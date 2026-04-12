@@ -12,8 +12,9 @@ Every item here is a lesson learned the hard way or a constraint that's invisibl
 ## Chat Reducer
 
 - **`toolCalls` Map is never cleared.** ToolCards need old results for display. Use `activeTurnToolIds` (a Set) for current-turn status checks, not the full Map.
-- **Always use `endTurn()` helper when adding turn-ending code paths.** Don't manually clear `isThinking`, `streamingText`, `currentTurnId`, etc. — `endTurn()` handles all of them consistently.
+- **Always use `endTurn()` helper when adding turn-ending code paths.** Don't manually clear `isThinking`, `streamingText`, `currentTurnId`, `attentionState`, etc. — `endTurn()` handles all of them consistently. `SESSION_PROCESS_EXITED` is the one handler that spreads `endTurn()` and then overrides `attentionState: 'session-died'`.
 - **Dedup is content-based, not flag-based.** There is no `optimistic` flag. Both `USER_PROMPT` and `TRANSCRIPT_USER_MESSAGE` compare content against the last 10 timeline entries. Legitimate rapid-fire identical messages can be suppressed — known limitation.
+- **`attentionState` is classifier-driven, not timer-driven.** The 30s `thinkingTimedOut` flag is gone. `useAttentionClassifier` reads the xterm buffer every 1s and dispatches `ATTENTION_STATE_CHANGED`; transcript events + `PERMISSION_REQUEST` reset it to `'ok'`. **Classifier patterns in `attention-classifier.ts` are Claude Code CLI-version sensitive** — regex drift is the most likely source of banner false positives/negatives. Keep the version-anchor comment current and treat it like a dated fixture.
 
 ## Android Runtime
 
@@ -45,7 +46,7 @@ Every item here is a lesson learned the hard way or a constraint that's invisibl
 - **Use `<Scrim>` and `<OverlayPanel>` from `components/overlays/Overlay.tsx`** — don't hardcode `bg-black/40`, `bg-canvas/60`, `backdrop-blur-sm`, `shadow-xl`, `rounded-xl`, or arbitrary z-indexes. The primitives pull scrim color, blur, surface background, shadow, and z-index from theme tokens automatically. Anchored popovers (dropdowns, context menus) that don't need a scrim can use `.layer-surface` class directly.
 - **Pick a layer, not a z-index.** L1 = drawers (z 40/50), L2 = popups (z 60/61), L3 = destructive (z 70/71), L4 = system (z 100). See `docs/shared-ui-architecture.md` "Overlay Layer System".
 - **SessionStrip dropdown at `z-[9000]` is load-bearing.** `.header-bar`'s `backdrop-filter` creates a stacking context that traps lower values. Don't "fix" it.
-- **Glassmorphism is automatic.** `[data-panels-blur] .layer-surface` applies `backdrop-filter: blur(16px) saturate(1.2)` when a glass theme is active. Reduced-effects mode resets blur to 0 and keeps surfaces opaque — no per-component handling required.
+- **Glassmorphism is automatic and var-driven.** `.layer-surface` reads `--panels-blur` / `--panels-opacity` directly (always set by theme-engine, defaults `0px` / `1`). No `[data-panels-blur]` attribute gate exists — blur and opacity are independent knobs. Reduced-effects forces `--panels-blur: 0` but preserves the user's opacity intent. No per-component handling required.
 
 ## Documentation Drift
 

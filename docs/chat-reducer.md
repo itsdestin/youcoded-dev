@@ -6,7 +6,7 @@ Chat state lives in `destincode/desktop/src/renderer/state/chat-reducer.ts` with
 
 `toolCalls` is a **session-lifetime Map** — never cleared. ToolCards need old results for display, so entries persist. Individual entries are updated in-place (status flipped to `failed`), but the Map never resets.
 
-To prevent stale `running` / `awaiting-approval` entries from old turns affecting status indicators, `activeTurnToolIds` (a Set) tracks which tools belong to the current turn. All status checks — StatusDot color, ThinkingIndicator visibility, thinking timeout — scan this Set only, not the full Map.
+To prevent stale `running` / `awaiting-approval` entries from old turns affecting status indicators, `activeTurnToolIds` (a Set) tracks which tools belong to the current turn. All status checks — StatusDot color, ThinkingIndicator visibility, attention classifier — scan this Set only, not the full Map.
 
 ## endTurn() helper
 
@@ -14,15 +14,23 @@ To prevent stale `running` / `awaiting-approval` entries from old turns affectin
 
 - Iterates `activeTurnToolIds` and marks any `running` or `awaiting-approval` tool as `failed` with error `'Turn ended'`
 - Returns a fresh empty `activeTurnToolIds: new Set()`
-- Clears `isThinking`, `streamingText`, `currentGroupId`, `currentTurnId`, `thinkingTimedOut`
+- Clears `isThinking`, `streamingText`, `currentGroupId`, `currentTurnId`, and resets `attentionState: 'ok'`
 
 **Always use this helper when adding a new turn-ending code path.** Don't manually clear these fields.
 
-## Thinking timeout
+`SESSION_PROCESS_EXITED` spreads `endTurn()` and then overrides `attentionState: 'session-died'` — the only case where the post-endTurn attention is not `'ok'`.
 
-A 30-second watchdog fires only when `state.isThinking && !hasAwaitingApproval && !hasRunningTools` — true silence, not just absence of visible output. Computed via `useMemo` over the toolCalls Map inside `ChatView.tsx`.
+## Attention classifier
 
-Sets an ephemeral `thinkingTimedOut: true` flag rather than injecting permanent text. The flag auto-clears on `TRANSCRIPT_TURN_COMPLETE` via `endTurn()`.
+The old 30-second `thinkingTimedOut` watchdog was replaced by a per-session `attentionState` enum driven by three independent signals:
+
+1. **Process liveness** — main-process `session-exit` forwards `exitCode` via IPC; App.tsx dispatches `SESSION_PROCESS_EXITED`. If a turn was in flight OR the exit was nonzero, the reducer calls `endTurn()` and sets `attentionState: 'session-died'`. Clean exits during idle are no-ops.
+2. **PTY buffer classifier** — `useAttentionClassifier` ticks every 1s while `isThinking && !hasRunningTools && !hasAwaitingApproval && visible`. It reads the xterm buffer via `getScreenText`, passes the last 40 lines to the pure `classifyBuffer` function (`src/renderer/state/attention-classifier.ts`), and dispatches `ATTENTION_STATE_CHANGED` only when the mapped state differs from the current one. Reset to `'ok'` on unmount.
+3. **Transcript corroboration** — `TRANSCRIPT_USER_MESSAGE`, `TRANSCRIPT_ASSISTANT_TEXT`, `TRANSCRIPT_TOOL_USE`, `TRANSCRIPT_TOOL_RESULT`, `PERMISSION_REQUEST`, and the new `TRANSCRIPT_THINKING_HEARTBEAT` (emitted for `thinking` blocks from extended-thinking models) clear `attentionState` back to `'ok'`.
+
+`ChatView` renders `<ThinkingIndicator />` when `attentionState === 'ok' && isThinking`, and swaps in `<AttentionBanner state={attentionState} />` otherwise. Banner copy is keyed off the state (`awaiting-input`, `shell-idle`, `error`, `stuck`, `session-died`).
+
+The classifier's regex patterns are Claude Code CLI-version sensitive — see the version-anchor comment at the top of `attention-classifier.ts` and review if CLI visuals change.
 
 ## Deduplication
 
