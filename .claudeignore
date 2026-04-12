@@ -1,0 +1,26 @@
+# Build artifacts and dependencies
+destincode/desktop/node_modules/
+destincode/desktop/dist/
+destincode/desktop/release/
+destincode/app/build/
+destincode/.gradle/
+**/node_modules/
+**/*.map
+
+# Large historical/plan documents — not needed for active sessions
+destinclaude/CHANGELOG.md
+TOOLKIT-DECOMPOSITION-*.md
+TOOLKIT-MARKETPLACE-DECOMPOSITION-PLAN.md
+SECURITY-REMEDIATION-*.md
+TESTING-CHECKLIST.md
+
+# Worktree clones (temporary, not project state)
+*-worktree*/
+*-phase*/
+*-decoupling/
+*-unified/
+*-sessions/
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db

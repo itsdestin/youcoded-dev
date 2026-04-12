@@ -16,5 +16,12 @@ destincode-marketplace/
 .auto-title
 .auto-title-audit.tmp
 
-# Claude project settings (user-specific)
-.claude/
+# Claude project config
+# Track: commands/, hooks/, rules/, skills/, settings.json (shared across machines)
+# Ignore: settings.local.json (user/machine-specific), worktrees/
+.claude/*
+!.claude/commands/
+!.claude/hooks/
+!.claude/rules/
+!.claude/skills/
+!.claude/settings.json

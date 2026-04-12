@@ -1,0 +1,54 @@
+# Pitfalls & Architectural Invariants
+
+Every item here is a lesson learned the hard way or a constraint that's invisible from reading code alone. Violating these silently breaks things.
+
+## Cross-Platform (Desktop + Android)
+
+- **`preload.ts` and `remote-shim.ts` must expose the same SHARED `window.claude` shape.** If one has a shared API the other lacks, React crashes on that platform. Intentional exceptions: `window.claude.window` (Electron-only, for minimize/maximize/close) and `window.claude.android` (Android-only).
+- **Desktop handlers return raw values; Android wraps in JSONObject.** The shim must normalize both to a consistent shape before React sees them.
+- **Message type strings must be identical across preload.ts, ipc-handlers.ts, and SessionService.kt.** A typo silently fails on one platform.
+- **`build-web-ui.sh` MUST run before Android APK builds** or the Android app launches with a blank WebView.
+
+## Chat Reducer
+
+- **`toolCalls` Map is never cleared.** ToolCards need old results for display. Use `activeTurnToolIds` (a Set) for current-turn status checks, not the full Map.
+- **Always use `endTurn()` helper when adding turn-ending code paths.** Don't manually clear `isThinking`, `streamingText`, `currentTurnId`, etc. — `endTurn()` handles all of them consistently.
+- **Dedup is content-based, not flag-based.** There is no `optimistic` flag. Both `USER_PROMPT` and `TRANSCRIPT_USER_MESSAGE` compare content against the last 10 timeline entries. Legitimate rapid-fire identical messages can be suppressed — known limitation.
+
+## Android Runtime
+
+- **`LD_LIBRARY_PATH` is mandatory. DO NOT remove.** Termux binaries are relocated from `/data/data/com.termux/files/usr` to `context.filesDir/usr`; `DT_RUNPATH` baked into binaries is stale.
+- **All binaries route through `/system/bin/linker64`** for SELinux W^X bypass. Three layers with distinct roles: LD_PRELOAD for C/Rust, claude-wrapper.js for runtime quirks, linker64-env.sh for Go binaries.
+- **`TMPDIR` points to `$HOME/.cache/tmpdir`, not `$HOME/tmp`.** The specific path avoids Termux Node.js's compiled-in `/tmp` rewriting double-applying. Don't "fix" it to `$HOME/tmp`.
+- **Use the linker variant of `termux-exec`.** Bootstrap copies `libtermux-exec-linker-ld-preload.so` over the primary `.so` after install.
+- **Runtime fixes must work in BOTH `PtyBridge` and `DirectShellBridge`.** Both share `Bootstrap.buildRuntimeEnv()` and `Bootstrap.deployBashEnv()` — fix once, applies everywhere.
+- **DO NOT poll `isRunning`.** Use the reactive `sessionFinished` `StateFlow` (fed by JNI waitpid thread).
+- **`claude-wrapper.js` canonical source is `app/src/main/assets/claude-wrapper.js`.** Edit this file directly. It's deployed to `~/.claude-mobile/` at every launch.
+
+## Toolkit & Hooks
+
+- **Never edit hooks in `settings.json` directly — update `hooks-manifest.json`.** During `/update`, the manifest is merged into settings.json. Direct edits get overwritten.
+- **`.sh` files MUST have execute bit set.** On Windows, Git does not set this automatically. Use `git update-index --chmod=+x path/to/file.sh`. Missing execute bit is the #1 cause of "hook does nothing" bugs.
+- **`config.json` is portable, `config.local.json` is machine-specific.** config.local.json is rebuilt every session by session-start.sh — don't sync it.
+- **Feature work requires `git worktree add`**, not `git checkout -b`, in the main plugin dir. `worktree-guard.sh` blocks branch switches.
+
+## Releases
+
+- **Bump `versionCode` AND `versionName` in `app/build.gradle.kts` BEFORE tagging.** Play Store requires `versionCode` to be monotonically increasing; CI cannot derive it from the tag.
+- **Desktop version is from the git tag**, not `package.json`. CI patches `package.json` during build.
+- **Auto-tag for toolkit triggers on `plugin.json` version changes** on master. Bump the root `plugin.json` (not layer plugin.json files) — the root version drives releases.
+- **Release skill (`destinclaude-admin`) only handles toolkit releases currently.** destincode multi-repo coordination needs rework — see memory entry `project_release_rework`.
+- **v2.3.0 lessons**: auto-tag was fragile, hooks were untested, spec gaps existed, protocol parity blind spots broke cross-platform features. See memory `project_release_lessons_2_3_0`.
+
+## Documentation Drift
+
+- **These pitfalls/invariants age with the code.** Code changes but docs don't always follow. Run `/audit` periodically (or before releases) to verify every claim against current source. The audit produces concrete fix instructions for each drift it finds.
+- **Add entries to `docs/knowledge-debt.md`** when you notice drift mid-session but can't fix it immediately. The session-start hook surfaces a reminder when entries exist.
+- **Update `last_verified` frontmatter** on rules and docs after confirming they still match code. Stale-detection uses this date.
+
+## Working With Destin
+
+- **"Merge" means merge AND push to origin.** Don't stop at a local merge.
+- **Always sync before working.** `git fetch origin && git pull origin master` in every repo you'll touch. Prevents working against stale state.
+- **Annotate non-trivial code edits with a WHY comment.** Destin is a non-developer and relies on comments to understand what code does and why it was changed. Example: `// Fix: prevent stale tool IDs from coloring the status dot`.
+- **Verify fix consequences before shipping.** Batch fixes — especially network/permission changes — can silently break cross-cutting features. Check both platforms.

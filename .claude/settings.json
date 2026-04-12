@@ -1,0 +1,17 @@
+{
+  "_comment": "Workspace-level Claude Code config for destinclaude-dev. Loaded alongside ~/.claude/settings.json when working in this project. Commands, hooks, skills, and rules in sibling dirs are discovered automatically.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/context-inject.sh\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
