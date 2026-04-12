@@ -41,3 +41,48 @@ These are NOT parity violations — they're by design:
 ## Response shape normalization
 
 Desktop handlers return raw values (e.g., `string[]`). Android wraps in JSONObject (e.g., `{paths: [...]}`). The shim should normalize differences so React sees a consistent shape.
+
+## Overlay Layer System
+
+All popups, modals, drawers, and floating menus share a single set of theme-driven overlay tokens. This is how DestinCode keeps popup styling consistent across themes and avoids per-component hardcoded scrims/shadows/blur.
+
+### Layers
+
+| Layer | Name | z-scrim | z-content | Examples |
+|-------|------|---------|-----------|----------|
+| L0 | Content | — | — | App chrome (chat, header, input, status) |
+| L1 | Drawer | 40 | 50 | SettingsPanel, CommandDrawer, ResumeBrowser |
+| L2 | Popup | 60 | 61 | PreferencesPopup, ModelPickerPopup, ShareSheet, ThemeShareSheet, SkillEditor, StatusBar WidgetConfigPopup, ShortcutsPopup |
+| L3 | Critical | 70 | 71 | Destructive confirmations (no instances yet) |
+| L4 | System | 100 | 100 | Toasts, always-visible indicators |
+
+**Exception:** `SessionStrip` dropdown lives at `z-[9000]`. It's load-bearing — `.header-bar`'s `backdrop-filter` creates a stacking context that would trap lower z-index values. Don't "fix" it.
+
+### Primitives
+
+Use `<Scrim>` and `<OverlayPanel>` from `components/overlays/Overlay.tsx` instead of hardcoding. They wrap the `.layer-scrim` / `.layer-surface` CSS classes, set the correct z-index per layer, and emit the right `data-*` attributes.
+
+```tsx
+<Scrim layer={2} onClick={onClose} />
+<OverlayPanel layer={2} destructive={false} className="...">
+  {children}
+</OverlayPanel>
+```
+
+For anchored popovers that don't need a scrim (dropdowns, context menus, info tooltips), use `.layer-surface` class directly — it still gets theme-driven background, border, shadow, and glass treatment.
+
+### What the tokens do
+
+Computed in `theme-engine.ts` from existing theme color tokens; no new manifest fields required:
+
+- `--scrim`, `--scrim-heavy` — theme-tinted backdrop (derived from `canvas`, not cold `bg-black/40`)
+- `--overlay-bg` — opaque `--panel` normally, semi-transparent `rgba(panel, 0.85)` under glassmorphism
+- `--overlay-blur` — `0px` normally, `16px` under glassmorphism, `0px` in reduced-effects mode
+- `--shadow-strength` — adapts to theme lightness (stronger on light themes)
+- `--destructive`, `--destructive-dim` — destructive-variant border/ring for L3
+
+### Do NOT
+
+- Do NOT hardcode `bg-black/40`, `bg-canvas/60`, `backdrop-blur-sm`, `shadow-xl`, or `rounded-xl` on popup surfaces — use `.layer-surface` / `<OverlayPanel>` so theme tokens drive it
+- Do NOT pick arbitrary z-index values — pick a layer (1-4) and let the primitive set z-index
+- Do NOT add `.layer-scrim` with its own background-color override — that defeats the theme tinting

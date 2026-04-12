@@ -40,6 +40,13 @@ Every item here is a lesson learned the hard way or a constraint that's invisibl
 - **Release skill (`destinclaude-admin`) only handles toolkit releases currently.** destincode multi-repo coordination needs rework — see memory entry `project_release_rework`.
 - **v2.3.0 lessons**: auto-tag was fragile, hooks were untested, spec gaps existed, protocol parity blind spots broke cross-platform features. See memory `project_release_lessons_2_3_0`.
 
+## Overlays (Popups, Modals, Drawers)
+
+- **Use `<Scrim>` and `<OverlayPanel>` from `components/overlays/Overlay.tsx`** — don't hardcode `bg-black/40`, `bg-canvas/60`, `backdrop-blur-sm`, `shadow-xl`, `rounded-xl`, or arbitrary z-indexes. The primitives pull scrim color, blur, surface background, shadow, and z-index from theme tokens automatically. Anchored popovers (dropdowns, context menus) that don't need a scrim can use `.layer-surface` class directly.
+- **Pick a layer, not a z-index.** L1 = drawers (z 40/50), L2 = popups (z 60/61), L3 = destructive (z 70/71), L4 = system (z 100). See `docs/shared-ui-architecture.md` "Overlay Layer System".
+- **SessionStrip dropdown at `z-[9000]` is load-bearing.** `.header-bar`'s `backdrop-filter` creates a stacking context that traps lower values. Don't "fix" it.
+- **Glassmorphism is automatic.** `[data-panels-blur] .layer-surface` applies `backdrop-filter: blur(16px) saturate(1.2)` when a glass theme is active. Reduced-effects mode resets blur to 0 and keeps surfaces opaque — no per-component handling required.
+
 ## Documentation Drift
 
 - **These pitfalls/invariants age with the code.** Code changes but docs don't always follow. Run `/audit` periodically (or before releases) to verify every claim against current source. The audit produces concrete fix instructions for each drift it finds.
