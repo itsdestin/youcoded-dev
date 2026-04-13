@@ -22,8 +22,19 @@ That sets two env vars and runs `npm run dev` in `destincode/desktop/`:
 | Electron `userData` | `%APPDATA%/destincode/` | `%APPDATA%/destincode-dev/` |
 | Window title / dock label | DestinCode | DestinCode Dev |
 | localStorage (theme, font, recents) | untouched | dev-only, starts empty |
+| `~/.claude/settings.json` hooks | written by the built app | **not touched by dev** (see below) |
 
 Running a second concurrent dev? Set `DESTINCODE_PORT_OFFSET=100` (or any other free offset) before invoking. The script uses 50 by default.
+
+### Why dev doesn't install hooks
+
+`scripts/install-hooks.js` writes absolute paths to `hook-scripts/relay.js`, `title-update.sh`, etc. into `~/.claude/settings.json`. If dev ran that script from a worktree, the paths would point into the worktree — and the moment the worktree is removed, every hook call fails with ENOENT. Sessions then hang on the "Initializing" overlay forever because the app waits for the first hook event to confirm Claude is alive.
+
+To prevent that, `main.ts` skips `install-hooks` when `DESTINCODE_PROFILE=dev`. Dev uses whatever hook-script paths the built app last wrote. Tradeoff: editing `hook-scripts/*.js` or `*.sh` in dev won't take effect until you rebuild and reinstall the app. Hook-script changes are rare in practice.
+
+The built app also self-checks on every startup: if it finds a hook command whose path contains `.worktrees/` or doesn't exist on disk, it logs a warning and lets `install-hooks.js` repair it. So even if something slips past (e.g., from an older dev build that didn't have the skip-in-dev gate), relaunching the built app once recovers automatically.
+
+If you ever see errors like `Cannot find module 'C:\...\.worktrees\...\relay.js'` in the terminal, that's the smoking gun — **close the dev app and relaunch the built app once**.
 
 ## What is shared (intentional)
 
