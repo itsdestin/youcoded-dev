@@ -36,10 +36,10 @@
 
 | Path | Change |
 |------|--------|
-| `youcoded/desktop/src/shared/types.ts` | Add buddy IPC channel constants; add `SessionInfo.lastActivityAt` if missing; add `AttentionSummary` type. |
+| `youcoded/desktop/src/shared/types.ts` | Add buddy IPC channel constants (`BUDDY_*`, `SESSION_ATTENTION_SUMMARY`, `ATTENTION_REPORT`), add `AttentionSummary` type, add `BuddyApi` interface. **Do NOT extend `SessionInfo`** — attention data flows through the AttentionSummary push (Phase C), not per-entry fields. |
 | `youcoded/desktop/src/main/window-registry.ts` | Add `subscriptions: Map<sessionId, Set<wcId>>`; `subscribe` / `unsubscribe` / `getSubscribers` / `releaseAllForWindow`. |
-| `youcoded/desktop/src/main/main.ts` | Extend `createAppWindow` with a `buddy` variant; wire `BuddyWindowManager`; route session events to owner ∪ subscribers; handle `render-process-gone` for buddy windows. |
-| `youcoded/desktop/src/main/ipc-handlers.ts` | Add `buddy:*` handlers; emit `session:attention-summary` on transitions. |
+| `youcoded/desktop/src/main/main.ts` | Extend `createAppWindow` with a `buddy` variant; wire `BuddyWindowManager`; buddy lifecycle IPC registration; handle `render-process-gone` for buddy windows. |
+| `youcoded/desktop/src/main/ipc-handlers.ts` | **Modify existing `sendForSession` helper** (line ~66) to route to owner ∪ subscribers. Add `buddy:*` handlers and the per-window attention-report aggregator that emits `session:attention-summary`. |
 | `youcoded/desktop/src/main/preload.ts` | Expose `window.claude.buddy.*` API (inlined channel names per sandboxed-preload rule). |
 | `youcoded/desktop/src/renderer/remote-shim.ts` | Stub `window.claude.buddy.*` with `throw new Error('Buddy is desktop-only in this version')`. |
 | `youcoded/desktop/src/renderer/App.tsx` | Mode routing branch at top: check `new URLSearchParams(location.search).get('mode')`. |
@@ -251,99 +251,68 @@ git commit -m "feat(buddy): add subscription layer to WindowRegistry"
 ### Task A2: Route session events to owner ∪ subscribers
 
 **Files:**
-- Modify: `youcoded/desktop/src/main/main.ts` (event-routing helpers)
+- Modify: `youcoded/desktop/src/main/ipc-handlers.ts` (the existing `sendForSession` helper)
 
-Currently `main.ts` has a `windowFromWcId` helper and session events are dispatched via per-owner lookups. We need to broadcast to owner + all subscribers for the session-scoped events listed in the spec.
+The codebase already has a single session-scoped IPC helper: `sendForSession(sessionId, channel, ...args)` defined at `src/main/ipc-handlers.ts:66`. Every session-scoped send (TRANSCRIPT_EVENT, PTY_OUTPUT, SESSION_DESTROYED, SESSION_RENAMED, SESSION_META_CHANGED, TRANSCRIPT_SHRINK, etc.) already flows through it. The minimal correct change is to extend **that helper** to include subscribers. Individual call sites don't change.
 
-- [ ] **Step 1: Find every existing send-to-owner site in main.ts**
+- [ ] **Step 1: Locate the existing helper**
 
 ```bash
 cd /c/Users/desti/youcoded-dev/.worktrees/buddies-floater/desktop
-grep -n 'ownership\|getOwner\|windowFromWcId' src/main/main.ts
+grep -n 'sendForSession' src/main/ipc-handlers.ts
 ```
 
-Expected output includes at minimum the session-events dispatch site (look for `TRANSCRIPT_EVENT`, `PTY_OUTPUT`, `HOOK_EVENT`, `SESSION_PROCESS_EXITED` sends).
+Expected: definition at or near line 66, plus many call sites. Read the current definition and the comment block above it before editing.
 
-- [ ] **Step 2: Add a shared helper `sendToSessionAudience`**
+- [ ] **Step 2: Modify `sendForSession` to send to owner ∪ subscribers**
 
-Add near `windowFromWcId` in `main.ts`:
+Replace the current body of the helper. Keep the variadic `...args: any[]` signature — many call sites pass more than one arg (e.g., `sendForSession(sid, IPC.SESSION_DESTROYED, sid, exitCode)`). Keep the mainWindow fallback for orphaned events. New body:
 
 ```ts
-// Send a session-scoped IPC event to the owner window AND every subscriber
-// window. Used for transcript, PTY, hook, and lifecycle events that the
-// buddy subscription layer needs to observe without taking ownership.
-function sendToSessionAudience(sessionId: string, channel: string, payload: unknown): void {
+// Route a session-scoped emit to the owner AND any buddy subscribers.
+// Ownership and subscription are independent (a buddy window observes a
+// session without claiming ownership), so events must reach both. Falls
+// back to the primary mainWindow when neither owner nor subscribers
+// exist (preserves the existing pre-buddy fallback behavior for
+// remote-created sessions during Phase 1).
+const sendForSession = (sessionId: string, channel: string, ...args: any[]) => {
   const ids = new Set<number>();
-  const owner = windowRegistry.getOwner(sessionId);
-  if (owner != null) ids.add(owner);
-  for (const sub of windowRegistry.getSubscribers(sessionId)) ids.add(sub);
-  for (const wcId of ids) {
-    const win = windowFromWcId(wcId);
-    if (win && !win.isDestroyed()) win.webContents.send(channel, payload);
+  const ownerId = windowRegistry?.getOwner(sessionId);
+  if (ownerId != null) ids.add(ownerId);
+  if (windowRegistry) {
+    for (const subId of windowRegistry.getSubscribers(sessionId)) ids.add(subId);
   }
-}
-```
-
-- [ ] **Step 3: Replace per-owner sends for the session-scoped channels**
-
-Find the existing dispatch sites for the following channels and swap them to use `sendToSessionAudience(sessionId, channel, payload)`:
-
-- `IPC.TRANSCRIPT_EVENT` (search for `TRANSCRIPT_EVENT`)
-- `IPC.PTY_OUTPUT` (search for `PTY_OUTPUT`)
-- `IPC.HOOK_EVENT` when it carries a `sessionId` (search for `HOOK_EVENT`)
-- `IPC.SESSION_PROCESS_EXITED` (search for `SESSION_PROCESS_EXITED` or the dispatch that accompanies `session-exit`)
-
-For each, the refactor looks like:
-
-Before:
-```ts
-const owner = windowRegistry.getOwner(sessionId);
-const win = owner ? windowFromWcId(owner) : mainWindow;
-if (win && !win.isDestroyed()) win.webContents.send(IPC.TRANSCRIPT_EVENT, evt);
-```
-
-After:
-```ts
-sendToSessionAudience(sessionId, IPC.TRANSCRIPT_EVENT, evt);
-```
-
-**Important:** existing fallback behavior ("send to mainWindow when there's no owner") is intentional for orphaned events. Preserve it — in `sendToSessionAudience`, if `ids.size === 0` AND there's a `mainWindow`, fall back to `mainWindow`:
-
-```ts
-function sendToSessionAudience(sessionId: string, channel: string, payload: unknown): void {
-  const ids = new Set<number>();
-  const owner = windowRegistry.getOwner(sessionId);
-  if (owner != null) ids.add(owner);
-  for (const sub of windowRegistry.getSubscribers(sessionId)) ids.add(sub);
-
-  if (ids.size === 0) {
-    // Orphaned event — fall back to mainWindow so existing behavior is
-    // preserved for sessions that haven't been claimed yet at boot.
-    if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send(channel, payload);
+  if (ids.size > 0) {
+    for (const wid of ids) {
+      // wid is a webContents.id, NOT a BrowserWindow.id — see the original
+      // comment in this file for why that distinction matters.
+      const wc = webContents.fromId(wid);
+      if (wc && !wc.isDestroyed()) wc.send(channel, ...args);
     }
     return;
   }
-  for (const wcId of ids) {
-    const win = windowFromWcId(wcId);
-    if (win && !win.isDestroyed()) win.webContents.send(channel, payload);
-  }
-}
+  // Fallback: no known owner and no subscribers (e.g., remote-created
+  // session pre-assignment). Send to mainWindow to preserve existing behavior.
+  if (!mainWindow.isDestroyed()) mainWindow.webContents.send(channel, ...args);
+};
 ```
 
-- [ ] **Step 4: Run the full existing test suite to verify no regression**
+**No individual call-site changes needed.** Every existing call to `sendForSession(...)` now automatically reaches owner + subscribers.
+
+- [ ] **Step 3: Run the full existing test suite to verify no regression**
 
 ```bash
 npm test -- --run
+npm run build
 ```
 
-Expected: all existing tests still pass. (No new tests for this task — routing is exercised end-to-end later.)
+Expected: all existing tests still pass; build succeeds. No subscribers exist yet in production paths, so behavior is identical to before this change until buddy windows start subscribing in Phase B.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/main.ts
-git commit -m "refactor(buddy): route session events to owner ∪ subscribers"
+git add src/main/ipc-handlers.ts
+git commit -m "refactor(buddy): route session events to owner ∪ subscribers via sendForSession"
 ```
 
 ---
@@ -939,11 +908,11 @@ ipcMain.handle(IPC.BUDDY_SET_SESSION, (_evt, sessionId: string) => {
 });
 ipcMain.handle(IPC.BUDDY_SUBSCRIBE, (evt, sessionId: string) => {
   windowRegistry.subscribe(sessionId, evt.sender.id);
-  // Trigger a replay so the buddy reducer catches up with recent history.
-  // The existing TRANSCRIPT_REPLAY handler will stream events back via the
-  // normal TRANSCRIPT_EVENT channel — we just need the subscription in
-  // place before the events start arriving.
-  evt.sender.send(IPC.TRANSCRIPT_REPLAY_START, { sessionId });
+  // Replay is kicked off by the renderer after this call resolves, via
+  // window.claude.detach.requestTranscriptReplay(sessionId). That sends
+  // IPC.TRANSCRIPT_REPLAY (already handled elsewhere) and streams history
+  // back through the normal TRANSCRIPT_EVENT channel — which, thanks to
+  // Task A2, now reaches both the owner and the new subscriber.
 });
 ipcMain.handle(IPC.BUDDY_UNSUBSCRIBE, (evt, sessionId: string) => {
   windowRegistry.unsubscribe(sessionId, evt.sender.id);
@@ -951,7 +920,7 @@ ipcMain.handle(IPC.BUDDY_UNSUBSCRIBE, (evt, sessionId: string) => {
 ipcMain.handle(IPC.BUDDY_GET_VIEWED_SESSION, () => buddyManager.getViewedSession());
 ```
 
-**Note:** if `TRANSCRIPT_REPLAY_START` doesn't exist as an IPC constant, either reuse `TRANSCRIPT_REPLAY` (invoke-style) or omit this line — the buddy renderer can call `window.claude.session.replayTranscript(sessionId)` itself after subscribing. Pick the existing-pattern option that's consistent with current renderer code.
+**Note:** no new replay IPC is needed. The existing `window.claude.detach.requestTranscriptReplay(sessionId)` (preload.ts ~581) drives `IPC.TRANSCRIPT_REPLAY` into main and main streams history back via `IPC.TRANSCRIPT_EVENT`. Buddy's renderer calls this helper right after subscribe (see Task E2 Step 3).
 
 - [ ] **Step 6: Build to verify**
 
@@ -1657,67 +1626,70 @@ Create `youcoded/desktop/src/renderer/components/buddy/SessionPill.tsx`:
 
 ```tsx
 import { useEffect, useState, useCallback } from 'react';
-
-interface RunningSession {
-  id: string;
-  cwd: string;
-  branch?: string;
-  attentionState?: string;
-  awaitingApproval?: boolean;
-}
+import type { AttentionSummary, SessionInfo } from '../../../shared/types';
 
 interface Props {
   viewedSessionId: string | null;
   onChange: (sessionId: string) => void;
+  attentionSummary: AttentionSummary | null;
 }
 
-export function SessionPill({ viewedSessionId, onChange }: Props) {
+export function SessionPill({ viewedSessionId, onChange, attentionSummary }: Props) {
   const [open, setOpen] = useState(false);
-  const [sessions, setSessions] = useState<RunningSession[]>([]);
+  const [sessions, setSessions] = useState<SessionInfo[]>([]);
   const viewed = sessions.find((s) => s.id === viewedSessionId) ?? null;
 
   useEffect(() => {
-    // Load running sessions from the existing window:get-directory IPC.
-    // The payload shape is { windows: [{ window, sessions }] }; flatten to
-    // a unique list and project to RunningSession.
+    // Directory APIs live under window.claude.detach.* (not session.*).
+    // The payload shape is { windows: [{ window, sessions: SessionInfo[] }] };
+    // flatten across all windows into a unique list.
     const load = async () => {
-      const dir = await window.claude.session.getDirectory?.(); // verify helper name
-      if (!dir) return;
-      const all: RunningSession[] = [];
+      const dir = await window.claude.detach.getDirectory();
+      if (!dir?.windows) return;
+      const all: SessionInfo[] = [];
+      const seen = new Set<string>();
       for (const wd of dir.windows) {
-        for (const s of wd.sessions) {
-          all.push({
-            id: s.id,
-            cwd: s.cwd,
-            branch: s.branch,
-            attentionState: s.attentionState,
-            awaitingApproval: s.awaitingApproval,
-          });
+        for (const s of (wd.sessions ?? [])) {
+          if (seen.has(s.id)) continue;
+          seen.add(s.id);
+          all.push(s);
         }
       }
       setSessions(all);
     };
     load();
-    const unsub = window.claude.session.onDirectoryUpdated?.(load); // verify helper name
+    const unsub = window.claude.detach.onDirectoryUpdated(load);
     return unsub;
   }, []);
 
   const selectSession = useCallback(async (sid: string) => {
     await window.claude.buddy.setSession(sid);
     await window.claude.buddy.subscribe(sid);
+    // After subscribing, ask main for the transcript replay so the buddy
+    // reducer catches up with existing history. Reuses the existing helper.
+    window.claude.detach.requestTranscriptReplay(sid);
     onChange(sid);
     setOpen(false);
   }, [onChange]);
 
   const createSession = useCallback(async () => {
-    // Reuses existing session:create IPC. The new session appears in main's
-    // strip; wait for the directory push, then select it.
-    const newId = await window.claude.session.create?.({ cwd: undefined, model: undefined, dangerous: false });
-    if (newId) selectSession(newId);
+    // Reuses existing session:create IPC. Real payload shape is
+    // { name, cwd, skipPermissions, cols?, rows?, resumeSessionId?, provider? }.
+    // We default skipPermissions=false (safe default — user can upgrade in main);
+    // cwd falls back to the main app's default if empty. Name is derived from cwd.
+    const dir = await window.claude.detach.getDirectory();
+    const defaultCwd = dir?.defaultCwd ?? ''; // if this field doesn't exist, leave ''; main will reject and user can create from main instead
+    if (!defaultCwd) return;
+    const info = await window.claude.session.create({
+      name: basename(defaultCwd),
+      cwd: defaultCwd,
+      skipPermissions: false,
+    });
+    if (info?.id) selectSession(info.id);
   }, [selectSession]);
 
-  const label = viewed ? `${basename(viewed.cwd)}${viewed.branch ? ` · ${viewed.branch}` : ''}` : 'no session';
-  const dotColor = viewed ? attentionColor(viewed) : '#888';
+  const label = viewed ? viewed.name || basename(viewed.cwd) : 'no session';
+  const dotColor = viewed ? attentionColorFromSummary(viewed.id, attentionSummary) : '#888';
 
   return (
     <div style={{ position: 'relative', alignSelf: 'center' }}>
@@ -1735,19 +1707,23 @@ export function SessionPill({ viewedSessionId, onChange }: Props) {
           className="layer-surface"
           style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: 6, width: 240, padding: 6, borderRadius: 16, zIndex: 100 }}
         >
-          {sessions.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => selectSession(s.id)}
-              style={{ display: 'flex', width: '100%', alignItems: 'center', gap: 8, padding: '6px 10px', fontSize: 12, background: s.id === viewedSessionId ? 'rgba(255,255,255,0.06)' : 'transparent', border: 'none', borderRadius: 10, cursor: 'pointer', color: 'inherit' }}
-            >
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: attentionColor(s) }} />
-              <span style={{ flex: 1, textAlign: 'left' }}>{basename(s.cwd)}{s.branch ? ` · ${s.branch}` : ''}</span>
-              {(s.awaitingApproval || (s.attentionState && s.attentionState !== 'ok')) && (
-                <span style={{ fontSize: 10, opacity: 0.7 }}>● {s.awaitingApproval ? 'awaiting' : s.attentionState}</span>
-              )}
-            </button>
-          ))}
+          {sessions.map((s) => {
+            const attn = attentionSummary?.perSession?.[s.id];
+            const label = attn?.awaitingApproval ? 'awaiting'
+              : attn?.attentionState && attn.attentionState !== 'ok' ? attn.attentionState
+              : null;
+            return (
+              <button
+                key={s.id}
+                onClick={() => selectSession(s.id)}
+                style={{ display: 'flex', width: '100%', alignItems: 'center', gap: 8, padding: '6px 10px', fontSize: 12, background: s.id === viewedSessionId ? 'rgba(255,255,255,0.06)' : 'transparent', border: 'none', borderRadius: 10, cursor: 'pointer', color: 'inherit' }}
+              >
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: attentionColorFromSummary(s.id, attentionSummary) }} />
+                <span style={{ flex: 1, textAlign: 'left' }}>{s.name || basename(s.cwd)}</span>
+                {label && <span style={{ fontSize: 10, opacity: 0.7 }}>● {label}</span>}
+              </button>
+            );
+          })}
           <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '4px 0' }} />
           <button
             onClick={createSession}
@@ -1767,9 +1743,15 @@ function basename(path: string): string {
   return parts[parts.length - 1] || path;
 }
 
-function attentionColor(s: RunningSession): string {
-  if (s.awaitingApproval) return '#f5a623';
-  switch (s.attentionState) {
+// Reads per-session attention from the Phase C AttentionSummary map rather
+// than expecting per-session fields on SessionInfo (which has none for
+// attention). If the summary hasn't arrived yet or the session isn't in it,
+// falls back to a neutral "running" color.
+function attentionColorFromSummary(sessionId: string, summary: AttentionSummary | null): string {
+  const attn = summary?.perSession?.[sessionId];
+  if (!attn) return '#9575ff';
+  if (attn.awaitingApproval) return '#f5a623';
+  switch (attn.attentionState) {
     case 'error':
     case 'stuck': return '#ef4444';
     case 'awaiting-input': return '#f5a623';
@@ -1780,11 +1762,27 @@ function attentionColor(s: RunningSession): string {
 }
 ```
 
-**Note:** the helper names `window.claude.session.getDirectory()`, `onDirectoryUpdated(…)`, `create(…)` are placeholders — the implementer MUST verify exact names in `preload.ts` and `remote-shim.ts` and adjust. If the existing API is `window.claude.window.getDirectory()` or `window.claude.sessions.list()`, match that.
+**Notes / verification the implementer should do first:**
 
-- [ ] **Step 2: Swap `BuddyChat` to use the real pill**
+- `window.claude.detach.getDirectory()` / `onDirectoryUpdated(cb)` / `requestTranscriptReplay(sid)` are confirmed present in `preload.ts` (see lines ~525–583).
+- `window.claude.session.create(opts)` — confirm the return shape before wiring `info?.id` above. At plan time, `create` is exposed in preload.ts:191 with the payload shape `{ name, cwd, skipPermissions, cols?, rows?, resumeSessionId?, provider? }`. The return type (Promise<SessionInfo>, Promise<string>, etc.) needs verification — adjust `info?.id` accordingly.
+- `dir.defaultCwd` is hypothetical — if the directory payload doesn't include a default cwd, either fetch it via the settings IPC (`window.claude.settings.get()` returns `{ skipPermissions, model, projectFolder }`) or disable the `+ New session…` entry in the MVP and file a follow-up to add it.
+- `SessionInfo` does NOT carry attention data — that's why the pill takes an `attentionSummary` prop from the parent instead.
 
-Replace `<SessionPillPlaceholder>` with `<SessionPill viewedSessionId={viewedSession} onChange={setViewedSession} />`.
+- [ ] **Step 2: Swap `BuddyChat` to use the real pill and pass the attention summary**
+
+Replace `<SessionPillPlaceholder>` with `<SessionPill viewedSessionId={viewedSession} onChange={setViewedSession} attentionSummary={attentionSummary} />`.
+
+Also hoist attention-summary subscription up to `BuddyChat.tsx` so both the pill and the `<AttentionStrip>` (Task E5) can consume the same source:
+
+```tsx
+import type { AttentionSummary } from '../../../shared/types';
+
+const [attentionSummary, setAttentionSummary] = useState<AttentionSummary | null>(null);
+useEffect(() => {
+  return window.claude.buddy.onAttentionSummary(setAttentionSummary);
+}, []);
+```
 
 - [ ] **Step 3: First-open default = main's active session**
 
@@ -1795,20 +1793,27 @@ useEffect(() => {
   (async () => {
     let sid = await window.claude.buddy.getViewedSession();
     if (!sid) {
-      // Fallback: main's currently-active session. The `window:get-directory`
-      // response already marks the active session per-window; find main's.
-      const dir = await window.claude.session.getDirectory?.();
-      const mainWin = dir?.windows?.find((w: any) => w.window.label === 'window 1');
-      sid = mainWin?.sessions?.find((s: any) => s.active)?.id ?? null;
+      // Fallback: pick a session from the directory. Main's primary window
+      // is the one flagged as leader. There is no canonical "active session"
+      // field on SessionInfo — at plan time the renderer tracks activity
+      // per-window. A pragmatic choice for MVP: take the first session
+      // belonging to the leader window (it's at the top of that window's
+      // session strip). Verify this matches main's visible active tab.
+      const dir = await window.claude.detach.getDirectory();
+      const leaderEntry = dir?.windows?.find?.((w: any) => w.window?.isLeader);
+      sid = leaderEntry?.sessions?.[0]?.id ?? null;
       if (sid) await window.claude.buddy.setSession(sid);
     }
     setViewedSession(sid);
-    if (sid) window.claude.buddy.subscribe(sid);
+    if (sid) {
+      window.claude.buddy.subscribe(sid);
+      window.claude.detach.requestTranscriptReplay(sid);
+    }
   })();
 }, []);
 ```
 
-**Note:** verify what field on `SessionInfo` / the directory entry marks "active" — if it's `isActive` or `focused` instead of `active`, adjust.
+**Verify at plan execution:** inspect the shape returned by `detach.getDirectory()` — the property names (`windows`, `window.isLeader`, `sessions`) are based on what `WindowRegistry.getDirectory(...)` produces; confirm by logging the response once before wiring. If the field is `window.leader` or there's no `isLeader` flag, fall back to `dir.windows[0].sessions[0]` which is equivalent for single-window users (the common case).
 
 - [ ] **Step 4: Manage subscription when session changes**
 
@@ -2251,13 +2256,21 @@ git branch -D feature/buddies-floater
 
 ## Self-review notes (for the implementer)
 
+**Lessons from code-review feedback on this plan** — verified fixes already applied, but the following general rules apply throughout implementation:
+
+- **IPC channel names live in `src/shared/types.ts`'s `IPC` const, not in reducer action types.** Reducer actions like `SESSION_PROCESS_EXITED` are renderer-internal; the IPC channel for the same event is `SESSION_DESTROYED: 'session:destroyed'`. When wiring a new send or handler, grep `shared/types.ts` for the channel constant — don't guess from reducer types.
+- **`sendForSession` in `ipc-handlers.ts:66` is variadic** (`...args: any[]`). Existing call sites pass multiple args (e.g., `sendForSession(sid, IPC.SESSION_DESTROYED, sid, exitCode)`). Any modification must preserve this signature — don't narrow to a single payload.
+- **Directory / detach-related renderer APIs live on `window.claude.detach.*`, not `window.claude.session.*`.** `getDirectory`, `onDirectoryUpdated`, `requestTranscriptReplay` are all under `detach`. Confirm names in `preload.ts:520–583` before calling.
+- **`SessionInfo` has no attention fields.** The type is `{ id, name, cwd, permissionMode, skipPermissions, status, createdAt, provider, model? }`. Don't extend it with `attentionState` / `awaitingApproval` / `branch` — route attention data through the Phase C `AttentionSummary` push channel instead.
+- **`session:create` payload is `{ name, cwd, skipPermissions, cols?, rows?, resumeSessionId?, provider? }`** — not `{ cwd, model, dangerous }`. Name comes from the caller.
+
 **Areas where the plan explicitly defers to plan-time verification:**
 
 1. **`<ThemeMascot>` component existence** (Task D2) — verify before implementing; fall back to inline `<img>` if missing.
-2. **`window.claude.session.getDirectory()` / `.onDirectoryUpdated()` / `.create()`** (Task E2) — the exact preload method names are not verified here. Find the real ones before writing the SessionPill.
-3. **Attention classifier integration point** (Task C1, step 5) — the cleanest hook into the renderer's reducer is unverified; likely `useAttentionClassifier` or a side-effect in `App.tsx` where the reducer lives.
-4. **Bubble feed factoring** (Task E3) — whether to factor out a standalone `<BubbleFeed>` or render the whole `<ChatView>` in compact mode is a judgment call at plan time. Pick the less invasive path.
-5. **Tool-card swap point** (Task E4) — the exact render site for tool cards may differ from assumptions; find the real one before inserting `<ToolRendererSwitch>`.
-6. **`active` field on session directory entries** (Task E2, step 3) — the exact property name that marks the currently-active session in the `window:get-directory` response needs to be verified.
+2. **Attention classifier integration point** (Task C1, step 5) — the cleanest hook into the renderer's reducer is unverified; likely `useAttentionClassifier` or a side-effect near where the reducer lives.
+3. **Bubble feed factoring** (Task E3) — whether to factor out a standalone `<BubbleFeed>` or render the whole `<ChatView>` in compact mode is a judgment call at plan time. Pick the less invasive path.
+4. **Tool-card swap point** (Task E4) — the exact render site for tool cards may differ from assumptions; find the real one before inserting `<ToolRendererSwitch>`.
+5. **`dir.defaultCwd` and window-leader field** (Task E2) — verify the shape returned by `detach.getDirectory()` via one-time console log before trusting `dir.defaultCwd` or `window.isLeader`. Adjust to the actual shape (e.g., fall back to settings IPC for the default cwd).
+6. **`session.create` return type** (Task E2) — confirm whether it returns `Promise<SessionInfo>`, `Promise<string>`, or something else, and adjust the `info?.id` usage accordingly.
 
 These are all small verifications the implementer should do as Step 0 of the relevant task — not blockers, just don't trust the plan's field names blindly.
