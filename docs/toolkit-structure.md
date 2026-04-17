@@ -17,13 +17,12 @@ Skills are directories containing a `SKILL.md` file. YAML frontmatter `descripti
 
 Declared in `core/hooks/hooks-manifest.json` — **desired-state format**. During `/update`, `phase_settings_migrate()` merges this into the user's `settings.json`. **Never edit hooks in settings.json directly — update the manifest.**
 
-Current manifest declares 11 hooks across 6 types:
-- SessionStart: `session-start.sh`, `contribution-detector.sh`
+Current manifest declares 5 hooks across 3 types:
+- SessionStart: `session-start.sh`
 - PreToolUse: `write-guard.sh`, `worktree-guard.sh`, `tool-router.sh`
-- PostToolUse: `sync.sh`, `title-update.sh`
-- UserPromptSubmit: `todo-capture.sh`
-- Stop: `checklist-reminder.sh`, `done-sound.sh`
-- SessionEnd: `session-end-sync.sh`
+- Notification: `statusline.sh`
+
+Sync hooks were removed when the desktop app became the single source of backup/sync (see `youcoded/desktop/src/main/sync-service.ts`). `session-start.sh` still runs at the top of each Claude Code session for encyclopedia context injection and version migration, but no longer touches sync.
 
 ## Hook guards
 
@@ -32,7 +31,7 @@ Current manifest declares 11 hooks across 6 types:
 
 ## Commands
 
-Markdown files in `core/commands/` become slash commands (e.g., `/update`, `/health`, `/toolkit`, `/restore`, `/diagnose`, `/appupdate`, `/contribute`, `/toolkit-uninstall`).
+Markdown files in `commands/` become slash commands: `/update`, `/health`, `/diagnose`. Restore is handled by the desktop app's Restore Wizard UI (`youcoded/desktop/src/renderer/components/restore/RestoreWizard.tsx`), not a slash command.
 
 ## Important conventions
 
