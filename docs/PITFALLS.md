@@ -33,6 +33,15 @@ Every item here is a lesson learned the hard way or a constraint that's invisibl
 - **`config.json` is portable, `config.local.json` is machine-specific.** config.local.json is rebuilt every session by session-start.sh — don't sync it.
 - **Feature work requires `git worktree add`**, not `git checkout -b`, in the main plugin dir. `worktree-guard.sh` blocks branch switches.
 
+## Sync Warnings
+
+- **`~/.claude/.sync-warnings.json` is the authoritative sync warning file.** It holds a typed `SyncWarning[]` array consumed by SyncPanel, StatusBar chips, and the gear-icon red dot. The legacy string-code `~/.claude/.sync-warnings` is still written by bash `statusline.sh` for the terminal statusline — the desktop app no longer writes or reads that file.
+- **Two writers, non-overlapping codes.** `runHealthCheck()` owns `OFFLINE`, `PERSONAL_NOT_CONFIGURED`, `PERSONAL_STALE`, `SKILLS_UNROUTED`, `PROJECTS_UNSYNCED`. Push methods (`pushDrive`/`pushGithub`/`pushiCloud`) own per-backend codes (`CONFIG_MISSING`, `AUTH_EXPIRED`, `QUOTA_EXCEEDED`, `NETWORK`, `RCLONE_MISSING`, `UNKNOWN`). Every push-path warning has a `backendId`; health-check ones don't. If you add a new code, pick an owner — the health-check merge replaces only its own codes on every run, so a push-path-owned code must never appear in `runHealthCheck`.
+- **`.sync-error-<backendId>` is retired.** The old per-backend error file format is deleted on startup by `SyncService.cleanupStaleBackendErrorFiles()`. Do not reintroduce that file. All per-backend error state now lives in `.sync-warnings.json` entries keyed by `backendId`.
+- **Push-failure warnings are non-dismissible.** `dismissWarning()` enforces `dismissible: false` server-side — the UI's dismiss button is hidden for those, but even if it weren't, the server rejects the call. That's deliberate: silencing "Google Drive isn't connected" risks data loss. Don't add a force-dismiss path.
+- **Remove a backend → clear its warnings.** `removeBackend()` calls `clearWarningsByBackend(id)` after removing the backend from config. Skipping this leaves a phantom warning with no way to dismiss (the backend it pointed to is gone).
+- **Classifier stderr patterns are version-sensitive.** `sync-error-classifier.ts` uses rclone-version-sensitive substring matches. When rclone changes its error messages (major version bumps), patterns can silently drop to `UNKNOWN`. The test file is the source of truth for what stderr each code matches — keep it alongside any pattern change.
+
 ## Releases
 
 - **Bump `versionCode` AND `versionName` in `app/build.gradle.kts` BEFORE tagging.** Play Store requires `versionCode` to be monotonically increasing; CI cannot derive it from the tag.
