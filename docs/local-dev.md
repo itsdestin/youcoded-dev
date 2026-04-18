@@ -11,7 +11,7 @@ bash scripts/run-dev.sh
 That sets two env vars and runs `npm run dev` in `youcoded/desktop/`:
 
 - `YOUCODED_PORT_OFFSET=50` — shifts every port youcoded controls.
-- `YOUCODED_PROFILE=dev` — splits Electron userData into a separate dir.
+- `YOUCODED_PROFILE=dev` — marks this as a dev instance. Any non-empty value activates dev mode: userData is split into `%APPDATA%/youcoded-<profile>/`, the app name becomes `YouCoded Dev` (or `YouCoded Dev (<profile>)` for non-`dev` profiles), the remote port gets offset-shifted, and `install-hooks.js` is skipped so we don't write worktree paths into `~/.claude/settings.json`.
 
 ## What gets isolated
 
@@ -24,7 +24,13 @@ That sets two env vars and runs `npm run dev` in `youcoded/desktop/`:
 | localStorage (theme, font, recents) | untouched | dev-only, starts empty |
 | `~/.claude/settings.json` hooks | written by the built app | **not touched by dev** (see below) |
 
-Running a second concurrent dev? Set `YOUCODED_PORT_OFFSET=100` (or any other free offset) before invoking. The script uses 50 by default.
+Running a second concurrent dev? Set both env vars to distinct values before invoking:
+
+```bash
+YOUCODED_PROFILE=dev2 YOUCODED_PORT_OFFSET=100 bash scripts/run-dev.sh
+```
+
+Each profile gets its own `%APPDATA%/youcoded-<profile>/` userData dir and its own Vite/remote ports. The profile value is a freeform label — use whatever you want (`dev`, `dev2`, `feature-x`, etc.). The only reserved value is empty/unset, which means "this is the built app" and re-enables `install-hooks.js`.
 
 ### Why dev doesn't install hooks
 
@@ -54,8 +60,9 @@ This is intentional — isolating these would mean dev can't test against your r
 
 - **Plugin install/uninstall mutates your real state.** Installing a plugin in dev adds it to your built app's enabled plugins too. Clean up after testing if you don't want that to stick.
 - **Windows OneDrive.** If `~/.claude/` lives under a OneDrive-synced folder, two writers can produce conflict copies. Check with `(Resolve-Path ~/.claude).Path` in PowerShell — if the path starts with a OneDrive folder, either exclude `.claude` from sync or accept the occasional conflict file.
-- **Second dev run fails noisily.** `strictPort: true` in `vite.config.ts` means if the dev port is already taken, Vite errors instead of silently picking the next one. Kill the stale process or bump `YOUCODED_PORT_OFFSET`.
+- **Second dev run fails noisily.** `strictPort: true` in `vite.config.ts` means if the dev port is already taken, Vite errors instead of silently picking the next one. Kill the stale process or bump `YOUCODED_PORT_OFFSET`. To find what's holding the port: `netstat -ano | grep ":5223 "` (substitute your chosen Vite port).
 - **If dev crashes, close only the dev window.** The built app is unaffected.
+- **Clean shutdown matters on Windows.** Ctrl-C / killing the `npm run dev` bash process does NOT cascade-kill the Electron children it spawned — they keep running and hold file locks on `desktop/node_modules/electron/…`. This bites when you try to remove a worktree while a dev instance was there: `git worktree remove` fails with "Invalid argument" because files are still locked. Correct order: (1) close the dev window, (2) Ctrl-C the npm shell, (3) verify no orphans with `powershell -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*.worktrees*' } | Select-Object Id,Name"`. Force-kill survivors with `Stop-Process -Id <pid> -Force`.
 
 ## Committing dev changes
 
