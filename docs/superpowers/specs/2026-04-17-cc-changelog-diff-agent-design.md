@@ -148,38 +148,45 @@ Phase 2, in parallel with the existing nine. No cross-agent dependencies. Networ
    - If missing, emit a soft warning and proceed in free-reasoning-only mode.
 
 5. **Classify each CHANGELOG entry.**
-   - **Blocker:** the entry contradicts a touchpoint's **Depends on** in a way that would trigger its **Break symptom**. (Example: touchpoint says "spinner glyph is ✻"; entry says "changed spinner glyph to ◈".)
-   - **Warning:** the entry likely touches a dependency-doc area or keywords from the entry grep-match files in `youcoded/` or `youcoded-core/`, but certainty is low; user should verify before tag.
-   - **Checklist-update:** the entry is informational (new feature that doesn't couple to YouCoded, user-facing tweak, new model ID that YouCoded's pill reconciliation already handles) and worth remembering as "verified-against v<current>" evidence.
-   - **Future-work:** the entry describes something worth considering in a later release (new CC feature YouCoded could surface, new CLI flag worth adopting, deprecation on a distant horizon).
+   - **block** finding: the entry contradicts a touchpoint's **Depends on** in a way that would trigger its **Break symptom**. (Example: touchpoint says "spinner glyph is ✻"; entry says "changed spinner glyph to ◈".)
+   - **warn** finding: the entry likely touches a dependency-doc area, or keywords from the entry grep-match files in `youcoded/` or `youcoded-core/`, but certainty is low; user should verify before tag. Also used for items that would formerly have been "checklist-updates" — informational changes (new model ID, minor user-facing tweak) that the user should eyeball before tagging and then typically clear.
+   - **Future_work:** the entry describes something worth considering in a later release (new CC feature YouCoded could surface, new CLI flag worth adopting, deprecation on a distant horizon). Not added to Findings — surfaced via the agent's separate `Future_work` field.
 
 6. **Return structured findings** (see Output schema).
 
 ### Output schema
 
-Matches the existing nine agents' return shape. JSON object with four arrays:
+Matches the existing nine agents' return shape exactly (YAML-style structured text with `Category`, `Findings`, `Summary`), plus one additional field `Future_work` following the same extension pattern the platform agent uses for its `Checklist_updates` field.
 
-```json
-{
-  "blockers": [
-    {
-      "title": "Spinner regex in attention-classifier.ts won't match new glyph",
-      "detail": "CC v2.1.0 changelog: 'Changed thinking spinner glyph to ◈'. SPINNER_RE character class does not include ◈. Fix regex before tag.",
-      "files": ["youcoded/desktop/src/renderer/state/attention-classifier.ts"],
-      "changelog_entry": "v2.1.0: Changed thinking spinner glyph to ◈"
-    }
-  ],
-  "warnings":        [ { "title", "detail", "files", "changelog_entry" } ],
-  "checklistUpdates":[ { "title", "detail" } ],
-  "futureWork":      [ { "title", "detail", "changelog_entry" } ]
-}
 ```
+Category: cc-changes
+Findings:
+  - severity: block
+    repo: youcoded
+    file: desktop/src/renderer/state/attention-classifier.ts
+    line: 42
+    description: "CC v2.1.0 changelog: 'Changed thinking spinner glyph to ◈'. SPINNER_RE character class does not include ◈."
+    suggestion: "Add ◈ to the SPINNER_RE character class before tagging."
+  - severity: warn
+    repo: youcoded
+    file: desktop/src/main/transcript-watcher.ts
+    line: null
+    description: "CC v2.0.18 renamed 'stop_reason' → 'stopReason' in transcript JSONL output; transcript-watcher still reads 'stop_reason'."
+    suggestion: "Update reducer handler TRANSCRIPT_TURN_COMPLETE and corroborate against a sample JSONL file after upgrading."
+Future_work:
+  - title: "CC v2.1.0 ships /approve-next CLI flag for batch approval"
+    description: "YouCoded could surface this in the permission panel UI as a 'approve next N' toggle."
+    changelog_entry: "v2.1.0: Added /approve-next flag to pre-authorize upcoming tool calls."
+Summary: "1 blocker (spinner regex), 1 warning (transcript field rename), 1 future-work item (permission batch UI)."
+```
+
+**Two severities only (`block` / `warn`) — matches the existing 9 agents.** Items that would previously have been "checklist-updates" are either promoted to `warn` (if the user should verify this release) or routed to `Future_work` (if they're worth remembering but not acting on now).
 
 ### Phase 3 integration
 
-Phase 3 already presents unified blockers/warnings/checklist-updates from the nine agents. No schema change for those three buckets — the tenth agent's output merges in.
+Phase 3 already presents unified `BLOCKERS`, `WARNINGS`, and `PLATFORM CHECKLIST UPDATES` from the nine agents. No schema change for blockers/warnings — the tenth agent's findings merge in naturally. The `PLATFORM CHECKLIST UPDATES` section is unchanged (still owned by the platform agent) and is unrelated to this agent.
 
-**New:** `futureWork` items surface as a separate sub-section in the Phase 3 report titled *"CC drift for future work (no action this release)."* After the user acknowledges (yes / edit / drop), approved items are appended to `docs/knowledge-debt.md` under:
+**New:** a `CC FUTURE WORK` section is added to the Phase 3 unified report. Items come from the tenth agent's `Future_work` field. After the user acknowledges (yes / edit / drop), approved items are appended to `docs/knowledge-debt.md` in the `youcoded-dev` workspace (the existing location; `/audit` consumes the same file) under:
 
 ```markdown
 ## CC-drift: <item title> (surfaced 2026-04-17, from CC v2.1.0)
@@ -216,11 +223,11 @@ The existing "Build CHANGELOGs" step in `/release` Phase 4 is already responsibl
 
 ### platform-checklist.json
 
-The existing `data/platform-checklist.json` under the release skill accumulates platform findings across releases. `checklistUpdates` from this agent append to it with the same shape as other agents' checklist updates. No schema change.
+Unchanged. `platform-checklist.json` remains owned by the platform agent and is unrelated to this spec.
 
 ### knowledge-debt.md
 
-`futureWork` items append to this file, which already exists and is already surfaced by the session-start hook. A single new heading convention (`## CC-drift: ...`) distinguishes these entries.
+`Future_work` items append to `docs/knowledge-debt.md` in the `youcoded-dev` workspace, which already exists and is already surfaced by the session-start hook. A single new heading convention (`## CC-drift: ...`) distinguishes these entries from existing audit-sourced entries.
 
 ## Rollout
 
