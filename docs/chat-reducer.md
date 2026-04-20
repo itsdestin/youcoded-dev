@@ -34,10 +34,9 @@ The classifier's regex patterns are Claude Code CLI-version sensitive — see th
 
 ## Deduplication
 
-Both `USER_PROMPT` (chat-reducer.ts:101-141) and `TRANSCRIPT_USER_MESSAGE` (chat-reducer.ts:209-248) dedup via **content matching** against the last 10 timeline entries. There is **no `optimistic` flag** — dedup compares strings and entry kinds directly.
+User timeline entries carry a `pending?: boolean` flag. `USER_PROMPT` always appends a new entry with `pending: true`. `TRANSCRIPT_USER_MESSAGE` finds the **oldest** pending entry with matching content and clears its flag — confirming the optimistic bubble rather than adding a duplicate. If no pending match exists (remote/replay client, or user typed directly in the terminal), the transcript event appends a new `pending: false` entry.
 
-### Known limitation
-Identical messages sent legitimately in quick succession can be suppressed. If this becomes a real problem, the fix requires source tagging (e.g., a flag distinguishing optimistic-from-local vs confirmed-from-transcript entries), not content comparison.
+Replaces the prior content-match-against-last-10-entries approach, which silently dropped legitimate rapid-fire duplicates (e.g. "yes" sent twice within five turns). Pending/confirmed correctly distinguishes "transcript confirms a send already shown" from "two distinct sends that happen to have identical text."
 
 ## Per-turn metadata
 
