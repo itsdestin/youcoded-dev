@@ -16,7 +16,7 @@ The recent favorite-toggle addition (`FavoriteStar + InstallingPill primitives`,
 - The `Installed` badge sits in a position where it's visually occluded by the floating favorite star rather than reading alongside it.
 - Integrations render through a separate `IntegrationCard` component with a horizontal layout that doesn't match the rest of the marketplace grid, and they don't use the shared click-to-expand detail overlay.
 
-Separately, the browse views in all three surfaces (CommandDrawer, Marketplace, Library) currently flatten plugins into individual skill cards — a plugin that bundles 5 skills produces 5 tiles. This clutters the grids and makes it hard to discover that those skills are siblings. The ask is to group installed skills/commands under their parent plugin in browse, while keeping search in the CommandDrawer mixed (matches can be individual skills OR whole plugins).
+Separately, the **CommandDrawer browse** and **Library Skills tab** currently flatten plugins into individual skill cards — a plugin that bundles 5 skills produces 5 tiles. Both read from `skill-provider.getInstalled()`, which in turn reads `scanSkills()` (emits one `SkillEntry` per skill file). The **Marketplace grid** is unaffected: its source is `listMarketplace()` → `index.json`, which already carries one `type: "plugin"` entry per plugin with a `components.skills` array. So Encyclopedia already shows as a single tile in the marketplace today, but renders as 5 tiles in the drawer and the library. The ask is to group installed skills/commands under their parent plugin in those two surfaces, while keeping search in the CommandDrawer mixed (matches can be individual skills OR whole plugins).
 
 ## Goal
 
@@ -70,32 +70,32 @@ Retire `IntegrationCard` as a separate visual component. Integration tiles rende
 
 The integrations rail in `MarketplaceScreen.tsx:252-270` stays as a dedicated rail (integrations are a first-class category), but the cards themselves are now standard plugin cards. Clicking an integration tile opens `MarketplaceDetailOverlay` with the same `{ kind: "skill", id }` shape as every other plugin. The overlay already handles "What's inside" — no new detail UI for integrations.
 
-### 5. Plugin-level grouping in browse views
+### 5. Plugin-level grouping in the drawer and library
 
-**Data source change.** `marketplace-context.tsx` currently exposes `installedSkills` and `skillEntries` as flattened per-skill lists. We add **plugin-grouped** views:
+**Data source change.** `marketplace-context.tsx` currently exposes `installedSkills` as a flattened per-skill list (derived from `skill-provider.getInstalled()` → `scanSkills()`). We add a plugin-grouped selector:
 
-- `installedPlugins: PluginEntry[]` — one entry per installed plugin, including a `skills: SkillEntry[]` field listing the bundled skills
-- `marketplacePlugins: PluginEntry[]` — one entry per marketplace plugin, with a `skills: SkillEntry[]` field
+- `installedPlugins: PluginEntry[]` — one entry per installed plugin, including a `skills: SkillEntry[]` field listing the bundled skills. Built by grouping `installedSkills` by `pluginName` and enriching each group with plugin-level metadata (displayName, description, prompt, iconUrl, etc.) from the marketplace `index.json` cache. Private/self skills with no `pluginName` pass through as single-skill synthetic plugin entries so they still render as one card each.
 
-The existing per-skill arrays remain for search and other call sites that still need them, but browse grids switch to the plugin-grouped arrays.
+The existing per-skill `installedSkills` array stays for search and other call sites.
 
-**Consumers:**
+**No change to marketplace grid.** `listMarketplace()` already returns plugin-granular entries; `MarketplaceScreen.tsx` continues to iterate `skillEntries` unchanged.
 
-- **Marketplace grid** (`MarketplaceScreen.tsx`): iterates `marketplacePlugins` instead of `skillEntries`. One card per plugin.
-- **Library Skills tab** (`LibraryScreen.tsx`): iterates `installedPlugins`. One card per plugin.
+**Consumers that change:**
+
+- **Library Skills tab** (`LibraryScreen.tsx`): iterates `installedPlugins` instead of `installedSkills`. One card per plugin.
 - **CommandDrawer browse** (`CommandDrawer.tsx`): iterates `installedPlugins`. One card per plugin.
 
-**Card contents (all three surfaces):** Plugin `displayName`, plugin `description`, and a compact row of skill-name chips showing what's bundled inside (borrowed from the earlier badge-spec idea). Single-skill plugins show no chip row — the card is functionally a single-skill card.
+**Card contents (drawer + library):** Plugin `displayName`, plugin `description`, and for multi-skill plugins a compact row of skill-name chips showing what's bundled. Single-skill plugins show no chip row — the card is functionally a single-skill card.
 
 **Click behavior in browse:**
 
-- **Marketplace and Library** — click card → opens `MarketplaceDetailOverlay` with `{ kind: "skill", id: plugin.id }`. The overlay's existing "What's inside" section lists the bundled skills with their descriptions; clicking a skill there runs whatever it runs today (the existing overlay behavior is unchanged).
+- **Library** — click card → opens `MarketplaceDetailOverlay` with `{ kind: "skill", id: plugin.id }` (current behavior — unchanged).
 - **CommandDrawer** — click card has a split behavior:
-  - Single-skill plugin: click invokes that skill immediately (same as today for a single-skill tile).
-  - Multi-skill plugin: click invokes the plugin's **prompt** (its `prompt` field from `marketplace.json`, e.g. `/civic-report`) when one is defined. If no plugin-level prompt exists, the click opens `MarketplaceDetailOverlay` inline over the drawer so the user can pick a specific skill.
-  - A skill chip in the card is independently clickable: click a chip → invoke that specific skill. Stops propagation so it doesn't also trigger the card click.
+  - Single-skill plugin: click invokes that skill immediately (same as a single-skill tile today).
+  - Multi-skill plugin: click invokes the plugin's **prompt** (its `prompt` field from `index.json`, e.g. `/civic-report`) when one is defined. If no plugin-level prompt exists, the click opens `MarketplaceDetailOverlay` over the drawer so the user can pick a specific skill.
+  - A skill chip in the card is independently clickable: click a chip → invoke that specific skill. `stopPropagation` so it doesn't also trigger the card click.
 
-**Favorites on grouped plugin cards:** The favorite star on a plugin card favorites the **plugin as a whole**. Storage: the existing favorites mechanism already accepts a plugin ID (see existing `setFavorite` call sites that accept either skill ID or plugin name, per earlier research). No new storage; just wire the plugin card's star to the plugin ID.
+**Favorites on grouped plugin cards:** The favorite star on a plugin card favorites the **plugin as a whole**. The existing favorites mechanism already accepts a plugin ID (see existing `setFavorite` call sites that accept either skill ID or plugin name). No new storage; just wire the plugin card's star to the plugin ID.
 
 ### 6. CommandDrawer search exception
 
@@ -104,14 +104,14 @@ When the user is in the drawer's search mode, the result list is **mixed**: matc
 - Query matches a plugin's `displayName` or `description` → plugin card appears in results.
 - Query matches an individual skill's `displayName` or `description` → skill card appears in results (even if its parent plugin also matched — both show).
 
-Implementation: the search filter walks both the flattened `skillEntries` list and the `marketplacePlugins` list, returning a mixed array tagged by entry type so the renderer picks the right card component. In practice this is one pass over each list with `.filter()` and concatenation; the renderer switches on an `entry.kind` discriminator.
+Implementation: the search filter walks both the flattened `installedSkills` list and the `installedPlugins` list, returning a mixed array tagged by entry type so the renderer picks the right card component. The renderer switches on an `entry.kind` discriminator (`"skill"` vs `"plugin"`).
 
 Search results render with the same tile styling as browse; they just aren't grouped.
 
 ## Data model additions
 
 - `PluginEntry` type: `{ id, displayName, description, category, source, prompt?, iconUrl?, accentColor?, skills: SkillEntry[] }` — lives alongside `SkillEntry` in `desktop/src/shared/types.ts`.
-- `installedPlugins` and `marketplacePlugins` selectors in `marketplace-context.tsx` — derived from existing data (group-by `pluginName` on the flattened lists, enriched with registry metadata).
+- `installedPlugins` selector in `marketplace-context.tsx` — derived from existing `installedSkills` by grouping on `pluginName` and enriching each group with plugin metadata from the `index.json` cache. (The marketplace grid already has plugin-granular entries from `listMarketplace()` and does not need a new selector.)
 
 ## Cross-platform parity
 
@@ -125,6 +125,6 @@ The braille-spinner install state uses client-side animation driven by the exist
 - Marketplace tiles show a download-arrow icon in the top-right when not installed; clicking starts install; the icon cycles through a braille spinner during install; on completion the slot becomes an unfavorited `FavoriteStar`.
 - `Installed` badge renders fully visible on marketplace tiles, not occluded by the favorite star.
 - Integrations render with the same vertical card styling as other plugins, keep their custom icon and accent color, and open the same `MarketplaceDetailOverlay` on click.
-- Marketplace grid, Library Skills tab, and CommandDrawer browse all show one card per plugin.
+- Library Skills tab and CommandDrawer browse show one card per plugin (marketplace grid is already plugin-granular and unchanged).
 - CommandDrawer search returns a mixed list of individual skills and whole plugins.
 - Android and desktop render identically — no parity drift.
