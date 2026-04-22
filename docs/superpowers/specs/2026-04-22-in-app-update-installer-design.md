@@ -1,8 +1,8 @@
 # In-App Update Installer — Design
 
 > **Status:** Design approved 2026-04-22, awaiting implementation plan.
-> **Base branch:** `feat/update-panel-popup` (local worktree, unpushed — the popup ships before this feature).
-> **Target worktree:** `/c/Users/desti/youcoded-worktrees/update-installer/` (to be created during implementation).
+> **Base branch:** `master` in `itsdestin/youcoded` (update-panel-popup landed on master earlier 2026-04-22 — see commits `1914126` and `3973e5c`; `UpdatePanel.tsx` and `changelog-service.ts` are in place).
+> **Target worktree:** `/c/Users/desti/youcoded-worktrees/update-installer/` on a new branch `feat/update-installer` (to be created during implementation).
 
 ## Goal
 
@@ -18,7 +18,7 @@ Replace the browser-open behavior of the update-panel popup's "Update Now" butto
 ## Context
 
 - **Current behavior (on master):** The StatusBar version pill (`desktop/src/renderer/components/StatusBar.tsx:877`) calls `window.claude.shell.openExternal(updateStatus.download_url)` when an update is available. User's browser opens the GitHub Release asset URL, downloads the installer to `~/Downloads`, and the user double-clicks it manually.
-- **In-flight work (`feat/update-panel-popup` branch):** A new L2 popup `UpdatePanel.tsx` opens from the version-pill click. When `updateStatus.update_available` is true, it shows an "Update Now" button plus filtered changelog entries. The button's `handleUpdate` function (`UpdatePanel.tsx:66`) currently still falls back to `shell.openExternal(updateStatus.download_url)`. **This design replaces the body of that function.**
+- **Recently landed (on master as of 2026-04-22):** A new L2 popup `UpdatePanel.tsx` opens from the version-pill click. When `updateStatus.update_available` is true, it shows an "Update Now" button plus filtered changelog entries. The button's `handleUpdate` function (`UpdatePanel.tsx:64-69`) currently still falls back to `shell.openExternal(updateStatus.download_url)`. **This design replaces the body of that function.**
 - **Asset resolution (already correct):** `ipc-handlers.ts:1192-1222` resolves `download_url` per-platform and per-architecture. macOS correctly differentiates `arm64` vs `x64` DMGs (fixed in commit `5f9e4f7`). Windows is x64 .exe NSIS. Linux prefers AppImage over .deb. Our installer consumes this resolved URL as-is and does not re-do arch detection.
 
 ## Architecture
@@ -38,8 +38,8 @@ The renderer's `UpdatePanel.tsx` owns a small local state machine (`idle → dow
 ### New files
 
 - `desktop/src/main/update-installer.ts` — lifecycle module.
-- `desktop/src/main/__tests__/update-installer.test.ts` — unit tests (download, cancel, launch, error paths).
-- `desktop/src/main/__tests__/update-install-ipc.test.ts` — parity test (extends pattern from the `update:changelog` parity test already in `feat/update-panel-popup`).
+- `desktop/tests/update-installer.test.ts` — unit tests (download, cancel, launch, error paths).
+- `desktop/tests/update-install-ipc.test.ts` — parity test (extends the `update:changelog` parity pattern and `shim-parity.test.ts` conventions already on master).
 - `desktop/src/shared/update-install-types.ts` — shared types (`UpdateJob`, `UpdateProgress`, `UpdateError`, error code enum). Consumed by preload, renderer, and the main module.
 - `app/src/main/kotlin/com/youcoded/app/runtime/UpdateInstallerStub.kt` — Kotlin stubs for all five message types, all returning `{ success: false, error: 'not-supported' }`.
 
@@ -250,7 +250,7 @@ Also: closing the update popup mid-download triggers `update:cancel` on the acti
 - On spawn error, `launchInstaller` surfaces the error instead of quitting.
 - `cleanupStaleDownloads` deletes `.partial` files and files older than 24 h; leaves fresh files.
 
-**`update-install-ipc.test.ts`** — parity check (extends the `update:changelog` parity test already on `feat/update-panel-popup`). Asserts all five new message types (`update:download`, `update:cancel`, `update:launch`, `update:progress`, `update:get-cached-download`) appear in `preload.ts`, `remote-shim.ts`, `ipc-handlers.ts`, and the Android stub.
+**`update-install-ipc.test.ts`** — parity check (extends the `update:changelog` parity pattern and `shim-parity.test.ts` conventions already on master). Asserts all five new message types (`update:download`, `update:cancel`, `update:launch`, `update:progress`, `update:get-cached-download`) appear in `preload.ts`, `remote-shim.ts`, `ipc-handlers.ts`, and the Android stub.
 
 Mock the network with `undici`'s `MockAgent` or a local HTTPS server. Tests do not hit real GitHub.
 
@@ -269,7 +269,7 @@ Mock the network with `undici`'s `MockAgent` or a local HTTPS server. Tests do n
 
 ### `YOUCODED_DEV_FAKE_UPDATE` extension
 
-The `feat/update-panel-popup` branch already gates a dev-only fake-update flag on `!app.isPackaged`. Extend it:
+Master already gates a dev-only fake-update flag on `!app.isPackaged` (landed with the update-panel popup). Extend it:
 
 - When set, `update:download` serves a bundled ~1 MB dummy installer from `desktop/dev-assets/fake-installer.<ext>` instead of fetching from GitHub.
 - On "Launch" in dev mode, invoke `shell.showItemInFolder(filePath)` on the dummy instead of spawning it. Prevents accidentally launching real installers during development.
