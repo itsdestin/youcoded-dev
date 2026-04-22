@@ -94,7 +94,7 @@ Behavior:
 
 - L2 popup using `<Scrim layer={2} onClick={onClose} />` + `<OverlayPanel layer={2}>` from `components/overlays/Overlay.tsx`. Pattern-match on `PreferencesPopup.tsx`.
 - On `open` flip to true: call `window.claude.update.changelog({ forceRefresh: updateStatus.update_available })`. Local state: `loading`, `data`, `error`.
-- ESC + scrim close via the `useEscClose` stack — do NOT add a parallel window-level ESC listener (PITFALLS "Keyboard Routing").
+- ESC + scrim close via local `useEffect` + `window.addEventListener('keydown')`, matching current convention in `AboutPopup.tsx` and `PreferencesPopup.tsx`. When the planned `useEscClose` stack lands (see `docs/superpowers/plans/2026-04-21-esc-chat-passthrough.md`), migrate this popup alongside the others in the same pass — do NOT special-case it.
 - Reuse the app's existing markdown renderer (same one chat bubbles use).
 - When `update_available` and filter returns entries → render those entries. If filter returns zero (changelog lags release, or current tag missing) → fall back to rendering only the newest entry so the popup is never empty with an update clearly available.
 - When not `update_available` → render full `markdown`.
@@ -177,7 +177,7 @@ interface ChangelogResult {
 - Renders "What's new" header + no Update button when `update_available = false`.
 - Update Now button click calls `shell.openExternal(download_url)` then `onClose`.
 - Shows fallback link when IPC returns `error: true` and no markdown.
-- ESC close flows through the `useEscClose` stack (assert via stack-registration spy, not via direct `window.addEventListener` count).
+- ESC close fires `onClose` (assert via a dispatched `keydown` `Escape` event on `window`), matching `AboutPopup.test.tsx`-style tests if present.
 
 ### Manual verification on dev loop
 
