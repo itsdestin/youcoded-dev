@@ -40,3 +40,24 @@ Last audit: 2026-04-11 (Phase 0 baseline — see `docs/AUDIT.md` for full findin
 - **Actual**: Manifest loading and asset resolution work end-to-end (`theme-asset-resolver.ts:52-58`), but **zero React components consume `theme.icons[slot]`**. Every UI icon — send button (`InputBar.tsx:493-495`), settings gear + view toggle + gamepad (`HeaderBar.tsx`), new session (`SessionStrip.tsx`) — is hardcoded inline SVG that ignores the override map. `golden-sunbreak`'s `send` override has been dead data since shipped.
 - **Fix**: Either (a) wire each icon-rendering component to check `theme.icons[slot]` before falling back to its hardcoded SVG, and expand slots to cover terminal/chat-view/game/session-add, OR (b) remove the `icons` field from `theme-types.ts` + manifest schema + SKILL.md and stop pretending it works. Also update `theme-builder/scripts/mockup-render.js` if (a) — mockup's chrome SVGs are also hardcoded. Tracked in youcoded issue.
 - **Priority**: medium (affects every theme's claimed override capability; blocks theme-builder icon pack work)
+
+## Sign + size-cap announcement payload (noticed 2026-04-21, surfaced by /release v1.2.0 review)
+- **Claim**: AnnouncementService (desktop `desktop/src/main/announcement-service.ts`, Android `app/src/main/kotlin/com/youcoded/app/runtime/AnnouncementService.kt`) fetches the public `announcements.txt` from `raw.githubusercontent.com/itsdestin/youcoded/master/announcements.txt` over HTTPS and writes the result to the local cache.
+- **Actual**: Fetch is unauthenticated and unsigned. Any future compromise of the youcoded repo (or the single file) lets an attacker push arbitrary banner text into the status bar of every installed client. Length is also unbounded — a multi-megabyte payload would bloat the cache and the StatusBar render path.
+- **Fix**: (1) Sign `announcements.txt` with a static public key committed to the app, verify the signature in both fetchers before writing to cache, fail-closed on signature mismatch. (2) Cap the parsed announcement length server-side in the parser (e.g. 512 chars) before persisting. (3) Document the trust model in the announcements README so contributors know not to bypass the signing step.
+- **Priority**: low (no current incident; defense-in-depth hardening)
+
+## CC-drift: Verify tool-card display after Glob/Grep merge into Bash tool on native builds (surfaced 2026-04-21, from CC v2.1.117)
+CC v2.1.117 merged the Glob and Grep tools into the Bash tool on native macOS/Linux builds (Windows desktop and Android npm builds are unchanged). YouCoded's transcript-watcher dispatches TRANSCRIPT_TOOL_USE with tool names; ToolCards render per-tool UI. If Glob/Grep calls now surface as `tool_name='Bash'` in transcript JSONL on native builds, any tool-name-specific rendering (icons, labels) drops through to the Bash fallback. Affects desktop macOS/Linux only (CC 2.1.113+ native builds). Touchpoint: 'Transcript JSONL shape'. Verify by running a Grep via native CC and checking the tool card.
+
+CHANGELOG entry: "v2.1.117: Native builds on macOS and Linux: the `Glob` and `Grep` tools are replaced by embedded `bfs` and `ugrep` available through the Bash tool — faster searches without a separate tool round-trip (Windows and npm-installed builds unchanged)"
+
+## CC-drift: Consider surfacing CLAUDE_CODE_FORK_SUBAGENT toggle in settings (surfaced 2026-04-21, from CC v2.1.117)
+CC v2.1.117 added `CLAUDE_CODE_FORK_SUBAGENT=1` to enable forked subagents on external builds. YouCoded doesn't expose this today. Could become a developer-mode toggle in the settings panel; low priority, small effort. No coupling today.
+
+CHANGELOG entry: "v2.1.117: Forked subagents can now be enabled on external builds by setting `CLAUDE_CODE_FORK_SUBAGENT=1`"
+
+## CC-drift: Audit sync service against CC's expanded cleanupPeriodDays coverage (surfaced 2026-04-21, from CC v2.1.117)
+CC v2.1.117 expanded the `cleanupPeriodDays` retention sweep to also cover `~/.claude/tasks/`, `~/.claude/shell-snapshots/`, and `~/.claude/backups/`. YouCoded's sync-service.ts writes/reads files under `~/.claude/` — if any YouCoded artifacts live under those three newly-swept paths, they could be deleted by CC's retention sweep. Quick audit of sync-service.ts paths worthwhile. No formal touchpoint for these paths today.
+
+CHANGELOG entry: "v2.1.117: The `cleanupPeriodDays` retention sweep now also covers `~/.claude/tasks/`, `~/.claude/shell-snapshots/`, and `~/.claude/backups/`"
