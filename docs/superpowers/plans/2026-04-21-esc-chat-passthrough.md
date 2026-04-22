@@ -47,7 +47,7 @@ cd /c/Users/desti/youcoded-worktrees/esc-chat-passthrough && git status && git b
 ```
 Expected: clean working tree on branch `feat/esc-chat-passthrough`.
 
-**From this point, all file paths are relative to `/c/Users/desti/youcoded-worktrees/esc-chat-passthrough/`.** The path to `youcoded/desktop/src/...` in later tasks refers to this worktree copy, not the original repo.
+**From this point, all file paths are relative to `/c/Users/desti/youcoded-worktrees/esc-chat-passthrough/`.** The path to `desktop/src/...` in later tasks refers to this worktree copy, not the original repo.
 
 ---
 
@@ -366,7 +366,7 @@ Expected: all 8 tests PASS.
 
 ```bash
 cd /c/Users/desti/youcoded-worktrees/esc-chat-passthrough
-git add youcoded/desktop/src/renderer/hooks/use-esc-close.tsx youcoded/desktop/src/renderer/hooks/use-esc-close.test.tsx
+git add desktop/src/renderer/hooks/use-esc-close.tsx desktop/src/renderer/hooks/use-esc-close.test.tsx
 git commit -m "feat(esc): add useEscClose stack hook for centralized overlay dismissal"
 ```
 
@@ -472,7 +472,7 @@ Expected: all 6 tests PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add youcoded/desktop/src/renderer/state/should-forward-esc-to-pty.ts youcoded/desktop/src/renderer/state/should-forward-esc-to-pty.test.ts
+git add desktop/src/renderer/state/should-forward-esc-to-pty.ts desktop/src/renderer/state/should-forward-esc-to-pty.test.ts
 git commit -m "feat(esc): pure guard fn for chat ESC -> PTY passthrough"
 ```
 
@@ -531,7 +531,7 @@ Expected: no new errors. (Existing errors, if any, are unrelated.)
 - [ ] **Step 4: Commit**
 
 ```bash
-git add youcoded/desktop/src/main/transcript-watcher.ts youcoded/desktop/src/renderer/state/chat-types.ts
+git add desktop/src/main/transcript-watcher.ts desktop/src/renderer/state/chat-types.ts
 git commit -m "feat(esc): add TRANSCRIPT_INTERRUPT event + action types"
 ```
 
@@ -709,7 +709,7 @@ Expected: no new errors.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add youcoded/desktop/src/main/transcript-watcher.ts youcoded/desktop/src/main/transcript-watcher.test.ts
+git add desktop/src/main/transcript-watcher.ts desktop/src/main/transcript-watcher.test.ts
 git commit -m "feat(esc): detect user-interrupt markers in transcript watcher"
 ```
 
@@ -949,7 +949,7 @@ Expected: all tests PASS (no regression in `chat-serialization.test.ts` or `chat
 - [ ] **Step 8: Commit**
 
 ```bash
-git add youcoded/desktop/src/renderer/state/chat-reducer.ts youcoded/desktop/src/renderer/state/__tests__/chat-reducer.test.ts
+git add desktop/src/renderer/state/chat-reducer.ts desktop/src/renderer/state/__tests__/chat-reducer.test.ts
 git commit -m "feat(esc): reducer handler for TRANSCRIPT_INTERRUPT + endTurn error msg param"
 ```
 
@@ -987,7 +987,7 @@ Expected: no errors.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add youcoded/desktop/src/renderer/App.tsx
+git add desktop/src/renderer/App.tsx
 git commit -m "feat(esc): dispatch TRANSCRIPT_INTERRUPT from user-interrupt transcript events"
 ```
 
@@ -1031,7 +1031,7 @@ Expected: build succeeds.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add youcoded/desktop/src/renderer/App.tsx
+git add desktop/src/renderer/App.tsx
 git commit -m "feat(esc): mount EscCloseProvider at app root"
 ```
 
@@ -1110,7 +1110,7 @@ Expected: no errors.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add youcoded/desktop/src/renderer/App.tsx
+git add desktop/src/renderer/App.tsx
 git commit -m "feat(esc): install chat ESC -> PTY passthrough listener in App"
 ```
 
@@ -1151,7 +1151,7 @@ The short copy matches the tone of the existing entries; the footer already rend
 - [ ] **Step 2: Commit**
 
 ```bash
-git add youcoded/desktop/src/renderer/components/AssistantTurnBubble.tsx
+git add desktop/src/renderer/components/AssistantTurnBubble.tsx
 git commit -m "feat(esc): render 'Interrupted' footer for interrupted-stopReason turns"
 ```
 
@@ -1215,15 +1215,15 @@ Expected: no errors.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add youcoded/desktop/src/renderer/components/CommandDrawer.tsx \
-        youcoded/desktop/src/renderer/components/ShareSheet.tsx \
-        youcoded/desktop/src/renderer/components/ThemeShareSheet.tsx \
-        youcoded/desktop/src/renderer/components/SkillEditor.tsx \
-        youcoded/desktop/src/renderer/components/ResumeBrowser.tsx \
-        youcoded/desktop/src/renderer/components/AboutPopup.tsx \
-        youcoded/desktop/src/renderer/components/CloseSessionPrompt.tsx \
-        youcoded/desktop/src/renderer/components/FolderSwitcher.tsx \
-        youcoded/desktop/src/renderer/components/marketplace/MarketplaceScreen.tsx
+git add desktop/src/renderer/components/CommandDrawer.tsx \
+        desktop/src/renderer/components/ShareSheet.tsx \
+        desktop/src/renderer/components/ThemeShareSheet.tsx \
+        desktop/src/renderer/components/SkillEditor.tsx \
+        desktop/src/renderer/components/ResumeBrowser.tsx \
+        desktop/src/renderer/components/AboutPopup.tsx \
+        desktop/src/renderer/components/CloseSessionPrompt.tsx \
+        desktop/src/renderer/components/FolderSwitcher.tsx \
+        desktop/src/renderer/components/marketplace/MarketplaceScreen.tsx
 git commit -m "refactor(esc): migrate 9 simple overlays to useEscClose"
 ```
 
@@ -1294,9 +1294,9 @@ cd desktop && npx tsc --noEmit && npm run build
 - [ ] **Step 5: Commit**
 
 ```bash
-git add youcoded/desktop/src/renderer/components/marketplace/RatingSubmitModal.tsx \
-        youcoded/desktop/src/renderer/components/marketplace/ReportReviewButton.tsx \
-        youcoded/desktop/src/renderer/components/QuickChips.tsx
+git add desktop/src/renderer/components/marketplace/RatingSubmitModal.tsx \
+        desktop/src/renderer/components/marketplace/ReportReviewButton.tsx \
+        desktop/src/renderer/components/QuickChips.tsx
 git commit -m "refactor(esc): migrate guarded + capture-phase overlays to useEscClose"
 ```
 
@@ -1306,7 +1306,7 @@ git commit -m "refactor(esc): migrate guarded + capture-phase overlays to useEsc
 
 **Files:**
 - Modify: `docs/PITFALLS.md` (workspace scaffold root)
-- Modify: `youcoded/desktop/CLAUDE.md` (the keyboard shortcuts table in "Keyboard Shortcuts")
+- Modify: `desktop/CLAUDE.md` (the keyboard shortcuts table in "Keyboard Shortcuts")
 
 ### PITFALLS entry
 
@@ -1322,7 +1322,7 @@ Add a new section between "Overlays" and existing later sections (preserve alpha
 
 ### Keyboard shortcuts update
 
-In `youcoded/desktop/CLAUDE.md` under "Keyboard Shortcuts", change this row:
+In `desktop/CLAUDE.md` under "Keyboard Shortcuts", change this row:
 
 ```markdown
 | **Escape** | Drawer/modal open | Close drawer or modal |
@@ -1340,7 +1340,7 @@ to two rows:
 - [ ] **Step 2: Commit**
 
 ```bash
-git add docs/PITFALLS.md youcoded/desktop/CLAUDE.md
+git add docs/PITFALLS.md desktop/CLAUDE.md
 git commit -m "docs(esc): record keyboard routing invariants in PITFALLS and shortcuts"
 ```
 
