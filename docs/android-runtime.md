@@ -24,7 +24,7 @@ Bionic only. `native/execve-interceptor.c` is a research artifact, not deployed.
 
 ## Canonical sources
 
-- `claude-wrapper.js` — canonical at `app/src/main/assets/claude-wrapper.js`. Deployed at launch by `Bootstrap.deployWrapperJs()` to `~/.claude-mobile/claude-wrapper.js`. **Edit the asset file directly.**
+- `claude-wrapper.js` — canonical at `app/src/main/assets/claude-wrapper.js`. Deployed at every PTY start (inline in `PtyBridge.start()` at `PtyBridge.kt:119-123` — reads the asset and writes it to `$HOME/.claude-mobile/claude-wrapper.js` before each launch). There is no separate `Bootstrap.deployWrapperJs()` method. **Edit the asset file directly.**
 
 ## Shared runtime environment
 
@@ -56,7 +56,7 @@ Used by: `dialog:open-file`, `dialog:open-folder`, `android:scan-qr`.
 | `app/.../bridge/LocalBridgeServer.kt` | WebSocket server on :9901, bridges React IPC to Kotlin |
 | `app/.../bridge/PlatformBridge.kt` | Android-native operations (file picker, clipboard, URLs) |
 | `app/.../runtime/Bootstrap.kt` | Package management, environment setup, shell function generation |
-| `app/.../runtime/SessionService.kt` | Main IPC dispatcher — handles 92 bridge message types |
+| `app/.../runtime/SessionService.kt` | Main IPC dispatcher — handles ~136 bridge message types |
 | `app/.../runtime/PtyBridge.kt` | Claude Code terminal session (PTY + event bridge) |
 | `app/.../runtime/DirectShellBridge.kt` | Standalone bash shell session |
 | `app/.../runtime/ManagedSession.kt` | Session lifecycle, status, approval flow, prompt detection |

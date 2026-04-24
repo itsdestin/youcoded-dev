@@ -20,7 +20,7 @@ Running list of documentation/rule drift that's been noticed but not yet fixed. 
 
 ---
 
-Last audit: 2026-04-11 (Phase 0 baseline — see `docs/AUDIT.md` for full findings).
+Last audit: 2026-04-23 (full sweep — see `docs/AUDIT.md` for complete findings). Prior baseline 2026-04-11.
 
 ## Onboarding.tsx screen deferred (noticed 2026-04-12)
 - **Claim**: Decomposition v3 §7.12 / §9.10 specify a React Onboarding screen that collects name/comfort/output-style, installs curated packages on first launch, and replaces the conversational setup-wizard as the primary first-run path.
@@ -68,3 +68,4 @@ CHANGELOG entry: "v2.1.117: The `cleanupPeriodDays` retention sweep now also cov
 - **Fix**: Add a subsection to `docs/android-runtime.md` under "System Fundamentals" (or `docs/PITFALLS.md` under "Android Runtime") titled something like "Go binaries can't exec scripts in `~/.claude-mobile/`." Explain: (1) why (LD_PRELOAD shim only intercepts libc execve, Go uses raw syscall), (2) the symptom (`EACCES` at fork/exec), (3) the two safe paths (spawn the Go process from bash with the linker64 wrappers so only the Go binary itself runs, then route any URL-open / native UI through `PlatformBridge` or a `CompletableDeferred` native-UI bridge), (4) cross-link to the rclone fix in SyncService.kt as the reference implementation. Also mention in the "# Known Pitfalls" list of CLAUDE.md that this is now a documented class of bug.
 - **Priority**: medium (next Go-binary integration will re-hit this silently; the fix pattern is non-obvious without docs)
 
+> **D1–D8 resolved on 2026-04-23.** Full details and applied fixes in `docs/AUDIT.md`. One follow-up: the D4 edit to `youcoded/.claude/rules/android-runtime.md` still needs to be committed + pushed in the youcoded repo.

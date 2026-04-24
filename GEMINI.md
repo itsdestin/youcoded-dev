@@ -4,17 +4,16 @@ This file provides foundational mandates for Gemini CLI. Subsystem details live 
 
 ## Project Identity
 
-**YouCoded** is a cross-platform AI assistant app built by a non-developer (Destin) entirely through AI conversation.
-**YouCoded** is the toolkit (Claude Code plugin) that supplements the app with personalization features.
+**YouCoded** is a cross-platform AI assistant app built by a non-developer (Destin) entirely through AI conversation. The app is the product; the WeCoded marketplace and a handful of bundled first-party plugins support it.
 
 ## Workspace Layout
 
 | Directory | Repo | What it is |
 |-----------|------|------------|
 | `youcoded/` | itsdestin/youcoded | **The app** — Desktop (Electron) + Android (Kotlin) |
-| `youcoded-core/` | itsdestin/youcoded-core | **The toolkit** — Skills, hooks, commands |
+| `wecoded-marketplace/` | itsdestin/wecoded-marketplace | Skill marketplace registry + Worker backend |
 | `wecoded-themes/` | itsdestin/wecoded-themes | Community theme registry |
-| `wecoded-marketplace/` | itsdestin/wecoded-marketplace | Skill marketplace registry |
+| `youcoded-core/` | itsdestin/youcoded-core | Bundled plugin (being deprecated) — hooks + setup skills |
 
 ## Core Mandates
 
@@ -40,9 +39,10 @@ This file provides foundational mandates for Gemini CLI. Subsystem details live 
 - **Invariants**: `toolCalls` Map must never be cleared. `activeTurnToolIds` Set tracks in-flight tools.
 - **Thinking indicator**: Timeout logic is in the reducer; do not duplicate in renderer.
 
-### Toolkit (`youcoded-core/`)
-- **Single Source of Truth**: Update `core/hooks/hooks-manifest.json`, never edit `settings.json` directly.
+### youcoded-core Plugin (`youcoded-core/`, being deprecated)
+- **Single Source of Truth**: Update `youcoded-core/hooks/hooks-manifest.json`, never edit `settings.json` directly.
 - **Permissions**: `.sh` files MUST have execute bit set (`git update-index --chmod=+x`).
+- **Prefer landing new work in the app** rather than here — see `docs/superpowers/plans/2026-04-21-deprecate-youcoded-core.md`.
 
 ## Specialized Sub-Agents
 

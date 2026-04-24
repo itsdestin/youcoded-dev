@@ -29,5 +29,5 @@ Use a single React app (`youcoded/desktop/src/renderer/`) as the source of truth
 
 **Bad:**
 - `scripts/build-web-ui.sh` must run before every APK build (blank WebView otherwise)
-- IPC handler parity must be maintained between preload.ts, ipc-handlers.ts, and SessionService.kt — 92 message types currently
+- IPC handler parity must be maintained between preload.ts, ipc-handlers.ts, and SessionService.kt — ~136 message types as of 2026-04 (and growing)
 - Some browser APIs behave subtly different in Android WebView vs Electron — need per-platform testing for complex features

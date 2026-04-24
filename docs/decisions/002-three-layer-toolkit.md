@@ -1,7 +1,8 @@
 # ADR 002: Three-Layer Toolkit Structure
 
-**Status:** Accepted
+**Status:** Superseded (2026-04 Phase 3 flatten)
 **Date:** Pre-2026 (foundational)
+**Superseded by:** Phase 3 commits `d54bbf9` / `0d5ca0a` flattened the toolkit into a single plugin. See `docs/toolkit-structure.md` for the current layout and `docs/superpowers/plans/2026-04-21-deprecate-youcoded-core.md` for the ongoing deprecation. The skills that used to live under `life/` and `productivity/` (journal, encyclopedia, inbox, theme-builder, skill-creator, etc.) migrated to independent marketplace plugins. This ADR is retained for historical context only — do not act on it.
 
 ## Context
 

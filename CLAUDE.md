@@ -16,27 +16,28 @@ YouCoded is an open-source cross-platform AI assistant app built entirely withou
 
 **Core pillars:**
 - **Social AI** — share custom themes and skills with friends/classmates/coworkers, play multiplayer games while waiting for Claude to work
-- **Personalization** — the YouCoded toolkit adds journaling, a personal encyclopedia, task inbox, text messaging, and cross-device sync
+- **Personalization** — community plugins (journaling, personal encyclopedia, task inbox, text messaging) install from the WeCoded marketplace; cross-device sync is built into the app
 - **Accessibility** — designed for non-technical users, not just developers. You can build things within this app using just conversation
 
-**YouCoded is the product. YouCoded is the toolkit that supplements it.** Documentation and code should always reflect this hierarchy.
+**The app is the product.** Everything else — themes, skill marketplace, bundled plugins — supports the app. Documentation and code should reflect that hierarchy.
 
 ## Workspace Layout
 
 | Directory | Repo | What it is |
 |-----------|------|------------|
-| `youcoded/` | itsdestin/youcoded | **The app** — Desktop (Electron) + Android (Kotlin), skill marketplace, themes, multiplayer games |
-| `youcoded-core/` | itsdestin/youcoded-core | **The toolkit** — Claude Code plugin with skills, hooks, commands for personalization |
-| `youcoded-admin/` | itsdestin/youcoded-admin | Owner-only release and announcement skills |
+| `youcoded/` | itsdestin/youcoded | **The app** — Desktop (Electron) + Android (Kotlin), skill marketplace UI, themes, multiplayer games |
+| `wecoded-marketplace/` | itsdestin/wecoded-marketplace | Skill marketplace registry + Cloudflare Worker backend |
 | `wecoded-themes/` | itsdestin/wecoded-themes | Community theme registry |
-| `wecoded-marketplace/` | itsdestin/wecoded-marketplace | Skill marketplace registry |
+| `youcoded-core/` | itsdestin/youcoded-core | A bundled Claude Code plugin (being deprecated — see `docs/superpowers/plans/2026-04-21-deprecate-youcoded-core.md`) |
+| `youcoded-admin/` | itsdestin/youcoded-admin | Owner-only release and announcement skills |
 
 ## Cross-Repo Relationships
 
 - **youcoded** is the main product. It contains `desktop/` (Electron app) and `app/` (Android app) side by side.
-- **youcoded-core** is the plugin toolkit installed at `~/.claude/plugins/youcoded-core/`. The app discovers its skills via the filesystem.
-- **wecoded-themes** and **wecoded-marketplace** registries are fetched at runtime by both apps from raw GitHub URLs.
-- **youcoded-admin** release skill orchestrates coordinated releases across both repos.
+- **wecoded-marketplace** and **wecoded-themes** are the registries the app fetches at runtime from raw GitHub URLs. Community plugins live here.
+- **Bundled plugins** — `youcoded-core`, `wecoded-themes-plugin`, and `wecoded-marketplace-publisher` ship with the app and are auto-installed on launch (see `youcoded/desktop/src/shared/bundled-plugins.ts` + `BundledPlugins.kt`).
+- **youcoded-core** is the oldest bundled plugin, installed at `~/.claude/plugins/youcoded-core/`. It contributes hooks (write-guard, session-start) and two setup skills. Being deprecated — `write-guard` is moving into the app natively, and the repo will eventually be archived.
+- **youcoded-admin** release skill orchestrates coordinated releases across repos.
 
 ## Working Rules
 
@@ -50,6 +51,8 @@ cd <repo> && git fetch origin && git pull origin master
 **Annotate non-trivial code edits with a WHY comment.** Destin is a non-developer and relies on comments to understand what code does and why it was changed. Example: `// Fix: prevent stale tool IDs from coloring the status dot`. This is critical for long-term maintainability.
 
 **"Merge" means merge AND push.** Don't stop at a local merge.
+
+**Pushing to master green-lights closing the dev server.** If you started `bash scripts/run-dev.sh` to verify a change, shut it down (plus any helper Electron processes) once the commit lands on `origin/master`. Don't leave it running unless the user explicitly asks — orphaned Vite servers hold port 5223 and trip up the next session's dev launch.
 
 **Clean up worktrees after merging to master.** Once a feature branch is merged and pushed, remove its worktree and delete the branch:
 ```bash
@@ -84,7 +87,7 @@ See `docs/build-and-release.md` for full build order, release flows, and version
 
 ## Known Pitfalls
 
-All architectural invariants, cross-cutting gotchas, and lessons learned live in `docs/PITFALLS.md`. **Read it before making non-trivial changes** — it covers IPC parity, chat reducer invariants, Android runtime constraints, toolkit/hooks rules, release gotchas, and working conventions.
+All architectural invariants, cross-cutting gotchas, and lessons learned live in `docs/PITFALLS.md`. **Read it before making non-trivial changes** — it covers IPC parity, chat reducer invariants, Android runtime constraints, bundled-plugin/hooks rules, release gotchas, and working conventions.
 
 ## Keeping Documentation Accurate
 

@@ -1,139 +1,145 @@
-# Codebase Audit — 2026-04-11
+# Codebase Audit — 2026-04-23
 
-Verified every claim in workspace CLAUDE.md against actual source code. This document is the authoritative source for all documentation written in Phases 1-4 of the development system improvement plan.
+Full-sweep re-audit against the 2026-04-11 baseline. Methodology: five parallel verification agents (IPC, chat reducer, Android runtime, `youcoded-core` plugin, release), plus direct verification of key counts and file paths. HEAD commits at time of audit:
 
-## Audit 0A: Cross-Platform IPC
+| Repo | HEAD |
+|------|------|
+| youcoded | `6020d40` (release v1.2.1) |
+| youcoded-core | `ac72dc3` (release v1.2.1) |
+| youcoded-admin | `14436ed` |
+| wecoded-themes | `c25718d` |
+| wecoded-marketplace | `620facc` |
 
-| Claim | Status | Actual |
-|-------|--------|--------|
-| Platform detection via `location.protocol === 'file:'` | CONFIRMED | remote-shim.ts:49-51 |
-| Android WebSocket on ws://localhost:9901 | CONFIRMED | LocalBridgeServer.kt:22 (`port = 9901`) |
-| ~70 bridge message types in handleBridgeMessage() | **CORRECTED** | Actually **92 message types** (SessionService.kt:524+) |
-| preload.ts and remote-shim.ts expose same window.claude shape | **NUANCED** | Mostly identical. preload.ts has `window.claude.window` (minimize/maximize/close) which remote-shim lacks — intentional, Electron-specific. remote-shim has `window.claude.android` which preload lacks — also intentional. All shared functionality matches. |
-| Protocol: type+id+payload request, type:response+id+payload response | CONFIRMED | remote-shim.ts:63-128, LocalBridgeServer.kt:149-168 |
+## Summary
 
-### Shared window.claude namespaces (both files)
-session, on, off, removeAllListeners, skills, marketplace, dialog, shell, remote, model, appearance, defaults, folders, sync, theme, firstRun, zoom, getGitHubAuth, getHomePath, getFavorites, setFavorites, getIncognito, setIncognito
-
-### Platform-exclusive namespaces
-- **Electron only** (preload.ts): `window.claude.window` (minimize/maximize/close/onFullscreenChanged)
-- **Android only** (remote-shim.ts): `window.claude.android`
-
----
-
-## Audit 0B: Chat Reducer Architecture
-
-| Claim | Status | Evidence |
-|-------|--------|---------|
-| toolCalls is a session-lifetime Map, never cleared | CONFIRMED | chat-types.ts:31, reducer clones but never clears |
-| activeTurnToolIds tracks current-turn tools as a Set | CONFIRMED | chat-types.ts:43, used at lines 307-309, 351-352, 472-473 |
-| endTurn() clears Set and marks orphaned tools as failed | CONFIRMED | chat-reducer.ts:52-69, marks running/awaiting-approval as failed with 'Turn ended' |
-| 30s thinking timeout fires only when isThinking && !hasRunningTools && !hasAwaitingApproval | CONFIRMED | ChatView.tsx useEffect, condition logic matches (clause order differs but logic identical) |
-| thinkingTimedOut is ephemeral, auto-clears on TRANSCRIPT_TURN_COMPLETE | CONFIRMED | Set true in THINKING_TIMEOUT (line 200), cleared via endTurn() on TRANSCRIPT_TURN_COMPLETE (lines 386-391) |
-| Dedup uses optimistic flag — USER_PROMPT marks optimistic, TRANSCRIPT_USER_MESSAGE claims | **OUTDATED** | No `optimistic` flag exists. Both handlers dedup via content matching against last 10 timeline entries. |
-
-### Dedup actual implementation
-- USER_PROMPT (lines 101-141): Linear search through last 10 entries comparing `action.content`
-- TRANSCRIPT_USER_MESSAGE (lines 209-248): Same approach comparing `action.text`
-- No flag-based claiming mechanism — purely content-based dedup
+- **Items verified:** ~60 claims across 7 docs and 6 rules
+- **Drift detected and FIXED this session:** 8 (D1–D8 — all resolved)
+- **Conceptual reframe applied this session:** "the toolkit" retired across canonical docs; `youcoded-core` now described as one of a handful of bundled plugins (and being deprecated per `docs/superpowers/plans/2026-04-21-deprecate-youcoded-core.md`)
+- **New features undocumented:** ~9 Android runtime files (deferred — low-severity table freshness)
+- **ADRs superseded:** 002 (three-layer toolkit), 004 (hook reconciliation ownership moved to app)
 
 ---
 
-## Audit 0C: Android Runtime Constraints
+## Applied fixes (this session)
 
-| Claim | Status | Evidence |
-|-------|--------|---------|
-| LD_LIBRARY_PATH mandatory (Termux binaries relocated, DT_RUNPATH stale) | CONFIRMED | Bootstrap.kt:1538 sets it, lines 1563-1567 explain why |
-| All binaries through linker64, three layers: claude-wrapper.js, termux-exec, linker64-env.sh | CONFIRMED | But roles differ from implication — see below |
-| No /tmp, use $HOME/tmp via TMPDIR | **CORRECTED** | TMPDIR actually points to `$HOME/.cache/tmpdir` (Bootstrap.kt:1603-1607), not `$HOME/tmp`. Intentional: avoids Node.js compiled-in /tmp rewriting double-applying. |
-| claude-wrapper.js canonical at app/src/main/assets/ | CONFIRMED | File exists, line 1-3 states "CANONICAL SOURCE" |
-| Use linker variant of termux-exec | CONFIRMED | Bootstrap.kt:407, lines 579-591 copy linker variant over primary |
-| Both PtyBridge and DirectShellBridge share buildRuntimeEnv()/deployBashEnv() | CONFIRMED | PtyBridge.kt:106,131 and DirectShellBridge.kt:43,49 |
-| Use sessionFinished StateFlow, don't poll isRunning | CONFIRMED | PtyBridge.kt:46-47, no polling patterns found |
+### D1 — Toolkit flatten + conceptual reframe ✅
 
-### Three-layer architecture (clarified roles)
-1. **LD_PRELOAD (termux-exec)**: Intercepts libc execve() in C/Rust programs, routes through linker64
-2. **claude-wrapper.js**: NOT exec routing — handles /tmp rewriting, fs.accessSync bypass, shell path fixing, BASH_ENV injection
-3. **linker64-env.sh**: Bash function wrappers for Go binaries (gh, fzf, micro) that bypass LD_PRELOAD via raw syscalls + /tmp rewriting helpers
+**Was:** `docs/toolkit-structure.md` and `.claude/rules/youcoded-toolkit.md` described a root plugin.json v2.3.2 plus three layer manifests at `core/plugin.json`, `life/plugin.json`, `productivity/plugin.json`. Post-Phase 3 (`d54bbf9` / `0d5ca0a`), those subdirectories no longer exist.
 
----
+**Fixed in:**
+- `docs/toolkit-structure.md` — rewrote as "youcoded-core Plugin" doc: flat structure, v1.2.1 manifest, only `setup-wizard` + `remote-setup` skills, deprecation callout
+- `.claude/rules/youcoded-toolkit.md` — matching rewrite, `last_verified` bumped to 2026-04-23
+- `.claude/skills/context-toolkit/SKILL.md` — rewrote three-layer context to reflect flat plugin and deprecation
+- `docs/decisions/002-three-layer-toolkit.md` — marked Superseded with pointer to Phase 3 commits and the deprecation plan
+- `docs/decisions/004-hooks-manifest-reconciliation.md` — path corrected from `core/hooks/hooks-manifest.json` to `hooks/hooks-manifest.json`; reconciliation owner updated to app's `HookReconciler`
+- `CLAUDE.md` (workspace root) — workspace layout table, "About This Project" core pillars, Cross-Repo Relationships
+- `GEMINI.md` — workspace layout, "Toolkit" subsystem section
+- `docs/PITFALLS.md` — renamed "Toolkit & Hooks" → "Bundled Plugins & Hooks (`youcoded-core`)"; added Phase 3 flatten note; release section no longer references layer plugin.json files
 
-## Audit 0D: Toolkit Structure and Hooks
+### D2 — Android versionCode/versionName ✅
 
-| Claim | Status | Evidence |
-|-------|--------|---------|
-| Three plugin layers, each with plugin.json | **CORRECTED** | 4 plugin.json files: root (v2.3.2) + core (v0.1.0) + life (v0.1.0) + productivity (v0.1.0). Root is aggregate package. |
-| Skills are dirs with SKILL.md, YAML frontmatter description for discovery | CONFIRMED | Verified across setup-wizard, sync, encyclopedia-compile |
-| Hooks in core/hooks/hooks-manifest.json | CONFIRMED | 11 hooks across 6 types (SessionStart:2, PreToolUse:3, PostToolUse:2, UserPromptSubmit:1, Stop:2, SessionEnd:1) |
-| hooks-manifest.json is desired-state, merged during /update | **CONFIRMED WITH DRIFT** | Manifest declares desired state (comment at line 1-2). But current ~/.claude/settings.json shows only generic relay.js hooks — no merged manifest hooks. Migration may not have run. |
-| session-start.sh syncs encyclopedia, checks inbox | CONFIRMED | 44KB script handles config rebuild, sync, encyclopedia, inbox |
-| write-guard.sh prevents file conflicts between sessions | CONFIRMED | Same-machine concurrency guard using .write-registry.json |
-| worktree-guard.sh guards worktree safety | CONFIRMED | Blocks git checkout/switch in plugin dir, enforces master-only policy |
+**Was:** `docs/build-and-release.md:18` — `versionCode = 7`, `versionName = "2.3.2"`.
+**Fixed to:** `versionCode = 17`, `versionName = "1.2.1"`.
 
----
+### D3 — `handleBridgeMessage` message-type count ✅
 
-## Audit 0E: Recent Undocumented Changes
+**Was:** 92 types in three places.
+**Fixed to:** ~136 types in:
+- `docs/shared-ui-architecture.md`
+- `docs/android-runtime.md` Key Files table
+- `.claude/rules/ipc-bridge.md` (+ `last_verified` 2026-04-23)
+- `docs/decisions/001-shared-react-ui.md` Consequences
 
-### Features added AFTER last CLAUDE.md update (2026-04-07) — NOT documented anywhere:
+### D4 — `Bootstrap.deployWrapperJs()` does not exist ✅
 
-**youcoded:**
-- Unified marketplace integration (merged branch)
-- Guided sync setup wizard for non-technical users
-- Glass sliders + per-theme CSS overrides system
-- Zoom UI (Ctrl+/-, pinch-to-zoom, overlay)
-- Android remote settings consolidation (tile/popup)
-- Status bar derived metrics (cache hit rate, active ratio, output speed)
-- Non-Claude session support (Gemini CLI)
+**Was:** Three files referenced a non-existent `Bootstrap.deployWrapperJs()`.
+**Fixed to:** "Deployed inline in `PtyBridge.start()` (`PtyBridge.kt:119-123`)" in:
+- `docs/android-runtime.md`
+- `.claude/rules/android-runtime.md` (+ `last_verified` 2026-04-23)
+- `youcoded/.claude/rules/android-runtime.md` (+ `last_verified` 2026-04-23) — **⚠️ lives in the youcoded repo, needs commit + push there**
 
-**youcoded-core:**
-- Output styles system (conversational, academic, professional)
-- Theme builder overhaul (bubble-blur/opacity fields)
-- Landing page marketplace showcase
+### D5 — `endTurn()` line range ✅
 
-**youcoded-admin:**
-- PartyKit deploy verification in release flow
-- Plugin.json discovery system
+**Was:** `docs/chat-reducer.md` — `chat-reducer.ts:52-69`.
+**Fixed to:** `chat-reducer.ts:145-167`.
 
-**wecoded-themes:**
-- Theme registry with previewTokens (CSS-based card previews)
-- Playwright-based preview PNG generator
-- /themes/ subdirectory structure with manifest-based asset inclusion
+### D6 — Chat reducer rule claimed content-based dedup ✅
 
-**wecoded-marketplace:**
-- Registry restructure: /skills/ and /themes/ directories
-- sync.js rewrite with diffing, version tracking, deprecation
-- CI validation workflow for community plugin PRs
+**Was:** `.claude/rules/chat-reducer.md` invariant #4 said "Dedup is content-based, NOT flag-based".
+**Fixed to:** Correct flag-based description via `pending` on user timeline entries. `last_verified` bumped to 2026-04-23.
 
-### Deleted features:
-- `rebuild-stats` workflow removed from wecoded-marketplace
+### D7 — Announcement cadence phrasing ✅
 
-### Repos with NO CLAUDE.md:
-- youcoded-core/ (toolkit itself)
-- youcoded-admin/
-- wecoded-themes/
-- wecoded-marketplace/
+**Was:** PITFALLS mentioned a "new 24h TS service".
+**Fixed to:** "Both platforms now share a single 1h cadence owned by the app's main process."
+
+### D8 — Toolkit rule listed layer skill paths ✅
+
+**Was:** Rule listed `core/skills/`, `life/skills/`, `productivity/skills/` contents.
+**Fixed to:** Lists only the two remaining in-plugin skills (`setup-wizard`, `remote-setup`) and points at the marketplace for everything else. Bundled into the D1 rewrite.
 
 ---
 
-## Audit 0F: Build and Release Flow
+## Confirmed (no action needed)
 
-| Claim | Status | Evidence |
-|-------|--------|---------|
-| build-web-ui.sh bundles desktop/dist/renderer/ into app/src/main/assets/web/ | CONFIRMED | Script at youcoded/scripts/build-web-ui.sh:14-27, called at android-release.yml:35 |
-| Desktop version from git tag, CI patches package.json | CONFIRMED | desktop-release.yml:40-46, strips v prefix and patches |
-| Android needs manual versionCode + versionName bump in build.gradle.kts | CONFIRMED | app/build.gradle.kts:23-24, currently versionCode=7, versionName="2.3.2" |
-| One vX.Y.Z tag triggers both workflows | CONFIRMED | Both trigger on `v*` pattern, both upload to same release |
-| Toolkit: plugin.json version bump on master triggers auto-tag.yml | CONFIRMED | auto-tag.yml compares HEAD vs HEAD~1 version, creates tag |
+### IPC / Cross-platform
+- ✅ Platform detection `location.protocol === 'file:'` → `remote-shim.ts:66`
+- ✅ Android WebSocket on port 9901 → `LocalBridgeServer.kt:27` (via `BuildConfig.BRIDGE_PORT`)
+- ✅ Protocol format (request/response/push) → `remote-shim.ts:74-224`
+- ✅ `preload.ts` vs `remote-shim.ts` parity with intentional exceptions
+- ✅ Overlay Layer System (L1 40/50, L2 60/61, L3 70/71, L4 100) → `components/overlays/Overlay.tsx:15-16`
+- ✅ SessionStrip dropdown z-[9000] load-bearing → `components/SessionStrip.tsx:786`
+- ✅ HeaderBar left cluster no `min-w-0`, platform-conditional toggle placement
+
+### Chat reducer
+- ✅ `toolCalls` Map never cleared; `activeTurnToolIds` Set drives current-turn status checks
+- ✅ `endTurn()` marks orphaned tools `failed` and resets turn state
+- ✅ SESSION_PROCESS_EXITED spreads endTurn() then overrides attentionState
+- ✅ Classifier-driven attention (no `thinkingTimedOut` timer)
+- ✅ TRANSCRIPT_THINKING_HEARTBEAT / PERMISSION_REQUEST / transcript events reset to `'ok'`
+- ✅ Flag-based dedup via `pending` (rule now matches)
+- ✅ Per-turn metadata (stopReason/model/usage/anthropicRequestId) → `chat-types.ts:31-44`
+- ✅ `transcript-watcher.ts:625-638` per-emit try/catch intact
+- ✅ Remotes hydrate via `chat:hydrate`; no sidecar replay buffer
+- ✅ `RemoteSnapshotExporter` is Electron-only; `chat:export-snapshot` 2s timeout
+- ✅ Interrupt markers end turn via `TRANSCRIPT_INTERRUPT`
+
+### Android runtime
+- ✅ `Bootstrap.buildRuntimeEnv()` sets LD_LIBRARY_PATH → `Bootstrap.kt:1595`
+- ✅ Linker64 routing, LD_PRELOAD linker variant, TMPDIR `$HOME/.cache/tmpdir`
+- ✅ PtyBridge + DirectShellBridge share env helpers; `sessionFinished` StateFlow drives reactivity
+- ✅ Native UI Bridge Pattern in use for dialogs + QR
+- ✅ PtyBridge 600ms Enter split (no ConPTY chunking on Android)
+
+### Bundled plugins & hooks
+- ✅ `hooks-manifest.json` = 5 hooks across 3 types
+- ✅ Sync hooks removed from the plugin
+- ✅ `session-start.sh` handles encyclopedia context + version migration only
+- ✅ Guards (`write-guard.sh`, `worktree-guard.sh`) present and behaving as documented
+- ✅ Commands `/update`, `/health`, `/diagnose` exist
+- ✅ Restore handled by `RestoreWizard.tsx`
+
+### Build & release
+- ✅ `build-web-ui.sh`, desktop-from-tag, single `v*` trigger, auto-tag.yml
+- ✅ `scripts/run-dev.sh` with YOUCODED_PORT_OFFSET=50 / YOUCODED_PROFILE=dev
+- ✅ Announcements: single 1h fetcher per platform, source of truth in youcoded repo, `isExpired()` helper, legacy fetch-script removed
+- ✅ `BUNDLED_PLUGIN_IDS` parity between `bundled-plugins.ts` and `BundledPlugins.kt`
+- ✅ `ClaudeCodeRegistry` writes all four registries
+- ✅ `sync-service.ts` uses `extractStderr()`, `cleanupStaleBackendErrorFiles()`, typed warnings
+- ✅ wecoded-marketplace worker `[env.test]` structure intact; production secret untouched
 
 ---
 
-## Summary: What Must Be Corrected in New Docs
+## Undocumented Features (deferred)
 
-1. **Bridge message count**: ~70 -> 92
-2. **Dedup mechanism**: Remove optimistic flag claim; document content-matching approach
-3. **TMPDIR path**: $HOME/tmp -> $HOME/.cache/tmpdir (intentional)
-4. **Plugin layer count**: "three layers" -> "root manifest + three layers (core/life/productivity)"
-5. **Three-layer linker64**: Clarify functional roles (LD_PRELOAD for C/Rust, wrapper for runtime quirks, linker64-env.sh for Go)
-6. **IPC shape parity**: Document intentional platform-exclusive namespaces (window.* for Electron, android.* for Android)
-7. **Hooks drift**: Note that manifest hooks may not be active in settings.json
-8. **Many recent features undocumented**: See 0E list above
+### Android runtime files not in `docs/android-runtime.md` "Key Files" table
+
+`AnnouncementService.kt`, `CommandProvider.kt`, `DevTools.kt`, `HookReconciler.kt`, `RestoreService.kt`, `RestoreTypes.kt`, `SessionBrowser.kt`, `SyncService.kt`, `bridge/MessageRouter.kt`. Low-severity freshness — table is merely incomplete, not wrong.
+
+---
+
+## Remaining follow-ups
+
+1. **Commit + push `youcoded/.claude/rules/android-runtime.md`** — the D4 fix landed in the youcoded repo and needs a PR/push there.
+2. **Android `Key Files` table expansion** — add the nine undocumented runtime files when convenient. Not blocking.
+3. **Open knowledge-debt items (unrelated to this audit):** Onboarding.tsx, SkillDetail rating, Icon override system, announcement signing, CC-drift items. See `docs/knowledge-debt.md`.

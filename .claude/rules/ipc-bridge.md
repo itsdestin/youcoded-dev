@@ -6,7 +6,7 @@ paths:
   - "youcoded/app/**/SessionService.kt"
   - "youcoded/app/**/LocalBridgeServer.kt"
   - "youcoded/app/**/PlatformBridge.kt"
-last_verified: 2026-04-11
+last_verified: 2026-04-23
 ---
 
 # IPC Bridge Rules
@@ -31,6 +31,6 @@ You are editing the cross-platform IPC bridge. Before making changes, read `docs
 
 1. Add to `remote-shim.ts` using `invoke('type:name', payload)` or `fire('type:name', payload)`
 2. Add to `ipc-handlers.ts` using `ipcMain.handle(IPC.CHANNEL, handler)` or `ipcMain.on()`
-3. Add a `when` case to `SessionService.handleBridgeMessage()` (currently has 92 types)
+3. Add a `when` case to `SessionService.handleBridgeMessage()` (currently has ~136 types)
 
 Use `bridgeServer.respond(ws, msg.type, msg.id, payload)` in SessionService when `msg.id` is present.

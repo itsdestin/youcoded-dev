@@ -10,7 +10,7 @@ To prevent stale `running` / `awaiting-approval` entries from old turns affectin
 
 ## endTurn() helper
 
-`endTurn()` in chat-reducer.ts:52-69 is the shared path for ending a turn. It:
+`endTurn()` in chat-reducer.ts:145-167 is the shared path for ending a turn. It:
 
 - Iterates `activeTurnToolIds` and marks any `running` or `awaiting-approval` tool as `failed` with error `'Turn ended'`
 - Returns a fresh empty `activeTurnToolIds: new Set()`

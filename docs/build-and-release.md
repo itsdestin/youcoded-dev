@@ -15,7 +15,7 @@ CI extracts version from the `vX.Y.Z` tag and patches `package.json` before buil
 ### Android version requires manual bump
 Both `versionCode` (integer, monotonically increasing for Play Store) and `versionName` (string) must be bumped in `app/build.gradle.kts` **before** tagging. CI does not derive Android versions from the tag — Play Store requires `versionCode` to always increase, so it cannot be derived.
 
-Current: `versionCode = 7`, `versionName = "2.3.2"` (app/build.gradle.kts:23-24).
+Current: `versionCode = 17`, `versionName = "1.2.1"` (app/build.gradle.kts:23-24).
 
 ### One tag, all platforms
 A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `desktop-release.yml`. Both upload artifacts (APK/AAB + Win/Mac/Linux installers) to the same GitHub Release.
