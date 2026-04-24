@@ -2,7 +2,7 @@
 paths:
   - "wecoded-themes/**"
   - "wecoded-marketplace/**"
-last_verified: 2026-04-11
+last_verified: 2026-04-24
 ---
 
 # Registries Rules
@@ -23,7 +23,7 @@ You are editing either the theme registry or the skill marketplace. Read `docs/r
 - Registry split into `/skills/` and `/themes/` subdirectories (recent restructure).
 - `index.json` holds combined entries; `marketplace.json` holds YouCoded-only entries
 - Synced from upstream Anthropic marketplace via `scripts/sync.js` — handles diffing, version tracking, deprecation
-- Entries with `sourceMarketplace: "youcoded-core"` are **never overwritten** by upstream sync
+- Entries with `sourceMarketplace: "youcoded"` are **never overwritten** by upstream sync. **Known debt:** 14+ null-component entries remain in `index.json` from the pre-flatten `youcoded-core` layers (`sync`, `toolkit`, `health`, `update`, `claudes-inbox`, `encyclopedia-*`, `fork-file`, `google-drive`, `journaling-assistant`, `remote-setup`, `setup-wizard`). They're orphaned — no source, no components — and should be pruned in a future cleanup pass when `youcoded-core` is fully retired.
 - CI: `.github/workflows/validate-plugin-pr.yml` validates community plugin PRs
 - App caches the fetched registry for 24 hours at `~/.claude/wecoded-marketplace-cache/`
 

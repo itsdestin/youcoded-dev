@@ -54,7 +54,7 @@ Dev and built both read and write `~/.claude/`:
 This is intentional — isolating these would mean dev can't test against your real plugins and settings, which defeats the point. Two coordination mechanisms keep it safe:
 
 1. **`.sync-lock` is a `mkdir`-based atomic lock.** Only one instance syncs at a time.
-2. **`write-guard.sh`** (toolkit PreToolUse hook) tracks per-file writes in `.write-registry.json` and blocks a second session from writing a file another live session just wrote. Cross-instance concurrent writes surface as `WRITE BLOCKED` messages — friction, not corruption. Re-read the file and retry.
+2. **`write-guard.sh`** (a PreToolUse hook contributed by the bundled `youcoded-core` plugin — being folded into the app natively) tracks per-file writes in `.write-registry.json` and blocks a second session from writing a file another live session just wrote. Cross-instance concurrent writes surface as `WRITE BLOCKED` messages — friction, not corruption. Re-read the file and retry.
 
 ## Caveats
 

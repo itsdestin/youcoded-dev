@@ -1,11 +1,12 @@
 # ADR 003: Multi-Backend Sync (Drive + GitHub + iCloud)
 
-**Status:** Accepted
+**Status:** Accepted (owner moved to the app in 2026-04)
 **Date:** Pre-2026
+**Update:** The decision still stands — YouCoded supports Drive + GitHub + iCloud concurrently. What changed is *where* the logic lives. Originally implemented as a `sync` skill inside `youcoded-core`, the sync engine moved into the app (`youcoded/desktop/src/main/sync-service.ts` + Android `SyncService.kt`) and the plugin-level skill was retired alongside Phase 3's flatten. The backend choice and `config.json` / `config.local.json` split described below are unchanged.
 
 ## Context
 
-The toolkit must sync personal data (journal, encyclopedia, config, skills) across the user's devices. Users have different trust models, existing tool investments, and technical comfort levels. Enforcing a single backend would alienate large segments.
+The app must sync personal data (journal, encyclopedia, config, skills) across the user's devices. Users have different trust models, existing tool investments, and technical comfort levels. Enforcing a single backend would alienate large segments.
 
 ## Decision
 
@@ -33,5 +34,6 @@ Users can run one or more backends concurrently. Config is split into portable (
 **Bad:**
 - Sync code paths multiply — every sync operation must handle all three backends
 - Reconciling conflicts across backends is complex (mitigated by rarely editing the same data on multiple devices simultaneously)
-- Setup wizard must detect which backends are available and guide users through each
-- `session-start.sh` (44KB) has grown large partly because of backend-handling code
+- Setup flow must detect which backends are available and guide users through each
+
+Historical note: the original implementation in `session-start.sh` grew to ~44KB partly because of backend handling. The app-side rewrite (`sync-service.ts` + Kotlin `SyncService.kt`) is where that logic lives now.
