@@ -26,6 +26,14 @@ Bionic only. `native/execve-interceptor.c` is a research artifact, not deployed.
 
 - `claude-wrapper.js` — canonical at `app/src/main/assets/claude-wrapper.js`. Deployed at every PTY start (inline in `PtyBridge.start()` at `PtyBridge.kt:119-123` — reads the asset and writes it to `$HOME/.claude-mobile/claude-wrapper.js` before each launch). There is no separate `Bootstrap.deployWrapperJs()` method. **Edit the asset file directly.**
 
+## Vendored Termux terminal-emulator
+
+Android depends on a **vendored copy** of Termux's `terminal-emulator` at `youcoded/terminal-emulator-vendored/` (Maven coordinate would be `com.github.termux.termux-app:terminal-emulator:v0.118.1`, but we build it locally). The vendor drop is patched to expose a `RawByteListener` on `TerminalEmulator.append()` — used by `PtyBridge.rawByteFlow` and broadcast as `pty:raw-bytes` WebSocket push events for future xterm.js consumption.
+
+Source of truth for the origin tag and patch shape: `terminal-emulator-vendored/VENDORED.md`. Never edit this module outside the documented patch.
+
+Terminal-view (`com.github.termux.termux-app:terminal-view:v0.118.1`) stays on the Maven dep — unpatched. The app build excludes terminal-emulator from terminal-view's transitive deps so Gradle picks up only the vendored version.
+
 ## Shared runtime environment
 
 Runtime fixes MUST work in both `PtyBridge` and `DirectShellBridge`. Both share:
