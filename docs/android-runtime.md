@@ -28,11 +28,25 @@ Bionic only. `native/execve-interceptor.c` is a research artifact, not deployed.
 
 ## Vendored Termux terminal-emulator
 
-Android depends on a **vendored copy** of Termux's `terminal-emulator` at `youcoded/terminal-emulator-vendored/` (Maven coordinate would be `com.github.termux.termux-app:terminal-emulator:v0.118.1`, but we build it locally). The vendor drop is patched to expose a `RawByteListener` on `TerminalEmulator.append()` — used by `PtyBridge.rawByteFlow` and broadcast as `pty:raw-bytes` WebSocket push events for future xterm.js consumption.
+Android depends on a **vendored copy** of Termux's `terminal-emulator` at `youcoded/terminal-emulator-vendored/` (Maven coordinate would be `com.github.termux.termux-app:terminal-emulator:v0.118.1`, but we build it locally). The vendor drop is patched to expose a `RawByteListener` on `TerminalEmulator.append()` — used by `PtyBridge.rawByteFlow` and broadcast as `pty:raw-bytes` WebSocket push events for the React xterm renderer.
 
 Source of truth for the origin tag and patch shape: `terminal-emulator-vendored/VENDORED.md`. Never edit this module outside the documented patch.
 
-Terminal-view (`com.github.termux.termux-app:terminal-view:v0.118.1`) stays on the Maven dep — unpatched. The app build excludes terminal-emulator from terminal-view's transitive deps so Gradle picks up only the vendored version.
+The vendored emulator is **headless** as of Tier 2. The native Termux `TerminalView` UI was removed from `ChatScreen.kt` and the `terminal-view:v0.118.1` Maven dependency dropped. `TerminalSession` still owns the PTY fork + JNI waitpid loop + emulator processing; only the rendering layer changed.
+
+## Terminal rendering (Tier 2)
+
+Terminal rendering on Android happens in xterm.js inside the WebView, not in a native Termux `TerminalView`. The pipeline:
+
+1. `PtyBridge` runs the PTY in `TerminalSession` (vendored emulator). Bytes from `pty.read()` reach `TerminalEmulator.append()`.
+2. The `RawByteListener` patch fires on the terminal thread before the emulator processes the bytes. `PtyBridge.rawByteFlow` (a `MutableSharedFlow` with `tryEmit`) carries them.
+3. `SessionService.launchRawByteBroadcast` collects from `rawByteFlow`, batches at ~16ms / 8KB, base64-encodes, and broadcasts `pty:raw-bytes` over the WebSocket.
+4. In React, `remote-shim.ts` dispatches per-session events. `usePtyRawBytes` (`desktop/src/renderer/hooks/usePtyRawBytes.ts`) decodes base64 → `Uint8Array` and feeds `terminal.write()` on xterm.
+5. xterm renders to canvas in the WebView. The React `TerminalView` component (`desktop/src/renderer/components/TerminalView.tsx`) is the same component desktop uses — the touch-platform branch sets `disableStdin: true`, skips `terminal.onData`, swaps to `usePtyRawBytes`, uses 12px font, and registers a one-finger touch-scroll handler.
+
+Typing on touch flows through `InputBar` minimal-mode `<textarea>` → `sendInput(text + '\r')`, NOT through xterm's hidden textarea (which is suppressed by `disableStdin`). Special keys (Esc, Tab, Ctrl, ←/→, ↑/↓ scroll buttons) come from `TerminalToolbar` and `TerminalScrollButtons`.
+
+The `screenMode` enum, `viewModeRequest` collector, and `layoutInsets` SharedFlow in `SessionService.kt` still have producers but no Kotlin consumers (the deleted Compose block was their only consumer). They're left in place as a follow-up cleanup — pruning is safe but out of Tier 2 scope.
 
 ## Shared runtime environment
 
