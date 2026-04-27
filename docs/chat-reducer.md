@@ -28,9 +28,9 @@ The old 30-second `thinkingTimedOut` watchdog was replaced by a per-session `att
 2. **PTY buffer classifier** — `useAttentionClassifier` ticks every 1s while `isThinking && !hasRunningTools && !hasAwaitingApproval && visible`. It reads the xterm buffer via `getScreenText`, passes the last 40 lines to the pure `classifyBuffer` function (`src/renderer/state/attention-classifier.ts`), and dispatches `ATTENTION_STATE_CHANGED` only when the mapped state differs from the current one. Reset to `'ok'` on unmount.
 3. **Transcript corroboration** — `TRANSCRIPT_USER_MESSAGE`, `TRANSCRIPT_ASSISTANT_TEXT`, `TRANSCRIPT_TOOL_USE`, `TRANSCRIPT_TOOL_RESULT`, `PERMISSION_REQUEST`, and the new `TRANSCRIPT_THINKING_HEARTBEAT` (emitted for `thinking` blocks from extended-thinking models) clear `attentionState` back to `'ok'`.
 
-`ChatView` renders `<ThinkingIndicator />` when `attentionState === 'ok' && isThinking`, and swaps in `<AttentionBanner state={attentionState} />` otherwise. Banner copy is keyed off the state (`awaiting-input`, `shell-idle`, `error`, `stuck`, `session-died`).
+`ChatView` renders `<ThinkingIndicator />` when `attentionState === 'ok' && isThinking`, and swaps in `<AttentionBanner state={attentionState} />` otherwise. The reachable states are `'ok' | 'stuck' | 'session-died'` — `'stuck'` covers spinner-glyph-flat-for-10s and no-spinner-for-20s; `'session-died'` is set by `SESSION_PROCESS_EXITED` only.
 
-The classifier's regex patterns are Claude Code CLI-version sensitive — see the version-anchor comment at the top of `attention-classifier.ts` and review if CLI visuals change.
+The classifier matches `<glyph> <Gerund>…` (CC v2.1.119 emits no seconds counter or "esc to interrupt" suffix) and decides active vs. stalled by **glyph rotation** across ticks. The 2026-04-26 empirical audit confirmed the suffix is gone; if a future CC version brings it back, the regex is still a superset and matches. The classifier's patterns are Claude Code CLI-version sensitive — see the version-anchor comment at the top of `attention-classifier.ts`, and re-run `test-conpty/test-spinner-fullcapture.mjs` + `test-conpty/test-attention-states.mjs` whenever CC visuals change.
 
 ## Deduplication
 
