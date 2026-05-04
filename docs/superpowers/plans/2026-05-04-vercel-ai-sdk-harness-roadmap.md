@@ -1,8 +1,12 @@
-# Multi-Model Harness MVP Implementation Plan
+# Vercel AI SDK Harness — Roadmap (Deferred)
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Status: DEFERRED — not the active MVP.** This plan describes a first-party agent layer using `@ai-sdk/openai` to talk directly to Ollama/LM Studio. After review, the team chose to embed OpenCode (an existing open-source agent CLI) as the local-mode backend instead — see `docs/superpowers/plans/2026-05-04-opencode-provider-mvp.md` for the active plan.
+>
+> This document is preserved as a roadmap option. It remains valid if/when YouCoded later wants a fully native local-mode runtime independent of OpenCode (e.g. for differentiation, environments where running an external CLI is undesirable, or much tighter UX control). The decision rationale is captured in the spec.
+>
+> **For agentic workers:** Do NOT execute this plan unless explicitly asked to revive the harness path. Execute `2026-05-04-opencode-provider-mvp.md` instead.
 
-**Goal:** Add chat-only "Local" sessions to YouCoded backed by Ollama (and any OpenAI-compatible endpoint). Local sessions render in the existing chat view via the same `transcript:event` shape Claude sessions use, so the chat reducer/UI works unchanged.
+**Goal (if executed):** Add chat-only "Local" sessions to YouCoded backed by Ollama (and any OpenAI-compatible endpoint). Local sessions render in the existing chat view via the same `transcript:event` shape Claude sessions use, so the chat reducer/UI works unchanged.
 
 **Architecture:** A new `LocalSessionHarness` lives in `src/main/` next to `SessionManager`. It uses the [Vercel AI SDK](https://sdk.vercel.ai) to stream from Ollama over HTTP, persists conversation JSON to `~/.claude/youcoded-local/sessions/`, and emits `transcript-event` on the same EventEmitter pipe the watcher uses today. `SessionManager.createSession()` delegates `provider: 'local'` to the harness instead of spawning a PTY worker.
 

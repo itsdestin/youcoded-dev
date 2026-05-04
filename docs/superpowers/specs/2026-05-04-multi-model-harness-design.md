@@ -1,4 +1,4 @@
-# Multi-Model Harness — Design
+# Multi-Model Support — Design (OpenCode-as-Provider MVP)
 
 **Date:** 2026-05-04
 **Status:** Design — pending implementation plan
@@ -7,41 +7,63 @@
 
 YouCoded today is structurally a Claude Code wrapper. The chat reducer, transcript watcher, hook system, skill router, MCP integration, attention classifier, and permission flow are all coupled to Claude Code's specific CLI surface and JSONL transcript format. A `SessionProvider` seam exists at session-spawn (`'claude' | 'gemini'`), but it only goes one level deep — non-Claude sessions are second-class today (terminal-only, no chat view, no skills, no hooks).
 
-We want users to be able to choose a local model (Qwen 3 via Ollama) as a first-class session type alongside Claude — same chat UI, same conversation experience — without weakening Claude's place as the headline runtime. We also want the architecture for adding more providers later (LM Studio, OpenRouter, others) to be additive rather than a rewrite each time.
+We want users to be able to choose a local model (Qwen 3 via Ollama) as a first-class session type alongside Claude — same chat UI, same conversation experience — without weakening Claude's place as the headline runtime.
 
-This spec covers the **MVP**: chat-only Local sessions backed by Ollama on desktop. It also sketches the staged roadmap (Stages B → D) so the harness contract is shaped to support tools, skills/MCP, and full parity without restructuring later.
+## The choice: leverage OpenCode instead of building a parallel agent
+
+The strategic question is *where the agent loop lives*. There are two viable paths:
+
+1. **Embed an existing agent CLI as the runtime backend** — spawn a mature open-source agent that already has tools, skills, MCP, permissions, and multi-provider model support. Treat it like we treat Claude Code today: external process producing structured output we translate into our chat UI.
+2. **Build our own in-process agent layer** — use a library like Vercel AI SDK to build the agent loop, tool definitions, prompts, etc. inside YouCoded.
+
+Both paths satisfy "let users use non-Claude models in YouCoded." Path 1 ships in weeks and gives users full agentic capability immediately. Path 2 ships chat-only in weeks and takes months to reach feature parity, but YouCoded owns the agent.
+
+**This MVP picks Path 1, with [OpenCode](https://opencode.ai) as the embedded backend.** Rationale:
+- The user explicitly prioritized leveraging existing software over building from scratch.
+- OpenCode supports 75+ model providers including Ollama, runs locally, and is MIT-licensed.
+- Architecturally, OpenCode integrates *more cleanly* than Claude Code does today: it ships a built-in HTTP+SSE server (`opencode serve`) and an official JS SDK (`@opencode-ai/sdk`), so we drive it programmatically over HTTP/SSE rather than parsing a TUI.
+- OpenCode's `Part`-based event model (TextPart, ReasoningPart, ToolPart with state machine, FilePart, etc.) maps almost 1:1 onto our existing `TRANSCRIPT_*` reducer actions — the chat view requires zero changes.
+
+Path 2 (Vercel AI SDK harness) is preserved as a roadmap option in `docs/superpowers/plans/2026-05-04-vercel-ai-sdk-harness-roadmap.md`. It remains useful if/when YouCoded wants a first-party agent for differentiation reasons or for environments where running an external binary is undesirable.
 
 ## Goals
 
-- Add a third provider, `'local'`, that runs against any OpenAI-compatible HTTP endpoint (Ollama, LM Studio, OpenRouter — all speak the same wire shape via `/v1/chat/completions`)
-- First-run UX that auto-installs Ollama and pulls Qwen 3 8B for non-technical users
-- LM Studio supported for users who already have it (no auto-install for it) — same OpenAI-compat code path, only the endpoint URL differs
-- Local sessions render in the existing chat view — same bubbles, same streaming, same markdown
-- Conversation persistence + resume
-- Architecture explicitly designed so Stages B (tools), C (skills + MCP), and D (hooks, memory, Android, multimodal, remote endpoints) are additive, not rewrites
+- Add a third provider, `'local'`, backed by OpenCode running headlessly against Ollama
+- First-run UX that auto-installs Ollama, pulls Qwen 3 8B, installs OpenCode, and writes OpenCode's config file to point at Ollama — all without the user editing JSON
+- Local sessions render in the existing chat view — same bubbles, streaming, markdown, tool cards
+- Tool calls display via the existing ToolCard UI (translation from OpenCode's `ToolPart`)
+- Conversation persistence + resume — handled by OpenCode's own SQLite storage; we read it via OpenCode's REST API
+- LM Studio supported for users who already have it (alternative endpoint URL in OpenCode config)
+- Architecture additive for adding more providers later (other agent CLIs as their own provider; Vercel AI SDK harness as an alternative path)
 
 ## Non-goals (MVP)
 
-- No tools (Read / Write / Edit / Bash / Glob) — Stage B
-- No skills support, hooks, MCP, statusline, attention classifier — Stage C/D
-- No permission flow (none needed without tools)
-- No terminal pane on local sessions (chat-only — view-mode toggle hidden when `provider === 'local'`)
+- No native YouCoded tool definitions — OpenCode owns the tool layer
+- No native YouCoded permission UI integration — OpenCode's prompt mechanism for now (can be improved post-MVP)
+- No skills / MCP integration UI — OpenCode supports both internally; surfacing them in YouCoded's settings/picker is post-MVP
+- No statusline integration for local sessions
+- No terminal pane on local sessions (chat-only — view-mode toggle hidden when `provider === 'local'`). OpenCode runs headlessly in the background; if a power-user terminal view is wanted later, `opencode attach <port>` could be exposed.
 - No attention classifier on local sessions (no PTY to read; classifier explicitly gated on `provider === 'claude'`)
-- No Android (Stage D — Ollama doesn't target Android cleanly). Local runtime option is hidden in the Runtime selector on Android and remote-browser surfaces using the existing `isAndroid()`/`isRemoteMode()` platform detection.
-- No remote endpoints (OpenRouter, Together, Groq) — same wire protocol, but defers settings UX for keys
+- No Android. Local runtime option is hidden in the Runtime selector on Android and remote-browser surfaces using the existing `isAndroid()`/`isRemoteMode()` platform detection. Android support requires investigating OpenCode binary distribution for Termux + reachable Ollama.
 - No multimodal / image input
-- No Qwen "thinking mode" toggle (defaults to whatever the model does)
+- No remote endpoints (OpenRouter, Together, Groq) — possible via OpenCode's provider config but defers settings UX for keys
 - **No mid-session provider switching, ever.** Switching from Claude to Local mid-conversation would require killing the CC process, format-converting message history, and restarting in a new runtime. Bad UX, bad reliability, dubious value. Spelled out as a permanent non-goal.
 
 ## Approach
 
-**Approach 1 of three considered: in-process harness in main, using Vercel AI SDK.** A new `LocalSessionHarness` class in `src/main/` next to `SessionManager` owns local sessions. It uses the [Vercel AI SDK](https://sdk.vercel.ai) to talk to Ollama/LM Studio over HTTP, maintains the conversation in memory, persists to a JSON file, and emits the same `transcript:event` IPC messages the renderer already consumes for Claude sessions.
+**OpenCode runs as a single background daemon.** YouCoded's main process launches `opencode serve --port <free>` once at app startup (or lazily on first local-session creation), waits for ready, and keeps it alive for the app's lifetime. All local sessions share that one daemon — they're separate sessions inside OpenCode, multiplexed over HTTP.
 
-Alternatives rejected:
-- **Subprocess harness mirroring `pty-worker.js`** — solves a problem we don't have (the harness isn't loading native modules), adds memory + spawn cost per session.
-- **Embed an existing OSS agent (Cline / Aider) as the runtime** — trades CC coupling for OSS-agent coupling, inherits their UX/prompts/update cadence. Defeats the goal of being model-agnostic.
+**Per-session adapter translates events.** A new `OpenCodeSessionAdapter` per local session subscribes to OpenCode's SSE stream, filters events for that session ID, and emits `transcript-event` messages in the exact shape `TranscriptWatcher` emits for Claude sessions. The chat reducer doesn't know which source produced an event.
 
-The recommended approach maximises OSS leverage where leverage actually matters (Vercel AI SDK doing the protocol/streaming/loop work), keeps YouCoded as the agent owner so we don't inherit anyone else's UX, and matches the existing main-process patterns.
+**No PTY for local sessions.** Unlike Claude/Gemini paths, local sessions don't spawn a per-session child process. The renderer never sees a terminal for them — the runtime is the shared OpenCode daemon. View-mode toggle is hidden in the header.
+
+**OpenCode owns persistence.** OpenCode writes session/message data to its own SQLite database (Drizzle ORM, WAL mode, ~`~/.local/share/opencode/opencode.db` on Linux, equivalent on other platforms). YouCoded does not maintain a separate session store for local sessions. Resume queries OpenCode's REST `GET /session` and `GET /session/:id/message`.
+
+Alternatives considered and rejected for MVP:
+
+- **Vercel AI SDK in-process harness** — the original draft of this spec. Higher control, much more code, months to feature parity. Preserved as a roadmap option (see `docs/superpowers/plans/2026-05-04-vercel-ai-sdk-harness-roadmap.md`).
+- **OpenCode-as-PTY (like Gemini today)** — would give us terminal-only sessions in ~1 week, but no chat view. Half the value. Worth knowing this is the cheap fallback if HTTP/SSE integration unexpectedly fails during implementation.
+- **Embedding Cline / Aider / Continue** — all viable alternatives to OpenCode. OpenCode chosen because of (a) headless server + official SDK (others require more wrapping), (b) explicit local-first design (Cline is VS Code extension, Aider is also CLI but Python), (c) richer event model.
 
 ## Architecture
 
@@ -54,68 +76,75 @@ export type SessionProvider = 'claude' | 'gemini' | 'local';
 export interface SessionInfo {
   // ... existing fields
   provider: SessionProvider;
-  model?: string;             // for 'local', this is the Ollama model name (e.g. 'qwen3:8b')
-  endpoint?: string;          // for 'local', the OpenAI-compat URL — must include /v1 (defaults to http://localhost:11434/v1, which is Ollama's OpenAI-compat path; LM Studio's default is http://localhost:1234/v1)
+  model?: string;             // for 'local', the model ID OpenCode will use (e.g. 'ollama/qwen3:8b')
+  endpoint?: string;          // for 'local', OpenCode's HTTP server URL (e.g. http://127.0.0.1:53217), assigned at daemon startup
 }
 ```
+
+### OpenCodeService — daemon lifecycle
+
+A new singleton in `src/main/opencode-service.ts`:
+
+```ts
+class OpenCodeService {
+  start(): Promise<void>           // spawn `opencode serve` on a free port; await /event SSE handshake
+  stop(): Promise<void>            // kill child process
+  isRunning(): boolean
+  baseUrl(): string                // e.g. http://127.0.0.1:53217
+  sdk(): OpenCodeClient            // memoized @opencode-ai/sdk client
+  
+  // Session-level convenience methods (thin wrappers over the SDK):
+  createSession(opts: { systemPrompt?: string }): Promise<{ id: string }>
+  sendMessage(sessionId: string, text: string): Promise<void>
+  cancelSession(sessionId: string): Promise<void>
+  destroySession(sessionId: string): Promise<void>
+  listSessions(): Promise<Array<{ id: string; title: string; updatedAt: number; ... }>>
+}
+```
+
+Lifecycle: started on app launch (after first-run setup completes — see Persistence/First-Run sections). One process for the lifetime of the app. Crash recovery: if the child exits unexpectedly, `OpenCodeService` restarts it; in-flight session adapters surface a `turn-complete` with `stopReason: 'error'` so the chat view doesn't hang.
+
+Port allocation: `OpenCodeService` finds a free port at startup (Node's `net.createServer().listen(0)` then read `address().port`). Stored in `OpenCodeService.baseUrl()` for adapters and IPC handlers to read.
+
+### OpenCodeSessionAdapter — per-session event translator
+
+A new file `src/main/opencode-session-adapter.ts`:
+
+```ts
+class OpenCodeSessionAdapter extends EventEmitter {
+  // Subscribes to the OpenCode SSE event stream, filters for opts.sessionId,
+  // translates each Part type into a transcript-event in the same shape
+  // TranscriptWatcher emits.
+  constructor(opts: { sessionId: string; service: OpenCodeService });
+  destroy(): void;
+}
+```
+
+Event mapping (illustrative — exact field names verified during implementation against `@opencode-ai/sdk` types):
+
+| OpenCode event/Part | YouCoded transcript-event |
+|---|---|
+| `message.updated` (UserMessage) | `{ type: 'user-message', sessionId, data: { text, timestamp, uuid } }` |
+| `part.delta` (TextPart) | `{ type: 'assistant-text', sessionId, data: { text, timestamp, uuid } }` |
+| `part.delta` (ReasoningPart) | `{ type: 'assistant-thinking', sessionId, data: { text, ... } }` (uses existing thinking-heartbeat shape) |
+| `ToolPart` (state: pending) | `{ type: 'tool-use', sessionId, data: { toolName, toolInput, toolUseId } }` |
+| `ToolPart` (state: completed) | `{ type: 'tool-result', sessionId, data: { toolUseId, result, isError } }` |
+| `StepFinishPart` / `message.completed` | `{ type: 'turn-complete', sessionId, data: { stopReason, model, usage } }` |
+
+The chat reducer dispatches the existing `TRANSCRIPT_USER_MESSAGE` / `TRANSCRIPT_ASSISTANT_TEXT` / `TRANSCRIPT_THINKING_HEARTBEAT` / `TRANSCRIPT_TOOL_USE` / `TRANSCRIPT_TOOL_RESULT` / `TRANSCRIPT_TURN_COMPLETE` actions — no reducer changes.
 
 ### SessionManager delegation
 
 `SessionManager.createSession()` branches on `provider`:
 
 - `'claude'` / `'gemini'` → existing PTY worker path, unchanged
-- `'local'` → delegates to `LocalSessionHarness.startSession(...)` instead of spawning a child process
+- `'local'` → asks `OpenCodeService.createSession(...)` for a session ID, constructs an `OpenCodeSessionAdapter` for that ID, wires its events through the existing `transcript-event` pipeline. Resume passes an existing OpenCode session ID instead of creating new.
 
-```ts
-// src/main/session-manager.ts (sketch)
-createSession(opts: CreateSessionOpts): SessionInfo {
-  if (opts.provider === 'local') {
-    return this.localHarness.startSession(opts); // returns SessionInfo, emits same events as PTY path
-  }
-  // ...existing PTY path unchanged
-}
-```
+`SessionManager.sendInput()` for local sessions:
+- Plain text → `OpenCodeService.sendMessage(sessionId, text)`
+- Single-byte ESC (`\x1b`) → `OpenCodeService.cancelSession(sessionId)` (interrupt the in-flight turn)
 
-### LocalSessionHarness
-
-New file `src/main/local-session-harness.ts`:
-
-```ts
-class LocalSessionHarness {
-  startSession(opts: CreateSessionOpts): SessionInfo
-  send(sessionId: string, userText: string): Promise<void>
-  cancel(sessionId: string): Promise<void>            // mid-stream interrupt via AbortController
-  destroySession(sessionId: string): boolean
-  resumeSession(sessionId: string): Promise<SessionInfo>  // load from disk
-}
-```
-
-Internally per session:
-1. Maintains an in-memory `messages: ChatMessage[]` array
-2. On `send()`:
-   - Emit `transcript:event { type: 'user-message', text }` → reducer dispatches `TRANSCRIPT_USER_MESSAGE`
-   - Append user message to `messages`
-   - Call Vercel AI SDK `streamText({ model: openai(modelName), messages, abortSignal })` where `openai` is built from `createOpenAI({ baseURL: endpoint, apiKey: 'ollama' })` — using `@ai-sdk/openai` against any OpenAI-compatible endpoint (Ollama at `/v1`, LM Studio, OpenRouter, etc.). API key is required by the SDK but Ollama/LM Studio ignore it; pass any non-empty placeholder.
-   - For each text chunk: emit `transcript:event { type: 'assistant-text', text }` → reducer dispatches `TRANSCRIPT_ASSISTANT_TEXT`
-   - On stream complete: emit `transcript:event { type: 'turn-complete', metadata }` → reducer dispatches `TRANSCRIPT_TURN_COMPLETE`
-   - Persist updated `messages` to disk (see Persistence section)
-3. On `cancel()`: trigger the `AbortController`; SDK stops streaming; emit a synthetic `turn-complete` with `stopReason: 'interrupted'`
-
-### Why this works without touching the chat reducer
-
-The harness emits the exact `transcript:event` shape that `TranscriptWatcher` already emits for Claude sessions. The chat reducer (`chat-reducer.ts`) doesn't know — and doesn't need to know — that the events came from a different source. This means we get for free:
-
-- Streaming text rendering
-- Pending-flag dedup of optimistic + transcript-confirmed user messages
-- Markdown / code-block / highlight.js rendering
-- Turn metadata strip (model name, token usage if the SDK exposes it)
-- Auto-titling from first message
-- Status-pill display
-- Stop button wiring (already dispatches an interrupt action — we just need it routed to `LocalSessionHarness.cancel()` for local sessions instead of `\x1b` to PTY)
-
-### Stage B prep baked in
-
-The same `streamText` call accepts a `tools` parameter and a `stopWhen: stepCountIs(N)` option that runs the multi-step agent loop automatically. Stage B becomes "define tool schemas + executors and pass them in," not "rewrite the loop." See Roadmap.
+`SessionManager.destroySession()` for local sessions: tears down the adapter, calls `OpenCodeService.destroySession(sessionId)`, removes from registry. Does NOT stop the OpenCode daemon — it stays up for other sessions.
 
 ## UI integration
 
@@ -131,116 +160,100 @@ Skip Permissions: [toggle, grayed out for non-Claude]
 [Create]
 ```
 
-Selecting **Local** swaps the Model dropdown to the user's installed Ollama models (queried live via the `/api/tags` HTTP endpoint or equivalent), defaulting to whatever was used last. If no models are installed, the form shows "Install Qwen 3 8B →" inline, kicking off the first-run flow.
+Selecting **Local** swaps the Model dropdown to the user's installed Ollama models (queried live via Ollama's `/api/tags` HTTP endpoint, since YouCoded knows the Ollama URL from its first-run setup; OpenCode is configured to use those models). If no models are installed, the form shows "Install Qwen 3 8B →" inline, kicking off the first-run flow.
 
-Gemini stays gated by the existing `sessionDefaults.geminiEnabled` setting. Local is ungated since it's the new headline feature.
+Local is hidden on Android and remote-browser via existing `isAndroid()`/`isRemoteMode()` platform detection plus a `window.claude.local.supported` capability flag.
 
 ### Mid-session model picker — within-runtime swaps only
 
-The existing `ModelPickerPopup.tsx` continues to handle mid-session model changes, but its list is now scoped to the current session's runtime:
+The existing `ModelPickerPopup.tsx` continues to handle mid-session model changes:
 
 - Claude session → Claude variants (current behavior, unchanged)
-- Local session → installed Ollama models (e.g. Qwen 8B ↔ Qwen 32B). Safe because we're loading a different model into the same Ollama runtime — message history carries over, no process restart.
-- Gemini session → unchanged (no model variants exposed today)
+- Local session → installed Ollama models. We notify OpenCode of the swap (likely via creating a follow-up message that names the model in OpenCode's config, or via OpenCode's session-update REST endpoint — implementation detail to verify against the SDK).
+- Gemini session → unchanged
 
-Stretch: locking the model at creation time is acceptable for MVP if mid-session swap proves complicated. The mid-session swap on local sessions is a small win, not a load-bearing requirement.
+Stretch: locking the model at creation time is acceptable for MVP if mid-session swap proves complicated.
 
 ### First-run for local mode
 
-Extends the existing `prerequisite-installer.ts` pattern:
+Three-stage setup, all driven by extending `prerequisite-installer.ts`:
 
-1. Detect Ollama. If missing, prompt: *"Local mode needs Ollama (~300 MB). Install now? [Install] [Skip]"*
-2. After install, detect installed models. If none, prompt: *"Download Qwen 3 8B (~5 GB)? [Download] [Choose different model] [Skip]"*
-3. Progress shown in the existing `SetupScreen` UI.
+1. **Ollama.** Detect; if missing, prompt: *"Local mode needs Ollama (~300 MB). Install now? [Install] [Skip]"*. Install via `https://ollama.com/install.{ps1,sh}` bootstrap (Linux/macOS) or `OllamaSetup.exe` silent install (Windows). Wait for daemon ready.
+2. **Model.** Detect installed models via Ollama's `/api/tags`. If none, prompt: *"Download Qwen 3 8B (~5 GB)? [Download] [Choose different model] [Skip]"*. Stream pull progress via Ollama's `/api/pull`.
+3. **OpenCode.** Detect binary; if missing, install via `https://opencode.ai/install` bootstrap script (Linux/macOS) or fetch the appropriate Windows binary from GitHub Releases. Then write `~/.config/opencode/opencode.json` to declare a custom Ollama provider (npm: `@ai-sdk/openai-compatible`, baseURL: `http://localhost:11434/v1`) and a placeholder `auth.json` so OpenCode considers it configured.
 
-LM Studio is detected (via its default port `1234`) and offered as an alternative endpoint in settings, but never auto-installed.
+Progress for all three shown in the existing `SetupScreen` UI.
+
+LM Studio is detected (via its default port `1234`) and offered as an alternative endpoint in settings, but never auto-installed — when configured, YouCoded writes a different baseURL into OpenCode's config.
 
 ### Per-session UI differences for `provider === 'local'`
 
 - View-mode toggle (chat ↔ terminal) hidden in HeaderBar — local sessions are chat-only
-- Permission-mode badge hidden — no permissions concept
-- Status pill shows the Ollama model name (`qwen3:8b`)
-- Stop button visible mid-stream
+- Permission-mode badge hidden — OpenCode owns the permission concept; we don't surface it in MVP
+- Status pill shows the model name (`qwen3:8b`)
+- Stop button visible mid-stream, routes to `OpenCodeService.cancelSession()`
 - Attention banner inert (no PTY classifier) — `attentionState` stays `'ok'`
 
 ### Settings panel additions
 
 New "Local Models" section in the existing settings panel:
 
-- Endpoint URL (defaults to `http://localhost:11434/v1`)
+- Ollama endpoint URL (defaults to `http://localhost:11434`)
 - Default model (dropdown of installed Ollama models)
-- System prompt override (textarea, defaults to a minimal "You are a helpful assistant. The user is using YouCoded, a desktop coding-assistant app.")
-- "Manage Ollama models →" button (deep links to `ollama list` workflow or opens a small management UI — exact form deferred to implementation)
+- "Manage Ollama models →" button (deep links to `ollama list` workflow)
+- (Future) OpenCode advanced config: link to `~/.config/opencode/opencode.json` for power users
+
+Endpoint changes trigger a rewrite of OpenCode's config file and a restart of the OpenCode daemon. (Or a SIGHUP if OpenCode supports config reload — verify in implementation.)
 
 ## Persistence
 
-Local conversations stored at `~/.claude/youcoded-local/sessions/<session-id>.json`:
+OpenCode owns persistence. YouCoded does NOT maintain a parallel session store for local sessions.
 
-```json
-{
-  "id": "uuid",
-  "provider": "local",
-  "model": "qwen3:8b",
-  "endpoint": "http://localhost:11434/v1",
-  "systemPrompt": "You are a helpful assistant...",
-  "createdAt": 1714857600000,
-  "updatedAt": 1714857890000,
-  "title": "Auto-named from first message",
-  "messages": [
-    { "role": "user", "content": "...", "timestamp": 1714857600000 },
-    { "role": "assistant", "content": "...", "timestamp": 1714857615000 }
-  ]
-}
-```
+- **Storage location:** OpenCode's SQLite at platform-specific path (e.g. `~/.local/share/opencode/opencode.db` on Linux), Drizzle ORM, WAL mode (concurrent reads supported).
+- **Session list (for ResumeBrowser):** YouCoded calls OpenCode's REST `GET /session`. Returns array of session metadata (id, title, timestamps, etc.). Cached in renderer for the duration of the picker.
+- **Message history (for resume):** OpenCode replays the session's messages over SSE when we re-attach to a session. We translate each historical Part to a transcript-event the same way we translate live events. Chat reducer hydrates from empty.
+- **No write-side concerns:** OpenCode is the only writer. No atomic-write logic, no .tmp file dance, no concurrent-write conflicts to manage.
+- **Auto-titling:** OpenCode handles it. We display its title in the session strip.
 
-**Why a separate path** (not CC's `~/.claude/projects/<slug>/<id>.jsonl`):
+## Roadmap
 
-- Different shape (full message array per file vs append-only JSONL with tool/turn nesting)
-- Avoids accidentally pretending a local session is a CC session anywhere in existing watcher/resume code
-- Keeps the resume browser able to query both stores independently
+Each item is a separate spec/plan; this section sketches what comes after MVP.
 
-**Resume browser** — existing `ResumeBrowser` UI lists CC sessions today; gains a "Local" tab (or filter chip) that queries `~/.claude/youcoded-local/sessions/`. Clicking a local session restores message history into the harness and re-mounts in chat view.
-
-**Auto-titling** — first user message → first ~5 words → session title. Same UX as CC's auto-naming.
-
-**Atomic writes** — write to `<id>.json.tmp` then rename, to avoid corrupting on crash mid-write.
-
-## Roadmap to parity (Stages B → D)
-
-Each stage is a separate spec/plan; this section sketches them so the MVP harness contract is shaped to support them.
-
-| Stage | Adds | Approx. effort | Key OSS leverage |
-|---|---|---|---|
-| **B** | Tools (Read, Write, Edit, Bash, Glob), permission flow (reusing the existing `PERMISSION_REQUEST` reducer action shape so existing approval UI just works), tool result rendering via existing ToolCard | ~3–4 weeks | Vercel AI SDK `streamText({ tools, stopWhen: stepCountIs(N) })` runs the agent loop; tool definitions are pure functions |
-| **C** | Skill router (embedding-based match against installed skills), MCP client | ~3–4 weeks | `@modelcontextprotocol/sdk` (official Anthropic), Ollama embedding models (`nomic-embed-text`) |
-| **D** | Hook lifecycle parity, memory (long-term context), Android runtime, multimodal, remote endpoints (OpenRouter etc.) with secure key storage | Ongoing | Varies — Android is the hard one (likely needs `llama.cpp` Termux build or a "remote-Ollama-on-PC" pattern) |
-
-The MVP harness contract — `startSession() → { send, cancel, destroy } + emit transcript:event` — is shaped so:
-
-- **Stage B** adds `tools` to the `streamText` call and emits `TRANSCRIPT_TOOL_USE` / `TRANSCRIPT_TOOL_RESULT` events. No reducer changes. Permission gates emit `PERMISSION_REQUEST` events the existing approval UI already consumes.
-- **Stage C** inserts a skill-matching pre-pass before the model call (embed the user message, find top-k skill descriptions, inject matched skill bodies into the system prompt) and adds an MCP-tool-discovery step at session start. No reducer changes.
-- **Stage D** adds new providers as `LocalSessionHarness` peers (or subclasses) without restructuring SessionManager. Android needs its own runtime story but the harness contract carries over.
+| Stage | Adds | Approx. effort |
+|---|---|---|
+| **B** | Permission flow integration — surface OpenCode's permission requests in our existing `PERMISSION_REQUEST` UI instead of OpenCode's default mechanism | ~1–2 weeks |
+| **C** | Skills / MCP UI integration — let users browse and toggle OpenCode's skills/MCP servers from YouCoded's settings | ~2–3 weeks |
+| **D** | Android support — investigate OpenCode binary on Termux, or a "remote OpenCode on a PC, Android client connects" pattern | Investigation + 4+ weeks |
+| **E (Alternative)** | Vercel AI SDK in-process harness — preserved at `docs/superpowers/plans/2026-05-04-vercel-ai-sdk-harness-roadmap.md`. Builds a first-party agent layer using `@ai-sdk/openai`. Sense-makes if YouCoded later wants a fully native local-mode experience independent of OpenCode, or for environments where running an external CLI is undesirable. | ~6+ weeks for a tools-capable harness |
 
 ## Risks and open questions
 
-- **Ollama install on Windows requires admin rights** in some configurations. The auto-install flow needs to detect this and either elevate (with consent) or fall back to a guided manual install. To be confirmed in implementation.
-- **Provider library choice resolved:** `@ai-sdk/openai` with `createOpenAI({ baseURL })` against Ollama's OpenAI-compat path (`/v1`). Earlier draft considered `ollama-ai-provider`; rejected because it speaks Ollama's native `/api/...` endpoints, which would prevent the same client code from working with LM Studio / OpenRouter / any other OpenAI-compat backend. Single client → all OpenAI-compat backends.
-- **Mid-session model swap within local** (Qwen 8B → Qwen 32B) is plausibly safe but needs verification that Ollama doesn't drop conversation context when the model changes. If it does, the swap requires the harness to re-send the full message history with the new model — slight cost but trivial. Defer to implementation.
-- **System prompt for chat-only Qwen** — minimal default is fine, but we should sanity-check that a totally bare prompt doesn't cause Qwen to hallucinate tools or pretend to be Claude. Test during implementation; the prompt is configurable in settings as an escape hatch.
-- **Token usage / context-window display** — Vercel AI SDK exposes per-turn token counts. Reuse the existing turn-metadata UI (which already displays this for Claude sessions when enabled).
-- **Persistence file growth** — long conversations grow the JSON file unboundedly. Acceptable for MVP. Stage D could add summarization/truncation.
-- **Concurrent session handling** — multiple local sessions sharing one Ollama backend will queue at Ollama's level (it serializes inference). UX-wise, the second session will just appear "still thinking" longer. Acceptable; document.
-- **Stop-mid-stream cleanup** — if the user cancels mid-stream, the partial assistant text is already in the chat view. We should persist the partial reply with a `stopReason: 'interrupted'` flag so resume doesn't re-show it as an in-flight turn. Implementation detail.
+- **Repo fork situation.** Two OpenCode repos exist as of this writing — `sst/opencode` (original) and `anomalyco/opencode` (recent split). Need to pick a canonical source to bundle from before MVP ships. Doesn't block design.
+- **SDK + schema verification.** Research confirmed event types and SQLite/Drizzle storage from docs and DeepWiki, but the actual SDK type definitions and DB DDL haven't been read line-by-line yet. Implementation Task 1 verifies these against `@opencode-ai/sdk` package types.
+- **OpenCode lifecycle management.** Running `opencode serve` as a long-lived child process means YouCoded's main owns: spawn, wait-for-ready, port allocation, crash detection, restart, graceful shutdown on app quit. More state than the per-session PTY model. Mitigated by: well-understood subprocess management patterns in `src/main/`, OpenCode is itself a stable daemon.
+- **OpenCode API stability.** Active project, latest release dated today (2026-05-04). Some risk of breaking changes between releases. Mitigation: pin to a specific OpenCode version when bundling, treat OpenCode upgrades as a release-time decision (similar to how Anthropic's Claude Code upgrades are tracked in `cc-dependencies.md`). Add an `oc-dependencies.md` file analogous to `cc-dependencies.md` to document YouCoded's coupling points to OpenCode.
+- **Permission UX gap.** MVP doesn't surface OpenCode's permission requests in YouCoded's UI. Users see whatever OpenCode emits as text in the chat (likely an "approve this tool call?" message). This is OK for MVP but feels rough next to Claude's polished permission cards. Stage B fixes this.
+- **Mid-session model swap.** Need to verify OpenCode supports model swap via SDK without losing session context, or whether it requires creating a fresh session. Verify during implementation.
+- **Concurrent local sessions.** Multiple sessions sharing one OpenCode daemon → OpenCode's responsibility. Documenting expected behavior (queueing? parallel?) needs SDK testing.
+- **Stop-mid-stream cleanup.** OpenCode's cancel API behavior: does it persist the partial assistant message? Verify; mirror Claude session interrupt behavior in chat view.
+- **Bundling vs separate install.** Bundling the OpenCode binary in YouCoded's installer adds ~30 MB but eliminates a setup step. Auto-downloading at first-run keeps installer small. MVP recommendation: auto-download on first-run, bundle later if first-run friction is reported.
+- **Disk usage of two installations.** Users with both Claude Code AND OpenCode have ~600 MB of overlapping CLI tooling installed. Acceptable; document in onboarding.
 
 ## References
 
-- [Vercel AI SDK docs](https://sdk.vercel.ai/docs) — provider abstraction, streaming, tool calling, multi-step agent loops
-- [Ollama API reference](https://github.com/ollama/ollama/blob/main/docs/api.md) — model management, OpenAI-compat endpoint
-- [Model Context Protocol](https://modelcontextprotocol.io/) — for Stage C
+- [OpenCode official site](https://opencode.ai/)
+- [OpenCode CLI docs](https://opencode.ai/docs/cli/)
+- [OpenCode Server docs (HTTP+SSE+OpenAPI)](https://opencode.ai/docs/server/)
+- [OpenCode Providers docs (Ollama setup)](https://opencode.ai/docs/providers/)
+- [Storage and Database (DeepWiki)](https://deepwiki.com/sst/opencode/2.9-storage-and-database)
+- [Message and Part Structure (DeepWiki)](https://deepwiki.com/sst/opencode/2.2-message-and-prompt-system)
+- [Event Bus (DeepWiki)](https://deepwiki.com/sst/opencode/2.8-event-bus-and-sync-architecture)
+- [`sst/opencode` (GitHub)](https://github.com/sst/opencode) and [`anomalyco/opencode` (GitHub)](https://github.com/anomalyco/opencode)
+- [Ollama × OpenCode integration](https://docs.ollama.com/integrations/opencode)
 - Existing YouCoded patterns:
   - `src/main/session-manager.ts` — provider seam
-  - `src/main/transcript-watcher.ts` — `transcript:event` shape
+  - `src/main/transcript-watcher.ts` — `transcript-event` shape we mirror
   - `src/renderer/state/chat-reducer.ts` — `TRANSCRIPT_*` actions
   - `src/renderer/components/SessionStrip.tsx` — new-session form (where the runtime picker lives)
-  - `src/main/prerequisite-installer.ts` — install pattern Ollama setup follows
-- Reference OSS implementations to study (not embed): [Cline](https://github.com/cline/cline), [Aider](https://github.com/Aider-AI/aider), [Continue](https://github.com/continuedev/continue)
+  - `src/main/prerequisite-installer.ts` — install pattern Ollama / OpenCode setup follows
+- Roadmap alternative: [Vercel AI SDK in-process harness plan](../plans/2026-05-04-vercel-ai-sdk-harness-roadmap.md) — preserved for future consideration
