@@ -6,7 +6,7 @@
 
 **Architecture:** A new `LocalSessionHarness` lives in `src/main/` next to `SessionManager`. It uses the [Vercel AI SDK](https://sdk.vercel.ai) to stream from Ollama over HTTP, persists conversation JSON to `~/.claude/youcoded-local/sessions/`, and emits `transcript-event` on the same EventEmitter pipe the watcher uses today. `SessionManager.createSession()` delegates `provider: 'local'` to the harness instead of spawning a PTY worker.
 
-**Tech Stack:** TypeScript, Node 20+, Electron, Vercel AI SDK (`ai` + `ollama-ai-provider`), Vitest, React 18.
+**Tech Stack:** TypeScript, Node 20+, Electron, Vercel AI SDK (`ai` + `@ai-sdk/openai` against Ollama's OpenAI-compat path at `/v1`), Vitest, React 18.
 
 **Spec:** `docs/superpowers/specs/2026-05-04-multi-model-harness-design.md`
 
@@ -72,29 +72,35 @@ ls node_modules | head -3
 
 Expected: a few package directory names print. **Critical:** when you eventually remove this worktree, `cmd //c "rmdir node_modules"` FIRST — `git worktree remove` follows junctions on Windows and would wipe the main checkout's `node_modules`. (See `docs/PITFALLS.md → Working With Destin → "git worktree remove follows junctions on Windows"`.)
 
-- [ ] **Setup Step 4: Install new npm dependencies**
+- [ ] **Setup Step 4: Install new npm dependencies in the worktree**
 
-```bash
-cd /c/Users/desti/youcoded-dev/youcoded/desktop
-npm install ai@^4 ollama-ai-provider@^1
-```
-
-Run from the main checkout, not the worktree, since `node_modules` is junctioned. Expected: deps land in `package.json` and `node_modules`.
-
-- [ ] **Setup Step 5: Commit the dep additions on the feature branch**
-
-The `npm install` modifies `package.json` and `package-lock.json` in the main checkout. Move them to the worktree:
+Run `npm install` from inside the worktree itself, not the main checkout. The junctioned `node_modules` is shared, but `package.json` and `package-lock.json` need to land in the worktree (where the feature branch is checked out) — not on master's working tree.
 
 ```bash
 cd /c/Users/desti/youcoded-dev/youcoded.wt/local-harness-mvp/desktop
-git checkout HEAD -- package.json package-lock.json  # discard if any auto-changed in worktree
-git -C ../../../youcoded/desktop diff package.json package-lock.json | git apply -p1 --directory=desktop
-git status
-git add desktop/package.json desktop/package-lock.json
-git commit -m "feat(local-harness): add ai sdk + ollama-ai-provider deps"
+npm install ai@^4 @ai-sdk/openai@^1
 ```
 
-Expected: one commit, two files staged. (If the diff/apply dance is awkward, alternative: edit `package.json` in the worktree to add the two deps, then run `npm install` from the main checkout to regenerate the lock — both checkouts end up with the same shared `node_modules`.)
+Expected: `package.json` and `package-lock.json` are modified in the worktree; `node_modules` (the junction target in the main checkout) gets the new packages installed. Master's working tree stays clean.
+
+Verify the modifications landed in the worktree, not master:
+
+```bash
+git -C /c/Users/desti/youcoded-dev/youcoded.wt/local-harness-mvp status --short
+git -C /c/Users/desti/youcoded-dev/youcoded status --short
+```
+
+Expected: worktree shows `M desktop/package.json` and `M desktop/package-lock.json`; main checkout shows nothing new from this step.
+
+- [ ] **Setup Step 5: Commit the dep additions on the feature branch**
+
+```bash
+cd /c/Users/desti/youcoded-dev/youcoded.wt/local-harness-mvp
+git add desktop/package.json desktop/package-lock.json
+git commit -m "feat(local-harness): add ai sdk + @ai-sdk/openai deps"
+```
+
+Expected: one commit. (Note on package selection: `@ai-sdk/openai` works against Ollama's OpenAI-compat endpoint at `/v1`, LM Studio's at `/v1`, and any other OpenAI-shape endpoint. We do not need `ollama-ai-provider` — that package speaks Ollama's native `/api/...` endpoints, which would lock us out of LM Studio and the wider OpenAI-compat ecosystem.)
 
 ---
 
@@ -675,8 +681,8 @@ const mockStreamText = vi.fn();
 vi.mock('ai', () => ({
   streamText: (...args: any[]) => mockStreamText(...args),
 }));
-vi.mock('ollama-ai-provider', () => ({
-  createOllama: () => (modelName: string) => ({ __mockModel: modelName }),
+vi.mock('@ai-sdk/openai', () => ({
+  createOpenAI: () => (modelName: string) => ({ __mockModel: modelName }),
 }));
 
 function streamFromChunks(chunks: string[]) {
@@ -799,24 +805,30 @@ describe('LocalSessionHarness', () => {
     expect(loaded?.messages.at(-1)?.content).toBe('partial');
   });
 
-  it('resumeSession() re-loads message history and emits the existing transcript', async () => {
+  it('resumeSession() re-loads history AND re-emits historical events for reducer hydration', async () => {
     // Pre-seed a session record on disk
     await store.save({
       id: 'sess-x', provider: 'local', model: 'qwen3:8b',
       endpoint: 'http://localhost:11434/v1', systemPrompt: 'sys',
       createdAt: 1, updatedAt: 2, title: 'Old chat',
       messages: [
-        { role: 'user', content: 'prior q', timestamp: 1 },
-        { role: 'assistant', content: 'prior a', timestamp: 2 },
+        { role: 'user', content: 'prior q', timestamp: 100 },
+        { role: 'assistant', content: 'prior a', timestamp: 200 },
       ],
     });
     const info = await harness.resumeSession('sess-x');
     expect(info.id).toBe('sess-x');
-    // Resuming does NOT re-emit (the chat reducer hydrates from persisted state separately).
-    // It just makes the session live again so subsequent send() works.
-    expect(events).toEqual([]);
+    // Re-emit historical events so the chat reducer hydrates the session
+    // state from empty (mirrors how Claude resume hydrates via TranscriptWatcher
+    // reading the JSONL from offset 0).
+    expect(events.map(e => e.type)).toEqual([
+      'user-message', 'assistant-text', 'turn-complete',
+    ]);
+    expect(events[0].data.text).toBe('prior q');
+    expect(events[1].data.text).toBe('prior a');
 
     // Subsequent send should include the prior history in the SDK call
+    events.length = 0;
     mockStreamText.mockReturnValueOnce(streamFromChunks(['ok']));
     await harness.send('sess-x', 'new q');
     const callArgs = mockStreamText.mock.calls[0][0];
@@ -854,7 +866,7 @@ Create `youcoded/desktop/src/main/local-session-harness.ts`:
 ```ts
 import { EventEmitter } from 'events';
 import { streamText } from 'ai';
-import { createOllama } from 'ollama-ai-provider';
+import { createOpenAI } from '@ai-sdk/openai';
 import type { SessionInfo } from '../shared/types';
 import { LocalSessionStore, type LocalChatMessage } from './local-session-store';
 
@@ -926,7 +938,12 @@ export class LocalSessionHarness extends EventEmitter {
     return info;
   }
 
-  /** Re-mount a previously persisted session as live. Does NOT re-emit prior events. */
+  /**
+   * Re-mount a previously persisted session as live AND re-emit its message
+   * history as transcript events so the chat reducer hydrates from empty.
+   * Mirrors how Claude resume works (TranscriptWatcher reads the JSONL from
+   * offset 0 and re-fires every event).
+   */
   async resumeSession(id: string): Promise<SessionInfo> {
     const rec = await this.store.load(id);
     if (!rec) throw new Error(`local session ${id} not found on disk`);
@@ -943,6 +960,30 @@ export class LocalSessionHarness extends EventEmitter {
       createdAt: rec.createdAt,
     };
     this.sessions.set(id, { info, systemPrompt: rec.systemPrompt, abortController: null });
+
+    // Hydration: re-emit each persisted message in chronological order.
+    // Each user message starts a new turn in the reducer; assistant chunks
+    // accumulate into the current turn (same shape as live streaming).
+    for (const msg of rec.messages) {
+      const eventType = msg.role === 'user' ? 'user-message' : 'assistant-text';
+      this.emit('transcript-event', {
+        type: eventType,
+        sessionId: id,
+        data: {
+          text: msg.content,
+          timestamp: msg.timestamp,
+          uuid: `local-resume-${msg.role}-${msg.timestamp}`,
+        },
+      });
+    }
+    // Final turn-complete so the reducer sees the conversation as
+    // not-in-progress (no streaming text left over from the last assistant).
+    this.emit('transcript-event', {
+      type: 'turn-complete',
+      sessionId: id,
+      data: { stopReason: 'stop', model: rec.model, usage: null },
+    });
+
     return info;
   }
 
@@ -987,10 +1028,15 @@ export class LocalSessionHarness extends EventEmitter {
     const abortController = new AbortController();
     live.abortController = abortController;
 
-    // Build the model client. createOllama() returns a factory; calling it
-    // with the model name returns the actual model handle the SDK uses.
-    const ollama = createOllama({ baseURL: live.info.endpoint });
-    const modelHandle = ollama(live.info.model);
+    // Build the model client via the OpenAI-compat path. createOpenAI() returns
+    // a factory; calling it with a model name returns the model handle the SDK uses.
+    // The apiKey field is required by the SDK but Ollama and LM Studio ignore it —
+    // pass any non-empty placeholder so the SDK doesn't bail at construction.
+    const provider = createOpenAI({
+      baseURL: live.info.endpoint,
+      apiKey: 'ollama-or-lmstudio-ignore-this',
+    });
+    const modelHandle = provider(live.info.model);
 
     let assistantText = '';
     let stopReason: 'stop' | 'interrupted' | 'error' = 'stop';
@@ -1143,27 +1189,39 @@ createSession(opts: CreateSessionOpts): SessionInfo {
   // --- LOCAL provider branch ---
   if (provider === 'local') {
     if (!this.localHarness) throw new Error('Local harness not wired');
+    // CRITICAL: when resuming a local session, the harness keys its in-memory
+    // session map on the persisted id. We MUST use that same id as the desktop
+    // session id, otherwise the renderer holds a fresh UUID and every send
+    // reaches a session the harness never saw. (Differs from the Claude PTY
+    // path, where --resume is just a flag passed to claude CLI; the desktop id
+    // is independent of the Claude Code session id.)
+    const localId = opts.resumeSessionId || id;
     const endpoint = opts.endpoint || 'http://localhost:11434/v1';
     const systemPrompt = opts.systemPrompt || 'You are a helpful assistant. The user is using YouCoded, a desktop coding-assistant app.';
     const model = opts.model || 'qwen3:8b';
-    // Fire-and-forget the async startSession; the SessionInfo we return
-    // mirrors what the harness will use. We immediately register a dummy
-    // ManagedSession so destroy/list operations still work uniformly.
     const info: SessionInfo = {
-      id, name: opts.name, cwd: resolvedCwd,
+      id: localId, name: opts.name, cwd: resolvedCwd,
       permissionMode: 'normal', skipPermissions: false,
       status: 'active', createdAt: Date.now(),
       provider: 'local', model, endpoint,
       ...(opts.initialInput !== undefined ? { initialInput: opts.initialInput } : {}),
     };
-    this.sessions.set(id, { info, worker: null as any });   // worker unused for local
+    this.sessions.set(localId, { info, worker: null as any });   // worker unused for local
     this.emit('session-created', info);
-    this.localHarness.startSession({
-      id, name: opts.name, cwd: resolvedCwd, model, endpoint, systemPrompt,
-    }).catch((err) => {
-      log('ERROR', 'SessionManager', 'Local harness startSession failed', { sessionId: id, error: String(err) });
-      this.emit('session-exit', id, 1);
-      this.sessions.delete(id);
+    // Fire-and-forget the async start/resume. The SessionInfo we return
+    // mirrors what the harness will use; events from the harness arrive
+    // shortly after via the 'transcript-event' re-emit wired in setLocalHarness.
+    const harnessPromise = opts.resumeSessionId
+      ? this.localHarness.resumeSession(opts.resumeSessionId)
+      : this.localHarness.startSession({
+          id: localId, name: opts.name, cwd: resolvedCwd, model, endpoint, systemPrompt,
+        });
+    harnessPromise.catch((err) => {
+      log('ERROR', 'SessionManager', 'Local harness start/resume failed', {
+        sessionId: localId, resume: !!opts.resumeSessionId, error: String(err),
+      });
+      this.emit('session-exit', localId, 1);
+      this.sessions.delete(localId);
     });
     return info;
   }
@@ -1173,6 +1231,8 @@ createSession(opts: CreateSessionOpts): SessionInfo {
   const args: string[] = [];
   // ... existing code
 ```
+
+The id-correction is the key behavior change versus an earlier draft: `localId = opts.resumeSessionId || id`, used everywhere the local branch creates IDs. Without this, resume silently no-ops.
 
 - [ ] **Step 3: Update `CreateSessionOpts` to accept the new fields**
 
@@ -1247,24 +1307,145 @@ destroySession(id: string): boolean {
 }
 ```
 
-- [ ] **Step 5: Wire the harness in `main.ts`**
+- [ ] **Step 5: Wire the harness in `ipc-handlers.ts` (alongside the existing TranscriptWatcher wire)**
 
-Open `src/main/main.ts`. Find where `SessionManager` is instantiated. After construction, wire the harness:
+The existing `TranscriptWatcher` is constructed and wired to the renderer IPC inside `ipc-handlers.ts` at line 1639-1646 (verified in source). The wire pattern is:
 
 ```ts
-import { LocalSessionHarness } from './local-session-harness';
-import { LocalSessionStore } from './local-session-store';
+const transcriptWatcher = new TranscriptWatcher();
+
+transcriptWatcher.on('transcript-event', (event: any) => {
+  sendForSession(event.sessionId, IPC.TRANSCRIPT_EVENT, event);
+  if (remoteServer) {
+    remoteServer.broadcast({ type: 'transcript:event', payload: event });
+  }
+});
+```
+
+Construct + wire the local harness right next to it. Add immediately after the `transcriptWatcher.on('transcript-event', ...)` block:
+
+```ts
 import * as os from 'os';
 import * as path from 'path';
+import { LocalSessionHarness } from './local-session-harness';
+import { LocalSessionStore } from './local-session-store';
 
 const localStore = new LocalSessionStore(path.join(os.homedir(), '.claude', 'youcoded-local'));
 const localHarness = new LocalSessionHarness(localStore);
 sessionManager.setLocalHarness(localHarness);
+
+// Same plumbing as TranscriptWatcher: forward harness 'transcript-event' to
+// the renderer IPC and (if remote is enabled) the broadcast bus. The chat
+// reducer doesn't care which source emitted — same event shape.
+localHarness.on('transcript-event', (event: any) => {
+  sendForSession(event.sessionId, IPC.TRANSCRIPT_EVENT, event);
+  if (remoteServer) {
+    remoteServer.broadcast({ type: 'transcript:event', payload: event });
+  }
+});
 ```
 
-Also locate the existing wiring of `transcriptWatcher.on('transcript-event', ...)` to the renderer IPC. The harness's `transcript-event` is now also re-emitted by `SessionManager` via `setLocalHarness`, so any code already subscribed to `sessionManager.on('transcript-event', ...)` works for free. If the existing wire goes through `transcriptWatcher` directly (search for `transcriptWatcher.on('transcript-event'`), add the parallel `sessionManager.on('transcript-event', ...)` subscription with the same handler.
+(Direct subscription on the harness — not via `SessionManager`'s re-emit — to keep one less level of indirection. `setLocalHarness` still re-emits internally; that's fine and harmless. The subscription pattern matches `TranscriptWatcher` line-for-line.)
 
-- [ ] **Step 6: Type-check and commit**
+Then export `localStore` from this module so the IPC handlers in Task 12 (`LOCAL_LIST_SESSIONS`) can use the same instance instead of constructing a duplicate.
+
+- [ ] **Step 6: Add tests for the local branch**
+
+The local branch is the load-bearing routing logic — `id` reuse on resume, sendInput dispatch to harness vs PTY, ESC-as-cancel. None of the existing PTY-path tests cover it. Pin the behavior down before moving on.
+
+Create `youcoded/desktop/tests/session-manager-local.test.ts`:
+
+```ts
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { EventEmitter } from 'events';
+import { SessionManager } from '../src/main/session-manager';
+import type { LocalSessionHarness } from '../src/main/local-session-harness';
+
+function makeMockHarness(): LocalSessionHarness {
+  const ee = new EventEmitter() as any;
+  ee.startSession = vi.fn(async (opts: any) => ({ id: opts.id, provider: 'local' }));
+  ee.resumeSession = vi.fn(async (id: string) => ({ id, provider: 'local' }));
+  ee.send = vi.fn(async () => {});
+  ee.cancel = vi.fn(async () => {});
+  ee.destroySession = vi.fn(() => true);
+  return ee as LocalSessionHarness;
+}
+
+describe('SessionManager local branch', () => {
+  let sm: SessionManager;
+  let harness: LocalSessionHarness;
+
+  beforeEach(() => {
+    sm = new SessionManager();
+    harness = makeMockHarness();
+    sm.setLocalHarness(harness);
+  });
+
+  it('createSession({ provider: "local" }) calls harness.startSession with the desktop id', () => {
+    const info = sm.createSession({
+      name: 'L', cwd: '', skipPermissions: false,
+      provider: 'local', model: 'qwen3:8b', endpoint: 'http://localhost:11434/v1',
+    });
+    expect(info.provider).toBe('local');
+    expect(info.id).toBeTruthy();
+    expect((harness as any).startSession).toHaveBeenCalledWith(
+      expect.objectContaining({ id: info.id, model: 'qwen3:8b', endpoint: 'http://localhost:11434/v1' }),
+    );
+    expect((harness as any).resumeSession).not.toHaveBeenCalled();
+  });
+
+  it('createSession with resumeSessionId uses that id everywhere (no fresh UUID)', () => {
+    const info = sm.createSession({
+      name: 'L', cwd: '', skipPermissions: false,
+      provider: 'local', resumeSessionId: 'resume-me-123',
+    });
+    // The renderer receives info.id === resumeSessionId — critical for sendInput routing.
+    expect(info.id).toBe('resume-me-123');
+    expect((harness as any).resumeSession).toHaveBeenCalledWith('resume-me-123');
+    expect((harness as any).startSession).not.toHaveBeenCalled();
+    // Registry keyed on resume id, so destroy/list operations work too.
+    expect(sm.getSession('resume-me-123')).toBeDefined();
+  });
+
+  it('sendInput on a local session routes plain text to harness.send (CR stripped)', () => {
+    const info = sm.createSession({
+      name: 'L', cwd: '', skipPermissions: false, provider: 'local',
+    });
+    sm.sendInput(info.id, 'hello\r');
+    expect((harness as any).send).toHaveBeenCalledWith(info.id, 'hello');
+  });
+
+  it('sendInput on a local session routes single ESC byte to harness.cancel', () => {
+    const info = sm.createSession({
+      name: 'L', cwd: '', skipPermissions: false, provider: 'local',
+    });
+    sm.sendInput(info.id, '\x1b');
+    expect((harness as any).cancel).toHaveBeenCalledWith(info.id);
+    expect((harness as any).send).not.toHaveBeenCalled();
+  });
+
+  it('destroySession on a local session calls harness.destroySession and emits exit', () => {
+    const exitSpy = vi.fn();
+    sm.on('session-exit', exitSpy);
+    const info = sm.createSession({
+      name: 'L', cwd: '', skipPermissions: false, provider: 'local',
+    });
+    expect(sm.destroySession(info.id)).toBe(true);
+    expect((harness as any).destroySession).toHaveBeenCalledWith(info.id);
+    expect(exitSpy).toHaveBeenCalledWith(info.id, 0);
+  });
+});
+```
+
+Run:
+
+```bash
+npx vitest run tests/session-manager-local.test.ts 2>&1 | tail -10
+```
+
+Expected: all 5 tests pass. If the test file can't construct `SessionManager` because the existing constructor expects more setup, mirror what existing `session-manager.test.ts` does (or stub the missing prerequisites with the smallest mock that satisfies the constructor).
+
+- [ ] **Step 7: Type-check and commit**
 
 ```bash
 cd /c/Users/desti/youcoded-dev/youcoded.wt/local-harness-mvp/desktop
@@ -1274,8 +1455,8 @@ npx tsc --noEmit 2>&1 | tail -10
 Expected: no errors. (If the `ManagedSession.worker` field tightens types and refuses `null as any`, change its type to `worker: ChildProcess | null`.)
 
 ```bash
-git add desktop/src/main/session-manager.ts desktop/src/main/main.ts
-git commit -m "feat(local-harness): SessionManager delegates 'local' provider to LocalSessionHarness"
+git add desktop/src/main/session-manager.ts desktop/src/main/main.ts desktop/tests/session-manager-local.test.ts
+git commit -m "feat(local-harness): SessionManager delegates 'local' provider to LocalSessionHarness; resume id reuse pinned by tests"
 ```
 
 ---
@@ -1305,19 +1486,21 @@ const IPC = {
 };
 ```
 
-Then in the `contextBridge.exposeInMainWorld('claude', { ... })` block, add the `local` namespace:
+Then in the `contextBridge.exposeInMainWorld('claude', { ... })` block, add the `local` namespace. Note `listModels`, `isOllamaInstalled`, and `pullModel` all accept an optional `endpoint` so the renderer can route a configured non-default endpoint (e.g. LM Studio at `:1234`) through every call — not just `createSession`.
 
 ```ts
 local: {
-  listModels: () => ipcRenderer.invoke(IPC.LOCAL_LIST_MODELS),
-  isOllamaInstalled: () => ipcRenderer.invoke(IPC.LOCAL_IS_OLLAMA_INSTALLED),
+  /** Capability flag — true on Electron desktop, false on Android/remote-shim */
+  supported: true,
+  listModels: (endpoint?: string) => ipcRenderer.invoke(IPC.LOCAL_LIST_MODELS, endpoint),
+  isOllamaInstalled: (endpoint?: string) => ipcRenderer.invoke(IPC.LOCAL_IS_OLLAMA_INSTALLED, endpoint),
   installOllama: () => ipcRenderer.invoke(IPC.LOCAL_INSTALL_OLLAMA),
   onInstallOllamaProgress: (cb: (ev: { phase: string; pct?: number; message?: string }) => void) => {
     const handler = (_e: any, ev: any) => cb(ev);
     ipcRenderer.on(IPC.LOCAL_INSTALL_OLLAMA_PROGRESS, handler);
     return () => ipcRenderer.removeListener(IPC.LOCAL_INSTALL_OLLAMA_PROGRESS, handler);
   },
-  pullModel: (name: string) => ipcRenderer.invoke(IPC.LOCAL_PULL_MODEL, name),
+  pullModel: (name: string, endpoint?: string) => ipcRenderer.invoke(IPC.LOCAL_PULL_MODEL, name, endpoint),
   onPullModelProgress: (cb: (ev: { name: string; phase: string; pct?: number; message?: string }) => void) => {
     const handler = (_e: any, ev: any) => cb(ev);
     ipcRenderer.on(IPC.LOCAL_PULL_MODEL_PROGRESS, handler);
@@ -1326,6 +1509,8 @@ local: {
 },
 ```
 
+The `supported: true` flag is the platform-capability gate — the runtime selector reads it (Task 7) and hides the Local pill when false. Stub methods stay in place on remote-shim so any incidental call still resolves cleanly.
+
 - [ ] **Step 2: Implement the IPC handlers in `ipc-handlers.ts`**
 
 Open `src/main/ipc-handlers.ts`. Import the detector and constants:
@@ -1333,19 +1518,33 @@ Open `src/main/ipc-handlers.ts`. Import the detector and constants:
 ```ts
 import { OllamaDetector } from './ollama-detector';
 import { IPC } from '../shared/types';
-
-const ollama = new OllamaDetector();
 ```
 
-Add the four handlers at the bottom of the file:
+The detector is constructed **per call** with the supplied endpoint. A module-level singleton hardcoded to `localhost:11434` would silently ignore the user's configured endpoint (e.g. LM Studio at `:1234`).
+
+The OllamaDetector's `baseURL` argument expects the API root WITHOUT the `/v1` suffix that the OpenAI-compat path uses (Ollama's `/api/version`, `/api/tags`, `/api/pull` are at the root). The renderer passes the *configured endpoint* which IS in `/v1` form for the chat path. So the handlers need to strip the `/v1` suffix before constructing the detector.
 
 ```ts
-ipcMain.handle(IPC.LOCAL_IS_OLLAMA_INSTALLED, async () => {
-  return await ollama.isReachable();
+function detectorFor(rawEndpoint?: string): OllamaDetector {
+  const ep = rawEndpoint || 'http://localhost:11434/v1';
+  // Strip trailing /v1 (and optional trailing slash) so the detector's
+  // /api/* probes hit the right path.
+  const root = ep.replace(/\/v1\/?$/, '').replace(/\/$/, '');
+  return new OllamaDetector(root);
+}
+
+ipcMain.handle(IPC.LOCAL_IS_OLLAMA_INSTALLED, async (_event, endpoint?: string) => {
+  return await detectorFor(endpoint).isReachable();
 });
 
-ipcMain.handle(IPC.LOCAL_LIST_MODELS, async () => {
-  return await ollama.listModels();
+ipcMain.handle(IPC.LOCAL_LIST_MODELS, async (_event, endpoint?: string) => {
+  const detector = detectorFor(endpoint);
+  // Distinguish "no models installed" from "endpoint unreachable" — the UI
+  // shows different copy for each (install Ollama vs install a model).
+  const reachable = await detector.isReachable();
+  if (!reachable) return { reachable: false, models: [] };
+  const models = await detector.listModels();
+  return { reachable: true, models };
 });
 
 ipcMain.handle(IPC.LOCAL_INSTALL_OLLAMA, async (event) => {
@@ -1357,9 +1556,10 @@ ipcMain.handle(IPC.LOCAL_INSTALL_OLLAMA, async (event) => {
   return { ok: false, error: 'install path not yet wired' };
 });
 
-ipcMain.handle(IPC.LOCAL_PULL_MODEL, async (event, name: string) => {
+ipcMain.handle(IPC.LOCAL_PULL_MODEL, async (event, name: string, endpoint?: string) => {
   if (typeof name !== 'string' || !name) return { ok: false, error: 'name required' };
-  await ollama.pullModel(name, (ev) => {
+  const detector = detectorFor(endpoint);
+  await detector.pullModel(name, (ev) => {
     if (ev.kind === 'progress') {
       event.sender.send(IPC.LOCAL_PULL_MODEL_PROGRESS, {
         name, phase: ev.status,
@@ -1377,13 +1577,16 @@ ipcMain.handle(IPC.LOCAL_PULL_MODEL, async (event, name: string) => {
 });
 ```
 
+Note the IPC return shape change for `LOCAL_LIST_MODELS`: `{ reachable: boolean; models: OllamaModelInfo[] }` instead of bare `OllamaModelInfo[]`. Renderer code (Tasks 7, 8, 10) consumes the new shape.
+
 - [ ] **Step 3: Add no-op shims to `remote-shim.ts`**
 
-Open `src/renderer/remote-shim.ts`. Find the `window.claude` assembly. Add a `local` namespace whose methods all reject with "not supported on this platform" (matches the existing pattern for desktop-only APIs):
+Open `src/renderer/remote-shim.ts`. Find the `window.claude` assembly. Add a `local` namespace whose `supported` flag is `false` (so the runtime selector hides the Local pill — see Task 7) and whose methods are graceful no-ops so any incidental call resolves cleanly without crashing the renderer:
 
 ```ts
 local: {
-  listModels: async () => [],
+  supported: false,
+  listModels: async () => ({ reachable: false, models: [] }),
   isOllamaInstalled: async () => false,
   installOllama: async () => ({ ok: false, error: 'local mode not supported on this platform' }),
   onInstallOllamaProgress: () => () => {},
@@ -1391,6 +1594,8 @@ local: {
   onPullModelProgress: () => () => {},
 },
 ```
+
+(The `listModels` shape mirrors the new IPC return shape from Step 2 — `{ reachable, models }` — so consumers don't need to branch on the platform.)
 
 - [ ] **Step 4: Verify IPC channel parity test still passes**
 
@@ -1425,38 +1630,62 @@ Replace the existing `isGemini: boolean` toggle with a three-way **Runtime** sel
 
 - [ ] **Step 1: Add `runtime` state and replace the Gemini toggle**
 
+First, add the platform import at the top of the file:
+
+```tsx
+import { isAndroid, isRemoteMode } from '../platform';
+```
+
 Find the local state at the top of the new-session form (`const [isGemini, setIsGemini] = useState(false);`, around line 166). Replace with:
 
 ```tsx
 type Runtime = 'claude' | 'local' | 'gemini';
 const [runtime, setRuntime] = useState<Runtime>('claude');
 const [localModels, setLocalModels] = useState<Array<{ name: string; sizeBytes: number }>>([]);
-const [localModelsLoaded, setLocalModelsLoaded] = useState(false);
+const [localReachable, setLocalReachable] = useState<boolean | null>(null);  // null = not yet checked
+
+// Local runtime is desktop-only — Android & remote-browser hide the pill.
+// Same gate HeaderBar uses for other desktop-only features.
+const localSupported = !isAndroid() && !isRemoteMode() && !!(window.claude as any).local?.supported;
 
 useEffect(() => {
-  if (runtime !== 'local') return;
+  if (runtime !== 'local' || !localSupported) return;
   let cancelled = false;
-  (window.claude as any).local.listModels().then((models: any[]) => {
+  // Read the configured endpoint from session defaults so non-default endpoints
+  // (LM Studio at :1234, etc.) are honored at the model-list step too.
+  const endpoint = (defaultLocalEndpoint as string | undefined) || undefined;
+  (window.claude as any).local.listModels(endpoint).then((res: { reachable: boolean; models: any[] }) => {
     if (cancelled) return;
-    setLocalModels(models);
-    setLocalModelsLoaded(true);
+    setLocalReachable(res.reachable);
+    setLocalModels(res.models);
   });
   return () => { cancelled = true; };
-}, [runtime]);
+}, [runtime, localSupported, defaultLocalEndpoint]);
 ```
 
-(The `as any` cast is temporary — once `window.claude.local` is added to the type declarations in `shared/types.ts` or a `globals.d.ts`, replace with the typed accessor.)
+(`defaultLocalEndpoint` is plumbed in from Props in Step 2 below. The `as any` cast is temporary — once `window.claude.local` is added to type declarations, replace with the typed accessor.)
 
-- [ ] **Step 2: Add the Runtime segmented control above the form fields**
+- [ ] **Step 2: Plumb `defaultLocalEndpoint` and add the Runtime segmented control**
+
+Add to the `Props` interface (top of the file):
+
+```tsx
+defaultLocalEndpoint?: string;
+```
 
 Inside the expanded new-session form JSX, just before the existing folder picker `<div>`, insert:
 
 ```tsx
-{/* Runtime picker — Local is ungated; Gemini gated by sessionDefaults.geminiEnabled */}
+{/* Runtime picker — Local hidden on Android/remote (no Ollama runtime there);
+    Gemini gated by sessionDefaults.geminiEnabled */}
 <div className="mb-3">
   <label className="text-[10px] uppercase tracking-wider text-fg-muted mb-1 block">Runtime</label>
   <div className="inline-flex rounded border border-edge overflow-hidden">
-    {(['claude', 'local', ...(geminiEnabled ? ['gemini' as Runtime] : [])] as Runtime[]).map(r => (
+    {([
+      'claude' as Runtime,
+      ...(localSupported ? ['local' as Runtime] : []),
+      ...(geminiEnabled ? ['gemini' as Runtime] : []),
+    ]).map(r => (
       <button
         key={r}
         type="button"
@@ -1469,6 +1698,8 @@ Inside the expanded new-session form JSX, just before the existing folder picker
   </div>
 </div>
 ```
+
+Then plumb `defaultLocalEndpoint` from the parent (HeaderBar, then App.tsx — same plumbing pattern as `defaultModel`/`defaultProjectFolder`/etc.). Default fallback in App.tsx is `sessionDefaults.localEndpoint` (added in Task 10).
 
 - [ ] **Step 3: Replace the model selector body to be runtime-aware**
 
@@ -1490,21 +1721,35 @@ Find the existing Model selector block (search for `{/* Model selector — graye
   )}
   {runtime === 'local' && (
     <>
-      {!localModelsLoaded && <div className="text-xs text-fg-muted">Checking installed models…</div>}
-      {localModelsLoaded && localModels.length === 0 && (
+      {localReachable === null && <div className="text-xs text-fg-muted">Checking…</div>}
+      {/* Endpoint unreachable — Ollama not installed/running. CTA installs Ollama then pulls a model. */}
+      {localReachable === false && (
         <button
           type="button"
           className="text-xs px-2 py-1 rounded bg-accent text-on-accent"
           onClick={() => {
             setShowNewForm(false);
-            // Triggers first-run flow — wired in Task 11
             window.dispatchEvent(new CustomEvent('youcoded:open-local-setup'));
           }}
         >
-          Install Qwen 3 8B →
+          Install Ollama + Qwen 3 8B →
         </button>
       )}
-      {localModelsLoaded && localModels.length > 0 && (
+      {/* Endpoint reachable, but no models installed — CTA pulls just the model. */}
+      {localReachable === true && localModels.length === 0 && (
+        <button
+          type="button"
+          className="text-xs px-2 py-1 rounded bg-accent text-on-accent"
+          onClick={() => {
+            setShowNewForm(false);
+            window.dispatchEvent(new CustomEvent('youcoded:open-local-setup'));
+          }}
+        >
+          Pull Qwen 3 8B →
+        </button>
+      )}
+      {/* Endpoint reachable, models present — pick one. */}
+      {localReachable === true && localModels.length > 0 && (
         <select
           className="bg-panel border border-edge rounded text-fg text-xs px-2 py-1"
           value={newModel}
@@ -1543,11 +1788,25 @@ const handleCreate = useCallback(() => {
 
 Find the `Props` interface at the top of the file. Change `provider?: 'claude' | 'gemini'` to `provider?: 'claude' | 'gemini' | 'local'` everywhere it appears (likely 1–2 occurrences in this file).
 
-- [ ] **Step 6: Update HeaderBar's `onCreateSession` prop type**
+- [ ] **Step 6: Update HeaderBar's prop types and plumb `defaultLocalEndpoint`**
 
-Open `src/renderer/components/HeaderBar.tsx`. Find the `Props` interface (around line 153). Change `provider?: 'claude' | 'gemini'` to `provider?: 'claude' | 'gemini' | 'local'`.
+Open `src/renderer/components/HeaderBar.tsx`. Find the `Props` interface (around line 153). Change every `provider?: 'claude' | 'gemini'` to `provider?: 'claude' | 'gemini' | 'local'`. Add a new optional prop:
 
-- [ ] **Step 7: Update App.tsx's `createSession` callback**
+```tsx
+defaultLocalEndpoint?: string;
+```
+
+Plumb it through to the SessionStrip render call (the `<SessionStrip ... />` block in this file, around line 504):
+
+```tsx
+<SessionStrip
+  // ... existing props
+  defaultLocalEndpoint={defaultLocalEndpoint}
+  // ...
+/>
+```
+
+- [ ] **Step 7: Update App.tsx's `createSession` callback and pass `defaultLocalEndpoint`**
 
 Open `src/renderer/App.tsx`. Find the `createSession` useCallback (around line 1562). Change the signature:
 
@@ -1568,10 +1827,28 @@ const createSession = useCallback(async (
     skipPermissions: dangerous,
     model: m,
     provider,
+    // For local sessions, also pass endpoint + system prompt from configured defaults.
+    // (sessionDefaults gains these fields in Task 10.)
+    ...(provider === 'local' ? {
+      endpoint: sessionDefaults.localEndpoint || 'http://localhost:11434/v1',
+      systemPrompt: sessionDefaults.localSystemPrompt || undefined,
+    } : {}),
     // ... rest unchanged
   });
   // ...
 ```
+
+Then find where `<HeaderBar ... />` is rendered (around line 1980+) and add the new prop:
+
+```tsx
+<HeaderBar
+  // ... existing
+  defaultLocalEndpoint={sessionDefaults.localEndpoint}
+  // ...
+/>
+```
+
+(`sessionDefaults.localEndpoint` is added to the defaults shape in Task 10.)
 
 - [ ] **Step 8: Type-check and dev-smoke**
 
@@ -1651,11 +1928,11 @@ const [localModels, setLocalModels] = useState<Array<{ name: string; sizeBytes: 
 useEffect(() => {
   if (provider !== 'local') return;
   let cancelled = false;
-  (window.claude as any).local.listModels().then((models: any[]) => {
-    if (!cancelled) setLocalModels(models);
+  (window.claude as any).local.listModels(endpoint).then((res: { reachable: boolean; models: any[] }) => {
+    if (!cancelled) setLocalModels(res.models);
   });
   return () => { cancelled = true; };
-}, [provider]);
+}, [provider, endpoint]);
 
 // In the render body, branch:
 if (provider === 'local') {
@@ -1695,7 +1972,40 @@ In `App.tsx` (or wherever `ModelPickerPopup` is rendered), pass the active sessi
 />
 ```
 
-- [ ] **Step 5: Type-check and commit**
+- [ ] **Step 5: Gate `useAttentionClassifier` on `provider === 'claude'`**
+
+Critical because the classifier reads the xterm buffer every 1s while `isThinking`. Local sessions have no PTY; without a gate, the buffer is empty, no spinner glyph rotates, no counter advances, and after 30s the classifier escalates to `'stuck'` — flashing the AttentionBanner during normal local replies.
+
+Open `src/renderer/hooks/useAttentionClassifier.ts`. Find the hook signature; it currently accepts `(sessionId, options)`. Add a `provider?: SessionProvider` field to the options and short-circuit when not Claude:
+
+```ts
+// At the top of the hook body, after destructuring options:
+if (provider !== undefined && provider !== 'claude') {
+  // No PTY buffer to read — classifier has nothing to classify.
+  // Returning early keeps the hook itself called every render (rules of hooks)
+  // but prevents the interval from registering and avoids dispatching ATTENTION_STATE_CHANGED.
+  return;
+}
+```
+
+(If the hook returns early before `useEffect` runs, the effect won't register — but this means subsequent renders that change provider also won't register. For MVP this is fine since provider is fixed per session. If parents pass a stable provider, no edge case.)
+
+Then update the call site in `src/renderer/components/ChatView.tsx` (line 107):
+
+```tsx
+useAttentionClassifier(sessionId, {
+  isThinking: state.isThinking,
+  hasRunningTools,
+  hasAwaitingApproval,
+  visible,
+  currentAttentionState: state.attentionState,
+  provider: session?.provider,    // NEW — gate against non-Claude sessions
+});
+```
+
+(`session` is whatever variable holds the active SessionInfo in ChatView — find it nearby; existing code likely already references it.)
+
+- [ ] **Step 6: Type-check and commit**
 
 ```bash
 npx tsc --noEmit 2>&1 | tail -10
@@ -1704,8 +2014,8 @@ npx tsc --noEmit 2>&1 | tail -10
 Expected: no errors.
 
 ```bash
-git add desktop/src/renderer/components/HeaderBar.tsx desktop/src/renderer/components/ModelPickerPopup.tsx desktop/src/renderer/App.tsx
-git commit -m "feat(local-harness): hide terminal toggle + permission badge for local sessions; runtime-scoped ModelPicker"
+git add desktop/src/renderer/components/HeaderBar.tsx desktop/src/renderer/components/ModelPickerPopup.tsx desktop/src/renderer/components/ChatView.tsx desktop/src/renderer/hooks/useAttentionClassifier.ts desktop/src/renderer/App.tsx
+git commit -m "feat(local-harness): hide terminal toggle + permission badge for local sessions; gate classifier; runtime-scoped ModelPicker"
 ```
 
 ---
@@ -1820,7 +2130,19 @@ Define the new section, persisting changes via the existing `sessionDefaults` me
 </SettingsSection>
 ```
 
-Add the `localModelsForSettings` state with a `useEffect` that calls `window.claude.local.listModels()` when the panel mounts.
+Add the `localModelsForSettings` state with a `useEffect` that calls `window.claude.local.listModels(defaults.localEndpoint)` (passing the configured endpoint) when the panel mounts AND when the endpoint field value changes. Without passing the endpoint, the dropdown would always poll the default Ollama port even when the user has configured LM Studio.
+
+```tsx
+const [localModelsForSettings, setLocalModelsForSettings] = useState<Array<{ name: string; sizeBytes: number }>>([]);
+
+useEffect(() => {
+  let cancelled = false;
+  (window.claude as any).local.listModels(defaults.localEndpoint).then((res: { reachable: boolean; models: any[] }) => {
+    if (!cancelled) setLocalModelsForSettings(res.models);
+  });
+  return () => { cancelled = true; };
+}, [defaults.localEndpoint]);
+```
 
 - [ ] **Step 3: Extend the `defaults` interface**
 
@@ -1992,7 +2314,10 @@ useEffect(() => {
 
 // Render the modal when localSetupOpen is true:
 {localSetupOpen && (
-  <LocalSetupModal onClose={() => setLocalSetupOpen(false)} />
+  <LocalSetupModal
+    endpoint={sessionDefaults.localEndpoint}
+    onClose={() => setLocalSetupOpen(false)}
+  />
 )}
 ```
 
@@ -2001,14 +2326,21 @@ Create `src/renderer/components/LocalSetupModal.tsx`:
 ```tsx
 import { useEffect, useState } from 'react';
 
-export function LocalSetupModal({ onClose }: { onClose: () => void }) {
+interface Props {
+  onClose: () => void;
+  /** Configured endpoint (defaults to Ollama). Passed through to all local IPC calls
+   *  so a user with LM Studio configured doesn't get the wrong server probed. */
+  endpoint?: string;
+}
+
+export function LocalSetupModal({ onClose, endpoint }: Props) {
   const [phase, setPhase] = useState<'check' | 'install-ollama' | 'pull-model' | 'done' | 'error'>('check');
   const [progress, setProgress] = useState<{ pct?: number; message?: string }>({});
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      const ollamaUp = await (window.claude as any).local.isOllamaInstalled();
+      const ollamaUp = await (window.claude as any).local.isOllamaInstalled(endpoint);
       if (!ollamaUp) {
         setPhase('install-ollama');
         const off = (window.claude as any).local.onInstallOllamaProgress((ev: any) => setProgress(ev));
@@ -2016,17 +2348,17 @@ export function LocalSetupModal({ onClose }: { onClose: () => void }) {
         off();
         if (!result.ok) { setError(result.error || 'install failed'); setPhase('error'); return; }
       }
-      const models = await (window.claude as any).local.listModels();
-      if (models.length === 0) {
+      const res = await (window.claude as any).local.listModels(endpoint);
+      if (!res.reachable || res.models.length === 0) {
         setPhase('pull-model');
         const off = (window.claude as any).local.onPullModelProgress((ev: any) => setProgress(ev));
-        const result = await (window.claude as any).local.pullModel('qwen3:8b');
+        const result = await (window.claude as any).local.pullModel('qwen3:8b', endpoint);
         off();
         if (!result.ok) { setError(result.error || 'pull failed'); setPhase('error'); return; }
       }
       setPhase('done');
     })();
-  }, []);
+  }, [endpoint]);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -2090,18 +2422,15 @@ In `remote-shim.ts`, no-op:
 listSessions: async () => [],
 ```
 
-In `ipc-handlers.ts`, wire to the store. Pass the store in via main.ts (or read directly):
+In `ipc-handlers.ts`, wire to the existing `localStore` singleton constructed in Task 5 Step 5 (same file, earlier in the module). No need for a second instance:
 
 ```ts
-import { LocalSessionStore } from './local-session-store';
-const localStoreForIpc = new LocalSessionStore(path.join(os.homedir(), '.claude', 'youcoded-local'));
-
 ipcMain.handle(IPC.LOCAL_LIST_SESSIONS, async () => {
-  return await localStoreForIpc.listAll();
+  return await localStore.listAll();
 });
 ```
 
-(For consistency it's cleaner to share one `LocalSessionStore` instance across `main.ts` and `ipc-handlers.ts`. Refactor as a singleton if natural, otherwise two readers of the same dir is benign — they both read; only `LocalSessionHarness` writes.)
+(If `localStore` was constructed inside a setup function rather than at module top-level, lift it to module scope so the new handler can reference it. The `LocalSessionStore` is read-only safe to share — only `LocalSessionHarness.send()` writes; everything else just reads the directory.)
 
 - [ ] **Step 2: Add a "Local" tab to `ResumeBrowser`**
 
@@ -2173,20 +2502,9 @@ const onResumeLocal = useCallback(async (sessionId: string) => {
 }, []);
 ```
 
-In `SessionManager.createSession` (Task 5), add a check at the top of the `local` branch:
+The `SessionManager.createSession` local branch from Task 5 already handles the resume case correctly: when `opts.resumeSessionId` is set, it uses that as the desktop `id` (`const localId = opts.resumeSessionId || id`), routes registry + harness call through that id, and calls `harness.resumeSession()` instead of `harness.startSession()`. No additional change to `session-manager.ts` is needed in this task — the resume path is already wired.
 
-```ts
-if (opts.resumeSessionId) {
-  // Resume an existing local session instead of creating a new one
-  this.localHarness!.resumeSession(opts.resumeSessionId).then((info) => {
-    this.sessions.set(info.id, { info, worker: null as any });
-    this.emit('session-created', info);
-  });
-  return /* placeholder SessionInfo with the resume id */;
-}
-```
-
-(The placeholder-then-replace pattern matches how Claude session resume works today; mirror its existing shape.)
+(Reminder: the renderer must end up holding the same id the harness has in memory, otherwise sends silently no-op. That's why Task 5 explicitly uses `localId` everywhere in the local branch — see the comment block in that task's Step 2.)
 
 - [ ] **Step 4: Type-check and commit**
 

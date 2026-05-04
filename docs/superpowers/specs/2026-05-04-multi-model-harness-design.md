@@ -13,9 +13,9 @@ This spec covers the **MVP**: chat-only Local sessions backed by Ollama on deskt
 
 ## Goals
 
-- Add a third provider, `'local'`, that runs against any OpenAI-compatible HTTP endpoint
+- Add a third provider, `'local'`, that runs against any OpenAI-compatible HTTP endpoint (Ollama, LM Studio, OpenRouter — all speak the same wire shape via `/v1/chat/completions`)
 - First-run UX that auto-installs Ollama and pulls Qwen 3 8B for non-technical users
-- LM Studio supported for users who already have it (no auto-install for it)
+- LM Studio supported for users who already have it (no auto-install for it) — same OpenAI-compat code path, only the endpoint URL differs
 - Local sessions render in the existing chat view — same bubbles, same streaming, same markdown
 - Conversation persistence + resume
 - Architecture explicitly designed so Stages B (tools), C (skills + MCP), and D (hooks, memory, Android, multimodal, remote endpoints) are additive, not rewrites
@@ -26,7 +26,8 @@ This spec covers the **MVP**: chat-only Local sessions backed by Ollama on deskt
 - No skills support, hooks, MCP, statusline, attention classifier — Stage C/D
 - No permission flow (none needed without tools)
 - No terminal pane on local sessions (chat-only — view-mode toggle hidden when `provider === 'local'`)
-- No Android (Stage D — Ollama doesn't target Android cleanly)
+- No attention classifier on local sessions (no PTY to read; classifier explicitly gated on `provider === 'claude'`)
+- No Android (Stage D — Ollama doesn't target Android cleanly). Local runtime option is hidden in the Runtime selector on Android and remote-browser surfaces using the existing `isAndroid()`/`isRemoteMode()` platform detection.
 - No remote endpoints (OpenRouter, Together, Groq) — same wire protocol, but defers settings UX for keys
 - No multimodal / image input
 - No Qwen "thinking mode" toggle (defaults to whatever the model does)
@@ -54,7 +55,7 @@ export interface SessionInfo {
   // ... existing fields
   provider: SessionProvider;
   model?: string;             // for 'local', this is the Ollama model name (e.g. 'qwen3:8b')
-  endpoint?: string;          // for 'local', the OpenAI-compat URL (defaults to http://localhost:11434/v1)
+  endpoint?: string;          // for 'local', the OpenAI-compat URL — must include /v1 (defaults to http://localhost:11434/v1, which is Ollama's OpenAI-compat path; LM Studio's default is http://localhost:1234/v1)
 }
 ```
 
@@ -94,7 +95,7 @@ Internally per session:
 2. On `send()`:
    - Emit `transcript:event { type: 'user-message', text }` → reducer dispatches `TRANSCRIPT_USER_MESSAGE`
    - Append user message to `messages`
-   - Call Vercel AI SDK `streamText({ model: ollama(modelName, { baseURL: endpoint }), messages, abortSignal })`
+   - Call Vercel AI SDK `streamText({ model: openai(modelName), messages, abortSignal })` where `openai` is built from `createOpenAI({ baseURL: endpoint, apiKey: 'ollama' })` — using `@ai-sdk/openai` against any OpenAI-compatible endpoint (Ollama at `/v1`, LM Studio, OpenRouter, etc.). API key is required by the SDK but Ollama/LM Studio ignore it; pass any non-empty placeholder.
    - For each text chunk: emit `transcript:event { type: 'assistant-text', text }` → reducer dispatches `TRANSCRIPT_ASSISTANT_TEXT`
    - On stream complete: emit `transcript:event { type: 'turn-complete', metadata }` → reducer dispatches `TRANSCRIPT_TURN_COMPLETE`
    - Persist updated `messages` to disk (see Persistence section)
@@ -223,7 +224,7 @@ The MVP harness contract — `startSession() → { send, cancel, destroy } + emi
 ## Risks and open questions
 
 - **Ollama install on Windows requires admin rights** in some configurations. The auto-install flow needs to detect this and either elevate (with consent) or fall back to a guided manual install. To be confirmed in implementation.
-- **Vercel AI SDK Ollama provider** (`ollama-ai-provider` package by community, or the SDK's built-in OpenAI provider pointed at Ollama's `/v1` endpoint) — we'll use whichever is more stable at implementation time. Both are viable and the choice is a one-line swap.
+- **Provider library choice resolved:** `@ai-sdk/openai` with `createOpenAI({ baseURL })` against Ollama's OpenAI-compat path (`/v1`). Earlier draft considered `ollama-ai-provider`; rejected because it speaks Ollama's native `/api/...` endpoints, which would prevent the same client code from working with LM Studio / OpenRouter / any other OpenAI-compat backend. Single client → all OpenAI-compat backends.
 - **Mid-session model swap within local** (Qwen 8B → Qwen 32B) is plausibly safe but needs verification that Ollama doesn't drop conversation context when the model changes. If it does, the swap requires the harness to re-send the full message history with the new model — slight cost but trivial. Defer to implementation.
 - **System prompt for chat-only Qwen** — minimal default is fine, but we should sanity-check that a totally bare prompt doesn't cause Qwen to hallucinate tools or pretend to be Claude. Test during implementation; the prompt is configurable in settings as an escape hatch.
 - **Token usage / context-window display** — Vercel AI SDK exposes per-turn token counts. Reuse the existing turn-metadata UI (which already displays this for Claude sessions when enabled).
