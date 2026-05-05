@@ -39,7 +39,7 @@ Path 2 (Vercel AI SDK harness) is preserved as a roadmap option in `docs/superpo
 ## Non-goals (MVP)
 
 - No native YouCoded tool definitions — OpenCode owns the tool layer
-- No native YouCoded permission UI integration — OpenCode's prompt mechanism for now (can be improved post-MVP)
+- No native YouCoded permission UI integration — for MVP, `OpenCodeConfigWriter` sets OpenCode's permission policy to allow-all so tool calls execute without prompting. **Security implication:** local-mode tools (Read, Write, Edit, Bash, etc.) execute without per-call user approval. This matches the existing Claude `--dangerously-skip-permissions` mode. Documented in onboarding. Stage B integrates OpenCode's permission events into our existing `PERMISSION_REQUEST` UI.
 - No skills / MCP integration UI — OpenCode supports both internally; surfacing them in YouCoded's settings/picker is post-MVP
 - No statusline integration for local sessions
 - No terminal pane on local sessions (chat-only — view-mode toggle hidden when `provider === 'local'`). OpenCode runs headlessly in the background; if a power-user terminal view is wanted later, `opencode attach <port>` could be exposed.
@@ -54,6 +54,10 @@ Path 2 (Vercel AI SDK harness) is preserved as a roadmap option in `docs/superpo
 **OpenCode runs as a single background daemon.** YouCoded's main process launches `opencode serve --port <free>` once at app startup (or lazily on first local-session creation), waits for ready, and keeps it alive for the app's lifetime. All local sessions share that one daemon — they're separate sessions inside OpenCode, multiplexed over HTTP.
 
 **Per-session adapter translates events.** A new `OpenCodeSessionAdapter` per local session subscribes to OpenCode's SSE stream, filters events for that session ID, and emits `transcript-event` messages in the exact shape `TranscriptWatcher` emits for Claude sessions. The chat reducer doesn't know which source produced an event.
+
+**Desktop ↔ OpenCode session ID mapping.** OpenCode generates its own session IDs at create time. YouCoded's renderer expects to use one stable ID for a session for its lifetime. To bridge: `SessionManager` maintains a `localIdMap: Map<desktopId, ocId>` and the adapter is constructed with both — it filters live events by `ocSessionId` but emits transcript events tagged with `desktopSessionId`. `sendInput` translates desktop → oc before calling the SDK. For RESUME, the desktop ID *is* the OC session ID (the user picked it from a list of OC sessions), so the map is trivial.
+
+**Send-before-ready buffer.** OpenCode session creation is asynchronous. If the user sends a message before the OC session ID is known (race window after `createSession` returns synchronously), `SessionManager` queues the text in `localPendingSends` and drains the queue when the OC session resolves. This avoids dropped first-messages.
 
 **No PTY for local sessions.** Unlike Claude/Gemini paths, local sessions don't spawn a per-session child process. The renderer never sees a terminal for them — the runtime is the shared OpenCode daemon. View-mode toggle is hidden in the header.
 
@@ -77,7 +81,9 @@ export interface SessionInfo {
   // ... existing fields
   provider: SessionProvider;
   model?: string;             // for 'local', the model ID OpenCode will use (e.g. 'ollama/qwen3:8b')
-  endpoint?: string;          // for 'local', OpenCode's HTTP server URL (e.g. http://127.0.0.1:53217), assigned at daemon startup
+  // (Earlier draft included an `endpoint?: string` field on SessionInfo.
+  //  Dropped — sendInput reaches the OpenCode service via the singleton, not
+  //  via this field, so it was vestigial.)
 }
 ```
 
@@ -228,14 +234,18 @@ Each item is a separate spec/plan; this section sketches what comes after MVP.
 
 ## Risks and open questions
 
-- **Repo fork situation.** Two OpenCode repos exist as of this writing — `sst/opencode` (original) and `anomalyco/opencode` (recent split). Need to pick a canonical source to bundle from before MVP ships. Doesn't block design.
-- **SDK + schema verification.** Research confirmed event types and SQLite/Drizzle storage from docs and DeepWiki, but the actual SDK type definitions and DB DDL haven't been read line-by-line yet. Implementation Task 1 verifies these against `@opencode-ai/sdk` package types.
-- **OpenCode lifecycle management.** Running `opencode serve` as a long-lived child process means YouCoded's main owns: spawn, wait-for-ready, port allocation, crash detection, restart, graceful shutdown on app quit. More state than the per-session PTY model. Mitigated by: well-understood subprocess management patterns in `src/main/`, OpenCode is itself a stable daemon.
+- **Canonical repo: `sst/opencode`** chosen as default — it's the original repo and the source the public install scripts (`opencode.ai/install`) point at. `anomalyco/opencode` appears to be a recent fork with unclear long-term maintenance posture. Pinned at plan time. Re-evaluate if a smoke-test failure or upstream-policy shift surfaces.
+- **SDK + config-schema verification is BLOCKING.** Research confirmed event types and SQLite/Drizzle storage from docs and DeepWiki, but the actual SDK type definitions, REST endpoint shapes, and config-file schemas (`opencode.json`, `auth.json`) haven't been read line-by-line yet. The plan's Setup Step 5 is a hard gate — a `scratch/opencode-spike.ts` file calls real SDK methods against a live `opencode serve`, prints types, and generates a real config via `opencode init` for diff-against-our-writer. Tasks 4–6 cannot be implemented before this gate passes; their illustrative method names will likely need revision once the real SDK surface is known.
+- **OpenCode lifecycle management.** Running `opencode serve` as a long-lived child process means YouCoded's main owns: spawn, wait-for-ready (via port polling — see below), port allocation, crash detection, restart, graceful shutdown on app quit. More state than the per-session PTY model.
+- **Crash recovery — destroy local sessions, surface session-died.** On `OpenCodeService.crashed`, we destroy all live local-session adapters (the SDK they were bound to is dead) and emit `session-exit` with the child's non-zero exit code for each. The renderer's existing `SESSION_PROCESS_EXITED` reducer path translates non-zero exit during an in-flight turn into `attentionState: 'session-died'`, which surfaces the existing `AttentionBanner`. User restarts the session via the new-session form; OpenCodeService re-spawns lazily.
+- **Ready-detection via port polling, not stdout regex.** `OpenCodeService.start()` allocates a port, spawns `opencode serve --port N`, then polls `GET http://127.0.0.1:N/event` every 200 ms with a 15 s deadline. Avoids depending on a specific log-line format that may change between OpenCode versions.
 - **OpenCode API stability.** Active project, latest release dated today (2026-05-04). Some risk of breaking changes between releases. Mitigation: pin to a specific OpenCode version when bundling, treat OpenCode upgrades as a release-time decision (similar to how Anthropic's Claude Code upgrades are tracked in `cc-dependencies.md`). Add an `oc-dependencies.md` file analogous to `cc-dependencies.md` to document YouCoded's coupling points to OpenCode.
-- **Permission UX gap.** MVP doesn't surface OpenCode's permission requests in YouCoded's UI. Users see whatever OpenCode emits as text in the chat (likely an "approve this tool call?" message). This is OK for MVP but feels rough next to Claude's polished permission cards. Stage B fixes this.
+- **Permission UX gap.** MVP sets OpenCode's permission policy to allow-all in the config writer so tool calls execute without prompts. Without this, OpenCode would emit permission events that have no UI listener and tool calls hang. The downside: local-mode tools run without per-call confirmation. This matches Claude's `--dangerously-skip-permissions` mode and is documented in onboarding. Stage B integrates OpenCode's permission events into our existing `PERMISSION_REQUEST` UI.
 - **Mid-session model swap.** Need to verify OpenCode supports model swap via SDK without losing session context, or whether it requires creating a fresh session. Verify during implementation.
 - **Concurrent local sessions.** Multiple sessions sharing one OpenCode daemon → OpenCode's responsibility. Documenting expected behavior (queueing? parallel?) needs SDK testing.
 - **Stop-mid-stream cleanup.** OpenCode's cancel API behavior: does it persist the partial assistant message? Verify; mirror Claude session interrupt behavior in chat view.
+- **User-message dedup.** Optimistic `USER_PROMPT` adds the bubble with `pending: true`; the existing dedup matches by content with the next `TRANSCRIPT_USER_MESSAGE` to clear the flag. To avoid OpenCode's potential whitespace normalization breaking content-match, `OpenCodeSessionAdapter` does NOT emit `user-message` events from OpenCode. Instead, after `OpenCodeService.sendMessage` succeeds, `SessionManager` emits a synthetic `user-message` with the *exact text we sent* — guaranteeing dedup match.
+- **Resume hydration is fetch-then-subscribe.** When the adapter mounts for an existing OpenCode session, it first does `GET /session/:id/message` to fetch the message history, synthesizes transcript-events for each historical message, THEN subscribes to live SSE. Defensive against SSE-only-delivers-new-events behavior. If OpenCode's SSE does replay on subscribe, the duplicate is filtered by uuid in the adapter.
 - **Bundling vs separate install.** Bundling the OpenCode binary in YouCoded's installer adds ~30 MB but eliminates a setup step. Auto-downloading at first-run keeps installer small. MVP recommendation: auto-download on first-run, bundle later if first-run friction is reported.
 - **Disk usage of two installations.** Users with both Claude Code AND OpenCode have ~600 MB of overlapping CLI tooling installed. Acceptable; document in onboarding.
 
