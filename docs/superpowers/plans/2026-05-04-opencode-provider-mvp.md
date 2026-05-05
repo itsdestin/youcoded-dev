@@ -168,9 +168,9 @@ Run it. Then update this plan in place to substitute real names everywhere a pla
 
 Do not start Task 3, 4, 5, or 6 until the spike has produced concrete answers to all of the above.
 
-- [ ] **Setup Step 6: Commit the dep + a placeholder `oc-dependencies.md`**
+- [ ] **Setup Step 6: Commit the dep + create `oc-dependencies.md`**
 
-Create `youcoded/docs/oc-dependencies.md` (analog to the existing `cc-dependencies.md`). Initial content:
+Create `youcoded/docs/oc-dependencies.md` (analog to the existing `cc-dependencies.md`). Content reflects facts pinned in Setup Step 5:
 
 ```markdown
 # OpenCode Coupling Registry
@@ -179,20 +179,26 @@ YouCoded depends on OpenCode's HTTP+SSE server, SDK, event shape, config-file fo
 
 Format mirrors `cc-dependencies.md`.
 
-## Touchpoints (initial)
-
-- **`opencode serve` CLI flags** — `--port`. (`opencode-service.ts`)
-- **Readiness probe endpoint** — `GET /event` (SSE) is what `OpenCodeService.start()` polls until 200; if OpenCode renames or removes that endpoint, daemon ready-detection breaks. (`opencode-service.ts`)
-- **`@opencode-ai/sdk` event types** — `part.delta` (delta semantics: incremental text chunks, NOT cumulative — verified in spike), `message.updated` (final state of a message including all parts), `ToolPart` state-machine (`pending` → `running` → `completed` | `failed`), `step-finish` part type. (`opencode-session-adapter.ts`)
-- **REST endpoints** — `POST /session`, `POST /session/:id/message`, `GET /session`, `GET /session/:id/message`, session cancel mechanism (verify exact path). (`opencode-service.ts`, `opencode-session-adapter.ts`)
-- **Config file format** — `~/.config/opencode/opencode.json` shape (especially `provider.<name>.npm`, `provider.<name>.options.baseURL`, AND the permission-policy field), `auth.json` shape. (`opencode-config-writer.ts`)
-- **Session storage path** — for direct SQLite reads as a fallback only; per platform: Linux `~/.local/share/opencode/opencode.db`, macOS `~/Library/Application Support/opencode/opencode.db` (verify), Windows `%APPDATA%\opencode\opencode.db` (verify). Currently NOT read directly — we use REST. (No active reader.)
-- **Binary distribution** — install bootstrap URL (`https://opencode.ai/install`), platform binary names, GitHub Releases asset naming under `sst/opencode`. (`prerequisite-installer.ts → installOpenCode`)
-- **Permission policy field** — config field name that disables per-call permission prompts in MVP (`permission.default = 'allow'` placeholder, real name pinned via `opencode init` in Setup Step 5). (`opencode-config-writer.ts`)
-
 ## Pinned version
 
-OpenCode `vX.Y.Z` (set during implementation, after Setup Step 5 picks the actual binary). Bump together with full coupling re-check.
+`@opencode-ai/sdk@1.14.35` + matching `opencode` binary on PATH. Bump together with a full coupling re-check (re-run the inspection that produced the "Verified API Surface" section in the OpenCode-MVP plan).
+
+## Touchpoints
+
+- **`opencode serve` CLI flags** — `--port` (default 4096; we override with a free port), `--hostname` (default 127.0.0.1). (`opencode-service.ts`)
+- **Readiness probe endpoint** — `GET /global/health` returns `{ healthy: true, version: string }`. `OpenCodeService.start()` polls this until 200. (`opencode-service.ts`)
+- **REST endpoints** — `POST /session` (create), `GET /session` (list), `DELETE /session/:id` (delete), `POST /session/:id/message` (sync prompt), `POST /session/:id/prompt_async` (async prompt — what we use), `GET /session/:id/message` (history), `POST /session/:id/abort` (cancel). (`opencode-service.ts`, `opencode-session-adapter.ts`)
+- **`@opencode-ai/sdk` exports** — top-level `createOpencodeClient(config)` factory and `OpencodeClient` class. (`opencode-service.ts`)
+- **`@opencode-ai/sdk` method paths** — `client.session.create()`, `.list()`, `.delete(id)`, `.abort(id)`, `.promptAsync(id, body)`, `.messages(id)`, plus `client.event.subscribe()` returning an SSE stream. (`opencode-service.ts`, `opencode-session-adapter.ts`)
+- **SSE event `type` literals (dotted strings)** — used by the adapter: `message.part.updated` (carries `{ part: Part, delta?: string }` — incremental text chunks live in `delta`), `message.updated` (final message info), `session.idle` (turn-complete signal), `session.error`, `permission.updated` (we allow-all in MVP, so we ignore this). (`opencode-session-adapter.ts`)
+- **`Part` discriminated union** — `text`, `reasoning`, `file`, `tool`, `step-start`, `step-finish`, `snapshot`, `patch`, `agent`, `retry`, `compaction`, `subtask`. (`opencode-session-adapter.ts`)
+- **`ToolPart.state` discriminator** — field is `status` (NOT `type`); values `pending` | `running` | `completed` | `error`. Each variant has different fields: `completed` carries `output: string`, `error` carries `error: string`, both carry `input: {}` and `time: { start, end }`. (`opencode-session-adapter.ts`)
+- **`prompt`/`promptAsync` body shape** — `{ parts: Array<TextPartInput | ...>, model?: { providerID, modelID }, agent?, system?, tools?, messageID?, noReply? }`. User text goes via `parts: [{ type: 'text', text }]`. (`opencode-service.ts`, `session-manager.ts`)
+- **Config file format** — `~/.config/opencode/opencode.json` (Linux/macOS) / `%APPDATA%\opencode\opencode.json` (Windows). Provider declaration: `{ provider: { ollama: { npm: '@ai-sdk/openai-compatible', name, options: { baseURL: 'http://host:port/v1' }, models: {...} } } }`. Permission allow-all: top-level `"permission": "allow"` (string shorthand) — NOT `permission.default`. (`opencode-config-writer.ts`)
+- **`auth.json`** — at `~/.local/share/opencode/auth.json` (Linux), `~/Library/Application Support/opencode/auth.json` (macOS), `%LOCALAPPDATA%\opencode\auth.json` (Windows). For local Ollama (no auth), this file is NOT required. We do not write it. (`opencode-config-writer.ts`)
+- **Session storage path (SQLite)** — Linux `~/.local/share/opencode/opencode.db`, macOS `~/Library/Application Support/opencode/opencode.db`, Windows `%LOCALAPPDATA%\opencode\opencode.db`. Currently NOT read directly — we use REST. (No active reader.)
+- **Binary distribution** — install bootstrap URL `https://opencode.ai/install` (POSIX bash). Windows installs from a GitHub Releases asset (`opencode-windows-x64.zip` etc. under `sst/opencode`). The SDK strictly requires `opencode` on PATH or a known absolute path — there is no in-process embedded server. (`prerequisite-installer.ts → installOpenCode`)
+- **`OPENCODE_CONFIG_CONTENT` env var** — accepts a JSON-stringified config and bypasses file-based config loading. We do NOT use it for MVP (file-based config is more inspectable and editable), but it's a known alternative if file-write friction arises. (No active reader.)
 ```
 
 Commit:
@@ -202,6 +208,169 @@ cd /c/Users/desti/youcoded-dev/youcoded.wt/opencode-mvp
 git add desktop/package.json desktop/package-lock.json docs/oc-dependencies.md
 git commit -m "feat(opencode): add @opencode-ai/sdk dep + oc-dependencies coupling registry"
 ```
+
+---
+
+## Verified API Surface (post-Step-5)
+
+> **Implementer subagents — read this section before writing any test or production code in Tasks 3, 4, 5, or 6.** The illustrative TypeScript in those tasks was written with placeholders. Where the placeholder disagrees with this section, **this section wins**. Update the test fixtures and the production code together.
+
+### SDK exports (`@opencode-ai/sdk@1.14.35`)
+
+- `createOpencodeClient(config)` — factory returning an `OpencodeClient` instance. Plan placeholder name was correct; usable as-is.
+- `OpencodeClient` — class form (alternative to factory). Either works.
+- `createOpencode({...})` — async factory that ALSO subprocess-spawns `opencode serve` itself via `cross-spawn`, watches stdout for `"opencode server listening on <url>"` (5s timeout), parses URL. **We do NOT use this** — Task 4's `OpenCodeService` manages the subprocess directly with port polling and crash detection, which is more robust than stdout-regex.
+- The SDK is a thin REST/SSE client. Strictly requires the `opencode` binary on PATH or absolute path. There is no in-process embedded server.
+
+### SDK method names (corrections to placeholders)
+
+| Plan placeholder | Real name |
+|---|---|
+| `client.session.message.create(id, { text })` | **`client.session.promptAsync(id, body)`** (returns immediately; events stream via SSE — required for our streaming UI) |
+| `client.session.cancel(id)` | **`client.session.abort(id)`** |
+| `client.session.message.list(id)` | **`client.session.messages(id)`** — returns `Array<{ info: Message, parts: Part[] }>` (note the `{info, parts}` envelope, NOT a flat array) |
+| `client.session.create()` | unchanged |
+| `client.session.list()` | unchanged |
+| `client.session.delete(id)` | unchanged |
+| `client.event.subscribe(handler)` | unchanged — returns an unsubscribe function |
+
+### `promptAsync` body shape
+
+```ts
+body?: {
+  parts: Array<TextPartInput | FilePartInput | ...>;   // REQUIRED
+  model?: { providerID: string; modelID: string };     // e.g., { providerID: 'ollama', modelID: 'qwen3:8b' }
+  agent?: string;
+  system?: string;
+  tools?: Record<string, boolean>;
+  messageID?: string;
+  noReply?: boolean;
+}
+```
+
+User text is wrapped: `parts: [{ type: 'text', text: userText }]`.
+
+### Ready probe (Task 4)
+
+`GET /global/health` → `{ healthy: true, version: string }`. The plan placeholder `GET /event` is **wrong** — `/event` is the SSE event stream, not a probe. Poll `/global/health` until 200 or deadline.
+
+### Permission policy (Task 3)
+
+Top-level `permission` field accepts:
+- `"allow"` (string shorthand — what we use for MVP) — equivalent to `{ "*": "allow" }`
+- `{ "<toolName>": "allow" | "ask" | "deny", ... }` (per-tool object form)
+
+The plan placeholder `permission.default = 'allow'` is **wrong** — it's a top-level `"permission": "allow"` shorthand. Update both the test assertion and the implementation:
+
+```ts
+// In opencode.json:
+{ "permission": "allow", "provider": { ... } }
+
+// In the writer:
+cfg.permission = cfg.permission ?? 'allow';
+
+// In the test:
+expect(cfg.permission).toBe('allow');
+```
+
+Env-var alternative `OPENCODE_PERMISSION='{"*":"allow"}'` exists but we use the file form for inspectability.
+
+### Event subscription mechanism (Task 5)
+
+```ts
+const unsubscribe = client.event.subscribe((ev: { type: string; properties: object }) => {
+  // ...
+});
+```
+
+The handler receives every event for every session — filter by `properties.sessionID || properties.info?.sessionID || properties.part?.sessionID` matching this adapter's `ocSessionId`. Different events nest the session id in different places (see table below).
+
+### SSE event `type` literals
+
+| Event `type` (runtime string) | `properties` shape (top-level keys) |
+|---|---|
+| `message.updated` | `{ info: Message }` (full Message object including `info.sessionID`) |
+| `message.part.updated` | `{ part: Part, delta?: string }` (`delta` = incremental text chunk for streaming Text/Reasoning parts) |
+| `message.part.removed` | `{ sessionID, messageID, partID }` |
+| `message.removed` | `{ sessionID, messageID }` |
+| `session.idle` | `{ sessionID }` — **use this as turn-complete signal** |
+| `session.error` | `{ sessionID?, error? }` |
+| `session.created` / `session.updated` / `session.deleted` | `{ info: Session }` |
+| `permission.updated` | `{ id, sessionID, time, title, metadata }` (we IGNORE in MVP — permission is allow-all) |
+| `file.edited`, `todo.updated`, `command.executed`, `lsp.client.diagnostics`, `pty.*`, `tui.*`, `vcs.branch.updated`, `installation.*`, `server.*` | various — not used by adapter for MVP |
+
+There is **no `part.delta` event** — the plan's Task 5 placeholder `'part.delta'` is wrong. Streaming text deltas arrive on `message.part.updated` with `properties.delta` populated.
+
+### `Part` discriminated union (full)
+
+Discriminator field: `type`. Variants: `text`, `reasoning`, `file`, `tool`, `step-start`, `step-finish`, `snapshot`, `patch`, `agent`, `retry`, `compaction`, plus inline `subtask`.
+
+```ts
+TextPart       = { type: 'text',        id, sessionID, messageID, text: string, synthetic?, ignored?, time?, metadata? }
+ReasoningPart  = { type: 'reasoning',   id, sessionID, messageID, text: string, time, metadata? }
+ToolPart       = { type: 'tool',        id, sessionID, messageID, callID: string, tool: string /* tool NAME */, state: ToolState, metadata? }
+StepStartPart  = { type: 'step-start',  id, sessionID, messageID, snapshot? }
+StepFinishPart = { type: 'step-finish', id, sessionID, messageID, reason: string, snapshot?, cost: number, tokens: TokenUsage }
+SnapshotPart   = { type: 'snapshot',    id, sessionID, messageID, snapshot: string }
+FilePart       = { type: 'file',        id, sessionID, messageID, mime, filename?, url, source? }
+// (plus patch, agent, retry, compaction, subtask — not consumed by MVP adapter)
+```
+
+### `ToolPart.state` discriminator (CRITICAL)
+
+The state is itself a discriminated union. Discriminator field is **`status`** (NOT `type`):
+
+```ts
+ToolStatePending   = { status: 'pending',   input: {},  raw: string }
+ToolStateRunning   = { status: 'running',   input: {},  title?, metadata?, time: { start } }
+ToolStateCompleted = { status: 'completed', input: {},  output: string, title, metadata, time: { start, end, compacted? }, attachments?: FilePart[] }
+ToolStateError     = { status: 'error',     input: {},  error: string, metadata?, time: { start, end } }
+```
+
+The plan placeholder `part.state === 'pending'` (treating `state` as a string) and `part.state === 'failed'` (wrong status literal) are both wrong. Correct usage:
+
+```ts
+// Tool input — read from state, not from part.tool
+const toolName = part.tool;                 // string
+const toolInput = part.state.input;          // object
+const toolUseId = part.id;                   // or part.callID
+const status = part.state.status;            // 'pending' | 'running' | 'completed' | 'error'
+
+// On completed:
+const result = part.state.output;            // string
+
+// On error:
+const errorMsg = part.state.error;           // string
+
+if (status === 'pending' || status === 'running') {
+  // emit tool-use
+} else if (status === 'completed') {
+  // emit tool-result with isError: false
+} else if (status === 'error') {
+  // emit tool-result with isError: true, result: errorMsg
+}
+```
+
+### Resume hydration shape (Task 5)
+
+`client.session.messages(ocSessionId)` returns `Array<{ info: Message, parts: Part[] }>`. The plan's Task 5 placeholder treats history items as flat `{ id, role, time, parts }` objects — that's wrong. Real shape nests under `info`:
+
+```ts
+const history = await sdk.session.messages(ocSessionId);
+for (const item of history) {
+  const role = item.info.role;             // 'user' | 'assistant'
+  const messageId = item.info.id;
+  const time = item.info.time?.created;
+  const parts = item.parts;                // Part[]
+  // translate each part as you would for a message.updated event
+}
+```
+
+### Architecture confirmation
+
+- We spawn `opencode serve --port <free>` as our own subprocess (Task 4's `OpenCodeService`). Port polling against `GET /global/health`. Native crash detection via `child.on('exit')`.
+- We pass the `opencode` binary's absolute path explicitly — never rely on `PATH` lookup (works on dev, fragile on packaged Electron).
+- Config goes to `~/.config/opencode/opencode.json` on POSIX, `%APPDATA%\opencode\opencode.json` on Windows. The `OpenCodeConfigWriter` resolves home via constructor parameter for testability.
 
 ---
 
@@ -481,7 +650,7 @@ git commit -m "feat(opencode): OllamaDetector — probe Ollama HTTP API + model 
 - Create: `youcoded/desktop/src/main/opencode-config-writer.ts`
 - Test: `youcoded/desktop/tests/opencode-config-writer.test.ts`
 
-Writes `~/.config/opencode/opencode.json` (declares the Ollama provider) and `~/.config/opencode/auth.json` (placeholder credentials so OpenCode considers the provider configured). Pure file I/O; no network.
+Writes `~/.config/opencode/opencode.json` declaring the Ollama provider (via `@ai-sdk/openai-compatible`) and setting permission policy to allow-all for MVP. Per Verified API Surface, no `auth.json` is required for local Ollama. Pure file I/O; no network.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -515,15 +684,11 @@ describe('OpenCodeConfigWriter', () => {
     expect(cfg.provider.ollama.npm).toBe('@ai-sdk/openai-compatible');
   });
 
-  it('writeOllamaConfig() also writes a placeholder auth.json entry for the provider', async () => {
+  it('writeOllamaConfig() does NOT write auth.json (Ollama via OpenAI-compat needs no auth)', async () => {
+    // Verified API Surface confirms: for local Ollama (no auth), auth.json is
+    // not required by OpenCode. Don't write a file users will be confused by.
     await writer.writeOllamaConfig({ ollamaBaseUrl: 'http://localhost:11434' });
-    const text = await fs.readFile(path.join(tmpHome, '.config', 'opencode', 'auth.json'), 'utf8');
-    const auth = JSON.parse(text);
-    // Ollama doesn't require an API key, but OpenCode's provider validator
-    // expects the entry to exist. Any non-empty placeholder is fine.
-    expect(auth.ollama).toBeDefined();
-    expect(typeof auth.ollama.key).toBe('string');
-    expect(auth.ollama.key.length).toBeGreaterThan(0);
+    await expect(fs.access(path.join(tmpHome, '.config', 'opencode', 'auth.json'))).rejects.toThrow();
   });
 
   it('writeOllamaConfig() preserves user-modified fields outside provider/ollama', async () => {
@@ -550,13 +715,11 @@ describe('OpenCodeConfigWriter', () => {
   it('writeOllamaConfig() sets permission policy to allow-all (MVP simplification)', async () => {
     // Without this, OpenCode's permission system would prompt on every tool
     // call and the prompts have no UI listener in MVP — tools would hang.
-    // CRITICAL: the actual permission-policy field name is verified against
-    // the opencode init -generated config in Setup Step 5. Adjust this test
-    // and the implementation together.
+    // Per "Verified API Surface": top-level "permission": "allow" string
+    // shorthand (NOT permission.default).
     await writer.writeOllamaConfig({ ollamaBaseUrl: 'http://localhost:11434' });
     const cfg = JSON.parse(await fs.readFile(path.join(tmpHome, '.config', 'opencode', 'opencode.json'), 'utf8'));
-    // Placeholder shape; actual key may differ:
-    expect(cfg.permission?.default ?? cfg.permissions?.default).toBe('allow');
+    expect(cfg.permission).toBe('allow');
   });
 });
 ```
@@ -611,20 +774,10 @@ export class OpenCodeConfigWriter {
     // MVP simplification: allow all tool calls without per-call user approval.
     // Matches Claude's --dangerously-skip-permissions mode. Stage B integrates
     // OpenCode's permission events into our existing PERMISSION_REQUEST UI.
-    // ACTUAL field name is verified against opencode init in Setup Step 5;
-    // the placeholder below may need to change.
-    cfg.permission = cfg.permission ?? { default: 'allow' };
+    // Top-level "permission": "allow" string shorthand (per Verified API Surface).
+    cfg.permission = cfg.permission ?? 'allow';
     await fs.writeFile(cfgPath, JSON.stringify(cfg, null, 2), 'utf8');
-
-    // Merge into existing auth.json if present
-    let auth: any = {};
-    try {
-      auth = JSON.parse(await fs.readFile(authPath, 'utf8'));
-    } catch (e: any) {
-      if (e?.code !== 'ENOENT') throw e;
-    }
-    auth.ollama = auth.ollama ?? { key: 'ollama-local-no-auth-needed' };
-    await fs.writeFile(authPath, JSON.stringify(auth, null, 2), 'utf8');
+    // No auth.json — Ollama via OpenAI-compat has no API key (per Verified API Surface).
   }
 }
 ```
@@ -635,11 +788,11 @@ export class OpenCodeConfigWriter {
 npx vitest run tests/opencode-config-writer.test.ts 2>&1 | tail -10
 ```
 
-Expected: 4 passing.
+Expected: 5 passing.
 
 ```bash
 git add desktop/src/main/opencode-config-writer.ts desktop/tests/opencode-config-writer.test.ts
-git commit -m "feat(opencode): OpenCodeConfigWriter — generate opencode.json + auth.json for Ollama"
+git commit -m "feat(opencode): OpenCodeConfigWriter — generate opencode.json for Ollama"
 ```
 
 ---
@@ -670,8 +823,8 @@ vi.mock('child_process', async (orig) => ({
 
 const mockSdkConstructor = vi.fn();
 vi.mock('@opencode-ai/sdk', () => ({
-  // Match whatever the actual export is — adjust during implementation.
-  // Common names: createOpencodeClient, OpencodeClient, default export, etc.
+  // Verified: @opencode-ai/sdk@1.14.35 exports both createOpencodeClient (factory)
+  // and OpencodeClient (class). Either works; we use the factory.
   createOpencodeClient: (opts: any) => mockSdkConstructor(opts),
 }));
 
@@ -803,9 +956,8 @@ import { spawn, ChildProcess } from 'child_process';
 import { EventEmitter } from 'events';
 import * as net from 'net';
 
-// During implementation, replace this import with the actual symbol the SDK
-// exports — verified in Setup Step 5. Common shapes: a class, a factory
-// function, or a default export. The plan uses a placeholder name.
+// Verified API Surface: @opencode-ai/sdk@1.14.35 exports createOpencodeClient
+// (factory) and OpencodeClient (class). We use the factory.
 import { createOpencodeClient } from '@opencode-ai/sdk';
 
 export interface OpenCodeServiceOpts {
@@ -874,16 +1026,15 @@ export class OpenCodeService extends EventEmitter {
     };
     child.once('exit', startupExitListener);
 
-    // Poll the port until reachable or deadline.
-    // GET /event is OpenCode's SSE endpoint — any 2xx (or even SSE-style 200
-    // before the stream completes) confirms the server is up. Verify the
-    // exact endpoint name in the spike (Setup Step 5); /event is from docs.
+    // Poll /global/health until reachable or deadline. Per Verified API Surface,
+    // GET /global/health returns { healthy: true, version: string } and is the
+    // documented liveness probe.
     const baseUrl = `http://${this.host}:${port}`;
     const deadline = Date.now() + readyDeadlineMs;
     while (Date.now() < deadline && !exitedDuringStartup) {
       try {
-        const res = await fetchImpl(`${baseUrl}/event`, { method: 'GET' });
-        if (res.ok || res.status === 200) {
+        const res = await fetchImpl(`${baseUrl}/global/health`, { method: 'GET' });
+        if (res.ok) {
           this.port = port;
           this.client = createOpencodeClient({ baseURL: baseUrl });
           // Swap startup exit listener for the long-lived crash handler.
@@ -926,15 +1077,19 @@ export class OpenCodeService extends EventEmitter {
     this.client = null;
   }
 
-  // Session-level convenience wrappers — exact SDK call signatures verified during impl
+  // Session-level convenience wrappers — SDK names per Verified API Surface.
   async createSession(opts: { systemPrompt?: string }): Promise<{ id: string }> {
     return await this.client.session.create(opts);
   }
-  async sendMessage(sessionId: string, text: string): Promise<void> {
-    await this.client.session.message.create(sessionId, { text });
+  /** Streaming send — events arrive via SSE. Use this for chat (we render incrementally). */
+  async sendMessage(sessionId: string, text: string, model?: { providerID: string; modelID: string }): Promise<void> {
+    await this.client.session.promptAsync(sessionId, {
+      parts: [{ type: 'text', text }],
+      ...(model ? { model } : {}),
+    });
   }
   async cancelSession(sessionId: string): Promise<void> {
-    await this.client.session.cancel(sessionId);
+    await this.client.session.abort(sessionId);
   }
   async destroySession(sessionId: string): Promise<void> {
     await this.client.session.delete(sessionId);
@@ -967,7 +1122,7 @@ export class OpenCodeService extends EventEmitter {
 npx vitest run tests/opencode-service.test.ts 2>&1 | tail -10
 ```
 
-Expected: 4 passing. If the ready-pattern regex doesn't match what OpenCode actually prints, adjust both the test mock and the production regex once a real binary is available.
+Expected: 5 passing. The ready-detection path uses `GET /global/health` polling per Verified API Surface — no stdout regex.
 
 ```bash
 git add desktop/src/main/opencode-service.ts desktop/tests/opencode-service.test.ts
@@ -1017,9 +1172,8 @@ function makeFakeService() {
         },
       },
       session: {
-        message: {
-          list: async (sessionId: string) => historyBySession.get(sessionId) ?? [],
-        },
+        // Verified: client.session.messages(id) returns Array<{info: Message, parts: Part[]}>
+        messages: async (sessionId: string) => historyBySession.get(sessionId) ?? [],
       },
     }),
   };
@@ -1058,13 +1212,20 @@ describe('OpenCodeSessionAdapter', () => {
   });
 
   it('translates assistant TextPart deltas into "assistant-text" events tagged with desktopSessionId', () => {
+    // Verified: streaming text deltas arrive on message.part.updated with `delta` populated.
     svc.eventBus.emit('event', {
-      type: 'part.delta',
-      properties: { sessionID: 'OC1', part: { type: 'text', text: 'hello ' } },
+      type: 'message.part.updated',
+      properties: {
+        delta: 'hello ',
+        part: { type: 'text', id: 'P1', sessionID: 'OC1', messageID: 'M1', text: 'hello ' },
+      },
     });
     svc.eventBus.emit('event', {
-      type: 'part.delta',
-      properties: { sessionID: 'OC1', part: { type: 'text', text: 'world' } },
+      type: 'message.part.updated',
+      properties: {
+        delta: 'world',
+        part: { type: 'text', id: 'P1', sessionID: 'OC1', messageID: 'M1', text: 'hello world' },
+      },
     });
     expect(emitted.map(e => e.type)).toEqual(['assistant-text', 'assistant-text']);
     expect(emitted.map(e => e.data.text)).toEqual(['hello ', 'world']);
@@ -1073,8 +1234,11 @@ describe('OpenCodeSessionAdapter', () => {
 
   it('translates ReasoningPart deltas into "assistant-thinking" tagged with desktopSessionId', () => {
     svc.eventBus.emit('event', {
-      type: 'part.delta',
-      properties: { sessionID: 'OC1', part: { type: 'reasoning', text: 'pondering...' } },
+      type: 'message.part.updated',
+      properties: {
+        delta: 'pondering...',
+        part: { type: 'reasoning', id: 'P2', sessionID: 'OC1', messageID: 'M1', text: 'pondering...', time: { start: 1 } },
+      },
     });
     expect(emitted[0]).toMatchObject({
       type: 'assistant-thinking',
@@ -1084,16 +1248,20 @@ describe('OpenCodeSessionAdapter', () => {
   });
 
   it('translates ToolPart pending into "tool-use" with input', () => {
+    // Verified: ToolPart.state is itself a discriminated union with `status` field;
+    // input lives at part.state.input, tool name at part.tool (string).
     svc.eventBus.emit('event', {
-      type: 'message.updated',
+      type: 'message.part.updated',
       properties: {
-        info: { id: 'M2', sessionID: 'OC1', role: 'assistant', time: { created: 1714857700000 } },
-        parts: [{
+        part: {
           type: 'tool',
           id: 'T1',
-          state: 'pending',
-          tool: { name: 'read_file', input: { path: '/x' } },
-        }],
+          callID: 'call-1',
+          sessionID: 'OC1',
+          messageID: 'M2',
+          tool: 'read_file',
+          state: { status: 'pending', input: { path: '/x' }, raw: '' },
+        },
       },
     });
     expect(emitted[0]).toMatchObject({
@@ -1105,15 +1273,24 @@ describe('OpenCodeSessionAdapter', () => {
 
   it('translates ToolPart completed into "tool-result"', () => {
     svc.eventBus.emit('event', {
-      type: 'message.updated',
+      type: 'message.part.updated',
       properties: {
-        info: { id: 'M2', sessionID: 'OC1', role: 'assistant', time: { created: 1714857700000 } },
-        parts: [{
+        part: {
           type: 'tool',
           id: 'T1',
-          state: 'completed',
-          tool: { name: 'read_file', output: 'file contents', error: null },
-        }],
+          callID: 'call-1',
+          sessionID: 'OC1',
+          messageID: 'M2',
+          tool: 'read_file',
+          state: {
+            status: 'completed',
+            input: { path: '/x' },
+            output: 'file contents',
+            title: 'read_file',
+            metadata: {},
+            time: { start: 1, end: 2 },
+          },
+        },
       },
     });
     expect(emitted[0]).toMatchObject({
@@ -1123,25 +1300,48 @@ describe('OpenCodeSessionAdapter', () => {
     });
   });
 
-  it('translates StepFinish into "turn-complete"', () => {
+  it('translates ToolPart error into "tool-result" with isError:true', () => {
+    // Verified: error status literal is 'error' (not 'failed').
     svc.eventBus.emit('event', {
-      type: 'message.updated',
+      type: 'message.part.updated',
       properties: {
-        info: { id: 'M3', sessionID: 'OC1', role: 'assistant', time: { created: 1714857800000 } },
-        parts: [{ type: 'step-finish', stopReason: 'end_turn', model: 'qwen3:8b', usage: { promptTokens: 10, completionTokens: 20 } }],
+        part: {
+          type: 'tool',
+          id: 'T2',
+          callID: 'call-2',
+          sessionID: 'OC1',
+          messageID: 'M2',
+          tool: 'bash',
+          state: { status: 'error', input: {}, error: 'permission denied', time: { start: 1, end: 2 } },
+        },
       },
+    });
+    expect(emitted[0]).toMatchObject({
+      type: 'tool-result',
+      sessionId: 'DESK1',
+      data: { toolUseId: 'T2', result: 'permission denied', isError: true },
+    });
+  });
+
+  it('translates session.idle into "turn-complete"', () => {
+    // Verified: session.idle is the cleanest turn-complete signal.
+    svc.eventBus.emit('event', {
+      type: 'session.idle',
+      properties: { sessionID: 'OC1' },
     });
     expect(emitted[0]).toMatchObject({
       type: 'turn-complete',
       sessionId: 'DESK1',
-      data: { stopReason: 'end_turn', model: 'qwen3:8b' },
     });
   });
 
   it('IGNORES events for other OpenCode sessions', () => {
     svc.eventBus.emit('event', {
-      type: 'part.delta',
-      properties: { sessionID: 'OC_OTHER', part: { type: 'text', text: 'not ours' } },
+      type: 'message.part.updated',
+      properties: {
+        part: { type: 'text', id: 'P', sessionID: 'OC_OTHER', messageID: 'M', text: 'not ours' },
+        delta: 'not ours',
+      },
     });
     expect(emitted).toEqual([]);
   });
@@ -1149,8 +1349,11 @@ describe('OpenCodeSessionAdapter', () => {
   it('destroy() unsubscribes — no further events emitted after', () => {
     adapter.destroy();
     svc.eventBus.emit('event', {
-      type: 'part.delta',
-      properties: { sessionID: 'OC1', part: { type: 'text', text: 'late' } },
+      type: 'message.part.updated',
+      properties: {
+        part: { type: 'text', id: 'P', sessionID: 'OC1', messageID: 'M', text: 'late' },
+        delta: 'late',
+      },
     });
     expect(emitted).toEqual([]);
   });
@@ -1158,9 +1361,16 @@ describe('OpenCodeSessionAdapter', () => {
   it('isResume:true fetches message history via REST and emits transcript-events for each message', async () => {
     // Tear down the default adapter (from beforeEach) and create a resume one.
     adapter.destroy();
+    // Verified shape: messages() returns Array<{ info: Message, parts: Part[] }>
     svc.seedHistory('OC1', [
-      { id: 'm-1', role: 'user',      time: { created: 100 }, parts: [{ type: 'text', text: 'prior q' }] },
-      { id: 'm-2', role: 'assistant', time: { created: 200 }, parts: [{ type: 'text', text: 'prior a' }] },
+      {
+        info: { id: 'm-1', role: 'user',      time: { created: 100 } },
+        parts: [{ type: 'text', id: 'p-1', sessionID: 'OC1', messageID: 'm-1', text: 'prior q' }],
+      },
+      {
+        info: { id: 'm-2', role: 'assistant', time: { created: 200 } },
+        parts: [{ type: 'text', id: 'p-2', sessionID: 'OC1', messageID: 'm-2', text: 'prior a' }],
+      },
     ]);
     emitted = [];
     adapter = new OpenCodeSessionAdapter({
@@ -1220,11 +1430,11 @@ export interface OpenCodeSessionAdapterOpts {
  *   transcript-events for each historical message before subscribing.
  *   Tracks seenUuids to filter duplicates if SSE happens to replay history.
  *
- * NOTE: The exact shape of OpenCode's events is verified against
- * @opencode-ai/sdk types in Setup Step 5. Property names below
- * (`properties.info.sessionID`, `properties.part.type`, etc.) are
- * placeholders from OpenCode's documented Part discriminated union and
- * will likely need fine-tuning.
+ * Event shapes per Verified API Surface section of the plan:
+ *   message.part.updated → { part: Part, delta?: string }
+ *   message.updated      → { info: Message }
+ *   session.idle         → { sessionID }
+ *   ToolPart.state       → { status: 'pending' | 'running' | 'completed' | 'error', ... }
  */
 export class OpenCodeSessionAdapter extends EventEmitter {
   private unsubscribe: (() => void) | null = null;
@@ -1241,12 +1451,13 @@ export class OpenCodeSessionAdapter extends EventEmitter {
 
     // Hydration first (fetch history, synthesize events) — defensive against
     // SSE delivering only new events. Then subscribe to live.
+    // Verified: client.session.messages(id) returns Array<{ info: Message, parts: Part[] }>.
     if (this.opts.isResume) {
       try {
-        const messages = await sdk.session.message.list(this.opts.ocSessionId);
-        for (const msg of messages) {
+        const messages = await sdk.session.messages(this.opts.ocSessionId);
+        for (const item of messages) {
           if (this.destroyed) return;
-          this.handleHistoryMessage(msg);
+          this.handleHistoryMessage(item);
         }
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -1264,33 +1475,67 @@ export class OpenCodeSessionAdapter extends EventEmitter {
     this.unsubscribe = null;
   }
 
-  private handleHistoryMessage(msg: any): void {
-    // History items have a final `parts: [...]` array; same shape we'd see
-    // in a `message.updated` event after the message completes. Translate
-    // each part and emit. INCLUDES user-message here (no optimistic bubble
-    // exists for historical messages).
-    const parts: any[] = msg.parts ?? [];
+  private handleHistoryMessage(item: any): void {
+    // Verified shape: { info: { id, role, time, ... }, parts: Part[] }
+    // INCLUDES user-message here (no optimistic bubble exists for historical messages).
+    const info = item.info ?? {};
+    const parts: any[] = item.parts ?? [];
     for (const part of parts) {
-      const translated = this.translatePart(part, msg, /* skipUser = */ false);
+      const translated = this.translatePart(part, info, /* skipUser = */ false);
       if (translated) this.emit('transcript-event', translated);
     }
     // Each historical assistant message ends a turn.
-    if (msg.role === 'assistant') {
+    if (info.role === 'assistant') {
       this.emit('transcript-event', {
         type: 'turn-complete',
         sessionId: this.opts.desktopSessionId,
-        data: { stopReason: 'stop', model: msg.model ?? null, usage: null },
+        data: { stopReason: 'stop', model: info.model ?? null, usage: null },
       });
     }
   }
 
   private handleEvent(ev: any): void {
-    const sessionId = ev?.properties?.info?.sessionID ?? ev?.properties?.sessionID;
+    // Different events nest sessionID in different places — check all known shapes.
+    const sessionId =
+      ev?.properties?.info?.sessionID ??
+      ev?.properties?.sessionID ??
+      ev?.properties?.part?.sessionID;
     if (sessionId !== this.opts.ocSessionId) return;
 
+    // Streaming text/reasoning deltas: message.part.updated carries `delta` string.
+    if (ev.type === 'message.part.updated') {
+      const part = ev.properties.part;
+      const delta = ev.properties.delta as string | undefined;
+
+      if (part.type === 'text' && delta) {
+        this.emit('transcript-event', {
+          type: 'assistant-text',
+          sessionId: this.opts.desktopSessionId,
+          data: { text: delta, timestamp: Date.now(), uuid: `oc-${Date.now()}-${Math.random().toString(36).slice(2,8)}` },
+        });
+        return;
+      }
+      if (part.type === 'reasoning' && delta) {
+        this.emit('transcript-event', {
+          type: 'assistant-thinking',
+          sessionId: this.opts.desktopSessionId,
+          data: { text: delta, timestamp: Date.now() },
+        });
+        return;
+      }
+
+      // Tool parts arrive on this event too — every state transition triggers an update.
+      if (part.type === 'tool') {
+        const translated = this.translatePart(part, { sessionID: sessionId }, /* skipUser */ true);
+        if (translated) this.emit('transcript-event', translated);
+      }
+      return;
+    }
+
+    // Final-state assistant message (covers user/system messages on resume too).
     if (ev.type === 'message.updated') {
       const info = ev.properties.info;
-      const parts: any[] = ev.properties.parts ?? [];
+      const parts: any[] = info?.parts ?? ev.properties.parts ?? [];
       for (const part of parts) {
         const translated = this.translatePart(part, info, /* skipUser = */ true);
         if (translated) this.emit('transcript-event', translated);
@@ -1298,21 +1543,13 @@ export class OpenCodeSessionAdapter extends EventEmitter {
       return;
     }
 
-    if (ev.type === 'part.delta') {
-      const part = ev.properties.part;
-      if (part.type === 'text') {
-        this.emit('transcript-event', {
-          type: 'assistant-text',
-          sessionId: this.opts.desktopSessionId,
-          data: { text: part.text, timestamp: Date.now(), uuid: `oc-${Date.now()}-${Math.random().toString(36).slice(2,8)}` },
-        });
-      } else if (part.type === 'reasoning') {
-        this.emit('transcript-event', {
-          type: 'assistant-thinking',
-          sessionId: this.opts.desktopSessionId,
-          data: { text: part.text, timestamp: Date.now() },
-        });
-      }
+    // Turn complete — session.idle is the cleanest signal.
+    if (ev.type === 'session.idle') {
+      this.emit('transcript-event', {
+        type: 'turn-complete',
+        sessionId: this.opts.desktopSessionId,
+        data: { stopReason: 'stop', model: null, usage: null },
+      });
       return;
     }
   }
@@ -1330,41 +1567,48 @@ export class OpenCodeSessionAdapter extends EventEmitter {
       };
     }
     if (part.type === 'tool') {
-      if (part.state === 'pending' || part.state === 'running') {
+      // Verified: ToolPart has top-level `tool: string` (the name), `callID: string`,
+      // and `state` is itself a discriminated union with `status` field.
+      const status = part.state?.status;
+      const toolName = part.tool;
+      const toolInput = part.state?.input;
+
+      if (status === 'pending' || status === 'running') {
         return {
           type: 'tool-use',
           sessionId: this.opts.desktopSessionId,
           data: {
-            toolName: part.tool?.name,
-            toolInput: part.tool?.input,
+            toolName,
+            toolInput,
             toolUseId: part.id,
             timestamp: info.time?.created ?? Date.now(),
           },
         };
       }
-      if (part.state === 'completed' || part.state === 'failed') {
+      if (status === 'completed') {
         return {
           type: 'tool-result',
           sessionId: this.opts.desktopSessionId,
           data: {
             toolUseId: part.id,
-            result: part.tool?.output ?? part.tool?.error ?? '',
-            isError: part.state === 'failed' || !!part.tool?.error,
+            result: part.state?.output ?? '',
+            isError: false,
             timestamp: info.time?.created ?? Date.now(),
           },
         };
       }
-    }
-    if (part.type === 'step-finish') {
-      return {
-        type: 'turn-complete',
-        sessionId: this.opts.desktopSessionId,
-        data: {
-          stopReason: part.stopReason,
-          model: part.model,
-          usage: part.usage,
-        },
-      };
+      if (status === 'error') {
+        return {
+          type: 'tool-result',
+          sessionId: this.opts.desktopSessionId,
+          data: {
+            toolUseId: part.id,
+            result: part.state?.error ?? '',
+            isError: true,
+            timestamp: info.time?.created ?? Date.now(),
+          },
+        };
+      }
     }
     return null;
   }
@@ -1377,7 +1621,7 @@ export class OpenCodeSessionAdapter extends EventEmitter {
 npx vitest run tests/opencode-session-adapter.test.ts 2>&1 | tail -10
 ```
 
-Expected: 8 passing. If a test fails because the actual SDK event shape diverges from the assumed one, fix the translator AND the test together — keep them honest about the contract.
+Expected: 10 passing. If a test fails because the actual SDK event shape diverges from the Verified API Surface section, fix the translator AND the test together — keep them honest about the contract.
 
 - [ ] **Step 5: Commit**
 
