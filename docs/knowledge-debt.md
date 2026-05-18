@@ -112,3 +112,9 @@ Five CC v2.1.119–v2.1.121 fixes touch behaviors YouCoded code paths interact w
 
 `refreshPath()` at line 152 invokes `reg query` without resolving `reg.exe` via `which` / PATHEXT. C:\Windows\System32 is reliably on PATH so this works in practice, but inherits Electron's snapshot of PATH at app launch — same vulnerability the rest of the file works around with `resolveCommand()`. Real fix would be to invoke C:\Windows\System32\reg.exe by absolute path.
 
+## Pre-existing test failure: sync-service-tags.test.ts red on master (noticed 2026-05-18)
+- **Claim**: `youcoded/desktop` has a green test suite; the CI `build` job runs `npm test` and passes, so a red `build` check on a PR signals a real regression.
+- **Actual**: `desktop/tests/sync-service-tags.test.ts` fails on clean `origin/master` — test `updateConversationIndex — interaction with epoch-seeded entries > overwrites an epoch-seeded entry when the topic file shows up` throws `TypeError: Cannot read properties of undefined (reading 'topic')` at `sync-service-tags.test.ts:83` (`readIndex().sessions['sess-c']` is `undefined`). Suite result is `1 failed | 941 passed`. Because this is on master, the CI `build` job (test step) is red on **every** PR — it was red on all three Linux-fix PRs (#93/#94/#95), which were merged anyway since the failure is pre-existing and unrelated. A genuinely test-breaking PR would not be distinguishable from this baseline noise.
+- **Fix**: Reproduce with `cd youcoded/desktop && npx vitest run tests/sync-service-tags.test.ts`. Determine whether `updateConversationIndex` stopped writing the `sess-c` entry or the test fixture/setup drifted, then fix `desktop/src/main/sync-service.ts` or the test so `sessions['sess-c']` is populated when a topic file shows up after epoch-seeding. Verify the full suite goes green so CI's `build` job passes again.
+- **Priority**: medium (red CI baseline masks real test regressions on every PR)
+
