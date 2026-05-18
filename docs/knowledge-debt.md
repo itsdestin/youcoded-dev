@@ -108,7 +108,25 @@ Five CC v2.1.119–v2.1.121 fixes touch behaviors YouCoded code paths interact w
 
 ## CC-verification: install-prereq POSIX bash/curl probing + reg.exe absolute path (surfaced 2026-04-29, from review-platform)
 
-`desktop/src/main/prerequisite-installer.ts` `installClaude` POSIX branch silently assumes `/bin/bash` exists and `curl` is on PATH; on stripped Linux distros (Alpine, certain container images) this can fail with raw stderr instead of clear "install bash + curl" guidance. Optional follow-up: probe with `runCommand('bash', ['--version'])` and `runCommand('curl', ['--version'])` first.
+`desktop/src/main/prerequisite-installer.ts` `installClaude` POSIX branch silently assumes `/bin/bash` exists and `curl` is on PATH; on stripped Linux distros (Alpine, certain container images) this can fail with raw stderr instead of clear "install bash + curl" guidance. **Partially resolved (v1.2.4, commit `8abcdd6d`):** the `curl` part is fixed — `installClaude` now probes for curl, falls back to wget, and emits an actionable message if neither exists (`set -o pipefail` keeps a left-side pipe failure visible). The `bash` assumption is still open: optional follow-up is to probe `runCommand('bash', ['--version'])` first.
 
 `refreshPath()` at line 152 invokes `reg query` without resolving `reg.exe` via `which` / PATHEXT. C:\Windows\System32 is reliably on PATH so this works in practice, but inherits Electron's snapshot of PATH at app launch — same vulnerability the rest of the file works around with `resolveCommand()`. Real fix would be to invoke C:\Windows\System32\reg.exe by absolute path.
 
+
+## CC-drift: Surface CC /goal completion-condition feature in the YouCoded UI (surfaced 2026-05-18, from CC v2.1.143)
+
+CC v2.1.139 added a /goal command that sets a completion condition and keeps Claude working across turns until it is met, with a live elapsed/turns/tokens overlay. YouCoded already renders per-turn metadata and has an attention-banner system; it could surface goal progress as a status-bar widget or banner. Medium UI effort; no current coupling, so additive only.
+
+CHANGELOG entry: v2.1.139 — Added /goal command: set a completion condition and Claude keeps working across turns until it's met. Works in interactive, -p, and Remote Control. Shows live elapsed/turns/tokens as an overlay panel
+
+## CC-drift: Consider CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN to fix xterm scrollback duplication on Android (surfaced 2026-05-18, from CC v2.1.143)
+
+CC v2.1.132 added CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1. The Tier 2 terminal-rendering touchpoint and PITFALLS "xterm scrollback can show duplicated TUI chrome" note that CC's full-TUI redraws push duplicate banner chrome into xterm scrollback. Setting this env var at launch (or deliberately keeping alt-screen) could influence the duplication behavior. Worth a deliberate decision and a test-conpty probe before adopting either way — alt-screen also affects getScreenText buffer reads. Small env-var change, but needs verification across both platforms.
+
+CHANGELOG entry: v2.1.132 — Added CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1 env var to opt out of the fullscreen alternate-screen renderer and keep the conversation in the terminal's native scrollback
+
+## CC-drift: Surface CC agent view / background-session model in YouCoded's multi-session UI (surfaced 2026-05-18, from CC v2.1.143)
+
+CC v2.1.139 added "agent view" (claude agents) — a single list of every CC session (running, blocked, done) — and v2.1.140–v2.1.143 added many flags and lifecycle fixes around it. YouCoded already has its own SessionRegistry / SessionStrip multi-session model. No coupling exists, but if YouCoded ever wants to show CC-daemon-managed background sessions it would integrate here. Large effort; purely speculative for now.
+
+CHANGELOG entry: v2.1.139 — Added agent view (Research Preview): a single list of every Claude Code session — running, blocked on you, or done. Run claude agents to get started.
