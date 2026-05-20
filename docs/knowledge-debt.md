@@ -130,3 +130,39 @@ CHANGELOG entry: v2.1.132 — Added CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1 env v
 CC v2.1.139 added "agent view" (claude agents) — a single list of every CC session (running, blocked, done) — and v2.1.140–v2.1.143 added many flags and lifecycle fixes around it. YouCoded already has its own SessionRegistry / SessionStrip multi-session model. No coupling exists, but if YouCoded ever wants to show CC-daemon-managed background sessions it would integrate here. Large effort; purely speculative for now.
 
 CHANGELOG entry: v2.1.139 — Added agent view (Research Preview): a single list of every Claude Code session — running, blocked on you, or done. Run claude agents to get started.
+
+## Local-mode tool views: `list` and `patch` render raw (noticed 2026-05-19)
+- **Claim**: All catalog-model tool calls render via prettified per-tool views in `desktop/src/renderer/components/tool-views/ToolBody.tsx` (Read, Edit, Write, Bash, Grep, Glob, WebFetch, TodoWrite, Task, etc).
+- **Actual**: OpenCode's built-in `list` (directory listing) and `patch` (multi-file patch) tools have no dedicated view case in ToolBody — they fall through to `RawFallbackView`. Functional (name + input + result shown raw) but not prettified. Claude Code has no exact `patch` equivalent; `list` ≈ Claude's directory tools.
+- **Fix**: Add view-router cases for `'List'` (directory tree render of `result`) and `'Patch'` (multi-file diff render — split the patch output per-file). Minor polish; users see the data, just not formatted nicely.
+- **Priority**: low
+
+## Local-mode subagent (`task` tool) shows empty card (noticed 2026-05-19)
+- **Claim**: OpenCode's `task` tool spawns a subagent; YouCoded's `AgentView` (`tool-views/AgentView.tsx`) renders the nested subagent timeline inside the parent card.
+- **Actual**: `normalizeToolName('task') → 'Task'` correctly routes to `AgentView`, but the OpenCode session adapter (`desktop/src/main/opencode-session-adapter.ts`) doesn't translate OpenCode's `AgentPart` events into nested subagent transcript events. Result: a Task card appears but its body is empty — no sub-activity, no nested tool calls. Tracked as a known deferred MVP item.
+- **Fix**: Add an `AgentPart` branch in the adapter that translates the part's nested message stream into a subagent timeline (`parentAgentToolUseId` + `agentId`). Mirror the structure the Claude path produces in `desktop/src/main/subagent-watcher.ts`. Non-trivial — there's no Android equivalent to copy from.
+- **Priority**: medium (visible empty card is more confusing than no Task tool at all)
+
+## Local-mode: no Android parity (noticed 2026-05-19)
+- **Claim**: Per the cross-platform invariant in `desktop/CLAUDE.md`, every IPC message type is identical across `preload.ts`, `ipc-handlers.ts`, and `app/.../runtime/SessionService.kt`.
+- **Actual**: The local provider is desktop-only. Android's `SessionService.kt` has no `local` provider branch, no OpenCode daemon management, no Ollama detection, no `local:*` IPC handlers. Roughly half the new `local:*` channel constants in `preload.ts` are unimplemented on Android. Local sessions cannot be created on Android.
+- **Fix**: Port the OpenCode + Ollama runtime to Android. Will need: Termux-based OpenCode binary, Ollama-on-Android (Termux + GGUF), `LocalBridgeServer` handlers mirroring the Electron IPC, the runtime-aware UI gates honoring Android's local-supported flag. Roughly the size of the original desktop work. Out of MVP scope by explicit decision.
+- **Priority**: medium (release-blocking only if the product later requires Android local mode; documented as a deliberate gap)
+
+## Local-mode: image input (FilePart) unhandled (noticed 2026-05-19)
+- **Claim**: Multi-model catalog includes Gemma 4 (verified working vision via the 2026-05-18 capability probe).
+- **Actual**: There is no UI to attach an image to a local-session prompt. The OpenCode protocol supports a `FilePart` in `session.prompt.body.parts`, but the adapter and `InputBar.tsx` only construct text parts. So Gemma 4 sessions can answer text prompts but the vision capability is unreachable from the chat UI.
+- **Fix**: (1) Add a file/image picker to `InputBar.tsx` that emits FilePart-shaped data alongside the text. (2) Adapter: handle inbound FilePart in `message.updated` parts (assistants can return file references). (3) Wire the renderer to show attached images inline in user-bubble (mirror Claude's image rendering if any). Mostly Electron-side; Android image picker plumbing already exists for other features. Non-trivial.
+- **Priority**: medium (gemma4 multimodal is a real catalog selling point unreachable today)
+
+## Local-mode: `session.compacted` event unhandled (noticed 2026-05-19)
+- **Claim**: Compaction markers ("Conversation cleared / Compacted") appear in the chat timeline as thin dividers (`docs/chat-reducer.md` describes `system-marker` entries).
+- **Actual**: For Claude sessions, the transcript watcher detects compact-summary entries and dispatches `COMPACTION_COMPLETE`. For OpenCode sessions, the adapter does not translate OpenCode's `session.compacted` event — the marker simply doesn't appear. Functional impact: a compacted local session continues to chat normally, just without the visible "compacted" divider.
+- **Fix**: Add a `session.compacted` branch in `opencode-session-adapter.ts:handleEvent` that emits a `compact-summary` transcript event. App.tsx already dispatches `COMPACTION_COMPLETE` on that event type. ~10 lines.
+- **Priority**: low (cosmetic — no functional break)
+
+## Local-mode: stuck-detection inactive (noticed 2026-05-19)
+- **Claim**: `useAttentionClassifier` (per `docs/chat-reducer.md`) detects a stalled assistant and swaps `<ThinkingIndicator />` for `<AttentionBanner state='stuck' />` after a glyph-stable / counter-frozen window.
+- **Actual**: The classifier reads the **xterm PTY buffer**. Local (OpenCode) sessions have no PTY; the classifier never runs for them. A hung local model never trips the "something's wrong" banner — the user sees the silent spinner indefinitely.
+- **Fix**: Add a transcript-driven stuck heuristic for local sessions (e.g. `isThinking && Date.now() - lastActivityAt > 90s && !hasRunningTools` → set `attentionState: 'stuck'`). Likely a small `useEffect` in App.tsx gated on the session's provider. Don't reuse the PTY classifier — its regex is CC-spinner-specific and would never match.
+- **Priority**: medium (silent hang is a real UX failure when a local model misbehaves; users can't tell if it's stuck vs slow)
