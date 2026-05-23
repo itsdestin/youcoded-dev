@@ -3744,3 +3744,53 @@ After writing the plan above, here are the checks:
 ---
 
 **Plan complete.** Saved to `docs/superpowers/plans/2026-05-21-artifact-viewer.md`.
+
+---
+
+## Post-execution notes (2026-05-22)
+
+All 45 tasks executed in a single session using subagent-driven development. Phase-by-phase pause checkpoints, mostly small adaptations during implementation, then several real bugs surfaced during manual dev-loop verification.
+
+### Phase-by-phase result
+
+| Phase | Tasks | All green | Notes |
+|---|---|---|---|
+| 1 — Data layer | 1.1-1.10 | ✓ | Task 1.2 cleanup commit `7d20cdba` removed dead else-if + documented bare-`/` edge case. Task 1.7's concurrent test surfaced a TOCTOU race in casWrite; fix in `a75492ea` added an mkdir-based exclusive lock (all 24 artifact tests pass stably after). |
+| 2 — IPC | 2.1-2.5 | ✓ | Task 2.5 parity test initially had 13 failures (6 false ipc-handlers + 7 Kotlin); 6 fixed by accepting `ARTIFACT_IPC.<NAME>` constant references in the assertion (commit `0fff858c`); 7 Kotlin tracked as a Phase 8 indicator and went green when Phase 8 landed. |
+| 3 — Tracker | 3.1-3.2 | ✓ | Implementer reused existing `transcript:event` channel via `(window.claude.on as any).transcriptEvent` — no new IPC surface needed. |
+| 4 — Renderer Registry + 7 viewers | 4.1-4.8 | ✓ | Implementer batched the 4 non-lazy viewers + Registry + 3 lazy viewers across 3 dispatches; added `@ts-expect-error` bridge for lazy imports then cleaned them up. `MarkdownContent`'s prop name is `content` (not `source` as the plan template guessed). |
+| 5 — Inline filepath detection | 5.1-5.3 | ✓ | Implementer used a proper rehype plugin via `visitParents` for AST-aware code-block exclusion (cleaner than regex preprocessing in the plan template). Removed `currentProjectRoot` prop in favor of suffix-based path matching. |
+| 6 — Session Drawer | 6.1-6.4 | ✓ | Implementer reused the existing `useEscClose` LIFO stack for back-button handling on both desktop and Android. Added `ACTIVE_ARTIFACT_CLEARED` reducer action to handle null vs empty-string correctly. Refactored MarkdownView to a controlled component so the conflict banner can observe edit-in-progress. |
+| 7 — Project View | 7.1-7.3 | ✓ | Extracted `ActiveArtifactView` to a shared file used by both SessionDrawer and ProjectView. `dialog.openFile()` returns `string[]` (multi-select); button label changed from "Add external folder" to "Add external file". |
+| 8 — Android Kotlin | 8.1-8.5 | ✓ | Used `ReadResult` sealed class instead of TS's union type (idiomatic Kotlin). Hand-rolled ULID generator (Crockford base32). `org.json.JSONObject` used consistently with existing 40+ Kotlin source files. All artifact channels now in SessionService.kt → parity test 57/57. |
+| 9 — Verification + Docs | 9.1-9.4 | ✓ (9.1-9.3), partial (9.4) | Integration test, PITFALLS section, cc-dependencies entry all landed. 9.4 manual verification is in progress (this session) — surfaced six real bugs that needed post-Phase-9 fixes. |
+
+### Post-Phase-9 fixes (after the plan completed)
+
+The plan was technically "complete" at commit `b0fca22f` (Task 9.1), but manual dev-loop verification surfaced bugs that the plan didn't catch. Each was fixed in a separate commit:
+
+| # | Symptom | Root cause | Fix commit |
+|---|---|---|---|
+| 1 | Vite build failed on `pdfjs-dist` worker import | pdfjs-dist v5+ ships only `.mjs` workers; needed Vite `?url` suffix + explicit `workerSrc` | `4bd677c0` |
+| 2 | SessionDrawer rendered with `projectRoot=""` | `cwd` wasn't threaded from App.tsx through ChatView to SessionDrawer; added prop, lookup against central index | `7f367b0d` |
+| 3 | Wallpapers/gradients invisible when drawer is open | `.framed-shell { background: var(--panel) }` painted over WallpaperBackdrop layer | `3cb4242f` |
+| 4 | "No projects" and "nothing in drawer" — artifacts never tracked | `artifacts:append-version` IPC didn't exist; Tracker only called `listSession` (read-only) | `74437f92` |
+| 5 | Tracker handler never fired after the IPC fix | Handler read `event.cwd` but transcript events don't include cwd; switched to `sessionsRef` lookup by sessionId | `aa226cc3` |
+| 6 | Session drawer skipped EXTERNAL files Claude wrote | Original spec said "external = NEVER auto-track" — conflated session-scope with project-scope. Changed: session drawer tracks all; Project View filters externals not in manualIncludes | `447b7c3e` |
+| 7 | Inline filepath tokens didn't render for `docs/foo.md`-style paths | Detector regex required `./`, `~/`, `/`, or drive-letter prefix; widened to allow `<dirname>/<file>` | `d5fb3fc4` |
+
+### Attempted-and-reverted
+
+- **Option C: chrome-clearance padding for framed-shell when drawer open** — committed as `03111edc`, reverted as `5f95b36d`. The layout-shift between drawer-closed (chat scrolls behind chrome) and drawer-open (chat inset) looked worse than the original problem. Deferred to Option B (restructure HeaderBar/StatusBar to flex siblings) in a fresh session.
+
+### Material design changes captured in the spec
+
+See the spec doc's "Post-implementation amendments" section for canonical references. The amendments are not just bug fixes — they record decisions that override original spec text.
+
+### Outstanding before merge
+
+- Framed-chrome visual fix (Option B or C-prime; deferred to a fresh session)
+- Strip diagnostic console.logs from App.tsx artifact tracker
+- Track down `setState`-during-render warning
+- Real-device Android verification
+- Other themes visual verification

@@ -771,3 +771,99 @@ To be resolved during planning or implementation:
 8. **Sidecar growth bound.** A heavily-iterated artifact's `versions[]` array grows linearly. At v1 scale (versions are ~80 bytes each without `transcriptRef`) this is not a problem (1000 iterations = ~80KB per artifact). v2 may add a compaction policy (e.g., keep first version, last N versions, all type-change events; drop the rest). Tracking as a v2 polish item rather than blocking v1.
 
 None block writing the implementation plan. Each gets a concrete answer during implementation or the dev-loop verification step.
+
+---
+
+## Post-implementation amendments (2026-05-22)
+
+These are material design decisions that changed during execution and dev-loop verification. They override the original spec text above.
+
+### Amendment 1: Session Drawer auto-tracks EXTERNAL files too
+
+**Spec said:** "External files (outside working directory) → NOT auto-tracked. Even if Claude edits them in this session, they don't auto-become artifacts." (Tracking boundary section.)
+
+**Actual behavior:** The Session Drawer auto-tracks **every** file Claude writes/edits/deletes in the session, regardless of whether it's inside the working directory. Internal vs external is determined by path comparison and stored as `kind: 'internal' | 'external'` + `absolutePath`. The session drawer shows all of them.
+
+**Why:** The original rule conflated session-scope tracking with project-scope tracking. The session drawer is by definition a *session activity log* — if Claude touched a file in the session, it belongs there regardless of location. The "doesn't pollute project history" concern only applies to the Project View.
+
+**Project View filter:** internal artifacts always shown; external artifacts only shown if explicitly added via `manualIncludes`. External auto-captures live in the sidecar (so the Session Drawer can read them) but don't appear in Project View. Filter implemented in `ipc-handlers.ts` LIST_PROJECT handler.
+
+Fix commit: `447b7c3e`.
+
+### Amendment 2: Added `artifacts:append-version` IPC
+
+**Spec said (data flow):** "Artifact Tracker (renderer state slice) detects a tracked-extension Edit; updates its in-memory state; issues `artifacts:append-version` IPC to the Artifact Store."
+
+**Original plan/Phase 2:** the IPC channels listed were `list-session`, `list-project`, `get`, `save`, `include-external`, `exclude`, `changed` — **`append-version` was missing**. The Tracker called only `list-session`, which reads the sidecar but never populates it. End result: artifacts never materialized from agent activity until a user-initiated `save`.
+
+**Fix:** Added `artifacts:append-version` to `ipc-channels.ts`, ipc-handlers.ts (runs `ensureProject` + `applyGitTreatment` + `appendVersion` + broadcasts `artifacts:changed`), preload.ts, remote-shim.ts, and SessionService.kt. Updated the renderer Tracker to call it before `listSession`.
+
+Fix commit: `74437f92`.
+
+### Amendment 3: Transcript events don't carry `cwd`
+
+**Implementation assumed:** the transcript event payload includes `cwd`.
+
+**Reality:** transcript-watcher.ts emits events of shape `{ type, sessionId, uuid, timestamp, data }` — no cwd field.
+
+**Fix:** the renderer Tracker resolves cwd by looking up the session in the `sessions` state via a `sessionsRef` (so the handler always sees the latest list without re-subscribing).
+
+Fix commits: `aa226cc3`, `7f367b0d`.
+
+### Amendment 4: Inline filepath detector widened to bare relative paths
+
+**Original regex required** paths to start with `/`, `~/`, `./`, `../`, or a drive letter.
+
+**Real Claude output** commonly uses bare relative paths like `docs/foo.md` (no `./` prefix). These weren't matched.
+
+**Fix:** added a fifth prefix alternative `[\w\-.]+[\\/]` so bare relative paths with at least one directory segment + separator are detected. Standalone filenames (`plan.md` with no slash) still correctly excluded.
+
+Fix commit: `d5fb3fc4`.
+
+### Amendment 5: Wallpaper themes broken by opaque framed-shell
+
+**Spec called for** `.framed-shell { background: var(--panel) }` and `.chat-pane { background: var(--canvas) }` to render the chrome.
+
+**Reality:** these opaque backgrounds painted over the WallpaperBackdrop layer, hiding wallpapers / gradients / glassmorphism in themes that rely on them.
+
+**Fix:** `.framed-shell` is now transparent. Only the explicit chrome children (`.frame-edge`, `.frame-divider`, `.drawer-pane`) carry the `--panel` fill. Chat-pane has no explicit background — wallpaper shows through.
+
+Fix commit: `3cb4242f`.
+
+---
+
+## Outstanding issues (deferred from this round)
+
+These were identified during dev-loop verification but not fully resolved.
+
+### Framed-chrome visual doesn't fully form (HIGH)
+
+**Symptom:** Session Drawer's drawer-pane slips behind the absolute-positioned HeaderBar / StatusBar / InputBar chrome. Frame edges (left/right/divider) don't visually connect to the header/status panel fill.
+
+**Root cause:** YouCoded's existing HeaderBar (`.header-bar { position: absolute; top: 0; z-index: 20 }`) and bottom chrome (`.bottom-float`) overlay the chat region rather than being flex siblings. `.chat-scroll` compensates internally with `padding-top: 3rem` and `padding-bottom: calc(...)` — giving the immersive "messages scroll behind frosted chrome" effect. The drawer-pane has no such internal compensation, so its top and bottom slip behind the absolute chrome.
+
+**Attempted fix (Option C, reverted):** Apply chrome-clearance padding to `.framed-shell.drawer-open`, zero the chat-scroll's internal padding when drawer is open. Committed as `03111edc`, reverted as `5f95b36d` because the layout-shift when toggling looked worse than the original problem.
+
+**Recommended next-pass fix (Option B):** Restructure HeaderBar + bottom chrome to be flex siblings of the framed-shell instead of absolute overlays. Frame would form perfectly without z-index trickery. Tradeoff: loses the "chat scrolls behind frosted chrome" effect across all themes (currently a YouCoded design feature). Larger change touching glassmorphism opacity, drag region, mac titlebar inset, multiple themes — better done in a fresh session.
+
+**Alternative if Option B is too aggressive:** Option C-prime — drawer-pane internally pads its top/bottom to avoid chrome (chat keeps current behavior, drawer only is inset). Smaller change. Doesn't form a continuous frame visual but at least makes the drawer visible.
+
+### Lower-priority
+
+- **`setState`-during-render warning** in DevTools throughout the session. Caused by an effect or context update during initial render. Doesn't break functionality.
+- **Diagnostic `console.log` statements** still in `App.tsx`'s artifact tracker (added during this round's debugging). Should be stripped before merge.
+- **Theme `layout.frame-style` field** is referenced by the `data-theme-layout` attribute but no theme currently has the field — it's always hardcoded to `'framed'`. The floating-theme branch is therefore dead code until a theme opts in.
+
+---
+
+## Not yet verified
+
+These remain as items to check before merging to master:
+
+- Android device verification (Kotlin tests pass but no real-device run of the drawer, inline filepath taps, hardware-back navigation)
+- Conflict banner under real concurrent edit (user editing + Claude writing same file at the same time)
+- Project View deletion + add-external flows in actual use
+- Other themes (only default tested for visual integrity)
+- Mac titlebar interactions (`mac-titlebar-inset` overlap with framed-shell)
+- Performance with many artifacts (sidecar growth bound concern from Open Questions section 8)
+- Multi-window scenarios
