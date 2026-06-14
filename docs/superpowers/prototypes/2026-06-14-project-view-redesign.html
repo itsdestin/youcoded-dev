@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Project View Redesign — Project Switcher Options</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: {
+      canvas:'var(--canvas)', panel:'var(--panel)', inset:'var(--inset)', well:'var(--well)',
+      accent:'var(--accent)', 'on-accent':'var(--on-accent)',
+      fg:'var(--fg)', 'fg-2':'var(--fg-2)', 'fg-dim':'var(--fg-dim)', 'fg-muted':'var(--fg-muted)', 'fg-faint':'var(--fg-faint)',
+      edge:'var(--edge)', 'edge-dim':'var(--edge-dim)',
+    },
+    borderRadius:{ DEFAULT:'4px', sm:'4px', md:'8px', lg:'12px', xl:'16px', full:'9999px' },
+    fontFamily:{ mono:['Cascadia Code','ui-monospace','Consolas','monospace'] },
+  }}}
+</script>
+<style>
+  [data-theme="light"]{ --canvas:#F2F2F2; --panel:#EAEAEA; --inset:#E0E0E0; --well:#F7F7F7;
+    --accent:#1A1A1A; --on-accent:#F2F2F2; --fg:#1A1A1A; --fg-2:#444; --fg-dim:#666; --fg-muted:#888; --fg-faint:#AAA;
+    --edge:#CFCFCF; --edge-dim:#DCDCDC80; --shadow:0.12; }
+  [data-theme="dark"]{ --canvas:#111; --panel:#191919; --inset:#222; --well:#1C1C1C;
+    --accent:#D4D4D4; --on-accent:#111; --fg:#E0E0E0; --fg-2:#B0B0B0; --fg-dim:#999; --fg-muted:#666; --fg-faint:#444;
+    --edge:#2E2E2E; --edge-dim:#37373780; --shadow:0.45; }
+  html,body{height:100%;margin:0;background:var(--canvas);}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--fg);}
+  *{box-sizing:border-box;}
+  .layer-surface{ background:var(--panel); border:1px solid var(--edge); border-radius:16px;
+    box-shadow:0 8px 32px rgba(0,0,0,var(--shadow,.12)); overflow:hidden; }
+  .lbl{ font-size:10px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--fg-muted); }
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-thumb{background:var(--edge);border-radius:6px;border:2px solid var(--canvas);}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.38);backdrop-filter:blur(2px);z-index:60;}
+  .md h1{font-size:18px;font-weight:650;margin:.1em 0 .55em;}
+  .md h2{font-size:14px;font-weight:650;margin:1.15em 0 .4em;border-bottom:1px solid var(--edge-dim);padding-bottom:3px;}
+  .md p{margin:.5em 0;color:var(--fg-2);font-size:13.5px;line-height:1.65;}
+  .md code{font-family:'Cascadia Code',monospace;font-size:12px;background:var(--inset);padding:1px 5px;border-radius:4px;}
+  .md strong{color:var(--fg);font-weight:650;}
+  .editarea{width:100%;min-height:320px;font-family:'Cascadia Code',monospace;font-size:12.5px;line-height:1.65;border:1px solid var(--edge);border-radius:8px;padding:12px;background:var(--canvas);color:var(--fg);outline:none;resize:vertical;}
+</style>
+</head>
+<body class="bg-canvas">
+<div id="root" class="fixed inset-0 flex flex-col"></div>
+
+<button onclick="document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'"
+  class="fixed bottom-3.5 right-3.5 z-[80] text-[11.5px] bg-panel border border-edge rounded-full px-3 py-1.5 text-fg-muted">◐ theme</button>
+
+<script>
+// ── Icons ──────────────────────────────────────────────────────────────
+const IC = {
+  search:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14ZM21 21l-4.3-4.3',
+  close:'M18 6 6 18M6 6l12 12', chevL:'M15 18l-6-6 6-6', chevR:'M9 18l6-6-6-6', chevDown:'M6 9l6 6 6-6',
+  doc:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8ZM14 2v6h6',
+  chat:'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z',
+  brain:'M12 5a3 3 0 0 0-3 3 3 3 0 0 0-3 3 3 3 0 0 0 1 5 3 3 0 0 0 5 1 3 3 0 0 0 5-1 3 3 0 0 0 1-5 3 3 0 0 0-3-3 3 3 0 0 0-3-3Z',
+  globe:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20',
+  grid:'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z',
+  pencil:'M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z',
+  link:'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71',
+  folder:'M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z',
+  play:'M6 4l14 8-14 8Z', check:'M20 6 9 17l-5-5', list:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
+  warn:'M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0ZM12 9v4M12 17h.01',
+  info:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM12 16v-4M12 8h.01',
+  layout:'M3 3h18v18H3zM3 9h18M9 21V9',
+  ext:'M15 3h6v6M10 14 21 3M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5',
+  git:'M6 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM6 9v6M6 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM18 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM18 9a9 9 0 0 1-9 9',
+  plus:'M12 5v14M5 12h14',
+};
+function svg(n,s){ s=s||16; const segs=IC[n].split('M').filter(Boolean).map(x=>'<path d="M'+x+'"/>').join('');
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+segs+'</svg>'; }
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Data ───────────────────────────────────────────────────────────────
+const PROJECTS = [
+  { id:'yd', name:'youcoded-dev', path:'C:\\Users\\desti\\youcoded-dev', repo:'itsdestin/youcoded-dev', arts:68, convs:23, ctx:7, last:'2h ago' },
+  { id:'yc', name:'youcoded', path:'…\\youcoded-dev\\youcoded', repo:'itsdestin/youcoded', arts:41, convs:55, ctx:5, last:'1d ago' },
+  { id:'wm', name:'wecoded-marketplace', path:'…\\wecoded-marketplace', repo:'itsdestin/wecoded-marketplace', arts:12, convs:8, ctx:3, last:'3d ago' },
+  { id:'th', name:'thesis-draft', path:'C:\\Users\\desti\\Documents\\thesis', repo:null, arts:9, convs:14, ctx:2, last:'5d ago' },
+  { id:'bt', name:'budget-tracker', path:'C:\\Users\\desti\\code\\budget', repo:null, arts:6, convs:4, ctx:1, last:'2w ago' },
+];
+// load: when Claude reads this file.  lg: glyph (● always · ◐ conditional · ○ on-recall)
+const CTX = {
+  project:[
+    { id:'c1', name:'CLAUDE.md', ic:'doc', desc:'Workspace guidance — sub-repo rules, live-app safety, build flows', size:'9.4 KB', scope:'project', warn:'project', load:'Always', lg:'●' },
+    { id:'c2', name:'AGENTS.md', ic:'doc', desc:'Cross-harness instructions (opencode, Codex, Cursor)', size:'2.1 KB', scope:'project', warn:'project', load:'Always · other tools', lg:'●' },
+    { id:'c3', name:'.claude/rules/live-app-safety.md', ic:'doc', desc:'Never touch the live built app; dev-server workflow', size:'3.1 KB', scope:'project', load:'Always', lg:'●' },
+    { id:'c4', name:'.claude/rules/android-runtime.md', ic:'doc', desc:'LD_LIBRARY_PATH, linker64, /tmp constraints', size:'5.8 KB', scope:'project', load:'When editing app/**', lg:'◐' },
+  ],
+  global:[ { id:'c5', name:'~/.claude/CLAUDE.md', ic:'globe', desc:'Auto-title rule + context-loading refs — applies everywhere', size:'1.2 KB', scope:'global', warn:'global', load:'Always · everywhere', lg:'●' } ],
+  memory:[
+    { id:'c6', name:'MEMORY.md', ic:'brain', desc:'Index of 8 saved memories', size:'0.7 KB', scope:'memory', load:'Index', lg:'○' },
+    { id:'c7', name:'feedback_never_touch_live_app.md', ic:'brain', desc:'All runtime testing via run-dev.sh', size:'0.3 KB', scope:'memory', load:'On recall', lg:'○' },
+    { id:'c8', name:'feedback_use_opus_for_implementer_agents.md', ic:'brain', desc:'Default agent model to opus for non-trivial work', size:'0.4 KB', scope:'memory', load:'On recall', lg:'○' },
+  ],
+};
+const CONVS = [
+  { id:'v1', title:'Artifact Viewer UI Bugfixes', time:'2h ago', msgs:142, glyph:'◐', preview:'make project view more comprehensive, and clean up the project UI' },
+  { id:'v2', title:'Per-session drawer + project counts', time:'6h ago', msgs:88, glyph:'●', preview:'new sessions should start with the artifacts panel closed by default' },
+  { id:'v3', title:'Chrome-glass frame refactor', time:'1d ago', msgs:210, glyph:'◐', preview:'the chrome around the chat renders double-blurred seams at non-100% zoom' },
+  { id:'v4', title:'Resume Browser reliability', time:'2d ago', msgs:64, glyph:'●', preview:'221 conversations deleted by CC default cleanup, topic files rebumped' },
+  { id:'v5', title:'Theme contrast audit', time:'3d ago', msgs:37, glyph:'●', preview:'panel and canvas are effectively identical, the frame disappears' },
+];
+const ARTS = [
+  { id:'a1', name:'2026-05-21-artifact-viewer-design.md', kind:'Document', g:'md', glyph:'◐' },
+  { id:'a2', name:'in-bubble-file-views.html', kind:'Document', g:'html', glyph:'●' },
+  { id:'a3', name:'theme-contrast-preview.html', kind:'Document', g:'html', glyph:'●' },
+  { id:'a4', name:'knowledge-debt.md', kind:'Document', g:'md', glyph:'◐' },
+  { id:'a5', name:'opencode-provider-mvp.md', kind:'Document', g:'md', glyph:'●' },
+  { id:'a6', name:'android-divergence-audit.md', kind:'Document', g:'md', glyph:'●' },
+  { id:'a7', name:'SB1421_reasoning.docx', kind:'Document', g:'docx', glyph:'○' },
+  { id:'a8', name:'theme-preview.png', kind:'Image', g:'img', glyph:'○' },
+];
+const SAMPLE_MD = ['# CLAUDE.md','','Workspace guidance for Claude Code. Subsystem details live in `docs/` and `.claude/rules/`.','','## Working Rules','','**NEVER touch the live, built YouCoded app.** All development and testing happens in a dev workspace via `bash scripts/run-dev.sh`.','','**Always sync before working.** Pull the latest before changes, plans, or investigations.','','**Use worktrees for non-trivial work.** Any work beyond a handful of lines uses a separate git worktree.'].join('\n');
+const SAMPLE_TR = [
+  { role:'user', text:'two major things: 1) make project view more comprehensive so it lives up to its name.' },
+  { role:'asst', text:'I mapped the infrastructure. Conversations already have listPastSessions() and loadHistory(); artifacts are wired via the central index. The greenfield part is agent-context discovery.' },
+  { role:'user', text:'does project view already have editing built in? why would we remove it?' },
+  { role:'asst', text:'You are right — it reuses the artifact editor already. Keeping it, and adding a blast-radius warning for CLAUDE.md and global files.' },
+];
+
+// ── State ──────────────────────────────────────────────────────────────
+const S = { pid:'yd', cat:'artifacts', open:null, editing:false, swOpen:false, info:null };
+// The intro banner is a one-time, dismiss-forever affordance (persisted).
+function introDismissed(){ try{ return localStorage.getItem('pv-context-intro-dismissed')==='1'; }catch(e){ return false; } }
+const proj = ()=> PROJECTS.find(p=>p.id===S.pid);
+const allCtx = ()=> [...CTX.project, ...CTX.global, ...CTX.memory];
+const CATS = [
+  { id:'artifacts', label:'Artifacts', ic:'grid', count:p=>p.arts },
+  { id:'convs', label:'Conversations', ic:'chat', count:p=>p.convs },
+  { id:'context', label:'Context', ic:'doc', count:p=>p.ctx },
+];
+
+// ── Reusable bits ──────────────────────────────────────────────────────
+function scopeBadge(scope){ const t={project:'PROJECT',global:'GLOBAL',memory:'MEMORY'}[scope]||'MEMORY';
+  return '<span class="text-[9.5px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-inset text-fg-2 border border-edge-dim shrink-0">'+t+'</span>'; }
+function searchInput(ph,w){ return '<div class="flex items-center gap-2 bg-inset border border-edge rounded-md px-3 py-1.5 '+(w||'w-full sm:w-64')+'">'+
+  '<span class="text-fg-muted">'+svg('search',15)+'</span><input placeholder="'+ph+'" class="bg-transparent outline-none text-[13px] text-fg w-full placeholder:text-fg-muted"/></div>'; }
+function chip(label,on){ return '<button class="px-3 py-1 rounded-full text-[12.5px] transition-colors '+
+  (on?'bg-accent text-on-accent':'bg-inset text-fg-2 border border-edge hover:text-fg hover:border-edge-dim')+'">'+label+'</button>'; }
+function avatar(p,sz){ sz=sz||8; return '<span class="w-'+sz+' h-'+sz+' rounded-md shrink-0 inline-flex items-center justify-center text-[12px] font-semibold bg-inset text-fg-2 border border-edge-dim">'+p.name[0].toUpperCase()+'</span>'; }
+
+// Load badge teaches WHEN Claude reads the file — plain text, no status glyphs.
+function loadPill(f){ return '<span title="When Claude loads this file" class="inline-flex items-center text-[10px] text-fg-dim bg-well border border-edge-dim rounded-full px-2 py-0.5 shrink-0">'+f.load+'</span>'; }
+function ctxRow(f){ return '<button data-open="ctx:'+f.id+'" class="w-full text-left flex items-center gap-3 bg-panel border border-edge-dim rounded-lg p-3 hover:bg-inset hover:border-edge transition-colors">'+
+  '<span class="w-9 h-9 rounded-md shrink-0 inline-flex items-center justify-center bg-inset text-fg-dim">'+svg(f.ic,17)+'</span>'+
+  '<span class="min-w-0 flex-1"><span class="flex items-center gap-2"><span class="text-[13.5px] font-medium font-mono truncate">'+f.name.split('/').pop()+'</span>'+loadPill(f)+'</span>'+
+  '<span class="block text-[12px] text-fg-2 truncate mt-0.5">'+f.desc+'</span></span>'+
+  '<span class="text-[11px] text-fg-faint font-mono shrink-0">'+f.size+'</span></button>'; }
+function convRow(c){ return '<button data-open="conv:'+c.id+'" class="w-full text-left flex items-start gap-3 bg-panel border border-edge-dim rounded-lg p-3 hover:bg-inset hover:border-edge transition-colors">'+
+  '<span class="w-9 h-9 rounded-md shrink-0 inline-flex items-center justify-center bg-inset text-fg-dim mt-0.5">'+svg('chat',17)+'</span>'+
+  '<span class="min-w-0 flex-1"><span class="flex items-baseline gap-2 justify-between"><span class="text-[13.5px] font-medium truncate">'+c.title+'</span><span class="text-[11px] text-fg-faint shrink-0">'+c.time+'</span></span>'+
+  '<span class="block text-[12px] text-fg-2 truncate mt-0.5">'+c.preview+'</span>'+
+  '<span class="block text-[10.5px] text-fg-muted mt-1.5">'+c.msgs+' messages</span></span></button>'; }
+function artCard(a){ const thumb = a.g==='md'||a.g==='html'
+    ? '<div class="h-28 bg-canvas border-b border-edge-dim p-2 overflow-hidden text-[7px] leading-[1.5] text-fg-2 font-mono"># '+esc(a.name)+'\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</div>'
+    : '<div class="h-28 bg-inset inline-flex items-center justify-center text-fg-faint w-full">'+svg('doc',26)+'</div>';
+  return '<button data-open="art:'+a.id+'" class="layer-surface !rounded-lg text-left flex flex-col overflow-hidden transition-transform duration-200 hover:scale-[1.02]">'+
+    thumb+'<span class="px-2.5 pt-2 pb-0.5 text-[12px] font-mono truncate text-fg-2">'+a.name+'</span>'+
+    '<span class="px-2.5 pb-2.5 text-[10.5px] text-fg-muted">'+a.kind+'</span></button>'; }
+
+// ── Header (back, per request) ─────────────────────────────────────────
+function header(){ return '<header class="flex items-center justify-between gap-3 px-4 py-3 border-b border-edge shrink-0">'+
+  '<h1 class="text-[19px] font-semibold text-fg">Projects</h1>'+
+  '<div class="flex items-center gap-2">'+searchInput('Search all projects…','w-[240px]')+
+    '<button class="text-fg-dim hover:text-fg text-[13px] px-2 py-1">Esc · Close</button></div></header>'; }
+
+// ── Hero — project name is now a switcher trigger ──────────────────────
+function hero(){ const p=proj();
+  return '<div class="layer-surface p-5 flex items-end justify-between gap-4">'+
+    '<div class="min-w-0"><div class="lbl mb-1.5">Project</div>'+
+      // Clickable name → opens the project switcher (centered palette)
+      '<button data-act="open-switcher" class="group flex items-center gap-2 text-left rounded-md -ml-1 px-1 py-0.5 hover:bg-inset transition-colors">'+
+        '<span class="text-[24px] font-semibold text-fg leading-tight">'+p.name+'</span>'+
+        '<span class="text-fg-muted group-hover:text-fg shrink-0">'+svg('chevDown',18)+'</span></button>'+
+      '<div class="flex items-center gap-2 mt-1.5 min-w-0">'+
+        '<span class="font-mono text-[12px] text-fg-muted truncate">'+p.path+'</span>'+
+        (p.repo ? '<span class="text-fg-faint shrink-0">·</span><span class="inline-flex items-center gap-1 text-[12px] text-fg-dim shrink-0">'+svg('git',13)+p.repo+'</span>' : '')+
+      '</div>'+
+      '<div class="flex gap-4 mt-3 text-[12.5px] text-fg-dim">'+
+        '<span><b class="text-fg-2 font-semibold">'+p.arts+'</b> artifacts</span>'+
+        '<span><b class="text-fg-2 font-semibold">'+p.convs+'</b> conversations</span>'+
+        '<span><b class="text-fg-2 font-semibold">'+p.ctx+'</b> context files</span>'+
+        '<span>active <b class="text-fg-2 font-semibold">'+p.last+'</b></span></div></div>'+
+    '<div class="shrink-0 flex items-center gap-2">'+
+      (p.repo ? '<button title="Open '+p.repo+' on GitHub" class="px-3 py-2 rounded-md bg-inset text-fg-2 hover:text-fg border border-edge-dim hover:border-edge text-[13px] inline-flex items-center gap-1.5">'+svg('ext',14)+'Open repo</button>' : '')+
+      '<button class="px-4 py-2 rounded-md bg-accent text-on-accent text-[13px] hover:opacity-90">New Conversation</button></div>'+
+  '</div>'; }
+
+// ── Project switcher: centered command palette ─────────────────────────
+function swProjRow(p){
+  const on = p.id===S.pid;
+  return '<button data-proj="'+p.id+'" class="w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-md '+(on?'bg-inset':'hover:bg-inset')+'">'+
+    avatar(p,8)+'<span class="min-w-0 flex-1"><span class="flex items-center gap-2"><span class="text-[13.5px] font-medium truncate">'+p.name+'</span>'+
+      (p.repo?'<span class="text-fg-faint shrink-0" title="'+p.repo+'">'+svg('git',13)+'</span>':'')+'</span>'+
+    '<span class="block font-mono text-[11px] text-fg-muted truncate">'+p.path+'</span></span>'+
+    '<span class="text-[11px] text-fg-faint shrink-0">'+p.arts+' files · '+p.convs+' chats</span>'+
+    (on?'<span class="text-fg shrink-0 ml-1">'+svg('check',15)+'</span>':'')+'</button>';
+}
+function switcherPaletteEl(){
+  const rows = PROJECTS.map(p=>swProjRow(p)).join('');
+  const el=document.createElement('div'); el.id='swc';
+  el.innerHTML =
+    '<div class="scrim" data-act="sw-close"></div>'+
+    '<div class="layer-surface fixed left-1/2 -translate-x-1/2 top-[14%] w-[min(560px,92vw)] z-[70] !rounded-xl flex flex-col">'+
+      '<div class="p-2.5 border-b border-edge-dim flex items-center gap-2">'+
+        '<span class="text-fg-muted pl-1">'+svg('search',17)+'</span>'+
+        '<input autofocus placeholder="Jump to project…" class="flex-1 bg-transparent outline-none text-[15px] text-fg placeholder:text-fg-muted"/>'+
+        '<span class="text-[10px] text-fg-faint border border-edge-dim rounded px-1.5 py-0.5">esc</span></div>'+
+      '<div class="px-2 pt-2"><span class="lbl px-2">Recent</span></div>'+
+      '<div class="p-2 max-h-[50vh] overflow-y-auto flex flex-col gap-0.5">'+rows+'</div>'+
+      '<button class="flex items-center gap-2 px-4 py-3 border-t border-edge-dim text-[13px] text-fg-2 hover:bg-inset hover:text-fg">'+svg('plus',15)+'Add a project</button>'+
+    '</div>';
+  return el;
+}
+
+// ── Main render ────────────────────────────────────────────────────────
+function renderHub(){ const p=proj();
+  const seg = '<div class="flex items-center gap-1.5 p-1 layer-surface !rounded-full" style="box-shadow:none">'+
+    CATS.map(c=>{ const on=c.id===S.cat;
+      return '<button data-cat="'+c.id+'" class="px-3.5 py-1.5 rounded-full text-[13px] font-medium inline-flex items-center gap-2 transition-colors '+
+        (on?'bg-accent text-on-accent':'text-fg-2 hover:text-fg hover:bg-inset')+'">'+svg(c.ic,15)+c.label+
+        '<span class="text-[11px] '+(on?'opacity-80':'text-fg-muted')+'">'+c.count(p)+'</span></button>'; }).join('')+'</div>';
+
+  let body='';
+  if (S.cat==='context'){
+    const explainer = introDismissed() ? '' :
+      '<div class="relative flex gap-3 p-3.5 pr-9 rounded-lg bg-inset border border-edge-dim mb-4">'+
+        '<span class="shrink-0 text-fg-dim mt-px">'+svg('info',18)+'</span>'+
+        '<div class="text-[12.5px] text-fg-2 leading-relaxed">'+
+          '<span class="text-fg font-medium">These files shape how Claude works in '+p.name+'.</span> '+
+          'Claude reads them automatically at the start of a conversation — you don’t load them by hand. When two files disagree, the more specific one wins (this project overrides global).'+
+          '<div class="mt-2.5 text-[11px] text-fg-muted">The badge on each file shows <span class="text-fg-2">when it loads</span> — every conversation, only when you touch matching files, or pulled in on recall when it’s relevant. Tap the <span class="inline-flex align-middle text-fg-dim">'+svg('info',13)+'</span> on any group to learn more.</div>'+
+        '</div>'+
+        '<button data-act="dismiss-intro" title="Dismiss — won’t show again" class="absolute top-2 right-2 w-6 h-6 rounded-md inline-flex items-center justify-center text-fg-muted hover:text-fg hover:bg-well">'+svg('close',14)+'</button>'+
+      '</div>';
+    // (i) at the end of each group line opens the shared "How context works" popup on the right topic.
+    const grp=(lab,hint,items,info)=>'<div class="mb-5"><div class="flex items-center gap-2 mb-2 px-1">'+
+      '<span class="lbl">'+lab+'</span><span class="text-[11.5px] text-fg-muted">'+hint+'</span>'+
+      '<button data-info="'+info+'" title="Learn how these work" class="ml-auto w-6 h-6 rounded-md inline-flex items-center justify-center text-fg-muted hover:text-fg hover:bg-inset shrink-0">'+svg('info',15)+'</button>'+
+      '</div><div class="flex flex-col gap-2">'+items.map(ctxRow).join('')+'</div></div>';
+    body = explainer
+      + grp('This project','May be loaded for conversations in this project',CTX.project,'claude')
+      + grp('Global','Loaded before every conversation on this device',CTX.global,'global')
+      + grp('Memory','Recalled when relevant to a conversation',CTX.memory,'memory');
+  } else if (S.cat==='convs'){ body = '<div class="flex flex-col gap-2">'+CONVS.map(convRow).join('')+'</div>'; }
+  else { body = '<div class="grid gap-3" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">'+ARTS.map(artCard).join('')+'</div>'; }
+  const toolbar = S.cat==='artifacts' ? '<div class="flex items-center gap-1.5">'+chip('Hide code & configs',true)+chip('Show deleted',false)+'</div>'
+    : (S.cat==='convs' ? '<div class="flex items-center gap-1.5">'+chip('Recent',true)+chip('Most messages',false)+'</div>'
+    : '<div class="flex items-center gap-1.5">'+chip('Project',true)+chip('Global',true)+chip('Memory',true)+'</div>');
+
+  document.getElementById('root').innerHTML =
+    header()+
+    '<main class="flex-1 overflow-y-auto min-w-0"><div class="max-w-[1100px] mx-auto px-6 py-5 flex flex-col gap-5">'+
+      hero()+
+      '<div class="flex items-center justify-between gap-3 flex-wrap">'+seg+'<div class="flex items-center gap-2">'+searchInput('Search '+S.cat+'…','w-[220px]')+toolbar+'</div></div>'+
+      '<div>'+body+'</div>'+
+    '</div></main>';
+}
+
+// ── Detail overlay (shared) ────────────────────────────────────────────
+function renderDetail(){ const old=document.getElementById('ov'); if(old) old.remove(); if(!S.open) return;
+  const [t,id]=S.open.split(':'); let title='',tools='',meta='',body='';
+  if(t==='ctx'){ const f=allCtx().find(x=>x.id===id); title=f.name.split('/').pop();
+    tools=(S.editing?'<button data-act="save" class="px-3.5 py-1.5 rounded-md bg-accent text-on-accent text-[12.5px] inline-flex items-center gap-1.5">'+svg('check',13)+'Save</button><button data-act="canceledit" class="px-3 py-1.5 rounded-md bg-inset text-fg border border-edge text-[12.5px]">Cancel</button>'
+      :'<button data-act="edit" class="px-3.5 py-1.5 rounded-md bg-accent text-on-accent text-[12.5px] inline-flex items-center gap-1.5">'+svg('pencil',13)+'Edit</button>')+
+      '<button class="px-3 py-1.5 rounded-md bg-inset text-fg-2 hover:text-fg border border-edge-dim hover:border-edge text-[12.5px] inline-flex items-center gap-1.5">'+svg('folder',13)+'Reveal</button>'+
+      '<button class="px-3 py-1.5 rounded-md bg-inset text-fg-2 hover:text-fg border border-edge-dim hover:border-edge text-[12.5px] inline-flex items-center gap-1.5">'+svg('link',13)+'Copy path</button>';
+    meta=scopeBadge(f.scope)+loadPill(f)+'<span class="text-fg-faint">·</span><span>'+f.size+'</span><span class="text-fg-faint">·</span><span>edited 2d ago</span>';
+    let banner='';
+    if(f.warn==='global') banner='<div class="flex gap-2.5 p-3 rounded-lg mb-4 text-[12.5px] leading-relaxed border" style="color:#9a6a00;background:#FFF6E5;border-color:#E8C170"><span class="shrink-0 mt-px">'+svg('warn',16)+'</span><div><strong>Global file — affects every project.</strong> Edits here change how Claude works in <em>all</em> folders on this machine, not just '+proj().name+'.</div></div>';
+    else if(f.warn==='project') banner='<div class="flex gap-2.5 p-3 rounded-lg mb-4 text-[12.5px] leading-relaxed bg-inset border border-edge text-fg-2"><span class="shrink-0 mt-px text-fg-dim">'+svg('warn',16)+'</span><div><strong>Project instructions.</strong> Editing this changes how Claude behaves across every session in <strong>'+proj().name+'</strong>.</div></div>';
+    body=banner+(S.editing?'<textarea class="editarea">'+esc(SAMPLE_MD)+'</textarea>':'<div class="md">'+mdToHtml(SAMPLE_MD)+'</div>');
+  } else if(t==='conv'){ const c=CONVS.find(x=>x.id===id); title=c.title;
+    tools='<button class="px-3.5 py-1.5 rounded-md bg-accent text-on-accent text-[12.5px] inline-flex items-center gap-1.5">'+svg('play',13)+'Resume in Claude</button><button class="px-3 py-1.5 rounded-md bg-inset text-fg-2 hover:text-fg border border-edge-dim hover:border-edge text-[12.5px]">Open full transcript</button>';
+    meta='<span>'+c.msgs+' messages</span><span class="text-fg-faint">·</span><span>'+c.time+'</span><span class="text-fg-faint">·</span><span>read-only preview</span>';
+    body='<div class="max-w-[680px]">'+SAMPLE_TR.map(m=>'<div class="mb-4"><div class="lbl mb-1.5 '+(m.role==='user'?'!text-fg-2':'')+'">'+(m.role==='user'?'You':'Claude')+'</div><div class="text-[13px] text-fg-2 border rounded-lg px-3.5 py-2.5 whitespace-pre-wrap '+(m.role==='user'?'bg-inset border-edge':'bg-canvas border-edge-dim')+'">'+esc(m.text)+'</div></div>').join('')+'<div class="text-center text-[11.5px] text-fg-muted py-2">— showing last 4 of '+c.msgs+' messages —</div></div>';
+  } else { const a=ARTS.find(x=>x.id===id); title=a.name;
+    tools='<button class="px-3.5 py-1.5 rounded-md bg-accent text-on-accent text-[12.5px] inline-flex items-center gap-1.5">'+svg('pencil',13)+'Edit</button><button class="px-3 py-1.5 rounded-md bg-inset text-fg-2 hover:text-fg border border-edge-dim hover:border-edge text-[12.5px]">Reveal</button><button class="px-3 py-1.5 rounded-md bg-inset text-fg-2 hover:text-fg border border-edge-dim hover:border-edge text-[12.5px]">Copy path</button>';
+    meta='<span>edited</span><span class="text-fg-faint">·</span><span>2d ago</span><span class="text-fg-faint">·</span><span>4.2 KB</span>';
+    body='<div class="md max-w-[760px]">'+mdToHtml('# '+a.name+'\n\nThis is the artifact content viewer — the same `ActiveArtifactView` the session drawer uses, in a full-width focused overlay.\n\n## Section\n\nLorem ipsum dolor sit amet, **consectetur** adipiscing elit. Sed do eiusmod tempor incididunt ut labore.')+'</div>'; }
+  const ov=document.createElement('div'); ov.id='ov';
+  ov.innerHTML='<div class="scrim" data-act="dclose"></div>'+
+    '<div class="layer-surface fixed inset-3 sm:inset-10 md:inset-x-[12%] md:inset-y-[8%] z-[70] flex flex-col">'+
+      '<header class="flex items-center justify-between gap-3 px-4 py-3 border-b border-edge shrink-0"><span class="text-[15px] font-semibold text-fg truncate">'+esc(title)+'</span>'+
+        '<div class="flex items-center gap-1.5">'+tools+'<button data-act="dclose" class="ml-1 text-fg-dim hover:text-fg w-7 h-7 inline-flex items-center justify-center">'+svg('close',17)+'</button></div></header>'+
+      '<div class="flex items-center gap-2 px-4 py-1.5 text-[11.5px] text-fg-muted border-b border-edge-dim bg-well shrink-0">'+meta+'</div>'+
+      '<div class="flex-1 overflow-y-auto px-5 py-4">'+body+'</div></div>';
+  document.body.appendChild(ov);
+}
+function mdToHtml(md){ return md.split('\n').map(l=>{ if(l.indexOf('## ')===0)return '<h2>'+inl(l.slice(3))+'</h2>'; if(l.indexOf('# ')===0)return '<h1>'+inl(l.slice(2))+'</h1>'; if(l.trim()==='')return ''; return '<p>'+inl(l)+'</p>'; }).join(''); }
+function inl(s){ return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>'); }
+
+// ── Shared "How context works" popup (opened from each group's (i)) ────
+const INFO_TABS = [
+  { id:'overview', label:'Overview', icon:'layout' },
+  { id:'claude',   label:'CLAUDE.md', icon:'doc' },
+  { id:'agents',   label:'AGENTS.md', icon:'doc' },
+  { id:'rules',    label:'Rules', icon:'list' },
+  { id:'memory',   label:'Memory', icon:'brain' },
+];
+const INFO = {
+  claude:{ icon:'doc', h:'CLAUDE.md', tag:'Your standing instructions for a project.',
+    facts:[['Scope','Project or global'],['When it loads','Every conversation'],['Lives at','CLAUDE.md']],
+    secs:[
+      ['What it is','Your main instructions for a project. Claude treats CLAUDE.md like standing orders — coding style, things to avoid, and how you like work done.'],
+      ['When Claude reads it','At the start of every conversation in that folder. A global ~/.claude/CLAUDE.md applies everywhere. It’s always loaded, so keep it focused.'],
+    ],
+    example:['# CLAUDE.md','','## Working rules','- Never touch the live built app — test via run-dev.sh','- Use worktrees for non-trivial work','- Add a WHY comment on non-trivial edits'].join('\n') },
+  agents:{ icon:'doc', h:'AGENTS.md', tag:'The cross-tool instruction standard.',
+    facts:[['Scope','Project'],['When it loads','Every conversation'],['Read by','Claude, opencode, Codex…']],
+    secs:[
+      ['What it is','The same idea as CLAUDE.md, but the shared open standard other AI coding tools read too — opencode, Codex, Cursor, and more.'],
+      ['When to use it','Put cross-tool instructions here so every tool behaves consistently. Claude reads it alongside CLAUDE.md.'],
+    ],
+    example:['# AGENTS.md','','Build:  npm run build','Test:   npm test','Style:  2-space indent','','# Read by Claude, opencode, Codex, Cursor…'].join('\n') },
+  rules:{ icon:'list', h:'Rules', tag:'Instructions that load only when they’re relevant.',
+    facts:[['Scope','Project or global'],['When it loads','Only for matching files'],['Lives at','.claude/rules/']],
+    secs:[
+      ['What it is','Focused instruction files that apply conditionally. Each can target a path — for example, “only when editing files under app/**”.'],
+      ['Why they help','They keep your always-on instructions short while deep guidance stays on tap exactly when it’s needed.'],
+    ],
+    example:['---','description: Android runtime constraints','globs: app/**','alwaysApply: false','---','','LD_LIBRARY_PATH is mandatory. All binaries','route through /system/bin/linker64…'].join('\n') },
+  memory:{ icon:'brain', h:'Memory', tag:'What Claude remembers — and recalls when it helps.',
+    facts:[['Scope','This project only'],['When it loads','Recalled when relevant'],['Index','MEMORY.md']],
+    secs:[
+      ['What it is','Short notes Claude saves so it doesn’t re-learn things each time — your preferences, decisions you’ve made, and recurring gotchas. One fact per file.'],
+      ['How Claude saves them','Claude decides what’s worth keeping — usually something durable it couldn’t just re-read from your code or history. You don’t have to ask; it writes the note and lists it in an index (MEMORY.md).'],
+      ['How Claude recalls them','It doesn’t search on demand. The index loads at the start of every conversation, and the notes that look relevant to what you’re doing are pulled into context automatically.'],
+      ['Where they live','Saved with this project — not shared globally. What Claude learns here stays here.'],
+    ],
+    example:['---','type: feedback','---','','All runtime testing goes through run-dev.sh —','never touch the live built app.'].join('\n') },
+};
+// Overview tab: a visual of what loads, in what order, and which wins.
+function overviewContent(){
+  const layers = [
+    ['globe','Global','~/.claude/CLAUDE.md','Always · every project'],
+    ['doc','This project','CLAUDE.md · AGENTS.md','Always · this folder · overrides global'],
+    ['list','Rules','.claude/rules/','Only when you touch matching files'],
+    ['brain','Memory','MEMORY.md + saved facts','Recalled when relevant to your message'],
+  ];
+  const stack = layers.map((l,i)=>
+    '<div class="flex items-center gap-3 p-3 rounded-lg bg-panel border border-edge-dim">'+
+      '<span class="w-9 h-9 rounded-md bg-inset border border-edge-dim inline-flex items-center justify-center text-fg-dim shrink-0">'+svg(l[0],17)+'</span>'+
+      '<div class="min-w-0 flex-1"><div class="text-[13.5px] font-medium text-fg">'+l[1]+'</div><div class="font-mono text-[11px] text-fg-muted truncate">'+l[2]+'</div></div>'+
+      '<div class="text-[11.5px] text-fg-dim text-right shrink-0 max-w-[210px]">'+l[3]+'</div></div>'+
+    (i<layers.length-1?'<div class="pl-[30px] text-fg-faint text-[12px] leading-none py-0.5">↓</div>':'')
+  ).join('');
+  return '<h3 class="text-[17px] font-semibold text-fg leading-tight">How context works</h3>'+
+    '<p class="text-[12.5px] text-fg-muted mt-0.5 mb-4">Everything Claude reads before it starts — and which wins when they disagree.</p>'+
+    '<p class="text-[13px] text-fg-2 leading-relaxed mb-3.5">Claude builds its understanding of your project from several sources, all loaded automatically. They stack from broad to specific:</p>'+
+    '<div class="flex flex-col gap-2">'+stack+'</div>'+
+    '<div class="mt-4 flex gap-2.5 p-3 rounded-lg bg-inset border border-edge-dim text-[12.5px] text-fg-2 leading-relaxed">'+
+      '<span class="text-fg-dim shrink-0 mt-px">'+svg('info',16)+'</span><div><strong class="text-fg">When two files disagree, the more specific one wins.</strong> A project’s CLAUDE.md overrides the global one; always-on instructions take priority over conditional rules and recalled memory.</div></div>';
+}
+function infoContent(id){
+  if(id==='overview') return overviewContent();
+  const t = INFO[id] || INFO.claude;
+  const head = '<div class="flex items-start gap-3 mb-4">'+
+    '<span class="w-10 h-10 rounded-lg bg-inset border border-edge-dim inline-flex items-center justify-center text-fg-dim shrink-0">'+svg(t.icon,20)+'</span>'+
+    '<div class="min-w-0"><h3 class="text-[17px] font-semibold text-fg leading-tight font-mono">'+t.h+'</h3><p class="text-[12.5px] text-fg-muted mt-0.5">'+t.tag+'</p></div></div>';
+  const facts = '<div class="flex flex-wrap gap-x-6 gap-y-2 mb-4 pb-4 border-b border-edge-dim">'+
+    t.facts.map(f=>'<div><div class="lbl mb-0.5">'+f[0]+'</div><div class="text-[12.5px] text-fg-2">'+f[1]+'</div></div>').join('')+'</div>';
+  const secs = t.secs.map(s=>'<div class="mb-3.5"><div class="lbl mb-1">'+s[0]+'</div><p class="text-[13px] text-fg-2 leading-relaxed">'+s[1]+'</p></div>').join('');
+  const ex = t.example ? '<div class="lbl mb-1.5">Example</div><pre class="bg-canvas border border-edge-dim rounded-lg p-3 text-[11.5px] font-mono text-fg-2 overflow-x-auto whitespace-pre leading-relaxed m-0">'+esc(t.example)+'</pre>' : '';
+  return head+facts+secs+ex;
+}
+function renderInfo(){ const old=document.getElementById('infoov'); if(old) old.remove(); if(!S.info) return;
+  const tabs = INFO_TABS.map(t=>'<button data-infotab="'+t.id+'" class="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] transition-colors '+(t.id===S.info?'bg-inset text-fg font-medium':'text-fg-2 hover:bg-inset hover:text-fg')+'"><span class="'+(t.id===S.info?'text-fg':'text-fg-muted')+'">'+svg(t.icon,15)+'</span>'+t.label+'</button>').join('');
+  const el=document.createElement('div'); el.id='infoov';
+  el.innerHTML='<div class="scrim" data-act="info-close"></div>'+
+    '<div class="layer-surface fixed left-1/2 -translate-x-1/2 top-[10%] w-[min(720px,94vw)] max-h-[80vh] z-[75] !rounded-xl flex flex-col">'+
+      '<header class="flex items-center justify-between px-4 py-3 border-b border-edge shrink-0"><span class="text-[15px] font-semibold text-fg">How context works</span>'+
+        '<button data-act="info-close" class="text-fg-dim hover:text-fg w-7 h-7 inline-flex items-center justify-center">'+svg('close',17)+'</button></header>'+
+      '<div class="flex-1 flex min-h-0">'+
+        '<aside class="w-[190px] shrink-0 border-r border-edge-dim p-2 flex flex-col gap-1 overflow-y-auto">'+tabs+'</aside>'+
+        '<div class="flex-1 overflow-y-auto px-5 py-5">'+infoContent(S.info)+'</div></div>'+
+    '</div>';
+  document.body.appendChild(el);
+}
+
+// ── Render + events ────────────────────────────────────────────────────
+function renderSwitcher(){ const old=document.getElementById('swc'); if(old) old.remove(); if(S.swOpen) document.body.appendChild(switcherPaletteEl()); }
+function renderScreen(){ renderHub(); renderDetail(); renderSwitcher(); renderInfo(); }
+
+document.addEventListener('click', e=>{
+  const t=e.target.closest('[data-proj],[data-cat],[data-open],[data-info],[data-infotab],[data-act]'); if(!t) return;
+  if(t.hasAttribute('data-info')){ S.info=t.getAttribute('data-info'); renderInfo(); return; }
+  if(t.hasAttribute('data-infotab')){ S.info=t.getAttribute('data-infotab'); renderInfo(); return; }
+  if(t.hasAttribute('data-proj')){ S.pid=t.getAttribute('data-proj'); S.swOpen=false; S.open=null; renderScreen(); return; }
+  if(t.hasAttribute('data-cat')){ S.cat=t.getAttribute('data-cat'); renderScreen(); return; }
+  if(t.hasAttribute('data-open')){ S.open=t.getAttribute('data-open'); S.editing=false; renderDetail(); return; }
+  const act=t.getAttribute('data-act');
+  if(act==='open-switcher'){ S.swOpen=!S.swOpen; renderScreen(); }
+  else if(act==='sw-close'){ S.swOpen=false; renderScreen(); }
+  else if(act==='edit'){ S.editing=true; renderDetail(); }
+  else if(act==='save'||act==='canceledit'){ S.editing=false; renderDetail(); }
+  else if(act==='dclose'){ S.open=null; S.editing=false; renderDetail(); }
+  else if(act==='info-close'){ S.info=null; renderInfo(); }
+  else if(act==='dismiss-intro'){ try{ localStorage.setItem('pv-context-intro-dismissed','1'); }catch(e){} renderScreen(); }
+});
+
+renderScreen();
+</script>
+</body>
+</html>
