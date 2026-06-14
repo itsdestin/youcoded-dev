@@ -2,6 +2,8 @@
 
 **Status:** Direction approved via interactive prototype (2026-06-14). Formal spec + implementation plan still pending — this captures the agreed UX, the infrastructure to build on, and the open items so the build can pick up cleanly.
 
+**Branch / stream:** This is the **same stream of work as the artifact viewer**, not a separate effort. Implement it **on `feat/artifact-viewer`** (in the `youcoded` repo) — that branch already holds the `ProjectView.tsx` this redesign replaces. The redesign **ships as part of that branch**; do **not** merge `feat/artifact-viewer` to `master` ahead of this — the artifact viewer and Project View go out together. (These workspace artifacts — prototype + notes — live in `youcoded-dev`; the actual code lands on `feat/artifact-viewer` in `youcoded`.)
+
 **Prototype:** [`2026-06-14-project-view-redesign.html`](./2026-06-14-project-view-redesign.html) — a self-contained, clickable HTML mock. Open it in a browser. (It loads Tailwind via CDN for fidelity, so it needs internet; the real implementation uses the app's own Tailwind + theme tokens.) It is built strictly to YouCoded's design language — `.layer-surface`, monochrome palette, accent used once per view, uppercase `tracking-wider` micro-labels, outline-not-fill selection — mirrored from the marketplace / resume-browser / settings surfaces.
 
 ## Goal
