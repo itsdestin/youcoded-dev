@@ -13,6 +13,18 @@ export YOUCODED_PORT_OFFSET="${YOUCODED_PORT_OFFSET:-50}"
 # window bounds, and cache don't clobber the built app's.
 export YOUCODED_PROFILE=dev
 
+# Belt-and-suspenders: if this script is run from inside a Claude Code session
+# (e.g. via a Claude session's Bash tool), the shell carries CC's own session
+# markers. Inherited by the dev app and passed to the `claude` it spawns, they
+# make that child run as a NESTED session, which writes no transcript → chat
+# view stays empty (responses only show in terminal view). The real fix lives in
+# the app (desktop/src/main/pty-worker.js strips these at spawn); unsetting them
+# here too keeps the dev launch clean regardless of app version.
+# See docs/PITFALLS.md → "Local Dev & Launch Environment".
+unset CLAUDECODE CLAUDE_CODE_CHILD_SESSION CLAUDE_CODE_SESSION_ID \
+      CLAUDE_CODE_ENTRYPOINT CLAUDE_CODE_EXECPATH CLAUDE_EFFORT \
+      CLAUDE_DESKTOP_SESSION_ID CLAUDE_DESKTOP_PIPE
+
 echo "Starting YouCoded dev (port offset: $YOUCODED_PORT_OFFSET)..."
 echo "  Vite:          http://localhost:$((5173 + YOUCODED_PORT_OFFSET))"
 echo "  Remote server: port $((9900 + YOUCODED_PORT_OFFSET)) (if enabled in dev)"
