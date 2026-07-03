@@ -1,7 +1,7 @@
 # YouCoded Accounts & Friendship — Consolidated Design
 
 **Date:** 2026-07-03
-**Status:** Approved design — Phase 0 implemented (pending runtime verification), Phases 1–2 ready for implementation plans, Phase 3 sketched.
+**Status:** Approved design — Phase 0 MERGED (youcoded `10eac9ca`, runtime-verified 2026-07-03; two-user lobby check deferred to Phase 2 gate). Companion Worker fix shipped: poll returns `user` + new `GET /auth/me` (wecoded-marketplace#17) — sign-in previously stored only the token, leaving the user profile permanently null. Phases 1–2 ready for implementation plans, Phase 3 sketched.
 **Supersedes:**
 - `docs/superpowers/2026-07-01-friendship-model-session-status.md` (friendship-model session)
 - `docs/superpowers/investigations/2026-07-01-github-auth-consolidation-status.md` (GitHub-auth session)
