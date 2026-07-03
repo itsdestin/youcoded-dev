@@ -1,7 +1,7 @@
 # Games: GitHub identity from marketplace OAuth (not gh CLI)
 
 **Date:** 2026-06-13
-**Status:** Approved design — ready for implementation plan
+**Status:** Executed — implemented 2026-07-03 on `feat/games-marketplace-identity`; absorbed as **Phase 0** of `2026-07-03-youcoded-accounts-friendship-consolidated-design.md`
 **Scope:** Desktop + Android + remote (shared React UI). Single focused change.
 
 ## Problem
