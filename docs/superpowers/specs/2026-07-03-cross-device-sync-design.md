@@ -3,7 +3,7 @@
 - **Date:** 2026-07-03 (brainstormed 2026-06-12 → 2026-07-03)
 - **Status:** Approved design, pending implementation plan
 - **Precursor:** Full review of the existing sync/backup/restore system (conducted in-session 2026-06-12; key findings summarized in §1)
-- **Related:** `docs/superpowers/plans/2026-05-04-opencode-provider-mvp.md` (shipped), `docs/superpowers/plans/2026-06-12-resume-browser-reliability.md` (shipped), `docs/decisions/003-multi-backend-sync.md` (superseded in part by this design)
+- **Related:** `docs/superpowers/plans/2026-05-04-opencode-provider-mvp.md` (shipped), `docs/superpowers/plans/2026-06-12-resume-browser-reliability.md` (shipped), `docs/decisions/003-multi-backend-sync.md` (superseded in part by this design), `docs/superpowers/specs/2026-07-03-youcoded-accounts-friendship-consolidated-design.md` (the platform account system SyncHub identity builds on; coordination memo at `docs/superpowers/investigations/2026-07-03-sync-accounts-coordination.md`)
 
 ## 1. Motivation & background
 
@@ -70,14 +70,15 @@ The engine doesn't know how a space travels; the transport doesn't know what's i
 |---|---|---|
 | **Sync Engine** | Per-device daemon inside the app: watches owned roots, debounce-commits, pushes/pulls via transport, applies merges, materializes provider-specific artifacts (e.g. CC JSONL into device-local slugs) | New (TS desktop; Kotlin in Android phase) |
 | **SyncTransport** | Interface: `push(space)`, `pull(space)`, `subscribe(space)`, `history(space)`. First impl: **git transport** (hidden repos → private GitHub). Future impl: **YouCoded Cloud** (§16) | New interface; git impl reuses existing `gh` auth + repo-creation code from `sync-setup-handlers.ts` |
-| **SyncHub** | Tiny Cloudflare Worker + Durable Object: device registry, change signals, session leases, presence. **Metadata only — never file contents, names, or conversation titles** | New; same stack/pattern as the marketplace Worker |
+| **SyncHub** | A walled module **inside the platform Worker** (the wecoded-marketplace Worker, per the accounts consolidation): own routes + its own `SyncGroupRoom` Durable Object for device registry, change signals, session leases, presence. **Metadata only — never file contents, names, or conversation titles** | New module; reuses the platform Worker's session middleware, D1, cron, secrets, and CI deploy |
 | **Conversation Store** | Provider-neutral local store (SQLite) fed by the existing TranscriptWatcher (CC) and OpenCodeSessionAdapter (OpenCode). Resume Browser, flags, and titles read from here. Replaces conversation-index/topic-file/slug machinery over time | New; conversation-index v2 schema is its seed |
 | **Backup layer** | Once-daily mirror of *all synced spaces* to Drive and/or iCloud into **dated folders** (versioned). Restore Wizard retained for these two backends only. GitHub removed as backup/restore backend | Simplified from today's 15-min loop; most current push complexity is deleted (§12) |
 
 ## 6. SyncHub (signal service)
 
-- **One Durable Object per sync group** (a user's device set). Devices hold a WebSocket while the app runs. Missed signals replay from a small ring buffer on reconnect; a full reconcile-on-connect covers anything older, so the DO is never a source of truth — only an accelerant.
-- **Identity/pairing:** devices join a sync group via the user's GitHub identity — the Worker verifies a `gh` token the same way the marketplace Worker's PAT path does (`auth/pat.ts` pattern). No new account system. The user already authenticates `gh` for the git transport.
+- **Lives inside the platform Worker** (wecoded-marketplace Worker — now the "YouCoded platform backend" per the accounts consolidation spec) as a walled module: its own routes and its own `SyncGroupRoom` Durable Object class. One deploy path, one secret store, one authenticated-DO pattern. **`SyncGroupRoom` and the social `PresenceRoom` are different DOs with different data** — a user's own devices vs. a user's friends. Shared infrastructure pattern, no shared state.
+- **One `SyncGroupRoom` per sync group** (a user's device set). Devices hold a WebSocket while the app runs. Missed signals replay from a small ring buffer on reconnect; a full reconcile-on-connect covers anything older, so the DO is never a source of truth — only an accelerant.
+- **Identity/pairing:** devices authenticate with the user's `gh` token (already required for the git transport), but the Worker resolves it to the **opaque platform account id**: gh token → GitHub `/user` id → `identities` table lookup → account (auto-creating the account if none exists, identical to GitHub sign-in resolution). **Sync groups are keyed by the account id, never by a provider-derived string** — per the platform-wide "no code ever parses a user id" rule. This makes a user's sync group, social account, and (later) YouCoded Cloud identity provably the same principal.
 - **Message types (all metadata-only):** `space-updated {spaceId, rev}`, `lease-acquired/renewed/released {sessionId, deviceName}`, `takeover-request {sessionId}`, `device-online/offline`. Space IDs are opaque hashes; session IDs are provider UUIDs; the only human-readable field is the user-chosen device name.
 - **Degradation:** if SyncHub is unreachable, the engine falls back to polling the transport every few minutes, and leases fall back to lease files written through the transport (slower takeover, same safety). SyncHub downtime never blocks work or loses data — it only makes sync less instant.
 - **Privacy:** consistent with the analytics privacy-by-construction stance — the hosted component physically never receives user content.
@@ -149,6 +150,7 @@ The warning-code system survives but shrinks to genuinely actionable items (auth
 - Default ignores prevent common secret files from syncing; first-sync warning on credential-looking files.
 - Synced repos are always private; the engine verifies repo visibility at creation and on connect.
 - `mcp.json` and other credential-bearing config are **excluded from sync by default** with an explicit opt-in (addresses the review finding that MCP keys currently ship to backends silently).
+- **The account auth file is excluded from BOTH sync and the daily backup** — `~/.claude/marketplace-auth.json` today, plus whatever name it takes after the accounts Phase 1 `account:*` rename (track both in the exclusion set). Account sessions are per-device bearer tokens: server-side logout, 90-day expiry, and presence semantics all assume one token = one device. Replicating that file across machines via cloud storage breaks those assumptions and copies a live credential. Each device signs in once itself.
 
 ## 15. Testing strategy
 
@@ -164,7 +166,7 @@ Documented here by explicit decision — **Destin intends to add this at a later
 - **Storage:** Cloudflare R2, content-defined chunking (~1MB chunks, content hashes, dedup — edit a paragraph, upload kilobytes). Metadata (file-version → chunk list) in D1/DO.
 - **Coordination:** the same SyncHub DOs, extended to carry data-plane change feeds.
 - **Encryption:** client-side (end-to-end) — chunks encrypted with user-held keys before upload, so YouCoded-the-service cannot read user data. Requires key management + recovery-phrase UX (lost keys = lost data, or an explicit escrow choice).
-- **Prerequisites that make this a real product effort, not just a transport:** a user account system (YouCoded currently has no server-side identity), quotas/billing, abuse handling, data-deletion obligations, uptime/support responsibility.
+- **Prerequisites that make this a real product effort, not just a transport:** quotas/billing, abuse handling, data-deletion obligations, uptime/support responsibility. (The account-system prerequisite is already satisfied: the platform account substrate exists per `2026-07-03-youcoded-accounts-friendship-consolidated-design.md`, and with sync groups account-keyed from day one — §6 — the Cloud transport inherits identity for free.)
 - **Economics:** R2 ≈ $0.015/GB-month, free egress — storage cost is trivial; the cost is operational responsibility. Paid tier funds it.
 - **Why deferred:** the git transport delivers the same user value for free using infrastructure someone else operates; Cloud makes sense once "zero-setup sync, no GitHub account" is worth becoming a data custodian.
 - **What keeps it honest:** the transport contract tests (§15) and the space abstraction (§4) — Cloud must slot in without changes above the transport seam.
@@ -180,6 +182,8 @@ A pointer to this section lives in `docs/knowledge-debt.md` so the commitment is
 
 Each phase gets its own implementation plan (writing-plans skill) and ships independently.
 
+**Cross-track sequencing:** accounts **Phase 1 (Worker identity rebuild) must land before SyncHub is implemented** — SyncHub's group keying and token resolution depend on the `identities` table and the account-resolution helper existing. Both tracks touch `wecoded-marketplace/worker/` (`auth/`, `wrangler.toml` DO bindings, migrations): rebase early, land D1 migrations as separate numbered files. The sync engine + git transport (the bulk of Phase 1) have no dependency on the accounts work and can proceed in parallel.
+
 ## 18. Open questions & risks
 
 - **Watcher scale:** very large `Projects/` trees (a user importing a monorepo) — the ignore set + size caps mitigate, but the engine needs a files-count guardrail with a "this project is too large to live-sync" fallback.
@@ -187,3 +191,5 @@ Each phase gets its own implementation plan (writing-plans skill) and ships inde
 - **CC `--resume` semantics** are a CC-coupled dependency (session-id stability verified 2026-06-12; re-verify on CC bumps — `docs/cc-dependencies.md` entry required when Phase 2 lands).
 - **Lease correctness under clock skew:** lease expiry decided by SyncHub (server time), never device clocks.
 - **Migration ordering:** GitHub-backup → sync migration must not run while a legacy 15-min push is mid-flight; reuse the existing `.sync-lock` discipline during the transition release.
+- **gh CLI auth is a silent gate for non-developers — the "Connect GitHub" modal is a GA prerequisite, not polish.** Sync Phase 1 requires `gh` auth (git transport + group join) and §3 makes Sync the default onboarding path. The accounts track's core lesson applies directly: the games lobby sat "empty" for months because non-developer users silently never pass `gh auth login`. The in-app "Connect GitHub" modal (wrapping gh's device-code flow; currently a deferred follow-up in the accounts spec) must ship **before Sync becomes the default onboarding path**. Desktop↔desktop dogfooding can proceed without it; GA cannot.
+- **Accounts-track dependency:** SyncHub implementation is blocked on accounts Phase 1 (see §17 sequencing note). If the sync plan reaches SyncHub first, coordinate with the accounts track rather than building on the legacy `github:<id>` identity — that format is deleted in the same release window.

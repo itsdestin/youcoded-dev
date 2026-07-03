@@ -164,7 +164,7 @@ CHANGELOG entry: v2.1.139 — Added agent view (Research Preview): a single list
 ## Roadmap: YouCoded Cloud sync transport (recorded 2026-07-03)
 - **Claim**: The cross-device sync design (`docs/superpowers/specs/2026-07-03-cross-device-sync-design.md`) ships with a single `SyncTransport` implementation (git → private GitHub repos).
 - **Actual**: Not drift — a deliberate roadmap commitment recorded at Destin's request so it's discoverable outside the spec. **Destin intends to add a second transport, "YouCoded Cloud," at a later date**: Cloudflare R2 content-addressed chunked storage + client-side (end-to-end) encryption + a user account system, likely as a paid tier ("zero-setup sync, no GitHub account needed"). Full outline in the spec's §16 (Future work).
-- **Fix**: When picking it up: the `SyncTransport` contract tests and the sync-space abstraction are the compatibility boundary — YouCoded Cloud must slot in with no changes above the transport seam. Prerequisites are listed in spec §16 (accounts, quotas/billing, abuse handling, deletion obligations).
+- **Fix**: When picking it up: the `SyncTransport` contract tests and the sync-space abstraction are the compatibility boundary — YouCoded Cloud must slot in with no changes above the transport seam. Prerequisites are listed in spec §16 (quotas/billing, abuse handling, deletion obligations, ops; identity is already covered — sync groups are keyed by platform account ids per spec §6 and the 2026-07-03 accounts consolidation spec).
 - **Priority**: low (future roadmap item, not a defect; remove this entry when the Cloud transport ships or gets its own spec)
 
 ## Local-mode: stuck-detection inactive (noticed 2026-05-19)
