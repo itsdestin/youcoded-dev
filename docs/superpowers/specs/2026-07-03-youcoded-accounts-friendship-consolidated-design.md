@@ -168,6 +168,10 @@ Known wrinkle: CI applies migrations *before* deploying the new Worker code, so 
 - **"Hide my last seen"** preference toggle.
 - De-Claude-ifying plugin publishing — explicitly ruled irrelevant to this work by Destin (auth session).
 
+### Related in-flight work
+
+- **Cross-device sync** (`docs/superpowers/specs/2026-07-03-cross-device-sync-design.md`, separate session, worktree `youcoded-dev.wt/cross-device-sync`) plans a SyncHub (device registry + leases) on the same Worker stack. Coordination memo with requested amendments (SyncHub keys groups by **account id** via `identities`, lives as a module in the platform Worker, account token file joins sync/backup credential exclusions, gh "Connect GitHub" modal becomes a sync-GA prerequisite): `docs/superpowers/investigations/2026-07-03-sync-accounts-coordination.md`. Sequencing: accounts Phase 1 lands before SyncHub implementation; both tracks touch `wecoded-marketplace/worker/auth/` and `wrangler.toml` — coordinate migrations.
+
 ### Known risks
 
 - **D1 migrate-then-deploy blip** (Phase 1): old Worker code errors against the new schema for the seconds between CI's migration and deploy steps. Accepted at current scale.
