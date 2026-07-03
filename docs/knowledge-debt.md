@@ -161,6 +161,12 @@ CHANGELOG entry: v2.1.139 — Added agent view (Research Preview): a single list
 - **Fix**: Add a `session.compacted` branch in `opencode-session-adapter.ts:handleEvent` that emits a `compact-summary` transcript event. App.tsx already dispatches `COMPACTION_COMPLETE` on that event type. ~10 lines.
 - **Priority**: low (cosmetic — no functional break)
 
+## Roadmap: YouCoded Cloud sync transport (recorded 2026-07-03)
+- **Claim**: The cross-device sync design (`docs/superpowers/specs/2026-07-03-cross-device-sync-design.md`) ships with a single `SyncTransport` implementation (git → private GitHub repos).
+- **Actual**: Not drift — a deliberate roadmap commitment recorded at Destin's request so it's discoverable outside the spec. **Destin intends to add a second transport, "YouCoded Cloud," at a later date**: Cloudflare R2 content-addressed chunked storage + client-side (end-to-end) encryption + a user account system, likely as a paid tier ("zero-setup sync, no GitHub account needed"). Full outline in the spec's §16 (Future work).
+- **Fix**: When picking it up: the `SyncTransport` contract tests and the sync-space abstraction are the compatibility boundary — YouCoded Cloud must slot in with no changes above the transport seam. Prerequisites are listed in spec §16 (accounts, quotas/billing, abuse handling, deletion obligations).
+- **Priority**: low (future roadmap item, not a defect; remove this entry when the Cloud transport ships or gets its own spec)
+
 ## Local-mode: stuck-detection inactive (noticed 2026-05-19)
 - **Claim**: `useAttentionClassifier` (per `docs/chat-reducer.md`) detects a stalled assistant and swaps `<ThinkingIndicator />` for `<AttentionBanner state='stuck' />` after a glyph-stable / counter-frozen window.
 - **Actual**: The classifier reads the **xterm PTY buffer**. Local (OpenCode) sessions have no PTY; the classifier never runs for them. A hung local model never trips the "something's wrong" banner — the user sees the silent spinner indefinitely.
