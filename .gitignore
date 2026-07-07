@@ -35,3 +35,7 @@ scratch/
 !.claude/rules/
 !.claude/skills/
 !.claude/settings.json
+.youcoded/
+
+# Worktree container dirs (per-repo .wt convention)
+*.wt/

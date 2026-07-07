@@ -110,7 +110,7 @@ Five CC v2.1.119–v2.1.121 fixes touch behaviors YouCoded code paths interact w
 
 `desktop/src/main/prerequisite-installer.ts` `installClaude` POSIX branch silently assumes `/bin/bash` exists and `curl` is on PATH; on stripped Linux distros (Alpine, certain container images) this can fail with raw stderr instead of clear "install bash + curl" guidance. **Partially resolved (v1.2.4, commit `8abcdd6d`):** the `curl` part is fixed — `installClaude` now probes for curl, falls back to wget, and emits an actionable message if neither exists (`set -o pipefail` keeps a left-side pipe failure visible). The `bash` assumption is still open: optional follow-up is to probe `runCommand('bash', ['--version'])` first.
 
-`refreshPath()` at line 152 invokes `reg query` without resolving `reg.exe` via `which` / PATHEXT. C:\Windows\System32 is reliably on PATH so this works in practice, but inherits Electron's snapshot of PATH at app launch — same vulnerability the rest of the file works around with `resolveCommand()`. Real fix would be to invoke C:\Windows\System32\reg.exe by absolute path.
+**Resolved (2026-05-22):** The absolute path of `reg.exe` is now fully resolved dynamically using `SystemRoot` / `windir` (defaulting to `C:\Windows\System32\reg.exe`) inside `refreshPath()` and `checkWindowsDevMode()` to bypass Electron environment snapshot limitations.
 
 
 ## CC-drift: Surface CC /goal completion-condition feature in the YouCoded UI (surfaced 2026-05-18, from CC v2.1.143)

@@ -750,11 +750,10 @@ export class OpenCodeConfigWriter {
     this.configDir = path.join(homeDir, '.config', 'opencode');
   }
 
-  /** Declare an Ollama-via-OpenAI-compat provider in opencode.json + placeholder auth.json. */
+  /** Declare an Ollama-via-OpenAI-compat provider in opencode.json. No auth.json — Ollama has no API key. */
   async writeOllamaConfig(opts: OllamaConfigOpts): Promise<void> {
     await fs.mkdir(this.configDir, { recursive: true });
     const cfgPath = path.join(this.configDir, 'opencode.json');
-    const authPath = path.join(this.configDir, 'auth.json');
 
     // Merge into existing opencode.json if present (preserve user fields)
     let cfg: any = {};
