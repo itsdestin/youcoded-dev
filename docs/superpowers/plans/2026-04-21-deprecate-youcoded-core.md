@@ -31,7 +31,7 @@
 
 **Context:** `write-guard.sh` conditionally sources `$HOOK_DIR/lib/hook-preamble.sh` at line 8 (the `[[ -f ... ]] &&` check). Keeping the same relative `lib/` path lets us copy both files verbatim without edits.
 
-- [ ] **Step 1: Copy both files with identical content**
+- [x] **Step 1: Copy both files with identical content**
 
 ```bash
 mkdir -p youcoded/desktop/hook-scripts/lib
@@ -41,7 +41,7 @@ chmod +x youcoded/desktop/hook-scripts/write-guard.sh
 chmod +x youcoded/desktop/hook-scripts/lib/hook-preamble.sh
 ```
 
-- [ ] **Step 2: Ensure Git records the execute bit (Windows git doesn't set this automatically)**
+- [x] **Step 2: Ensure Git records the execute bit (Windows git doesn't set this automatically)**
 
 ```bash
 cd youcoded
@@ -49,7 +49,7 @@ git update-index --chmod=+x desktop/hook-scripts/write-guard.sh
 git update-index --chmod=+x desktop/hook-scripts/lib/hook-preamble.sh
 ```
 
-- [ ] **Step 3: Verify the relative-path sourcing will still work**
+- [x] **Step 3: Verify the relative-path sourcing will still work**
 
 ```bash
 grep -n 'hook-preamble' youcoded/desktop/hook-scripts/write-guard.sh
@@ -57,7 +57,7 @@ grep -n 'hook-preamble' youcoded/desktop/hook-scripts/write-guard.sh
 
 Expected: one match at line 8 showing `$HOOK_DIR/lib/hook-preamble.sh`.
 
-- [ ] **Step 4: Update the comment at the top of `write-guard.sh` to reflect new ownership**
+- [x] **Step 4: Update the comment at the top of `write-guard.sh` to reflect new ownership**
 
 Find line ~2 which currently reads:
 ```bash
@@ -67,7 +67,7 @@ Find line ~2 which currently reads:
 
 No text change needed — the comment is already app-agnostic. Skip if already correct.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd youcoded
@@ -90,7 +90,7 @@ via install-hooks.js. Part of youcoded-core deprecation."
 
 **Context:** Android's `Bootstrap.installHooks()` opens assets via `context.assets.open("relative/path.sh")`. Nested directories under `assets/` are supported — the existing bundle has a flat layout but there's nothing preventing a `lib/` subdir.
 
-- [ ] **Step 1: Copy both files**
+- [x] **Step 1: Copy both files**
 
 ```bash
 mkdir -p youcoded/app/src/main/assets/lib
@@ -98,7 +98,7 @@ cp youcoded-core/hooks/write-guard.sh youcoded/app/src/main/assets/write-guard.s
 cp youcoded-core/hooks/lib/hook-preamble.sh youcoded/app/src/main/assets/lib/hook-preamble.sh
 ```
 
-- [ ] **Step 2: Android assets don't need Git's execute bit (assets are copied with `setExecutable(true)` at deploy time by Bootstrap), but commit them anyway**
+- [x] **Step 2: Android assets don't need Git's execute bit (assets are copied with `setExecutable(true)` at deploy time by Bootstrap), but commit them anyway**
 
 ```bash
 cd youcoded
@@ -120,7 +120,7 @@ registration in Bootstrap.kt. Part of youcoded-core deprecation."
 
 `install-hooks.js` is a self-invoking script (not a module), so unit testing is not established here. Verification is a manual boot + inspect cycle covered in Task 11.
 
-- [ ] **Step 1: Insert the write-guard registration block after the title-update registration**
+- [x] **Step 1: Insert the write-guard registration block after the title-update registration**
 
 Open `youcoded/desktop/scripts/install-hooks.js`. Locate the line:
 
@@ -160,11 +160,11 @@ Open `youcoded/desktop/scripts/install-hooks.js`. Locate the line:
   }
 ```
 
-- [ ] **Step 2: Verify the worktree-safety guard still protects the new path**
+- [x] **Step 2: Verify the worktree-safety guard still protects the new path**
 
 The existing guard at lines 29-36 only checks `RELAY_PATH`. The write-guard path uses the same `path.resolve(__dirname, ...)` pattern, so if it's inside a worktree, so is the relay path — the existing guard covers it. Confirm by reading lines 29-36 and verifying no per-path changes are needed.
 
-- [ ] **Step 3: Update the final log line to mention write-guard**
+- [x] **Step 3: Update the final log line to mention write-guard**
 
 Locate this line (around line 190):
 
@@ -178,7 +178,7 @@ Replace with:
   console.log('Hooks installed for ' + FIRE_AND_FORGET_EVENTS.length + ' fire-and-forget events + PermissionRequest (blocking) + auto-title + statusline + write-guard');
 ```
 
-- [ ] **Step 4: Smoke-test the script against a temp settings.json**
+- [x] **Step 4: Smoke-test the script against a temp settings.json**
 
 ```bash
 cd youcoded/desktop
@@ -202,7 +202,7 @@ fs.rmSync(tmp, { recursive: true });
 
 Expected output: `OK: write-guard registered`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd youcoded
@@ -224,7 +224,7 @@ deprecation."
 
 **Context:** The template is the title-update deployment block at lines 979-1017. We deploy `write-guard.sh` + `lib/hook-preamble.sh` from assets to `~/.claude-mobile/hooks/`, mark executable, then register a `PreToolUse` hook with matcher `"Write|Edit"` using the existing `bashPath` and additive merge pattern.
 
-- [ ] **Step 1: Add the asset deployment block after the title-update deployment**
+- [x] **Step 1: Add the asset deployment block after the title-update deployment**
 
 Open `youcoded/app/src/main/kotlin/com/youcoded/app/runtime/Bootstrap.kt`. Locate line 1017 (end of the `if (!titleHookRegistered) { ... }` block). Insert the following block immediately after that closing brace, BEFORE the `// Deploy CLAUDE.md instruction` line at 1019:
 
@@ -275,7 +275,7 @@ Open `youcoded/app/src/main/kotlin/com/youcoded/app/runtime/Bootstrap.kt`. Locat
         }
 ```
 
-- [ ] **Step 2: Verify the Kotlin compiles**
+- [x] **Step 2: Verify the Kotlin compiles**
 
 ```bash
 cd youcoded
@@ -284,7 +284,7 @@ cd youcoded
 
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd youcoded
@@ -309,7 +309,7 @@ write-guard.sh + lib/hook-preamble.sh from assets to
 
 Tests use the same `tmpHome` pattern as `symlink-cleanup.test.ts` — `os.homedir` is monkey-patched per-test to point at a temp dir.
 
-- [ ] **Step 1: Write the failing test file**
+- [x] **Step 1: Write the failing test file**
 
 Create `youcoded/desktop/tests/legacy-cleanup.test.ts`:
 
@@ -373,7 +373,7 @@ describe('cleanupLegacyYoucodedCore', () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 ```bash
 cd youcoded/desktop
@@ -382,7 +382,7 @@ npx vitest run tests/legacy-cleanup.test.ts
 
 Expected: FAIL with a module-not-found or import error for `../src/main/legacy-cleanup`.
 
-- [ ] **Step 3: Implement `legacy-cleanup.ts`**
+- [x] **Step 3: Implement `legacy-cleanup.ts`**
 
 Create `youcoded/desktop/src/main/legacy-cleanup.ts`:
 
@@ -432,7 +432,7 @@ export function cleanupLegacyYoucodedCore(): LegacyCleanupResult {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 ```bash
 cd youcoded/desktop
@@ -441,7 +441,7 @@ npx vitest run tests/legacy-cleanup.test.ts
 
 Expected: PASS (3 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd youcoded
@@ -463,7 +463,7 @@ errors. Next task wires into main.ts startup."
 
 **Context:** The ordering matters: legacy-cleanup must run BEFORE `reconcileHooks()` so that `pruneDeadPluginHooks()` sees the now-missing scripts and removes the orphaned entries on the same launch. Ordering AFTER install-hooks.js (which registers the new bundled write-guard) means users never have a window where the concurrency guard is missing.
 
-- [ ] **Step 1: Insert the legacy-cleanup call**
+- [x] **Step 1: Insert the legacy-cleanup call**
 
 Open `youcoded/desktop/src/main/main.ts`. Locate line 1042 (the comment `// Decomposition v3 §9.2: reconcile plugin hooks-manifest.json...`). Insert immediately BEFORE that comment block:
 
@@ -487,7 +487,7 @@ Open `youcoded/desktop/src/main/main.ts`. Locate line 1042 (the comment `// Deco
 
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [x] **Step 2: Verify TypeScript compiles**
 
 ```bash
 cd youcoded/desktop
@@ -496,7 +496,7 @@ npx tsc --noEmit
 
 Expected: no errors. (If any unrelated errors exist in the codebase, confirm they pre-dated this change via `git stash` + recompile.)
 
-- [ ] **Step 3: Verify install-hooks.js runs BEFORE the new legacy-cleanup call**
+- [x] **Step 3: Verify install-hooks.js runs BEFORE the new legacy-cleanup call**
 
 Read `youcoded/desktop/src/main/main.ts` lines 1010-1054. Confirm the order is:
 1. `install-hooks.js` invocation (around line 1027)
@@ -506,7 +506,7 @@ Read `youcoded/desktop/src/main/main.ts` lines 1010-1054. Confirm the order is:
 
 If out of order, adjust placement.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd youcoded
@@ -528,7 +528,7 @@ write-guard missing. Part of youcoded-core deprecation."
 
 **Context:** Android's `Bootstrap` is called by `SessionService` on startup. The pattern is: add a private method that handles the cleanup, then call it before or alongside `installHooks()`. Unlike desktop, Android has no `HookReconciler` driven by manifests (its own `HookReconciler.kt` does something different) — but the legacy clone still shouldn't sit on disk, and Android's own `installHooks()` writes the new write-guard path, superseding anything stale.
 
-- [ ] **Step 1: Add the cleanup method to `Bootstrap.kt`**
+- [x] **Step 1: Add the cleanup method to `Bootstrap.kt`**
 
 Open `youcoded/app/src/main/kotlin/com/youcoded/app/runtime/Bootstrap.kt`. Add a new private method (place it near the other deployment helpers, e.g., just above `installHooks()` at line 866):
 
@@ -553,7 +553,7 @@ Open `youcoded/app/src/main/kotlin/com/youcoded/app/runtime/Bootstrap.kt`. Add a
     }
 ```
 
-- [ ] **Step 2: Invoke the cleanup before `installHooks()`**
+- [x] **Step 2: Invoke the cleanup before `installHooks()`**
 
 Locate the caller of `installHooks()` at line 858. Immediately BEFORE that line, add:
 
@@ -561,7 +561,7 @@ Locate the caller of `installHooks()` at line 858. Immediately BEFORE that line,
         cleanupLegacyYoucodedCore()
 ```
 
-- [ ] **Step 3: Also prune stale `settings.json` entries that point into the deleted dir**
+- [x] **Step 3: Also prune stale `settings.json` entries that point into the deleted dir**
 
 The desktop path relies on `HookReconciler.pruneDeadPluginHooks()` to handle this. Android's hook installation is additive (it doesn't prune missing entries). Add a targeted prune in `installHooks()` — at the beginning, after the `existingJson` read but before `hooksObj` is constructed.
 
@@ -602,7 +602,7 @@ Immediately AFTER that line, add:
         }
 ```
 
-- [ ] **Step 4: Compile**
+- [x] **Step 4: Compile**
 
 ```bash
 cd youcoded
@@ -611,7 +611,7 @@ cd youcoded
 
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd youcoded
@@ -635,7 +635,7 @@ the desktop cleanup path. Part of youcoded-core deprecation."
 
 **Context:** After this task, new users won't get the clone. Existing users have the legacy-cleanup handling their old clone. Both paths converge on "no youcoded-core directory on disk."
 
-- [ ] **Step 1: Find and document the current usage of `cloneToolkit` and `detectToolkit`**
+- [x] **Step 1: Find and document the current usage of `cloneToolkit` and `detectToolkit`**
 
 ```bash
 cd youcoded
@@ -644,7 +644,7 @@ grep -rn "cloneToolkit\|detectToolkit" desktop/src desktop/tests
 
 Expected matches: the declarations themselves, any re-exports, and any call sites in setup-wizard / first-run flows. Record the call sites — they all need updating.
 
-- [ ] **Step 2: Delete `cloneToolkit()` (lines ~440-483) and `detectToolkit()` (lines ~253-269)**
+- [x] **Step 2: Delete `cloneToolkit()` (lines ~440-483) and `detectToolkit()` (lines ~253-269)**
 
 Open `youcoded/desktop/src/main/prerequisite-installer.ts`.
 
@@ -685,17 +685,17 @@ export async function cloneToolkit(): Promise<{ success: boolean; error?: string
 }
 ```
 
-- [ ] **Step 3: Remove `'youcoded-core'` from the prerequisite list at line ~260**
+- [x] **Step 3: Remove `'youcoded-core'` from the prerequisite list at line ~260**
 
 Find the array literal that contains `'youcoded-core'` alongside other prerequisite identifiers (near line 260). Remove only the `'youcoded-core'` entry and its trailing comma (or leading comma if it's the last element). Surrounding entries (likely `'node'`, `'git'`, `'claude'`, `'auth'`) stay.
 
-- [ ] **Step 4: Update every call site found in Step 1**
+- [x] **Step 4: Update every call site found in Step 1**
 
 For each call site identified in Step 1, remove the call. If a call site was inside a conditional block (e.g., "if toolkit not installed, clone it"), remove the block entirely — the work is no longer needed. If a call site was part of a Promise.all array, replace with the remaining items.
 
 If a call site lives in a first-run flow that's now obsolete (e.g., "toolkit detection → clone decision"), delete the whole flow.
 
-- [ ] **Step 5: Compile**
+- [x] **Step 5: Compile**
 
 ```bash
 cd youcoded/desktop
@@ -704,7 +704,7 @@ npx tsc --noEmit
 
 Expected: no TypeScript errors. If there are errors about missing `cloneToolkit` / `detectToolkit` exports, the call site sweep in Step 4 missed one — find via `grep -rn "cloneToolkit\|detectToolkit" desktop/src` and fix.
 
-- [ ] **Step 6: Run the full desktop test suite**
+- [x] **Step 6: Run the full desktop test suite**
 
 ```bash
 cd youcoded/desktop
@@ -713,7 +713,7 @@ npm test
 
 Expected: all tests pass. If any test depends on `cloneToolkit`/`detectToolkit`, delete those tests (the functions are gone, the tests are stale).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd youcoded
@@ -738,14 +738,14 @@ deprecation."
 
 **Context:** Any fixture in this test that seeds `~/.claude/plugins/youcoded-core/` with a hooks-manifest.json was modeling the pre-deprecation world. Post-deprecation, no fixture should seed youcoded-core — but the reconciler's pruneDeadPluginHooks behavior itself is unchanged and still needs coverage. Update fixtures to use a generic marketplace-plugin shape (e.g., a plugin named `"test-plugin"` at `~/.claude/plugins/marketplaces/youcoded/plugins/test-plugin/`).
 
-- [ ] **Step 1: Read the current test file and identify fixtures that seed `youcoded-core`**
+- [x] **Step 1: Read the current test file and identify fixtures that seed `youcoded-core`**
 
 ```bash
 cd youcoded
 grep -n "youcoded-core" desktop/tests/hook-reconciler-prune.test.ts
 ```
 
-- [ ] **Step 2: For each match, rename the plugin identifier to `"test-plugin"` and adjust the seeded directory to a marketplace-style path**
+- [x] **Step 2: For each match, rename the plugin identifier to `"test-plugin"` and adjust the seeded directory to a marketplace-style path**
 
 Example rewrite:
 
@@ -759,11 +759,11 @@ After:
 const pluginRoot = path.join(tmpHome, '.claude', 'plugins', 'marketplaces', 'youcoded', 'plugins', 'test-plugin');
 ```
 
-- [ ] **Step 3: If any fixture specifically tested "toolkit-clone-layout" behavior that no longer exists, delete that test**
+- [x] **Step 3: If any fixture specifically tested "toolkit-clone-layout" behavior that no longer exists, delete that test**
 
 Rationale: post-deprecation, the reconciler only sees marketplace plugins. Tests exercising the old clone-layout-specific paths are modeling defunct code.
 
-- [ ] **Step 4: Run the test file**
+- [x] **Step 4: Run the test file**
 
 ```bash
 cd youcoded/desktop
@@ -772,7 +772,7 @@ npx vitest run tests/hook-reconciler-prune.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd youcoded
@@ -793,18 +793,18 @@ entries whose script file is missing) is unchanged."
 
 **Context:** Any test case explicitly exercising `inferredSource: 'youcoded-core'` was covering a branch we'll delete in Phase 2. For Phase 1, leave the branch in place as a no-op (unused) but update the test file so it doesn't rely on the seeding producing that source.
 
-- [ ] **Step 1: Read the current test file and identify `youcoded-core`-specific cases**
+- [x] **Step 1: Read the current test file and identify `youcoded-core`-specific cases**
 
 ```bash
 cd youcoded
 grep -n "youcoded-core" desktop/tests/skill-scanner.test.ts
 ```
 
-- [ ] **Step 2: For each case that seeded a `youcoded-core` directory expecting `inferredSource === 'youcoded-core'`, convert the seeding to a marketplace-plugin shape and update the expectation to `'plugin'`**
+- [x] **Step 2: For each case that seeded a `youcoded-core` directory expecting `inferredSource === 'youcoded-core'`, convert the seeding to a marketplace-plugin shape and update the expectation to `'plugin'`**
 
 The exact marketplace-plugin shape: `~/.claude/plugins/marketplaces/youcoded/plugins/<name>/` with a `plugin.json` at the root and skills under `skills/<skill-name>/SKILL.md`.
 
-- [ ] **Step 3: Run the test file**
+- [x] **Step 3: Run the test file**
 
 ```bash
 cd youcoded/desktop
@@ -813,7 +813,7 @@ npx vitest run tests/skill-scanner.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd youcoded
@@ -1752,6 +1752,11 @@ record. Part of workspace scaffold cleanup."
 - [x] Type names used later match type names defined earlier (`cleanupLegacyYoucodedCore` consistent across tasks 5 and 6; `LegacyCleanupResult` used consistently)
 - [x] Phase gates stated explicitly
 - [x] Every spec section maps to at least one task
+
+## Execution log
+
+- **2026-07-07 — Phase 1 (Tasks 1–10) MERGED to youcoded master** (merge commit `4eaeb621`, branch `deprecate-youcoded-core` deleted local + remote, worktree removed). The branch was implemented 2026-04-21 and revived for the upcoming release: origin/master (472 commits ahead) was merged in with one conflict (`prerequisite-installer.ts` — master's native-installer rework vs. this branch's `cloneToolkit()` deletion; deletion kept). Verified: bundled `write-guard.sh`/`hook-preamble.sh` still byte-identical to youcoded-core HEAD (no hook changes in v1.2.2–v1.2.4); `tsc --noEmit` clean; full desktop suite 974 passed; `:app:compileDebugKotlin` BUILD SUCCESSFUL; temp-home smoke of `install-hooks.js` registers write-guard (`Write|Edit`, timeout 10). Bonus fix: SyncPanel empty-state copy no longer instructs users to install the deprecated toolkit.
+- **Task 11 remains open** — packaged-build smoke on Destin's machine (legacy clone removed, settings.json entries pruned, two-session write-guard block) + Android on-device check happen as part of the next release. Phase 2 gate starts when that release has been live 1–2 weeks.
 
 ## Execution notes
 
