@@ -100,6 +100,16 @@ describe("0004_social schema", () => {
     const row = await env.DB.prepare("SELECT last_seen_at FROM users WHERE id = ?").bind(a.userId).first<{ last_seen_at: number }>();
     expect(row!.last_seen_at).toBe(123);
   });
+
+  it("handle_releases has a nullable released_by that clears when the user is deleted", async () => {
+    const a = await createTestAccount();
+    const now = Math.floor(Date.now() / 1000);
+    await env.DB.prepare("INSERT INTO handle_releases (handle, released_at, released_by) VALUES ('oldname', ?, ?)")
+      .bind(now, a.userId).run();
+    await env.DB.prepare("DELETE FROM users WHERE id = ?").bind(a.userId).run();
+    const row = await env.DB.prepare("SELECT released_by FROM handle_releases WHERE handle = 'oldname'").first<{ released_by: string | null }>();
+    expect(row!.released_by).toBeNull(); // ON DELETE SET NULL
+  });
 });
 ```
 
@@ -149,6 +159,12 @@ CREATE INDEX idx_blocks_blocked ON blocks(blocked);
 -- Friends-visible "last seen" — written by the PresenceRoom DO on disconnect
 -- and on a coarse ~5-minute refresh. Nullable: never-connected users have none.
 ALTER TABLE users ADD COLUMN last_seen_at INTEGER;
+
+-- Who released a handle: lets the PREVIOUS OWNER re-claim their own handle
+-- during the 30-day cooldown (Destin, 2026-07-08: renames shouldn't lock you
+-- out of your old handle). NULL = nobody can reclaim early. ON DELETE SET NULL
+-- so a deleted account's handles follow the normal cooldown for everyone.
+ALTER TABLE handle_releases ADD COLUMN released_by TEXT REFERENCES users(id) ON DELETE SET NULL;
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -1388,7 +1404,7 @@ accountRoutes.get("/auth/export", requireAuth, async (c) => {
 
 ---
 
-### Task 9: Maintenance batch + stale-request prune + atomic handle claim (knowledge-debt #2, #3)
+### Task 9: Maintenance batch + stale-request prune + atomic handle claim with self-reclaim (knowledge-debt #2, #3 + Destin 2026-07-08)
 
 **Files:**
 - Modify: `worker/src/maintenance.ts`
@@ -1432,6 +1448,28 @@ it("a handle inserted into cooldown between check and claim still cannot be take
   const row = await env.DB.prepare("SELECT handle FROM users WHERE id = ?").bind(me.userId).first<{ handle: string | null }>();
   expect(row!.handle).toBeNull();
 });
+
+it("the previous owner CAN re-claim their own handle during cooldown; others still cannot", async () => {
+  const me = await createTestAccount({ handle: "original" });
+  const other = await createTestAccount();
+  const meTok = await issueTestSession(me);
+  const otherTok = await issueTestSession(other);
+  const put = (token: string, handle: string) => SELF.fetch("https://test.local/auth/handle", {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ handle }),
+  });
+  // Rename away → 'original' enters cooldown with released_by = me
+  expect((await put(meTok, "newname")).status).toBe(200);
+  const rel = await env.DB.prepare("SELECT released_by FROM handle_releases WHERE handle = 'original'").first<{ released_by: string }>();
+  expect(rel!.released_by).toBe(me.userId);
+  // Someone else can't snipe it during cooldown
+  expect((await put(otherTok, "original")).status).toBe(409);
+  // But the previous owner can take it back immediately
+  expect((await put(meTok, "original")).status).toBe(200);
+  const row = await env.DB.prepare("SELECT handle FROM users WHERE id = ?").bind(me.userId).first<{ handle: string }>();
+  expect(row!.handle).toBe("original");
+});
 ```
 
 - [ ] **Step 2: Run, expect the prune test to FAIL** (the cooldown test may already pass via the pre-check — that's fine; it pins the atomic behavior).
@@ -1454,15 +1492,24 @@ export async function pruneExpired(db: D1Database, now: number): Promise<void> {
 }
 ```
 
-`worker/src/auth/account.ts` PUT /auth/handle — **read the current merged implementation first** (it batches rename+release). Keep the friendly pre-check SELECT (for the clear 409 message), but make the claim UPDATE itself conditional so the check→claim gap can't be sniped:
+`worker/src/auth/account.ts` PUT /auth/handle — **read the current merged implementation first** (it batches rename+release). Three coordinated changes:
+
+1. **Self-reclaim (Destin 2026-07-08):** the cooldown only applies to OTHER users — the previous owner can take their old handle back immediately. Both the friendly pre-check SELECT and the atomic claim below get the extra condition `AND (released_by IS NULL OR released_by != <me>)`.
+2. **Atomic claim (knowledge-debt #2):** make the claim UPDATE itself conditional so the check→claim gap can't be sniped:
 
 ```sql
 UPDATE users SET handle = ?1
 WHERE id = ?2
-  AND NOT EXISTS (SELECT 1 FROM handle_releases WHERE handle = ?1 AND released_at >= ?3)
+  AND NOT EXISTS (
+    SELECT 1 FROM handle_releases
+    WHERE handle = ?1 AND released_at >= ?3
+      AND (released_by IS NULL OR released_by != ?2)
+  )
 ```
 
 Bind `(handle, userId, now - HANDLE_COOLDOWN_SEC)`. After the batch, inspect the UPDATE statement's result: `results[i].meta.changes === 0` → `throw conflict("that handle was recently released and is in cooldown")`. The UNIQUE-violation → 409 catch stays as-is.
+
+3. **Stamp the releaser:** the rename path's release insert becomes `INSERT OR REPLACE INTO handle_releases (handle, released_at, released_by) VALUES (?, ?, ?)` with the current user id. The DELETE /auth/account release (`INSERT ... SELECT` in the delete batch) stays `(handle, released_at)`-only — `released_by` defaults NULL there, and the FK would null it anyway when the users row cascades; deleted accounts' handles are never early-reclaimable. Also consume the cooldown row on self-reclaim: add `DELETE FROM handle_releases WHERE handle = ? AND released_by = ?` (bound to the claimed handle + current user) to the same batch. The `released_by = me` condition makes it safe — when a DIFFERENT user's claim is rejected by the conditional UPDATE, this DELETE matches nothing, so the cooldown row survives; when the previous owner reclaims, their own release row is cleaned up (otherwise a later rename would leave a stale row with the OLD released_at).
 
 - [ ] **Step 4: Run** full suite → green.
 
@@ -1497,3 +1544,4 @@ git branch -D feat/social-phase2
 - Spec §3 coverage: PresenceRoom DO ✓ (T7), token auth / no ?username= ✓, friends-only fan-out ✓, single global instance ✓, last_seen_at on disconnect + 5-min refresh ✓, no presence history ✓, friends-only challenge relay ✓, message shapes reducer-compatible ✓, multi-device join/leave dedup ✓.
 - Spec §5 coverage: export ✓ (T8) with blocked-by exclusion; cron hygiene ✓ (T9).
 - Knowledge-debt: #1 ✓ (T2), #2 ✓ (T9), #3 ✓ (T9). (#4–#8 are client-plan scope.)
+- Destin 2026-07-08 addition: handle self-reclaim during cooldown ✓ (T1 `released_by` column, T9 conditional claim + row consumption; deleted accounts excluded by ON DELETE SET NULL).
