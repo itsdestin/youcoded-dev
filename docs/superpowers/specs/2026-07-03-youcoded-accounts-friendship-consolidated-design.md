@@ -1,7 +1,7 @@
 # YouCoded Accounts & Friendship — Consolidated Design
 
 **Date:** 2026-07-03
-**Status:** Approved design — Phase 0 MERGED (youcoded `10eac9ca`, runtime-verified 2026-07-03; two-user lobby check deferred to Phase 2 gate). Companion Worker fix shipped: poll returns `user` + new `GET /auth/me` (wecoded-marketplace#17) — sign-in previously stored only the token, leaving the user profile permanently null. Phases 1–2 ready for implementation plans, Phase 3 sketched.
+**Status:** Approved design — **Phase 1 MERGED 2026-07-08** (worker: wecoded-marketplace `8d18246` PR#18, deployed + smoke-tested; client: youcoded `3d62baa4`, runtime-verified by Destin — fresh sign-in, handle claim, profile/handle edits, cooldown 409, games gate, sign-out). Phase 1 extras beyond the plans: 401-auto-signout (dead tokens flip clients to signed-out), Account popup view/edit split with handle-change + delete consequence warnings, Account leads the settings stack, `itsdestin` unreserved (PR#19). Deferred follow-ups in `docs/knowledge-debt.md`. Phase 0 MERGED (youcoded `10eac9ca`, 2026-07-03; two-user lobby check deferred to Phase 2 gate). Phase 2 (friends + presence + games) needs its own implementation plan and Destin's go-ahead; Phase 3 sketched.
 **Supersedes:**
 - `docs/superpowers/2026-07-01-friendship-model-session-status.md` (friendship-model session)
 - `docs/superpowers/investigations/2026-07-01-github-auth-consolidation-status.md` (GitHub-auth session)
