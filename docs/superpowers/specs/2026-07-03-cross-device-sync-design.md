@@ -47,9 +47,17 @@ Alongside the visible folder, YouCoded silently syncs its **AI state**: conversa
 
 **The pitch:** *"Turn on Sync and your projects, files, and conversations are on every device. Drive or iCloud backup is an optional extra copy."* Onboarding pushes Sync as the default path; backups are framed as belt-and-suspenders.
 
-**Import/migration:**
+**Import/migration (REQUIRED for feature completion — expanded 2026-07-09):**
 
-- Existing external folders can be imported into `Projects/` (move or copy).
+The rebuild is not complete until existing work can be brought into sync without manual file surgery. Users like Destin run their real projects as plain home-directory folders (`~/youcoded-dev`, `~/askthebudgetaz`, `~/cookinonlowheat`); a sync system that only covers folders born inside `~/YouCoded/` misses the entire point for them. Two explicit flows must ship (Phase 1b or a dedicated Phase 1 follow-up plan — see §17):
+
+1. **Convert an existing saved-folder project into a managed synced project.** From the session picker (and/or Project View), any existing non-managed folder gets a "Sync this project" affordance. YouCoded shows a plain-language confirm — *"YouCoded will move this folder to `~/YouCoded/Projects/<name>/` so it can sync across your devices. Is this okay?"* — then MOVES the folder, updates the saved-folders entry (`~/.claude/youcoded-folders.json`) to the new path, and initializes the space. Post-move integrity matters: artifact sidecars, the central index, and conversation/cwd associations that reference the old path must be remapped or gracefully degrade; block (or warn hard) if a live session currently has the folder as its cwd.
+2. **Import any on-device folder via the folder picker.** In the new-project flow, alongside "type a name," offer "choose an existing folder" (native picker). Same move-with-consent warning, same path-remap treatment. This is the general entry: a folder that was never a YouCoded project becomes a synced project in one step.
+
+Shared rules for both flows: **move, not copy, is the default** (a copy silently forks the user's work — the old path keeps winning their muscle memory while the synced copy rots); name validation runs through the existing `validateSyncName` guards; a folder that is already a git repo is fine (the hidden `GIT_DIR` transport never touches it, and `.git/` is in the default ignore set); very large trees hit the §18 watcher-scale guardrail with the "too large to live-sync" fallback rather than a silent hang.
+
+Also:
+
 - `~/.claude/encyclopedia/` migrates to `Personal/Encyclopedia/` with the plugin's paths updated.
 - Existing GitHub-*backup* users are upgraded to sync automatically (same repo lineage; see §11).
 
@@ -177,6 +185,8 @@ A pointer to this section lives in `docs/knowledge-debt.md` so the commitment is
 ## 17. Phasing
 
 1. **Phase 1 — Foundation + project sync:** `SyncTransport` interface + git transport, SyncHub, managed `~/YouCoded/` roots + session-creation picker integration, project + personal space live sync, simplified daily backup, GitHub-backup migration, Sync status surface.
+   - **1a (SHIPPED 2026-07-08, youcoded#107):** transport + engine + managed roots + picker/SyncPanel UI + dated daily space backup. SyncHub, backup migration, and legacy deletions deliberately excluded (see the 1a plan's scope notes).
+   - **1-followup — Import existing folders (REQUIRED before the rebuild is "complete"; added 2026-07-09):** the two §3 import flows — convert an existing saved-folder project to a managed synced project, and folder-picker import of any on-device folder — each with the move-with-consent warning and path-remap integrity work. Without this, sync only serves folders created after the feature shipped, which excludes the user's actual existing projects. Needs its own small plan; sequence before or alongside Plan 1b.
 2. **Phase 2 — Conversations + handoff:** Conversation Store + provider adapters feeding it, session leases, CC warm handoff + takeover UX, Resume Browser reads from store. Read-only watching as polish.
 3. **Phase 3 — Android:** Kotlin engine port (spaces, transport, store ingestion against shared fixtures), mobile-appropriate scheduling (foreground sync + on-open reconcile rather than persistent watchers).
 4. **Future:** YouCoded Cloud transport (§16); OpenCode live resume if upstream support appears.
@@ -192,5 +202,6 @@ Each phase gets its own implementation plan (writing-plans skill) and ships inde
 - **CC `--resume` semantics** are a CC-coupled dependency (session-id stability verified 2026-06-12; re-verify on CC bumps — `docs/cc-dependencies.md` entry required when Phase 2 lands).
 - **Lease correctness under clock skew:** lease expiry decided by SyncHub (server time), never device clocks.
 - **Migration ordering:** GitHub-backup → sync migration must not run while a legacy 15-min push is mid-flight; reuse the existing `.sync-lock` discipline during the transition release.
+- **Existing-folder import (§3) is a completion prerequisite, same tier as the Connect-GitHub modal.** Shipping sync that only covers newly created projects looks done in a demo and useless on a real machine full of pre-existing project folders. The rebuild is not "complete" until the convert-existing-project and folder-picker-import flows exist (decided with Destin 2026-07-09).
 - **gh CLI auth is a silent gate for non-developers — the "Connect GitHub" modal is a GA prerequisite, not polish.** Sync Phase 1 requires `gh` auth (git transport + group join) and §3 makes Sync the default onboarding path. The accounts track's core lesson applies directly: the games lobby sat "empty" for months because non-developer users silently never pass `gh auth login`. The in-app "Connect GitHub" modal (wrapping gh's device-code flow; currently a deferred follow-up in the accounts spec) must ship **before Sync becomes the default onboarding path**. Desktop↔desktop dogfooding can proceed without it; GA cannot.
 - **Accounts-track dependency (updated 2026-07-08):** accounts Phase 1 landed, so SyncHub is no longer identity-blocked. The remaining dependency is infrastructural: the platform Worker has no Durable Object / WebSocket setup yet — SyncGroupRoom either pioneers it or reuses accounts Phase 2's PresenceRoom setup, whichever lands first (§6, §17). The legacy `github:<id>` format is already deleted server-side; note the desktop client's `MarketplaceUser.id` type comment still mentions it — cosmetic, don't build on it.
