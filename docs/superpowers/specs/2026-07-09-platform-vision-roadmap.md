@@ -1,7 +1,7 @@
 # YouCoded Platform Vision — Multi-Model Backends, Custom Harnesses, Agents & Automations
 
 **Date:** 2026-07-09
-**Status:** Vision roadmap — pending Destin's review. Each phase gets its own spec → plan → implementation cycle later.
+**Status:** Vision roadmap — reviewed with Destin 2026-07-09; revisions folded in (engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy). One open decision remains: whether Phase 4 (Agents & Automations) jumps the queue on the CC backend. Each phase gets its own spec → plan → implementation cycle later.
 **Inputs:** repo audit of master + `feat/opencode-mvp`, `cc-dependencies.md` coupling inventory, mid-2026 market research (web, cited), llama.cpp/provider-layer technical research (web, cited).
 
 ---
@@ -141,7 +141,7 @@ The technical research strongly validates skipping Ollama:
 - **OpenAI-compatible tool calling** with native chat-template handling (`--jinja`) for Qwen/Llama/Hermes/DeepSeek/etc., plus **grammar-constrained JSON** (`json_schema`) — measured to lift small-model tool-call accuracy from ~50% to ~78%. This is what makes local *agentic* use viable.
 - Also free: parallel slots, speculative decoding, multimodal (libmtmd), embeddings.
 
-**Decision: subprocess `llama-server`, not in-process `node-llama-cpp`.** Rationale: crash isolation (a segfaulting native module in Electron main kills the app), engine updates decoupled from app releases (Jan's pattern), the API is OpenAI-compat so the provider layer treats local exactly like cloud, and — decisive — **the same binary + protocol runs on Android** under the existing Termux runtime. `node-llama-cpp` (v3.19, excellent) stays in reserve for in-process needs (its memory-fit estimation code is a good reference for the download UX regardless).
+**Decision (confirmed 2026-07-09): subprocess `llama-server` is the backbone; `node-llama-cpp` is reserved for narrow in-process niches.** Rationale for the server: crash isolation (a segfaulting native module in Electron main kills the whole app — and router mode further isolates each model in its own subprocess), engine updates decoupled from app releases (Jan's pattern), the API is OpenAI-compat so the provider layer treats local exactly like cloud, and — decisive — **the same binary + protocol runs on Android and over LAN** under the existing Termux runtime. `node-llama-cpp` (v3.19, excellent) keeps the nicer in-process function-calling API and memory-fit estimation code (a reference for the download UX regardless); if we later want token-level UX or instant tiny-model utility features (local title generation, autocomplete-class features, embeddings without a server round-trip), adopt it for those narrow uses. The provider layer hides which engine is underneath, so this is reversible and additive — the default agentic path stays on the server.
 
 Packaging: ship CPU + Vulkan (+ Metal on macOS) engine binaries (~100 MB), offer the CUDA backend as an opt-in post-install download (~373 MB cudart on Windows) — the LM Studio/Jan pattern. Supervise the server the same way `pty-worker`/OpenCodeService were supervised: free-port spawn, health polling, crash restart, `engine-dependencies.md` coupling registry.
 
@@ -156,7 +156,7 @@ Model UX ladder (defaults, revisit quarterly):
 
 Download UI shows disk + RAM/VRAM fit before pulling; Q4_K_M is the quality floor for tool-calling; local context defaults 16–32K (honest UX), cloud gets full context.
 
-**Ollama / LM Studio as optional backends:** they're just alternate OpenAI-compat baseURLs in the provider layer + a detector. ~1 week of work total, mostly settings UI. Never required.
+**Ollama / LM Studio as optional backends:** they're just alternate OpenAI-compat baseURLs in the provider layer + a detector. ~1 week of work total, mostly settings UI. Never required — and deliberately not the default: Ollama has drifted from "neutral llama.cpp wrapper" toward a product with its own gravity (engine fork, `:cloud`-routed models, VC-shaped incentives), and its per-model defaults are agent-hostile (the silent small-context truncation footgun). Building the default path on it would recreate the exact dependency shape this roadmap removes with OpenCode. Users who already run Ollama or LM Studio lose nothing.
 
 ### 3.2 Provider layer — Vercel AI SDK
 
@@ -186,7 +186,7 @@ A **harness** = system prompt + tool set + loop policy (permission rules, max st
 
 **Tool naming is a cheat code:** name the native tools exactly `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep`, `WebFetch`, `TodoWrite`… — the same names Claude Code uses. The existing `ToolCard`/`ToolBody` views key off tool name + input shape, so **every polished tool view (diff rendering, structuredPatch, todo lists) lights up for free**, and the Artifact Tracker (which watches `TRANSCRIPT_TOOL_USE` for `Write`/`Edit` with `file_path`) keeps working without modification. The ToolCard sandbox (`run-sandbox.sh`) validates this cheaply with fixtures before any live loop exists.
 
-**On the leaked Claude Code source:** don't use it. Incorporating leaked proprietary Anthropic code into a publicly distributed open-source app is a copyright/ToS liability that could sink the project — and YouCoded's headline sign-in depends on Anthropic goodwill (they've recently been *loosening* subscription-agent policy; don't give them a reason). Everything it would teach is available legitimately: opencode is MIT and battle-tested at scale; Anthropic's own engineering blog + Agent SDK docs describe the loop, compaction, and tool design; and the behaviors YouCoded already reverse-engineered empirically (documented in `cc-dependencies.md` and the PTY probes) are clean-room knowledge. Design-level inspiration from published analyses: fine. Copied leaked code: no.
+**On the leaked Claude Code source (policy settled 2026-07-09): ideas-only, never code.** No leaked code, prompts, or tool-description text enters the repo — non-literal copying (distinctive structure, and especially the copyrighted system-prompt/tool-description strings embedded in that source) is a real liability for a publicly distributed app, and YouCoded's headline sign-in depends on Anthropic goodwill. Destin may review it personally for feature/design ideas expressed in his own words; Claude-side design work draws exclusively on legitimate sources, which cover nearly the same ground: opencode (MIT, battle-tested), Anthropic's published Agent SDK docs and engineering blog, public CC prompt/loop teardowns, the CC changelog, and the clean-room behavioral knowledge already in `cc-dependencies.md`. A dedicated "harness design ideas" research pass over those public sources is a Phase 0 step.
 
 ### 3.4 Making non-Claude sessions first-class in the existing UI
 
@@ -204,15 +204,24 @@ Feature-by-feature wiring plan (the part you asked for emphasis on):
 | Resume browser | Native sessions persist as JSONL in `~/.claude/youcoded-sessions/<project-slug>/` mirroring the transcript shape → the conversation index, topic files, and Resume Browser treat them like CC sessions with a `provider` tag. One store, two writers. |
 | Projects view / conversations | Same conversation-index integration → project conversation lists include native sessions automatically. |
 | Artifacts | Artifact Tracker already keys off transcript tool events — zero work beyond tool naming. |
-| Skills | **Adopt the SKILL.md convention in the harness**: scan the same installed-plugin/skill dirs, inject skill descriptions into the system prompt, load full SKILL.md on trigger. The WeCoded marketplace instantly serves every backend — a real moat. |
-| MCP | AI SDK 6 stable MCP client; read the same MCP config the reconciler writes; settings UI shared. |
+| Skills | **SKILL.md stays as the content format** (simple, portable, already what the marketplace catalog contains) but the harness scans the YouCoded-native skill store (§3.4a): frontmatter descriptions in the system prompt, full SKILL.md loaded on trigger. The WeCoded marketplace serves every backend — a real moat. |
+| MCP | AI SDK 6 stable MCP client reading **YouCoded's own MCP config as source of truth**; the existing mcp-reconciler demotes to an export adapter that projects entries into CC's config for CC sessions (§3.4a). |
 | Slash commands | Command drawer already scans command dirs; harness implements `/model`, `/compact`, `/clear` natively (no PTY writes — just function calls). |
 | Model picker | Provider-scoped lists (salvaged ModelPickerPopup work) + models.dev metadata; mid-session model swap is trivial natively (next `streamText` call uses the new model — no process restart). |
 | Attention states | Mostly unnecessary: the harness has *real* state (streaming/tool-running/awaiting-approval/errored) — no buffer-scraping classifier. Map error states to the existing AttentionBanner. |
-| Memory/context | Reuse `context-discovery.ts`: CLAUDE.md/AGENTS.md + rules + memory dirs feed the harness system prompt. Same files, either backend. |
+| Memory/context | Reuse `context-discovery.ts` with **AGENTS.md as the primary instruction file** (the genuine cross-tool standard — Codex, Cursor, opencode, Copilot, Antigravity all read it) and CLAUDE.md as fallback for existing projects. Same discovery code, either backend. |
 | Android/remote | Events already flow over the bridge (`transcript:event` shape is transport-agnostic). Harness runs in desktop main; Android Phase 5 decides local-vs-LAN. |
 
-The deep insight: **YouCoded's "Claude conventions" (SKILL.md, CLAUDE.md, MCP config, plugin dirs) become YouCoded's own cross-backend conventions.** The app stops *wrapping* Claude Code's ecosystem and starts *owning* a compatible one.
+### 3.4a Conventions inversion — YouCoded-native home, CC as export target
+
+Decision (2026-07-09, replacing the earlier "adopt Claude's conventions as ours" position): the jank Destin has experienced is almost entirely Claude Code's **packaging/registry layer** — the four-file plugin registry that must be written atomically, `enabledPlugins` in settings.json, marketplace cache dirs, hooks-in-settings.json, `.claude.json` MCP quirks — not the content formats. So:
+
+- **A YouCoded-native home** (working name `~/.youcoded/`; final layout is a Phase 0 spec) becomes the **source of truth** for installed skills, MCP server configs, harness manifests, and agent manifests — one clean manifest/lockfile instead of CC's four-file dance.
+- **Content formats stay standard:** SKILL.md as the skill format, MCP as the tool protocol, **AGENTS.md as the primary project-instructions file** (CLAUDE.md read as fallback).
+- **`ClaudeCodeRegistry` demotes from "the system" to an export adapter:** it projects installed items *into* `~/.claude` (plugin registry, MCP config) only so CC sessions can see them. Single-writer discipline; CC's quirks quarantined behind one adapter. The mcp-reconciler follows the same demotion.
+- **Marketplace implications** (Phase 3): registry schema gains item types (skill / harness / agent) and a backend-compatibility field (`claude-code` / `any-backend`, validated in the plugin-PR CI); install paths move to the native home; a one-time migration in an app release moves existing installs and leaves CC-visible exports in place.
+
+The app stops *wrapping* Claude Code's ecosystem and starts owning a standards-based one that Claude Code plugs into like any other backend.
 
 ### 3.5 Agents & Automations view
 
@@ -231,17 +240,20 @@ A third top-level view alongside Chat and Projects:
 
 Phases are sequential but 1/2 overlap internally; each phase = its own brainstorm→spec→plan cycle per workspace convention. Estimates are focused-effort approximations, not calendar promises.
 
+**Open decision (settle in Phase 0):** Phase 4 (Agents & Automations) could jump the queue and ship first on the Claude Code backend — headless `claude -p` runs already work, and the scheduler/inbox/manifest work is backend-agnostic. That delivers the headline surface in ~2 months instead of ~5, at the cost of deferring the "agents run free on local models" combo and designing the runner against CC's quirks first.
+
 ### Phase 0 — Foundations & salvage (~1–2 weeks)
 
 **Goal:** lock decisions, extract value from `feat/opencode-mvp`, land the shared seam on master.
 
-1. **Decision records** (`docs/decisions/`): llama-server-subprocess over node-llama-cpp; AI SDK v6 now/v7 later; native harness over embedded CLI; no leaked-source policy; tool-name compatibility policy.
+1. **Decision records** (`docs/decisions/`): llama-server backbone + node-llama-cpp-for-in-process-niches hybrid; AI SDK v6 now/v7 later; native harness over embedded CLI; leaked-source ideas-only policy; tool-name compatibility policy; conventions inversion + native home layout (§3.4a); **Agents-view ordering** (the one still-open call — see §4 intro).
 2. **Salvage pass on `feat/opencode-mvp`:**
    a. Cherry-pick/rebase the provider-seam + runtime-aware UI commits (types, SessionStrip runtime selector, HeaderBar gates, classifier gating, ModelPicker scoping, reasoning UI) onto a fresh branch; strip OpenCode/Ollama specifics.
    b. Rename `'local'` provider concept to `'native'` (the harness) with a `providerEndpoint` concept underneath; reserve `IPC` channels.
    c. Archive the branch with a README pointing here (don't delete — the adapter is reference material).
-3. **Spec the provider-layer interfaces** (`ProviderRegistry`, `ModelCatalog`, `EngineSupervisor`, `HarnessSession`) and the native session store format (JSONL mirroring transcript-event shape).
+3. **Spec the provider-layer interfaces** (`ProviderRegistry`, `ModelCatalog`, `EngineSupervisor`, `HarnessSession`), the native session store format (JSONL mirroring transcript-event shape), and the **native home layout** (`~/.youcoded/` manifest + the CC export-adapter design, §3.4a).
 4. Create `engine-dependencies.md` + `provider-dependencies.md` coupling registries (the `cc-dependencies.md` discipline, applied forward).
+5. **Harness-design-ideas research pass** over legitimate public sources (opencode internals, Agent SDK docs, published CC prompt/loop teardowns, the CC changelog) — the sanctioned substitute for mining the leaked source (§3.3 policy).
 
 **Exit criteria:** master has the `SessionProvider` extension + dormant runtime selector behind a settings flag; specs approved.
 
@@ -280,8 +292,8 @@ Phases are sequential but 1/2 overlap internally; each phase = its own brainstor
 
 **Goal:** the WeCoded ecosystem and user extensibility work on every backend.
 
-1. **Skills in the harness:** scan installed skills/plugins (same dirs the marketplace installs to); frontmatter descriptions in system prompt; on-trigger SKILL.md loading; per-harness skill toggles. Marketplace UI gains "works with: Claude / all backends" metadata.
-2. **MCP client:** AI SDK MCP integration reading the existing reconciled MCP config; per-harness MCP server toggles; connection status UI.
+1. **Skills in the harness + conventions migration:** scan the native skill store (§3.4a); frontmatter descriptions in system prompt; on-trigger SKILL.md loading; per-harness skill toggles; CC export adapter keeps CC sessions seeing the same installs. Marketplace registry + UI gain backend-compat metadata (validated in the plugin-PR CI); one-time migration moves existing installs to the native home.
+2. **MCP client:** AI SDK MCP integration reading YouCoded's own MCP config (source of truth; mcp-reconciler demoted to CC exporter); per-harness MCP server toggles; connection status UI.
 3. **Custom harness builder:** create/edit/duplicate harnesses (prompt, tools, permissions, model binding, skills/MCP selection); JSON manifest store; import/export; share-to-friend via existing social layer.
 4. **Slash commands native:** `/model`, `/compact`, `/clear`, custom command-dir commands executed harness-side.
 5. **Projects view integration polish:** provider badges on conversations; per-project default harness/model.
@@ -343,14 +355,16 @@ Phases are sequential but 1/2 overlap internally; each phase = its own brainstor
 | Two agent stacks to maintain (CC + native) | The transcript-event seam already isolates them; shared conventions (skills/MCP/context) prevent ecosystem forking |
 | Windows GPU support matrix pain (CUDA/Vulkan/driver zoo) | Vulkan default (covers NVIDIA/AMD/Intel), CUDA opt-in, CPU always works; Jan's backend-variant switcher as the model |
 | Security of user-shared harnesses/agents | Manifest-level review + scanning at marketplace submission from day one |
+| Conventions migration breaks existing installs | One-time migration leaves CC-visible exports in place; export adapter tested against the existing four-file-registry fixtures; staged behind an app release |
 
 ---
 
 ## 6. Immediate next steps
 
-1. Destin reviews this document; adjust vision/priorities.
-2. Phase 0 brainstorm → spec (provider interfaces + salvage plan) via the standard superpowers cycle.
-3. Quick win candidate while Phase 0 specs bake: land the dormant `SessionProvider`/runtime-selector seam from the salvage pass behind a settings flag.
+1. Done — reviewed with Destin 2026-07-09; revisions folded in (engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy, Ollama-drift rationale).
+2. **Settle the one open call:** whether Phase 4 (Agents & Automations) jumps the queue on the CC backend (§4 intro).
+3. Phase 0 brainstorm → spec (provider interfaces + native home layout + salvage plan) via the standard superpowers cycle.
+4. Quick win candidate while Phase 0 specs bake: land the dormant `SessionProvider`/runtime-selector seam from the salvage pass behind a settings flag.
 
 ### Sources
 
