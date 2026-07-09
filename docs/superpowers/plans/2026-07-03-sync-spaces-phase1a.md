@@ -53,7 +53,7 @@ Modify: `desktop/src/shared/types.ts` (IPC consts), `desktop/src/main/preload.ts
 - Create: `desktop/src/main/sync-spaces/guards.ts`
 - Test: `desktop/tests/sync-spaces-guards.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```ts
 // desktop/tests/sync-spaces-guards.test.ts
@@ -121,12 +121,12 @@ describe('findCaseCollisions', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `npx vitest run tests/sync-spaces-guards.test.ts`
 Expected: FAIL — cannot resolve `../src/main/sync-spaces/guards`
 
-- [ ] **Step 3: Implement guards.ts**
+- [x] **Step 3: Implement guards.ts**
 
 ```ts
 // desktop/src/main/sync-spaces/guards.ts
@@ -180,12 +180,12 @@ export function findCaseCollisions(paths: string[]): string[][] {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/sync-spaces-guards.test.ts`
 Expected: PASS (all)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add desktop/src/main/sync-spaces/guards.ts desktop/tests/sync-spaces-guards.test.ts
@@ -201,7 +201,7 @@ git commit -m "feat(sync-spaces): pure guards — name validation, ignores, size
 - Create: `desktop/src/main/sync-spaces/managed-roots.ts`
 - Test: `desktop/tests/sync-spaces-managed-roots.test.ts`
 
-- [ ] **Step 1: Write types.ts (no test — types only)**
+- [x] **Step 1: Write types.ts (no test — types only)**
 
 ```ts
 // desktop/src/main/sync-spaces/types.ts
@@ -247,7 +247,7 @@ export type SpaceSyncEvent =
   | { type: 'error'; spaceId: string; message: string };
 ```
 
-- [ ] **Step 2: Write the failing tests for managed-roots**
+- [x] **Step 2: Write the failing tests for managed-roots**
 
 ```ts
 // desktop/tests/sync-spaces-managed-roots.test.ts
@@ -297,12 +297,12 @@ describe('ManagedRoots', () => {
 });
 ```
 
-- [ ] **Step 3: Run tests to verify they fail**
+- [x] **Step 3: Run tests to verify they fail**
 
 Run: `npx vitest run tests/sync-spaces-managed-roots.test.ts`
 Expected: FAIL — cannot resolve `managed-roots`
 
-- [ ] **Step 4: Implement managed-roots.ts**
+- [x] **Step 4: Implement managed-roots.ts**
 
 ```ts
 // desktop/src/main/sync-spaces/managed-roots.ts
@@ -360,12 +360,12 @@ export class ManagedRoots {
 }
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `npx vitest run tests/sync-spaces-managed-roots.test.ts`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add desktop/src/main/sync-spaces/types.ts desktop/src/main/sync-spaces/managed-roots.ts desktop/tests/sync-spaces-managed-roots.test.ts
@@ -383,7 +383,7 @@ The contract suite is the reusable compatibility boundary — Plan 1b/YouCoded C
 - Create: `desktop/src/main/sync-spaces/git-transport.ts`
 - Test: `desktop/tests/sync-spaces-git-transport.test.ts`
 
-- [ ] **Step 1: Write the contract suite**
+- [x] **Step 1: Write the contract suite**
 
 ```ts
 // desktop/tests/sync-transport-contract.ts
@@ -493,7 +493,7 @@ export function describeTransportContract(name: string, makeHarness: () => Promi
 }
 ```
 
-- [ ] **Step 2: Write the git-transport test file that runs the contract**
+- [x] **Step 2: Write the git-transport test file that runs the contract**
 
 ```ts
 // desktop/tests/sync-spaces-git-transport.test.ts
@@ -547,12 +547,12 @@ describe('GitTransport specifics', () => {
 });
 ```
 
-- [ ] **Step 3: Run to verify failure**
+- [x] **Step 3: Run to verify failure**
 
 Run: `npx vitest run tests/sync-spaces-git-transport.test.ts`
 Expected: FAIL — cannot resolve `git-transport`
 
-- [ ] **Step 4: Implement git-transport.ts**
+- [x] **Step 4: Implement git-transport.ts**
 
 ```ts
 // desktop/src/main/sync-spaces/git-transport.ts
@@ -739,12 +739,12 @@ export class GitTransport implements SyncTransport {
 }
 ```
 
-- [ ] **Step 5: Run the transport tests**
+- [x] **Step 5: Run the transport tests**
 
 Run: `npx vitest run tests/sync-spaces-git-transport.test.ts`
 Expected: PASS (contract suite + oversize test). These tests shell to real git — if a step fails, re-run with `--reporter=verbose` and inspect the temp dirs printed in failures before changing the implementation.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add desktop/tests/sync-transport-contract.ts desktop/src/main/sync-spaces/git-transport.ts desktop/tests/sync-spaces-git-transport.test.ts
@@ -759,7 +759,7 @@ git commit -m "feat(sync-spaces): GitTransport (hidden GIT_DIR repo) + reusable 
 - Create: `desktop/src/main/sync-spaces/engine.ts`
 - Test: `desktop/tests/sync-spaces-engine.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 The engine test uses a fake transport (no git) to keep it fast and deterministic; the real-git path is already covered by Task 3.
 
@@ -838,12 +838,12 @@ describe('SpaceSyncEngine', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `npx vitest run tests/sync-spaces-engine.test.ts`
 Expected: FAIL — cannot resolve `engine`
 
-- [ ] **Step 3: Implement engine.ts**
+- [x] **Step 3: Implement engine.ts**
 
 ```ts
 // desktop/src/main/sync-spaces/engine.ts
@@ -940,17 +940,17 @@ export class SpaceSyncEngine {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `npx vitest run tests/sync-spaces-engine.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Run the whole new suite together**
+- [x] **Step 5: Run the whole new suite together**
 
 Run: `npx vitest run tests/sync-spaces-guards.test.ts tests/sync-spaces-managed-roots.test.ts tests/sync-spaces-git-transport.test.ts tests/sync-spaces-engine.test.ts`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add desktop/src/main/sync-spaces/engine.ts desktop/tests/sync-spaces-engine.test.ts
@@ -965,7 +965,7 @@ git commit -m "feat(sync-spaces): SpaceSyncEngine — chokidar watch, debounce, 
 - Create: `desktop/src/main/sync-spaces/space-manager.ts`
 - Test: `desktop/tests/sync-spaces-space-manager.test.ts`
 
-- [ ] **Step 1: Write the failing test (state + repo-name logic; gh calls injected)**
+- [x] **Step 1: Write the failing test (state + repo-name logic; gh calls injected)**
 
 ```ts
 // desktop/tests/sync-spaces-space-manager.test.ts
@@ -1012,12 +1012,12 @@ describe('SpaceManager state', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `npx vitest run tests/sync-spaces-space-manager.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement space-manager.ts**
+- [x] **Step 3: Implement space-manager.ts**
 
 ```ts
 // desktop/src/main/sync-spaces/space-manager.ts
@@ -1097,12 +1097,12 @@ export class SpaceManager {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `npx vitest run tests/sync-spaces-space-manager.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add desktop/src/main/sync-spaces/space-manager.ts desktop/tests/sync-spaces-space-manager.test.ts
@@ -1117,7 +1117,7 @@ git commit -m "feat(sync-spaces): SpaceManager — enable state, per-space GitHu
 - Create: `desktop/src/main/sync-spaces/daily-backup.ts`
 - Test: `desktop/tests/sync-spaces-daily-backup.test.ts`
 
-- [ ] **Step 1: Write the failing tests (pure scheduling + prune logic)**
+- [x] **Step 1: Write the failing tests (pure scheduling + prune logic)**
 
 ```ts
 // desktop/tests/sync-spaces-daily-backup.test.ts
@@ -1143,12 +1143,12 @@ describe('foldersToPrune', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `npx vitest run tests/sync-spaces-daily-backup.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement daily-backup.ts**
+- [x] **Step 3: Implement daily-backup.ts**
 
 ```ts
 // desktop/src/main/sync-spaces/daily-backup.ts
@@ -1246,12 +1246,12 @@ export class DailyBackup {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `npx vitest run tests/sync-spaces-daily-backup.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add desktop/src/main/sync-spaces/daily-backup.ts desktop/tests/sync-spaces-daily-backup.test.ts
@@ -1271,7 +1271,7 @@ git commit -m "feat(sync-spaces): DailyBackup — dated per-day space snapshots 
 
 **Channels:** `syncspaces:status`, `syncspaces:enable`, `syncspaces:sync-now`, `syncspaces:create-project`, plus push event `syncspaces:event`.
 
-- [ ] **Step 1: Add the parity test first**
+- [x] **Step 1: Add the parity test first**
 
 Append to `desktop/tests/ipc-channels.test.ts` (follow the existing `dev:*` describe pattern in that file):
 
@@ -1300,7 +1300,7 @@ describe('syncspaces:* channel parity (desktop surfaces)', () => {
 Run: `npx vitest run tests/ipc-channels.test.ts`
 Expected: the new describe FAILS (channels absent); pre-existing describes still pass.
 
-- [ ] **Step 2: Add constants to `src/shared/types.ts` IPC object**
+- [x] **Step 2: Add constants to `src/shared/types.ts` IPC object**
 
 Inside `export const IPC = { ... }` next to the existing `SYNC_*` keys:
 
@@ -1312,7 +1312,7 @@ Inside `export const IPC = { ... }` next to the existing `SYNC_*` keys:
   SYNC_SPACES_EVENT: 'syncspaces:event',
 ```
 
-- [ ] **Step 3: Add the same keys to the inlined IPC object in `preload.ts`** (values must be byte-identical — the parity test compares them), then expose the API next to the existing `sync:` block (~line 580):
+- [x] **Step 3: Add the same keys to the inlined IPC object in `preload.ts`** (values must be byte-identical — the parity test compares them), then expose the API next to the existing `sync:` block (~line 580):
 
 ```ts
   syncSpaces: {
@@ -1328,7 +1328,7 @@ Inside `export const IPC = { ... }` next to the existing `SYNC_*` keys:
   },
 ```
 
-- [ ] **Step 4: Mirror in `remote-shim.ts`** (next to the `sync:` block ~line 940 — same shared shape or React crashes on remote, per PITFALLS):
+- [x] **Step 4: Mirror in `remote-shim.ts`** (next to the `sync:` block ~line 940 — same shared shape or React crashes on remote, per PITFALLS):
 
 ```ts
   syncSpaces: {
@@ -1342,7 +1342,7 @@ Inside `export const IPC = { ... }` next to the existing `SYNC_*` keys:
 
 (If `remote-shim.ts` has no generic `subscribe` helper, follow whatever pattern the existing `sync`/`status:data` push events use in that file — match it exactly.)
 
-- [ ] **Step 5: Add remote-server cases** in the message switch (~line 1093, next to `case 'sync:get-status'`) delegating to the same functions Task 8 wires (import from `./sync-spaces/service` — created in Task 8):
+- [x] **Step 5: Add remote-server cases** in the message switch (~line 1093, next to `case 'sync:get-status'`) delegating to the same functions Task 8 wires (import from `./sync-spaces/service` — created in Task 8):
 
 ```ts
       case 'syncspaces:status': this.respond(ws, msg, await syncSpacesStatus()); break;
@@ -1353,7 +1353,7 @@ Inside `export const IPC = { ... }` next to the existing `SYNC_*` keys:
 
 (Match the exact `respond` signature used by the adjacent `sync:get-status` case in that file.)
 
-- [ ] **Step 6: Run the parity test** — the ipc-handlers assertion still fails (handlers arrive in Task 8). That's expected; commit after Task 8. Do NOT commit a red test alone.
+- [x] **Step 6: Run the parity test** — the ipc-handlers assertion still fails (handlers arrive in Task 8). That's expected; commit after Task 8. Do NOT commit a red test alone.
 
 ---
 
@@ -1364,7 +1364,7 @@ Inside `export const IPC = { ... }` next to the existing `SYNC_*` keys:
 - Modify: `desktop/src/main/ipc-handlers.ts` (register handlers + merge managed projects into `FOLDERS_LIST`)
 - Modify: `desktop/src/main/main.ts` (~line 1432 block)
 
-- [ ] **Step 1: Implement service.ts**
+- [x] **Step 1: Implement service.ts**
 
 ```ts
 // desktop/src/main/sync-spaces/service.ts
@@ -1477,7 +1477,7 @@ let logFn: (m: string) => void = console.log;
 // in syncSpacesEnable: await startEngine(logFn);
 ```
 
-- [ ] **Step 2: Register IPC handlers in `ipc-handlers.ts`** (next to `ipcMain.handle(IPC.SYNC_GET_STATUS, ...)` at ~line 1862):
+- [x] **Step 2: Register IPC handlers in `ipc-handlers.ts`** (next to `ipcMain.handle(IPC.SYNC_GET_STATUS, ...)` at ~line 1862):
 
 ```ts
 import {
@@ -1490,7 +1490,7 @@ ipcMain.handle(IPC.SYNC_SPACES_SYNC_NOW, () => syncSpacesSyncNow());
 ipcMain.handle(IPC.SYNC_SPACES_CREATE_PROJECT, (_e, name: string) => syncSpacesCreateProject(String(name ?? '')));
 ```
 
-- [ ] **Step 3: Merge managed projects into `FOLDERS_LIST`** — in the existing handler at `ipc-handlers.ts:767-780`, after the saved-folders array is built and before return:
+- [x] **Step 3: Merge managed projects into `FOLDERS_LIST`** — in the existing handler at `ipc-handlers.ts:767-780`, after the saved-folders array is built and before return:
 
 ```ts
     // Managed projects (spec §3) always appear in the session-creation picker,
@@ -1505,7 +1505,7 @@ ipcMain.handle(IPC.SYNC_SPACES_CREATE_PROJECT, (_e, name: string) => syncSpacesC
     }
 ```
 
-- [ ] **Step 4: Bootstrap in `main.ts`** — in the service-start block (~line 1432, right after `initRestoreService(...)`):
+- [x] **Step 4: Bootstrap in `main.ts`** — in the service-start block (~line 1432, right after `initRestoreService(...)`):
 
 ```ts
 // Cross-device sync spaces (spec 2026-07-03). Roots always ensured (the
@@ -1536,12 +1536,12 @@ try { void stopSyncSpaces(); } catch {}
 
 (`getSyncConfig` is already exported from `sync-state.ts` and imported in main.ts's orbit — check the import list at the top of main.ts and add it if absent. Match the actual `SyncConfig` field names from `sync-state.ts:111` — if the backends array is named differently there, use that name.)
 
-- [ ] **Step 5: Typecheck + run parity and full test suite**
+- [x] **Step 5: Typecheck + run parity and full test suite**
 
 Run: `cd desktop && npm run build 2>&1 | tail -20` (or the project's typecheck script) and `npx vitest run tests/ipc-channels.test.ts`
 Expected: build clean; the Task 7 parity describe now PASSES.
 
-- [ ] **Step 6: Commit (Tasks 7+8 together — they're one parity unit)**
+- [x] **Step 6: Commit (Tasks 7+8 together — they're one parity unit)**
 
 ```bash
 git add desktop/src/shared/types.ts desktop/src/main/preload.ts desktop/src/renderer/remote-shim.ts \
@@ -1558,7 +1558,7 @@ git commit -m "feat(sync-spaces): IPC surface (syncspaces:*) + service compositi
 - Modify: `desktop/src/renderer/components/FolderSwitcher.tsx`
 - Modify: `desktop/src/renderer/components/SyncPanel.tsx`
 
-- [ ] **Step 1: FolderSwitcher — "New project" affordance**
+- [x] **Step 1: FolderSwitcher — "New project" affordance**
 
 In `FolderSwitcher.tsx`, next to the existing add-folder control, add a small inline form that calls the new API and refreshes the list (follow the component's existing state/refresh pattern — it already calls `window.claude.folders.list()` at line 32):
 
@@ -1597,7 +1597,7 @@ Also badge managed rows: where the folder rows render, if the entry has `managed
 
 (`refresh` = whatever function the component already uses to reload `folders.list()`; reuse it, don't add a second loader.)
 
-- [ ] **Step 2: SyncPanel — "Synced spaces" section**
+- [x] **Step 2: SyncPanel — "Synced spaces" section**
 
 In `SyncPanel.tsx`, add a section below the backends list. Follow the component's existing data-fetch pattern (`window.claude.sync.getStatus()` at line 246):
 
@@ -1647,12 +1647,12 @@ useEffect(() => {
 </section>
 ```
 
-- [ ] **Step 3: Typecheck + full suite**
+- [x] **Step 3: Typecheck + full suite**
 
 Run: `cd desktop && npm run build && npx vitest run`
 Expected: clean build, all tests pass.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add desktop/src/renderer/components/FolderSwitcher.tsx desktop/src/renderer/components/SyncPanel.tsx
@@ -1666,7 +1666,7 @@ git commit -m "feat(sync-spaces): renderer — new-project in session picker, Sy
 **Files:**
 - Create: `desktop/tests/sync-spaces-two-device.test.ts`
 
-- [ ] **Step 1: Write the two-device end-to-end test (real git, fake devices)**
+- [x] **Step 1: Write the two-device end-to-end test (real git, fake devices)**
 
 ```ts
 // desktop/tests/sync-spaces-two-device.test.ts
@@ -1724,12 +1724,12 @@ async function waitFor(cond: () => boolean, timeoutMs: number): Promise<void> {
 }
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `npx vitest run tests/sync-spaces-two-device.test.ts`
 Expected: PASS (allow up to 30s)
 
-- [ ] **Step 3: Live verification in the dev app (NEVER the built app)**
+- [x] **Step 3: Live verification in the dev app (NEVER the built app)**
 
 ```bash
 cd /c/Users/desti/youcoded-dev && bash scripts/run-dev.sh
@@ -1737,7 +1737,7 @@ cd /c/Users/desti/youcoded-dev && bash scripts/run-dev.sh
 
 In the **YouCoded Dev** window: open Settings → Sync → verify the "Synced spaces" section renders; create a project from the new-session picker ("New project name…"); confirm `~/YouCoded/Projects/<name>` exists on disk and the folder appears in the picker with the "synced project" badge. Do NOT enable sync against real GitHub in this smoke test unless a throwaway/`gh`-authed test account is acceptable — engine behavior is already covered by the two-device test.
 
-- [ ] **Step 4: Full suite + commit**
+- [x] **Step 4: Full suite + commit**
 
 ```bash
 cd desktop && npx vitest run && npm run build
@@ -1752,7 +1752,7 @@ git commit -m "test(sync-spaces): two-device engine convergence integration test
 **Files:**
 - Modify (workspace repo, separate commit on the `spec/cross-device-sync` branch): `docs/PITFALLS.md`
 
-- [ ] **Step 1: Add a PITFALLS section** (workspace repo — `youcoded-dev.wt/cross-device-sync/docs/PITFALLS.md`), new `## Sync Spaces (Cross-Device Sync Phase 1a)` section:
+- [x] **Step 1: Add a PITFALLS section** (workspace repo — `youcoded-dev.wt/cross-device-sync/docs/PITFALLS.md`), new `## Sync Spaces (Cross-Device Sync Phase 1a)` section:
 
 ```markdown
 ## Sync Spaces (Cross-Device Sync Phase 1a)
@@ -1767,7 +1767,7 @@ git commit -m "test(sync-spaces): two-device engine convergence integration test
 
 Commit (workspace repo): `git add docs/PITFALLS.md && git commit -m "docs(PITFALLS): sync-spaces Phase 1a invariants"`
 
-- [ ] **Step 2: Push the youcoded branch + open the PR**
+- [x] **Step 2: Push the youcoded branch + open the PR**
 
 ```bash
 cd /c/Users/desti/youcoded-dev/youcoded.wt/sync-spaces
@@ -1792,3 +1792,26 @@ EOF
 1. **Spec coverage (Phase 1 items):** managed roots §3 → Task 2/8/9; SyncTransport + git transport §5/§7 → Tasks 3; engine + conflicts + guards §8 → Tasks 1/4; polling degradation §6 → Task 4; remote provisioning §7 → Task 5; daily dated backup §11 → Task 6; status surface §13 (minimal) → Task 9; testing §15 (contract suite, two-instance) → Tasks 3/10. Deferred with reasons: SyncHub (1b), GitHub-backup migration + deletions (Phase 2), skills/memory/settings in personal space (Phase 2), StatusBar widget (polish, follow-up).
 2. **Placeholder scan:** the one intentionally-flagged expression in Task 8 Step 1 has explicit replacement instructions immediately below it. No TBDs elsewhere.
 3. **Type consistency:** `SyncSpace{id,kind,root}`, `PushResult{pushed,commit?,oversize}`, `PullResult{updated,conflictCopies}`, `SpaceSyncEvent`, `GitTransport(opts{deviceName,maxFileBytes?})`, `SpaceSyncEngine(transport, {debounceMs,pollMs,onEvent})`, `ManagedRoots(baseDir)` with `ensure/listProjects/createProject/spaces`, `SpaceManager{isEnabled,setEnabled,remoteFor,recordRemote,ensureRemote}` — used consistently across Tasks 1–10.
+
+---
+
+## Execution log & plan corrections (2026-07-08, executed via subagent-driven development)
+
+All 11 tasks executed and merged into `feat/sync-spaces` (youcoded). The plan's given code needed the following corrections, discovered by the plan's own tests or by review — recorded here per the handoff's definition of done. Durable invariants moved to `docs/PITFALLS.md → Sync Spaces`.
+
+1. **`info/attributes`: `* text=auto` → `* -text`** (Task 3). `text=auto` overrides `core.autocrlf=false` and CRLF-converts checkouts on Windows, failing the contract suite's own byte-fidelity assertions. Scope note 4 and the handoff's decision list said `text=auto`; byte-faithful storage (the decision's actual goal) requires `-text`.
+2. **`pull()` needed an unborn-`main` adopt path** (Task 3). A fresh second device has no local `main`; `rev-list main..origin/main` exits 128 and the plan's pull bailed before applying remote content — the round-trip contract test could never pass. Fix: `checkout -B main origin/main` after fetch when local main is unborn.
+3. **`merge` needs `--allow-unrelated-histories`** (Task 3, review finding). Two devices with pre-existing content in the same space (Personal on a second machine) were permanently, silently stuck. New contract test pins convergence.
+4. **Conflict-copy extraction needed a Buffer path with `maxBuffer ≥ maxFileBytes`** (Task 3, review finding). The plan's `git show` via the utf8 string helper corrupted binary conflict copies and silently DROPPED copies >1MB (Node kills the child at the 1MB default maxBuffer) while `checkout --theirs` still overwrote local content. Two new contract tests pin >1MB + binary fidelity.
+5. **Contract suite owns a 30s suite-scoped timeout** (`vi.setConfig`) — the plan's tests exceeded vitest's 5s default under real git on Windows, so bare `npx vitest run` (the DoD gate) failed.
+6. **Engine `addSpace` must await chokidar `ready`** (Task 4). With `ignoreInitial: true`, writes landing before `ready` are silently never emitted (verified empirically) — the plan's own debounce tests timed out without the wait.
+7. **Engine needs a persistent `watcher.on('error')`** (Task 4, review finding) — post-ready watcher errors otherwise crash the Electron main process on the second occurrence (unhandled EventEmitter 'error').
+8. **Engine `stop()` must await in-flight sync chains** (Task 10, exposed by the two-device test's Windows teardown flake). The plan's stop() resolved with git subprocesses still running — which also raced real app-quit teardown.
+9. **`repoNameForSpace` gained a lowercased-id hash suffix** (Task 5, review finding; supersedes the plan's pinned test). The plain slug mapped distinct projects ('My App' / 'My-App') to one repo (silent cross-sync) and all-symbol/non-Latin names to an empty slug.
+10. **`provisionGithubRemote` recovers from already-exists via `gh repo view`** (Task 5). The per-device state file means the second device re-provisions repos the first created; the plan's version errored and sync never started on device 2. Also: injectable exec for testability, plain-language ENOENT/auth errors, atomic state writes.
+11. **iCloud backup filter → shared `isIgnoredPath()`** (Task 6, review finding). The plan's hardcoded cpSync filter leaked `*.pem`/`id_rsa*`/credentials into iCloud backups that Drive excluded. Also: iCloud copy/prune switched to `fs.promises` (sync deep copies froze the main process), marker write guarded per the never-throws contract.
+12. **Task 8 wiring drift vs current code:** `getSyncConfig()` is async and exposes `.backends` (not `storage_backends`); no central remote push forwarder exists, so `service.ts` takes an injected `setSyncSpacesRemoteBroadcaster` (wired in main.ts before start); enable/disable transitions are serialized through a promise chain (toggle race leaked watchers); parity test asserts the `IPC.SYNC_SPACES_*` constant form for ipc-handlers.
+13. **Task 9 additions beyond the template:** SyncPanel renders the latest `error`-type event (the space-manager friendly-error contract had no reader), all async UI actions handle rejections, enable shows a "Setting up…" pending state, and Android degrades gracefully via the shim's 30s invoke timeout (no Kotlin stubs in 1a — deliberate).
+14. **Env-contamination note for future full-suite runs:** inherited `YOUCODED_PORT_OFFSET`/`YOUCODED_PROFILE` from a dev-server shell make `remote-config.test.ts` / `ipc-handlers.test.ts` fail falsely — unset them in the test shell.
+
+Smoke test (Task 10 step 3) performed against the worktree dev instance via CDP: managed roots created at boot; `syncSpaces.status()` round-trips; project creation via IPC AND via the picker UI form lands on disk and appears in the picker with the "synced project" badge; SyncPanel "Synced spaces" section renders with the toggle + Sync now (space list correctly hidden while disabled); no status glyphs. Sync was never enabled against real GitHub. Dev instance shut down and smoke artifacts removed afterward.
