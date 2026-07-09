@@ -1,7 +1,7 @@
 # YouCoded Platform Vision — Multi-Model Backends, Custom Harnesses, Agents & Automations
 
 **Date:** 2026-07-09
-**Status:** Vision roadmap — reviewed with Destin 2026-07-09; revisions folded in (engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy). One open decision remains: whether Phase 4 (Agents & Automations) jumps the queue on the CC backend. Each phase gets its own spec → plan → implementation cycle later.
+**Status:** Vision roadmap — reviewed and approved by Destin 2026-07-09 (revisions: engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy; phase ordering confirmed as written). Each phase gets its own spec → plan → implementation cycle.
 **Inputs:** repo audit of master + `feat/opencode-mvp`, `cc-dependencies.md` coupling inventory, mid-2026 market research (web, cited), llama.cpp/provider-layer technical research (web, cited).
 
 ---
@@ -240,13 +240,13 @@ A third top-level view alongside Chat and Projects:
 
 Phases are sequential but 1/2 overlap internally; each phase = its own brainstorm→spec→plan cycle per workspace convention. Estimates are focused-effort approximations, not calendar promises.
 
-**Open decision (settle in Phase 0):** Phase 4 (Agents & Automations) could jump the queue and ship first on the Claude Code backend — headless `claude -p` runs already work, and the scheduler/inbox/manifest work is backend-agnostic. That delivers the headline surface in ~2 months instead of ~5, at the cost of deferring the "agents run free on local models" combo and designing the runner against CC's quirks first.
+**Ordering decision (Destin, 2026-07-09): phases stay as laid out.** The alternative — shipping Agents & Automations first on the CC backend — was considered and rejected: automations don't make sense until other backends exist, since the headline value is 24/7 agents running free on local models, and building the runner against CC's PTY quirks first would bake the wrong constraints into the design.
 
 ### Phase 0 — Foundations & salvage (~1–2 weeks)
 
 **Goal:** lock decisions, extract value from `feat/opencode-mvp`, land the shared seam on master.
 
-1. **Decision records** (`docs/decisions/`): llama-server backbone + node-llama-cpp-for-in-process-niches hybrid; AI SDK v6 now/v7 later; native harness over embedded CLI; leaked-source ideas-only policy; tool-name compatibility policy; conventions inversion + native home layout (§3.4a); **Agents-view ordering** (the one still-open call — see §4 intro).
+1. **Decision records** (`docs/decisions/`): llama-server backbone + node-llama-cpp-for-in-process-niches hybrid; AI SDK v6 now/v7 later; native harness over embedded CLI; leaked-source ideas-only policy; tool-name compatibility policy; conventions inversion + native home layout (§3.4a); phase ordering as laid out (Agents view after backends — decided 2026-07-09).
 2. **Salvage pass on `feat/opencode-mvp`:**
    a. Cherry-pick/rebase the provider-seam + runtime-aware UI commits (types, SessionStrip runtime selector, HeaderBar gates, classifier gating, ModelPicker scoping, reasoning UI) onto a fresh branch; strip OpenCode/Ollama specifics.
    b. Rename `'local'` provider concept to `'native'` (the harness) with a `providerEndpoint` concept underneath; reserve `IPC` channels.
@@ -361,10 +361,9 @@ Phases are sequential but 1/2 overlap internally; each phase = its own brainstor
 
 ## 6. Immediate next steps
 
-1. Done — reviewed with Destin 2026-07-09; revisions folded in (engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy, Ollama-drift rationale).
-2. **Settle the one open call:** whether Phase 4 (Agents & Automations) jumps the queue on the CC backend (§4 intro).
-3. Phase 0 brainstorm → spec (provider interfaces + native home layout + salvage plan) via the standard superpowers cycle.
-4. Quick win candidate while Phase 0 specs bake: land the dormant `SessionProvider`/runtime-selector seam from the salvage pass behind a settings flag.
+1. Done — reviewed and approved by Destin 2026-07-09; revisions folded in (engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy, Ollama-drift rationale); phase ordering confirmed as written.
+2. Phase 0 brainstorm → spec (provider interfaces + native home layout + salvage plan) via the standard superpowers cycle.
+3. Quick win candidate while Phase 0 specs bake: land the dormant `SessionProvider`/runtime-selector seam from the salvage pass behind a settings flag.
 
 ### Sources
 
