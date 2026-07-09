@@ -71,7 +71,7 @@ The `~/.claude/youcoded-folders.json` read/write is currently inlined inside `re
 - Test: `desktop/tests/saved-folders.test.ts`
 - Modify: `desktop/src/main/ipc-handlers.ts:778-800` (delete inlined helpers, import the module)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // desktop/tests/saved-folders.test.ts
@@ -124,12 +124,12 @@ describe('saved-folders store', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run (from `desktop/`): `npx vitest run tests/saved-folders.test.ts`
 Expected: FAIL — `Cannot find module '../src/main/saved-folders'`
 
-- [ ] **Step 3: Write the module**
+- [x] **Step 3: Write the module**
 
 ```ts
 // desktop/src/main/saved-folders.ts
@@ -189,12 +189,12 @@ export function updateFolderPath(oldPath: string, newPath: string, file: string 
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run tests/saved-folders.test.ts`
 Expected: PASS (5 tests)
 
-- [ ] **Step 5: Refactor ipc-handlers.ts to use the module**
+- [x] **Step 5: Refactor ipc-handlers.ts to use the module**
 
 In `desktop/src/main/ipc-handlers.ts`:
 1. Add to the imports at the top of the file:
@@ -204,12 +204,12 @@ import { SavedFolder, readFolders, writeFolders } from './saved-folders';
 2. Delete the inlined block at lines 778-800 (`const foldersPrefPath = …`, `interface SavedFolder`, `function readFolders()`, `function writeFolders(…)`), keeping the `// --- Folder switcher persistence ---` comment.
 3. The four `IPC.FOLDERS_*` handlers below it call `readFolders()` / `writeFolders(folders)` with no arguments — the module defaults to the same `~/.claude/youcoded-folders.json` path, so the handler bodies need **no other changes**.
 
-- [ ] **Step 6: Run the folder-adjacent suites + tsc**
+- [x] **Step 6: Run the folder-adjacent suites + tsc**
 
 Run: `npx vitest run tests/saved-folders.test.ts tests/ipc-channels.test.ts && npx tsc -p tsconfig.json --noEmit`
 Expected: PASS, tsc clean
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add desktop/src/main/saved-folders.ts desktop/tests/saved-folders.test.ts desktop/src/main/ipc-handlers.ts
@@ -228,7 +228,7 @@ Three small enablers the import module needs.
 - Modify: `desktop/src/main/artifacts/central-index.ts` (append after `listProjects`, line 72)
 - Test: `desktop/tests/sync-spaces-import.test.ts` (create — first describe only)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // desktop/tests/sync-spaces-import.test.ts
@@ -280,12 +280,12 @@ describe('import enablers', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/sync-spaces-import.test.ts`
 Expected: FAIL — `MAX_IMPORT_FILE_COUNT`, `ccProjectSlug`, `remapProjectPath` not exported
 
-- [ ] **Step 3: Implement all three enablers**
+- [x] **Step 3: Implement all three enablers**
 
 `desktop/src/main/sync-spaces/guards.ts` — append after the `MAX_SYNC_FILE_BYTES` block:
 
@@ -323,17 +323,17 @@ export async function remapProjectPath(
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run tests/sync-spaces-import.test.ts`
 Expected: PASS (4 tests)
 
-- [ ] **Step 5: Run the neighbors that consume the modified files**
+- [x] **Step 5: Run the neighbors that consume the modified files**
 
 Run: `npx vitest run tests/sync-spaces-guards.test.ts tests/project-conversations.test.ts 2>/dev/null || npx vitest run tests/sync-spaces-guards.test.ts`
 Expected: PASS (if `tests/project-conversations.test.ts` doesn't exist, the guards suite alone is fine)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add desktop/src/main/sync-spaces/guards.ts desktop/src/main/project-conversations.ts desktop/src/main/artifacts/central-index.ts desktop/tests/sync-spaces-import.test.ts
@@ -350,7 +350,7 @@ The pure-ish decision layer: every reason an import must be refused, checked BEF
 - Create: `desktop/src/main/sync-spaces/import-project.ts` (checks + counter only; move/remap arrive in Task 4)
 - Test: `desktop/tests/sync-spaces-import.test.ts` (append describe)
 
-- [ ] **Step 1: Write the failing tests** — append to `tests/sync-spaces-import.test.ts`:
+- [x] **Step 1: Write the failing tests** — append to `tests/sync-spaces-import.test.ts`:
 
 ```ts
 import { checkImport, countFilesBounded } from '../src/main/sync-spaces/import-project';
@@ -430,12 +430,12 @@ describe('checkImport', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `npx vitest run tests/sync-spaces-import.test.ts`
 Expected: FAIL — `Cannot find module '../src/main/sync-spaces/import-project'`
 
-- [ ] **Step 3: Implement checks + counter**
+- [x] **Step 3: Implement checks + counter**
 
 ```ts
 // desktop/src/main/sync-spaces/import-project.ts
@@ -527,14 +527,14 @@ export function checkImport(opts: ImportCheckOpts): string | null {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/sync-spaces-import.test.ts`
 Expected: PASS (all describes so far)
 
 Note: if the `node_modules` skip assertion fails, check `isIgnoredPath`'s dir-entry semantics in `guards.ts` (`DEFAULT_IGNORES` uses trailing-slash dir patterns) and adjust the `isIgnoredPath(childRel + '/') || isIgnoredPath(childRel)` call — the test pins the REQUIRED behavior (node_modules must be skipped), not the call shape.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add desktop/src/main/sync-spaces/import-project.ts desktop/tests/sync-spaces-import.test.ts
@@ -551,7 +551,7 @@ The move itself, then best-effort remaps of the four path-keyed stores (saved fo
 - Modify: `desktop/src/main/sync-spaces/import-project.ts` (append)
 - Test: `desktop/tests/sync-spaces-import.test.ts` (append describe)
 
-- [ ] **Step 1: Write the failing tests** — append to `tests/sync-spaces-import.test.ts`:
+- [x] **Step 1: Write the failing tests** — append to `tests/sync-spaces-import.test.ts`:
 
 ```ts
 import { importProjectFolder } from '../src/main/sync-spaces/import-project';
@@ -665,12 +665,12 @@ describe('importProjectFolder', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `npx vitest run tests/sync-spaces-import.test.ts`
 Expected: FAIL — `importProjectFolder` not exported
 
-- [ ] **Step 3: Implement move + remaps + orchestrator** — append to `import-project.ts`:
+- [x] **Step 3: Implement move + remaps + orchestrator** — append to `import-project.ts`:
 
 ```ts
 import { foldersFilePath, updateFolderPath } from '../saved-folders';
@@ -791,17 +791,17 @@ export async function importProjectFolder(opts: ImportOpts): Promise<ImportResul
 
 Also update the module's existing import of `foldersFilePath` if unused — the code above only uses `updateFolderPath` with an explicit file arg; drop `foldersFilePath` from the import list if tsc flags it.
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/sync-spaces-import.test.ts`
 Expected: PASS (all import describes)
 
-- [ ] **Step 5: Run tsc**
+- [x] **Step 5: Run tsc**
 
 Run: `npx tsc -p tsconfig.json --noEmit`
 Expected: clean
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add desktop/src/main/sync-spaces/import-project.ts desktop/tests/sync-spaces-import.test.ts
@@ -823,7 +823,7 @@ git commit -m "feat(sync-spaces): importProjectFolder — move-with-guards + rem
 - Modify: `desktop/src/main/remote-server.ts` (~line 1132, after the create-project case)
 - Modify: `desktop/tests/ipc-channels.test.ts:499` (add channel row)
 
-- [ ] **Step 1: Add the parity test row first (failing test)**
+- [x] **Step 1: Add the parity test row first (failing test)**
 
 In `desktop/tests/ipc-channels.test.ts`, in the `syncspaces:* channel parity` describe, extend the channels array (line 496-500):
 
@@ -837,12 +837,12 @@ In `desktop/tests/ipc-channels.test.ts`, in the `syncspaces:* channel parity` de
   ];
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `npx vitest run tests/ipc-channels.test.ts`
 Expected: FAIL — `syncspaces:import-project present in preload, remote-shim, ipc-handlers, remote-server`
 
-- [ ] **Step 3: service.ts — the import entry point**
+- [x] **Step 3: service.ts — the import entry point**
 
 Append after `syncSpacesCreateProject` (service.ts line 147), plus add the import at the top of the file (`import { importProjectFolder } from './import-project';`):
 
@@ -875,7 +875,7 @@ export async function syncSpacesImportProject(sourcePath: string, name: string, 
 }
 ```
 
-- [ ] **Step 4: IPC constant in both homes**
+- [x] **Step 4: IPC constant in both homes**
 
 `desktop/src/shared/types.ts` after line 769 (`SYNC_SPACES_CREATE_PROJECT`):
 ```ts
@@ -886,7 +886,7 @@ export async function syncSpacesImportProject(sourcePath: string, name: string, 
   SYNC_SPACES_IMPORT_PROJECT: 'syncspaces:import-project',
 ```
 
-- [ ] **Step 5: preload + remote-shim methods**
+- [x] **Step 5: preload + remote-shim methods**
 
 `preload.ts` syncSpaces block, after `createProject`:
 ```ts
@@ -901,7 +901,7 @@ export async function syncSpacesImportProject(sourcePath: string, name: string, 
         invoke('syncspaces:import-project', { sourcePath, name }),
 ```
 
-- [ ] **Step 6: ipc-handlers + remote-server handlers**
+- [x] **Step 6: ipc-handlers + remote-server handlers**
 
 `ipc-handlers.ts`, after the `SYNC_SPACES_CREATE_PROJECT` handler (line 1929). Add `syncSpacesImportProject` to the existing sync-spaces import list at line 27:
 
@@ -923,7 +923,7 @@ export async function syncSpacesImportProject(sourcePath: string, name: string, 
       }
 ```
 
-- [ ] **Step 7: Managed-badge fix in FOLDERS_LIST**
+- [x] **Step 7: Managed-badge fix in FOLDERS_LIST**
 
 After import, the saved-folder entry points at the new managed path, so the existing merge (which only tags SYNTHESIZED rows `managed: true`) would show the row without its "synced project" badge. Tag saved entries by projectsRoot prefix instead. In `ipc-handlers.ts` `FOLDERS_LIST` (the `result` mapping around line 811):
 
@@ -941,12 +941,12 @@ After import, the saved-folder entry points at the new managed path, so the exis
     }));
 ```
 
-- [ ] **Step 8: Run parity + service tests + tsc**
+- [x] **Step 8: Run parity + service tests + tsc**
 
 Run: `npx vitest run tests/ipc-channels.test.ts tests/sync-spaces-service.test.ts && npx tsc -p tsconfig.json --noEmit`
 Expected: PASS, tsc clean. (`sync-spaces-service.test.ts` mocks every service dep via `vi.mock` — if the new `./import-project` import breaks module resolution there, add `vi.mock('../src/main/sync-spaces/import-project', () => ({ importProjectFolder: vi.fn() }))` alongside the existing mocks.)
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add desktop/src/main/sync-spaces/service.ts desktop/src/shared/types.ts desktop/src/main/preload.ts desktop/src/renderer/remote-shim.ts desktop/src/main/ipc-handlers.ts desktop/src/main/remote-server.ts desktop/tests/ipc-channels.test.ts
@@ -965,7 +965,7 @@ Consequence-gated UI rules apply (Destin's standing preference): plain words, ex
 - Create: `desktop/src/renderer/components/ImportProjectModal.tsx`
 - Modify: `desktop/src/renderer/components/FolderSwitcher.tsx`
 
-- [ ] **Step 1: Create the modal**
+- [x] **Step 1: Create the modal**
 
 ```tsx
 // desktop/src/renderer/components/ImportProjectModal.tsx
@@ -1065,7 +1065,7 @@ export default function ImportProjectModal({ sourcePath, defaultName, onClose, o
 }
 ```
 
-- [ ] **Step 2: Wire both flows into FolderSwitcher**
+- [x] **Step 2: Wire both flows into FolderSwitcher**
 
 In `desktop/src/renderer/components/FolderSwitcher.tsx`:
 
@@ -1147,12 +1147,12 @@ import ImportProjectModal from './ImportProjectModal';
       )}
 ```
 
-- [ ] **Step 3: tsc + build**
+- [x] **Step 3: tsc + build**
 
 Run: `npx tsc -p tsconfig.json --noEmit && npm run build`
 Expected: clean
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add desktop/src/renderer/components/ImportProjectModal.tsx desktop/src/renderer/components/FolderSwitcher.tsx
@@ -1163,7 +1163,7 @@ git commit -m "feat(sync-spaces): import UI — consent modal + row action + pic
 
 ### Task 7: Full verification, live smoke, docs, PR
 
-- [ ] **Step 1: Full suite + build (env-stripped)**
+- [x] **Step 1: Full suite + build (env-stripped)**
 
 From `desktop/`:
 ```bash
@@ -1173,7 +1173,7 @@ npm run build
 ```
 Expected: ALL green (transport contract tests take 45-85s total — normal), tsc + build clean.
 
-- [ ] **Step 2: Live dev-window smoke test (both flows)**
+- [x] **Step 2: Live dev-window smoke test (both flows)**
 
 Per the handoff's worktree-smoke recipe (run-dev.sh cds into the MAIN checkout — replicate manually from the worktree): export `YOUCODED_PORT_OFFSET=50 YOUCODED_PROFILE=dev`, unset the CC session markers (list in `scripts/run-dev.sh`), start `npm run dev:renderer` in the background, `npx wait-on http://localhost:5223`, then `npx tsc -p tsconfig.json && node -e "require('fs').cpSync('src/main/pty-worker.js','dist/main/pty-worker.js')" && npx electron . --remote-debugging-port=9333` in the background. Probe via CDP (copy `scripts/cdp-eval.mjs` INTO `desktop/` first). **Never touch the live built app.**
 
@@ -1185,7 +1185,7 @@ Verify (Definition of Done item 3 from the handoff):
 5. Artifacts/conversations resolution: if a scratch folder had a conversation, confirm it still lists under the project after the move (transcript slug remap).
 6. Clean up: kill the electron + node PIDs directly (TaskStop on the shell does not kill Windows children), confirm ports 5223/9333 freed, delete scratch folders and their `~/YouCoded/Projects/` copies, remove picker entries.
 
-- [ ] **Step 3: Docs**
+- [x] **Step 3: Docs**
 
 In the **workspace repo** (`youcoded-dev`, branch `spec/cross-device-sync` or master if already merged):
 1. `docs/PITFALLS.md → Sync Spaces`: append invariants learned, at minimum:
@@ -1197,7 +1197,7 @@ In the **workspace repo** (`youcoded-dev`, branch `spec/cross-device-sync` or ma
 3. Check the plan checkboxes in this file as tasks complete; append an execution log + corrections section (same format as the 1a plan).
 4. Commit + push the docs branch.
 
-- [ ] **Step 4: PR**
+- [x] **Step 4: PR**
 
 ```bash
 git push -u origin feat/sync-import
@@ -1212,3 +1212,24 @@ If #107 is still open, note in the PR body that this branch is stacked on `feat/
 - Spec §3 coverage: flow 1 (row action, Task 6) ✓; flow 2 (picker, Task 6) ✓; move-not-copy ✓ (Task 4 moveFolder); consent wording ✓ (modal copy); `validateSyncName` ✓ (checkImport); git-repo-inside is fine ✓ (nothing special needed — GIT_DIR transport + `.git/` in DEFAULT_IGNORES, no code change required); §18 guardrail ✓ (MAX_IMPORT_FILE_COUNT block); live-session block ✓; EBUSY/EPERM message ✓; store remap enumeration ✓ (saved-folders, central index, sidecar manual lists, transcript slug dir; conversation-index + topics are sessionId-keyed and need nothing — verified in exploration).
 - Encyclopedia migration + GitHub-backup upgrade from §3 are NOT here — they belong to Phase 2 per §17 (conversations/backup migration); the knowledge-debt entry scoped to the two folder flows only.
 - Type consistency: `ImportResult`/`ImportOpts`/`ImportCheckOpts` used consistently across Tasks 3-5; `syncSpacesImportProject(sourcePath, name, liveCwds)` matches both handler call sites; modal calls `syncSpaces.importProject(sourcePath, name)` matching preload/shim.
+
+---
+
+## Execution log & plan corrections (2026-07-09, executed via subagent-driven development)
+
+All 7 tasks executed on youcoded branch `feat/sync-import` (worktree `youcoded.wt/sync-import`, based on `feat/sync-spaces` since PR #107 was still open). Fresh Opus implementer per task + spec-compliance review + code-quality review; the loops caught **8 real defects** in the plan's own code. Corrections, in commit order:
+
+1. **`countFilesBounded` needed depth (100) + wall-clock (2s) bounds** (Task 3 quality review). `isSymbolicLink()` does not detect NTFS junctions; a junction cycle containing no files never trips the file-count limit → unbounded recursion → main-process stack overflow. Depth/time exhaustion returns the OVER-limit signal (fail closed), not a partial count. Commit `7698e28`.
+2. **`manualIncludes` is `ManualInclude[]` (objects), not `string[]`** (Task 4 spec review). The plan's remap code and test both used bare strings — the test exercised a branch that never runs in production. Object-only remap preserving `addedAt`/`addedBy`; test uses the real shape. Commit `d446560`. (Root cause of the slip: `desktop/tests/**` is not covered by `tsc -p tsconfig.json` — a workspace-level improvement candidate.)
+3. **EXDEV copy failure left a partial dest that permanently blocked retries** (Task 4 quality review) — checkImport's "already exists" guard then refused every retry. cpSync wrapped; partial dest cleaned up best-effort; friendly "failed partway / nothing was lost" error. Commit `e4d3df9`.
+4. **Sidecar CAS miss was silently ignored** — now throws internally so the orchestrator converts it to the standard warning (every remap failure must surface). Same commit.
+5. **`writeFolders` atomic write used a fixed `.tmp` name** — two concurrent writers (dev + built app) would interleave into one tmp file. Unique per-writer tmp + cleanup-on-rename-failure. Same commit. (The atomic write itself was a Task 1 review follow-up — the plan's original was a plain writeFileSync.)
+6. **Rename-over-existing needed an explicit EEXIST/ENOTEMPTY branch** — the TOCTOU dest-collision otherwise reported "another program is using this folder." Same commit.
+7. **The EXDEV branch needed an `existsSync(dest)` re-check** (Task 4 quality re-review) — rename(2) reports EXDEV before dest-existence, so a dest created in the check→move window would be silently MERGED into by cpSync and then DELETED by the failure cleanup. Applied inline by the coordinator (corrections had accumulated). Commit `168f0120`.
+8. **Modal ESC bypassed the busy guard** (Task 6 quality review) — ESC mid-move unmounted the modal, setState fired on an unmounted component, and the folder list never reconciled. `useEscClose(!busy, dismiss)` + cancelledRef + post-success dismissals all route to `onDone(path)`; a11y roles added (dialog/alert, matching RatingSubmitModal); submit latch via inFlightRef. Commit `d7546dc`.
+
+Also folded in from Task 2's quality review: `remapProjectPath` drops any stale index entry already sitting at the destination path (two entries sharing one canonical path shadow each other and detach artifact history).
+
+**Verification:** full env-stripped suite 1309 passed / 34 skipped / 0 failed; tsc + `npm run build` clean. Live dev-window smoke (manual worktree replication of run-dev.sh, CDP-driven): flow 1 driven through the REAL UI (row action → consent modal with correct copy + prefilled name → confirm → folder moved to `~/YouCoded/Projects/`, picker entry rewritten with the "synced project" badge, no duplicate rows); live-session guard verified end-to-end (session open in folder → exact refusal message; import succeeds after session destroy); IPC-level import verified for a second folder; flow 2's picker button renders (its unique step — the native OS folder dialog — can't be driven headlessly; it feeds the same modal + IPC path as flow 1). Smoke artifacts removed, dev processes killed, ports 5223/9333 freed.
+
+**Follow-ups (non-blocking, noted by reviewers):** migrate `remote-server.ts`'s four inline `youcoded-folders.json` cases to the `saved-folders.ts` module; consider typechecking `desktop/tests/**`; `project-context.ts` still carries a private duplicate of `ccProjectSlug`; Windows dir-rename-onto-existing surfaces as EPERM so that TOCTOU case shows the folder-in-use message (inherent ambiguity); time-cap exhaustion in `countFilesBounded` reuses the "too many files" message wording.
