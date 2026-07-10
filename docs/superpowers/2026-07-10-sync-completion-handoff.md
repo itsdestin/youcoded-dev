@@ -25,8 +25,8 @@ Working-state notes: all worktrees/branches from the above are cleaned up; the m
 
 ## 2. Remaining work, in execution order
 
-### A. Execute SyncHub — Plan 1b (READY NOW)
-`docs/superpowers/plans/2026-07-09-sync-hub-1b.md`. Worker half first (`SyncGroupRoom` DO in wecoded-marketplace — per-account `idFromName(userId)` rooms, signal relay + replay ring, requireAuth in the route; merge → CI auto-deploys → smoke-test 401), then desktop half (`sync-hub-socket.ts` + service wiring: signal→pull, push→signal, reconcile-on-connect, SyncPanel "Instant sync" line). Execute via superpowers:subagent-driven-development, Opus implementers + two-stage review (the loop caught real defects in every plan so far). Coordination: the accounts track also works in `worker/` — rebase early and before the PR.
+### A. Execute SyncHub — Plan 1b ✅ DONE (2026-07-10)
+Shipped: wecoded-marketplace#21 (SyncGroupRoom DO, merged + CI-deployed + live smoke test 401) and youcoded#114 (sync-hub-socket.ts + service wiring + SyncPanel "Instant sync" line, merged). Full execution log in the plan file; new invariants in PITFALLS → Sync Spaces → SyncHub. **Live end-to-end relay verified against production** (two authenticated WS devices: signal relayed, replay ring served to a late joiner). Review loops again caught real defects: single-shot no-token retry, superseded-startEngine hubStatus clobber, unisolated hub send in broadcast(). Note for D (dogfood): device 1's dev-window "Instant sync: connected" visual + a real synced-space signal flow remain unverified single-machine — first item to check on the second device.
 
 ### B. Phase 2 — conversations + handoff (THE BIG ONE; needs brainstorm + spec-refinement + plan)
 Spec §9/§10/§11/§12. This is the largest remaining chunk and the part Destin cares most about. Scope:
