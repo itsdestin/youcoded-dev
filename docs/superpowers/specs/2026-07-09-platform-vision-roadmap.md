@@ -256,7 +256,7 @@ Phases are sequential but 1/2 overlap internally; each phase = its own brainstor
 4. Create `engine-dependencies.md` + `provider-dependencies.md` coupling registries (the `cc-dependencies.md` discipline, applied forward).
 5. **Harness-design-ideas research pass** over legitimate public sources (opencode internals, Agent SDK docs, published CC prompt/loop teardowns, the CC changelog) — the sanctioned substitute for mining the leaked source (§3.3 policy).
 
-**Exit criteria:** master has the `SessionProvider` extension + dormant runtime selector behind a settings flag; specs approved.
+**Exit criteria:** master has the `SessionProvider` extension + dormant runtime selector behind the `native.supported` capability gate (no settings flag — decided 2026-07-10); specs approved.
 
 ### Phase 1 — Local Engine + Provider Layer (~4–6 weeks)
 
@@ -364,7 +364,7 @@ Phases are sequential but 1/2 overlap internally; each phase = its own brainstor
 
 1. Done — reviewed and approved by Destin 2026-07-09; revisions folded in (engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy, Ollama-drift rationale); phase ordering confirmed as written.
 2. Phase 0 brainstorm → spec (provider interfaces + native home layout + salvage plan) via the standard superpowers cycle.
-3. Quick win candidate while Phase 0 specs bake: land the dormant `SessionProvider`/runtime-selector seam from the salvage pass behind a settings flag.
+3. Quick win candidate while Phase 0 specs bake: land the dormant `SessionProvider`/runtime-selector seam from the salvage pass behind the `native.supported` capability gate.
 
 ### Sources
 

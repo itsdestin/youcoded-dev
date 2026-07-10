@@ -3,7 +3,7 @@
 **Date:** 2026-07-10
 **Status:** Draft — pending Destin's review
 **Parent:** `2026-07-09-platform-vision-roadmap.md` (approved). ADRs 006–010 record the settled decisions this spec builds on.
-**Scope:** the native home layout, provider-layer interfaces, native session store, the `feat/opencode-mvp` salvage plan, and coupling-registry skeletons. Phase 0 ships **no user-visible behavior** — everything lands dormant behind a developer settings flag.
+**Scope:** the native home layout, provider-layer interfaces, native session store, the `feat/opencode-mvp` salvage plan, and coupling-registry skeletons. Phase 0 ships **no user-visible behavior** except the deliberate Gemini removal — the native seam lands dormant behind the `window.claude.native.supported` capability flag (hard-false until Phase 1). No user-visible settings flag (decided with Destin 2026-07-10 — the capability gate makes one redundant); dev builds force the capability with a `YOUCODED_NATIVE=1` env var for testing.
 
 ---
 
@@ -124,12 +124,12 @@ Storing reducer-ready events (rather than a vendor message format) means the sto
 
 Drift check (2026-07-10, merge-base `b8035469`, 2026-05-04): heavily drifted on master since the branch — `App.tsx`/`preload.ts`/`remote-shim.ts` (24 commits each); lightly drifted — `SessionStrip.tsx` (3), `SettingsPanel.tsx` (3), `chat-reducer.ts`/`chat-types.ts` (2), `ResumeBrowser.tsx` (2), `ModelPickerPopup.tsx` (1), `session-manager.ts` (1). **Therefore: no mechanical cherry-picks.** Re-apply from the branch diff as fresh commits, file-by-file, adapting to current master.
 
-**Re-apply now (Phase 0 PR, dormant behind `settings → Development → "Native runtime (experimental)"`, default off):**
+**Re-apply now (Phase 0 PR, dormant behind `window.claude.native.supported` — hard-false until Phase 1; `YOUCODED_NATIVE=1` env override for dev testing):**
 
 | Piece | Source commits | Adaptation |
 |---|---|---|
 | `SessionProvider` + `'native'`, IPC constant reservations | `88ad7f43` | rename `local:*` → `native:*` / `engine:*`; drop Ollama/OpenCode channels |
-| Runtime selector in SessionStrip — **two-way: `Claude Code \| YouCoded`** | `fe98709b` | gate the YouCoded option on the new flag + `window.claude.native.supported`; no Gemini option |
+| Runtime selector in SessionStrip — **two-way: `Claude Code \| YouCoded`** | `fe98709b` | rendered only when `window.claude.native.supported` (one runtime = no selector); no Gemini option |
 | **Gemini removal** (ships ungated — cleanup, not seam) | n/a — master change | delete the Settings Gemini toggle, `isGemini` in SessionStrip, the `'gemini'` command branch in session-manager, and `'gemini'` from `SessionProvider` |
 | Runtime-aware gating: HeaderBar chat-toggle/permission-badge, `useAttentionClassifier(provider)`, ChatView pass-through, ModelPickerPopup scoping | `338e6189` | provider check `!== 'claude'` where the branch said `=== 'local'` |
 | Collapsible reasoning UI + reducer/chat-types reasoning state + BubbleFeed | `eb3ac2ea` (renderer/reducer parts) | keep; CC extended-thinking display benefits too; port the branch's `chat-reducer.test.ts` additions |
@@ -157,11 +157,11 @@ No engine binary, no model downloads, no working native session (Phase 1). No to
 ## 7. Verification & exit criteria
 
 - `ipc-channels.test.ts` parity green across preload/remote-shim (+ SessionService stub row for `native:*` if the harness requires the three-file rule).
-- Branch-ported reducer tests green; `npm test && npm run build` green; flag OFF → the only behavior change is Gemini's removal (deliberate, ungated); flag ON → the two-way runtime selector renders with the YouCoded option present but disabled ("coming in Phase 1").
+- Branch-ported reducer tests green; `npm test && npm run build` green; default build → the only behavior change is Gemini's removal (deliberate, ungated); with `YOUCODED_NATIVE=1` in a dev instance → the two-way runtime selector renders with the YouCoded option present but disabled ("coming in Phase 1").
 - ADRs 006–010 committed (done); this spec approved; harness-design-ideas research report saved under `docs/superpowers/investigations/`.
 
 ## 8. Open items for Destin
 
 1. Resolved (Destin, 2026-07-10): selector is `Claude Code | YouCoded`; Gemini removed entirely (§2, §4).
-2. **Flag placement:** Settings → Development section (recommendation) vs a hidden config-file-only flag.
-3. Anything to add to the harness preset list before Phase 2 specs (current: Chat, Assistant, Coder, Researcher, Automation)?
+2. Resolved (Destin, 2026-07-10): no settings flag — the `native.supported` capability gate (false until Phase 1) is the only gate; env-var override for dev testing.
+3. Harness preset list stands as proposed (Chat, Assistant, Coder, Researcher, Automation) unless Destin flags additions before the Phase 2 spec.
