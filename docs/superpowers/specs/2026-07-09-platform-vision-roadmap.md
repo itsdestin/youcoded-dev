@@ -201,7 +201,7 @@ Feature-by-feature wiring plan (the part you asked for emphasis on):
 | Turn metadata / usage | AI SDK usage + finishReason → `turn-complete` `{stopReason, model, usage}` → existing per-turn strip and UsageCard. |
 | Interrupt (ESC) | AbortController → emit `user-interrupt` → existing `TRANSCRIPT_INTERRUPT` endTurn path. |
 | Compaction | Harness-owned summarization when context nears limit → `compact-summary` event → existing SystemMarker with expandable summary. |
-| Resume browser | Native sessions persist as JSONL in `~/.claude/youcoded-sessions/<project-slug>/` mirroring the transcript shape → the conversation index, topic files, and Resume Browser treat them like CC sessions with a `provider` tag. One store, two writers. |
+| Resume browser | Native sessions persist as JSONL in `~/.youcoded/sessions/<cwd-slug>/` (native home, §3.4a) mirroring the transcript-event shape → the conversation index, topic files, and Resume Browser treat them like CC sessions with a `provider` tag. One index, two stores. |
 | Projects view / conversations | Same conversation-index integration → project conversation lists include native sessions automatically. |
 | Artifacts | Artifact Tracker already keys off transcript tool events — zero work beyond tool naming. |
 | Skills | **SKILL.md stays as the content format** (simple, portable, already what the marketplace catalog contains) but the harness scans the YouCoded-native skill store (§3.4a): frontmatter descriptions in the system prompt, full SKILL.md loaded on trigger. The WeCoded marketplace serves every backend — a real moat. |
