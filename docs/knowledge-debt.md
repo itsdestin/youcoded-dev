@@ -184,3 +184,9 @@ CHANGELOG entry: v2.1.139 — Added agent view (Research Preview): a single list
 - **Actual**: Review iterations hardened the code beyond the plan text: `resolveProviderSignIn` now uses a transactional `db.batch` + ON CONFLICT converge (no orphaned users row on racing first sign-ins); PUT /auth/handle uses a sole-path `db.batch` for rename+release; DELETE /auth/account is batched (INSERT..SELECT + DELETE); CORS allowMethods gained PATCH/PUT. A future re-execution of the plan verbatim would reintroduce the fixed bugs.
 - **Fix**: The merged worker code (wecoded-marketplace master) is the source of truth; treat the plan as historical. If anyone re-runs the plan, diff against `worker/src/` first.
 - **Priority**: low (documentation-only)
+
+## ModelPickerPopup /fast + /effort sends bypass the stray-Enter prompt gate (noticed 2026-07-09)
+- **Claim**: After youcoded PRs #110/#111, every non-menu-driving PTY write is gated on `hasPendingInteraction` (pty-input-gate.ts) so it can't answer a live permission/AskUserQuestion Ink menu.
+- **Actual**: `ModelPickerPopup.tsx` still calls `window.claude.session.sendInput(sessionId, '/fast …\r' | '/effort …\r')` directly (lines ~181/200) — it lacks session-state access, so toggling fast mode or effort while a prompt is pending would type into the menu and the trailing `\r` would answer it. The popup's `/model` send WAS fixed (routed through App's `guardedPtySend` via `onSelectModel`).
+- **Fix**: Thread a guarded sender from App (like `onSelectModel`) or read `useChatStateMap` + `hasPendingInteraction` inside the popup with its own toast. ~15 lines; fold in whenever ModelPickerPopup is next touched.
+- **Priority**: low (requires opening the model picker mid-prompt; rare path, small blast radius)
