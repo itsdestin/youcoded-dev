@@ -76,6 +76,8 @@ cd youcoded && ./gradlew assembleDebug && ./gradlew test
 cd youcoded && ./scripts/build-web-ui.sh
 ```
 
+**Never run the desktop build and any Gradle build CONCURRENTLY (same checkout/worktree).** Gradle's `bundleWebUi` task shells to `scripts/build-web-ui.sh`, which runs `npm ci` inside `desktop/` — wiping and reinstalling `node_modules` out from under a desktop build reading it (symptom: `'vite' is not recognized` mid-build even though tests ran fine moments earlier). Run them sequentially; observed 2026-07-09 during the accounts Phase 2 verification pass.
+
 ## Verify behavior under R8 minification (dev/release parity)
 
 Debug builds skip R8 minification, which means a class of bug — string-based reflection, annotation introspection, anything that depends on stable symbol names — works fine in dev and silently dies in release. The 2026-04-30 PluginInstaller reflection footgun (commit `912f5ca7`) shipped this way: every dev test passed, every release user couldn't install plugins. See `docs/PITFALLS.md → Build-Type Parity (Android)`.
