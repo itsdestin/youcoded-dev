@@ -251,6 +251,7 @@ Phases are sequential but 1/2 overlap internally; each phase = its own brainstor
    a. Cherry-pick/rebase the provider-seam + runtime-aware UI commits (types, SessionStrip runtime selector, HeaderBar gates, classifier gating, ModelPicker scoping, reasoning UI) onto a fresh branch; strip OpenCode/Ollama specifics.
    b. Rename `'local'` provider concept to `'native'` (the harness) with a `providerEndpoint` concept underneath; reserve `IPC` channels.
    c. Archive the branch with a README pointing here (don't delete — the adapter is reference material).
+   d. **Remove the Gemini provider entirely** (Destin, 2026-07-10): Google discontinued the Gemini CLI in June 2026; Gemini models are reachable through the native runtime via OpenRouter/direct key instead. Runtime selector labels become `Claude Code | YouCoded`.
 3. **Spec the provider-layer interfaces** (`ProviderRegistry`, `ModelCatalog`, `EngineSupervisor`, `HarnessSession`), the native session store format (JSONL mirroring transcript-event shape), and the **native home layout** (`~/.youcoded/` manifest + the CC export-adapter design, §3.4a).
 4. Create `engine-dependencies.md` + `provider-dependencies.md` coupling registries (the `cc-dependencies.md` discipline, applied forward).
 5. **Harness-design-ideas research pass** over legitimate public sources (opencode internals, Agent SDK docs, published CC prompt/loop teardowns, the CC changelog) — the sanctioned substitute for mining the leaked source (§3.3 policy).

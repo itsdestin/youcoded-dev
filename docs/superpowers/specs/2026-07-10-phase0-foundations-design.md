@@ -105,7 +105,9 @@ export interface HarnessManifest {
 }
 ```
 
-`SessionProvider` becomes `'claude' | 'gemini' | 'native'`. A native session = `provider: 'native'` + a `ModelBinding` + a `HarnessManifest` ref. **UI label for the native runtime: "YouCoded"** (runtime selector reads `Claude | YouCoded | Gemini`) — it's the app's own runtime, and "Local" would be wrong the moment an OpenRouter binding is selected. (Flagged for Destin's veto — cosmetic, easily changed.)
+`SessionProvider` becomes `'claude' | 'native'` — **the `'gemini'` provider is removed entirely in this workstream** (Destin, 2026-07-10). Google discontinued the Gemini CLI in June 2026, and Gemini *models* remain reachable the right way: through the native runtime via OpenRouter or a direct Google key. Removal covers the Settings opt-in toggle, the `isGemini` branches in SessionStrip, and the gemini command branch in session-manager; existing `provider !== 'claude'` guards keep working for `'native'`.
+
+A native session = `provider: 'native'` + a `ModelBinding` + a `HarnessManifest` ref. **Runtime selector reads `Claude Code | YouCoded`** — "Claude Code" (not "Claude") keeps runtime and model distinct, since a user can also run Claude *models* through the YouCoded runtime via API/OpenRouter; "YouCoded" (not "Local") because a binding may be a cloud model.
 
 ## 3. Native session store
 
@@ -127,7 +129,8 @@ Drift check (2026-07-10, merge-base `b8035469`, 2026-05-04): heavily drifted on 
 | Piece | Source commits | Adaptation |
 |---|---|---|
 | `SessionProvider` + `'native'`, IPC constant reservations | `88ad7f43` | rename `local:*` → `native:*` / `engine:*`; drop Ollama/OpenCode channels |
-| Three-way runtime selector in SessionStrip | `fe98709b` | gate on the new flag + `window.claude.native.supported`; label "YouCoded" |
+| Runtime selector in SessionStrip — **two-way: `Claude Code \| YouCoded`** | `fe98709b` | gate the YouCoded option on the new flag + `window.claude.native.supported`; no Gemini option |
+| **Gemini removal** (ships ungated — cleanup, not seam) | n/a — master change | delete the Settings Gemini toggle, `isGemini` in SessionStrip, the `'gemini'` command branch in session-manager, and `'gemini'` from `SessionProvider` |
 | Runtime-aware gating: HeaderBar chat-toggle/permission-badge, `useAttentionClassifier(provider)`, ChatView pass-through, ModelPickerPopup scoping | `338e6189` | provider check `!== 'claude'` where the branch said `=== 'local'` |
 | Collapsible reasoning UI + reducer/chat-types reasoning state + BubbleFeed | `eb3ac2ea` (renderer/reducer parts) | keep; CC extended-thinking display benefits too; port the branch's `chat-reducer.test.ts` additions |
 | `remote-shim.ts` `window.claude.native.*` no-op stubs + `preload.ts` parity | `65d72637` | re-derive against current files (heavy drift — write fresh, satisfy `ipc-channels.test.ts`) |
@@ -154,11 +157,11 @@ No engine binary, no model downloads, no working native session (Phase 1). No to
 ## 7. Verification & exit criteria
 
 - `ipc-channels.test.ts` parity green across preload/remote-shim (+ SessionService stub row for `native:*` if the harness requires the three-file rule).
-- Branch-ported reducer tests green; `npm test && npm run build` green; flag OFF → zero behavior change (manual dev-instance pass); flag ON → runtime selector renders, "YouCoded" option present but disabled with a "coming in Phase 1" note.
+- Branch-ported reducer tests green; `npm test && npm run build` green; flag OFF → the only behavior change is Gemini's removal (deliberate, ungated); flag ON → the two-way runtime selector renders with the YouCoded option present but disabled ("coming in Phase 1").
 - ADRs 006–010 committed (done); this spec approved; harness-design-ideas research report saved under `docs/superpowers/investigations/`.
 
 ## 8. Open items for Destin
 
-1. **UI label** for the native runtime in the selector: recommendation "YouCoded"; alternatives "Models", "Universal", "Local+".
+1. Resolved (Destin, 2026-07-10): selector is `Claude Code | YouCoded`; Gemini removed entirely (§2, §4).
 2. **Flag placement:** Settings → Development section (recommendation) vs a hidden config-file-only flag.
 3. Anything to add to the harness preset list before Phase 2 specs (current: Chat, Assistant, Coder, Researcher, Automation)?
