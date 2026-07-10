@@ -57,7 +57,7 @@ Sharp edges (all real, from prior sessions):
 - Create: `desktop/src/renderer/components/sync-dot-state.ts`
 - Test: `desktop/tests/sync-dot-state.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```ts
 // desktop/tests/sync-dot-state.test.ts
@@ -138,12 +138,12 @@ describe('lastSyncedLabel', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run (from `desktop/`): `npx vitest run tests/sync-dot-state.test.ts`
 Expected: FAIL — Cannot find module '../src/renderer/components/sync-dot-state'
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```ts
 // desktop/src/renderer/components/sync-dot-state.ts
@@ -210,9 +210,9 @@ export function lastSyncedLabel(spaceId: string, status: SyncStatusData | null, 
 }
 ```
 
-- [ ] **Step 4: Run to verify it passes** — `npx vitest run tests/sync-dot-state.test.ts` → PASS
+- [x] **Step 4: Run to verify it passes** — `npx vitest run tests/sync-dot-state.test.ts` → PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add desktop/src/renderer/components/sync-dot-state.ts desktop/tests/sync-dot-state.test.ts
@@ -232,7 +232,7 @@ git commit -m "feat(sync-ux): pure sync-dot derivation (green/red/gray + sync-of
 - Modify: `desktop/src/main/remote-server.ts` (`syncspaces:sync-now` case)
 - Test: `desktop/tests/sync-spaces-service.test.ts` (append)
 
-- [ ] **Step 1: Write the failing test** — append to the existing describe in `tests/sync-spaces-service.test.ts` (this file mocks electron/engine/etc. via `vi.mock` + `vi.hoisted` and uses `freshService()` with dynamic import — follow its existing patterns exactly; read its top 70 lines first):
+- [x] **Step 1: Write the failing test** — append to the existing describe in `tests/sync-spaces-service.test.ts` (this file mocks electron/engine/etc. via `vi.mock` + `vi.hoisted` and uses `freshService()` with dynamic import — follow its existing patterns exactly; read its top 70 lines first):
 
 ```ts
   it('syncSpacesSyncNow(spaceId) syncs ONLY the matching space', async () => {
@@ -270,9 +270,9 @@ git commit -m "feat(sync-ux): pure sync-dot derivation (green/red/gray + sync-of
 
 Adapt mock names (`mockEngine`, `capturedOnEvent`, spaces returned by the mocked roots) to what the file actually defines — read it first; if the existing mocks only define one space, extend the mocked `spaces()` to return two (`project:alpha`, `project:beta`). The BEHAVIOR asserted above is the contract; the harness plumbing follows the file's own conventions.
 
-- [ ] **Step 2: Run to verify the new tests fail** — `npx vitest run tests/sync-spaces-service.test.ts`
+- [x] **Step 2: Run to verify the new tests fail** — `npx vitest run tests/sync-spaces-service.test.ts`
 
-- [ ] **Step 3: Implement.**
+- [x] **Step 3: Implement.**
 
 `desktop/src/main/sync-spaces/types.ts` — extend the event union: add to EACH variant of `SpaceSyncEvent` an optional stamp, e.g. change the union to intersect with `{ at?: number }`:
 
@@ -341,9 +341,9 @@ export async function syncSpacesSyncNow(spaceId?: string) {
       }
 ```
 
-- [ ] **Step 4: Run** — `npx vitest run tests/sync-spaces-service.test.ts tests/ipc-channels.test.ts tests/sync-spaces-engine.test.ts && npx tsc -p tsconfig.json --noEmit` → all PASS, tsc clean.
+- [x] **Step 4: Run** — `npx vitest run tests/sync-spaces-service.test.ts tests/ipc-channels.test.ts tests/sync-spaces-engine.test.ts && npx tsc -p tsconfig.json --noEmit` → all PASS, tsc clean.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add desktop/src/main/sync-spaces/types.ts desktop/src/main/sync-spaces/service.ts desktop/src/main/ipc-handlers.ts desktop/src/main/preload.ts desktop/src/renderer/remote-shim.ts desktop/src/main/remote-server.ts desktop/tests/sync-spaces-service.test.ts
@@ -360,7 +360,7 @@ The rewrite REPLACES the whole component. It keeps: row list (nickname/path/miss
 - Rewrite: `desktop/src/renderer/components/FolderSwitcher.tsx`
 - Modify: `desktop/src/renderer/components/SessionStrip.tsx` (~line 948: pass `onManageProjects`)
 
-- [ ] **Step 1: Rewrite the component**
+- [x] **Step 1: Rewrite the component**
 
 ```tsx
 // desktop/src/renderer/components/FolderSwitcher.tsx
@@ -713,7 +713,7 @@ export default function FolderSwitcher({ value, onChange, autoSelect = true, onM
 }
 ```
 
-- [ ] **Step 2: Wire SessionStrip.** In `desktop/src/renderer/components/SessionStrip.tsx`: add `import { useArtifact } from '../state/ArtifactContext';` and inside the component body `const { dispatch: artifactDispatch } = useArtifact();` (SessionStrip renders only in the main window, inside the ArtifactContext provider — the buddy window uses FolderSwitcher directly and simply omits the prop). Then at the `<FolderSwitcher …>` usage (~line 948):
+- [x] **Step 2: Wire SessionStrip.** In `desktop/src/renderer/components/SessionStrip.tsx`: add `import { useArtifact } from '../state/ArtifactContext';` and inside the component body `const { dispatch: artifactDispatch } = useArtifact();` (SessionStrip renders only in the main window, inside the ArtifactContext provider — the buddy window uses FolderSwitcher directly and simply omits the prop). Then at the `<FolderSwitcher …>` usage (~line 948):
 
 ```tsx
                 <FolderSwitcher
@@ -727,9 +727,9 @@ export default function FolderSwitcher({ value, onChange, autoSelect = true, onM
 
 Verify the menu-close setter's real name in this component (the remote-session rows nearby call `setMenuOpen(false)`) and match it. If `useArtifact` cannot be called at SessionStrip's top level for provider-ordering reasons (check how HeaderBar isolates it at line ~195), isolate the same way HeaderBar does.
 
-- [ ] **Step 3: Verify** — `npx tsc -p tsconfig.json --noEmit && npx vitest run tests/sync-dot-state.test.ts tests/ipc-channels.test.ts` → clean/PASS. (BuddyNewSessionForm compiles unchanged — the new prop is optional.)
+- [x] **Step 3: Verify** — `npx tsc -p tsconfig.json --noEmit && npx vitest run tests/sync-dot-state.test.ts tests/ipc-channels.test.ts` → clean/PASS. (BuddyNewSessionForm compiles unchanged — the new prop is optional.)
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add desktop/src/renderer/components/FolderSwitcher.tsx desktop/src/renderer/components/SessionStrip.tsx
@@ -745,7 +745,7 @@ git commit -m "feat(sync-ux): picker slim-down — sync dots, portal positioning
 
 Read `desktop/src/renderer/components/ImportProjectModal.tsx` first — this modal reuses its conventions exactly (Scrim/OverlayPanel layer 2, useEscClose, cancelledRef, inFlightRef, a11y roles, inline errors, rejection-safe invokes).
 
-- [ ] **Step 1: Create the component**
+- [x] **Step 1: Create the component**
 
 ```tsx
 // desktop/src/renderer/components/project-view/AddProjectModal.tsx
@@ -951,9 +951,9 @@ export default function AddProjectModal({ onClose, onAdded }: Props) {
 
 Note: if `OverlayPanel` doesn't accept `role`/`aria-*` props (check its signature in `components/overlays/Overlay.tsx` — ImportProjectModal already passes them, so it almost certainly does), match however ImportProjectModal attaches them.
 
-- [ ] **Step 2: Verify** — `npx tsc -p tsconfig.json --noEmit` → clean.
+- [x] **Step 2: Verify** — `npx tsc -p tsconfig.json --noEmit` → clean.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add desktop/src/renderer/components/project-view/AddProjectModal.tsx
@@ -969,7 +969,7 @@ git commit -m "feat(sync-ux): unified two-step Add-a-project modal (router over 
 - Modify: `desktop/src/renderer/components/project-view/ProjectHero.tsx`
 - Modify: `desktop/src/renderer/components/project-view/ProjectSwitcher.tsx`
 
-- [ ] **Step 1: ProjectView — sync status + modal mounts.** In `ProjectView.tsx`:
+- [x] **Step 1: ProjectView — sync status + modal mounts.** In `ProjectView.tsx`:
 
 1. State additions near the other useState calls (~line 167):
 ```tsx
@@ -1080,7 +1080,7 @@ and add the shared post-add handler (reusing the existing refresh + suffix-selec
 
 6. Pass `syncStatus` to `<ProjectSwitcher … syncStatus={syncStatus} />` and gate its per-row remove: change the `onDeleteProject` prop it receives to skip synced rows (see Step 3).
 
-- [ ] **Step 2: ProjectHero — sync line + actions row.** Extend the props and render. New prop types at the top of `ProjectHero.tsx`:
+- [x] **Step 2: ProjectHero — sync line + actions row.** Extend the props and render. New prop types at the top of `ProjectHero.tsx`:
 
 ```tsx
 import { type SyncDot } from '../sync-dot-state';
@@ -1215,7 +1215,7 @@ And the management actions row directly under the stat row:
 ```
 with `const isElectron = getPlatform() === 'electron';` and `import { getPlatform } from '../../platform';` (verify the module path — SessionDrawer.tsx:174 imports the same helper; copy its import specifier).
 
-- [ ] **Step 3: ProjectSwitcher — dots + remove gating.** In `ProjectSwitcher.tsx`:
+- [x] **Step 3: ProjectSwitcher — dots + remove gating.** In `ProjectSwitcher.tsx`:
 1. Props: add `syncStatus?: SyncStatusData | null;` (import `{ syncDotFor, findSpaceFor, type SyncStatusData }` from `../sync-dot-state`).
 2. In the row map (after the files·chats hint, before the active check):
 ```tsx
@@ -1232,9 +1232,9 @@ with `const isElectron = getPlatform() === 'electron';` and `import { getPlatfor
 ```
 3. Gate the hover remove-×: replace the `{onDeleteProject && (` condition with `{onDeleteProject && !findSpaceFor(p.path, syncStatus ?? null) && (` — synced rows don't offer remove (deferred move-out flow); the title stays "Remove … from YouCoded".
 
-- [ ] **Step 4: Verify** — `npx tsc -p tsconfig.json --noEmit && npx vitest run tests/sync-dot-state.test.ts && npm run build` → clean.
+- [x] **Step 4: Verify** — `npx tsc -p tsconfig.json --noEmit && npx vitest run tests/sync-dot-state.test.ts && npm run build` → clean.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add desktop/src/renderer/components/project-view/ProjectView.tsx desktop/src/renderer/components/project-view/ProjectHero.tsx desktop/src/renderer/components/project-view/ProjectSwitcher.tsx
@@ -1245,16 +1245,16 @@ git commit -m "feat(sync-ux): Project View management hub — hero sync line + a
 
 ### Task 6: Full verification
 
-- [ ] **Step 1:** From `desktop/`: `env -u YOUCODED_PROFILE -u YOUCODED_PORT_OFFSET npx vitest run` → ALL green (transport contract tests take 45–85s — normal). Then `npx tsc -p tsconfig.json --noEmit && npm run build` → clean.
-- [ ] **Step 2:** Static review of the four spec copy rules against the diff (`git diff origin/master --stat` + grep): the noun is "project" in all new user-facing strings; the two sync phrases appear exactly as specced; no `●◐○` glyph characters anywhere (`git diff origin/master | grep -c "●\|◐\|○"` → 0); sync-off wording present in AddProjectModal + hero + dot label.
-- [ ] **Step 3: Commit any fixes**, then hand back to the coordinator. **Do NOT start a dev instance** — port 5223 is held by Destin's running session; the live UI review happens post-merge via the main checkout's HMR (coordinator handles the merge, including discarding the main checkout's uncommitted FolderSwitcher.tsx first — it is subsumed by Task 3).
+- [x] **Step 1:** From `desktop/`: `env -u YOUCODED_PROFILE -u YOUCODED_PORT_OFFSET npx vitest run` → ALL green (transport contract tests take 45–85s — normal). Then `npx tsc -p tsconfig.json --noEmit && npm run build` → clean.
+- [x] **Step 2:** Static review of the four spec copy rules against the diff (`git diff origin/master --stat` + grep): the noun is "project" in all new user-facing strings; the two sync phrases appear exactly as specced; no `●◐○` glyph characters anywhere (`git diff origin/master | grep -c "●\|◐\|○"` → 0); sync-off wording present in AddProjectModal + hero + dot label.
+- [x] **Step 3: Commit any fixes**, then hand back to the coordinator. **Do NOT start a dev instance** — port 5223 is held by Destin's running session; the live UI review happens post-merge via the main checkout's HMR (coordinator handles the merge, including discarding the main checkout's uncommitted FolderSwitcher.tsx first — it is subsumed by Task 3).
 
 ---
 
 ### Task 7: Docs + PR (coordinator or final subagent)
 
-- [ ] **Step 1: Workspace docs** (`youcoded-dev` master): add to `docs/PITFALLS.md → Sync Spaces` a short "Project & sync management UX" subsection: dots are the ONE sanctioned status-color use (tooltip carries the words; the no-●◐○-glyph rule is about glyph text, not colored dots — Destin chose the dots explicitly); FolderSwitcher is portaled to document.body at z-9001 (host menu is the z-9000 exception — don't "fix" either); the picker deliberately has NO add/import actions (spec decision 3 — don't reintroduce); `SpaceSyncEvent.at` is stamped in `broadcast()` and is the ONLY source for "Last synced" (no persistence); `syncSpacesSyncNow(spaceId?)` narrows to one space. Check this plan's boxes + append an execution log.
-- [ ] **Step 2: PR** on `itsdestin/youcoded` from `feat/project-sync-ux` to master, describing the spec link, the three surfaces, and that the FolderSwitcher portal fix (live-session hotfix) is included here rather than as a separate PR.
+- [x] **Step 1: Workspace docs** (`youcoded-dev` master): add to `docs/PITFALLS.md → Sync Spaces` a short "Project & sync management UX" subsection: dots are the ONE sanctioned status-color use (tooltip carries the words; the no-●◐○-glyph rule is about glyph text, not colored dots — Destin chose the dots explicitly); FolderSwitcher is portaled to document.body at z-9001 (host menu is the z-9000 exception — don't "fix" either); the picker deliberately has NO add/import actions (spec decision 3 — don't reintroduce); `SpaceSyncEvent.at` is stamped in `broadcast()` and is the ONLY source for "Last synced" (no persistence); `syncSpacesSyncNow(spaceId?)` narrows to one space. Check this plan's boxes + append an execution log.
+- [x] **Step 2: PR** on `itsdestin/youcoded` from `feat/project-sync-ux` to master, describing the spec link, the three surfaces, and that the FolderSwitcher portal fix (live-session hotfix) is included here rather than as a separate PR.
 
 ---
 
@@ -1264,3 +1264,21 @@ git commit -m "feat(sync-ux): Project View management hub — hero sync line + a
 - Type consistency: `SyncStatusData`/`SyncDot`/`findSpaceFor`/`lastSyncedLabel` defined in T1, consumed in T3/T5 with matching signatures; `syncNow(spaceId?)` matches T2's surfaces; `HeroSync` local to ProjectHero ✓.
 - Placeholders: none — every code step carries the code; T2's test harness adaptation is explicitly bounded ("behavior is the contract, plumbing follows the file's conventions").
 - Known judgment calls for reviewers: `managed` badge text removed in favor of the dot (spec decision 2); ProjectSwitcher "Add a project" footer now opens the modal (unchanged wiring — `onAddProject` still fires, only its implementation changed).
+
+---
+
+## Execution log (2026-07-09, subagent-driven development)
+
+Executed task-by-task with a fresh Opus implementer per task + spec-compliance review + code-quality review per task, then a whole-branch final review. Merged as youcoded#112 (merge commit `8af94119`); worktree + branch cleaned up; main checkout's uncommitted FolderSwitcher hotfix discarded (subsumed by Task 3).
+
+| Task | Commits | Review outcome |
+|---|---|---|
+| 1 sync-dot-state module | `c6cb370a`, `bcbf099f` | Spec ✅; quality approved (+3 label-branch tests added on reviewer suggestion) |
+| 2 timestamps + per-space sync-now | `544f7b47`, `1a269f35` | Spec review caught the remote-server.ts edit left UNCOMMITTED (remote parity would have shipped broken) → committed; quality approved |
+| 3 FolderSwitcher rewrite | `d181eacf`, `4f572fcb` | Spec ✅; quality approved (+corrected a stale WHY comment on the dead `managed` field, linked PANEL_WIDTH↔w-72) |
+| 4 AddProjectModal | `a3ff9e0b`, `76108dce` | Spec ✅ (copy byte-verified); quality approved (+stale-error clear on move transition, surfaced picker failures, autofocus-absence WHY) |
+| 5 Project View wiring | `49685e72`, `63525807` | Spec ✅; quality flagged "Sync now gives no feedback / status goes stale" → fixed with a debounced `syncSpaces.onEvent` subscription + handleAdded/onRenamed hardening; re-approved |
+| 6 full verification | — | 1426 passed / 34 skipped; tsc + `npm run build` clean; all four copy rules pass (glyph grep = 0) |
+| final whole-branch review | `15d043e0` | Found the buddy window lost its only add-folder route (picker slim-down removed browse; buddy has no Project View) → "Browse for folder…" fallback rendered ONLY when `onManageProjects` is absent; welcome-screen picker gained the Manage entry; ImportProjectModal gained the sync-off honesty note (it's reached directly from the hero); HeaderBar isolation comment corrected. Re-review APPROVED |
+
+Notable catches the review loops earned their cost on: the uncommitted parity surface (Task 2), the buddy-window dead end, and the sync-now-invisible-feedback gap — all would have reached Destin's UI review as real defects.
