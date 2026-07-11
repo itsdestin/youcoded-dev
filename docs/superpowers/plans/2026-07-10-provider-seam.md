@@ -1,5 +1,7 @@
 # Provider Seam (Phase 0) Implementation Plan
 
+> **STATUS: EXECUTED & MERGED 2026-07-10** — youcoded PR #115 (`29ca27a0` on master). All 9 tasks completed via subagent-driven development with per-task spec + quality reviews and a final whole-branch review (approve, merge-ready). `feat/opencode-mvp` archived in place with `OPENCODE-MVP-ARCHIVED.md`. Phase 1 follow-ups are recorded in the PR body (ungated Shift+Tab, chat-view PTY send paths needing harness routing, subagent reasoning routing, copy-blocks reasoning decision).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Per workspace memory, implementer subagents should run on **Opus or better**.
 
 **Goal:** Land the dormant multi-model provider seam on youcoded master — `SessionProvider = 'claude' | 'native'`, Gemini removed entirely, a two-way `Claude Code | YouCoded` runtime selector gated by the `native.supported` capability flag, runtime-aware UI gating, the collapsible reasoning UI salvaged from `feat/opencode-mvp`, and coupling-registry skeletons — with zero user-visible behavior change except Gemini's removal.
