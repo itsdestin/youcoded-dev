@@ -273,11 +273,14 @@ Delivered: ADRs 006–010; foundations spec (`2026-07-10-phase0-foundations-desi
    a. Curated catalog (tiered defaults ladder) + HF search (`?filter=gguf`); per-quant file sizes; RAM/VRAM fit estimate vs detected hardware; disk-space guard.
    b. Download via `-hf`/HF API into the llama.cpp cache with progress events (reuse the pull-progress IPC patterns from the MVP).
    c. Settings → Local Models panel: installed models, delete, default per tier, context-length knob, GPU backend picker (Jan-style) with detection.
+   d. **Unsloth GGUF compatibility is a first-class requirement (Destin, 2026-07-10):** he prefers downloading unsloth's quants. Curated catalog entries should point at `unsloth/*-GGUF` repos where available; HF search + downloader must handle unsloth's dynamic-quant naming (`UD-Q4_K_XL` etc.), multi-part GGUF splits, and their fixed chat templates. Verify a real unsloth download end-to-end as part of Phase 1 acceptance.
 3. **ProviderRegistry + key management:** Providers settings panel (local / OpenRouter / Anthropic / OpenAI / Google / custom-endpoint); `safeStorage` keychain; connection test per provider; models.dev + OpenRouter catalog fetch with cache; OpenRouter attribution headers.
 4. **Chat-preset sessions end-to-end:** `HarnessSession` v0 = plain `streamText` loop (no tools) emitting transcript-events; SessionManager `provider === 'native'` branch (adapted from the Vercel-roadmap plan's Task 5); runtime selector enabled; model picker provider-scoped; session persistence + Resume Browser tab.
 5. **Optional endpoints:** Ollama/LM Studio detectors → they appear as endpoint choices, never requirements.
 
 **Exit criteria:** a non-developer can install a recommended model in-app and chat with it offline; an OpenRouter key holder can chat with any catalog model; sessions persist and resume.
+
+**Gating decision (Destin, 2026-07-10):** `native.supported` stays OFF in production builds until **Phase 2 is complete** — users first meet the YouCoded runtime when it can already do agentic work, not chat-only. Phase 1 verification happens in dev builds via `YOUCODED_NATIVE=1`. Build order within Phase 1 is **cloud-first vertical slice**: provider registry + keys + HarnessSession v0 + session store against OpenRouter/direct keys first, then the local engine + model manager as additional providers.
 
 ### Phase 2 — Native Harness v1: tools + permissions (~6–8 weeks)
 
