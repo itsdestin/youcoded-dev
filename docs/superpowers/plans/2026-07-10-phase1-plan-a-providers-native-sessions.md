@@ -6,7 +6,7 @@
 
 **Architecture:** A new main-process provider layer (`providers/`) wraps the Vercel AI SDK; `NativeSessionHost` (`harness/`) owns `HarnessSession` instances that emit the SAME `transcript-event` protocol the chat reducer already consumes, forwarded through the existing `sendForSession` + remote-broadcast pipe. `SessionManager.createSession` branches on `provider === 'native'` before the PTY worker spawn. Renderer send paths branch per provider: native sessions use `native:send`/`native:interrupt` IPC instead of PTY bytes.
 
-**Tech Stack:** TypeScript (Electron main + React renderer), Vercel AI SDK v6 (`ai`, `@ai-sdk/openai-compatible`, `@ai-sdk/anthropic`, `@ai-sdk/openai`, `@ai-sdk/google`), Electron `safeStorage`, Vitest 4.
+**Tech Stack:** TypeScript (Electron main + React renderer), Vercel AI SDK v7 (`ai`, `@ai-sdk/openai-compatible`, `@ai-sdk/anthropic`, `@ai-sdk/openai`, `@ai-sdk/google`), Electron `safeStorage`, Vitest 4.
 
 **Spec:** `docs/superpowers/specs/2026-07-10-phase1-engine-providers-design.md` §2 (+ §0–1, §5). Roadmap: `2026-07-09-platform-vision-roadmap.md` Phase 1.
 
@@ -40,7 +40,7 @@ Run tests from `desktop/`: `npx vitest run tests/<file>.test.ts` (single file), 
 10. ResumeBrowser lists via `window.claude.session.browse()` → `PastSession[]` (`{sessionId, name, projectSlug, projectPath, lastModified, size, flags?}`); no tabs — filter pills + `renderSessionRow`.
 11. Parity test templates in `tests/ipc-channels.test.ts`: mirror `describe('project:* channel parity')` (lines 494-525) for new channels; Android stub template is the combined `when` case in `app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt:3514-3526` (`JSONObject().put("ok", false).put("error", "not-implemented-on-mobile")`, guarded `msg.id?.let`). Kotlin assertions are double-quoted `"chan"`; TS single-quoted.
 12. `safeStorage` is NOT yet used anywhere; no `ai`/`@ai-sdk/*` deps installed. Vitest electron mock (`tests/__mocks__/electron.ts`) must gain `safeStorage` + any `app.getPath` your test touches.
-13. AI SDK v6 note: `fullStream` parts are `{type:'text-delta'|'reasoning-delta', id, ...}` — there was v6 churn between `part.delta` (types) and `part.text` (runtime) in early releases (vercel/ai#8335/#8756). **Read `node_modules/ai/dist/index.d.ts` for the installed part shapes before writing the stream loop**, and use the `deltaText()` accessor from Task 8 everywhere.
+13. AI SDK v7 facts (VERIFIED against the installed ai@7.0.22 by Task 1): `fullStream` yields `text-delta`/`reasoning-delta` parts carrying the chunk in **`part.text`** (`{type:'text-delta'; id: string; text: string}`); the `delta` field name belongs to the UIMessageChunk stream and raw provider-level parts — do not conflate. Mock model: `MockLanguageModelV4` from `ai/test` (v7's LanguageModel accepts V2/V3/V4; V4 is current). Usage totals: `result.usage` (`result.totalUsage` is @deprecated in v7). Keep the `deltaText()` accessor from Task 8 anyway so future churn stays in one place.
 14. Every non-trivial edit gets a WHY comment (Destin is a non-developer). Commit messages: conventional prefixes, end with `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
 
 **File map (created →/modified ✎):**
@@ -83,7 +83,7 @@ Run tests from `desktop/`: `npx vitest run tests/<file>.test.ts` (single file), 
 npm install ai @ai-sdk/openai-compatible @ai-sdk/anthropic @ai-sdk/openai @ai-sdk/google
 ```
 
-Expected: `ai@^6`, `@ai-sdk/openai-compatible@^3` land in `package.json`. Then open `node_modules/ai/dist/index.d.ts` and note (in a scratch note for Task 8): the exact `TextStreamPart` delta field name (`text` vs `delta`), the mock helper name exported from `ai/test` (`MockLanguageModelV3` or similar), and whether usage totals come from `result.totalUsage` or `result.usage`.
+Expected: `ai@^7`, `@ai-sdk/openai-compatible@^3` land in `package.json`. Then open `node_modules/ai/dist/index.d.ts` and note (in a scratch note for Task 8): the exact `TextStreamPart` delta field name (`text` vs `delta`), the mock helper name exported from `ai/test` (`MockLanguageModelV4` as of ai@7), and whether usage totals come from `result.totalUsage` or `result.usage`.
 
 - [ ] **Step 2: Create `desktop/src/shared/provider-types.ts`** (shared because renderer components type against these too)
 
@@ -1162,7 +1162,7 @@ git commit -m "feat(native): SessionStore — header+events JSONL with partId co
 - Create: `desktop/src/main/harness/harness-session.ts`
 - Test: `desktop/tests/harness-session.test.ts`
 
-**AI SDK note (Context primer #13):** before coding, open `node_modules/ai/dist/index.d.ts` and confirm (a) the delta field on `text-delta`/`reasoning-delta` stream parts, (b) the mock model class exported from `ai/test`, (c) usage totals accessor. The code below targets the v6 documented shape (`part.text`, `MockLanguageModelV3`-style, `result.totalUsage`) — adapt names to the installed reality, keep the `deltaText()` accessor so churn stays in one place.
+**AI SDK note (Context primer #13):** before coding, open `node_modules/ai/dist/index.d.ts` and confirm (a) the delta field on `text-delta`/`reasoning-delta` stream parts, (b) the mock model class exported from `ai/test`, (c) usage totals accessor. The code below targets the VERIFIED v7 shape (`part.text` on fullStream parts, `MockLanguageModelV4`, `result.usage`) — re-confirm against the installed reality, keep the `deltaText()` accessor so churn stays in one place.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1175,11 +1175,11 @@ import type { TranscriptEvent } from '../src/shared/types';
 
 // Minimal fake AI-SDK model: emits reasoning + text deltas then finishes.
 // Uses the ai/test mock helper — adapt the class name to the installed SDK
-// (check node_modules/ai/test.d.ts): MockLanguageModelV3 as of ai@6.
-import { MockLanguageModelV3, simulateReadableStream } from 'ai/test';
+// (check node_modules/ai/test.d.ts): MockLanguageModelV4 as of ai@7.
+import { MockLanguageModelV4, simulateReadableStream } from 'ai/test';
 
 function mockModel(parts: any[]) {
-  return new MockLanguageModelV3({
+  return new MockLanguageModelV4({
     doStream: async () => ({
       stream: simulateReadableStream({ chunks: parts }),
     }),
@@ -1234,7 +1234,7 @@ describe('HarnessSession', () => {
   it('interrupt() aborts and emits user-interrupt instead of session-error', async () => {
     // A stream that never finishes until aborted.
     const never = new ReadableStream({ start() { /* never enqueues, never closes */ } });
-    const model = new MockLanguageModelV3({ doStream: async () => ({ stream: never as any }) });
+    const model = new MockLanguageModelV4({ doStream: async () => ({ stream: never as any }) });
     const session = new HarnessSession(opts, async () => model as any);
     const events = collect(session);
     const sendP = session.send('hi');
@@ -1247,7 +1247,7 @@ describe('HarnessSession', () => {
 
   it('conversation history accumulates across turns (second call sees first exchange)', async () => {
     const seen: any[] = [];
-    const factory = async () => new MockLanguageModelV3({
+    const factory = async () => new MockLanguageModelV4({
       doStream: async (req: any) => { seen.push(req.prompt); return { stream: simulateReadableStream({ chunks: TEXT_FINISH }) }; },
     }) as any;
     const session = new HarnessSession(opts, factory);
@@ -1384,7 +1384,7 @@ export class HarnessSession extends EventEmitter {
         }
       }
 
-      const usage = await result.totalUsage;
+      const usage = await result.usage; // v7: totalUsage is deprecated in favor of usage
       const finishReason = await result.finishReason;
       if (assistantText) this.history.push({ role: 'assistant', content: assistantText });
 
@@ -1452,7 +1452,7 @@ import * as fs from 'fs'; import * as path from 'path'; import * as os from 'os'
 import { NativeHome } from '../src/main/native-home';
 import { SessionStore } from '../src/main/harness/session-store';
 import { NativeSessionHost } from '../src/main/harness/native-session-host';
-import { MockLanguageModelV3, simulateReadableStream } from 'ai/test';
+import { MockLanguageModelV4, simulateReadableStream } from 'ai/test';
 
 const CHUNKS = [
   { type: 'stream-start', warnings: [] },
@@ -1461,7 +1461,7 @@ const CHUNKS = [
   { type: 'text-end', id: 'p1' },
   { type: 'finish', finishReason: 'stop', usage: { inputTokens: 3, outputTokens: 2, totalTokens: 5 } },
 ];
-const factory = async () => new MockLanguageModelV3({ doStream: async () => ({ stream: simulateReadableStream({ chunks: CHUNKS }) }) }) as any;
+const factory = async () => new MockLanguageModelV4({ doStream: async () => ({ stream: simulateReadableStream({ chunks: CHUNKS }) }) }) as any;
 
 describe('NativeSessionHost', () => {
   let root: string; let host: NativeSessionHost;
@@ -2220,7 +2220,7 @@ YOUCODED_NATIVE=1 bash scripts/run-dev.sh   # dev worktree instance; NEVER the l
 7. A regular Claude Code session in the same instance still works end-to-end (spawn, chat, terminal view).
 
 - [ ] **Step 3: Docs.**
-- `youcoded/docs/provider-dependencies.md`: record every external coupling now real — AI SDK v6 surface used (`streamText`, `fullStream` part types + the delta-name churn note, mock helpers), models.dev `api.json` schema fields consumed, OpenRouter `/api/v1/models` fields + attribution headers, per-vendor key-validation endpoints used by `testConnection`. Each entry names the consuming file.
+- `youcoded/docs/provider-dependencies.md`: record every external coupling now real — AI SDK v7 surface used (`streamText`, `fullStream` part types + the delta-name churn note, mock helpers), models.dev `api.json` schema fields consumed, OpenRouter `/api/v1/models` fields + attribution headers, per-vendor key-validation endpoints used by `testConnection`. Each entry names the consuming file.
 - `youcoded-dev/docs/PITFALLS.md`: append to the "Multi-Model Provider Seam" section: `native:send` is fire-and-forget by design; SessionStore coalescing invariant (replay ≡ live merge — change both together); secrets never plaintext / never in `~/.youcoded`; `errorMessage`+`'error'` state writer; ManagedSession.worker optional (guard before `.send`).
 - `youcoded-dev/docs/chat-reducer.md`: document the text-segment partId merge beside the reasoning paragraph.
 - [ ] **Step 4: Shut down the dev instance** (kill the run-dev process tree; verify ports 5223/9950 freed — orphaned Vite/Electron trip the next session).
