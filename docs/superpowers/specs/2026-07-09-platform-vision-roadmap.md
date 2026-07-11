@@ -2,6 +2,7 @@
 
 **Date:** 2026-07-09
 **Status:** Vision roadmap — reviewed and approved by Destin 2026-07-09 (revisions: engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy; phase ordering confirmed as written). Each phase gets its own spec → plan → implementation cycle.
+**Progress:** **Phase 0 COMPLETE 2026-07-10** (youcoded PR #115, master `29ca27a0`). Next: Phase 1 spec cycle (local engine + provider layer).
 **Inputs:** repo audit of master + `feat/opencode-mvp`, `cc-dependencies.md` coupling inventory, mid-2026 market research (web, cited), llama.cpp/provider-layer technical research (web, cited).
 
 ---
@@ -242,7 +243,9 @@ Phases are sequential but 1/2 overlap internally; each phase = its own brainstor
 
 **Ordering decision (Destin, 2026-07-09): phases stay as laid out.** The alternative — shipping Agents & Automations first on the CC backend — was considered and rejected: automations don't make sense until other backends exist, since the headline value is 24/7 agents running free on local models, and building the runner against CC's PTY quirks first would bake the wrong constraints into the design.
 
-### Phase 0 — Foundations & salvage (~1–2 weeks)
+### Phase 0 — Foundations & salvage (~1–2 weeks) — DONE 2026-07-10
+
+Delivered: ADRs 006–010; foundations spec (`2026-07-10-phase0-foundations-design.md`); harness-design-ideas research (`investigations/2026-07-10-harness-design-ideas.md`); seam PR merged (youcoded #115 — `SessionProvider = 'claude' | 'native'`, Gemini removed, `native.supported` gate, runtime selector, runtime-aware gating, reasoning UI salvage, coupling-registry skeletons); `feat/opencode-mvp` archived in place. Phase 1 follow-ups recorded in the PR body.
 
 **Goal:** lock decisions, extract value from `feat/opencode-mvp`, land the shared seam on master.
 
@@ -334,7 +337,7 @@ Phases are sequential but 1/2 overlap internally; each phase = its own brainstor
 
 | Phase | Estimate | Unlocks |
 |---|---|---|
-| 0 Foundations | 1–2 wk | decisions, salvage, seam on master |
+| 0 Foundations — DONE 2026-07-10 | 1–2 wk | decisions, salvage, seam on master (PR #115) |
 | 1 Engine+Providers | 4–6 wk | local + cloud chat |
 | 2 Harness v1 | 6–8 wk | agentic sessions, full UI parity |
 | 3 Ecosystem | 4–6 wk | skills/MCP/custom harnesses everywhere |
@@ -362,9 +365,9 @@ Phases are sequential but 1/2 overlap internally; each phase = its own brainstor
 
 ## 6. Immediate next steps
 
-1. Done — reviewed and approved by Destin 2026-07-09; revisions folded in (engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy, Ollama-drift rationale); phase ordering confirmed as written.
-2. Phase 0 brainstorm → spec (provider interfaces + native home layout + salvage plan) via the standard superpowers cycle.
-3. Quick win candidate while Phase 0 specs bake: land the dormant `SessionProvider`/runtime-selector seam from the salvage pass behind the `native.supported` capability gate.
+1. Done — reviewed and approved by Destin 2026-07-09; revisions folded in; phase ordering confirmed as written.
+2. Done — Phase 0 executed and merged 2026-07-10 (spec `2026-07-10-phase0-foundations-design.md`, plan `2026-07-10-provider-seam.md`, youcoded PR #115).
+3. **Next: Phase 1 brainstorm → spec** — EngineSupervisor (llama-server download/spawn/supervision + GPU backend variants), Model Manager (catalog, HF downloads, RAM/VRAM-fit UX), ProviderRegistry + keychain key storage + Providers settings panel, chat-preset native sessions end-to-end (`HarnessSession` v0, session store, Resume Browser tab), optional Ollama/LM Studio endpoint detectors. Phase 1 must also route the chat-view PTY send paths through the harness for native sessions (list in PR #115 body).
 
 ### Sources
 

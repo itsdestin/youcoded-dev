@@ -1,7 +1,7 @@
 # Phase 0 Foundations — Design
 
 **Date:** 2026-07-10
-**Status:** Draft — pending Destin's review
+**Status:** EXECUTED — approved by Destin 2026-07-10 (all §8 items resolved); implemented via `docs/superpowers/plans/2026-07-10-provider-seam.md`; merged as youcoded PR #115 (master `29ca27a0`). §1–3 (native home, provider interfaces, session store) are Phase 1 build targets and remain the governing design.
 **Parent:** `2026-07-09-platform-vision-roadmap.md` (approved). ADRs 006–010 record the settled decisions this spec builds on.
 **Scope:** the native home layout, provider-layer interfaces, native session store, the `feat/opencode-mvp` salvage plan, and coupling-registry skeletons. Phase 0 ships **no user-visible behavior** except the deliberate Gemini removal — the native seam lands dormant behind the `window.claude.native.supported` capability flag (hard-false until Phase 1). No user-visible settings flag (decided with Destin 2026-07-10 — the capability gate makes one redundant); dev builds force the capability with a `YOUCODED_NATIVE=1` env var for testing.
 
