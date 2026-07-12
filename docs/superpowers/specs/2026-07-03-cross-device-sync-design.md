@@ -97,7 +97,7 @@ The engine doesn't know how a space travels; the transport doesn't know what's i
 - Each space is backed by a **hidden git repository** using a separate git dir (`<root>/.youcoded/sync.git`) so a developer's own `.git` in the same project folder is never touched, and non-developers never see git at all.
 - Remote: **auto-created private GitHub repos** (one per space), via the existing repo-creation flow. The personal space evolves from the existing `personal-sync` repo lineage.
 - Push = commit + push (atomic, checksummed, resumable). Pull = fetch + merge. History = `git log` (free point-in-time restore, richer than the old wizard's version picker).
-- **Known limits, handled explicitly:** 100MB/file GitHub hard limit and multi-GB repo softness → per-file size cap (~50MB) with a clear "too large to sync — covered by your daily backup instead" message; history compaction job for binary churn; default ignores (below).
+- **Known limits:** 100MB/file GitHub hard limit and multi-GB repo softness. **Built:** per-file size cap (50MB, `MAX_SYNC_FILE_BYTES`) with a clear "too large to sync — covered by your daily backup instead" message, plus default ignores (below). **NOT yet built (Phase 2c) — the single medium-term GitHub-backend concern:** a history-compaction / `gc` job for the unbounded `.git` growth from append-only transcript re-commits + binary churn. Audited 2026-07-12: the engine has no `gc`/repack/shallow today, so history accumulates every version forever. Non-trivial because the sync remote is *shared* — rewriting history to reclaim space means a force-push and every other device re-clones, so it needs a deliberate strategy (periodic `gc`/repack at minimum; squash/shallow for old transcript history), not a drive-by fix. Repos stay well under limits for normal use; heavy multi-month use is what eventually approaches GitHub's ~5GB soft recommendation.
 - Requires the GitHub backend connected (one-time OAuth). Drive/iCloud-only users are prompted to add it when enabling Sync; their backups are unaffected either way.
 
 ## 8. Sync Engine
@@ -124,6 +124,15 @@ The engine doesn't know how a space travels; the transport doesn't know what's i
 - **Stale leases:** no heartbeat for ~90s → lease expires; takeover proceeds without ceremony (covers laptop-asleep-at-home).
 - **Warm prefetch:** devices background-pull transcript updates as signals arrive, so takeover is "click → resumed," not "click → download → resumed."
 - **Phase-2 polish:** a "watch read-only" third option reusing the remote-access machinery.
+
+### 10a. Device registry & friendly names (Plan 2b — decided 2026-07-12)
+
+Leases and takeover need a stable per-device identity and human-readable device names ("moved to **Home PC**"), so the device registry ships **with 2b** (Plan 1b's `SyncGroupRoom` deliberately tracks no roster — `webSocketClose` persists nothing). Design:
+
+- **Persistent registry = a git-synced `devices.json` in the Personal space** — one entry per device: a **stable random per-install id** (generated locally on first run; **NOT** the analytics device hash and **NOT** machine-id-derived — kept un-correlatable across contexts), the OS hostname as the *default* name, a **user-editable friendly name**, and first/last-seen timestamps updated on each sync. This is the backbone: it survives offline, needs no live socket, and gives a rename affordance (replace an identifying hostname like `DESTIN-HOME-PC` with "Laptop").
+- **Live online/offline** (which devices are connected *right now*) reuses SyncHub's `device-online/offline` signals — a nice-to-have layered on the persistent list, not a prerequisite.
+- **Surfaced in the Backup & Sync menu** as a "Your devices" list (name, last synced, online dot), extending today's spaces-only view; rename inline.
+- **Privacy (see §14):** the registry lives ONLY in the user's own private sync repo and travels ONLY between the user's own devices — never sent to the Worker or analytics. The hostname it defaults to is *already* synced today (commit authors, conflict-copy filenames), so this adds no new collection; the friendly-name rename is a privacy *improvement*. The only device string SyncHub ever sees stays the ephemeral, connection-pinned `?device=` label (metadata-only, not persisted beyond the 32-entry ring).
 
 ## 11. Backup layer (simplified)
 
@@ -156,6 +165,7 @@ The warning-code system survives but shrinks to genuinely actionable items (auth
 ## 14. Security & privacy
 
 - User content flows only between the user's devices and the user's own GitHub account (git transport). SyncHub sees opaque IDs + device names only.
+- **The device registry (§10a) is the user's own data about the user's own devices** — a `devices.json` in the private Personal space, synced only between the user's devices, never sent to the Worker or analytics. Its device id is a random per-install value (**not** the analytics device hash, **not** machine-id-derived), so it can't correlate a user across contexts, and it carries only name + last-seen (no IP, geolocation, or serials). Friendly names let a user replace an identifying hostname — a net privacy improvement over the hostname that already syncs today.
 - Default ignores prevent common secret files from syncing; first-sync warning on credential-looking files.
 - Synced repos are always private; the engine verifies repo visibility at creation and on connect.
 - `mcp.json` and other credential-bearing config are **excluded from sync by default** with an explicit opt-in (addresses the review finding that MCP keys currently ship to backends silently).
