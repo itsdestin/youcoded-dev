@@ -44,8 +44,23 @@ Phase 2 almost certainly wants decomposition into 2+ plans (store+transcript-syn
 ### C. Connect-GitHub modal (GA/launch prerequisite; parallelizable any time)
 Spec §18: `gh` auth is a silent gate non-developers never pass; sync's GA path requires an in-app modal wrapping gh's device-code flow. Independent of A/B — can be brainstormed/planned/built in parallel or by a second session. Small-to-medium scope; touches first-run + Settings + the sync enable path.
 
-### D. Two-device dogfood (after A, ideally mid/after B)
-Dev builds on a second machine: sign in, enable Sync, verify Personal + a project space converge, conflict copies materialize correctly, second-device provisioning reuses device 1's repos, and (post-A) signals make it near-instant. This is the first real-world test of the convergent-conflict policy — schedule it BEFORE building too much of Phase 2 on top, in case it surfaces design problems.
+### D. Two-device dogfood (THE GATE before Plan 2b — needs a 2nd machine)
+Dev builds on a second machine: sign in, enable Sync, verify Personal + a project space converge, conflict copies materialize correctly, second-device provisioning reuses device 1's repos, and signals make it near-instant. First real-world test of the convergent-conflict policy AND of Plan 2a's conversation store — schedule it BEFORE building 2b on top, in case it surfaces design problems.
+
+**Procedure (both machines run a DEV build — `bash scripts/run-dev.sh` — not the released app):**
+1. **Both machines:** launch `bash scripts/run-dev.sh` (dev window on shifted ports; shares `~/.claude` but its own userData profile). First launch runs the reconciler — expect it to populate `~/YouCoded/Personal/Conversations/` locally (records + mirrored transcripts). With youcoded#118 shipped, conversations key to their REAL projects (e.g. `youcoded-dev`), not all bucketed to `desti`. **Sanity-check this first** (`ls ~/YouCoded/Personal/Conversations/claude/transcripts/` should show real project names, not just `desti`).
+2. **Both machines:** sign in to the SAME account (marketplace auth), then **enable Sync** in the SyncPanel. Machine 1 provisions the personal-space GitHub repo; machine 2 must REUSE it (provisioning treats an existing repo as success — verify no duplicate repo, no error).
+3. **Conversation convergence (the Plan 2a payoff):** run a short conversation on machine A → within a few seconds (SyncHub signal) it should appear in machine B's **Resume Browser**. Open it on B and confirm **resume works** (`claude --resume` finds a materialized transcript). Then the reverse (B→A).
+4. **Project-space convergence:** edit a file in a synced project folder on A → confirm it converges on B; make conflicting edits offline on both → confirm the convergent policy (remote wins canonical, local becomes a visible `(from <device>)` conflict copy) and that BOTH devices end identical.
+
+**What to watch / known 2a caveats (not bugs):**
+- **A LIVE (running) session is deliberately NOT offered for resume on the other device** (no leases until 2b — the sweep + browser both skip live sessions to avoid two `claude --resume` on one transcript). Takeover UX is Plan 2b.
+- **Accepted caveat:** an ENDED session stays sweep-guarded until app restart (nothing clears the live-sessions map on exit yet — `noteSessionEnded` lands in 2b). If a just-ended conversation doesn't materialize on the other device until a restart, that's this, not a bug.
+- A store-only Resume Browser row can briefly read **"Not synced to this device yet"** until the same-pull sweep materializes its transcript — self-corrects on the next browser open.
+- Transcripts **>50 MB** won't push (engine `MAX_SYNC_FILE_BYTES` cap) — they list but won't materialize cross-device.
+- The **live-intake path** (an in-app turn writing to the store) is UNVERIFIED at runtime — the 2a smoke test only exercised the startup reconciler. Confirming a fresh in-app conversation shows up on the other device is the key new thing this dogfood proves.
+
+**If it surfaces a design problem, STOP and fix before 2b.** Shut down both dev instances when done (kill Vite on 5223 + the dev electron procs; NEVER the built app — see §4 sharp edges).
 
 ### E. Android (Phase 3) — DECISION NEEDED from Destin
 Spec phases Android sync as Phase 3 (Kotlin engine port, foreground sync + on-open reconcile). **Open question the next session should ask Destin:** does "entirely complete and shippable" include Android sync, or does the release ship with desktop-only sync (Android UI already degrades gracefully — no syncspaces Kotlin handlers by design)? This materially changes the timeline; don't assume either way.
