@@ -94,6 +94,15 @@ The 1b `SyncGroupRoom` DO is extended (allowlist + a small lease table in DO sto
 - Resolves the knowledge-debt entry "CC-drift: cleanupPeriodDays coverage" as part of the sync-service work.
 - **Ordering guard (PITFALLS, standing):** none of `sync-service.ts` is touched before this plan — flipping backup to daily-only earlier regresses conversation backup freshness to 24h.
 
+### 4a. Foreign-slug symlink removal — the FULL 2c task (not just deleting the functions)
+
+Deleting the creator does NOT remove the symlinks already on disk, so this is a **four-part** task, all in Plan 2c:
+
+1. **Stop creating them.** Delete `SyncService.aggregateConversations()` (`sync-service.ts:2062`) and `rewriteProjectSlugs()` (`:2026`), plus their two call sites in `pull()` (`:1595-1596`). (`regenerateTopicCache()` at `:1604` goes in the same pass — it's on the deletion list above.)
+2. **One-time on-disk cleanup sweep (the easily-missed part).** A migration on first 2c launch must remove the symlinks/junctions ALREADY created (687 on Destin's machine; every existing user has them). Sweep `~/.claude/projects/*/` and delete entries where `lstatSync().isSymbolicLink()` is true (both the `.jsonl` file-symlinks from `aggregateConversations` and the `rewriteProjectSlugs` foreign-device dir junctions — on Windows a junction also reports as a reparse point; use `lstat`/junction-aware removal). **NEVER delete a real file** — only symlinks/junctions. Without this sweep the stale links linger forever (harmless to the store thanks to the 2a reconciler skip, but they pollute `~/.claude/projects` and confuse anyone browsing it, and CC's `/resume` picker from `~` still shows the stale aggregated set). Idempotent; safe to re-run.
+3. **Keep the 2a reconciler symlink-skip (youcoded#118) — do NOT remove it.** After the aggregator is gone it's a harmless, cheap no-op, and it defends against any future/other symlink source. Removing it buys nothing and re-opens the bucketing bug if any symlink ever reappears.
+4. **Accept the `claude --resume`-from-`~`-outside-the-app consequence.** The aggregation existed so CC's `/resume` invoked from the home dir (bare CLI, not through YouCoded) showed every project's conversations in one list. After removal, a bare-CLI user resuming from `~` sees only genuine home-dir sessions. This is acceptable: the in-app store-fed Resume Browser is the replacement and shows everything cross-project/cross-device. The agent trace confirmed `/resume from ~` + the legacy backup's consolidated-slug pull are the ONLY consumers, and both are replaced by the store — nothing else depends on the aggregation. (If the bare-CLI-from-home case turns out to matter, revisit before deleting — but the design intent is that the app is the resume surface.)
+
 ## 5. Plan decomposition & sequencing
 
 | # | Plan | Scope | Gate before next |
