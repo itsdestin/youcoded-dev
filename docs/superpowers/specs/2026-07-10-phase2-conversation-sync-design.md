@@ -98,7 +98,7 @@ The 1b `SyncGroupRoom` DO is extended (allowlist + a small lease table in DO sto
 
 | # | Plan | Scope | Gate before next |
 |---|------|-------|------------------|
-| 2a | **Store + conversation sync** | `conversation-store.ts` (records, reconciler, healer), transcript mirror-in/materialize-out, Resume Browser reads store (legacy fallback intact) | **Two-device dogfood** (handoff item D): conversations appear + resume works both ways on dev builds |
+| 2a ✅ **SHIPPED** (youcoded#116, 2026-07-11) | **Store + conversation sync** | `conversation-store.ts` (records, reconciler, healer), transcript mirror-in/materialize-out, Resume Browser reads store (legacy fallback intact) | **Two-device dogfood** (handoff item D): conversations appear + resume works both ways on dev builds — STILL THE GATE before 2b |
 | 2b | **Leases + takeover** | SyncGroupRoom lease table + kinds (worker), lease client + heartbeat + takeover dialog/banner + force path (desktop) | Two-device takeover verified |
 | 2c | **Migration + demolition** | personal-sync repo repurpose, Drive/iCloud daily backup, the §4 deletion list | `/audit` + release checklist readiness |
 

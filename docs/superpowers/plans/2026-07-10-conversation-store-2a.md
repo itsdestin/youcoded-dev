@@ -1,5 +1,7 @@
 # Conversation Store + CC Transcript Sync (Plan 2a) Implementation Plan
 
+> **✅ SHIPPED 2026-07-11 — youcoded#116 merged to master (`ea2e1aa3`).** All 9 tasks executed via subagent-driven development (Opus implementers + two-stage review). 1577 tests green, tsc clean, build+installer clean. See the Execution Log at the bottom.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Implementer/reviewer agents run on **Opus** (Destin's standing preference).
 
 **Goal:** Implement spec §1–§2 of `docs/superpowers/specs/2026-07-10-phase2-conversation-sync-design.md` — a per-conversation record store in the personal space, CC transcript mirror-in/materialize-out, and a Resume Browser that reads the store (legacy fallback intact). Leases (2b) and demolition (2c) are OUT of scope; **`sync-service.ts` is not touched** (PITFALLS standing rule).
@@ -1063,3 +1065,23 @@ and skip the `onResume` invocation for `missingProject` rows (guard at the top o
 - **Type consistency:** `ConversationRecord`/`UpsertInput`/`ConversationStore` (Tasks 1–2) match Task 4/6 call sites; `PastSession` extras (Task 7) match the renderer mirror; `onSyncSpacesEvent` (Task 5) matches Task 6's subscription.
 - **Known judgment calls for reviewers:** size-gated mirroring (not hashing) — documented in Task 3's header comment; projectName-from-slug approximation in the reconciler — corrected by the live path; `require()` lazy import in resolveLocalProject to avoid a cycle; store-only rows carry `size: 0` (no local file to stat — renderer's formatSize renders '0 B', acceptable until materialization fills it).
 - **Placeholder scan:** clean — every code step carries the actual code; test steps carry behavior contracts naming the exact convention file to clone (the bounded style Tasks 4/5 of the 1b plan used).
+
+---
+
+## Execution Log (2026-07-11)
+
+Executed via superpowers:subagent-driven-development — fresh Opus implementer per task, spec-compliance review then code-quality review per task, review loops until both approved, whole-branch final review before PR. 18 commits on `feat/conversation-store` → PR #116 → merged to master (`ea2e1aa3`). Started under Fable 5; finished under Opus 4.8 after the model switch. Final: **1577 tests pass**, tsc clean, production build + installer clean.
+
+**Defects the review loops caught and fixed (the process earning its keep):**
+- **Task 1 (store-core):** `'Untitled'` placeholder wrongly beat real titles; `mergeRecords` non-convergent on exact `lastActive` ties (positional tiebreak → two devices ping-pong) — fixed with a total-order content tiebreak; `foldConflictCopies` title, then ALL field groups, made order-independent by picking over the ORIGINAL input set instead of the mutated reduce accumulator; parse hardening (flag-value sanitize, corrupt-`createdAt` fallback, greedy conflict-copy regex).
+- **Task 2 (IO shell):** path-traversal write via crafted id (charset allowlist + `path.resolve` containment + Windows reserved names); multi-process heal race deleting an unfolded conflict copy (quarantine-rename claim); metadata-only upsert silently dropping provided fields (local-truth re-apply); read paths rejecting on lock-timeout (fail-soft); lock-timeout returning a bogus record (throw).
+- **Task 3 (mirror):** approved first pass; added stale-`.tmp` sweep (crash orphans would sync as junk) + same-size/different-content and materialize-side tmp tests.
+- **Task 4 (reconciler):** O(n²) heal-readdir storm (measured ~2.8s at 600 records every startup + 30-min tick) → single `list()` preload (~200× fewer dirents); corrupt-tail transcript created an EPOCH record that re-upserted forever → skip; untested update branch pinned; wasted head-read reordered.
+- **Task 5 (sync-spaces hook):** approved as written (isolated fan-out before the hub send; SyncHub invariants intact).
+- **Task 6 (composition root):** materialize sweep could replace a LIVE session's transcript (no leases) → `sessions.has(id)` guard; per-record sweep IO on secondary devices → hoist managed/saved lookups once; double-start subscription/timer leak → idempotent start; phantom synced-record from flagging a live session before its id mapping → gated dual-write.
+- **Task 7 (Resume Browser):** union resurfaced LIVE sessions as resumable rows (double-attach hazard) → `activeSessionIds` guard; store-only rows offered resume before the transcript materialized → `notSyncedYet` gate; `'Untitled'` placeholder shadowed derived names; fresh-secondary-device early-return-`[]` hid all synced conversations (product fix).
+- **Whole-branch review:** the reconciler (`basename` via slug-last-segment truncation) and the live path (`basename(cwd)`) derived DIFFERENT projectKeys for hyphenated folders (`youcoded-dev` → `dev`) → orphan duplicate space transcript + cross-device materialize gap; fixed by recovering the exact folder name from a `ccProjectSlug(known folder) → basename` map (`3a7559b1`).
+
+**Documented (not fixed here):** transient "Not synced to this device yet" wording on a second device until the same-pull sweep materializes (self-corrects); transcripts >50 MB hit the engine's pre-existing `MAX_SYNC_FILE_BYTES` cap and don't reach peers.
+
+**The gate before Plan 2b:** the two-device dogfood (handoff item D) — first real-world test of records + transcripts converging across two machines. A single-instance live smoke test was NOT run this session; the dogfood supersedes it.
