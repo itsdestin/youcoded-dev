@@ -62,6 +62,14 @@ Dev builds on a second machine: sign in, enable Sync, verify Personal + a projec
 
 **If it surfaces a design problem, STOP and fix before 2b.** Shut down both dev instances when done (kill Vite on 5223 + the dev electron procs; NEVER the built app — see §4 sharp edges).
 
+**Dogfood progress (2026-07-12 — device 1 = Windows `GalaxyBook`, device 2 = Linux `destinsZ13`; IN PROGRESS, not yet a full pass):** Sync connected, "Instant sync: connected" verified with two devices, conversation names appeared on the peer within seconds, and conversations synced + resumed cross-device. The live-intake path is now runtime-verified (a conversation made on one device resumed on the other). Bugs found AND FIXED on desktop (all merged to youcoded master):
+- **Cross-device / cross-OS resume launched into the wrong cwd → blank spawn + exit** (`bea0de3e`): the Resume Browser's store-only row resolved a synced session by `originalPath` only — a peer's path (Linux `/home/destin/…` on Windows) doesn't exist locally, so resume got a dead cwd. Fixed by sharing the materializer's `resolveLocalProject` (originalPath → managed-by-name → saved-by-basename) via `buildLocalProjectResolver`.
+- **Every hyphenated-folder session "resumed from the home directory"** (`57be5e14`): the legacy slug→path walk (`walkSlugParts`) was SHORTEST-first, so a stray `C:\Users\desti\youcoded` dir made `C--Users-desti-youcoded-dev` resolve to the nonexistent `…\youcoded\dev`, and `session-manager` silently fell back to `$HOME`. Fixed to longest-first + a store-record override that uses the unambiguous basename resolver. (Then `8f92a091` made that `$HOME` fallback warn instead of silently masking.)
+- **Backup & Sync panel reframed to final state** (`a713decf`): GitHub cross-device sync is now the primary backup+sync backend; Drive/iCloud demoted to "Additional backups · optional"; info popup rewritten. Future-flex (2c backup-layer changes) left as in-code WHY comments. Do NOT undo this framing.
+- **Android resume is broken independent of sync** — see item E + PITFALLS "Slug→path resolution for resume"; deferred to Phase 3 per Destin (2026-07-12).
+
+**Still to finish in the dogfood:** offline conflict-copy convergence on a project space (step 4), and second-device provisioning-reuse confirmation. `C:\Users\desti\youcoded` (the stray dir that triggered the greedy-slug bug) is a real dir on GalaxyBook — the fix handles it, but note that hyphenated project folders with a shorter-prefix sibling are the trigger class.
+
 ### E. Android (Phase 3) — DECISION NEEDED from Destin
 Spec phases Android sync as Phase 3 (Kotlin engine port, foreground sync + on-open reconcile). **Open question the next session should ask Destin:** does "entirely complete and shippable" include Android sync, or does the release ship with desktop-only sync (Android UI already degrades gracefully — no syncspaces Kotlin handlers by design)? This materially changes the timeline; don't assume either way.
 
