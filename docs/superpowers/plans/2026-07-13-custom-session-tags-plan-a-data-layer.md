@@ -14,6 +14,35 @@
 
 ---
 
+## Session Bootstrap (do this first)
+
+This plan is written for a cold session. Before Task 1:
+
+1. **Read the companion spec** `docs/superpowers/specs/2026-07-13-custom-session-tags-design.md` — it explains the *why* behind every design choice referenced below (registry model, reserved-flag behavior, the `helpful` removal, Android deferral).
+
+2. **Sync + create a worktree in the `youcoded` sub-repo** (workspace CLAUDE.md requires worktrees for non-trivial work; sub-repo code never lands in `youcoded-dev`):
+
+```bash
+cd youcoded
+git fetch origin && git pull origin master
+git worktree add ../youcoded-worktrees/session-tags-a -b feat/session-tags-data-layer
+cd ../youcoded-worktrees/session-tags-a
+```
+
+3. **Install desktop deps once** (the worktree has its own `node_modules`; or junction the main checkout's per CLAUDE.md — if you junction, remember to `cmd //c "rmdir node_modules"` BEFORE `git worktree remove` so it doesn't delete the main checkout's deps):
+
+```bash
+cd desktop && npm ci && cd ..
+```
+
+4. **Path note:** run every `npx vitest` / `npx tsc` / `npm run build` from `<worktree>/desktop`. Gradle commands run from `<worktree>` (the repo root). Never run the desktop build and a Gradle build concurrently in the same checkout (PITFALLS → Build order — `bundleWebUi` shells to `npm ci` and wipes `node_modules` mid-build).
+
+5. **Context that auto-loads:** editing files under `src/main/conversations/`, `src/renderer/`, or `app/**` pulls in the relevant `.claude/rules/` (IPC bridge, React renderer, Android runtime). `docs/PITFALLS.md` → "Conversation Store", "Resume Browser & Conversation Identity", and "Cross-Platform" are the load-bearing invariants this plan builds on — skim them if a task's *why* isn't obvious.
+
+When Plan A is merged, remove the worktree per CLAUDE.md (`git worktree remove`, `git branch -D`), then Plan B (UI) is authored against the now-locked types.
+
+---
+
 ## File Structure
 
 **Create (youcoded/desktop):**
@@ -73,7 +102,7 @@ export function earliestOf(x: string, y: string): string {
 
 - [ ] **Step 2: Verify existing store-core tests still pass**
 
-Run: `cd youcoded/desktop && npx vitest run tests/store-core.test.ts`
+Run: `cd youcoded/desktop && npx vitest run tests/conversation-store-core.test.ts`
 Expected: PASS (adding `export` changes nothing at call sites).
 
 - [ ] **Step 3: Commit**
@@ -637,13 +666,13 @@ git commit -m "feat(tags): tag-registry service singleton + launch wiring"
 **Files:**
 - Modify: `youcoded/desktop/src/main/conversations/store-core.ts`
 - Modify: `youcoded/desktop/src/main/conversations/conversation-store.ts`
-- Test: `youcoded/desktop/tests/store-core.test.ts` (extend)
+- Test: `youcoded/desktop/tests/conversation-store-core.test.ts` (extend)
 
 The per-session freeform note is a record field with its own timestamp, merged newest-wins independently of activity.
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `tests/store-core.test.ts` (import `mergeRecords`, `parseRecord` if not already):
+Add to `tests/conversation-store-core.test.ts` (import `mergeRecords`, `parseRecord` if not already):
 
 ```ts
 describe('note field', () => {
@@ -670,7 +699,7 @@ describe('note field', () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd youcoded/desktop && npx vitest run tests/store-core.test.ts -t "note field"`
+Run: `cd youcoded/desktop && npx vitest run tests/conversation-store-core.test.ts -t "note field"`
 Expected: FAIL — `note`/`noteUpdatedAt` not on the record.
 
 - [ ] **Step 3: Extend `store-core.ts`**
@@ -750,13 +779,13 @@ Add the implementation (after the `setTitle` method):
 
 - [ ] **Step 5: Run tests to verify they pass**
 
-Run: `cd youcoded/desktop && npx vitest run tests/store-core.test.ts`
+Run: `cd youcoded/desktop && npx vitest run tests/conversation-store-core.test.ts`
 Expected: PASS (note-field cases + all existing).
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/conversations/store-core.ts src/main/conversations/conversation-store.ts tests/store-core.test.ts
+git add src/main/conversations/store-core.ts src/main/conversations/conversation-store.ts tests/conversation-store-core.test.ts
 git commit -m "feat(conversations): add per-session note field (independent newest-wins merge)"
 ```
 
