@@ -1,0 +1,142 @@
+# Cross-Device Project Auto-Discovery — Design
+
+- **Date:** 2026-07-12
+- **Status:** Approved design, pending implementation plan
+- **Parent spec:** `docs/superpowers/specs/2026-07-03-cross-device-sync-design.md` (§3 "enable Sync and everything appears", §8 materialization, §10a device-registry pattern)
+- **Fills:** the release-gating gap recorded in `docs/superpowers/2026-07-10-sync-completion-handoff.md` §2 item **A00** and `docs/knowledge-debt.md`
+- **Precedes:** Plan 2b (leases + `devices.json` device registry), Plan 2c (legacy demolition)
+
+## 1. Motivation
+
+The cross-device sync pitch (parent spec §3) is *"turn on Sync and your projects, files, and conversations are on every device."* Conversations deliver on that — they ride the **Personal** space, which exists and syncs on every device unconditionally. **Projects do not.** A device's synced spaces are derived purely from the filesystem: `ManagedRoots.spaces()` returns the Personal space plus one space per folder physically present under `~/YouCoded/Projects/`. There is no notion of "a project that exists in the sync group but isn't on this device," so a project synced on device A never appears on device B, and a `space-updated` SyncHub signal for an unknown project is silently dropped (`service.ts`: `spaceForKey` returns null → no-op).
+
+This was specced as vision (parent §3) but never decomposed into a plan — it fell through the crack between the vision and the phased plans. Under the standing release gate ("no release until sync is entirely complete"), a two-device user whose projects don't appear is a broken core feature. This design closes the gap.
+
+## 2. Goals & non-goals
+
+**Goals**
+- A project synced on any device **silently appears** (folder created, repo cloned, live-syncing) on every other device in the sync group, with no user action.
+- Discovery is **convergent and offline-tolerant**: two devices that each create projects while apart both end up with the union.
+- The visible record of "what happened" lives in the existing Sync panel — nothing is truly invisible.
+
+**Non-goals (this design)**
+- **Per-device selective sync** (choosing that a given project lands on only some devices). Silent materialization means every synced project lands on every device. Deferred; would be a later feature if wanted.
+- **Un-sync / removal propagation** (removing a project from the sync group on all devices). No un-sync flow exists yet; the registry is add/update-only.
+- **Rename propagation.** Folder rename changes the sync identity (`repoNameForSpace` derives from the name) and is already deferred in the picker UX. Out of scope here.
+- **Android.** Desktop-first, consistent with the rest of sync (Android is Phase 3). The registry format is platform-neutral so the Android engine can consume it unchanged later.
+
+## 3. Why a registry, not `gh repo list`
+
+`repoNameForSpace` slugifies and then appends a SHA-1 hash of the **lowercased** project id: `youcoded-sync-project-<slug>-<sha8>`. This is deliberately lossy and one-way (parent §7 / `space-manager.ts` comment) so distinct folder names always get distinct repos and weird names still get a valid repo. **The transform cannot be reversed** — from a repo name you cannot recover the real folder name (`My App` and `my-app` both slug to `my-app`; the hash disambiguates the repo but not the display name). Enumerating the account's repos by prefix would tell a device *that* projects exist but not what to **name their folders**.
+
+So the source of truth is an explicit **registry that stores the real folder name alongside its repo name**, synced through a channel that already works on every device: the Personal space.
+
+## 4. The registry — one file per project
+
+Location: `~/YouCoded/Personal/.youcoded/projects/<name>.json`
+
+```json
+{
+  "name": "cookingonlowheat",
+  "repoName": "youcoded-sync-project-cookingonlowheat-3f9a1c2b",
+  "addedBy": "GalaxyBook",
+  "addedAt": "2026-07-12T18:04:00.000Z"
+}
+```
+
+- **One file per project — this is what makes it conflict-free.** Two devices adding *different* projects while offline touch *different* files, so the git-backed Personal space merges them with zero conflicts. Two devices adding the *same* name produce byte-identical content (`repoName` is deterministic on `name`), so there is no conflict there either. This mirrors the Phase-2a Conversation Store's per-record-file design, which exists for exactly this reason. A single combined `projects.json` would textually conflict on concurrent adds and require a convergent-merge helper; per-file avoids that entirely.
+- **Hidden `.youcoded/` control dir** keeps user-facing `Personal/` (notes, `Conversations/`, `Encyclopedia/`) clean. Plan 2b's `devices.json` can move in beside it (`Personal/.youcoded/devices.json`) when it lands.
+- **`addedBy` / `addedAt`** are provenance only (useful for the Sync panel and debugging); nothing keys on them.
+- **Writers** (add/update only):
+  1. `createProject(name)` — new managed project.
+  2. `importProject(...)` — a folder moved into management.
+  3. **Backfill on enable** — a one-time pass that writes a registry file for every project already present under `Projects/` on this device, so pre-existing projects (created before this feature, or created while sync was off) enter the registry the first time sync runs.
+- **No removal semantics.** Un-sync and rename are deferred (see §2), so nothing deletes or renames registry files. A project, once registered, stays discoverable.
+
+## 5. Registry store module
+
+A small store owns registry I/O, kept as a pure-ish shell over `fs`:
+
+- `readAllProjects(personalRoot): RegistryEntry[]` — read every `*.json` under `.youcoded/projects/`. **Fail-soft:** a corrupt or partial file is skipped, never thrown (the dev instance and built app share the tree; a half-written peer file must not crash discovery). Uses `lstat`/skip on anything that isn't a real regular file.
+- `writeProject(personalRoot, entry)` — atomic temp-file + rename write of one entry (idempotent; overwriting with identical content is a no-op-equivalent, harmless).
+- `ensureRegistryDir(personalRoot)` — `mkdir -p` the control dir.
+
+Writes are atomic (temp + rename) for the same shared-tree reason the existing `SpaceManager.write` and `saved-folders.writeFolders` are.
+
+## 6. The materialization planner (pure)
+
+The decision of *what to do* is a pure function with no I/O, unit-tested in isolation (same pattern as `resolveLocalProject`, `buildSavedFolderProjects`, `discoverContext`):
+
+```ts
+// input: registry entries (from the synced Personal space) + names of projects
+//        already present locally under ~/YouCoded/Projects/
+// output: the projects this device must materialize (missing locally)
+export function planMaterialization(
+  registry: RegistryEntry[],
+  localProjectNames: string[],
+): RegistryEntry[]
+```
+
+Rules:
+- A registry entry whose `name` is **not** in `localProjectNames` → materialize.
+- A registry entry whose `name` **is** already local → skip. (A same-named local project already converges to the same repo through existing `ensureRemote` provisioning + the transport's unrelated-histories merge — materializing again would clobber a live folder.)
+- Dedup by `name` (defensive; per-file storage already guarantees uniqueness).
+
+Keeping this pure means the tricky cases (missing, already-local, empty registry, duplicate) are tested without touching the filesystem, `gh`, or the engine.
+
+## 7. Materialization (the IO shell)
+
+For each planned entry, in `service.ts` (it owns the engine singletons), **complete-then-register** so a half-clone is never picked up as a live space:
+
+1. **Clone into a temp path** — `git clone <cloneUrl> <projectsRoot>/.<name>.materializing` (leading dot + suffix marks it as in-progress and keeps it out of `listProjects()`, which the engine would otherwise pick up). The clone URL comes from `manager.ensureRemote` for a synthesized space id `project:<name>` — reusing the existing already-exists recovery, so a device that lost its state file still resolves the URL via `gh repo view`.
+2. **Atomic rename** into place — `rename(.<name>.materializing → <name>)`. Only after a *complete* clone does the folder become a real project.
+3. **Wire the git transport** the same way `syncSpacesImportProject` does: the cloned repo already has an `origin`, but the hidden-`GIT_DIR` transport uses `<root>/.youcoded/sync.git`, so materialization must **re-init the space transport** and set its remote (the clone's working tree is kept; the transport's separate git dir is initialized over it, mirroring the import path's `transport.init` + `setRemote`).
+4. `engine.addSpace(space)` + initial `void engine.syncSpace(space)` — the folder is now a live, watched, syncing space.
+5. **Emit `synced`** for the new space so the Sync panel + a toast show *"Added project X from another device."*
+
+**Failure at any step** (clone fails, `gh` not authed, disk full, name now taken): emit an `error` sync event with a plain-language message, clean up the temp `.<name>.materializing` dir best-effort, and **do not** add a space. Discovery re-runs on the next boot / enable / SyncHub `connected`, so a transient failure self-heals. This matches the engine's existing "errors surface as events, the poll/reconnect is the retry" contract.
+
+> **Transport-init detail to settle in the plan:** whether to `git clone` then init the hidden transport over the working tree, or to `createProject` (empty folder) + init transport + `syncSpace` (which fetches + checks out via the existing `pull` path). The latter reuses the *exact* code path `createProject` + first-sync already exercises (no new clone-then-adopt logic) and is preferred if `pull` on a fresh unborn space reliably checks out `origin/main` — which the transport already handles (`checkout -B main origin/main` when local `main` is unborn, per the parent spec's first-sync convergence fix). The plan will pick one; both converge to the same end state.
+
+## 8. Where discovery runs
+
+Discovery hooks the points that already exist in `service.ts`, always **after** the Personal space has been synced (its pull is what brings the latest registry):
+
+- **`startEngine`** (app boot when enabled, and enable-toggle): after the existing per-space loop syncs the Personal space, run discovery, then materialize. New projects get added to the same engine instance.
+- **SyncHub `connected` handler**: the existing reconcile-on-connect already re-syncs every space; extend it to re-read the registry and materialize newcomers (covers "device B was asleep when A created a project").
+- **Backfill** runs once inside `startEngine` before discovery: register every local project so this device's projects enter the registry.
+
+Supersession safety: discovery must respect the same `engine !== e` guard the start loop uses, so a disable mid-materialization bails cleanly (no `addSpace` onto a dead engine).
+
+## 9. Failure modes & transparency
+
+| Situation | Behavior |
+|-----------|----------|
+| Clone fails (network/offline) | `error` event in Sync panel; temp dir cleaned; retried next connect/boot |
+| `gh` not authenticated | Plain-language `error` (reuses `provisionGithubRemote`'s "Not signed in to GitHub" message shape) |
+| Same name already exists locally | Skipped by the planner (converges via existing provisioning) |
+| Registry file corrupt/partial | Skipped by the store's fail-soft read; other entries still processed |
+| Disk full / rename blocked (Windows EBUSY) | `error` event; temp dir cleaned best-effort; no half-space |
+| Two devices create same-named project | Identical registry file + deterministic repo → converge; no conflict |
+| Two devices create different projects offline | Per-file registry merges cleanly; each device materializes the other's |
+
+## 10. Testing strategy
+
+- **Pure planner** (`planMaterialization`): missing → materialize; already-local → skip; empty registry → []; duplicate names deduped; backfill set correct. No I/O.
+- **Registry store**: per-file write→read round-trip; corrupt-file tolerance (one bad file doesn't sink the read); atomic write leaves no partial file visible.
+- **Service integration** (fake transport + fake/real engine): discovery runs only after the Personal space syncs; calls the materialize path for missing projects and skips existing ones; a clone failure emits an `error` event and leaves no `.materializing` dir and no space; supersession (disable mid-run) adds nothing to the dead engine.
+- **Convergence** (two managed roots pointed at one fake remote, mirroring the transport contract suite's style): device A creates a project → device B, on next discovery, materializes it → both `roots.listProjects()` agree.
+
+## 11. File plan (informs the implementation plan)
+
+- **New:** `desktop/src/main/sync-spaces/project-registry.ts` — registry store (§5) + `RegistryEntry` type.
+- **New:** `desktop/src/main/sync-spaces/materialization-planner.ts` — pure `planMaterialization` (§6).
+- **Modify:** `desktop/src/main/sync-spaces/service.ts` — backfill + discovery + materialization wiring in `startEngine` and the SyncHub `connected` handler (§7, §8); registry writes in `syncSpacesCreateProject` / `syncSpacesImportProject`.
+- **Modify:** `desktop/src/main/sync-spaces/managed-roots.ts` — a `personalRoot` is already exposed; add a helper for the control-dir path if useful.
+- **New tests:** `desktop/tests/materialization-planner.test.ts`, `desktop/tests/project-registry.test.ts`, and additions to the sync-spaces service/convergence tests.
+- **Docs:** a `docs/PITFALLS.md` entry under Sync Spaces (registry is per-file for conflict-freedom; complete-then-register; discovery runs after Personal sync); update the handoff A00 status and clear the knowledge-debt entry when shipped.
+
+## 12. Open questions (resolve in the plan, not blocking)
+
+1. **Materialize via `git clone` vs `createProject` + first-sync `pull`** (§7 note). Preference: reuse the first-sync `pull` path if it reliably checks out `origin/main` on an unborn space; the plan verifies and picks one.
+2. **Toast vs Sync-panel-only** for a newly materialized project. Design assumes both (a `synced` event already drives the panel; a toast is a small addition). If toasts feel noisy on a first-run device that materializes ten projects, batch into one "Added N projects from your other devices" — decide during implementation.
