@@ -1,5 +1,7 @@
 # Project & Sync Management UX Implementation Plan
 
+> **✅ SHIPPED — youcoded#112 + #113 (2026-07-09).** Live status: `docs/superpowers/2026-07-10-sync-completion-handoff.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Implementer/reviewer agents run on **Opus** (Destin's standing preference).
 
 **Goal:** Implement `docs/superpowers/specs/2026-07-09-project-sync-management-ux-design.md` — slim the session picker to rows + sync dots + a "Manage projects…" bridge, add the unified two-step "Add a project" flow in Project View, and turn the ProjectHero into the per-project sync/management hub.

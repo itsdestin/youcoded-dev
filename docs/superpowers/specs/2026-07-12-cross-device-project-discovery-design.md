@@ -1,5 +1,7 @@
 # Cross-Device Project Sync — Discovery, Rename & Stop — Design
 
+> **✅ SHIPPED 2026-07-13** — merged to `youcoded` master (`1f397c87`), hardened by post-merge review fixes (`0b599bf5`). Cross-device project discovery, rename (display-name), and stop-syncing are implemented + tested. Post-merge review + resolutions: `docs/superpowers/2026-07-13-sync-project-discovery-review-findings.md`. **Live status tracker: `docs/superpowers/2026-07-10-sync-completion-handoff.md`.** The `Status:` line below is historical.
+
 - **Date:** 2026-07-12
 - **Status:** Approved design, pending implementation plan
 - **Parent spec:** `docs/superpowers/specs/2026-07-03-cross-device-sync-design.md` (§3 "enable Sync and everything appears", §8 materialization, §10a device-registry pattern)

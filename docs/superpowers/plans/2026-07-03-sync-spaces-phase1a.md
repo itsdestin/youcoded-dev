@@ -1,5 +1,7 @@
 # Cross-Device Sync Phase 1a — Desktop Sync Foundation Implementation Plan
 
+> **✅ SHIPPED — youcoded#107 (2026-07-08).** Desktop sync foundation live on master. Live status: `docs/superpowers/2026-07-10-sync-completion-handoff.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Ship the desktop sync foundation from `docs/superpowers/specs/2026-07-03-cross-device-sync-design.md` §17 Phase 1: managed `~/YouCoded/` roots, the `SyncTransport` interface + git transport (hidden repos → private GitHub), the watcher-driven sync engine with convergent conflict handling, session-picker integration, and the dated daily backup job for spaces.

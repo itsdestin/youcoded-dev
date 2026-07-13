@@ -1,5 +1,7 @@
 # Phase 2 — Conversation Sync, Leases & Legacy Demolition (Design)
 
+> **⏳ PARTIALLY IMPLEMENTED (as of 2026-07-13).** §1–§2 (Conversation Store + CC transcript sync) SHIPPED as **Plan 2a** (`docs/superpowers/plans/2026-07-10-conversation-store-2a.md`, youcoded#116). §3+ — **leases/takeover (Plan 2b)** and **legacy demolition (Plan 2c)** — are DESIGNED here but **NOT yet planned or built**. "Phase 2" here is the SYNC roadmap's phase 2 (NOT the multi-model provider roadmap's phase 2). Live status: `docs/superpowers/2026-07-10-sync-completion-handoff.md` §2.B.
+
 **Date:** 2026-07-10
 **Status:** Approved by Destin (brainstorming session 2026-07-10)
 **Parent spec:** `2026-07-03-cross-device-sync-design.md` §8–§12 (this doc refines those sections into buildable shape; where they differ, this doc wins)

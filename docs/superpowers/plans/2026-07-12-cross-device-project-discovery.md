@@ -1,5 +1,7 @@
 # Cross-Device Project Sync — Discovery, Rename & Stop — Implementation Plan
 
+> **✅ SHIPPED 2026-07-13 — `youcoded` master `1f397c87`, hardened by `0b599bf5`.** All 10 tasks executed. **As-built correction:** fold-on-read is done **in memory only** (no writeback/prune — conflict copies are left in place); the "heal-on-read" phrasing in the Architecture line below is superseded by the spec §4a/§5 correction. Post-merge review fixes (#1–#8) + resolutions: `docs/superpowers/2026-07-13-sync-project-discovery-review-findings.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Default implementer agents to the `opus` model.
 
 **Goal:** A project synced on one device silently **appears** on every other device, can be **renamed** so the same visible name shows everywhere, and can be **stopped** (detached from sync while every device keeps its local copy, never respawning).

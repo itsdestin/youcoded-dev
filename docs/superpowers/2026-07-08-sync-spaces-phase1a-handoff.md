@@ -1,5 +1,7 @@
 # Handoff: Execute Cross-Device Sync Phase 1a (Sync Spaces Foundation)
 
+> **✅ EXECUTED + SUPERSEDED.** Phase 1a shipped (youcoded#107); this handoff's task is complete. Superseded by `docs/superpowers/2026-07-09-sync-spaces-post-1a-handoff.md` → **`docs/superpowers/2026-07-10-sync-completion-handoff.md`** (the current tracker). Kept for history.
+
 **Date:** 2026-07-08
 **From:** the cross-device-sync design session (worktree `youcoded-dev.wt/cross-device-sync`, branch `spec/cross-device-sync`)
 **For:** a fresh session executing the implementation via **superpowers:subagent-driven-development**

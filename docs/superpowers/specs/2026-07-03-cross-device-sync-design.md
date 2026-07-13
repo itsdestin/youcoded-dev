@@ -1,5 +1,7 @@
 # Cross-Device Sync — Design
 
+> **📐 THE STANDING AUTHORITY — partially implemented (as of 2026-07-13).** This is the parent design for the whole cross-device-sync workstream; §17 has the phasing. SHIPPED: Phase 1a (#107), import (#109), management UX (#112/#113), SyncHub 1b (#21/#114), conversation store 2a (#116), and cross-device project discovery/rename/stop (`1f397c87`+`0b599bf5`). REMAINING: conversation leases (Plan 2b), legacy demolition (Plan 2c), Connect-GitHub modal, Android (Phase 3), release. **The LIVE status tracker is `docs/superpowers/2026-07-10-sync-completion-handoff.md`** — do not treat the "pending implementation plan" `Status:` line below as current.
+
 - **Date:** 2026-07-03 (brainstormed 2026-06-12 → 2026-07-03)
 - **Status:** Approved design, pending implementation plan
 - **Precursor:** Full review of the existing sync/backup/restore system (conducted in-session 2026-06-12; key findings summarized in §1)

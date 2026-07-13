@@ -1,5 +1,7 @@
 # Sync Spaces — Import Existing Folders Implementation Plan
 
+> **✅ SHIPPED — youcoded#109 (2026-07-09).** Live status: `docs/superpowers/2026-07-10-sync-completion-handoff.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Implementer/reviewer agents run on **Opus** (Destin's standing preference).
 
 **Goal:** Ship spec §3's two import flows — "Sync this project" on existing saved folders, and folder-picker import — each moving the folder (with plain-language consent) into `~/YouCoded/Projects/<name>/` and remapping every path-keyed store.
