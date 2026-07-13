@@ -150,7 +150,7 @@ A simple expandable "Add a note…" text field sitting next to the Tag Picker in
 
 ## Color palette
 
-A fixed set of ~8–10 tag color slots defined in theme terms in `theme-engine.ts` (e.g. `tag-blue`, `tag-green`, `tag-amber`, …), each resolving to a theme-legible color so a tag stays readable on Light, Dark, Midnight, Crème, and community themes, and in both light/dark. The registry stores the **slot key**, never a raw hex, so a theme swap re-tints every tag automatically. No free color picker in v1.
+A fixed set of **10 tag color slots** defined in theme terms in `theme-engine.ts` (e.g. `tag-red`, `tag-orange`, `tag-amber`, `tag-green`, `tag-teal`, `tag-blue`, `tag-indigo`, `tag-purple`, `tag-pink`, `tag-gray`), each resolving to a theme-legible color so a tag stays readable on Light, Dark, Midnight, Crème, and community themes, and in both light/dark. The registry stores the **slot key**, never a raw hex, so a theme swap re-tints every tag automatically. No free color picker in v1.
 
 ## Migration
 
@@ -185,7 +185,7 @@ A fixed set of ~8–10 tag color slots defined in theme terms in `theme-engine.t
 ## Future extensions (explicitly out of v1)
 
 - Dedicated "Manage tags" view (usage counts, bulk archive, reorder) reached from a "Manage tags…" link in the picker.
-- Free color picker / custom palette.
+- Free color picker / custom palette (beyond the fixed 10 slots).
 - Android tagging UI.
 - Orphaned-application cleanup sweep after tag deletion.
 - Tag colors influencing anything beyond chips (e.g. session-row accents).
