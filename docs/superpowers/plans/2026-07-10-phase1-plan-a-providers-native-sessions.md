@@ -2213,7 +2213,7 @@ YOUCODED_NATIVE=1 bash scripts/run-dev.sh   # dev worktree instance; NEVER the l
 - [ ] **Step 2: Acceptance script (spec §1 Plan A exit test)** — in the dev window:
 1. Settings → Providers renders; add an OpenRouter key (Destin has one; otherwise create a free-tier key); Test shows "Connected."
 2. New session → Runtime "YouCoded" → pick a cheap OpenRouter model (e.g. a free `:free`-suffixed model) → Create.
-3. Send a message → streaming text appears token-by-token in the chat view; status/per-turn metadata shows tokens + tok/s when `showTurnMetadata` is on.
+3. Send a message → streaming text appears token-by-token in the chat view; the per-turn metadata strip shows tokens + tok/s when `showTurnMetadata` is on. **KNOWN GAP (`native-statusbar-usage`, deferred):** the StatusBar *chips* (context/tokens/speed pills) stay empty for native sessions — they read CC-hook files (`~/.claude/.session-stats-<id>.json`) native sessions don't write. The per-turn strip is the working surface; bridging reducer usage → `buildStatusData` for the StatusBar chips is a Phase-2 follow-up (tracked in `docs/knowledge-debt.md`).
 4. ESC mid-stream → turn ends with the interrupted marker, no stuck thinking.
 5. Remove the API key → send → error banner with the plain-language message; "Try again" after re-adding the key works.
 6. Quit the dev app; relaunch; Resume Browser lists the session with the YouCoded badge; resume; prior messages render; continue chatting.
