@@ -12,6 +12,18 @@
 
 ---
 
+## Amendments (post-planning decisions — Destin, 2026-07-13)
+
+**Read these first — they modify Tasks 1, 4, and 9.**
+
+1. **No coder tier.** Drop the placeholder `coder`-tier entries (`qwen3-coder-30b`, `devstral-small`) from Task 4's catalog. Decision: the general Qwen 27B/35B-class models outperform Qwen3-Coder on most metrics, so coding is covered by the everyday/large tiers — there is no dedicated `coder` tier. (The curated model LIST is still pending Destin's final confirmation, now informed by a 2026-07-13 research pass: Qwen3.5 [0.8B–397B], Qwen3.6 [27B, 35B-A3B, incl. MTP speed variants], and Gemma 4 [E2B/E4B/12B/26B-A4B/31B] all have real unsloth GGUFs; don't hardcode sizes — Task 5's hf-client fetches real per-quant sizes.)
+
+2. **Catalog must LIST models that `llama-server` can't yet run, clearly marked "not yet supported."** Some GGUF models exist but can't run on the bundled `llama-server` — e.g. **DiffusionGemma** (`unsloth/diffusiongemma-26B-A4B-it-GGUF`): a block-diffusion architecture whose llama.cpp support is an **unmerged PR (#24427)** requiring a **separate `llama-diffusion-cli` runner** that `llama-server` does not provide. Destin wants it (and any future such model) **listed with a "not yet supported" indicator** so users see it's coming — not hidden. Thread this through:
+   - **Task 1 (types):** add `runtimeSupport: 'supported' | 'unsupported'` (default `'supported'`) and optional `unsupportedReason?: string` to the `CuratedModel` type (and surface it on any catalog row the browser renders).
+   - **Task 4 (curated seed):** include a DiffusionGemma entry with `runtimeSupport: 'unsupported'`, `unsupportedReason: 'Needs llama.cpp diffusion support (PR #24427) + a llama-diffusion-cli runner — not runnable on the bundled llama-server yet.'`, alongside the (Destin-confirmed) supported entries.
+   - **Task 9 (Local Models panel):** render a plain-language **"Not yet supported"** badge (no `●◐○` glyphs) + the reason inline/on-hover for `unsupported` rows, and do **NOT** offer Install/Download for them (downloading a model that can't run wastes disk) — present them as "coming when llama.cpp support lands." The row is visible but not run-actionable.
+   - Because the catalog is raw-GitHub-refreshable (Task 4), flipping DiffusionGemma to `'supported'` later — once llama.cpp merges the PR AND `llama-server` serves it — is a **zero-code catalog update**, no app release. (A future engine-version-aware gate could automate the flip; out of scope for Plan C — a static flag is enough now.)
+
 ## Context primer (read once before any task)
 
 Repo: the `youcoded` sub-repo (`youcoded-dev/youcoded`). Desktop app lives in `desktop/`. **Work in a worktree, branched from master AFTER Plan B has merged:**
