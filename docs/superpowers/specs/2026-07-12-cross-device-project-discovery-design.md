@@ -20,10 +20,13 @@ This was specced as vision (parent §3) but never decomposed into a plan — it 
 - The visible record of "what happened" lives in the existing Sync panel — nothing is truly invisible.
 
 **Non-goals (this design)**
-- **Per-device selective sync** (choosing that a given project lands on only some devices). Silent materialization means every synced project lands on every device. Deferred; would be a later feature if wanted.
-- **Un-sync / removal propagation** (removing a project from the sync group on all devices). No un-sync flow exists yet; the registry is add/update-only.
-- **Rename propagation.** Folder rename changes the sync identity (`repoNameForSpace` derives from the name) and is already deferred in the picker UX. Out of scope here.
+- **Per-device selective sync** (a project landing on only *some* devices). Explicitly not a goal — silent materialization means every synced project lands on every device, which is the intended model. Not planned.
+- **Project lifecycle: rename, un-sync/remove, delete-propagation.** All out of scope here and belong to a dedicated follow-up (see "Follow-up required" below). This design is add/update-only.
 - **Android.** Desktop-first, consistent with the rest of sync (Android is Phase 3). The registry format is platform-neutral so the Android engine can consume it unchanged later.
+
+**Known limitation introduced by this design (until the lifecycle follow-up ships):** because discovery is silent and the registry is add-only, **deleting a project folder on one device makes it respawn** (re-clone) on the next discovery pass — the registry still lists it. There is no way to remove a project from a device short of disabling sync. This is an accepted, documented limitation, not a bug; the lifecycle follow-up fixes it.
+
+**Follow-up required (release-gating under the "sync must be entirely complete" rule):** a separate **project lifecycle** design — renaming a synced project (a coordinated multi-device operation: rename the repo, rewrite the registry entry on all devices, rename each local folder + remap transcript slug / artifact sidecar / central index), un-syncing/removing a project from the group, propagating deletes (fixing the respawn above via tombstones or equivalent). These are multi-device operations best built **on top of Plan 2b's coordination primitives** (the device registry to enumerate devices; leases/signals to avoid races), so this follow-up should come after 2b. Tracked in `docs/superpowers/2026-07-10-sync-completion-handoff.md`. NOT part of Plan 2b (leases + device registry) or 2c (legacy demolition) — it is its own unhomed piece of "complete sync."
 
 ## 3. Why a registry, not `gh repo list`
 
