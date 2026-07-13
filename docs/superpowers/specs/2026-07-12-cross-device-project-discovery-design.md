@@ -165,8 +165,10 @@ Reconcile hooks the points that already exist in `service.ts`, always **after** 
 
 - **Project View hero gains a "Stop syncing" button** for synced projects, behind a plain-language consequence confirm: *"Stop syncing '<name>'? The folder stays on all your devices, but changes will no longer sync between them. This can't be undone from here."* (Consequence-gated, per the destructive-UI convention.) On confirm → `syncSpacesStopProject`.
 - **Hero "Rename"** is wired to `syncSpacesRenameProject` for synced projects (propagates); unchanged for local folders.
-- **Sync status surfaces `stopped`.** `sync-dot-state.ts` gains a "stopped / not syncing" presentation (gray dot, "Sync stopped" label) so a stopped project reads as detached, not errored. ProjectSwitcher hides the sync affordances for stopped rows.
+- **Sync status surfaces `stopped`.** `sync-dot-state.ts` gains a "stopped / not syncing" presentation (gray dot, "Sync stopped" label) so a stopped project reads as detached, not errored. ProjectSwitcher hides the sync affordances for stopped rows. **This status dot is the minimum in-scope UI** — it's what makes Stop legible and distinguishes a synced project from a stopped one at a glance.
 - Rows everywhere render the overlaid `displayName` (§8).
+
+**Deferred to a UI follow-up (see §15) — not blocking the core feature:** Project View should explicitly distinguish, in plain end-user language, the three kinds of row a user will see — **YouCoded project, syncing** · **YouCoded project, not syncing** · **external folder** (a folder outside `~/YouCoded/Projects/`). Likely a small grouping/label treatment plus an `(i)` explainer so a non-technical user understands why a project sits in `Projects/` but isn't syncing (location ≠ status; the dot is the truth). Do this once the underlying discover/rename/stop plumbing is working and dogfooded — the status dot covers legibility until then.
 
 ## 11. Failure modes & transparency
 
@@ -211,6 +213,7 @@ The immutable-add-only design bought its simplicity entirely by disallowing muta
 - **Resume syncing a stopped project.** `stopped` is a permanent tombstone here (monotonic, so a stale rename can't un-stop it). Safe reactivation needs to distinguish an intentional resume from a stale `active` write — the clean way is a **per-field timestamp on `state`** (or a monotonic generation counter): resume bumps it above the stop's, a stale rename never writes `state` at all. A contained one-field schema bump when/if Resume is wanted.
 - **True on-disk folder rename.** Renaming the physical folder is a coordinated multi-device folder move + transcript-slug/artifact-sidecar/central-index remap (the `import-project` remap machinery, times N devices, with live-session hazards). Display-name rename covers the "same name everywhere" requirement without it.
 - **Remote GitHub repo cleanup on stop.** The provisioned repo is orphaned, not deleted (destructive cross-account action). A future "delete remote too" opt-in could clean it up.
+- **Project View three-category UI** (§10 "Deferred"): plain-language grouping of *YouCoded project, syncing* / *YouCoded project, not syncing* / *external folder*, with an `(i)` explainer. Deferred until the discover/rename/stop feature works and is dogfooded; the status dot is the interim legibility. Design decision 2026-07-13: fine to keep synced + unsynced projects together in `Projects/` as long as the dot and (eventually) this labeling make the distinction obvious.
 
 ## 16. Resolved during design
 
