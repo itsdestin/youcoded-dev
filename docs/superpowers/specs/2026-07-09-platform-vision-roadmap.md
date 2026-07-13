@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-09
 **Status:** Vision roadmap — reviewed and approved by Destin 2026-07-09 (revisions: engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy; phase ordering confirmed as written). Each phase gets its own spec → plan → implementation cycle.
-**Progress:** **Phase 0 COMPLETE 2026-07-10** (youcoded PR #115, master `29ca27a0`). Next: Phase 1 spec cycle (local engine + provider layer).
+**Progress:** **Phase 0 COMPLETE 2026-07-10** (youcoded PR #115, master `29ca27a0`). **Phase 1 Plan A (provider layer + native chat sessions) COMPLETE, in review 2026-07-13** — youcoded PR #119 (`feat/native-sessions`, 27 commits, 1551 tests green, boot-verified, dormant behind `native.supported`). Delivers `~/.youcoded/` home + safeStorage keys, ProviderRegistry + `languageModel(binding)` + ModelCatalog, HarnessSession v0 (AI SDK v7 streamText, no tools) → transcript-events, NativeSessionHost + SessionManager native branch + 10 IPC channels, reducer partId-merge + error banner, provider-aware send routing, runtime selector + binding picker, Providers settings panel, Resume Browser native rows. Known follow-up: StatusBar usage *chips* aren't fed for native (per-turn metadata strip is) — small renderer-usage→statusData bridge, candidate for Phase 2. Next: **Phase 1 Plan B (local engine — EngineSupervisor + llama-server)** then Plan C (model manager).
 **Inputs:** repo audit of master + `feat/opencode-mvp`, `cc-dependencies.md` coupling inventory, mid-2026 market research (web, cited), llama.cpp/provider-layer technical research (web, cited).
 
 ---
