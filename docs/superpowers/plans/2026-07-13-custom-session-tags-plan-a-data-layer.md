@@ -1379,7 +1379,103 @@ git commit -m "test(tags): channel parity for tags:* + set-tag/set-note"
 
 ---
 
-## Task 15: Full verification
+## Task 15: `session:get-meta` read channel (all surfaces)
+
+**Files:**
+- Modify: `youcoded/desktop/src/main/ipc-handlers.ts`, `preload.ts`, `remote-shim.ts`, `remote-server.ts`, `SessionService.kt`, `shared/types.ts`, `tests/ipc-channels.test.ts`
+
+`session:browse` deliberately EXCLUDES live sessions, so Plan B's in-session StatusBar element has no way to read the ACTIVE session's applied tags + note. This read channel fills that gap: given a session id, return `{ tags: string[], note: string }` from the store record.
+
+- [ ] **Step 1: Constant** — in `shared/types.ts` IPC block, beside `SESSION_SET_NOTE`:
+
+```ts
+  SESSION_GET_META: 'session:get-meta',   // (sessionId) → { tags, note }
+```
+
+- [ ] **Step 2: Main handler** — in `ipc-handlers.ts`, extend the conversations import to also pull `getConversationStore`, and add after the `SESSION_SET_NOTE` handler:
+
+```ts
+  ipcMain.handle(IPC.SESSION_GET_META, async (_e, sessionId: string) => {
+    const store = getConversationStore();
+    if (!store) return { tags: [], note: '' };
+    const resolved = sessionIdMap.get(sessionId) || sessionId;
+    try {
+      const rec = await store.get('claude', resolved);
+      if (!rec) return { tags: [], note: '' };
+      const tags: string[] = [];
+      for (const [k, v] of Object.entries(rec.flags)) {
+        if (v.value && k.startsWith('tag:')) tags.push(k.slice(4));
+      }
+      return { tags, note: rec.note || '' };
+    } catch { return { tags: [], note: '' }; }
+  });
+```
+
+(Add `getConversationStore` to the existing `import { ... } from './conversations/service'` line.)
+
+- [ ] **Step 3: preload.ts** — in the `session` namespace:
+
+```ts
+    getMeta: (sessionId: string): Promise<{ tags: string[]; note: string }> =>
+      ipcRenderer.invoke(IPC.SESSION_GET_META, sessionId),
+```
+
+- [ ] **Step 4: remote-shim.ts** — in the `session` namespace:
+
+```ts
+      getMeta: (sessionId: string) => invoke('session:get-meta', { sessionId }),
+```
+
+- [ ] **Step 5: remote-server.ts** — add a case beside the others:
+
+```ts
+      case 'session:get-meta': {
+        const { getConversationStore } = await import('./conversations/service');
+        const store = getConversationStore();
+        let out = { tags: [] as string[], note: '' };
+        if (store) {
+          try {
+            const rec = await store.get('claude', String(payload?.sessionId));
+            if (rec) {
+              const tags: string[] = [];
+              for (const [k, v] of Object.entries(rec.flags)) {
+                if ((v as any).value && k.startsWith('tag:')) tags.push(k.slice(4));
+              }
+              out = { tags, note: rec.note || '' };
+            }
+          } catch { /* fall through to empty */ }
+        }
+        this.respond(client.ws, type, id, out);
+        break;
+      }
+```
+
+- [ ] **Step 6: SessionService.kt** — add to the not-implemented group, but return an EMPTY meta object (not an error) so a shared-UI call degrades gracefully:
+
+```kotlin
+            "session:get-meta" -> {
+                val payload = org.json.JSONObject()
+                    .put("tags", org.json.JSONArray())
+                    .put("note", "")
+                msg.id?.let { bridgeServer.respond(ws, msg.type, it, payload) }
+            }
+```
+
+- [ ] **Step 7: Parity + typecheck** — add `'session:get-meta'` to the channel array in the Task-14 parity describe, then:
+
+Run: `cd youcoded/desktop && npx tsc --noEmit && npx vitest run tests/ipc-channels.test.ts`
+Expected: PASS.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add src/shared/types.ts src/main/ipc-handlers.ts src/main/preload.ts src/renderer/remote-shim.ts src/main/remote-server.ts app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt tests/ipc-channels.test.ts
+git commit -m "feat(tags): session:get-meta read channel for live-session tags/note"
+```
+
+---
+
+## Task 16: Full verification
 
 - [ ] **Step 1: Full test suite**
 
@@ -1406,5 +1502,5 @@ Expected: only Plan-B renderer files (`ResumeBrowser.tsx`, `CloseSessionPrompt.t
 ## Self-review notes (author)
 
 - **Spec coverage:** registry (T2–T5), application via flag map (T8–T12), note field (T6–T7, T9), IPC + parity (T8–T11, T14), drop helpful (T8, T12), Android stubs (T13), sync-off works (registry/store write locally regardless — T5/T4). Tombstone delete (T3/T4), duplicate-label reuse (T4), 8000-char note cap (T9/T11). UI surfaces are Plan B by design.
-- **Types locked for Plan B:** `TagRecord`/`TagColor`/`TAG_COLORS` (`src/shared/tags.ts`), `PastSession.tags?: string[]` + `note?`, channel names, and `window.claude.tags` + `session.setTag/setNote` + `on.tagsChanged`.
+- **Types locked for Plan B:** `TagRecord`/`TagColor`/`TAG_COLORS` (`src/shared/tags.ts`), `PastSession.tags?: string[]` + `note?`, channel names, and `window.claude.tags` + `session.setTag/setNote/getMeta` + `on.tagsChanged`. Live-session tags/note are read via `session.getMeta(sessionId)` (Task 15).
 - **Not in this plan:** theme color tokens for the 10 slots (Plan B, T-theme), the Tag Picker / chip / note editor components, and all five UI surfaces.
