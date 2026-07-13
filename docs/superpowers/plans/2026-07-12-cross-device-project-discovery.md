@@ -12,8 +12,9 @@
 
 **Worktree:** All code changes are in the `youcoded` repo. Create a worktree before starting (see Execution Setup). The plan/spec/doc edits are in the `youcoded-dev` workspace repo.
 
-**Decisions resolved during planning (differ from the spec's initial sketch — spec being corrected in Task 6):**
-- **Registry lives at `~/YouCoded/Personal/.youcoded-sync/projects/<name>.json`, NOT `.../.youcoded/...`.** `.youcoded/` is the transport's hidden git dir basename AND is in `DEFAULT_IGNORES` (`guards.ts`), so anything under it is never committed/pushed. `.youcoded-sync` is a distinct basename that the watcher (`WATCH_IGNORED` regex needs `.youcoded` followed by a slash or end) and the git ignore (`.youcoded/` matches the exact basename) both leave alone — so it syncs.
+**Decisions resolved during planning (the spec was already updated to match these — Task 6 only verifies):**
+- **Registry lives at `~/YouCoded/Personal/ProjectSync/<name>.json`** — a visible per-file folder directly mirroring the Conversation Store's `~/YouCoded/Personal/Conversations/<provider>/<id>.json` convention. This is the established pattern for "a per-file record set synced in the Personal space," and following it sidesteps the reserved `.youcoded/` basename entirely (that name is the transport's hidden git dir AND is in `DEFAULT_IGNORES`, so anything under it silently never syncs — the original sketch's landmine).
+- **The registry entry is deterministic and immutable: `{ schemaVersion, name, repoName }` — NO `addedBy`/`addedAt`.** `repoName` is a pure function of `name` (`repoNameForSpace`), so two devices adding the same project write BYTE-IDENTICAL files → git never conflicts on them, and two devices adding different projects touch different files → clean union. Provenance fields were the only thing that could differ between two devices and cause a conflict; dropping them (nothing in the design consumed them) makes registry conflicts structurally impossible. This is why ProjectSync needs NONE of the Conversation Store's merge/heal engine (`mergeRecords`, `foldConflictCopies`, `mutateFileUnderLock`, the `laterOf` tiebreak) — that machinery exists to converge MUTABLE records; ProjectSync records never mutate. ProjectSync borrows only the store's *hygiene*: visible per-file layout, fail-soft parse (a corrupt peer file is skipped, never thrown), a `schemaVersion` for forward-compat, and atomic temp+rename writes.
 - **Materialization reuses the empty-folder + first-sync-pull path, not `git clone`.** `GitTransport.pull` already adopts the remote on an unborn local `main` via `checkout -B main origin/main` (git-transport.ts). So `createProject` (empty) → `addSpace` (inits hidden repo) → `setRemote` → `syncSpace` (pull adopts remote content) fully materializes a project with code that's already contract-tested. No temp `.materializing` dir is needed because no partial-clone artifact exists; a failed initial pull leaves an empty but live, poll-retriable space, not a corrupt folder.
 
 ---
@@ -21,7 +22,7 @@
 ## File Structure
 
 **New files (youcoded repo):**
-- `desktop/src/main/sync-spaces/project-registry.ts` — registry store: `ProjectRegistryEntry` type + `readProjectRegistry` / `writeProjectRegistry`. Owns the `.youcoded-sync/projects/` location and its fail-soft read + atomic idempotent write.
+- `desktop/src/main/sync-spaces/project-registry.ts` — registry store: `ProjectRegistryEntry` type + `readProjectRegistry` / `writeProjectRegistry`. Owns the `Personal/ProjectSync/` location and its fail-soft read + atomic idempotent write.
 - `desktop/src/main/sync-spaces/materialization-planner.ts` — pure `planMaterialization(registry, localNames)`; no I/O.
 - `desktop/tests/project-registry.test.ts`
 - `desktop/tests/materialization-planner.test.ts`
@@ -53,19 +54,20 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { readProjectRegistry, writeProjectRegistry } from '../src/main/sync-spaces/project-registry';
+import { readProjectRegistry, writeProjectRegistry, PROJECT_REGISTRY_SCHEMA } from '../src/main/sync-spaces/project-registry';
 
 let personal: string;
 beforeEach(() => { personal = fs.mkdtempSync(path.join(os.tmpdir(), 'yc-reg-')); });
 afterEach(() => { fs.rmSync(personal, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); });
 
 describe('project registry store', () => {
-  it('round-trips an entry through the .youcoded-sync/projects dir', () => {
-    writeProjectRegistry(personal, { name: 'app', repoName: 'youcoded-sync-project-app-abc', addedBy: 'Laptop', addedAt: '2026-07-12T00:00:00.000Z' });
+  it('round-trips an entry through the Personal/ProjectSync dir', () => {
+    writeProjectRegistry(personal, { name: 'app', repoName: 'youcoded-sync-project-app-abc' });
     const got = readProjectRegistry(personal);
-    expect(got).toEqual([{ name: 'app', repoName: 'youcoded-sync-project-app-abc', addedBy: 'Laptop', addedAt: '2026-07-12T00:00:00.000Z' }]);
-    // Location is under .youcoded-sync (NOT .youcoded, which is git-ignored).
-    expect(fs.existsSync(path.join(personal, '.youcoded-sync', 'projects', 'app.json'))).toBe(true);
+    expect(got).toEqual([{ schemaVersion: PROJECT_REGISTRY_SCHEMA, name: 'app', repoName: 'youcoded-sync-project-app-abc' }]);
+    // Visible ProjectSync folder (mirrors Personal/Conversations), NOT the
+    // reserved .youcoded basename.
+    expect(fs.existsSync(path.join(personal, 'ProjectSync', 'app.json'))).toBe(true);
   });
 
   it('returns [] when the registry dir does not exist', () => {
@@ -73,19 +75,26 @@ describe('project registry store', () => {
   });
 
   it('skips a corrupt/partial file without throwing, keeping the good ones', () => {
-    writeProjectRegistry(personal, { name: 'good', repoName: 'r-good', addedBy: 'x', addedAt: 't' });
-    const dir = path.join(personal, '.youcoded-sync', 'projects');
+    writeProjectRegistry(personal, { name: 'good', repoName: 'r-good' });
+    const dir = path.join(personal, 'ProjectSync');
     fs.writeFileSync(path.join(dir, 'bad.json'), '{ this is not json');
     const got = readProjectRegistry(personal);
     expect(got.map(e => e.name)).toEqual(['good']);
   });
 
+  it('skips a file with an unknown schemaVersion', () => {
+    writeProjectRegistry(personal, { name: 'good', repoName: 'r-good' });
+    const dir = path.join(personal, 'ProjectSync');
+    fs.writeFileSync(path.join(dir, 'future.json'), JSON.stringify({ schemaVersion: 999, name: 'future', repoName: 'r' }));
+    expect(readProjectRegistry(personal).map(e => e.name)).toEqual(['good']);
+  });
+
   it('an identical rewrite does not change the file mtime (no watcher churn)', () => {
-    const entry = { name: 'app', repoName: 'r', addedBy: 'x', addedAt: 't' };
+    const entry = { name: 'app', repoName: 'r' };
     writeProjectRegistry(personal, entry);
-    const file = path.join(personal, '.youcoded-sync', 'projects', 'app.json');
+    const file = path.join(personal, 'ProjectSync', 'app.json');
     const m1 = fs.statSync(file).mtimeMs;
-    writeProjectRegistry(personal, entry); // identical → skipped
+    writeProjectRegistry(personal, entry); // identical bytes → skipped
     expect(fs.statSync(file).mtimeMs).toBe(m1);
   });
 });
@@ -103,32 +112,52 @@ Expected: FAIL — cannot find module `../src/main/sync-spaces/project-registry`
 // The per-project registry that makes cross-device project discovery possible.
 // One JSON file per project, synced INSIDE the Personal space so every device
 // sees the same list (spec 2026-07-12).
+//
+// Layout mirrors the Conversation Store (Personal/Conversations/<provider>/<id>.json):
+// a VISIBLE per-file folder under Personal. That's the established pattern for a
+// per-file record set synced in Personal — and following it sidesteps the
+// reserved `.youcoded/` basename (the transport's hidden git dir AND a
+// DEFAULT_IGNORES entry, so anything under it silently never syncs).
+//
+// Unlike the Conversation Store, entries are IMMUTABLE and DETERMINISTIC
+// ({ schemaVersion, name, repoName }; repoName is a pure function of name). Two
+// devices adding the same project write byte-identical files → git never
+// conflicts. So this store deliberately carries NONE of the Conversation Store's
+// merge/heal engine — it only borrows the good hygiene: visible per-file layout,
+// fail-soft parse, a schema version, and atomic writes.
 import fs from 'fs';
 import path from 'path';
 
+export const PROJECT_REGISTRY_SCHEMA = 1;
+
 export interface ProjectRegistryEntry {
-  name: string;      // the project's folder name under ~/YouCoded/Projects/
-  repoName: string;  // repoNameForSpace(project) — the stable cross-device sync identity
-  addedBy: string;   // hostname that first registered it (provenance only)
-  addedAt: string;   // ISO timestamp (provenance only)
+  schemaVersion: number; // forward-compat; readers reject unknown versions
+  name: string;          // the project's folder name under ~/YouCoded/Projects/
+  repoName: string;      // repoNameForSpace(project) — stable cross-device sync identity
 }
 
-// WHY not `.youcoded/`: that basename is (a) the git transport's hidden git dir
-// (<root>/.youcoded/sync.git) and (b) in DEFAULT_IGNORES (guards.ts), so anything
-// under it is NEVER committed or pushed. `.youcoded-sync` is a DELIBERATELY
-// different basename so the registry rides the Personal space's sync. Verified:
-// WATCH_IGNORED's /(^|[\\/])\.youcoded([\\/]|$)/ needs `.youcoded` followed by a
-// slash or end-of-segment, and git's `.youcoded/` ignore matches the exact
-// basename — neither matches `.youcoded-sync`. The project-discovery integration
-// test pins that the registry actually syncs, guarding against a future
-// broadening of the ignore set.
-function registryDir(personalRoot: string): string {
-  return path.join(personalRoot, '.youcoded-sync', 'projects');
+// Input to writeProjectRegistry — schemaVersion is stamped by the writer, so
+// callers pass only the meaningful fields.
+export interface ProjectRegistryInput {
+  name: string;
+  repoName: string;
 }
+
+function registryDir(personalRoot: string): string {
+  return path.join(personalRoot, 'ProjectSync');
+}
+
+// Defense-in-depth: `name` becomes a filename and this store sits near sync/
+// remote surfaces. Names are already run through validateSyncName at create/
+// import time (rejects separators, reserved names, etc.), but re-checking here
+// keeps the store safe regardless of caller. Mirrors the conversation store's
+// isSafeSegment intent, minus the provider dimension.
+const SAFE_NAME_RE = /^[^<>:"|?*\x00-\x1f/\\]+$/;
+const isSafeName = (s: string) => !!s && s !== '.' && s !== '..' && SAFE_NAME_RE.test(s) && !/[. ]$/.test(s);
 
 /** Read every registry entry. FAIL-SOFT: a corrupt/partial peer file (the dev
- *  instance and built app share ~/YouCoded) is skipped, never thrown — one bad
- *  file must not sink discovery for all the others. */
+ *  instance and built app share ~/YouCoded), or one written by a newer schema,
+ *  is skipped — never thrown. One bad file must not sink discovery. */
 export function readProjectRegistry(personalRoot: string): ProjectRegistryEntry[] {
   const dir = registryDir(personalRoot);
   let names: string[];
@@ -142,13 +171,12 @@ export function readProjectRegistry(personalRoot: string): ProjectRegistryEntry[
       // stray dir) before reading.
       if (!fs.lstatSync(full).isFile()) continue;
       const parsed = JSON.parse(fs.readFileSync(full, 'utf8'));
-      if (parsed && typeof parsed.name === 'string' && typeof parsed.repoName === 'string') {
-        out.push({
-          name: parsed.name,
-          repoName: parsed.repoName,
-          addedBy: String(parsed.addedBy ?? ''),
-          addedAt: String(parsed.addedAt ?? ''),
-        });
+      if (
+        parsed && parsed.schemaVersion === PROJECT_REGISTRY_SCHEMA &&
+        typeof parsed.name === 'string' && isSafeName(parsed.name) &&
+        typeof parsed.repoName === 'string' && parsed.repoName
+      ) {
+        out.push({ schemaVersion: PROJECT_REGISTRY_SCHEMA, name: parsed.name, repoName: parsed.repoName });
       }
     } catch { /* corrupt/partial file — skip */ }
   }
@@ -158,11 +186,15 @@ export function readProjectRegistry(personalRoot: string): ProjectRegistryEntry[
 /** Write one entry atomically. Idempotent: an identical rewrite is skipped so a
  *  boot-time backfill doesn't bump mtimes and wake the Personal watcher on every
  *  launch. Atomic temp+rename because the dev instance and built app share the
- *  tree — a concurrent reader must never see a half-written file. */
-export function writeProjectRegistry(personalRoot: string, entry: ProjectRegistryEntry): void {
+ *  tree — a concurrent reader must never see a half-written file. Refuses an
+ *  unsafe name rather than writing a traversing filename. */
+export function writeProjectRegistry(personalRoot: string, input: ProjectRegistryInput): void {
+  if (!isSafeName(input.name)) throw new Error(`project-registry: invalid name '${input.name}'`);
   const dir = registryDir(personalRoot);
   fs.mkdirSync(dir, { recursive: true });
-  const file = path.join(dir, `${entry.name}.json`);
+  const file = path.join(dir, `${input.name}.json`);
+  // Fixed key order so two devices serialize identically → byte-identical files.
+  const entry: ProjectRegistryEntry = { schemaVersion: PROJECT_REGISTRY_SCHEMA, name: input.name, repoName: input.repoName };
   const body = JSON.stringify(entry, null, 2) + '\n';
   try { if (fs.readFileSync(file, 'utf8') === body) return; } catch { /* absent — write it */ }
   const tmp = `${file}.tmp`;
@@ -199,7 +231,7 @@ import { describe, it, expect } from 'vitest';
 import { planMaterialization } from '../src/main/sync-spaces/materialization-planner';
 import type { ProjectRegistryEntry } from '../src/main/sync-spaces/project-registry';
 
-const entry = (name: string): ProjectRegistryEntry => ({ name, repoName: `r-${name}`, addedBy: 'x', addedAt: 't' });
+const entry = (name: string): ProjectRegistryEntry => ({ schemaVersion: 1, name, repoName: `r-${name}` });
 
 describe('planMaterialization', () => {
   it('returns registry projects that are missing locally', () => {
@@ -289,7 +321,7 @@ Add to the `h = vi.hoisted(() => ({ ... }))` return object:
 ```ts
     // Cross-device discovery (2026-07-12): the registry entries readProjectRegistry
     // returns, and the local project names the fake ManagedRoots reports.
-    registry: [] as Array<{ name: string; repoName: string; addedBy: string; addedAt: string }>,
+    registry: [] as Array<{ schemaVersion: number; name: string; repoName: string }>,
     projects: [] as string[],
     writeRegistry: vi.fn(),
 ```
@@ -365,15 +397,14 @@ import { planMaterialization } from './materialization-planner';
 
 Add a small helper above `syncSpacesCreateProject`:
 ```ts
-// Register a project so this device's peers can discover it. repoNameForSpace is
-// the stable cross-device identity; addedBy/addedAt are provenance only.
+// Register a project so this device's peers can discover it. The entry is
+// deterministic ({name, repoName}) so two devices adding the same project write
+// byte-identical files — no conflict.
 function registerProject(name: string, root: string): void {
   if (!roots) return;
   writeProjectRegistry(roots.personalRoot, {
     name,
     repoName: repoNameForSpace({ id: `project:${name}`, kind: 'project', root }),
-    addedBy: os.hostname(),
-    addedAt: new Date().toISOString(),
   });
 }
 ```
@@ -426,7 +457,7 @@ Add these tests inside the top-level `describe` in `desktop/tests/sync-spaces-se
 
   it('a hub-connected reconcile materializes a registered project missing locally', async () => {
     const svc = await enabledDiscoveryService();
-    h.registry = [{ name: 'gamma', repoName: 'repo-project:gamma', addedBy: 'Laptop', addedAt: 't' }];
+    h.registry = [{ schemaVersion: 1, name: 'gamma', repoName: 'repo-project:gamma' }];
     const engine = h.engines[0];
     engine.added.length = 0;
     h.hub.opts.onEvent({ type: 'connected' }); // triggers reconcile + discovery
@@ -441,7 +472,7 @@ Add these tests inside the top-level `describe` in `desktop/tests/sync-spaces-se
     h.projects = ['alpha'];
     const svc = await freshService();
     await svc.syncSpacesEnable(true);
-    h.registry = [{ name: 'alpha', repoName: 'repo-project:alpha', addedBy: 'x', addedAt: 't' }];
+    h.registry = [{ schemaVersion: 1, name: 'alpha', repoName: 'repo-project:alpha' }];
     const createSpy = vi.spyOn(await import('../src/main/sync-spaces/managed-roots').then(m => m.ManagedRoots.prototype), 'createProject');
     h.hub.opts.onEvent({ type: 'connected' });
     await new Promise((r) => setTimeout(r, 20));
@@ -452,7 +483,7 @@ Add these tests inside the top-level `describe` in `desktop/tests/sync-spaces-se
 
   it('a materialize failure emits an error event and creates no space', async () => {
     const svc = await enabledDiscoveryService();
-    h.registry = [{ name: 'gamma', repoName: 'repo-project:gamma', addedBy: 'x', addedAt: 't' }];
+    h.registry = [{ schemaVersion: 1, name: 'gamma', repoName: 'repo-project:gamma' }];
     h.ensureRemoteFails = true; // see mock change below
     const engine = h.engines[0];
     engine.added.length = 0;
@@ -468,7 +499,7 @@ Add these tests inside the top-level `describe` in `desktop/tests/sync-spaces-se
 
   it('a Personal-space synced+updated event triggers discovery', async () => {
     const svc = await enabledDiscoveryService();
-    h.registry = [{ name: 'gamma', repoName: 'repo-project:gamma', addedBy: 'x', addedAt: 't' }];
+    h.registry = [{ schemaVersion: 1, name: 'gamma', repoName: 'repo-project:gamma' }];
     h.onEvent!({ type: 'synced', spaceId: 'personal', pushed: false, updated: true });
     await vi.waitFor(() => expect(h.projects).toContain('gamma'));
     void svc;
@@ -641,7 +672,7 @@ git commit -m "feat(sync): discover + materialize cross-device projects from the
 **Files:**
 - Create: `desktop/tests/sync-spaces-project-discovery.test.ts`
 
-This proves — against REAL git, no mocks — that (a) the registry file actually syncs through the transport (guarding the `.youcoded-sync` naming decision) and (b) the planner + materialize path brings a peer's project onto a second device.
+This proves — against REAL git, no mocks — that (a) the registry file actually syncs through the transport (guarding the `Personal/ProjectSync/` location decision) and (b) the planner + materialize path brings a peer's project onto a second device.
 
 - [ ] **Step 1: Write the test**
 
@@ -701,7 +732,7 @@ it('device B discovers and materializes a project device A registered', async ()
   await lEngine.syncSpace(lApp);
 
   // Laptop registers 'app' in the Personal space and pushes Personal.
-  writeProjectRegistry(laptop.personalRoot, { name: 'app', repoName: 'app', addedBy: 'Laptop', addedAt: '2026-07-12T00:00:00.000Z' });
+  writeProjectRegistry(laptop.personalRoot, { name: 'app', repoName: 'app' });
   await lEngine.syncSpace(lPersonal);
 
   // Desktop pulls Personal → the registry file must arrive (proves it syncs).
@@ -733,7 +764,7 @@ it('device B discovers and materializes a project device A registered', async ()
 - [ ] **Step 2: Run the test**
 
 Run: `cd youcoded/desktop && npx vitest run tests/sync-spaces-project-discovery.test.ts`
-Expected: PASS. (If it fails on the registry-arrives assertion, the `.youcoded-sync` location is being ignored — that is the exact regression this test guards.)
+Expected: PASS. (If it fails on the registry-arrives assertion, the `Personal/ProjectSync/` location is being ignored by sync — that is the exact regression this test guards.)
 
 - [ ] **Step 3: Run the whole sync-spaces suite to confirm no regressions**
 
@@ -762,16 +793,9 @@ git commit -m "test(sync): real-git convergence for cross-device project discove
 - Modify: `docs/superpowers/2026-07-10-sync-completion-handoff.md`
 - Modify: `docs/knowledge-debt.md`
 
-- [ ] **Step 1: Correct the spec's resolved decisions**
+- [ ] **Step 1: Verify the spec matches the implementation**
 
-In `docs/superpowers/specs/2026-07-12-cross-device-project-discovery-design.md`:
-- §4 heading + body: change every `~/YouCoded/Personal/.youcoded/projects/` to `~/YouCoded/Personal/.youcoded-sync/projects/`, and replace the "Hidden `.youcoded/` control dir" bullet with:
-  > - **Control dir `.youcoded-sync/` (NOT `.youcoded/`).** `.youcoded/` is the git transport's hidden git-dir basename AND is in `DEFAULT_IGNORES`, so anything under it is never committed/pushed — it would silently never sync. `.youcoded-sync` is a distinct basename the watcher and git-ignore both leave alone. Plan 2b's `devices.json` can join as `.youcoded-sync/devices.json`.
-- §7: replace the "clone into a temp path → atomic rename" mechanism and the "Transport-init detail to settle in the plan" note with the resolved approach:
-  > Materialization reuses the empty-folder + first-sync-pull path (no `git clone`, no temp dir): `ensureRemote` (resolve URL, already-exists recovery) → `createProject` (empty folder) → `addSpace` (inits the hidden repo + watches) → `setRemote` → `syncSpace` (the transport adopts `origin/main` on an unborn local `main`, checking out the peer's content). Ordering is load-bearing: `ensureRemote` first so a gh-auth failure creates nothing; `addSpace` before the first pull so a failed pull leaves a recoverable empty space, not an orphan. No partial-clone artifact exists, so no complete-then-register temp dir is needed.
-- §8: add the third trigger:
-  > - **`broadcast` on Personal `synced` + `updated:true`**: a Personal-space pull that applied changes may have added registry entries — reconcile. This is what makes a project created on device A appear on device B within seconds (A pushes → hub signal → B pulls Personal → updated → discovery).
-- §12: mark open question #1 **Resolved (empty-folder + first-sync-pull; see §7)**.
+The spec (`docs/superpowers/specs/2026-07-12-cross-device-project-discovery-design.md`) was already updated during planning to the final decisions: §4/§5 (`Personal/ProjectSync/`, immutable `{schemaVersion,name,repoName}` entries, no `store-core` reuse), §7 (materialize via `createProject` + first-sync `pull`), §8 (three triggers incl. `broadcast` on Personal `synced`+`updated`), §12 (both decisions recorded). Skim it against what you actually built and fix any drift (a renamed function, a changed default). No wholesale rewrite expected.
 
 - [ ] **Step 2: Add a PITFALLS subsection**
 
@@ -781,8 +805,8 @@ In `docs/PITFALLS.md`, under the Sync Spaces area, add:
 
 Spec: `docs/superpowers/specs/2026-07-12-cross-device-project-discovery-design.md`. Module: `desktop/src/main/sync-spaces/{project-registry,materialization-planner}.ts` + `service.ts` wiring.
 
-- **The project registry lives at `~/YouCoded/Personal/.youcoded-sync/projects/<name>.json` — NEVER `.youcoded/`.** `.youcoded/` is the transport's hidden git-dir basename AND is in `DEFAULT_IGNORES` (`guards.ts`), so anything under it is never committed/pushed — a registry there would silently never sync and discovery would be dead. `.youcoded-sync` is a distinct basename the `WATCH_IGNORED` regex (needs `.youcoded` + slash/end) and git's `.youcoded/` ignore (exact basename) both leave alone. `sync-spaces-project-discovery.test.ts` pins that the registry actually round-trips through the transport — if someone broadens the ignore to `.youcoded*`, that test breaks.
-- **One file per project is what makes the registry conflict-free.** Two devices adding different projects touch different files (clean git merge); two devices adding the same name write byte-identical content (deterministic `repoName`). Don't collapse it into one `projects.json` — concurrent adds would textually conflict. Mirrors the 2a Conversation Store's per-record-file design.
+- **The project registry lives at `~/YouCoded/Personal/ProjectSync/<name>.json` — a VISIBLE per-file folder mirroring the Conversation Store (`Personal/Conversations/<provider>/<id>.json`), NEVER under `.youcoded/`.** `.youcoded/` is the transport's hidden git-dir basename AND is in `DEFAULT_IGNORES` (`guards.ts`), so anything under it is never committed/pushed — a registry there would silently never sync and discovery would be dead. `sync-spaces-project-discovery.test.ts` pins that the registry actually round-trips through the transport — that test is the guard against re-parking it somewhere ignored.
+- **Registry entries are immutable + deterministic (`{ schemaVersion, name, repoName }`) — that's what makes the registry conflict-free and why it does NOT reuse `store-core`.** `repoName` is a pure function of `name`, so two devices adding the same project write byte-identical files (never conflict); different projects touch different files (clean union). The Conversation Store's `mergeRecords`/`foldConflictCopies`/`mutateFileUnderLock` engine exists to converge MUTABLE records (lastActive/flags/title both devices update) — project entries never mutate, so that machinery is deliberately absent. Don't add `addedBy`/`addedAt` back casually: they were dropped precisely because they're the only fields that could differ between devices and cause a file conflict. Don't collapse the per-file layout into one `projects.json` (concurrent adds would textually conflict).
 - **Materialization reuses the empty-folder + first-sync-pull path — do NOT reintroduce `git clone`.** `createProject` (empty) → `addSpace` → `setRemote` → `syncSpace` works because `GitTransport.pull` adopts `origin/main` on an unborn local `main`. Ordering is load-bearing: `ensureRemote` FIRST (gh-auth failure creates nothing), `addSpace` BEFORE the first pull (a failed pull leaves a recoverable empty space, not an orphan folder). There is no temp `.materializing` dir because there is no partial-clone artifact.
 - **`runDiscovery` is single-flight with one coalesced rerun.** Three triggers fire it (startEngine after an awaited Personal pull; SyncHub `connected`; `broadcast` on Personal `synced`+`updated`). Without the guard, overlapping triggers could race two `createProject` calls for one name. Don't remove it.
 - **Discovery reads the registry ON DISK; the triggers guarantee freshness.** startEngine awaits a Personal `syncSpace` before backfill+discovery; the broadcast + connected triggers fire only after a Personal sync. Don't make `runDiscovery` sync Personal itself — that recurses through the broadcast trigger.
@@ -839,7 +863,7 @@ Do NOT run the desktop build and any Gradle build concurrently in this worktree 
 - §5 registry store (fail-soft read, atomic write) → Task 1. ✅
 - §6 pure planner → Task 2. ✅
 - §4 writers (create/import + backfill) → Task 3 (create/import) + Task 4 (`backfillRegistry`). ✅
-- §7 materialization (complete/robust ordering) → Task 4 `materializeProject`. ✅ (approach corrected to first-sync-pull; spec updated in Task 6)
+- §7 materialization (robust ordering) → Task 4 `materializeProject`. ✅ (approach = first-sync-pull; spec already updated to match)
 - §8 triggers (boot/enable, connected, Personal-updated) → Task 4. ✅
 - §9 failure/transparency (error events, retry) → Task 4 `runDiscovery` catch + Task 4 tests. ✅
 - §10 testing (planner, store, service integration, convergence) → Tasks 2, 1, 4, 5. ✅
@@ -847,6 +871,6 @@ Do NOT run the desktop build and any Gradle build concurrently in this worktree 
 
 **Placeholder scan:** No TBD/TODO/"handle edge cases"/"similar to Task N" — every code step has complete code; the one doc step (Task 6) quotes exact replacement text. ✅
 
-**Type consistency:** `ProjectRegistryEntry {name, repoName, addedBy, addedAt}` defined in Task 1, imported by Task 2 (`planMaterialization`), and constructed in Task 3/4 (`registerProject`, `backfillRegistry`). `planMaterialization(registry, localNames)` signature matches across Tasks 2 and 4. `materializeProject(entry)`, `runDiscovery()`, `backfillRegistry()`, `registerProject(name, root)` names consistent between the implementation and the triggers. `repoNameForSpace` is already imported in service.ts. ✅
+**Type consistency:** `ProjectRegistryEntry {schemaVersion, name, repoName}` (input `{name, repoName}`) defined in Task 1, imported by Task 2 (`planMaterialization`), and written via `registerProject` in Task 3/4 (`backfillRegistry`). `planMaterialization(registry, localNames)` signature matches across Tasks 2 and 4. `materializeProject(entry)`, `runDiscovery()`, `backfillRegistry()`, `registerProject(name, root)` names consistent between the implementation and the triggers. `repoNameForSpace` is already imported in service.ts. ✅
 
 **Note on `registerProject`:** defined in Task 3 (used by create/import) and reused by `backfillRegistry` in Task 4 — Task 4 depends on Task 3 having added it. Execute tasks in order.

@@ -33,20 +33,18 @@ So the source of truth is an explicit **registry that stores the real folder nam
 
 ## 4. The registry — one file per project
 
-Location: `~/YouCoded/Personal/.youcoded/projects/<name>.json`
+Location: `~/YouCoded/Personal/ProjectSync/<name>.json`
 
 ```json
 {
+  "schemaVersion": 1,
   "name": "cookingonlowheat",
-  "repoName": "youcoded-sync-project-cookingonlowheat-3f9a1c2b",
-  "addedBy": "GalaxyBook",
-  "addedAt": "2026-07-12T18:04:00.000Z"
+  "repoName": "youcoded-sync-project-cookingonlowheat-3f9a1c2b"
 }
 ```
 
-- **One file per project — this is what makes it conflict-free.** Two devices adding *different* projects while offline touch *different* files, so the git-backed Personal space merges them with zero conflicts. Two devices adding the *same* name produce byte-identical content (`repoName` is deterministic on `name`), so there is no conflict there either. This mirrors the Phase-2a Conversation Store's per-record-file design, which exists for exactly this reason. A single combined `projects.json` would textually conflict on concurrent adds and require a convergent-merge helper; per-file avoids that entirely.
-- **Hidden `.youcoded/` control dir** keeps user-facing `Personal/` (notes, `Conversations/`, `Encyclopedia/`) clean. Plan 2b's `devices.json` can move in beside it (`Personal/.youcoded/devices.json`) when it lands.
-- **`addedBy` / `addedAt`** are provenance only (useful for the Sync panel and debugging); nothing keys on them.
+- **Visible `ProjectSync/` folder, mirroring the Conversation Store** (`~/YouCoded/Personal/Conversations/<provider>/<id>.json`). That per-file-under-Personal layout is the established pattern for a record set synced in Personal, so the registry follows it instead of inventing a hidden control dir. Crucially, this sidesteps the reserved `.youcoded/` basename — that name is BOTH the git transport's hidden git dir (`<root>/.youcoded/sync.git`) AND a `DEFAULT_IGNORES` entry, so anything under it silently never syncs. (Location resolved 2026-07-12 after the initial `.youcoded/projects/` sketch would have been git-ignored.)
+- **Entries are immutable + deterministic — `{ schemaVersion, name, repoName }`, no provenance.** `repoName` is a pure function of `name` (`repoNameForSpace`), so two devices adding the *same* project write **byte-identical** files → git never conflicts; two devices adding *different* projects touch *different* files → clean union. This is what makes the registry conflict-free. It is ALSO why the registry deliberately reuses **none** of the Phase-2a Conversation Store's merge/heal engine (`mergeRecords`, `foldConflictCopies`, `mutateFileUnderLock`, the `laterOf` tiebreak): that machinery exists to converge MUTABLE records whose fields both devices update; project entries never mutate. The registry borrows only the store's *hygiene* — visible per-file layout, fail-soft parse, a `schemaVersion` for forward-compat, atomic temp+rename writes. Earlier drafts carried `addedBy`/`addedAt`; they were dropped because nothing consumed them AND they were the only fields that could differ between devices and cause a file conflict. Adding provenance back later is a one-field schema bump. A single combined `projects.json` is likewise rejected — concurrent adds would textually conflict.
 - **Writers** (add/update only):
   1. `createProject(name)` — new managed project.
   2. `importProject(...)` — a folder moved into management.
@@ -55,13 +53,12 @@ Location: `~/YouCoded/Personal/.youcoded/projects/<name>.json`
 
 ## 5. Registry store module
 
-A small store owns registry I/O, kept as a pure-ish shell over `fs`:
+A small store (`sync-spaces/project-registry.ts`, ~40 lines) owns registry I/O over `Personal/ProjectSync/`:
 
-- `readAllProjects(personalRoot): RegistryEntry[]` — read every `*.json` under `.youcoded/projects/`. **Fail-soft:** a corrupt or partial file is skipped, never thrown (the dev instance and built app share the tree; a half-written peer file must not crash discovery). Uses `lstat`/skip on anything that isn't a real regular file.
-- `writeProject(personalRoot, entry)` — atomic temp-file + rename write of one entry (idempotent; overwriting with identical content is a no-op-equivalent, harmless).
-- `ensureRegistryDir(personalRoot)` — `mkdir -p` the control dir.
+- `readProjectRegistry(personalRoot): ProjectRegistryEntry[]` — read every `*.json` under `ProjectSync/`. **Fail-soft:** a corrupt/partial file, or one written by an unknown `schemaVersion`, is skipped — never thrown (the dev instance and built app share the tree; a half-written peer file must not crash discovery). `lstat`/skip on anything that isn't a real regular file.
+- `writeProjectRegistry(personalRoot, { name, repoName })` — stamps `schemaVersion`, then atomic temp-file + rename write of one entry. Idempotent: an identical rewrite (byte-compared) is skipped so a boot-time backfill doesn't churn the Personal watcher every launch. Refuses an unsafe `name` (defense-in-depth; names are already `validateSyncName`-checked upstream).
 
-Writes are atomic (temp + rename) for the same shared-tree reason the existing `SpaceManager.write` and `saved-folders.writeFolders` are.
+Writes are atomic (temp + rename) for the same shared-tree reason the existing `SpaceManager.write` and `saved-folders.writeFolders` are. No read-modify-write lock (`mutateFileUnderLock`) is needed — entries are write-once and whole-file, not incrementally mutated.
 
 ## 6. The materialization planner (pure)
 
@@ -72,9 +69,9 @@ The decision of *what to do* is a pure function with no I/O, unit-tested in isol
 //        already present locally under ~/YouCoded/Projects/
 // output: the projects this device must materialize (missing locally)
 export function planMaterialization(
-  registry: RegistryEntry[],
+  registry: ProjectRegistryEntry[],
   localProjectNames: string[],
-): RegistryEntry[]
+): ProjectRegistryEntry[]
 ```
 
 Rules:
@@ -86,57 +83,62 @@ Keeping this pure means the tricky cases (missing, already-local, empty registry
 
 ## 7. Materialization (the IO shell)
 
-For each planned entry, in `service.ts` (it owns the engine singletons), **complete-then-register** so a half-clone is never picked up as a live space:
+For each planned entry, in `service.ts` (it owns the engine singletons), materialize by **reusing the empty-folder + first-sync-pull path** — the exact sequence `createProject` and `importProject` already exercise, no `git clone`, no temp dir:
 
-1. **Clone into a temp path** — `git clone <cloneUrl> <projectsRoot>/.<name>.materializing` (leading dot + suffix marks it as in-progress and keeps it out of `listProjects()`, which the engine would otherwise pick up). The clone URL comes from `manager.ensureRemote` for a synthesized space id `project:<name>` — reusing the existing already-exists recovery, so a device that lost its state file still resolves the URL via `gh repo view`.
-2. **Atomic rename** into place — `rename(.<name>.materializing → <name>)`. Only after a *complete* clone does the folder become a real project.
-3. **Wire the git transport** the same way `syncSpacesImportProject` does: the cloned repo already has an `origin`, but the hidden-`GIT_DIR` transport uses `<root>/.youcoded/sync.git`, so materialization must **re-init the space transport** and set its remote (the clone's working tree is kept; the transport's separate git dir is initialized over it, mirroring the import path's `transport.init` + `setRemote`).
-4. `engine.addSpace(space)` + initial `void engine.syncSpace(space)` — the folder is now a live, watched, syncing space.
-5. **Emit `synced`** for the new space so the Sync panel + a toast show *"Added project X from another device."*
+1. **Resolve the remote** — `manager.ensureRemote({ id: 'project:<name>', ... })`. Reuses the existing already-exists recovery, so a peer's repo (or one this device provisioned before losing its state file) resolves via `gh repo view`. Runs FIRST so a `gh`-auth failure creates nothing.
+2. **`createProject(name)`** — an empty managed folder.
+3. **`engine.addSpace(space)`** — inits the hidden repo (`<root>/.youcoded/sync.git`) and starts watching. Done BEFORE the first pull so that even if the pull fails, the folder is a live, poll-retriable space rather than an orphan.
+4. **`transport.setRemote(space, url)`** then **`engine.syncSpace(space)`** — the transport's `pull` adopts the peer's content because a fresh space has an unborn local `main`, and `pull` checks out `origin/main` wholesale in that case (`checkout -B main origin/main`, the parent spec's first-sync convergence fix). The engine's own `synced` event then fires for the new space, driving the Sync-panel record (+ optional toast).
 
-**Failure at any step** (clone fails, `gh` not authed, disk full, name now taken): emit an `error` sync event with a plain-language message, clean up the temp `.<name>.materializing` dir best-effort, and **do not** add a space. Discovery re-runs on the next boot / enable / SyncHub `connected`, so a transient failure self-heals. This matches the engine's existing "errors surface as events, the poll/reconnect is the retry" contract.
+**Why no temp `.materializing` dir / complete-then-register:** that guard only mattered for the `git clone` approach, whose failure mode is a partial-clone directory. This approach has no such artifact — a failed initial pull leaves an *empty but valid* space that the 120s poll / next connect re-syncs. Ordering (ensureRemote → createProject → addSpace → pull) is the safety, not a temp dir.
 
-> **Transport-init detail to settle in the plan:** whether to `git clone` then init the hidden transport over the working tree, or to `createProject` (empty folder) + init transport + `syncSpace` (which fetches + checks out via the existing `pull` path). The latter reuses the *exact* code path `createProject` + first-sync already exercises (no new clone-then-adopt logic) and is preferred if `pull` on a fresh unborn space reliably checks out `origin/main` — which the transport already handles (`checkout -B main origin/main` when local `main` is unborn, per the parent spec's first-sync convergence fix). The plan will pick one; both converge to the same end state.
+**Failure at any step** (`gh` not authed, disk full, name taken between plan and now): emit an `error` sync event with a plain-language message and **stop** — an already-created empty space is fine (it retries); nothing half-built is left. Discovery re-runs on the next boot / enable / SyncHub `connected`. Matches the engine's existing "errors surface as events, the poll/reconnect is the retry" contract.
+
+*(Resolved 2026-07-12: the initial sketch's `git clone` + temp-dir approach was dropped in favor of this — it reuses fully contract-tested code and needs no clone-then-adopt logic. See §12.)*
 
 ## 8. Where discovery runs
 
 Discovery hooks the points that already exist in `service.ts`, always **after** the Personal space has been synced (its pull is what brings the latest registry):
 
-- **`startEngine`** (app boot when enabled, and enable-toggle): after the existing per-space loop syncs the Personal space, run discovery, then materialize. New projects get added to the same engine instance.
-- **SyncHub `connected` handler**: the existing reconcile-on-connect already re-syncs every space; extend it to re-read the registry and materialize newcomers (covers "device B was asleep when A created a project").
-- **Backfill** runs once inside `startEngine` before discovery: register every local project so this device's projects enter the registry.
+- **`startEngine`** (app boot when enabled, and enable-toggle): after the per-space loop, **await** a fresh Personal-space `syncSpace` (so the registry on disk is current), run **backfill**, then `runDiscovery`. New projects get added to the same engine instance.
+- **SyncHub `connected` handler**: the existing reconcile-on-connect already re-syncs every space; also call `runDiscovery` (retries any project a prior materialize missed).
+- **`broadcast` on Personal `synced` + `updated:true`**: a Personal-space pull that APPLIED changes may have added registry entries — reconcile. This is what makes a project created on device A appear on device B within seconds during a live session (A pushes → SyncHub signal → B pulls Personal → `updated:true` → `runDiscovery`), without waiting for a reconnect or the poll.
+- **Backfill** runs once inside `startEngine` before discovery: register every local project (idempotent — identical rewrites are skipped) so this device's projects enter the registry.
 
-Supersession safety: discovery must respect the same `engine !== e` guard the start loop uses, so a disable mid-materialization bails cleanly (no `addSpace` onto a dead engine).
+`runDiscovery` is **single-flight with one coalesced rerun** (mirrors the engine's `syncSpace` guard) so overlapping triggers can't race two `createProject` calls for one name, and reads the registry **on disk** (the triggers guarantee freshness) rather than syncing Personal itself (which would recurse through the broadcast trigger). Supersession safety: discovery respects the same `engine !== e` guard the start loop uses, so a disable mid-materialization bails cleanly (no `addSpace` onto a dead engine).
 
 ## 9. Failure modes & transparency
 
 | Situation | Behavior |
 |-----------|----------|
-| Clone fails (network/offline) | `error` event in Sync panel; temp dir cleaned; retried next connect/boot |
-| `gh` not authenticated | Plain-language `error` (reuses `provisionGithubRemote`'s "Not signed in to GitHub" message shape) |
+| First pull fails (network/offline) | `error` event in Sync panel; the empty space stays live and re-syncs on the 120s poll / next connect |
+| `gh` not authenticated | Plain-language `error` (reuses `provisionGithubRemote`'s "Not signed in to GitHub" message shape); nothing created (ensureRemote runs first) |
 | Same name already exists locally | Skipped by the planner (converges via existing provisioning) |
-| Registry file corrupt/partial | Skipped by the store's fail-soft read; other entries still processed |
-| Disk full / rename blocked (Windows EBUSY) | `error` event; temp dir cleaned best-effort; no half-space |
-| Two devices create same-named project | Identical registry file + deterministic repo → converge; no conflict |
-| Two devices create different projects offline | Per-file registry merges cleanly; each device materializes the other's |
+| Registry file corrupt/partial/unknown-schema | Skipped by the store's fail-soft read; other entries still processed |
+| Name taken between plan and createProject (TOCTOU) | `createProject` returns not-ok; treated as already-present (idempotent no-op) |
+| Two devices create same-named project | Byte-identical registry file + deterministic repo → converge; no conflict |
+| Two devices create different projects offline | Per-file registry unions cleanly; each device materializes the other's |
 
 ## 10. Testing strategy
 
 - **Pure planner** (`planMaterialization`): missing → materialize; already-local → skip; empty registry → []; duplicate names deduped; backfill set correct. No I/O.
 - **Registry store**: per-file write→read round-trip; corrupt-file tolerance (one bad file doesn't sink the read); atomic write leaves no partial file visible.
-- **Service integration** (fake transport + fake/real engine): discovery runs only after the Personal space syncs; calls the materialize path for missing projects and skips existing ones; a clone failure emits an `error` event and leaves no `.materializing` dir and no space; supersession (disable mid-run) adds nothing to the dead engine.
-- **Convergence** (two managed roots pointed at one fake remote, mirroring the transport contract suite's style): device A creates a project → device B, on next discovery, materializes it → both `roots.listProjects()` agree.
+- **Service integration** (fake transport + fake/real engine): discovery calls the materialize path for missing projects and skips existing ones; a materialize failure (e.g. `ensureRemote` rejects) emits an `error` event and adds no space; supersession (disable mid-run) adds nothing to the dead engine.
+- **Convergence** (two managed roots pointed at real bare remotes, mirroring `sync-spaces-two-device.test.ts`): device A registers + pushes a project → device B pulls the registry (proving `ProjectSync/` actually syncs), plans, and materializes it → both `roots.listProjects()` agree and the peer's file is on B.
 
 ## 11. File plan (informs the implementation plan)
 
-- **New:** `desktop/src/main/sync-spaces/project-registry.ts` — registry store (§5) + `RegistryEntry` type.
+- **New:** `desktop/src/main/sync-spaces/project-registry.ts` — registry store (§5) + `ProjectRegistryEntry` type + `PROJECT_REGISTRY_SCHEMA`.
 - **New:** `desktop/src/main/sync-spaces/materialization-planner.ts` — pure `planMaterialization` (§6).
-- **Modify:** `desktop/src/main/sync-spaces/service.ts` — backfill + discovery + materialization wiring in `startEngine` and the SyncHub `connected` handler (§7, §8); registry writes in `syncSpacesCreateProject` / `syncSpacesImportProject`.
-- **Modify:** `desktop/src/main/sync-spaces/managed-roots.ts` — a `personalRoot` is already exposed; add a helper for the control-dir path if useful.
-- **New tests:** `desktop/tests/materialization-planner.test.ts`, `desktop/tests/project-registry.test.ts`, and additions to the sync-spaces service/convergence tests.
-- **Docs:** a `docs/PITFALLS.md` entry under Sync Spaces (registry is per-file for conflict-freedom; complete-then-register; discovery runs after Personal sync); update the handoff A00 status and clear the knowledge-debt entry when shipped.
+- **Modify:** `desktop/src/main/sync-spaces/service.ts` — `backfillRegistry` + `runDiscovery` + `materializeProject` wiring in `startEngine`, the SyncHub `connected` handler, and `broadcast` (§7, §8); registry writes in `syncSpacesCreateProject` / `syncSpacesImportProject`.
+- **New tests:** `desktop/tests/materialization-planner.test.ts`, `desktop/tests/project-registry.test.ts`, `desktop/tests/sync-spaces-project-discovery.test.ts`, and additions to `desktop/tests/sync-spaces-service.test.ts`.
+- **Docs:** a `docs/PITFALLS.md` entry under Sync Spaces (registry at `ProjectSync/` not `.youcoded/`; immutable entries → no `store-core` reuse; materialize via first-sync-pull; discovery runs after Personal sync); update the handoff A00 status and clear the knowledge-debt entry when shipped.
 
-## 12. Open questions (resolve in the plan, not blocking)
+## 12. Resolved during planning
 
-1. **Materialize via `git clone` vs `createProject` + first-sync `pull`** (§7 note). Preference: reuse the first-sync `pull` path if it reliably checks out `origin/main` on an unborn space; the plan verifies and picks one.
-2. **Toast vs Sync-panel-only** for a newly materialized project. Design assumes both (a `synced` event already drives the panel; a toast is a small addition). If toasts feel noisy on a first-run device that materializes ten projects, batch into one "Added N projects from your other devices" — decide during implementation.
+1. **Materialize via `createProject` + first-sync `pull`, NOT `git clone`** (§7). Verified against `git-transport.ts`: `pull` checks out `origin/main` on an unborn local `main`, so the empty-folder path fully adopts a peer's content with no clone-then-adopt logic and no temp dir.
+2. **Registry at `Personal/ProjectSync/`, immutable `{schemaVersion,name,repoName}` entries, no `store-core` reuse** (§4/§5). Follows the Conversation Store's layout convention (sidestepping the git-ignored `.youcoded/`); deterministic entries make conflicts structurally impossible, so the merge/heal engine is unnecessary.
+
+## 13. Open question (non-blocking)
+
+- **Toast vs Sync-panel-only** for a newly materialized project. Design assumes both (a `synced` event already drives the panel; a toast is a small addition). If toasts feel noisy on a first-run device that materializes ten projects, batch into one "Added N projects from your other devices" — decide during implementation.
