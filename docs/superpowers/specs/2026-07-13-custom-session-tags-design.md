@@ -92,7 +92,7 @@ A new field on `ConversationRecord`:
 ```
 
 - Independent field-level merge: newest `noteUpdatedAt` wins. **Not** activity-coupled (unlike `title`, which rides `lastActive`) — a note edit on an idle device must not lose to a busier device's newer turn.
-- Plain text, one note per session, soft size cap (e.g. 8 KB) to keep sync light. Empty string is a valid value (clearing a note).
+- Plain text, one note per session, hard cap of **8,000 characters** (≈8 KB for ordinary text; comfortably ≤8 KB even with multi-byte characters) to keep sync light. The editor enforces the limit and shows a remaining-characters count as it's approached. Empty string is a valid value (clearing a note).
 - `parseRecord` defaults `note` to `''` and `noteUpdatedAt` to `createdAt` when absent, so older records upgrade transparently.
 
 ## Storage & sync layout
@@ -170,7 +170,7 @@ A fixed set of ~8–10 tag color slots defined in theme terms in `theme-engine.t
 - **Duplicate labels:** `tags:create` reuses an existing non-archived tag whose label matches case-insensitively rather than creating a duplicate; blank/whitespace labels rejected.
 - **Orphaned applications:** a `tag:<id>` on a session whose registry tag was deleted renders nothing (registry lookup misses) and is ignored; lazy cleanup deferred.
 - **Archived tag on a session:** the chip still renders (optionally muted); the tag is only hidden from the picker's default list.
-- **Note size:** soft-capped plain text; empty is valid (clear).
+- **Note size:** plain text, hard-capped at 8,000 characters (editor-enforced with a remaining-count near the limit); empty is valid (clear).
 - **Concurrent registry writes:** dev + built app share `~/YouCoded`; registry writes go through the same CAS/lock primitives as conversations to avoid lost updates.
 - **Live-session tagging before id map:** the phantom-record gate prevents seeding a store record keyed by the desktop UUID.
 
