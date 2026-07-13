@@ -22,6 +22,12 @@ Running list of documentation/rule drift that's been noticed but not yet fixed. 
 
 Last audit: 2026-04-23 (full sweep — see `docs/AUDIT.md` for complete findings). Prior baseline 2026-04-11.
 
+## Cross-device project auto-discovery specced but never planned (noticed 2026-07-12)
+- **Claim**: cross-device-sync spec §11 ("New-device bootstrap is primarily 'enable Sync and everything appears'") + §7 pitch ("your projects… on every device") promise a project synced on one device appears on the user's other devices.
+- **Actual**: NOT implemented and NOT in any plan. Each device's sync engine syncs only `roots.spaces()` = Personal + project folders that already exist locally under `~/YouCoded/Projects/` (`managed-roots.ts:47-51`). No repo enumeration / clone-missing / new-device bootstrap. A `space-updated` signal for a project the peer lacks is dropped (`sync-spaces/service.ts:164-165`). Only the Personal space (conversations/AI state) propagates because it's a fixed space both devices always have. Found in the 2026-07-12 two-device dogfood.
+- **Fix**: brainstorm+spec+plan a "cross-device project bootstrap/discovery" feature — e.g. a `{name, repoName}` project registry synced in the Personal space; on enable/on-connect each device reads it and materializes (create folder + clone repo + add space) any project it lacks. Settle in design: auto-clone vs confirm, rename/conflict handling, registry-in-Personal vs `gh repo list`. Details + Destin's build order in `docs/superpowers/2026-07-10-sync-completion-handoff.md` §2 item A00.
+- **Priority**: high (release-gating — Destin's gate is "no release until sync is entirely complete"; this is the NEXT feature to build per his 2026-07-12 order, ahead of Plan 2b).
+
 ## Onboarding.tsx screen deferred (noticed 2026-04-12)
 - **Claim**: Decomposition v3 §7.12 / §9.10 specify a React Onboarding screen that collects name/comfort/output-style, installs curated packages on first launch, and replaces the conversational setup-wizard as the primary first-run path.
 - **Actual**: All backend helpers exist and are bridged to desktop, remote, and Android (skills:install-many, skills:apply-output-style, skills:get-curated-defaults, skills:get-integration-info). The React screen itself has not been built — App.tsx still shows only `FirstRunView` (CLI prereqs) and no toolkit-preferences step. Net effect: after decomposition lands, first-launch users reach an empty app with no curated packages installed and no output style set.
