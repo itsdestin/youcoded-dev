@@ -88,6 +88,17 @@ The 1b `SyncGroupRoom` DO is extended (allowlist + a small lease table in DO sto
 5. **Unresponsive holder:** no ack within ~10s → dialog offers "<Device A> isn't responding — take over anyway?" → force: B acquires over the stale-pending lease and resumes; A's client, whenever it wakes, sees it no longer holds the lease and ends its session with the same banner (its final turn may land as an engine conflict copy in the worst case — visible, never silent loss).
 6. **Expired lease (>5 min silent):** no dialog ceremony at all — open proceeds as if unleased.
 
+### Materialize-on-release — the deferred "Part 2" of the 2a two-device dogfood fix (2026-07-13)
+
+The 2a dogfood surfaced a cross-device back-sync hole (investigation: `docs/superpowers/investigations/2026-07-13-cross-device-conversation-sync-bugs.md`). **Part 1 (a catch-up `materializeSweep()` at Conversation-Store startup) shipped separately (youcoded#120)** so a peer version already sitting in the local space is applied on the next launch. **Part 2 — releasing the live-session guard and materializing a peer's version the moment a session CLOSES, so it applies WITHOUT a restart — is owned by THIS plan (2b)**, because doing it safely requires the single-writer guarantee only leases provide. When implementing 2b, this MUST be handled:
+
+1. **Release the live guard on session end.** Add `noteSessionEnded(claudeSessionId)` to `conversations/service.ts` that deletes the id from the in-memory `sessions` guard map (the map the sweep checks at `service.ts` `if (sessions.has(rec.id)) continue;`). Wire it into the `session-exit` handler in `ipc-handlers.ts` (the second listener, currently ~`:2028`), resolving the claude id from `sessionIdMap` **before** the existing `sessionIdMap.delete`. Without this, an ended session stays guarded until an app restart and its peer version is never pulled mid-session. (The `service.ts` sweep-guard comment already flags this: *"a `noteSessionEnded` refinement lands with leases in 2b."*)
+2. **Materialize TARGETED to the ended session — do NOT full-scan.** Only the just-ended session became un-guarded, so materialize that ONE record, not a whole-store `materializeSweep()`. A full `store.list('claude')` + per-record resolve on every session close is an O(records) disk scan (600–900+ records in the wild) — that cost is exactly why the reconciler runs only every 30 min. A targeted materialize is cheap and sufficient.
+3. **Gate on the process ACTUALLY being gone, not just the `session-exit` event.** `SessionManager.destroySession` emits `session-exit` **synchronously, before** it kills the PTY worker — so at handler time CC may still be flushing a final turn. Materializing then (tmp+rename over the local JSONL) can detach CC from its inode on POSIX and lose that flush — the exact hazard the sweep guard protects against. Under 2b, the lease-release path is the natural gate (materialize only after the holder has final-pushed and released); the investigation's Part-2 sketch (materialize immediately in the `session-exit` handler) is a stopgap that this plan supersedes with the lease-aware version.
+4. **Cover the cross-process / two-app-instances case.** The dev instance and the built app share `~/.claude` but have **separate** in-memory guard maps, so one instance releasing + materializing can clobber a transcript the OTHER instance still has live. This is only truly safe once leases coordinate writers **across instances on the same machine**, not just across devices — 2b's leases must key on the conversation, not the process.
+
+Net: leases turn the investigation's risky Part-2 stopgap into the correct behavior. Part 1 (startup catch-up) is already in; Part 2 is a first-class 2b deliverable, not a follow-up.
+
 ## 4. Migration + demolition (strictly last)
 
 - The existing `personal-sync` GitHub backup repo **becomes** the personal space's sync remote (history preserved; it changes jobs). Migration runs on first Phase-2 enable for existing GitHub-backup users.
@@ -110,7 +121,7 @@ Deleting the creator does NOT remove the symlinks already on disk, so this is a 
 | # | Plan | Scope | Gate before next |
 |---|------|-------|------------------|
 | 2a ✅ **SHIPPED** (youcoded#116, 2026-07-11) | **Store + conversation sync** | `conversation-store.ts` (records, reconciler, healer), transcript mirror-in/materialize-out, Resume Browser reads store (legacy fallback intact) | **Two-device dogfood** (handoff item D): conversations appear + resume works both ways on dev builds — STILL THE GATE before 2b |
-| 2b | **Leases + takeover** | SyncGroupRoom lease table + kinds (worker), lease client + heartbeat + takeover dialog/banner + force path (desktop) | Two-device takeover verified |
+| 2b | **Leases + takeover** | SyncGroupRoom lease table + kinds (worker), lease client + heartbeat + takeover dialog/banner + force path (desktop), **+ materialize-on-release (§3 "Materialize-on-release"): `noteSessionEnded` guard-release + lease-gated targeted inbound materialize on session-end** | Two-device takeover verified **+ a peer's continuation applies on session close without a restart** |
 | 2c | **Migration + demolition** | personal-sync repo repurpose, Drive/iCloud daily backup, the §4 deletion list | `/audit` + release checklist readiness |
 
 Plans merge independently; nothing releases until the whole system is complete (Destin's standing §0 decision, desktop-only per decision 5). Each plan executes via superpowers:subagent-driven-development, Opus implementers, two-stage review — the process that caught real defects in every plan so far.
@@ -125,6 +136,7 @@ Plans merge independently; nothing releases until the whole system is complete (
 - Takeover integration on desktop with a mocked hub (the sync-spaces-service test harness already fakes the hub socket).
 - The 10-test transport contract suite is untouched — none of this changes the transport.
 - Reconciler + mirror-in guarded by fixtures for the invariants: cleanup-never-propagates, mtime-never-recency, healer folds.
+- Materialize-on-release (§3): `noteSessionEnded` releases the guard; the post-release materialize is TARGETED to the ended session (not a full sweep); it does NOT run before the CC process is confirmed gone / the lease released. (Part 1's startup catch-up sweep is already pinned in `conversations-service.test.ts` — "runs a catch-up materialize sweep on startup".)
 
 ## 7. Explicitly out of scope
 

@@ -3,7 +3,7 @@
 **Date:** 2026-07-10
 **Supersedes:** `docs/superpowers/2026-07-09-sync-spaces-post-1a-handoff.md` (its work items A and B are fully executed; its sharp-edges section §4 is still gold — read it).
 **Spec:** `docs/superpowers/specs/2026-07-03-cross-device-sync-design.md` (the authority for everything below; §17 phasing statuses updated 2026-07-10).
-**Last updated:** 2026-07-13 — **A00 (project discovery/rename/stop) DONE + hardened; A01 mostly delivered.** Remaining: two-device dogfood (item D), Plan 2b, Plan 2c, Connect-GitHub modal (C), Android (E), release (F). **This doc is the live status tracker for the whole workstream.**
+**Last updated:** 2026-07-13 — **A00 (project discovery/rename/stop) DONE + hardened; A01 mostly delivered. 2nd dogfood pass found 2 conversation-sync bugs; Bug 2 back-sync FIXED (Part 1, youcoded#120), rest → 2b/open (see §D).** Remaining: two-device dogfood (item D), Plan 2b, Plan 2c, Connect-GitHub modal (C), Android (E), release (F). **This doc is the live status tracker for the whole workstream.**
 
 ## 0. The governing decision (Destin, 2026-07-09 — do not re-litigate)
 
@@ -83,7 +83,7 @@ Dev builds on a second machine: sign in, enable Sync, verify Personal + a projec
 
 **What to watch / known 2a caveats (not bugs):**
 - **A LIVE (running) session is deliberately NOT offered for resume on the other device** (no leases until 2b — the sweep + browser both skip live sessions to avoid two `claude --resume` on one transcript). Takeover UX is Plan 2b.
-- **Accepted caveat:** an ENDED session stays sweep-guarded until app restart (nothing clears the live-sessions map on exit yet — `noteSessionEnded` lands in 2b). If a just-ended conversation doesn't materialize on the other device until a restart, that's this, not a bug.
+- **Accepted caveat (reduced by #120):** an ENDED session stays sweep-guarded until app restart (nothing clears the live-sessions map on exit yet — `noteSessionEnded` lands in 2b). A peer version now reliably materializes **on the next launch** thanks to the startup catch-up sweep (youcoded#120); applying it **without** a restart is the deferred Part-2-of-the-dogfood-fix, owned by 2b (design §3 "Materialize-on-release"). Before #120, it did NOT materialize even after a restart — that was the Bug 2 below.
 - A store-only Resume Browser row can briefly read **"Not synced to this device yet"** until the same-pull sweep materializes its transcript — self-corrects on the next browser open.
 - Transcripts **>50 MB** won't push (engine `MAX_SYNC_FILE_BYTES` cap) — they list but won't materialize cross-device.
 - The **live-intake path** (an in-app turn writing to the store) is UNVERIFIED at runtime — the 2a smoke test only exercised the startup reconciler. Confirming a fresh in-app conversation shows up on the other device is the key new thing this dogfood proves.
@@ -95,6 +95,10 @@ Dev builds on a second machine: sign in, enable Sync, verify Personal + a projec
 - **Every hyphenated-folder session "resumed from the home directory"** (`57be5e14`): the legacy slug→path walk (`walkSlugParts`) was SHORTEST-first, so a stray `C:\Users\desti\youcoded` dir made `C--Users-desti-youcoded-dev` resolve to the nonexistent `…\youcoded\dev`, and `session-manager` silently fell back to `$HOME`. Fixed to longest-first + a store-record override that uses the unambiguous basename resolver. (Then `8f92a091` made that `$HOME` fallback warn instead of silently masking.)
 - **Backup & Sync panel reframed to final state** (`a713decf`): GitHub cross-device sync is now the primary backup+sync backend; Drive/iCloud demoted to "Additional backups · optional"; info popup rewritten. Future-flex (2c backup-layer changes) left as in-code WHY comments. Do NOT undo this framing.
 - **Android resume is broken independent of sync** — see item E + PITFALLS "Slug→path resolution for resume"; deferred to Phase 3 per Destin (2026-07-12).
+
+**Second dogfood pass (2026-07-13) — sequential handoff (A→close→B→close→A) surfaced two more bugs** (full analysis: `investigations/2026-07-13-cross-device-conversation-sync-bugs.md`):
+- **Bug 2 — back-sync never materialized (FIXED, Part 1: youcoded#120).** The space→local sweep was ONLY triggered by a fresh Personal `synced+updated` event. A peer's continuation that landed in the local space while its session was guarded (or before the store watched) was never written to the local CC transcript the app resumes from — and, critically, **not even on restart** (no startup catch-up). Confirmed on disk: space 103,844 b vs. stale local 73,878 b. Part 1 adds a `materializeSweep()` at store startup → applies on next launch. **Part 2 (release-guard + materialize on session-close, no restart needed) → Plan 2b** (design §3 "Materialize-on-release" + phase-table 2b row now own it, incl. the perf/timing/cross-process refinements).
+- **Bug 1 — a closed session lingers in the resume-browser active-set until restart (STILL OPEN).** `listPastSessions` excludes `sessionIdMap.values()`; the map is cleared on `session-exit`, but the observed session stayed hidden until an app restart. Exact mechanism unpinned (candidates: a close path that bypassed `destroySession`, or a resume leaving a stale second desktop-id→claude-id mapping). Not addressed by #120; needs the `session-exit`→`sessionIdMap.delete` path verified. Tracked in the investigation.
 
 **Still to finish in the dogfood:** offline conflict-copy convergence on a project space (step 4), and second-device provisioning-reuse confirmation. `C:\Users\desti\youcoded` (the stray dir that triggered the greedy-slug bug) is a real dir on GalaxyBook — the fix handles it, but note that hyphenated project folders with a shorter-prefix sibling are the trigger class.
 
