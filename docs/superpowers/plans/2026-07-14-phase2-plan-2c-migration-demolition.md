@@ -14,11 +14,11 @@
 
 ---
 
-## Decision points to confirm with Destin BEFORE starting (5 minutes, saves days)
+## Decision points — ANSWERED by Destin 2026-07-14 (do not re-ask)
 
-1. **personal-sync repo repurpose is likely MOOT — recommend skipping it.** Design §4 says the legacy `personal-sync` backup repo "becomes" the personal space remote, but 1a already provisioned a separate personal-space repo that both dogfood devices actively use. Repurposing now = migration risk with zero benefit. **Recommendation: leave the old repo untouched as a frozen archive; delete only its WRITER (the GitHub backup target). Confirm.**
-2. **Snapshot retention number.** "More aggressive than today" — propose: keep 14 daily snapshots, prune older. Confirm the number.
-3. **Remote .git compaction is deferred by design here** (see Task 8) — local repack only, remote force-push compaction gets a documented threshold + procedure, not automation. Confirm.
+1. **Legacy `personal-sync` repo: DELETE it, don't leave it frozen** ("don't really want a dead repo laying around"). The repurpose from design §4 is moot (1a already provisioned the personal-space repo both devices use). Deletion is Task 10 — a guided, gated final task with a pre-delete verification checklist and an explicit per-run confirmation from Destin (destructive cross-account action; never automatic).
+2. **Snapshot retention is TIERED (grandfather-father-son), ~3 months total:** keep every daily snapshot ≤7 days old; from 8–28 days keep ONE per calendar week (the newest in each week); from 29–90 days keep ONE per calendar month (the newest in each month); delete everything older than 90 days. Task 3 implements exactly this.
+3. **Remote .git compaction deferred** (local repack only + >500MB warning + documented manual procedure) — explained to Destin 2026-07-14; pending his final OK, but proceed with Task 8 as written unless he objects.
 
 ## Bugs to be wary of
 
@@ -98,7 +98,19 @@ function removeLink(p: string): void {
 - Test: extend the sync-service tests where the harness allows; the rclone layer is exec-mocked in existing tests — follow that pattern.
 
 - [ ] Reshape the Drive/iCloud push path to: once daily (persist last-run stamp in `~/.claude/toolkit-state/`), copy the `~/.claude` backup set (memory, CLAUDE.md, encyclopedia, config, skills — the existing set) to `Backup/<YYYY-MM-DD>/` dated folders instead of the flat overwrite tree. Reuse `isIgnoredPath()` from `sync-spaces/guards.ts` for scrub consistency (PITFALLS — the iCloud leak lesson).
-- [ ] Add pruning: after a successful snapshot, delete dated folders older than the confirmed retention (default 14 days) — rclone `purge` per dated dir, never a wildcard.
+- [ ] Add tiered pruning (Destin's decision 2 — grandfather-father-son). Implement as a PURE function (house pattern) + thin rclone shell:
+
+```ts
+// snapshot-retention.ts — pure: (folderNames: string[], today: Date) => string[] toDelete
+// Folder names are Backup/<YYYY-MM-DD>. Rules (each snapshot's age in days vs today):
+//   age <= 7          → keep all
+//   8 <= age <= 28    → keep only the NEWEST snapshot per ISO calendar week
+//   29 <= age <= 90   → keep only the NEWEST snapshot per calendar month
+//   age > 90          → delete
+// Unparseable names are NEVER returned for deletion (fail-safe: unknown = keep).
+```
+
+  Unit-test the tier boundaries (day 7/8, 28/29, 90/91), the newest-per-bucket picks, and the unparseable-name guard. After a successful snapshot, delete each returned folder via rclone `purge` on that EXACT dated path — never a wildcard.
 - [ ] The conversation/projects content is already covered by `daily-backup.ts` (spaces) — do NOT duplicate it here. This snapshot covers only the non-space `~/.claude` set.
 - [ ] Commit — `feat(sync): dated daily Drive/iCloud snapshots with pruning`.
 
@@ -147,6 +159,18 @@ Delete, in one reviewed commit (grep each symbol for ALL callers first):
 - [ ] Add a size probe: if `sync.git` exceeds 500MB, emit a one-per-launch warning event ("Sync history for <space> is large — see docs") through the existing `broadcast()` error/notice channel. Remote force-push compaction stays a documented manual procedure (write it into the handoff §2 as a named deferred item) — automating a coordinated force-push + peer re-clone is out of scope by decision 3.
 - [ ] Contract-suite regression: full transport suite green (gc must not perturb the conflict/convergence tests).
 - [ ] Commit — `feat(sync): periodic local git gc + size warning`.
+
+### Task 9-pre (numbered Task 10 in commits): Delete the legacy `personal-sync` GitHub repo — GATED, runs LAST
+
+Destin's decision 1: no dead repo. This is a guided manual step executed WITH Destin in the session, **after** Task 7's verification passes and at least one dated snapshot exists on Drive/iCloud. It is deliberately NOT app code — a one-time operation ships no product surface.
+
+- [ ] **Pre-delete checklist (all must pass; show Destin the evidence):**
+  - The new personal-space repo exists and both devices synced from it within the last day (`gh repo view <personal-space-repo> --json pushedAt`).
+  - A dated snapshot folder exists for today on Drive or iCloud.
+  - The legacy repo's content is confirmed superseded: its conversation JSONLs are a subset of what the store/space now holds (spot-check 3 filenames from the repo tree against `~/YouCoded/Personal/Conversations/claude/transcripts/`). Anything present ONLY in the legacy repo gets pulled down into a local archive folder FIRST (`gh repo clone` to a temp dir → copy the uniques → show Destin).
+  - Task 4's writer deletions are merged (nothing will re-create the repo).
+- [ ] **Delete:** `gh auth refresh -h github.com -s delete_repo` (interactive — Destin runs it via `! gh auth refresh ...` in the session prompt if needed), then `gh repo delete <owner>/personal-sync --yes` ONLY after Destin types explicit confirmation in the conversation. GitHub retains deleted private repos ~90 days via support restore — mention this as the safety net.
+- [ ] Record the deletion (date, repo name, verification evidence summary) in the handoff tracker.
 
 ### Task 9: Docs, PITFALLS, review, PR
 
