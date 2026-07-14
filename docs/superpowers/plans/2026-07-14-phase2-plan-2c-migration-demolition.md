@@ -6,9 +6,9 @@
 
 **Architecture:** Strictly subtractive plus two migrations (symlink sweep, backup reshape). `sync-service.ts` is edited for the FIRST time since 1a — every deletion here was pre-cleared by design §4/§4a of the Phase-2 spec. Nothing in the transport/engine/store changes.
 
-**Gate (the WHY, not just sequencing):** 2c DELETES the legacy fallback paths (Resume Browser legacy source, auto-restore, slug aggregation) that are currently the safety net *underneath* the store-based system. 2b is still being stabilized (follow-up fixes in flight as of 2026-07-14), so removing the net before 2b is merged + dogfooded means a store-path regression would have nothing catching it. Therefore: **the DESTRUCTIVE tasks (4, 5, 6, 10) MUST NOT merge until 2b is merged AND its two-device dogfood passed.** Also mechanical: 2b's open PR touches `ipc-handlers.ts` + `main.ts`, which Tasks 4/5 also edit — expect rebase conflicts if you branch before 2b lands.
+**Gate — CLEARED to proceed (Destin, 2026-07-14: "I don't care about the old sync system, ready to run 2c").** An earlier draft gated the destructive tasks on 2b being merged+dogfooded; that was over-coupling. The fallback paths 2c removes (auto-restore, slug aggregation, backup writers, the 2a-era flag/title dual-write) are all **2a-era machinery that already shipped and was dogfooded** — they are NOT the safety net under 2b's leases/takeover. So 2c does not depend on 2b being stable and may run now.
 
-**Parallel-safe subset (OK to build + merge independently, even while 2b is in flight):** Tasks 2 (`symlink-sweep.ts`), 3 (`snapshot-retention.ts` + the dated-snapshot reshape — additive, the OLD writers stay until Task 4), and 8 (local `git gc` in `git-transport.ts`). These are new/additive, touch none of 2b's files, and delete nothing. If you want parallel progress now, do these three and STOP before Task 4.
+**The ONE real constraint is merge-order, not correctness:** 2b's open PR (`feat/sync-leases`) edits `ipc-handlers.ts` (session-exit region) and `main.ts` (startup wiring); 2c Tasks 4 + 5 also edit those two files (delete legacy calls / wire the sweep). Whichever merges second rebases those two files — adjacent code, not shared logic, so manageable. **Prefer to land 2b first if it's close; otherwise branch 2c from current master and rebase when 2b lands.** Coordinate at Task 1. Everything else in 2c (`sync-service.ts`, the new modules, `session-browser.ts`, `git-transport.ts`) does not overlap 2b at all.
 
 **Governing docs (READ FIRST):** spec `2026-07-10-phase2-conversation-sync-design.md` §4 + §4a (the deletion list IS the contract); handoff §2.B "2c must-not-forget" + §5 decisions (NO auto-restore EVER; aggressive snapshot pruning); PITFALLS → Sync Warnings, Resume Browser, Conversation Store.
 
@@ -35,7 +35,7 @@
 
 ### Task 1: Preflight audit
 
-- [ ] Confirm 2b merged to master; `git log --oneline -5` shows it. Rebase the worktree.
+- [ ] Check 2b's status: `git log --oneline -10 origin/master | grep -i lease` and `git branch -a | grep sync-leases`. If 2b is already merged, branch 2c from master normally. If 2b's PR is still open, branch 2c from current master anyway (Destin cleared this — gate above) and note that Tasks 4/5 will rebase against `ipc-handlers.ts` + `main.ts` when 2b lands; keep those two edits small and well-commented to make the rebase trivial.
 - [ ] Grep and RECORD current line anchors for: `aggregateConversations`, `rewriteProjectSlugs`, `regenerateTopicCache`, the `pull()` call sites, `pushTimer = setInterval`, the three auto-restore `--update` pulls (`CLAUDE.md`, `config.json`, encyclopedia — around `sync-service.ts:1256-1280` as of 2026-07-14), `PROJECTS_UNSYNCED`, `--ignore-existing`, the GitHub backup target, the recent-50 pull. Paste the map into the task notes for later tasks.
 - [ ] Commit nothing; this is reconnaissance.
 
