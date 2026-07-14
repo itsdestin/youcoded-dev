@@ -18,7 +18,7 @@
 
 1. **Legacy `personal-sync` repo: DELETE it, don't leave it frozen** ("don't really want a dead repo laying around"). The repurpose from design §4 is moot (1a already provisioned the personal-space repo both devices use). Deletion is Task 10 — a guided, gated final task with a pre-delete verification checklist and an explicit per-run confirmation from Destin (destructive cross-account action; never automatic).
 2. **Snapshot retention is TIERED (grandfather-father-son), ~3 months total:** keep every daily snapshot ≤7 days old; from 8–28 days keep ONE per calendar week (the newest in each week); from 29–90 days keep ONE per calendar month (the newest in each month); delete everything older than 90 days. Task 3 implements exactly this.
-3. **Remote .git compaction deferred** (local repack only + >500MB warning + documented manual procedure) — explained to Destin 2026-07-14; pending his final OK, but proceed with Task 8 as written unless he objects.
+3. **Remote .git compaction deferred — CONFIRMED by Destin 2026-07-14.** Only the SAFE local repack runs automatically (no history rewrite, no peer impact). The risky remote history-deletion stays a deliberate manual procedure, triggered by a >500MB per-launch warning. Task 8 as written.
 
 ## Bugs to be wary of
 
