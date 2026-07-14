@@ -6,7 +6,9 @@
 
 **Architecture:** Strictly subtractive plus two migrations (symlink sweep, backup reshape). `sync-service.ts` is edited for the FIRST time since 1a — every deletion here was pre-cleared by design §4/§4a of the Phase-2 spec. Nothing in the transport/engine/store changes.
 
-**Gate:** 2b MUST be merged first (design §5 sequencing), and the two-device dogfood must have passed with 2b in. Do not start 2c while any 2b review finding is open.
+**Gate (the WHY, not just sequencing):** 2c DELETES the legacy fallback paths (Resume Browser legacy source, auto-restore, slug aggregation) that are currently the safety net *underneath* the store-based system. 2b is still being stabilized (follow-up fixes in flight as of 2026-07-14), so removing the net before 2b is merged + dogfooded means a store-path regression would have nothing catching it. Therefore: **the DESTRUCTIVE tasks (4, 5, 6, 10) MUST NOT merge until 2b is merged AND its two-device dogfood passed.** Also mechanical: 2b's open PR touches `ipc-handlers.ts` + `main.ts`, which Tasks 4/5 also edit — expect rebase conflicts if you branch before 2b lands.
+
+**Parallel-safe subset (OK to build + merge independently, even while 2b is in flight):** Tasks 2 (`symlink-sweep.ts`), 3 (`snapshot-retention.ts` + the dated-snapshot reshape — additive, the OLD writers stay until Task 4), and 8 (local `git gc` in `git-transport.ts`). These are new/additive, touch none of 2b's files, and delete nothing. If you want parallel progress now, do these three and STOP before Task 4.
 
 **Governing docs (READ FIRST):** spec `2026-07-10-phase2-conversation-sync-design.md` §4 + §4a (the deletion list IS the contract); handoff §2.B "2c must-not-forget" + §5 decisions (NO auto-restore EVER; aggressive snapshot pruning); PITFALLS → Sync Warnings, Resume Browser, Conversation Store.
 
