@@ -71,6 +71,22 @@
 - Orphaned `.partial` files (cancel a 55 GB download → invisible lost disk, since `scanGgufCache` only counts `.gguf`) get a cleanup affordance: the panel surfaces in-progress/partial downloads with "Resume / Discard".
 - Disk guard: when `cacheDir` doesn't exist yet, `statfs` the nearest EXISTING ancestor instead of skipping the check.
 
+## Amendments (review-pass fixes — 2026-07-14, self + peer review of the finalized plan)
+
+**Read this THIRD. Same authority as the A–J block. None are architectural; #K1/#K2/#K3 are the ones to get right.**
+
+**K1. Per-card fetch state + lazy fetch (Task 9 §2).** Amendment D makes every curated card a live `models.quants(hfRepo)` fetch, so each card carries an explicit `loading | ready | unavailable` state. On 404 / timeout / 429 the card renders "Couldn't reach Hugging Face for this model — tap to retry" — one dead/renamed repo can NEVER blank or throw the section (the first-impression screen). The fetch is **lazy per tier** (only when a tier is expanded/visible), capping panel-open fan-out at ~3 concurrent HF calls instead of 11; 429 maps to `unavailable, retry`. (All 11 repos + their `UD-Q4_K_XL` were verified live 2026-07-14 — this state guards runtime DRIFT, not a known-bad list.)
+
+**K2. Picker seam already wired — but verify router hot-reload (Task 10 acceptance).** Installed local models reach the new-session picker via Plan B's `catalogModels()` and start via the existing `session.create({provider:'native', binding})` path — no Plan C task wires this (documented in the Context primer, fact 9). **CAVEAT:** the router discovers `--models-dir` GGUFs at BOOT; a model downloaded AFTER the engine booted may not appear in the picker until an engine restart, even though the Installed list (`scanGgufCache`) updates instantly. Task 10 step 2 MUST check whether the router hot-rescans; if not, restart the engine (or fall back to `scanGgufCache`) after a download so the just-downloaded model is immediately selectable.
+
+**K3. Cancel test + production abort guard (Task 6).** The cancel test's fake stream MUST honor the abort `signal` (its `pull` rejects once aborted) AND `downloadFile`'s read loop checks `signal.aborted` each iteration. Real `fetch` honors the signal, but cancellation must not depend solely on that — otherwise the test hangs to timeout instead of asserting `/cancel/i` (a real bug in the pre-review test).
+
+**K4. Discard is cancel-then-delete (Task 9 §3).** If a live `downloadId` exists for the model's key, `cancel()` and AWAIT it before `models.delete(id)` rm's the `.partial` — else Discard races an open writestream.
+
+**K5. Disk guard reserves in-flight bytes (Task 8).** `ModelManager.download` subtracts the remaining bytes of all ACTIVE downloads (`Σ (total − received)`) from free space before admitting a new one, so two large-tier downloads can't each pass against the same free space and collectively overflow the disk.
+
+**K6. Acceptance + setContext wording (Task 10 / Task 9).** The context knob asserts the ENGINE's `contextSize` (via `engine:status`/config), NOT `CuratedModel.contextLength` (trained context — unrelated, and removed from the seed). `setContext`'s `supervisorBinary = null` is REQUIRED (`rebuildSupervisor` dedups on `binaryPath`, so a plain `restart()` would keep the old `-c`); `stop()` is already single-flight, so the only residual risk is a mid-stream context change landing one send late — acceptable, but don't apply it mid-stream.
+
 ## Context primer (read once before any task)
 
 Repo: the `youcoded` sub-repo (`youcoded-dev/youcoded`). Desktop app lives in `desktop/`. **Work in a worktree, branched from master AFTER Plan B has merged:**
@@ -93,8 +109,9 @@ Run tests from `desktop/`: `npx vitest run tests/<file>.test.ts` (single file), 
 4. Broadcast helper in ipc-handlers.ts: `send(channel, ...args)` (all windows). Push-subscription pattern: preload `ipcRenderer.on` + returned unsubscribe; remote-shim channel-name dispatch (Plan B's `engine:install-progress` is the closest template).
 5. `ProviderRegistry.upsert()` (`src/main/providers/provider-registry.ts`) creates `openai-compatible` provider entries — the endpoint detectors reuse it via the EXISTING `provider:upsert` IPC; no new write path.
 6. External-schema discipline: every consumed HF API field gets a `docs/provider-dependencies.md` entry; parse defensively — absent fields omitted, never guessed (model-catalog.ts is the style reference).
-7. Every non-trivial edit gets a WHY comment. Commit messages: conventional prefixes + `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`. Plain words in UI, never `●◐○` glyphs. Destructive actions (model delete) are consequence-gated (explicit confirm with plain-language consequence).
+7. Every non-trivial edit gets a WHY comment. Commit messages: conventional prefixes + `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`. Plain words in UI, never `●◐○` glyphs. Destructive actions (model delete) are consequence-gated (explicit confirm with plain-language consequence).
 8. Curated remote refresh follows the announcements pattern (`src/main/announcement-service.ts` is the reference: raw.githubusercontent.com fetch, cache file, fetch-failure falls back silently).
+9. **The model-picker + native-create seam already exists — Plan C does NOT build it (Amendment K2).** An installed local model reaches the new-session picker's Local group via Plan B's `EngineManager.catalogModels()` (surfaced through `provider:catalog`), and a session starts via the already-wired `SessionStrip` binding picker → `App.createSession` → `window.claude.session.create({ provider: 'native', binding })` (verified in master 2026-07-14; the stale "handleCreate hardwired to claude" PITFALLS note is wrong). **Router hot-reload caveat:** `catalogModels()` lists the RUNNING router's `GET /models`, discovered from `--models-dir` at BOOT — a model downloaded after boot may need an engine restart (or a `scanGgufCache` fallback) to appear in the picker, even though `installedModels()` shows it instantly. Task 10 step 2 verifies this.
 
 **Hugging Face API facts** (2026-07-13; record in provider-dependencies.md in Task 5):
 
@@ -250,7 +267,7 @@ Expected: PASS (per-channel parity describe comes in Task 8).
 git add src/shared/model-manager-types.ts src/shared/types.ts src/main/preload.ts
 git commit -m "feat(models): shared model-manager types + models:* IPC constants
 
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -474,7 +491,7 @@ Expected: PASS.
 git add src/main/models/quant-parser.ts tests/quant-parser.test.ts
 git commit -m "feat(models): quant parser — standard + unsloth dynamic quants + multi-part sets
 
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -640,7 +657,7 @@ Run: `npx vitest run tests/gpu-detector.test.ts` → PASS.
 git add src/main/models/fit-estimator.ts src/main/models/gpu-detector.ts tests/fit-estimator.test.ts tests/gpu-detector.test.ts
 git commit -m "feat(models): GPU-aware fit estimator + best-effort VRAM detector + disk guard
 
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -816,7 +833,7 @@ export class CuratedCatalog {
 }
 ```
 
-Populate `models` with the same entries as `SHIPPED_CURATED` once Destin confirms the list (an empty remote array is invalid by design — `validList` returns null and clients keep their shipped copy, so committing this stub is safe).
+Populate `models` with the same 11 confirmed entries as `SHIPPED_CURATED` (Amendment B) so the raw-GitHub refresh is live. Committing the empty stub is also safe as an interim (an empty/invalid remote array makes `validList` return null → clients keep their shipped copy), but the confirmed list means there's no reason to leave it dormant.
 
 - [ ] **Step 6: Run the test to verify it passes**
 
@@ -829,7 +846,7 @@ Expected: PASS.
 git add src/main/models/curated-models.ts src/main/models/curated-catalog.ts tests/curated-catalog.test.ts ../curated-models.json
 git commit -m "feat(models): curated catalog — shipped unsloth-first seed + raw-GitHub refresh
 
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -955,7 +972,7 @@ export class HfClient {
   async quantOptions(repo: string): Promise<QuantOption[]> {
     const url = `${API}/models/${repo}/tree/main?recursive=true`;
     const res = await this.fetchImpl(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
-    if (!res.ok) throw new Error('Could not list this model's files on Hugging Face — try again in a moment.');
+    if (!res.ok) throw new Error("Could not list this model's files on Hugging Face — try again in a moment."); // double-quoted: apostrophe (Amendment I)
     const rows = await res.json();
     const files = [];
     for (const row of Array.isArray(rows) ? rows : []) {
@@ -993,7 +1010,7 @@ Expected: PASS.
 git add src/main/models/hf-client.ts tests/hf-client.test.ts ../docs/provider-dependencies.md
 git commit -m "feat(models): Hugging Face client — gguf search + recursive tree + resolve URLs
 
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1095,10 +1112,25 @@ describe('ModelDownloader', () => {
   });
 
   it('cancel: stops the stream, emits cancelled, KEEPS the .partial for resume', async () => {
-    // A fetch whose body stalls until cancelled.
-    const fetchImpl = (async () => new Response(new ReadableStream({
-      async pull(c) { c.enqueue(new Uint8Array(4)); await new Promise((r) => setTimeout(r, 20)); },
-    }), { status: 200, headers: { 'content-length': '99999' } })) as any;
+    // A fetch whose body streams 4 bytes every 20ms until the abort signal
+    // fires. The fake MUST honor init.signal (K3) — real fetch rejects the
+    // in-flight read on abort; without this the loop never breaks and the test
+    // hangs to timeout instead of asserting cancellation.
+    const fetchImpl = (async (_url: any, init?: any) => {
+      const signal: AbortSignal = init.signal;
+      return new Response(new ReadableStream({
+        pull(c) {
+          if (signal.aborted) { c.error(new DOMException('Aborted', 'AbortError')); return; }
+          c.enqueue(new Uint8Array(4));
+          return new Promise<void>((resolve, reject) => {
+            const t = setTimeout(resolve, 20);
+            signal.addEventListener('abort',
+              () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); },
+              { once: true });
+          });
+        },
+      }), { status: 200, headers: { 'content-length': '99999' } });
+    }) as any;
     const dl = new ModelDownloader(dir, fetchImpl);
     const events: DownloadProgress[] = [];
     const id = dl.start('unsloth/M-GGUF', quantOpt(false), (p) => events.push(p));
@@ -1259,6 +1291,9 @@ export class ModelDownloader {
     let lastEmit = 0;
     try {
       for (;;) {
+        // K3: don't rely SOLELY on fetch honoring the signal — check each turn
+        // so a cancel always breaks the loop (and reject the in-flight read).
+        if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
         const { done, value } = await reader.read();
         if (done) break;
         received += value.byteLength;
@@ -1296,7 +1331,7 @@ Expected: PASS.
 git add src/main/models/model-downloader.ts tests/model-downloader.test.ts
 git commit -m "feat(models): resumable multi-part GGUF downloader with sha256 verify + cancel
 
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1537,7 +1572,7 @@ Expected: PASS.
 git add src/main/models/endpoint-detectors.ts src/main/engine/engine-manager.ts tests/endpoint-detectors.test.ts tests/engine-manager.test.ts
 git commit -m "feat(models): endpoint detectors + EngineManager model ops (setBackend/installed/delete)
 
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1640,17 +1675,33 @@ export class ModelManager extends EventEmitter {
     return null;
   }
 
-  /** Disk guard, then start; progress fans out on 'download-progress'. */
+  // Remaining bytes of in-flight downloads (K5): the disk guard reserves them so
+  // two large downloads can't each pass against the same free space and then
+  // collectively overflow the disk.
+  private inflight = new Map<string, { total: number; received: number }>();
+  private reservedBytes(): number {
+    let sum = 0;
+    for (const d of this.inflight.values()) sum += Math.max(0, d.total - d.received);
+    return sum;
+  }
+
+  /** Disk guard (reserving in-flight downloads), then start; progress fans out
+   *  on 'download-progress'. */
   async download(repo: string, quant: QuantOption): Promise<{ downloadId: string }> {
     const free = this.freeBytesNear(this.cacheDir());
-    const refusal = free != null ? checkDiskSpace(quant.totalSizeBytes, free) : null;
-    if (refusal) throw new Error(refusal);
+    if (free != null) {
+      const refusal = checkDiskSpace(quant.totalSizeBytes, Math.max(0, free - this.reservedBytes()));
+      if (refusal) throw new Error(refusal);
+    }
     const dl = this.getDownloader();
-    const downloadId = dl.start(repo, quant, (p: DownloadProgress) => this.emit('download-progress', p));
-    // Outcome is delivered via progress events; swallow the rejection here so
-    // an error can't become an unhandled rejection in main (the UI reads the
-    // 'error' progress event).
-    void dl.wait(downloadId).catch(() => {});
+    const downloadId = dl.start(repo, quant, (p: DownloadProgress) => {
+      this.inflight.set(downloadId, { total: p.totalBytes, received: p.receivedBytes });
+      this.emit('download-progress', p);
+    });
+    // Outcome is delivered via progress events; swallow the rejection here so an
+    // error can't become an unhandled rejection in main (the UI reads the
+    // 'error' progress event). Clear the reservation once the download settles.
+    void dl.wait(downloadId).catch(() => {}).finally(() => this.inflight.delete(downloadId));
     return { downloadId };
   }
 
@@ -1760,7 +1811,7 @@ Run: `npx vitest run tests/ipc-channels.test.ts` → PASS. `npm test -- --run` �
 git add src/main/models/model-manager.ts src/main/ipc-handlers.ts src/main/preload.ts src/renderer/remote-shim.ts src/main/remote-server.ts ../app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt tests/ipc-channels.test.ts
 git commit -m "feat(models): ModelManager + models:* IPC surface across all parity files
 
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1784,15 +1835,21 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 //      (No GPU-name line — GPU detection stays internal to fit; surfacing the
 //      name would force an EngineStatus/status() change for a cosmetic label.
 //      The fit labels already convey the GPU benefit.)
-//   2. Recommended models — models.curated() rows grouped under small /
+//   2. Recommended models — models.curatedList() rows grouped under small /
 //      everyday / LARGE tier headers (Amendment A). NO baked sizes (Amendment
-//      D): for each card call models.quants(hfRepo), find the quantDefault entry
-//      (fall back to first), and show ITS size in GB + fit label (plain words
+//      D): each card resolves its size + fit LAZILY via models.quants(hfRepo)
+//      when its tier is first expanded/visible (K1 — caps panel-open fan-out at
+//      ~3 HF calls, not 11; cache the result per repo). Each card carries an
+//      explicit loading | ready | unavailable state: while fetching, a skeleton;
+//      on success, the quantDefault entry's size in GB + fit label (plain words
 //      from fit.label — color ONLY via existing semantic tokens, no glyphs;
-//      fit is GPU-aware). Cache the quants() result per repo. Download button →
-//      models.download(repo, defaultQuant). While downloading: progress bar
-//      (receivedBytes/totalBytes + "part x of y") from onDownloadProgress + a
-//      Cancel button → downloadCancel(downloadId).
+//      GPU-aware; fall back to the first quant if quantDefault is absent); on
+//      404 / timeout / 429, "Couldn't reach Hugging Face for this model — tap to
+//      retry" — one dead/renamed repo must NEVER blank or throw the section (the
+//      first-impression screen). Download button → models.download(repo,
+//      defaultQuant). While downloading: progress bar (receivedBytes/totalBytes
+//      + "part x of y") from onDownloadProgress + a Cancel button →
+//      downloadCancel(downloadId).
 //   3. Installed models — models.installed() rows: id, size, quant +
 //      quantDescription. (NO "Last used" / "Default for tier" — CUT, Amendment
 //      G.) Delete is CONSEQUENCE-GATED (standing UX rule): clicking flips the
@@ -1802,9 +1859,12 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 //      onDownloadProgress state, or a cancelled one) shows here with Resume /
 //      Discard so a big cancelled .partial isn't invisible lost disk (Amend. J).
 //      Resume = models.download(repo, quant) again (the downloader resumes from
-//      the .partial via Range). Discard = models.delete(id) where id is the
-//      part-1 basename minus .gguf — deleteModel already rm's every part's
-//      .gguf AND .gguf.partial, so no new IPC is needed.
+//      the .partial via Range). Discard = if a live downloadId exists for this
+//      key, downloadCancel(downloadId) and AWAIT the 'cancelled' progress event
+//      FIRST (K4 — rm-ing the .partial out from under an open writestream
+//      races), THEN models.delete(id) where id is the part-1 basename minus
+//      .gguf — deleteModel already rm's every part's .gguf AND .gguf.partial, so
+//      no new IPC is needed.
 //   4. Add from Hugging Face — search input → models.search() hits (repo +
 //      downloads count); expanding a hit calls models.quants(repo). Show the
 //      RECOMMENDED few quants first (UD-Q4_K_XL, Q4_K_M, Q8_0 when present) with
@@ -1831,9 +1891,13 @@ Implement the component fully per the comment above; every IPC call already exis
       throw new Error('Context length must be at least 1024 tokens.');
     }
     await updateEngineConfig(this.home, { contextSize: Math.floor(contextSize) });
-    // A running engine keeps its old -c until rebooted; restart now so the
-    // knob does what it says. supervisorBinary reset forces a rebuild with
-    // the fresh config on the next ensureRunning.
+    // A running engine keeps its old -c until rebooted; restart now so the knob
+    // does what it says. The supervisorBinary = null is REQUIRED (K6):
+    // rebuildSupervisor dedups on binaryPath, so a plain restart() would return
+    // early and keep the OLD contextSize — nulling forces a rebuild with the
+    // fresh config on the next ensureRunning. stop() is single-flight (Plan B),
+    // so a send in the kill window is coordinated; only avoid applying this
+    // mid-stream (a context change is inherently disruptive).
     if (this.supervisor) { await this.supervisor.stop(); this.supervisorBinary = null; }
     this.emit('status-changed');
   }
@@ -1849,7 +1913,7 @@ Run: `npm run build` → green. Then `YOUCODED_NATIVE=1 bash scripts/run-dev.sh`
 git add src/renderer/components/LocalModelsSection.tsx src/renderer/components/ProvidersSection.tsx src/renderer/components/SettingsPanel.tsx src/main/engine/engine-manager.ts src/shared/types.ts src/main/preload.ts src/renderer/remote-shim.ts src/main/remote-server.ts src/main/ipc-handlers.ts ../app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt tests/ipc-channels.test.ts
 git commit -m "feat(models): Settings → Local Models panel (curated, installed, search, detectors, engine controls)
 
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1950,12 +2014,12 @@ Run: `npm test -- --run && npm run build` → all green.
 - [ ] **Step 3: Live acceptance (spec §1 Plan C exit test + §5)** — dev build, `YOUCODED_NATIVE=1`:
 
 1. Settings → Local Models → Recommended → pick a **small-tier unsloth model** → Download. Progress bar shows bytes + parts; Cancel and re-Download once to prove resume (progress restarts past zero).
-2. When done, the model appears under Installed with quant + size, and in the model picker's Local group.
+2. When done, the model appears IMMEDIATELY under Installed (via `scanGgufCache`). **Then verify the new-session picker's Local group (`catalogModels()` → running router):** if the just-downloaded model is NOT listed, the router didn't hot-rescan `--models-dir` at runtime (it discovers at boot) — restart the engine (or add a `scanGgufCache` fallback to the local catalog source) so it's selectable without a manual restart (Amendment K2). Record b9992's actual behavior in `docs/engine-dependencies.md`.
 3. New YouCoded session with it → chat streams; per-turn metadata strip shows tokens/sec.
 4. **Disconnect the network → chat again** — still works. This is the Plan C exit test (real unsloth download → offline chat).
 5. Delete flow: confirm strip appears, delete removes the file(s), installed list refreshes, picker loses the entry.
 6. With Ollama running (if available on the dev machine): Detect finds it, Add as endpoint creates the provider entry, its models are usable by typing a model id in the picker's custom-endpoint flow.
-7. Backend switch (NVIDIA machine only): Switch to CUDA downloads the CUDA build, engine restarts, chat still works. Context knob: set 8192, engine restarts, catalog rows report contextLength 8192.
+7. Backend switch (NVIDIA machine only): Switch to CUDA downloads the CUDA build, engine restarts, chat still works. Context knob: set 8192, engine restarts; verify the ENGINE's context took effect via `engine:status`/config (`contextSize === 8192`) — NOT any `CuratedModel.contextLength` (that's the model's trained context, unrelated and removed from the seed — Amendment K6).
 8. Shut the dev instance down.
 
 - [ ] **Step 4: Workspace docs (youcoded-dev repo):**
@@ -1968,7 +2032,7 @@ Run: `npm test -- --run && npm run build` → all green.
   - Model delete unloads best-effort first; a cancelled `.partial` is surfaced in the panel (Resume/Discard) so big cancelled downloads aren't invisible lost disk.
   - CUDA opt-in is Windows-x64-only (no upstream Linux/arm CUDA asset).
   - CUT from v1: default-model-per-tier and last-used stamps (Amendment G) — don't reintroduce until the picker consumes a default.
-- Roadmap Progress line: Plan C merged (Phase 1 complete pending Destin's curated-list confirmation).
+- Roadmap Progress line: Plan C merged → Phase 1 backend complete (curated list confirmed — Amendment B). Remaining before user-facing: native-harness tools, flip `native.supported`, Android runtime — all out of Plan C scope.
 
 - [ ] **Step 5: Merge** — superpowers:finishing-a-development-branch (PR to youcoded master). After merge: junction removal → worktree removal → branch delete → dev server down.
 
