@@ -90,7 +90,11 @@ Run tests from `desktop/`: `npx vitest run tests/<file>.test.ts` (single file), 
 // Model-manager shapes — Phase 1 Plan C (spec 2026-07-10-phase1-engine-providers-design.md §4).
 // Shared between main and renderer; keep free of Node/Electron imports.
 
-export type ModelTier = 'small' | 'everyday' | 'coder';
+// No 'coder' tier (Amendment 2026-07-13 — coding is covered by everyday/larger
+// general models). A future 'large' tier may be added when Destin confirms the
+// curated list; add it to this union AND the Task 4 validator + panel headers
+// together.
+export type ModelTier = 'small' | 'everyday';
 
 /** Spec §4.1 entry shape. sizeBytes is per quant (quants[] carries both). */
 export interface CuratedQuant { quant: string; sizeBytes: number; }
@@ -534,23 +538,10 @@ export const SHIPPED_CURATED: CuratedModel[] = [
     contextLength: 40960,
     notes: 'Noticeably smarter than the small tier; still fine on 16GB.',
   },
-  // ---- coder (runs on ~32GB+ machines) ----
-  {
-    id: 'qwen3-coder-30b', label: 'Qwen3 Coder 30B (A3B)', tier: 'coder',
-    hfRepo: 'unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF',
-    quantDefault: 'UD-Q4_K_XL',
-    quants: [{ quant: 'UD-Q4_K_XL', sizeBytes: 0 }],
-    contextLength: 262144,
-    notes: 'Mixture-of-experts coder — fast for its size.',
-  },
-  {
-    id: 'devstral-small', label: 'Devstral Small', tier: 'coder',
-    hfRepo: 'unsloth/Devstral-Small-2507-GGUF',
-    quantDefault: 'UD-Q4_K_XL',
-    quants: [{ quant: 'UD-Q4_K_XL', sizeBytes: 0 }],
-    contextLength: 131072,
-    notes: 'Mistral's agentic-coding model.',
-  },
+  // NOTE: the placeholder 'coder'-tier entries (qwen3-coder-30b, devstral-small)
+  // were removed per the 2026-07-13 amendment — no dedicated coder tier. Larger
+  // general models (27B/35B-class), if added, get their own tier when Destin
+  // confirms the curated list; do NOT reintroduce a 'coder' tier.
 ];
 ```
 
@@ -632,7 +623,7 @@ function validList(payload: any): CuratedModel[] | null {
   for (const m of payload.models) {
     // Defensive parse: a malformed row is dropped, never guessed at.
     if (typeof m?.id !== 'string' || typeof m?.hfRepo !== 'string' || typeof m?.label !== 'string') continue;
-    if (!['small', 'everyday', 'coder'].includes(m?.tier)) continue;
+    if (!['small', 'everyday'].includes(m?.tier)) continue;
     if (typeof m?.quantDefault !== 'string' || !Array.isArray(m?.quants)) continue;
     out.push(m as CuratedModel);
   }
@@ -1655,7 +1646,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 //      handler OR rides setBackend's config path — see step 2), and the cache
 //      location line (read-only path from EngineStatus.cacheDir).
 //   2. Recommended models — models.curated() rows grouped by tier
-//      (small/everyday/coder headers), each card: label, notes, default-quant
+//      (small/everyday tier headers), each card: label, notes, default-quant
 //      size in GB, fit label (plain words from fit.label — color ONLY via
 //      existing semantic tokens, no glyphs), and a Download button →
 //      models.quants(hfRepo) → pick the entry matching quantDefault (fall back
@@ -1748,7 +1739,12 @@ if (!fs.existsSync(dest)) {
 }
 
 const PORT = 9974;
-const child = spawn(binary, ['--host', '127.0.0.1', '--port', String(PORT), '--no-webui', '--jinja', '-c', '4096'],
+// The spawn MUST mirror engine-supervisor.ts — crucially `--models-dir <cacheDir>`.
+// Plan B verified (b9992) that the router discovers flat GGUFs from --models-dir,
+// NOT from LLAMA_CACHE (which only tracks -hf auto-downloads). WITHOUT it, /models
+// returns [] and this probe would FALSELY fail — do not "fix" the downloader in
+// response; the missing flag is the bug. See docs/engine-dependencies.md.
+const child = spawn(binary, ['--host', '127.0.0.1', '--port', String(PORT), '--no-webui', '--jinja', '--models-dir', cacheDir, '--models-max', '2', '-c', '4096'],
   { env: { ...process.env, LLAMA_CACHE: cacheDir }, stdio: ['ignore', 'inherit', 'inherit'] });
 const deadline = Date.now() + 30_000;
 while (Date.now() < deadline) {
