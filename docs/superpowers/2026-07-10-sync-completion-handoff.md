@@ -123,7 +123,7 @@ The remaining engineering work is fully planned — execute each with superpower
 
 | Work item | Plan file | Prereq gate |
 |---|---|---|
-| **Plan 2b** — leases + takeover + materialize-on-release + Bug 1 + device registry | `docs/superpowers/plans/2026-07-14-phase2-plan-2b-leases-takeover.md` — ✅ IMPLEMENTED, **PR open on `feat/sync-leases`** (~13 commits; wecoded-marketplace `SyncGroupRoom` lease table + youcoded desktop). Merge SHA: TODO (fill after merge). | Item D dogfood finished (offline conflict-copy + provisioning-reuse checks) |
+| **Plan 2b** — leases + takeover + materialize-on-release + Bug 1 + device registry + Moved Gate | `docs/superpowers/plans/2026-07-14-phase2-plan-2b-leases-takeover.md` + Moved Gate follow-up `docs/superpowers/2026-07-14-plan-2b-review-findings-and-moved-gate.md` — ✅ **MERGED 2026-07-14**. youcoded#121 merge `61903850`; wecoded-marketplace#22 merge `eecc8439` (worker auto-deployed on merge). | Item D dogfood finished (offline conflict-copy + provisioning-reuse checks) **+ two-device takeover/Moved-Gate dogfood** |
 | **Plan 2c** — migration + legacy demolition | `docs/superpowers/plans/2026-07-14-phase2-plan-2c-migration-demolition.md` | 2b merged + dogfooded; 3 decision points at plan top need Destin's 5-minute confirmation |
 | **Connect-GitHub modal (C)** | `docs/superpowers/plans/2026-07-14-connect-github-modal.md` | None — parallelizable with 2b/2c any time |
 
