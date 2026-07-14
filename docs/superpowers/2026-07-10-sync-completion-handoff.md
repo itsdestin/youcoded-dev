@@ -3,7 +3,7 @@
 **Date:** 2026-07-10
 **Supersedes:** `docs/superpowers/2026-07-09-sync-spaces-post-1a-handoff.md` (its work items A and B are fully executed; its sharp-edges section §4 is still gold — read it).
 **Spec:** `docs/superpowers/specs/2026-07-03-cross-device-sync-design.md` (the authority for everything below; §17 phasing statuses updated 2026-07-10).
-**Last updated:** 2026-07-13 — **A00 (project discovery/rename/stop) DONE + hardened; A01 mostly delivered. 2nd dogfood pass found 2 conversation-sync bugs; Bug 2 back-sync FIXED (Part 1, youcoded#120), rest → 2b/open (see §D).** Remaining: two-device dogfood (item D), Plan 2b, Plan 2c, Connect-GitHub modal (C), Android (E), release (F). **This doc is the live status tracker for the whole workstream.**
+**Last updated:** 2026-07-14 — **Release scope DECIDED: v1.3 = all master content + desktop-only sync; Android sync + Android-resume fixes → follow-up (1.3.1), see §2.E.** A00 (project discovery/rename/stop) DONE + hardened; A01 mostly delivered. 2nd dogfood pass found 2 conversation-sync bugs; Bug 2 back-sync FIXED (Part 1, youcoded#120), rest → 2b/open (see §D). Remaining before v1.3: finish two-device dogfood (item D), Plan 2b, Plan 2c, Connect-GitHub modal (C), release (F). **This doc is the live status tracker for the whole workstream.**
 
 ## 0. The governing decision (Destin, 2026-07-09 — do not re-litigate)
 
@@ -102,13 +102,32 @@ Dev builds on a second machine: sign in, enable Sync, verify Personal + a projec
 
 **Still to finish in the dogfood:** offline conflict-copy convergence on a project space (step 4), and second-device provisioning-reuse confirmation. `C:\Users\desti\youcoded` (the stray dir that triggered the greedy-slug bug) is a real dir on GalaxyBook — the fix handles it, but note that hyphenated project folders with a shorter-prefix sibling are the trigger class.
 
-### E. Android (Phase 3) — DECISION NEEDED from Destin
-Spec phases Android sync as Phase 3 (Kotlin engine port, foreground sync + on-open reconcile). **Open question the next session should ask Destin:** does "entirely complete and shippable" include Android sync, or does the release ship with desktop-only sync (Android UI already degrades gracefully — no syncspaces Kotlin handlers by design)? This materially changes the timeline; don't assume either way.
+### E. Android (Phase 3) — ✅ DECIDED (Destin, 2026-07-14): DEFERRED, desktop-only ships first
+**Release scope is now settled: v1.3 ships all master content + the desktop sync work, DESKTOP-ONLY sync.** Android sync + the Android-resume fixes (below) come in a FOLLOW-UP release (1.3.1 or similar). This matches the 2b design §0 decision 5 ("Release scope: desktop-only sync; Android sync is Phase 3, post-release") — the earlier "DECISION NEEDED" flag is resolved; do not re-litigate. Android UI already degrades gracefully (no syncspaces Kotlin handlers by design), so shipping desktop-only is safe.
 
 **Android resume is BROKEN independent of sync — found in the 2026-07-12 sweep (needs an APK build to verify a fix).** All three slug/cwd failure modes the desktop dogfood surfaced are still live in the Kotlin app (details + code refs in PITFALLS → "Slug→path resolution for resume"): (1) `SessionBrowser.kt walkSlugParts` is still SHORTEST-first (greedy hyphenated-folder bug — the desktop fix is a 1:1 longest-first port); (2) the `session:create` bridge handler in `SessionService.kt` **drops `resumeSessionId`**, so Android "resume" launches a FRESH session, and passes the raw cwd to the PTY with no existence check; (3) no `resolveLocalProject`/store overlay and no home-slug symlink skip, so cross-device/foreign sessions resolve to `$HOME`. `SessionRegistry.resumeSession` has the correct derivation but is dead code. Bundle these into whatever Android pass happens (with the Phase-3 sync work, or as a standalone Android-resume fix if a release includes Android). Desktop is fully fixed (youcoded `bea0de3e` slug-only resolver, `57be5e14` longest-first walk + store override, `8f92a091` diagnosable cwd fallback).
 
-### F. Release (after everything above Destin includes in "complete")
-`/audit` first (already overdue), bump `versionCode`+`versionName` in `app/build.gradle.kts`, tag `vX.Y.Z`, one tag → both platform workflows. Consider `assembleReleaseTest` locally (R8 parity) since sync code is new. The release-blocking definition is Destin's §0 decision — check with him before tagging.
+### F. Release — v1.3 (after D + 2b + 2c + C)
+Scope per §2.E decision: v1.3 = all master content + desktop-only sync; Android follows in 1.3.1. Concrete order:
+1. **`/audit`** (long overdue — AUDIT.md >80 days) and fix the drift it finds; sync docs/PITFALLS churned heavily across 2a/2b/2c.
+2. **Desktop verify:** `cd youcoded/desktop && npm ci && npm test && npm run build` (never concurrent with any Gradle build — PITFALLS).
+3. **Android build sanity** (Android ships UNCHANGED but the shared React bundle changed): `./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew test`, then `./gradlew :app:assembleReleaseTest` (R8 parity — new sync code is desktop-main-process, but the shared renderer changed; the Kotlin stubs for new `syncspaces:*`/`github:*`/`session:moved` channels must exist so the shared UI degrades instead of crashing).
+4. **Version bumps:** `versionCode` (17→18) + `versionName` (→`1.3.0`) in `app/build.gradle.kts` BEFORE tagging (CI cannot derive them).
+5. Tag `v1.3.0` on youcoded master → one tag triggers both platform workflows → single GitHub Release.
+6. Post-release: `/announce` per the release skill; smoke the live update path; confirm the Worker (already CI-deployed continuously) needs nothing.
+Run the `release` skill for the unified review flow when the day comes — it owns the cross-repo checklist.
+
+## 2a. Prepared implementation plans (2026-07-14, ready for Opus execution)
+
+The remaining engineering work is fully planned — execute each with superpowers:subagent-driven-development (Opus implementers, two-stage review; handoff §3):
+
+| Work item | Plan file | Prereq gate |
+|---|---|---|
+| **Plan 2b** — leases + takeover + materialize-on-release + Bug 1 + device registry | `docs/superpowers/plans/2026-07-14-phase2-plan-2b-leases-takeover.md` | Item D dogfood finished (offline conflict-copy + provisioning-reuse checks) |
+| **Plan 2c** — migration + legacy demolition | `docs/superpowers/plans/2026-07-14-phase2-plan-2c-migration-demolition.md` | 2b merged + dogfooded; 3 decision points at plan top need Destin's 5-minute confirmation |
+| **Connect-GitHub modal (C)** | `docs/superpowers/plans/2026-07-14-connect-github-modal.md` | None — parallelizable with 2b/2c any time |
+
+Notable pre-made design calls baked into the 2b plan (don't re-derive): lease ops are DO-authoritative request/response, NOT client-relayed signals, and lease frames never enter the replay ring; leases key on a per-install userData deviceId (dev + built app = distinct devices, which is what makes same-machine cross-instance materialize safe); materialize-on-end gates on transcript quiescence because `session-exit` fires before the PTY dies; Bug 1's fix is browse-time filtering of `sessionIdMap` against live sessions (the map is a cache, not truth). The 2c plan flags that the §4 "personal-sync repo repurpose" is likely MOOT (1a already provisioned the personal repo both devices use) — confirm with Destin before executing.
 
 ## 3. Process that works (repeat it)
 
@@ -125,6 +144,7 @@ Everything in the 2026-07-09 handoff §4 still applies verbatim (npm-test-watch 
 
 All of the 2026-07-09 handoff §5, plus:
 - **Release gating (§0 above).**
+- **v1.3 = desktop-only sync + all master content (Destin, 2026-07-14).** The next release is v1.3: everything on master plus the completed desktop sync work, DESKTOP-ONLY. Android sync + the Android-resume fixes ship in a follow-up (1.3.1 or similar). This confirms 2b design §0 decision 5; Android is no longer an open release-scope question.
 - **Sync dots** (green/red/gray) are the one sanctioned status-color use; tooltip/hero carry the plain words; the no-●◐○-glyph rule is about glyph text.
 - **The session picker just picks** — no add/create/import/rename/remove row actions (buddy-window "Browse for folder…" fallback is the sole exception, only where Project View doesn't exist; delete it if the buddy window ever gains Project View).
 - **Move-out-of-sync and folder-rename-for-synced-projects are deferred** named follow-ups (hero hides Remove for synced projects; Rename is picker-nickname-only).
