@@ -35,5 +35,5 @@ Low-risk but pure-churn; best done in a quiet window, NOT during the sync-gated 
 ## Where the shipped work lives
 
 - Merge `7cfe75a7` on youcoded master — 3 commits (correctness / perf / dead-code), full test suite + dev-app smoke pass verified.
-- Remote findings: `docs/superpowers/2026-07-10-remote-access-review-handoff.md`.
+- Remote findings: `docs/active/handoffs/2026-07-10-remote-access-review-handoff.md`.
 - New invariants: `docs/PITFALLS.md` (serialized reads, byte carry, replay dedup, tail screen reads, subagent timer lifecycle).

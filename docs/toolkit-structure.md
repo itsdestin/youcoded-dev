@@ -2,7 +2,7 @@
 
 `youcoded-core/` is a Claude Code plugin that ships bundled with the YouCoded app. It's one of a handful of first-party plugins alongside `wecoded-themes-plugin` and `wecoded-marketplace-publisher` — not a separate "toolkit layer" or framework.
 
-**Status:** Actively being deprecated. See `docs/superpowers/plans/2026-04-21-deprecate-youcoded-core.md`. Release N (in flight) absorbs `write-guard.sh` into the app natively and stops cloning `~/.claude/plugins/youcoded-core/` on new installs; release N+1 removes all `youcoded-core`-aware branches from the app; then the repo is archived. New features should land in the app or in a dedicated marketplace plugin, not here.
+**Status:** Actively being deprecated. See `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`. Release N (in flight) absorbs `write-guard.sh` into the app natively and stops cloning `~/.claude/plugins/youcoded-core/` on new installs; release N+1 removes all `youcoded-core`-aware branches from the app; then the repo is archived. New features should land in the app or in a dedicated marketplace plugin, not here.
 
 ## Layout
 

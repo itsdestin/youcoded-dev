@@ -6,7 +6,7 @@ status: active
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Execute Phases 1, 2, and the Phase-4 convention rider of `docs/superpowers/specs/2026-07-15-workspace-knowledge-management-design.md` — cut eager context ~45k→~10k tokens, stand up ROADMAP.md, census all lifecycle docs into `docs/active/`+`docs/archive/`, triage PITFALLS.md into rules/tests/sub-repo docs, and create `docs/MAP.md`.
+**Goal:** Execute Phases 1, 2, and the Phase-4 convention rider of `docs/active/specs/2026-07-15-workspace-knowledge-management-design.md` — cut eager context ~45k→~10k tokens, stand up ROADMAP.md, census all lifecycle docs into `docs/active/`+`docs/archive/`, triage PITFALLS.md into rules/tests/sub-repo docs, and create `docs/MAP.md`.
 
 **Architecture:** Pure docs/conventions work in the `youcoded-dev` workspace repo plus small doc-removal PRs in sub-repos. No app code changes except optional small pinning tests (each via normal sub-repo worktree+PR flow). Phases 1 and 2 ship in direct succession — the de-`@import` window before rules expand is deliberately not bridged (spec, Execution phases note).
 
@@ -18,7 +18,7 @@ status: active
 
 ## Read these first
 
-1. The spec: `docs/superpowers/specs/2026-07-15-workspace-knowledge-management-design.md` (entire file — it is the authority; this plan operationalizes it).
+1. The spec: `docs/active/specs/2026-07-15-workspace-knowledge-management-design.md` (entire file — it is the authority; this plan operationalizes it).
 2. Destin's research note on loading mechanics: `~/.claude/research/context-loading-strategies.md` (why `@import` saves nothing; rules with `paths:` are lazy; rules WITHOUT `paths:` are eager — never create one without `paths:`).
 3. `docs/PITFALLS.md` — you will be rewriting it in Phase 2; skim the section headers now so the census (Task 7) doesn't archive something PITFALLS still points to.
 
@@ -85,7 +85,7 @@ mkdir -p docs/audits && git mv docs/AUDIT.md docs/audits/2026-04-23.md
 
 ```markdown
 ---
-plan: docs/superpowers/plans/2026-07-15-workspace-knowledge-mgmt-phases-1-2.md
+plan: docs/active/plans/2026-07-15-workspace-knowledge-mgmt-phases-1-2.md
 started: 2026-07-15
 residue: 0
 ---
@@ -129,7 +129,7 @@ commit/PR in the detail line) — shipped items collect in ## Shipped.
 ## v1.3 — sync release
 
 - [ ] Ship v1.3: all master content + desktop-only sync `feature` (added 2026-07-15)
-  Gated on sync being entirely complete (incl. Phase 2 conversation sync). Status: docs/superpowers/2026-07-10-sync-completion-handoff.md.
+  Gated on sync being entirely complete (incl. Phase 2 conversation sync). Status: docs/active/handoffs/2026-07-10-sync-completion-handoff.md.
 
 ## v1.3.1 — Android + polish `v1.3.1`
 
@@ -237,7 +237,7 @@ Expected: project-state output; NO "knowledge debt" section; an "Unapplied audit
 ```markdown
 ## Where Knowledge Lives
 
-New knowledge goes to, in descending preference: **a pinning test > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. Full taxonomy: `docs/superpowers/specs/2026-07-15-workspace-knowledge-management-design.md`.
+New knowledge goes to, in descending preference: **a pinning test > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. Full taxonomy: `docs/active/specs/2026-07-15-workspace-knowledge-management-design.md`.
 
 | Kind of knowledge | Home |
 |---|---|

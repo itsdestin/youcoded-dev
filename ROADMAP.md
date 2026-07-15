@@ -10,7 +10,7 @@ commit/PR in the detail line) — shipped items collect in ## Shipped.
 ## v1.3 — sync release
 
 - [ ] Ship v1.3: all master content + desktop-only sync `feature` (added 2026-07-15)
-  Gated on sync being entirely complete (incl. Phase 2 conversation sync). Status: docs/superpowers/2026-07-10-sync-completion-handoff.md.
+  Gated on sync being entirely complete (incl. Phase 2 conversation sync). Status: docs/active/handoffs/2026-07-10-sync-completion-handoff.md.
 
 ## v1.3.1 — Android + polish `v1.3.1`
 

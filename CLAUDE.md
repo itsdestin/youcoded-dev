@@ -13,7 +13,7 @@ Navigation: `docs/MAP.md` maps every subsystem to its entry points, rule, lazy d
 **Workspace-level artifacts DO get committed + pushed to `youcoded-dev`.** That includes:
 - Cross-cutting docs that span multiple sub-repos: `docs/PITFALLS.md`, `docs/android-runtime.md`, `docs/chat-reducer.md`, `docs/shared-ui-architecture.md`, `docs/registries.md`, `docs/build-and-release.md`, etc.
 - This `CLAUDE.md` and any rule files under `.claude/rules/`.
-- Specs / plans / investigations under `docs/superpowers/` (the artifacts produced by brainstorming, writing-plans, and similar skills before any sub-repo code changes).
+- Lifecycle documents (specs, plans, investigations, handoffs, prototypes) — the artifacts produced by brainstorming, writing-plans, and similar skills before any sub-repo code changes. In-flight ones live under `docs/active/`; completed/superseded ones under `docs/archive/`. (These replace the old flat `docs/superpowers/` dump.)
 - Dev tooling under `scripts/` — `run-dev.sh`, `run-sandbox.sh`, `cdp-eval.mjs`, etc.
 - The workspace's own `.gitignore`, `setup.sh`, and skill marketplace pointers under `.claude/`.
 
@@ -39,7 +39,7 @@ YouCoded is an open-source cross-platform AI assistant app built entirely withou
 | `youcoded/` | itsdestin/youcoded | **The app** — Desktop (Electron) + Android (Kotlin), skill marketplace UI, themes, multiplayer games |
 | `wecoded-marketplace/` | itsdestin/wecoded-marketplace | Skill marketplace registry + Cloudflare Worker backend |
 | `wecoded-themes/` | itsdestin/wecoded-themes | Community theme registry |
-| `youcoded-core/` | itsdestin/youcoded-core | A bundled Claude Code plugin (being deprecated — see `docs/superpowers/plans/2026-04-21-deprecate-youcoded-core.md`) |
+| `youcoded-core/` | itsdestin/youcoded-core | A bundled Claude Code plugin (being deprecated — see `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`) |
 | `youcoded-admin/` | itsdestin/youcoded-admin | Owner-only release and announcement skills |
 
 ## Cross-Repo Relationships
@@ -159,7 +159,7 @@ Do NOT preserve: full file contents already read, intermediate debugging output,
 
 ## Where Knowledge Lives
 
-New knowledge goes to, in descending preference: **a pinning test > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. Full taxonomy: `docs/superpowers/specs/2026-07-15-workspace-knowledge-management-design.md`.
+New knowledge goes to, in descending preference: **a pinning test > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. Full taxonomy: `docs/active/specs/2026-07-15-workspace-knowledge-management-design.md`.
 
 | Kind of knowledge | Home |
 |---|---|

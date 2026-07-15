@@ -36,7 +36,7 @@
 //
 // History: written during the Tier 2 android-xterm-webview dogfood pass to
 // inspect xterm scrollback live and capture the byte stream into xterm. See
-// the Tier 2 spec/plan under `docs/superpowers/`.
+// the Tier 2 spec/plan under `docs/archive/`.
 import WebSocket from 'ws';
 
 const wsUrl = process.argv[2];

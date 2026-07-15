@@ -12,7 +12,7 @@ status: active
 
 **Tech Stack:** Node.js + TypeScript (desktop Electron main process), Kotlin (Android), vitest for desktop unit tests, bash for hook scripts.
 
-**Spec:** `docs/superpowers/specs/2026-04-21-deprecate-youcoded-core-design.md`
+**Spec:** `docs/archive/specs/2026-04-21-deprecate-youcoded-core-design.md`
 
 **Scope note:** This is a cross-repo plan. It touches three repos: `youcoded-dev` (workspace), `youcoded` (the app — both `desktop/` and `app/`), and `youcoded-core` (the repo being deprecated). All paths in this document are rooted at `C:/Users/desti/youcoded-dev/` unless otherwise specified.
 
@@ -1422,7 +1422,7 @@ git commit -m "deprecate: remove files superseded by the YouCoded app
 
 The YouCoded app now owns setup, hooks (write-guard bundled
 natively on both platforms), sync, skills, and all user-facing
-behavior. See docs/superpowers/specs/2026-04-21-deprecate-
+behavior. See docs/archive/specs/2026-04-21-deprecate-
 youcoded-core-design.md in the youcoded-dev workspace for the
 full decomposition."
 ```
@@ -1552,7 +1552,7 @@ YouCoded app itself.
 
 - See `CHANGELOG.md` for the historical release log.
 - See the YouCoded app's `CHANGELOG.md` for migration releases.
-- Full design rationale: `docs/superpowers/specs/2026-04-21-deprecate-
+- Full design rationale: `docs/archive/specs/2026-04-21-deprecate-
   youcoded-core-design.md` in the `youcoded-dev` workspace repo.
 ```
 

@@ -1,5 +1,5 @@
 ---
-plan: docs/superpowers/plans/2026-07-15-workspace-knowledge-mgmt-phases-1-2.md
+plan: docs/active/plans/2026-07-15-workspace-knowledge-mgmt-phases-1-2.md
 started: 2026-07-15
 residue: 1
 ---
