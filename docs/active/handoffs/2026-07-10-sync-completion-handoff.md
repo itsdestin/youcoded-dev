@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Handoff: Cross-Device Sync — the road to COMPLETE and SHIPPABLE
 
 **Date:** 2026-07-10

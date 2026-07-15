@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Session Status — Games Lobby & Friendship Model (2026-06 → 2026-07-01)
 
 > **SUPERSEDED (2026-07-03)** by `docs/superpowers/specs/2026-07-03-youcoded-accounts-friendship-consolidated-design.md`, which consolidates this session's design with the GitHub-auth session's work and corrects several findings (the PartyKit server was NOT down; prior related work DID exist — the 2026-06-13 games-identity spec). Kept for historical context only.

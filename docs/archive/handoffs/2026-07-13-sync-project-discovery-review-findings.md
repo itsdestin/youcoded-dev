@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Cross-Device Project Discovery — Post-Merge Review Findings (2026-07-13)
 
 **Status:** **RESOLVED (2026-07-13)** on `youcoded` branch `fix/sync-project-discovery-followups` (off master `1f397c87`). #1–#5, #7, #8 fixed + regression-tested; #6 reconciled in the spec; #9 deferred (see below). Full desktop suite green (1630 passed; the one "failure" is the real-git convergence test hitting the 30s budget under full-parallel load — passes in 13s isolated), `tsc` clean. Branch pending PR/merge.

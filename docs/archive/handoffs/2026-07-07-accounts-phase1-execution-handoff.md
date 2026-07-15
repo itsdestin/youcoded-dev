@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Handoff: Execute Accounts Phase 1 (Subagent-Driven)
 
 **Date:** 2026-07-07

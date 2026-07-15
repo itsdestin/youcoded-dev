@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Plan 2b (Session Leases + Takeover) — Adversarial Review Findings + "Moved Gate" Follow-up
 
 **Date:** 2026-07-14

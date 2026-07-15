@@ -63,6 +63,22 @@ entries in file order; rows 37–40 are the extra deferred-work items swept in f
 | 43 | `docs/local-dev-vm.md` | Residue — awaiting Destin | Low | Is the VM flow still used? Recommend: archive (superseded by run-dev.sh isolation) unless still in use. File untouched pending the answer. |
 | 44 | CLAUDE.md `@import` block → replaced with lazy pointer table | Done | High | Removed the 7 `@docs/...` eager imports; added "Where Knowledge Lives" taxonomy + document-lifecycle convention, a "read on demand" Subsystem References pointer table, the one-product principle, first-screen MAP.md navigation line, and repointed staleness bullets at `docs/audits/` residue. Swept dead refs (knowledge-debt/AUDIT.md/GEMINI — none remain). Eager load (CLAUDE.md + live-app-safety.md + ~/.claude/CLAUDE.md): 33,601 → 2,763 words. |
 
+### Task 7 — workspace document census (rows 45+)
+
+Sorts every lifecycle doc under `docs/superpowers/` (151 files) plus `docs/plans/marketplace-integrations-v2.md`
+into `docs/active/{specs,plans,handoffs,investigations,prototypes}` (in-flight only) and
+`docs/archive/{…}` (completed/superseded). DEFAULT disposition = **archive · shipped**; the small ACTIVE
+set and the SUPERSEDED cluster are the exceptions. Every moved file gets a `status:` frontmatter line
+(existing frontmatter had its `status:` value repointed to the lifecycle value; the one `.html` prototype
+got an HTML-comment status marker). Moves use `git mv` so history follows.
+
+| # | Item | Disposition | Confidence | Notes |
+|---|------|-------------|------------|-------|
+| 45 | Handoffs — active set (3) | Active → docs/active/handoffs/ | High | `2026-07-10-sync-completion-handoff` (v1.3 release-gating status doc). `2026-07-10-remote-access-review-handoff` (5 open remote findings for a future rework session — MOSTLY-open live guidance, kept active per the review-handoff rule; ROADMAP feature pointer added). `2026-07-10-review-followups` (deferred perf/simplification catalog — kept active; ROADMAP idea pointer added). |
+| 46 | `2026-07-13-sync-project-discovery-review-findings` | Archive · shipped → archive/handoffs | High | Doc self-marks **RESOLVED**; #1–#8 fixed + merged (`1f397c87` + `b5d29f34` followups), #9 intentionally deferred (roots-null boot window unreachable in practice) — too marginal for a ROADMAP line. |
+| 47 | `2026-07-14-plan-2b-review-findings-and-moved-gate` | Archive · shipped → archive/handoffs | High | Moved Gate design was implemented (cited as shipped in PITFALLS "Session leases & takeover"). Finding 2's optional hub-down-warn refinement is already documented in PITFALLS as not-required — no ROADMAP line. |
+| 48 | Handoffs — shipped (4) | Archive · shipped → archive/handoffs | High | `2026-07-01-friendship-model-session-status`, `2026-07-07-accounts-phase1-execution-handoff`, `2026-07-08-sync-spaces-phase1a-handoff`, `2026-07-09-sync-spaces-post-1a-handoff` — accounts P1/P2 + sync 1a all merged. |
+
 ## Residue (needs Destin)
 
 1. **docs/local-dev-vm.md** — is the VM dev flow still used? Recommendation: archive it (run-dev.sh's isolated dev instance superseded the VM approach) unless it's still part of your workflow.

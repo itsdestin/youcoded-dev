@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Handoff: Sync Spaces after Phase 1a — merge, import follow-up, and Plan 1b
 
 > **SUPERSEDED (2026-07-10)** by `docs/superpowers/2026-07-10-sync-completion-handoff.md`. Work items A (merge #107) and B (import flows, shipped as youcoded#109) are fully executed; item C's plan is written (`docs/superpowers/plans/2026-07-09-sync-hub-1b.md`). §4 sharp edges remain current and are referenced by the successor doc.

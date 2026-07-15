@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Remote Access / Remote Server — Review Findings Handoff
 
 **Date:** 2026-07-10

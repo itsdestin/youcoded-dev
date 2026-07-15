@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Master Review — Deferred Follow-ups (non-remote)
 
 **Date:** 2026-07-10
