@@ -11,7 +11,7 @@ Navigation: `docs/MAP.md` maps every subsystem to its entry points, rule, lazy d
 **Sub-repo code changes go to the relevant sub-repo** (e.g., `youcoded/`, `youcoded-core/`, `wecoded-themes/`, `wecoded-marketplace/`) — open PRs there, push there. Do NOT mix sub-repo code into the workspace repo (`youcoded-dev`).
 
 **Workspace-level artifacts DO get committed + pushed to `youcoded-dev`.** That includes:
-- Cross-cutting docs that span multiple sub-repos: `docs/PITFALLS.md`, `docs/android-runtime.md`, `docs/chat-reducer.md`, `docs/shared-ui-architecture.md`, `docs/registries.md`, `docs/build-and-release.md`, etc.
+- Cross-cutting docs that span multiple sub-repos: `docs/PITFALLS.md`, `docs/registries.md`, `docs/build-and-release.md`, etc. (Single-repo subsystem depth — chat-reducer, android-runtime, shared-ui-architecture, etc. — lives in `youcoded/docs/`, not here.)
 - This `CLAUDE.md` and any rule files under `.claude/rules/`.
 - Lifecycle documents (specs, plans, investigations, handoffs, prototypes) — the artifacts produced by brainstorming, writing-plans, and similar skills before any sub-repo code changes. In-flight ones live under `docs/active/`; completed/superseded ones under `docs/archive/`. (These replace the old flat `docs/superpowers/` dump.)
 - Dev tooling under `scripts/` — `run-dev.sh`, `run-sandbox.sh`, `cdp-eval.mjs`, etc.
@@ -179,9 +179,9 @@ Path-scoped rules in `.claude/rules/` inject automatically when you touch matchi
 | Doc | Read when… |
 |---|---|
 | `docs/PITFALLS.md` | before any non-trivial change — cross-repo invariants |
-| `docs/chat-reducer.md` | touching chat state, transcript events, attention |
-| `docs/android-runtime.md` | touching the Android/Termux runtime |
-| `docs/shared-ui-architecture.md` | adding IPC or cross-platform features |
+| `youcoded/docs/chat-reducer.md` | touching chat state, transcript events, attention |
+| `youcoded/docs/android-runtime.md` | touching the Android/Termux runtime |
+| `youcoded/docs/shared-ui-architecture.md` | adding IPC or cross-platform features |
 | `docs/registries.md` | touching marketplace/themes registries |
 | `docs/build-and-release.md` | building, releasing, version bumping |
 | `docs/toolkit-structure.md` | touching youcoded-core (deprecated plugin) |

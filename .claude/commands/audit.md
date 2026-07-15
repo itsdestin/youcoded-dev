@@ -28,7 +28,7 @@ Use the Agent tool with `subagent_type: Explore` for each scope. Each agent veri
 Agents to launch (based on scope):
 
 **IPC Audit agent** — verifies claims in:
-- `docs/shared-ui-architecture.md`
+- `youcoded/docs/shared-ui-architecture.md`
 - `.claude/rules/ipc-bridge.md`
 - PITFALLS sections: "Cross-Platform"
 - Memory: `arch_shared_ui_why.md`
@@ -41,7 +41,7 @@ Must check:
 - Protocol format (type+id+payload structure)
 
 **Chat Reducer Audit agent** — verifies claims in:
-- `docs/chat-reducer.md`
+- `youcoded/docs/chat-reducer.md`
 - `.claude/rules/chat-reducer.md`
 - PITFALLS sections: "Chat Reducer"
 
@@ -53,7 +53,7 @@ Must check:
 - Dedup mechanism (confirm still content-based, no optimistic flag)
 
 **Android Audit agent** — verifies claims in:
-- `docs/android-runtime.md`
+- `youcoded/docs/android-runtime.md`
 - `.claude/rules/android-runtime.md`
 - PITFALLS sections: "Android Runtime"
 

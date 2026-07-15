@@ -8,8 +8,8 @@ description: Load deep context for Android app development — Kotlin SessionSer
 You are working on the YouCoded Android app. Before making changes, orient with these references:
 
 ## Read first
-- `docs/android-runtime.md` — full runtime architecture, key files table, SELinux bypass details
-- `docs/shared-ui-architecture.md` — React UI is SHARED with desktop; Android only contributes native APIs
+- `youcoded/docs/android-runtime.md` — full runtime architecture, key files table, SELinux bypass details
+- `youcoded/docs/shared-ui-architecture.md` — React UI is SHARED with desktop; Android only contributes native APIs
 - `arch_shared_ui_why.md` memory — why UI is shared, not native
 
 ## Hard constraints (DO NOT violate)
@@ -43,4 +43,4 @@ For IPC handlers that need native Android UI (file picker, folder picker, QR sca
 `cd youcoded && ./gradlew test` for unit tests. `./gradlew assembleDebug` for APK. Remember to run `./scripts/build-web-ui.sh` first or the APK launches with a blank WebView.
 
 ## Key files
-See `docs/android-runtime.md` table for full reference. Most critical: `Bootstrap.kt`, `SessionService.kt`, `PtyBridge.kt`, `LocalBridgeServer.kt`, `assets/claude-wrapper.js`.
+See `youcoded/docs/android-runtime.md` table for full reference. Most critical: `Bootstrap.kt`, `SessionService.kt`, `PtyBridge.kt`, `LocalBridgeServer.kt`, `assets/claude-wrapper.js`.

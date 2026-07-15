@@ -1,24 +1,33 @@
-# Pitfalls & Architectural Invariants
+# Pitfalls — cross-repo invariants
 
-Every item here is a lesson learned the hard way or a constraint that's invisible from reading code alone. Violating these silently breaks things.
+This file now holds **only cross-repo invariants** — constraints that span two or more repos (the app, the registries, the bundled plugin) or the workspace itself. Subsystem invariants moved to path-scoped rules in `.claude/rules/` (injected automatically when you touch matching files) with depth in `youcoded/docs/` and `wecoded-marketplace/docs/`. Start any non-trivial task at `docs/MAP.md` (subsystem → entry points → rule → doc → guard tests; created in the follow-up task).
+
+**Entry template — every entry names a guard.** *invariant (1–2 sentences) · why (1 sentence or a link) · guard (the test that pins it, or the mechanical check `/audit` runs).* An unguarded invariant is a standing request for a pinning test. New knowledge goes, in descending preference: a pinning test → a WHY comment at the edit site → a path-scoped rule → the rule's lazy doc. A new entry belongs **here** only if it's genuinely cross-repo; otherwise it belongs in a rule.
 
 ## Releases
 
-- **Bump `versionCode` AND `versionName` in `app/build.gradle.kts` BEFORE tagging.** Play Store requires `versionCode` to be monotonically increasing; CI cannot derive it from the tag.
-- **Desktop version is from the git tag**, not `package.json`. CI patches `package.json` during build.
-- **Auto-tag for `youcoded-core` triggers on `plugin.json` version changes** on master. Bump the plugin's `plugin.json` `version` and `.github/workflows/auto-tag.yml` creates a `vX.Y.Z` tag automatically. There is no separate layer-level `plugin.json` — the plugin has a single manifest.
-- **Release skill (`youcoded-admin`) orchestrates multi-repo coordination** across the app, `youcoded-core`, and admin — see `youcoded-admin/skills/release/SKILL.md` for the current orchestration.
-- **v2.3.0 lessons**: auto-tag was fragile, hooks were untested, spec gaps existed, protocol parity blind spots broke cross-platform features. See memory `project_release_lessons_2_3_0`.
+- **Bump `versionCode` AND `versionName` in `youcoded/app/build.gradle.kts` BEFORE tagging** (currently `versionCode = 20`, `versionName = "1.2.4"`). *Why:* Play Store requires `versionCode` to be monotonically increasing, so CI cannot derive it from the tag. *Guard:* none mechanical — release-skill checklist (`youcoded-admin/skills/release`).
+- **One `vX.Y.Z` tag on youcoded master ships all platforms.** It triggers both `android-release.yml` and `desktop-release.yml` → a single GitHub Release with APK/AAB + Win/Mac/Linux installers. *Why:* coordinated cross-platform release. *Guard:* CI workflows.
+- **Desktop version comes from the git tag, not `package.json`.** CI extracts the version from the tag and patches `package.json` during build. *Guard:* `desktop-release.yml`.
+- **youcoded-core auto-tags on `plugin.json` version change** on master — `youcoded-core/.github/workflows/auto-tag.yml` compares `HEAD` vs `HEAD~1` and creates the tag. There is one manifest (no layer-level `plugin.json`). *Guard:* `auto-tag.yml`.
+- **Multi-repo release coordination lives in the `youcoded-admin` release skill** (`youcoded-admin/skills/release/SKILL.md`) across the app, `youcoded-core`, and admin. See build order + flows in `docs/build-and-release.md`. History: v2.3.0 lessons (fragile auto-tag, untested hooks, protocol-parity blind spots) — memory `project_release_lessons_2_3_0`.
+
+## Cross-repo invariants
+
+- **A message-type string must be byte-identical across `preload.ts`, `ipc-handlers.ts`, `remote-shim.ts`, and `SessionService.kt`.** *Why:* a typo silently fails on one platform (the shared React UI crashes or a feature no-ops). *Guard:* `youcoded/desktop/tests/ipc-channels.test.ts`; depth in rule `.claude/rules/ipc-bridge.md` + `youcoded/docs/shared-ui-architecture.md`.
+- **`preload.ts` and `remote-shim.ts` must expose the same SHARED `window.claude` shape** (intentional exceptions: `window.claude.window` Electron-only, `window.claude.android` Android-only). *Why:* a missing shared API crashes React on that platform. *Guard:* `ipc-channels.test.ts`.
+- **When you add CC-coupled code, add an entry to `youcoded/docs/cc-dependencies.md`.** Coupling = parsing CC output (transcript JSONL, statusline JSON), consuming a CC file, depending on CLI behavior/flags/exit codes, or matching a CC text pattern (spinner glyphs, prompt markers). *Why:* that spine doc feeds the `review-cc-changes` release agent; an omitted touchpoint downgrades it to free-reasoning mode. *Guard:* the release-agent review.
+- **The bundled-plugin list is two-way duplicated** — `BUNDLED_PLUGIN_IDS` in `youcoded/desktop/src/shared/bundled-plugins.ts` AND `youcoded/app/.../skills/BundledPlugins.kt`. Both must stay in sync; changing it requires an app release. *Why:* the list is intentionally hardcoded (offline-first launch can't fetch it; a remote list would grant the marketplace force-install authority). *Guard:* none mechanical — cross-file convention; depth in rule `.claude/rules/registries.md`.
+- **The marketplace + theme registries are fetched at runtime from `raw.githubusercontent.com`, cached ~24h.** No CI rebuild on the app side; registry entries with `sourceMarketplace: "youcoded-core"` are never overwritten by upstream sync. *Why:* apps read live registry state, so a bad registry commit reaches users without an app release. *Guard:* registry-PR CI in `wecoded-marketplace`/`wecoded-themes`; depth in `docs/registries.md`.
+- **The dev instance and the built app SHARE `~/.claude/` (and `~/YouCoded/`).** Every cross-process JSON write is lock-guarded (`mutateFileUnderLock` / mkdir-lock `casWrite`); `write-guard.sh` + `.sync-lock` mediate concurrency. *Why:* `run-dev.sh` runs against real state alongside Destin's live app — two writers is a normal state, not an edge case. *Guard:* `cas-write.test.ts` + the per-subsystem store tests.
+- **Windows `git worktree remove` follows junctions.** If you junctioned `node_modules` into a worktree, delete the junction first (`cmd //c "rmdir <path>"`, NOT `rm -rf`) before `git worktree remove`, or it wipes the MAIN checkout's `node_modules`. *Why:* recursive delete traverses the junction to its target. *Guard:* none — see the fuller note in `CLAUDE.md` → Working Rules.
 
 ## Documentation Drift
 
-- **These pitfalls/invariants age with the code.** Code changes but docs don't always follow. Run `/audit` periodically (or before releases) to verify every claim against current source. The audit produces concrete fix instructions for each drift it finds.
-- **Add entries to `docs/knowledge-debt.md`** when you notice drift mid-session but can't fix it immediately. The session-start hook surfaces a reminder when entries exist.
-- **Update `last_verified` frontmatter** on rules and docs after confirming they still match code. Stale-detection uses this date.
+- **Fix on sight.** A doc/rule/CLAUDE.md claim that contradicts current code gets fixed in the session you notice it — verify against code, cite the verification in the commit. There is no drift ledger to defer into. *Guard:* the fix + its commit message.
+- **Unfixable this session → a ROADMAP `bug` tagged `#docs`** (in `ROADMAP.md`), captured the same session. Not a scratch note, not memory.
+- **`/audit` is the periodic backstop** (run before releases / after major refactors). It is fix-executing and diff-scoped: it verifies claim anchors against code, applies corrections inline, and writes a dated report to `docs/audits/YYYY-MM-DD.md`. The report is an audit trail of applied fixes plus a **residue** of items needing a human decision (product-behavior questions, deletions of user content, privacy-copy wording). *Guard:* the report's `residue:` frontmatter count — the session-start hook warns when it's non-zero or the latest report is >60 days old. (`docs/knowledge-debt.md` is retired — the residue in the newest audit report is the only surviving drift ledger.)
 
 ## Working With Destin
 
-- **"Merge" means merge AND push to origin.** Don't stop at a local merge.
-- **Always sync before working.** `git fetch origin && git pull origin master` in every repo you'll touch. Prevents working against stale state.
-- **Annotate non-trivial code edits with a WHY comment.** Destin is a non-developer and relies on comments to understand what code does and why it was changed. Example: `// Fix: prevent stale tool IDs from coloring the status dot`.
-- **Verify fix consequences before shipping.** Batch fixes — especially network/permission changes — can silently break cross-cutting features. Check both platforms.
+The day-to-day working rules — **"merge" means merge AND push**, **always sync before working**, **annotate non-trivial edits with a WHY comment**, **verify fix consequences on both platforms** — live in `CLAUDE.md` → Working Rules and are not duplicated here. The overriding safety rule (**never touch Destin's live built app**; all runtime testing goes through `bash scripts/run-dev.sh`) is `.claude/rules/live-app-safety.md`.
