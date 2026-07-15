@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Project View Redesign — Design Notes & Prototype
 
 **Status:** Direction approved via interactive prototype (2026-06-14). Formal spec + implementation plan still pending — this captures the agreed UX, the infrastructure to build on, and the open items so the build can pick up cleanly.
