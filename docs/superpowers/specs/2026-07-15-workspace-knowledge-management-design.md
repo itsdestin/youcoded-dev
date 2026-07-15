@@ -33,7 +33,7 @@ A Fable 5 survey of the workspace on 2026-07-15 found:
 | Drift found by `/audit` | The dated audit report, until its findings are applied | The report is the only ledger, and it's a snapshot, not an accumulator |
 | External bug reports / PR-linked tracking | GitHub issues | An inbox, never the plan; triaged into ROADMAP.md with a `youcoded#N` link token |
 | CC-version watch items | `youcoded/docs/cc-dependencies.md` review flow | Reviewed on CC bumps, not at session start |
-| History (completed plans/specs, incident narratives, superseded handoffs) | Root `Archived/` + git log | Searchable when needed, invisible otherwise |
+| History (completed plans/specs, incident narratives, superseded handoffs) | `docs/archive/` + git log | Searchable when needed, invisible otherwise |
 | Codebase orientation (subsystem → entry points → rule → doc → guards) | `docs/MAP.md` | Every cell is an anchor; audit-verified, so it can't rot |
 
 ## ROADMAP.md
@@ -98,19 +98,19 @@ The navigation aid the context cut would otherwise leave missing: a compact (~1k
 - **Diff-scoped by default:** each audit report records the per-repo HEAD SHAs it verified against in its frontmatter. The next run diffs `lastAuditedSHA..HEAD` per repo and re-verifies only claims whose anchor paths intersect the diff. A quiet week audits in minutes; a heavy week audits what changed. `/audit full` remains for occasional (quarterly-ish) full re-verification, since diff-scoping can't catch claims that were wrong from the start or drift in unanchored prose.
 - **Fix, don't report:** findings are worked through in the same run — doc/rule/CLAUDE.md corrections applied inline and committed as they go; larger fixes (new pinning tests, rule restructures) via subagent-driven-development with verification. Sub-repo code fixes follow normal working rules (worktree, tests, PR) — the audit gets no special bypass. The dated report (`docs/audits/YYYY-MM-DD.md`) is an audit trail: a changelog of applied fixes plus a residue of items needing a human decision (product-behavior questions, deletions of user-created content). The residue should be near-empty on a healthy run; anything left in it is the only surviving drift ledger.
 - **Roadmap verification:** every open `[ ]` ROADMAP.md item is checked against code/commits since its added date; already-shipped items are flipped to `[x]` with the shipping commit noted. Stale `in-progress` markers get the same treatment.
-- **Workspace gardening (meta-pass):** enforce the store budgets from principle 5 (eager load ≤ ~10k tokens; per-rule ~600 words; slim PITFALLS ~2,500 words) and trim/migrate regressions; detect subsystems that gained code but lack a path-scoped rule; verify `docs/MAP.md` anchors and update the map for new/renamed entry points; sweep `Active/` for docs whose feature shipped and move them to `Archived/`; verify status frontmatter presence; dedup ROADMAP items; review outward-facing docs (README/privacy/license/sub-repo CLAUDE.md) against the diff since last audit. This is the enforcement mechanism that keeps the Phase 1–2 cleanup from re-rotting.
+- **Workspace gardening (meta-pass):** enforce the store budgets from principle 5 (eager load ≤ ~10k tokens; per-rule ~600 words; slim PITFALLS ~2,500 words) and trim/migrate regressions; detect subsystems that gained code but lack a path-scoped rule; verify `docs/MAP.md` anchors and update the map for new/renamed entry points; sweep `docs/active/` for docs whose feature shipped and move them to `docs/archive/`; verify status frontmatter presence; dedup ROADMAP items; review outward-facing docs (README/privacy/license/sub-repo CLAUDE.md) against the diff since last audit. This is the enforcement mechanism that keeps the Phase 1–2 cleanup from re-rotting.
 - **Scope derivation:** subsystem list comes from `.claude/rules/*` `paths:` frontmatter, not a hardcoded enumeration — new subsystems are covered the day their rule lands.
 - The audit skill's own claims (what it tells agents to expect) must be regenerated from current docs each rebuild — the April failure mode was the audit asserting stale expectations as ground truth.
 
-## Document lifecycle: `Active/` and `Archived/`
+## Document lifecycle: `docs/active/` and `docs/archive/`
 
-Two folders at the **workspace root**, each mirroring `plans/ specs/ handoffs/ investigations/ prototypes/` inside:
+Two folders under `docs/`, each mirroring `plans/ specs/ handoffs/ investigations/ prototypes/` inside:
 
-- **`Active/`** — live and in-progress lifecycle documents only. This replaces `docs/superpowers/` as where brainstorming/writing-plans save new specs and plans (stated in CLAUDE.md; the skills honor user-preference locations). Because it holds only what's in flight, the folder listing IS the index — no INDEX.md.
-- **`Archived/`** — completed and superseded documents. Git history preserves provenance; grep hygiene: live searches default to excluding `Archived/`.
+- **`docs/active/`** — live and in-progress lifecycle documents only. This replaces `docs/superpowers/` as where brainstorming/writing-plans save new specs and plans (stated in CLAUDE.md; the skills honor user-preference locations). Because it holds only what's in flight, the folder listing IS the index — no INDEX.md.
+- **`docs/archive/`** — completed and superseded documents. Git history preserves provenance; grep hygiene: live searches default to excluding `docs/archive/`.
 - **Initial census (Phase 1):** sweep the workspace AND all sub-repos for lifecycle documents (specs, plans, handoffs, investigations, prototypes) and sort every one into the two folders. Living *reference* docs coupled to code (`youcoded/docs/cc-dependencies.md`, `engine-dependencies.md`, `terminal-emulator-vendored/VENDORED.md`, etc.) are NOT lifecycle documents and stay in their sub-repos. Docs moved out of a sub-repo get an `origin: <repo>@<sha>:<path>` frontmatter line so provenance survives the cross-repo move (git history doesn't).
-- **Move-on-completion convention (goes in CLAUDE.md):** when a feature merges, its associated spec/plan/handoff docs move `Active/` → `Archived/` in the same session — this rides the existing "Merge means merge AND push" working rule, which extends to "…AND archive the docs AND flip the roadmap item," so completion hygiene attaches to a habit every session already has. The `/audit` gardening pass is the backstop, not the primary mechanism.
-- Everything in `Active/` carries `status:` frontmatter: `draft | active | merged | superseded` (+ `merged:` commit/PR where known), so sweeps stay mechanical. Handoff docs also carry an explicit expiry condition ("archive when X merges").
+- **Move-on-completion convention (goes in CLAUDE.md):** when a feature merges, its associated spec/plan/handoff docs move `docs/active/` → `docs/archive/` in the same session — this rides the existing "Merge means merge AND push" working rule, which extends to "…AND archive the docs AND flip the roadmap item," so completion hygiene attaches to a habit every session already has. The `/audit` gardening pass is the backstop, not the primary mechanism.
+- Everything in `docs/active/` carries `status:` frontmatter: `draft | active | merged | superseded` (+ `merged:` commit/PR where known), so sweeps stay mechanical. Handoff docs also carry an explicit expiry condition ("archive when X merges").
 
 ## Outward-facing docs review (READMEs, privacy, licenses, sub-repo CLAUDE.md)
 
@@ -122,7 +122,7 @@ Two folders at the **workspace root**, each mirroring `plans/ specs/ handoffs/ i
 - **Remove the `@import` block** — replace with a pointer table (path + one-line "read when…" per doc). This is the single biggest win: ~45k → ~10k eager tokens.
 - Add the **one-product principle** and the **taxonomy table** (compressed).
 - Add the **ROADMAP capture convention** and the **fix-on-sight policy**.
-- Add the **document lifecycle convention**: new specs/plans save to `Active/`; on feature completion, associated docs move to `Archived/` in the same session. Extend "Merge means merge AND push" to include archiving docs + flipping the roadmap item.
+- Add the **document lifecycle convention**: new specs/plans save to `docs/active/`; on feature completion, associated docs move to `docs/archive/` in the same session. Extend "Merge means merge AND push" to include archiving docs + flipping the roadmap item.
 - Point to `docs/MAP.md` on the first screen.
 - Add a "where does knowledge go" line: test > comment > rule > doc, in that order.
 
@@ -134,14 +134,14 @@ Two folders at the **workspace root**, each mirroring `plans/ specs/ handoffs/ i
 ## Other deletions/moves
 
 - `GEMINI.md` — delete (Gemini CLI discontinued June 2026).
-- `docs/plans/marketplace-integrations-v2.md` — archive; remove the orphan `docs/plans/` dir. `docs/superpowers/` is dissolved entirely by the census (contents sorted into `Active/`/`Archived/`).
+- `docs/plans/marketplace-integrations-v2.md` — archive; remove the orphan `docs/plans/` dir. `docs/superpowers/` is dissolved entirely by the census (contents sorted into `docs/active/`/`docs/archive/`).
 - `docs/AUDIT.md` — becomes `docs/audits/2026-04-23.md` (historical).
 - `docs/knowledge-debt.md` — delete after triage: deferred-product-work entries → ROADMAP.md; CC-watch entries → cc-dependencies flow; genuine drift entries → fixed on the spot or carried into the next audit report if verification is needed.
 - `docs/local-dev-vm.md` — verify with Destin whether the VM flow is still used; archive if dead.
 
 ## Execution phases
 
-1. **Phase 1 — mechanical wins + census:** de-`@import` CLAUDE.md; create ROADMAP.md (seeded from knowledge-debt triage + known deferred work + `idea` entries for the Project View Roadmap tab and rolling roadmap cleanup-by-release); delete knowledge-debt.md + GEMINI.md; the document census — sweep workspace + all sub-repos for lifecycle docs and sort into root `Active/`/`Archived/` with status + `origin:` frontmatter (dissolving `docs/superpowers/`); baseline review of READMEs, privacy copy, licenses, and sub-repo CLAUDE.md files; hook update.
+1. **Phase 1 — mechanical wins + census:** de-`@import` CLAUDE.md; create ROADMAP.md (seeded from knowledge-debt triage + known deferred work + `idea` entries for the Project View Roadmap tab and rolling roadmap cleanup-by-release); delete knowledge-debt.md + GEMINI.md; the document census — sweep workspace + all sub-repos for lifecycle docs and sort into `docs/active/`/`docs/archive/` with status + `origin:` frontmatter (dissolving `docs/superpowers/`); baseline review of READMEs, privacy copy, licenses, and sub-repo CLAUDE.md files; hook update.
 2. **Phase 2 — PITFALLS triage** (judgment-heavy, reviewed): the 5-way triage above, including the existing `docs/*.md` subsystem docs; expand `.claude/rules/` (with `verify:` anchor blocks); create `docs/MAP.md`; retire the `context-*` skills; add pinning tests where high-value invariants are unguarded.
 3. **Phase 3 — `/audit` rebuild:** anchor-harvesting + anchor-check script (inline `verify:` blocks, no separate manifest); diff-scoped incremental mode with per-repo SHA tracking; fix-executing flow (inline + subagent-driven-development); roadmap verification; workspace-gardening meta-pass; dated audit-trail reports; retire the old command doc.
 4. **Phase 4 — lifecycle enforcement:** status frontmatter required on new plans/specs (writing-plans/brainstorming conventions note); periodic archive sweep is then trivial.
