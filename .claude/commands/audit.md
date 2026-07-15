@@ -4,7 +4,7 @@ description: Verify all documentation (CLAUDE.md, docs/, .claude/rules/, PITFALL
 
 # /audit — Documentation Drift Verification
 
-Re-runs the Phase 0 audit methodology to detect drift between documentation claims and actual code. Produces an updated `docs/AUDIT.md` with findings AND explicit fix instructions for every drift item.
+Re-runs the Phase 0 audit methodology to detect drift between documentation claims and actual code. Produces a dated report in `docs/audits/` with findings AND explicit fix instructions for every drift item.
 
 ## Usage
 
@@ -101,7 +101,7 @@ For each rules file and doc, check `last_verified` frontmatter against `git log 
 
 ### Step 5: Produce report
 
-Rewrite `docs/AUDIT.md` with structure:
+Write a dated report `docs/audits/<YYYY-MM-DD>.md` (frontmatter: `residue: <count of unfixed findings>` — the session-start hook greps it) with structure:
 
 ```markdown
 # Codebase Audit — <DATE>
@@ -136,17 +136,17 @@ For each drift item:
 ## Stale References
 [Files no longer exist / renamed; fix by removing/updating...]
 
-## Knowledge Debt Noted
-[Items from knowledge-debt.md still unresolved]
+## Residue (unfixed findings)
+[Findings not fixed this run — counted in the residue: frontmatter]
 ```
 
 ### Step 6: Update last_verified dates
 
 For each doc/rule/memory file that was verified as ACCURATE (not just checked), update its `last_verified` frontmatter field to today's date AND record the current HEAD commit of the code area it describes.
 
-### Step 7: Log to knowledge-debt.md
+### Step 7: Record residue
 
-For each drift item that wasn't fixed in this session, append to `docs/knowledge-debt.md` with the fix instructions so it persists across sessions.
+For each drift item that wasn't fixed in this session, list it under the report's ## Residue section with fix instructions, and set the `residue:` frontmatter count to match — the session-start hook surfaces non-zero residue every session.
 
 ## Fix Instructions Must Be Concrete
 
@@ -160,10 +160,10 @@ Fix instructions are the whole point — without them, Claude just complains abo
 
 ## After Running
 
-- Review `docs/AUDIT.md` — the drift section is your fix backlog
+- Review the dated report in `docs/audits/` — the drift section is your fix backlog
 - Apply fixes (ideally one PR per subsystem)
 - Re-run `/audit <subsystem>` to confirm resolution
-- Entries persist in `docs/knowledge-debt.md` until fixed
+- Unfixed findings persist in the report's ## Residue (surfaced at session start) until fixed
 
 ## When to Run
 
