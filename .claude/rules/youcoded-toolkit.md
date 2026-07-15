@@ -10,7 +10,7 @@ You are editing the `youcoded-core` Claude Code plugin. Read `docs/toolkit-struc
 
 ## Status
 
-**Being deprecated.** `docs/superpowers/plans/2026-04-21-deprecate-youcoded-core.md` is the active deprecation plan — `write-guard.sh` is moving into the app natively, and the repo will eventually be archived. Prefer fixing bugs over adding features here. New functionality belongs in the app or in a separate marketplace plugin.
+**Being deprecated.** `docs/active/plans/2026-04-21-deprecate-youcoded-core.md` is the active deprecation plan — `write-guard.sh` is moving into the app natively, and the repo will eventually be archived. Prefer fixing bugs over adding features here. New functionality belongs in the app or in a separate marketplace plugin.
 
 ## Structure
 

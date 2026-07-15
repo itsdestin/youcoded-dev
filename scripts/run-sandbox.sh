@@ -3,7 +3,7 @@
 # sandbox (?mode=tool-sandbox). Useful when iterating on ToolCard/ToolBody
 # views — no DevTools redirect dance needed.
 #
-# See docs/superpowers/plans/2026-04-24-tool-card-sandbox.md and
+# See docs/archive/plans/2026-04-24-tool-card-sandbox.md and
 # scripts/run-dev.sh for details.
 set -euo pipefail
 

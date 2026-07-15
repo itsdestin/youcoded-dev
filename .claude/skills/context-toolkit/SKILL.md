@@ -5,13 +5,13 @@ description: Load deep context for the youcoded-core bundled plugin — plugin s
 
 # youcoded-core Plugin Context
 
-You are working on `youcoded-core`, a bundled Claude Code plugin shipped with the YouCoded app. It is **being deprecated** — see `docs/superpowers/plans/2026-04-21-deprecate-youcoded-core.md`. `write-guard.sh` is moving into the app natively and the repo will eventually be archived.
+You are working on `youcoded-core`, a bundled Claude Code plugin shipped with the YouCoded app. It is **being deprecated** — see `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`. `write-guard.sh` is moving into the app natively and the repo will eventually be archived.
 
 Before making changes, orient with:
 
 - `docs/toolkit-structure.md` — current flat plugin layout
 - `youcoded-core/docs/system-architecture.md` — architecture reference (may be partially stale post-flatten; cross-check with current layout)
-- `docs/superpowers/plans/2026-04-21-deprecate-youcoded-core.md` — the deprecation plan (absorb write-guard into the app, remove the clone path, archive the repo)
+- `docs/active/plans/2026-04-21-deprecate-youcoded-core.md` — the deprecation plan (absorb write-guard into the app, remove the clone path, archive the repo)
 
 ## Hard rules
 

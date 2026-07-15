@@ -2,7 +2,7 @@
 
 **Status:** Accepted
 **Date:** 2026-07-09 (settled with Destin during platform-vision review)
-**Context doc:** `docs/superpowers/specs/2026-07-09-platform-vision-roadmap.md` §3.3
+**Context doc:** `docs/active/specs/2026-07-09-platform-vision-roadmap.md` §3.3
 
 ## Context
 

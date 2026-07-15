@@ -34,4 +34,4 @@ Declare the plugin's hooks in `youcoded-core/hooks/hooks-manifest.json` in a **d
 - Reconciliation logic historically lived in `session-start.sh` / `post-update.sh`; it has since moved into the app's `HookReconciler` (desktop) and Kotlin `HookReconciler` (Android) for centralized control
 - Users who want to temporarily disable a plugin hook can't — editing settings.json directly gets overwritten on next reconciliation
 
-Related: `docs/superpowers/plans/2026-04-21-deprecate-youcoded-core.md` plans to absorb `write-guard.sh` into the app natively, which will further reduce what this manifest declares.
+Related: `docs/active/plans/2026-04-21-deprecate-youcoded-core.md` plans to absorb `write-guard.sh` into the app natively, which will further reduce what this manifest declares.

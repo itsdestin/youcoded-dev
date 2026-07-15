@@ -23,7 +23,7 @@ Two ways to deal with it:
 - **(A) Free up the hypervisor for VBox.** Run `bcdedit /set hypervisorlaunchtype off` from an elevated PowerShell, reboot, do your testing, then `bcdedit /set hypervisorlaunchtype auto` and reboot again to get WSL2/Docker back. Two reboots; native-speed VBox in between. Best path if you'll use the VM regularly.
 - **(B) Skip the VM, test on a real clean Windows machine.** A friend's, coworker's, or a cloud Win11 instance. Strictly higher signal for installer testing — a clean physical machine is exactly what real users have. Often the right answer for a single fix.
 
-Full context and trade-offs in `docs/superpowers/investigations/2026-04-29-vbox-hyperv-conflict.md`.
+Full context and trade-offs in `docs/archive/investigations/2026-04-29-vbox-hyperv-conflict.md`.
 
 ## When to use this
 
@@ -194,5 +194,5 @@ It does NOT have Node, npm, Git, Claude Code, or YouCoded. That's intentional �
 ## See also
 
 - `scripts/setup-test-vm.ps1` — the script that produces the snapshot
-- `docs/superpowers/investigations/2026-04-28-friend-install-einval.md` — the original investigation that motivated having a test VM (if/when written)
+- `docs/archive/investigations/2026-04-28-friend-install-einval.md` — the original investigation that motivated having a test VM (if/when written)
 - `youcoded/desktop/src/main/prerequisite-installer.ts` — the code under test

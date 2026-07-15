@@ -1,5 +1,5 @@
 ---
-plan: docs/superpowers/plans/2026-07-15-workspace-knowledge-mgmt-phases-1-2.md
+plan: docs/active/plans/2026-07-15-workspace-knowledge-mgmt-phases-1-2.md
 started: 2026-07-15
 residue: 1
 ---
@@ -62,6 +62,35 @@ entries in file order; rows 37–40 are the extra deferred-work items swept in f
 | 42 | `GEMINI.md` | Deleted (Gemini CLI discontinued June 2026) | High | Dead file — Google discontinued the Gemini CLI; the `gemini` provider was removed from the codebase (PITFALLS "Multi-Model Provider Seam"). |
 | 43 | `docs/local-dev-vm.md` | Residue — awaiting Destin | Low | Is the VM flow still used? Recommend: archive (superseded by run-dev.sh isolation) unless still in use. File untouched pending the answer. |
 | 44 | CLAUDE.md `@import` block → replaced with lazy pointer table | Done | High | Removed the 7 `@docs/...` eager imports; added "Where Knowledge Lives" taxonomy + document-lifecycle convention, a "read on demand" Subsystem References pointer table, the one-product principle, first-screen MAP.md navigation line, and repointed staleness bullets at `docs/audits/` residue. Swept dead refs (knowledge-debt/AUDIT.md/GEMINI — none remain). Eager load (CLAUDE.md + live-app-safety.md + ~/.claude/CLAUDE.md): 33,601 → 2,763 words. |
+
+### Task 7 — workspace document census (rows 45+)
+
+Sorts every lifecycle doc under `docs/superpowers/` (151 files) plus `docs/plans/marketplace-integrations-v2.md`
+into `docs/active/{specs,plans,handoffs,investigations,prototypes}` (in-flight only) and
+`docs/archive/{…}` (completed/superseded). DEFAULT disposition = **archive · shipped**; the small ACTIVE
+set and the SUPERSEDED cluster are the exceptions. Every moved file gets a `status:` frontmatter line
+(existing frontmatter had its `status:` value repointed to the lifecycle value; the one `.html` prototype
+got an HTML-comment status marker). Moves use `git mv` so history follows.
+
+| # | Item | Disposition | Confidence | Notes |
+|---|------|-------------|------------|-------|
+| 45 | Handoffs — active set (3) | Active → docs/active/handoffs/ | High | `2026-07-10-sync-completion-handoff` (v1.3 release-gating status doc). `2026-07-10-remote-access-review-handoff` (5 open remote findings for a future rework session — MOSTLY-open live guidance, kept active per the review-handoff rule; ROADMAP feature pointer added). `2026-07-10-review-followups` (deferred perf/simplification catalog — kept active; ROADMAP idea pointer added). |
+| 46 | `2026-07-13-sync-project-discovery-review-findings` | Archive · shipped → archive/handoffs | High | Doc self-marks **RESOLVED**; #1–#8 fixed + merged (`1f397c87` + `b5d29f34` followups), #9 intentionally deferred (roots-null boot window unreachable in practice) — too marginal for a ROADMAP line. |
+| 47 | `2026-07-14-plan-2b-review-findings-and-moved-gate` | Archive · shipped → archive/handoffs | High | Moved Gate design was implemented (cited as shipped in PITFALLS "Session leases & takeover"). Finding 2's optional hub-down-warn refinement is already documented in PITFALLS as not-required — no ROADMAP line. |
+| 48 | Handoffs — shipped (4) | Archive · shipped → archive/handoffs | High | `2026-07-01-friendship-model-session-status`, `2026-07-07-accounts-phase1-execution-handoff`, `2026-07-08-sync-spaces-phase1a-handoff`, `2026-07-09-sync-spaces-post-1a-handoff` — accounts P1/P2 + sync 1a all merged. |
+| 49 | `investigations/2026-07-10-harness-design-ideas` | Active → docs/active/investigations/ | High | Feeds the future native-runtime phases (per the active-set list). |
+| 50 | Investigations — superseded (2) | Archive · superseded → archive/investigations | High | `2026-05-04-opencode-provider-mvp-plan-review` + `2026-05-21-agent-harness-landscape` — the OpenCode MVP is archived (feat/opencode-mvp) and the harness landscape research is folded into the platform-vision roadmap + phase designs. |
+| 51 | Investigations — shipped (7) | Archive · shipped → archive/investigations | High | `2026-04-24-chat-to-pty-submit-reliability`, `2026-04-26-background-task-tracking`, `2026-04-27-android-desktop-divergence-audit` (existing `status: investigation` frontmatter repointed to shipped), `2026-04-29-vbox-hyperv-conflict`, `2026-07-01-github-auth-consolidation-status`, `2026-07-03-sync-accounts-coordination`, `2026-07-13-cross-device-conversation-sync-bugs` — all bug/audit/coordination docs whose work merged. |
+| 52 | `plans/research/*` (3) → investigations | Archive · shipped → archive/investigations | High | `2026-04-16-gws-slides-coverage`, `2026-04-16-oauth-brand-automation`, `2026-04-16-refresh-token-findings` — Google-services research; relocated to investigations/ per the plan. `plans/research/` dir removed. |
+| 53 | Prototypes (2) | Archive · shipped → archive/prototypes | High | `2026-06-14-project-view-redesign.{md,html}` — the Project View redesign shipped (`feat/artifact-viewer`). The `.html` got its status marker as an HTML comment (`<!-- status: shipped -->`) so rendering isn't broken; the `.md` got normal frontmatter. |
+| 54 | Plans — active set (3) | Active → docs/active/plans/ | High | `2026-07-15-workspace-knowledge-mgmt-phases-1-2` (this plan). `2026-07-13-custom-session-tags-plan-a-data-layer` (Plan B in flight). `2026-04-21-deprecate-youcoded-core` (release N+1 pending). |
+| 55 | Plans — superseded (5) | Archive · superseded → archive/plans | High | `2026-05-04-opencode-provider-mvp` + `2026-05-04-vercel-ai-sdk-harness-roadmap` (OpenCode/early-harness path abandoned — superseded by the Phase 0/1 provider+engine plans). `2026-04-23-privacy-analytics` (install_id design superseded by 2026-05-01 device-id redesign, per PITFALLS). `2026-04-17-apple-services-implementation` + `-handoff` (Apple-services integration was never built — no `apple-services` code in youcoded; integration strategy evolved). |
+| 56 | Plans — shipped (64) | Archive · shipped → archive/plans | High | All remaining top-level `plans/*.md` — merged features (marketplace polish, analytics, artifact viewer, project view, resume browser, sync 1a/1b/2a/2b/2c, cross-device discovery, accounts P1/P2, native-runtime Phase 0/1 plans A/B/C + local-model lifecycle, connect-github modal, buddy floater, android xterm, etc.). Verified against PITFALLS "merged" statements + sub-repo history; default disposition. |
+| 57 | `docs/plans/marketplace-integrations-v2.md` → archive/plans; `docs/plans/` dissolved | Archive · shipped → archive/plans | High | Bundled-skills/Google-services integration plan (2026-04-16); marketplace integrations shipped. Moved out of the stray `docs/plans/` dir, which is now removed. |
+| 58 | Specs — active set (4) | Active → docs/active/specs/ | High | `2026-07-15-workspace-knowledge-management-design` (this redesign). `2026-07-09-platform-vision-roadmap` (governing roadmap). `2026-07-10-phase2-conversation-sync-design` (Android Phase 3 unimplemented). `2026-07-13-custom-session-tags-design` (Plan B in flight). |
+| 59 | Specs — superseded (4) | Archive · superseded → archive/specs | High | `2026-04-23-privacy-analytics-design` + `2026-04-23-analytics-privacy-copy-draft` (install_id design + copy draft → superseded by the 2026-05-01 device-id redesign, per PITFALLS). `2026-05-04-multi-model-harness-design` (superseded by the platform-vision roadmap + Phase 0/1 designs). `2026-04-17-apple-services-design` (Apple-services integration never built). |
+| 60 | Specs — shipped (47) | Archive · shipped → archive/specs | High | All remaining `specs/*.md` — merged features. Files with pre-existing `status: design/draft/investigation` frontmatter had that key's value repointed to the lifecycle value (single valid `---` block, no double-stamp). |
+| 61 | `docs/superpowers/` — 1 dirty-skipped file remains (residue-adjacent note, NOT a Destin decision) | Left in place | High | `plans/2026-07-13-custom-session-tags-plan-b-ui.md` is modified in the MAIN checkout (uncommitted Plan B UI work), so it was skipped by the dirty-file guard. Move it into `docs/active/plans/` (or `docs/archive/plans/` once shipped) when that session lands. `docs/superpowers/` is kept only to hold it; every other lifecycle doc is now under `docs/active/` + `docs/archive/`. |
 
 ## Residue (needs Destin)
 
