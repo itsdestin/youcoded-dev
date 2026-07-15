@@ -1,7 +1,7 @@
 ---
 plan: docs/superpowers/plans/2026-07-15-workspace-knowledge-mgmt-phases-1-2.md
 started: 2026-07-15
-residue: 0
+residue: 1
 ---
 
 # Knowledge-management execution changelog
@@ -60,7 +60,8 @@ entries in file order; rows 37–40 are the extra deferred-work items swept in f
 | 40 | Android PtyBridge echo-driven submit TODO (PITFALLS sweep) | → ROADMAP | High | Features `#android` `#pty-writes`; cites PITFALLS "PTY Writes → Android". No knowledge-debt entry. |
 | 41 | `docs/knowledge-debt.md` | Deleted (triaged to ROADMAP in Task 3) | High | Every dated entry dispositioned in rows 1–36 above; file removed in Task 4. Session-start staleness detection repointed at `docs/audits/`. |
 | 42 | `GEMINI.md` | Deleted (Gemini CLI discontinued June 2026) | High | Dead file — Google discontinued the Gemini CLI; the `gemini` provider was removed from the codebase (PITFALLS "Multi-Model Provider Seam"). |
+| 43 | `docs/local-dev-vm.md` | Residue — awaiting Destin | Low | Is the VM flow still used? Recommend: archive (superseded by run-dev.sh isolation) unless still in use. File untouched pending the answer. |
 
 ## Residue (needs Destin)
 
-(none — every knowledge-debt entry dispositioned at high confidence)
+1. **docs/local-dev-vm.md** — is the VM dev flow still used? Recommendation: archive it (run-dev.sh's isolated dev instance superseded the VM approach) unless it's still part of your workflow.
