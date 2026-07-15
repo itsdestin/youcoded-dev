@@ -26,7 +26,7 @@ Governing docs: `docs/superpowers/specs/2026-07-09-platform-vision-roadmap.md`, 
 - **Phase 1 must route chat-view PTY send paths through the harness for native sessions.** Cataloged in PR #115's body: InputBar send, `guardedPtySend`, ESC interrupt, `useSubmitConfirmation` retry, ChatView Ink-menu keys, ToolCard permission keys, TrustGate, BubbleFeed send; also gate the Shift+Tab permission-cycle handler; subagent reasoning needs `parentAgentToolUseId` routing in the reasoning reducer case.
 - **`feat/opencode-mvp` is ARCHIVED, not dead** — `OPENCODE-MVP-ARCHIVED.md` on that branch lists what Phase 1/2 should mine (event-translation patterns, subprocess supervision + tests, OllamaDetector, capability probe). Do not merge it; do not delete it.
 
-### Phase 1 Plan A — provider layer + native chat sessions (`feat/native-sessions`, in review)
+### Phase 1 Plan A — provider layer + native chat sessions (merged 2026-07-13, youcoded master `e964a5cc`, PR #119)
 
 Cloud-first slice: `~/.youcoded/` home, provider registry + keychain keys, `HarnessSession` v0 (streamText, no tools), native session store + resume, provider-aware send routing, Providers settings panel. Still gated on `native.supported` (false in production until Phase 2 completes — the gating decision). Governing spec: `docs/superpowers/specs/2026-07-10-phase1-engine-providers-design.md`; plan: `docs/superpowers/plans/2026-07-10-phase1-plan-a-providers-native-sessions.md`.
 
