@@ -58,6 +58,8 @@ entries in file order; rows 37–40 are the extra deferred-work items swept in f
 | 38 | `.partial` orphan scan IPC — local-models Plan C v1 gap (PITFALLS sweep) | → ROADMAP | High | Someday idea `#local-models`; cites PITFALLS "Phase 1 Plan C". No knowledge-debt entry. |
 | 39 | Amendment K2 router hot-reload of --models-dir (PITFALLS sweep) | → ROADMAP | High | Features `#local-models`; cites PITFALLS "Phase 1 Plan C". No knowledge-debt entry. |
 | 40 | Android PtyBridge echo-driven submit TODO (PITFALLS sweep) | → ROADMAP | High | Features `#android` `#pty-writes`; cites PITFALLS "PTY Writes → Android". No knowledge-debt entry. |
+| 41 | `docs/knowledge-debt.md` | Deleted (triaged to ROADMAP in Task 3) | High | Every dated entry dispositioned in rows 1–36 above; file removed in Task 4. Session-start staleness detection repointed at `docs/audits/`. |
+| 42 | `GEMINI.md` | Deleted (Gemini CLI discontinued June 2026) | High | Dead file — Google discontinued the Gemini CLI; the `gemini` provider was removed from the codebase (PITFALLS "Multi-Model Provider Seam"). |
 
 ## Residue (needs Destin)
 
