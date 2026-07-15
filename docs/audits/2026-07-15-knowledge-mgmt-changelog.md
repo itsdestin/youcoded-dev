@@ -61,6 +61,7 @@ entries in file order; rows 37–40 are the extra deferred-work items swept in f
 | 41 | `docs/knowledge-debt.md` | Deleted (triaged to ROADMAP in Task 3) | High | Every dated entry dispositioned in rows 1–36 above; file removed in Task 4. Session-start staleness detection repointed at `docs/audits/`. |
 | 42 | `GEMINI.md` | Deleted (Gemini CLI discontinued June 2026) | High | Dead file — Google discontinued the Gemini CLI; the `gemini` provider was removed from the codebase (PITFALLS "Multi-Model Provider Seam"). |
 | 43 | `docs/local-dev-vm.md` | Residue — awaiting Destin | Low | Is the VM flow still used? Recommend: archive (superseded by run-dev.sh isolation) unless still in use. File untouched pending the answer. |
+| 44 | CLAUDE.md `@import` block → replaced with lazy pointer table | Done | High | Removed the 7 `@docs/...` eager imports; added "Where Knowledge Lives" taxonomy + document-lifecycle convention, a "read on demand" Subsystem References pointer table, the one-product principle, first-screen MAP.md navigation line, and repointed staleness bullets at `docs/audits/` residue. Swept dead refs (knowledge-debt/AUDIT.md/GEMINI — none remain). Eager load (CLAUDE.md + live-app-safety.md + ~/.claude/CLAUDE.md): 33,601 → 2,763 words. |
 
 ## Residue (needs Destin)
 
