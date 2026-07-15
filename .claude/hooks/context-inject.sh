@@ -75,39 +75,30 @@ elif [[ -d "$WORKSPACE/.git" ]]; then
 fi
 
 # --- Staleness detection ---
-# Flag stale docs or open knowledge debt. Suggests running /audit when appropriate.
-AUDIT_FILE="$WORKSPACE/docs/AUDIT.md"
-DEBT_FILE="$WORKSPACE/docs/knowledge-debt.md"
-
-if [[ -f "$AUDIT_FILE" ]]; then
-    # Prefer git commit time; fallback to filesystem mtime if untracked or no commits
-    AUDIT_CTIME=$(git -C "$WORKSPACE" log -1 --format=%ct -- docs/AUDIT.md 2>/dev/null || true)
-    if [[ -z "$AUDIT_CTIME" ]]; then
-        # Untracked or no commits yet — use filesystem modification time
-        AUDIT_CTIME=$(stat -c %Y "$AUDIT_FILE" 2>/dev/null || stat -f %m "$AUDIT_FILE" 2>/dev/null || echo "")
-    fi
-    if [[ -n "$AUDIT_CTIME" ]]; then
-        NOW_EPOCH=$(date +%s)
-        AUDIT_AGE_DAYS=$(( (NOW_EPOCH - AUDIT_CTIME) / 86400 ))
-        if [[ $AUDIT_AGE_DAYS -gt 60 ]]; then
-            echo "### ⚠️ Documentation staleness"
-            echo "docs/AUDIT.md is ${AUDIT_AGE_DAYS} days old. Consider running \`/audit\` to refresh."
+# Points at the newest dated audit report in docs/audits/. Warns when stale (>60 days)
+# or when the report's `residue:` frontmatter count is non-zero (unapplied findings).
+AUDITS_DIR="$WORKSPACE/docs/audits"
+if [[ -d "$AUDITS_DIR" ]]; then
+    LATEST_AUDIT=$(ls "$AUDITS_DIR"/[0-9]*.md 2>/dev/null | sort | tail -1)
+    if [[ -n "$LATEST_AUDIT" ]]; then
+        AUDIT_CTIME=$(git -C "$WORKSPACE" log -1 --format=%ct -- "${LATEST_AUDIT#$WORKSPACE/}" 2>/dev/null || true)
+        [[ -z "$AUDIT_CTIME" ]] && AUDIT_CTIME=$(stat -c %Y "$LATEST_AUDIT" 2>/dev/null || stat -f %m "$LATEST_AUDIT" 2>/dev/null || echo "")
+        if [[ -n "$AUDIT_CTIME" ]]; then
+            NOW_EPOCH=$(date +%s)
+            AUDIT_AGE_DAYS=$(( (NOW_EPOCH - AUDIT_CTIME) / 86400 ))
+            if [[ $AUDIT_AGE_DAYS -gt 60 ]]; then
+                echo "### ⚠️ Audit staleness"
+                echo "Latest audit ($(basename "$LATEST_AUDIT")) is ${AUDIT_AGE_DAYS} days old. Consider running \`/audit\`."
+                echo ""
+            fi
+        fi
+        # residue: N in the report frontmatter = findings awaiting action
+        RESIDUE=$(grep -m1 -E '^residue: *[0-9]+' "$LATEST_AUDIT" | grep -oE '[0-9]+' || true)
+        if [[ -n "$RESIDUE" && "$RESIDUE" -gt 0 ]] 2>/dev/null; then
+            echo "### ⚠️ Unapplied audit findings"
+            echo "${RESIDUE} open item(s) in $(basename "$LATEST_AUDIT"). Review the ## Residue section."
             echo ""
         fi
-    fi
-fi
-
-# Surface open knowledge debt — count entries matching the template format
-# A real entry looks like: "## <Title> (noticed YYYY-MM-DD)"
-# Template/system headers use other titles so we only match the dated pattern
-if [[ -f "$DEBT_FILE" ]]; then
-    # grep -c returns 1 when no matches, so we pipe through and default to 0
-    DEBT_COUNT=$(grep -cE '^## .* \(noticed [0-9]{4}-[0-9]{2}-[0-9]{2}\)' "$DEBT_FILE" 2>/dev/null; true)
-    DEBT_COUNT=${DEBT_COUNT:-0}
-    if [[ "$DEBT_COUNT" -gt 0 ]] 2>/dev/null; then
-        echo "### ⚠️ Open knowledge debt"
-        echo "${DEBT_COUNT} unresolved entries in docs/knowledge-debt.md. Review before making related changes."
-        echo ""
     fi
 fi
 
