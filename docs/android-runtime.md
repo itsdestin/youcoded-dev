@@ -22,6 +22,9 @@ Use `$HOME/.cache/tmpdir` via `TMPDIR` and `CLAUDE_CODE_TMPDIR`. The specific pa
 ### No glibc
 Bionic only. `native/execve-interceptor.c` is a research artifact, not deployed.
 
+### Go binaries can't exec scripts in `~/.claude-mobile/`
+The `linker64-env.sh` bash wrappers only cover binaries YOU invoke from bash. They do NOT protect a Go binary's OWN `fork/exec` calls: Go issues a raw `SYS_execve` syscall that bypasses termux-exec's LD_PRELOAD intercept (the shim only patches libc `execve`). So any script under `~/.claude-mobile/*` (e.g. an `xdg-open`/`open` shim on PATH, or a helper script) exec'd by a Go child fails with `EACCES` at fork/exec. Hit in the wild by rclone's Google Drive OAuth auto-browser-open — fixed in youcoded `6469e058` (`authGdriveWithBrowserIntent` streams stderr and opens the URL via `PlatformBridge.openUrl` / `Intent.ACTION_VIEW`). Two safe paths for any future Go integration: (1) spawn the Go process FROM bash with the linker64 wrappers so only the Go binary itself runs, and (2) route any URL-open / native UI through `PlatformBridge` or a `CompletableDeferred` native-UI bridge — never a `~/.claude-mobile/` shim. Reference implementation: the rclone fix in `SessionService.kt`.
+
 ## Canonical sources
 
 - `claude-wrapper.js` — canonical at `app/src/main/assets/claude-wrapper.js`. Deployed at every PTY start (inline in `PtyBridge.start()` at `PtyBridge.kt:119-123` — reads the asset and writes it to `$HOME/.claude-mobile/claude-wrapper.js` before each launch). There is no separate `Bootstrap.deployWrapperJs()` method. **Edit the asset file directly.**
