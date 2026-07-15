@@ -10,7 +10,7 @@ status: active
 
 ## Summary
 
-Flatten the Settings panel from grouped sections (uppercase `<h3>` headers like "Appearance", "Buddy", "Sound", "Performance", "Sync", "Other" — plus several unnamed ones sharing the identical pattern: "Account", "Backup & Sync", "Model Providers", "Remote Access", "Package Tier") into a single uniform list of cards. Every card gets the same shape: an icon, a static title, and a lighter-weight subtitle line showing the current value or a short description — matching the existing "Defaults" / "Development" cards, which already follow this format.
+Flatten the Settings panel from grouped sections (uppercase `<h3>` headers like "Appearance", "Buddy", "Sound", "Performance", "Sync", "Other", "Account", "Backup & Sync", "Model Providers", "Remote Access", "Package Tier" etc.) into a single uniform list of cards. Every card gets the same shape: an icon, a static title, and a lighter-weight subtitle line showing the current value or a short description — matching the existing "Defaults" / "Development" cards, which already follow this format.
 
 Extract the repeated row markup (icon + title + subtitle + chevron, currently copy-pasted ~12 times) into one shared `SettingsRow` component so future consistency changes are a single edit instead of a dozen.
 
@@ -79,19 +79,19 @@ Presentational only — renders the button/icon-slot/title/subtitle/chevron mark
 
 Rows that already have a static label + dynamic value only need the header stripped. Three rows currently use the dynamic value *as the title* (no separate label) and get restructured:
 
-| Row | Title (before → after) | Subtitle (before → after) |
-|---|---|---|
-| Account | Account (unchanged) | "Signed in as @x" / "Sign in to like themes, rate plugins, and play games" (unchanged) |
-| Appearance | theme name → **"Appearance"** | *(none)* → **theme name**, e.g. "Golden Daybreak" |
-| Buddy Floater | "Show buddy floater" → **"Buddy Floater"** | description text → **"Enabled" / "Disabled"** |
-| Sound | "Notifications" → **"Sound"** | volume % / "Muted" (unchanged) |
-| Performance | "Graphics" → **"Performance"** | state label, e.g. "Power saving" (unchanged) |
-| Backup & Sync | unchanged | unchanged (badge accessory unchanged) |
-| Model Providers | unchanged | unchanged |
-| Remote Access | status text → **"Remote Access"** | *(n/a)* → **status text**, e.g. "Connected · 2 clients · Tailscale" (folds in the separate "Tailscale" tag currently rendered next to the title) |
-| Package Tier (Android) | unchanged | unchanged |
-| Connect to Desktop (Android) | unchanged | unchanged |
-| Defaults, Development, Keyboard Shortcuts, Donate, About | unchanged | unchanged |
+| Row                                                      | Title (before → after)                     | Subtitle (before → after)                                                                                                                        |
+| -------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Account                                                  | Account (unchanged)                        | "Signed in as @x" / "Sign in to like themes, rate plugins, and play games" (unchanged)                                                           |
+| Appearance                                               | theme name → **"Appearance"**              | *(none)* → **theme name**, e.g. "Golden Daybreak"                                                                                                |
+| Buddy Floater                                            | "Show buddy floater" → **"Buddy Floater"** | description text → **"Enabled" / "Disabled"**                                                                                                    |
+| Sound                                                    | "Notifications" → **"Sound"**              | volume % / "Muted" (unchanged)                                                                                                                   |
+| Performance                                              | "Graphics" → **"Performance"**             | state label, e.g. "Power saving" (unchanged)                                                                                                     |
+| Backup & Sync                                            | unchanged                                  | unchanged (badge accessory unchanged)                                                                                                            |
+| Model Providers                                          | unchanged                                  | unchanged                                                                                                                                        |
+| Remote Access                                            | status text → **"Remote Access"**          | *(n/a)* → **status text**, e.g. "Connected · 2 clients · Tailscale" (folds in the separate "Tailscale" tag currently rendered next to the title) |
+| Package Tier (Android)                                   | unchanged                                  | unchanged                                                                                                                                        |
+| Connect to Desktop (Android)                             | unchanged                                  | unchanged                                                                                                                                        |
+| Defaults, Development, Keyboard Shortcuts, Donate, About | unchanged                                  | unchanged                                                                                                                                        |
 
 ## Buddy Floater row
 

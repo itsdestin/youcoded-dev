@@ -1,7 +1,7 @@
 ---
 plan: docs/active/plans/2026-07-15-workspace-knowledge-mgmt-phases-1-2.md
 started: 2026-07-15
-residue: 3
+residue: 2
 ---
 
 # Knowledge-management execution changelog
@@ -210,7 +210,7 @@ runtime skipped (deprecated plugin). No new residue (stays 3).
 
 ## Residue (needs Destin)
 
-1. **docs/local-dev-vm.md** — is the VM dev flow still used? Recommendation: archive it (run-dev.sh's isolated dev instance superseded the VM approach) unless it's still part of your workflow.
+1. ~~**docs/local-dev-vm.md**~~ — RESOLVED 2026-07-15: Destin confirmed the Windows-VM flow was never functional and never used → archived to `docs/archive/local-dev-vm.md` (status: superseded). His stated future intent — a VM testing flow on his Linux machine for first-run install/setup/sign-in testing — captured as a ROADMAP.md Features line (`#tests` `#install`) citing the archived doc as prior art. (Row 129.)
 
 2. **Landing-page FAQ privacy copy is stale (`youcoded/docs/index.html`, ~line 3326)** — the "How is my data handled?" FAQ says YouCoded sends "one anonymous daily ping — **a random install ID**, the app version, platform and OS, and **the country** from the connection." Two mismatches vs. what the code actually sends (`wecoded-marketplace/worker/src/lib/analytics.ts` + `AboutPopup.tsx`): (a) the **install-ID model was retired** — blob2 is now an irreversible **hash of the device's hardware ID** (the install_id design was superseded by the device-hash redesign); (b) it **omits region** — the code also sends approximate region (ISO 3166-2, e.g. US state; `CF-IPRegionCode`). NOT auto-edited (privacy copy = decision-residue). Recommended wording: "…one anonymous daily ping — an irreversible hash of your device's hardware ID, the app version, platform and OS, and the country **and approximate region** from the connection…". (Same file is the GitHub Pages landing FAQ; youcoded-core/docs/landing-copy.md is the older core landing and omits analytics detail entirely — deprecated, not worth touching.)
 
@@ -223,3 +223,4 @@ runtime skipped (deprecated plugin). No new residue (stays 3).
 | 126 | `.claude/commands/audit.md` dead references | Fixed (interim patch) | High | knowledge-debt.md / docs/AUDIT.md references repointed to docs/audits/ dated reports + residue: frontmatter. Full /audit rebuild is Phase 3 (separate plan). |
 | 127 | Budget verification | Logged | High | Eager load: 33,601 → 2,791 words (~3.8k tokens, budget ≤10k). PITFALLS: 905 words (budget ≤2,500). All 14 rule BODIES ≤600 words (file totals 410–648 incl. verify: frontmatter). Live-pointer sweep: zero broken paths in CLAUDE.md / MAP.md / rules. |
 | 128 | `docs/superpowers/` residual | Deferred (documented) | High | Holds exactly 1 dirty-skipped file (custom-session-tags-plan-b-ui.md, owned by a concurrent session) — move to docs/active/plans/ when that session lands. |
+| 129 | `docs/local-dev-vm.md` (residue item 1) | Resolved — archived + ROADMAP | High | Destin: never functional, never used → docs/archive/local-dev-vm.md (superseded). Future Linux-host VM testing flow (first-run install/setup/sign-in) → ROADMAP Features `#tests` `#install`, citing the archived doc + the vbox-hyperv investigation as prior art. residue: 3→2. |

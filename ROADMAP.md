@@ -59,6 +59,9 @@ commit/PR in the detail line) — shipped items collect in ## Shipped.
 - [ ] Remote access system rework (5 review findings) `feature` `#remote` (added 2026-07-15)
   From the 2026-07-10 full-codebase review: (1) chat:hydrate ID collision corrupts remote chat history (reseed/namespace counters in deserializeChatState); (2) rolling PTY replay buffer does an O(4MB) string copy per chunk with zero clients connected (chunk array + join-at-connect + broadcast early-return); (3) ~14 hand-rolled remote-server pref handlers duplicate ipc-handlers.ts and have 3 live drift bugs (defaults/folders); (4) live/replay ordering gap at connect double-applies events; (5) replayed events stamped Date.now() not transcript time. Full findings + fix shapes: docs/active/handoffs/2026-07-10-remote-access-review-handoff.md. (from master-review handoff)
 
+- [ ] VM testing flow for first-run install/setup/sign-in (Linux host) `feature` `#tests` `#install` (added 2026-07-15)
+  Snapshot-revertible VMs on Destin's Linux machine (KVM — no Hyper-V conflict, unlike the abandoned Windows-host attempt) to exercise the prerequisite installer, first-run setup, and sign-in flows on clean guests, plus any future changes to those flows. Prior art (methodology + when-to-use list): docs/archive/local-dev-vm.md and docs/archive/investigations/2026-04-29-vbox-hyperv-conflict.md.
+
 ## Someday / ideas
 
 - [ ] Visual-regression harness for renderer chrome invariants (framed-shell, chrome-glass, overlay layers) `idea` `#tests` (added 2026-07-15)

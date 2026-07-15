@@ -1,3 +1,9 @@
+---
+status: superseded
+---
+
+> Archived 2026-07-15: this Windows-hosted VirtualBox flow was never functional (Hyper-V conflict made it impractical) and was never used. The replacement — a VM testing flow on Destin's Linux machine (KVM has no hypervisor conflict) for first-run install/setup/sign-in testing — is a ROADMAP.md item. The snapshot-revert methodology and "When to use this" list below carry over as prior art.
+
 # Local Test VM (Windows 11)
 
 A clean, snapshot-revertible Windows 11 VM is the highest-fidelity way to validate the YouCoded first-run installer. Real failure modes — `spawn EINVAL`, missing Node, fresh-PATH propagation, blocked execution policy, UAC interactions — only surface on a machine that's never seen Node, npm, or Claude Code. This doc shows you how to spin one up.

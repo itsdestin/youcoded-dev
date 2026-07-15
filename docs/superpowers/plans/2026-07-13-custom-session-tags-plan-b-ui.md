@@ -14,6 +14,8 @@
 
 **Working directory:** Same `youcoded` worktree conventions as Plan A (Session Bootstrap section there). Continue on the same feature branch as Plan A so the two ship together — do NOT release Plan A without Plan B (the retired `helpful` button would otherwise fail silently in the interim). Run tests/build from `<worktree>/desktop`.
 
+**Line numbers are approximate.** The `~line N` anchors below were written against pre-native-sessions master; PR #119 (native-sessions) has since merged, shifting several by ~5-60 lines (e.g. App.tsx's close-prompt `onConfirm` is now ~2657, not ~2599; `ResumeBrowser.tsx`'s Tags `FilterPill` is ~741, not ~705). Locate every anchor by its **symbol** (grep the quoted identifier), not the line number.
+
 ---
 
 ## File Structure
@@ -186,10 +188,15 @@ export function useSessionMeta(sessionId: string | null): SessionMetaApi {
 
   useEffect(() => {
     refetch();
-    // sessionMetaChanged cb is (sessionId, payload) on both preload + remote-shim.
-    const off = (window as any).claude.on?.sessionMetaChanged?.((sid: string) => {
-      if (sid === sessionId) refetch();
-    });
+    // Refetch on ANY session:meta-changed — deliberately NOT gated on the event's
+    // session id. For a LIVE session the broadcast carries the RESOLVED Claude id
+    // (ipc-handlers resolves via sessionIdMap before broadcasting) while this hook
+    // holds the DESKTOP session id, so an id-equality gate would silently never
+    // fire (e.g. the buddy window tagging the same live session). meta changes are
+    // rare and getMeta is one cheap IPC call, so an unconditional refetch is both
+    // correct and inexpensive. The user's own edits are already covered optimistically
+    // by setTag/setNote below.
+    const off = (window as any).claude.on?.sessionMetaChanged?.(() => refetch());
     return () => { if (typeof off === 'function') off(); };
   }, [sessionId, refetch]);
 
@@ -567,9 +574,11 @@ git commit -m "feat(tags): SessionTagsChip (fixed StatusBar element + popup)"
 Add near the top imports:
 
 ```ts
-import { getPlatform } from '../remote-shim';
+import { isAndroid } from '../platform';
 import { SessionTagsChip } from './tags/SessionTagsChip';
 ```
+
+(`isAndroid()` is the codebase's renderer platform check — a synchronous boolean from `src/renderer/platform.ts`, used across HeaderBar/InputBar/etc. Do NOT use `getPlatform` from `remote-shim`: that's an *async* `window.claude` method returning a `Promise`, so `getPlatform() !== 'android'` would always be truthy.)
 
 - [ ] **Step 2: Render the fixed element**
 
@@ -578,7 +587,7 @@ In the `StatusBar` render, immediately AFTER the permission-mode chip block (the
 ```tsx
       {/* Session tags & note — fixed control (design §"In-session surface").
           Hidden on Android (touch UI deferred); shown on desktop + remote. */}
-      {getPlatform() !== 'android' && <SessionTagsChip sessionId={sessionId ?? null} />}
+      {!isAndroid() && <SessionTagsChip sessionId={sessionId ?? null} />}
 ```
 
 - [ ] **Step 3: Add `locked` to WidgetDef + the WidgetId + a "Session" category**
@@ -762,6 +771,8 @@ Replace the `tagFiltered` block and the search block in `applyFilters`:
     return (s.tags ?? []).some((id) => (state.tagLabelById[id] ?? '').toLowerCase().includes(q));
   });
 ```
+
+> **Expected transient typecheck breakage:** `ResumeBrowser.tsx` imports `FlagName` from this file (its single source of truth) and still references `'helpful'` (`FLAG_LABEL.helpful`, `FLAG_BADGE`, `TAG_FILTER_OPTIONS`). Narrowing `FlagName` to `'priority' | 'complete'` here makes a full `npx tsc --noEmit` FAIL in `ResumeBrowser.tsx` until Task 10 fixes those references — the same staged pattern as Plan A's Task 8→12. That's why Step 4 runs only THIS file's vitest (which passes); defer the full typecheck/build to Task 10 Step 7. (`CloseSessionPrompt.tsx` declares its own local `FlagName` and is unaffected until Task 11.)
 
 - [ ] **Step 4: Run tests to verify pass**
 
@@ -1142,6 +1153,6 @@ gh pr create --repo itsdestin/youcoded --title "Custom session tags & notes" --b
 
 ## Self-review notes (author)
 
-- **Spec coverage:** shared Tag Picker with search-to-create + inline rename/recolor/archive/delete + show-archived (T6); colored chips, plain words, no glyphs (T4); note editor with 8000-char cap (T5); fixed StatusBar element with "Add tags" empty state + locked config row (T7–T8); chips/indicators AFTER the name (T10-S5); custom-tag filter + note/label search (T9–T10); close-prompt tagging (T11); reserved Priority/Complete retained, `helpful` removed (T9–T12); Android hidden on touch (T8 `getPlatform() !== 'android'`), data still syncs via Plan A.
+- **Spec coverage:** shared Tag Picker with search-to-create + inline rename/recolor/archive/delete + show-archived (T6); colored chips, plain words, no glyphs (T4); note editor with 8000-char cap (T5); fixed StatusBar element with "Add tags" empty state + locked config row (T7–T8); chips/indicators AFTER the name (T10-S5); custom-tag filter + note/label search (T9–T10); close-prompt tagging (T11); reserved Priority/Complete retained, `helpful` removed (T9–T12); Android hidden on touch (T8 `!isAndroid()`), data still syncs via Plan A.
 - **Type consistency:** consumes Plan A's `TagRecord`/`TagColor`/`TAG_COLORS`/`DEFAULT_TAG_COLOR` (`src/shared/tags.ts`), `PastSession.tags?`/`note?`, `window.claude.tags.*`, `session.setTag/setNote/getMeta`, `on.tagsChanged`. `useTagRegistry`/`useSessionMeta` APIs are referenced identically across TagPicker, SessionTagsChip, ResumeBrowser, CloseSessionPrompt.
 - **Deferred (future extensions, per spec):** dedicated "Manage tags" view; free color picker; Android tagging UI; orphaned-application cleanup after tag delete.
