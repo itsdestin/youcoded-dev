@@ -23,7 +23,7 @@ verify:
 
 # Chat reducer, transcript pipeline & terminal byte stream
 
-Chat state + the JSONL transcript watcher that feeds it + the Android byte pipeline. **Full architecture: `youcoded/docs/chat-reducer.md`; read-integrity + terminal-byte depth: staged additions to that doc.**
+Chat state + the JSONL transcript watcher that feeds it + the Android byte pipeline. **Full architecture + read-integrity/spinner-regex/terminal-byte depth: `youcoded/docs/chat-reducer.md` (see its "PITFALLS-triage additions" section).**
 
 ## Reducer state (`chat-reducer.ts`) — guard: `chat-reducer.test.ts`
 - **`toolCalls` Map is NEVER cleared** (ToolCards need old results). Use `activeTurnToolIds` (a Set) for current-turn status checks, not the full Map.

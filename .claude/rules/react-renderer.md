@@ -14,7 +14,7 @@ verify:
 
 # React Renderer (shared desktop + Android WebView)
 
-This code runs in BOTH the Electron renderer AND a bundled Android WebView. **Chrome/theme/overlay depth: `youcoded/docs/renderer-chrome.md`; overlay layer system: workspace `docs/shared-ui-architecture.md`.**
+This code runs in BOTH the Electron renderer AND a bundled Android WebView. **Chrome/theme/overlay depth: `youcoded/docs/renderer-chrome.md`; overlay layer system: `youcoded/docs/shared-ui-architecture.md`.**
 
 ## Node vs browser boundary
 - **No `process.env`, `require()`, `fs`/`path`/`os`, or direct filesystem access** — the WebView has no Node runtime. Go through `window.claude.*` (from `remote-shim.ts`); use ES `import`, browser APIs, `fetch`.
@@ -37,7 +37,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **Ch
 - **`showCaptionButtons` must include Linux, not just Windows** — the window is frameless on BOTH; gate window-chrome on "not macOS" (`!isMac && !isAndroid() && !isRemoteMode()`), NEVER `navigator.platform === 'Win32'` (excludes Linux). Chat/terminal toggle placement is platform-conditional (right on macOS, left on Win/Linux). Announcement lives in StatusBar, not HeaderBar.
 
 ## Overlays (`components/overlays/Overlay.tsx`)
-- **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode `bg-black/40`, `backdrop-blur-sm`, `shadow-xl`, `rounded-xl`, or arbitrary z-index. Pick a LAYER (L1 drawers / L2 popups / L3 destructive / L4 system), not a z-index. `SessionStrip` at `z-[9000]` is load-bearing (`.header-bar` backdrop-filter traps lower values) — don't "fix" it. Glassmorphism is var-driven (`--panels-blur`/`--panels-opacity`). See `docs/shared-ui-architecture.md`.
+- **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode `bg-black/40`, `backdrop-blur-sm`, `shadow-xl`, `rounded-xl`, or arbitrary z-index. Pick a LAYER (L1 drawers / L2 popups / L3 destructive / L4 system), not a z-index. `SessionStrip` at `z-[9000]` is load-bearing (`.header-bar` backdrop-filter traps lower values) — don't "fix" it. Glassmorphism is var-driven (`--panels-blur`/`--panels-opacity`). See `youcoded/docs/shared-ui-architecture.md`.
 
 ## Remote access state sync (`main/remote-server.ts`, `RemoteSnapshotExporter.tsx`)
 - **Remote clients hydrate via `chat:hydrate` on connect** (`replayBuffers()` → `requestChatSnapshot()` → serialized `ChatState`) — don't add a parallel replay buffer; extend `serializeChatState`/`deserializeChatState` in `state/chat-types.ts` instead. The `chat:export-snapshot` has a 2s timeout (resolves `{sessions:[]}`).

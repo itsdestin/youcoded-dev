@@ -19,7 +19,7 @@ verify:
 
 # IPC Bridge (cross-platform parity)
 
-Desktop and Android render the SAME React UI over the SAME JSON protocol. **Full architecture: workspace `docs/shared-ui-architecture.md`.** Drift is caught by `tests/ipc-channels.test.ts`.
+Desktop and Android render the SAME React UI over the SAME JSON protocol. **Full architecture: `youcoded/docs/shared-ui-architecture.md`.** Drift is caught by `tests/ipc-channels.test.ts`.
 
 ## Core parity invariants
 - **`preload.ts` and `remote-shim.ts` must expose the same SHARED `window.claude` shape.** If one has a shared API the other lacks, React crashes on that platform. Only two intentional exceptions: `window.claude.window` (Electron-only — window controls) and `window.claude.android` (Android-only).

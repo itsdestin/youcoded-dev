@@ -9,8 +9,8 @@ You are working on the YouCoded desktop app. Before making changes, orient with 
 
 ## Read first
 - `youcoded/desktop/CLAUDE.md` — component-level docs (SessionManager, TranscriptWatcher, HookRelay)
-- `docs/shared-ui-architecture.md` — cross-platform React sharing + IPC pattern
-- `docs/chat-reducer.md` — if touching state/chat-reducer.ts or ChatView
+- `youcoded/docs/shared-ui-architecture.md` — cross-platform React sharing + IPC pattern
+- `youcoded/docs/chat-reducer.md` — if touching state/chat-reducer.ts or ChatView
 
 ## Critical invariants (do not violate)
 
