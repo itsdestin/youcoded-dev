@@ -1,0 +1,29 @@
+# Workspace Map
+
+One row per subsystem: where to start, what loads when you touch it, what pins it.
+Touching a subsystem? Start at its **Entry points**. The matching **Rule** injects
+automatically the moment you edit a file under its `paths:` glob — you don't invoke it.
+Read the **Depth doc** on demand when you need the full architecture. The **Guard tests**
+are the invariants; run them (or read them as the contract) before shipping a change there.
+
+Rules live in `.claude/rules/`; depth docs are read-on-demand (`youcoded/docs/`,
+`wecoded-marketplace/docs/`, or workspace `docs/`); guards are real test files, probes, or CI.
+`/audit` verifies every path in this table mechanically — update a row when its entry points move.
+
+| Subsystem | Entry points | Rule | Depth doc | Guard tests |
+|---|---|---|---|---|
+| Chat & transcript | `youcoded/desktop/src/renderer/state/chat-reducer.ts`<br>`youcoded/desktop/src/main/transcript-watcher.ts`<br>`youcoded/desktop/src/renderer/state/attention-classifier.ts` | chat-reducer | `youcoded/docs/chat-reducer.md` | `youcoded/desktop/tests/chat-reducer.test.ts`<br>`youcoded/desktop/tests/transcript-watcher.test.ts` |
+| IPC bridge (parity) | `youcoded/desktop/src/main/preload.ts`<br>`youcoded/desktop/src/renderer/remote-shim.ts`<br>`youcoded/app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt` | ipc-bridge | `youcoded/docs/shared-ui-architecture.md` | `youcoded/desktop/tests/ipc-channels.test.ts` |
+| React renderer / chrome | `youcoded/desktop/src/renderer/App.tsx`<br>`youcoded/desktop/src/renderer/components/HeaderBar.tsx`<br>`youcoded/desktop/src/renderer/styles/globals.css` | react-renderer | `youcoded/docs/renderer-chrome.md` | manual (visual regression) |
+| Artifact viewer | `youcoded/desktop/src/main/artifacts/read-binary-access.ts`<br>`youcoded/desktop/src/main/artifacts/visible-artifacts.ts`<br>`youcoded/desktop/src/shared/artifacts/canonicalize.ts` | artifacts | `youcoded/docs/artifacts.md` | `youcoded/desktop/tests/artifacts/read-binary-access.test.ts`<br>`youcoded/desktop/tests/artifacts/visible-artifacts.test.ts` |
+| PTY I/O & keyboard | `youcoded/desktop/src/main/pty-worker.js`<br>`youcoded/desktop/src/renderer/state/pty-input-gate.ts`<br>`youcoded/desktop/src/renderer/components/TerminalView.tsx` | pty-io | `youcoded/docs/pty-io.md` | `youcoded/desktop/test-conpty/test-worker-submit.mjs`<br>`youcoded/desktop/test-conpty/cc-snapshot.mjs` |
+| Sync spaces & GitHub | `youcoded/desktop/src/main/sync-spaces/engine.ts`<br>`youcoded/desktop/src/main/sync-spaces/git-transport.ts`<br>`youcoded/desktop/src/main/sync-hub-socket.ts` | sync-spaces | `youcoded/docs/sync-spaces.md` | `youcoded/desktop/tests/sync-transport-contract.ts`<br>`youcoded/desktop/tests/sync-spaces-git-transport.test.ts` |
+| Conversation store | `youcoded/desktop/src/main/conversations/store-core.ts`<br>`youcoded/desktop/src/main/conversations/transcript-mirror.ts`<br>`youcoded/desktop/src/main/session-browser.ts` | conversations | `youcoded/docs/conversations.md` | `youcoded/desktop/tests/conversation-store-core.test.ts`<br>`youcoded/desktop/tests/slug-path-resolution.test.ts` |
+| Native runtime (harness) | `youcoded/desktop/src/main/harness/harness-session.ts`<br>`youcoded/desktop/src/main/harness/native-session-host.ts`<br>`youcoded/desktop/src/main/providers/provider-registry.ts` | native-runtime | `youcoded/docs/native-runtime.md` | `youcoded/desktop/tests/harness-session.test.ts`<br>`youcoded/desktop/tests/native-send.test.ts` |
+| Local engine & models | `youcoded/desktop/src/main/engine/engine-supervisor.ts`<br>`youcoded/desktop/src/main/engine/engine-pin.ts`<br>`youcoded/desktop/src/main/models/model-downloader.ts` | engine-local-models | `youcoded/docs/engine-dependencies.md` | `youcoded/desktop/tests/engine-supervisor.test.ts`<br>`youcoded/desktop/test-engine/probe-models.mjs` |
+| Android runtime | `youcoded/app/src/main/kotlin/com/youcoded/app/runtime/Bootstrap.kt`<br>`youcoded/app/src/main/kotlin/com/youcoded/app/runtime/PtyBridge.kt`<br>`youcoded/app/src/main/assets/claude-wrapper.js` | android-runtime | `youcoded/docs/android-runtime.md` | `youcoded/.github/workflows/android-ci.yml` (assembleReleaseTest) |
+| Prerequisite installer | `youcoded/desktop/src/main/prerequisite-installer.ts`<br>`youcoded/desktop/src/main/first-run.ts` | prereq-installer | `youcoded/docs/cc-dependencies.md` | manual (clean Windows box) |
+| Registries & plugins | `youcoded/desktop/src/main/claude-code-registry.ts`<br>`youcoded/desktop/src/main/local-theme-synthesizer.ts`<br>`youcoded/desktop/src/shared/bundled-plugins.ts` | registries | `docs/registries.md` | `youcoded/desktop/tests/local-theme-synthesizer.test.ts` |
+| Marketplace worker | `wecoded-marketplace/worker/src/lib/analytics.ts`<br>`wecoded-marketplace/worker/src/lib/admin-filter.ts` | worker-backend | `wecoded-marketplace/docs/worker-backend.md` | `wecoded-marketplace/worker/test/analytics-lib.test.ts`<br>`wecoded-marketplace/worker/test/admin-filter.test.ts` |
+| youcoded-core plugin | `youcoded-core/hooks/hooks-manifest.json`<br>`youcoded-core/plugin.json` | youcoded-toolkit | `docs/toolkit-structure.md` | manual (hook runtime) |
+| Build & release | `youcoded/app/build.gradle.kts`<br>`youcoded/scripts/build-web-ui.sh` | — | `docs/build-and-release.md` | `youcoded/.github/workflows/desktop-release.yml` |
