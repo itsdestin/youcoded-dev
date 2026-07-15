@@ -71,6 +71,8 @@ cd <repo> && git fetch origin && git pull origin master
 
 **Annotate non-trivial code edits with a WHY comment.** Destin is a non-developer and relies on comments to understand what code does and why it was changed. Example: `// Fix: prevent stale tool IDs from coloring the status dot`. This is critical for long-term maintainability.
 
+**Never write misleading error messages.** Do NOT guess at a cause you haven't verified. Every user-facing error must be either (a) *specific and accurate* — surface the real detail (subprocess stderr, caught exception, failing path/port/arg); never `catch` and replace the real error with a hardcoded guess — or (b) *general but non-committal* ("Error: Unable to run local models.") paired with two actions: **Report bug / submit PR** and **Diagnose with Claude** (the Settings → Development flow). See `docs/error-message-standards.md`. Full audit/replacement of existing messages is a v1.3.1 followup.
+
 **"Merge" means merge AND push.** Don't stop at a local merge.
 
 **Never tell Destin to run `wrangler deploy` manually.** The Cloudflare Worker (`wecoded-marketplace/worker/`) auto-deploys on push to master via `.github/workflows/worker-deploy.yml` — CI runs tests, applies D1 migrations, deploys, and pushes secrets. To ship a Worker change, the workflow is: open a PR → merge to master → CI handles the rest. Same for `[vars]` flips like `CUTOVER_TIMESTAMP` — edit `wrangler.toml`, commit, merge. See `docs/build-and-release.md → Worker (wecoded-marketplace)`.
