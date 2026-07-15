@@ -2,6 +2,8 @@
 
 Workspace guidance for Claude Code. Subsystem details live in `docs/` and `.claude/rules/` — loaded only when relevant.
 
+Navigation: `docs/MAP.md` maps every subsystem to its entry points, rule, lazy doc, and guard tests.
+
 ## Workspace Setup
 
 **On first session**, run `bash setup.sh` from the project root to clone all repos. On subsequent sessions, run it again to pull the latest from each repo's default branch. Do this before any other work.
@@ -9,7 +11,7 @@ Workspace guidance for Claude Code. Subsystem details live in `docs/` and `.clau
 **Sub-repo code changes go to the relevant sub-repo** (e.g., `youcoded/`, `youcoded-core/`, `wecoded-themes/`, `wecoded-marketplace/`) — open PRs there, push there. Do NOT mix sub-repo code into the workspace repo (`youcoded-dev`).
 
 **Workspace-level artifacts DO get committed + pushed to `youcoded-dev`.** That includes:
-- Cross-cutting docs that span multiple sub-repos: `docs/PITFALLS.md`, `docs/android-runtime.md`, `docs/chat-reducer.md`, `docs/shared-ui-architecture.md`, `docs/registries.md`, `docs/build-and-release.md`, `docs/knowledge-debt.md`, etc.
+- Cross-cutting docs that span multiple sub-repos: `docs/PITFALLS.md`, `docs/android-runtime.md`, `docs/chat-reducer.md`, `docs/shared-ui-architecture.md`, `docs/registries.md`, `docs/build-and-release.md`, etc.
 - This `CLAUDE.md` and any rule files under `.claude/rules/`.
 - Specs / plans / investigations under `docs/superpowers/` (the artifacts produced by brainstorming, writing-plans, and similar skills before any sub-repo code changes).
 - Dev tooling under `scripts/` — `run-dev.sh`, `run-sandbox.sh`, `cdp-eval.mjs`, etc.
@@ -27,6 +29,8 @@ YouCoded is an open-source cross-platform AI assistant app built entirely withou
 - **Accessibility** — designed for non-technical users, not just developers. You can build things within this app using just conversation
 
 **The app is the product.** Everything else — themes, skill marketplace, bundled plugins — supports the app. Documentation and code should reflect that hierarchy.
+
+**One product.** The five sub-repos are components of a single consolidated product. Planning, versioning, and roadmapping happen at the workspace level (`ROADMAP.md`); sub-repo docs exist only for knowledge physically coupled to that repo's code.
 
 ## Workspace Layout
 
@@ -137,8 +141,8 @@ This workspace's documentation is self-verifying. Run `/audit` to detect drift b
 
 - Run before any release (prevents shipping with stale docs)
 - Run after major refactors touching IPC, reducer, or runtime
-- Unresolved findings persist in `docs/knowledge-debt.md`
-- Session-start hook surfaces a reminder if `docs/AUDIT.md` is >60 days old or if `knowledge-debt.md` has open entries
+- Unresolved findings live in the latest `docs/audits/` report's `## Residue` section (the only surviving drift ledger — a snapshot, not an accumulator)
+- Session-start hook surfaces a reminder if the latest `docs/audits/` report is >60 days old or its `residue:` frontmatter count is non-zero
 
 If you notice Claude acting on outdated information, or you mention a file/function Claude doesn't recognize, that's the signal to run `/audit`.
 
@@ -153,14 +157,33 @@ When compacting context (/compact), always preserve:
 
 Do NOT preserve: full file contents already read, intermediate debugging output, or resolved sub-tasks.
 
-## Subsystem References
+## Where Knowledge Lives
 
-Deep context for specific subsystems is loaded automatically via `.claude/rules/` when you touch relevant files. For direct reference:
+New knowledge goes to, in descending preference: **a pinning test > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. Full taxonomy: `docs/superpowers/specs/2026-07-15-workspace-knowledge-management-design.md`.
 
-@docs/shared-ui-architecture.md
-@docs/chat-reducer.md
-@docs/android-runtime.md
-@docs/toolkit-structure.md
-@docs/registries.md
-@docs/build-and-release.md
-@docs/PITFALLS.md
+| Kind of knowledge | Home |
+|---|---|
+| Invariant / lesson | Pinning test → WHY comment → path-scoped rule → the rule's lazy doc. Slim `docs/PITFALLS.md` holds only cross-repo items |
+| Planned feature / bug / idea | `ROADMAP.md` — capture in the SAME session Destin mentions it (typed, tagged, dated; dedup first) |
+| Doc contradicting code | **Fix on sight** (verify against code; cite verification in the commit). Unfixable this session → ROADMAP `bug` tagged `#docs`. There is no drift ledger |
+| CC-version watch item | `youcoded/docs/cc-dependencies.md` |
+| Completed/superseded plans, specs, handoffs | `docs/archive/` (in-flight ones live in `docs/active/`) |
+| Destin-specific preferences / session feedback | Auto-memory — LAST resort; product planning never lives in memory |
+
+**Document lifecycle:** new specs/plans/handoffs save to `docs/active/{specs,plans,handoffs,investigations,prototypes}/` with `status:` frontmatter (`draft | active | shipped | superseded`). When a feature merges, its docs move to `docs/archive/` and the ROADMAP item flips to `[x]` in the same session — "Merge means merge AND push" extends to "…AND archive the docs AND flip the roadmap item." Searches for live docs exclude `docs/archive/` by default.
+
+## Subsystem References (read on demand — NOT auto-loaded)
+
+Path-scoped rules in `.claude/rules/` inject automatically when you touch matching files. Start any non-trivial task at `docs/MAP.md` (subsystem → entry points → rule → doc → guard tests). Direct pointers:
+
+| Doc | Read when… |
+|---|---|
+| `docs/PITFALLS.md` | before any non-trivial change — cross-repo invariants |
+| `docs/chat-reducer.md` | touching chat state, transcript events, attention |
+| `docs/android-runtime.md` | touching the Android/Termux runtime |
+| `docs/shared-ui-architecture.md` | adding IPC or cross-platform features |
+| `docs/registries.md` | touching marketplace/themes registries |
+| `docs/build-and-release.md` | building, releasing, version bumping |
+| `docs/toolkit-structure.md` | touching youcoded-core (deprecated plugin) |
+| `docs/error-message-standards.md` | writing any user-facing error |
+| `docs/local-dev.md` | running the dev instance |
