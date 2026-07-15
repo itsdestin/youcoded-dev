@@ -10,7 +10,7 @@ commit/PR in the detail line) — shipped items collect in ## Shipped.
 ## v1.3 — sync release
 
 - [ ] Ship v1.3: all master content + desktop-only sync `feature` (added 2026-07-15)
-  Gated on sync being entirely complete (incl. Phase 2 conversation sync). Status: docs/active/handoffs/2026-07-10-sync-completion-handoff.md.
+  Gated on sync being entirely complete (incl. Phase 2 conversation sync). Plan 2c (legacy demolition) + the Backup & Sync popup redesign MERGED 2026-07-15 (youcoded PR #126, merge `0a91850e`); Task 10 (dead legacy backup repo `destin-claude-config`) deleted. Remaining gates: two-device dogfood + Connect-GitHub live sign-in, then release. Status: docs/active/handoffs/2026-07-10-sync-completion-handoff.md.
 
 ## v1.3.1 — Android + polish `v1.3.1`
 
@@ -26,6 +26,8 @@ commit/PR in the detail line) — shipped items collect in ## Shipped.
 
 ## Features
 
+- [ ] Backup & Sync popup redesign — follow-up tweaks `feature` `#sync` (added 2026-07-15)
+  Redesign SHIPPED in youcoded PR #126 (unified status box with dot·title·sub·toggle derived across off/setting-up/waiting-on-GitHub/error/syncing/synced; Devices·Projects·Conversations count tabs; Additional-backups box with a permanent master toggle + per-backend green/gray/red status lights + cog menu). Deferred tweaks: (1) a real persisted "additional backups enabled" flag — the master toggle currently DERIVES on/off from `backends.some(syncEnabled)` and maps to pause-all/resume-all as a non-destructive proxy; (2) prefetch/cache the Conversations count (session.browse() runs on popup open, so the pill reads 0 for a beat); (3) decide the "Waiting on GitHub" toggle checked-state (currently bound to real `enabled`, reads OFF); (4) surface an error line in the not-enabled + error + GitHub-authed case (currently collapses to plain "off").
 - [ ] StatusBar usage chips not fed for native sessions `feature` `#native-runtime` (added 2026-07-13)
   Native turn `usage` reaches the per-turn metadata strip but NOT the StatusBar chips (context/tokens/speed), which buildStatusData() builds from CC-hook files native sessions never write. Add a renderer→main IPC pushing the reducer's turn.usage into main (mirror remote:attention-changed → lastAttentionBySession) and fold into status:data. Natural to land WITH Phase 2 native runtime. youcoded PR #119. (from knowledge-debt)
 - [ ] Onboarding.tsx first-run screen `feature` (added 2026-04-12)
