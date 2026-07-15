@@ -61,6 +61,8 @@ commit/PR in the detail line) — shipped items collect in ## Shipped.
 
 ## Someday / ideas
 
+- [ ] Visual-regression harness for renderer chrome invariants (framed-shell, chrome-glass, overlay layers) `idea` `#tests` (added 2026-07-15)
+  The renderer visual/chrome invariants in `.claude/rules/react-renderer.md` (single-backdrop-filter chrome-glass, framed-shell insets, overlay z-layers, header space-aware layout) are guarded only by manual inspection — they aren't unit-testable. A screenshot/DOM visual-regression harness (Playwright against the dev renderer) would give them a real guard. (from Task 15 pinning-test pass)
 - [ ] Deferred perf + simplification opportunities from the 2026-07-10 master review `idea` (added 2026-07-15)
   Net-improvement work the review surfaced but deliberately didn't ship: App-root useChatStateMap subscription refactor (biggest re-render win), hidden-xterm WebGL detach, sync-spaces 120s idle-poll backoff, and the big-file decompositions (ipc-handlers.ts ~2,674 lines / SessionService.kt ~2,700 / App.tsx ~2,500 / SettingsPanel.tsx ~2,489) plus small cleanups (buildStatusData dedup, FOLDERS_LIST canonicalize, ConfigForm/ProjectManager dead-code pruning). Full catalog: docs/active/handoffs/2026-07-10-review-followups.md. (from master-review handoff)
 - [ ] Project View Roadmap tab — render any project's ROADMAP.md, same discovery pattern as context files `idea` `#project-view` (added 2026-07-15)

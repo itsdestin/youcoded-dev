@@ -11,6 +11,7 @@ verify:
   - path: youcoded/desktop/src/main/prerequisite-installer.ts
     contains: "detectWinget"
   - path: youcoded/desktop/src/main/first-run.ts
+  - test: youcoded/desktop/tests/prerequisite-installer-pins.test.ts
 ---
 
 # Prerequisite installer (desktop first-run)
@@ -23,4 +24,4 @@ The Windows-11 clean-machine install path. A real-user `spawn EINVAL` motivated 
 - **`getRegPath()` returns a QUOTED path; `getPowerShellPath()` returns UNQUOTED — do not unify.** `getRegPath` is interpolated into an `execSync` template routed through `cmd.exe` (parses the quotes). `getPowerShellPath` is passed to `runCommand → execFile(..., {shell:false})`, which hands the literal string to `CreateProcess` — embedded quotes become part of the filename → `ENOENT`. Rule: a path used as the `file` arg of `execFile`/`spawn` with `shell:false` must be UNQUOTED. (Verified 2026-05-21.)
 - **`detectWinget()` is the upfront guard for winget-dependent installs — wire new callsites through it.** `winget.exe` is an MSIX alias, not a guaranteed Win32 binary (absent on Server, older LTSC, sandboxes, policy-disabled). Bare invocation → cryptic `spawn ENOENT`; `detectWinget()` probes `winget --version` and returns an actionable message. Current callers: `installNode`, `installGit`, `RemoteConfig.installTailscale` (`remote-config.ts`), `installRclone` (`sync-setup-handlers.ts`). Any new winget flow runs it first.
 
-**Guard: none — candidate.** These are Windows-machine-state footguns with no unit test; verify by running the first-run flow on a clean box.
+**Guard:** `youcoded/desktop/tests/prerequisite-installer-pins.test.ts` pins the two decision-level invariants — the `runCommand` shell-flag decision (via the extracted pure `shouldUseShell(cmd, platform)`) and the `getRegPath` quoted / `getPowerShellPath` unquoted asymmetry (win32-guarded, since they read System32). The remaining machine-state footguns (winget/PATH-propagation/native-installer behavior) have no unit test — verify those by running the first-run flow on a clean Windows box.
