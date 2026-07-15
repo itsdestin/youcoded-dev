@@ -2,34 +2,46 @@
 paths:
   - "wecoded-themes/**"
   - "wecoded-marketplace/**"
-last_verified: 2026-04-24
+  - "youcoded/desktop/src/main/claude-code-registry.ts"
+  - "youcoded/desktop/src/main/local-theme-synthesizer.ts"
+  - "youcoded/desktop/src/main/theme-marketplace-provider.ts"
+  - "youcoded/desktop/src/main/announcement-service.ts"
+  - "youcoded/desktop/src/shared/announcement.ts"
+  - "youcoded/desktop/src/shared/bundled-plugins.ts"
+last_verified: 2026-07-15
+verify:
+  - path: youcoded/desktop/src/main/claude-code-registry.ts
+  - path: youcoded/desktop/src/main/local-theme-synthesizer.ts
+  - path: youcoded/desktop/src/shared/bundled-plugins.ts
+  - path: youcoded/desktop/src/main/announcement-service.ts
+  - path: youcoded/desktop/src/shared/announcement.ts
+    contains: "isExpired"
+  - test: youcoded/desktop/tests/local-theme-synthesizer.test.ts
 ---
 
-# Registries Rules
+# Registries: themes, marketplace, plugin install, announcements
 
-You are editing either the theme registry or the skill marketplace. Read `docs/registries.md` for full context.
+Both registries are GitHub repos fetched at runtime via `raw.githubusercontent.com` (no scheduled CI rebuild). **Registry-repo depth: workspace `docs/registries.md`. MCP-authoring depth: `wecoded-marketplace/docs/mcp-authoring.md`.**
 
-## Theme Registry (`wecoded-themes`)
+## Theme & skill registries
+- **`wecoded-themes/registry/theme-registry.json` is auto-generated on CI merge** — don't hand-edit. Each theme: `themes/{slug}/manifest.json` + assets. **15 required CSS tokens** (canvas, panel, inset, well, accent, on-accent, fg, fg-2, fg-dim, fg-muted, fg-faint, edge, edge-dim, scrollbar-thumb, scrollbar-hover). CSS safety (CI-enforced): NO `@import`, external URLs, `expression()`, `javascript:`. Manifest >10MB or duplicate slug fails CI.
+- **`wecoded-marketplace`:** `index.json` (combined) + `marketplace.json` (YouCoded-only); synced from upstream via `scripts/sync.js`. Entries with `sourceMarketplace: "youcoded"` are never overwritten. App caches 24h at `~/.claude/wecoded-marketplace-cache/`.
 
-- `registry/theme-registry.json` is **auto-generated** on CI merge. Don't hand-edit it.
-- Each theme lives under `themes/{slug}/` with a `manifest.json` + assets.
-- **15 required CSS tokens**: canvas, panel, inset, well, accent, on-accent, fg, fg-2, fg-dim, fg-muted, fg-faint, edge, edge-dim, scrollbar-thumb, scrollbar-hover
-- **CSS safety** (CI enforces): NO `@import`, NO external URLs, NO `expression()`, NO `javascript:` URIs
-- `previewTokens` in registry power CSS-based card previews (no image load)
-- CI runs Playwright to generate preview PNGs on merge
+## Theme marketplace entries (`local-theme-synthesizer.ts`) — guard: `local-theme-synthesizer.test.ts`
+- **`isLocal` is distinct from `installed`.** `installed` = a `manifest.json` exists at `~/.claude/wecoded-themes/<slug>/`; `isLocal` = synthesized because no registry entry exists (user-built, unpublished). Code branching on "deletable forever vs reinstallable" reads `isLocal`, NOT `installed`.
+- **Slug collisions: marketplace entry wins** (`synthesizeLocalThemeEntries` skips local records whose slug is in the marketplace list; merge order `[...marketplace, ...synthesized]` locked by the test). **Synthesizer is PURE** (no `fs`/`path`/`os`); all I/O is in `theme-marketplace-provider.ts::listThemes()`. Android does NOT synthesize local themes (parity gap — Library tab shows registry only).
 
-## Skill Marketplace (`wecoded-marketplace`)
+## Plugin install & CC registries (`claude-code-registry.ts`)
+- **Claude Code v2.1+ does NOT filesystem-scan `~/.claude/plugins/`** — its loader iterates `enabledPlugins` in `settings.json`. Dropping files in without writing the registries leaves the plugin invisible.
+- **FOUR registries must be written atomically** (`registerPluginInstall()`/`unregisterPluginInstall()` — never by hand): (1) `settings.json` → `enabledPlugins["id@youcoded"]:true`, (2) `~/.claude/plugins/installed_plugins.json` (v2 entry, absolute `installPath`), (3) `~/.claude/plugins/known_marketplaces.json`, (4) `~/.claude/plugins/marketplaces/youcoded/.claude-plugin/marketplace.json`.
+- **Install location is `~/.claude/plugins/marketplaces/youcoded/plugins/<id>/`** (under the plugin cache dir). Two exceptions OUTSIDE it: bundled `youcoded-core` at `~/.claude/plugins/youcoded-core/`, and legacy top-level installs. **`listInstalledPluginDirs()` must scan BOTH roots** (top-level children for the youcoded-core clone AND `YOUCODED_PLUGINS_DIR`) — scanning one misses half.
+- **`BUNDLED_PLUGIN_IDS` is two-way duplicated** — `desktop/src/shared/bundled-plugins.ts` + Kotlin `BundledPlugins.kt` must stay in sync. Intentionally hardcoded (offline-first + no remote force-install authority); changing it requires an app release.
 
-- Registry split into `/skills/` and `/themes/` subdirectories (recent restructure).
-- `index.json` holds combined entries; `marketplace.json` holds YouCoded-only entries
-- Synced from upstream Anthropic marketplace via `scripts/sync.js` — handles diffing, version tracking, deprecation
-- Entries with `sourceMarketplace: "youcoded"` are **never overwritten** by upstream sync. **Known debt:** 14+ null-component entries remain in `index.json` from the pre-flatten `youcoded-core` layers (`sync`, `toolkit`, `health`, `update`, `claudes-inbox`, `encyclopedia-*`, `fork-file`, `google-drive`, `journaling-assistant`, `remote-setup`, `setup-wizard`). They're orphaned — no source, no components — and should be pruned in a future cleanup pass when `youcoded-core` is fully retired.
-- CI: `.github/workflows/validate-plugin-pr.yml` validates community plugin PRs
-- App caches the fetched registry for 24 hours at `~/.claude/wecoded-marketplace-cache/`
+## MCP plugin authoring (marketplace plugins) — **read `wecoded-marketplace/docs/mcp-authoring.md` before shipping a stdio MCP server**
+- **`bash` is NOT on the Windows system PATH** — don't write `command:"bash"` in `mcp-manifest.json`; use a real on-PATH binary (`node`/`uvx`/`python`) or bash's 8.3 short name (`C:\PROGRA~1\Git\usr\bin\bash.exe` — spaces break the spawn). MSYS `/c/...` paths work only as ARGS, never `command`.
+- **`${PACKAGE_DIR}` is expanded by YouCoded's `reconcileMcp()`, NOT Claude Code** — non-YouCoded CLI users get a literal placeholder. **Pin `mcp>=1.0.0,<2.0.0`** (0.x→1.x is dict→Pydantic breaking). **`claude mcp list` is a liar** (verifies only `initialize`) — verify with in-session `/mcp` (full `tools/list`). Test the handshake end-to-end with a Node spawn-probe before submission. Ten more footguns (venv activate, `PYTHONIOENCODING`, pywinrt, `rsync`, system-Python gating) are in the staging doc.
 
-## Common gotchas
-
-- No CI rebuilds either registry on a schedule. Rebuild happens on merge (themes) or via manual `node scripts/sync.js` (marketplace).
-- Submitting a theme without all 15 tokens fails CI.
-- Submitting a theme manifest larger than 10MB fails CI.
-- Slug uniqueness is validated — a PR with a duplicate slug fails CI.
+## Announcements (`announcement-service.ts`, `shared/announcement.ts`)
+- **Source of truth is `youcoded/announcements.txt`** (app repo), NOT youcoded-core. `/announce` writes there; public URL `raw.githubusercontent.com/itsdestin/youcoded/master/announcements.txt`.
+- **Single fetcher per platform** (desktop `announcement-service.ts` 1h; Android `AnnouncementService.kt` 1h) → each writes `~/.claude/.announcement-cache.json` in its own home. Never reintroduce a parallel fetcher to the same file.
+- **Two expiry filters, both required** — fetch-time (parser drops past-date lines) + render-time (`isExpired()` in `StatusBar.tsx`). **Clear propagation is an explicit null-write** — empty/all-expired remote → write `{message:null, fetched_at}`, don't skip the write (else clears linger a full interval). Cache shape: `{message:string|null, fetched_at, expires?}`.
