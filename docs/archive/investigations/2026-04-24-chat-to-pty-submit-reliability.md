@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Chat → PTY Submit Reliability — Investigation
 
 **Date:** 2026-04-24

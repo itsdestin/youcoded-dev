@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Cross-Device Conversation Sync — Two Bugs From The Two-Device Dogfood
 
 > **Status:** Investigation complete — **BOTH BUGS FIXED as of Plan 2b (PR open on `feat/sync-leases`, 2026-07-14).**

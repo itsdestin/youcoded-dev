@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Research — gws Slides Command Coverage (Docs-Only)
 
 **Date:** 2026-04-16

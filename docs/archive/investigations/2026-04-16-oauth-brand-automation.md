@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Research — gcloud External-Consent Automation (Docs-Only)
 
 **Date:** 2026-04-16

@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Coordination Memo: Cross-Device Sync × Accounts/Friendship Platform
 
 **Date:** 2026-07-03

@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # VirtualBox + Hyper-V conflict on Windows 11 Home (test VM provisioning)
 
 **Date:** 2026-04-29

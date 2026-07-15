@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Harness Design Ideas for the YouCoded Native Harness
 
 **Date:** 2026-07-10

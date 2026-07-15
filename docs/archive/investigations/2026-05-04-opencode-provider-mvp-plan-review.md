@@ -1,3 +1,7 @@
+---
+status: superseded
+---
+
 # Plan Review: `2026-05-04-opencode-provider-mvp.md`
 
 **Date:** 2026-05-04

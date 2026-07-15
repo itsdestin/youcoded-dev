@@ -1,3 +1,7 @@
+---
+status: superseded
+---
+
 # Session Summary — Agent Harness Landscape & YouCoded Direction
 
 **Date:** 2026-05-21

@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Research — 7-day Refresh-Token Expiry (Documentation-Only)
 
 **Date:** 2026-04-16

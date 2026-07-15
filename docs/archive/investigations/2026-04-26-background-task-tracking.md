@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # Background Task Tracking — Investigation
 
 **Date:** 2026-04-26

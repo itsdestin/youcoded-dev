@@ -1,3 +1,7 @@
+---
+status: shipped
+---
+
 # GitHub Auth Consolidation — Session Status
 
 > **SUPERSEDED (2026-07-03)** by `docs/superpowers/specs/2026-07-03-youcoded-accounts-friendship-consolidated-design.md`. The games slice this session spec'd is Phase 0 of that consolidated design (implemented on `feat/games-marketplace-identity`); the deferred gh-CLI items are recorded there as out-of-scope follow-ups. Kept for historical context only.

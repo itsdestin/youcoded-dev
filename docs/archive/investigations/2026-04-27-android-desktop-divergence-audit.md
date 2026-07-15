@@ -1,7 +1,7 @@
 ---
 title: Android-Desktop Divergence Audit
 date: 2026-04-27
-status: investigation
+status: shipped
 ---
 
 # Executive Summary
