@@ -82,11 +82,16 @@ Triage all ~381 entries into exactly one of:
 
 **Entry hygiene going forward:** every pitfall entry must name its **guard** — the test that pins it, or the mechanical check `/audit` runs. An unguarded invariant is a standing request for a pinning test. New-entry template: *invariant (1–2 sentences) · why (1 sentence or a link) · guard*.
 
-## `/audit` rebuild (manifest-driven)
+## `/audit` rebuild (manifest-driven, fix-executing, diff-scoped)
+
+`/audit` is a maintenance *process*, not a report generator. It fixes what it finds and leaves the workspace healthier than it found it. Dumping an unactioned to-do list is a failure mode, not an output.
 
 - **Claims manifest:** each doc/rule claim gets a machine-checkable anchor — file exists, symbol/regex present at a path, named test exists and passes. A script verifies anchors mechanically; agents handle only the residue of genuinely semantic claims.
+- **Diff-scoped by default:** each audit report records the per-repo HEAD SHAs it verified against in its frontmatter. The next run diffs `lastAuditedSHA..HEAD` per repo and re-verifies only claims whose anchor paths intersect the diff. A quiet week audits in minutes; a heavy week audits what changed. `/audit full` remains for occasional (quarterly-ish) full re-verification, since diff-scoping can't catch claims that were wrong from the start or drift in unanchored prose.
+- **Fix, don't report:** findings are worked through in the same run — doc/rule/CLAUDE.md corrections applied inline and committed as they go; larger fixes (new pinning tests, rule restructures) via subagent-driven-development with verification. Sub-repo code fixes follow normal working rules (worktree, tests, PR) — the audit gets no special bypass. The dated report (`docs/audits/YYYY-MM-DD.md`) is an audit trail: a changelog of applied fixes plus a residue of items needing a human decision (product-behavior questions, deletions of user-created content). The residue should be near-empty on a healthy run; anything left in it is the only surviving drift ledger.
+- **Roadmap verification:** every open `[ ]` ROADMAP.md item is checked against code/commits since its added date; already-shipped items are flipped to `[x]` with the shipping commit noted. Stale `in-progress` markers get the same treatment.
+- **Workspace gardening (meta-pass):** measure the eager context load (CLAUDE.md + `paths: "**"` rules) against a stated budget (≤ ~10k tokens) and trim regressions; detect subsystems that gained code but lack a path-scoped rule; sweep merged/superseded plans, specs, and handoffs that weren't archived; verify status frontmatter presence. This is the enforcement mechanism that keeps the Phase 1–2 cleanup from re-rotting.
 - **Scope derivation:** subsystem list comes from `.claude/rules/*` `paths:` frontmatter, not a hardcoded enumeration — new subsystems are covered the day their rule lands.
-- **Reports are dated files** (`docs/audits/YYYY-MM-DD.md`), not one overwritten AUDIT.md. Open findings in the latest report are the drift ledger; applying a finding edits the report.
 - The audit skill's own claims (what it tells agents to expect) must be regenerated from current docs each rebuild — the April failure mode was the audit asserting stale expectations as ground truth.
 
 ## Archive & lifecycle conventions
@@ -120,7 +125,7 @@ Triage all ~381 entries into exactly one of:
 
 1. **Phase 1 — mechanical wins:** de-`@import` CLAUDE.md; create ROADMAP.md (seeded from knowledge-debt triage + known deferred work + the Project View Roadmap tab as its first `idea`); delete knowledge-debt.md + GEMINI.md; archive sweep with status frontmatter; INDEX.md; hook update.
 2. **Phase 2 — PITFALLS triage** (judgment-heavy, reviewed): the 5-way triage above; expand `.claude/rules/`; add pinning tests where high-value invariants are unguarded.
-3. **Phase 3 — `/audit` rebuild:** claims manifest + script + dated reports; retire the old command doc.
+3. **Phase 3 — `/audit` rebuild:** claims manifest + anchor-check script; diff-scoped incremental mode with per-repo SHA tracking; fix-executing flow (inline + subagent-driven-development); roadmap verification; workspace-gardening meta-pass; dated audit-trail reports; retire the old command doc.
 4. **Phase 4 — lifecycle enforcement:** status frontmatter required on new plans/specs (writing-plans/brainstorming conventions note); periodic archive sweep is then trivial.
 
 ## Out of scope (deliberately)
