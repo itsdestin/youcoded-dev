@@ -1,12 +1,17 @@
 ---
 paths:
   - "youcoded-core/**"
-last_verified: 2026-04-23
+last_verified: 2026-07-15
+verify:
+  - path: youcoded-core/plugin.json
+  - path: youcoded-core/hooks/hooks-manifest.json
+  - path: youcoded-core/hooks/write-guard.sh
+  - path: youcoded-core/hooks/worktree-guard.sh
 ---
 
 # youcoded-core Plugin Rules
 
-You are editing the `youcoded-core` Claude Code plugin. Read `docs/toolkit-structure.md` for full context.
+You are editing the `youcoded-core` Claude Code plugin — a BUNDLED first-party plugin (alongside `wecoded-themes-plugin` + `wecoded-marketplace-publisher`), NOT a separate toolkit layer. Read workspace `docs/toolkit-structure.md` for full context.
 
 ## Status
 
