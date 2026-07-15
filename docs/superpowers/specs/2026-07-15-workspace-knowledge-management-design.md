@@ -90,22 +90,31 @@ Triage all ~381 entries into exactly one of:
 - **Diff-scoped by default:** each audit report records the per-repo HEAD SHAs it verified against in its frontmatter. The next run diffs `lastAuditedSHA..HEAD` per repo and re-verifies only claims whose anchor paths intersect the diff. A quiet week audits in minutes; a heavy week audits what changed. `/audit full` remains for occasional (quarterly-ish) full re-verification, since diff-scoping can't catch claims that were wrong from the start or drift in unanchored prose.
 - **Fix, don't report:** findings are worked through in the same run — doc/rule/CLAUDE.md corrections applied inline and committed as they go; larger fixes (new pinning tests, rule restructures) via subagent-driven-development with verification. Sub-repo code fixes follow normal working rules (worktree, tests, PR) — the audit gets no special bypass. The dated report (`docs/audits/YYYY-MM-DD.md`) is an audit trail: a changelog of applied fixes plus a residue of items needing a human decision (product-behavior questions, deletions of user-created content). The residue should be near-empty on a healthy run; anything left in it is the only surviving drift ledger.
 - **Roadmap verification:** every open `[ ]` ROADMAP.md item is checked against code/commits since its added date; already-shipped items are flipped to `[x]` with the shipping commit noted. Stale `in-progress` markers get the same treatment.
-- **Workspace gardening (meta-pass):** measure the eager context load (CLAUDE.md + `paths: "**"` rules) against a stated budget (≤ ~10k tokens) and trim regressions; detect subsystems that gained code but lack a path-scoped rule; sweep merged/superseded plans, specs, and handoffs that weren't archived; verify status frontmatter presence. This is the enforcement mechanism that keeps the Phase 1–2 cleanup from re-rotting.
+- **Workspace gardening (meta-pass):** measure the eager context load (CLAUDE.md + `paths: "**"` rules) against a stated budget (≤ ~10k tokens) and trim regressions; detect subsystems that gained code but lack a path-scoped rule; sweep `Active/` for docs whose feature shipped and move them to `Archived/`; verify status frontmatter presence; review outward-facing docs (README/privacy/license/sub-repo CLAUDE.md) against the diff since last audit. This is the enforcement mechanism that keeps the Phase 1–2 cleanup from re-rotting.
 - **Scope derivation:** subsystem list comes from `.claude/rules/*` `paths:` frontmatter, not a hardcoded enumeration — new subsystems are covered the day their rule lands.
 - The audit skill's own claims (what it tells agents to expect) must be regenerated from current docs each rebuild — the April failure mode was the audit asserting stale expectations as ground truth.
 
-## Archive & lifecycle conventions
+## Document lifecycle: `Active/` and `Archived/`
 
-- `docs/superpowers/archive/{plans,specs,handoffs}/` — completed/superseded artifacts move there wholesale. Grep hygiene: live searches default to non-archive paths.
-- Everything remaining in `plans/`, `specs/`, and the superpowers root gets `status:` frontmatter: `draft | active | merged | superseded` (+ `merged:` commit/PR where known). The archive sweep keys on status and stays mechanical forever after.
-- A short `docs/superpowers/INDEX.md` lists the living documents.
-- Handoff docs get an explicit expiry condition ("archive when X merges").
+Two folders at the **workspace root**, each mirroring `plans/ specs/ handoffs/ investigations/ prototypes/` inside:
+
+- **`Active/`** — live and in-progress lifecycle documents only. This replaces `docs/superpowers/` as where brainstorming/writing-plans save new specs and plans (stated in CLAUDE.md; the skills honor user-preference locations). Because it holds only what's in flight, the folder listing IS the index — no INDEX.md.
+- **`Archived/`** — completed and superseded documents. Git history preserves provenance; grep hygiene: live searches default to excluding `Archived/`.
+- **Initial census (Phase 1):** sweep the workspace AND all sub-repos for lifecycle documents (specs, plans, handoffs, investigations, prototypes) and sort every one into the two folders. Living *reference* docs coupled to code (`youcoded/docs/cc-dependencies.md`, `engine-dependencies.md`, `terminal-emulator-vendored/VENDORED.md`, etc.) are NOT lifecycle documents and stay in their sub-repos.
+- **Move-on-completion convention (goes in CLAUDE.md):** when a feature merges, its associated spec/plan/handoff docs move `Active/` → `Archived/` in the same session. The `/audit` gardening pass enforces this — any `Active/` doc whose feature shipped gets flagged and moved.
+- Everything in `Active/` carries `status:` frontmatter: `draft | active | merged | superseded` (+ `merged:` commit/PR where known), so sweeps stay mechanical. Handoff docs also carry an explicit expiry condition ("archive when X merges").
+
+## Outward-facing docs review (READMEs, privacy, licenses, sub-repo CLAUDE.md)
+
+- **Phase 1 baseline review:** verify every sub-repo's README, privacy copy (in-app Privacy section, landing-page FAQ, analytics spec copy), LICENSE, and CLAUDE.md for accuracy against current code; fix on sight.
+- **Recurring in `/audit` (gardening pass):** diff each repo since the last audit and review these outward-facing docs against what changed — the general mechanism that subsumes the old "analytics payload ↔ privacy copy must stay in sync" pitfall. Privacy copy changes remain decision-residue (never silently auto-edited — they're user-facing promises); README/CLAUDE.md accuracy fixes apply on sight.
 
 ## CLAUDE.md changes
 
 - **Remove the `@import` block** — replace with a pointer table (path + one-line "read when…" per doc). This is the single biggest win: ~45k → ~10k eager tokens.
 - Add the **one-product principle** and the **taxonomy table** (compressed).
 - Add the **ROADMAP capture convention** and the **fix-on-sight policy**.
+- Add the **document lifecycle convention**: new specs/plans save to `Active/`; on feature completion, associated docs move to `Archived/` in the same session.
 - Add a "where does knowledge go" line: test > comment > rule > doc, in that order.
 
 ## Session-start hook changes
@@ -116,14 +125,14 @@ Triage all ~381 entries into exactly one of:
 ## Other deletions/moves
 
 - `GEMINI.md` — delete (Gemini CLI discontinued June 2026).
-- `docs/plans/marketplace-integrations-v2.md` — archive; remove the orphan `docs/plans/` dir.
+- `docs/plans/marketplace-integrations-v2.md` — archive; remove the orphan `docs/plans/` dir. `docs/superpowers/` is dissolved entirely by the census (contents sorted into `Active/`/`Archived/`).
 - `docs/AUDIT.md` — becomes `docs/audits/2026-04-23.md` (historical).
 - `docs/knowledge-debt.md` — delete after triage: deferred-product-work entries → ROADMAP.md; CC-watch entries → cc-dependencies flow; genuine drift entries → fixed on the spot or carried into the next audit report if verification is needed.
 - `docs/local-dev-vm.md` — verify with Destin whether the VM flow is still used; archive if dead.
 
 ## Execution phases
 
-1. **Phase 1 — mechanical wins:** de-`@import` CLAUDE.md; create ROADMAP.md (seeded from knowledge-debt triage + known deferred work + the Project View Roadmap tab as its first `idea`); delete knowledge-debt.md + GEMINI.md; archive sweep with status frontmatter; INDEX.md; hook update.
+1. **Phase 1 — mechanical wins + census:** de-`@import` CLAUDE.md; create ROADMAP.md (seeded from knowledge-debt triage + known deferred work + the Project View Roadmap tab as its first `idea`); delete knowledge-debt.md + GEMINI.md; the document census — sweep workspace + all sub-repos for lifecycle docs and sort into root `Active/`/`Archived/` with status frontmatter (dissolving `docs/superpowers/`); baseline review of READMEs, privacy copy, licenses, and sub-repo CLAUDE.md files; hook update.
 2. **Phase 2 — PITFALLS triage** (judgment-heavy, reviewed): the 5-way triage above; expand `.claude/rules/`; add pinning tests where high-value invariants are unguarded.
 3. **Phase 3 — `/audit` rebuild:** claims manifest + anchor-check script; diff-scoped incremental mode with per-repo SHA tracking; fix-executing flow (inline + subagent-driven-development); roadmap verification; workspace-gardening meta-pass; dated audit-trail reports; retire the old command doc.
 4. **Phase 4 — lifecycle enforcement:** status frontmatter required on new plans/specs (writing-plans/brainstorming conventions note); periodic archive sweep is then trivial.
