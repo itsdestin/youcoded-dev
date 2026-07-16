@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 # Phase 2 Plan A — Agent Loop + Core Tools + Permissions: Implementation Plan
