@@ -92,9 +92,13 @@ window-level snap) is untouched and remains in the existing buddy-floater plan.
 
 ## Remaining scope (in order)
 
-0. **Fold-back**: revise buddy-floater spec §3/§5/§6 + plan Tasks 7–12 + `mascots/` README
-   to match decisions 1–8 (incl. Task 8 sign fix + its test). ⚠️ Both docs had uncommitted
-   local edits from a concurrent session on 2026-07-16 — reconcile, don't clobber.
+0. ~~**Fold-back**~~ **DONE 2026-07-16** (same day, post-compaction session): spec
+   §3.2/3.3/3.6/§5/§6.2 + plan Tasks 7–12 revised (Task 8 signs corrected AND pinned by
+   test; addendum block before Task 7), prototype committed to
+   `docs/active/prototypes/2026-07-16-buddy-rig-workbench.html`, `mascots/` README updated
+   for grip hands/companions/tail/motion styles (wecoded-themes PR #13, merge `90efb05`).
+   The concurrent session's uncommitted spec/plan edits had already landed as `c025766`
+   (status corrections) — no conflict.
 1. App-side rig rendering (sanitizer, MascotRig, poses/springs module, default rig).
 2. `/theme-builder` mascot phase: mix/match from `mascots/` OR generate under README
    constraints.
