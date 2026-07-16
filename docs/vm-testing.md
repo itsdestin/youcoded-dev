@@ -21,11 +21,22 @@ How to spin up clean Windows and Linux virtual machines on the current dev machi
 
 ## One-time setup
 
-Install quickemu (AUR; pulls `qemu`, `swtpm`, `edk2-ovmf`, `spice-gtk` from official repos):
+Install quickemu **and `qemu-desktop`** (AUR + official repos):
 
 ```bash
-paru -S quickemu
+paru -S quickemu qemu-desktop
 ```
+
+`qemu-desktop` is not optional and quickemu will not pull it in: quickemu's `qemu` dependency
+resolves to **`qemu-base`, which has zero display backends**, and the VM dies at launch with
+`There is no option group 'spice'`. Verify before your first boot — the list must include `gtk`:
+
+```bash
+qemu-system-x86_64 -display help
+```
+
+If package downloads 404 with "failed retrieving file … from <mirror>", the pacman database is
+stale (mirrors delete superseded packages). Sync first: `paru -Syu`.
 
 Create a home for VM disks — **outside** the repos and **outside** any synced folder (`~/YouCoded/` syncs to GitHub; a 20 GB disk image must never land there):
 
@@ -39,11 +50,57 @@ quickemu creates VMs in the current directory — always run it from `~/vms`.
 
 ```bash
 cd ~/vms
-quickget windows 11        # downloads the Win11 ISO via Microsoft's API + virtio drivers (~7 GB)
+quickget windows 11        # generates the VM config, answer file + driver ISOs
 quickemu --vm windows-11.conf
 ```
 
-The Windows install is **fully unattended** — quickemu injects an answer file that partitions, bypasses the Microsoft-account OOBE, installs virtio/SPICE drivers, and creates a local account (**user `Quickemu`, password `quickemu`**). Expect ~20–30 min at native KVM speed; a window shows progress. TPM 2.0 + Secure Boot are configured automatically. An unactivated Win11 runs indefinitely for testing (desktop watermark only).
+The install is **near-unattended** — quickemu injects an answer file that partitions, selects Pro via a
+generic product key, bypasses the Microsoft-account OOBE + the TPM/SecureBoot/CPU/RAM requirement
+checks, installs virtio/SPICE drivers, and creates a local account (**user `Quickemu`, password
+`quickemu`**). Expect ~20–30 min at native KVM speed. An unactivated Win11 runs indefinitely for
+testing (desktop watermark only).
+
+**You must click Next through two screens first** ("Select language settings", "Select keyboard
+settings"). This is not a bug: quickemu's answer file defines no `Microsoft-Windows-International-
+Core-WinPE` component, so Setup prompts for them. Everything after "We're getting a few things
+ready" is automatic. Drive them from the monitor if you're scripting: `sendkey ret`, wait, repeat.
+
+Two things `quickget windows 11` gets wrong on this host — check both before booting:
+
+1. **The ISO download is blocked.** Microsoft 404s/blocks quickget's automated request by IP
+   (`WARNING! Microsoft blocked the automated download request based on your IP address`).
+   quickget continues anyway and leaves **no `windows-11.iso`**. Download the ISO manually in a
+   browser from <https://www.microsoft.com/en-us/software-download/windows11> and drop it at
+   `~/vms/windows-11/windows-11.iso`. Any multi-edition x64 ISO works — the answer file selects
+   Pro via a generic product key and sets no locale, so an EN-US ISO is fine (verified with
+   `Win11_25H2_English_x64_v2.iso`, 8.5 GB).
+2. **`virtio-win.iso` may land as a ~4 KB stub** when its download fails the same way. Check with
+   `file windows-11/virtio-win.iso` — it must say `ISO 9660 … 'virtio-win-<version>'`, not
+   `ASCII text`. Re-fetch:
+   ```bash
+   curl -Lo ~/vms/windows-11/virtio-win.iso \
+     https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso
+   ```
+
+### The "Press any key to boot from CD or DVD" trap
+
+The Windows ISO shows this prompt **~3–5 s after launch** and waits ~5 s. Miss it and UEFI falls
+through to PXE and parks there forever — the screen reads `failed to start Boot0002 "UEFI QEMU
+DVD-ROM" … : Time out` then `>>Start PXE over IPv4`. That is the failure, not a hang.
+
+quickemu sends its own `sendkey ret` burst at launch, but **it fires before the prompt appears and
+the keypress is lost.** Either press a key in the VM window yourself within the first ~5 s, or
+drive the monitor socket on the timing below (verified working):
+
+```bash
+cd ~/vms && quickemu --vm windows-11.conf --display spice > boot.log 2>&1 &
+until [ -S windows-11/windows-11-monitor.socket ]; do sleep 0.2; done
+sleep 2.5                                   # prompt lands ~t=3s
+( for i in $(seq 1 30); do echo "sendkey ret"; sleep 0.2; done ) \
+  | socat - unix-connect:windows-11/windows-11-monitor.socket
+```
+
+This is a **one-time** cost: once the `clean` snapshot exists, reverts boot from disk with no prompt.
 
 When the desktop appears, **power the VM off** (shut down inside Windows), then take the baseline:
 
@@ -59,6 +116,16 @@ quickemu --vm windows-11.conf                          # boot
 ```
 
 **Snapshots only while powered off.** `--snapshot` wraps `qemu-img` internal snapshots; snapshotting or reverting a running VM corrupts the disk.
+
+### Use `--display gtk`, not `spice`, and set `gl="off"`
+
+quickemu's default SPICE path selects `-display egl-headless` + GL. On this host's Radeon 8060S that
+renders **a permanently black screen** the moment the guest leaves text mode — in the viewer window
+*and* in `screendump`, so you can't even see what's wrong. The VM is alive (high CPU) and looks hung.
+
+Add `gl="off"` to the `.conf` and launch with `--display gtk` (→ `virtio-vga, GL (off)`). Windows
+Setup renders immediately and `screendump` captures real frames. Verified: identical VM, same ISO,
+black under `spice`/egl-headless, working under `gtk` + `gl="off"`.
 
 ## Linux VMs
 
@@ -112,7 +179,10 @@ Do these interactively in the VM window with real credentials (Destin drives; th
 
 For automated smoke tests, two hooks exist without extra tooling:
 
-- **QEMU monitor socket** (quickemu creates `<vm>/<vm>-monitor.socket`): `screendump` writes a screenshot Claude can read; `sendkey` types keys. Enough for "boot → revert → launch installer → screenshot-verify" loops driven from a session.
+- **QEMU monitor socket** (quickemu creates `<vm>/<vm>-monitor.socket`): `screendump` writes a screenshot Claude can read; `sendkey` types keys. Enough for "boot → revert → launch installer → screenshot-verify" loops driven from a session. Verified working — `sendkey ret` drove Windows Setup's screens, and `screendump` + ImageMagick (`magick x.ppm -format "%[mean]" info:`) is a cheap "has the screen changed?" probe. Three traps, all hit for real:
+  - **Never send `quit`** — it terminates the VM. (Killed a booted VM mid-session.)
+  - **`echo cmd | socat -` loses the command**: socat closes on EOF before QEMU processes it. Keep the connection open: `( echo "cmd"; sleep 2 ) | socat - unix-connect:<sock>`.
+  - **`pkill -f qemu-system-x86_64` kills the shell running it** — the pattern matches its own command line, so the rest of your script silently never runs (exit 144). Use the bracket trick: `pkill -f "[q]emu-system-x86_64"`. Same for `pgrep` — it self-matches and reports a dead VM as alive.
 - **Guest SSH:** quickemu forwards guest port 22 to a host port (printed at boot). Enable OpenSSH Server in the Windows baseline before snapshotting `clean`, and command-level assertions (`Get-Command claude`, registry PATH checks) become scriptable.
 
 Alternative zero-setup path: [dockur/windows](https://github.com/dockur/windows) runs Windows-in-KVM inside the already-installed Docker with a browser-based viewer (`-p 8006:8006`) — handy if quickemu ever misbehaves, but snapshots are manual file copies, so quickemu remains the primary recommendation.
