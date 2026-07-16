@@ -240,16 +240,26 @@ snapshot it reverts to — the same reason the archived Windows-host script docu
 
 Verified end-to-end 2026-07-16 with the real `YouCoded.Setup.1.2.4.exe` (111 MB).
 
-**1. Get a build.** CI already has a manual beta job — `youcoded/.github/workflows/desktop-test-build.yml`
-(`workflow_dispatch`, builds `.exe` / `.dmg` / `.AppImage`):
+**1. Get a build.** CI has a manual beta job — `youcoded/.github/workflows/desktop-test-build.yml`
+(`workflow_dispatch`; builds `.exe` / `.dmg` / `.AppImage`, stamps `YOUCODED_BUILD_CHANNEL=BETA` so
+Settings → About reads `YouCoded v1.3.0-beta (BETA)`):
 
 ```bash
 cd youcoded
-gh workflow run desktop-test-build.yml && sleep 5
+gh workflow run desktop-test-build.yml -f version=1.3.0-beta      # see the version caveat below
+gh run watch "$(gh run list -w desktop-test-build.yml -L1 --json databaseId -q '.[0].databaseId')"
 gh run download "$(gh run list -w desktop-test-build.yml -L1 --json databaseId -q '.[0].databaseId')" -D ~/vms/share
-# or ship-shape artifacts straight from a release:
+# or take shipped artifacts straight from a release:
 gh release download v1.2.4 -p 'YouCoded.Setup.*.exe' -D ~/vms/share
 ```
+
+The `version` input **must sort above the latest release** — `compareVersions` parses naively, so
+`1.2.4-beta` → `[1,2,0]`, which is *lower* than `1.2.4` and the build offers to "update" itself back
+to the release. Bump the minor and suffix (`1.3.0-beta`), don't patch the current version.
+
+**A VM is the right home for these builds.** Per `version-line.ts`, test builds install *over* a real
+install and share its appId — on Destin's machine only the `(BETA)` line distinguishes them. A guest
+has no real install to collide with, and `--snapshot apply clean` undoes the whole thing.
 
 **2. Launch the VM with the share attached** (host dir → `\\10.0.2.4\qemu` in the guest):
 
