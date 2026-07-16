@@ -46,7 +46,7 @@ Base (always):
 ```
 inline-flex items-center justify-center gap-1.5 font-medium rounded-lg transition-colors
 disabled:opacity-50 disabled:cursor-not-allowed
-focus-visible:ring-2 focus-visible:ring-accent
+focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas
 ```
 Variants:
 | variant | classes |
@@ -71,15 +71,13 @@ Decisions baked in (each was an explicit choice among rendered alternatives):
 - **Hover `hover:bg-accent/90`** (background fades toward surface; label stays crisp). Rejected:
   `hover:brightness-110` (imperceptible on Light/Crème's near-black accent) and `hover:opacity-90`
   (fades label; on glow-themes like Halftone the fill fades out from under the theme's box-shadow glow).
-- **Focus ring is offset-less `ring-2 ring-accent`** (§9.A). The originally-approved
-  `ring-offset-2 ring-offset-canvas` was premised on "extends the marketplace precedent" — that
-  precedent doesn't exist: zero `ring-offset-canvas` uses in the renderer; the actual marketplace
-  rings (MarketplaceCard.tsx:158, :241, :310, MarketplaceFilterBar.tsx:144 …) are offset-less
-  `ring-accent`, and the app's only ring-offset (TagPicker.tsx:90) matches its surface
-  (`ring-offset-inset`). Tailwind's ring-offset is a **solid fill, not a gap** — a canvas offset
-  paints a canvas-colored halo around every button on a panel/popup/inset surface, i.e. most of
-  them. Offset-less IS the existing precedent. Community `custom_css` focus styles (e.g.
-  Halftone's pink outline) still override by specificity — intentional, packs keep that power.
+- **Focus ring keeps the canvas offset** (`ring-offset-2 ring-offset-canvas`). Amendment §9.A
+  proposed dropping it (the offset is a solid fill, so it renders a canvas-colored halo on
+  panel/popup surfaces, and no such ring exists in the codebase today) — **Destin reviewed both
+  variants in the Session 8 workbench on 2026-07-16 and kept the offset**; the halo behavior is
+  noted and accepted. For the historical evidence see §9.A (rejected). Community `custom_css`
+  focus styles (e.g. Halftone's pink outline) still override by specificity — intentional, packs
+  keep that power.
 - **Coarse-pointer hit areas** (proposed, change 48): sm/icon buttons render an invisible expanded
   hit target under `@media (pointer: coarse)` — the renderer is shared with Android, and sm is
   ~22px tall against the ~44–48dp touch guideline. Visuals unchanged.
@@ -159,11 +157,21 @@ Radio circle:   w-3.5 h-3.5 rounded-full, unselected: bg-inset border border-edg
                 role="radio" + arrow-key group navigation + focus ring
 ```
 
-### 1.5 Slider (change 40)
+### 1.5 Slider (change 40 — RESCOPED 2026-07-16, Session 8 iteration)
 
-Keep native `<input type="range">` (free drag/keyboard/a11y); style track + thumb via CSS
-(Chromium-only pseudos are safe — both platforms are Chromium). **Filled track** was an explicit
-review correction (flat track made the value unreadable):
+**Destin's direction on the Session 8 re-render: today's native sliders are the preferred
+aesthetic.** Change 40 is rescoped to wiring only, zero visual change:
+
+- Keep the native `<input type="range">` with `accent-accent` exactly as shipped (it already
+  themes via `--accent` and Chromium renders a filled track natively).
+- **No custom track/thumb CSS.** The originally-approved custom recipe (4px bordered track,
+  `--sv` gradient fill, 14px canvas-ringed thumb) is **rejected** — kept below for reference only.
+- The one real fix (was §9.D): the roundness slider (ThemeScreen.tsx:392) is **uncontrolled**
+  (`defaultValue`), so its thumb goes stale when a theme switch changes the roundness state —
+  make it controlled (`value=` + onChange). The volume and glass sliders are already controlled
+  and need nothing.
+
+Rejected-for-reference recipe (do not implement):
 ```css
 input[type=range].slider { appearance:none; height:4px; border-radius:9999px;
   border:1px solid var(--edge-dim);
@@ -171,14 +179,7 @@ input[type=range].slider { appearance:none; height:4px; border-radius:9999px;
 input[type=range].slider::-webkit-slider-thumb { appearance:none; width:14px; height:14px;
   border-radius:50%; background:var(--accent); border:2px solid var(--canvas);
   box-shadow:0 1px 2px rgba(0,0,0,.2); }
-/* --sv = ((value-min)/(max-min))*100 + '%', computed FROM THE VALUE PROP at render
-   (style={{'--sv': pct}}) — NOT updated only onInput (§9.D) */
 ```
-§9.D: the approved "`--sv` updated onInput" wiring desyncs the filled track whenever the value
-changes without a drag. Verified: the glass slider (ThemeScreen.tsx:542) is controlled and its
-value changes on theme switch — thumb would move, fill wouldn't. The roundness slider
-(ThemeScreen.tsx:392) is **uncontrolled** (`defaultValue`) and already goes stale on theme switch
-today — change 40 also makes it controlled.
 
 ### 1.6 State family (`components/ui/states.tsx`) — changes 31–33
 
@@ -288,7 +289,7 @@ its deliberately-quiet inline variant (its source comment says quiet was intenti
 |---|---|
 | 38 | **SessionDrawer adopts ProjectView's FileFilterPopover** (explicit review direction — Destin wanted "a filter toggle menu thing like project view"). Key discovery: FileFilterPopover.tsx **already contains** "Hide code & configs" and "Show deleted" as Chips (:133-140) — this is component reuse, not new design. Drawer search row becomes: TextInput sm + one sliders-icon trigger (FIELD-styled) opening the shared popover (Sort chips + Visibility chips; the Type group can join later for free). The drawer's separate sort select AND both CheckboxGlyph rows are deleted. Click-outside stays parent-owned (see FileFilterPopover.tsx:9-11 comment — owning it inside races the trigger). Checkbox primitive's one remaining site: ProjectView.tsx:807 consent checkbox. |
 | 39 | Radio primitive (§1.4) replaces native radios: PreferencesPopup.tsx:154 (permission-mode list), SyncSetupWizard.tsx:389 + :419 |
-| 40 | Styled slider with **filled track** (§1.5): SettingsPanel.tsx:551 (volume), ThemeScreen.tsx:392 (roundness — becomes controlled, §9.D), :543 (glass) |
+| 40 | **RESCOPED 2026-07-16 (§1.5):** sliders keep the native `accent-accent` look — no custom styling. Remaining work: make the roundness slider controlled (ThemeScreen.tsx:392, `defaultValue` → `value`). Volume (SettingsPanel.tsx:551) and glass (:543) unchanged. |
 
 ### Session 8 — post-approval additions (41–48) — **PROPOSED, not yet approved**
 
@@ -302,9 +303,9 @@ method, `/ui-mockup`) before implementation. They do NOT block tranches 0–7 ex
 | 42 | **Textarea primitive** on FIELD (§1.3): 11 sites (ContextPopup:161, BugReportPopup:194/:226, PreferencesPopup:233, QuickChips:351, ContextEditorOverlay:255, RatingSubmitModal:292, ReportReviewButton:189, NoteEditor:29, MarkdownView:22). InputBar's mirror-overlay textarea excluded. Search/number/password inputs fold into change 20's sweep under FIELD. |
 | 43 | **`--on-destructive` derivation** in `computeOverlayTokens`, same guard style as `--code`/change 36: white when `overlay.destructive` is dark, near-black when light. Danger Button + danger Toggle labels consume it (§9.B). Contrast audit gains a destructive-vs-on-destructive check alongside change 36's link check. Rationale: `--destructive` is pack-overridable via `overlay.destructive` (theme-types.ts:109) with **no contrast guard**, so the approved `text-white` violates rule 15 and can silently go white-on-light. |
 | 44 | **Toast primitive** — one transient-feedback component replacing three uncoordinated systems: the App-global toast (App.tsx:3009, `fixed bottom-16 … bg-panel border-edge`, manual setTimeout at every call site), LikeButton's local mini-toast (LikeButton.tsx:203 — different size/radius/z), and the marketplace `role="status"` strips. Anatomy joins the §1.6 state family; `aria-live="polite"`; auto-dismiss owned by the component. |
-| 45 | **SegmentedTabs primitive** — one active-state recipe for tab rows. Today: Library tabs (LibraryScreen.tsx:183 `bg-accent text-on-accent` active / `bg-inset` inactive), BugReportPopup Bug/Feature (:185 — same active, but **no** inset on inactive), project-view tabs, Settings section nav. Marketplace filter Chips stay chips (filters ≠ tabs, rule 8). |
+| 45 | **SegmentedTabs primitive** — one active-state recipe for tab rows. Today: Library tabs (LibraryScreen.tsx:183 `bg-accent text-on-accent` active / `bg-inset` inactive), BugReportPopup Bug/Feature (:185 — same active, but **no** inset on inactive), project-view tabs, Settings section nav. Marketplace filter Chips stay chips (filters ≠ tabs, rule 8). **DECIDED 2026-07-16: inactive style = option B, transparent** (`text-fg-2 hover:bg-inset`); recipe: `px-3 py-1.5 rounded-md text-xs font-medium` + ring, active `bg-accent text-on-accent`. Library tabs shrink text-sm → text-xs. |
 | 46 | **ProgressBar primitive** — track `bg-inset` (decision needed: ModelLoadingBar.tsx:141 uses `bg-well` today, FirstRunView.tsx:57 + LocalModelsSection.tsx:115 use `bg-inset`), rounded `bg-accent` fill (LocalModelsSection's fill is unrounded today), status-color fill via prop (UsageCard.tsx:63 keeps its inline status color). UpdatePanel gets a real bar — today download % is button-label text (:279) on a `rounded-sm` + `hover:opacity-90` button (two rejected idioms; the button itself is caught by the tranche-1 sweep). |
-| 47 | **Games subtree decision** (`game/GameLobby.tsx`, GameOverlay, GameChat, ConnectFourBoard) — currently unmigrated and violating multiple locked rules: hardcoded `text-[#66AAFF]`/`#88CCFF` links (change 36 fixes link tokens everywhere *except* here), `bg-green-600`/`bg-red-600 text-white` action buttons (rule 5), `bg-indigo-950/50` panels, `focus:border-fg-dim` gray-focus input (GameLobby:446 — the exact idiom change 20 retires), and the app's only `role="menu"` (friend-row kebab, :104-195). Recommendation to render in the workbench: inputs/links/neutral buttons (Decline/Cancel) migrate to primitives + tokens; semantic Accept-green/Block-red **may** keep their colors as a documented ToolCard-style exception — Destin decides. |
+| 47 | **Games subtree migration** (`game/GameLobby.tsx`, GameOverlay, GameChat, ConnectFourBoard) — currently unmigrated and violating multiple locked rules: hardcoded `text-[#66AAFF]`/`#88CCFF` links (change 36 fixes link tokens everywhere *except* here), `bg-green-600`/`bg-red-600 text-white` action buttons (rule 5), `bg-indigo-950/50` panels, `focus:border-fg-dim` gray-focus input (GameLobby:446 — the exact idiom change 20 retires), and the app's only `role="menu"` (friend-row kebab, :104-195). **DECIDED 2026-07-16: option A — Accept = Button primary** (no semantic-green exception). Full migration: inputs → FIELD, links → text-link, Decline/Send → Button secondary, kebab → Button icon (41), Block confirm → Button danger, Block text → text-destructive. Keep the documented touch-padding WHY comments intact. |
 | 48 | **Touch-target + sticky-hover pass** (cross-cutting): invisible expanded hit areas under `@media (pointer: coarse)` for every control below ~24px — Checkbox/Radio (14px), sm buttons (~22px tall), icon buttons, Select options; `@media (hover: hover)` guards on hover-only effects (change 22's scale lift; any future lift). Zero visual change on desktop. Motivation: the spec chose the 36×20 Toggle *for* Android touch, then specced 14px checkboxes — one shared renderer means every control is a phone control. |
 
 **Policy decisions recorded (not numbered changes):**
@@ -476,7 +477,7 @@ wrong localStorage key, pre-engine theming instructions) — ROADMAP bug filed 2
 | 5 States (final = section 20 + Option C) | 31–34 | https://claude.ai/code/artifact/9d552e5e-014e-4ad0-8b59-f0c4546221ec |
 | 6 Type & tokens | 35–37 | https://claude.ai/code/artifact/15b04909-a6ee-4ae3-889d-8df5fb560ddb |
 | 7 Form controls + inventory | 38–40 | https://claude.ai/code/artifact/b54205c3-ce04-42e7-b26e-8b13f9ab9b83 |
-| 8 Post-approval additions (+ §9 A–E re-approval renders) | 41–48 | https://claude.ai/code/artifact/7dae2904-21ba-47ac-af1f-3f97eae68453 — **rendered 2026-07-16; Destin is iterating, NOTHING in Session 8 approved yet** (open picks: 45 A/B inactive-tab style, 47 A/B Accept-button color) |
+| 8 Post-approval additions (+ §9 A–E re-approval renders) | 41–48 | https://claude.ai/code/artifact/7dae2904-21ba-47ac-af1f-3f97eae68453 — v3, iterating. **Decided 2026-07-16: 45→B (transparent inactive), 47→A (Button primary), §9.A rejected (offset ring stays), change 40 rescoped to native sliders.** Still awaiting final approval by number: 41, 42, 43, 44, 46, 48, B, C, D-rescope, E. |
 
 The mockup method used to produce these is captured as the workspace skill `/ui-mockup`
 (`.claude/skills/ui-mockup/SKILL.md`) — use it for any future UI design work.
@@ -506,10 +507,10 @@ corrections/verifications that don't change any approved pixel.
 
 | # | What changed | Why |
 |---|---|---|
-| A | Button focus ring: `ring-2 ring-accent ring-offset-2 ring-offset-canvas` → **offset-less `ring-2 ring-accent`** | The "marketplace precedent" the offset was approved on doesn't exist — zero `ring-offset-canvas` in the codebase; real marketplace rings are offset-less; ring-offset is a solid fill that would paint a canvas-colored halo on every panel/inset surface (verified: MarketplaceCard.tsx:158 etc., TagPicker.tsx:90) |
+| A | **REJECTED by Destin 2026-07-16 (Session 8 workbench)** — the approved offset ring stays. Original proposal: drop the offset because it has no codebase precedent and paints a solid canvas-colored halo on panel surfaces (MarketplaceCard.tsx:158 etc., TagPicker.tsx:90) | Destin reviewed both variants rendered in a real popup footer and kept the offset; halo behavior noted and accepted |
 | B | danger variant: `text-white` → `text-on-destructive` (derived, change 43) | `--destructive` is pack-overridable with no contrast guard; hardcoded white violates rule 15 and can go white-on-light |
 | C | Toggle knob: `bg-white shadow-sm` → `bg-white border border-edge-dim shadow-sm` | Verified ~1.2:1 knob-vs-track on Crème's off state (`--inset` #DDD1BE); shadow alone was the only separator |
-| D | Slider `--sv`: onInput-only → derived from value prop at render; roundness slider becomes controlled | Verified desync: glass slider is controlled and changes on theme switch; roundness uses `defaultValue` and is already stale today |
+| D | **Superseded by the change-40 rescope (§1.5, 2026-07-16):** sliders stay native `accent-accent` (Destin prefers today's look), so the `--sv` fill wiring is moot. Surviving fix: roundness slider becomes controlled | Roundness uses `defaultValue` and its thumb goes stale on theme switch today; volume/glass are already controlled |
 | E | Change 22 scale lift wrapped in `@media (hover: hover)` | Hover styles stick after tap on Android WebView; a stuck 1.02 scale is visible |
 | F | FIELD gains `disabled:opacity-50 disabled:cursor-not-allowed` | Disabled fields exist today (EngineCard.tsx:143, InputBar.tsx:604, ReportReviewButton.tsx:197) and would have lost their affordance |
 | G | Select menu gains `max-h-64` scroll + scroll-into-view + reposition-on-scroll + typeahead | RuntimeBinding model select renders a dynamic catalog (dozens of entries); all six sites live in scrollable panels |
