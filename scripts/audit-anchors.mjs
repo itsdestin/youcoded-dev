@@ -117,3 +117,69 @@ export function countBodyWords(text) {
   const body = text.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
   return (body.match(/\S+/g) || []).length;
 }
+
+// ---------- checks (filesystem / git I/O) ----------
+
+// One anchor → {ok, reason}. `test:` anchors are existence-checked here; the
+// /audit FULL mode additionally RUNS them via each repo's test runner (the
+// script stays fast and dependency-free — seconds, not minutes).
+export function checkAnchor(root, anchor) {
+  if (anchor.malformed !== undefined) {
+    return { ok: false, reason: `unparseable doc-anchor JSON: ${anchor.malformed}` };
+  }
+  const rel = anchor.path ?? anchor.test;
+  if (!rel) return { ok: false, reason: `anchor has neither path nor test: ${JSON.stringify(anchor)}` };
+  const abs = path.join(root, rel);
+  if (!fs.existsSync(abs)) return { ok: false, reason: `missing: ${rel}` };
+  if (anchor.contains !== undefined) {
+    let re;
+    try { re = new RegExp(anchor.contains); }
+    catch (e) { return { ok: false, reason: `invalid contains regex /${anchor.contains}/: ${e.message}` }; }
+    if (!re.test(fs.readFileSync(abs, 'utf8'))) {
+      return { ok: false, reason: `/${anchor.contains}/ not found in ${rel}` };
+    }
+  }
+  return { ok: true };
+}
+
+// git-tracked files across workspace + sub-repos, sub-repo paths prefixed with
+// their dir. git ls-files (not a tree walk) so node_modules/build output never
+// appear and the whole sweep stays sub-second.
+export function listTrackedFiles(root) {
+  const files = [];
+  const ls = (dir, prefix) => {
+    try {
+      const out = execFileSync('git', ['-C', dir, 'ls-files'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+      for (const f of out.split('\n')) if (f) files.push(prefix + f);
+    } catch { /* repo missing (setup.sh not run) — its globs will visibly match nothing */ }
+  };
+  ls(root, '');
+  for (const r of REPOS) {
+    if (fs.existsSync(path.join(root, r, '.git'))) ls(path.join(root, r), r + '/');
+  }
+  return files;
+}
+
+export function currentShas(root) {
+  const shas = {};
+  const get = (name, dir) => {
+    try { shas[name] = execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(); }
+    catch { /* leave absent */ }
+  };
+  get('workspace', root);
+  for (const r of REPOS) if (fs.existsSync(path.join(root, r, '.git'))) get(r, path.join(root, r));
+  return shas;
+}
+
+export function* walkMarkdown(dir, skipDirs = []) {
+  if (!fs.existsSync(dir)) return;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name === 'node_modules' || skipDirs.some(s => path.resolve(full) === path.resolve(s))) continue;
+      yield* walkMarkdown(full, skipDirs);
+    } else if (entry.name.endsWith('.md')) {
+      yield full;
+    }
+  }
+}

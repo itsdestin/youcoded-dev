@@ -106,3 +106,37 @@ test('countBodyWords: strips frontmatter before counting', () => {
   assert.equal(countBodyWords('---\npaths:\n  - "a"\n---\none two three'), 3);
   assert.equal(countBodyWords('one two'), 2);
 });
+
+import { checkAnchor } from './audit-anchors.mjs';
+
+function makeFixture() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-'));
+  fs.mkdirSync(path.join(root, 'src'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'src', 'a.ts'), 'export function fooFn() {}\n');
+  return root;
+}
+
+test('checkAnchor: path exists / missing', () => {
+  const root = makeFixture();
+  assert.equal(checkAnchor(root, { path: 'src/a.ts' }).ok, true);
+  const miss = checkAnchor(root, { path: 'src/gone.ts' });
+  assert.equal(miss.ok, false);
+  assert.match(miss.reason, /missing/);
+});
+
+test('checkAnchor: contains regex found / not found / invalid', () => {
+  const root = makeFixture();
+  assert.equal(checkAnchor(root, { path: 'src/a.ts', contains: 'fooFn' }).ok, true);
+  assert.equal(checkAnchor(root, { path: 'src/a.ts', contains: 'barFn' }).ok, false);
+  const bad = checkAnchor(root, { path: 'src/a.ts', contains: '([unclosed' });
+  assert.equal(bad.ok, false);
+  assert.match(bad.reason, /invalid/);
+});
+
+test('checkAnchor: test anchors are existence-checked; malformed and empty fail', () => {
+  const root = makeFixture();
+  assert.equal(checkAnchor(root, { test: 'src/a.ts' }).ok, true);
+  assert.equal(checkAnchor(root, { test: 'tests/gone.test.ts' }).ok, false);
+  assert.equal(checkAnchor(root, { malformed: '{not json}' }).ok, false);
+  assert.equal(checkAnchor(root, {}).ok, false);
+});
