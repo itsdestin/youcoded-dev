@@ -1,14 +1,16 @@
 ---
-status: shipped
+status: draft
 ---
 
 # Buddy Floater Upgrades Implementation Plan
+
+> **NOT SHIPPED (verified 2026-07-15).** This plan was prematurely marked shipped and archived, but none of the code ever landed on master — no action bar, no rig subsystem, no new IPC channels, no branch or commits. Status corrected to `draft` and moved back to `docs/active/`. The §2 stale-action-bar-position bug is still live.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Fix the buddy floater's positioning bugs, replace the single capture icon with a 3-button action bar (screenshot · open main app · hide), make the mascot feel alive (rigged SVG mascot format with limb-trailing drag, breathing, blinks, attention bounce), add edge snap + peek, and restyle the Settings entry.
 
-**Spec:** `docs/superpowers/specs/2026-07-10-buddy-floater-upgrades-design.md` (workspace repo). Read it first.
+**Spec:** `docs/active/specs/2026-07-10-buddy-floater-upgrades-design.md` (workspace repo). Read it first.
 
 **Architecture:** All work is in the `youcoded` repo, `desktop/` only (buddy is Electron-only). Main-process window orchestration lives in `buddy-window-manager.ts` with new pure modules (`buddy-bar-geometry.ts`, `buddy-bar-visibility.ts`, `buddy-dock.ts`) for unit-testable logic. Renderer gains a rigged-mascot subsystem under `src/renderer/components/mascot/` (sanitizer, poses, `MascotRig` component, first-party default rig). All mascot motion is CSS/JS transforms inside fixed-size windows; the only window-bounds animation is the edge-snap glide.
 
@@ -2513,7 +2515,7 @@ Expected: all pass. Then the full manual QA list from the spec (§11) in the dev
 ```bash
 git add -A && git commit -m "docs(theme-spec): mascot rig format"
 git push -u origin feat/buddy-upgrades
-gh pr create --repo itsdestin/youcoded --title "Buddy floater upgrades: action bar, rigged mascot, edge snap + peek" --body "Implements docs/superpowers/specs/2026-07-10-buddy-floater-upgrades-design.md (youcoded-dev). Fixes stale capture-icon position, orphaned icon, dead chat persistence. Adds 3-button action bar, rigged mascot format + default rig, alive animations, edge snap + peek, dismiss-for-run, settings row restyle.
+gh pr create --repo itsdestin/youcoded --title "Buddy floater upgrades: action bar, rigged mascot, edge snap + peek" --body "Implements docs/active/specs/2026-07-10-buddy-floater-upgrades-design.md (youcoded-dev). Fixes stale capture-icon position, orphaned icon, dead chat persistence. Adds 3-button action bar, rigged mascot format + default rig, alive animations, edge snap + peek, dismiss-for-run, settings row restyle.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)"
 ```

@@ -1,8 +1,10 @@
 ---
-status: shipped
+status: draft
 ---
 
 # Buddy Floater Upgrades — Design
+
+> **NOT SHIPPED (verified 2026-07-15).** Design was approved but implementation never happened — see the sibling plan. Status corrected from `shipped` to `draft`.
 
 **Status:** design approved in brainstorming, awaiting implementation plan
 **Date:** 2026-07-10

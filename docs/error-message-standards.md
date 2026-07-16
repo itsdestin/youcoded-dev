@@ -44,4 +44,4 @@ We will **go back and replace all existing system/app error messages** against t
 - Where a subprocess/exception detail is available, thread it through instead of swallowing it.
 - Wire the two-action fallback UX (report / diagnose-with-Claude) as a reusable component so general errors get a consistent affordance.
 
-Tracked in `docs/knowledge-debt.md`.
+Tracked in `ROADMAP.md` → v1.3.1 "Misleading error messages — full audit + replacement".
