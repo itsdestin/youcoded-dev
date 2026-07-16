@@ -27,10 +27,11 @@ and the Android WebView — one migration covers both platforms). New primitives
 
 **2026-07-16 amendment pass:** after approval, a code-verification review found (a) recipe
 problems verified against the codebase — those recipe fixes are applied inline below and logged
-change-by-change in §9 so the delta from the approved renders is visible; (b) whole control
-families the original audit never inventoried (icon buttons, textareas, toasts, tabs, progress
-bars, the games subtree) — those are **proposed** as Session 8 (changes 41–48) and need the same
-workbench render-and-approve treatment as sessions 1–7 before implementation.
+change-by-change in §9 (B–E approved by Destin in the Session 8 workbench; A rejected — offset
+ring stays; D superseded by the change-40 rescope); (b) whole control families the original audit
+never inventoried (icon buttons, textareas, toasts, tabs, progress bars, the games subtree) —
+rendered and **approved in full as Session 8 (changes 41–49) on 2026-07-16**. The full change set
+1–49 is now implementation-ready.
 
 ---
 
@@ -291,11 +292,13 @@ its deliberately-quiet inline variant (its source comment says quiet was intenti
 | 39 | Radio primitive (§1.4) replaces native radios: PreferencesPopup.tsx:154 (permission-mode list), SyncSetupWizard.tsx:389 + :419 |
 | 40 | **RESCOPED 2026-07-16 (§1.5):** sliders keep the native `accent-accent` look — no custom styling. Remaining work: make the roundness slider controlled (ThemeScreen.tsx:392, `defaultValue` → `value`). Volume (SettingsPanel.tsx:551) and glass (:543) unchanged. |
 
-### Session 8 — post-approval additions (41–48) — **PROPOSED, not yet approved**
+### Session 8 — post-approval additions (41–49) — **APPROVED 2026-07-16**
 
 Found by the 2026-07-16 code-verification pass: whole control families the original four-agent
-audit never inventoried. These need a workbench session (same before/after render + approve-by-number
-method, `/ui-mockup`) before implementation. They do NOT block tranches 0–7 except where noted.
+audit never inventoried. Rendered in the Session 8 workbench (three iterations — see §7) and
+**approved in full by Destin on 2026-07-16**, with these iteration outcomes: 45 → option B,
+47 → option A, change 40 rescoped to native sliders (§1.5), amendment §9.A rejected (offset ring
+stays), and one Destin-requested addition (49).
 
 | # | What |
 |---|---|
@@ -307,6 +310,7 @@ method, `/ui-mockup`) before implementation. They do NOT block tranches 0–7 ex
 | 46 | **ProgressBar primitive** — track `bg-inset` (decision needed: ModelLoadingBar.tsx:141 uses `bg-well` today, FirstRunView.tsx:57 + LocalModelsSection.tsx:115 use `bg-inset`), rounded `bg-accent` fill (LocalModelsSection's fill is unrounded today), status-color fill via prop (UsageCard.tsx:63 keeps its inline status color). UpdatePanel gets a real bar — today download % is button-label text (:279) on a `rounded-sm` + `hover:opacity-90` button (two rejected idioms; the button itself is caught by the tranche-1 sweep). |
 | 47 | **Games subtree migration** (`game/GameLobby.tsx`, GameOverlay, GameChat, ConnectFourBoard) — currently unmigrated and violating multiple locked rules: hardcoded `text-[#66AAFF]`/`#88CCFF` links (change 36 fixes link tokens everywhere *except* here), `bg-green-600`/`bg-red-600 text-white` action buttons (rule 5), `bg-indigo-950/50` panels, `focus:border-fg-dim` gray-focus input (GameLobby:446 — the exact idiom change 20 retires), and the app's only `role="menu"` (friend-row kebab, :104-195). **DECIDED 2026-07-16: option A — Accept = Button primary** (no semantic-green exception). Full migration: inputs → FIELD, links → text-link, Decline/Send → Button secondary, kebab → Button icon (41), Block confirm → Button danger, Block text → text-destructive. Keep the documented touch-padding WHY comments intact. |
 | 48 | **Touch-target + sticky-hover pass** (cross-cutting): invisible expanded hit areas under `@media (pointer: coarse)` for every control below ~24px — Checkbox/Radio (14px), sm buttons (~22px tall), icon buttons, Select options; `@media (hover: hover)` guards on hover-only effects (change 22's scale lift; any future lift). Zero visual change on desktop. Motivation: the spec chose the 36×20 Toggle *for* Android touch, then specced 14px checkboxes — one shared renderer means every control is a phone control. |
+| 49 | **BrailleSpinner on the model-loading strip** (requested by Destin, 2026-07-16): ModelLoadingBar's "Loading {model}" / "Preparing {model}" line (ModelLoadingBar.tsx:107-133) gains a `<BrailleSpinner size="sm"/>` at the left of the text, matching the §1.6 state-family anatomy (spinner = working). Standard cadence: 80ms frames, 600ms color cycle fg-dim→fg-2→accent→fg-muted→fg-faint, frozen under prefers-reduced-motion. |
 
 **Policy decisions recorded (not numbered changes):**
 - **Native `title=` tooltips stay** for icon hints (~231 across 63 files). AnchorTip (change 28) is for rich/click-open info, `title` for hover hints — two tools, one policy, documented exception to rule 9. Migrating 231 sites to a custom tooltip is cost without payoff.
@@ -383,12 +387,12 @@ don't churn it).
 too — sort each hit before converting: tab/segmented actives (LibraryScreen, BugReportPopup
 Bug/Feature) → change 45, NOT Button; TerminalToolbar key row → excluded (Session 8 policy);
 InputBar send → change 41 (icon Button); games subtree → change 47 decision; BugReportPopup and
-UpdatePanel CTAs → genuine Button conversions (both currently use rejected hover idioms). If
-Session 8 isn't approved yet when tranche 1 runs, leave the 41/45/47 hits untouched — don't
-half-convert them to md Buttons.
+UpdatePanel CTAs → genuine Button conversions (both currently use rejected hover idioms).
+(Session 8 IS approved as of 2026-07-16, so all triage targets are live.)
 
-**Tranche 8 (after Session 8 approval):** 41 icon buttons + CloseButton, 42 Textarea sweep,
-44 Toast, 45 SegmentedTabs, 46 ProgressBar, 47 games (per decision), 48 touch/hover pass.
+**Tranche 8 (Session 8 — approved 2026-07-16):** 41 icon buttons + CloseButton, 42 Textarea sweep,
+44 Toast, 45 SegmentedTabs (option B), 46 ProgressBar, 47 games (option A), 48 touch/hover pass,
+49 loading-strip spinner.
 
 **Known implementation risks (check these early):**
 1. **Protection cascade vs hover — CONFIRMED, no dev check needed (§9.K):** globals.css is
@@ -436,13 +440,16 @@ half-convert them to md Buttons.
 14. Type comes from the named scale (`text-4xs…text-sm…`); no arbitrary `text-[Npx]`.
 15. Every color a component consumes is a settable or derived token — nothing falls back to `:root`.
 
-Proposed with Session 8 (locked only once 41–48 are approved):
+Locked with Session 8's approval (2026-07-16):
 
 16. Icon-only buttons go through Button `size="icon"` (or `CloseButton`); `aria-label` required.
 17. Hover-only effects (scale lifts) sit behind `@media (hover: hover)`; controls smaller than
     ~24px get invisible coarse-pointer hit-area expansion — the renderer is always also a phone UI.
-18. Transient feedback goes through Toast; tab rows through SegmentedTabs; progress through
-    ProgressBar (`bg-inset` track, rounded fill).
+18. Transient feedback goes through Toast; tab rows through SegmentedTabs (inactive = transparent
+    `text-fg-2 hover:bg-inset`); progress through ProgressBar (`bg-inset` track, rounded fill);
+    working-state text carries the BrailleSpinner per the state family.
+19. Sliders stay native `<input type="range">` with `accent-accent` — no custom track/thumb CSS
+    (Destin's aesthetic call, 2026-07-16); range inputs must be controlled.
 
 ---
 
@@ -477,7 +484,7 @@ wrong localStorage key, pre-engine theming instructions) — ROADMAP bug filed 2
 | 5 States (final = section 20 + Option C) | 31–34 | https://claude.ai/code/artifact/9d552e5e-014e-4ad0-8b59-f0c4546221ec |
 | 6 Type & tokens | 35–37 | https://claude.ai/code/artifact/15b04909-a6ee-4ae3-889d-8df5fb560ddb |
 | 7 Form controls + inventory | 38–40 | https://claude.ai/code/artifact/b54205c3-ce04-42e7-b26e-8b13f9ab9b83 |
-| 8 Post-approval additions (+ §9 A–E re-approval renders) | 41–48 | https://claude.ai/code/artifact/7dae2904-21ba-47ac-af1f-3f97eae68453 — v3, iterating. **Decided 2026-07-16: 45→B (transparent inactive), 47→A (Button primary), §9.A rejected (offset ring stays), change 40 rescoped to native sliders.** Still awaiting final approval by number: 41, 42, 43, 44, 46, 48, B, C, D-rescope, E. |
+| 8 Post-approval additions (+ §9 re-approval renders) | 41–49 | https://claude.ai/code/artifact/7dae2904-21ba-47ac-af1f-3f97eae68453 — v4, **APPROVED IN FULL 2026-07-16** (41–46, 48, 49, §9 B/C/E, D-rescope; 45→B; 47→A; §9.A rejected — offset ring stays; 40 rescoped to native sliders; 49 added at Destin's request) |
 
 The mockup method used to produce these is captured as the workspace skill `/ui-mockup`
 (`.claude/skills/ui-mockup/SKILL.md`) — use it for any future UI design work.
@@ -500,10 +507,11 @@ policy notes fold into (a)–(c) once approved.
 
 ## 9. Amendment log (2026-07-16, post-approval code-verification pass)
 
-Sessions 1–7 were approved against rendered artifacts; the items below change what was approved
-or correct false claims, so they're logged individually. A–E change approved recipes and should
-get a quick re-approve (they'll be rendered alongside Session 8 in the workbench); F–K are
-corrections/verifications that don't change any approved pixel.
+Sessions 1–7 were approved against rendered artifacts; the items below changed what was approved
+or corrected false claims, so they're logged individually. Resolution 2026-07-16 (Session 8
+workbench): **A rejected** (offset ring stays), **B, C, E approved**, **D superseded by the
+change-40 rescope (confirmed)**; F–K are corrections/verifications that never changed approved
+pixels.
 
 | # | What changed | Why |
 |---|---|---|
