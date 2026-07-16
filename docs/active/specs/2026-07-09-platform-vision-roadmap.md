@@ -175,7 +175,7 @@ Key storage: OS keychain via Electron `safeStorage` (never plaintext in settings
 
 ### 3.3 Harness layer — the agent loops
 
-A **harness** = system prompt + tool set + loop policy (permission rules, max steps, compaction strategy) + model binding + UI affordances. Built on AI SDK `ToolLoopAgent`, with **opencode (MIT) as the design reference** — its `SessionPrompt.loop()` → processor → permission → compaction architecture is itself AI-SDK-based, so patterns transfer 1:1 *without embedding opencode*.
+A **harness** = system prompt + tool set + loop policy (permission rules, max steps, compaction strategy) + model binding + UI affordances. Built as **our own thin loop over AI SDK `streamText`** (amended 2026-07-15, Phase 2 spec settled decision 1 — the Phase 0 research verdict superseded the original `ToolLoopAgent` wording; `prepareStep`/`stopWhen` remain the design vocabulary), with **opencode (MIT) as the design reference** — its `SessionPrompt.loop()` → processor → permission → compaction architecture is itself AI-SDK-based, so patterns transfer 1:1 *without embedding opencode*.
 
 **Default harness presets (v1 set):**
 
@@ -287,6 +287,8 @@ Delivered: ADRs 006–010; foundations spec (`2026-07-10-phase0-foundations-desi
 **Gating decision (Destin, 2026-07-10):** `native.supported` stays OFF in production builds until **Phase 2 is complete** — users first meet the YouCoded runtime when it can already do agentic work, not chat-only. Phase 1 verification happens in dev builds via `YOUCODED_NATIVE=1`. Build order within Phase 1 is **cloud-first vertical slice**: provider registry + keys + HarnessSession v0 + session store against OpenRouter/direct keys first, then the local engine + model manager as additional providers.
 
 ### Phase 2 — Native Harness v1: tools + permissions (~6–8 weeks)
+
+**Spec:** `2026-07-15-phase2-native-harness-design.md` (drafted 2026-07-15). Key deltas from the outline below, decided in that brainstorm: own-loop over `streamText` (not `ToolLoopAgent`); tool set gains **AskUser** (mirrors the CC AskUserQuestion card) while **Task/subagents are deferred-but-designed-for** (core/vital — ROADMAP item); WebSearch default = **Exa keyless → DDG fallback → keyed upgrades**; presets ship as **personality profiles with the full tool suite** (Assistant + Coder; Chat cut); StatusBar usage bridge included; exit stays dev-gated — a **Phase 2.1** review/fix pass then flips `native.supported` in production.
 
 **Goal:** the Coder and Assistant presets work — real agentic sessions with the full existing chat UI.
 
