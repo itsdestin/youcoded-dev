@@ -22,6 +22,34 @@ This file now holds **only cross-repo invariants** — constraints that span two
 - **The dev instance and the built app SHARE `~/.claude/` (and `~/YouCoded/`).** Every cross-process JSON write is lock-guarded (`mutateFileUnderLock` / mkdir-lock `casWrite`); `write-guard.sh` + `.sync-lock` mediate concurrency. *Why:* `run-dev.sh` runs against real state alongside Destin's live app — two writers is a normal state, not an edge case. *Guard:* `cas-write.test.ts` + the per-subsystem store tests.
 - **Windows `git worktree remove` follows junctions.** If you junctioned `node_modules` into a worktree, delete the junction first (`cmd //c "rmdir <path>"`, NOT `rm -rf`) before `git worktree remove`, or it wipes the MAIN checkout's `node_modules`. *Why:* recursive delete traverses the junction to its target. *Guard:* none — see the fuller note in `CLAUDE.md` → Working Rules.
 
+## Native harness (Phase 2 Plan A)
+
+- **The Bash tool bypasses the file-tool guards** — secret-path denial and the
+  cwd jail live in the file tools; `cat .env` through Bash defeats them, and the
+  command-glob deny-list can't catch every phrasing. ACCEPTED limitation (CC has
+  the same hole); the guards are honest friction, not a sandbox. Don't present
+  them as a security boundary, and don't try to glob your way to one.
+- **Permission precedence is two-tier:** tool-layer guards (secret paths,
+  external_directory) sit BELOW all configuration and never yield; the
+  destructive deny-list is CONFIG — an explicit remembered Always-allow beats
+  it (by design, consequence-gated in UI). Guard: `permission-engine.test.ts`.
+- **The read-before-edit registry resets on resume** (files change while a
+  session is closed). Don't "optimize" it back from stored Read events.
+- **HarnessSession's emit surface is FROZEN** — the tool loop only emits
+  existing TranscriptEventType values. New loop states must map onto existing
+  events (max_steps/doom_loop are permission asks, not new event types).
+  Guard: `harness-session-loop.test.ts` + `tests/harness-sdk-toolcall-contract.test.ts`.
+- **Tool-call/result pairing is an invariant EVERYWHERE** — the driver
+  back-fills canceled/interrupted calls, `rebuildHistory` back-fills
+  crash-truncated ones, and `fitToContext` trims pair-aware. *Why:* a dangling
+  tool_call 400s on real providers and bricks the session. Guards:
+  `harness-session-loop.test.ts` (canceled-ask regression) +
+  `harness-history-rebuild.test.ts` (truncated-tail).
+- **The driver emits ALL of a step's tool-use events BEFORE executing** (not
+  interleaved). *Why:* `rebuildHistory` groups by event adjacency and relies on
+  this ordering; "fixing" it back to interleaved silently breaks history
+  reconstruction. Guard: `harness-session-loop.test.ts`.
+
 ## Documentation Drift
 
 - **Fix on sight.** A doc/rule/CLAUDE.md claim that contradicts current code gets fixed in the session you notice it — verify against code, cite the verification in the commit. There is no drift ledger to defer into. *Guard:* the fix + its commit message.
