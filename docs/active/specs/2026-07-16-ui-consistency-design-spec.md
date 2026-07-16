@@ -64,7 +64,7 @@ Sizes:
 | sm | `text-2xs px-2.5 py-1` | inline row actions (EngineCard, provider rows, chips) |
 | md (default) | `text-xs px-3 py-1.5` | forms, popup footers, most actions |
 | lg | `text-sm px-4 py-2` | page-level CTAs (sign-in, marketplace hero) |
-| icon (proposed, change 41) | `w-7 h-7 p-0` (square; `aria-label` required) | icon-only buttons — ✕ close, send, toolbar/utility icons |
+| icon (change 41 — approved) | `w-7 h-7 p-0` (square; `aria-label` required) | icon-only buttons — ✕ close, send, toolbar/utility icons |
 
 Decisions baked in (each was an explicit choice among rendered alternatives):
 - **Radius `rounded-lg`** (12px built-ins / 24px on big-radius packs) — matches the just-shipped
@@ -79,7 +79,7 @@ Decisions baked in (each was an explicit choice among rendered alternatives):
   noted and accepted. For the historical evidence see §9.A (rejected). Community `custom_css`
   focus styles (e.g. Halftone's pink outline) still override by specificity — intentional, packs
   keep that power.
-- **Coarse-pointer hit areas** (proposed, change 48): sm/icon buttons render an invisible expanded
+- **Coarse-pointer hit areas** (change 48 — approved): sm/icon buttons render an invisible expanded
   hit target under `@media (pointer: coarse)` — the renderer is shared with Android, and sm is
   ~22px tall against the ~44–48dp touch guideline. Visuals unchanged.
 - **Pill exception**: first-run hero CTAs keep `rounded-full` + their own larger padding via
@@ -117,7 +117,7 @@ FIELD_SIZE = md: text-xs px-3 py-2   ·   sm: text-2xs px-2.5 py-1.5
 ```
 FIELD covers **all** text-entry elements, not just `type="text"`: password (6 API-key sites),
 search (MarketplaceFilterBar.tsx:78/:140 — two treatments today), number (EngineCard.tsx:145,
-keeps `type="number"`), and `<textarea>` via a Textarea primitive (proposed, change 42 —
+keeps `type="number"`), and `<textarea>` via a Textarea primitive (change 42 — approved:
 12 textareas in 11 files currently split across ≥2 conflicting recipes, e.g. ContextPopup.tsx:161
 `border-edge rounded-sm focus:ring-1` vs BugReportPopup.tsx:194 `border-edge-dim rounded-lg
 focus:border-accent`; default `resize-none`). The chat composer textarea (InputBar.tsx:535,
