@@ -119,11 +119,32 @@ quickemu --vm windows-11.conf --snapshot apply clean   # revert (VM must be powe
 quickemu --vm windows-11.conf --display gtk            # boot from disk; no ISO, no key-press trap
 ```
 
-**Snapshots only while powered off.** `--snapshot` wraps `qemu-img` internal snapshots; snapshotting
-or reverting a running VM corrupts the disk. Shut a guest down from the monitor rather than killing
-it — `( echo "system_powerdown"; sleep 2 ) | socat - unix-connect:<vm>/<vm>-monitor.socket` sends
-ACPI and both guests power off cleanly in a few seconds. Confirm with `qemu-img snapshot -l
-<vm>/disk.qcow2`; quickemu's own `--snapshot info` prints image info, not the snapshot table.
+**Snapshots only while powered off.** `--snapshot` wraps `qemu-img` internal snapshots. Shut a guest
+down from the monitor rather than killing it — `( echo "system_powerdown"; sleep 2 ) | socat -
+unix-connect:<vm>/<vm>-monitor.socket` sends ACPI and both guests power off cleanly in seconds.
+Confirm with `qemu-img snapshot -l <vm>/disk.qcow2`; quickemu's own `--snapshot info` prints image
+info, not the snapshot table.
+
+**Wait for the poweroff — don't time-box it.** ACPI shutdown can be *delayed by a modal dialog in the
+guest* (Ubuntu's "System program problem detected" apport prompt held one up here). A wait loop with a
+timeout will fall through and revert against a live VM:
+
+```bash
+# WRONG — falls through after 120s and reverts anyway
+end=$(( $(date +%s) + 120 )); while [ $(date +%s) -lt $end ]; do pgrep -f ... || break; sleep 5; done
+quickemu --vm x.conf --snapshot apply clean && echo "reverted"     # prints success even if it failed
+
+# RIGHT — block until it's actually gone, then revert
+until ! pgrep -f "[q]emu-system-x86_64.*<vm>" >/dev/null; do sleep 3; done
+quickemu --vm x.conf --snapshot apply clean
+```
+
+qcow2 file locking means a revert against a running VM **errors rather than corrupts** (verified:
+`corrupt: false` after this happened), but quickemu can still exit 0, so `&& echo "reverted"` lies.
+**Verify the revert took** instead of trusting it — boot and check that whatever you installed is gone.
+
+Cosmetic aftermath: crash-y testing leaves Ubuntu showing *"System program problem detected"* (apport
+caught a killed/core-dumping process). It's test debris, not a guest fault, and reverting clears it.
 
 ### Set `gl="off"` — this is mandatory, on every guest
 
