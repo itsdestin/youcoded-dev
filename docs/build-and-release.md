@@ -61,6 +61,62 @@ First time only: `cd youcoded/desktop && npm ci` to install deps. After that `sc
 
 See `docs/local-dev.md` for caveats (plugin install shares state with built app, OneDrive path warning, remote-access UI is read-only in dev).
 
+## Beta builds (desktop) — a real installer from an untagged branch
+
+`run-dev.sh` is for iterating. When you need a **real installed app** from unreleased code —
+to dogfood master as a daily driver, or to exercise the install / first-run / sign-in flow on a
+clean VM — dispatch **`desktop-test-build.yml`**. It's `workflow_dispatch`-only, runs `npm test`
+plus a launch smoke test, and uploads Win `.exe` / macOS `.dmg` / Linux `.AppImage` artifacts
+(**7-day retention** — re-dispatch after that, don't hunt for the old run).
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "workflow_dispatch"} -->
+
+```bash
+# version MUST sort above the latest release — see the trap below
+gh workflow run desktop-test-build.yml --repo itsdestin/youcoded \
+  --ref <branch> -f version=1.3.0-beta
+
+gh run watch --repo itsdestin/youcoded $(gh run list --repo itsdestin/youcoded \
+  --workflow=desktop-test-build.yml --limit 1 --json databaseId --jq '.[0].databaseId')
+
+gh run download --repo itsdestin/youcoded <run-id> -n youcoded-desktop-windows -D ./beta
+```
+
+**It replaces the installed app in place.** `electron-builder.yml` pins `appId: com.youcoded.desktop`
+and `productName: YouCoded`, so NSIS upgrades over the existing install rather than sitting beside
+it. `AppData/Roaming/youcoded` (window bounds, localStorage) carries over, and `~/.claude/` +
+`~/.youcoded/` are shared as always — which is what makes it usable as a daily driver, and also
+what makes rollback lossy. There is no side-by-side desktop equivalent of Android's `.releasetest`
+suffix; if you want isolation, use a VM.
+<!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "appId: com.youcoded.desktop"} -->
+
+**The version input is load-bearing — read this before picking one.** `compareVersions`
+(`ipc-handlers.ts`) parses naively: `'1.2.4-beta'.split('.').map(Number)` → `Number('4-beta')` →
+`NaN` → `|| 0` → `[1,2,0]`, which is **lower** than a released `1.2.4`. The installed beta would
+then show "update available" and offer to downgrade itself to the release it's meant to be ahead
+of. **Bump the minor and suffix** (`1.3.0-beta` → `[1,3,0]`), never patch-suffix the current
+version. Corollary: once the real `1.3.0` ships it compares *equal* to `1.3.0-beta`, so the beta
+never prompts to update — that's fine, you re-dispatch to move forward.
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "Stamp beta version"} -->
+
+**Why the version step exists at all:** only `desktop-release.yml` patches `package.json` (from the
+tag). Without the `Stamp beta version` step a test build inherits the *last released* version and
+reports it in About, in analytics (`analytics-service.ts` sends `app.getVersion()`), and in bug
+reports — a dogfood build is then indistinguishable from the real release, and it pollutes your own
+version breakdown. Both `__APP_VERSION__` (Vite reads `pkg.version`) and `app.getVersion()` derive
+from that one file, so stamping it fixes every surface at once.
+
+**How you know you're on one:** the build step sets `YOUCODED_BUILD_CHANNEL=BETA`, Vite bakes it in
+as `__BUILD_CHANNEL__`, and Settings → About reads `YouCoded v1.3.0-beta (BETA)`. Release builds set
+no channel and render unchanged. Format lives in `desktop/src/shared/version-line.ts` (pinned by
+`desktop/tests/version-line.test.ts`).
+<!-- verify: {"test": "youcoded/desktop/tests/version-line.test.ts"} -->
+
+**Rolling back.** Reinstall the last release's installer from its GitHub release
+(`YouCoded.Setup.<version>.exe`). That reverts the *code* only — it does **not** un-migrate
+`~/.claude/` or `~/.youcoded/` state that the newer build may have already rewritten. Snapshot both
+before installing a beta that's far ahead of your release (there's precedent: the 776 MB
+`claude-snapshot.tar.gz` taken 2026-07-12 before the two-device dogfood).
+
 ## Local verification (typecheck + CI-style build)
 
 When you need to confirm something compiles or passes tests — not just runs:

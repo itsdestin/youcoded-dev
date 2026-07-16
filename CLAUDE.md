@@ -183,7 +183,7 @@ Path-scoped rules in `.claude/rules/` inject automatically when you touch matchi
 | `youcoded/docs/android-runtime.md` | touching the Android/Termux runtime |
 | `youcoded/docs/shared-ui-architecture.md` | adding IPC or cross-platform features |
 | `docs/registries.md` | touching marketplace/themes registries |
-| `docs/build-and-release.md` | building, releasing, version bumping |
+| `docs/build-and-release.md` | building, releasing, version bumping, beta/test builds (dogfooding master, VM install testing) |
 | `docs/toolkit-structure.md` | touching youcoded-core (deprecated plugin) |
 | `docs/error-message-standards.md` | writing any user-facing error |
 | `docs/local-dev.md` | running the dev instance |
