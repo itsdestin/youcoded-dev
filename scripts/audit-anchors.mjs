@@ -36,19 +36,30 @@ export const BUDGETS = { ruleBodyWords: 600, pitfallsWords: 2500, eagerTokens: 1
 // ---------- parsers (pure, no I/O) ----------
 
 // Minimal parser for the exact rule-frontmatter shape pinned in .claude/rules/README.md.
-// Deliberately NOT a general YAML parser: unknown top-level keys are ignored, and only
-// the pinned shapes parse — a creatively-formatted rule surfaces as missing anchors
-// (visible in the totals) rather than silently passing.
+// Deliberately NOT a general YAML parser: unknown top-level keys are ignored. Fail-loud
+// guarantee: an off-schema `paths:`/`verify:` line (e.g. inline-flow YAML like
+// `paths: ["a/**"]`) is collected in `errors` — main() reports each as a failed anchor
+// and skips the rule, so a creatively-formatted rule can never silently pass with its
+// anchors unchecked or get misclassified as eager.
 export function parseRuleFrontmatter(text) {
   const m = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!m) return null;
-  const out = { paths: [], last_verified: null, verify: [] };
+  const out = { paths: [], last_verified: null, verify: [], errors: [] };
   let section = null; // 'paths' | 'verify' | null
   for (const raw of m[1].split(/\r?\n/)) {
     const line = raw.replace(/\s+$/, '');
     if (!line) continue;
-    if (/^paths:\s*$/.test(line)) { section = 'paths'; continue; }
-    if (/^verify:\s*$/.test(line)) { section = 'verify'; continue; }
+    // section headers may carry a trailing # comment (the README's schema example does)
+    if (/^paths:\s*(#.*)?$/.test(line)) { section = 'paths'; continue; }
+    if (/^verify:\s*(#.*)?$/.test(line)) { section = 'verify'; continue; }
+    // Fail loud on inline-flow YAML (`paths: ["a/**"]`, `verify: [{...}]`): silently
+    // parsing it as "no paths, no anchors" would skip every check for the rule with exit 0.
+    const inline = line.match(/^(paths|verify):\s*(\S.*)$/);
+    if (inline) {
+      out.errors.push(`off-schema ${inline[1]}: line ("${line}") — use the block-list form pinned in .claude/rules/README.md`);
+      section = null;
+      continue;
+    }
     const lv = line.match(/^last_verified:\s*(\S+)/);
     if (lv) { out.last_verified = lv[1]; section = null; continue; }
     if (/^\S/.test(line)) { section = null; continue; } // any other top-level key
@@ -59,8 +70,9 @@ export function parseRuleFrontmatter(text) {
       continue;
     }
     if (section === 'verify') {
-      const item = line.match(/^\s+-\s+(path|test):\s*(\S+)/);
-      if (item) { out.verify.push({ [item[1]]: item[2] }); continue; }
+      // quoted value (allows spaces in the path) or first bare token
+      const item = line.match(/^\s+-\s+(path|test):\s*(?:"([^"]+)"|(\S+))/);
+      if (item) { out.verify.push({ [item[1]]: item[2] ?? item[3] }); continue; }
       const cont = line.match(/^\s+contains:\s*(?:"(.*)"|(.+))$/);
       if (cont && out.verify.length) {
         out.verify[out.verify.length - 1].contains = cont[1] ?? cont[2];
@@ -173,7 +185,9 @@ export function listTrackedFiles(root) {
   const files = [];
   const ls = (dir, prefix) => {
     try {
-      const out = execFileSync('git', ['-C', dir, 'ls-files'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+      // stderr ignored: a missing repo prints "fatal: not a git repository" otherwise
+      const out = execFileSync('git', ['-C', dir, 'ls-files'],
+        { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
       for (const f of out.split('\n')) if (f) files.push(prefix + f);
     } catch { /* repo missing (setup.sh not run) — its globs will visibly match nothing */ }
   };
@@ -187,7 +201,10 @@ export function listTrackedFiles(root) {
 export function currentShas(root) {
   const shas = {};
   const get = (name, dir) => {
-    try { shas[name] = execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(); }
+    try {
+      shas[name] = execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    }
     catch { /* leave absent */ }
   };
   get('workspace', root);
@@ -197,7 +214,10 @@ export function currentShas(root) {
 
 export function* walkMarkdown(dir, skipDirs = []) {
   if (!fs.existsSync(dir)) return;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+  // sorted so anchor ordering (and thus report output) is deterministic across filesystems
+  const entries = fs.readdirSync(dir, { withFileTypes: true })
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+  for (const entry of entries) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       if (entry.name === 'node_modules' || skipDirs.some(s => path.resolve(full) === path.resolve(s))) continue;
@@ -257,7 +277,8 @@ export function changedFilesSince(root, shas) {
     const prefix = name === 'workspace' ? '' : name + '/';
     try {
       const out = execFileSync('git', ['-C', dir, 'diff', '--name-only', `${sha}..HEAD`],
-        { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+        // stderr ignored: an unknown base SHA prints "fatal: bad revision" otherwise
+        { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
       for (const f of out.split('\n')) if (f) changed.push(prefix + f);
     } catch {
       notes.push(`repo ${name}: base SHA ${sha} unknown — run /audit full`);
@@ -291,9 +312,25 @@ function main() {
   const asJson = args.includes('--json');
   const noDiff = args.includes('--no-diff');
   const rootIdx = args.indexOf('--root');
+  // Guard the CLI surface: a bad --root or a non-workspace dir must produce one specific
+  // error line, not a raw ENOENT stack (workspace error-message standard).
+  if (rootIdx !== -1 && (args[rootIdx + 1] === undefined || args[rootIdx + 1].startsWith('--'))) {
+    console.error('audit-anchors: --root requires a directory argument (e.g. --root /c/Users/desti/youcoded-dev)');
+    process.exit(1);
+  }
   const root = rootIdx !== -1
     ? path.resolve(args[rootIdx + 1])
     : path.resolve(fileURLToPath(new URL('..', import.meta.url)));
+  for (const [what, p] of [
+    ['workspace root', root],
+    ['rules dir', path.join(root, '.claude', 'rules')],
+    ['CLAUDE.md', path.join(root, 'CLAUDE.md')],
+  ]) {
+    if (!fs.existsSync(p)) {
+      console.error(`audit-anchors: ${what} not found at ${p} — is --root pointing at the youcoded-dev workspace?`);
+      process.exit(1);
+    }
+  }
 
   const result = {
     ok: true,
@@ -311,8 +348,20 @@ function main() {
   for (const f of fs.readdirSync(rulesDir).filter(f => f.endsWith('.md') && f !== 'README.md').sort()) {
     const text = fs.readFileSync(path.join(rulesDir, f), 'utf8');
     const fm = parseRuleFrontmatter(text);
+    // Parse failures count toward total too, so the summary math stays non-negative
+    // (failed ⊆ total) and the failure is visible in the printed ratio.
     if (!fm) {
+      result.anchors.total++;
       result.anchors.failed.push({ source: `.claude/rules/${f}`, reason: 'no frontmatter block' });
+      continue;
+    }
+    if (fm.errors.length) {
+      // Off-schema frontmatter: don't trust the partial parse (no paths would misclassify
+      // the rule as eager; no verify would silently skip its anchors). Fail each error loudly.
+      for (const e of fm.errors) {
+        result.anchors.total++;
+        result.anchors.failed.push({ source: `.claude/rules/${f}`, reason: e });
+      }
       continue;
     }
     rules.push({ name: f.replace(/\.md$/, ''), file: `.claude/rules/${f}`, fm, text });

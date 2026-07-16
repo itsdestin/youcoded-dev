@@ -204,3 +204,70 @@ test('harvestDocAnchors: example anchors inside code fences and inline spans are
   ].join('\n'));
   assert.deepEqual(anchors, [{ path: 'real.ts' }]);
 });
+
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+
+test('parseRuleFrontmatter: inline-flow paths/verify collected as errors (fail-loud)', () => {
+  const fm = parseRuleFrontmatter(`---
+paths: ["a/**"]
+last_verified: 2026-07-15
+verify: [{path: gone.ts}]
+---
+body`);
+  assert.equal(fm.errors.length, 2);
+  assert.match(fm.errors[0], /off-schema paths/);
+  assert.match(fm.errors[1], /off-schema verify/);
+  // partial parse yields nothing usable — main() must skip the rule, not trust this
+  assert.deepEqual(fm.paths, []);
+  assert.deepEqual(fm.verify, []);
+});
+
+test('parseRuleFrontmatter: block-form rules have no errors; header comments allowed', () => {
+  assert.deepEqual(parseRuleFrontmatter('---\npaths:\n  - "a/**"\n---\n').errors, []);
+  // the README schema example puts a trailing # comment on the paths: header itself
+  const fm = parseRuleFrontmatter('---\npaths:   # REQUIRED\n  - "a/**"\n---\n');
+  assert.deepEqual(fm.errors, []);
+  assert.deepEqual(fm.paths, ['a/**']);
+});
+
+test('parseRuleFrontmatter: quoted verify path/test values drop the quotes', () => {
+  const fm = parseRuleFrontmatter(`---
+paths:
+  - "a/**"
+verify:
+  - path: "a b.ts"
+  - test: "tests/e.test.ts"
+---
+`);
+  assert.deepEqual(fm.verify, [{ path: 'a b.ts' }, { test: 'tests/e.test.ts' }]);
+});
+
+test('main: an off-schema rule fails the whole run loudly (pinning)', () => {
+  // Regression pin for the fail-loud guarantee: inline-flow YAML in a rule used to
+  // parse as "no paths, no anchors" and exit 0 with every check for that rule skipped.
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-badrule-'));
+  fs.mkdirSync(path.join(root, '.claude', 'rules'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'docs'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'CLAUDE.md'), 'minimal fixture workspace');
+  fs.writeFileSync(path.join(root, 'docs', 'MAP.md'), '# map\n');
+  fs.writeFileSync(path.join(root, '.claude', 'rules', 'bad.md'),
+    '---\npaths: ["a/**"]\n---\nbody');
+  const script = fileURLToPath(new URL('./audit-anchors.mjs', import.meta.url));
+  const r = spawnSync(process.execPath, [script, '--root', root, '--no-diff'], { encoding: 'utf8' });
+  assert.equal(r.status, 1);
+  assert.match(r.stdout, /off-schema paths/);
+  assert.match(r.stdout, /0\/1 ok/); // parse failure counts toward total — no negative math
+});
+
+test('main: bad --root value and non-workspace dir produce one clear error, exit 1', () => {
+  const script = fileURLToPath(new URL('./audit-anchors.mjs', import.meta.url));
+  const noVal = spawnSync(process.execPath, [script, '--root'], { encoding: 'utf8' });
+  assert.equal(noVal.status, 1);
+  assert.match(noVal.stderr, /--root requires a directory argument/);
+  const empty = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-notws-'));
+  const notWs = spawnSync(process.execPath, [script, '--root', empty], { encoding: 'utf8' });
+  assert.equal(notWs.status, 1);
+  assert.match(notWs.stderr, /rules dir not found/);
+  assert.doesNotMatch(notWs.stderr, /ENOENT/);
+});
