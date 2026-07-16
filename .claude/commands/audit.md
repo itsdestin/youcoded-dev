@@ -1,174 +1,153 @@
 ---
-description: Verify all documentation (CLAUDE.md, docs/, .claude/rules/, PITFALLS.md, memory files) against current code. Report drift with concrete fix instructions.
+description: Fix-executing workspace audit — mechanical anchor pass via scripts/audit-anchors.mjs, diff-scoped semantic re-verification, fixes applied in-run, dated audit-trail report in docs/audits/.
 ---
 
-# /audit — Documentation Drift Verification
+# /audit — fix-executing workspace audit
 
-Re-runs the Phase 0 audit methodology to detect drift between documentation claims and actual code. Produces a dated report in `docs/audits/` with findings AND explicit fix instructions for every drift item.
+/audit is a maintenance PROCESS, not a report generator. It fixes what it finds in the
+same run and leaves the workspace healthier than it found it. Dumping an unactioned
+to-do list is a failure mode, not an output. The dated report is an audit TRAIL — what
+was verified, what was fixed — plus a near-empty residue of items that genuinely need
+Destin's decision.
+
+**Ground truth is the code.** The rules, depth docs, MAP, and ROADMAP are the claims
+under test. This command doc deliberately contains NO subsystem-specific expectations —
+the claims live in the documents themselves and are harvested at run time. (The old
+/audit hardcoded its expectations and became the stalest doc in the workspace.)
 
 ## Usage
 
-- `/audit` — audits all subsystems
-- `/audit ipc` — audits only cross-platform IPC
-- `/audit chat` — audits only chat reducer
-- `/audit android` — audits only Android runtime
-- `/audit toolkit` — audits only YouCoded toolkit
-- `/audit release` — audits only build/release flow
-- `/audit stale` — only checks last_verified dates and commit activity; does not re-verify
+- `/audit` — diff-scoped (default): the mechanical pass always runs in full; semantic
+  re-verification covers only subsystems whose files changed since the last report's
+  `verified_shas`.
+- `/audit full` — semantic re-verification of every rule + depth doc, and every `test:`
+  anchor is RUN, not just existence-checked. Quarterly-ish, or whenever the script notes
+  a base SHA is unknown. Diff-scoping can't catch claims that were wrong from the start.
+- `/audit <subsystem>` — one subsystem. Names are `.claude/rules/*.md` basenames
+  (`/audit sync-spaces`, `/audit chat-reducer`, …) — the list comes from the rules dir,
+  never from this doc.
 
-## Audit Methodology
+## Process
 
-### Step 1: Sync first
-Run `bash setup.sh` to pull latest from all sub-repos. Stale git state invalidates findings.
+### 0. Sync
 
-### Step 2: Launch parallel verification subagents
+Run `bash setup.sh` from the workspace root. Stale git state invalidates findings.
 
-Use the Agent tool with `subagent_type: Explore` for each scope. Each agent verifies one subsystem's claims against actual code. Run up to 3 in parallel.
+### 1. Mechanical pass (always full, always first)
 
-Agents to launch (based on scope):
-
-**IPC Audit agent** — verifies claims in:
-- `youcoded/docs/shared-ui-architecture.md`
-- `.claude/rules/ipc-bridge.md`
-- PITFALLS sections: "Cross-Platform"
-- Memory: `arch_shared_ui_why.md`
-
-Must check:
-- `remote-shim.ts` platform detection logic
-- `LocalBridgeServer.kt` port number
-- `SessionService.handleBridgeMessage()` message type count
-- `preload.ts` vs `remote-shim.ts` window.claude shape parity
-- Protocol format (type+id+payload structure)
-
-**Chat Reducer Audit agent** — verifies claims in:
-- `youcoded/docs/chat-reducer.md`
-- `.claude/rules/chat-reducer.md`
-- PITFALLS sections: "Chat Reducer"
-
-Must check:
-- `toolCalls` Map never-cleared invariant
-- `activeTurnToolIds` Set existence and usage
-- `endTurn()` helper signature and behavior
-- Thinking timeout condition logic
-- Dedup mechanism (confirm still content-based, no optimistic flag)
-
-**Android Audit agent** — verifies claims in:
-- `youcoded/docs/android-runtime.md`
-- `.claude/rules/android-runtime.md`
-- PITFALLS sections: "Android Runtime"
-
-Must check:
-- `Bootstrap.buildRuntimeEnv()` sets LD_LIBRARY_PATH
-- TMPDIR path (confirm $HOME/.cache/tmpdir, not $HOME/tmp)
-- termux-exec linker variant deployment
-- claude-wrapper.js canonical asset location
-- PtyBridge + DirectShellBridge both use shared env
-- sessionFinished StateFlow still the reactive source
-
-**Toolkit Audit agent** — verifies claims in:
-- `docs/toolkit-structure.md`
-- `.claude/rules/youcoded-core-toolkit.md`
-- Memory: `arch_three_layer_toolkit.md`, `arch_sync_design.md`, `arch_hook_enforcement.md`
-
-Must check:
-- Root + 3 layer plugin.json structure and versions
-- hooks-manifest.json hook count and matchers
-- Settings.json drift vs manifest
-- session-start.sh responsibilities
-- write-guard.sh and worktree-guard.sh behavior
-
-**Release Audit agent** — verifies claims in:
-- `docs/build-and-release.md`
-- PITFALLS sections: "Releases"
-- Memory: `arch_release_flow.md`
-
-Must check:
-- `build-web-ui.sh` existence and current behavior
-- Android versionCode/versionName current values in build.gradle.kts
-- Both workflows trigger on `v*` tag pattern
-- auto-tag.yml behavior for plugin.json version changes
-
-### Step 3: Recent-commits scan
-
-For each sub-repo, run `git log --oneline -20` and identify:
-- Architectural changes (renames, deletions, new subsystems)
-- New files/directories not referenced in any doc/rule
-- Deleted or renamed files that docs/rules still reference
-
-### Step 4: Stale detection
-
-For each rules file and doc, check `last_verified` frontmatter against `git log -1 --format=%ci` on referenced code paths. Flag any rules whose scoped code has been modified since last verification.
-
-### Step 5: Produce report
-
-Write a dated report `docs/audits/<YYYY-MM-DD>.md` (frontmatter: `residue: <count of unfixed findings>` — the session-start hook greps it) with structure:
-
-```markdown
-# Codebase Audit — <DATE>
-
-## Summary
-- Items verified: N
-- Drift detected: N
-- Stale (code changed since last verify): N
-- New features undocumented: N
-- References to removed files: N
-
-## Confirmed (no action needed)
-[Checklist of verified claims]
-
-## Drift — Action Required
-For each drift item:
-
-### <Finding title>
-- **Claim**: <what docs said>
-- **Actual**: <what code does now>
-- **Where**: <file:line of the drift>
-- **Impact**: <what breaks if Claude acts on stale info>
-- **Fix**:
-  1. Edit `<file>` at `<section/line>`
-  2. Change "<old text>" to "<new text>"
-  3. Update `last_verified` in frontmatter to today
-  4. Verify by: <specific check>
-
-## Undocumented Features
-[New code areas with no corresponding rule/doc; fix by creating...]
-
-## Stale References
-[Files no longer exist / renamed; fix by removing/updating...]
-
-## Residue (unfixed findings)
-[Findings not fixed this run — counted in the residue: frontmatter]
+```bash
+node scripts/audit-anchors.mjs --json
 ```
 
-### Step 6: Update last_verified dates
+Checks, deterministically: every `verify:` anchor in `.claude/rules/*.md` (path exists,
+`contains` regex present, test file exists), every `<!-- verify: {...} -->` doc anchor,
+every path in `docs/MAP.md`, every rule `paths:` glob still matches ≥1 tracked file, and
+the store budgets (rule bodies ≤600 words, PITFALLS ≤2,500 words, eager load ≤10k tokens).
+It also emits the diff scope: changed files since the last report's `verified_shas`,
+which rules they intersect, and changed code files matching NO rule.
 
-For each doc/rule/memory file that was verified as ACCURATE (not just checked), update its `last_verified` frontmatter field to today's date AND record the current HEAD commit of the code area it describes.
+**Every failure is confirmed drift. Fix it now**, before anything else:
+- missing path / failed regex → read the code, correct the rule/doc/MAP entry (or the
+  anchor, if the invariant moved), commit with the verification cited
+- budget violation → trim or migrate content per the taxonomy (rule overflow → its lazy
+  doc or a pinning test)
+- glob matching nothing → the subsystem moved; update the rule's `paths:` and MAP row
 
-### Step 7: Record residue
+Re-run until exit 0.
 
-For each drift item that wasn't fixed in this session, list it under the report's ## Residue section with fix instructions, and set the `residue:` frontmatter count to match — the session-start hook surfaces non-zero residue every session.
+### 2. Determine semantic scope
 
-## Fix Instructions Must Be Concrete
+- `/audit full` → all rules. `/audit <name>` → that rule.
+- Default → `diffScope.affected` from the script output. If `diffScope.notes` says a base
+  SHA is unknown or there's no base report, escalate to full.
+- `diffScope.uncoveredCode` (changed code matching no rule) → judge whether a new
+  subsystem has formed; if so, draft a new rule + MAP row as part of this run (gardening
+  finding, not residue).
 
-Every drift entry in the report MUST include:
-1. **Exact file to edit** (absolute path)
-2. **Section or line range** (so the fix is localized)
-3. **Old text vs new text** (or specific content change)
-4. **Verification command** (how to confirm the fix worked — e.g., "grep for X", "re-run `/audit ipc`")
+### 3. Semantic verification (subagents)
 
-Fix instructions are the whole point — without them, Claude just complains about drift without helping the user resolve it.
+For each in-scope subsystem, dispatch a read-only verification agent (Explore) with:
+the full rule text, the depth doc it points to, and this instruction:
 
-## After Running
+> Verify every factual claim in these documents against the current code. For each claim,
+> find the code that proves or disproves it and report file:line evidence. Report drift
+> only — do not fix anything. Flag claims you could not verify either way.
 
-- Review the dated report in `docs/audits/` — the drift section is your fix backlog
-- Apply fixes (ideally one PR per subsystem)
-- Re-run `/audit <subsystem>` to confirm resolution
-- Unfixed findings persist in the report's ## Residue (surfaced at session start) until fixed
+Run up to 3 in parallel. The agents receive the documents as the claims — never a
+paraphrase or a cached expectation.
 
-## When to Run
+### 4. Fix, don't report
 
-- **Before any release** — prevents shipping with stale docs
-- **After major refactors** — touching IPC, reducer, or runtime
-- **Monthly baseline** — even if nothing "feels" off
-- **When Claude surprises you** — mentions a file that doesn't exist, claims behavior that isn't current, etc.
-- **Quarterly full sweep** — run `/audit` (no scope) to verify everything
+Work every finding in the same run:
+- **Doc/rule/MAP/CLAUDE.md corrections** — fix inline, commit as you go (verify against
+  code first; cite the verification in the commit message).
+- **Missing pinning tests, rule restructures** — superpowers:subagent-driven-development.
+- **Sub-repo code fixes** — normal working rules: worktree, tests, PR. The audit gets no
+  bypass.
+- **Decision-residue** (privacy copy, LICENSE text, deleting user-created content,
+  product-behavior questions) — never auto-edit; goes to the report's `## Residue` with a
+  recommendation.
+- Drift genuinely unfixable this session → ROADMAP `bug` line tagged `#docs` AND a
+  residue entry.
+
+### 5. Roadmap verification
+
+For every open `[ ]` item in `ROADMAP.md`: check whether it already shipped (git log
+since its `(added YYYY-MM-DD)` date, or read the code it names). Shipped → flip to `[x]`,
+note the commit/PR in the detail line, move to `## Shipped`. Stale `in-progress` tokens
+get the same check. Dedup near-identical items (merge detail lines, keep the older date).
+
+### 6. Gardening (the anti-rot pass)
+
+- Budgets: already enforced by the script in step 1; migrate any overflow now.
+- `docs/active/` sweep: any doc whose feature merged → `docs/archive/`, status flipped
+  to `shipped`/`superseded`. Verify every doc there still has `status:` frontmatter.
+- MAP: update rows for renamed/new entry points found in steps 2–3.
+- Auto-memory (`~/.claude/projects/C--Users-desti-youcoded-dev/memory/`): delete or
+  migrate duplicative/misplaced/drifted entries. Planning content moves to ROADMAP.md —
+  memory is the last-resort store.
+- Outward-facing docs: diff each repo since the last audit; review README, in-app
+  privacy copy, landing-page FAQ, LICENSE, sub-repo CLAUDE.md against what changed.
+  README/CLAUDE.md accuracy fixes apply on sight; privacy/license changes are
+  decision-residue.
+
+### 7. Report + last_verified
+
+- Update `last_verified:` to today in every rule that was semantically verified (not
+  merely mechanically checked).
+- Write `docs/audits/YYYY-MM-DD.md` with the frontmatter contract below, a changelog of
+  applied fixes (what, where, verification), and `## Residue` listing ONLY items needing
+  a human decision — each with a concrete recommendation. Set `residue:` to that count.
+  The session-start hook greps `residue:` and the report date every session.
+- Commit + push (workspace repo, direct or via worktree per size).
+
+```yaml
+---
+date: YYYY-MM-DD
+scope: full | diff-scoped | <subsystem>
+residue: 0
+verified_shas:
+  workspace: <full sha>
+  youcoded: <full sha>
+  youcoded-core: <full sha>
+  youcoded-admin: <full sha>
+  wecoded-themes: <full sha>
+  wecoded-marketplace: <full sha>
+---
+```
+
+Take `verified_shas` from the script's `currentShas` output at the END of the run (after
+fixes are committed), so the next diff-scoped run starts from what this run verified.
+
+In full mode, additionally run every `test:` anchor through its repo's runner before
+writing the report (e.g. `cd youcoded/desktop && npx vitest run <files>`;
+`cd wecoded-marketplace/worker && npm test`). A failing pinned test is drift in the code
+or the pin — investigate, don't skip.
+
+## When to run
+
+- Before any release (prevents shipping with stale docs)
+- After major refactors touching IPC, reducer, or runtime
+- When Claude acts on outdated info or mentions files that don't exist
+- `/audit full` quarterly, or when diff-scope notes demand it
+- The session-start hook nags when the latest report is >60 days old or has residue
