@@ -1103,6 +1103,31 @@ git commit -m "feat(buddy): settings row restyle — Toggle switch, live status,
 
 ---
 
+> #### ⚠️ 2026-07-16 workbench addendum — read before Tasks 7–12
+>
+> The mascot's visual/structural design was prototyped and approved after this plan was
+> written. **Where a sketch below conflicts with the prototype, the prototype wins:**
+> `docs/active/prototypes/2026-07-16-buddy-rig-workbench.html` (its physics/pose code was
+> deliberately written copy-back-able). Decisions + exact values:
+> `docs/active/handoffs/2026-07-16-mascot-rig-workbench-handoff.md`. Authoring contract +
+> reference art: `wecoded-themes/mascots/` (README + 6 skins + 2 example rigs + components).
+> Deltas vs. the original sketches:
+>
+> 1. **Contract grew**: viewBox `-3 -5 30 30`, `rig-root`, SIX faces (idle/welcome/curious/
+>    shocked/dizzy/blink), `rig-tail`, slots (`slot-hat`/`slot-eyewear`/`slot-item`),
+>    `rig-hand-peek-right/left`. No `rig-head` (the body carries the face). Tint via
+>    `--rig-accent`/`--rig-on-accent`/`--rig-line`, not `currentColor`.
+> 2. **Task 8's original POSES had inverted signs** (wave crossed the face) — the code +
+>    test below are corrected; don't "fix" them back. Poses also support `tx`/`ty` translate.
+> 3. **Unified springs**: pose base + drag trail + idle sway all target ONE spring per part —
+>    pose changes ride the physics instead of a 180ms CSS transition. Port `stepSpring` usage
+>    from the prototype's rAF loop.
+> 4. **Motion styles + intensity** (chill/bouncy/floaty/hyper/sleepy, 0.5–2×) and **scene
+>    companions** (spring-following flourishes) are part of the approved §5 design — port
+>    `IDLE_STYLES`/`BLINK_CFG`/`COMPANIONS` handling from the prototype in Task 10.
+> 5. **Side-edge peek is the approved "75° wider" staging** (edge-pinned mittens + swing-out),
+>    not a plain translateX sink — Task 12 Step 7 below reflects it.
+
 ### Task 7: Rig SVG sanitizer (TDD)
 
 **Files:**
@@ -1270,25 +1295,32 @@ describe('parsePivot', () => {
 
 describe('defaultPivot', () => {
   const bbox = { x: 10, y: 20, width: 8, height: 20 };
-  it('arms/legs pivot at top-center (shoulder/hip)', () => {
+  it('limbs pivot at top-center (shoulder/hip — limbs hang down)', () => {
     expect(defaultPivot('rig-arm-left', bbox)).toEqual({ x: 14, y: 20 });
     expect(defaultPivot('rig-leg-right', bbox)).toEqual({ x: 14, y: 20 });
-  });
-  it('head pivots at bottom-center (neck)', () => {
-    expect(defaultPivot('rig-head', bbox)).toEqual({ x: 14, y: 40 });
   });
 });
 
 describe('POSES', () => {
   it('every pose names only known part ids and a valid face', () => {
     for (const pose of Object.values(POSES)) {
-      expect(['idle', 'shocked']).toContain(pose.face);
+      expect(['idle', 'welcome', 'curious', 'shocked', 'dizzy']).toContain(pose.face);
       for (const id of Object.keys(pose.parts)) {
-        expect([...LIMB_IDS, 'rig-head', 'rig-body']).toContain(id);
+        expect([...LIMB_IDS, 'rig-tail', 'rig-body']).toContain(id);
       }
     }
   });
-  it('peek raises both arms (hands gripping the edge)', () => {
+  // SIGN-CONVENTION PINS (2026-07-16 workbench): limbs hang down from their
+  // pivot, positive = clockwise. These caught a real bug — the original plan
+  // sketch had the wave crossing the face.
+  it('welcome raises the right arm OUTWARD (negative rotation)', () => {
+    expect(POSES.welcome.parts['rig-arm-right']!.rotate!).toBeLessThan(0);
+  });
+  it('shocked flails both arms OUTWARD (left positive, right negative)', () => {
+    expect(POSES.shocked.parts['rig-arm-left']!.rotate!).toBeGreaterThan(0);
+    expect(POSES.shocked.parts['rig-arm-right']!.rotate!).toBeLessThan(0);
+  });
+  it('bottom-peek curls both arms INWARD to grip the edge', () => {
     expect(POSES.peek.parts['rig-arm-left']!.rotate!).toBeLessThan(0);
     expect(POSES.peek.parts['rig-arm-right']!.rotate!).toBeGreaterThan(0);
   });
@@ -1350,23 +1382,34 @@ Expected: FAIL — module not found.
 
 export const LIMB_IDS = ['rig-arm-left', 'rig-arm-right', 'rig-leg-left', 'rig-leg-right'] as const;
 export type LimbId = (typeof LIMB_IDS)[number];
-export type RigPartId = LimbId | 'rig-head' | 'rig-body';
-export type FaceName = 'idle' | 'shocked';
-export type PoseName = 'idle' | 'shocked' | 'welcome' | 'peek';
+// The tail springs like a limb (drag target = left-leg lean × 0.8) but has no
+// pose entries of its own today, so it stays out of LIMB_IDS.
+export type RigPartId = LimbId | 'rig-tail' | 'rig-body';
+export type FaceName = 'idle' | 'welcome' | 'curious' | 'shocked' | 'dizzy';
+export type PoseName = 'idle' | 'welcome' | 'curious' | 'shocked' | 'dizzy' | 'peek' | 'peek-right' | 'peek-left';
 
-export interface PartPose { rotate?: number; translateX?: number; translateY?: number; }
-export interface PoseDef { parts: Partial<Record<RigPartId, PartPose>>; face: FaceName; }
+export interface PartPose { rotate?: number; tx?: number; ty?: number; }
+export interface PoseDef { parts: Partial<Record<RigPartId, PartPose>>; face: FaceName; wave?: boolean; }
 
 // Rotation values assume limbs drawn HANGING DOWN from their pivot (the
-// default-rig convention, documented in theme-spec.md). ±160° ≈ raised
-// straight up. Tuned during QA; treat as starting points, not magic.
+// rig-contract convention, wecoded-themes/mascots/README.md).
+// SIGN CONVENTION (2026-07-16 workbench, verified visually): positive =
+// clockwise, so raising the RIGHT arm OUTWARD is NEGATIVE and the LEFT arm
+// outward is POSITIVE. +160 on the right arm waves ACROSS THE FACE — the
+// original sketch had it backwards; the unit tests pin the corrected signs.
 export const POSES: Record<PoseName, PoseDef> = {
   idle:    { parts: {}, face: 'idle' },
-  shocked: { parts: { 'rig-arm-left': { rotate: -130 }, 'rig-arm-right': { rotate: 130 } }, face: 'shocked' },
-  welcome: { parts: { 'rig-arm-right': { rotate: 160 } }, face: 'idle' },
-  // Peek: both arms up = little hands gripping the screen edge while the
-  // body sinks past it (BuddyMascot applies the container sink transform).
+  welcome: { parts: { 'rig-arm-right': { rotate: -160 } }, face: 'welcome', wave: true },
+  curious: { parts: {}, face: 'curious' },
+  shocked: { parts: { 'rig-arm-left': { rotate: 130 }, 'rig-arm-right': { rotate: -130 } }, face: 'shocked' },
+  dizzy:   { parts: { 'rig-arm-left': { rotate: -14 }, 'rig-arm-right': { rotate: 14 } }, face: 'dizzy' },
+  // Bottom/top peek: arms curled INWARD = little hands gripping the screen
+  // edge while the body sinks past it (BuddyMascot applies the sink transform).
   peek:    { parts: { 'rig-arm-left': { rotate: -160 }, 'rig-arm-right': { rotate: 160 } }, face: 'idle' },
+  // Side peek: arms parked via translate (the edge-pinned mittens do the
+  // gripping — Task 12), one leg cocked, curious face while he looks around.
+  'peek-right': { parts: { 'rig-arm-left': { rotate: 0, tx: 4.5 }, 'rig-arm-right': { rotate: 0 }, 'rig-leg-left': { rotate: -10 } }, face: 'curious' },
+  'peek-left':  { parts: { 'rig-arm-right': { rotate: 0, tx: -4.5 }, 'rig-arm-left': { rotate: 0 }, 'rig-leg-right': { rotate: 10 } }, face: 'curious' },
 };
 
 /** Parse a data-pivot="x y" attribute (viewBox coordinates). */
@@ -1377,16 +1420,15 @@ export function parsePivot(attr: string | null): { x: number; y: number } | null
   return { x: parts[0], y: parts[1] };
 }
 
-/** Fallback pivot when a part declares no data-pivot: arms/legs hinge at
- *  top-center (shoulder/hip), the head at bottom-center (neck). */
+/** Fallback pivot when a part declares no data-pivot: limbs hinge at
+ *  top-center (shoulder/hip) — they hang down from it. Canonical capsule
+ *  rigs declare explicit pivots: arms (2.5 9)/(21.5 9), legs (8.95 17)/
+ *  (15.05 17), tail (19 14). */
 export function defaultPivot(
   partId: RigPartId,
   bbox: { x: number; y: number; width: number; height: number },
 ): { x: number; y: number } {
-  const cx = bbox.x + bbox.width / 2;
-  return partId === 'rig-head'
-    ? { x: cx, y: bbox.y + bbox.height }
-    : { x: cx, y: bbox.y };
+  return { x: bbox.x + bbox.width / 2, y: bbox.y };
 }
 
 // ── Spring physics (limb trailing during drag) ──
@@ -1446,49 +1488,29 @@ git commit -m "feat(mascot): pose data, pivot parsing, spring physics for rig an
 
 `src/renderer/components/mascot/default-buddy-rig.ts`:
 
+**Do NOT hand-draw a new character** (an earlier sketch here used a round blob — superseded).
+The default rig is the capsule buddy in the approved **2.5D soft** skin, ported from
+`wecoded-themes/mascots/skins/2-5d-soft.svg`:
+
+1. Copy that file's markup into the exported template string.
+2. Swap its demo-palette hexes for `var(--rig-accent, <demo hex>)` / `var(--rig-on-accent, <demo hex>)`
+   per the substitution table in the file's header comment. (The buddy renderer sets
+   `--rig-accent`/`--rig-on-accent`/`--rig-line` from the theme's `accent`/`on-accent`/`fg`
+   tokens — the theme contrast rules guarantee ≥4.5:1 between accent and on-accent.)
+3. Keep everything the file already has: `viewBox="-3 -5 30 30"`, `rig-root`, all six faces,
+   the slots, `rig-hand-peek-right/left`, the canonical `data-pivot` values, limbs painted
+   before the body (they hang down behind it).
+
 ```ts
 /**
- * First-party default buddy character (spec §3.6) — a friendly round blob
- * with stubby limbs. Ships as a rig so every user gets limb-trailing drag,
- * blinks, and peek-with-hands out of the box, and serves as the reference
- * implementation of the rig contract (docs/theme-spec.md).
- *
- * Theme-tinted: body/limbs use var(--accent), face uses var(--on-accent) —
- * the theme contrast rules guarantee ≥4.5:1 between those two tokens.
- * Limbs are drawn HANGING DOWN from their data-pivot (the pose-data convention).
- * Limbs are defined BEFORE the body so they paint behind it.
+ * First-party default buddy (spec §3.6) — the capsule character in the 2.5D
+ * soft skin, ported from wecoded-themes/mascots/skins/2-5d-soft.svg and
+ * tinted via --rig-accent / --rig-on-accent. Ships as a rig so every user
+ * gets the full experience (trailing limbs, six faces, peek hands) out of
+ * the box, and doubles as the contract's reference implementation.
  */
-export const DEFAULT_BUDDY_RIG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-  <g id="rig-arm-left" data-pivot="17 38">
-    <rect x="12" y="34" width="9" height="21" rx="4.5" fill="var(--accent)"/>
-  </g>
-  <g id="rig-arm-right" data-pivot="63 38">
-    <rect x="59" y="34" width="9" height="21" rx="4.5" fill="var(--accent)"/>
-  </g>
-  <g id="rig-leg-left" data-pivot="33 58">
-    <rect x="29" y="56" width="8" height="16" rx="4" fill="var(--accent)"/>
-  </g>
-  <g id="rig-leg-right" data-pivot="47 58">
-    <rect x="43" y="56" width="8" height="16" rx="4" fill="var(--accent)"/>
-  </g>
-  <g id="rig-body">
-    <circle cx="40" cy="40" r="24" fill="var(--accent)"/>
-  </g>
-  <g id="rig-face-idle">
-    <circle cx="32" cy="36" r="2.6" fill="var(--on-accent)"/>
-    <circle cx="48" cy="36" r="2.6" fill="var(--on-accent)"/>
-    <path d="M33 46 Q40 52 47 46" stroke="var(--on-accent)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  </g>
-  <g id="rig-face-shocked" style="display:none">
-    <circle cx="32" cy="35" r="3.4" fill="var(--on-accent)"/>
-    <circle cx="48" cy="35" r="3.4" fill="var(--on-accent)"/>
-    <ellipse cx="40" cy="48" rx="4" ry="5.5" fill="var(--on-accent)"/>
-  </g>
-  <g id="rig-face-blink" style="display:none">
-    <path d="M29 36 h6" stroke="var(--on-accent)" stroke-width="2.4" stroke-linecap="round"/>
-    <path d="M45 36 h6" stroke="var(--on-accent)" stroke-width="2.4" stroke-linecap="round"/>
-    <path d="M33 46 Q40 52 47 46" stroke="var(--on-accent)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  </g>
+export const DEFAULT_BUDDY_RIG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3 -5 30 30">
+  …ported 2-5d-soft.svg markup, recolored…
 </svg>`;
 ```
 
@@ -1518,7 +1540,9 @@ interface MascotRigProps {
 
 interface Parts {
   byId: Map<RigPartId, SVGGElement>;
-  faces: { idle: SVGGElement | null; shocked: SVGGElement | null; blink: SVGGElement | null };
+  // The six expression groups + blink, indexed by face name; absent groups
+  // simply don't swap (graceful degradation per spec §3.2).
+  faces: Partial<Record<FaceName | 'blink', SVGGElement>>;
 }
 
 /**
@@ -1561,7 +1585,7 @@ export function MascotRig({ svgUrl, pose, motionRef, reducedEffects }: MascotRig
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
     const byId = new Map<RigPartId, SVGGElement>();
-    const allIds: RigPartId[] = [...LIMB_IDS, 'rig-head', 'rig-body'];
+    const allIds: RigPartId[] = [...LIMB_IDS, 'rig-tail', 'rig-body'];
     for (const id of allIds) {
       const el = svg.querySelector<SVGGElement>(`#${id}`);
       if (!el) continue;
@@ -1576,14 +1600,12 @@ export function MascotRig({ svgUrl, pose, motionRef, reducedEffects }: MascotRig
         el.style.transformOrigin = `${pivot.x}px ${pivot.y}px`;
       }
     }
-    partsRef.current = {
-      byId,
-      faces: {
-        idle: svg.querySelector<SVGGElement>('#rig-face-idle'),
-        shocked: svg.querySelector<SVGGElement>('#rig-face-shocked'),
-        blink: svg.querySelector<SVGGElement>('#rig-face-blink'),
-      },
-    };
+    const faces: Parts['faces'] = {};
+    for (const name of ['idle', 'welcome', 'curious', 'shocked', 'dizzy', 'blink'] as const) {
+      const el = svg.querySelector<SVGGElement>(`#rig-face-${name}`);
+      if (el) faces[name] = el;
+    }
+    partsRef.current = { byId, faces };
     springsRef.current = new Map();
     applyPose(partsRef.current, poseRef.current, blinking, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1682,15 +1704,19 @@ function applyPose(parts: Parts, pose: PoseName, blinking: boolean, instant: boo
   for (const [id, el] of parts.byId) {
     if (id === 'rig-body') continue;
     const p = def.parts[id] ?? {};
+    // NOTE (2026-07-16 addendum): in the final integration pose targets feed
+    // the per-part SPRINGS (overshoot arrival), not this CSS transition — port
+    // the unified rAF loop from the workbench prototype. The transition path
+    // stays as the reduced-effects fallback.
     el.style.transition = instant ? 'none' : 'transform 180ms ease-out';
-    el.style.transform = `translate(${p.translateX ?? 0}px, ${p.translateY ?? 0}px) rotate(${p.rotate ?? 0}deg)`;
+    el.style.transform = `translate(${p.tx ?? 0}px, ${p.ty ?? 0}px) rotate(${p.rotate ?? 0}deg)`;
   }
-  const { idle, shocked, blink } = parts.faces;
-  const want: 'idle' | 'shocked' | 'blink' =
-    blinking && blink && def.face === 'idle' ? 'blink' : def.face;
-  if (idle) idle.style.display = want === 'idle' ? '' : 'none';
-  if (shocked) shocked.style.display = want === 'shocked' ? '' : 'none';
-  if (blink) blink.style.display = want === 'blink' ? '' : 'none';
+  // Blink overlays whichever face is showing (except eyes-wide shocked).
+  const want: FaceName | 'blink' =
+    blinking && parts.faces.blink && def.face !== 'shocked' ? 'blink' : def.face;
+  for (const [name, el] of Object.entries(parts.faces)) {
+    el.style.display = name === want ? '' : 'none';
+  }
 }
 ```
 
@@ -1731,6 +1757,20 @@ git commit -m "feat(mascot): MascotRig renderer + first-party default rig + masc
 - [ ] **Step 1: Rewrite `BuddyMascot.tsx`**
 
 The drag/IPC logic is preserved verbatim from the current file (anchor-based drag, rAF coalescing, capture-loss safety nets — see the WHY comments); new: mascot resolution order (rig > flat > default rig), motion tracking for the springs, wrapper animation classes, hover reporting, dock-state sink (state subscribed here but transforms land in Task 12's CSS).
+
+> **2026-07-16 addendum:** this task is also where the workbench's approved §5 behaviors land —
+> port from `docs/active/prototypes/2026-07-16-buddy-rig-workbench.html`:
+> - **Motion styles + intensity** — `IDLE_STYLES` keyframe loops (amplitude via `--amp`),
+>   per-style limb sway targets, `BLINK_CFG` cadences (replace the hardcoded 6–12s/120ms
+>   below with the active style's `[minGap, range, closedMs]`), hyper twitches, sleepy Zzz.
+> - **Scene companions** — `COMPANIONS`/`compTarget`/ghost-opacity handling; reduced-effects
+>   pins them statically.
+> - **Drag velocity normalization** — multiply the smoothed px/frame velocity by
+>   `80/MASCOT_SIZE × 2.4` before feeding `dragTargets` (identical feel at any render size);
+>   decay `×0.85`/frame while held.
+> - The wrapper layer order matters: position translate → fx (independent `scale`, `rotate`
+>   for the peek lean, keyframe `translate` loops) → svg. Independent CSS properties compose;
+>   a single `transform` string clobbers.
 
 ```tsx
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -2435,26 +2475,41 @@ Add to `BuddyWindowManagerDeps`:
   buddyManagerRef?.setAttentionNeeded(anyNeedsAttention);
 ```
 
-- [ ] **Step 7: Peek sink CSS**
+- [ ] **Step 7: Peek staging (bottom/top sink CSS + the approved side-peek)**
 
-Append to `buddy.css`:
+**Bottom/top edges** — append to `buddy.css`:
 
 ```css
 /* Peek (spec §6.2): the 80×80 window stays flush on-screen at the edge; the
-   ARTWORK translates past the edge so only the top ~30% (head + gripping
-   hands from the rig's peek pose) stays visible. Percentages of the 80px box. */
+   ARTWORK translates past the edge so only ~42% (face + the peek pose's
+   gripping hands) stays visible. Percentages of the 80px box. */
 body[data-mode="buddy-mascot"] .mascot-sink[data-dock-mode="peeking"][data-dock-edge="bottom"] { transform: translateY(58%); }
 body[data-mode="buddy-mascot"] .mascot-sink[data-dock-mode="peeking"][data-dock-edge="top"] { transform: translateY(-58%); }
-body[data-mode="buddy-mascot"] .mascot-sink[data-dock-mode="peeking"][data-dock-edge="left"] { transform: translateX(-58%); }
-body[data-mode="buddy-mascot"] .mascot-sink[data-dock-mode="peeking"][data-dock-edge="right"] { transform: translateX(58%); }
 ```
+
+**Left/right edges** — the approved **"75° wider"** side-peek (spec §6.2), NOT a translateX sink.
+Port `enterPeek` / `showPeekHands` / `swingOut` from
+`docs/active/prototypes/2026-07-16-buddy-rig-workbench.html` (search those function names):
+
+- Clone the rig's `rig-hand-peek-right/left` mitten art into an overlay element pinned at the
+  window's edge-side boundary, OUTSIDE the body's lean transform — the hands stay planted on
+  the frame while the body moves. Skip the overlay (sink-only degradation) when the rig has
+  no peek-hand groups or the mascot is flat art.
+- Staging geometry, in fractions of the mascot render size (workbench values at 230px):
+  visible fraction **0.18**, grip gap **168/230 ≈ 0.73**, vertical offset **−52/230 ≈ −0.226**
+  from center, hands centered on the body midline, body lean **∓75°** via the independent CSS
+  `rotate` property on the fx wrapper (composes with `scale` + keyframe loops). Pose
+  `peek-right`/`peek-left` (Task 8) supplies the arm parking + curious face.
+- Slide-out (hover/attention/chat) runs `swingOut`: unpin hands, whip the lean from ∓75°
+  through ±14° past vertical, ~460ms `cubic-bezier(.34,1.35,.45,1)` overshoot slide to beside
+  the edge, then the greet wave. Bottom/top keep the plain ~200ms sink transition.
 
 - [ ] **Step 8: Typecheck + full tests + manual smoke**
 
 Run: `npx tsc --noEmit && npx vitest run`
 Expected: PASS.
 
-Dev smoke: drag near bottom edge, release → glides flush; wait 8s → sinks into peek (default rig: arms up gripping); hover → slides out to docked; drag away → undocks; permission prompt while peeking → pops out shocked; relaunch dev instance → still docked. Repeat for left/right edges. Verify chat + bar still position sanely while docked (bar flips above when mascot is on the bottom edge).
+Dev smoke: drag near bottom edge, release → glides flush; wait 8s → sinks into peek (default rig: arms curled inward gripping); hover → slides out to docked; drag away → undocks; permission prompt while peeking → pops out shocked; relaunch dev instance → still docked. Left/right edges: mittens plant on the frame, body sags between at 75° with the curious face; hover → swing-out whip + greet wave. Verify chat + bar still position sanely while docked (bar flips above when mascot is on the bottom edge).
 
 - [ ] **Step 9: Commit**
 
@@ -2480,26 +2535,37 @@ Append a section:
 
 A theme may ship `mascot.rig`: a single SVG whose named groups the app animates.
 Flat variants (`idle`/`shocked`/`welcome`) remain supported as the legacy tier
-(no limb trailing, no blink, no peek hands).
+(no limb trailing, no blink, no peek hands, no companions).
 
-Required/optional group ids: `rig-body` (required), `rig-head`, `rig-arm-left`,
-`rig-arm-right`, `rig-leg-left`, `rig-leg-right`, `rig-face-idle`,
-`rig-face-shocked`, `rig-face-blink`.
+**The full authoring contract, six approved skins, example rigs, and drop-in
+components live in the wecoded-themes repo: `mascots/README.md`.** Summary:
 
-Conventions:
-- Draw limbs HANGING DOWN from their attachment point; pose data assumes it.
-- Each limb/head group may declare `data-pivot="x y"` (viewBox coords) for its
-  hinge. Defaults: top-center of the group's bbox (arms/legs), bottom-center (head).
-- Face groups other than `rig-face-idle` should start `style="display:none"`.
+- `viewBox="-3 -5 30 30"` (24×24 art box + hat/item padding). Group ids:
+  `rig-root`, `rig-body` (required), `rig-arm-left/right`, `rig-leg-left/right`,
+  `rig-tail`, six faces (`rig-face-idle/welcome/curious/shocked/dizzy/blink`),
+  slots (`slot-hat`/`slot-eyewear`/`slot-item`), `rig-hand-peek-right/left`
+  (grip mittens for the side-edge peek).
+- Draw limbs HANGING DOWN from their `data-pivot="x y"` hinge (viewBox coords;
+  default: top-center of the group's bbox). Canonical capsule pivots: arms
+  (2.5 9)/(21.5 9), legs (8.95 17)/(15.05 17), tail (19 14).
+- Faces are PAINT on a solid body, not evenodd cutouts — face groups must be
+  swappable. All but `rig-face-idle` start `style="display:none"`. The curious
+  face wraps its sparkle pupils in `<g class="pupil">` for cursor tracking.
+- Tint via `var(--rig-accent)` / `var(--rig-on-accent)` / `var(--rig-line)`
+  (always with fallbacks) — NOT `currentColor`, which renders black in the
+  legacy `<img>` path. Hardcoded identity colors are fine.
+- Don't bake static scenery into the rig — flourishes ship as scene companions
+  (small SVGs + offsets that spring-follow the buddy; physics is app-side).
 - Groups may embed raster art via `<image href="data:image/...">` — painted
   mascots can be rigged by slicing.
 - SECURITY: rigs are sanitized at load (`sanitize-rig-svg.ts`) — scripts,
   foreignObject, `<style>`, SMIL animation tags, `on*` attributes, and external
   URLs are stripped. Only `#refs` and `data:image/*` URLs survive.
-- Poses (idle/shocked/welcome/peek) and physics are app-defined data in
+- Poses, springs, motion styles, blinking, and peek staging are app-defined in
   `src/renderer/components/mascot/mascot-poses.ts` — new behaviors ship in app
   updates and apply to every conforming rig with no re-authoring.
-- Reference implementation: `src/renderer/components/mascot/default-buddy-rig.ts`.
+- Reference implementation: `src/renderer/components/mascot/default-buddy-rig.ts`
+  (the 2.5D-soft capsule) + the reference rigs in wecoded-themes `mascots/skins/`.
 ```
 
 - [ ] **Step 2: Full verification**

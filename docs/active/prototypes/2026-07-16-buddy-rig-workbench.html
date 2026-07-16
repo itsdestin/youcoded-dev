@@ -1,0 +1,2100 @@
+<title>Buddy Rig Workbench</title>
+<style>
+  /* ── Workbench chrome tokens (violet-ink neutrals; stage colors come from the selected theme) ── */
+  :root {
+    --wb-bg: #F1F1F4; --wb-panel: #FBFBFD; --wb-inset: #EBEBEF; --wb-edge: #DBDAE2;
+    --wb-fg: #1C1B22; --wb-dim: #6E6B7B; --wb-faint: #A5A2B2;
+    --sel: #8158ad; /* live-updated to the selected theme's accent */
+    --mono: "Cascadia Code", "Cascadia Mono", Consolas, ui-monospace, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --wb-bg: #0F0F14; --wb-panel: #17171F; --wb-inset: #1E1E28; --wb-edge: #2A2A36;
+      --wb-fg: #EAE8F0; --wb-dim: #9B97AB; --wb-faint: #5B5868;
+    }
+  }
+  :root[data-theme="dark"] {
+    --wb-bg: #0F0F14; --wb-panel: #17171F; --wb-inset: #1E1E28; --wb-edge: #2A2A36;
+    --wb-fg: #EAE8F0; --wb-dim: #9B97AB; --wb-faint: #5B5868;
+  }
+  :root[data-theme="light"] {
+    --wb-bg: #F1F1F4; --wb-panel: #FBFBFD; --wb-inset: #EBEBEF; --wb-edge: #DBDAE2;
+    --wb-fg: #1C1B22; --wb-dim: #6E6B7B; --wb-faint: #A5A2B2;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--wb-bg); color: var(--wb-fg);
+    font-family: var(--sans); font-size: 14px; line-height: 1.55;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 20px 64px; }
+
+  header.top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+  header.top h1 { font-family: var(--mono); font-size: 19px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  header.top .sub { color: var(--wb-dim); font-size: 13px; }
+
+  .bench { display: grid; grid-template-columns: 1fr 300px; gap: 14px; align-items: start; }
+  @media (max-width: 860px) { .bench { grid-template-columns: 1fr; } }
+
+  /* ── Stage ── */
+  .stageCard { border: 1px solid var(--wb-edge); border-radius: 10px; overflow: hidden; background: var(--wb-panel); }
+  #stage {
+    position: relative; height: 480px; overflow: hidden; touch-action: none;
+    transition: background 200ms ease;
+  }
+  #stageBackdrop { position: absolute; inset: 0; pointer-events: none; }
+  #stageBackdrop svg { width: 100%; height: 100%; display: block; }
+  #peekEdge {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 10px; display: none; z-index: 5;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.45));
+  }
+  .stageBar {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 8px 12px; border-top: 1px solid var(--wb-edge);
+    font-family: var(--mono); font-size: 11px; color: var(--wb-dim);
+  }
+  .stageBar .hint { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stageBar button {
+    font-family: var(--mono); font-size: 11px; padding: 4px 10px; border-radius: 6px;
+    border: 1px solid var(--wb-edge); background: var(--wb-inset); color: var(--wb-fg); cursor: pointer;
+  }
+  .stageBar button:hover { border-color: var(--sel); }
+
+  /* mascot wrapper stack: position → fx (scale/lean/hop) → tilt3d → svg */
+  #mascotPos { position: absolute; left: 0; top: 0; will-change: transform; }
+  /* rotate carries the side-peek lean — independent property, springy ease */
+  #mascotFx { transition: scale 140ms ease, rotate 360ms cubic-bezier(.34,1.5,.5,1); transform-origin: 50% 78%; }
+  #tiltWrap { perspective: 620px; }
+  #tilt3d { will-change: transform; }
+  #mascotPos.grabbable { cursor: grab; }
+  #mascotPos.grabbing { cursor: grabbing; }
+  #mascotPos svg { display: block; overflow: visible; }
+
+  @keyframes hopGreet {
+    0% { translate: 0 0; scale: 1 1; }
+    18% { translate: 0 3px; scale: 1.08 0.88; }
+    45% { translate: 0 calc(-26px * var(--amp, 1)); scale: 0.94 1.1; }
+    72% { translate: 0 0; scale: 1.06 0.9; }
+    86% { translate: 0 calc(-5px * var(--amp, 1)); scale: 0.99 1.03; }
+    100% { translate: 0 0; scale: 1 1; }
+  }
+  #mascotFx.greeting { animation: hopGreet 640ms cubic-bezier(.34,1.3,.5,1); }
+  @keyframes dropSettle {
+    0% { scale: 1.05 0.92; } 35% { scale: 0.96 1.06; } 70% { scale: 1.02 0.98; } 100% { scale: 1 1; }
+  }
+  #mascotFx.dropped { animation: dropSettle 420ms ease-out; }
+  @keyframes shockPop { 0% { scale: 1 1; } 30% { scale: 1.14 1.14; } 60% { scale: 0.95 0.95; } 100% { scale: 1 1; } }
+  #mascotFx.shockpop { animation: shockPop 380ms ease-out; }
+
+  /* breathing + pose motion live INSIDE the svg on rig groups.
+     --amp is the intensity multiplier (set on #stage by the slider). */
+  svg .rigPart { transform-box: view-box; }
+  @keyframes breathe { 0%,100% { transform: translateY(0); } 50% { transform: translateY(calc(-1.6% * var(--amp, 1))); } }
+  svg #rig-root.breathing { transform-box: view-box; animation: breathe 4s ease-in-out infinite; }
+  svg #rig-root.fastBreath { animation-duration: 1.8s; }
+  @keyframes bounceLoop {
+    0%,100% { transform: translateY(0) scale(1, 1); }
+    28% { transform: translateY(calc(-3% * var(--amp, 1))) scale(0.985, 1.02); }
+    55% { transform: translateY(0) scale(1.015, 0.975); }
+    72% { transform: translateY(calc(-0.9% * var(--amp, 1))) scale(1, 1); }
+  }
+  svg #rig-root.bounceLoop { transform-box: view-box; transform-origin: 50% 85%; animation: bounceLoop 1.15s ease-in-out infinite; }
+  @keyframes floatLoop {
+    0%,100% { transform: translateY(calc(1.6% * var(--amp, 1))) rotate(-1.2deg); }
+    50% { transform: translateY(calc(-2.8% * var(--amp, 1))) rotate(1.2deg); }
+  }
+  svg #rig-root.floatLoop { transform-box: view-box; transform-origin: 50% 60%; animation: floatLoop 5.8s ease-in-out infinite; }
+  @keyframes sleepLoop {
+    0%,100% { transform: translateY(0) scale(1, 1); }
+    50% { transform: translateY(calc(-2.2% * var(--amp, 1))) scale(1.012, 0.988); }
+  }
+  svg #rig-root.sleepLoop { transform-box: view-box; transform-origin: 50% 85%; animation: sleepLoop 6.5s ease-in-out infinite; }
+  @keyframes swayDizzy { 0%,100% { transform: rotate(-2.6deg); } 50% { transform: rotate(2.6deg); } }
+  svg #rig-root.dizzySway { transform-box: view-box; transform-origin: 50% 85%; animation: swayDizzy 1.5s ease-in-out infinite; }
+  @keyframes waveWiggle { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+  /* wiggle about the right shoulder pivot (21.5 9), not the viewBox center */
+  svg .waveInner { transform-box: view-box; transform-origin: 21.5px 9px; }
+  svg .waveInner.waving { animation: waveWiggle 700ms ease-in-out infinite; }
+  @keyframes balloonBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2.5%); } }
+  svg .balloonBob { transform-box: view-box; animation: balloonBob 2.6s ease-in-out infinite; }
+  @keyframes swirlSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  svg .swirl { transform-box: fill-box; transform-origin: center; animation: swirlSpin 2.2s linear infinite; }
+  @keyframes moteFloat { 0%,100% { transform: translateY(0); opacity: .7; } 50% { transform: translateY(-4%); opacity: 1; } }
+  svg .mote { transform-box: view-box; animation: moteFloat 3.4s ease-in-out infinite; }
+  /* hologram: bright band sweeps the body; whole projection flickers occasionally */
+  @keyframes holoScan { 0% { transform: translateY(-24%); } 100% { transform: translateY(28%); } }
+  svg .holoScan { transform-box: view-box; animation: holoScan 2.6s ease-in-out infinite alternate; }
+  @keyframes holoFlick { 0%,100% { opacity: 1; } 7% { opacity: .85; } 9% { opacity: 1; } 43% { opacity: .93; } 45% { opacity: 1; } 76% { opacity: .82; } 78% { opacity: 1; } }
+  svg.holoFlick { animation: holoFlick 5s linear infinite; }
+  /* neon: the tube buzzes — hard opacity steps, mostly on */
+  @keyframes neonBuzz { 0%,100% { opacity: 1; } 11% { opacity: .72; } 12% { opacity: 1; } 38% { opacity: .88; } 39% { opacity: 1; } 70% { opacity: .55; } 71% { opacity: .9; } 72% { opacity: .65; } 73% { opacity: 1; } }
+  svg.neonBuzz { animation: neonBuzz 6s step-end infinite; }
+  /* ── Scene companions: flourish elements that spring-follow the buddy ── */
+  #companions { position: absolute; inset: 0; pointer-events: none; }
+  #companions .comp { position: absolute; left: 0; top: 0; will-change: transform; }
+  #companions .comp svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  @keyframes sunSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  #companions .sunSpin { transform-box: fill-box; transform-origin: center; animation: sunSpin 26s linear infinite; }
+  @keyframes sunPulse { 0%,100% { transform: scale(1); opacity: 0.95; } 50% { transform: scale(1.07); opacity: 1; } }
+  #companions .sunPulse { transform-box: fill-box; transform-origin: center; animation: sunPulse 4.5s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100% { opacity: 0.35; transform: scale(0.8) rotate(-8deg); } 50% { opacity: 1; transform: scale(1.12) rotate(8deg); } }
+  #companions .twinkle { transform-box: fill-box; transform-origin: center; animation: twinkle 2.8s ease-in-out infinite; }
+  @keyframes zrise { 0% { opacity: 0; transform: translateY(22%); } 30% { opacity: 0.9; } 100% { opacity: 0; transform: translateY(-45%); } }
+  #companions .zrise { transform-box: fill-box; transform-origin: center; animation: zrise 3.2s ease-in-out infinite; }
+  @keyframes berryBob { 0%,100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+  #companions .berryBob { transform-box: fill-box; transform-origin: center; animation: berryBob 3.6s ease-in-out infinite; }
+  .fxOff svg #rig-root, .fxOff svg .waveInner, .fxOff svg .balloonBob,
+  .fxOff svg .swirl, .fxOff svg .mote, .fxOff svg .holoScan,
+  .fxOff svg.holoFlick, .fxOff svg.neonBuzz,
+  .fxOff #companions .sunSpin, .fxOff #companions .sunPulse,
+  .fxOff #companions .twinkle, .fxOff #companions .zrise,
+  .fxOff #companions .berryBob { animation: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    #mascotFx, svg .rigPart { transition: none; }
+  }
+
+  /* ── Control rail ── */
+  .rail { display: flex; flex-direction: column; gap: 12px; }
+  .group { background: var(--wb-panel); border: 1px solid var(--wb-edge); border-radius: 10px; padding: 10px 12px 12px; }
+  .group h3 {
+    margin: 0 0 8px; font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--wb-dim);
+  }
+  .segs { display: flex; flex-wrap: wrap; gap: 5px; }
+  .segs button {
+    font-family: var(--mono); font-size: 11.5px; padding: 5px 9px; border-radius: 6px;
+    border: 1px solid var(--wb-edge); background: transparent; color: var(--wb-fg);
+    cursor: pointer; transition: border-color 120ms ease, background 120ms ease;
+  }
+  .segs button:hover { border-color: var(--sel); }
+  .segs button.on { background: var(--sel); border-color: var(--sel); color: var(--sel-on, #fff); }
+  .segs button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .segs button:focus-visible, .stageBar button:focus-visible, .themeBtn:focus-visible {
+    outline: 2px solid var(--sel); outline-offset: 1px;
+  }
+  .themeBtns { display: flex; flex-direction: column; gap: 5px; }
+  .themeBtn {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    font-family: var(--mono); font-size: 11.5px; padding: 6px 9px; border-radius: 6px;
+    border: 1px solid var(--wb-edge); background: transparent; color: var(--wb-fg);
+    cursor: pointer; text-align: left;
+  }
+  .themeBtn:hover { border-color: var(--sel); }
+  .themeBtn.on { border-color: var(--sel); background: color-mix(in srgb, var(--sel) 14%, transparent); }
+  .sw { display: inline-flex; gap: 3px; flex: none; }
+  .sw i { width: 11px; height: 11px; border-radius: 3px; border: 1px solid rgba(128,128,128,0.35); }
+  .toggles { display: flex; flex-direction: column; gap: 6px; }
+  .toggles label { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11.5px; cursor: pointer; }
+  .toggles input { accent-color: var(--sel); width: 14px; height: 14px; }
+  .note { font-size: 12px; color: var(--wb-dim); margin: 8px 0 0; }
+
+  /* ── Authoring guide ── */
+  .docs { margin-top: 26px; }
+  .docs h2 { font-family: var(--mono); font-size: 15px; margin: 0 0 4px; }
+  .docs .lede { color: var(--wb-dim); max-width: 68ch; margin: 0 0 12px; }
+  details {
+    border: 1px solid var(--wb-edge); border-radius: 10px; background: var(--wb-panel);
+    margin-bottom: 8px; overflow: hidden;
+  }
+  details summary {
+    cursor: pointer; padding: 10px 14px; font-family: var(--mono); font-size: 12.5px; font-weight: 600;
+    list-style: none; display: flex; align-items: center; gap: 8px;
+  }
+  details summary::before { content: "+"; color: var(--sel); font-weight: 700; width: 12px; }
+  details[open] summary::before { content: "–"; }
+  details .body { padding: 2px 16px 14px; max-width: 76ch; }
+  details .body p, details .body li { color: var(--wb-fg); font-size: 13.5px; }
+  details .body li { margin-bottom: 4px; }
+  code, pre {
+    font-family: var(--mono); font-size: 12px; background: var(--wb-inset);
+    border: 1px solid var(--wb-edge); border-radius: 5px;
+  }
+  code { padding: 1px 5px; }
+  pre { padding: 10px 12px; overflow-x: auto; line-height: 1.5; }
+  pre code { background: none; border: none; padding: 0; }
+  table.anchors { border-collapse: collapse; font-size: 13px; }
+  table.anchors th, table.anchors td { border: 1px solid var(--wb-edge); padding: 5px 10px; text-align: left; }
+  table.anchors th { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--wb-dim); }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Buddy Rig Workbench</h1>
+    <span class="sub">the real 24×24 capsule buddy, rebuilt as a rig — drag it, poke it, dress it up</span>
+  </header>
+
+  <div class="bench">
+    <div>
+      <div class="stageCard">
+        <div id="stage" aria-label="Mascot stage">
+          <div id="stageBackdrop"></div>
+          <div id="companions"></div>
+          <div id="peekEdge"></div>
+          <div id="mascotPos" class="grabbable">
+            <div id="mascotFx"><div id="tiltWrap"><div id="tilt3d"></div></div></div>
+          </div>
+        </div>
+        <div class="stageBar">
+          <span class="hint" id="stageHint">drag the buddy · click to greet</span>
+          <span style="display:flex; gap:6px; flex:none;">
+            <button id="btnGreet" type="button">wave hello</button>
+            <button id="btnStartle" type="button">startle</button>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rail">
+      <div class="group">
+        <h3>Theme</h3>
+        <div class="themeBtns" id="themeBtns"></div>
+      </div>
+      <div class="group">
+        <h3>Render</h3>
+        <div class="segs" id="styleBtns"></div>
+        <p class="note" id="styleNote"></p>
+      </div>
+      <div class="group">
+        <h3>Pose / expression</h3>
+        <div class="segs" id="poseBtns"></div>
+        <h3 style="margin:9px 0 5px;">side-peek staging</h3>
+        <div class="segs" id="peekVarBtns"></div>
+      </div>
+      <div class="group">
+        <h3>Components</h3>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div><h3 style="margin-bottom:5px;">hat</h3><div class="segs" id="hatBtns"></div></div>
+          <div><h3 style="margin-bottom:5px;">eyewear</h3><div class="segs" id="eyeBtns"></div></div>
+          <div><h3 style="margin-bottom:5px;">held item</h3><div class="segs" id="itemBtns"></div></div>
+        </div>
+        <p class="note" id="compNote"></p>
+      </div>
+      <div class="group">
+        <h3>Scene</h3>
+        <div class="segs" id="sceneBtns"></div>
+      </div>
+      <div class="group">
+        <h3>Motion style</h3>
+        <div class="segs" id="motionBtns" style="margin-bottom:8px;"></div>
+        <label style="display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11.5px; margin-bottom:8px; cursor:pointer;">
+          intensity
+          <input type="range" id="rngIntensity" min="0.5" max="2" step="0.25" value="1" style="flex:1; accent-color:var(--sel);">
+          <span id="intVal" style="width:36px; text-align:right;">1.0×</span>
+        </label>
+        <div class="toggles">
+          <label><input type="checkbox" id="tglBreathe" checked> idle motion (breathe/bounce/float)</label>
+          <label><input type="checkbox" id="tglBlink" checked> blinking</label>
+          <label><input type="checkbox" id="tglTilt" checked> 3D tilt on hover</label>
+          <label><input type="checkbox" id="tglFlourish" checked> scene companions (follow the buddy)</label>
+          <label><input type="checkbox" id="tglOverlay"> show rig overlay (pivots + slots)</label>
+          <label><input type="checkbox" id="tglReduced"> reduced effects (a11y master switch)</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="docs">
+    <h2>Component &amp; rig authoring guide</h2>
+    <p class="lede">Plain-language instructions for rebuilding a theme's mascot as a rig and authoring
+    hats, eyewear, and held items — written so the theme-builder skill (or a person) can follow them
+    without knowing the app's code.</p>
+
+    <details open>
+      <summary>1 · The rig file: one SVG, named groups</summary>
+      <div class="body">
+        <p>A rigged mascot is a single SVG. The app finds the parts it can animate by their
+        <code>id</code>. Draw everything in the classic <strong>24×24 box</strong> the flat mascots
+        already use — same body, same coordinates.</p>
+<pre><code>&lt;svg viewBox="0 0 24 24"&gt;
+  &lt;g id="rig-root"&gt;                     ← breathing happens here (the app adds it)
+    &lt;g id="rig-arm-left"  data-pivot="2.5 9"&gt;  …arm art…  &lt;/g&gt;
+    &lt;g id="rig-arm-right" data-pivot="21.5 9"&gt; …arm art…  &lt;g id="slot-item"/&gt; &lt;/g&gt;
+    &lt;g id="rig-leg-left"  data-pivot="8.95 17"&gt; …leg art… &lt;/g&gt;
+    &lt;g id="rig-leg-right" data-pivot="15.05 17"&gt;…leg art… &lt;/g&gt;
+    &lt;g id="rig-body"&gt;
+      …the capsule…
+      &lt;g id="rig-face-idle"&gt;…&lt;/g&gt;
+      &lt;g id="rig-face-welcome" style="display:none"&gt;…&lt;/g&gt;
+      &lt;g id="rig-face-curious" style="display:none"&gt;…&lt;/g&gt;
+      &lt;g id="rig-face-shocked" style="display:none"&gt;…&lt;/g&gt;
+      &lt;g id="rig-face-dizzy"   style="display:none"&gt;…&lt;/g&gt;
+      &lt;g id="rig-face-blink"   style="display:none"&gt;…&lt;/g&gt;
+    &lt;/g&gt;
+    &lt;g id="slot-hat"/&gt;      &lt;g id="slot-eyewear"/&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;</code></pre>
+        <ul>
+          <li>Only <code>rig-body</code> is required. Missing parts just don't animate.</li>
+          <li>Limbs are drawn <strong>hanging down</strong> from their pivot. The pose data assumes it.</li>
+          <li><code>data-pivot="x y"</code> marks the hinge (shoulder, hip) in viewBox coordinates.
+              If omitted, the app uses the top-center of the group.</li>
+          <li>Every face group except the default starts <code>style="display:none"</code>.</li>
+          <li>Optional <strong>side-peek grip hands</strong>: <code>rig-hand-peek-right</code> /
+              <code>rig-hand-peek-left</code> — simple mitten stubs (no fingers — match the limb
+              shapes). During a side peek the renderer clones this art and pins it OVER the screen
+              edge, outside the body's lean transform, so the hands stay planted on the frame while
+              the head tips out. Clicking the peeking buddy swings him out around the edge.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>2 · Faces are paint, not holes</summary>
+      <div class="body">
+        <p>The flat mascots cut the eyes out of the body with <code>fill-rule="evenodd"</code> so the
+        desktop shows through. A rig can't do that — a swappable face has to be its own group. So:
+        <strong>keep the body solid, and paint the eyes on top</strong> in a dark "socket" color
+        (Golden Sunbreak already ships one: <code>#2a1004</code>; Halftone uses <code>#1e2636</code>).</p>
+        <p>Ship one group per expression. The full set the app understands today:
+        <code>idle</code>, <code>welcome</code>, <code>curious</code>, <code>shocked</code>,
+        <code>dizzy</code>, <code>blink</code>. Blink is just the idle face with the eyes drawn as
+        closed lines — the app flashes it for ~120&nbsp;ms every 6–12&nbsp;s.</p>
+        <p>Things that belong to <em>every</em> expression (whiskers, a nose) go inside each face
+        group, so nothing lingers when faces swap.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>3 · Component slots: hats, eyewear, held items</summary>
+      <div class="body">
+        <p>Slots are empty groups at fixed anchor points. A component is a small piece of SVG art
+        drawn <em>around its anchor</em> in the same 24×24 space — drop it in the slot and it fits
+        every capsule buddy automatically.</p>
+        <table class="anchors">
+          <tr><th>slot</th><th>anchor (x y)</th><th>art should stay within</th><th>moves with</th></tr>
+          <tr><td><code>slot-hat</code></td><td>12 4 (top of head)</td><td>x 5–19 · y −4 to 6</td><td>body</td></tr>
+          <tr><td><code>slot-eyewear</code></td><td>12 9.9 (eye line)</td><td>x 4–20 · y 7–13</td><td>body</td></tr>
+          <tr><td><code>slot-item</code></td><td>21.5 12.8 (right hand)</td><td>≈4×8 around the hand</td><td>the right arm — it waves and trails</td></tr>
+        </table>
+        <p style="margin-top:10px;">Tint components with the theme tokens (<code>var(--rig-accent)</code>
+        etc.) when they should adapt per theme, or hardcode colors when the component has its own
+        identity (a gold crown stays gold). Theme signatures can ship <em>as</em> components:
+        Halftone's dimensional visor is eyewear, Kuromi's jester hat and Strawberry Kitty's
+        ears-and-bow are hats — which means any theme can borrow them.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>4 · Tinting: how colors resolve</summary>
+      <div class="body">
+        <p>Rigs are <strong>inlined</strong> into the page (after sanitizing), so CSS variables and
+        <code>currentColor</code> finally work — unlike today's <code>&lt;img&gt;</code> path, where
+        <code>currentColor</code> silently resolves to black (that's why Halftone's body ships black
+        right now).</p>
+        <ul>
+          <li><code>var(--rig-accent)</code> — theme accent. Default body tint for themes without custom art.</li>
+          <li><code>var(--rig-on-accent)</code> — face color on accent-tinted bodies.</li>
+          <li><code>var(--rig-line)</code> — outline color for white-body mascots (maps to the theme's <code>fg</code>).</li>
+          <li>Hardcoded colors are fine and encouraged where they ARE the identity
+              (Golden Sunbreak's <code>#f0a828</code> amber, Kuromi's <code>#FF4FB8</code> pink).</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>5 · What the app animates for free (never author these)</summary>
+      <div class="body">
+        <ul>
+          <li><strong>Poses</strong> — arm/leg rotations per state (wave, shocked arms-up, peek grip) are app data applied to your groups.</li>
+          <li><strong>Drag physics</strong> — limbs trail the body on springs while dragging and wobble on release.</li>
+          <li><strong>Breathing, blinking, greet hop, drop bounce, 3D tilt</strong> — wrapper- and group-level, automatic.</li>
+          <li><strong>Scene companions</strong> — flourish elements (sun, motes, sparkles, glitch bars, the chromatic ghost) are satellites that spring-follow the buddy at a preferred offset. A theme declares them as small SVGs + an offset; the physics is app-side.</li>
+          <li><strong>Reduced effects</strong> — the a11y setting turns all of the above off; your art must look right standing still.</li>
+        </ul>
+        <p>Because behaviors are app data, every new app version teaches every existing rig new
+        tricks with no re-authoring.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>6 · Safety rules (the sanitizer will strip these)</summary>
+      <div class="body">
+        <p>Rig SVGs are third-party content inlined into the app, so they pass through a sanitizer.
+        Don't use: <code>&lt;script&gt;</code>, <code>&lt;style&gt;</code>,
+        <code>&lt;foreignObject&gt;</code>, SMIL animation tags
+        (<code>&lt;animate&gt;</code>…), any <code>on*=</code> attribute, or external URLs.
+        Only same-document <code>#refs</code> and <code>data:image/*</code> URLs survive — embedded
+        raster art is allowed, remote fetches are not.</p>
+      </div>
+    </details>
+  </section>
+</div>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════ THEME DATA ══════════════════════════════════ */
+/* Geometry source of truth: wecoded-themes/themes/<slug>/assets/mascot-*.svg
+   Body capsule: M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z */
+
+const BODY_D = 'M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z';
+
+const THEMES = {
+  'golden-sunbreak': {
+    label: 'Golden Sunbreak', dark: true,
+    canvas: '#08080e', panel: '#140e1a', accent: '#ffc030', onAccent: '#000', fg: '#f8e8c8', edge: '#281e10',
+    kind: 'solid', body: '#f0a828', bodyHi: '#ffd268', bodyLo: '#b8760f', rim: '#ffe9b0',
+    face: '#2a1004', sparkA: '#ffc030', sparkB: '#ffe090', sparkC: '#ffd060',
+    flourish: 'sun', defaults: { hat: 'none', eyewear: 'none', item: 'none' },
+    flatVariants: ['idle', 'welcome', 'curious'],
+  },
+  'halftone-dimension': {
+    label: 'Halftone Dimension', dark: true,
+    canvas: '#08060e', panel: '#100e1c', accent: '#e8234a', onAccent: '#fff', fg: '#f0e8f8', edge: '#322850',
+    kind: 'solid', body: '#191327', bodyHi: '#332852', bodyLo: '#0b0813', rim: '#00b8ff',
+    face: '#1e2636', sparkA: '#e8234a', sparkB: '#00b8ff', sparkC: '#ffea00',
+    flourish: 'glitch', defaults: { hat: 'none', eyewear: 'visor', item: 'none' },
+    flatVariants: ['idle', 'welcome', 'curious'],
+    chromatic: true,
+  },
+  'kuromi-dreamer': {
+    label: 'Kuromi Dreamer', dark: false,
+    canvas: '#C9B8E0', panel: '#D4C5E6', accent: '#8158ad', onAccent: '#FFFFFF', fg: '#1A0F28', edge: '#8466A8',
+    kind: 'outline', body: '#FFFFFF', bodyHi: '#FFFFFF', bodyLo: '#d9cbe9', rim: '#ffffff',
+    line: '#1A0F28', charm: '#FF4FB8',
+    flourish: 'sparkles', defaults: { hat: 'jester', eyewear: 'none', item: 'none' },
+    flatVariants: ['idle', 'welcome', 'shocked', 'dizzy'],
+    tail: true, whiskers: true,
+  },
+  'strawberry-kitty': {
+    label: 'Strawberry Kitty', dark: false,
+    canvas: '#F8D7DE', panel: '#FCE4E9', accent: '#CC4060', onAccent: '#FFFFFF', fg: '#3A1420', edge: '#E09AA8',
+    kind: 'outline', body: '#FFFFFF', bodyHi: '#FFFFFF', bodyLo: '#f4d4dc', rim: '#ffffff',
+    line: '#3A1420', charm: '#E14560', nose: '#F7C948', leaf: '#6DB56D',
+    flourish: 'berries', defaults: { hat: 'kitty', eyewear: 'none', item: 'none' },
+    flatVariants: ['idle', 'welcome', 'shocked', 'dizzy'],
+    whiskers: true,
+  },
+  'midnight': {
+    label: 'Midnight (stock)', dark: true,
+    canvas: '#0D1117', panel: '#161B22', accent: '#B1BAC4', onAccent: '#0D1117', fg: '#C9D1D9', edge: '#30363D',
+    kind: 'solid', body: '#B1BAC4', bodyHi: '#e2e8ef', bodyLo: '#79838f', rim: '#f0f4f8',
+    face: '#0D1117', sparkA: '#C9D1D9', sparkB: '#8B949E', sparkC: '#6E7681',
+    flourish: 'none', defaults: { hat: 'none', eyewear: 'none', item: 'none' },
+    flatVariants: [], // stock themes ship no mascot art — app falls back to the tinted glyph
+  },
+  'creme': {
+    label: 'Crème (stock)', dark: false,
+    canvas: '#F0E6D6', panel: '#EBE1D1', accent: '#3D3229', onAccent: '#F0E6D6', fg: '#2C2418', edge: '#CBBFAD',
+    kind: 'solid', body: '#3D3229', bodyHi: '#6d5c48', bodyLo: '#211a12', rim: '#8a7a64',
+    face: '#F0E6D6', sparkA: '#F0E6D6', sparkB: '#CBBFAD', sparkC: '#B0A595',
+    flourish: 'none', defaults: { hat: 'none', eyewear: 'none', item: 'none' },
+    flatVariants: [],
+  },
+};
+
+/* ══════════════════ ORIGINAL FLAT SVGs (verbatim from the theme repos) ══════════════════ */
+const FLAT = {
+  'golden-sunbreak': {
+    idle: `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="5.5" r="4.5" fill="#ffc030" opacity="0.08"/><circle cx="3" cy="5.5" r="2.8" fill="#ffc030" opacity="0.13"/><circle cx="3" cy="5.5" r="1.4" fill="#ffc030"/><line x1="4.6" y1="5.5" x2="6.2" y2="5.5" stroke="#ffc030" stroke-width="0.55" stroke-linecap="round"/><line x1="4.1" y1="4.1" x2="5.2" y2="3.2" stroke="#ffc030" stroke-width="0.50" stroke-linecap="round"/><line x1="4.1" y1="6.9" x2="5.2" y2="7.8" stroke="#ffc030" stroke-width="0.50" stroke-linecap="round"/><line x1="3" y1="3.8" x2="3" y2="2.4" stroke="#ffc030" stroke-width="0.50" stroke-linecap="round"/><line x1="3" y1="7.2" x2="3" y2="8.6" stroke="#ffc030" stroke-width="0.45" stroke-linecap="round"/><line x1="1.4" y1="5.5" x2="0.1" y2="5.5" stroke="#ffc030" stroke-width="0.45" stroke-linecap="round"/><line x1="1.4" y1="4.1" x2="0.4" y2="3.2" stroke="#ffc030" stroke-width="0.40" stroke-linecap="round"/><line x1="1.4" y1="6.9" x2="0.4" y2="7.8" stroke="#ffc030" stroke-width="0.40" stroke-linecap="round"/><rect x="4.5" y="4.0" width="5.5" height="9" rx="2" fill="#ffc030" opacity="0.05"/><path fill="#f0a828" fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/><path fill="#f0a828" d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/><path fill="#f0a828" d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/><rect fill="#f0a828" x="7.2" y="17" width="3.5" height="4" rx="1.2"/><rect fill="#f0a828" x="13.3" y="17" width="3.5" height="4" rx="1.2"/><circle cx="6.5" cy="6.0" r="0.40" fill="#ffc030" opacity="0.70"/><circle cx="8.5" cy="4.5" r="0.30" fill="#ffe090" opacity="0.55"/><circle cx="7.0" cy="8.5" r="0.26" fill="#ffc030" opacity="0.48"/><circle cx="20.5" cy="11.5" r="0.28" fill="#ffe090" opacity="0.35"/></svg>`,
+    welcome: `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="few-a" cx="25%" cy="30%" r="60%"><stop offset="0%" stop-color="#2a1004" stop-opacity="1"/><stop offset="100%" stop-color="#2a1004" stop-opacity="0"/></radialGradient></defs><circle cx="3" cy="5.5" r="4.5" fill="#ffc030" opacity="0.08"/><circle cx="3" cy="5.5" r="2.8" fill="#ffc030" opacity="0.13"/><circle cx="3" cy="5.5" r="1.4" fill="#ffc030"/><line x1="4.6" y1="5.5" x2="6.2" y2="5.5" stroke="#ffc030" stroke-width="0.55" stroke-linecap="round"/><line x1="4.1" y1="4.1" x2="5.2" y2="3.2" stroke="#ffc030" stroke-width="0.50" stroke-linecap="round"/><line x1="4.1" y1="6.9" x2="5.2" y2="7.8" stroke="#ffc030" stroke-width="0.50" stroke-linecap="round"/><line x1="3" y1="3.8" x2="3" y2="2.4" stroke="#ffc030" stroke-width="0.50" stroke-linecap="round"/><line x1="3" y1="7.2" x2="3" y2="8.6" stroke="#ffc030" stroke-width="0.45" stroke-linecap="round"/><line x1="1.4" y1="5.5" x2="0.1" y2="5.5" stroke="#ffc030" stroke-width="0.45" stroke-linecap="round"/><rect x="4.5" y="4.0" width="5.5" height="9" rx="2" fill="#ffc030" opacity="0.05"/><ellipse cx="9.3" cy="9.55" rx="1.6" ry="2.2" fill="#2a1004"/><ellipse cx="9.3" cy="9.55" rx="1.6" ry="2.2" fill="url(#few-a)"/><ellipse cx="14.7" cy="9.25" rx="1.6" ry="2.2" fill="#2a1004"/><ellipse cx="14.7" cy="9.25" rx="1.6" ry="2.2" fill="url(#few-a)"/><path fill="#f0a828" fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M9.3 7.35 A1.6 2.2 0 1 0 9.3 11.75 A1.6 2.2 0 1 0 9.3 7.35 Z M14.7 7.05 A1.6 2.2 0 1 0 14.7 11.45 A1.6 2.2 0 1 0 14.7 7.05 Z"/><circle cx="10.0" cy="10.25" r="0.28" fill="#ffc030"/><circle cx="9.35" cy="10.85" r="0.20" fill="#ffe090"/><circle cx="10.3" cy="10.85" r="0.14" fill="#ffd060"/><circle cx="15.4" cy="9.95" r="0.28" fill="#ffc030"/><circle cx="14.75" cy="10.55" r="0.20" fill="#ffe090"/><circle cx="15.65" cy="10.55" r="0.14" fill="#ffd060"/><g transform="rotate(-2 12 13.3)"><path d="M10.8 13.3 Q10.8 13 12 13 Q13.2 13 13.2 13.3 A1.1 1 0 0 1 10.8 13.3 Z" fill="#2a1004"/></g><g transform="translate(0.3 1.0) rotate(-10 2.5 11)"><path fill="#f0a828" d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/></g><g transform="translate(-0.1 0.8) rotate(-20 19.5 6)"><path fill="#f0a828" d="M20.8 2.5 L22.2 2.5 A0.8 0.8 0 0 1 23 3.3 L23 5.7 A0.8 0.8 0 0 1 22.2 6.5 L20.8 6.5 A0.8 0.8 0 0 1 20 5.7 L20 3.3 A0.8 0.8 0 0 1 20.8 2.5 Z"/></g><rect fill="#f0a828" x="7.2" y="17" width="3.5" height="4" rx="1.2"/><rect fill="#f0a828" x="13.3" y="17" width="3.5" height="4" rx="1.2"/><circle cx="3.5" cy="11" r="0.45" fill="#ffc030" opacity="0.70"/><circle cx="20.8" cy="8" r="0.38" fill="#ffe090" opacity="0.65"/><circle cx="22" cy="13" r="0.32" fill="#ffc030" opacity="0.50"/></svg>`,
+    curious: `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="5.5" r="4.5" fill="#ffc030" opacity="0.08"/><circle cx="3" cy="5.5" r="2.8" fill="#ffc030" opacity="0.13"/><circle cx="3" cy="5.5" r="1.4" fill="#ffc030"/><line x1="4.6" y1="5.5" x2="6.2" y2="5.5" stroke="#ffc030" stroke-width="0.55" stroke-linecap="round"/><line x1="4.1" y1="4.1" x2="5.2" y2="3.2" stroke="#ffc030" stroke-width="0.50" stroke-linecap="round"/><line x1="4.1" y1="6.9" x2="5.2" y2="7.8" stroke="#ffc030" stroke-width="0.50" stroke-linecap="round"/><line x1="3" y1="3.8" x2="3" y2="2.4" stroke="#ffc030" stroke-width="0.50" stroke-linecap="round"/><line x1="3" y1="7.2" x2="3" y2="8.6" stroke="#ffc030" stroke-width="0.45" stroke-linecap="round"/><line x1="1.4" y1="5.5" x2="0.1" y2="5.5" stroke="#ffc030" stroke-width="0.45" stroke-linecap="round"/><rect x="4.5" y="4.0" width="5.5" height="9" rx="2" fill="#ffc030" opacity="0.05"/><path fill="#f0a828" fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M9.8 8.2 A2 2 0 1 0 9.8 12.2 A2 2 0 1 0 9.8 8.2 Z M14.2 8.2 A2 2 0 1 0 14.2 12.2 A2 2 0 1 0 14.2 8.2 Z"/><circle cx="8.9" cy="10.2" r="0.82" fill="#2a1004"/><circle cx="13.3" cy="10.2" r="0.82" fill="#2a1004"/><circle cx="9.35" cy="9.80" r="0.28" fill="#ffc030" opacity="0.9"/><circle cx="13.75" cy="9.80" r="0.28" fill="#ffc030" opacity="0.9"/><circle cx="9.00" cy="9.65" r="0.14" fill="#ffe090" opacity="0.7"/><circle cx="13.40" cy="9.65" r="0.14" fill="#ffe090" opacity="0.7"/><path fill="#f0a828" d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/><path fill="#f0a828" d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/><rect fill="#f0a828" x="7.2" y="17" width="3.5" height="4" rx="1.2"/><rect fill="#f0a828" x="13.3" y="17" width="3.5" height="4" rx="1.2"/><circle cx="6.5" cy="6.0" r="0.40" fill="#ffc030" opacity="0.70"/><circle cx="8.5" cy="4.5" r="0.30" fill="#ffe090" opacity="0.55"/><circle cx="7.0" cy="8.5" r="0.26" fill="#ffc030" opacity="0.48"/><circle cx="20.5" cy="11.5" r="0.28" fill="#ffe090" opacity="0.35"/></svg>`,
+  },
+  'halftone-dimension': {
+    idle: `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5.5" width="18" height="0.6" rx="0.3" fill="#00b8ff" opacity="0.3"/><rect x="4" y="14" width="16" height="0.5" rx="0.25" fill="#e8234a" opacity="0.25"/><path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/><rect x="5.8" y="7.2" width="12.4" height="2.8" rx="1.2" fill="#e8234a" opacity="0.55"/><rect x="6.2" y="7.6" width="11.6" height="2" rx="0.9" fill="#08060e" opacity="0.45"/><circle cx="7" cy="6" r="0.4" fill="#e8234a" opacity="0.25"/><circle cx="9" cy="5.5" r="0.35" fill="#00b8ff" opacity="0.2"/><circle cx="17" cy="6" r="0.4" fill="#e8234a" opacity="0.25"/><circle cx="15" cy="14" r="0.35" fill="#00b8ff" opacity="0.2"/><circle cx="8" cy="14.5" r="0.4" fill="#e8234a" opacity="0.2"/><circle cx="16" cy="5.5" r="0.3" fill="#ffea00" opacity="0.15"/><circle cx="10" cy="14" r="0.3" fill="#ffea00" opacity="0.15"/><path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/><path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/><rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/><rect x="19.5" y="8" width="0.4" height="5" rx="0.2" fill="#e8234a" opacity="0.2"/><rect x="4.2" y="9" width="0.4" height="4" rx="0.2" fill="#00b8ff" opacity="0.2"/></svg>`,
+    welcome: `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fhw-a" cx="25%" cy="30%" r="60%"><stop offset="0%" stop-color="#2a3040" stop-opacity="1"/><stop offset="100%" stop-color="#2a3040" stop-opacity="0"/></radialGradient><radialGradient id="fhw-b" cx="70%" cy="65%" r="55%"><stop offset="0%" stop-color="#2a2535" stop-opacity="1"/><stop offset="100%" stop-color="#2a2535" stop-opacity="0"/></radialGradient></defs><rect x="3" y="5" width="18" height="0.5" rx="0.25" fill="#00b8ff" opacity="0.3"/><rect x="4" y="14.5" width="16" height="0.5" rx="0.25" fill="#e8234a" opacity="0.25"/><ellipse cx="9.3" cy="9.55" rx="1.6" ry="2.2" fill="#1e2636"/><ellipse cx="9.3" cy="9.55" rx="1.6" ry="2.2" fill="url(#fhw-a)"/><ellipse cx="9.3" cy="9.55" rx="1.6" ry="2.2" fill="url(#fhw-b)"/><ellipse cx="14.7" cy="9.25" rx="1.6" ry="2.2" fill="#1e2636"/><ellipse cx="14.7" cy="9.25" rx="1.6" ry="2.2" fill="url(#fhw-a)"/><ellipse cx="14.7" cy="9.25" rx="1.6" ry="2.2" fill="url(#fhw-b)"/><path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M9.3 7.35 A1.6 2.2 0 1 0 9.3 11.75 A1.6 2.2 0 1 0 9.3 7.35 Z M14.7 7.05 A1.6 2.2 0 1 0 14.7 11.45 A1.6 2.2 0 1 0 14.7 7.05 Z"/><rect x="5.8" y="7.5" width="12.4" height="2.5" rx="1" fill="#e8234a" opacity="0.4"/><rect x="6.2" y="7.8" width="11.6" height="1.8" rx="0.8" fill="#08060e" opacity="0.35"/><circle cx="10" cy="10.25" r="0.3" fill="#e8234a" opacity="0.8"/><circle cx="9.4" cy="10.85" r="0.2" fill="#00b8ff" opacity="0.7"/><circle cx="10.3" cy="10.85" r="0.15" fill="#ffea00" opacity="0.6"/><circle cx="15.4" cy="9.95" r="0.3" fill="#e8234a" opacity="0.8"/><circle cx="14.8" cy="10.55" r="0.2" fill="#00b8ff" opacity="0.7"/><circle cx="15.7" cy="10.55" r="0.15" fill="#ffea00" opacity="0.6"/><g transform="rotate(-2 12 13.3)"><path d="M10.8 13.3 Q10.8 13 12 13 Q13.2 13 13.2 13.3 A1.1 1 0 0 1 10.8 13.3 Z" fill="#222030"/></g><circle cx="7" cy="6" r="0.35" fill="#e8234a" opacity="0.25"/><circle cx="17" cy="5.8" r="0.35" fill="#00b8ff" opacity="0.2"/><circle cx="8" cy="14.5" r="0.35" fill="#e8234a" opacity="0.2"/><circle cx="16" cy="14" r="0.3" fill="#ffea00" opacity="0.15"/><g transform="translate(0.3 1.0) rotate(-10 2.5 11)"><path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/></g><g transform="translate(-0.1 0.8) rotate(-20 19.5 6)"><path d="M20.8 2.5 L22.2 2.5 A0.8 0.8 0 0 1 23 3.3 L23 5.7 A0.8 0.8 0 0 1 22.2 6.5 L20.8 6.5 A0.8 0.8 0 0 1 20 5.7 L20 3.3 A0.8 0.8 0 0 1 20.8 2.5 Z"/></g><rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/><rect x="19.3" y="7.5" width="0.4" height="5" rx="0.2" fill="#e8234a" opacity="0.2"/><rect x="4.4" y="8" width="0.4" height="4.5" rx="0.2" fill="#00b8ff" opacity="0.2"/></svg>`,
+    curious: `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5.5" width="18" height="0.5" rx="0.25" fill="#00b8ff" opacity="0.3"/><rect x="4" y="14.2" width="16" height="0.5" rx="0.25" fill="#e8234a" opacity="0.25"/><path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M9.8 8.2 A2 2 0 1 0 9.8 12.2 A2 2 0 1 0 9.8 8.2 Z M14.2 8.2 A2 2 0 1 0 14.2 12.2 A2 2 0 1 0 14.2 8.2 Z"/><rect x="5.8" y="7.5" width="12.4" height="2.8" rx="1.2" fill="#e8234a" opacity="0.45"/><rect x="6.2" y="7.9" width="11.6" height="2" rx="0.9" fill="#08060e" opacity="0.4"/><circle cx="10.3" cy="10.2" r="0.7" fill="#e8234a" opacity="0.9"/><circle cx="10.3" cy="10.2" r="0.35"/><circle cx="14.7" cy="10.2" r="0.7" fill="#e8234a" opacity="0.9"/><circle cx="14.7" cy="10.2" r="0.35"/><circle cx="10.7" cy="9.8" r="0.2" fill="#00b8ff" opacity="0.6"/><circle cx="15.1" cy="9.8" r="0.2" fill="#00b8ff" opacity="0.6"/><circle cx="7" cy="6" r="0.4" fill="#e8234a" opacity="0.25"/><circle cx="9" cy="5.3" r="0.35" fill="#00b8ff" opacity="0.2"/><circle cx="17" cy="6" r="0.4" fill="#e8234a" opacity="0.25"/><circle cx="15" cy="14.2" r="0.35" fill="#00b8ff" opacity="0.2"/><circle cx="8" cy="14.5" r="0.4" fill="#e8234a" opacity="0.2"/><circle cx="16" cy="5.5" r="0.3" fill="#ffea00" opacity="0.15"/><path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/><path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/><rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/><rect x="19.5" y="7.8" width="0.4" height="5" rx="0.2" fill="#e8234a" opacity="0.2"/><rect x="4.2" y="8.5" width="0.4" height="4" rx="0.2" fill="#00b8ff" opacity="0.2"/></svg>`,
+  },
+  'kuromi-dreamer': {
+    idle: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 14 Q21 14 21.5 15.5 Q22 17 20.5 17.2 L21.5 18.2 L20 18 L21 19 L19.5 18.5 Z" fill="currentColor" opacity="0.85"/><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="1" y="9" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="20" y="9" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="7.2" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><path d="M7.5 9 L10 10 L7.5 11" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 9 L14 10 L16.5 11" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 13 Q12 13.8 13 13" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><g stroke="currentColor" stroke-width="0.4" stroke-linecap="round"><line x1="5.5" y1="10.5" x2="7" y2="10.5"/><line x1="5.5" y1="11.5" x2="7" y2="11.5"/><line x1="17" y1="10.5" x2="18.5" y2="10.5"/><line x1="17" y1="11.5" x2="18.5" y2="11.5"/></g><path d="M7 4 L6.5 1.5 L9 3.5 Z" fill="currentColor"/><path d="M17 4 L17.5 1.5 L15 3.5 Z" fill="currentColor"/><circle cx="12" cy="5.8" r="0.9" fill="#FF4FB8"/><circle cx="11.7" cy="5.6" r="0.22" fill="#1A0F28"/><circle cx="12.3" cy="5.6" r="0.22" fill="#1A0F28"/><rect x="11.7" y="6" width="0.6" height="0.4" fill="#1A0F28"/></svg>`,
+    welcome: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 14 Q21 14 21.5 15.5 Q22 17 20.5 17.2 L21.5 18.2 L20 18 L21 19 L19.5 18.5 Z" fill="currentColor" opacity="0.85"/><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="1" y="10" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="20" y="3" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6" transform="rotate(-15 21.5 5)"/><rect x="7.2" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><ellipse cx="9.3" cy="10" rx="1.3" ry="1.8" fill="currentColor"/><ellipse cx="14.7" cy="10" rx="1.3" ry="1.8" fill="currentColor"/><circle cx="9.7" cy="9.2" r="0.55" fill="#FFFFFF"/><circle cx="15.1" cy="9.2" r="0.55" fill="#FFFFFF"/><circle cx="8.8" cy="10.5" r="0.22" fill="#FFFFFF"/><circle cx="14.2" cy="10.5" r="0.22" fill="#FFFFFF"/><path d="M10.8 13 Q12 14.2 13.3 12.9" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><g stroke="currentColor" stroke-width="0.4" stroke-linecap="round"><line x1="5.5" y1="10.5" x2="7" y2="10.5"/><line x1="5.5" y1="11.5" x2="7" y2="11.5"/><line x1="17" y1="10.5" x2="18.5" y2="10.5"/><line x1="17" y1="11.5" x2="18.5" y2="11.5"/></g><path d="M7 4 L6.5 1.5 L9 3.5 Z" fill="currentColor"/><path d="M17 4 L17.5 1.5 L15 3.5 Z" fill="currentColor"/><circle cx="6.5" cy="1.5" r="0.5" fill="#FF4FB8"/><circle cx="17.5" cy="1.5" r="0.5" fill="#FF4FB8"/><circle cx="12" cy="5.8" r="0.9" fill="#FF4FB8"/><circle cx="11.7" cy="5.6" r="0.22" fill="#1A0F28"/><circle cx="12.3" cy="5.6" r="0.22" fill="#1A0F28"/><rect x="11.7" y="6" width="0.6" height="0.4" fill="#1A0F28"/><path d="M2.5 2 L2.8 2.7 L3.5 3 L2.8 3.3 L2.5 4 L2.2 3.3 L1.5 3 L2.2 2.7 Z" fill="#FF4FB8"/></svg>`,
+    shocked: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 14 Q21 14 21.5 15.5 Q22 17 20.5 17.2 L21.5 18.2 L20 18 L21 19 L19.5 18.5 Z" fill="currentColor" opacity="0.85"/><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="1" y="9" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6" transform="rotate(20 2.5 11)"/><rect x="20" y="9" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6" transform="rotate(-20 21.5 11)"/><rect x="7.2" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><circle cx="9.3" cy="10" r="1.7" fill="currentColor"/><circle cx="14.7" cy="10" r="1.7" fill="currentColor"/><circle cx="9.7" cy="9.5" r="0.45" fill="#FFFFFF"/><circle cx="15.1" cy="9.5" r="0.45" fill="#FFFFFF"/><ellipse cx="12" cy="13.4" rx="0.8" ry="1" fill="currentColor"/><g stroke="currentColor" stroke-width="0.4" stroke-linecap="round"><line x1="5.5" y1="10.5" x2="7" y2="10.5"/><line x1="5.5" y1="11.5" x2="7" y2="11.5"/><line x1="17" y1="10.5" x2="18.5" y2="10.5"/><line x1="17" y1="11.5" x2="18.5" y2="11.5"/></g><g transform="rotate(-8 12 3)"><path d="M7 4 L6.5 1.5 L9 3.5 Z" fill="currentColor"/><path d="M17 4 L17.5 1.5 L15 3.5 Z" fill="currentColor"/></g><circle cx="12" cy="5.8" r="0.9" fill="#FF4FB8"/><circle cx="11.7" cy="5.6" r="0.22" fill="#1A0F28"/><circle cx="12.3" cy="5.6" r="0.22" fill="#1A0F28"/><rect x="11.7" y="6" width="0.6" height="0.4" fill="#1A0F28"/><path d="M3 4.5 L3.3 5.3 L4.2 5.5 L3.3 5.7 L3 6.5 L2.7 5.7 L1.8 5.5 L2.7 5.3 Z" fill="#FF4FB8"/></svg>`,
+    dizzy: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 15 Q20.5 16 20.5 17.5 Q20.5 18.5 19.2 18.6 L20 19.4 L18.8 19.2 L19.5 20 L18.3 19.5 Z" fill="currentColor" opacity="0.75"/><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="1" y="10" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6" transform="rotate(-12 2.5 12)"/><rect x="20" y="10" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6" transform="rotate(12 21.5 12)"/><rect x="7.2" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><g stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="8" y1="8.5" x2="10.6" y2="11.5"/><line x1="10.6" y1="8.5" x2="8" y2="11.5"/><line x1="13.4" y1="8.5" x2="16" y2="11.5"/><line x1="16" y1="8.5" x2="13.4" y2="11.5"/></g><path d="M10.4 13.4 L11.2 12.8 L12 13.4 L12.8 12.8 L13.6 13.4" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/><g stroke="currentColor" stroke-width="0.4" stroke-linecap="round"><line x1="5.5" y1="11" x2="7" y2="11.3"/><line x1="5.5" y1="12" x2="7" y2="12.3"/><line x1="17" y1="11.3" x2="18.5" y2="11"/><line x1="17" y1="12.3" x2="18.5" y2="12"/></g><g transform="rotate(-20 12 3)"><path d="M7 4 L6.2 1.8 L9 3.5 Z" fill="currentColor"/><path d="M17 4 L17.8 1.8 L15 3.5 Z" fill="currentColor"/></g><circle cx="12" cy="5.8" r="0.9" fill="#FF4FB8"/><circle cx="11.7" cy="5.6" r="0.22" fill="#1A0F28"/><circle cx="12.3" cy="5.6" r="0.22" fill="#1A0F28"/><rect x="11.7" y="6" width="0.6" height="0.4" fill="#1A0F28"/><path d="M5 3 Q6 2 7 3 Q6 4 5 3" fill="none" stroke="#FF4FB8" stroke-width="0.5" stroke-linecap="round"/><path d="M18 3 Q19 2 20 3 Q19 4 18 3" fill="none" stroke="#FF4FB8" stroke-width="0.5" stroke-linecap="round"/></svg>`,
+  },
+  'strawberry-kitty': {
+    idle: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><path d="M6 4.3 L6.8 1.8 L9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><path d="M18 4.3 L17.2 1.8 L15 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="1" y="9" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="20" y="9" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="7.2" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><path d="M7.5 9.2 L10 10.2 L7.5 11.2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 9.2 L14 10.2 L16.5 11.2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="12" cy="11.2" rx="0.5" ry="0.35" fill="#F7C948"/><path d="M11 12.6 Q12 13.4 13 12.6" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><g stroke="currentColor" stroke-width="0.4" stroke-linecap="round"><line x1="5.5" y1="10.5" x2="7" y2="10.5"/><line x1="5.5" y1="11.5" x2="7" y2="11.5"/><line x1="17" y1="10.5" x2="18.5" y2="10.5"/><line x1="17" y1="11.5" x2="18.5" y2="11.5"/></g><path d="M6.7 5.2 Q6 6 6.2 6.8 Q6.6 7.6 7.4 7.5 Q8 7.2 8.1 6.3 Q8 5.4 7.4 5.1 Z" fill="#E14560"/><path d="M6.5 5.1 L7.6 4.9 L7.5 5.4 L6.9 5.5 Z" fill="#6DB56D"/><circle cx="6.8" cy="6.0" r="0.1" fill="#FFF2A8"/><circle cx="7.4" cy="6.0" r="0.1" fill="#FFF2A8"/><circle cx="7.1" cy="6.6" r="0.1" fill="#FFF2A8"/></svg>`,
+    welcome: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><path d="M6 4.3 L6.8 1.8 L9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><path d="M18 4.3 L17.2 1.8 L15 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="1" y="10" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="20" y="3" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6" transform="rotate(-15 21.5 5)"/><rect x="7.2" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><ellipse cx="9.3" cy="10" rx="1.3" ry="1.8" fill="currentColor"/><ellipse cx="14.7" cy="10" rx="1.3" ry="1.8" fill="currentColor"/><circle cx="9.7" cy="9.2" r="0.55" fill="#FFFFFF"/><circle cx="15.1" cy="9.2" r="0.55" fill="#FFFFFF"/><circle cx="8.8" cy="10.5" r="0.22" fill="#FFFFFF"/><circle cx="14.2" cy="10.5" r="0.22" fill="#FFFFFF"/><ellipse cx="12" cy="11.4" rx="0.5" ry="0.35" fill="#F7C948"/><path d="M10.8 12.6 Q12 13.8 13.3 12.5" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><g stroke="currentColor" stroke-width="0.4" stroke-linecap="round"><line x1="5.5" y1="10.5" x2="7" y2="10.5"/><line x1="5.5" y1="11.5" x2="7" y2="11.5"/><line x1="17" y1="10.5" x2="18.5" y2="10.5"/><line x1="17" y1="11.5" x2="18.5" y2="11.5"/></g><path d="M17.2 3.3 L16.2 2.5 L16.2 4 Z" fill="#E14560"/><path d="M17.2 3.3 L18.2 2.5 L18.2 4 Z" fill="#E14560"/><circle cx="17.2" cy="3.3" r="0.35" fill="#E14560"/><path d="M6.7 5.2 Q6 6 6.2 6.8 Q6.6 7.6 7.4 7.5 Q8 7.2 8.1 6.3 Q8 5.4 7.4 5.1 Z" fill="#E14560"/><path d="M6.5 5.1 L7.6 4.9 L7.5 5.4 L6.9 5.5 Z" fill="#6DB56D"/><circle cx="6.9" cy="6.0" r="0.1" fill="#FFF2A8"/><circle cx="7.4" cy="6.3" r="0.1" fill="#FFF2A8"/><path d="M2.5 2 L2.8 2.7 L3.5 3 L2.8 3.3 L2.5 4 L2.2 3.3 L1.5 3 L2.2 2.7 Z" fill="#E14560"/></svg>`,
+    shocked: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><path d="M6 4.3 L6.8 1.8 L9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><path d="M18 4.3 L17.2 1.8 L15 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="1" y="9" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6" transform="rotate(20 2.5 11)"/><rect x="20" y="9" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6" transform="rotate(-20 21.5 11)"/><rect x="7.2" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><circle cx="9.3" cy="10" r="1.7" fill="currentColor"/><circle cx="14.7" cy="10" r="1.7" fill="currentColor"/><circle cx="9.7" cy="9.5" r="0.45" fill="#FFFFFF"/><circle cx="15.1" cy="9.5" r="0.45" fill="#FFFFFF"/><ellipse cx="12" cy="11.6" rx="0.5" ry="0.35" fill="#F7C948"/><ellipse cx="12" cy="13.2" rx="0.7" ry="0.9" fill="currentColor"/><g stroke="currentColor" stroke-width="0.4" stroke-linecap="round"><line x1="5.5" y1="10.5" x2="7" y2="10.5"/><line x1="5.5" y1="11.5" x2="7" y2="11.5"/><line x1="17" y1="10.5" x2="18.5" y2="10.5"/><line x1="17" y1="11.5" x2="18.5" y2="11.5"/></g><g transform="rotate(-8 17.2 3.3)"><path d="M17.2 3.3 L16.2 2.5 L16.2 4 Z" fill="#E14560"/><path d="M17.2 3.3 L18.2 2.5 L18.2 4 Z" fill="#E14560"/><circle cx="17.2" cy="3.3" r="0.35" fill="#E14560"/></g><path d="M6.7 5.2 Q6 6 6.2 6.8 Q6.6 7.6 7.4 7.5 Q8 7.2 8.1 6.3 Q8 5.4 7.4 5.1 Z" fill="#E14560"/><path d="M6.5 5.1 L7.6 4.9 L7.5 5.4 L6.9 5.5 Z" fill="#6DB56D"/><path d="M3 4.5 L3.3 5.3 L4.2 5.5 L3.3 5.7 L3 6.5 L2.7 5.7 L1.8 5.5 L2.7 5.3 Z" fill="#E14560"/></svg>`,
+    dizzy: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><g transform="rotate(-10 12 3)"><path d="M6 4.3 L6.8 1.8 L9 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><path d="M18 4.3 L17.2 1.8 L15 4 Z" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/></g><rect x="1" y="10" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6" transform="rotate(-12 2.5 12)"/><rect x="20" y="10" width="3" height="4" rx="0.8" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6" transform="rotate(12 21.5 12)"/><rect x="7.2" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2" fill="#FFFFFF" stroke="currentColor" stroke-width="0.6"/><g stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="8" y1="8.8" x2="10.6" y2="11.4"/><line x1="10.6" y1="8.8" x2="8" y2="11.4"/><line x1="13.4" y1="8.8" x2="16" y2="11.4"/><line x1="16" y1="8.8" x2="13.4" y2="11.4"/></g><ellipse cx="12" cy="12.1" rx="0.5" ry="0.35" fill="#F7C948"/><path d="M10.4 13.4 L11.2 12.8 L12 13.4 L12.8 12.8 L13.6 13.4" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/><g stroke="currentColor" stroke-width="0.4" stroke-linecap="round"><line x1="5.5" y1="11" x2="7" y2="11.3"/><line x1="5.5" y1="12" x2="7" y2="12.3"/><line x1="17" y1="11.3" x2="18.5" y2="11"/><line x1="17" y1="12.3" x2="18.5" y2="12"/></g><g transform="rotate(-18 17 4)"><path d="M17.2 3.3 L16.2 2.5 L16.2 4 Z" fill="#E14560"/><path d="M17.2 3.3 L18.2 2.5 L18.2 4 Z" fill="#E14560"/><circle cx="17.2" cy="3.3" r="0.35" fill="#E14560"/></g><path d="M6.7 5.2 Q6 6 6.2 6.8 Q6.6 7.6 7.4 7.5 Q8 7.2 8.1 6.3 Q8 5.4 7.4 5.1 Z" fill="#E14560"/><path d="M6.5 5.1 L7.6 4.9 L7.5 5.4 L6.9 5.5 Z" fill="#6DB56D"/><path d="M5 3 Q6 2 7 3 Q6 4 5 3" fill="none" stroke="#E14560" stroke-width="0.5" stroke-linecap="round"/><path d="M18 3 Q19 2 20 3 Q19 4 18 3" fill="none" stroke="#E14560" stroke-width="0.5" stroke-linecap="round"/></svg>`,
+  },
+};
+/* Stock themes' flat fallback = the WelcomeAppIcon glyph (capsule, currentColor). */
+const GLYPH_FALLBACK = `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gf-a" cx="25%" cy="30%" r="60%"><stop offset="0%" stop-color="#2a3040"/><stop offset="100%" stop-color="#2a3040" stop-opacity="0"/></radialGradient></defs><ellipse cx="9.3" cy="9.55" rx="1.6" ry="2.2" fill="#1e2636"/><ellipse cx="9.3" cy="9.55" rx="1.6" ry="2.2" fill="url(#gf-a)"/><ellipse cx="14.7" cy="9.25" rx="1.6" ry="2.2" fill="#1e2636"/><ellipse cx="14.7" cy="9.25" rx="1.6" ry="2.2" fill="url(#gf-a)"/><path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M9.3 7.35 A1.6 2.2 0 1 0 9.3 11.75 A1.6 2.2 0 1 0 9.3 7.35 Z M14.7 7.05 A1.6 2.2 0 1 0 14.7 11.45 A1.6 2.2 0 1 0 14.7 7.05 Z"/><circle cx="10" cy="10.25" r="0.25"/><circle cx="9.4" cy="10.85" r="0.18"/><circle cx="10.3" cy="10.85" r="0.13"/><circle cx="15.4" cy="9.95" r="0.25"/></svg>`;
+
+/* ══════════════════════════════════ FACE BUILDERS ══════════════════════════════════ */
+/* Solid-body themes paint faces in the theme's socket color; outline themes stroke them. */
+
+function solidFaces(t) {
+  const F = t.face, A = t.sparkA, B = t.sparkB, C = t.sparkC;
+  const eyeSocketPair = (exL, eyL, exR, eyR, rx, ry) => `
+    <ellipse cx="${exL}" cy="${eyL}" rx="${rx}" ry="${ry}" fill="${F}"/>
+    <ellipse cx="${exR}" cy="${eyR}" rx="${rx}" ry="${ry}" fill="${F}"/>`;
+  return {
+    idle: `
+      <path fill="${F}" d="M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z"/>
+      <path fill="${F}" d="M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>`,
+    welcome: `
+      ${eyeSocketPair(9.3, 9.55, 14.7, 9.25, 1.6, 2.2)}
+      <circle cx="10.0" cy="10.25" r="0.28" fill="${A}"/><circle cx="9.35" cy="10.85" r="0.20" fill="${B}"/><circle cx="10.3" cy="10.85" r="0.14" fill="${C}"/>
+      <circle cx="15.4" cy="9.95" r="0.28" fill="${A}"/><circle cx="14.75" cy="10.55" r="0.20" fill="${B}"/><circle cx="15.65" cy="10.55" r="0.14" fill="${C}"/>
+      <g transform="rotate(-2 12 13.3)"><path d="M10.8 13.3 Q10.8 13 12 13 Q13.2 13 13.2 13.3 A1.1 1 0 0 1 10.8 13.3 Z" fill="${F}"/></g>`,
+    curious: `
+      <ellipse cx="9.3" cy="9.55" rx="1.7" ry="2.3" fill="${F}"/>
+      <ellipse cx="14.7" cy="9.25" rx="1.7" ry="2.3" fill="${F}"/>
+      <g class="pupil"><circle cx="9.75" cy="9.2" r="0.42" fill="${A}"/><circle cx="9.0" cy="10.3" r="0.22" fill="${B}"/><circle cx="9.95" cy="10.15" r="0.14" fill="${C}"/></g>
+      <g class="pupil"><circle cx="15.15" cy="8.9" r="0.42" fill="${A}"/><circle cx="14.4" cy="10.0" r="0.22" fill="${B}"/><circle cx="15.35" cy="9.85" r="0.14" fill="${C}"/></g>
+      <path d="M13.5 6.1 Q14.7 5.55 15.9 6.1" fill="none" stroke="${F}" stroke-width="0.45" stroke-linecap="round"/>
+      <ellipse cx="12.1" cy="13.1" rx="0.55" ry="0.65" fill="${F}"/>`,
+    shocked: `
+      <circle cx="9.3" cy="9.8" r="2.1" fill="${F}"/>
+      <circle cx="14.7" cy="9.8" r="2.1" fill="${F}"/>
+      <circle cx="9.9" cy="9.2" r="0.5" fill="${B}"/><circle cx="15.3" cy="9.2" r="0.5" fill="${B}"/>
+      <ellipse cx="12" cy="13.6" rx="1" ry="1.25" fill="${F}"/>`,
+    dizzy: `
+      <g stroke="${F}" stroke-width="1" stroke-linecap="round">
+        <line x1="8" y1="8.6" x2="10.6" y2="11.4"/><line x1="10.6" y1="8.6" x2="8" y2="11.4"/>
+        <line x1="13.4" y1="8.6" x2="16" y2="11.4"/><line x1="16" y1="8.6" x2="13.4" y2="11.4"/>
+      </g>
+      <path d="M10.4 13.6 L11.2 13 L12 13.6 L12.8 13 L13.6 13.6" fill="none" stroke="${F}" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <g class="swirl"><path d="M5.4 3.6 Q6.4 2.6 7.4 3.6 Q6.4 4.6 5.4 3.6" fill="none" stroke="${A}" stroke-width="0.5" stroke-linecap="round"/></g>
+      <g class="swirl"><path d="M16.6 3.6 Q17.6 2.6 18.6 3.6 Q17.6 4.6 16.6 3.6" fill="none" stroke="${A}" stroke-width="0.5" stroke-linecap="round"/></g>`,
+    blink: `
+      <path d="M8 10 Q9.3 11 10.6 10" fill="none" stroke="${F}" stroke-width="0.9" stroke-linecap="round"/>
+      <path d="M13.4 10 Q14.7 11 16 10" fill="none" stroke="${F}" stroke-width="0.9" stroke-linecap="round"/>`,
+  };
+}
+
+function outlineFaces(t) {
+  const L = t.line;
+  const whisk = (droop) => t.whiskers ? `
+    <g stroke="${L}" stroke-width="0.4" stroke-linecap="round">
+      <line x1="5.5" y1="${droop ? 11 : 10.5}" x2="7" y2="${droop ? 11.3 : 10.5}"/>
+      <line x1="5.5" y1="${droop ? 12 : 11.5}" x2="7" y2="${droop ? 12.3 : 11.5}"/>
+      <line x1="17" y1="${droop ? 11.3 : 10.5}" x2="18.5" y2="${droop ? 11 : 10.5}"/>
+      <line x1="17" y1="${droop ? 12.3 : 11.5}" x2="18.5" y2="${droop ? 12 : 11.5}"/>
+    </g>` : '';
+  const nose = (y) => t.nose ? `<ellipse cx="12" cy="${y}" rx="0.5" ry="0.35" fill="${t.nose}"/>` : '';
+  return {
+    idle: `
+      <path d="M7.5 9 L10 10 L7.5 11" fill="none" stroke="${L}" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16.5 9 L14 10 L16.5 11" fill="none" stroke="${L}" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+      ${nose(11.2)}
+      <path d="M11 ${t.nose ? 12.6 : 13} Q12 ${t.nose ? 13.4 : 13.8} 13 ${t.nose ? 12.6 : 13}" fill="none" stroke="${L}" stroke-width="0.8" stroke-linecap="round"/>
+      ${whisk(false)}`,
+    welcome: `
+      <ellipse cx="9.3" cy="10" rx="1.3" ry="1.8" fill="${L}"/>
+      <ellipse cx="14.7" cy="10" rx="1.3" ry="1.8" fill="${L}"/>
+      <circle cx="9.7" cy="9.2" r="0.55" fill="#FFFFFF"/><circle cx="15.1" cy="9.2" r="0.55" fill="#FFFFFF"/>
+      <circle cx="8.8" cy="10.5" r="0.22" fill="#FFFFFF"/><circle cx="14.2" cy="10.5" r="0.22" fill="#FFFFFF"/>
+      ${nose(11.4)}
+      <path d="M10.8 ${t.nose ? 12.6 : 13} Q12 ${t.nose ? 13.8 : 14.2} 13.3 ${t.nose ? 12.5 : 12.9}" fill="none" stroke="${L}" stroke-width="0.8" stroke-linecap="round"/>
+      ${whisk(false)}`,
+    curious: `
+      <ellipse cx="9.3" cy="10" rx="1.15" ry="1.6" fill="${L}"/>
+      <ellipse cx="14.7" cy="10" rx="1.15" ry="1.6" fill="${L}"/>
+      <g class="pupil"><circle cx="9.65" cy="9.35" r="0.5" fill="#FFFFFF"/><circle cx="8.95" cy="10.4" r="0.2" fill="#FFFFFF"/></g>
+      <g class="pupil"><circle cx="15.05" cy="9.35" r="0.5" fill="#FFFFFF"/><circle cx="14.35" cy="10.4" r="0.2" fill="#FFFFFF"/></g>
+      <path d="M13.6 7.5 Q14.7 7 15.8 7.5" fill="none" stroke="${L}" stroke-width="0.45" stroke-linecap="round"/>
+      ${nose(11.9)}
+      <ellipse cx="12" cy="13" rx="0.45" ry="0.55" fill="none" stroke="${L}" stroke-width="0.6"/>
+      ${whisk(false)}`,
+    shocked: `
+      <circle cx="9.3" cy="10" r="1.7" fill="${L}"/>
+      <circle cx="14.7" cy="10" r="1.7" fill="${L}"/>
+      <circle cx="9.7" cy="9.5" r="0.45" fill="#FFFFFF"/><circle cx="15.1" cy="9.5" r="0.45" fill="#FFFFFF"/>
+      ${nose(11.6)}
+      <ellipse cx="12" cy="13.4" rx="0.8" ry="1" fill="${L}"/>
+      ${whisk(false)}`,
+    dizzy: `
+      <g stroke="${L}" stroke-width="1" stroke-linecap="round">
+        <line x1="8" y1="8.6" x2="10.6" y2="11.4"/><line x1="10.6" y1="8.6" x2="8" y2="11.4"/>
+        <line x1="13.4" y1="8.6" x2="16" y2="11.4"/><line x1="16" y1="8.6" x2="13.4" y2="11.4"/>
+      </g>
+      ${nose(12.1)}
+      <path d="M10.4 13.4 L11.2 12.8 L12 13.4 L12.8 12.8 L13.6 13.4" fill="none" stroke="${L}" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+      ${whisk(true)}
+      <g class="swirl"><path d="M5 3 Q6 2 7 3 Q6 4 5 3" fill="none" stroke="${t.charm}" stroke-width="0.5" stroke-linecap="round"/></g>
+      <g class="swirl"><path d="M18 3 Q19 2 20 3 Q19 4 18 3" fill="none" stroke="${t.charm}" stroke-width="0.5" stroke-linecap="round"/></g>`,
+    blink: `
+      <path d="M8 10 Q9.3 10.9 10.6 10" fill="none" stroke="${L}" stroke-width="0.9" stroke-linecap="round"/>
+      <path d="M13.4 10 Q14.7 10.9 16 10" fill="none" stroke="${L}" stroke-width="0.9" stroke-linecap="round"/>
+      ${nose(11.2)}
+      <path d="M11 12.6 Q12 13.4 13 12.6" fill="none" stroke="${L}" stroke-width="0.8" stroke-linecap="round"/>
+      ${whisk(false)}`,
+  };
+}
+
+/* ══════════════════════════════════ COMPONENTS ══════════════════════════════════ */
+/* All drawn in the 24×24 space around their slot anchor. Tint via var(--rig-accent) etc. */
+
+const HATS = {
+  none: { label: 'none', svg: () => '' },
+  party: { label: 'party', svg: () => `
+    <path d="M10.5 4.6 L12 0.9 L13.5 4.6 Z" fill="var(--rig-accent)"/>
+    <path d="M10.9 3.6 L13.1 3.6 L12.66 2.52 L11.34 2.52 Z" fill="#fff" opacity="0.35"/>
+    <circle cx="12" cy="0.9" r="0.55" fill="#fff" opacity="0.9"/>` },
+  beanie: { label: 'beanie', svg: () => `
+    <path d="M8.6 4.6 A3.4 3.05 0 0 1 15.4 4.6 Z" fill="var(--rig-accent)"/>
+    <rect x="8.35" y="4.05" width="7.3" height="1.1" rx="0.55" fill="var(--rig-accent)" stroke="rgba(0,0,0,0.18)" stroke-width="0.15"/>
+    <circle cx="12" cy="1.35" r="0.7" fill="var(--rig-accent)" stroke="rgba(255,255,255,0.5)" stroke-width="0.18"/>` },
+  crown: { label: 'crown', svg: () => `
+    <path d="M9.2 4.5 L9.2 2.4 L10.6 3.5 L12 1.9 L13.4 3.5 L14.8 2.4 L14.8 4.5 Z" fill="#E8B33C" stroke="#B8862A" stroke-width="0.18"/>
+    <circle cx="12" cy="3.5" r="0.32" fill="#E14560"/>` },
+  jester: { label: 'jester (Kuromi)', svg: (t) => `
+    <path d="M7 4 L6.5 1.5 L9 3.5 Z" fill="${t.kind === 'outline' ? t.line : 'var(--rig-line)'}"/>
+    <path d="M17 4 L17.5 1.5 L15 3.5 Z" fill="${t.kind === 'outline' ? t.line : 'var(--rig-line)'}"/>
+    <circle cx="6.5" cy="1.5" r="0.5" fill="#FF4FB8"/><circle cx="17.5" cy="1.5" r="0.5" fill="#FF4FB8"/>
+    <circle cx="12" cy="5.8" r="0.9" fill="#FF4FB8"/>
+    <circle cx="11.7" cy="5.6" r="0.22" fill="#1A0F28"/><circle cx="12.3" cy="5.6" r="0.22" fill="#1A0F28"/>
+    <rect x="11.7" y="6" width="0.6" height="0.4" fill="#1A0F28"/>` },
+  kitty: { label: 'kitty ears (Strawberry)', svg: (t) => {
+    const line = t.kind === 'outline' ? t.line : 'var(--rig-line)';
+    const fill = t.kind === 'outline' ? '#FFFFFF' : 'var(--rig-body)';
+    return `
+    <path d="M6 4.3 L6.8 1.8 L9 4 Z" fill="${fill}" stroke="${line}" stroke-width="0.6"/>
+    <path d="M18 4.3 L17.2 1.8 L15 4 Z" fill="${fill}" stroke="${line}" stroke-width="0.6"/>
+    <path d="M17.2 3.3 L16.2 2.5 L16.2 4 Z" fill="#E14560"/><path d="M17.2 3.3 L18.2 2.5 L18.2 4 Z" fill="#E14560"/>
+    <circle cx="17.2" cy="3.3" r="0.35" fill="#E14560"/>
+    <path d="M6.7 5.2 Q6 6 6.2 6.8 Q6.6 7.6 7.4 7.5 Q8 7.2 8.1 6.3 Q8 5.4 7.4 5.1 Z" fill="#E14560"/>
+    <path d="M6.5 5.1 L7.6 4.9 L7.5 5.4 L6.9 5.5 Z" fill="#6DB56D"/>
+    <circle cx="6.8" cy="6.0" r="0.1" fill="#FFF2A8"/><circle cx="7.4" cy="6.0" r="0.1" fill="#FFF2A8"/>`; } },
+};
+
+const EYEWEAR = {
+  none: { label: 'none', svg: () => '' },
+  round: { label: 'round glasses', svg: () => `
+    <g fill="none" stroke="var(--rig-line)" stroke-width="0.5">
+      <circle cx="9.4" cy="10" r="1.85"/><circle cx="14.6" cy="10" r="1.85"/>
+      <path d="M11.25 9.7 Q12 9.3 12.75 9.7"/>
+      <path d="M7.55 9.7 L5.4 9.1"/><path d="M16.45 9.7 L18.6 9.1"/>
+    </g>` },
+  sun: { label: 'sunglasses', svg: () => `
+    <g>
+      <rect x="7.3" y="8.5" width="4.2" height="2.7" rx="1.1" fill="#14121c"/>
+      <rect x="12.5" y="8.5" width="4.2" height="2.7" rx="1.1" fill="#14121c"/>
+      <path d="M11.5 9.3 Q12 9 12.5 9.3" fill="none" stroke="#14121c" stroke-width="0.55"/>
+      <path d="M7.3 9.4 L5.3 8.9" stroke="#14121c" stroke-width="0.5"/><path d="M16.7 9.4 L18.7 8.9" stroke="#14121c" stroke-width="0.5"/>
+      <path d="M8 9.2 L9.4 9.2" stroke="#ffffff" stroke-width="0.3" opacity="0.5"/>
+      <path d="M13.2 9.2 L14.6 9.2" stroke="#ffffff" stroke-width="0.3" opacity="0.5"/>
+    </g>` },
+  visor: { label: 'visor (Halftone)', svg: () => `
+    <rect x="5.8" y="7.6" width="12.4" height="2.8" rx="1.2" fill="#e8234a" opacity="0.55"/>
+    <rect x="6.2" y="8" width="11.6" height="2" rx="0.9" fill="#08060e" opacity="0.45"/>
+    <path d="M6.6 8.3 L17 8.3" stroke="#00b8ff" stroke-width="0.18" opacity="0.6"/>` },
+};
+
+const ITEMS = {
+  none: { label: 'none', svg: () => '' },
+  coffee: { label: 'coffee', svg: () => `
+    <g>
+      <rect x="20.3" y="12.4" width="2.3" height="2.1" rx="0.35" fill="var(--rig-accent)"/>
+      <path d="M22.6 12.9 Q23.5 13.3 22.6 14" fill="none" stroke="var(--rig-accent)" stroke-width="0.4"/>
+      <path d="M21 11.9 Q21.2 11.3 21 10.8" fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="0.3" stroke-linecap="round"/>
+      <path d="M21.9 11.9 Q22.1 11.3 21.9 10.8" fill="none" stroke="rgba(160,160,160,0.6)" stroke-width="0.3" stroke-linecap="round"/>
+    </g>` },
+  pencil: { label: 'pencil', svg: () => `
+    <g transform="rotate(-35 21.5 12.8)">
+      <rect x="21" y="8.9" width="1" height="5.2" rx="0.15" fill="#E8B33C"/>
+      <path d="M21 14.1 L21.5 15.4 L22 14.1 Z" fill="#d9c6ab"/>
+      <path d="M21.32 14.95 L21.5 15.4 L21.68 14.95 Z" fill="#3a3a3a"/>
+      <rect x="21" y="8.9" width="1" height="0.7" rx="0.15" fill="var(--rig-accent)"/>
+    </g>` },
+  flag: { label: 'flag', svg: () => `
+    <g>
+      <line x1="21.5" y1="12.8" x2="21.5" y2="6.4" stroke="var(--rig-line)" stroke-width="0.35"/>
+      <path d="M21.5 6.5 L25 7.5 L21.5 8.5 Z" fill="var(--rig-accent)"/>
+    </g>` },
+  balloon: { label: 'balloon', svg: () => `
+    <g>
+      <path d="M21.5 12.8 Q22.3 10.5 21.9 8.4" fill="none" stroke="var(--rig-line)" stroke-width="0.25" opacity="0.7"/>
+      <g class="balloonBob">
+        <ellipse cx="21.9" cy="6.6" rx="1.7" ry="2" fill="var(--rig-accent)"/>
+        <ellipse cx="21.35" cy="5.9" rx="0.45" ry="0.65" fill="#ffffff" opacity="0.45"/>
+        <path d="M21.7 8.55 L22.1 8.55 L21.9 9 Z" fill="var(--rig-accent)"/>
+      </g>
+    </g>` },
+};
+
+/* ══════════════════════════════════ RIG BUILDER ══════════════════════════════════ */
+const PIVOTS = {
+  'rig-arm-left': [2.5, 9], 'rig-arm-right': [21.5, 9],
+  'rig-leg-left': [8.95, 17], 'rig-leg-right': [15.05, 17],
+};
+const SLOT_ANCHORS = { 'slot-hat': [12, 4], 'slot-eyewear': [12, 9.9], 'slot-item': [21.5, 12.8] };
+const FACES = ['idle', 'welcome', 'curious', 'shocked', 'dizzy', 'blink'];
+
+/* ── Color helpers for the stylized skins ── */
+function mixHex(a, b, k) {
+  const parse = (h) => h.replace('#', '').match(/../g).map((x) => parseInt(x, 16));
+  const [r1, g1, b1] = parse(a), [r2, g2, b2] = parse(b);
+  const c = (v1, v2) => Math.round(v1 + (v2 - v1) * k).toString(16).padStart(2, '0');
+  return '#' + c(r1, r2) + c(g1, g2) + c(b1, b2);
+}
+function lumOf(h) {
+  const [r, g, b] = h.replace('#', '').match(/../g).map((x) => parseInt(x, 16));
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+}
+/* Tube/glow color: the theme accent, brightened when it's too dark to read as light. */
+const glowColor = (t) => lumOf(t.accent) < 0.45 ? mixHex(t.accent, '#ffffff', 0.55) : t.accent;
+/* Comic outline: dark ink on light bodies, light ink on dark bodies. */
+const toonLine = (t) => t.kind === 'outline' ? t.line
+  : (lumOf(t.body) < 0.3 ? mixHex(t.body, '#ffffff', 0.5) : mixHex(t.body, '#000000', 0.6));
+
+/* Toon cel-shade crescent: the body area minus a light circle offset toward the
+   top-left light source (evenodd) — clipped to the capsule. */
+const TOON_CRESCENT = 'M4 3 H20 V17 H4 Z M9.5 -3 A10 10 0 1 0 9.5 17 A10 10 0 1 0 9.5 -3 Z';
+
+/* 8-bit body: the capsule quantized to a 1-unit pixel grid (r4 corners → 2,1 steps). */
+function pixelBodyMarkup(t) {
+  const solid = t.kind === 'solid';
+  const inner = solid ? t.body : '#FFFFFF';
+  const border = solid ? mixHex(t.body, '#000000', 0.45) : t.line;
+  const row = (x, y, w, c, o) => `<rect x="${x}" y="${y}" width="${w}" height="1" fill="${c}"${o ? ` opacity="${o}"` : ''}/>`;
+  let s = row(7, 4, 10, border);
+  s += row(6, 5, 1, border) + row(17, 5, 1, border) + row(7, 5, 10, inner);
+  for (let y = 6; y <= 13; y++) s += row(5, y, 1, border) + row(18, y, 1, border) + row(6, y, 12, inner);
+  s += row(6, 14, 1, border) + row(17, 14, 1, border) + row(7, 14, 10, inner);
+  s += row(7, 15, 10, border);
+  s += row(7, 14, 10, t.bodyLo, 0.5);
+  for (let y = 6; y <= 13; y++) s += row(17, y, 1, t.bodyLo, 0.45);
+  if (solid) s += row(7, 5, 4, t.bodyHi, 0.6);
+  return s;
+}
+
+/* 8-bit faces — shared pixel vocabulary, colored per theme. */
+function pixelFaces(t) {
+  const solid = t.kind === 'solid';
+  const F = solid ? t.face : t.line;
+  const A = solid ? t.sparkA : (t.charm || '#FF4FB8');
+  const p = (x, y, c) => `<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`;
+  const eye2x3 = (x) => p(x, 8, F) + p(x + 1, 8, F) + p(x, 9, F) + p(x + 1, 9, F) + p(x, 10, F) + p(x + 1, 10, F);
+  const eye3x3 = (x) => [0, 1, 2].map((dx) => [8, 9, 10].map((y) => p(x + dx, y, F)).join('')).join('');
+  return {
+    idle: p(8, 8, F) + p(9, 9, F) + p(8, 10, F) + p(15, 8, F) + p(14, 9, F) + p(15, 10, F),
+    welcome: eye2x3(8) + eye2x3(14) + p(9, 8, '#FFFFFF') + p(15, 8, '#FFFFFF')
+      + p(10, 12, F) + p(11, 13, F) + p(12, 13, F) + p(13, 12, F),
+    curious: eye2x3(8) + eye2x3(14) + p(9, 8, A) + p(15, 8, A) + p(8, 10, '#FFFFFF') + p(14, 10, '#FFFFFF')
+      + p(14, 6, F) + p(15, 6, F) + p(12, 13, F),
+    shocked: eye3x3(8) + eye3x3(13) + p(10, 8, '#FFFFFF') + p(15, 8, '#FFFFFF')
+      + p(11, 13, F) + p(12, 13, F) + p(11, 14, F) + p(12, 14, F),
+    dizzy: p(8, 8, F) + p(10, 8, F) + p(9, 9, F) + p(8, 10, F) + p(10, 10, F)
+      + p(13, 8, F) + p(15, 8, F) + p(14, 9, F) + p(13, 10, F) + p(15, 10, F)
+      + p(10, 13, F) + p(11, 12, F) + p(12, 13, F) + p(13, 12, F),
+    blink: p(8, 9, F) + p(9, 9, F) + p(10, 9, F) + p(14, 9, F) + p(15, 9, F) + p(16, 9, F),
+  };
+}
+
+const LIMB_D = {
+  armL: 'M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z',
+  armR: 'M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z',
+};
+function limbShape(kind, attrs) {
+  if (kind === 'armL' || kind === 'armR') return `<path d="${LIMB_D[kind]}" ${attrs}/>`;
+  if (kind === 'legL') return `<rect x="7.2" y="17" width="3.5" height="4" rx="1.2" ${attrs}/>`;
+  return `<rect x="13.3" y="17" width="3.5" height="4" rx="1.2" ${attrs}/>`;
+}
+function pixelLimb(kind, t) {
+  const solid = t.kind === 'solid';
+  const inner = solid ? t.body : '#FFFFFF';
+  const border = solid ? mixHex(t.body, '#000000', 0.45) : t.line;
+  const box = { armL: [1, 9, 3, 4], armR: [20, 9, 3, 4], legL: [7, 17, 4, 4], legR: [13, 17, 4, 4] }[kind];
+  return `<rect x="${box[0]}" y="${box[1]}" width="${box[2]}" height="${box[3]}" fill="${inner}" stroke="${border}" stroke-width="0.5" shape-rendering="crispEdges"/>`;
+}
+
+/* Brick-built body: mortar-colored stepped backing, alternating brick courses
+   inset on top, studs across the head — the buddy as a plastic construction toy. */
+function brickBodyMarkup(t) {
+  const solid = t.kind === 'solid';
+  const base = solid ? t.body : '#FFFFFF';
+  const mortar = solid ? mixHex(t.body, '#000000', 0.4) : mixHex(t.line, '#ffffff', 0.3);
+  const rows = [
+    { y: 4, x0: 7, x1: 17 },
+    { y: 6, x0: 5, x1: 19 }, { y: 8, x0: 5, x1: 19 },
+    { y: 10, x0: 5, x1: 19 }, { y: 12, x0: 5, x1: 19 },
+    { y: 14, x0: 6, x1: 18 },
+  ];
+  let s = rows.map((r) => `<rect x="${r.x0}" y="${r.y}" width="${r.x1 - r.x0}" height="2" fill="${mortar}"/>`).join('');
+  rows.forEach((r, i) => {
+    const off = (i % 2) ? 1.75 : 0;
+    for (let x = r.x0 - 3.5 + off; x < r.x1; x += 3.5) {
+      const bx = Math.max(r.x0 + 0.12, x + 0.12);
+      const bw = Math.min(r.x1 - 0.12, x + 3.5 - 0.12) - bx;
+      if (bw < 0.6) continue;
+      const shade = ((i + Math.round(Math.abs(x))) % 3 === 0) ? mixHex(base, '#000000', 0.08) : base;
+      s += `<rect x="${bx.toFixed(2)}" y="${(r.y + 0.14).toFixed(2)}" width="${bw.toFixed(2)}" height="1.72" rx="0.12" fill="${shade}"/>`;
+    }
+  });
+  for (const cx of [8.7, 12, 15.3]) {
+    s += `<rect x="${cx - 0.85}" y="3.3" width="1.7" height="0.75" fill="${mixHex(base, '#000000', 0.18)}"/>
+          <ellipse cx="${cx}" cy="3.3" rx="0.85" ry="0.34" fill="${mixHex(base, '#ffffff', 0.35)}"/>`;
+  }
+  s += `<rect x="7" y="4.35" width="6" height="0.5" rx="0.25" fill="#ffffff" opacity="0.35"/>`;
+  return s;
+}
+function brickLimb(kind, t) {
+  const solid = t.kind === 'solid';
+  const base = solid ? t.body : '#FFFFFF';
+  const mortar = solid ? mixHex(t.body, '#000000', 0.4) : mixHex(t.line, '#ffffff', 0.3);
+  const [x, y, w, h] = { armL: [1, 9, 3, 4], armR: [20, 9, 3, 4], legL: [7.2, 17, 3.5, 4], legR: [13.3, 17, 3.5, 4] }[kind];
+  const cx = x + w / 2;
+  return `
+    <rect x="${cx - 0.6}" y="${y - 0.55}" width="1.2" height="0.55" fill="${mixHex(base, '#000000', 0.18)}"/>
+    <ellipse cx="${cx}" cy="${y - 0.55}" rx="0.6" ry="0.26" fill="${mixHex(base, '#ffffff', 0.35)}"/>
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="0.2" fill="${mortar}"/>
+    <rect x="${(x + 0.14).toFixed(2)}" y="${(y + 0.14).toFixed(2)}" width="${(w - 0.28).toFixed(2)}" height="${(h / 2 - 0.24).toFixed(2)}" rx="0.12" fill="${base}"/>
+    <rect x="${(x + 0.14).toFixed(2)}" y="${(y + h / 2 + 0.1).toFixed(2)}" width="${(w - 0.28).toFixed(2)}" height="${(h / 2 - 0.24).toFixed(2)}" rx="0.12" fill="${mixHex(base, '#000000', 0.08)}"/>`;
+}
+
+/* Side-peek grip hands: little paws drawn ON TOP of the body, placed at the screen-edge
+   cut line (svg x≈10.5 for right-dock, ≈13.5 for left-dock at 45% visibility) with
+   fingertip bumps wrapping around onto the visible side. Hidden except in side peeks.
+   Rig-format addition: optional groups rig-hand-peek-right / rig-hand-peek-left. */
+function peekHands(t, styleId) {
+  const solid = t.kind === 'solid';
+  let fillAttr, strokeAttr = '';
+  if (styleId === 'print') {
+    fillAttr = solid ? mixHex(t.body, '#f6f1e4', 0.75) : '#f6f1e4';
+    strokeAttr = `stroke="#221f1c" stroke-width="0.5"`;
+  } else if (styleId === 'toon' || styleId === 'burst') {
+    fillAttr = solid ? t.body : '#FFFFFF';
+    strokeAttr = `stroke="${toonLine(t)}" stroke-width="${styleId === 'burst' ? 0.7 : 0.45}"`;
+  } else if (styleId === 'sticker') {
+    fillAttr = solid ? t.body : '#FFFFFF';
+    strokeAttr = solid ? '' : `stroke="${t.line}" stroke-width="0.6"`;
+  } else {
+    fillAttr = solid ? 'url(#g-limb)' : '#FFFFFF';
+    strokeAttr = solid ? '' : `stroke="${t.line}" stroke-width="0.6"`;
+  }
+  // No fingers — the buddy is all rounded stubs. The grip is a single mitten:
+  // an arm-shaped rounded rect reaching around the edge line into view, tilted
+  // slightly down like it's hooked on.
+  const hand = (x, cx, cy, ang) => `
+    <g transform="rotate(${ang} ${cx} ${cy})">
+      <rect x="${x}" y="${(cy - 1.02).toFixed(2)}" width="3" height="2.05" rx="1.0" fill="${fillAttr}" ${strokeAttr}/>
+    </g>`;
+  return `
+    <g id="rig-hand-peek-right" style="display:none">${hand(8.7, 10.2, 12.1, 6)}</g>
+    <g id="rig-hand-peek-left" style="display:none">${hand(12.3, 13.8, 12.1, -6)}</g>`;
+}
+
+function limbArt(t, styleId, kind) {
+  // kind: 'armL' | 'armR' | 'legL' | 'legR' — geometry from the source SVGs
+  const solid = t.kind === 'solid';
+  if (styleId === 'pixel') return pixelLimb(kind, t);
+  if (styleId === 'holo') {
+    const hc = glowColor(t);
+    return limbShape(kind, `fill="${hc}" opacity="0.3"`)
+      + limbShape(kind, `fill="none" stroke="${hc}" stroke-width="0.22" opacity="0.9"`);
+  }
+  if (styleId === 'neon') {
+    return `<g filter="url(#f-glow)">${limbShape(kind, `fill="rgba(10,8,16,0.45)" stroke="${glowColor(t)}" stroke-width="0.4"`)}</g>`;
+  }
+  if (styleId === 'sticker') {
+    return limbShape(kind, `fill="#ffffff" stroke="#ffffff" stroke-width="0.75" stroke-linejoin="round"`)
+      + limbShape(kind, solid ? `fill="${t.body}"` : `fill="#FFFFFF" stroke="${t.line}" stroke-width="0.6"`);
+  }
+  if (styleId === 'toon') {
+    return limbShape(kind, `fill="${solid ? t.body : '#FFFFFF'}" stroke="${toonLine(t)}" stroke-width="${solid ? 0.45 : 0.8}"`);
+  }
+  if (styleId === 'burst') {
+    return limbShape(kind, `fill="${solid ? t.body : '#FFFFFF'}" stroke="${toonLine(t)}" stroke-width="${solid ? 0.7 : 0.95}"`);
+  }
+  if (styleId === 'print') {
+    const paper = solid ? mixHex(t.body, '#f6f1e4', 0.75) : '#f6f1e4';
+    return limbShape(kind, `fill="${paper}" stroke="#221f1c" stroke-width="0.5"`);
+  }
+  if (styleId === 'brick') return brickLimb(kind, t);
+  if (styleId === 'doodle') {
+    return `<g filter="url(#f-wobble)">${limbShape(kind, `fill="${solid ? t.body : '#ffffff'}" fill-opacity="0.3" stroke="${toonLine(t)}" stroke-width="0.45"`)}</g>`;
+  }
+  if (styleId === 'iso') {
+    const sideC = solid ? mixHex(t.body, '#000000', 0.45) : mixHex(t.line, '#ffffff', 0.55);
+    return limbShape(kind, `fill="${sideC}" transform="translate(0.7 0.7)"`)
+      + limbShape(kind, solid ? `fill="${t.body}"` : `fill="#FFFFFF" stroke="${t.line}" stroke-width="0.6"`);
+  }
+  if (styleId === 'chrome') {
+    return limbShape(kind, `fill="url(#g-chrome)"`) + limbShape(kind, `fill="${t.accent}" opacity="0.2"`);
+  }
+  // gradient skins (soft / clay / vinyl / plush)
+  const fill = solid ? 'url(#g-limb)' : '#FFFFFF';
+  const stroke = solid ? '' : `stroke="${t.line}" stroke-width="0.6"`;
+  return limbShape(kind, `fill="${fill}" ${stroke}`);
+}
+
+/* Per-style shading recipes. hi/lo/spec are gradient strengths; the booleans
+   switch overlay layers on. Solid vs outline (white) bodies get different values
+   because a white body carries depth in its shadows, not its highlights. */
+const RIG_SHADE = {
+  soft:  (solid) => ({ hi: solid ? 0.85 : 0.0, lo: solid ? 0.75 : 0.55, spec: solid ? 0.5 : 0.9, rim: true,  glint: false, ao: false, grain: false, stitch: false }),
+  clay:  (solid) => ({ hi: solid ? 0.5  : 0.0, lo: solid ? 0.6  : 0.5,  spec: 0.22,              rim: false, glint: false, ao: true,  grain: false, stitch: false }),
+  vinyl: (solid) => ({ hi: solid ? 1.0  : 0.0, lo: solid ? 0.9  : 0.7,  spec: solid ? 0.7 : 1.0, rim: true,  glint: true,  ao: false, grain: false, stitch: false }),
+  plush: (solid) => ({ hi: solid ? 0.35 : 0.0, lo: solid ? 0.5  : 0.45, spec: 0,                 rim: false, glint: false, ao: true,  grain: true,  stitch: true }),
+  sticker: (solid) => ({ hi: solid ? 0.45 : 0.0, lo: solid ? 0.4 : 0.3, spec: 0.3,               rim: false, glint: false, ao: false, grain: false, stitch: false }),
+  iso:     (solid) => ({ hi: solid ? 0.6  : 0.0, lo: solid ? 0.5 : 0.4, spec: 0.35,              rim: false, glint: false, ao: false, grain: false, stitch: false }),
+  render:  (solid) => ({ hi: solid ? 1.0  : 0.15, lo: solid ? 0.95 : 0.7, spec: solid ? 0.85 : 0.95, rim: false, glint: false, ao: false, grain: false, stitch: false }),
+};
+
+function buildRigSvg(t, opts) {
+  const { styleId, hat, eyewear, item, overlay, chromatic } = opts;
+  const solid = t.kind === 'solid';
+  const S = (RIG_SHADE[styleId] ?? RIG_SHADE.soft)(solid);
+
+  // Stylized skins recolor the face art (neon/holo) or redraw it as pixels.
+  const gc = glowColor(t);
+  let facesTheme = t;
+  if (styleId === 'neon') facesTheme = solid
+    ? { ...t, face: gc, sparkA: '#ffffff', sparkB: gc, sparkC: '#ffffff' }
+    : { ...t, line: gc };
+  if (styleId === 'holo') {
+    const holoInk = t.dark ? '#eaf8ff' : mixHex(gc, '#000000', 0.35);
+    facesTheme = solid
+      ? { ...t, face: holoInk, sparkA: '#ffffff', sparkB: gc, sparkC: holoInk }
+      : { ...t, line: holoInk };
+  }
+  if (styleId === 'print') {
+    const ink = '#221f1c';
+    facesTheme = solid ? { ...t, face: ink, sparkA: t.accent, sparkB: ink, sparkC: t.accent } : { ...t, line: ink };
+  }
+  const faces = styleId === 'pixel' ? pixelFaces(t)
+    : (solid ? solidFaces(facesTheme) : outlineFaces(facesTheme));
+
+  const defs = `
+    <defs>
+      <radialGradient id="g-hi" cx="33%" cy="20%" r="80%">
+        <stop offset="0%" stop-color="${t.bodyHi}" stop-opacity="${S.hi}"/>
+        <stop offset="55%" stop-color="${t.bodyHi}" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="g-lo" x1="0" y1="0" x2="0.22" y2="1">
+        <stop offset="52%" stop-color="${t.bodyLo}" stop-opacity="0"/>
+        <stop offset="100%" stop-color="${t.bodyLo}" stop-opacity="${S.lo}"/>
+      </linearGradient>
+      <linearGradient id="g-limb" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${t.body}"/>
+        <stop offset="100%" stop-color="${t.bodyLo}"/>
+      </linearGradient>
+      <radialGradient id="g-spec" cx="30%" cy="16%" r="26%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="${S.spec}"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+      <clipPath id="c-body"><path d="${BODY_D}"/></clipPath>
+      <filter id="f-soft" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="0.45"/>
+      </filter>
+      <filter id="f-grain" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0" result="na"/>
+        <feComposite in="na" in2="SourceGraphic" operator="in"/>
+      </filter>
+      <filter id="f-grainW" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.5 0" result="na"/>
+        <feComposite in="na" in2="SourceGraphic" operator="in"/>
+      </filter>
+      <filter id="f-glow" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="0.5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <pattern id="p-dots" width="1.1" height="1.1" patternUnits="userSpaceOnUse">
+        <circle cx="0.55" cy="0.55" r="0.24" fill="${t.bodyLo}"/>
+      </pattern>
+      <pattern id="p-dots2" width="1.7" height="1.7" patternUnits="userSpaceOnUse">
+        <circle cx="0.85" cy="0.85" r="0.42" fill="${t.bodyLo}"/>
+      </pattern>
+      <pattern id="p-print" width="0.95" height="0.95" patternUnits="userSpaceOnUse">
+        <circle cx="0.48" cy="0.48" r="0.3" fill="${solid ? t.body : t.accent}"/>
+      </pattern>
+      <pattern id="p-hatch" width="1.2" height="1.2" patternUnits="userSpaceOnUse" patternTransform="rotate(-24)">
+        <rect x="0" y="0" width="0.45" height="1.2" fill="${solid ? t.body : mixHex(t.accent, '#ffffff', 0.25)}"/>
+      </pattern>
+      <linearGradient id="g-chrome" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#f7fbff"/>
+        <stop offset="28%" stop-color="#c6d3e2"/>
+        <stop offset="47%" stop-color="#66788c"/>
+        <stop offset="52%" stop-color="#232e3c"/>
+        <stop offset="62%" stop-color="#4c5e72"/>
+        <stop offset="100%" stop-color="#a7b8ca"/>
+      </linearGradient>
+      <radialGradient id="g-bounce" cx="50%" cy="96%" r="55%">
+        <stop offset="0%" stop-color="${t.canvas}" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="${t.canvas}" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="f-wobble" x="-15%" y="-15%" width="130%" height="130%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.12" numOctaves="3" seed="7" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="0.7"/>
+      </filter>
+    </defs>`;
+
+  const bodyFill = solid ? t.body : '#FFFFFF';
+  const bodyStroke = solid ? '' : `stroke="${t.line}" stroke-width="0.6"`;
+
+  // Style overlays reuse the capsule path with gradient fills + layered effects.
+  let shading = `
+    <path d="${BODY_D}" fill="url(#g-lo)"/>
+    <path d="${BODY_D}" fill="url(#g-hi)"/>`;
+  if (S.ao) shading += `
+    <g clip-path="url(#c-body)"><ellipse cx="12" cy="15.8" rx="6.6" ry="2.6" fill="${t.bodyLo}" opacity="${solid ? 0.35 : 0.5}" filter="url(#f-soft)"/></g>`;
+  if (S.spec > 0) shading += `
+    <ellipse cx="9.6" cy="6.4" rx="3.4" ry="1.9" fill="url(#g-spec)" transform="rotate(-14 9.6 6.4)"/>`;
+  if (S.glint) shading += solid ? `
+    <ellipse cx="9" cy="5.9" rx="1.9" ry="0.9" fill="#ffffff" opacity="0.55" transform="rotate(-16 9 5.9)"/>
+    <circle cx="7.4" cy="7.6" r="0.4" fill="#ffffff" opacity="0.8"/>
+    <path d="M18.1 7 A3.8 3.8 0 0 1 18.55 11" fill="none" stroke="#ffffff" stroke-width="0.28" opacity="0.4"/>` : `
+    <ellipse cx="9" cy="5.9" rx="1.9" ry="0.9" fill="${t.bodyLo}" opacity="0.4" transform="rotate(-16 9 5.9)"/>
+    <path d="M18.1 7 A3.8 3.8 0 0 1 18.55 11" fill="none" stroke="${t.bodyLo}" stroke-width="0.35" opacity="0.85"/>`;
+  if (S.grain) shading += `
+    <g clip-path="url(#c-body)">
+      <rect x="4" y="3" width="16" height="14" filter="url(#f-grain)" opacity="0.28"/>
+      <rect x="4" y="3" width="16" height="14" filter="url(#f-grainW)" opacity="0.14" transform="translate(0.3 0.2)"/>
+    </g>`;
+  if (S.stitch) shading += `
+    <path d="${BODY_D}" transform="translate(0.84 0.7) scale(0.93)" fill="none" stroke="${solid ? t.face : t.line}" stroke-width="0.18" stroke-dasharray="0.5 0.42" stroke-linecap="round" opacity="0.5"/>`;
+  if (S.rim) shading += chromatic ? `
+    <path d="M5 11.5 L5 8 A4 4 0 0 1 9 4 L12 4" fill="none" stroke="#00b8ff" stroke-width="0.35" opacity="0.75" filter="url(#f-soft)"/>
+    <path d="M19 8.5 L19 12 A4 4 0 0 1 15 16 L12.5 16" fill="none" stroke="#e8234a" stroke-width="0.35" opacity="0.75" filter="url(#f-soft)"/>` : `
+    <path d="M5 10.5 L5 8 A4 4 0 0 1 9 4 L11 4" fill="none" stroke="${solid ? t.rim : t.accent}" stroke-width="0.32" opacity="${solid ? 0.8 : 0.5}" filter="url(#f-soft)"/>`;
+
+  const halftoneDots = (t === THEMES['halftone-dimension']) ? `
+    <circle cx="7" cy="6" r="0.4" fill="#e8234a" opacity="0.25"/><circle cx="9" cy="5.5" r="0.35" fill="#00b8ff" opacity="0.2"/>
+    <circle cx="17" cy="6" r="0.4" fill="#e8234a" opacity="0.25"/><circle cx="15" cy="14" r="0.35" fill="#00b8ff" opacity="0.2"/>
+    <circle cx="8" cy="14.5" r="0.4" fill="#e8234a" opacity="0.2"/><circle cx="16" cy="5.5" r="0.3" fill="#ffea00" opacity="0.15"/>` : '';
+
+  // ── Body core per skin. Gradient skins use the shading stack above; the
+  //    stylized skins replace the body treatment entirely (same silhouette). ──
+  let preRoot = ''; // drawn behind everything inside rig-root (e.g. burst rays)
+  let bodyCore = `
+    <path d="${BODY_D}" fill="${bodyFill}" ${bodyStroke}/>
+    ${halftoneDots}
+    ${shading}`;
+  let shadowMarkup = `<ellipse id="groundShadow" cx="12" cy="22.4" rx="5.6" ry="0.95" fill="#000" opacity="${t.dark ? 0.38 : 0.2}" filter="url(#f-soft)"/>`;
+
+  if (styleId === 'toon') {
+    bodyCore = `
+      <path d="${BODY_D}" fill="${bodyFill}" stroke="${toonLine(t)}" stroke-width="${solid ? 0.5 : 0.8}" stroke-linejoin="round"/>
+      ${halftoneDots}
+      <g clip-path="url(#c-body)">
+        <path fill-rule="evenodd" d="${TOON_CRESCENT}" fill="${t.bodyLo}" opacity="0.35"/>
+        <path fill-rule="evenodd" d="${TOON_CRESCENT}" fill="url(#p-dots)" opacity="0.65"/>
+      </g>
+      <path d="M7.1 5.4 L7.45 6.35 L8.4 6.7 L7.45 7.05 L7.1 8 L6.75 7.05 L5.8 6.7 L6.75 6.35 Z" fill="#ffffff" opacity="0.9"/>`;
+  } else if (styleId === 'holo') {
+    const scan = Array.from({ length: 13 }, (_, i) =>
+      `<rect x="4" y="${(4.4 + i * 0.9).toFixed(1)}" width="16" height="0.22" fill="${gc}" opacity="0.16"/>`).join('');
+    bodyCore = `
+      <path d="${BODY_D}" fill="${gc}" opacity="0.3"/>
+      <g clip-path="url(#c-body)">
+        ${scan}
+        <g class="holoScan"><rect x="4" y="6" width="16" height="1.4" fill="#ffffff" opacity="0.22"/></g>
+      </g>
+      <path d="${BODY_D}" fill="none" stroke="#7fdfff" stroke-width="0.18" opacity="0.8" transform="translate(-0.18 0)"/>
+      <path d="${BODY_D}" fill="none" stroke="#ff5f8f" stroke-width="0.18" opacity="0.7" transform="translate(0.18 0)"/>
+      <path d="${BODY_D}" fill="none" stroke="${gc}" stroke-width="0.3" opacity="0.95"/>`;
+    shadowMarkup = `<ellipse id="groundShadow" cx="12" cy="22.4" rx="5" ry="0.9" fill="${gc}" opacity="0.4" filter="url(#f-soft)"/>`;
+  } else if (styleId === 'neon') {
+    bodyCore = `
+      <path d="${BODY_D}" fill="${t.dark ? 'rgba(6,4,12,0.55)' : 'rgba(18,14,26,0.88)'}"/>
+      <g filter="url(#f-glow)">
+        <path d="${BODY_D}" fill="none" stroke="${gc}" stroke-width="0.5" opacity="0.95"/>
+        <path d="${BODY_D}" fill="none" stroke="#ffffff" stroke-width="0.15" opacity="0.85"/>
+      </g>`;
+    shadowMarkup = `<ellipse id="groundShadow" cx="12" cy="22.4" rx="5" ry="0.9" fill="${gc}" opacity="0.35" filter="url(#f-soft)"/>`;
+  } else if (styleId === 'pixel') {
+    bodyCore = `<g shape-rendering="crispEdges">${pixelBodyMarkup(t)}</g>`;
+    shadowMarkup = `<rect id="groundShadow" x="7" y="22" width="10" height="1" fill="#000" opacity="${t.dark ? 0.4 : 0.22}" shape-rendering="crispEdges"/>`;
+  } else if (styleId === 'sticker') {
+    bodyCore = `
+      <path d="${BODY_D}" fill="#ffffff" stroke="#ffffff" stroke-width="0.8" stroke-linejoin="round"/>
+      <path d="${BODY_D}" fill="${bodyFill}" ${bodyStroke}/>
+      ${halftoneDots}
+      ${shading}`;
+  } else if (styleId === 'burst') {
+    const ink = toonLine(t);
+    preRoot = `<g opacity="0.85">${Array.from({ length: 22 }, (_, i) => {
+      const a = (i / 22) * Math.PI * 2;
+      const r1 = 8.6 + (i % 3) * 0.7, r2 = 12.2 + (i % 2) * 1.6;
+      return `<line x1="${(12 + Math.cos(a) * r1).toFixed(2)}" y1="${(10 + Math.sin(a) * r1 * 0.85).toFixed(2)}" x2="${(12 + Math.cos(a) * r2).toFixed(2)}" y2="${(10 + Math.sin(a) * r2 * 0.85).toFixed(2)}" stroke="${ink}" stroke-width="${(0.22 + (i % 2) * 0.1).toFixed(2)}"/>`;
+    }).join('')}</g>`;
+    bodyCore = `
+      <path d="${BODY_D}" fill="none" stroke="#00b8ff" stroke-width="0.55" opacity="0.6" transform="translate(-0.45 0.1)"/>
+      <path d="${BODY_D}" fill="none" stroke="#e8234a" stroke-width="0.55" opacity="0.6" transform="translate(0.45 0.28)"/>
+      <path d="${BODY_D}" fill="${bodyFill}" stroke="${ink}" stroke-width="0.9" stroke-linejoin="round"/>
+      ${halftoneDots}
+      <g clip-path="url(#c-body)">
+        <path fill-rule="evenodd" d="${TOON_CRESCENT}" fill="${t.bodyLo}" opacity="0.4"/>
+        <path fill-rule="evenodd" d="${TOON_CRESCENT}" fill="url(#p-dots2)" opacity="0.85"/>
+      </g>
+      <path d="M7.1 5.2 L7.5 6.3 L8.6 6.7 L7.5 7.1 L7.1 8.2 L6.7 7.1 L5.6 6.7 L6.7 6.3 Z" fill="#ffffff" opacity="0.95"/>
+      <path d="M16.4 4.4 L16.65 5.1 L17.35 5.35 L16.65 5.6 L16.4 6.3 L16.15 5.6 L15.45 5.35 L16.15 5.1 Z" fill="#ffffff" opacity="0.85"/>`;
+  } else if (styleId === 'print') {
+    const ink = '#221f1c';
+    const paper = solid ? mixHex(t.body, '#f6f1e4', 0.75) : '#f6f1e4';
+    bodyCore = `
+      <path d="${BODY_D}" fill="none" stroke="#00b8d0" stroke-width="0.4" opacity="0.55" transform="translate(-0.32 0.08)"/>
+      <path d="${BODY_D}" fill="none" stroke="#e8309a" stroke-width="0.4" opacity="0.55" transform="translate(0.3 0.22)"/>
+      <path d="${BODY_D}" fill="${paper}" stroke="${ink}" stroke-width="0.65" stroke-linejoin="round"/>
+      <g clip-path="url(#c-body)">
+        <rect x="4" y="3" width="16" height="14" fill="url(#p-print)" opacity="0.75"/>
+        <path fill-rule="evenodd" d="${TOON_CRESCENT}" fill="${ink}" opacity="0.14"/>
+      </g>`;
+  } else if (styleId === 'brick') {
+    bodyCore = brickBodyMarkup(t);
+  } else if (styleId === 'doodle') {
+    const ink = toonLine(t);
+    bodyCore = `
+      <g filter="url(#f-wobble)">
+        <path d="${BODY_D}" fill="${bodyFill}" opacity="0.22"/>
+        <g clip-path="url(#c-body)"><rect x="4" y="3" width="16" height="14" fill="url(#p-hatch)" opacity="0.8"/></g>
+        <path d="${BODY_D}" fill="none" stroke="${ink}" stroke-width="0.5" stroke-linecap="round"/>
+        <path d="${BODY_D}" fill="none" stroke="${ink}" stroke-width="0.3" opacity="0.45" transform="translate(0.25 -0.18) rotate(0.8 12 10)"/>
+      </g>`;
+    shadowMarkup = `<g id="groundShadow" filter="url(#f-wobble)">
+      <ellipse cx="12" cy="22.4" rx="5.2" ry="0.8" fill="none" stroke="#000" stroke-width="0.28" opacity="0.4"/>
+      <ellipse cx="11.6" cy="22.5" rx="4.2" ry="0.55" fill="none" stroke="#000" stroke-width="0.22" opacity="0.3"/>
+    </g>`;
+  } else if (styleId === 'iso') {
+    const sideC = solid ? mixHex(t.body, '#000000', 0.45) : mixHex(t.line, '#ffffff', 0.55);
+    bodyCore = `
+      <path d="${BODY_D}" fill="${sideC}" transform="translate(1 1)"/>
+      <path d="${BODY_D}" fill="${bodyFill}" ${bodyStroke}/>
+      <path d="${BODY_D}" fill="url(#g-hi)"/>
+      <path d="${BODY_D}" fill="url(#g-lo)"/>`;
+    shadowMarkup = `<ellipse id="groundShadow" cx="13.4" cy="22.6" rx="6" ry="1" fill="#000" opacity="${t.dark ? 0.4 : 0.22}" filter="url(#f-soft)"/>`;
+  } else if (styleId === 'render') {
+    bodyCore = `
+      <path d="${BODY_D}" fill="${bodyFill}" ${bodyStroke}/>
+      ${halftoneDots}
+      <path d="${BODY_D}" fill="url(#g-lo)"/>
+      <path d="${BODY_D}" fill="url(#g-hi)"/>
+      <g clip-path="url(#c-body)">
+        <ellipse cx="12" cy="16.4" rx="6.8" ry="2.2" fill="${t.bodyLo}" opacity="0.35" filter="url(#f-soft)"/>
+        <ellipse cx="12" cy="17.2" rx="7.5" ry="3.4" fill="url(#g-bounce)"/>
+      </g>
+      <ellipse id="specEl" cx="9.6" cy="6.2" rx="3" ry="1.7" fill="url(#g-spec)" transform="rotate(-14 9.6 6.2)"/>
+      <path d="M5 12 L5 8 A4 4 0 0 1 9 4 L12.5 4" fill="none" stroke="${solid ? t.rim : '#ffffff'}" stroke-width="0.4" opacity="0.9" filter="url(#f-soft)"/>
+      <path d="M19 9 L19 12 A4 4 0 0 1 15.5 15.9" fill="none" stroke="${mixHex(t.canvas, '#ffffff', 0.3)}" stroke-width="0.3" opacity="0.5" filter="url(#f-soft)"/>`;
+    shadowMarkup = `<ellipse id="groundShadow" cx="12" cy="22.4" rx="5.8" ry="1.05" fill="#000" opacity="${t.dark ? 0.5 : 0.3}" filter="url(#f-soft)"/>`;
+  } else if (styleId === 'chrome') {
+    bodyCore = `
+      <path d="${BODY_D}" fill="url(#g-chrome)"/>
+      <path d="${BODY_D}" fill="${t.accent}" opacity="0.2"/>
+      <path d="${BODY_D}" fill="none" stroke="${mixHex(t.accent, '#000000', 0.4)}" stroke-width="0.25" opacity="0.6"/>
+      <g clip-path="url(#c-body)">
+        <rect x="4" y="9.4" width="16" height="0.5" fill="#0c141e" opacity="0.55"/>
+        <ellipse cx="9" cy="5.8" rx="2.6" ry="1.2" fill="#ffffff" opacity="0.8" transform="rotate(-14 9 5.8)"/>
+        <rect x="14.8" y="4.5" width="1" height="11" fill="#ffffff" opacity="0.25" transform="skewX(-8)"/>
+      </g>`;
+    shadowMarkup = `<ellipse id="groundShadow" cx="12" cy="22.4" rx="5.6" ry="0.95" fill="#000" opacity="${t.dark ? 0.45 : 0.28}" filter="url(#f-soft)"/>`;
+  }
+
+  const tail = t.tail ? `
+    <g id="rig-tail" class="rigPart" data-pivot="19 14">
+      <path d="M19 14 Q21 14 21.5 15.5 Q22 17 20.5 17.2 L21.5 18.2 L20 18 L21 19 L19.5 18.5 Z" fill="${t.line}" opacity="0.85"/>
+    </g>` : '';
+
+  const faceGroups = FACES.map((f) =>
+    `<g id="rig-face-${f}"${f === 'idle' ? '' : ' style="display:none"'}>${faces[f]}</g>`).join('\n');
+  // Doodle faces wobble like the ink lines do.
+  const facesBlock = styleId === 'doodle' ? `<g filter="url(#f-wobble)">${faceGroups}</g>` : faceGroups;
+
+  const overlayMarkers = overlay ? `
+    <g id="rigOverlay" style="pointer-events:none">
+      ${Object.entries(PIVOTS).map(([id, [x, y]]) => `
+        <circle cx="${x}" cy="${y}" r="0.55" fill="none" stroke="#00e0a0" stroke-width="0.18"/>
+        <circle cx="${x}" cy="${y}" r="0.12" fill="#00e0a0"/>
+        <text x="${x + 0.8}" y="${y + 0.35}" font-size="0.85" fill="#00e0a0" font-family="monospace">${id.replace('rig-', '')}</text>`).join('')}
+      ${Object.entries(SLOT_ANCHORS).map(([id, [x, y]]) => `
+        <path d="M${x - 0.5} ${y} L${x + 0.5} ${y} M${x} ${y - 0.5} L${x} ${y + 0.5}" stroke="#38b6ff" stroke-width="0.18"/>
+        <text x="${x + 0.7}" y="${y - 0.4}" font-size="0.85" fill="#38b6ff" font-family="monospace">${id}</text>`).join('')}
+    </g>` : '';
+
+  return `
+  <svg viewBox="-3 -5 30 30" xmlns="http://www.w3.org/2000/svg" style="--rig-accent:${t.accent}; --rig-on-accent:${t.onAccent}; --rig-line:${t.kind === 'outline' ? t.line : t.fg}; --rig-body:${t.body};">
+    ${defs}
+    ${shadowMarkup}
+    <g id="rig-root">
+      ${preRoot}
+      ${tail}
+      <g id="rig-arm-left" class="rigPart" data-pivot="2.5 9">${limbArt(t, styleId, 'armL')}</g>
+      <g id="rig-arm-right" class="rigPart" data-pivot="21.5 9">
+        <g class="waveInner">${limbArt(t, styleId, 'armR')}<g id="slot-item">${ITEMS[item].svg(t)}</g></g>
+      </g>
+      <g id="rig-leg-left" class="rigPart" data-pivot="8.95 17">${limbArt(t, styleId, 'legL')}</g>
+      <g id="rig-leg-right" class="rigPart" data-pivot="15.05 17">${limbArt(t, styleId, 'legR')}</g>
+      <g id="rig-body">
+        ${bodyCore}
+        ${facesBlock}
+        <g id="slot-eyewear">${EYEWEAR[eyewear].svg(t)}</g>
+        ${peekHands(t, styleId)}
+      </g>
+      <g id="slot-hat">${HATS[hat].svg(t)}</g>
+    </g>
+    ${overlayMarkers}
+  </svg>`;
+}
+
+/* ══════════════════════════════════ BACKDROPS ══════════════════════════════════ */
+/* The backdrop is only the scene surface now — all flourish elements are mobile
+   COMPANIONS that spring-follow the buddy (see below). */
+function buildBackdrop(t, sceneBg) {
+  let bg;
+  if (sceneBg === 'canvas') bg = t.canvas;
+  else if (sceneBg === 'panel') bg = t.panel;
+  else bg = null; // desktop sim
+  const stage = document.getElementById('stage');
+  stage.style.background = bg ?? (t.dark
+    ? 'linear-gradient(135deg, #1b2735 0%, #090a0f 100%)'
+    : 'linear-gradient(135deg, #cfd9e8 0%, #8fa8c8 100%)');
+
+  let inner = '';
+  if (sceneBg === 'desktop') {
+    // faint "someone's desktop" — window outlines behind the floater
+    inner += `
+      <rect x="6%" y="10%" width="46%" height="62%" rx="8" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/>
+      <rect x="6%" y="10%" width="46%" height="5.5%" rx="8" fill="rgba(255,255,255,0.08)"/>
+      <rect x="57%" y="24%" width="34%" height="54%" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.10)"/>`;
+  }
+  document.getElementById('stageBackdrop').innerHTML =
+    `<svg preserveAspectRatio="xMidYMid slice">${inner}</svg>`;
+}
+
+/* ══════════════════════════════════ SCENE COMPANIONS ══════════════════════════════════ */
+/* Flourish elements as satellites: each has a preferred offset from the buddy's center
+   and follows it on its own spring (stiffness k / damping dmp) — drag the buddy and
+   they trail behind, catch up, and overshoot, just like the limbs. `float` adds an
+   idle bob; ghost companions fade with lag distance (chromatic after-image). */
+
+const SUN_SVG = `<svg viewBox="0 0 40 40">
+  <defs>
+    <radialGradient id="cg-sun" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff6d8"/>
+      <stop offset="35%" stop-color="#ffd968" stop-opacity="0.95"/>
+      <stop offset="62%" stop-color="#ffc030" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffc030" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g class="sunPulse">
+    <g class="sunSpin" fill="#ffc030" opacity="0.8">
+      ${[0, 45, 90, 135, 180, 225, 270, 315].map((a) =>
+        `<path d="M20 4.6 Q21.7 9.2 20 12.2 Q18.3 9.2 20 4.6 Z" transform="rotate(${a} 20 20)"/>`).join('')}
+    </g>
+    <circle cx="20" cy="20" r="13.5" fill="url(#cg-sun)"/>
+    <circle cx="20" cy="20" r="5.4" fill="#ffdf7e"/>
+    <circle cx="20" cy="20" r="3.7" fill="#fff3cf"/>
+    <circle cx="18.5" cy="18.3" r="1" fill="#ffffff" opacity="0.85"/>
+  </g>
+</svg>`;
+
+const moteSvg = (c, o) => `<svg viewBox="0 0 10 10"><circle class="twinkle" cx="5" cy="5" r="3.6" fill="${c}" opacity="${o}"/></svg>`;
+const sparkSvg = (c, o = 1) => `<svg viewBox="0 0 10 10"><path class="twinkle" d="M5 0.6 L6 3.9 L9.4 5 L6 6.1 L5 9.4 L4 6.1 L0.6 5 L4 3.9 Z" fill="${c}" opacity="${o}"/></svg>`;
+const glintSvg = (c, o = 1) => `<svg viewBox="0 0 10 10"><g class="twinkle" stroke="${c}" stroke-width="0.9" stroke-linecap="round" opacity="${o}"><line x1="5" y1="0.8" x2="5" y2="9.2"/><line x1="0.8" y1="5" x2="9.2" y2="5"/></g></svg>`;
+const berrySvg = () => `<svg viewBox="0 0 10 10"><g class="berryBob">
+  <path d="M3.4 1.9 Q1 4.5 1.7 7 Q3 9.6 5.7 9.2 Q7.7 8.3 8 5.4 Q7.7 2.4 5.7 1.5 Z" fill="#E14560"/>
+  <path d="M2.8 1.6 L6.5 0.9 L6.2 2.6 L4.2 2.9 Z" fill="#6DB56D"/>
+  <circle cx="3.4" cy="4.6" r="0.4" fill="#FFF2A8"/><circle cx="5.6" cy="4.9" r="0.4" fill="#FFF2A8"/><circle cx="4.5" cy="6.9" r="0.4" fill="#FFF2A8"/>
+</g></svg>`;
+const barSvg = (c) => `<svg viewBox="0 0 100 6" preserveAspectRatio="none"><rect x="0" y="1.6" width="100" height="2.6" rx="1.3" fill="${c}" opacity="0.35"/></svg>`;
+const GHOST_SVG = `<svg viewBox="-3 -5 30 30">
+  <g fill="#00b8ff" opacity="0.4" transform="translate(-0.55 0)">
+    <path d="${BODY_D}"/><path d="${LIMB_D.armL}"/><path d="${LIMB_D.armR}"/>
+    <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+  </g>
+  <g fill="#e8234a" opacity="0.35" transform="translate(0.6 0.25)">
+    <path d="${BODY_D}"/><path d="${LIMB_D.armL}"/><path d="${LIMB_D.armR}"/>
+    <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/><rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+  </g>
+</svg>`;
+const ZZZ_SVG = `<svg viewBox="0 0 20 24">
+  <g stroke="#9aa4c0" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path class="zrise" d="M2 18 L7 18 L2 23 L7 23" stroke-width="1.3"/>
+    <path class="zrise" style="animation-delay:1.05s" d="M8 10 L13.5 10 L8 15.5 L13.5 15.5" stroke-width="1.15" opacity="0.85"/>
+    <path class="zrise" style="animation-delay:2.1s" d="M13 3 L18 3 L13 8 L18 8" stroke-width="1" opacity="0.7"/>
+  </g>
+</svg>`;
+
+const COMPANIONS = {
+  'golden-sunbreak': [
+    { w: 100, dx: -138, dy: -104, k: 65, dmp: 9, float: 6, floatMs: 2600, svg: SUN_SVG },
+    { w: 15, dx: 72, dy: -84, k: 120, dmp: 8, float: 9, floatMs: 1700, svg: moteSvg('#ffc030', 0.75) },
+    { w: 11, dx: 112, dy: -28, k: 85, dmp: 7, float: 11, floatMs: 2100, svg: moteSvg('#ffe090', 0.6) },
+    { w: 9, dx: -92, dy: 46, k: 55, dmp: 6, float: 13, floatMs: 2500, svg: moteSvg('#ffc030', 0.5) },
+  ],
+  'halftone-dimension': [
+    { w: 230, dx: 0, dy: 0, k: 34, dmp: 7, float: 0, svg: GHOST_SVG, ghost: true },
+    { w: 200, h: 6, dx: -8, dy: -74, k: 55, dmp: 8, float: 4, floatMs: 2300, svg: barSvg('#00b8ff') },
+    { w: 165, h: 6, dx: 14, dy: 76, k: 42, dmp: 7, float: 5, floatMs: 2900, svg: barSvg('#e8234a') },
+  ],
+  'kuromi-dreamer': [
+    { w: 26, dx: -104, dy: -76, k: 95, dmp: 8, float: 8, floatMs: 2000, svg: sparkSvg('#FF4FB8') },
+    { w: 15, dx: 96, dy: -100, k: 70, dmp: 7, float: 11, floatMs: 2500, svg: sparkSvg('#FFFFFF', 0.8) },
+    { w: 12, dx: 120, dy: 24, k: 55, dmp: 6, float: 9, floatMs: 1800, svg: sparkSvg('#FF4FB8', 0.65) },
+  ],
+  'strawberry-kitty': [
+    { w: 30, dx: -112, dy: -66, k: 85, dmp: 8, float: 7, floatMs: 2400, svg: berrySvg() },
+    { w: 20, dx: 108, dy: 48, k: 60, dmp: 6, float: 10, floatMs: 2900, svg: berrySvg() },
+    { w: 16, dx: 84, dy: -104, k: 100, dmp: 8, float: 9, floatMs: 1900, svg: sparkSvg('#E14560', 0.8) },
+  ],
+  'midnight': [
+    { w: 16, dx: -96, dy: -88, k: 80, dmp: 7, float: 8, floatMs: 2600, svg: glintSvg('#C9D1D9', 0.7) },
+    { w: 11, dx: 104, dy: -40, k: 60, dmp: 6, float: 10, floatMs: 3100, svg: glintSvg('#8B949E', 0.55) },
+  ],
+  'creme': [
+    { w: 13, dx: -88, dy: -80, k: 75, dmp: 7, float: 8, floatMs: 2700, svg: moteSvg('#8A7E6E', 0.45) },
+    { w: 10, dx: 98, dy: -30, k: 55, dmp: 6, float: 10, floatMs: 3200, svg: moteSvg('#8A7E6E', 0.35) },
+  ],
+};
+const ZZZ_COMP = { w: 40, h: 48, dx: 66, dy: -128, k: 90, dmp: 9, float: 5, floatMs: 2800, svg: ZZZ_SVG };
+
+const companionsEl = document.getElementById('companions');
+let comps = [];
+function rebuildCompanions() {
+  companionsEl.innerHTML = '';
+  comps = [];
+  const defs = [...(state.flourish ? (COMPANIONS[state.theme] ?? []) : [])];
+  if (state.motionStyle === 'sleepy') defs.push(ZZZ_COMP);
+  defs.forEach((def, i) => {
+    const el = document.createElement('div');
+    el.className = 'comp';
+    el.style.width = def.w + 'px';
+    if (def.h) el.style.height = def.h + 'px';
+    el.innerHTML = def.svg;
+    companionsEl.appendChild(el);
+    comps.push({ def, el, phase: i * 1.7, sx: { value: 0, velocity: 0 }, sy: { value: 0, velocity: 0 }, seeded: false });
+  });
+  layoutCompanionsStatic();
+}
+function compTarget(c, nowMs) {
+  const cx = pos.x + MASCOT_SIZE / 2, cy = pos.y + MASCOT_SIZE / 2;
+  const f = (c.def.float && effectsOn())
+    ? Math.sin(nowMs / (c.def.floatMs ?? 2000) * Math.PI * 2 + c.phase) * c.def.float * state.intensity
+    : 0;
+  return {
+    x: cx + c.def.dx - c.def.w / 2,
+    y: cy + c.def.dy - (c.def.h ?? c.def.w) / 2 + f,
+  };
+}
+/* Reduced effects / initial placement: pin companions at their offsets, no springs. */
+function layoutCompanionsStatic() {
+  for (const c of comps) {
+    const t = compTarget(c, 0);
+    c.sx = { value: t.x, velocity: 0 };
+    c.sy = { value: t.y, velocity: 0 };
+    c.seeded = true;
+    c.el.style.transform = `translate(${t.x.toFixed(1)}px, ${t.y.toFixed(1)}px)`;
+    if (c.def.ghost) c.el.style.opacity = '0';
+  }
+}
+
+/* ══════════════════════════════════ STATE + UI ══════════════════════════════════ */
+const state = {
+  theme: 'golden-sunbreak',
+  style: 'soft', // 'flat' | 'soft' | 'clay' | 'vinyl' | 'plush'
+  pose: 'idle',   // idle | welcome | curious | shocked | dizzy | peek
+  hat: 'none', eyewear: 'none', item: 'none',
+  scene: 'canvas',
+  peekVariant: 'side75Wider', // side-peek staging — '75° wider' approved 2026-07-16
+  motionStyle: 'chill', // chill | bouncy | floaty | hyper | sleepy
+  intensity: 1,         // 0.5–2× multiplier on idle motion, sway, tilt, companions
+  breathe: true, blink: true, tilt: true, flourish: true, overlay: false,
+  reduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+};
+
+/* Pose data — from the plan's mascot-poses.ts (Task 8). Limbs hang down; rotation about data-pivot. */
+const POSES = {
+  idle: { parts: {}, face: 'idle' },
+  // Sign convention: for a limb hanging below its pivot, NEGATIVE rotation on the
+  // right arm swings it up leaning OUTWARD (away from the body) — a natural wave.
+  // Positive leans it inward across the head (the original 160 waved over his face).
+  welcome: { parts: { 'rig-arm-right': { rotate: -160 } }, face: 'welcome', wave: true },
+  curious: { parts: {}, face: 'curious' },
+  // Shocked flails outward too: left arm positive, right arm negative.
+  shocked: { parts: { 'rig-arm-left': { rotate: 130 }, 'rig-arm-right': { rotate: -130 } }, face: 'shocked' },
+  dizzy: { parts: { 'rig-arm-left': { rotate: -14 }, 'rig-arm-right': { rotate: 14 } }, face: 'dizzy' },
+  // Peek ↓: both arms up, curled inward = hands gripping the bottom edge while the body sinks.
+  peek: { parts: { 'rig-arm-left': { rotate: -160 }, 'rig-arm-right': { rotate: 160 } }, face: 'idle', lean: 0 },
+  // Side peeks, hands-first staging: body almost fully behind the edge, TWO mitten
+  // hands pinned OVER the edge line (an edge-pinned overlay — they must not lean with
+  // the body or they'd slide off the frame), and the head tips out past the edge via
+  // `lean` so the eyes peek over. Click him to swing out. Arms park behind the body.
+  'peek-right': { parts: { 'rig-arm-left': { rotate: 0, tx: 4.5 }, 'rig-arm-right': { rotate: 0 }, 'rig-leg-left': { rotate: -10 } }, face: 'curious', lean: -19 },
+  'peek-left': { parts: { 'rig-arm-right': { rotate: 0, tx: -4.5 }, 'rig-arm-left': { rotate: 0 }, 'rig-leg-right': { rotate: 10 } }, face: 'curious', lean: 19 },
+};
+const isPeek = (p) => typeof p === 'string' && p.startsWith('peek');
+const isSidePeek = (p) => p === 'peek-right' || p === 'peek-left';
+
+/* Side-peek staging variants: body height (dy from vertical center), hands height
+   (hdy — the grip point moves with the reach), lean angle, and xf (fraction of the
+   body left visible past the edge — big rotations need LESS, since the rotation
+   itself swings the head back into view while the torso stays hidden).
+   The 45°+ tiers turn the head-top line toward parallel with the screen edge. */
+const PEEK_VARIANTS = {
+  classic: { label: 'classic', dy: 0, hdy: 0, gap: 84, lean: 19, xf: 0.35 },        // head between the hands
+  classicTight: { label: 'classic·tight', dy: 0, hdy: -18, gap: 58, lean: 19, xf: 0.35 }, // hands hugging the face
+  classicLow: { label: 'classic·low', dy: 0, hdy: 26, gap: 70, lean: 19, xf: 0.35 },      // hands at chest, head clear above
+  chinup: { label: 'chin-up', dy: 42, hdy: 0, gap: 84, lean: 12, xf: 0.35 },        // body low, head hauls up to the top hand
+  high: { label: 'high lean', dy: -48, hdy: -8, gap: 84, lean: 24, xf: 0.35 },      // head well above the hands
+  dive: { label: 'dive 30°', dy: -8, hdy: -22, gap: 84, lean: 30, xf: 0.33 },       // hard rotation, swinging out
+  swing45: { label: 'swing 45°', dy: -36, hdy: 5, gap: 84, lean: 45, xf: 0.22 },    // half-out, head leading
+  hang60: { label: 'hang 60°', dy: -37, hdy: 12, gap: 84, lean: 60, xf: 0.2 },      // head-first, torso hidden
+  side75: { label: 'sideways 75°', dy: -61, hdy: 18, gap: 84, lean: 75, xf: 0.18 }, // nearly horizontal
+  side75Under: { label: '75°·under', dy: -61, hdy: 34, gap: 52, lean: 75, xf: 0.18 },  // tight pair right under the head
+  side75Above: { label: '75°·above', dy: -61, hdy: -30, gap: 60, lean: 75, xf: 0.18 }, // gripping above, hanging below the hands
+  // wide-grip family: hands spread far apart on the frame, body falling/sagging
+  // out BETWEEN them (dy lowers the body relative to the hand midline)
+  side75Wide: { label: '75°·wide', dy: -61, hdy: 0, gap: 130, lean: 75, xf: 0.18 },    // head level with the hand midline
+  side75Wider: { label: '75°·wider (approved)', dy: -52, hdy: 0, gap: 168, lean: 75, xf: 0.18 }, // THE docked side-peek — approved 2026-07-16
+  side75Slung: { label: '75°·slung', dy: -36, hdy: -12, gap: 150, lean: 75, xf: 0.18 }, // properly fallen between them
+};
+
+const MASCOT_SIZE = 230;
+const stage = document.getElementById('stage');
+const mascotPos = document.getElementById('mascotPos');
+const mascotFx = document.getElementById('mascotFx');
+const tilt3d = document.getElementById('tilt3d');
+
+const pos = { x: 0, y: 0 };          // top-left of mascot box in stage coords
+let prevPos = { x: 0, y: 0 };        // for restoring after peek
+const springs = {};                   // limbId -> {value, velocity}
+const LIMBS = ['rig-arm-left', 'rig-arm-right', 'rig-leg-left', 'rig-leg-right'];
+const RIG_LIMBS = [...LIMBS, 'rig-tail']; // tail springs too (Kuromi wags)
+RIG_LIMBS.forEach((id) => { springs[id] = { value: 0, velocity: 0 }; });
+let twitchIn = 1200;                  // hyper-style twitch countdown (ms)
+let drag = null;                      // {grabX, grabY, lastX, lastY, travel, id}
+const motion = { vx: 0, vy: 0, dragging: false };
+let blinking = false;
+let blinkTimer = null, blinkOpenTimer = null;
+let greetTimer = null;
+let tiltTarget = { rx: 0, ry: 0 }, tiltCur = { rx: 0, ry: 0 };
+let parts = null;                     // id -> element cache
+
+const effectsOn = () => !state.reduced;
+
+/* ── Spring physics (constants from the plan) ── */
+function stepSpring(s, target, dtMs, stiffness = 170, damping = 16) {
+  const dt = Math.min(dtMs, 64) / 1000;
+  const accel = stiffness * (target - s.value) - damping * s.velocity;
+  s.velocity += accel * dt;
+  s.value += s.velocity * dt;
+  return s;
+}
+const isSettled = (s, t) => Math.abs(s.value - t) < 0.15 && Math.abs(s.velocity) < 0.15;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+function dragTargets(vx, vy) {
+  const lean = clamp(-vx * 1.6, -28, 28);
+  const lift = clamp(vy * 0.8, -10, 10);
+  return {
+    'rig-arm-left': clamp(lean * 1.4 + lift, -45, 45),
+    'rig-arm-right': clamp(lean * 1.4 - lift, -45, 45),
+    'rig-leg-left': clamp(lean * 1.1, -45, 45),
+    'rig-leg-right': clamp(lean * 1.1, -45, 45),
+  };
+}
+
+/* Per-motion-style idle limb sway (degrees added to the pose base, fed through the
+   same springs as drag trailing so everything stays physical). */
+const SWAY_ZERO = {};
+function idleSway(t, I) {
+  const st = state.motionStyle;
+  if (st === 'bouncy') {
+    const a = Math.sin(t / 165) * 2.4 * I;
+    return { 'rig-arm-left': -a, 'rig-arm-right': a, 'rig-leg-left': a * 0.5, 'rig-leg-right': -a * 0.5, 'rig-tail': a * 2.2 };
+  }
+  if (st === 'floaty') {
+    const a = Math.sin(t / 1250) * 7 * I, b = Math.sin(t / 1250 + 2.1) * 4 * I;
+    return { 'rig-arm-left': -8 * I + a, 'rig-arm-right': 8 * I - a, 'rig-leg-left': b, 'rig-leg-right': -b, 'rig-tail': a };
+  }
+  if (st === 'sleepy') {
+    const a = Math.sin(t / 1700) * 1.6 * I;
+    return { 'rig-arm-left': -7 * I + a, 'rig-arm-right': 7 * I - a, 'rig-leg-left': 0, 'rig-leg-right': 0, 'rig-tail': a };
+  }
+  if (st === 'hyper') {
+    const a = Math.sin(t / 300) * 1.2 * I;
+    return { 'rig-arm-left': a, 'rig-arm-right': -a, 'rig-leg-left': 0, 'rig-leg-right': 0, 'rig-tail': Math.sin(t / 220) * 5 * I };
+  }
+  return SWAY_ZERO;
+}
+
+/* Blink cadence per motion style: [min gap ms, random range ms, closed duration ms] */
+const BLINK_CFG = {
+  chill: [6000, 6000, 120], bouncy: [5000, 4000, 100], floaty: [7000, 7000, 160],
+  hyper: [2200, 2800, 80], sleepy: [3000, 3000, 430],
+};
+
+/* ── Rendering ── */
+function theme() { return THEMES[state.theme]; }
+
+function renderMascot() {
+  const t = theme();
+  const isRig = state.style !== 'flat';
+  let html;
+  if (isRig) {
+    html = buildRigSvg(t, {
+      styleId: state.style, hat: state.hat, eyewear: state.eyewear, item: state.item,
+      overlay: state.overlay, chromatic: !!t.chromatic,
+    });
+  } else {
+    const variantKey = state.pose === 'peek' ? 'idle' : state.pose;
+    const flat = FLAT[state.theme];
+    const src = flat ? (flat[variantKey] ?? flat.idle) : GLYPH_FALLBACK;
+    // faithful <img> behavior: currentColor resolves to black in the app today,
+    // except the glyph fallback which the app tints with text-fg-dim.
+    const tint = flat ? '#000000' : t.fg;
+    html = `<div style="color:${tint}; opacity:${flat ? 1 : 0.75}">${src}</div>`;
+  }
+  tilt3d.innerHTML = html;
+  tilt3d.style.transform = ''; // drop any lingering 3D tilt from a previous render mode
+  tiltCur = { rx: 0, ry: 0 };
+  const svg = tilt3d.querySelector('svg');
+  svg.style.width = MASCOT_SIZE + 'px';
+  svg.style.height = MASCOT_SIZE + 'px';
+  svg.classList.toggle('holoFlick', state.style === 'holo');
+  svg.classList.toggle('neonBuzz', state.style === 'neon');
+  // sticker die-cut: hard offset shadow behind the whole silhouette
+  svg.style.filter = state.style === 'sticker' ? 'drop-shadow(2px 3px 0 rgba(0,0,0,0.25))' : '';
+
+  parts = null;
+  if (isRig) {
+    parts = { faces: {} };
+    LIMBS.concat(['rig-tail']).forEach((id) => {
+      const el = svg.querySelector('#' + id);
+      if (!el) return;
+      const pv = (el.getAttribute('data-pivot') || '').split(/[\s,]+/).map(Number);
+      el.style.transformOrigin = pv.length === 2 ? `${pv[0]}px ${pv[1]}px` : 'top center';
+      parts[id] = el;
+    });
+    FACES.forEach((f) => { parts.faces[f] = svg.querySelector('#rig-face-' + f); });
+    parts.shadow = svg.querySelector('#groundShadow');
+    parts.root = svg.querySelector('#rig-root');
+    parts.wave = svg.querySelector('.waveInner');
+    parts.pupils = Array.from(svg.querySelectorAll('.pupil'));
+    // rendered-3D dynamic light: gradient center + specular follow the tilt
+    parts.gHi = svg.querySelector('#g-hi');
+    parts.specEl = svg.querySelector('#specEl');
+    parts.handR = svg.querySelector('#rig-hand-peek-right');
+    parts.handL = svg.querySelector('#rig-hand-peek-left');
+    RIG_LIMBS.forEach((id) => { springs[id] = { value: 0, velocity: 0 }; });
+    applyPose(true);
+    syncIdleAnims();
+  }
+  syncFxClass();
+}
+
+function applyPose(instant) {
+  if (!parts) return;
+  const def = POSES[state.pose] ?? POSES.idle;
+  // Springs own the limb transforms while effects are on (the rAF loop drives them
+  // toward the pose base + sway/drag). Instant / reduced-effects writes go direct.
+  RIG_LIMBS.forEach((id) => {
+    const el = parts[id];
+    if (!el) return;
+    const pp = def.parts[id] ?? {};
+    const base = pp.rotate ?? 0;
+    if (instant || !effectsOn()) {
+      springs[id] = { value: base, velocity: 0 };
+      el.style.transition = 'none';
+      el.style.transform = `translate(${pp.tx ?? 0}px, ${pp.ty ?? 0}px) rotate(${base}deg)`;
+    }
+  });
+  const want = blinking && def.face !== 'shocked' && def.face !== 'dizzy' ? 'blink' : def.face;
+  FACES.forEach((f) => {
+    if (parts.faces[f]) parts.faces[f].style.display = f === want ? '' : 'none';
+  });
+  // side-peek grip hands (overlay parts, only visible in their peek pose)
+  if (parts.handR) parts.handR.style.display = def.hand === 'right' ? '' : 'none';
+  if (parts.handL) parts.handL.style.display = def.hand === 'left' ? '' : 'none';
+  if (parts.wave) parts.wave.classList.toggle('waving', !!def.wave && effectsOn() && !motion.dragging);
+}
+
+const IDLE_CLASS = { chill: 'breathing', bouncy: 'bounceLoop', floaty: 'floatLoop', hyper: 'breathing', sleepy: 'sleepLoop' };
+function syncIdleAnims() {
+  if (!parts || !parts.root) return;
+  const r = parts.root;
+  ['breathing', 'bounceLoop', 'floatLoop', 'sleepLoop', 'fastBreath', 'dizzySway'].forEach((c) => r.classList.remove(c));
+  if (!effectsOn()) return;
+  if (state.pose === 'dizzy') { r.classList.add('dizzySway'); return; }
+  if (!state.breathe) return;
+  r.classList.add(IDLE_CLASS[state.motionStyle] ?? 'breathing');
+  if (state.motionStyle === 'hyper') r.classList.add('fastBreath');
+}
+function syncFxClass() {
+  document.body.classList.toggle('fxOff', !effectsOn());
+  if (!effectsOn()) { tiltCur = { rx: 0, ry: 0 }; tilt3d.style.transform = ''; }
+}
+
+/* ── Position ── */
+function placeMascot(x, y, opts = {}) {
+  const r = stage.getBoundingClientRect();
+  const maxX = r.width - MASCOT_SIZE, maxY = r.height - MASCOT_SIZE;
+  // allowSink relaxes BOTH axes so side peeks can hang past the vertical edges
+  pos.x = clamp(x, opts.allowSink ? -MASCOT_SIZE : -30, opts.allowSink ? r.width : maxX + 30);
+  pos.y = clamp(y, -40, opts.allowSink ? r.height : maxY + 20);
+  mascotPos.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+  // reduced effects: no companion springs — pin them to their offsets on every move
+  if (!effectsOn()) layoutCompanionsStatic();
+}
+function centerMascot() {
+  const r = stage.getBoundingClientRect();
+  placeMascot((r.width - MASCOT_SIZE) / 2, (r.height - MASCOT_SIZE) / 2 - 10);
+}
+
+function showPeekEdge(side) {
+  const e = document.getElementById('peekEdge');
+  const grad = (dir) => `linear-gradient(to ${dir}, rgba(0,0,0,0.28), rgba(0,0,0,0.45))`;
+  if (side === 'bottom') e.style.cssText = `display:block; position:absolute; z-index:5; left:0; right:0; bottom:0; top:auto; width:auto; height:10px; background:${grad('bottom')};`;
+  if (side === 'right') e.style.cssText = `display:block; position:absolute; z-index:5; top:0; bottom:0; right:0; left:auto; height:auto; width:10px; background:${grad('right')};`;
+  if (side === 'left') e.style.cssText = `display:block; position:absolute; z-index:5; top:0; bottom:0; left:0; right:auto; height:auto; width:10px; background:${grad('left')};`;
+}
+/* Edge-pinned grip mittens: two rounded stubs hooked over the edge line, staggered
+   heights, slight opposing tilts. Rendered OUTSIDE the leaning body so they stay
+   planted on the frame (in the app: the renderer clones the rig's grip-hand art and
+   pins it to the window edge, outside the lean transform). */
+function showPeekHands(side, hdy = 0, gap = 84) {
+  removePeekHands();
+  const t = theme();
+  const solid = t.kind === 'solid';
+  const fill = solid ? t.body : '#FFFFFF';
+  // Always rimmed: the mittens sit ON TOP of the same-colored body where it crosses
+  // the edge — without a darker rim they vanish into it (screenshot feedback).
+  const rim = solid ? mixHex(t.body, '#000000', 0.4) : t.line;
+  const stroke = `stroke="${rim}" stroke-width="${solid ? 2.6 : 3.5}"`;
+  const r = stage.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.id = 'peekHands';
+  const cy = r.height / 2;
+  // Hands WRAP a vertical edge — from this side you see vertical knuckle bumps lying
+  // flat against the frame (not rods poking out). hdy shifts the pair vs the body;
+  // gap sets how far apart the two grips are.
+  const c1 = cy + hdy - gap / 2, c2 = cy + hdy + gap / 2; // mitten centers (stage y)
+  const top = c1 - 24, hgt = gap + 48;
+  el.style.cssText = `position:absolute; z-index:6; pointer-events:none; top:${top.toFixed(0)}px; height:${hgt.toFixed(0)}px; width:36px; ${side === 'right' ? 'right:0;' : 'left:0;'}`;
+  const mitten = (yc, ang) => side === 'right'
+    ? `<g transform="rotate(${ang} 30 ${yc})"><rect x="23" y="${(yc - 13).toFixed(0)}" width="20" height="26" rx="9" fill="${fill}" ${stroke}/></g>`
+    : `<g transform="rotate(${ang} 6 ${yc})"><rect x="-7" y="${(yc - 13).toFixed(0)}" width="20" height="26" rx="9" fill="${fill}" ${stroke}/></g>`;
+  el.innerHTML = `<svg width="36" height="${hgt.toFixed(0)}" viewBox="0 0 36 ${hgt.toFixed(0)}" style="overflow:hidden; display:block;">
+    ${mitten(c1 - top, side === 'right' ? -4 : 4)}
+    ${mitten(c2 - top, side === 'right' ? 4 : -4)}
+  </svg>`;
+  stage.appendChild(el);
+}
+function removePeekHands() {
+  const el = document.getElementById('peekHands');
+  if (el) el.remove();
+}
+
+function enterPeek(p, alreadyPeeking) {
+  if (!alreadyPeeking) prevPos = { x: pos.x, y: pos.y };
+  const r = stage.getBoundingClientRect();
+  const side = p === 'peek' ? 'bottom' : (p === 'peek-right' ? 'right' : 'left');
+  showPeekEdge(side);
+  mascotPos.style.transition = 'transform 380ms cubic-bezier(.34,1.2,.5,1)';
+  if (side === 'bottom') placeMascot((r.width - MASCOT_SIZE) / 2, r.height - MASCOT_SIZE * 0.58, { allowSink: true });
+  // sides: only ~35% visible — the body hides, the LEAN tips the head out over the
+  // edge, and the pinned mittens carry the "holding on" read. Height, hand reach,
+  // and rotation come from the selected staging variant.
+  const v = PEEK_VARIANTS[state.peekVariant] ?? PEEK_VARIANTS.classic;
+  const sideY = (r.height - MASCOT_SIZE) / 2 + v.dy;
+  const xf = v.xf ?? 0.35;
+  if (side === 'right') placeMascot(r.width - MASCOT_SIZE * xf, sideY, { allowSink: true });
+  if (side === 'left') placeMascot(-MASCOT_SIZE * (1 - xf), sideY, { allowSink: true });
+  if (side !== 'bottom') showPeekHands(side, v.hdy, v.gap); else removePeekHands();
+  // the lean rides the independent `rotate` property so it composes with the
+  // scale (hover/grab) and the translate/scale keyframe animations
+  mascotFx.style.rotate = (side === 'bottom' ? 0 : (side === 'right' ? -v.lean : v.lean)) + 'deg';
+  document.getElementById('stageHint').textContent = side === 'bottom'
+    ? 'hanging on the bottom edge' : 'click him to swing out';
+  setTimeout(() => { mascotPos.style.transition = ''; }, 400);
+}
+function exitPeek() {
+  document.getElementById('peekEdge').style.display = 'none';
+  removePeekHands();
+  mascotFx.style.rotate = '';
+  mascotPos.style.transition = 'transform 380ms cubic-bezier(.34,1.2,.5,1)';
+  placeMascot(prevPos.x, prevPos.y);
+  setTimeout(() => { mascotPos.style.transition = ''; }, 400);
+  syncAll();
+}
+
+/* The swing-out: he whips around the edge — lean releases through an overshoot in the
+   opposite direction while he slides free, lands beside the edge, and waves. */
+function swingOut() {
+  const side = state.pose === 'peek-right' ? 'right' : 'left';
+  const r = stage.getBoundingClientRect();
+  document.getElementById('peekEdge').style.display = 'none';
+  removePeekHands();
+  state.pose = 'idle';
+  applyPose(false); syncIdleAnims(); syncPoseButtons();
+  mascotPos.style.transition = 'transform 460ms cubic-bezier(.34,1.35,.45,1)';
+  placeMascot(side === 'right' ? r.width - MASCOT_SIZE - 8 : 8, (r.height - MASCOT_SIZE) / 2);
+  mascotFx.style.rotate = (side === 'right' ? 14 : -14) + 'deg'; // whip past vertical…
+  setTimeout(() => { mascotFx.style.rotate = ''; }, 230);         // …and spring back to 0
+  setTimeout(() => { mascotPos.style.transition = ''; greet(); }, 470);
+  syncAll();
+}
+
+/* ── Drag (anchor-based, mirroring BuddyMascot.tsx) ── */
+const DRAG_THRESHOLD = 4;
+mascotPos.addEventListener('pointerdown', (e) => {
+  if (state.pose === 'peek-right' || state.pose === 'peek-left') { swingOut(); return; }
+  if (isPeek(state.pose)) return;
+  try { mascotPos.setPointerCapture(e.pointerId); } catch {}
+  const r = stage.getBoundingClientRect();
+  drag = {
+    grabX: e.clientX - r.left - pos.x, grabY: e.clientY - r.top - pos.y,
+    lastX: e.clientX, lastY: e.clientY, travel: 0, id: e.pointerId,
+  };
+  mascotPos.classList.add('grabbing'); mascotPos.classList.remove('grabbable');
+  mascotFx.style.scale = '0.94';
+});
+mascotPos.addEventListener('pointermove', (e) => {
+  if (!drag) return;
+  const dx = e.clientX - drag.lastX, dy = e.clientY - drag.lastY;
+  if (dx === 0 && dy === 0) return;
+  drag.lastX = e.clientX; drag.lastY = e.clientY;
+  drag.travel += Math.abs(dx) + Math.abs(dy);
+  if (drag.travel > DRAG_THRESHOLD) {
+    motion.dragging = true;
+    // smoothed velocity, normalized to the 80px buddy-window scale the plan constants assume
+    const k = 80 / MASCOT_SIZE * 2.4;
+    motion.vx = motion.vx * 0.7 + dx * k * 0.3;
+    motion.vy = motion.vy * 0.7 + dy * k * 0.3;
+    const r = stage.getBoundingClientRect();
+    placeMascot(e.clientX - r.left - drag.grabX, e.clientY - r.top - drag.grabY);
+    if (parts && parts.wave) parts.wave.classList.remove('waving');
+  }
+});
+function endDrag(e) {
+  if (!drag) return;
+  const wasDrag = drag.travel > DRAG_THRESHOLD;
+  try { mascotPos.releasePointerCapture(drag.id); } catch {}
+  drag = null;
+  motion.dragging = false; motion.vx = 0; motion.vy = 0;
+  mascotPos.classList.remove('grabbing'); mascotPos.classList.add('grabbable');
+  mascotFx.style.scale = '';
+  if (wasDrag) {
+    if (effectsOn()) {
+      mascotFx.classList.remove('dropped'); void mascotFx.offsetWidth;
+      mascotFx.classList.add('dropped');
+    }
+  } else {
+    greet();
+  }
+  applyPose(false);
+}
+mascotPos.addEventListener('pointerup', endDrag);
+mascotPos.addEventListener('pointercancel', endDrag);
+mascotPos.addEventListener('lostpointercapture', () => {
+  if (!drag) return;
+  drag = null; motion.dragging = false; motion.vx = 0; motion.vy = 0;
+  mascotPos.classList.remove('grabbing'); mascotPos.classList.add('grabbable');
+  mascotFx.style.scale = '';
+});
+
+/* ── Greet (click / wave-hello) ── */
+function greet() {
+  if (state.style === 'flat' || !parts) return;
+  if (greetTimer) { clearTimeout(greetTimer); greetTimer = null; }
+  if (effectsOn()) {
+    mascotFx.classList.remove('greeting'); void mascotFx.offsetWidth;
+    mascotFx.classList.add('greeting');
+  }
+  const returnPose = state.pose;
+  const prev = state.pose;
+  state.pose = 'welcome'; applyPose(false);
+  greetTimer = setTimeout(() => {
+    state.pose = ['welcome'].includes(prev) ? 'idle' : returnPose;
+    if (isPeek(state.pose)) state.pose = 'idle';
+    applyPose(false); syncPoseButtons(); syncIdleAnims();
+  }, 1400);
+  syncPoseButtons();
+}
+function startle() {
+  if (state.style === 'flat' || !parts) return;
+  setPose('shocked');
+  if (effectsOn()) {
+    mascotFx.classList.remove('shockpop'); void mascotFx.offsetWidth;
+    mascotFx.classList.add('shockpop');
+  }
+}
+
+/* ── Blink loop ── */
+function scheduleBlink() {
+  clearTimeout(blinkTimer); clearTimeout(blinkOpenTimer);
+  if (!state.blink || !effectsOn()) return;
+  const [minGap, range, dur] = BLINK_CFG[state.motionStyle] ?? BLINK_CFG.chill;
+  blinkTimer = setTimeout(() => {
+    const facesBlinkable = parts && parts.faces.blink && !motion.dragging
+      && !['shocked', 'dizzy'].includes(POSES[state.pose]?.face);
+    if (facesBlinkable && state.style !== 'flat') {
+      blinking = true; applyPose(false);
+      blinkOpenTimer = setTimeout(() => { blinking = false; applyPose(false); scheduleBlink(); }, dur);
+    } else {
+      scheduleBlink();
+    }
+  }, minGap + Math.random() * range);
+}
+
+/* ── Master rAF: limb springs + tilt + pupils + shadow ── */
+let last = performance.now();
+function tick(now) {
+  requestAnimationFrame(tick);
+  const dt = now - last; last = now;
+  if (state.style !== 'flat' && parts && effectsOn()) {
+    const I = state.intensity;
+    const drag = motion.dragging ? dragTargets(motion.vx, motion.vy) : null;
+    const sway = motion.dragging ? SWAY_ZERO : idleSway(now, I);
+    // hyper style: random limb twitches — an impulse straight into a spring's velocity
+    if (state.motionStyle === 'hyper' && !motion.dragging) {
+      twitchIn -= dt;
+      if (twitchIn <= 0) {
+        const id = RIG_LIMBS[Math.floor(Math.random() * RIG_LIMBS.length)];
+        if (springs[id] && parts[id]) springs[id].velocity += (60 + Math.random() * 140) * (Math.random() < 0.5 ? -1 : 1) * I;
+        twitchIn = 700 + Math.random() * 1700;
+      }
+    }
+    // one spring per part drives base pose + drag trail + idle sway — pose changes
+    // arrive with the same overshoot physics as everything else
+    for (const id of RIG_LIMBS) {
+      const el = parts[id];
+      if (!el) continue;
+      const pp = POSES[state.pose]?.parts[id] ?? {};
+      const base = pp.rotate ?? 0;
+      const offs = drag
+        ? (id === 'rig-tail' ? (drag['rig-leg-left'] ?? 0) * 0.8 : (drag[id] ?? 0))
+        : (sway[id] ?? 0);
+      const s = springs[id] ?? (springs[id] = { value: base, velocity: 0 });
+      stepSpring(s, base + offs, dt);
+      el.style.transition = 'none';
+      el.style.transform = `translate(${pp.tx ?? 0}px, ${pp.ty ?? 0}px) rotate(${s.value.toFixed(2)}deg)`;
+    }
+    // velocity decay when dragging pauses mid-hold
+    if (motion.dragging) { motion.vx *= 0.85; motion.vy *= 0.85; }
+    // shadow reacts to grab lift
+    if (parts.shadow) {
+      const lifted = motion.dragging;
+      parts.shadow.style.opacity = lifted ? 0.1 : '';
+      parts.shadow.style.transform = lifted ? 'scale(0.82)' : '';
+      parts.shadow.style.transformOrigin = '12px 22.4px';
+      parts.shadow.style.transformBox = 'view-box';
+      parts.shadow.style.transition = 'opacity 240ms ease, transform 240ms ease';
+      if (isPeek(state.pose)) parts.shadow.style.opacity = 0;
+    }
+    // 3D tilt easing
+    if (state.tilt) {
+      tiltCur.rx += (tiltTarget.rx - tiltCur.rx) * 0.12;
+      tiltCur.ry += (tiltTarget.ry - tiltCur.ry) * 0.12;
+      tilt3d.style.transform = `rotateX(${tiltCur.rx.toFixed(2)}deg) rotateY(${tiltCur.ry.toFixed(2)}deg)`;
+    } else if (tilt3d.style.transform) {
+      tilt3d.style.transform = '';
+    }
+    // rendered-3D: the light stays fixed in the world, so its gradient center
+    // moves opposite the tilt — this is what sells actual volume
+    if (state.style === 'render' && parts.gHi) {
+      parts.gHi.setAttribute('cx', (33 - tiltCur.ry * 1.6).toFixed(1) + '%');
+      parts.gHi.setAttribute('cy', (20 - tiltCur.rx * 1.4).toFixed(1) + '%');
+      if (parts.specEl) parts.specEl.setAttribute('transform',
+        `rotate(-14 9.6 6.2) translate(${(-tiltCur.ry * 0.09).toFixed(2)} ${(tiltCur.rx * 0.07).toFixed(2)})`);
+    }
+    // pupils track the cursor in curious face
+    if (parts.pupils.length && POSES[state.pose]?.face === 'curious') {
+      for (const p of parts.pupils) {
+        p.style.transformBox = 'view-box';
+        p.style.transform = `translate(${pupilOff.x.toFixed(2)}px, ${pupilOff.y.toFixed(2)}px)`;
+      }
+    }
+  }
+  // scene companions spring-follow the buddy (any render style) — they trail on drag,
+  // lean while catching up, and the halftone ghost only materializes when lagging
+  if (effectsOn() && comps.length) {
+    for (const c of comps) {
+      const t = compTarget(c, now);
+      if (!c.seeded) { c.sx.value = t.x; c.sy.value = t.y; c.seeded = true; }
+      stepSpring(c.sx, t.x, dt, c.def.k, c.def.dmp);
+      stepSpring(c.sy, t.y, dt, c.def.k, c.def.dmp);
+      const lean = clamp((t.x - c.sx.value) * 0.12, -16, 16);
+      c.el.style.transform = `translate(${c.sx.value.toFixed(1)}px, ${c.sy.value.toFixed(1)}px)`
+        + (c.def.ghost ? '' : ` rotate(${lean.toFixed(1)}deg)`);
+      if (c.def.ghost) {
+        const dist = Math.hypot(t.x - c.sx.value, t.y - c.sy.value);
+        c.el.style.opacity = clamp(dist / 70, 0, 0.85).toFixed(2);
+      }
+    }
+  }
+}
+requestAnimationFrame(tick);
+
+/* hover tilt + pupil targets */
+const pupilOff = { x: 0, y: 0 };
+stage.addEventListener('pointermove', (e) => {
+  const r = stage.getBoundingClientRect();
+  const cx = pos.x + MASCOT_SIZE / 2 + r.left, cy = pos.y + MASCOT_SIZE / 2 + r.top;
+  const nx = clamp((e.clientX - cx) / (MASCOT_SIZE), -1, 1);
+  const ny = clamp((e.clientY - cy) / (MASCOT_SIZE), -1, 1);
+  const I = state.intensity;
+  if (!motion.dragging) { tiltTarget.ry = nx * 9 * I; tiltTarget.rx = -ny * 7 * I; }
+  else { tiltTarget.ry = clamp(motion.vx * I, -8, 8); tiltTarget.rx = clamp(-motion.vy * I, -5, 5); }
+  pupilOff.x = nx * 0.55; pupilOff.y = ny * 0.4;
+});
+stage.addEventListener('pointerleave', () => { tiltTarget.rx = 0; tiltTarget.ry = 0; pupilOff.x = 0; pupilOff.y = 0; });
+mascotPos.addEventListener('pointerenter', () => { if (!drag) mascotFx.style.scale = '1.06'; });
+mascotPos.addEventListener('pointerleave', () => { if (!drag) mascotFx.style.scale = ''; });
+
+/* ══════════════════════════════════ CONTROL WIRING ══════════════════════════════════ */
+function seg(el, entries, current, onPick, disabledIds) {
+  el.innerHTML = '';
+  for (const [id, label] of entries) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = label;
+    if (id === current) b.classList.add('on');
+    if (disabledIds && disabledIds.includes(id)) b.disabled = true;
+    b.addEventListener('click', () => onPick(id));
+    el.appendChild(b);
+  }
+}
+
+function contrastText(hex) {
+  const n = hex.replace('#', '');
+  const v = n.length === 3 ? n.split('').map((c) => c + c).join('') : n;
+  const r = parseInt(v.slice(0, 2), 16), g = parseInt(v.slice(2, 4), 16), b = parseInt(v.slice(4, 6), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#111' : '#fff';
+}
+
+function syncPoseButtons() {
+  const isRig = state.style !== 'flat';
+  const t = theme();
+  const all = [['idle', 'idle'], ['welcome', 'welcome'], ['curious', 'curious'], ['shocked', 'shocked'], ['dizzy', 'dizzy'], ['peek', 'peek ↓'], ['peek-right', 'peek →'], ['peek-left', 'peek ←']];
+  const disabled = isRig ? [] : all.map(([id]) => id).filter((id) => !(t.flatVariants.includes(id)) && !(id === 'idle' && t.flatVariants.length));
+  seg(document.getElementById('poseBtns'), all, state.pose, setPose, disabled);
+}
+
+function setPose(p) {
+  const wasPeek = isPeek(state.pose);
+  const nowPeek = isPeek(p);
+  state.pose = p;
+  if (state.style !== 'flat') {
+    if (nowPeek) enterPeek(p, wasPeek); // re-entry from another edge keeps prevPos
+    if (!nowPeek && wasPeek) exitPeek();
+    applyPose(false);
+    syncIdleAnims();
+  } else {
+    if (wasPeek) exitPeek();
+    renderMascot();
+  }
+  syncPoseButtons();
+}
+
+function setTheme(id) {
+  state.theme = id;
+  const t = theme();
+  document.documentElement.style.setProperty('--sel', t.accent);
+  document.documentElement.style.setProperty('--sel-on', t.onAccent);
+  const d = t.defaults;
+  state.hat = d.hat; state.eyewear = d.eyewear; state.item = d.item;
+  if (state.style === 'flat' && t.flatVariants.length && !t.flatVariants.includes(state.pose)) state.pose = 'idle';
+  buildBackdrop(t, state.scene);
+  rebuildCompanions();
+  renderMascot();
+  // refresh the edge-pinned mittens in the new theme's colors if mid-peek
+  if (state.pose === 'peek-right') showPeekHands('right');
+  if (state.pose === 'peek-left') showPeekHands('left');
+  syncAll();
+}
+
+function setPeekVariant(v) {
+  state.peekVariant = v;
+  // re-stage live if he's already peeking a side
+  if (isSidePeek(state.pose)) enterPeek(state.pose, true);
+  syncAll();
+}
+
+function setMotionStyle(m) {
+  state.motionStyle = m;
+  syncIdleAnims();
+  scheduleBlink();
+  rebuildCompanions(); // sleepy adds the Zzz companion
+  syncAll();
+}
+
+function setStyle(s) {
+  state.style = s;
+  if (s === 'flat' && isPeek(state.pose)) { exitPeek(); state.pose = 'idle'; }
+  const t = theme();
+  if (s === 'flat' && t.flatVariants.length && !t.flatVariants.includes(state.pose)) state.pose = 'idle';
+  renderMascot(); syncAll();
+}
+
+function syncAll() {
+  const t = theme();
+  // theme buttons
+  const tb = document.getElementById('themeBtns');
+  tb.innerHTML = '';
+  for (const [id, th] of Object.entries(THEMES)) {
+    const b = document.createElement('button');
+    b.className = 'themeBtn' + (id === state.theme ? ' on' : '');
+    b.innerHTML = `<span class="sw"><i style="background:${th.canvas}"></i><i style="background:${th.accent}"></i></span>${th.label}`;
+    b.addEventListener('click', () => setTheme(id));
+    tb.appendChild(b);
+  }
+  // Approved skin set (2026-07-16): these six ship as reference examples for theme builders.
+  seg(document.getElementById('styleBtns'),
+    [['soft', '2.5D soft'], ['clay', 'clay'],
+     ['toon', 'comic pop'], ['burst', 'comic burst'], ['print', 'newsprint'], ['sticker', 'sticker']],
+    state.style, setStyle);
+  const STYLE_NOTES = {
+    soft: 'Gradient shading + rim light. The balanced default 2.5D treatment.',
+    clay: 'Matte clay: broad soft light, heavy contact shading — stop-motion figurine feel.',
+    toon: 'Comic pop: heavy ink outline, hard cel shade with halftone dots. Spider-Verse energy.',
+    burst: 'Maximum comic: manga speed-line burst, CMYK misregistration ghosts, fat ink outline, action sparks.',
+    print: 'Vintage newsprint: paper-tint body printed in Ben-Day dots, plates slightly off-register.',
+    sticker: 'Die-cut sticker: white border + hard offset shadow, light shading.',
+  };
+  document.getElementById('styleNote').textContent = STYLE_NOTES[state.style];
+  syncPoseButtons();
+  const isRig = state.style !== 'flat';
+  seg(document.getElementById('hatBtns'), Object.entries(HATS).map(([k, v]) => [k, v.label]), state.hat,
+    (id) => { state.hat = id; renderMascot(); syncAll(); }, isRig ? [] : Object.keys(HATS));
+  seg(document.getElementById('eyeBtns'), Object.entries(EYEWEAR).map(([k, v]) => [k, v.label]), state.eyewear,
+    (id) => { state.eyewear = id; renderMascot(); syncAll(); }, isRig ? [] : Object.keys(EYEWEAR));
+  seg(document.getElementById('itemBtns'), Object.entries(ITEMS).map(([k, v]) => [k, v.label]), state.item,
+    (id) => { state.item = id; renderMascot(); syncAll(); }, isRig ? [] : Object.keys(ITEMS));
+  document.getElementById('compNote').textContent = isRig
+    ? 'Components snap into slot-hat / slot-eyewear / slot-item. The held item rides the right arm.'
+    : 'Components need the rig — flat art has no slots.';
+  seg(document.getElementById('sceneBtns'),
+    [['canvas', 'canvas'], ['panel', 'panel'], ['desktop', 'desktop sim']], state.scene,
+    (id) => { state.scene = id; buildBackdrop(theme(), id); });
+  seg(document.getElementById('motionBtns'),
+    [['chill', 'chill'], ['bouncy', 'bouncy'], ['floaty', 'floaty'], ['hyper', 'hyper'], ['sleepy', 'sleepy']],
+    state.motionStyle, setMotionStyle);
+  seg(document.getElementById('peekVarBtns'),
+    Object.entries(PEEK_VARIANTS).map(([k, v]) => [k, v.label]),
+    state.peekVariant, setPeekVariant, isRig ? [] : Object.keys(PEEK_VARIANTS));
+  document.getElementById('stageHint').textContent = isRig
+    ? 'drag the buddy · click to greet · limbs and companions trail on springs'
+    : 'flat tier: wrapper effects only (hover, breathing) — no limbs, no slots';
+}
+
+/* toggles */
+const bindTgl = (id, key, after) => {
+  const el = document.getElementById(id);
+  el.checked = state[key];
+  el.addEventListener('change', () => { state[key] = el.checked; after && after(); });
+};
+bindTgl('tglBreathe', 'breathe', syncIdleAnims);
+bindTgl('tglBlink', 'blink', scheduleBlink);
+bindTgl('tglTilt', 'tilt');
+bindTgl('tglFlourish', 'flourish', rebuildCompanions);
+bindTgl('tglOverlay', 'overlay', renderMascot);
+bindTgl('tglReduced', 'reduced', () => {
+  syncFxClass(); syncIdleAnims(); scheduleBlink(); applyPose(true); layoutCompanionsStatic();
+});
+document.getElementById('tglReduced').checked = state.reduced;
+
+const rngIntensity = document.getElementById('rngIntensity');
+rngIntensity.addEventListener('input', () => {
+  state.intensity = parseFloat(rngIntensity.value);
+  document.getElementById('intVal').textContent = state.intensity.toFixed(1) + '×';
+  // --amp feeds the CSS keyframes (breathe/bounce/float/sleep, greet hop)
+  stage.style.setProperty('--amp', state.intensity);
+});
+
+document.getElementById('btnGreet').addEventListener('click', greet);
+document.getElementById('btnStartle').addEventListener('click', startle);
+
+window.addEventListener('resize', () => {
+  if (!isPeek(state.pose)) centerMascot();
+});
+
+/* boot */
+setTheme('golden-sunbreak');
+centerMascot();
+scheduleBlink();
+</script>
