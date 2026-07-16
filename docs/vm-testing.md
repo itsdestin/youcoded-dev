@@ -341,6 +341,47 @@ Installer — so this baseline exercises the **native `claude.ai/install.ps1` fa
 A `clean-winget` second snapshot (boot, let the Store provision App Installer, re-snapshot) would
 cover the other branch. Two snapshots, two code paths — worth doing before trusting either.
 
+## Verified Ubuntu baseline (`clean` snapshot, 2026-07-16)
+
+Snapshot **includes qemu-guest-agent + spice-vdagent** (installed by hand, then re-snapshotted), so
+`vm-exec.sh` works on every revert. Verified via the agent:
+
+| Check | State |
+|---|---|
+| node / npm / git / claude / **curl** | **all absent** (`wget`, `python3`, `gio` present) |
+| **libfuse2** | **absent** — the AppImage FUSE failure reproduces exactly |
+| qemu-guest-agent / spice-vdagent | ✅ enabled |
+| Version | Ubuntu 24.04.4 LTS, kernel 7.0.0-28 |
+
+**`guest-exec` runs as `root` here, not SYSTEM** — the opposite of the Windows caveat, and it means a
+`.deb` install (`dpkg -i`, genuinely a root action) *is* scriptable through the agent. Launching the
+app still needs a user session with `$DISPLAY`; headless it dies with `Missing X server or $DISPLAY`.
+
+### What the Linux baseline proves (verified 2026-07-16)
+
+Running the shipped `YouCoded-1.2.4.AppImage` on this pristine guest reproduces the real user
+experience exactly:
+
+```
+dlopen(): error loading libfuse.so.2
+AppImages require FUSE to run.
+```
+
+`apt install libfuse2t64` clears it (the app then reaches Electron). **The download page already
+documents this correctly** — `youcoded/docs/index.html` → `dl-linux` tells users
+`sudo apt install libfuse2`, and that command **was verified to work on a pristine 24.04**: `libfuse2`
+no longer exists as a real package there (renamed `libfuse2t64` in the 64-bit `time_t` transition;
+`apt-cache policy libfuse2` → `Candidate: (none)`), but apt resolves it via Provides and installs the
+right thing. Don't "fix" the doc to say `libfuse2t64` — the current text is correct *and* portable
+across Debian/Mint.
+
+**Coming: deb/rpm/pacman are untested.** Those targets were added in youcoded#98 (2026-05-20), which
+**postdates the v1.2.4 tag (2026-05-18)** — so no release has ever shipped them, and v1.2.4 offers
+Linux users only the AppImage. When v1.3 ships they will be brand-new artifacts on their first
+contact with real distros: install each in the matching guest (`dpkg -i` on Ubuntu, `rpm -i` on
+Fedora, `pacman -U` on Arch), and check the `pacman.depends` override in `electron-builder.yml`
+actually resolves — its WHY comment flags `libappindicator-gtk3` as AUR-only.
+
 ## What to test where
 
 | Flow | VM | Real code path exercised |
