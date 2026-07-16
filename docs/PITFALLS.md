@@ -22,7 +22,7 @@ This file now holds **only cross-repo invariants** — constraints that span two
 - **The dev instance and the built app SHARE `~/.claude/` (and `~/YouCoded/`).** Every cross-process JSON write is lock-guarded (`mutateFileUnderLock` / mkdir-lock `casWrite`); `write-guard.sh` + `.sync-lock` mediate concurrency. *Why:* `run-dev.sh` runs against real state alongside Destin's live app — two writers is a normal state, not an edge case. *Guard:* `cas-write.test.ts` + the per-subsystem store tests.
 - **Windows `git worktree remove` follows junctions.** If you junctioned `node_modules` into a worktree, delete the junction first (`cmd //c "rmdir <path>"`, NOT `rm -rf`) before `git worktree remove`, or it wipes the MAIN checkout's `node_modules`. *Why:* recursive delete traverses the junction to its target. *Guard:* none — see the fuller note in `CLAUDE.md` → Working Rules.
 
-## Native harness (Phase 2 Plan A)
+## Native harness (Phase 2 Plans A–B)
 
 - **The Bash tool bypasses the file-tool guards** — secret-path denial and the
   cwd jail live in the file tools; `cat .env` through Bash defeats them, and the
@@ -49,6 +49,37 @@ This file now holds **only cross-repo invariants** — constraints that span two
   interleaved). *Why:* `rebuildHistory` groups by event adjacency and relies on
   this ordering; "fixing" it back to interleaved silently breaks history
   reconstruction. Guard: `harness-session-loop.test.ts`.
+- **WebFetch/WebSearch validate EVERY redirect hop** (scheme + literal IP + the
+  DNS-resolved address) — redirects are followed MANUALLY because a public URL
+  302ing to `http://192.168.1.1/` (or a hex-form `http://[::ffff:127.0.0.1]/`,
+  which `new URL` normalizes to `::ffff:7f00:1`) is the classic SSRF bypass.
+  Honest friction, not a security boundary (TOCTOU DNS-rebind remains possible);
+  never "simplify" back to `redirect: 'follow'`. Guard: `net-guard.test.ts`.
+- **WebFetch bounds extraction cost with a pre-parse complexity guard** — linkedom
+  `parseHTML` + Readability run SYNCHRONOUSLY on the Electron main loop and
+  `Readability.parse()` is ~quadratic in DOM depth, so the 5MB byte cap is not a
+  cost bound. A tag-count + max-nesting-depth scan (`MAX_TAGS`/`MAX_DEPTH`) rejects
+  pathological pages before parsing; `defineTool`'s catch CANNOT stop a synchronous
+  hang. Don't remove the guard "because there's a size cap." Guard: `web-fetch-tool.test.ts`.
+- **DDG's `202` is rate-limiting and is NEVER retried** — single attempt by
+  design (the 2025 breakage waves came from clients hammering it). The chain
+  moves to the next backend and reports honestly. Guard: `search-backends.test.ts`.
+- **AskUserQuestion answers ride `decision.updatedInput` through the permission
+  channel** — the broker must pass `updatedInput` through, and `formatAnswers`
+  must be TOTAL (never throw on a non-string/array/missing answer from an
+  untrusted renderer/remote client): a throw there escapes the "never throws"
+  tool loop → dangling tool_call → bricked session. Guards:
+  `native-permission-broker.test.ts` + `ask-user-question-tool.test.ts`.
+- **Preset permission posture is the `modeFor` SEED, not presetRules** — mode
+  rules outrank preset rules in the engine layering, so a preset's "edits allow"
+  only works as a STARTING mode (`auto-edit` for Coder). `modeFor` is seeded once
+  at create/resume and never overwritten by the preset afterward; an explicit
+  `setPermissionMode` always wins. Legacy `harnessId:'chat'` maps to Assistant
+  read-side — the stored header is never rewritten. Guard: `native-session-host.test.ts`.
+- **`CORE_TOOLS` and the manifest's `NATIVE_TOOL_NAMES` must stay identical** —
+  presets advertise their suite via the names, and the prompt bodies reference
+  tools by them; advertising an unregistered tool makes a preset instruct the
+  model to call something that doesn't exist. Guard: `tool-registry-manifest.test.ts`.
 
 ## Documentation Drift
 
