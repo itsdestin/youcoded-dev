@@ -1130,9 +1130,14 @@ git commit -m "feat(buddy): settings row restyle — Toggle switch, live status,
 
 ### Task 7: Rig SVG sanitizer (TDD)
 
+> ✅ **Shipped 2026-07-16** — youcoded PR #150 (merge `bb2f468a`), together with Tasks 8–9.
+> Executor correction: the `environmentMatchGlobs` claim below is stale — DOM-needing test
+> files require an explicit `// @vitest-environment jsdom` first-line pragma (the repo
+> convention; the glob alone does NOT apply on the current vitest).
+
 **Files:**
 - Create: `src/renderer/components/mascot/sanitize-rig-svg.ts`
-- Test: `tests/sanitize-rig-svg.test.tsx` (**`.tsx` extension is required** — vitest's `environmentMatchGlobs` gives jsdom only to `tests/**/*.tsx`; the sanitizer needs DOMParser)
+- Test: `tests/sanitize-rig-svg.test.tsx` (needs jsdom for DOMParser — see pragma note above)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1265,6 +1270,9 @@ git commit -m "feat(mascot): rig SVG sanitizer — the security boundary for thi
 ---
 
 ### Task 8: Poses, pivots, springs (TDD)
+
+> ✅ **Shipped 2026-07-16** — youcoded PR #150. Executor note: `dragTargets` needed a
+> `-0 → +0` normalization (negating a zero velocity yields `-0`, which fails `toBe(0)`).
 
 **Files:**
 - Create: `src/renderer/components/mascot/mascot-poses.ts`
@@ -1479,6 +1487,10 @@ git commit -m "feat(mascot): pose data, pivot parsing, spring physics for rig an
 ---
 
 ### Task 9: Default rig + MascotRig component
+
+> ✅ **Shipped 2026-07-16** — youcoded PR #150. The default rig is the ported 2.5D-soft
+> capsule with white/black overlay shading (tints to any accent); `Array.from()` used over
+> DOM-collection spreads (the repo tsconfig lacks DOM.Iterable).
 
 **Files:**
 - Create: `src/renderer/components/mascot/default-buddy-rig.ts`

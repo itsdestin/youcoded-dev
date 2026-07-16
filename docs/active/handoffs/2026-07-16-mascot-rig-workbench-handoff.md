@@ -99,7 +99,10 @@ window-level snap) is untouched and remains in the existing buddy-floater plan.
    for grip hands/companions/tail/motion styles (wecoded-themes PR #13, merge `90efb05`).
    The concurrent session's uncommitted spec/plan edits had already landed as `c025766`
    (status corrections) — no conflict.
-1. App-side rig rendering (sanitizer, MascotRig, poses/springs module, default rig).
+1. ~~App-side rig rendering~~ **DONE 2026-07-16**: sanitizer + mascot-poses + MascotRig +
+   default rig (2.5D-soft capsule) + `mascot.rig` theme key — youcoded PR #150, merge
+   `bb2f468a` (plan Tasks 7–9). Nothing consumes MascotRig yet; BuddyMascot integration
+   (motion styles, companions, peek staging) rides the buddy-floater track (plan Tasks 10–12).
 2. `/theme-builder` mascot phase: mix/match from `mascots/` OR generate under README
    constraints.
 3. Rebuild golden-sunbreak + halftone-dimension as rigs for `mascots/examples/`.
