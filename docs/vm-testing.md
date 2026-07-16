@@ -157,18 +157,64 @@ proprietary software" boxes unchecked** (irrelevant under virtio-vga, and stock 
 testing against), *Interactive installation* → *Default selection*, and **"Erase disk and install
 Ubuntu"** — safe, it only ever sees the blank virtual disk, never the host's drives.
 
-## macOS — don't (use CI + a real Mac instead)
+## macOS
 
-quickemu will happily `quickget macos sonoma`, and the question recurs, so: **we deliberately don't.**
-Two reasons. (1) Apple's license permits macOS only on Apple-branded hardware — a VM here violates
-that term. (2) macOS has no AMD support; this host would need OpenCore + AMD kernel patches, and
-quickemu's macOS path is only reliable on Intel hosts — a fragile rig that breaks on every macOS
-update.
+**Licensing:** Apple's macOS license permits running it only on Apple-branded hardware, so a VM here
+is outside that term. It's a civil license matter; Destin made an informed call that testing his own
+app is a reasonable use. Noted once, here, so it doesn't get re-litigated every session.
 
-The `.dmg` already builds on `macos-latest` runners in `youcoded/.github/workflows/desktop-release.yml`
-— real Apple hardware, properly licensed, and the natural home for an automated macOS smoke test.
-For interactive flows (sign-in, setup wizard) rent a cloud Mac by the hour (AWS EC2 Mac, MacStadium,
-Scaleway) or borrow one. Both give **higher signal than a hackintosh** — they're what real users run.
+**The AMD problem mostly doesn't apply to VMs** — the single most misleading thing in the forums.
+[AMD_Vanilla](https://github.com/AMD-OSX/AMD_Vanilla) kernel patches are for **bare-metal**
+hackintosh, where macOS sees the real CPU. quickemu masks the CPU entirely on AMD hosts:
+
+    -cpu Haswell-v2,vendor=GenuineIntel,-pdpe1gb,+avx,+sse,+sse2,+ssse3,vmware-cpuid-freq=on
+
+The guest thinks it's an Intel Haswell, so Zen 5 novelty is largely irrelevant and no kernel patches
+are needed. [OSX-KVM](https://github.com/kholia/OSX-KVM): *"modern AMD Ryzen processors work just
+fine (even for macOS Sonoma)."*
+
+**This host passes every gate quickemu enforces** (verified 2026-07-16 against `/proc/cpuinfo`):
+
+| Gate | Requirement | Result |
+|---|---|---|
+| Ventura+ CPU | `sse4_2` + `avx2` — hard `exit 1` if absent | ✅ both |
+| Metal | `fma` | ✅ |
+| AMD-mobile freeze | clocksource must be `tsc` | ✅ `tsc` |
+
+That last row nearly bit us: quickemu warns *"macOS may freeze on AMD Ryzen mobile CPUs"*
+([#1273](https://github.com/quickemu-project/quickemu/issues/1273)) and the Ryzen AI Max **is**
+mobile-lineage silicon — but the gate only fires when the clocksource isn't `tsc`. If a future kernel
+demotes the clocksource (check `/sys/devices/system/clocksource/clocksource0/current_clocksource`),
+add `tsc=reliable` to the cmdline via `/etc/default/limine`, or use Big Sur/Monterey.
+
+**Prerequisite:** `ignore_msrs` must be `Y` or macOS won't boot. `quickemu --ignore-msrs-always`
+writes `/etc/modprobe.d/kvm-quickemu.conf` for future boots, but **does not change the running
+kernel** — `kvm` is already loaded, so modprobe.d won't re-apply. Set it live (root):
+
+```bash
+cat /sys/module/kvm/parameters/ignore_msrs          # must read Y
+echo 1 | sudo tee /sys/module/kvm/parameters/ignore_msrs
+```
+
+### What a macOS VM can't tell you
+
+- **x64 only — this is the real limitation, and it isn't AMD.** Apple Silicon cannot be virtualized
+  on x86 hardware, so the VM exercises the **x64** `.dmg` while most Mac users today are arm64.
+  First-run logic is largely arch-independent, so it's still real signal — just know the gap.
+- **No GPU acceleration** — macOS has no virtio-gpu driver. Software rendering; Electron is sluggish
+  but fine for click-through flow testing.
+- **Apple ID sign-in won't work** (no valid serials). Irrelevant here — Claude sign-in is browser
+  OAuth.
+- **Gatekeeper will block the app — and that's a real finding, not a VM artifact.**
+  `youcoded/desktop/electron-builder.yml` sets **no signing identity and no notarize config**, so a
+  downloaded `.dmg` is unsigned + un-notarized and modern macOS reports *"YouCoded is damaged and
+  can't be opened."* Arch-independent and live in the shipping config — worth fixing regardless of
+  whether any VM ever boots.
+
+CI already builds the `.dmg` on `macos-latest` runners
+(`youcoded/.github/workflows/desktop-release.yml`) — real Apple hardware and the natural home for an
+automated smoke test. For arm64 / high-signal interactive work, a rented cloud Mac (AWS EC2 Mac,
+MacStadium, Scaleway) or a borrowed one beats the VM, because it's what users actually run.
 
 ## Guest credentials
 
