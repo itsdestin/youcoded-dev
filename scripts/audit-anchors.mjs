@@ -49,6 +49,7 @@ export function parseRuleFrontmatter(text) {
   for (const raw of m[1].split(/\r?\n/)) {
     const line = raw.replace(/\s+$/, '');
     if (!line) continue;
+    if (/^\s*#/.test(line)) continue; // full-line YAML comments are fine anywhere
     // section headers may carry a trailing # comment (the README's schema example does)
     if (/^paths:\s*(#.*)?$/.test(line)) { section = 'paths'; continue; }
     if (/^verify:\s*(#.*)?$/.test(line)) { section = 'verify'; continue; }
@@ -66,7 +67,10 @@ export function parseRuleFrontmatter(text) {
     if (section === 'paths') {
       // quoted value (comment-safe) or first bare token
       const pm = line.match(/^\s+-\s+(?:"([^"]+)"|(\S+))/);
-      if (pm) out.paths.push(pm[1] ?? pm[2]);
+      if (pm) { out.paths.push(pm[1] ?? pm[2]); continue; }
+      // anything else indented here (e.g. inline-flow `  ["a/**"]`) would silently
+      // yield zero paths and misclassify the rule as eager — fail loudly instead
+      out.errors.push(`off-schema paths entry ("${line.trim()}") — use the "- <glob>" block-list form pinned in .claude/rules/README.md`);
       continue;
     }
     if (section === 'verify') {
@@ -76,7 +80,11 @@ export function parseRuleFrontmatter(text) {
       const cont = line.match(/^\s+contains:\s*(?:"(.*)"|(.+))$/);
       if (cont && out.verify.length) {
         out.verify[out.verify.length - 1].contains = cont[1] ?? cont[2];
+        continue;
       }
+      // a typo'd key (`- file: x.ts`) or an orphaned `contains:` would silently drop
+      // the anchor — the exact fail-loud hole, one level down. Fail loudly instead.
+      out.errors.push(`off-schema verify entry ("${line.trim()}") — expected "- path:", "- test:", or a "contains:" continuation (schema: .claude/rules/README.md)`);
     }
   }
   return out;

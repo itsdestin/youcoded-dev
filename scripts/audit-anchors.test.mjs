@@ -271,3 +271,56 @@ test('main: bad --root value and non-workspace dir produce one clear error, exit
   assert.match(notWs.stderr, /rules dir not found/);
   assert.doesNotMatch(notWs.stderr, /ENOENT/);
 });
+
+test('parseRuleFrontmatter: typo-keyed verify item fails loudly, not silently dropped', () => {
+  const fm = parseRuleFrontmatter(`---
+paths:
+  - "a/**"
+verify:
+  - path: ok.ts
+  - file: typo.ts
+---
+`);
+  assert.deepEqual(fm.verify, [{ path: 'ok.ts' }]);
+  assert.equal(fm.errors.length, 1);
+  assert.match(fm.errors[0], /off-schema verify entry \("- file: typo\.ts"\)/);
+});
+
+test('parseRuleFrontmatter: orphaned contains (no preceding item) fails loudly', () => {
+  const fm = parseRuleFrontmatter(`---
+paths:
+  - "a/**"
+verify:
+  contains: orphaned-no-preceding-item
+---
+`);
+  assert.deepEqual(fm.verify, []);
+  assert.equal(fm.errors.length, 1);
+  assert.match(fm.errors[0], /off-schema verify entry \("contains: orphaned-no-preceding-item"\)/);
+});
+
+test('parseRuleFrontmatter: indented inline-flow under paths fails loudly (no eager misclassification)', () => {
+  const fm = parseRuleFrontmatter(`---
+paths:
+  ["a/**"]
+---
+`);
+  assert.deepEqual(fm.paths, []);
+  assert.equal(fm.errors.length, 1);
+  assert.match(fm.errors[0], /off-schema paths entry \("\[\"a\/\*\*\"\]"\)/);
+});
+
+test('parseRuleFrontmatter: full-line comments inside sections are not errors', () => {
+  const fm = parseRuleFrontmatter(`---
+paths:
+  # a comment between entries
+  - "a/**"
+verify:
+  # another comment
+  - path: ok.ts
+---
+`);
+  assert.deepEqual(fm.errors, []);
+  assert.deepEqual(fm.paths, ['a/**']);
+  assert.deepEqual(fm.verify, [{ path: 'ok.ts' }]);
+});
