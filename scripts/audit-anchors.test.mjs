@@ -140,3 +140,67 @@ test('checkAnchor: test anchors are existence-checked; malformed and empty fail'
   assert.equal(checkAnchor(root, { malformed: '{not json}' }).ok, false);
   assert.equal(checkAnchor(root, {}).ok, false);
 });
+
+import { parseReportShas, latestShaReport, affectedSubsystems } from './audit-anchors.mjs';
+
+test('parseReportShas: reads the verified_shas map, tolerates other keys', () => {
+  const shas = parseReportShas(`---
+date: 2026-07-15
+scope: full
+residue: 0
+verified_shas:
+  workspace: f3a6e81aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  wecoded-marketplace: 558608a0000000000000000000000000000000aa
+---
+# Report`);
+  assert.equal(shas.workspace, 'f3a6e81aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+  assert.equal(shas['wecoded-marketplace'], '558608a0000000000000000000000000000000aa');
+});
+
+test('parseReportShas: null when no verified_shas (e.g. the knowledge-mgmt changelog)', () => {
+  assert.equal(parseReportShas('---\nresidue: 0\n---\n# Changelog'), null);
+  assert.equal(parseReportShas('# no frontmatter at all'), null);
+});
+
+test('latestShaReport: newest dated report that HAS shas wins; sha-less ones skipped', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-reports-'));
+  fs.mkdirSync(path.join(root, 'docs', 'audits'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'docs', 'audits', '2026-07-01.md'),
+    '---\nresidue: 0\nverified_shas:\n  workspace: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n---\n');
+  fs.writeFileSync(path.join(root, 'docs', 'audits', '2026-07-15-changelog.md'),
+    '---\nresidue: 0\n---\nno shas here');
+  const r = latestShaReport(root);
+  assert.match(r.file, /2026-07-01\.md$/);
+  assert.equal(r.shas.workspace, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+});
+
+test('affectedSubsystems: intersects changed files with rule globs; uncovered listed', () => {
+  const rules = [
+    { name: 'sync-spaces', globs: [globToRegex('youcoded/desktop/src/main/sync-spaces/**')] },
+    { name: 'worker-backend', globs: [globToRegex('wecoded-marketplace/worker/**')] },
+  ];
+  const { affected, uncovered } = affectedSubsystems(rules, [
+    'youcoded/desktop/src/main/sync-spaces/engine.ts',
+    'youcoded/desktop/src/main/brand-new-subsystem/core.ts',
+  ]);
+  assert.deepEqual(affected, ['sync-spaces']);
+  assert.deepEqual(uncovered, ['youcoded/desktop/src/main/brand-new-subsystem/core.ts']);
+});
+
+test('harvestDocAnchors: example anchors inside code fences and inline spans are ignored', () => {
+  // Regression: docs that TEACH the anchor syntax (plans/specs reproducing source)
+  // must not have their example anchors harvested as live claims. Only the raw-prose
+  // anchor below is a real claim.
+  const anchors = harvestDocAnchors([
+    'Prose mentions `<!-- verify: {"path": "inline.ts"} -->` as inline code.',
+    '```js',
+    'const s = `Broken: <!-- verify: {not json} -->`;',
+    '<!-- verify: {"path": "youcoded/desktop/src/main/x.ts", "contains": "fooFn"} -->',
+    '```',
+    'A real claim. <!-- verify: {"path": "real.ts"} -->',
+    '````markdown',
+    '<!-- verify: {"test": "fenced.test.ts"} -->',
+    '````',
+  ].join('\n'));
+  assert.deepEqual(anchors, [{ path: 'real.ts' }]);
+});
