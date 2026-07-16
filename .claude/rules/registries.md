@@ -25,6 +25,7 @@ Both registries are GitHub repos fetched at runtime via `raw.githubusercontent.c
 
 ## Theme & skill registries
 - **`wecoded-themes/registry/theme-registry.json` is auto-generated on CI merge** — don't hand-edit. Each theme: `themes/{slug}/manifest.json` + assets. **15 required CSS tokens** (canvas, panel, inset, well, accent, on-accent, fg, fg-2, fg-dim, fg-muted, fg-faint, edge, edge-dim, scrollbar-thumb, scrollbar-hover). CSS safety (CI-enforced): NO `@import`, external URLs, `expression()`, `javascript:`. Manifest >10MB or duplicate slug fails CI.
+- **Any content change to a published theme MUST bump the manifest `version`** — the registry pins version from the manifest (default `1.0.0`), and the app only offers Update when registry version > recorded install version (`marketplace-context.tsx` `isNewerVersion`). No bump → installed users see a no-op "Installed" button forever (2026-07-16 mascot update, fixed in wecoded-themes PR #16). Guard: none — candidate for a CI diff check.
 - **`wecoded-marketplace`:** `index.json` (combined) + `marketplace.json` (YouCoded-only); synced from upstream via `scripts/sync.js`. Entries with `sourceMarketplace: "youcoded"` are never overwritten. App caches 24h at `~/.claude/wecoded-marketplace-cache/`.
 
 ## Theme marketplace entries (`local-theme-synthesizer.ts`) — guard: `local-theme-synthesizer.test.ts`
