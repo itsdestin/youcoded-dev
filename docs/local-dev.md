@@ -89,3 +89,25 @@ git -C youcoded branch -D dev-profile
 | `youcoded/desktop/src/main/main.ts` | Computes `DEV_SERVER_URL` from the shared constant; splits `userData` and app name when `YOUCODED_PROFILE=dev`. |
 | `youcoded/desktop/src/main/remote-config.ts` | Default port comes from the shared constant. |
 | `scripts/run-dev.sh` | Sets both env vars and runs `npm run dev`. |
+
+## Driving the desktop dev app via CDP (headless verification)
+
+For programmatic UI verification of the DESKTOP dev instance (the Android recipe in
+CLAUDE.md uses adb; this is the desktop equivalent, first used for the Phase 2 Plan A
+live-acceptance run):
+
+1. Launch Electron directly with a debugging port (run-dev's npm chain doesn't forward
+   Chromium flags): from `<worktree>/desktop`, with Vite already running,
+   `YOUCODED_NATIVE=1 YOUCODED_PORT_OFFSET=50 YOUCODED_PROFILE=dev ./node_modules/electron/dist/electron.exe . --remote-debugging-port=9222`
+2. `curl http://127.0.0.1:9222/json` lists page targets. Gotchas: the buddy floater is its
+   own page at `?mode=buddy-mascot` — match the main window by EXACT url
+   `http://localhost:5223/`, not a substring; DevTools windows also appear as pages.
+3. Evaluate via `Runtime.evaluate` (awaitPromise) + `Page.captureScreenshot` over the
+   target's webSocketDebuggerUrl — `scripts/cdp-eval.mjs` works with the ws url directly.
+4. The whole `window.claude` preload surface is callable from evals — creating sessions,
+   listing the provider catalog, etc. — which beats DOM-clicking for setup steps. For the
+   InputBar specifically: there are TWO textareas in the DOM; use the one inside a
+   `<form>` and submit with `form.requestSubmit()` (React's Enter handler is flaky with
+   synthetic KeyboardEvents).
+5. Never do any of this against the live app (live-app-safety rule) — the flag-launched
+   dev instance only.
