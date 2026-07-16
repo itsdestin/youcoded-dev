@@ -125,15 +125,20 @@ it — `( echo "system_powerdown"; sleep 2 ) | socat - unix-connect:<vm>/<vm>-mo
 ACPI and both guests power off cleanly in a few seconds. Confirm with `qemu-img snapshot -l
 <vm>/disk.qcow2`; quickemu's own `--snapshot info` prints image info, not the snapshot table.
 
-### Use `--display gtk`, not `spice`, and set `gl="off"`
+### Set `gl="off"` — this is mandatory, on every guest
 
-quickemu's default SPICE path selects `-display egl-headless` + GL. On this host's Radeon 8060S that
-renders **a permanently black screen** the moment the guest leaves text mode — in the viewer window
-*and* in `screendump`, so you can't even see what's wrong. The VM is alive (high CPU) and looks hung.
+**The single highest-value line in this doc.** With GL on, quickemu selects `-display egl-headless`,
+which on this host's Radeon 8060S renders **a permanently black screen** the moment the guest leaves
+text mode — in the viewer window *and* in `screendump`, so you cannot see what's wrong. The VM is
+alive at high CPU and looks exactly like a hang. Cost us an hour before we spotted it.
 
-Add `gl="off"` to the `.conf` and launch with `--display gtk` (→ `virtio-vga, GL (off)`). Windows
-Setup renders immediately and `screendump` captures real frames. Verified: identical VM, same ISO,
-black under `spice`/egl-headless, working under `gtk` + `gl="off"`.
+```bash
+printf 'gl="off"\n' >> ~/vms/<vm>.conf     # do this for every VM you create
+```
+
+The **display backend is not the problem** — `spice` renders fine once GL is off (`qxl-vga, GL (off)`),
+and **`--display spice` is the better choice**: it adds clipboard sharing (spice-vdagent), WebDAV, and
+the `spicy` viewer's `--spice-shared-dir`, none of which `gtk` gives you. `screendump` works under both.
 
 ## Linux VMs
 
@@ -231,16 +236,88 @@ snapshot it reverts to — the same reason the archived Windows-host script docu
 | windows-11 | `Quickemu` | `quickemu` (quickemu's answer-file default) |
 | ubuntu-24.04 | `youcodedtesting` | `youcodedtesting` |
 
-## Getting an installer into a guest
+## Testing a beta / dev build — the loop
 
-Guests use QEMU user-mode networking: **the host is always `http://10.0.2.2` from inside the VM.**
+Verified end-to-end 2026-07-16 with the real `YouCoded.Setup.1.2.4.exe` (111 MB).
 
-- **Local build:** on the host, `cd youcoded/desktop && npm run build && npx electron-builder --win nsis` (or `--linux`), then serve it:
-  ```bash
-  python3 -m http.server 8010 -d ~/youcoded-dev/youcoded/desktop/release
-  ```
-  In the guest browser (Edge/Firefox): `http://10.0.2.2:8010` → download → run.
-- **Release/CI build:** download straight from the GitHub Release inside the guest — this also exercises exactly what a real user does (SmartScreen prompt included).
+**1. Get a build.** CI already has a manual beta job — `youcoded/.github/workflows/desktop-test-build.yml`
+(`workflow_dispatch`, builds `.exe` / `.dmg` / `.AppImage`):
+
+```bash
+cd youcoded
+gh workflow run desktop-test-build.yml && sleep 5
+gh run download "$(gh run list -w desktop-test-build.yml -L1 --json databaseId -q '.[0].databaseId')" -D ~/vms/share
+# or ship-shape artifacts straight from a release:
+gh release download v1.2.4 -p 'YouCoded.Setup.*.exe' -D ~/vms/share
+```
+
+**2. Launch the VM with the share attached** (host dir → `\\10.0.2.4\qemu` in the guest):
+
+```bash
+cd ~/vms && quickemu --vm windows-11.conf --display spice --public-dir ~/vms/share
+```
+
+**3. ⚠️ Bust the stale share after adding files.** `smbd` caches the directory listing for the life of
+its process: **files added after the VM booted are invisible in the guest** — not a Windows cache, and
+`net use /delete` doesn't help. Killing smbd makes slirp respawn it on next access; the VM keeps
+running:
+
+```bash
+pkill -f "[s]mbd -l /tmp/qemu-smb"      # then re-list in the guest; new files appear
+```
+
+**4. Install it — by double-clicking in the VM**, as a real user would. See the SYSTEM caveat below;
+this is also the actual thing under test (Gatekeeper/SmartScreen prompts, first-run, sign-in).
+
+**5. Verify + reset:** inspect with the agent (below), then `--snapshot apply clean` to reset in seconds.
+
+Alternatives if SMB misbehaves: the host is always `http://10.0.2.2` from inside a guest
+(`python3 -m http.server 8010 -d ~/vms/share`), or download the release in the guest browser — which
+additionally exercises the real SmartScreen path.
+
+## Driving guests from a session: the QEMU guest agent
+
+**The most useful thing here.** quickemu's Windows answer file installs `qemu-ga` (plus spice-vdagent,
+spice-webdavd and the virtio GPU driver) from the virtio ISO, and exposes it at
+`<vm>/<vm>-agent.sock`. That makes the guest scriptable — no SSH, no `sendkey` roulette:
+
+```bash
+( echo '{"execute":"guest-ping"}'; sleep 2 ) | socat - unix-connect:~/vms/windows-11/windows-11-agent.sock
+# -> {"return": {}}
+
+# Wrapped up for daily use — prints exit code + stdout/stderr:
+scripts/vm/vm-exec.sh ~/vms/windows-11 powershell.exe -Command "Get-Command node"
+```
+
+`guest-exec` + `guest-exec-status` run a command and return base64 stdout/stderr;
+`scripts/vm/vm-exec.sh` wraps that handshake. This is how the baseline below was verified. (The virtio ISO must be the real image, not the 4 KB stub — see above —
+or none of these tools get installed.)
+
+**⚠️ `guest-exec` runs as `NT AUTHORITY\SYSTEM`**, because qemu-ga is a LocalSystem service.
+`$env:LOCALAPPDATA` resolves to `C:\Windows\System32\config\systemprofile\...`, so **running
+electron-builder's per-user NSIS installer through the agent installs into the system profile and
+tests a path no real user ever takes** (it registers an uninstall entry pointing at a nonexistent
+path). Use the agent to *inspect*, and the GUI to *install*. Attempts to work around it — `schtasks
+/ru <user> /it`, and the `explorer.exe <path>` launch trick — both failed here; don't burn time on it,
+double-clicking is the real test anyway.
+
+## Verified Windows baseline (`clean` snapshot, 2026-07-16)
+
+Checked via guest-exec, so this is measured, not assumed:
+
+| Check | State |
+|---|---|
+| node / npm / git / claude | **all absent** — a true clean machine |
+| **winget** | **absent** — `Microsoft.DesktopAppInstaller` is NOT provisioned |
+| Internet | ✅ github 200 · npmjs 200 · **`claude.ai/install.ps1` 200** |
+| qemu-ga / spice-agent | ✅ Running (spice-webdavd installed but Stopped) |
+| Build / resolution | Windows 11 Pro 25H2 (26200) · 1024×768 |
+
+**The `winget absent` row is a feature, not a defect.** `prerequisite-installer.ts` branches on
+`detectWinget`, and a fresh offline Win11 genuinely has no winget until the Store provisions App
+Installer — so this baseline exercises the **native `claude.ai/install.ps1` fallback path** for real.
+A `clean-winget` second snapshot (boot, let the Store provision App Installer, re-snapshot) would
+cover the other branch. Two snapshots, two code paths — worth doing before trusting either.
 
 ## What to test where
 
