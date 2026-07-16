@@ -16,8 +16,10 @@ How to spin up clean Windows and Linux virtual machines on the current dev machi
 |---|---|
 | CPU virtualization | AMD-V, `kvm_amd` module loaded |
 | `/dev/kvm` | present, world-rw — **no libvirt daemon or group setup needed** |
-| RAM / disk | 121 GB / ~447 GB free |
-| Tooling | nothing installed yet; `paru` available for AUR |
+| RAM / disk | 121 GB / ~425 GB free |
+| Tooling | quickemu 4.9.9 + qemu-desktop 11.0.2 installed |
+| Win11 guest | **provisioned + `clean` snapshot taken** (`~/vms/windows-11.conf`) |
+| Ubuntu 24.04 guest | ISO + config ready; installer click-through pending |
 
 ## One-time setup
 
@@ -136,10 +138,13 @@ cd ~/vms
 quickget ubuntu 24.04      # deb + AppImage testing (the mainstream case)
 quickget fedora 42         # rpm (optional)
 quickget archlinux latest  # pacman artifact (optional — never test it on the host)
-quickemu --vm ubuntu-24.04.conf
+printf 'gl="off"\n' >> ubuntu-24.04.conf
+quickemu --vm ubuntu-24.04.conf --display gtk
 ```
 
-Linux installs are not unattended — click through the distro installer once (~10 min), power off, snapshot `clean` exactly as above.
+Unlike Windows there's no ISO-download block and no "press any key" trap — GRUB boots straight to
+`Try or Install Ubuntu` and the live desktop comes up in <1 min. But the install is **not**
+unattended: click through Ubuntu's installer once (~10 min), power off, snapshot `clean` as above.
 
 ## Getting an installer into a guest
 
@@ -191,4 +196,8 @@ Wrap this into `scripts/vm/` helpers only after the first real pass validates th
 
 ## Costs
 
-~7 GB ISO + ~20 GB installed per Windows VM; ~5 GB per Linux VM (sparse qcow2 — `du -h`, not `ls -l`, shows real usage). Budget ~50 GB total for the full matrix; the host has ~447 GB free.
+Measured on the first real run: Win11 ISO 8.5 GB + **11 GB installed** (64 GB virtual disk, sparse
+qcow2 — `du -h`, not `ls -l`, shows real usage); Ubuntu ISO 6.7 GB. Budget ~50 GB for the full
+matrix; the host had ~425 GB free after both ISOs landed. Install wall-clock: **~15 min** for
+Windows at native KVM speed (the `install.wim` extraction that took 1–3 hr under the old
+Hyper-V-crippled VirtualBox rig ran at ~2.5 GB per 30 s here).
