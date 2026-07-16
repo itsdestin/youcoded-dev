@@ -1,6 +1,7 @@
 ---
 status: active
 date: 2026-07-16
+amended: 2026-07-16 (post-approval code-verification pass — see §9)
 owner: Destin (decisions) / Claude (spec)
 ---
 
@@ -24,6 +25,13 @@ renderer guard as "manual"). Full audit numbers in §6.
 and the Android WebView — one migration covers both platforms). New primitives live in a new
 `youcoded/desktop/src/renderer/components/ui/` directory.
 
+**2026-07-16 amendment pass:** after approval, a code-verification review found (a) recipe
+problems verified against the codebase — those recipe fixes are applied inline below and logged
+change-by-change in §9 so the delta from the approved renders is visible; (b) whole control
+families the original audit never inventoried (icon buttons, textareas, toasts, tabs, progress
+bars, the games subtree) — those are **proposed** as Session 8 (changes 41–48) and need the same
+workbench render-and-approve treatment as sessions 1–7 before implementation.
+
 ---
 
 ## 1. The primitives (exact recipes)
@@ -38,7 +46,7 @@ Base (always):
 ```
 inline-flex items-center justify-center gap-1.5 font-medium rounded-lg transition-colors
 disabled:opacity-50 disabled:cursor-not-allowed
-focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas
+focus-visible:ring-2 focus-visible:ring-accent
 ```
 Variants:
 | variant | classes |
@@ -46,7 +54,7 @@ Variants:
 | primary | `bg-accent text-on-accent hover:bg-accent/90` |
 | secondary | `border border-edge-dim text-fg-2 hover:bg-inset` |
 | ghost | `text-fg-dim hover:text-fg hover:bg-inset` |
-| danger | `bg-destructive text-white hover:bg-destructive/90` |
+| danger | `bg-destructive text-on-destructive hover:bg-destructive/90` (§9.B — was text-white) |
 | danger-outline | `border border-destructive/50 text-destructive hover:bg-destructive/10` |
 
 Sizes:
@@ -55,6 +63,7 @@ Sizes:
 | sm | `text-2xs px-2.5 py-1` | inline row actions (EngineCard, provider rows, chips) |
 | md (default) | `text-xs px-3 py-1.5` | forms, popup footers, most actions |
 | lg | `text-sm px-4 py-2` | page-level CTAs (sign-in, marketplace hero) |
+| icon (proposed, change 41) | `w-7 h-7 p-0` (square; `aria-label` required) | icon-only buttons — ✕ close, send, toolbar/utility icons |
 
 Decisions baked in (each was an explicit choice among rendered alternatives):
 - **Radius `rounded-lg`** (12px built-ins / 24px on big-radius packs) — matches the just-shipped
@@ -62,9 +71,18 @@ Decisions baked in (each was an explicit choice among rendered alternatives):
 - **Hover `hover:bg-accent/90`** (background fades toward surface; label stays crisp). Rejected:
   `hover:brightness-110` (imperceptible on Light/Crème's near-black accent) and `hover:opacity-90`
   (fades label; on glow-themes like Halftone the fill fades out from under the theme's box-shadow glow).
-- **Focus ring with canvas offset** (visible on accent fills; extends the marketplace precedent).
-  Community `custom_css` focus styles (e.g. Halftone's pink outline) override it by specificity —
-  intentional, packs keep that power.
+- **Focus ring is offset-less `ring-2 ring-accent`** (§9.A). The originally-approved
+  `ring-offset-2 ring-offset-canvas` was premised on "extends the marketplace precedent" — that
+  precedent doesn't exist: zero `ring-offset-canvas` uses in the renderer; the actual marketplace
+  rings (MarketplaceCard.tsx:158, :241, :310, MarketplaceFilterBar.tsx:144 …) are offset-less
+  `ring-accent`, and the app's only ring-offset (TagPicker.tsx:90) matches its surface
+  (`ring-offset-inset`). Tailwind's ring-offset is a **solid fill, not a gap** — a canvas offset
+  paints a canvas-colored halo around every button on a panel/popup/inset surface, i.e. most of
+  them. Offset-less IS the existing precedent. Community `custom_css` focus styles (e.g.
+  Halftone's pink outline) still override by specificity — intentional, packs keep that power.
+- **Coarse-pointer hit areas** (proposed, change 48): sm/icon buttons render an invisible expanded
+  hit target under `@media (pointer: coarse)` — the renderer is shared with Android, and sm is
+  ~22px tall against the ~44–48dp touch guideline. Visuals unchanged.
 - **Pill exception**: first-run hero CTAs keep `rounded-full` + their own larger padding via
   `className` override; only hover + ring normalize (change 7).
 - **`type="button"` default** in the component (stops accidental form submits).
@@ -79,10 +97,14 @@ track:  relative w-9 h-5 rounded-full transition-colors shrink-0
         on  (tone default): bg-accent          ← was green-600 in settings/sync (change 16)
         on  (tone danger):  bg-destructive     ← was raw #DD4444 (change 17)
         off:                bg-inset border border-edge-dim
-knob:   absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-all
+knob:   absolute top-0.5 w-4 h-4 rounded-full bg-white border border-edge-dim shadow-sm transition-all
         left: 18px checked / 2px unchecked (inline style)
 a11y:   role="switch" aria-checked  (today only 2 of ~14 switches have any aria)
 ```
+Knob border added §9.C: today's knobs are bare `bg-white` and sit at ~1.2:1 against Crème's
+off-state track (`--inset` `#DDD1BE` per creme.json:9) — `shadow-sm` is the only thing separating
+knob from track on light themes. The `border-edge-dim` ring keeps the knob legible on light
+tracks without changing dark themes (borders are box-border; knob stays 16px, positions hold).
 
 ### 1.3 TextInput + Select (`components/ui/field.ts`, `Select.tsx`)
 
@@ -90,8 +112,17 @@ One field surface (was: 3 focus paradigms × 3 backgrounds × 4 radii across ~25
 ```
 FIELD      = bg-inset border border-edge-dim rounded-lg text-fg placeholder:text-fg-faint
              focus:outline-none focus:border-accent
+             disabled:opacity-50 disabled:cursor-not-allowed          ← §9.F (spec omitted it;
+             disabled fields exist today, e.g. EngineCard.tsx:143 disabled:opacity-60)
 FIELD_SIZE = md: text-xs px-3 py-2   ·   sm: text-2xs px-2.5 py-1.5
 ```
+FIELD covers **all** text-entry elements, not just `type="text"`: password (6 API-key sites),
+search (MarketplaceFilterBar.tsx:78/:140 — two treatments today), number (EngineCard.tsx:145,
+keeps `type="number"`), and `<textarea>` via a Textarea primitive (proposed, change 42 —
+12 textareas in 11 files currently split across ≥2 conflicting recipes, e.g. ContextPopup.tsx:161
+`border-edge rounded-sm focus:ring-1` vs BugReportPopup.tsx:194 `border-edge-dim rounded-lg
+focus:border-accent`; default `resize-none`). The chat composer textarea (InputBar.tsx:535,
+transparent-text + mirror overlay) is sui generis and excluded.
 Retires: `focus:border-fg-muted` (gray focus), `focus:ring-*` focus, `bg-canvas`/`bg-well` field
 surfaces, `rounded`/`rounded-sm`/`rounded-md` field radii. The ProvidersSection key input
 (ProvidersSection.tsx:337) already IS this baseline — it doesn't change (change 19).
@@ -104,10 +135,16 @@ component is: FIELD-styled `<button>` trigger + chevron (`aria-haspopup="listbox
 `.layer-surface` popover menu —
 ```
 menu:     .layer-surface, p-1 (4px), border-radius var(--radius-lg), min-width ≥ trigger, z per layer system
-option:   px-2.5 py-1.5 rounded-md text-2xs cursor-pointer
+          max-h-64 overflow-y-auto  ← §9.G: RuntimeBinding's model select (:212) renders the dynamic
+          provider catalog — dozens of entries for OpenRouter-style providers; menu must scroll and
+          the selected option scrolls into view on open
+option:   px-2.5 py-1.5 rounded-md text-2xs cursor-pointer  (py bumps under pointer:coarse — change 48)
 selected: bg-accent text-on-accent font-medium     other: text-fg-2 hover:bg-inset
-keyboard: ArrowUp/Down roving, Enter selects, Esc closes (useEscClose), click-outside closes
+keyboard: ArrowUp/Down roving, Enter selects, Esc closes (useEscClose), click-outside closes,
+          first-character typeahead jump
 a11y:     role="listbox" / role="option" aria-selected
+anchoring: portal position derives from the trigger rect; must reposition (or close) on ancestor
+          scroll/resize — all six sites live inside scrollable settings panels
 ```
 
 ### 1.4 Checkbox + Radio (`components/ui/Checkbox.tsx`, `Radio.tsx`)
@@ -134,8 +171,14 @@ input[type=range].slider { appearance:none; height:4px; border-radius:9999px;
 input[type=range].slider::-webkit-slider-thumb { appearance:none; width:14px; height:14px;
   border-radius:50%; background:var(--accent); border:2px solid var(--canvas);
   box-shadow:0 1px 2px rgba(0,0,0,.2); }
-/* --sv updated onInput: ((value-min)/(max-min))*100 + '%' */
+/* --sv = ((value-min)/(max-min))*100 + '%', computed FROM THE VALUE PROP at render
+   (style={{'--sv': pct}}) — NOT updated only onInput (§9.D) */
 ```
+§9.D: the approved "`--sv` updated onInput" wiring desyncs the filled track whenever the value
+changes without a drag. Verified: the glass slider (ThemeScreen.tsx:542) is controlled and its
+value changes on theme switch — thumb would move, fill wouldn't. The roundness slider
+(ThemeScreen.tsx:392) is **uncontrolled** (`defaultValue`) and already goes stale on theme switch
+today — change 40 also makes it controlled.
 
 ### 1.6 State family (`components/ui/states.tsx`) — changes 31–33
 
@@ -160,8 +203,9 @@ ErrorState    == Option C (explicitly chosen over A "quiet inline" and B "destru
 ```
 The general card **is** the reusable two-action component `docs/error-message-standards.md`
 schedules for v1.3.1 — change 33 ships that roadmap item. Field errors under inputs stay short
-lines: `text-[10px] text-destructive` (change 34: all error text `text-red-500` → `text-destructive`;
-identical #DD4444 today, theme-overridable).
+lines: `text-3xs text-destructive` (§9.H — was written `text-[10px]`, which rule 14 itself bans;
+change 34: all error text `text-red-500` → `text-destructive`; identical #DD4444 today,
+theme-overridable).
 
 ### 1.7 AnchorTip (change 28) + floating chips (change 29)
 
@@ -208,7 +252,7 @@ identical #DD4444 today, theme-overridable).
 ### Session 3 — Cards (22–25)
 | # | What |
 |---|---|
-| 22 | SkillCard (both variants) `bg-panel border` → **`.layer-surface`** + grid hover `hover:scale-[1.02] transition-transform duration-200` + `focus-visible:ring-2 ring-accent` (drawer variant keeps hover:bg-inset instead of scale). ThemeScreen theme tiles + project-view file cards follow the same rule during migration. Chat-timeline cards (PromptCard/UsageCard/ToolCard) are deliberately excluded — different species. |
+| 22 | SkillCard (both variants) `bg-panel border` → **`.layer-surface`** + grid hover `hover:scale-[1.02] transition-transform duration-200` + `focus-visible:ring-2 ring-accent` (drawer variant keeps hover:bg-inset instead of scale). The scale lift sits behind `@media (hover: hover)` — §9.E: hover styles stick after tap on the Android WebView, and a stuck 1.02 scale is far more visible than a stuck tint. ThemeScreen theme tiles + project-view file cards follow the same rule during migration. Chat-timeline cards (PromptCard/UsageCard/ToolCard) are deliberately excluded — different species. |
 | 23 | SkillCard badge system → MarketplaceCard's STATUS_TONE_CLASS pills: statuses = ok/warn tones; **identity badges (YC, User Skill, plugin pills) = accent pill** `bg-accent/15 text-accent border-accent/30` (blue-status alternative was offered, not taken); hex strips (`#4CAF50/#66AAFF/#f0ad4e`) die; Get → Button primary sm |
 | 24 | STATUS_TONE_CLASS.locked: `bg-slate-500/10 border-slate-500/30` → `bg-inset/50 text-fg-dim border border-edge` (tokenized; one of the app's last 3 neutral stock-palette leaks) |
 | 25 | EngineCard `bg-well border` → ProviderRow's `bg-inset/50 rounded-lg px-3 py-2.5` (borderless). Rule: in-panel rows use the SettingsRow surface. |
@@ -244,11 +288,34 @@ its deliberately-quiet inline variant (its source comment says quiet was intenti
 |---|---|
 | 38 | **SessionDrawer adopts ProjectView's FileFilterPopover** (explicit review direction — Destin wanted "a filter toggle menu thing like project view"). Key discovery: FileFilterPopover.tsx **already contains** "Hide code & configs" and "Show deleted" as Chips (:133-140) — this is component reuse, not new design. Drawer search row becomes: TextInput sm + one sliders-icon trigger (FIELD-styled) opening the shared popover (Sort chips + Visibility chips; the Type group can join later for free). The drawer's separate sort select AND both CheckboxGlyph rows are deleted. Click-outside stays parent-owned (see FileFilterPopover.tsx:9-11 comment — owning it inside races the trigger). Checkbox primitive's one remaining site: ProjectView.tsx:807 consent checkbox. |
 | 39 | Radio primitive (§1.4) replaces native radios: PreferencesPopup.tsx:154 (permission-mode list), SyncSetupWizard.tsx:389 + :419 |
-| 40 | Styled slider with **filled track** (§1.5): SettingsPanel.tsx:551 (volume), ThemeScreen.tsx:392 (roundness), :543 (glass) |
+| 40 | Styled slider with **filled track** (§1.5): SettingsPanel.tsx:551 (volume), ThemeScreen.tsx:392 (roundness — becomes controlled, §9.D), :543 (glass) |
+
+### Session 8 — post-approval additions (41–48) — **PROPOSED, not yet approved**
+
+Found by the 2026-07-16 code-verification pass: whole control families the original four-agent
+audit never inventoried. These need a workbench session (same before/after render + approve-by-number
+method, `/ui-mockup`) before implementation. They do NOT block tranches 0–7 except where noted.
+
+| # | What |
+|---|---|
+| 41 | **Button `icon` size + `CloseButton` component.** ~9 distinct icon-button idioms exist and none can go through the approved Button (no square size). The standard popup ✕ (`w-7 h-7 rounded-sm hover:bg-inset` + copy-pasted SVG) is duplicated in ≥8 files (AccountSection.tsx:93, ModelPickerPopup.tsx:316/:388, PreferencesPopup.tsx:132, AboutPopup.tsx:109, ModelProvidersPopup.tsx:109/:403, ContextPopup.tsx:128, PerformancePopup.tsx:107). Also migrates: **InputBar send (`:607`)** — the app's most-used button, currently hand-rolled `bg-accent` + the rejected `hover:brightness-110`; attachment-remove × (InputBar.tsx:481); marketplace filter icon (MarketplaceFilterBar.tsx:84); GameLobby kebab (:125); terminal scroll buttons (TerminalToolbar.tsx:66); ThemeScreen swatch delete (:177 — also kills the app's last raw `hover:bg-black/20`). `aria-label` required on every icon button. |
+| 42 | **Textarea primitive** on FIELD (§1.3): 11 sites (ContextPopup:161, BugReportPopup:194/:226, PreferencesPopup:233, QuickChips:351, ContextEditorOverlay:255, RatingSubmitModal:292, ReportReviewButton:189, NoteEditor:29, MarkdownView:22). InputBar's mirror-overlay textarea excluded. Search/number/password inputs fold into change 20's sweep under FIELD. |
+| 43 | **`--on-destructive` derivation** in `computeOverlayTokens`, same guard style as `--code`/change 36: white when `overlay.destructive` is dark, near-black when light. Danger Button + danger Toggle labels consume it (§9.B). Contrast audit gains a destructive-vs-on-destructive check alongside change 36's link check. Rationale: `--destructive` is pack-overridable via `overlay.destructive` (theme-types.ts:109) with **no contrast guard**, so the approved `text-white` violates rule 15 and can silently go white-on-light. |
+| 44 | **Toast primitive** — one transient-feedback component replacing three uncoordinated systems: the App-global toast (App.tsx:3009, `fixed bottom-16 … bg-panel border-edge`, manual setTimeout at every call site), LikeButton's local mini-toast (LikeButton.tsx:203 — different size/radius/z), and the marketplace `role="status"` strips. Anatomy joins the §1.6 state family; `aria-live="polite"`; auto-dismiss owned by the component. |
+| 45 | **SegmentedTabs primitive** — one active-state recipe for tab rows. Today: Library tabs (LibraryScreen.tsx:183 `bg-accent text-on-accent` active / `bg-inset` inactive), BugReportPopup Bug/Feature (:185 — same active, but **no** inset on inactive), project-view tabs, Settings section nav. Marketplace filter Chips stay chips (filters ≠ tabs, rule 8). |
+| 46 | **ProgressBar primitive** — track `bg-inset` (decision needed: ModelLoadingBar.tsx:141 uses `bg-well` today, FirstRunView.tsx:57 + LocalModelsSection.tsx:115 use `bg-inset`), rounded `bg-accent` fill (LocalModelsSection's fill is unrounded today), status-color fill via prop (UsageCard.tsx:63 keeps its inline status color). UpdatePanel gets a real bar — today download % is button-label text (:279) on a `rounded-sm` + `hover:opacity-90` button (two rejected idioms; the button itself is caught by the tranche-1 sweep). |
+| 47 | **Games subtree decision** (`game/GameLobby.tsx`, GameOverlay, GameChat, ConnectFourBoard) — currently unmigrated and violating multiple locked rules: hardcoded `text-[#66AAFF]`/`#88CCFF` links (change 36 fixes link tokens everywhere *except* here), `bg-green-600`/`bg-red-600 text-white` action buttons (rule 5), `bg-indigo-950/50` panels, `focus:border-fg-dim` gray-focus input (GameLobby:446 — the exact idiom change 20 retires), and the app's only `role="menu"` (friend-row kebab, :104-195). Recommendation to render in the workbench: inputs/links/neutral buttons (Decline/Cancel) migrate to primitives + tokens; semantic Accept-green/Block-red **may** keep their colors as a documented ToolCard-style exception — Destin decides. |
+| 48 | **Touch-target + sticky-hover pass** (cross-cutting): invisible expanded hit areas under `@media (pointer: coarse)` for every control below ~24px — Checkbox/Radio (14px), sm buttons (~22px tall), icon buttons, Select options; `@media (hover: hover)` guards on hover-only effects (change 22's scale lift; any future lift). Zero visual change on desktop. Motivation: the spec chose the 36×20 Toggle *for* Android touch, then specced 14px checkboxes — one shared renderer means every control is a phone control. |
+
+**Policy decisions recorded (not numbered changes):**
+- **Native `title=` tooltips stay** for icon hints (~231 across 63 files). AnchorTip (change 28) is for rich/click-open info, `title` for hover hints — two tools, one policy, documented exception to rule 9. Migrating 231 sites to a custom tooltip is cost without payoff.
+- **Native color inputs stay** (ThemeScreen.tsx:378, :391) — the OS color picker is a documented exception to rule 9; building a themed color picker is a project, not a consistency fix.
+- **TerminalToolbar key row** (Esc/Tab/Ctrl buttons) is excluded — it deliberately mirrors QuickChips and is a keyboard-emulation species, not action buttons.
+- **Drag affordances** (SessionDrawer resize handle :455 `hover:bg-accent/30`, CommandDrawer grab pill :198) — left as-is, noted as an idiom to revisit if a third drag handle appears.
 
 ---
 
-## 3. Native/OS-control inventory (verified by grep 2026-07-16 — this is the complete list)
+## 3. Native/OS-control inventory (corrected §9.I — the original "complete list" missed four input types)
 
 | Location | Control | Replacement | Change |
 |---|---|---|---|
@@ -264,11 +331,18 @@ its deliberately-quiet inline variant (its source comment says quiet was intenti
 | SyncSetupWizard.tsx:389 + :419 | native radios | Radio group | 39 |
 | SettingsPanel.tsx:551 | native range (volume) | styled Slider | 40 |
 | ThemeScreen.tsx:392 + :543 | native ranges | styled Slider | 40 |
+| EngineCard.tsx:145 | native number input (context length) | FIELD styling, keeps `type="number"` | 20 |
+| MarketplaceFilterBar.tsx:78 + :140 | native search inputs (two different treatments in one file) | FIELD sm | 20 |
+| index.tsx:72, FirstRunView.tsx:118, ModelProvidersPopup.tsx:430, ProvidersSection.tsx:330 + :487, SettingsPanel.tsx:983 + :1878 | password inputs (API keys) | FIELD, keeps `type="password"` | 20 |
+| ThemeScreen.tsx:378 + :391 | **native color inputs** | **KEEP — documented exception** (OS color picker; see Session 8 policy notes) | — |
 
 Verified absent: no other native `<select>`, `type="checkbox"`, `type="radio"`, `type="range"` in
-the renderer. No date/color/file inputs (file picking = Electron dialogs). Correction to the
+the renderer. No date/file inputs (file picking = Electron dialogs). Corrections to the
 original audit: LocalModelsSection.tsx:204's "faked select" is actually a search input with a
-clear button — covered by change 20, not 21.
+clear button — covered by change 20, not 21. The original §3 claimed "no color inputs" and listed
+no number/search/password inputs — all four exist (rows above, found 2026-07-16); the color
+inputs are now an explicit rule-9 exception rather than a false negative. Native `title=`
+tooltips (~231 across 63 files) are also a documented rule-9 exception (Session 8 policy notes).
 
 ---
 
@@ -283,13 +357,19 @@ the web UI automatically. No IPC changes anywhere in this spec.
 
 **Tranche 0 — foundations (small, land first):**
 - `@theme` additions: `--text-2xs/3xs/4xs` (35).
-- theme-engine.ts: link/link-hover derivation in `computeOverlayTokens` (36).
+- theme-engine.ts: link/link-hover derivation in `computeOverlayTokens` (36) **and `--on-destructive`
+  derivation (43 — same guard pattern, same commit; the danger Button consumes it from day one)**.
 - creme.json contrast fix (37 immediate part) + the triple-source pinning test (37 structural part
   can be its own commit; a vitest that diffs builtin JSON vs the globals.css blocks vs the audit
   script's copy is the cheap version).
-- Create `components/ui/` with Button, Toggle, field.ts, Select, Checkbox, Radio, states.tsx,
-  AnchorTip — **with pinning tests** (variant class output, role/aria attributes) per the workspace
-  "pinning test first" rule.
+- **Protection-cascade fix (was risk 1, now a confirmed task):** scope globals.css:843 to
+  `.layer-surface .bg-accent:not(:hover)` + add an explicit hover companion rule, and add the
+  missing `.layer-surface .bg-destructive` protection rule (see risk 1 below). Without this,
+  every popup button's approved hover is dead on arrival.
+- Create `components/ui/` with Button (incl. `icon` size — the size ships even while its
+  migration change 41 awaits approval), Toggle, field.ts (+ Textarea), Select, Checkbox, Radio,
+  states.tsx, AnchorTip — **with pinning tests** (variant class output, role/aria attributes,
+  disabled classes) per the workspace "pinning test first" rule.
 
 **Tranches 1–7** (independent after tranche 0; order by payoff): 1 Buttons (changes 1–14, ~50 files
 — the `bg-accent text-on-accent` grep returns the worklist), 2 Toggles+inputs (15–21),
@@ -298,12 +378,27 @@ BugReportPopup and Diagnose → Development flow), 6 Screens & nav (26–30, inc
 behavior check), 7 Type-scale rename sweep (35's mechanical part — do LAST so earlier tranches
 don't churn it).
 
+**Tranche-1 sweep triage (§9.J):** the `bg-accent text-on-accent` grep hits non-button surfaces
+too — sort each hit before converting: tab/segmented actives (LibraryScreen, BugReportPopup
+Bug/Feature) → change 45, NOT Button; TerminalToolbar key row → excluded (Session 8 policy);
+InputBar send → change 41 (icon Button); games subtree → change 47 decision; BugReportPopup and
+UpdatePanel CTAs → genuine Button conversions (both currently use rejected hover idioms). If
+Session 8 isn't approved yet when tranche 1 runs, leave the 41/45/47 hits untouched — don't
+half-convert them to md Buttons.
+
+**Tranche 8 (after Session 8 approval):** 41 icon buttons + CloseButton, 42 Textarea sweep,
+44 Toast, 45 SegmentedTabs, 46 ProgressBar, 47 games (per decision), 48 touch/hover pass.
+
 **Known implementation risks (check these early):**
-1. **Protection cascade vs hover:** globals.css:843 `.layer-surface .bg-accent { background-color:
-   var(--accent) }` is an *unlayered* rule; Tailwind utilities are layered — it may override
-   `hover:bg-accent/90` inside popups (unlayered beats layered). Verify in dev; if it wins, scope
-   the cascade (`.layer-surface .bg-accent:not(:hover)`) or add an explicit hover companion rule.
-   Same question for `.panel-glass` surfaces (globals.css:821-826).
+1. **Protection cascade vs hover — CONFIRMED, no dev check needed (§9.K):** globals.css is
+   Tailwind v4 (`@import "tailwindcss"`), so utilities live in cascade layers while
+   `.layer-surface .bg-accent` (:843) is unlayered — unlayered beats layered unconditionally.
+   `hover:bg-accent/90` on any element that also carries `bg-accent` inside `.layer-surface` never
+   fires. Fix is a tranche-0 task (scope with `:not(:hover)` + hover companion rule). Two more
+   verified facts: only `bg-inset` and `bg-accent` have protection rules — there is **no**
+   `.layer-surface .bg-destructive`, so danger buttons in popovers go translucent on wallpaper
+   themes while primary stays opaque (add the rule in tranche 0); and `.panel-glass`
+   (globals.css:821-826) has the same two-utility coverage, same gap.
 2. **ProjectView z-40** (change 26) — see the ⚠ in §2.
 3. **Toggle knob position with off-state border**: the 1px border shifts the content box; keep the
    knob positions (18px/2px) visually verified on both states.
@@ -323,12 +418,14 @@ don't churn it).
 2. One radius for controls: `rounded-lg`. Pills are a documented exception (first-run CTAs).
 3. Hover = background fade (`/90` mix), never brightness or whole-element opacity.
 4. Everything interactive has the focus ring (or the theme's custom_css override).
-5. One destructive style on `--destructive`; status colors (amber/green/blue/red statuses) stay
-   theme-independent; **action buttons never use stock palette colors**.
+5. One destructive style on `--destructive`, with text via derived `--on-destructive` (never
+   hardcoded white); status colors (amber/green/blue/red statuses) stay theme-independent;
+   **action buttons never use stock palette colors**.
 6. Info callouts are accent-tinted; warnings amber; errors are neutral cards with a destructive dot.
 7. Dialogs with an ✕ get no redundant text cancel. Copy buttons dock inside their containers.
 8. Booleans: Toggle (settings/state) / Checkbox (consent) / chips (filters). Option lists: Radio.
-9. No OS-rendered control anywhere: Select/Checkbox/Radio/styled-Slider only.
+9. No OS-rendered control anywhere: Select/Checkbox/Radio/styled-Slider only. Documented
+   exceptions: the OS color picker (ThemeScreen) and native `title=` hover hints on icon buttons.
 10. Grid cards are `.layer-surface` + lift + ring; in-panel rows are `bg-inset/50`; chat bubbles
     are their own species.
 11. Screens are pages at z-40; overlays paint above; Overlay.tsx is the only z-index authority;
@@ -337,6 +434,14 @@ don't churn it).
 13. Loading/empty/error use the state family; every error is specific+Retry or general+two-actions.
 14. Type comes from the named scale (`text-4xs…text-sm…`); no arbitrary `text-[Npx]`.
 15. Every color a component consumes is a settable or derived token — nothing falls back to `:root`.
+
+Proposed with Session 8 (locked only once 41–48 are approved):
+
+16. Icon-only buttons go through Button `size="icon"` (or `CloseButton`); `aria-label` required.
+17. Hover-only effects (scale lifts) sit behind `@media (hover: hover)`; controls smaller than
+    ~24px get invisible coarse-pointer hit-area expansion — the renderer is always also a phone UI.
+18. Transient feedback goes through Toast; tab rows through SegmentedTabs; progress through
+    ProgressBar (`bg-inset` track, rounded fill).
 
 ---
 
@@ -371,6 +476,7 @@ wrong localStorage key, pre-engine theming instructions) — ROADMAP bug filed 2
 | 5 States (final = section 20 + Option C) | 31–34 | https://claude.ai/code/artifact/9d552e5e-014e-4ad0-8b59-f0c4546221ec |
 | 6 Type & tokens | 35–37 | https://claude.ai/code/artifact/15b04909-a6ee-4ae3-889d-8df5fb560ddb |
 | 7 Form controls + inventory | 38–40 | https://claude.ai/code/artifact/b54205c3-ce04-42e7-b26e-8b13f9ab9b83 |
+| 8 Post-approval additions | 41–48 | **not yet rendered — pending workbench session** |
 
 The mockup method used to produce these is captured as the workspace skill `/ui-mockup`
 (`.claude/skills/ui-mockup/SKILL.md`) — use it for any future UI design work.
@@ -386,4 +492,28 @@ pass for `/audit` (grep-ban: new `bg-accent text-on-accent` outside ui/, arbitra
 `text-[Npx]`, stock reds/greens on actions, `bg-black/40`); (d) ESLint (repo has none);
 (e) extend the ToolCard sandbox toward a component workbench (archived plan
 2026-04-26-dev-sandbox-tooling.md) — natural target for the ROADMAP visual-regression idea.
-Raise these with Destin when implementation starts.
+Raise these with Destin when implementation starts. The §5 rule additions 16–18 and the Session 8
+policy notes fold into (a)–(c) once approved.
+
+---
+
+## 9. Amendment log (2026-07-16, post-approval code-verification pass)
+
+Sessions 1–7 were approved against rendered artifacts; the items below change what was approved
+or correct false claims, so they're logged individually. A–E change approved recipes and should
+get a quick re-approve (they'll be rendered alongside Session 8 in the workbench); F–K are
+corrections/verifications that don't change any approved pixel.
+
+| # | What changed | Why |
+|---|---|---|
+| A | Button focus ring: `ring-2 ring-accent ring-offset-2 ring-offset-canvas` → **offset-less `ring-2 ring-accent`** | The "marketplace precedent" the offset was approved on doesn't exist — zero `ring-offset-canvas` in the codebase; real marketplace rings are offset-less; ring-offset is a solid fill that would paint a canvas-colored halo on every panel/inset surface (verified: MarketplaceCard.tsx:158 etc., TagPicker.tsx:90) |
+| B | danger variant: `text-white` → `text-on-destructive` (derived, change 43) | `--destructive` is pack-overridable with no contrast guard; hardcoded white violates rule 15 and can go white-on-light |
+| C | Toggle knob: `bg-white shadow-sm` → `bg-white border border-edge-dim shadow-sm` | Verified ~1.2:1 knob-vs-track on Crème's off state (`--inset` #DDD1BE); shadow alone was the only separator |
+| D | Slider `--sv`: onInput-only → derived from value prop at render; roundness slider becomes controlled | Verified desync: glass slider is controlled and changes on theme switch; roundness uses `defaultValue` and is already stale today |
+| E | Change 22 scale lift wrapped in `@media (hover: hover)` | Hover styles stick after tap on Android WebView; a stuck 1.02 scale is visible |
+| F | FIELD gains `disabled:opacity-50 disabled:cursor-not-allowed` | Disabled fields exist today (EngineCard.tsx:143, InputBar.tsx:604, ReportReviewButton.tsx:197) and would have lost their affordance |
+| G | Select menu gains `max-h-64` scroll + scroll-into-view + reposition-on-scroll + typeahead | RuntimeBinding model select renders a dynamic catalog (dozens of entries); all six sites live in scrollable panels |
+| H | §1.6 field-error size `text-[10px]` → `text-3xs` | Rule 14 bans arbitrary sizes; spec self-consistency |
+| I | §3 inventory corrected: number (EngineCard:145), search (MarketplaceFilterBar:78/:140), password (6 sites), color (ThemeScreen:378/:391) inputs exist | Original "complete list" claim was false; color inputs + `title=` tooltips became explicit rule-9 exceptions |
+| J | Tranche-1 sweep triage added | The `bg-accent text-on-accent` grep also hits tabs, the send button, TerminalToolbar, and games — converting those to md Buttons would be wrong |
+| K | Risk 1 upgraded from "verify in dev" to confirmed tranche-0 task; missing `.layer-surface .bg-destructive` protection rule found | Tailwind v4 layering makes the outcome certain statically; only bg-inset/bg-accent have protection rules today |
