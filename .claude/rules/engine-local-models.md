@@ -14,6 +14,7 @@ verify:
   - test: youcoded/desktop/tests/engine-acquisition.test.ts
   - test: youcoded/desktop/tests/engine-manager.test.ts
   - test: youcoded/desktop/tests/model-downloader.test.ts
+  - test: youcoded/desktop/tests/cache-scan.test.ts
   - test: youcoded/desktop/test-engine/probe-models.mjs
   - test: youcoded/desktop/test-engine/probe-download.mjs
 ---
@@ -37,4 +38,5 @@ A downloaded, SHA-256-verified `llama-server` spawned in router mode + supervise
 - **The quant parser DENYLISTS `mmproj*` + `mtp-*` aux files and recognizes `MXFP4(_MOE)`.** Multi-part sets must be COMPLETE before download. Unrecognized tokens drop silently (re-admitting re-admits aux pollution).
 - **Delete unloads best-effort, then removes every part + `.partial`.** CUDA opt-in is Windows-x64-only. `engine:set-context` restart nulls `supervisorBinary` (else `rebuildSupervisor` dedups on `binaryPath` and keeps the old `-c`).
 
-**Known open items (deferred, tracked in ROADMAP):** router hot-reload of `--models-dir` after boot is unverified (Amendment K2) — a model downloaded after boot may need an engine restart to appear in `catalogModels()`; and `.partial` files orphaned by an app restart aren't surfaced (needs a cache-scan IPC).
+- **`listModels()` UNIONS a fresh disk scan into the running router's `GET /models`** (K2 workaround) — router rows win (live residency); disk-only rows are `unloaded`, so post-boot downloads are LISTED without restart. Guard: `engine-supervisor.test.ts` "UNIONS the disk scan". Whether the router can SERVE a post-boot file is still open — see engine-dependencies.md.
+- **Orphaned `.partial`s: `models:orphaned-partials`** lists them (in-flight excluded via `activePartialNames()`); clean via `models:delete`, resume by re-downloading the same repo+quant. Guards: `cache-scan.test.ts`, `model-downloader.test.ts`. Panel UI = ROADMAP follow-up.

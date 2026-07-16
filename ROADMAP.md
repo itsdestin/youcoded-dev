@@ -24,13 +24,10 @@ surface, not a history.
 
 ## Bugs
 
-- [ ] ModelPickerPopup `/fast` + `/effort` sends bypass the stray-Enter prompt gate `bug` `#pty-writes` (added 2026-07-09)
-  ModelPickerPopup.tsx calls session.sendInput directly (~lines 181/200) without a hasPendingInteraction check, so toggling fast/effort mid-prompt could answer a live Ink menu. Thread a guarded sender like onSelectModel (the `/model` send was already fixed). Small blast radius. (from knowledge-debt)
-
 ## Features
 
 - [ ] Backup & Sync popup redesign — follow-up tweaks `feature` `#sync` (added 2026-07-15)
-  Redesign SHIPPED in youcoded PR #126 (unified status box with dot·title·sub·toggle derived across off/setting-up/waiting-on-GitHub/error/syncing/synced; Devices·Projects·Conversations count tabs; Additional-backups box with a permanent master toggle + per-backend green/gray/red status lights + cog menu). Deferred tweaks: (1) a real persisted "additional backups enabled" flag — the master toggle currently DERIVES on/off from `backends.some(syncEnabled)` and maps to pause-all/resume-all as a non-destructive proxy; (2) prefetch/cache the Conversations count (session.browse() runs on popup open, so the pill reads 0 for a beat); (3) decide the "Waiting on GitHub" toggle checked-state (currently bound to real `enabled`, reads OFF); (4) surface an error line in the not-enabled + error + GitHub-authed case (currently collapses to plain "off").
+  Redesign SHIPPED in youcoded PR #126 (unified status box with dot·title·sub·toggle derived across off/setting-up/waiting-on-GitHub/error/syncing/synced; Devices·Projects·Conversations count tabs; Additional-backups box with a permanent master toggle + per-backend green/gray/red status lights + cog menu). Tweaks (2) Conversations-count prefetch/cache and (4) off+error+GitHub-authed error line SHIPPED 2026-07-15 in youcoded PR #139. Remaining: (1) a real persisted "additional backups enabled" flag — the master toggle currently DERIVES on/off from `backends.some(syncEnabled)` and maps to pause-all/resume-all as a non-destructive proxy; (3) decide the "Waiting on GitHub" toggle checked-state (currently bound to real `enabled`, reads OFF).
 - [ ] StatusBar usage chips not fed for native sessions `feature` `#native-runtime` (added 2026-07-13)
   Native turn `usage` reaches the per-turn metadata strip but NOT the StatusBar chips (context/tokens/speed), which buildStatusData() builds from CC-hook files native sessions never write. Add a renderer→main IPC pushing the reducer's turn.usage into main (mirror remote:attention-changed → lastAttentionBySession) and fold into status:data. Natural to land WITH Phase 2 native runtime. youcoded PR #119. (from knowledge-debt)
 - [ ] Onboarding.tsx first-run screen `feature` (added 2026-04-12)
@@ -53,8 +50,6 @@ surface, not a history.
   No UI to attach an image to a native/local prompt — InputBar builds text parts only, so vision-capable local models can't receive images from chat. Add an image picker emitting file-part data + render attached images in the user bubble. (from knowledge-debt, carries to native harness)
 - [ ] Android artifact Project View (mobile v2) `feature` `#android` (added 2026-07-15)
   Android artifacts:list-project / :list-all-files / :list-projects-index / :include-external / :exclude / :delete-project / :rename / :remove-record and the project:* channels are `not-implemented-on-mobile` stubs; mobile Project View is v2. PITFALLS "Artifact Viewer". (from PITFALLS sweep)
-- [ ] Amendment K2: router hot-reload of `--models-dir` after boot `feature` `#local-models` (added 2026-07-15)
-  The engine discovers GGUFs at boot; a model downloaded AFTER boot may not appear in catalogModels() (new-session picker Local group) until an engine restart. Verify router hot-reload on a dev machine, or add a scanGgufCache fallback to the local catalog source. PITFALLS "Phase 1 Plan C". (from PITFALLS sweep)
 - [ ] Android PtyBridge echo-driven submit `feature` `#android` `#pty-writes` (added 2026-07-15)
   Android PtyBridge.writeInput still uses the 600ms enter-split for >56-byte sends; desktop moved to echo-driven CR (no timing assumption). Mirror the desktop approach on Android. PITFALLS "PTY Writes → Android". (from PITFALLS sweep)
 - [ ] Sign + size-cap the announcement payload `feature` `#security` `#announcements` (added 2026-04-21)
@@ -85,24 +80,32 @@ surface, not a history.
   Bind the dedicated Copilot/AI keyboard key (Windows laptops + others) via Electron globalShortcut to open/close the multiplayer games panel. May need Windows-specific keycode detection. (from knowledge-debt)
 - [ ] DiffusionGemma support (upstream-gated) `idea` `#local-models` (added 2026-07-13)
   Block-diffusion model the bundled llama-server can't run — llama.cpp support is unmerged PR #24427 and needs a separate llama-diffusion-cli runner, not llama-server. Deliberately excluded from Plan C v1. Revisit only when mainline llama.cpp AND llama-server can serve it; then add a curated-catalog entry (refresh-from-GitHub, no app release) and scope any engine spawn-flag changes. (from knowledge-debt)
-- [ ] Surface `.partial` orphans from previous app runs `idea` `#local-models` (added 2026-07-15)
-  Model-manager v1 surfaces only THIS-session download partials; a `.partial` orphaned by an app restart isn't listed. Needs a cache-scan-for-`.partial` IPC. PITFALLS "Phase 1 Plan C". (from PITFALLS sweep)
+- [ ] Local Models panel: render orphaned `.partial` rows `idea` `#local-models` (added 2026-07-15)
+  The backend shipped 2026-07-15 (youcoded PR #142): `models:orphaned-partials` returns fileName/modelId/sizeBytes/mtimeMs, cleanable via the existing models:delete, resumable by re-downloading the same repo+quant. Open scope: the panel UI that lists orphan rows with clean/resume actions.
 - [ ] xterm scrollback duplicate-chrome mitigation `idea` `#android` (added 2026-05-18)
   CC's full-TUI redraws push duplicate banner chrome into xterm scrollback (PITFALLS "Vendored Termux terminal-emulator"). Two candidate approaches: bump xterm `scrollback` to 5000+ so history coexists with the duplicates, OR set CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1 at launch (needs a test-conpty probe — alt-screen also affects getScreenText buffer reads). CC v2.1.120/121 also fixed some scrollback-dup cases upstream; re-verify current behavior first. (from knowledge-debt + PITFALLS sweep)
 - [ ] Adopt PostToolUse `updatedToolOutput` for tool-output rewriting `idea` `#hooks` (added 2026-04-29)
   CC v2.1.121 made hookSpecificOutput.updatedToolOutput work for ALL tools (was MCP-only). Bundled hooks (write-guard, hook-relay) could use it to redact secrets/PII or normalize paths at the tool-output boundary. Additive; no current coupling. (from knowledge-debt)
-- [ ] Wrap `claude ultrareview` CLI in the youcoded-admin release skill `idea` (added 2026-04-29)
-  CC v2.1.120 added a non-interactive `claude ultrareview [target]` (--json, exit 0/1). Wrapping it lets the admin /ultrareview run headlessly in the release pipeline / CI / PR bots. Small effort. (from knowledge-debt)
 - [ ] Surface CC `/goal` completion-condition in the YouCoded UI `idea` (added 2026-05-18)
   CC v2.1.139 added /goal (a completion condition Claude works toward across turns with a live elapsed/turns/tokens overlay). Could surface as a status-bar widget/banner atop the existing per-turn-metadata + attention-banner systems. Additive; medium UI effort. (from knowledge-debt)
 - [ ] Surface a CC-style agent view / background-session model in the multi-session UI `idea` `#sessions` (added 2026-05-18)
   CC v2.1.139 added "agent view" (`claude agents`) — one list of every CC session. If YouCoded ever wants CC-daemon-managed background sessions, it integrates with the SessionRegistry/SessionStrip model here. Large, speculative. (from knowledge-debt)
 - [ ] Developer-mode toggle for CLAUDE_CODE_FORK_SUBAGENT `idea` (added 2026-04-21)
   CC v2.1.117 added CLAUDE_CODE_FORK_SUBAGENT=1 to enable forked subagents on external builds; could become a settings-panel dev toggle. No coupling today; small effort. (from knowledge-debt)
-- [ ] install-prereq: probe `bash --version` before assuming /bin/bash `idea` `#install` (added 2026-04-29)
-  Residual of a CC-verification item: prerequisite-installer.ts installClaude's POSIX branch assumes /bin/bash exists. The curl→wget fallback (v1.2.4, 8abcdd6d) and dynamic reg.exe path resolution (2026-05-22) are already RESOLVED; only the optional bash probe remains. (from knowledge-debt)
 
 ## Shipped
 
 - [x] Rolling ROADMAP cleanup-by-release (archive ## Shipped tail per release) `idea` (added 2026-07-15)
   Shipped 2026-07-15 as a convention line in this file's header — at each release, ## Shipped entries older than the previous release move to docs/archive/roadmap-shipped.md.
+- [x] ModelPickerPopup `/fast` + `/effort` sends bypass the stray-Enter prompt gate `bug` `#pty-writes` (added 2026-07-09)
+  Shipped 2026-07-15, youcoded PR #141 — both toggles route through App.guardedPtySend (same gate as /model) and refuse BEFORE the optimistic state writes.
+- [x] Amendment K2: router hot-reload of `--models-dir` after boot `feature` `#local-models` (added 2026-07-15)
+  Shipped 2026-07-15, youcoded PR #142 — EngineSupervisor.listModels() unions a fresh scanGgufCache into the running router's GET /models (router rows win), so post-boot downloads are LISTED without a restart. Still open for the live pass (tracked in youcoded/docs/engine-dependencies.md): whether the running router can SERVE a post-boot file or 400s until restart.
+- [x] Surface `.partial` orphans from previous app runs — backend `idea` `#local-models` (added 2026-07-15)
+  Shipped 2026-07-15, youcoded PR #142 — `models:orphaned-partials` IPC (full parity: preload, remote shim/server, Android stub). Panel UI remains as its own idea line above.
+- [x] Wrap `claude ultrareview` CLI in the youcoded-admin release skill `idea` (added 2026-04-29)
+  Shipped 2026-07-15, youcoded-admin PR #4 — opt-in, billing stated, advisory-only (never blocks Phase 4). Note: the /ultrareview slash command is deprecated (/code-review ultra now) but the headless `claude ultrareview [target] --json --timeout <min>` CLI subcommand survives as of CC v2.1.211 and is what the skill wraps. Watch: bugs.json schema/exit codes are undocumented upstream.
+- [x] install-prereq: probe `bash --version` before assuming /bin/bash `idea` `#install` (added 2026-04-29)
+  Shipped 2026-07-15, youcoded PR #140 — spawn-ENOENT is caught at the install spawn (no racy pre-probe) and mapped to an accurate "bash was not found on PATH" message per error-message-standards; isSpawnEnoent pinned by 6 tests.
+- [x] Bundled write-guard never actually blocked (exit-1/stdout vs CC's exit-2/stderr deny contract) `bug` `#hooks` (added 2026-07-15)
+  Found during issue youcoded#86 verification (CC only denies PreToolUse on exit 2 + stderr; the guard exited 1 + stdout → no-op in EVERY permission mode). Fixed 2026-07-15: youcoded-core PR #119 (source copy, verified with sandboxed claude -p probes against CC v2.1.211) + youcoded PR #144 (both app-bundled copies + a parity/contract pinning test). CC-command-list refresh + red-stall fixtures landed the same day in youcoded PR #143 (issues #85/#87).
