@@ -6,6 +6,9 @@ milestone (`vX.Y.Z`), tags (`#kebab-case`, same vocabulary as custom session tag
 issue link (`repo#N`), `(added YYYY-MM-DD)`. Section headers pass their tokens down;
 an item's own tokens win. Unknown tokens degrade to tags. `[x]` = shipped (note the
 commit/PR in the detail line) — shipped items collect in ## Shipped.
+Rolling cleanup: at each release, move ## Shipped entries older than the previous
+release to `docs/archive/roadmap-shipped.md` — the ROADMAP is a live planning
+surface, not a history.
 
 ## v1.3 — sync release
 
@@ -71,7 +74,6 @@ commit/PR in the detail line) — shipped items collect in ## Shipped.
 - [ ] Deferred perf + simplification opportunities from the 2026-07-10 master review `idea` (added 2026-07-15)
   Net-improvement work the review surfaced but deliberately didn't ship: App-root useChatStateMap subscription refactor (biggest re-render win), hidden-xterm WebGL detach, sync-spaces 120s idle-poll backoff, and the big-file decompositions (ipc-handlers.ts ~2,674 lines / SessionService.kt ~2,700 / App.tsx ~2,500 / SettingsPanel.tsx ~2,489) plus small cleanups (buildStatusData dedup, FOLDERS_LIST canonicalize, ConfigForm/ProjectManager dead-code pruning). Full catalog: docs/active/handoffs/2026-07-10-review-followups.md. (from master-review handoff)
 - [ ] Project View Roadmap tab — render any project's ROADMAP.md, same discovery pattern as context files `idea` `#project-view` (added 2026-07-15)
-- [ ] Rolling ROADMAP cleanup-by-release (archive ## Shipped tail per release) `idea` (added 2026-07-15)
 - [ ] Census pass over `youcoded/desktop/docs/` `idea` `#docs` (added 2026-07-15)
   The last unsorted lifecycle-doc dump: ~27 dated design docs + a `superpowers/` subtree left in place by the 2026-07-15 census because `desktop/CLAUDE.md` and a `preload.ts:920` code comment point into it. Sorting it into the workspace `docs/archive/` requires rewriting those references first (keep the genuinely-living ones: `theme-spec.md`, `transcript-watcher-spec.md`).
 - [ ] Restore-from-backup redesign (removed in Plan 2c; redesign around local-models/accounts/platform) `idea` `#sync` (added 2026-07-15)
@@ -101,3 +103,6 @@ commit/PR in the detail line) — shipped items collect in ## Shipped.
   Residual of a CC-verification item: prerequisite-installer.ts installClaude's POSIX branch assumes /bin/bash exists. The curl→wget fallback (v1.2.4, 8abcdd6d) and dynamic reg.exe path resolution (2026-05-22) are already RESOLVED; only the optional bash probe remains. (from knowledge-debt)
 
 ## Shipped
+
+- [x] Rolling ROADMAP cleanup-by-release (archive ## Shipped tail per release) `idea` (added 2026-07-15)
+  Shipped 2026-07-15 as a convention line in this file's header — at each release, ## Shipped entries older than the previous release move to docs/archive/roadmap-shipped.md.
