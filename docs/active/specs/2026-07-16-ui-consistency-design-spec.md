@@ -476,7 +476,7 @@ wrong localStorage key, pre-engine theming instructions) — ROADMAP bug filed 2
 | 5 States (final = section 20 + Option C) | 31–34 | https://claude.ai/code/artifact/9d552e5e-014e-4ad0-8b59-f0c4546221ec |
 | 6 Type & tokens | 35–37 | https://claude.ai/code/artifact/15b04909-a6ee-4ae3-889d-8df5fb560ddb |
 | 7 Form controls + inventory | 38–40 | https://claude.ai/code/artifact/b54205c3-ce04-42e7-b26e-8b13f9ab9b83 |
-| 8 Post-approval additions | 41–48 | **not yet rendered — pending workbench session** |
+| 8 Post-approval additions (+ §9 A–E re-approval renders) | 41–48 | https://claude.ai/code/artifact/7dae2904-21ba-47ac-af1f-3f97eae68453 — **rendered 2026-07-16; Destin is iterating, NOTHING in Session 8 approved yet** (open picks: 45 A/B inactive-tab style, 47 A/B Accept-button color) |
 
 The mockup method used to produce these is captured as the workspace skill `/ui-mockup`
 (`.claude/skills/ui-mockup/SKILL.md`) — use it for any future UI design work.
