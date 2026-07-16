@@ -17,3 +17,15 @@ lazy doc the rule points to, or becomes a pinning test.
 Body format per invariant: **invariant (1–2 sentences) · why (1 sentence or link) · guard
 (the pinning test, or "none — candidate")**. End the body with a pointer to the lazy doc
 for depth.
+
+## Doc anchors (depth docs)
+
+Depth docs may pin an individual claim with a trailing HTML comment on the line after it:
+
+    The transport sets GIT_DIR explicitly.
+    <!-- verify: {"path": "youcoded/desktop/src/main/sync-spaces/git-transport.ts", "contains": "GIT_DIR"} -->
+
+JSON body: `path` (+ optional `contains` regex) or `test`. Harvested and checked by
+`scripts/audit-anchors.mjs` (the /audit mechanical pass) from `docs/`, `youcoded/docs/`,
+and `wecoded-marketplace/docs/` — `docs/archive/` is never scanned. Use sparingly: anchor
+the claims whose silent drift would mislead a session, not every sentence.
