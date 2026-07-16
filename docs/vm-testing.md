@@ -205,11 +205,16 @@ echo 1 | sudo tee /sys/module/kvm/parameters/ignore_msrs
   but fine for click-through flow testing.
 - **Apple ID sign-in won't work** (no valid serials). Irrelevant here — Claude sign-in is browser
   OAuth.
-- **Gatekeeper will block the app — and that's a real finding, not a VM artifact.**
-  `youcoded/desktop/electron-builder.yml` sets **no signing identity and no notarize config**, so a
-  downloaded `.dmg` is unsigned + un-notarized and modern macOS reports *"YouCoded is damaged and
-  can't be opened."* Arch-independent and live in the shipping config — worth fixing regardless of
-  whether any VM ever boots.
+- **Gatekeeper will block the app — this is expected and already documented for users.**
+  `youcoded/desktop/electron-builder.yml` sets no signing identity and no notarize config (an Apple
+  Developer cert is $99/yr), so the `.dmg` is unsigned and macOS blocks it on first launch. That is a
+  known, accepted trade-off, **not a bug**: the download page ships a full walkthrough for it —
+  `youcoded/docs/index.html` → `dl-macos` install-tips modal (drag to Applications → *"Apple cannot
+  check it for malicious software"* → System Settings → Privacy & Security → **Open Anyway**).
+  **This is the single highest-value thing a macOS VM can verify.** That walkthrough is
+  hand-tuned to a specific macOS release's gatekeeping behavior (the source comment says as much),
+  and Apple reworks this flow regularly — a clean VM is the only way to confirm the steps we tell
+  users still match what macOS actually shows. Same applies to the Windows SmartScreen copy.
 
 CI already builds the `.dmg` on `macos-latest` runners
 (`youcoded/.github/workflows/desktop-release.yml`) — real Apple hardware and the natural home for an
