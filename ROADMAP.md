@@ -61,6 +61,7 @@ surface, not a history.
 
 - [ ] VM testing flow for first-run install/setup/sign-in (Linux host) `feature` `#tests` `#install` (added 2026-07-15)
   Snapshot-revertible VMs on Destin's Linux machine (KVM — no Hyper-V conflict, unlike the abandoned Windows-host attempt) to exercise the prerequisite installer, first-run setup, and sign-in flows on clean guests, plus any future changes to those flows. Prior art (methodology + when-to-use list): docs/archive/local-dev-vm.md and docs/archive/investigations/2026-04-29-vbox-hyperv-conflict.md.
+  **Update 2026-07-16:** recipe written at `docs/vm-testing.md` (KVM/quickemu; host readiness + package availability verified). Remaining to close: `paru -S quickemu` (needs Destin's password), first Win11 + Ubuntu provision, take `clean` baseline snapshots, run one installer pass; only then consider `scripts/vm/` helpers.
 
 ## Someday / ideas
 
