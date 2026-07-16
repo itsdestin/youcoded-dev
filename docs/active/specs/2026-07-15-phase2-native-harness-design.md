@@ -45,9 +45,9 @@ One turn = a loop of **steps**; one step = one `streamText` call. Stream parts a
 
 - Text/reasoning deltas emit exactly as today; **each step allocates fresh `partId`s** so text between tool calls renders as its own bubble (CC's intermediate-message behavior).
 - A streamed tool call → emit `tool-use` (id, name, input) → permission decision (§2.4) → execute (with the turn's AbortSignal) → emit `tool-result` → append the call/result message pair to history.
-- **Turn end:** step produced no tool calls (normal), `limits.maxSteps` reached (default 25, per-preset), interrupt, or error. `turn-complete` carries usage summed across the turn's steps + `tokensPerSecond`.
+- **Turn end:** step produced no tool calls (normal), `limits.maxSteps` reached (default 25, per-preset), interrupt, or error. **Hitting maxSteps surfaces as a "continue?" ask** (same rail as `doom_loop`), not a silent stop — a long agentic task dying quietly at step 25 is an undiagnosable dead end for a non-developer. `turn-complete` carries usage summed across the turn's steps + `tokensPerSecond`.
 - **Tool errors are results, not crashes:** validation failures, timeouts, and execution errors return as tool results with a corrective hint (R§3's actionable-error rule) so the model self-repairs on the next step.
-- **Doom-loop guard (R§1):** 3 identical consecutive `(name, normalized args)` tool calls → synthetic `doom_loop` permission ask ("The model seems stuck repeating itself — continue?"). Threshold 2 for small models (via Plan C profiles).
+- **Doom-loop guard (R§1):** 3 identical consecutive `(name, normalized args)` tool calls → synthetic `doom_loop` permission ask ("The model seems stuck repeating itself — continue?"). Threshold 2 for small models (via Plan C profiles). Known false-positive class: legitimate repetition like re-running a failing test — acceptable *because* it's an ask, not a block; expect it in dogfooding and tune thresholds from transcripts.
 - **Retry:** transient provider errors (429/5xx/network) retry with exponential backoff honoring `retry-after`; exhaustion → existing `session-error` → error attention state.
 - **Truncated tool calls** (`finishReason: length` mid-JSON) are a distinct error class → fail that call cleanly ("response was cut off"), never re-parse or loop.
 - **Interrupt mid-tool:** ESC aborts the stream AND running tools (Bash kills its child, fetches abort). Partial history kept; `user-interrupt` emits; same reducer path as today.
@@ -55,7 +55,7 @@ One turn = a loop of **steps**; one step = one `streamText` call. Stream parts a
 
 ### 2.2 System prompt assembly
 
-Fixed order (R§2): identity line → preset prompt body → `<env>` block (cwd, platform, OS, date, git branch/status, YouCoded version) → project instructions (AGENTS.md walk-up, CLAUDE.md fallback — reuse `context-discovery.ts`) → tool guidance. **Byte-stable across turns within a session** (local KV-cache reuse; R§7). Prompt bodies are asset files under `desktop/src/main/harness/prompts/`, not string literals. Plan A ships one body (Coder-shaped default); the variant family arrives with Plans B/C.
+Fixed order (R§2): identity line → preset prompt body → `<env>` block (cwd, platform, OS, date, git branch/status, YouCoded version) → project instructions (AGENTS.md walk-up, CLAUDE.md fallback — reuse `context-discovery.ts`) → tool guidance. **The `<env>` block is snapshotted at session start and labeled as such** ("as of session start — use tools for current state"), exactly CC's behavior with its git-status block — the model re-checks live state via tools rather than trusting a stale prompt. That makes the system prompt **byte-stable across turns by construction** (local KV-cache reuse; R§7) with no freshness lie. Prompt bodies are asset files under `desktop/src/main/harness/prompts/`, not string literals. Plan A ships one body (Coder-shaped default); the variant family arrives with Plans B/C.
 
 ### 2.3 `defineTool()` + the core tools
 
@@ -66,7 +66,7 @@ One wrapper centralizes: schema validation (invalid → corrective error result)
 | Read | `cat -n` line numbers; offset/limit; ~2000-line cap; binary sniff; long-line truncation |
 | Edit | exact-string replace + uniqueness; **read-before-edit gate** (fails if not Read this session or changed since); line-ending + BOM preservation; `structuredPatch` via jsdiff on the result (diff card renders as with CC) |
 | Write | create/overwrite; read-before-overwrite for existing files; `structuredPatch`; Artifact Tracker compatibility (`file_path` input name) |
-| Bash | PTY-less `child_process` spawn — none of the ConPTY 56-byte machinery applies; timeout (default 2 min, capped); output cap; kill-on-interrupt. **Windows shell: prefer Git Bash when present, else PowerShell — the live shell is stated in the tool description, never silently pretended** |
+| Bash | PTY-less `child_process` spawn — none of the ConPTY 56-byte machinery applies; timeout (default 2 min, capped); output cap; kill-on-interrupt. **Windows shell: prefer Git Bash when present, else PowerShell — the live shell is stated in the tool description, never silently pretended.** **Known limitation (accepted for Phase 2):** Bash can reach what the file-tool guards block — `cat .env` bypasses secret-path denial, and command-string globs can't catch every phrasing. CC has the same hole; closing it means sandboxing (out of scope). The guards are honest friction, not a security boundary — PITFALLS entry ships with the tool |
 | Glob | pure-JS globbing; mtime-sorted results |
 | Grep | bundled ripgrep (`@vscode/ripgrep`); structured, pre-truncated output — dedicated tool because small models butcher shell quoting (R§3) |
 | TodoWrite | per-session todo state; renders in the existing todo card |
@@ -78,12 +78,13 @@ Every tool: unit tests + a ToolCard sandbox fixture (`run-sandbox.sh`) validatin
 - **One pure function:** `decide(tool, args, session) → allow | ask | deny`, evaluated inside `defineTool()` before execute. No I/O; a rule table in, a decision out.
 - **Rule schema is opencode's, near-verbatim (R§4):** per-tool allow/ask/deny; Bash rules glob the *command string* (`"git *": "allow"`, `"git push *": "ask"`, `"rm *": "deny"`); file tools glob paths; **last matching rule wins**. Synthetic permissions `doom_loop` and `external_directory` ride the same rail.
 - **Three layers merge (most specific wins):** preset baseline (manifest `permissionPolicy`) → session mode (Ask / Auto-edit / Full-auto, switched via the StatusBar chip over a new IPC — real state, instant) → remembered decisions ("Always allow" persists a (tool, pattern) rule per project in `~/.youcoded/` via NativeHome; management UI is Phase 3, Phase 2 writes + honors).
-- **Full-auto still keeps** the non-negotiable guards and the destructive deny-list (`rm *`, `git push *`, …).
+- **Precedence ruling (two distinct tiers — do not conflate):** the **tool-layer guards** (secret-path denial, `external_directory` jail, the *existence* of `doom_loop`) sit BELOW all configuration — no preset, mode, or remembered rule overrides them. The **destructive deny-list** (`rm *`, `git push *`, …) is *configuration*: it ships in the preset/mode baselines (so Full-auto still carries it), but an **explicit remembered user rule wins over it** — user sovereignty over their own machine — with the "Always allow" for a deny-listed pattern gated by a plain-language consequence warning (standing consequence-gated-destructive-UI preference).
+- **Pending-ask edge cases:** interrupt while a permission ask or AskUserQuestion is pending → the ask resolves as *canceled* (tool result "user interrupted"), turn ends via the normal interrupt path. Flipping the mode chip mid-ask does NOT retroactively resolve the pending ask — it stays pending; the new mode applies from the next tool call.
 - **Ask flow reuses the existing UI end-to-end:** loop pauses → emit the same `PERMISSION_REQUEST` shape the hook relay produces → same Yes/No/Always card → response resumes or converts the call to a refusal result ("The user declined this action") the model can adapt to. Born in-process, so the CC permission race (hook faster than file watcher → synthetic entries) structurally cannot happen.
 
 ### 2.5 Persistence + resume
 
-History becomes structured (`ModelMessage` with tool-call parts + tool-result messages). The session store keeps persisting raw transcript events (same JSONL, same coalescing); **resume gains a rebuild step** reconstructing tool-call/result pairs from stored events into driver history. Pinning test: resumed history deep-equals the live session's. Store header unchanged (subagent parent pointer would be an *additive* header field — decision 5).
+History becomes structured (`ModelMessage` with tool-call parts + tool-result messages). The session store keeps persisting raw transcript events (same JSONL, same coalescing); **resume gains a rebuild step** reconstructing tool-call/result pairs from stored events into driver history. Pinning test: resumed history deep-equals the live session's. **The read-before-edit registry RESETS on resume** (not rebuilt from stored Read events) — files may have changed while the session was closed, so forcing a fresh Read is the safe ruling. Store header unchanged (subagent parent pointer would be an *additive* header field — decision 5).
 
 ### 2.6 New IPC (Plan A, provisional names)
 
@@ -93,7 +94,7 @@ History becomes structured (`ModelMessage` with tool-call parts + tool-result me
 
 ### 3.1 WebFetch
 
-Fetch (redirects, size cap, timeout, AbortSignal) → Readability-style extraction → Markdown → truncation trailer. Plain text passes through; binaries refuse honestly. **Private/localhost/RFC-1918 addresses blocked by default** (no LAN probing) — same guard family as secret paths.
+Fetch (redirects, size cap, timeout, AbortSignal) → Readability-style extraction → Markdown → truncation trailer. Plain text passes through; binaries refuse honestly. **Private/localhost/RFC-1918 addresses blocked by default, validated on EVERY redirect hop** (redirects followed manually — a public URL 302ing to `http://192.168.1.1/…` is the classic SSRF bypass) with an http/https-only scheme allowlist — same guard family as secret paths.
 
 ### 3.2 WebSearch (decision 6)
 
