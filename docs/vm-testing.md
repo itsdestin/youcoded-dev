@@ -18,8 +18,10 @@ How to spin up clean Windows and Linux virtual machines on the current dev machi
 | `/dev/kvm` | present, world-rw — **no libvirt daemon or group setup needed** |
 | RAM / disk | 121 GB / ~425 GB free |
 | Tooling | quickemu 4.9.9 + qemu-desktop 11.0.2 installed |
-| Win11 guest | **provisioned + `clean` snapshot taken** (`~/vms/windows-11.conf`) |
-| Ubuntu 24.04 guest | ISO + config ready; installer click-through pending |
+| Win11 guest | **provisioned + `clean` snapshot; revert→boot verified (~50 s to desktop)** |
+| Ubuntu 24.04 guest | **provisioned + `clean` snapshot; revert→boot verified (~45 s to desktop)** |
+
+Both guests are ready to test against right now — `~/vms/windows-11.conf`, `~/vms/ubuntu-24.04.conf`.
 
 ## One-time setup
 
@@ -110,14 +112,18 @@ When the desktop appears, **power the VM off** (shut down inside Windows), then 
 quickemu --vm windows-11.conf --snapshot create clean
 ```
 
-Test cycle:
+Test cycle (verified on both guests — revert is instant, boot ~45–50 s to desktop):
 
 ```bash
 quickemu --vm windows-11.conf --snapshot apply clean   # revert (VM must be powered off)
-quickemu --vm windows-11.conf                          # boot
+quickemu --vm windows-11.conf --display gtk            # boot from disk; no ISO, no key-press trap
 ```
 
-**Snapshots only while powered off.** `--snapshot` wraps `qemu-img` internal snapshots; snapshotting or reverting a running VM corrupts the disk.
+**Snapshots only while powered off.** `--snapshot` wraps `qemu-img` internal snapshots; snapshotting
+or reverting a running VM corrupts the disk. Shut a guest down from the monitor rather than killing
+it — `( echo "system_powerdown"; sleep 2 ) | socat - unix-connect:<vm>/<vm>-monitor.socket` sends
+ACPI and both guests power off cleanly in a few seconds. Confirm with `qemu-img snapshot -l
+<vm>/disk.qcow2`; quickemu's own `--snapshot info` prints image info, not the snapshot table.
 
 ### Use `--display gtk`, not `spice`, and set `gl="off"`
 
@@ -145,6 +151,34 @@ quickemu --vm ubuntu-24.04.conf --display gtk
 Unlike Windows there's no ISO-download block and no "press any key" trap — GRUB boots straight to
 `Try or Install Ubuntu` and the live desktop comes up in <1 min. But the install is **not**
 unattended: click through Ubuntu's installer once (~10 min), power off, snapshot `clean` as above.
+
+Wizard answers that keep the guest a realistic clean user machine: **leave both "Install recommended
+proprietary software" boxes unchecked** (irrelevant under virtio-vga, and stock is what we're
+testing against), *Interactive installation* → *Default selection*, and **"Erase disk and install
+Ubuntu"** — safe, it only ever sees the blank virtual disk, never the host's drives.
+
+## macOS — don't (use CI + a real Mac instead)
+
+quickemu will happily `quickget macos sonoma`, and the question recurs, so: **we deliberately don't.**
+Two reasons. (1) Apple's license permits macOS only on Apple-branded hardware — a VM here violates
+that term. (2) macOS has no AMD support; this host would need OpenCore + AMD kernel patches, and
+quickemu's macOS path is only reliable on Intel hosts — a fragile rig that breaks on every macOS
+update.
+
+The `.dmg` already builds on `macos-latest` runners in `youcoded/.github/workflows/desktop-release.yml`
+— real Apple hardware, properly licensed, and the natural home for an automated macOS smoke test.
+For interactive flows (sign-in, setup wizard) rent a cloud Mac by the hour (AWS EC2 Mac, MacStadium,
+Scaleway) or borrow one. Both give **higher signal than a hackintosh** — they're what real users run.
+
+## Guest credentials
+
+Local-only throwaway VMs, never internet-facing. Documented so a future session can sign into the
+snapshot it reverts to — the same reason the archived Windows-host script documented its password.
+
+| Guest | User | Password |
+|---|---|---|
+| windows-11 | `Quickemu` | `quickemu` (quickemu's answer-file default) |
+| ubuntu-24.04 | `youcodedtesting` | `youcodedtesting` |
 
 ## Getting an installer into a guest
 
