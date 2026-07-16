@@ -1,9 +1,14 @@
 ---
-status: active
+status: shipped
 date: 2026-07-16
 subsystem: buddy mascot / themes
 artifact: https://claude.ai/code/artifact/411658ae-3053-4e40-a312-3b401e527bc2
 ---
+
+> **All scope items 0–3 shipped 2026-07-16** (see Remaining scope below for the PRs).
+> Item 4 (functional buddy + MascotRig consumption) is the buddy-floater plan's own track —
+> its spec/plan now carry every decision from this handoff (fold-back done), so this doc is
+> archived as a historical record.
 
 # Mascot Rig Workbench — session handoff (2026-07-16)
 
@@ -103,7 +108,12 @@ window-level snap) is untouched and remains in the existing buddy-floater plan.
    default rig (2.5D-soft capsule) + `mascot.rig` theme key — youcoded PR #150, merge
    `bb2f468a` (plan Tasks 7–9). Nothing consumes MascotRig yet; BuddyMascot integration
    (motion styles, companions, peek staging) rides the buddy-floater track (plan Tasks 10–12).
-2. `/theme-builder` mascot phase: mix/match from `mascots/` OR generate under README
-   constraints.
-3. Rebuild golden-sunbreak + halftone-dimension as rigs for `mascots/examples/`.
-4. Functional buddy work (action bar etc.) — separate track, existing plan Tasks 1–6, 11–13.
+2. ~~`/theme-builder` mascot phase~~ **DONE 2026-07-16**: rig authoring taught to the skill
+   (fetch contract from `mascots/README.md`; mix/match, adapt-example, or from-scratch;
+   rig authored in Phase 2 alongside the still-required flat variants) — wecoded-marketplace
+   PR #42, merge `a3a23fc`.
+3. ~~Rebuild golden-sunbreak + halftone-dimension~~ **DONE 2026-07-16**: both shipped to
+   `mascots/examples/` (halftone's hardcoded navy also fixes its currentColor-black bug) —
+   wecoded-themes PR #14, merge `a115c9d`.
+4. Functional buddy work (action bar, BuddyMascot rig integration, motion styles,
+   companions, peek staging) — separate track, buddy-floater plan Tasks 1–6, 10–13.
