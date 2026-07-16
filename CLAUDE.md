@@ -46,8 +46,8 @@ YouCoded is an open-source cross-platform AI assistant app built entirely withou
 
 - **youcoded** is the main product. It contains `desktop/` (Electron app) and `app/` (Android app) side by side.
 - **wecoded-marketplace** and **wecoded-themes** are the registries the app fetches at runtime from raw GitHub URLs. Community plugins live here.
-- **Bundled plugins** — `youcoded-core`, `wecoded-themes-plugin`, and `wecoded-marketplace-publisher` ship with the app and are auto-installed on launch (see `youcoded/desktop/src/shared/bundled-plugins.ts` + `BundledPlugins.kt`).
-- **youcoded-core** is the oldest bundled plugin, installed at `~/.claude/plugins/youcoded-core/`. It contributes hooks (write-guard, session-start) and two setup skills. Being deprecated — `write-guard` is moving into the app natively, and the repo will eventually be archived.
+- **Bundled plugins** — `wecoded-themes-plugin` and `wecoded-marketplace-publisher` ship with the app and are auto-installed on launch (see `youcoded/desktop/src/shared/bundled-plugins.ts` + `BundledPlugins.kt`).
+- **youcoded-core** is the legacy plugin toolkit, mid-deprecation (Phase 1 merged to youcoded master 2026-07-07): `write-guard` now ships bundled natively in the app on both platforms, new installs no longer clone `~/.claude/plugins/youcoded-core/`, and the app deletes existing clones at launch. **Until that release ships, the repo is still the live hook source for existing installs — hook fixes must land in BOTH the youcoded-core copy and the app's bundled copies** (e.g., the 2026-07-15 write-guard exit-code fix: youcoded-core PR #119 + youcoded PR #144). Repo will be archived after release N+1 — see `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`.
 - **youcoded-admin** release skill orchestrates coordinated releases across repos.
 
 ## Working Rules
