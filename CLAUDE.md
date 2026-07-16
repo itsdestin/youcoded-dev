@@ -137,7 +137,7 @@ All architectural invariants, cross-cutting gotchas, and lessons learned live in
 
 ## Keeping Documentation Accurate
 
-This workspace's documentation is self-verifying. Run `/audit` to detect drift between docs and current code — produces a report with concrete fix instructions for each drift item. Scope it (`/audit ipc`, `/audit chat`, etc.) for a specific subsystem or run bare for a full sweep.
+This workspace's documentation is self-verifying. Run `/audit` — it verifies the machine-checkable anchors (`node scripts/audit-anchors.mjs`: rule `verify:` blocks, doc anchors, MAP paths, store budgets), diff-scopes semantic re-verification to what changed since the last report in `docs/audits/`, and **fixes what it finds in the same run** (the report is an audit trail, not a to-do list). `/audit full` re-verifies everything and runs every pinned test; `/audit <subsystem>` scopes to one rule (names = `.claude/rules/*.md` basenames).
 
 - Run before any release (prevents shipping with stale docs)
 - Run after major refactors touching IPC, reducer, or runtime
