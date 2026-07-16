@@ -1351,7 +1351,7 @@ async send(text: string): Promise<void> {
       for (const call of toolCalls) {
         this.emitEvent('tool-use', { toolUseId: call.toolCallId, toolName: call.toolName, toolInput: call.input as Record<string, unknown> });
         const payload = await this.runOneTool(call, recentCalls);   // validate → guards → decide → (ask) → execute; NEVER throws
-        if (payload === 'interrupted') { this.emitEvent('user-interrupt', {}); return; }
+        if (payload === 'interrupted') { /* REVIEW CORRECTION (2026-07-15): do NOT bare-return here — that leaves a dangling assistant tool-call in history and the NEXT send() 400s on real providers (dangling tool_call). Back-fill first: synthesize isError "Canceled" tool-results for this call and every remaining call in the step, push the complete role:'tool' message, emit matching tool-result events, THEN emit user-interrupt and return. */ }
         this.emitEvent('tool-result', {
           toolUseId: call.toolCallId, toolName: call.toolName,
           toolResult: payload.text, isError: payload.isError ?? false,
