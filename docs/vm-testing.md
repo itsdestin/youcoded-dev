@@ -222,6 +222,43 @@ cat /sys/module/kvm/parameters/ignore_msrs          # must read Y
 echo 1 | sudo tee /sys/module/kvm/parameters/ignore_msrs
 ```
 
+### Installing macOS: the OpenCore picker will loop you back into Recovery
+
+The install is **multi-phase with reboots**, and quickemu's OpenCore picker defaults to the **first**
+entry — `macOS Base System` (Recovery). So after the copy phase reboots the VM, it lands back in the
+Recovery menu and looks like the install failed or reset. It didn't; you just booted the wrong entry.
+
+After the first reboot the picker gains a second entry. **Pick `macOS Installer`, not `macOS Base
+System`:**
+
+```
+[macOS Base System]  [macOS Installer]  [Recovery (dmg)]  [UEFI Shell]  [Reset NVRAM]
+        ^ default — Recovery         ^ the one that continues the install
+```
+
+**The picker times out in a couple of seconds**, so a screenshot-then-react loop is always too late.
+Poll for it and press the arrow the instant it appears — any keypress also *stops* the countdown, so
+once one lands you can take your time. The picker screen fingerprints at `mean ≈ 930` (vs `≈ 6100`
+for the Recovery menu, `≈ 170` for the Apple-logo boot):
+
+```bash
+( echo "system_reset"; sleep 1 ) | socat - unix-connect:<vm>/<vm>-monitor.socket
+for i in $(seq 1 40); do
+  ( echo "screendump /tmp/poll.ppm"; sleep 0.4 ) | socat - unix-connect:<vm>/<vm>-monitor.socket
+  m=$(magick /tmp/poll.ppm -format "%[mean]" info: | cut -d. -f1)
+  if [ "$m" -gt 800 ] && [ "$m" -lt 1100 ]; then       # picker is up
+    ( echo "sendkey right"; sleep 0.6 ) | socat - unix-connect:<vm>/<vm>-monitor.socket
+    break
+  fi
+  sleep 1
+done
+# confirm "macOS Installer" is highlighted, then: sendkey ret
+```
+
+**Don't panic when the disk shrinks.** It went 28 GB → 16 GB here at the hand-off into the real
+install phase: that's APFS issuing TRIM as it prepares the target volume and qcow2 reclaiming the
+freed blocks — not lost progress. It climbs again immediately.
+
 ### What a macOS VM can't tell you
 
 - **x64 only — this is the real limitation, and it isn't AMD.** Apple Silicon cannot be virtualized
