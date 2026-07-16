@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 # Artifact drawer: drag-to-resize width — design

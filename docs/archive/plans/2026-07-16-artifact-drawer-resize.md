@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 # Artifact Drawer Drag-to-Resize Implementation Plan
