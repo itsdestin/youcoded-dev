@@ -24,6 +24,9 @@ surface, not a history.
 
 ## Bugs
 
+- [ ] Linux download page still hands everyone the AppImage (FUSE step) once v1.3 ships native packages `bug` `#docs` `#install` (added 2026-07-16)
+  `youcoded/docs/index.html` matchers hardcode `'dl-linux': /\.AppImage$/`, so when v1.3 ships the deb/rpm/pacman targets added in youcoded#98 (2026-05-20 — postdates the v1.2.4 tag, which is why v1.2.4 offers only the AppImage), every Linux user is still handed the AppImage and its `sudo apt install libfuse2` step. **Verified in a clean Ubuntu 24.04 VM 2026-07-16:** the shipped AppImage dies with `dlopen(): error loading libfuse.so.2` on stock 24.04 (no libfuse2), while the locally-built `.deb` declares **zero** fuse deps, `apt install ./youcoded_*.deb` resolves everything itself, installs to `/opt/YouCoded`, and registers a real menu entry the AppImage never provides. Fix: offer deb → Debian/Ubuntu/Mint, rpm → Fedora, pacman → Arch, AppImage as any-distro fallback; keep the FUSE note only on the AppImage path (its `sudo apt install libfuse2` text is CORRECT — verified: libfuse2 no longer exists on 24.04 but apt resolves it to libfuse2t64 via Provides; don't "fix" it). Also un-blocks testing those three artifacts, which no release has ever shipped. See docs/vm-testing.md.
+
 - [ ] desktop/docs/theme-spec.md is badly stale `bug` `#docs` `#themes` (added 2026-07-16)
   Still says "DestinCode", names the wrong localStorage key (`destincode-theme`; actual `youcoded-theme`), and instructs the pre-engine workflow ([data-theme] CSS blocks + ThemeName union + DARK_THEMES array) that no longer matches the JSON + theme-engine system. Rewrite against theme-engine.ts/theme-context.tsx — or retire it into the ui-primitives/token reference doc proposed in the UI-consistency spec §8. Found during the 2026-07-16 token audit.
 

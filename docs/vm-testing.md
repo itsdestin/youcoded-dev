@@ -234,7 +234,10 @@ snapshot it reverts to — the same reason the archived Windows-host script docu
 | Guest | User | Password |
 |---|---|---|
 | windows-11 | `Quickemu` | `quickemu` (quickemu's answer-file default) |
-| ubuntu-24.04 | `youcodedtesting` | `youcodedtesting` |
+| ubuntu-24.04 | `youcoded-testin` | `youcodedtesting` |
+
+The Ubuntu username really is `youcoded-testin` — read from `getent passwd 1000`, not from memory
+(Ubuntu's installer truncated what was typed). Password is the full `youcodedtesting`.
 
 ## Testing a beta / dev build — the loop
 
@@ -381,6 +384,37 @@ Linux users only the AppImage. When v1.3 ships they will be brand-new artifacts 
 contact with real distros: install each in the matching guest (`dpkg -i` on Ubuntu, `rpm -i` on
 Fedora, `pacman -U` on Arch), and check the `pacman.depends` override in `electron-builder.yml`
 actually resolves — its WHY comment flags `libappindicator-gtk3` as AUR-only.
+
+### The .deb removes the FUSE problem entirely (tested 2026-07-16)
+
+Built locally (`npx electron-builder --linux deb`) and installed on the pristine guest. Measured, in
+the VM, with real `dpkg`:
+
+```
+Depends: libgtk-3-0, libnotify4, libnss3, libxss1, libxtst6, xdg-utils,
+         libatspi2.0-0, libuuid1, libsecret-1-0
+Recommends: libappindicator3-1          # fuse mentions: 0
+```
+
+**No FUSE anywhere.** `apt install ./youcoded_1.2.4_amd64.deb` resolves every dependency itself,
+installs to `/opt/YouCoded/youcoded`, and registers `/usr/share/applications/youcoded.desktop` — a
+real menu entry the AppImage never provides. The binary then starts with no FUSE error (headless it
+stops at `Missing X server or $DISPLAY`, as expected).
+
+So the answer to *"can we auto-install FUSE instead of telling users to run terminal commands?"* is:
+**don't — ship the .deb and the need disappears.** It's already built (#98) and lands with v1.3.
+
+**⚠️ The gap that will bite:** the download page hardcodes the AppImage for Linux —
+`youcoded/docs/index.html` → `matchers`:
+
+```js
+'dl-linux':   function(n) { return /\.AppImage$/i.test(n); },
+```
+
+When v1.3 ships `.deb`/`.rpm`/`.pacman`, that matcher still hands **every** Linux user the AppImage
+and its FUSE step. Offering deb → Debian/Ubuntu/Mint, rpm → Fedora, pacman → Arch, and AppImage only
+as the any-distro fallback covers the large majority of Linux desktops with **zero terminal**.
+Tracked in ROADMAP.
 
 ## What to test where
 
