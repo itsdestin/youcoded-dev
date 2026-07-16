@@ -2,6 +2,8 @@
 paths:
   - "youcoded/desktop/src/main/sync-spaces/**"
   - "youcoded/desktop/src/main/sync-service.ts"
+  - "youcoded/desktop/src/main/snapshot-retention.ts"
+  - "youcoded/desktop/src/main/conversations/symlink-sweep.ts"
   - "youcoded/desktop/src/main/sync-hub-socket.ts"
   - "youcoded/desktop/src/main/sync-error-classifier.ts"
   - "youcoded/desktop/src/main/github-auth.ts"
@@ -14,6 +16,9 @@ verify:
   - path: youcoded/desktop/src/main/sync-hub-socket.ts
   - path: youcoded/desktop/src/main/sync-error-classifier.ts
     contains: "extractStderr"
+  - path: youcoded/desktop/src/main/snapshot-retention.ts
+  - path: youcoded/desktop/src/main/conversations/symlink-sweep.ts
+  - path: youcoded/desktop/src/main/sync-spaces/gc-policy.ts
   - test: youcoded/desktop/tests/sync-transport-contract.ts
   - test: youcoded/desktop/tests/sync-spaces-git-transport.test.ts
   - test: youcoded/desktop/tests/sync-spaces-engine.test.ts
@@ -45,7 +50,7 @@ A hidden per-space git repo the app pushes/pulls + SyncHub instant signals + a d
 - **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — derive ALL dot state from the pure `sync-dot-state.ts` (labels are a pinned contract).
 - **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` is `stopped`-dominates monotonic (not LWW); `displayName` LWW; **fold-on-read** keeps a stopped project from resurrecting. **Stop = tombstone + `engine.removeSpace` + keep folder**, gated by `activeManagedSpaces()`. Rename/stop ride 4-surface IPC parity (`ipc-channels.test.ts`).
 
-## Legacy backup / demolition (Plan 2c — branch `feat/sync-legacy-demolition`, NOT yet merged; `snapshot-retention.ts` + `symlink-sweep.ts` + `gc-policy.ts` land with it)
+## Legacy backup / demolition (Plan 2c — MERGED, youcoded PR #126; modules `snapshot-retention.ts`, `conversations/symlink-sweep.ts`, `sync-spaces/gc-policy.ts`)
 - **`sweepProjectSymlinks()` is `lstat`-only, removes ONLY symlinks/junctions, NEVER recursive** — recursion through a junction deletes the TARGET's real transcripts (irreversible; highest-consequence sync invariant).
 - **Drive/iCloud backup is WRITE-ONLY dated snapshots; restore was REMOVED** — don't re-add a Restore Wizard or auto-restore pull. The >500MB warning rides a `notice` event kind, NOT `error`; `git gc` is local `--auto` only.
 
