@@ -159,7 +159,7 @@ Do NOT preserve: full file contents already read, intermediate debugging output,
 
 ## Where Knowledge Lives
 
-New knowledge goes to, in descending preference: **a pinning test > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. Full taxonomy: `docs/active/specs/2026-07-15-workspace-knowledge-management-design.md`.
+New knowledge goes to, in descending preference: **a pinning test > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. Full taxonomy: `docs/archive/specs/2026-07-15-workspace-knowledge-management-design.md`.
 
 | Kind of knowledge | Home |
 |---|---|

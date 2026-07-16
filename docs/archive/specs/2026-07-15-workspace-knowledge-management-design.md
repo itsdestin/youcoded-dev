@@ -1,5 +1,6 @@
 ---
-status: active
+status: shipped
+shipped: Phase 3 merge 9b8cc35 (see docs/audits/2026-07-15-phase3-baseline.md)
 ---
 
 # Workspace Knowledge Management & Context Efficiency Redesign
