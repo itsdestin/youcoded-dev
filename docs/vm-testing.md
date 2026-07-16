@@ -289,7 +289,19 @@ additionally exercises the real SmartScreen path.
 
 **The most useful thing here.** quickemu's Windows answer file installs `qemu-ga` (plus spice-vdagent,
 spice-webdavd and the virtio GPU driver) from the virtio ISO, and exposes it at
-`<vm>/<vm>-agent.sock`. That makes the guest scriptable — no SSH, no `sendkey` roulette:
+`<vm>/<vm>-agent.sock`. That makes the guest scriptable — no SSH, no `sendkey` roulette.
+
+**Linux guests need the agent installed once, by hand.** quickemu wires the host-side channel for
+every guest, but only Windows gets the software auto-installed — on Ubuntu nothing answers the socket
+until you install it, and you can't do that *through* the agent. Run this once in the guest's own
+terminal, then re-take the `clean` snapshot so every revert keeps it:
+
+```bash
+sudo apt install -y qemu-guest-agent spice-vdagent    # vdagent = clipboard + auto-resize
+```
+
+Everything else is already at parity — `gl="off"`, snapshot/revert, `screendump`/`sendkey`, and the
+SMB share (GNOME Files browses `smb://10.0.2.4/qemu` natively via gvfs; no `cifs-utils` needed).
 
 ```bash
 ( echo '{"execute":"guest-ping"}'; sleep 2 ) | socat - unix-connect:~/vms/windows-11/windows-11-agent.sock
