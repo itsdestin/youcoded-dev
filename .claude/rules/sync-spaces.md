@@ -8,7 +8,7 @@ paths:
   - "youcoded/desktop/src/main/sync-error-classifier.ts"
   - "youcoded/desktop/src/main/github-auth.ts"
   - "youcoded/desktop/src/main/github-connect.ts"
-last_verified: 2026-07-15
+last_verified: 2026-07-16
 verify:
   - path: youcoded/desktop/src/main/sync-spaces/engine.ts
   - path: youcoded/desktop/src/main/sync-spaces/git-transport.ts
@@ -19,6 +19,11 @@ verify:
   - path: youcoded/desktop/src/main/snapshot-retention.ts
   - path: youcoded/desktop/src/main/conversations/symlink-sweep.ts
   - path: youcoded/desktop/src/main/sync-spaces/gc-policy.ts
+  - path: youcoded/desktop/src/main/device-identity.ts
+    contains: "getMachineIdentity"
+  - path: youcoded/desktop/src/main/sync-spaces/device-registry.ts
+    contains: "removeDevice"
+  - test: youcoded/desktop/tests/device-identity.test.ts
   - test: youcoded/desktop/tests/sync-transport-contract.ts
   - test: youcoded/desktop/tests/sync-spaces-git-transport.test.ts
   - test: youcoded/desktop/tests/sync-spaces-engine.test.ts
@@ -49,6 +54,13 @@ A hidden per-space git repo the app pushes/pulls + SyncHub instant signals + a d
 ## Project UX + discovery (`project-registry.ts`, `renderer/components/sync-dot-state.ts`) — guard: `sync-dot-state.test.ts`, `sync-spaces-project-discovery.test.ts`
 - **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — derive ALL dot state from the pure `sync-dot-state.ts` (labels are a pinned contract).
 - **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` is `stopped`-dominates monotonic (not LWW); `displayName` LWW; **fold-on-read** keeps a stopped project from resurrecting. **Stop = tombstone + `engine.removeSpace` + keep folder**, gated by `activeManagedSpaces()`. Rename/stop ride 4-surface IPC parity (`ipc-channels.test.ts`).
+
+## Device registry (`device-identity.ts`, `sync-spaces/device-registry.ts`) — guard: `device-identity.test.ts`, `sync-spaces-device-registry.test.ts`
+- **TWO identities, never merged: `getDeviceIdentity(userData)` = per-INSTALL (leases only); `getMachineIdentity(builtAppUserData)` = per-MACHINE (registry only).** The registry once reused the per-install id, so every `YOUCODED_PROFILE` became a permanent duplicate row (three "GalaxyBook" rows, 2026-07-16). `getMachineIdentity` READS the built app's `device-id.json` and never mints (a dev profile minting it would orphan the real row); **`null` ⇒ register NOTHING** — an ephemeral id orphans a fresh row EVERY launch.
+- **`main.ts` captures `BUILT_APP_USER_DATA = app.getPath('userData')` BEFORE the dev-profile `setPath`** — never hardcode the `youcoded` dirname; Electron derives it from the app name, so adding a `productName` would silently resolve to `null` ⇒ NO device rows, every platform.
+- **Machine id lives in `%APPDATA%`, NOT `~/.claude`** — `~/.claude` is dotfile-synced and slated to carry memory+skills; a shared id merges two real machines into one row.
+- **`removeDevice` deletes conflict copies too** — `readDevices` folds `<id> (from X).json` without needing the canonical, so a survivor resurrects a removed row. Plain delete, NOT a tombstone: a live device re-registering is correct.
+- **Self-marking uses `machineId` on BOTH surfaces** (`ipc-handlers.ts` + `remote-server.ts`); `deviceId` there is the lease id and matches no row.
 
 ## Legacy backup / demolition (Plan 2c — MERGED, youcoded PR #126; modules `snapshot-retention.ts`, `conversations/symlink-sweep.ts`, `sync-spaces/gc-policy.ts`)
 - **`sweepProjectSymlinks()` is `lstat`-only, removes ONLY symlinks/junctions, NEVER recursive** — recursion through a junction deletes the TARGET's real transcripts (irreversible; highest-consequence sync invariant).
