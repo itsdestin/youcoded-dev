@@ -16,6 +16,24 @@ status: draft
 
 ---
 
+## How to execute this plan (read first)
+
+**Line numbers are hints; symbol names are the contract.** Every line reference was taken on `feat/buddy-feedback-tuning` @ 4432fb78 and will have drifted by the time you run this. Locate code by the symbol/comment quoted in each step (`grep`), never by jumping to a line number. If a quoted snippet isn't there, that's a STOP (below), not a cue to improvise.
+
+**The code blocks in this plan are the deliverable, not illustrations.** Where a step shows code, type that code. Where a step says "cut-and-paste from App.tsx", literally move the existing block — do not retype it from memory, do not "clean it up", do not drop comments you find redundant. This file is dense with hard-won WHY comments (stray-Enter fixes, ConPTY quirks, ordering constraints); a comment you delete is a bug someone re-introduces in six months.
+
+**This is a behavior-preserving refactor. The ONLY intended change is which mechanism triggers a re-render.** If you find yourself improving logic, renaming a variable for clarity, or "fixing" something you noticed in passing — stop. Note it in the PR description instead. A tranche-1 PR that also fixes an unrelated bug is a tranche-1 PR that can't be reviewed.
+
+**STOP and surface (do not guess) when:**
+- A quoted code snippet doesn't match what's in the file (someone changed it since 2026-07-17).
+- A step's described semantics and the actual code disagree.
+- A test fails in a file this plan touches and the fix isn't obviously a typo in your own edit.
+- You need to make a semantic judgment call the plan didn't anticipate — especially anything touching PTY writes, permission gating, or attention reporting.
+
+Surfacing a blocker costs one message. Guessing wrong on `useSubmitConfirmation` silently auto-answers permission prompts in production.
+
+---
+
 ## Prerequisites & ground rules
 
 1. **Do NOT start until `feat/buddy-feedback-tuning` is merged to youcoded master.** This plan edits App.tsx broadly; starting earlier guarantees painful conflicts.
@@ -26,6 +44,8 @@ status: draft
    ```
    Do NOT junction `node_modules` if any step will run `npm ci`/Gradle (see workspace CLAUDE.md junction warning). Run a plain `npm ci` in the worktree's `desktop/`.
 3. Every task ends green: `cd desktop && npm test && npm run build` must pass before its commit.
+   **Known flaky tests — do NOT chase them.** This suite has a documented load-dependent flake family (ROADMAP `#tests` items): `subagent-watcher`, `transcript-watcher > deduplicates events by uuid`, and the git-heavy `sync-spaces-*` tests time out or misfire under full-suite parallel load on Windows. None of them import chat-context, App.tsx, or any file this plan touches. If one goes red, re-run it in isolation (`npx vitest run <file>`) — if it passes alone, it is the known flake: proceed, and note it in the PR. Only a failure in a file this plan actually touches is yours.
+   **Ownership check:** this plan touches ONLY `desktop/src/renderer/{App.tsx, state/chat-context.ts, hooks/*}`. A red test elsewhere is either the flake family above or pre-existing on master — verify with `git stash && npm test` before spending time on it.
 4. Runtime verification uses the dev instance ONLY (`bash scripts/run-dev.sh` from the workspace root) — never Destin's live app (`.claude/rules/live-app-safety.md`).
 5. **Behavior-preservation is the contract.** Every conversion keeps logic byte-for-byte where possible; only the subscription mechanism changes. If a step forces a semantic choice, stop and surface it.
 6. Regression traps R1–R10 in the decomposition map apply throughout. The ones this plan touches directly: R1 (status/reporter ordering — solved by Task 8's design), R6 (watchdog timers), R9 (`prevAttentionRef` remote path — NOT touched here; `statusHandler` stays as-is), R10 (`lastStatusJsonRef` — untouched).
@@ -229,7 +249,7 @@ export function useZoomControls() {
 }
 ```
 
-(When moving, copy the ORIGINAL comment blocks from App.tsx verbatim — the abbreviated bodies above show structure, the file keeps full comments.)
+**On the abbreviated bodies above:** the keyboard/pinch effects are shown with their comments trimmed for plan readability. When you create the file, copy the ORIGINAL blocks out of App.tsx so every WHY comment survives the move — specifically the `'+' comes as '=' on US keyboards` explanation, the `Chromium/Electron fires wheel events with ctrlKey set for pinch` note, the accumulate/flush rationale, and the `{ passive: false }` requirement. The move is a cut-and-paste, not a retype: **zero logic changes.** If your extracted file differs from the original in anything but indentation and the added hook wrapper, you've made a mistake.
 
 - [ ] **Step 2: Rewire App.tsx** — replace the removed code with `const { zoomPercent, zoomVisible, handleZoomIn, handleZoomOut, handleZoomReset } = useZoomControls();` placed where the state block was (line 403) so hook order stays stable relative to surrounding hooks. `<ZoomOverlay>` props (3177–3183) are unchanged by name.
 - [ ] **Step 3: Verify green** — `cd desktop && npm test && npm run build`.
@@ -243,11 +263,13 @@ export function useZoomControls() {
 - Create: `desktop/src/renderer/hooks/useChromeMeasurements.ts`
 - Modify: `desktop/src/renderer/App.tsx` (remove the three effects at 2493–2572; one hook call replaces them)
 
-- [ ] **Step 1: Create the hook** — the three ResizeObserver effects verbatim (bottom-chrome-height 2493–2507, top-chrome vars 2528–2546 with its full NOTE comment about measuring `.header-bar` not the wrapper, Android layout-report 2550–2572). Signature:
+- [ ] **Step 1: Create the hook** — move the three ResizeObserver effects **cut-and-paste, in their existing order**: bottom-chrome-height (2493–2507), top-chrome vars (2528–2546), Android layout-report (2550–2572). Preserve every comment, especially the long NOTE at 2524–2527 explaining that we measure the inner `.header-bar`, NOT the `headerRef` wrapper (measuring the wrapper returns 0 — that bug already happened once). Signature:
 
 ```ts
 import { useEffect } from 'react';
-import { getPlatform } from '../remote-shim';   // match App.tsx's actual import for getPlatform — grep it; adjust path if it comes from elsewhere
+// getPlatform: copy the import line from App.tsx's existing import block
+// (grep `getPlatform` in App.tsx) and fix up the relative path — it is one
+// level deeper here (hooks/ → ../).
 
 // Chrome geometry observers extracted from AppInner (tranche 1) — logic
 // unchanged. Publishes --bottom-chrome-height / --top-chrome-height /
@@ -279,33 +301,124 @@ These are internal changes to each hook — zero API/callsite changes. One commi
 - Modify: `desktop/src/renderer/hooks/useSubmitConfirmation.ts`
 - Modify: `desktop/src/renderer/hooks/useRemoteAttentionSync.ts`
 
-- [ ] **Step 1: usePromptDetector** — replace `useChatStateMap` with `useChatStore`:
-  - Delete lines 51–53 (`chatState`, `chatStateRef`, render assign). Add `const store = useChatStore();`.
-  - Replace both `chatStateRef.current.get(sid)` reads (lines 92, 156) with `store.getState().get(sid)`.
-  - Convert the awaiting-transition effect (73–86) to a subscription — same body, reading the store:
+**The conversion recipe (applies to all three):** each hook currently calls `useChatStateMap()` purely to feed effects and a latest-value ref. Swap the map for the store handle, replace `<ref>.current` reads with `store.getState()`, and turn each `[chatState]`-keyed effect into a `store.subscribeAll` subscription that runs the identical body. Every subscription follows this shape — `check()` first (seeding the refs exactly as the old effect's first run did), then subscribe, returning the unsubscribe:
+
+```ts
+useEffect(() => {
+  const check = () => { /* old effect body, chatState → store.getState() */ };
+  check();
+  return store.subscribeAll(check);
+}, [store]);
+```
+
+- [ ] **Step 1: usePromptDetector** — full diff, not a description:
+  - **Import line 3** becomes: `import { useChatDispatch, useChatStore } from '../state/chat-context';`
+  - **Delete lines 51–53** (`const chatState = useChatStateMap();` + `chatStateRef` + its render assign). **Add** in their place: `const store = useChatStore();`
+  - **Line 92** — inside the `onBufferReady` callback — becomes: `const sessionState = store.getState().get(sid);`
+  - **Line 156** — inside the debounce timer — becomes: `const currentSession = store.getState().get(sid);`
+  - **Replace the whole awaiting-transition effect (lines 73–86)** — keep its existing perf WHY comment (68–72) above it — with:
     ```ts
     // Perf (tranche 1): direct store subscription instead of a [chatState]
-    // effect — this hook no longer re-renders its host on every dispatch.
-    // Callback body is unchanged from the previous effect.
+    // effect — this hook no longer re-renders its host (AppInner) on every
+    // dispatch. Body is unchanged from the previous effect.
     useEffect(() => {
       const check = () => {
         for (const [sid, session] of store.getState()) {
-          /* body verbatim from old effect lines 74–85 */
+          let hasAwaiting = false;
+          for (const toolId of session.activeTurnToolIds) {
+            const tool = session.toolCalls.get(toolId);
+            if (tool && tool.status === 'awaiting-approval') { hasAwaiting = true; break; }
+          }
+          const wasAwaiting = prevAwaitingRef.current.get(sid) ?? false;
+          if (wasAwaiting && !hasAwaiting) {
+            lastPermissionClearedRef.current.set(sid, Date.now());
+          }
+          prevAwaitingRef.current.set(sid, hasAwaiting);
         }
       };
-      check(); // seed prevAwaitingRef with current state, as the old effect's first run did
+      check();
       return store.subscribeAll(check);
     }, [store]);
     ```
-  - Update the import line: `import { useChatDispatch, useChatStore } from '../state/chat-context';`
+  - **Nothing else changes** — the big `onBufferReady` effect (88–225) keeps its `[dispatch]` dep and its whole body; it was never keyed on chatState.
 - [ ] **Step 2: Verify + commit** — `npm test` (the ink-select-parser + any prompt-flow tests pin the semantics); `git commit -m "perf(renderer): usePromptDetector reads the chat store directly (no host re-renders)"`
-- [ ] **Step 3: useSubmitConfirmation** — same shape. This hook guards the stray-`\r` safety mechanism (`.claude/rules/pty-io.md`) — body must move VERBATIM:
-  - Delete lines 76–80 (`chatState`, `stateRef`, render assign). Add `const store = useChatStore();`.
-  - In `attemptRetry`, replace `stateRef.current.get(info.sessionId)` (line 94) with `store.getState().get(info.sessionId)`.
-  - Convert the tracking effect (164–196) to `useEffect(() => { const track = () => { /* body verbatim, chatState → store.getState() */ }; track(); return store.subscribeAll(track); }, [store, attemptRetry]);`
-  - The unmount-only cleanup effect (200–206) stays exactly as-is.
+- [ ] **Step 3: useSubmitConfirmation** — this hook guards the stray-`\r` safety mechanism (`.claude/rules/pty-io.md`: a bare `\r` while an Ink menu is live silently answers a permission prompt). **Every gate stays exactly as written** — you are changing WHERE state is read from, never WHEN a `\r` is sent:
+  - **Import line 2** becomes: `import { useChatStore } from '../state/chat-context';`
+  - **Delete lines 76–80** (`const chatState = useChatStateMap();` + `stateRef` + its render assign, keeping the `argsRef` block at 84–85 untouched). **Add**: `const store = useChatStore();`
+  - **Line 94** in `attemptRetry` becomes: `const session = store.getState().get(info.sessionId);`
+  - **Replace the tracking effect (lines 164–196)** with the same body reading the store:
+    ```ts
+    // Perf (tranche 1): store subscription instead of a [chatState] effect.
+    // Tracking/cleanup semantics are unchanged — only the read path moved.
+    useEffect(() => {
+      const track = () => {
+        const tracked = trackedRef.current;
+        const seen = new Set<string>();
+        for (const [sessionId, session] of store.getState()) {
+          // Native sessions send in-process (native:send) — no lost-byte failure
+          // mode, so never track their pending bubbles for the PTY `\r` retry.
+          // Edge: during teardown the resolver may transiently return undefined
+          // (the SessionInfo already removed while chat state lingers). undefined is
+          // treated as claude/tracked — safe by default (a bare `\r` to a dead
+          // session is a harmless no-op); a native session caught mid-teardown is a
+          // low residual risk, not a correctness bug.
+          if (argsRef.current.providerForSession?.(sessionId) === 'native') continue;
+          for (const entry of session.timeline) {
+            if (entry.kind !== 'user' || !entry.pending) continue;
+            const messageId = entry.message.id;
+            seen.add(messageId);
+            if (tracked.has(messageId)) continue;
+            tracked.set(messageId, {
+              sessionId,
+              retried: false,
+              timer: setTimeout(() => attemptRetry(messageId), RETRY_DELAY_MS),
+            });
+          }
+        }
+        for (const [id, info] of tracked) {
+          if (!seen.has(id)) {
+            clearTimeout(info.timer);
+            tracked.delete(id);
+          }
+        }
+      };
+      track();
+      return store.subscribeAll(track);
+    }, [store, attemptRetry]);
+    ```
+  - **The unmount-only cleanup effect (200–206) stays exactly as-is** — its empty deps are load-bearing (its comment explains why).
 - [ ] **Step 4: Verify + commit** — `npm test` (submit-confirmation/outgoing-message tests pin this); `git commit -m "perf(renderer): useSubmitConfirmation subscribes to the store directly"`
-- [ ] **Step 5: useRemoteAttentionSync** — same shape: `const store = useChatStore();`, effect (16–32) becomes `useEffect(() => { const sync = () => { /* body verbatim, chatState → store.getState() */ }; sync(); return store.subscribeAll(sync); }, [store]);`. Note the early `return` when `fireRemoteAttentionChanged` is missing must move INSIDE `sync()` (the API can appear later; bailing out of the whole effect would also skip subscribing — check: original bails permanently, so preserve original semantics by keeping the guard + early return OUTSIDE the subscription, exactly as today: if the API is absent at mount, subscribe nothing).
+- [ ] **Step 5: useRemoteAttentionSync** — the smallest of the three:
+  - **Import line 2** becomes: `import { useChatStore } from '../state/chat-context';`
+  - **Delete line 13** (`const chatState = useChatStateMap();`). **Add**: `const store = useChatStore();`
+  - **Replace the effect (lines 16–32)** with:
+    ```ts
+    // Perf (tranche 1): store subscription instead of a [chatState] effect.
+    // The api-missing guard stays OUTSIDE the subscription and still bails
+    // permanently — identical to the previous effect's semantics (it also
+    // returned before doing any work when the API was absent at mount).
+    useEffect(() => {
+      const api = (window as any).claude;
+      if (typeof api?.fireRemoteAttentionChanged !== 'function') return;
+      const sync = () => {
+        const last = lastByIdRef.current;
+        const chatState = store.getState();
+        for (const [sessionId, session] of chatState) {
+          const prev = last.get(sessionId);
+          if (prev !== session.attentionState) {
+            last.set(sessionId, session.attentionState);
+            api.fireRemoteAttentionChanged({ sessionId, state: session.attentionState });
+          }
+        }
+        // Clean up removed sessions so we don't keep stale entries in the ref.
+        for (const sessionId of Array.from(last.keys())) {
+          if (!chatState.has(sessionId)) last.delete(sessionId);
+        }
+      };
+      sync();
+      return store.subscribeAll(sync);
+    }, [store]);
+    ```
 - [ ] **Step 6: Verify + commit** — `npm test`; `git commit -m "perf(renderer): useRemoteAttentionSync subscribes to the store directly"`
 
 ---
@@ -318,45 +431,103 @@ The ONE render-path consumer. Returns a `Map<sessionId, {status, attentionState,
 - Create: `desktop/src/renderer/hooks/useSessionAttention.ts`
 - Test: `desktop/src/renderer/hooks/useSessionAttention.test.tsx`
 
-- [ ] **Step 1: Write the failing test** (model the store harness on the existing hook tests, e.g. `useSessionTasks.test.tsx`, for how they wrap `ChatProvider` and dispatch):
+- [ ] **Step 1: Write the failing test**
+
+Every action shape below is REAL — verified 2026-07-17 against `state/chat-types.ts` (`SESSION_INIT` line 214, `USER_PROMPT` 216–223, `PERMISSION_REQUEST` 314–323) and `chat-reducer.ts` (`SESSION_INIT` 283, `USER_PROMPT` 295). Do NOT invent variants; if one of these no longer type-checks, read the current `ChatAction` union and adjust, then note the drift in the PR.
+
+Write `desktop/src/renderer/hooks/useSessionAttention.test.tsx`:
 
 ```tsx
-import { renderHook, act } from '@testing-library/react';
+// @vitest-environment jsdom
 import React from 'react';
+import { describe, it, expect } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
 import { ChatProvider, useChatDispatch } from '../state/chat-context';
 import { useSessionAttention } from './useSessionAttention';
 
-const SESSIONS = [{ id: 's1' }, { id: 's2' }] as any;
+const SESSIONS = [{ id: 's1' }, { id: 's2' }];
 
+function Providers({ children }: { children: React.ReactNode }) {
+  return <ChatProvider>{children}</ChatProvider>;
+}
+
+// viewedSessions/activeSessionId are fixed for these cases; the hook mirrors
+// them into a ref, so passing new identities per render is not under test here.
 function useHarness() {
   const dispatch = useChatDispatch();
-  const attention = useSessionAttention(SESSIONS, new Set<string>(), 's1');
+  const attention = useSessionAttention(SESSIONS, new Set<string>(['s1']), 's1');
   return { dispatch, attention };
 }
-const wrapper = ({ children }: { children: React.ReactNode }) => <ChatProvider>{children}</ChatProvider>;
 
-test('identity is stable across dispatches that do not change any triple', () => {
-  const { result } = renderHook(useHarness, { wrapper });
-  act(() => { result.current.dispatch({ type: 'SESSION_CREATED', sessionId: 's1' } as any); });
-  const first = result.current.attention;
-  // A transcript text event mid-turn changes timeline but not status/attention triple
-  act(() => { result.current.dispatch({ type: 'SESSION_CREATED', sessionId: 's2' } as any); });
-  const afterS2 = result.current.attention;  // s2 appeared → identity SHOULD change
-  expect(afterS2).not.toBe(first);
-  const again = result.current.attention;
-  expect(again).toBe(afterS2);              // no dispatch → stable
-});
+describe('useSessionAttention', () => {
+  it('returns gray for a session with no chat state and for a freshly inited one', () => {
+    const { result } = renderHook(useHarness, { wrapper: Providers });
+    expect(result.current.attention.get('s1')?.status).toBe('gray');
+    act(() => { result.current.dispatch({ type: 'SESSION_INIT', sessionId: 's1' }); });
+    expect(result.current.attention.get('s1')?.status).toBe('gray');
+    expect(result.current.attention.get('s1')?.attentionState).toBe('ok');
+    expect(result.current.attention.get('s1')?.awaitingApproval).toBe(false);
+  });
 
-test('status flips green when a session starts thinking', () => {
-  const { result } = renderHook(useHarness, { wrapper });
-  act(() => { result.current.dispatch({ type: 'SESSION_CREATED', sessionId: 's1' } as any); });
-  expect(result.current.attention.get('s1')?.status).toBe('gray');
-  act(() => { result.current.dispatch({ type: 'USER_PROMPT', sessionId: 's1', message: { id: 'm1', text: 'hi' } } as any); });
-  expect(result.current.attention.get('s1')?.status).toBe('green');
+  it('flips to green when a session starts thinking (USER_PROMPT sets isThinking)', () => {
+    const { result } = renderHook(useHarness, { wrapper: Providers });
+    act(() => { result.current.dispatch({ type: 'SESSION_INIT', sessionId: 's1' }); });
+    act(() => {
+      result.current.dispatch({
+        type: 'USER_PROMPT', sessionId: 's1', content: 'hi', timestamp: 1,
+      });
+    });
+    expect(result.current.attention.get('s1')?.status).toBe('green');
+  });
+
+  it('flips to red + awaitingApproval when a permission request lands', () => {
+    const { result } = renderHook(useHarness, { wrapper: Providers });
+    act(() => { result.current.dispatch({ type: 'SESSION_INIT', sessionId: 's1' }); });
+    act(() => {
+      result.current.dispatch({
+        type: 'PERMISSION_REQUEST', sessionId: 's1', toolName: 'Bash',
+        input: { command: 'ls' }, requestId: 'req-1',
+      });
+    });
+    expect(result.current.attention.get('s1')?.status).toBe('red');
+    expect(result.current.attention.get('s1')?.awaitingApproval).toBe(true);
+  });
+
+  it('keeps Map IDENTITY stable when a dispatch changes no triple (the perf contract)', () => {
+    const { result } = renderHook(useHarness, { wrapper: Providers });
+    act(() => { result.current.dispatch({ type: 'SESSION_INIT', sessionId: 's1' }); });
+    act(() => {
+      result.current.dispatch({
+        type: 'USER_PROMPT', sessionId: 's1', content: 'first', timestamp: 1,
+      });
+    });
+    const afterThinking = result.current.attention;
+    expect(afterThinking.get('s1')?.status).toBe('green');
+    // Second prompt while ALREADY thinking: timeline grows, isThinking stays
+    // true → no triple changes → the selector must return the SAME Map object.
+    act(() => {
+      result.current.dispatch({
+        type: 'USER_PROMPT', sessionId: 's1', content: 'second', timestamp: 2,
+      });
+    });
+    expect(result.current.attention).toBe(afterThinking);
+  });
+
+  it('changes identity when a triple actually changes', () => {
+    const { result } = renderHook(useHarness, { wrapper: Providers });
+    act(() => { result.current.dispatch({ type: 'SESSION_INIT', sessionId: 's1' }); });
+    const before = result.current.attention;
+    act(() => {
+      result.current.dispatch({
+        type: 'USER_PROMPT', sessionId: 's1', content: 'go', timestamp: 1,
+      });
+    });
+    expect(result.current.attention).not.toBe(before);   // gray → green
+  });
 });
 ```
 
-**Adjust action shapes to the real reducer's** (`state/chat-reducer.ts` / `chat-types.ts`) — the test author must use real `ChatAction` variants (whatever sets `isThinking`, e.g. the action `USER_PROMPT` maps to), not invented ones. If `SESSION_CREATED` isn't the real init action, use the one the reducer actually handles.
+The identity test (case 4) is the whole point of the hook — if it passes but the others fail, the cache is over-aggressive; if it alone fails, stabilization is broken. Both are real bugs, not test noise.
 
 - [ ] **Step 2: Run to verify failure** — `cd desktop && npx vitest run src/renderer/hooks/useSessionAttention.test.tsx` — expected: FAIL (module not found).
 
@@ -561,8 +732,87 @@ useEffect(() => {
 }, [chatStore]);
 ```
 
-- [ ] **Step 2: Compaction watchdog → subscription** (R6) — same body, `chatStateMap` → `chatStore.getState()`, wrapped as `useEffect(() => { const check = () => { /* body verbatim incl. the steady-state short-circuit */ }; check(); return chatStore.subscribeAll(check); }, [chatStore, dispatch]);`. Timer map + its per-iteration clears are unchanged; the (pre-existing) no-cleanup-on-unmount semantics stay as-is.
-- [ ] **Step 3: Clear-viewed-on-thinking → subscription** — body verbatim; `sessions` → `sessionsRef.current` (the mirror already exists for exactly this pattern), `chatStateMap.get` → `chatStore.getState().get`. `setViewedSessions` is a stable setState — safe inside the callback.
+- [ ] **Step 2: Compaction watchdog → subscription** (R6). Keep the entire existing comment block (502–512) above it. Replace the effect (513–550) with:
+
+```ts
+useEffect(() => {
+  const check = () => {
+    const map = chatStore.getState();
+    // Perf: this runs on every reducer dispatch. Steady state (no compaction
+    // in flight, no live watchdogs) short-circuits without walking the session
+    // map. When a compaction is live we still iterate — preserving the
+    // activity-awareness described above (timer resets on every dispatch).
+    if (compactWatchdogs.current.size === 0) {
+      let anyPending = false;
+      for (const session of map.values()) {
+        if (session.compactionPending) { anyPending = true; break; }
+      }
+      if (!anyPending) return;
+    }
+    for (const [sid, session] of map) {
+      const existing = compactWatchdogs.current.get(sid);
+      if (session.compactionPending) {
+        // Reset on every reducer tick while pending — if transcript events are
+        // flowing for this session, the timer keeps bumping and never fires.
+        if (existing) clearTimeout(existing);
+        const timer = setTimeout(() => {
+          const current = chatStateMapRef.current.get(sid);
+          if (current?.compactionPending) {
+            dispatch({
+              type: 'COMPACTION_COMPLETE',
+              sessionId: sid,
+              markerId: `compact-timeout-${Date.now()}`,
+              afterContextTokens: null,
+              aborted: true,
+            });
+          }
+          compactWatchdogs.current.delete(sid);
+        }, 180_000);
+        compactWatchdogs.current.set(sid, timer);
+      } else if (existing) {
+        clearTimeout(existing);
+        compactWatchdogs.current.delete(sid);
+      }
+    }
+  };
+  check();
+  return chatStore.subscribeAll(check);
+}, [chatStore, dispatch]);
+```
+
+  The 180s timer still reads `chatStateMapRef.current` (Step 1 keeps that ref fed). The pre-existing no-clear-timers-on-unmount behavior is preserved deliberately — do not "fix" it here; that's a separate change with its own risk.
+
+- [ ] **Step 3: Clear-viewed-on-thinking → subscription.** Keep the existing comment (1658–1659). Replace the effect (1660–1679) with the body below — note `sessions` becomes `sessionsRef.current` (that mirror already exists in the file for exactly this reason) and `setViewedSessions` is a stable setState, safe to call from a subscription callback:
+
+```ts
+useEffect(() => {
+  const check = () => {
+    const map = chatStore.getState();
+    const sessions = sessionsRef.current;
+    // Early-exit: skip iteration if no sessions are currently thinking.
+    let anyThinking = false;
+    for (const s of sessions) {
+      const chatState = map.get(s.id);
+      if (chatState?.isThinking) { anyThinking = true; break; }
+    }
+    if (!anyThinking) return;
+
+    for (const s of sessions) {
+      const chatState = map.get(s.id);
+      if (chatState?.isThinking) {
+        setViewedSessions((prev) => {
+          if (!prev.has(s.id)) return prev;
+          const next = new Set(prev);
+          next.delete(s.id);
+          return next;
+        });
+      }
+    }
+  };
+  check();
+  return chatStore.subscribeAll(check);
+}, [chatStore]);
+```
 - [ ] **Step 4: Passive model drift → subscription with arg refs** — this effect also depends on `sessionId`, `sessionModels`, `pendingModel`. Add one render-phase mirror above it (file idiom):
 
 ```ts
@@ -575,12 +825,43 @@ useEffect(() => {
     const { sessionId, sessionModels, pendingModel } = driftArgsRef.current;
     if (!sessionId || pendingModel) return;
     const session = chatStore.getState().get(sessionId);
-    /* remainder of the body verbatim from 1854–1886, incl. all comments */
+    if (!session) return;
+
+    // Walk backward through the timeline for the most recent assistant-turn
+    // with a known model. turn.model is null until the first assistant-text
+    // arrives, so new/empty sessions exit here.
+    let latestModel: string | null = null;
+    for (let i = session.timeline.length - 1; i >= 0; i--) {
+      const entry = session.timeline[i];
+      if (entry.kind === 'assistant-turn') {
+        const turn = session.assistantTurns.get(entry.turnId);
+        if (turn?.model) { latestModel = turn.model; break; }
+      }
+    }
+    if (!latestModel) return;
+
+    // Match the raw transcript model (e.g. 'claude-opus-4-7') → ModelAlias,
+    // mirroring the SessionInfo matcher.
+    const alias = MODELS.find((m) => latestModel!.includes(m.replace(/\[.*\]/, '')));
+    if (!alias) return;
+
+    const currentAlias = sessionModels.get(sessionId);
+    if (currentAlias && currentAlias !== alias) {
+      // Drift detected — reconcile silently. Also the self-heal path for a pill
+      // stuck on the 'unknown' sentinel: the moment a real model shows up in
+      // the transcript, this overwrites it. setPreference persists to disk
+      // (so next session boots with the correct default); setSessionModels
+      // updates the status-bar pill + Shift+Space cycle start point.
+      (window.claude as any).model?.setPreference(alias);
+      setSessionModels((prev) => new Map(prev).set(sessionId, alias));
+    }
   };
   check();
   return chatStore.subscribeAll(check);
 }, [chatStore]);
 ```
+
+  Keep the original comment block (1841–1850) above this effect — it explains the `!pendingModel` verify-race gate (R5), which stays exactly as written.
 
   One semantic delta to accept knowingly: the old effect ALSO re-ran when `sessionId`/`sessionModels`/`pendingModel` changed without a dispatch; the subscription only fires on dispatches. The drift this effect reconciles is *produced by* transcript dispatches (a new assistant turn carrying a model), so a dispatch always follows the state it needs to see; the `check()` seed covers mount. If the implementer finds a counterexample, keep this one as a React effect keyed on `[sessionId, sessionModels, pendingModel]` + a store-subscribed dispatch counter state instead — do not silently ship a behavior change.
 - [ ] **Step 5: Delete the `useChatStateMap` import usage** — grep App.tsx for `chatStateMap` (excluding `chatStateMapRef` and `chatStore`): expected ZERO hits. Remove `useChatStateMap` from the import at line 24 (keep `useChatState` — still used elsewhere; verify with grep).
