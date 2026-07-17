@@ -30,8 +30,8 @@ problems verified against the codebase — those recipe fixes are applied inline
 change-by-change in §9 (B–E approved by Destin in the Session 8 workbench; A rejected — offset
 ring stays; D superseded by the change-40 rescope); (b) whole control families the original audit
 never inventoried (icon buttons, textareas, toasts, tabs, progress bars, the games subtree) —
-rendered and **approved in full as Session 8 (changes 41–49) on 2026-07-16**. The full change set
-1–49 is now implementation-ready.
+rendered and **approved in full as Session 8 (changes 41–51) on 2026-07-16**. The full change set
+1–51 is now implementation-ready.
 
 ---
 
@@ -292,13 +292,14 @@ its deliberately-quiet inline variant (its source comment says quiet was intenti
 | 39 | Radio primitive (§1.4) replaces native radios: PreferencesPopup.tsx:154 (permission-mode list), SyncSetupWizard.tsx:389 + :419 |
 | 40 | **RESCOPED 2026-07-16 (§1.5):** sliders keep the native `accent-accent` look — no custom styling. Remaining work: make the roundness slider controlled (ThemeScreen.tsx:392, `defaultValue` → `value`). Volume (SettingsPanel.tsx:551) and glass (:543) unchanged. |
 
-### Session 8 — post-approval additions (41–49) — **APPROVED 2026-07-16**
+### Session 8 — post-approval additions (41–51) — **APPROVED 2026-07-16**
 
-Found by the 2026-07-16 code-verification pass: whole control families the original four-agent
-audit never inventoried. Rendered in the Session 8 workbench (three iterations — see §7) and
-**approved in full by Destin on 2026-07-16**, with these iteration outcomes: 45 → option B,
-47 → option A, change 40 rescoped to native sliders (§1.5), amendment §9.A rejected (offset ring
-stays), and one Destin-requested addition (49).
+41–48 were found by the 2026-07-16 code-verification pass: whole control families the original
+four-agent audit never inventoried. Rendered in the Session 8 workbench (see §7) and **approved
+in full by Destin on 2026-07-16**, with these iteration outcomes: 45 → option B, 47 → option A,
+change 40 rescoped to native sliders (§1.5), amendment §9.A rejected (offset ring stays).
+49–51 were added at Destin's request during the same review (49 loading spinner; 50–51 Settings
+drawer — approved with one correction, the tightened title↔subtitle gap in 51).
 
 | # | What |
 |---|---|
@@ -311,6 +312,8 @@ stays), and one Destin-requested addition (49).
 | 47 | **Games subtree migration** (`game/GameLobby.tsx`, GameOverlay, GameChat, ConnectFourBoard) — currently unmigrated and violating multiple locked rules: hardcoded `text-[#66AAFF]`/`#88CCFF` links (change 36 fixes link tokens everywhere *except* here), `bg-green-600`/`bg-red-600 text-white` action buttons (rule 5), `bg-indigo-950/50` panels, `focus:border-fg-dim` gray-focus input (GameLobby:446 — the exact idiom change 20 retires), and the app's only `role="menu"` (friend-row kebab, :104-195). **DECIDED 2026-07-16: option A — Accept = Button primary** (no semantic-green exception). Full migration: inputs → FIELD, links → text-link, Decline/Send → Button secondary, kebab → Button icon (41), Block confirm → Button danger, Block text → text-destructive. Keep the documented touch-padding WHY comments intact. |
 | 48 | **Touch-target + sticky-hover pass** (cross-cutting): invisible expanded hit areas under `@media (pointer: coarse)` for every control below ~24px — Checkbox/Radio (14px), sm buttons (~22px tall), icon buttons, Select options; `@media (hover: hover)` guards on hover-only effects (change 22's scale lift; any future lift). Zero visual change on desktop. Motivation: the spec chose the 36×20 Toggle *for* Android touch, then specced 14px checkboxes — one shared renderer means every control is a phone control. |
 | 49 | **BrailleSpinner on the model-loading strip** (requested by Destin, 2026-07-16): ModelLoadingBar's "Loading {model}" / "Preparing {model}" line (ModelLoadingBar.tsx:107-133) gains a `<BrailleSpinner size="sm"/>` at the left of the text, matching the §1.6 state-family anatomy (spinner = working). Standard cadence: 80ms frames, 600ms color cycle fg-dim→fg-2→accent→fg-muted→fg-faint, frozen under prefers-reduced-motion. |
+| 50 | **Settings drawer goes headerless** (requested by Destin, approved 2026-07-16): delete the "Settings" title row + ✕ (SettingsPanel.tsx:245-254) entirely — rows start at the top of the drawer. Close = Esc / click outside (both already wired; the ✕ was a third path). Rule 12 gains the documented Settings-drawer exception. ⚠ The deleted header carried the macOS traffic-light top padding (`settings-drawer-header`, WHY comment at :241-244) — move that padding to the scroll body on macOS; no-op on other platforms. |
+| 51 | **Settings rows: type + icons one step larger, same card size** (requested by Destin, approved 2026-07-16 with the tightened-gap correction): in SettingsRow.tsx (single source — one edit covers all rows): title `text-xs` → `text-sm`, subtitle `text-[10px]` → `text-2xs` **with `-mt-0.5`** (Destin: slightly reduce the title↔subtitle gap), row padding `py-2.5` → `py-2` (compensates the taller type; row height stays ~50px), chevron `w-3.5` → `w-4`. Inline row icons at call sites: `w-4` → `w-5` (the {YC} monogram `w-6 h-4` → `w-7 h-5`); the 32×20 icon slot, px-3, rounded-lg, and bg-inset/50 are unchanged. |
 
 **Policy decisions recorded (not numbered changes):**
 - **Native `title=` tooltips stay** for icon hints (~231 across 63 files). AnchorTip (change 28) is for rich/click-open info, `title` for hover hints — two tools, one policy, documented exception to rule 9. Migrating 231 sites to a custom tooltip is cost without payoff.
@@ -392,7 +395,8 @@ UpdatePanel CTAs → genuine Button conversions (both currently use rejected hov
 
 **Tranche 8 (Session 8 — approved 2026-07-16):** 41 icon buttons + CloseButton, 42 Textarea sweep,
 44 Toast, 45 SegmentedTabs (option B), 46 ProgressBar, 47 games (option A), 48 touch/hover pass,
-49 loading-strip spinner.
+49 loading-strip spinner, 50 headerless Settings drawer (mind the macOS traffic-light padding),
+51 SettingsRow type/icon bump.
 
 **Known implementation risks (check these early):**
 1. **Protection cascade vs hover — CONFIRMED, no dev check needed (§9.K):** globals.css is
@@ -435,7 +439,8 @@ UpdatePanel CTAs → genuine Button conversions (both currently use rejected hov
     are their own species.
 11. Screens are pages at z-40; overlays paint above; Overlay.tsx is the only z-index authority;
     tooltips/floating chips are `.layer-surface` at L4.
-12. Screens exit with "Esc · Back to chat"; panels close with ✕.
+12. Screens exit with "Esc · Back to chat"; panels close with ✕. Documented exception (change 50,
+    2026-07-16): the Settings drawer has no header/✕ — it closes via Esc / click outside.
 13. Loading/empty/error use the state family; every error is specific+Retry or general+two-actions.
 14. Type comes from the named scale (`text-4xs…text-sm…`); no arbitrary `text-[Npx]`.
 15. Every color a component consumes is a settable or derived token — nothing falls back to `:root`.
@@ -484,7 +489,7 @@ wrong localStorage key, pre-engine theming instructions) — ROADMAP bug filed 2
 | 5 States (final = section 20 + Option C) | 31–34 | https://claude.ai/code/artifact/9d552e5e-014e-4ad0-8b59-f0c4546221ec |
 | 6 Type & tokens | 35–37 | https://claude.ai/code/artifact/15b04909-a6ee-4ae3-889d-8df5fb560ddb |
 | 7 Form controls + inventory | 38–40 | https://claude.ai/code/artifact/b54205c3-ce04-42e7-b26e-8b13f9ab9b83 |
-| 8 Post-approval additions (+ §9 re-approval renders) | 41–49 | https://claude.ai/code/artifact/7dae2904-21ba-47ac-af1f-3f97eae68453 — v4, **APPROVED IN FULL 2026-07-16** (41–46, 48, 49, §9 B/C/E, D-rescope; 45→B; 47→A; §9.A rejected — offset ring stays; 40 rescoped to native sliders; 49 added at Destin's request) |
+| 8 Post-approval additions (+ §9 re-approval renders) | 41–51 | https://claude.ai/code/artifact/7dae2904-21ba-47ac-af1f-3f97eae68453 — v6, **APPROVED IN FULL 2026-07-16** (45→B; 47→A; §9.A rejected — offset ring stays; 40 rescoped to native sliders; 49–51 added at Destin's request, 51 with the tightened-gap correction) |
 
 The mockup method used to produce these is captured as the workspace skill `/ui-mockup`
 (`.claude/skills/ui-mockup/SKILL.md`) — use it for any future UI design work.
