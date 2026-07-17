@@ -62,6 +62,8 @@ YouCoded is an open-source cross-platform AI assistant app built entirely withou
 
 When you need to verify runtime behavior (GPU usage, DOM state, IPC responses, theme rendering, etc.), the workflow is **always**: dev worktree → `bash scripts/run-dev.sh` → test in the dev window. Never the production install.
 
+**Flag final-stage visual/interactive verification for Destin instead of automating it.** When work reaches the point of "launch a dev instance and look at it / interact with it" (visual polish, animation staging, hover/drag behavior, anything cursor- or timing-sensitive), ASK before building a scripted verification rig — Destin can usually eyeball it in 30 seconds, and CDP-scripting multi-window interactions on his multi-monitor desktop (where his real cursor position interferes) burns large amounts of time and tokens (2026-07-16 buddy-peek lesson). Automated verification is still right for DOM assertions, unit-testable logic, and one-shot screenshots of static screens; the handoff point is *interactive* or *repeated-relaunch* verification.
+
 Read-only process inspection from outside the app is fine (`Get-Process`, GPU counters, Task Manager observation, log file tailing). Anything that *talks to* the running app is not.
 
 **Always sync before working.** Before changes, plans, or investigations, pull the latest:
