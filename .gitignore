@@ -39,3 +39,4 @@ scratch/
 
 # Worktree container dirs (per-repo .wt convention)
 *.wt/
+scratch-*/
