@@ -880,6 +880,14 @@ useEffect(() => {
 
 ---
 
+## Known incoming merge conflict — `feat/native-local-reliability` (noted 2026-07-17)
+
+That branch (Plan C, live) adds a `nativeStatusUsage` memo to AppInner keyed on `[isNativeSession, sessionId, chatStateMap]` that walks the active native session's timeline for the latest turn usage, feeding the StatusBar chips. It is a **render-path** consumer of `chatStateMap` — the same category as `sessionStatuses`, so it cannot simply become a subscription.
+
+It is NOT on master as of this plan's execution, so Task 9 Step 5's "grep `chatStateMap` → ZERO hits" holds for this branch. But **whoever merges second owns the reconciliation**:
+- If tranche 1 lands first: that branch's memo must be re-expressed as a cached selector (mirror `useSessionAttention` — subscribe via `useChatStore`, stabilize identity on the usage object) or read `chatStateMapRef.current` if a render-path read isn't actually needed.
+- If that branch lands first: Task 9's grep will find this extra consumer. Do NOT delete it or leave `useChatStateMap` in place to serve it — extend `useSessionAttention` (or add a sibling `useNativeStatusUsage` selector) so the whole-map subscription still dies.
+
 ## Explicitly out of scope (tranche 2+)
 
 - `<WelcomeScreen>` extraction, session model/permission hooks, marketplace nav, takeover prompt (decomposition-map stages 1–2).
