@@ -1,6 +1,8 @@
 ---
-status: draft
+status: shipped
 created: 2026-07-16
+shipped: 2026-07-17
+shipped_via: youcoded PR #162 (merge 2de1e89e)
 subsystem: sync-spaces
 related:
   - youcoded/desktop/src/main/device-identity.ts
