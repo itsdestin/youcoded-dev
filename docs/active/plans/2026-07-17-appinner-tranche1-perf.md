@@ -64,18 +64,19 @@ Surfacing a blocker costs one message. Guessing wrong on `useSubmitConfirmation`
 
 Add below `useChatDispatch` (~line 132). The internal `useStore` already exists; expose it under a public name and export the store type:
 
+Change `interface ChatStore` (line 37) to `export interface ChatStore`, then add the accessor:
+
 ```ts
 // Public store accessor for effect-only consumers (subscriptions/timers that
 // read state without needing re-renders). Render-path consumers should keep
 // using useChatState/useChatStateMap or a cached selector hook — reading
 // getState() during render bypasses React's subscription and can tear.
-export type { ChatStore };
 export function useChatStore(): ChatStore {
   return useStore();
 }
 ```
 
-Also change `interface ChatStore` (line 37) to `export interface ChatStore`.
+**Do NOT also add `export type { ChatStore };` here** — exporting at the declaration site (above) plus a re-export is a duplicate export and tsc fails with `TS2484`. (Corrected 2026-07-17: the original plan said to do both.)
 
 - [ ] **Step 2: Add the profiler harness around `<AppInner />`**
 
@@ -813,57 +814,22 @@ useEffect(() => {
   return chatStore.subscribeAll(check);
 }, [chatStore]);
 ```
-- [ ] **Step 4: Passive model drift → subscription with arg refs** — this effect also depends on `sessionId`, `sessionModels`, `pendingModel`. Add one render-phase mirror above it (file idiom):
+- [x] **Step 4: Passive model drift → cached selector (option c — RESOLVED 2026-07-17).** The plan originally proposed a plain `chatStore.subscribeAll` subscription and flagged a possible semantic delta. **That delta was real** — a Task-9 implementer agent constructed a concrete counterexample: the old effect read only the *active* session (`chatStateMap.get(sessionId)`) and its `sessionId` dep is what reconciles a session's pill *on switch-in*. A dispatch-only subscription drops that trigger, so switching into a background-drifted idle session (e.g. B auto-downshifted on a rate limit while A was active, then went idle) leaves B's pill stale until its next dispatch. The proposed dispatch-counter fallback preserves behavior but re-renders AppInner every dispatch, negating the win.
 
+  **Resolution shipped: a cached selector, `useActiveSessionModel(sessionId)`** (`hooks/useActiveSessionModel.ts` + 5 tests). It moves the timeline walk into a `useSyncExternalStore` selector returning the active session's latest-known `ModelAlias | null` (a primitive, so Object.is handles identity — no manual cache). This preserves BOTH triggers — the transcript trigger (selector value changes → effect re-runs) AND the switch trigger (`sessionId` change re-renders, `getSnapshot` recomputes for the new session) — while re-rendering AppInner only when the active session's alias actually changes, not per dispatch. The AppInner effect becomes:
 ```ts
-// Latest-value mirror for the drift subscription below (assign-in-render,
-// same pattern as zoomInRef et al).
-const driftArgsRef = useRef({ sessionId, sessionModels, pendingModel });
-driftArgsRef.current = { sessionId, sessionModels, pendingModel };
+const activeSessionModel = useActiveSessionModel(sessionId);
 useEffect(() => {
-  const check = () => {
-    const { sessionId, sessionModels, pendingModel } = driftArgsRef.current;
-    if (!sessionId || pendingModel) return;
-    const session = chatStore.getState().get(sessionId);
-    if (!session) return;
-
-    // Walk backward through the timeline for the most recent assistant-turn
-    // with a known model. turn.model is null until the first assistant-text
-    // arrives, so new/empty sessions exit here.
-    let latestModel: string | null = null;
-    for (let i = session.timeline.length - 1; i >= 0; i--) {
-      const entry = session.timeline[i];
-      if (entry.kind === 'assistant-turn') {
-        const turn = session.assistantTurns.get(entry.turnId);
-        if (turn?.model) { latestModel = turn.model; break; }
-      }
-    }
-    if (!latestModel) return;
-
-    // Match the raw transcript model (e.g. 'claude-opus-4-7') → ModelAlias,
-    // mirroring the SessionInfo matcher.
-    const alias = MODELS.find((m) => latestModel!.includes(m.replace(/\[.*\]/, '')));
-    if (!alias) return;
-
-    const currentAlias = sessionModels.get(sessionId);
-    if (currentAlias && currentAlias !== alias) {
-      // Drift detected — reconcile silently. Also the self-heal path for a pill
-      // stuck on the 'unknown' sentinel: the moment a real model shows up in
-      // the transcript, this overwrites it. setPreference persists to disk
-      // (so next session boots with the correct default); setSessionModels
-      // updates the status-bar pill + Shift+Space cycle start point.
-      (window.claude as any).model?.setPreference(alias);
-      setSessionModels((prev) => new Map(prev).set(sessionId, alias));
-    }
-  };
-  check();
-  return chatStore.subscribeAll(check);
-}, [chatStore]);
+  if (!sessionId || pendingModel) return;
+  if (!activeSessionModel) return;
+  const currentAlias = sessionModels.get(sessionId);
+  if (currentAlias && currentAlias !== activeSessionModel) {
+    (window.claude as any).model?.setPreference(activeSessionModel);
+    setSessionModels((prev) => new Map(prev).set(sessionId, activeSessionModel));
+  }
+}, [sessionId, activeSessionModel, sessionModels, pendingModel]);
 ```
-
-  Keep the original comment block (1841–1850) above this effect — it explains the `!pendingModel` verify-race gate (R5), which stays exactly as written.
-
-  One semantic delta to accept knowingly: the old effect ALSO re-ran when `sessionId`/`sessionModels`/`pendingModel` changed without a dispatch; the subscription only fires on dispatches. The drift this effect reconciles is *produced by* transcript dispatches (a new assistant turn carrying a model), so a dispatch always follows the state it needs to see; the `check()` seed covers mount. If the implementer finds a counterexample, keep this one as a React effect keyed on `[sessionId, sessionModels, pendingModel]` + a store-subscribed dispatch counter state instead — do not silently ship a behavior change.
+  The `!pendingModel` verify-race gate (R5) and the drift-reconciliation WHY comment are preserved. Committed in `34e4b68a`. This is the pattern later tranches should reuse for any other render-path chatStateMap consumer (e.g. the incoming `nativeStatusUsage` conflict noted below).
 - [ ] **Step 5: Delete the `useChatStateMap` import usage** — grep App.tsx for `chatStateMap` (excluding `chatStateMapRef` and `chatStore`): expected ZERO hits. Remove `useChatStateMap` from the import at line 24 (keep `useChatState` — still used elsewhere; verify with grep).
 - [ ] **Step 6: Verify green + full dev smoke** — `npm test && npm run build`, then in the dev instance: send messages, watch compaction (trigger `/compact` if practical), switch sessions (viewed/blue dots), model pill behavior, prompts still detected (usePromptDetector path), submit recovery unaffected (normal sends work).
 - [ ] **Step 7: Commit** — `git commit -m "perf(renderer): AppInner no longer subscribes to the whole chat map"`
@@ -899,4 +865,16 @@ It is NOT on master as of this plan's execution, so Task 9 Step 5's "grep `chatS
 
 ## Measurements
 
-(filled in by Tasks 2 and 10)
+**Status 2026-07-17:** all 8 implementation tasks committed on `perf/appinner-tranche1` and statically verified — `tsc --noEmit` clean, full suite green (238 files / 2551 passed + 35 skipped, no flakes), `vite build` clean. App.tsx 3356 → 3114 lines (−242); 9 new focused files (5 hooks + 3 components + the profiler harness).
+
+**Before/after profiler numbers (Tasks 2 & 10) are still PENDING** — they require the running dev instance + React DevTools Profiler (`window.__appInnerProfile`), which is exactly the interactive/visual verification the workspace rule says to hand to Destin rather than script. The static contract the perf work guarantees: during streaming, AppInner's whole-map subscription is gone — it now re-renders only on dot-color/attention flips, active-model changes, and session switches, not on every transcript dispatch. Confirming the commit-count drop on the dev instance is the one open verification step.
+
+### Commit map (11 commits)
+- `7638e6a9` Task 1 — export useChatStore + dev profiler
+- `15ba8cc2` / `85a2cc74` / `90af57aa` Task 6 — three hooks → store subscriptions
+- `b12da4f1` / `09b7495c` Task 7 — useSessionAttention selector + tests (+ amber rationale)
+- `59dad0e5` Task 8 — status dots + attention reporter → selector
+- `34e4b68a` Task 9 — remove AppInner useChatStateMap (incl. useActiveSessionModel, option c)
+- `97d1bf7e` Task 3 — ThemeBg / StatsWithHealthBridge / RootErrorBoundary → own files
+- `796f584a` Task 4 — useZoomControls
+- `7d374fb1` Task 5 — useChromeMeasurements
