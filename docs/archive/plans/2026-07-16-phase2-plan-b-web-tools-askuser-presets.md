@@ -1,8 +1,10 @@
 ---
-status: active
+status: shipped
 ---
 
 # Phase 2 Plan B — Web Tools + AskUserQuestion + Presets: Implementation Plan
+
+> **SHIPPED** 2026-07-16 — merged to youcoded master via PR #156 (merge `2fd316e1`). All 14 implementation tasks executed via subagent-driven development (per-task spec + adversarial quality review); 3 critical bugs caught pre-merge (SSRF hex-mapped bypass, AskUserQuestion formatAnswers throw, WebFetch main-thread DoS). Live acceptance passed in the dev build (Destin, 2026-07-16). Full suite 2298 passing, tsc clean.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -10,7 +12,7 @@ status: active
 
 **Architecture:** Three new `NativeTool`s slot into the existing `defineTool()`/driver pipeline from Plan A. WebFetch/WebSearch share a new SSRF-guarded fetch helper (every redirect hop validated); WebSearch walks a data-driven backend chain (shipped + remote-refreshed, curated-models pattern) through an injected `SearchService`. AskUserQuestion rides the EXISTING permission-ask rail end-to-end — the renderer card, `permission:respond` channel, and broker already exist; the only gap is that the broker currently drops `decision.updatedInput` (the answers). Presets become real: two manifests (Assistant default-`ask`, Coder default-`auto-edit`), main-side prompt bodies, a preset registry with the legacy `'chat'`→Assistant mapping, and picker cards in both new-session forms.
 
-**Tech Stack:** TypeScript (Electron main + React renderer), zod, vitest, ai@7.0.22 (unchanged), new deps: `@mozilla/readability` + `@mixmark-io/domino` (article extraction without jsdom) + `turndown` (HTML→Markdown).
+**Tech Stack:** TypeScript (Electron main + React renderer), zod, vitest, ai@7.0.22 (unchanged), new deps: `@mozilla/readability@0.6.0` + `linkedom@0.18.13` (article extraction without jsdom) + `turndown@7.2.4` (HTML→Markdown). **Task 1 verified empirically:** readability 0.6.0 does NOT work with domino (`for...of` over non-iterable NodeLists) — linkedom's `parseHTML` is the pinned DOM provider.
 
 **Spec:** `youcoded-dev/docs/active/specs/2026-07-15-phase2-native-harness-design.md` §3 (binding; §0 settled decisions apply). Research: `2026-07-15-web-search-backends.md`.
 
@@ -93,21 +95,9 @@ npm ci
 
 Do NOT junction `node_modules` (the `git worktree remove` junction hazard — workspace CLAUDE.md).
 
-- [ ] **Step 2: Install the extraction deps (exact versions)**
+- [ ] **Step 2: Install the extraction deps (exact versions)** — DONE at plan time (2026-07-16): `@mozilla/readability@0.6.0`, `turndown@7.2.4`, `linkedom@0.18.13`, committed as `chore(native): add readability/turndown/linkedom for WebFetch extraction`.
 
-```bash
-npm install --save-exact @mozilla/readability turndown @mixmark-io/domino
-```
-
-Note: `turndown` v7+ already depends on `@mixmark-io/domino` for its Node DOM, but we import domino directly for Readability, so it must be a first-class dependency.
-
-- [ ] **Step 3: Verify the stack loads in plain Node (no jsdom, no DOM globals)**
-
-```bash
-node -e "const d=require('@mixmark-io/domino');const{Readability}=require('@mozilla/readability');const T=require('turndown');const w=d.createWindow('<html><body><article><h1>Hi</h1><p>Body text here that is long enough to extract.</p></article></body></html>','https://example.com');const a=new Readability(w.document).parse();console.log(JSON.stringify({title:a&&a.title,md:new T().turndown(a?a.content:'')}))"
-```
-
-Expected: JSON with `title` and a Markdown string containing `# Hi` (or `Hi\n==`). If Readability returns null on this tiny doc, that's fine — record it; the tool has a whole-body fallback.
+- [ ] **Step 3: Verify the stack loads in plain Node** — DONE at plan time: domino FAILED (readability 0.6.0 `for...of`s non-iterable NodeLists); **linkedom's `parseHTML` verified working** (title extracted, nav junk stripped, markdown produced).
 
 - [ ] **Step 4: Baseline suite green, then commit**
 
@@ -601,9 +591,11 @@ describe('WebFetch', () => {
 // WebFetchView renders unchanged (it markdown-renders the result string).
 // DESIGN (plan decision 9): no secondary summarization model — the result IS
 // the extracted markdown; `prompt` is echoed as a context header.
+// DOM provider is linkedom (NOT domino/jsdom) — Task 1 verified readability
+// 0.6.0 breaks on domino's non-iterable NodeLists.
 import { z } from 'zod';
 import { Readability } from '@mozilla/readability';
-import domino from '@mixmark-io/domino';
+import { parseHTML } from 'linkedom';
 import TurndownService from 'turndown';
 import { defineTool } from './registry';
 import { guardedFetch, readBodyCapped, NetGuardError, type GuardedFetchOpts } from './net-guard';
@@ -622,14 +614,14 @@ const inputSchema = z.object({
 const TEXT_TYPES = /^(text\/(plain|markdown|csv|xml)|application\/(json|xml|rss\+xml|atom\+xml))/;
 
 function htmlToMarkdown(rawHtml: string, url: string): { title: string | null; markdown: string } {
-  const window = domino.createWindow(rawHtml, url);
-  const article = new Readability(window.document).parse();
+  const { document } = parseHTML(rawHtml);
+  const article = new Readability(document, { /* linkedom lacks a real location; base handled by caller-absolute URLs */ }).parse();
   const turndown = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' });
   if (article?.content) return { title: article.title ?? null, markdown: turndown.turndown(article.content) };
   // Readability found no article (a dashboard, an index page…) — fall back to the
   // whole body so the model still gets SOMETHING structured, never a silent empty.
-  const body = window.document.body?.innerHTML ?? rawHtml;
-  return { title: window.document.title || null, markdown: turndown.turndown(body) };
+  const body = document.body?.innerHTML ?? rawHtml;
+  return { title: document.title || null, markdown: turndown.turndown(body) };
 }
 
 export const WebFetchTool = defineTool<z.infer<typeof inputSchema>>({

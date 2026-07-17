@@ -22,7 +22,7 @@ This file now holds **only cross-repo invariants** — constraints that span two
 - **The dev instance and the built app SHARE `~/.claude/` (and `~/YouCoded/`).** Every cross-process JSON write is lock-guarded (`mutateFileUnderLock` / mkdir-lock `casWrite`); `write-guard.sh` + `.sync-lock` mediate concurrency. *Why:* `run-dev.sh` runs against real state alongside Destin's live app — two writers is a normal state, not an edge case. *Guard:* `cas-write.test.ts` + the per-subsystem store tests.
 - **Windows `git worktree remove` follows junctions.** If you junctioned `node_modules` into a worktree, delete the junction first (`cmd //c "rmdir <path>"`, NOT `rm -rf`) before `git worktree remove`, or it wipes the MAIN checkout's `node_modules`. *Why:* recursive delete traverses the junction to its target. *Guard:* none — see the fuller note in `CLAUDE.md` → Working Rules.
 
-## Native harness (Phase 2 Plans A–B)
+## Native harness (Phase 2 Plans A–C)
 
 - **The Bash tool bypasses the file-tool guards** — secret-path denial and the
   cwd jail live in the file tools; `cat .env` through Bash defeats them, and the
@@ -80,6 +80,35 @@ This file now holds **only cross-repo invariants** — constraints that span two
   presets advertise their suite via the names, and the prompt bodies reference
   tools by them; advertising an unregistered tool makes a preset instruct the
   model to call something that doesn't exist. Guard: `tool-registry-manifest.test.ts`.
+- **Compaction never drops a message; it only shrinks tool-result TEXT (prune)
+  or replaces a span cut on a USER-message boundary (summarize)** — either path
+  that split an assistant tool-call from its `role:'tool'` result would dangle a
+  tool_call and brick the session. It also FAILS SAFE: a summary that throws or
+  returns empty leaves the pruned history (`fitToContext` is the floor, never a
+  `session-error`), and the summary stream is abort-raced + 30s-timeout-bounded —
+  a bare `for await` there would reintroduce the exact un-interruptible hang
+  `consumeStep` guards against. Guards: `compaction.test.ts`, `harness-compaction.test.ts`.
+- **Capability profiles NEVER branch on a model-name string** — they resolve from
+  provider TYPE + the real context window + a family-keyed regex registry; only
+  that registry's matcher touches the modelId. Tools are removed only when the
+  registry marks a model `supportsTools:false`. Guards: `capability-profile.test.ts`,
+  `known-models.test.ts`.
+- **A local model's context window is READ + enforced, never the catalog guess** —
+  `effectiveContextWindow` reads llama-server `/props` and clamps to `min(loaded,
+  GGUF-trained, registry ceiling)`; the SAME number feeds profile tiering, the
+  compaction trigger, and the StatusBar chip (gauge and threshold can't disagree).
+  Guard: `engine-context-window.test.ts`.
+
+## Buddy Floater
+
+- **The action bar window stays Electron-shown; visibility is CSS + `setIgnoreMouseEvents`.** Reveal/dismiss animates via the `buddy:bar-state` push. When CSS-hidden, main sets `setIgnoreMouseEvents(true, {forward:true})` so the invisible 148×44 window doesn't eat clicks — and `forward:true` is load-bearing: it keeps mousemove flowing so hovering the hidden bar zone can re-reveal it. Don't "simplify" to window show/hide (kills the fade) and don't drop the ignore-mouse toggle (invisible click-eater).
+- **Bar position is recomputed from live mascot bounds before EVERY reveal** (`showBar` + `applyBarVisible`). The original capture-icon bug was computing position only at window creation — a mascot drag while the bar was hidden stranded it. Geometry is pure + tested in `buddy-bar-geometry.ts`.
+- **Window moves strand hover state** — pointerleave only fires on pointer MOVEMENT, so main repositioning the bar/mascot out from under a stationary cursor leaves the tracker hovering forever (bar pinned visible, docked buddy never peeks). `reconcileHoverWithCursor()` checks `screen.getCursorScreenPoint()` containment after main-driven moves. Keep calling it from any new code path that moves buddy windows.
+- **Rig SVGs are third-party code — `sanitize-rig-svg.ts` is the security boundary.** Themes ship `mascot.rig` (and `companions` SVGs) and they are INLINED into renderer DOM. The sanitizer strips scripts/foreignObject/`<style>`/SMIL/`on*`/external URLs; only `#refs` and `data:image/*` survive. Never inline a theme SVG without routing through it. Registry-side CI validation does not exist yet — the app-side sanitizer carries the whole guarantee.
+- **MascotRig indexes the rig DOM by ELEMENT IDENTITY (`ensureParts`), not effect timing.** React can recreate the host div with identical innerHTML (e.g., ThemeMascot re-parents into MascotScene when the async theme delivers companions) without `svgHtml` changing — an effect keyed on state then styles a detached svg and every animation silently dies. Any new rig surface must go through `ensureParts()`; don't "optimize" it back to a mount-time index.
+- **Theme `companions` is a TOP-LEVEL manifest key, NOT inside `mascot`** — pre-companions app versions crash in `resolveAllAssetPaths` on non-string mascot values (`value.startsWith`). Keep new structured theme data out of `mascot` unless the installed-base resolver is known to guard it.
+- **Mascot motion is transforms inside fixed-size windows; the ONLY window-bounds animation is the edge-snap glide.** Independent CSS properties compose (wrapper `scale` for hover/grab, sink `transform` translate, lean `rotate`) — but the side-peek lean MUST live on its own inner element: CSS resolves an element's `rotate` property BEFORE its `transform`, so combining them on one element swings the translated body out of the window. The dock/peek state machine is pure (`buddy-dock.ts`); BuddyWindowManager owns its timers.
+- **`buddy:dismiss` hides for the run only** — `localStorage['youcoded-buddy-enabled']` stays `'1'`; the `dismissed` flag lives in BuddyWindowManager and every `show()` clears it. The Settings row's "Show now" is just `buddy.show()`. Don't make the hide button write the localStorage preference.
 
 ## Documentation Drift
 

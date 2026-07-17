@@ -1,10 +1,10 @@
 ---
-status: draft
+status: shipped
 ---
 
 # Buddy Floater Upgrades Implementation Plan
 
-> **NOT SHIPPED (verified 2026-07-15).** This plan was prematurely marked shipped and archived, but none of the code ever landed on master — no action bar, no rig subsystem, no new IPC channels, no branch or commits. Status corrected to `draft` and moved back to `docs/active/`. The §2 stale-action-bar-position bug is still live.
+> ✅ **SHIPPED 2026-07-16** — youcoded PR #159 (merge `e63fa96e`): Tasks 0-13 complete (Tasks 7-9 had shipped earlier via PR #150). Companion themes: wecoded-themes PR #17. Extras beyond the plan: welcome-screen scene companions (MascotScene + top-level `companions` manifest key), self-healing rig DOM indexing (ensureParts), stranded-hover cursor reconcile, dock-state replay on mascot page load. Buddy-floater companion FOLLOW physics deferred (80×80 window clips satellites) — see ROADMAP.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
