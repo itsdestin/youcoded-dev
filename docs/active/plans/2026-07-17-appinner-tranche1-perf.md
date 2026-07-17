@@ -854,6 +854,13 @@ It is NOT on master as of this plan's execution, so Task 9 Step 5's "grep `chatS
 - If tranche 1 lands first: that branch's memo must be re-expressed as a cached selector (mirror `useSessionAttention` — subscribe via `useChatStore`, stabilize identity on the usage object) or read `chatStateMapRef.current` if a render-path read isn't actually needed.
 - If that branch lands first: Task 9's grep will find this extra consumer. Do NOT delete it or leave `useChatStateMap` in place to serve it — extend `useSessionAttention` (or add a sibling `useNativeStatusUsage` selector) so the whole-map subscription still dies.
 
+## Docs to land WITH the merge (not before)
+
+A 2026-07-17 docs audit found the workspace docs are almost entirely unaffected (they describe the renderer at an abstraction above these internals). Two doc changes were prepared; the in-code one is on the branch, the rule one must wait for merge:
+
+1. **DONE on the branch (`chat-context.ts` perf-rationale comment)** — rewritten to name `RemoteSnapshotExporter` as the sole remaining `useChatStateMap()` caller and to document `useChatStore()` + the "use a selector for render-path data" rule. Ships with the branch.
+2. **HOLD until merge (`.claude/rules/react-renderer.md`, workspace repo)** — add a Perf bullet: *"Reading chat state on the render path: use a cached selector, not the whole map"* — `chat-context.ts` is a `useSyncExternalStore` store; `useChatState(id)` per-session; `useChatStore()` for effect-only readers + cached selectors (`useSessionAttention`, `useActiveSessionModel`); do NOT put `useChatStateMap()` on the render path (only sanctioned caller is `RemoteSnapshotExporter`); never `getState()` during render (can tear). Also add a `verify:` anchor `path: youcoded/desktop/src/renderer/hooks/useSessionAttention.ts` (`contains: "useSyncExternalStore"`) and bump `last_verified` to the merge date. **Why held:** the anchor + prose reference `useSessionAttention.ts`, which only exists on this branch — landing the rule on workspace master before the branch merges to youcoded master would fail `/audit` (missing-file anchor). Apply this rule edit in the same session the branch merges.
+
 ## Explicitly out of scope (tranche 2+)
 
 - `<WelcomeScreen>` extraction, session model/permission hooks, marketplace nav, takeover prompt (decomposition-map stages 1–2).
@@ -867,6 +874,8 @@ It is NOT on master as of this plan's execution, so Task 9 Step 5's "grep `chatS
 
 **Status 2026-07-17:** all 8 implementation tasks committed on `perf/appinner-tranche1` and statically verified — `tsc --noEmit` clean, full suite green (238 files / 2551 passed + 35 skipped, no flakes), `vite build` clean. App.tsx 3356 → 3114 lines (−242); 9 new focused files (5 hooks + 3 components + the profiler harness).
 
+**Adversarial review (2026-07-17):** a diff-level review of the perf-core commits ran. Verdict: behavior-preserving; the safety-critical stray-`\r`/auto-answer guard (`useSubmitConfirmation`) confirmed fully preserved. It found ONE real regression — the ready-sound effect had become a per-dispatch subscription that would spam `ready` chimes during transcript replay/hydrate (a batch of N turn dispatches toggling `isThinking` intra-batch). **Fixed in `604b8403`** by reverting it to a React effect keyed on `[sessionAttention]` (coalesces to one post-commit run, mirroring the attention-sound effect). Findings #2/#4/#5 were negligible (idempotent bodies / unreachable paths), left as-is; #3 was a comment-honesty fix. This regression is the reason the ready-sound path is worth a 30-second ear-check during the dev-instance measurement: resume a chatty session, confirm it chimes once (not per historical turn).
+
 **Before/after profiler numbers (Tasks 2 & 10) are still PENDING** — they require the running dev instance + React DevTools Profiler (`window.__appInnerProfile`), which is exactly the interactive/visual verification the workspace rule says to hand to Destin rather than script. The static contract the perf work guarantees: during streaming, AppInner's whole-map subscription is gone — it now re-renders only on dot-color/attention flips, active-model changes, and session switches, not on every transcript dispatch. Confirming the commit-count drop on the dev instance is the one open verification step.
 
 ### Commit map (11 commits)
@@ -878,3 +887,4 @@ It is NOT on master as of this plan's execution, so Task 9 Step 5's "grep `chatS
 - `97d1bf7e` Task 3 — ThemeBg / StatsWithHealthBridge / RootErrorBoundary → own files
 - `796f584a` Task 4 — useZoomControls
 - `7d374fb1` Task 5 — useChromeMeasurements
+- `604b8403` review followups — ready-sound regression fix + dead-import/comment cleanup
