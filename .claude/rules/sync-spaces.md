@@ -34,41 +34,41 @@ verify:
 
 # Sync Spaces, SyncHub, backup & GitHub-connect
 
-A hidden per-space git repo the app pushes/pulls + SyncHub instant signals + a daily backup. **Full depth + the invariants not listed here: `youcoded/docs/sync-spaces.md`.**
+**Depth + invariants not listed here: `youcoded/docs/sync-spaces.md`.**
 
 ## Git transport (`sync-spaces/git-transport.ts`) — guard: `sync-spaces-git-transport.test.ts`, `sync-transport-contract.ts`
-- **`GIT_DIR` env, not `--separate-git-dir`** (which drops a `.git` FILE colliding with a dev's own repo). Ignores/attributes go in `$GIT_DIR/info/`, never the user's tree.
-- **`info/attributes` = `* -text`, NOT `text=auto`** — on Windows text=auto forces LF→CRLF, breaking byte fidelity.
-- **Conflict policy is convergent: REMOTE wins the canonical name, LOCAL becomes a visible conflict copy** (local-wins never converges). `merge --allow-unrelated-histories` is load-bearing. Conflict-copy content is read as a Buffer via `showStage()` with `maxBuffer ≥ maxFileBytes` — the string `git()` helper corrupts binary/truncates >1MB → silent data loss.
-- **`sync-transport-contract.ts` is the transport compatibility boundary** — a new `SyncTransport` must pass it unchanged. **`repoNameForSpace` = slug + hash of the LOWERCASED space id** (the sync identity).
+- **`GIT_DIR` env, not `--separate-git-dir`** (a `.git` FILE collides with a dev's repo); ignores/attributes in `$GIT_DIR/info/`, never the user's tree.
+- **`info/attributes` = `* -text`, NOT `text=auto`** (Windows LF→CRLF breaks byte fidelity).
+- **Convergent conflicts: REMOTE wins the canonical name, LOCAL becomes a visible conflict copy** (local-wins never converges). `merge --allow-unrelated-histories` is load-bearing. Copy content: Buffer via `showStage()`, `maxBuffer >= maxFileBytes` (string `git()` truncates >1MB).
+- **`sync-transport-contract.ts` is the transport compatibility boundary**; **`repoNameForSpace` = slug + hash of the LOWERCASED space id** = the sync identity.
 
 ## Engine & service (`engine.ts`, `service.ts`) — guard: `sync-spaces-engine.test.ts`, `sync-spaces-service.test.ts`
-- **Engine:** single-flight per space + one coalesced rerun; `addSpace` awaits chokidar `ready`; a persistent `watcher.on('error')` is required; `stop()` clears the state map FIRST then awaits in-flight chains (Windows handles block folder removal).- **`provisionGithubRemote` treats an already-existing repo as SUCCESS** (per-device state → second device re-provisions). **`isIgnoredPath()` keeps backup scrub == sync scrub** (`DEFAULT_IGNORES`). Android has no `syncspaces:*` handlers yet.
+- **Engine:** single-flight per space + one coalesced rerun; `addSpace` awaits chokidar `ready`; a persistent `watcher.on('error')` is required; `stop()` clears the state map FIRST, then awaits in-flight chains (Windows handles block removal). **`provisionGithubRemote` treats an existing repo as SUCCESS.** **`isIgnoredPath()` keeps backup scrub == sync scrub** (`DEFAULT_IGNORES`). No Android `syncspaces:*` handlers yet.
 
 ## SyncHub (`sync-hub-socket.ts` + worker `SyncGroupRoom` DO) — guard: `sync-hub-socket.test.ts`
-- **DO is per-account, an ACCELERANT not a source of truth** — never optimize away the 120s poll. **spaceKey = `repoNameForSpace()`, never the local id.** **Signal ONLY on `pushed:true`** (loop breaker). **The hub send runs LAST in `broadcast()`, own try/catch** (never block local/remote delivery). **A superseded `startEngine` owns no global state.**
+- **DO is per-account, an ACCELERANT not a source of truth** — never optimize away the 120s poll. **spaceKey = `repoNameForSpace()`, never the local id.** **Signal ONLY on `pushed:true`.** **The hub send runs LAST in `broadcast()`, own try/catch.** **A superseded `startEngine` owns no global state.**
 
 ## Import (`sync-spaces/import-project.ts`) — guard: `sync-spaces-import.test.ts`
-- **Import MOVES the folder — never copy-and-keep-both** (a surviving copy forks the user's work). The EXDEV branch re-checks `existsSync(dest)` BEFORE cpSync. Store remaps after the move (`remapTranscriptDir` etc.) degrade to WARNINGS, never silent drops.
+- **Import MOVES the folder — never copy-and-keep-both** (a survivor forks the work). The EXDEV branch re-checks `existsSync(dest)` BEFORE cpSync. Store remaps (`remapTranscriptDir` etc.) degrade to WARNINGS, never silent drops.
 
 ## Project UX + discovery (`project-registry.ts`, `renderer/components/sync-dot-state.ts`) — guard: `sync-dot-state.test.ts`, `sync-spaces-project-discovery.test.ts`
-- **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — derive ALL dot state from the pure `sync-dot-state.ts` (labels are a pinned contract).
-- **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` is `stopped`-dominates monotonic (not LWW); `displayName` LWW; **fold-on-read** keeps a stopped project from resurrecting. **Stop = tombstone + `engine.removeSpace` + keep folder**, gated by `activeManagedSpaces()`. Rename/stop ride 4-surface IPC parity (`ipc-channels.test.ts`).
+- **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — derive ALL dot state from the pure `sync-dot-state.ts`; labels pinned.
+- **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); `displayName` LWW; **fold-on-read** prevents resurrection. **Stop = tombstone + `engine.removeSpace` + keep folder** (gate: `activeManagedSpaces()`). Rename/stop ride 4-surface IPC parity (`ipc-channels.test.ts`).
 
 ## Device registry (`device-identity.ts`, `sync-spaces/device-registry.ts`) — guard: `device-identity.test.ts`, `sync-spaces-device-registry.test.ts`
-- **TWO identities, never merged: `getDeviceIdentity(userData)` = per-INSTALL (leases only); `getMachineIdentity(builtAppUserData)` = per-MACHINE (registry only).** The registry once reused the per-install id, so every `YOUCODED_PROFILE` became a permanent duplicate row (three "GalaxyBook" rows, 2026-07-16). `getMachineIdentity` READS the built app's `device-id.json` and never mints (a dev profile minting it would orphan the real row); **`null` ⇒ register NOTHING** — an ephemeral id orphans a fresh row EVERY launch.
-- **`main.ts` captures `BUILT_APP_USER_DATA = app.getPath('userData')` BEFORE the dev-profile `setPath`** — never hardcode the `youcoded` dirname; Electron derives it from the app name, so adding a `productName` would silently resolve to `null` ⇒ NO device rows, every platform.
-- **Machine id lives in `%APPDATA%`, NOT `~/.claude`** — `~/.claude` is dotfile-synced and slated to carry memory+skills; a shared id merges two real machines into one row.
-- **`removeDevice` deletes conflict copies too** — `readDevices` folds `<id> (from X).json` without needing the canonical, so a survivor resurrects a removed row. Plain delete, NOT a tombstone: a live device re-registering is correct.
-- **Self-marking uses `machineId` on BOTH surfaces** (`ipc-handlers.ts` + `remote-server.ts`); `deviceId` there is the lease id and matches no row.
+- **TWO identities, NEVER merged: `getDeviceIdentity(userData)` = per-INSTALL (leases); `getMachineIdentity(builtAppUserData)` = per-MACHINE (registry).** **`getMachineIdentity` READS, never mints; `null` ⇒ register NOTHING** (else a row orphans per launch).
+- **`main.ts` captures `BUILT_APP_USER_DATA` BEFORE the dev-profile `setPath`** — never hardcode the `youcoded` dirname (a `productName` ⇒ `null` ⇒ NO rows).
+- **Machine id in `%APPDATA%`, NOT `~/.claude`** (dotfile-synced → merges two machines).
+- **`removeDevice` deletes conflict copies too** (a survivor resurrects the row); **plain delete, NOT a tombstone**.
+- **Self-marking uses `machineId` on BOTH surfaces** (`ipc-handlers.ts` + `remote-server.ts`); `deviceId` matches no row.
 
-## Legacy backup / demolition (Plan 2c — MERGED, youcoded PR #126; modules `snapshot-retention.ts`, `conversations/symlink-sweep.ts`, `sync-spaces/gc-policy.ts`)
-- **`sweepProjectSymlinks()` is `lstat`-only, removes ONLY symlinks/junctions, NEVER recursive** — recursion through a junction deletes the TARGET's real transcripts (irreversible; highest-consequence sync invariant).
-- **Drive/iCloud backup is WRITE-ONLY dated snapshots; restore was REMOVED** — don't re-add a Restore Wizard or auto-restore pull. The >500MB warning rides a `notice` event kind, NOT `error`; `git gc` is local `--auto` only.
+## Legacy backup / demolition (`snapshot-retention.ts`, `conversations/symlink-sweep.ts`, `sync-spaces/gc-policy.ts`)
+- **`sweepProjectSymlinks()` is `lstat`-only, removes ONLY symlinks/junctions, NEVER recursive** — recursion through a junction irreversibly deletes the TARGET's real transcripts.
+- **Drive/iCloud backup is WRITE-ONLY dated snapshots; restore was REMOVED** — don't re-add a Restore Wizard or auto-restore pull. The >500MB warning rides `notice`, NOT `error`; `git gc` is local `--auto` only.
 
 ## Sync Warnings (`sync-service.ts`, `sync-error-classifier.ts`) — guard: `sync-warnings-lifecycle.test.ts`, `sync-error-classifier.test.ts`
-- **`~/.claude/.sync-warnings.json` is authoritative** (`SyncWarning[]`). **Two writers, non-overlapping codes** (health-check vs `backendId`-keyed push); the health-check merge replaces only its own. Push-failure warnings are non-dismissible.
+- **`~/.claude/.sync-warnings.json` (`SyncWarning[]`) is authoritative.** **Two writers, non-overlapping codes** (health-check vs `backendId`-keyed push); the merge replaces only its own codes. Push-failure warnings are non-dismissible.
 - **Node-killed timeouts have empty stderr — route through `extractStderr(e, timeoutMs)`**, never raw `e.stderr || e.message` (else every timeout → `UNKNOWN`).
 
 ## Connect-GitHub Modal (`github-auth.ts`, `github-connect.ts`) — guard: `github-auth.test.ts`, `github-connect.test.ts`
-- **The access token NEVER leaves the main process** — only into `gh auth login --with-token` stdin; never logged/thrown/in a payload/over WS. Reuse gh's client id `178c6fc778ccc68e1d6a`; don't wrap interactive `--web` (`completeLogin` must `stdin.end()`). **Orchestrator is a singleton with a PER-FLOW settle guard** (`activeFlowId`). gh-missing install = winget→`restartRequired`.
+- **The access token NEVER leaves the main process** — only into `gh auth login --with-token` stdin; never logged/thrown/in a payload/over WS. Reuse gh's client id `178c6fc778ccc68e1d6a`; don't wrap interactive `--web` (`completeLogin` must `stdin.end()`). **Orchestrator: singleton, PER-FLOW settle guard** (`activeFlowId`). gh-missing install = winget→`restartRequired`.

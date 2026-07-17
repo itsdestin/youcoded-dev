@@ -22,7 +22,7 @@ verify:
 
 # Conversation store, leases & Resume Browser identity
 
-Per-conversation records at `~/YouCoded/Personal/Conversations/claude/<id>.json` + CC transcript mirroring on the personal sync space; leases + takeover; Resume Browser name/path resolution. **Full depth + invariants not listed here: `youcoded/docs/conversations.md`.**
+Records at `~/YouCoded/Personal/Conversations/claude/<id>.json` + CC transcript mirroring on the personal sync space. **Depth + invariants not listed here: `youcoded/docs/conversations.md`.**
 
 ## Conversation store (Phase 2a) — guard: `transcript-mirror.test.ts`, `conversation-store-core.test.ts`, `conversation-reconciler.test.ts`, `conversations-service.test.ts`
 - **Mirror-in is add/update-only AND shrink-guarded** — CC `cleanupPeriodDays` deletion + `/clear` rewrites must NEVER shrink the durable space copy (local smaller → skip; never deletes).
@@ -30,15 +30,15 @@ Per-conversation records at `~/YouCoded/Personal/Conversations/claude/<id>.json`
 - **Merges are convergent (lattice join), not positional.** `mergeRecords` breaks ties by total-order content compare; `foldConflictCopies` picks each field group over the ORIGINAL input set (a mutated accumulator ping-ponged two devices).
 - **The record id/provider is a path-traversal boundary** (charset allowlist + `path.resolve`-contain; reachable over remote WS). **Fire-and-forget store writes MUST `.catch()`.**
 - **The materialize sweep + Resume Browser union both SKIP live sessions** — a rename over a transcript CC is appending to detaches its inode (POSIX) → lost turns.
-- **The reconciler recovers the EXACT projectKey from known folders** (`ccProjectSlug(folder)→basename`; last-segment truncation is only a fallback). **It MUST skip symlinks (`lstatSync` + `isSymbolicLink`)** — the legacy sync system symlinks conversations into the home slug; following them mis-keyed 921/921 records. Keep it even after Plan 2c deletes the symlink creators.
+- **The reconciler recovers the EXACT projectKey from known folders** (`ccProjectSlug(folder)→basename`; last-segment truncation is a fallback). **It MUST skip symlinks (`lstatSync` + `isSymbolicLink`)** — the legacy sync system symlinks conversations into the home slug; following them mis-keyed 921/921 records; keep it after Plan 2c deletes the symlink creators.
 
-## Session leases & takeover (Plan 2b — mostly DORMANT behind `native.supported`; materialize-on-release + Bug-1 browse filter + SessionStart-acquire run for CC) — guard: `holder-takeover.test.ts`, `requester-takeover.test.ts`, `lease-client.test.ts`
+## Session leases & takeover (Plan 2b — DORMANT behind `native.supported` except materialize-on-release, Bug-1 browse filter, SessionStart-acquire) — guard: `holder-takeover.test.ts`, `requester-takeover.test.ts`, `lease-client.test.ts`
 - **Lease ops are DO-AUTHORITATIVE request/response, NOT client-relayed signals** (→ the DO, 300s expiry). `lease-event` broadcasts NEVER enter the replay ring (re-query via `op:get`).
-- **Leases key on the per-INSTALL `deviceId`** (`device-identity.ts` → `getDeviceIdentity(userData)`, a UUID in Electron `userData`), NEVER the client `device` label (dev + built app share `~/.claude`, split `userData`). Do NOT swap this for `getMachineIdentity()` — that id is per-MACHINE and is the DEVICE REGISTRY's, so using it here would make the dev instance and built app indistinguishable to leases. See `.claude/rules/sync-spaces.md` → Device registry.
+- **Leases key on the per-INSTALL `deviceId`** (`device-identity.ts` → `getDeviceIdentity(userData)`, a UUID in Electron `userData`), NEVER the client `device` label (dev + built app share `~/.claude`, split `userData`) and **NEVER `getMachineIdentity()`** (per-MACHINE = the registry's; would make dev + built app indistinguishable).
 - **`noteSessionEnded`'s materialize-on-end MUST skip on timeout** — `session-exit` fires before the PTY worker dies; a space→local `renameSync` over CC's still-open inode is data loss.
 - **Holder-takeover ordering: interrupt → flush(local→space) → release → pushMoved → destroySession** (mirror-before-release; push-moved-before-destroy). Every step try/caught + outer backstop.
 - **Never-block: any lease/takeover failure proceeds with the resume (+ warning), never a hard block.** **Bug-1 browse filter: filter `sessionIdMap.entries()` to LIVE sessions** (the map isn't reliably pruned on close).
-- **MovedGate (App.tsx renderer):** the holder KEEPS the moved pill + destroys the CC session; `destroyedHandler` MUST read `movedSessionsRef.current`, not the `movedSessions` STATE (the once-registered handler closes over the empty initial Map).
+- **MovedGate (App.tsx):** the holder KEEPS the moved pill + destroys the CC session; `destroyedHandler` MUST read `movedSessionsRef.current`, not the `movedSessions` STATE (the once-registered handler closes over the empty initial Map).
 
 ## Resume Browser & identity (`session-browser.ts`) — guard: `session-browser.test.ts`
 - **Topic-file mtime IS the index's `lastActive`** — topic rewrites MUST preserve the original mtime (`fs.utimesSync`; `regenerateTopicCache()` does), else a feedback loop bumps every session and breaks the 30-day prune.
@@ -49,4 +49,4 @@ Per-conversation records at `~/YouCoded/Personal/Conversations/claude/<id>.json`
 ## Slug→path resolution (`session-browser.ts`, `conversations/resolve-local-project.ts`) — guard: `slug-path-resolution.test.ts`, `resolve-local-project.test.ts`
 - **`walkSlugParts` MUST try the LONGEST leading segment first** — shortest-first descends into a shorter sibling (`youcoded` before `youcoded-dev`) → resume silently launched in `$HOME`.
 - **Store-backed rows override the slug-walk with `resolveLocalProject`'s exact-basename resolution** (only when the folder holds the transcript). `session-manager.ts`'s `existsSync(cwd)?cwd:homedir()` mask now WARNS.
-- **ANDROID still has the pre-fix bug** (`SessionBrowser.kt` shortest-first; `session:create` drops `resumeSessionId`) — deferred to Phase 3.
+- **ANDROID still has the pre-fix bug** (`SessionBrowser.kt` shortest-first; `session:create` drops `resumeSessionId`) — deferred, Phase 3.
