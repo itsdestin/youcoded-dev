@@ -146,20 +146,33 @@ qcow2 file locking means a revert against a running VM **errors rather than corr
 Cosmetic aftermath: crash-y testing leaves Ubuntu showing *"System program problem detected"* (apport
 caught a killed/core-dumping process). It's test debris, not a guest fault, and reverting clears it.
 
-### Set `gl="off"` — this is mandatory, on every guest
+### The black screen is `spice` + GL, NOT GL itself — don't over-correct like I did
 
-**The single highest-value line in this doc.** With GL on, quickemu selects `-display egl-headless`,
-which on this host's Radeon 8060S renders **a permanently black screen** the moment the guest leaves
-text mode — in the viewer window *and* in `screendump`, so you cannot see what's wrong. The VM is
-alive at high CPU and looks exactly like a hang. Cost us an hour before we spotted it.
+**Symptom:** with quickemu's SPICE default, GL selects `-display egl-headless`, which on this host's
+Radeon 8060S renders **a permanently black screen** the moment the guest leaves text mode — in the
+viewer *and* in `screendump`, so you can't see what's wrong. The VM is alive at high CPU and looks
+exactly like a hang. Cost an hour to spot.
+
+**The fix is picking a working display path, not disabling GL globally:**
+
+| display | GL | result |
+|---|---|---|
+| `spice` (egl-headless) | on | ❌ **black screen** |
+| `spice` (qxl-vga) | **off** | ✅ works — plus clipboard, WebDAV, `--spice-shared-dir` |
+| `gtk` | **off** | ✅ works, but **every frame is blitted on the CPU** |
+| `gtk` | **on** | ✅ works, GPU-accelerated (verified on macOS 2026-07-16) |
+
+Blanket `gl="off"` was the wrong lesson to draw from the black screen: `gtk,gl=on` renders fine and
+lets the GPU do the blitting, while `gl=off` forces **software rendering of every frame** on a machine
+with a perfectly good iGPU idle. That's a latency floor no amount of resolution reduction fixes —
+proven the hard way: halving macOS's pixels (1920×1080 → 1280×800) changed the perceived lag **not at
+all**, because the bottleneck was the CPU blit path, not fill rate.
 
 ```bash
-printf 'gl="off"\n' >> ~/vms/<vm>.conf     # do this for every VM you create
+printf 'gl="on"\n'  >> ~/vms/macos-sonoma.conf     # gtk + GL: accelerated
+# For Windows/Ubuntu, gtk+gl=on is UNTESTED here — only spice+gl=on (black) and
+# gtk/spice+gl=off (fine) were tried. Test before trusting it.
 ```
-
-The **display backend is not the problem** — `spice` renders fine once GL is off (`qxl-vga, GL (off)`),
-and **`--display spice` is the better choice**: it adds clipboard sharing (spice-vdagent), WebDAV, and
-the `spicy` viewer's `--spice-shared-dir`, none of which `gtk` gives you. `screendump` works under both.
 
 ## Linux VMs
 
@@ -258,6 +271,34 @@ done
 **Don't panic when the disk shrinks.** It went 28 GB → 16 GB here at the hand-off into the real
 install phase: that's APFS issuing TRIM as it prepares the target volume and qcow2 reclaiming the
 freed blocks — not lost progress. It climbs again immediately.
+
+### macOS performance: what's fixable and what isn't
+
+macOS in QEMU is **sluggish, permanently**, and it's worth knowing why before burning an evening on it
+(I burned one). There is **no GPU acceleration available at any price on this host**:
+
+- **No paravirtualized path** — virgl/VirtIO-GPU 3D [only works with Linux guests](https://wiki.archlinux.org/title/QEMU/Guest_graphics_acceleration); macOS has no VirtIO-GPU driver.
+- **No passthrough path** — Apple's AMD support [stops at RDNA 2](https://dortania.github.io/GPU-Buyers-Guide/modern-gpus/amd-gpu.html) (Navi 21/23). The Radeon 8060S is **RDNA 3.5**, a generation past unsupported, and since Apple ended Intel Macs *support will never be added*. Passing it through would also blind the host (it's the only GPU) and Strix Halo's iGPU has a once-per-boot reset bug.
+
+So the levers are only: **let QEMU use the GPU to blit** (`gtk` + `gl="on"` — the big one; `gl="off"`
+means CPU-blitting every frame), and **make macOS composite less** (System Settings → Accessibility →
+Display → **Reduce transparency** + **Reduce motion**; the blur passes are expensive in software).
+Bake those into the snapshot so reverts inherit them.
+
+**Resolution is NOT a lever** — verified: 1920×1080 → 1280×800 halved the pixels and changed the
+perceived lag not at all. Don't repeat that experiment. (Changing it means editing OpenCore's
+`config.plist`, since it hard-codes `Resolution` = `1920x1080@32` and overrides the `OVMF_VARS-*.fd`
+that quickemu picks — swapping in `OVMF_VARS-1024x768.fd` does nothing. The `@32` there is **bits per
+pixel, not Hz**; there is no refresh rate to raise, because `vmware-svga` is a dumb framebuffer with no
+scanout clock.)
+
+**Also expect:** macOS ignores ACPI `system_powerdown` — shut it down from the Apple menu, by hand.
+And a fresh install runs **Spotlight indexing at ~350% CPU** for a while; let it finish before
+snapshotting so every revert boots settled instead of re-indexing.
+
+Verdict: fine as a **functional** target (click through install/setup/sign-in once per release), never
+pleasant to drive. For anything genuinely interactive, the `macos-latest` CI runner + a borrowed or
+rented Mac beats it — and tests arm64, which this VM can't.
 
 ### What a macOS VM can't tell you
 
