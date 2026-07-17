@@ -6,7 +6,7 @@ Navigation: `docs/MAP.md` maps every subsystem to its entry points, rule, lazy d
 
 ## Workspace Setup
 
-**On first session**, run `bash setup.sh` from the project root to clone all repos. On subsequent sessions, run it again to pull the latest from each repo's default branch. Do this before any other work.
+**On first session**, run `bash setup.sh` to clone all repos. On subsequent sessions, run it again to pull the latest from each repo's default branch — it syncs every sub-repo *and* the workspace repo (`youcoded-dev`) itself, and resolves the workspace from its own location, so it works from any directory. Do this before any other work.
 
 **Sub-repo code changes go to the relevant sub-repo** (e.g., `youcoded/`, `youcoded-core/`, `wecoded-themes/`, `wecoded-marketplace/`) — open PRs there, push there. Do NOT mix sub-repo code into the workspace repo (`youcoded-dev`).
 
