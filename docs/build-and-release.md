@@ -66,9 +66,13 @@ See `docs/local-dev.md` for caveats (plugin install shares state with built app,
 `run-dev.sh` is for iterating. When you need a **real installed app** from unreleased code —
 to dogfood master as a daily driver, or to exercise the install / first-run / sign-in flow on a
 clean VM — dispatch **`desktop-test-build.yml`**. It's `workflow_dispatch`-only, runs `npm test`
-plus a launch smoke test, and uploads Win `.exe` / macOS `.dmg` / Linux `.AppImage` artifacts
-(**7-day retention** — re-dispatch after that, don't hunt for the old run).
+plus a launch smoke test, and uploads Win `.exe` / macOS `.dmg` / Linux `.AppImage` + `.deb` +
+`.rpm` + `.pacman` artifacts (**7-day retention** — re-dispatch after that, don't hunt for the
+old run). The Linux glob mirrors `desktop-release.yml`'s as of youcoded#158; before that a beta
+built the three native packages and discarded them at upload, which is why nothing but the
+AppImage was testable pre-v1.3.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "workflow_dispatch"} -->
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "\\*\\.pacman"} -->
 
 ```bash
 # version MUST sort above the latest release — see the trap below
@@ -87,6 +91,13 @@ it. `AppData/Roaming/youcoded` (window bounds, localStorage) carries over, and `
 `~/.youcoded/` are shared as always — which is what makes it usable as a daily driver, and also
 what makes rollback lossy. There is no side-by-side desktop equivalent of Android's `.releasetest`
 suffix; if you want isolation, use a VM.
+
+**On Linux "in place" depends on the format.** The AppImage is a loose file, so a beta lands *beside*
+the release you already have and you roll back by launching the old file. `.deb` / `.rpm` / `.pacman`
+install to a fixed `/opt/YouCoded` and replace a prior native install (but not an AppImage). Either
+way `appId` is shared, so all of them read the same `~/.config/youcoded` — the code rolls back, the
+state doesn't. Quit the running app before launching a beta: two instances on one userData contend
+over the same LevelDB.
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "appId: com.youcoded.desktop"} -->
 
 **The version input is load-bearing — read this before picking one.** `compareVersions`
