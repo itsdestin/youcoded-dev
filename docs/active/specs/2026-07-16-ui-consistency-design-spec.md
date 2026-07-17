@@ -218,6 +218,57 @@ theme-overridable).
 - ZoomOverlay + ModelLoadingBar → `.layer-surface` at L4; inner buttons get focus rings;
   ZoomOverlay hover targets change `hover:bg-well` → `hover:bg-inset` (on the panel surface).
 
+### 1.8 Session 8 primitives — exact recipes (inlined so no artifact fetch is needed)
+
+**CloseButton** (`components/ui/CloseButton.tsx`, change 41) — Button `icon`·ghost + the shared ✕:
+```
+<Button size="icon" variant="ghost" aria-label={label ?? 'Close'}>
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+  </svg>
+```
+icon size = `w-7 h-7 p-0` on the Button base; ghost = `text-fg-dim hover:text-fg hover:bg-inset`.
+Terminal scroll buttons keep `w-10 h-10` via className override (documented exception).
+
+**Toast** (`components/ui/Toast.tsx`, change 44) — pixel-identical to today's global toast:
+```
+container: fixed bottom-16 left-1/2 -translate-x-1/2 (L4, z-100)
+           layer-surface px-4 py-2 rounded-lg text-sm text-fg
+           (border/shadow/background come from .layer-surface — drop the hand-rolled
+            bg-panel border border-edge shadow-lg)
+a11y:      role="status" aria-live="polite"
+behavior:  component owns the dismiss timer (default 3000ms) — call sites stop running setTimeout
+error:     prepends the §1.6 mark (w-1.5 h-1.5 rounded-full bg-destructive)
+variants:  anchored (LikeButton) = same classes, absolute bottom-full right-0 mb-1 whitespace-nowrap
+sites:     App.tsx:3009 (global), LikeButton.tsx:203 (adopts this look — the one visible change),
+           marketplace role="status" strips (InstallingFooterStrip, InstallFavoriteCorner)
+```
+
+**SegmentedTabs** (`components/ui/SegmentedTabs.tsx`, change 45 — option B locked):
+```
+tab:       px-3 py-1.5 rounded-md text-xs font-medium transition-colors + Button focus ring
+active:    bg-accent text-on-accent          inactive: text-fg-2 hover:bg-inset   (option B)
+a11y:      role="tablist" / role="tab" aria-selected; ArrowLeft/Right roving focus
+bare:      flex gap-2                        (LibraryScreen.tsx:176 — drops text-sm → text-xs)
+contained: flex gap-1 p-1 bg-inset/50 rounded-lg, tabs get flex-1   (BugReportPopup.tsx:183)
+```
+
+**ProgressBar** (`components/ui/ProgressBar.tsx`, change 46):
+```
+track:     h-1.5 rounded-full bg-inset overflow-hidden        (never bg-well)
+fill:      h-full rounded-full transition-[width] duration-300 ease-out, width = pct%
+           default bg-accent; optional color prop → inline backgroundColor (UsageCard's status hues)
+label:     optional right-aligned  text-xs text-fg-muted tabular-nums  percent
+sites:     ModelLoadingBar.tsx:141 (bg-well→bg-inset), FirstRunView.tsx:57 (already matches),
+           LocalModelsSection.tsx:115 (fill gains rounding), UsageCard.tsx:63 (color prop),
+           UpdatePanel.tsx:275 (NEW bar under the footer button; the % leaves the button label —
+           button becomes Button primary lg, disabled while downloading, label "Downloading…")
+```
+
+**Loading-strip spinner** (change 49): `<BrailleSpinner size="sm"/>` inserted before the
+"Loading"/"Preparing" text in ModelLoadingBar.tsx:107-133 — the existing BrailleSpinner
+component, standard cadence, no new primitive.
+
 ---
 
 ## 2. The full change ledger (all approved)
@@ -282,7 +333,7 @@ its deliberately-quiet inline variant (its source comment says quiet was intenti
 | # | What |
 |---|---|
 | 35 | `@theme` gains `--text-2xs: 11px`, `--text-3xs: 10px`, `--text-4xs: 9px`. Mechanical rename of ~538 raw sites (`text-[11px]`×190 → text-2xs, `text-[10px]`×313 → text-3xs, `text-[9px]`×35 → text-4xs) — **zero visual change**. Stragglers (13px ×23, 12px ×11, 15/17px ×5) fold into the nearest named size case-by-case, flagged in the PR when the fold is visible. New rule: no arbitrary `text-[Npx]`. |
-| 36 | `link`/`link-hover` become optional pack tokens; when absent the engine derives them in `computeOverlayTokens`: `link = accent` when accent-fg distance > 40, else `fg-2` (the exact `--code` guard at theme-engine.ts:198-208); `link-hover` = link brightened ~15% toward fg. Fixes light-blue `#2563EB` links on every community pack (they fall back to `:root` today — verified live on halftone-dimension). Built-ins keep their hand-picked values. Contrast audit gains a link-vs-canvas check. |
+| 36 | `link`/`link-hover` become optional pack tokens; when absent the engine derives them in `computeOverlayTokens`: `link = accent` when accent-fg distance > 40, else `fg-2` (the exact `--code` guard at theme-engine.ts:198-208); `link-hover = color-mix(in oklab, <link> 85%, <fg>)` (exact formula — matches the approved Session 8 render). Fixes light-blue `#2563EB` links on every community pack (they fall back to `:root` today — verified live on halftone-dimension). Built-ins keep their hand-picked values. Contrast audit gains a link-vs-canvas check. |
 | 37 | **creme.json:16-17 is wrong and shipping**: fg-muted `#9E9283` (2.47:1, fails ≥3:1) and fg-faint `#BEB3A4` (1.67:1, fails ≥1.8:1). Fix to the audited values from globals.css:133-134: fg-muted `#8A7E6E`, fg-faint `#B0A595` — a real visual legibility fix, the JSON (not the CSS) is what renders after the engine applies. Structural: `themes/builtin/*.json` becomes the single source; the globals.css `[data-theme]` blocks (anti-FOUC only) and the hardcoded copy in `audit-theme-contrast.mjs:52-77` get generated from it or pinned by a unit test that diffs all three. |
 
 ### Session 7 — Form controls (38–40)
@@ -305,7 +356,7 @@ drawer — approved with one correction, the tightened title↔subtitle gap in 5
 |---|---|
 | 41 | **Button `icon` size + `CloseButton` component.** ~9 distinct icon-button idioms exist and none can go through the approved Button (no square size). The standard popup ✕ (`w-7 h-7 rounded-sm hover:bg-inset` + copy-pasted SVG) is duplicated in ≥8 files (AccountSection.tsx:93, ModelPickerPopup.tsx:316/:388, PreferencesPopup.tsx:132, AboutPopup.tsx:109, ModelProvidersPopup.tsx:109/:403, ContextPopup.tsx:128, PerformancePopup.tsx:107). Also migrates: **InputBar send (`:607`)** — the app's most-used button, currently hand-rolled `bg-accent` + the rejected `hover:brightness-110`; attachment-remove × (InputBar.tsx:481); marketplace filter icon (MarketplaceFilterBar.tsx:84); GameLobby kebab (:125); terminal scroll buttons (TerminalToolbar.tsx:66); ThemeScreen swatch delete (:177 — also kills the app's last raw `hover:bg-black/20`). `aria-label` required on every icon button. |
 | 42 | **Textarea primitive** on FIELD (§1.3): 11 sites (ContextPopup:161, BugReportPopup:194/:226, PreferencesPopup:233, QuickChips:351, ContextEditorOverlay:255, RatingSubmitModal:292, ReportReviewButton:189, NoteEditor:29, MarkdownView:22). InputBar's mirror-overlay textarea excluded. Search/number/password inputs fold into change 20's sweep under FIELD. |
-| 43 | **`--on-destructive` derivation** in `computeOverlayTokens`, same guard style as `--code`/change 36: white when `overlay.destructive` is dark, near-black when light. Danger Button + danger Toggle labels consume it (§9.B). Contrast audit gains a destructive-vs-on-destructive check alongside change 36's link check. Rationale: `--destructive` is pack-overridable via `overlay.destructive` (theme-types.ts:109) with **no contrast guard**, so the approved `text-white` violates rule 15 and can silently go white-on-light. |
+| 43 | **`--on-destructive` derivation** in `computeOverlayTokens`. Exact rule: `--on-destructive = '#FFFFFF'` when WCAG contrast(white, destructive) ≥ 4.5:1, else `'#1A1A1A'` (compute via the standard relative-luminance formula; #DD4444 vs white = ~4.7:1, so every built-in and non-overriding pack derives white — zero visual change). Danger Button + danger Toggle labels consume it (§9.B). Contrast audit gains the matching assertion: on-destructive vs destructive ≥ 4.5:1. Rationale: `--destructive` is pack-overridable via `overlay.destructive` (theme-types.ts:109) with **no contrast guard**, so the approved `text-white` violates rule 15 and can silently go white-on-light. |
 | 44 | **Toast primitive** — one transient-feedback component replacing three uncoordinated systems: the App-global toast (App.tsx:3009, `fixed bottom-16 … bg-panel border-edge`, manual setTimeout at every call site), LikeButton's local mini-toast (LikeButton.tsx:203 — different size/radius/z), and the marketplace `role="status"` strips. Anatomy joins the §1.6 state family; `aria-live="polite"`; auto-dismiss owned by the component. |
 | 45 | **SegmentedTabs primitive** — one active-state recipe for tab rows. Today: Library tabs (LibraryScreen.tsx:183 `bg-accent text-on-accent` active / `bg-inset` inactive), BugReportPopup Bug/Feature (:185 — same active, but **no** inset on inactive), project-view tabs, Settings section nav. Marketplace filter Chips stay chips (filters ≠ tabs, rule 8). **DECIDED 2026-07-16: inactive style = option B, transparent** (`text-fg-2 hover:bg-inset`); recipe: `px-3 py-1.5 rounded-md text-xs font-medium` + ring, active `bg-accent text-on-accent`. Library tabs shrink text-sm → text-xs. |
 | 46 | **ProgressBar primitive** — track `bg-inset` (decision needed: ModelLoadingBar.tsx:141 uses `bg-well` today, FirstRunView.tsx:57 + LocalModelsSection.tsx:115 use `bg-inset`), rounded `bg-accent` fill (LocalModelsSection's fill is unrounded today), status-color fill via prop (UsageCard.tsx:63 keeps its inline status color). UpdatePanel gets a real bar — today download % is button-label text (:279) on a `rounded-sm` + `hover:opacity-90` button (two rejected idioms; the button itself is caught by the tranche-1 sweep). |
@@ -374,10 +425,11 @@ the web UI automatically. No IPC changes anywhere in this spec.
   `.layer-surface .bg-accent:not(:hover)` + add an explicit hover companion rule, and add the
   missing `.layer-surface .bg-destructive` protection rule (see risk 1 below). Without this,
   every popup button's approved hover is dead on arrival.
-- Create `components/ui/` with Button (incl. `icon` size — the size ships even while its
-  migration change 41 awaits approval), Toggle, field.ts (+ Textarea), Select, Checkbox, Radio,
-  states.tsx, AnchorTip — **with pinning tests** (variant class output, role/aria attributes,
-  disabled classes) per the workspace "pinning test first" rule.
+- Create `components/ui/` with Button (incl. `icon` size), CloseButton, Toggle, field.ts
+  (+ Textarea), Select, Checkbox, Radio, states.tsx, AnchorTip, Toast, SegmentedTabs, ProgressBar
+  (§1.8 recipes) — **every primitive with pinning tests** (variant class output, role/aria
+  attributes, disabled classes) per the workspace "pinning test first" rule. Building all
+  primitives in tranche 0 keeps tranche 8 a pure migration sweep.
 
 **Tranches 1–7** (independent after tranche 0; order by payoff): 1 Buttons (changes 1–14, ~50 files
 — the `bg-accent text-on-accent` grep returns the worklist), 2 Toggles+inputs (15–21),
