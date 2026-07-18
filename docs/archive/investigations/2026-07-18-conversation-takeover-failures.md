@@ -1,6 +1,11 @@
 ---
-status: active
+status: shipped
 ---
+
+> **Resolution shipped 2026-07-18** — youcoded PR #176 (merge `e7b09f60`). Fixes 1-3
+> (the reported symptoms) plus the §3.5 secondary issues landed; only Fix 4 (holder
+> ack) and the TTL/sweeper tuning remain deferred. Implementation plan:
+> `docs/archive/plans/2026-07-18-conversation-takeover-fixes.md`.
 
 # Conversation takeover failures (Plan 2b leases) — symptoms, diagnosis, proposed fixes
 
