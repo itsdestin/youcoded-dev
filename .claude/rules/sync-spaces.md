@@ -8,7 +8,7 @@ paths:
   - "youcoded/desktop/src/main/sync-error-classifier.ts"
   - "youcoded/desktop/src/main/github-auth.ts"
   - "youcoded/desktop/src/main/github-connect.ts"
-last_verified: 2026-07-16
+last_verified: 2026-07-18
 verify:
   - path: youcoded/desktop/src/main/sync-spaces/engine.ts
   - path: youcoded/desktop/src/main/sync-spaces/git-transport.ts
@@ -28,6 +28,7 @@ verify:
   - test: youcoded/desktop/tests/sync-spaces-git-transport.test.ts
   - test: youcoded/desktop/tests/sync-spaces-engine.test.ts
   - test: youcoded/desktop/tests/sync-hub-socket.test.ts
+  - test: youcoded/desktop/tests/device-activity-label.test.ts
   - test: youcoded/desktop/tests/sync-warnings-lifecycle.test.ts
   - test: youcoded/desktop/tests/github-connect.test.ts
 ---
@@ -47,6 +48,7 @@ verify:
 
 ## SyncHub (`sync-hub-socket.ts` + worker `SyncGroupRoom` DO) — guard: `sync-hub-socket.test.ts`
 - **DO is per-account, an ACCELERANT not a source of truth** — never optimize away the 120s poll. **spaceKey = `repoNameForSpace()`, never the local id.** **Signal ONLY on `pushed:true`.** **The hub send runs LAST in `broadcast()`, own try/catch.** **A superseded `startEngine` owns no global state.**
+- **Per-device sync recency rides the SAME signal.** The `pushed:true` signal now also carries `deviceId` (the machineId) + server `at`; the DO stores a durable per-account `lastSyncByDevice` map (in DO storage) and ships it in `hello`. It is accelerant/presence-grade — losing it degrades a device row to the launch-time `lastSeen` fallback, never breaks. Client exposes it on `getSyncStatus()` + the `status:data` push; renderer's PURE `deviceActivityLabel` (`renderer/components/device-activity-label.ts`, guard `device-activity-label.test.ts`) renders "Synced just now" (<5min) / "Last synced X ago". **Self reads the LOCAL live `lastSyncEpoch`, NOT the map** — the DO never echoes a device's own signal back, so self's own map entry only refreshes on reconnect and would drift stale.
 
 ## Import (`sync-spaces/import-project.ts`) — guard: `sync-spaces-import.test.ts`
 - **Import MOVES the folder — never copy-and-keep-both** (a survivor forks the work). The EXDEV branch re-checks `existsSync(dest)` BEFORE cpSync. Store remaps (`remapTranscriptDir` etc.) degrade to WARNINGS, never silent drops.
