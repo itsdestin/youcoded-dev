@@ -21,6 +21,7 @@ verify:
   - test: youcoded/desktop/tests/harness-session-loop.test.ts
   - test: youcoded/desktop/tests/harness-history-rebuild.test.ts
   - test: youcoded/desktop/tests/harness-sdk-toolcall-contract.test.ts
+  - test: youcoded/desktop/tests/harness-tools-core.test.ts
 ---
 
 # Multi-model native runtime (provider seam + native chat sessions)
@@ -51,6 +52,7 @@ verify:
 - **Tool-call/result pairing is an invariant EVERYWHERE** — the driver back-fills canceled/interrupted calls, `rebuildHistory` back-fills crash-truncated ones, and `fitToContext` trims pair-aware. *Why:* a dangling tool_call 400s on real providers and bricks the session. Guards: `harness-session-loop.test.ts` + `harness-history-rebuild.test.ts` (truncated-tail).
 - **The driver emits ALL of a step's tool-use events BEFORE executing** (not interleaved) — `rebuildHistory` groups by event adjacency and relies on this ordering; don't "fix" it back to interleaved. Guard: `harness-session-loop.test.ts`.
 - **The read-before-edit registry RESETS on resume** — files change while a session is closed, so a stored Read can't stand in for a fresh one. Don't "optimize" the registry back from persisted Read events. Guard: `harness-session-loop.test.ts`.
+- **Bash cwd is SCOPED-PERSISTENT; the file tools are not** — `HarnessSession.shellCwd` tracks the shell dir across calls (read back via a `__YC_CWD__` sentinel `printf`ed on its own **newline-terminated** line, with `exit $__yc_rc` preserving the exit code); a `cd` outside `ctx.cwd` is reverted AND announced. Only cwd persists — env/aliases don't — and it resets on resume like readRegistry. Read/Edit/Write/Glob/Grep still resolve relative paths against `ctx.cwd`, so `cd sub` does NOT move them. *Why:* stateless-and-silent cost ~6 wasted tool calls in one session (the upstream complaint in CC #35058/#42837); the sentinel's trailing newline and the uncapped tail buffer are both load-bearing — without them a background writer corrupts the path and a chatty command drops the `cd`. PowerShell (Windows sans Git Bash) stays stateless by design. Guard: `harness-tools-core.test.ts` ("scoped cwd persistence").
 
 ## Native web tools + presets (Plan B) — guards: `net-guard.test.ts`, `web-fetch-tool.test.ts`, `search-backends.test.ts`, `search-service.test.ts`, `ask-user-question-tool.test.ts`, `native-session-host.test.ts`, `tool-registry-manifest.test.ts`
 - **WebFetch/WebSearch follow redirects MANUALLY and re-validate every hop** (scheme + literal IP + DNS answer) — a public URL 302ing to a private/loopback/metadata address (incl. the hex-form `[::ffff:127.0.0.1]` that `new URL` normalizes to `::ffff:7f00:1`) is the SSRF bypass class. Honest friction, not a boundary (TOCTOU rebind possible). Never `redirect:'follow'`. Guard: `net-guard.test.ts`.
