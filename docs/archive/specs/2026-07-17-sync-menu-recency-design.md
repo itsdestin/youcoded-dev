@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-07-17
 topic: sync-menu-recency
 repos: [youcoded, wecoded-marketplace]

@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 ---
 
 # Plan — Sync menu per-device recency (via SyncHub DO)
