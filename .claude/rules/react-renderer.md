@@ -1,7 +1,7 @@
 ---
 paths:
   - "youcoded/desktop/src/renderer/**"
-last_verified: 2026-07-15
+last_verified: 2026-07-17
 verify:
   - path: youcoded/desktop/src/renderer/App.tsx
   - path: youcoded/desktop/src/renderer/components/HeaderBar.tsx
@@ -10,6 +10,8 @@ verify:
   - path: youcoded/desktop/src/renderer/styles/globals.css
     contains: "chrome-glass"
   - path: youcoded/desktop/src/renderer/components/RemoteSnapshotExporter.tsx
+  - path: youcoded/desktop/src/renderer/hooks/useSessionAttention.ts
+    contains: "useSyncExternalStore"
 ---
 
 # React Renderer (shared desktop + Android WebView)
@@ -20,6 +22,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **Ch
 - **No `process.env`, `require()`, `fs`/`path`/`os`, or direct filesystem access** — the WebView has no Node runtime. Go through `window.claude.*` (from `remote-shim.ts`); use ES `import`, browser APIs, `fetch`.
 - **Platform detection: `location.protocol === 'file:'` = Android.** Use `remote-shim.ts` helpers, not the check inline.
 - **Perf:** prefer `content-visibility: auto` over virtualization (keeps find-in-page + a11y); memoize every Context value (`useMemo`), split contexts by change frequency. The chat reducer preserves `toolCalls`/`toolGroups` Map refs when unchanged so `React.memo` works — don't clone them needlessly.
+- **Reading chat state on the render path: use a cached selector, not the whole map.** `state/chat-context.ts` is a custom `useSyncExternalStore` store, not a plain Context. `useChatState(id)` re-renders only on that session's change. `useChatStore()` gives effect-only readers (`getState`/`subscribeAll`) and backs cached-selector hooks (`useSessionAttention`, `useActiveSessionModel`) that re-render their host only when a *derived* value changes. **Do NOT put `useChatStateMap()` on the render path** — it re-renders on every dispatch; the one sanctioned caller is `RemoteSnapshotExporter` (serializes the full map for remote hydration). **Never call `store.getState()` during render** for render-path data — it bypasses the subscription and can tear; add a selector instead. (2026-07-17 AppInner tranche removed AppInner's whole-map subscription this way — ~20× fewer AppInner re-renders.)
 
 ## Framed shell & chrome-glass (`globals.css`, `App.tsx`)
 - **ONE backdrop-filter, ever.** The whole frame chrome is a single `<div class="chrome-glass">` clipped to a donut via `clip-path: polygon()`. Per-element `backdrop-filter` on HeaderBar/InputBar/StatusBar/frame-edge/frame-divider/drawer-pane creates anti-aliased compositing seams at non-100% zoom — don't reintroduce them in framed-chrome mode.

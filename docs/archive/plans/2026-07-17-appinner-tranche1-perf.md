@@ -1,8 +1,10 @@
 ---
-status: draft
+status: shipped
 ---
 
 # AppInner Tranche 1 — Perf Wins + Stage-0 Extractions Implementation Plan
+
+> **SHIPPED 2026-07-17** — merged to youcoded master as `f1ab07fc` (branch `perf/appinner-tranche1`). All 8 tasks + review fix executed; verified `tsc` + 2589 tests + `vite build`; in-situ measurement ~20× fewer AppInner re-renders (see Measurements). Tranches 2–4 remain (ROADMAP). Archived for reference.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
