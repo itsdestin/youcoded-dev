@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 # Agent-shell CWD model + Grep `spawn ENOTDIR` — findings & proposed fixes
@@ -12,6 +12,8 @@ status: active
 `/opt/YouCoded` (PID 769035), confirmed identical source in the dev workspace.
 
 ---
+
+**RESOLUTION (2026-07-18):** both issues shipped. Issue 2 (Grep `spawn ENOTDIR`) → youcoded PR #172. Issue 1 (Bash CWD) → youcoded PR #174, which implemented the scoped-persistence option below: harness-tracked cwd, `__YC_CWD__` sentinel readback, out-of-root revert with a `Shell cwd was reset to …` notice, cwd-only (no env) persistence, and an updated tool description. PowerShell (Windows without Git Bash) stays stateless by design. Guarded by 5 tests in `desktop/tests/harness-tools-core.test.ts`.
 
 ## TL;DR
 
