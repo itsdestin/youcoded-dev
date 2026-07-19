@@ -713,6 +713,17 @@ first rather than making that many unilateral variant/size calls inside a large 
 > icon-only closers (change 41) and ~52 non-button interactive surfaces that belong to other
 > primitives (SegmentedTabs, cards, chips, StatusBar pills). **The triage this paragraph asks for
 > is §11**, where the 153 collapse into 8 mechanical patterns + 16 judgment calls, all decided.
+>
+> **AND "changes 1–14 are done" is itself wrong.** Verified 2026-07-19 during the tranche 2
+> implementation: four of the seven supposedly-migrated files still contained hand-rolled buttons
+> carrying the full pattern set (`bg-accent text-on-accent hover:brightness-110`, `text-[11px]`,
+> no focus ring) — **AccountSection ~9, LocalModelsSection ~5, SettingsPanel ~5,
+> ConnectGithubModal ~2**. Those ~21 were never in the 153, because the audit trusted this
+> paragraph and excluded all seven files. This is almost certainly where the "~25–30" number came
+> from: someone counted the leftovers *inside* the migrated files and never swept the other ~50.
+> Finished in tranche 2 — see §11.7. **Lesson: "file X is migrated" is not a durable claim unless
+> a grep-ban enforces it.** §8's `audit-ui-tokens` pass, still unapproved, is what would have
+> caught this at the time.
 
 ### 10.8 Smaller corrections
 
@@ -777,7 +788,7 @@ All approved as recommended. Context-free: apply everywhere the pattern matches.
 
 | # | Decision | Sites |
 |---|---|---|
-| 60 | **Option A — `secondary` (outline).** The filled-grey family (`bg-inset hover:bg-edge text-fg-2`) is a second secondary; it collapses into the primitive's outline. Several sit beside a primary as genuine peers, which ghost under-weights. Rejected: ghost (B), and adding a 5th `soft` variant. | ~14 — GameLobby :161 :377 :448, GameOverlay:57, ConnectFourBoard:55, SyncSetupWizard :756 :803 :936, SyncPanel:1496, App.tsx :2841 :2895, ModelPickerPopup:518, MovedGate:46, ErrorBoundary:32 |
+| 60 | **Option A — `secondary` (outline).** The filled-grey family (`bg-inset hover:bg-edge text-fg-2`) is a second secondary; it collapses into the primitive's outline. Several sit beside a primary as genuine peers, which ghost under-weights. Rejected: ghost (B), and adding a 5th `soft` variant. | ~13 — GameLobby :161 :377 :448, GameOverlay:57, SyncSetupWizard :756 :803 :936, SyncPanel:1496, App.tsx :2841 :2895, ModelPickerPopup:518, MovedGate:46, ErrorBoundary:32. **Correction 2026-07-19:** `ConnectFourBoard:55` ("Leave Game") was listed here in error — its classes are `text-fg-dim hover:text-fg bg-inset`, which is ghost's idiom with a persistent fill, not the filled-grey family (`bg-inset hover:bg-edge text-fg-2`). It ships as `ghost`, matching the original audit. |
 | 61 | ▲ **Radius + focus ring only. Colors untouched — including the inverted red.** The proposed red→blue flip on ToolCard:382 is **REJECTED**: "Always allow" stays red even though red means "No" one row below. Muscle memory on the app's most-clicked control outweighs colour-semantics tidiness; users read these by position and label. Status colours stay hardcoded per `desktop/CLAUDE.md`. | 5 — ToolCard :375 :382 :396 :405 :414 |
 | 62 | ▲ **Option A — filled `danger`.** Skip-permissions gets the same weight as a real deletion. **Known + accepted consequence:** "Create Session (Dangerous)" now looks identical to "Remove project"; filled red means "stop and read this", not strictly "this destroys something". Rejected: `danger-outline` (B). | 4 + 2 toggles — SessionStrip:1066, ResumeBrowser:557, App.tsx :2832 :2838, SkipPermissionsInfoTooltip:70 |
 | 63 | **Option B — promote to `primary`.** Keeps the Build-vs-Browse hierarchy without a 5th variant. Rejected: collapse to secondary (A), add `accent-outline` (C). | 1 — ThemeScreen:213 |
@@ -842,3 +853,65 @@ mechanic can be doing unrelated jobs.
 - Changes 71 and the ~52 non-button surfaces stay out of the Button sweep entirely — they want
   SegmentedTabs and a card primitive (tranches 4 and 8).
 - Change 72's `busy` prop and change 49's BrailleSpinner are the same slot; do them together, later.
+
+### 11.7 Tranche 1 was incomplete — found during tranche 2
+
+§10.7 claims "changes 1–14 are done". Verified false on 2026-07-19. Four of the seven files it
+counts as migrated still held hand-rolled buttons with the full pattern set:
+
+| File | Left behind |
+|---|---|
+| `AccountSection.tsx` | ~9 |
+| `LocalModelsSection.tsx` | ~5 |
+| `SettingsPanel.tsx` | ~5 |
+| `ConnectGithubModal.tsx` | ~2 |
+
+None were in §11.1's 153 — the audit excluded all seven files on §10.7's word. Swept in tranche 2.
+
+**Two ledger gaps found the same way**, both from enumerating sites by grep rather than by reading
+the surface:
+
+- **Change 62 missed a third skip-permissions Create button.** The ledger cites SessionStrip:1066,
+  ResumeBrowser:557 and `App.tsx :2832 :2838` — but those two App.tsx line numbers are the *toggle*
+  and a warning `<p>`, not a button. The welcome form has its own
+  `Create Session` / `Create (Dangerous)` button that nothing in the ledger named. It ships filled
+  `danger` like the other two.
+- **Change 61 covered only the five permission buttons.** ToolCard's AskUserQuestion
+  `Submit` / `Dismiss` pair has no approved variant and remains open (see §11.4's note).
+
+**Also dead code, found while chasing a change-55 miss:** `SyncPanel`'s confirm dialog takes a
+`confirmColor: 'red' | 'blue'` prop, and the `'blue'` branch — `bg-blue-600 hover:bg-blue-500
+text-white`, one of the last hardcoded-blue survivors — is unreachable. There is exactly one call
+site and it passes `"red"`. Delete the branch rather than migrating it.
+
+**What this says about the process.** Three of these four findings came from *reading the code at
+the edit site*, not from the audit's greps — the same lesson §11.5 records for change 74. A grep
+tells you which files match a pattern; it cannot tell you that a cited line number is a `<p>`, that
+a variant branch has no callers, or that a file someone marked "done" isn't. The durable fix is
+§8's still-unapproved `audit-ui-tokens` grep-ban: had it been enforcing "no raw `bg-accent
+text-on-accent` outside `ui/`" since July, none of the four files could have drifted back, and the
+"~25–30" estimate would never have been written.
+
+### 11.8 Open items — need Destin's call before tranche 2 closes
+
+Everything below was found DURING implementation and has no approved decision. Each was left
+untouched rather than guessed at.
+
+| # | Item | Why it needs a call |
+|---|---|---|
+| A | **`SettingsPanel` "Add Device"** — `bg-blue-500/10 border-blue-500/25 text-blue-400 hover:bg-blue-500/20` | A soft-blue *outline*, not the `bg-blue-600`/`text-white` family change 55 kills, and in no change's site list. Structurally identical to change 63's accent-outline problem (a variant that doesn't exist) and change 66's orange (a status color worth keeping). Forcing it into `secondary` needs three color overrides fighting `border-edge-dim`/`text-fg-2` on CSS source order — and `mergeClasses` resolves radius/size/padding groups, NOT colors, so the result would be fragile. Wants an explicit ruling. |
+| B | **`ToolCard` AskUserQuestion `Submit` / `Dismiss`** | Change 61 enumerated only the five permission buttons. Submit hand-rolls a disabled look on top of a real `disabled` prop; Dismiss uses a grey→red hover that is neither `ghost` nor `danger-outline`. Radius normalized so the rows align; variant open. |
+| C | **`ContextPopup` split button** ("Compact conversation" + chevron) | A joined pair sharing one `rounded-sm overflow-hidden border border-accent` wrapper with an internal `border-l` seam. Migrating either half reintroduces per-button radius inside the clipped container and breaks the seam. Needs a split-button decision, not a variant. |
+| D | **`GameLobby` "Send request"** | Decision 60 assigns `secondary`, but it is the only action in the "Add a friend" block and reads as that section's primary. Shipped `secondary` per the decision; one word to flip. |
+| E | **`SettingsPanel` project-folder picker** | A `<button>` that renders the current value, left-aligned and truncating — behaves as a field, not an action. Left under the input/select exclusion; arguably belongs to the Select work (change 21). |
+| F | **`InputBar` attachment-chip ✕** (`w-4 h-4 rounded-full`) | Sits inside a chip; `CloseButton`'s 28×28 may be too heavy. Excluded from the change-76 sweep pending a look. |
+| G | **`InputBar` send button** (`:607`) | Deliberately out of scope for change 76 — the app's most-used control, takes a theme-supplied custom icon (Halftone ships `icon-send.svg` + a `.send-btn` glow). Wants its own render before anyone touches it. |
+
+**Visual checks queued for Destin** (per CLAUDE.md, these are eyeball calls, not scripted ones):
+- The `panel-glass` nav chips ("Your Library" / "Marketplace") and `ThemeScreen`'s "Browse Theme
+  Marketplace" lost their resting `bg-inset` / `bg-panel` fills when the filled-grey family
+  collapsed to outline `secondary` (decision 60). On wallpaper themes `panel-glass` is now doing the
+  surface work alone. Three agents independently flagged this.
+- `AccountSection`'s two Save buttons dropped their `py-2` override, so they no longer height-match
+  the inputs beside them (vertically centred, slightly shorter). Change 3 set the precedent that
+  rows may get shorter, so it shipped — but it is a visible alignment change.
