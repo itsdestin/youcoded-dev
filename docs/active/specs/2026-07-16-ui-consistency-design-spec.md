@@ -1,7 +1,7 @@
 ---
 status: active
 date: 2026-07-16
-amended: 2026-07-19 (button triage — changes 52–76 decided; §11)
+amended: 2026-07-19 (tranche 2 BUTTON half SHIPPED — youcoded PR #181, merge `2bf29a44`)
 owner: Destin (decisions) / Claude (spec)
 ---
 
@@ -10,6 +10,9 @@ owner: Destin (decisions) / Claude (spec)
 > WRONG against the real codebase and §10 records what actually shipped and why.
 > The corrections are load-bearing — following §1/§9 literally reintroduces bugs
 > that are now fixed and pinned by tests.
+>
+> **Tranche 2's BUTTON half shipped 2026-07-19** — youcoded PR #181, merge `2bf29a44`.
+> Its TOGGLE/INPUT half (changes 15–21, plus new 77/78) is NOT started.
 >
 > **Then read §11** (added 2026-07-19). The "~25–30 remaining hand-rolled buttons"
 > §10.7 owed a triage for is really **~153 across ~50 files**. §11 is that triage:
