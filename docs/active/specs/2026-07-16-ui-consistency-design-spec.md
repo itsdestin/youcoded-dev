@@ -1,7 +1,7 @@
 ---
 status: active
 date: 2026-07-16
-amended: 2026-07-19 (tranche 2 BUTTON half SHIPPED — youcoded PR #181, merge `2bf29a44`)
+amended: 2026-07-19 (tranche 2 COMPLETE — buttons PR #181 `2bf29a44`, inputs PR #183)
 owner: Destin (decisions) / Claude (spec)
 ---
 
@@ -11,8 +11,10 @@ owner: Destin (decisions) / Claude (spec)
 > The corrections are load-bearing — following §1/§9 literally reintroduces bugs
 > that are now fixed and pinned by tests.
 >
-> **Tranche 2's BUTTON half shipped 2026-07-19** — youcoded PR #181, merge `2bf29a44`.
-> Its TOGGLE/INPUT half (changes 15–21, plus new 77/78) is NOT started.
+> **Tranche 2 is COMPLETE (2026-07-19)** — buttons in youcoded PR #181 (merge `2bf29a44`),
+> toggles/fields/selects in PR #183. Implementation logs: **§11** (buttons) and **§13**
+> (inputs). Change 78 is the one deferred item — see §11.10 for why it's a feature, not a
+> migration. Tranches 3–8 remain.
 >
 > **§12** (added 2026-07-19) is a separate, non-blocking finding: the theme contrast
 > audit only checks text against `canvas`, so secondary text can go invisible on
@@ -1142,3 +1144,140 @@ is a stopgap that hides the class of bug — land it with the rule, not instead 
 
 Filed alongside: the dead `.send-btn` selector in Halftone Dimension's `custom_css`
 (matches nothing in the renderer — see §11.7), which is the other outstanding `wecoded-themes` item.
+
+---
+
+## 13. Implementation log — tranche 2 INPUT half (shipped 2026-07-19)
+
+youcoded PR **#183**. Changes **15–17, 19–21, 42, 77**. 51 files, 2668 tests green.
+
+Consumers after the sweep: `Toggle` 28, `TextInput` 31, `Textarea` 9, `Select` 10,
+`InputGroup` 11 across 10 files. Before this tranche, `TextInput`/`FIELD`/`Toggle`/`Select`
+had **zero** consumers — they shipped as primitives in tranche 0 and sat unused.
+
+### 13.1 Change 77 — `InputGroup` shipped, and why it's a component
+
+`ui/InputGroup.tsx`. The wrapper carries `FIELD_SURFACE` + `focus-within:border-accent`; the
+input inside is bare (`bg-transparent border-0 outline-none`) and carries only text + padding.
+
+The reason it is not a `className` on `TextInput`, restated because it will be tempting to
+"simplify" later: plain `FIELD` puts the border **and** `focus:border-accent` on the `<input>`.
+Move the border to a wrapper and the input goes bare — and that focus rule now has no border to
+recolor, so the field shows **no focus state at all**. `focus-within` on the wrapper is the only
+way to express it. Pinned by `ui-primitives.test.tsx` → "moves the focus state to the wrapper".
+
+`FIELD_SURFACE` and `FIELD_TEXT` were split out of `FIELD` so a bordered field and a grouped one
+cannot drift apart; a test pins `FIELD` still containing `FIELD_SURFACE`.
+
+Size inherits through a React context so each site doesn't re-declare it, with a per-field
+override. Ten sites: AccountSection ×2, HandlePrompt, ProvidersSection, ModelProvidersPopup,
+SettingsPanel (remote password), LocalModelsSection, TagPicker, GameLobby, AddProjectModal,
+MarketplaceFilterBar.
+
+### 13.2 A latent bug in `fieldClasses` — found by checking an agent's claim
+
+An agent reported that a field's font size "can't be overridden by className". Investigating it
+found something worse than the claim: **`fieldClasses` concatenated `className` instead of merging
+it**, while `buttonClasses` has routed through `mergeClasses` since tranche 0.
+
+Tailwind resolves two competing utilities by **CSS source order**, not class-attribute order. So a
+caller passing `text-sm` or `px-4` to a field got whichever Tailwind happened to emit later — an
+accident, not an override. This is the identical mechanism that made tranche 0's pills silently
+render as rounded rectangles (§10.3); fields carried it unnoticed because they had no consumers
+until this tranche.
+
+`fieldClasses` now calls `mergeClasses`. Two tests pin it: an override wins deterministically, and
+non-conflicting base classes (colors, the focus rule) survive.
+
+### 13.3 Behavior changed, not just appearance — call this out on release
+
+- **~20 toggles gained an accessible name.** Most were bare `<button>`s inside a `<label>`, which
+  names nothing — a `<label>` cannot name a button. Several announced `aria-pressed` instead of
+  `role="switch"`.
+- **Four `<label>` wrappers became `<div>` + `aria-label`** around `Select` triggers, for the same
+  reason (the trigger is a button).
+- **`PerformancePopup`'s GPU control announced as a switch but rendered a 16×16 square.** Now a
+  real toggle. Its row wrapper became a `div` (a button cannot nest a button) with a guard so a
+  click on the toggle doesn't fire the handler twice.
+- **Four `text-sm` fields became `text-xs`.** The approved field scale is 12/11px; 14px was off
+  scale. Visible shrink on two marketplace search boxes — **queued for Destin's eye**.
+- **A sync toggle's `cursor-wait` became `cursor-not-allowed`** while provisioning. Semantically
+  slightly worse (busy ≠ forbidden); the primitive's disabled variant wins the cascade and forcing
+  it back would depend on the same source-order accident §13.2 just fixed.
+- **`SettingsPanel`'s exported `Toggle` kept its `enabled`/`onToggle`/`color` signature** as a thin
+  wrapper over the shared one, because `AboutPopup` imports it. Deleting it would have broken an
+  unrelated file.
+
+### 13.4 Spec corrections — three §11.9 sites don't exist in that shape
+
+§11.9 listed ~10 InputGroup sites from a read of the audit. Three were wrong, each verified in
+code rather than assumed:
+
+| §11.9 said | Reality |
+|---|---|
+| QuickChips (Add Custom) | Two-field form (`<input>` + `<textarea>`) with `[Add Custom] [Cancel]` **below both**. `addCustom` requires BOTH fields (`QuickChips.tsx:250`). Footer shape — excluded by InputGroup's own rule. |
+| ProvidersSection add-provider | Submit sits below **three** separate fields. Footer shape. |
+| SettingsPanel add-device | Android form's Cancel + "Save & Connect" sit below **four** fields. Desktop's "Add Device" is a QR/copy-link panel with no text field at all. |
+| LocalModelsSection (endpoint) | **There is no endpoint field.** `OtherLocalApps` discovers endpoints and offers an "Add as endpoint" button; the section's only field is the model search. InputGroup went there instead — its clear-X was already an inside-field action faked with `absolute` + a hand-tuned `pr-8`. |
+
+Same lesson as §11.5 and §11.7: the gaps came from reading code at the edit site. A grep cannot
+tell you that a submit belongs to three fields rather than one.
+
+Two more judged and left alone: **`CommandDrawer`'s search** is a mode-switching composite (the
+`<input>` swaps for a read-only `<span>` mirror; the wrapper takes an `onClick`) whose trailing
+buttons are navigation, not a submit — needs a design call, not a sweep. **`AccountSection`'s
+delete-confirm input** keeps `focus:border-red-500` as a deliberate danger-zone signal.
+
+### 13.5 Found outside the sweep
+
+**`index.tsx` — the remote-access login screen — still had a hardcoded `bg-blue-600` button and a
+`focus:border-fg-muted` password field.** The button half (§11) missed it because that sweep
+covered `components/`, not the renderer root. That was the last hardcoded blue in the renderer.
+Its `text-red-400` error line moved to `text-destructive` at the same time.
+
+**A third copy of the skip-permissions warning string.** `App.tsx:2843` carried
+`text-[#DD4444]` on "Claude will execute tools without asking for approval." — the toggle directly
+above it had been migrated and the text walked past. ResumeBrowser and SessionStrip had the other
+two. All four (plus `SkipPermissionsInfoTooltip`'s "What could go wrong" heading) now ride the
+destructive token, so a community pack restyling its red no longer leaves warning text and its
+toggle out of sync. Exactly the same shape as change 62's missed third Create button (§11.7) —
+**this app has a habit of three copies, and two is never the answer.**
+
+### 13.6 Deliberately not migrated
+
+- **`SessionDrawer`'s sort `<select>`** — the one native select left, folding into
+  `FileFilterPopover` under change 38.
+- **Change 78** — deferred with reasoning in §11.10 (needs a recents list that doesn't exist).
+- **Radios, checkboxes, ranges, color inputs** — different changes, not in 15–21.
+- **The chat composer** (`InputBar`) — transparent text over a mirror overlay, sui generis.
+- **`QuickChips.tsx:374` and `RatingSubmitModal.tsx:345`** — two plain `Cancel` text buttons the
+  BUTTON half missed. Both are `text-[10px]`; the nearest primitive step is 11px, so migrating
+  them is a visual change Destin hasn't seen. Left as residue rather than resized silently.
+- Two hardcoded-blue spinners in `SyncSetupWizard` (`:67`, `:925`) — arguably covered by the
+  "status colors stay hardcoded" rule, though a spinner is not really a status color. Residue.
+
+### 13.7 Latent bugs found, not fixed (filed to ROADMAP)
+
+1. **Sync wizard: text inputs nested inside a radio's `<label>`.** Label activation forwards to the
+   first labelable descendant — the radio — so clicking into the field can re-trigger it. Harmless
+   today only because the field renders only when that radio is already checked.
+2. **`ProjectView`'s search pill focuses to `border-edge-dim` over a resting `border-edge`** — a
+   focus state with *less* contrast than resting. Reads like it was meant to be `border-accent`.
+3. **`LocalModelsSection.PartialRow.resume()` silently no-ops** when the quant option can't be
+   reconstructed (inner catch swallows the `quants()` failure, `if (opt)` then skips). Clicking
+   Resume with Hugging Face unreachable does nothing — no error, no state change. Every sibling in
+   that file has an explicit error line.
+4. **`RatingSubmitModal.handleInstallAndRate` discards the caught error** and reports a hardcoded
+   "Network error — try again." — the exact pattern `docs/error-message-standards.md` forbids.
+   `handleSubmit` immediately above it does it correctly.
+5. **`ThemeScreen` particles is cast `as any`** — a theme JSON can carry an arbitrary string. A
+   native `<select>` rendered an out-of-list value blank; `Select` shows the "Select…" placeholder,
+   so a theme with `particles: "sparkle"` displays as unset and gets overwritten on next change.
+
+### 13.8 Process note — the JSX comment trap bit the author three times
+
+`{/* … */}` placed between `cond && (` and its element is a **syntax error**, not a comment. It was
+in every agent brief; the author then made it three times in their own edits (`index.tsx`,
+`ResumeBrowser`, `SessionStrip`). One was caught by an agent reading a concurrent typecheck, two by
+`tsc`. Nothing shipped broken, but a rule that has to be remembered is a rule that will be
+forgotten — this is the concrete argument for §8's unapproved **ESLint guardrail**.
