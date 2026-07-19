@@ -14,6 +14,10 @@ owner: Destin (decisions) / Claude (spec)
 > **Tranche 2's BUTTON half shipped 2026-07-19** — youcoded PR #181, merge `2bf29a44`.
 > Its TOGGLE/INPUT half (changes 15–21, plus new 77/78) is NOT started.
 >
+> **§12** (added 2026-07-19) is a separate, non-blocking finding: the theme contrast
+> audit only checks text against `canvas`, so secondary text can go invisible on
+> `panel`/`inset`/`well`. A `wecoded-themes` fix, not a tranche.
+>
 > **Then read §11** (added 2026-07-19). The "~25–30 remaining hand-rolled buttons"
 > §10.7 owed a triage for is really **~153 across ~50 files**. §11 is that triage:
 > changes 52–76, all decided by Destin, covering every remaining button.
@@ -979,3 +983,81 @@ joins change 21's six native `<select>` replacements.
 answer is often a folder in no list. The workable shape is a `Select` whose options are recent/common
 folders plus a final `Browse…` item that opens the native dialog. Noted so nobody ships a dropdown
 that can't reach an arbitrary path.
+
+---
+
+## 12. Contrast rules need refinement — the audit only checks `canvas` (raised 2026-07-19)
+
+Not pressing, but real, and it will keep producing invisible text until fixed.
+
+### 12.1 The report
+
+Destin, on Meadow Mist: the second line of the "Compacting conversation…" card is effectively
+invisible. Screenshot confirms it — the subtitle is pale green on pale green, legible only if you
+already know what it says.
+
+### 12.2 The cause — a gap in the audit, not a bad theme
+
+`CompactingCard.tsx:27` is `text-xs text-fg-muted` on a `bg-inset` bubble. Meadow Mist
+(`wecoded-themes/themes/meadow-mist/manifest.json`) has `fg-muted: #7C9384`, `inset: #BAD0B6`.
+
+That pair is **2.01:1**. But the theme passes CI, because `wecoded-themes/scripts/audit-contrast.mjs`
+checks each foreground token against **`canvas` only** — and `fg-muted/canvas` is 3.13:1, just over
+its 3.0 gate. Every fg token is measured against the one surface, and `inset` is spot-checked with a
+single pair:
+
+| pair | gate | Meadow Mist |
+|---|---|---|
+| `fg-muted` / `canvas` | ≥ 3.0 | **3.13** ✅ (barely) |
+| `fg` / `inset` | ≥ 4.5 | 9.82 ✅ |
+| `fg-muted` / `inset` | *not checked* | **2.01** ← the bug |
+
+The theme is internally consistent; the ruleset just never asks the question the UI actually poses.
+Full matrix for Meadow Mist — everything below 3.0 that the app can legally render:
+
+```
+on canvas: fg=15.29  fg-2=7.93  fg-dim=4.87  fg-muted=3.13  fg-faint=1.93
+on panel:  fg=12.86  fg-2=6.67  fg-dim=4.10  fg-muted=2.63  fg-faint=1.62
+on inset:  fg= 9.82  fg-2=5.09  fg-dim=3.13  fg-muted=2.01  fg-faint=1.24
+on well:   fg=11.01  fg-2=5.71  fg-dim=3.51  fg-muted=2.25  fg-faint=1.39
+```
+
+Three structural points:
+
+1. **`canvas` is the lightest surface in a light theme** (and the darkest in a dark one), so it is
+   the *most forgiving* backdrop. Auditing against it alone measures the best case and ships the
+   worst. Every `panel`/`inset`/`well` column above is strictly worse than the column CI reads.
+2. **Glass makes it worse again.** Meadow Mist is a wallpaper theme at `panels-opacity: 0.58` —
+   the effective bubble background is `inset` mixed toward a photograph, so the real-world number
+   is below the 2.01 computed on flat tokens. The audit models no theme's compositing.
+3. **This is not one card.** `text-fg-muted` / `text-fg-faint` on a non-canvas surface is a common
+   pairing across the renderer. `CompactingCard` is just where it got bad enough to see.
+
+### 12.3 What a fix has to decide
+
+Not decided yet — this is the open question, not the answer. Two directions, and they are not
+exclusive:
+
+- **Widen the matrix.** Check every fg token against every surface it can legally land on
+  (`canvas`, `panel`, `inset`, `well`), not just `canvas`. Honest, but it will fail themes already
+  published — so it needs a grandfather list or a version ramp, and possibly a lower gate for
+  `fg-faint` (decorative by definition). Existing themes must be measured *before* choosing gates,
+  or the ruleset gets written to whatever happens to pass.
+- **Constrain the pairing instead.** Rule that `fg-muted`/`fg-faint` are canvas-only tokens and
+  secondary text on a raised surface must use `fg-dim` or better. Cheaper for theme authors — the
+  burden moves to the app — but it needs a guard, or it decays into a convention nobody follows.
+
+Whichever way it goes, the compositing gap (point 2) is separate and survives both: a flat-token
+audit cannot see through glass. Either the audit composites against a representative backdrop, or
+wallpaper themes carry a stricter gate to leave headroom.
+
+### 12.4 Scope note
+
+This is a **`wecoded-themes` + audit-script** change (plus possibly a `react-renderer` rule about
+which fg tokens may sit on which surfaces). It is not part of the UI-consistency tranches and
+should not block them. `CompactingCard` itself could be patched to `text-fg-dim` as a one-line
+stopgap — but doing only that hides the class of bug without fixing it, so it should land *with*
+the rule change, not instead of it.
+
+Filed alongside: the dead `.send-btn` selector in Halftone Dimension's `custom_css`
+(matches nothing in the renderer — see §11.7), which is the other outstanding `wecoded-themes` item.
