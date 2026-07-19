@@ -7,6 +7,26 @@ repos: [youcoded, wecoded-marketplace]
 
 # Native-session takeover: the lease outran the data path
 
+> **§6's recommendation was overridden and then largely restored, both on 2026-07-18.** Destin
+> first ruled that native sessions must reach full sync parity (promoting Option C into a v1.3
+> gate), then re-scoped after a design review found that cross-device native *resume* is blocked
+> by the native model binding being device-local by deliberate security design. Current plan:
+> **v1.3 ships Option A + the Break-4 fix + a phantom-record fix; Option C moves to v1.3.1**,
+> gated on a binding-portability decision. Read the spec for the plan:
+> `docs/active/specs/2026-07-18-native-sync-parity-design.md`.
+>
+> **Three corrections to this document**, established by that review — the rest of §§1–5 and
+> §§7–9 stands and remains the authority:
+> 1. **§2's claim that native and CC use "the same function" for slugs is wrong.** The native
+>    store uses raw `cwdToProjectSlug`; the sync layer and `pushMoved` use `ccProjectSlug`, which
+>    uppercases the Windows drive letter first. They diverge on Windows. Spec §4.2.
+> 2. **A fifth break exists, not documented here.** PR #176's `sessionIdMap.set` for native
+>    defeats the phantom-record gate at `ipc-handlers.ts:2374`, so flagging or noting a live
+>    native session seeds a mislabeled `provider:'claude'` record that syncs everywhere and is
+>    never pruned. Confirmed on disk. Spec §3.2.
+> 3. **§6 decision point 1's "recommend dropping `sessionIdMap.set`" is reversed.** The invariant
+>    it was buying ("native is not in the sync system") never held — see correction 2. Spec §3.3.
+
 **Purpose.** Handoff for an implementer deciding how to fix the native-session takeover
 regression introduced by youcoded PR #176 (merge `e7b09f60`). Everything below was
 verified against `origin/master` at `e7b09f60` by reading the code; claims are marked
