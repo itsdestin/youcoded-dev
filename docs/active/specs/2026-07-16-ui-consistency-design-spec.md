@@ -984,6 +984,21 @@ answer is often a folder in no list. The workable shape is a `Select` whose opti
 folders plus a final `Browse…` item that opens the native dialog. Noted so nobody ships a dropdown
 that can't reach an arbitrary path.
 
+**DEFERRED out of tranche 2 (2026-07-19), and here is the reason.** Checked the code before
+starting: `SettingsPanel.tsx:1392` is `handleBrowseFolder`, which calls
+`window.claude.dialog.openFolder()` and writes the result to a single `projectFolder` **string**
+(`:1957`, `:2180`). There is no recents list anywhere in the app — not in state, not in
+`settings.json`, not over IPC.
+
+So change 78 is not a migration at all. To have options to show, it needs a persisted
+recent-folders list: a new settings key, IPC to read/write it, a cap and eviction policy, and a
+decision about whether folders that no longer exist get pruned or shown greyed. That is a small
+feature, and it is the only item in this tranche that would grow scope rather than reduce it —
+every other change swaps a hand-rolled control for one that already exists.
+
+Tranche 2 leaves the picker exactly as it is. Change 78 stays open, and should be sized as a
+feature when it comes up, not folded into a consistency sweep.
+
 ---
 
 ## 12. Contrast rules need refinement — the audit only checks `canvas` (raised 2026-07-19)
