@@ -1030,34 +1030,100 @@ Three structural points:
 2. **Glass makes it worse again.** Meadow Mist is a wallpaper theme at `panels-opacity: 0.58` —
    the effective bubble background is `inset` mixed toward a photograph, so the real-world number
    is below the 2.01 computed on flat tokens. The audit models no theme's compositing.
-3. **This is not one card.** `text-fg-muted` / `text-fg-faint` on a non-canvas surface is a common
-   pairing across the renderer. `CompactingCard` is just where it got bad enough to see.
+3. **This is not one card** — see §12.3. It is close to a structural property of the renderer.
 
-### 12.3 What a fix has to decide
+### 12.3 Second report, and the finding gets much bigger (2026-07-19)
 
-Not decided yet — this is the open question, not the answer. Two directions, and they are not
-exclusive:
+Destin then reported the same symptom in Settings → Appearance: the row descriptions ("Disables
+particles, blur, and animations" / "Show time sent in each chat bubble") are nearly invisible.
 
-- **Widen the matrix.** Check every fg token against every surface it can legally land on
-  (`canvas`, `panel`, `inset`, `well`), not just `canvas`. Honest, but it will fail themes already
-  published — so it needs a grandfather list or a version ramp, and possibly a lower gate for
-  `fg-faint` (decorative by definition). Existing themes must be measured *before* choosing gates,
-  or the ruleset gets written to whatever happens to pass.
-- **Constrain the pairing instead.** Rule that `fg-muted`/`fg-faint` are canvas-only tokens and
-  secondary text on a raised surface must use `fg-dim` or better. Cheaper for theme authors — the
-  burden moves to the app — but it needs a guard, or it decays into a convention nobody follows.
+That one is `SettingsRow.tsx:34` — `text-[10px] text-fg-muted` inside a `bg-inset/50` row
+(`SettingsRow.tsx:28`), itself nested in `.settings-drawer` (= `--panel`, `globals.css:648`).
+**One line, 18 call sites.** A sweep of the renderer then turned up the real shape of the problem.
 
-Whichever way it goes, the compositing gap (point 2) is separate and survives both: a flat-token
-audit cannot see through glass. Either the audit composites against a representative backdrop, or
-wallpaper themes carry a stricter gate to leave headroom.
+**Most of the app is not on `canvas`.** Three rules decide the backdrop for the majority of text:
 
-### 12.4 Scope note
+| rule | file | background | blast radius |
+|---|---|---|---|
+| `.layer-surface` | `globals.css:811` | `var(--panel)` | **55 `<OverlayPanel>` usages across 45 files** — every popup, modal, drawer, marketplace card |
+| `.settings-drawer` | `globals.css:648` | `var(--panel)` | the whole Settings body |
+| assistant bubble | `AssistantTurnBubble.tsx:362` | `bg-inset` | **every assistant message and every ToolCard inside it** |
 
-This is a **`wecoded-themes` + audit-script** change (plus possibly a `react-renderer` rule about
-which fg tokens may sit on which surfaces). It is not part of the UI-consistency tranches and
-should not block them. `CompactingCard` itself could be patched to `text-fg-dim` as a one-line
-stopgap — but doing only that hides the class of bug without fixing it, so it should land *with*
-the rule change, not instead of it.
+So the surface CI audits is the one comparatively little of the UI actually uses.
+
+**And the failing pairs fail in every theme, not some.** Measured across all 11 shipped themes
+(4 built-in + 7 community) — worst-case ratios for the two pairings the renderer uses most:
+
+| pair | best theme | worst theme | themes under 3.0 |
+|---|---|---|---|
+| `fg-muted` / `inset` | 4.17 (Strawberry Kitty) | **2.01** (Meadow Mist) | **9 of 11** |
+| `fg-faint` / `panel` | 2.31 (Strawberry Kitty) | **1.62** (Meadow Mist) | **11 of 11** |
+| `fg-faint` / `inset` | 2.31 | **1.24** | **11 of 11** |
+
+**`fg-faint` on a raised surface has never worked in any theme that has ever shipped.** Its max
+observed ratio anywhere is 2.31:1. That is not a theme-quality problem — it is an app pairing no
+theme can satisfy, because `fg-faint`'s gate (1.8 vs canvas) was written on the assumption it is
+decorative. It is not always used decoratively.
+
+Substantive text currently sitting on that impossible pairing includes:
+
+- `StatusBar.tsx:756–1017` — ~15 `bg-panel` pills whose *entire content* is `text-fg-faint` at
+  10px: `In:` `Out:` `Cached:` `Hit:` `Speed:`, and at `:914`/`:863` the strings `No changes` and
+  `N/A`. Densest cluster in the app.
+- `ThemeScreen.tsx:377, 433, 481, 486` — `text-[10px] text-fg-faint` *on the same element as*
+  `bg-inset`. These are the "why you can't edit this theme" explainers.
+- `SettingsPanel.tsx:1301` — `text-[9px] text-fg-faint` per-category permission descriptions.
+- `QuickChips.tsx:310` — the chip's own prompt preview.
+
+And on `fg-muted`/`inset` (9 of 11 themes under 3.0): `UsageCard.tsx:85–166` (every cost and
+token label), `ResumeBrowser.tsx:463–549` (all field labels), `SkillCard.tsx:141/205` (card
+descriptions), `ToolBody.tsx` (~54 occurrences, all inside the bubble), `AboutPopup.tsx:122–234`
+(~22 paragraphs of `text-[11px] text-fg-dim` legal copy on panel).
+
+`ui/states.tsx:119` is the same bug in a shared primitive that **has no call sites yet** — the
+error-explanation text is `text-2xs text-fg-dim` on the `bg-inset/50` container at `:110`. Latent
+today; multiplies the moment the states family gets adopted. Worth fixing before that.
+
+### 12.4 What this means for the fix
+
+The second report changes the recommendation. §12.2 offered two directions as roughly equal; the
+data now favours one:
+
+- **Widening the audit matrix cannot be the primary fix.** Gating `fg-faint` against `panel`/`inset`
+  at any reasonable threshold fails **11 of 11 shipped themes**, including all four built-ins. A
+  rule every theme violates isn't a rule — it's a rename of the bug.
+- **Constrain the pairing.** `fg-muted` and `fg-faint` become *canvas-only* tokens; substantive
+  text on a raised surface must be `fg-dim` or stronger. The burden moves to the app, where the
+  actual mistake is, and theme authors are unaffected.
+
+A promising mechanism, and cheap: `.layer-surface` already precedents descendant overrides at
+`globals.css:827` (`.layer-surface .bg-inset`, the protection cascade). A rule in the same family —
+roughly `.layer-surface .text-fg-muted { color: var(--fg-dim) }` — would cover all 55 overlay call
+sites without touching a single component. **Not yet verified**: it must respect the same layered-vs-
+unlayered ordering trap the protection cascade documents (§9.K / tranche 0), and it would need
+matching rules for `.settings-drawer` and the assistant bubble, which are separate surfaces.
+
+Two things this does *not* solve, both still open:
+
+1. **Genuinely decorative faint text should stay faint.** A blanket override also lifts the `·`
+   separators, timestamps, and placeholder text that are *supposed* to recede. Either accept that,
+   or split the token (`fg-faint` decorative vs a new substantive-secondary token) — which is the
+   more correct fix and the more expensive one.
+2. **Glass still isn't modelled.** All numbers above are flat-token math. Every wallpaper theme
+   composites `panel` toward a photograph, so the real ratios are worse than the table and vary by
+   wallpaper. No audit of static tokens can see this; wallpaper themes need headroom, not a
+   measurement.
+
+### 12.5 Scope note
+
+Split across two repos: the **app** owns the pairing fix (`react-renderer` rule + the component
+sweep), **`wecoded-themes`** owns whatever the audit ends up checking. Not part of the
+UI-consistency tranches; shouldn't block them.
+
+Highest-leverage first, if this gets picked up: `SettingsRow.tsx:34` (1 line, 18 sites, and it is
+Destin's reported bug), then `ui/states.tsx:119` (before adoption spreads), then the `.layer-surface`
+descendant rule, then `StatusBar`'s faint pills. Patching `CompactingCard` to `text-fg-dim` alone
+is a stopgap that hides the class of bug — land it with the rule, not instead of it.
 
 Filed alongside: the dead `.send-btn` selector in Halftone Dimension's `custom_css`
 (matches nothing in the renderer — see §11.7), which is the other outstanding `wecoded-themes` item.
