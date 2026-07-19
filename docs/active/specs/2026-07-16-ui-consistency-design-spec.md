@@ -892,10 +892,11 @@ a variant branch has no callers, or that a file someone marked "done" isn't. The
 text-on-accent` outside `ui/`" since July, none of the four files could have drifted back, and the
 "~25–30" estimate would never have been written.
 
-### 11.8 Open items — need Destin's call before tranche 2 closes
+### 11.8 Open items — ALL DECIDED 2026-07-19
 
-Everything below was found DURING implementation and has no approved decision. Each was left
-untouched rather than guessed at.
+Found DURING implementation, with no approved decision at the time. Each was left untouched
+rather than guessed at. **Destin ruled on all seven on 2026-07-19** — decisions in the last column.
+A/B/C/F/G shipped in commit `6bf5e7e2`; D and E changed shape and moved to §11.9.
 
 | # | Item | Why it needs a call |
 |---|---|---|
@@ -915,3 +916,63 @@ untouched rather than guessed at.
 - `AccountSection`'s two Save buttons dropped their `py-2` override, so they no longer height-match
   the inputs beside them (vertically centred, slightly shorter). Change 3 set the precedent that
   rows may get shorter, so it shipped — but it is a visible alignment change.
+
+**Decisions, 2026-07-19:**
+
+| # | Decision | Shipped |
+|---|---|---|
+| A | **`secondary`.** The soft-blue was decorative, not signal — unlike change 66's orange, nothing here is a warning. | `6bf5e7e2` |
+| B | **`primary` + `ghost`.** This pair DOES go through Button, unlike the permission triad above it. Submit's hand-rolled disabled look collapses into `disabled:opacity-50`; Dismiss's grey→red hover is dropped because dismissing a question destroys nothing. | `6bf5e7e2` |
+| C | **Keep the joined shape** as a documented exception. The shared clipped wrapper is what makes the chevron read as "options for THAT action"; per-half `rounded-lg` would put a rounded edge inside the clip and break the seam. Adopts the app radius + real hover only. **Do not "finish" this by splitting it into two Buttons.** | `6bf5e7e2` |
+| D | **Superseded — became a new pattern.** See §11.9. | — |
+| E | **Not a button — becomes a `Select`.** Rides with change 21, not the field work. | deferred |
+| F | **Keep 16px**, take the accessible name + focus ring. CloseButton's 28px is nearly as tall as the chip it sits on. QuickChips' bare-glyph ✕ is excluded entirely (no chrome to normalize). | `6bf5e7e2` |
+| G | **Migrate.** Geometry unchanged, and it KEEPS `bg-accent` — load-bearing, because packs style this button through `.bg-accent`. `disabled:opacity-30` kept over the primitive's 50% on purpose. | `6bf5e7e2` |
+
+**Bug found in a community pack while deciding G:** Halftone Dimension's `custom_css` contains a
+`.send-btn` rule, and `send-btn` appears **nowhere** in the renderer — the selector has never
+matched anything. The glow on the send button comes from the pack's separate `.bg-accent` rule.
+The author clearly meant to target the send button specifically. Fix belongs in `wecoded-themes`.
+
+### 11.9 Change 77 — the inside-field action pattern (NEW, decided 2026-07-19)
+
+Destin, answering item D: *"I'd like Send request inside the text box at the right-hand side. I
+think for all text fields that have a submit/copy, I like the button to be inside the field instead
+of alongside it."*
+
+This is a general rule, not a one-site fix.
+
+**Precedent already in the app:** `MarketplaceFilterBar`'s search box is exactly this — a bordered
+wrapper holding a borderless `<input>` plus a button inside. Standardize on that, don't invent.
+
+**Needs a new primitive — `InputGroup`.** Today's `FIELD` (`ui/field.ts`) puts the border and
+`focus:border-accent` on the `<input>` itself. This pattern moves the border to a wrapper and makes
+the input bare, so the focus state must become **`focus-within:border-accent` on the wrapper** —
+otherwise focusing a borderless input shows no focus state at all. A `className` cannot express this.
+
+**Scope — ~10 genuine inline field+action pairs:** GameLobby (Send request), ProvidersSection ×2
+(API key Save, add-provider), AccountSection ×2 (display name, handle), ModelProvidersPopup (search
+key), SettingsPanel ×2 (remote password Set, add-device), ShareSheet (Copy), LocalModelsSection
+(endpoint), QuickChips (Add Custom), TagPicker. Another ~19 `<input>`-near-`<button>` matches are
+**modal footers** (button below the field) where the pattern does NOT apply — don't sweep by grep.
+
+**Sub-rule:** when a field has both a submit and a Cancel, only the *submit* goes inside. Cancel is
+not a field action, and two buttons inside stop it reading as a field. (Confirmed against the
+ProvidersSection API-key row.)
+
+**Sequencing — ship with change 20, not before.** `TextInput`/`FIELD` currently have ZERO consumers;
+all ~25 text inputs are still hand-rolled because the input half of tranche 2 hasn't started.
+Building `InputGroup` now means hand-rolling ~10 wrappers that get rebuilt the moment change 20
+lands. Until then GameLobby's "Send request" stays `secondary` — flipping it to `primary` would be a
+visual change that gets undone.
+
+### 11.10 Change 78 — project-folder picker becomes a Select (decided 2026-07-19)
+
+Item E. `SettingsPanel`'s folder picker is a `<button>` that renders the current value, left-aligned
+and truncating. Destin: *"this should be a dropdown eventually."* So it is not a button at all — it
+joins change 21's six native `<select>` replacements.
+
+**Constraint to honour when it lands:** a folder picker cannot be a pure dropdown, because the real
+answer is often a folder in no list. The workable shape is a `Select` whose options are recent/common
+folders plus a final `Browse…` item that opens the native dialog. Noted so nobody ships a dropdown
+that can't reach an arbitrary path.
