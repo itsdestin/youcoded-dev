@@ -1,7 +1,7 @@
 ---
 status: active
 date: 2026-07-16
-amended: 2026-07-17 (tranches 0+1 shipped — implementation log + recipe corrections in §10)
+amended: 2026-07-19 (button triage — changes 52–76 decided; §11)
 owner: Destin (decisions) / Claude (spec)
 ---
 
@@ -10,6 +10,10 @@ owner: Destin (decisions) / Claude (spec)
 > WRONG against the real codebase and §10 records what actually shipped and why.
 > The corrections are load-bearing — following §1/§9 literally reintroduces bugs
 > that are now fixed and pinned by tests.
+>
+> **Then read §11** (added 2026-07-19). The "~25–30 remaining hand-rolled buttons"
+> §10.7 owed a triage for is really **~153 across ~50 files**. §11 is that triage:
+> changes 52–76, all decided by Destin, covering every remaining button.
 
 # UI Consistency Design Spec — the 40 approved changes
 
@@ -703,6 +707,13 @@ indicator. §9.J caught the tabs/send/TerminalToolbar/games cases but missed the
 were never individually rendered — triage each hit before converting, and show Destin the list
 first rather than making that many unilateral variant/size calls inside a large diff.
 
+> **CORRECTED 2026-07-19 — the "~25–30" estimate was low by ~5×.** A full sweep of
+> `desktop/src/renderer/` counted **536** raw `<button`, **274** with real button chrome, **228**
+> outside the seven migrated files, and **~153 genuine hand-rolled action buttons** — plus 23
+> icon-only closers (change 41) and ~52 non-button interactive surfaces that belong to other
+> primitives (SegmentedTabs, cards, chips, StatusBar pills). **The triage this paragraph asks for
+> is §11**, where the 153 collapse into 8 mechanical patterns + 16 judgment calls, all decided.
+
 ### 10.8 Smaller corrections
 
 - Built-in themes now declare `link`/`link-hover` in their JSON so derivation can't stomp their
@@ -718,3 +729,116 @@ first rather than making that many unilateral variant/size calls inside a large 
   without stealing a neighbour's taps). Both behind `@media (pointer: coarse)`.
 - Checkbox pins a **literal 4px** radius, not `rounded-sm`: radii are theme tokens, and a
   big-radius pack would round a 14px box into a circle — i.e. into a Radio.
+
+---
+
+## 11. Button triage — changes 52–76 (decided 2026-07-19)
+
+Discharges the debt §10.7 opened. Workbench artifact:
+<https://claude.ai/code/artifact/d9174f7b-139d-44e6-b009-c2da3e7d80c1> — every "Today" render uses
+the verbatim `className` from the cited source line; every "Proposed" render is real
+`buttonClasses()` output on real tokens, across Midnight / Crème / Halftone Dimension / Dark / Light.
+
+Numbering continues the 1–51 ledger. Approved by number by Destin on 2026-07-19.
+
+### 11.1 The real scope
+
+| Metric | Count |
+|---|---|
+| Raw `<button` in `desktop/src/renderer/` | 536 |
+| …with real button chrome (`rounded*` + padding + `bg-`/`border`) | 274 |
+| …excluding the 7 files migrated in changes 1–14 | 228 |
+| **Genuine hand-rolled action buttons** | **~153 across ~50 files** |
+| Icon-only close/dismiss (change 41 / §11.4) | 23 |
+| Non-button interactive surfaces (rows, chips, tabs, pills) — belong to other primitives | ~52 |
+
+§10.7's "~25–30" was low by ~5×. The 153 are not 153 decisions: 8 mechanical patterns (§11.2) cover
+~120 of them, 16 judgment calls (§11.3) cover the rest.
+
+### 11.2 Mechanical patterns — changes 52–59, 75
+
+All approved as recommended. Context-free: apply everywhere the pattern matches.
+
+| # | Change | Sites | Recipe |
+|---|---|---|---|
+| 52 | Kill `hover:brightness-110` | ~28 | → `hover:bg-accent/90`. Imperceptible on Light/Crème's near-black accent; blows out glow packs. |
+| 53 | Kill `hover:opacity-90` / `transition-opacity` | ~12 | → `hover:bg-accent/90`. Fades the label; on glow themes the fill fades out from under the pack's box-shadow. |
+| 54 | Radius drift → one control radius | 57 (`rounded-sm` ×11, `rounded-md` ×34, bare `rounded` ×12) | → `rounded-lg` via the primitive. Theme-scalable (12px built-in, 24px on Halftone). |
+| 55 | Hardcoded blue family | 5 — SyncSetupWizard :511 :664 :911, index.tsx:80 | → `primary`. Last `bg-blue-600`/`text-white` survivors. |
+| 56 | Raw destructive hex → token | 6 — SessionStrip:1066, ResumeBrowser:557, ProjectHero ×4 | `bg-[#DD4444]`/`#E55555` → `bg-destructive`; `text-white` → `text-on-destructive` (engine-derived, so a pale community red can't go white-on-pink). |
+| 57 | Arbitrary font sizes → the scale | ~40 | `text-[9/10/11/12/12.5/13px]` all deleted — the `size` prop owns type. |
+| 58 | Missing focus rings | ~40 | Free with `BUTTON_BASE`. Canvas offset retained (§9.A decision stands). |
+| 59 | Raw `bg-red-600` → danger | 4 | Stock oklch red ≠ the app's `#DD4444`; two reds for one meaning. Filled `danger` to commit, `danger-outline` to confirm. |
+| 75 | Dead hovers | 5 — GameLobby:615, GameOverlay:50, MovedGate:53, ImportProjectModal:116, ContributePopup:102 | `hover:bg-accent` over a `bg-accent` base = no feedback today. **A behavior change, not a visual one — call it out in the PR description.** |
+
+### 11.3 Judgment calls — changes 60–74
+
+**Two departures from the recommendation are marked ▲. Do not "correct" them back.**
+
+| # | Decision | Sites |
+|---|---|---|
+| 60 | **Option A — `secondary` (outline).** The filled-grey family (`bg-inset hover:bg-edge text-fg-2`) is a second secondary; it collapses into the primitive's outline. Several sit beside a primary as genuine peers, which ghost under-weights. Rejected: ghost (B), and adding a 5th `soft` variant. | ~14 — GameLobby :161 :377 :448, GameOverlay:57, ConnectFourBoard:55, SyncSetupWizard :756 :803 :936, SyncPanel:1496, App.tsx :2841 :2895, ModelPickerPopup:518, MovedGate:46, ErrorBoundary:32 |
+| 61 | ▲ **Radius + focus ring only. Colors untouched — including the inverted red.** The proposed red→blue flip on ToolCard:382 is **REJECTED**: "Always allow" stays red even though red means "No" one row below. Muscle memory on the app's most-clicked control outweighs colour-semantics tidiness; users read these by position and label. Status colours stay hardcoded per `desktop/CLAUDE.md`. | 5 — ToolCard :375 :382 :396 :405 :414 |
+| 62 | ▲ **Option A — filled `danger`.** Skip-permissions gets the same weight as a real deletion. **Known + accepted consequence:** "Create Session (Dangerous)" now looks identical to "Remove project"; filled red means "stop and read this", not strictly "this destroys something". Rejected: `danger-outline` (B). | 4 + 2 toggles — SessionStrip:1066, ResumeBrowser:557, App.tsx :2832 :2838, SkipPermissionsInfoTooltip:70 |
+| 63 | **Option B — promote to `primary`.** Keeps the Build-vs-Browse hierarchy without a 5th variant. Rejected: collapse to secondary (A), add `accent-outline` (C). | 1 — ThemeScreen:213 |
+| 64 | **Keep dashed as a documented exception** (`secondary` + `border-dashed` override). Text lifts `fg-muted` → `fg-2`. CommandDrawer:339 is a card — excluded, handle with tranche 4. | 2 — SyncPanel:1269, QuickChips:333 |
+| 65 | **Extend the pill exception to floating overlay affordances.** ChatView:823 "Jump to bottom" keeps `rounded-full`; ProjectView:701, FilesTab:366, ModelLoadingBar:155 normalize. Pills must go through `buttonClasses()` — a raw className override silently loses (§10.3). | 4 |
+| 66 | **Option B — keep the orange as a status colour.** Radius/ring/hover normalize; `#FF9800` survives. Same logic as 61: billing consent is signal, not surface. | 1 — ModelPickerPopup:524 |
+| 67 | **Option A — `danger-outline`.** The neutral-until-hover-red idiom is dropped: "Remove from YouCoded" / "Stop syncing" are consequential enough that hover is the wrong time to find out. "Rename" stays neutral and does useful work as the only non-red one. | 4 — ProjectHero :279(neutral) :293 :308 :316 |
+| 68 | **`danger-outline` everywhere for "Remove".** Settles the ProvidersSection(red)-vs-ModelProvidersPopup(neutral) contradiction; removing a provider destroys a pasted key. Also settles SyncPanel:1662, ProjectView:821. | 2 + followers |
+| 69 | **Keep `panel-glass` and `text-base` as className overrides.** The merge function exists for this. Glass re-tiers translucency bubble→panels on wallpaper themes (globals.css:843-856); a naive migration drops it. | 4 — App.tsx :2882 :2895, MarketplaceScreen:295, LibraryScreen:134 |
+| 70 | **Option A — `primary`.** Nothing here is a safety decision; green is borrowed authority. Removes the last `text-white` from the games subtree. | 1 — GameLobby:367 |
+| 71 | **Defer.** Backend choice tiles are a choice group, not buttons. Add the focus ring now; handle with the ~52 other non-button surfaces in tranche 4/8. | 4 — SyncPanel :1248 :1255, SyncSetupWizard ×2 |
+| 72 | **Plain `disabled` now; a `busy` prop later with change 49.** The `cursor-wait` faded-fill saving state has no primitive equivalent, and BrailleSpinner will want the same slot — do the API change once. | 3 — SyncPanel:1776, SyncSetupWizard :511 :664 |
+| 73 | **`danger-outline`.** `/clear` throws away the conversation and currently looks neutral, directly below a non-destructive Compact. Clearest case of styling under-selling consequence. | 1 — ContextPopup:225 |
+| 74 | **REVISED — migrate the variant only, change no opacity.** Both → `ghost / sm`. Copy keeps `opacity-0`, Mark Inactive keeps `opacity-40`. See §11.5. | 2 — MarkdownContent:84, OpenTasksPopup:76 |
+
+### 11.4 Change 76 — the CloseButton sweep
+
+**Sweep all 23** icon-only ✕ buttons to `Button size="icon" variant="ghost"` (28×28, one hover, ring
+everywhere). `aria-label` is required by the type signature, which fixes the 8 sites missing one by
+construction rather than by review.
+
+**Explicitly NOT included: `InputBar.tsx:607`, the send button.** It's the most-used control in the
+app, it takes a theme-supplied custom icon (Halftone ships `icon-send.svg` + a `.send-btn` glow), and
+it gets its own render before anyone touches it.
+
+Open question flagged but not decided: the `w-4 h-4 rounded-full` attachment ✕ at `InputBar.tsx:529`
+sits inside a chip — 28px may be too heavy there. Confirm with Destin at the edit site.
+
+### 11.5 Change 74 — a correction worth reading
+
+The original recommendation (make both buttons `opacity-0` at rest) **was wrong, and the reasoning
+error is the transferable part.**
+
+Both buttons matched a `group-hover:opacity-100` grep, so they were treated as one pattern. They
+aren't:
+
+- `MarkdownContent.tsx:84` (code-block Copy) is a **floating overlay control**, absolutely positioned
+  in a code block's corner. It is **already `opacity-0`** — correct as-is, nothing to change.
+- `OpenTasksPopup.tsx:76` ("Mark Inactive") is an **inline row action**. Its `opacity-40` is
+  deliberate: it's the standing hint that rows are dismissible. At 0% that hint only exists once the
+  cursor is already on the row.
+
+The collision that motivated the change — resting `opacity-40` sitting below `BUTTON_BASE`'s
+`disabled:opacity-50`, so a disabled button renders *brighter* than an enabled one — is **latent, not
+live**: neither button ever receives a `disabled` prop.
+
+**Therefore:** migrate both to `ghost / sm`, leave both opacity values alone, add a WHY comment at
+`OpenTasksPopup.tsx:76` recording that the 40% resting opacity sits below `disabled:opacity-50` so
+adding a `disabled` prop requires revisiting it. One real fix survives: the Copy button needs
+`focus-visible:opacity-100` so it isn't invisible when tabbed to.
+
+**Lesson for the rest of the sweep:** the mechanical patterns (52–59) are genuinely context-free and
+safe to apply from a grep. The judgment calls are not — verify what a button *does* at the edit site
+before applying a recipe derived from what its `className` *looks like*. Two buttons sharing a CSS
+mechanic can be doing unrelated jobs.
+
+### 11.6 Implementation notes
+
+- Tranche 2 order: §11.2 mechanical patterns first (one commit per pattern, app-wide — small diffs,
+  easy review), then §11.3 surface by surface (SettingsRow playbook: worktree, one commit per surface).
+- Change 75 makes five inert buttons responsive. Name it in the PR body; it is not a visual-only diff.
+- Changes 71 and the ~52 non-button surfaces stay out of the Button sweep entirely — they want
+  SegmentedTabs and a card primitive (tranches 4 and 8).
+- Change 72's `busy` prop and change 49's BrailleSpinner are the same slot; do them together, later.
