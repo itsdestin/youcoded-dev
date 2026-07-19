@@ -307,6 +307,23 @@ transfer.
 4. **Browse/meta.** `session-browser.ts:427/439` probes a CC path to decide `notSyncedYet`, so a
    native record would permanently read "not synced to this device yet." Make the probe
    runtime-aware. **Remote browse** (`remote-server.ts:601-606`) omits native rows entirely.
+
+   **Correction added 2026-07-19 (found while shipping the §11.2 stopgap — see §11.5).** This item
+   understates the read side. Phase 1's provider threading makes the store *writable* for native,
+   but three separate reads are hardcoded to `'claude'` and would each still return nothing for a
+   correctly-written `native/<id>.json`. Store paths are `<root>/<provider>/<id>.json`, so a
+   provider mismatch is not a filter — it is a different file that does not exist:
+   - `session:get-meta` → `store.get('claude', resolved)` (`ipc-handlers.ts`), and the **remote**
+     copy of the same handler in `remote-server.ts` has the identical hardcode.
+   - The Resume Browser overlay → `store.list('claude')` only (`session-browser.ts:377`).
+   - `session:browse` builds native rows from `nativeHost.list()` with **no `flags` / `tags` /
+     `note` fields at all** (`ipc-handlers.ts:1379-1391`) and `concat`s them *after* the store
+     overlay loop has already run over the CC rows (`:1393`) — so native rows are never enriched
+     even if a record exists. The overlay loop, not just the record shape, has to change.
+
+   Acceptance for this item should therefore be a **round trip**, not a write: tag a native
+   session, restart the app, and see the tag on its Resume Browser row *and* in the in-session
+   chip. A write-only test will pass against all three of these bugs.
 5. **Native-aware teardown (Option B, per D6).** `takeover.ts` branches on the runtime for step 3:
    `nativeHost.interrupt(sessionId)` (`native-session-host.ts:354-362`) instead of the ESC byte
    via `sendInput`, which returns `false` for native and is a silent no-op (investigation
@@ -468,6 +485,50 @@ delete them. Two caveats:
   is partly answered: 26 native sessions exist on the primary dev machine, so native is a real
   and used path. Whether it is used across two devices remains unanswered, but §3.2's phantom
   records are written by a **single** device, so that fix's urgency does not depend on the answer.
+
+---
+
+## 12. Stopgap shipped 2026-07-19 — what to retire when this spec is implemented
+
+§3.2's fix stopped the phantom write, but the three handlers still returned `{ok: true}` and still
+broadcast `session:meta-changed` after skipping it. The renderer's optimistic update therefore
+stuck, and marking a native session Complete (or tagging/noting one) looked saved until the next
+browse — silent data loss, and the symptom Destin reported the next day. A UX stopgap shipped to
+make the refusal honest: **youcoded merge `63cae0f1`**, plus CI fix `92e77d66`.
+
+What it added, all of which this spec's work should **remove** rather than build on:
+
+| Thing | Where | Retire by |
+|---|---|---|
+| `NATIVE_META_UNSUPPORTED`, `SessionMetaResult` | `desktop/src/shared/types.ts` | Delete the constant; keep the type but drop `supported`/`unsupportedReason` if nothing else needs them |
+| `nativeMetaRefusal` + the early returns in set-flag / set-tag / set-note | `desktop/src/main/ipc-handlers.ts` | Delete — native writes become legal |
+| `isNativeMetaTarget` + the three WS refusals | `desktop/src/main/remote-server.ts` | Delete |
+| `supported` / `unsupportedReason` on `session:get-meta` | ipc-handlers + remote-server | Delete once native reads work (see §6.4) |
+| `metaDisabled` branch (hides flags/tags/note on native rows) | `ResumeBrowser.tsx` | Delete |
+| `metaSupported` / `metaLoaded` gate | `CloseSessionPrompt.tsx` | Delete |
+| `supported` / `unsupportedReason` + the refusal-revert | `hooks/useSessionMeta.ts` | Keep the **revert-on-`ok:false`** logic; it is a real fix independent of native (tags/notes previously had no revert path at all). Drop only the `supported` plumbing. |
+| `tests/session-meta-native-refusal.test.ts` | desktop tests | Delete with the guard it pins |
+
+Three things from that work are **not** stopgap and must survive:
+
+1. **`remote-server.ts` bypassed §3.2's gate entirely.** The 2026-07-18 fix only covered the
+   `ipcMain` handlers; the WS path called `noteFlagChanged` / `noteSessionNote` directly, so a
+   phone tagging a native session was *still* seeding phantom records after v1.3 shipped. Any
+   future gate must cover both surfaces — they are separate call sites of the same service.
+2. **Android is a distinct gap from native.** `SessionService.kt`'s `session:set-tag` /
+   `session:set-note` are stubs, so it now answers `get-meta` with `supported:false` and its own
+   wording, and the stubs return `unsupported:true`. That stays true after this spec ships —
+   do not delete Android's branch along with the native one. (Android hosts no native sessions;
+   verified by grep 2026-07-19.)
+3. **The refusal message is host-supplied** (`unsupportedReason`) precisely so one host's wording
+   never appears on another — showing "not supported for native sessions" on Android would be a
+   guessed-and-wrong cause per `docs/error-message-standards.md`.
+
+**Related bug found, deliberately not fixed:** `noteFlagChanged` / `noteSessionNote` are
+`store?.setFlag(...)` — when the store is `null` the write vanishes for **Claude Code** sessions
+too, same silent-drop shape. `get-meta` reports `supported: true` when the store is null on
+purpose (it is null transiently at boot; flickering the controls disabled would be worse than a
+loud failure). Tracked as its own ROADMAP bug — reachability in steady state is unquantified.
 
 ---
 
