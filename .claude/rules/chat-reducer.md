@@ -9,7 +9,7 @@ paths:
   - "youcoded/desktop/src/renderer/hooks/usePtyRawBytes.ts"
   - "youcoded/terminal-emulator-vendored/**"
   - "youcoded/shared-fixtures/**"
-last_verified: 2026-07-15
+last_verified: 2026-07-19
 verify:
   - path: youcoded/desktop/src/renderer/state/chat-reducer.ts
   - path: youcoded/desktop/src/renderer/state/attention-classifier.ts
@@ -30,6 +30,7 @@ Chat state + the JSONL transcript watcher that feeds it + the Android byte pipel
 - **Always use the `endTurn()` helper** for turn-ending paths — it fails orphaned running/awaiting tools, clears the Set + `isThinking`/`streamingText`/`currentTurnId`, and resets `attentionState:'ok'`. `SESSION_PROCESS_EXITED` (→`session-died`) and `NATIVE_SESSION_ERROR` (→`error`) are the only spread-then-override exceptions.
 - **`AttentionState` is `'ok'|'stuck'|'session-died'|'error'` — four reachable states, each with a writer** (`stuck`←PTY classifier; `session-died`←`SESSION_PROCESS_EXITED`; `error`←`NATIVE_SESSION_ERROR`, native sessions ONLY). Adding a state without a writer resurrects dead branches in the `AttentionBanner` switch.
 - **Dedup uses the `pending` flag** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest matching pending entry, else appends `pending:false`. Don't "simplify" back to last-10 content matching (drops rapid-fire duplicates).
+- **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid — do NOT add a `seenUuids` guard** (the watcher re-emits tool-use on a repeated uuid by design; a guard swallows tools arriving in a CC line rewrite). Every write on that path stays idempotent, `PERMISSION_REQUEST` included. Guard: `chat-reducer.test.ts` → "chatReducer tool card duplication".
 - **`attentionState` is classifier-driven, not timer-driven** — `useAttentionClassifier` ticks the xterm buffer every 1s; transcript events + `PERMISSION_REQUEST` reset to `'ok'`.
 
 ## Transcript watcher read-integrity (`transcript-watcher.ts`, `subagent-watcher.ts`) — guard: `transcript-watcher.test.ts`
