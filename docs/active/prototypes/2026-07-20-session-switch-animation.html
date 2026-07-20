@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session switch animation — mockup</title>
+<style>
+/* ── Preflight subset (matches app) ───────────────────────────── */
+*{box-sizing:border-box;border:0 solid}
+button{font:inherit;background:transparent;color:inherit;cursor:pointer;padding:0}
+body{line-height:1.5;margin:0}
+:focus:not(:focus-visible){outline:none}
+
+/* ── Theme tokens — verbatim from globals.css ─────────────────── */
+.t-light{
+  --canvas:#F2F2F2; --panel:#EAEAEA; --inset:#D7D7D7; --well:#F9F9F9;
+  --accent:#1A1A1A; --on-accent:#F2F2F2;
+  --fg:#1A1A1A; --fg-2:#444444; --fg-dim:#656565; --fg-muted:#797979; --fg-faint:#989898;
+  --edge:#C0C0C0; --edge-dim:#B3B3B380;
+  --radius:4px; --radius-sm:4px; --radius-md:8px; --radius-lg:12px;
+  --radius-xl:16px; --radius-2xl:24px; --radius-full:9999px;
+  color-scheme:light;
+}
+.t-dark{
+  --canvas:#111111; --panel:#191919; --inset:#222222; --well:#1C1C1C;
+  --accent:#D4D4D4; --on-accent:#111111;
+  --fg:#E0E0E0; --fg-2:#B0B0B0; --fg-dim:#999999; --fg-muted:#6C6C6C; --fg-faint:#515151;
+  --edge:#393939; --edge-dim:#44444480;
+  --radius:4px; --radius-sm:4px; --radius-md:8px; --radius-lg:12px;
+  --radius-xl:16px; --radius-2xl:24px; --radius-full:9999px;
+  color-scheme:dark;
+}
+.t-midnight{
+  --canvas:#0D1117; --panel:#161B22; --inset:#21262D; --well:#0D1117;
+  --accent:#B1BAC4; --on-accent:#0D1117;
+  --fg:#C9D1D9; --fg-2:#A0AAB4; --fg-dim:#8B949E; --fg-muted:#6E7681; --fg-faint:#4E555E;
+  --edge:#343A41; --edge-dim:#3F454C80;
+  --radius:4px; --radius-sm:4px; --radius-md:8px; --radius-lg:12px;
+  --radius-xl:16px; --radius-2xl:24px; --radius-full:9999px;
+  color-scheme:dark;
+}
+.t-creme{
+  --canvas:#F0E6D6; --panel:#EBE1D1; --inset:#D8CCB9; --well:#F9F0E2;
+  --accent:#3D3229; --on-accent:#F0E6D6;
+  --fg:#2C2418; --fg-2:#564938; --fg-dim:#695E4D; --fg-muted:#7D7161; --fg-faint:#9A8F7F;
+  --edge:#C4B8A6; --edge-dim:#B8AC9A80;
+  --radius:4px; --radius-sm:4px; --radius-md:8px; --radius-lg:12px;
+  --radius-xl:16px; --radius-2xl:24px; --radius-full:9999px;
+  color-scheme:light;
+}
+/* Halftone Dimension — wecoded-themes/themes/halftone-dimension/manifest.json */
+.t-halftone{
+  --canvas:#08060e; --panel:#100e1c; --inset:#181430; --well:#0C0A14;
+  --accent:#E51F48; --on-accent:#ffffff;
+  --fg:#F0E8F8; --fg-2:#D4CAE4; --fg-dim:#A498C0; --fg-muted:#7468A0; --fg-faint:#4D417A;
+  --edge:#372D56; --edge-dim:#453B6580;
+  --radius:8px; --radius-sm:8px; --radius-md:16px; --radius-lg:24px;
+  --radius-xl:32px; --radius-2xl:36px; --radius-full:9999px;
+  color-scheme:dark;
+  --panels-blur:20px; --panels-opacity:78%;
+  background-image:linear-gradient(135deg,#08060e 0%,#18102e 25%,#200e3a 50%,rgba(232,35,74,0.07) 70%,rgba(0,184,255,0.05) 85%,#08060e 100%);
+}
+/* custom_css from the pack, scoped. NOTE: its .chat-bubble.* rules are dead in the
+   live app (renderer uses .user-bubble/.assistant-bubble) — reproduced faithfully
+   against the REAL selectors so the glow is visible here. See fidelity notes. */
+.t-halftone .bg-accent{box-shadow:0 0 20px rgba(232,35,74,.4),0 0 40px rgba(232,35,74,.15)}
+.t-halftone .assistant-bubble{border-left:3px solid #e8234a}
+.t-halftone .timeline-entry:nth-child(odd) .assistant-bubble{border-left-color:#00b8ff}
+.t-halftone .user-bubble{box-shadow:0 0 18px rgba(232,35,74,.3),0 0 40px rgba(232,35,74,.1);border:1.5px solid rgba(232,35,74,.5)}
+.t-halftone .header-bar{border-color:rgba(232,35,74,.4)}
+
+/* ── Tailwind utilities actually used by the sampled markup ───── */
+.flex{display:flex} .items-center{align-items:center}
+.justify-end{justify-content:flex-end} .justify-start{justify-content:flex-start}
+.relative{position:relative}
+.gap-1{gap:.25rem} .gap-0\.5{gap:.125rem}
+.px-4{padding-left:1rem;padding-right:1rem}
+.px-5{padding-left:1.25rem;padding-right:1.25rem}
+.px-1\.5{padding-left:.375rem;padding-right:.375rem}
+.py-2{padding-top:.5rem;padding-bottom:.5rem}
+.py-3{padding-top:.75rem;padding-bottom:.75rem}
+.py-3\.5{padding-top:.875rem;padding-bottom:.875rem}
+.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}
+.py-px{padding-top:1px;padding-bottom:1px}
+.max-w-\[80\%\]{max-width:80%} .max-w-\[85\%\]{max-width:85%}
+.break-words{overflow-wrap:break-word}
+.whitespace-pre-wrap{white-space:pre-wrap} .whitespace-nowrap{white-space:nowrap}
+.overflow-hidden{overflow:hidden} .overflow-y-auto{overflow-y:auto}
+.text-ellipsis{text-overflow:ellipsis}
+.min-w-0{min-width:0} .shrink{flex-shrink:1} .shrink-0{flex-shrink:0}
+.h-full{height:100%}
+.select-none{user-select:none}
+.font-medium{font-weight:500}
+.text-xs{font-size:12px;line-height:16px}
+.text-sm{font-size:14px;line-height:20px}
+.rounded-full{border-radius:var(--radius-full)}
+.rounded-2xl{border-radius:var(--radius-2xl)}
+.rounded-br-sm{border-bottom-right-radius:var(--radius-sm)}
+.rounded-bl-sm{border-bottom-left-radius:var(--radius-sm)}
+.border{border-width:1px}
+.border-edge{border-color:var(--edge)}
+.border-transparent{border-color:transparent}
+.bg-accent{background-color:var(--accent)}
+.bg-inset{background-color:var(--inset)}
+.bg-panel{background-color:var(--panel)}
+.text-fg{color:var(--fg)} .text-fg-2{color:var(--fg-2)}
+.text-on-accent{color:var(--on-accent)}
+.transition-shadow{transition:box-shadow .15s}
+
+/* ── App structural CSS (verbatim intent) ─────────────────────── */
+/* globals.css:598-606 — layout+style containment only. NOT contain:paint /
+   content-visibility: those clip community-theme glow shadows. */
+.timeline-entry{contain:layout style}
+
+/* ── Mockup page chrome (not app UI) ──────────────────────────── */
+body{font-family:'Cascadia Mono','Cascadia Code','Fira Code',monospace;background:#15161a;color:#ddd}
+.topbar{position:sticky;top:0;z-index:50;background:#0e0f12;border-bottom:1px solid #2a2c33;
+  padding:12px 20px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.topbar h1{font-size:14px;margin:0;font-weight:600;letter-spacing:.02em}
+.ctl{display:flex;gap:6px;align-items:center;font-size:11px}
+.ctl label{color:#8b8d96;text-transform:uppercase;letter-spacing:.06em;font-size:10px}
+.ctl button{border:1px solid #2f323a;background:#16181d;color:#c9ccd3;padding:4px 10px;
+  border-radius:5px;font-size:11px}
+.ctl button[aria-pressed="true"]{background:#3b6ea5;border-color:#4d86c4;color:#fff}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 90px}
+h2{font-size:15px;margin:38px 0 6px;color:#fff;letter-spacing:.02em}
+.sub{color:#8b8d96;font-size:12px;margin:0 0 14px;line-height:1.6;max-width:80ch}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:900px){.pair{grid-template-columns:1fr}}
+.vp-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#8b8d96;margin-bottom:6px}
+.viewport{border:1px solid #2a2c33;border-radius:10px;overflow:hidden;background:var(--canvas);
+  background-image:inherit;display:flex;flex-direction:column;height:440px}
+.t-halftone.viewport{background-image:linear-gradient(135deg,#08060e 0%,#18102e 25%,#200e3a 50%,rgba(232,35,74,0.07) 70%,rgba(0,184,255,0.05) 85%,#08060e 100%)}
+.header-bar{background:var(--panel);border-bottom:1px solid var(--edge);padding:8px 10px;
+  display:flex;align-items:center;gap:8px;flex-shrink:0}
+.chat-scroll{scrollbar-width:thin}
+.note{font-size:11px;color:#8b8d96;margin-top:8px;line-height:1.6}
+.num{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;
+  border-radius:50%;background:#3b6ea5;color:#fff;font-size:10px;font-weight:700;
+  margin-right:7px;flex-shrink:0}
+.change{display:flex;align-items:flex-start;margin:10px 0;font-size:12px;line-height:1.65;
+  color:#c3c6cd;max-width:88ch}
+table{border-collapse:collapse;width:100%;font-size:11.5px;margin-top:14px}
+th,td{border:1px solid #2a2c33;padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#16181d;color:#fff;font-weight:600}
+td code{color:#9fd0ff;font-size:11px}
+code{background:#1c1e24;padding:1px 5px;border-radius:3px;font-size:11.5px;color:#9fd0ff}
+.rec{color:#7ec699;font-weight:600}
+footer{margin-top:56px;border-top:1px solid #2a2c33;padding-top:18px;font-size:11.5px;
+  color:#8b8d96;line-height:1.75;max-width:90ch}
+footer h3{color:#fff;font-size:12.5px;margin:0 0 8px}
+
+/* ═══════════════════════════════════════════════════════════════
+   THE PROPOSAL — everything below is the actual animation CSS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1 + 2. Session pill label expansion ──────────────────────── */
+/* Today: label maxWidth is `undefined` when active (nothing to
+   interpolate) AND transition is 'none' whenever the pill is in
+   pack.expanded — which packSessions guarantees for the active pill.
+   Two independent reasons it snaps. */
+.pill-label{display:block;overflow:hidden;min-width:0}
+
+/* Option A — numeric max-width, literally the hover recipe */
+[data-pill-anim="A"] .pill-label-outer{
+  max-width:0;opacity:0;
+  transition:max-width 200ms ease, opacity 150ms ease;
+}
+[data-pill-anim="A"] .pill.show-name .pill-label-outer{max-width:320px;opacity:1}
+
+/* Option B (recommended) — grid 0fr→1fr animates to INTRINSIC width,
+   so the active pill keeps its uncapped flex-shrink + ellipsis. */
+[data-pill-anim="B"] .pill-label-outer{
+  display:grid;grid-template-columns:0fr;opacity:0;
+  transition:grid-template-columns 200ms ease, opacity 150ms ease;
+}
+[data-pill-anim="B"] .pill.show-name .pill-label-outer{grid-template-columns:1fr;opacity:1}
+
+/* Today = no transition at all */
+[data-pill-anim="today"] .pill-label-outer{
+  display:grid;grid-template-columns:0fr;opacity:0;transition:none;
+}
+[data-pill-anim="today"] .pill.show-name .pill-label-outer{grid-template-columns:1fr;opacity:1}
+
+/* Pill container transition — verbatim from SessionStrip.tsx:770-772 */
+.pill{transition:all 150ms cubic-bezier(0.34,1.56,0.64,1);cursor:default;
+  background:transparent;border:1px solid transparent}
+.pill.show-name{border-color:var(--edge);background:var(--panel)}
+.pill:not(.active):hover{transform:scale(1.02)}
+.pill.active{box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent),
+  0 0 10px color-mix(in srgb,var(--accent) 22%,transparent)}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:#4CAF50}
+.dot.gray{background:var(--fg-faint)}
+.dot.amber{background:#FF9800}
+
+/* ── 3. Bubble enter / exit ───────────────────────────────────── */
+/* Targets .in-view ONLY — the class ChatView.tsx:277-280 already
+   maintains via IntersectionObserver. Off-screen entries never animate. */
+@keyframes bubble-pop{
+  from{opacity:0;transform:scale(.9) translateY(10px)}
+  /* `transform:none`, not translateY(0) — matches the row-fade-in
+     convention at globals.css:1172 (fill-mode compositing layer). */
+  to{opacity:1;transform:none}
+}
+@keyframes bubble-pop-soft{
+  from{opacity:0;transform:scale(.97) translateY(5px)}
+  to{opacity:1;transform:none}
+}
+@keyframes bubble-out{
+  from{opacity:1;transform:none}
+  to{opacity:0;transform:scale(.96) translateY(-4px)}
+}
+
+.session-entering .timeline-entry.in-view{
+  animation:bubble-pop 260ms cubic-bezier(0.34,1.56,0.64,1) both;
+  animation-delay:calc(var(--i,0) * 30ms);
+}
+[data-bounce="soft"] .session-entering .timeline-entry.in-view{
+  animation-name:bubble-pop-soft;animation-timing-function:cubic-bezier(0.16,1,0.3,1);
+}
+[data-bounce="big"] .session-entering .timeline-entry.in-view{
+  animation-duration:320ms;animation-timing-function:cubic-bezier(0.34,1.8,0.5,1);
+}
+.session-leaving .timeline-entry.in-view{
+  animation:bubble-out 120ms ease-in both;
+}
+
+/* Gating: both the OS setting and the app's own reducedEffects toggle. */
+@media (prefers-reduced-motion:reduce){
+  .session-entering .timeline-entry.in-view,
+  .session-leaving .timeline-entry.in-view{animation:none}
+  [data-pill-anim] .pill-label-outer,.pill{transition:none}
+}
+[data-reduced-effects="1"] .session-entering .timeline-entry.in-view,
+[data-reduced-effects="1"] .session-leaving .timeline-entry.in-view{animation:none}
+[data-reduced-effects="1"] .pill-label-outer,
+[data-reduced-effects="1"] .pill{transition:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Session switch — motion mockup</h1>
+  <div class="ctl"><label>Theme</label>
+    <button data-theme-btn="midnight" aria-pressed="true">Midnight</button>
+    <button data-theme-btn="creme" aria-pressed="false">Crème</button>
+    <button data-theme-btn="halftone" aria-pressed="false">Halftone</button>
+    <button data-theme-btn="dark" aria-pressed="false">Dark</button>
+    <button data-theme-btn="light" aria-pressed="false">Light</button>
+  </div>
+  <div class="ctl"><label>Pill</label>
+    <button data-pill-btn="A" aria-pressed="false">A · max-width</button>
+    <button data-pill-btn="B" aria-pressed="true">B · grid ✓</button>
+  </div>
+  <div class="ctl"><label>Bounce</label>
+    <button data-bounce-btn="soft" aria-pressed="false">Soft</button>
+    <button data-bounce-btn="std" aria-pressed="true">Standard ✓</button>
+    <button data-bounce-btn="big" aria-pressed="false">Big</button>
+  </div>
+  <div class="ctl"><label>reducedEffects</label>
+    <button data-reduced-btn aria-pressed="false">off</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <h2>Surface — header session strip + chat transcript</h2>
+  <p class="sub">
+    Click the session pills in either panel. <strong>Left</strong> is today's behavior, <strong>right</strong> is
+    the proposal — both driven by the same click. Scroll the right transcript to an
+    arbitrary position before switching: only the bubbles actually on screen animate,
+    because the animation keys off the <code>.in-view</code> class the app's existing
+    IntersectionObserver already maintains.
+  </p>
+
+  <div class="pair">
+    <div>
+      <div class="vp-label">Today</div>
+      <div class="viewport t-midnight" data-vp="today" data-pill-anim="today">
+        <div class="header-bar"></div>
+        <div class="chat-scroll h-full overflow-y-auto"></div>
+      </div>
+    </div>
+    <div>
+      <div class="vp-label">Proposed</div>
+      <div class="viewport t-midnight" data-vp="new" data-pill-anim="B" data-bounce="std">
+        <div class="header-bar"></div>
+        <div class="chat-scroll h-full overflow-y-auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="change"><span class="num">1</span><div>
+    <strong>The active pill's label can actually animate.</strong>
+    Today <code>maxWidth</code> is <code>undefined</code> when the pill is active
+    (<code>SessionStrip.tsx:785-787</code>) — there is no numeric value pair, so width snaps to
+    intrinsic. <span class="rec">Option B</span> wraps the label in a
+    <code>display:grid</code> box and animates <code>grid-template-columns: 0fr → 1fr</code>,
+    which interpolates to the <em>intrinsic</em> width. That keeps the active pill's uncapped
+    <code>min-w-0</code> flex-shrink + ellipsis behavior intact. Option A caps it at 320px, which
+    is simpler but truncates long names earlier than today.
+  </div></div>
+
+  <div class="change"><span class="num">2</span><div>
+    <strong>Stop disabling the transition on the pill that was just clicked.</strong>
+    <code>transition: pack.expanded.has(s.id) ? 'none' : …</code>
+    (<code>SessionStrip.tsx:789</code>) — and <code>packSessions</code> puts the active pill in
+    <code>expanded</code> unconditionally (<code>pack-sessions.ts:53</code>), so the clicked pill
+    is exactly the one with animation switched off. The <code>'none'</code> still matters for
+    suppressing repack churn, so it becomes conditional on <em>why</em> the pill expanded:
+    animate on an active-id change, stay instant when only the packing solver changed.
+  </div></div>
+
+  <div class="change"><span class="num">3</span><div>
+    <strong>Bubbles pop in, staggered, on-screen only.</strong>
+    <code>260ms cubic-bezier(0.34, 1.56, 0.64, 1)</code> — the same overshoot curve already used
+    for the pills — from <code>scale(.9) translateY(10px)</code>, with a
+    <code>30ms × index</code> stagger. Applied to <code>.timeline-entry.in-view</code>, so
+    off-screen entries render already-settled and cost nothing. Outgoing session gets a faster
+    <code>120ms ease-in</code> shrink-away so the swap doesn't feel laggy.
+  </div></div>
+
+  <div class="change"><span class="num">4</span><div>
+    <strong>Gated on <code>reducedEffects</code> and <code>prefers-reduced-motion</code>.</strong>
+    The session strip currently has no reduced-motion gate at all. Toggle
+    <em>reducedEffects</em> in the topbar to confirm both animations fall back to instant.
+  </div></div>
+
+  <h2>Change ledger</h2>
+  <table>
+    <tr><th>#</th><th>Where</th><th>Change</th><th>Recipe</th></tr>
+    <tr><td>1</td><td><code>SessionStrip.tsx:780-793</code></td>
+      <td>Label wrapper so width is interpolable</td>
+      <td><code>display:grid; grid-template-columns:0fr→1fr; transition:200ms ease</code></td></tr>
+    <tr><td>2</td><td><code>SessionStrip.tsx:789</code></td>
+      <td><code>'none'</code> gated on repack, not on active</td>
+      <td>track prev active id; suppress only when <code>pack</code> changed</td></tr>
+    <tr><td>3</td><td><code>globals.css</code> + <code>ChatView.tsx:693-702</code></td>
+      <td><code>bubble-pop</code> keyframes on <code>.in-view</code> entries</td>
+      <td><code>260ms cubic-bezier(.34,1.56,.64,1)</code>, <code>--i × 30ms</code></td></tr>
+    <tr><td>4</td><td><code>globals.css</code></td>
+      <td>reduced-motion + <code>reducedEffects</code> gate</td>
+      <td><code>animation:none; transition:none</code></td></tr>
+  </table>
+
+  <footer>
+    <h3>Fidelity notes</h3>
+    <strong>Verbatim from source:</strong> all four theme token blocks and the radius scale
+    (<code>globals.css:14-152</code>); Halftone Dimension tokens, shape, gradient and
+    <code>custom_css</code> (manifest.json); user bubble markup
+    (<code>UserMessage.tsx:71-79</code>); assistant bubble markup
+    (<code>AssistantTurnBubble.tsx:361-362</code>, plain-text <code>py-3.5</code> branch);
+    timeline entry wrapper (<code>ChatView.tsx:693-702</code>); scroll container
+    (<code>ChatView.tsx:597</code>); pill + strip markup and the pill's
+    <code>150ms cubic-bezier(0.34,1.56,0.64,1)</code> transition
+    (<code>SessionStrip.tsx:736-806</code>); <code>.timeline-entry{contain:layout style}</code>
+    (<code>globals.css:598-606</code>).
+    <br><br>
+    <strong>Approximated — do not read as spec:</strong> the active pill's glow substitutes for
+    <code>GLOW_SHADOW</code> (<code>SessionStrip.tsx:70-76</code>), which I did not read; likewise
+    the <code>SessionDot</code> status colors. The header bar is a plain panel strip — the real one
+    is part of the single <code>chrome-glass</code> backdrop-filter donut and carries window
+    controls, view toggle and gear. Halftone's particles, scan-lines, vignette, noise and pattern
+    overlay are omitted. Its <code>custom_css</code> targets <code>.chat-bubble.user/.assistant</code>,
+    which <em>match nothing in the live app</em> (the renderer uses
+    <code>.user-bubble</code>/<code>.assistant-bubble</code>) — I re-pointed those rules at the real
+    selectors here so the glow is visible; in the shipping app that pack's bubble styling is
+    currently dead. Transcript copy is representative filler.
+  </footer>
+</div>
+
+<script>
+const SESSIONS = [
+  {id:'s1', name:'youcoded-dev workspace', dot:''},
+  {id:'s2', name:'marketplace worker', dot:'amber'},
+  {id:'s3', name:'theme contrast audit', dot:'gray'},
+  {id:'s4', name:'android runtime', dot:'gray'},
+];
+const TALK = {
+  s1:[['u','can you check why the session strip feels jumpy?'],
+      ['a','Looking at SessionStrip now. The pill container already has a springy transition, so the strip itself is fine — it\'s the label that snaps.'],
+      ['u','what makes the label snap?'],
+      ['a','Two things stack up. The active pill sets maxWidth to undefined, so there\'s no numeric pair for the browser to interpolate between.'],
+      ['a','And separately, the transition is set to the string \'none\' whenever the pill is in pack.expanded — which packSessions guarantees for the active pill.'],
+      ['u','so the pill i just clicked is the one with animation turned off'],
+      ['a','Exactly. Either one alone would cause the snap; both are present.'],
+      ['u','ok lets fix both'],
+      ['a','On it. The \'none\' still earns its keep for repack churn, so I\'ll make it conditional on why the pill expanded rather than deleting it.'],
+      ['u','sounds right'],
+      ['a','Draft is ready whenever you want to look.']],
+  s2:[['u','did the worker deploy go through?'],
+      ['a','CI is green — migrations applied and secrets pushed on merge to master.'],
+      ['u','and the cutover timestamp?'],
+      ['a','Still the old value in wrangler.toml. That\'s a vars flip, so it needs a commit rather than a manual deploy.'],
+      ['u','open a pr for it'],
+      ['a','Will do. Anything else in the same PR?'],
+      ['u','no just that'],
+      ['a','Opened. Single-line change to wrangler.toml.']],
+  s3:[['u','run the contrast audit over the community themes'],
+      ['a','All seven pass on canvas and panel. Halftone Dimension is closest to the line at 1.09:1 for panel vs canvas.'],
+      ['u','thats above 1.07 so its fine right'],
+      ['a','Correct — it passes, but with very little headroom. Worth knowing before anyone repalettes it.'],
+      ['u','note it somewhere'],
+      ['a','Added to the audit report residue section.']],
+  s4:[['u','whats the state of the xterm webview work'],
+      ['a','Tier 2 landed — xterm in the WebView is the sole Android terminal renderer now, and the native Termux view was removed.'],
+      ['u','any perf concerns'],
+      ['a','The raw byte listener fires on the terminal thread, so bytes get copied before any async work. It uses tryEmit, which drops rather than blocks.'],
+      ['u','good']],
+};
+
+function bubble(kind, text){
+  const wrap = document.createElement('div');
+  wrap.className = 'timeline-entry in-view';
+  wrap.innerHTML = kind === 'u'
+    ? `<div class="flex justify-end px-4 py-2"><div class="user-bubble max-w-[80%] break-words rounded-2xl rounded-br-sm bg-accent px-5 py-3 text-sm text-on-accent whitespace-pre-wrap"></div></div>`
+    : `<div class="flex justify-start px-4 py-0.5"><div class="assistant-bubble max-w-[85%] break-words rounded-2xl rounded-bl-sm bg-inset text-sm text-fg px-5 py-3.5"></div></div>`;
+  wrap.querySelector('.user-bubble,.assistant-bubble').textContent = text;
+  return wrap;
+}
+
+function buildStrip(vp, activeId){
+  const bar = vp.querySelector('.header-bar');
+  bar.innerHTML = '';
+  const strip = document.createElement('div');
+  strip.className = 'session-strip flex items-center gap-0.5 bg-inset rounded-full px-1.5 py-0.5 overflow-hidden min-w-0 shrink transition-shadow';
+  SESSIONS.forEach(s => {
+    const active = s.id === activeId;
+    const b = document.createElement('button');
+    // SessionStrip.tsx:759-768 — class string verbatim, minus React-only branches
+    b.className = `pill relative flex items-center gap-1 rounded-full px-1.5 py-px border select-none overflow-hidden ${active ? 'min-w-0 shrink active show-name' : 'shrink-0'}`;
+    b.innerHTML = `<span class="dot ${s.dot}"></span>`
+      + `<span class="pill-label-outer"><span class="pill-label text-xs font-medium text-fg-2 whitespace-nowrap overflow-hidden text-ellipsis"></span></span>`;
+    b.querySelector('.pill-label').textContent = s.name;
+    // Non-active pills reveal on hover — the existing behavior Destin likes.
+    b.addEventListener('mouseenter', () => { if (!active) b.classList.add('show-name'); });
+    b.addEventListener('mouseleave', () => { if (!active) b.classList.remove('show-name'); });
+    b.addEventListener('click', () => switchTo(s.id));
+    strip.appendChild(b);
+  });
+  bar.appendChild(strip);
+}
+
+function fill(vp, id){
+  const sc = vp.querySelector('.chat-scroll');
+  sc.innerHTML = '';
+  TALK[id].forEach(([k,t]) => sc.appendChild(bubble(k,t)));
+  sc.scrollTop = sc.scrollHeight;
+}
+
+let current = 's1';
+function switchTo(id){
+  document.querySelectorAll('.viewport').forEach(vp => {
+    const isNew = vp.dataset.vp === 'new';
+    const sc = vp.querySelector('.chat-scroll');
+    const commit = () => {
+      buildStrip(vp, id);
+      fill(vp, id);
+      if (!isNew) return;
+      // Tag only entries whose box actually intersects the scroll viewport —
+      // stands in for the app's existing IntersectionObserver-maintained
+      // .in-view class, and supplies the stagger index.
+      const r = sc.getBoundingClientRect();
+      let i = 0;
+      sc.querySelectorAll('.timeline-entry').forEach(el => {
+        const b = el.getBoundingClientRect();
+        const visible = b.bottom > r.top && b.top < r.bottom;
+        el.classList.toggle('in-view', visible);
+        if (visible) el.style.setProperty('--i', i++);
+      });
+      vp.classList.add('session-entering');
+      setTimeout(() => vp.classList.remove('session-entering'), 700);
+    };
+    if (isNew && id !== current){
+      // Mark on-screen outgoing entries, then swap after the exit finishes.
+      const r = sc.getBoundingClientRect();
+      sc.querySelectorAll('.timeline-entry').forEach(el => {
+        const b = el.getBoundingClientRect();
+        el.classList.toggle('in-view', b.bottom > r.top && b.top < r.bottom);
+      });
+      vp.classList.add('session-leaving');
+      setTimeout(() => { vp.classList.remove('session-leaving'); commit(); }, 120);
+    } else commit();
+  });
+  current = id;
+}
+
+// topbar wiring
+const THEMES = ['midnight','creme','halftone','dark','light'];
+document.querySelectorAll('[data-theme-btn]').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('[data-theme-btn]').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+  document.querySelectorAll('.viewport').forEach(vp => {
+    THEMES.forEach(t => vp.classList.remove('t-'+t));
+    vp.classList.add('t-'+btn.dataset.themeBtn);
+  });
+}));
+document.querySelectorAll('[data-pill-btn]').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('[data-pill-btn]').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+  document.querySelector('[data-vp="new"]').dataset.pillAnim = btn.dataset.pillBtn;
+}));
+document.querySelectorAll('[data-bounce-btn]').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('[data-bounce-btn]').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+  document.querySelector('[data-vp="new"]').dataset.bounce = btn.dataset.bounceBtn;
+}));
+const rb = document.querySelector('[data-reduced-btn]');
+rb.addEventListener('click', () => {
+  const on = rb.getAttribute('aria-pressed') !== 'true';
+  rb.setAttribute('aria-pressed', String(on));
+  rb.textContent = on ? 'on' : 'off';
+  document.body.dataset.reducedEffects = on ? '1' : '0';
+});
+
+document.querySelectorAll('.viewport').forEach(vp => { buildStrip(vp, current); fill(vp, current); });
+</script>
+</body>
+</html>
