@@ -301,6 +301,9 @@ surface, not a history.
 
 ## Someday / ideas
 
+- [ ] "Run in background" option — keep the local engine serving after app close `idea` `#local-models` (added 2026-07-20)
+  Destin's note during the engine-lifecycle fix: some users may want YouCoded's downloaded models to keep serving EXTERNAL AI tools (anything that speaks the OpenAI-compatible `http://127.0.0.1:9920/v1` API) after the YouCoded window closes. Today the engine is deliberately reaped on quit (the 2026-07-20 lifecycle fix made quit-kill reliable precisely so a stale engine can't squat the port and get wrongly adopted). A background-serve mode would need an explicit opt-in toggle, a supervisor that hands the child off to a user-service/daemon instead of killing it, a "YouCoded engine is running" tray/menubar presence with a Stop control, and a reconcile-on-launch path (adopt-or-restart a daemon we own, distinct from a foreign process). Not the current intended behavior — file for later, only if real demand shows up.
+
 - [ ] Full LSP — real diagnostics, hover types, rename-symbol `idea` `#renderer` `#artifacts` (added 2026-07-20)
   The genuine IDE-parity tier for code intelligence, and deliberately deferred. Costs: per-language server lifecycle management (spawn, crash recovery, workspace roots, one server per language per project), a protocol client the repo has none of (no LSP client, no tree-sitter, no codemirror/monaco as of 2026-07-20), and — the part that actually decides it — **it is almost certainly desktop-only**. Android cannot host language servers, so shipping this hard-forks the desktop/Android UI parity that currently holds because both run the same React bundle (`WebViewHost.kt:160`). Real win for developers, large architectural commitment. Do the tree-sitter/ctags item under Features first and see whether the remaining 20% is worth the fork.
 
