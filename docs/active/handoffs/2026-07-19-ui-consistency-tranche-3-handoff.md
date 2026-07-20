@@ -50,7 +50,21 @@ So: **first task of the next session is an audit, not an edit.** Produce a real 
 for changes 22–25 the way §11.1 did for buttons, and expect the ledger to need corrections before
 any code moves.
 
-## Decision waiting on Destin — the contrast fix
+## ~~Decision waiting on Destin~~ — RESOLVED 2026-07-20, the contrast fix shipped
+
+> Destin took the mockup round this section recommends. Neither fork below was
+> chosen: **(a) blanket override** was rejected once the unlayered-CSS trap was
+> found (83 `hover:text-*` sites), and **(b) split the token** was unnecessary
+> because the palettes themselves were solvable. Shipped instead: an OKLCH solver
+> that places each theme's ramp against every paintable surface, plus a call-site
+> migration for `fg-faint`'s 106 text uses. wecoded-marketplace#50,
+> wecoded-themes#19, youcoded#187. See spec §12's resolution note.
+>
+> The fallback this section suggests — "(a) for `fg-muted` only, leaving `fg-faint`
+> alone" — would have left the actual reported bug unfixed. `fg-faint` *was* the
+> bug.
+
+### Original decision text (kept for context)
 
 Reported twice from two screens (Meadow Mist: the CompactingCard subtitle, then the Appearance row
 descriptions). Full analysis in **spec §12**; roadmap entry filed.

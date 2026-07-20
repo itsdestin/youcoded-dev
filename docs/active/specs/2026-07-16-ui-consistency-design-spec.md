@@ -16,9 +16,8 @@ owner: Destin (decisions) / Claude (spec)
 > (inputs). Change 78 is the one deferred item — see §11.10 for why it's a feature, not a
 > migration. Tranches 3–8 remain.
 >
-> **§12** (added 2026-07-19) is a separate, non-blocking finding: the theme contrast
-> audit only checks text against `canvas`, so secondary text can go invisible on
-> `panel`/`inset`/`well`. A `wecoded-themes` fix, not a tranche.
+> **§12** (added 2026-07-19) — **SHIPPED 2026-07-20.** Turned out to span all three
+> repos, not just `wecoded-themes`. See the resolution note at the head of §12.
 >
 > **Then read §11** (added 2026-07-19). The "~25–30 remaining hand-rolled buttons"
 > §10.7 owed a triage for is really **~153 across ~50 files**. §11 is that triage:
@@ -1004,6 +1003,31 @@ feature when it comes up, not folded into a consistency sweep.
 ---
 
 ## 12. Contrast rules need refinement — the audit only checks `canvas` (raised 2026-07-19)
+
+> **RESOLVED 2026-07-20** — wecoded-marketplace#50, wecoded-themes#19, youcoded#187.
+> Full analysis archived at `docs/archive/investigations/2026-07-19-fg-muted-faint-raised-surface-inventory.md`
+> and `docs/archive/prototypes/2026-07-19-*.html`.
+>
+> **Three things below were wrong, and are worth knowing before trusting this section:**
+>
+> 1. **The exemplar was wrong.** §12 leads with `SettingsRow`'s `bg-inset/50` stack.
+>    The real worst case was `fg-faint` on a *plain* `panel` (`ThemeScreen.tsx:257/273`),
+>    which fails in **11 of 11** themes and never cleared 3.0 even on `canvas`.
+> 2. **The numbers were understated.** Every ratio in §12 measures flat tokens.
+>    Composited over their real wallpapers, meadow-mist and cotton-candy-sky bottom
+>    out at **1.01** — identical luminance — not the 1.24 recorded here.
+> 3. **The "cheap" `.layer-surface .text-fg-muted` rule was a trap.** It is unlayered
+>    CSS and would have killed `hover:text-*` on 83 sites — the exact bug documented
+>    at `globals.css:865-885`. Redefining the *variable* (`--fg-muted`) rather than
+>    the property dissolves it, but the shipped fix didn't need either: the palettes
+>    were solved instead.
+>
+> Shipped instead: an OKLCH solver that *places* each theme's ramp against every
+> paintable surface (glass composite included), a generated 34-rule table replacing
+> the hand-written 16, consolidation of the three divergent rule copies behind one
+> canonical source with a CI drift guard, and migration of the 106 `fg-faint`
+> **text** sites to `fg-muted` — `fg-faint` stays decorative, which no palette
+> change could have achieved.
 
 Not pressing, but real, and it will keep producing invisible text until fixed.
 
