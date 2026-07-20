@@ -128,6 +128,27 @@ no channel and render unchanged. Format lives in `desktop/src/shared/version-lin
 before installing a beta that's far ahead of your release (there's precedent: the 776 MB
 `claude-snapshot.tar.gz` taken 2026-07-12 before the two-device dogfood).
 
+**macOS ships two dmgs, and the x64 one is built on an arm64 runner.** `electron-builder.yml`
+targets both `x64` and `arm64`, but both workflows run on `macos-latest` (Apple Silicon) and cut
+both dmgs from a single `node_modules` with `npmRebuild: false`. Any dependency that ships its
+binaries as **per-platform `optionalDependencies`** therefore installs arm64-only, and the x64 dmg
+gets binaries it cannot execute. Both workflows carry an `Add darwin-x64 binaries for the x64 dmg`
+step that force-installs the missing variants; **when you add a dependency with per-platform
+optional deps, add it there too.** Caught 2026-07-19 when `1.3.0-beta.6` died at launch on an Intel
+VM with `Could not find @vscode/ripgrep-darwin-x64` (youcoded#189); `@napi-rs/canvas` (via
+`pdfjs-dist`) was a second, latent instance that would have shown up only as broken PDF rendering.
+`node-pty` and `koffi` vendor every arch in-package and need no help.
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-release.yml", "contains": "darwin-x64 binaries"} -->
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "darwin-x64 binaries"} -->
+
+To check a dmg before handing it to a tester, extract it and confirm the arch actually present:
+
+```bash
+7z x -y YouCoded-<version>.dmg -o/tmp/dmgcheck >/dev/null
+find /tmp/dmgcheck -type d -name '*-darwin-*'        # expect darwin-x64 in the unsuffixed dmg
+file "$(find /tmp/dmgcheck -path '*MacOS/YouCoded')" # expect Mach-O 64-bit x86_64
+```
+
 ## Local verification (typecheck + CI-style build)
 
 When you need to confirm something compiles or passes tests — not just runs:
