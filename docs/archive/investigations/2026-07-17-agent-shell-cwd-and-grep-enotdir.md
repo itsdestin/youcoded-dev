@@ -15,6 +15,8 @@ status: shipped
 
 **RESOLUTION (2026-07-18):** both issues shipped. Issue 2 (Grep `spawn ENOTDIR`) → youcoded PR #172. Issue 1 (Bash CWD) → youcoded PR #174, which implemented the scoped-persistence option below: harness-tracked cwd, `__YC_CWD__` sentinel readback, out-of-root revert with a `Shell cwd was reset to …` notice, cwd-only (no env) persistence, and an updated tool description. PowerShell (Windows without Git Bash) stays stateless by design. Guarded by 5 tests in `desktop/tests/harness-tools-core.test.ts`.
 
+**⚠️ CORRECTION (2026-07-20) — Issue 2's root cause below is WRONG, and PR #172 did not actually fix it.** The `spawn ENOTDIR` kept reproducing in the packaged app after #172. The `cwd` hypothesis (Issue 2, "Root cause" section) was a misdiagnosis: the real cause is that `@vscode/ripgrep`'s `rgPath` resolves via `createRequire().resolve()` to a path **inside `app.asar`** (a FILE), so `spawn()` of that command path throws `ENOTDIR` **synchronously** — before the late-attached `'error'` handler can catch it. Dev never reproduces it (no asar). **Actual fix → youcoded PR #194:** rewrite `rgPath` to `app.asar.unpacked` (mirroring the pty-worker pattern in `session-manager.ts:131`) + `try/catch` the synchronous throw in both Grep and Bash. Lesson: this doc's own hypothesis table "ruled out" the command-path arg without testing whether `rgPath` itself resolves inside the asar — the `ENOTDIR` was always the *command* path, not the `cwd`. The `cwd:` fix from #172 is retained (correct on its own) but was never the cause.
+
 ## TL;DR
 
 1. **Bash CWD is stateless-per-call** in this harness: every Bash tool invocation is a
