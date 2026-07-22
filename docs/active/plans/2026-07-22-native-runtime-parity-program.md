@@ -29,6 +29,23 @@ Partially landed: **Plan C local reliability** — the stall watchdog and step-b
 
 Interrupt exists end-to-end (`NativeSessionHost.interrupt` → `NATIVE_INTERRUPT` → ESC handler native branch + remote shim) — but ESC is the only affordance. There is no send queue, no send-result feedback, no store/sync participation, no skills/commands, no usage/cost chips, no stuck detection, no Android.
 
+## §1.5 Where this lands in the platform vision (`2026-07-09-platform-vision-roadmap.md`)
+
+The vision spec remains the umbrella for the **whole** platform (multi-model backends → harnesses → ecosystem → Agents view → Android → differentiators). This program is the execution vehicle for its **parity slice** — everything needed so native sessions equal CC sessions — plus parity debt itemized after the vision was written (2026-07-09). The Agents & Automations view (vision Phase 4) and the differentiators (Phase 6) are deliberately NOT in this program: they are new surfaces, not parity.
+
+| Program milestone | Lands in the vision as |
+|---|---|
+| M1 session control, M4 status/reliability UX | The unfinished remainder of Phase 2's "full UI parity" promise — debt itemized after 07-09, no phase body names it |
+| M2 conversations/sync | New scope: the Phase 2 harness spec declared native-session sync out of scope and no vision phase owns it; M2 is where it lands |
+| M3 skills/commands/rules/MCP | Phase 3 items 1 (the in-app skill-surface half), 2, 4, 6. Execute together with Phase 3 item 1's conventions migration — which also fixes the CC-reclone plugin-wipe bug (that ROADMAP entry stays separate and lands there) |
+| M5 permissions | Phase 3 item 7 (management UI) + the Bash-rule bug the vision explicitly pairs with it, plus the full-auto prompt bug (new) |
+| M6 model intelligence | The vision progress-log's two OPEN bullets — Phase 2 Plan C reconciliation and the multi-model cwd contract — plus the metadata/tiering follow-ons |
+| M7 subagents → orchestration | Phase 3 item 8 (subagents design handoff) feeding Phase 4's named prerequisites; the Phase 4 view itself stays vision-only |
+| M8 Android | Phase 5 items 2–3, following Phase 5's internal order (see §8) |
+| M9 onboarding equality | The vision §0 stance ("Claude Code becomes one integration among several") applied to first-run; no phase itemizes it |
+
+Vision Phase 3 items NOT pulled into this program (they ship with the vision phase, though M3 must be designed alongside them since they share the surface): item 3 **custom harness builder** (a differentiator, not parity — CC has no equivalent) and item 5 projects-view polish.
+
 ## §2 Milestone M1 — Session control (chat mechanics feel identical)
 
 Decisions (Destin 2026-07-22): sends during a live turn **queue**; stop is a **visible button**, not just ESC.
@@ -61,7 +78,7 @@ Design constraints already settled (former "context management" entry + Phase 2 
 3. **Path-scoped rules + nested CLAUDE.md.** A path-matcher in the tool loop injects a rule message after a tool touches a matching path (`.claude/rules/*.md` `paths:`); nested/subdirectory CLAUDE.md discovery. Already in: root-walk AGENTS.md/CLAUDE.md snapshot (`prompt-assembly.ts`).
 4. **MCP in native sessions.**
 5. **Capability-gated injection.** A 600-word rule can blow a small model's window — injection must scale with the capability profile (soft dependency on M6's tiering; current profiles suffice to start).
-Also owned by this phase per the Phase 2 spec: custom harness builder, mid-session preset switching, `~/.claude` migration — sequence within M3 when designing it.
+Design M3 together with the vision Phase 3 items that share this surface — the custom harness builder, the `~/.youcoded` conventions migration, mid-session preset switching — but those ship under the vision phase, not this parity program (see §1.5).
 
 ## §5 Milestone M4 — Status, reliability & tool-parity UX
 
@@ -90,7 +107,7 @@ Also owned by this phase per the Phase 2 spec: custom harness builder, mid-sessi
 ## §8 Later milestones
 
 - **M7 Subagents → orchestration.** Task tool as child sessions (parent-session pointer, condensed result up) — deferred from Phase 2 by decision but CORE/VITAL; the session store was designed so this lands without schema change. Then workflow orchestration (spec `2026-07-19-native-workflow-orchestration-design.md`; research done, **no design decision taken** — the pivotal choice is model-authored JS vs declarative DAG, and DAG is favored for four-unpredictable-models + sandbox elimination via schema validation; concurrency must derive from llama-server `--parallel` slots, not copied constants; KV-cache prefix stability must be live-probed; our resumption story via child sessions can beat CC/Codex/Kimi). M7 subagent cwd takes an explicit `work_dir` param (per the cwd-contract plan's non-goal note).
-- **M8 Android native runtime.** SessionService.kt has no native provider branch, no engine detection, no `native:*`/`local:*` handlers — roughly the size of the original desktop work. Also owns Android parity for M2 meta (tag/note stubs) and M5's permission UI.
+- **M8 Android native runtime.** SessionService.kt has no native provider branch, no engine detection, no `native:*`/`local:*` handlers — roughly the size of the original desktop work. Follow vision Phase 5's internal order: **LAN engine access first** (desktop llama-server exposed on LAN, `--api-key` + QR pairing over the existing remote-access machinery — zero new inference code, Android is just another OpenAI-compat client), then on-device llama-server under Termux (curated ≤4B Q4 list), then cloud providers on Android (keystore), then agents-as-viewer. Also owns Android parity for M2 meta (tag/note stubs) and M5's permission UI.
 - **M9 Onboarding equality** (Destin 2026-07-20): remove the Claude Code gate from first-run — installer downloads prerequisites, lands on Crème, then a popup offers three *equal* options (Claude Code / OpenRouter key / local runner). No default provider — the open-platform stance applied to onboarding. Intersects the separate `Onboarding.tsx` roadmap entry (2026-04-12, predates this direction — check whether its spec still names CC as primary before building either). Unscoped: popup design, `prerequisite-installer.ts` rework, mapping the conversational wizard onto a three-choice model.
 
 ## §9 Sequencing, dependencies, release mapping
