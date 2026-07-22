@@ -581,6 +581,39 @@ npm run build                   # type-check + bundle
 
 - [ ] **Step 4: PR** to `itsdestin/youcoded` master from `feat/m1-session-control`, body listing the six M1 items + the Destin-eyeball note for stop-button placement. After merge: archive this plan per the workspace document lifecycle and flip program §2 status in the same session.
 
+### Task 10: Move the stop button into the input bar (Destin feedback, 2026-07-22)
+
+Destin's ruling on Task 6's placement: the stop control belongs **inside the chat input area, immediately left of the send button** — not beside the thinking indicator.
+
+**Files:**
+- Modify: `desktop/src/renderer/components/InputBar.tsx` (render `<StopButton>` left of the send button in the composer form), `desktop/src/renderer/components/ChatView.tsx` (remove both `<StopButton>` render sites and now-unused imports/wrappers)
+- Test: extend `desktop/src/renderer/components/InputBar.test.tsx` (stop visible while thinking, hidden when idle, click calls the right IPC per provider); `StopButton.test.tsx` unchanged (component behavior identical)
+
+**Interfaces:**
+- Consumes: the existing `StopButton` component as-is; `useChatState(sessionId)` (the cached per-session selector — the react-renderer rule requires it over map reads in render).
+- Visibility predicate: `state.isThinking && state.attentionState === 'ok'` — same gate as before, now evaluated in InputBar. InputBar renders for both providers; the button must too (CC path sends the ESC byte).
+- The send button itself stays fully functional while streaming (sending queues — that's the point of M1); stop appears BESIDE it, `shrink-0`, same `size="icon"` scale.
+
+- [ ] Steps: failing InputBar test (stop hidden idle / visible thinking / click→interrupt) → RED → move the render site → GREEN → full suite + tsc → commit `feat(renderer): stop button moves into the input bar, left of send (Destin placement ruling)`.
+
+### Task 11: Cancel/edit queued messages (Destin feedback, 2026-07-22)
+
+A queued message must be cancelable and editable before it sends. Design: **edit = cancel + refill the input box** (no in-place editing).
+
+**Files:**
+- Modify: `desktop/src/shared/types.ts` (queued ack gains `queueId`; new channel const `NATIVE_QUEUE_REMOVE: 'native:queue-remove'`), `desktop/src/main/harness/native-session-host.ts` (queue holds `{id, text}`; `removeQueued`), `desktop/src/main/ipc-handlers.ts`, `desktop/src/main/preload.ts`, `desktop/src/renderer/remote-shim.ts`, `desktop/src/main/remote-server.ts` (fourth transport), `app/…/SessionService.kt` (stub string only, matching the existing `native:*` stub list), `desktop/tests/ipc-channels.test.ts` (parity pins for the new channel), `desktop/src/renderer/state/chat-types.ts` + `chat-reducer.ts` (`queueId` on the queued user entry; `QUEUED_PROMPT_CANCELED` action), `desktop/src/renderer/components/UserMessage.tsx` (Cancel/Edit affordances on queued bubbles), InputBar/App wiring for the edit-refill path.
+- Test: `desktop/tests/native-session-host.test.ts` (removeQueued semantics incl. races), reducer tests (cancel action), UserMessage or InputBar test for the affordances.
+
+**Interfaces:**
+- `NativeSendResult` queued arm becomes `{ status: 'queued'; queueId: string }` (host mints `randomUUID()` per enqueue). `'sent'`/`'failed'` arms unchanged.
+- `NativeSessionHost.removeQueued(sessionId: string, queueId: string): boolean` — sync; false when the session isn't live or the id is no longer queued (already draining/sent). Never throws.
+- New invoke `native:queue-remove` `{sessionId, queueId}` → `boolean`, all four transports (remote mirrors desktop; SessionService keeps the shared not-implemented stub — add the literal to the stub's `when` list so the parity test holds).
+- Reducer: queued `USER_PROMPT` stores `queueId`; `QUEUED_PROMPT_CANCELED {sessionId, queueId}` removes the matching `pending && queued` entry (no-op if already confirmed — the race where the drain won); `TRANSCRIPT_USER_MESSAGE` confirm drops `queueId` with the other queued fields.
+- UI: on a queued bubble, two small `<Button size="icon">` affordances (Cancel ✕, Edit ✎ — theme tokens, `aria-label`s). Cancel: invoke remove → on `true` dispatch `QUEUED_PROMPT_CANCELED`; on `false` toast "Already sending — too late to cancel." Edit: invoke remove → on `true` dispatch the cancel action AND put the text into the input box; if the input currently has a non-empty draft, refuse with a toast ("Finish or clear your current draft first, then edit the queued message.") BEFORE removing from the queue (never destroy the queued message when the refill can't land); on `false` same too-late toast. For the refill mechanism, follow whatever existing idiom lets external surfaces inject input-bar text (search for how quick chips/compose flows set drafts); if none exists, lift a `draftInjection` state to the InputBar's parent and note it in the report.
+- Race invariant: `removeQueued` must be checked-and-removed atomically in the host (single-threaded sync method — a simple `findIndex`+`splice` suffices); the drain loop must re-check the queue only via `shift()` so a removed entry can never send.
+
+- [ ] Steps: host tests (remove queued mid-queue; remove already-drained id → false; remove on dead session → false; canceled entry never emits user-message) → RED → host impl → IPC surfaces + parity pins → reducer tests (cancel removes only pending+queued match; confirm still clears) → RED → reducer impl → UI affordances + refill wiring → full suite + tsc → commit `feat(native): cancel and edit queued messages before they send`.
+
 ## Self-Review (done at write time)
 
 - **Spec coverage vs program §2:** item 1 (queue) → Task 1; item 2 (acks + remote shim) → Tasks 2–3; item 3 (guardedPtySend + caller audit) → Task 4; item 4 (stop) → Task 6; item 5 (hide /sync + /config) → Task 5; item 6a → Task 7; 6b → Task 8; 6c → Task 3 (queued variant + BUG C pin test). Gap check: none.
