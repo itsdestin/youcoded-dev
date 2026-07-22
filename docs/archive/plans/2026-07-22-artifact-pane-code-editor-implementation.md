@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-07-22
 pr: https://github.com/itsdestin/youcoded/pull/200
 spec: docs/active/specs/2026-07-20-artifact-pane-code-editor.md
