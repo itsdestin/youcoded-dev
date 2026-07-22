@@ -1,8 +1,10 @@
 ---
-status: active
+status: superseded
 created: 2026-07-22
+superseded: 2026-07-22 (same day)
+superseded-by: docs/active/plans/2026-07-22-native-runtime-parity-program.md
 design-ref: docs/active/specs/2026-07-18-native-sync-parity-design.md
-supersedes-roadmap-entries: [native-first-class-sync-citizens, native-takeover-residue, store-null-flag-drops]
+note: Folded into the parity program as Milestone M2, content unchanged (all five phases + the resolved resume-picker/lastUsedModel decision carry forward in program §3).
 ---
 
 # Native Sync Parity Plan — tags, transcripts, browse, takeover for native sessions

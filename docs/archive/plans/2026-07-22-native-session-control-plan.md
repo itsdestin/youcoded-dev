@@ -1,7 +1,9 @@
 ---
-status: active
+status: superseded
 created: 2026-07-22
-supersedes-roadmap-entries: [native-runtime-interruption-queueing, guardedptysend-silent-discard]
+superseded: 2026-07-22 (same day)
+superseded-by: docs/active/plans/2026-07-22-native-runtime-parity-program.md
+note: Folded into the parity program as Milestone M1. The program drops this plan's interim "not available yet" toast work (Destin 2026-07-22 — build the real M3 features instead); the queue/results/stop/guardedPtySend content carries forward, and the 9-site caller audit lives in program §2.
 ---
 
 # Native Session Control Plan — send queueing, honest sends, stop affordance
