@@ -9,10 +9,17 @@ paths:
   - "youcoded/desktop/src/main/github-auth.ts"
   - "youcoded/desktop/src/main/github-connect.ts"
   - "youcoded/desktop/src/main/github-client.ts"
+  - "youcoded/desktop/src/main/github-fork-publish.ts"
 last_verified: 2026-07-22
 verify:
   - path: youcoded/desktop/src/main/github-client.ts
     contains: "createGithubClient"
+  - path: youcoded/desktop/src/main/github-fork-publish.ts
+    contains: "forkPublish"
+  - test: youcoded/desktop/tests/github-fork-publish.test.ts
+  - path: youcoded/desktop/src/renderer/state/sync-display-state.ts
+    contains: "deriveSettingsRowState"
+  - test: youcoded/desktop/tests/sync-display-state.test.ts
   - path: youcoded/desktop/src/main/sync-spaces/git-transport.ts
     contains: "credentialedGitInvocation"
   - test: youcoded/desktop/tests/github-client.test.ts

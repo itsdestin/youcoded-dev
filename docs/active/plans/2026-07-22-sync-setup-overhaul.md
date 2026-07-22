@@ -153,6 +153,28 @@ New main-process module (`github-client.ts` or similar): token custody + REST he
 
 ## Phase 3 — Consumer conversions + Connected accounts UI (mechanical follow-ups)
 
+> **Status: SHIPPED 2026-07-22** — youcoded PRs #202 (merge `95895a6b`, consumer
+> conversions) and #203 (merge `647bd242`, Connected accounts UI). Deltas vs the
+> bullets below, all from Destin's live dogfood pass on the dev instance:
+> (1) the Connected-accounts surface is a PAGE inside the single Account popup
+> (back-chevron nav), NOT a sibling settings row — a second GitHub-labeled row
+> under "Sign in with GitHub" read as the app contradicting itself;
+> (2) every YouCoded-account sign-in CTA renamed **"Sign in to YouCoded"**
+> (GitHub demoted to a mechanism small-print; octocat off the CTAs; signed-in
+> line reads "Signs in with GitHub (@login)" — the word "Connected" belongs
+> exclusively to repo access). Copy pinned in account-section /
+> rating-submit-modal tests;
+> (3) bonus fix: the Backup & Sync settings ROW derived from legacy rclone
+> backends only and read "Not configured" over live green sync — new pure
+> `deriveSettingsRowState` merges both systems (guard:
+> `sync-display-state.test.ts`, THE SCREENSHOT PIN);
+> (4) `github:disconnect` IPC shipped with 4-surface parity + Android stub;
+> disconnect kicks an immediate sync so the panel lands in the coded reconnect
+> state at once. Shared `github-fork-publish.ts` pipeline replaced both
+> publishers' duplicated gh exec sequences (also killed the skill path's
+> Windows ~32 KB argv bug); theme-pr-lookup now works anonymously at 60/hr
+> where the gh path returned null unconditionally.
+
 - Convert marketplace publishing + theme publishing fork/PR calls to REST via the shared
   client (currently they dead-end on stock machines exactly like sync did — at the
   product's social pillar). Convert `dev-tools.ts` bug reports to one REST POST
