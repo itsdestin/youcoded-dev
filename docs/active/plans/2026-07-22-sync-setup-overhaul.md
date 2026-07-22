@@ -109,6 +109,19 @@ row, panel header, project dots) derives from it. Phases:
 
 ## Phase 2 — Shared `github-client` + remove gh from the sync path (fix B)
 
+> **Status: SHIPPED 2026-07-22** — youcoded PR #201, merge `998d6fb0`. All bullets below
+> landed as designed, with two deltas: (1) the git credential mechanism is an inline
+> per-invocation `credential.helper` (NOT `GIT_ASKPASS`) — git consults helpers before
+> askpass, so askpass could never outrank a stale system helper; (2) auth-refused git
+> fetch/push failures are classified (`classifyGitAuthFailure`) and throw coded
+> plain-language errors so an expired token can't masquerade as offline. `errorCode:
+> 'github-auth'` rides error events → SyncPanel's Reconnect CTA; `github:status` is the
+> combined status; the connect modal no longer gates on gh being installed. Guards:
+> `github-client.test.ts`, transport/engine/connect Phase 2 pins, plus a real-git
+> credentialed-cycle pin (CI Windows leg proves the inline helper under gh-for-Windows sh).
+> The Phase 1 VM verification item now covers the gh-free path end-to-end and the
+> `gh auth setup-git` question is moot on it (credentials ride the transport env).
+
 New main-process module (`github-client.ts` or similar): token custody + REST helpers +
 401 handling. Sync is its first consumer.
 

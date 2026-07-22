@@ -8,8 +8,14 @@ paths:
   - "youcoded/desktop/src/main/sync-error-classifier.ts"
   - "youcoded/desktop/src/main/github-auth.ts"
   - "youcoded/desktop/src/main/github-connect.ts"
+  - "youcoded/desktop/src/main/github-client.ts"
 last_verified: 2026-07-22
 verify:
+  - path: youcoded/desktop/src/main/github-client.ts
+    contains: "createGithubClient"
+  - path: youcoded/desktop/src/main/sync-spaces/git-transport.ts
+    contains: "credentialedGitInvocation"
+  - test: youcoded/desktop/tests/github-client.test.ts
   - path: youcoded/desktop/src/main/sync-spaces/engine.ts
     contains: "ensureProvisioned"
   - path: youcoded/desktop/src/renderer/components/sync-dot-state.ts
@@ -76,5 +82,5 @@ verify:
 - **`~/.claude/.sync-warnings.json` (`SyncWarning[]`) is authoritative.** **Two writers, non-overlapping codes** (health-check vs `backendId`-keyed push); the merge replaces only its own codes. Push-failure warnings are non-dismissible.
 - **Node-killed timeouts have empty stderr — route through `extractStderr(e, timeoutMs)`**, never raw `e.stderr || e.message` (else every timeout → `UNKNOWN`).
 
-## Connect-GitHub Modal (`github-auth.ts`, `github-connect.ts`) — guard: `github-auth.test.ts`, `github-connect.test.ts`
-- **The access token NEVER leaves the main process** — only into `gh auth login --with-token` stdin; never logged/thrown/in a payload/over WS. Reuse gh's client id `178c6fc778ccc68e1d6a`; don't wrap interactive `--web` (`completeLogin` must `stdin.end()`). **Orchestrator: singleton, PER-FLOW settle guard** (`activeFlowId`). gh-missing install = winget→`restartRequired`.
+## GitHub auth (`github-auth.ts`, `github-connect.ts`, `github-client.ts`) — guard: `github-auth.test.ts`, `github-connect.test.ts`, `github-client.test.ts`
+- **The access token NEVER leaves the main process** — only into the github-client store (safeStorage, per-install userData — NEVER `~/.claude` or a synced dir) and `gh auth login --with-token` stdin; never logged/thrown/in a payload/over WS/in git argv or config. App store PRIMARY, gh best-effort; acquisition: stored → `gh auth token` → device flow (2026-07-22 Phase 2 — gh no longer gates connecting or sync). Git creds = per-invocation inline `credential.helper` reading child env, NOT `GIT_ASKPASS` (helpers outrank askpass); auth-refused git ops throw coded `github-auth` errors — match the code, never prose. Reuse gh's client id `178c6fc778ccc68e1d6a`; don't wrap interactive `--web` (`completeLogin` must `stdin.end()`). **Orchestrator: singleton, PER-FLOW settle guard** (`activeFlowId`). gh-missing install = winget→`restartRequired`.

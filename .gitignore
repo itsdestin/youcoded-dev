@@ -40,3 +40,9 @@ scratch/
 # Worktree container dirs (per-repo .wt convention)
 *.wt/
 scratch-*/
+# The workspace-level worktree container (CLAUDE.md convention: worktrees/<name>).
+# Each entry is its own git checkout — committing them embeds foreign repos.
+worktrees/
+# Downloaded release/beta installers used for VM install testing — large
+# binaries that must never enter git history.
+beta/
