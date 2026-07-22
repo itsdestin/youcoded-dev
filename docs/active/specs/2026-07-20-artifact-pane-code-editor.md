@@ -152,7 +152,7 @@ except that edit mode stays open.
 | D2 | Cross-file search on Android/remote | **Desktop-only + unsupported notice** | The `remote-unsupported.ts` mechanism already maps `artifacts:` → "Project files". Kotlin gets a ~3-line stub branch to satisfy the parity test. Keeps §7 in Tier 1 cheaply rather than paying for a divergent Kotlin reimplementation. |
 | D3 | Unsaved changes | **Prompt on discard** (Save / Discard / Cancel) | Conventional and predictable. Rejected auto-save because it writes to real source files with no explicit user action and races the agent on the same file. |
 | D4 | Editable file scope | **Any text file, denylist binaries** | Matches `project-file-discovery.ts:18-22`, which already deliberately avoids an extension allowlist. Also fixes the 9-extension `CodeView` gap in the same change rather than adding extensions forever. **Constrained by D5 — see §12.1.** |
-| D5 | Deny-list scope for editable paths | **OPEN — blocks §4** | The consequence review (§12.1) found the renderer allowlist is the *only* barrier in front of arbitrary writes; main enforces nothing but path traversal. A deny-list is required, but its scope is a product decision: which of `.git/`, `.claude/`, `.youcoded/`, `.env*`, `CLAUDE.md` are **not editable at all** vs **editable with friction** (a confirm) vs **editable freely**. See §12.1 for what each choice exposes. |
+| D5 | Deny-list scope for editable paths | **Resolved 2026-07-22 — tiered deny/confirm/free** | `.git/`, `.youcoded/`, and the read-binary sensitive set (minus dotenv) are **never editable** (main-enforced boundary, applied to the resolved absolute path so tracked externals are covered); `.claude/` and `.env*`/`.envrc` are **editable behind a confirm** (dialog on entering edit mode, save carries `confirmed: true`, main requires it); `CLAUDE.md` is **free**. Full table + refusal UX: `docs/active/plans/2026-07-22-artifact-pane-code-editor-implementation.md` §1. |
 
 ## 4. Item 1 — Unlock code editing
 
@@ -600,6 +600,13 @@ and `CLAUDE.md` — not editable at all, editable behind a confirm, or editable 
 Recommendation: `.git/` and `.youcoded/` never (no legitimate in-pane use, and both
 are escalation vectors); `.env*` and `.claude/` behind an explicit confirm;
 `CLAUDE.md` freely, since editing it is a normal and expected user action.
+
+> **RESOLVED 2026-07-22.** Decision taken per the recommendation above, with one
+> addition surfaced during verification: the deny tier also includes the read-binary
+> sensitive set (minus dotenv), checked against the **resolved absolute path** so the
+> tracked-external `absolutePath` branch cannot bypass it. Decision table, tier
+> semantics (denied = security boundary, confirm = mistake-prevention), and refusal
+> UX live in `docs/active/plans/2026-07-22-artifact-pane-code-editor-implementation.md` §1.
 
 ### 12.2 `artifacts:save` bypasses write-guard in both directions
 
