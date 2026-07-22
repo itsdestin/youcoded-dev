@@ -71,4 +71,4 @@ Model bindings are device-local: user-added provider ids are per-device ULIDs, `
 
 ## Out of scope
 
-Android tag/note handlers (stubs — separate gap); native `/clear`/`/compact`/skills (ecosystem-parity workstream); send queueing/stop affordance (control plan).
+Android tag/note handlers (stubs — separate gap); native `/clear`/`/compact`/skills/MCP (Phase 3 — the "Native session context management" ROADMAP entry); send queueing/stop affordance (control plan).
