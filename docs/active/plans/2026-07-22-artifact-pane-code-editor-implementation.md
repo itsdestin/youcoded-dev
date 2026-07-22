@@ -1,6 +1,7 @@
 ---
 status: active
 date: 2026-07-22
+pr: https://github.com/itsdestin/youcoded/pull/200
 spec: docs/active/specs/2026-07-20-artifact-pane-code-editor.md
 repo: youcoded (one PR, branch feat/artifact-code-editor)
 ---
@@ -272,6 +273,10 @@ The largest step — §5.3 makes it more than a viewer swap.
   real component and pins `lineAt`.
 
 ### Step 6 — Cross-file search (spec §7, §12.10) — CUT LINE
+
+**CUT 2026-07-22:** steps 1–5 shipped as youcoded PR #200; this step goes to a
+follow-up PR per the cut line below (the diff was already five substantial
+commits). Everything below remains the follow-up's spec.
 
 Explicitly cuttable to a follow-up PR if the diff is unwieldy (D2 framing). If cut,
 everything above still ships whole.
