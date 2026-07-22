@@ -8,9 +8,12 @@ paths:
   - "youcoded/desktop/src/main/sync-error-classifier.ts"
   - "youcoded/desktop/src/main/github-auth.ts"
   - "youcoded/desktop/src/main/github-connect.ts"
-last_verified: 2026-07-18
+last_verified: 2026-07-22
 verify:
   - path: youcoded/desktop/src/main/sync-spaces/engine.ts
+    contains: "ensureProvisioned"
+  - path: youcoded/desktop/src/renderer/components/sync-dot-state.ts
+    contains: "deriveSyncBoxState"
   - path: youcoded/desktop/src/main/sync-spaces/git-transport.ts
     contains: "GIT_DIR"
   - path: youcoded/desktop/src/main/sync-hub-socket.ts
@@ -45,6 +48,7 @@ verify:
 
 ## Engine & service (`engine.ts`, `service.ts`) — guard: `sync-spaces-engine.test.ts`, `sync-spaces-service.test.ts`
 - **Engine:** single-flight per space + one coalesced rerun; `addSpace` awaits chokidar `ready`; a persistent `watcher.on('error')` is required; `stop()` clears the state map FIRST, then awaits in-flight chains (Windows handles block removal). **`provisionGithubRemote` treats an existing repo as SUCCESS.** **`isIgnoredPath()` keeps backup scrub == sync scrub** (`DEFAULT_IGNORES`). No Android `syncspaces:*` handlers yet.
+- **A remote-less space NEVER emits `synced`** (2026-07-22) — pull/push no-op without a remote and the phantom success superseded the real gh error (green over a never-synced device, beta.8 VM). `syncSpace` retries the injected `ensureProvisioned` hook every cycle (self-heals, re-errors verbatim until cured); `broadcast` persists per-space `lastSync` evidence; **panel green is evidence-gated via pure `deriveSyncBoxState`** (all active spaces provisioned + Personal synced once; else `hydrating`). · guards: `sync-spaces-engine.test.ts` (honest-state-machine pins), `sync-dot-state.test.ts` (`deriveSyncBoxState`).
 
 ## SyncHub (`sync-hub-socket.ts` + worker `SyncGroupRoom` DO) — guard: `sync-hub-socket.test.ts`
 - **DO is per-account, an ACCELERANT not a source of truth** — never optimize away the 120s poll. **spaceKey = `repoNameForSpace()`, never the local id.** **Signal ONLY on `pushed:true`.** **The hub send runs LAST in `broadcast()`, own try/catch.** **A superseded `startEngine` owns no global state.**

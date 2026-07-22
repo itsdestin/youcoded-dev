@@ -72,6 +72,12 @@ fallback), legacy `sync-setup-handlers.ts`. Games identity is the marketplace ac
 
 ## Phase 1 — Honest state machine (release unblocker, ships independently)
 
+> **Status: SHIPPED 2026-07-22** — youcoded PR #199, merge `efab7e7d`. Items 1–5 below
+> landed (item 4's hydrating phase is copy-level; percentages via `git fetch --progress`
+> move to Phase 2+). Item 6 (VM verification of the gh installer through the first real
+> push, incl. the `gh auth setup-git` question) is still OPEN — it needs Destin's macOS
+> VM and gates calling roadmap :49's stopgap done. Roadmap :96/:99 flipped [x].
+
 One main-process-owned sync status object with explicit phases; every surface (sidebar
 row, panel header, project dots) derives from it. Phases:
 
