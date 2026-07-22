@@ -13,6 +13,12 @@ module/channel names, test strategy, and the step-by-step order with done-when
 criteria. Every spec claim cited here was re-verified against code on 2026-07-22
 (session: D5 decision prep) — implement from the current spec copy only.
 
+**Amended same-day (2026-07-22 second-pass review).** Six gaps found and folded
+into the steps below, the largest being that **Android is a second, live
+implementation of `artifacts:save`** (`SessionService.kt:3377`) — not a stub — so
+a desktop-main-only boundary would leave the same React UI calling an unguarded
+Kotlin write path. Each addendum is marked `ADDED 2026-07-22` inline.
+
 ## 0. Ground rules
 
 - All code changes go to the **youcoded** sub-repo, in a worktree
@@ -41,7 +47,25 @@ table in one pure module.
 Two tiers, two purposes: **denied** is the security boundary (main-enforced, no
 bypass); **needs-confirm** is mistake-prevention (renderer dialog on *entering edit
 mode*, save carries `confirmed: true`, main refuses confirm-tier saves without it —
-the flag records intent, it does not need to be attacker-proof).
+the flag records intent, it does not need to be attacker-proof). Precedence is
+denied > needs-confirm > free — e.g. `~/.claude/CLAUDE.md` is confirm-tier (the
+`.claude` segment wins over the CLAUDE.md free rule), which is coherent: that file
+is global agent memory, not a project doc.
+
+**ADDED 2026-07-22 — the boundary is main AND Kotlin, not main alone.**
+`SessionService.kt` implements `artifacts:get`/`save`/`read-binary` for real
+(`:3324`, `:3377`, `:3357`), and its save writes `artifact.absolutePath!!` with no
+checks — the same escalation hole as desktop's tracked branch. Since Android ships
+the identical React UI, step 4's unlock would offer editing on Android and Kotlin
+would execute it unguarded. The policy must therefore be mirrored as
+`EditablePathPolicy.kt` beside `PathCanonicalize.kt`, driven by a **shared JSON
+fixture** so the TS and Kotlin implementations cannot drift (the canonicalize
+precedent). Android's save is tracked-artifacts-only (no discovered branch), which
+narrows its exposure but does not remove it. While in that file: Kotlin
+`read-binary` has **no deny-list at all** — desktop's `read-binary-access` guard
+was never mirrored (pre-existing gap, `.ssh`/`.env` readable by absolute path).
+Porting `isSensitivePath` is the same module we are adding, so it is in scope here
+rather than a separate roadmap item.
 
 Refusal UX (per `docs/error-message-standards.md` — specific and accurate):
 - Denied: renderer hides the Edit affordance (tooltip: protected file). If a save
@@ -82,6 +106,18 @@ non-stale.
 - **Events**: broadcast `ARTIFACT_IPC.CHANGED` with `by: 'external'`,
   `kind: 'edit' | 'add' | 'remove'`. Do NOT emit or repurpose `by: 'agent'` (§8.2).
   Also `invalidateDiscoveryCache(projectRoot)` so file lists refresh (§8.3).
+- **ADDED 2026-07-22 — path→artifactId resolution.** The renderer filters events on
+  `evt.artifactId === artifact.id`, and **tracked artifact ids are sidecar ids, not
+  paths** — but the watcher only sees paths. Without resolving each watched path
+  against the sidecar (canonical compare; fall back to the relative path for
+  discovered files), the conflict banner stays dead for exactly the tracked files,
+  reincarnating the §2.1 bug this step exists to fix. Cache the path→id map and
+  invalidate it on sidecar writes.
+- **ADDED 2026-07-22 — depth cap.** The seeded "Home" folder can make most of the
+  home directory a project root, and a session cwd of `~` would point chokidar at
+  the entire home tree. Set chokidar `depth` to match discovery `MAX_DEPTH = 6` so
+  the watcher and the file list agree on the visible universe and the walk stays
+  bounded.
 - **Renderer**: subscribe/unsubscribe from the two hosts on the visible
   `projectRoot`; in `ActiveArtifactView` delete the `by === 'agent'` filter and the
   `if (!editing) return` gate — not-editing (or clean) → refetch content; dirty →
@@ -119,7 +155,27 @@ non-stale.
 - **Renderer**: `ActiveArtifactView` round-trips the mtime token; `conflict` error
   raises the conflict banner (this is what stops D3's prompt from sitting on a
   still-clobbering save); all save failures surface the **real** `res.error` in an
-  inline banner — replaces the console-only path (§2.4).
+  inline banner — replaces the console-only path (§2.4). The conflict banner's
+  "Keep mine" is a deliberate force-save: it omits the token but must still carry
+  `confirmed` for confirm-tier files.
+- **ADDED 2026-07-22 — resolve symlinks before checking.** `canonicalize()` is pure
+  string manipulation and `path.resolve` does not follow symlinks — but `writeFile`
+  does, so a symlink inside the root defeats both the traversal guard and the
+  deny-list (a link named `notes.md` → `~/.ssh/config` passes every string check).
+  Pre-existing hole, but it matters far more post-unlock: `fs.realpath` the parent
+  directory of the target before the traversal + policy checks, on get and save.
+- **ADDED 2026-07-22 — `binary` flag on get.** `RendererRegistry.getViewer` is a
+  hard extension map with `BinaryFallback` for unknowns, so D4's "any text file"
+  has no routing path: `rs`/`go`/`toml`/extensionless files would still fall to
+  BinaryFallback. The get handler's new head-slice sniff must be returned as
+  `binary: boolean`, and `getViewer` grows a content-aware fallback: unknown
+  extension + `binary: false` → the code editor view; `binary: true` →
+  BinaryFallback (which today would render U+FFFD garbage instead).
+- **ADDED 2026-07-22 — Kotlin enforcement (see §1).** Port the policy to
+  `EditablePathPolicy.kt` with the shared JSON fixture, enforce it in the Kotlin
+  save handler (deny tier + `confirmed` flag; add the `baseMtimeMs` token check for
+  parity), and port `isSensitivePath` into the Kotlin `read-binary` handler while
+  there. Kotlin-side tests against the same fixture file.
 - **Tests** (the §11 must-pins): `editable-path-policy.test.ts` — every tier row,
   segment-vs-basename cases, `.git`-as-file, tracked-external absolute paths,
   `CLAUDE.md` free; sniff cases. Conflict-token accept/reject logic.
@@ -155,6 +211,13 @@ Lands only now: watcher live, boundary enforced, conflict UI real.
 - **The §2.2 empty-file guarantee is the highest-risk regression**: `dirty` is
   hard-false and save is hard-blocked while `content === null`. Pin with a test
   simulating the null-then-resolve fetch transient.
+- **ADDED 2026-07-22 — editing-surface split, decided.** The edit textarea lives
+  inside `MarkdownView` (which also serves `txt`); `CodeView` has no edit mode at
+  all. For this PR: **md/txt keep the existing textarea; CM6 is the editing surface
+  for code files only.** This keeps the `.artifact-edit-textarea` context-menu
+  branch live, halves the step-5 blast radius, and defers "one unified editor" to a
+  follow-up if CM6 proves itself. Dirty tracking, confirm flow, and the save token
+  live in `ActiveArtifactView` and are shared by both surfaces.
 - **Done when**: a `.ts` typo is fixable in the dev instance; `.env` edit prompts a
   confirm; `.git/hooks/pre-commit` shows no Edit affordance and a forced save via
   the console returns `protected-path`; switching files while dirty prompts.
@@ -197,6 +260,12 @@ The largest step — §5.3 makes it more than a viewer swap.
   jitter (`globals.css:241-244`).
 - **§12.11**: clear CM6 history on conflict resolution so undo cannot cross into a
   document state that no longer corresponds to disk.
+- **ADDED 2026-07-22 — Ctrl+F.** `ContentFindBar` finds matches by TreeWalker over
+  the rendered DOM (CSS Custom Highlight API) — over CM6's virtualized DOM it
+  silently finds only viewport-resident text, the same failure class as the §5.3
+  line numbers. Code files must route Ctrl+F to `@codemirror/search` instead;
+  ContentFindBar stays for MarkdownView and the other viewers. Pin with a test that
+  a match beyond the rendered viewport is findable.
 - **Done when**: line numbers/gutter render, editing round-trips through step-4
   save, "Ask about this" cites correct line numbers on a long scrolled file, model
   does not cycle when typing Shift+Space in the editor, rewritten test mounts the
