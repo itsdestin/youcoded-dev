@@ -1,6 +1,7 @@
 ---
-status: active
+status: shipped
 date: 2026-07-22
+shipped: 2026-07-23 (superseded by the spec; feature merged in youcoded PR #213)
 owner: Destin (decisions) / Claude (execution)
 subject: Seed a spec + plan for the in-app git surface + version tracking
 type: handoff

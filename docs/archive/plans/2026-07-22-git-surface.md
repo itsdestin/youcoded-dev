@@ -1,7 +1,8 @@
 ---
-status: active
+status: shipped
 date: 2026-07-22
-spec: docs/active/specs/2026-07-22-git-surface.md
+shipped: 2026-07-23 (youcoded PR #213 — all 10 tasks, merged to master)
+spec: docs/archive/specs/2026-07-22-git-surface.md
 mockup: https://claude.ai/code/artifact/522efb25-d56a-4483-9a7c-e5e1a431f262
 ---
 

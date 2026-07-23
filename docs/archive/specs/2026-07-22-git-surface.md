@@ -1,10 +1,12 @@
 ---
-status: draft
+status: shipped
 date: 2026-07-22
+shipped: 2026-07-23 (youcoded PR #213, merged to master)
+amended: 2026-07-23 (§2 UI superseded in places by Destin's live-testing decisions — see "Live-iteration amendments" at the end; the SHIPPED code is the reference, not §2's original render)
 owner: Destin (decisions) / Claude (execution)
 subject: In-app git surface — per-file review view in the SessionDrawer
 roadmap: "ROADMAP.md — 'Git surface in-app — diff vs HEAD, stage, commit, branch' (#git, added 2026-07-20)"
-supersedes: docs/active/handoffs/2026-07-22-handoff-git-surface-and-version-tracking.md (open decisions — all resolved 2026-07-22)
+supersedes: docs/archive/handoffs/2026-07-22-handoff-git-surface-and-version-tracking.md (open decisions — all resolved 2026-07-22)
 mockup: https://claude.ai/code/artifact/522efb25-d56a-4483-9a7c-e5e1a431f262
 ---
 
@@ -192,3 +194,41 @@ Desktop-only MVP (matches the #205 content-search precedent):
 | 2026-07-22 | git-shell (system binary), new main module; isomorphic-git rejected |
 | 2026-07-22 | Tabs toggle rejected → footer entry + pushed review view (sub-header beneath the standard header) — **UI outline locked** |
 | 2026-07-22 | Attribution chips dropped (complexity > value for a flaky signal) |
+
+## Live-iteration amendments (2026-07-23)
+
+Destin tested the built feature in a dev instance and revised the UI. **Where this section
+conflicts with §2, this section wins** — §2 records the pre-implementation lock, the shipped
+code records the outcome. All changes landed in youcoded PR #213 before merge.
+
+- **Rename-aware history (fix).** §2's "one card per commit (`git log --follow`)" silently
+  showed empty diffs for commits *before* a rename, because `git show` was asked for the
+  file's CURRENT path. Cards now request `pathAtCommit`, and a rename commit also passes
+  `renamedFrom` so the pair renders as a rename (`-M`) rather than a whole-file add. A
+  rename-only commit reads "Moved from “X” — no content changes in this commit."
+- **Per-commit `+N −N`.** Commit card headers carry the same counts as the uncommitted card
+  (one `--numstat` pass on the log call). Binary/countless chunks show no number rather than
+  a misleading `+0 −0`.
+- **Staging = "legible mirror" (supersedes §2's checkbox rules).** The "Staged for commit"
+  checkbox became **"Include in commit" on EVERY uncommitted card, including brand-new
+  (untracked) files** — the original hid it for untracked files, leaving no way to commit a
+  new file from this view. An empty-cart hint appears under the disabled commit button when
+  nothing is staged.
+- **"Open file ↗" removed entirely** (§2's line-number → `revealLine` jump went with it).
+  Destin: unnecessary. The `ActiveArtifactHandle.revealLine` integration is NOT shipped.
+- **Discard relabeled + gated.** "Delete file" read as destroying the underlying file. It is
+  now **"Revert Changes…"** and always routes through the L3 confirm dialog, whose verb
+  matches the real outcome: "Move to Trash" when HEAD has no copy, "Revert Changes" when it
+  does.
+- **Composer hidden on clean files.** A file with no uncommitted changes is a read-only
+  history view — no commit affordance renders at all.
+- **Diff scrolling reworked (§2's "UnifiedDiff verbatim with its 15-line preview cap +
+  Expand button" no longer holds inside this view).** Three problems compounded: the cards
+  were flex items with the default `flex-shrink:1`, so they COMPRESSED to fit the panel
+  instead of overflowing — clipping each diff and collapsing the timeline's scrollHeight so
+  nothing scrolled anywhere; `overscroll-contain` on each diff trapped the wheel; and
+  UnifiedDiff's own preview cap stacked a third, redundant scroll container. Shipped: cards
+  are `shrink-0`, `overscroll-contain` is gone, and `UnifiedDiff` takes a **`fill`** prop
+  that drops its internal cap + Expand button when a host owns the height. Net result is two
+  scroll surfaces — the timeline scrolls the card list, each diff scrolls its own text
+  within a 45vh cap.
