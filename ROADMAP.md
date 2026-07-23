@@ -37,7 +37,7 @@ surface, not a history.
 ## Bugs
 
 - [ ] `sync-spaces-engine.test.ts` "debounces file changes into one sync" flaked on macOS CI `bug` `#tests` `#ci` `#sync` (added 2026-07-22)
-  Seen once on youcoded PR #213 (run 29983190137, macOS, commit `5850e281` — a branch that touches nothing in sync-spaces): `vi.waitFor(() => expect(t.pushes.length).toBe(1))` timed out with 0 pushes. Same macOS fs-event/timing flake family as the closed `subagent-watcher` and `sync-warnings-lifecycle` entries. One strike so far; file the pattern, fix if it recurs (rerun result noted on the PR).
+  Seen once on youcoded PR #213 (run 29983190137, macOS, commit `5850e281` — a branch that touches nothing in sync-spaces): `vi.waitFor(() => expect(t.pushes.length).toBe(1))` timed out with 0 pushes. Same macOS fs-event/timing flake family as the closed `subagent-watcher` and `sync-warnings-lifecycle` entries. Passed on rerun (job 89132331505) → one strike; file the pattern, fix if it recurs.
 
 - [ ] `UnsavedChangesDialog` Escape also fires the app ESC cascade underneath `bug` `#renderer` (added 2026-07-22)
   Found while fixing the identical bug in the git-surface discard dialog (branch `feat/git-surface`, commit `b2301eb8`): the dialog registers its own raw capture-phase `keydown` listener and calls `stopPropagation()`, but `EscCloseProvider` (`use-esc-close.tsx`) ALSO listens capture-phase on the same `window` target — and same-target listeners are immune to `stopPropagation()` (only `stopImmediatePropagation()` stops them). One Escape press therefore cancels the dialog AND pops the drawer's ESC stack beneath it. Fix is the same one the discard dialog got: replace the raw listener with `useEscClose(true, onCancel)` so the dialog joins the shared LIFO stack.
