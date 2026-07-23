@@ -2,7 +2,8 @@
 status: active
 date: 2026-07-16
 amended: 2026-07-19 (tranche 2 COMPLETE — buttons PR #181 `2bf29a44`, inputs PR #183)
-amended: 2026-07-22 (tranche 3 AUDITED against master `82552cee` — see §14; ledger needs five corrections)
+amended: 2026-07-22 (tranche 3 AUDITED — see §14; five ledger corrections; impl log §14.11)
+amended: 2026-07-23 (tranches 3 + 5[31/32/34] + 7[38/39/40] **MERGED to master** — youcoded PR #245, merge `dd3e5b30`. See §14/§15/§16 + the review-round log §17. Token corrected to text-destructive-fg; every UI primitive now has call sites; change 33 held for the error audit)
 owner: Destin (decisions) / Claude (spec)
 ---
 
@@ -1309,7 +1310,7 @@ forgotten — this is the concrete argument for §8's unapproved **ESLint guardr
 
 ---
 
-## 14. Tranche 3 audit — changes 22–25, cards (audited 2026-07-22, NOT yet implemented)
+## 14. Tranche 3 — changes 22–25, cards (audited 2026-07-22; MERGED via PR #245 — impl log §14.11)
 
 Verified against `origin/master` **`82552cee`** (130 commits past the `d0c646b7` baseline the
 2026-07-19 handoff recorded). Every row below was read at the edit site. This is the §11.1-shape
@@ -1349,9 +1350,10 @@ and `sourceBadgeStyles.plugin` — the other two keys are never indexed.
 **This survived the three dead-code sweeps that merged 2026-07-21/22 (#206, #207, #208)** — those
 were export- and symbol-level; an unreachable JSX branch behind a defaulted prop is invisible to them.
 
-**Decision needed from Destin:** delete the dead branch as part of tranche 3, or migrate it on the
-theory that a marketplace SkillCard returns later. Recommend **delete** — `MarketplaceCard` already
-owns that job, and migrating dead code is the most expensive possible way to be consistent.
+**DECIDED 2026-07-22 — delete.** Destin ruled: the dead branch comes out as part of tranche 3.
+`MarketplaceCard` already owns the marketplace card; migrating dead code is the most expensive
+possible way to be consistent. This removes change 22's marketplace-variant target and four of
+change 23's six hex sites from the ledger entirely — they are deletions, not migrations.
 
 ### 14.3 Correction 2 — change 22's live target is one card, and it has two unledgered siblings
 
@@ -1495,3 +1497,258 @@ one dead-branch deletion:
 That is a one-agent, one-PR tranche — **not** the six-agent partition tranche 2 needed. Two open
 rulings for Destin: the dead-branch deletion (§14.2) and the star-gold / success-green hexes (§14.7).
 One item needs a mockup only if the answer to §14.4 is "cards should be elevated".
+
+### 14.11 Implementation log — tranche 3 (branch `feat/ui-consistency-tranche-3`, commit `1f68a7f0`)
+
+Executed 2026-07-22 off master `12ad6ae3` (master moved 4 commits mid-session — Electron 41.10.3 and
+presence liveness; **no tranche-3 target file was touched**, so the §14 line numbers held).
+
+All eight planned tasks landed, plus the two rulings below. 13 files, +145/−146.
+Verified: `tsc --noEmit` clean, **3091 tests pass**, `vite build` clean. (`npm run build` fails at
+the `electron-builder` RPM step — `rpmbuild` isn't installed on this machine. Compilation is
+unaffected; CI does packaging.)
+
+**Rulings taken this session (Destin):**
+
+1. **Delete the dead branch** (§14.2) — done. Removed with it: the `variant`, `installed`,
+   `updateAvailable`, `onInstall`, `installing` props, their `skillCardPropsEqual` comparisons, the
+   two unread `sourceBadgeStyles` keys, and the `StarRating` / `useMarketplaceStats` / `Button`
+   imports that fell out.
+2. **Star gold stays hardcoded; "Published successfully!" goes neutral** (§14.7). The stars are the
+   app-store convention rather than a status color, and there is no `--gold` token to migrate to —
+   tokenizing would mean 11 theme manifests plus the contrast audit. De-duplicated to one exported
+   `STAR_GOLD_CLASS` in `StarRating.tsx`. The success line follows design rule 6's logic (errors are
+   neutral cards, not red boxes ⇒ success is not green text) and goes `text-fg`.
+
+**Two decisions made during execution, worth knowing:**
+
+- **`.layer-surface` adoption uses `!rounded-lg` + `style={{ boxShadow: 'none' }}`** at all three
+  drawer-grid sites, per §14.4 — the geometry is unchanged from today, only the tokens/hover/focus
+  move. Nobody has seen elevated cards in that grid; that would need a mockup round.
+- **The hover guard shipped as a named `.hover-lift` class**, not as a media query wrapped around the
+  existing arbitrary utility. A class can't be lost by copy-pasting `hover:scale-[1.02]` into a
+  fourth card, and it let the three pre-existing sites adopt the fix without a second pattern. Uses
+  `transform: scale()` rather than the `scale:` property — `scale` is an independent property that
+  `transition: transform` does not animate, which would have made the lift snap.
+
+**Fixed on sight:** `LocalModelsSection.tsx`'s header comment described the panel's cards as
+"bg-well / bg-inset cards, border-edge-dim" — false after change 25.
+
+**Queued for Destin's eye (~1 minute in a dev instance, all three are visible changes):**
+
+1. The **command drawer grid** — skill cards, command cards and the Add Skills tile should now be
+   indistinguishable in geometry, flat, with no shadow.
+2. **"Published successfully!"** in the share sheet is now neutral rather than green.
+3. **`locked` status pills** ("macOS Only", etc.) — verify they still read as recessed-and-blocked
+   rather than blurring into `neutral`, now that they're on inset/edge tokens instead of slate. The
+   marketplace **detail overlay** is the second surface to check; it was rendering a drifted copy.
+
+**Not done, deliberately:** everything §14.5 excludes (`ContextTab`, `ConversationsTab`, FilesTab's
+folder cards, FilesTab's already-migrated doc cards). Change 22's grid-hover scale was NOT added to
+the drawer card — the ledger gives the drawer variant `hover:bg-inset` instead, and that is what
+shipped.
+
+---
+
+## 15. Tranche 5 — changes 31–34, states (audited 2026-07-23; 31/32/34 MERGED via PR #245; 33 held)
+
+Verified against master `12ad6ae3`. Changes 31/32/34 MERGED (PR #245); change 33 held (§15.4).
+
+### 15.1 Token correction — the ledger says `text-destructive`, the codebase says `text-destructive-fg`
+
+§2/§1.6 write change 34 as `text-red-500 → text-destructive`. **That is wrong for text.**
+`globals.css:214–217`: `--destructive` is a FILL colour (danger buttons) that is too dark to read as
+text on dark themes; the split `--destructive-fg` is the per-theme text variant. **All 11**
+pre-existing destructive-text sites use `-fg`, as does the `FieldError` primitive and
+`danger-outline`'s label. Change 34 shipped as `text-destructive-fg`. Anyone reading §1.6 literally
+would reintroduce the contrast bug the split was created to fix.
+
+### 15.2 Change 34 — shipped (`c6590224`), 42 sites / 23 files
+
+Not cosmetic on community packs: `--color-red-{400,500}` are both `#DD4444` today, so built-ins are
+pixel-identical, but packs can now theme error text via `--destructive-fg`. The include/exclude rule
+is in the commit body and is the load-bearing part — **"error text" means the app's own error
+*messages*, not** status scales (green-amber-red), status glyphs (✗), danger-action affordances
+(Delete links, reject buttons, danger hovers), the games subtree (change 47), diff/tool-output tone
+systems, git-stat metrics, red-tinted error boxes (change 33's job), or the "Danger zone" heading.
+30 red sites remain, every one a verified exclusion.
+
+### 15.3 Changes 31–33 — the real work is ADOPTION, and it carries decisions
+
+`states.tsx` exports `LoadingState`, `EmptyState`, `ErrorState`, `FieldError` — **all with zero call
+sites.** This is the headline: the primitives are built and unused. But adoption is not mechanical.
+
+**Change 31 (LoadingState).** ~30 raw "Loading…" strings. They split three ways, and only the first
+is a clean adoption:
+
+| bucket | examples | disposition |
+|---|---|---|
+| **block list surfaces** — centered, `py-8`/`p-8`, on a list/panel | ResumeBrowser:888 ("Loading sessions…" ✓ already names it), PreferencesPopup:138, ModelPickerPopup:392, SyncPanel:882, UpdatePanel:211, SettingsPanel:943, ContextTab:79, ConversationsTab:35, ConversationPreview:120, FileViewerOverlay:100 | → `<LoadingState what="…" />`. **Each needs a "name the thing" copy call** — most currently say bare "Loading…". |
+| **inline** — small, in a section | ProvidersSection:159, LocalModelsSection:228/407, ReviewList:148 | → `<LoadingState variant="inline" what="…" />` |
+| **NOT LoadingState** | artifact viewers (`Center`/`CenterNote`: Docx/Xlsx/Csv/Image/Binary/Html — their own deliberate local helper), ChatView:90 ("Loading…" is the *toggle label* for "See previous messages", not a load surface), ModelLoadingBar (its own strip + BrailleSpinner already), index.tsx:163 (pre-mount, before the primitive is importable cheaply) | leave; note in PR |
+
+**Change 32 (EmptyState).** ~10 real empty states, several already abstracted:
+- `LibraryScreen`'s `Section empty="…"` (5 uses) and `ReviewList`'s `status:'empty'` machine already
+  centralize empty copy locally. **Decision:** refactor those onto `EmptyState`, or leave the local
+  abstraction and only adopt the un-abstracted ones? (ResumeBrowser:891, FilesTab:471, BubbleFeed:315.)
+- `SessionDrawer:445-446` is a **deliberately contextual** empty state (WHY comment at :432: a
+  generic empty state would contradict the file the user just clicked). Adopt with a custom
+  `message`, or leave — it is arguably already correct.
+- Several `EmptyState`s want an `action` (LibraryScreen "Browse marketplace", ResumeBrowser "Clear
+  filters" when a search is active) — those are copy + wiring calls.
+
+**Change 33 (ErrorState) — the decision-bearing one.** Two modes, and picking per site is a design
+call, not a grep:
+- **recoverable** (dot + message + **Retry**) — needs an actual retry handler at the site. Candidates:
+  ReviewList:156 ("Couldn't load reviews"), the red-tinted boxes change 34 deferred here
+  (SyncSetupWizard:486/705, InstallingFooterStrip:51 — these become NEUTRAL cards, Option C).
+- **general** (dot + title + explainer + **Report bug / Diagnose with Claude**) — **this is the
+  component the ROADMAP's error-message audit waits on** (`docs/error-message-standards.md`).
+  Which errors are "general fallback" vs "specific+Retry" is exactly the judgment that audit exists
+  to make. Wiring `onReportBug`→BugReportPopup and `onDiagnose`→Settings→Development is shared, but
+  the per-site mode choice should have Destin's eye — this is where tranche 5 touches a second
+  workstream, and sequencing it thoughtlessly pre-empts the error audit's own decisions.
+
+### 15.4 Recommendation
+
+31 and 32 are worth doing next and are mostly mechanical **once the copy is agreed** (the "name the
+thing" strings and the handful of `action` labels). 33 should be scoped WITH the error-message audit,
+not ahead of it — the general/recoverable split is that audit's core question. Suggested next step: a
+short copy pass with Destin on the ~12 LoadingState names + ~5 EmptyState messages/actions, then a
+single adoption commit for 31+32; hold 33 until the error audit starts (tranche 5 was always its
+unblock, but "unblock" means the component is ready — it is — not that the call-site policy is
+pre-decided here).
+
+### 15.5 Implementation log — changes 31–32 (shipped `9634e58d`, 2026-07-23)
+
+Adopted `LoadingState` (8 sites, was 0) and `EmptyState` (2 sites, was 0). The full include/exclude
+list is in the commit body. The load-bearing exclusions — the ones a future session must not
+"discover" as misses — are the two deliberately-quiet skeletons (ProvidersSection/LocalModelsSection,
+§2 protects Providers by name), the project-view tab loads (top-left, block would center them), and
+LibraryScreen's `Section(empty=)` / ReviewList's status machine (already clean local abstractions;
+the primitive would shrink or re-center their copy). Change 33 (ErrorState) remains held for the
+error-message audit — the general/recoverable split is that audit's core decision, and the component
+is already built and ready, which was always what "tranche 5 unblocks the audit" meant.
+
+**Tranche 5 status (MERGED, PR #245):** 31 ✅ · 32 ✅ · 33 ⏸ (held for error audit) · 34 ✅ (`c6590224`).
+
+---
+
+## 16. Tranche 7 — form controls (38–40), MERGED via PR #245
+
+Commits `f779c3f0` (39/40 + Checkbox) and `06d96ccf` (38). Verified against master `12ad6ae3`.
+This turns the last three zero-call-site primitives live — **Radio, RadioGroup, and Checkbox now
+have call sites, and the renderer has zero native `<input type="radio">`/`type="checkbox">`.**
+
+**Change 39 (Radio).** Ledger line numbers had drifted (PreferencesPopup:152, SyncSetupWizard:395/428,
+not :154/:389/:419) but the three-site count held. `RatingSubmitModal:59` and `FileFilterPopover:38`
+are `role="radio"` CUSTOM controls (stars, filter chips) — correctly not native radios.
+**Primitive fix the adoption forced:** `RadioGroup`'s wrapper `onKeyDown` hijacked arrow keys typed
+into an option's nested field (SyncSetupWizard's repo-name inputs live inside the radio rows) and
+switched the selection — native radios never do that. Guarded to ignore keydowns from
+INPUT/TEXTAREA/SELECT/contenteditable; pinned by a new `ui-primitives` test.
+
+**Change 40 (roundness slider).** NOT the one-word `defaultValue`→`value` the ledger implies:
+`currentRoundness` derives from the theme FILE via an async `writeFile`, so a bare controlled value
+freezes the thumb mid-drag. Fixed with a local draft (instant on drag) + a resync effect when
+`currentRoundness` changes externally (theme switch) — the §9.D staleness. Same shape as EngineCard's
+context knob.
+
+**Checkbox.** Adopted at its one intended site — ProjectView's delete-consent checkbox (ledger said
+:807; actually :846). Clickable-div row (a `<label>` can't drive a button); the Checkbox is wrapped
+in a `stopPropagation` span so its own click fires one toggle, not two.
+
+**Change 38 (SessionDrawer → FileFilterPopover).** The structural one. The drawer's native sort
+`<select>` and its two `CheckboxGlyph` rows collapse into one sliders trigger opening the shared
+popover — the "filter menu like project view" direction. **FileFilterPopover generalized:**
+`typeFilter`/`onTypeFilter` are now optional; Project View passes them (Type group renders, its call
+site UNCHANGED), the drawer omits them (no Type group). Parent-owned click-outside via a ref wrapping
+trigger+popover, per the popover's contract. The drawer's `SortKey` and the popover's `FileSortKey`
+are the same union — no type friction. Dropped the old "+N deleted" count (popover has none, matching
+Project View) and removed the now-orphaned `deletedCount` memo. **Visible interaction change on the
+artifact drawer** — flagged for the eyeball pass; the 264px right-anchored popover is worth a glance
+at the narrowest drawer width.
+
+**Tranche 7 status:** 38 ✅ · 39 ✅ · 40 ✅ · Checkbox adopted ✅ (all MERGED, PR #245).
+
+---
+
+## 17. Review round — Destin's dev-instance pass on tranches 3/5/7 (2026-07-23, all in PR #245)
+
+Everything above was reviewed in a live dev instance before merge. Seven follow-ups came out of it;
+two REVERSE earlier rulings of Destin's, which is why they're recorded here rather than left in
+commit messages — a future session reading the old decisions needs to see they were superseded.
+
+### 17.1 The card hover regression — and the trap that caused it
+
+Reported as "no click/hover effects at all. too flat." **A regression change 22 introduced.**
+`.layer-surface` sets `background-color: var(--panel)` as UNLAYERED css; Tailwind emits
+`hover:bg-inset` inside `@layer utilities`; **unlayered beats layered regardless of specificity**, so
+moving the cards onto `.layer-surface` silently turned their hover utility into a no-op.
+
+This is the *same* trap `globals.css` already documents on the protection cascade (§10.1) — it is why
+`!rounded-lg` was needed for the radius. The `!` was applied to radius and the hover was missed.
+**Generalized lesson: any Tailwind utility that competes with a `.layer-surface` property is dead
+unless it is `!important` or an unlayered rule.** Fixed with a named `.card-interactive` (hover →
+`--inset`, `:active` → `--edge`, hover behind `@media (hover: hover)`) rather than scattered `!`, so
+the knowledge sits in one commented place.
+
+### 17.2 Empty states — a reversal
+
+Destin ruled 2026-07-22 that search mode needed **no** prose empty state ("the `(0)` in the section
+headers carries it"). Seeing it live reversed that: two "(0)" headers over blank space read as a dead
+end. All three file surfaces now use the `EmptyState` + action pattern (change 32): Project View
+files tab, the session drawer, and the Resume browser. The old comment was retired, not left
+contradicting the code.
+
+Two non-obvious bits: FilesTab could not clear its own search (owned by ProjectView → new
+`onClearSearch` prop), and the content search is debounced 300ms + async with no pending flag, so a
+naive "both counts are 0" check FLASHED the empty state on every keystroke — gated behind a new
+`contentSearching` flag.
+
+Layout: the drawer first shipped `variant="inline"` (left-aligned row) and was corrected to the
+default **block** variant — centered, stacked — matching Resume.
+
+### 17.3 "Session artifacts" → "Session Files" — a reversal, and a 4-site rename
+
+The label lived in THREE user-facing places (drawer header, HeaderBar tooltip, OverflowMenu row) plus
+a test that pinned the OPPOSITE: `it('says "Session artifacts", never the old "Files" wording')`,
+encoding the 2026-07-20 decision. The guard was **inverted** rather than deleted — it now pins
+"Session Files" and forbids "artifacts", so the rename can't drift back.
+
+### 17.4 `SearchFilterPill` — the consistency fix that mattered most
+
+"If the goal is consistency, we should try to better match the styling of the project-view and
+session file view search boxes/filter icons." They were two different controls for one job — a
+rounded-full pill with the trigger docked inside vs a plain field with a bare glyph floating beside
+it — and **each file carried its own copy of the sliders glyph**. Extracted
+`components/ui/SearchFilterPill.tsx`; the glyph is now defined once, down from twice. Click-outside
+deliberately stays parent-owned (FileFilterPopover's ref contract), so the pill forwards its wrapper
+ref and takes the popover as children.
+
+### 17.5 Type filter → multi-select; sort-by-type and hide-code retired
+
+- Type filter became a **set** (`ReadonlySet<FileTypeGroup>`, empty = all types; "All types" is the
+  cleared state, not a member). The drawer gained the group, so FileFilterPopover's type props are
+  required again.
+- **Sort-by-Type removed** — the Type filter supersedes it. Neither surface persists sort, so no
+  stored `'type'` can go stale.
+- **"Hide code & configs" retired entirely** — code is already a filterable type, so hiding it was a
+  second, overlapping mechanism (and the two could combine into a guaranteed-empty list). Removed
+  down to `theme-context`: it was a PERSISTED, cross-device-synced appearance setting that nothing
+  read any more. Found en route: **Project View used a local `useState` while the drawer used the
+  persisted context flag** — the same visible control backed by two independently-drifting settings.
+- `Chip`/`Group` gained a `multi` mode (`aria-pressed` + `role="group"`). This also fixed the
+  Visibility chips, which were independent toggles wearing radio semantics.
+
+### 17.6 Behavior changes for the release notes
+
+1. **Android sticky hover fixed** — `.hover-lift` puts the card scale behind `@media (hover: hover)`.
+   Three cards already shipped an unguarded `hover:scale-[1.02]`, so a tap left them stuck enlarged.
+2. **Error text is theme-derived** (`text-destructive-fg`) — built-ins pixel-identical, community
+   packs can now shift it.
+3. **The default file view is no longer documents-first** — code/config files appear by default in
+   both browsers. This was a deliberate non-developer accommodation; Destin accepted the change
+   ("this is fine"). If it ever needs restoring, initialise the type selection to
+   `{document, image, sheet}` rather than reviving the hide toggle.
+4. `RadioGroup` no longer hijacks arrow keys typed into a nested field.

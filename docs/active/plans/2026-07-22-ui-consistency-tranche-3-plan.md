@@ -1,8 +1,9 @@
 ---
-status: draft
+status: shipped
 date: 2026-07-22
 owner: Destin (decisions) / Claude (execution)
 subject: Tranche 3 (cards, changes 22–25) implementation plan + proposed ordering for tranches 4–8
+shipped: 2026-07-23 — MERGED to master via youcoded PR #245 (merge `dd3e5b30`). The branch carried tranches 3, 5 (31/32/34) and 7, plus Destin's review round (spec §17). Logs: spec §14.11, §15, §16, §17.
 type: plan
 roadmap: "ROADMAP.md — 'UI consistency system — shared primitives + the 51-change migration' (#ui, added 2026-07-16)"
 spec: docs/active/specs/2026-07-16-ui-consistency-design-spec.md (audit in §14)
@@ -14,8 +15,8 @@ baseline: youcoded origin/master 82552cee (2026-07-22)
 Reconciled against the **§14 audit**, which read every cited site on master `82552cee`. Read §14
 first; this plan assumes its five corrections. Do not re-derive the inventory from greps.
 
-**Blocked on two rulings from Destin** — §14.2 (delete the dead branch?) and §14.7 (star-gold /
-success-green hexes). Everything else is decided. Task 1 can start regardless.
+**Both rulings taken 2026-07-22** — §14.2: delete the dead branch. §14.7: stars stay hardcoded,
+"Published successfully!" goes neutral. All 8 tasks executed; see spec §14.11 for the log.
 
 ## Shape
 
@@ -47,7 +48,7 @@ fix, not a no-op.
 
 ---
 
-## Task 2 — SkillCard dead-branch deletion  ⚠ **needs Destin's ruling (§14.2)**
+## Task 2 — SkillCard dead-branch deletion  ✅ **DECIDED 2026-07-22 — delete**
 
 **File:** `components/SkillCard.tsx`
 
@@ -55,11 +56,13 @@ fix, not a no-op.
 Lines **123–186** (`variant === 'marketplace'`) are unreachable, as are the `self` and `marketplace`
 keys in `sourceBadgeStyles` (`:37`, `:39`) — `SourceTag` never indexes them.
 
-- **If delete (recommended):** remove `:123–186`, the two dead map keys, and the now-unused
-  `StarRating` / `Button` / `FavoriteStar`-in-marketplace imports if they fall out. `MarketplaceCard`
-  already owns the marketplace card. Deleting first makes task 3 and task 4 half the size.
-- **If keep:** migrate it alongside the live card and say so in the PR, so the next session doesn't
-  re-file it as dead.
+Remove `:123–186`, the two dead map keys, and any imports that fall out (`StarRating`,
+`useMarketplaceStats`, `Button` — check each; `FavoriteStar` is still used by the drawer variant).
+The `variant`, `installed`, `updateAvailable`, `onInstall`, `installing` props and their
+`skillCardPropsEqual` comparisons all become dead with the branch — remove them from `Props` and the
+comparator too, or the next session re-discovers a component with five props nothing passes.
+
+Deleting first makes tasks 3 and 4 roughly half the size.
 
 **Verify:** `npx tsc --noEmit` clean; `grep -rn "SkillCard" desktop/src` still shows exactly one
 importer; the drawer renders skills (dev instance).
