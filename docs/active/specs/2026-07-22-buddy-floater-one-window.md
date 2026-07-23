@@ -62,7 +62,12 @@ tests keep passing unmodified), `buddy-dock.ts` (pure state machine),
 
 ### The overlay window
 
-One BrowserWindow per session on the **primary display**:
+**A single BrowserWindow, app-wide, on the primary display** — one overlay for
+the lifetime of the app instance. There is only ever one live floater no matter
+how many Claude sessions are open (unchanged from today: the buddy is app-level
+and subscribes to session events; it is not per-Claude-session). "Session" in
+the platform-seam paragraph above means the OS login session type (Wayland vs
+X11), not a Claude session.
 
 - Constructed at **exactly the display's logical size** (never `maximize()` —
   KWin refuses it on `resizable:false`; construct-at-size is the proven
