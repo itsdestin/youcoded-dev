@@ -17,8 +17,9 @@ of the app's real token values**, so what he approves is what ships.
 2. **Tokens verbatim** from `youcoded/desktop/src/renderer/styles/globals.css` (the four
    `[data-theme]` blocks) — plus the engine-derived values from
    `themes/theme-engine.ts::computeOverlayTokens`: `--scrim` = canvas RGB × 0.4 (dark, lum≤0.2) or
-   × 0.3 (light) at 0.5 alpha; `--shadow-strength` 0.1 dark / 0.2 light; `--destructive` #DD4444
-   unless the pack sets `overlay.destructive`; `--code` = accent when accent↔fg RGB distance > 40
+   × 0.3 (light) at 0.5 alpha; `--shadow-strength` 0.1 dark / 0.2 light; `--destructive` #C62828
+   unless the pack sets `overlay.destructive` (theme-engine.ts:317 — the Tailwind `red-500`
+   remap below is a DIFFERENT red, don't conflate them); `--code` = accent when accent↔fg RGB distance > 40
    else fg-2.
 3. **Include a community theme** — default: Halftone Dimension from
    `wecoded-themes/themes/halftone-dimension/manifest.json`. It stress-tests everything: 2-3×
