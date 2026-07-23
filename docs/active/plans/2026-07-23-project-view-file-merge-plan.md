@@ -362,6 +362,30 @@ describe('importFile', () => {
     expect(fs.existsSync(path.join(outside, 'evil.md'))).toBe(true); // untouched
   });
 
+  it('refuses to import into .claude/ without a protected-path confirm', async () => {
+    // needs-confirm exists so writing an agent hook or settings file is a
+    // deliberate act. The Move/Copy dialog does not satisfy it.
+    fs.mkdirSync(path.join(root, '.claude'), { recursive: true });
+    const s = src('settings.json', '{}');
+    const r = await importFile({
+      projectRoot: root, sourcePath: s, destDir: path.join(root, '.claude'),
+      mode: 'copy', onCollision: 'replace',
+    });
+    expect(r).toMatchObject({ ok: false, error: 'needs-confirm' });
+    expect(fs.existsSync(path.join(root, '.claude', 'settings.json'))).toBe(false);
+  });
+
+  it('refuses to overwrite a dotenv file', async () => {
+    fs.writeFileSync(path.join(root, '.env'), 'SECRET=1');
+    const s = src('.env', 'SECRET=2');
+    const r = await importFile({
+      projectRoot: root, sourcePath: s, destDir: root,
+      mode: 'copy', onCollision: 'replace',
+    });
+    expect(r).toMatchObject({ ok: false, error: 'needs-confirm' });
+    expect(fs.readFileSync(path.join(root, '.env'), 'utf8')).toBe('SECRET=1');
+  });
+
   it('reports the real error code when the source does not exist', async () => {
     const r = await importFile({
       projectRoot: root, sourcePath: path.join(outside, 'ghost.md'), destDir: root,
@@ -456,8 +480,15 @@ export async function importFile(args: {
 
   // Traversal + protected-path policy on the RESOLVED destination. mustStayInRoot
   // is true: an import always lands inside the project by definition.
+  //
+  // confirmed is NOT passed. The flag means "the caller showed the protected-path
+  // confirm dialog", and the Move/Copy dialog is not that dialog — it asks
+  // copy-vs-move, not "you are about to overwrite your .env". So an import into
+  // .claude/ or onto a dotenv comes back as needs-confirm and the renderer must
+  // surface it as a refusal. Passing confirmed: true here would skip the one gate
+  // that makes writing an agent hook or a secrets file a deliberate act.
   const auth = await authorizeArtifactWrite({
-    projectRoot, fullPath: destPath, mustStayInRoot: true, confirmed: true,
+    projectRoot, fullPath: destPath, mustStayInRoot: true,
   });
   if (!auth.ok) return { ok: false, error: auth.error, detail: (auth as any).path };
 
@@ -1224,17 +1255,37 @@ passing `destDir` = `activeProject.path` joined with the current relative dir an
 On confirm, call `importFile` per source, then bump `refreshKey`:
 
 ```typescript
+  // Join the project root with the folder FilesTab is currently showing.
+  // currentRelDir is '' at the tree root, so this is just the project path there.
+  const importDestDir = (): string => {
+    const root = activeProject!.path.replace(/[\\/]+$/, '');
+    if (!currentRelDir) return root;
+    const sep = root.includes('\\') ? '\\' : '/';
+    return `${root}${sep}${currentRelDir.replace(/^[\\/]+/, '')}`;
+  };
+
   const runImport = async ({ mode, onCollision }: { mode: 'move' | 'copy'; onCollision: 'replace' | 'keep-both' | 'skip' }) => {
-    const destDir = /* activeProject.path + currentRelDir */;
+    const destDir = importDestDir();
     const results = await Promise.all(pendingImport!.sources.map((p) =>
       (window.claude as any).artifacts.importFile(activeProject!.path, p, destDir, { mode, onCollision })));
     const failed = results.filter((r) => r && r.ok === false);
-    // Surface the REAL failure (code + path) — never a guessed cause.
-    if (failed.length > 0) setImportError(failed.map((f: any) => `${f.error}${f.detail ? `: ${f.detail}` : ''}`).join('\n'));
+    // Surface the REAL failure (code + path) — never a guessed cause. Two codes
+    // need human wording rather than being dumped raw:
+    //   needs-confirm  → the destination is a .claude/ path or a dotenv, which
+    //                    main refuses without a protected-path confirm. Say that
+    //                    the file was NOT imported and name the path.
+    //   MOVE_SOURCE_NOT_REMOVED → the copy SUCCEEDED and the original is still
+    //                    there. Report the partial outcome; do not say the move
+    //                    failed, because half of it did not.
+    if (failed.length > 0) setImportError(failed.map(describeImportFailure).join('\n'));
     setPendingImport(null);
     setRefreshKey((k) => k + 1);
   };
 ```
+
+Write `describeImportFailure` beside `runImport`. It maps those two codes to
+accurate sentences and falls through to `${error}: ${detail}` for everything
+else — a real code is more useful than a friendly guess.
 
 Compute the collision list before opening the dialog by checking the current
 `Project Files` listing for matching basenames, and pass it as `collisions`.
