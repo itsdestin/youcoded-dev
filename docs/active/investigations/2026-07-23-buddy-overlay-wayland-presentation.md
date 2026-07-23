@@ -3,10 +3,85 @@ status: active
 opened: 2026-07-23
 subsystem: buddy overlay (Linux Wayland), PR itsdestin/youcoded#214
 verdict: ARCHITECTURE BLOCKED — click-through primitive does not exist on native Wayland
-merged: PR #214 merged 2026-07-23 in DORMANT configuration (chooseBuddyStrategy → 'windows' everywhere); next step is the XWayland investigation (option A below), vehicle worktrees/xwayland-floater
+merged: PR #214 merged 2026-07-23 in DORMANT configuration (chooseBuddyStrategy → 'windows' everywhere)
+xwayland: option A EXECUTED 2026-07-23 — the floater WORKS under XWayland (two launch flags + one Electron scaling bug fixed). Shelved as EXPERIMENTAL / not production-ready on branch fix/linux-xwayland-floater. See "XWAYLAND ATTEMPT" below.
 ---
 
 # Buddy overlay Wayland presentation — open investigation
+
+## XWAYLAND ATTEMPT (2026-07-23, third session) — WORKS, shelved as experimental
+
+Option A from the fallback space below was executed. **The existing three-window
+floater works under XWayland**: mascot renders crisply with clean transparency,
+`setPosition` positions real windows, KWin reports `keepAbove=true`, no GPU
+crash. Destin visually confirmed ("visually much better"). It is **not shipped** —
+branch `fix/linux-xwayland-floater`, marked NOT PRODUCTION-READY.
+
+### What it takes to make it work (both required)
+
+| Need | Mechanism | Evidence |
+|---|---|---|
+| Route app to XWayland | **real argv flag** `electron . --ozone-platform=x11` | `app.commandLine.appendSwitch('ozone-platform','x11')` is **silently ineffective on Electron 41** — process still came up on native Wayland ozone (`ui/ozone/platform/wayland/*` init logs, KWin `surface != null`). `ELECTRON_OZONE_PLATFORM_HINT=x11` was **also** ineffective. Only the real argv flag flipped it (verified: 0 wayland-ozone lines, `--ozone-platform=x11` on the browser process cmdline, KWin `x11=true` on every window). |
+| Stop the GPU crash | `--use-angle=vulkan` (`YOUCODED_ANGLE=vulkan`) | Default ANGLE GL backend SIGSEGVs the GPU process (`exit_code=139`) at `EGL_CreateWindowSurface` — **3 crashes per launch**, then Chromium falls back to X11 software presentation. Vulkan (RADV): **0 crashes**. Machine-specific to this AMD/mesa stack — do NOT default it blindly. |
+
+The earlier `force-high-performance-gpu` hypothesis (the probe/full-app
+differentiator) was **wrong** — it was the ANGLE GL backend all along.
+
+### NEW BUG FOUND + FIXED: setPosition inflates frameless windows on fractional scale
+
+Under XWayland at **1.5× fractional scaling**, Electron's `setPosition()` grows a
+frameless window's size by a DIP↔physical rounding error on **every call**.
+`moveMascot` fires one per pointermove, so it compounds across a drag.
+
+Isolated probe (`scale-probe.js`, scaleFactor 1.5, 40 moves each):
+
+| Window | Method | Before | After |
+|---|---|---|---|
+| A | `setPosition` | 334×490 | **373×529 — grew** |
+| B | `setBounds` w/ explicit fixed size | 334×490 | **334×489 — stable** |
+| C | `setMinimumSize`+`setMaximumSize` then `setPosition` | 334×488 | **373×527 — grew anyway** |
+
+Real-world symptom: the chat window ballooned to **1851×1526** — larger than the
+whole 1707×1067 logical screen — the three windows drifted apart, and KWin
+popped a geometry tip ("1216px × 1036px") during drags. This is the "chat keeps
+getting bigger / things don't stay together" jank.
+
+**Fix (shipped on the branch):** `BuddyWindowManager.place(win, x, y)` re-asserts
+each window's known fixed size via `setBounds` on every move; all buddy
+`setPosition` calls route through it. **Linux-gated** so Windows/macOS keep the
+cheaper `setPosition` path. Note `setMinimumSize`/`setMaximumSize` do NOT clamp
+this — only re-asserting the bounds does. Verified after fix: mascot back to
+exactly 112×112, no ballooning.
+
+### Why it is NOT production-ready
+
+- **Ozone backend is a whole-process, launch-time choice** — you cannot run the
+  main app on native Wayland and only the buddy on XWayland. Adopting this means
+  the *entire app* runs on XWayland.
+- **Production enablement is unimplemented.** The in-code `appendSwitch` does
+  nothing (above). Shipping would need the app to re-exec itself with the flag, or
+  a launcher/`.desktop` entry carrying it. Dev-only today via the `dev:main` script.
+- **Sharpness is compositor-specific.** Sharp on KDE (its Xwayland scale hands X11
+  clients native resolution); XWayland under fractional scaling is famously blurry
+  on GNOME and others. Does not generalize from this machine.
+- **Mixed-DPI multi-monitor breaks** — XWayland has one global scale for all
+  outputs; native Wayland scales per-monitor.
+- **GPU flag is machine-specific** — vulkan fixes this AMD/mesa box; Nvidia/Intel/
+  older mesa untested.
+- Legacy backend (ecosystem is moving to native Wayland), weaker IME support, and
+  gives back some of Wayland's app isolation.
+
+### Decision (Destin, 2026-07-23)
+
+Push the branch clearly marked NOT production-ready; **take a break**. Eventually
+dig deeper into making it work on **native Wayland**; if XWayland is ever adopted,
+**hide it behind a toggle** rather than forcing it on all Linux users.
+
+Follow-ups if resumed: production enablement mechanism (self-relaunch/launcher);
+a pinning test for the size-inflation fix (currently guarded only by the isolated
+probe); the unexplained green vertical line artifact seen on the chat edge; and
+an `EGL config` warning (`No suitable EGL configs found`) that appeared benign.
+
 
 ## FINAL VERDICT (2026-07-23, second session — supersedes the open questions below)
 
