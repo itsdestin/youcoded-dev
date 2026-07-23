@@ -21,6 +21,8 @@
 #   --path <dir>      Launch an explicit checkout dir (contains desktop/). Overrides <worktree>.
 #   --offset <n>      Port offset (default 50: Vite 5223, remote 9950). Use a DIFFERENT value
 #                     to run two dev instances at once — and pair it with --profile.
+#   --label <text>    Window-title descriptor → "YouCoded - <text>" in the taskbar/Alt-Tab,
+#                     so concurrent dev instances are tellable apart. Defaults to the branch name.
 #   --profile <name>  Electron userData profile (default: dev → %APPDATA%/youcoded-<name>/).
 #                     Two concurrent instances MUST use different profiles or they share state.
 #   --list            List registered worktrees (path + branch) and exit.
@@ -43,6 +45,7 @@ WORKTREE=""
 EXPLICIT_PATH=""
 OFFSET="${YOUCODED_PORT_OFFSET:-50}"
 PROFILE="${YOUCODED_PROFILE:-dev}"
+LABEL=""            # window-title descriptor; defaults to the branch name below
 DRY_RUN=0
 
 die() { echo "run-dev: $*" >&2; exit 1; }
@@ -61,12 +64,13 @@ list_worktrees() {
 # --- arg parsing ---
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -h|--help)  sed -n '2,44p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help)  sed -n '2,37p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     --list)     list_worktrees; exit 0 ;;
     --dry-run)  DRY_RUN=1; shift ;;
     --path)     EXPLICIT_PATH="${2:-}"; [[ -n "$EXPLICIT_PATH" ]] || die "--path needs a directory"; shift 2 ;;
     --offset)   OFFSET="${2:-}"; [[ -n "$OFFSET" ]] || die "--offset needs a number"; shift 2 ;;
     --profile)  PROFILE="${2:-}"; [[ -n "$PROFILE" ]] || die "--profile needs a name"; shift 2 ;;
+    --label)    LABEL="${2:-}"; [[ -n "$LABEL" ]] || die "--label needs a descriptor"; shift 2 ;;
     -*)         die "unknown option: $1 (try --help)" ;;
     *)          [[ -z "$WORKTREE" ]] || die "unexpected extra argument: $1"; WORKTREE="$1"; shift ;;
   esac
@@ -130,6 +134,12 @@ export YOUCODED_PORT_OFFSET="$OFFSET"
 # localStorage, window bounds, and cache don't clobber the built app's.
 export YOUCODED_PROFILE="$PROFILE"
 
+# Window-title descriptor so concurrent dev instances are tellable apart in the
+# taskbar / Alt-Tab (main.ts reads this → "YouCoded - <label>"). Default to the
+# branch name (minus a feat/fix/chore prefix) when --label wasn't given, so a dev
+# window is never just "YouCoded".
+export YOUCODED_DEV_LABEL="${LABEL:-$(echo "$BRANCH" | sed -E 's#^(feat|fix|chore|refactor|docs)/##')}"
+
 # Belt-and-suspenders: if this script is run from inside a Claude Code session
 # (e.g. via a Claude session's Bash tool), the shell carries CC's own session
 # markers. Inherited by the dev app and passed to the `claude` it spawns, they
@@ -145,6 +155,7 @@ unset CLAUDECODE CLAUDE_CODE_CHILD_SESSION CLAUDE_CODE_SESSION_ID \
 echo "Starting YouCoded dev"
 echo "  Checkout:      $CHECKOUT"
 echo "  Branch:        $BRANCH"
+echo "  Window title:  YouCoded - $YOUCODED_DEV_LABEL"
 echo "  Profile:       $PROFILE  (userData → %APPDATA%/youcoded-$PROFILE/)"
 echo "  Vite:          http://localhost:$((5173 + YOUCODED_PORT_OFFSET))"
 echo "  Remote server: port $((9900 + YOUCODED_PORT_OFFSET)) (if enabled in dev)"
