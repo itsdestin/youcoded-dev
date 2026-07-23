@@ -11,7 +11,7 @@ program: docs/active/plans/2026-07-22-native-runtime-parity-program.md (§3 — 
 
 ## Why this matters now (Destin, 2026-07-22)
 
-**M2 gates v1.3.1.** Destin's ruling: core sync functionality must be complete before the version is finalized — "sync needs to be finished before we version." M2 is the native-session half of that milestone (Android sync is a separate v1.3.1 work stream, not yours). Do not let scope drift into M3+ items.
+**M2 gates v1.3.0.** Destin's ruling: core sync functionality must be complete before the version is finalized — "sync needs to be finished before we version." M2 is the native-session half of that milestone (Android sync is a separate v1.3.1 work stream, not yours). Do not let scope drift into M3+ items.
 
 ## What M2 is (program §3 — read it in full; summary here)
 
