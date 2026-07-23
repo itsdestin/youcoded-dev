@@ -152,3 +152,32 @@ Both PRs merged same-day: wecoded-marketplace `31269649` (worker deploy swept
 existing ghosts on rollout), youcoded `e24a69a8` (Android CI build green,
 13m44s). Remaining follow-ups live in ROADMAP: threshold tightening after the
 Android release is widespread, and the `PresenceClient.kt` test-harness gap.
+
+## Day 2 (2026-07-23): the friend was STILL online — third root cause
+
+The ghost fix was real (an eviction was observed live at 04:23Z) but the
+specific friend kept reading Online overnight. Server forensics closed it:
+
+- D1 `last_seen_at` kept refreshing on alarm ticks; a 3.3-min `wrangler tail`
+  captured **only the PresenceRoom alarm** — zero reconnects, zero REST, zero
+  DO-visible socket messages. The only liveness source invisible to a tail is
+  the **edge-answered auto-response ping** → the client was genuinely pinging
+  every 30s → the app process runs continuously → the Mac never sleeps.
+- Likely why: the remote-access **keep-awake** feature
+  (`ipc-handlers.ts applyKeepAwake` → `powerSaveBlocker.start`) exists exactly
+  to keep machines awake. The suspend gate (PR #211) never fires on a machine
+  that never suspends.
+- Real bug #3: presence meant "process alive"; humans read "person present".
+
+**Fix: youcoded PR #215 — 10-min user-idle gate** (`powerMonitor.
+getSystemIdleTime()` polled at 15s in Electron main; remote-client activity
+counts as presence via `RemoteServer.getLastClientActivityMs()`; idle ⊥
+suspend so a dark wake can't flash a false Online; no-idle-API platforms fail
+safe to active). Idle users read as offline ("Last seen …") — an explicit
+Away status is a possible later layer. Client-side, so it reaches friends
+with the next release; until the friend updates, their row stays Online.
+
+Lesson for future debugging here: three DISTINCT causes produced the same
+symptom (ghost sockets; sleeping-Mac dark wakes; never-sleeping Mac + idle
+user). Each fix was real; each unmasked the next. The Android equivalent of
+cause #3 (service-alive vs user-present) is an open ROADMAP decision.
