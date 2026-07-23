@@ -107,6 +107,9 @@ export interface GitUncommitted {
   counts: GitFileCounts;
   staged: boolean;
   untracked: boolean;
+  /** false when HEAD has no copy of this file (untracked, staged-new, or a
+   *  repo with no commits yet) — discard then trashes instead of restoring. */
+  inHead: boolean;
   binary: boolean;
 }
 
@@ -423,7 +426,6 @@ git commit -m "feat(git): shared git-surface types + pure porcelain/numstat/log/
   - `execGit(cwd: string, args: string[]): Promise<{code: number, stdout: string, stderr: string}>`
   - `resolveRepoRoot(dir: string): Promise<string | null>` (cached; null = not a repo or git missing)
   - `invalidateRepoRootCache(): void`
-  - `gitAvailable(): Promise<boolean>` (memoized)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -435,7 +437,7 @@ import { execFileSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { execGit, resolveRepoRoot, invalidateRepoRootCache, gitAvailable } from '../../src/main/git/git-exec';
+import { execGit, resolveRepoRoot, invalidateRepoRootCache } from '../../src/main/git/git-exec';
 
 function hasGit(): boolean {
   try { execFileSync('git', ['--version'], { stdio: 'ignore' }); return true; } catch { return false; }
@@ -475,10 +477,6 @@ describe.skipIf(!hasGit())('git-exec (integration, real git)', () => {
 
   it('resolveRepoRoot returns null outside any repo', async () => {
     expect(await resolveRepoRoot(dir)).toBeNull();
-  });
-
-  it('gitAvailable is true here', async () => {
-    expect(await gitAvailable()).toBe(true);
   });
 });
 ```
@@ -529,12 +527,6 @@ export async function execGit(cwd: string, args: string[]): Promise<GitExecResul
     // spawn failure (git not installed, ENOENT) or timeout kill
     return { code: -1, stdout: '', stderr: e.stderr || e.message || String(err) };
   }
-}
-
-let gitOk: boolean | null = null;
-export async function gitAvailable(): Promise<boolean> {
-  if (gitOk === null) gitOk = (await execGit(process.cwd(), ['--version'])).code === 0;
-  return gitOk;
 }
 
 // dir -> repo toplevel (or null). Cached: the footer asks on every artifact
@@ -591,8 +583,9 @@ git commit -m "feat(git): execGit runner + cached repo-root resolution"
 
 Notes that shape the implementation:
 - `relPath` arrives **project-root-relative** (that is what `artifact.path` is). The repo root may sit above the project root, so every git call converts: `abs = path.resolve(projectRoot, relPath)` → `relToRepo = path.relative(repoRoot, abs)` (posix-joined). If `abs` escapes the project root (`path.relative(projectRoot, abs)` starts with `..`) return `{ok:false, error:'path-outside-project'}` — defense in depth under the Task 5 root gate.
-- Untracked file: no diff vs HEAD exists — read the file (`fs.promises.readFile`, utf8) and `synthesizeAddHunk`. Files >1MB: return `binary:true`-style truncation (`hunks: [], binary: true`) rather than flooding IPC.
-- Discard: tracked → `git checkout HEAD -- <rel>` (restores index AND worktree); untracked → `shell.trashItem(abs)` (recoverable; NEVER `git clean`).
+- **Every `git status` call passes `--untracked-files=all`** — without it git collapses an untracked directory into one `? dir/` entry and a new file inside a new directory (the most common agent output) would be invisible to the footer and review view.
+- No-committed-copy files (untracked, staged-new via `git add`, or any file in a repo with no commits yet / unborn HEAD): no diff vs HEAD exists — read the file (`fs.promises.readFile`, utf8) and `synthesizeAddHunk`. Files >1MB: return `binary:true`-style truncation (`hunks: [], binary: true`) rather than flooding IPC. `git cat-file -e HEAD:<rel>` (exit code) is the single source of truth for "does HEAD have a copy?" and feeds `GitUncommitted.inHead`.
+- Discard routes on HEAD copy, not just untracked-ness: HEAD has a copy → `git checkout HEAD -- <rel>` (restores index AND worktree); no HEAD copy → unstage if needed (`git rm --cached --force`, which works before the first commit) then `shell.trashItem(abs)` (recoverable; NEVER `git clean`). A bare `checkout HEAD` on a staged-new file would fail with "pathspec did not match".
 - Every failed git call returns `{ok:false, error: stderr.trim() || 'git exited with code N'}` — real stderr, per the error standard.
 
 - [ ] **Step 1: Add `trashItem` to the electron mock**
@@ -684,6 +677,7 @@ describe.skipIf(!hasGit())('git-service (integration, real git)', () => {
     const r = await gitFileReview(root, 'a.txt');
     expect(r.ok).toBe(true);
     expect(r.uncommitted?.untracked).toBe(false);
+    expect(r.uncommitted?.inHead).toBe(true);
     expect(r.uncommitted?.counts).toEqual({ added: 1, removed: 1 });
     expect(r.uncommitted?.hunks[0].lines).toContain('-two');
     expect(r.log).toHaveLength(1);
@@ -696,6 +690,7 @@ describe.skipIf(!hasGit())('git-service (integration, real git)', () => {
     await fs.promises.writeFile(path.join(root, 'new.txt'), 'alpha\nbeta\n');
     const r = await gitFileReview(root, 'new.txt');
     expect(r.uncommitted?.untracked).toBe(true);
+    expect(r.uncommitted?.inHead).toBe(false);
     expect(r.uncommitted?.hunks).toEqual([
       { oldStart: 0, oldLines: 0, newStart: 1, newLines: 2, lines: ['+alpha', '+beta'] },
     ]);
@@ -749,6 +744,38 @@ describe.skipIf(!hasGit())('git-service (integration, real git)', () => {
     expect(shell.trashItem).toHaveBeenCalledWith(p);
   });
 
+  it('discard of a staged-but-never-committed file unstages then trashes', async () => {
+    const p = path.join(root, 'staged-new.txt');
+    await fs.promises.writeFile(p, 'x\n');
+    sh(root, ['add', 'staged-new.txt']);
+    expect((await gitDiscard(root, 'staged-new.txt')).ok).toBe(true);
+    expect(shell.trashItem).toHaveBeenCalledWith(p);
+    // Index no longer holds it (the mocked trash leaves the file on disk, so
+    // git now sees it as plain untracked — proving rm --cached ran).
+    expect(sh(root, ['status', '--porcelain']).trim()).toBe('?? staged-new.txt');
+  });
+
+  it('fileStatus sees an untracked file inside an untracked directory', async () => {
+    await fs.promises.mkdir(path.join(root, 'newdir'));
+    await fs.promises.writeFile(path.join(root, 'newdir', 'inner.txt'), 'a\nb\n');
+    const r = await gitFileStatus(root, 'newdir/inner.txt');
+    expect(r.counts).toEqual({ added: 2, removed: 0 });
+  });
+
+  it('fileReview works in a repo with no commits yet (unborn HEAD)', async () => {
+    const fresh = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'ycd-unborn-'));
+    try {
+      sh(fresh, ['init']);
+      await fs.promises.writeFile(path.join(fresh, 'f.txt'), 'hello\n');
+      sh(fresh, ['add', 'f.txt']);
+      const r = await gitFileReview(fresh, 'f.txt');
+      expect(r.ok).toBe(true);
+      expect(r.uncommitted?.inHead).toBe(false);
+      expect(r.uncommitted?.hunks[0].lines).toEqual(['+hello']);
+      expect(r.log).toEqual([]);
+    } finally { await fs.promises.rm(fresh, { recursive: true, force: true }); }
+  });
+
   it('LOG_PAGE caps the log and reports hasMore', async () => {
     for (let i = 0; i < LOG_PAGE + 2; i++) {
       await fs.promises.writeFile(path.join(root, 'a.txt'), `rev ${i}\n`);
@@ -784,7 +811,7 @@ import {
 } from './porcelain';
 import type {
   GitFileStatusResult, GitFileReviewResult, GitCommitFileDiffResult,
-  GitOpResult, GitUncommitted,
+  GitOpResult, GitUncommitted, GitFileCounts,
 } from '../../shared/git-types';
 
 export const LOG_PAGE = 20;
@@ -824,32 +851,40 @@ const NOT_REPO: Omit<GitFileStatusResult, 'ok' | 'error'> = {
   isRepo: false, branch: null, counts: null, hasHistory: false, staged: false,
 };
 
+// Counts for a file HEAD has no copy of (untracked / staged-new / unborn
+// HEAD): its whole content is the addition. Oversized or unreadable -> 0/0.
+async function worktreeAddCounts(abs: string): Promise<GitFileCounts> {
+  try {
+    const stat = await fs.promises.stat(abs);
+    if (stat.size > MAX_UNTRACKED_BYTES) return { added: 0, removed: 0 };
+    return countsFromHunks([synthesizeAddHunk(await fs.promises.readFile(abs, 'utf8'))]);
+  } catch { return { added: 0, removed: 0 }; }
+}
+
 export async function gitFileStatus(projectRoot: string, relPath: string): Promise<GitFileStatusResult> {
   const loc = await locate(projectRoot, relPath);
   if (loc === 'outside') return { ok: false, error: 'path-outside-project', ...NOT_REPO };
   if (!loc) return { ok: true, ...NOT_REPO };
   const { repoRoot, abs, rel } = loc;
 
-  const status = await execGit(repoRoot, ['status', '--porcelain=v2', '--branch', '--', rel]);
+  const status = await execGit(repoRoot, ['status', '--porcelain=v2', '--branch', '--untracked-files=all', '--', rel]);
   if (status.code !== 0) return { ok: false, error: errText(status), ...NOT_REPO };
   const parsed = parsePorcelainV2(status.stdout);
   const entry = parsed.files.find((f) => f.path === rel) ?? null;
 
   let counts: GitFileStatusResult['counts'] = null;
   if (entry?.untracked) {
-    try {
-      const stat = await fs.promises.stat(abs);
-      if (stat.size <= MAX_UNTRACKED_BYTES) {
-        const content = await fs.promises.readFile(abs, 'utf8');
-        counts = countsFromHunks([synthesizeAddHunk(content)]);
-      } else counts = { added: 0, removed: 0 };
-    } catch { counts = { added: 0, removed: 0 }; }
+    counts = await worktreeAddCounts(abs);
   } else if (entry) {
     const num = await execGit(repoRoot, ['diff', '--numstat', 'HEAD', '--', rel]);
     if (num.code === 0) {
       const m = parseNumstat(num.stdout).get(rel);
       counts = m ? { added: m.added, removed: m.removed } : { added: 0, removed: 0 };
-    } else counts = { added: 0, removed: 0 };
+    } else {
+      // HEAD may be unborn (fresh git init, nothing committed yet) — the file
+      // is effectively all-new, so count its content as additions.
+      counts = await worktreeAddCounts(abs);
+    }
   }
 
   // Any commit touching this path? --max-count=1 keeps it O(first hit).
@@ -875,27 +910,34 @@ export async function gitFileReview(
 
   // Whole-repo status: branch + this file's entry + the repo-wide staged count
   // (the commit button label counts everything a commit would include).
-  const status = await execGit(repoRoot, ['status', '--porcelain=v2', '--branch']);
+  const status = await execGit(repoRoot, ['status', '--porcelain=v2', '--branch', '--untracked-files=all']);
   if (status.code !== 0) return fail<GitFileReviewResult>(base, errText(status));
   const parsed = parsePorcelainV2(status.stdout);
   const entry = parsed.files.find((f) => f.path === rel) ?? null;
   const stagedCount = parsed.files.filter((f) => f.staged).length;
 
   let uncommitted: GitUncommitted | null = null;
-  if (entry?.untracked) {
-    let hunks = [] as GitUncommitted['hunks'];
-    let binary = false;
-    try {
-      const stat = await fs.promises.stat(abs);
-      if (stat.size <= MAX_UNTRACKED_BYTES) hunks = [synthesizeAddHunk(await fs.promises.readFile(abs, 'utf8'))];
-      else binary = true;
-    } catch { binary = true; }
-    uncommitted = { hunks, counts: countsFromHunks(hunks), staged: false, untracked: true, binary };
-  } else if (entry) {
-    const diff = await execGit(repoRoot, ['diff', 'HEAD', '--', rel]);
-    if (diff.code !== 0) return fail<GitFileReviewResult>(base, errText(diff));
-    const { hunks, binary } = parseUnifiedDiff(diff.stdout);
-    uncommitted = { hunks, counts: countsFromHunks(hunks), staged: entry.staged, untracked: false, binary };
+  if (entry) {
+    // cat-file -e answers "does HEAD have a copy of this file?" — false for
+    // untracked, staged-new AND unborn-HEAD repos, which all render as pure
+    // additions (there is nothing to diff against).
+    const inHead = !entry.untracked
+      && (await execGit(repoRoot, ['cat-file', '-e', `HEAD:${rel}`])).code === 0;
+    if (!inHead) {
+      let hunks = [] as GitUncommitted['hunks'];
+      let binary = false;
+      try {
+        const stat = await fs.promises.stat(abs);
+        if (stat.size <= MAX_UNTRACKED_BYTES) hunks = [synthesizeAddHunk(await fs.promises.readFile(abs, 'utf8'))];
+        else binary = true;
+      } catch { binary = true; }
+      uncommitted = { hunks, counts: countsFromHunks(hunks), staged: entry.staged, untracked: entry.untracked, inHead: false, binary };
+    } else {
+      const diff = await execGit(repoRoot, ['diff', 'HEAD', '--', rel]);
+      if (diff.code !== 0) return fail<GitFileReviewResult>(base, errText(diff));
+      const { hunks, binary } = parseUnifiedDiff(diff.stdout);
+      uncommitted = { hunks, counts: countsFromHunks(hunks), staged: entry.staged, untracked: false, inHead: true, binary };
+    }
   }
 
   const skip = opts?.logSkip ?? 0;
@@ -940,8 +982,22 @@ export function gitStage(projectRoot: string, relPath: string): Promise<GitOpRes
   return simpleOp(projectRoot, relPath, (rel) => ['add', '--', rel]);
 }
 
-export function gitUnstage(projectRoot: string, relPath: string): Promise<GitOpResult> {
-  return simpleOp(projectRoot, relPath, (rel) => ['restore', '--staged', '--', rel]);
+export async function gitUnstage(projectRoot: string, relPath: string): Promise<GitOpResult> {
+  const first = await simpleOp(projectRoot, relPath, (rel) => ['restore', '--staged', '--', rel]);
+  if (first.ok) return first;
+  // Unborn HEAD (repo with no commits): restore --staged cannot resolve HEAD.
+  // The equivalent unstage there is rm --cached, which leaves the worktree
+  // file untouched. Only fall back when HEAD verifiably does not resolve —
+  // any other failure keeps its real stderr.
+  const loc = await locate(projectRoot, relPath);
+  if (loc && loc !== 'outside') {
+    const head = await execGit(loc.repoRoot, ['rev-parse', '--verify', '--quiet', 'HEAD']);
+    if (head.code !== 0) {
+      const rm = await execGit(loc.repoRoot, ['rm', '--cached', '--force', '--', loc.rel]);
+      if (rm.code === 0) return { ok: true };
+    }
+  }
+  return first;
 }
 
 export async function gitCommit(projectRoot: string, message: string): Promise<GitOpResult> {
@@ -955,16 +1011,26 @@ export async function gitCommit(projectRoot: string, message: string): Promise<G
 export async function gitDiscard(projectRoot: string, relPath: string): Promise<GitOpResult> {
   const loc = await locate(projectRoot, relPath);
   if (loc === 'outside' || !loc) return { ok: false, error: 'path-outside-project' };
-  const status = await execGit(loc.repoRoot, ['status', '--porcelain=v2', '--', loc.rel]);
+  const status = await execGit(loc.repoRoot, ['status', '--porcelain=v2', '--untracked-files=all', '--', loc.rel]);
   if (status.code !== 0) return { ok: false, error: errText(status) };
   const entry = parsePorcelainV2(status.stdout).files.find((f) => f.path === loc.rel);
   if (!entry) return { ok: true }; // nothing to discard — already clean
-  if (entry.untracked) {
-    // Untracked: recoverable OS-trash delete, never `git clean` (spec section 5).
+  const trash = async (): Promise<GitOpResult> => {
+    // Recoverable OS-trash delete, never `git clean` (spec section 5).
     try { await shell.trashItem(loc.abs); return { ok: true }; }
     catch (e) { return { ok: false, error: e instanceof Error ? e.message : String(e) }; }
+  };
+  if (entry.untracked) return trash();
+  const inHead = (await execGit(loc.repoRoot, ['cat-file', '-e', `HEAD:${loc.rel}`])).code === 0;
+  if (!inHead) {
+    // Staged-new (or unborn HEAD): there is no committed copy to restore, and
+    // `checkout HEAD` would fail with a pathspec error. Unstage with
+    // rm --cached (works before the first commit too), then trash.
+    const rm = await execGit(loc.repoRoot, ['rm', '--cached', '--force', '--', loc.rel]);
+    if (rm.code !== 0) return { ok: false, error: errText(rm) };
+    return trash();
   }
-  // Tracked: restore BOTH index and worktree copy to HEAD.
+  // Tracked with a HEAD copy: restore BOTH index and worktree copy to HEAD.
   const r = await execGit(loc.repoRoot, ['checkout', 'HEAD', '--', loc.rel]);
   return r.code === 0 ? { ok: true } : { ok: false, error: errText(r) };
 }
@@ -1344,12 +1410,14 @@ Add the registration block directly AFTER the artifacts watcher block (after the
       }
       return watchGit(repoRoot, senderId);
     }));
-  ipcMain.handle(GIT_IPC.UNWATCH, async (e, projectRoot: string) => {
-    if (typeof projectRoot !== 'string' || projectRoot.length === 0) return { ok: false };
-    const repoRoot = await resolveRepoRoot(projectRoot);
-    if (repoRoot) unwatchGit(repoRoot, e.sender.id);
-    return { ok: true };
-  });
+  // Gated like every other git channel — unwatch shells rev-parse, and the
+  // known-roots gate should be uniform even for read-only paths.
+  ipcMain.handle(GIT_IPC.UNWATCH, (e, projectRoot: string) =>
+    gitGate(projectRoot, { ok: false }, async () => {
+      const repoRoot = await resolveRepoRoot(projectRoot);
+      if (repoRoot) unwatchGit(repoRoot, e.sender.id);
+      return { ok: true };
+    }));
 ```
 
 - [ ] **Step 4: Expose in `desktop/src/main/preload.ts`**
@@ -1840,8 +1908,9 @@ export interface GitReviewViewProps {
   onBack: () => void;
   /** jump into the editor at a 1-indexed line (Task 7 host wires revealLine) */
   onOpenAtLine: (line: number) => void;
-  /** open the L3 discard confirm (Task 9 wires the dialog; until then a no-op) */
-  onRequestDiscard: (untracked: boolean) => void;
+  /** open the L3 discard confirm; willTrash = HEAD has no copy, so discard
+   *  trashes the file instead of restoring (Task 9 wires the dialog) */
+  onRequestDiscard: (willTrash: boolean) => void;
 }
 ```
 
@@ -1861,7 +1930,7 @@ const review = {
   ok: true, isRepo: true, branch: 'master',
   uncommitted: {
     hunks: [{ oldStart: 142, oldLines: 1, newStart: 142, newLines: 2, lines: ['-old line', '+new line', '+added line'] }],
-    counts: { added: 2, removed: 1 }, staged: false, untracked: false, binary: false,
+    counts: { added: 2, removed: 1 }, staged: false, untracked: false, inHead: true, binary: false,
   },
   log: [
     { sha: 'a'.repeat(40), shortSha: 'aaaaaaa', subject: 'fix: first', authorDate: '2026-07-22T10:00:00Z' },
@@ -2026,7 +2095,7 @@ export interface GitReviewViewProps {
   fileName: string;
   onBack: () => void;
   onOpenAtLine: (line: number) => void;
-  onRequestDiscard: (untracked: boolean) => void;
+  onRequestDiscard: (willTrash: boolean) => void;
 }
 
 function gitApi(): any {
@@ -2172,10 +2241,10 @@ export function GitReviewView({
               <div className="flex-1" />
               <button
                 type="button"
-                onClick={() => onRequestDiscard(uncommitted.untracked)}
+                onClick={() => onRequestDiscard(!uncommitted.inHead)}
                 className="px-2 py-1 rounded-md text-[11px] text-destructive-fg hover:bg-destructive/10 transition-colors"
               >
-                {uncommitted.untracked ? 'Delete file…' : 'Discard changes…'}
+                {!uncommitted.inHead ? 'Delete file…' : 'Discard changes…'}
               </button>
               {uncommitted.hunks.length > 0 && (
                 <button
@@ -2311,7 +2380,9 @@ git commit -m "feat(git): GitReviewView — pushed sub-view with card timeline a
 ```ts
 export interface DiscardConfirmDialogProps {
   fileName: string;
-  untracked: boolean;
+  /** true = HEAD has no committed copy (untracked OR staged-new) — the file
+   *  goes to the OS trash instead of being restored from HEAD */
+  willTrash: boolean;
   onConfirm: () => void;  // caller runs git.discard and closes
   onCancel: () => void;
 }
@@ -2334,15 +2405,15 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 describe('DiscardConfirmDialog', () => {
   it('tracked copy states exactly what is restored and confirm fires', () => {
     const onConfirm = vi.fn();
-    render(<DiscardConfirmDialog fileName="f.ts" untracked={false} onConfirm={onConfirm} onCancel={() => {}} />);
+    render(<DiscardConfirmDialog fileName="f.ts" willTrash={false} onConfirm={onConfirm} onCancel={() => {}} />);
     expect(screen.getByText(/Restore “f.ts” to its last committed state\?/)).toBeInTheDocument();
     expect(screen.getByText(/uncommitted edits to this file will be lost/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Discard changes' }));
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });
 
-  it('untracked copy says trash, not restore', () => {
-    render(<DiscardConfirmDialog fileName="new.ts" untracked onConfirm={() => {}} onCancel={() => {}} />);
+  it('never-committed copy says trash, not restore', () => {
+    render(<DiscardConfirmDialog fileName="new.ts" willTrash onConfirm={() => {}} onCancel={() => {}} />);
     expect(screen.getByText(/Move “new.ts” to the system trash\?/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Delete file' })).toBeInTheDocument();
   });
@@ -2350,7 +2421,7 @@ describe('DiscardConfirmDialog', () => {
   it('cancel and Escape both close without confirming', () => {
     const onConfirm = vi.fn();
     const onCancel = vi.fn();
-    render(<DiscardConfirmDialog fileName="f.ts" untracked={false} onConfirm={onConfirm} onCancel={onCancel} />);
+    render(<DiscardConfirmDialog fileName="f.ts" willTrash={false} onConfirm={onConfirm} onCancel={onCancel} />);
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(onCancel).toHaveBeenCalled();
@@ -2374,12 +2445,13 @@ import { Button } from '../ui';
 
 export interface DiscardConfirmDialogProps {
   fileName: string;
-  untracked: boolean;
+  /** true = HEAD has no committed copy (untracked OR staged-new) — trash path */
+  willTrash: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-export function DiscardConfirmDialog({ fileName, untracked, onConfirm, onCancel }: DiscardConfirmDialogProps) {
+export function DiscardConfirmDialog({ fileName, willTrash, onConfirm, onCancel }: DiscardConfirmDialogProps) {
   // Capture-phase Escape = cancel, same pattern as UnsavedChangesDialog — the
   // drawer's own ESC cascade must not fire underneath an open dialog.
   useEffect(() => {
@@ -2397,21 +2469,21 @@ export function DiscardConfirmDialog({ fileName, untracked, onConfirm, onCancel 
         destructive
         role="alertdialog"
         aria-modal
-        aria-label={untracked ? 'Delete file' : 'Discard changes'}
+        aria-label={willTrash ? 'Delete file' : 'Discard changes'}
         className="p-4 max-w-sm w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-sm font-medium text-fg mb-1">
-          {untracked ? `Move “${fileName}” to the system trash?` : `Restore “${fileName}” to its last committed state?`}
+          {willTrash ? `Move “${fileName}” to the system trash?` : `Restore “${fileName}” to its last committed state?`}
         </div>
         <div className="text-sm text-fg-2 mb-4 break-all">
-          {untracked
-            ? 'The file is untracked — git has no copy of it. It goes to the trash, not permanent deletion.'
+          {willTrash
+            ? 'Git has no committed copy of this file. It goes to the trash, not permanent deletion.'
             : 'Your uncommitted edits to this file will be lost. Staged and unstaged changes are both restored from HEAD.'}
         </div>
         <div className="flex gap-2 justify-end">
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="danger" onClick={onConfirm}>{untracked ? 'Delete file' : 'Discard changes'}</Button>
+          <Button variant="danger" onClick={onConfirm}>{willTrash ? 'Delete file' : 'Discard changes'}</Button>
         </div>
       </OverlayPanel>
     </Scrim>
@@ -2424,17 +2496,17 @@ export function DiscardConfirmDialog({ fileName, untracked, onConfirm, onCancel 
 Add state + handler inside `SessionDrawer` (near the other git state from Task 7):
 
 ```tsx
-  const [discardAsk, setDiscardAsk] = useState<{ untracked: boolean } | null>(null);
+  const [discardAsk, setDiscardAsk] = useState<{ willTrash: boolean } | null>(null);
   const [discardError, setDiscardError] = useState<string | null>(null);
 ```
 
-Replace Task 8's `onRequestDiscard={() => {}}` with `onRequestDiscard={(untracked) => setDiscardAsk({ untracked })}` and render next to `{unsavedDialog}` (`:549`):
+Replace Task 8's `onRequestDiscard={() => {}}` with `onRequestDiscard={(willTrash) => setDiscardAsk({ willTrash })}` and render next to `{unsavedDialog}` (`:549`):
 
 ```tsx
       {discardAsk && active && (
         <DiscardConfirmDialog
           fileName={fileName}
-          untracked={discardAsk.untracked}
+          willTrash={discardAsk.willTrash}
           onConfirm={async () => {
             setDiscardAsk(null);
             const r = await (window as any).claude?.git?.discard?.(projectRoot, active.path).catch(
@@ -2448,6 +2520,8 @@ Replace Task 8's `onRequestDiscard={() => {}}` with `onRequestDiscard={(untracke
 ```
 
 Pass `discardError` into `GitReviewView` presentation by leaving it to the view's own `opError`? No — keep ONE error surface: add an optional prop to `GitReviewView` (`externalError?: string | null`) rendered in the same `opError` slot, and pass `discardError`. Add the prop to `GitReviewViewProps` and render `{(opError ?? externalError) && (...)}` in the composer block.
+
+Two clearing rules so a stale discard error cannot linger: (1) `GitReviewView` also gains `onExternalErrorClear?: () => void` and calls it at the top of `run()` — any new operation supersedes the old error; SessionDrawer passes `() => setDiscardError(null)`. (2) SessionDrawer resets `discardError` to null wherever it dispatches `GIT_REVIEW_CLOSED` (back button wiring and the ESC cascade branch), so a reopened review starts clean.
 
 Import: `import { DiscardConfirmDialog } from './git/DiscardConfirmDialog';`
 
@@ -2519,6 +2593,14 @@ git worktree remove <path> && git branch -D feat/git-surface   # after merge ver
 - Reducer test imports `artifactReducer`/`initialArtifactState` — if the reducer is module-local today, export it (T6 step 1 note) rather than renaming anything.
 
 **Type consistency check:** `GitFileStatusResult`/`GitFileReviewResult`/`GitOpResult` shapes match between service (T3), handlers' blocked-fallback objects (T5), hook (T7), and view (T8). `LOG_PAGE` used in T3 test and T8 `logSkip` math. `relPath` is project-root-relative everywhere (converted to repo-relative only inside `locate()`).
+
+**2026-07-22 review amendments (applied before implementation):**
+- Every `git status` call passes `--untracked-files=all` — without it, a new file inside a new directory (the most common agent output) collapses into a `? dir/` entry and is invisible to footer + review.
+- Discard routes on "does HEAD have a copy?" (`git cat-file -e HEAD:<rel>`), not just untracked-ness: staged-new and unborn-HEAD files get `rm --cached --force` + `shell.trashItem` instead of a `checkout HEAD` that would fail with a pathspec error. `GitUncommitted.inHead` and the dialog's `willTrash` prop carry the distinction so the confirm copy never claims a committed state that doesn't exist.
+- `gitFileStatus`/`gitFileReview` degrade to synthesized all-addition hunks when HEAD has no copy (covers fresh `git init` repos with zero commits); `gitUnstage` falls back to `rm --cached` only when HEAD verifiably doesn't resolve.
+- `git:unwatch` goes through the known-roots gate like every other git channel.
+- Dropped unused `gitAvailable()` (`resolveRepoRoot` already returns null when git is missing).
+- Discard errors clear on the next operation and on review close (`onExternalErrorClear` + reset alongside `GIT_REVIEW_CLOSED`).
 
 
 
