@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-07-22
 subsystem: social / presence
 repos: wecoded-marketplace (worker), youcoded (app)
@@ -145,3 +145,10 @@ Unintended consequences hunted for before writing the fix; each shaped the desig
   (main-looper bound, no Robolectric) — a harness would be a separate change.
 - Either merge order is safe; tightening the Worker threshold (~10–15 min) waits until
   the youcoded release is widespread. That tightening is the open follow-up.
+
+## Resolution (2026-07-22)
+
+Both PRs merged same-day: wecoded-marketplace `31269649` (worker deploy swept
+existing ghosts on rollout), youcoded `e24a69a8` (Android CI build green,
+13m44s). Remaining follow-ups live in ROADMAP: threshold tightening after the
+Android release is widespread, and the `PresenceClient.kt` test-harness gap.

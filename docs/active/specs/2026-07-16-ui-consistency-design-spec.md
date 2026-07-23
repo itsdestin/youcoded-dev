@@ -2,6 +2,7 @@
 status: active
 date: 2026-07-16
 amended: 2026-07-19 (tranche 2 COMPLETE — buttons PR #181 `2bf29a44`, inputs PR #183)
+amended: 2026-07-22 (tranche 3 AUDITED against master `82552cee` — see §14; ledger needs five corrections)
 owner: Destin (decisions) / Claude (spec)
 ---
 
@@ -1305,3 +1306,192 @@ in every agent brief; the author then made it three times in their own edits (`i
 `ResumeBrowser`, `SessionStrip`). One was caught by an agent reading a concurrent typecheck, two by
 `tsc`. Nothing shipped broken, but a rule that has to be remembered is a rule that will be
 forgotten — this is the concrete argument for §8's unapproved **ESLint guardrail**.
+
+---
+
+## 14. Tranche 3 audit — changes 22–25, cards (audited 2026-07-22, NOT yet implemented)
+
+Verified against `origin/master` **`82552cee`** (130 commits past the `d0c646b7` baseline the
+2026-07-19 handoff recorded). Every row below was read at the edit site. This is the §11.1-shape
+inventory the handoff asked for; **the ledger needs five corrections before any code moves.**
+
+### 14.1 Headline — the scope is far SMALLER than the greps, for a new reason
+
+Tranches 1–2 were understated. Tranche 3 is **overstated**, and by a mechanism worth naming: the
+ledger's named targets have been overtaken by code that landed after the spec was written.
+
+| change | ledger's claim | grep upper bound | **audited live surface** |
+|---|---|---|---|
+| 22 | SkillCard both variants + theme tiles + file cards → `.layer-surface` | ~58 `bg-panel`+border | **1 live card** (+2 unledgered siblings that must move with it) |
+| 23 | SkillCard badge system → tone pills; hex strips die | 21 hex occurrences | **2 live sites** of 22 total; 4 of the 6 SkillCard hexes are unreachable |
+| 24 | last 3 neutral stock-palette leaks | 3 | **4** — a second `locked` tone map exists |
+| 25 | EngineCard `bg-well` → SettingsRow surface | ~54 `bg-well` | **3 sites**, byte-identical, in one panel — the ledger names one |
+
+### 14.2 Correction 1 — SkillCard's `marketplace` variant is DEAD CODE
+
+`SkillCard` has exactly one importer: `CommandDrawer.tsx:3`, rendering it at `:166` with **no
+`variant` prop** (defaults to `'drawer'`) and without `installed` / `updateAvailable` / `onInstall`
+/ `installing`. `LibraryScreen.renderSkillCard` (`:70`) renders a **`MarketplaceCard`**, not a
+`SkillCard` — the name is a leftover. Verified by grepping every `.ts`/`.tsx` under `desktop/src`.
+
+Therefore `SkillCard.tsx:123–186` — the whole `variant === 'marketplace'` branch — is unreachable.
+It contains:
+
+- change 22's marketplace-variant target (`:132`)
+- change 23's install-status hex strip (`:156–161`, `#f0ad4e` / `#66AAFF` / `#4CAF50`)
+- the `Get` → `Button size="sm"` migration (`:176`) — **already done**, and on dead code
+- the `StarRating` / installs / author block
+
+Also dead: `sourceBadgeStyles.self` (`:37`, `#66AAFF`) and `sourceBadgeStyles.marketplace` (`:39`).
+`SourceTag` (`:70–82`) reads only `sourceBadgeStyles['youcoded-core']`, `typeBadgeStyles[skill.type]`
+and `sourceBadgeStyles.plugin` — the other two keys are never indexed.
+
+**This survived the three dead-code sweeps that merged 2026-07-21/22 (#206, #207, #208)** — those
+were export- and symbol-level; an unreachable JSX branch behind a defaulted prop is invisible to them.
+
+**Decision needed from Destin:** delete the dead branch as part of tranche 3, or migrate it on the
+theory that a marketplace SkillCard returns later. Recommend **delete** — `MarketplaceCard` already
+owns that job, and migrating dead code is the most expensive possible way to be consistent.
+
+### 14.3 Correction 2 — change 22's live target is one card, and it has two unledgered siblings
+
+The only live `bg-panel` card in the SkillCard species:
+
+| site | current classes | in ledger? |
+|---|---|---|
+| `SkillCard.tsx:199` (drawer variant) | `relative bg-panel border border-edge-dim rounded-lg p-3 hover:bg-inset hover:border-edge` | ✅ change 22 |
+| `CommandDrawer.tsx:131` (`renderCommandCard`) | `rounded-lg p-3 border border-edge-dim` + `bg-panel/80 hover:bg-inset hover:border-edge` / disabled `bg-panel/40` | ❌ **not in the ledger** |
+| `CommandDrawer.tsx:348` (`AddSkillsCard`) | `bg-panel/40 border border-dashed border-edge rounded-lg p-3 hover:bg-inset hover:border-accent` | ❌ **not in the ledger** |
+
+All three render **in the same drawer grid** (`CommandDrawer.tsx:272`, `:313`, `:323` for skills;
+command cards and the Add-Skills tile interleave in the same scroll body). `AddSkillsCard`'s own
+comment says it "matches SkillCard's drawer dimensions so it sits naturally at the end of the grid."
+Migrating `SkillCard` alone splits that grid into two visibly different card species — the exact
+class of regression this workstream exists to remove. **Change 22 must be rescoped to all three.**
+
+### 14.4 Correction 3 — `.layer-surface` is not a drop-in for a grid card
+
+`globals.css:858–867` — `.layer-surface` sets `background-color: var(--panel)`,
+`border: 1px solid var(--edge)`, `border-radius: var(--radius-xl)`, `box-shadow: 0 8px 32px …`,
+`overflow: hidden`. Against the current card that is **four** changes, not one:
+
+1. **Radius** `rounded-lg` → `--radius-xl` (theme-scalable; large on Halftone Dimension).
+2. **Shadow** — 20+ drawer cards would each gain a `0 8px 32px` shadow.
+3. **Border** `--edge-dim` → `--edge` (stronger).
+4. **`overflow: hidden`** — the documented reason two sibling migrations were refused.
+
+The precedent is already in the codebase and it argues for overriding all of it. `FilesTab.tsx:362`
+adopts `.layer-surface` as `layer-surface !rounded-lg` **plus** `style={{ boxShadow: 'none' }}`,
+with this comment: *"No shadow: folder cards are flat, and mixed elevation in one grid read as
+inconsistent (user feedback 2026-07-08). Same override the seg control uses on its .layer-surface."*
+Destin has already rejected shadowed cards in a grid once.
+
+**Recommendation:** adopt the FilesTab recipe verbatim — `layer-surface !rounded-lg` + inline
+`boxShadow: 'none'` — so the drawer grid keeps today's geometry and gains only the token/hover/focus
+consistency. If instead the intent is that grid cards look elevated, that is a **visual change Destin
+has not seen**, and it needs a mockup round before it ships.
+
+### 14.5 Correction 4 — theme tiles and two project-view row families are NOT change-22 targets
+
+- **`ThemeScreen.tsx:171` theme tiles** — these paint the *previewed* theme's own tokens inline
+  (`background: linear-gradient(90deg, t.tokens.canvas, t.tokens.accent)`, `background:
+  t.tokens.canvas`, `color: t.tokens.fg`). They are not `bg-panel` cards; putting them on
+  `.layer-surface` would paint the **active** theme's panel over a preview of a **different** theme
+  and destroy the control's purpose. The ledger's "ThemeScreen theme tiles … follow the same rule"
+  is wrong. Only one part applies: they are `role="button"` + `tabIndex={0}` with **zero
+  `focus-visible:ring`** anywhere in the file — the focus ring half of change 22 is valid here.
+- **`ContextTab.tsx:129` and `ConversationsTab.tsx:48`** carry explicit WHY comments (`ContextTab.tsx:6`,
+  `ConversationsTab.tsx:7` and `:43`): rows use `bg-panel border border-edge-dim rounded-lg`
+  *"(NOT .layer-surface — its overflow:hidden + flex compression clips the text)"*. The audit
+  confirms `overflow: hidden` is real (`globals.css:866`). These are correctly excluded; **do not
+  "discover" them as misses.**
+- **`FilesTab.tsx:566/:586/:611` folder cards** use `bg-panel` *deliberately, to match*
+  `.layer-surface`'s panel background (comment at `:581–585`, user feedback 2026-07-19). Already
+  consistent. Leave alone.
+- **`FilesTab.tsx:362` doc cards** already are `.layer-surface` + `hover:scale-[1.02]
+  transition-transform duration-200`. **Change 22 is already shipped here** — it landed incidentally
+  with the project-view work, not through this workstream.
+
+### 14.6 Correction 5 — the `@media (hover: hover)` guard does not exist, and three sites already need it
+
+Change 22 requires the scale lift to sit behind `@media (hover: hover)` (§9.E — sticky hover on the
+Android WebView, and a stuck `1.02` is very visible). **`globals.css` has no `@media (hover: hover)`
+block at all** (only two `@media (pointer: coarse)` blocks, `:955` and `:1250`).
+
+Three sites already ship an unguarded `hover:scale-[1.02]`: `MarketplaceCard.tsx:241`,
+`FilesTab.tsx:362`, `FilesTab.tsx:566`. So the guard is not new work for change 22 — it is a
+**pre-existing Android defect** that change 22 would otherwise make worse. Land the guard first and
+it retro-fixes all three. This is the cheap half of change 48 arriving early; take it.
+
+### 14.7 Change 23 — verified hex inventory (22 occurrences, 2 are change-23 work)
+
+| bucket | sites | verdict |
+|---|---|---|
+| **Change 23, live** | `SkillCard.tsx:36` (`#4CAF50`, YC badge), `:43` (`#f0ad4e`, Prompt badge) | **the whole live surface of change 23** |
+| Change 23, dead | `SkillCard.tsx:37` (unread map key), `:158`/`:160`/`:161` (dead branch) | resolve with §14.2 |
+| Status colors — exempt per `desktop/CLAUDE.md` | `StatusBar.tsx:135, :141, :906, :922, :966`; `SessionStrip.tsx:80`; `buddy/SessionPill.tsx:228`; `ContextPopup.tsx:21` | leave |
+| Other tranches | `game/GameLobby.tsx:76, :370, :411, :505` (change 47); `artifact-views/cm/cm-theme.ts:37` `--link` fallback (change 36) | leave for their tranche |
+| **Undecided** | `marketplace/StarRating.tsx:67` + `RatingSubmitModal.tsx:66` (`#f0ad4e` star gold); `ShareSheet.tsx:129` (`#4CAF50` "Published successfully!") | **needs a Destin ruling** — star gold is arguably brand, not status; the success line is arguably status |
+
+`Get → Button primary sm` is **already done** (`SkillCard.tsx:176`) — but on the dead branch.
+No second copy of the badge system exists anywhere in the renderer (checked); the "three copies"
+habit does not bite here.
+
+### 14.8 Change 24 — there are FOUR leaks, not three
+
+| site | current | note |
+|---|---|---|
+| `marketplace/MarketplaceCard.tsx:63` | `locked: 'bg-slate-500/10 text-fg-dim border border-slate-500/30'` | the ledger's target |
+| `marketplace/MarketplaceScreen.tsx:587` | `locked: 'bg-slate-500/10 text-fg-dim border-slate-500/30'` | **a second, near-duplicate tone map** (`toneClass`, local to the detail overlay) — not in the ledger |
+| `App.tsx:2533` | `bg-gray-950` (first-run loading) | pre-mount surface; `bg-canvas` is the token |
+| `App.tsx:2539` | `bg-gray-950` (first-run shell) | same |
+| `SessionStrip.tsx:68` | `gray: 'bg-gray-500'` | **exempt** — status-dot palette, hardcoded per project rule (already recorded as residue 2026-07-19) |
+
+The duplicated tone map is the "three copies" habit again: fixing only `MarketplaceCard` leaves the
+detail overlay's `locked` pill slate. **Recommendation:** delete `MarketplaceScreen.tsx`'s local
+`toneClass` and import `STATUS_TONE_CLASS` — one map, one edit, and change 23's future tone work
+lands in one place. (Note the two maps already differ: `MarketplaceCard`'s entries include `border`,
+`MarketplaceScreen`'s omit it — so they are not even rendering the same pill today.)
+
+### 14.9 Change 25 — the EngineCard idiom has three copies in one panel
+
+Target surface confirmed unchanged: `ProvidersSection.tsx:272` is
+`bg-inset/50 hover:bg-inset rounded-lg px-3 py-2.5`, matching `SettingsRow.tsx:27`
+(`px-3 py-2.5 rounded-lg bg-inset/50 hover:bg-inset`). The ledger is accurate about the destination.
+
+It is not accurate about the source count. Three byte-identical class strings exist:
+
+| site | classes |
+|---|---|
+| `EngineCard.tsx:88` | `mt-2 rounded-lg border border-edge-dim bg-well px-3 py-2.5` |
+| `LocalModelsSection.tsx:195` ("Models") | `rounded-lg border border-edge-dim bg-well px-3 py-2.5` |
+| `LocalModelsSection.tsx:670` ("Other local apps") | `rounded-lg border border-edge-dim bg-well px-3 py-2.5` |
+
+`EngineCard`'s own header comment says its idioms *"mirror ProvidersSection's own rows so the card
+reads as part of the section."* All three render inside the Local Models panel as siblings.
+Migrating only `EngineCard` makes it the odd one out in the panel it was written to blend into.
+**Change 25 must cover all three.**
+
+The remaining `bg-well` sites (57 lines, 9 comment-only) are legitimate inset surfaces —
+QR frames, code wells, chip fills, hover targets, the drawer search well. They are **not** in-panel
+rows and the rule in change 25 does not reach them.
+
+### 14.10 What tranche 3 actually is
+
+After the corrections, changes 22–25 are **~11 edit sites across 7 files**, plus one CSS guard and
+one dead-branch deletion:
+
+1. `globals.css` — add the `@media (hover: hover)` guard for the scale lift (retro-fixes 3 sites).
+2. `SkillCard.tsx` — delete the dead marketplace branch + 2 dead map keys (pending Destin's ruling);
+   drawer card → `layer-surface !rounded-lg` + `boxShadow:'none'` + `focus-visible:ring-2
+   ring-accent`; YC/Prompt badge hexes → tone pills.
+3. `CommandDrawer.tsx` — `renderCommandCard` and `AddSkillsCard` follow SkillCard (2 sites).
+4. `MarketplaceCard.tsx` — `locked` tone tokenized.
+5. `MarketplaceScreen.tsx` — local `toneClass` deleted, imports `STATUS_TONE_CLASS`.
+6. `App.tsx` — 2 × `bg-gray-950` → `bg-canvas`.
+7. `EngineCard.tsx` + `LocalModelsSection.tsx` ×2 — `bg-well` + border → `bg-inset/50` borderless.
+8. `ThemeScreen.tsx` — focus ring on the tile (the only change-22 part that applies there).
+
+That is a one-agent, one-PR tranche — **not** the six-agent partition tranche 2 needed. Two open
+rulings for Destin: the dead-branch deletion (§14.2) and the star-gold / success-green hexes (§14.7).
+One item needs a mockup only if the answer to §14.4 is "cards should be elevated".
