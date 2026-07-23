@@ -39,6 +39,9 @@ surface, not a history.
 - [ ] `sync-spaces-engine.test.ts` "debounces file changes into one sync" flaked on macOS CI `bug` `#tests` `#ci` `#sync` (added 2026-07-22)
   Seen once on youcoded PR #213 (run 29983190137, macOS, commit `5850e281` — a branch that touches nothing in sync-spaces): `vi.waitFor(() => expect(t.pushes.length).toBe(1))` timed out with 0 pushes. Same macOS fs-event/timing flake family as the closed `subagent-watcher` and `sync-warnings-lifecycle` entries — and the SAME FILE as the still-open "sync fs.watch tests flake on macOS CI" entry further down (PR #180/#181 history), which already prescribes the likely fix (per-test `testTimeout` on the fs.watch integration cases). Treat these as one ledger. Passed on rerun (job 89132331505).
 
+- [ ] `session-meta-native-refusal.test.ts` flaked locally under parallel workers (`/tmp` race) `bug` `#tests` (added 2026-07-23)
+  Seen once during git-surface work (Linux, full-suite parallel run): failed on first run, clean on rerun and standalone — implementer diagnosed a pre-existing `/tmp` path race between vitest workers. One strike; if it recurs, give the test a worker-unique temp dir (`mkdtemp`) like the git fixtures use.
+
 - [ ] `content-search.test.ts` "caps total hits and reports truncation" flaked EBUSY on Windows CI `bug` `#tests` `#ci` `#artifacts` (added 2026-07-23)
   Seen once on youcoded PR #213 (run 30030655741, windows-latest, commit `7e0551ac` — a branch that touches nothing in artifacts): teardown `rmdir` of the `ycd-search-*` temp dir failed `EBUSY: resource busy or locked` — classic Windows race where the spawned ripgrep hasn't released the dir when afterEach removes it. Fix shape when it recurs: retry-with-backoff on the teardown rm (or `fs.rm` with `maxRetries`, which exists for exactly this) rather than widening timeouts.
 
