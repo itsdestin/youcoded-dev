@@ -2,9 +2,45 @@
 status: active
 opened: 2026-07-23
 subsystem: buddy overlay (Linux Wayland), PR itsdestin/youcoded#214
+verdict: ARCHITECTURE BLOCKED — click-through primitive does not exist on native Wayland
 ---
 
 # Buddy overlay Wayland presentation — open investigation
+
+## FINAL VERDICT (2026-07-23, second session — supersedes the open questions below)
+
+**`setIgnoreMouseEvents` is a TOTAL no-op on native Wayland** (Electron 41.10.3, KWin,
+probe-verified twice with Destin's live clicks): with `(true, {forward:true})` AND with plain
+`(true)`, the "ignored" fullscreen window received the complete pointer stream — pointerdown/
+up/click at every screen coordinate — and nothing reached the desktop beneath. This is the
+plan's Open Question 1 STOP condition. The workbench's I2 "PASS — counter kept climbing" was a
+misread: the renderer received moves because the window was receiving ALL input natively, not
+because forward-while-ignored worked. Task 3 Step 0 (the 20-second click-through eyeball gated
+exactly on this) was deferred by the controller at execution start and never run — the entire
+evening's click-eating incidents were this missing primitive.
+
+Secondary: the EvictionThrottlesDraw switch (da1f0238) was derived from an XWayland-backend
+probe and actively FREEZES native-Wayland transparent surfaces — reverted in f05a70cf. The
+persist-before-init poisoning (5ea5789e) explains the recurring behind-the-panel spawn.
+Whether the real app page PRESENTS on native Wayland remains unconfirmed (trivial pages do)
+— moot until an input mechanism exists.
+
+**Fallback option space (Destin's decision):**
+- **(A) XWayland for the app** (`--ozone-platform=x11`): FINDINGS Round 3 — setPosition,
+  always-on-top, transparency, and X11 input shapes all work; the EXISTING three-window
+  floater would work unchanged, no overlay needed. Blocker: Round-4 ANGLE null-deref GPU
+  crash in the full app; untested workaround list (--use-angle=gl, --disable-gpu-sandbox,
+  --in-process-gpu). Worktree `worktrees/xwayland-floater` already exists.
+- **(B) Merge PR #214 with Wayland defaulting to 'windows'** (flip chooseBuddyStrategy):
+  preserves the BuddyManager seam + all 5 real fixes, zero behavior change anywhere, buddy
+  stays absent on Wayland exactly as on master today (no regression). Overlay code stays
+  dormant behind the env override for future work.
+- (C) KWin-scripted input regions: not scriptable. Dead.
+- (D) Small movable interactive window: Wayland forbids positioning. Dead.
+- (E) Upstream ext-zones/layer-shell: years out.
+
+Recommendation: **B now** (salvage the merge), **A as the follow-up investigation** (it is the
+only path to an actually-working Wayland floater and reuses the shipped three-window code).
 
 **State: PR #214 merge is ON HOLD.** Five real bugs were found and fixed during the first live
 dev-loop session (all pushed to `feat/buddy-overlay`), but the mascot has still never been
