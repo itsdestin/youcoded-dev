@@ -36,6 +36,18 @@ surface, not a history.
 
 ## Bugs
 
+- [ ] `UnsavedChangesDialog` Escape also fires the app ESC cascade underneath `bug` `#renderer` (added 2026-07-22)
+  Found while fixing the identical bug in the git-surface discard dialog (branch `feat/git-surface`, commit `b2301eb8`): the dialog registers its own raw capture-phase `keydown` listener and calls `stopPropagation()`, but `EscCloseProvider` (`use-esc-close.tsx`) ALSO listens capture-phase on the same `window` target — and same-target listeners are immune to `stopPropagation()` (only `stopImmediatePropagation()` stops them). One Escape press therefore cancels the dialog AND pops the drawer's ESC stack beneath it. Fix is the same one the discard dialog got: replace the raw listener with `useEscClose(true, onCancel)` so the dialog joins the shared LIFO stack.
+
+- [ ] Git surface: conflicted (unmerged) files read as clean `bug` `#git` `#renderer` (added 2026-07-22)
+  `parsePorcelainV2` skips `u XY …` lines entirely, so a mid-merge conflicted file shows no footer counts and no review card. Rare state (the app never initiates merges) but the mirror lies when a terminal merge conflicts. Parse `u` lines into an entry kind and surface something honest.
+
+- [ ] Git surface: "Show more" pagination vs `git:changed` refresh can drop/duplicate log entries `bug` `#git` (added 2026-07-22)
+  `refresh()` refetches only page one while `extraLog` keeps stale older pages; if the log shifts between fetches the merged list can miss or duplicate a commit. Cheapest honest fix (per final review): clear `extraLog` inside `refresh()` — the log changed, so collapsing pagination is correct.
+
+- [ ] Git surface: stale discard-error banner after close+reopen during an in-flight discard `bug` `#git` (added 2026-07-22)
+  `onConfirm` awaits `git.discard` then `setDiscardError(...)`; closing and reopening the review before the promise settles lets the late error write into the reopened view. Sub-second window, non-destructive. Fix with a resolution-token check in `onConfirm` whenever the file is next touched.
+
 - [ ] Android `layoutInsets` flow is emitted into but never collected — REPORTED, UNCONFIRMED `bug` `#android` `#renderer` (added 2026-07-22)
   **Status: reported but NOT confirmed** — found by grep during the 2026-07-22 dead-code sweep, never observed at runtime, and deliberately left in place rather than deleted. Treat the impact claim as unverified until someone checks it on a device.
   What was seen: `SessionService.kt` declares `_layoutInsets`/`layoutInsets` (+ the `LayoutInsets` data class) and the `ui:action`/`layout-update` handler emits into it on every layout report from React, but **`rg layoutInsets` finds no collector anywhere in `app/`** — only the declaration, the emit, and a comment. `ChatScreen.kt:14` explicitly names "the layoutInsets / screenMode plumbing they fed" as part of what Tier 2 removed along with the native Termux `TerminalView` Compose block, which is consistent with the consumer having been deleted and the producer left behind. Same vestigial shape as the `viewModeRequest` flow, which WAS removed in youcoded#207 (`82552cee`) after confirming React owns chat↔terminal switching entirely.
@@ -252,6 +264,15 @@ surface, not a history.
 
 - [ ] Git surface in-app — diff vs HEAD, stage, commit, branch `feature` `#renderer` `#ui` `#git` (added 2026-07-20)
   **The highest-value developer feature on this list and the real differentiator** — reviewing what the agent just did is the core anxiety of using an agent-first tool, and right now the only in-app view of a change is the per-tool-call diff inside a chat card (`ToolBody.tsx:318`). There is no way to see the cumulative working-tree diff, no staging, no commit, no branch awareness. Git currently appears in this codebase only as *plumbing* — the sync transport (`main/sync-spaces/git-transport.ts`) — and never as a user-facing surface. Sequencing note: `ROADMAP.md:43` already plans to drop the hand-installed `gh` dependency in favor of direct GitHub REST, which is adjacent work and should probably be settled first so this doesn't build on a dependency that's being removed. Recommended to jump the queue ahead of tabs and the file tree once Tier 1 ships.
+
+- [ ] Git surface phase 2 — branch ops, push/PR creation, repo-wide review, hunk-level staging `feature` `#git` `#renderer` (added 2026-07-22)
+  The spec's §8 non-goals for the shipped per-file MVP (`feat/git-surface`), deferred deliberately. Also from the MVP's final review: `-z`-format parsing for paths containing literal quotes/newlines (quotepath residual), a `refresh()` error state in GitReviewView, and prose polish for raw error codes (`unknown-project-root`, `path-outside-project`).
+
+- [ ] Git surface: untracked files can't be staged from the review card — UX decision needed `task` `#git` `#ui` (added 2026-07-22)
+  The locked mockup hides the "Staged for commit" checkbox for untracked files, so a brand-new file can only enter a commit if the agent/terminal stages it externally. Deliberate per the mockup ledger, but the final review flags it as a real workflow gap worth a conscious v-next call by Destin.
+
+- [ ] Git surface: profiling checkpoint before Android or multi-window `task` `#git` `#perf` (added 2026-07-22)
+  `git:file-status` spawns up to 3 git processes per refresh and refreshes on every `artifacts:changed` for the project AND every `git:changed` from ANY repo (filtering needs a renderer-side projectRoot→repoRoot map that doesn't exist yet). Plan accepted "correctness first; profile before optimizing" — profile before anything multiplies subscribers. Also: `locateOrFail` extraction in git-service.ts to dedupe the outside/!loc split across its three sites.
 
 - [ ] Go-to-definition / find-references without a full LSP `feature` `#renderer` `#artifacts` (added 2026-07-20)
   Symbol navigation covers most of what developers actually reach for, and does NOT require a language server: tree-sitter, or even ctags-grade indexing, gets ~80% of the value at a fraction of the cost and — unlike an LSP — runs inside the Android WebView, so it preserves desktop/Android UI parity. Depends on the CM6 editor from Tier 1 item (2) for the click targets and jump affordance. Explicitly the cheap alternative to the LSP idea filed under Someday.
