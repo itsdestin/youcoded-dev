@@ -1,5 +1,7 @@
 ---
-status: draft
+status: active
+approved: 2026-07-22 (Destin)
+plan: docs/active/plans/2026-07-22-buddy-floater-one-window-plan.md
 date: 2026-07-22
 owner: Destin (approval) / Claude (execution)
 subject: Buddy floater on Linux Wayland — one-window overlay architecture
