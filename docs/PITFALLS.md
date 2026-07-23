@@ -112,6 +112,11 @@ This file now holds **only cross-repo invariants** — constraints that span two
 - **Theme `companions` is a TOP-LEVEL manifest key, NOT inside `mascot`** — pre-companions app versions crash in `resolveAllAssetPaths` on non-string mascot values (`value.startsWith`). Keep new structured theme data out of `mascot` unless the installed-base resolver is known to guard it.
 - **Mascot motion is transforms inside fixed-size windows; the ONLY window-bounds animation is the edge-snap glide.** Independent CSS properties compose (wrapper `scale` for hover/grab, sink `transform` translate, lean `rotate`) — but the side-peek lean MUST live on its own inner element: CSS resolves an element's `rotate` property BEFORE its `transform`, so combining them on one element swings the translated body out of the window. The dock/peek state machine is pure (`buddy-dock.ts`); BuddyWindowManager owns its timers.
 - **`buddy:dismiss` hides for the run only** — `localStorage['youcoded-buddy-enabled']` stays `'1'`; the `dismissed` flag lives in BuddyWindowManager and every `show()` clears it. The Settings row's "Show now" is just `buddy.show()`. Don't make the hide button write the localStorage preference.
+- **Linux Wayland hosts the buddy in one overlay window, not three** (`BuddyOverlayManager`, chosen by `chooseBuddyStrategy` in `src/main/buddy-manager.ts`; env override `YOUCODED_BUDDY_STRATEGY`). Four invariants specific to that overlay:
+  - The overlay ignores mouse events by default — every new interactive element MUST sit inside a hover-counted wrapper (the ref-counted `overlaySetInteractive` machinery in `BuddyOverlayApp`) or it is unclickable.
+  - Never read `getPosition()`/`getBounds()` for overlay logic — Wayland returns stale/echoed values. ALL overlay math is window-local; the work area arrives as window-local offsets via `overlayInitPayload`.
+  - Overlay recreation on display changes must re-apply keep-above AND re-send `BUDDY_OVERLAY_INIT` — KWin pin state and renderer state both die with the window.
+  - The keep-above Settings toggle is a saved preference, not an actual-state indicator (KDE-only; the resolved boolean only drives a transient hint, not state reconciliation).
 
 ## Documentation Drift
 
