@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>sharpness test</title>
+<style>
+  /* Deliberately OPAQUE: this test isolates rendering sharpness, so the
+     transparency freeze must not confound the measurement. */
+  html, body { margin: 0; height: 100%; background: #ffffff; color: #000; overflow: hidden;
+               font-family: system-ui, sans-serif; }
+
+  /* A 1px-period line grating is the classic resolution target: rendered at
+     native resolution it stays pure black/white with maximum edge energy;
+     rendered at 1x and upscaled by the compositor it averages toward grey. */
+  #grating {
+    position: absolute; top: 120px; left: 0; right: 0; height: 260px;
+    background-image: repeating-linear-gradient(to right, #000 0, #000 1px, #fff 1px, #fff 2px);
+  }
+  #grating-v {
+    position: absolute; top: 400px; left: 0; right: 0; height: 160px;
+    background-image: repeating-linear-gradient(to bottom, #000 0, #000 1px, #fff 1px, #fff 2px);
+  }
+  #hairlines { position: absolute; top: 580px; left: 20px; right: 20px; }
+  #hairlines div { border-top: 1px solid #000; margin-bottom: 3px; }
+
+  #text { position: absolute; top: 620px; left: 20px; font-size: 11px; line-height: 1.35; }
+  #readout { position: absolute; top: 10px; left: 20px; font: 700 20px ui-monospace, monospace; }
+  #sub { position: absolute; top: 44px; left: 20px; font: 13px ui-monospace, monospace; color: #333; }
+</style>
+</head>
+<body>
+  <div id="readout">SHARPNESS TEST</div>
+  <div id="sub">…</div>
+  <div id="grating"></div>
+  <div id="grating-v"></div>
+  <div id="hairlines"><div></div><div></div><div></div><div></div><div></div></div>
+  <div id="text">
+    The quick brown fox jumps over the lazy dog — 11px body text at native scale.<br/>
+    Rendering crispness here is what "blurry under XWayland" actually refers to.
+  </div>
+  <script>
+    const p = new URLSearchParams(location.search);
+    document.getElementById('readout').textContent = 'SHARPNESS — ' + (p.get('label') || 'baseline');
+    document.getElementById('sub').textContent =
+      `dPR=${window.devicePixelRatio}  css=${window.innerWidth}x${window.innerHeight}  ` +
+      `screen=${screen.width}x${screen.height}`;
+  </script>
+</body>
+</html>

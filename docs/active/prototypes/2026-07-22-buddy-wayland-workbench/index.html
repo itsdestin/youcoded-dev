@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Buddy Wayland Workbench</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; width: 100%;
+    background: transparent;
+    font-family: system-ui, sans-serif;
+    overflow: hidden;
+    /* The empty overlay area must never look opaque — if you see grey here,
+       transparency itself failed (test I0). */
+  }
+
+  #panel {
+    position: fixed; top: 24px; left: 24px; width: 460px;
+    background: rgba(18, 20, 26, 0.94);
+    color: #e8eaf0;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 13px; line-height: 1.5;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  #panel h1 { margin: 0 0 4px; font-size: 15px; }
+  #panel .sub { color: #8b93a7; font-size: 11px; margin-bottom: 12px; }
+  .row { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .row b { color: #9fd3ff; font-weight: 600; }
+  .val { font-family: ui-monospace, monospace; color: #ffd479; }
+  .step { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.14); }
+  .step h2 { margin: 0 0 6px; font-size: 12px; color: #7ee787; text-transform: uppercase; letter-spacing: .06em; }
+  .step p { margin: 0 0 8px; color: #c3c9d8; font-size: 12px; }
+  button {
+    background: #2b3350; color: #e8eaf0; border: 1px solid #45507a;
+    border-radius: 7px; padding: 6px 11px; font-size: 12px; cursor: pointer;
+    margin: 0 6px 6px 0;
+  }
+  button:hover { background: #384270; }
+  button.danger { background: #5a2330; border-color: #8c3548; }
+  #countdown { color: #ff9f6e; font-weight: 700; }
+
+  /* The draggable stand-in for the mascot. Dragging this is a pure CSS write —
+     no IPC, no setPosition — which is the whole point of the one-window model. */
+  #mascot {
+    position: fixed; width: 112px; height: 112px;
+    left: 700px; top: 400px;
+    background: radial-gradient(circle at 35% 30%, #7cc4ff, #2b6ed4);
+    border-radius: 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 12px; text-align: center;
+    cursor: grab; user-select: none;
+  }
+  #mascot.dragging { cursor: grabbing; transform: scale(1.06); }
+
+  #apphandle {
+    -webkit-app-region: drag;
+    background: linear-gradient(90deg, #7a4520, #b8703a);
+    color: #ffe9d6; padding: 9px 12px; border-radius: 7px;
+    font-size: 12px; text-align: center; user-select: none;
+    border: 1px solid #d08a4f;
+    /* Fixed placement: the panel grew taller than the 700px window and clipped
+       this strip when it lived inline (I5 was unreachable on 2026-07-22). */
+    position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%);
+    width: 420px; z-index: 10;
+  }
+
+  #hint {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: rgba(18,20,26,0.9); color: #c3c9d8; padding: 8px 16px;
+    border-radius: 999px; font-size: 12px; border: 1px solid rgba(255,255,255,0.15);
+  }
+</style>
+</head>
+<body>
+  <div id="panel">
+    <h1>Buddy floater — Wayland primitive probe</h1>
+    <div class="sub" id="env">…</div>
+
+    <div class="row"><b>I0 · transparency</b><span class="val">look past this panel — desktop visible?</span></div>
+    <div class="row"><b>I1 · CSS drag</b><span class="val" id="dragState">drag the blue square</span></div>
+    <div class="row"><b>pointer events</b><span class="val" id="moveCount">0</span></div>
+    <div class="row"><b>last pointer</b><span class="val" id="lastPointer">—</span></div>
+    <div class="row"><b>ignore mode</b><span class="val" id="ignoreState">off (window takes all input)</span></div>
+    <div class="row"><b>main cursor poll</b><span class="val" id="cursorPoll">—</span></div>
+
+    <div class="step">
+      <h2>I2 · click-through + forward events</h2>
+      <p>Turn this on, then move the mouse over the empty area. If <i>pointer events</i>
+         keeps climbing, forward works and hover tracking is viable. If it freezes,
+         the one-window model needs a different hover strategy.</p>
+      <button id="ignoreForward">ignore + forward (12s)</button>
+      <button id="ignorePlain">ignore, no forward (12s)</button>
+      <span id="countdown"></span>
+    </div>
+
+    <div class="step">
+      <h2>I3 · setShape input region</h2>
+      <p>Binds input to the mascot rect only. If clicks land on the square but pass
+         through everywhere else, this is the clean solution — no polling needed.</p>
+      <button id="shapeOn">shape to mascot (12s)</button>
+      <button id="shapeOff">clear shape</button>
+    </div>
+
+    <div class="step">
+      <h2>I4 · always-on-top</h2>
+      <p>Click another window to focus it. This overlay should stay visible above it.
+         KWin reports <i>keepAbove=false</i> for this window, so this may well fail —
+         that is exactly what we need to know.</p>
+    </div>
+
+    <div class="step">
+      <h2>I5 · compositor-driven window move</h2>
+      <p>Wayland forbids the app from moving its own window, but it CAN ask the
+         compositor to drag it. Drag the orange strip below: if the whole window
+         moves, dragging is possible without the one-window rewrite (though the
+         app still can't know where the window ended up).</p>
+      <div id="apphandle">⠿ drag this strip to move the whole window (-webkit-app-region: drag)</div>
+    </div>
+
+    <div class="step">
+      <button id="quit" class="danger">quit workbench</button>
+    </div>
+  </div>
+
+  <div id="mascot">drag me<br/>(CSS only)</div>
+  <div id="hint">Ctrl+Alt+Q force-quits · ignore modes auto-revert after 12s so you never lose the cursor</div>
+
+<script>
+  let moves = 0;
+  let ignoreTimer = null;
+  let countdownTimer = null;
+
+  const $ = (id) => document.getElementById(id);
+
+  window.probe.onInit((d) => {
+    $('env').textContent =
+      `Electron ${d.electron} · ${d.sessionType}/${d.desktop} · scale ${d.scaleFactor} · ` +
+      `workArea ${d.workArea.width}x${d.workArea.height} · setShape ${d.hasSetShape ? 'present' : 'MISSING'}`;
+  });
+  window.probe.onError((msg) => { $('env').textContent = 'ERROR: ' + msg; });
+
+  // I2 metric: does the renderer keep receiving pointer events while the window
+  // is set to ignore mouse events with forward:true?
+  window.addEventListener('pointermove', (e) => {
+    moves++;
+    $('moveCount').textContent = moves;
+    $('lastPointer').textContent = `${e.clientX}, ${e.clientY}`;
+  });
+
+  // I1: dragging is a local CSS write. On Wayland this is the ONLY drag model
+  // available, since setPosition is a no-op.
+  const mascot = $('mascot');
+  let dragging = false, offX = 0, offY = 0;
+  mascot.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    offX = e.clientX - mascot.offsetLeft;
+    offY = e.clientY - mascot.offsetTop;
+    mascot.classList.add('dragging');
+    mascot.setPointerCapture(e.pointerId);
+    $('dragState').textContent = 'drag started';
+  });
+  window.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    mascot.style.left = (e.clientX - offX) + 'px';
+    mascot.style.top = (e.clientY - offY) + 'px';
+    $('dragState').textContent = `moving → ${mascot.offsetLeft},${mascot.offsetTop}`;
+  });
+  window.addEventListener('pointerup', () => {
+    if (!dragging) return;
+    dragging = false;
+    mascot.classList.remove('dragging');
+    $('dragState').textContent = `PASS — landed at ${mascot.offsetLeft},${mascot.offsetTop}`;
+  });
+
+  // Safety: every ignore mode auto-reverts, so a failed click-through test can
+  // never leave the overlay eating every click on the desktop.
+  function armRevert(label) {
+    clearTimeout(ignoreTimer);
+    clearInterval(countdownTimer);
+    let left = 12;
+    $('countdown').textContent = `reverting in ${left}s`;
+    countdownTimer = setInterval(() => {
+      left--;
+      $('countdown').textContent = left > 0 ? `reverting in ${left}s` : '';
+      if (left <= 0) clearInterval(countdownTimer);
+    }, 1000);
+    ignoreTimer = setTimeout(() => {
+      window.probe.setIgnore(false);
+      window.probe.setShape([]);
+      $('ignoreState').textContent = 'off (window takes all input)';
+      $('countdown').textContent = '';
+    }, 12000);
+    $('ignoreState').textContent = label;
+  }
+
+  $('ignoreForward').onclick = () => {
+    moves = 0;
+    window.probe.setIgnore(true, true);
+    armRevert('ignore + forward — watch the pointer-event counter');
+  };
+  $('ignorePlain').onclick = () => {
+    moves = 0;
+    window.probe.setIgnore(true, false);
+    armRevert('ignore, no forward — counter should freeze');
+  };
+  $('shapeOn').onclick = () => {
+    const r = mascot.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    window.probe.setShape([{
+      x: Math.round(r.left * dpr), y: Math.round(r.top * dpr),
+      width: Math.round(r.width * dpr), height: Math.round(r.height * dpr),
+    }]);
+    armRevert('setShape bound to the mascot rect');
+  };
+  $('shapeOff').onclick = () => {
+    window.probe.setShape([]);
+    window.probe.setIgnore(false);
+    $('ignoreState').textContent = 'off (window takes all input)';
+  };
+  $('quit').onclick = () => window.probe.quit();
+
+  // Main-process cursor poll — the fallback hover strategy. We need to see the
+  // numbers TRACK, not just be non-zero.
+  setInterval(async () => {
+    const r = await window.probe.cursor();
+    $('cursorPoll').textContent = `${r.cursor.x}, ${r.cursor.y}`;
+  }, 400);
+</script>
+</body>
+</html>

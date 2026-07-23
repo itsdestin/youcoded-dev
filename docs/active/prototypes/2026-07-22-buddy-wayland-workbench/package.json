@@ -1,0 +1,7 @@
+{
+  "name": "buddy-wayland-workbench",
+  "version": "1.0.0",
+  "description": "Probes the OS primitives the one-window buddy floater rewrite depends on, on native Wayland.",
+  "main": "main.js",
+  "private": true
+}

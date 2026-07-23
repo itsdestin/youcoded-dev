@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>smear test</title>
+<style>
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+
+  /* A bright element in constant motion across a TRANSPARENT surface. If the
+     compositor/Electron mis-tracks damage on translucent windows, the moving
+     element leaves a trail of un-cleared frames — visible in a screenshot,
+     which makes this objectively testable without any cursor input. */
+  #runner {
+    position: absolute; top: 300px; left: 0;
+    width: 112px; height: 112px; border-radius: 24px;
+    background: radial-gradient(circle at 35% 30%, #7cc4ff, #1b5fd0);
+    animation: sweep 3s linear infinite;
+  }
+  @keyframes sweep {
+    0%   { transform: translateX(0px)   translateY(0px); }
+    50%  { transform: translateX(820px) translateY(160px); }
+    100% { transform: translateX(0px)   translateY(0px); }
+  }
+
+  /* Static reference marks: these never move, so any smear near them is
+     unambiguously caused by the moving element, not by the backdrop. */
+  .mark { position: absolute; width: 26px; height: 26px; border: 3px solid #ff4d6d; border-radius: 50%; }
+  #m1 { top: 40px; left: 40px; }
+  #m2 { top: 40px; right: 40px; }
+  #m3 { bottom: 40px; left: 40px; }
+  #m4 { bottom: 40px; right: 40px; }
+
+  #label {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    background: rgba(10,12,18,.92); color: #ffd479; padding: 6px 14px;
+    border-radius: 8px; font: 12px ui-monospace, monospace; white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+  <div id="label">SMEAR TEST</div>
+  <div class="mark" id="m1"></div><div class="mark" id="m2"></div>
+  <div class="mark" id="m3"></div><div class="mark" id="m4"></div>
+  <div id="runner"></div>
+  <!-- Candidate app-level workaround for the frozen-transparency bug.
+       Hypothesis: the compositor/Chromium only re-uploads the surface region it
+       considers damaged. The moving square damages a small rect, so the rest of
+       the translucent surface is never refreshed and stays stuck on whatever
+       frame it last held. Forcing a full-viewport invalidation every frame
+       should keep the entire surface live. Visually near-invisible (alpha
+       ~0.004) but enough to mark the whole surface dirty. -->
+  <div id="damage"></div>
+  <style>
+    #damage { position: absolute; inset: 0; pointer-events: none; display: none; }
+    #damage.on { display: block; animation: dmg 0.1s linear infinite; }
+    @keyframes dmg {
+      0%   { background: rgba(255,255,255,0.004); }
+      50%  { background: rgba(255,255,255,0.008); }
+      100% { background: rgba(255,255,255,0.004); }
+    }
+  </style>
+  <script>
+    const p = new URLSearchParams(location.search);
+    const mode = p.get('label') || 'baseline';
+    document.getElementById('label').textContent = 'SMEAR TEST — ' + mode;
+
+    if (p.get('damage') === '1') {
+      document.getElementById('damage').classList.add('on');
+      // Belt and braces: also drive a rAF loop that touches a full-surface
+      // property, in case the CSS animation alone is composited on the GPU
+      // without ever marking the main surface dirty.
+      let t = 0;
+      (function tick() {
+        t = (t + 1) % 2;
+        document.body.style.outline = t ? '1px solid rgba(0,0,0,0.004)' : 'none';
+        requestAnimationFrame(tick);
+      })();
+    }
+  </script>
+</body>
+</html>
