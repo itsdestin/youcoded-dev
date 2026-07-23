@@ -239,12 +239,31 @@ Mark it deprecated in `ipc-channels.ts` with a pointer to this spec.
 
 ## 7. Android parity
 
-The renderer is shared (Android bundles the desktop React UI via
-`scripts/build-web-ui.sh`), so every renderer change above lands on Android
-automatically. `IMPORT_FILE` does not — it needs either a Kotlin counterpart or an
-explicit desktop-only gate that hides the Move/Copy affordance when
-`getPlatform()` is Android. **Decide before implementation; do not let the button
-render on Android with no handler behind it.**
+**This feature is desktop-only in practice, and already was.** Every
+`artifacts:*` channel on Android is a `not-implemented-on-mobile` stub —
+`list-project` and `list-all-files` included (`SessionService.kt:3585-3601`).
+Mobile Project View is v2 (ROADMAP: *"Android artifact Project View (mobile
+v2)"*). The Files tab renders on Android because the renderer is shared, but it
+has no data behind it today.
+
+Consequences:
+
+- **No Kotlin counterpart for `IMPORT_FILE`.** It gets a
+  `not-implemented-on-mobile` stub alongside its siblings, matching the
+  convention every other artifacts channel follows.
+- **Move is still gated off on Android** in the renderer. Cheap, and it prevents
+  a wrong affordance from appearing the day mobile Project View ships. Android's
+  picker copies the selection into `~/attachments/` before the renderer sees a
+  path (`MainActivity.kt:40-73`), so the "source" is a temp copy — moving it
+  would delete the temp and leave the user's original untouched, which is a lie
+  about what happened.
+- **The picker filename fix stands on its own merits.** Android's picker renames
+  every selection to `${System.currentTimeMillis()}.${ext}` with the extension
+  guessed from MIME. That is invisible for chat attachments today but wrong the
+  moment a picked file is filed into a project folder. Fixing it now improves
+  attachment names immediately and removes a blocker for mobile Project View. It
+  is **not** part of this feature's critical path and ships as its own revertible
+  commit.
 
 `SidecarSchema.kt` (`manualIncludes`, `manualExcludes`) is unchanged — the sidecar
 format does not move, only the predicate that reads it.
