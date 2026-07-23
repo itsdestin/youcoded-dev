@@ -1752,3 +1752,169 @@ ref and takes the popover as children.
    ("this is fine"). If it ever needs restoring, initialise the type selection to
    `{document, image, sheet}` rather than reviving the hide toggle.
 4. `RadioGroup` no longer hijacks arrow keys typed into a nested field.
+
+---
+
+## 18. Tranche 4 — screens & navigation (26–30), audited 2026-07-23
+
+Verified against master `60d56a67`. **Headline: the ledger's ⚠ on change 26 points at the right
+change for the wrong reason, and two ledger clauses are already shipped.** Net scope is smaller
+than the ledger reads, except in §18.5 where it is meaningfully larger.
+
+### 18.1 Change 26 — two of the three screens are already at z-40
+
+| screen | today | work |
+|---|---|---|
+| Marketplace | `fixed inset-0 z-40` (MarketplaceScreen.tsx:277) | none |
+| Library | `fixed inset-0 z-40` (LibraryScreen.tsx:126) | none |
+| ProjectView | `fixed inset-0 bg-canvas z-[8000]` (ProjectView.tsx:511) | the whole change |
+
+**Correction — Marketplace/Library are NOT precedent for ProjectView, and the reason is
+load-bearing.** App.tsx:2643 puts the entire chat shell behind
+`hidden={activeView === 'marketplace' || activeView === 'library'}` — `display:none`, with a WHY
+comment saying `hidden` was chosen *because* "chrome has backdrop-filter stacking contexts that trap
+sibling z-index values". So those two screens sit at z-40 over an unmounted-for-painting shell.
+ProjectView does not switch `activeView`; it overlays a live, interactive chat shell. "It works for
+Marketplace" therefore proves nothing about ProjectView.
+
+**The ⚠ resolves anyway, by a different mechanism.** Every path that opens ProjectView is a click:
+HeaderBar.tsx:208, OverflowMenu.tsx:82, SessionStrip.tsx:1008, and the FolderSwitcher
+"Manage projects…" footer (App.tsx:2941). Every L1 drawer mounts a **full-screen z-40 scrim with
+live pointer events** — SettingsPanel.tsx:211 (`<Scrim layer={1}>`), CommandDrawer.tsx:183
+(`layer-scrim`, `zIndex: 40`, `onClick={onClose}`), ResumeBrowser.tsx:749 (`<Scrim layer={1}>`) —
+so a header click while a drawer is open dismisses the drawer instead of reaching the button. The
+two menu paths call `setMenuOpen(false)` first. **Conclusion: a drawer and ProjectView cannot be
+co-opened through the UI, so nothing can be relying on 8000 to out-stack one.** Verified by
+enumerating callers, not by inference from the comment.
+
+**What DOES change, and it is a fix:** overlays that appear *spontaneously* — Toast (L4, z-100),
+ContextMenu (L4), AnchorTip (L4) — are invisible behind ProjectView today. At z-40 they surface.
+A toast fired while Projects is open is currently swallowed; call it out on release.
+
+### 18.2 Correction — change 26 forces an edit the ledger does not list
+
+`ProjectHero.tsx:428-430` hardcodes `z-[9000]` with a comment that justifies it *by ProjectView's
+8000*: "ProjectView is a fixed inset-0 z-[8000] overlay, so the menu has to clear it." Drop
+ProjectView to z-40 and that comment is false and the value is wildly over-stacked — a narrow-mode
+kebab menu would float above every overlay in the app, including L4. **It must come down in the
+same change.** It is also the last raw `glass-overlay … shadow-lg z-[9000]` hand-roll under
+`project-view/`; every other overlay there is already `Scrim`/`OverlayPanel` (ProjectDetailOverlay,
+ProjectSwitcher, HowContextWorksPopup, AddProjectModal, and ProjectView's own L3 delete modal).
+FileFilterPopover's `z-30` is local stacking inside the header row — not a screen-layer value,
+leave it.
+
+### 18.3 Change 27 — ProjectView only; the ThemeScreen clause is stale
+
+Marketplace (:318-325) and Library (:158-169) already ship the approved pattern verbatim — wide
+"Esc · Back to chat" text, narrow bordered ✕. ProjectView.tsx:516-525 is the outlier: a ghost
+`<Button>` reading "Esc / Close".
+
+**The ledger's "ThemeScreen's ✕ gains standard hover:bg-inset + focus ring" is already done.**
+ThemeScreen.tsx:148 is `<CloseButton onClick={onClose} label="Close themes" className="w-6 h-6" />`
+— it went through the primitive during the CloseButton adoption and carries both behaviors. Strike
+the clause rather than "verifying" it again next session.
+
+### 18.4 Changes 28 + 29 — small, with one ledger error
+
+**28 is three call sites**, not a sweep: `InfoPopover` has exactly one (ModelProvidersPopup);
+`SkipPermissionsInfoTooltip` has two (SessionStrip.tsx:1048, ResumeBrowser.tsx:545). Both source
+files then delete. The trap the spec set here was already defused in code — AnchorTip.tsx:17-21
+records that the two are *not* duplicates (click-toggled + dismissible vs hover/focus +
+`pointer-events-none`) and supports both modes, so no call site changes behavior.
+
+**29 is half wrong.** ZoomOverlay.tsx:24 is a genuine hand-roll
+(`fixed top-16 right-4 z-50 … rounded-lg`) and converts cleanly — note z-50 → L4 (z-100) means it
+now floats above L2 popups, which is the intent for a system indicator. But **ModelLoadingBar is
+already on `.layer-surface`** (ModelLoadingBar.tsx:105). It is `absolute … z-10` *inside the chat
+column* (:104), not a fixed overlay — converting it to a fixed L4 would **relocate a correctly
+positioned strip**. Real work is dropping the redundant `rounded-xl shadow-lg`, which
+`.layer-surface` already supplies (globals.css:861-862). Do not "finish" this one by moving it.
+
+### 18.5 Change 30 — the one place scope grows
+
+Both ledger line-number sets are stale; both counts are right.
+
+**Donate-confirm.** Now SettingsPanel.tsx:2206 and :2548. `diff` confirms the two 41-line blocks are
+**byte-identical**, and they are both live — one in `AndroidSettings`, one in `DesktopSettings`
+(platform variants, not dead code; this is not the tranche-3 SkillCard pattern). Converting each
+inline to `<Scrim/><OverlayPanel>` would leave **two** copies of the converted thing. Extract one
+component. They currently hand-roll `z-[9999]` around an inner `layer-scrim data-layer="2"`; L3
+(z-71) is correct and safe — nothing in the 9000 band can be co-open with a settings sub-modal.
+
+**The seven z-[61] popups.** Now :541, :665, :835, :981, :1532, :1684, :1885. All seven are the
+identical shell: `<Scrim layer={2}/>` + `layer-surface fixed z-[61]` centred at
+`min(380px,88vw)`/`80vh` + a header + a `scroll-fade` body. **This is not seven `OverlayPanel`
+swaps — it is one `SettingsPopup` shell used seven times.** Each also carries a hand-rolled
+`✕` (`text-lg leading-none`, not `CloseButton`), so the shell retires seven of those for free —
+tranche-8 change 41 work that comes along at zero extra cost.
+
+**Unledgered, found by the sweep: three more raw `z-[61]` sites** — StatusBar.tsx:535,
+CloseSessionPrompt.tsx:121, SessionTagsChip.tsx:57. All three are the *already-correct*
+`Scrim` + `OverlayPanel` pattern with a plain centring wrapper; the wrapper just re-literals
+`CONTENT_Z[2]` as `z-[61]`. Tiny, and squarely inside "Overlay.tsx becomes the only z-index
+authority". Include them.
+
+### 18.6 What tranche 4 actually is
+
+1. ProjectView `z-[8000]` → `z-40` + rewrite the file-header comment (26)
+2. ProjectHero `z-[9000]` → a real layer — forced by 1, unledgered (26)
+3. ProjectView adopts "Esc · Back to chat" / narrow ✕ (27) — ThemeScreen clause struck
+4. 3 call sites → `AnchorTip`; delete `InfoPopover` + `SkipPermissionsInfoTooltip` (28)
+5. ZoomOverlay → L4; ModelLoadingBar loses two redundant classes and **stays put** (29)
+6. One `SettingsPopup` shell ×7 + one `DonateConfirm` component ×2 + 3 wrapper literals (30)
+
+Everything except 6 is small. 6 is the tranche.
+
+### 18.7 Implementation log — tranche 4 (branch `feat/ui-consistency-tranche-4`)
+
+14 files changed, 3 added, **net −243 lines**. tsc clean · 3333 tests · build clean.
+
+**26.** `ProjectView` `z-[8000]` → `z-40`; `ProjectHero`'s kebab `z-[9000]` → `<OverlayPanel layer={4}>`
+(the forced companion edit, §18.2). Both file-header comments rewritten — the old ones asserted the
+*reason* for the high values, so leaving them would have been worse than leaving the values.
+
+**27.** ProjectView adopts the Marketplace treatment verbatim. **Found en route:** Library's narrow
+✕ was still a hand-rolled `<button>` + inline SVG while Marketplace next door already used
+`<CloseButton>`. Change 27 is literally "one exit per surface type", so the two narrow exits could
+not stay different components. Fixed; ThemeScreen's clause struck as already-shipped.
+
+**28.** `InfoPopover` deleted (1 call site → `<AnchorTip>`, a prop-for-prop swap).
+`SkipPermissionsInfoTooltip` **kept as a named component** and reimplemented on AnchorTip —
+correcting the ledger's "AnchorTip replaces … SkipPermissionsInfoTooltip". InfoPopover was a generic
+primitive and is genuinely superseded; the other is ~40 lines of *safety copy* with two call sites,
+and inlining it would fork that copy into two places that could drift. The wrapper is the dedup;
+AnchorTip is the presentation.
+
+**29.** ZoomOverlay → L4 (was z-50, i.e. *under* the L2 popups it can be triggered over — a latent
+bug, not just an idiom). `onWheel` moved to an inner div: `OverlayPanel`'s typed props don't include
+it, the same wall ContextMenu hit with `onKeyDown` — **the inner div must carry the padding too**, or
+the wheel guard stops covering the panel's gutter. ModelLoadingBar kept its position per §18.4; only
+the redundant `rounded-xl shadow-lg` came off.
+
+**30.** New `SettingsPopup` (7 call sites, was 7 copies) and `DonateConfirm` (2 call sites, was 2
+byte-identical blocks). SettingsPanel.tsx alone lost ~230 lines. Three details worth keeping:
+- **`maxHeight="none"` on Buddy Floater.** It was the only one of the seven with no height ceiling
+  *and* no scroll container, so inheriting the shell's 80vh default would have silently CLIPPED the
+  Linux keep-above row. Preserved deliberately, not overlooked.
+- **Two callers pass no `title`** — Appearance hands the whole panel to ThemeScreen, Remote Access
+  swaps the whole surface for SettingsExplainer. A shell header would paint behind those.
+- **Package Tier's `h3` became `h2`.** All seven are sibling dialogs; the lone h3 gave screen readers
+  a heading outline implying it nested under the others.
+
+Plus the 4 centring wrappers (§18.5's three + ResumeBrowser, found by the same grep) now import
+`CONTENT_Z` from Overlay.tsx instead of re-literalling `z-[61]` / `z-50`.
+
+**Guard: `desktop/tests/overlay-layer-authority.test.ts`** (4 assertions, mutation-verified).
+Its first draft failed on **its own WHY comments**, which necessarily name the values they replaced —
+so it now matches only inside `className=` strings. Worth remembering for any future source-grep
+test: the invariant is what ships in the class list, not what the prose may mention.
+
+### 18.8 Behavior changes for the release notes
+
+1. **Toasts, context menus and info bubbles are no longer swallowed by Project View.** At z-[8000]
+   anything spontaneous painted underneath it. This is the user-visible half of change 26.
+2. **The zoom indicator now paints above popups** instead of under them.
+3. Seven settings popups gained a real focus ring + accessible name on their ✕ (they were bare
+   `<button>✕</button>`), and the donate modal is now a proper `role="dialog"`.
+4. Remote Access's ✕ is very slightly larger — it was the one hand-rolled at `w-6 h-6`; it now
+   matches every other popup ✕.
