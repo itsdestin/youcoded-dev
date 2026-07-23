@@ -1,10 +1,12 @@
 ---
-status: draft
+status: shipped
 date: 2026-07-18
 tags: [native-runtime, sync, leases, takeover, parity]
 repos: [youcoded]
 supersedes_recommendation_in: docs/active/investigations/2026-07-18-native-session-takeover-gap.md
 ---
+
+**Shipped via M2, youcoded PR #212, merge `60d56a67`** — §§4-6 (the Option C parity work: store provider-awareness, read-side unlock, resume picker, space sync + takeover, auto-titles, store-availability fix) are now implemented. §3 (the v1.3 correctness fixes) shipped earlier via youcoded#177.
 
 # Native sessions and cross-device sync
 

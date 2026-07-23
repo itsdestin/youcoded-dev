@@ -1,9 +1,11 @@
 ---
-status: active
+status: shipped
 created: 2026-07-22
 type: handoff
 program: docs/active/plans/2026-07-22-native-runtime-parity-program.md (§3 — Milestone M2)
 ---
+
+**Shipped via M2, youcoded PR #212, merge `60d56a67`.**
 
 # Handoff: Implement M2 — Conversations & Sync (native session parity)
 

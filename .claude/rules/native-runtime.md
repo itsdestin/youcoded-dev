@@ -4,10 +4,14 @@ paths:
   - "youcoded/desktop/src/main/providers/**"
   - "youcoded/desktop/src/main/native-home.ts"
   - "youcoded/desktop/src/renderer/components/native-send.ts"
-last_verified: 2026-07-15
+last_verified: 2026-07-23
 verify:
   - path: youcoded/desktop/src/main/harness/harness-session.ts
   - path: youcoded/desktop/src/main/harness/native-session-host.ts
+    contains: "quiesce"
+  - path: youcoded/desktop/src/main/native-title-feeder.ts
+  - path: youcoded/desktop/src/main/conversations/portable-model.ts
+  - path: youcoded/desktop/src/renderer/components/NativeModelSelect.tsx
   - path: youcoded/desktop/src/main/providers/provider-registry.ts
   - path: youcoded/desktop/src/main/native-home.ts
     contains: "mutateFileUnderLock"
@@ -15,6 +19,7 @@ verify:
   - test: youcoded/desktop/tests/native-session-host.test.ts
   - test: youcoded/desktop/tests/native-send.test.ts
   - test: youcoded/desktop/tests/native-home.test.ts
+  - test: youcoded/desktop/tests/native-title-feeder.test.ts
   - test: youcoded/desktop/tests/provider-registry.test.ts
   - test: youcoded/desktop/tests/ipc-channels.test.ts
   - test: youcoded/desktop/tests/permission-engine.test.ts
@@ -43,6 +48,14 @@ verify:
 - **The renderer send path branches on `provider === 'native'` and MUST skip ALL PTY machinery** (`native-send.ts`): no `\r`, no 56-byte chunking, no echo wait, no `hasPendingInteraction` gate. **The native send string MUST equal `buildOutgoingMessage(...).content`** or the optimistic bubble never dedups. ESC → `native.interrupt`, not a PTY `\x1b`.
 - **Provider IPC error semantics differ by transport** (latent parity gap): desktop `ipcMain.handle` THROWS → renderer rejects; remote WS resolves `{ok:false}`. `safeProviders` normalizes both to a throw — EXCEPT `test()`, where `ok:false` is a real result.
 - **AI SDK is v7**; `fullStream` parts carry the chunk in `part.text` (NOT `part.delta`); `HarnessSession` maps usage → the fixed transcript `usage` shape (native adds `tokensPerSecond`). **`ModelCatalog` re-stamps `fetchedAt` ONLY when BOTH sources succeed** (else a dead source freezes the picker 24h).
+
+## M2 — conversations & sync participation (`conversations/service.ts`, `native-title-feeder.ts`, `NativeModelSelect.tsx`) — guards: `session-meta-parity.test.ts`, `native-title-feeder.test.ts`, `holder-takeover.test.ts` (native flows)
+- **Native sessions are real Conversation Store rows** (`native/<id>.json`) — store participation, lane assertion, and meta-write buffering are provider-generic invariants; full detail lives in `.claude/rules/conversations.md` → "Native provider participation."
+- **`lastUsedModel` is portable (`{modelId, providerType, providerLabel}`), never `binding.providerId`** (a device-local per-device ULID in never-synced `providers.json`) — a synced record can't carry a usable binding across devices by construction.
+- **Resume ALWAYS offers the model selector (`NativeModelSelect`), pre-filled from `lastUsedModel`, and NEVER auto-launches a binding** — true from every native-resume entry point (inline ResumeBrowser, MovedGate's `onResume`, ProjectView's `onResumeConversation`, all via App.tsx's `pendingNativeResume` modal). The selection becomes `resume(id, cwd, bindingOverride?)`'s `bindingOverride`, applied BEFORE the eager transcript load — the resumed session must never briefly render under the stale stored binding — and the session header is NEVER rewritten, only the live binding.
+- **`quiesce(id)` is a SEPARATE, STRONGER teardown than `interrupt()` — cross-device takeover only, never the Stop button.** The M1 interrupt-aborts-current-turn-only / queue-still-drains semantics pinned above are UNCHANGED for `interrupt()`. `quiesce()` additionally: clears the send queue synchronously → awaits one macrotask (lets a same-tick `send()` finish its deferred dispatch before the abort) → cancels any paused permission ask + aborts the stream → awaits turn settling → drains the append chain. Postcondition: no further appends until a new `send()`. `createHolderTakeover` branches to it for a native holder instead of the ESC byte; the native lease acquire is re-enabled behind `isSyncSpacesEnabled()` (warn-on-denied, mirrors CC).
+- **`native-title-feeder.ts` fires once, at the session's first `turn-complete`, and NEVER touches the session's own JSONL** — bound-model `generateText`, 15s abort, max 3 attempts, a synchronous in-flight guard (closes a takeover/resume double-title race). Titles are store-only metadata, written through the same path a CC auto-title uses.
+- **Android has none of this** — no Kotlin code reads the Conversation Store, `~/.youcoded/`, or `lastUsedModel`; `SessionService.kt`'s `session:browse`/`get-meta` still answer from the legacy `~/.claude/conversation-index.json` + local scan only (M8).
 
 ## Native tools (Plan A) — guards: `harness-session-loop.test.ts`, `harness-history-rebuild.test.ts`, `harness-sdk-toolcall-contract.test.ts`, `permission-engine.test.ts`
 - **HarnessSession's emit surface is FROZEN** — the tool loop only emits existing `TranscriptEventType` values; new loop states MUST map onto existing events (max_steps/doom_loop are permission asks, NOT new event types). *Why:* the chat reducer/UI render native and CC through one pipe — a new event type is dead on arrival. Guard: `harness-session-loop.test.ts` + `harness-sdk-toolcall-contract.test.ts`.

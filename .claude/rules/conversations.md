@@ -3,13 +3,16 @@ paths:
   - "youcoded/desktop/src/main/conversations/**"
   - "youcoded/desktop/src/main/session-browser.ts"
   - "youcoded/desktop/src/main/device-identity.ts"
-last_verified: 2026-07-15
+last_verified: 2026-07-23
 verify:
   - path: youcoded/desktop/src/main/conversations/transcript-mirror.ts
     contains: "shrunk"
   - path: youcoded/desktop/src/main/conversations/store-core.ts
     contains: "mergeRecords"
   - path: youcoded/desktop/src/main/conversations/takeover.ts
+  - path: youcoded/desktop/src/main/conversations/service.ts
+    contains: "containedTranscriptPath"
+  - path: youcoded/desktop/src/main/conversations/portable-model.ts
   - path: youcoded/desktop/src/main/session-browser.ts
     contains: "walkSlugParts"
   - path: youcoded/desktop/src/main/device-identity.ts
@@ -18,11 +21,21 @@ verify:
   - test: youcoded/desktop/tests/conversation-reconciler.test.ts
   - test: youcoded/desktop/tests/slug-path-resolution.test.ts
   - test: youcoded/desktop/tests/holder-takeover.test.ts
+  - test: youcoded/desktop/tests/session-meta-parity.test.ts
+  - test: youcoded/desktop/tests/takeover-dialog-copy.test.ts
 ---
 
 # Conversation store, leases & Resume Browser identity
 
-Records at `~/YouCoded/Personal/Conversations/claude/<id>.json` + CC transcript mirroring on the personal sync space. **Depth + invariants not listed here: `youcoded/docs/conversations.md`.**
+Records at `~/YouCoded/Personal/Conversations/<provider>/<id>.json` (`claude/` and `native/`) + transcript mirroring on the personal sync space. **Depth + invariants not listed here: `youcoded/docs/conversations.md`.**
+
+## Native provider participation (M2, `conversations/service.ts`) — guard: `session-meta-parity.test.ts`, `takeover-dialog-copy.test.ts`, `holder-takeover.test.ts` (native-runtime rule owns `native-title-feeder.test.ts`)
+- **`sessionProvider` is a REQUIRED param on every store-facing service call** — no default to `'claude'`, so a native caller can never silently write into the CC bucket. `materializeOne`/`materializeSweep` assert `transcriptRef.startsWith(`${sessionProvider}/`)` FIRST, before path-traversal containment — a lane-mismatched record is refused, not materialized (both guards mutation-covered).
+- **`lastUsedModel` is a `PortableModelRef` (`{modelId, providerType, providerLabel}`) — NEVER the device-local provider ULID.** Whitelist-parsed at all 4 read/parse sites; drops the WHOLE field on any partial match. `noteModelUsed` never seeds a record (no-op if none exists) — avoids recreating the phantom-record shape `pruneNativePhantomRecords` cleans up.
+- **Meta writes buffer until `storePhase` leaves `'starting'`, answering HONESTLY either way** (`pendingMetaWrites`, arrival-order flush). Every IPC call site `await`s the write BEFORE broadcasting `SESSION_META_CHANGED` — broadcast-after-persist, never optimistic (replaces the 2026-07-19 silent-loss incident).
+- **Read-side fully unlocked, desktop IPC + remote WS** — the 2026-07-19 native meta refusal is retired; its sentinel string survives renamed `META_UNSUPPORTED_FALLBACK` (Android still uses it).
+- **Takeover requester's hub-down-with-no-holder outcome is `'undeliverable'`, distinct from `'timeout'`** — skips the 25s poll. Three-state dialog copy (`confirm`/`undeliverable`/`force`) pinned verbatim.
+- Depth: `.claude/rules/native-runtime.md` → "M2 — conversations & sync participation" (quiesce, resume picker, auto-titles); `.claude/rules/sync-spaces.md` (sync-lane treatment).
 
 ## Conversation store (Phase 2a) — guard: `transcript-mirror.test.ts`, `conversation-store-core.test.ts`, `conversation-reconciler.test.ts`, `conversations-service.test.ts`
 - **Mirror-in is add/update-only AND shrink-guarded** — CC `cleanupPeriodDays` deletion + `/clear` rewrites must NEVER shrink the durable space copy (local smaller → skip; never deletes).

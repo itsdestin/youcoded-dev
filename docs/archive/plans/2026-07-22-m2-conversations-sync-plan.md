@@ -1,11 +1,13 @@
 ---
-status: active
+status: shipped
 created: 2026-07-22
 type: plan
 program: docs/active/plans/2026-07-22-native-runtime-parity-program.md (§3 — Milestone M2)
-design: docs/active/specs/2026-07-18-native-sync-parity-design.md (Option C)
-handoff: docs/active/handoffs/2026-07-22-m2-conversations-sync-handoff.md
+design: docs/archive/specs/2026-07-18-native-sync-parity-design.md (Option C)
+handoff: docs/archive/handoffs/2026-07-22-m2-conversations-sync-handoff.md
 ---
+
+**Shipped via M2, youcoded PR #212, merge `60d56a67`.**
 
 # M2 Conversations & Sync Implementation Plan
 
