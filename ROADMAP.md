@@ -38,6 +38,12 @@ surface, not a history.
 
 ## Bugs
 
+- [ ] Takeover holder can't detect lease loss while the SyncHub is down `bug` `#sync` `#leases` (added 2026-07-23)
+  Found during the M2 dev repro (instrumented, confirmed from logs): lease *presence* has two transports (hub + the `~/YouCoded/Personal/Leases/` file fallback) but loss-detection lives only in the hub renew branch. A holder in file-fallback mode keeps optimistically renewing forever — after a force-takeover it never interrupts, never flushes, never shows the moved pill, and keeps rewriting the lease file (two installs ping-pong it). Pre-existing, provider-agnostic (CC + native). The misleading "isn't responding" dialog copy is being fixed on the M2 branch (PR #212); this entry is the deeper holder-side gap.
+
+- [ ] Same-machine takeover handoff without the hub (lease-file signaling) `idea` `#sync` `#leases` (added 2026-07-23)
+  Two installs sharing `~/YouCoded` (dev instance + built app — the sanctioned dogfood config) can see each other's lease files but can't deliver a takeover request when the hub is down (the request has exactly one transport: the SyncHub socket). A file-based request signal (holder watches its lease file's dir) would make same-machine handoff work hub-less. Nice-to-have; the hub path is primary.
+
 - [ ] `sync-spaces-engine.test.ts` "debounces file changes into one sync" flaked on macOS CI `bug` `#tests` `#ci` `#sync` (added 2026-07-22)
   Seen once on youcoded PR #213 (run 29983190137, macOS, commit `5850e281` — a branch that touches nothing in sync-spaces): `vi.waitFor(() => expect(t.pushes.length).toBe(1))` timed out with 0 pushes. Same macOS fs-event/timing flake family as the closed `subagent-watcher` and `sync-warnings-lifecycle` entries — and the SAME FILE as the still-open "sync fs.watch tests flake on macOS CI" entry further down (PR #180/#181 history), which already prescribes the likely fix (per-test `testTimeout` on the fs.watch integration cases). Treat these as one ledger. Passed on rerun (job 89132331505). **RECURRED 2026-07-23** on the same PR's final head `bebbe276` (job 89313264909, macOS, 60030ms timeout on the same `debounces file changes into one sync` case) — again on a branch touching nothing in sync-spaces, and again green on rerun. Per the flake rule (file once, fix on recurrence) this is now due. **RECURRED A THIRD TIME 2026-07-23** on youcoded PR #243 (job 89320861447, a COMMENT-ONLY diff), which is what finally pinned the diagnosis:
 
