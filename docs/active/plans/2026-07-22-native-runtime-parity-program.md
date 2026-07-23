@@ -74,7 +74,7 @@ Phases (design basis: `2026-07-18-native-sync-parity-design.md` Option C):
 5. **Auto-titles** (parity gap found in the 2026-07-22 review — no prior ROADMAP entry): native sessions are never auto-named. CC titles flow Auto-Title hook → `~/.claude/topics` → topic-watcher → `setTitle` (`conversations/service.ts`; the session-store comment notes topic-watcher is `setTitle`'s only caller). Native needs its own feeder: generate a title at first-turn end via the bound model (one cheap prompt; skip below a capability floor once M6 tiers exist) and call the same `setTitle` path.
 6. **Store-availability fix (not native-specific).** `noteFlagChanged`/`noteSessionNote` (`conversations/service.ts:267-273`) are `store?.` optional-chains — null store (boot window at minimum) evaporates the write while `SESSION_SET_FLAG` still broadcasts META_CHANGED and returns `{ok:true}`. Bound the reachability first; then buffer meta writes until `startConversationStore()` and flush in order, honest `ok:false` + renderer revert if the store never comes up.
 
-Desktop-only (shares the v1.3.1 window with Android sync). Android tag/note handlers are stubs — that gap belongs to M8.
+Desktop-only, and **gates v1.3.0** (Destin 2026-07-22: sync must be finished before we version; Android sync follows as its own v1.3.1 stream). Android tag/note handlers are stubs — that gap belongs to M8.
 
 ## §4 Milestone M3 — Context, skills & commands (the ecosystem works in native)
 
@@ -121,7 +121,7 @@ Design M3 together with the vision Phase 3 items that share this surface — the
 
 ## §9 Sequencing, dependencies, release mapping
 
-- **Near-term tranche: M1 → M2 → M3** (M1 and M2 are independent of each other; M3 depends on neither but its capability-gated injection prefers M6 item 3's tiers — start with current profiles). M2 is the v1.3.1-targeted piece (shares the milestone with Android sync).
+- **Near-term tranche: M1 → M2 → M3** (M1 and M2 are independent of each other; M3 depends on neither but its capability-gated injection prefers M6 item 3's tiers — start with current profiles). M2 gates v1.3.0 (Destin 2026-07-22 — sync finished before versioning; Android sync is the separate v1.3.1 stream).
 - **M4** anytime after M1 (item 2 also needs M6 item 2's pricing). **M5** items 1+3 anytime; item 2 strictly after 3. **M6** before heavy small-local-model dogfooding (at minimum its item 3 sub-fix).
 - **M7** after M3 (skills/MCP shape the subagent context model); orchestration strictly after Task tool. **M8** last among the feature milestones; **M9** independent, whenever onboarding is picked up.
 - Every milestone ships its own tests; the #177 lesson applies everywhere: fakes must be able to express failure, or the suite certifies the bug.
