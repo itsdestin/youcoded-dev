@@ -1,8 +1,13 @@
 ---
-status: active
+status: shipped
 date: 2026-07-23
+shipped: 2026-07-23 (5 PRs merged + 1 amendment; V1–V5 all verified — outcome in §8)
 owner: Destin (decisions) / Claude (spec)
 ---
+
+> **SHIPPED 2026-07-23.** Read **§8 (outcome)** before treating §1–§7 as current: the
+> Gradle design in §4.2 was WRONG in one respect (two entries duplicated every app
+> dependency) and was amended the same day. §8 records what actually shipped.
 
 # Dependabot across the YouCoded workspace
 
@@ -331,3 +336,76 @@ has no native deps, and `worker-ci.yml` (§4.1) gives every bump a real pre-merg
 - **Required status checks / auto-merge** deferred by decision 4. The prerequisite is
   branch protection (§1.6). Natural revisit point: after a month of grouped PRs, if
   merging them by hand feels like busywork.
+
+---
+
+## 8. Outcome (2026-07-23)
+
+Shipped the same day it was designed. Five PRs, then one amendment.
+
+| PR | Repo | What |
+|---|---|---|
+| #216 → #217 | youcoded | `pull_request:` trigger, then `dependabot.yml` |
+| #56 → #57 | wecoded-marketplace | `worker-ci.yml`, then `dependabot.yml` |
+| #21 | wecoded-themes | `dependabot.yml` |
+| **#238** | youcoded | **amendment** — dropped the redundant `/app` Gradle entry (below) |
+
+### 8.1 The Gradle design in §4.2 was wrong — two entries, not one
+
+§3/§4.2 specified **two** Gradle entries (`/` for root plugins, `/app` for libraries) on
+the assumption they cover different files. They do not. Dependabot resolves the **whole
+multi-project build** from `/` (root `build.gradle.kts` *plus* `app/build.gradle.kts` via
+`settings.gradle`), so the `/app` entry re-scanned what `/` already covered and **every
+app dependency opened twice**. Proof from the first run: **#235 and #222 both bumped
+`mockwebserver` in the same `app/build.gradle.kts`**, one from each entry.
+
+Fixed in #238 by deleting the `/app` entry and keeping the single root entry (group
+renamed `gradle-root-minor-patch` → `gradle-minor-patch`, since it covers the whole
+build). §6 anticipated this exact risk and the remedy it prescribed is what was applied.
+`terminal-emulator-vendored/` was **not** reached by root resolution, so the intended
+exclusion held for free.
+
+### 8.2 V1–V5 results — all confirmed
+
+Dependabot auto-ran on merge (no manual trigger needed), opening 29 PRs.
+
+- **V1 ✅ — the load-bearing one.** Dependabot PRs **do** get a check rollup; the
+  `pull_request:` trigger catches `dependabot/**`. This was the one assumption
+  unverifiable before the first run (§1.2), and it held.
+- **V2 ✅** `worker-ci` ran on every `worker/**` PR — and immediately caught **three
+  breaking bumps** (vitest 2→4, workers-types 4→5, and the worker group) that under the
+  old setup would have merged green and failed while deploying to production.
+- **V3 ✅** Grouping works: one PR carried **20** desktop deps, another 15, another 7.
+  Majors stayed individual as designed.
+- **V4 ✅** Zero PRs for `node-pty`, `electron`, `koffi`, or `@vscode/ripgrep`. The
+  tiered ignore policy held exactly.
+- **V5 ✅** (after #238) Root + app both covered by the single entry.
+
+### 8.3 Unanticipated finding: the desktop test flake taxes this workflow
+
+Not in the design, and it matters more than anything in §6. The known desktop
+Windows/macOS flake family — `@vitest/runner` timeouts plus the
+`[session-browser] … ENOENT …\.claude\projects` shared-temp race (ROADMAP lines 39 and
+134) — produced **4 of 8 non-superseded youcoded false reds** in the very first batch.
+A red youcoded Dependabot PR therefore does **not** imply a bad bump.
+
+Triage rule learned, and worth keeping: **the failing job name tells you the surface.**
+Bare `build` = Android/Gradle CI → real dependency breakage. `build (windows-latest)` /
+`build (macos-latest)` = the desktop matrix → suspect the flake, especially when the
+dependency cannot touch that surface (an Actions-version bump cannot break vitest logic;
+an Android `testImplementation` dep cannot break desktop tests). Two cases were confirmed
+flake this way: `gradle-wrapper` 8→9 (#234) passed Android outright, and `jest-dom` 6→7
+(#232) failed only on Windows with the session-browser ENOENT signature, not a jest-dom
+assertion.
+
+Consequence: until that flake is fixed, each weekly batch needs manual re-runs to read
+true status — the exact manual effort this automation exists to remove. **Fixing the
+flake is the highest-value follow-up to this work.**
+
+### 8.4 First batch disposition
+
+12 dependency bumps merged (desktop 20-dep group, chokidar 5, which 7, pdfjs 6, partykit
+TS 7, three Actions bumps; marketplace TS 7, checkout, setup-node). Five held as genuine
+major breakage needing hand-migration: okhttp 4→5, compose-bom, AGP 8→9, vitest 2→4,
+workers-types 4→5. Same-file conflicts (shared `package-lock.json` / workflow files) are
+routine when merging several bumps at once — `@dependabot rebase` resolves them.

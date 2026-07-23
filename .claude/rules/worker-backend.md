@@ -10,11 +10,13 @@ verify:
   - test: wecoded-marketplace/worker/test/analytics-lib.test.ts
   - test: wecoded-marketplace/worker/test/admin-filter.test.ts
   - test: wecoded-marketplace/worker/test/admin-analytics.test.ts
+  - path: wecoded-marketplace/.github/workflows/worker-ci.yml
+    contains: "typecheck"
 ---
 
 # Marketplace Worker backend (Cloudflare)
 
-`wecoded-marketplace/worker/` — the Cloudflare Worker backing marketplace install counts, ratings, accounts/social, sync-hub, and privacy analytics. Auto-deploys on push to master (`.github/workflows/worker-deploy.yml`); **never tell Destin to run `wrangler deploy` manually.** Backend + analytics depth: `wecoded-marketplace/docs/worker-backend.md`; deploy flow: workspace `docs/build-and-release.md → Worker`.
+`wecoded-marketplace/worker/` — Cloudflare Worker: install counts, ratings, accounts/social, sync-hub, privacy analytics. Auto-deploys on push to master (`worker-deploy.yml`); **never tell Destin to run `wrangler deploy` manually.** `worker-ci.yml` typechecks + tests `worker/**` PRs pre-merge. Backend + analytics depth: `wecoded-marketplace/docs/worker-backend.md`; deploy flow: workspace `docs/build-and-release.md → Worker`.
 
 ## Deploy / config invariants
 - **Never put a key in both `[vars]` and `wrangler secret put` with the same name.** On every deploy the wrangler.toml var wins and silently clobbers the secret (symptom: OAuth breaks because `GH_CLIENT_ID` = the placeholder). Define shared secrets ONLY as secrets — the missing-var pattern is load-bearing; don't add a placeholder.

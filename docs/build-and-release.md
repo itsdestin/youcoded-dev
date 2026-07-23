@@ -37,8 +37,10 @@ A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `deskt
 ### Worker (wecoded-marketplace)
 **The Cloudflare Worker auto-deploys on push to master — never tell Destin to run `wrangler deploy` manually.** `.github/workflows/worker-deploy.yml` runs on `push` to `master` (filtered to `worker/**` and the workflow file itself) plus `workflow_dispatch`. The job runs `npm test` → `wrangler d1 migrations apply --remote` → `wrangler deploy` → `wrangler secret put` for every required secret. Cloudflare credentials live in repo secrets (`CF_API_TOKEN`, `CF_ACCOUNT_ID`); no local `wrangler login` needed.
 
+**Worker PRs are tested BEFORE merge** by `.github/workflows/worker-ci.yml` (added 2026-07-23): `npm ci` → `npm run typecheck` → `npm test` on any PR touching `worker/**` or the workflow itself. Until then worker code had **no pre-merge check at all** — the tests lived only inside the deploy job above, so a broken PR merged green and first failed while deploying to production (verified: PRs #51–#55 all merged with an empty check rollup). It paid for itself immediately, catching three breaking dependency bumps at PR time.
+
 To ship a worker change:
-1. Open a PR from your feature branch to `master`.
+1. Open a PR from your feature branch to `master`. The `worker-ci` check runs — wait for it.
 2. Merge (squash or merge-commit, doesn't matter).
 3. CI does the rest. Smoke-test the live endpoints once Actions reports green.
 
@@ -179,4 +181,4 @@ adb install -r app/build/outputs/apk/releaseTest/*.apk
 # Same data isolation as the regular debug app — no risk to your real install.
 ```
 
-Use this before tagging if you've touched code that involves reflection, annotation processing, or other R8-sensitive patterns. CI runs it on every push (`android-ci.yml` and `android-test-build.yml`) so most regressions get caught at PR time.
+Use this before tagging if you've touched code that involves reflection, annotation processing, or other R8-sensitive patterns. `android-ci.yml` builds `assembleReleaseTest` on **every PR** and on pushes to `master`, so most regressions get caught at PR time. (`android-test-build.yml` is `workflow_dispatch` only — a manual beta build, not a push trigger.) Both youcoded CI workflows moved from a branch-name allowlist to `pull_request` on 2026-07-23; see `docs/archive/specs/2026-07-23-dependabot-design.md` §4.1 for why.

@@ -1,5 +1,11 @@
 # Dependabot Implementation Plan
 
+> **EXECUTED AND SHIPPED 2026-07-23.** All 5 tasks implemented, each reviewed clean, all
+> PRs merged: youcoded #216 + #217, marketplace #56 + #57, themes #21 — plus amendment
+> #238, which removed a Gradle entry this plan got wrong (Task 2 specified two Gradle
+> entries; they duplicated every app dependency). V1–V5 all verified. Full outcome:
+> `docs/archive/specs/2026-07-23-dependabot-design.md` §8.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Automate weekly, grouped, throttled dependency-update PRs in the three YouCoded sub-repos with a real dependency surface, and close the CI gaps that would otherwise make those PRs unverifiable.
@@ -8,7 +14,7 @@
 
 **Tech Stack:** GitHub Actions YAML, Dependabot `version: 2` config YAML. No application code changes. Validation is local YAML parsing (`python3` + pyyaml — `actionlint`/`yamllint` are not installed) plus defined post-merge behavioral observation.
 
-**Spec:** `docs/active/specs/2026-07-23-dependabot-design.md`. Read §1 (verified findings) and §2 (decisions) before starting.
+**Spec:** `docs/archive/specs/2026-07-23-dependabot-design.md` — read **§8 (outcome)** first; §1 (verified findings) and §2 (decisions) for background. (Path references to `docs/active/…` further down are preserved verbatim inside commit messages and PR bodies — they record what was actually executed on the day.)
 
 ## Global Constraints
 
@@ -673,6 +679,13 @@ git push origin master
 ## Post-Merge Verification (spec §5)
 
 These cannot run before merge — they observe GitHub/Dependabot behavior. Run them after the relevant PRs land on the default branch. Do each, record the result, and surface any miss to Destin.
+
+> **ALL FIVE VERIFIED 2026-07-23.** Dependabot auto-ran on merge (no manual trigger was
+> needed — the "Check for updates" step below turned out to be unnecessary), opening 29
+> PRs. **V1 passed** — the load-bearing assumption held. **V5 passed only after #238**:
+> the first run exposed that this plan's two Gradle entries duplicated every app
+> dependency (#235 == #222), so the `/app` entry was deleted. Results and the
+> unanticipated flake finding: spec §8.
 
 - [ ] **V1 (load-bearing — spec §1.2):** After Tasks 1+2 merge, wait for or force the first Dependabot run (repo → Insights → Dependency graph → Dependabot → "Check for updates"). The **first Dependabot PR must show a non-empty check rollup**:
   ```bash
