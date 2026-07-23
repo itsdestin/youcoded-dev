@@ -46,7 +46,9 @@ The vision spec remains the umbrella for the **whole** platform (multi-model bac
 
 Vision Phase 3 items NOT pulled into this program (they ship with the vision phase, though M3 must be designed alongside them since they share the surface): item 3 **custom harness builder** (a differentiator, not parity — CC has no equivalent) and item 5 projects-view polish.
 
-## §2 Milestone M1 — Session control (chat mechanics feel identical)
+## §2 Milestone M1 — Session control (chat mechanics feel identical) — **SHIPPED 2026-07-22 (youcoded PR #204)**
+
+All six items below shipped in PR #204 (12 tasks, plan archived at `docs/archive/plans/2026-07-22-m1-session-control-plan.md`), plus three Destin-feedback additions: stop button lives in the input bar left of send; queued messages are cancelable/editable; queued messages render in a docked strip and join the timeline only at true send position (never as enqueue-time entries). Residue: BUG B (6b) re-dogfood against the pinned baseline; fast-typist edit-refill design call; edit of a queued message with attachments refills raw paths (ROADMAP).
 
 Decisions (Destin 2026-07-22): sends during a live turn **queue**; stop is a **visible button**, not just ESC.
 

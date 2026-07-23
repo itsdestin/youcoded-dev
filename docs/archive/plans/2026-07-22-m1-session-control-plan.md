@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 created: 2026-07-22
 type: plan
 program: docs/active/plans/2026-07-22-native-runtime-parity-program.md (§2 — Milestone M1)
