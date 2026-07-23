@@ -5,13 +5,16 @@ Running a dev build of YouCoded while your installed/built app is still open (wi
 ## Quick start
 
 ```bash
-bash scripts/run-dev.sh
+bash scripts/run-dev.sh <branch-or-worktree> --label "Feature Name"
 ```
 
-That sets two env vars and runs `npm run dev` in `youcoded/desktop/`:
+`<branch-or-worktree>` picks the checkout to run (branch name, worktree name, or `--path`; omit for the main checkout). **Always add `--label "<Feature Name>"`** so the window is tellable apart — see [Telling instances apart](#telling-instances-apart) below.
 
-- `YOUCODED_PORT_OFFSET=50` — shifts every port youcoded controls.
-- `YOUCODED_PROFILE=dev` — marks this as a dev instance. Any non-empty value activates dev mode: userData is split into `%APPDATA%/youcoded-<profile>/`, the app name becomes `YouCoded Dev` (or `YouCoded Dev (<profile>)` for non-`dev` profiles), the remote port gets offset-shifted, and `install-hooks.js` is skipped so we don't write worktree paths into `~/.claude/settings.json`.
+The script sets three env vars and runs `npm run dev` in `<checkout>/desktop/`:
+
+- `YOUCODED_PORT_OFFSET=50` — shifts every port youcoded controls (set via `--offset`).
+- `YOUCODED_PROFILE=dev` — marks this as a dev instance (set via `--profile`). Any non-empty value activates dev mode: userData is split into `%APPDATA%/youcoded-<profile>/`, the app name becomes `YouCoded Dev` (or `YouCoded Dev (<profile>)` for non-`dev` profiles), the remote port gets offset-shifted, and `install-hooks.js` is skipped so we don't write worktree paths into `~/.claude/settings.json`.
+- `YOUCODED_DEV_LABEL` — the window-title descriptor (set via `--label`; defaults to the branch name). `main.ts` turns it into the OS window title `YouCoded - <label>`.
 
 ## What gets isolated
 
@@ -20,17 +23,29 @@ That sets two env vars and runs `npm run dev` in `youcoded/desktop/`:
 | Vite dev server | n/a (packaged) | `localhost:5223` |
 | Remote server default port | 9900 | 9950 |
 | Electron `userData` | `%APPDATA%/youcoded/` | `%APPDATA%/youcoded-dev/` |
-| Window title / dock label | YouCoded | YouCoded Dev |
+| Window title (taskbar / Alt-Tab) | YouCoded | `YouCoded - <label>` (from `--label`, else the branch name; bare env-var launch with no label → `YouCoded Dev`) |
 | localStorage (theme, font, recents) | untouched | dev-only, starts empty |
 | `~/.claude/settings.json` hooks | written by the built app | **not touched by dev** (see below) |
 
-Running a second concurrent dev? Set both env vars to distinct values before invoking:
+## Telling instances apart
+
+Destin often reviews **several dev instances at once**, and every window's title is otherwise just "YouCoded" — impossible to tell apart in the taskbar / Alt-Tab / window switcher. So:
+
+**When launching a dev instance for Destin to look at, always pass `--label "<Feature Name>"`.** Use a short human-readable descriptor of what's being tested (`--label "UI Consistency"`, `--label "Buddy Mascot"`), not the raw branch name. The window then reads `YouCoded - UI Consistency`. Omitting `--label` falls back to the branch name, which is better than nothing but not as clear.
+
+The title is **dev-only** — it comes from `YOUCODED_DEV_LABEL` / `YOUCODED_PROFILE`, both unset in the built app, so production keeps the plain "YouCoded" title. Cross-platform (one Electron path for Win/Mac/Linux). The app's own titlebar is hidden (custom chrome), but the OS still uses this title for the taskbar/switcher.
+
+## Running a second concurrent instance
+
+Give each instance a **distinct `--offset` AND `--profile`** (and its own `--label`):
 
 ```bash
-YOUCODED_PROFILE=dev2 YOUCODED_PORT_OFFSET=100 bash scripts/run-dev.sh
+bash scripts/run-dev.sh feat/my-branch  --offset 100 --profile dev2 --label "My Feature"
 ```
 
-Each profile gets its own `%APPDATA%/youcoded-<profile>/` userData dir and its own Vite/remote ports. The profile value is a freeform label — use whatever you want (`dev`, `dev2`, `feature-x`, etc.). The only reserved value is empty/unset, which means "this is the built app" and re-enables `install-hooks.js`.
+Each profile gets its own `%APPDATA%/youcoded-<profile>/` userData dir; each offset gets its own Vite/remote ports. **Collisions are not graceful:** two instances on the same offset fight over the port, and two sharing a `--profile` fight over the Local Storage leveldb lock — either way one window gets SIGKILLed shortly after it renders. If a launch dies ~10s in, check for a port/profile clash with another running instance (`--list` shows registered worktrees; `ss -ltn` shows busy ports). The `--profile` value is freeform (`dev`, `dev2`, `feature-x`); the only reserved value is empty/unset, which means "this is the built app" and re-enables `install-hooks.js`.
+
+The equivalent env-var form still works (`YOUCODED_PROFILE=dev2 YOUCODED_PORT_OFFSET=100 bash scripts/run-dev.sh`), but the flags are clearer and add `--label`.
 
 ### Why dev doesn't install hooks
 

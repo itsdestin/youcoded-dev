@@ -99,10 +99,12 @@ Verify the commit landed on master first: `git branch --contains <sha>` should l
 Release builds happen through GitHub Actions CI in the relevant sub-repo. For iterating on desktop changes locally alongside Destin's installed/built app:
 
 ```bash
-bash scripts/run-dev.sh
+bash scripts/run-dev.sh <branch-or-worktree> --label "Feature Name"
 ```
 
-This shifts every port youcoded uses (Vite 5173 → 5223, remote server 9900 → 9950) and splits Electron `userData` into a separate dir so the dev instance coexists with a running built app. See `docs/local-dev.md` for what's isolated, what's shared (`~/.claude/`), and the caveats.
+**Always pass `--label "<Feature Name>"`** — it sets the dev window's taskbar / Alt-Tab title to `YouCoded - <Feature Name>`, so Destin can tell concurrent dev instances apart (he often reviews several at once, and every unlabeled window just reads "YouCoded"). Without it the title falls back to the branch name. Also pass a distinct `--offset` **and** `--profile` when another dev instance may be running, so you don't collide on ports/userData (a collision SIGKILLs the window). `--dry-run` prints the resolved target/ports/title without launching; `--list` shows registered worktrees.
+
+This shifts every port youcoded uses (Vite 5173 → 5223, remote server 9900 → 9950 at the default offset) and splits Electron `userData` into a separate dir so the dev instance coexists with a running built app. See `docs/local-dev.md` for what's isolated, what's shared (`~/.claude/`), the `--label`/`--offset`/`--profile` flags, and the caveats.
 
 ### ToolCard sandbox
 
