@@ -1,3 +1,5 @@
+> **OUTCOME (2026-07-23):** merged DORMANT in youcoded PR #214 — the overlay is built and review-hardened, but `setIgnoreMouseEvents` proved a total no-op on native Wayland (the spec's I2 click-through evidence was a misread: the renderer received moves because the window was receiving ALL input, and clicks never passed through). `chooseBuddyStrategy` defaults to 'windows' everywhere; overlay reachable only via `YOUCODED_BUDDY_STRATEGY=overlay`. Live status, full evidence, and the XWayland next step: `docs/active/investigations/2026-07-23-buddy-overlay-wayland-presentation.md`.
+
 # Buddy Floater One-Window Overlay — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

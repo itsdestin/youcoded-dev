@@ -3,6 +3,7 @@ status: active
 opened: 2026-07-23
 subsystem: buddy overlay (Linux Wayland), PR itsdestin/youcoded#214
 verdict: ARCHITECTURE BLOCKED — click-through primitive does not exist on native Wayland
+merged: PR #214 merged 2026-07-23 in DORMANT configuration (chooseBuddyStrategy → 'windows' everywhere); next step is the XWayland investigation (option A below), vehicle worktrees/xwayland-floater
 ---
 
 # Buddy overlay Wayland presentation — open investigation

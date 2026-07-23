@@ -1,5 +1,5 @@
 ---
-status: active
+status: superseded
 date: 2026-07-22
 owner: Destin (decisions) / Claude (execution)
 subject: Seed a spec + plan for the buddy-floater one-window Wayland rewrite
@@ -7,6 +7,8 @@ type: handoff
 kind: spec-seed
 roadmap: "ROADMAP.md — 'Buddy floater: Wayland-native one-window rewrite' (#buddy #linux, added 2026-07-17)"
 ---
+
+> **OUTCOME (2026-07-23):** merged DORMANT in youcoded PR #214 — the overlay is built and review-hardened, but `setIgnoreMouseEvents` proved a total no-op on native Wayland (the spec's I2 click-through evidence was a misread: the renderer received moves because the window was receiving ALL input, and clicks never passed through). `chooseBuddyStrategy` defaults to 'windows' everywhere; overlay reachable only via `YOUCODED_BUDDY_STRATEGY=overlay`. Live status, full evidence, and the XWayland next step: `docs/active/investigations/2026-07-23-buddy-overlay-wayland-presentation.md`.
 
 # Handoff — Buddy floater: Wayland-native one-window rewrite
 

@@ -1,5 +1,5 @@
 ---
-status: active
+status: superseded
 approved: 2026-07-22 (Destin)
 plan: docs/active/plans/2026-07-22-buddy-floater-one-window-plan.md
 date: 2026-07-22
@@ -11,6 +11,8 @@ evidence: docs/active/prototypes/2026-07-22-buddy-wayland-workbench/FINDINGS.md
 roadmap: "ROADMAP.md — 'Buddy floater: Wayland-native one-window rewrite' (#buddy #linux)"
 subsumes: "ROADMAP.md — 'Buddy floater scene-companion follow physics — window padding redesign' (#buddy #themes)"
 ---
+
+> **OUTCOME (2026-07-23):** merged DORMANT in youcoded PR #214 — the overlay is built and review-hardened, but `setIgnoreMouseEvents` proved a total no-op on native Wayland (the spec's I2 click-through evidence was a misread: the renderer received moves because the window was receiving ALL input, and clicks never passed through). `chooseBuddyStrategy` defaults to 'windows' everywhere; overlay reachable only via `YOUCODED_BUDDY_STRATEGY=overlay`. Live status, full evidence, and the XWayland next step: `docs/active/investigations/2026-07-23-buddy-overlay-wayland-presentation.md`.
 
 # Spec — Buddy floater one-window overlay (Linux Wayland)
 
