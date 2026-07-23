@@ -66,7 +66,28 @@ looks." The instance churned before the localStorage read could run.
 Question B is working-as-designed, flip the pref (Settings → show buddy), and re-evaluate
 Question A only after. **Do this check FIRST next session — it gates everything else.**
 
+## SEVERITY UPGRADE (2026-07-23, late): invisible mascot = roaming phantom click-eater
+
+The presentation bug is NOT cosmetic. `setIgnoreMouseEvents(true, {forward:true})` still
+delivers pointer moves to the renderer (that is the designed hover mechanism, FINDINGS I2).
+With the mascot INVISIBLE but its DOM box live at bottom-right — overlapping the panel/clock
+corner — any cursor visit to that corner fires pointerenter → `overlaySetInteractive(true)` →
+the screen-sized overlay starts eating every click until the cursor happens to exit the
+invisible 112px box (+60ms). Destin had to kill the dev app to use his desktop. **Do not run
+the overlay strategy on this machine again until presentation is confirmed fixed** — for
+unrelated dev work on this branch, launch with `YOUCODED_BUDDY_STRATEGY=windows`. Candidate
+hardening regardless of the fix: the renderer should refuse to request interactivity until it
+has evidence it is actually visible (e.g. gate the very FIRST setInteractive(true) on a
+successful IntersectionObserver/paint heuristic — needs design; or main-side: cap any
+interactive period not followed by a real click at N seconds).
+
 ## Instrument notes (hard-won tonight — do not relearn)
+
+- **pgrep/grep self-matching:** every diagnostic shell whose command line contains the search
+  pattern (e.g. `pgrep -f "…electron/dist"`) matches ITSELF and its wrapper zsh — this session
+  chased phantom "respawning electrons" twice that were its own probes. Verify by ancestry
+  (`/proc/PID/stat` ppid chain) before believing a match; a real electron's ancestor chain ends
+  in run-dev, not in `claude`.
 
 - `Page.captureScreenshot` (CDP) on transparent pages returns all-alpha-0 regardless of actual
   paint. Useless for this bug class.
