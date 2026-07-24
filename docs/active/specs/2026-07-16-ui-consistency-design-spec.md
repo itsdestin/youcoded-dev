@@ -4,6 +4,7 @@ date: 2026-07-16
 amended: 2026-07-19 (tranche 2 COMPLETE — buttons PR #181 `2bf29a44`, inputs PR #183)
 amended: 2026-07-22 (tranche 3 AUDITED — see §14; five ledger corrections; impl log §14.11)
 amended: 2026-07-23 (tranches 3 + 5[31/32/34] + 7[38/39/40] **MERGED to master** — youcoded PR #245, merge `dd3e5b30`. See §14/§15/§16 + the review-round log §17. Token corrected to text-destructive-fg; every UI primitive now has call sites; change 33 held for the error audit)
+amended: 2026-07-24 (tranche 4 [26–30] **MERGED to master** — youcoded PR #246, merge `cc1d3944`. See §18 for the audit + impl log + the review round. Overlay.tsx is now the sole z-index authority; ProjectView joined the z-40 screen layer, which un-swallowed spontaneous overlays behind it)
 owner: Destin (decisions) / Claude (spec)
 ---
 
@@ -17,6 +18,14 @@ owner: Destin (decisions) / Claude (spec)
 > toggles/fields/selects in PR #183. Implementation logs: **§11** (buttons) and **§13**
 > (inputs). Change 78 is the one deferred item — see §11.10 for why it's a feature, not a
 > migration. Tranches 3–8 remain.
+>
+> **Tranches 3, 5 (31/32/34), 7 MERGED 2026-07-23** (PR #245, `dd3e5b30`, §14–§17) and
+> **tranche 4 MERGED 2026-07-24** (PR #246, `cc1d3944`, §18). **Still open: tranche 8**
+> (Session-8 additions 41–51 — the biggest remaining chunk, most user-visible), **tranche 6**
+> (type/token rename 35–37; pull the creme.json contrast fix (37) forward — it's a live
+> legibility bug), plus **held change 33** (ErrorState, waits on the error-message audit) and
+> **deferred change 78** (folder picker → Select; it's a feature, needs a recents list). No
+> tranche 4-style z-index or overlay work is left. Recommended next: **8 → 6**.
 >
 > **§12** (added 2026-07-19) — **SHIPPED 2026-07-20.** Turned out to span all three
 > repos, not just `wecoded-themes`. See the resolution note at the head of §12.
