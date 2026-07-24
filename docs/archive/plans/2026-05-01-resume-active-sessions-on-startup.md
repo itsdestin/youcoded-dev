@@ -1,8 +1,37 @@
 ---
-status: shipped
+status: superseded
 ---
 
 # Resume Active Sessions on Startup — Implementation Plan
+
+> **SUPERSEDED 2026-07-24 — this plan was NEVER shipped; the frontmatter said `shipped` and was wrong.**
+>
+> Only Tasks 1–2 were ever built, on `feat/resume-on-startup` (3 commits, 2026-05-01, no PR): the
+> `ActiveSession`/`ActiveSessionForRender` types and `active-sessions-store.ts` + its 19 tests.
+> Tasks 3–10 — every IPC handler, the preload/remote-shim parity entries, `ResumeOnStartupScreen`,
+> the App.tsx cold-start gate, the Kotlin mirror, the PITFALLS entry — were never written. The
+> module had zero callers. **The branch was deleted 2026-07-24** after an audit; nothing on master
+> ever referenced `ActiveSession`, `active-sessions`, or `session:active-list-read`.
+>
+> **Why it's superseded, not merely abandoned.** This plan's architecture — a second JSON file at
+> `~/.claude/youcoded-active-sessions.json` holding conversation activity — predates the Conversation
+> Store (Phase 2a, `desktop/src/main/conversations/`). Master's per-conversation records already carry
+> a strict superset of `ActiveSession`'s five fields (`title`, `lastActive`, `projectName`,
+> `originalPath`, `transcriptRef`, `device`, `lastUsedModel`) plus flags, convergent merges, conflict
+> healing, and cross-device sync. Merging this would have stood up a second, unsynced source of truth
+> for exactly the data the store centralized. It is also provider-blind: post-M2 a session is
+> `'claude'` or `'native'`, and a native resume needs the model picker plus
+> `nativeHost.resume(id, cwd, binding)`, so this resume path would have silently worked for CC only.
+> Even the atomic-write helper is redundant — `sync-service.ts:494` already has the Windows
+> EPERM/EACCES rename retry.
+>
+> **The feature itself is still wanted** and is tracked in `ROADMAP.md → Features` as a rebuild on
+> the Conversation Store. Read the design spec and the UX in Task 6 below for the intended shape;
+> ignore the storage architecture entirely.
+>
+> For the record, the deleted branch was healthy code: it merged clean onto master as of `b0f990b9`,
+> its 19 tests passed, and `tsc --noEmit` was clean. It was dropped for being the wrong design, not
+> for being broken.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
