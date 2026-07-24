@@ -3,7 +3,7 @@ status: superseded
 created: 2026-07-22
 superseded: 2026-07-22 (same day)
 superseded-by: docs/active/plans/2026-07-22-native-runtime-parity-program.md
-design-ref: docs/active/specs/2026-07-18-native-sync-parity-design.md
+design-ref: docs/archive/specs/2026-07-18-native-sync-parity-design.md
 note: Folded into the parity program as Milestone M2, content unchanged (all five phases + the resolved resume-picker/lastUsedModel decision carry forward in program §3).
 ---
 
@@ -21,7 +21,7 @@ Model bindings are device-local: user-added provider ids are per-device ULIDs, `
 
 ## Design basis
 
-- Spec: `docs/active/specs/2026-07-18-native-sync-parity-design.md` (Option C — thread provider through the store). Its §2.5 open question is resolved by the ruling above.
+- Spec: `docs/archive/specs/2026-07-18-native-sync-parity-design.md` (Option C — thread provider through the store). Its §2.5 open question is resolved by the ruling above.
 - The 2026-07-19 correction stands (verified on master `b832e299`, 2026-07-22): the read side is provider-locked in three places none of the original Option C list covered — `session:get-meta` reads `store.get('claude', …)` (`ipc-handlers.ts:2606`), the Resume Browser overlay lists `store.list('claude')` only (`session-browser.ts:377`), and `session:browse` maps `nativeHost.list()` to `PastSession` rows with no `flags`/`tags`/`note` fields (`ipc-handlers.ts:1412`). A correctly-written native record would never be read or displayed without Phase 2.
 - youcoded#177 (merge `fe8529ba`) already shipped the correctness slice: single-writer guard in `resume()`/`create()`, awaited `destroyNative` in takeover + session-exit backstop, native lease acquire reverted (with an explicit "re-enable together with parity, NOT before" comment at `ipc-handlers.ts:545-570`), phantom-record gate + `nativeMetaRefusal` covering all write sites including remote-server. The takeover data-corruption class is closed; this plan builds the capability the lease implies.
 

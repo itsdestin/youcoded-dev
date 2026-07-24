@@ -3,7 +3,7 @@ status: shipped
 date: 2026-07-18
 tags: [native-runtime, sync, leases, takeover, parity]
 repos: [youcoded]
-supersedes_recommendation_in: docs/active/investigations/2026-07-18-native-session-takeover-gap.md
+supersedes_recommendation_in: docs/archive/investigations/2026-07-18-native-session-takeover-gap.md
 ---
 
 **Shipped via M2, youcoded PR #212, merge `60d56a67`** — §§4-6 (the Option C parity work: store provider-awareness, read-side unlock, resume picker, space sync + takeover, auto-titles, store-availability fix) are now implemented. §3 (the v1.3 correctness fixes) shipped earlier via youcoded#177.
@@ -26,7 +26,7 @@ That ordering is not a timeline concession; it is the sequencing the evidence su
 re-litigate it without reading §2.5 and §11.
 
 Everything below builds on the verified findings in
-`docs/active/investigations/2026-07-18-native-session-takeover-gap.md`. Read that first; this
+`docs/archive/investigations/2026-07-18-native-session-takeover-gap.md`. Read that first; this
 spec does not repeat its evidence, but §11 does correct two of its claims.
 
 ---
@@ -536,6 +536,6 @@ loud failure). Tracked as its own ROADMAP bug — reachability in steady state i
 
 ## Related
 
-- `docs/active/investigations/2026-07-18-native-session-takeover-gap.md` — the evidence base
+- `docs/archive/investigations/2026-07-18-native-session-takeover-gap.md` — the evidence base
 - `docs/active/handoffs/2026-07-10-sync-completion-handoff.md` — the v1.3 gate list
 - `ROADMAP.md` — the v1.3 safety-fix item and the v1.3.1 parity item

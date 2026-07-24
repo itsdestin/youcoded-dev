@@ -1,11 +1,22 @@
 ---
-status: active
+status: shipped
 date: 2026-07-18
+archived: 2026-07-23
 tags: [native-runtime, sync, leases, takeover]
 repos: [youcoded, wecoded-marketplace]
 ---
 
 # Native-session takeover: the lease outran the data path
+
+> **ARCHIVED 2026-07-23 — everything this document asks for has shipped.** Option A + the
+> Break-4 fix + the phantom-record fix landed in youcoded#177 (2026-07-19); the full parity
+> work (Option C — transcript sync, native lease re-enabled, real `quiesce()`-backed takeover,
+> resume model picker, auto-titles) landed as **M2 of the Native Runtime Parity Program**,
+> youcoded PR #212, merge `60d56a67` (2026-07-23), in **v1.3.0** — not v1.3.1 as the
+> re-scope below expected. Plan: `docs/archive/plans/2026-07-22-m2-conversations-sync-plan.md`.
+> Kept for the §§1–5/§§7–9 mechanism analysis, which is still the clearest account of *why*
+> the lease outran the data path. Current behavior lives in `.claude/rules/conversations.md`
+> and `.claude/rules/native-runtime.md`.
 
 > **§6's recommendation was overridden and then largely restored, both on 2026-07-18.** Destin
 > first ruled that native sessions must reach full sync parity (promoting Option C into a v1.3
@@ -13,7 +24,7 @@ repos: [youcoded, wecoded-marketplace]
 > by the native model binding being device-local by deliberate security design. Current plan:
 > **v1.3 ships Option A + the Break-4 fix + a phantom-record fix; Option C moves to v1.3.1**,
 > gated on a binding-portability decision. Read the spec for the plan:
-> `docs/active/specs/2026-07-18-native-sync-parity-design.md`.
+> `docs/archive/specs/2026-07-18-native-sync-parity-design.md` (archived shipped 2026-07-23).
 >
 > **Three corrections to this document**, established by that review — the rest of §§1–5 and
 > §§7–9 stands and remains the authority:

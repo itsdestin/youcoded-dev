@@ -17,7 +17,7 @@ program: docs/active/plans/2026-07-22-native-runtime-parity-program.md (§3 — 
 
 ## What M2 is (program §3 — read it in full; summary here)
 
-Six items, design basis `docs/active/specs/2026-07-18-native-sync-parity-design.md` (Option C):
+Six items, design basis `docs/archive/specs/2026-07-18-native-sync-parity-design.md` (Option C):
 
 1. **Store provider-awareness (writes)** — `provider:'native'` records; provider-aware `localJsonlPath`/`transcriptRef` (native transcripts live at `~/.youcoded/sessions/<slug>/<id>.jsonl`); route the native host's `transcript-event` into `noteTranscriptEvent` (today fed only by CC's TranscriptWatcher, hardcoded `provider:'claude'`); write portable `lastUsedModel` on create/`setBinding`/turn-complete.
 2. **Read-side unlock** — three provider locks (anchors below) + retire the 2026-07-19 meta-refusal stopgap in the same pass (replace `session-meta-native-refusal.test.ts` with parity tests).
@@ -54,7 +54,7 @@ Model bindings are **device-local** (per-device provider ULIDs in never-synced `
 
 ## Hard lessons that bind your tests (the #177 lesson)
 
-`holder-takeover.test.ts` previously **certified a no-op** — the suite passed while native takeover destroyed the holder and transferred nothing, because the fakes could not express failure. Program §9: *fakes must be able to express failure, or the suite certifies the bug.* Your item-4 work MUST give `holder-takeover.test.ts` real native flows (real `NativeSessionHost` over a real store in a tmpdir — `desktop/tests/native-session-host.test.ts` shows the pattern, incl. `delayedFactory` for mid-stream capture). History: youcoded #177 (merge `fe8529ba`), investigation at `docs/active/investigations/2026-07-18-native-session-takeover-gap.md`, ROADMAP entry "Native-session takeover destroys the holder" (shipped, residue = your item 4).
+`holder-takeover.test.ts` previously **certified a no-op** — the suite passed while native takeover destroyed the holder and transferred nothing, because the fakes could not express failure. Program §9: *fakes must be able to express failure, or the suite certifies the bug.* Your item-4 work MUST give `holder-takeover.test.ts` real native flows (real `NativeSessionHost` over a real store in a tmpdir — `desktop/tests/native-session-host.test.ts` shows the pattern, incl. `delayedFactory` for mid-stream capture). History: youcoded #177 (merge `fe8529ba`), investigation at `docs/archive/investigations/2026-07-18-native-session-takeover-gap.md`, ROADMAP entry "Native-session takeover destroys the holder" (shipped, residue = your item 4).
 
 ## Process requirements (program §9 — these are exit criteria, not suggestions)
 
@@ -69,10 +69,10 @@ Model bindings are **device-local** (per-device provider ULIDs in never-synced `
 
 1. This handoff
 2. `docs/active/plans/2026-07-22-native-runtime-parity-program.md` §3 + §9
-3. `docs/active/specs/2026-07-18-native-sync-parity-design.md` (Option C — the phases map 1:1 to items 1–4)
+3. `docs/archive/specs/2026-07-18-native-sync-parity-design.md` (Option C — the phases map 1:1 to items 1–4)
 4. `.claude/rules/native-runtime.md`, `.claude/rules/sync-spaces.md` (workspace), `youcoded/docs/sync-spaces.md`, `youcoded/docs/chat-reducer.md`
 5. `docs/PITFALLS.md` (cross-repo invariants)
-6. `docs/active/investigations/2026-07-18-native-session-takeover-gap.md` (item 4 background)
+6. `docs/archive/investigations/2026-07-18-native-session-takeover-gap.md` (item 4 background)
 
 ## Open questions you may hit (resolutions if Destin is unavailable)
 
