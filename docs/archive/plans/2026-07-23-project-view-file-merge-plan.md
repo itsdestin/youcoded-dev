@@ -1,7 +1,7 @@
 ---
-status: draft
+status: shipped
 date: 2026-07-23
-spec: docs/active/specs/2026-07-23-project-view-file-merge-design.md
+spec: docs/archive/specs/2026-07-23-project-view-file-merge-design.md
 owner: Destin (decisions) / Claude (plan)
 ---
 

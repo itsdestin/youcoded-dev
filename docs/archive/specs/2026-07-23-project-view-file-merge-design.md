@@ -1,11 +1,32 @@
 ---
-status: draft
+status: shipped
 date: 2026-07-23
+amended: 2026-07-23 (External Artifacts section DESCOPED after live review — see banner)
+shipped: 2026-07-24 (youcoded PR #247, merge b0f990b9 — External Artifacts section NOT shipped, see banner)
 owner: Destin (decisions) / Claude (spec)
 scope: youcoded/desktop (renderer + main), youcoded/app (Android parity)
 ---
 
 # Project View — merge Artifacts into a single Files tab
+
+> **AMENDMENT 2026-07-23 — the `External Artifacts` section was removed and rule 4
+> was reverted, after Destin tested the branch in a dev instance.** Measured
+> against his real sidecar the section was ~95% incidental noise (163 scratchpad
+> temps, 37 other-device Windows paths, 19 `.claude/` internals; ~8 genuinely
+> useful) — because "Claude edited a file outside the project folder" happens
+> constantly and incidentally, which is exactly why the original rule required a
+> manual pin. `manualIncludes` was 0, so the pre-flip rule would have shown an
+> empty section and the post-flip rule showed garbage; neither was worth a
+> section. **What the branch actually ships:** ONE `Files` tab = the on-disk
+> `Project Files` walk only; `+ Add file` Move/Copy import; the data-safety
+> fixes. Externals live in the Session Drawer (per session), their correct home.
+> `visible-artifacts.ts` rule 4 is back to "externals hidden unless pinned".
+> **Everything below about the `External Artifacts` section, the rule-4 flip
+> (§3), the section rendering (§5.1), root-only placement, and `Exclude`
+> scoping (§5.3) is SUPERSEDED** — read it as the road not taken. §2's "four
+> crescent items" argument is what motivated the section; the crescent turned
+> out not to be worth surfacing. The rest (tab merge, §6 Move/Copy import,
+> §7 Android, §8 testing) stands.
 
 ## 1. Problem
 

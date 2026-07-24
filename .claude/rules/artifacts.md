@@ -7,10 +7,14 @@ paths:
   - "youcoded/desktop/src/renderer/state/artifact-tracker.ts"
   - "youcoded/desktop/src/renderer/state/ArtifactContext.tsx"
   - "youcoded/desktop/src/shared/artifacts/**"
-last_verified: 2026-07-15
+last_verified: 2026-07-24
 verify:
   - path: youcoded/desktop/src/main/artifacts/read-binary-access.ts
   - path: youcoded/desktop/src/main/artifacts/visible-artifacts.ts
+  - path: youcoded/desktop/src/main/artifacts/import-file.ts
+    contains: "MOVE_SOURCE_NOT_REMOVED"
+  - test: youcoded/desktop/tests/artifacts/import-file.test.ts
+  - test: youcoded/desktop/tests/session-drawer-deleted-toggle.test.tsx
   - path: youcoded/desktop/src/main/artifacts/cas-write.ts
     contains: "mutateFileUnderLock"
   - path: youcoded/desktop/src/shared/artifacts/canonicalize.ts
@@ -27,8 +31,10 @@ verify:
 Files Claude touches are tracked in per-project sidecars + a central index and rendered in the Session Drawer and Project View. State lives in the renderer (`ArtifactContext`/`artifact-tracker.ts`); all I/O is main-process via `window.claude.artifacts.*` IPC (same split as the chat reducer). **Full depth: `youcoded/docs/artifacts.md`.**
 
 ## Concept split — guard: `visible-artifacts.test.ts`, `project-file-discovery.test.ts`
-- **Artifacts vs All files are TWO concepts; All files is ALWAYS a superset.** Artifacts = files Claude created/edited (sidecar-tracked, internal or manually-included-external). All files = every real file on disk. `LIST_PROJECT` returns tracked ONLY; `LIST_ALL_FILES` = discovery UNIONed with tracked-on-disk artifacts (so it can't report fewer than Artifacts). Don't merge them, add an extension allowlist to discovery, or drop the union.
-- **`trackedArtifacts()` (`visible-artifacts.ts`) is the SOLE Artifacts-tab visibility decider.** Includes WIN over excludes ("+ Add file" recovers a mistaken exclude); `manualExcludes` MUST stay wired (shipped inert once); internal with ≥1 non-`read` version = Claude's work; pill-click `read`-only views don't appear. Include/exclude paths are canonical ABSOLUTE (canonicalize BOTH sides — Windows drive-case bug).
+- **ONE Files tab, ONE section (merged 2026-07-23 — the Artifacts tab is gone).** `Project Files` = the folder on disk (`LIST_ALL_FILES`). **In-folder artifacts are deliberately UNDIFFERENTIATED** — the disk is the truth; don't badge or re-split them. An `External Artifacts` section was tried the same day and REMOVED (~95% incidental noise); **don't re-add it** — externals live in the **Session Drawer** (`LIST_SESSION`), never Project View.
+- **`LIST_ALL_FILES` is NOT pure discovery.** Callee `projectAllFiles()` UNIONS tracked **internal** artifacts that exist on disk but discovery didn't reach (skipped nested sub-repo), so Project Files is a superset of in-folder tracked files. Keep the union; no extension allowlist. (`ipc-handlers.ts` said "pure discovery, independent of the sidecar" until 2026-07-23 — wrong.)
+- **`trackedArtifacts()` (`visible-artifacts.ts`) is the SOLE tracked-visibility decider.** Order: manually INCLUDED (any kind) → manually EXCLUDED hidden → **internal with ≥1 non-`read` version; externals hidden unless pinned**. (Rule 4 was briefly flipped 2026-07-23 to show unpinned externals, reverted with the section.) Rule 1 keeps LEGACY pins visible on upgrade; nothing WRITES pins now (`+ Add file` imports, `INCLUDE_EXTERNAL` has no caller). Pill-click `read`-only views don't appear. Include/exclude paths are canonical ABSOLUTE (canonicalize BOTH sides — Windows drive-case bug).
+- **`+ Add file` IMPORTS (Move/Copy into the browsed folder), it does not pin.** `artifacts:import-file` (`artifacts/import-file.ts`) reuses `authorizeArtifactWrite` **without** `confirmed` (`.claude/`/dotenv destinations REFUSED). Data-safety invariants (each pinned by a test, full list in the depth doc): never silent-overwrite, self-import guard, copy→verify→unlink for move, temp-then-rename for replace, `{ force: true }` on the collision `listAllFiles` scan. `.youcoded-import-*.part` temps are filtered from discovery AND sync `DEFAULT_IGNORES`.
 - **Discovery (`project-file-discovery.ts`) stops at nested git repos, has NO extension allowlist, is bounded** (file/dir/depth caps + 1.5s budget, 10s cache). The nested-repo stop makes the count DETERMINISTIC. `discovered:true` is NEVER persisted — consumers skip it in `checkExistence` (relative ids, not sidecar ids).
 
 ## Paths & counts
@@ -47,4 +53,6 @@ Files Claude touches are tracked in per-project sidecars + a central index and r
 ## UI invariants
 - **Filepath pills ALWAYS open the artifact viewer, NEVER Project View** — resolve session→project→else artifactify (`appendVersion` `read`); `findBestMatch` prefers EXACT over suffix.
 - **Drawer state is per-session keyed by `sessionId`**; drawer is layout-level (don't wrap in `<OverlayPanel>`). `ActiveArtifactView` is shared by SessionDrawer + ProjectView. Status glyphs (`●◐○`) are BANNED — plain words. `.youcoded/` is auto-gitignored.
-- **Android `get`/`save`/`read-binary` are REAL implementations (SessionService.kt), NOT stubs — any new guard on the desktop handlers must be mirrored in Kotlin** (the 2026-07-22 lesson: Kotlin save wrote `absolutePath!!` unchecked while desktop grew a boundary). List/project stubs still return `{ok:false,error:'not-implemented-on-mobile'}` — that's the contract.** `project:*` IPC is desktop-only (context read/write allow-listed to discovered set). Parity pinned by `ipc-channels.test.ts`.
+- **`showDeletedArtifacts` is SESSION-DRAWER-ONLY — the asymmetry is deliberate.** Project View dropped it 2026-07-23 (`VersionEvent` has no content field → a deleted record is a tombstone, not a recovery path); the drawer keeps it because seeing everything Claude did in a session, deletions included, is that view's purpose. Cross-device-SYNCED preference (`persistAppearance`), so deleting the "now-unused" flag drops a real setting. · guard: `session-drawer-deleted-toggle.test.tsx`.
+- **`EXCLUDE` (`manualExcludes` write) has NO renderer caller** (the button went with the External Artifacts section). Handler kept for legacy round-trip + rule 2. In-folder files can't be excluded at all — hiding a file the user sees in their file manager would be a lie.
+- **Android `get`/`save`/`read-binary` are REAL implementations (SessionService.kt), NOT stubs — any new guard on the desktop handlers must be mirrored in Kotlin** (the 2026-07-22 lesson: Kotlin save wrote `absolutePath!!` unchecked while desktop grew a boundary). List/project stubs still return `{ok:false,error:'not-implemented-on-mobile'}` — that's the contract. `project:*` IPC is desktop-only (context read/write allow-listed to discovered set). Parity pinned by `ipc-channels.test.ts`.
