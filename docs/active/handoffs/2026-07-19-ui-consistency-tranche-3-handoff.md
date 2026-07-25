@@ -118,9 +118,11 @@ the field's own wrapper, so there's no adjacent-height comparison left to fail.
 
 ## Residue (small, deliberate, don't "discover" these again)
 
-- `QuickChips.tsx:374` and `RatingSubmitModal.tsx:345` — two plain `Cancel` text buttons the BUTTON
-  half missed. Both `text-[10px]`; nearest primitive step is 11px, so migrating them is a visual
-  change Destin hasn't seen. Left rather than silently resized.
+- `QuickChips.tsx:374` and `RatingSubmitModal.tsx:354` — two plain `Cancel` text buttons the BUTTON
+  half missed. Still open. QuickChips' is 10px (now written `text-3xs` after the change-35 rename —
+  same pixels); nearest primitive step is 11px, so migrating it is a visual change Destin hasn't
+  seen. Left rather than silently resized. RatingSubmitModal's is `text-sm` and has no such
+  obstacle — it was simply missed. Both are tranche-8 change-41 candidates.
 - `SyncSetupWizard.tsx:67` and `:925` — two hardcoded-blue spinners. Arguably covered by "status
   colors stay hardcoded", though a spinner isn't really a status color.
 - `SessionDrawer.tsx:373` — the one remaining native `<select>`, folding into `FileFilterPopover`

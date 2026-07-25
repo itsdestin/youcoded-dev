@@ -4,6 +4,7 @@ date: 2026-07-16
 amended: 2026-07-19 (tranche 2 COMPLETE — buttons PR #181 `2bf29a44`, inputs PR #183)
 amended: 2026-07-22 (tranche 3 AUDITED — see §14; five ledger corrections; impl log §14.11)
 amended: 2026-07-23 (tranches 3 + 5[31/32/34] + 7[38/39/40] **MERGED to master** — youcoded PR #245, merge `dd3e5b30`. See §14/§15/§16 + the review-round log §17. Token corrected to text-destructive-fg; every UI primitive now has call sites; change 33 held for the error audit)
+amended: 2026-07-24 (tranche 6 [35–37] **MERGED to master** — youcoded PR #249, merge `335ca46f`, plus wecoded-marketplace #64 `8b79d6d` and wecoded-themes #25 `8623eed`. See §19. 572-site type rename + a shipping link-contrast bug the audit clause uncovered — 6 of 11 themes were below AA. **Tranche 8 is the only tranche left**)
 amended: 2026-07-24 (tranche 4 [26–30] **MERGED to master** — youcoded PR #246, merge `cc1d3944`. See §18 for the audit + impl log + the review round. Overlay.tsx is now the sole z-index authority; ProjectView joined the z-40 screen layer, which un-swallowed spontaneous overlays behind it)
 owner: Destin (decisions) / Claude (spec)
 ---
@@ -19,13 +20,23 @@ owner: Destin (decisions) / Claude (spec)
 > (inputs). Change 78 is the one deferred item — see §11.10 for why it's a feature, not a
 > migration. Tranches 3–8 remain.
 >
-> **Tranches 3, 5 (31/32/34), 7 MERGED 2026-07-23** (PR #245, `dd3e5b30`, §14–§17) and
-> **tranche 4 MERGED 2026-07-24** (PR #246, `cc1d3944`, §18). **Still open: tranche 8**
-> (Session-8 additions 41–51 — the biggest remaining chunk, most user-visible), **tranche 6**
-> (type/token rename 35–37; pull the creme.json contrast fix (37) forward — it's a live
-> legibility bug), plus **held change 33** (ErrorState, waits on the error-message audit) and
-> **deferred change 78** (folder picker → Select; it's a feature, needs a recents list). No
-> tranche 4-style z-index or overlay work is left. Recommended next: **8 → 6**.
+> **Tranches 3, 5 (31/32/34), 7 MERGED 2026-07-23** (PR #245, `dd3e5b30`, §14–§17),
+> **tranche 4 MERGED 2026-07-24** (PR #246, `cc1d3944`, §18) and **tranche 6 MERGED
+> 2026-07-24** (PR #249, `335ca46f`, §19 — plus wecoded-marketplace #64 and wecoded-themes #25, the
+> other two copies of the shared contrast rules).
+>
+> **TRANCHE 8 (session-8 additions 41–51) IS THE ONLY TRANCHE LEFT**, plus **held change 33**
+> (ErrorState, waits on the error-message audit) and **deferred change 78** (folder picker →
+> Select; it's a feature, needs a recents list). Ignore any older note telling you to pull
+> change 37 (creme contrast) forward — §19.1 verified it shipped back on 2026-07-19.
+> **Audit tranche 8 before implementing it**: change 41's CloseButton half already shipped in
+> tranche 2, and tranche 4 moved seven settings popups onto a shared shell, so its real scope
+> is smaller than the ledger's.
+>
+> **When tranche 8 lands, the migration is done — and Destin wants a whole-UI review pass at
+> that point** (ROADMAP, added 2026-07-24). Expect minor tweaks to theme tokens and individual
+> elements afterwards; they go through `components/ui/` and the tokens, never into individual
+> components, which is the entire point of having done this.
 >
 > **§12** (added 2026-07-19) — **SHIPPED 2026-07-20.** Turned out to span all three
 > repos, not just `wecoded-themes`. See the resolution note at the head of §12.
@@ -1927,3 +1938,156 @@ test: the invariant is what ships in the class list, not what the prose may ment
    `<button>✕</button>`), and the donate modal is now a proper `role="dialog"`.
 4. Remote Access's ✕ is very slightly larger — it was the one hand-rolled at `w-6 h-6`; it now
    matches every other popup ✕.
+
+---
+
+## 19. Tranche 6 — type scale + link tokens (35–37), audited 2026-07-24
+
+### 19.1 The audit found most of the tranche already shipped
+
+Both changes were **split across tranche 0 and here**, and the ledger never said so. Verified against
+the code before touching anything:
+
+| Clause | State on 2026-07-24 |
+|---|---|
+| 35 — `@theme` gains `--text-2xs/3xs/4xs` | **Shipped** in tranche 0 (`globals.css:229-231`) |
+| 35 — the ~538-site rename | Open — this tranche |
+| 36 — `link?`/`link-hover?` optional in `theme-types.ts` | **Shipped** (`:22-24`) |
+| 36 — derivation in `computeOverlayTokens` | **Shipped** (accent-vs-fg >40 guard + the oklab hover mix) |
+| 36 — "contrast audit gains a link-vs-canvas check" | Open — and it turned out to be the real work |
+| 37 — creme.json contrast fix | **Shipped**, and at *better* values than the spec proposed (`#7D7161`/`#9A8F7F`, not `#8A7E6E`/`#B0A595`) — the 2026-07-19 contrast-rules rewrite repaletted it |
+
+So change 37 needed nothing. The previous session's advice to "pull 37 forward as a live legibility
+bug" was **stale** — it was already fixed. Recorded here because that advice appeared in two
+handoffs and would have sent a third session looking for a bug that isn't there.
+
+### 19.2 Change 35 — the counts, and what the ledger got wrong
+
+Spec said ~538 core + 39 stragglers. Actual, `.tsx` only (the earlier 575 figure double-counted the
+three class names quoted on a single `globals.css` comment line):
+
+| Size | Count | Target | Visual |
+|---|---|---|---|
+| `text-[10px]` | 335 | `text-3xs` | none |
+| `text-[11px]` | 160 | `text-2xs` | none |
+| `text-[9px]` | 37 | `text-4xs` | none |
+| `text-[12px]` | 11 | `text-xs` | none |
+| `text-[13px]` | 22 | `text-sm-tight` | none (new token) |
+| `text-[15px]` | 3 | `text-base` | 15 → 16 |
+| `text-[17px]` | 2 | `text-lg` | 17 → 18 |
+| `text-[8px]` | 2 | `text-4xs` | 8 → 9 |
+| | **572 / 87 files** | | **546 are a pure no-op** |
+
+Three findings the ledger didn't carry:
+
+1. **`text-[12px]` is free.** Tailwind's `text-xs` IS 12px and nothing overrides the root font-size
+   (`0.75rem == 16px × 0.75`), so those 11 sites fold with zero visual change. The spec had them in
+   the "visible fold" bucket.
+2. **`text-[8px]` (2 sites) wasn't in the ledger at all** — below the scale's floor.
+3. **13px is a real step, not a straggler.** All 22 sites are Project View body copy, on the screen
+   Destin reviewed and signed off two days earlier (§18). **DECIDED 2026-07-24: name it, don't fold
+   it** — `--text-sm-tight: 13px`. Folding to `text-sm` would have resized ProjectHero's sync rows,
+   AddProjectModal, HowContextWorksPopup and the tab pills for no benefit. The 15/17/8px sites fold
+   **UP** so titles keep their step over 13px body.
+
+**Trap worth remembering:** two WHY comments quote the retired class names on purpose
+(`globals.css:226`, `BugReportPopup.tsx:234`). The first rename pass rewrote the BugReportPopup one
+into nonsense ("the old text-3xs" — there never was one there) because it sits inside a *JSX* block
+comment `{/* ... */}` whose continuation lines start with neither `//` nor `*`. Same family as the
+§18.7 pinning-test trap: **any source-wide sweep or source-grep test in this renderer must model
+block comments, not just line comments.**
+
+**Guard: `desktop/tests/type-scale-authority.test.ts`** — asserts every named step is declared in
+`@theme` and that no component ships an arbitrary `text-[Npx]`. Mutation-verified. Adding a genuinely
+new size now requires editing both the `@theme` block and the guard's `NAMED_TOKENS`, which is the
+decision it exists to force.
+
+### 19.3 Change 36 — the audit clause was hiding a shipping bug
+
+Building the check before writing any code was the whole game. Derived link contrast across the 11
+shipped themes, measured *before* any change:
+
+```
+theme                 link      source     vsCanvas   vsPanel
+creme       builtin   #5B4A1E   declared     7.46 ok    6.64 ok
+dark        builtin   #66AAFF   declared     7.88 ok    7.33 ok
+light       builtin   #2563EB   declared     4.62 ok    4.30 FAIL
+midnight    builtin   #58A6FF   declared     7.49 ok    6.85 ok
+cotton-candy-sky      #8B47B8   derived      5.30 ok    4.38 FAIL
+devils-garden         #FFC627   derived     12.46 ok   11.49 ok
+golden-sunbreak       #ffc030   derived     12.21 ok   11.59 ok
+halftone-dimension    #E51F48   derived      4.43 FAIL  4.19 FAIL
+kuromi-dreamer        #8158AD   derived      2.90 FAIL  3.29 FAIL
+meadow-mist           #2F7D55   derived      4.76 ok    4.00 FAIL
+strawberry-kitty      #CC4060   derived      3.53 FAIL  3.90 FAIL
+```
+
+**Adding the rule as specced would have turned CI red on 6 of 11 themes, including a built-in.** The
+tranche-0 derivation's `> 40` distance guard only asks "is this distinguishable from body text",
+never "can you read it" — so `kuromi-dreamer` shipped a link at **2.90:1**.
+
+**DECIDED 2026-07-24: nudge the derivation to AA, then the HARD rule is safe.** `deriveLink` in
+`theme-engine.ts` mirrors the existing `deriveDestructiveFg` exactly — mix toward white (dark themes)
+/ black (light themes) in 2% steps until it clears 4.5:1.
+
+Three sub-decisions, all load-bearing:
+
+- **The surface set is canvas + panel + INSET, not canvas.** The assistant bubble is `bg-inset`
+  (`AssistantTurnBubble.tsx:374`) and `MarkdownContent` renders inside it, so the bubble — not the
+  page — is where most links live. Auditing canvas alone is the *exact* mistake §12 documents for
+  `fg-muted`/`fg-faint`: canvas is the best case, so measuring it alone ships the worst case. With
+  canvas+panel only, the nudge left three packs failing on inset; adding inset converged all of them.
+- **`well` is excluded on purpose.** It is the command-drawer search surface and renders no links.
+  Including it fails `kuromi-dreamer` (3.65) and `strawberry-kitty` (3.63) over a combination that
+  never reaches the screen — a gate on a pairing the app cannot produce.
+- **Only DERIVED links are nudged.** A declared link is the author's explicit choice (creme's olive
+  `#5B4A1E` is deliberate), and auto-correcting declared values would make the new HARD rules
+  *unfailable*. A gate that cannot fail reports nothing.
+
+Built-in `light` was the one declared link that failed (3.59:1 on `--inset`), so it was darkened by
+hand to `#2055CA` / `#1E4395` — the hover picked to restore the luminance gap the old pair had
+(0.0461 vs the old 0.0465). Updated in **both** sources `theme-builtin-sources.test.ts` diffs.
+
+**Result:** halftone-dimension `#E51F48`→`#E93E62`, meadow-mist `#2F7D55`→`#245F41`, cotton-candy-sky
+`#8B47B8`→`#6F3993`, kuromi-dreamer `#8158AD`→`#5D3F7D`. All 4 built-ins and all 7 community packs
+pass, glass-composited, with **zero new failures** against a rule-by-rule pre-change baseline.
+
+### 19.4 The rules file is vendored THREE ways — merge order is not optional
+
+Not in the ledger, and a landmine for any future change to that file:
+
+| Copy | Role |
+|---|---|
+| `wecoded-marketplace/wecoded-themes-plugin/skills/theme-builder/scripts/contrast-rules.js` | **canonical** |
+| `wecoded-themes/scripts/vendor/contrast-rules.js` | vendored; CI diffs it against marketplace **master** |
+| `youcoded/desktop/scripts/vendor/contrast-rules.js` | vendored; no drift check |
+
+`wecoded-themes/.github/workflows/validate-theme.yml` fetches the canonical file from
+`raw.githubusercontent.com/.../master/...` and fails loudly on any difference. **Landing the
+wecoded-themes copy before the marketplace copy red-lights the next theme-submission PR** — which
+would look like a broken submission, not a stale vendor. Correct order: marketplace → themes →
+youcoded. (That workflow only triggers on `themes/**`, so a vendor-only PR never runs it — the
+failure surfaces on somebody else's submission, which is worse.)
+
+### 19.5 Behavior changes for the release notes
+
+1. **Hyperlinks are readable on four community themes.** Kuromi Dreamer's were at 2.90:1 — below the
+   AA floor. Halftone Dimension, Meadow Mist and Cotton Candy Sky also shift.
+2. **The Light theme's links are slightly darker** (`#2563EB` → `#2055CA`), because the old value was
+   3.59:1 against the assistant bubble.
+3. A handful of tiny labels are 1px larger (the 15/17/8px folds — 7 sites total). Everything else in
+   the 572-site rename is pixel-identical.
+
+### 19.6 Shipped
+
+- **youcoded PR #249** (merge `335ca46f`) — the rename, `deriveLink`, `light.json`, the re-vendored
+  rules, both guards. CI green on all four legs (Android 12m49s, macOS 1m36s, Ubuntu 8m29s,
+  Windows 3m21s).
+- **wecoded-marketplace PR #64** (`8b79d6d`) — canonical rules.
+- **wecoded-themes PR #25** (`8623eed`) — re-vendored copy.
+
+**REMAINING after this tranche: tranche 8 (session-8 additions 41–51) only**, plus held change 33
+(ErrorState, waits on the error-message audit) and deferred change 78 (folder picker → Select, a
+feature). Note change 41's CloseButton half already shipped in tranche 2, and tranche 4 moved seven
+settings popups onto a shared shell — **audit 41 before implementing it; its real scope is smaller
+than the ledger's.**
