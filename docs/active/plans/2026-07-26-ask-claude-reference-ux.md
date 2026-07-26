@@ -1573,7 +1573,15 @@ export function useReferenceGeometry(anchor: ReferenceAnchor | null): { d: strin
     // DOM mutation. If React ever replaces these nodes the Range yields no rects
     // and we fall through to the whole-host outline, which is the designed
     // fallback (spec 7).
-    const runRects = anchor.range ? [...anchor.range.getClientRects()] : [];
+    //
+    // The containment check is load-bearing. The withdrawn surroundContents()
+    // design REJECTED a selection spanning element boundaries (it throws), so a
+    // cross-bubble drag produced a null anchor automatically. cloneRange()
+    // accepts it happily, so that signal is gone and we must re-derive it here:
+    // a Range escaping its host would otherwise trace an outline around content
+    // the reference does not actually cover.
+    const inHost = !!anchor.range && host.contains(anchor.range.commonAncestorContainer);
+    const runRects = inHost ? [...anchor.range!.getClientRects()] : [];
     const rects = runRects.length ? runRects : [host.getBoundingClientRect()];
 
     // Viewport-relative: the trace SVG is position:fixed, so the "host" origin
