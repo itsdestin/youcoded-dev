@@ -101,7 +101,7 @@ export type PendingReference = {
   /** Prepended at send. NEVER rendered in the composer. */
   promptText: string;
   /** How to re-find the source. Null when it was never anchorable. */
-  anchor: { hostSelector: string; runSelector: string } | null;
+  anchor: { host: Element; range: Range | null } | null;
 };
 ```
 
