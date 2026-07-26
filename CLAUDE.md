@@ -85,12 +85,13 @@ cd <repo> && git fetch origin && git pull origin master
 
 **Pushing to master green-lights closing the dev server.** If you started `bash scripts/run-dev.sh` to verify a change, shut it down (plus any helper Electron processes) once the commit lands on `origin/master`. Don't leave it running unless the user explicitly asks — orphaned Vite servers hold port 5223 and trip up the next session's dev launch.
 
-**Clean up worktrees after merging to master.** Once a feature branch is merged and pushed, remove its worktree and delete the branch:
+**Clean up worktrees and branches after merging to master.** Once a feature branch is fully merged and pushed, remove its worktree and delete the branch **both remotely and locally**:
 ```bash
 git worktree remove <path>
-git branch -D <branch>   # -D (not -d) because --no-ff merges leave the tip non-ancestral
+git push origin --delete <branch>   # skip if GitHub's PR auto-delete already removed it
+git branch -D <branch>              # -D (not -d) because --no-ff merges leave the tip non-ancestral
 ```
-Verify the commit landed on master first: `git branch --contains <sha>` should list `master`. Leaving stale worktrees around accumulates cruft and confuses future sessions about what's in-flight.
+Verify the commit landed on master first: `git branch --contains <sha>` should list `master`. Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
 
 **Verify fix consequences before shipping.** Batch fixes — especially network/permission changes — can silently break cross-cutting features. Check both platforms (desktop + Android) after any IPC change.
 
