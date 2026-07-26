@@ -141,7 +141,28 @@ Two that need care, called out because they are not pure deletions:
 
 ---
 
-### Task 4: K2 — the setting row · **BLOCKED, needs Destin's call**
+### Task 4: K2 — the setting row · **DECIDED 2026-07-26 (Destin delegated the call)**
+
+**Resolution: (c′) — one component, two densities selected by ROLE.**
+
+Both sizes are already Destin-approved, from looking at rendered UI rather than a spec:
+- drawer/navigation rows at `text-sm`/`text-2xs` — change 51, 2026-07-16
+- Sound preset rows at `text-xs`/`text-3xs` — tranche 1, approved 2026-07-26
+
+So the axis is not drawer-vs-in-menu, it is **navigation vs list item**:
+
+| variant | type | when |
+|---|---|---|
+| `nav` (default) | title `text-sm`, desc `text-2xs` | the row takes you somewhere — chevron, opens a dialog |
+| `item` | title `text-xs`, desc `text-3xs` | the row is one of N being scanned or chosen between |
+
+This costs nothing K2 was actually buying. The five shapes K2 retires were about **where the
+description lives** (below the row · after the row · as a K1 section label · as a `<p>` outside the
+container), not about type size. One component, one description rule, one control-slot vocabulary,
+two densities. The spec §1 K2 recipe is amended to carry the `variant` axis.
+
+**Original conflict, kept for the record:** spec §1 K2 specified `text-xs`/`text-3xs` for all rows,
+which would have silently reverted change 51.
 
 **The spec and the shipped code disagree about row type size, and the spec would silently revert a
 decision Destin made on 2026-07-16.**
