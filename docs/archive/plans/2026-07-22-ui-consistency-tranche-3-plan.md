@@ -6,7 +6,7 @@ subject: Tranche 3 (cards, changes 22–25) implementation plan + proposed order
 shipped: 2026-07-23 — MERGED to master via youcoded PR #245 (merge `dd3e5b30`). The branch carried tranches 3, 5 (31/32/34) and 7, plus Destin's review round (spec §17). Logs: spec §14.11, §15, §16, §17.
 type: plan
 roadmap: "ROADMAP.md — 'UI consistency system — shared primitives + the 51-change migration' (#ui, added 2026-07-16)"
-spec: docs/active/specs/2026-07-16-ui-consistency-design-spec.md (audit in §14)
+spec: docs/archive/specs/2026-07-16-ui-consistency-design-spec.md (audit in §14)
 baseline: youcoded origin/master 82552cee (2026-07-22)
 ---
 

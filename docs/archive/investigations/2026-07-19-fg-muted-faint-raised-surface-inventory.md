@@ -6,7 +6,7 @@ tags: [themes, a11y, contrast]
 
 # Inventory — `fg-muted` / `fg-faint` text on raised surfaces
 
-Companion to spec §12 (`docs/active/specs/2026-07-16-ui-consistency-design-spec.md:1006-1145`)
+Companion to spec §12 (`docs/archive/specs/2026-07-16-ui-consistency-design-spec.md:1006-1145`)
 and ROADMAP.md:81-82. Scope: `youcoded/desktop/src/renderer`.
 
 Surfaces were traced by reading each file's container chain, not by grepping the class alone.

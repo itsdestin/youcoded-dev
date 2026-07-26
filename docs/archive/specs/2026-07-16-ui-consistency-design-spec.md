@@ -1,11 +1,13 @@
 ---
-status: active
+status: shipped
 date: 2026-07-16
+completed: 2026-07-24
 amended: 2026-07-19 (tranche 2 COMPLETE — buttons PR #181 `2bf29a44`, inputs PR #183)
 amended: 2026-07-22 (tranche 3 AUDITED — see §14; five ledger corrections; impl log §14.11)
-amended: 2026-07-23 (tranches 3 + 5[31/32/34] + 7[38/39/40] **MERGED to master** — youcoded PR #245, merge `dd3e5b30`. See §14/§15/§16 + the review-round log §17. Token corrected to text-destructive-fg; every UI primitive now has call sites; change 33 held for the error audit)
+amended: 2026-07-23 (tranches 3 + 5[31/32/34] + 7[38/39/40] **MERGED to master** — youcoded PR #245, merge `dd3e5b30`. See §14/§15/§16 + the review-round log §17. Token corrected to text-destructive-fg; change 33 held for the error audit. ⚠ This entry also claimed "every UI primitive now has call sites" — FALSE, and §20.2 explains how it survived: FirstRunView's LOCAL ProgressBar shadowed the shared one, so a grep for the component name found a match and hid the fact that the primitive had zero consumers)
 amended: 2026-07-24 (tranche 6 [35–37] **MERGED to master** — youcoded PR #249, merge `335ca46f`, plus wecoded-marketplace #64 `8b79d6d` and wecoded-themes #25 `8623eed`. See §19. 572-site type rename + a shipping link-contrast bug the audit clause uncovered — 6 of 11 themes were below AA. **Tranche 8 is the only tranche left**)
 amended: 2026-07-24 (tranche 4 [26–30] **MERGED to master** — youcoded PR #246, merge `cc1d3944`. See §18 for the audit + impl log + the review round. Overlay.tsx is now the sole z-index authority; ProjectView joined the z-40 screen layer, which un-swallowed spontaneous overlays behind it)
+amended: 2026-07-24 (tranche 8 [41, 44–51] **MERGED to master** — youcoded PR #252, merge `a5e6e8f1`. See §20. **THE MIGRATION IS COMPLETE**: 49 of 51 shipped; change 33 is held by the error-message audit and change 78 was reclassified as a feature, and neither is a migration. Change 50 was approved, built, and REVERSED on sight — the Settings drawer keeps its header, see §20.4)
 owner: Destin (decisions) / Claude (spec)
 ---
 
@@ -25,16 +27,25 @@ owner: Destin (decisions) / Claude (spec)
 > 2026-07-24** (PR #249, `335ca46f`, §19 — plus wecoded-marketplace #64 and wecoded-themes #25, the
 > other two copies of the shared contrast rules).
 >
-> **TRANCHE 8 (session-8 additions 41–51) IS THE ONLY TRANCHE LEFT**, plus **held change 33**
-> (ErrorState, waits on the error-message audit) and **deferred change 78** (folder picker →
-> Select; it's a feature, needs a recents list). Ignore any older note telling you to pull
-> change 37 (creme contrast) forward — §19.1 verified it shipped back on 2026-07-19.
-> **Audit tranche 8 before implementing it**: change 41's CloseButton half already shipped in
-> tranche 2, and tranche 4 moved seven settings popups onto a shared shell, so its real scope
-> is smaller than the ledger's.
+> **TRANCHE 8 MERGED 2026-07-24 (PR #252, `a5e6e8f1`, §20) — THE MIGRATION IS COMPLETE.**
+> 49 of 51 changes shipped. The two that did not are not migrations and are tracked on the
+> ROADMAP, not here: **change 33** (ErrorState) is held because its per-site
+> recoverable-vs-general split IS the error-message audit's core decision, and **change 78**
+> (folder picker → Select) was reclassified as a feature — it needs a recents list that does
+> not exist anywhere in the app.
 >
-> **When tranche 8 lands, the migration is done — and Destin wants a whole-UI review pass at
-> that point** (ROADMAP, added 2026-07-24). Expect minor tweaks to theme tokens and individual
+> **This document is now history, not instructions.** Three things in it will actively
+> mislead if read as a to-do:
+> 1. **Change 50 was approved, built, and REVERSED on sight** (§20.4). The Settings drawer
+>    KEEPS its title row and ✕. Do not re-delete them on the strength of the 2026-07-16
+>    approval recorded below.
+> 2. **Every tranche's audit found the ledger wrong** — overstated in 3 and 8, understated in
+>    1, 2 and 4, silently split across tranches in 6. Counts here are hypotheses.
+> 3. Ignore any note telling you to pull change 37 (creme contrast) forward — §19.1 verified
+>    it shipped on 2026-07-19.
+>
+> **Destin wants a whole-UI review pass now that this is done** (ROADMAP, added 2026-07-24).
+> Expect minor tweaks to theme tokens and individual
 > elements afterwards; they go through `components/ui/` and the tokens, never into individual
 > components, which is the entire point of having done this.
 >
@@ -2091,3 +2102,146 @@ failure surfaces on somebody else's submission, which is worse.)
 feature). Note change 41's CloseButton half already shipped in tranche 2, and tranche 4 moved seven
 settings popups onto a shared shell — **audit 41 before implementing it; its real scope is smaller
 than the ledger's.**
+
+---
+
+## 20. Tranche 8 — the last tranche (41, 44–51), audited 2026-07-24, MERGED
+
+**youcoded PR #252, merge `a5e6e8f1`.** CI green on all four legs. This closes the
+migration: 49 of the 51 changes have shipped, and the two that have not are not
+migrations (§20.6).
+
+### 20.1 Three of eleven were already done
+
+Same lesson as every prior tranche, so it is now a rule rather than an anecdote:
+**the ledger is a record of what was DECIDED, never of what is DONE.**
+
+| # | Ledger | Reality on 2026-07-24 |
+|---|---|---|
+| 41 | 9 icon idioms, ≥8 popup ✕, 6 named sites | ~80% shipped in tranche 2 (change 76's CloseButton sweep) + the InputBar send button |
+| 42 | Textarea at 11 sites | **shipped** in tranche 2 |
+| 43 | `--on-destructive` derivation | **shipped** in tranche 0 |
+| 46 | ProgressBar — "FirstRunView already matched" | **zero** consumers — see §20.2 |
+
+### 20.2 The find: a local declaration shadowing a shared primitive
+
+`FirstRunView.tsx` declared its **own** `function ProgressBar({ percent })` — a
+near-exact copy of the shared one (same track, same fill, same tabular label).
+That local declaration shadowed the import site, so:
+
+- the primitive read as adopted (`<ProgressBar percent={…} />` appears in the file)
+  while actually having **no consumers at all**, and
+- the file the spec called "already matched" was the precise reason nobody noticed.
+
+This is the second time this workstream has found a shadow copy (tranche 3 found
+`SkillCard`'s dead `marketplace` variant), and the first where a grep for the
+component name actively *hid* the problem.
+
+**Guard: `desktop/tests/primitive-adoption.test.ts`** — every `components/ui/`
+primitive must have a call site outside `components/ui/`. Seven primitives shipped
+in tranche 0 and sat unused for weeks; an unused primitive is a copy waiting to
+happen. Mutation-verified with a deliberately unadopted file.
+
+### 20.3 Two things the Toast ledger did not anticipate
+
+**The primitive would have shipped a dead button.** `<Toast>` is
+`pointer-events-none` so it never swallows a click meant for the app underneath —
+correct, and incompatible with App's toast carrying a real "Send anyway" action
+(`onSendBlocked`). Routing it through `message` inherits the body's
+pointer-events and renders a button that cannot be clicked. Added an explicit
+`action` slot that is `pointer-events-auto`.
+
+**The 14 manual timers did not agree.** They ran 3s/4s/6s/8s, scaled to how much
+text there was to read — the 8s ones are the cross-device handoff warnings.
+Collapsing to one primitive default would have silently cut those to 3s. Duration
+moved onto the toast state; every call site keeps its own. All 14 `setTimeout`s
+are gone, and each was a chance to leak a timer past unmount.
+
+`LikeButton` keys its toast on a **nonce** because the primitive re-arms its timer
+on message CHANGE, and both its call sites show the same string — without it, a
+second failure inside the window inherits the first one's remaining time.
+
+### 20.4 Change 50 was approved, built, and REVERSED on sight
+
+The headerless Settings drawer was approved 2026-07-16, implemented here, and
+rejected by Destin the moment he saw it in a dev instance (2026-07-24). Esc and
+click-outside genuinely work — that was verified in code before the ✕ came out —
+but the title row is what tells you which drawer you are in, and the ✕ is the
+affordance a non-technical user reaches for. **Design rule 12 gets NO
+Settings-drawer exception.** Do not re-delete the header on the strength of the
+2026-07-16 approval above; this note supersedes it.
+
+The ✕ did not revert all the way: it returns as the shared `<CloseButton>` rather
+than the bare `text-lg w-8 h-8` button, since every other closer went through that
+component in tranche 2.
+
+**The reusable lesson is the macOS coupling.** The header carried
+`.mac-titlebar-inset .settings-drawer-header { padding-top: 28px }` — the only
+thing keeping the first row clear of the native traffic lights. Deleting the
+header moved it to the scroll body; reverting moved it back. The guard now pins
+the **coupling** rather than either arrangement: it reads which anchor
+`SettingsPanel` actually uses and requires `globals.css` to pad that same
+selector. Break the pair and macOS renders the drawer under the window buttons —
+a failure no Linux or Windows session would ever see.
+
+### 20.5 Judgment calls made without asking
+
+- **ConnectFour's `bg-red-600`/`bg-yellow-500` pieces stay hardcoded.**
+  `state.myColor === 'red'` — the colour is a wire-protocol value identifying which
+  player you are, not styling. Theming it desyncs the board from game state. Same
+  for GameChat's speaker colours and GameOverlay's winner headline.
+- **ThemeScreen's swatch button uses `bg-current/15`, not the ghost Button's
+  `hover:bg-inset`.** That button floats on a swatch painted in the PREVIEWED
+  theme's colours, so an app-theme fill can land invisible on any given swatch.
+  `bg-current` resolves to the inline colour — that theme's own fg — and reads on
+  light and dark swatches alike, which 20% black never did. This retires the app's
+  last raw `hover:bg-black/20`.
+- **TerminalToolbar keeps 40×40 rather than taking `size="icon"`'s 28px.** It is a
+  primary touch control floating over a terminal; a 30% shrink would be a
+  regression dressed as consistency. It takes the focus ring and an accessible
+  name instead — the labels are bare arrow glyphs that announced as "up arrow".
+- **Challenge is `secondary`, not `primary`.** The first pass only recoloured it,
+  which left the lobby arguing with itself — the friend-request row above had real
+  Buttons while the friends row styled its only action as text. Primary would put
+  a filled accent button on every online friend.
+
+### 20.6 What is left, and why neither is a migration
+
+- **Change 33 (ErrorState)** — HELD, and correctly so. Its per-site
+  recoverable-vs-general split IS the error-message audit's core decision, not a
+  styling call. The component is built and has call sites; the audit consumes it.
+  Tracked by the error-message-standards ROADMAP entry, not here.
+- **Change 78 (folder picker → Select)** — reclassified in tranche 2 (§11.10).
+  `projectFolder` is a single string and no recents list exists anywhere in the
+  app, so it needs a new settings key + IPC + cap + eviction policy. A feature.
+  Now has its own ROADMAP entry.
+
+### 20.7 Behavior changes for the release notes
+
+1. **Friend-request Accept/Decline and Challenge are real buttons**, not coloured
+   text. Accept was `text-green-400` — "yes" by colour alone, the exact pairing
+   rule 5 retires.
+2. **Library's inactive tabs** lose their permanent fill (hover reveals the tint)
+   and shrink one type step.
+3. **Settings rows** read one step larger at the same ~50px height.
+4. **The Settings ✕** is 28px rather than 32px and now has a focus ring and an
+   accessible name (it announced as "✕").
+5. **Toasts** in the theme detail overlay grow `text-3xs` → `text-sm`, matching
+   every other toast instead of being a third size.
+6. **The update panel shows a real progress bar** — download progress previously
+   existed only as a percentage inside a disabled, dimmed button label.
+7. **Toggles are easier to hit on Android** (invisible 44×44 target; desktop
+   byte-identical).
+8. Community themes' **game-lobby links and errors now follow the theme** instead
+   of a hardcoded blue/red.
+
+### 20.8 The workstream, closed
+
+Eight tranches, 2026-07-16 → 2026-07-24. Every tranche's audit found the ledger
+wrong — overstated in 3 and 8, understated in 1, 2 and 4, split across tranches in
+6. **The one rule worth carrying forward: audit before editing, and treat a
+count in a spec as a hypothesis.**
+
+**Destin wants a whole-UI review pass now that this is done** (ROADMAP,
+2026-07-24). Tweaks from it go through `components/ui/` and the theme tokens —
+never into individual components, which is the entire point of having done this.

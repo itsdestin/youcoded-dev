@@ -6,7 +6,7 @@ subject: Resume the UI-consistency sweep — audit + plan for tranches 3–8
 type: handoff
 kind: plan-seed
 roadmap: "ROADMAP.md — 'UI consistency system — shared primitives + the 51-change migration' (#ui, added 2026-07-16)"
-supersedes-context: docs/active/handoffs/2026-07-19-ui-consistency-tranche-3-handoff.md
+supersedes-context: docs/archive/handoffs/2026-07-19-ui-consistency-tranche-3-handoff.md
 ---
 
 # Handoff — UI consistency, resuming at tranche 3
@@ -66,12 +66,12 @@ Create button, `index.tsx`'s hardcoded blue, `App.tsx`'s third skip-permissions 
 
 ## Where to read (do NOT read §1–§9 literally)
 
-- **Spec:** `docs/active/specs/2026-07-16-ui-consistency-design-spec.md`. Start at **§10** — the
+- **Spec:** `docs/archive/specs/2026-07-16-ui-consistency-design-spec.md`. Start at **§10** — the
   head note warns that five recipes in §1–§9 are WRONG against the real codebase and following them
   reintroduces now-fixed, test-pinned bugs. Implementation logs: **§10** (tranche 0/1), **§11**
   (buttons), **§12** (contrast — shipped), **§13** (inputs). The remaining tranche ledger is **§2**
   (Sessions 3–8, changes 22–51) with §11/§13 as the model for how to actually execute one.
-- **Prior handoff (still valid context):** `docs/active/handoffs/2026-07-19-ui-consistency-tranche-3-handoff.md`
+- **Prior handoff (still valid context):** `docs/archive/handoffs/2026-07-19-ui-consistency-tranche-3-handoff.md`
   — carries the residue list (don't re-discover these), the queued Destin-eyeball items, and the
   process notes below.
 

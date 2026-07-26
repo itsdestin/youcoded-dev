@@ -6,7 +6,7 @@ description: Render pixel-faithful YouCoded UI mockups as interactive HTML artif
 # YouCoded UI Mockup Workflow
 
 Established with Destin during the 2026-07-16 UI-consistency sessions (7 artifacts, 40 approved
-changes — see `docs/active/specs/2026-07-16-ui-consistency-design-spec.md` for the output format
+changes — see `docs/archive/specs/2026-07-16-ui-consistency-design-spec.md` for the output format
 this produced). The bar: **every render uses the exact `className` strings from app source on top
 of the app's real token values**, so what he approves is what ships.
 

@@ -4,7 +4,7 @@ date: 2026-07-26
 owner: Destin (decisions) / Claude (spec)
 artifact: https://claude.ai/code/artifact/7e886cfc-9957-4e5f-918d-3d83bd77e0a6
 supersedes: nothing
-extends: docs/active/specs/2026-07-16-ui-consistency-design-spec.md
+extends: docs/archive/specs/2026-07-16-ui-consistency-design-spec.md
 ---
 
 # Menu Internals Design System — the kit (K1–K12) + the navigation drafts (D1–D4)
