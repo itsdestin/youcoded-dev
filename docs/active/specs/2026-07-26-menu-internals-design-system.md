@@ -1,6 +1,8 @@
 ---
-status: draft
+status: active
 date: 2026-07-26
+amended: 2026-07-26 (D2 DECIDED = A; re-measured against post-tranche-8 master — three counts in the
+  original draft were stale, see §0)
 owner: Destin (decisions) / Claude (spec)
 artifact: https://claude.ai/code/artifact/7e886cfc-9957-4e5f-918d-3d83bd77e0a6
 supersedes: nothing
@@ -9,9 +11,38 @@ extends: docs/archive/specs/2026-07-16-ui-consistency-design-spec.md
 
 # Menu Internals Design System — the kit (K1–K12) + the navigation drafts (D1–D4)
 
-**Status: DRAFT. Nothing here is approved yet.** The kit is stable enough to implement; the
-navigation model (D2) is an open decision. Do not start work from this document until Destin
-approves by number.
+**Status: APPROVED, implementation not started.** Destin approved the kit and chose **D2 = A**
+(drawer + modals) on 2026-07-26. D1 and D3 follow from that. D4 shipped independently.
+
+---
+
+## 0. Amendment — re-measurement against post-tranche-8 master (2026-07-26)
+
+The original draft was measured on 2026-07-25 against `b0f990b9`. Between then and approval, the
+**entire 2026-07-16 UI-consistency workstream closed** (tranche 8, youcoded PR #252, merge
+`a5e6e8f1`; spec archived in workspace `2d71a34`). Three numbers in the draft are now wrong, and one
+headline finding is dead. Corrected here rather than silently in place, because the retired finding
+was cited as a reason to do the work.
+
+| Item | Draft said | Actually now | Effect |
+|---|---|---|---|
+| **D4 type tokens** | ~538 raw sites, prerequisite, blocking | **SHIPPED** (tranche 6). `--text-2xs/3xs/4xs` exist in `globals.css:229-231`; `text-[10px]` 313→**1**, `text-[11px]` 190→**1**, `text-3xs` now **333** sites | **Unblocks everything.** No longer a prerequisite tranche |
+| **K3 — `SegmentedTabs` has zero call sites** | headline finding | **STALE.** Tranche 8 adopted it in **2** places: `BugReportPopup.tsx`, `LibraryScreen.tsx` | The *lesson* survives (see below); the *count* does not. K3's remaining scope is the 4 hand-rolled groups, all still present |
+| **K10 — ad-hoc states** | 17 `animate-pulse` sites | **9** remaining; 13 files now use `states.tsx` | Scope roughly halved |
+| **K1 — section labels** | ~30 sites across 3 shapes | **78** across 3 shapes — I under-measured a **49-site** variant that writes the same classes in a different order (`uppercase tracking-wider text-fg-muted`) | **Scope more than doubled.** K1 is the largest kit item, not a rounding error |
+| **K8 — dividers** | 15 | **4** `<hr>` | Smaller |
+| **Sound audition bug** | live | **still live**, `SettingsPanel.tsx:354` | Unchanged |
+
+**The `SegmentedTabs` lesson still holds and is now better evidenced.** Tranche 8's own audit found
+`FirstRunView` declaring a **local `ProgressBar`** that shadowed the shared import — so grepping the
+component name matched, and the primitive read as adopted while having zero real consumers. That is
+the second shadow copy the workstream found, and the first where the grep actively concealed it. It
+is now guarded by `youcoded/desktop/tests/primitive-adoption.test.ts`. **Any new primitive this spec
+introduces must land with its call-site migration in the same PR and an entry in that test** — the
+generalized form of what I originally observed about `SegmentedTabs`.
+
+**Consequence for sequencing:** the tranche this spec called "prerequisite" is done. Implementation
+can begin immediately with the mechanical, D2-independent work.
 
 ## Why this exists
 
@@ -41,7 +72,7 @@ Each role: what it is · what it replaces · the exact recipe. Class strings are
 rendered against real theme tokens across Midnight / Crème / Halftone Dimension / Dark / Light.
 
 Type sizes are written as tokens (`text-2xs` = 11px, `text-3xs` = 10px, `text-4xs` = 9px). **These
-tokens do not exist yet** — they are spec change 35, tranche 6, still open. See D4.
+tokens now exist** — `globals.css:229-231`, shipped in tranche 6. See §0.
 
 ### K1 — Section label · retires 4 shapes
 
@@ -51,10 +82,24 @@ tokens do not exist yet** — they are spec change 35, tranche 6, still open. Se
 
 Sentence case, not Title Case. Always `<h3>`.
 
-Retires: `h3 text-[10px] uppercase` (×22, the plurality — this is the winner, retyped), `label
-text-xs uppercase` (×7 — and none of them have `htmlFor`, so the `<label>` element is wrong on
-a11y grounds as well as visual), `h4 text-sm font-semibold` + AnchorTip (ModelProvidersPopup's
-`SectionHeader`, the app's only `h4`-as-section-header), `h4 text-[10px] uppercase` (AboutPopup).
+**78 sites across 3 orderings** (re-measured post-tranche-8 — the draft said ~30; see §0). This is
+the largest single item in the kit.
+
+| Variant | Sites | Note |
+|---|---|---|
+| `text-3xs font-medium text-fg-muted tracking-wider uppercase` | 22 | The canonical order — this is the winner |
+| `uppercase tracking-wider text-fg-muted` (reversed) | **49** | Same classes, different order. Renders identically, greps differently — which is exactly why the draft missed it |
+| `text-xs font-medium text-fg-muted tracking-wider uppercase` | 7 | One size too large |
+
+Also retires, by element rather than by class string: `h4 text-sm font-semibold` + AnchorTip
+(ModelProvidersPopup's `SectionHeader`, the app's only `h4`-as-section-header), `h4` + uppercase
+(AboutPopup), and the `<label>` element used as a heading (**none of them have `htmlFor`**, so it is
+an a11y defect, not just a visual one).
+
+> **Method note.** The 49-site variant was invisible to the draft's grep because Tailwind class
+> order is semantically irrelevant but textually decisive. Any future audit of a multi-class recipe
+> must match on the *set* of classes, not the string. This is the same failure mode as the shadowed
+> `ProgressBar` in §0: the grep matched what it was asked, and the question was wrong.
 
 A section label never labels a single control. If a control needs a label, that's K2's title.
 (Session Defaults' "Close-session prompt" is the one violation.)
@@ -120,9 +165,11 @@ variant, hand-rolled), Sync filters (`rounded-full px-3 py-1 text-[11px]`).
 
 That's **4 radii, 4 text sizes, 3 inactive treatments** for one function.
 
-> **Finding worth keeping:** `ui/SegmentedTabs.tsx` already exists, shipped as spec change 45, and
-> **has zero call sites in the renderer.** The primitive was built and never adopted. K3 is mostly
-> an adoption task, not a design task.
+> **Amended 2026-07-26 — the "zero call sites" claim is no longer true.** Tranche 8 adopted
+> `SegmentedTabs` in `BugReportPopup.tsx` and `LibraryScreen.tsx`. All four hand-rolled groups above
+> are still present, so K3 remains an adoption task — just from 2 call sites, not 0. The durable
+> lesson (a primitive must ship with its call-site migration, now guarded by
+> `tests/primitive-adoption.test.ts`) is in §0.
 
 ### K4 — Callout (passive information) · retires 3 geometries
 
@@ -397,7 +444,18 @@ Retires 14 bespoke widths, 6 height values, 3 centering techniques, 4 header pad
 
 `SettingsPopup.tsx` is the seed — it is already correct, it just has **7 callers out of ~42**.
 
-### D2 — Navigation model *(OPEN — this is the blocking decision)*
+### D2 — Navigation model · **DECIDED 2026-07-26: A (drawer + modals)**
+
+**Destin chose A.** Rationale as presented and accepted: A is a strict subset of B, B is what C
+degrades to below 640px, and the kit is ~80% of the work in all three — so A costs nothing if B or C
+is wanted later. C was declined because it re-opens two decisions made within the preceding ten days
+(change 50's headerless drawer; the 2026-07-23 git-branch popup spec) and its case does not clear
+that bar.
+
+**What A accepts, explicitly:** 6 modal-on-modal sites and up to 2 stacked scrims remain. Those are
+the known cost of this choice, not an oversight — B and C are the fixes, and they stay available.
+
+The comparison is preserved below as the record of what was weighed.
 
 | | **A · Strict shell** | **B · Drill-in stack** | **C · Workbench** |
 |---|---|---|---|
@@ -423,26 +481,27 @@ A first costs nothing if B or C is wanted later.
 
 C only makes sense if Destin actively wants those re-opened.
 
-### D3 — Chip popups
+### D3 — Chip popups · **DECIDED by D2: centered modal**
 
-Follows from D2: centered modal (A/B) or anchored popover (C). Under C, popovers use
-`POPOVER_Z = 9001` from `Overlay.tsx:32`, already the sanctioned tier.
+Follows from A. The 2026-07-23 git-branch popup spec stands unchanged. Anchored popovers
+(`POPOVER_Z = 9001`, `Overlay.tsx:32`) stay available if C is ever revisited.
 
-### D4 — Type tokens land first
+### D4 — Type tokens · **SHIPPED (tranche 6), not part of this work**
 
-Spec change 35 (tranche 6): `--text-2xs: 11px`, `--text-3xs: 10px`, `--text-4xs: 9px`, then a
-mechanical rename of ~538 raw `text-[Npx]` sites. **Zero visual change.** Every recipe in this
-document is written in those tokens, so this is a prerequisite, not a parallel track.
+`--text-2xs: 11px`, `--text-3xs: 10px`, `--text-4xs: 9px` are live at `globals.css:229-231`, and the
+mechanical rename landed: `text-[10px]` 313→1, `text-[11px]` 190→1, `text-3xs` now 333 sites. The
+draft listed this as a blocking prerequisite; it is done. See §0.
 
 ---
 
 ## 6. Ledger
 
-Approve by number. K-numbers are shell-agnostic and can be approved independently of D2.
+**All K-numbers and D1/D2/D3 approved by Destin 2026-07-26.** D4 shipped separately. Counts are
+post-tranche-8 (see §0).
 
 | # | What | Retires |
 |---|---|---|
-| K1 | Section label: `h3 text-3xs font-medium text-fg-muted tracking-wider uppercase mb-2`, sentence case | 4 shapes |
+| K1 | Section label: `h3 text-3xs font-medium text-fg-muted tracking-wider uppercase mb-2`, sentence case | **78 sites**, 3 orderings + 2 wrong elements |
 | K2 | One setting row, 4 control slots; description always in the left column | 5 shapes |
 | K3 | Choice group: ≤4 → segmented · needs description → radio list · >5 → Select | 7 recipes |
 | K4 | Callout `rounded-lg p-3 border`, 3 tones | 3 geometries |
@@ -451,13 +510,13 @@ Approve by number. K-numbers are shell-agnostic and can be approved independentl
 | K7 | Typed+submit → InputGroup · chosen elsewhere → K2 value row + Change | button-as-field |
 | K8 | No decorative dividers in a menu body | 4 idioms |
 | K9 | Danger zone: last, K1 + danger callout + arm/confirm, kept together | 3 bespoke zones |
-| K10 | LoadingState / EmptyState / ErrorState everywhere | 3 ad-hoc; unblocks change 33 |
+| K10 | LoadingState / EmptyState / ErrorState everywhere | 9 remaining `animate-pulse` + ad-hoc |
 | K11 | Footer = commit/dismiss only, no prose; autosaving menus have none | 3 conventions |
 | K12 | One explainer renderer for the existing payload | 5 mechanisms |
 | D1 | One `<Dialog>` shell: ladder 340/420/560/820, `max-h-[80vh]`, no fixed `h-` | 14 widths, 6 heights, 3 centering techniques |
-| **D2** | **Navigation model: A / B / C** | **— OPEN** |
-| D3 | Chip popups: modal (A/B) or popover (C) | — |
-| D4 | Type tokens first (change 35, tranche 6) | 538 raw `text-[Npx]` |
+| **D2** | **Navigation model = A (drawer + modals)** | **DECIDED 2026-07-26** |
+| D3 | Chip popups = centered modal (follows from A) | DECIDED 2026-07-26 |
+| ~~D4~~ | ~~Type tokens~~ | **SHIPPED** in tranche 6 |
 
 ---
 
@@ -479,13 +538,19 @@ Approve by number. K-numbers are shell-agnostic and can be approved independentl
 
 ## 8. Open questions
 
-1. **D2** — the navigation model. Blocking.
-2. **Sound `desc` field** — add the tone signatures as data, or ship title-only rows?
-3. **Appearance / Sync / Providers / About reorganisations** — the artifact renders these with copy
+~~1. **D2**~~ — decided 2026-07-26 = A. ~~4. **Tranche ordering**~~ — moot; tranches 6 and 8 both
+shipped, nothing overlaps any more (§0).
+
+Remaining, none blocking the first tranche:
+
+1. **Sound `desc` field** — add the tone signatures ("C5 → E5") as data, or ship title-only rows?
+   Cheap either way; decide at implementation.
+2. **Appearance / Sync / Providers / About reorganisations** — the artifact renders these with copy
    written by Claude, not shipped copy. They need a copy pass before implementation. (About's
-   privacy paragraphs are exempt: relocate verbatim.)
-4. **Tranche ordering vs the existing spec** — this work overlaps open tranches 6 (type tokens, a
-   prerequisite) and 8 (Session-8 additions 41–51). Sequencing to be decided when D2 lands.
+   privacy paragraphs are exempt: relocate verbatim.) **Gates tranche 3 only.**
+3. **K2 density at scale** — every menu becomes a stack of `bg-inset/50` rounded rows. Judgeable
+   today from the artifact §3 grid, especially in Halftone where 2–3× radii exaggerate it. If the
+   texture reads as monotonous, better to know before 16 migrations than after.
 
 ## 9. Artifact
 
