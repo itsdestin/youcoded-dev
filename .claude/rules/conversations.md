@@ -3,12 +3,19 @@ paths:
   - "youcoded/desktop/src/main/conversations/**"
   - "youcoded/desktop/src/main/session-browser.ts"
   - "youcoded/desktop/src/main/device-identity.ts"
-last_verified: 2026-07-23
+  # Owns the desktop→claude id map this rule's invariants depend on. Was absent
+  # until 2026-07-26, so editing it injected NO rule — exactly the file where
+  # the wrong-transcript bug landed.
+  - "youcoded/desktop/src/main/session-id-mapping.ts"
+last_verified: 2026-07-26
 verify:
   - path: youcoded/desktop/src/main/conversations/transcript-mirror.ts
     contains: "shrunk"
   - path: youcoded/desktop/src/main/conversations/store-core.ts
     contains: "mergeRecords"
+  - path: youcoded/desktop/src/main/session-id-mapping.ts
+    contains: "startup"
+  - test: youcoded/desktop/tests/session-id-mapping.test.ts
   - path: youcoded/desktop/src/main/conversations/takeover.ts
   - path: youcoded/desktop/src/main/conversations/service.ts
     contains: "containedTranscriptPath"
@@ -55,7 +62,7 @@ Records at `~/YouCoded/Personal/Conversations/<provider>/<id>.json` (`claude/` a
 
 ## Resume Browser & identity (`session-browser.ts`) — guard: `session-browser.test.ts`
 - **Topic-file mtime IS the index's `lastActive`** — topic rewrites MUST preserve the original mtime (`fs.utimesSync`; `regenerateTopicCache()` does), else a feedback loop bumps every session and breaks the 30-day prune.
-- **`sessionIdMap` remaps ONLY on `SessionStart`** (CC rotates its id on `/clear`; subagent events carry child ids that poison the map).
+- **`sessionIdMap` remaps ONLY on a `SessionStart` whose `source` is not `startup`** (CC rotates its id on `/clear`; subagent events carry child ids that poison the map). A `startup` on an already-mapped session is a FOREIGN nested `claude` inheriting our `CLAUDE_DESKTOP_SESSION_ID` — adopting it replayed an unrelated conversation into chat view (2026-07-26). Fail-open on a missing `source`; first sighting never gated. Guard: `session-id-mapping.test.ts`.
 - **Name precedence: topic file > index topic > derived-from-first-user-message > "Untitled"** — the derived title + content-timestamp ordering exist because auto-title is PostToolUse-gated + mtimes lie after restore.
 - **Index keys are CC UUIDs — `SESSION_UUID_RE` gates topic-scan creation** (flagged malformed entries are KEPT). **`cleanupPeriodDays` seeded 365 when absent, never overwritten** (CC's 30-day default deletes transcripts).
 
