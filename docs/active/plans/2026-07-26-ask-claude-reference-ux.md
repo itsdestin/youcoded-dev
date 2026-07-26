@@ -107,7 +107,7 @@ if Destin wants to stop and dogfood the behaviour before the animation lands, Ta
 - Consumes: nothing.
 - Produces:
   - `type PendingReference = { kind: 'chat-text' | 'chat-code' | 'artifact'; label: string; promptText: string; anchor: ReferenceAnchor | null }`
-  - `type ReferenceAnchor = { hostSelector: string; runSelector: string | null }`
+  - `type ReferenceAnchor = { host: Element; range: Range | null }`
   - `function ReferenceProvider({ sessionId, children }: { sessionId: string; children: React.ReactNode }): JSX.Element`
   - `function useReference(): { reference: PendingReference | null; setReference: (r: PendingReference | null) => void; clearReference: () => void }`
 
@@ -209,10 +209,10 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
  * send time, so the textarea only ever contains the user's own words.
  */
 export type ReferenceAnchor = {
-  /** CSS selector re-finding the element the reference came from. */
-  hostSelector: string;
-  /** Selector for the selected runs inside the host, or null for a whole-element reference. */
-  runSelector: string | null;
+  /** The element the reference came from. Held directly — see the note below. */
+  host: Element;
+  /** Live Range over the selection, or null for a whole-element reference. */
+  range: Range | null;
 };
 
 export type PendingReference = {
@@ -453,7 +453,7 @@ describe('buildChatReference', () => {
     selectWithin(el, 6, 11); // "bravo"
     const ref = buildChatReference(el, el)!;
     expect(ref.promptText).toContain('"bravo"');
-    expect(ref.anchor?.runSelector).not.toBeNull();
+    expect(ref.anchor?.range).not.toBeNull();
   });
 
   it('returns null when there is nothing to quote', () => {
@@ -532,36 +532,27 @@ import type { PendingReference } from '../../state/reference-context';
  * is what makes it testable — and keeps build-menu.ts a pure DOM-inspection module.
  */
 
-/** Marks the element a reference came from, so the overlay can re-find it. */
-const HOST_ATTR = 'data-reference-host';
-const RUN_ATTR = 'data-reference-run';
-let hostSeq = 0;
-
-function tagHost(el: Element): string {
-  const id = String(++hostSeq);
-  el.setAttribute(HOST_ATTR, id);
-  return `[${HOST_ATTR}="${id}"]`;
-}
-
 /**
- * Wraps the current selection in marker spans so the overlay can re-measure it
- * later. getClientRects() on these spans returns ONE RECT PER LINE BOX — the
- * same shape Range.getClientRects() gives — which is what the union outline
- * (Task 5) traces. Returns null when the selection can't be wrapped (it crosses
- * element boundaries, which surroundContents rejects).
+ * Captures the live selection as a Range.
+ *
+ * NEVER mutate the DOM to mark a selection. An earlier draft of this wrapped the
+ * selection in marker spans via Range.surroundContents(); that SPLITS the text
+ * node it wraps, and chat bubbles are plain React-rendered children — React's
+ * fiber still points at the original single text node, so the next reconcile of
+ * that subtree throws NotFoundError: removeChild and takes the renderer down.
+ *
+ * A cloned live Range needs no mutation at all: it re-measures itself as the page
+ * scrolls, and getClientRects() returns ONE RECT PER LINE BOX — exactly the shape
+ * the union outline (Task 5) traces. If React ever does replace the nodes it
+ * spans, it simply yields no rects and the overlay falls through to the
+ * whole-host outline, which is the designed fallback (spec §7).
  */
-function tagSelectionRuns(hostId: string): string | null {
+function captureRange(): Range | null {
   const sel = window.getSelection();
   if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return null;
-  try {
-    const span = document.createElement('span');
-    span.setAttribute(RUN_ATTR, hostId);
-    sel.getRangeAt(0).surroundContents(span);
-    return `[${RUN_ATTR}="${hostId}"]`;
-  } catch {
-    // Selection spans multiple elements — fall back to a whole-element outline.
-    return null;
-  }
+  // cloneRange: the live selection is cleared the moment focus moves to the
+  // composer, which would empty a borrowed reference out from under us.
+  return sel.getRangeAt(0).cloneRange();
 }
 
 /** One-line, bounded placeholder copy. Newlines collapse so it can't wrap. */
@@ -596,15 +587,13 @@ export function buildChatReference(bubble: Element | null, target: HTMLElement):
       : 'Regarding this:';
 
   const host = (bubble ?? target) as Element;
-  const hostSelector = tagHost(host);
-  const hostId = host.getAttribute(HOST_ATTR)!;
-  const runSelector = selectionText().trim() ? tagSelectionRuns(hostId) : null;
+  const range = selectionText().trim() ? captureRange() : null;
 
   return {
     kind: 'chat-text',
     label: `"${truncateLabel(quote)}"`,
     promptText: scaffold(lead, quote, false),
-    anchor: { hostSelector, runSelector },
+    anchor: { host, range },
   };
 }
 
@@ -614,7 +603,7 @@ export function buildCodeReference(pre: HTMLElement): PendingReference {
     kind: 'chat-code',
     label: truncateLabel(code),
     promptText: scaffold('Earlier, you shared this code:', code, true),
-    anchor: { hostSelector: tagHost(pre), runSelector: null },
+    anchor: { host: pre, range: null },
   };
 }
 
@@ -628,8 +617,6 @@ export function buildArtifactReference(container: HTMLElement): PendingReference
   if (!sel || !path) return null;
 
   const ref = describeArtifactSelection(sel, container);
-  const hostSelector = tagHost(container);
-  const hostId = container.getAttribute(HOST_ATTR)!;
 
   return {
     kind: 'artifact',
@@ -637,7 +624,7 @@ export function buildArtifactReference(container: HTMLElement): PendingReference
     // line form reads well with "of <file>".
     label: ref.startsWith('line') ? `${ref} of ${baseName(path)}` : truncateLabel(ref),
     promptText: `The user is referencing ${ref} from "${path}". Respond to the following prompt accordingly:\n\n`,
-    anchor: { hostSelector, runSelector: tagSelectionRuns(hostId) },
+    anchor: { host: container, range: captureRange() },
   };
 }
 ```
@@ -1576,15 +1563,18 @@ export function useReferenceGeometry(anchor: ReferenceAnchor | null): { d: strin
 
   const measure = useCallback(() => {
     if (!anchor) { setGeom({ d: '', rects: [] }); return; }
-    const host = document.querySelector(anchor.hostSelector);
-    if (!host) { setGeom({ d: '', rects: [] }); return; }
+    const host = anchor.host;
+    if (!host.isConnected) { setGeom({ d: '', rects: [] }); return; }
 
     // Trace the SELECTION when there is one (Destin's 9B call); fall back to
     // the whole host element's box when there isn't — which is exactly the
     // no-selection case that already references the entire message.
-    const rects = anchor.runSelector
-      ? [...document.querySelectorAll(anchor.runSelector)].flatMap((n) => [...n.getClientRects()])
-      : [host.getBoundingClientRect()];
+    // A live Range re-measures itself as the page scrolls — no stored rects, no
+    // DOM mutation. If React ever replaces these nodes the Range yields no rects
+    // and we fall through to the whole-host outline, which is the designed
+    // fallback (spec 7).
+    const runRects = anchor.range ? [...anchor.range.getClientRects()] : [];
+    const rects = runRects.length ? runRects : [host.getBoundingClientRect()];
 
     // Viewport-relative: the trace SVG is position:fixed, so the "host" origin
     // for toBoxes is the viewport itself.
@@ -1602,7 +1592,7 @@ export function useReferenceGeometry(anchor: ReferenceAnchor | null): { d: strin
     // pane) re-measures — scroll does not bubble.
     window.addEventListener('scroll', measure, true);
     const ro = new ResizeObserver(measure);
-    const host = document.querySelector(anchor.hostSelector);
+    const host = anchor.host;
     if (host) ro.observe(host);
     return () => {
       window.removeEventListener('resize', measure);
@@ -1715,7 +1705,7 @@ In `ReferenceOverlay.tsx`, add the lift. Chat kinds only:
   useEffect(() => {
     const node = liftRef.current;
     if (!node || !reference?.anchor) return;
-    const src = document.querySelector(reference.anchor.hostSelector);
+    const src = reference.anchor.host;
     if (!src) return;
 
     const s = src.getBoundingClientRect();
@@ -1750,10 +1740,10 @@ unmounting:
   useEffect(() => {
     const holder = holderRef.current;
     if (!holder || !reference?.anchor) return;
-    const src = document.querySelector(reference.anchor.hostSelector);
+    const src = reference.anchor.host;
     if (!src) return;
     const copy = src.cloneNode(true) as HTMLElement;
-    copy.removeAttribute('data-reference-host');   // don't duplicate the anchor id
+    // (nothing to strip — the anchor never wrote attributes onto the source)
     holder.replaceChildren(copy);
     return () => holder.replaceChildren();
   }, [reference]);
@@ -1941,3 +1931,35 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 
 Per spec §9: touch/long-press, narrow viewport below 640px, images, multiple simultaneous
 references, and a structured transcript reply-to relationship.
+
+---
+
+## Amendment — 2026-07-26, during execution (after Task 2 review)
+
+**The anchor must never mutate the DOM.** The original plan tagged the source
+element with a `data-reference-host` attribute and wrapped the selection in marker
+spans via `Range.surroundContents()`, storing CSS selectors in the anchor.
+
+The Task 2 reviewer demonstrated empirically that this crashes the renderer:
+`surroundContents()` splits the text node it wraps, and chat bubbles
+(`UserMessage.tsx`, `AssistantTurnBubble.tsx`) render their text as plain
+React-managed JSX children. React's fiber still references the original single text
+node, so the next reconcile of that subtree throws
+`NotFoundError: Failed to execute 'removeChild'` and takes down the chat view. The
+reviewer also found repeated right-clicks produced *nested*, accumulating marker
+spans, with no cleanup path anywhere in the renderer.
+
+The defect was dormant in Task 2 (nothing called the builders yet) and would have
+fired the moment Task 3 wired the menu.
+
+**Corrected design:** `ReferenceAnchor = { host: Element; range: Range | null }` —
+hold the element and a cloned live `Range` directly. This is renderer-local state
+that is never serialized, persisted, or sent over IPC, so holding node references is
+safe. A live Range re-measures itself across scrolls with no stored rects and no
+mutation; `getClientRects()` still returns one rect per line box, which is what the
+union outline traces. If React does replace the spanned nodes, the Range yields no
+rects and the overlay falls through to the whole-host outline — the fallback §7
+already specifies.
+
+Tasks 1, 2, 7 and 8 above have been rewritten in place to match. The corresponding
+spec section (§3.1) is amended in the same commit.

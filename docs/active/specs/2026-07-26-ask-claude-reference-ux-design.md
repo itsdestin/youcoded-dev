@@ -105,11 +105,18 @@ export type PendingReference = {
 };
 ```
 
-**The anchor stores selectors, not rects.** Rects are re-derived from the live DOM on every
-measure pass (§3.4), because a stored `DOMRect[]` goes stale the moment the transcript scrolls,
-the window resizes, or a drawer opens. A snapshot is taken only as the *fallback* value when the
-host has disappeared, and at that point the overlay stops anchoring entirely and renders the
-non-anchored centred card (§7).
+**The anchor stores live DOM handles, not rects and not selectors.** Rects are re-derived on every
+measure pass, because a stored `DOMRect[]` goes stale the moment the transcript scrolls, the window
+resizes, or a drawer opens.
+
+Selectors were the original design and were **withdrawn during implementation (2026-07-26)**: they
+required tagging the source element and wrapping the selection in marker spans via
+`Range.surroundContents()`, which splits a text node inside React-managed chat bubbles and crashes
+the renderer on the next reconcile (`NotFoundError: removeChild`). Holding the `Element` and a
+cloned live `Range` needs no mutation at all, and the `Range` re-measures itself. This is
+renderer-local state — never serialized, persisted, or sent over IPC — so node references are safe
+to hold. When React does replace the spanned nodes the Range yields no rects, and the overlay falls
+through to the whole-host outline (§7).
 
 Provides `{ reference, setReference, clearReference }`. **Keyed by session internally**, the same
 way `InputBar` already parks drafts (`draftsRef`, `InputBar.tsx:132`) — so switching sessions parks
