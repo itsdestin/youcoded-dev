@@ -100,10 +100,16 @@ export type PendingReference = {
   label: string;
   /** Prepended at send. NEVER rendered in the composer. */
   promptText: string;
-  /** Null when the source DOM is gone or never had rects. */
-  anchor: { hostSelector: string; rects: DOMRect[] } | null;
+  /** How to re-find the source. Null when it was never anchorable. */
+  anchor: { hostSelector: string; runSelector: string } | null;
 };
 ```
+
+**The anchor stores selectors, not rects.** Rects are re-derived from the live DOM on every
+measure pass (§3.4), because a stored `DOMRect[]` goes stale the moment the transcript scrolls,
+the window resizes, or a drawer opens. A snapshot is taken only as the *fallback* value when the
+host has disappeared, and at that point the overlay stops anchoring entirely and renders the
+non-anchored centred card (§7).
 
 Provides `{ reference, setReference, clearReference }`. **Keyed by session internally**, the same
 way `InputBar` already parks drafts (`draftsRef`, `InputBar.tsx:132`) — so switching sessions parks
@@ -256,6 +262,7 @@ z-index luck.
 | Actively streaming message | Menu row **disabled** with `title="Unavailable while Claude is still writing this message"` |
 | Second "Ask about this" while one is held | Replaces the held reference. No multi-reference support in v1 |
 | Send fails the pending-interaction gate (`InputBar.tsx:325-334`) | Reference is **retained**, matching how the draft is retained |
+| Cancel (Esc / scrim-click / ×) with text already typed | Clears **only** the reference. The draft is untouched — cancelling a reference is not a "discard my message" action |
 
 ---
 
