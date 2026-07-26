@@ -15,6 +15,9 @@ verify:
   - path: youcoded/desktop/src/renderer/components/ui/Button.tsx
     contains: "mergeClasses"
   - test: youcoded/desktop/src/renderer/components/ui/Button.test.tsx
+  - test: youcoded/desktop/tests/primitive-adoption.test.ts
+  - test: youcoded/desktop/tests/overlay-layer-authority.test.ts
+  - test: youcoded/desktop/tests/type-scale-authority.test.ts
 ---
 
 # React Renderer (shared desktop + Android WebView)
@@ -42,8 +45,8 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **Ch
 - **Do NOT add `min-w-0` to the left cluster** (it collapses below the gear's `shrink-0`, letting SessionStrip paint over it). Put `min-w-0` on an individual child instead. Layout is SPACE-aware (`packSessions()` + ResizeObserver, measured `clientWidth`), NOT viewport-aware — no `@media`/`hidden sm:`/`window.innerWidth`.
 - **`showCaptionButtons` must include Linux, not just Windows** — the window is frameless on BOTH; gate window-chrome on "not macOS" (`!isMac && !isAndroid() && !isRemoteMode()`), NEVER `navigator.platform === 'Win32'` (excludes Linux). Chat/terminal toggle placement is platform-conditional (right on macOS, left on Win/Linux). Announcement lives in StatusBar, not HeaderBar.
 
-## Control primitives (`components/ui/Button.tsx` et al.)
-- **Every button goes through `<Button>`** — never hand-roll `bg-accent text-on-accent`. A caller's `className` REPLACES base tokens by conflict group via `mergeClasses` (a hand-rolled tailwind-merge stand-in); it does not pile on.
+## Control primitives (`components/ui/`, 19 of them)
+- **Every control goes through its primitive** — never hand-roll `bg-accent text-on-accent`. A caller's `className` REPLACES base tokens by conflict group via `mergeClasses` (a hand-rolled tailwind-merge stand-in); it does not pile on. Guard `primitive-adoption.test.ts` also fails on a primitive with NO call site — an unused one becomes a shadow copy.
 - **Padding groups are per-axis:** `px-`/`py-`/`p{trbl}-` are independent; `p-N` belongs to ALL padding groups. An `px-`-only override must NOT drop the size's `py-` (2026-07-20: the old single `/^p[xytrbl]?-/` group collapsed welcome CTAs + SyncPanel Save to text height). Guard: `Button.test.tsx` — keep per-axis independence if you touch `CONFLICT_GROUPS`.
 
 ## Overlays (`components/overlays/Overlay.tsx`)

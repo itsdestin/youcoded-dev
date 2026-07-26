@@ -2215,6 +2215,18 @@ a failure no Linux or Windows session would ever see.
   `projectFolder` is a single string and no recents list exists anywhere in the
   app, so it needs a new settings key + IPC + cap + eviction policy. A feature.
   Now has its own ROADMAP entry.
+- **`FieldError` adoption** — found 2026-07-26, AFTER this section was first
+  written, by widening the adoption guard to see `states.tsx` (youcoded PR #255).
+  The primitive has zero call sites while 25 sites across 14 files still write its
+  markup by hand. Not a held decision like 33 — just unfinished, and not a blind
+  swap either: 6 of those sites are `text-2xs` against the primitive's hardcoded
+  `text-3xs`. Own ROADMAP entry.
+
+  Worth noting how it hid: the tranche-8 guard derived primitive names from
+  `^[A-Z]\w*.tsx` FILENAMES, and `states.tsx` is lowercase — so four primitives
+  were invisible to the very test written to catch unadopted primitives. The
+  guard now scans exported names. **A guard's blind spots are worth auditing as
+  carefully as the code it guards.**
 
 ### 20.7 Behavior changes for the release notes
 

@@ -42,6 +42,10 @@ We will **go back and replace all existing system/app error messages** against t
 - Audit every user-facing `throw new Error('…')`, toast, banner, and IPC error string across desktop, Android, and the worker.
 - Fix any that assert an unverified cause (specific+accurate) or that are vague without a next step (general + the two actions).
 - Where a subprocess/exception detail is available, thread it through instead of swallowing it.
-- Wire the two-action fallback UX (report / diagnose-with-Claude) as a reusable component so general errors get a consistent affordance.
+- ~~Wire the two-action fallback UX (report / diagnose-with-Claude) as a reusable component so general errors get a consistent affordance.~~ **DONE — the component exists.** `components/ui/states.tsx` exports `<ErrorState>` with exactly the two modes this standard describes: `mode="recoverable"` (specific message + Retry) and `mode="general"` (title + explainer + **Report bug** / **Diagnose with Claude**). Built 2026-07-23 as change 33 of the UI-consistency migration.
+
+  **It has ZERO call sites, deliberately.** Choosing which mode each site gets IS this audit's core decision — adopting it early would have guessed that call at every site, and each guess would then read as settled. So the audit's job is now: for every error surface, pick the mode, and pass the real detail (subprocess stderr, caught exception, failing path/port) rather than a hardcoded cause. The markup is no longer part of the work.
+
+  `desktop/tests/primitive-adoption.test.ts` exempts `ErrorState` by name with this reasoning; **remove it from `INTENTIONALLY_UNADOPTED` when this audit lands**, or the guard will keep covering for it.
 
 Tracked in `ROADMAP.md` → v1.3.1 "Misleading error messages — full audit + replacement".
