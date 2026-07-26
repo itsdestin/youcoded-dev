@@ -8,6 +8,64 @@
 
 **Tech Stack:** React 19 + TypeScript, Tailwind v4 (semantic CSS-variable tokens), Vitest 4, Electron 41. The renderer is shared with the Android WebView — every change here ships on both platforms.
 
+---
+
+## START HERE (cold-start orientation)
+
+*Written for a session with no memory of the design conversation. Everything needed is on disk.*
+
+**What this is.** Destin asked for consistent settings/status-bar popups. The finding: the real
+problem was not the popup chrome but that **no vocabulary existed for what goes inside a menu** — so
+every menu invented its own row, button group, and callout. "Pick one of N" had 7 designs; a toggle
+row had 5; explaining something to the user had 5 mechanisms. The design system that came out of it
+is 12 roles (K1–K12), each with one recipe.
+
+**Read in this order:**
+1. `docs/active/specs/2026-07-26-menu-internals-design-system.md` — **§0 first** (it corrects three
+   counts from the draft), then §1 for the exact recipes, then §6 for the ledger.
+2. This plan. Tasks are ordered; Task 3 must precede Task 4 (it removes two of Task 4's sites).
+3. Optional visual reference: <https://claude.ai/code/artifact/7e886cfc-9957-4e5f-918d-3d83bd77e0a6>
+   — every role today-vs-proposed, all 16 menus rebuilt, in 5 themes.
+
+**Decisions already made — do not relitigate:**
+- **D2 = A** (drawer + modals). Approved 2026-07-26. Accepted cost: 6 modal-on-modal sites and up to
+  2 stacked scrims remain. B and C stay available later; A is a strict subset of B.
+- **D4 shipped** in tranche 6 — type tokens exist. It is not a prerequisite any more.
+- The whole 2026-07-16 UI-consistency workstream **closed** (tranche 8, youcoded PR #252). Nothing
+  in this plan overlaps it.
+
+**Repo state at time of writing (verify before starting — it will have moved):**
+- Workspace `youcoded-dev` @ `b72b8a1`, clean.
+- Sub-repo `youcoded` was **23 commits behind** `origin/master`, and its working tree carries
+  **another session's uncommitted** `desktop/knip.json` + a `package.json` `allowScripts` block.
+  **Do not stash, revert, or commit those.** Branch from `origin/master`, not from the working tree.
+
+**Setup:**
+```bash
+cd /home/destin/youcoded-dev/youcoded
+git fetch origin
+git worktree add ../wt-menu-tranche1 -b feat/menu-internals-tranche-1 origin/master
+cd ../wt-menu-tranche1/desktop && npm ci
+```
+Do **not** junction `node_modules` on this machine (Linux) — that hazard is Windows-only, but a
+plain `npm ci` in the worktree is the safe path either way.
+
+**Verification loop for every task:** `npx vitest run tests/<the-new-test>.ts` → `npm test` →
+`npm run build`. Never claim a task passes without running these and reading the output.
+
+**Do not launch the built app to check anything.** All runtime verification goes through
+`bash scripts/run-dev.sh <branch> --label "Menu Tranche 1"` from the workspace root. Destin's
+installed YouCoded is his working environment and is off-limits — see
+`.claude/rules/live-app-safety.md`.
+
+**One open judgment call, flagged not resolved:** Task 3 turns Sound's 15 wrap-flowed chips into 15
+full-width rows, so that section gets noticeably taller. The spec's §3 render pairs it with a
+category switcher so only one list shows at a time, but that switcher is a tranche-3 restructure. In
+tranche 1 the popup just gets long. Ship it and let Destin eyeball it; do not invent the switcher
+here.
+
+---
+
 ## Global Constraints
 
 - **Spec:** `docs/active/specs/2026-07-26-menu-internals-design-system.md`. D2 = **A** (drawer + modals), decided 2026-07-26. This tranche is D2-independent, so nothing here depends on that.
@@ -18,7 +76,13 @@
 - **Status colors stay hardcoded** (green/amber/red/blue). Only surface/text/border colors use semantic tokens.
 - **Annotate non-trivial edits with a WHY comment.** Destin is a non-developer and relies on them.
 - **Guard tests must `stripComments` before asserting.** WHY comments necessarily quote the idiom they replaced; a raw grep flags the very note explaining the fix. This trap has bitten three existing guard tests — copy the helper verbatim from `tests/type-scale-authority.test.ts`.
-- **Never write misleading error messages.** Surface the real error or stay non-committal with report/diagnose actions.
+- **Never write misleading error messages, and never hand-roll one.** `<ErrorState>`
+  (`components/ui/states.tsx`) renders both approved shapes: `mode="recoverable"` (specific message +
+  Retry) and `mode="general"` (the two-action Report bug / Diagnose card). Workspace CLAUDE.md was
+  updated 2026-07-26 to make this explicit.
+- **Tranche boundary.** This plan is K1, K8, K3, K10 and the Sound bug — nothing else. K2/K6/K7 wait
+  for D1's shell (tranche 2); K4/K5/K9/K11/K12 are per-menu restructures gated on a copy pass
+  (tranche 3). If a task tempts you into restyling a row, stop — that is tranche 2.
 
 ## File Structure
 
