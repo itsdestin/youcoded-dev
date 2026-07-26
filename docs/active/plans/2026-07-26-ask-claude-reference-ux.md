@@ -76,7 +76,7 @@ Tailwind class, so design rule 11 holds and the authority test stays green.
 | `src/renderer/state/reference-context.test.tsx` | **Create** — park/restore, replace, clear | 1 |
 | `src/renderer/components/context-menu/build-reference.ts` | **Create** — pure `(target) => PendingReference \| null` | 2 |
 | `src/renderer/components/context-menu/build-reference.test.ts` | **Create** — one case per `kind` | 2 |
-| `src/renderer/components/context-menu/build-menu.ts` | **Modify** — export `describeArtifactSelection`; delete `askAboutThis`/`scaffold`; `hint` field; streaming gate | 2, 3 |
+| `src/renderer/components/context-menu/build-menu.ts` | **Modify** — move `describeArtifactSelection` out; delete `askAboutThis`/`scaffold`; `hint` field; streaming gate | 2, 3 |
 | `src/renderer/components/context-menu/ContextMenu.tsx` | **Modify** — render `hint` as `title` | 3 |
 | `src/renderer/components/context-menu/ContextMenuHost.tsx` | **Modify** — supply `setReference` to the builder | 3 |
 | `src/renderer/components/AssistantTurnBubble.tsx` | **Modify** — `data-streaming` attribute | 3 |
@@ -353,22 +353,24 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
   - `function buildArtifactReference(container: HTMLElement): PendingReference | null`
   - `function truncateLabel(text: string, max?: number): string`
 
-- [ ] **Step 1: Export the artifact line-describer from build-menu.ts**
+- [ ] **Step 1: MOVE the artifact line-describer into build-reference.ts**
 
-In `build-menu.ts`, change the declaration at line 205 from:
+`describeArtifactSelection` (`build-menu.ts:205-231`) must **move**, not be exported. Exporting it
+would make the two modules circular — `build-menu.ts` imports the builders from
+`build-reference.ts` (Task 3) while `build-reference.ts` imports the describer back. ES modules
+tolerate that, but it is fragile and needless: after Task 3, `build-menu.ts` has no remaining
+caller for it.
 
-```ts
-function describeArtifactSelection(sel: string, container: HTMLElement): string {
-```
+1. Cut the entire function **and its full comment block** (lines 192-231 — the comment explains the
+   `textContent`-not-`innerText` and CM6-virtualization reasoning and must travel with the code)
+   out of `build-menu.ts`.
+2. Paste it into `build-reference.ts` as a module-private function (no `export`).
+3. Move the import it depends on — `import { editorViewFor } from '../artifact-views/cm/editor-registry';`
+   — to `build-reference.ts`. Delete it from `build-menu.ts` **only if** nothing else there uses it
+   (check: `cmEditableMenu` does, so it stays in both — leave `build-menu.ts`'s import alone).
 
-to:
-
-```ts
-export function describeArtifactSelection(sel: string, container: HTMLElement): string {
-```
-
-Leave the whole body and its comment block untouched — the line-number logic and its
-`textContent`-not-`innerText` reasoning are still exactly right.
+Do not otherwise edit the body. The line-number logic is correct as written and is pinned by
+`build-menu-cm6.test.tsx`, which reaches it through the menu path either way.
 
 - [ ] **Step 2: Write the failing test**
 
@@ -515,8 +517,12 @@ Expected: FAIL — `Failed to resolve import "./build-reference"`
 Create `youcoded/desktop/src/renderer/components/context-menu/build-reference.ts`:
 
 ```ts
-import { describeArtifactSelection } from './build-menu';
+import { editorViewFor } from '../artifact-views/cm/editor-registry';
 import type { PendingReference } from '../../state/reference-context';
+
+// describeArtifactSelection MOVES here from build-menu.ts:205 (with its full
+// comment block) — see Task 2 Step 1. Module-private on purpose: exporting it
+// would make build-menu.ts and build-reference.ts circular.
 
 /**
  * Builds the "Ask Claude about this" reference (spec 2026-07-26).
@@ -1708,7 +1714,7 @@ In `ReferenceOverlay.tsx`, add the lift. Chat kinds only:
   // it and can never reach centre (spec 2.1).
   useEffect(() => {
     const node = liftRef.current;
-    if (!node || !travels || !reference?.anchor) return;
+    if (!node || !reference?.anchor) return;
     const src = document.querySelector(reference.anchor.hostSelector);
     if (!src) return;
 
@@ -1718,6 +1724,8 @@ In `ReferenceOverlay.tsx`, add the lift. Chat kinds only:
     node.style.width = `${s.width}px`;
     node.style.transform = 'translate(0, 0)';
 
+    // [Step 2b's non-travelling branch goes here — see below.]
+
     // Next frame so the browser paints the First position before transitioning.
     const raf = requestAnimationFrame(() => {
       const h = node.offsetHeight;
@@ -1726,37 +1734,38 @@ In `ReferenceOverlay.tsx`, add the lift. Chat kinds only:
       node.style.transform = `translate(${dx}px, ${dy}px)`;
     });
     return () => cancelAnimationFrame(raf);
-  }, [reference, travels]);
+  }, [reference, travels, d]);
 ```
 
-Capture the source's markup once, when the reference is set, so the clone survives the source
+Clone the source node itself, once, when the reference is set — so the card survives the original
 unmounting:
 
 ```tsx
-  const [clone, setClone] = useState<string | null>(null);
+  const holderRef = useRef<HTMLDivElement | null>(null);
+
+  // cloneNode(true), NOT innerHTML: no HTML re-parsing, no XSS surface, and
+  // canvas/img/scroll state comes across intact. The clone is static, which is
+  // safe because Task 3 disables the menu row on the still-streaming turn —
+  // every other message is complete and will not change under us.
   useEffect(() => {
-    if (!reference?.anchor || !travels) { setClone(null); return; }
+    const holder = holderRef.current;
+    if (!holder || !reference?.anchor) return;
     const src = document.querySelector(reference.anchor.hostSelector);
-    setClone(src ? src.outerHTML : null);
-  }, [reference, travels]);
+    if (!src) return;
+    const copy = src.cloneNode(true) as HTMLElement;
+    copy.removeAttribute('data-reference-host');   // don't duplicate the anchor id
+    holder.replaceChildren(copy);
+    return () => holder.replaceChildren();
+  }, [reference]);
 ```
 
-and render it inside the `<Scrim>`:
+and render the holder inside the `<Scrim>`:
 
 ```tsx
-      {travels && clone && (
-        <div ref={liftRef} className="reference-lift">
-          {/* Static snapshot of the source. Safe because the menu row is
-              disabled on the still-streaming turn (Task 3) — every other
-              message is complete and will not change under us. */}
-          <div dangerouslySetInnerHTML={{ __html: clone }} />
-        </div>
-      )}
+      <div ref={liftRef} className="reference-lift" data-travels={travels ? 'true' : undefined}>
+        <div ref={holderRef} />
+      </div>
 ```
-
-> **Why `dangerouslySetInnerHTML` is acceptable here:** the markup comes from the app's own
-> already-rendered DOM, not from user input or the network. It is never re-parsed from a string the
-> user supplied. Add exactly that sentence as a WHY comment at the call site.
 
 Move the cancel button so it pins to the lifted card rather than the viewport corner when a card is
 present — put the `<CloseButton>` inside the `.reference-lift` div, absolutely positioned at
@@ -1770,43 +1779,44 @@ lifted card — and the original text is behind a window-wide scrim.
 
 Raising the original spans with `z-index` does **not** work: they live inside `.drawer-pane`, which
 is `z-index: 11` and creates a stacking context, so a child at `z-61` is trapped at 11 — below the
-scrim at 60. Redraw them above the scrim instead, one absolutely-positioned copy per line box:
+scrim at 60.
+
+The clone from Step 2 already solves this — it just needs to be **clipped to the selection**.
+Because the artifact clone does not travel, it sits pixel-aligned over the original, so applying
+`clip-path` with the same union path the outline traces reveals exactly the selected text at full
+`--fg` and hides the rest of the file. Perfect glyph fidelity, no text re-drawing, and it reuses
+`buildUnionPath` unchanged.
+
+Extend the Step 2 positioning effect so non-travelling references pin to the source rect and clip:
 
 ```tsx
-  // Artifact references don't travel, so their selected text would sit behind
-  // the dim. Raising the originals with z-index CANNOT work — .drawer-pane is
-  // z-index:11 and creates a stacking context that traps any child below the
-  // scrim. Redraw each line box above the scrim instead.
-  const runNodes = useMemo(
-    () => (travels || !reference?.anchor?.runSelector
-      ? []
-      : [...document.querySelectorAll(reference.anchor.runSelector)]),
-    [reference, travels],
-  );
+    if (!travels) {
+      // Artifact reference: no travel. Pin the clone exactly over the original
+      // and clip it to the selection, so only the selected lines read at full
+      // --fg while the rest of the window dims. Clipping the clone beats
+      // re-drawing the text: multi-line selections (the headline case —
+      // "lines 12-18 of engine.ts") keep exact glyphs, fonts, and highlighting.
+      node.style.transform = 'translate(0, 0)';
+      node.style.clipPath = d ? `path('${d}')` : 'none';
+      return;
+    }
 ```
 
-and render, inside the `<Scrim>` and **after** the trace SVG so the outline stays on top:
+The `d` here is viewport-relative and the clone is `position: fixed`, so the coordinate systems
+already agree — no offset conversion needed. `clip-path` re-applies on every re-measure because `d`
+is a dependency of the effect, so it tracks scrolling.
 
-```tsx
-      {!travels && rects.map((r, i) => (
-        <div
-          key={i}
-          className="fixed text-fg pointer-events-none whitespace-pre"
-          style={{
-            left: r.left, top: r.top, width: r.width, height: r.height,
-            font: runNodes[0] ? getComputedStyle(runNodes[0]).font : undefined,
-          }}
-        >
-          {runNodes[0]?.textContent ?? ''}
-        </div>
-      ))}
+Add to the reference CSS block in `globals.css`:
+
+```css
+/* Non-travelling (artifact) clone: pinned over the original and clipped to the
+   selection, so only the referenced lines stay bright above the dim. */
+.reference-lift:not([data-travels="true"]) > * {
+  box-shadow: none;
+  max-height: none;
+  overflow: visible;
+}
 ```
-
-> **Known limitation, call it out at dev review:** this re-draws each line box with the run's full
-> text, which is correct for a single-line selection and approximate for a multi-line one (each
-> box repeats the whole string rather than its own slice). If a multi-line artifact selection looks
-> wrong in Step 3, the fix is to slice the text per box using `Range` offsets — do that only if it
-> actually reads badly, since single-line is by far the common case.
 
 - [ ] **Step 3: Verify in the dev instance**
 
@@ -1815,8 +1825,10 @@ Run: `cd /home/destin/youcoded-dev && bash scripts/run-dev.sh <branch> --label "
 Check all five: (a) the **newest** message — the one directly above the composer — travels to
 centre correctly, since that is the case scroll-to-center could never handle; (b) a very long
 message scrolls internally rather than overflowing; (c) an artifact selection does **not** travel
-and its text stays bright above the dim; (d) a *multi-line* artifact selection reads correctly (see
-the Step 2b limitation); (e) the composer stays clickable and typable over the dim.
+and its text stays bright above the dim; (d) a *multi-line* artifact selection clips correctly —
+this is the headline case (`lines 12–18 of engine.ts`), so confirm the clip edges track the real
+selection shape and keep tracking it while scrolling; (e) the composer stays clickable and typable
+over the dim.
 
 - [ ] **Step 4: Typecheck and commit**
 
