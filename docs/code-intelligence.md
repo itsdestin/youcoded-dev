@@ -11,12 +11,16 @@ error next to it.
 
 The escalation ladder — stop as soon as the question is answered:
 
-| Layer | Answers | Tool |
-|---|---|---|
-| Graph | "who calls / implements / defines this?" | **Serena** (`find_symbol`, `find_referencing_symbols`) |
-| Structural | "where does this code *shape* appear?" | **ast-grep** |
-| Lexical | "where does this exact text appear?" | **`rg`** |
-| Verdict | "is this dead / typed / in parity?" | `npm run knip`, `tsc --noEmit`, `ipc-channels.test.ts` |
+| Layer | Answers | Tool | Scope |
+|---|---|---|---|
+| Graph | "who calls / implements / defines this?" | **Serena** (`find_symbol`, `find_referencing_symbols`) | **`youcoded/` TypeScript only** — not Kotlin, not other sub-repos |
+| Structural | "where does this code *shape* appear?" | **ast-grep** | Any repo, TS **and** Kotlin |
+| Lexical | "where does this exact text appear?" | **`rg`** | Everything |
+| Verdict | "is this dead / typed / in parity?" | `npm run knip`, `tsc --noEmit`, `ipc-channels.test.ts` | Definitive — prefer over all of the above |
+
+Read the Scope column before trusting a negative result. Serena's reach is narrower than
+it looks, and it reports "no references" the same way whether it searched and found
+nothing or never looked — see [Where it stops](#where-it-stops--verified-2026-07-28).
 
 Whole-file reads are for files you are about to **edit**, not files you are trying to
 understand.
@@ -33,8 +37,9 @@ graphs instead of grep hits that include comments and strings.
 
 - **`uv` / `uvx`** — already installed (`uv 0.11.24`). Otherwise:
   `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- **A JDK** for the Kotlin language server — already installed (OpenJDK 26).
-  TypeScript needs nothing extra.
+- **TypeScript needs nothing extra.**
+- **Kotlin needs JDK 21 specifically, and is currently OFF.** See
+  [Kotlin is disabled](#kotlin-is-disabled) — do not assume `.kt` files are indexed.
 
 ### Install (already done on this machine — this is the recipe for a new one)
 
@@ -54,10 +59,13 @@ Then create the project config and build the symbol index, non-interactively:
 ```bash
 cd /path/to/youcoded-dev/youcoded
 uvx --from git+https://github.com/oraios/serena serena project create \
-  --language typescript --language kotlin --index
+  --language typescript --index
 ```
 
 Indexing 959 files takes ~12 seconds and produces a ~43 MB cache.
+
+**TypeScript only — do not add `--language kotlin` here.** It is not an oversight; see
+below.
 
 **Restart Claude Code afterwards** — MCP servers load at startup. You'll get a permission
 prompt for the new server on first launch.
@@ -78,6 +86,38 @@ prompt for the new server on first launch.
    servers to enable and dies on EOF in a script. `project create --language … --index`
    is the non-interactive path.
 
+### Kotlin is disabled
+
+`.kt` files are **not indexed**. `youcoded/.serena/project.yml` lists `typescript` only.
+
+Why it is off rather than broken-and-ignored: JetBrains' `kotlin-lsp` cancels its
+`initialize` request (`-32800`) for this workspace, and **Serena treats any
+language-server failure as fatal**. A failing Kotlin server tears down the healthy
+TypeScript one and disables *every* Serena tool. Half-working is not an option here; it is
+all or nothing.
+<!-- verify: {"path": "youcoded/.serena/project.yml", "contains": "language_servers"} -->
+
+**The JDK is not the cause — do not chase it.** An earlier revision of this doc blamed
+JDK 26 and prescribed installing JDK 17/21. That was wrong, and it cost a pointless
+package install on 2026-07-28. `kotlin-lsp.sh` hard-codes
+`JAVA_BIN="$DIR/jre/bin/java"` and runs on its own bundled JetBrains Runtime **21.0.8**,
+ignoring `JAVA_HOME` and `PATH`. Confirmed by installing `jdk21-openjdk` and re-running
+the index with both `JAVA_HOME` and `PATH` forced at it — byte-identical `-32800`.
+
+What is actually known: the binary is healthy — running `kotlin-lsp.sh` by hand starts it
+cleanly and it waits on stdin — so the cancellation happens while it processes
+`initialize` against *this* workspace, most likely the root Gradle/Android model import
+(`settings.gradle.kts` + the Android plugin), not the Kotlin sources.
+
+Do not re-add `- kotlin` speculatively. Reproduce a green
+`serena project index` first; a failure disables every Serena tool for the whole session.
+
+The practical consequence: **the cross-platform parity question — "is there an Android
+mirror of this?" — is not a Serena question, and is not blocked on making it one.**
+Answer it with `desktop/tests/ipc-channels.test.ts` (a verdict over all three surfaces),
+`ast-grep` (which supports Kotlin), or `rg`. That path is better than a Kotlin LSP would
+have been anyway.
+
 ### Using it
 
 | Tool | Use for |
@@ -85,13 +125,43 @@ prompt for the new server on first launch.
 | `get_symbols_overview` | The shape of an unfamiliar file, without reading it |
 | `find_symbol` | One function/class body by name path |
 | `find_referencing_symbols` | **"Who calls this?"** — resolved, no comment/string noise |
-| `search_for_pattern` | Regex when the thing isn't symbol-shaped |
-| `activate_project` | Switch to another sub-repo |
+| `find_implementations` / `find_declaration` | Interface → implementors; call site → definition |
+| `get_diagnostics_for_file` | Type errors for one file without a full `tsc` run |
+| `rename_symbol` / `safe_delete_symbol` | Reference-aware refactors — they update all call sites atomically |
+| `replace_in_files` | Bulk edits; `dry_run: true` first returns per-occurrence diffs you can select |
 
 `find_referencing_symbols` is the one that changes how the workspace works. The
 `never assert a negative from a single search` rule exists because grep cannot establish
 its own completeness — a language server can. "Is there an Android mirror of this",
 "is this the only call site", and "is this dead" become answerable instead of inferable.
+
+### Where it stops — verified 2026-07-28
+
+Serena answers **typed TypeScript symbol** questions. It does not answer the other three,
+and each boundary has produced a wrong answer here:
+
+1. **Not symbol-shaped → Serena is blind.** `ipcMain.handle('foo', …)` has no symbol
+   named `foo`, just a string argument. `find_symbol` on `registerIpcHandlers` with
+   `depth=1` returns ~250 children, most of them anonymous `ipcMain.handle() callback`
+   — a large token bill and no channel names. For IPC channels use `ipc-channels.test.ts`
+   (a verdict) or `rg` on the literal string. Never `depth=1` on a god-function.
+
+2. **Only the active project.** This build exposes **no `activate_project` and no
+   `search_for_pattern`** — earlier revisions of this doc listed both; neither exists.
+   Serena is locked to `youcoded/` for the whole session. `wecoded-marketplace/`,
+   `wecoded-themes/`, and `youcoded-core/` are reachable only by `rg`/`ast-grep`.
+
+3. **Only files inside a TypeScript program.** A file no `tsconfig.json` includes is
+   invisible, and Serena reports zero references for it *without saying it did not look*.
+   `desktop/tests/` was in exactly this state until `desktop/tests/tsconfig.json` was
+   added — `find_referencing_symbols('ErrorState')` returned only the barrel re-export
+   while three real call sites sat in `tests/ui-primitives.test.tsx`.
+   <!-- verify: {"path": "youcoded/desktop/tests/tsconfig.json", "contains": "include"} -->
+
+Boundary 3 is the dangerous one: it is a **silent false negative** in the exact shape the
+`never assert a negative from a single search` rule exists to catch. Before concluding
+"dead" or "no mirror", confirm the file is in a program — or use `npm run knip`, which
+reads its own config and does not share this blind spot.
 
 ### Honest cost
 
@@ -105,6 +175,14 @@ beat pattern matches), not the token number.
 
 - The index is a cache; it goes stale as code changes. Re-run `serena project index` after
   large refactors. Serena falls back to live LSP for anything uncached.
+- **`youcoded/desktop/tests/tsconfig.json` is load-bearing for search correctness, not for
+  the build.** It is what puts the test tree into a TypeScript program so reference search
+  can see it. Deleting it does not fail any test or break any build — it silently
+  reintroduces the false negative described above. Any new top-level source directory
+  outside `src/**` needs the same treatment.
+  <!-- verify: {"path": "youcoded/desktop/tests/tsconfig.json", "contains": "language-server"} -->
+- A future `tsc --noEmit` CI gate must keep using `-p tsconfig.json` (the build config).
+  The tests project carries 44 pre-existing type errors and is not gated.
 - `youcoded/.serena/` self-manages a `.gitignore` covering `cache/` and
   `project.local.yml`, so only `project.yml` would ever be tracked. Whether to commit it
   to the `youcoded` sub-repo is an open call — it's the same shape as the
