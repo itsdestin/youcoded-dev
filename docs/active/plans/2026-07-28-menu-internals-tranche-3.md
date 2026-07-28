@@ -1,5 +1,5 @@
 ---
-status: shipped (unmerged) — K4/K6/K7/K12 done; K5/K9 deferred, gated on a copy pass
+status: shipped (unmerged) — ALL of K4/K5/K6/K7/K9/K12 done; the copy pass landed same-day
 extends: docs/active/specs/2026-07-26-menu-internals-design-system.md
 follows: docs/active/plans/2026-07-26-menu-internals-tranche-2.md
 branch: feat/menu-internals-tranche-1 (tranches 1+2+3 ship as ONE PR — Destin's call 2026-07-28)
@@ -14,9 +14,16 @@ branch: feat/menu-internals-tranche-1 (tranches 1+2+3 ship as ONE PR — Destin'
 
 ## STATUS (2026-07-28, end of session — read this first)
 
-**All four in-scope roles SHIPPED to `feat/menu-internals-tranche-1` (23 commits total across
-tranches 1–3, UNMERGED, no PR).** Suite 3462 green, `tsc --noEmit` clean, `vite build` clean.
-Destin reviewed in a dev instance and approved.
+**ALL SIX roles SHIPPED to `feat/menu-internals-tranche-1` (24 commits total, UNMERGED, no PR).**
+Suite 3470 green, `tsc --noEmit` clean, `vite build` clean. Destin reviewed in a dev instance and
+approved.
+
+K5 and K9 were expected to need a separate tranche behind a copy pass. The copy pass ran the same
+day and turned out to be structural rather than editorial — seven of the eleven Remote branches
+carry over verbatim and all three danger zones already had a good consequence sentence — so they
+landed here. Decisions: `docs/active/specs/2026-07-28-k5-k9-copy-pass.md`.
+
+**That completes the kit: K1–K12 and D1 are all shipped.**
 
 | Role | State |
 |---|---|
@@ -24,8 +31,8 @@ Destin reviewed in a dev instance and approved.
 | K6 item list | **DONE** — 4 bare glyphs killed, 1 exempt, coupled help text fixed |
 | K7 field + action | **DONE** — 1 site |
 | K12 explainer | **DONE** — chrome moved to Dialog, ThemeScreen's `showInfo` lifted |
-| K5 status strip | **NOT STARTED** — gated on a copy pass |
-| K9 danger zone | **NOT STARTED** — gated on a copy pass |
+| K5 status strip | **DONE** — `ui/StatusStrip.tsx`, 11 Remote branches |
+| K9 danger zone | **DONE** — 3 zones in one shape, 4th red killed |
 | K11 footer | Folded into K9 (nothing independent left) |
 
 ### Where this plan's own estimates were wrong
