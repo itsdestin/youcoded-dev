@@ -50,6 +50,14 @@ Two sections. **A** is Plan C (was already on the branch). **B** is new today.
 - [ ] Same in a Claude Code session — everything should behave exactly as it always has.
       This is the regression that matters most; the dispatcher changed underneath.
 
+> **Fixed 2026-07-28 after your first attempt** (`be1ac312`): `/theme-builder` reported
+> "That isn't an installed skill". `scanSkills` namespaces plugin skills as
+> `<plugin>:<skill>`, so the real id was `wecoded-themes-plugin:theme-builder` — but the
+> button and you both type the bare name, which is what Claude Code accepts. Exact-match
+> lookup meant **all 16** installed skills on your machine were unreachable, not just this
+> one. Bare names now resolve; an ambiguous one is refused with both qualified ids rather
+> than guessing.
+
 ### B2. `/skill-name`
 
 - [ ] Type `/` in a native session and run an installed skill. Its instructions should
