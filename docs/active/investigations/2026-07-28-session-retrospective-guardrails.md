@@ -1,10 +1,18 @@
 ---
-status: draft — proposals for Destin's approval
+status: partly applied 2026-07-28 — Proposals 1 and 2 done; 3, 4 and 5 still open
 scope: workspace conventions (CLAUDE.md, .claude/rules/, scripts/)
 source: the menu-internals session, 2026-07-26 → 2026-07-28 (26 commits, PR #264)
 ---
 
 # What went wrong this session, and what would have stopped it
+
+> **Applied 2026-07-28.** Proposal 2 (shared guard scope + non-vacuity helpers) shipped as
+> `desktop/tests/helpers/guard-scope.ts` — PR #267. Proposal 1 was folded into the EXISTING
+> `CLAUDE.md` rule rather than added beside it, because three overlapping rules on search discipline
+> already existed and length is part of why the first one got skimmed.
+>
+> **Still open: Proposals 3 (spec counts anchored or dated), 4 (staging hygiene) and 5
+> (`run-dev.sh --list`).**
 
 Every item below is a real mistake from this session, not a hypothetical. The point of writing them
 down together is that **seven of them are the same mistake**, and the workspace already has a rule
