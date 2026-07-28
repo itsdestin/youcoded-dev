@@ -57,16 +57,44 @@ if [[ ${#SUB_REPOS[@]} -gt 0 ]]; then
         collect_repo_state "$WORKSPACE/$repo" "$repo"
     done
 
-    # Active worktrees
-    WORKTREES_FOUND=0
-    while IFS= read -r -d '' dir; do
-        if [[ $WORKTREES_FOUND -eq 0 ]]; then
-            echo "### Active worktrees"
-            WORKTREES_FOUND=1
-        fi
-        echo "  - $(basename "$dir")"
-    done < <(find "$WORKSPACE" -maxdepth 1 -type d \( -name "*-worktree*" -o -name "*-phase*" -o -name "*-decoupling" \) -print0 2>/dev/null || true)
-    [[ $WORKTREES_FOUND -eq 1 ]] && echo ""
+    # Active worktrees — ask git, not the directory names.
+    #
+    # WHY: this block used to `find -maxdepth 1` for directories named
+    # *-worktree* / *-phase* / *-decoupling. Real worktrees live at
+    # worktrees/<name> (depth 2) with names like plan-c and sync-health, so the
+    # find matched nothing — and because the header only printed when something
+    # was found, the whole section silently vanished. Six live worktrees were
+    # invisible at session start, and the absence looked exactly like "no
+    # worktrees exist". Git's own registry is authoritative and can't drift from
+    # a naming convention.
+    #
+    # The section now ALWAYS prints. "none" and "broken" must not look alike.
+    echo "### Active worktrees"
+    WT_ANY=0
+    for repo in "${SUB_REPOS[@]}"; do
+        while IFS= read -r wt_path; do
+            [[ "$wt_path" == "$WORKSPACE/$repo" ]] && continue   # skip the main checkout
+            wt_branch=$(git -C "$wt_path" branch --show-current 2>/dev/null || echo "detached")
+            echo "  - $(basename "$wt_path") [$repo: ${wt_branch:-detached}]"
+            WT_ANY=1
+        done < <(git -C "$WORKSPACE/$repo" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')
+    done
+
+    # Directories under worktrees/ that git doesn't know about — leftovers from a
+    # `git worktree remove` that didn't clean up. The CLAUDE.md cleanup rule exists
+    # to prevent these; nothing was checking.
+    if [[ -d "$WORKSPACE/worktrees" ]]; then
+        for wt_dir in "$WORKSPACE"/worktrees/*/; do
+            [[ -d "$wt_dir" ]] || continue
+            if [[ ! -e "${wt_dir%/}/.git" ]]; then
+                echo "  ⚠ $(basename "${wt_dir%/}") — no .git, unregistered leftover"
+                WT_ANY=1
+            fi
+        done
+    fi
+
+    [[ $WT_ANY -eq 0 ]] && echo "  (none)"
+    echo ""
 elif [[ -d "$WORKSPACE/.git" ]]; then
     # Single-repo project
     echo "## Project State (auto-generated at session start)"
