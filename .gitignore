@@ -1,3 +1,9 @@
+# Third-party packages. The workspace root grows a node_modules/ from wrangler
+# and vitest runs, and it was never ignored here (only the sub-repos ignore it),
+# so a broad `git add` swept two cache files into history on 2026-07-28 —
+# including a wrangler account-id cache. Regenerated on demand; never committed.
+node_modules/
+
 # Cloned repos (managed by setup.sh)
 youcoded/
 youcoded-core/
