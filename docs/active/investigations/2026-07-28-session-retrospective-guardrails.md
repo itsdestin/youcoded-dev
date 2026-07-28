@@ -81,7 +81,7 @@ Failures 2, 4 and 7 were all guards that passed while covering nothing. Add to
 
 ## 2. The spec was authoritative and stale, four times
 
-`docs/active/specs/2026-07-26-menu-internals-design-system.md` asserted:
+`docs/archive/specs/2026-07-26-menu-internals-design-system.md` asserted:
 
 - `SettingsPopup` "is already correct" — it was the source of the scroll bug.
 - The width ladder — circular, fitted to values that were themselves arbitrary.
