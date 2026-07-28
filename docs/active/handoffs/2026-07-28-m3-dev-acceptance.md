@@ -90,6 +90,20 @@ Two sections. **A** is Plan C (was already on the branch). **B** is new today.
 
 ---
 
+## Known console warning — not from M3, origin not yet established
+
+On boot the dev console logs once:
+
+> `Cannot update a component (AppInner) while rendering a different component (AppInner).`
+
+I verified this is **present in the pre-M3 dev run on this same branch**, so today's
+work did not introduce it. What I have NOT established is whether Plan C introduced it
+or it is already on master. It is distinct from the ThinkingIndicator ref-during-render
+warning fixed in `57e39248` (that one was ThinkingIndicator → AppInner; this is
+AppInner → AppInner). It fires once at startup and nothing visibly misbehaves, but a
+setState-during-render can cause real ordering bugs, so it is on the whole-branch review
+list rather than dismissed.
+
 ## What I still owe after your pass
 
 - Whole-branch review (never done against current master).
