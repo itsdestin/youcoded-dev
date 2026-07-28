@@ -66,10 +66,20 @@ cause — reading for the recipes someone had already written down instead of fo
 
 ### Residue
 
-- **Three main views still paint their own headers inside a `Dialog`**: Remote Access, Backup & Sync,
-  and SyncSetupWizard's `WizardHeader`. Same D1 gap the explainer had, but fixing them means lifting
-  each view's state to its Dialog owner (as K12 did for ThemeScreen's `showInfo`) — a restructure,
-  not a migration.
+- ~~**Three main views still paint their own headers inside a `Dialog`**~~ — **FIXED 2026-07-28,
+  and the number was wrong.** It was SIX, not three: Remote Access's main view, Backup & Sync's main
+  view, its add/edit `SubViewHeader`, Appearance's main view, the theme editor, and the setup wizard,
+  holding three separate reimplementations of the back chevron between them. That count was written
+  from memory instead of a search — the same mistake the `*-authority` suites exist to prevent for
+  class recipes, and the second time in this workstream (see the tranche-2 exemptions in spec §0b).
+  Five are converted; the wizard keeps its header, with the reason recorded in
+  `tests/dialog-chrome-authority.test.ts`:
+
+  > Its title derives from state that legitimately lives inside it — step, chosen backend,
+  > reconnect-vs-first-run, additional-Google-account. Lifting that would make `SyncPanel` recompute
+  > wizard logic to satisfy a structural rule, trading one duplication for a worse one. The real fix
+  > is for the wizard to own its own `<Dialog>`, which turns it from replacing the sync panel into
+  > stacking over it — a UX decision, not a mechanical one.
 - **The explainer's close button announces as "Close About Context"** — `Dialog` builds that label
   from the title. Aria-only, cosmetic, would need a `closeLabel` prop.
 - **`HowContextWorksPopup.tsx`** is a fifth explainer mechanism on the out-of-scope project-view
