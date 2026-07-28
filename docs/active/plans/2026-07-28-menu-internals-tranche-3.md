@@ -1,5 +1,5 @@
 ---
-status: draft — not started
+status: shipped (unmerged) — K4/K6/K7/K12 done; K5/K9 deferred, gated on a copy pass
 extends: docs/active/specs/2026-07-26-menu-internals-design-system.md
 follows: docs/active/plans/2026-07-26-menu-internals-tranche-2.md
 branch: feat/menu-internals-tranche-1 (tranches 1+2+3 ship as ONE PR — Destin's call 2026-07-28)
@@ -9,6 +9,68 @@ branch: feat/menu-internals-tranche-1 (tranches 1+2+3 ship as ONE PR — Destin'
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or
 > superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
+
+---
+
+## STATUS (2026-07-28, end of session — read this first)
+
+**All four in-scope roles SHIPPED to `feat/menu-internals-tranche-1` (23 commits total across
+tranches 1–3, UNMERGED, no PR).** Suite 3462 green, `tsc --noEmit` clean, `vite build` clean.
+Destin reviewed in a dev instance and approved.
+
+| Role | State |
+|---|---|
+| K4 callout | **DONE** — `ui/Callout.tsx`, 7 sites |
+| K6 item list | **DONE** — 4 bare glyphs killed, 1 exempt, coupled help text fixed |
+| K7 field + action | **DONE** — 1 site |
+| K12 explainer | **DONE** — chrome moved to Dialog, ThemeScreen's `showInfo` lifted |
+| K5 status strip | **NOT STARTED** — gated on a copy pass |
+| K9 danger zone | **NOT STARTED** — gated on a copy pass |
+| K11 footer | Folded into K9 (nothing independent left) |
+
+### Where this plan's own estimates were wrong
+
+The plan corrected the spec, and then the work corrected the plan. Both undercounts had the same
+cause — reading for the recipes someone had already written down instead of for the shape:
+
+- **K4 was 7 sites, not 6.** The plan's list came from a `bg-accent/10|bg-amber-500/10|bg-destructive/10`
+  grep. The app also had `bg-red-500/10` at **two** border opacities (/20 and /25) and a
+  `bg-green-500/10` success block. The first guard I wrote inherited the same blind spot, and a
+  second one: it required the tint to appear BEFORE `border`, so it silently scored `Button.tsx` as
+  zero — that recipe reads `border border-destructive/50 … hover:bg-destructive/10`. A guard that
+  misses a violation because of class ORDER is the exact K1 failure. It looks both ways now.
+- **K6 was 5 bare glyphs, not 3**, and they were three different problems: two item actions, two
+  container dismisses that had reimplemented `CloseButton`, and one already-correct `Button` using
+  the glyph as its label. The plan's guessed exemptions (`QuickChips`, `RemoteUnsupportedNotice`)
+  were both wrong — `RemoteUnsupportedNotice` needed migrating, `QuickChips` had no glyph at all.
+- **The SyncPanel "destructive banner" in the plan's K4 list was not a callout.** It was a
+  hand-rolled dialog header inside a `<Dialog>` — D1 residue that tranche 2 had recorded as "titling
+  them is a copy decision". Not true of that one: it already received a `title` prop and was passing
+  it as an aria-label while drawing the heading itself. Fixed in the K4 commit.
+
+### Bugs the work surfaced, fixed in place
+
+- **`SettingRow`'s `disabled` dimmed the row but did not block its handler.** The `<button>` branch
+  got that from the DOM attribute; the `<div>` branch did not. Found by K6's saved-devices row,
+  which disables itself mid-connect and would otherwise have let you start a second connection.
+- **`Callout`'s slots had to be `<div>`, not `<p>`.** SyncSetupWizard's install error puts a link on
+  its own line, and a `<div>` inside a `<p>` is invalid HTML the browser repairs by closing the
+  paragraph early — which would have dropped the body's text classes off everything after it.
+
+### Residue
+
+- **Three main views still paint their own headers inside a `Dialog`**: Remote Access, Backup & Sync,
+  and SyncSetupWizard's `WizardHeader`. Same D1 gap the explainer had, but fixing them means lifting
+  each view's state to its Dialog owner (as K12 did for ThemeScreen's `showInfo`) — a restructure,
+  not a migration.
+- **The explainer's close button announces as "Close About Context"** — `Dialog` builds that label
+  from the title. Aria-only, cosmetic, would need a `closeLabel` prop.
+- **`HowContextWorksPopup.tsx`** is a fifth explainer mechanism on the out-of-scope project-view
+  surface.
+- **`AnchorTip` survives in `ModelProvidersPopup`** as an inline hint — spec K12 explicitly permits
+  that; it is not the explainer mechanism.
+- **K6 candidates on other surfaces**: model providers, connected accounts, sync spaces, open tasks.
+  Each has a bespoke row layout that deserves its own look rather than a blind conversion.
 
 ---
 
