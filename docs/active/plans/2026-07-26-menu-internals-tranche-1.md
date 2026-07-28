@@ -1,6 +1,29 @@
+---
+status: shipped (unmerged) — all 5 tasks landed on feat/menu-internals-tranche-1, 2026-07-26
+supersedes-status: live status for the whole workstream lives in the TRANCHE 2 plan
+---
+
 # Menu Internals — Tranche 1 (mechanical adoption) Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+> ## ✅ ALL FIVE TASKS SHIPPED (2026-07-26) — this document is now history.
+>
+> Landed on `feat/menu-internals-tranche-1` (unmerged, no PR). Destin reviewed them in a dev build
+> and asked for a 4-item rework of Sound, which also shipped: the popup could not scroll, two
+> independent preset lists became one behind a category toggle, the separate play button was
+> removed (selecting a sound now plays it), and the whole tile became the hit target.
+>
+> **That reversal inverted `tests/sound-preview.test.ts`** — it now asserts that selecting DOES
+> preview, because a picker you cannot hear is the original bug wearing different clothes. Do not
+> "fix" it back.
+>
+> Two counts in this plan were wrong when written, and the corrections matter more than the numbers:
+> K1 was **~90 sites in SIX orderings**, not 78 in three — the enumerating grep matched only the
+> orderings someone had already thought of, which is why the guard now asserts on the CLASS SET.
+> K10's `animate-pulse` population was 17, not 9; only 4 were real loading text.
+>
+> **Live status for the whole workstream is in the tranche 2 plan**, not here.
 
 **Goal:** Land the five D2-independent items of the menu-internals kit — one section-label recipe, no decorative dividers, the Sound audition fix, `SegmentedTabs` adoption, and `LoadingState` adoption — each with a source-text guard test so the idiom cannot come back.
 

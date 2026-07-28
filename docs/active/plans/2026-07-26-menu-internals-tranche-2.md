@@ -1,5 +1,5 @@
 ---
-status: active
+status: active — D1 SHIPPED, K2 (Task 4) not started
 extends: docs/active/specs/2026-07-26-menu-internals-design-system.md
 branch: feat/menu-internals-tranche-1 (tranche 1 + 2 ship as ONE PR — Destin's call 2026-07-26)
 ---
@@ -9,13 +9,82 @@ branch: feat/menu-internals-tranche-1 (tranche 1 + 2 ship as ONE PR — Destin's
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or
 > superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
 
+---
+
+## STATUS (2026-07-26, end of session — read this first)
+
+**Branch `feat/menu-internals-tranche-1` in the `youcoded` repo — 18 commits, all pushed, clean
+tree. NOTHING IS MERGED. No PR is open.** Suite 3436 green, `tsc --noEmit` clean, `vite build`
+clean. Tranche 1 and tranche 2 ship as ONE PR (Destin's call).
+
+| | State |
+|---|---|
+| **Tranche 1** (K1, K8, Sound bug, K3, K10) | **DONE** — 6 commits, reviewed by Destin in a dev build, plus a 4-item rework of Sound he asked for |
+| **Tranche 2 Task 1** `<Dialog>` | **DONE** |
+| **Tranche 2 Task 2** 7 SettingsPopup callers | **DONE** — `SettingsPopup.tsx` deleted |
+| **Tranche 2 Task 3** migrate the family | **DONE** — **40 dialogs across 22 files** |
+| **Tranche 2 Task 4** K2 rows | **NOT STARTED** — decided (below), not written |
+| **Bookkeeping** | **NOT DONE** — ROADMAP not flipped, docs not archived |
+| **Tranche 3** | Not planned |
+
+**Sizing was rebuilt twice after Destin pushed back, and the second version is what ships.** Do not
+reintroduce the ladder. See spec §0b for the full amendment; the short version is that widths are
+derived from reading measure (`prompt 340 / panel 420 / document 600`) and the height cap is 1.4x
+the size's own width, never a `vh` fraction and never one flat number.
+
+**Current bucket counts:** prompt 15 · panel 24 · document 1 · total 40.
+`document` having exactly one member (the changelog) is a known smell — if nothing joins it, collapse
+to two sizes and let the changelog carry a documented exception.
+
+**Residue, all named in commit messages, none silent:**
+- K1's classes still appear at other sizes on `text-4xs` micro-labels and the marketplace eyebrow
+  headings — a design call, deliberately not made.
+- `LoadingState` hardcodes the verb, so the Tailscale install reads "Loading Tailscale…". Wants an
+  optional `verb` prop.
+- `AccountSection`'s "Danger zone" is still an `<h4>` in a retired class order (it is red, so the K1
+  guard does not catch it). Belongs with K9.
+- `tests/session-meta-parity.test.ts` flakes when parallel workers race the shared test HOME.
+  Pre-existing, not caused by this work.
+- The confirm cards keep their own headers; D1 says "no untitled dialogs" but titling them is a copy
+  decision, not a mechanical one.
+- **Out of scope and unmigrated:** marketplace, project-view, game, git, tags, context-menu, buddy.
+  `git/DiscardConfirmDialog.tsx` is an L3 destructive confirm — the same *kind* as the ones migrated,
+  just on an excluded surface. Worth reconsidering.
+
+**Guard tests added by this work:** `tests/dialog-shell.test.tsx` (11 assertions — render tests for
+the shell, plus the adoption guard with a walked scope and an exemption list that fails if it rots),
+`tests/section-label-authority.test.ts`, `tests/choice-group-authority.test.ts`,
+`tests/sound-preview.test.ts`. Plus `tests/setup-dom.ts`, a vitest `setupFile` supplying the
+`ResizeObserver` stub jsdom lacks — every `Dialog` runs `useScrollFade`, so without it a dozen
+suites fail for a missing browser API rather than anything about the component.
+
+### NEXT STEPS, in order
+
+1. **Task 4 — K2 rows** (below, decided but unwritten). The last piece of tranche 2, and the change
+   with the widest visual reach: every settings row in the app.
+2. **Bookkeeping** — flip the ROADMAP entry, move both plan docs and the spec to `docs/archive/`,
+   per "merge means merge AND push AND archive AND flip the roadmap item".
+3. **Open the PR** on `itsdestin/youcoded` from `feat/menu-internals-tranche-1`.
+4. **Tranche 3** — K4/K5/K6/K7/K9/K11/K12, gated on a copy pass. Not planned.
+
+**Before doing anything, re-verify:** `cd worktrees/menu-tranche1/desktop && npm test && npx tsc
+--noEmit`. The worktree is at `/home/destin/youcoded-dev/worktrees/menu-tranche1`. Do NOT relaunch
+the built app; runtime checks go through `bash scripts/run-dev.sh feat/menu-internals-tranche-1
+--label "Menu Tranche 1" --offset 100 --profile dev-menu1`.
+
+---
+
 **Goal:** Land D1 — one `<Dialog>` shell that owns scrim, centering, sizing, header, close **and the
 scroll body** — then migrate the settings/status-bar dialog family onto it.
 
-**Architecture:** `SettingsPopup.tsx` is the seed, but the spec's claim that it "is already correct"
+**Architecture:** `SettingsPopup.tsx` was the seed, but the spec's claim that it "is already correct"
 is wrong in one specific way that tranche 1 proved empirically (see §Finding below). `<Dialog>` is
-`SettingsPopup` with the body brought inside the component, a width ladder replacing free-form
-widths, and a fixed-height ban. Then callers migrate.
+`SettingsPopup` with the body brought inside the component, CONTENT-DERIVED sizing replacing
+free-form widths, and a fixed-height ban. Then callers migrate.
+
+> **The "width ladder" language below is HISTORICAL.** The ladder was tried and rejected as circular
+> — see §STATUS and spec §0b. Sizes are `prompt 340 / panel 420 / document 600`, derived from
+> reading measure, and the height cap is 1.4x the size's own width.
 
 **Tech Stack:** React 19 + TypeScript, Tailwind v4 semantic tokens, Vitest 4, Electron 41. The
 renderer is shared with the Android WebView — everything here ships on both platforms.
@@ -54,18 +123,20 @@ not in the spec — the spec is amended by this plan.
 Everything from tranche 1's plan still applies (type tokens, `<Button>`, status colors hardcoded,
 WHY comments, `stripComments` in guard tests, `<ErrorState>` for errors). Additionally:
 
-- **Scope: the settings + status-bar family only.** The 24 top-level `components/*.tsx` dialogs plus
-  `ui/` and `development/`. **Marketplace, project-view, game, git, tags and context-menu are OUT** —
+- **Scope: the settings + status-bar family only.** `App.tsx` + top-level `components/*.tsx`
+  + `components/development` + `components/ui`. (The guard originally read only `components/*.tsx`
+  and so could not enforce this; fixed — it now walks the scope explicitly.) **Marketplace, project-view, game, git, tags and context-menu are OUT** —
   they are different surfaces with their own visual language, and dragging them in triples the diff
   for no benefit to the menus this project is about. Recorded as residue, not silently skipped.
 - **One PR.** Tranche 1 and 2 land together on `feat/menu-internals-tranche-1`. Do not merge tranche
   1 separately.
-- **No behavior changes.** A dialog that opened centered at 420px still opens centered at 420px.
-  Where the width ladder forces a change, it rounds to the NEAREST rung, and the change is listed.
+- **No behavior changes** beyond size. Where a dialog's width or height moves, the change is listed
+  in the commit. (The original "round to the nearest rung" rule is retired along with the ladder —
+  a dialog is assigned by CONTENT KIND now: is it a confirm, a settings surface, or long-form text?)
 
 ---
 
-### Task 1: The `<Dialog>` primitive
+### Task 1: The `<Dialog>` primitive — ✅ DONE
 
 **Files:**
 - Create: `src/renderer/components/ui/Dialog.tsx`
@@ -108,7 +179,7 @@ WHY comments, `stripComments` in guard tests, `<ErrorState>` for errors). Additi
 
 ---
 
-### Task 2: Migrate the 7 `SettingsPopup` callers
+### Task 2: Migrate the 7 `SettingsPopup` callers — ✅ DONE
 
 `SettingsPopup` becomes a thin deprecated alias for one commit, then is deleted. Its two callers
 that set `height` (Appearance, Remote Access — `min(600px, 80vh)`) are the interesting ones: they
@@ -122,7 +193,7 @@ want a panel that fills regardless of content, which the ban removes. Give them
 
 ---
 
-### Task 3: Migrate the settings/status-bar dialog family
+### Task 3: Migrate the settings/status-bar dialog family — ✅ DONE
 
 The ~17 remaining top-level dialogs. Mechanical but not blind — each one drops its hand-rolled
 `createPortal` + `<Scrim>` + `<OverlayPanel>` + header + `✕`.
@@ -141,7 +212,7 @@ Two that need care, called out because they are not pure deletions:
 
 ---
 
-### Task 4: K2 — the setting row · **DECIDED 2026-07-26 (Destin delegated the call)**
+### Task 4: K2 — the setting row · **DECIDED, NOT STARTED — this is where to resume**
 
 **Resolution: (c′) — one component, two densities selected by ROLE.**
 

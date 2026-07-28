@@ -44,6 +44,45 @@ generalized form of what I originally observed about `SegmentedTabs`.
 **Consequence for sequencing:** the tranche this spec called "prerequisite" is done. Implementation
 can begin immediately with the mechanical, D2-independent work.
 
+## 0b. Amendment — what D1 actually required (2026-07-26, during tranche 2)
+
+D1 shipped, but three of its clauses were wrong and one was missing. Recorded here rather than
+silently corrected, because each was cited as a reason to do the work.
+
+| Spec said | Reality |
+|---|---|
+| *"`SettingsPopup.tsx` is the seed — it is already correct"* | **It was not.** It set `maxHeight` but left the panel a plain block, so every caller had to remember `flex flex-col` AND wrap its own `.scroll-fade`. **2 of its 7 callers forgot** (Sound, Session Defaults) — the symptom is a dialog that clips with no way to scroll. `<Dialog>` therefore owns the scroll body, and the fade hook with it. |
+| Width ladder `340 / 420 / 560 / 820` | **Circular.** It was fitted to the widths already in the codebase, which were themselves arbitrary. `lg 560` was the tell: nothing had ever been 560px, so 3 dialogs were widened 17% to reach a rung that existed to make the progression look tidy. |
+| `max-h-[80vh]` | **Wrong unit.** 80vh is ~700px on a laptop and ~1730px on a 4K display — a different object per monitor. Then a flat 680px cap was also wrong: it gave each width a different *proportion*. |
+| *"~42 dialogs"*, `components/` only | **49 files** hand-rolled the shell. The adoption guard's first scope (`components/*.tsx`) could not see `App.tsx` or any subdirectory, hiding 5 more. |
+
+**What replaced them.** The app is entirely monospace (`--font-sans` and `--font-mono` are both
+Cascadia Mono), so character advance is a constant 0.6em and reading measure converts to exact
+pixels. Widths are derived from content and named for what drives them:
+
+- `prompt` **340** — two action buttons side by side without wrapping (322px floor).
+- `panel` **420** — UI prose measure: 59ch at `text-2xs`, 51ch beside a control. Measured median
+  dialog string is 54ch across 130 of them, so it fits one line.
+- `document` **600** — long-form measure, 67ch at `text-sm`. Code blocks already scroll, so they
+  do not drive width.
+
+Height is capped at **1.4x the size's own width** (476 / 588 / 840), clamped by
+`calc(100vh - 6rem)` so a modal always leaves a constant 3rem of scrim. The ratio is a design
+judgment; tying the cap to width at all is the principled part — one flat number cannot suit 340px
+and 600px at once.
+
+**Two mistakes of mine worth keeping**, both the same shape — a negative asserted from a partial
+read, then written somewhere durable:
+1. `SyncPanel` and `QuickChips` were exempted from the adoption guard as *"anchored popovers"* on
+   the strength of `className="fixed …"` alone. Their `style` objects said
+   `top:50%, left:50%, transform:translate(-50%,-50%)` — centered modals, one with the exact fixed
+   height the shell exists to ban. An exemption with a confident reason is *more* dangerous than a
+   bare one: the reason is what stops the next reader re-deriving it.
+2. The guard scanned `components/*.tsx` and nothing else, so it could not enforce even the scope
+   this plan declared. Scope is now walked explicitly and asserted non-vacuous.
+
+---
+
 ## Why this exists
 
 The 2026-07-16 UI-consistency spec locked **controls** — buttons, toggles, fields, cards, states,
@@ -513,7 +552,7 @@ post-tranche-8 (see §0).
 | K10 | LoadingState / EmptyState / ErrorState everywhere | 9 remaining `animate-pulse` + ad-hoc |
 | K11 | Footer = commit/dismiss only, no prose; autosaving menus have none | 3 conventions |
 | K12 | One explainer renderer for the existing payload | 5 mechanisms |
-| D1 | One `<Dialog>` shell: ladder 340/420/560/820, `max-h-[80vh]`, no fixed `h-` | 14 widths, 6 heights, 3 centering techniques |
+| D1 | One `<Dialog>` shell — **SHIPPED, amended 3x in flight (see §0b)**: sizes `prompt 340 / panel 420 / document 600`, height capped at 1.4x width, no fixed `h-`, shell owns the scroll body | **~18 widths, 7 heights, 2 centering techniques**, measured across **40 dialogs** |
 | **D2** | **Navigation model = A (drawer + modals)** | **DECIDED 2026-07-26** |
 | D3 | Chip popups = centered modal (follows from A) | DECIDED 2026-07-26 |
 | ~~D4~~ | ~~Type tokens~~ | **SHIPPED** in tranche 6 |
