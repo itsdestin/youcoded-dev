@@ -1,0 +1,17 @@
+id: toolcalls-never-cleared
+language: typescript
+severity: error
+message: >-
+  The `toolCalls` Map must NEVER be cleared — ToolCards render results from
+  earlier turns. Use `activeTurnToolIds` (a Set) for current-turn status checks.
+note: |
+  Invariant source: .claude/rules/chat-reducer.md → "Reducer state".
+  Guard: youcoded/desktop/tests/chat-reducer.test.ts
+files:
+  - "**/renderer/state/chat-reducer.ts"
+  - "**/fixtures/**/chat-reducer.ts"
+rule:
+  pattern: $OBJ.clear()
+constraints:
+  OBJ:
+    regex: "toolCalls$"

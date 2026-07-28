@@ -1,0 +1,28 @@
+id: no-seenuuids-on-tool-use
+language: typescript
+severity: error
+message: >-
+  TRANSCRIPT_TOOL_USE dedups by `toolUseId`, never by uuid — do NOT add a
+  `seenUuids` guard on this path. The watcher re-emits tool-use on a repeated
+  uuid by design; a uuid guard swallows tools arriving in a CC line rewrite.
+note: |
+  Invariant source: .claude/rules/chat-reducer.md → "Reducer state".
+  Guard: youcoded/desktop/tests/chat-reducer.test.ts
+         → "chatReducer tool card duplication"
+
+  SCOPING MATTERS: `seenUuids` is legitimate and load-bearing on the
+  TRANSCRIPT_USER_MESSAGE path (replay/live dedup, chat-reducer.ts ~L567).
+  This rule fires only inside the TRANSCRIPT_TOOL_USE case, so it does not
+  false-positive on that correct usage.
+files:
+  - "**/renderer/state/chat-reducer.ts"
+  - "**/fixtures/**/chat-reducer.ts"
+rule:
+  regex: "seenUuids"
+  kind: property_identifier
+  inside:
+    kind: switch_case
+    stopBy: end
+    has:
+      field: value
+      regex: "TRANSCRIPT_TOOL_USE"

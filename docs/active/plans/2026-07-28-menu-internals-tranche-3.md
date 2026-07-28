@@ -2,7 +2,7 @@
 status: draft — not started
 extends: docs/active/specs/2026-07-26-menu-internals-design-system.md
 follows: docs/active/plans/2026-07-26-menu-internals-tranche-2.md
-branch: TBD — see "Branching" below
+branch: feat/menu-internals-tranche-1 (tranches 1+2+3 ship as ONE PR — Destin's call 2026-07-28)
 ---
 
 # Menu Internals — Tranche 3 (the passive roles) Implementation Plan

@@ -4,7 +4,7 @@ paths:
   - "youcoded/desktop/src/main/providers/**"
   - "youcoded/desktop/src/main/native-home.ts"
   - "youcoded/desktop/src/renderer/components/native-send.ts"
-last_verified: 2026-07-23
+last_verified: 2026-07-28
 verify:
   - path: youcoded/desktop/src/main/harness/harness-session.ts
   - path: youcoded/desktop/src/main/harness/native-session-host.ts
@@ -27,6 +27,10 @@ verify:
   - test: youcoded/desktop/tests/harness-history-rebuild.test.ts
   - test: youcoded/desktop/tests/harness-sdk-toolcall-contract.test.ts
   - test: youcoded/desktop/tests/harness-tools-core.test.ts
+# NOTE: M3 items 1/3/5 add skills/, injection/ and their guards. Deliberately NOT
+# anchored here yet — anchors are checked against the WORKSPACE (i.e. master), and
+# that code lives on feat/native-local-reliability-rebase. Add them when it merges;
+# until then the section below names its guards in prose, as Plan C's does.
 ---
 
 # Multi-model native runtime (provider seam + native chat sessions)
@@ -75,9 +79,9 @@ verify:
 - **AskUserQuestion rides the existing permission-ask rail** — the broker threads `decision.updatedInput` (the answers) through, and `formatAnswers` is TOTAL (never throws on untrusted answer shapes) or a throw bricks the session via a dangling tool_call. Interactive tools are driver-routed (skip guards/decide). Guards: `native-permission-broker.test.ts`, `ask-user-question-tool.test.ts`, `harness-session-loop.test.ts`.
 - **Presets (Assistant/Coder) express permission posture as the `modeFor` SEED, not presetRules** — mode rules outrank preset rules, so Coder = starting mode `auto-edit`. Seeded once at create/resume, never overwritten; explicit `setPermissionMode` wins. Legacy `harnessId:'chat'` → Assistant read-side (header never rewritten). `CORE_TOOLS` ≡ manifest `NATIVE_TOOL_NAMES`. Guards: `preset-registry.test.ts`, `native-session-host.test.ts`, `tool-registry-manifest.test.ts`.
 
-## Native local reliability (Plan C) — ⚠️ **NOT ON MASTER**
+## Native local reliability (Plan C) + M3 items 1/3/5 — ⚠️ **NOT ON MASTER**
 
-**Everything in this section describes the unmerged branch `origin/feat/native-local-reliability`.** Verified 2026-07-24: `resolveProfile`, `effectiveContextWindow` and `autoCompaction` appear nowhere in master's `src/`, and 8 of the 9 guard tests named below don't exist there (`provider-registry.test.ts` is the exception). Do not reason about master's behavior from these bullets, and don't "fix" master to match them — merging or dropping Plan C is **M6 item 1** of the parity program (`docs/active/plans/2026-07-22-native-runtime-parity-program.md` §7). Kept in the rule because the branch is live work, not abandoned; the bullets are an accurate description of *it*.
+**Everything in this section describes the unmerged branch `origin/feat/native-local-reliability`.** Verified 2026-07-24: `resolveProfile`, `effectiveContextWindow` and `autoCompaction` appear nowhere in master's `src/`, and 8 of the 9 guard tests named below don't exist there (`provider-registry.test.ts` is the exception). Do not reason about master's behavior from these bullets, and don't "fix" master to match them — merging or dropping Plan C is **M6 item 1** of the parity program (`docs/active/plans/2026-07-22-native-runtime-parity-program.md` §7). Kept in the rule because the branch is live work, not abandoned; the bullets are an accurate description of *it*. **Updated 2026-07-28:** Plan C was rebased onto master and M3 items 1 (skills), 3 (path-scoped rules + nested project instructions) and 5 (capability-gated injection) were built on top of it, all on `feat/native-local-reliability-rebase`. Flip this banner when that branch merges. M3 item 2 (`/clear`, `/compact`) is on the same branch; item 4 (MCP) is not started and has its own plan.
 
 Branch guards: `capability-profile.test.ts`, `known-models.test.ts`, `engine-context-window.test.ts`, `compaction.test.ts`, `harness-compaction.test.ts`, `harness-tool-presentation.test.ts`, `harness-hardening.test.ts`, `provider-registry.test.ts`, `statusbar-native-usage.test.ts`, `ipc-channels.test.ts`
 - **CapabilityProfile resolves in THREE layers and NEVER branches on a model name** — discovered facts (provider type + real context window) → a family-keyed regex registry (`known-models.ts`, the ONLY place a modelId is inspected) → conservative fallback. `resolveProfile` is pure. Tools are attached unless the registry marks `supportsTools:false` (then the model runs as plain chat; `buildAiTools` returns `{}`). The registry's factual fields (context windows, tool-calling) are web-sourced + `// UNVERIFIED`-flagged and re-checked against real GGUF quants at acceptance — treat them as provisional. Guards: `capability-profile.test.ts`, `known-models.test.ts`.
@@ -87,3 +91,14 @@ Branch guards: `capability-profile.test.ts`, `known-models.test.ts`, `engine-con
 - **Native auto-compaction surfaces via `data.autoCompaction`, not the manual `/compact` gate** — the driver emits the existing `compact-summary` event with `{ summary, autoCompaction: true }`; the reducer's `COMPACTION_COMPLETE` bypasses the `compactionPending` guard only when `action.auto` (set ONLY by the native harness, so CC resume-from-summary still inserts no marker). The event is persisted + replayed, so each spontaneous compaction leaves one inline marker.
 - **Simplified presentation swaps DESCRIPTIONS, not the tool set** — `maxToolPresentation:'simplified'` hands each tool its `shortDescription ?? description`; all ten tools remain. Schema flattening beyond descriptions is deferred pending probe evidence. Guard: `harness-tool-presentation.test.ts`.
 - **`native:usage-report` is a STATUS channel, not a transcript type** — renderer→main fire-and-forget cached in `lastNativeUsageBySession` (mirrors `remote:attention-changed`), folded into `buildStatusData().nativeUsageMap`. The StatusBar chips (context %/tokens/tokens-per-sec) read a session's `turn-complete` usage; `contextLength` rides the usage payload (a session constant on a per-turn event, like `tokensPerSecond`). Chips update at turn END (mid-turn lag accepted). Guards: `ipc-channels.test.ts`, `statusbar-native-usage.test.ts`.
+
+
+### M3 items 1 / 3 / 5 (same branch)
+
+Branch guards: `skill-catalog.test.ts`, `skill-tool.test.ts`, `skill-tool-gating.test.ts`, `injection-budget.test.ts`, `path-triggers.test.ts`, `rule-injection.test.ts`, `slash-routing.test.ts`, `tool-registry-manifest.test.ts`, `ipc-channels.test.ts`. Depth: `youcoded/docs/native-runtime.md` → "Skills, rules and injection (M3)".
+
+- **Injection is MESSAGES, never a prompt edit** — skills, path-scoped rules and nested project instructions all arrive as messages; `prompt-assembly.ts` stays byte-stable. · A mid-session prompt change discards the KV cache prefix every local model reuses. · Guard: `rule-injection.test.ts`.
+- **Injected content is bounded by the profile, and truncation announces itself** — `injectionBudgetTokens` / `exposeSkillCatalog` come from the REAL window; an unmeasured one is small, except for frontier providers whose window we never discover. · A 600-word rule can blow a small window; a silently cut procedure is worse than none. · Guards: `injection-budget.test.ts`, `capability-profile.test.ts`.
+- **`Skill` is CONDITIONAL and deliberately absent from `NATIVE_TOOL_NAMES`** — attached per session only when the profile affords its catalog and skills exist; re-synced on `setBinding`. `/skill-name` works on every model. · Advertising it statically tells the model about a tool it may not have. · Guards: `tool-registry-manifest.test.ts`, `skill-tool-gating.test.ts`.
+- **A rule with no `paths:` is SKIPPED, never global** — an eager rule rides every turn, the exact cost item 5 exists to control. · Guard: `path-triggers.test.ts`.
+- **`native:*` four-surface parity is only NOW pinned** — `ipc-channels.test.ts` covers shim/Android per-PREFIX and had no `native:*` block until 2026-07-28, so a channel missing from `remote-shim.ts` or `SessionService.kt` passed silently. · Guard: `ipc-channels.test.ts` → "native:* channel parity".

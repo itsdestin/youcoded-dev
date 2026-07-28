@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 date: 2026-07-28
 milestone: M3 items 1, 3, 5 (Native Runtime Parity Program §4)
 program: docs/active/plans/2026-07-22-native-runtime-parity-program.md
@@ -10,6 +10,37 @@ verified_against: branch `f65245ae` (master merged 2026-07-28)
 ---
 
 # M3 — Skills, path-scoped rules, and capability-gated injection
+
+> **Implementation status (2026-07-28):** Tasks 1–8 are DONE and committed on
+> `feat/native-local-reliability-rebase`. Task 9's doc work is done except the
+> parts that must wait for the merge (MAP rows and the program §4 flip both
+> describe master, and the handoff explicitly forbids adding unmerged paths to
+> MAP). Remaining: Destin's dev acceptance, the whole-branch review, then PR.
+>
+> Four deviations from this plan, each forced by something the plan did not know
+> and each recorded in its commit:
+> 1. **Task 2** — `Skill` is NOT added to `NATIVE_TOOL_NAMES`. The registry↔manifest
+>    guard rejected it, correctly: whether Skill exists depends on the model, so
+>    advertising it statically is the exact sin that guard exists to catch. It is
+>    a `CONDITIONAL_TOOL_NAME` instead.
+> 2. **Task 3** — frontier hosted providers are exempt from window-based sizing.
+>    The plan's flat "derive from the window" would have stripped the skill
+>    catalog from every cloud session, since we never discover Anthropic's window
+>    and `null` there means "not measured", not "small".
+> 3. **Task 5** — no `knownSkillIds` plumbing. An unrecognized slash command rides
+>    the existing `handled: false` branch carrying an invoke-skill intent, so
+>    Claude Code is untouched and the harness (which owns the catalog) resolves it.
+> 4. **Task 6** — `routeSlashResult` extracted, because deviation 3 broke BOTH
+>    callers at once (each checked `handled` before `nativeAction`).
+>
+> Two things found while implementing, both now fixed and pinned:
+> - `ipc-channels.test.ts` covers remote-shim/Android **per-prefix**, and `native:*`
+>   had no block — so "four-surface parity" was two-thirds true for the whole
+>   native runtime. Verified by deleting a channel from the shim and watching the
+>   file stay green.
+> - `HarnessManifest.tools` has **no consumer anywhere**; every session gets
+>   `CORE_TOOLS` regardless of what a preset declares. Pre-existing, out of scope
+>   here, worth a ROADMAP entry.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development
 > (recommended) or superpowers:executing-plans to implement this plan task-by-task.

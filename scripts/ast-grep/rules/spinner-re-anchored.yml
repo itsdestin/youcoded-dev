@@ -1,0 +1,20 @@
+id: spinner-re-anchored
+language: typescript
+severity: error
+message: >-
+  SPINNER_RE must stay `^`-anchored. Without the anchor, markdown bullets,
+  echoed prompts, and `●`-prefixed turns false-match and the attention
+  classifier reports "thinking" on static text.
+note: |
+  Invariant source: .claude/rules/chat-reducer.md → "Spinner classifier".
+  Guard: youcoded/desktop/tests/attention-classifier-parity.test.ts
+         + youcoded/shared-fixtures/attention-classifier/
+files:
+  - "**/renderer/state/attention-classifier.ts"
+  - "**/fixtures/**/attention-classifier.ts"
+rule:
+  pattern: const SPINNER_RE = $RE
+constraints:
+  RE:
+    not:
+      regex: '^/\^'

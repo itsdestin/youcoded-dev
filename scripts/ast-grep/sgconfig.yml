@@ -1,0 +1,10 @@
+# ast-grep config for executable invariants.
+#
+# WHY this exists: several invariants in .claude/rules/ are prose an agent has to
+# read and honor ("always use endTurn()", "SPINNER_RE is ^-anchored"). Prose is the
+# weakest possible guard. These rules turn the mechanically-checkable subset into a
+# scan that fails, so the invariant holds whether or not anyone read the rule file.
+#
+# Run: bash scripts/ast-grep/check.sh
+ruleDirs:
+  - rules

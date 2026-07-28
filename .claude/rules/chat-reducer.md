@@ -19,6 +19,9 @@ verify:
   - test: youcoded/desktop/tests/transcript-watcher.test.ts
   - test: youcoded/desktop/tests/attention-classifier-parity.test.ts
   - test: youcoded/desktop/tests/raw-byte-listener-contract.test.ts
+  - path: scripts/ast-grep/rules/toolcalls-never-cleared.yml
+  - path: scripts/ast-grep/rules/spinner-re-anchored.yml
+  - path: scripts/ast-grep/rules/no-seenuuids-on-tool-use.yml
 ---
 
 # Chat reducer, transcript pipeline & terminal byte stream
@@ -26,11 +29,11 @@ verify:
 Chat state + the JSONL transcript watcher that feeds it + the Android byte pipeline. **Full architecture + read-integrity/spinner-regex/terminal-byte depth: `youcoded/docs/chat-reducer.md` (see its "PITFALLS-triage additions" section).**
 
 ## Reducer state (`chat-reducer.ts`) — guard: `chat-reducer.test.ts`
-- **`toolCalls` Map is NEVER cleared** (ToolCards need old results). Use `activeTurnToolIds` (a Set) for current-turn status checks, not the full Map.
+- **Current-turn status checks use `activeTurnToolIds` (a Set), not the `toolCalls` Map** — the Map is never cleared, because ToolCards render earlier turns' results. · scan: `toolcalls-never-cleared`
 - **Always use the `endTurn()` helper** for turn-ending paths — it fails orphaned running/awaiting tools, clears the Set + `isThinking`/`streamingText`/`currentTurnId`, and resets `attentionState:'ok'`. `SESSION_PROCESS_EXITED` (→`session-died`) and `NATIVE_SESSION_ERROR` (→`error`) are the only spread-then-override exceptions.
 - **`AttentionState` is `'ok'|'stuck'|'session-died'|'error'` — four reachable states, each with a writer** (`stuck`←PTY classifier; `session-died`←`SESSION_PROCESS_EXITED`; `error`←`NATIVE_SESSION_ERROR`, native sessions ONLY). Adding a state without a writer resurrects dead branches in the `AttentionBanner` switch.
 - **Dedup uses the `pending` flag** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest matching pending entry, else appends `pending:false`. Don't "simplify" back to last-10 content matching (drops rapid-fire duplicates).
-- **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid — do NOT add a `seenUuids` guard** (the watcher re-emits tool-use on a repeated uuid by design; a guard swallows tools arriving in a CC line rewrite). Every write on that path stays idempotent, `PERMISSION_REQUEST` included. Guard: `chat-reducer.test.ts` → "chatReducer tool card duplication".
+- **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits tool-use on a repeated uuid by design, so every write on that path must stay idempotent, `PERMISSION_REQUEST` included. · scan: `no-seenuuids-on-tool-use` · guard: `chat-reducer.test.ts` → "chatReducer tool card duplication".
 - **`attentionState` is classifier-driven, not timer-driven** — `useAttentionClassifier` ticks the xterm buffer every 1s; transcript events + `PERMISSION_REQUEST` reset to `'ok'`.
 
 ## Transcript watcher read-integrity (`transcript-watcher.ts`, `subagent-watcher.ts`) — guard: `transcript-watcher.test.ts`
@@ -42,7 +45,7 @@ Chat state + the JSONL transcript watcher that feeds it + the Android byte pipel
 - **SubagentWatcher polls are slow (5s) safety nets — the fast paths are event-driven** (`kickScan()` on a parent Agent tool_use, `settleByParent()` on its result). Don't speed the polls up or remove the kick/settle calls.
 
 ## Spinner classifier (`attention-classifier.ts`) — guard: `attention-classifier-parity.test.ts` + `shared-fixtures/attention-classifier/`
-- **Matches glyph + gerund + ellipsis ONLY** (no seconds counter). Active-vs-stalled = glyph rotation OR `COUNTER_RE` advancement (same glyph ≥30s + no counter = stalled). **`SPINNER_RE` is `^`-anchored — DO NOT remove it** (else markdown bullets / echoed prompts / `●`-prefixed turns false-match). Patterns are CC-CLI-version-sensitive; keep the version anchor + re-run the `test-conpty` spinner probes on a CC bump.
+- **Matches glyph + gerund + ellipsis ONLY** (no seconds counter). Active-vs-stalled = glyph rotation OR `COUNTER_RE` advancement (same glyph ≥30s + no counter = stalled). Patterns are CC-CLI-version-sensitive; keep the version anchor + re-run the `test-conpty` spinner probes on a CC bump. · scan: `spinner-re-anchored` (the `^` anchor)
 - **The `shared-fixtures/attention-classifier/` fixtures are the contract** — a `BufferClass` or regex change needs a fixture change in the SAME commit.
 
 ## Terminal byte stream (Android xterm-in-WebView) — guard: `raw-byte-listener-contract.test.ts`

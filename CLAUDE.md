@@ -81,6 +81,10 @@ cd <repo> && git fetch origin && git pull origin master
 
 **Never assert a negative from a single search.** The same rule as above, pointed at the codebase instead of at error strings. "Never called", "no mirror exists", "dead code", "only one call site", "not handled on Android" are only as good as the search that backed them — and one `grep` never establishes its own completeness. Search repo-wide FIRST and narrow after, never the reverse; use the tool that actually answers the question (`npm run knip` for dead code, a tree-wide `rg` for cross-platform parity, a failing test for "this can't happen") instead of inferring it from a pattern match. `docs/MAP.md` tells you where a subsystem *starts*, not its full extent — it is not a completeness oracle. A *surprising* negative ("dead state in a shipping app", "no Android equivalent of a core mechanism") raises the evidence bar rather than lowering it. This binds hardest at the moment a claim becomes durable — a commit message, a PR body, a ROADMAP entry — because loose talk mid-investigation is self-correcting and a wrong claim in `ROADMAP.md` outlives the session. Both misses in the 2026-07-26 wrong-transcript investigation were this exact shape (a one-file grep concluding "no Android `sessionIdMap`"; a short grep concluding `resumeInfo` was dead — both false).
 
+**Query symbols before reading files, and delegate sweeps to a subagent.** The rule above is about search *completeness*; this one is about search *price*. `ipc-handlers.ts` is 3,809 lines and `App.tsx` is 3,544 — **one whole-file read costs ~10x this entire CLAUDE.md**, and a conventional IPC-parity sweep runs ~90k tokens. Escalate, stopping as soon as the question is answered: **Serena** (`find_symbol`, `find_referencing_symbols`, `get_symbols_overview` — resolved call graphs, no comment/string noise) → **`rg`** for exact strings → **whole-file reads only for files you're about to edit**. Any question answered by sweeping files goes to a read-only search subagent (`Explore`, else `general-purpose`), which spends the tool calls in its own context and returns a 1–2k-token conclusion. Serena is scoped to `youcoded/` and its tool descriptions cost tokens on every request — net win on long sessions over big subsystems, net loss on one-line lookups. Setup, gotchas, and the full tool table: `docs/code-intelligence.md`.
+
+**Prefer a tool that returns a verdict over one that returns text to interpret.** `npm run knip` for dead code, `tsc --noEmit` for types, `ipc-channels.test.ts` for three-surface parity, `bash scripts/ast-grep/check.sh` for the invariants that have been promoted from prose to executable scans. When you codify a new invariant, an ast-grep rule beats a sentence in `.claude/rules/` — adding rules to the scan is documented in `docs/code-intelligence.md`.
+
 **"Merge" means merge AND push.** Don't stop at a local merge.
 
 **Never tell Destin to run `wrangler deploy` manually.** The Cloudflare Worker (`wecoded-marketplace/worker/`) auto-deploys on push to master via `.github/workflows/worker-deploy.yml` — CI runs tests, applies D1 migrations, deploys, and pushes secrets. To ship a Worker change, the workflow is: open a PR → merge to master → CI handles the rest. Same for `[vars]` flips like `CUTOVER_TIMESTAMP` — edit `wrangler.toml`, commit, merge. See `docs/build-and-release.md → Worker (wecoded-marketplace)`.
@@ -166,11 +170,13 @@ Do NOT preserve: full file contents already read, intermediate debugging output,
 
 ## Where Knowledge Lives
 
-New knowledge goes to, in descending preference: **a pinning test > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. Full taxonomy: `docs/archive/specs/2026-07-15-workspace-knowledge-management-design.md`.
+New knowledge goes to, in descending preference: **a pinning test > an ast-grep rule > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. Full taxonomy: `docs/archive/specs/2026-07-15-workspace-knowledge-management-design.md`.
+
+The first two tiers *execute*; the rest only ask to be read and honored. Prefer an ast-grep rule (`scripts/ast-grep/`) whenever the invariant is a code shape — it covers the large class that isn't unit-testable but is still mechanically checkable, and it removes prose rather than adding it.
 
 | Kind of knowledge | Home |
 |---|---|
-| Invariant / lesson | Pinning test → WHY comment → path-scoped rule → the rule's lazy doc. Slim `docs/PITFALLS.md` holds only cross-repo items |
+| Invariant / lesson | Pinning test → ast-grep rule → WHY comment → path-scoped rule → the rule's lazy doc. Slim `docs/PITFALLS.md` holds only cross-repo items |
 | Planned feature / bug / idea | `ROADMAP.md` — capture in the SAME session Destin mentions it (typed, tagged, dated; dedup first) |
 | Doc contradicting code | **Fix on sight** (verify against code; cite verification in the commit). Unfixable this session → ROADMAP `bug` tagged `#docs`. There is no drift ledger |
 | CC-version watch item | `youcoded/docs/cc-dependencies.md` |
@@ -186,6 +192,7 @@ Path-scoped rules in `.claude/rules/` inject automatically when you touch matchi
 | Doc | Read when… |
 |---|---|
 | `docs/PITFALLS.md` | before any non-trivial change — cross-repo invariants |
+| `docs/code-intelligence.md` | setting up Serena on a new machine, adding an ast-grep invariant rule, or deciding which search tool answers a question |
 | `youcoded/docs/chat-reducer.md` | touching chat state, transcript events, attention |
 | `youcoded/docs/android-runtime.md` | touching the Android/Termux runtime |
 | `youcoded/docs/shared-ui-architecture.md` | adding IPC or cross-platform features |
