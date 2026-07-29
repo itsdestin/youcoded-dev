@@ -1,8 +1,33 @@
 ---
-status: draft
+status: superseded
 date: 2026-07-20
 kind: plan
+superseded_by: docs/active/specs/2026-07-29-ui-workbench-design.md
+superseded_on: 2026-07-29
 ---
+
+> **SUPERSEDED 2026-07-29** by `docs/active/specs/2026-07-29-ui-workbench-design.md`.
+> Never built — no `scripts/run-mockup.sh`, no `src/renderer/dev/mockup/`, and no ROADMAP
+> entry ever tracked it, which is most of why it sat for nine days.
+>
+> **Adopted by the successor:** the `Proxy` catch-all for the unimplemented channel tail; the
+> Vite-only / no-Electron launcher; hydrate snapshots as *data* rather than event scripts; the
+> dev-gating and refuse-to-shadow-a-real-bridge rules; the channel-parity guard test.
+>
+> **Reversed:** this plan makes conversations *live* (the replayer) and menus *inert*
+> ("static canned values so the surrounding panels render non-empty but inert"). Destin's
+> 2026-07-29 direction is the inverse — live, stateful menus and a frozen chat — because the
+> purpose changed from tool-card iteration to *building every new feature's UI before its
+> backend exists*. That also retires this plan's maintenance contract rule 3 ("resist stubbing
+> namespaces for completeness"), replaced by the `MOCK_ONLY` registry.
+>
+> **Also reversed:** this plan keeps the ToolCard sandbox for isolated fixtures. It is now
+> deleted, its 24 fixtures absorbed into the workbench.
+>
+> **Corrected:** the "~236 IPC channels across ~25 namespaces" and "90 renderer files" figures
+> below were not reproducible on 2026-07-29 — see §10 of the successor for measured values.
+>
+> The replayer design in §3 remains the phase-2 starting point.
 
 # Plan — Mockup browser renderer (dev-only UI iteration without Electron)
 
