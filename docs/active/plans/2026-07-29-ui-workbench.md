@@ -1716,26 +1716,34 @@ cd .. && git add -A && git commit -m "docs: retire the ToolCard sandbox, documen
 - [ ] **Step 1: Verify production exclusion**
 
 ```bash
-cd youcoded/desktop && npm run build
+cd youcoded/desktop && npm run build   # may fail at the final RPM step if
+                                       # rpmbuild is absent — that is packaging,
+                                       # after the renderer bundle is built
 
-# Three checks, because each one alone can pass on a real leak:
-#  1. No chunk NAMED for the workbench was emitted.
-#  2. No workbench module CONTENT survived. Minification renames identifiers but
-#     never rewrites string literals, so grep for a literal the shim must carry
-#     if its code is present at all — `grep -ril workbench` alone would miss a
-#     bundle where every symbol got mangled to a single letter.
-#  3. The mock-only registry's marker string is absent.
+# Check the EXECUTED bundle: dist/renderer/assets/ is what index.html loads.
+# Do NOT grep dist/ wholesale — `tsc` also emits every src/ file to
+# dist/renderer/dev/**, and electron-builder packs it (44 pre-existing .test.js
+# files ship the same way). Those are unreachable dead weight, not a leak, and
+# grepping them produces a false alarm that looks exactly like a real one.
 LEAK=0
-find dist/ -iname '*workbench*' | grep . && LEAK=1
-grep -rl "unimplemented channel" dist/ && LEAK=1
-grep -rl "mode=workbench" dist/ && LEAK=1
+for s in "unimplemented channel" "MOCK_ONLY" "wb-past-" "refuseWrites" "buildHydratePayload"; do
+  grep -l "$s" dist/renderer/assets/*.js && LEAK=1
+done
+# And prove the chunk is unreachable rather than merely absent by name.
+grep -c "dev/workbench" dist/renderer/index.html dist/renderer/assets/index-*.js
 [ "$LEAK" = 0 ] && echo "OK: tree-shaken" || echo "LEAK — workbench reached the prod bundle"
 ```
 
-Expected: `OK: tree-shaken`. If it leaks, an `import.meta.env.DEV` gate is missing — most
-likely a static import of a workbench module somewhere in the always-loaded path. Note the
-`?mode=workbench` comparison in `index.tsx` is inside the `import.meta.env.DEV &&` branch, so
-even that string literal should fold away.
+Expected: `OK: tree-shaken`, and `0` reachability hits. Verified 2026-07-29: all five
+strings absent from the executed bundle, `dev/workbench` unreachable from `index.html` and the
+entry chunk. If it leaks, an `import.meta.env.DEV` gate is missing — most likely a static
+import of a workbench module somewhere in the always-loaded path.
+
+**Separate, pre-existing finding — not this branch's to fix.** `tsc` emits the whole `src/`
+tree to `dist/`, and there is no `build.files` in `package.json`, so `electron-builder` packs
+all of it: 44 `.test.js` files and now 19 `dist/renderer/dev/workbench/*.js` files ship inside
+`app.asar`. Nothing loads them (the renderer runs `assets/`, main runs `dist/main/main.js`), so
+this is installer weight rather than reachable code. Captured in `ROADMAP.md` as a `bug`.
 
 - [ ] **Step 2: Rewrite the skill**
 
