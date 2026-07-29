@@ -4,7 +4,7 @@ paths:
   - "youcoded/desktop/src/main/providers/**"
   - "youcoded/desktop/src/main/native-home.ts"
   - "youcoded/desktop/src/renderer/components/native-send.ts"
-last_verified: 2026-07-28
+last_verified: 2026-07-29
 verify:
   - path: youcoded/desktop/src/main/harness/harness-session.ts
   - path: youcoded/desktop/src/main/harness/native-session-host.ts
@@ -27,10 +27,21 @@ verify:
   - test: youcoded/desktop/tests/harness-history-rebuild.test.ts
   - test: youcoded/desktop/tests/harness-sdk-toolcall-contract.test.ts
   - test: youcoded/desktop/tests/harness-tools-core.test.ts
-# NOTE: M3 items 1/3/5 add skills/, injection/ and their guards. Deliberately NOT
-# anchored here yet — anchors are checked against the WORKSPACE (i.e. master), and
-# that code lives on feat/native-local-reliability-rebase. Add them when it merges;
-# until then the section below names its guards in prose, as Plan C's does.
+  - path: youcoded/desktop/src/main/harness/skills/skill-catalog.ts
+  - path: youcoded/desktop/src/main/harness/tools/skill.ts
+  - path: youcoded/desktop/src/main/harness/injection/path-triggers.ts
+    contains: "paths:"
+  - path: youcoded/desktop/src/main/harness/injection/injection-budget.ts
+    contains: "truncated"
+  - path: youcoded/desktop/src/main/harness/capability-profile.ts
+    contains: "exposeSkillCatalog"
+  - test: youcoded/desktop/tests/skill-catalog.test.ts
+  - test: youcoded/desktop/tests/skill-tool-gating.test.ts
+  - test: youcoded/desktop/tests/injection-budget.test.ts
+  - test: youcoded/desktop/tests/path-triggers.test.ts
+  - test: youcoded/desktop/tests/rule-injection.test.ts
+  - test: youcoded/desktop/tests/prefill-lifecycle.test.ts
+  - test: youcoded/desktop/tests/archive-boundary.test.ts
 ---
 
 # Multi-model native runtime (provider seam + native chat sessions)
@@ -79,9 +90,9 @@ verify:
 - **AskUserQuestion rides the existing permission-ask rail** — the broker threads `decision.updatedInput` (the answers) through, and `formatAnswers` is TOTAL (never throws on untrusted answer shapes) or a throw bricks the session via a dangling tool_call. Interactive tools are driver-routed (skip guards/decide). Guards: `native-permission-broker.test.ts`, `ask-user-question-tool.test.ts`, `harness-session-loop.test.ts`.
 - **Presets (Assistant/Coder) express permission posture as the `modeFor` SEED, not presetRules** — mode rules outrank preset rules, so Coder = starting mode `auto-edit`. Seeded once at create/resume, never overwritten; explicit `setPermissionMode` wins. Legacy `harnessId:'chat'` → Assistant read-side (header never rewritten). `CORE_TOOLS` ≡ manifest `NATIVE_TOOL_NAMES`. Guards: `preset-registry.test.ts`, `native-session-host.test.ts`, `tool-registry-manifest.test.ts`.
 
-## Native local reliability (Plan C) + M3 items 1/3/5 — ⚠️ **NOT ON MASTER**
+## Native local reliability (Plan C) + M3 items 1/2/3/5 — **ON MASTER since 2026-07-29**
 
-**Everything in this section describes the unmerged branch `origin/feat/native-local-reliability`.** Verified 2026-07-24: `resolveProfile`, `effectiveContextWindow` and `autoCompaction` appear nowhere in master's `src/`, and 8 of the 9 guard tests named below don't exist there (`provider-registry.test.ts` is the exception). Do not reason about master's behavior from these bullets, and don't "fix" master to match them — merging or dropping Plan C is **M6 item 1** of the parity program (`docs/active/plans/2026-07-22-native-runtime-parity-program.md` §7). Kept in the rule because the branch is live work, not abandoned; the bullets are an accurate description of *it*. **Updated 2026-07-28:** Plan C was rebased onto master and M3 items 1 (skills), 3 (path-scoped rules + nested project instructions) and 5 (capability-gated injection) were built on top of it, all on `feat/native-local-reliability-rebase`. Flip this banner when that branch merges. M3 item 2 (`/clear`, `/compact`) is on the same branch; item 4 (MCP) is not started and has its own plan.
+**Merged to master 2026-07-29 — youcoded PR #268, merge `12f71d07`.** This section described the unmerged branch `feat/native-local-reliability-rebase` until then; it is now master truth and the verify: anchors below cover it. M3 item 4 (MCP) is NOT here — it is greenfield and gets its own design pass.
 
 Branch guards: `capability-profile.test.ts`, `known-models.test.ts`, `engine-context-window.test.ts`, `compaction.test.ts`, `harness-compaction.test.ts`, `harness-tool-presentation.test.ts`, `harness-hardening.test.ts`, `provider-registry.test.ts`, `statusbar-native-usage.test.ts`, `ipc-channels.test.ts`
 - **CapabilityProfile resolves in THREE layers and NEVER branches on a model name** — discovered facts (provider type + real context window) → a family-keyed regex registry (`known-models.ts`, the ONLY place a modelId is inspected) → conservative fallback. `resolveProfile` is pure. Tools are attached unless the registry marks `supportsTools:false` (then the model runs as plain chat; `buildAiTools` returns `{}`). The registry's factual fields (context windows, tool-calling) are web-sourced + `// UNVERIFIED`-flagged and re-checked against real GGUF quants at acceptance — treat them as provisional. Guards: `capability-profile.test.ts`, `known-models.test.ts`.

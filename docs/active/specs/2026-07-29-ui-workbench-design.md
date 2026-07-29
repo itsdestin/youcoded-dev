@@ -63,8 +63,14 @@ That last fact is the load-bearing one. The mock is written as
 mock whose shape doesn't match what the app consumes.** The data layer's fidelity is enforced
 by the compiler.
 
-Two caveats, stated rather than hidden:
+Three caveats, stated rather than hidden:
 
+- **The guarantee is forfeited if the mock is written as `any`.** A shim that returns `any` and
+  routes everything through a `Proxy` gets no compiler check at all — the fidelity claim above
+  becomes a claim about a test instead. So each hand-written namespace is declared
+  `Partial<Window['claude'][ns]>` and only the assembled bridge is cast once at the boundary.
+  The `Partial` is what lets the mock implement three of a namespace's twelve methods; the
+  three it does implement still have to match.
 - Many call sites bypass that type with `(window as any).claude.…` — `ResumeBrowser.tsx` does
   it for `session.browse`, `setFlag`, `setTag`, `setNote`; `App.tsx` does it for `firstRun`
   and `detach`. For those channels the mock is only as honest as its author. Fix them
@@ -110,8 +116,8 @@ youcoded/desktop/src/renderer/dev/workbench/
   mock-shim.ts           # Proxy catch-all + hand-written channels
   mock-store.ts          # the stateful in-memory store
   mock-only.ts           # MOCK_ONLY registry (channels with no real backend yet)
-  variants.ts            # surface -> variant registry
-  WorkbenchToolbar.tsx   # themes / variants / scenarios / viewport
+  WorkbenchToolbar.tsx   # themes / scenarios / latency / viewport
+                         # (variants.ts deferred — see §3.4)
   scenarios.ts           # named store seeds (default, empty, no-providers, refused, stress)
   fixtures/
     conversations/*.jsonl# replayed through the real reducer via fixture-loader
@@ -130,11 +136,26 @@ youcoded-dev/scripts/
 (`App.tsx:134` parses `?mode=`, `App.tsx:3482` routes on it), so the whole branch is
 statically dead code in production and tree-shakes out.
 
-`index.tsx` already branches on `?mode=`. The mock installs **there**, before React mounts —
-same ordering constraint the anti-FOUC theme apply already respects — and before the remote
-shim's `connect()`/login path, which is skipped entirely. Because `isElectron` treats a
-present `window.claude` as "ready", installing the mock first makes `Root` render `<App/>`
-immediately.
+`index.tsx` already reads `?mode=` at `:24` for the anti-FOUC buddy-window handling. The mock
+installs **there**, before React mounts — the same ordering constraint that apply already
+respects.
+
+The workbench then renders its frame **directly instead of `<Root/>`**, bypassing the
+connection wrapper entirely. This is worth stating because the obvious alternative — install
+the mock and let `Root` decide — costs a change to production boot code: `index.tsx:112`'s
+`const isElectron = !!(window as any).claude` is captured at module-eval time, so an
+asynchronously-installed mock would arrive too late and strand the app on the login screen,
+and making it lazy means touching six readers (`:120,:121,:122,:126,:155,:163`) in the file
+every launch goes through. Rendering the frame directly needs none of that. `Root` only owns
+remote connection state, which the workbench does not have.
+
+For the same reason the workbench frame is **not** a route inside `App.tsx`. Routing it there
+would make `WorkbenchFrame` import `App` while `App` lazy-imports `WorkbenchFrame`, and since
+the frame renders `<App/>` whose `buddyMode` is still `'workbench'`, it needs a
+`workbenchChild` prop threaded through `App`'s signature purely to stop infinite recursion.
+Mounting from `index.tsx` removes the cycle, the prop, and the lazy wrapper. `'workbench'`
+matches none of `App.tsx`'s existing `buddyMode` branches, so `<App/>` falls through to the
+main app unchanged.
 
 `install-mock.ts` **refuses to install if `window.claude` already exists**, so it can never
 shadow a real preload bridge or a live remote shim.
@@ -147,14 +168,41 @@ tree**. That is the point — we want the real chrome.
 Two layers:
 
 **Hand-written channels.** Only what the surfaces under design actually exercise. Each is
-implemented against the store, so reads reflect writes.
+implemented against the store, so reads reflect writes, and each is typed `Partial<Window['claude'][ns]>`
+per §1.3.
+
+**Top-level members are not namespaces and need their own hand-written entries.** `window.claude`
+carries callable members directly on the bridge — `getPlatform`, `getHomePath`, `getFavorites`,
+`setFavorites`, `off`, `removeAllListeners` — plus the `devLabel` string. A catch-all that
+assumes "unknown top-level property = namespace object" makes these uncallable:
+`platform.ts:17` guards on `w.claude?.getPlatform` (a Proxy passes the guard), then `:23` calls
+it and throws inside an async function, so platform detection never resolves and the rejection
+is swallowed. These are hand-written, not caught.
 
 **Proxy catch-all.** Every namespace is wrapped in a `Proxy`; an unimplemented member returns
 a function that warns once (mirroring `remote-unsupported.ts`'s announce-once pattern) and
 resolves a safe empty value. Unimplemented channels degrade to empty instead of hanging for
 30s, and the renderer can call channels the mock has never heard of without breaking.
 
-This is what keeps a few-hundred-channel surface from becoming a stubbing project.
+This is what keeps a few-hundred-channel surface from becoming a stubbing project. Three
+details decide whether it helps or hurts:
+
+- **The empty value is `[]`, not `null`.** The dominant consumer shape is
+  `const rows = await claude.x.list(); rows.map(…)`, and `null` throws there. `[]` satisfies
+  list consumers, reads as "no properties" to object consumers (same as `{}` would), and never
+  trips a `res.ok === false` check.
+- **No `has` trap.** A trap returning `true` for everything makes `'x' in claude.y` lie.
+  Optional chaining does not consult `has`, so the trap buys nothing and costs correctness.
+- **Symbols and `then` return `undefined`.** Otherwise a namespace looks thenable and
+  `await claude.session` hangs forever instead of resolving to the object.
+
+One consequence to accept knowingly: the catch-all returns a *function*, which is truthy, so
+every `if (claude.foo)` capability gate passes. `HeaderBar.tsx:41` (`if (!claude?.window) return null`)
+is one — the Proxy is what decides caption buttons render (see §11).
+
+**Latency.** Every channel resolves through a shared delay knob (0ms / 150ms / 2s, set from the
+toolbar), defaulting to 150ms. See §4 — this is the failure mode UI-first development actually
+introduces, and a synchronous mock hides all of it.
 
 **The `MOCK_ONLY` registry.** The 2026-07-20 draft's maintenance contract said "resist
 stubbing namespaces for completeness." That rule was written for a tool whose purpose was
@@ -178,6 +226,16 @@ This matters more than "the list isn't empty." The real components' optimistic-u
 only exist because writes can fail, and today those paths are invisible. `ResumeBrowser.tsx:428`
 reverts an applied tag when `setTag` resolves `{ok:false}`; the `refused` scenario makes that
 behaviour something you can watch.
+
+**Writes must fire the real change events, not just mutate the store.** The renderer does not
+poll — it re-fetches on `claude.on.sessionCreated`, `on.sessionDestroyed`, `on.sessionRenamed`
+and `on.sessionMetaChanged`. A mock that mutates state without emitting those leaves the UI
+showing stale data, and "created a session and nothing appeared" reads as a bug in the surface
+under design rather than a hole in the mock. Every hand-written write emits its event.
+
+The `refused` scenario applies to **all** writes, including `session.destroy` and
+`defaults.set` — a write that quietly succeeds under `refused` is worse than no scenario,
+because it teaches the reviewer that the revert path is fine when it was never exercised.
 
 **Chat state is seeded by replaying real reducer actions.** `dev/fixture-loader.ts` already
 does exactly this for ToolSandbox: it walks a JSONL fixture and runs each line through the
@@ -205,6 +263,13 @@ app. Alternatives are new sibling files (`ResumeBrowser.v2.tsx`).
 Picking a winner: delete the losing files, move the winner over the real filename, drop the
 registry entry. No porting, because it was always the real component.
 
+**Deferred out of phase 1.** The design above is right; building it now is not. A registry
+whose only entry is `current`, wired into no call site, is infrastructure with no user — and
+the switcher only works if changing it actually re-renders the app, which means either a full
+reload (like the scenario picker) or a context provider. Both decisions are easier to make
+against a real second design than in the abstract. Build it the first time there are two
+candidates to compare; until then the workbench compares *states*, not *variants*.
+
 ### 3.5 Toolbar
 
 Chrome rendered **outside** the app frame so it never overlaps what is being reviewed:
@@ -219,10 +284,11 @@ Chrome rendered **outside** the app frame so it never overlaps what is being rev
   hot-pink accent, glass popups, `custom_css`, patterned background.
   Note `theme` is one of the namespaces absent from the `useIpc.ts` typed contract, so these
   two channels get no compiler check — they belong in the `(window as any)` caveat of §1.3.
-- **Variant switchers** — one per registered surface.
 - **Scenario picker** — §3.6.
+- **Latency picker** — 0ms / 150ms / 2s, applied to every mock channel. §4.
 - **Viewport toggle** — pinned to the real 640px breakpoint from `use-narrow-viewport.ts`.
   Not a new number (see the narrow-viewport rule).
+- **Variant switchers** — deferred with the registry itself (§3.4).
 
 ### 3.6 Scenarios
 
@@ -234,7 +300,7 @@ Named store seeds, selectable live:
 | `empty` | No sessions, no tags, no past conversations — first-run shape |
 | `no-providers` | Native runtime supported but zero ready providers |
 | `refused` | Every write resolves `{ok:false}` — exercises optimistic-revert paths |
-| `stress` | 200 sessions, 80-character names, missing optional fields, a timing-out provider |
+| `stress` | 200 sessions, 80-character names, missing optional fields (slowness is the latency picker's job, not the seed's) |
 
 `stress` is **first-class, not an afterthought**. See §4.
 
@@ -248,13 +314,21 @@ fails in a specific way if this is left implicit.
 **Guaranteed identical:** appearance. Same components, same `globals.css`, same theme engine,
 same primitives. There is no second implementation that can disagree.
 
-**NOT guaranteed identical:** behaviour under real data. Real data is longer, slower,
-emptier, and errors where a mock succeeds. A design that looks right against three sessions
-with tidy names can fall apart at 200 sessions with 80-character names, or when a provider
-call takes four seconds instead of resolving synchronously.
+**NOT guaranteed identical:** behaviour under real data. Real data is longer, emptier, and
+errors where a mock succeeds. A design that looks right against three sessions with tidy names
+can fall apart at 200 sessions with 80-character names.
 
-The mitigation is the `stress` scenario, plus a standing rule: **a surface is not approved
-until it has been looked at under `stress` and `empty`, not just `default`.**
+**NOT guaranteed identical, and this is the bigger one:** *timing*. Real IPC resolves a tick or
+several after the call; a naive mock resolves effectively immediately. That difference is
+invisible in the workbench and produces exactly the class of bug UI-first development
+introduces — loading states that never render, empty-then-populated flicker, mount-order races,
+spinners that were never seen because nothing ever took long enough to show one. Data realism
+is a design problem you can spot by looking; timing realism is a correctness problem you
+cannot. Hence the latency picker in §3.5, defaulting to 150ms rather than 0.
+
+The mitigation is those two knobs plus a standing rule: **a surface is not approved until it
+has been looked at under `stress` and `empty` as well as `default`, and at a non-zero
+latency.**
 
 ---
 
@@ -289,9 +363,11 @@ Archived plans/specs referencing it are history and are left alone.
 ### 6.1 Iteration
 
 `bash scripts/run-workbench.sh` runs **only Vite** (`npm run dev:renderer`) — no Electron, no
-main process — on the standard shifted port so it coexists with the live app and any dev
-instance. It prints `http://localhost:5223/?mode=workbench`; Destin opens it in any browser,
-including on a phone.
+main process. It uses **offset 60 → port 5233**, deliberately *not* `run-dev.sh`'s default
+offset 50 → 5223 (`run-dev.sh:22,46`): the workbench has to coexist with a running dev
+instance, and reusing that port guarantees it can't. It prints
+`http://localhost:5233/?mode=workbench`; Destin opens it in a local browser. Binding beyond
+localhost is out of scope — the workbench is not for phone or remote review.
 
 Claude edits real components in a worktree; Vite HMR repaints in ~1s; Destin looks and
 responds. Per the workspace rule, Claude does **not** script interactive verification — one-shot
@@ -339,7 +415,8 @@ is now supplied by running the real CSS.
 
 | Test | Asserts |
 |---|---|
-| `mock-contract.test.ts` | Every hand-written mock channel either exists in `preload.ts` with a compatible signature, **or** is listed in `MOCK_ONLY`. Also fails on a `MOCK_ONLY` entry that has since gained a real preload channel (stale registry). |
+| `mock-contract.test.ts` | Every hand-written mock channel either exists in `preload.ts` **under its own namespace**, or is listed in `MOCK_ONLY`. Also fails on a `MOCK_ONLY` entry that has since gained a real preload channel (stale registry). Matching must be namespace-scoped — a bare `\blist\s*:` regex over the whole file matches `session`, `tags`, `providers` and `theme` alike, so a wrong namespace passes and the test reads green while proving nothing. `preload.ts` puts namespaces at indent 2 and leaves at indent 4, so scoping is a brace-scan, not a heuristic. |
+| the compiler (`tsc --noEmit`) | The primary parity check for the 21 namespaces in `useIpc.ts`, via the `Partial<Window['claude'][ns]>` annotations (§1.3). The test above exists for what the compiler cannot see: `theme` and the other untyped namespaces, and `MOCK_ONLY` staleness. |
 | `fixture-actions.test.ts` | Every conversation and tool fixture replays through the real `chatReducer` into a well-formed timeline — no dropped lines, no tool left in a non-terminal state unless the fixture says so. Inherits `fixture-loader.test.ts`'s existing cases. |
 | existing `ipc-channels.test.ts` | Unchanged. The workbench is deliberately **not** added as a fourth parity surface — it is allowed to be a superset during design; `MOCK_ONLY` is what keeps that honest. |
 
@@ -354,7 +431,7 @@ When these fail, the fix is updating the mock — not loosening the test.
 2. Fixtures — 2 conversation hydrate snapshots, sessions/providers/models/tags/defaults, the
    24 ported tool fixtures
 3. `scenarios.ts` — the five scenarios in §3.6, including `stress`
-4. `variants.ts` + `WorkbenchToolbar.tsx`
+4. `WorkbenchToolbar.tsx` — theme, scenario, latency, viewport. (`variants.ts` is deferred per §3.4.)
 5. `scripts/run-workbench.sh`
 6. The two guard tests in §8
 7. ToolSandbox deletion per §5
@@ -400,7 +477,11 @@ files"; those numbers were not reproduced by the commands above and are supersed
   viewport and `chrome-glass` owns the frame chrome. Likely a fixed-position bar that shrinks
   the app's container rather than overlaying it — overlaying would falsify the space-aware
   header layout (`packSessions()` measures `clientWidth`). Confirm when the toolbar is built.
-- **Whether the workbench should render window caption buttons.** `showCaptionButtons` is
-  gated on "not macOS", and in a browser tab there is no window to control. Faking them keeps
-  the header's measured layout honest (`packSessions()` is space-aware); omitting them changes
-  available width. Decide when the header is first reviewed.
+- ~~**Whether the workbench should render window caption buttons.**~~ **RESOLVED 2026-07-29 —
+  yes, they render.** This was never going to stay open: `HeaderBar.tsx:41` gates on
+  `if (!claude?.window) return null`, and the Proxy catch-all makes `claude.window` truthy, so
+  the buttons render whether or not anyone decides they should. That is also the right answer —
+  `packSessions()` is space-aware, so omitting them would change the measured width and
+  falsify every header layout reviewed in the workbench. Clicking one warns and no-ops.
+  Recorded here because a behaviour the Proxy decides by accident is exactly the kind that
+  should be written down before someone "fixes" it.

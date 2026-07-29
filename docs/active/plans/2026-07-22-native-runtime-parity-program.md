@@ -74,7 +74,17 @@ Desktop-only, and **satisfies the v1.3.0 gate** (Destin 2026-07-22: sync must be
 
 **Residue (carried to ROADMAP, dated 2026-07-23):** remote WS set-tag/set-note don't broadcast `SESSION_META_CHANGED` on success (remote clients go stale); no `quiescing` refuse-flag, so a send landing in `quiesce()`'s one-macrotask window still runs one full uninterrupted turn before handoff; the `SESSION_CREATE` native-resume split-refusal branch has no direct test (the new `session-meta-parity.test.ts` harness now makes one possible); the takeover holder can't detect lease loss while the SyncHub is down, and same-machine hub-less handoff has no file-signal path (both filed 2026-07-23, pre-existing this milestone); Android `lastUsedModel` passthrough is structurally N/A until Android reads the Conversation Store (M8).
 
-## §4 Milestone M3 — Context, skills & commands (the ecosystem works in native)
+## §4 Milestone M3 — Context, skills & commands (the ecosystem works in native) — **items 1, 2, 3, 5 SHIPPED 2026-07-29 (youcoded PR #268, merge `12f71d07`); item 4 (MCP) NOT STARTED**
+
+**Shipped in that PR, alongside Plan C (which had to land first — item 5 needs a real `CapabilityProfile` to gate on, so this also closes §7 item 1's "decide the branch's fate"):**
+1. **Skill tool + surfaces** — a model-invoked `Skill` tool, `/skill-name` on every model, and the three UI surfaces that were silently dead in native sessions (drawer, skill-prompt, ThemeScreen's "Build New Theme with Claude"). `Skill` is deliberately a `CONDITIONAL_TOOL_NAME`, NOT in `NATIVE_TOOL_NAMES`: its catalog rides the schema every turn, so it attaches only when the profile can afford it — advertising it statically is what the registry↔manifest guard exists to prevent.
+2. **`/clear` + `/compact`** — `/compact` drives the two-stage compaction; `/clear` is a context barrier that FADES the conversation rather than wiping it (it wiped the timeline on both providers until 2026-07-29).
+3. **Path-scoped rules + nested project instructions** — one mechanism, not two: content discovered from a path, delivered as a message, bounded by the profile. Root `AGENTS.md`/`CLAUDE.md` stays in the byte-stable prompt.
+5. **Capability-gated injection** — `exposeSkillCatalog` + `injectionBudgetTokens` derived from the REAL window, with a capability conjunction (a Qwen 2B at `-c 128000` has room but is not fit to choose skills autonomously).
+
+**Item 4 (MCP) remains open and is the only thing between here and M3 complete.** Deliberately deferred: it is greenfield and wants its own design pass resolving config source, transport order, tool namespacing, and permission-subject mapping.
+
+**Corrections this milestone forced into §5 (M4), read before starting it:** M4 item 1 ("usage chips need a renderer→main IPC bridge") is **obsolete** — Plan C built that bridge, then deleted it once the reducer path existed; the chips read `turn.usage` from the reducer and serve remote for free. Do not rebuild `native:usage-report` without a reader.
 
 Design constraints already settled (former "context management" entry + Phase 2 spec §6 deferrals): the native system prompt is **byte-stable** for the whole session (KV-cache reuse for local models), so rules/skills/context must arrive as **messages**, exactly as Claude Code does it — never as mid-session system-prompt mutation.
 
