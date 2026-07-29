@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 ---
 
 # Phase 2 Plan C — Local Reliability + Compaction + Status: Implementation Plan

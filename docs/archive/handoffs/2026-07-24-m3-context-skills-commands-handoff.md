@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-07-24
 milestone: M3 (Native Runtime Parity Program §4)
 program: docs/active/plans/2026-07-22-native-runtime-parity-program.md

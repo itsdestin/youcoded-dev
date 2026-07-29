@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-07-28
 milestone: M3 items 1, 3, 5 + Plan C
 branch: feat/native-local-reliability-rebase (worktree `worktrees/plan-c`)

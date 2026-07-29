@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-07-28
 milestone: Plan C (native local reliability) — pre-merge close-out
 program: docs/active/plans/2026-07-22-native-runtime-parity-program.md
