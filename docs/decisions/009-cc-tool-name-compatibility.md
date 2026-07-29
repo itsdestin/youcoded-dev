@@ -21,5 +21,5 @@ This is a *renderer-contract* choice, not a CC coupling: the shapes are defined 
 
 ## Consequences
 
-- ToolCard sandbox fixtures (`run-sandbox.sh`) validate native tool rendering before any live loop exists.
+- Tool-gallery fixtures (`run-workbench.sh`, view = tool gallery) validate native tool rendering before any live loop exists.
 - Tool *semantics* must actually match the names (an `Edit` that doesn't produce `structuredPatch` would silently degrade the diff view) — pinned by fixtures.

@@ -97,7 +97,7 @@ Verify the commit landed on master first: `git branch --contains <sha>` should l
 - Cross-cutting docs that span multiple sub-repos: `docs/PITFALLS.md`, `docs/registries.md`, `docs/build-and-release.md`, etc. (Single-repo subsystem depth — chat-reducer, android-runtime, shared-ui-architecture, etc. — lives in `youcoded/docs/`, not here.)
 - This `CLAUDE.md` and any rule files under `.claude/rules/`.
 - Lifecycle documents (specs, plans, investigations, handoffs, prototypes) — the artifacts produced by brainstorming, writing-plans, and similar skills before any sub-repo code changes. In-flight ones live under `docs/active/`; completed/superseded ones under `docs/archive/`. (These replace the old flat `docs/superpowers/` dump.)
-- Dev tooling under `scripts/` — `run-dev.sh`, `run-sandbox.sh`, `cdp-eval.mjs`, etc.
+- Dev tooling under `scripts/` — `run-dev.sh`, `run-workbench.sh`, `cdp-eval.mjs`, etc.
 - The workspace's own `.gitignore`, `setup.sh`, and skill marketplace pointers under `.claude/`.
 
 ## Development Workflow
@@ -110,9 +110,9 @@ bash scripts/run-dev.sh <branch-or-worktree> --label "Feature Name"
 
 **Always pass `--label "<Feature Name>"`** so Destin can tell concurrent dev instances apart; without it the title falls back to the branch name. When another dev instance may be running, also pass a distinct `--offset` **and** `--profile` — a collision SIGKILLs the window. `--dry-run` prints the resolved target/ports/title without launching; `--list` shows registered worktrees. Ports, what's isolated, what's shared (`~/.claude/`), and the caveats: `docs/local-dev.md`.
 
-### ToolCard sandbox
+### UI Workbench
 
-When iterating on `ToolCard` / `ToolBody` view designs in the renderer, skip the live-session loop by running `bash scripts/run-sandbox.sh`. It launches the same dev instance as `run-dev.sh` but boots the Electron window directly into `?mode=tool-sandbox`, where every `.jsonl` fixture in `youcoded/desktop/src/renderer/dev/fixtures/` renders as a real `<ToolCard>`. Edit `ToolBody.tsx` view functions and Vite HMR updates the page within ~1 second. Only touches the renderer; no PTY or transcript side effects. Destin intends to deprecate this feature and replace it with more comprehensive UI developer tools.
+`bash scripts/run-workbench.sh` boots the **real renderer** in a browser tab (Vite only — no Electron, no PTY) against a fake `window.claude`, on port 5233. Every menu is clickable and stateful, so **new feature UI is built here before its backend exists** — channels with no backend go in `MOCK_ONLY`, which is then the backend to-do list. Toolbar switches scenario (`default`/`empty`/`no-providers`/`refused`/`stress`), fake IPC latency, narrow viewport, and the tool gallery that replaced `?mode=tool-sandbox`. Use `run-dev.sh` instead when you need real event ordering, PTY, or main-process behaviour. Rule: `.claude/rules/react-renderer.md`; spec: `docs/active/specs/2026-07-29-ui-workbench-design.md`.
 
 ### CDP eval (live renderer inspection)
 

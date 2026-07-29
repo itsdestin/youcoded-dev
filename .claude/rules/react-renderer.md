@@ -18,6 +18,9 @@ verify:
   - test: youcoded/desktop/tests/primitive-adoption.test.ts
   - test: youcoded/desktop/tests/overlay-layer-authority.test.ts
   - test: youcoded/desktop/tests/type-scale-authority.test.ts
+  - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
+    contains: "MOCK_ONLY|HAND_WRITTEN"
+  - test: youcoded/desktop/tests/workbench-mock-contract.test.ts
 ---
 
 # React Renderer (shared desktop + Android WebView)
@@ -55,3 +58,6 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **Ch
 ## Remote access state sync (`main/remote-server.ts`, `RemoteSnapshotExporter.tsx`)
 - **Remote clients hydrate via `chat:hydrate` on connect** (`replayBuffers()` → `requestChatSnapshot()` → serialized `ChatState`) — don't add a parallel replay buffer; extend `serializeChatState`/`deserializeChatState` in `state/chat-types.ts` instead. The `chat:export-snapshot` has a 2s timeout (resolves `{sessions:[]}`).
 - **`attentionState` is authoritative on DESKTOP only** — `useAttentionClassifier` reads the xterm buffer (Electron only). Remote browsers get it via `attentionMap` in `status:data` and MUST NOT run their own classifier (CLI-version regex would drift). The shim diffs `attentionMap` vs `prevAttentionRef` before dispatching — the diff is load-bearing. `RemoteSnapshotExporter` is Electron-only by design (short-circuits on remote).
+
+## UI iteration tooling
+- **Building or redesigning UI? Use `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`, port 5233) — not `run-dev.sh`, which is for real event ordering, PTY, or main-process behaviour. New UI is built there BEFORE its backend: a channel with no backend goes in `mock-shim.ts`'s `MOCK_ONLY` with the feature it belongs to, and that list is the backend to-do. Review under `stress` and `empty`, and at non-zero latency — a surface only ever seen resolving instantly has never shown its loading states. Guard: `tests/workbench-mock-contract.test.ts`. Spec: `docs/active/specs/2026-07-29-ui-workbench-design.md`.

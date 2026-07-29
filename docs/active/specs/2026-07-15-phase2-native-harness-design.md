@@ -71,7 +71,7 @@ One wrapper centralizes: schema validation (invalid → corrective error result)
 | Grep | bundled ripgrep (`@vscode/ripgrep`); structured, pre-truncated output — dedicated tool because small models butcher shell quoting (R§3) |
 | TodoWrite | per-session todo state; renders in the existing todo card |
 
-Every tool: unit tests + a ToolCard sandbox fixture (`run-sandbox.sh`) validating the rendered card before any live loop exists.
+Every tool: unit tests + a tool-gallery fixture (`run-workbench.sh`, view = tool gallery) validating the rendered card before any live loop exists.
 
 ### 2.4 Permission engine
 
@@ -142,7 +142,7 @@ Renderer→main IPC (`native:usage-report`, mirroring `remote:attention-changed`
 
 - **Unit:** every tool through `defineTool()` (validation, truncation, guards); permission decision function (rule-table torture suite incl. last-match-wins, bash command globs, layer merging); doom-loop; compaction stage selection; profile resolution; history rebuild (resume ≡ live).
 - **Protocol:** emitter fixtures for tool-use→ask→tool-result, compaction, AskUser round-trip — validated against frozen `TranscriptEventType` shapes (native-emitter contract discipline).
-- **ToolCard sandbox:** fixture per tool view, rendering verified pre-loop.
+- **Workbench tool gallery:** fixture per tool view, rendering verified pre-loop.
 - **Engine probes:** `probe-tools.mjs` (constrained tool-call round-trip, dev-run, engine-bump gated).
 - **IPC parity:** every new channel in `ipc-channels.test.ts` + preload + remote-shim + SessionService.kt stubs.
 - **Live acceptance:** A — bug-fix exit test on OpenRouter; B — web-research task with mid-flight AskUser; C — bug-fix exit test on local Qwen3-Coder 30B with chips live + a survived compaction. Android releaseTest pass at phase end (bridge-delivered tool cards/approvals render identically).
