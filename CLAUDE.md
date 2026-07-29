@@ -1,32 +1,18 @@
 # CLAUDE.md
 
-Workspace guidance for Claude Code. Subsystem details live in `docs/` and `.claude/rules/` — loaded only when relevant.
-
-Navigation: `docs/MAP.md` maps every subsystem to its entry points, rule, lazy doc, and guard tests.
-
-## Workspace Setup
-
-**On first session**, run `bash setup.sh` to clone all repos. On subsequent sessions, run it again to pull the latest from each repo's default branch — it syncs every sub-repo *and* the workspace repo (`youcoded-dev`) itself, and resolves the workspace from its own location, so it works from any directory. Do this before any other work.
-
-**Sub-repo code changes go to the relevant sub-repo** (e.g., `youcoded/`, `youcoded-core/`, `wecoded-themes/`, `wecoded-marketplace/`) — open PRs there, push there. Do NOT mix sub-repo code into the workspace repo (`youcoded-dev`).
-
-**Workspace-level artifacts DO get committed + pushed to `youcoded-dev`.** That includes:
-- Cross-cutting docs that span multiple sub-repos: `docs/PITFALLS.md`, `docs/registries.md`, `docs/build-and-release.md`, etc. (Single-repo subsystem depth — chat-reducer, android-runtime, shared-ui-architecture, etc. — lives in `youcoded/docs/`, not here.)
-- This `CLAUDE.md` and any rule files under `.claude/rules/`.
-- Lifecycle documents (specs, plans, investigations, handoffs, prototypes) — the artifacts produced by brainstorming, writing-plans, and similar skills before any sub-repo code changes. In-flight ones live under `docs/active/`; completed/superseded ones under `docs/archive/`. (These replace the old flat `docs/superpowers/` dump.)
-- Dev tooling under `scripts/` — `run-dev.sh`, `run-sandbox.sh`, `cdp-eval.mjs`, etc.
-- The workspace's own `.gitignore`, `setup.sh`, and skill marketplace pointers under `.claude/`.
+Workspace guidance for Claude Code. Subsystem details live in `docs/` and `.claude/rules/` — loaded only when relevant. **Start any non-trivial task at `docs/MAP.md`**, which maps every subsystem to its entry points, rule, lazy doc, and guard tests. **First action each session:** `bash setup.sh` (see [Workspace Setup](#workspace-setup)).
 
 ## About This Project
 
 YouCoded is an open-source cross-platform AI assistant app built entirely without coding experience using Claude Code. The creator (Destin) is a non-developer — the entire ecosystem is built and maintained through conversation with Claude.
 
-**What YouCoded is:** A hyper-personalized AI assistant app for students, professionals, and anyone who uses AI regularly. Users sign in with their Claude Pro or Max plan (no API key needed). It runs on Windows, macOS, Linux, Android, and via remote web access.
+**What YouCoded is:** A hyper-personalized AI assistant app for students, professionals, and anyone who uses AI regularly. Users may sign in with their Claude subscription, access cloud models via OpenRouter, or run smaller models locally. It runs on Windows, macOS, Linux, Android, and via remote web access.
 
 **Core pillars:**
-- **Social AI** — share custom themes and skills with friends/classmates/coworkers, play multiplayer games while waiting for Claude to work
+- **Social AI** — share custom themes and skills with friends/classmates/coworkers, play multiplayer games while waiting for the assistant to work
 - **Personalization** — community plugins (journaling, personal encyclopedia, task inbox, text messaging) install from the WeCoded marketplace; cross-device sync is built into the app
-- **Accessibility** — designed for non-technical users, not just developers. You can build things within this app using just conversation
+- **Comprehensive Workspace** — the ultimate goal of the app is to eliminate the need for users to leave it. Everything a user might utilize artificial intelligence for (editing documents, conducting research, coding, etc) should eventually be fully manageable within the app. Users should be able organize documents, context, and conversations in project view, directly edit documents alongside their assistant in the artifact panel, and create new app personalized features from within the app itself. This applies to the entire agent pipeline: users should be able to manage their agent, its context/harness, the user interface/interaction surface, etc in a way that provides more utility than any of Claude Cowork, Cursor, Codex, OpenClaw, Hermes, T3 Code, etc.
+- **Accessibility** — designed for non-technical users, students, professionals, and more, not just developers. App menus should be intuitive and not use terms that a normal college student would find confusing (instead of "Artifacts," use "files," for example). Prose/copy should be minimal and utilitarian with clear explanations of confusing concepts where present. Complex app systems, like backup and sync, warrant explainers (often in the form of (i) popup menus) to help onboard new users.
 
 **The app is the product.** Everything else — themes, skill marketplace, bundled plugins — supports the app. Documentation and code should reflect that hierarchy.
 
@@ -47,49 +33,31 @@ YouCoded is an open-source cross-platform AI assistant app built entirely withou
 - **youcoded** is the main product. It contains `desktop/` (Electron app) and `app/` (Android app) side by side.
 - **wecoded-marketplace** and **wecoded-themes** are the registries the app fetches at runtime from raw GitHub URLs. Community plugins live here.
 - **Bundled plugins** — `wecoded-themes-plugin` and `wecoded-marketplace-publisher` ship with the app and are auto-installed on launch (see `youcoded/desktop/src/shared/bundled-plugins.ts` + `BundledPlugins.kt`).
-- **youcoded-core** is the legacy plugin toolkit, mid-deprecation (Phase 1 merged to youcoded master 2026-07-07): `write-guard` now ships bundled natively in the app on both platforms, new installs no longer clone `~/.claude/plugins/youcoded-core/`, and the app deletes existing clones at launch. **Until that release ships, the repo is still the live hook source for existing installs — hook fixes must land in BOTH the youcoded-core copy and the app's bundled copies** (e.g., the 2026-07-15 write-guard exit-code fix: youcoded-core PR #119 + youcoded PR #144). Repo will be archived after release N+1 — see `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`.
+- **youcoded-core** is the legacy plugin toolkit, mid-deprecation. `write-guard` now ships bundled natively in the app on both platforms, new installs no longer clone `~/.claude/plugins/youcoded-core/`, and the app deletes existing clones at launch. **Until that release ships, the repo is still the live hook source for existing installs — hook fixes must land in BOTH the youcoded-core copy and the app's bundled copies.** Repo will be archived after release N+1 — see `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`.
 - **youcoded-admin** release skill orchestrates coordinated releases across repos.
 
 ## Working Rules
 
-**NEVER touch Destin's live, built YouCoded app.** All development, testing, debugging, and runtime verification must happen in a dev workspace using `bash scripts/run-dev.sh` (which spins up an isolated Electron instance on shifted ports with separate `userData`). The built app on his machine is his **working environment** — treat it like production. Specifically forbidden against the live app:
-- Running JavaScript in DevTools (even read-only — DevTools contention can stall or crash the renderer)
-- Sending IPC messages, modifying DOM/CSS/localStorage, dispatching reducer actions
-- Killing, restarting, or signalling its processes
-- Touching files Electron has open (cookies, Local Storage leveldb, settings.json, .claude.json)
-- Installing/uninstalling plugins or themes
-- Any code change that requires the running app to reload it
+### Safety
 
-When you need to verify runtime behavior (GPU usage, DOM state, IPC responses, theme rendering, etc.), the workflow is **always**: dev worktree → `bash scripts/run-dev.sh` → test in the dev window. Never the production install.
+**NEVER touch Destin's live, built YouCoded app.** The built app on his machine is his **working environment** — treat it like production. All development, testing, debugging, and runtime verification must happen in a dev workspace using `bash scripts/run-dev.sh` (which spins up an isolated Electron instance on shifted ports with separate `userData`). Read-only inspection from *outside* the app is fine (`Get-Process`, GPU counters, Task Manager observation, log file tailing); anything that *talks to* the running app is not — DevTools JavaScript (even read-only), IPC messages, DOM/CSS/localStorage changes, signalling its processes, touching files Electron holds open, installing plugins or themes, or any code change requiring it to reload.
 
-**Flag final-stage visual/interactive verification for Destin instead of automating it.** When work reaches the point of "launch a dev instance and look at it / interact with it" (visual polish, animation staging, hover/drag behavior, anything cursor- or timing-sensitive), ASK before building a scripted verification rig — Destin can usually eyeball it in 30 seconds, and CDP-scripting multi-window interactions on his multi-monitor desktop (where his real cursor position interferes) burns large amounts of time and tokens (2026-07-16 buddy-peek lesson). Automated verification is still right for DOM assertions, unit-testable logic, and one-shot screenshots of static screens; the handoff point is *interactive* or *repeated-relaunch* verification.
+When you need to verify runtime behavior (GPU usage, DOM state, IPC responses, theme rendering, etc.), the workflow is **always**: dev worktree → `bash scripts/run-dev.sh` → test in the dev window. Never the production install. The full forbidden/allowed lists and the escalation path when a check genuinely needs live-app state: `.claude/rules/live-app-safety.md` (auto-injects on any file you touch).
 
-Read-only process inspection from outside the app is fine (`Get-Process`, GPU counters, Task Manager observation, log file tailing). Anything that *talks to* the running app is not.
+**Flag final-stage visual/interactive verification for Destin instead of automating it.** When work reaches the point of "launch a dev instance and look at it / interact with it" (visual polish, animation staging, hover/drag behavior, anything cursor- or timing-sensitive), ASK before building a scripted verification rig — Destin can usually eyeball it in 30 seconds, and scripting multi-window interactions wastes time and tokens. Automated verification is still right for DOM assertions, unit-testable logic, and one-shot screenshots of static screens; the handoff point is *interactive* or *repeated-relaunch* verification.
+
+### Git, worktrees, and shipping
 
 **Always sync before working.** Before changes, plans, or investigations, pull the latest:
 ```bash
 cd <repo> && git fetch origin && git pull origin master
 ```
 
-**Use worktrees for non-trivial work.** Any work beyond a handful of lines must be done in a separate git worktree (or use the Agent tool with `isolation: "worktree"`). This prevents multiple concurrent Claude sessions from overwriting each other's changes.
+**Use worktrees for non-trivial work.** Any work beyond a handful of lines or narrowly-scoped bug fixes must be done in a separate git worktree (or use the Agent tool with `isolation: "worktree"`). This prevents multiple concurrent Claude sessions from overwriting each other's changes.
 
-**`git worktree remove` follows junctions on Windows.** If you junctioned `node_modules` into a worktree (e.g., `cmd //c "mklink /J node_modules ..."` to share the main checkout's deps), `git worktree remove` will recursively delete through that junction and wipe the **main checkout's** `node_modules`. Before removing the worktree, delete the junction first: `cmd //c "rmdir <path-to-junction>"` (NOT `rm -rf`, which also follows). Then run `git worktree remove`. **`npm ci` wipes through the junction too** (hit 2026-07-16): any build step that runs `npm ci` inside the worktree — including Android's `bundleWebUi` → `scripts/build-web-ui.sh` when it finds deps "missing" — rimrafs the junction TARGET (emptying the main checkout's `node_modules`) before installing a real directory in the worktree. If you junctioned deps, don't run Gradle/`build-web-ui.sh` in that worktree; if it happens anyway, re-run `npm ci` in the main checkout to restore.
-
-**Annotate non-trivial code edits with a WHY comment.** Destin is a non-developer and relies on comments to understand what code does and why it was changed. Example: `// Fix: prevent stale tool IDs from coloring the status dot`. This is critical for long-term maintainability.
-
-**Never write misleading error messages.** Do NOT guess at a cause you haven't verified. Every user-facing error must be either (a) *specific and accurate* — surface the real detail (subprocess stderr, caught exception, failing path/port/arg); never `catch` and replace the real error with a hardcoded guess — or (b) *general but non-committal* ("Error: Unable to run local models.") paired with two actions: **Report bug / submit PR** and **Diagnose with Claude** (the Settings → Development flow). **Don't hand-roll either shape — `<ErrorState>` (`components/ui/states.tsx`) renders both:** `mode="recoverable"` (specific message + Retry) and `mode="general"` (the two-action card). See `docs/error-message-standards.md`. Full audit/replacement of existing messages is a v1.3.1 followup.
-
-**A count, an exemption, or a negative is a command's output — never a recollection.** The same rule as above, pointed at the codebase instead of at error strings. "Never called", "no mirror exists", "dead code", "only one call site", "not handled on Android" are only as good as the search that backed them — and one `grep` never establishes its own completeness. **This covers positive claims too**, which is where it kept failing: "three files do X", "these two are exempt because they're popovers", "the guard covers the family" are all numbers, and a number you did not just measure is a guess wearing a fact's clothes. Write the command *before* the sentence, and paste what it returned. **If the output disagrees with you, the output wins** — on 2026-07-28 it disagreed seven times and was right seven times, most cheaply on "three views still hand-roll a header" (six) and a guard that scored a file at zero because its pattern assumed one class order. Search repo-wide FIRST and narrow after, never the reverse; use the tool that actually answers the question (`npm run knip` for dead code, a tree-wide `rg` for cross-platform parity, a failing test for "this can't happen") instead of inferring it from a pattern match. `docs/MAP.md` tells you where a subsystem *starts*, not its full extent — it is not a completeness oracle. A *surprising* negative ("dead state in a shipping app", "no Android equivalent of a core mechanism") raises the evidence bar rather than lowering it. This binds hardest at the moment a claim becomes durable — a commit message, a PR body, a ROADMAP entry — because loose talk mid-investigation is self-correcting and a wrong claim in `ROADMAP.md` outlives the session. Both misses in the 2026-07-26 wrong-transcript investigation were this exact shape (a one-file grep concluding "no Android `sessionIdMap`"; a short grep concluding `resumeInfo` was dead — both false).
-
-**Query symbols before reading files, and delegate sweeps to a subagent.** The rule above is about search *completeness*; this one is about search *price*. `ipc-handlers.ts` is 3,809 lines and `App.tsx` is 3,544 — **one whole-file read costs ~10x this entire CLAUDE.md**, and a conventional IPC-parity sweep runs ~90k tokens. Escalate, stopping as soon as the question is answered: **Serena** (`find_symbol`, `find_referencing_symbols`, `get_symbols_overview` — resolved call graphs, no comment/string noise) → **ast-grep** for code *shapes* → **`rg`** for exact strings → **whole-file reads only for files you're about to edit**. Any question answered by sweeping files goes to a read-only search subagent (`Explore`, else `general-purpose`), which spends the tool calls in its own context and returns a 1–2k-token conclusion. **Serena covers `youcoded/` TypeScript only** — not Kotlin, not the other sub-repos, and it says "no references" identically whether it searched or never looked, so never rest a negative on it alone. Cross-platform parity is `ipc-channels.test.ts`, not Serena; string-keyed things (IPC channels, CSS classes) are `rg`, not Serena. Its tool descriptions also cost tokens on every request — net win on long sessions over big subsystems, net loss on one-line lookups. Setup, scope limits, and the full tool table: `docs/code-intelligence.md`.
-
-**Prefer a tool that returns a verdict over one that returns text to interpret.** `npm run knip` for dead code, `tsc --noEmit` for types, `ipc-channels.test.ts` for three-surface parity, `bash scripts/ast-grep/check.sh` for the invariants that have been promoted from prose to executable scans. When you codify a new invariant, an ast-grep rule beats a sentence in `.claude/rules/` — adding rules to the scan is documented in `docs/code-intelligence.md`.
+**On Windows, `git worktree remove` AND `npm ci` both follow `node_modules` junctions** and will wipe the **main checkout's** deps. Delete the junction first (`cmd //c "rmdir <path>"`, never `rm -rf`), and don't run Gradle or `build-web-ui.sh` inside a junctioned worktree. Full note: `docs/PITFALLS.md` → Cross-repo invariants.
 
 **"Merge" means merge AND push.** Don't stop at a local merge.
-
-**Never tell Destin to run `wrangler deploy` manually.** The Cloudflare Worker (`wecoded-marketplace/worker/`) auto-deploys on push to master via `.github/workflows/worker-deploy.yml` — CI runs tests, applies D1 migrations, deploys, and pushes secrets. To ship a Worker change, the workflow is: open a PR → merge to master → CI handles the rest. Same for `[vars]` flips like `CUTOVER_TIMESTAMP` — edit `wrangler.toml`, commit, merge. See `docs/build-and-release.md → Worker (wecoded-marketplace)`.
-
-**Pushing to master green-lights closing the dev server.** If you started `bash scripts/run-dev.sh` to verify a change, shut it down (plus any helper Electron processes) once the commit lands on `origin/master`. Don't leave it running unless the user explicitly asks — orphaned Vite servers hold port 5223 and trip up the next session's dev launch.
 
 **Clean up worktrees and branches after merging to master.** Once a feature branch is fully merged and pushed, remove its worktree and delete the branch **both remotely and locally**:
 ```bash
@@ -99,7 +67,38 @@ git branch -D <branch>              # -D (not -d) because --no-ff merges leave t
 ```
 Verify the commit landed on master first: `git branch --contains <sha>` should list `master`. Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
 
+**Pushing to master green-lights closing the dev server.** If you started `bash scripts/run-dev.sh` to verify a change, shut it down (plus any helper Electron processes) once the commit lands on `origin/master`. Don't leave it running unless the user explicitly asks — orphaned Vite servers hold port 5223 and trip up the next session's dev launch.
+
+**Never tell Destin to run `wrangler deploy` manually.** The Cloudflare Worker (`wecoded-marketplace/worker/`) auto-deploys on push to master via `.github/workflows/worker-deploy.yml` — CI runs tests, applies D1 migrations, deploys, and pushes secrets. To ship a Worker change, the workflow is: open a PR → merge to master → CI handles the rest. Same for `[vars]` flips like `CUTOVER_TIMESTAMP` — edit `wrangler.toml`, commit, merge. See `docs/build-and-release.md → Worker (wecoded-marketplace)`.
+
+### Investigation discipline
+
+**Claiming a count, an exemption, or a negative requires programmatic verification.** Claims like "never called", "no mirror exists", "dead code", "only one call site", "not handled on Android" are only as good as the search that backed them — and one `grep` never establishes its own completeness. **This covers positive claims too**: "three files do X", "these two are exempt because they're popovers", "the guard covers the family" are all numbers, and a number you did not accurately measure can be actively misleading. Write the command *before* the sentence, and paste what it returned. **If the output disagrees with you, the output likely wins**. Search repo-wide FIRST and narrow after, never the reverse; use the tool that actually answers the question (`npm run knip` for dead code, a tree-wide `rg` for cross-platform parity, a failing test for "this can't happen") instead of inferring it from a pattern match. `docs/MAP.md` tells you where a subsystem *starts*, not its full extent — it is not a completeness oracle. A *surprising* negative ("dead state in a shipping app", "no Android equivalent of a core mechanism") raises the evidence bar rather than lowering it. This binds hardest at the moment a claim becomes durable — a commit message, a PR body, a ROADMAP entry — because loose talk mid-investigation is self-correcting and a wrong claim in `ROADMAP.md` outlives the session. Both misses in the 2026-07-26 wrong-transcript investigation were this exact shape (a one-file grep concluding "no Android `sessionIdMap`"; a short grep concluding `resumeInfo` was dead — both false).
+
+**Query symbols before reading files, and delegate sweeps to a subagent.** The rule above is about search *completeness*; this one is about search *price*. `ipc-handlers.ts` is 3,809 lines and `App.tsx` is 3,544 — **one whole-file read costs ~10x this entire CLAUDE.md**, and a conventional IPC-parity sweep runs ~90k tokens. Escalate, stopping as soon as the question is answered: **Serena** (`find_symbol`, `find_referencing_symbols`, `get_symbols_overview` — resolved call graphs, no comment/string noise) → **ast-grep** for code *shapes* → **`rg`** for exact strings → **whole-file reads only for files you're about to edit**. Any question answered by sweeping files goes to a read-only search subagent (`Explore`, else `general-purpose`), which spends the tool calls in its own context and returns a 1–2k-token conclusion. **Serena covers `youcoded/` TypeScript only** — not Kotlin, not the other sub-repos, and it says "no references" identically whether it searched or never looked, so never rest a negative on it alone. Cross-platform parity is `ipc-channels.test.ts`, not Serena; string-keyed things (IPC channels, CSS classes) are `rg`, not Serena. Its tool descriptions also cost tokens on every request — net win on long sessions over big subsystems, net loss on one-line lookups. Setup, scope limits, and the full tool table: `docs/code-intelligence.md`.
+
+**Prefer a tool that returns a verdict over one that returns text to interpret.** `npm run knip` for dead code, `tsc --noEmit` for types, `ipc-channels.test.ts` for three-surface parity, `bash scripts/ast-grep/check.sh` for the invariants that have been promoted from prose to executable scans. When you codify a new invariant, an ast-grep rule beats a sentence in `.claude/rules/` — adding rules to the scan is documented in `docs/code-intelligence.md`.
+
+### Code and copy standards
+
+**Annotate non-trivial code edits with a WHY comment.** Destin is a non-developer and relies on comments to understand what code does and why it was changed. Example: `// Fix: prevent stale tool IDs from coloring the status dot`. This is critical for long-term maintainability.
+
+**Never write misleading error messages.** Do NOT guess at a cause you haven't verified. Every user-facing error must be either (a) *specific and accurate* — surface the real detail (subprocess stderr, caught exception, failing path/port/arg); never `catch` and replace the real error with a hardcoded guess — or (b) *general but non-committal* ("Error: Unable to run local models.") paired with two actions: **Report bug / submit PR** and **Diagnose with Claude** (the Settings → Development flow). **Don't hand-roll either shape — `<ErrorState>` (`components/ui/states.tsx`) renders both:** `mode="recoverable"` (specific message + Retry) and `mode="general"` (the two-action card). See `docs/error-message-standards.md`. Full audit/replacement of existing messages is a v1.3.1 followup.
+
 **Verify fix consequences before shipping.** Batch fixes — especially network/permission changes — can silently break cross-cutting features. Check both platforms (desktop + Android) after any IPC change.
+
+## Workspace Setup
+
+**On first session**, run `bash setup.sh` to clone all repos. On subsequent sessions, run it again to pull the latest from each repo's default branch — it syncs every sub-repo *and* the workspace repo (`youcoded-dev`) itself, and resolves the workspace from its own location, so it works from any directory. Do this before any other work.
+
+**Sub-repo code changes go to the relevant sub-repo** (e.g., `youcoded/`, `youcoded-core/`, `wecoded-themes/`, `wecoded-marketplace/`) — open PRs there, push there. Do NOT mix sub-repo code into the workspace repo (`youcoded-dev`).
+
+**Workspace-level artifacts DO get committed + pushed to `youcoded-dev`.** That includes:
+- Cross-cutting docs that span multiple sub-repos: `docs/PITFALLS.md`, `docs/registries.md`, `docs/build-and-release.md`, etc. (Single-repo subsystem depth — chat-reducer, android-runtime, shared-ui-architecture, etc. — lives in `youcoded/docs/`, not here.)
+- This `CLAUDE.md` and any rule files under `.claude/rules/`.
+- Lifecycle documents (specs, plans, investigations, handoffs, prototypes) — the artifacts produced by brainstorming, writing-plans, and similar skills before any sub-repo code changes. In-flight ones live under `docs/active/`; completed/superseded ones under `docs/archive/`. (These replace the old flat `docs/superpowers/` dump.)
+- Dev tooling under `scripts/` — `run-dev.sh`, `run-sandbox.sh`, `cdp-eval.mjs`, etc.
+- The workspace's own `.gitignore`, `setup.sh`, and skill marketplace pointers under `.claude/`.
 
 ## Development Workflow
 
@@ -109,26 +108,17 @@ Release builds happen through GitHub Actions CI in the relevant sub-repo. For it
 bash scripts/run-dev.sh <branch-or-worktree> --label "Feature Name"
 ```
 
-**Always pass `--label "<Feature Name>"`** — it sets the dev window's taskbar / Alt-Tab title to `YouCoded - <Feature Name>`, so Destin can tell concurrent dev instances apart (he often reviews several at once, and every unlabeled window just reads "YouCoded"). Without it the title falls back to the branch name. Also pass a distinct `--offset` **and** `--profile` when another dev instance may be running, so you don't collide on ports/userData (a collision SIGKILLs the window). `--dry-run` prints the resolved target/ports/title without launching; `--list` shows registered worktrees.
-
-This shifts every port youcoded uses (Vite 5173 → 5223, remote server 9900 → 9950 at the default offset) and splits Electron `userData` into a separate dir so the dev instance coexists with a running built app. See `docs/local-dev.md` for what's isolated, what's shared (`~/.claude/`), the `--label`/`--offset`/`--profile` flags, and the caveats.
+**Always pass `--label "<Feature Name>"`** so Destin can tell concurrent dev instances apart; without it the title falls back to the branch name. When another dev instance may be running, also pass a distinct `--offset` **and** `--profile` — a collision SIGKILLs the window. `--dry-run` prints the resolved target/ports/title without launching; `--list` shows registered worktrees. Ports, what's isolated, what's shared (`~/.claude/`), and the caveats: `docs/local-dev.md`.
 
 ### ToolCard sandbox
 
-When iterating on `ToolCard` / `ToolBody` view designs in the renderer, skip the live-session loop by running `bash scripts/run-sandbox.sh`. It launches the same dev instance as `run-dev.sh` but boots the Electron window directly into `?mode=tool-sandbox`, where every `.jsonl` fixture in `youcoded/desktop/src/renderer/dev/fixtures/` renders as a real `<ToolCard>`. Edit `ToolBody.tsx` view functions and Vite HMR updates the page within ~1 second. Only touches the renderer; no PTY or transcript side effects.
+When iterating on `ToolCard` / `ToolBody` view designs in the renderer, skip the live-session loop by running `bash scripts/run-sandbox.sh`. It launches the same dev instance as `run-dev.sh` but boots the Electron window directly into `?mode=tool-sandbox`, where every `.jsonl` fixture in `youcoded/desktop/src/renderer/dev/fixtures/` renders as a real `<ToolCard>`. Edit `ToolBody.tsx` view functions and Vite HMR updates the page within ~1 second. Only touches the renderer; no PTY or transcript side effects. Destin intends to deprecate this feature and replace it with more comprehensive UI developer tools.
 
 ### CDP eval (live renderer inspection)
 
-`scripts/cdp-eval.mjs` is a one-shot Chrome DevTools Protocol eval helper. Use it to inspect or poke a live React renderer — most often the Android WebView while a debug APK is running on a device. Header comment in the script has the full adb-forward + page-discovery recipe; the short form:
+`scripts/cdp-eval.mjs` is a one-shot Chrome DevTools Protocol eval helper — use it to inspect or poke a live React renderer, most often the Android WebView while a debug APK is running on a device. The full `adb forward` + page-discovery recipe is in the script's header comment.
 
-```bash
-adb shell ps -A | grep com.youcoded            # find the dev or release PID
-adb forward tcp:9222 localabstract:webview_devtools_remote_<PID>
-curl -s http://localhost:9222/json             # copy webSocketDebuggerUrl
-node scripts/cdp-eval.mjs '<wsUrl>' "(() => ({ url: location.href, vm: document.documentElement.dataset.viewMode }))()"
-```
-
-Used during the Tier 2 android-xterm-webview dogfood pass to read xterm scrollback live, trace the byte stream into `terminal.write`, and pinpoint the visible black gap above the InputBar without rebuilding.
+### Local build & test
 
 For Claude sessions that need to verify code compiles or run tests locally:
 
@@ -148,7 +138,7 @@ All architectural invariants, cross-cutting gotchas, and lessons learned live in
 
 ## Keeping Documentation Accurate
 
-This workspace's documentation is self-verifying. Run `/audit` — it verifies the machine-checkable anchors (`node scripts/audit-anchors.mjs`: rule `verify:` blocks, doc anchors, MAP paths, store budgets), diff-scopes semantic re-verification to what changed since the last report in `docs/audits/`, and **fixes what it finds in the same run** (the report is an audit trail, not a to-do list). `/audit full` re-verifies everything and runs every pinned test; `/audit <subsystem>` scopes to one rule (names = `.claude/rules/*.md` basenames).
+This workspace's documentation is intended to be self-verifying. Destin can run `/audit` — it verifies the machine-checkable anchors (`node scripts/audit-anchors.mjs`: rule `verify:` blocks, doc anchors, MAP paths, store budgets), diff-scopes semantic re-verification to what changed since the last report in `docs/audits/`, and **fixes what it finds in the same run** (the report is an audit trail, not a to-do list). `/audit full` re-verifies everything and runs every pinned test; `/audit <subsystem>` scopes to one rule (names = `.claude/rules/*.md` basenames).
 
 - Run before any release (prevents shipping with stale docs)
 - Run after major refactors touching IPC, reducer, or runtime
@@ -157,26 +147,13 @@ This workspace's documentation is self-verifying. Run `/audit` — it verifies t
 
 If you notice Claude acting on outdated information, or you mention a file/function Claude doesn't recognize, that's the signal to run `/audit`.
 
-## Compaction Guidance
-
-When compacting context (/compact), always preserve:
-- The current task objective and success criteria
-- Architectural invariants or pitfalls discovered during this session
-- File paths of files currently being modified
-- Uncommitted work state (what has been changed but not committed)
-- Cross-repo dependency context (if working across multiple repos)
-
-Do NOT preserve: full file contents already read, intermediate debugging output, or resolved sub-tasks.
-
 ## Where Knowledge Lives
 
-New knowledge goes to, in descending preference: **a pinning test > an ast-grep rule > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. Full taxonomy: `docs/archive/specs/2026-07-15-workspace-knowledge-management-design.md`.
-
-The first two tiers *execute*; the rest only ask to be read and honored. Prefer an ast-grep rule (`scripts/ast-grep/`) whenever the invariant is a code shape — it covers the large class that isn't unit-testable but is still mechanically checkable, and it removes prose rather than adding it.
+New knowledge goes to, in descending preference: **a pinning test > an ast-grep rule > a WHY comment at the edit site > a path-scoped rule in `.claude/rules/` > the lazy doc the rule points to**. Never a new always-loaded doc. The first two tiers *execute*; the rest only ask to be read and honored — so prefer an ast-grep rule (`scripts/ast-grep/`) whenever the invariant is a code shape, since it covers the large class that isn't unit-testable but is still mechanically checkable, and it removes prose rather than adding it. Full taxonomy: `docs/archive/specs/2026-07-15-workspace-knowledge-management-design.md`.
 
 | Kind of knowledge | Home |
 |---|---|
-| Invariant / lesson | Pinning test → ast-grep rule → WHY comment → path-scoped rule → the rule's lazy doc. Slim `docs/PITFALLS.md` holds only cross-repo items |
+| Invariant / lesson | The ladder above. Slim `docs/PITFALLS.md` holds only cross-repo items |
 | Planned feature / bug / idea | `ROADMAP.md` — capture in the SAME session Destin mentions it (typed, tagged, dated; dedup first) |
 | Doc contradicting code | **Fix on sight** (verify against code; cite verification in the commit). Unfixable this session → ROADMAP `bug` tagged `#docs`. There is no drift ledger |
 | CC-version watch item | `youcoded/docs/cc-dependencies.md` |
@@ -187,17 +164,12 @@ The first two tiers *execute*; the rest only ask to be read and honored. Prefer 
 
 ## Subsystem References (read on demand — NOT auto-loaded)
 
-Path-scoped rules in `.claude/rules/` inject automatically when you touch matching files. Start any non-trivial task at `docs/MAP.md` (subsystem → entry points → rule → doc → guard tests). Direct pointers:
+Path-scoped rules in `.claude/rules/` inject automatically when you touch matching files, and `docs/MAP.md` maps every subsystem to its entry points, rule, depth doc, and guard tests — go there for anything subsystem-shaped. These workspace-level docs are not in MAP:
 
 | Doc | Read when… |
 |---|---|
 | `docs/PITFALLS.md` | before any non-trivial change — cross-repo invariants |
 | `docs/code-intelligence.md` | setting up Serena on a new machine, adding an ast-grep invariant rule, or deciding which search tool answers a question |
-| `youcoded/docs/chat-reducer.md` | touching chat state, transcript events, attention |
-| `youcoded/docs/android-runtime.md` | touching the Android/Termux runtime |
-| `youcoded/docs/shared-ui-architecture.md` | adding IPC or cross-platform features |
-| `docs/registries.md` | touching marketplace/themes registries |
 | `docs/build-and-release.md` | building, releasing, version bumping, beta/test builds (dogfooding master, VM install testing) |
-| `docs/toolkit-structure.md` | touching youcoded-core (deprecated plugin) |
 | `docs/error-message-standards.md` | writing any user-facing error |
 | `docs/local-dev.md` | running the dev instance |
