@@ -2,6 +2,21 @@
 status: shipped
 ---
 
+> **SHIPPED 2026-07-29 — youcoded PR #268, merge `12f71d07`**, rebased onto master and merged
+> together with M3 items 1/2/3/5. This closes Native Runtime Parity Program §7 item 1
+> ("reconcile Plan C" — the decision was merge).
+>
+> **Six bugs this branch fixed were LATENT ON MASTER, not introduced here** — found by
+> dogfooding, not by this plan: token counts were never requested from the provider
+> (`includeUsage` unset, so every native turn recorded `inputTokens: 0` and the compaction
+> trigger had never once fired on a measured count); local sessions ran on HALF their real
+> window in router mode; the context trimmer could empty the message list; the prefill budget
+> was never in force (the SDK's synthetic `start` part flipped the first-chunk flag at +8ms);
+> `tok/s` divided generation output by whole-turn wall-clock; and the prefill readout outlived
+> prefill and resurfaced mid-generation.
+>
+> Residue and unverified claims are tracked in the program doc's **§4 "M3 residue"** block.
+
 # Phase 2 Plan C — Local Reliability + Compaction + Status: Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

@@ -11,11 +11,26 @@ verified_against: branch `f65245ae` (master merged 2026-07-28)
 
 # M3 — Skills, path-scoped rules, and capability-gated injection
 
-> **Implementation status (2026-07-28):** Tasks 1–8 are DONE and committed on
-> `feat/native-local-reliability-rebase`. Task 9's doc work is done except the
-> parts that must wait for the merge (MAP rows and the program §4 flip both
-> describe master, and the handoff explicitly forbids adding unmerged paths to
-> MAP). Remaining: Destin's dev acceptance, the whole-branch review, then PR.
+> **SHIPPED 2026-07-29 — youcoded PR #268, merge `12f71d07`.** All nine tasks
+> complete, including Task 9's post-merge half (MAP rows, program §4 flip, rule
+> banner + restored `verify:` anchors, docs archived).
+>
+> **What happened between task 8 and the merge, none of it in this plan.** Destin
+> dogfooded it and eight more fixes landed:
+> the skill catalog had to accept a BARE name (`scanSkills` namespaces plugin
+> skills as `<plugin>:<skill>`, so ALL 16 installed skills were unreachable by the
+> name a user types); a user-invoked skill became a compact CARD instead of 26k
+> characters of user message; that card needed a real bubble surface; the
+> injection needed imperative framing or the model narrated the skill instead of
+> running it; the invocation had to register as a TURN START so the thinking
+> indicator ran; the skill name became the link to its SKILL.md; the capability
+> gate had to add a capability conjunction (a 2B at `-c 128000` has room but is
+> not fit to choose skills); and `/clear` had to stop wiping the visible timeline.
+> Two audit agents over the progress/token chain then found six more, and CI
+> caught a machine-dependent test that passed on three of four platforms.
+>
+> **The honest read on this plan: tasks 1–8 were the smaller half of the work.**
+> Everything above came from using the feature, not from planning it.
 >
 > Four deviations from this plan, each forced by something the plan did not know
 > and each recorded in its commit:
