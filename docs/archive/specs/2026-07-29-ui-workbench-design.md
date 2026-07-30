@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-07-29
 owner: Destin (decisions) / Claude (spec)
 supersedes: docs/active/plans/2026-07-20-mockup-browser-renderer.md

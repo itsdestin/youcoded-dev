@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-07-29
 kind: plan
 spec: docs/active/specs/2026-07-29-ui-workbench-design.md
