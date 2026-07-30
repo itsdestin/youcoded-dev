@@ -24,11 +24,15 @@
 //   Reported as % of ONE core, summed across the Electron process family
 //   (browser + renderers + GPU). Reference numbers from the 2026-07-30 run on a
 //   2560x1600@180Hz panel, dev instance, meadow-mist theme:
-//     ~4%    idle, welcome screen, no perpetual animation   <- healthy
-//     ~35%   3 sessions showing the pulsing "Initializing" overlay (pre-fix)
-//     ~43%   one un-promoted 64px `animate-pulse` div, nothing else
-//   Anything above ~10% visible-idle means something is animating every frame.
-//   The script lists any running CSS animations so you can see what.
+//     ~2.5%  idle, welcome screen, no animation running     <- healthy
+//     ~29%   ONE smoothly-animating element, of any size    <- the failure mode
+//     ~9-11% the same element with steps(8) timing          <- frame-budgeted
+//   The cost is per-presented-FRAME (~1.5-1.9ms CPU each), not per-element, and
+//   not app-specific: bare Electron measured 33.7% and plain Chrome 26.7% for
+//   the identical animated div. Layer promotion (will-change) was measured
+//   USELESS (29.8% -> 27.8%) — the fix for a hot animation is steps() timing or
+//   stopping it, never promotion. The script lists running animations and flags
+//   smooth ones, since a single smooth infinite animation is the failure mode.
 //
 //   Expect LOWER numbers on a 60Hz display — the burn scales with refresh rate,
 //   so a regression that costs 40% here costs ~13% on a 60Hz laptop. Compare
@@ -146,9 +150,9 @@ async function inspectRenderer() {
       const anims=document.getAnimations().filter(a=>a.playState==='running').map(a=>{
         const t=a.effect&&a.effect.target;
         const cn=t?((t.className&&t.className.baseVal!==undefined?t.className.baseVal:t.className)||t.tagName):'?';
-        const wc=t?getComputedStyle(t).willChange:'?';
+        const tf=t?getComputedStyle(t).animationTimingFunction:'?';
         const inf=(()=>{try{return a.effect.getTiming().iterations===Infinity;}catch(e){return null;}})();
-        return {name:a.animationName||a.transitionProperty||'?',target:(cn+'').slice(0,60),willChange:wc,infinite:inf};
+        return {name:a.animationName||a.transitionProperty||'?',target:(cn+'').slice(0,60),timingFn:tf,infinite:inf};
       });
       return JSON.stringify({fps,visibility:document.visibilityState,anims});
     })()`;
@@ -228,11 +232,13 @@ if (anim.ok) {
   } else {
     console.log(`  ${anim.anims.length} running animation(s):`);
     for (const a of anim.anims) {
-      const promoted = a.willChange && a.willChange !== 'auto';
-      const mark = promoted ? 'promoted' : 'NOT PROMOTED — repaints the whole window every frame';
+      const stepped = /steps\(/.test(a.timingFn || '');
+      const mark = stepped
+        ? `frame-budgeted: ${a.timingFn}`
+        : `SMOOTH${a.infinite ? ' + INFINITE' : ''} — presents a frame at full refresh rate (~29%/core at 180Hz)`;
       console.log(`    - ${a.name} on "${a.target}" [${mark}]`);
     }
-    console.log('  A perpetual animation without will-change is the #1 cause of idle burn.');
+    console.log('  A SMOOTH infinite animation is the #1 cause of idle burn — fix with steps() timing or a finite iteration count.');
   }
 } else {
   console.log(`\n(animation inspection skipped: ${anim.reason})`);
