@@ -25,6 +25,15 @@ on:
     - cron: '17 6 * * *'
   workflow_dispatch:
 
+# The introducing push (d53f4f7) dispatched TWO runs — same workflow id, same
+# commit, same second, both attempt=1 — with only one workflow file and one ref
+# on the remote. Cause unknown and GitHub-side; this collapses duplicates rather
+# than explaining them, and also stops a rapid second push from paying for a run
+# whose result is already stale.
+concurrency:
+  group: workspace-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   anchors:
     name: Anchors and invariants
