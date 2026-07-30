@@ -156,8 +156,49 @@ composites. That is a **visual** change to how chat text renders, so it was
 deliberately not bundled into this verified, visually-neutral perf PR. It should
 be built and eyeballed in the workbench.
 
-This is the single highest-value follow-up: it is worth the same ~40% of a core
-as the bug that was just fixed, and it triggers in the app's most common state.
+**Partly mitigated in PR #275** (below): Reduced Effects now stops it. That is a
+user-opt-in escape hatch, not a fix — the default path still pays the cost.
+
+## Follow-up shipped: the Reduced Effects toggle did nothing to CSS (PR #275)
+
+`data-reduced-effects` is written onto `<html>` by `theme-engine.ts`, but it had
+**zero CSS rules gating on it** — it was read only in JS, by `ThemeEffects` and
+`MascotRig`. Turning Reduced Effects on therefore left every CSS keyframe
+animation running.
+
+Swept all 14 `infinite` animation declarations and checked each one's gating.
+Most were already covered (rig loops in `MascotRig`, buddy breathing in
+`BuddyMascot.tsx`, companion shimmer by `.mascot-scene[data-effects-off='1']
+.mascot-comp *`). Three were not: `.flowing-word`,
+`.model-load-track::after`, `.model-load-finalize::after` — each already had a
+`prefers-reduced-motion` fallback, so the fix reuses those declarations under an
+`[data-reduced-effects]` trigger.
+
+Measured A/B with one keyword on screen: **48.78% → 2.44%** of one core.
+
+Verified through the *real* setting path (appearance IPC + reload), not by
+poking the attribute — and the frozen gradient was screenshotted to confirm the
+keyword stays legible, so no extra fallback styling was needed.
+
+Loading spinners deliberately keep spinning: a frozen spinner reads as a hung
+app, and they are transient and already cheap after promotion. The guard test
+pins that decision too.
+
+### Why "just cap the app to 30fps" is not the answer
+
+Considered and rejected on evidence:
+
+- **Electron cannot do it.** `webContents.setFrameRate()` is documented as
+  offscreen-rendering-only; switching the main window to offscreen rendering
+  would mean software compositing and would wreck the xterm WebGL path.
+  Chromium's frame-rate switches (`--disable-frame-rate-limit`,
+  `--disable-gpu-vsync`) only ever *remove* caps.
+- **Promotion beats capping anyway.** A 30fps cap would divide the 43% by ~6 to
+  ~7%; layer promotion measured **3.6%**, and keeps full 180Hz responsiveness
+  for scrolling, typing and terminal output.
+- **Refresh rate is a multiplier, not a constant tax.** Chromium only produces
+  frames when something damages the screen, so an idle app with nothing
+  animating costs nothing regardless of the panel's rate.
 
 ## What was NOT changed, and why
 
@@ -186,7 +227,16 @@ as the bug that was just fixed, and it triggers in the app's most common state.
 2. **`youcoded-dev/scripts/measure-idle-cpu.mjs`** — repeatable measurement.
    Samples the dev Electron family via `/proc`, reports % of one core, and over
    CDP lists every *running* animation flagged `promoted` / `NOT PROMOTED`, plus
-   the renderer's real fps. Takes `--budget N` for a non-zero exit.
+   the rate the window presents at. Takes `--budget N` for a non-zero exit.
+   **Two corrections applied 2026-07-30 after the script contaminated its own
+   reading:** the CDP probe now runs *after* the sample window, not inside it
+   (counting frames requires requesting rAF, and requesting rAF itself makes
+   Chromium present — so probing mid-sample both inflated the CPU number and
+   destroyed the idleness being measured); and the fps figure is labelled as the
+   refresh rate rather than "idle frame production", because a visible idle page
+   still reports ~180 for that same reason. **The CPU total is the real signal;
+   the animation list is the diagnostic.** An earlier 0 fps reading here was the
+   artifact of a window that had just been restored and was not yet presenting.
    It **refuses to sample the packaged production app** (matches only the
    `node_modules/electron/dist` binary), so it cannot be pointed at the live
    install in violation of `.claude/rules/live-app-safety.md`.

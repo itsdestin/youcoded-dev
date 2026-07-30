@@ -179,10 +179,14 @@ if (!pids.length) {
 }
 
 console.log(`Sampling ${pids.length} dev Electron processes for ${SECONDS}s — keep the window VISIBLE and idle.\n`);
+// The CDP probe must run AFTER the sample window closes, never inside it.
+// Counting frames requires requesting rAF, and requesting rAF itself makes
+// Chromium produce frames — so probing mid-sample both inflates the CPU number
+// and destroys the very idleness being measured.
 const before = snapshot(pids);
-const anim = await inspectRenderer(); // runs during the sample window; ~1s of rAF counting
 await new Promise((r) => setTimeout(r, SECONDS * 1000));
 const after = snapshot(pids);
+const anim = await inspectRenderer();
 
 const perProc = new Map();
 const perThread = [];
@@ -210,14 +214,17 @@ for (const t of perThread.sort((a, b) => b.pct - a.pct).slice(0, 8)) {
 }
 
 if (anim.ok) {
-  console.log(`\nRenderer: ${anim.fps} fps, visibility=${anim.visibility}`);
+  // NOT a measure of idle frame production. Counting frames means requesting
+  // rAF, which itself makes Chromium present — so a visible, perfectly idle page
+  // still reports ~the display refresh rate here. Read it as "what this window
+  // presents at when something IS animating", i.e. the multiplier a perpetual
+  // animation gets billed at. The CPU total above is the real signal.
+  console.log(`\nRenderer presents at ${anim.fps} fps (refresh rate), visibility=${anim.visibility}`);
   if (anim.visibility !== 'visible') {
     console.log('  NOTE: window is not visible — Chromium throttles it, so this number is not the idle-visible figure.');
   }
   if (!anim.anims.length) {
-    // 0 fps here is the HEALTHY reading, not a broken probe: with nothing
-    // animating there is no damage, so Chromium produces no frames at all.
-    console.log('  No running CSS animations — 0 fps is the expected, healthy result.');
+    console.log('  No running CSS animations — nothing is driving per-frame work. This is the healthy state.');
   } else {
     console.log(`  ${anim.anims.length} running animation(s):`);
     for (const a of anim.anims) {
