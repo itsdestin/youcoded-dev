@@ -130,6 +130,35 @@ Same scenario (3 sessions showing the pulsing "Initializing" overlay):
 | Before | **35.6%** of one core |
 | After | **1.6%** of one core |
 
+## Top remaining offender: `.flowing-word` (measured, NOT fixed here)
+
+`.flowing-word` (`globals.css:1368`, used by `FlowingKeywords.tsx` and
+`UserMessage.tsx`) animates **`background-position`** on an infinite loop to
+give keywords a flowing-gradient look. It already pauses when its timeline entry
+scrolls out of view (`.timeline-entry:not(.in-view)`), but **every on-screen
+keyword animates forever** — and Destin's chat is full of user messages.
+
+Measured with a faithful standalone replica of the rule:
+
+| | CPU (% of one core) |
+|---|---|
+| One flowing keyword visible | **43.8%** |
+| Same, plus `will-change: background-position` | 43.0% — **no help** |
+
+`background-position` is not a compositable property, so layer promotion does
+nothing for it (unlike opacity/transform). Note the renderer main thread runs
+*higher* here (18.3%) than in the opacity case, because the text is re-painted
+on the main thread every frame.
+
+Fixing it properly means changing the technique — e.g. a `transform:
+translateX()`-driven gradient overlay behind `background-clip: text`, which
+composites. That is a **visual** change to how chat text renders, so it was
+deliberately not bundled into this verified, visually-neutral perf PR. It should
+be built and eyeballed in the workbench.
+
+This is the single highest-value follow-up: it is worth the same ~40% of a core
+as the bug that was just fixed, and it triggers in the app's most common state.
+
 ## What was NOT changed, and why
 
 - **`model-load-sweep`** (`globals.css`) animates `left`, which is not
