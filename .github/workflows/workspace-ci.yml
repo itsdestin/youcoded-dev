@@ -1,0 +1,87 @@
+name: Workspace CI
+
+# Runs the two workspace-owned verdict tools that previously ran nowhere
+# automatically: the doc/rule anchor checker and the ast-grep invariant scan.
+#
+# WHY THIS EXISTS: CLAUDE.md ranks "a pinning test > an ast-grep rule" at the top
+# of where knowledge should live, and both of those tiers are supposed to
+# *execute*. They didn't. `scripts/audit-anchors.mjs` only ran when Destin typed
+# `/audit`, and `scripts/ast-grep/check.sh` only when a session remembered it. A
+# rule whose `verify:` path moved stayed silently wrong in the meantime, and a
+# stale rule is worse than no rule because it auto-injects and is believed.
+#
+# THE CRON IS THE POINT. Anchors here reference files inside the SUB-repos, so
+# they break when `youcoded` moves — which never triggers a push to this repo.
+# Push/PR runs only catch drift someone introduces while editing the workspace;
+# the daily run is what actually catches the common case.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    # 06:17 UTC daily. Off the hour on purpose — GitHub delays cron jobs
+    # scheduled at :00 under load.
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  anchors:
+    name: Anchors and invariants
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # Sub-repos are gitignored here and cloned by setup.sh, so a bare checkout
+      # of this repo cannot resolve a single anchor — every one of the 100+ MAP
+      # paths would report missing and the run would be noise.
+      #
+      # NOT `bash setup.sh`: that also clones itsdestin/youcoded-admin (the one
+      # PRIVATE repo, which would need a PAT) and then tries to `git pull` this
+      # repo over itself, which is wrong inside a CI checkout. Verified that no
+      # rule `paths:` glob and no docs/MAP.md path references youcoded-admin, so
+      # omitting it costs no coverage. If that ever changes, audit-anchors
+      # reports it as `repo youcoded-admin not found on disk` rather than
+      # silently passing.
+      #
+      # --depth 1: the checks are file-existence, regex-contains, and
+      # `git ls-files`. None of them read history.
+      - name: Clone public sub-repos
+        run: |
+          set -euo pipefail
+          for entry in youcoded:master youcoded-core:master \
+                       wecoded-themes:main wecoded-marketplace:master; do
+            name="${entry%%:*}"
+            branch="${entry##*:}"
+            git clone --depth 1 --branch "$branch" \
+              "https://github.com/itsdestin/$name.git" "$name"
+          done
+
+      # The checker's own unit tests. If its parsers regress, every anchor result
+      # below is untrustworthy — so this runs first and gates the rest.
+      - name: Test the anchor checker
+        run: node --test scripts/audit-anchors.test.mjs
+
+      # --no-diff skips the "which subsystems changed since the last audit
+      # report" computation. That is a scoping aid for the /audit agent and needs
+      # git history plus a dated report; the mechanical anchor pass does not.
+      - name: Verify anchors, MAP paths, and store budgets
+        run: node scripts/audit-anchors.mjs --no-diff
+
+      # check.sh falls back to `npx --yes @ast-grep/cli` when the binary is
+      # absent, which re-resolves the package on every invocation. Installing it
+      # once is faster and makes a network failure a clear install error rather
+      # than a confusing scan error.
+      - name: Install ast-grep
+        run: npm install -g @ast-grep/cli
+
+      # Scans youcoded/desktop/src (the clone above) against scripts/ast-grep/rules,
+      # and the violation fixtures in the same pass — a rule that has silently
+      # stopped matching fails this step instead of passing quietly.
+      - name: Executable invariants (ast-grep)
+        run: bash scripts/ast-grep/check.sh

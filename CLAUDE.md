@@ -79,7 +79,7 @@ Verify the commit landed on master first: `git branch --contains <sha>` should l
 
 **Query symbols before reading files, and delegate sweeps to a subagent.** The rule above is about search *completeness*; this one is about search *price*. `ipc-handlers.ts` is 3,809 lines and `App.tsx` is 3,544 — **one whole-file read costs ~10x this entire CLAUDE.md**, and a conventional IPC-parity sweep runs ~90k tokens. Escalate, stopping as soon as the question is answered: **Serena** (`find_symbol`, `find_referencing_symbols`, `get_symbols_overview` — resolved call graphs, no comment/string noise) → **ast-grep** for code *shapes* → **`rg`** for exact strings → **whole-file reads only for files you're about to edit**. Any question answered by sweeping files goes to a read-only search subagent (`Explore`, else `general-purpose`), which spends the tool calls in its own context and returns a 1–2k-token conclusion. **Serena covers `youcoded/` TypeScript only** — not Kotlin, not the other sub-repos, and it says "no references" identically whether it searched or never looked, so never rest a negative on it alone. Cross-platform parity is `ipc-channels.test.ts`, not Serena; string-keyed things (IPC channels, CSS classes) are `rg`, not Serena. Its tool descriptions also cost tokens on every request — net win on long sessions over big subsystems, net loss on one-line lookups. Setup, scope limits, and the full tool table: `docs/code-intelligence.md`.
 
-**Prefer a tool that returns a verdict over one that returns text to interpret.** `npm run knip` for dead code, `tsc --noEmit` for types, `ipc-channels.test.ts` for three-surface parity, `bash scripts/ast-grep/check.sh` for the invariants that have been promoted from prose to executable scans. When you codify a new invariant, an ast-grep rule beats a sentence in `.claude/rules/` — adding rules to the scan is documented in `docs/code-intelligence.md`.
+**Prefer a tool that returns a verdict over one that returns text to interpret.** `npm run knip` for dead code, `tsc --noEmit` for types, `ipc-channels.test.ts` for three-surface parity, `bash scripts/ast-grep/check.sh` for the invariants that have been promoted from prose to executable scans — or `bash scripts/verify.sh` to run all of those at once against a checkout (see [Local build & test](#local-build--test)). When you codify a new invariant, an ast-grep rule beats a sentence in `.claude/rules/` — adding rules to the scan is documented in `docs/code-intelligence.md`.
 
 ### Code and copy standards
 
@@ -122,11 +122,11 @@ bash scripts/run-dev.sh <branch-or-worktree> --label "Feature Name"
 
 ### Local build & test
 
-For Claude sessions that need to verify code compiles or run tests locally:
+**Before claiming a desktop change is done, run `bash scripts/verify.sh [<worktree>]`.** One command, one exit code: `tsc --noEmit`, `vitest related` on the files you changed, `knip`, and the ast-grep invariant scan — in parallel, ~10s for a small diff. It runs the FULL suite automatically when the diff touches test infra (`vitest.config.ts`, `package.json`, `tests/__mocks__/`), since that invalidates the affected-test mapping; `--full` forces it, `--dry-run` prints the plan. **It covers `youcoded/desktop` only** — it says so on exit, and Android/worker still need their own commands below.
 
 ```bash
 # Desktop
-cd youcoded/desktop && npm ci && npm test && npm run build
+cd youcoded/desktop && npm ci && npm run build
 
 # Android (requires Desktop React UI built first)
 cd youcoded && ./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew test
@@ -146,6 +146,7 @@ This workspace's documentation is intended to be self-verifying. Destin can run 
 - Run after major refactors touching IPC, reducer, or runtime
 - Unresolved findings live in the latest `docs/audits/` report's `## Residue` section (the only surviving drift ledger — a snapshot, not an accumulator)
 - Session-start hook surfaces a reminder if the latest `docs/audits/` report is >60 days old or its `residue:` frontmatter count is non-zero
+- The mechanical pass also runs unattended in `.github/workflows/workspace-ci.yml` — on push/PR here, **and daily on a cron**. The cron is the one that matters: anchors point into the sub-repos, so they break when `youcoded` moves, which never triggers a push to this repo
 
 If you notice Claude acting on outdated information, or you mention a file/function Claude doesn't recognize, that's the signal to run `/audit`.
 

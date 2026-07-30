@@ -9,12 +9,21 @@
 # (its worktree `find` matched nothing for weeks and printed no section, so nobody
 # noticed). Fixtures make a broken rule fail loudly instead of going quiet.
 #
-# Usage: bash scripts/ast-grep/check.sh
+# Usage: bash scripts/ast-grep/check.sh [<source-dir>]
+#
+#   <source-dir>  Defaults to the main checkout's youcoded/desktop/src. Pass one to
+#                 scan a worktree instead — scripts/verify.sh does exactly that, so a
+#                 branch is checked against ITS OWN source rather than master's.
 set -uo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE="$(cd "$HERE/../.." && pwd)"
-SOURCE_DIR="$WORKSPACE/youcoded/desktop/src"
+SOURCE_DIR="${1:-$WORKSPACE/youcoded/desktop/src}"
+
+if [[ ! -d "$SOURCE_DIR" ]]; then
+    echo "error: source dir not found: $SOURCE_DIR" >&2
+    exit 2
+fi
 
 # Prefer a real install (pacman -S ast-grep / npm i -g @ast-grep/cli); npx works but
 # re-resolves the binary on every invocation, which is slow enough to notice.
