@@ -76,7 +76,8 @@ feed the registry, and the registry feeds both runtimes. `mcp-reconciler.ts` kee
 
 ### 3.1 Registry shape
 
-`~/.youcoded/mcp.json`, written exclusively through `NativeHome.mutateFileUnderLock`:
+`~/.youcoded/mcp.json`, written exclusively through `NativeHome.mutateJson` (the locked
+read-modify-write; `mutateFileUnderLock` is its internal primitive, not the caller's API):
 
 ```jsonc
 {
@@ -110,6 +111,12 @@ The registry stores only `secretRef` pointers; values go to the `safeStorage`-en
 split already used by `providers.json` (API keys) and `search-providers.json` (search keys).
 A registry entry is therefore safe to sync, and a synced entry on a second device resolves to
 that device's own secret or reports `needs-setup`.
+
+`SearchKeyStore` (`harness/search/search-key-store.ts`) is the closest existing analogue and
+should be read before implementing this — it already solves the structural-interface split
+(`NativeHomeLike`/`SecretsLike` with compile-time drift guards), the encrypt-then-store
+ordering, and the delete ordering that leaves a harmless dangling pointer rather than an
+unreachable ciphertext blob.
 
 ### 3.3 Projection into Claude Code
 
@@ -297,7 +304,20 @@ should be mutation-checked: break the code, watch it fail, restore.
    theirs, in a way that survives hand-editing.
 2. **Where the "servers dropped for this model" notice appears** — status bar, session banner,
    or first-turn system notice. Should be decided against the UI Workbench once it merges.
-3. **Whether `@modelcontextprotocol/sdk` can be used for transport only.** Its client may
-   assume it owns tool execution; our harness owns the loop deliberately
-   (`harness-session.ts:427`). If the seam is awkward, the transports are simple enough to
-   implement directly — decide with the SDK in hand, not from its README.
+3. ~~**Whether `@modelcontextprotocol/sdk` can be used for transport only.**~~ **RESOLVED
+   2026-07-30 — yes.** Checked against `@modelcontextprotocol/sdk@1.30.0` installed and read,
+   not from its README. `Client` exposes `connect(transport)` / `listTools()` /
+   `callTool({name, arguments})` / `close()` — protocol and transport only, with no agentic
+   loop of its own, so it composes with a harness that owns the loop. The
+   "client-owns-execution" concern applies to the *AI SDK's* `experimental_createMCPClient`,
+   not to this package. Three further facts that change the plan:
+   - **It ships a CJS build** (`dist/cjs`, with a `require` condition in its exports map), so
+     the CommonJS main process can consume it. This was a genuine potential blocker.
+   - **`StdioClientTransport` defaults `stderr: 'inherit'`.** Capturing the real spawn error
+     (§7's "surface the actual stderr, never a guessed cause") requires explicitly passing
+     `stderr: 'pipe'` and reading the exposed stream. The default silently routes it to the
+     app's own stderr where no error message can reach.
+   - **MCP tools may carry `annotations.readOnlyHint` / `destructiveHint`.** These come from
+     the SERVER and are therefore untrusted: they may inform UI copy, but must never widen a
+     grant or skip a prompt. Recorded here so a later reader does not mistake them for a
+     safety signal.
