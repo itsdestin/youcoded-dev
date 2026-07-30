@@ -1,10 +1,23 @@
 ---
-status: active
+status: shipped
 created: 2026-07-30
-owner: unassigned (next session)
+owner: completed 2026-07-30 (youcoded PR #274)
 ---
 
 # Handoff: YouCoded desktop idle CPU burn — measure, attribute, fix
+
+> **RESOLVED 2026-07-30 — youcoded PR #274.** Findings and corrections:
+> `docs/active/investigations/2026-07-30-idle-cpu-burn.md`.
+>
+> Root cause was perpetual CSS animations that were not layer-promoted, NOT the
+> lease/heartbeat lead below (renderer JS profiled 99% idle; `pty:output` = 0
+> bytes). Two premises below are wrong and are corrected in the investigation:
+> the 104-133% live-app figures were **not idle** (the measuring session was
+> itself running inside the app alongside 6 other streaming CC sessions), and
+> the "~0% hidden" budget was already met — Chromium throttles hidden windows
+> correctly, so the problem is exclusively visible-and-idle.
+>
+> Everything below is preserved as the original brief.
 
 ## Why
 
