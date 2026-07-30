@@ -86,11 +86,18 @@ jobs:
       # absent, which re-resolves the package on every invocation. Installing it
       # once is faster and makes a network failure a clear install error rather
       # than a confusing scan error.
+      # !cancelled() on both ast-grep steps: they are INDEPENDENT of the anchor
+      # pass, and steps fail-fast by default. Without this, a red anchors step
+      # (which is the state today — see the commit that added this workflow)
+      # means the invariant scan silently never runs at all, and a run reports
+      # one finding when there might be two.
       - name: Install ast-grep
+        if: ${{ !cancelled() }}
         run: npm install -g @ast-grep/cli
 
       # Scans youcoded/desktop/src (the clone above) against scripts/ast-grep/rules,
       # and the violation fixtures in the same pass — a rule that has silently
       # stopped matching fails this step instead of passing quietly.
       - name: Executable invariants (ast-grep)
+        if: ${{ !cancelled() }}
         run: bash scripts/ast-grep/check.sh
