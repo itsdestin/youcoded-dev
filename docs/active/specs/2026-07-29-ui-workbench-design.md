@@ -122,7 +122,8 @@ youcoded/desktop/src/renderer/dev/workbench/
   fixtures/
     conversations/*.jsonl# replayed through the real reducer via fixture-loader
     tools/*.jsonl        # the 24 ported ToolSandbox fixtures
-    themes/*.json        # vendored community packs (Halftone Dimension)
+    themes/<slug>/       # vendored community packs + their assets
+                         #   (Halftone Dimension, Meadow Mist)
     sessions.ts  providers.ts  models.ts  tags.ts  defaults.ts
   mock-contract.test.ts  # parity vs preload + MOCK_ONLY completeness
   fixture-actions.test.ts# every fixture replays into a well-formed timeline
@@ -285,14 +286,19 @@ Chrome rendered **outside** the app frame so it never overlaps what is being rev
   Note `theme` is one of the namespaces absent from the `useIpc.ts` typed contract, so these
   two channels get no compiler check — they belong in the `(window as any)` caveat of §1.3.
 
-  **Known fidelity gap — theme assets do not load.** `theme-asset-resolver.ts` rewrites a
-  pack's asset paths to `theme-asset://<slug>/<path>`, an Electron custom protocol with no
-  browser equivalent, so Halftone Dimension's pattern, mascots and icons render as broken
-  images in the workbench. Colors, radii, fonts, `custom_css` and the glass cascade are all
-  faithful. Closing it would mean teaching `theme-asset-resolver.ts` a second scheme — a
-  production change for a dev-only gain — so it is deliberately left open. Stated here because
-  §4 requires approximations be named, and because a reviewer seeing broken images should know
-  it is the workbench, not the theme.
+  **Theme assets DO load** (closed 2026-07-29). A pack references its assets relatively, and
+  `theme-asset-resolver.ts` turns those into `theme-asset://<slug>/<path>` — an Electron
+  protocol a browser tab cannot fetch, so patterns, mascots and wallpapers rendered broken.
+  Two changes fixed it. First, `resolveAssetPath` now passes through already-resolved values
+  (`data:`, `http(s):`, root-absolute) as its docblock always claimed it did; previously only
+  `theme-asset://` was handled, so any pack shipping a data URI or a remote image was silently
+  broken **in the real app too**. Second, the mock rewrites each vendored pack's relative paths
+  to Vite URLs before the resolver sees them. Both shapes matter: Vite inlines assets under 4KB
+  as `data:` URIs and serves larger ones as paths, so a single manifest contains both.
+  Two packs ship by default — **Halftone Dimension** (gradient background, SVG pattern, glass,
+  hot-pink accent) and **Meadow Mist** (photographic wallpaper, light palette) — chosen to
+  exercise different rendering paths rather than to pad the list. Guard:
+  `tests/workbench-channels.test.ts`.
 - **Scenario picker** — §3.6.
 - **Latency picker** — 0ms / 150ms / 2s, applied to every mock channel. §4.
 - **Viewport toggle** — pinned to the real 640px breakpoint from `use-narrow-viewport.ts`.

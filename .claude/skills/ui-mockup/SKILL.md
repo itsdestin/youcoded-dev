@@ -59,11 +59,10 @@ approved.
   only ever seen at instant-resolve has never shown its loading states; a surface only seen on
   five tidy rows has never been tested. This is the workbench's one real gap: appearance is
   guaranteed identical, behaviour under real data is not.
-- **Explicit fidelity notes — never let an approximation pass silently.** Known gaps today:
-  community-theme *assets* (pattern, mascots, icons) do not load, because they resolve to the
-  `theme-asset://` Electron protocol that a browser tab has no scheme for. Colors, radii, fonts
-  and the glass cascade are faithful. Say so rather than letting him wonder why the pattern is
-  missing.
+- **Explicit fidelity notes — never let an approximation pass silently.** Community themes
+  render in full, artwork included (two ship by default: Halftone Dimension and Meadow Mist).
+  If you hit something the workbench genuinely cannot reproduce, say so in the review rather
+  than letting Destin wonder whether it is the design or the harness.
 - **On ambiguous feedback ("make them more consistent"), prefer the smallest literal reading and
   ask.** Over-extrapolating cost a full rework in the original session.
 - When he picks among options (A/B/C), keep the rejected ones described in the ledger marked
