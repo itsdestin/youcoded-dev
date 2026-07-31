@@ -84,12 +84,22 @@ wanted, has to live in the relay (which already parses `tool_name` from stdin at
 `relay-blocking.js:30-35`). Not needed at 24h — noted so a future session does
 not rediscover it.
 
-**Existing installs need no migration.** `main.ts:1288-1307` `require()`s
-`install-hooks.js` on every launch of the built app. `resolveHookDir()`
-(`install-hooks.js:44-48`) unconditionally `fs.cpSync`s `hook-scripts/` into
-`~/.claude/youcoded-hooks/`, overwriting; `install-hooks.js:129-136` finds the
-existing `PermissionRequest` entry by index and replaces it outright. Both the new
-script and the new settings value land on the first launch after update.
+**Existing installs need no migration — on desktop only.** `main.ts:1288-1307`
+`require()`s `install-hooks.js` on every launch of the built app.
+`resolveHookDir()` (`install-hooks.js:44-48`) unconditionally `fs.cpSync`s
+`hook-scripts/` into `~/.claude/youcoded-hooks/`, overwriting;
+`install-hooks.js:129-136` finds the existing `PermissionRequest` entry by index
+and replaces it outright. Both the new script and the new settings value land on
+the first launch after update.
+
+**Android does NOT update in place — this must be fixed or the Android half
+ships dead.** `Bootstrap.kt:992-1018` scans for an existing entry whose command
+contains `hook-relay-blocking.js`, sets `prRegistered = true`, and then guards
+the entire write behind `if (!prRegistered)`. On any install that already has the
+hook — i.e. every existing user — the block is skipped and `timeout: 300` stays
+forever. Changing the literal at line 1014 alone accomplishes nothing for anyone
+but a fresh install. Android needs desktop's find-and-replace semantics: locate
+the existing entry and overwrite it, rather than skipping when present.
 
 **Scope note.** This writes `~/.claude/settings.json`, which the user's terminal
 Claude Code sessions also read. The new timeout applies to CLI usage, not only to
@@ -160,10 +170,13 @@ Two hard rules:
   landing on "Yes, and don't ask again" is a silent misfire in the worst
   direction. Require a confident label match; with no match, degrade to the
   banner. Never guess an index.
-- **Coordinate with `hasPendingPermission`.** That guard exists to stop PTY
-  writers while a menu is live, because a stray `\r` selects whatever is
-  highlighted. Writing digits as a permission response is that exact operation on
-  purpose, so it must not race a concurrent chat send.
+- **Bypass the PTY gate — deliberately, with precedent.** `pty-input-gate.ts`
+  states the rule: automated writers (submit-retry, chat sends, command sends)
+  must consult the gate; "Deliberate menu-driving writes (ToolCard plan keys,
+  TrustGate buttons, terminal-view keystrokes) must NOT go through this gate —
+  driving the menu is their whole purpose." The rebind writer is category two.
+  Working precedent is `ToolCard.tsx:466-473`, where `PlanApprovalButtons` sends
+  `DOWN.repeat(optionIndex) + '\r'` straight through `sendInput`.
 
 **Explicitly not attempted for AskUserQuestion.** CC's TUI for it is sequential
 (answer Q1, then Q2…), handles multi-select toggling, and per CC's own tool
@@ -172,10 +185,57 @@ answers" — affordances our card does not have. Replaying that blind is a state
 machine with a wrong-answer failure mode. AskUserQuestion's safety net is the
 banner from §2.
 
-### 4. Android parity
+### 4. Close the post-expiry stray-Enter hole
 
-Same four numbers. Android's relay asset is the worst value in the table today
-and must not be left behind.
+Pre-existing bug, reachable today, made far more visible by keeping the card
+alive. Every guard that protects the live Ink menu keys off state that goes
+FALSE at expiry, while the menu is still on screen:
+
+- `hasPendingPermission` (`hook-relay.ts:182-188`) is socket-based, so it flips
+  false the moment the socket closes. It gates the `/reload-plugins` broadcast
+  (`main.ts:178-181`, `session-manager.ts:264-271`) — that broadcast can now type
+  into a live menu.
+- `hasPendingInteraction` (`pty-input-gate.ts`) scans `activeTurnToolIds` for
+  `awaiting-approval`; the expired card becomes `'failed'`, so chat sends and the
+  `useSubmitConfirmation` retry `\r` are unblocked while the menu is live.
+
+This is precisely the class the 2026-07-09 stray-Enter fix exists to prevent
+(`pty-input-gate.ts`, `pty-worker.js:192-202`, `App.tsx:517-525`): a bare `\r`
+presses Enter on the highlighted option and silently auto-answers the prompt.
+
+Requirement: whatever state the rebound card takes must still count as pending
+for **both** gates, even though the rebind buttons themselves bypass them. The §2
+discriminator supplies the signal — menu present means still gated.
+
+### 5. Comment rewrites (not renumbering)
+
+Three comment sites assert the *opposite* of the new design or hardcode the old
+value. Changing constants without them leaves landmines:
+
+- **`relay-blocking.js:19-21`** — "Default 300s to match the Claude Code hook
+  timeout in settings.json. If the relay times out before Claude Code's hook
+  timeout, it exits with code 2 (deny), causing an auto-deny before the user can
+  respond." Both clauses now invert: the values are deliberately **not** matched,
+  and the relay firing first is the **desired** outcome. Rewrite to explain why
+  (relay-wins → clean exit-2 deny that unblocks; CC-wins → hook killed with no
+  decision → AskUserQuestion waits forever on its `never` default). Without this
+  a future session "fixes" the margin back to equal and restores the wedge.
+- **`EventBridge.kt:119,146`** — both hardcode "times out (120s)" in prose.
+- **`docs/blocking-relay-handoff.md:44`** — already stale and contradicts shipped
+  code today: claims "default 30s" and "relay exits 0 (**fail-open**)", but the
+  code is 300s and exit 2 (**fail-closed**). Fix-on-sight or mark historical.
+
+Preserved intentionally: **`exit 2` fail-closed on timeout stays.** Both relay
+headers document it (`relay-blocking.js:11`, `hook-relay-blocking.js:10`) and the
+new design depends on it — it is what makes relay-wins unblock the session.
+Android's "Connection error → exit 0 (fall through to terminal prompt)" also
+stays.
+
+### 6. Android parity
+
+Same four numbers, plus the in-place update fix from Constraints above. Android's
+relay asset is the worst value in the table today (120s) and must not be left
+behind.
 
 ## Testing
 
