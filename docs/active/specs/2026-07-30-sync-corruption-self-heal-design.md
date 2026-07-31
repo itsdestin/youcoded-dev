@@ -113,9 +113,11 @@ preserves only local commit granularity that no UI surfaces); always-nuke
 what is usually an eight-file cleanup).
 
 **Triggers:**
-- Boot probe in `addSpace`: one `rev-parse --verify HEAD` (~10 ms) before the
-  first sync, so a crash-corrupted repo heals before it can fail.
 - Op-time: engine catches a `repo-corrupt` throw from any sync operation.
+- Launch coverage rides the initial reconcile sync (`startEngine` syncs every
+  space at startup), so a corrupt repo heals in the first cycle — the separate
+  `addSpace` probe was folded away at plan time (same guarantee, less
+  machinery).
 
 **Guardrails:**
 - Runs inside the space's existing single-flight sync chain.
