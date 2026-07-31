@@ -147,11 +147,17 @@ Both test files were confirmed to FAIL with their fix removed.
   Reduced-Effects-gated) — converting to transform is a visual change.
 - Mascot/buddy keyframes animate inner SVG elements; only run for rig-shipping
   themes. Same steps() treatment would apply if they show up in measurements.
-- Three perpetual rAF loops that re-request every frame while mounted
-  (`BrailleSpinner.tsx:42` — though its *state* ticks at 12.5fps, the rAF
-  itself runs at refresh rate; `ThemeEffects.tsx:206` — 30fps-capped work but
-  full-rate rAF; `MascotRig.tsx:247`). Candidates for setInterval or
-  rAF-with-frame-skip if they appear in future measurements.
+- ~~Three perpetual rAF loops~~ **All three fixed 2026-07-30 (PR #275):**
+  `BrailleSpinner` → 40ms interval (was 180 wakeups/sec for 12.5fps work);
+  `ThemeEffects` → 33ms interval (was full-rate rAF for 30fps-capped drawing);
+  `MascotRig` → dual-rate driver — 33ms interval for idle sway (whose
+  continuous sinusoid meant the springs NEVER parked, i.e. rig themes were
+  presenting 180 frames/sec of ambient sway, the full ~29% cost), rAF only
+  while dragging, where cursor-tracking limb trail genuinely wants full rate.
+  dt-based spring physics makes the cadence handoff seamless. Guarded in
+  `animation-frame-budget.test.ts` (rAF in MascotRig must be the drag-gated
+  `rafTick`; the other two must not use rAF chains). Visual pass on a
+  rig/particle theme still owed — neither runs on meadow-mist.
 - Whether this machine's per-frame cost is inflated by the missing
   `DC_DISABLE_IPS` amdgpu flag (see memory: env-amdgpu-pageflip-timeout) —
   measurable by comparing after the kernel-param fix, or at 60Hz.
