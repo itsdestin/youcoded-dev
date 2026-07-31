@@ -48,6 +48,7 @@ const ROUTES = [
   ['app · refused', '&child=1&scenario=refused'],
   ['app · stress', '&child=1&scenario=stress'],
   ['tool gallery', '&child=1&view=tools'],
+  ['comparisons', '&child=1&view=compare'],
 ];
 
 const CHROME = ['google-chrome-stable', 'google-chrome', 'chromium', 'chromium-browser'];
