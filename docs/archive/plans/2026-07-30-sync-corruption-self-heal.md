@@ -1,7 +1,7 @@
 ---
-status: active
+status: shipped
 date: 2026-07-30
-spec: docs/active/specs/2026-07-30-sync-corruption-self-heal-design.md
+spec: docs/archive/specs/2026-07-30-sync-corruption-self-heal-design.md
 repo: youcoded (desktop only)
 branch: fix/sync-corruption-self-heal
 ---
@@ -1167,7 +1167,7 @@ git commit -m "fix(sync): self device row reads real sync evidence, not the lega
 **Files:**
 - Modify: `youcoded-dev/.claude/rules/sync-spaces.md` (workspace repo)
 - Modify: `youcoded/docs/sync-spaces.md` (depth doc, youcoded repo — commit rides the PR)
-- Modify: `youcoded-dev/docs/active/specs/2026-07-30-sync-corruption-self-heal-design.md` (record the boot-probe fold)
+- Modify: `youcoded-dev/docs/archive/specs/2026-07-30-sync-corruption-self-heal-design.md` (record the boot-probe fold)
 - Modify: `youcoded-dev/ROADMAP.md` (flip on merge)
 
 - [ ] **Step 1: Full verification**

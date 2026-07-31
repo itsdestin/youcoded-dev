@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-07-30
 owner: Destin
 repos: youcoded (desktop main process only — sync-spaces has no Android mirror pre-Phase-3)
