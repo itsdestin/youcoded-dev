@@ -42,6 +42,22 @@ verify:
   - test: youcoded/desktop/tests/rule-injection.test.ts
   - test: youcoded/desktop/tests/prefill-lifecycle.test.ts
   - test: youcoded/desktop/tests/archive-boundary.test.ts
+  - path: youcoded/desktop/src/main/harness/mcp/mcp-registry.ts
+    contains: "secretRef"
+  - path: youcoded/desktop/src/main/harness/mcp/mcp-client.ts
+    contains: "stderr: 'pipe'"
+  - path: youcoded/desktop/src/main/harness/mcp/mcp-manager.ts
+  - path: youcoded/desktop/src/main/harness/mcp/mcp-tools.ts
+    contains: "permissionSubject"
+  - path: youcoded/desktop/src/main/mcp-reconciler.ts
+    contains: "_youcodedOwnedMcpServers"
+  - test: youcoded/desktop/tests/mcp-registry.test.ts
+  - test: youcoded/desktop/tests/mcp-client.test.ts
+  - test: youcoded/desktop/tests/mcp-manager.test.ts
+  - test: youcoded/desktop/tests/mcp-tools.test.ts
+  - test: youcoded/desktop/tests/mcp-gating.test.ts
+  - test: youcoded/desktop/tests/mcp-projection.test.ts
+  - test: youcoded/desktop/tests/mcp-startup-wiring.test.ts
 ---
 
 # Multi-model native runtime (provider seam + native chat sessions)
@@ -113,3 +129,11 @@ Branch guards: `skill-catalog.test.ts`, `skill-tool.test.ts`, `skill-tool-gating
 - **`Skill` is CONDITIONAL and deliberately absent from `NATIVE_TOOL_NAMES`** — attached per session only when the profile affords its catalog and skills exist; re-synced on `setBinding`. `/skill-name` works on every model. · Advertising it statically tells the model about a tool it may not have. · Guards: `tool-registry-manifest.test.ts`, `skill-tool-gating.test.ts`.
 - **A rule with no `paths:` is SKIPPED, never global** — an eager rule rides every turn, the exact cost item 5 exists to control. · Guard: `path-triggers.test.ts`.
 - **`native:*` four-surface parity is only NOW pinned** — `ipc-channels.test.ts` covers shim/Android per-PREFIX and had no `native:*` block until 2026-07-28, so a channel missing from `remote-shim.ts` or `SessionService.kt` passed silently. · Guard: `ipc-channels.test.ts` → "native:* channel parity".
+
+## MCP in native sessions (M3 item 4, phase 1) — guards: `mcp-registry.test.ts`, `mcp-client.test.ts`, `mcp-manager.test.ts`, `mcp-tools.test.ts`, `mcp-gating.test.ts`, `mcp-projection.test.ts`, `mcp-startup-wiring.test.ts`. Depth: `youcoded/docs/native-runtime.md` → "MCP in native sessions".
+- **MCP secret plaintext NEVER enters `~/.youcoded/mcp.json`** — only a `secretRef` pointer does; plaintext lives in `SecretsStore` (safeStorage, machine-bound), same split as `providers.json`. · Why: a synced ciphertext is unrecoverable on a second device. · Guard: `mcp-registry.test.ts`.
+- **Attachment is WHOLE-SERVER, in registry order, dropping from the END** — never a partial tool set for one server. · Why: a model can't reason about tools it can't see all of. · Guard: `mcp-gating.test.ts`.
+- **Grants are PER-TOOL (`mcp__{server}__{tool}`), not per-server** — `permissionSubject` returns `undefined` so "always allow" grants exactly one namespaced tool. · Why: a server update can add a destructive tool with no revocation UI until M5 item 3; a per-server grant would silently cover it too. · Guard: `mcp-tools.test.ts`.
+- **`stderr: 'pipe'` on the stdio transport is LOAD-BEARING** — the SDK defaults to `'inherit'`, which would route a failing server's only explanation into the app's own stderr, unreachable by the user. · Guard: `mcp-client.test.ts`.
+- **A server's own tool annotations (`readOnlyHint`, `destructiveHint`) are IGNORED** — a server is not a trusted authority about its own danger. · Guard: `mcp-tools.test.ts`.
+- **Projection into `~/.claude.json` NEVER overwrites an entry it doesn't own** — ownership is a TOP-LEVEL `_youcodedOwnedMcpServers: string[]` key, not a per-entry marker (CC's tolerance for unknown per-entry keys is unverified). A colliding unowned id is SKIPPED and named in `skippedCollisions`, never adopted. · Guard: `mcp-projection.test.ts`.

@@ -13,6 +13,7 @@ design-refs:
   - docs/active/specs/2026-07-09-platform-vision-roadmap.md
   - docs/active/plans/2026-07-18-multi-model-cwd-contract.md
   - docs/active/plans/2026-07-16-phase2-plan-c-local-reliability.md
+  - docs/active/specs/2026-07-30-native-mcp-design.md
 ---
 
 # Native Runtime Parity Program
@@ -53,7 +54,10 @@ browse, takeover; **Plan C local reliability + M3 items 1/2/3/5** (#268, merge `
   state and a provider-specific tunable.
 
 **Still absent, verified 2026-07-29:**
-- **MCP in native sessions** (M3 item 4) — nothing in `src/main/harness/` speaks MCP.
+- **MCP in native sessions** (M3 item 4) — nothing in `src/main/harness/` speaks MCP on
+  master. **Since superseded on-branch:** phase 1 (registry, client, connection manager, tool
+  adapter, budget gating, `~/.claude.json` projection) is implemented on
+  `feat/native-mcp-phase1` (Tasks 1–7b), not yet merged — see §4 item 4.
 - **Native stuck detection** — `useAttentionClassifier` is still xterm-buffer-only, so it
   cannot see a native session (M4 item 3).
 - **Cost chip for native** — `StatusBar`'s cost chip reads `sessionStats.costUsd`, which only
@@ -112,7 +116,7 @@ Desktop-only, and **satisfies the v1.3.0 gate** (Destin 2026-07-22: sync must be
 
 **Residue (carried to ROADMAP, dated 2026-07-23):** remote WS set-tag/set-note don't broadcast `SESSION_META_CHANGED` on success (remote clients go stale); no `quiescing` refuse-flag, so a send landing in `quiesce()`'s one-macrotask window still runs one full uninterrupted turn before handoff; the `SESSION_CREATE` native-resume split-refusal branch has no direct test (the new `session-meta-parity.test.ts` harness now makes one possible); the takeover holder can't detect lease loss while the SyncHub is down, and same-machine hub-less handoff has no file-signal path (both filed 2026-07-23, pre-existing this milestone); Android `lastUsedModel` passthrough is structurally N/A until Android reads the Conversation Store (M8).
 
-## §4 Milestone M3 — Context, skills & commands (the ecosystem works in native) — **items 1, 2, 3, 5 SHIPPED 2026-07-29 (youcoded PR #268, merge `12f71d07`); item 4 (MCP) NOT STARTED**
+## §4 Milestone M3 — Context, skills & commands (the ecosystem works in native) — **items 1, 2, 3, 5 SHIPPED 2026-07-29 (youcoded PR #268, merge `12f71d07`); item 4 (MCP) phase 1 CODE-COMPLETE on branch `feat/native-mcp-phase1` (Tasks 1–7b), not yet merged**
 
 **Shipped in that PR, alongside Plan C (which had to land first — item 5 needs a real `CapabilityProfile` to gate on, so this also closes §7 item 1's "decide the branch's fate"):**
 1. **Skill tool + surfaces** — a model-invoked `Skill` tool, `/skill-name` on every model, and the three UI surfaces that were silently dead in native sessions (drawer, skill-prompt, ThemeScreen's "Build New Theme with Claude"). `Skill` is deliberately a `CONDITIONAL_TOOL_NAME`, NOT in `NATIVE_TOOL_NAMES`: its catalog rides the schema every turn, so it attaches only when the profile can afford it — advertising it statically is what the registry↔manifest guard exists to prevent.
@@ -120,7 +124,43 @@ Desktop-only, and **satisfies the v1.3.0 gate** (Destin 2026-07-22: sync must be
 3. **Path-scoped rules + nested project instructions** — one mechanism, not two: content discovered from a path, delivered as a message, bounded by the profile. Root `AGENTS.md`/`CLAUDE.md` stays in the byte-stable prompt.
 5. **Capability-gated injection** — `exposeSkillCatalog` + `injectionBudgetTokens` derived from the REAL window, with a capability conjunction (a Qwen 2B at `-c 128000` has room but is not fit to choose skills autonomously).
 
-**Item 4 (MCP) remains open and is the only thing between here and M3 complete.** Deliberately deferred: it is greenfield and wants its own design pass resolving config source, transport order, tool namespacing, and permission-subject mapping.
+**Item 4 (MCP) phase 1 is implemented on `feat/native-mcp-phase1`** (design:
+`docs/active/specs/2026-07-30-native-mcp-design.md`; 9 tasks, Tasks 1–7b, not yet merged):
+registry store (`~/.youcoded/mcp.json`, `secretRef` split from `SecretsStore` — same pattern
+as `providers.json`), a single-server client (stdio + streamable HTTP), a refcounted
+connection manager pooling one live connection per server across sessions, a per-tool
+`mcp__{server}__{tool}` adapter (permission subject `undefined` — grants are per-tool, never
+per-server; server-declared `readOnlyHint`/`destructiveHint` annotations are ignored as
+untrusted), whole-server budget-gated session wiring (registry order, drops from the end,
+`droppedMcpServers` records ids), and ownership-scoped projection into `~/.claude.json` (a
+top-level `_youcodedOwnedMcpServers: string[]` marker — not a per-entry flag, since Claude
+Code's tolerance for an unknown per-entry key is unverified — and a collision guard that skips
+rather than overwrites an id it doesn't own, reporting it via `skippedCollisions`).
+
+**Deliberately deferred to phase 2, contrary to this plan's own §4 item 4 wording above:** the
+plugin-manifest scan (`mcp-reconciler.ts`'s pre-existing `~/.claude/plugins/*/mcp-manifest.json`
+walk) was **not** migrated to feed the registry — no production registry-write path exists yet,
+and the manifest schema (`platform`, `auto`, `command_windows`, `{{plugin_root}}` template
+expansion) has no lossless registry equivalent (see `task-7-report.md`). **Consequence stated
+plainly: a marketplace-installed MCP server is visible to Claude Code sessions today but NOT to
+native sessions** — the "works in both by default" goal is not yet met for that path. Also
+phase 2: the adopt flow for a hand-written/manifest-owned collision, the settings surface to
+add/remove/enable/test servers, and full `mcp:*` IPC parity (phase 1 adds no `mcp:*` channel —
+the registry is read in the main process and nothing crosses to the renderer, so
+`ipc-channels.test.ts` has no new row to pin). Phase 1 is developer-operable only: configured
+by hand-editing `~/.youcoded/mcp.json`, no settings UI, no adopt flow.
+
+**A leaked-subprocess gap, app-wide and pre-existing, not introduced by this work:**
+`McpManager.destroyAll()` is reachable only via `NativeSessionHost.destroyAll()`, called from
+the app's `window-all-closed` handler — the only quit path it rides. macOS Cmd+Q, dock quit,
+and OS SIGTERM bypass that handler and leak the MCP subprocess. `sessionManager.destroyAll()`
+and `hookRelay.stop()` ride the identical single hook, so this is not a new hole; it is the
+existing ROADMAP-logged quit-hook bug applying to one more subsystem.
+
+**Not yet run: the pre-merge dogfood pass** the task brief requires (a real stdio server, a
+tool call on a capable model, the permission prompt + always-allow scope, a capable→small-model
+mid-session switch, a bad-command spawn failure, and confirming the same server projects into a
+Claude Code session) — due before this branch merges.
 
 **M3 residue — found during implementation/audit, NOT fixed, no owner yet.** All verified in code on 2026-07-28/29; none block the merge, and none are captured anywhere else:
 
@@ -140,7 +180,7 @@ Design constraints already settled (former "context management" entry + Phase 2 
 1. **Skill tool + skill surfaces.** A `Skill` tool loads skill instructions as messages; the command/skill drawer and ThemeScreen's `/theme-builder` entry point (`ThemeScreen.tsx:234`) invoke it for native sessions. This is what makes the drawer/theme surfaces real — no toast shims (Destin 2026-07-22).
 2. **Native slash commands: `/clear` and `/compact` first.** They are context operations — reset, and summarize-then-reset, the message history under the byte-stable prompt. Wire the existing reducer actions (`CLEAR_TIMELINE`, `COMPACTION_PENDING`) to real harness operations.
 3. **Path-scoped rules + nested CLAUDE.md.** A path-matcher in the tool loop injects a rule message after a tool touches a matching path (`.claude/rules/*.md` `paths:`); nested/subdirectory CLAUDE.md discovery. Already in: root-walk AGENTS.md/CLAUDE.md snapshot (`prompt-assembly.ts`).
-4. **MCP in native sessions.** Unscoped — design in the M3 plan doc, resolving at minimum: config source (reuse projects' `.mcp.json` + app settings, don't invent a new registry), transport order (stdio first, SSE/HTTP later), tool namespacing (CC's `mcp__server__tool` convention so names can't collide with the native tools), and how MCP tools map to permission-engine subjects.
+4. ~~**MCP in native sessions.** Unscoped — design in the M3 plan doc...~~ **Design done, phase 1 implemented** — see §4 item 4 above for what shipped on `feat/native-mcp-phase1` and what's deferred to phase 2. Original text kept for history: design in the M3 plan doc, resolving at minimum: config source (reuse projects' `.mcp.json` + app settings, don't invent a new registry), transport order (stdio first, SSE/HTTP later), tool namespacing (CC's `mcp__server__tool` convention so names can't collide with the native tools), and how MCP tools map to permission-engine subjects.
 5. **Capability-gated injection.** A 600-word rule can blow a small model's window — injection must scale with the capability profile (soft dependency on M6's tiering; current profiles suffice to start).
 Design M3 together with the vision Phase 3 items that share this surface — the custom harness builder, the `~/.youcoded` conventions migration, mid-session preset switching — but those ship under the vision phase, not this parity program (see §1.5).
 
@@ -180,8 +220,8 @@ Design M3 together with the vision Phase 3 items that share this surface — the
 
 ## §9 Sequencing, dependencies, release mapping
 
-- **Near-term tranche M1 → M2 → M3 is COMPLETE except MCP.** M1 (#204, 2026-07-22), M2 (#212, 2026-07-23), M3 items 1/2/3/5 (#268, 2026-07-29). M2 satisfies the v1.3.0 gate (Destin 2026-07-22 — sync finished before versioning; Android sync is the separate v1.3.1 stream); its beta two-device dogfood closed 2026-07-30.
-- **M3 item 4 (MCP) is the only open piece of the near-term tranche.** It needs its own plan doc resolving config source, transport order, tool namespacing and permission-subject mapping. Sequencing note that changed: M3's capability-gated injection did NOT need to wait for M6 item 3's tiers — Plan C's profile was sufficient, and it landed with M3 in the same PR.
+- **Near-term tranche M1 → M2 → M3 is COMPLETE except MCP's merge + dogfood.** M1 (#204, 2026-07-22), M2 (#212, 2026-07-23), M3 items 1/2/3/5 (#268, 2026-07-29), M3 item 4 phase 1 code-complete on `feat/native-mcp-phase1` (unmerged). M2 satisfies the v1.3.0 gate (Destin 2026-07-22 — sync finished before versioning; Android sync is the separate v1.3.1 stream); its beta two-device dogfood closed 2026-07-30.
+- **M3 item 4 (MCP) phase 1 is code-complete on `feat/native-mcp-phase1`, not yet merged — it is the only open piece of the near-term tranche.** What remains after merge is phase 2 (adopt flow, settings UI, plugin-manifest→registry migration, full `mcp:*` IPC parity) plus the pre-merge dogfood pass (see §4 item 4). Sequencing note that changed: M3's capability-gated injection did NOT need to wait for M6 item 3's tiers — Plan C's profile was sufficient, and it landed with M3 in the same PR.
 - **The M1–M3 side-by-side dogfood (see "program definition of done" below) has NOT been run.** It is due now that the tranche is otherwise complete, and it is the honest gate on calling this tranche done rather than "merged".
 - **M4** anytime after M1 (item 2 also needs M6 item 2's pricing). **Read §5 items 1 and 4 before planning M4** — #268 made item 1's prescription actively wrong and completed most of item 4, so M4's real scope is smaller than its item count suggests. **M5** items 1+3 anytime; item 2 strictly after 3. **M6 item 3 is now the most urgent thing in M6** — its 20k-character instruction cap is cutting this workspace's own `CLAUDE.md` (20,295 chars) mid-file today and eating ~5k tokens of every native prompt here; Destin escalated it 2026-07-28 from "scale the number" to "the mechanism is wrong".
 - **M7** after M3 (skills/MCP shape the subagent context model); orchestration strictly after Task tool. **M8** last among the feature milestones; **M9** independent, whenever onboarding is picked up.
