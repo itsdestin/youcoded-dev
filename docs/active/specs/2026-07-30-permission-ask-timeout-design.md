@@ -35,6 +35,35 @@ repos: [youcoded]
 > All five are corrected below. One product decision is now surfaced rather than
 > implied: a 24h tier-1 hold blocks chat input for that session for 24h
 > (§1b) — that number needs Destin's call.
+>
+> **Revision note 3 (2026-07-30, third review — four-way independent
+> verification against `5a787879` and the CC binary).** The diagnosis,
+> §Constraints, and the §2c/§2d inventories all held. What changed:
+> 1. **§Open is resolved.** The CC binary confirms a `PermissionRequest` deny
+>    on AskUserQuestion releases the turn — no re-prompt. See §Open for the
+>    decompiled path. The design no longer rests on an unverified assumption,
+>    and tier 1's deny now carries an explanatory `message` (§1).
+> 2. §Mechanism 1's timer-arming detail was still wrong (the relay timer is an
+>    *idle* timer armed *before* pipe connect). Conclusion unchanged.
+> 3. The §2 "menu gone?" discriminator was a one-shot parse racing the
+>    terminal buffer in both directions (false retain *and* false resolve). It
+>    is now a standing rule in the detector's flush cycle.
+> 4. §3 never said how a successfully rebound card resolves — nothing would
+>    have, until `endTurn()` stamped it `'failed'`. Resolution now rides the
+>    §2 standing rule.
+> 5. §1a restored less of the dead-man switch than it claimed (one case of
+>    four), and its Android half named a class (`SessionService`) that neither
+>    tracks sessions nor is reachable from `EventBridge`. Rewritten; Android
+>    needs no gate at all.
+> 6. §1b's "no in-app way out" was false — `InputBar` has a `force` "Send
+>    anyway" bypass, which is itself a §4 stray-input hazard. Now handled.
+> 7. §2a's 47-hit count silently summed to 35; the missing live consumer
+>    (`fixture-loader.ts`, the workbench fake backend) joins §2b as a fifth.
+> 8. §5 grows from four sites to five (`test-blocking-relay.js` pins the old
+>    fail-open contract) and the handoff-doc bullet now lists all three of its
+>    contradictions. One incidental **live bug** found and filed to ROADMAP:
+>    `PlanApprovalButtons` sends arrows+`\r` in one write — the exact shape
+>    `ink-select-parser.ts:345-351` measured as broken on CC 2.1.220.
 
 ## Problem
 
@@ -50,10 +79,11 @@ despite claude still waiting on my input/response to a permission prompt."
    with `timeout: 300` (seconds). `desktop/hook-scripts/relay-blocking.js:22`
    defaults to `300000` ms. **These are not a race — CC wins deterministically.**
    CC starts its timer when it spawns the hook process; the relay's timer is
-   `client.setTimeout(TIMEOUT_MS)` at `relay-blocking.js:69`, which is not armed
-   until node has booted, drained stdin, and connected to the pipe — several
-   hundred ms later. Equal nominal values with a strictly later start means the
-   relay always loses, so the exit-2 auto-deny branch effectively never fires
+   `client.setTimeout(TIMEOUT_MS)` at `relay-blocking.js:69` — an **idle**
+   timer, armed in the stdin-`'end'` handler in the same tick as
+   `createConnection` (i.e. after node boot and stdin drain but *before* the
+   pipe connects; the second draft got the connect part wrong). Equal nominal
+   values with a strictly later start means the relay always loses, so the exit-2 auto-deny branch effectively never fires
    today. (The first draft attributed the inconsistent presentation to a race.
    That explanation is wrong; the true cause of any run-to-run variation is
    unknown and is **not** load-bearing for this design.)
@@ -101,7 +131,10 @@ Three factors stack to make this the tool that actually bites:
   never auto-approves AskUserQuestion (`toolName !== 'AskUserQuestion'`), while
   everything else under `--dangerously-skip-permissions` is handled natively by
   CC. For a user who lives in bypass mode it is the only prompt still routed to
-  chat.
+  chat. (Code nuance: the comment at `main.ts:873-882` frames that block as
+  bypass-only, but it actually runs for **every** `PermissionRequest`
+  regardless of `permissionMode` — the product claim holds; the comment
+  oversells the gate.)
 - **It takes longest to answer** — 1-4 questions, some multi-select. 300s is
   tight for a real question and generous for a Yes/No.
 - **It is the only one where expiry is unrecoverable.** An expired permission ask
@@ -144,7 +177,7 @@ beyond injecting `_desktop_session_id` (`relay-blocking.js:27-35` — there is n
 `HookRelay` has the parsed payload and can branch there. Not needed here —
 noted so a future session does not rediscover it.
 
-**Existing desktop installs need no migration.** `main.ts:1288-1306` `require()`s
+**Existing desktop installs need no migration.** `main.ts:1288-1312` `require()`s
 `install-hooks.js` on every launch of the built app (skipped when
 `YOUCODED_PROFILE` is set, i.e. dev instances). `resolveHookDir()`
 (`install-hooks.js:42`) unconditionally `fs.cpSync`s `hook-scripts/` into
@@ -220,7 +253,12 @@ Why the ordering matters, in one sentence per tier:
   `appDecision.decision` and re-wraps it as `hookSpecificOutput.decision`, so a
   flat `{ behavior: 'deny' }` ships `decision: undefined`. Every real caller
   uses the nested form (`main.ts:894, 900, 906`) and
-  `tests/hook-relay.test.ts:86` pins it.
+  `tests/hook-relay.test.ts:109` pins it. **Send a `message` with the deny:**
+  CC puts the hook's `message` verbatim into the denied tool result (verified
+  in the binary — the fallback is a bare "Permission denied by hook"), so tier
+  1 should say what happened, e.g. "YouCoded auto-denied after 2h with no
+  response — ask again if still needed." The model then knows to re-raise
+  later instead of reading it as a refusal.
 - **Tier 2 (relay) covers "app alive but hung"** — the only case where the
   socket stays open with nobody minding it. It exits 2 (fail-closed deny), which
   also unblocks.
@@ -234,7 +272,11 @@ If the app process dies, the socket closes on its own and the relay exits 0
 is needed for that case.
 
 Carry a WHY comment at each site. The margins are invisible otherwise and a
-future session will "tidy" them back to equal — which restores the wedge.
+future session will "tidy" them back to equal — which restores the wedge. One
+more WHY at the tier-1 timer itself: main-process `setTimeout` does not
+advance while the machine is suspended, so a 2h hold can stretch well past 2h
+of wall-clock on a laptop that slept. Expected and harmless — comment it so
+the drift isn't misread as a bug.
 
 ### 1a. Undelivered asks must not hold for 24 hours
 
@@ -250,7 +292,27 @@ routability gate wired to `SessionManager`, mirroring the existing
 `setReloadPluginsGate` pattern (`main.ts:181`, `session-manager.ts:274-276`). If
 the incoming `sessionId` does not correspond to a live session at the moment the
 request arrives, the hold is capped at **60s** instead of 24h; on expiry the app
-responds deny as in tier 1. Same gate on Android, wired to `SessionService`.
+responds deny as in tier 1.
+
+**Be honest about what this restores: one case of four.** An arrival-time
+liveness check catches only the unmatched-session-id case. The other three —
+renderer crash *after* arrival, a session alive in `SessionManager` with no
+window rendering it, remote client gone — still hold for the full tier-1
+duration with no visible card. Accepted deliberately: a true "can any surface
+render this card right now" oracle doesn't exist in the main process and isn't
+worth building; the shortened tier-1 magnitude (§1b), the §1b dismiss control,
+terminal view, and the tier-2 backstop all bound the damage. Stated here so
+the residual isn't rediscovered as a regression.
+
+**Android needs no gate at all.** The first two drafts said "same gate, wired
+to `SessionService`" — wrong twice: `SessionService` doesn't track sessions
+(`SessionRegistry` does), and `EventBridge` is constructed with only a socket
+path (`PtyBridge.kt:109`), so it has a handle to neither and wiring one would
+be new dependency work. None is needed: EventBridge is per-session, one per
+`PtyBridge` (`EventBridge.kt:216-217`: "EventBridge is per-session … so no
+session filter is needed"), so an ask arriving on a session's own socket is
+routable by construction. The unmatched-id case is structurally impossible on
+Android; only the tier-1 hold timer (§6) is new work there.
 
 ### 1b. ⚠ Decision needed: a 24h hold blocks chat input for 24h
 
@@ -263,8 +325,11 @@ the card `awaiting-approval` past expiry, so the block persists.
 The only automatic release is `endTurn()` (`chat-reducer.ts:171-181`), which
 flips `awaiting-approval` → `'failed'`. It cannot fire while CC is blocked on
 the hook — that is the wedge. So a user who walks away from an ask returns to a
-session they cannot type into, with no in-app way out except answering the card
-or switching to terminal view.
+session where typing is refused. The refusal is not absolute —
+`InputBar.tsx:338` keeps a `force` path ("Send anyway" after one refusal) that
+skips the gate entirely — but that bypass writes straight into the live Ink
+menu, the exact §4 stray-input class, and a longer hold makes it more tempting
+at the moment it is most destructive. §4 has the required copy change.
 
 §4 discusses the `/reload-plugins` fallout of the longer hold but not this,
 which is the larger one. Two things close it; **the first needs Destin's call**:
@@ -298,7 +363,7 @@ tag in the close handler" reads an entry that is already gone: `respond()`
 `pendingSockets.delete(requestId)` **synchronously**, while `'close'` fires on a
 later tick — and the handler's `const wasOpen = this.pendingSockets.delete(...)`
 guard (`:69-72`) then swallows the emit. Consequence today: an app-initiated
-close emits **no `permission-expired` at all**. (`tests/hook-relay.test.ts:80-96`
+close emits **no `permission-expired` at all**. (`tests/hook-relay.test.ts:86-112`
 matches — it asserts `respond()` clears `hasPendingPermission`, and never
 asserts an emit.) A tier-1 deny built on the close handler would therefore leave
 the card `awaiting-approval` with a dead `requestId` forever — the wedge,
@@ -311,16 +376,38 @@ relocated.
 `'hook-closed'` — it is now reachable only when the far end went away first,
 which is exactly the discrimination §2 wants. No tagging, no new map field.
 
+The reasons, and the only one that retains the card:
+
 - `'app-timeout'` — tier 1 fired; a deny was delivered and CC is about to tear
   its menu down. **Do not rebind** (see the race in §3). Resolve the card as
   denied, with accurate copy.
 - `'unroutable'` — the §1a 60s cap fired. Same handling as `'app-timeout'`.
+- `'delivery-failed'` — a renderer button couldn't reach the socket (§2c).
+  Resolve. Never retain: the socket is provably gone.
+- *absent* — native broker cancel, or any producer that predates this field
+  (§2d). Resolve, per the §2c default.
 - `'hook-closed'` — the far end went away (CC killed the hook, relay died,
-  relay's own tier-2 timeout). The menu may still be live; discriminate:
-  - **Menu gone** (`parseInkSelect` over the buffer returns nothing) → the user
-    answered in the terminal. Clear the card quietly as resolved. No error text.
-  - **Menu still up** → genuine dead hook. Keep the card per §2a and rebind per
-    §3.
+  relay's own tier-2 timeout). The menu may still be live; discriminate — but
+  **not with a one-shot parse at the action.** A point-in-time buffer read
+  races the terminal in both directions: a user answering in the terminal can
+  produce a socket close that lands *before* the buffer flush that removes the
+  menu (false retain — the card would later be stamped `'failed'` by
+  `endTurn()` despite a successful answer); and when CC kills the hook, its
+  own fallback TUI menu renders a beat *after* the close (false resolve — the
+  red dot clears while the session is blocked on a menu chat view will never
+  render, since `SETUP_PROMPT_TITLES` refuses permission menus — the reported
+  symptom, rebuilt). So:
+  - The reducer retains **provisionally** on `'hook-closed'`: the card keeps
+    `awaiting-approval` and gains `expired: true` (§2a). No buffer read in the
+    reducer.
+  - The verdict is a **standing rule in `usePromptDetector`'s flush cycle**
+    (which the §2b bail fix keeps running): menu present at a flush → stay
+    retained, §3 rebind eligible; menu absent for **two consecutive flushes**
+    → dispatch the quiet resolve. No error text.
+  - The same standing rule upgrades a late terminal answer for free: user
+    answers *after* retention → menu leaves the buffer → the card resolves at
+    the next flushes instead of waiting for `endTurn()` to mislabel it
+    `'failed'`.
 
 `usePromptDetector` already polls the buffer via `getVisibleScreenText` /
 `onBufferReady` and is mounted once at app level (`App.tsx:475`), iterating all
@@ -352,7 +439,7 @@ Required change: make that bail skip cards flagged `expired` —
 of the original guard ("the hook UI owns this menu, don't double-render a
 PromptCard") still holds for live asks and no longer holds for a dead one.
 
-Related, same file: `usePromptDetector.ts:80-96` arms its 800ms
+Related, same file: `usePromptDetector.ts:78-95` arms its 800ms
 `POST_PERMISSION_COOLDOWN_MS` on the `awaiting → not-awaiting` transition, which
 §2a stops firing on expiry. Harmless (the cooldown exists to suppress redraw
 churn after a *successful* response) but it means the `expired` flag, not the
@@ -369,11 +456,15 @@ keep `status: 'awaiting-approval'`, clear `requestId`, and set a new optional
 
 One field change buys four behaviours **with no edits to any of the four
 gates below** — but it is not free elsewhere. `rg -n "awaiting-approval"
-src/renderer/` returns 47 hits: 12 across 5 component files
-(`ToolCard`, `CompactToolStrip`, `AssistantTurnBubble`, `BubbleFeed`,
-`ChatView`), plus `usePromptDetector` (7), `chat-reducer` (9),
-`useSessionAttention` (3), `pty-input-gate` (3), `useAnyAttentionNeeded` (1).
-The four wins are real; the required edits are inventoried in §2b.
+src/renderer/` returns 47 hits: **35 in shipping code** — 12 across 5
+component files (`ToolCard`, `CompactToolStrip`, `AssistantTurnBubble`,
+`BubbleFeed`, `ChatView`), plus `usePromptDetector` (7), `chat-reducer` (9),
+`useSessionAttention` (3), `pty-input-gate` (3), `useAnyAttentionNeeded` (1) —
+plus 10 across two test suites and **2 in
+`renderer/dev/workbench/fixture-loader.ts`, the workbench's live fake backend,
+which the first two drafts' inventory missed** (it dispatches
+`PERMISSION_REQUEST` at `fixture-loader.ts:143`). The four wins are real; the
+required edits are inventoried in §2b.
 
 The four behaviours that come for free:
 
@@ -395,7 +486,7 @@ count as pending for both gates" — without touching either gate.
 
 ### 2b. Consumers that DO need edits
 
-Four, none optional:
+Five — four load-bearing, one for the workbench flow:
 
 - **`usePromptDetector.ts:101-108`** — the buffer-parse bail. See §2; without
   this edit §2 and §3 do not function at all.
@@ -411,6 +502,12 @@ Four, none optional:
   stays pinned to the bottom of the chat and out of its turn group for the life
   of the turn. That is arguably the right presentation for something still
   needing an answer — decide deliberately rather than discover it.
+- **`renderer/dev/workbench/fixture-loader.ts`** — the workbench's fake
+  backend dispatches `PERMISSION_REQUEST` (`:143`) and needs an expired-card
+  scenario, so the §2a/§3 card states can be built and reviewed in the
+  workbench before the backend lands (which is where new feature UI is built).
+  Run `node scripts/workbench-boot-check.mjs` after touching it, per the
+  workbench rule.
 
 `useAnyAttentionNeeded.ts` (the tray/badge "any session needs you" aggregate) is
 fed by the renderer's own `ATTENTION_REPORT`, which derives from
@@ -437,7 +534,11 @@ All three must pass `reason: 'delivery-failed'`, which the reducer resolves the
 same way as `'app-timeout'`: card resolved, no retention, no rebind. The
 `reason` field therefore has to exist on the `PERMISSION_EXPIRED` *action*
 (`chat-types.ts:460`), not just on the main-process event — and it must be
-optional, so a remote client on an older shim still deserializes.
+optional, so a remote client on an older shim still deserializes. The same
+dispatches also mirror to remote clients via `claude?.remote?.broadcastAction`
+(both `ToolCard` and `CompactToolStrip` do this on every respond/expire path)
+— an optional field rides that serialization unchanged, which is the second
+reason `reason` must be optional rather than required.
 
 **Default when `reason` is absent: resolve, do not retain.** Retention is the
 new, riskier behaviour; it should require an explicit opt-in from a producer
@@ -516,6 +617,15 @@ Three hard rules:
   `menuToButtons` returns `input` and `submitInput` as distinct fields). Use the
   `input`/`submitInput` split.
 
+**Resolution after a rebind click comes from §2's standing rule, not the
+click.** Nothing else can resolve the card: no `PERMISSION_RESPONSE` will ever
+arrive (the socket is gone), and `endTurn()` would stamp a successfully
+answered card `'failed'` ("Turn ended") — an error on the happy path. The
+click writes the digits and disables the buttons; when CC confirms and the
+menu leaves the buffer, §2's two-flush absence rule resolves the card quietly.
+If the write didn't land, the menu stays, the card stays, and the buttons
+re-arm after a short cooldown — with §1b's dismiss as the manual out.
+
 **Why `'app-timeout'` must not rebind.** When tier 1 fires, the app has just
 sent a deny; CC has not yet processed it, so the Ink menu is still on screen at
 the instant `PERMISSION_EXPIRED` is dispatched. A buffer-only discriminator
@@ -549,7 +659,7 @@ edits needed.
 
 The `/reload-plugins` path needs no code change either, but its behaviour
 changes and should be documented: `sendReloadWhenClear` retries at most
-`RELAY_MAX_RETRIES = 24` × 5s ≈ 2 minutes and then **gives up silently**
+`RELOAD_MAX_RETRIES = 24` × 5s ≈ 2 minutes and then **gives up silently**
 (`session-manager.ts:278-279, 300-305`). With a 24h hold, a broadcast issued
 while a session sits on an unanswered prompt will always be dropped rather than
 delayed. Accepted: installing a plugin will not reload it in a session that is
@@ -560,9 +670,18 @@ cap to cover 24h — that would resurrect the stray-Enter write.
 only reachable in the ~2-minute window immediately preceding an expiry, and §2a
 plus the tier-1 deny make it narrower still. Not a blocker.)
 
+A third stray-input surface, pre-existing: `InputBar.tsx:338`'s `force` resend
+("Send anyway" after one refusal) skips the gate by design. §2a keeps the gate
+refusing for the whole hold, which makes that bypass the path of least
+resistance for a stuck-feeling user. Required change is copy, not mechanism:
+when the blocker is a permission/question card, the first refusal must name
+the card (and, once it exists, the §1b dismiss control) instead of a generic
+"blocked" message. The force path itself stays — it is the user's final
+override, and terminal view grants the same power anyway.
+
 ### 5. Comment and doc rewrites
 
-Four sites assert the opposite of the new design or hardcode a stale value.
+Five sites assert the opposite of the new design or hardcode a stale value.
 Changing constants without them leaves landmines:
 
 - **`relay-blocking.js:19-21`** — "Default 300s to match the Claude Code hook
@@ -578,10 +697,19 @@ Changing constants without them leaves landmines:
   it or generalize it; the first draft listed the wrong pair of lines.)
 - **`HookEvent.kt:60`** — hardcodes "timed out (120s)". Missed by the first
   draft; it is the second of the two Android prose sites that carry the number.
-- **`desktop/docs/blocking-relay-handoff.md:44`** — already stale and
-  contradicts shipped code today: claims "default 30s" and "relay exits 0
-  (**fail-open**)", but the code is 300s and exit 2 (**fail-closed**). Fix on
-  sight (workspace rule: docs contradicting code get fixed in the same session).
+- **`desktop/docs/blocking-relay-handoff.md`** — already stale and contradicts
+  shipped code today, in three places: `:44` claims "default 30s" and "relay
+  exits 0 (**fail-open**)" (code: 300s, exit 2 **fail-closed**); `:123` says
+  the protocol "must fail-open (exit 0) on timeout"; and its deny-path
+  description claims a parsed deny exits 2 (code exits 0 on any parsed
+  decision — 2 is the timeout path only). `:50` also points at
+  `scripts/test-blocking-relay.js`; the file lives in `docs/`. Fix on sight
+  (workspace rule: docs contradicting code get fixed in the same session).
+- **`desktop/docs/test-blocking-relay.js:144`** — missed by both earlier
+  drafts: the case labeled "Timeout (server holds, relay fails open)" asserts
+  `expectedCode: 0`, pinning the *old* fail-open contract. It already
+  contradicts the shipped `exit(2)` and must flip to expect exit 2 under the
+  new constant — otherwise the harness re-documents the wrong invariant.
 
 Preserved intentionally: **`exit 2` fail-closed on the relay timeout stays.**
 Both relay headers document it (`relay-blocking.js:11`,
@@ -592,10 +720,32 @@ terminal-only sessions and post-app-quit hooks resolve instantly.
 ### 6. Android parity
 
 Android needs, in this order: the `Bootstrap` find-and-replace fix
-(prerequisite), the two numbers, the tier-1 hold timer + routability cap in
-`EventBridge`, and the `reason` tag on `PermissionExpired`. The React layer is
-shared, so §2a/§3 come for free once `PermissionExpired` carries `reason` on
-both transports.
+(prerequisite), the two numbers, the tier-1 hold timer in `EventBridge` (no
+routability cap — §1a explains why it is structurally unnecessary on Android;
+note EventBridge has **no timer of any kind today**, so this is new wiring,
+not a constant change), and the `reason` tag on `PermissionExpired`. The React layer is
+shared, so §2a–§2c and §3 come for free once `PermissionExpired` carries
+`reason` on both transports.
+
+Three Android-side notes, all verified:
+
+- **The §2 suppression is identical on Android, and already documented there.**
+  `EventBridge.respond()` (`:180-181`) removes from `pendingSockets` before
+  closing, and `monitorSocketClosure`'s own comment (`:151-152`) says so: "The
+  monitor detects the closure but finds the requestId already gone — no false
+  PermissionExpired." So the tier-1 hold must emit explicitly on Android too;
+  it cannot lean on the closure monitor.
+- **A fifth producer of a reason-less `PermissionExpired`:**
+  `EventBridge.kt:193-199` emits one when `respond()`'s socket write throws,
+  "so React UI clears the stale approval card" — Android's exact analogue of
+  §2c. It must resolve, which the §2c default already gives it; tag it
+  `'delivery-failed'` when the field lands.
+- **That write-failure emit carries `sessionId: ""`** (`EventBridge.kt:197`,
+  "ManagedSession uses its own ID for broadcast"). Safe today because
+  `ManagedSession` rebroadcasts under its own id and ignores the event's — but
+  any `reason` handling keyed on the event's `sessionId` breaks on exactly
+  this path. Key on `requestId` (or the rebroadcast id), never the raw
+  event's session field.
 
 ## Implementation order
 
@@ -607,27 +757,62 @@ The Android pieces are order-dependent; the rest is not.
    There is no way to stage them apart: the asset redeploys unconditionally on
    every launch.
 2. Timeout constants, all six sites (§1 table) + WHY comments (§5).
-3. `ToolCallState.expired` + the `PERMISSION_EXPIRED` reducer change (§2a) —
-   this alone fixes the reported symptom and is independently shippable.
-4. `reason` on the expiry event, both transports (§2), plus tier-1 timer and the
-   §1a routability cap.
+3. `ToolCallState.expired` + the `PERMISSION_EXPIRED` reducer change (§2a),
+   **shipped as one unit with §2b, §2c and §2d.** The reducer change alone is
+   NOT independently shippable — on its own it silently converts three
+   delivery-failure recovery paths (§2c) and the native cancel path (§2d) into
+   permanent wedges, and switches off prompt detection for the session (§2b).
+   The unit is: `expired` field + `reason` on the action (default = resolve) +
+   the §2b consumer edits (four load-bearing + the workbench fixture).
+4. `reason` on the expiry event, both transports (§2) — including the explicit
+   emit from `respond()`, since the close handler cannot carry it — plus the
+   tier-1 timer and the §1a routability cap.
 5. Digit rebind (§3) — the smallest-value, highest-risk piece; ship last, behind
-   the §3 gates.
+   the §3 gates. The §1b dismiss affordance should land with or before it, since
+   it is the only out for AskUserQuestion (which never rebinds).
 
 ## Testing
 
 - **Unit, constants:** assert the literal defaults satisfy
   `app_hold < relay_default < cc_entry_ms` across all six sites. Read the
   literals, not `process.env`-resolved values (§Constraints). Pins the margins
-  against a future "tidy".
-- **Reducer:** `PERMISSION_EXPIRED` with `reason: 'hook-closed'` + menu present
-  leaves the card `awaiting-approval` with `expired: true` and no error text;
-  `hasPendingInteraction` and `canRetrySubmit` still report pending; the
-  `useSessionAttention` dot stays `'red'`. This is the regression test for the
-  reported symptom.
+  against a future "tidy". The six sites span two JS trees **and
+  `Bootstrap.kt`** — `scripts/verify.sh` covers `youcoded/desktop` only, so
+  this is either a desktop vitest (the three desktop literals) plus an
+  Android unit-test twin, or — better, per the knowledge ladder — one
+  workspace ast-grep/scan rule that reads all six files.
+- **Reducer:** `PERMISSION_EXPIRED` with `reason: 'hook-closed'` retains
+  provisionally — the card stays `awaiting-approval` with `expired: true` and
+  no error text, **regardless of buffer state** (the reducer never reads the
+  buffer; the detector owns the verdict); `hasPendingInteraction` and
+  `canRetrySubmit` still report pending; the `useSessionAttention` dot stays
+  `'red'`. This is the regression test for the reported symptom.
 - **Reducer:** `reason: 'app-timeout'` resolves the card without rebinding, even
   when the buffer still shows a menu.
-- **Reducer:** expiry with menu absent → quiet resolve, no error text.
+- **Detector:** an `expired` card whose session buffer shows no menu for two
+  consecutive flushes → quiet resolve, no error text; menu present at a flush
+  → stays retained. Plus the late-terminal-answer path: retained card, menu
+  disappears later → resolves without waiting for `endTurn()`.
+- **Reducer:** `PERMISSION_EXPIRED` with **no** `reason` resolves the card —
+  the §2c/§2d default. This is the regression test for the native broker's
+  cancel path and for the three renderer delivery-failure dispatches, none of
+  which set a reason.
+- **Reducer:** `reason: 'delivery-failed'` resolves the card (does not retain).
+- **Relay:** `respond()` emits `permission-expired` with `reason:'app-timeout'`.
+  Guards the §2 correction — the close handler alone emits nothing, because
+  `respond()` deletes the pending entry before `'close'` fires
+  (`tests/hook-relay.test.ts:86-112` is the existing shape to extend).
+- **Relay:** `respond()` is called with the nested `{ decision: { behavior } }`
+  shape — assert against the relay's own parse (`appDecision.decision`), not a
+  hand-written expectation, so a flat-shape regression fails.
+- **Detector:** `usePromptDetector` keeps parsing the buffer when the session's
+  only `awaiting-approval` tool carries `expired: true`, and still bails when it
+  does not. Without this the §2 discriminator and §3 rebind silently no-op.
+- **Gates:** `ToolCard` and `CompactToolStrip` render actionable UI for an
+  `expired` card with no `requestId` — the §2b gate widening.
+- **Rebind:** a §3 click writes `input` and `submitInput` as **separate**
+  writes, disables the buttons, and does not locally resolve the card —
+  resolution must arrive via the detector's menu-absence rule.
 - **Parser:** `menuToButtons` consumers reject a menu with any missing
   `optionNumbers` entry, and reject a label set that doesn't confidently match
   the card's buttons — degrade rather than guess.
@@ -636,21 +821,28 @@ The Android pieces are order-dependent; the rest is not.
   that would have caught the §Constraints inversion.
 - `ipc-channels.test.ts` for the `reason` field on the expiry event (three
   surfaces: preload / remote-shim / `SessionService.kt`).
+- `node scripts/workbench-boot-check.mjs` after the `fixture-loader.ts` change
+  (§2b) — the mock-shim rule.
 - `bash scripts/verify.sh` before claiming the desktop half done.
 
 ## Open
 
-**One load-bearing assumption is unverified.** The whole tier ordering rests on
-"a deny unblocks the turn" — specifically, that responding
-`{ behavior: 'deny' }` (tier 1) or exiting 2 (tier 2) on an **AskUserQuestion**
-`PermissionRequest` releases CC rather than re-prompting. I confirmed the relay
-exits 2 and that CC treats exit 2 as a block, but not CC's downstream behaviour
-for this specific tool. If a deny causes CC to re-ask instead of proceeding, the
-margins buy nothing and the design needs a different tier-1 action (close the
-socket and let CC fall through to its own menu).
+**The load-bearing assumption is now verified against the CC binary (third
+review).** In 2.1.220, the `PermissionRequest` hook-result handler's deny
+branch is unguarded by `requiresUserInteraction`: `y.behavior === "deny"` →
+`buildDeny(y.message || "Permission denied by hook", …)` returns a terminal
+denied tool result, the AskUserQuestion dialog never opens, and the turn
+releases — no re-prompt. (The **allow** branch is the one that no-ops for
+AskUserQuestion — `if (!y.updatedInput && e.requiresUserInteraction?.())
+return null` — a hook can suppress the question but never answer it.) This is
+also why tier 1's deny carries a `message` (§1): it lands verbatim in the tool
+result the model reads. A one-time live sanity check when implementation
+starts (`bash scripts/run-dev.sh <worktree> --label "Ask Timeout"`, trigger an
+AskUserQuestion, let it expire, watch the turn proceed) remains cheap
+insurance — flagged for Destin per the interactive-verification rule — but
+the design no longer rests on it.
 
-**This needs a live check in a dev instance, not a code read** —
-`bash scripts/run-dev.sh <worktree> --label "Ask Timeout"`, trigger an
-AskUserQuestion, let the ask expire, observe whether the turn proceeds. Flagging
-for Destin rather than scripting it (workspace rule on interactive
-verification). Everything else in this spec is settled.
+**One product decision is open: the tier-1 magnitude (§1b).** 24h vs the
+recommended 2h. It changes six constants and nothing structural — the tier
+ordering and the margins are what the design rests on. Everything else is
+settled.
