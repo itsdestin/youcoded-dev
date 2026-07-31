@@ -17,6 +17,7 @@ verify:
   - test: youcoded/desktop/src/renderer/components/ui/Button.test.tsx
   - test: youcoded/desktop/tests/primitive-adoption.test.ts
   - test: youcoded/desktop/tests/overlay-layer-authority.test.ts
+  - test: youcoded/desktop/tests/drawer-card-glass.test.ts
   - test: youcoded/desktop/tests/type-scale-authority.test.ts
   - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
     contains: "MOCK_ONLY|HAND_WRITTEN"
@@ -54,6 +55,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **Ch
 
 ## Overlays (`components/overlays/Overlay.tsx`)
 - **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode `bg-black/40`, `backdrop-blur-sm`, `shadow-xl`, `rounded-xl`, or arbitrary z-index. Pick a LAYER (L1 drawers / L2 popups / L3 destructive / L4 system), not a z-index. `SessionStrip` at `z-[9000]` is load-bearing (`.header-bar` backdrop-filter traps lower values) — don't "fix" it. Glassmorphism is var-driven (`--panels-blur`/`--panels-opacity`). See `youcoded/docs/shared-ui-architecture.md`.
+- **`.layer-surface` on a REPEATED element (grid tile, list row) is a paint bug, not a style choice** — theme-engine gives each one a `backdrop-filter` under `[data-wallpaper]`, so N tiles = N blur layers, and inside an `overflow-hidden` + `transform`-animating parent Windows Electron drops their paint *per card* (shipped twice: `516411a5`, `1f68a7f0`). Over an opaque parent cancel it; over a real wallpaper pre-blur ONE backdrop instead. Guard + full rationale: `youcoded/desktop/tests/drawer-card-glass.test.ts`.
 
 ## Remote access state sync (`main/remote-server.ts`, `RemoteSnapshotExporter.tsx`)
 - **Remote clients hydrate via `chat:hydrate` on connect** (`replayBuffers()` → `requestChatSnapshot()` → serialized `ChatState`) — don't add a parallel replay buffer; extend `serializeChatState`/`deserializeChatState` in `state/chat-types.ts` instead. The `chat:export-snapshot` has a 2s timeout (resolves `{sessions:[]}`).
