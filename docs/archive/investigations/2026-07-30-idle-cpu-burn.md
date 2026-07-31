@@ -6,7 +6,7 @@ status: shipped
 
 **Date:** 2026-07-30 (rewritten same day after re-measurement disproved the first fix)
 **Branch:** `perf/reduced-effects-animations` (youcoded PR #275; supersedes closed PR #274)
-**Handoff:** `docs/active/handoffs/2026-07-30-youcoded-idle-cpu-burn.md`
+**Handoff:** `docs/archive/handoffs/2026-07-30-youcoded-idle-cpu-burn.md`
 
 ---
 

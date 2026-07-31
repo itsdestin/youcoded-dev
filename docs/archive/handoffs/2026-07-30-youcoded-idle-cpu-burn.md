@@ -9,7 +9,7 @@ owner: completed 2026-07-30 (youcoded PR #275; #274 closed — premise disproven
 > **RESOLVED 2026-07-30 — youcoded PR #275** (PR #274 closed after re-measurement
 > disproved its layer-promotion premise). Findings, corrections, and the full
 > correction history:
-> `docs/active/investigations/2026-07-30-idle-cpu-burn.md`.
+> `docs/archive/investigations/2026-07-30-idle-cpu-burn.md`.
 >
 > Root cause: on a high-refresh display any smoothly-animating element costs
 > ~29% of a core (Chromium presents a frame per refresh; per-frame cost, not
