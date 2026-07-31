@@ -34,7 +34,7 @@ Every commit below passes `scripts/verify.sh` (types, related tests, knip, ast-g
 
 2. **Close-session menu — more work wanted.** Round 1 of the comparison view (`?mode=workbench&view=compare`) is seeded with three treatments of its body. Pick one and ask for round 2.
 
-3. **Resume Browser load time.** Diagnosed, not fixed — 948ms to open at ~1,642 rows, 278ms per keystroke, because the list is not windowed. File IO is ruled out at 0.06s. Own handoff: `2026-07-31-resume-browser-load-time-handoff.md`. Start from THIS branch; the row markup was rewritten here.
+3. **Resume Browser load time.** ~~Diagnosed, not fixed~~ **FIXED on this branch (`f8ca631b`, 2026-07-31)** — chunked reveal (50 items + an IntersectionObserver top-up), not the windowing the diagnosis anticipated. Open **804ms → 96ms** at ~1,642 rows, keystrokes **220/319/183ms → 64/83/100ms**, DOM nodes **37,920 → 1,585**, and open time is now flat in conversation count. File IO was ruled out at 0.06s and never was the cause. Outcome, the two disproved hypotheses (`React.memo` could not have fixed the open; the filter pipeline needs no debounce), and the accepted trade-off: `docs/archive/handoffs/2026-07-31-resume-browser-load-time-handoff.md`.
 
 4. **Model favourites are localStorage-only.** They are now the picker's default view, so a fresh device opens it empty. A real synced channel is the backend to-do.
 
