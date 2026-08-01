@@ -1,12 +1,12 @@
 ---
-status: active
+status: shipped
 ---
 
 # Session launch / resume UX — open items
 
 **Date:** 2026-07-31
-**Branch:** `feat/session-launch-ux` — worktree `youcoded-dev/worktrees/session-ux`, 17 commits ahead of master, **unmerged and unpushed**.
-**Why this doc:** work paused mid-iteration to build the workbench comparison view. This is the ledger of what is done, what is still open, and what has been deliberately left alone — so the thread survives the pause.
+**Shipped:** merged 2026-07-31 as youcoded#279 (`8db3d675`), 37 commits, full desktop suite green on all four CI builds.
+**Why this doc:** started as a mid-iteration ledger when work paused to build the workbench comparison view. Kept as the record of what shipped, what did NOT, and what was deliberately left alone — the last section is the one worth reading later, because it explains decisions a future session would otherwise "fix".
 
 ---
 
@@ -30,15 +30,19 @@ Every commit below passes `scripts/verify.sh` (types, related tests, knip, ast-g
 
 ## Open
 
-1. **Final review of every changed surface.** Nothing on this branch has had a full visual pass. Changed surfaces: Resume Browser (cards, filters, tag sheet, tag manager), SessionStrip new-session form, welcome form, pre-resume modal, close prompt, StatusBar tags chip. Destin's call, not scriptable.
+1. **Final review of every changed surface — NOT DONE before merge.** Destin reviewed captures from the workbench, not a real dev instance. The workbench has no PTY, no main process and a fake backend, so the paths never exercised end to end are exactly the ones this branch changed most: creating a session from the new model picker, resuming one, and the two new backend writers (the transcript-tail model read, the store write on `assistant-text`). All unit-tested; none run live. `bash scripts/run-dev.sh` if anything looks wrong in use.
 
-2. **Close-session menu — more work wanted.** Round 1 of the comparison view (`?mode=workbench&view=compare`) is seeded with three treatments of its body. Pick one and ask for round 2.
+2. **Close-session menu — settled through ten comparison rounds and shipped.** The rounds remain in `dev/workbench/compare/registry.tsx` if it needs revisiting; the breadcrumb is the record of how it got there.
 
 3. **Resume Browser load time.** ~~Diagnosed, not fixed~~ **FIXED on this branch (`f8ca631b`, 2026-07-31)** — chunked reveal (50 items + an IntersectionObserver top-up), not the windowing the diagnosis anticipated. Open **804ms → 96ms** at ~1,642 rows, keystrokes **220/319/183ms → 64/83/100ms**, DOM nodes **37,920 → 1,585**, and open time is now flat in conversation count. File IO was ruled out at 0.06s and never was the cause. Outcome, the two disproved hypotheses (`React.memo` could not have fixed the open; the filter pipeline needs no debounce), and the accepted trade-off: `docs/archive/handoffs/2026-07-31-resume-browser-load-time-handoff.md`.
 
-4. **Model favourites are localStorage-only.** They are now the picker's default view, so a fresh device opens it empty. A real synced channel is the backend to-do.
+4. **Model favourites are localStorage-only** — moved to ROADMAP → Bugs, since it outlives this branch.
 
-5. **Android shows no model chip and no tags.** `SessionBrowser.PastSession` there is a thin mirror with no Conversation Store behind it. Pre-existing divergence, not introduced here, not roadmapped yet.
+5. **Android shows no model chip and no tags.** `SessionBrowser.PastSession` there is a thin mirror with no Conversation Store behind it. Pre-existing divergence, not introduced here, still not roadmapped — it is a much larger piece than this branch was.
+
+7. **The resume tag sheet still assembles its own pieces** rather than using the shared `TagNoteEditor`. Same look, not the same component. It needs a small prop change because Priority writes through `setFlag` there rather than local state.
+
+8. **The FIELD-surface collision** (a `bg-inset` field on a `bg-inset` host) was patched three times on this branch and is now a ROADMAP bug — the default is likely wrong for nested hosts.
 
 6. **Pre-existing anchor drift**, unrelated to this work but flagged on every `/audit`: nine `native-runtime.md` anchors and three MAP paths point at `harness/mcp/*` files absent from the checkout; six rule files exceed the 600-word budget.
 
