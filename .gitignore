@@ -52,3 +52,11 @@ worktrees/
 # Downloaded release/beta installers used for VM install testing — large
 # binaries that must never enter git history.
 beta/
+
+# Full event-stream transcripts from the harness review runner
+# (youcoded/desktop/test-engine/review-harness.mjs). A transcript is a
+# debugging artifact for the session that produced it, not durable history —
+# five models' full event streams would dominate this repo's diff history.
+# The reviews themselves (appended into the investigation doc) are the
+# durable record.
+docs/active/investigations/harness-review-runs/
