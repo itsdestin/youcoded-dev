@@ -2004,3 +2004,116 @@ fitToContext appends its own notice, independent of defineTool's, and hardcoded
 result. Derives the advice from toolName, and says nothing when it has nothing
 accurate to say."
 ```
+
+---
+
+### Task 19: Widening vocabulary belongs to the tool, not to the moment it truncates
+
+**Added mid-execution (2026-08-06), found by three independent reviews converging.** Task 1
+split truncation into two independent events: what the TOOL dropped (`bounds`) and what the
+PIPELINE cap dropped (`defineTool`'s `caps`). It assumed those coincide. They do not.
+
+Measured cases where the pipeline cap fires while the tool declares nothing:
+- **Grep**, one file, 400 matching lines, 6,691 chars, `output_mode:'content'` — the binding
+  cap is `maxLines: 250`, `bounds` is `undefined`, and the model receives
+  `[output truncated: showing 4169 of 6691 chars]` with **no widening advice at all**, in
+  *chars* when the actual constraint was lines.
+- **Glob**, 2,000 paths exceeding `maxChars: 30_000` with `hits.length <= RESULT_LIMIT`.
+- **Bash**, the 30k–71.5k retention window (closed separately, but by per-tool arithmetic
+  that the next constant change can silently reopen).
+
+`composeNotice`'s no-`bounds` branch carries a comment calling it "a bounds declaration bug";
+in practice it is now the *common* path for content-mode Grep. Fixing this per tool means
+每 tool must keep its retention arithmetic under its own cap forever — three places to get
+wrong. The advice is a static property of a tool, so it should live with the tool.
+
+**Files:**
+- Modify: `src/main/harness/tools/types.ts` (add `moreHint` to `NativeTool`)
+- Modify: `src/main/harness/tools/registry.ts` (pass it to `composeNotice`)
+- Modify: `src/main/harness/tools/truncate.ts` (`composeNotice` takes a fallback hint)
+- Modify: each tool that can be capped — `bash.ts`, `grep.ts`, `glob.ts`, `read.ts`,
+  `web-search.ts`, `web-fetch.ts` — to declare its static hint
+- Test: `tests/harness-truncate.test.ts`, `tests/harness-tool-conformance.test.ts`
+
+**Interfaces:**
+- Consumes: `ResultBounds` (Task 1), and every tool's existing `bounds.moreHint` strings —
+  reuse the exact wording already shipped rather than inventing second versions.
+- Produces: `NativeTool.moreHint?: string`. Task 14's manifest guard asserts every
+  non-exempt tool declares it.
+
+- [ ] **Step 1: Write the failing test**
+
+In `tests/harness-truncate.test.ts`:
+
+```ts
+it('uses the tool\'s static hint when the pipeline cap fires and the tool declared no bounds', () => {
+  // The gap three reviews found: `bounds` describes what the TOOL dropped, but the
+  // pipeline cap is a separate event. When only the cap fires, the model used to get
+  // a bare "[output truncated: showing N of M chars]" with no way to widen — and for
+  // content-mode Grep that was the COMMON case, not an edge.
+  const out = composeNotice(undefined, { shown: 4169, total: 6691 }, 'narrow the pattern');
+  expect(out).toContain('4169 of 6691 chars');
+  expect(out).toContain('narrow the pattern');
+});
+
+it('still emits no advice when neither a bound nor a static hint is available', () => {
+  // Honest fallback preserved: we never invent advice we do not have.
+  expect(composeNotice(undefined, { shown: 10, total: 20 }, undefined))
+    .toBe('\n[output truncated: showing 10 of 20 chars]');
+});
+
+it('prefers the bound\'s own hint over the static one when both exist', () => {
+  const b = { shown: 5, total: 9, unit: 'files' as const, moreHint: 'specific hint' };
+  expect(composeNotice(b, null, 'static hint')).toContain('specific hint');
+  expect(composeNotice(b, null, 'static hint')).not.toContain('static hint');
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `npx vitest run tests/harness-truncate.test.ts -t "static hint"`
+Expected: FAIL — `composeNotice` takes two arguments.
+
+- [ ] **Step 3: Thread the static hint through**
+
+Add to `NativeTool` in `types.ts`:
+
+```ts
+/** How to widen THIS tool's output, in its own vocabulary — a static property,
+ *  independent of whether the tool or the pipeline did the cutting.
+ *
+ *  WHY static (2026-08-06): `bounds.moreHint` only exists when the TOOL bounded its
+ *  own output. The pipeline cap in defineTool is a separate event that fires on its
+ *  own schedule — for content-mode Grep it is the common one — and without a hint to
+ *  fall back on the model was told content vanished and given no way to get it back. */
+moreHint?: string;
+```
+
+`composeNotice(bounds, cap, fallbackHint?)` uses `bounds.moreHint` when a bound exists,
+else `fallbackHint`, else emits no advice. `defineTool` passes `def.moreHint`.
+
+Each tool declares the hint it already uses in its `bounds`, verbatim — do not write a
+second wording. For tools whose only cap is the pipeline's (`web-fetch.ts`), supply the
+hint that fits: fetching a more specific URL or section.
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `npx vitest run tests/harness-truncate.test.ts tests/harness-tools-core.test.ts tests/harness-tool-bounds.test.ts tests/web-search-tool.test.ts tests/web-fetch-tool.test.ts`
+Expected: PASS.
+
+- [ ] **Step 5: Add the regression cases the reviews measured**
+
+In `tests/harness-tool-conformance.test.ts`, assert that a content-mode Grep exceeding
+`maxLines: 250` and a Glob exceeding `maxChars` both produce advice, and that **no** tool
+result in the suite ever contains the bare no-advice string.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git commit -o src/main/harness/tools tests/harness-truncate.test.ts tests/harness-tool-conformance.test.ts -m "fix(harness): a capped result with no bounds gave the model no way to widen
+
+bounds describes what the TOOL dropped; defineTool's cap is a separate event.
+When only the cap fired the model got a bare byte count and no advice — the
+common case for content-mode Grep. Widening advice is now a static property
+of each tool."
+```
