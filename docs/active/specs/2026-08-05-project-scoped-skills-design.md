@@ -269,7 +269,7 @@ vitest + knip + ast-grep).
 | File | Change |
 |---|---|
 | `desktop/src/main/project-skills.ts` | new — `scanProjectSkills`, `mergeProjectSkills` |
-| `desktop/src/main/skill-scanner.ts` | unchanged (deliberately — see §1) |
+| `desktop/src/main/skill-scanner.ts` | one word: `readSkillMeta` becomes exported so the project pass reuses the frontmatter reader rather than duplicating it. No behavior change, and `scanSkills()` itself is untouched — see §1 |
 | `desktop/src/shared/types.ts` | `SkillEntry.source` gains `'project'`; new `shadows?` field |
 | `desktop/src/main/skill-provider.ts` | project layer applied per request over the memoized home layer |
 | `desktop/src/main/command-provider.ts` | cwd per call; `getProjectCwd` constructor param removed |
