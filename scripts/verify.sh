@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # One command, one verdict: "is this change safe to ship?"
 #
-# WHY THIS EXISTS: CLAUDE.md prescribes four separate checks (tsc --noEmit,
-# vitest, knip, ast-grep) across two directories, and none of them had an npm
+# WHY THIS EXISTS: CLAUDE.md prescribes five separate checks (tsc --noEmit,
+# vitest, knip, eslint, ast-grep) across two directories, and none of them had an npm
 # script or a shared entry point. Every session typed them slightly differently
 # and "verified" meant whatever that session happened to remember to run. This
 # makes it one command with one exit code.
@@ -128,8 +128,8 @@ done
 
 # ---------- run the checks, in parallel ----------
 #
-# tsc, vitest and knip are independent and each takes tens of seconds, so they
-# run concurrently into separate logs and are reported in a fixed order
+# tsc, vitest, knip and eslint are independent and each takes tens of seconds,
+# so they run concurrently into separate logs and are reported in a fixed order
 # afterwards. Interleaving their stdout would make the output unreadable.
 LOGDIR="$(mktemp -d)"
 trap 'rm -rf "$LOGDIR"' EXIT
@@ -160,6 +160,7 @@ if [[ $DRY -eq 1 ]]; then
   echo "would run:"
   echo "  npx tsc --noEmit -p tsconfig.json"
   echo "  npm run knip"
+  echo "  npm run lint"
   if [[ $RUN_FULL -eq 1 ]]; then
     echo "  npx vitest run"
   elif [[ ${#REL[@]} -gt 0 ]]; then
@@ -171,6 +172,11 @@ fi
 
 start types "types (tsc --noEmit)" npx tsc --noEmit -p tsconfig.json
 start knip  "dead code (knip)"     npm run knip --silent
+# eslint is the bug gate, not a style gate — it catches the classes tsc/knip
+# structurally cannot (conditional React hooks, floating promises in main,
+# runtime imports of undeclared packages). Rule set + the measured cost of every
+# deferred rule: desktop/eslint.config.mjs.
+start lint  "lint (eslint)"        npm run lint --silent
 
 if [[ $RUN_FULL -eq 1 ]]; then
   start tests "tests (full suite)" npx vitest run
@@ -183,7 +189,7 @@ fi
 start invariants "invariants (ast-grep)" bash "$ROOT/scripts/ast-grep/check.sh" "$DESKTOP/src"
 
 FAILED=0
-for key in types tests knip invariants; do
+for key in types tests knip lint invariants; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
   if [[ $rc -eq 0 ]]; then
