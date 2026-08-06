@@ -16,19 +16,34 @@ note: |
   advice into a dead end. Declaring the fact and rendering it centrally means a
   tool structurally cannot suggest a parameter it does not have.
 
+  BROADENED (2026-08-06, tool-honesty branch): web-fetch.ts's own "[body
+  truncated at 5MB]" and "Showing only the first NKB..." escaped the original
+  regex only because their WORDING differed from the one retired sentence it
+  targeted — the invariant is "no hand-rolled truncation prose in a tool's
+  result text", not "no instance of one specific sentence". Added two more
+  alternatives to catch that shape of notice generally, not just the strings
+  that happened to exist when the rule was written.
+
   SCOPING: `truncate.ts` is excluded via `ignores` below. It is the renderer —
   composeNotice's job IS to write "[output truncated: showing ...]" and
   "[showing ... — <moreHint>]" into the final text, so those literal strings
-  legitimately live there. The regex only matches the retired shared-advice
-  wording ("[truncated", "[output truncated", "use offset/limit", "offset/limit
-  or a narrower"); it does not match a tool merely mentioning its own real
-  offset/limit parameter (read.ts says "offset and limit", no slash) or a
-  static `moreHint` naming a tool's actual widening options.
+  legitimately live there. The regex matches the retired shared-advice wording
+  ("[truncated", "[output truncated", "use offset/limit", "offset/limit or a
+  narrower") plus the web-fetch-specific hand-rolled notices ("[body
+  truncated", "showing only the first"); it does not match a tool merely
+  mentioning its own real offset/limit parameter (read.ts says "offset and
+  limit", no slash), a static `moreHint` naming a tool's actual widening
+  options, or a plain factual aside that carries no advice and isn't shaped
+  like either retired notice (e.g. "[No anchor named ... The body was
+  truncated at 5MB, so a later part of the page may still contain it.]" in
+  web-fetch.ts's fragment-resolution note — a statement about the DOCUMENT,
+  not a truncation notice about the tool's own output; see that file's inline
+  WHY comment).
 files:
   - "**/harness/tools/*.ts"
   - "**/fixtures/harness-tool.ts"
 ignores:
   - "**/harness/tools/truncate.ts"
 rule:
-  regex: "\\[truncated|\\[output truncated|use offset/limit|offset/limit or a narrower"
+  regex: "\\[truncated|\\[output truncated|use offset/limit|offset/limit or a narrower|\\[body truncated|(?i:showing only the first)"
   kind: string_fragment

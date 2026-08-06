@@ -34,8 +34,10 @@ else
     echo "note: using npx (slower). Install with: sudo pacman -S ast-grep"
 fi
 
-# How many fixture violations we expect. Bump this when adding a rule + fixture.
-EXPECTED_VIOLATIONS=4
+# How many fixture violations we expect. Bump this when adding a rule + fixture,
+# or when broadening an existing rule's coverage with a new fixture line (e.g.
+# tool-bounds-not-hand-rolled's 2026-08-06 broadening added AlsoBadTool).
+EXPECTED_VIOLATIONS=5
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
