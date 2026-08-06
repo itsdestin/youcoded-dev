@@ -9,6 +9,18 @@ status: active
 > Two things phase 1 ships deliberately inert, awaiting phase 3: the `○` open
 > marker, and `--state open`, which answers "cannot be determined yet" rather
 > than returning zero results.
+>
+> **Verified against real data 2026-08-06** (dev instance, 1,689 conversations).
+> That run found a real bug the whole test suite had missed — youcoded#283,
+> merge `8a06d79d`: the builder resolved transcripts only to a device-local
+> path derived from `originalPath`, so records with an empty path and every
+> record created on another device resolved to nothing. 1,532 of 1,689 (91%)
+> were falsely marked deleted; sampling 400, all 400 were present in the synced
+> space. Fixed by the two-step resolution this spec's Corpus section always
+> called for — local first, then the space mirror via `transcriptRef` (through
+> `containedTranscriptPath`, since a ref is record data). After: 1,502 indexed,
+> 3 tombstoned, 12,355 turns. **Lesson: a green suite over fixtures says
+> nothing about path resolution on a real machine.**
 
 # Chat Search — design
 
