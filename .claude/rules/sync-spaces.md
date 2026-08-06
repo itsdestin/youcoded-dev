@@ -53,6 +53,7 @@ verify:
   - test: youcoded/desktop/tests/device-activity-label.test.ts
   - test: youcoded/desktop/tests/sync-warnings-lifecycle.test.ts
   - test: youcoded/desktop/tests/github-connect.test.ts
+  - test: youcoded/desktop/tests/sync-spaces-project-registry.test.ts
 ---
 
 # Sync Spaces, SyncHub, backup & GitHub-connect
@@ -83,7 +84,7 @@ verify:
 
 ## Project UX + discovery (`project-registry.ts`, `renderer/components/sync-dot-state.ts`) — guard: `sync-dot-state.test.ts`, `sync-spaces-project-discovery.test.ts`
 - **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — derive ALL dot state from the pure `sync-dot-state.ts`; labels pinned.
-- **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); `displayName` LWW; **fold-on-read** prevents resurrection. **Stop = tombstone + `engine.removeSpace` + keep folder** (gate: `activeManagedSpaces()`). Rename/stop ride 4-surface IPC parity (`ipc-channels.test.ts`).
+- **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); `displayName` LWW by `updatedAt`; `description` LWW by its OWN `descriptionUpdatedAt` — a shared clock reverts a peer's rename. **Schema stays 1: `parseEntry` rejects on strict inequality, so bumping it makes older devices drop every record.** Setters spread `cur` so an older build's write can't destroy a newer field. **fold-on-read** prevents resurrection. Rename/stop/describe ride 4-surface IPC parity (`ipc-channels.test.ts`).
 
 ## Device registry (`device-identity.ts`, `sync-spaces/device-registry.ts`) — guard: `device-identity.test.ts`, `sync-spaces-device-registry.test.ts`
 - **TWO identities, NEVER merged: `getDeviceIdentity(userData)` = per-INSTALL (leases); `getMachineIdentity(builtAppUserData)` = per-MACHINE (registry).** **`getMachineIdentity` READS, never mints; `null` ⇒ register NOTHING** (else a row orphans per launch).
