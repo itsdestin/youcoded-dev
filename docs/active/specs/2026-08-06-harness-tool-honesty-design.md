@@ -242,10 +242,23 @@ even when the section is present — verified against the saved fixture. Three o
    confident preamble into an explicit statement.
 
 **Soft fallback replacing hard refusal.** `tooComplexToExtract` currently dead-ends
-(Kimi's #1). The DoS concern is specifically Readability's quadratic parse; tag-stripping
-is O(n) and safe on any input. When the guard trips, skip Readability and return plain
-stripped text with a note about the degraded extraction. The guard keeps its teeth and
-the dead end disappears.
+(Kimi's #1). The DoS concern is specifically Readability's quadratic parse, so when the
+guard trips we can skip Readability and return plain stripped text with a note about the
+degraded extraction — the guard keeps its teeth and the dead end disappears.
+
+**Correction (2026-08-06, from the implementation review):** an earlier draft of this
+section asserted that tag-stripping "is O(n) and safe on any input." **That was wrong**, and
+it was wrong in the most dangerous possible place — the fallback runs on exactly the
+attacker-controlled input the guard just rejected. A regex of the shape `/<[^>]*>/g`
+backtracks per start position when the closing `>` never arrives. Measured on the naive
+implementation: 50k chars → 756 ms, 100k → 3,032 ms, 200k → 12,088 ms, i.e. 4× per 2× of
+input. A 200 KB page of bare `<` characters — well under the 5 MB body cap — froze the
+Electron main loop for 12 seconds, reopening the precise freeze `tooComplexToExtract`
+exists to prevent. The fallback must therefore be a **single forward character scan**
+(skipping `<script>`/`<style>` bodies by `indexOf` rather than by a backtracking pattern),
+linear by construction, over a **bounded** slice of the input, with the bound disclosed in
+the returned text. Any future change here needs a measured worst case, not an asserted
+complexity class.
 
 ## 5. Guards
 
