@@ -1,0 +1,34 @@
+id: tool-bounds-not-hand-rolled
+language: typescript
+severity: error
+message: >-
+  Harness tools must DECLARE what they omitted via the `bounds` field, not write
+  truncation prose into `text`. The pipeline (defineTool → composeNotice) renders
+  it, using the tool's own `moreHint`.
+note: |
+  Invariant source: .claude/rules/native-runtime.md → "Native tools".
+  Guard: youcoded/desktop/tests/tool-registry-manifest.test.ts
+         → "every bounded tool declares its bounds"
+
+  WHY: a single shared advice string used to tell EVERY tool's caller to "use
+  offset/limit" — correct for Read, meaningless for Bash and WebSearch, which
+  accept neither. Two models in the 2026-08-01 harness review followed that
+  advice into a dead end. Declaring the fact and rendering it centrally means a
+  tool structurally cannot suggest a parameter it does not have.
+
+  SCOPING: `truncate.ts` is excluded via `ignores` below. It is the renderer —
+  composeNotice's job IS to write "[output truncated: showing ...]" and
+  "[showing ... — <moreHint>]" into the final text, so those literal strings
+  legitimately live there. The regex only matches the retired shared-advice
+  wording ("[truncated", "[output truncated", "use offset/limit", "offset/limit
+  or a narrower"); it does not match a tool merely mentioning its own real
+  offset/limit parameter (read.ts says "offset and limit", no slash) or a
+  static `moreHint` naming a tool's actual widening options.
+files:
+  - "**/harness/tools/*.ts"
+  - "**/fixtures/harness-tool.ts"
+ignores:
+  - "**/harness/tools/truncate.ts"
+rule:
+  regex: "\\[truncated|\\[output truncated|use offset/limit|offset/limit or a narrower"
+  kind: string_fragment

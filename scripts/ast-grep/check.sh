@@ -35,7 +35,7 @@ else
 fi
 
 # How many fixture violations we expect. Bump this when adding a rule + fixture.
-EXPECTED_VIOLATIONS=3
+EXPECTED_VIOLATIONS=4
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
