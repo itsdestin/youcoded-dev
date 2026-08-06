@@ -249,7 +249,7 @@ The battery prompt now lives in code as the single source:
 
 To run it across the whole roster:
 
-    cd youcoded/desktop && npm run build
+    cd youcoded/desktop && npm run build:main
     OPENROUTER_API_KEY=... node test-engine/review-harness.mjs
 
 `--dry-run` prints the roster and the prompt without spending anything;
