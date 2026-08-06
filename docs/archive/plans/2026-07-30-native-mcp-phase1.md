@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-07-30
 owner: Destin (decisions) / Claude (plan)
 implements: docs/active/specs/2026-07-30-native-mcp-design.md — Phase 1

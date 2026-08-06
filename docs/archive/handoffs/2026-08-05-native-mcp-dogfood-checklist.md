@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 branch: feat/native-mcp-phase1
 created: 2026-08-05
 ---
