@@ -66,6 +66,14 @@ Dev and built both read and write `~/.claude/`:
 - Plugin skills, themes, memory, sync state
 - Claude Code CLI sessions, projects, credentials
 
+They also share `~/.youcoded/` (native sessions, config, providers — resolved
+straight from `os.homedir()` in `native-home.ts`, no profile component) and
+`~/YouCoded/` (the sync spaces and Conversation Store,
+`sync-spaces/managed-roots.ts`). `--profile` gives no isolation for any of
+these — anything that writes under them must go through `NativeHome`'s
+mkdir-based file lock (ADR 008), which exists precisely because dev + built
+can both be running against the same home dir.
+
 This is intentional — isolating these would mean dev can't test against your real plugins and settings, which defeats the point. Two coordination mechanisms keep it safe:
 
 1. **`.sync-lock` is a `mkdir`-based atomic lock.** Only one instance syncs at a time.
