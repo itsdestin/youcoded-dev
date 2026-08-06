@@ -1873,3 +1873,134 @@ git add -A && git commit -m "docs(harness): record the bounds contract and the r
 ```
 
 Then use `superpowers:finishing-a-development-branch`. Flip the spec's `status:` to `shipped` and move both spec and plan to `docs/archive/` in the same session the branch merges, per the workspace document-lifecycle rule.
+
+---
+
+### Task 18: The context-fit truncation path
+
+**Added mid-execution (2026-08-06), found by the Task 1 review.** `fitToContext` in
+`harness-session.ts` is a SECOND truncation path, independent of `defineTool`'s: it fires
+when a single tool result alone exceeds the model's context window, and it appends
+`Re-run with offset/limit, or use Grep, to see the rest.` to **any** tool's result —
+including Bash and WebSearch, which accept neither parameter. Without this task the spec's
+contract ("never advise an action the tool does not support") stays violated after all 17
+other tasks land, on the exact path that fires when output is largest.
+
+This task deliberately reaches outside the plan's stated `tools/**` scope, because the
+defect is the same one and leaving it would make the branch's central claim false.
+
+**Files:**
+- Modify: `src/main/harness/harness-session.ts:150-168` (`fitToContext`'s per-result trim)
+- Test: `tests/harness-tool-bounds.test.ts` — NO. Use `tests/harness-compaction.test.ts`,
+  which already covers `fitToContext`. Confirm with `rg -n "fitToContext" tests/` first and
+  use whichever file already exercises it, to avoid a second home for the same subject.
+
+**Interfaces:**
+- Consumes: nothing from other tasks. `harness-session.ts` is touched by no other task in
+  this plan, so this runs fully in parallel.
+- Produces: nothing other tasks consume.
+
+- [ ] **Step 1: Find the existing test home**
+
+Run: `rg -n "fitToContext" tests/ src/main/harness/harness-session.ts`
+Use the test file that already covers it. Do not create a new file if one exists.
+
+- [ ] **Step 2: Write the failing test**
+
+```ts
+it('does not advise offset/limit for a tool that has neither parameter', () => {
+  // fitToContext trims ONE oversized tool result. The advice it appends used to be
+  // hardcoded "Re-run with offset/limit, or use Grep" regardless of which tool
+  // produced the result — the same defect the bounds contract removed from the
+  // defineTool path, on the path that fires when output is LARGEST.
+  const msg = {
+    role: 'tool',
+    content: [{
+      type: 'tool-result',
+      toolName: 'Bash',
+      output: { type: 'text', value: 'x'.repeat(50_000) },
+    }],
+  } as any;
+  const out = trimOversizedToolResults(msg, 1_000);
+  const value = (out as any).content[0].output.value;
+  expect(value).toContain('truncated');
+  expect(value).not.toContain('offset/limit');
+  expect(value).toMatch(/head|tail|narrower/i);
+});
+
+it('still advises offset for Read, which does accept it', () => {
+  const msg = {
+    role: 'tool',
+    content: [{
+      type: 'tool-result',
+      toolName: 'Read',
+      output: { type: 'text', value: 'y'.repeat(50_000) },
+    }],
+  } as any;
+  const value = (trimOversizedToolResults(msg, 1_000) as any).content[0].output.value;
+  expect(value).toContain('offset');
+});
+
+it('states the true dropped count', () => {
+  const msg = {
+    role: 'tool',
+    content: [{ type: 'tool-result', toolName: 'Bash', output: { type: 'text', value: 'z'.repeat(10_000) } }],
+  } as any;
+  const value = (trimOversizedToolResults(msg, 2_000) as any).content[0].output.value;
+  // 10,000 in, `per` characters kept — the notice must name the real difference,
+  // never a rounded or invented figure.
+  expect(value).toMatch(/[\d,]+ more characters/);
+});
+```
+
+The function may currently be unexported or differently named — export it (or the smallest
+testable unit) and use its real name. Do not rename it.
+
+- [ ] **Step 3: Run test to verify it fails**
+
+Run: `npx vitest run <the test file> -t "does not advise offset/limit"`
+Expected: FAIL — the message contains `offset/limit` for a Bash result.
+
+- [ ] **Step 4: Derive the advice from the tool that produced the result**
+
+The `tool-result` part carries `toolName`. Use it. Add a small lookup beside the function:
+
+```ts
+/** Widening advice per tool, in that tool's OWN vocabulary.
+ *
+ *  WHY (2026-08-06): this path appended "Re-run with offset/limit, or use Grep" to
+ *  EVERY oversized tool result, including Bash and WebSearch, which accept neither
+ *  parameter. It is the same defect the bounds contract removed from the
+ *  defineTool path — and it fires precisely when output is largest, so it was the
+ *  most likely advice a model would ever act on. Tools absent from this map get a
+ *  bare statement with no advice, which is the honest fallback per
+ *  docs/error-message-standards.md — never a guess. */
+const FIT_MORE_HINT: Record<string, string> = {
+  Read: 'Re-run with a narrower offset/limit window',
+  Bash: 'Re-run piping through head, tail, or wc -l',
+  Grep: 'Re-run with a narrower pattern or output_mode: "count"',
+  Glob: 'Re-run with a narrower glob pattern',
+  WebSearch: 'Re-run with a narrower query',
+  WebFetch: 'Fetch a more specific URL or section',
+};
+```
+
+Then build the notice from `FIT_MORE_HINT[p.toolName]`, appending `. ${hint}.` only when a
+hint exists, and nothing when it does not.
+
+- [ ] **Step 5: Run tests to verify they pass**
+
+Run: `npx vitest run <the test file>`
+Expected: PASS.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/main/harness/harness-session.ts tests/<the test file>
+git commit -m "fix(harness): context-fit truncation advised offset/limit for every tool
+
+fitToContext appends its own notice, independent of defineTool's, and hardcoded
+'Re-run with offset/limit, or use Grep' regardless of which tool produced the
+result. Derives the advice from toolName, and says nothing when it has nothing
+accurate to say."
+```
