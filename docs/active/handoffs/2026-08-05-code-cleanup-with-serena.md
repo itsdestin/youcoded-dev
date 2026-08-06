@@ -30,22 +30,27 @@ Fixes applied (branch `fix/diagnostics-sweep` in the `youcoded` repo):
 
 ## The backlog this prompt should work through
 
-**Unused-code findings: 120 remaining** (was 143; 23 fixed on the branch above).
-Reproduce with:
+**Unused-code findings: 1 remaining** (was 143; 142 cleared across 2026-08-05 and
+2026-08-06). Reproduce with:
 
 ```bash
 cd youcoded/desktop && npx tsc --noEmit --noUnusedLocals --noUnusedParameters -p tsconfig.json
 ```
 
-- **89 are unused `import React`** — dead under the modern JSX transform, across ~50
-  files. One mechanical sweep, large diff, its own branch.
-- **31 are everything else** — the interesting ones. Treat each as a possible symptom
-  before deleting it; on 2026-08-05 that instinct turned three "cosmetic" findings into
-  real dead-state removals.
+- **89 unused `import React`** — cleared 2026-08-06 in `chore/cleanup-react-imports`
+  (9961df9e). Mechanical sweep, no behavioral change.
+- **31 everything else** — cleared 2026-08-06 in `chore/cleanup-unused-31` (4 commits).
+  One real bug found: `applyThemeFont` was imported but never called, so theme fonts
+  (Google Fonts injection + `--font-sans`/`--font-mono`) were silently dead. Fixed in
+  67d2423c.
+- **1 remaining:** `FilesTab.onMutated` — explicitly documented as vestigial with a
+  re-wire note (Exclude was removed with External Artifacts; kept for future in-tab
+  mutations). Left intentionally.
 
-**The durable end state:** once all 120 are cleared, enable `noUnusedLocals` and
-`noUnusedParameters` in `desktop/tsconfig.json` so this class is caught forever. Do not
-enable them before the list is empty — it fails the build.
+**The durable end state:** `noUnusedLocals` and `noUnusedParameters` can now be enabled
+in `desktop/tsconfig.json` — the list is empty except for the one intentional vestige.
+Either suppress that one with `@ts-ignore` or remove it and its re-wire comment, then
+flip the flags.
 
 **Bug hunts not yet run** (ranked by whether an existing tool is structurally blind):
 
