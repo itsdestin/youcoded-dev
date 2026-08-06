@@ -2,6 +2,14 @@
 status: active
 ---
 
+> **Phase 1 SHIPPED 2026-08-06** — index + read-only CLI: youcoded#282 (merge
+> `2f8b5671`) and wecoded-marketplace#66. This spec stays active because it
+> still governs **phase 2** (the write outbox) and **phase 3** (digests), both
+> unbuilt. Plan + execution notes: `docs/archive/plans/2026-08-05-chatsearch-phase1-plan.md`.
+> Two things phase 1 ships deliberately inert, awaiting phase 3: the `○` open
+> marker, and `--state open`, which answers "cannot be determined yet" rather
+> than returning zero results.
+
 # Chat Search — design
 
 A token-efficient search layer over every past YouCoded conversation, reachable

@@ -289,6 +289,13 @@ investigations doc recording §1 and §2.
 
 Two layers answering different questions. Neither substitutes for the other.
 
+> **Implementation split.** This spec ships as two plans in parallel worktrees.
+> **Plan A** — §3, §4, §5, and §6a: the contract, every tool change, and all guards
+> including the conformance suite, which asserts the contract and so cannot precede it.
+> **Plan B** — §6b alone: the live review runner drives whatever the harness currently
+> is, so it builds against master today and lands independently of A. Once both are in,
+> re-running B against A's result is the acceptance check for the whole spec.
+
 ### 6a. Conformance suite — deterministic, free, CI-gated
 
 `desktop/tests/harness-tool-conformance.test.ts` drives each tool against seeded

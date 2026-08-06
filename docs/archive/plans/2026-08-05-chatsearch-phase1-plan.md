@@ -1,6 +1,28 @@
 ---
-status: active
+status: shipped
 ---
+
+> **OUTCOME (2026-08-06):** All 7 tasks shipped. youcoded#282 (merge `2f8b5671`)
+> and wecoded-marketplace#66, preceded by wecoded-marketplace#65 which absorbed
+> a 152-entry index backlog so the feature PR stayed reviewable.
+> Final: 386 test files / 4256 tests, 0 failures; `verify.sh` green.
+>
+> Corrections to this plan found during execution — the example code here was
+> NOT pre-verified, and reviews found real bugs in it:
+> - The expected ISO literal for epoch `1785990913428` is WRONG in Task 2
+>   (correct: `2026-08-06T04:35:13.428Z`). Do not copy it forward.
+> - Task 4's `refreshTurns` had a crash window between the turns write and the
+>   state write that silently duplicated turns forever; shipped with a
+>   `turnsBytes` self-heal.
+> - Task 4's `acquireBuildLock` used `statSync` where the project requires
+>   `lstatSync`, and its stale-lock takeover was a non-atomic
+>   rm-then-mkdir race; shipped with an atomic rename claim.
+> - The whole-branch review found a CRITICAL the per-task reviews could not:
+>   the store's `list()` is already fail-soft, so an unreadable sync space
+>   would overwrite a good index with zero conversations AND stamp a fresh
+>   timestamp, suppressing the staleness banner.
+> - Task 3's test fixture had an illegal unquoted object key (`9c14bbbb:`).
+> - "three call sites" for the shared lane guards was an undercount; six.
 
 # Chat Search (chatsearch) Phase 1 — Implementation Plan
 
