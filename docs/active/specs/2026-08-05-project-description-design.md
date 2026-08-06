@@ -86,7 +86,19 @@ description: LWW by descriptionUpdatedAt        (new, independent)
 The merge stays commutative and associative — it is still a lattice join, now
 over `state × (updatedAt, displayName) × (descriptionUpdatedAt, description)` —
 so a plain reduce over any conflict-copy order still converges, and fold-on-read
-needs no new machinery.
+needs no new machinery. **This holds only under one constraint, and it is easy
+to violate:** `laterOf` breaks an equal-clock tie on `JSON.stringify(x) >=
+JSON.stringify(y)`, so whatever is handed to it *becomes* the tiebreak key. Each
+dimension must be passed a wrapper carrying **only that dimension's own value +
+clock** — `laterOf({ v: a.description, at: a.descriptionUpdatedAt }, …)`, the
+shape `notePick` already uses in `conversations/store-core.ts`. Passing the
+whole entry makes the tiebreak read `displayName`/`state`/`updatedAt` first;
+those are chosen by *different* rules, so the key mutates as the fold
+accumulates and the result starts depending on `fs.readdirSync` order. Measured
+on the first implementation, which passed whole entries: **2,116 of 32,768
+triples failed associativity** (commutativity and idempotence were unaffected).
+Guard: `sync-spaces-project-registry.test.ts` → "converges on the same record
+for every fold order".
 
 ### 3.2 Known hazard: old clients drop the field
 
