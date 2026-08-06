@@ -118,8 +118,13 @@ enumerates `~/.youcoded/sessions/` with a plain `readdirSync`, no symlink
 skip. The index builder is therefore the **first thing ever to cold-scan the
 native lane**, so it cannot inherit the invariants by imitation. Phase 1
 **extracts** the lstat/symlink-skip and lane-prefix guards into shared pure
-helpers consumed by the reconciler, the builder, and `NativeHome.listSessionFiles()` —
-one implementation, one pinning test, three call sites.
+helpers — one implementation, one pinning test. Shipped 2026-08-05 as
+`conversations/lane-guards.ts` with **six** importing modules (measured, not
+estimated: `rg -l lane-guards desktop/src/` → `reconciler.ts`, `service.ts`,
+`native-home.ts`, `chatsearch-index/{index-store,index-service,meta-builder}.ts`).
+An earlier draft of this line said "three call sites"; that was an undercount.
+Note also that the builder does **not** consume `NativeHome.listSessionFiles()` —
+it resolves native transcript paths itself from store records.
 
 The two slug encodings differ deliberately (`ccProjectSlug` uppercases a
 lowercase Windows drive letter; `cwdToProjectSlug` does not). The builder reads
