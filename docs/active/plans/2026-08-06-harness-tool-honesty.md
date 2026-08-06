@@ -523,24 +523,61 @@ Expected: FAIL — no `[cwd:` in the output.
 
 - [ ] **Step 3: Emit the metadata line**
 
-In `finish`, replace the `const text = ...` line and the `resolve` from Task 3 with:
+Replace everything in `finish` from `let body = joined();` to the end of the function with this complete block, so the metadata line, the `dropped` calculation, and the single `resolve` all live in one place:
 
 ```ts
+        let body = joined();
+        let notice = '';
+        // Track what the cwd ENDED as, so the metadata line can state it. Two
+        // separate facts: where the shell actually landed, and whether the scope
+        // guard pulled it back.
+        let reportedCwd: string | null = null;
+        let resetTo: string | null = null;
+        if (probe) {
+          const parsed = extractCwd(joined());
+          body = parsed.text;
+          // Sentinel past the retention window → recover it from the uncapped tail.
+          const reported = parsed.cwd ?? extractCwd(probeTail).cwd;
+          if (reported && path.resolve(reported) !== path.resolve(startCwd)) {
+            if (isInside(ctx.cwd, reported)) {
+              reportedCwd = path.resolve(reported);
+              ctx.setShellCwd?.(reportedCwd);
+            } else {
+              // Scope guard: don't let the session wander out of the workspace,
+              // and TELL the model — a silent revert is the exact failure mode
+              // the Claude Code issues (#35058 et al.) complain about.
+              ctx.setShellCwd?.(ctx.cwd);
+              resetTo = ctx.cwd;
+              notice = `\nShell cwd was reset to ${ctx.cwd} (${reported} is outside the workspace).`;
+            }
+          }
+        }
         // ONE metadata line, always. Four of five reviewing models independently
         // asked for this (2026-08-01): file tools resolve relative paths from the
         // workspace root while Bash resolves from its own persistent cwd, and with
         // no cwd echoed back the only safe habit was prefixing every single call
         // with `cd <root> &&`. This line costs ~15 tokens and removes that ritual.
-        // It also ABSORBS the old `(exit code N)` prefix and the reset notice
-        // rather than adding to them.
+        // It ABSORBS the old `(exit code N)` prefix rather than adding to it.
+        const dropped = totalChars > body.length;
         const effectiveCwd = resetTo ?? reportedCwd ?? startCwd;
         const meta = [`cwd: ${effectiveCwd}`, `exit ${code ?? '?'}`];
         if (dropped) meta.push(`${totalChars} bytes output, showing ${body.length}`);
-        const metaLine = `\n[${meta.join(' · ')}]`;
-        const text = (`${body}`.trim() + notice).trim() + metaLine;
+        const text = (`${prefix}${body}`.trim() + notice).trim() + `\n[${meta.join(' · ')}]`;
+        resolve({
+          text,
+          isError,
+          bounds: dropped
+            ? {
+                shown: body.length,
+                total: totalChars,
+                unit: 'bytes' as const,
+                moreHint: 'pipe through head -n 100, tail -n 100, or wc -l to narrow it',
+              }
+            : undefined,
+        });
 ```
 
-This needs two new locals in `finish`. Above the `if (probe)` block add `let reportedCwd: string | null = null; let resetTo: string | null = null;`. Inside the scope-guard branch set `resetTo = ctx.cwd;` alongside the existing `notice` assignment, and in the in-workspace branch set `reportedCwd = path.resolve(reported);`.
+Note `prefix` stays in the text — it now only ever carries the timeout and cancellation messages, since the next change removes the exit-code prefix.
 
 Then remove the exit-code prefix at the call site — change the `close` handler to `child.on('close', (code) => finish('', code !== 0, code));`. The timeout and abort handlers keep their prefixes, since those messages are not exit codes.
 
