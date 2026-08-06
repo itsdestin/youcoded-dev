@@ -616,7 +616,7 @@ Absorbs the old (exit code N) prefix and the cwd-reset notice into one line."
       ctx,
     );
     expect(r.text).toContain('✓ passed');
-    expect(r.text).not.toContain('[');
+    expect(r.text).not.toContain('\x1b[');
   });
 
   it('Bash sets NO_COLOR so tools emit plain output in the first place', async () => {
@@ -656,7 +656,7 @@ Add near the top of `bash.ts`:
  *  reading the transcript. */
 export function stripAnsi(s: string): string {
   // eslint-disable-next-line no-control-regex
-  return s.replace(/\[[0-9;?]*[ -/]*[@-~]/g, '').replace(/\][^]*(?:|\\)/g, '');
+  return s.replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, '').replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, '');
 }
 ```
 
