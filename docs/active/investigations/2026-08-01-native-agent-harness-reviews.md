@@ -242,6 +242,56 @@ For YouCoded's goal (non-developers driving real agent work inside the app), I'd
 
 ---
 
+## Correction note — 2026-08-06
+
+Verification pass ahead of the fix branch. Nothing below edits or contradicts any
+model's review section — those stand as-written; this records what did and didn't
+hold up against the actual code, for a future session reading these reviews.
+
+**Claims that did not reproduce.** Read's binary guard and Write's overwrite
+refusal both already existed at review time. Kimi's and Opus's accounts of the
+Write guard were describing *different paths*, not disagreeing about the same
+one: Kimi overwrote a file it had written itself earlier in the same session,
+which the harness deliberately permits (an in-session author is trusted to know
+what they're replacing); Opus overwrote a file it had never Read, which the
+harness correctly refuses. Kimi's finding was narrower than Opus's rebuttal
+assumed, not wrong.
+
+**A misdiagnosed root cause.** WebFetch's failure on `vitest.dev/config/` was not
+truncation. Measured directly against the fetched page: 98,298 bytes of HTML,
+2,637 tags (far under the 15,000-tag complexity guard), 5,189 chars of visible
+text, and `id="include"` absent from the document entirely. Running the real
+extraction path (linkedom → Readability → turndown) against the same HTML yields
+3,647 chars of markdown — a clean Readability hit, well under the truncation cap,
+correctly producing no truncation notice. The content simply is not in the served
+HTML; it arrives as a JavaScript-fetched chunk after page load. WebFetch behaved
+correctly on the page it was given and still produced a false negative. An
+extraction-coverage ratio cannot catch this class of failure either: the failure
+page and a known-good page (docs.python.org's asyncio docs) measure within about
+one point of each other (70.3% vs 69.1%) on that metric.
+
+**An overstatement.** Bash's context cost was overstated roughly sevenfold.
+`BashTool` declares a 30,000-char cap and `defineTool` truncates every result
+through it before the model ever sees it, so the reviewed 60,000-line dump cost
+about 30 KB of context, not the ~200 KB the review's per-call accounting implied.
+
+**Three defects no reviewer found**, each worse than what was reported because
+each produced a confidently wrong answer rather than mere friction:
+- Bash announced a fabricated byte total once output exceeded its internal
+  retention buffer — the reported "total" was the length of the already-capped
+  buffer, not the command's real output size.
+- Glob's "sorted by modification time, newest first" claim was false on any tree
+  over 2,000 matching files: the walk capped its result set *before* sorting, so
+  a capped result was an arbitrary slice in directory-walk order, sorted only
+  among itself.
+- Grep truncated twice — a per-file `--max-count` and a separate stdout ceiling —
+  with neither disclosed, so a count-mode tally used to size a subsystem could be
+  short with no indication.
+
+Full accounting, the fix for each item above, and the bounds contract that
+replaces the shared advice string: `docs/active/specs/2026-08-06-harness-tool-honesty-design.md`.
+The fixes landed on branch `fix/harness-tool-honesty`.
+
 ## Prompt for other agents
 
 The battery prompt now lives in code as the single source:
