@@ -2,18 +2,19 @@
 
 Two tools that replace expensive LLM reading with cheap deterministic queries.
 
-**Why they exist here:** `ipc-handlers.ts` is 3,809 lines and `App.tsx` is 3,544, so a
+**Why they exist here:** `ipc-handlers.ts` is 3,906 lines and `App.tsx` is 3,679, so a
 single whole-file read costs roughly **10x the entire always-on `CLAUDE.md`**, and a
 conventional IPC-parity sweep (preload + remote-shim + ipc-handlers + `SessionService.kt`
-+ the parity test) runs ~90k tokens. The workspace has 871 TypeScript and 88 Kotlin
-source files. Reading is the dominant cost of every task; injected context is a rounding
-error next to it.
++ the parity test) runs ~90k tokens. The `youcoded` repo has 938 tracked TypeScript/TSX
+and 84 Kotlin files. Reading is the dominant cost of every task; injected context is a
+rounding error next to it.
+<!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts"} -->
 
 The escalation ladder — stop as soon as the question is answered:
 
 | Layer | Answers | Tool | Scope |
 |---|---|---|---|
-| Graph | "who calls / implements / defines this?" | **Serena** (`find_symbol`, `find_referencing_symbols`) | **`youcoded/` TypeScript only** — not Kotlin, not other sub-repos |
+| Graph | "who calls / implements / defines this?" | **Serena** (`find_symbol`, `find_referencing_symbols`) | **`youcoded/` TypeScript on the *main checkout* only** — not Kotlin, not other sub-repos, **not your worktree** |
 | Structural | "where does this code *shape* appear?" | **ast-grep** | Any repo, TS **and** Kotlin |
 | Lexical | "where does this exact text appear?" | **`rg`** | Everything |
 | Verdict | "is this dead / typed / in parity?" | `npm run knip`, `tsc --noEmit`, `ipc-channels.test.ts` | Definitive — prefer over all of the above |
@@ -30,8 +31,54 @@ understand.
 ## Serena
 
 An MCP server that runs real language servers (LSP) and exposes symbol-level tools, so an
-agent can fetch one function body instead of a 3,809-line file, and get resolved call
+agent can fetch one function body instead of a 3,906-line file, and get resolved call
 graphs instead of grep hits that include comments and strings.
+
+### It answers about `master`, not your worktree — read this first
+
+**This is the constraint that decides whether Serena is the right tool for what you are
+about to do.** It went unnoticed for the first week and is the main reason the server sat
+unused: 18 tool calls total, all on install day (2026-07-28), zero since.
+
+The server is started once per session with `--project /home/destin/youcoded-dev/youcoded`
+— **the main checkout**. It resolves every `relative_path` against that single root
+(`project.py:230`: `abs_path = os.path.join(self.project_root, relative_path)`) and
+rejects anything outside it (`is_path_in_project`, which logs *"not relative to the
+project root and was therefore ignored"*).
+
+But `CLAUDE.md` mandates worktrees for any non-trivial work. So in the common case:
+
+- Your worktree's files are **unreachable** — Serena cannot be pointed at them.
+- A query for `desktop/src/foo.ts` **silently returns master's copy**. It looks like a
+  correct answer. It is not an answer about your branch.
+
+**The division of labor that follows:**
+
+| Question | Tree it's about | Tool |
+|---|---|---|
+| "What's the shape of this file?" / "Who calls this?" | the shipped codebase = `master` | **Serena** ✅ |
+| "Does my branch typecheck / pass / have dead code?" | your worktree | **`bash scripts/verify.sh`** |
+| "Did my branch change this function?" | your worktree | `git diff`, Read |
+
+Orientation and reference-finding are questions *about the code that already exists* —
+master is the right tree for them, so this is a real role, not a consolation prize.
+
+**Serena is read-only here** (`read_only: true` in `youcoded/.serena/project.yml`,
+enforced at `agent.py:1100` → `tool_set.without_editing_tools()`). That drops 11 of the
+21 tools — the 7 file/symbol editors and the 4 memory writers — leaving 7 exposed:
+`initial_instructions`, `get_symbols_overview`, `find_symbol`, `find_referencing_symbols`,
+`find_implementations`, `find_declaration`, `get_diagnostics_for_file`.
+
+Read-only is deliberate and load-bearing: an edit tool aimed at `desktop/src/foo.ts`
+during worktree work would have **written to the main checkout** while the session
+believed it was editing the worktree — corrupting master and losing the edit. Reference-aware
+refactors (`rename_symbol`, `safe_delete_symbol`) are the real casualty; to use them you
+must be working *in the main checkout* and flip `read_only` back yourself.
+<!-- verify: {"path": "youcoded/.serena/project.yml", "contains": "read_only: true"} -->
+
+`get_diagnostics_for_file` is also master-only, so it cannot check your branch — but it
+is still additive on master, because LSP diagnostics include tsserver hints (unused
+locals and imports, unreachable code) that `tsc --noEmit` does not emit.
 
 ### Prerequisites
 
@@ -62,7 +109,8 @@ uvx --from git+https://github.com/oraios/serena serena project create \
   --language typescript --index
 ```
 
-Indexing 959 files takes ~12 seconds and produces a ~43 MB cache.
+Indexing takes ~12 seconds and produces a ~42 MB cache under `youcoded/.serena/cache/`
+(self-gitignored). A warm start reloads it in well under a second.
 
 **TypeScript only — do not add `--language kotlin` here.** It is not an oversight; see
 below.
@@ -74,9 +122,16 @@ prompt for the new server on first launch.
 
 1. **Point it at `youcoded/`, never at the workspace root.** Serena honors `.gitignore`,
    and the workspace `.gitignore` excludes *every* sub-repo (`youcoded/`,
-   `wecoded-themes/`, …). Aimed at `/youcoded-dev` it indexes essentially nothing while
-   appearing to succeed. Reach other repos at runtime with `activate_project`.
-   <!-- verify: {"path": ".gitignore", "contains": "youcoded/"} -->
+   `wecoded-themes/`, …) **and `worktrees/`**. Aimed at `/youcoded-dev` it indexes
+   essentially nothing while appearing to succeed. The other sub-repos are then
+   unreachable for the whole session — this build has no `activate_project` (see
+   [Where it stops](#where-it-stops--verified-2026-07-28)); use `rg`/`ast-grep` for them.
+   <!-- verify: {"path": ".gitignore", "contains": "worktrees/"} -->
+
+   Do **not** "fix" the worktree blind spot by aiming it at the workspace root with
+   gitignore disabled: that indexes the main checkout *plus* every worktree, so each
+   symbol returns one hit per tree and `find_referencing_symbols` inflates its counts
+   ~8x. A wrong number is worse than a missing one.
 
 2. **Use `--context claude-code`.** Older guides say `--context ide-assistant`; that
    context no longer exists. `uvx --from git+https://github.com/oraios/serena serena
@@ -126,14 +181,14 @@ have been anyway.
 | `find_symbol` | One function/class body by name path |
 | `find_referencing_symbols` | **"Who calls this?"** — resolved, no comment/string noise |
 | `find_implementations` / `find_declaration` | Interface → implementors; call site → definition |
-| `get_diagnostics_for_file` | Type errors for one file without a full `tsc` run |
-| `rename_symbol` / `safe_delete_symbol` | Reference-aware refactors — they update all call sites atomically |
-| `replace_in_files` | Bulk edits; `dry_run: true` first returns per-occurrence diffs you can select |
+| `get_diagnostics_for_file` | Master-only type errors + tsserver hints (unused locals/imports) for one file |
+| ~~`rename_symbol` / `safe_delete_symbol` / `replace_in_files`~~ | **Removed** — `read_only: true`. They would have written to the main checkout during worktree work |
 
 `find_referencing_symbols` is the one that changes how the workspace works. The
 `never assert a negative from a single search` rule exists because grep cannot establish
-its own completeness — a language server can. "Is there an Android mirror of this",
-"is this the only call site", and "is this dead" become answerable instead of inferable.
+its own completeness — a language server can. "Is this the only call site" and "is this
+dead" become answerable instead of inferable **for TypeScript on master**. (Android-mirror
+questions are *not* in scope — Kotlin is unindexed; that's `ipc-channels.test.ts`.)
 
 ### Where it stops — verified 2026-07-28
 
@@ -165,11 +220,16 @@ reads its own config and does not share this blind spot.
 
 ### Honest cost
 
-Registering any MCP server adds its tool descriptions to **every** request. Net win on
-long sessions over large subsystems; net loss on one-line lookups. Use `rg` for those.
-The published token-savings figures in this space are one unreplicated study plus vendor
-claims — the durable argument for Serena here is **correctness** (resolved references
-beat pattern matches), not the token number.
+Serena's tools are **deferred** in this harness — only the bare names appear in the
+session's tool list; the JSONSchema loads on demand via `ToolSearch`. An earlier revision
+of this section said the descriptions cost tokens on *every* request and used that to
+argue against reaching for the server; that overstated the standing cost. Trimming to 7
+tools (`read_only` + `excluded_tools`) cuts the name-list noise further.
+
+The real cost is a **`ToolSearch` round-trip before the first call**, which is why `rg`
+still wins one-line lookups. The published token-savings figures in this space are one
+unreplicated study plus vendor claims — the durable argument for Serena here is
+**correctness** (resolved references beat pattern matches), not the token number.
 
 ### Maintenance
 
@@ -184,9 +244,14 @@ beat pattern matches), not the token number.
 - A future `tsc --noEmit` CI gate must keep using `-p tsconfig.json` (the build config).
   The tests project carries 44 pre-existing type errors and is not gated.
 - `youcoded/.serena/` self-manages a `.gitignore` covering `cache/` and
-  `project.local.yml`, so only `project.yml` would ever be tracked. Whether to commit it
-  to the `youcoded` sub-repo is an open call — it's the same shape as the
-  `.claude/rules/` already tracked there.
+  `project.local.yml`. **`project.yml` is tracked in the `youcoded` sub-repo**
+  (`git ls-files .serena` → `.serena/.gitignore`, `.serena/project.yml`), so changes to
+  `read_only` / `excluded_tools` / `language_servers` are a sub-repo PR, not a local tweak.
+  A side effect worth knowing: because it's tracked, every worktree inherits a
+  `.serena/project.yml` it will never use — the running server is pinned to the main
+  checkout regardless.
+- **Config changes need a Claude Code restart.** `read_only` and `excluded_tools` are read
+  when the MCP server starts, which is once per session.
 
 ---
 
