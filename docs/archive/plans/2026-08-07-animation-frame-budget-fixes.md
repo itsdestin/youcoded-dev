@@ -1,8 +1,8 @@
 ---
-status: draft
+status: shipped
 created: 2026-08-07
 repo: youcoded (desktop)
-branch: perf/transcript-hover-frames
+branch: perf/transcript-hover-frames (merged a071679d, 2026-08-07)
 worktree: /home/destin/youcoded-dev/worktrees/hover-paint
 ---
 
@@ -861,3 +861,42 @@ git commit -m "docs(perf): record animation frame-budget results and deferred it
 - **Mascot motion while genuinely visible and focused** — that is the feature working as intended.
 - **Android and remote surfaces** — same root cause, different scoping and unmeasured cost coefficients. Captured in the ROADMAP by Task 8 Step 4.
 - **Making Reduced Effects an "all animations off" switch** — currently it is mostly a blur/glass + particles + mascot switch. Expanding it is a product decision, not a perf fix, and the 2026-07-30 investigation deliberately kept spinners running ("a frozen spinner reads as a hung app").
+
+
+## Result (2026-08-07)
+
+Merged as `a071679d`. Six commits; `tsc`, related vitest, knip and eslint green
+(the ast-grep scan's two `web-fetch.ts` errors are pre-existing on master and are
+roadmapped separately).
+
+**Landed:** all of Tasks 1–7. `.hover-lift` settled at `steps(5)`, `.card-interactive`
+and `.stepped-hover` at `steps(4)`, `version-glow` at `steps(16)`.
+
+**Corrections made during execution, worth carrying forward:**
+- The plan's `steps(16)` build check was wrong. Tailwind normalizes the arbitrary
+  value to `steps(16,end)` in the emitted CSS, so `grep 'steps(16)'` finds nothing
+  and looks like a rejection. Use `grep -roE 'steps\(16[,)]'`.
+- `.model-load-finalize::after` shares `model-load-sweep` and *also* needed
+  `left: 0`. The plan listed this as a conditional check; it was load-bearing —
+  left at `-35%` plus the new `translateX(-100%)` start would have kept the
+  highlight from ever reaching the right edge.
+- Narrowing `transition: all` on the session pills required **both** `box-shadow`
+  (`GLOW_SHADOW` changes on activation *and* on status-colour flips) and `opacity`
+  (`opacity-30` is dropped by the same render that leaves the drag branch).
+  Omitting either would have snapped what `all` used to ease.
+- One guard assertion in Task 1 passed vacuously as first written — it looked for
+  `transition:` and `'all` adjacent, but they sit on separate lines of a ternary.
+  Match the value, not the declaration.
+
+**Not done — Task 8's measurement.** Merged on a visual "good for now" rather than a
+re-measured number. The `~33% of one core while circling the pointer` baseline was
+never re-taken after the fix, so the size of the win is unquantified. `dragprobe.py`
+(scratchpad, this session) is the tool; re-run it against a tool-heavy transcript if
+the question comes up.
+
+**Two changes carry residual risk, each a single-commit revert:**
+- `9a01fbf5` (nested blur) — revert if tool cards visibly flatten inside assistant
+  bubbles under a wallpaper theme.
+- `a2767a67` (mascot visibility gate) — the spring `dt` reset on resume is the one
+  behaviour no test covers. A visible jolt when restoring a minimized window means
+  `last = performance.now()` is landing after the first tick rather than before.
