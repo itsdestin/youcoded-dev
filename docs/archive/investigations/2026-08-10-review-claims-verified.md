@@ -1,8 +1,16 @@
 ---
-status: draft
+status: shipped (unmerged) — findings acted on in integration/harness-spec, 2026-08-10
 ---
 
 # Harness review claims, verified against ground-truth transcripts
+
+> **Archived 2026-08-10.** This adjudication's "worth fixing" list was acted on: Grep's
+> architecturally-unknowable count (items 1–2), Bash's elision corruption (item 4), the
+> no-op `replace_all` (item 6), WebFetch's undistinguished empty body (item 9), and Read's
+> message-shape inconsistency (item 7) all have corresponding fixes on `integration/harness-spec`
+> (worktree `youcoded/worktrees/harness-integration`). Item 3 (Write's overwrite guard has no
+> freshness check) got a same-shape guard as Edit's — but both still use mtime, not a content
+> hash; see the open ROADMAP item. Not yet merged to `youcoded` master.
 
 Five frontier models (Kimi K3, DeepSeek v4 Flash 0731, Grok 4.5, GPT-5.6 Luna, Claude
 Opus 5) each ran an identical tool battery against the native agent harness

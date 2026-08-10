@@ -1,8 +1,16 @@
 ---
-status: draft
+status: shipped (unmerged) — all 6 tasks landed, hardened further on integration/harness-spec, 2026-08-10
 ---
 
 # Harness Review Runner Implementation Plan (Plan B)
+
+> **Archived 2026-08-10.** All six tasks implemented and committed (`feat/harness-review-runner`),
+> then hardened by review-driven fixes on `integration/harness-spec`
+> (worktree `youcoded/worktrees/harness-integration`) — fixture jail (deny non-AskUserQuestion
+> asks), bounded `max_steps` continuations, the final-message extraction fix, and a
+> minute-precision heading with build identity. **Not yet merged to `youcoded` master** as of
+> this archive date — `.claude/rules/harness-review-runner.md` covers the runner's load-bearing
+> invariants and stays live until the merge lands and its `verify:` anchors can be added.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

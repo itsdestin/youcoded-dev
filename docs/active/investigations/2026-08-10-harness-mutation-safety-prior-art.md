@@ -1,7 +1,17 @@
 ---
-status: draft
+status: active — partially consumed, one recommendation still open
 date: 2026-08-10
 ---
+
+> **Kept active 2026-08-10** (not archived alongside its sibling prior-art docs): most of
+> this doc's findings were acted on in `integration/harness-spec` (Write got Edit's
+> staleness guard, no-op edits say so, timeout exit representation, shell persistence), but
+> its strongest recommendation — replacing Write's and Edit's **mtime** staleness check with
+> a **content hash** (§1, citing Gemini CLI's SHA-256 and OpenCode V2's byte comparison) —
+> was deliberately deferred; both tools still compare mtime today (`write.ts`, `edit.ts`),
+> consistently, per an in-code WHY comment that treats hash as the correct long-term answer.
+> This doc is that recommendation's justification — see the open ROADMAP item. Re-archive
+> once the hash migration ships.
 
 # Prior art for file-mutation safety and shell result metadata: what mature harnesses do
 

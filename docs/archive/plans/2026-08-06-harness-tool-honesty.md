@@ -1,8 +1,17 @@
 ---
-status: draft
+status: shipped (unmerged) — all 19 tasks landed on integration/harness-spec, 2026-08-10
 ---
 
 # Harness Tool Honesty Implementation Plan (Plan A)
+
+> **Archived 2026-08-10.** All 19 tasks (the original 17 plus two added during execution:
+> Task 18 context-fit truncation, Task 19 tool-owned widening vocabulary) verified against
+> the commit history on `integration/harness-spec` (worktree
+> `youcoded/worktrees/harness-integration`) — the bounds contract, every per-tool fix
+> (Read/Bash/Grep/Glob/WebSearch/WebFetch), the manifest test + schema cross-check, the
+> ast-grep rule (`scripts/ast-grep/rules/tool-bounds-not-hand-rolled.yml`, this workspace
+> repo), and the conformance suite are all present. **Not yet merged to `youcoded` master**
+> as of this archive date.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

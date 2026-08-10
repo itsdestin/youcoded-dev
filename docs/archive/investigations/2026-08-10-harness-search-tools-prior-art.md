@@ -1,7 +1,12 @@
 ---
-status: draft
+status: shipped (unmerged) — recommendations implemented on integration/harness-spec, 2026-08-10
 date: 2026-08-10
 ---
+
+> **Archived 2026-08-10.** Its recommendations shipped: Glob's non-nested brace support,
+> Grep's exhaustive count mode + error-message derivation + workspace-relative paths +
+> per-file cap disclosure. Verified against `integration/harness-spec` (worktree
+> `youcoded/worktrees/harness-integration`), not yet merged to `youcoded` master.
 
 # Prior art for Glob/Grep tool design: what mature harnesses do
 

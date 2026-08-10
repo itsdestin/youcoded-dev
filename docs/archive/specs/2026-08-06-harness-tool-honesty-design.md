@@ -1,8 +1,19 @@
 ---
-status: draft
+status: shipped (unmerged) — §3, §4, §5, §6a implemented on integration/harness-spec, 2026-08-10
 ---
 
 # Native harness tool honesty — design
+
+> **Archived 2026-08-10.** Every mechanism this spec describes is implemented: the `bounds`
+> contract (§3), all seven per-tool changes in §4 (Bash accumulator/metadata/ANSI, Grep
+> error-derivation/relative-paths/caps-disclosure, Glob walk-then-sort, WebSearch cap+dedup,
+> Read migration, WebFetch JS-shell disclosure/fragment resolution/soft fallback), and every
+> guard in §5 (pinning tests, the manifest test + schema cross-check, the ast-grep rule,
+> the conformance suite) — verified against the commit history on `integration/harness-spec`
+> (worktree `youcoded/worktrees/harness-integration`). §7's deferred items remain deferred,
+> deliberately — that is not open scope, it is this spec's own explicit boundary. **Not yet
+> merged to `youcoded` master** as of this archive date; the implementation plan
+> (`docs/archive/plans/2026-08-06-harness-tool-honesty.md`) carries the same caveat.
 
 Every finding in the five-model harness review (`docs/active/investigations/2026-08-01-native-agent-harness-reviews.md`)
 reduces to one defect class: **a tool result that lets the model mistake a bounded

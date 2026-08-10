@@ -1,7 +1,12 @@
 ---
-status: draft
+status: shipped (unmerged) — recommendations implemented on integration/harness-spec, 2026-08-10
 date: 2026-08-10
 ---
+
+> **Archived 2026-08-10.** Its recommendations shipped: Bash's 4k head+tail cap with
+> unconditional spill-to-file and a once-per-process TTL sweep (`bash.ts`), and Grep's
+> match-count cap with disclosure. Verified against `integration/harness-spec` (worktree
+> `youcoded/worktrees/harness-integration`), not yet merged to `youcoded` master.
 
 # Prior art: how mature agentic harnesses truncate large shell-command output
 
