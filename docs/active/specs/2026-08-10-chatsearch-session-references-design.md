@@ -164,6 +164,42 @@ Requirements:
    must contain resolved paths to the two legal roots (`~/.claude/projects`,
    the conversation space) and refuse anything else. Reachable over the remote
    WebSocket, so this is a real boundary, not a formality.
+4. **Refuses subagent transcripts explicitly** — see below. Root containment
+   alone does not cover this: a subagent transcript sits *inside* a legal root.
+
+### C2. Subagent transcripts must never surface as conversations
+
+Claude Code writes each subagent's transcript to its own file, nested under the
+parent session:
+
+```
+~/.claude/projects/<slug>/<parent-session-id>/subagents/agent-<hash>.jsonl
+```
+
+Measured on this device: 1,134 of 1,743 transcript files are subagent files.
+They are cleanly separated — 1,131 are entirely `isSidechain: true`, the 606
+session transcripts contain none, and no file mixes the two.
+
+None of them currently reach the store, the synced space, or the chatsearch
+index (verified: zero entries on either lane with an `agent-` id, a
+`/subagents/` path, or a non-UUID id; no `subagents/` directory exists anywhere
+in the space). **But that is incidental, not guarded.** Both enumerators —
+`conversations/reconciler.ts:126` and `session-browser.ts:351` — do a flat
+`readdir` filtered on `.endsWith('.jsonl')`, so subagent files are missed only
+because they are one directory deeper. A secondary accident is that store index
+keys are UUID-shaped and `agent-<hash>` is not. Nothing in the store, mirror, or
+reconciler references subagents by name.
+
+This design widens the exposure, because the reader accepts a transcript path
+rather than a slug plus id. So the exclusion becomes explicit:
+
+- Reject any path with a `subagents` path segment.
+- Reject any id not matching the session-UUID shape.
+- Reject a transcript whose message lines are entirely `isSidechain: true`
+  — a content check that survives a future layout change.
+
+A subagent transcript is not a conversation the user had. Surfacing one as a
+past session would be a fabrication, not merely noise.
 
 **Known fidelity limit.** `HistoryMessage[]` carries no tool activity, and
 `loadHistory` keeps assistant messages only where `stop_reason === 'end_turn'`.
@@ -275,6 +311,7 @@ avoid crossing that boundary.
 | Native transcript → `HistoryMessage[]` | Unit, fixture-based |
 | Claude transcript → `HistoryMessage[]` | Unit, pinning the existing filters |
 | Path containment | Unit — traversal + foreign-root refusal |
+| **Subagent exclusion** | **Fixture with a nested `<session>/subagents/agent-x.jsonl`: the reader refuses it, and neither the reconciler nor `listPastSessions` enumerates it. This is the pinning test the current implicit behavior lacks.** |
 | Local-vs-mirror preference | Unit — both present, mirror only, neither |
 | New IPC channel parity | `ipc-channels.test.ts` |
 | Renderer extraction | `ConversationPreview` keeps its current behavior |
