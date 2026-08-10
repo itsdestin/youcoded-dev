@@ -94,7 +94,8 @@ unsynced transcript.
 
 ## Architecture
 
-Five components. Only the first is genuinely new UI.
+The two card renderers (A, A2) are the only genuinely new UI. Everything else
+extracts, widens, or guards something that already exists.
 
 ### A. Chatsearch result card (`tool-views/`)
 
@@ -117,6 +118,43 @@ converge on one renderer.
 The CLI's stdout stays human-readable. The card parses the same rows the model
 reads. If parsing fails, fall back to the existing plain `Bash` rendering — a
 search that displays as text is degraded, not broken.
+
+### A2. `show` renders a presented conversation card
+
+`find` answers "what's out there"; `show <id>` answers "this one". Both render as
+cards, with different layouts: `find` a list of rows, **`show` a single
+conversation presented prominently, with Preview and Resume**.
+
+This is the intentional-display primitive — the model presents a conversation by
+running `show` on it. It needs no signalling channel back into the app, which is
+what made a dedicated spotlight tool expensive on the `claude` lane: the tool
+call and its output already land in the transcript, carrying full session
+context, and the card is simply how they render. Identical on both lanes.
+
+The skill must state it directly: **when you name a specific past conversation
+to the user, run `show` on it.** That turns presentation into a tool call the
+model has independent reason to make — it is already told to verify before
+asserting — rather than a formatting convention it may not follow.
+
+This closes the gap the `find` card cannot: a follow-up like *"which one had
+X?"* is answered from results already in hand, so no `find` runs, and without
+this the answer would arrive as unadorned prose.
+
+**Grouping.** `show` cards must not be pooled with unrelated tool cards. Today
+`TRANSCRIPT_TOOL_USE` appends every call to `currentGroupId`, which only resets
+on assistant text (`chat-reducer.ts:747`) — so a `show` immediately after a
+`Read` would share that `Read`'s group. The reducer gains a **group affinity**:
+a call joins the current group only when their affinity matches, otherwise it
+closes the group and opens a new one. `ToolGroupState` carries the affinity it
+was opened with.
+
+- Consecutive `show` calls group together — they stack, they never replace.
+- A `show` next to any other tool always starts its own group, in both
+  directions.
+
+Affinity is derived from the same normalizer that selects the card, so grouping
+and rendering can never disagree about what a call is. One function, two
+consumers.
 
 ### B. Conversation renderer (extracted)
 
@@ -245,17 +283,17 @@ folder not on this device"* vs *"Not synced to this device yet"*. Preview stays
 enabled in both cases. Never imply the conversation does not exist — it does;
 only its local prerequisites are missing.
 
-### Deferred: intentional spotlight
+### Deferred: catching a bare id in prose
 
-An explicit "show this session" tool the model calls on purpose is a real
-addition, but not the foundation, and is out of scope for v1.
+If the model answers without running `show`, no card appears. The skill
+instruction makes that less likely, not impossible.
 
-On the `native` lane it is clean — a harness tool via `buildAiTools()`. On the
-`claude` lane chatsearch is a bash script that **cannot touch the app's UI**; it
-would need a signalling channel back in (remote server, hook-relay pipe, or a
-watched file). That asymmetry is real work and a place the lanes would drift.
-The result card gets the same affordance with none of it, so build that first
-and add the spotlight only if it is missed.
+The fallback would be detecting a conversation id written in prose and rendering
+an inline chip — the rehype-plugin approach `rehypeFilepathTokens` already
+establishes. It is deliberately **not** in v1: it only fires when the model
+happens to write an id, and models tend to write titles instead, so it is a weak
+primary and an acceptable secondary. Add it only if cards are observably missing
+in practice.
 
 ## Data flow
 
@@ -308,6 +346,7 @@ avoid crossing that boundary.
 | Area | Guard |
 |---|---|
 | Row parsing from CLI stdout | Unit, incl. malformed input → fallback |
+| **`show` group affinity** | **Reducer unit: `show` after `Read` opens a new group; `Read` after `show` opens a new group; two consecutive `show`s share one. Regression risk is silent — a wrong group renders plausibly.** |
 | Native transcript → `HistoryMessage[]` | Unit, fixture-based |
 | Claude transcript → `HistoryMessage[]` | Unit, pinning the existing filters |
 | Path containment | Unit — traversal + foreign-root refusal |
@@ -323,7 +362,7 @@ The two readers should share one fixture-driven contract test, in the spirit of
 
 1. **Reader + IPC** (C) — path-based, both formats, contained. Testable with no UI.
 2. **Renderer extraction** (B) — plus the markdown change. Project View regression-checked.
-3. **Result card** (A) — the visible feature.
+3. **Result cards** (A, A2) — `find` list, `show` presented conversation, plus the reducer group affinity.
 4. **Drawer references** (D) — accumulate and re-open.
 5. **Resume wiring** (E) — smallest piece; depends on nothing above.
 
