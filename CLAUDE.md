@@ -136,6 +136,12 @@ cd youcoded && ./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew
 
 See `docs/build-and-release.md` for full build order, release flows, and version bumping rules.
 
+### Harness evals (native agent tools)
+
+**When you change a native harness tool, or want to know how a model behaves in a native session, OFFER to run the harness review battery — then let Destin decide.** `youcoded/desktop/test-engine/review-harness.mjs` runs an identical battery of agentic tasks across a roster of models, each in its own disposable `os.tmpdir()` fixture, and appends every model's free-form review of the harness to `docs/active/investigations/`. `--dry-run` is free and needs no key; `--only "<label>"` runs one model; a full roster is real money (~$1.50) and needs `OPENROUTER_API_KEY`, so **never run the paid path unasked**.
+
+Why offer at all: four live rounds found **nine** real defects that 4,500 passing tests did not — Bash returning 27,966 chars from one command, Grep reporting a 500-match cap as a true total, Glob treating `{ts,kt}` as literal text, a provider 402 rendered as `[object Object]`. Unit tests here drive scripted fake models; only a real model spending a real turn exercises the judgment these tools are built for. Rule: `.claude/rules/harness-review-runner.md` (auto-loads on `harness/tools/**` too).
+
 ## Known Pitfalls
 
 All architectural invariants, cross-cutting gotchas, and lessons learned live in `docs/PITFALLS.md`. **Read it before making non-trivial changes** — it covers IPC parity, chat reducer invariants, Android runtime constraints, bundled-plugin/hooks rules, release gotchas, and working conventions.
