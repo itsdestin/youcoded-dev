@@ -51,25 +51,46 @@ React view. `jsonl` is unmapped today.
 
 ## The constraint that shapes the design
 
-Chatsearch indexes the **synced conversation space**; the Resume Browser resumes
-from **local disk**. Those sets differ badly on this device:
+The two actions have different prerequisites, and that — not how much data
+exists — is what separates them.
+
+**Preview needs the transcript bytes.** Those are always present. Every
+conversation transcript is mirrored to the synced space at
+`~/YouCoded/Personal/Conversations/<provider>/transcripts/<key>/<id>.jsonl`, a
+real local directory. Measured: all 1,697 Claude entries carry a
+`transcriptPath`, and 1,694 point at a file that exists — the 3 exceptions are
+exactly the tombstones.
+
+**Resume needs the bytes *and* a working directory to launch into.** The
+transcript half is solvable: the materialize sweep already copies from the space
+into `~/.claude/projects/`, where `claude --resume` expects it. The directory
+half often is not — a conversation recorded on another machine names a folder
+that does not exist here, and a session cannot start in a directory that isn't
+there.
+
+Measured on this device:
 
 | | count |
 |---|---|
-| Claude conversations chatsearch can find | 1,690 |
-| …with a transcript in `~/.claude/projects/` | 599 |
-| …with no local transcript at all | **1,091** |
+| Claude conversations chatsearch can find | 1,697 |
+| Resumable — project folder present locally | 557 |
+| Not resumable — **project folder absent** | 1,137 |
+| Not resumable — transcript merely unmaterialized | **0** |
 
-Those 1,091 become `missingProject` or `notSyncedYet` rows, which
-`ResumeBrowser.tsx:872` marks `inert` — not resumable, not expandable. Native is
-not affected in the same way (62 of 64 are local).
+That last row is the important one. No conversation is blocked by the
+recoverable condition; every blocked one is blocked because its working
+directory is missing. Native is not affected the same way (62 of 64 local).
 
-So **resume is a minority action** and cannot be the only destination. Preview,
-however, can cover everything: chatsearch's own metadata already stores
-`transcriptPath` pointing into the synced space, which exists for all 1,690.
+(The 1,137 is a slight over-count: the measurement mirrors
+`resolveLocalProject` but reads only saved folders, not the managed-projects
+map. Directionally sound, not exact. The ratio is also specific to this
+device — a machine where most of the work was done locally would invert it.)
 
-**Design consequence:** Preview is the primary action and must work everywhere.
-Resume is the secondary action and must degrade honestly where it cannot work.
+**Design consequence:** both actions are first-class. Preview must work for
+every conversation, including every one resume cannot reach. Resume must state
+which prerequisite is missing rather than presenting a dead control, reusing the
+Resume Browser's existing distinction between an absent project folder and an
+unsynced transcript.
 
 ## Architecture
 
@@ -122,7 +143,8 @@ Today's path is project-scoped and local-only:
 `~/.claude/projects/<slug>/<id>.jsonl`.
 
 A chatsearch hit is not necessarily in a saved project, and two thirds of hits
-have no local transcript. So this component adds a **path-based** reader:
+have no transcript in `~/.claude/projects/` — their bytes live only in the
+synced mirror. So this component adds a **path-based** reader:
 
 ```
 readConversation(transcriptPath, provider, { count, all }) -> HistoryMessage[]
@@ -293,6 +315,7 @@ The two readers should share one fixture-driven contract test, in the spirit of
    renderer branch — same component, no rewrite. Deferred, not foreclosed.
 2. **Persisting references across restarts.** v1 keeps them in reducer state
    only. Persisting is a store decision, not a renderer one.
-3. **Rendering the 1,091 honestly.** A previewed conversation from another
-   device may be behind that device's latest turns. Whether the preview should
-   say so, and how it would know, is unresolved.
+3. **Freshness of a mirrored transcript.** A conversation previewed from the
+   synced mirror may be behind the originating device's latest turns — sync is
+   not instantaneous. Whether the preview should say so, and how it would know,
+   is unresolved.
