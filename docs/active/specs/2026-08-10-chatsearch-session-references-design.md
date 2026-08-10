@@ -141,16 +141,37 @@ X?"* is answered from results already in hand, so no `find` runs, and without
 this the answer would arrive as unadorned prose.
 
 **Grouping.** `show` cards must not be pooled with unrelated tool cards. Today
-`TRANSCRIPT_TOOL_USE` appends every call to `currentGroupId`, which only resets
-on assistant text (`chat-reducer.ts:747`) — so a `show` immediately after a
-`Read` would share that `Read`'s group. The reducer gains a **group affinity**:
-a call joins the current group only when their affinity matches, otherwise it
-closes the group and opens a new one. `ToolGroupState` carries the affinity it
-was opened with.
+`TRANSCRIPT_TOOL_USE` appends every call to `currentGroupId`, a single pointer
+that only resets on assistant text (`chat-reducer.ts:747`) — so a `show`
+immediately after a `Read` would share that `Read`'s group.
 
-- Consecutive `show` calls group together — they stack, they never replace.
-- A `show` next to any other tool always starts its own group, in both
-  directions.
+The reducer gains a **group affinity** per tool call, and `currentGroupId`
+becomes a per-turn **map** from affinity → group id. A call appends to the group
+for *its own* affinity, creating one (and a new turn segment) if that affinity
+has none yet in this turn. Assistant text clears the whole map, exactly as it
+clears the single pointer today. `ToolGroupState` carries the affinity it was
+opened with.
+
+A single pointer is not enough, because a `show` must not *end* the surrounding
+run of ordinary tools:
+
+```
+Read → show → Read     ⇒ 2 groups: [Read, Read] and [show]
+```
+
+Sequential close-and-reopen would yield three groups here. The ordinary-tool
+group has to survive the interruption, which is what the per-affinity map buys.
+
+- Consecutive `show` calls group together — they stack, never replace.
+- A `show` beside any other tool is always in its own group, in both directions.
+- Ordinary tools separated by a `show` stay in one group.
+
+**Consequence to accept:** a group renders where its affinity *first* appeared
+in the turn, so the trailing `Read` above appears in the group above the `show`
+card, even though it ran after. Position reflects the group, not the individual
+call. This follows unavoidably from the requirement — a group cannot both
+coalesce across an interruption and sit at each member's sequential position.
+Timestamps inside the group remain truthful.
 
 Affinity is derived from the same normalizer that selects the card, so grouping
 and rendering can never disagree about what a call is. One function, two
@@ -346,7 +367,7 @@ avoid crossing that boundary.
 | Area | Guard |
 |---|---|
 | Row parsing from CLI stdout | Unit, incl. malformed input → fallback |
-| **`show` group affinity** | **Reducer unit: `show` after `Read` opens a new group; `Read` after `show` opens a new group; two consecutive `show`s share one. Regression risk is silent — a wrong group renders plausibly.** |
+| **`show` group affinity** | **Reducer unit, with `Read → show → Read` ⇒ exactly 2 groups as the load-bearing case; plus two consecutive `show`s sharing one group, and assistant text clearing every affinity. Regression risk is silent — a wrong group renders plausibly.** |
 | Native transcript → `HistoryMessage[]` | Unit, fixture-based |
 | Claude transcript → `HistoryMessage[]` | Unit, pinning the existing filters |
 | Path containment | Unit — traversal + foreign-root refusal |
