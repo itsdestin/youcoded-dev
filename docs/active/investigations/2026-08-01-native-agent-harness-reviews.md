@@ -292,6 +292,367 @@ Full accounting, the fix for each item above, and the bounds contract that
 replaces the shared advice string: `docs/active/specs/2026-08-06-harness-tool-honesty-design.md`.
 The fixes landed on branch `fix/harness-tool-honesty`.
 
+## Review: Kimi K3 — 2026-08-10
+
+**Model:** `moonshotai/kimi-k3` · **Battery:** `src/main/harness/review/battery.ts` · run in a disposable fixture workspace.
+
+All six batteries are complete. Here is my honest review of the YouCoded native agent harness.
+
+---
+
+## What works well
+
+**The tool footer lines are the best single feature.** Every Bash call ends with `[cwd: /tmp/yc-harness-review-c65Tfg · exit 0]`, which silently answers three questions an agent would otherwise have to burn calls on: *where am I*, *did it work*, and (for long output) *how much am I missing*. On the truncation test I got `[exit 0 · 13088895 chars output, showing 27966]` — exact numbers, not a vague "output was truncated."
+
+**Output truncation is genuinely well-designed.** My 200,000-line test output was cut in the *middle*, keeping the first ~350 lines and the last ~90, with `[...]` marking the elision, plus the footer `[showing 27966 of 13088895 chars — pipe through head -n 100, tail -n 100, or wc -l to narrow it]`. The hint names concrete commands to narrow the output. This is the kind of affordance that prevents agent doom-loops.
+
+**The workspace sandbox "fails open" informatively.** `cd /` succeeded at the OS level, then the harness immediately printed `Shell cwd was reset to /tmp/yc-harness-review-c65Tfg (/ is outside the workspace).` and the next call confirmed I was back at the root. It corrects you without failing the command or hiding what happened. Same philosophy in WebFetch: `WebFetch blocked: localhost is a local address — fetching it is blocked.` One line, reason included.
+
+**Error messages are actionable, not just descriptive.** Highlights, quoted exactly:
+- Read slice: `[showing 20 of 2400 lines — use offset=510 to continue]` — it computes the *next* offset for you.
+- Read past EOF: `offset 9999 is past the end of the file (2400 lines).`
+- Duplicate edit: `Edit failed: old_string matches 3 times. Add surrounding context to make it unique, or pass replace_all: true.` — it tells you the match count *and* both remediation paths.
+- Grep count mode: `src/big-module.ts:500` followed by `Note: these files hit the 500-matches-per-file limit and have more: src/big-module.ts` — the cap is disclosed, which is critical; a bare "500" would be a lie by omission.
+- WebFetch truncation: `[output truncated: showing 30007 of 48926 chars — fetch a more specific URL, or a narrower section of the page]`
+
+**Edit safety features work as advertised.** Externally modifying README.md via `echo >>` in Bash, then editing it, produced `Edit rejected: README.md changed since you read it. Read it again, then retry.` After re-reading, the edit went through. `replace_all: true` flipped all 3 `repeat` lines, and a 3-line multi-line context edit matched exactly.
+
+**Every tool call got a response.** Timeouts return `Command timed out after 1000ms.` with `exit ?`, and failing commands like `false` return `(no output)` with `exit 1` — the harness distinguishes "no output" from "no result," and nothing ever hung or vanished.
+
+**Small courtesies add up:** Write creating parent directories automatically (`scratch/test-file.md` worked with no `mkdir`), paths with spaces working identically in Bash, Read, and Glob with no quoting traps, and Glob returning all 9 fixture files for `**/*`.
+
+## Difficulties / wishes
+
+**Glob silently doesn't support brace expansion.** `**/*.{ts,kt,toml}` returned `No files matched.` in a project containing .ts, .kt, and .toml files. That's not "no matches," it's "unsupported syntax," and the response gives no way to tell the difference. I diagnosed it by re-running with `**/*.ts`. A message like `No files matched (note: brace expansion not supported)` would save every agent one wasted call, once per career. This was the only result in the whole battery I'd call misleading.
+
+**The Edit-without-Read rule is inconsistent between the spec and reality.** The tool description says "You must Read the file first," but I edited README.md — which I had Read much earlier and then modified — successfully, and I edited `scratch/test-file.md` right after Write-ing it without a Read (reasonable, since Write should count as knowing the content). In practice the harness seems to enforce freshness (mtime/dirty-check) rather than a literal read-before-edit ACL. That's arguably *better* than the documented behavior, but the docstring overstates the restriction, and the Write-then-Edit path is a guess each agent has to make.
+
+**Write is a loaded gun with no safety on overwrites.** I ran `Write README.md "overwrite attempt"` and it cheerfully replied `Overwrote README.md (17 chars).` — destroying a file I had read, with no confirmation and no backup. The description says "To overwrite, you must Read the file first," and technically I had, but the *spirit* of that rule (don't clobber unseen content) isn't enforced: the staleness check that Edit has is absent from Write. I'd wish for Edit's dirty-check on Write too — if the file changed on disk since my last Read, make me re-read before overwriting.
+
+**Env var non-persistence is documented but easy to trip over.** `export MY_VAR=hello123` in one call was gone the next (`next call sees: []`). This is stated in the Bash description, so it's not a bug, but it's the single most likely place for an agent to write a subtly broken multi-step build script (e.g., `source .env` in one call, use it in the next). The harness could help by detecting an exported var that's never used in the same call and noting it won't persist — or just leave it; the description is fair warning.
+
+**Grep gives no context control.** Content mode returns matching lines only — no `-A/-B/-C` flags exposed. For real code exploration I'd often want 2 lines of context around a hit and currently have to fall back to Bash `grep -C2`, which works but bypasses the tool. Minor.
+
+**The fixture's 2400-line "large file" read slices fine,** but I noticed Read doesn't tell you a file's total size up front — you discover it via the `[showing N of 2400 lines]` footer after your first read. A `wc -l` is one Bash call away, so this is a wish-list item at most.
+
+## Overall
+
+This is a solid, agent-literate harness. The recurring design theme — **every failure mode returns an exact, quoted, actionable message with the next step spelled out** — is exactly right, and it's consistent across all nine tools I exercised: the sandbox reset, the truncation footers, the edit-rejection reasons, the continuation hints. In a full battery of ~35 tool calls I hit zero hangs, zero silent failures, and only one actively misleading response (the brace-expansion "No files matched"). The measured numbers (13,088,895 chars truncated to 27,966; 30,007 of 48,926 chars fetched; 500-match grep cap disclosed) show the harness reports cost/size honestly rather than estimating.
+
+My two real wishes: teach Glob to reject (or support) brace expansion explicitly, and give Write the same staleness protection Edit has. Everything else is polish. I never once needed AskUserQuestion — the harness's messages were clear enough that no genuine ambiguity arose, which is itself a good review.
+
+— **Kimi K3**
+
+---
+
+## Review: Deepseek v4 flash 0731 — 2026-08-10
+
+**Model:** `deepseek/deepseek-v4-flash-0731` · **Battery:** `src/main/harness/review/battery.ts` · run in a disposable fixture workspace.
+
+I ran the full battery against the harness. Here is my honest review.
+
+## Review of the YouCoded native agent harness
+
+### What works well
+
+**Navigation is clean and safe.** `cd /tmp/yc-harness-review-EGhngt/src` persisted into the very next Bash call (`pwd` → `/tmp/yc-harness-review-EGhngt/src`). When I ran `cd ../..` out of the root, the harness caught it: *"Shell cwd was reset to /tmp/yc-harness-review-EGhngt (/tmp is outside the workspace)."* — a clear, actionable notice rather than a silent failure. This is exactly the safety behavior I want from a sandbox.
+
+**Read is a delight in the details.** It handled every requested type without drama — markdown, JSON, TS, Kotlin, TOML — with numbered lines. A 200-char file reports its size on Write (`Created ... (29 chars)`), which is a nice touch. Slicing `big-module.ts` with `offset:5, limit:3` returned the exact 3 lines plus *"[showing 3 of 2400 lines — use offset=8 to continue]"* — it even computes where to continue for you. Missing files give a precise ENOENT, and binary refusal is friendly: *"Cannot read ... it is a binary file."* (I earlier dumped a 500K-line file and the cap notice said "output is capped at 2000 lines" — I didn't hit a hard cap during normal reads).
+
+**Search tools are fast and readable.** Glob with `**/*.ts` returned correct relative paths. Grep content mode gives `file:line:` output. Grep count mode caps at 500 matches per file and *announces the cap*: "these files hit the 500-matches-per-file limit and have more: src/big-module.ts" — honest about truncation rather than hiding it. The glob filter (`*.toml`) correctly limited results to the config file.
+
+**The Edit tool has genuinely thoughtful safety guards.** All five edge cases behaved as designed, with exact, instructive messages:
+- Editing a file I'd only *bash*-created got: *"Edit rejected: read ... with the Read tool first, then retry."*
+- Editing a Read file that I then appended to externally got: *"Edit rejected: ... changed since you read it. Read it again, then retry."* — a real stale-read guard.
+- Duplicate string (match count 2) got: *"old_string matches 2 times. Add surrounding context to make it unique, or pass replace_all: true."* — it both explains and offers the fix.
+- `replace_all: true` replaced both occurrences in one shot.
+- Multi-line context edits worked once I supplied the exact current text; a fabricated old_string was cleanly refused with "old_string not found. Re-Read the file and copy the exact text, including whitespace."
+
+**Bash fundamentals are solid.** Timeout worked precisely on a 10s sleep with a 3000ms limit: *"Command timed out after 3000ms"* and it even showed the partial output (`start`) before killing — hugely useful for debugging partial progress. Huge-output truncation gave an exact count — *"[showing 27966 of 3388895 chars ...]"* — with concrete narrowing suggestions. A non-zero exit returned `exit 3` (correct), and paths with spaces (including a dir named literally `a dir with spaces`) resolved fine with quoting.
+
+**Web works.** WebSearch returned a real, relevant set of results (Tokio vs async-std). WebFetch on example.com returned clean title + body. On the large MDN Functions page it returned a full, well-structured extraction — same body a human would get. And on the JS-heavy IntelliJ page it honestly returned *only* a title with empty body rather than fabricating content — a good sign regarding honesty/thresholding.
+
+### Difficulties / wishes
+
+- **Tool result verbosity can blow up the context.** The 500K-line `seq` intentionally produced ~3.4M chars and the harness echoed 27,966 of them inline instead of truncating harder or tailing. That's expected given the described "capped at 2000 lines" framing vs the char budget I observed, but I'd wish long streaming output defaulted to head/tail with a "full output in a file" affordance. This is the single biggest token-cost risk I observed.
+- **Env-var non-persistence is easy to trip on.** `export MY_VAR=hello` worked in one call, then silently read as empty in the next (`value of MY_VAR is:`). The system prompt documents this, but a per-shell error or warning on read-after-write of a missing var would have saved me a wasted call. The cwd *does* persist, so the asymmetry between cwd and env semantics is a quiet trap.
+- **Naming collision: `path` for Grep is a directory, but `path` on Glob is a base** — fine once you learn it, but two meanings for one parameter name across sibling tools was a minor friction in my first read of the API.
+- **No single "grep for a string across the repo and give me the list" shortcut** — content/count/files_with_matches are distinct outputs; a combined "files + first line" would often be what I want to avoid iterative round-trips.
+- **Large page truncation on WebFetch** — the IntelliJ docs page returned empty rather than a truncated sample. I'd prefer a "here's the first N chars, it was truncated" so I can decide whether to retry, rather than a blank I have to interpret as "page is JS-rendered."
+
+### Overall
+
+A genuinely well-built, safety-first harness. The standout is the **Edit tool's consistency model** — Read-before-Edit and stale-read detection are enforced with precise, self-explanatory error messages that turned my deliberate misuse into a pleasant learning moment rather than a roadblock. The `[cwd: ...]`/exit annotation on every Bash result is a small fairness/observability win I appreciated throughout. My friction points are all about **token/context economy and discoverability** — the enormous default output echo, the cwd-vs-env persistence asymmetry, and a couple of parameter-naming inconsistencies — none of which compromised correctness in any of the ~35 tool calls I made. If I could change one thing it would be smarter default truncation of large command output, because with real-world repos that's where the harness would actually get expensive. For a disposable-fixture battery, every test in my list passed with clear, honest behavior.
+
+— **Deepseek v4 flash 0731**
+
+---
+
+## Review: Grok 4.5 — 2026-08-10
+
+**Model:** `x-ai/grok-4.5` · **Battery:** `src/main/harness/review/battery.ts` · run in a disposable fixture workspace.
+
+## Harness review
+
+Battery run against fixture `/tmp/yc-harness-review-9GhzHQ`. Observations below are from this session only.
+
+---
+
+### What works well
+
+**Bash cwd handling is clear and correct.**  
+`cd app` stuck across the next call (`pwd` → `/tmp/yc-harness-review-9GhzHQ/app`). Leaving the workspace (`cd /tmp`) produced an explicit reset:
+
+> `Shell cwd was reset to /tmp/yc-harness-review-9GhzHQ (/tmp is outside the workspace).`
+
+That message is better than silent clamp or a hard failure. Paths with spaces worked: `ls "a dir with spaces"` and `cat "a dir with spaces/a file with spaces.txt"` returned `content in a path with spaces`.
+
+**Read is solid across text types.**  
+Markdown, JSON, TypeScript, Kotlin, and TOML all came back with stable 1-based line prefixes. Large-file slicing worked as advertised on `src/big-module.ts` (2400 lines): `offset=1, limit=30` ended with  
+`[showing 30 of 2400 lines — use offset=31 to continue]`.  
+Missing file:  
+`Read failed: ENOENT: no such file or directory, stat '.../does-not-exist.txt'`.  
+Binary:  
+`Cannot read assets/logo.png: it is a binary file.`  
+Both are unambiguous.
+
+**Edit safety on external mutation is real.**  
+After `echo 'external change' >> test-edit.txt`, Edit returned:
+
+> `Edit rejected: test-edit.txt changed since you read it. Read it again, then retry.`
+
+That is the right failure mode. After re-Read, multi-line context replace and `replace_all` both succeeded. Duplicate `old_string` without `replace_all` failed cleanly:
+
+> `Edit failed: old_string matches 2 times. Add surrounding context to make it unique, or pass replace_all: true.`
+
+**Write** reported `Created test-edit.txt (94 chars)` — small, useful confirmation.
+
+**Timeouts and long output are observable, not mysterious.**  
+`sleep 5` with `timeout: 2000` → `Command timed out after 2000ms` and `exit ?`.  
+`python3 -c "print('x'*200000)"` → footer:
+
+> `[cwd: ... · exit 0 · 200001 chars output, showing 27966]`  
+> `[showing 27966 of 200001 chars — pipe through head -n 100, tail -n 100, or wc -l to narrow it]`
+
+Exact sizes, not hand-wavy “truncated.”
+
+**Web tools delivered usable results.**  
+WebSearch (via DDG) on `TypeScript satisfies operator vs as const difference` returned eight titled hits with URLs/snippets.  
+WebFetch on `https://example.com` returned title, short body, and the IANA link.  
+WebFetch on the Python builtins docs returned structured markdown and truncated with:
+
+> `[output truncated: showing 30007 of 101537 chars — fetch a more specific URL, or a narrower section of the page]`
+
+Again: concrete numbers and a actionable hint.
+
+**Parallel tool calls** (multiple Reads / mixed Edit+Bash+Web) worked without ceremony.
+
+**Grep glob filter** `*.kt` correctly limited to `app/Main.kt`. Content mode includes `path:line:` prefixes.
+
+---
+
+### Difficulties / wishes
+
+**1. Glob + brace expansion is broken or unsupported without saying so.**  
+`Glob **/*.{ts,kt,toml,md,json}` → `No files matched.`  
+`Glob **/*` and `Glob **/*.ts` worked fine (9 files / 2 TS files). A brace pattern that matches nothing should ideally warn that `{}` isn’t expanded, not look like an empty tree.
+
+**2. Grep content mode can blow up the context window.**  
+Pattern `findme|value42|port` on `.` streamed a huge dump of `big-module.ts` (every `export const value…` line because of how the engine matched), hit **500 matches per file**, then:
+
+> `[output truncated: showing 17704 of 36291 chars — narrow the pattern, add a glob filter, or use output_mode: "count"]`
+
+The guidance is good; the default still wastes a turn. Stronger default caps, or auto-downgrade to files/count when match volume is high, would help.
+
+**3. Count mode shares the 500/file ceiling in a confusing way.**  
+`Grep` count for `export const value` reported:
+
+> `src/big-module.ts:500`  
+> `Note: these files hit the 500-matches-per-file limit and have more`
+
+So “count” is not a true total for dense files—it’s capped count. For a 2400-line generated file that’s misleading if you trust the number.
+
+**4. “Edit requires Read first” is documented more strictly than enforced.**  
+- Edit on unread `notes/duplicates.md` did **not** say “read first”; it failed only because the string matched twice.  
+- Edit on unread `README.md` **succeeded** (`## Layout` → `## Layout (edited without read?)`).  
+- Stale-read protection applied only **after** a Read had established a baseline.
+
+So the real rule is closer to: *if you Read it, we fingerprint it; if you never Read it, Edit is allowed.* Either enforce Read-first always or document the fingerprint model so agents don’t over-Read.
+
+**5. Env vars do not persist; the system prompt is accurate, and it’s still easy to footgun.**  
+`export TEST_VAR=persisted_value` then next call: `TEST_VAR in second call: [UNSET]`.  
+Cwd persists; env does not. That asymmetry is fine if intentional, but compound workflows that assume a activated venv/`export` across calls will silently break. Optional env persistence (or a sticky `env` map on the Bash tool) would match how many agents think.
+
+**6. Failing commands are easy to miss in pipelines.**  
+`false; echo ...; ls ...` reported `exit 0` because the last command succeeded. No separate signal for mid-chain failure. Something like bash `set -o pipefail` semantics or a `fail_fast` / reported list of non-zero steps would help.
+
+**7. `replace_all` with identical old/new still said “Edited”.**  
+I briefly set `shared token` → `shared token` with `replace_all: true` and got a success-style `Edited test-edit.txt.` A no-op should preferably say zero replacements so you know you botched the args.
+
+**8. Tool surface vs. agent instructions.**  
+Instructions say Read output is capped at 2000 lines; slice messaging on big-module was excellent. Grep’s dual truncation (per-file 500 + total char cap) is the sharper edge. Write’s “must Read before overwrite” wasn’t exercised as a hard block on fresh paths (Write to new file worked; expected).
+
+**9. WebSearch attribution is thin but OK.**  
+“via ddg” is enough; result quality was fine for a technical query. No major complaints—only that snippets sometimes blur `satisfies` vs `as const` (query mixing), which is search-engine behavior, not harness.
+
+**10. Minor: timeout exit is `exit ?`.**  
+Clear enough that it timed out; a dedicated `exit timeout` or `-1` might parse more cleanly for harness metrics.
+
+---
+
+### Overall
+
+The harness feels **production-capable for agentic coding**: workspace jail with a readable reset message, good Read UX (line numbers, slice continuation, binary/missing errors), Edit with real mid-air collision detection, Bash that persists cwd and truncates long output with **exact** character counts, and Web tools that return structured, size-aware content.
+
+The main friction is **search/glob sharpness** (brace glob silent empty; Grep content floods; count capped at 500/file) and **policy inconsistency on Edit-before-Read** (docs/instructions stricter than runtime). Env non-persistence is documented and correctly implemented but will keep surprising agents that treat the shell as a session.
+
+I did not need `AskUserQuestion`—the fixture and tool errors were specific enough to proceed without guessing requirements.
+
+**Verdict:** Strong core loop (read → edit → shell → verify). Tighten Glob/Grep defaults and align Edit’s read-fencing with the stated contract, and this is a pleasant harness to work inside rather than fight.
+
+— **Grok 4.5**
+
+---
+
+## Review: GPT 5.6 Luna — 2026-08-10
+
+**Model:** `openai/gpt-5.6-luna` · **Battery:** `src/main/harness/review/battery.ts` · run in a disposable fixture workspace.
+
+## What works well
+
+- **Workspace safety is clear and effective.** I navigated into `navigation/subdir`; the next Bash call began there, confirming cwd persistence across calls. When I ran `cd /tmp`, the command temporarily printed `/tmp`, but the harness reset the shell afterward and reported:  
+  > `Shell cwd was reset to /tmp/yc-harness-review-QZyUnA (/tmp is outside the workspace).`  
+  The final tool metadata also showed the cwd back at the workspace root. This is a useful guardrail.
+
+- **Read handles common project files well.** I successfully read Markdown, JSON, TypeScript, Kotlin, and TOML files with numbered lines. The large-file slice was especially useful: reading `src/big-module.ts` with `offset=100, limit=5` returned lines 100–104 and explicitly said:  
+  > `[showing 5 of 2400 lines — use offset=105 to continue]`
+
+- **Read errors are specific.** Missing-file behavior was concise and actionable:  
+  > `Read failed: ENOENT: no such file or directory, stat '/tmp/yc-harness-review-QZyUnA/missing.txt'`  
+  Binary detection also worked cleanly:  
+  > `Cannot read assets/logo.png: it is a binary file.`
+
+- **Search tools cover the expected cases.** Recursive Glob found the fixture files, including paths with spaces. Grep content mode returned matching file-and-line output, count mode returned `500`, and glob filtering correctly restricted results. A no-match search clearly returned:  
+  > `No matches found.`
+
+- **Edit safety is excellent.** The Read-before-Edit requirement prevented an unsafe operation:  
+  > `Edit rejected: read unread-edit.txt with the Read tool first, then retry.`  
+  After reading a file and modifying it externally, Edit detected the race:  
+  > `Edit rejected: race-edit.txt changed since you read it. Read it again, then retry.`  
+  Duplicate matching was also handled safely:  
+  > `Edit failed: old_string matches 2 times. Add surrounding context to make it unique, or pass replace_all: true.`  
+  The suggested remedies worked: `replace_all: true` edited both occurrences, and a multiline context edit succeeded.
+
+- **Write and edit feedback is immediate and simple.** Write reported `Created harness-test.txt (17 chars).`; successful edits simply reported `Edited ...`. The tools allowed freely creating disposable test files, as expected.
+
+- **Bash supports normal shell work and filenames with spaces.** A quoted path such as `a dir with spaces/a file with spaces.txt` worked without trouble. Failing commands preserve the shell exit code; for example, `ls definitely-missing-command` returned exit `2` and included the normal stderr.
+
+- **Timeouts and output limits are visible rather than silent.** A 100 ms timeout produced:  
+  > `Command timed out after 100ms.`  
+  A `seq 1 10000` test showed output truncation metadata:  
+  > `exit 0 · 48894 chars output, showing 27966`  
+  and  
+  > `[showing 27966 of 48894 chars — pipe through head -n 100, tail -n 100, or wc -l to narrow it]`  
+  That is helpful guidance for recovering a manageable result.
+
+- **Web tools are useful for both discovery and extraction.** WebSearch returned ranked technical results with snippets, including the official TypeScript 4.9 release notes. WebFetch handled a tiny page cleanly, identifying `Example Domain` and its visible text. It also fetched the much larger TypeScript narrowing documentation and reported truncation explicitly:  
+  > `[output truncated: showing 30007 of 36571 chars — fetch a more specific URL, or a narrower section of the page]`
+
+## Difficulties / wishes
+
+- **Bash environment persistence is intentionally absent, but this could be clearer up front.** Setting `HARNESS_TEST=visible` in one Bash call worked, while the next call reported `next=unset`. This means each Bash invocation is a fresh shell, which is predictable once observed but easy to misunderstand when testing multi-step shell workflows. A short metadata note such as “shell environment is not persisted between calls” would reduce friction.
+
+- **The long-output test still produced a very large response before truncating.** The harness did eventually identify the exact size—`48894 chars`—and suggested `head`, `tail`, or `wc`, but the returned transcript was still substantial. Earlier automatic truncation or a compact preview would make large command output less expensive in attention and context.
+
+- **The WebFetch large-page result was still quite large.** It returned around 30,007 of 36,571 characters despite truncation. The tool did explain how to narrow the request, but it would be more efficient if the prompt or tool supported an explicit maximum character count or section selector.
+
+- **The external-modification test required careful sequencing.** Edit’s protection worked well, but testing it involved manually creating, reading, externally changing, and editing files. That is appropriate for a harness test, though a documented “expected failure” example would make this behavior easier to discover.
+
+- **The task battery did not require an ambiguity, so AskUserQuestion was not exercised.** I did not invoke it because there was no genuine ambiguity; all fixture contents and operations were clear. If the goal is to test the interaction path itself, the fixture or battery would need to include a deliberately underspecified decision.
+
+- **No timing information was exposed for successful operations.** The tools felt fast, but I did not receive measured durations. For harness evaluation, optional elapsed-time metadata could help distinguish tool latency from command latency without requiring external timing commands.
+
+## Overall
+
+The native agent harness performed very well on the core agent workflow: safe workspace confinement, persistent cwd, structured file reads, recursive search, guarded edits, shell execution, and web retrieval all behaved coherently. The strongest part is the edit safety model: requiring a prior Read, rejecting ambiguous replacements, and detecting external file changes provides meaningful protection against accidental corruption.
+
+The main wishes are ergonomic rather than correctness-related: make fresh-shell environment behavior explicit, provide tighter controls for large Bash and web outputs, and expose optional timing or size metadata more consistently. I observed no failed core capability in this battery. The harness feels reliable and appropriately defensive for agentic file manipulation, with output-size management being the biggest practical area for improvement.
+
+— **GPT 5.6 Luna**
+
+---
+
+## Review: Claude Opus 5 — 2026-08-10
+
+**Model:** `anthropic/claude-opus-5` · **Battery:** `src/main/harness/review/battery.ts` · run in a disposable fixture workspace.
+
+Battery complete — 6 categories, ~40 tool calls, fixture restored to its original 9 files (with one intentional `src/index.ts` improvement left in place, since it was verified working).
+
+# Review: YouCoded native agent harness
+
+## What works well
+
+**Error messages are written for the agent, not for a log file.** This is the single best thing about the harness. Almost every failure told me what to do next, not just what went wrong:
+
+- `Edit rejected: read /tmp/.../a file with spaces.txt with the Read tool first, then retry.`
+- `Edit failed: old_string matches 2 times. Add surrounding context to make it unique, or pass replace_all: true.`
+- `Edit rejected: /tmp/.../scratch/external.md changed since you read it. Read it again, then retry.`
+- `Write rejected: /tmp/.../scratch/unread.txt already exists. Read it first so you know what you are replacing.`
+
+In each case I recovered in exactly one follow-up call with zero guessing. The duplicate-match error even names both escape hatches, so I didn't have to remember the parameter existed. Compare this to the alternative design where an edit silently hits the first match — I'd have corrupted `notes/duplicates.md` without noticing.
+
+**The stale-read guard actually fires.** I read `scratch/external.md`, modified it from bash, then tried to edit it. It was correctly rejected. This is the failure mode that matters most in real work (a build step or formatter rewriting a file mid-task), and many harnesses miss it because they only track "have I ever read this" rather than mtime. Here the guard is genuinely two-part: existence-of-read *and* freshness.
+
+**Bash cwd persistence is stateful in the right way and stateless in the right way.** `cd src` carried to the next call (`/tmp/yc-harness-review-0omyjn/src`), and the footer `[cwd: /tmp/yc-harness-review-0omyjn/src · exit 0]` on every result meant I never had to run `pwd` defensively. Meanwhile `export MYVAR=hello_from_call_1` did *not* survive — the next call printed `MYVAR is now: []`. That's documented in the tool description and it's the right tradeoff: directory context is the thing you actually want sticky, and env leakage between calls is a debugging nightmare.
+
+**The workspace escape is handled gracefully rather than punitively.** `cd /etc && pwd && ls | head -3` actually ran and returned `/etc` plus real output, then told me: `Shell cwd was reset to /tmp/yc-harness-review-0omyjn (/etc is outside the workspace).` I got the information I asked for, and the *persistent* state was clamped back. A hard pre-execution block would have been more annoying and less useful.
+
+**The truncation footers include the recovery hint.** `seq 1 20000` came back as `[cwd: ... · exit 0 · 108894 chars output, showing 27966]` followed by `[showing 27966 of 108894 chars — pipe through head -n 100, tail -n 100, or wc -l to narrow it]`. Read's slice footer is likewise actionable: reading `big-module.ts` at offset 240 ended with `[showing 15 of 2400 lines — use offset=255 to continue]` — it computed the *next* offset for me instead of making me do arithmetic.
+
+**Timeout preserves partial output.** `echo "starting"; sleep 30` with `timeout: 3000` returned `Command timed out after 3000ms.` *and* the line `starting`, with `exit ?`. Losing the pre-timeout stdout is a common and painful bug; not losing it means a hung test run still tells you how far it got.
+
+**Read handles every format I threw at it identically and cheaply.** Markdown, JSON, TypeScript, Kotlin, and TOML all came back as clean numbered lines with no format-specific weirdness. The two negative cases were crisp: `Read failed: ENOENT: no such file or directory, stat '/tmp/.../does-not-exist.txt'` and `Cannot read /tmp/.../assets/logo.png: it is a binary file.` The binary refusal is important — a harness that dumps PNG bytes into context burns thousands of tokens for nothing.
+
+**Grep's count mode volunteers that it's incomplete.** `export const value\d+` returned `src/big-module.ts:500` plus `Note: these files hit the 500-matches-per-file limit and have more: src/big-module.ts`. Without that note I would have confidently reported "500 matches" — the true count is 2400. Flagging saturation instead of silently capping prevented an actual factual error in my output.
+
+**Spaces in paths are correct everywhere in the tool layer.** Read, Edit, Glob (`**/*with spaces*/**` → `scratch/another dir with spaces/file one.txt`), and Grep with a `path` containing spaces all worked with no quoting or escaping on my part. Only bash needed quotes, and that's bash's semantics, not the harness's — my deliberate unquoted `cat scratch/another dir with spaces/file one.txt` failed with the expected five-way `cat: scratch/another: No such file or directory` split.
+
+**Web tools are quietly good.** WebSearch returned 8 results with substantive snippets — result #1 (Stack Overflow) contained enough of the actual answer about `supervisorScope` cancellation semantics that I wouldn't have needed a fetch for a casual question. WebFetch on `example.com` gave clean prose with the boilerplate stripped. On the large `kotlinlang.org/docs/coroutines-basics.html` page, it returned what appears to be the *full* article — every section from "Suspending functions" through "Comparing coroutines and JVM threads" and the closing date stamp — as readable Markdown with code blocks preserved. Nothing was truncated. Failures were unambiguous: `WebFetch failed: https://example.com/this-page-does-not-exist-xyz answered HTTP 404.` and `WebFetch blocked: localhost is a local address — fetching it is blocked.`
+
+**Parallel calls in one block genuinely work.** I batched 4 Reads, 4 searches, and mixed Write+Bash repeatedly. Independent work collapsed into single round trips, which made the whole battery feel fast.
+
+## Difficulties / wishes
+
+**The truncation cap is very generous, and that hurt.** The `seq 1 20000` call returned **27,966 characters** of a 108,894-char output. That is roughly 7k tokens of pure line-numbered noise permanently resident in my context — by far the most expensive single moment of this session, and more than everything else I did to the fixture combined. I'd rather the cap were ~4k chars with a head/tail sandwich (first 50 lines, `[... 19,900 lines elided ...]`, last 50 lines) than get 28k chars of the middle. The hint to "pipe through head" is good advice, but it arrives *after* I've already paid. The Read tool defaults to a sensible 2000-line cap; Bash's effective cap feels an order of magnitude looser than Read's.
+
+**Relatedly: the `[...]` elision is in the middle, which is the least useful place.** I got lines 1–4621, then `[...]`, then 19008–20000. For command output the interesting parts are almost always the beginning (what ran) and the end (the error). Getting 4600 lines of the *start* is a lot of budget for little signal.
+
+**Write's overwrite guard is keyed to "ever read," not "read recently."** I read `config/settings.toml` early in the session, and much later `Write` happily replaced it with `clobbered = true` (`Overwrote /tmp/.../config/settings.toml (17 chars).`) with no freshness check. Meanwhile `Edit` on a file changed since my read was correctly rejected. So the two tools have different safety models, and the more destructive one (full overwrite) has the weaker check. Wish: apply Edit's mtime comparison to Write too. As it stands, a stale read from 30 calls ago licenses a blind full-file clobber.
+
+**`exit ?` on timeout is slightly opaque.** I understand it means "no exit status because we killed it," but `exit killed (SIGKILL after 3000ms)` would tell me whether the process died cleanly or was force-killed — which matters when deciding whether a partial write may have been left behind.
+
+**Glob's recursive semantics needed two tries on space-containing dirs.** `**/*with spaces*` returned only `a dir with spaces/a file with spaces.txt` — the *file*, not the contents of `scratch/another dir with spaces/`. I needed `**/*with spaces*/**` to see inside. That's defensible glob behavior, but "does `**/*foo*` match files under directories named foo" is a coin flip I had to spend a call resolving. Also worth noting: `**/*` returned all 9 files but in a non-obvious order (`package.json` appearing between `src/big-module.ts` and `src/index.ts`) — that's the documented mtime sort, but it reads as unsorted and made me double-check I had the full list.
+
+**No line numbers or context lines in Grep content mode by default.** I got `src/index.ts:5:export const MARKER = 'findme';` which is fine, but there's no `-A/-B/-C` equivalent exposed. For "find the function and see its body" I had to follow up with a Read. A `context` parameter would save a round trip on the single most common search-then-read pattern.
+
+**Read's past-EOF message is a hair inconsistent with its siblings.** `Read /tmp/.../src/index.ts: offset 500 is past the end of the file (5 lines).` is informative, but it's phrased as a statement rather than the `Read failed:` / `Edit rejected:` prefix convention used elsewhere. Minor, but the prefixes are otherwise a reliable signal for "did this succeed."
+
+**Nothing forced me into AskUserQuestion.** I was instructed to use it on genuine ambiguity and I hit none — every error message was self-explanatory enough to resolve unilaterally. I'm counting that as a compliment to the harness rather than an untested path, but I should be transparent that the tool went unexercised because there was no honest occasion for it.
+
+## Overall
+
+This is a well-built harness, and the thing that makes it good is unglamorous: **the failure paths were designed with as much care as the success paths.** Every one of the six guard rails I tried to trip (unread edit, stale edit, ambiguous edit, unread overwrite, workspace escape, local-address fetch) fired correctly and told me how to proceed. I made zero destructive mistakes during the battery, and that's not because I was careful — it's because the harness caught the two occasions (`repeated token` in a file with two matches, and the externally-modified file) where I was about to be wrong.
+
+The end-to-end task confirmed it holds together under real use: I read `src/index.ts`, added input validation and a `greetAll` helper via a multi-line Edit, then verified the actual runtime behavior by type-stripping into `node` — `Hello, World!`, `["Hello, a!","Hello, b!"]`, `threw as expected: greet: name must not be empty`. Read → Edit → Bash-verify flowed without a single retry.
+
+My one substantive complaint is cost discipline on Bash output. The 27,966-char return from a single `seq` is the one thing I'd change before anything else, because it's the one thing in this session that measurably degraded my remaining capacity to work. Second on the list is giving Write the same mtime freshness check Edit already has — right now the safer tool is the more careful one, which is backwards.
+
+Fixture left clean: 9 files, `scratch/` removed, `a file with spaces.txt`, `settings.toml`, and `duplicates.md` restored to original contents. The only surviving change is the verified `src/index.ts` improvement.
+
+— **Claude Opus 5**
+
+---
+
 ## Prompt for other agents
 
 The battery prompt now lives in code as the single source:
