@@ -4,7 +4,7 @@ paths:
   - "youcoded/desktop/src/main/providers/**"
   - "youcoded/desktop/src/main/native-home.ts"
   - "youcoded/desktop/src/renderer/components/native-send.ts"
-last_verified: 2026-07-29
+last_verified: 2026-08-11
 verify:
   - path: youcoded/desktop/src/main/harness/harness-session.ts
   - path: youcoded/desktop/src/main/harness/native-session-host.ts
@@ -21,6 +21,11 @@ verify:
     contains: "rebaseReportedCwd"
   - path: youcoded/desktop/src/main/harness/tools/grep.ts
     contains: "path-separator"
+  - path: youcoded/desktop/src/main/harness/wire-adapter.ts
+    contains: "adaptForWire"
+  - path: youcoded/desktop/src/main/harness/image-support.ts
+  - path: youcoded/desktop/src/main/harness/message-size.ts
+  - test: youcoded/desktop/tests/wire-adapter.test.ts
   - test: youcoded/desktop/tests/harness-session.test.ts
   - test: youcoded/desktop/tests/native-session-host.test.ts
   - test: youcoded/desktop/tests/native-send.test.ts
@@ -105,6 +110,7 @@ verify:
 - **Bash cwd is SCOPED-PERSISTENT; the file tools are not** — `HarnessSession.shellCwd` tracks the shell dir across calls (read back via a `__YC_CWD__` sentinel `printf`ed on its own **newline-terminated** line, with `exit $__yc_rc` preserving the exit code); a `cd` outside `ctx.cwd` is reverted AND announced. Only cwd persists — env/aliases don't — and it resets on resume like readRegistry. Read/Edit/Write/Glob/Grep still resolve relative paths against `ctx.cwd`, so `cd sub` does NOT move them. *Why:* stateless-and-silent cost ~6 wasted tool calls in one session (the upstream complaint in CC #35058/#42837); the sentinel's trailing newline and the uncapped tail buffer are both load-bearing — without them a background writer corrupts the path and a chatty command drops the `cd`. PowerShell (Windows sans Git Bash) stays stateless by design. Guard: `harness-tools-core.test.ts` ("scoped cwd persistence").
 - **Harness tools emit FORWARD SLASHES; Bash reports its cwd in the ROOT'S SPELLING** — `toPosix()` (`tools/guards.ts`) is the one output normalizer; `rebaseReportedCwd()` re-expresses the shell's physical `pwd` in `ctx.cwd`'s vocabulary. *Why:* one file must not come back `src/a.ts` from Glob and `src\a.ts` from Grep, and the `[cwd: …]` line can only relate Bash to the file tools if both name the root the same way. Four traps, each of which has already bitten: (1) rg's `--path-separator /` rewrites **stdout only** — locally-built strings (`grepErrorMessage`, the match-cap label) bypass it and need `toPosix` too, while rg's positional target stays platform-native; (2) containment is checked **before** the rebase, or `path.join` pulls an escaped path back inside and voids the scope guard; (3) that check's `+ path.sep` is what rejects a prefix-sibling (`/a/bc` vs root `/a/b`); (4) `toPosix` is **not** `canonicalize()`, which lowercases on win32. **`ctx.cwd` is never canonicalized** — the permission store is keyed by it, so a spelling change orphans remembered grants. **These guards are VACUOUS on Linux** except the symlink block and the `grepErrorMessage` case: they only fail on Windows/macOS CI, which is why `eba51705` left master red for 2 days against a green `verify.sh`. Guards: `harness-tool-guards.test.ts`, `harness-tool-bounds.test.ts`, `harness-tools-core.test.ts` ("Bash cwd vocabulary"). Depth: `docs/archive/specs/2026-08-11-harness-cross-platform-path-vocabulary.md`.
 - **Tools DECLARE what they omitted (`bounds`); `defineTool`/`composeNotice` render it** — never truncation prose hand-written into `text`, and the widening advice (`moreHint`) is the tool's own vocabulary, not a shared default. A tool also gets a static `NativeTool.moreHint`, used when the pipeline's own cap fires but the tool bounded nothing that call (e.g. content-mode Grep, an oversized Skill body). *Why:* one shared string told every caller to "use offset/limit" — a parameter Bash and WebSearch do not have; two models in the 2026-08-01 review followed it into a dead end. Guards: `tool-registry-manifest.test.ts` ("every bounded tool declares its bounds"), `harness-tool-conformance.test.ts`, ast-grep `tool-bounds-not-hand-rolled`. Depth: `youcoded/docs/native-runtime.md` → "Tool output honesty".
+- **Images travel canonically inside the tool result; `wire-adapter.ts`'s `adaptForWire` splits it per wire at request-build time** — pass-through on direct Anthropic (which carries images natively inside `tool_result`), placeholder text plus a synthetic follow-up user message on OpenAI-compatible wires, a full pixel strip for a non-vision model. *Why:* it runs every request rather than at push time, so a mid-session swap to a blind model can never leak pixels — a push-time gate could. Guard: `wire-adapter.test.ts`.
 
 ## Native web tools + presets (Plan B) — guards: `net-guard.test.ts`, `web-fetch-tool.test.ts`, `search-backends.test.ts`, `search-service.test.ts`, `ask-user-question-tool.test.ts`, `native-session-host.test.ts`, `tool-registry-manifest.test.ts`
 - **WebFetch/WebSearch follow redirects MANUALLY and re-validate every hop** (scheme + literal IP + DNS answer) — a public URL 302ing to a private/loopback/metadata address (incl. the hex-form `[::ffff:127.0.0.1]` that `new URL` normalizes to `::ffff:7f00:1`) is the SSRF bypass class. Honest friction, not a boundary (TOCTOU rebind possible). Never `redirect:'follow'`. Guard: `net-guard.test.ts`.

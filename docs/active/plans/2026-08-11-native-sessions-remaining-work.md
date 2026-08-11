@@ -59,7 +59,7 @@ The status bar shows context remaining, tokens in and out, throughput, and cache
 - **Android has none of this.** No Kotlin code reads the Conversation Store, the native home, or model bindings. Android sessions are Claude Code only.
 - **No subagents.** The Task tool does not exist natively.
 - **No cost estimate**, because per-model pricing is not sourced anywhere.
-- **The model cannot fetch an image by path** — only the user can attach one.
+- ~~**The model cannot fetch an image by path** — only the user can attach one.~~ **SHIPPED 2026-08-11** (youcoded#293, `f65fed18`).
 
 ---
 
@@ -133,7 +133,11 @@ Three small independent pieces, in whatever order suits.
 
 **Folderless sessions.** The Assistant-preset heuristic already works — it is only the new-session form that requires a folder. Low priority per Destin.
 
-**Model fetching an image by path.** ~~Undecided.~~ **Decided and IN FLIGHT as of 2026-08-11** — plan at `docs/active/plans/2026-08-11-native-image-delivery-plan.md` (`status: active`), spec at `docs/active/specs/2026-08-11-native-image-handling.md`, being built in worktree `youcoded/worktrees/native-images` on `feat/native-image-delivery`. Do not start this item; coordinate with that branch. Its hard constraint stands: resume, compaction, and a cost ceiling get handled in the same pass, or the model ends up holding a reference to a picture that is not there.
+**Model fetching an image by path.** ~~Undecided.~~ ~~Decided and IN FLIGHT.~~ **SHIPPED 2026-08-11** — youcoded#293, merge `f65fed18`. Spec `docs/archive/specs/2026-08-11-native-image-handling.md`, plan `docs/archive/plans/2026-08-11-native-image-delivery-plan.md`. The hard constraint held: resume, compaction, budgets, and dedupe all landed in the same pass, so the model never holds a reference to a picture that is not there. Read delivers the image; it lives canonically in the tool result; `wire-adapter.ts` adapts per provider at request-build time (native on Anthropic, split elsewhere, stripped for non-vision, re-checked every request so a mid-session model swap cannot leak pixels).
+
+Two carried-forward items, both deliberate and documented at the code:
+- `fitToContext` trims for the wire only, so an image can scroll out of the model's view while the dedupe cache still says "already visible earlier". Bounded to registry-declared local vision models under ~8.5k context; the obvious fixes are worse (clearing there runs every request and defeats dedupe entirely). Intended fix is `toolCallId`-keyed reconciliation against the fitted window.
+- OpenRouter session start now touches the model catalog twice (once via `contextLengthFor`, once via `visionSupportFor`), each re-reading the cache file with no in-memory memoization. Only a latency cost, only on OpenRouter, disclosed in the closures' comments.
 
 ### Step 7 — M6 item 5, the multi-model cwd contract
 
