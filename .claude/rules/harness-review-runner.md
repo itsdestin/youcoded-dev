@@ -30,7 +30,6 @@ verify:
 
 # Harness review runner (`test-engine/review-harness.mjs`)
 
-Shipped on `youcoded` master (`eba51705`, "Merge harness tool honesty + review runner").
 Runs a battery of agentic tool tasks against the native harness across an OpenRouter
 model roster, in a disposable fixture: `npm run build:main &&
 OPENROUTER_API_KEY=sk-... node test-engine/review-harness.mjs`.
@@ -58,11 +57,10 @@ OPENROUTER_API_KEY=sk-... node test-engine/review-harness.mjs`.
   Guard: the `runBattery salvage` describe block.
 
 - **Two engine quirks this file leans on:** `session.send()` never rejects on a mid-run
-  provider error — `HarnessSession` emits `'session-error'` and resolves normally, so
-  `runBattery` scopes its scan for it per-`send()` (unscoped, a wrap-up turn mislabels a
-  recovered run as errored). And `tool-use` fires before `decide()`, so a denied wrap-up
-  call still counts — excluded from `metrics.toolsUsed`, the fabrication check's ground
-  truth. Guard: none — candidate.
+  provider error — `HarnessSession` emits `'session-error'` and resolves, so `runBattery`
+  scopes its scan per-`send()` (unscoped, a wrap-up mislabels a recovered run as errored).
+  And `tool-use` fires before `decide()`, so `metrics.toolsUsed` records *attempted*
+  calls; wrap-up's denials are excluded. Guard: none — candidate.
 
 - **Every appended review carries its run facts; a claimed tool the transcript never
   shows gets a warning above it.** `collectRunFacts` diffs claimed tool names against
@@ -77,18 +75,16 @@ OPENROUTER_API_KEY=sk-... node test-engine/review-harness.mjs`.
 
 - **`appendReview` is pure** — `(docText, run, runAtISO) => string`, no I/O — making
   "never disturbs other models' reviews" unit-testable. Headings carry minute precision
-  plus a build SHA; day-granularity alone produced indistinguishable same-day sections.
-  Guard: "leaves every existing review byte-identical".
+  plus a build SHA. Guard: "leaves every existing review byte-identical".
 
 - **`runBattery` sends an explicit output ceiling.** `BATTERY_MAX_OUTPUT_TOKENS = 32_000`
   overrides the unset `limits.maxTokens` on a battery-only copy of `ASSISTANT_PRESET` —
-  unset, OpenRouter reserves the model's full hosted max (Opus 5 hit 65,536). Guard:
-  "runBattery output ceiling (2026-08-10 incident)".
+  unset, OpenRouter reserves the model's full hosted max (Opus 5 hit 65,536).
 
-- **The review is the model's FINAL assistant message, never the join of every
-  `assistant-text` delta.** Deltas stream throughout the run; joining them glued
-  narration onto the real review (Kimi K3: 36% pre-review commentary). Guard: "review is
-  the FINAL assistant message, not every assistant-text delta in the run".
+- **The review is the text after the last tool result, not every `assistant-text`
+  delta.** Deltas stream all run; joining them glued narration onto the review (Kimi K3:
+  36% commentary). The wrap-up window falls back to the whole window only when that
+  anchored slice is empty — the model answered, then made one last denied call.
 
 - **The fixture must be byte-identical across runs, so reviews stay comparable.**
   `seedFixtureWorkspace()` writes the same bytes every call, including a seeded
@@ -99,5 +95,5 @@ OPENROUTER_API_KEY=sk-... node test-engine/review-harness.mjs`.
 - **Offer the battery after changing a harness tool; never run it unasked.** ~$1.50 a
   roster — `--dry-run` is free, `--only "<label>"` is one model.
 
-No depth doc — `docs/archive/plans/2026-08-06-harness-review-runner.md` and
-`test-engine/README.md` → "Review harness" cover the rest.
+Depth: `docs/archive/plans/2026-08-06-harness-review-runner.md`,
+`docs/archive/specs/2026-08-10-harness-review-runner-resilience-design.md`.

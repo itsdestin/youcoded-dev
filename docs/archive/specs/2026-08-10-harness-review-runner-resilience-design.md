@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 ---
 
 # Harness review runner: finish the run, or say why not
