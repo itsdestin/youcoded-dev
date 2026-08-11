@@ -49,7 +49,9 @@ OPENROUTER_API_KEY=sk-... node test-engine/review-harness.mjs`.
 - **A cut-short run ends in a wrap-up turn, not a dead one.** Budget exhaustion, a
   restarted battery (`REPEAT_LIMIT = 5` non-consecutive repeats), or the wall clock
   interrupt the testing turn and send a second turn carrying `WRAP_UP_PROMPT` with every
-  tool call denied. Guard: the `wrap-up turn` describe block.
+  tool call denied — including a genuine `AskUserQuestion`, which is `interactive: true`
+  and so bypasses `decide()` entirely; `askUser` denies it explicitly during wrap-up so
+  the prompt's claim holds for that tool too. Guard: the `wrap-up turn` describe block.
 
 - **`runBattery` never throws for a run that produced events** — it returns `outcome`,
   `error`, and `metrics` instead. Round 5 lost four transcripts to a rejected promise.
