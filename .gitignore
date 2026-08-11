@@ -60,3 +60,4 @@ beta/
 # The reviews themselves (appended into the investigation doc) are the
 # durable record.
 docs/active/investigations/harness-review-runs/
+docs/active/investigations/conversation-triage-runs/
