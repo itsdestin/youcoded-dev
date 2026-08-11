@@ -2544,11 +2544,32 @@ rationale to surface, not the rule.
 
 ### Actionable findings
 
-1. **`web-fetch.ts` accepts any non-empty Readability result** — `htmlToMarkdown` returns
-   `article.content` whenever it is truthy, with no length floor, so a nav sidebar
-   Readability mistook for the article is what the model gets and the whole-body fallback
-   never runs. Deepseek observed exactly this: rich content on one page, nav chrome only
-   on two others. *Silent wrong answer — the highest-value fix here.*
+1. ~~**`web-fetch.ts` accepts any non-empty Readability result**~~ — **withdrawn, and it was
+   my error, not Deepseek's.** I proposed a minimum-length floor on Readability's output on
+   the theory that it had mistaken a nav sidebar for the article. Re-fetching the three
+   pages Deepseek cited and running the real extraction says otherwise:
+
+   | Page | Readability | Body fallback |
+   |---|---|---|
+   | `rust-2024/index.html` | 776 md chars | 2,430 |
+   | `rust-2024/language.html` | 699 | 2,353 |
+   | `rust-2024/rpit-lifetime-capture.html` | 12,450 | 14,420 |
+
+   Readability succeeded on all three and returned the article, not the chrome. What
+   Deepseek saw is real but has a different cause: mdBook opens every page with a
+   `#mdbook-help-container` "Keyboard shortcuts" block that is hidden by CSS only — no
+   `hidden` attribute, no `aria-hidden` — so nothing in the HTML marks it as chrome, and
+   Readability keeps it. On a two-paragraph index page that preamble is most of the
+   result. A length floor would not have caught it (the extraction is too *long*, not too
+   short), and there is no site-agnostic signal to key off without a CSS engine. **No fix
+   — recorded so it is not re-proposed.**
+
+   The measurement did turn up a real latent defect nobody reported: a successful
+   Readability parse empties linkedom's document, and its `body` getter then *throws*
+   rather than returning undefined, so `document.body?.innerHTML ?? rawHtml` — the
+   documented "never a silent empty" fallback — would have raised a TypeError. Unreachable
+   today; guarded anyway.
+
 2. **Bash spills output where the model cannot read it** — the spill lands under
    `os.tmpdir()`, outside the workspace, and the result then advises "Read that file."
    Two models followed the advice into a closed loop.
@@ -2561,6 +2582,13 @@ rationale to surface, not the rule.
 5. **The cwd-reset notice trails the output it invalidates** — a model reading top-down
    acts on the command output before reaching the line saying its cwd was reverted.
 6. **Chars and lines are used interchangeably across tools** without saying which is which.
+
+### Status
+
+Findings 2–6 and the fixture defect are fixed on `youcoded` master — see the four
+`fix(harness)` / `fix(review)` commits dated 2026-08-11. Finding 1 is withdrawn above.
+Round 9 is worth running against that build; running it against the round-8 build would
+only rediscover the same list.
 
 ### One battery defect, not a harness defect
 
