@@ -54,7 +54,7 @@ Scope: `list()` / `remove(cwd, rule)`, an IPC pair with four-surface parity, and
 
 Live worktrees at time of writing — check `git worktree list` first, this moves:
 
-- `youcoded/worktrees/native-images` on `feat/native-image-delivery` — **actively building Step 6's "model fetching an image by path."** Plan: `docs/active/plans/2026-08-11-native-image-delivery-plan.md`. Do not start that item.
+- ~~`youcoded/worktrees/native-images` on `feat/native-image-delivery`~~ — **SHIPPED 2026-08-11** (youcoded#293, merge `f65fed18`). Worktree and branch are gone; the item is done. Plan and spec archived to `docs/archive/plans/2026-08-11-native-image-delivery-plan.md` and `docs/archive/specs/2026-08-11-native-image-handling.md`.
 - `worktrees/perm-timeout` (`feat/permission-ask-timeout`) — the CC-path permissions PR above.
 - `worktrees/ask-reference`, `worktrees/project-description`, `worktrees/session-switch-animation`, `worktrees/xwayland-floater` — older, unrelated.
 
@@ -83,5 +83,5 @@ Also live: `.superpowers/sdd/progress.md` is a **different** SDD workstream (rev
 > Windows from unrelated work, and `scripts/verify.sh` runs on Linux only, so it
 > cannot see that class of break.
 >
-> Use a worktree. Check `git worktree list` first — a `feat/native-image-delivery`
-> branch is actively building a different item in the same program.
+> Use a worktree. Check `git worktree list` first — other branches in this program
+> may be in flight. (`feat/native-image-delivery` shipped 2026-08-11 and is gone.)
