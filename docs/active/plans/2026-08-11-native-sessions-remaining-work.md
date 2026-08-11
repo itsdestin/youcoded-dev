@@ -32,6 +32,8 @@ Native sessions are rows in the Conversation Store. Tags, flags, notes, transcri
 
 Ten native tools: Read, Write, Edit, Bash, Glob, Grep, WebFetch, WebSearch, TodoWrite, AskUserQuestion. Plus Skill, attached conditionally. Bash keeps its working directory across calls within the session's root and announces any escape attempt. Every tool declares what it omitted rather than hand-writing truncation prose, and each supplies advice in its own vocabulary. Tool-call/result pairing is preserved everywhere, including after a crash or interrupt, because a dangling call breaks real providers.
 
+Three additions landed 2026-08-11, all from harness-review findings. Bash takes an opt-in `persistent_env` so an `export` can carry to the next call, filtered against the spawn baseline so an ambient credential never persists. Both halves of the cwd asymmetry now explain themselves rather than failing blankly: a file tool that misses names the Bash cwd if the file is really there, and Bash names the workspace root in the same situation — each confirms the alternative exists on disk first, never guessing. And every tool emits one path vocabulary on every platform: forward slashes for file and target paths, with Bash reporting its cwd in the workspace root's own spelling. That last one had `master` red on Windows and macOS for two days; `verify.sh` is Linux-only and could not see it.
+
 Permissions run on a two-tier engine: tool-layer guards (secret paths, external directories) sit below all configuration and never yield; a destructive deny-list sits above them as configuration, which an explicit remembered grant can beat. Presets (Assistant, Coder) set the starting permission posture. Web tools re-validate every redirect hop against a private-address guard.
 
 ### Skills, rules, and context
@@ -73,7 +75,9 @@ Do this first for one reason: everything below stacks on the same files, and rev
 
 **Done when:** both are merged and their worktrees and branches are cleaned up. — **Both merged 2026-08-11 (#289 `4bb760ff`, #290 `9a2d8af7`); worktrees removed, branches deleted local and remote.**
 
-**Read this before trusting a green tick again:** they were merged with **Windows and macOS CI failing**, after verifying the identical six failures on master first — they are inherited, not caused. `master` has been red on those two platforms since `eba51705` (2026-08-10). See the ROADMAP `Bugs` entry added 2026-08-11. `scripts/verify.sh` runs on Linux and cannot see this class of break.
+**Read this before trusting a green tick again:** they were merged with **Windows and macOS CI failing**, after verifying the identical failures on master first — they were inherited, not caused. That break (four distinct tests, six platform/case combinations) was diagnosed and **fixed the same day — PR #291, merge `71c4014a`**; see "one path vocabulary" in §1 and the archived spec. macOS is green again.
+
+**`master` is still red on Windows, for unrelated reasons.** Two PRs merged onto the already-red matrix on 2026-08-11 and each added failures: `43a9c43a` (six `wrap-up turn` cases in `harness-review-runner.test.ts`) and `a2b0e35f` (one `persistent_env` case). Measured: master had 11 Windows / 4 macOS failures; #291 cut that to 7 Windows / 0 macOS. Tracked in `ROADMAP.md` → Bugs. The standing lesson is unchanged and now has three instances in two days: **`scripts/verify.sh` runs on Linux and cannot see this class of break**, so a green local run is not evidence about Windows or macOS.
 
 **Not part of this step:** youcoded #278 is a permissions PR, but it is the *Claude Code* hook-relay path (relay scripts, Ink parser, both platforms), stale since 2026-07-31. It is not native work and does not gate anything here. Judge it on its own.
 
@@ -129,7 +133,7 @@ Three small independent pieces, in whatever order suits.
 
 **Folderless sessions.** The Assistant-preset heuristic already works — it is only the new-session form that requires a folder. Low priority per Destin.
 
-**Model fetching an image by path.** Undecided. Four options are weighed, with pros and cons and three named decisions, in `docs/active/specs/2026-08-11-native-image-handling.md`. **Read that before starting**; the recommended option is cheap for us specifically because the message-injection mechanism it needs already ships for path rules. Its one hard constraint: resume, compaction, and a cost ceiling get handled in the same pass, or the model ends up holding a reference to a picture that is not there.
+**Model fetching an image by path.** ~~Undecided.~~ **Decided and IN FLIGHT as of 2026-08-11** — plan at `docs/active/plans/2026-08-11-native-image-delivery-plan.md` (`status: active`), spec at `docs/active/specs/2026-08-11-native-image-handling.md`, being built in worktree `youcoded/worktrees/native-images` on `feat/native-image-delivery`. Do not start this item; coordinate with that branch. Its hard constraint stands: resume, compaction, and a cost ceiling get handled in the same pass, or the model ends up holding a reference to a picture that is not there.
 
 ### Step 7 — M6 item 5, the multi-model cwd contract
 
