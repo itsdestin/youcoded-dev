@@ -1,5 +1,7 @@
 ---
-status: active
+status: superseded
+superseded_by: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
+superseded_on: 2026-08-11
 created: 2026-07-22
 type: program
 supersedes:
@@ -17,6 +19,10 @@ design-refs:
 ---
 
 # Native Runtime Parity Program
+
+> **SUPERSEDED 2026-08-11 by `docs/active/plans/2026-08-11-native-sessions-remaining-work.md`. Do not plan from this file.**
+>
+> It accumulated enough history, reversed decisions and stale item text that **five of its seven M4 items were wrong** when finally checked against the code — three had shipped months earlier, two were already fixed. Its per-item corrections are stamped inline below and were carried into the successor. Kept only for archaeology: which decisions were taken, when, and why.
 
 The single plan for finishing the native (YouCoded-runtime) system. **North star (Destin, 2026-07-22): full parity with Claude Code sessions — a user should not feel any obvious distinction between how the two session types behave.** That means working send/interrupt/queue mechanics, working tags/flags/notes, working sync and takeover, working skills and commands, working status surfaces, mature permissions, informed model selection, subagents, and eventually Android.
 
