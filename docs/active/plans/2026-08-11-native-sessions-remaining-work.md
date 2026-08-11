@@ -65,13 +65,15 @@ The status bar shows context remaining, tokens in and out, throughput, and cache
 
 Each step says what it is, why it sits here, where the detail lives, and what finishing it means. A session picking this up starts at the first unfinished step and does not need to read anything above except §1.
 
-### Step 1 — Land the two built-and-green PRs
+### Step 1 — ~~Land the two built-and-green PRs~~ ✅ DONE 2026-08-11
 
 **youcoded #289** (project instructions outlined instead of cut) and **youcoded #290** (native cache chips + images in the user message). Both pass `verify.sh --full`; neither has been reviewed.
 
 Do this first for one reason: everything below stacks on the same files, and reviewing a branch that has three more branches piled on it is how review stops happening.
 
-**Done when:** both are merged and their worktrees and branches are cleaned up.
+**Done when:** both are merged and their worktrees and branches are cleaned up. — **Both merged 2026-08-11 (#289 `4bb760ff`, #290 `9a2d8af7`); worktrees removed, branches deleted local and remote.**
+
+**Read this before trusting a green tick again:** they were merged with **Windows and macOS CI failing**, after verifying the identical six failures on master first — they are inherited, not caused. `master` has been red on those two platforms since `eba51705` (2026-08-10). See the ROADMAP `Bugs` entry added 2026-08-11. `scripts/verify.sh` runs on Linux and cannot see this class of break.
 
 **Not part of this step:** youcoded #278 is a permissions PR, but it is the *Claude Code* hook-relay path (relay scripts, Ink parser, both platforms), stale since 2026-07-31. It is not native work and does not gate anything here. Judge it on its own.
 
