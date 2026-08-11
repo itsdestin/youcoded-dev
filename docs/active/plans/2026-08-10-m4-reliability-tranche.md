@@ -8,9 +8,9 @@ program: docs/active/plans/2026-07-22-native-runtime-parity-program.md
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Close the native-session defects where information the app already has fails to reach the place that needs it — cache stats, engine load state, and images.
+**Goal:** Close the two native-session defects that survived verification — cache stats that render `--` while the data sits in the same payload, and attached images that fail at the Read tool.
 
-**Architecture:** No new subsystems. Every task in this tranche is a wiring fix: a selector that drops fields it was handed, an IPC channel with no renderer subscriber, and a tool that refuses content the model was told to fetch. Two further items get verification tasks rather than fixes, because their July descriptions did not survive contact with the code.
+**Architecture:** No new subsystems, and a deliberately small scope. §5 listed seven items; **five were stale**, so this tranche is two wiring fixes: a selector that drops fields it was handed, and a tool that refuses content the model was told to fetch. The withdrawn items are recorded below rather than deleted, because the shape of the staleness is the most reusable thing this investigation produced.
 
 **Tech Stack:** TypeScript, React 19, Electron, Vitest, `@ai-sdk` v7.
 
@@ -27,15 +27,15 @@ program: docs/active/plans/2026-07-22-native-runtime-parity-program.md
 
 ## Verified state (2026-08-10) — read this before trusting §5
 
-Every item below was checked against the code. Four of seven were wrong. The pattern is not incidental: §5 was written in July and #268 landed a large amount of work across exactly this surface without rewriting the list.
+Every item below was checked against the code. **Five of seven were stale** — three by §5 being written in July while #268 and the 2026-07-14 residency work landed across exactly this surface, and two confirmed already-handled by Destin on 2026-08-10.
 
 | §5 item | July description | Verified state |
 |---|---|---|
 | 1 Usage chips | "usage bridge" needed | **Prescription already known wrong** (§5 says so). Remaining: `StatusBar.tsx:1086-1107` Cached/Hit chips read `sessionStats` alone. `NativeUsageInput` already carries `cacheReadTokens`/`cacheCreationTokens`; `NativeStatusChips` drops them. → **Task 1** |
 | 2 Cost chip | running cost estimate | Blocked on M6 item 2 pricing sourcing, which does not exist. **Out of tranche.** |
-| 3 PTY-less stuck detection | "native sessions have no stuck detection" | **STALE.** `harness-session.ts:1271-1277` runs a two-stage watchdog — `STALL_WARNING_MS` 60s emits a warning heartbeat driving a UI countdown, `STALL_RETRY_COUNTDOWN_MS` 15s then retries or throws `StreamStallError`. Prefill-aware (`prefillBudgetMs`). The renderer classifier's `hasBuffer` gate is correct, not an oversight. → **Task 4 (verify only)** |
-| 4 Stall observability | local stall messaging | Largely shipped in #268. Remaining: no UI for "which model is loaded / is it loading". `engine:status` + `engine:status-changed` exist in `shared/types.ts:1208-1213`; the only renderer file referencing them is `remote-shim.ts`, which is transport, not UI. → **Task 3** |
-| 5 Switcher races | pill vanishes mid-resume; `/model` wedges | **Unverified.** Both are timing bugs that cannot be confirmed statically. → **Task 5 (diagnose)** |
+| 3 PTY-less stuck detection | "native sessions have no stuck detection" | **STALE — CLOSED.** `harness-session.ts:1271-1277` runs a two-stage watchdog — `STALL_WARNING_MS` 60s emits a warning heartbeat driving a UI countdown, `STALL_RETRY_COUNTDOWN_MS` 15s then retries or throws `StreamStallError`. Prefill-aware (`prefillBudgetMs`). The renderer classifier's `hasBuffer` gate is correct, not an oversight. **Destin confirmed 2026-08-10 the countdown renders correctly in use.** No task. |
+| 4 Stall observability | local stall messaging + "no visible loaded/loading state" | **STALE — CLOSED.** Shipped 2026-07-14: `ModelLoadingBar.tsx`, rendered at `ChatView.tsx:999`, wired from `App.tsx:912` ("Native local-model residency → per-session ModelLoadingBar"). Shows a resident-bytes progress bar while loading and an "unloaded · Reload Model" state. **This plan originally carried a task to build it — that was a false negative from grepping the `engine:status` channel name when the data reaches the renderer by another path.** No task. |
+| 5 Switcher races | pill vanishes mid-resume; `/model` wedges | **CLOSED — Destin confirmed 2026-08-10 these were already dealt with.** Consistent with the amount of work that landed on this code since July. No task. |
 | 6 Multimodal | 6a "InputBar builds text parts only"; 6b Read refuses images | **WRONG, and 6a/6b are ONE bug.** Attachments are never image parts: `InputBar.handlePaste` calls `saveClipboardImage()` → a **file path**, `addFiles([path])`, and `buildOutgoingMessage` prepends the path to the message text. The model then *reads* it. CC's Read returns images; the native Read refuses binaries (`tools/read.ts:40-42` NUL sniff). So an attached image fails in native sessions **at the Read tool**, and fixing 6b fixes 6a. → **Task 2** |
 | 7 Folderless sessions | "forms require a folder so the heuristic never fires" | **Half wrong.** The heuristic exists and works — `RuntimeBinding.tsx`, `cwd.trim() ? 'coder' : 'assistant'`. Only the form gate remains. Low priority per Destin. **Out of tranche.** |
 
@@ -296,65 +296,23 @@ git commit -m "feat(native): Read returns images to vision-capable models"
 
 ---
 
-### Task 3: Surface which model is loaded, and when it is loading
+## Tasks 3-5: withdrawn
 
-`EngineManager.status()` tracks it and emits `status-changed`; `engine:status` and `engine:status-changed` are declared channels. No renderer component subscribes — only `remote-shim.ts`, which is transport. So the state exists and is visible to nobody.
+The original draft of this plan carried three more tasks. All three are gone, and the
+reasons are worth keeping because they are the same reason:
 
-**Files:**
-- Modify: `youcoded/desktop/src/renderer/components/StatusBar.tsx` (new chip)
-- Test: `youcoded/desktop/tests/statusbar-engine-status.test.ts`
+- **Task 3 (show the loaded model / loading state)** — withdrawn. The UI exists and
+  shipped 2026-07-14 (`ModelLoadingBar.tsx`). This plan's own first draft asserted it
+  did not, from a grep of the `engine:status` channel name; the residency data reaches
+  the renderer through `App.tsx:912` instead. **A negative from one search is not a
+  finding** — the workspace rule says so explicitly, and this plan broke it while
+  documenting four other people's stale claims.
+- **Task 4 (verify the stall countdown renders)** — withdrawn. Destin confirmed in use.
+- **Task 5 (diagnose the switcher races)** — withdrawn. Destin confirmed already dealt with.
 
-**Interfaces:**
-- Consumes: `window.claude.engine.status()` → `EngineStatus`, and the `engine:status-changed` push event.
-
-- [ ] **Step 1: Read the shipped shape before writing the test**
-
-Run: `cd youcoded/desktop && grep -n "interface EngineStatus" -A 12 src/shared/types.ts`
-
-Write the test against the **actual** fields this prints. Do not assume field names — this plan deliberately does not invent them, because every other §5 item that was written from memory turned out wrong.
-
-- [ ] **Step 2: Write the failing test, implement the chip, verify, commit**
-
-Follow the Task 1 shape: failing test first, minimal chip, `verify.sh`, one commit. The chip shows the loaded model's short name, `Loading…` while warming, and renders nothing for non-local sessions.
-
-```bash
-git commit -m "feat(native): status bar shows the loaded local model and its load state"
-```
-
----
-
-### Task 4 (verification only): what does the stall heartbeat actually render?
-
-The watchdog exists and is prefill-aware. What is **not** established is whether its warning heartbeat reaches a visible UI countdown, or dead-ends in the renderer the way `engine:status` does. §5 item 3's premise is void either way; this task decides whether anything remains.
-
-- [ ] **Step 1: Trace the heartbeat**
-
-Run: `cd youcoded/desktop && grep -rn "stall" src/renderer/ | grep -iv test`
-Then trace the emit at `harness-session.ts:1271-1277` through to a rendered element.
-
-- [ ] **Step 2: Record the verdict in this file**
-
-If it renders: mark §5 item 3 **closed as already-shipped** in the program doc and delete this task. If it dead-ends: write a Task 1-shaped fix task here and implement it. Either way the program doc's §5 item 3 text gets replaced with the verified state — do not leave the July description standing.
-
----
-
-### Task 5 (diagnosis only): the model-switch races
-
-Two symptoms from July, neither reproduced: the session-switcher pill disappears mid-resume of a local-model session, and `/model` during a load wedges a frozen menu until restart. Both are timing bugs. **A fix cannot be planned before a reproduction** — writing one now would be the guess this workspace's debugging rule forbids.
-
-- [ ] **Step 1: Reproduce in a dev instance**
-
-`bash scripts/run-dev.sh <worktree> --label "M4 races"`. Start a local-model session, resume it, and watch the switcher during the resume. Separately, run `/model` while a model is loading.
-
-- [ ] **Step 2: If reproduced, instrument before theorising**
-
-Log at each boundary — session-restore broadcast, load-state transition, `/model` open — and capture which arrives in which order. Follow `superpowers:systematic-debugging`: evidence before hypothesis.
-
-- [ ] **Step 3: Write the fix task into this file, then implement it**
-
-If **not** reproducible, say so explicitly in the program doc rather than leaving the item open on July's word. An unreproducible symptom that survived #268 may already be fixed.
-
----
+**Five of §5's seven items were stale.** Anyone extending this tranche should assume the
+same of any item they have not personally verified against the code TODAY, including the
+two below.
 
 ## Out of this tranche
 
@@ -363,7 +321,8 @@ If **not** reproducible, say so explicitly in the program doc rather than leavin
 
 ## Self-review notes
 
-- **Spec coverage:** §5 items 1, 3, 4, 5, 6 all have a task; items 2 and 7 are explicitly deferred with reasons. No item is silently dropped.
-- **Placeholders:** Tasks 3, 4 and 5 deliberately do not contain invented code. That is not a placeholder — it is the plan refusing to specify against unverified interfaces, and each carries a concrete first command that produces the missing fact. Tasks 1 and 2 are fully specified because their interfaces were read.
+- **Spec coverage:** all seven §5 items are accounted for — 1 and 6 have tasks, 3/4/5 are closed as already-shipped, 2 and 7 are deferred with reasons. Nothing silently dropped.
+- **Placeholders:** none. Both remaining tasks carry complete code because both interfaces were read directly.
 - **Type consistency:** `NativeStatusChips.cacheReadTokens`/`cacheCreationTokens` (Task 1) and `CapabilityProfile.supportsVision` (Task 2) are the only new members; both are `null`/`false`-defaulting and used only where defined.
-- **Ordering:** Task 1 is smallest and proves the loop. Task 2 is the highest user-visible value. Tasks 3-5 depend on facts the earlier tasks' verification habit is meant to instil.
+- **Ordering:** Task 1 is smallest and proves the loop. Task 2 is the user-visible one.
+- **Honest scope note:** this plan shrank from five tasks to two DURING its own writing, and one of the three withdrawals corrected an error this plan itself introduced. If a future session finds §5 or this file describing work that sounds plausible, verify before building — the base rate of stale items in this milestone is 5 in 7.
