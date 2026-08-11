@@ -45,55 +45,56 @@ OPENROUTER_API_KEY=sk-... node test-engine/review-harness.mjs`.
   40–80-call battery short. `STEP_GATE_ALLOWANCE = 1` (down from 4) gives one
   continuation before the gate denies. Guard: the `battery step budget` describe block.
 
-- **A cut-short run ends in a wrap-up turn, not a dead one.** Budget exhaustion, a
-  restarted battery (`REPEAT_LIMIT = 5` non-consecutive repeats), or the wall clock
-  interrupt the testing turn and send a second turn carrying `WRAP_UP_PROMPT` with every
-  tool call denied — including a genuine `AskUserQuestion`, which is `interactive: true`
-  and so bypasses `decide()` entirely; `askUser` denies it explicitly during wrap-up so
-  the prompt's claim holds for that tool too. Guard: the `wrap-up turn` describe block.
+- **Every run ends in a review or a labelled failure — three triggers, each a FACT.**
+  Budget exhaustion, the wall clock, and `stopped-early` (the turn ended on its own with
+  no text after the last tool result) each send a second turn carrying `WRAP_UP_PROMPT`
+  with every tool call denied — including a genuine `AskUserQuestion`, which is
+  `interactive: true` and so bypasses `decide()`; `askUser` denies it during wrap-up so
+  the prompt's claim holds. Guard: the `wrap-up turn` describe block.
+
+- **Do NOT add a heuristic trigger.** A 'restart' trigger counting repeated identical
+  calls was deleted 2026-08-11 after truncating 8 paid runs at threshold 5 and 5 more at
+  12 — every trip exactly one over the line, because the battery ("verify cwd persistence
+  across calls") and read-before-edit both REQUIRE identical repeats. Repeats are
+  reported (`REPEAT_REPORT_FLOOR`), never acted on. Guard: `repeat reporting
+  (diagnostic only)`.
 
 - **`runBattery` never throws for a run that produced events** — it returns `outcome`,
   `error`, and `metrics` instead. Round 5 lost four transcripts to a rejected promise.
   Guard: the `runBattery salvage` describe block.
 
-- **Two engine quirks this file leans on:** `session.send()` never rejects on a mid-run
-  provider error — `HarnessSession` emits `'session-error'` and resolves, so `runBattery`
-  scopes its scan per-`send()` (unscoped, a wrap-up mislabels a recovered run as errored).
-  And `tool-use` fires before `decide()`, so `metrics.toolsUsed` records *attempted*
-  calls; wrap-up's denials are excluded. Guard: none — candidate.
+- **Two engine quirks this file leans on:** `send()` never rejects on a mid-run provider
+  error — `HarnessSession` emits `'session-error'` and resolves, so the scan for it is
+  scoped per-`send()` (unscoped, a wrap-up mislabels a recovered run as errored). And
+  `tool-use` fires before `decide()`, so `toolsUsed` records *attempted* calls.
+  Guard: none — candidate.
 
 - **Every appended review carries its run facts; a claimed tool the transcript never
   shows gets a warning above it.** `collectRunFacts` diffs claimed tool names against
   `metrics.toolsUsed`; `MIN_TOOL_CALLS = 10` flags a run too short to have covered the
-  battery. Written after a 14-call run described Edit tests it never ran. Guard: the
-  `renderRunFacts` describe block.
+  battery. Written after a 14-call run described Edit tests it never ran.
+  Guard: `renderRunFacts`.
 
 - **`OPENROUTER_API_KEY` is the only credential; the CLI deletes it from `process.env`
   before any battery runs.** The battery prompt invites `env`/`printenv`, which would
-  land the key in the saved transcript — `makeOpenRouterFactory` takes the key as a plain
-  argument instead.
+  land the key in the saved transcript — `makeOpenRouterFactory` takes it as an argument.
 
 - **`appendReview` is pure** — `(docText, run, runAtISO) => string`, no I/O — making
-  "never disturbs other models' reviews" unit-testable. Headings carry minute precision
-  plus a build SHA. Guard: "leaves every existing review byte-identical".
-
-- **`runBattery` sends an explicit output ceiling.** `BATTERY_MAX_OUTPUT_TOKENS = 32_000`
-  overrides the unset `limits.maxTokens` on a battery-only copy of `ASSISTANT_PRESET` —
-  unset, OpenRouter reserves the model's full hosted max (Opus 5 hit 65,536).
+  "never disturbs other models' reviews" testable. Guard: "leaves every existing review
+  byte-identical".
 
 - **The review is the text after the last tool result, not every `assistant-text`
   delta.** Deltas stream all run; joining them glued narration onto the review (Kimi K3:
   36% commentary). The wrap-up window falls back to the whole window only when that
   anchored slice is empty — the model answered, then made one last denied call.
 
-- **The fixture must be byte-identical across runs, so reviews stay comparable.**
-  `seedFixtureWorkspace()` writes the same bytes every call, including a seeded
-  contradiction (`config/settings.toml` vs `config/app.toml` disagree on `port`) giving a
-  model reason to call `AskUserQuestion` — don't "fix" it. Guard:
+- **The fixture is byte-identical across runs, so reviews stay comparable** — including a
+  seeded contradiction (`config/settings.toml` vs `config/app.toml` disagree on `port`)
+  giving a model reason to call `AskUserQuestion`; don't "fix" it. Guard:
   `harness-review-fixture.test.ts` → "produces byte-identical trees across runs".
 
 - **Offer the battery after changing a harness tool; never run it unasked.** ~$1.50 a
-  roster — `--dry-run` is free, `--only "<label>"` is one model.
+  roster; `--dry-run` is free, `--only "<label>"` is one model.
 
 Depth: `docs/archive/plans/2026-08-06-harness-review-runner.md`,
 `docs/archive/specs/2026-08-10-harness-review-runner-resilience-design.md`.
