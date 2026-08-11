@@ -32,6 +32,9 @@ verify:
   - path: youcoded/desktop/src/main/sync-hub-socket.ts
   - path: youcoded/desktop/src/main/sync-error-classifier.ts
     contains: "extractStderr"
+  - path: youcoded/desktop/src/main/sync-service.ts
+    contains: "HEALTH_POLL_INTERVAL_MS"
+  - test: youcoded/desktop/tests/sync-warning-self-clear.test.ts
   - path: youcoded/desktop/src/main/snapshot-retention.ts
   - path: youcoded/desktop/src/main/conversations/symlink-sweep.ts
   - path: youcoded/desktop/src/main/sync-spaces/gc-policy.ts
@@ -97,8 +100,9 @@ verify:
 - **`sweepProjectSymlinks()` is `lstat`-only, removes ONLY symlinks/junctions, NEVER recursive** — recursion through a junction irreversibly deletes the TARGET's real transcripts.
 - **Drive/iCloud backup is WRITE-ONLY dated snapshots; restore was REMOVED** — don't re-add a Restore Wizard or auto-restore pull. The >500MB warning rides `notice`, NOT `error`; `git gc` is local `--auto` only.
 
-## Sync Warnings (`sync-service.ts`, `sync-error-classifier.ts`) — guard: `sync-warnings-lifecycle.test.ts`, `sync-error-classifier.test.ts`
+## Sync Warnings (`sync-service.ts`, `sync-error-classifier.ts`) — guard: `sync-warnings-lifecycle.test.ts`, `sync-error-classifier.test.ts`, `sync-warning-self-clear.test.ts`
 - **`~/.claude/.sync-warnings.json` (`SyncWarning[]`) is authoritative.** **Two writers, non-overlapping codes** (health-check vs `backendId`-keyed push); the merge replaces only its own codes. Push-failure warnings are non-dismissible.
+- **`runHealthCheck` runs at launch AND every 60s — a health warning must not outlive its cause** · why: once-per-launch pinned "No internet" over "All synced · 1m ago" for a whole session (2026-08-11) · guard: `sync-warning-self-clear.test.ts`. Four constraints keep the re-run safe — **probe backends at launch only, two strikes for `OFFLINE`, dismissals hold for the run, write only on change** — each load-bearing, each explained in `youcoded/docs/sync-spaces.md`.
 - **Node-killed timeouts have empty stderr — route through `extractStderr(e, timeoutMs)`**, never raw `e.stderr || e.message` (else every timeout → `UNKNOWN`).
 
 ## GitHub auth (`github-auth.ts`, `github-connect.ts`, `github-client.ts`) — guard: `github-auth.test.ts`, `github-connect.test.ts`, `github-client.test.ts`
