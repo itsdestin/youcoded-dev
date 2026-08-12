@@ -1057,6 +1057,12 @@ OPENROUTER_API_KEY=sk-... node test-engine/harness-eval.mjs \
 
 ### Task 13: Documentation
 
+- [ ] **Step 0 (code cleanup — added 2026-08-12, do this first):** three deferred renames now have no other owner. Task 2's interface block said `BatteryRun`/`BatteryMetrics`/`BatteryOutcome` "are renamed in Task 5", but Task 5's brief excluded `run-case.ts` (the shared file its parallel siblings were forbidden to touch), so Task 5 aliased `export type CaseRun = BatteryRun` instead and the rename fell through. Converge them here:
+  - Rename `BatteryRun` → `CaseRun`, `BatteryMetrics` → `CaseMetrics`, `BatteryOutcome` → `CaseOutcome` in `run-case.ts`; delete the alias in `case-types.ts`.
+  - Delete the `runBattery` delegating function (`run-case.ts`, added in Task 2 so the pinning tests stayed untouched) and update its ~35 call sites in `tests/harness-review-runner.test.ts` plus 2 in `test-engine/review-harness.mjs`. The "tests unchanged" evidence has served its purpose by now — Phases 1–3 all passed with it intact.
+  - Sweep the stale `run-battery.ts` / `run-battery.js` mentions left in comments across `test-engine/review-harness.mjs` and both pinning test files, and the hardcoded `src/main/harness/review/battery.ts` string in `eval/append-review.ts:59` (it renders a now-nonexistent path into report output).
+  - Gate: `bash scripts/verify.sh` plus the full `npx vitest run` — this is a wide mechanical rename and `tsc` will not catch the `.mjs` call sites.
+
 - [ ] **Step 1:** `git mv .claude/rules/harness-review-runner.md .claude/rules/harness-evaluator.md`; widen the body to cover the evaluator; repoint `paths:` to `youcoded/desktop/src/main/harness/eval/**` and `test-engine/harness-eval.mjs`; update every `verify:` anchor to the new paths.
 
 - [ ] **Step 2:** `git mv youcoded/docs/harness-review-runner-internals.md youcoded/docs/harness-evaluator-internals.md` and repoint its anchors. **Note:** this file is currently untracked in the main checkout — confirm it is committed before moving, or the move silently loses it.
