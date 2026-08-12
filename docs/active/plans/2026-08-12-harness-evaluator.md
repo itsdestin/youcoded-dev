@@ -759,6 +759,18 @@ git add -A && git commit -m "feat(eval): per-cell worker process and grader-isol
 
 ---
 
+### Task 8c: Load the instruction files (added 2026-08-12 — this was an ORPHAN)
+
+**Nothing in this plan owned reading an instruction file from disk.** The plan format defines `instructions: [{id, file}]`, `expandPlan` carries `instructionsFile` onto every cell, `runCell` refuses to run when a cell declares a file but no text was supplied, and Task 12 writes `draft.md`/`tightened.md` — but no task ever connected the two. `main()` never passes `instructionsText`, so every guidance arm would either refuse to run or run identically.
+
+Same failure shape as the `BatteryRun`→`CaseRun` rename (Task 13 Step 0): a step described in prose in one task's narrative, fenced out of that task's file list, and therefore assigned to nobody. It matters more here because the instructions axis **is** the first real experiment.
+
+- Read each arm's `file` relative to the **plan file's** directory (the same base `readPlanFile` already resolves `build.dist` against), not the cwd.
+- A declared file that cannot be read must fail **before** any spend, naming the path and the real I/O error.
+- Pass the text to `runCell` as `instructionsText`; it reaches `runCase`'s `instructions` option, which writes it into the fixture as a real `CLAUDE.md` (Task 3).
+- **Guard the axis actually differs:** two arms resolving to identical text is not a comparison. Reject it before spending, the same way `validatePlan` already rejects two `null` baselines.
+- Test that two arms produce two different `CLAUDE.md` bodies reaching the session — the shape guard added in Task 7 proves only that an arm *declared* itself. Prove it discriminates.
+
 ### Task 8: Estimate and spend cap
 
 > **BINDING CONSTRAINT added 2026-08-12 — the API key must NOT reach the orchestrator through an inherited environment variable.**
