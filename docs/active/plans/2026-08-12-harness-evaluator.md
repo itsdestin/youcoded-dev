@@ -769,6 +769,16 @@ git add -A && git commit -m "feat(eval): per-cell worker process and grader-isol
 >
 > Same session also recorded the identical hole in the shipped `review-harness.mjs` — see `ROADMAP.md` → Bugs (2026-08-12).
 
+> **STEP 0 — INTEGRATION, do this before any estimate work. Verified live on the merged branch 2026-08-12.**
+>
+> Phase 2's three tasks were built in isolated worktrees and forbidden from importing each other, so Task 7 wrote its own local `loadPlan`/`expandPlan` inside `test-engine/harness-eval.mjs`. Git merged all three **cleanly** — they are different files — and `verify.sh` passes. Measured after the merge:
+> - `test-engine/harness-eval.mjs` still defines its own `loadPlan` **and** `expandPlan` (2 matches), while `src/main/harness/eval/matrix.ts` exports `validatePlan` **and** `expandPlan` (2 matches). **Two plan validators, and they already disagree** — the local one never cross-checks case ids or roster labels, which is `validatePlan`'s whole job.
+> - `cellFilename` — the Windows-safe filename builder that cost a full review round (the raw cell id contains `|`, which is Windows-reserved, and spaces from roster labels like `"Claude Opus 5"`) — is referenced **zero times** in `harness-eval.mjs`. The orchestrator is not using it.
+>
+> Nothing fails, which is the hazard: a clean merge plus a green gate reads as "integrated" when the two halves have never been connected.
+>
+> **Required:** delete the local `loadPlan`/`expandPlan` from `harness-eval.mjs` — *delete and replace*, never merge the two — import the real ones from `dist/main/harness/eval/matrix.js`, thread `knownCaseIds`/`knownModels` into `validatePlan` from `cases/index.js` and the roster, and use `cellFilename` for every path derived from a cell. Then re-run Task 7's own tests: several pin behaviour of the local validator and must be repointed, not deleted.
+
 **Files:**
 - Create: `src/main/harness/eval/estimate.ts`
 - Modify: `test-engine/harness-eval.mjs`
