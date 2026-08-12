@@ -40,10 +40,17 @@ says subagent, orchestrator, spawn, or Task. The model-facing tool is named `Tas
    there is no dedicated coordinator persona (Kilo deprecated theirs for exactly
    this; Codex removed its bespoke batch-jobs subsystem — batch shape lives in the
    plan data, execution lives in the parent's ordinary machinery).
-4. **Delegation is gated on the ORCHESTRATOR'S model class**, resolved via the
-   capability profile like every other conditional tool. Weak local models don't
-   get the Task tool (evidence: weak orchestrators halve delegation quality and
-   serial-collapse; weak *workers* under a strong orchestrator are fine).
+4. **Delegation is gated on the ORCHESTRATOR'S model class.** The Task tool
+   attaches conditionally the way Skill and MCP tools do (the only conditional
+   attachments today — core tools are static), but the *criterion* is net-new:
+   `CapabilityProfile` currently derives from provider type + context window and
+   has no model-class concept, so this decision adds one (it dovetails with the
+   Step 5 tiering rework, which needs the same axis). Weak local models don't get
+   the Task tool (evidence: weak orchestrators halve delegation quality and
+   serial-collapse; weak *workers* under a strong orchestrator are fine). **The
+   gate applies to Task-tool attachment only, never to `createChild` itself** —
+   app-initiated hidden utility specialists (titling, compaction) must keep
+   working on every model class.
 5. **Agent definitions: design for marketplace, ship files.** v1 = built-ins + a
    watched user folder + Claude Code `.claude/agents` format compatibility. The
    in-app "create a helper" editor and WeCoded distribution arrive with the later
@@ -62,9 +69,16 @@ same JSONL persistence, same tools, same permission machinery. No new runtime ki
 `parentSessionId?: string`, `sessionKind?: 'root' | 'specialist'`, and
 `agentType?: string` (the specialist definition id). `validateHeader` already
 tolerates additive fields. Sessions with `parentSessionId` are excluded from every
-top-level session/conversation list (the Kilo prune invariant) and from the
-conversation sync layer's `sessionIdMap` (the hazard `youcoded/docs/conversations.md`
-§62 documents for CC subagent ids applies identically here).
+top-level session/conversation list (the Kilo prune invariant) and from
+conversation-store sync (the CC-subagent-id poisoning hazard documented in
+`youcoded/docs/conversations.md` under "sessionIdMap"). **But note the carve-out
+shape:** native sessions are deliberately identity-mapped into `sessionIdMap`
+(`ipc-handlers.ts`, the "NO CC SessionStart hook" block) so lease release and
+holder teardown pick them up — children must be excluded from *listing and sync*
+while still getting teardown/lease handling, either through their parent's
+lifecycle (preferred: cascade-cancel already ties child fate to the parent) or
+their own map entries. The implementation plan must decide this explicitly rather
+than skipping the branch wholesale.
 
 **The Task tool** is a `defineTool()` tool, attached dynamically like Skill/MCP,
 gated on the capability profile (decision 4). Schema:
@@ -100,13 +114,27 @@ line 14).
 - Specialists resolve from the parent's binding by default; a definition's model
   preference overrides with graceful fallback (see §2).
 
+**Child context (decided, not by omission): cold start.** A child's context is
+built fresh from: the specialist definition body (system prompt) + the standard
+env block + budget-fitted project instructions for its `work_dir` + the Task
+prompt. **No parent conversation history, no parent skills catalog, no MCP tools**
+in v1 (each is attachable later via definition fields; MCP grants are per-tool
+already). The Reviewer's isolation is therefore **structural at spawn** — its
+context simply never contains the producing conversation, only the work-product
+references in its prompt; this is construction, not convention. Codex's
+fork-context filter (inherit parent transcript filtered to user messages +
+assistant final answers) is a **deliberately deferred** second spawn mode — the
+research LIFT verdict stands, but it ships after cold-start proves out, not in
+stage one.
+
 ## §2 Specialist definitions
 
 **Built-ins (four visible + hidden utilities):**
 - **Explorer** — read-only (files, search, web). Parallel-safe workhorse.
 - **Worker** — general-purpose with edit access. Runs solo (single-writer).
 - **Reviewer** — read-only; receives ONLY the work product, never the producing
-  conversation; prefers a *different model* than the producer when available
+  conversation (structural: §1 cold-start context construction, not a prompt
+  convention); prefers a *different model* than the producer when available
   (verifier-independence evidence).
 - **Researcher** — Explorer tuned for the Assistant preset: web-heavy, sourced
   summaries.
@@ -118,8 +146,17 @@ line 14).
 **Definition = file:** frontmatter (name, description, model preference, allowed
 tools, permission ruleset, step cap) + body = system-prompt instructions. Sources in
 precedence order: bundled built-ins → project folder (including **`.claude/agents`
-`.md` frontmatter read as-is** for CC compatibility) → personal folder, watched and
+`.md` frontmatter** for CC compatibility) → personal folder, watched and
 hot-reloaded (chokidar; Cline pattern).
+
+**CC-format compatibility is safety-relevant, not just convenience:** a CC agent
+file's `tools:` list uses CC tool names and CC semantics, and §5's consent model
+depends on charters being *accurate* — a mis-mapped definition could render
+"read-only" on the launch card while actually holding write access. The
+implementation carries an explicit CC→native tool mapping table, and **narrows on
+any ambiguity**: unmappable or unrecognized tool grants are stripped (with a
+visible warning on the definition, not silently), and the launch-card charter is
+always rendered from the *mapped* result, never from the source file's claims.
 
 **Marketplace-shaped from day one:** the schema reserves `id`, `version`, `author`,
 and a **declared permission summary** so a future WeCoded surface can render "this
@@ -135,8 +172,9 @@ never carry across model families (Goose hygiene rule).
 ## §3 Execution lifecycle and durability (stage one)
 
 - **Foreground and background.** Foreground waits; anything long runs in
-  background. A foreground run can be **promoted** to background mid-run
-  (opencode's race(wait, promotion)). Background completions are **injected as a
+  background. A foreground run can be **promoted** to background mid-run — by the
+  user (card action) or by the model on a later turn; no automatic timeout
+  promotion in v1 (opencode's race(wait, promotion)). Background completions are **injected as a
   synthetic user-role turn at an idle boundary** — never spliced mid-turn
   (preserves role alternation and the local prompt cache). The completion payload
   is self-contained (task, specialist, timing) because the parent may not remember
@@ -163,6 +201,22 @@ never carry across model families (Goose hygiene rule).
   and in-tool staleness thresholds, and an open model request always refreshes the
   heartbeat (slow local prefill is never killed). Composes with the existing stall
   watchdog.
+- **Single-writer, precisely:** among specialists, a second write-capable spawn
+  while one runs gets a typed `writer-busy` result (queue or wait — same shape as
+  `at-capacity`). **The parent is not blocked** from its own edits in v1 —
+  enforcement there would be invasive and no shipped harness does it — but the
+  Task tool's description instructs the model not to edit files while a Worker
+  runs, and the turn-context ledger keeps the running Worker visible. Stage two is
+  stricter: the plan validator **rejects** fan-out (`map`) over write-capable
+  specialists structurally.
+- **Child failure is a typed result, not silence:** a child that dies mid-run
+  (provider error, engine crash) resolves the parent's Task call with an error
+  result naming what happened plus a pointer to the partial transcript — the
+  parent model decides retry/respawn/report. (The §8 fakes exercise exactly this.)
+- **Child context exhaustion:** children run the same two-stage compaction as any
+  session; if a child overflows again after compacting, it is told to finalize —
+  write up what it has and return. Expected week-one behavior for small local
+  windows, so it is a designed path, not an edge case.
 - **Concurrency: reserve-slot counter** with a typed, model-visible
   `at-capacity{max}` result the model can react to (queue or wait). Derived **per
   provider**: hosted defaults to **4** (config constant); local derives from the
@@ -183,11 +237,22 @@ result), `combine` (synthesis step), `repeat` (bounded loop-until, explicit cap)
 Every node executes as an ordinary §1 child session. Local models author plans via
 the same constrained-decoding path as tool calls.
 
-- **Pre-flight:** the app validates the plan structurally and computes worst-case
-  fan-out and token/cost ceiling. The plan renders as a reviewable card: **Approve /
-  Comment** — Comment enters the annotation/markup mode (the ask-reference
-  evolution), and the assistant revises. Plans under a user-configurable threshold
-  auto-approve.
+- **Plans are authored as a tool call** (`propose_plan`, args = the plan
+  document), so local models produce them through the *same* `--jinja` tool-arg
+  grammar path as every other tool call — the repo has no top-level-JSON
+  constrained mode and must not gain one (`provider-registry.ts`: "NEVER a
+  top-level json_schema"). Whether that grammar holds up on a large nested schema
+  is **live probe 3** (§8); if fidelity is poor on small models, plan authoring
+  falls under the same model-class gate as the Task tool.
+- **Pre-flight, with honest arithmetic:** every plan node carries an enforced
+  per-child token budget (defaulted from the specialist definition); the card's
+  worst-case = Σ(node budgets × fan-out) priced per model. The ceiling is honest
+  *because the budgets are enforced caps, not estimates*. Dollar figures appear
+  only for models with pricing data (a Step 4 / model-metadata dependency —
+  **not yet landed**); token ceilings always appear. The plan renders as a
+  reviewable card: **Approve / Comment** — Comment enters the annotation/markup
+  mode (the ask-reference evolution), and the assistant revises. Plans under a
+  user-configurable threshold auto-approve.
 - **Execution journal:** each completed node's result is recorded in the plan's
   journal at completion. **Budgets are hard stops** — token/spend caps pause the
   plan and ask, never warn-and-continue.
@@ -224,7 +289,10 @@ do not prompt. This is deliberately *not* CC's silent acceptEdits upgrade — th
 elevation is visible, scoped to the declaration, and refusable at launch. Full Auto
 skips launch consent (already approve-everything); a strict per-action toggle
 exists in settings. Remembered "always allow" grants are keyed **specialist +
-rule**, and land in the existing store (revocable via the M5 permissions UI).
+rule** — which is a **permission-store schema evolution, not a drop-in**: the
+persisted file is `v:1`, keyed by project slug only (with documented slug-collision
+caveats), so the specialist dimension arrives as a `v:2` migration designed
+alongside the M5 permissions UI (revocation must render the specialist key too).
 
 **Always cuts through the envelope:** the destructive deny-list, the bottom-tier
 tool guards (secrets, external dirs) — no charter or envelope overrides them — and
@@ -269,8 +337,13 @@ over summarized prose.
   {Role}"** — descriptor alliterates with the role, drawn randomly from per-role
   pools in a plain word-list file (John the Exuberant Explorer, Nadia the Rambling
   Researcher, Priya the Ruthless Reviewer, Marcus the Whistling Worker). Full title
-  on launch card and transcript header; first name in compact rows. Pools are
-  trivially extensible (future theme/marketplace flavor hook).
+  on launch card and transcript header; first name in compact rows. Names draw
+  **without replacement per conversation** (no "John and John" in one fan-out).
+  Pools are trivially extensible (future theme/marketplace flavor hook).
+- **User steering path:** the child's card and its transcript view carry a
+  "send a note" action — text goes through the same steering channel the model
+  uses (§3), applied at the child's next natural pause. The model's path and the
+  user's path are one mechanism.
 - **Attention, not vigilance:** a quiet status-bar indicator while specialists run
   ("2 specialists working") that becomes a badge when something needs the user
   (queued ask, finished report, paused plan); click-through jumps to the card.
@@ -289,7 +362,10 @@ over summarized prose.
 - **`youcoded agent run <specialist> --task <text> --dir <path>`** runs a native
   child session headlessly and prints the report (full output to a file, bounded
   summary to stdout). It is the same child-session machinery — a bridge-spawned
-  specialist is persisted, inspectable, and resumable like any other.
+  specialist is persisted, inspectable, and resumable like any other. **CLI
+  packaging is its own workstream:** the app currently ships no `bin` entry at
+  all, so the executable, its packaging on three platforms, and its path onto
+  users' PATHs are net-new and budgeted separately in the plan.
 - **A bundled CC skill** teaches Claude Code sessions to delegate through it:
   `run_in_background` for long jobs (CC's task notifications deliver the result),
   stdin redirected (`</dev/null` — the known agent-CLI gotcha), results treated as
@@ -315,11 +391,14 @@ over summarized prose.
 - **Harness review battery:** add delegation tasks to the roster (over-delegation
   of trivial work, serial collapse, placeholder prompts). Offered per its standing
   rule; paid runs only when Destin says so.
-- **Live probes BEFORE implementation locks defaults** (both flagged "measure,
-  don't assume" since July): (1) the local engine's real parallel capacity and the
-  right `--parallel`/slot configuration for the router setup (nothing introspects
-  this today — net-new); (2) whether KV prefix reuse survives specialist fan-out on
-  our llama.cpp build. Results recorded in `youcoded/docs/engine-dependencies.md`.
+- **Live probes BEFORE implementation locks defaults**: (1) the local engine's
+  real parallel capacity and the right `--parallel`/slot configuration for the
+  router setup (nothing introspects this today — net-new); (2) whether KV prefix
+  reuse survives specialist fan-out on our llama.cpp build (both flagged
+  "measure, don't assume" since July); (3) **grammar fidelity of the `--jinja`
+  tool-arg constraint on the large nested `propose_plan` schema** across the
+  local model roster — added after review; plan authoring depends on it (§4).
+  Results recorded in `youcoded/docs/engine-dependencies.md`.
 - **Workbench-first UI:** all cards/rows/badges built against mocked events in the
   UI Workbench (`MOCK_ONLY` channels become the backend to-do list);
   `workbench-boot-check.mjs` after shim changes. Interactive/visual sign-off is

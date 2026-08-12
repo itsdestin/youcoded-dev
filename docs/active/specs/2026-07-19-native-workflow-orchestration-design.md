@@ -8,6 +8,15 @@ supersedes: docs/active/investigations/2026-07-19-agent-orchestration-landscape.
 
 # Native workflow orchestration — competitive research + design direction
 
+> **2026-08-11: §8's open decisions are now largely RESOLVED** by the approved
+> M7 spec (`docs/active/specs/2026-08-11-native-specialists-design.md`):
+> decision 1 = declarative plans (DAG) over model-authored JS, permanent;
+> decision 2 mooted (no sandbox — no model-authored code executes); decision 5 =
+> subagents/plans are a native-harness feature, with the Agents & Automations
+> surface layered on later (Inbox, specialist editor, marketplace). Decisions
+> 3–4 became live probes 1–2 in that spec's §8. The research sections here
+> remain current.
+
 **Date:** 2026-07-19
 **Status:** DRAFT — research complete, design direction proposed, **no decision taken**.
 Phase 4+ / gated on the native harness Task tool landing first.
