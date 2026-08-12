@@ -70,9 +70,12 @@ OPENROUTER_API_KEY=sk-... node test-engine/review-harness.mjs`.
   battery. Written after a 14-call run described Edit tests it never ran. Guard:
   `renderRunFacts`.
 
-- **`OPENROUTER_API_KEY` is the only credential; the CLI deletes it from `process.env`
-  before any run.** The prompt invites `env`/`printenv`, which would land the key in the
-  saved transcript — `makeOpenRouterFactory` takes it as an argument.
+- **`review-harness.mjs`'s `delete process.env.OPENROUTER_API_KEY` does NOT stop the model
+  reading the key** (measured 2026-08-12; ROADMAP → Bugs). `delete` is `unsetenv` — in-heap
+  only, never rewrites `/proc/<pid>/environ`, which every same-uid descendant can read. The
+  evaluator CLI closes it: `--key-file`, an inherited key REFUSED outright, worker config
+  over stdin. Guard: `tests/harness-eval-key-leak.test.ts`, with a negative control that
+  must report LEAKED.
 
 - **The fixture is byte-identical across runs, so reviews stay comparable** — including a
   seeded contradiction (`config/settings.toml` vs `config/app.toml` disagree on `port`)
