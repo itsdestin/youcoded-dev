@@ -151,6 +151,8 @@ Phase 1 works but has no management surface. Phase 2 is the adopt flow, the sett
 
 ### Step 9 — M7 subagents, then orchestration
 
+**DESIGNED 2026-08-11 — spec approved by Destin:** `docs/active/specs/2026-08-11-native-specialists-design.md` (user-facing name "specialists"; stage one = Task tool as child sessions, stage two = declarative plans; ratifies the 2026-07-19 orchestration spec's DAG-over-JS decision). Research base: `docs/active/investigations/2026-08-11-subagent-platform-research.md`. Implementation plan doc still to be written before code.
+
 **Subagents first.** The Task tool as child sessions, with a parent-session pointer and a condensed result travelling back up. The session store was deliberately designed so this lands without a schema change. Deferred once already, but core.
 
 **Orchestration strictly after.** Spec exists (`docs/active/specs/2026-07-19-native-workflow-orchestration-design.md`) with research done but **no design decision taken**. The pivotal choice is model-authored JavaScript versus a declarative graph, and the graph is favored — four unpredictable models plus sandbox elimination via schema validation. Two constraints to respect when it is picked up: concurrency must derive from the local engine's actual parallel slots rather than a copied constant, and prefix-cache stability must be measured rather than assumed.
