@@ -60,52 +60,49 @@ verify:
   # the rule text shipped ahead of the merge and broke the anchors CI. Restore this anchor when it lands:
   #   - test: youcoded/desktop/tests/sync-spaces-project-registry.test.ts
 ---
-
 # Sync Spaces, SyncHub, backup & GitHub-connect
 
-**Depth + invariants not listed here: `youcoded/docs/sync-spaces.md`.**
+**Depth + why per bullet: `youcoded/docs/sync-spaces.md`; guards = frontmatter `verify:` tests.**
 
-## Git transport (`sync-spaces/git-transport.ts`) — guard: `sync-spaces-git-transport.test.ts`, `sync-transport-contract.ts`
-- **`GIT_DIR` env, not `--separate-git-dir`** (a `.git` FILE collides with a dev's repo); ignores/attributes in `$GIT_DIR/info/`, never the user's tree.
-- **`info/attributes` = `* -text`, NOT `text=auto`** (Windows LF→CRLF breaks byte fidelity).
-- **Convergent conflicts: REMOTE wins the canonical name, LOCAL becomes a visible conflict copy** (local-wins never converges). `merge --allow-unrelated-histories` is load-bearing. Copy content: Buffer via `showStage()`, `maxBuffer >= maxFileBytes` (string `git()` truncates >1MB).
-- **`sync-transport-contract.ts` is the transport compatibility boundary**; **`repoNameForSpace` = slug + hash of the LOWERCASED space id** = the sync identity.
-- **Non-zero git exits are guilty until proven benign.** Benign is an explicit allowlist; corruption throws coded `repo-corrupt`; everything else throws the REAL stderr — a failed commit must never return `{pushed:false}` · why: a crash-corrupted repo synced "green" for three days (2026-07-27) · guard: `sync-spaces-git-transport.test.ts` honest-failure cases.
-- **Zero-byte loose objects are POISON, not damage** — git checks existence by filename, so `add` never rewrites them from the intact worktree; only `repair()` clears them, and it never writes outside `.youcoded/` · guard: `sync-spaces-repair.test.ts`.
+## Git transport (`sync-spaces/git-transport.ts`)
+- **`GIT_DIR` env, not `--separate-git-dir`; ignores/attributes in `$GIT_DIR/info/`; `info/attributes` = `* -text`, NOT `text=auto`.**
+- **Convergent conflicts: REMOTE wins the canonical name, LOCAL becomes a visible conflict copy**; `--allow-unrelated-histories` is load-bearing; conflict-copy content rides Buffer `showStage()`, never string `git()`.
+- **`sync-transport-contract.ts` is the compatibility boundary; `repoNameForSpace` (slug + LOWERCASED-id hash) IS the sync identity.**
+- **Non-zero git exits are guilty until proven benign** (allowlist; corruption → coded `repo-corrupt`; else the REAL stderr) — never `{pushed:false}` on a failed commit.
+- **Zero-byte loose objects are POISON** — only `repair()` clears them, never writing outside `.youcoded/`.
 
-## Engine & service (`engine.ts`, `service.ts`) — guard: `sync-spaces-engine.test.ts`, `sync-spaces-service.test.ts`
-- **Engine:** single-flight per space + one coalesced rerun; `addSpace` awaits chokidar `ready`; a persistent `watcher.on('error')` is required; `stop()` clears the state map FIRST, then awaits in-flight chains (Windows handles block removal). **`provisionGithubRemote` treats an existing repo as SUCCESS.** **`isIgnoredPath()` keeps backup scrub == sync scrub** (`DEFAULT_IGNORES`). No Android `syncspaces:*` handlers yet.
-- **A remote-less space NEVER emits `synced`; panel green is evidence-gated** (2026-07-22). `syncSpace` retries the injected `ensureProvisioned` hook every cycle (self-heals; re-errors verbatim until cured); `broadcast` persists per-space `lastSync`; header derives from pure `deriveSyncBoxState` (all active spaces provisioned + Personal synced once, else `hydrating`) · why: the phantom `synced` superseded the real gh error — green over a never-synced device (beta.8 VM) · guards: `sync-spaces-engine.test.ts`, `sync-dot-state.test.ts`. Depth: `youcoded/docs/sync-spaces.md`.
-- **The Conversation Store's `native/` lanes ride this SAME evidence-gated engine — there is no native-only `synced` path** (M2). Lease TAKEOVER REQUEST has exactly ONE transport (the SyncHub socket) where lease PRESENCE has two (hub + file fallback) — that asymmetry is why the requester outcome `'undeliverable'` exists (`.claude/rules/conversations.md`). Depth: `youcoded/docs/conversations.md` → "Native provider participation".
-- **Corrupt-repo heal is ONCE per space per launch** (`healedSpaces`, marked before the attempt) — never a repair/fail loop at poll cadence · guard: `sync-spaces-engine.test.ts` corruption cases.
-- **Self device-row recency derives from `lastSyncFor` evidence**, never the legacy `.sync-marker` alone (absent on GitHub-era installs) · guard: `self-sync-status.test.ts`.
+## Engine & service (`engine.ts`, `service.ts`)
+- **Engine:** single-flight per space + one coalesced rerun; `addSpace` awaits chokidar `ready`; persistent `watcher.on('error')` required; `stop()` clears the state map FIRST.
+- **A remote-less space NEVER emits `synced`; green is evidence-gated** (pure `deriveSyncBoxState`).
+- **Conversation Store `native/` lanes ride this SAME engine — no native-only `synced` path.**
+- **Corrupt-repo heal is ONCE per space per launch** (`healedSpaces`, marked BEFORE attempting). **Self device-row recency derives from `lastSyncFor` evidence**, never `.sync-marker` alone.
 
-## SyncHub (`sync-hub-socket.ts` + worker `SyncGroupRoom` DO) — guard: `sync-hub-socket.test.ts`
-- **DO is per-account, an ACCELERANT not a source of truth** — never optimize away the 120s poll. **spaceKey = `repoNameForSpace()`, never the local id.** **Signal ONLY on `pushed:true`.** **The hub send runs LAST in `broadcast()`, own try/catch.** **A superseded `startEngine` owns no global state.**
-- **Per-device sync recency rides the SAME signal.** The `pushed:true` signal now also carries `deviceId` (the machineId) + server `at`; the DO stores a durable per-account `lastSyncByDevice` map (in DO storage) and ships it in `hello`. It is accelerant/presence-grade — losing it degrades a device row to the launch-time `lastSeen` fallback, never breaks. Client exposes it on `getSyncStatus()` + the `status:data` push; renderer's PURE `deviceActivityLabel` (`renderer/components/device-activity-label.ts`, guard `device-activity-label.test.ts`) renders "Synced just now" (<5min) / "Last synced X ago". **Self reads the LOCAL live `lastSyncEpoch`, NOT the map** — the DO never echoes a device's own signal back, so self's own map entry only refreshes on reconnect and would drift stale.
+## SyncHub (`sync-hub-socket.ts` + `SyncGroupRoom` DO)
+- **The DO is per-account, an ACCELERANT not truth** — never optimize away the 120s poll. **spaceKey = `repoNameForSpace()`, never the local id; signal ONLY on `pushed:true`; the hub send runs LAST in `broadcast()`, isolated.**
+- **Per-device recency rides the SAME signal** (`lastSyncByDevice` in DO storage; pure `deviceActivityLabel` renders). **Self reads the LOCAL `lastSyncEpoch`, NOT the map.**
 
-## Import (`sync-spaces/import-project.ts`) — guard: `sync-spaces-import.test.ts`
-- **Import MOVES the folder — never copy-and-keep-both** (a survivor forks the work). The EXDEV branch re-checks `existsSync(dest)` BEFORE cpSync. Store remaps (`remapTranscriptDir` etc.) degrade to WARNINGS, never silent drops.
+## Import (`sync-spaces/import-project.ts`)
+- **Import MOVES the folder — never copy-and-keep-both.** The EXDEV branch re-checks `existsSync(dest)` BEFORE cpSync; store remaps degrade to WARNINGS, never silent drops.
 
-## Project UX + discovery (`project-registry.ts`, `renderer/components/sync-dot-state.ts`) — guard: `sync-dot-state.test.ts`, `sync-spaces-project-discovery.test.ts`
-- **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — derive ALL dot state from the pure `sync-dot-state.ts`; labels pinned.
-- **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); `displayName` LWW by `updatedAt`; `description` LWW by its OWN `descriptionUpdatedAt` — a shared clock reverts a peer's rename. **Each dimension's `laterOf` gets a `{v, at}` wrapper, NEVER the whole entry** — the equal-clock tiebreak is `JSON.stringify`, so a whole-entry argument makes the tiebreak key mutate as the fold accumulates and associativity dies (measured: 2,116/32,768 triples) · guard: `sync-spaces-project-registry.test.ts` fold-order case (**lands with `feat/project-description`, in flight as of 2026-08-12 — this whole bullet describes that branch, not master; its verify anchor is parked in the frontmatter until merge**). **Schema stays 1: `parseEntry` rejects on strict inequality, so bumping it makes older devices drop every record.** Setters spread `cur` so the NEXT field added survives a write from a build that predates it — this does **not** protect `description` itself: an old build that renames/stops still writes an entry without it, and that mixed-version window is open, not closed (spec §3.2). **fold-on-read** prevents resurrection. Rename/stop/describe ride 4-surface IPC parity (`ipc-channels.test.ts`).
+## Project UX + discovery
+- **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — ALL dot state from pure `sync-dot-state.ts`; labels pinned.
+- **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); **fold-on-read** prevents resurrection; schema stays 1.
+- **Per-field merge (`{v, at}` `laterOf` wrappers, NEVER whole-entry; `description` LWW by its OWN `descriptionUpdatedAt`) lands with `feat/project-description` (in flight, 2026-08-12) — that branch, not master; its verify anchor (`sync-spaces-project-registry.test.ts`) is parked in the frontmatter until merge.**
 
-## Device registry (`device-identity.ts`, `sync-spaces/device-registry.ts`) — guard: `device-identity.test.ts`, `sync-spaces-device-registry.test.ts`
-- **TWO identities, NEVER merged: `getDeviceIdentity(userData)` = per-INSTALL (leases); `getMachineIdentity(builtAppUserData)` = per-MACHINE (registry).** **`getMachineIdentity` READS, never mints; `null` ⇒ register NOTHING** (else a row orphans per launch).
-- **`main.ts` captures `BUILT_APP_USER_DATA` BEFORE the dev-profile `setPath`** — never hardcode the `youcoded` dirname (a `productName` ⇒ `null` ⇒ NO rows).
-- **Machine id in `%APPDATA%`, NOT `~/.claude`** (dotfile-synced → merges two machines).
-- **`removeDevice` deletes conflict copies too** (a survivor resurrects the row); **plain delete, NOT a tombstone**.
-- **Self-marking uses `machineId` on BOTH surfaces** (`ipc-handlers.ts` + `remote-server.ts`); `deviceId` matches no row.
+## Device registry
+- **TWO identities, NEVER merged: `getDeviceIdentity(userData)` = per-INSTALL (leases); `getMachineIdentity(builtAppUserData)` = per-MACHINE (registry), which READS, never mints — `null` ⇒ register NOTHING.**
+- **`main.ts` captures `BUILT_APP_USER_DATA` BEFORE the dev-profile `setPath`.** **Machine id lives in `%APPDATA%`, NOT `~/.claude`.**
+- **`removeDevice` deletes conflict copies too — plain delete, NOT a tombstone.** **Self-marking uses `machineId` on BOTH surfaces.**
 
-## Legacy backup / demolition (`snapshot-retention.ts`, `conversations/symlink-sweep.ts`, `sync-spaces/gc-policy.ts`)
-- **`sweepProjectSymlinks()` is `lstat`-only, removes ONLY symlinks/junctions, NEVER recursive** — recursion through a junction irreversibly deletes the TARGET's real transcripts.
-- **Drive/iCloud backup is WRITE-ONLY dated snapshots; restore was REMOVED** — don't re-add a Restore Wizard or auto-restore pull. The >500MB warning rides `notice`, NOT `error`; `git gc` is local `--auto` only.
+## Legacy backup / demolition
+- **`sweepProjectSymlinks()` is `lstat`-only, removes ONLY symlinks/junctions, NEVER recursive.** **Drive/iCloud backup is WRITE-ONLY dated snapshots; restore was REMOVED.** The >500MB warning rides `notice`, NOT `error`; `git gc` is local `--auto` only.
 
-## Sync Warnings (`sync-service.ts`, `sync-error-classifier.ts`) — guard: `sync-warnings-lifecycle.test.ts`, `sync-error-classifier.test.ts`, `sync-warning-self-clear.test.ts`
-- **`~/.claude/.sync-warnings.json` (`SyncWarning[]`) is authoritative.** **Two writers, non-overlapping codes** (health-check vs `backendId`-keyed push); the merge replaces only its own codes. Push-failure warnings are non-dismissible.
-- **`runHealthCheck` runs at launch AND every 60s — a health warning must not outlive its cause** · why: once-per-launch pinned "No internet" over "All synced · 1m ago" for a whole session (2026-08-11) · guard: `sync-warning-self-clear.test.ts`. Four constraints keep the re-run safe — **probe backends at launch only, two strikes for `OFFLINE`, dismissals hold for the run, write only on change** — each load-bearing, each explained in `youcoded/docs/sync-spaces.md`.
-- **Node-killed timeouts have empty stderr — route through `extractStderr(e, timeoutMs)`**, never raw `e.stderr || e.message` (else every timeout → `UNKNOWN`).
+## Sync Warnings
+- **`~/.claude/.sync-warnings.json` is authoritative; two writers, non-overlapping codes** (each merge replaces only its own); push-failure warnings are non-dismissible.
+- **`runHealthCheck` runs at launch AND every 60s — a health warning must not outlive its cause** (2026-08-11); re-run constraints in the doc.
+- **Node-killed timeouts have empty stderr — route through `extractStderr(e, timeoutMs)`**, never raw `e.stderr || e.message`.
 
-## GitHub auth (`github-auth.ts`, `github-connect.ts`, `github-client.ts`) — guard: `github-auth.test.ts`, `github-connect.test.ts`, `github-client.test.ts`
-- **The access token NEVER leaves the main process** — only into the github-client store (safeStorage, per-install userData — NEVER `~/.claude` or a synced dir) and `gh auth login --with-token` stdin; never logged/thrown/in a payload/over WS/in git argv or config. App store PRIMARY, gh best-effort; acquisition: stored → `gh auth token` → device flow (2026-07-22 Phase 2 — gh no longer gates connecting or sync). Git creds = per-invocation inline `credential.helper` reading child env, NOT `GIT_ASKPASS` (helpers outrank askpass); auth-refused git ops throw coded `github-auth` errors — match the code, never prose. Reuse gh's client id `178c6fc778ccc68e1d6a`; don't wrap interactive `--web` (`completeLogin` must `stdin.end()`). **Orchestrator: singleton, PER-FLOW settle guard** (`activeFlowId`). gh-missing install = winget→`restartRequired`.
+## GitHub auth (`github-{auth,connect,client}.ts`)
+- **The access token NEVER leaves the main process** — only the github-client store (safeStorage, per-install userData, NEVER `~/.claude`/synced dirs) and `gh auth login --with-token` stdin; never logged/thrown/in payloads/WS/git argv/config. App store PRIMARY, gh best-effort.
+- **Git creds = per-invocation inline `credential.helper` reading child env, NOT `GIT_ASKPASS`**; auth-refused ops throw coded `github-auth` errors — match the code, never prose.
+- **Reuse gh's own client id `178c6fc778ccc68e1d6a`; never wrap interactive `--web`.** **Orchestrator: singleton, PER-FLOW settle guard (`activeFlowId`).**

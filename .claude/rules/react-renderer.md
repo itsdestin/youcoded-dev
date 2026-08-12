@@ -23,43 +23,42 @@ verify:
     contains: "MOCK_ONLY|HAND_WRITTEN"
   - test: youcoded/desktop/tests/workbench-mock-contract.test.ts
 ---
-
 # React Renderer (shared desktop + Android WebView)
 
-This code runs in BOTH the Electron renderer AND a bundled Android WebView. **Chrome/theme/overlay depth: `youcoded/docs/renderer-chrome.md`; overlay layer system: `youcoded/docs/shared-ui-architecture.md`.**
+This code runs in BOTH the Electron renderer AND a bundled Android WebView. **Depth + why per bullet: `youcoded/docs/renderer-chrome.md`; overlay layer system: `youcoded/docs/shared-ui-architecture.md`.**
 
 ## Node vs browser boundary
-- **No `process.env`, `require()`, `fs`/`path`/`os`, or direct filesystem access** — the WebView has no Node runtime. Go through `window.claude.*` (from `remote-shim.ts`); use ES `import`, browser APIs, `fetch`.
-- **Platform detection: `location.protocol === 'file:'` = Android.** Use `remote-shim.ts` helpers, not the check inline.
-- **Perf:** prefer `content-visibility: auto` over virtualization (keeps find-in-page + a11y); memoize every Context value (`useMemo`), split contexts by change frequency. The chat reducer preserves `toolCalls`/`toolGroups` Map refs when unchanged so `React.memo` works — don't clone them needlessly.
-- **Reading chat state on the render path: use a cached selector, not the whole map.** `state/chat-context.ts` is a custom `useSyncExternalStore` store, not a plain Context. `useChatState(id)` re-renders only on that session's change. `useChatStore()` gives effect-only readers (`getState`/`subscribeAll`) and backs cached-selector hooks (`useSessionAttention`, `useActiveSessionModel`) that re-render their host only when a *derived* value changes. **Do NOT put `useChatStateMap()` on the render path** — it re-renders on every dispatch; the one sanctioned caller is `RemoteSnapshotExporter` (serializes the full map for remote hydration). **Never call `store.getState()` during render** for render-path data — it bypasses the subscription and can tear; add a selector instead. (2026-07-17 AppInner tranche removed AppInner's whole-map subscription this way — ~20× fewer AppInner re-renders.)
+- **No `process.env`, `require()`, `fs`/`path`/`os`, or direct filesystem access** — the WebView has no Node. Go through `window.claude.*`; use ES `import`, browser APIs, `fetch`.
+- **Platform detection: `location.protocol === 'file:'` = Android** — use the `remote-shim.ts` helpers, not the check inline.
+- **Perf:** prefer `content-visibility: auto` over virtualization; memoize every Context value; the reducer preserves `toolCalls`/`toolGroups` Map refs — don't clone them.
+- **Render-path chat state goes through a cached selector, never the whole map.** `state/chat-context.ts` is a `useSyncExternalStore` store: `useChatState(id)` for one session; cached-selector hooks (`useSessionAttention`, `useActiveSessionModel`) for derived values. **`useChatStateMap()` is banned on the render path** (sole sanctioned caller: `RemoteSnapshotExporter`); **never `store.getState()` during render** (tears — add a selector).
 
 ## Framed shell & chrome-glass (`globals.css`, `App.tsx`)
-- **ONE backdrop-filter, ever.** The whole frame chrome is a single `<div class="chrome-glass">` clipped to a donut via `clip-path: polygon()`. Per-element `backdrop-filter` on HeaderBar/InputBar/StatusBar/frame-edge/frame-divider/drawer-pane creates anti-aliased compositing seams at non-100% zoom — don't reintroduce them in framed-chrome mode.
-- **`destination-out` is NOT a valid `mix-blend-mode`** (it's a Porter-Duff compositing op) — the browser silently ignores it and paints the cutout's `background:black` through (black chat area). Use `clip-path` to cut a shape.
-- **`chrome-glass` is `display:none` in floating-chrome modes** (`chrome-style='floating'` or `input-style='floating'`) — HeaderBar/InputBar/StatusBar paint their own pills; mirror that gating for any new "always-floating" element. `.chrome-wrapper` must be `background: transparent !important` (the bottom wrapper at z-20 sits above chrome-glass at z-10). drawer-pane sits ABOVE chrome-glass via `z-index:11`.
-- **Compound attribute selectors must be same-element:** `data-wallpaper` is on `<html>`, `data-chrome-style` on `<body>` — use a DESCENDANT combinator, never `[a][b]` (never matches).
-- **Right slot holds EITHER the artifact drawer OR the games panel** — both read `var(--right-pane-width)`; they're mutually exclusive; `chrome-glass--drawer-open` gates on `activeDrawerOpen || gameState.panelOpen`. Don't hardcode the pane width in either place.
+- **ONE backdrop-filter, ever** — the frame chrome is a single `<div class="chrome-glass">` clipped via `clip-path: polygon()`; per-element backdrop-filters seam at non-100% zoom.
+- **`destination-out` is NOT a valid `mix-blend-mode`** — silently ignored (black chat area). Cut shapes with `clip-path`.
+- **`chrome-glass` is `display:none` in floating-chrome modes**; `.chrome-wrapper` must stay `background: transparent !important`; drawer-pane sits ABOVE chrome-glass (`z-index:11`).
+- **Compound attribute selectors must be same-element:** `data-wallpaper` is on `<html>`, `data-chrome-style` on `<body>` — descendant combinator, never `[a][b]`.
+- **The right slot holds EITHER the artifact drawer OR the games panel** — both read `var(--right-pane-width)`; `chrome-glass--drawer-open` gates on `activeDrawerOpen || gameState.panelOpen`. Don't hardcode the width.
 
 ## Theme color contrast (`desktop/scripts/audit-theme-contrast.mjs`; CI `wecoded-themes/scripts/audit-contrast.mjs`)
-- **`panel` vs `canvas` ≥ 1.07:1** (below it the frame disappears). Text on canvas: `fg`/`fg-2` ≥4.5, `fg-dim`/`fg-muted` ≥3, `fg-faint` ≥1.8. User bubble `on-accent` vs `accent` ≥4.5.
-- **chat-pane bg == drawer-pane bg (both `--canvas`)** — change them in the SAME edit (the audit doesn't catch a mismatch).
+- **`panel` vs `canvas` ≥ 1.07:1**; `fg`/`fg-2` ≥4.5, `fg-dim`/`fg-muted` ≥3, `fg-faint` ≥1.8; `on-accent` vs `accent` ≥4.5.
+- **chat-pane bg == drawer-pane bg (both `--canvas`)** — change them in the SAME edit; the audit doesn't catch a mismatch.
 
 ## Header bar (`HeaderBar.tsx`)
-- **Do NOT add `min-w-0` to the left cluster** (it collapses below the gear's `shrink-0`, letting SessionStrip paint over it). Put `min-w-0` on an individual child instead. Layout is SPACE-aware (`packSessions()` + ResizeObserver, measured `clientWidth`), NOT viewport-aware — no `@media`/`hidden sm:`/`window.innerWidth`.
-- **`showCaptionButtons` must include Linux, not just Windows** — the window is frameless on BOTH; gate window-chrome on "not macOS" (`!isMac && !isAndroid() && !isRemoteMode()`), NEVER `navigator.platform === 'Win32'` (excludes Linux). Chat/terminal toggle placement is platform-conditional (right on macOS, left on Win/Linux). Announcement lives in StatusBar, not HeaderBar.
+- **No `min-w-0` on the left cluster** (collapses below the gear's `shrink-0`); put it on an individual child. Layout is SPACE-aware (`packSessions()` + ResizeObserver) — no `@media`/`window.innerWidth`.
+- **`showCaptionButtons` must include Linux** — frameless on BOTH; gate window-chrome on "not macOS", NEVER `navigator.platform === 'Win32'`. Announcement lives in StatusBar, not HeaderBar.
 
-## Control primitives (`components/ui/`, 19 of them)
-- **Every control goes through its primitive** — never hand-roll `bg-accent text-on-accent`. A caller's `className` REPLACES base tokens by conflict group via `mergeClasses` (a hand-rolled tailwind-merge stand-in); it does not pile on. Guard `primitive-adoption.test.ts` also fails on a primitive with NO call site — an unused one becomes a shadow copy.
-- **Padding groups are per-axis:** `px-`/`py-`/`p{trbl}-` are independent; `p-N` belongs to ALL padding groups. An `px-`-only override must NOT drop the size's `py-` (2026-07-20: the old single `/^p[xytrbl]?-/` group collapsed welcome CTAs + SyncPanel Save to text height). Guard: `Button.test.tsx` — keep per-axis independence if you touch `CONFLICT_GROUPS`.
+## Control primitives (`components/ui/`)
+- **Every control goes through its primitive** — never hand-roll `bg-accent text-on-accent`; a caller's `className` REPLACES base tokens per conflict group via `mergeClasses`. Guard `primitive-adoption.test.ts` also fails on a primitive with NO call site.
+- **Padding groups are per-axis** (`px-`/`py-` independent; `p-N` in ALL groups) — an `px-`-only override must NOT drop `py-` · guard: `Button.test.tsx` if you touch `CONFLICT_GROUPS`.
 
 ## Overlays (`components/overlays/Overlay.tsx`)
-- **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode `bg-black/40`, `backdrop-blur-sm`, `shadow-xl`, `rounded-xl`, or arbitrary z-index. Pick a LAYER (L1 drawers / L2 popups / L3 destructive / L4 system), not a z-index. `SessionStrip` at `z-[9000]` is load-bearing (`.header-bar` backdrop-filter traps lower values) — don't "fix" it. Glassmorphism is var-driven (`--panels-blur`/`--panels-opacity`). See `youcoded/docs/shared-ui-architecture.md`.
-- **`.layer-surface` on a REPEATED element (grid tile, list row) is a paint bug, not a style choice** — theme-engine gives each one a `backdrop-filter` under `[data-wallpaper]`, so N tiles = N blur layers, and inside an `overflow-hidden` + `transform`-animating parent Windows Electron drops their paint *per card* (shipped twice: `516411a5`, `1f68a7f0`). Over an opaque parent cancel it; over a real wallpaper pre-blur ONE backdrop instead. Guard + full rationale: `youcoded/desktop/tests/drawer-card-glass.test.ts`.
+- **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode scrim/blur/shadow/radius/z-index; pick a LAYER (L1 drawers / L2 popups / L3 destructive / L4 system). `SessionStrip` at `z-[9000]` is load-bearing. Glassmorphism is var-driven.
+- **`.layer-surface` on a REPEATED element (grid tile, list row) is a paint bug** — N tiles = N backdrop-filters, and Windows Electron drops their paint per card (shipped twice: `516411a5`, `1f68a7f0`) · guard: `drawer-card-glass.test.ts`.
 
 ## Remote access state sync (`main/remote-server.ts`, `RemoteSnapshotExporter.tsx`)
-- **Remote clients hydrate via `chat:hydrate` on connect** (`replayBuffers()` → `requestChatSnapshot()` → serialized `ChatState`) — don't add a parallel replay buffer; extend `serializeChatState`/`deserializeChatState` in `state/chat-types.ts` instead. The `chat:export-snapshot` has a 2s timeout (resolves `{sessions:[]}`).
-- **`attentionState` is authoritative on DESKTOP only** — `useAttentionClassifier` reads the xterm buffer (Electron only). Remote browsers get it via `attentionMap` in `status:data` and MUST NOT run their own classifier (CLI-version regex would drift). The shim diffs `attentionMap` vs `prevAttentionRef` before dispatching — the diff is load-bearing. `RemoteSnapshotExporter` is Electron-only by design (short-circuits on remote).
+- **Remote clients hydrate via `chat:hydrate` on connect** — no parallel replay buffer; extend `serializeChatState`/`deserializeChatState` instead. `chat:export-snapshot` has a 2s timeout.
+- **`attentionState` is authoritative on DESKTOP only** — remote browsers get `attentionMap` via `status:data` and MUST NOT run their own classifier. The shim's `attentionMap` diff is load-bearing. `RemoteSnapshotExporter` is Electron-only by design.
 
 ## UI iteration tooling
-- **Building or redesigning UI? Use `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`, port 5233); `run-dev.sh` is for real event ordering, PTY or main-process behaviour. New UI is built there BEFORE its backend — an unbacked channel goes in `mock-shim.ts`'s `MOCK_ONLY`, which is then the backend to-do. Review under `stress` and `empty` and at non-zero latency. **After ANY shim change run `node scripts/workbench-boot-check.mjs`** — the unit suite stayed green through three consecutive boot crashes. Depth: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
+- **Building or redesigning UI? Use `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`, port 5233); `run-dev.sh` only for real event ordering/PTY/main-process behaviour. Unbacked channels go in `mock-shim.ts`'s `MOCK_ONLY`; review under `stress`/`empty` + latency. **After ANY shim change run `node scripts/workbench-boot-check.mjs`.** Depth: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.

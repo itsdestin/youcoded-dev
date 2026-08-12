@@ -23,33 +23,32 @@ verify:
   - path: scripts/ast-grep/rules/spinner-re-anchored.yml
   - path: scripts/ast-grep/rules/no-seenuuids-on-tool-use.yml
 ---
-
 # Chat reducer, transcript pipeline & terminal byte stream
 
-Chat state + the JSONL transcript watcher that feeds it + the Android byte pipeline. **Full architecture + read-integrity/spinner-regex/terminal-byte depth: `youcoded/docs/chat-reducer.md` (see its "PITFALLS-triage additions" section).**
+Chat state + the JSONL transcript watcher that feeds it + the Android byte pipeline. **Depth + why per bullet: `youcoded/docs/chat-reducer.md` (incl. its "PITFALLS-triage" and "Rule-overflow" sections).**
 
 ## Reducer state (`chat-reducer.ts`) — guard: `chat-reducer.test.ts`
-- **Current-turn status checks use `activeTurnToolIds` (a Set), not the `toolCalls` Map** — the Map is never cleared, because ToolCards render earlier turns' results. · scan: `toolcalls-never-cleared`
-- **Always use the `endTurn()` helper** for turn-ending paths — it fails orphaned running/awaiting tools, clears the Set + `isThinking`/`streamingText`/`currentTurnId`, and resets `attentionState:'ok'`. `SESSION_PROCESS_EXITED` (→`session-died`) and `NATIVE_SESSION_ERROR` (→`error`) are the only spread-then-override exceptions.
-- **`AttentionState` is `'ok'|'stuck'|'session-died'|'error'` — four reachable states, each with a writer** (`stuck`←PTY classifier; `session-died`←`SESSION_PROCESS_EXITED`; `error`←`NATIVE_SESSION_ERROR`, native sessions ONLY). Adding a state without a writer resurrects dead branches in the `AttentionBanner` switch.
-- **Dedup uses the `pending` flag** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest matching pending entry, else appends `pending:false`. Don't "simplify" back to last-10 content matching (drops rapid-fire duplicates).
-- **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits tool-use on a repeated uuid by design, so every write on that path must stay idempotent, `PERMISSION_REQUEST` included. · scan: `no-seenuuids-on-tool-use` · guard: `chat-reducer.test.ts` → "chatReducer tool card duplication".
-- **A permission ask binds ONLY to a running tool with a MATCHING NAME** (input-match, then name-match). There is deliberately no name-agnostic fallback — one existed until 2026-08-09 and let an ask that arrived before its own `tool_use` hijack an unrelated card, so the card named Bash while its buttons approved Read. · why: showing one tool's identity on a card that authorizes another is a CONSENT bug, not a cosmetic one · guard: `chat-reducer.test.ts` → "PERMISSION_REQUEST tool identity".
-- **`TRANSCRIPT_REPLAY_COMPLETE` reaps tools a replayed transcript left `running`, and ONLY when `sessionIdle`** — a transcript ends wherever the process died, so its last `tool_use` may have no result. Orphans are marked **failed, never complete** (we don't know if the tool finished). The idle gate exists because the same replay fires on a live re-dock, where the running tool is real; only `NativeSessionHost.isIdle()` can affirm it, so CC sessions report false and keep the orphan. · guard: `chat-reducer.test.ts` → "TRANSCRIPT_REPLAY_COMPLETE".
+- **Current-turn status checks use `activeTurnToolIds` (a Set), not the `toolCalls` Map** — the Map is never cleared (ToolCards render earlier turns) · scan: `toolcalls-never-cleared`.
+- **Always use the `endTurn()` helper** for turn-ending paths — it fails orphaned tools, clears the Set + `isThinking`/`streamingText`/`currentTurnId`, resets `attentionState:'ok'`. `SESSION_PROCESS_EXITED` and `NATIVE_SESSION_ERROR` are the only spread-then-override exceptions.
+- **`AttentionState` is `'ok'|'stuck'|'session-died'|'error'` — four reachable states, each with a writer.** Adding a state without a writer resurrects dead `AttentionBanner` branches.
+- **Dedup uses the `pending` flag** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest matching pending entry, else appends. Don't "simplify" back to content matching (drops rapid-fire duplicates).
+- **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits tool-use on a repeated uuid by design; every write on that path stays idempotent, `PERMISSION_REQUEST` included · scan: `no-seenuuids-on-tool-use`.
+- **A permission ask binds ONLY to a running tool with a MATCHING NAME** (input-match, then name-match) — deliberately no name-agnostic fallback · a card naming one tool while authorizing another is a CONSENT bug · guard: "PERMISSION_REQUEST tool identity".
+- **`TRANSCRIPT_REPLAY_COMPLETE` reaps replay-orphaned `running` tools ONLY when `sessionIdle`, marking them failed, never complete** — the same replay fires on a live re-dock where the tool is real; only `NativeSessionHost.isIdle()` can affirm idle, so CC sessions keep the orphan · guard: "TRANSCRIPT_REPLAY_COMPLETE".
 - **`attentionState` is classifier-driven, not timer-driven** — `useAttentionClassifier` ticks the xterm buffer every 1s; transcript events + `PERMISSION_REQUEST` reset to `'ok'`.
 
 ## Transcript watcher read-integrity (`transcript-watcher.ts`, `subagent-watcher.ts`) — guard: `transcript-watcher.test.ts`
-- **`readNewLines` isolates each emit in try/catch** — `session.offset` advances before the loop, so a throwing listener would strand every later chunk. Root cause of "rare Claude message not appearing." Don't collapse to a batch-level wrapper.
-- **`readNewLines` is SERIALIZED per session (`reading` flag + coalesced rerun)** — un-serialized overlapping reads consumed the same byte range (duplicate bubbles, flapping tool cards) and wedged NUL bytes into the carry, dropping the next message at `JSON.parse`.
-- **The incomplete-line carry is BYTES (`partialBytes: Buffer`), not a string** — a string carry decodes each half of a split multi-byte char to U+FFFD (garbled emoji/CJK). Stitch bytes before decoding.
-- **`<local-command-stdout>`/`<local-command-stderr>` are STRIPPED ENTIRELY in `stripSystemTags`** — unwrapping let CC's post-`/compact` echo reach `TRANSCRIPT_USER_MESSAGE`, appending a fake bubble AND setting `isThinking:true` with no turn to clear it (chat stuck thinking forever). Route any future slash-command output through a NEW event type, not the user-message path.
-- **`getHistory` replay dedups by uuid with the SAME semantics as the live path** (the reducer appends duplicates). Change both in one commit.
-- **SubagentWatcher polls are slow (5s) safety nets — the fast paths are event-driven** (`kickScan()` on a parent Agent tool_use, `settleByParent()` on its result). Don't speed the polls up or remove the kick/settle calls.
+- **`readNewLines` isolates each emit in try/catch** — the offset advances before the loop, so a throwing listener strands every later chunk. Don't collapse to a batch wrapper.
+- **`readNewLines` is SERIALIZED per session** (`reading` flag + coalesced rerun) — overlapping reads duplicated bubbles and wedged NUL bytes into the carry.
+- **The incomplete-line carry is BYTES (`partialBytes: Buffer`), not a string** — a string carry garbles split multi-byte chars to U+FFFD.
+- **`<local-command-stdout>`/`<local-command-stderr>` are STRIPPED ENTIRELY in `stripSystemTags`** — unwrapping let CC's post-`/compact` echo append a fake bubble AND stick `isThinking` forever. New slash-command output gets a NEW event type, never the user-message path.
+- **`getHistory` replay dedups by uuid with the SAME semantics as the live path** — change both in one commit.
+- **SubagentWatcher polls are slow (5s) safety nets — the fast paths are event-driven** (`kickScan()`/`settleByParent()`). Don't speed the polls up or remove the kicks.
 
-## Spinner classifier (`attention-classifier.ts`) — guard: `attention-classifier-parity.test.ts` + `shared-fixtures/attention-classifier/`
-- **Matches glyph + gerund + ellipsis ONLY** (no seconds counter). Active-vs-stalled = glyph rotation OR `COUNTER_RE` advancement (same glyph ≥30s + no counter = stalled). Patterns are CC-CLI-version-sensitive; keep the version anchor + re-run the `test-conpty` spinner probes on a CC bump. · scan: `spinner-re-anchored` (the `^` anchor)
+## Spinner classifier (`attention-classifier.ts`) — guard: `attention-classifier-parity.test.ts`
+- **Matches glyph + gerund + ellipsis ONLY** (no seconds counter). Active-vs-stalled = glyph rotation OR `COUNTER_RE` advancement (same glyph ≥30s + no counter = stalled). CC-CLI-version-sensitive; re-run the `test-conpty` spinner probes on a CC bump · scan: `spinner-re-anchored` (the `^` anchor).
 - **The `shared-fixtures/attention-classifier/` fixtures are the contract** — a `BufferClass` or regex change needs a fixture change in the SAME commit.
 
 ## Terminal byte stream (Android xterm-in-WebView) — guard: `raw-byte-listener-contract.test.ts`
-- **The vendored emulator is HEADLESS (pinned Termux v0.118.1, one documented `RawByteListener` patch — `VENDORED.md` is source of truth).** It exists solely to produce the byte stream. **`RawByteListener` fires on the terminal thread — copy bytes before any async work** (Termux reuses the `byte[]`); `rawByteFlow` uses `tryEmit` (drops rather than blocks).
-- **`pty:raw-bytes` is base64-encoded** (JSON can't carry binary) with full three-surface parity (preload stub / remote-shim dispatch / SessionService.kt) — pinned by `ipc-channels.test.ts`. **xterm is display-only on touch** (`disableStdin:true`; typing flows through InputBar); single-finger scroll is custom capture-phase JS. Don't reintroduce a native render path or xterm-side touch input.
+- **The vendored emulator is HEADLESS** (pinned Termux v0.118.1, one documented patch — `VENDORED.md` is source of truth). **`RawByteListener` fires on the terminal thread — copy bytes before any async work**; `rawByteFlow` uses `tryEmit` (drops rather than blocks).
+- **`pty:raw-bytes` is base64-encoded** with full three-surface parity (pinned by `ipc-channels.test.ts`). **xterm is display-only on touch** (`disableStdin:true`; typing flows through InputBar); single-finger scroll is custom capture-phase JS. Don't reintroduce a native render path or xterm-side touch input.

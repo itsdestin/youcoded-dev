@@ -19,6 +19,7 @@ Recent restructure (unified-marketplace merge) split the registry into `/skills/
 - CI validates PRs (required tokens, CSS safety, size <10MB, slug uniqueness)
 - CI auto-rebuilds registry + generates preview PNGs (Playwright) on merge to main
 - `previewTokens` in registry power CSS-based card previews in the app (no image load needed)
+- **Version bumps gate the Update button** (migrated 2026-08-12 from the path-scoped rule): the registry pins version from the manifest (default `1.0.0`), and the app only offers Update when registry version > recorded install version (`marketplace-context.tsx` `isNewerVersion`). No bump → installed users see a no-op "Installed" button forever — hit on the 2026-07-16 mascot update, fixed in wecoded-themes PR #16.
 
 ### Required CSS tokens (15)
 
