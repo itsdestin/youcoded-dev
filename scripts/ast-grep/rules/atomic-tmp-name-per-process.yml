@@ -1,0 +1,42 @@
+id: atomic-tmp-name-per-process
+language: typescript
+severity: error
+message: >-
+  Atomic-write temp files must have a PER-PROCESS name
+  (`${file}.${process.pid}.tmp`), never a fixed `<file>.tmp`. The dev instance
+  and the built app share ~/.claude, so two writers racing one temp path make
+  the loser's rename throw ENOENT (and can interleave half-written content).
+note: |
+  Invariant source: the 2026-08-05 skill-config-store fix (f05b2711) and the
+  2026-08-12 sweep that converted the remaining eleven fixed-name sites.
+  Guard: this rule + youcoded/desktop/tests/artifacts/cas-write.test.ts
+         → "uses a per-process temp name"
+
+  WHY: `~/.claude/` is shared between the installed app and dev instances, so
+  cross-process concurrent writes are a normal state, not a rarity. With a
+  fixed `<file>.tmp`, both processes write the same temp path, the first
+  rename consumes it, and the second rename throws ENOENT. The established
+  convention is `${file}.${process.pid}.tmp` (add `.${Date.now()}` or a
+  sequence counter when the same process can run the write concurrently —
+  see skill-config-store.ts / transcript-mirror.ts).
+
+  SCOPING: matching on `endsWith('.tmp')` / cleanup filters is fine — those
+  are call arguments, not the concat shape, and templates that end in `.tmp`
+  are exempt when they contain `process.pid`. Renderer code never writes
+  files, so the rule scans src/main only (plus its violation fixture).
+files:
+  - "**/src/main/**/*.ts"
+  - "**/fixtures/atomic-write.ts"
+rule:
+  any:
+    # A template literal ending in `.tmp` that nowhere contains process.pid —
+    # i.e. `${file}.tmp` but not `${file}.${process.pid}.tmp`.
+    - kind: template_string
+      regex: "\\.tmp`$"
+      not:
+        has:
+          pattern: process.pid
+          stopBy: end
+    # The string-concat spellings of the same fixed-name shape.
+    - pattern: $P + '.tmp'
+    - pattern: $P + ".tmp"
