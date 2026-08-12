@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 date: 2026-07-26
 spec: docs/active/specs/2026-07-26-ask-claude-reference-ux-design.md
 artifact: https://claude.ai/code/artifact/bed5f7ea-1a2e-431f-9d2c-563fd3bcdee4

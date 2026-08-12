@@ -1084,7 +1084,7 @@ example.
 - Modify: `youcoded-dev/.claude/rules/native-runtime.md` (new MCP invariant block + `verify:` anchors)
 - Modify: `youcoded/docs/native-runtime.md` (depth section)
 - Modify: `youcoded-dev/docs/MAP.md` (new subsystem paths)
-- Modify: `youcoded-dev/docs/active/plans/2026-07-22-native-runtime-parity-program.md` (§4 item 4)
+- Modify: `youcoded-dev/docs/archive/plans/2026-07-22-native-runtime-parity-program.md` (§4 item 4)
 - Modify: `youcoded/docs/provider-dependencies.md` (the SDK dependency)
 
 - [ ] **Step 1: Add the rule block**
@@ -1134,7 +1134,7 @@ Expected: tsc clean, tests pass, knip clean, ast-grep clean. Note it covers
 - [ ] **Step 6: Commit**
 
 ```bash
-git add .claude/rules/native-runtime.md docs/MAP.md docs/active/plans/2026-07-22-native-runtime-parity-program.md
+git add .claude/rules/native-runtime.md docs/MAP.md docs/archive/plans/2026-07-22-native-runtime-parity-program.md
 git commit -m "docs(mcp): rule invariants, anchors, MAP and program-plan status"
 ```
 

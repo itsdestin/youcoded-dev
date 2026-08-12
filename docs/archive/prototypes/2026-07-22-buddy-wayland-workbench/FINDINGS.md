@@ -525,7 +525,7 @@ The remaining questions cannot be answered without real pointer input, and per
 CLAUDE.md interactive verification is Destin's eyeball, not a scripted CDP rig.
 
 ```bash
-cd docs/active/prototypes/2026-07-22-buddy-wayland-workbench
+cd docs/archive/prototypes/2026-07-22-buddy-wayland-workbench
 /home/destin/youcoded-dev/youcoded/desktop/node_modules/electron/dist/electron . --interactive
 ```
 
@@ -549,7 +549,7 @@ result, not a detail.
 ## Reproducing the automated half
 
 ```bash
-cd docs/active/prototypes/2026-07-22-buddy-wayland-workbench
+cd docs/archive/prototypes/2026-07-22-buddy-wayland-workbench
 ELECTRON=/home/destin/youcoded-dev/youcoded/desktop/node_modules/electron/dist/electron
 $ELECTRON .             # A0-A7, prints a table, self-terminates
 $ELECTRON . --coverage  # A8/A9, holds 25s for a compositor query

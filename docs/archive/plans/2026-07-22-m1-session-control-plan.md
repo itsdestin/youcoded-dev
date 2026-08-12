@@ -2,7 +2,7 @@
 status: shipped
 created: 2026-07-22
 type: plan
-program: docs/active/plans/2026-07-22-native-runtime-parity-program.md (§2 — Milestone M1)
+program: docs/archive/plans/2026-07-22-native-runtime-parity-program.md (§2 — Milestone M1)
 ---
 
 # M1 Session Control Implementation Plan

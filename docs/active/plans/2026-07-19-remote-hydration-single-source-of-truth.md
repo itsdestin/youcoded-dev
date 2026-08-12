@@ -1,10 +1,12 @@
 ---
-status: draft
+status: active
 date: 2026-07-19
 kind: plan
 ---
 
 # Remote-access state sync: issue summary + proposals
+
+> **Note 2026-08-12:** Proposal A's first slice shipped in youcoded `2f8132cf` (2026-07-20) — see the shipped-state block in `docs/active/plans/2026-07-20-remote-hydration-pr-spec.md`.
 
 Condensed from the full investigation:
 `docs/active/investigations/2026-07-19-remote-access-ui-state-hydration.md`

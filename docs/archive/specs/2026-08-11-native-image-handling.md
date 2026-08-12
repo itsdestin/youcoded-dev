@@ -1,7 +1,7 @@
 ---
 status: shipped
 milestone: M4
-program: docs/active/plans/2026-07-22-native-runtime-parity-program.md
+program: docs/archive/plans/2026-07-22-native-runtime-parity-program.md
 plan: docs/archive/plans/2026-08-11-native-image-delivery-plan.md
 research_date: 2026-08-11
 shipped: 2026-08-11

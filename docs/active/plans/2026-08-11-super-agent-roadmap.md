@@ -1,3 +1,8 @@
+---
+status: active
+created: 2026-08-11
+---
+
 # Super-agent roadmap — verified sequence for consolidating the best harness mechanisms into YouCoded
 
 **Status:** ACTIVE plan, 2026-08-11. Ordered sequence agreed with Destin; step 1 is next up.

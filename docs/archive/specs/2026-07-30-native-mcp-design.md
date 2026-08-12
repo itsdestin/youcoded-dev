@@ -2,7 +2,7 @@
 status: shipped
 date: 2026-07-30
 owner: Destin (decisions) / Claude (spec)
-implements: docs/active/plans/2026-07-22-native-runtime-parity-program.md — §4 Milestone M3 item 4 (MCP in native sessions)
+implements: docs/archive/plans/2026-07-22-native-runtime-parity-program.md — §4 Milestone M3 item 4 (MCP in native sessions)
 ---
 
 # MCP in native sessions — design spec

@@ -724,7 +724,7 @@ describe('SearchChain', () => {
 // (the curated-models pattern, see src/main/models/curated-catalog.ts) so the
 // chain is patchable without an app release. WHY: free search endpoints keep
 // vanishing (Brave free tier dead Feb 2026, Bing dead Aug 2025 — see
-// docs/active/investigations/2026-07-15-web-search-backends.md).
+// docs/archive/investigations/2026-07-15-web-search-backends.md).
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 

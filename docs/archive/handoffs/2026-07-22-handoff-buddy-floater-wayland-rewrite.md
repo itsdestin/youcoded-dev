@@ -13,7 +13,7 @@ roadmap: "ROADMAP.md — 'Buddy floater: Wayland-native one-window rewrite' (#bu
 # Handoff — Buddy floater: Wayland-native one-window rewrite
 
 > **OUTCOME (2026-07-22, same day):** the investigation this handoff mandated ran
-> its full course — see `docs/active/prototypes/2026-07-22-buddy-wayland-workbench/FINDINGS.md`
+> its full course — see `docs/archive/prototypes/2026-07-22-buddy-wayland-workbench/FINDINGS.md`
 > (measured evidence, several of this handoff's premises corrected) and the
 > resulting spec `docs/active/specs/2026-07-22-buddy-floater-one-window.md`
 > (status: draft, awaiting Destin's approval). Key corrections to this document:

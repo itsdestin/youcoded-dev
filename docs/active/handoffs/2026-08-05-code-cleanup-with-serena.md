@@ -5,6 +5,8 @@ created: 2026-08-05
 
 # Handoff: code cleanup + bug hunting with Serena, lint, and verdict tools
 
+> **Progress note 2026-08-12 — done so far:** the Serena setup below landed (`08067924`); the ESLint gate landed (`3bff0cf6`/`51d859e4`, merged via `48202704`); the 89 unused-`React`-imports sweep landed (`9961df9e`). The remaining backlog items below stay live.
+
 Paste the prompt below to start a cleanup session. Everything above the prompt is
 context for whoever is reading this file directly.
 

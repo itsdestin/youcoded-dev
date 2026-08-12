@@ -1,8 +1,10 @@
 ---
-status: active
+status: shipped
 ---
 
 # Zero-Config Web Search Backend for the Native WebSearch Tool
+
+> **SHIPPED** — decision consumed by youcoded PR #156 `2fd316e1` (feat/native-web-tools).
 
 **Date:** 2026-07-15
 **Status:** Research report — feeds the Phase 2 spec (`2026-07-15-phase2-native-harness-design.md` §3.2, settled decision 6).

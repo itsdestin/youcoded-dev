@@ -4,6 +4,8 @@ status: active
 
 # AppInner Decomposition Map
 
+> **Tranche 1 SHIPPED 2026-07-17** (youcoded merge `f1ab07fc`; plan archived at `docs/archive/plans/2026-07-17-appinner-tranche1-perf.md`). Tranches 2-4 remain.
+
 **Date:** 2026-07-17
 **Status:** Investigation — extraction map for the staged decomposition of `AppInner` in `youcoded/desktop/src/renderer/App.tsx`. Feeds the ROADMAP item "Staged AppInner decomposition". Mapped on branch `feat/buddy-feedback-tuning` (line numbers will drift as that branch and master evolve — re-anchor by symbol name, not line, when executing).
 
@@ -11,7 +13,7 @@ status: active
 
 `App.tsx` is 3,356 lines; a single component, `AppInner` (lines 178–3195), holds ~51 `useState`, ~49 `useEffect`, and ~80+ state/ref declarations. Costs: (1) merge-conflict magnet for parallel Claude sessions, (2) context burn — every session touching app-level behavior reads the whole file, (3) perf — nothing at the call site is memoized, so **any single state update re-renders the entire return and every mounted child**, with fresh inline closures defeating any child-level `React.memo`.
 
-Decision (2026-07-17 session with Destin): **staged mechanical extraction, not a rewrite.** Small PRs, one cluster each, verified in the dev instance. Do NOT start until in-flight renderer branches (currently `feat/buddy-feedback-tuning`) land — this refactor conflicts with everything.
+Decision (2026-07-17 session with Destin): **staged mechanical extraction, not a rewrite.** Small PRs, one cluster each, verified in the dev instance. ~~Do NOT start until in-flight renderer branches (currently `feat/buddy-feedback-tuning`) land — this refactor conflicts with everything.~~ *(Stale as of 2026-07-17: that branch landed and tranche 1 shipped the same day — see the banner above. The general caution still applies to future tranches: check for in-flight renderer branches before starting one.)*
 
 ## Headline numbers
 

@@ -202,7 +202,7 @@ export interface OverlayInit {
 }
 ```
 
-- [ ] **Step 0 (20 s, Destin): confirm click-through pass-through.** Run the archived workbench (`docs/active/prototypes/2026-07-22-buddy-wayland-workbench/`, `--interactive`), press "ignore + forward (12s)", click on a window BEHIND the empty area. Click must land on the thing underneath. If not → STOP (Open Question 1).
+- [ ] **Step 0 (20 s, Destin): confirm click-through pass-through.** Run the archived workbench (`docs/archive/prototypes/2026-07-22-buddy-wayland-workbench/`, `--interactive`), press "ignore + forward (12s)", click on a window BEHIND the empty area. Click must land on the thing underneath. If not → STOP (Open Question 1).
 - [ ] **Step 1: Failing test for the pure payload builder:**
 
 ```ts

@@ -2,7 +2,7 @@
 status: shipped
 date: 2026-07-24
 milestone: M3 (Native Runtime Parity Program §4)
-program: docs/active/plans/2026-07-22-native-runtime-parity-program.md
+program: docs/archive/plans/2026-07-22-native-runtime-parity-program.md
 repos: [youcoded]
 verified_against: youcoded master `b0f990b9` (2026-07-24)
 ---
@@ -24,7 +24,7 @@ spec. Several design questions below need Destin's answer *first* — §6 lists 
 
 ## 1. Read these, in this order
 
-1. `docs/active/plans/2026-07-22-native-runtime-parity-program.md` — §4 is M3's scope; §1 is
+1. `docs/archive/plans/2026-07-22-native-runtime-parity-program.md` — §4 is M3's scope; §1 is
    where the runtime stood at program start; §9 is sequencing + per-milestone exit criteria.
 2. `.claude/rules/native-runtime.md` — the harness contract. **Note the NOT-ON-MASTER banner**
    on the "Native local reliability (Plan C)" section: everything under it describes the unmerged

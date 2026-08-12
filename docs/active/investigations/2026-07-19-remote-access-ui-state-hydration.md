@@ -58,6 +58,8 @@ So the client renders a **live, incrementally-built** state for some hundreds of
 
 ## Finding 2 — Message IDs collide after hydration, breaking reconciliation
 
+> **SHIPPED 2026-07-20** — fixed by youcoded `2f8132cf` (same fix as F2 below; the chat:hydrate ID collision is closed).
+
 The reducer generates timeline message IDs from a module-level counter (chat-reducer.ts:14-17):
 
 ```ts

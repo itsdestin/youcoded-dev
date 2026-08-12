@@ -2,7 +2,7 @@
 status: shipped
 created: 2026-07-22
 type: handoff
-program: docs/active/plans/2026-07-22-native-runtime-parity-program.md (§3 — Milestone M2)
+program: docs/archive/plans/2026-07-22-native-runtime-parity-program.md (§3 — Milestone M2)
 ---
 
 **Shipped via M2, youcoded PR #212, merge `60d56a67`.**
@@ -68,7 +68,7 @@ Model bindings are **device-local** (per-device provider ULIDs in never-synced `
 ## Read in this order
 
 1. This handoff
-2. `docs/active/plans/2026-07-22-native-runtime-parity-program.md` §3 + §9
+2. `docs/archive/plans/2026-07-22-native-runtime-parity-program.md` §3 + §9
 3. `docs/archive/specs/2026-07-18-native-sync-parity-design.md` (Option C — the phases map 1:1 to items 1–4)
 4. `.claude/rules/native-runtime.md`, `.claude/rules/sync-spaces.md` (workspace), `youcoded/docs/sync-spaces.md`, `youcoded/docs/chat-reducer.md`
 5. `docs/PITFALLS.md` (cross-repo invariants)

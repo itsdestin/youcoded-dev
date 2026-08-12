@@ -13,7 +13,7 @@ status: active
 
 - The model-binding blocker cited below was solved, not waived: records carry a **portable** `{modelId, providerType, providerLabel}` and cross-device resume **always** offers the model picker (pre-filled when the model exists locally, empty — never substituted — when it doesn't). Native sessions now sync tags/notes/flags/titles, mirror transcripts into `Personal/Conversations/native/`, appear in browse (desktop + remote), auto-title after the first turn, and support real takeover backed by `NativeSessionHost.quiesce()` with the native lease re-enabled.
 - A pre-existing takeover bug found in dogfood also shipped a fix: the hub is the only transport for a handoff request, so when it can't be reached the requester now gets a distinct `'undeliverable'` outcome and an honest dialog instead of a 25s wait blaming the other device.
-- **Gate D (two-device dogfood) is the live remaining work**, now running on `1.3.0-beta.9` (cut from master post-M2) installed on the Z13 and the Intel macOS VM. Gates C (sign-in) and F (release mechanics) are unchanged.
+- ~~**Gate D (two-device dogfood) is the live remaining work**, now running on `1.3.0-beta.9` (cut from master post-M2) installed on the Z13 and the Intel macOS VM.~~ **Update 2026-08-12: Gate D CLOSED 2026-07-30 on Destin's confirmation (per the ROADMAP v1.3 entry).** Gates C (Connect-GitHub live sign-in confirmation) and F (release mechanics) remain the live work.
 
 **Update 2026-07-18, CORRECTED 2026-07-19 — the "fourth gate (G)" was superseded within hours of being written, and is now CLOSED.** ⚠️ This block previously promoted full native sync *parity* into a v1.3 gate. That is wrong on both counts and should not be acted on:
 

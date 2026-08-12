@@ -1,10 +1,12 @@
-# Harness evaluator — design
-
+---
 status: draft
 date: 2026-08-12
 owner: Destin
 supersedes: nothing (widens `.claude/rules/harness-review-runner.md`'s subject)
-roadmap: `docs/active/plans/2026-08-11-super-agent-roadmap.md` step 2
+roadmap: docs/active/plans/2026-08-11-super-agent-roadmap.md step 2
+---
+
+# Harness evaluator — design
 
 ## Why
 

@@ -13,6 +13,8 @@ status: active
 
 ## Finding 1 (HIGH, correctness): `chat:hydrate` ID collision corrupts remote chat history
 
+> **FIXED 2026-07-20** — youcoded `2f8132cf`. Findings 2-5 below remain open.
+
 `desktop/src/renderer/state/chat-reducer.ts:13-25` — `messageCounter` / `groupCounter` / `turnCounter` are module-level and start at 0 in every JS context. IDs are deterministic (`turn-1`, `group-1`, `msg-1`).
 
 A remote browser hydrates the desktop's serialized `ChatState` (containing the *desktop's* low-numbered IDs) via `chat:hydrate`, then mints the same IDs from its own fresh counters when live transcript events arrive. `getOrCreateTurn` (chat-reducer.ts:45) does `assistantTurns.set('turn-1', …)` — **overwriting a hydrated historical turn's segments** while also pushing a second `{kind:'assistant-turn', turnId:'turn-1'}` timeline entry. The oldest historical assistant reply visibly morphs into a copy of the newest streaming response. Same collision class for `group-1` (old tool group renders new tools) and `msg-1` (duplicate React keys).

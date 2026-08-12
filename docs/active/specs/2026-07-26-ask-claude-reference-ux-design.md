@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 date: 2026-07-26
 owner: Destin (decisions) / Claude (spec)
 artifact: https://claude.ai/code/artifact/bed5f7ea-1a2e-431f-9d2c-563fd3bcdee4
@@ -9,8 +9,8 @@ implements: ROADMAP.md:366 — "Ask about this" — native compose/quoted-refere
 
 # "Ask Claude about this" — native reference UX
 
-**Status: design approved in chat 2026-07-26; spec pending Destin's review. Implementation not
-started.**
+**Status: design approved in chat 2026-07-26; spec pending Destin's review. Implementation in
+flight on `feat/ask-claude-reference-ux` (27 commits ahead as of 2026-08-12).**
 
 Replaces the v1 "Ask about this" behaviour (shipped 2026-07-17, youcoded PR #169) — which pastes a
 raw prompt scaffold into the composer — with a held, visible reference: the source is pinned on

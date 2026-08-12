@@ -2,7 +2,7 @@
 status: shipped
 date: 2026-07-28
 milestone: M3 items 1, 3, 5 (Native Runtime Parity Program §4)
-program: docs/active/plans/2026-07-22-native-runtime-parity-program.md
+program: docs/archive/plans/2026-07-22-native-runtime-parity-program.md
 handoff: docs/active/handoffs/2026-07-24-m3-context-skills-commands-handoff.md
 repos: [youcoded]
 branch: feat/native-local-reliability-rebase
@@ -1614,7 +1614,7 @@ budget. A rule with no paths: is skipped rather than treated as global."
 - Modify: `.claude/rules/native-runtime.md`
 - Modify: `youcoded/docs/native-runtime.md`
 - Modify: `docs/MAP.md`
-- Modify: `docs/active/plans/2026-07-22-native-runtime-parity-program.md` (§4 status)
+- Modify: `docs/archive/plans/2026-07-22-native-runtime-parity-program.md` (§4 status)
 - Modify: `ROADMAP.md`
 
 - [ ] **Step 1: Update the rule, respecting its word budget**

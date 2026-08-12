@@ -1,11 +1,11 @@
 ---
-status: active
+status: shipped
 ---
 
 # Custom Session Tags & Notes — Design
 
 **Date:** 2026-07-13
-**Status:** Approved design, pre-implementation
+**Status:** Shipped 2026-07-14 (youcoded `af064d46`, feat/session-tags-data-layer)
 **Scope:** Desktop (Electron + React renderer); data layer syncs to Android, mobile UI deferred
 
 ## Summary

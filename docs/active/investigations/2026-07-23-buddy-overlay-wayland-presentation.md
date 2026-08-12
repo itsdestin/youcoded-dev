@@ -33,7 +33,7 @@ Under XWayland at **1.5× fractional scaling**, Electron's `setPosition()` grows
 frameless window's size by a DIP↔physical rounding error on **every call**.
 `moveMascot` fires one per pointermove, so it compounds across a drag.
 
-Isolated probe — `docs/active/prototypes/2026-07-22-buddy-wayland-workbench/scale-probe.js`
+Isolated probe — `docs/archive/prototypes/2026-07-22-buddy-wayland-workbench/scale-probe.js`
 (re-run with `DISPLAY=:0 <electron> --ozone-platform=x11 scale-probe.js`; scaleFactor 1.5,
 40 moves each):
 

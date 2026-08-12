@@ -1,8 +1,10 @@
 ---
-status: active
+status: shipped
 ---
 
 # Custom Session Tags — Plan A: Data Layer & IPC
+
+> **SHIPPED 2026-07-14 — youcoded af064d46 (feat/session-tags-data-layer)** (Plans A+B landed together.)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -12,7 +14,7 @@ status: active
 
 **Tech Stack:** TypeScript, Node.js (Electron main), Vitest. Kotlin (Android bridge, stubs only).
 
-**Companion spec:** `docs/active/specs/2026-07-13-custom-session-tags-design.md`. Plan B (UI) follows and consumes the types this plan locks.
+**Companion spec:** `docs/archive/specs/2026-07-13-custom-session-tags-design.md`. Plan B (UI) follows and consumes the types this plan locks.
 
 **Working directory:** All code paths are in the `youcoded` sub-repo. Do this work in a `youcoded` git worktree (per workspace CLAUDE.md: sub-repo changes go to the sub-repo, PR'd there). Run tests from `youcoded/desktop`.
 
@@ -22,7 +24,7 @@ status: active
 
 This plan is written for a cold session. Before Task 1:
 
-1. **Read the companion spec** `docs/active/specs/2026-07-13-custom-session-tags-design.md` — it explains the *why* behind every design choice referenced below (registry model, reserved-flag behavior, the `helpful` removal, Android deferral).
+1. **Read the companion spec** `docs/archive/specs/2026-07-13-custom-session-tags-design.md` — it explains the *why* behind every design choice referenced below (registry model, reserved-flag behavior, the `helpful` removal, Android deferral).
 
 2. **Sync + create a worktree in the `youcoded` sub-repo** (workspace CLAUDE.md requires worktrees for non-trivial work; sub-repo code never lands in `youcoded-dev`):
 

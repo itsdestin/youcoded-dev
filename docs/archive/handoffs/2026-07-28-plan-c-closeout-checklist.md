@@ -2,7 +2,7 @@
 status: shipped
 date: 2026-07-28
 milestone: Plan C (native local reliability) — pre-merge close-out
-program: docs/active/plans/2026-07-22-native-runtime-parity-program.md
+program: docs/archive/plans/2026-07-22-native-runtime-parity-program.md
 repos: [youcoded]
 branch: feat/native-local-reliability-rebase (worktree `worktrees/plan-c`, 29 commits, never pushed)
 verified_against: youcoded `57e39248`; origin/master +31 ahead

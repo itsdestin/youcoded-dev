@@ -2,7 +2,7 @@
 status: shipped
 created: 2026-07-22
 type: plan
-program: docs/active/plans/2026-07-22-native-runtime-parity-program.md (§3 — Milestone M2)
+program: docs/archive/plans/2026-07-22-native-runtime-parity-program.md (§3 — Milestone M2)
 design: docs/archive/specs/2026-07-18-native-sync-parity-design.md (Option C)
 handoff: docs/archive/handoffs/2026-07-22-m2-conversations-sync-handoff.md
 ---

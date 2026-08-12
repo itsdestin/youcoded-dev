@@ -3,7 +3,7 @@ status: active
 created: 2026-08-11
 type: program
 supersedes:
-  - docs/active/plans/2026-07-22-native-runtime-parity-program.md
+  - docs/archive/plans/2026-07-22-native-runtime-parity-program.md
 ---
 
 # Native Sessions — Current State and Remaining Work

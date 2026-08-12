@@ -56,7 +56,9 @@ verify:
   - test: youcoded/desktop/tests/device-activity-label.test.ts
   - test: youcoded/desktop/tests/sync-warnings-lifecycle.test.ts
   - test: youcoded/desktop/tests/github-connect.test.ts
-  - test: youcoded/desktop/tests/sync-spaces-project-registry.test.ts
+  # sync-spaces-project-registry.test.ts exists only on feat/project-description (youcoded ab16b338);
+  # the rule text shipped ahead of the merge and broke the anchors CI. Restore this anchor when it lands:
+  #   - test: youcoded/desktop/tests/sync-spaces-project-registry.test.ts
 ---
 
 # Sync Spaces, SyncHub, backup & GitHub-connect
@@ -87,7 +89,7 @@ verify:
 
 ## Project UX + discovery (`project-registry.ts`, `renderer/components/sync-dot-state.ts`) — guard: `sync-dot-state.test.ts`, `sync-spaces-project-discovery.test.ts`
 - **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — derive ALL dot state from the pure `sync-dot-state.ts`; labels pinned.
-- **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); `displayName` LWW by `updatedAt`; `description` LWW by its OWN `descriptionUpdatedAt` — a shared clock reverts a peer's rename. **Each dimension's `laterOf` gets a `{v, at}` wrapper, NEVER the whole entry** — the equal-clock tiebreak is `JSON.stringify`, so a whole-entry argument makes the tiebreak key mutate as the fold accumulates and associativity dies (measured: 2,116/32,768 triples) · guard: `sync-spaces-project-registry.test.ts` fold-order case. **Schema stays 1: `parseEntry` rejects on strict inequality, so bumping it makes older devices drop every record.** Setters spread `cur` so the NEXT field added survives a write from a build that predates it — this does **not** protect `description` itself: an old build that renames/stops still writes an entry without it, and that mixed-version window is open, not closed (spec §3.2). **fold-on-read** prevents resurrection. Rename/stop/describe ride 4-surface IPC parity (`ipc-channels.test.ts`).
+- **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); `displayName` LWW by `updatedAt`; `description` LWW by its OWN `descriptionUpdatedAt` — a shared clock reverts a peer's rename. **Each dimension's `laterOf` gets a `{v, at}` wrapper, NEVER the whole entry** — the equal-clock tiebreak is `JSON.stringify`, so a whole-entry argument makes the tiebreak key mutate as the fold accumulates and associativity dies (measured: 2,116/32,768 triples) · guard: `sync-spaces-project-registry.test.ts` fold-order case (**lands with `feat/project-description`, in flight as of 2026-08-12 — this whole bullet describes that branch, not master; its verify anchor is parked in the frontmatter until merge**). **Schema stays 1: `parseEntry` rejects on strict inequality, so bumping it makes older devices drop every record.** Setters spread `cur` so the NEXT field added survives a write from a build that predates it — this does **not** protect `description` itself: an old build that renames/stops still writes an entry without it, and that mixed-version window is open, not closed (spec §3.2). **fold-on-read** prevents resurrection. Rename/stop/describe ride 4-surface IPC parity (`ipc-channels.test.ts`).
 
 ## Device registry (`device-identity.ts`, `sync-spaces/device-registry.ts`) — guard: `device-identity.test.ts`, `sync-spaces-device-registry.test.ts`
 - **TWO identities, NEVER merged: `getDeviceIdentity(userData)` = per-INSTALL (leases); `getMachineIdentity(builtAppUserData)` = per-MACHINE (registry).** **`getMachineIdentity` READS, never mints; `null` ⇒ register NOTHING** (else a row orphans per launch).

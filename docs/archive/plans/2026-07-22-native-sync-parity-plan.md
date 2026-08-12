@@ -2,7 +2,7 @@
 status: superseded
 created: 2026-07-22
 superseded: 2026-07-22 (same day)
-superseded-by: docs/active/plans/2026-07-22-native-runtime-parity-program.md
+superseded-by: docs/archive/plans/2026-07-22-native-runtime-parity-program.md
 design-ref: docs/archive/specs/2026-07-18-native-sync-parity-design.md
 note: Folded into the parity program as Milestone M2, content unchanged (all five phases + the resolved resume-picker/lastUsedModel decision carry forward in program §3).
 ---

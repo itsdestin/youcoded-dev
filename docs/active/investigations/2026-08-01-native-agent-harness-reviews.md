@@ -1,3 +1,8 @@
+---
+status: active
+type: investigation
+---
+
 # Native Agent Harness Reviews
 
 **Purpose:** Multi-model reviews of the YouCoded native agent harness (the first-party tool-use runtime that ships in the app). Each reviewing agent runs a standard battery of agentic tasks (navigate, read, write, edit, search, web) inside the harness and records an honest, first-person assessment of what works, what doesn't, and what they'd change.

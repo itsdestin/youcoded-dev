@@ -1,10 +1,12 @@
 ---
-status: draft
+status: shipped
 milestone: M4
-program: docs/active/plans/2026-07-22-native-runtime-parity-program.md
+program: docs/archive/plans/2026-07-22-native-runtime-parity-program.md
 ---
 
 # M4 Reliability Tranche — Implementation Plan
+
+> **SHIPPED 2026-08-11** — both tasks landed: Task 1 `27047849` (PR #290, merge `9a2d8af7`); Task 2 `fba930e7` (PR #293, merge `f65fed18`). Checkboxes below left as-written; this banner is the completion record.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -16,7 +18,7 @@ program: docs/active/plans/2026-07-22-native-runtime-parity-program.md
 
 ## Global Constraints
 
-- **Read `docs/active/plans/2026-07-22-native-runtime-parity-program.md` §5 before starting.** Its item list is stale — see "Verified state" below. This plan supersedes §5's descriptions where they conflict.
+- **Read `docs/archive/plans/2026-07-22-native-runtime-parity-program.md` §5 before starting.** Its item list is stale — see "Verified state" below. This plan supersedes §5's descriptions where they conflict.
 - **Every user-facing string follows `docs/error-message-standards.md`** — specific and accurate, or general and non-committal. Never a guessed cause.
 - **Desktop only.** Android has no native runtime (M8). No Kotlin changes in this tranche.
 - **`bash scripts/verify.sh <worktree>` must pass before every commit** — tsc, related tests, knip, eslint, ast-grep.

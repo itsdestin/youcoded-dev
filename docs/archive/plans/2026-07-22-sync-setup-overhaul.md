@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 created: 2026-07-22
 roadmap:
   - "Sync dead-ends on any machine without `gh`"
@@ -8,6 +8,8 @@ roadmap:
 ---
 
 # Sync setup overhaul — honest state machine + GitHub token custody
+
+> **SHIPPED 2026-07-22** — all 3 phases merged: PRs #199 `efab7e7d`, #201 `998d6fb0`, #202 `95895a6b`, #203 `647bd242`. Residual macOS-VM verification is tracked in ROADMAP (the "Sync dead-ends on any machine without gh" entry).
 
 Approved by Destin 2026-07-22 after the investigation in this session. Fixes the three
 open `#sync` roadmap bugs as one program: the green-lie state machine, the unnarrated

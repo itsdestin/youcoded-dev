@@ -7,7 +7,7 @@ owner: Destin (approval) / Claude (execution)
 subject: Buddy floater on Linux Wayland — one-window overlay architecture
 type: spec
 handoff: docs/active/handoffs/2026-07-22-handoff-buddy-floater-wayland-rewrite.md
-evidence: docs/active/prototypes/2026-07-22-buddy-wayland-workbench/FINDINGS.md
+evidence: docs/archive/prototypes/2026-07-22-buddy-wayland-workbench/FINDINGS.md
 roadmap: "ROADMAP.md — 'Buddy floater: Wayland-native one-window rewrite' (#buddy #linux)"
 subsumes: "ROADMAP.md — 'Buddy floater scene-companion follow physics — window padding redesign' (#buddy #themes)"
 ---
