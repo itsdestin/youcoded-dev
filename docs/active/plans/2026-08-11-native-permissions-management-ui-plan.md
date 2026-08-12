@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active — implemented and green on `feat/native-permissions-ui`; awaiting PR + merge, then archive
 created: 2026-08-11
 type: plan
 spec: docs/active/specs/2026-08-11-native-permissions-management-ui.md

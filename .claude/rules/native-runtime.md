@@ -8,7 +8,7 @@ paths:
   - "youcoded/desktop/src/main/providers/**"
   - "youcoded/desktop/src/main/native-home.ts"
   - "youcoded/desktop/src/renderer/components/native-send.ts"
-last_verified: 2026-08-11
+last_verified: 2026-08-12
 verify:
   - path: youcoded/desktop/src/main/harness/harness-session.ts
   - path: youcoded/desktop/src/main/harness/native-session-host.ts
@@ -42,11 +42,11 @@ verify:
 ---
 # Multi-model native runtime (provider seam + sessions + local reliability)
 
-`SessionProvider` is `'claude' | 'native'`; native UI is DORMANT in production (`native.supported=false`). **Depth + why for every bullet: `youcoded/docs/native-runtime.md` + `provider-dependencies.md`. Tools/skills/injection/MCP: sibling rule `harness-tools.md`.**
+`SessionProvider` is `'claude' | 'native'`. **Depth for every bullet: `youcoded/docs/native-runtime.md` + `provider-dependencies.md`. Siblings: `harness-tools.md` (tools/skills/injection/MCP), `native-permissions.md` (remembered Always-allow rules).**
 
 ## Provider seam (Phase 0) — guard: `ipc-channels.test.ts`
 - **`'gemini'` is GONE** — don't reintroduce it anywhere.
-- **`native.supported` is the ONLY gate** (`YOUCODED_NATIVE=1`; remote-shim hardcodes `false`) — a plain boolean, not IPC.
+- **`native.supported` is the ONLY gate** — a plain boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`.
 - **`createSession` throws for non-claude providers**; the native branch builds NO PTY worker (guard every `session.worker.X`); needs a `binding` unless resuming.
 - **Reasoning segments are dormant on the CC path** (`data:{}`); App.tsx + BubbleFeed.tsx MUST share predicate `event.data?.text`.
 

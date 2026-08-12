@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active — implemented and green on `feat/native-permissions-ui`; awaiting PR + merge, then archive
 created: 2026-08-11
 type: spec
 program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
@@ -64,6 +64,45 @@ gap, but it lands in the same list.
 Rules also carry no timestamp and no origin, so "when did I grant this?" is
 unanswerable for anything already stored. New grants record `grantedAt`; existing ones
 show no date. It heals forward rather than lying about the past.
+
+---
+
+## Where the design actually landed (added 2026-08-12, after implementation)
+
+**Read this before the Phase 1 "Layout" section below** — the screen that shipped is not
+the one that section describes. The layout was settled through **three rounds in the
+workbench compare view** (surface `permissions-mode-control`, `dev/workbench/compare/`),
+not written up front; the spec's layout is the starting point those rounds moved away
+from. Everything else in this document — the store/host/IPC contracts, the five surfaces,
+the conventions list, the testing plan — landed as written.
+
+What the shipped `components/PermissionsSection.tsx` is, in body order:
+
+1. **The three permission modes as REFERENCE CONTENT, not a control.** All three
+   definitions print at once (a first-time reader is comparing them, which cannot be done
+   one at a time). Three selector shapes were tried across the rounds — radio list,
+   segmented control, "state first" plus a Change button — and every one read as a live
+   setting. It is not: mode is per-conversation state owned by `NativeSessionHost` and set
+   from the status-bar chip, and there is no app-wide default for this screen to write. A
+   control that sets nothing is a lie in the shape of a control. `permissions-section.test.tsx`
+   pins that this block contains no interactive element at all — that assertion is the
+   invariant, not this paragraph.
+2. **The always-asks list**, hanging off Full auto and nowhere else. Round 3 compared
+   three containments (own card / no container / one shared card) and the shared card won:
+   Full auto's definition ends by pointing at the list, so the list should read as part of
+   the same statement rather than as a section one heading away. Both headings survive as
+   band headers inside the one `bg-inset/50` card.
+3. **The approvals themselves, as per-folder collapsible cards** — a folder header row
+   carrying its count, always collapsed on arrival (no "open it if it's small" heuristic —
+   that makes the screen look different every time), grouped by kind inside, with a
+   per-folder bulk revoke at the bottom of the open card.
+
+Two things the rounds deleted outright: the approvals summary line, and the Refresh
+button (the screen remounts on open, so it re-reads anyway). The budget that bought back
+was spent on longer mode definitions.
+
+The "Open item for Phase 1 review" below was resolved as recommended: the section is
+**not** gated on `window.claude.native.supported`.
 
 ---
 
