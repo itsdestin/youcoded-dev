@@ -761,6 +761,14 @@ git add -A && git commit -m "feat(eval): per-cell worker process and grader-isol
 
 ### Task 8: Estimate and spend cap
 
+> **BINDING CONSTRAINT added 2026-08-12 — the API key must NOT reach the orchestrator through an inherited environment variable.**
+>
+> Task 7 took three rounds to close this class and the third round still left it open one process up. The mechanism: `delete process.env.X` is `unsetenv`, which edits the in-heap environ array and never rewrites the region the kernel exposes at `/proc/<pid>/environ`. That region is readable by any same-uid process, and the model's Bash tool is a same-uid **descendant** — not just a child. Task 7's worker is now clean (config, key included, arrives over stdin with an allowlisted child environment), but Task 8 is where a process first actually *holds* a key, and the existing convention (`OPENROUTER_API_KEY=sk-... node …`, see `review-harness.mjs:100` and `openrouter-factory.ts:14`) would put it straight back into an inherited environ. Measured on the real three-process topology: worker environ CLEAN, **orchestrator environ LEAKED**, own inherited env CLEAN.
+>
+> So: read the credential from a file (`--key-file`), or prompt for it, or any mechanism that never places it in the orchestrator's environment. Then extend the leak detector to probe the **grandparent** (`/proc/<orchestrator-pid>/environ` and `ps eww` against it) from a Bash-tool-style grandchild, and keep a negative control that reproduces the env-inherited style and reports LEAKED — a detector that cannot see the old bug certifies nothing. Three rounds of this were each certified by a detector that probed exactly the boundary it was aimed at; the whole threat model is "any channel a **descendant** can read", so the detector's boundary must be the outermost key-holding process, not the nearest one.
+>
+> Same session also recorded the identical hole in the shipped `review-harness.mjs` — see `ROADMAP.md` → Bugs (2026-08-12).
+
 **Files:**
 - Create: `src/main/harness/eval/estimate.ts`
 - Modify: `test-engine/harness-eval.mjs`
