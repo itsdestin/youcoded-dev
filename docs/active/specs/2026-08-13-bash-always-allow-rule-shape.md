@@ -620,7 +620,33 @@ replacement for the §4.5 explanation dropped by A5), and what the bare
 `git push` card says when it has nothing to offer. A says the least, B lets each
 option carry its own consequence, C states the limits once in full.
 
-*(pick pending)*
+**R2 pick: C.** The heading names what is being granted; one sentence under the
+choice says what the grant will NOT cover; the bare `git push` card carries its
+own line explaining why nothing can be remembered. Cost accepted: that sentence
+has to cover both options at once, so it is worded per grant type rather than
+per option.
+
+The settled strings, which Task 8 implements verbatim:
+
+| Slot | String |
+|---|---|
+| Heading — one exact option | `Always allow this exact command in youcoded?` (unchanged) |
+| Heading — one named option | `Always allow pushing to <branch> in youcoded?` |
+| Heading — two options | `Always allow this in youcoded?` |
+| Option rows | `Only this exact command` · the option's own label (`Any npm run command`) |
+| Limits — a named grant | `This won't cover deleting or force-pushing the branch, or this command chained onto another one.` |
+| Limits — otherwise | `This won't cover the command chained onto another one, or run with options that change what it does.` |
+| No grant possible (bare `git push`) | `There's nothing to remember here: this sends whichever branch is checked out when it runs, so next time it could be a different one.` |
+
+**The limits sentence is load-bearing.** A5 dropped the after-the-fact
+explanation, so this line is the item's only warning about the two cases that
+will re-ask anyway (a chained command, a force-push). It is not decoration and
+must not be trimmed for space.
+
+**The no-grant line is shape-specific.** It describes a push, because `git push`
+is the only shape that can refuse to be remembered. A future shape that refuses
+must supply its own line rather than inherit this one — it is stored on the shape
+row, not hardcoded in the card.
 
 ## 15. Amendments (2026-08-13, from the implementation plan)
 
