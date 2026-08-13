@@ -587,6 +587,41 @@ that matters; the Permissions explainer popup is the right home.
 - Five-surface IPC parity if any channel is added — none is expected here; `grantScope`
   rides the existing `respondToPermission` payload.
 
+## 16. Compare rounds (workbench surface `bash-grant-width`)
+
+The confirm's shape and copy are settled here, not in this document — §10 defers
+to the workbench. Each round records what was compared and what Destin picked.
+
+**R1 — where does the choice live?** Three shapes, each rendering the real
+`bashGrantOptions` output across seven scenarios: every width as its own button
+on the card (A), one Always Allow button with the choice inside the confirm
+behind it (B), or the widening as a quieter second action under the confirm (C).
+
+**R1 pick: B.** The card keeps exactly one Always Allow button and never changes
+shape; every widening still passes the consequence step that today guards a
+deny-listed always-allow. Cost accepted: the wider grant is invisible until you
+open the confirm.
+
+Two corrections landed with the pick, both from Destin looking at the rendered
+card:
+
+- **The two options on a push "are just offering the same thing."** They were —
+  see amendment A6, which collapses a shaped grant to one option.
+- **The confirm showed "may delete files or change published code" over
+  `npm run build`.** ToolCard gates that sentence on `denyListed`; the candidate
+  did not. Fixed in the surface — an ordinary command never carried that warning
+  and must not start.
+
+**R2 — how much does the confirm explain?** Shape settled; the round varies only
+the reading matter, which is where §10's open copy questions live: the heading
+(the shipped string says "this exact command", false for a branch grant), the
+option wording, whether the limits are stated BEFORE the grant is made (the
+replacement for the §4.5 explanation dropped by A5), and what the bare
+`git push` card says when it has nothing to offer. A says the least, B lets each
+option carry its own consequence, C states the limits once in full.
+
+*(pick pending)*
+
 ## 15. Amendments (2026-08-13, from the implementation plan)
 
 The implementation plan (`docs/active/plans/2026-08-13-bash-always-allow-rule-shape.md`)
