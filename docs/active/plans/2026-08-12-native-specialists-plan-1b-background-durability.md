@@ -40,7 +40,7 @@ sequence: plan 1b of 3 for spec stage one (1a = core foreground, SHIPPED 8db4623
 | Subagent `assistant-thinking` routing | 1c (renderer) |
 | Child-transcript GC / deletion lifecycle | ROADMAP (`#specialists`) — children accumulate in the sessions dir; deleting a parent conversation should sweep its children |
 | Foreground→background *automatic* promotion on timeout | Ruled out by spec §3 ("no automatic timeout promotion in v1"); manual promotion buttons are 1c |
-| `cheap`/`strongest` per-provider curated model tables, cost preview on launch card | 1c / model-metadata work — Task 14 ships catalog-pricing-based resolution with parent fallback |
+| Settings menu UI for the **budget**/**frontier** delegated-model pickers (two model pickers + their get/set IPC channels), launch-card display of the resolved model, cost preview | 1c — Task 14 ships the storage file, resolver, per-hire `model` input, and ModelSearch tool it consumes |
 
 ---
 
@@ -522,18 +522,46 @@ it('replayed stamped events preserve partId so the reducer coalesces deltas iden
 - [ ] **Step 2: Run to verify failure** → FAIL. **Step 3: Implement** (tsc will point at exactly the three profile sites). **Step 4: Run** → PASS.
 - [ ] **Step 5: Commit** — `git commit -m "feat(specialists): concurrency cap from the capability profile — engine-measured locally, 4 hosted"`
 
-### Task 14: `modelPreference` resolution
+### Task 14: Delegated model tiers — budget & frontier + user-directed override (Destin's ruling, 2026-08-12)
+
+**Ruling (replaces the spec's original 'cheap/strongest' vocabulary):** two user-designated tiers, **budget** and **frontier**, each set to a concrete model in a Settings menu (the menu itself is 1c; this task ships the storage and resolution). **No automatic price-based selection anywhere.** The orchestrating model gets a catalog-search tool and may name a specific model per hire — but only at the user's direction.
 
 **Files:**
-- Create: `desktop/src/main/harness/specialists/model-preference.ts`
-- Modify: `desktop/src/main/harness/native-session-host.ts` (`createChild` :941-943 binding selection)
-- Test: Create `desktop/tests/specialist-model-preference.test.ts`; extend `desktop/tests/native-session-host.test.ts`
+- Create: `desktop/src/main/harness/specialists/delegated-models.ts`
+- Create: `desktop/src/main/harness/tools/model-search.ts`
+- Modify: `desktop/src/main/harness/specialists/registry.ts:15` (`modelPreference?: 'parent' | 'budget' | 'frontier'` — the field is declared-but-never-read on master, so the union rename is free), `desktop/src/main/harness/native-session-host.ts` (`createChild` :941-943 binding selection), `desktop/src/main/harness/tools/task.ts` (new `model` input + resolution + fallback note in the ack text), `desktop/src/main/harness/harness-session.ts` (`syncTaskTool` :649 attaches ModelSearch under the same `canDelegate && !isSpecialistChild` gate), `desktop/src/shared/harness-manifest.ts` (`CONDITIONAL_TOOL_NAMES` gains `'ModelSearch'`), `desktop/src/shared/permission-types.ts` (ModelSearch joins the always-allowed baseline — it reads public catalog metadata, nothing else)
+- Test: Create `desktop/tests/specialist-delegated-models.test.ts` and `desktop/tests/model-search-tool.test.ts`; extend `desktop/tests/task-tool.test.ts`, `desktop/tests/harness-session-loop.test.ts`, `desktop/tests/native-session-host.test.ts`
 
 **Interfaces:**
-- Produces: `resolveSpecialistBinding(pref: SpecialistDefinition['modelPreference'], parent: ModelBinding, catalog: PricedModel[] | null): { binding: ModelBinding; fellBack: boolean }` — `'parent'`/absent → parent; `'cheap'` → the cheapest same-provider chat model by prompt price from the catalog's pricing data; `'strongest'` → the priciest; **any resolution failure (no catalog, no pricing, local-engine parent, resolved model unavailable) falls back to the parent's binding with `fellBack: true`** — never silently a different provider, never provider-specific params across families (spec §2 Goose hygiene). `createChild` retains the RESOLVED model via the existing `modelRefs` ref-counting and the child header records the resolved binding. **Built-ins keep `modelPreference` unset** — nothing changes for the four shipped specialists until Destin rules on defaults; this task ships the mechanism so a definition (1c files) that declares a preference gets it.
-- [ ] **Step 1: Write the failing tests** (parent passthrough; cheap picks min prompt-price within provider; strongest picks max; local parent → parent + fellBack; missing pricing → parent + fellBack).
-- [ ] **Step 2: Run to verify failure** → FAIL. **Step 3: Implement** (pure function + the two-line `createChild` wiring; the catalog arrives from the host's existing `ModelCatalog` access — pass `null` when unavailable).
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** — `git commit -m "feat(specialists): modelPreference resolution with honest parent fallback"`
+- Produces:
+
+```ts
+// delegated-models.ts
+export type DelegatedTier = 'budget' | 'frontier';
+// File: ~/.youcoded/delegated-models.json — { v: 1, budget?: ModelBinding, frontier?: ModelBinding }
+export class DelegatedModels {
+  constructor(private home: NativeHome) {}
+  get(tier: DelegatedTier): ModelBinding | null;                          // readJson, null when unset
+  async set(tier: DelegatedTier, binding: ModelBinding | null): Promise<void>; // mutateJson; 1c's Settings UI calls this via its own IPC
+}
+export function resolveDelegatedBinding(i: {
+  requested: 'parent' | DelegatedTier | { modelId: string };  // Task-call arg wins over the definition's modelPreference, which wins over 'parent'
+  parent: ModelBinding;
+  designated: DelegatedModels;
+  catalog: CatalogModel[] | null;                             // for specific-id validation only
+}): { binding: ModelBinding; fellBack: boolean; reason?: string }
+```
+
+  - Tier semantics: `budget`/`frontier` → the user's designated binding, else **parent + `fellBack: true`** with `reason: 'no budget model is set in Settings'` (or frontier). `parent` → parent. A specific `{ modelId }` that isn't in the live catalog for a cloud provider **refuses the Task call** (typed: `Refused: "${id}" is not an available model. Use ModelSearch to find the exact id, or use "budget"/"frontier".`) — a user-directed override is never silently substituted, unlike tiers, which degrade gracefully. Never provider-specific params across families (spec §2 Goose hygiene). `createChild` retains the RESOLVED model via the existing `modelRefs` ref-counting; the child header records the resolved binding.
+  - Task input gains `model?: string`, described verbatim: `Optional: "budget" or "frontier" to use the models the user designated in Settings, or a specific model id — only name a specific model when the user asked for it. Omit to run the specialist on this conversation's model.` When a tier fell back, the launch/ack text appends one honest line: `(No ${tier} model is set in Settings — using this conversation's model.)`
+  - **ModelSearch tool** (`model-search.ts`, `defineTool`): input `{ query: string }` (min 2 chars); case-insensitive substring match on catalog id + display name; returns up to 20 lines `id — name · in $X/M tok · out $Y/M tok · ctx N`, sorted by prompt price ascending, with a `+N more — narrow the query` footer when capped; no catalog loaded → `Model list is unavailable right now (catalog not loaded). Delegate with "budget"/"frontier" or the conversation's model instead.` Description tells the model this exists to find ids **when the user asks for a specific model**. Read-only, `permissionSubject: undefined`, attached only alongside Task.
+  - **Built-ins keep `modelPreference` unset** — the four shipped specialists run on the parent's model until Destin designates tiers and/or flips a definition.
+
+- [ ] **Step 1: Write the failing tests** — `specialist-delegated-models.test.ts`: tier resolves to the designated binding; unset tier → parent + fellBack + reason; `parent` passthrough; unknown specific id → the typed refusal shape; known specific id resolves; set/get round-trip through a temp `NativeHome`; Task-arg beats definition preference beats parent. `model-search-tool.test.ts`: substring match, price sort, 20-cap footer, no-catalog copy, min-query refusal. `task-tool.test.ts`: `model: 'budget'` spawn uses the designated binding; fallback note appears in the ack; refusal on a fake id. `harness-session-loop.test.ts`: ModelSearch attaches and detaches with the same gate as Task.
+- [ ] **Step 2: Run to verify failure** → FAIL (modules not found).
+- [ ] **Step 3: Implement** `delegated-models.ts` (storage + pure resolver) and `model-search.ts`; **Step 4: wire** `createChild` + `task.ts` + `syncTaskTool` + manifest + baseline.
+- [ ] **Step 5: Run** the five test files plus `npx vitest run tests/tool-registry-manifest.test.ts tests/ipc-channels.test.ts` → PASS.
+- [ ] **Step 6: Commit** — `git commit -m "feat(specialists): budget/frontier delegated tiers, ModelSearch, per-hire override at user direction"`
 
 ### Task 15: Docs, rules, and the remaining 1a handoff pins
 
@@ -561,6 +589,6 @@ Dependencies: T4 needs T1+T2; T5 needs T2+T4; T6 needs T1-T4; T7 needs T2; T8 ne
 
 ## Self-review notes (writing-plans checklist, run 2026-08-12)
 
-- Spec coverage: §3 background/injection (T4), MOIM (T5), steering+management (T3/T6), report caps+spill (T10), weak-model hardening (T12), heartbeat (T7), single-writer precise (T1), child failure typed (T2/T4), compaction-finalize (T12), concurrency per provider (T13), spawn budget (T12), restart survival (T9); §5 timeout redirect + routed asks (T8), grant keying v2 (T11); §2 model preference (T14). §6 UX items and §2 definition files are 1c per the sequence line; §4/stage two untouched.
+- Spec coverage: §3 background/injection (T4), MOIM (T5), steering+management (T3/T6), report caps+spill (T10), weak-model hardening (T12), heartbeat (T7), single-writer precise (T1), child failure typed (T2/T4), compaction-finalize (T12), concurrency per provider (T13), spawn budget (T12), restart survival (T9); §5 timeout redirect + routed asks (T8), grant keying v2 (T11); §2 model preference (T14 — per Destin's 2026-08-12 ruling: budget/frontier user-designated tiers, ModelSearch, per-hire override at user direction; replaces the spec's original cheap/strongest auto-resolution, spec amended same day). §6 UX items and §2 definition files are 1c per the sequence line; §4/stage two untouched.
 - Interpretation flagged for Destin's review: spec §5 says a late approval on a FINISHED child is "delivered as a resume" — T8 delivers it as a parent notice naming `task_id` (parent-in-the-loop) rather than auto-resuming the child, because an auto-resume spends tokens with no model or user in the loop. Overrule at review if the literal reading is preferred.
 - Type consistency pass done: `SpecialistReservation` (T1) is the shape T4/T6 consume; `DelegationRecord` fields referenced by T5/T7/T9 all exist in T2's interface; `postSteer` signature identical in T3/T6/T8/T12.

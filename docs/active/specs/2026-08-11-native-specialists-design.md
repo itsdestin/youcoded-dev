@@ -169,6 +169,15 @@ Nothing else marketplace-related is built now.
 and falls back to the parent's binding when unavailable. Provider-specific params
 never carry across model families (Goose hygiene rule).
 
+> **Amended 2026-08-12 (Destin's ruling, plan 1b Task 14):** the classes are two
+> **user-designated tiers — `budget` and `frontier` —** each set to a concrete
+> model in a Settings menu (pickers ship in plan 1c). **No automatic price-based
+> selection anywhere**; an unset tier degrades gracefully to the parent's binding,
+> stated honestly. The Task call may additionally name a specific model — only at
+> the user's direction — validated against the live catalog and **refused, never
+> substituted,** when unknown; a read-only ModelSearch tool (attached only
+> alongside Task) lets the orchestrator browse the catalog to find exact ids.
+
 ## §3 Execution lifecycle and durability (stage one)
 
 - **Foreground and background.** Foreground waits; anything long runs in
