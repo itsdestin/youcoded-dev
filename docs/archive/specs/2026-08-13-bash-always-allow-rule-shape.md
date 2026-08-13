@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 created: 2026-08-13
 type: spec
 program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md

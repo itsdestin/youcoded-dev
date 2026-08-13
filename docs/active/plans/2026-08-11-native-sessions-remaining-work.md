@@ -91,11 +91,18 @@ Scope: `list()` / `remove(cwd, rule)`, an IPC pair with four-surface parity, and
 
 **2b. Full-auto prompt coherence. ✅ SHIPPED 2026-08-12** (youcoded #313, merge `cfb3124d`). The design went a third way after four compare-view rounds: the deny-list stop KEEPS asking (the shipped Permissions-screen promise binds), but renders as a mode-branded safety stop — amber band, per-family copy ("Stopped before pushing code" / "YouCoded limits this action, even in Full Auto — …"), Run it / Skip it | Always Allow (status orange, behind the same consequence confirm). `permissionMode` rides the broker ask payload; condition is exactly `full-auto && denyListed`, everything else pixel-identical. Spec + plan archived: `docs/archive/{specs,plans}/2026-08-12-full-auto-prompt-coherence.md`.
 
-**2c. Bash always-allow rule shape.** Bash's permission subject is the literal full command string, anchored — so "always allow `git push origin main`" grants nothing for `git push origin dev`, while a tool with no subject gets a tool-wide grant. This needs a real design: prefix rules, argv-head matching, or a user-editable pattern at confirm time.
+**2c. Bash always-allow rule shape. ✅ SHIPPED 2026-08-13** (youcoded #314, merge `542b7e23`). The framing above was half the problem: grant width was not narrow, it was *unspecified*, and in the cases that mattered far too wide. What shipped —
 
-**This one is strictly after 2a, and the reason matters:** remembered rules are the last layer and outrank the destructive deny-list. Their accidental narrowness is currently the only thing limiting blast radius. Do not widen grants before revocation exists.
+- **"This exact command" is now exact.** Rules carry `match: 'exact' | 'glob'`; every stored rule is re-read as byte-exact, so a command containing `*` or `?` is no longer a wildcard rule sitting above the deny-list.
+- **One matcher owns rule meaning.** `ruleMatches` (`shared/subject-glob.ts`) is the only decision-path matcher, and it carries two narrowings that apply to wildcard Bash grants only — never cross a shell operator, never admit a destructive flag when the pattern has text after its wildcard. In the matcher rather than on each rule, so a future rule-builder cannot forget them.
+- **Widening is named, not inferred.** `bashGrantOptions` derives what may be offered and owns the sentence the user reads. `git push` scopes to one branch (master included — it is an ordinary branch, asked about once and revocable on its own); everything else gets "this exact command" or "any `npm run` command". A shape-produced grant REPLACES its exact rung — two options that mean the same thing is not a choice (compare round 1).
+- **Two postconditions.** An option must cover the command in hand, and a wide option must admit nothing from a corpus of destructive commands — the check that stops `git --no-pager log` being offered "Any git command".
+- **Nothing at all for a target that moves.** Bare `git push`, `git push origin`, `git push origin HEAD` lose the button and say why.
+- Rule identity is the `(tool, pattern, action, match)` quad; Settings tells exact / scoped / tool-wide apart and never renders a glob.
 
-**Done when:** a user can see every rule they have granted, remove any of them, and Full Auto no longer asks questions it has already answered.
+Confirm shape and copy settled in the workbench (surface `bash-grant-width`, R1–R3). Spec + plan archived: `docs/archive/{specs,plans}/2026-08-13-bash-always-allow-rule-shape.md`. Deferred by design: telling a user when a grant *almost* covered a command (ROADMAP, `#permissions`).
+
+**Done when:** a user can see every rule they have granted, remove any of them, and Full Auto no longer asks questions it has already answered. **✅ MET 2026-08-13** — for pushes. The other four destructive families (`rm`, `sudo`, `format`, `git reset --hard`) keep asking unless the exact command repeats, which is the posture 2c's §5.2 chose deliberately, not a gap discovered later.
 
 ### Step 3 — Make context truncation visible to the user
 

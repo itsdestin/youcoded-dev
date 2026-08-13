@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 created: 2026-08-13
 revised: 2026-08-13
 type: plan
