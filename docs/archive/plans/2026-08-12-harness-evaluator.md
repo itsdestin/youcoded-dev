@@ -1,6 +1,6 @@
 ---
-status: active
-spec: docs/active/specs/2026-08-12-harness-evaluator-design.md
+status: shipped
+spec: docs/archive/specs/2026-08-12-harness-evaluator-design.md
 created: 2026-08-12
 ---
 

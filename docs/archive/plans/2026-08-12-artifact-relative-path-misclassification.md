@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 > **Implemented 2026-08-13** on branch `fix/artifact-relative-path` (14 commits, unmerged).
