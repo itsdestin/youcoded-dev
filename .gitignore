@@ -74,4 +74,8 @@ docs/active/investigations/conversation-triage-runs/
 # time and the first forgotten one loses the record of a paid run.
 docs/active/investigations/harness-eval-runs/**
 !docs/active/investigations/harness-eval-runs/**/
-!docs/active/investigations/harness-eval-runs/*/report.md
+# Reports are named report-<plan>.md so two experiments on the same day cannot
+# overwrite each other (2026-08-13: one silently destroyed another's report).
+# The glob MUST stay wildcarded — a literal `report.md` here would silently
+# ignore every per-plan report and undo that fix.
+!docs/active/investigations/harness-eval-runs/*/report*.md
