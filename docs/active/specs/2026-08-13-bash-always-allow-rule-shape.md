@@ -71,8 +71,15 @@ is still a security change and is specified as one.
 |---|---|---|
 | D1 | The **user** picks the grant width, from options the app computes. No free-text glob entry. | Destin, 2026-08-13 |
 | D2 | **Two rungs** — exact, or program+subcommand. No whole-program third rung; that requires going to Settings. | Destin, 2026-08-13 |
-| D3 | A **small table of command shapes** supplies per-command exclusions where the varying part is separable from the dangerous part. `git push` is the motivating entry. | Destin, 2026-08-13 |
-| D4 | Exclusions are **fixed defaults the user reads**, not editable in the confirm. | Destin, 2026-08-13 |
+| D3 | A **small table of command shapes** scopes the wide rung to the specific thing the command acts on. `git push` is the motivating entry: the wide rung is "any push to THIS branch". | Destin, 2026-08-13 |
+| D4 | **Per-branch, no protected-branch policy.** master and main are ordinary branches. The user is asked separately for each branch and each grant is stored separately, so "always allow pushes to master" is available and is an explicit, visible, individually-revocable act. | Destin, 2026-08-13 |
+
+D3/D4 supersede an earlier draft of this spec (commits `1f3b6ef`, `5da87e1`) in which the
+`git push` wide rung was "any push EXCEPT to master or main". That shape was rejected:
+it decides the policy on the user's behalf, it cannot express "I do want master to stop
+asking", and its substring exclusions made `git push origin domain-fix` prompt forever
+for a reason no one could guess. Per-branch scoping is strictly better on all three
+counts and deletes the exclusion table entirely.
 
 ## 3. Rule shape
 
@@ -117,11 +124,15 @@ An `except` entry does not write a deny. It makes the remembered rule **fail to 
 which drops the decision back to whatever the layer below already said. For a deny-listed
 family that is the deny-list's own `ask`; for anything else it is the mode baseline.
 
-So a grant of "any `git push`, except to master or main" yields:
+So a grant of "any `npm run` command" (§4.3's operator set) yields:
 
-- `git push origin feat/login` → remembered rule matches → allowed.
-- `git push origin master` → remembered rule vetoed → deny-list's `git push*` is the
-  winning rule → **still asks**, and still renders 2b's safety stop in Full auto.
+- `npm run build` → remembered rule matches → allowed.
+- `npm run build && rm -rf dist` → vetoed by `*&&*` → the layer below is the winning rule
+  → **still asks**.
+
+The same fall-through is what lets a scoped grant coexist with the deny-list: a grant of
+"pushing to feat/x" simply does not match `git push origin master`, so the deny-list's
+`git push*` wins and master still asks — until the user separately approves master (D4).
 
 No new engine layer, no negation in the matcher, no re-ordering of precedence, and
 `DESTRUCTIVE_DENY_LIST` is not touched. This is the mechanism the whole design rests on.
@@ -156,10 +167,10 @@ export type GrantScope = 'exact' | 'wide';
 export interface GrantOption {
   scope: GrantScope;
   rule: PermissionRule;      // exactly what gets persisted
-  /** Plain-English label. Never contains '*' or any other rule syntax. */
+  /** Plain-English label. Never contains '*' or any other rule syntax.
+   *  Generic wide rung: 'Any npm run command'.
+   *  Scoped wide rung (§5.1): 'Always allow pushing to feat/x'. */
   label: string;
-  /** Plain-English exclusion clause, or undefined. */
-  exceptNote?: string;
 }
 
 /** Options to offer for a Bash command, narrowest first. Always at least one
@@ -193,7 +204,7 @@ are the same rule, and the confirm's wording must not imply otherwise.
 **Known consequence for script runners.** `npm run build` derives `npm run*`, which covers
 `npm run deploy` and every other script in `package.json`. The verb for `npm` is genuinely
 two tokens deeper than for `git`, and the table (§5) is the mechanism that could pin that —
-a row may carry a `depth` alongside its exclusions. No such row ships in this item (D3
+a row may carry a `depth` alongside its scoping. No such row ships in this item (D3
 scopes the table to `git push`); this is recorded so the first person who finds `npm run*`
 too wide knows where the fix goes, rather than reaching for a fourth rung.
 
@@ -229,10 +240,10 @@ offered as a wide rung that can never fire for the very command being approved:
 
 - **A command the operator set excludes.** `npm run build > log.txt` derives `npm run*`,
   whose `OPERATOR_EXCEPT` contains `*>*` — it vetoes the approving command itself.
-- **A command the table excludes.** The user is asked about `git push origin master`,
-  clicks Always allow, and picks "any `git push`, except to master or main". They have
-  just stored a rule that cannot match what they were asked about, and will be asked
-  again next time, identically. Nothing on screen would explain why.
+- **A command the table cannot scope.** `git push origin master feat/x` pushes two refs;
+  §5.1 derives `git push*origin feat/x`, which does not match it. Offering that rung
+  would store a grant that cannot fire for the command the user was looking at, and
+  would name only one of the two branches it was really about.
 - **A chained command.** `npm run build && git push` derives `npm run*`, vetoed by `*&&*`.
 
 The invariant kills all three with one rule, and subsumes the chained-command case that
@@ -247,68 +258,114 @@ Also exact-only:
 
 ### 4.5 An ask the user thought they had answered must say so
 
-The exclusions are silent by construction: a vetoed rule simply does not match, and the
-layer below asks as if no grant existed. From the user's side that is indistinguishable
-from the app forgetting their approval — the worst possible reading, and the one that
-costs trust.
+A veto is silent by construction: the rule simply does not match, and the layer below asks
+as if no grant existed. From the user's side that is indistinguishable from the app
+forgetting their approval — the worst possible reading, and the one that costs trust.
 
-So when a remembered rule was vetoed by an `except` entry, the ask carries that fact and
-the card says which exclusion fired. `git push origin domain-fix` must not present as a
-bare "may I push?"; it must read as "you allowed pushes except to master or main — this
-branch name contains one of those words."
+The remaining vetoes are §4.3's operator set. A user who granted "any `npm run`" and then
+sees `npm run build && rm -rf dist` stop must be told that the grant does not extend to
+commands chained with another command — not shown a bare "may I?".
 
 This rides the ask payload the way 2b's `permissionMode` does — validated at the
 dispatcher, display-only, never persisted. Exact copy is Destin's (§10).
 
-Without this, every fail-safe over-veto in §4.3 and §5.1 becomes an unexplained repeat
-prompt. The over-veto is the right trade only if it is legible.
+Per-branch scoping (§5.1) removed the large source of unexplained re-asks that an earlier
+draft carried. What remains is the operator set and §5.3's trailing-flag gap.
 
-## 5. The command-shape table
+## 5. The command-shape table — target scoping
+
+A row does not supply exclusions. It supplies a **narrower wide rung**: instead of
+generalising to the whole verb (`git push*`), it pins the specific thing the command acts
+on and generalises everything else.
 
 ```ts
 interface CommandShape {
-  /** Matched against `${program} ${subcommand}` or `${program}`. */
+  /** Matched against `${program} ${subcommand}`. */
   key: string;
-  label: string;              // e.g. 'Any git push'
-  except: string[];           // merged with OPERATOR_EXCEPT
-  exceptNote: string;         // e.g. 'except to master or main'
+  /** Returns the scoped rung, or null when this command cannot be scoped safely.
+   *  Null means no wide rung at all — never a silent fallback to the generic one. */
+  scope(command: string): { pattern: string; label: string } | null;
 }
 ```
 
-### 5.1 Entries
+Returning `null` is load-bearing: a table row exists precisely because the generic rung is
+too wide for that command, so falling back to it when scoping fails would grant more than
+the unscoped case, not less.
 
-| key | label | except | note |
-|---|---|---|---|
-| `git push` | Any `git push` | `git push*master*`, `git push*main*` | except to master or main |
+### 5.1 `git push` — scope to the branch
 
-One entry to start. A row earns its place only when the varying part of the command is
-separable from the dangerous part. Anything without a row falls through to the generic
-derivation with `OPERATOR_EXCEPT` alone.
+For `git push`, the wide rung is **"always allow pushing to this branch"**. Nothing is
+excluded and no branch is special. master, main, and `feat/login` are all ordinary
+branches: each is asked about the first time, each gets its own stored grant, each shows
+as its own row in Settings, and each is revocable on its own.
 
-**Why the exclusions are substring patterns over the whole command rather than a parsed
-branch argument.** Verified against the shipped matcher: `git push*master*` vetoes
-`git push origin master`, `git push --force origin master`, `git push origin HEAD:master`,
-and `git push origin +master`, while `git push origin feat/login` and `git push -u origin
-feat/x` still match. A positional parse, or a space-anchored `git push* master*`, misses
-the `HEAD:master` and `+master` refspec forms — which are exactly the shapes a
-force-push-to-master takes.
+**Derivation.** Tokenize after `git push`; separate flags (leading `-`) from positional
+arguments. A rung is produced **only when there are exactly two positional arguments** —
+a remote and a refspec:
 
-The cost is over-veto: `git push origin maintenance` and `git push origin domain-fix`
-contain the substrings and will keep asking. That is the same fail-safe trade §4.3 makes
-and `DESTRUCTIVE_DENY_LIST`'s own header states — an unnecessary ask is annoying, a missed
-push to master is the failure that matters.
+```
+pattern = `git push*${remote} ${refspec}`      // end-anchored, refspec verbatim as typed
+label   = `Always allow pushing to ${branch}`   // branch = refspec with +, HEAD:, refs/heads/ stripped
+```
 
-### 5.2 Deny-listed families are exact-only, except `git push`
+`git push origin feat/x` → pattern `git push*origin feat/x`, label "Always allow pushing
+to feat/x". Verified against the shipped matcher:
 
-`rm`, `rmdir`, `del`, `sudo`, `format`, and `git reset --hard` offer no wide rung. For
-each of them the varying part *is* the dangerous part; there is no honest exclusion list
-for "any `sudo`". `git push` is the one deny-listed family where the branch separates
-cleanly from the risk, which is the entire reason the table mechanism exists.
+| command | matches `git push*origin feat/x` |
+|---|---|
+| `git push origin feat/x` | yes |
+| `git push -u origin feat/x` | yes |
+| `git push --force origin feat/x` | yes |
+| `git push origin feat/x-2` | **no** — a longer branch name is a different branch |
+| `git push origin master feat/x` | **no** — see below |
+| `git push origin feat/x master` | no |
+| `git push origin master` | no |
+| `git push origin feat/x --force` | no — trailing flags, see §5.3 |
+
+**Why the remote is in the pattern and not just the branch.** The obvious shape,
+`git push*feat/x`, leaks: it matches `git push origin master feat/x`, which pushes master
+*and* feat/x. Git accepts any number of refspecs, and this glob cannot count tokens, so
+the only way to bound the command to a single ref is to pin the token that must precede
+it. Including the remote does that — verified above. A grant named "pushing to feat/x"
+that silently also pushes master is the exact failure this item exists to prevent.
+
+**No rung when the target is not in the command.** Bare `git push` (zero positional
+arguments) pushes whatever branch is checked out *at the time it runs*. The app cannot
+know which branch that is from the command string, and the branch changes underneath the
+grant — approve it on `feat/x` today and it silently pushes `master` next week. Under a
+per-branch model that is a hole that defeats the point.
+
+So a `git push` with no explicit refspec gets **no "Always allow" button at all**, only
+allow-once. `suppressAlwaysAllow` already exists on `PermissionButtons` for exactly this
+class of ask (budget gates, external directories). This is a small removal of an existing
+capability — today a bare `git push` can be always-allowed and then covers every future
+bare push on any branch — and removing it is the whole reason per-branch means anything.
+
+### 5.2 Deny-listed families: `git push` is scoped, the rest are exact-only
+
+`rm`, `rmdir`, `del`, `sudo`, `format`, and `git reset --hard` offer no wide rung at all.
+
+Target scoping does not transfer to them, and `rm` shows why concretely: a scoped rung of
+`rm*build/` would match `rm -rf /home/me build/`, because `rm` takes any number of
+targets and the trailing one is all the pattern pins. The remote-token trick that bounds
+`git push` to a single ref has no analogue — there is nothing that must precede an `rm`
+target. `sudo` is worse: its varying part IS its danger.
 
 Implementation: a command is deny-listed if any `DESTRUCTIVE_DENY_LIST` entry matches it
 (via `ruleMatches`). If so, a wide rung is offered only when the derived key has a table
 row. This is a live check against the shared list, not a second hardcoded family list —
 adding a deny-list entry must not silently open a wide rung for it.
+
+### 5.3 What the scoped rung does not cover
+
+`git push origin feat/x --force` — flags *after* the refspec — does not match, so it asks
+again and, if approved, stores its own row. Git's own documentation and every common
+invocation put flags before the refspec, and this glob cannot express "a flag, but not
+another ref". The safe direction is an extra ask.
+
+This is the one place the design produces a re-ask that §4.5 cannot explain, because it
+is a non-match rather than a veto. It is recorded rather than solved; if it turns out to
+bite, the fix is a second stored pattern per grant, which costs a second Settings row.
 
 ## 6. Trust boundary — the renderer never names a pattern
 
@@ -375,8 +432,6 @@ export interface RuleDescription {
    *  'wide'     — a pattern grant, e.g. any `git push`
    *  'tool-wide'— no pattern; covers every use of the tool */
   width: 'exact' | 'wide' | 'tool-wide';
-  /** Plain-English exclusion clause for a 'wide' rule, e.g. 'except to master or main'. */
-  exceptNote?: string;
 }
 ```
 
@@ -384,10 +439,13 @@ export interface RuleDescription {
 (lines 303 and 728). `broadNote(tool)` keeps its current copy and fires only on
 `'tool-wide'`.
 
-A wide Bash rule renders as **"Run any `git push` command, except to master or main"** —
-the sentence comes from the same `GrantOption` the confirm showed, so the screen still
-never renders an asterisk. The existing MCP and Task branches are unchanged; MCP stays
-non-broad for the reason its comment already gives, and reports `'exact'`.
+A wide Bash rule renders from the same `GrantOption` label the confirm showed, so the
+screen still never renders an asterisk: **"Pushing to feat/x"**, **"Pushing to master"**,
+**"Run any `npm run` command"**. `describeRule` therefore needs the rule's `pattern` to be
+reversible into that sentence — `bash-grant-shapes.ts` exports a `describeBashPattern()`
+alongside `bashGrantOptions()` so one module owns both directions and they cannot drift.
+The existing MCP and Task branches are unchanged; MCP stays non-broad for the reason its
+comment already gives, and reports `'exact'`.
 
 ## 10. The confirm — deferred to the workbench
 
@@ -404,9 +462,9 @@ Constraints the compare rounds must respect, whatever shape wins:
    comment ("that is rule syntax, and the screen is written for people who have never
    seen a glob") governs the confirm too.
 2. The exact rung is the default selection. Widening is always an explicit act.
-3. The exclusion clause is shown, not hidden behind a tooltip — a grant the user cannot
-   read is a grant they cannot judge. (`title=` is also dead on touch —
-   `.claude/rules/narrow-viewport.md`.)
+3. The wide rung names the branch out loud — "Always allow pushing to **master**" — and is
+   not hidden behind a tooltip. A grant the user cannot read is a grant they cannot judge.
+   (`title=` is also dead on touch — `.claude/rules/narrow-viewport.md`.)
 4. When only one option exists (§4.4), the confirm renders as it does today — no empty
    chooser, no disabled second rung.
 5. The rule also applies to the rest of the current session; 2b's body copy understates
@@ -429,11 +487,12 @@ Extend, in the same commit as the change each covers:
 |---|---|
 | `subject-glob.test.ts` | `ruleMatches`: exact is byte-equal and case-SENSITIVE; `except` vetoes; `except` ignored under `'exact'`; a legacy rule with no `match` still globs |
 | `permission-engine.test.ts` | A vetoed remembered rule falls through to the deny-list's `ask` — the §3.2 mechanism, with `git push origin master` as the named case |
-| `bash-grant-shapes.test.ts` (new) | `npm run build*` does NOT grant `npm run build && rm -rf /`; no wide rung for chained commands; no wide rung for `rm`/`sudo`; a wide rung for `git push` carrying both table and operator exclusions; the four force-push-to-master refspec forms (`origin master`, `--force origin master`, `HEAD:master`, `+master`) are all vetoed while `feat/…` is not; subcommand-vs-flag-vs-path detection |
-| `bash-grant-shapes.test.ts` (new) | **The §4.4 postcondition**: over a corpus of commands, every returned option satisfies `ruleMatches(option.rule, command)` — no option is ever offered that cannot cover its own input. Named cases: `npm run build > log.txt`, `git push origin master`, `npm run build && git push` |
+| `bash-grant-shapes.test.ts` (new) | `npm run build*` does NOT grant `npm run build && rm -rf /`; no wide rung for chained commands; no wide rung for `rm`/`sudo`; subcommand-vs-flag-vs-path detection |
+| `bash-grant-shapes.test.ts` (new) | **`git push` scoping (§5.1)**: `git push*origin feat/x` matches the bare, `-u`, and `--force` forms; does NOT match `origin feat/x-2`, `origin master feat/x`, `origin feat/x master`, or `origin master`. Bare `git push` and `git push origin` yield no wide rung AND suppress "Always allow" entirely. A push to master scopes to master like any other branch — no family is special |
+| `bash-grant-shapes.test.ts` (new) | **The §4.4 postcondition**: over a corpus of commands, every returned option satisfies `ruleMatches(option.rule, command)` — no option is ever offered that cannot cover its own input. Named cases: `npm run build > log.txt`, `git push origin master feat/x`, `npm run build && git push` |
 | `permission-store.test.ts` | Identity is the quad; legacy rules normalize to `match: 'exact'` on read; `except` set-equality in dedupe and `remove` |
 | `native-session-host.test.ts` | `revokeRule` removes only the matching quad from `rememberedFor` |
-| `describe-rule.test.ts` | Three widths; the exclusion clause; no `*` in any returned string |
+| `describe-rule.test.ts` | Three widths; a scoped push rule renders "Pushing to <branch>"; no `*` in any returned string |
 | `permissions-section.test.tsx` | A wide rule's row copy; `broadNote` fires only on `'tool-wide'` |
 | `deny-list-copy.test.ts` | Classifier goes through `ruleMatches` and still names the same family |
 | `tool-card-full-auto-stop.test.tsx`, `permission-confirm-card.test.tsx` | Updated to whatever copy the compare rounds settle — they pin it verbatim, so they change last |
@@ -454,18 +513,36 @@ direction is always "asks more, allows less", so nothing becomes less safe; it w
 as the app forgetting an approval. Whether that warrants a one-time notice is Destin's
 call — this spec does not add one.
 
+**Each branch is asked about once, then stops asking.** The first push to a branch
+prompts; approving it covers every later push to that same branch in that project. A new
+branch is a new question. For someone working in short-lived feature branches that is one
+prompt per branch — the intended cost, against the alternatives of one prompt per command
+string (today) or one blanket grant (rejected by D4).
+
+**A push to a branch you approved becomes silent in Full Auto.** Today Full auto always
+stops before any push. After approving master, pushes to master proceed with no prompt in
+that project until revoked. That is the point of D4 — the user is allowed to decide master
+is fine — and it is the largest single behavioural change in the item. It is also fully
+visible: the grant reads "Always allow pushing to master" in Settings, on its own row,
+with its own remove button.
+
+**Pushes written a less common way ask again.** Flags after the branch
+(`git push origin feat/x --force`) and the `HEAD:` / `+` refspec forms derive a different
+rule than the plain form, so each prompts once and stores its own row (§5.3).
+
+**Bare `git push` loses its "Always allow" button.** Today it can be always-allowed, and
+that grant then covers every future bare push on any branch — the hole per-branch exists
+to close. After this it is allow-once only. Existing bare-`git push` grants are NOT
+retroactively removed; they keep working and stay visible in Settings, where they can be
+revoked. Silently deleting them would be a bigger surprise than leaving them.
+
 **Full Auto still asks for four of the five destructive families.** Full auto's baseline
 is `{ tool: '*', action: 'allow' }`, so the ONLY things it ever asks about are deny-list
-matches. §5.2 gives a wide rung to `git push` alone, so `rm`, `sudo`, `format`, and
-`git reset --hard` keep asking every time unless the exact command repeats. The program
-doc's done-condition — "Full Auto no longer asks questions it has already answered" — is
-therefore met for one family and deliberately not met for the other four. That is the
-security posture D2 and §5.2 chose, recorded here so it is not discovered later as a gap.
-
-**In Full Auto, one approval makes feature-branch pushes silent forever.** Today Full auto
-always stops before a push. After a wide `git push` grant, pushes to any branch whose name
-does not contain "master" or "main" proceed with no prompt, in that project, until
-revoked. That IS the feature; it is also the largest single behavioural change in the item.
+matches. §5.2 scopes `git push` alone, so `rm`, `sudo`, `format`, and `git reset --hard`
+keep asking every time unless the exact command repeats. The program doc's done-condition
+— "Full Auto no longer asks questions it has already answered" — is therefore met for
+pushes and deliberately not met for the other four. That is the posture D2 and §5.2 chose,
+recorded here so it is not discovered later as a gap.
 
 **The wide rung mostly benefits Ask-first and Auto-edit.** Those are the modes where
 ordinary commands prompt at all.
@@ -475,13 +552,18 @@ ordinary commands prompt at all.
 exactly as exact grants already do. Broader latitude, same mechanism, no new seam.
 
 **Settings can show two rows for one command.** Approve `git push origin feat/x` exactly,
-then later approve "any `git push`" — identity is a quad (§8), so both persist and both
+then later approve "pushing to feat/x" — identity is a quad (§8), so both persist and both
 list. Removing one leaves the other live. Suppressing a subsumed exact row is possible and
-is NOT in this item; the honest two rows are better than a screen that hides a live grant.
+is NOT in this item; two honest rows beat a screen that hides a live grant.
 
-**Row copy does not mention the operator exclusions.** "Run any `git push` command, except
-to master or main" omits "…and not when chained with another command". Putting it in the
-row would bury the part that matters; the Permissions explainer popup is the right home.
+**Push grants will accumulate a row per branch.** That is the design working, but a
+long-lived project will grow a list. Grouping by project already exists (2a); grouping
+several branch grants under one "Pushing" heading is a Settings-screen refinement, not
+part of this item.
+
+**Row copy does not mention the operator exclusions.** "Run any `npm run` command" omits
+"…and not when chained with another command". Putting it in the row would bury the part
+that matters; the Permissions explainer popup is the right home.
 
 ## 13. Out of scope
 
