@@ -3,14 +3,23 @@ status: shipped
 created: 2026-08-13
 revised: 2026-08-13
 type: plan
-spec: docs/active/specs/2026-08-13-bash-always-allow-rule-shape.md
+spec: docs/archive/specs/2026-08-13-bash-always-allow-rule-shape.md
 program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
 item: M5 2c — Bash always-allow rule shape
 ---
 
 # Bash always-allow rule shape — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **✅ SHIPPED 2026-08-13 — youcoded #314, merge `542b7e23`. DO NOT EXECUTE THIS PLAN.**
+> Every task below is done and on `master`; the unchecked boxes are the original
+> worksheet, kept as the record of how the work was sequenced. Two things changed
+> mid-flight and are recorded where they happened rather than rewritten out of
+> history: **A6** (a named grant replaces its exact rung — Task 2/3) and the
+> workspace-doc timing in Task 5 (anchors cannot resolve until the code is on
+> master). What actually ships is the code plus the spec's §15; this file is
+> archaeology.
+>
+> *(Original header, for the record: REQUIRED SUB-SKILL — superpowers:subagent-driven-development or superpowers:executing-plans, task-by-task, checkbox syntax for tracking.)*
 
 **Goal:** Make an "Always allow" on a Bash command mean something the user chose and can read — an exact command, or a scoped widening (for `git push`, one branch) — and make "exact" actually exact.
 
@@ -58,7 +67,7 @@ Both live in `ruleMatches` and apply **only** to a Bash rule that (a) grants (`a
 
 ## Amendments to the spec
 
-This plan deviates from `docs/active/specs/2026-08-13-bash-always-allow-rule-shape.md` in five places. Task 0 records them in the spec so the two documents do not contradict each other mid-flight. Each is a narrowing (allows less) or a simplification (fewer moving parts).
+This plan deviates from `docs/archive/specs/2026-08-13-bash-always-allow-rule-shape.md` in five places. Task 0 records them in the spec so the two documents do not contradict each other mid-flight. Each is a narrowing (allows less) or a simplification (fewer moving parts).
 
 | # | Spec said | This plan does | Why |
 |---|---|---|---|
@@ -110,7 +119,7 @@ Expected: PASS. If it fails on Linux, stop — the failure is pre-existing and n
 
 In `/home/destin/youcoded-dev`:
 
-1. Append an `## Amendments (2026-08-13, from the implementation plan)` section to `docs/active/specs/2026-08-13-bash-always-allow-rule-shape.md` carrying the A1–A5 table above verbatim, plus the `HEAD` / `:branch` / `+branch` note. A spec that contradicts its own plan mid-flight is how a later session implements the wrong thing.
+1. Append an `## Amendments (2026-08-13, from the implementation plan)` section to `docs/archive/specs/2026-08-13-bash-always-allow-rule-shape.md` carrying the A1–A5 table above verbatim, plus the `HEAD` / `:branch` / `+branch` note. A spec that contradicts its own plan mid-flight is how a later session implements the wrong thing.
 2. Add a ROADMAP entry for the dropped §4.5 work — type `feature`, tagged `#permissions`, dated 2026-08-13, worded as: *"Tell the user when a saved permission almost covered a command (both causes: operator veto and flag-after-refspec non-match)."* Dedup against existing entries first.
 
 ```bash
@@ -1108,7 +1117,7 @@ Ask him for, specifically:
 
 - [ ] **Step 6: Record the outcome and commit**
 
-Append a `## Compare rounds` section to `docs/active/specs/2026-08-13-bash-always-allow-rule-shape.md` in the workspace repo, recording each round and what he chose, the way 2b's spec records its four rounds. Commit the surface (sub-repo) and the spec update (workspace repo) separately.
+Append a `## Compare rounds` section to `docs/archive/specs/2026-08-13-bash-always-allow-rule-shape.md` in the workspace repo, recording each round and what he chose, the way 2b's spec records its four rounds. Commit the surface (sub-repo) and the spec update (workspace repo) separately.
 
 ---
 
@@ -2065,7 +2074,7 @@ Start a native session and walk these, then **ask Destin to do the visual pass**
 cd /home/destin/youcoded-dev/worktrees/bash-grant-shape
 git push -u origin feat/bash-grant-shape
 gh pr create --title "M5 2c: Bash always-allow rule shape" --body "$(cat <<'EOF'
-Spec: `youcoded-dev/docs/active/specs/2026-08-13-bash-always-allow-rule-shape.md`
+Spec: `youcoded-dev/docs/archive/specs/2026-08-13-bash-always-allow-rule-shape.md`
 
 Closes the last item in M5.
 

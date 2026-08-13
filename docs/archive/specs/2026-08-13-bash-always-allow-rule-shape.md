@@ -4,13 +4,19 @@ created: 2026-08-13
 type: spec
 program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
 item: M5 2c — Bash always-allow rule shape
-handoff: docs/active/handoffs/2026-08-12-native-sessions-m5-2c.md
+handoff: docs/archive/handoffs/2026-08-12-native-sessions-m5-2c.md
 ---
 
 # Bash always-allow rule shape (M5 2c)
 
 The last item in M5. 2a shipped revocation; 2b shipped the Full-auto safety stop. This one
 fixes what an "Always allow" on a Bash command actually grants.
+
+> **SHIPPED AS AMENDED (2026-08-13, youcoded #314 `542b7e23`). Read §15 before §3–§5.**
+> Six decisions below were narrowed or dropped during implementation. The big one: the
+> `except` array described in §3.2, §3.3, §4.3 and §8 **does not exist** — those two
+> narrowings live inside `ruleMatches` instead, and no rule carries an exclusion list.
+> Sections marked ⚠ below are superseded; §15 says by what, and why.
 
 ## 1. The problem, restated
 
@@ -118,7 +124,7 @@ literal, so backslash-as-escape would break Windows commands like `del C:\foo\*`
 discriminator field sidesteps the question entirely and leaves the deny-list's own
 matching bit-identical.
 
-### 3.2 `except` vetoes; it does not block
+### 3.2 `except` vetoes; it does not block ⚠ SUPERSEDED (A1 — no `except` field ships)
 
 An `except` entry does not write a deny. It makes the remembered rule **fail to match**,
 which drops the decision back to whatever the layer below already said. For a deny-listed
@@ -137,7 +143,7 @@ The same fall-through is what lets a scoped grant coexist with the deny-list: a 
 No new engine layer, no negation in the matcher, no re-ordering of precedence, and
 `DESTRUCTIVE_DENY_LIST` is not touched. This is the mechanism the whole design rests on.
 
-### 3.3 One matcher function, two callers
+### 3.3 One matcher function, two callers ⚠ PARTLY SUPERSEDED (A1 — `ruleMatches` ships, its body does not)
 
 `subjectMatches` stays as the primitive. A new exported `ruleMatches(rule, subject)` in
 `src/shared/subject-glob.ts` owns `match` / `pattern` / `except`:
@@ -208,7 +214,7 @@ a row may carry a `depth` alongside its scoping. No such row ships in this item 
 scopes the table to `git push`); this is recorded so the first person who finds `npm run*`
 too wide knows where the fix goes, rather than reaching for a fourth rung.
 
-### 4.3 The operator exclusion set
+### 4.3 The operator exclusion set ⚠ SUPERSEDED (A1 — the set is `SHELL_OPERATORS`, applied by the matcher)
 
 Every wide rung carries this baseline `except`, merged with any table entry (§5):
 
@@ -292,7 +298,7 @@ Returning `null` is load-bearing: a table row exists precisely because the gener
 too wide for that command, so falling back to it when scoping fails would grant more than
 the unscoped case, not less.
 
-### 5.1 `git push` — scope to the branch
+### 5.1 `git push` — scope to the branch ⚠ AMENDED (A2 destructive flags excluded · A6 it is the ONLY option offered)
 
 For `git push`, the wide rung is **"always allow pushing to this branch"**. Nothing is
 excluded and no branch is special. master, main, and `feat/login` are all ordinary
@@ -406,7 +412,7 @@ Therefore:
   eagerly — `remember()` already spreads the existing entry
   (`native-permissions.md` → "`remember()` spreads the existing entry").
 
-## 8. Rule identity becomes a quad
+## 8. Rule identity becomes a quad ⚠ AMENDED (A1 — the quad is `(tool, pattern, action, match)`; `except` is not part of it)
 
 `native-permissions.md` pins that rule identity everywhere — dedupe in `remember()`, disk
 removal in `remove()`, and the in-memory `rememberedFor` filter in `revokeRule` — is the
@@ -551,7 +557,8 @@ ordinary commands prompt at all.
 (`native-session-host.ts`), so a widened grant widens what a spawned specialist may run,
 exactly as exact grants already do. Broader latitude, same mechanism, no new seam.
 
-**Settings can show two rows for one command.** Approve `git push origin feat/x` exactly,
+**Settings can show two rows for one command.** ⚠ RETIRED BY A6 — a shaped grant replaces
+its exact rung, so a push can no longer be approved both ways. Approve `git push origin feat/x` exactly,
 then later approve "pushing to feat/x" — identity is a quad (§8), so both persist and both
 list. Removing one leaves the other live. Suppressing a subsumed exact row is possible and
 is NOT in this item; two honest rows beat a screen that hides a live grant.
@@ -586,6 +593,62 @@ that matters; the Permissions explainer popup is the right home.
 - `tests/helpers/guard-scope.ts` does not scan `components/<subdir>/`.
 - Five-surface IPC parity if any channel is added — none is expected here; `grantScope`
   rides the existing `respondToPermission` payload.
+
+## 15. Amendments (2026-08-13, from the implementation plan)
+
+The implementation plan (`docs/archive/plans/2026-08-13-bash-always-allow-rule-shape.md`)
+narrows five decisions above. Recorded here so the spec does not contradict its own plan
+while the work is in flight. Each is a narrowing (allows less) or a simplification (fewer
+moving parts).
+
+| # | This spec said | The plan does | Why |
+|---|---|---|---|
+| A1 | §3.2/§4.3 — every wide rule stores an `except` array of shell operators | The matcher (`ruleMatches`) owns operator-crossing; no `except` field exists | Cannot be forgotten by a future rule-builder; removes a persisted array, a 5th identity field, and an order-insensitive comparison |
+| A2 | §5.1 — the branch rung "covers the flag forms", `--force` included | A second matcher rule vetoes `--delete`, `-d`, `--prune`, `--mirror`, `--all`, `--force`, `-f`, `--force-with-lease`, `--hard` on any pattern with text after its wildcard | A grant reading "pushing to feat/x" that deletes feat/x — or every *other* branch, via `--prune` — is the lie this item exists to end. `-u`, `-q`, `--set-upstream` are still covered |
+| A3 | §4.4 — a push that cannot be scoped is offered nothing | It still gets the **exact** rung; only the wide rung is suppressed | Remembering `git push origin master feat/x` byte-for-byte is exactly as safe as remembering `rm -rf build`, which §5.2 already allows. Refusing it means a repeated push that can never be answered permanently |
+| A4 | §4.4/§5.2 — danger is judged from the approving command | Danger is judged from the approving command **and** from what the derived rule would admit (a fixed hostile corpus, one entry per deny-list family) | §5.2's check misses `git --no-pager log`: its second token is a flag, so the derived rung is `git*`, offered as "Any git command" — which covers pushes and hard resets and outranks the deny-list once stored |
+| A5 | §4.5 — a vetoed ask tells the user why (a field threaded engine → broker → dispatcher → card) | Dropped from this item. The caveat is stated **up front in the option's own wording** (settled in the workbench round) and the after-the-fact explanation is logged to ROADMAP | It explained only one of the two re-ask causes — §5.3's flag-after-refspec case is a non-match, not a veto — so the user still could not rely on being told. Four files and a copy decision for half a promise |
+
+**A6 (added 2026-08-13, from the first compare round).** §4 offers two rungs for
+every command. Destin looked at the rendered card and asked whether the two options
+for a push were "just offering the same thing" — they were. For `git push origin
+feat/login` the exact rung and the branch rung differ ONLY by options whose effect
+is invisible (`-u`, `-q`, `--repo=…`); every difference that would matter (another
+branch, two branches, delete, force, prune, `--no-verify`) is excluded from both by
+A2's matcher rule. So:
+
+- **When a command SHAPE produced the wide rung, it is the only option offered.**
+  The exact rung is dropped. A shaped rung already says in the user's words what
+  the command does, and two sentences that mean the same thing is not a choice.
+- **The generic rung is NOT collapsed.** "Only this command" vs "any `npm run`
+  command" is a real difference in how much trust is handed over, and stays a
+  two-option card.
+- If the shaped rung is withheld for any reason (a multi-ref push, a `+`/`:`
+  refspec), the exact rung is still offered — the collapse only applies when the
+  named grant actually survived.
+- `--no-verify` joins A2's excluded flags. It skips the checks a repo runs before
+  a push, which is a behaviour change wearing the clothes of "the same command
+  with one more option" — exactly the class this collapse assumes is empty.
+
+This also retires §12's "Settings can show two rows for one command": a push can
+no longer be approved both ways.
+
+Also new, not decided above:
+
+- `git push origin HEAD` and `git push origin @` are treated exactly like a bare
+  `git push` (no grant at any width). `HEAD` resolves to whatever branch is checked out
+  when the command RUNS, so §5.1's "the branch changes underneath the grant" applies to
+  them verbatim.
+- `git push origin :feat/x` (delete form) and `git push origin +feat/x` (force form) get
+  the exact rung but no branch rung: a rung labelled "pushing to feat/x" would misdescribe
+  both.
+- The hostile corpus of A4 deliberately does NOT contain a plain `git push origin master`.
+  Pushing to master is something D4 says the user may grant, so it is not hostile
+  regardless of intent — including it would refuse the very rung §5.1 exists to build.
+  `git*` is still caught, by the `--delete`, `--prune` and `git reset --hard` entries.
+- Commands are stored VERBATIM, never trimmed. `permissionSubject` hands the engine
+  `args.command` unchanged, so a trimmed pattern would differ from the subject by a
+  character the user cannot see and the grant would silently never fire again.
 
 ## 16. Compare rounds (workbench surface `bash-grant-width`)
 
@@ -647,59 +710,3 @@ must not be trimmed for space.
 is the only shape that can refuse to be remembered. A future shape that refuses
 must supply its own line rather than inherit this one — it is stored on the shape
 row, not hardcoded in the card.
-
-## 15. Amendments (2026-08-13, from the implementation plan)
-
-The implementation plan (`docs/active/plans/2026-08-13-bash-always-allow-rule-shape.md`)
-narrows five decisions above. Recorded here so the spec does not contradict its own plan
-while the work is in flight. Each is a narrowing (allows less) or a simplification (fewer
-moving parts).
-
-| # | This spec said | The plan does | Why |
-|---|---|---|---|
-| A1 | §3.2/§4.3 — every wide rule stores an `except` array of shell operators | The matcher (`ruleMatches`) owns operator-crossing; no `except` field exists | Cannot be forgotten by a future rule-builder; removes a persisted array, a 5th identity field, and an order-insensitive comparison |
-| A2 | §5.1 — the branch rung "covers the flag forms", `--force` included | A second matcher rule vetoes `--delete`, `-d`, `--prune`, `--mirror`, `--all`, `--force`, `-f`, `--force-with-lease`, `--hard` on any pattern with text after its wildcard | A grant reading "pushing to feat/x" that deletes feat/x — or every *other* branch, via `--prune` — is the lie this item exists to end. `-u`, `-q`, `--set-upstream` are still covered |
-| A3 | §4.4 — a push that cannot be scoped is offered nothing | It still gets the **exact** rung; only the wide rung is suppressed | Remembering `git push origin master feat/x` byte-for-byte is exactly as safe as remembering `rm -rf build`, which §5.2 already allows. Refusing it means a repeated push that can never be answered permanently |
-| A4 | §4.4/§5.2 — danger is judged from the approving command | Danger is judged from the approving command **and** from what the derived rule would admit (a fixed hostile corpus, one entry per deny-list family) | §5.2's check misses `git --no-pager log`: its second token is a flag, so the derived rung is `git*`, offered as "Any git command" — which covers pushes and hard resets and outranks the deny-list once stored |
-| A5 | §4.5 — a vetoed ask tells the user why (a field threaded engine → broker → dispatcher → card) | Dropped from this item. The caveat is stated **up front in the option's own wording** (settled in the workbench round) and the after-the-fact explanation is logged to ROADMAP | It explained only one of the two re-ask causes — §5.3's flag-after-refspec case is a non-match, not a veto — so the user still could not rely on being told. Four files and a copy decision for half a promise |
-
-**A6 (added 2026-08-13, from the first compare round).** §4 offers two rungs for
-every command. Destin looked at the rendered card and asked whether the two options
-for a push were "just offering the same thing" — they were. For `git push origin
-feat/login` the exact rung and the branch rung differ ONLY by options whose effect
-is invisible (`-u`, `-q`, `--repo=…`); every difference that would matter (another
-branch, two branches, delete, force, prune, `--no-verify`) is excluded from both by
-A2's matcher rule. So:
-
-- **When a command SHAPE produced the wide rung, it is the only option offered.**
-  The exact rung is dropped. A shaped rung already says in the user's words what
-  the command does, and two sentences that mean the same thing is not a choice.
-- **The generic rung is NOT collapsed.** "Only this command" vs "any `npm run`
-  command" is a real difference in how much trust is handed over, and stays a
-  two-option card.
-- If the shaped rung is withheld for any reason (a multi-ref push, a `+`/`:`
-  refspec), the exact rung is still offered — the collapse only applies when the
-  named grant actually survived.
-- `--no-verify` joins A2's excluded flags. It skips the checks a repo runs before
-  a push, which is a behaviour change wearing the clothes of "the same command
-  with one more option" — exactly the class this collapse assumes is empty.
-
-This also retires §12's "Settings can show two rows for one command": a push can
-no longer be approved both ways.
-
-Also new, not decided above:
-
-- `git push origin HEAD` and `git push origin @` are treated exactly like a bare
-  `git push` (no grant at any width). `HEAD` resolves to whatever branch is checked out
-  when the command RUNS, so §5.1's "the branch changes underneath the grant" applies to
-  them verbatim.
-- `git push origin :feat/x` (delete form) and `git push origin +feat/x` (force form) get
-  the exact rung but no branch rung: a rung labelled "pushing to feat/x" would misdescribe
-  both.
-- The hostile corpus of A4 deliberately does NOT contain a plain `git push origin master`.
-  Pushing to master is something D4 says the user may grant, so it is not hostile
-  regardless of intent — including it would refuse the very rung §5.1 exists to build.
-  `git*` is still caught, by the `--delete`, `--prune` and `git reset --hard` entries.
-- Commands are stored VERBATIM, never trimmed. `permissionSubject` hands the engine
-  `args.command` unchanged, so a trimmed pattern would differ from the subject by a
-  character the user cannot see and the grant would silently never fire again.
