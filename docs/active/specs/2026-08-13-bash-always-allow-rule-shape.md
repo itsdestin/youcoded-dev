@@ -602,6 +602,30 @@ moving parts).
 | A4 | §4.4/§5.2 — danger is judged from the approving command | Danger is judged from the approving command **and** from what the derived rule would admit (a fixed hostile corpus, one entry per deny-list family) | §5.2's check misses `git --no-pager log`: its second token is a flag, so the derived rung is `git*`, offered as "Any git command" — which covers pushes and hard resets and outranks the deny-list once stored |
 | A5 | §4.5 — a vetoed ask tells the user why (a field threaded engine → broker → dispatcher → card) | Dropped from this item. The caveat is stated **up front in the option's own wording** (settled in the workbench round) and the after-the-fact explanation is logged to ROADMAP | It explained only one of the two re-ask causes — §5.3's flag-after-refspec case is a non-match, not a veto — so the user still could not rely on being told. Four files and a copy decision for half a promise |
 
+**A6 (added 2026-08-13, from the first compare round).** §4 offers two rungs for
+every command. Destin looked at the rendered card and asked whether the two options
+for a push were "just offering the same thing" — they were. For `git push origin
+feat/login` the exact rung and the branch rung differ ONLY by options whose effect
+is invisible (`-u`, `-q`, `--repo=…`); every difference that would matter (another
+branch, two branches, delete, force, prune, `--no-verify`) is excluded from both by
+A2's matcher rule. So:
+
+- **When a command SHAPE produced the wide rung, it is the only option offered.**
+  The exact rung is dropped. A shaped rung already says in the user's words what
+  the command does, and two sentences that mean the same thing is not a choice.
+- **The generic rung is NOT collapsed.** "Only this command" vs "any `npm run`
+  command" is a real difference in how much trust is handed over, and stays a
+  two-option card.
+- If the shaped rung is withheld for any reason (a multi-ref push, a `+`/`:`
+  refspec), the exact rung is still offered — the collapse only applies when the
+  named grant actually survived.
+- `--no-verify` joins A2's excluded flags. It skips the checks a repo runs before
+  a push, which is a behaviour change wearing the clothes of "the same command
+  with one more option" — exactly the class this collapse assumes is empty.
+
+This also retires §12's "Settings can show two rows for one command": a push can
+no longer be approved both ways.
+
 Also new, not decided above:
 
 - `git push origin HEAD` and `git push origin @` are treated exactly like a bare

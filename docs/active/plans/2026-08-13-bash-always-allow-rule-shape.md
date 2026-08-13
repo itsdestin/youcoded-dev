@@ -67,6 +67,7 @@ This plan deviates from `docs/active/specs/2026-08-13-bash-always-allow-rule-sha
 | A3 | §4.4 — a push that cannot be scoped is offered nothing | It is still offered the **exact** rung; only the wide rung is suppressed | Remembering `git push origin master feat/x` byte-for-byte is exactly as safe as remembering `rm -rf build`, which the spec already allows. Refusing it means a repeated push that can never be answered permanently |
 | A4 | §4.4/§5.2 — danger is judged from the approving command | Danger is judged from the approving command **and** from what the derived rule would admit (hostile corpus) | The spec's check misses `git --no-pager log` → "Any git command", which covers pushes and hard-resets and outranks the deny-list |
 | A5 | §4.5 — a vetoed ask tells the user why (a new field threaded engine → broker → dispatcher → card) | Dropped from this item. The caveat is stated **up front in the option's own wording** (settled in Task 4) and logged to ROADMAP | It explained only one of the two re-ask causes (§5.3's flag-after-refspec case is a non-match, not a veto), so the user still could not rely on being told. Four files and a copy decision for half a promise |
+| A6 | §4 — every command offers two rungs | When a command SHAPE produced the wide rung, it is the **only** option; the generic rung still offers both. `--no-verify` joins A2's excluded flags | Found in compare round 1: for a push the two options differ only by invisible options (`-u`, `-q`), so the card asked the user to choose between two sentences that mean the same thing — and let one push be approved twice as two identical-looking Settings rows. Retires §12's "Settings can show two rows for one command" |
 
 Also new, not in the spec: `git push origin HEAD` and `git push origin @` are treated exactly like bare `git push` (no grant of any width), because `HEAD` resolves to whatever branch is checked out when the command *runs*, not when it is approved. And `git push origin :feat/x` (the delete form) and `git push origin +feat/x` (the force form) get the exact rung but no branch rung, because a rung named "pushing to feat/x" would misdescribe both.
 
@@ -365,7 +366,7 @@ export const SHELL_OPERATORS: readonly string[] = ['&&', '||', ';', '|', '`', '$
  *  and `--hard` destroy history rather than adding to it. */
 export const BOUNDED_RUNG_VETO: readonly string[] = [
   '--delete', '-d', '--prune', '--mirror', '--all',
-  '--force', '-f', '--force-with-lease', '--hard',
+  '--force', '-f', '--force-with-lease', '--hard', '--no-verify',
 ];
 
 /** The ONE function that knows what a whole rule means. `subjectMatches` above is
@@ -765,7 +766,7 @@ export function bashGrantOptions(command: string): GrantOption[] {
   const wide = deriveWide(command, tokens);
   if (wide) options.push(wide);
 
-  return options.filter((o) => {
+  const offered = options.filter((o) => {
     // POSTCONDITION 1 — never offer a rung that cannot cover the command in front
     // of the user. Without it, `npm run build > log.txt` is offered "any npm run
     // command", a rule safety rule 1 immediately refuses, so the user saves a
@@ -777,6 +778,21 @@ export function bashGrantOptions(command: string): GrantOption[] {
     if (o.scope === 'exact') return true;
     return !HOSTILE_CORPUS.some((hostile) => ruleMatches(o.rule, hostile));
   });
+
+  // A SHAPED rung already says, in the user's own words, what the command does
+  // ("pushing to feat/login"). Its exact rung differs from it ONLY by options the
+  // user cannot see the effect of (-u, -q, --repo=…) — every difference that
+  // would matter is excluded from both by safety rule 2. Offering both would ask
+  // the user to choose between two sentences that mean the same thing, and would
+  // let one push be approved twice, as two Settings rows that read identically
+  // and cover different amounts. (Amendment A6, from compare round 1.)
+  //
+  // The GENERIC rung is not collapsed: "only this command" vs "any npm run
+  // command" is a real difference in how much trust is being handed over.
+  if (shape && offered.some((o) => o.scope === 'wide')) {
+    return offered.filter((o) => o.scope === 'wide');
+  }
+  return offered;
 }
 ```
 
