@@ -61,3 +61,17 @@ beta/
 # durable record.
 docs/active/investigations/harness-review-runs/
 docs/active/investigations/conversation-triage-runs/
+# Same reasoning for the model EVALUATOR (youcoded/desktop/test-engine/
+# harness-eval.mjs): each cell writes its full conversation and its grades
+# beside the run, and those are not durable history.
+#
+# The difference from the two runners above: this runner's durable artifact —
+# report.md — lives INSIDE the ignored directory. So the pattern is written in
+# three parts rather than one, because git cannot re-include a file whose
+# parent DIRECTORY is excluded: ignore the contents (`/**`), re-include the
+# directories themselves so git can descend into them, then re-include exactly
+# the reports. Without this, committing a report would need `git add -f` every
+# time and the first forgotten one loses the record of a paid run.
+docs/active/investigations/harness-eval-runs/**
+!docs/active/investigations/harness-eval-runs/**/
+!docs/active/investigations/harness-eval-runs/*/report.md
