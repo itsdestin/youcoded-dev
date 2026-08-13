@@ -44,31 +44,31 @@ verify:
 
 Runs a **case** (a task plus a rubric and mechanical checks) across a matrix of **code
 version × instruction file × model**, each cell in its own disposable fixture, grading
-every run twice: free checks read off the event stream, and an LLM judge.
-`--plan <file> --dry-run` is free and needs no key; a real run needs `--key-file`.
+every run twice: free checks read off the event stream, and an LLM judge. `--dry-run` is
+free and needs no key; a real run needs `--key-file`.
 
 - **The credential arrives by file or not at all.** `harness-eval.mjs` **refuses to start**
-  if `OPENROUTER_API_KEY` is in its own environment, and passes worker config over
-  **stdin** — never argv, never env. `delete process.env.X` is `unsetenv`: in-heap only, it
-  never rewrites `/proc/<pid>/environ`, which every same-uid descendant — including a Bash
-  call the model makes — can read. **`review-harness.mjs` still has the bug** (ROADMAP).
-  Guard: `harness-eval-key-leak.test.ts`, whose negative control must report LEAKED.
+  if `OPENROUTER_API_KEY` is in its environment, and passes worker config over **stdin** —
+  never argv, never env. `delete process.env.X` is `unsetenv`: in-heap only, it never
+  rewrites `/proc/<pid>/environ`, which every same-uid descendant — including a Bash call
+  the model makes — can read. **`review-harness.mjs` still has the bug** (ROADMAP). Guard:
+  `harness-eval-key-leak.test.ts`, whose negative control must report LEAKED.
 
 - **The grader always loads from the orchestrator's own build; only the worker loads the
   cell's `dist`** — else a branch-vs-master run silently compares two *graders* too.
   `paths.ts`: `graderRoot()` (ignores its argument on purpose) vs `harnessRoot(cell)`.
   Guard: `harness-eval-orchestrator.test.ts`.
 
-- **A check has three states, and `never-ran` is not `passed`** — its precondition never
-  happened, so nothing was measured, and the report must render it visibly differently.
-  The first version keyed "never ran" on an empty event list, unreachable in production,
-  so a provider billing failure scored as a model failure. Guards:
-  `harness-eval-assertions.test.ts` (discrimination-tested), `harness-eval-report.test.ts`.
+- **A check has three states, and `never-ran` is not `passed`** — nothing was measured, and
+  the report must render it visibly differently. The first version keyed it on an empty
+  event list, unreachable in production, so a provider billing failure scored as a model
+  failure. Guards: `harness-eval-assertions.test.ts` (discrimination-tested),
+  `harness-eval-report.test.ts`.
 
 - **Every judge grade must quote the answer verbatim or be discarded**, and contradiction
-  warnings only warn — never adjust a score. They match tool ids, not the judge's prose;
-  keying them on free text made a check that passed by proving a tool was *never* used
-  register as proof it was. Guard: `harness-eval-judge.test.ts`.
+  warnings only warn — never adjust a score. They match tool ids, not prose; keying them on
+  free text made a check that passed by proving a tool was *never* used register as proof
+  it was. Guard: `harness-eval-judge.test.ts`.
 
 - **The fixture jail is held by `askUser`, not `decide`.** `decide` is fully permissive;
   `askUser` denies every ask that isn't a genuine `AskUserQuestion` — `external_directory`,
@@ -76,30 +76,32 @@ every run twice: free checks read off the event stream, and an LLM judge.
   (`tools/spill-paths.ts`) is `ok`, so a model can read back its own truncated output.
   Guard: `harness-review-runner.test.ts` → "denies a Write outside the fixture".
 
-- **Uniform step budget, not the app's chat tiers** (`stepBudgetFor`'s 25/50 tiers cut a
-  40–80-call run short), and **never end a run on a heuristic**: a repeat-counting trigger
-  was deleted 2026-08-11 after truncating 13 paid runs, every trip one over threshold,
-  because cwd-persistence and read-before-edit both REQUIRE repeats.
+- **Uniform step budget, not the app's chat tiers** (25/50 cuts a 40–80-call run short),
+  and **never end a run on a heuristic**: a repeat-counting trigger was deleted 2026-08-11
+  after truncating 13 paid runs, because cwd-persistence and read-before-edit REQUIRE
+  repeats.
 
 - **Every run ends in an answer or a labelled failure** — three FACT triggers each send a
   second `WRAP_UP_PROMPT` turn with every tool denied. Scope per-turn scans to the
   *testing* turn; an unscoped scan sees the wrap-up and mislabels a run that recovered.
   `runCase` never throws for a run that produced events — round 5 lost four transcripts to
-  a rejected promise. Details: the internals doc.
+  a rejected promise.
 
 - **The fixture is byte-identical across runs, so results stay comparable** — including a
   seeded `port` disagreement between `config/settings.toml` and `config/app.toml`; don't
   "fix" it, four cases depend on it. **`notes/pristine.md` is reserved for the read-gate
   negative test** — point anything else at it and that test silently inverts into a passing
-  Edit (it did). Guard: `harness-review-fixture.test.ts`.
+  Edit. Guard: `harness-review-fixture.test.ts`.
 
-- **There is no resume, and the printed estimate runs ~8× high.** A stopped run re-pays for
-  every finished cell. Measured 2026-08-13: **~$0.25 a cell** including its judge call,
-  against an estimate of $2.07 — `estimate.ts`'s token tables are still battery-derived.
+- **There is no resume, and the estimate is deliberately high.** A stopped run re-pays for
+  every finished cell. `estimate.ts` prices from the MAX of a case's samples, never the
+  mean — under-predicting spends money nobody agreed to — so it reads **~2.2×** the real
+  bill (~$0.25 a cell, 2026-08-13). **A case with no measured row is priced as a 40–63-call
+  battery run**; the CLI names those rows as battery-priced. Treat them as HIGH.
 
 - **Offer a run after changing a harness tool; never run the paid path unasked.**
-  `--dry-run` is free, `--only <cellId>` is one cell, `--max-spend <usd>` is a hard cap
-  re-checked against OpenRouter's own billing between cells.
+  `--dry-run` is free; `--max-spend <usd>` is a hard cap re-checked against OpenRouter's
+  own billing between cells.
 
 Changing the evaluator itself: `youcoded/docs/harness-evaluator-internals.md`. History:
 `docs/archive/specs/2026-08-12-harness-evaluator-design.md`.
