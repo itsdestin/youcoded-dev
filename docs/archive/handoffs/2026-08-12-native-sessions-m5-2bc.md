@@ -1,5 +1,5 @@
 ---
-status: active
+status: superseded
 created: 2026-08-12
 type: handoff
 program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
