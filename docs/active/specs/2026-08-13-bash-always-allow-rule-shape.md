@@ -219,15 +219,49 @@ crosses `&&` is the failure that matters. Same fail-safe reasoning
 
 ### 4.4 When no wide rung is offered
 
-`bashGrantOptions` returns the exact rung only when:
+**The governing invariant: never offer a rung that does not cover the command in front of
+the user.** Formally — a `GrantOption` is emitted only if `ruleMatches(option.rule,
+command)` is true. This is a hard postcondition of `bashGrantOptions`, pinned by a test
+that runs it over a corpus and asserts every returned option matches its own input.
 
-- The command contains a shell operator (`&&`, `||`, `;`, `|`, backtick, `$(`, newline).
-  A chained command has more than one verb in it, and a rung named after the first would
-  silently cover the rest — the hole `DESTRUCTIVE_DENY_LIST`'s `* …` compound variants
-  exist to close. (Such a rung would also be vetoed by its own operator exclusion set,
-  which is absurd on its face.)
+Without it the feature has a trapdoor. Concretely, all three of these would otherwise be
+offered as a wide rung that can never fire for the very command being approved:
+
+- **A command the operator set excludes.** `npm run build > log.txt` derives `npm run*`,
+  whose `OPERATOR_EXCEPT` contains `*>*` — it vetoes the approving command itself.
+- **A command the table excludes.** The user is asked about `git push origin master`,
+  clicks Always allow, and picks "any `git push`, except to master or main". They have
+  just stored a rule that cannot match what they were asked about, and will be asked
+  again next time, identically. Nothing on screen would explain why.
+- **A chained command.** `npm run build && git push` derives `npm run*`, vetoed by `*&&*`.
+
+The invariant kills all three with one rule, and subsumes the chained-command case that
+would otherwise need its own list. Chaining stays independently worth naming, because a
+rung named after the first verb of a multi-verb command would silently cover the rest —
+the hole `DESTRUCTIVE_DENY_LIST`'s `* …` compound variants exist to close.
+
+Also exact-only:
+
 - The command matches a deny-listed family that has no table entry (§5.2).
 - Tokenization yields no program (empty or whitespace-only command).
+
+### 4.5 An ask the user thought they had answered must say so
+
+The exclusions are silent by construction: a vetoed rule simply does not match, and the
+layer below asks as if no grant existed. From the user's side that is indistinguishable
+from the app forgetting their approval — the worst possible reading, and the one that
+costs trust.
+
+So when a remembered rule was vetoed by an `except` entry, the ask carries that fact and
+the card says which exclusion fired. `git push origin domain-fix` must not present as a
+bare "may I push?"; it must read as "you allowed pushes except to master or main — this
+branch name contains one of those words."
+
+This rides the ask payload the way 2b's `permissionMode` does — validated at the
+dispatcher, display-only, never persisted. Exact copy is Destin's (§10).
+
+Without this, every fail-safe over-veto in §4.3 and §5.1 becomes an unexplained repeat
+prompt. The over-veto is the right trade only if it is legible.
 
 ## 5. The command-shape table
 
@@ -379,6 +413,8 @@ Constraints the compare rounds must respect, whatever shape wins:
    this knowingly and that decision carries forward.
 6. 2b's Full-auto safety stop keeps its band, header, and Run it / Skip it | Always Allow
    ordering. Only what happens after "Always Allow" changes.
+7. §4.5's vetoed-grant ask needs its own line of copy — the user is being asked about
+   something they believe they already allowed, and the card has to say why.
 
 **All copy is Destin's.** 2b's subline took three owner iterations; this spec proposes no
 wording. Candidates get built on a new compare surface in
@@ -394,6 +430,7 @@ Extend, in the same commit as the change each covers:
 | `subject-glob.test.ts` | `ruleMatches`: exact is byte-equal and case-SENSITIVE; `except` vetoes; `except` ignored under `'exact'`; a legacy rule with no `match` still globs |
 | `permission-engine.test.ts` | A vetoed remembered rule falls through to the deny-list's `ask` — the §3.2 mechanism, with `git push origin master` as the named case |
 | `bash-grant-shapes.test.ts` (new) | `npm run build*` does NOT grant `npm run build && rm -rf /`; no wide rung for chained commands; no wide rung for `rm`/`sudo`; a wide rung for `git push` carrying both table and operator exclusions; the four force-push-to-master refspec forms (`origin master`, `--force origin master`, `HEAD:master`, `+master`) are all vetoed while `feat/…` is not; subcommand-vs-flag-vs-path detection |
+| `bash-grant-shapes.test.ts` (new) | **The §4.4 postcondition**: over a corpus of commands, every returned option satisfies `ruleMatches(option.rule, command)` — no option is ever offered that cannot cover its own input. Named cases: `npm run build > log.txt`, `git push origin master`, `npm run build && git push` |
 | `permission-store.test.ts` | Identity is the quad; legacy rules normalize to `match: 'exact'` on read; `except` set-equality in dedupe and `remove` |
 | `native-session-host.test.ts` | `revokeRule` removes only the matching quad from `rememberedFor` |
 | `describe-rule.test.ts` | Three widths; the exclusion clause; no `*` in any returned string |
@@ -404,7 +441,49 @@ Extend, in the same commit as the change each covers:
 An ast-grep rule is the right home for "no Bash pattern is stored without a `match`
 field" if it turns out to be expressible; otherwise the store test carries it.
 
-## 12. Out of scope
+## 12. Consequences the user will feel
+
+Stated plainly, because several are visible changes to a shipping app that nobody would
+trace back to this item.
+
+**Some existing approvals will start asking again.** §7 re-reads every stored rule as
+byte-exact. Anyone who approved a command containing `*` or `?` — `rm *.tmp`,
+`grep foo *` — had a wildcard rule they never asked for, and loses it. Anyone whose
+approved command differed in capitalisation from what runs now also loses the match. The
+direction is always "asks more, allows less", so nothing becomes less safe; it will read
+as the app forgetting an approval. Whether that warrants a one-time notice is Destin's
+call — this spec does not add one.
+
+**Full Auto still asks for four of the five destructive families.** Full auto's baseline
+is `{ tool: '*', action: 'allow' }`, so the ONLY things it ever asks about are deny-list
+matches. §5.2 gives a wide rung to `git push` alone, so `rm`, `sudo`, `format`, and
+`git reset --hard` keep asking every time unless the exact command repeats. The program
+doc's done-condition — "Full Auto no longer asks questions it has already answered" — is
+therefore met for one family and deliberately not met for the other four. That is the
+security posture D2 and §5.2 chose, recorded here so it is not discovered later as a gap.
+
+**In Full Auto, one approval makes feature-branch pushes silent forever.** Today Full auto
+always stops before a push. After a wide `git push` grant, pushes to any branch whose name
+does not contain "master" or "main" proceed with no prompt, in that project, until
+revoked. That IS the feature; it is also the largest single behavioural change in the item.
+
+**The wide rung mostly benefits Ask-first and Auto-edit.** Those are the modes where
+ordinary commands prompt at all.
+
+**Specialists inherit wide grants.** `buildDecide` feeds `parentDecide` for child sessions
+(`native-session-host.ts`), so a widened grant widens what a spawned specialist may run,
+exactly as exact grants already do. Broader latitude, same mechanism, no new seam.
+
+**Settings can show two rows for one command.** Approve `git push origin feat/x` exactly,
+then later approve "any `git push`" — identity is a quad (§8), so both persist and both
+list. Removing one leaves the other live. Suppressing a subsumed exact row is possible and
+is NOT in this item; the honest two rows are better than a screen that hides a live grant.
+
+**Row copy does not mention the operator exclusions.** "Run any `git push` command, except
+to master or main" omits "…and not when chained with another command". Putting it in the
+row would bury the part that matters; the Permissions explainer popup is the right home.
+
+## 13. Out of scope
 
 - **File-tool grant widening.** `Write`/`Edit` subjects are paths and have the same
   literal-only narrowness, but a directory-scoped file grant is its own design with its
@@ -414,7 +493,7 @@ field" if it turns out to be expressible; otherwise the store test carries it.
 - **Editing a rule in Settings.** The screen lists and revokes; it does not author.
 - **Android.** No native runtime there yet (M8).
 
-## 13. Traps carried in from the handoff
+## 14. Traps carried in from the handoff
 
 - Never canonicalize `ctx.cwd`; removal keys by SLUG; `revokeRule`/`revokeProject` are the
   only revocation entry points. `.claude/rules/native-permissions.md`.
