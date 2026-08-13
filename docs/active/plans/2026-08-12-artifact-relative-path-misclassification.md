@@ -1,6 +1,14 @@
 ---
-status: draft
+status: active
 ---
+
+> **Implemented 2026-08-13** on branch `fix/artifact-relative-path` (14 commits, unmerged).
+> Two plan defects were found during execution and corrected in place: the merge
+> fixture's ids sorted backwards, and the Task 5 tests short-circuited on the
+> process memo instead of exercising the real run-once gate. Two plan *claims*
+> were also wrong and are corrected below: the sidecar does NOT sync between
+> devices, and there are FIVE path-resolution sites, not four (`renameArtifact`
+> was an unguarded `fs.rename`). Archive this and flip the ROADMAP item on merge.
 
 # Artifact Relative-Path Misclassification — Implementation Plan
 
@@ -63,7 +71,7 @@ The 8 out-of-root Windows records are left alone for free, because step 2 only r
 
 An earlier draft of this plan bumped `SIDECAR_SCHEMA_VERSION` 1 → 2 on both platforms and used it as the migration's "already ran" marker. That is worse than it looks:
 
-- **It is not self-healing.** `appendVersion` round-trips `$schema` from disk (`artifact-store.ts:114,127` set it only when creating a *new* sidecar). A peer device still running a pre-fix build keeps producing new relative-external records into the same synced sidecar — and the fixed client, seeing `$schema: 2`, will never repair them.
+- **It is not self-healing.** `appendVersion` round-trips `$schema` from disk (`artifact-store.ts:114,127` set it only when creating a *new* sidecar), so once a sidecar is stamped v2 it stays v2 no matter what is written into it afterwards. New relative-external records can still appear after the stamp — most realistically from a *pre-fix build of this app running against the same folder*, which this workspace's own rules make routine (a dev instance alongside the installed app). A fixed client seeing `$schema: 2` would never re-examine them. (An earlier draft justified this with a *peer device* writing into a synced sidecar. That is wrong — the sidecar is per-device and never synced; see "Out of scope → An Android-side migration". The conclusion stands on the same-machine case.)
 - **It buys nothing.** `migrateRelativeExternals` is pure and already returns `reclassified`. Gating on `reclassified === 0` costs one pass over an array that `readSidecar` just parsed anyway — noise next to the JSON.parse of a multi-megabyte file — and is exactly as idempotent (Task 4 pins that with a test).
 - **It couples two platforms for no reason.** The bump forced a matching Kotlin constant change and a two-directions compatibility argument about whether an older client would reject a v2 sidecar.
 
@@ -79,7 +87,13 @@ Repeated calls are made cheap by a process-lifetime `Set<string>` of already-che
 
 **Repairing `..`-escaping records.** `resolveP` is `path.resolve(cwd, p)`, so `../other/notes.md` really did write outside the project. Those records stay external with a relative `absolutePath`, which after Task 2 means they are consistently refused as orphans everywhere instead of silently resolving against the process cwd. Correct but not *repaired* — captured as a follow-up.
 
-**An Android-side migration.** Desktop-only, deliberately. Both platforms read the same synced sidecar, so once desktop migrates a project the repaired records are correct everywhere. If Android opens an unmigrated project first it shows the same false orphans it shows today — degraded, never corrupted. A Kotlin migration twin would double the riskiest code in this plan for a window that closes the first time the project is opened on desktop.
+**An Android-side migration.** Desktop-only — but for a weaker reason than this plan originally claimed, and the consequence is worse than it stated.
+
+An earlier draft said "both platforms read the same synced sidecar, so once desktop migrates a project the repaired records are correct everywhere." **That is false.** `.youcoded/` is in `DEFAULT_IGNORES` (`sync-spaces/guards.ts:29`), which `git-transport.ts:333` writes into each hidden repo's `info/exclude`, and `project-manager.ts:67` additionally adds `.youcoded/` to the project's own `.gitignore`. The sidecar is **per-device and never synced by any transport in this tree.**
+
+So Android keeps its own damaged sidecar indefinitely, and its symptom is *quieter* than desktop's: `artifacts:check-existence` is stubbed there (`SessionService.kt:3619-3622`, always reports nothing missing), so a damaged record renders as a normal file in the list and then opens empty — no "no longer on disk" label to explain it. Task 3's guard makes `artifacts:get` return a clean orphan for those records rather than reading whatever sits at the process cwd, which is the safety half; the repair half is genuinely absent.
+
+Still out of scope here — a Kotlin migration twin would double the riskiest code in this plan — but it is a real gap, not a window that closes on the first desktop open. Captured as a follow-up.
 
 ## File Structure
 
@@ -1071,12 +1085,33 @@ describe('runSidecarMigration', () => {
       path: 'flappy-bird/play.html', kind: 'internal', absolutePath: null,
     });
 
-    // No-op via the reclassified === 0 gate — NOT via the process memo, which a
-    // fresh temp root cannot have populated for a second distinct project.
+    // Same-process second call: short-circuits on the MEMO, before any disk
+    // access. That is the cheap path, and it is worth pinning — but it proves
+    // nothing about the real gate, which is the next test's job.
     const second = await runSidecarMigration(projectRoot);
     expect(second).toMatchObject({ migrated: false, reclassified: 0 });
     const unchanged = await readSidecar(projectRoot) as ProjectSidecar;
     expect(unchanged.updatedAt).toBe(after.updatedAt);   // it did not rewrite
+  });
+
+  // THE REAL GATE. The test above cannot reach it: `migrationChecked` is a
+  // module-level Set, so a second call on the same projectRoot in the same
+  // process returns before readSidecar. Re-importing the module gives a fresh,
+  // empty memo, so this call genuinely re-reads the repaired sidecar, re-runs
+  // the pure migration, gets reclassified === 0, and declines to rewrite.
+  // Without this, NOTHING tests the production run-once condition.
+  it('declines to rewrite an already-repaired sidecar even with a cold memo', async () => {
+    await writeSidecar(projectRoot, null, legacy() as any);
+    await runSidecarMigration(projectRoot);
+    const after = await readSidecar(projectRoot) as ProjectSidecar;
+
+    vi.resetModules();
+    const fresh = await import('../../src/main/artifacts/artifact-store');
+    const res = await fresh.runSidecarMigration(projectRoot);
+
+    expect(res).toMatchObject({ migrated: false, reclassified: 0, merged: 0 });
+    const stillAfter = await readSidecar(projectRoot) as ProjectSidecar;
+    expect(stillAfter.updatedAt).toBe(after.updatedAt);   // no second rewrite
   });
 
   it('does not write, or back up, a sidecar with nothing to repair', async () => {
@@ -1089,13 +1124,29 @@ describe('runSidecarMigration', () => {
     expect(readdirSync(join(projectRoot, '.youcoded')).filter((f) => f.includes('.bak'))).toHaveLength(0);
   });
 
-  it('backs the sidecar up exactly once before rewriting it', async () => {
+  it('backs the sidecar up under a fixed name before rewriting it', async () => {
     await writeSidecar(projectRoot, null, legacy() as any);
-    await runSidecarMigration(projectRoot);
     await runSidecarMigration(projectRoot);
     const backups = readdirSync(join(projectRoot, '.youcoded'))
       .filter((f) => f.startsWith('artifacts.json.pre-migration'));
     expect(backups).toEqual(['artifacts.json.pre-migration.bak']);
+  });
+
+  // Exercises the COPYFILE_EXCL / EEXIST-swallow branch directly. A retry after
+  // a CAS conflict reaches the copy step a second time, and the backup is the
+  // only way back if the merge rule turns out wrong for a record we did not
+  // anticipate — so the OLDEST copy must survive, never be overwritten by a
+  // copy of the already-half-migrated state. Pre-seeding the backup reaches
+  // that branch without having to stage a real write race.
+  it('never overwrites an existing backup', async () => {
+    await writeSidecar(projectRoot, null, legacy() as any);
+    const bak = join(projectRoot, '.youcoded', 'artifacts.json.pre-migration.bak');
+    writeFileSync(bak, 'ORIGINAL BACKUP');
+
+    const res = await runSidecarMigration(projectRoot);
+
+    expect(res.migrated).toBe(true);                       // the repair still ran
+    expect(readFileSync(bak, 'utf8')).toBe('ORIGINAL BACKUP');
   });
 });
 ```
@@ -1298,6 +1349,7 @@ Note what invariant 1 no longer asserts: that every *external* holds an absolute
 ## Follow-ups to capture in ROADMAP.md
 
 - **Kotlin `detectOrphan` pruning** — `chore`, tagged `#android`. Dead code with test-only callers; desktop twin already removed (`project-manager.ts:84-88`).
-- **Android does not run the migration** — `bug`, tagged `#android`, low priority. A project opened only ever on Android keeps showing the legacy false orphans. Closes the first time that project is opened on desktop.
+- **Android never gets the repair, and its symptom is silent** — `bug`, tagged `#android`. Upgraded from the original entry, which wrongly assumed a desktop repair propagated by sync. The sidecar is per-device (`.youcoded/` is in `DEFAULT_IGNORES`), so an Android device keeps its damaged records forever. Worse, `artifacts:check-existence` is stubbed on Android, so those records show as ordinary files that open empty rather than carrying a "no longer on disk" explanation. Needs either a Kotlin migration twin or an honest empty-state.
+- **Nothing detects a repair that silently over-reclassifies** — `chore`, low priority. On first launch after this ships, ~48 records on the main project become newly visible in Project View (externals are pin-gated, internals are not). That is the intended fix, but if the classifier ever reclassified a shape the dry-run did not contain, the symptom is phantom in-project files, not an error. `.youcoded/artifacts.json.pre-migration.bak` is the recovery path.
 - **`..`-escaping records are refused, not repaired** — `bug`, low priority. `resolveP` is `path.resolve(cwd, p)`, so `../other/notes.md` really did write outside the project; the record keeps a relative `absolutePath` and is consistently orphaned everywhere. Folding `..` segments against the root in pure string code would let those resolve to their real absolute location.
 - **The migration's collision map compares raw paths** — `chore`, low priority. Everything else in the artifact layer compares through `canonicalize()` on both sides (`visible-artifacts.ts:46-55`). A case-differing pair could dodge the merge on Windows and leave two internal records at "the same" path.
