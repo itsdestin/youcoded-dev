@@ -3,12 +3,13 @@ status: superseded
 created: 2026-08-12
 type: handoff
 related: ROADMAP.md → "Show progress while a tool call's arguments stream"
-superseded_by: docs/active/specs/2026-08-12-tool-arg-streaming-visibility.md
+superseded_by: docs/archive/specs/2026-08-12-tool-arg-streaming-visibility.md
 ---
 
 > **Superseded 2026-08-12 (same day).** The investigation this handoff asked for
 > ran and produced
-> `docs/active/specs/2026-08-12-tool-arg-streaming-visibility.md`, which carries
+> `docs/archive/specs/2026-08-12-tool-arg-streaming-visibility.md` (shipped
+> 2026-08-13), which carries
 > the re-verified facts plus the decisions. Two of this document's open
 > questions were answered in the installed dist: `tool-input-start` and the
 > completed `tool-call` carry the **same** id, and `assistant-thinking` with no
