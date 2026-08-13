@@ -115,8 +115,10 @@ types over dist still applies.
  * `toolCallId` is the provider's real id, identical to the one the completed
  * `tool-call` part carries — that is what lets the card transition in place.
  */
-toolPreparing?: { toolCallId: string; toolName: string; chars: number };
+toolPreparing?: { toolCallId: string; toolName: string; chars: number; cleared?: boolean };
 ```
+
+`cleared: true` means "remove this preparing card" — see Stall retry below.
 
 The emit surface stays **frozen** as `.claude/rules/native-runtime.md` requires
 — no new `TranscriptEventType`. This is the same smuggling `promptProcessing`
@@ -140,6 +142,26 @@ immediately and the real `tool-use` event supersedes the card.
 The `Map` is per-step and cleared when the step ends. Parallel tool calls each
 get their own entry and their own card — the local branch pins
 `parallel_tool_calls: false`, but cloud models can emit several.
+
+#### Stall retry — the one path that must clear cards explicitly
+
+Every other way a step can die (interrupt, provider error, stall give-up) ends
+the **turn**, so `endTurn`'s reaping covers it. The stall **auto-retry** does
+not: `harness-session.ts:1733` returns `STALL_RETRY` and the step re-runs
+inside the same turn. A preparing card created before the stall would then sit
+spinning for the rest of the turn while the retry's own `tool-input-start`
+mints a second card beside it.
+
+So immediately before `return STALL_RETRY`, emit one `assistant-thinking` per
+entry still in the map with `cleared: true`, and drop it from the reducer the
+same way `endTurn` does.
+
+`emittedAny` is deliberately **not** set by these parts. It gates whether a
+stall may auto-retry (`!emittedAny && isFirstAttempt`, :1691), and flipping it
+on `tool-input-start` would silently disable the retry for every turn whose
+stall lands during argument generation — a behavior change well outside this
+feature, and a downgrade: nothing has executed at that point, so re-running the
+step is exactly the safe case the retry exists for.
 
 No change to `native-session-host.ts`: it forwards and appends every event
 (:831–844), and the store's existing filter drops these.
@@ -172,11 +194,25 @@ suppressing it would strand the previous phase's progress line on screen.
   copy is how the two paths drift.
 - If an entry exists, update `preparingChars` only. Never touch status, group,
   or position.
+- If `cleared` is true, remove the entry via the shared removal helper below.
+  A `cleared` for an id that is not preparing (already superseded by the real
+  `tool-use`) is a no-op — never remove a real tool card.
 - Sets `lastActivityAt` and `attentionState: 'ok'` like every other transcript
   path.
 
 `input: {}` because `ToolCallState.input` is non-optional
 (`shared/types.ts:324`), and `preparingChars?: number` carries the count.
+
+**The dispatch is added in TWO files, not one.** `App.tsx:1218` and
+`components/buddy/BubbleFeed.tsx:182` each own a transcript-event switch feeding
+the same reducer — the buddy window is a separate `BrowserWindow` and cannot
+share the main window's `ChatProvider`. Both already handle `assistant-thinking`
+and `tool-use`, so a dispatch added to only one leaves the buddy feed drawing
+the card late while the main window draws it early.
+`tests/transcript-event-surface-parity.test.ts` exists because exactly that
+drift shipped once (PR #287, `replay-complete`), but it compares **case labels**
+only — it cannot see a missing branch *inside* a shared case, so this needs its
+own assertion.
 
 **No change to `TRANSCRIPT_TOOL_USE`.** Fact 5 means the real event already
 supersedes the preparing entry correctly — it overwrites with the real input
@@ -191,7 +227,9 @@ code; it is load-bearing and invisible.
 **deleted**, because no tool was ever invoked — a card reading "Write · failed"
 would describe an event that did not happen (Destin's call, 2026-08-12).
 
-For each id in `activeTurnToolIds` whose entry has `preparing === true`:
+Both this and the `cleared` path above go through **one shared helper**,
+`removePreparingTool(session-parts, toolUseId)`, so the two removals cannot
+drift. For each id in `activeTurnToolIds` whose entry has `preparing === true`:
 
 1. delete it from `toolCalls`,
 2. remove the id from its group's `toolIds`,
@@ -247,6 +285,14 @@ model before claiming per-provider behavior in docs.
   group and its turn segment when the last preparing tool leaves it.
 - A turn ending with both a preparing tool and a real running tool fails the
   real one and deletes the preparing one.
+- A `cleared` payload removes the preparing entry and prunes its group; a
+  `cleared` for an id that already became a real tool is a **no-op** (the real
+  card survives).
+
+**Surface parity** (`transcript-event-surface-parity.test.ts`): both `App.tsx`
+and `BubbleFeed.tsx` reference `toolPreparing`. A textual pin, matching how that
+suite already works — it is the only thing that catches a branch missing from
+one of two switches that share a case label.
 
 **Session store** (`session-store` tests): an `assistant-thinking` carrying only
 `toolPreparing` is not persisted and does **not** flush the open streaming part.
@@ -256,7 +302,8 @@ Worth pinning explicitly — adding a field to that event type is exactly how th
 **Harness** (`harness-session-loop` tests): `tool-input-start` emits one event
 carrying the SDK's id and tool name; `tool-input-delta` accumulates and is
 throttled to at most one emit per 300ms per tool call; `tool-input-end` emits
-nothing.
+nothing; a stall that returns `STALL_RETRY` mid-arguments emits a `cleared`
+event for every still-preparing id.
 
 ## Deliberately out of scope
 
