@@ -9,6 +9,20 @@ status: active
 > were also wrong and are corrected below: the sidecar does NOT sync between
 > devices, and there are FIVE path-resolution sites, not four (`renameArtifact`
 > was an unguarded `fs.rename`). Archive this and flip the ROADMAP item on merge.
+>
+> **Scope grew by one commit after visual verification.** Repairing the records
+> exposed a pre-existing Session Drawer bug the corruption had been masking: the
+> drawer picks rows by session but labelled every row from RECORD-GLOBAL data, so
+> a file merely *viewed* in this session read `edited · <another session's date>`.
+> Before the repair, each mis-filed path had its own throwaway record holding one
+> session's history, so the labels looked right by accident. Fixed in `f3d65dd8`
+> (`versionsInSession`/`lastModifiedInSession`, applied to the row word, the row
+> timestamp, the "recent first" sort, and the active-artifact footer).
+>
+> Verification also uncovered a SEPARATE, larger pre-existing bug that is NOT
+> fixed here — opening a session replays its whole transcript and re-records
+> every file it ever touched. Captured in `ROADMAP.md`; it is very likely the
+> real mechanism behind the long-standing "unbounded sidecar growth" item.
 
 # Artifact Relative-Path Misclassification — Implementation Plan
 
