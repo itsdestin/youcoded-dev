@@ -20,8 +20,15 @@ revocation reaches sessions that are **already running** — not just the file o
 and the previous handoff are archived under `docs/archive/`. The invariants live in
 `.claude/rules/native-permissions.md`, which auto-loads on the permission files.
 
-**2b and 2c are what remain in M5.** Both are open. **The ordering constraint that blocked 2c is
-now lifted** — it was blocked on revocation existing, and it does.
+**2b SHIPPED 2026-08-12** (youcoded #313, merge `cfb3124d`) — the deny-list stop in full auto now
+renders as a mode-branded safety stop (Run it / Skip it | Always Allow); spec + plan under
+`docs/archive/`. The §2b section below is retained as the record of the problem statement only.
+
+**2c is all that remains in M5.** **The ordering constraint that blocked it is
+now lifted** — it was blocked on revocation existing, and it does. Note 2b added
+`permissionMode` to the ask payload and moved `subject-glob` to `src/shared/` — the 2c design
+should read the shipped safety-stop confirm (`ToolCard.tsx`) before changing rule shape, since
+whatever pattern shape wins must survive being echoed in that confirm and in `describe-rule.ts`.
 
 ## Read first
 
