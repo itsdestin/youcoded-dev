@@ -1,95 +1,105 @@
 ---
 paths:
-  - "youcoded/desktop/src/main/harness/review/**"
+  - "youcoded/desktop/src/main/harness/eval/**"
+  - "youcoded/desktop/test-engine/harness-eval.mjs"
+  - "youcoded/desktop/test-engine/harness-eval-worker.mjs"
+  - "youcoded/desktop/test-engine/eval-plans/**"
   - "youcoded/desktop/test-engine/review-harness.mjs"
   - "youcoded/desktop/test-engine/review-roster.json"
-  # Also fires on the code the battery EVALUATES, not just the runner — the person
-  # changing a tool is the one who should be offered an eval. Four live rounds found
-  # nine defects here that 4,500 passing tests missed, because every test drives a
-  # scripted fake model and none of them spend a real turn deciding what to do next.
+  # Also fires on the code the evaluator EVALUATES, not just the evaluator — the person
+  # changing a tool is the one who should be offered a run. Four live rounds found nine
+  # defects here that 4,500 passing tests missed, because every test drives a scripted
+  # fake model and none of them spend a real turn deciding what to do next.
   - "youcoded/desktop/src/main/harness/tools/**"
-last_verified: 2026-08-11
+last_verified: 2026-08-13
 verify:
-  - path: youcoded/desktop/src/main/harness/review/run-battery.ts
+  - path: youcoded/desktop/src/main/harness/eval/run-case.ts
     contains: "askUser: async"
-  - path: youcoded/desktop/src/main/harness/review/run-battery.ts
+  - path: youcoded/desktop/src/main/harness/eval/run-case.ts
     contains: "STEP_GATE_ALLOWANCE = 1"
-  - path: youcoded/desktop/src/main/harness/review/run-battery.ts
+  - path: youcoded/desktop/src/main/harness/eval/run-case.ts
     contains: "WRAP_UP_PROMPT"
-  - path: youcoded/desktop/src/main/harness/review/run-battery.ts
-    contains: "BATTERY_STEP_BUDGET"
-  - path: youcoded/desktop/src/main/harness/review/run-facts.ts
+  - path: youcoded/desktop/src/main/harness/eval/paths.ts
+    contains: "export function graderRoot"
+  - path: youcoded/desktop/src/main/harness/eval/run-facts.ts
     contains: "MIN_TOOL_CALLS"
-  - path: youcoded/desktop/src/main/harness/review/append-review.ts
-  - path: youcoded/desktop/src/main/harness/review/battery.ts
-  - path: youcoded/desktop/src/main/harness/review/fixture-workspace.ts
-  - path: youcoded/desktop/test-engine/review-harness.mjs
+  - path: youcoded/desktop/src/main/harness/eval/fixture-workspace.ts
+    contains: "FIXTURE_MANIFEST"
+  - path: youcoded/desktop/src/main/harness/eval/cases/index.ts
+  - path: youcoded/desktop/src/main/harness/eval/assertions.ts
+  - path: youcoded/desktop/src/main/harness/eval/judge.ts
+  - path: youcoded/desktop/src/main/harness/eval/matrix.ts
+  - path: youcoded/desktop/test-engine/harness-eval.mjs
+    contains: "OPENROUTER_API_KEY"
+  - test: youcoded/desktop/tests/harness-eval-key-leak.test.ts
+  - test: youcoded/desktop/tests/harness-eval-assertions.test.ts
+  - test: youcoded/desktop/tests/harness-eval-judge.test.ts
+  - test: youcoded/desktop/tests/harness-eval-matrix.test.ts
+  - test: youcoded/desktop/tests/harness-eval-report.test.ts
   - test: youcoded/desktop/tests/harness-review-fixture.test.ts
   - test: youcoded/desktop/tests/harness-review-runner.test.ts
 ---
 
-# Harness review runner (`test-engine/review-harness.mjs`)
+# Harness evaluator (`test-engine/harness-eval.mjs`)
 
-Runs a battery of agentic tool tasks against the native harness across an OpenRouter
-model roster, in a disposable fixture: `npm run build:main &&
-OPENROUTER_API_KEY=sk-... node test-engine/review-harness.mjs`.
+Runs a **case** (a task plus a rubric and mechanical checks) across a matrix of **code
+version × instruction file × model**, each cell in its own disposable fixture, grading
+every run twice: free checks read off the event stream, and an LLM judge.
+`--plan <file> --dry-run` is free and needs no key; a real run needs `--key-file`.
+
+- **The credential arrives by file or not at all.** `harness-eval.mjs` **refuses to start**
+  if `OPENROUTER_API_KEY` is in its own environment, and passes worker config over
+  **stdin** — never argv, never env. `delete process.env.X` is `unsetenv`: in-heap only, it
+  never rewrites `/proc/<pid>/environ`, which every same-uid descendant — including a Bash
+  call the model makes — can read. **`review-harness.mjs` still has the bug** (ROADMAP).
+  Guard: `harness-eval-key-leak.test.ts`, whose negative control must report LEAKED.
+
+- **The grader always loads from the orchestrator's own build; only the worker loads the
+  cell's `dist`** — else a branch-vs-master run silently compares two *graders* too.
+  `paths.ts`: `graderRoot()` (ignores its argument on purpose) vs `harnessRoot(cell)`.
+  Guard: `harness-eval-orchestrator.test.ts`.
+
+- **A check has three states, and `never-ran` is not `passed`** — its precondition never
+  happened, so nothing was measured, and the report must render it visibly differently.
+  The first version keyed "never ran" on an empty event list, unreachable in production,
+  so a provider billing failure scored as a model failure. Guards:
+  `harness-eval-assertions.test.ts` (discrimination-tested), `harness-eval-report.test.ts`.
+
+- **Every judge grade must quote the answer verbatim or be discarded**, and contradiction
+  warnings only warn — never adjust a score. They match tool ids, not the judge's prose;
+  keying them on free text made a check that passed by proving a tool was *never* used
+  register as proof it was. Guard: `harness-eval-judge.test.ts`.
 
 - **The fixture jail is held by `askUser`, not `decide`.** `decide` is fully permissive;
-  `askUser` denies every ask that isn't a genuine `AskUserQuestion` — including
-  `external_directory`, `doom_loop`, and `max_steps`. A prior version blanket-allowed all
-  three (Critical). **One path is exempt by design:** Bash's spill root
-  (`tools/spill-paths.ts`) is `ok`, not an `external_directory` ask, so a model can read
-  back its own truncated output. Guard: `harness-review-runner.test.ts` → "denies a Write
-  outside the fixture instead of rubber-stamping it (Critical fix)".
+  `askUser` denies every ask that isn't a genuine `AskUserQuestion` — `external_directory`,
+  `doom_loop`, `max_steps`. **One path is exempt by design:** Bash's spill root
+  (`tools/spill-paths.ts`) is `ok`, so a model can read back its own truncated output.
+  Guard: `harness-review-runner.test.ts` → "denies a Write outside the fixture".
 
-- **The battery sets its own uniform step budget, not the app's per-model chat tiers.**
-  `BATTERY_STEP_BUDGET = 100` overrides `stepBudgetFor`'s 25/50 tiers, which cut a
-  40–80-call battery short. `STEP_GATE_ALLOWANCE = 1` (down from 4) gives one
-  continuation before the gate denies. Guard: the `battery step budget` describe block.
+- **Uniform step budget, not the app's chat tiers** (`stepBudgetFor`'s 25/50 tiers cut a
+  40–80-call run short), and **never end a run on a heuristic**: a repeat-counting trigger
+  was deleted 2026-08-11 after truncating 13 paid runs, every trip one over threshold,
+  because cwd-persistence and read-before-edit both REQUIRE repeats.
 
-- **Every run ends in a review or a labelled failure — three triggers, each a FACT.**
-  Budget exhaustion, the wall clock, and `stopped-early` (the turn ended on its own with
-  no text after the last tool result) each send a second turn carrying `WRAP_UP_PROMPT`
-  with every tool call denied — including a genuine `AskUserQuestion`, which is
-  `interactive: true` and so bypasses `decide()`; `askUser` denies it during wrap-up so
-  the prompt's claim holds. Guard: the `wrap-up turn` describe block.
+- **Every run ends in an answer or a labelled failure** — three FACT triggers each send a
+  second `WRAP_UP_PROMPT` turn with every tool denied. Scope per-turn scans to the
+  *testing* turn; an unscoped scan sees the wrap-up and mislabels a run that recovered.
+  `runCase` never throws for a run that produced events — round 5 lost four transcripts to
+  a rejected promise. Details: the internals doc.
 
-- **Do NOT add a heuristic trigger.** A 'restart' trigger counting repeated identical
-  calls was deleted 2026-08-11 after truncating 8 paid runs at threshold 5 and 5 more at
-  12 — every trip exactly one over, because the battery ("verify cwd persistence across
-  calls") and read-before-edit both REQUIRE repeats. Repeats are reported
-  (`REPEAT_REPORT_FLOOR`), never acted on. Guard: `repeat reporting (diagnostic only)`.
+- **The fixture is byte-identical across runs, so results stay comparable** — including a
+  seeded `port` disagreement between `config/settings.toml` and `config/app.toml`; don't
+  "fix" it, four cases depend on it. **`notes/pristine.md` is reserved for the read-gate
+  negative test** — point anything else at it and that test silently inverts into a passing
+  Edit (it did). Guard: `harness-review-fixture.test.ts`.
 
-- **`runBattery` never throws for a run that produced events** — it returns `outcome`,
-  `error`, and `metrics` instead. Round 5 lost four transcripts to a rejected promise.
-  Guard: the `runBattery salvage` describe block.
+- **There is no resume, and the printed estimate runs ~8× high.** A stopped run re-pays for
+  every finished cell. Measured 2026-08-13: **~$0.25 a cell** including its judge call,
+  against an estimate of $2.07 — `estimate.ts`'s token tables are still battery-derived.
 
-- **Every appended review carries its run facts; a claimed tool the transcript never
-  shows gets a warning above it.** `collectRunFacts` diffs claims against
-  `metrics.toolsUsed`; `MIN_TOOL_CALLS = 10` flags a run too short to have covered the
-  battery. Written after a 14-call run described Edit tests it never ran. Guard:
-  `renderRunFacts`.
+- **Offer a run after changing a harness tool; never run the paid path unasked.**
+  `--dry-run` is free, `--only <cellId>` is one cell, `--max-spend <usd>` is a hard cap
+  re-checked against OpenRouter's own billing between cells.
 
-- **`review-harness.mjs`'s `delete process.env.OPENROUTER_API_KEY` does NOT stop the model
-  reading the key** (measured 2026-08-12; ROADMAP → Bugs). `delete` is `unsetenv` — in-heap
-  only, never rewrites `/proc/<pid>/environ`, which every same-uid descendant can read. The
-  evaluator CLI closes it: `--key-file`, an inherited key REFUSED outright, worker config
-  over stdin. Guard: `tests/harness-eval-key-leak.test.ts`, with a negative control that
-  must report LEAKED.
-
-- **The fixture is byte-identical across runs, so reviews stay comparable** — including a
-  seeded contradiction (`config/settings.toml` vs `config/app.toml` disagree on `port`)
-  giving a model reason to call `AskUserQuestion`; don't "fix" it. **`notes/pristine.md`
-  is reserved for area 4's read-gate negative test** — point any other area at it and that
-  test silently inverts into a passing Edit (it did, yielding a false "the read gate is
-  inconsistent" finding). Guard: `harness-review-fixture.test.ts`.
-
-- **Offer the battery after changing a harness tool; never run it unasked.** Measured
-  2026-08-11: **$10.38 for rounds 6–8, ~$3.46 a roster** — an earlier "~$1.50" came from
-  account-lifetime spend; `/api/v1/key` is the per-key figure. `--dry-run` is free,
-  `--only "<label>"` is one model.
-
-Changing the runner itself (review extraction, the two `HarnessSession` quirks it leans
-on, the `appendReview` purity boundary): `youcoded/docs/harness-review-runner-internals.md`.
-History: `docs/archive/plans/2026-08-06-harness-review-runner.md`,
-`docs/archive/specs/2026-08-10-harness-review-runner-resilience-design.md`.
+Changing the evaluator itself: `youcoded/docs/harness-evaluator-internals.md`. History:
+`docs/archive/specs/2026-08-12-harness-evaluator-design.md`.
