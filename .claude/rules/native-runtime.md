@@ -48,13 +48,13 @@ verify:
 
 ## Provider seam (Phase 0) — guard: `ipc-channels.test.ts`
 - **`'gemini'` is GONE** — don't reintroduce it anywhere.
-- **`native.supported` is the ONLY gate** — a plain boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`.
+- **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`.
 - **`createSession` throws for non-claude providers**; the native branch builds NO PTY worker (guard every `session.worker.X`); needs a `binding` unless resuming.
 - **Reasoning segments are dormant on the CC path** (`data:{}`); App.tsx + BubbleFeed.tsx MUST share predicate `event.data?.text`.
 
 ## Native sessions (Plan A) — guards: `harness-session`/`native-session-host`/`native-send`/`native-home` tests
 - **API keys: `safeStorage`-encrypted in `userData/native-secrets.json`, NEVER `~/.youcoded/`** (only a `secretRef`; no plaintext fallback); `~/.youcoded/` writes ride `NativeHome.mutateFileUnderLock` (THROWS on lock exhaustion).
-- **`SessionStore` coalesces same-`partId` deltas; `session-error` is display-only, NEVER persisted.** Callers serialize per session; re-entrant `send()` throws.
+- **`SessionStore` coalesces same-`partId` deltas; display-only (`session-error`, payload-less `assistant-thinking`) is NEVER persisted.** Callers serialize per session; re-entrant `send()` throws.
 - **`send()` never throws — synchronous `NativeSendResult`** (`'sent'|'queued'` FIFO-10 `|'failed'`, real reason); the queue drains ONLY on `send()` settle; **interrupt aborts the current turn only — the queue still drains**; `destroy()` order is load-bearing (destroy → append-chain → dispose → delete).
 - **`native:*` calls are invokes with ONE result shape on ALL transports.** Queued messages are renderer list state, NEVER timeline; `TRANSCRIPT_REPLAY`: `nativeHost.getHistory ?? transcriptWatcher.getHistory`.
 - **The renderer native send path skips ALL PTY machinery** (`native-send.ts`); the send string MUST equal `buildOutgoingMessage(...).content`; ESC → `native.interrupt`.
