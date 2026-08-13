@@ -116,17 +116,20 @@ with `const RESERVED_WRITER = '__reserved__';`, `bindReservation(token, childId)
 - Produces (Tasks 4, 5, 6, 7, 9 all consume this):
 
 ```ts
+export type OwnerStamp = { pid: number; instanceId: string };
 export interface DelegationRecord {
   childId: string; parentToolCallId: string;
   agentType: string; title: string; workDir: string; description: string;
   background: boolean;
   status: 'running' | 'completed' | 'failed' | 'interrupted';
   startedAt: number; endedAt?: number; steps?: number;
-  rawReport?: string;      // UNFORMATTED body, capped at RAW_REPORT_CAP_CHARS; formatting happens at delivery
-  reportPath?: string;     // Task 10 spill file
+  rawReport?: string;      // UNFORMATTED body, capped at RAW_REPORT_CAP_CHARS (full body lives in the child JSONL + reportPath)
+  reportPath?: string;     // spill file — written at COMPLETION when the body exceeds the ledger cap (Task 4), or at delivery on budget truncation (Task 10)
   failureText?: string;    // status 'failed'
-  delivered: boolean;      // formatted report reached the parent's context
-  owner: { pid: number; processStartedAt: number };
+  delivered: boolean;      // flipped ONLY after the injected turn has run — see the claim lease below
+  claimedBy?: OwnerStamp;  // delivery LEASE — a claim is not a delivery
+  claimedAt?: number;
+  owner: OwnerStamp;
   missedSteers: string[];
   stale?: boolean;
 }
@@ -136,27 +139,38 @@ export class DelegationLedger {
   async recordStart(parentCwd: string, parentId: string, rec: DelegationRecord): Promise<void>;
   async update(parentCwd: string, parentId: string, childId: string, patch: Partial<DelegationRecord>): Promise<void>;
   listFor(parentCwd: string, parentId: string): DelegationRecord[];   // sync read, [] when no file
-  async claimUndelivered(parentCwd: string, parentId: string): Promise<DelegationRecord | null>; // oldest completed+undelivered; sets delivered=true under the lock
-  async releaseClaim(parentCwd: string, parentId: string, childId: string): Promise<void>;       // delivery failed — flip delivered back
+  async claimUndelivered(parentCwd: string, parentId: string): Promise<DelegationRecord | null>;
+    // oldest record with status completed && !delivered && no live-owner lease;
+    // stamps claimedBy/claimedAt under the lock — delivered stays FALSE
+  async confirmDelivered(parentCwd: string, parentId: string, childId: string): Promise<void>;   // the injected turn ran — NOW flip delivered
+  async releaseClaim(parentCwd: string, parentId: string, childId: string): Promise<void>;       // delivery failed — clear the lease for retry
 }
-export const OWNER = { pid: process.pid, processStartedAt: Date.now() }; // captured once at module load
-export function isOwnerAlive(owner: { pid: number; processStartedAt: number }): boolean;
+export const OWNER: OwnerStamp = { pid: process.pid, instanceId: randomUUID() }; // captured once at module load
+export function isOwnerAlive(owner: OwnerStamp): boolean;
 ```
 
-File path: `sessions/<cwdToProjectSlug(parentCwd)>/<parentId>.delegations.json`, shape `{ v: 1, delegations: DelegationRecord[] }`. `isOwnerAlive`: same-pid + same-start fast path → true; else `process.kill(pid, 0)` in try/catch; on Linux additionally read `/proc/<pid>/stat` field 22 and compare against `processStartedAt` within boot-time slack — when the proc read is unavailable (macOS/Windows), fall back to pid-only with a WHY comment naming the PID-reuse residual risk (the sync-service `isPidAlive` precedent at `sync-service.ts:441-454` is pid-only too).
+File path: `sessions/<cwdToProjectSlug(parentCwd)>/<parentId>.delegations.json`, shape `{ v: 1, delegations: DelegationRecord[] }`. **A claim is a lease, not a delivery** (external review 2026-08-12): the earlier eager-`delivered: true` shape lost the report forever if the app died between the claim and the injected turn reaching the parent — the exact failure mode this ledger exists to close. `isOwnerAlive`: `owner.instanceId === OWNER.instanceId` → true (it is this very process); otherwise `process.kill(pid, 0)` in try/catch (the `sync-service.ts:441-454` precedent). Deliberately NO `/proc/<pid>/stat` start-time comparison — field 22 is jiffies-since-boot while our stamp would be epoch ms, and the conversion is fiddly, platform-specific, and prone to never firing or false-firing (external review). The residual PID-reuse risk (a dead owner's pid reused by some long-lived process) leaves a stale `running` record that remains visible in the status block and interruptible via `task_id` — annoying, never lossy. The WHY comment states exactly this.
 
 - [ ] **Step 1: Write the failing tests** in `specialist-delegation-ledger.test.ts` (temp-dir `NativeHome`, same fixture style as `permission-store.test.ts`):
 
 ```ts
 it('recordStart + listFor round-trips a record', async () => { /* record, list, expect one match */ });
 it('update patches one record by childId and leaves siblings alone', async () => { /* two records, patch one */ });
-it('claimUndelivered returns oldest completed+undelivered and marks it delivered atomically', async () => {
+it('claimUndelivered LEASES the oldest completed+undelivered record — delivered stays false', async () => {
   // three records: running / completed-undelivered(old) / completed-undelivered(new)
   const first = await ledger.claimUndelivered(CWD, 'p1');
   expect(first?.childId).toBe('old');
-  expect(ledger.listFor(CWD, 'p1').find(r => r.childId === 'old')?.delivered).toBe(true);
+  const rec = ledger.listFor(CWD, 'p1').find(r => r.childId === 'old');
+  expect(rec?.delivered).toBe(false);
+  expect(rec?.claimedBy).toEqual(OWNER);
 });
-it('releaseClaim flips delivered back so a failed injection retries', async () => { /* claim, release, claim again returns same */ });
+it('confirmDelivered flips delivered; a confirmed record is never claimable again', async () => { /* claim, confirm, claim → next record */ });
+it('releaseClaim clears the lease so a failed injection retries', async () => { /* claim, release, claim again returns same record */ });
+it('a record leased by a DEAD owner is claimable again — crash between claim and injection re-delivers', async () => {
+  // write a record with claimedBy: { pid: 999999, instanceId: 'gone' }, delivered: false
+  const rec = await ledger.claimUndelivered(CWD, 'p1');
+  expect(rec?.childId).toBe('the-orphaned-one');
+});
 it('isOwnerAlive: our own pid+start is alive; an absurd pid is not', () => {
   expect(isOwnerAlive(OWNER)).toBe(true);
   expect(isOwnerAlive({ pid: 999999, processStartedAt: 1 })).toBe(false);
@@ -166,7 +180,7 @@ it('isOwnerAlive: our own pid+start is alive; an absurd pid is not', () => {
 Plus in `native-home.test.ts`: `it('listSessionFiles ignores .delegations.json sidecars', ...)`.
 - [ ] **Step 2: Run to verify failure** — `npx vitest run tests/specialist-delegation-ledger.test.ts` → FAIL (module not found).
 - [ ] **Step 3: Implement the module** exactly per the interface above; every write goes through `home.mutateJson` (read-modify-write under the lock); `rawReport` is sliced to `RAW_REPORT_CAP_CHARS` in `update` with a WHY comment (the full body survives in the child JSONL and, from Task 10, the spill file).
-- [ ] **Step 4: Wire recording into the host.** In `spawnSpecialist`: `recordStart` right after `createChild` returns (childId + title now known; `parentToolCallId` from `opts.parentToolCallId`; `owner: OWNER`; `background: false` here). In the success path: `update(..., { status: 'completed', endedAt: Date.now(), steps: run.steps, rawReport: run.report, delivered: true })` — foreground delivery IS the tool result, so it is born delivered. In the catch: `update(..., { status: 'failed', failureText: <the thrown message>, endedAt: Date.now() })`. In `destroyChildrenOf` (:1471-1483) and `interrupt`'s cascade: children still `running` get `{ status: 'interrupted', endedAt: Date.now() }` — fire-and-forget with `.catch(log)` since `interrupt()` is sync.
+- [ ] **Step 4: Wire recording into the host.** In `spawnSpecialist`: `recordStart` right after `createChild` returns (childId + title now known; `parentToolCallId` from `opts.parentToolCallId`; `owner: OWNER`; `background: false` here). In the success path: `update(..., { status: 'completed', endedAt: Date.now(), steps: run.steps, rawReport: run.report, delivered: true })` — foreground delivery IS the tool result, so it is born delivered. In the catch: `update(..., { status: 'failed', failureText: <the thrown message>, endedAt: Date.now() })`. In `destroyChildrenOf` (:1471-1483): children still `running` get `{ status: 'interrupted', endedAt: Date.now() }` — fire-and-forget with `.catch(log)` since callers can be sync. **`interrupt(parentId)`'s cascade (:1355) becomes FOREGROUND-only** (external review 2026-08-12, deliberate 1b decision): the Stop button aborts the parent's turn and any foreground child blocking that turn, but a background specialist keeps working — stopping a *turn* is not firing the researcher. `destroy`/`quiesce` teardown still takes every child down (spec §1 cascade-cancel applies in full there). Foreground/background is read synchronously from `ledger.listFor`. Test: parent interrupt mid-background-run leaves the child live and its record `running`.
 - [ ] **Step 5: Run** `npx vitest run tests/specialist-delegation-ledger.test.ts tests/specialist-run.test.ts tests/native-home.test.ts` → PASS.
 - [ ] **Step 6: Commit** — `git commit -m "feat(specialists): durable delegation ledger with owner liveness and delivery claims"`
 
@@ -178,7 +192,7 @@ Plus in `native-home.test.ts`: `it('listSessionFiles ignores .delegations.json s
 - Test: `desktop/tests/harness-session-loop.test.ts`
 
 **Interfaces:**
-- Produces: `HarnessSession.postSteer(text: string): boolean` — queues a steer; returns `false` when no turn is in flight (the caller records a missed steer). Steers drain at the **top of each turn-loop iteration** (before `maybeCompact` at :1390) as user-role history messages — a tool call is never cut. Tasks 6, 8, 12 consume this.
+- Produces: `HarnessSession.postSteer(text: string): boolean` — queues a steer; returns `false` when no turn is in flight (the caller records a missed steer). Steers drain at the **top of each turn-loop iteration** (before `maybeCompact` at :1390) as user-role history messages — a tool call is never cut. Also `drainUnappliedSteers(): string[]` — leftover steers that were posted too late to drain (the turn ended first); `runDelegation` folds these into the ledger's `missedSteers` at completion, so a `postSteer` that returned `true` during the child's final step is still honestly reported as un-applied (gap surfaced by the external review's invariant question). The in-flight test `this.abort !== null` is the real invariant: `this.abort = new AbortController()` at :1338 and `finally { this.abort = null; }` at :1550-1552 bracket the turn exactly (verified 2026-08-12). Tasks 6, 8, 12 consume this.
 
 - [ ] **Step 1: Write the failing test** in `harness-session-loop.test.ts`:
 
@@ -190,6 +204,11 @@ it('postSteer lands as a user-role message before the NEXT model step, never mid
 });
 it('postSteer with no turn in flight returns false and injects nothing', () => {
   expect(session.postSteer('late note')).toBe(false);
+});
+it('a steer posted during the FINAL step never lands — drainUnappliedSteers returns it after the turn', async () => {
+  // scripted model whose last step is a plain text end; postSteer during that step;
+  // after the turn resolves, expect session.drainUnappliedSteers() to equal ['the steer']
+  // and the request history to never have contained it.
 });
 ```
 
@@ -272,17 +291,20 @@ async spawnSpecialistBackground(parentId: string, opts: SpecialistSpawnOpts & { 
 ```ts
 // WHY (spec §3): background completions inject as a synthetic user-role turn at
 // an idle boundary — never spliced mid-turn (role alternation + local prompt cache).
-// Claims are atomic (ledger lock); a failed injection releases the claim so a
-// restart re-delivers instead of losing the report.
+// A claim is a LEASE: delivered flips only after the injected turn has run. A crash
+// between claim and injection leaves a dead-owner lease that Task 9's reconcile
+// releases — the report is re-delivered after restart, never lost.
 while (this.pendingDeliveryParents.has(sessionId)) {
-  const rec = await this.ledger.claimUndelivered(entry.cwd, sessionId);
+  const rec = await this.ledger.claimUndelivered(entry.cwd, sessionId);   // lease, not delivery
   if (!rec) { this.pendingDeliveryParents.delete(sessionId); break; }
-  try { await entry.session.runNotice(this.formatDelivery(sessionId, rec)); }
-  catch (err) { await this.ledger.releaseClaim(entry.cwd, sessionId, rec.childId); log.warn(...); break; }
+  try {
+    await entry.session.runNotice(this.formatDelivery(sessionId, rec));
+    await this.ledger.confirmDelivered(entry.cwd, sessionId, rec.childId); // only now is it delivered
+  } catch (err) { await this.ledger.releaseClaim(entry.cwd, sessionId, rec.childId); log.warn(...); break; }
 }
 ```
 
-`formatDelivery` wraps `formatSpecialistReport` (now parameterized with `concurrentReporters = pending undelivered count`) with a self-contained preamble: `[Background specialist finished] ${title} (${agentType}) completed the task you delegated ("${description}", started <n>m ago, ${steps} steps).` — failure records instead produce `[Background specialist failed] ${title} (${agentType}): ${failureText}. Partial transcript: specialist session ${childId}.` `runNotice` in `harness-session.ts` is `beginTurn(text, () => this.emitEvent('user-message', { text, injected: 'specialist-report' }))` — the same shape `runSkill` uses (:1207-1209).
+**Completion-time spill for oversized bodies:** when `run.report` exceeds `RAW_REPORT_CAP_CHARS`, the completion handler writes the FULL body to the Task 10 spill file *before* the ledger update and stores `reportPath` alongside the capped `rawReport` — delivery re-reads the full body from `reportPath`, so the background path never produces a pre-truncated file whose footer claims "full report" (external review 2026-08-12; the foreground path formats from the in-memory body and was never affected). `formatDelivery` wraps `formatSpecialistReport` (now parameterized with `concurrentReporters = pending undelivered count`) with a self-contained preamble: `[Background specialist finished] ${title} (${agentType}) completed the task you delegated ("${description}", started <n>m ago, ${steps} steps).` — failure records instead produce `[Background specialist failed] ${title} (${agentType}): ${failureText}. Partial transcript: specialist session ${childId}.` `runNotice` in `harness-session.ts` is `beginTurn(text, () => this.emitEvent('user-message', { text, injected: 'specialist-report' }))` — the same shape `runSkill` uses (:1207-1209).
 - [ ] **Step 5: Task tool branch.** In `task.ts`, when `args.background`: reserve (Task 1), `const { childId, title } = await services.spawnBackground(...)`, return `{ text: \`${title} (${args.agent}) is now working in the background (task_id: ${childId}). Their report will be delivered to you automatically when they finish — do not wait or poll. Keep working; a status block at the start of your turns tracks running specialists.\` }` — and do NOT release in `finally` on this path (ownership transferred to the detached chain; a thrown launch still releases).
 - [ ] **Step 6: Run** the two test files plus `npx vitest run tests/native-session-host.test.ts` → PASS.
 - [ ] **Step 7: Commit** — `git commit -m "feat(specialists): background execution with idle-boundary report delivery"`
@@ -302,10 +324,14 @@ while (this.pendingDeliveryParents.has(sessionId)) {
 
 ```ts
 // harness-session-loop.test.ts
-it('a non-null specialistStatus is injected before the user message each turn, and skipped when null', async () => {
+it('a non-null specialistStatus is injected before the user message, and a null one REMOVES the stale block', async () => {
   // opts.specialistStatus returns 'Nadia (researcher): running — step 3' on turn 1, null on turn 2;
   // assert turn 1's request history has a user message containing '<specialists-status>' BEFORE the typed text,
-  // and turn 2's has none.
+  // and turn 2's contains NO status block at all (turn 1's was removed).
+});
+it('exactly ONE status block ever lives in history — turn N replaces turn N-1', async () => {
+  // statuses 'step 1' then 'step 3' across two turns; turn 2's request history contains
+  // one <specialists-status> block, containing 'step 3', not two.
 });
 // native-session-host.test.ts
 it('the host status block lists running and undelivered-finished specialists and omits delivered ones', async () => { ... });
@@ -318,6 +344,14 @@ it('the host status block lists running and undelivered-finished specialists and
 // WHY (spec §3, MOIM pattern): the model never polls and never forgets a child
 // exists — a compact status block rides every turn while specialists are live.
 // History-only (no transcript event), so replay and the emit surface are untouched.
+// Exactly ONE block lives in history: the previous turn's is removed first
+// (external review 2026-08-12 — appending accumulates stale, contradictory
+// blocks over a long child run). Accepted cost: removing a mid-history message
+// invalidates local KV prefix cache from that point while specialists run.
+const statusIdx = this.history.findIndex(
+  (m) => typeof m.content === 'string' && m.content.startsWith('<specialists-status>'),
+);
+if (statusIdx >= 0) this.history.splice(statusIdx, 1);
 const status = this.opts.specialistStatus?.();
 if (status) this.history.push({ role: 'user', content: `<specialists-status>\n${status}\n</specialists-status>` });
 ```
@@ -435,7 +469,7 @@ Plus the flipped branch-5 case in `specialist-child-permissions.test.ts` and bro
 **Interfaces:**
 - Consumes: Task 2's ledger (`owner`, `delivered`, `parentToolCallId`), Task 4's delivery queue.
 - Produces:
-  - **Reconcile on parent resume:** inside `resume()`, after the store read succeeds: `reconcileDelegations(sessionId, cwd)` — for each ledger record: `status === 'running' && !isOwnerAlive(owner)` → `update({ status: 'interrupted', endedAt: Date.now() })` (marked **honestly**, per spec — the child is an ordinary resumable session via `task_id`); `status === 'completed' && !delivered` → `queueDelivery(sessionId)` so the report lands at the first idle boundary after resume.
+  - **Reconcile on parent resume:** inside `resume()`, after the store read succeeds: `reconcileDelegations(sessionId, cwd)` — for each ledger record: `status === 'running' && !isOwnerAlive(owner)` → `update({ status: 'interrupted', endedAt: Date.now() })` (marked **honestly**, per spec — the child is an ordinary resumable session via `task_id`); records holding a `claimedBy` lease whose owner fails `isOwnerAlive` → `releaseClaim` first (the crash-between-claim-and-injection gap — external review 2026-08-12); then `status === 'completed' && !delivered` → `queueDelivery(sessionId)` so the report lands at the first idle boundary after resume.
   - **Card replay:** `getHistory(sessionId)` merges children: for each ledger record, read `store.readEvents(childId, workDir)`, filter to `SUBAGENT_DISPLAY_TYPES`, stamp each with `sessionId: parentId, data: { ...data, parentAgentToolUseId, agentId: childId }` (identical to the live stamp at :1072-1076), and splice the block **immediately after** the parent event whose `data.toolUseId === parentToolCallId` (the reducer bails if the parent Task card hasn't been seen yet — ordering is load-bearing, `chat-reducer.ts:222-223`). A record whose Task tool-use isn't found in the parent stream is skipped defensively (WHY comment: a crash between child-create and parent-append).
 
 - [ ] **Step 1: Write the failing tests:**
@@ -443,6 +477,10 @@ Plus the flipped branch-5 case in `specialist-child-permissions.test.ts` and bro
 ```ts
 it('resuming a parent marks dead-owner running children as interrupted, honestly', async () => { ... });
 it('an undelivered background report from before the restart is delivered at the first idle boundary', async () => { ... });
+it('a report CLAIMED by a dead instance but never confirmed is re-delivered after restart', async () => {
+  // ledger record: completed, delivered: false, claimedBy: { pid: 999999, instanceId: 'gone' };
+  // resume the parent → expect the injected user-message to arrive once, and the record to end confirmed.
+});
 it('getHistory splices stamped child events immediately after the parent Task tool-use', async () => {
   // run a foreground specialist to completion; destroy and resume the parent;
   // const events = host.getHistory(parentId)!;
@@ -471,7 +509,7 @@ it('replayed stamped events preserve partId so the reducer coalesces deltas iden
 - **Path-guard exemption:** the parent session's `checkPathGuard` treats its own spill directory as internal — `HarnessSessionOpts.internalReadRoots?: string[]`, consulted before the external-directory branch (`harness-session.ts:1913-1917`), wired by the host to the session's spill dir only. WHY: the spec's telephone-game mitigation ("summary + paths, not compressed prose") only works if the parent can actually Read the path without an external-dir ask in ask-mode.
 
 - [ ] **Step 1: Write the failing tests** — spill file written with full body on truncation + footer names the real path; no spill file when the report fits; `internalReadRoots` lets the parent Read the spill path without an ask while a sibling external path still asks.
-- [ ] **Step 2: Run to verify failure** → FAIL. **Step 3: Implement** (spill in `formatSpecialistReport` — which now runs at delivery time per Task 4, so the spill happens exactly once per delivered report; ledger records `reportPath`). **Step 4: Run** the three touched files → PASS.
+- [ ] **Step 2: Run to verify failure** → FAIL. **Step 3: Implement** (spill in `formatSpecialistReport` at delivery time; when Task 4's completion handler already spilled an oversized background body, delivery re-reads the FULL body from `reportPath` and does not re-write the file; ledger records `reportPath` either way). **Step 4: Run** the three touched files → PASS.
 - [ ] **Step 5: Commit** — `git commit -m "feat(specialists): oversized reports spill to a readable file with a pointer footer"`
 
 ### Task 11: Permission store v2 — specialist-keyed grants + consent-key canonicalization
@@ -503,7 +541,7 @@ it('replayed stamped events preserve partId so the reducer coalesces deltas iden
 **Interfaces:**
 - Produces three independent behaviors:
   1. **JSON-string arg recovery** (all tools, at the validation seam): when raw tool input is a single string that `JSON.parse`s to an object, re-validate the parsed object before failing — one attempt, then the normal arg error. WHY: weak local models emit `"{\"prompt\": ...}"` as a string; spec §3 hardening.
-  2. **Placeholder prompt rejection** in `task.ts` (after the 40-char floor): `const PLACEHOLDER_RE = /^(?:todo|tbd|task ?\d*|fixme|<[^>]*>|\{\{[^}]*\}\}|\.{3}|xxx+)[.!]?$/i;` tested against the trimmed prompt AND against each line of a prompt that is only such lines → `That prompt looks like an unexpanded placeholder. Write the actual self-contained brief: what to do, relevant paths, what "done" looks like.` (narrow regex, per spec — real prompts must never trip it; test with a 45-char real sentence).
+  2. **Placeholder prompt rejection** in `task.ts` (after the 40-char floor): `const PLACEHOLDER_RE = /^(?:todo|tbd|task ?\d*|fixme|<[^>]*>|\{\{[^}]*\}\}|\.{3}|xxx+)[.!]?$/i;` tested against the **whole trimmed prompt only** — no per-line scanning (external review 2026-08-12 flagged the false-positive risk of the per-line variant; the whole-prompt narrow form is exactly what spec §3 mandates: *"reject placeholder prompts (TODO, 'task 1', unexpanded template markers — narrow regex)"* — this is an observed weak-model failure in the platform research, not speculation, and the 40-char floor alone misses padded markers like `{{TASK_DESCRIPTION_GOES_HERE_PLEASE_FILL}}`). Refusal copy: `That prompt looks like an unexpanded placeholder. Write the actual self-contained brief: what to do, relevant paths, what "done" looks like.` Test with a 45-char real sentence to pin the false-positive boundary.
   3. **Per-conversation spawn budget:** `SPECIALIST_SPAWN_BUDGET_PER_SESSION = 30` in `limits.ts`; a per-parent lifetime counter (in-memory, host) checked in the Task execute path → `Refused: this conversation has reached its specialist budget (${n}). This is a runaway guard — the user can start a fresh conversation to continue delegating.`
   4. **Compaction-finalize:** in the `runSpecialist` listener, count `compact-summary` events with `data.autoCompaction`; on the second, `postSteer('You are running low on room even after summarizing. Stop new exploration — write up what you have and finish with your report now.')` — once per child. (Spec §3: a designed path for small local windows, not an edge case.)
 - [ ] **Step 1: Write the failing tests** (string-arg recovery round-trip; placeholder rejects + 45-char real prompt passes; 31st spawn refused with the budget copy; second auto-compaction posts exactly one finalize steer).
@@ -584,11 +622,20 @@ export function resolveDelegatedBinding(i: {
 
 ## Task ordering and parallelization
 
-Dependencies: T4 needs T1+T2; T5 needs T2+T4; T6 needs T1-T4; T7 needs T2; T8 needs T3 (+T4 for late-answer delivery); T9 needs T2+T4; T11 needs T8; T12 needs T3; T15 last.
-**Wave 1 (parallel):** T1, T2, T3, T10, T13, T14. **Wave 2:** T4, T8 (T8's late-delivery case can stub until T4 merges). **Wave 3 (parallel):** T5, T6, T7, T9, T11, T12. **Wave 4:** T15.
+Dependencies: T4 needs T1+T2; T5 needs T2+T4; T6 needs T1-T4; T7 needs T2; T8 needs T3 (+T4 for late-answer delivery); T9 needs T2+T4; **T10 needs T4** (spill runs in the delivery-time formatter); T11 needs T8; T12 needs T3; **T13 needs T1** (`maxSpecialistsFor`) and lands after T4 (both edit `task.ts`); T14 edits `task.ts` + the host after everything settles (severable if Destin reassigns it); T15 last.
+**Wave 1 (parallel):** T1, T2, T3. **Wave 2:** T4, T8 (T8's late-delivery case can stub until T4 merges). **Wave 3 (parallel):** T5, T6, T7, T9, T10, T11, T12, T13. **Wave 4:** T14. **Wave 5:** T15.
+(The original wave 1 listed T10/T13/T14 as parallel with T1 — the external review caught T13's undeclared dependency on T1; the same pass here caught T10's on T4. Both moved.)
 
 ## Self-review notes (writing-plans checklist, run 2026-08-12)
 
 - Spec coverage: §3 background/injection (T4), MOIM (T5), steering+management (T3/T6), report caps+spill (T10), weak-model hardening (T12), heartbeat (T7), single-writer precise (T1), child failure typed (T2/T4), compaction-finalize (T12), concurrency per provider (T13), spawn budget (T12), restart survival (T9); §5 timeout redirect + routed asks (T8), grant keying v2 (T11); §2 model preference (T14 — per Destin's 2026-08-12 ruling: budget/frontier user-designated tiers, ModelSearch, per-hire override at user direction; replaces the spec's original cheap/strongest auto-resolution, spec amended same day). §6 UX items and §2 definition files are 1c per the sequence line; §4/stage two untouched.
 - Interpretation flagged for Destin's review: spec §5 says a late approval on a FINISHED child is "delivered as a resume" — T8 delivers it as a parent notice naming `task_id` (parent-in-the-loop) rather than auto-resuming the child, because an auto-resume spends tokens with no model or user in the loop. Overrule at review if the literal reading is preferred.
 - Type consistency pass done: `SpecialistReservation` (T1) is the shape T4/T6 consume; `DelegationRecord` fields referenced by T5/T7/T9 all exist in T2's interface; `postSteer` signature identical in T3/T6/T8/T12.
+
+## External review responses (2026-08-12, second-session review)
+
+**Accepted and folded in:** delivery claims are now LEASES — claim ≠ delivered, `confirmDelivered` runs only after the injected turn, and Task 9's reconcile releases dead-owner leases, closing the crash-between-claim-and-injection report loss (T2/T4/T9). Parent Stop no longer kills background children — the `interrupt` cascade is foreground-only; `destroy`/`quiesce` still take everything down (T2). Oversized background reports spill their FULL body at completion, so the spill file's "full report" footer is true (T4/T10). The MOIM block replaces its predecessor instead of accumulating — the local KV prefix-cache invalidation this causes while specialists run is a stated, accepted cost (T5). `isOwnerAlive` drops the `/proc` start-time comparison (jiffies-vs-epoch conversion is fiddly and would false-fire or never fire) for an instance-UUID fast path + pid probe; the residual PID-reuse risk is visible-and-interruptible, never lossy (T2). Waves reordered — T13 after T1/T4, T14 isolated in its own wave; the same pass caught T10's undeclared dependency on T4. `drainUnappliedSteers` added — the reviewer's `abort !== null` verification question surfaced a real gap (a steer posted during the child's final step returned `true` but never landed); the invariant itself checks out (:1338 / :1550-1552 bracket the turn exactly) (T3).
+
+**Pushed back:** **Task 14 stays in 1b.** The reviewer read it as bolted-on scope, but it is Destin's explicit 2026-08-12 ruling from this session, and it is not inert without 1c — the per-hire `model` override and ModelSearch work immediately in conversation; only the tier *pickers* wait for 1c's Settings menu. The severability and merge-collision points were valid: it now runs as its own wave and remains cleanly cuttable if Destin reassigns it. **Placeholder rejection stays** — spec §3 mandates it verbatim and it is an observed weak-model failure in the platform research, not speculation; the implementation is simplified to a whole-prompt-only narrow regex per the reviewer's legitimate false-positive concern (T12).
+
+**Stated explicitly (previously implied):** steers and status blocks are history-only. A steer the child ACTED on is not recorded in the child's JSONL, so `resumeSpecialist`'s rebuilt history omits it and 1c's card cannot show a steer trail; `missedSteers` covers un-applied steers only. Accepted for 1b. If 1c wants a visible steer trail, persist steers as `user-message` events in the child's JSONL then — they are already excluded from `SUBAGENT_DISPLAY_TYPES`, so nothing would leak to the parent card.
