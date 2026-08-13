@@ -47,7 +47,7 @@ verify:
 `SessionProvider` is `'claude' | 'native'`. **Depth for every bullet: `youcoded/docs/native-runtime.md` + `provider-dependencies.md`. Siblings: `harness-tools.md` (tools/skills/injection/MCP), `native-permissions.md` (remembered Always-allow rules).**
 
 ## Provider seam (Phase 0) — guard: `ipc-channels.test.ts`
-- **`'gemini'` is GONE** — don't reintroduce it anywhere.
+- **`'gemini'` is GONE** — never reintroduce it.
 - **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`.
 - **`createSession` throws for non-claude providers**; the native branch builds NO PTY worker (guard every `session.worker.X`); needs a `binding` unless resuming.
 - **Reasoning segments are dormant on the CC path** (`data:{}`); App.tsx + BubbleFeed.tsx MUST share predicate `event.data?.text`.
@@ -63,11 +63,11 @@ verify:
 ## Tool loop (`harness-session.ts`) — guards: `harness-session-loop`/`harness-history-rebuild`/`harness-sdk-toolcall-contract`/`permission-engine` tests
 - **The emit surface is FROZEN** — new loop states map onto existing `TranscriptEventType`s only.
 - **Tool-call/result pairing holds EVERYWHERE** (driver, `rebuildHistory`, `fitToContext`) — a dangling tool_call bricks sessions.
-- **An ask PAUSES the turn, not ends it** — no re-`send()` while open; **`PERMISSION_RESPOND` tries the `native-`-prefixed broker first**, then hookRelay.
+- **An ask PAUSES the turn, not ends it** — no re-`send()` while open; **`PERMISSION_RESPOND` tries the `native-`-prefixed broker first**, then hookRelay. **Carve-out: a HUMAN dismissal (broker `dismissed`) ENDS it.**
 - **Permission precedence is two-tier:** tool-layer guards never yield; the destructive deny-list is CONFIG — a remembered Always-allow beats it.
 - **Images travel canonically in the tool result; `adaptForWire` splits per wire at request-build time** — a mid-session model swap can't leak pixels.
 
-## M2 — conversations & sync — guards: `session-meta-parity`/`native-title-feeder`/`holder-takeover` tests
+## M2 conversations/sync — guards: `session-meta-parity`/`native-title-feeder`/`holder-takeover` tests
 - **Native sessions are real Conversation Store rows** (`native/<id>.json`) — invariants: rule `conversations.md` → "Native provider participation". **Android has none of this** (M8).
 - **`lastUsedModel` is portable (`{modelId, providerType, providerLabel}`), never the device-local `binding.providerId`.**
 - **Resume ALWAYS offers `ModelPicker`, NEVER auto-launches a binding**; `bindingOverride` applies BEFORE the eager transcript load; the header is never rewritten.
@@ -75,7 +75,7 @@ verify:
 - **`native-title-feeder.ts` fires once (first `turn-complete`); NEVER touches the session's JSONL.**
 - **Presets express posture as the `modeFor` SEED, not presetRules** — seeded once; explicit `setPermissionMode` wins; `CORE_TOOLS` ≡ `NATIVE_TOOL_NAMES` (guards: `preset-registry`/`tool-registry-manifest`).
 
-## Local reliability (Plan C, master 2026-07-29 PR #268) — guards: `capability-profile`/`known-models`/`engine-context-window`/`compaction`/`harness-compaction`/`harness-tool-presentation`/`statusbar-native-usage` tests
+## Local reliability (Plan C) — guards: `capability-profile`/`known-models`/`engine-context-window`/`compaction`/`harness-compaction`/`harness-tool-presentation`/`statusbar-native-usage` tests
 - **CapabilityProfile resolves in THREE layers and NEVER branches on a model name** (`known-models.ts` is the ONLY modelId inspection); `supportsTools:false` → plain chat.
 - **A local model's REAL context window is read (`/props`) + clamped, never guessed** — ONE number feeds tiering, compaction trigger, StatusBar chip.
 - **Constrained decoding = `--jinja` grammar + `parallel_tool_calls:false`, NEVER a top-level `json_schema`** (local branch only).

@@ -60,9 +60,9 @@ Session lifecycle: sibling rule `native-runtime.md`. **Depth + why for every bul
 - **WebFetch keeps its pre-parse complexity guard (`MAX_TAGS`/`MAX_DEPTH`)** — Readability is synchronous + ~quadratic in DOM depth; the 5MB cap is not a cost bound.
 - **WebSearch walks a data-driven backend chain** (tavily → exa → ddg; ships in-app, refreshes from `raw.githubusercontent.com/itsdestin/youcoded/master/search-chain.json`). **DDG `202` = rate-limited, NEVER retried.** Backend ids from IPC are whitelisted.
 - **Search keys are `safeStorage`-encrypted; `search-providers.json` holds only `secretRef`s**; `search:*` has 5-surface parity; `search:test` never throws (guards: `search-key-store`/`ipc-channels`).
-- **AskUserQuestion rides the permission-ask rail** — the broker threads `decision.updatedInput`; `formatAnswers` is TOTAL (a throw = dangling tool_call = bricked session) — guards: `native-permission-broker`/`ask-user-question-tool`.
+- **AskUserQuestion rides the permission-ask rail** — the broker threads `decision.updatedInput`; `formatAnswers` is TOTAL (a throw = dangling tool_call = bricked session). **A human dismissal ENDS the turn** (broker `dismissed`) — guards: `native-permission-broker`/`ask-user-question-tool`/`harness-session-loop`.
 
-## Skills & injection (M3 items 1/3/5) — guards: `skill-catalog`/`skill-tool-gating`/`injection-budget`/`project-instruction-budget`/`path-triggers`/`rule-injection`/`slash-routing` tests
+## Skills & injection (M3) — guards: `skill-catalog`/`skill-tool-gating`/`injection-budget`/`project-instruction-budget`/`path-triggers`/`rule-injection`/`slash-routing` tests
 - **Injection is MESSAGES, never a prompt edit** (`prompt-assembly.ts` stays byte-stable) — a mid-session prompt change discards the KV cache prefix.
 - **Injected content is bounded by the profile; truncation announces itself** (budgets from the REAL window; unmeasured = small, frontier providers exempt).
 - **The ROOT project-instruction file is OUTLINED to fit (`fitProjectInstructions`), never tail-cut** — every heading survives; the notice says only what happened; **sizing is fixed at session start — `setBinding` does NOT re-apply it.**
@@ -70,7 +70,7 @@ Session lifecycle: sibling rule `native-runtime.md`. **Depth + why for every bul
 - **A rule with no `paths:` is SKIPPED, never global** — an eager rule rides every turn.
 - **`native:*` four-surface parity is pinned** (`ipc-channels.test.ts` → "native:* channel parity").
 
-## MCP (M3 item 4, phase 1) — guards: the seven `mcp-*.test.ts` suites
+## MCP (M3) — guards: the seven `mcp-*.test.ts` suites
 - **MCP secret plaintext NEVER enters `~/.youcoded/mcp.json`** — `secretRef` only; plaintext in `SecretsStore`.
 - **Attachment is WHOLE-SERVER, in registry order, dropping from the END** — a model can't reason over a partial tool set.
 - **Grants are PER-TOOL (`mcp__{server}__{tool}`), not per-server** (`permissionSubject` → `undefined`) — a server update can add a destructive tool (no revocation UI until M5).
