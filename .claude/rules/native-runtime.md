@@ -3,9 +3,10 @@ paths:
   # Split 2026-08-12: harness/{tools,injection,mcp,skills,search}/** moved to
   # harness-tools.md. `*` does not cross slashes, so `harness/*` = top-level
   # harness files only (harness-session, native-session-host, capability-profile, …).
+  # Split 2026-08-12: harness/specialists/** moved to native-specialists.md
+  # (rule-body budget) — content moved, glob moved with it, no duplication.
   - "youcoded/desktop/src/main/harness/*"
   - "youcoded/desktop/src/main/harness/prompts/**"
-  - "youcoded/desktop/src/main/harness/specialists/**"
   - "youcoded/desktop/src/main/providers/**"
   - "youcoded/desktop/src/main/native-home.ts"
   - "youcoded/desktop/src/renderer/components/native-send.ts"
@@ -26,9 +27,6 @@ verify:
   - path: youcoded/desktop/src/main/harness/message-size.ts
   - path: youcoded/desktop/src/main/harness/capability-profile.ts
     contains: "exposeSkillCatalog"
-  - path: youcoded/desktop/src/main/harness/specialists/registry.ts
-  - path: youcoded/desktop/src/main/harness/specialists/child-ask-policy.ts
-  - test: youcoded/desktop/tests/specialist-run.test.ts
   - test: youcoded/desktop/tests/wire-adapter.test.ts
   - test: youcoded/desktop/tests/harness-session.test.ts
   - test: youcoded/desktop/tests/native-session-host.test.ts
@@ -84,9 +82,3 @@ verify:
 - **Two-stage compaction prunes then summarizes, and FAILS SAFE** — never drops a message, cuts on a USER boundary; the summary is abort-raced, 30s-bounded; failure leaves the pruned history.
 - **Native auto-compaction rides `data.autoCompaction`** (only `action.auto` bypasses `compactionPending`; native-only).
 - **`native:usage-report` is a STATUS channel, not a transcript type**; chips read `turn-complete` usage (turn END).
-
-## Specialists (plan 1a) — guards: `specialist-run`/`specialist-registry`/`specialist-child-ask-policy` tests
-- **Depth-by-omission**: no `SpecialistDefinition.allowedTools` lists `'Task'`; `isSpecialistChild: true` is a second gate — no recursion path exists to bound.
-- **Only `tool-use`/`tool-result`/`assistant-text` re-emit as stamped copies, NEVER persisted under the parent** — a stamped `turn-complete` would fire the parent's record listener/title feeder off a child turn.
-- **Children are hidden from every list by construction**: `SessionStore.list()` defaults `includeChildren: false`; `createChild` mints no Conversation Store record, has no IPC route.
-- **A child never reaches a real user ask**: `askUser: childAskPolicy()` replaces the `PermissionBroker` — a broker ask under a child's id has no owning window and would hang forever.
