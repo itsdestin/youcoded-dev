@@ -151,7 +151,7 @@ Phase 1 works but has no management surface. Phase 2 is the adopt flow, the sett
 
 ### Step 9 — M7 subagents, then orchestration
 
-**DESIGNED 2026-08-11 — spec approved by Destin:** `docs/active/specs/2026-08-11-native-specialists-design.md` (user-facing name "specialists"; stage one = Task tool as child sessions, stage two = declarative plans; ratifies the 2026-07-19 orchestration spec's DAG-over-JS decision). Research base: `docs/active/investigations/2026-08-11-subagent-platform-research.md`. Implementation plan doc still to be written before code.
+**DESIGNED 2026-08-11 — spec approved by Destin:** `docs/active/specs/2026-08-11-native-specialists-design.md` (user-facing name "specialists"; stage one = Task tool as child sessions, stage two = declarative plans; ratifies the 2026-07-19 orchestration spec's DAG-over-JS decision). Research base: `docs/active/investigations/2026-08-11-subagent-platform-research.md`. **SHIPPED 2026-08-12 (stage one, plan 1a):** foreground specialists end-to-end merged to youcoded master (8db46236) — Task tool, child sessions, envelope consent with deny-list cut-through, subagent-card rendering, headroom-capped reports, engine probes measured. Plan archived: `docs/archive/plans/2026-08-12-native-specialists-plan-1a-core.md`. Remaining: plan 1b (background/durability/steering/timeout-redirect) and 1c (definitions folder/CC mapping/chat UI) — not yet written.
 
 **Subagents first.** The Task tool as child sessions, with a parent-session pointer and a condensed result travelling back up. The session store was deliberately designed so this lands without a schema change. Deferred once already, but core.
 

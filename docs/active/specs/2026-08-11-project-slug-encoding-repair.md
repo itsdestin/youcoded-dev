@@ -582,33 +582,43 @@ tests/conversations-service.test.ts   (:16, 779)
   production callers; Android reads `transcript_path` from the hook. Mirroring
   the new rule into dead code makes it harder to remove later and creates a
   false impression of parity coverage.
-- **`runtime/SyncService.kt:231` (`getCurrentSlug`) — SPLIT, do not freeze.** An
-  earlier revision said "freeze" on the claim that it is a device/sync key with
-  no CC-directory lookup behind it. **That claim is false** — three of its four
-  call sites construct `~/.claude/projects/<slug>/` paths, and all three are
-  silently broken today (§4). It is the same one-function-two-jobs trap as
-  desktop's §3, so it gets the same split:
-  - **Job 2 (freeze):** the sync key stamped into `conversation-index.json`
-    (`:1276`, `updateConversationIndex`). It slugs
-    `bootstrap.homeDir.canonicalPath` = `/data/data/com.youcoded.app/files/home`;
-    mirroring it would change the key on **every Android device** and orphan
-    their sync state. Stays on the frozen rule, renamed so its job is
-    unmistakable. (Debug/releasetest builds use `applicationIdSuffix` `.dev` /
-    `.releasetest` — more dots, same divergence class.)
-  - **Job 1 (mirror):** the three directory operations — `pushSession`
-    (`:1524`), `rewriteProjectSlugs` (`:1384`), `aggregateConversations`
-    (`:1414`) — switch to a Kotlin `ccProjectSlug` mirror (full rule, cap
-    included), anchored to the **same §8 probe fixtures** as desktop, never to
-    the TS implementation. Where the hook-supplied `transcript_path`
-    (`EventBridge.getTranscriptPath`) is still available at session close,
-    `pushSession` should prefer it over any derivation, per §5.0's design.
-  - Fix the doc comment (`:226-229`), which currently claims the frozen rule
-    matches CC's algorithm. Note `getCurrentSlug` already calls `canonicalPath`
-    "to resolve symlinks" — the one place in the codebase that gets §1 point 3
-    right, by accident of a different requirement.
-  - **Open question (§8):** what consumes the `conversation-index.json` slug on
-    peer devices — if any consumer resolves it against a CC projects directory,
-    the frozen key carries the same latent bug one hop out.
+- **`runtime/SyncService.kt:231` (`getCurrentSlug`) — RE-KEY everything to the
+  CC mirror; no freeze.** (Decision by Destin 2026-08-12, resolving the §8 open
+  question after the Task 9 investigation.) Two earlier revisions each fell to
+  a false premise: "freeze" assumed the slug is an opaque sync key (false —
+  three of four call sites construct `~/.claude/projects/<slug>/` paths, §4),
+  and the "split" revision assumed freezing the `conversation-index.json` stamp
+  (`:1276`) preserves peer sync state. The investigation refuted that too:
+  - The index slug **is resolved as a real path** on restore:
+    `pullDriveConversationsRecent` (`:1042-1095`) uses each entry's `slug`
+    verbatim to build the remote fetch path (`conversations/<slug>/<sid>.jsonl`,
+    `:1074`) AND the local placement under `~/.claude/projects/` (`:1080`).
+  - The remote `conversations/` corpus is **already keyed by CC's real slugs**:
+    the bulk backup (`:680-697` Drive, `:813` GitHub) mirrors the actual local
+    `projects/` dirs — the names CC itself wrote — not `getCurrentSlug()` output.
+  - The frozen stamp is the disconnected party, not the protected one:
+    `pushSession` (`:1524-1526`) looks for `projects/<frozenSlug>/` which never
+    exists on Android (home has dots) and returns early — session-end push has
+    **never worked** — and the recent-50 restore fetches remote paths that the
+    bulk push never creates, so it silently pulls nothing for Android entries.
+  - Re-keying orphans nothing: the slug is per-entry data merged by sessionId
+    (`mergeConversationIndex`, `:1328-1356`); old entries keep their old slugs
+    and stay coherent with wherever their files were actually pushed. The only
+    invariant that matters is stamp-and-push-target agreeing **within one
+    device at one time** — which re-keying preserves and freezing breaks.
+
+  So: every `getCurrentSlug()` call site — the index stamp (`:1276`), the
+  directory ops `rewriteProjectSlugs` (`:1384`) / `aggregateConversations`
+  (`:1414`), and `pushSession`'s local lookup AND remote target (`:1524`,
+  `:1539`, `:1548`) — moves to a Kotlin `ccProjectSlug` mirror (full rule, cap
+  included), anchored to the **same §8 probe fixtures** as desktop, never to
+  the TS implementation. Where the hook-supplied `transcript_path`
+  (`EventBridge.getTranscriptPath`) is still available at session close,
+  `pushSession` prefers it over any derivation, per §5.0's design. Fix the doc
+  comment (`:226-229`), which claims the old rule matches CC's algorithm. Note
+  `getCurrentSlug` already calls `canonicalPath` "to resolve symlinks" — the
+  one place in the codebase that gets §1 point 3 right, by accident of a
+  different requirement; keep that step.
 
 Net: after this change there are **two** live implementations of the CC mirror —
 desktop TS and Android Kotlin — both pinned to the same externally-generated
@@ -981,16 +991,34 @@ below. The `$HOME`-fork causation question is now **closed**.
   each, and record the directory CC creates. Those become §7's fixture. This is
   the only evidence that will distinguish a correct fix from a third occurrence.
 
-- **What consumes the Android sync key?** §5.3 freezes the
-  `conversation-index.json` slug on the grounds that re-keying orphans peer
-  state. Verify what peers actually *do* with that field — if any consumer
-  resolves it against a CC projects directory, the frozen key carries the same
-  latent bug one hop out, and freeze-vs-migrate must be revisited.
+- ~~**What consumes the Android sync key?**~~ **Settled 2026-08-12 — the freeze
+  premise was false, and Destin chose to re-key (see §5.3 for the full evidence
+  chain).** The index slug is consumed as a real path by
+  `pullDriveConversationsRecent` (`SyncService.kt:1061→1074→1080`); the remote
+  corpus is already CC-real-keyed (bulk push `:695` uses `slugDir.name`);
+  Android's per-session push has never worked (`:1524-1526` early-returns on a
+  never-existing frozen-slug path). Re-keying the stamp to the CC mirror
+  reconnects the loop and orphans nothing (slugs are per-entry, merged by
+  sessionId). §5.3 rewritten accordingly; the sole remaining Android slug rule
+  is the fixture-anchored `CcProjectSlug` mirror.
 
-- **How does the sweep key a materialized transcript after the record repair —
-  by record or by directory?** §6.0's case-C aftermath depends on the record
-  winning (`reconciler.ts:61` suggests it does). Verify before the repair
-  ships; §11's `destin/`-bucket check assumes the answer.
+- ~~**How does the sweep key a materialized transcript after the record repair —
+  by record or by directory?**~~ **Settled 2026-08-12 — the record wins.**
+  `reconciler.ts:56-62` (`resolveProjectName`) short-circuits on
+  `existing?.projectName` before the slug-derived fallbacks, and both call
+  sites (`reconciler.ts:165`, `:177`) feed that name into `transcriptRef` and
+  the `safeMirror` bucket. §6.0's case-C aftermath and §11's `destin/` check
+  stand. Two side findings, both compatible with §6: (a) the *live*
+  turn-complete mirror (`conversations/service.ts:362-380`) recomputes its
+  bucket from `path.basename(ctx.cwd)` and never reads the record — benign,
+  because §6.2 sets `projectName = basename(P)`, the same value; (b) the
+  Resume Browser (`session-browser.ts:320-427`) lists sessions purely from
+  directory scans — consistent, because §6 physically moves wrong copies
+  rather than only rewriting records (and the case-C fork staying in
+  `-home-destin` is §6.0's documented behavior). A pinning test lands with
+  Phase 6 (plan Task 12): reconcile a tmp projects tree where the record says
+  `RealProj` but a known folder competes for the same slug, assert the mirror
+  bucket is `RealProj`; a no-record variant proves the fallback tier engages.
 
 - ~~**Causation of the `$HOME` fork.**~~ **Settled — the app causes it.**
   `26d919ff` and `3c36fd7e` carry store records with `originalPath: '/home/destin'`

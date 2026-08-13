@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-08-12
 revised: 2026-08-12 (external review 2 — child ask policy, real permission types, Agent-card rendering, Skill/MCP suppression, fixture corrections, scope decisions)
 spec: docs/active/specs/2026-08-11-native-specialists-design.md

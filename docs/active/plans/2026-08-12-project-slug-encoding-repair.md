@@ -154,9 +154,10 @@ describe('ccProjectSlug — anchored to directories CC itself created', () => {
   it('caps at 200 and hashes the ORIGINAL argument, not the slug', () => {
     const long = '/x/' + 'b'.repeat(300);
     const out = ccProjectSlug(long);
-    expect(out.length).toBe(CC_SLUG_MAX + 1 + ccHash(long).length);
-    expect(out.slice(0, CC_SLUG_MAX)).toBe(long.replace(/[^a-zA-Z0-9]/g, '-').slice(0, CC_SLUG_MAX));
-    expect(out.slice(CC_SLUG_MAX + 1)).toBe(ccHash(long));
+    // '98hajq' computed with an INDEPENDENT hash reimplementation (review
+    // fix 2026-08-12) — never with this module's own ccHash (spec §2).
+    expect(out).toBe('-x-' + 'b'.repeat(197) + '-98hajq');
+    expect(out.length).toBe(207);
   });
 
   it('drive-normalizes a lowercase drive (OUR input normalization, not CC rule)', () => {
@@ -969,68 +970,37 @@ git add app/src/main/kotlin/com/youcoded/app/runtime/CcProjectSlug.kt app/src/te
 git commit -m "feat(android): CC project-slug mirror anchored to the 2.1.228 probe fixtures"
 ```
 
-### Task 11: SyncService two-job split + dead-code deletion
+### Task 11: SyncService re-key to the CC mirror + dead-code deletion
+
+> **REVISED 2026-08-12** after the Task 9 investigation tripped the STOP gate:
+> the "frozen sync key" premise was false (the index slug is resolved as a real
+> path on restore; the remote corpus is already CC-real-keyed; per-session push
+> never worked). Destin chose **re-key everything to the CC mirror** — spec
+> §5.3 (rewritten) carries the full evidence chain. There is no frozen rule on
+> Android anymore; `getCurrentSlug` is replaced outright.
 
 **Files:**
-- Modify: `app/.../runtime/SyncService.kt:222-241` (rename + doc), `:1276`, `:1384`, `:1414`, `:1523-1526`
+- Modify: `app/.../runtime/SyncService.kt:222-241` (replace `getCurrentSlug` + doc comment), `:1276`, `:1384`, `:1414`, `:1522-1548` (pushSession)
 - Modify: `app/.../runtime/SessionService.kt:642-646` (pushSession call site)
 - Modify: `app/.../parser/TranscriptWatcher.kt` (delete `cwdToProjectSlug` `:55-66` AND the unused `projectsDir` constructor param `:27`)
 - Modify: `app/.../runtime/SessionRegistry.kt:53-54` (stop constructing/passing `projectsDir`)
 - Delete: `app/src/test/kotlin/com/youcoded/app/parser/CwdToProjectSlugTest.kt`
-- Test: `app/src/test/kotlin/com/youcoded/app/runtime/SyncSlugSplitTest.kt` (new)
 
 **Interfaces:**
 - Consumes: `CcProjectSlug.slug` (Task 10).
-- Produces: `SyncService.syncIndexKey(): String` (the FROZEN old `getCurrentSlug`, used ONLY at `:1276`) and `SyncService.ccHomeSlug(): String` (mirror, used by the three directory ops). `pushSession(sessionId: String, transcriptPath: String? = null)`.
+- Produces: `SyncService.ccHomeSlug(): String` (CC mirror of the canonical home path — the ONLY Android slug rule). `pushSession(sessionId: String, transcriptPath: String? = null)`.
 
-- [ ] **Step 1: Write the failing test:**
-
-```kotlin
-// app/src/test/kotlin/com/youcoded/app/runtime/SyncSlugSplitTest.kt
-package com.youcoded.app.runtime
-
-import org.junit.Assert.assertEquals
-import org.junit.Test
-
-/** Spec §5.3/§7: the sync key is FROZEN (re-keying orphans every device's
- *  sync state); the directory ops use the CC mirror (the frozen dotted slug
- *  points at a directory CC never writes — that bug silently killed
- *  session-end push, /resume aggregation, and cross-device symlinking). */
-class SyncSlugSplitTest {
-    private val home = "/data/data/com.youcoded.app/files/home"
-
-    @Test fun `frozen sync key is byte-identical to the historical rule`() {
-        assertEquals(
-            "-data-data-com.youcoded.app-files-home",   // dots PRESERVED — frozen
-            SyncService.frozenSlugFor(home),
-        )
-    }
-
-    @Test fun `directory ops use CC's real dashed slug`() {
-        assertEquals(
-            "-data-data-com-youcoded-app-files-home",   // dots collapsed — CC's rule
-            CcProjectSlug.slug(home),
-        )
-    }
-}
-```
-
-- [ ] **Step 2: Run to verify fail** (`frozenSlugFor` missing).
-
-- [ ] **Step 3: Implement the split in `SyncService.kt`.** Replace `:222-241` with:
+- [ ] **Step 1: Replace `SyncService.kt:222-241` with:**
 
 ```kotlin
     // =========================================================================
-    // Slug generation — TWO rules, ON PURPOSE (spec §5.3; desktop mirror:
-    // slug-encoding.ts). Do NOT re-unify:
-    //   syncIndexKey() — FROZEN historical rule (dots preserved). It is the
-    //     cross-device key stamped into conversation-index.json; changing it
-    //     orphans every Android device's sync state.
-    //   ccHomeSlug()   — CC's REAL encoding. Everything that touches
-    //     ~/.claude/projects/<slug>/ must use this: the frozen slug names a
-    //     directory CC never writes (the home path contains dots), which
-    //     silently broke pushSession, rewriteProjectSlugs, and
-    //     aggregateConversations until 2026-08-12.
+    // Slug generation — ONE rule: CC's real encoding, mirrored by CcProjectSlug
+    // (fixture-anchored; desktop mirror: slug-encoding.ts). The old 4-char
+    // replace rule was deleted 2026-08-12: it named directories CC never
+    // writes (the home path contains dots), which silently killed session-end
+    // push, /resume aggregation, cross-device symlinking, AND the
+    // conversation-index stamp it fed (spec §5.3 — the index slug is resolved
+    // as a real path on restore, so it must be the real CC slug too).
     // =========================================================================
 
     private fun canonicalHome(): String = try {
@@ -1041,20 +1011,11 @@ class SyncSlugSplitTest {
         bootstrap.homeDir.absolutePath
     }
 
-    /** FROZEN sync key — see block comment above. */
-    fun syncIndexKey(): String = frozenSlugFor(canonicalHome())
-
-    /** Exposed for the freeze test only. */
-    fun frozenSlugFor(path: String): String =
-        path.replace('/', '-').replace('\\', '-').replace(':', '-').replace(' ', '-')
-
     /** CC's real directory name for the home project. */
     fun ccHomeSlug(): String = CcProjectSlug.slug(canonicalHome())
 ```
 
-(the test calls `frozenSlugFor` statically — if `SyncService` can't be instantiated in a unit test, make `frozenSlugFor` a `companion object` function; adjust the test accordingly.)
-
-- [ ] **Step 4: Re-point the four call sites:** `:1276` `getCurrentSlug()` → `syncIndexKey()`; `:1384` and `:1414` `getCurrentSlug()` → `ccHomeSlug()`; `:1523-1526` becomes:
+- [ ] **Step 2: Re-point every call site.** `:1276` `getCurrentSlug()` → `ccHomeSlug()`; `:1384` and `:1414` `getCurrentSlug()` → `ccHomeSlug()`; `pushSession` (`:1522-1526`) becomes:
 
 ```kotlin
     /** Push a single session's JSONL to all backends (called on session close).
@@ -1064,22 +1025,29 @@ class SyncSlugSplitTest {
         val fromHook = transcriptPath?.let { java.io.File(it) }?.takeIf { it.isFile }
         val jsonlFile = fromHook ?: java.io.File(claudeDir, "projects/${ccHomeSlug()}/$sessionId.jsonl")
         if (!jsonlFile.exists()) return
+        // Remote bucket = the transcript's REAL containing dir name (CC wrote
+        // it), keeping session-end push consistent with the bulk push, which
+        // mirrors projects/ dirs verbatim. Fallback covers a hook path outside
+        // projects/ (should not happen; belt and suspenders).
+        val slug = jsonlFile.parentFile?.name ?: ccHomeSlug()
 ```
 
-and at `SessionService.kt:642-646`, pass the hook path where the session object is in scope (verify the local variable name when editing; the map may already be cleared at session end — the derived fallback covers that):
+The rest of `pushSession` (`:1528-1548`) keeps using its existing `$slug` references (remote Drive target `conversations/$slug/` at `:1539`, GitHub `conversations/$slug` at `:1548`) — they now pick up the real dir name.
+
+- [ ] **Step 3: SessionService.kt:642-646** — pass the hook path where the session object is in scope (verify the local variable name when editing; the transcript-path map may already be cleared at session end — the derived fallback covers that):
 
 ```kotlin
 sync.pushSession(sessionId, session.ptyBridge?.getEventBridge()?.getTranscriptPath(sessionId))
 ```
 
-- [ ] **Step 5: Delete the dead code.** Remove `TranscriptWatcher.kt:55-66` (`cwdToProjectSlug` + its KDoc) AND the `projectsDir` constructor param at `:27` (referenced nowhere else in the file); update `SessionRegistry.kt:53-54` to stop building/passing it; delete `CwdToProjectSlugTest.kt`. Then prove totality: `rg -n 'cwdToProjectSlug|getCurrentSlug' app/src` → zero hits.
+- [ ] **Step 4: Delete the dead code.** Remove `TranscriptWatcher.kt:55-66` (`cwdToProjectSlug` + its KDoc) AND the `projectsDir` constructor param at `:27` (referenced nowhere else in the file); update `SessionRegistry.kt:53-54` to stop building/passing it; delete `CwdToProjectSlugTest.kt`. Then prove totality: `rg -n 'cwdToProjectSlug|getCurrentSlug' app/src` → **zero hits**.
 
-- [ ] **Step 6: Run + commit**
+- [ ] **Step 5: Run + commit.** No new test file: the slug rule itself is pinned by `CcProjectSlugTest` (Task 10, fixture-anchored), the re-pointing is proven total by the Step 4 grep plus compilation, and `SyncService` has no existing unit-test harness to extend (it needs a live `bootstrap`). Behavioral verification of the reconnected push/restore loop happens on-device in Task 18.
 
-Run: `cd youcoded && ./gradlew test` → green (build compiles the split; the deleted param would fail the build if referenced anywhere).
+Run: `cd <worktree> && ./gradlew test` → green.
 
 ```bash
-git commit -am "fix(android): split SyncService slugs — frozen sync key vs CC mirror for projects-dir ops; delete dead watcher slug"
+git commit -am "fix(android): re-key SyncService to the CC slug mirror everywhere; delete dead watcher slug (spec §5.3)"
 ```
 
 ---
@@ -1098,6 +1066,13 @@ The case-C aftermath (spec §6.0) assumes the record's `projectName` wins over t
 - [ ] **Step 3:** Record the verdict in the spec §8 bullet (same commit pattern as Task 9). Commit.
 
 ### Task 13: Repair core — uuid sets, A/B/C classification
+
+> **REVISED at review time (2026-08-12):** set-membership-only comparison was
+> found to bless a same-uuid-different-content pair as subset — the exact
+> data-loss direction §6.0 forbids. `classifyPair` now also hashes each line
+> per uuid; any shared uuid whose content differs → `'fork'` (the safe,
+> never-automated label). The code blocks below predate that fix; the module
+> as committed is authoritative.
 
 **Files:**
 - Create: `desktop/src/main/conversations/slug-repair.ts` (core section)
@@ -1488,6 +1463,13 @@ export function repairHomeForks(opts: RepairOpts): RepairFinding[] {
 - [ ] **Step 4: Run → pass; `bash scripts/verify.sh <worktree>`. Step 5: Commit** `git commit -am "feat(repair): §6.1 \$HOME-fork repair — R2-owned, top-level only, case C surfaced untouched"`
 
 ### Task 16: Repair step 6.2 — records and sync-space buckets, per session
+
+> **REVISED at review time (2026-08-12):** the keeper-by-uuid-count design below
+> auto-resolved case-C forks (spec §6.0 forbids automating those). As committed,
+> keeper selection is fork-gated via `classifyPair`: any non-containment pair →
+> snapshot all, surface `fork-surfaced`, skip the session. A record-only repair
+> now emits `record-repaired` (not `moved`), and `basename(homeDir)` is in the
+> protected bucket set structurally. The code blocks below predate that fix.
 
 **Files:**
 - Modify: `desktop/src/main/conversations/slug-repair.ts` (append)

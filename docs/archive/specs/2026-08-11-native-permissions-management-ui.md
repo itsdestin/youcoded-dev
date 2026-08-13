@@ -1,5 +1,5 @@
 ---
-status: active — implemented and green on `feat/native-permissions-ui`; awaiting PR + merge, then archive
+status: shipped
 created: 2026-08-11
 type: spec
 program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
