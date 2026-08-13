@@ -586,3 +586,35 @@ that matters; the Permissions explainer popup is the right home.
 - `tests/helpers/guard-scope.ts` does not scan `components/<subdir>/`.
 - Five-surface IPC parity if any channel is added — none is expected here; `grantScope`
   rides the existing `respondToPermission` payload.
+
+## 15. Amendments (2026-08-13, from the implementation plan)
+
+The implementation plan (`docs/active/plans/2026-08-13-bash-always-allow-rule-shape.md`)
+narrows five decisions above. Recorded here so the spec does not contradict its own plan
+while the work is in flight. Each is a narrowing (allows less) or a simplification (fewer
+moving parts).
+
+| # | This spec said | The plan does | Why |
+|---|---|---|---|
+| A1 | §3.2/§4.3 — every wide rule stores an `except` array of shell operators | The matcher (`ruleMatches`) owns operator-crossing; no `except` field exists | Cannot be forgotten by a future rule-builder; removes a persisted array, a 5th identity field, and an order-insensitive comparison |
+| A2 | §5.1 — the branch rung "covers the flag forms", `--force` included | A second matcher rule vetoes `--delete`, `-d`, `--prune`, `--mirror`, `--all`, `--force`, `-f`, `--force-with-lease`, `--hard` on any pattern with text after its wildcard | A grant reading "pushing to feat/x" that deletes feat/x — or every *other* branch, via `--prune` — is the lie this item exists to end. `-u`, `-q`, `--set-upstream` are still covered |
+| A3 | §4.4 — a push that cannot be scoped is offered nothing | It still gets the **exact** rung; only the wide rung is suppressed | Remembering `git push origin master feat/x` byte-for-byte is exactly as safe as remembering `rm -rf build`, which §5.2 already allows. Refusing it means a repeated push that can never be answered permanently |
+| A4 | §4.4/§5.2 — danger is judged from the approving command | Danger is judged from the approving command **and** from what the derived rule would admit (a fixed hostile corpus, one entry per deny-list family) | §5.2's check misses `git --no-pager log`: its second token is a flag, so the derived rung is `git*`, offered as "Any git command" — which covers pushes and hard resets and outranks the deny-list once stored |
+| A5 | §4.5 — a vetoed ask tells the user why (a field threaded engine → broker → dispatcher → card) | Dropped from this item. The caveat is stated **up front in the option's own wording** (settled in the workbench round) and the after-the-fact explanation is logged to ROADMAP | It explained only one of the two re-ask causes — §5.3's flag-after-refspec case is a non-match, not a veto — so the user still could not rely on being told. Four files and a copy decision for half a promise |
+
+Also new, not decided above:
+
+- `git push origin HEAD` and `git push origin @` are treated exactly like a bare
+  `git push` (no grant at any width). `HEAD` resolves to whatever branch is checked out
+  when the command RUNS, so §5.1's "the branch changes underneath the grant" applies to
+  them verbatim.
+- `git push origin :feat/x` (delete form) and `git push origin +feat/x` (force form) get
+  the exact rung but no branch rung: a rung labelled "pushing to feat/x" would misdescribe
+  both.
+- The hostile corpus of A4 deliberately does NOT contain a plain `git push origin master`.
+  Pushing to master is something D4 says the user may grant, so it is not hostile
+  regardless of intent — including it would refuse the very rung §5.1 exists to build.
+  `git*` is still caught, by the `--delete`, `--prune` and `git reset --hard` entries.
+- Commands are stored VERBATIM, never trimmed. `permissionSubject` hands the engine
+  `args.command` unchanged, so a trimmed pattern would differ from the subject by a
+  character the user cannot see and the grant would silently never fire again.
