@@ -1,9 +1,10 @@
 ---
-status: draft
+status: shipped
 created: 2026-08-12
 type: spec
+shipped: 2026-08-13
 related:
-  - docs/active/handoffs/2026-08-12-tool-streaming-visibility.md
+  - docs/archive/handoffs/2026-08-12-tool-streaming-visibility.md
   - ROADMAP.md → "Show progress while a tool call's arguments stream"
 ---
 

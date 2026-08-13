@@ -1,8 +1,9 @@
 ---
-status: draft
+status: shipped
 created: 2026-08-12
 type: plan
-spec: docs/active/specs/2026-08-12-tool-arg-streaming-visibility.md
+shipped: 2026-08-13
+spec: docs/archive/specs/2026-08-12-tool-arg-streaming-visibility.md
 ---
 
 # Preparing Tool Cards Implementation Plan

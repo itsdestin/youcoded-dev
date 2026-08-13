@@ -6,9 +6,9 @@ status: draft
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Stop the artifact tracker filing in-project files as `external` artifacts with a relative `absolutePath`, and repair the 58 records already written that way — which make the artifact viewer report existing files as "This file is no longer on disk."
+**Goal:** Stop the artifact tracker filing in-project files as `external` artifacts with a relative `absolutePath`, and repair the 58 records already written that way — which make the artifact viewer and the Session Drawer report existing files as "no longer on disk."
 
-**Architecture:** One producer fix, two consumer guards, one data repair. The producer is the pure shared helper `resolveTrackedPath`, which falls through to `external` for any path it does not recognise as under the project root — including relative paths, which the native harness legitimately emits. A new branch classifies a relative recorded path as `internal`, since a relative `file_path` from the harness is relative to the session cwd, which *is* the project root. The consumer guards (desktop `write-authorization.ts`, Android `SessionService.kt`) refuse a non-absolute `absolutePath` rather than handing it to `realpath`/`File()`, which silently resolve against the **process** cwd. The repair then re-runs every stored external path through the *fixed* classifier, so it is correct by construction rather than by a second, hand-written set of rules.
+**Architecture:** One producer fix, one guard applied at every path-resolution site, one data repair. The producer is the pure shared helper `resolveTrackedPath`, which falls through to `external` for any path it does not recognise as under the project root — including relative paths, which the native harness legitimately emits. A new branch classifies a relative recorded path as `internal`, because a relative `file_path` from the harness is resolved against the session cwd, which is *literally the same value* the tracker passes as `projectRoot`. The guard (`isAbsoluteRecorded`) refuses a non-absolute `absolutePath` rather than handing it to `realpath`/`fs.access`/`File()`, which silently resolve against the **process** cwd. The repair then re-runs every stored external path through the *fixed* classifier, so it is correct by construction rather than by a second, hand-written set of rules.
 
 **Tech Stack:** TypeScript (Electron main + shared), vitest; Kotlin (Android), JUnit.
 
@@ -17,7 +17,7 @@ status: draft
 - `src/shared/artifacts/resolve-tracked-path.ts` must stay **pure** — no `fs`, no `path`, no `os` imports. It is imported by the renderer and unit-tested without a filesystem. The migration helper (Task 4) inherits this constraint for the same reason.
 - Desktop and Android both implement `artifacts:get` and `artifacts:save` independently. A guard added to one needs the other (`ipc-channels.test.ts` pins three-surface parity).
 - Annotate every non-trivial edit with a WHY comment (workspace rule — Destin is a non-developer and relies on them).
-- **Never run the migration, or any script, against a live sidecar** — not `/home/destin/youcoded-dev/.youcoded/artifacts.json`, not `/home/destin/.youcoded/artifacts.json`. It ships as app code that runs on project open. All migration tests use fixtures in `os.tmpdir()`. Live-app-safety rule.
+- **Never run the migration, or any script, against a live sidecar** — not `/home/destin/youcoded-dev/.youcoded/artifacts.json`, not `/home/destin/.youcoded/artifacts.json`. It ships as app code. All migration tests use fixtures in `os.tmpdir()`. Live-app-safety rule.
 - The migration must never delete an artifact's history. Duplicates are **merged**, never dropped.
 
 ## Background: verified findings
@@ -27,19 +27,24 @@ Established by direct inspection before this plan was written. An implementer sh
 | Fact | Evidence |
 |---|---|
 | The live app's process cwd is `/home/destin`, not the project root | `readlink /proc/<pid>/cwd` on the running Electron processes |
+| **A relative harness path and the tracker's `projectRoot` are the SAME value** — this is an identity, not an inference | `App.tsx:1507` sets `projectRoot = session.cwd`; `harness/tools/write.ts:19` calls `resolveP(args.file_path, ctx.cwd)`, and `resolveP` is `path.resolve(cwd, p)` (`harness/tools/guards.ts:31-33`). No tilde expansion, no other base. Forecloses the "what if the session cwd is a subdirectory" objection |
 | 18 sidecar records are `kind: "external"` with a **relative** `absolutePath` | `.youcoded/artifacts.json`, dates 2026-07-20 → 2026-08-13 |
 | 13 of those 18 name a file that really exists under the project root | existence test against `/home/destin/youcoded-dev/<relpath>` |
 | A further 40 records hold Windows `C:/Users/desti/...` paths, which node also treats as relative on Linux | same sidecar |
 | **10 of the 18 already have an internal twin at the same path** — `docs/MAP.md`, `ROADMAP.md`, `flappy-bird/styles.css`, `bowling.html`, … | join of relative-external `absolutePath` against internal `path` |
 | 8 of the 40 Windows records point outside any project root (`.claude/plugins/…`, `AppData/Local/Temp/claude-desktop-attachments/paste-*.png`) | inspection of the 40 |
-| The native harness `Write` accepts a relative `file_path` and resolves it internally, but the transcript event carries the **raw** arg | `harness/tools/write.ts:19-22` (`resolveP(args.file_path, ctx.cwd)`) |
+| Simulating this plan's algorithm on the live sidecar: **48 reclassified (18 relative + 30 Windows-remapped), 13 merged** | Python reimplementation of `resolveTrackedPath` + the merge rule, run read-only against a parse of `.youcoded/artifacts.json` |
+| The sidecar is written continuously by the running app — 2,811 artifacts at one measurement, 2,839 twenty minutes later | two reads during planning; **this is why the verification asserts invariants rather than counts** |
+| **FOUR desktop sites resolve a record's `absolutePath`, not two** | `ipc-handlers.ts:3588` (GET → `authorizeArtifactRead`), `:3727` (SAVE → `authorizeArtifactWrite`), `:4091` (CHECK_EXISTENCE → raw `fs.access`), `projects-index.ts:42` (`countArtifacts` → raw `fs.access`). `write-authorization.ts` is NOT a chokepoint |
+| **The Session Drawer is the only surface where a relative external is visible at all** | Project View requires externals to be pinned (`visible-artifacts.ts:62`); the drawer shows every session record. Its "no longer on disk" label comes from CHECK_EXISTENCE, not from `artifacts:get` — `SessionDrawer.tsx:42,145` |
+| The viewer's own "This file is no longer on disk." comes from `artifacts:get` returning `orphan` | `ActiveArtifactView.tsx:433` |
 | Save is hard-blocked for orphans, so the stray-write path is **latent, not live** | `ActiveArtifactView.tsx:278` — `if (content === null) return false;` |
-| `detectOrphan` was deleted from desktop as dead code; the Kotlin twin has test-only callers | `project-manager.ts:84-88`; `rg detectOrphan app/src` |
-| Android's `artifacts:get` has the identical defect and **is** live | `SessionService.kt:3320` — `File(artifact.absolutePath!!)` |
+| `detectOrphan` was deleted from desktop as dead code; the Kotlin twin has test-only callers | `project-manager.ts:84-88`; `ProjectManager.kt:118-130`; `rg detectOrphan app/src` |
+| Android's `artifacts:get`/`save` have the identical defect and **are** live; Android's `artifacts:check-existence` is a stub that always returns no missing ids | `SessionService.kt:3319`, `:3446`, `:3619-3622` |
 | `manualIncludes`/`manualExcludes` key on **paths**, not artifact ids | `types.ts:52-54`, `visible-artifacts.ts:46-47` — so merging records dangles no reference |
-| Neither platform validates `$schema` on read (desktop only writes it; Android `optInt`s it) | `artifact-store.ts:114,127`; `SidecarSchema.kt:163` — so a version bump is safe in both directions |
+| `appendVersion` only writes `$schema` when CREATING a sidecar; otherwise it round-trips whatever was on disk | `artifact-store.ts:114,127` — **this is why a `$schema` marker is the wrong run-once gate** (see "Key design decision 2") |
 
-## Key design decision: the migration reuses the fixed classifier
+## Key design decision 1: the migration reuses the fixed classifier
 
 The repair does **not** implement its own "is this path in the project" rules. It re-runs each external record's stored `absolutePath` through `resolveTrackedPath` — the same function Task 1 fixes — and reclassifies whatever now comes back `internal`.
 
@@ -47,12 +52,24 @@ This is what makes the repair safe without a filesystem check:
 
 | Stored path (root = `/home/destin/youcoded-dev`) | Which branch fires | Result |
 |---|---|---|
-| `flappy-bird/play.html` | new step 2.5 (relative) | internal `flappy-bird/play.html` ✓ |
+| `flappy-bird/play.html` | new step 3 (relative) | internal `flappy-bird/play.html` ✓ |
 | `C:/Users/desti/youcoded-dev/docs/PITFALLS.md` | step 2 (cross-OS remap finds `youcoded-dev`) | internal `docs/PITFALLS.md` ✓ |
-| `C:/Users/desti/AppData/Local/Temp/…/paste.png` | no branch — no root segment, and step 2.5 rejects drive letters | stays external ✓ |
+| `C:/Users/desti/AppData/Local/Temp/…/paste.png` | no branch — no root segment, and step 3 rejects drive letters | stays external ✓ |
 | `/tmp/claude-1000/…/scratchpad/flappy.html` | step 1 fails, absolute, no remap | stays external ✓ |
 
 The 8 out-of-root Windows records are left alone for free, because step 2 only remaps when it finds the project-root basename as a path segment. No existence check, no `fs`, no guessing.
+
+## Key design decision 2: the run-once gate is `reclassified === 0`, NOT a `$schema` bump
+
+An earlier draft of this plan bumped `SIDECAR_SCHEMA_VERSION` 1 → 2 on both platforms and used it as the migration's "already ran" marker. That is worse than it looks:
+
+- **It is not self-healing.** `appendVersion` round-trips `$schema` from disk (`artifact-store.ts:114,127` set it only when creating a *new* sidecar). A peer device still running a pre-fix build keeps producing new relative-external records into the same synced sidecar — and the fixed client, seeing `$schema: 2`, will never repair them.
+- **It buys nothing.** `migrateRelativeExternals` is pure and already returns `reclassified`. Gating on `reclassified === 0` costs one pass over an array that `readSidecar` just parsed anyway — noise next to the JSON.parse of a multi-megabyte file — and is exactly as idempotent (Task 4 pins that with a test).
+- **It couples two platforms for no reason.** The bump forced a matching Kotlin constant change and a two-directions compatibility argument about whether an older client would reject a v2 sidecar.
+
+So: no schema bump, no Kotlin constant change, no compatibility analysis. The gate is "did the pure function actually change anything."
+
+Repeated calls are made cheap by a process-lifetime `Set<string>` of already-checked project roots, so wiring the migration into hot handlers costs a `Set.has` after the first call per project. Consequence to accept knowingly: repair from a stale peer's damage happens on the **next app launch**, not mid-session.
 
 ## Out of scope
 
@@ -60,15 +77,19 @@ The 8 out-of-root Windows records are left alone for free, because step 2 only r
 
 **Changing what the harness emits.** Tempting, but wrong: `permissionSubject: (a) => a.file_path` (`harness/tools/write.ts:20`) feeds the permission prompt and the tool card. A short relative path is friendlier to show when approving a write. Changing the emitted value to satisfy the artifact layer would change what the user reads when deciding to approve. Fix the consumer.
 
-**An Android-side migration.** Desktop-only, deliberately. Both platforms read the same synced sidecar, so once desktop migrates a project the repaired records are correct everywhere. If Android opens an unmigrated project first it shows the same false orphans it shows today — degraded, never corrupted. A Kotlin migration twin would double the riskiest code in this plan for a window that closes the first time the project is opened on desktop. Task 5 still bumps the Kotlin schema constant so the two stay in sync.
+**Repairing `..`-escaping records.** `resolveP` is `path.resolve(cwd, p)`, so `../other/notes.md` really did write outside the project. Those records stay external with a relative `absolutePath`, which after Task 2 means they are consistently refused as orphans everywhere instead of silently resolving against the process cwd. Correct but not *repaired* — captured as a follow-up.
+
+**An Android-side migration.** Desktop-only, deliberately. Both platforms read the same synced sidecar, so once desktop migrates a project the repaired records are correct everywhere. If Android opens an unmigrated project first it shows the same false orphans it shows today — degraded, never corrupted. A Kotlin migration twin would double the riskiest code in this plan for a window that closes the first time the project is opened on desktop.
 
 ## File Structure
 
 | File | Responsibility | Change |
 |---|---|---|
-| `youcoded/desktop/src/shared/artifacts/resolve-tracked-path.ts` | Pure internal/external classification of a recorded path | Modify — new branch before the external fallthrough |
-| `youcoded/desktop/tests/resolve-tracked-path.test.ts` | Unit tests for the above | Modify — 6 new cases |
-| `youcoded/desktop/src/main/artifacts/write-authorization.ts` | Resolve-and-authorize for `artifacts:get` / `artifacts:save` | Modify — `isAbsoluteRecorded` guard in both functions |
+| `youcoded/desktop/src/shared/artifacts/resolve-tracked-path.ts` | Pure internal/external classification of a recorded path | Modify — gate step 2 on absoluteness; new relative branch before the external fallthrough |
+| `youcoded/desktop/tests/resolve-tracked-path.test.ts` | Unit tests for the above | Modify — 7 new cases |
+| `youcoded/desktop/src/main/artifacts/write-authorization.ts` | Resolve-and-authorize for `artifacts:get` / `artifacts:save` | Modify — **export** `isAbsoluteRecorded`; apply in both functions |
+| `youcoded/desktop/src/main/ipc-handlers.ts` | `artifacts:check-existence` handler | Modify — apply the guard (this is the Session-Drawer-visible path) |
+| `youcoded/desktop/src/main/artifacts/projects-index.ts` | `countArtifacts` | Modify — apply the guard |
 | `youcoded/desktop/tests/artifacts/write-authorization.test.ts` | Unit tests for the above | Modify — 3 new cases |
 | `youcoded/app/.../runtime/SessionService.kt` | Android bridge handlers incl. `artifacts:get` / `artifacts:save` | Modify — same guard at both sites |
 | `youcoded/app/.../artifacts/ProjectManager.kt` | Android artifact path helpers | Modify — add `isAbsoluteRecorded` |
@@ -76,7 +97,8 @@ The 8 out-of-root Windows records are left alone for free, because step 2 only r
 | `youcoded/desktop/src/shared/artifacts/migrate-relative-externals.ts` | **Pure** sidecar repair: reclassify + merge duplicates | Create |
 | `youcoded/desktop/tests/migrate-relative-externals.test.ts` | Unit tests for the repair | Create |
 | `youcoded/desktop/src/main/artifacts/artifact-store.ts` | Sidecar read/write | Modify — `runSidecarMigration` entry point |
-| `youcoded/desktop/src/shared/artifacts/types.ts` | Schema constants | Modify — `SIDECAR_SCHEMA_VERSION` 1 → 2 |
+
+Note what is **not** in this table any more: `types.ts` and `SidecarSchema.kt`. See "Key design decision 2".
 
 ---
 
@@ -84,8 +106,10 @@ The 8 out-of-root Windows records are left alone for free, because step 2 only r
 
 The producer fix. It stops new bad records on **both** platforms at once, because Android runs the same shared React tracker (`App.tsx:1535`) in its WebView. Task 4 then depends on the branch added here.
 
+This task also closes a **pre-existing** hole next door: step 2's cross-OS remap fires on *any* path whose OS-ness differs from the root's, including relative ones. With a Windows root, `resolveTrackedPath('proj/notes.md', 'C:/Users/desti/proj')` currently finds `proj` at index 0 and returns internal `notes.md` — but the harness resolved that arg to `C:/Users/desti/proj/proj/notes.md`. That is a wrong-file classification, and it is the one relative-path subset the new branch would otherwise not reach. One extra condition on the step-2 gate fixes it.
+
 **Files:**
-- Modify: `youcoded/desktop/src/shared/artifacts/resolve-tracked-path.ts:73-79`
+- Modify: `youcoded/desktop/src/shared/artifacts/resolve-tracked-path.ts:59-75`
 - Test: `youcoded/desktop/tests/resolve-tracked-path.test.ts`
 
 **Interfaces:**
@@ -99,11 +123,12 @@ Append inside the existing `describe('resolveTrackedPath', …)` block in `youco
 ```typescript
   // ── Relative recorded paths (native harness) ────────────────────────────
   // The native harness Write/Edit/Read tools accept a relative file_path and
-  // resolve it against ctx.cwd internally, but the transcript event carries the
-  // RAW arg. Such a path is relative to the session cwd, which IS the project
-  // root — so the file is genuinely in-project and must file as internal.
-  // Filing it external with a relative absolutePath produced the 2026-08-12
-  // "This file is no longer on disk" false positive on files that exist.
+  // resolve it with path.resolve(ctx.cwd, p) (harness/tools/guards.ts), but the
+  // transcript event carries the RAW arg. The tracker passes session.cwd as
+  // projectRoot (App.tsx:1507) — the SAME value — so a relative recorded path is
+  // by definition in-project and must file as internal. Filing it external with
+  // a relative absolutePath produced the 2026-08-12 "no longer on disk" false
+  // positive on files that exist.
 
   it('relative recorded path → internal, NOT external', () => {
     expect(resolveTrackedPath('play.html', '/home/desti/proj')).toEqual({
@@ -120,6 +145,16 @@ Append inside the existing `describe('resolveTrackedPath', …)` block in `youco
   it('leading ./ is stripped', () => {
     expect(resolveTrackedPath('./ROADMAP.md', '/home/desti/proj')).toEqual({
       kind: 'internal', path: 'ROADMAP.md', absolutePath: null,
+    });
+  });
+
+  // PRE-EXISTING BUG, fixed by the absoluteness gate on step 2. Without it the
+  // cross-OS remap fires on a RELATIVE path (its OS-ness trivially differs from
+  // a Windows root), finds 'proj' at index 0, and returns internal 'notes.md' —
+  // but the harness resolved this arg to C:/Users/desti/proj/proj/notes.md.
+  it('relative path under a Windows root is joined, not remapped', () => {
+    expect(resolveTrackedPath('proj/notes.md', 'C:/Users/desti/proj')).toEqual({
+      kind: 'internal', path: 'proj/notes.md', absolutePath: null,
     });
   });
 
@@ -157,32 +192,49 @@ Append inside the existing `describe('resolveTrackedPath', …)` block in `youco
 cd youcoded/desktop && npx vitest run tests/resolve-tracked-path.test.ts
 ```
 
-Expected: the three "relative → internal" cases FAIL (they currently return `{kind: 'external', …}`). The three guard cases (Windows, `..`, empty) should already PASS — they encode behavior that must not regress.
+Expected: the three "relative → internal" cases FAIL (they currently return `{kind: 'external', …}`), and the Windows-root case FAILS (it currently returns `{kind: 'internal', path: 'notes.md'}`). The three guard cases (unremappable Windows, `..`, empty) should already PASS — they encode behavior that must not regress.
 
-- [ ] **Step 3: Add the classification branch**
+- [ ] **Step 3: Gate the cross-OS remap on absoluteness**
 
-In `youcoded/desktop/src/shared/artifacts/resolve-tracked-path.ts`, insert **between** the step-2 cross-OS remap block and the step-3 external fallthrough:
+The two `isWindows` flags already exist at `resolve-tracked-path.ts:59-60`. Add a POSIX-absolute test beside them and require the recorded path to be absolute *somehow* before step 2 may fire:
 
 ```typescript
-  // 2.5 Relative recorded path → internal. The native harness tools accept a
-  //     relative file_path and resolve it against ctx.cwd themselves
-  //     (main/harness/tools/write.ts), but the transcript event we consume
-  //     carries the RAW arg. A relative path there is relative to the session
-  //     cwd, which IS the project root — the file is genuinely in-project.
+  const recordedIsWindows = /^[a-zA-Z]:[\\/]/.test(recordedPath);
+  const rootIsWindows = /^[a-zA-Z]:[\\/]/.test(projectRoot);
+  // Fix: step 2 remaps ANOTHER DEVICE'S ABSOLUTE PATH. A relative path has no
+  // OS-ness of its own, so the `recordedIsWindows !== rootIsWindows` gate below
+  // fired on every relative path under a Windows root and, if the path happened
+  // to contain the project folder name as a segment, silently returned the WRONG
+  // file ('proj/notes.md' → 'notes.md', when the harness meant proj/proj/notes.md).
+  const recordedIsAbsolute = recordedIsWindows || fwdPath.startsWith('/');
+  if (recordedIsAbsolute && recordedIsWindows !== rootIsWindows) {
+```
+
+(The body of the `if` is unchanged.)
+
+- [ ] **Step 4: Add the classification branch**
+
+Insert **between** the step-2 cross-OS remap block and the step-3 external fallthrough (which becomes step 4 — renumber its comment):
+
+```typescript
+  // 3. Relative recorded path → internal. The native harness tools accept a
+  //    relative file_path and resolve it with path.resolve(ctx.cwd, p) themselves
+  //    (main/harness/tools/guards.ts), but the transcript event we consume
+  //    carries the RAW arg. The tracker passes session.cwd as projectRoot
+  //    (App.tsx:1507) — the SAME value the harness resolved against — so a
+  //    relative path here is in-project by identity, not by inference.
   //
-  //     WHY internal rather than absolutising into an external: internal
-  //     records survive cross-device sync (that is the entire point of step 2).
-  //     An external carrying a machine-specific absolute path breaks again the
-  //     next time the conversation is resumed on another device.
+  //    WHY internal rather than absolutising into an external: internal records
+  //    survive cross-device sync (that is the entire point of step 2). An
+  //    external carrying a machine-specific absolute path breaks again the next
+  //    time the conversation is resumed on another device.
   //
-  //     MUST run AFTER step 2. 'C:/Users/...' is not absolute by POSIX rules,
-  //     so on Linux it reaches here; the drive-letter test below catches the
-  //     case where step 2 ran but found no project-root segment to remap.
-  //     Without it we would produce join(root, 'C:/Users/...') — worse than
-  //     leaving the record external.
-  const isWindowsAbs = /^[a-zA-Z]:[\\/]/.test(recordedPath);
-  const isPosixAbs = fwdPath.startsWith('/');
-  if (fwdPath !== '' && !isWindowsAbs && !isPosixAbs) {
+  //    MUST run AFTER step 2. 'C:/Users/...' is not absolute by POSIX rules, so
+  //    on Linux it reaches here; the drive-letter test below catches the case
+  //    where step 2 ran but found no project-root segment to remap. Without it
+  //    we would produce join(root, 'C:/Users/...') — worse than leaving the
+  //    record external.
+  if (!recordedIsAbsolute && fwdPath !== '') {
     // A '..' segment escapes the root once joined, manufacturing a phantom
     // internal artifact. Leave those external — authorizeArtifactRead's in-root
     // check would reject them anyway, but as an unexplained "not found".
@@ -192,7 +244,9 @@ In `youcoded/desktop/src/shared/artifacts/resolve-tracked-path.ts`, insert **bet
   }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+Note this reuses `recordedIsAbsolute` from Step 3 rather than recomputing the two regexes — one definition of "absolute" for both branches.
+
+- [ ] **Step 5: Run the tests to verify they pass**
 
 ```bash
 cd youcoded/desktop && npx vitest run tests/resolve-tracked-path.test.ts
@@ -200,48 +254,63 @@ cd youcoded/desktop && npx vitest run tests/resolve-tracked-path.test.ts
 
 Expected: PASS, all cases including the 8 pre-existing ones.
 
-- [ ] **Step 5: Run the wider artifact suite for fallout**
+- [ ] **Step 6: Run the wider artifact suite for fallout**
 
 ```bash
-cd youcoded/desktop && npx vitest run tests/artifact-tracker.test.ts tests/artifacts/
+cd youcoded/desktop && npx vitest run tests/artifacts/
 ```
 
-Expected: PASS. If `artifact-tracker.test.ts` fails, a fixture there encodes the old external-for-relative behavior — update the fixture, and say in the commit that the fixture was asserting the bug.
+Expected: PASS. If `tests/artifacts/artifact-tracker.test.ts` fails, a fixture there encodes the old external-for-relative behavior — update the fixture, and say in the commit that the fixture was asserting the bug.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add src/shared/artifacts/resolve-tracked-path.ts tests/resolve-tracked-path.test.ts
 git commit -m "fix(artifacts): file relative transcript paths as internal, not external
 
 The native harness Write/Edit/Read tools accept a relative file_path and
-resolve it against ctx.cwd, but the transcript event carries the raw arg.
-resolveTrackedPath had no branch for a relative path, so it fell through to
-'genuinely external' and stored the relative string in absolutePath -- a field
-contractually required to be absolute. Consumers then handed that to realpath,
-which resolves against the PROCESS cwd (/home/destin for a GUI-launched
-Electron app), so 13 files that exist in the project rendered as
-'This file is no longer on disk'.
+resolve it with path.resolve(ctx.cwd, p), but the transcript event carries the
+raw arg. resolveTrackedPath had no branch for a relative path, so it fell
+through to 'genuinely external' and stored the relative string in absolutePath
+-- a field contractually required to be absolute. Consumers then handed that to
+realpath/fs.access, which resolve against the PROCESS cwd (/home/destin for a
+GUI-launched Electron app), so 13 files that exist in the project rendered as
+'no longer on disk'.
 
-The new branch runs after the cross-OS remap and guards against both
-Windows-drive paths (not absolute by POSIX rules) and '..' escapes."
+Also gates the cross-OS remap on the recorded path being absolute. A relative
+path has no OS-ness, so that gate fired on every relative path under a Windows
+root and, when the path contained the project folder name as a segment,
+returned the WRONG file ('proj/notes.md' -> 'notes.md')."
 ```
 
 ---
 
-### Task 2: Refuse non-absolute external paths at the desktop authorize boundary
+### Task 2: Refuse non-absolute recorded paths at every desktop resolution site
 
-Defense in depth for records the migration cannot reach — other projects' sidecars, and any record written by a client that has not shipped Task 1 yet. Today `realpath('ROADMAP.md')` from cwd `/home/destin` happens to ENOENT — but only because no such file exists there. If one did, the viewer would open **the wrong file**. The same construction in the write path resolves the *parent* on ENOENT (`write-authorization.ts:85-87`) and, since `mustStayInRoot` is `false` for externals, would create a stray file outside the project.
+**There is no single boundary to guard.** Four desktop sites build a filesystem path out of `artifact.absolutePath`; only two go through `write-authorization.ts`:
 
-**User-visible behavior is unchanged**: the read guard returns the same `orphan` signal these records already produce. A reviewer should not expect a visible fix from this task.
+| Site | How it resolves today | Consequence of a relative record |
+|---|---|---|
+| `ipc-handlers.ts:3588` (GET) | `authorizeArtifactRead` → `realpath` | Opens whatever sits at that path relative to the process cwd, or ENOENT → orphan |
+| `ipc-handlers.ts:3727` (SAVE) | `authorizeArtifactWrite` → `realpath`, ENOENT-falls-back to the **parent** | Would CREATE a stray file in the process cwd, with the in-root check skipped (`mustStayInRoot` is false for externals) |
+| `ipc-handlers.ts:4091` (CHECK_EXISTENCE) | raw `fs.access(a.absolutePath)` | **This is the Session Drawer's "The original file is no longer on disk."** (`SessionDrawer.tsx:42,145`) — and the inverse: a same-named file in the process cwd reports the artifact as *alive* |
+| `projects-index.ts:42` (`countArtifacts`) | raw `fs.access(a.absolutePath!)` | Same, in the hero/switcher count. Lower reach — `trackedArtifacts` admits externals only when pinned (`visible-artifacts.ts:62`) |
+
+`isAbsoluteRecorded` is therefore **exported** from `write-authorization.ts` and imported by the other two.
+
+**No drive-letter clause.** An earlier draft accepted `C:/…` explicitly. It is provably behavior-neutral: on POSIX, `realpath('C:/Users/x/notes.md')` ENOENTs and the write path's parent fallback ENOENTs too — identical outcomes to refusing up front — and on Windows `path.isAbsolute` already returns true for it. Bare `path.isAbsolute` is exactly right on both platforms.
+
+**User-visible behavior is unchanged** on the read/list paths: these records already render as orphans. A reviewer should not expect a visible fix from this task. What it removes is the *wrong-file* class — a relative record silently addressing, or creating, a file outside the project.
 
 **Files:**
 - Modify: `youcoded/desktop/src/main/artifacts/write-authorization.ts`
+- Modify: `youcoded/desktop/src/main/ipc-handlers.ts` (CHECK_EXISTENCE, ~4076)
+- Modify: `youcoded/desktop/src/main/artifacts/projects-index.ts` (`countArtifacts`, ~34)
 - Test: `youcoded/desktop/tests/artifacts/write-authorization.test.ts`
 
 **Interfaces:**
 - Consumes: nothing from Task 1.
-- Produces: `isAbsoluteRecorded(p: string): boolean`, module-private. No new return variants — `authorizeArtifactRead` reuses `{ok: false, orphan: true}`, `authorizeArtifactWrite` reuses `{ok: false, error: 'artifact-not-found'}`. No caller changes.
+- Produces: `export function isAbsoluteRecorded(p: string): boolean`. No new return variants — `authorizeArtifactRead` reuses `{ok: false, orphan: true}`, `authorizeArtifactWrite` reuses `{ok: false, error: 'artifact-not-found'}`, CHECK_EXISTENCE reports the id as missing, `countArtifacts` counts it as not-alive. No caller signature changes.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -249,9 +318,9 @@ Append to `youcoded/desktop/tests/artifacts/write-authorization.test.ts`:
 
 ```typescript
   // A relative absolutePath is a corrupt sidecar record (pre-2026-08-12
-  // resolveTrackedPath wrote them). realpath()/File() resolve it against the
-  // PROCESS cwd, not the project root, so it can silently address a file
-  // outside the project. Refuse before resolution rather than guessing.
+  // resolveTrackedPath wrote them). realpath()/fs.access()/File() resolve it
+  // against the PROCESS cwd, not the project root, so it can silently address a
+  // file outside the project. Refuse before resolution rather than guessing.
 
   // NOTE the deliberate choice of 'package.json': it EXISTS relative to the
   // vitest cwd (youcoded/desktop). Before the guard, realpath resolves it and
@@ -264,7 +333,12 @@ Append to `youcoded/desktop/tests/artifacts/write-authorization.test.ts`:
     expect(res).toEqual({ ok: false, orphan: true });
   });
 
-  it('read: refuses a Windows-drive path on POSIX', async () => {
+  // Behavior PIN, not a fix: a Windows-drive record already orphans on POSIX
+  // (realpath ENOENT) and is already accepted on Windows (path.isAbsolute is
+  // true there). Same expectation on both platforms, before and after. It exists
+  // so a future "simplification" of isAbsoluteRecorded to a hand-rolled
+  // startsWith('/') cannot silently break cross-device records on Windows.
+  it('read: a Windows-drive path orphans on POSIX and is accepted on Windows', async () => {
     const res = await authorizeArtifactRead('/some/project', 'C:/Users/desti/notes.md', false);
     expect(res).toEqual({ ok: false, orphan: true });
   });
@@ -283,12 +357,12 @@ Append to `youcoded/desktop/tests/artifacts/write-authorization.test.ts`:
 cd youcoded/desktop && npx vitest run tests/artifacts/write-authorization.test.ts
 ```
 
-Expected: FAIL, deterministically.
-- Read/`package.json`: currently returns `{ok: true, realPath: '<cwd>/package.json'}` because the file exists relative to the vitest cwd.
-- Read/`C:/Users/...`: currently returns `{ok: false, orphan: true}` already — this one **passes before the change**. Keep it: it pins the drive-letter clause so a future simplification of `isAbsoluteRecorded` to a bare `path.isAbsolute` cannot silently reroute cross-device records.
-- Write/`ROADMAP.md`: currently returns `{ok: true, realPath: '<cwd>/ROADMAP.md'}` because the ENOENT fallback resolves `dirname('ROADMAP.md')` = `realpath('.')`.
+Expected: two of the three FAIL, deterministically.
+- Read/`package.json`: currently returns `{ok: true, realPath: '<cwd>/package.json'}` because the file exists relative to the vitest cwd. **FAILS.**
+- Read/`C:/Users/...`: passes before and after — see the comment above. **PASSES.**
+- Write/`ROADMAP.md`: currently returns `{ok: true, realPath: '<cwd>/ROADMAP.md'}` because the ENOENT fallback resolves `dirname('ROADMAP.md')` = `realpath('.')`. **FAILS.**
 
-- [ ] **Step 3: Add the guard**
+- [ ] **Step 3: Add and export the guard**
 
 In `youcoded/desktop/src/main/artifacts/write-authorization.ts`, add above `inRealRoot`:
 
@@ -297,18 +371,24 @@ In `youcoded/desktop/src/main/artifacts/write-authorization.ts`, add above `inRe
  * An external artifact's `absolutePath` is contractually canonical and absolute
  * (shared/artifacts/types.ts). Records written before the 2026-08-12
  * resolveTrackedPath fix violate that — they hold relative strings like
- * 'flappy-bird/play.html'. fs.realpath resolves a relative path against the
- * PROCESS cwd (/home/destin for a GUI-launched Electron app, never the project
- * root), so such a record can silently address a file outside the project, or
- * — on the write path, whose ENOENT fallback resolves the PARENT — create one.
- * Refuse explicitly rather than letting realpath guess.
+ * 'flappy-bird/play.html'. Every filesystem call resolves a relative path
+ * against the PROCESS cwd (/home/destin for a GUI-launched Electron app, never
+ * the project root), so such a record can silently address a file outside the
+ * project, or — on the write path, whose ENOENT fallback resolves the PARENT —
+ * create one.
  *
- * The drive-letter clause keeps cross-device Windows records ('C:/Users/...',
- * which path.isAbsolute() calls relative on POSIX) on their existing orphan
- * path instead of routing them through a new error.
+ * EXPORTED because write-authorization is not the only site that builds a path
+ * from a record: artifacts:check-existence (ipc-handlers.ts) and countArtifacts
+ * (projects-index.ts) call fs.access on the raw string. All four sites share
+ * this one definition.
+ *
+ * path.isAbsolute is deliberately used bare. It is already platform-correct: on
+ * Windows it accepts 'C:\...' (a real absolute path there); on POSIX it rejects
+ * it, which lands cross-device Windows records on the same orphan outcome their
+ * realpath ENOENT already produced.
  */
-function isAbsoluteRecorded(p: string): boolean {
-  return path.isAbsolute(p) || /^[a-zA-Z]:[\\/]/.test(p);
+export function isAbsoluteRecorded(p: string): boolean {
+  return path.isAbsolute(p);
 }
 ```
 
@@ -330,40 +410,90 @@ And in `authorizeArtifactWrite`, immediately after the existing `const { project
   if (!isAbsoluteRecorded(fullPath)) return { ok: false, error: 'artifact-not-found' };
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [ ] **Step 4: Apply the guard at the two raw `fs.access` sites**
 
-```bash
-cd youcoded/desktop && npx vitest run tests/artifacts/write-authorization.test.ts
+In `youcoded/desktop/src/main/ipc-handlers.ts`, inside the CHECK_EXISTENCE handler (~4089), replace:
+
+```typescript
+        const fullPath = a.kind === 'internal'
+          ? path.join(projectRoot, a.path)
+          : a.absolutePath;
+        if (!fullPath) return id;
 ```
 
-Expected: PASS, including all pre-existing cases (symlink resolution, in-root enforcement, tier refusal, concurrency token).
+with:
 
-- [ ] **Step 5: Commit**
+```typescript
+        // A corrupt record (relative absolutePath) resolves against the PROCESS
+        // cwd here, which cuts both ways: it reports an in-project file as
+        // missing (the Session Drawer's "no longer on disk" — this handler feeds
+        // that label, SessionDrawer.tsx:42) AND would report an artifact as
+        // present if a same-named file happens to sit in the process cwd.
+        const fullPath = a.kind === 'internal'
+          ? path.join(projectRoot, a.path)
+          : a.absolutePath;
+        if (!fullPath) return id;
+        if (a.kind !== 'internal' && !isAbsoluteRecorded(fullPath)) return id;
+```
+
+In `youcoded/desktop/src/main/artifacts/projects-index.ts`, inside `countArtifacts` (~41):
+
+```typescript
+  const alive = await Promise.all(visible.map(async (a: any) => {
+    const full = a.kind === 'internal' ? path.join(projectRoot, a.path) : a.absolutePath!;
+    // Same corrupt-record guard as artifacts:check-existence — never let
+    // fs.access resolve a relative record against the process cwd and count a
+    // coincidentally-named file as this artifact.
+    if (a.kind !== 'internal' && !isAbsoluteRecorded(full)) return false;
+    try { await fs.promises.access(full); return true; } catch { return false; }
+  }));
+```
+
+Import `isAbsoluteRecorded` from `./write-authorization` (projects-index) and `./artifacts/write-authorization` (ipc-handlers) alongside the existing imports.
+
+- [ ] **Step 5: Run the tests to verify they pass**
 
 ```bash
-git add src/main/artifacts/write-authorization.ts tests/artifacts/write-authorization.test.ts
-git commit -m "fix(artifacts): refuse non-absolute external paths at the authorize boundary
+cd youcoded/desktop && npx vitest run tests/artifacts/
+```
+
+Expected: PASS, including all pre-existing cases (symlink resolution, in-root enforcement, tier refusal, concurrency token) and `project-manager.test.ts` / `categorization.test.ts`.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/main/artifacts/write-authorization.ts src/main/artifacts/projects-index.ts \
+        src/main/ipc-handlers.ts tests/artifacts/write-authorization.test.ts
+git commit -m "fix(artifacts): refuse non-absolute recorded paths at all four resolution sites
 
 Sidecar records written before the resolveTrackedPath fix hold relative
-absolutePath strings. realpath resolves those against the process cwd, so a
-read could open a file outside the project and a save could create one -- the
-write path's ENOENT fallback resolves the PARENT, which for a bare filename is
-realpath('.'), with the in-root check skipped because externals set
-mustStayInRoot=false.
+absolutePath strings, and FOUR main-process sites turn one into a filesystem
+path -- artifacts:get and artifacts:save via write-authorization, plus
+artifacts:check-existence and countArtifacts, which call fs.access on the raw
+string. write-authorization is not a chokepoint, so isAbsoluteRecorded is
+exported and applied at all four.
 
-User-visible behavior is unchanged: reads return the same orphan signal these
-records already produced."
+check-existence is the one users see: it feeds the Session Drawer's 'The
+original file is no longer on disk', and the drawer is the only surface where
+an unpinned external is visible at all.
+
+Reads and counts keep their existing orphan outcome. What goes away is the
+wrong-file class: realpath/fs.access resolving a relative record against the
+process cwd, and -- on save, whose ENOENT fallback resolves the PARENT --
+creating a stray file there with the in-root check skipped."
 ```
 
 ---
 
 ### Task 3: Android parity guard
 
-`SessionService.kt:3320` builds `File(artifact.absolutePath!!)` exactly as desktop did. On Android a relative path resolves against the app process cwd (`/`), so the identical false orphan occurs.
+`SessionService.kt:3319` builds `File(artifact.absolutePath!!)` exactly as desktop did. On Android a relative path resolves against the app process cwd (`/`), so the identical false orphan occurs. Android's `artifacts:check-existence` is a stub that always reports nothing missing (`SessionService.kt:3619-3622`), so unlike desktop there is no third site to guard.
+
+Android is always POSIX, so the helper is a bare `startsWith("/")` — no drive-letter clause. A synced Windows record (`C:/Users/…`) is refused as an orphan, which is exactly what `File("C:/Users/…").exists()` already returns there.
 
 **Files:**
 - Modify: `youcoded/app/src/main/kotlin/com/youcoded/app/artifacts/ProjectManager.kt`
-- Modify: `youcoded/app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt` (`artifacts:get` ~3320, `artifacts:save` ~3445)
+- Modify: `youcoded/app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt` (`artifacts:get` ~3319, `artifacts:save` ~3446)
 - Create: `youcoded/app/src/test/kotlin/com/youcoded/app/artifacts/ArtifactPathGuardTest.kt`
 
 **Interfaces:**
@@ -393,15 +523,16 @@ class ArtifactPathGuardTest {
     }
 
     @Test
-    fun windowsDrivePathIsAcceptedSoCrossDeviceRecordsKeepTheirExistingPath() {
-        assertTrue(isAbsoluteRecorded("C:/Users/desti/notes.md"))
-        assertTrue(isAbsoluteRecorded("C:\\Users\\desti\\notes.md"))
-    }
-
-    @Test
     fun relativePathIsRejected() {
         assertFalse(isAbsoluteRecorded("flappy-bird/play.html"))
         assertFalse(isAbsoluteRecorded("ROADMAP.md"))
+    }
+
+    // A synced Windows record is not addressable on Android. Refusing it yields
+    // the same orphan the existing File("C:/...").exists() == false produced.
+    @Test
+    fun windowsDrivePathIsRejectedOnAndroid() {
+        assertFalse(isAbsoluteRecorded("C:/Users/desti/notes.md"))
     }
 
     @Test
@@ -431,16 +562,16 @@ Append to `youcoded/app/src/main/kotlin/com/youcoded/app/artifacts/ProjectManage
  * records written before the 2026-08-12 resolveTrackedPath fix hold relative
  * strings ("flappy-bird/play.html"). File("flappy-bird/play.html") resolves
  * against the app PROCESS cwd ("/" on Android), so the file reads as missing
- * even though it sits in the project — the "This file is no longer on disk"
- * false positive.
+ * even though it sits in the project — the "no longer on disk" false positive.
  *
- * The drive-letter clause keeps cross-device Windows records on their existing
- * orphan path rather than routing them through a new error.
+ * Android is always POSIX, so this is a bare leading-slash test. A synced
+ * Windows record ("C:/Users/...") is not addressable here and is refused as an
+ * orphan — the same result File("C:/Users/...").exists() already gives.
  *
- * Mirrors desktop/src/main/artifacts/write-authorization.ts::isAbsoluteRecorded.
+ * Mirrors desktop/src/main/artifacts/write-authorization.ts::isAbsoluteRecorded
+ * (which uses path.isAbsolute, platform-correct on both OSes).
  */
-fun isAbsoluteRecorded(p: String): Boolean =
-    p.startsWith("/") || Regex("^[a-zA-Z]:[\\\\/]").containsMatchIn(p)
+fun isAbsoluteRecorded(p: String): Boolean = p.startsWith("/")
 ```
 
 - [ ] **Step 4: Run the test to verify it passes**
@@ -453,7 +584,7 @@ Expected: PASS.
 
 - [ ] **Step 5: Apply the guard at both bridge handlers**
 
-In `SessionService.kt`, in `"artifacts:get"`, replace the `fullPath` construction (~line 3320):
+In `SessionService.kt`, in `"artifacts:get"`, replace the `fullPath` construction (~line 3319):
 
 ```kotlin
                 val fullPath = if (artifact.kind == "internal") java.io.File(projectRoot, artifact.path)
@@ -477,7 +608,7 @@ with:
                                else java.io.File(extAbs!!)
 ```
 
-Then in `"artifacts:save"` (~line 3445), replace the identical `fullPath` construction with:
+Then in `"artifacts:save"` (~line 3446), replace the identical `fullPath` construction with:
 
 ```kotlin
                 // Same corrupt-record guard as artifacts:get. Critical on the write
@@ -520,12 +651,13 @@ Expected: BUILD SUCCESSFUL, all tests pass.
 git add app/src/main/kotlin/com/youcoded/app/artifacts/ProjectManager.kt \
         app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt \
         app/src/test/kotlin/com/youcoded/app/artifacts/ArtifactPathGuardTest.kt
-git commit -m "fix(artifacts): Android parity for the non-absolute external path guard
+git commit -m "fix(artifacts): Android parity for the non-absolute recorded path guard
 
 SessionService's artifacts:get/save built File(absolutePath!!) directly, so a
 relative record resolved against the app process cwd ('/') and reported an
 existing project file as missing -- the same defect fixed on desktop in
-write-authorization.ts."
+write-authorization.ts. Android's artifacts:check-existence is a stub that
+reports nothing missing, so there is no third site to guard here."
 ```
 
 ---
@@ -535,6 +667,8 @@ write-authorization.ts."
 The data fix. A pure function so the merge logic — the genuinely tricky part — is unit-testable without a filesystem, and so it can never touch a live sidecar by accident.
 
 **Merge rule.** When a reclassified record lands on a path an internal record already occupies, the **older** record survives (ULIDs sort by creation time, so the lexicographically smaller id is older). It absorbs the other's history: versions concatenated, deduped by version id, sorted by `ts`; `lastModified` = the later of the two; `status` recomputed from the latest version; `tags` unioned; `comments` concatenated. The surviving id is the one most likely already referenced by an open draft or the current selection.
+
+**Path matching is raw, deliberately.** The collision map keys on `a.path` byte-for-byte, while the rest of the artifact layer compares through `canonicalize()` on both sides (`visible-artifacts.ts:46-55`). Importing `canonicalize` here is possible (it is also pure) but changes what the migration *writes*: `resolved.path` comes straight out of `resolveTrackedPath`, so canonicalizing one side of the comparison and not the other would be worse than neither. The residual risk is a case-differing pair (`Docs/MAP.md` vs `docs/MAP.md`) dodging the merge and leaving two internal records at "the same" path — possible only on Windows, where these records mostly do not exist in the first place (a Windows client's own paths hit step 1 and were already internal). Accepted, and noted in the follow-ups.
 
 **Files:**
 - Create: `youcoded/desktop/src/shared/artifacts/migrate-relative-externals.ts`
@@ -546,7 +680,7 @@ The data fix. A pure function so the merge logic — the genuinely tricky part �
   ```typescript
   export interface MigrationResult {
     sidecar: ProjectSidecar;   // new object; input is not mutated
-    reclassified: number;      // externals that became internal
+    reclassified: number;      // externals that became internal (INCLUDES merged ones)
     merged: number;            // records folded into an existing internal twin
   }
   export function migrateRelativeExternals(
@@ -554,7 +688,7 @@ The data fix. A pure function so the merge logic — the genuinely tricky part �
     projectRoot: string
   ): MigrationResult
   ```
-  Task 5 calls this.
+  Task 5 calls this, and uses `reclassified === 0` as its run-once gate.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -563,6 +697,7 @@ Create `youcoded/desktop/tests/migrate-relative-externals.test.ts`:
 ```typescript
 import { describe, it, expect } from 'vitest';
 import { migrateRelativeExternals } from '../src/shared/artifacts/migrate-relative-externals';
+import { SIDECAR_SCHEMA_VERSION } from '../src/shared/artifacts/types';
 import type { ProjectSidecar, ArtifactRecord } from '../src/shared/artifacts/types';
 
 const ROOT = '/home/desti/youcoded-dev';
@@ -579,7 +714,7 @@ function rec(over: Partial<ArtifactRecord>): ArtifactRecord {
 
 function sidecar(artifacts: ArtifactRecord[]): ProjectSidecar {
   return {
-    $schema: 1 as any, projectId: 'p', name: 'proj',
+    $schema: SIDECAR_SCHEMA_VERSION, projectId: 'p', name: 'proj',
     createdAt: '2026-07-01T00:00:00.000Z', updatedAt: '2026-08-01T00:00:00.000Z',
     artifacts, manualExcludes: [], manualIncludes: [],
   };
@@ -630,15 +765,28 @@ describe('migrateRelativeExternals', () => {
     expect(res.sidecar.artifacts[0]).toEqual(original);
   });
 
+  it('leaves a .. escape external — the harness really did write outside the root', () => {
+    const original = rec({ id: 'art_A', path: 'notes.md', kind: 'external',
+      absolutePath: '../other/notes.md' });
+    const res = migrateRelativeExternals(sidecar([original]), ROOT);
+    expect(res.reclassified).toBe(0);
+    expect(res.sidecar.artifacts[0]).toEqual(original);
+  });
+
   it('MERGES into an existing internal twin instead of creating a duplicate', () => {
     // 10 of the 18 real records hit this path. A plain field rewrite would
     // leave two internal records at the same path with split histories.
+    //
+    // The ids carry a numeric prefix on purpose: `older()` compares ULIDs
+    // LEXICOGRAPHICALLY, so bare 'art_OLD'/'art_NEW' would make the "new" record
+    // sort first ('N' < 'O') and the assertion below would be testing the
+    // opposite of what it reads as.
     const res = migrateRelativeExternals(sidecar([
-      rec({ id: 'art_OLD', path: 'ROADMAP.md', kind: 'internal', absolutePath: null,
+      rec({ id: 'art_1_OLD', path: 'ROADMAP.md', kind: 'internal', absolutePath: null,
             lastModified: '2026-07-25T00:00:00.000Z',
             versions: [{ id: 'v1', ts: '2026-07-25T00:00:00.000Z', sessionId: 's1', type: 'create', author: 'agent' }],
             tags: ['plan'] }),
-      rec({ id: 'art_NEW', path: 'ROADMAP.md', kind: 'external', absolutePath: 'ROADMAP.md',
+      rec({ id: 'art_2_NEW', path: 'ROADMAP.md', kind: 'external', absolutePath: 'ROADMAP.md',
             lastModified: '2026-08-13T00:00:00.000Z',
             versions: [{ id: 'v2', ts: '2026-08-13T00:00:00.000Z', sessionId: 's2', type: 'edit', author: 'agent' }],
             tags: ['roadmap'] }),
@@ -647,7 +795,7 @@ describe('migrateRelativeExternals', () => {
     expect(res.merged).toBe(1);
     expect(res.sidecar.artifacts).toHaveLength(1);
     const m = res.sidecar.artifacts[0];
-    expect(m.id).toBe('art_OLD');                       // older record survives
+    expect(m.id).toBe('art_1_OLD');                     // older record survives
     expect(m.kind).toBe('internal');
     expect(m.versions.map((v) => v.id)).toEqual(['v1', 'v2']);   // history preserved, ts-sorted
     expect(m.lastModified).toBe('2026-08-13T00:00:00.000Z');     // later of the two
@@ -675,7 +823,9 @@ describe('migrateRelativeExternals', () => {
     expect(res.sidecar.artifacts[0].versions).toHaveLength(1);
   });
 
-  it('is idempotent — a second run changes nothing', () => {
+  // THE RUN-ONCE GATE. Task 5 writes only when reclassified > 0, so this test is
+  // load-bearing for "safe to call on every project open", not a nicety.
+  it('is idempotent — a second run reclassifies nothing and changes nothing', () => {
     const once = migrateRelativeExternals(sidecar([
       rec({ id: 'art_A', path: 'play.html', kind: 'external', absolutePath: 'flappy-bird/play.html' }),
     ]), ROOT);
@@ -721,9 +871,9 @@ Create `youcoded/desktop/src/shared/artifacts/migrate-relative-externals.ts`:
 ```typescript
 // One-time repair for sidecar records written before the 2026-08-12
 // resolveTrackedPath fix, which stored a RELATIVE string in `absolutePath` — a
-// field contractually absolute. Consumers hand that to realpath/File(), which
-// resolve it against the PROCESS cwd, so files that exist in the project render
-// as "This file is no longer on disk".
+// field contractually absolute. Consumers hand that to realpath/fs.access/File(),
+// which resolve it against the PROCESS cwd, so files that exist in the project
+// render as "no longer on disk".
 //
 // WHY this re-runs resolveTrackedPath rather than implementing its own rules:
 // the classifier already knows every case (relative → internal, cross-OS remap
@@ -734,7 +884,8 @@ Create `youcoded/desktop/src/shared/artifacts/migrate-relative-externals.ts`:
 // only fires when it finds the project-root basename as a path segment.
 //
 // Pure (no fs/path/os) so the merge logic is unit-testable and so this can
-// never touch a live sidecar by accident.
+// never touch a live sidecar by accident. `reclassified` doubles as the caller's
+// run-once gate — see runSidecarMigration in main/artifacts/artifact-store.ts.
 import type { ProjectSidecar, ArtifactRecord, VersionEvent } from './types';
 import { resolveTrackedPath } from './resolve-tracked-path';
 
@@ -786,6 +937,7 @@ export function migrateRelativeExternals(
   // Internal records indexed by path — the collision targets. 10 of the 18 real
   // relative-external records land on one of these, so a plain field rewrite
   // would leave two internal records at the same path with split histories.
+  // Keys are RAW, not canonicalized — see the task's "Path matching is raw" note.
   const byPath = new Map<string, ArtifactRecord>();
   const out: ArtifactRecord[] = [];
 
@@ -807,7 +959,9 @@ export function migrateRelativeExternals(
     const existing = byPath.get(resolved.path);
     if (existing) {
       // Merge into whichever record is older; it keeps the id most likely to be
-      // referenced by an open draft or the current selection.
+      // referenced by an open draft or the current selection. The merged record
+      // replaces `existing` IN PLACE regardless of which id wins, so ordering is
+      // stable and a later external resolving to the same path finds it here.
       const keep = older(existing, a);
       const drop = keep === existing ? a : existing;
       const mergedRec = mergeRecords({ ...keep, path: resolved.path }, drop);
@@ -837,7 +991,7 @@ export function migrateRelativeExternals(
 cd youcoded/desktop && npx vitest run tests/migrate-relative-externals.test.ts
 ```
 
-Expected: PASS, all 10 cases.
+Expected: PASS, all 11 cases.
 
 - [ ] **Step 5: Commit**
 
@@ -851,17 +1005,30 @@ repair cannot drift from the classifier. Reclassified records that collide
 with an existing internal twin (10 of 18 in the observed data) are MERGED --
 versions concatenated and deduped, status recomputed, tags unioned -- rather
 than duplicated. Pure, so the merge logic is testable without a filesystem and
-this can never touch a live sidecar by accident."
+this can never touch a live sidecar by accident.
+
+reclassified === 0 is the caller's run-once gate; the idempotency test pins it."
 ```
 
 ---
 
-### Task 5: Run the repair on project open
+### Task 5: Run the repair where the false orphans actually render
+
+**The handler choice is the substance of this task.** An earlier draft hooked `ARTIFACT_IPC.LIST_PROJECT` "on project open." That handler is not project open — `rg -n "artifacts\.listProject\b" src/renderer` returns exactly one caller, `FilepathToken.tsx:110` (resolving a filepath pill), and `ipc-handlers.ts:3517-3521` says so itself: *"No Project View section reads this any more."* Project View opens through `listProjectsIndex` + `listAllFiles`; the Session Drawer — the only surface where a relative external is visible — uses `listSession`.
+
+So wire it into all three per-project entry points and make repeat calls free with a process-lifetime memo:
+
+| Handler | Line | Why |
+|---|---|---|
+| `LIST_SESSION` | ~3471 | The Session Drawer. Where the false orphans render |
+| `LIST_ALL_FILES` | ~3567 | Actual project open (Project View → Files) |
+| `LIST_PROJECT` | ~3531 | Filepath pills + the hero/switcher count |
+
+`LIST_SESSION` also fires after every tracked write (`App.tsx` refreshes the drawer in `appendVersion`'s `.finally`), which is exactly why the memo is not optional.
 
 **Files:**
-- Modify: `youcoded/desktop/src/shared/artifacts/types.ts:1`
 - Modify: `youcoded/desktop/src/main/artifacts/artifact-store.ts`
-- Modify: `youcoded/app/src/main/kotlin/com/youcoded/app/artifacts/SidecarSchema.kt:12`
+- Modify: `youcoded/desktop/src/main/ipc-handlers.ts` (three handlers)
 - Test: `youcoded/desktop/tests/artifacts/artifact-store.test.ts`
 
 **Interfaces:**
@@ -870,45 +1037,67 @@ this can never touch a live sidecar by accident."
 
 - [ ] **Step 1: Write the failing test**
 
-Append to `youcoded/desktop/tests/artifacts/artifact-store.test.ts` (follow that file's existing tmpdir fixture helpers — do NOT point it at a real project):
+Append to `youcoded/desktop/tests/artifacts/artifact-store.test.ts`. That file has **no shared fixture helper** — every `describe` makes its own root with `mkdtempSync(join(tmpdir(), '<prefix>-'))` and cleans up in `afterEach`. Follow that pattern:
 
 ```typescript
-  it('runSidecarMigration repairs relative externals once and bumps $schema', async () => {
-    const root = await makeTempProject();   // existing helper in this file
-    await writeSidecar(root, null, {
-      $schema: 1 as any, projectId: 'p', name: 'proj',
-      createdAt: '2026-07-01T00:00:00.000Z', updatedAt: '2026-07-01T00:00:00.000Z',
-      artifacts: [{
-        id: 'art_A', path: 'play.html', kind: 'external',
-        absolutePath: 'flappy-bird/play.html',
-        lastModified: '2026-08-13T00:00:00.000Z', status: 'active',
-        versions: [], comments: [], tags: [],
-      }],
-      manualExcludes: [], manualIncludes: [],
-    });
+describe('runSidecarMigration', () => {
+  let projectRoot: string;
+  beforeEach(() => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'as-migrate-'));
+    mkdirSync(join(projectRoot, '.youcoded'), { recursive: true });
+  });
+  afterEach(() => rmSync(projectRoot, { recursive: true, force: true }));
 
-    const first = await runSidecarMigration(root);
+  const legacy = () => ({
+    $schema: SIDECAR_SCHEMA_VERSION, projectId: 'p', name: 'proj',
+    createdAt: '2026-07-01T00:00:00.000Z', updatedAt: '2026-07-01T00:00:00.000Z',
+    artifacts: [{
+      id: 'art_A', path: 'play.html', kind: 'external' as const,
+      absolutePath: 'flappy-bird/play.html',
+      lastModified: '2026-08-13T00:00:00.000Z', status: 'active' as const,
+      versions: [], comments: [], tags: [],
+    }],
+    manualExcludes: [], manualIncludes: [],
+  });
+
+  it('repairs relative externals and is a no-op on the second call', async () => {
+    await writeSidecar(projectRoot, null, legacy() as any);
+
+    const first = await runSidecarMigration(projectRoot);
     expect(first).toMatchObject({ migrated: true, reclassified: 1, merged: 0 });
 
-    const after = await readSidecar(root) as ProjectSidecar;
-    expect(after.$schema).toBe(2);
+    const after = await readSidecar(projectRoot) as ProjectSidecar;
     expect(after.artifacts[0]).toMatchObject({
       path: 'flappy-bird/play.html', kind: 'internal', absolutePath: null,
     });
 
-    // Second call is a no-op — the $schema guard, not luck.
-    const second = await runSidecarMigration(root);
-    expect(second.migrated).toBe(false);
+    // No-op via the reclassified === 0 gate — NOT via the process memo, which a
+    // fresh temp root cannot have populated for a second distinct project.
+    const second = await runSidecarMigration(projectRoot);
+    expect(second).toMatchObject({ migrated: false, reclassified: 0 });
+    const unchanged = await readSidecar(projectRoot) as ProjectSidecar;
+    expect(unchanged.updatedAt).toBe(after.updatedAt);   // it did not rewrite
   });
 
-  it('runSidecarMigration backs the sidecar up before rewriting it', async () => {
-    const root = await makeTempProject();
-    await writeSidecar(root, null, { /* same shape as above */ } as any);
-    await runSidecarMigration(root);
-    const backups = (await fs.readdir(join(root, '.youcoded')))
-      .filter((f) => f.startsWith('artifacts.json.bak.'));
-    expect(backups).toHaveLength(1);
+  it('does not write, or back up, a sidecar with nothing to repair', async () => {
+    const clean = legacy();
+    clean.artifacts[0] = { ...clean.artifacts[0], kind: 'internal' as any, absolutePath: null };
+    await writeSidecar(projectRoot, null, clean as any);
+
+    const res = await runSidecarMigration(projectRoot);
+    expect(res.migrated).toBe(false);
+    expect(readdirSync(join(projectRoot, '.youcoded')).filter((f) => f.includes('.bak'))).toHaveLength(0);
   });
+
+  it('backs the sidecar up exactly once before rewriting it', async () => {
+    await writeSidecar(projectRoot, null, legacy() as any);
+    await runSidecarMigration(projectRoot);
+    await runSidecarMigration(projectRoot);
+    const backups = readdirSync(join(projectRoot, '.youcoded'))
+      .filter((f) => f.startsWith('artifacts.json.pre-migration'));
+    expect(backups).toEqual(['artifacts.json.pre-migration.bak']);
+  });
+});
 ```
 
 - [ ] **Step 2: Run the test to verify it fails**
@@ -919,38 +1108,31 @@ cd youcoded/desktop && npx vitest run tests/artifacts/artifact-store.test.ts
 
 Expected: FAIL — "runSidecarMigration is not exported".
 
-- [ ] **Step 3: Bump the schema constant on both platforms**
-
-`youcoded/desktop/src/shared/artifacts/types.ts:1`:
-
-```typescript
-// 2 (2026-08-12): relative-external records repaired by
-// migrate-relative-externals. Doubles as the migration's run-once marker.
-// Safe to bump — neither platform VALIDATES $schema on read (desktop only
-// writes it; Android optInt()s it and round-trips whatever it read), so an
-// older client never rejects a v2 sidecar.
-export const SIDECAR_SCHEMA_VERSION = 2;
-```
-
-`youcoded/app/src/main/kotlin/com/youcoded/app/artifacts/SidecarSchema.kt:12`:
-
-```kotlin
-// 2 (2026-08-12): see desktop shared/artifacts/types.ts. Android does not run
-// the migration (desktop repairs the shared sidecar); this only keeps a
-// sidecar CREATED on Android from claiming to be v1.
-const val SIDECAR_SCHEMA_VERSION = 2
-```
-
-- [ ] **Step 4: Add the migration entry point**
+- [ ] **Step 3: Add the migration entry point**
 
 Append to `youcoded/desktop/src/main/artifacts/artifact-store.ts`:
 
 ```typescript
+// Project roots already checked in THIS process. The migration is safe to call
+// from hot handlers (LIST_SESSION fires after every tracked write), and the
+// pure pass over a 2,800-record array is cheap — but it is not free, and there
+// is no reason to redo it every call.
+//
+// Process-lifetime, deliberately: a peer device on a pre-fix build can keep
+// writing new relative-external records into a synced sidecar, and clearing the
+// memo on app launch is what lets us repair those. That is the trade for having
+// no persistent "already migrated" marker — see the plan's design decision 2.
+const migrationChecked = new Set<string>();
+
 /**
  * One-time repair of relative-external records (see
- * shared/artifacts/migrate-relative-externals.ts). Idempotent via the $schema
- * marker, so this is safe to call on every project open — the common path is a
- * single integer comparison on an object that was parsed anyway.
+ * shared/artifacts/migrate-relative-externals.ts).
+ *
+ * The run-once gate is `reclassified === 0`, NOT a $schema bump. appendVersion
+ * round-trips $schema from disk, so a schema marker would say "repaired" while
+ * a stale peer build kept producing new damage that this would then never fix.
+ * The pure function already tells us whether anything changed; nothing is
+ * written when it hasn't.
  *
  * WHY here and not inside readSidecar: readSidecar is a hot path (every get,
  * save, and list call). A function that writes from inside a read is both
@@ -959,40 +1141,58 @@ Append to `youcoded/desktop/src/main/artifacts/artifact-store.ts`:
 export async function runSidecarMigration(
   projectRoot: string
 ): Promise<{ migrated: boolean; reclassified: number; merged: number }> {
-  const current = await readSidecar(projectRoot);
-  if (current === null || 'corrupted' in current) {
-    return { migrated: false, reclassified: 0, merged: 0 };
+  const NOTHING = { migrated: false, reclassified: 0, merged: 0 };
+  if (migrationChecked.has(projectRoot)) return NOTHING;
+
+  // The sidecar is written continuously by the running app, so a CAS conflict is
+  // a real (if rare) outcome. Mirror appendVersion: re-read and retry rather
+  // than deferring to "some later project open", which for the busiest project
+  // is the least likely to win.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const current = await readSidecar(projectRoot);
+    if (current === null || 'corrupted' in current) {
+      migrationChecked.add(projectRoot);
+      return NOTHING;
+    }
+
+    const result = migrateRelativeExternals(current, projectRoot);
+    if (result.reclassified === 0) {
+      migrationChecked.add(projectRoot);   // nothing to do — don't re-scan this process
+      return NOTHING;
+    }
+
+    // Back up before the first rewrite. This edits weeks of artifact history in
+    // place; a copy is the only way back if the merge rule turns out wrong for a
+    // record we did not anticipate. FIXED name, written only if absent: a
+    // timestamped name would accumulate one file per retry and per relapse.
+    const sidecarPath = join(projectRoot, SIDECAR_RELATIVE);
+    try {
+      await fs.copyFile(sidecarPath, `${sidecarPath}.pre-migration.bak`, fsConstants.COPYFILE_EXCL);
+    } catch (e: any) {
+      if (e.code !== 'EEXIST') throw e;   // a backup already exists — keep the oldest
+    }
+
+    // CAS on the value we read: if another window wrote in between, re-read and
+    // recompute rather than clobber.
+    const next: ProjectSidecar = result.sidecar;
+    const { committed } = await writeSidecar(projectRoot, current.updatedAt, next);
+    if (committed) {
+      migrationChecked.add(projectRoot);
+      return { migrated: true, reclassified: result.reclassified, merged: result.merged };
+    }
   }
-  if ((current.$schema as number) >= SIDECAR_SCHEMA_VERSION) {
-    return { migrated: false, reclassified: 0, merged: 0 };
-  }
-
-  const result = migrateRelativeExternals(current, projectRoot);
-
-  // Back up before the first rewrite. This edits three weeks of artifact
-  // history in place; a timestamped copy is the only way back if the merge rule
-  // turns out wrong for a record we did not anticipate.
-  const sidecarPath = join(projectRoot, SIDECAR_RELATIVE);
-  const ts = new Date().toISOString().replace(/[:.]/g, '-');
-  await fs.copyFile(sidecarPath, `${sidecarPath}.bak.${ts}`);
-
-  const next: ProjectSidecar = { ...result.sidecar, $schema: SIDECAR_SCHEMA_VERSION };
-  // CAS on the value we read: if another window wrote in between, skip rather
-  // than clobber. The next project open retries.
-  const { committed } = await writeSidecar(projectRoot, current.updatedAt, next);
-  if (!committed) return { migrated: false, reclassified: 0, merged: 0 };
-
-  return { migrated: true, reclassified: result.reclassified, merged: result.merged };
+  return NOTHING;   // three conflicts — do NOT memo; the next call retries
 }
 ```
 
-Add the import at the top of the file:
+Add at the top of the file:
 
 ```typescript
+import { constants as fsConstants } from 'fs';
 import { migrateRelativeExternals } from '../../shared/artifacts/migrate-relative-externals';
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [ ] **Step 4: Run the test to verify it passes**
 
 ```bash
 cd youcoded/desktop && npx vitest run tests/artifacts/artifact-store.test.ts
@@ -1000,42 +1200,53 @@ cd youcoded/desktop && npx vitest run tests/artifacts/artifact-store.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 6: Call it on project open**
+- [ ] **Step 5: Call it from the three per-project entry points**
 
-In `youcoded/desktop/src/main/ipc-handlers.ts`, at the top of the `ARTIFACT_IPC.LIST_PROJECT` handler body:
+In `youcoded/desktop/src/main/ipc-handlers.ts`. `LIST_SESSION` (~3471) receives `projectRoot` directly:
 
 ```typescript
-    // Repair legacy relative-external records before listing, so Project View
-    // never renders a false "no longer on disk" for a file that is right there.
-    // No-op after the first run (guarded on $schema).
+    // Repair legacy relative-external records before listing. The Session
+    // Drawer is the only surface where an unpinned external is visible, so this
+    // is where the false "no longer on disk" actually renders. Memoized per
+    // project per process — this handler also fires after every tracked write.
     await runSidecarMigration(projectRoot);
 ```
 
+`LIST_PROJECT` (~3531) and `LIST_ALL_FILES` (~3567) both resolve `projectRoot` from `projectId` first; add the same line immediately after their `const projectRoot = p ? p.path : projectId;`.
+
 Import `runSidecarMigration` alongside the existing `artifact-store` imports.
 
-- [ ] **Step 7: Full desktop verification**
+- [ ] **Step 6: Full desktop verification**
 
 ```bash
 cd /home/destin/youcoded-dev && bash scripts/verify.sh
 ```
 
-Expected: PASS — tsc, affected vitest, knip, eslint, ast-grep. Knip matters here: it catches `runSidecarMigration` being exported but never wired up if Step 6 was missed.
+Expected: PASS — tsc, affected vitest, knip, eslint, ast-grep. Knip matters here: it catches `runSidecarMigration` being exported but never wired up if Step 5 was missed.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add src/shared/artifacts/types.ts src/main/artifacts/artifact-store.ts \
-        src/main/ipc-handlers.ts tests/artifacts/artifact-store.test.ts \
-        ../app/src/main/kotlin/com/youcoded/app/artifacts/SidecarSchema.kt
-git commit -m "feat(artifacts): run the relative-external repair on project open
+git add src/main/artifacts/artifact-store.ts src/main/ipc-handlers.ts \
+        tests/artifacts/artifact-store.test.ts
+git commit -m "feat(artifacts): run the relative-external repair where the orphans render
 
-Guarded on \$schema so it runs once per project and is a single integer
-comparison thereafter. Backs the sidecar up before the first rewrite, and CAS-
-writes against the value it read so a concurrent window is never clobbered --
-the next project open retries.
+Gated on the pure migration reporting reclassified === 0, not on a \$schema
+bump: appendVersion round-trips \$schema from disk, so a schema marker would
+read 'repaired' while a peer device on a pre-fix build kept writing new
+relative-external records that this would then never fix. A process-lifetime
+memo keeps repeat calls to a Set lookup.
 
-Bumped to schema 2 on both platforms. Safe in both directions: neither
-validates \$schema on read, so an older client never rejects a v2 sidecar."
+Wired into list-session (the Session Drawer -- the only surface where an
+unpinned external is visible), list-all-files (project open), and list-project
+(filepath pills). NOT list-project alone: that handler has exactly one renderer
+caller, FilepathToken, and its own comment says no Project View section reads
+it any more.
+
+Backs the sidecar up under a fixed name before the first rewrite, and CAS-
+writes against the value it read, retrying twice on conflict rather than
+deferring to a later open -- the busiest project is the one most likely to
+conflict and the one that most needs the repair."
 ```
 
 ---
@@ -1052,11 +1263,41 @@ cp /home/destin/youcoded-dev/.youcoded/artifacts.json \
    /tmp/claude-*/scratchpad/migration-check/.youcoded/
 ```
 
-Then run `migrateRelativeExternals` against the parsed copy in a scratch vitest file with `projectRoot` set to `/home/destin/youcoded-dev`, and assert the counts match what was measured: **18 relative + 32 remappable Windows records reclassified, 10 merged, 8 out-of-root Windows records untouched, 793 → 783 artifacts.** A different number means the merge rule is behaving unexpectedly on real data — stop and investigate before shipping. Delete the scratch file before committing.
+Then run `migrateRelativeExternals` against the parsed copy in a scratch vitest file with `projectRoot` set to `/home/destin/youcoded-dev`.
 
-- [ ] **Hand the visual check to Destin.** Per the workspace rule, do not build a scripted rig. Ask him to open a dev instance (`bash scripts/run-dev.sh <worktree> --label "Artifact Path Fix"`), open Project View on `youcoded-dev`, and confirm that `flappy-bird/play.html`, `ROADMAP.md`, and `docs/MAP.md` now open instead of showing "This file is no longer on disk". Note for him: the first open triggers the migration and writes a `.youcoded/artifacts.json.bak.<ts>` next to it — expected, not a bug.
+**Assert invariants, not counts.** A simulation of this algorithm against the live sidecar on 2026-08-12 produced **48 reclassified (18 relative + 30 Windows-remapped), 13 merged**, out of 2,839 artifacts. Do not hardcode those numbers: that file is written continuously by the running app — two measurements 20 minutes apart during planning saw 2,811 and 2,839 artifacts. Treat the composition (roughly 18 relative, roughly 30 Windows, ~13 collisions) as a sanity range and assert these instead, all of which hold at any size:
+
+```typescript
+const before = JSON.parse(raw) as ProjectSidecar;
+const { sidecar: after, reclassified, merged } = migrateRelativeExternals(before, ROOT);
+
+// 1. Every surviving external must be safe to hand to fs — the whole point.
+for (const a of after.artifacts) {
+  if (a.kind === 'internal') expect(a.absolutePath).toBeNull();
+}
+// 2. No two internal records may share a path (the duplicate this migration exists to prevent).
+const paths = after.artifacts.filter((a) => a.kind === 'internal').map((a) => a.path);
+expect(new Set(paths).size).toBe(paths.length);
+// 3. Exactly `merged` records disappeared — nothing else was lost.
+expect(after.artifacts.length).toBe(before.artifacts.length - merged);
+// 4. No version event was dropped anywhere in the sidecar.
+const count = (s: ProjectSidecar) => new Set(s.artifacts.flatMap((a) => a.versions.map((v) => v.id))).size;
+expect(count(after)).toBe(count(before));
+// 5. The out-of-root Windows records survived as externals.
+expect(after.artifacts.some((a) => a.kind === 'external' && a.absolutePath?.includes('AppData/Local/Temp'))).toBe(true);
+// 6. Running it again is a true no-op — this is the production run-once gate.
+expect(migrateRelativeExternals(after, ROOT).reclassified).toBe(0);
+```
+
+Invariant 4 is the one that matters most — it is the difference between a merge and a data loss. Invariant 6 is the one production depends on: with no `$schema` marker, an idempotency failure means the app rewrites the sidecar on every project open forever. Delete the scratch file before committing.
+
+Note what invariant 1 no longer asserts: that every *external* holds an absolute path. It doesn't, and shouldn't — the `..`-escaping records deliberately stay external with a relative string. Task 2's guard is what keeps those from resolving against the process cwd.
+
+- [ ] **Hand the visual check to Destin.** Per the workspace rule, do not build a scripted rig. Ask him to open a dev instance (`bash scripts/run-dev.sh <worktree> --label "Artifact Path Fix"`), open Project View on `youcoded-dev` **and** the Session Drawer on a session that touched them, and confirm that `flappy-bird/play.html`, `ROADMAP.md`, and `docs/MAP.md` now open instead of showing "no longer on disk". Note for him: the first open triggers the migration and writes `.youcoded/artifacts.json.pre-migration.bak` next to the sidecar — expected, not a bug, and it is written once ever.
 
 ## Follow-ups to capture in ROADMAP.md
 
 - **Kotlin `detectOrphan` pruning** — `chore`, tagged `#android`. Dead code with test-only callers; desktop twin already removed (`project-manager.ts:84-88`).
 - **Android does not run the migration** — `bug`, tagged `#android`, low priority. A project opened only ever on Android keeps showing the legacy false orphans. Closes the first time that project is opened on desktop.
+- **`..`-escaping records are refused, not repaired** — `bug`, low priority. `resolveP` is `path.resolve(cwd, p)`, so `../other/notes.md` really did write outside the project; the record keeps a relative `absolutePath` and is consistently orphaned everywhere. Folding `..` segments against the root in pure string code would let those resolve to their real absolute location.
+- **The migration's collision map compares raw paths** — `chore`, low priority. Everything else in the artifact layer compares through `canonicalize()` on both sides (`visible-artifacts.ts:46-55`). A case-differing pair could dodge the merge on Windows and leave two internal records at "the same" path.
