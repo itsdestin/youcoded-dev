@@ -1284,9 +1284,26 @@ Update the doc comment above `revokeRule` — the paragraph beginning "The in-me
  *  collapse into one row and Settings revokes the wrong one.
 ```
 
-- [ ] **Step 5: Update the workspace docs**
+- [ ] **Step 5: Do NOT update the workspace docs yet — they land at merge (Task 9)**
 
-In `/home/destin/youcoded-dev`:
+Measured 2026-08-13, not assumed: adding the `verify:` anchors and the MAP paths
+while the code is still on a branch turns the workspace's own CI red, because
+`node scripts/audit-anchors.mjs` resolves every anchor against **master** of the
+sub-repo. It reported exactly that:
+
+```
+FAIL anchors: /sameRule/ not found in youcoded/desktop/src/shared/permission-types.ts
+FAIL anchors: missing: youcoded/desktop/src/shared/bash-grant-shapes.ts
+FAIL MAP paths missing: youcoded/desktop/src/shared/bash-grant-shapes.ts
+```
+
+The same run also caught a second thing: the rule file has a **600-word budget**
+and the first draft of these invariants took it to 897. The final text below is
+the trimmed version that fits — depth belongs in the spec the rule already points
+at, not in the rule.
+
+Both edits move to **Task 9, Step 5** (after the merge lands on master). The text
+is recorded here so it is not re-derived:
 
 **a.** `.claude/rules/native-permissions.md` — replace the `remember() spreads the existing entry` invariant's second sentence:
 
@@ -1297,15 +1314,23 @@ Rule identity everywhere — dedupe, disk removal, in-memory filter — is
 `match` read as `'exact'` (sameRule normalizes both sides itself).
 ```
 
-Add a second invariant:
+Add ONE new invariant — not two; the file's word budget is 600 and depth belongs
+in the spec it already points at:
 
 ```
-**Invariant:** `ruleMatches` in `src/shared/subject-glob.ts` is the ONLY function
-that decides whether a rule covers a subject. It owns two narrowings that apply
-to wildcard Bash GRANTS only — a wildcard never swallows a shell operator, and a
-wildcard with text after it never swallows a destructive flag. They live in the
-matcher rather than on each rule so a new rule-builder cannot forget them.
-Guard: `tests/subject-glob.test.ts`, `tests/bash-grant-shapes.test.ts`.
+## What a rule covers, and what may be offered
+**Invariant:** `ruleMatches` (`src/shared/subject-glob.ts`) is the only
+decision-path matcher — engine and renderer both. It owns `match` (exact =
+byte-equal, case-sensitive, untrimmed) plus two narrowings for wildcard Bash
+GRANTS only: never cross a shell operator, and never admit a `BOUNDED_RUNG_VETO`
+flag when the pattern has text after its wildcard. `bashGrantOptions` may only
+offer an option that covers the command in hand and, if wide, admits nothing in
+`HOSTILE_CORPUS`.
+**Why:** in the matcher they cannot be forgotten by a new rule-builder; on the
+deny-list they must NOT apply, or `* rm *` stops catching `cd x && rm -rf y`.
+Judging danger from the approving command alone missed `git --no-pager log` →
+`git*` → "Any git command", which outranks the deny-list once stored.
+**Guard:** `subject-glob.test.ts`, `bash-grant-shapes.test.ts`.
 ```
 
 Add to the `verify:` block:
@@ -1341,7 +1366,7 @@ npx vitest run tests/permission-store.test.ts tests/native-session-host.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 7: Verify and commit (two repos)**
+- [ ] **Step 7: Verify and commit (sub-repo only — the workspace docs wait for Task 9)**
 
 ```bash
 cd /home/destin/youcoded-dev && bash scripts/verify.sh bash-grant-shape
@@ -1359,13 +1384,10 @@ sameRule normalizes both sides, so an absent 'match' has ONE meaning at every
 call site instead of one per caller.
 
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
-
-cd /home/destin/youcoded-dev
-git add .claude/rules/native-permissions.md docs/MAP.md
-git commit -m "docs(rules): permission rule identity is the quad; the matcher owns the safety rules
-
-Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
+
+The workspace-repo half of this task is deliberately NOT committed here — see
+Step 5. It lands in Task 9 Step 5, once the anchors can resolve.
 
 ---
 
@@ -2082,7 +2104,22 @@ EOF
 )"
 ```
 
-- [ ] **Step 5: After merge — archive**
+- [ ] **Step 5: After merge — land the workspace docs, then archive**
+
+**First, the docs Task 5 deferred** (they only resolve now that the code is on
+`master`): apply Task 5 Step 5's `.claude/rules/native-permissions.md` and
+`docs/MAP.md` edits, then prove it:
+
+```bash
+cd /home/destin/youcoded-dev && node scripts/audit-anchors.mjs
+```
+
+Expected: no `FAIL anchors`, no `FAIL MAP paths missing`, and **no budget
+violation for `native-permissions.md`** (600-word limit — the first draft of
+those invariants hit 897). `artifacts.md` may still be over from unrelated
+in-flight work; attribute before fixing.
+
+Then archive:
 
 Move the spec and this plan from `docs/active/{specs,plans}/` to `docs/archive/{specs,plans}/`, flip their `status:` to `shipped`, mark 2c done in `docs/active/plans/2026-08-11-native-sessions-remaining-work.md` §2, and archive `docs/active/handoffs/2026-08-12-native-sessions-m5-2c.md`. Confirm the ROADMAP entry from Task 0 Step 4 (the deferred "tell the user when a grant almost covered a command" work) is still there and accurate. Remove the worktree and delete the branch locally and remotely. Commit and push the workspace repo.
 
