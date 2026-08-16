@@ -5,14 +5,14 @@ paths:
   - "youcoded/desktop/src/shared/permission-types.ts"
   - "youcoded/desktop/src/renderer/components/PermissionsSection.tsx"
   - "youcoded/desktop/src/renderer/components/permissions/**"
-last_verified: 2026-08-13
+last_verified: 2026-08-16
 verify:
   - path: youcoded/desktop/src/main/harness/permission-store.ts
     contains: "removeProject"
   - path: youcoded/desktop/src/main/harness/native-session-host.ts
     contains: "revokeRule"
   - path: youcoded/desktop/src/main/harness/native-session-host.ts
-    contains: "cwdToProjectSlug"
+    contains: "nativeStoreSlug"
   - path: youcoded/desktop/src/shared/permission-types.ts
     contains: "StoredProject"
   - path: youcoded/desktop/src/renderer/components/PermissionsSection.tsx
@@ -22,9 +22,9 @@ verify:
   - path: youcoded/desktop/src/shared/types.ts
     contains: "PERMISSIONS_REMOVE_PROJECT"
   - path: youcoded/desktop/src/shared/permission-types.ts
-    contains: "specialist\\?: string"
+    contains: "specialist\?: string"
   - path: youcoded/desktop/src/shared/permission-types.ts
-    contains: "match\\?: 'exact' \\| 'glob'"
+    contains: "match\?: 'exact' \| 'glob'"
   - path: youcoded/desktop/src/shared/permission-types.ts
     contains: "export function sameRule"
   - path: youcoded/desktop/src/main/harness/permission-store.ts
@@ -55,7 +55,7 @@ so a disk-only delete leaves a session granting what was just revoked.
 **Guard:** `native-session-host.test.ts` → the `revokeRule / revokeProject` describe.
 
 ## Key by project SLUG, never by cwd; `remember()` spreads the existing entry
-**Invariant:** removal takes a slug — live sessions match via `cwdToProjectSlug(entry.cwd)
+**Invariant:** removal takes a slug — live sessions match via `nativeStoreSlug(entry.cwd)
 === slug`, never path equality. `remember()` writes `{ ...existingEntry, cwd, rules }`,
 never `{ rules }`.
 **Why:** the slug collapses `:`, `\`, `/` **and spaces** to `-`, so two differently-spelled

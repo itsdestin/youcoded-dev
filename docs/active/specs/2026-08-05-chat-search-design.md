@@ -111,7 +111,7 @@ Two provider lanes, both already modelled by the Conversation Store:
 | Lane | Local transcript | Store record |
 |---|---|---|
 | `claude` | `~/.claude/projects/<ccProjectSlug>/<id>.jsonl` | `~/YouCoded/Personal/Conversations/claude/<id>.json` |
-| `native` | `~/.youcoded/sessions/<cwdToProjectSlug(cwd)>/<id>.jsonl` | `~/YouCoded/Personal/Conversations/native/<id>.json` |
+| `native` | `~/.youcoded/sessions/<nativeStoreSlug(cwd)>/<id>.jsonl` | `~/YouCoded/Personal/Conversations/native/<id>.json` |
 
 Both mirror into the synced space under
 `<provider>/transcripts/<key>/<id>.jsonl`.
@@ -147,7 +147,7 @@ Note also that the builder does **not** consume `NativeHome.listSessionFiles()` 
 it resolves native transcript paths itself from store records.
 
 The two slug encodings differ deliberately (`ccProjectSlug` uppercases a
-lowercase Windows drive letter; `cwdToProjectSlug` does not). The builder reads
+lowercase Windows drive letter; `nativeStoreSlug` does not). The builder reads
 paths from the store record's `transcriptRef` and never derives slugs itself.
 No records predate the field (verified 2026-08-05: 0 of 1690 on-disk records
 lack the key; `RECORD_SCHEMA_VERSION` has only ever been 1). Records with an
@@ -282,7 +282,7 @@ at write time specifically so the CLI never needs store knowledge:
   not raw `tag:<id>` flag keys.
 - **`transcriptPath`** carries the resolved absolute local path, so `show
   --turns` reads raw bytes without touching slug derivation, the `ccProjectSlug`
-  / `cwdToProjectSlug` divergence, or the symlink hazard.
+  / `nativeStoreSlug` divergence, or the symlink hazard.
 
 The meta file is rewritten at app start, on the quiescence signal, and
 (debounced) on every `SESSION_META_CHANGED` broadcast. The last trigger is
