@@ -122,9 +122,9 @@ If the child had *finished* just before you closed the app but its report hadn't
 ## Test 8 — A child asks YOU for permission (routed asks + the 5-minute redirect)
 
 Set up a case the child can't decide itself. **Say:**
-> Hire a background specialist to run `git log --oneline -5` in this folder and report the last five commits.
+> Hire the **worker** specialist in the background to run `git log --oneline -5` in this folder and report the last five commits. Use the worker, not the explorer — it needs a shell.
 
-(The Worker specialist can run commands, but a shell command needs your OK.)
+(Only the Worker specialist has a shell — the explorer/researcher/reviewer are read-only and will just improvise around the request without ever asking you. If the parent still hires an explorer, tell it plainly: "use the worker specialist".)
 
 **You should see:**
 - A permission card appears **in your conversation** — for a request the *child* made — labelled with the specialist's name/type.
