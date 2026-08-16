@@ -1,13 +1,35 @@
 ---
-status: draft
+status: shipped
 date: 2026-08-13
-spec: docs/active/specs/2026-08-13-dismiss-ends-turn-design.md
+shipped: 2026-08-15
+merge: youcoded a2b23d1f
+spec: docs/archive/specs/2026-08-13-dismiss-ends-turn-design.md
 tags: [native-runtime, harness-tools, permissions, askuserquestion, chat-ux]
 repos: [youcoded, youcoded-dev]
 ---
 
 # Dismiss Ends The Turn — Implementation Plan
 
+> **SHIPPED 2026-08-15 — youcoded merge `a2b23d1f`. Executed to completion, with ONE design change made mid-flight. Read this before trusting any code snippet below.**
+>
+> Task 1's snippets show the *superseded* first design, in which **any** `deny` from
+> the interactive branch ended the turn. `tests/harness-review-runner.test.ts:775`
+> failed on it: the harness evaluator denies `AskUserQuestion` on its wrap-up turn
+> precisely so the model stops asking and *writes the review* — ending the turn there
+> discarded `run.review` and the eval returned empty.
+>
+> **As shipped:** `PermissionBroker.respond()` stamps `dismissed: true` on a deny,
+> and it is the only code path a human's button click travels. The driver ends the
+> turn only on `behavior === 'deny' && d.dismissed`; a bare programmatic deny
+> (specialist children, the evaluator) keeps its pre-existing continue-anyway text,
+> unchanged. So Task 1 gained a fourth file — `permission-broker.ts` — plus a
+> discrimination test (`POLICY deny (no dismissed) → the loop CONTINUES`) and two
+> broker tests, none of which appear below. Full write-up: the "Known side effects"
+> correction in the spec.
+>
+> Everything else — the `{ kind: 'end-turn' }` wrapper, sibling back-fill,
+> `break turnLoop`, `question_dismissed`, the footer copy — shipped as written.
+>
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** In native sessions, clicking **Dismiss** on an `AskUserQuestion` card ends the turn and returns control to the user, instead of handing the model a "continue with your best judgment" note and running another step.
@@ -56,20 +78,20 @@ No new files. The change is small and lives entirely inside existing, well-bound
 - Consumes: nothing
 - Produces: a worktree path used by every later task's `verify.sh` invocation
 
-- [ ] **Step 1: Sync master first**
+- [x] **Step 1: Sync master first**
 
 ```bash
 cd /home/destin/youcoded-dev/youcoded && git fetch origin && git pull origin master
 ```
 
-- [ ] **Step 2: Create the worktree and branch**
+- [x] **Step 2: Create the worktree and branch**
 
 ```bash
 cd /home/destin/youcoded-dev/youcoded
 git worktree add ../worktrees/dismiss-ends-turn -b feat/dismiss-ends-turn
 ```
 
-- [ ] **Step 3: Copy node_modules with hardlinks — NEVER symlink or junction**
+- [x] **Step 3: Copy node_modules with hardlinks — NEVER symlink or junction**
 
 ```bash
 cp -al /home/destin/youcoded-dev/youcoded/desktop/node_modules \
@@ -78,7 +100,7 @@ cp -al /home/destin/youcoded-dev/youcoded/desktop/node_modules \
 
 A symlink or junction here is destructive, not merely wrong: `npm ci` and `git worktree remove` both follow it and empty the **main checkout's** deps (verified 2026-08-13, six worktrees wiped at once). It also makes `verify.sh` silently skip suites — Vite resolves the real path, sees it outside the worktree root, and fails them at load with `Denied ID …?inline` while the summary still reads "1 check failed". `cp -al` is near-instant and has neither failure mode.
 
-- [ ] **Step 4: Confirm the baseline is green before changing anything**
+- [x] **Step 4: Confirm the baseline is green before changing anything**
 
 ```bash
 cd /home/destin/youcoded-dev && bash scripts/verify.sh worktrees/dismiss-ends-turn
@@ -98,7 +120,7 @@ Expected: all checks pass. If the baseline is already red, stop and report — d
 - Consumes: `ToolResultPayload` (`src/main/harness/tools/types.ts:108`) — verified to have no `kind` property, so `'kind' in payload` narrows cleanly; the existing `'interrupted'` sentinel and labelled `turnLoop`; `this.toolResultPart(call, text)`; `this.emitEvent(type, data)`.
 - Produces: `stopReason: 'question_dismissed'` on the `turn-complete` transcript event — Task 2 renders it. Module-private constants `DISMISSED_TOOL_TEXT`, `NOT_RUN_TOOL_TEXT`, `DISMISSED_STOP_REASON` (not exported; tests assert the literal strings).
 
-- [ ] **Step 1: Rewrite the test that pins the OLD behavior**
+- [x] **Step 1: Rewrite the test that pins the OLD behavior**
 
 `tests/harness-session-loop.test.ts:655` currently asserts the behavior we are deleting — its name literally ends "loop continues". Replace that whole `it(...)` block with:
 
@@ -132,7 +154,7 @@ Expected: all checks pass. If the baseline is already red, stop and report — d
     });
 ```
 
-- [ ] **Step 2: Add the sibling back-fill test**
+- [x] **Step 2: Add the sibling back-fill test**
 
 Insert immediately after the test from Step 1:
 
@@ -179,7 +201,7 @@ Insert immediately after the test from Step 1:
     });
 ```
 
-- [ ] **Step 3: Run the two tests to verify they FAIL**
+- [x] **Step 3: Run the two tests to verify they FAIL**
 
 ```bash
 cd /home/destin/youcoded-dev/worktrees/dismiss-ends-turn/desktop
@@ -190,7 +212,7 @@ Expected: both FAIL. Step 1's test fails on `expect(seen).toHaveLength(1)` (curr
 
 If either test *passes* here, stop — the test is not exercising the behavior it claims.
 
-- [ ] **Step 4: Add the three constants**
+- [x] **Step 4: Add the three constants**
 
 In `src/main/harness/harness-session.ts`, immediately after `CANCELED_TOOL_TEXT` (line 318):
 
@@ -216,7 +238,7 @@ const NOT_RUN_TOOL_TEXT = 'Not run: the turn ended when the user closed the ques
 const DISMISSED_STOP_REASON = 'question_dismissed';
 ```
 
-- [ ] **Step 5: Widen `runOneTool`'s return type**
+- [x] **Step 5: Widen `runOneTool`'s return type**
 
 Immediately above the `runOneTool` doc comment (line 1951), add:
 
@@ -250,7 +272,7 @@ Also extend the doc comment's last sentence (line 1953-1954) from "except a user
    *  question which returns EndTurnResult — both let the loop unwind. */
 ```
 
-- [ ] **Step 6: Change the interactive branch to end the turn**
+- [x] **Step 6: Change the interactive branch to end the turn**
 
 In `runOneTool`, replace the non-allow line inside `if (tool.interactive)` (line 1997):
 
@@ -267,7 +289,7 @@ with:
       if (d.behavior !== 'allow') return { kind: 'end-turn', payload: { text: DISMISSED_TOOL_TEXT, isError: true } };
 ```
 
-- [ ] **Step 7: Handle the new result in the tool loop**
+- [x] **Step 7: Handle the new result in the tool loop**
 
 In `send()`'s tool-execution loop, immediately AFTER the closing brace of the `if (payload === 'interrupted') { ... }` block (line 1518) and BEFORE the `resolveToolImages` call (line 1522), insert:
 
@@ -299,7 +321,7 @@ In `send()`'s tool-execution loop, immediately AFTER the closing brace of the `i
 
 `break turnLoop` exits both the inner `for` and the outer step loop, landing on the existing `turn-complete` emit — so usage accumulation, the generation-time denominator, and `contextUsedTokens` all keep working with no duplication. `injectPathTriggers` and the `max_steps` gate are correctly skipped: the turn is over.
 
-- [ ] **Step 8: Run the loop suite in full**
+- [x] **Step 8: Run the loop suite in full**
 
 ```bash
 cd /home/destin/youcoded-dev/worktrees/dismiss-ends-turn/desktop
@@ -312,7 +334,7 @@ Expected: PASS, every test. Three existing tests are load-bearing discrimination
 - `multi-call step, interactive cancel on the FIRST call → BOTH calls back-filled canceled + user-interrupt` (line ~692) — proves the interrupt back-fill still uses the interrupt copy.
 - The ordinary-permission-deny test (line ~130, `decide: async () => ({ action: 'deny', ... })`) — proves a declined Bash/Write still lets the model try something else.
 
-- [ ] **Step 9: Full verification gate**
+- [x] **Step 9: Full verification gate**
 
 ```bash
 cd /home/destin/youcoded-dev && bash scripts/verify.sh worktrees/dismiss-ends-turn
@@ -320,7 +342,7 @@ cd /home/destin/youcoded-dev && bash scripts/verify.sh worktrees/dismiss-ends-tu
 
 Expected: all checks pass (tsc, affected vitest, knip, eslint, ast-grep).
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 cd /home/destin/youcoded-dev/worktrees/dismiss-ends-turn
@@ -352,7 +374,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 - Consumes: `stopReason: 'question_dismissed'` from Task 1, arriving via `App.tsx:1201` (`stopReason: event.data.stopReason ?? null`) into `AssistantTurn.stopReason`. The existing `StopReasonFooter` and its render gate (`AssistantTurnBubble.tsx:422`) are reused as-is.
 - Produces: nothing consumed by later tasks.
 
-- [ ] **Step 1: Write the two failing tests**
+- [x] **Step 1: Write the two failing tests**
 
 Append to `src/renderer/components/AssistantTurnBubble.test.tsx`. It reuses the file's existing `renderTurn` helper (defined at line ~98) and the `AssistantTurn` shape used throughout:
 
@@ -397,7 +419,7 @@ describe('AssistantTurnBubble — stop reason footer', () => {
 
 If `AssistantTurn` is not already imported in this file, add it to the existing type import from `../state/chat-types`.
 
-- [ ] **Step 2: Run the tests to verify the first FAILS**
+- [x] **Step 2: Run the tests to verify the first FAILS**
 
 ```bash
 cd /home/destin/youcoded-dev/worktrees/dismiss-ends-turn/desktop
@@ -406,7 +428,7 @@ npx vitest run src/renderer/components/AssistantTurnBubble.test.tsx -t 'stop rea
 
 Expected: the first test FAILS — the fallback copy renders `Response ended: question_dismissed.` instead. The second test PASSES already (nothing renders for `end_turn`); that is correct and expected.
 
-- [ ] **Step 3: Add the copy entry**
+- [x] **Step 3: Add the copy entry**
 
 In `src/renderer/components/AssistantTurnBubble.tsx`, add one line to the `map` inside `stopReasonCopy` (after the `interrupted` entry, line 39):
 
@@ -418,7 +440,7 @@ In `src/renderer/components/AssistantTurnBubble.tsx`, add one line to the `map` 
     question_dismissed: 'Question closed — waiting for you.',
 ```
 
-- [ ] **Step 4: Run the tests to verify both PASS**
+- [x] **Step 4: Run the tests to verify both PASS**
 
 ```bash
 cd /home/destin/youcoded-dev/worktrees/dismiss-ends-turn/desktop
@@ -427,7 +449,7 @@ npx vitest run src/renderer/components/AssistantTurnBubble.test.tsx -t 'stop rea
 
 Expected: 2 passed.
 
-- [ ] **Step 5: Full verification gate**
+- [x] **Step 5: Full verification gate**
 
 ```bash
 cd /home/destin/youcoded-dev && bash scripts/verify.sh worktrees/dismiss-ends-turn
@@ -435,7 +457,7 @@ cd /home/destin/youcoded-dev && bash scripts/verify.sh worktrees/dismiss-ends-tu
 
 Expected: all checks pass.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /home/destin/youcoded-dev/worktrees/dismiss-ends-turn
@@ -465,7 +487,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 
 Three shipped statements become wrong the moment Task 1 merges. The workspace rule is fix-on-sight; leaving them turns a correct change into a source of future wrong decisions.
 
-- [ ] **Step 1: Fix the sub-agent ask-policy comment**
+- [x] **Step 1: Fix the sub-agent ask-policy comment**
 
 `child-ask-policy.ts`'s header comment enumerates what a deny does for each ask kind. Replace its `interactive AskUserQuestion` bullet (lines 15-17):
 
@@ -488,7 +510,7 @@ with:
 
 Note the stale `(line 1817)` / `(line 1424)` / `(line 1800)` line references throughout that comment are already drifted. Update only the bullet above; wholesale renumbering is out of scope.
 
-- [ ] **Step 2: Fix the workspace rule bullets**
+- [x] **Step 2: Fix the workspace rule bullets**
 
 In `youcoded-dev/.claude/rules/native-runtime.md`, under `## Tool loop`, replace:
 
@@ -514,7 +536,7 @@ with:
 - **AskUserQuestion rides the permission-ask rail** — the broker threads `decision.updatedInput`; `formatAnswers` is TOTAL (a throw = dangling tool_call = bricked session). **A DENY ends the turn** (`question_dismissed`), unlike an ordinary permission deny which the model may work around — guards: `native-permission-broker`/`ask-user-question-tool`/`harness-session-loop`.
 ```
 
-- [ ] **Step 3: Add the depth-doc paragraph**
+- [x] **Step 3: Add the depth-doc paragraph**
 
 In `youcoded/docs/native-runtime.md`, find the section covering the tool loop's ask semantics (search for `PAUSES` or `askUser`) and add:
 
@@ -537,7 +559,7 @@ this action" — that did not happen. And the signal is a driver-private
 ordinary tool cannot end a turn.
 ```
 
-- [ ] **Step 4: Verify the rule anchors still resolve**
+- [x] **Step 4: Verify the rule anchors still resolve**
 
 ```bash
 cd /home/destin/youcoded-dev && node scripts/audit-anchors.mjs 2>&1 | tail -20
@@ -545,7 +567,7 @@ cd /home/destin/youcoded-dev && node scripts/audit-anchors.mjs 2>&1 | tail -20
 
 Expected: no new failures versus the pre-change run. This checks the `verify:` blocks in the rules you just edited still point at real files and real regexes.
 
-- [ ] **Step 5: Commit the code-repo half**
+- [x] **Step 5: Commit the code-repo half**
 
 ```bash
 cd /home/destin/youcoded-dev/worktrees/dismiss-ends-turn
@@ -557,7 +579,7 @@ Both statements were true until this branch and are wrong after it.
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
-- [ ] **Step 6: Commit the workspace-repo half separately**
+- [x] **Step 6: Commit the workspace-repo half separately**
 
 Rules live in `youcoded-dev`, code lives in `youcoded` — never one commit.
 
@@ -579,7 +601,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 - Consumes: the three commits on `feat/dismiss-ends-turn` plus the workspace-repo commit.
 - Produces: merged master, archived spec/plan.
 
-- [ ] **Step 1: Final full verification**
+- [x] **Step 1: Final full verification**
 
 ```bash
 cd /home/destin/youcoded-dev && bash scripts/verify.sh worktrees/dismiss-ends-turn --full
@@ -587,17 +609,17 @@ cd /home/destin/youcoded-dev && bash scripts/verify.sh worktrees/dismiss-ends-tu
 
 Expected: all checks pass. `--full` (not the default affected-tests mode) because this touches the driver every native session runs through.
 
-- [ ] **Step 2: Hand the visual check to Destin, do NOT script it**
+- [x] **Step 2: Hand the visual check to Destin, do NOT script it**
 
 Ask Destin to run `bash scripts/run-dev.sh dismiss-ends-turn --label "Dismiss Ends Turn"`, start a native session, get the assistant to ask a question, and click Dismiss. He is looking for: the turn stops, the footer reads *"Question closed — waiting for you."*, and typing a follow-up works normally.
 
 Workspace rule: final-stage interactive verification goes to Destin rather than a scripted rig — he can eyeball it in 30 seconds. Do not build a CDP harness for this.
 
-- [ ] **Step 3: Offer a harness eval run — do NOT run it unasked**
+- [x] **Step 3: Offer a harness eval run — do NOT run it unasked**
 
 This changes a native harness tool's behavior, which is the documented trigger for offering the evaluator. Tell Destin: `--dry-run` is free; a real run is measured at ~$0.25 per cell and needs `--key-file`. Note the spec's flagged side effect — `run-case.ts:586` denies `AskUserQuestion` during wrap-up, so that turn now ends a beat earlier and small eval shifts have this as their first suspect. **Let him decide.**
 
-- [ ] **Step 4: Merge and push both repos**
+- [x] **Step 4: Merge and push both repos**
 
 ```bash
 cd /home/destin/youcoded-dev/youcoded
@@ -608,7 +630,7 @@ git push origin master
 cd /home/destin/youcoded-dev && git push origin master
 ```
 
-- [ ] **Step 5: Confirm the commit landed before cleanup**
+- [x] **Step 5: Confirm the commit landed before cleanup**
 
 ```bash
 cd /home/destin/youcoded-dev/youcoded && git branch --contains $(git rev-parse feat/dismiss-ends-turn)
@@ -616,7 +638,7 @@ cd /home/destin/youcoded-dev/youcoded && git branch --contains $(git rev-parse f
 
 Expected: `master` is listed. Do not proceed to Step 6 until it is.
 
-- [ ] **Step 6: Clean up the worktree and branch**
+- [x] **Step 6: Clean up the worktree and branch**
 
 ```bash
 cd /home/destin/youcoded-dev/youcoded
@@ -627,7 +649,7 @@ git push origin --delete feat/dismiss-ends-turn
 
 `-D` not `-d`: a `--no-ff` merge leaves the tip non-ancestral. If a dev server was started for Step 2, shut it down now — an orphaned Vite server holds port 5223 and breaks the next session's launch.
 
-- [ ] **Step 7: Archive the lifecycle docs in the same session**
+- [x] **Step 7: Archive the lifecycle docs in the same session**
 
 ```bash
 cd /home/destin/youcoded-dev

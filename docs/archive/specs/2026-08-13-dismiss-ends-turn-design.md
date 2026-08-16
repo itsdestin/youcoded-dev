@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-08-13
 tags: [native-runtime, harness-tools, permissions, askuserquestion, chat-ux]
 repos: [youcoded]
@@ -40,7 +40,9 @@ until the user sends a message.
 - **Native sessions only.** The Claude Code path routes its asks through
   `hook-relay` into the CC CLI, which owns the post-deny behavior; the app
   cannot change it. `AskUserQuestionCard` is shared, so the *card* is shared,
-  but only the native driver's interpretation of `deny` changes.
+  but only the native driver's interpretation of `deny` changes. *(As shipped,
+  narrower still: only a deny that came through `PermissionBroker.respond` —
+  i.e. a human's — see the correction under "Known side effects".)*
 - **Desktop only.** Native sessions have no Android implementation (M8), and
   `remote-shim.ts:1534` hardcodes `supported: false` inside its `native` block,
   so the remote browser never drives one either. No cross-platform parity work.
@@ -166,6 +168,18 @@ Two shipped invariants are amended by this work and must not be left stale:
 
 ## Known side effects
 
+> **CORRECTED 2026-08-15, at implementation.** Both paragraphs below described
+> the *first* design, in which any `deny` ended the turn. That design was wrong
+> and `harness-review-runner.test.ts:775` caught it: the evaluator's wrap-up
+> deny is not a user closing a card, it is a policy telling the model *stop
+> asking and answer* — ending the turn there discarded `run.review` entirely,
+> so the eval returned nothing. The shipped design therefore keys the end-of-turn
+> on a broker-stamped `dismissed: true`, which only `PermissionBroker.respond()`
+> sets and only a human reaches. **Net effect: neither side effect below
+> happened.** Both call sites deny programmatically, never through the broker,
+> so both keep their pre-existing continue-anyway behavior — bit-for-bit. Kept
+> verbatim as the record of what the analysis missed.
+
 **Specialist children.** `childAskPolicy()`
 (`desktop/src/main/harness/specialists/child-ask-policy.ts`) auto-denies every
 ask a child raises, and its header comment reasons explicitly about what each
@@ -179,10 +193,18 @@ interactive ask would now end the child's turn cleanly rather than return
 corrective text. That is a strict improvement over the "prevents hanging"
 guarantee the comment claims.
 
+*(As shipped: the child's deny is a bare deny with no `dismissed` flag, so the
+turn does NOT end. The header comment was updated instead to carry the new
+invariant — it MUST STAY a bare deny.)*
+
 **Harness evaluator.** `run-case.ts:586` denies `AskUserQuestion` during the
 wrap-up turn. That turn will now end at the deny instead of continuing. It is
 already the final turn of a run, so scores should not move — but a small shift
 in eval results after this ships has this as its first suspect.
+
+*(As shipped: zero change to eval code and zero change to eval behavior. The
+"scores should not move" reasoning was doubly wrong — the deny is not the final
+turn's last act, it is what makes the model produce the review at all.)*
 
 ## Out of scope
 
