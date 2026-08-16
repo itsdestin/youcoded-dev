@@ -1,6 +1,7 @@
 ---
 status: draft
 date: 2026-08-16
+revised: 2026-08-16 (Clock 1 left as-is — see §8)
 type: spec
 repos: [youcoded]
 tags: [native-runtime, harness, chat-ui, attention, error-handling]
@@ -64,7 +65,9 @@ step.
 | **Today: outcome** | auto-retry if safe, else kill the turn | auto-retry if safe, else kill the turn |
 | **After: threshold** | unchanged | **90s** |
 | **After: grace** | none — the card is the outcome | none |
-| **After: outcome** | *see §8* | **stalled card, turn stays alive** |
+| **After: outcome** | **unchanged** — auto-retry if safe, else kill the turn | **stalled card, turn stays alive** |
+
+**Clock 1 is deliberately untouched** (§8). This change is Clock 2 only.
 
 Constants live at `harness-session.ts:437-438` (`STALL_WARNING_MS`,
 `STALL_RETRY_COUNTDOWN_MS`) and are already overridable per-session for tests.
@@ -185,10 +188,12 @@ non-committal, and pairs with an action — the shape
 `docs/error-message-standards.md` requires when the cause is genuinely unknown.
 Naming OpenRouter would be a guess, and the same card serves local models.
 
-**Existing `StreamStallError` copy is retired for Clock 2.** Its text —
+**Existing `StreamStallError` copy is retired for Clock 2 only.** Its text —
 "The model stopped responding… send your message again to retry" — asserts a
 cause we haven't verified and instructs the user to do the one thing that
-duplicates work. The class stays for Clock 1's prefill phase (§8).
+duplicates work. The class is **not** deleted: its `'prefill'` phase still
+fires for Clock 1, which is unchanged (§8). Only the `'streaming'` phase
+becomes unreachable.
 
 ## §6 Persistence: don't lose the last thing on screen
 
@@ -216,24 +221,26 @@ Rejected alternative: send the typed text as a new user message. That forks the
 conversation mid-turn, which is the exact hazard the send queue exists to
 prevent.
 
-## §8 Clock 1 alignment — flagged for Destin's call
+## §8 Clock 1 stays as it is — decided
 
-Destin scoped this change to Clock 2. Clock 1 (waiting for the first byte) is
-raised here because leaving it as-is means one path that never gives up and one
-that does, and no way to tell from the outside which you're in.
+Aligning Clock 1 (waiting for the first byte) was raised and **declined**
+(Destin, 2026-08-16). Clock 1 keeps its budget, keeps `StreamStallError`, and
+keeps ending the turn when the budget expires.
 
-**Recommended:** Clock 1 gets the same treatment — never ends the turn, raises
-the same card at its existing threshold, with its own copy:
+The case for aligning it was consistency; the case against is that Clock 1 has
+not actually hurt anyone since its budget was fixed on 2026-07-26. It already
+waits four minutes at minimum and up to fifteen, it already shows a live
+prompt-reading readout on local models, and no incident since has been traced to
+it. Clock 2 is where the two recorded turn-killings happened.
 
-> Still reading your prompt — **3m 40s**
+Consequences, stated plainly so nobody rediscovers them as bugs:
 
-with the existing prompt-progress readout kept underneath on local models. The
-threshold (240s + 20ms/token, capped 15 min) does not change; only the outcome
-does.
-
-**If declined:** Clock 1 keeps `StreamStallError` and keeps killing turns after
-its budget, and §5's retirement of that copy applies to Clock 2 only. The rest
-of this spec is unaffected either way.
+- **The two clocks now behave differently at their deadline.** Clock 2 waits for
+  you; Clock 1 gives up. A user cannot tell from the screen which clock they are
+  on. Accepted for now — revisit if Clock 1 ever kills a real turn.
+- `StreamStallError`'s `'streaming'` phase becomes unreachable; its `'prefill'`
+  phase stays live. The class is not deleted (§5).
+- `tests/prefill-watchdog.test.ts` is untouched by this work.
 
 ## §9 Surfaces and parity
 
@@ -269,7 +276,8 @@ them.
 - The provider-error backoff — 3 tries at 1s/2s/4s for 429/5xx/ECONNRESET,
   honoring `retry-after` (`harness-session.ts:2383`). Silence is not an error,
   so it never engaged; that is correct and stays.
-- Clock 1's threshold formula.
+- Clock 1 in every respect — threshold, countdown, and its turn-ending
+  outcome (§8).
 - ESC / interrupt, which already ends any turn at any moment and remains the
   way to abandon a stalled one without retrying.
 - The `stuck` attention state and its amber dot.
@@ -301,9 +309,10 @@ that keeps emitting (slower than the warn window) NEVER trips the watchdog."*
 - `native:retry` channel parity across the five surfaces
   (`tests/ipc-channels.test.ts`).
 
-**Retired:** `tests/prefill-watchdog.test.ts` keeps its prefill-budget
-assertions regardless of §8's outcome; only its `StreamStallError` phase
-assertion is touched if Clock 1 is aligned.
+**Untouched:** `tests/prefill-watchdog.test.ts`. Clock 1 is unchanged (§8), so
+every assertion in it — including the `StreamStallError` `'prefill'` phase copy
+— must stay green exactly as written. A change there means this work leaked
+into Clock 1.
 
 ## §12 Risks
 
@@ -321,6 +330,11 @@ deliberately out of scope, but it is why the card says "Retry" and not
 starts appearing often enough to be ignored, the rule needs revisiting — but
 the states that moved are both "turn is over, act now," which is what red means
 under Destin's rule.
+
+**Two clocks, two different endings.** Clock 2 waits for you forever; Clock 1
+still kills the turn (§8). Nothing on screen distinguishes them, so a turn that
+dies at the fifteen-minute mark will look like the new design failing rather
+than the old one still running. If that happens once, align Clock 1.
 
 **A model that is legitimately silent for >90s.** Some providers hide reasoning
 entirely, so a long think looks identical to a stall. Today that kills the turn;
