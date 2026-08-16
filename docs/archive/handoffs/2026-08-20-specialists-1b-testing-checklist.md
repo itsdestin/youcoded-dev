@@ -1,8 +1,9 @@
 ---
-status: active
+status: shipped
 date: 2026-08-20
-branch: youcoded feat/native-specialists-background @ 240c4ea5
-dev-instance: "YouCoded - Specialists 1b" (bash scripts/run-dev.sh spec-bg --label "Specialists 1b")
+completed: 2026-08-16
+outcome: Tests 1-9 verified hands-on by Destin; 10-13 signed off. Merged to youcoded master as plan 1b (e5ec5b3c). Three fixes found during testing shipped in that merge (permission-card wipe cd6fb766, roster tool-listing cfa02250, report card cd/f8e35415). The branch, worktree, and dev instance named below no longer exist — this is a historical record.
+branch: youcoded feat/native-specialists-background @ 240c4ea5 (MERGED then deleted 2026-08-16)
 ---
 
 # Specialists 1b — hands-on testing checklist
