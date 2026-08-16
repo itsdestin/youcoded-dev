@@ -1,5 +1,6 @@
 ---
-status: draft
+status: shipped
+shipped: 2026-08-16 (youcoded master e5ec5b3c)
 date: 2026-08-12
 spec: docs/active/specs/2026-08-11-native-specialists-design.md
 repos: [youcoded]
