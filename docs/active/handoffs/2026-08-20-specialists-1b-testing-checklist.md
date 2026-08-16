@@ -26,7 +26,7 @@ Terminology in this doc: the main assistant is the **parent**; a specialist it h
 > Use a specialist to find every file in this folder that mentions the word "config" and tell me which one looks like the main entry point. Wait for it to finish before you answer.
 
 **You should see:**
-- A permission card asking to approve the hire (something like "Let a read-only specialist work in `<folder>`"). Click **Allow once**.
+- A permission card asking to approve the hire (something like "Let a read-only specialist work in `<folder>`"). Click **Yes** (not "Always Allow").
 - A tool card for the Task, with the child's tool calls (Grep, Read…) nested under it.
 - The parent's answer arrives *after* the child finishes.
 
@@ -40,7 +40,7 @@ Terminology in this doc: the main assistant is the **parent**; a specialist it h
 > Hire a specialist to research what this folder is for and write a short summary. Run it in the background. While it works, count from 1 to 10 for me, one number per line.
 
 **You should see:**
-1. Permission card → **Allow once**.
+1. Permission card → **Yes**.
 2. The parent gets an immediate acknowledgment mentioning **"is now working in the background (task_id: …)"** and telling it not to poll.
 3. The parent **counts to 10 without waiting**.
 4. When the child finishes, a new message appears in the parent's conversation containing **"[Background specialist finished]"** and the report — **only after** the parent's counting turn ended, never spliced into the middle of it.
@@ -130,7 +130,7 @@ Set up a case the child can't decide itself. **Say:**
 - A permission card appears **in your conversation** — for a request the *child* made — labelled with the specialist's name/type.
 - **Don't answer it.** Leave it for 5+ minutes. Keep chatting if you like.
 - After ~5 minutes the child is told the user hasn't responded and to continue anything that doesn't depend on it, and to **not** work around the block. It will finish with whatever it has.
-- **The card is still on screen and still answerable.** Now click **Allow once**. Because the child already finished, the parent gets a note like **"[Specialist follow-up] The user approved …after the specialist finished. Use task_id … to continue"** — and can resume it to actually run the command.
+- **The card is still on screen and still answerable.** Now click **Yes**. Because the child already finished, the parent gets a note like **"[Specialist follow-up] The user approved …after the specialist finished. Use task_id … to continue"** — and can resume it to actually run the command.
 
 Then repeat the hire and this time click **Deny** promptly. **You should see:** the child is told the user declined (plain wording, no "hasn't responded" language) and finishes without running it.
 
