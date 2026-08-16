@@ -24,7 +24,11 @@
 > directions (the size-gated grow-only mirror clobbered the smaller fork copy
 > within 2 s — 74 messages of `26d919ff`, recovered from the repair's snapshot).
 > Steady state on the device after run 5: findings = fork-surfaced only.
-> Ledger + per-task reports: `worktrees/slug-repair/.superpowers/sdd/`.
+> Durable evidence: youcoded PR #321 (body + review trail), the on-device decision
+> logs under `~/.youcoded/repair-quarantine/<stamp>/decisions.log` (5 runs, 2026-08-15),
+> and this spec's §11 checklist. The per-task SDD ledger lived in the (now removed)
+> worktree scratch dir; the session transcript "Slug Encoding Repair Implementation"
+> holds the full per-task review record.
 ## Global Constraints
 
 - **All desktop/Android work happens in a git worktree** of `youcoded/` (workspace rule) — create via superpowers:using-git-worktrees at execution start; suggested branch `fix/slug-encoding-repair`.
