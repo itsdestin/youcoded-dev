@@ -1,7 +1,7 @@
 ---
-status: draft
+status: shipped
 date: 2026-08-11
-updated: 2026-08-12
+updated: 2026-08-15
 tags: [transcript-watcher, conversations, sync, slug-encoding, cross-platform-parity, data-repair]
 repos: [youcoded]
 ---
@@ -1125,64 +1125,66 @@ below. The `$HOME`-fork causation question is now **closed**.
 
 ### Code
 
-- [ ] `bash scripts/verify.sh <worktree>` green
-- [ ] §8 probe completed; `_`, `.`, punctuation, >200-character, and symlink
+- [x] `bash scripts/verify.sh <worktree>` green
+- [x] §8 probe completed; `_`, `.`, punctuation, >200-character, and symlink
       pairs all recorded as fixtures — **and each one fails against the
       pre-fix code** (a fixture the old code passes is not a guard)
-- [ ] Chat view receives assistant messages in the reporting folder
-- [ ] Watcher uses the hook's `transcript_path`; fallback exercised by a test;
+- [x] Chat view receives assistant messages in the reporting folder
+- [x] Watcher uses the hook's `transcript_path`; fallback exercised by a test;
       **both** watcher test files rewired off the `claudeConfigDir` + slug seam
-- [ ] `event.payload.cwd` used at `ipc-handlers.ts:2800`/`:2803`, not
+- [x] `event.payload.cwd` used at `ipc-handlers.ts:2800`/`:2803`, not
       `sessionInfo.cwd`
-- [ ] All **nine** `cwdToProjectSlug` importers updated, plus the six
+- [x] All **nine** `cwdToProjectSlug` importers updated, plus the six
       `ccProjectSlug` importers and both private inline copies (§5.2);
       `tests/session-store.test.ts:247-254` renamed rather than deleted
-- [ ] Both wrong `permission-store.ts` comments fixed (`:9-11` and `:20-26`)
-- [ ] `session-manager.ts:68` converted from `console.warn` to `log()`
-- [ ] Project memory resolves for the reporting folder — `MEMORY.md` and
+- [x] Both wrong `permission-store.ts` comments fixed (`:9-11` and `:20-26`)
+- [x] `session-manager.ts:68` converted from `console.warn` to `log()`
+- [x] Project memory resolves for the reporting folder — `MEMORY.md` and
       `final-project-deck-v2.md` both visible in the Memory group
-- [ ] R1 and R2 both pinned, including the mid-file `cwd`-switch fixture
-- [ ] Over-cap inversion: option 1 resolves it; option 2 **declines** rather than
+- [x] R1 and R2 both pinned, including the mid-file `cwd`-switch fixture
+- [x] Over-cap inversion: option 1 resolves it; option 2 **declines** rather than
       returning a path
-- [ ] Option 2 backtracks past a sibling `a` to reach `a-b`
-- [ ] All 6 native transcripts still reachable after the change
-- [ ] Remembered "Always allow" rules survive the change
-- [ ] `./gradlew test` green; Kotlin `cwdToProjectSlug`, its test, and the unused
+- [x] Option 2 backtracks past a sibling `a` to reach `a-b`
+- [x] All 6 native transcripts still reachable after the change (guard: `nativeStoreSlug` byte-identical to the historical rule — freeze pin in `slug-encoding.test.ts` + `session-store.test.ts`)
+- [x] Remembered "Always allow" rules survive the change (same freeze guard; `permission-store.ts` routed to `nativeStoreSlug`, Task 3 review)
+- [x] `./gradlew test` green; Kotlin `cwdToProjectSlug`, its test, and the unused
       `projectsDir` watcher param are gone and nothing references them
-- [ ] Android `SyncService` split landed: `pushSession`, `rewriteProjectSlugs`,
+- [x] ~~Android `SyncService` split landed~~ **Superseded by the re-key decision (§5.3): every call site is on `ccHomeSlug()`; no frozen rule survives** — originally:: `pushSession`, `rewriteProjectSlugs`,
       and `aggregateConversations` resolve CC's real (dashed) directory for the
       dotted home path — pinned by a fixture test — and the
       `conversation-index.json` key is byte-identical to pre-change
 
 ### Data repair
 
-- [ ] The repair ran in a build that already contains the §5.0/§5.1 code fix —
+- [x] The repair ran in a build that already contains the §5.0/§5.1 code fix —
       the materialize path was still creating fresh orphan copies as of
       2026-08-12 (§6.3)
-- [ ] **Nothing was unlinked.** Every removal landed in
+- [x] **Nothing was unlinked.** Every removal landed in
       `~/.youcoded/repair-quarantine/<ts>/` with a decision log, and the
       quarantine is NOT under `~/.claude/projects/`
-- [ ] **No transcript was merged.** Every duplicate pair was classified A / B / C
+- [x] **No transcript was merged.** Every duplicate pair was classified A / B / C
       and the log records which; the case-C fork (`26d919ff`) is untouched on
       disk and surfaced to the user with both paths named
-- [ ] Sync space repair ran **before** the orphan retirement
-- [ ] Orphan CC directory retired; per-file case check logged; no session lost
-- [ ] `$HOME` project directory holds no foreign-R2 transcripts **except the
+- [x] Sync space repair ran **before** the orphan retirement
+- [x] Orphan CC directory retired; per-file case check logged; no session lost
+- [x] `$HOME` project directory holds no foreign-R2 transcripts **except the
       surfaced case-C fork (`26d919ff`), which remains by design (§6.0
       aftermath)**; its 57 legitimate `$HOME` transcripts (59 total minus the
       two mis-filed), `memory/`, and subagent subdirs are intact
-- [ ] Sync space shows **one** bucket for the project containing **every** PAF
+- [x] Sync space shows **one** bucket for the project containing **every** PAF
       session (8 as of 2026-08-12); no PAF session id remains in `Change/`;
       after the sweep re-keys off the repaired records none remains in `destin/`
-      either (the case-C fork's mirror now feeds the project bucket — §6.0
+      either — **as run 2026-08-15: one exception, `destin/26d919ff` holds the
+      project-side fork copy (4,409,708 B) and is HELD by the fork hold until the
+      user resolves the fork; every other PAF id is gone from `destin/`** (the case-C fork's mirror now feeds the project bucket — §6.0
       aftermath, §8's sweep-keying question settled); `destin/` still holds its
       ~58 legitimate `$HOME` sessions
-- [ ] The space's `26d919ff…` is a superset of the largest pre-repair copy by
+- [x] The space's `26d919ff…` is a superset of the largest pre-repair copy by
       **uuid set** (byte size is not the test; the largest pre-repair copy was
       5,532,831 B in `destin/`, not the 4,409,708 B in CC's directory)
-- [ ] No PAF store record carries `originalPath: '/home/destin'`; all carry the
+- [x] No PAF store record carries `originalPath: '/home/destin'`; all carry the
       real project path, and `1925e5ab` has a record
-- [ ] Resume from a repaired record lands in the real folder, not `$HOME`
-- [ ] Resume from a slug-only row lands in the real folder, not `$HOME`
-- [ ] "Live" has a written mechanical definition and the deferral has a bounded
+- [x] Resume from a repaired record lands in the real folder, not `$HOME`
+- [x] Resume from a slug-only row lands in the real folder, not `$HOME`
+- [x] "Live" has a written mechanical definition and the deferral has a bounded
       retry that surfaces to the user
