@@ -122,9 +122,9 @@ If the child had *finished* just before you closed the app but its report hadn't
 ## Test 8 — A child asks YOU for permission (routed asks + the 5-minute redirect)
 
 Set up a case the child can't decide itself. **Say:**
-> Hire the **worker** specialist in the background to run `git log --oneline -5` in this folder and report the last five commits. Use the worker, not the explorer — it needs a shell.
+> Hire the **worker** specialist in the background to create a temp file called `probe.tmp` in this folder, then delete it with `rm`, and report what happened.
 
-(Only the Worker specialist has a shell — the explorer/researcher/reviewer are read-only and will just improvise around the request without ever asking you. If the parent still hires an explorer, tell it plainly: "use the worker specialist".)
+(Two things make this prompt work, and both matter. **Only the Worker has a shell** — the other three helpers are read-only and would improvise around a command without ever asking you. And **approving the hire is consent for the worker's ordinary work** (spec §5, your 2026-08-11 ruling): a hired worker edits files and runs normal commands like `git log` *without* a card. Only the destructive list — `rm`, `git push`, `git reset --hard`, `sudo`, `format`, `del` — plus secret files and paths outside the folder still come to you. `rm` is what makes a card appear here; a `git log` request never will, and that is correct.)
 
 **You should see:**
 - A permission card appears **in your conversation** — for a request the *child* made — labelled with the specialist's name/type.
@@ -142,8 +142,8 @@ Then repeat the hire and this time click **Deny** promptly. **You should see:** 
 
 1. Repeat Test 8's hire. When the child's card appears, click **Always allow** (pick the narrowest option if it offers a width).
 2. Open **Settings → Permissions**. **You should see** the new rule described as being for **the Worker specialist** — plain language like "Let the Worker specialist run…" — not as a rule for you.
-3. Now, in the **parent** conversation, ask the parent itself to run the exact same command:
-   > Run `git log --oneline -5` yourself, don't delegate.
+3. Now, in the **parent** conversation, ask the parent itself to run the exact same destructive command:
+   > Run `rm probe.tmp` yourself, don't delegate. (Create it first if it's gone: `touch probe.tmp`.)
 
    **You should see a permission card.** The specialist's grant must **not** carry over to you.
 4. Back in Settings → Permissions, click the ✕ to **revoke** the specialist rule. It should disappear and stay gone after reopening Settings.
