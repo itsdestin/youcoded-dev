@@ -344,18 +344,19 @@ Verified end-to-end 2026-07-16 with the real `YouCoded.Setup.1.2.4.exe` (111 MB)
 
 **1. Get a build.** CI has a manual beta job — `youcoded/.github/workflows/desktop-test-build.yml`
 (`workflow_dispatch`; builds `.exe` / `.dmg` / `.AppImage`, stamps `YOUCODED_BUILD_CHANNEL=BETA` so
-Settings → About reads `YouCoded v1.3.0-beta (BETA)`):
+Settings → About reads `YouCoded v1.3.0-beta.71 (BETA)`):
 
 ```bash
 cd youcoded
-gh workflow run desktop-test-build.yml -f version=1.3.0-beta      # see the version caveat below
+gh workflow run desktop-test-build.yml      # numbers itself: <base>.<run number>, e.g. 1.3.0-beta.71
 gh run watch "$(gh run list -w desktop-test-build.yml -L1 --json databaseId -q '.[0].databaseId')"
 gh run download "$(gh run list -w desktop-test-build.yml -L1 --json databaseId -q '.[0].databaseId')" -D ~/vms/share
 # or take shipped artifacts straight from a release:
 gh release download v1.2.4 -p 'YouCoded.Setup.*.exe' -D ~/vms/share
 ```
 
-The `version` input **must sort above the latest release** — `compareVersions` parses naively, so
+The build stamps `<base>.<GitHub run number>` automatically (2026-08-16), so there is no number to
+type; the `base` prefix (default `1.3.0-beta`) **must sort above the latest release** — `compareVersions` parses naively, so
 `1.2.4-beta` → `[1,2,0]`, which is *lower* than `1.2.4` and the build offers to "update" itself back
 to the release. Bump the minor and suffix (`1.3.0-beta`), don't patch the current version.
 

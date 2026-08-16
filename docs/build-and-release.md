@@ -77,9 +77,10 @@ AppImage was testable pre-v1.3.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "\\*\\.pacman"} -->
 
 ```bash
-# version MUST sort above the latest release — see the trap below
-gh workflow run desktop-test-build.yml --repo itsdestin/youcoded \
-  --ref <branch> -f version=1.3.0-beta
+# No number to type: the build stamps <base>.<run number> itself, e.g. 1.3.0-beta.71.
+# `base` defaults to 1.3.0-beta and only needs passing when the release line moves —
+# and it MUST still sort above the latest release (see the trap below).
+gh workflow run desktop-test-build.yml --repo itsdestin/youcoded --ref <branch>
 
 gh run watch --repo itsdestin/youcoded $(gh run list --repo itsdestin/youcoded \
   --workflow=desktop-test-build.yml --limit 1 --json databaseId --jq '.[0].databaseId')
@@ -102,7 +103,13 @@ state doesn't. Quit the running app before launching a beta: two instances on on
 over the same LevelDB.
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "appId: com.youcoded.desktop"} -->
 
-**The version input is load-bearing — read this before picking one.** `compareVersions`
+**Betas number themselves (2026-08-16).** The workflow appends its own GitHub run counter to the
+`base` prefix (`1.3.0-beta` → `1.3.0-beta.71`, `.72`, …), so every beta sorts above the previous one
+and maps straight back to its run in the Actions tab; the free-text `version` box that let two builds
+share a name — or a hand-typed number sort *below* the installed one — is gone. `compareVersions`
+reads that fourth number, which is what makes the ordering work.
+
+**The `base` prefix is still load-bearing — read this before changing it.** `compareVersions`
 (`ipc-handlers.ts`) parses naively: `'1.2.4-beta'.split('.').map(Number)` → `Number('4-beta')` →
 `NaN` → `|| 0` → `[1,2,0]`, which is **lower** than a released `1.2.4`. The installed beta would
 then show "update available" and offer to downgrade itself to the release it's meant to be ahead
