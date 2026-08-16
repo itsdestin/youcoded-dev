@@ -19,6 +19,7 @@ verify:
     contains: "MOVE_SOURCE_NOT_REMOVED"
   - test: youcoded/desktop/tests/artifacts/import-file.test.ts
   - test: youcoded/desktop/tests/session-drawer-deleted-toggle.test.tsx
+  - test: youcoded/desktop/tests/project-view-default-selection.test.ts
   - path: youcoded/desktop/src/main/artifacts/cas-write.ts
     contains: "mutateFileUnderLock"
   - path: youcoded/desktop/src/main/artifacts/write-authorization.ts
@@ -65,6 +66,7 @@ Files Claude touches are tracked in per-project sidecars + a central index. Stat
 
 ## UI invariants
 - **Filepath pills ALWAYS open the artifact viewer, NEVER Project View** — session→project→else artifactify; `findBestMatch` prefers EXACT.
+- **Project View re-homes to the FOCUSED conversation's project on every open** — `matchProjectByPath(projects, activeSessionCwd)` → else `projects[0]`. It deliberately does NOT restore the last selection: the component never unmounts, so the old `prev`-retention made the choice sticky for the whole app run and opened you on a project you last browsed days ago. The cwd rides a REF, not an effect dep — a dep would re-home mid-browse. · guard: `project-view-default-selection.test.ts`.
 - **Drawer state is per-session keyed by `sessionId`**; layout-level, not an overlay. Status glyphs (`●◐○`) BANNED — plain words. `.youcoded/` auto-gitignored.
 - **`showDeletedArtifacts` is SESSION-DRAWER-ONLY — deliberate** (a deleted record is a tombstone, not a recovery path). Cross-device-SYNCED preference — don't delete the "unused" flag · guard: `session-drawer-deleted-toggle.test.tsx`.
 - **`EXCLUDE` has NO renderer caller** (kept for legacy round-trip + rule 2). In-folder files can't be excluded.
