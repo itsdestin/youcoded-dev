@@ -355,7 +355,7 @@ gh run download "$(gh run list -w desktop-test-build.yml -L1 --json databaseId -
 gh release download v1.2.4 -p 'YouCoded.Setup.*.exe' -D ~/vms/share
 ```
 
-The build stamps `<base>.<GitHub run number>` automatically (2026-08-16), so there is no number to
+The build stamps `<base>.<GitHub run number>` automatically (2026-08-15), so there is no number to
 type; the `base` prefix (default `1.3.0-beta`) **must sort above the latest release** — `compareVersions` parses naively, so
 `1.2.4-beta` → `[1,2,0]`, which is *lower* than `1.2.4` and the build offers to "update" itself back
 to the release. Bump the minor and suffix (`1.3.0-beta`), don't patch the current version.

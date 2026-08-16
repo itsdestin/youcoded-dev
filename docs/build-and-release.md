@@ -103,7 +103,7 @@ state doesn't. Quit the running app before launching a beta: two instances on on
 over the same LevelDB.
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "appId: com.youcoded.desktop"} -->
 
-**Betas number themselves (2026-08-16).** The workflow appends its own GitHub run counter to the
+**Betas number themselves (2026-08-15).** The workflow appends its own GitHub run counter to the
 `base` prefix (`1.3.0-beta` → `1.3.0-beta.71`, `.72`, …), so every beta sorts above the previous one
 and maps straight back to its run in the Actions tab; the free-text `version` box that let two builds
 share a name — or a hand-typed number sort *below* the installed one — is gone. `compareVersions`
