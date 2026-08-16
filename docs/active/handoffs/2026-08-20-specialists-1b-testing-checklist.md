@@ -47,7 +47,7 @@ Terminology in this doc: the main assistant is the **parent**; a specialist it h
 
 **Bug if:** the parent waits for the child before counting; the report appears mid-count; the report never arrives (give it a couple of minutes — a slow model is not a bug); the report arrives twice.
 
-**Known cosmetic gap (not a bug):** the injected report currently renders as a plain **user-style bubble**, indistinguishable from something you typed. Styling it is 1c's job.
+**Since 01:47 on 2026-08-16:** the injected report renders as a left-aligned **"Specialist report"** notice with real markdown, not as a bubble on your side. If you still see it as a user-style bubble, that is a bug.
 
 ---
 
