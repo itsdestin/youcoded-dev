@@ -154,7 +154,7 @@ Then repeat the hire and this time click **Deny** promptly. **You should see:** 
 
 ## Test 10 — Steering call can't grant blanket delegation (security-critical, quick)
 
-1. With a background child running, tell the parent to steer it (as in Test 4). If a permission card appears for that steer, look at it: it should offer **Allow once / Deny**, but any **Always allow** should either be **absent** or, if clicked, must **not** result in future hires skipping their card.
+1. With a background child running, tell the parent to steer it (as in Test 4). If a permission card appears for that steer, look at it: it should offer **Yes / No**, but any **Always Allow** should either be **absent** or, if clicked, must **not** result in future hires skipping their card.
 2. To verify: after allowing, start a completely new hire (Test 1's prompt). **A permission card must appear.**
 
 **Bug if:** a fresh hire sails through with no card after an Always-allow on a steer. That's a leak — tell me immediately.
