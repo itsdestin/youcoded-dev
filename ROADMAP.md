@@ -89,6 +89,9 @@ surface, not a history.
 
 ## Bugs
 
+- [ ] Main-chat thinking bubble flickers (disappears/reappears with no visible tokens) during a very slow native stream `bug` `#native-runtime` `#chat-ui` `needs-repro` (added 2026-08-16, Destin during the Specialists 1b hands-on — NOT specialist-related: the parent's own reducer state was probed live and was steady)
+  Seen on OpenRouter `qwen/qwen3.8-27b` in a turn that streamed at **6 tokens/s** (444 output tokens over ~75 s, per the persisted `turn-complete` usage) — a reasoning model whose thinking trickles in ~one token every 150 ms. Destin's own read: an artifact of the slow stream. Candidates to check with a live probe next time it happens: the reasoning bubble's collapse/merge on each `partId` delta, and the ThinkingIndicator's `lastOutputAt`-based state changes at sub-second token gaps. Repro needs a slow provider; not reproducible on demand yet.
+
 - [ ] **A native permission card vanishes if the renderer reloads (window re-dock / session move / dev HMR) while the ask is still open — the turn stays stuck on an ask with no buttons** `bug` `#native-runtime` `#permissions` (added 2026-08-16, found while tracing the Specialists 1b Test 1 hang)
   Transcript replay (`TRANSCRIPT_REPLAY` → `nativeHost.getHistory`) rebuilds tool cards from the JSONL, but pending asks live only in `PermissionBroker.pending` (memory) — nothing re-sends the open `PermissionRequest` after a replay, so the card comes back as `running` with no `requestId`. Observed twice live: after a Vite HMR reload the hire card sat spinning while main was still waiting; answering the ask through the API (`respondToPermission`) unstuck it. Fix shape: on replay, have the host re-emit any `pending` asks for that session (the broker already keeps them; `respond()` still resolves them). Distinct from the preparing-card overwrite bug fixed on `feat/native-specialists-background` (`cd6fb766`), which hit with NO reload.
 
