@@ -49,6 +49,17 @@ const ROUTES = [
   ['app · stress', '&child=1&scenario=stress'],
   ['tool gallery', '&child=1&view=tools'],
   ['comparisons', '&child=1&view=compare'],
+  // The parked-turn opt-in (toolbar "Stalled turn" toggle → ?stalled=1). It
+  // replays the fixture's `{"type":"stalled"}` line, which is the ONLY way the
+  // red "Provider may have stalled" card, its live count-up timer and its
+  // Retry/Stop buttons render in the workbench. Off by default (see
+  // fixture-loader.ts), so without a route here that whole surface — a
+  // component with a setInterval and two IPC-firing buttons — had no standing
+  // boot guard at all. Two routes because the toolbar itself renders the
+  // toggle: the parent frame proves the control mounts, the child proves the
+  // card it summons does.
+  ['parent frame · stalled toggle on', '&stalled=1'],
+  ['app · default + stalled turn', '&child=1&scenario=default&stalled=1'],
 ];
 
 const CHROME = ['google-chrome-stable', 'google-chrome', 'chromium', 'chromium-browser'];
