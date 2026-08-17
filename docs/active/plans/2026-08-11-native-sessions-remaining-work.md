@@ -136,7 +136,11 @@ Live-probe the API shapes before building against them. The UI surface is delibe
 
 Three small independent pieces, in whatever order suits.
 
-**Cost estimate chip.** Cumulative usage times per-model pricing, for hosted models only. Blocked until Step 4 lands; trivial afterwards.
+**Cost estimate chip.** Cumulative usage times per-model pricing, for hosted models only. Blocked until Step 4 lands; trivial afterwards — **with one correction that is not optional.**
+
+Cached input is billed at a fraction of normal input, so `inputTokens × prompt_price` is not the input cost, it is roughly **10× the input cost**. Measured on real sessions (2026-08-16): 95–99% of input tokens on a typical turn are cache reads, and OpenRouter publishes the discounted rate as `pricing.input_cache_read` (Kimi K3: `0.0000003` against a `prompt` of `0.000003` — exactly 0.1×). A turn with 331,432 input tokens of which 327,168 were cached costs ~$0.111, not the ~$0.994 the naive formula returns.
+
+So the formula is `(inputTokens − cacheReadTokens) × prompt + cacheReadTokens × input_cache_read + outputTokens × completion`, and Step 4 must source `input_cache_read` alongside `prompt`/`completion` — `model-catalog.ts` currently parses only the latter two. Note `inputTokens` on the native path **already contains** the cached reads (an OpenAI-compatible provider's `prompt_tokens` is the whole prompt), which is why the first term subtracts rather than adds; the same accounting trap is documented at `selectCacheReuse` in `StatusBar.tsx`. Some models also carry `input_cache_write`; where it is absent the provider caches automatically at no write premium, so treat missing as zero rather than as unknown.
 
 **Folderless sessions.** The Assistant-preset heuristic already works — it is only the new-session form that requires a folder. Low priority per Destin.
 
