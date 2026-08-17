@@ -954,7 +954,7 @@ surface, not a history.
   Shipped 2026-07-15 as a convention line in this file's header — at each release, ## Shipped entries older than the previous release move to docs/archive/roadmap-shipped.md.
 - [x] ModelPickerPopup `/fast` + `/effort` sends bypass the stray-Enter prompt gate `bug` `#pty-writes` (added 2026-07-09)
   Shipped 2026-07-15, youcoded PR #141 — both toggles route through App.guardedPtySend (same gate as /model) and refuse BEFORE the optimistic state writes.
-- [x] Amendment K2: router hot-reload of `--models-dir` after boot `feature` `#local-models` (added 2026-07-15)
+- [x] Amendment K2: LIST post-boot downloads without a restart (NOT router hot-reload — the router has none) `feature` `#local-models` (added 2026-07-15)
   Shipped 2026-07-15, youcoded PR #142 — EngineSupervisor.listModels() unions a fresh scanGgufCache into the running router's GET /models (router rows win), so post-boot downloads are LISTED without a restart. **The "can it SERVE one?" question this left open was ANSWERED 2026-08-16: no — it 400s until the router re-scans, and the union therefore made a disk-only model a selectable row the router had never heard of.** The rescan is `GET /models?reload=1`, not a restart. See the open `#local-models` bug under ## Bugs for the measurements and the fix.
 - [x] Surface `.partial` orphans from previous app runs — backend `idea` `#local-models` (added 2026-07-15)
   Shipped 2026-07-15, youcoded PR #142 — `models:orphaned-partials` IPC (full parity: preload, remote shim/server, Android stub). Panel UI remains as its own idea line above.

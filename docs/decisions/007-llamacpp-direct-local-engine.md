@@ -12,6 +12,8 @@ The local-model default must not depend on Ollama (Destin's explicit requirement
 
 **Bundled/downloaded `llama-server` in router mode is the backbone.** One supervised subprocess (`--host 127.0.0.1 --no-webui --jinja`, shifted free port): auto-discovers GGUFs in the llama.cpp cache, hot-loads on first request, LRU-evicts, isolates each model in its own child process, speaks OpenAI-compatible HTTP with native tool-call templates and grammar-constrained JSON.
 
+> **Correction (2026-08-16), left in place because the decision still stands:** "auto-discovers … hot-loads on first request" is true only of GGUFs present when the router BOOTS. It never re-scans `--models-dir` on its own — no timer, no inotify, no rescan on a plain `GET /models`. A file that lands after boot is not servable until `GET /models?reload=1`, and until then a completion naming it returns `400 model 'X' not found`. This reached a user on 2026-08-16. The app now rescans after every download and re-checks at the send chokepoint; see `youcoded/docs/engine-dependencies.md` → router hot-reload.
+
 Packaging: ship CPU + Vulkan (+ Metal on macOS) engine binaries (~100 MB); CUDA as opt-in post-install download. Engine version pinned, updatable independently of app releases (the Jan/LM Studio pattern). Coupling tracked in `youcoded/docs/engine-dependencies.md`.
 
 **`node-llama-cpp` is reserved for narrow in-process niches** (token-level UX, instant tiny-model utility features, embeddings without a server round trip) if wanted later. The provider layer hides which engine is underneath — reversible, additive.
