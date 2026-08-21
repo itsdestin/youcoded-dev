@@ -256,6 +256,11 @@ never reached him. Not part of this branch.
    still filtered.
 10. Existing suite green: park-guard expressions, stall timing byte-identical
     (`harness-stall-watchdog.test.ts` untouched and passing).
+11. Fully-silent turn (decision 4): (a) reducer — `TRANSCRIPT_TURN_COMPLETE`
+    with `currentTurnId` null + abnormal stopReason creates the turn and stamps
+    metadata; same event with `end_turn` still skips (today's behavior pinned);
+    (b) bubble — a turn with `empty_response` and zero segments renders the
+    footer copy and nothing else.
 
 ## 7. Non-goals
 
@@ -272,6 +277,21 @@ never reached him. Not part of this branch.
    first-attempt stall retry's philosophy; one log line for diagnosability).
 2. **Footer copy:** "The model returned an empty response. Retrying may help."
 3. **Retry affordance on the finished bubble: DEFERRED** — not in this branch.
+4. **Fully-silent turns get the footer too** (independent plan review, 2026-08-21).
+   The renderer creates assistant turns lazily — only assistant *content* creates
+   one — so a turn whose every step was contentless would carry `empty_response`
+   on an event nobody renders: the worst-case shape of this very bug would still
+   end in unexplained silence. Adopted fix, two small halves: (a) the reducer's
+   `TRANSCRIPT_TURN_COMPLETE` creates the turn when `currentTurnId` is null AND
+   the arriving `stopReason` is abnormal (non-null, ≠ `end_turn`) — normal CC/
+   native completions keep today's skip; (b) `AssistantTurnBubble` renders a
+   footer-only row for a turn with an abnormal stopReason and zero bubbles
+   (today that turn renders literally nothing). Both halves are additive and
+   inert for every existing state. NOTE: `TRANSCRIPT_INTERRUPT` has the same
+   latent gap and is deliberately NOT changed — an interrupt is user-initiated,
+   so its silence is self-explanatory; scope stays minimal. The buddy feed's
+   parallel reducer is also untouched (cosmetic surface, out of scope). This is
+   a review-driven scope addition, isolated in its own commit for easy reversal.
 
 ## 9. Implementation sketch (anchor map)
 
