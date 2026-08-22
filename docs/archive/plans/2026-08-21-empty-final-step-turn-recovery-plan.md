@@ -1,8 +1,8 @@
 ---
-status: active
+status: shipped
 date: 2026-08-21
 kind: plan
-spec: docs/active/specs/2026-08-21-empty-final-step-turn-recovery-design.md
+spec: docs/archive/specs/2026-08-21-empty-final-step-turn-recovery-design.md
 ---
 
 # Empty Final Step → Bounded Retry — Implementation Plan

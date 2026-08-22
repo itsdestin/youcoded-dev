@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-08-21
 kind: spec
 scope: youcoded/desktop — native harness turn loop, empty-final-step recovery
