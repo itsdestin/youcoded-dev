@@ -293,7 +293,24 @@ never reached him. Not part of this branch.
    parallel reducer is also untouched (cosmetic surface, out of scope). This is
    a review-driven scope addition, isolated in its own commit for easy reversal.
 
-## 9. Implementation sketch (anchor map)
+## 9. Prior art — opencode v1.18.21 (checked 2026-08-21, same day)
+
+opencode shipped "continue unknown finish responses" (`anomalyco/opencode`
+PR #43892, commit `57fa34f2`) hours before this branch was built — a sibling
+defect in the same family, corroborating the provider-side trigger (the same
+release also patches their ox-alpha model id). Their fix and ours do NOT cover
+the same case: theirs continues the loop when the stream ends with an
+UNRECOGNIZED finish reason (`'unknown'`), regardless of content; our observed
+fingerprint was a VALID `'stop'` finish with zero content, which their exit
+condition still treats as final. Their continuation is also unbounded by
+default (`agent.steps ?? Infinity`) and adds no user-facing state; ours is
+capped at one retry and ends with the labeled `empty_response` footer. Their
+partial-content/abnormal-finish case is covered on our side by different
+machinery (stream-error retry via `withRetry`, the park + manual Retry, and the
+`stopReasonCopy` fallback), so no design change was adopted from the
+comparison.
+
+## 10. Implementation sketch (anchor map)
 
 | Change | Site |
 |---|---|
