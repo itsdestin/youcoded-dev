@@ -15,6 +15,12 @@ related:
 all code anchors re-verified. The three open questions at the bottom were resolved to
 the recommended defaults (Destin unavailable; flagged for post-hoc review).
 
+**Corrected 2026-08-21 (third session), after two independent adversarial reviews of
+PR #324:** the review found the as-built Part 3/decision-4 rendering was dead code
+(ChatView/BubbleFeed drop segment-less turns upstream of the bubble), plus eight
+smaller defects. This document now describes the CORRECTED design as shipped on the
+branch; §11 records what changed and why.
+
 ---
 
 ## 1. Problem statement (as experienced)
@@ -142,14 +148,36 @@ same-partId rule — cosmetic (concatenated thinking text), accepted.
 `tool-input-delta` but dies before the completed `tool-call` part leaves
 `toolCalls` empty (fragments are deliberately discarded, L2241–2262) — that step
 satisfies the predicate and gets the retry, which is exactly right: nothing
-executed, nothing is on screen but a "preparing" card that the next attempt
-replaces.
+executed. CORRECTION (review round 2): the earlier claim that the next attempt
+"replaces" the leftover "preparing" card was wrong — the retry's cards carry
+different ids, and endTurn's reaping only fires at turn end, so the orphan would
+spin beside them for the rest of the turn. `StepResult` therefore carries
+`pendingPreparing` (started-but-never-completed call ids) out of the stream, and
+the retry emits `toolPreparing {cleared: true}` for each before re-running — the
+same withdrawal the manual-Retry and stall-retry paths already perform. The
+`empty_response` break needs no withdrawal (the turn ends there; endTurn reaps).
+
+**Whitespace-only text counts as empty — and must ALSO not be pushed to history**
+(review round 1). The push gate at L1711 used truthiness (`step.text`) while the
+predicate trims; a `'\n\n'` step would have been pushed AND retried, so the
+re-run's request ended in a dangling whitespace assistant message (Anthropic-shaped
+endpoints reject that with a 400), falsifying the history-untouched invariant. One
+shared `stepHasText` predicate now feeds both gates; the interrupt path's partial
+push trims for the same reason. Known cosmetic residual: the whitespace deltas
+still stream and persist as `assistant-text` events, so `rebuildHistory` coalesces
+them into the retry step's text on resume — a live-vs-rebuilt divergence smaller
+than pre-fix, deliberately left for a follow-up (ROADMAP `#harness`).
 
 ### Part 2 — Respond: one bounded silent retry, then an honest end
 
 **Gate on finishReason first.** The retry ladder applies ONLY when the empty step's
-`finishReason` is `'stop'`, `undefined`, `'unknown'`, or `'other'` — the shapes that
-mean "the provider claims an orderly finish." Any other reason keeps today's exact
+`finishReason` is `'stop'`, `undefined`, `'unknown'`, `'other'`, or — CORRECTED,
+review round 1 — `'tool-calls'` (with zero parsed calls it means every announced
+call was dropped as malformed/truncated: the exact truncated-tool-call shape Part 1
+promises to retry, which the original four-value list contradicted; it previously
+fell through to the meaningless raw passthrough stopReason `'tool-calls'`). The
+list lives as `ORDERLY_EMPTY_FINISHES`, a const NEXT TO `mapStopReason`, so the two
+finishReason vocabularies stay one list. Any other reason keeps today's exact
 behavior (`mapStopReason` at the break site): an empty step with `'length'` must
 still report `max_tokens` (truncation, not degeneracy — a retry would hit the same
 limit), and `'content-filter'` must keep its own mapping. Without this gate the
@@ -292,6 +320,42 @@ never reached him. Not part of this branch.
    so its silence is self-explanatory; scope stays minimal. The buddy feed's
    parallel reducer is also untouched (cosmetic surface, out of scope). This is
    a review-driven scope addition, isolated in its own commit for easy reversal.
+
+## 8b. Post-review corrections (2026-08-21, third session — PR #324)
+
+Two independent adversarial reviews (one of the PR, one of the fix commits) drove
+these changes to the as-built design; each is inlined above at its section:
+
+1. **The rendered fix was dead code** — ChatView (L793) and buddy BubbleFeed (L393)
+   drop segment-less turns before `AssistantTurnBubble` mounts, and every shipped
+   test sat below that boundary. Fixed with a shared `shouldRenderAssistantTurn` /
+   `abnormalStopReason` pair in `chat-types.ts` (used by the reducer's mint gate,
+   the bubble's two footer gates, and both timeline gates), pinned by a test that
+   mounts ChatView itself. **Visible side effects, flagged for Destin:** a turn
+   interrupted while still "preparing" a tool call now renders an "Interrupted."
+   footer where it previously vanished; a thinking-only CC turn ending
+   `max_tokens`/`pause_turn` now renders its footer where there was silence
+   (`pause_turn`'s standing row while CC continues in a new turn is the jarring
+   one — revisit if it annoys).
+2. **The decision-4 mint broke turn-complete's absorb contract** — watcher re-emits
+   and re-dock replay would append a ghost segment-less turn per delivery
+   (content actions are uuid-deduped, so replayed completes arrive with
+   `currentTurnId` null). Abnormal completions now record `action.uuid` in
+   `seenUuids` (both stamp and mint paths) and the mint checks it; minted turns
+   take the EVENT timestamp, and the two metadata-stamp sites merged into one
+   (they had already diverged on `model`). Residual, pre-existing: the STAMP path
+   itself is still not uuid-idempotent when a new turn is live at replay time.
+3. **Whitespace-only steps** and **`'tool-calls'` empties** — see the corrected
+   Part 1/Part 2 text above.
+4. **Orphaned preparing cards** on the retry — see the corrected Part 1 text.
+5. **Diagnosability** — the retry logs via structured `log()` to
+   `~/.claude/desktop.log`; `console.error` reaches nobody in a packaged build.
+6. **Copy** — "The model returned an empty response twice. Retrying may help."
+   ("twice" is the verified fact; "may help" refers to a later manual nudge,
+   which recovered all three live incidents — distinct from the failed immediate
+   auto-retry).
+7. **`docs/chat-reducer.md`** updated in the same PR: stopReason is an open set
+   including `empty_response`, and segment-less turns exist.
 
 ## 9. Prior art — opencode v1.18.21 (checked 2026-08-21, same day)
 
