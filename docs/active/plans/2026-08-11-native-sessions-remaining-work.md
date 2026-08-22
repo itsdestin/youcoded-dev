@@ -112,6 +112,8 @@ So a session on a small local model can be running with most of a project's rule
 
 Needs no new machinery — the signals all exist and are discarded by their callers. Full entry, including the four open design questions and one trap (the budget is fixed at session start; switching models mid-session does not re-truncate), is in `ROADMAP.md` under Features, added 2026-08-11.
 
+**UPDATE 2026-08-17 — DESIGN APPROVED, BROADENED.** Destin broadened this from a truncation notice into a **session context transparency panel**: every session (local or cloud) opens a panel accounting for what the assistant began with — system prompt, CLAUDE.md as-truncated, skills/tools with outlinks, MCP drops — plus a "Full vs supplied" diff for trimmed surfaces and a stubbed "Manage Assistant Settings" button. Mockup approved (workbench compare, tabbed layout) on `feat/context-truncation-notice`. Backend (the real `native.onSessionContext` channel + `fullText` sourcing) is open. Handoff: `docs/active/handoffs/2026-08-17-session-context-panel-handoff.md`.
+
 **Done when:** a session that truncated anything says so, once, in a place the user will see.
 
 ### Step 4 — M6 item 2, ground-truth model metadata

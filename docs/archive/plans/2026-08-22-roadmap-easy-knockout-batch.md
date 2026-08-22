@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 <!-- Reviewed 2026-08-22 by an independent agent against master c34890d3: 5/6 tasks
      approved as written; Task 4's original fs-spy test design was replaced with the
