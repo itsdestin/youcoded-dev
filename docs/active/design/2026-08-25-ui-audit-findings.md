@@ -57,11 +57,30 @@ screenshot you can open.
   5. **Tool Gallery page chrome is dev-only** and hardcodes a dark page, so in light
      themes the gallery *page* looks broken. The cards inside it are real; the page around
      them is not a product surface. Findings about the gallery below are about the cards.
-  6. The contrast probe **over-reports on glass** (meadow-mist): when a surface is
+  6. **Surfaces the rig tried to open but never did** (the click or keystroke missed, and
+     the screenshot is just the chat window — these sheets were pulled from the gallery on
+     2026-08-25 after Destin spotted them; a pixel-diff against the home screen found 27):
+     right-click context menus (chat, session tab, composer, file row), the close-session
+     prompt, the expanded "thinking" block, the Shift session switcher, composer
+     attachments, the context pill, the theme-cycle editor, the first-run wizard, a
+     permission prompt inside a chat, the stalled-turn card, the *Edit theme* screen
+     reached via "Browse all themes →", Projects' *Add project* and project-detail
+     overlays, Development's *Report a bug* / *Contribute* sub-screens, Model Providers'
+     OpenRouter/Local tabs (the dialog itself was captured), and the marketplace
+     detail/filter overlays in the workbench. **Nothing in this document is a finding about those surfaces.** Also
+     pulled: the `scenario-refused/no-providers/stress` sheets — those scenarios change
+     the resume list and permissions data, *not* the transcript, so they are identical to
+     home by design (their real effect is visible in `6-resume-browser-stress`).
+  7. **The Terminal view is blank in the workbench because the workbench has no
+     terminal** (no PTY). An earlier draft of this report called it "reads as a crash" —
+     that was the harness, not the app; withdrawn. Same caution for *Edit Quick Chips*
+     showing no chips: the mock may simply not serve them to the editor — **verify in the
+     real app before treating it as a bug.**
+  8. The contrast probe **over-reports on glass** (meadow-mist): when a surface is
      translucent over a wallpaper the probe can't know what's behind it, so meadow's
      "408 failures" are mostly noise. Meadow findings below are from looking, not from
      the numbers.
-  7. Halftone Dimension's headline text has a red/cyan fringe in screenshots. That is the
+  9. Halftone Dimension's headline text has a red/cyan fringe in screenshots. That is the
      theme's own `custom_css` text-shadow (a deliberate "chromatic" effect), not an app
      bug — but see T-4 for why it still matters.
 
@@ -76,8 +95,8 @@ user sees it. "Fix" names the design-guide rule (`G-n`) or a proposal (`P-n`, §
 |---|---|---|---|---|
 | 1 | **Marketplace** | One bar holds 13 identical grey pills that mean three different things (tabs *Plugins/Themes*, categories *School…Home*, sorts *New/Popular/Featured*); the search box is smaller than the pills and has no icon; the "Explore everything" heading is followed by nothing until data loads; the Themes tab shows two empty-state messages at once ("0 results" *and* "Nothing matches those filters."). At phone width the title truncates to "Ma…". | `3-marketplace`, `3-marketplace-themes`, `narrow-n-marketplace`, `e-marketplace-plugins` | P-1, G-14, G-18 |
 | 2 | **Your Library** | Two bare headings ("Favorites", "Installed") on an empty page: no explanation, no button, no link to the marketplace that sits one pill away in the header. 22px title over 12px tabs reads as scaffolding. Fully empty state is the *normal* state for a new user. | `3-library`, `3-library-themes` | P-2, G-18 |
-| 3 | **Themes dialog (Settings → Appearance)** | Theme cards come in two heights — the active card *and one arbitrary other* get a second row — so the 2×3 grid looks broken; card order changes between openings; three stacked full-width buttons in three different styles ("Browse all themes →" outline-with-fill, "✦ Build New Theme with Claude" filled, "Browse Theme Marketplace" outline) with two of them near-duplicates. Editing a built-in opens a 590px-tall dialog that is 90% empty except a note saying you can't edit it. | `1-settings-appearance`, `3-theme-edit`, `3-theme-edit-halftone` | P-3, G-9, G-10 |
-| 4 | **Model Providers → local section** | Shows literal `Installed undefined · undefined · stopped` and `No models match "".` as user-facing text (workbench mock data, but the strings exist in the component and the real app shows the same shape with real values — see `e-providers-local`); five button shapes in one dialog (outline chips *Add key/Test*, red outline *Remove*, filled pill *Connect to OpenRouter*, full-width outline *Add provider*, small *Detect* chip); the dialog clips its bottom with a fade and no scrollbar. | `2-providers-local`, `1-settings-model-providers`, `e-providers-local` | P-4, G-9, G-11 |
+| 3 | **Themes dialog (Settings → Appearance)** | Theme cards come in two heights — the active card gets a second row ("active" + pencil) and *its row-mate stretches to match*, showing an empty strip with a pencil — so the 2×3 grid looks broken; three stacked full-width buttons in three different styles ("Browse all themes →" outline-with-fill, "✦ Build New Theme with Claude" filled, "Browse Theme Marketplace" outline) with two of them near-duplicates. Editing a built-in opens a 590px-tall dialog that is 90% empty except a note saying you can't edit it. | `1-settings-appearance`, `3-theme-edit`, `3-theme-edit-halftone` | P-3, G-9, G-10 |
+| 4 | **Model Providers** | Five button shapes in one dialog (outline chips *Add key/Test*, red outline *Remove*, filled pill *Connect to OpenRouter*, full-width outline *Add provider*, small *Detect* chip; in the real app, six filled-accent *Download*/*Add key* primaries stacked in one list); the dialog clips its bottom with a fade and no scrollbar; under the fade the workbench shows literal `Installed undefined · undefined · stopped` (mock data — the real app fills real values, but the component has no fallback for a missing value). | `1-settings-model-providers` (see the meadow-mist sheet's clipped bottom), `e-providers-local` | P-4, G-9, G-11 |
 | 5 | **Projects header card** | Three button scales in one card: a big filled *New Conversation* top-right, tiny 11px outline *Rename* / *Remove from YouCoded* bottom-left, and a filled pill *Turn on sync for this project* nested inside a chip. Folder cards draw a small "tab" notch that overlaps the card border and reads as a glitch; document cards render raw Markdown at ~9px and cut mid-line. Also the **only full screen that ignores the theme wallpaper** (opaque in halftone and meadow while Library/Marketplace show it). | `1-projects`, `2-projects-conversations` | P-5, G-9, G-16, T-6 |
 | 6 | **Empty / welcome screen** | *New Session* is a pale grey pill that reads as disabled next to the outlined *Resume Session* (the accent on dark built-ins is near-white, so "filled primary" = "grey"); the mascot in halftone is a blurred smear with two stray hairlines; in meadow *Resume Session* is dark text on translucent blue over blue trees. Real app adds: Settings is unreachable from this screen except via New Session → Model → "Manage models…". | `1-scenario-empty`, `e-empty`, `e-new-session-form` | P-6, G-8, G-13 |
 | 7 | **Keyboard Shortcuts** | Uses the narrow "prompt" dialog width, so labels wrap to two lines while key chips don't, rows go uneven, and the list clips at "Send message" with no scroll cue — meadow-mist (a sans font) reveals an 11th row the monospace themes never show. | `1-settings-keyboard-shortcuts` | P-7, G-11 |
@@ -85,10 +104,11 @@ user sees it. "Fix" names the design-guide rule (`G-n`) or a proposal (`P-n`, §
 | 9 | **Skills drawer (bottom sheet)** | One dashed *＋ Add Skills* card alone at the far left of an empty 1400px row; category pills are the smallest text in the app (~11px) and use a different shape from every other filter pill; two unlabeled icon buttons live *inside* the search field; *★ Favorites only* orphaned at the far right. | `1-skills-drawer`, `narrow-n-skills-drawer` | P-9, G-14, G-18 |
 | 10 | **Status bar** | 10px text; the model chip ("Sonnet \| Auto Effort") is orange-outlined while every other chip is grey, so the model reads as a warning; the theme-name chip looks like a button but is a label; at phone width it wraps to two rows with the theme chip orphaned. In halftone the bar floats centred in its own pill. | `1-home`, `narrow-n-home` | P-10, G-15 |
 
-Honourable mentions (real, smaller): **Terminal** view is a blank pane with one cursor
-wedge and no chrome (`1-terminal`) — reads as a crash; **Edit Quick Chips** lists none of the
-seven chips it edits (`1-edit-quick-chips`); **Find bar** has no surface of its own and lands
-*inside* the user bubble, truncating it (`6-find-bar`); **Tags & note** is a dialog inside a
+Honourable mentions (real, smaller): **Find bar** has no surface of its own and lands
+*inside* the user bubble, truncating it (`6-find-bar`); **Edit Quick Chips** shows only
+"+ Add Chip" and none of the seven chips in the strip (`1-edit-quick-chips`) — *verify in the
+real app; may be mock data*; clicking **"Browse all themes →"** opens Library › Themes
+behind the dialog but leaves the Themes dialog open on top (`2-theme-marketplace`) — verify; **Tags & note** is a dialog inside a
 dialog with 9px labels and a full-width *Done* footer no sibling has (`1-tags-note-popover`);
 **Status Bar Widgets** clips its last section label ("CODE") with no scroll cue
 (`1-customize-status-bar`); **Donate** and **Development** are the only dialogs with no
@@ -258,7 +278,7 @@ point of the migration: one edit at the primitive/token layer moves everything).
 | P-11 | Tokens: `fg-muted` on raised surfaces (`inset`/`well`) is bumped to ≥4.5:1 in all four built-ins; `fg-faint` becomes *decorative-only* (dividers, disabled), never a spinner — spinners use `fg-muted`. | every surface | Muted text gets slightly lighter/darker; nothing moves. |
 | P-12 | Dark built-ins get a real accent (a muted blue for midnight, a warm grey-blue for dark — chosen so `on-accent` stays white and links stay AA on inset), so *primary* and *selected* stop looking disabled. Alternative if Destin wants to keep the monochrome look: primary/selected gain a second signal (thicker border + bold) and "disabled" gets a dashed border. | every primary/selected in midnight & dark | This is the most visible change in the ledger — every primary button and selected tab in the two most-used themes changes colour. Halftone/meadow unaffected. |
 | P-13 | Light/creme user bubble → `inset` (grey) with `fg` text instead of solid black; assistant bubble unchanged. | chat, light + creme | The user's own messages stop being the darkest thing on screen. |
-| P-14 | Terminal empty state: show the shell prompt area with a placeholder line and keep the status bar/composer chrome; find bar gets its own `panel` surface anchored top-right *above* the transcript instead of inside the bubble. | Terminal, find | Terminal no longer looks crashed. |
+| P-14 | Find bar gets its own `panel` surface anchored top-right *above* the transcript instead of inside the user bubble. | find | The bar stops covering the first message. |
 | P-15 | Every dialog gets the same header (title · optional ⓘ · ✕): add it to Donate and Development; Resume Session moves "Show complete" below the search field and gets a ✕. About and Permissions get a scrollbar/fade. | 5 dialogs | Two dialogs gain a title row. |
 | P-16 | Theme-pack guarantees added to `contrast-rules.js`: edge/panel ≥ 1.3:1 (outlines survive), checkbox radius pinned, text-bearing glass ≥ 0.85 opacity or a scrim, accent may paint at most the documented set (G-8). Meadow Mist and Halftone fixed in `wecoded-themes` to pass. | packs | Meadow's buttons get borders back; halftone's checkboxes go square. |
 | P-17 | Phone width: session tab keeps ≥ 8 characters before collapsing; quick-chip row gets an edge fade + horizontal scroll; status bar collapses chips to icons; model picker wraps its options; full screens drop "Esc ·" on touch layouts; coarse-pointer hit areas extended to chips and chevrons (the Toggle already has the mechanism). | narrow layouts | Android/phone only. |

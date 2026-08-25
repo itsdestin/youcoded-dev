@@ -198,6 +198,8 @@ and Projects stay reachable — P-6) and shows one `primary` (*New Session*) and
   overflows.
 - Find bar: its own `panel` popover anchored top-right of the transcript (P-14), never
   inside a bubble.
+- Terminal view: not covered by this guide yet — the workbench has no terminal, so it was
+  never reviewed; review it in a dev instance before writing its anatomy.
 
 ### 4.3 Settings drawer + dialogs
 
