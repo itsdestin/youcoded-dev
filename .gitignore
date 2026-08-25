@@ -79,3 +79,6 @@ docs/active/investigations/harness-eval-runs/**
 # The glob MUST stay wildcarded — a literal `report.md` here would silently
 # ignore every per-plan report and undo that fix.
 !docs/active/investigations/harness-eval-runs/*/report*.md
+
+# UI-audit screenshot sheets (evidence for docs/active/design/2026-08-25-*); regenerate per the folder README
+docs/active/design/*-ui-audit/images/

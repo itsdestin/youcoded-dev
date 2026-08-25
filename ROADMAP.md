@@ -848,6 +848,15 @@ surface, not a history.
   primitive and one token set, so a tweak at that layer moves every call site at once. Tweaks made
   *before* the migration finishes would land on surfaces that are about to be rewritten, and tweaks
   made *outside* the primitives would reintroduce exactly the divergence the 51 changes removed.
+  **Update 2026-08-25 — the review pass itself is DONE; the decisions are not.** ~600 headless
+  screenshots of every surface × 6 themes (+ a real Electron pass) are distilled into
+  `docs/active/design/2026-08-25-ui-audit-findings.md` (ten worst surfaces ranked, the
+  same-thing-drawn-N-ways table, per-theme contrast findings, and an 18-item ledger P-1…P-18
+  for Destin to approve by number) and `docs/active/design/2026-08-25-ui-design-guide.md`
+  (the standard: five laws, tokens/surfaces/type/radii, primitive usage, per-surface
+  anatomies, theme-pack guarantees, pre-review checklist). Evidence sheets:
+  `docs/active/design/2026-08-25-ui-audit/gallery.html`. Recommended order P-11 → P-12 →
+  P-13 (tokens first), then P-3/P-1/P-2/P-5. Tick this item when the ledger is decided.
   Gated on the UI consistency system entry above. Not scoped — no list of tweaks exists yet; this is
   a review appointment, not a work item. Feed anything it produces back through `components/ui/` +
   the theme tokens, never into individual components.
