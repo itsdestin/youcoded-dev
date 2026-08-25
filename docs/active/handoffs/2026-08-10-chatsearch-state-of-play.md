@@ -59,25 +59,98 @@ app.
 
 **Session references** —
 `docs/active/specs/2026-08-10-chatsearch-session-references-design.md`
-(`status: draft`, reviewed and revised once).
+(`status: active`, revised 2026-08-25) with an implementation plan at
+`docs/active/plans/2026-08-25-chatsearch-session-references-plan.md`.
 
-Preview and Resume from a search hit. Six phases; 0, 1 and 2 are parallel:
+Preview and Resume from a search hit. **Nothing is built.** No branch, no
+worktree, no CLI change.
 
-| Phase | Scope |
-|---|---|
-| 0 | CLI machine-readable block + SKILL.md "run `show` when naming a conversation" — **separate repo, separate cadence** |
-| 1 | Path-based transcript reader + IPC (both lanes, bounded, contained, subagent-refusing) |
-| 2 | Extract the conversation renderer out of `ConversationPreview`, markdown on |
-| 3 | `find` / `show` cards + the `session-card` turn segment |
-| 4 | Drawer references + `activePaneItem` consolidation |
-| 5 | Resume wiring, native via the model picker |
+**What the 2026-08-25 revision changed, and why** (history lives here, not in
+the spec):
 
-No implementation plan written yet.
+- *Reviewed the 2026-08-10 draft against master* (`df96b4a5`). About thirty of
+  its code claims held; the ones that did not are fixed in the spec: paths were
+  missing `src/`, the reducer resets `currentGroupId` at six sites not one, the
+  renderer folds segments in `splitIntoBubbles` (whose trailing `else` assumes
+  `tool-group` — an unknown segment would push `undefined` as a group id), and
+  `chat-serialization.test.ts` never exercises a populated segments list.
+- *Dropped the plugin-side machine-readable block.* Bundled plugins are
+  install-if-missing and never upgraded (`skill-provider.ts:803-812`; manual
+  `skills:update` exists but nothing drives it for bundled ids and the entry
+  has no version) — so a CLI change would never reach existing installs and
+  the cards would silently not exist for them. Instead the card parses the
+  short ids from the table the CLI already prints and resolves them in-app
+  over a new `chatsearch:resolve` channel against the index the app writes.
+  Works against every installed plugin version today. ROADMAP has the upgrade
+  gap as its own bug.
+- *Reader keyed by id, not path* (`chatsearch:read`): the renderer never names
+  a path; main looks it up in its own index. Containment kept as defense in
+  depth, three legal roots (`~/.claude/projects`, `~/.youcoded/sessions`, the
+  space root resolved at call time).
+- *Two drawer fields with a reducer rule* instead of the draft's
+  `activePaneItem` consolidation — same guarantee, thirteen fewer call sites.
+- *Android has no chatsearch index* (verified: the only `app/src` mention is
+  the bundled-id list), so both channels get the `project:*`-style
+  not-implemented stub and the cards fall back to plain shell there.
+- *Step 1 is a visual design pass with Destin in the workbench* — Destin's
+  instruction, 2026-08-25. The plan's Task 7 is that gate; no backend task
+  starts before his sign-off.
 
-**Unsettled inside that spec:** whether tool activity belongs in v1's preview.
-It got heavier once `show` became the main way a conversation is revisited —
-`HistoryMessage[]` has no representation for tool calls, so the preview shows
-none, and a marker has to make the omission visible.
+**Plan shape:** Task 0 = Destin uses phase-1 search by hand, go/no-go.
+Phase A (Tasks 1–6) builds the parser + copy table, the workbench fixture
+index, the two cards (**Task 4 = first look with Destin, cards only**), the
+shared transcript renderer, the preview pane, and the drawer state + list —
+all real renderer code against a fake `chatsearch` namespace (`MOCK_ONLY`).
+Task 7 = sign-off gate, with the full list of subjective decisions and the
+backend error sentences to confirm. Phase B (Tasks 8–13) builds the meta
+reader, the two-lane transcript reader (with a parse cache), the four IPC
+surfaces + WS + Kotlin stub, Resume wiring, and the unknown-segment guard.
+Task 14 is the `show`-as-segment change, **conditional on Destin asking for
+it**. Tasks 15–16 verify and finish; Task 17 is the one-sentence `SKILL.md`
+change in the marketplace repo.
+
+**Reviewed 2026-08-25** by an independent agent with no session context
+(errors / omissions / over- and under-thinking / add-one-subtract-one /
+simplification / user checkpoints / unapproved subjective decisions). It found
+ten defects in the plan's own code, every one of which the plan's tests would
+have passed anyway — the kind worth recording so the next plan checks for them:
+
+- `status !== 'completed'` where the real union says `'complete'`
+  (`shared/types.ts:351`); tests hid it behind an `as ToolCallState` cast.
+  Cards would never have appeared. Now: fixtures built as the real type.
+- A hook depending on a fresh array each render → cancel-and-never-refetch
+  spinner. Now: depends on the joined key only, with a re-render test.
+- The drawer's early return (`SessionDrawer.tsx:607`) made the pane branch
+  unreachable; the drawer is also unmounted until open, so the event listener
+  had to move to `ChatView` (found separately the same day).
+- Workbench seed ids are `wb-past-0`, not hex — every gallery row would have
+  been rejected; and the gallery renders bare cards with no `ChatView`, so
+  Preview had no listener there. Now: a dedicated hex fixture index with one
+  entry per state, and a scenario conversation that replays through the real
+  reducer.
+- The `show`-segment reducer change covered only one of the three
+  `TRANSCRIPT_TOOL_USE` branches; the permission-placeholder branch is the one
+  Bash takes in "ask" mode. Now: the segment is conditional (built only if
+  Destin wants `show` set apart after seeing it in a group) and, if built, must
+  cover every placing branch.
+- Gap counts off by one (a message's own tool calls were added to the gap
+  before it). Now: push text first, then count.
+- A vacuous "no filepath chips" assertion on an attribute that does not
+  exist. Now: positive control first.
+- One truncation marker checked of three; dateless (`----------`) rows
+  rejected; `2>&1` disqualified a card. All fixed.
+
+It also surfaced three things the plan had not decided: cards are collapsed
+by default (so the feature would have been a one-line header), raw `native` as
+a user-facing label, and no go/no-go on phase-1 recall despite this handoff
+asking for one. Now: expanded by default (Destin can reverse), `providerLabel`,
+Task 0. Its subtract-one candidate — the Referenced conversations list — is
+kept in the spec but marked a cut candidate for Destin at the gate.
+
+**Still unsettled inside the spec:** tool activity in the preview is a count
+marker only in v1 (open question 1); references are not persisted (2); a
+mirrored transcript may lag its origin device and the preview does not say so
+(3).
 
 ## Not started
 
