@@ -16,12 +16,21 @@ spec: docs/active/specs/2026-08-23-perf-lab-and-optimization-loop-design.md
 
 ## Global Constraints
 
-- **Live-app safety (overrides everything):** the rig NEVER touches `~/.config/youcoded`, the real `~/.claude`, the real `~/.youcoded`, or any running YouCoded process. Every launch uses `HOME=<fixture>` and `YOUCODED_PORT_OFFSET=100` (remote 10000, engine 10020 — clear of built 9900/9920 and dev 9950/9970). Process discovery is by fixture path, never by app name.
+- **Live-app safety (overrides everything):** the rig NEVER touches the real `~/.config/youcoded`, `~/.claude`, `~/.youcoded`, or any running YouCoded process. Every launch uses `HOME=<fixture>` and `YOUCODED_PORT_OFFSET=100` (remote 10000, engine 10020 — clear of built 9900/9920 and dev 9950/9970). Process discovery is by fixture path, never by app name.
+- **No `YOUCODED_PROFILE`.** A profile makes `main.ts:1339` skip the install-hooks chore that every real launch runs, so the rig would measure a boot no user gets. `HOME` alone isolates userData (`<fixture>/.config/youcoded`), the hook socket is per-process (`main.ts:191`), and the port offset moves every port — the profile adds nothing but a blind spot.
+- **Measure what the user gets:** the fixture turns remote access ON (`<fixture>/.claude/youcoded-remote.json`, default is off) so the remote-server chore is real, not ~0.
+- **Network-bound phases are flagged, never ranked as code cost:** `announcements` (GitHub fetch at boot, `announcement-service.ts:76`) and the release check (`ipc-handlers.ts:1716`) vary with WiFi. Reports carry them; the findings doc marks them `network`.
+- **Xvfb has no GPU.** Anything paint-heavy is measured on a slow software path, so rankings of renderer-paint work can be backwards. Any experiment touching paint/blur/animation/compositing REQUIRES an on-screen spot-check by Destin before it counts — flag it, don't script it (CLAUDE.md: final-stage visual verification is his).
+- **Blank window is a hard-reject metric:** `startup.blankWindowMs` = first contentful paint − window creation. The window is created visible today (`main.ts:612`); an experiment that shows it earlier but paints later makes the user stare at a blank box longer, and settled screenshots can't see that.
+- **Repetition everywhere a number can veto:** cold start ×5 (7 for baseline), history ×5 inside one boot, workload ×3 inside one boot. `compare.mjs` reads the spread from those runs for every PRIMARY metric.
+- **Budget:** a rig run aborts after `--max-minutes 45`; an autonomous session runs at most 8 experiments before reporting; the loop ends when Destin's approved card list is exhausted.
 - **No official numbers from dev mode.** Every reported number comes from `release/linux-unpacked/youcoded` (packaged; `app.isPackaged === true`).
 - **Zero visible UX/UI change** in product code. Screenshot parity gate rejects any pixel diff > 0.05% unless the ledger entry is tagged `ux-bugfix` for Destin's review.
 - **Product changes stay cross-platform** (Windows/macOS/Linux). Rig may be Linux-only.
 - **One PR.** All product work on `youcoded` branch `perf/optimization-pass`, worktree `worktrees/perf-lab/`. One commit per kept experiment, before/after numbers in the message.
-- **Ship gates per experiment:** `bash scripts/verify.sh perf-lab` green → rig run → keep only if target metric median improves ≥ 5% AND beyond baseline spread AND no other primary metric regresses > 3% AND screenshots match.
+- **Ship gates per experiment:** `bash scripts/verify.sh perf-lab` green → rig run → keep only if target metric median improves ≥ 5% AND beyond baseline spread AND no other primary metric regresses > 3% AND screenshots match. (Thresholds are Destin's to change; defaults chosen at plan time.)
+- **Two human gates:** (1) after Round 0, the ranked findings + proposed experiment cards go to Destin, who approves/vetoes/reorders before any product code changes; (2) any `ux-bugfix` PAUSES the loop — the session reports the diff PNGs and waits, it does not carry the branch forward on top of a visible change.
+- **Reports are JSON; screenshots are not committed** except the baseline set and any `ux-bugfix` pair under `perf-reports/review/`. `perf-reports/shots/` is gitignored.
 - **Every non-trivial product edit carries a WHY comment** (Destin reads code through comments).
 - **Node built-ins only** in `scripts/perf-lab/` — the workspace root has no `package.json` and must not gain one.
 - Fixed constants (use exactly): profile `perf`, CDP port `9555`, diff-engine Chrome CDP port `9556`, Xvfb display `:99` at `1600x1000x24`, fixture root `<workspace>/scratch/perf-lab/` (gitignored via `scratch/`), perf log `<fixture>/perf-marks.jsonl`.
@@ -71,7 +80,7 @@ Expected: the binary exists. If electron-builder complains about missing Linux d
 
 ```bash
 mkdir -p /home/destin/youcoded-dev/scratch/perf-lab/probe-home
-HOME=/home/destin/youcoded-dev/scratch/perf-lab/probe-home YOUCODED_PROFILE=perf YOUCODED_PORT_OFFSET=100 \
+HOME=/home/destin/youcoded-dev/scratch/perf-lab/probe-home YOUCODED_PORT_OFFSET=100 \
   xvfb-run -n 99 -s "-screen 0 1600x1000x24" ./release/linux-unpacked/youcoded --remote-debugging-port=9555 --no-sandbox &
 sleep 8; curl -s http://127.0.0.1:9555/json/list | head -c 600; kill %1
 ```
@@ -350,7 +359,9 @@ scripts/perf-lab/
   screenshots.mjs      capture + pixel diff (headless Chrome as diff engine)
   compare.mjs          keep/reject verdict between two reports
   tests/*.test.mjs     node:test unit tests for the pure parts
-perf-reports/          committed JSON reports + LEDGER.md (Phase 3)
+perf-reports/          committed JSON + md reports, LEDGER.md, review/ (baseline + ux-bugfix PNGs only)
+perf-reports/shots/    gitignored working screenshots
+scratch/perf-lab/      gitignored fixture HOME + copied desktop.log per boot
 ```
 
 Run all rig tests with: `node --test scripts/perf-lab/tests/`.
@@ -608,15 +619,16 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 - Test: `scripts/perf-lab/tests/fixture.test.mjs`
 
 **Interfaces:**
-- Produces `fixture.mjs`: `ccProjectSlug(cwd)` (copy of `youcoded/desktop/src/main/slug-encoding.ts:44-48` — non-alphanumerics → `-`; paths here are < 200 chars so no hash tail); `transcriptLines({ sessionId, cwd, turns, startedAt }) → string[]`; `buildFixture(root, { profile='perf', engineSrc, ggufSrc }) → FixtureInfo` where `FixtureInfo = { home, bin, projects: { alpha, beta }, transcripts: { small, medium, huge }: { sessionId, slug, path, turns }, perfLog, userData }`. Idempotent: wipes and rebuilds `root/home` each call (fast; huge file ~30 MB).
+- Produces `fixture.mjs`: `ccProjectSlug(cwd)` (copy of `youcoded/desktop/src/main/slug-encoding.ts:44-48` — non-alphanumerics → `-`; paths here are < 200 chars so no hash tail); `transcriptLines({ sessionId, cwd, turns, startedAt }) → string[]`; `buildFixture(root, { engineSrc, ggufSrc }) → FixtureInfo` where `FixtureInfo = { home, bin, projects: { alpha, beta }, transcripts: { small, medium, huge }: { sessionId, slug, path, turns }, perfLog, userData, modelId }`. Idempotent: wipes and rebuilds `root/home` each call (fast; huge file ~30 MB).
 - Produces `fake-claude.cjs`: copied to `<home>/bin/claude`, mode 755.
 
 Fixture contents (exact):
 - `home/.claude/toolkit-state/config.json` = `{"setup_completed": true}` (skips the first-run wizard, `first-run.ts:45-60`).
 - `home/.claude/settings.json` = `{}`; `home/.claude/projects/<slug(alpha)>/{small,medium,huge}.jsonl` (`turns` 50 / 2,500 / 25,000 → lines = 2×turns).
+- `home/.claude/youcoded-remote.json` = `{"enabled":true,"port":10000,"passwordHash":null,"trustTailscale":false,"keepAwakeHours":0,"everPaired":false}` — remote access defaults to OFF (`remote-config.ts:51`), which would zero the remote-server chore. Verify in the Task 7 smoke that `chore.remoteServer` is non-zero; if `remoteServer.start()` refuses without a password, note that in the README and leave it — a refused start is what a real never-paired install does too.
 - `home/.youcoded/config.json` = `{"v":1,"engine":{"backend":"cpu","contextSize":4096,"cacheDir":"<home>/models"}}`; `home/.youcoded/providers.json` = the two built-ins (`local` + `openrouter`, no secretRef).
 - `home/models/stories260K.gguf` — copied (not symlinked) from `/home/destin/.cache/huggingface/hub/models--ggml-org--models/snapshots/*/tinyllamas/stories260K.gguf` (follow the symlink; `fs.copyFileSync` does).
-- `home/.config/youcoded-perf/engine/b9992-cpu/` — `cp -al` of `/home/destin/.config/youcoded-dev/engine/b9992-cpu/` (includes `.complete`), so the app never downloads an engine. Read-only use of a dev-profile dir — allowed.
+- `home/.config/youcoded/engine/b9992-cpu/` — `cp -al` of `/home/destin/.config/youcoded-dev/engine/b9992-cpu/` (includes `.complete`), so the app never downloads an engine. Read-only use of a dev-profile dir — allowed. (`<home>/.config/youcoded` is the app's userData under the fixture HOME — no profile, see Global Constraints.)
 - `home/projects/alpha/README.md`, `home/projects/beta/README.md` — session cwds.
 - `home/bin/claude` — the fake; `home/perf-marks.jsonl` — truncated to empty.
 
@@ -648,7 +660,7 @@ test('transcriptLines yields loadHistory-visible user+assistant pairs', () => {
 
 ```js
 // scripts/perf-lab/fixture.mjs — builds the frozen fake HOME the perf lab runs against.
-// Everything the app touches under ~ (.claude, .youcoded, .config/youcoded-perf)
+// Everything the app touches under ~ (.claude, .youcoded, .config/youcoded)
 // lives here, so a run can never reach Destin's real data (live-app-safety rule).
 import { cpSync, copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync, chmodSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -687,7 +699,7 @@ function findGguf() {
   throw new Error('stories260K.gguf not found under ' + GGUF_GLOB_DIR);
 }
 
-export function buildFixture(root, { profile = 'perf', engineSrc = ENGINE_SRC, ggufSrc = findGguf() } = {}) {
+export function buildFixture(root, { engineSrc = ENGINE_SRC, ggufSrc = findGguf() } = {}) {
   const home = join(root, 'home');
   rmSync(home, { recursive: true, force: true });
   const mk = (...p) => { const d = join(home, ...p); mkdirSync(d, { recursive: true }); return d; };
@@ -695,6 +707,8 @@ export function buildFixture(root, { profile = 'perf', engineSrc = ENGINE_SRC, g
 
   mk('.claude', 'toolkit-state'); w('.claude/toolkit-state/config.json', JSON.stringify({ setup_completed: true }));
   w('.claude/settings.json', '{}');
+  // Remote access is OFF by default (remote-config.ts:51); turn it on so the remote-server chore is measured.
+  w('.claude/youcoded-remote.json', JSON.stringify({ enabled: true, port: 10000, passwordHash: null, trustTailscale: false, keepAwakeHours: 0, everPaired: false }));
   const projects = { alpha: join(mk('projects', 'alpha')), beta: join(mk('projects', 'beta')) };
   w('projects/alpha/README.md', '# alpha\n'); w('projects/beta/README.md', '# beta\n');
 
@@ -717,7 +731,7 @@ export function buildFixture(root, { profile = 'perf', engineSrc = ENGINE_SRC, g
   ] }));
   copyFileSync(ggufSrc, join(models, 'stories260K.gguf'));
 
-  const userData = mk('.config', `youcoded-${profile}`);
+  const userData = mk('.config', 'youcoded');   // Electron userData for app name "youcoded" under this HOME
   mkdirSync(join(userData, 'engine'), { recursive: true });
   execFileSync('cp', ['-al', engineSrc, join(userData, 'engine', 'b9992-cpu')]);
 
@@ -725,7 +739,7 @@ export function buildFixture(root, { profile = 'perf', engineSrc = ENGINE_SRC, g
   copyFileSync(join(HERE, 'fake-claude.cjs'), join(bin, 'claude'));
   chmodSync(join(bin, 'claude'), 0o755);
   const perfLog = join(home, 'perf-marks.jsonl'); writeFileSync(perfLog, '');
-  return { home, bin, projects, transcripts, perfLog, userData, profile, modelId: 'stories260K' };
+  return { home, bin, projects, transcripts, perfLog, userData, modelId: 'stories260K' };
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   console.log(JSON.stringify(buildFixture(resolve(process.argv[2] || join(HERE, '..', '..', 'scratch', 'perf-lab'))), null, 2));
@@ -767,7 +781,7 @@ for (const sig of ['SIGTERM', 'SIGHUP', 'SIGINT']) process.on(sig, () => process
 setInterval(() => {}, 1 << 30);               // stay alive
 ```
 
-- [ ] **Step 5: Run tests — pass;** then build the fixture for real: `node scripts/perf-lab/fixture.mjs` → prints `FixtureInfo`; check `ls -la scratch/perf-lab/home/.claude/projects/*/` shows three `.jsonl` (≈60 KB / 3 MB / 30 MB) and `scratch/perf-lab/home/.config/youcoded-perf/engine/b9992-cpu/.complete` exists.
+- [ ] **Step 5: Run tests — pass;** then build the fixture for real: `node scripts/perf-lab/fixture.mjs` → prints `FixtureInfo`; check `ls -la scratch/perf-lab/home/.claude/projects/*/` shows three `.jsonl` (≈60 KB / 3 MB / 30 MB) and `scratch/perf-lab/home/.config/youcoded/engine/b9992-cpu/.complete` exists.
 
 - [ ] **Step 6: Hand-check the fake claude protocol** (5 min, prevents a day of confusion later): `printf '{"hook_event_name":"x"}' | CLAUDE_DESKTOP_PIPE=/tmp/nope node scripts/perf-lab/fake-claude.cjs & sleep 1; kill %1` must not crash (socket error swallowed).
 
@@ -779,8 +793,9 @@ setInterval(() => {}, 1 << 30);               // stay alive
 - Create: `scripts/perf-lab/launch.mjs`
 
 **Interfaces:**
-- Produces: `startXvfb() → { proc, display: ':99' }` (idempotent — reuses a listening `:99`); `launchApp({ binary, appDir, fixture, cdpPort=9555 }) → Promise<App>` where `App = { proc, spawnedAt, pid, cdpPort, familyNeedles: [appDir, fixture.home], cdp: Cdp (connected to main window), target, kill(): Promise<void> }`. `kill` sends SIGTERM to the whole family (`findFamily(needles)`), waits 3 s, SIGKILLs stragglers, and removes `<fixture.home>/.config/youcoded-perf/SingletonLock` so the next launch is clean.
-- Env for the app (exact): `HOME=fixture.home`, `XDG_CONFIG_HOME` **unset**, `WAYLAND_DISPLAY` **unset**, `DISPLAY=:99`, `PATH=fixture.bin:process.env.PATH`, `YOUCODED_PROFILE='perf'`, `YOUCODED_PORT_OFFSET='100'`, `YOUCODED_PERF_LOG=fixture.perfLog`, `YOUCODED_NATIVE='1'`, `ELECTRON_DISABLE_SECURITY_WARNINGS='1'`, and delete `CLAUDECODE`, `CLAUDE_CODE_CHILD_SESSION`, `CLAUDE_CODE_SESSION_ID`, `CLAUDE_CODE_ENTRYPOINT`, `CLAUDE_CODE_EXECPATH`, `CLAUDE_EFFORT`. Args: `--remote-debugging-port=<cdpPort> --no-sandbox`.
+- Produces: `startXvfb() → { proc, display: ':99' }` (idempotent — reuses a listening `:99`); `launchApp({ binary, appDir, fixture, cdpPort=9555 }) → Promise<App>` where `App = { proc, spawnedAt, pid, cdpPort, familyNeedles: [appDir, fixture.home], cdp: Cdp (connected to main window), target, kill(): Promise<void> }`. `kill` sends SIGTERM to the whole family (`findFamily(needles)`), waits 3 s, SIGKILLs stragglers, and removes `<fixture.userData>/SingletonLock` so the next launch is clean.
+- Env for the app (exact): `HOME=fixture.home`, `XDG_CONFIG_HOME` **unset**, `WAYLAND_DISPLAY` **unset**, `YOUCODED_PROFILE` **unset** (see Global Constraints), `DISPLAY=:99`, `PATH=fixture.bin:process.env.PATH`, `YOUCODED_PORT_OFFSET='100'`, `YOUCODED_PERF_LOG=fixture.perfLog`, `YOUCODED_NATIVE='1'`, `ELECTRON_DISABLE_SECURITY_WARNINGS='1'`, and delete `CLAUDECODE`, `CLAUDE_CODE_CHILD_SESSION`, `CLAUDE_CODE_SESSION_ID`, `CLAUDE_CODE_ENTRYPOINT`, `CLAUDE_CODE_EXECPATH`, `CLAUDE_EFFORT`. Args: `--remote-debugging-port=<cdpPort> --no-sandbox`.
+- Produces `sweep(needles)`: SIGTERM then SIGKILL every process whose cmdline matches (`findFamily`), and remove `SingletonLock`. `launchApp` calls it BEFORE spawning, so a hung app from a crashed previous run can never be silently re-attached to.
 
 - [ ] **Step 1: Implement**
 
@@ -804,15 +819,23 @@ export async function startXvfb(display = ':99') {
   return { proc, display };
 }
 
+/** Kill anything left over from a previous run that matches the fixture/app paths. */
+export async function sweep(needles, userData) {
+  for (const p of findFamily(needles)) { try { process.kill(p, 'SIGTERM'); } catch {} }
+  if (findFamily(needles).length) { await sleep(2000); for (const p of findFamily(needles)) { try { process.kill(p, 'SIGKILL'); } catch {} } }
+  if (userData) rmSync(join(userData, 'SingletonLock'), { force: true });
+}
+
 export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, display = ':99' }) {
   const env = { ...process.env };
-  for (const k of ['CLAUDECODE', 'CLAUDE_CODE_CHILD_SESSION', 'CLAUDE_CODE_SESSION_ID', 'CLAUDE_CODE_ENTRYPOINT', 'CLAUDE_CODE_EXECPATH', 'CLAUDE_EFFORT', 'XDG_CONFIG_HOME', 'WAYLAND_DISPLAY']) delete env[k];
+  // No YOUCODED_PROFILE: a profile skips the install-hooks chore (main.ts:1339) and we must measure the boot users get.
+  for (const k of ['CLAUDECODE', 'CLAUDE_CODE_CHILD_SESSION', 'CLAUDE_CODE_SESSION_ID', 'CLAUDE_CODE_ENTRYPOINT', 'CLAUDE_CODE_EXECPATH', 'CLAUDE_EFFORT', 'XDG_CONFIG_HOME', 'WAYLAND_DISPLAY', 'YOUCODED_PROFILE']) delete env[k];
   Object.assign(env, {
     HOME: fixture.home, DISPLAY: display, PATH: `${fixture.bin}:${process.env.PATH}`,
-    YOUCODED_PROFILE: fixture.profile, YOUCODED_PORT_OFFSET: '100', YOUCODED_PERF_LOG: fixture.perfLog,
+    YOUCODED_PORT_OFFSET: '100', YOUCODED_PERF_LOG: fixture.perfLog,
     YOUCODED_NATIVE: '1', ELECTRON_DISABLE_SECURITY_WARNINGS: '1',
   });
-  rmSync(join(fixture.userData, 'SingletonLock'), { force: true });
+  await sweep([appDir, fixture.home], fixture.userData);   // never attach to a stale app from a crashed run
   const spawnedAt = Date.now();
   const proc = spawn(binary, [`--remote-debugging-port=${cdpPort}`, '--no-sandbox'], { env, cwd: fixture.home, stdio: ['ignore', 'ignore', 'ignore'], detached: true });
   const target = await waitForMainTarget(cdpPort, { timeoutMs: 90000 });
@@ -884,6 +907,7 @@ test('startupTable converts marks to ms-from-spawn and chore durations', () => {
   assert.equal(m.appMounted, 720);              // 1500+120-900
   assert.equal(m.firstContentfulPaint, 740);
   assert.equal(m.sessionsListed, 800);
+  assert.equal(m.blankWindowMs, 240);           // FCP 740 − createWindowAt 500: how long the user stares at an empty window
 });
 ```
 
@@ -908,12 +932,16 @@ export function startupTable({ spawnedAt, mainMarks, rendererMarks, timeOrigin, 
   const chores = {}; let prev = main('main:when-ready');
   for (const [key, mark] of CHORES) { const t = main(`main:chore:${mark}:done`); chores[key] = t === undefined || prev === undefined ? null : Math.round(t - prev); if (t !== undefined) prev = t; }
   const cwStart = main('main:create-window:start'), cwDone = main('main:create-window:done');
+  const fcp = p('first-contentful-paint'), cwAt = rel(cwStart);
   return {
     whenReady: rel(main('main:when-ready')), chores,
     createWindow: cwStart !== undefined && cwDone !== undefined ? Math.round(cwDone - cwStart) : null,
-    createWindowAt: rel(cwStart), didFinishLoad: rel(main('main:main-window:did-finish-load')), postWindowDone: rel(main('main:post-window:done')),
-    indexStart: r('yc:index-start'), rootRender: r('yc:root-render'), firstPaint: p('first-paint'), firstContentfulPaint: p('first-contentful-paint'),
+    createWindowAt: cwAt, didFinishLoad: rel(main('main:main-window:did-finish-load')), postWindowDone: rel(main('main:post-window:done')),
+    indexStart: r('yc:index-start'), rootRender: r('yc:root-render'), firstPaint: p('first-paint'), firstContentfulPaint: fcp,
     appMounted: r('yc:app-mounted'), sessionsListed: r('yc:sessions-listed'),
+    // The window is created visible (main.ts:612). This is the blank-box time — a hard-reject
+    // metric because settled screenshots cannot see an experiment that lengthens it (e.g. E1).
+    blankWindowMs: fcp !== null && cwAt !== null ? fcp - cwAt : null,
   };
 }
 export async function collectStartup(app, fixture) {
@@ -930,7 +958,7 @@ export async function collectStartup(app, fixture) {
 - Create: `scripts/perf-lab/scenario-history.mjs`
 
 **Interfaces:**
-- Produces: `runHistoryScenario(app, fixture) → Promise<HistoryMetrics>`: for each size `small|medium|huge` → `{ ipcLast10Ms, ipcAllMs, ipcAllCount, resumeFirstMessageMs, resumeStableMs, resumeMessageCount }`. Uses `window.claude.session.loadHistory(sessionId, slug, 10, false)` and `(…, 0, true)` timed in-page with `performance.now()`; then `window.claude.session.create({ name, cwd, skipPermissions: true, resumeSessionId })` (the fake claude reads `--resume <id>` and reports that id, so the app maps the session to the fixture transcript and replays it), then polls `document.querySelectorAll('.chat-scroll [data-message-id], .chat-scroll .message, .chat-scroll > div > div').length` — **the implementer must open `ChatView.tsx` around line 749 and pick the selector that counts rendered message bubbles**; stable = count unchanged for 1,000 ms. After each size, `window.claude.session.destroy(id)`.
+- Produces: `runHistoryScenario(app, fixture, { repeats = 5 }) → Promise<HistoryMetrics>`: for each size `small|medium|huge` → `{ runs: HistoryRun[], median: HistoryRun }` where `HistoryRun = { ipcLast10Ms, ipcAllMs, ipcAllCount, resumeFirstMessageMs, resumeStableMs, resumeMessageCount }`. Each size is measured `repeats` times inside the one boot (seconds each) so `compare.mjs` has a spread to judge against — a single sample cannot veto anything. Uses `window.claude.session.loadHistory(sessionId, slug, 10, false)` and `(…, 0, true)` timed in-page with `performance.now()`; then `window.claude.session.create({ name, cwd, skipPermissions: true, resumeSessionId })` (the fake claude reads `--resume <id>` and reports that id, so the app maps the session to the fixture transcript and replays it), then polls `document.querySelectorAll('.chat-scroll [data-message-id], .chat-scroll .message, .chat-scroll > div > div').length` — **the implementer must open `ChatView.tsx` around line 749 and pick the selector that counts rendered message bubbles**; stable = count unchanged for 1,000 ms. After each size, `window.claude.session.destroy(id)`.
 
 - [ ] **Step 1: Implement**
 
@@ -941,9 +969,21 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // Count rendered message bubbles. VERIFY this selector against ChatView.tsx (~line 749) before trusting numbers.
 export const MESSAGE_COUNT_EXPR = `document.querySelectorAll('.chat-scroll [data-message-id]').length`;
 
-export async function runHistoryScenario(app, fixture) {
+const median = (a) => { const s = a.filter((x) => typeof x === 'number').sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
+const medianRun = (runs) => Object.fromEntries(Object.keys(runs[0]).map((k) => [k, median(runs.map((r) => r[k]))]));
+
+export async function runHistoryScenario(app, fixture, { repeats = 5 } = {}) {
   const out = {};
   for (const size of ['small', 'medium', 'huge']) {
+    const runs = [];
+    for (let rep = 0; rep < repeats; rep++) runs.push(await measureOnce(app, fixture, size));
+    out[size] = { runs, median: medianRun(runs) };
+  }
+  return out;
+}
+
+async function measureOnce(app, fixture, size) {
+  {
     const t = fixture.transcripts[size];
     const ipc = await app.cdp.evaluate(`(async () => {
       const t0 = performance.now(); const last = await window.claude.session.loadHistory(${JSON.stringify(t.sessionId)}, ${JSON.stringify(t.slug)}, 10, false); const t1 = performance.now();
@@ -964,11 +1004,10 @@ export async function runHistoryScenario(app, fixture) {
       if (n !== lastCount) { lastCount = n; stableSince = now; } else if (now - stableSince >= 1000) { stableAt = stableSince; break; }
       await sleep(25);
     }
-    out[size] = { ...ipc, resumeFirstMessageMs: first, resumeStableMs: stableAt, resumeMessageCount: lastCount };
     await app.cdp.evaluate(`window.claude.session.destroy(${JSON.stringify(res)})`);
     await sleep(500);
+    return { ...ipc, resumeFirstMessageMs: first, resumeStableMs: stableAt, resumeMessageCount: lastCount };
   }
-  return out;
 }
 ```
 
@@ -982,8 +1021,8 @@ export async function runHistoryScenario(app, fixture) {
 - Create: `scripts/perf-lab/scenario-workload.mjs`
 
 **Interfaces:**
-- Produces: `installProbe(cdp)` — installs `window.__perfProbe = { log: [] }` recording `['longtask', tRel, durationMs]` via `PerformanceObserver({entryTypes:['longtask']})` and `['frame-gap', tRel, gapMs]` from an rAF loop with a 40 ms threshold (lifted from `scripts/resize-bench.mjs`), plus `mark(label)`; `readProbe(cdp) → { longtaskCount, longtaskTotalMs, longtaskMaxMs, frameGapCount, frameGapMaxMs }`; `runWorkloadScenario(app, fixture, { cpuSampleSeconds }) → Promise<WorkloadMetrics>` = `{ sessionsCreated, ccCreateMedianMs, nativeCreateMs, nativeFirstTokenMs, switchMedianMs, switchP95Ms, streamedLines, probe: <readProbe>, cpuDuringPct, pssAfterMb }`.
-- Journey (exact): create 4 CC sessions (`alpha`,`beta` cwds alternating, `skipPermissions:true`) + 2 native sessions (`provider:'native', binding:{providerId:'local', modelId: fixture.modelId}, preset:'coder', skipPermissions:false`); wait for each CC session's "Initializing" overlay to clear (`!document.body.innerText.includes('Initializing session')`); send `window.claude.native.send(id, 'Once upon a time')` to one native session and time until `.chat-scroll` text grows (`nativeFirstTokenMs`); start a streamer that appends one assistant-turn JSONL line every 150 ms to **three** of the CC transcripts (paths: `<home>/.claude/projects/<slug(cwd)>/<claudeId>.jsonl` — the claude ids are what the fake generated; read them from `readdirSync` of that dir, newest 4 files) for 40 s; meanwhile perform 40 switches round-robin through all 6 sessions via `window.claude.session.switch(id)` **and** a click on the pill `[data-session-idx="i"]` (use `Input.dispatchMouseEvent` at the pill's `getBoundingClientRect()` center — clicking is what the user does; `switch` alone skips React work), timing each switch as `performance.now()` before → `requestAnimationFrame` after the active session's `.chat-scroll` is visible (`document.querySelector('.chat-scroll')?.checkVisibility()`); sample family CPU over the 40 s; then open Settings (`[title="Settings"]`) and close it (click again), and read PSS.
+- Produces: `installProbe(cdp)` — installs `window.__perfProbe = { log: [] }` recording `['longtask', tRel, durationMs]` via `PerformanceObserver({entryTypes:['longtask']})` and `['frame-gap', tRel, gapMs]` from an rAF loop with a 40 ms threshold (lifted from `scripts/resize-bench.mjs`), plus `mark(label)`; `readProbe(cdp) → { longtaskCount, longtaskTotalMs, longtaskMaxMs, frameGapCount, frameGapMaxMs }`; `runWorkloadScenario(app, fixture, { cpuSampleSeconds = 40, keepSessions = false }) → Promise<WorkloadMetrics>` = `{ sessionsCreated, ccCreateMedianMs, nativeCreateMs, nativeFirstTokenMs, switchMedianMs, switchP95Ms, clickSwitches, ipcSwitches, streamedLines, probe: <readProbe>, cpuDuringPct, pssAfterMb, sessionIds? }`. Switch timing measures the **click** (in-page `el.click()` → double rAF); the bare IPC `switch` is the fallback only for pills hidden in the overflow menu, and the report says how many of each happened.
+- Journey (exact): create 4 CC sessions (`alpha`,`beta` cwds alternating, `skipPermissions:true`) + 2 native sessions (`provider:'native', binding:{providerId:'local', modelId: fixture.modelId}, preset:'coder', skipPermissions:false`); wait for each CC session's "Initializing" overlay to clear (`!document.body.innerText.includes('Initializing session')`); send `window.claude.native.send(id, 'Once upon a time')` to one native session and time until `.chat-scroll` text grows (`nativeFirstTokenMs`); start a streamer that appends one assistant-turn JSONL line every 150 ms to **three** of the CC transcripts (paths: `<home>/.claude/projects/<slug(cwd)>/<claudeId>.jsonl` — the claude ids are what the fake generated; read them from `readdirSync` of that dir, newest files) for 40 s; meanwhile perform 40 switches round-robin through all 6 sessions by **clicking** the pill `[data-session-idx="i"]` in-page (`el.click()`; timed `performance.now()` before → double `requestAnimationFrame` after), falling back to `window.claude.session.switch(id)` only when the pill is not in the strip; sample family CPU over the 40 s; then open Settings (`[title="Settings"]`) and close it (click again), read PSS, and destroy the sessions unless `keepSessions`.
 
 - [ ] **Step 1: Implement**
 
@@ -1018,7 +1057,7 @@ async function createSession(cdp, opts) {
   return cdp.evaluate(`(async () => { const t0 = performance.now(); const s = await window.claude.session.create(${JSON.stringify(opts)}); return { id: s.id, ms: Math.round(performance.now() - t0) }; })()`);
 }
 
-export async function runWorkloadScenario(app, fixture, { cpuSampleSeconds = 40 } = {}) {
+export async function runWorkloadScenario(app, fixture, { cpuSampleSeconds = 40, keepSessions = false } = {}) {
   await installProbe(app.cdp);
   const ids = [], ccMs = [];
   for (let i = 0; i < 4; i++) {
@@ -1047,13 +1086,21 @@ export async function runWorkloadScenario(app, fixture, { cpuSampleSeconds = 40 
   const streamer = setInterval(() => { for (const f of files) { const [, line] = transcriptLines({ sessionId: 'live', cwd: f.cwd, turns: 1, startedAt: Date.now() }); appendFileSync(f.p, line + '\n'); streamed++; } }, 150);
 
   const pids = app.family(); const c0 = cpuSnapshot(pids);
-  const switchMs = [];
+  const switchMs = []; let clickSwitches = 0, ipcSwitches = 0;
   for (let i = 0; i < 40; i++) {
     const idx = i % ids.length;
-    const ms = await app.cdp.evaluate(`(async () => { const t0 = performance.now(); await window.claude.session.switch(${JSON.stringify(ids[idx])}); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); return Math.round((performance.now() - t0) * 10) / 10; })()`);
-    await clickSelector(app.cdp, `[data-session-idx="${idx}"]`).catch(() => {});
-    switchMs.push(ms);
-    await sleep(Math.max(0, 1000 - ms));
+    // Time the CLICK path (what the user does — React handlers, reducer, re-render), in-page so
+    // CDP round-trip latency is not inside the number. Fall back to the IPC switch only when the
+    // pill is not in the strip (overflow menu, SessionStrip.tsx:860-872) and say so in the report.
+    const r = await app.cdp.evaluate(`(async () => {
+      const el = document.querySelector('[data-session-idx="${idx}"]');
+      const t0 = performance.now();
+      if (el) el.click(); else await window.claude.session.switch(${JSON.stringify(ids[idx])});
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      return { ms: Math.round((performance.now() - t0) * 10) / 10, clicked: !!el };
+    })()`);
+    switchMs.push(r.ms); r.clicked ? clickSwitches++ : ipcSwitches++;
+    await sleep(Math.max(0, 1000 - r.ms));
   }
   while (Date.now() - t0 < cpuSampleSeconds * 1000) await sleep(100);
   clearInterval(streamer);
@@ -1061,9 +1108,12 @@ export async function runWorkloadScenario(app, fixture, { cpuSampleSeconds = 40 
   await clickSelector(app.cdp, '[title="Settings"]'); await sleep(800); await clickSelector(app.cdp, '[title="Settings"]'); await sleep(500);
   const probe = await readProbe(app.cdp);
   const pss = pssMb(app.family());
-  return { sessionsCreated: ids.length, ccCreateMedianMs: median(ccMs), nativeCreateMs: nat[0].ms, nativeFirstTokenMs, switchMedianMs: median(switchMs), switchP95Ms: p95(switchMs), streamedLines: streamed, probe, cpuDuringPct: Math.round(cpu.totalPct * 10) / 10, pssAfterMb: pss.totalMb, pssBreakdown: pss.perPid, sessionIds: ids };
+  if (!keepSessions) for (const id of ids) await app.cdp.evaluate(`window.claude.session.destroy(${JSON.stringify(id)})`).catch(() => {});
+  return { sessionsCreated: ids.length, ccCreateMedianMs: median(ccMs), nativeCreateMs: nat[0].ms, nativeFirstTokenMs, switchMedianMs: median(switchMs), switchP95Ms: p95(switchMs), clickSwitches, ipcSwitches, streamedLines: streamed, probe, cpuDuringPct: Math.round(cpu.totalPct * 10) / 10, pssAfterMb: pss.totalMb, pssBreakdown: pss.perPid, sessionIds: keepSessions ? ids : undefined };
 }
 ```
+
+The orchestrator runs this journey **3×** per report (sessions are destroyed at the end of each pass so passes are comparable) and reports `workload.runs` + `workload.median`. The `six-sessions` / `native-chat` screenshots are taken by the orchestrator during a separate, final pass that leaves its sessions open.
 
 - [ ] **Step 2: Smoke it** (extend the throwaway). Expected: `sessionsCreated: 6`, `nativeFirstTokenMs` in the 2–30 s range (engine cold start on CPU; stories260K loads instantly), `streamedLines` ≈ 800, `switchMedianMs` single-digit, probe numbers present. Two likely snags, each with its check: (a) the native `modelId` may need the `.gguf` suffix or a different id — inspect `await app.cdp.evaluate('window.claude.native.listModels ? window.claude.native.listModels() : Object.keys(window.claude.native)')` and match what the catalog reports; (b) `data-session-idx` pills may be inside an overflow menu once 6 sessions are open (`SessionStrip.tsx:860-872`) — if the click fails for idx ≥ N, keep the IPC switch (already measured) and log the click as skipped; do not fake it.
 
@@ -1124,16 +1174,17 @@ async function withHeadlessChrome(fn) {
   } finally { proc.kill('SIGKILL'); }
 }
 const b64 = (p) => readFileSync(p).toString('base64');
-export async function diffPngs(aPath, bPath) {
-  return withHeadlessChrome((cdp) => cdp.evaluate(`(async () => {
+const DIFF_EXPR = (aB64, bB64) => `(async () => {
     const load = (b) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = 'data:image/png;base64,' + b; });
-    const [A, B] = await Promise.all([load(${JSON.stringify(b64(aPath))}), load(${JSON.stringify(b64(bPath))})]);
+    const [A, B] = await Promise.all([load(${JSON.stringify(aB64)}), load(${JSON.stringify(bB64)})]);
     const w = Math.max(A.width, B.width), h = Math.max(A.height, B.height);
     const px = (img) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(img, 0, 0); return g.getImageData(0, 0, w, h).data; };
     const a = px(A), b = px(B); let differing = 0;
     for (let i = 0; i < a.length; i += 4) { if (Math.abs(a[i]-b[i]) > 16 || Math.abs(a[i+1]-b[i+1]) > 16 || Math.abs(a[i+2]-b[i+2]) > 16) differing++; }
     const total = w * h; return { total, differing, pct: Math.round(differing / total * 10000) / 100 };
-  })()`));
+  })()`;
+export async function diffPngs(aPath, bPath) {
+  return withHeadlessChrome((cdp) => cdp.evaluate(DIFF_EXPR(b64(aPath), b64(bPath))));
 }
 /** Test helper: render rectangles to a PNG (base64→Buffer) in headless Chrome. */
 export async function renderTestPng(w, h, rects) {
@@ -1150,10 +1201,16 @@ export async function capture(app, outDir, name) {
   await app.cdp.evaluate(UNFREEZE);
   const p = join(outDir, `${name}.png`); writeFileSync(p, Buffer.from(data, 'base64')); return p;
 }
+/** All screens in ONE headless-Chrome session (spawning it per screen was 5× the cost). */
 export async function compareScreens(baselineDir, candidateDir, names) {
-  const out = {};
-  for (const n of names) { const r = await diffPngs(join(baselineDir, `${n}.png`), join(candidateDir, `${n}.png`)); out[n] = { ...r, pass: r.pct <= 0.05 }; }
-  return out;
+  return withHeadlessChrome(async (cdp) => {
+    const out = {};
+    for (const n of names) {
+      const r = await cdp.evaluate(DIFF_EXPR(b64(join(baselineDir, `${n}.png`)), b64(join(candidateDir, `${n}.png`))));
+      out[n] = { ...r, pass: r.pct <= 0.05 };
+    }
+    return out;
+  });
 }
 export const SCREEN_NAMES = ['welcome', 'chat-medium', 'settings-open', 'native-chat', 'six-sessions'];
 ```
@@ -1166,25 +1223,29 @@ The orchestrator (Task 12) decides *when* each named screen is captured; this mo
 
 **Files:**
 - Create: `scripts/perf-lab/run.mjs`, `scripts/perf-lab/README.md`
-- Modify: `.gitignore` (add `scratch/perf-lab/` is already covered by `scratch/`; add nothing else — `perf-reports/` is fully tracked)
+- Modify: `.gitignore` — add `perf-reports/shots/` (screenshots are working files; `scratch/` already covers the fixture). `perf-reports/*.json`, `*.md`, and `perf-reports/review/` stay tracked.
 
 **Interfaces:**
-- CLI: `node scripts/perf-lab/run.mjs [--checkout <dir>] [--runs 5] [--only startup,history,workload,shots] [--skip-build] [--label <text>] [--out perf-reports/]`. Writes `perf-reports/<YYYY-MM-DD>-<HHMM>-<sha7>[-label].json` and a sibling `.md` summary, plus screenshots under `perf-reports/shots/<same-stem>/`.
+- CLI: `node scripts/perf-lab/run.mjs [--checkout <dir>] [--runs 5] [--history-repeats 5] [--workload-repeats 3] [--only startup,history,workload,shots] [--force-build] [--label <text>] [--out perf-reports/] [--max-minutes 45]`. Writes `perf-reports/<YYYY-MM-DD>-<HHMM>-<sha7>[-label].json` and a sibling `.md` summary, plus screenshots under `perf-reports/shots/<same-stem>/` (gitignored). Exceeding `--max-minutes` aborts with exit 3 after killing the app family. Every exit path (success, error, Ctrl-C, timeout) runs the kill — `try/finally` around each boot plus `process.on('SIGINT')`.
+- Per boot the report also records `errors: { desktopLogErrorLines }` — the count of `"level":"ERROR"` lines in `<fixture>/.claude/desktop.log` — and copies that log to `scratch/perf-lab/logs/<stem>-<boot>.log`. A boot that logged errors is not a clean measurement; `compare.mjs` prints the count and the findings doc must not rank a phase from an erroring boot.
 - Report schema v1:
 
 ```json
 { "schemaVersion": 1, "label": "", "sha": "", "branch": "", "dirty": "", "timestamp": "", "machine": { "cpu": "", "ramGb": 0, "kernel": "", "node": "" },
   "noise": { "loadAvgBefore": 0, "machineBusyPctBefore": 0, "discardedRuns": 0 },
-  "startup": { "runs": [ /* StartupMetrics + idle */ ], "median": { /* every StartupMetrics key + chores.* */ } },
+  "startup": { "runs": [ /* StartupMetrics + idle + errors */ ], "median": { /* every StartupMetrics key incl. blankWindowMs + chores.* */ } },
   "idle": { "pssMb": { "median": 0, "runs": [] }, "cpuPct": { "median": 0, "runs": [] }, "breakdownMedianRun": [] },
-  "history": { "small": {}, "medium": {}, "huge": {} },
-  "workload": { /* WorkloadMetrics */ },
+  "history": { "small": { "runs": [], "median": {} }, "medium": { "runs": [], "median": {} }, "huge": { "runs": [], "median": {} } },
+  "workload": { "runs": [ /* WorkloadMetrics ×3 */ ], "median": { /* WorkloadMetrics incl. probe.* */ } },
+  "network": ["chores.announcements", "releaseCheck"],
+  "errors": { "coldStarts": [0], "scenarioBoot": 0 },
   "screens": { "dir": "", "names": [] } }
 ```
 
-- Cold-start loop (per run, `--runs` times): noise gate (`loadAvg1() < 4` and `machineBusyPct(3) < 10`, else wait 30 s and retry up to 5×, counting discards) → `buildFixture` → `launchApp` → `waitFor` `yc:sessions-listed` mark → `collectStartup` → 10 s settle → CPU over 15 s (`cpuSnapshot` before/after on `app.family()`) → `pssMb` → `kill`. Record `{ ...startup, idlePssMb, idleCpuPct }`.
-- Scenario boot (once): fresh fixture → launch → capture `welcome` → `runHistoryScenario` → resume `medium` again and capture `chat-medium` → open settings, capture `settings-open`, close → `runWorkloadScenario` → capture `six-sessions`, switch to a native session and capture `native-chat` → kill.
-- Median helper for nested objects: `medianOf(runs, path)`.
+- Cold-start loop (per run, `--runs` times): noise gate (`loadAvg1() < 4` and `machineBusyPct(3) < 10`, else wait 30 s and retry up to 5×, counting discards) → `buildFixture` → `launchApp` → `waitFor` `yc:sessions-listed` mark → `collectStartup` → 10 s settle → CPU over 15 s (`cpuSnapshot` before/after on `app.family()`) → `pssMb` → count ERROR lines + copy `desktop.log` → `kill` (in `finally`). Record `{ ...startup, idlePssMb, idleCpuPct, errorLines }`.
+- Scenario boot (once): fresh fixture → launch → capture `welcome` → `runHistoryScenario(app, fixture, { repeats })` (×5 inside) → resume `medium` once more and capture `chat-medium` → open settings, capture `settings-open`, close → `runWorkloadScenario` ×`--workload-repeats` (median + runs) → one more `runWorkloadScenario(…, { keepSessions: true })` for the `six-sessions` and `native-chat` captures (its numbers are NOT included in the median — screenshots perturb it) → error count + log copy → kill (in `finally`).
+- Median helper for nested objects: `medianTree(runs)` (recursive over plain-object keys, `null` when no numeric samples).
+- `network`: a constant list of report paths that are network-bound (`chores.announcements`; the release check is inside `postWindowDone`). The findings doc marks these `network` instead of ranking them.
 
 - [ ] **Step 1: Implement `run.mjs`**
 
@@ -1214,8 +1275,21 @@ const ONLY = new Set((opt('only', 'startup,history,workload,shots')).split(','))
 const CHECKOUT = resolve(opt('checkout', join(ROOT, 'worktrees', 'perf-lab')));
 const OUT = resolve(opt('out', join(ROOT, 'perf-reports')));
 const LABEL = opt('label', '');
+const HISTORY_REPEATS = Number(opt('history-repeats', 5));
+const WORKLOAD_REPEATS = Number(opt('workload-repeats', 3));
+const MAX_MINUTES = Number(opt('max-minutes', 45));
 const SCRATCH = join(ROOT, 'scratch', 'perf-lab');
+const DEADLINE = Date.now() + MAX_MINUTES * 60000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const checkDeadline = () => { if (Date.now() > DEADLINE) throw Object.assign(new Error(`--max-minutes ${MAX_MINUTES} exceeded`), { exitCode: 3 }); };
+let liveApp = null;                                   // whatever is running right now, for the finally/SIGINT paths
+const killLive = async () => { if (liveApp) { const a = liveApp; liveApp = null; await a.kill().catch(() => {}); } };
+process.on('SIGINT', async () => { await killLive(); process.exit(130); });
+function errorLines(fixture, stem, boot) {
+  let text = ''; try { text = readFileSync(join(fixture.home, '.claude', 'desktop.log'), 'utf8'); } catch {}
+  mkdirSync(join(SCRATCH, 'logs'), { recursive: true }); writeFileSync(join(SCRATCH, 'logs', `${stem}-${boot}.log`), text);
+  return text.split('\n').filter((l) => l.includes('"level":"ERROR"')).length;
+}
 const log = (...a) => console.error(`[perf-lab ${new Date().toISOString().slice(11, 19)}]`, ...a);
 const median = (a) => { const s = a.filter((x) => typeof x === 'number').sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
 function medianTree(runs) {
@@ -1260,19 +1334,25 @@ const stem = `${report.timestamp.slice(0, 10)}-${report.timestamp.slice(11, 16).
 mkdirSync(OUT, { recursive: true });
 await startXvfb();
 
+report.network = ['chores.announcements', 'postWindowDone(releaseCheck)'];
+report.errors = { coldStarts: [], scenarioBoot: null };
+try {
 if (ONLY.has('startup')) {
   const runs = [];
   for (let i = 0; i < RUNS; i++) {
+    checkDeadline();
     await noiseGate(report.noise);
     const fixture = buildFixture(SCRATCH);
-    const app = await bootAndWait(build, fixture);
-    const startup = await collectStartup(app, fixture);
-    await sleep(10000);
-    const pids = app.family(); const c0 = cpuSnapshot(pids); await sleep(15000); const cpu = cpuPercent(c0, cpuSnapshot(pids), 15);
-    const pss = pssMb(app.family());
-    runs.push({ ...startup, idlePssMb: pss.totalMb, idleCpuPct: Math.round(cpu.totalPct * 10) / 10, breakdown: pss.perPid });
-    log(`cold start ${i + 1}/${RUNS}: sessionsListed ${startup.sessionsListed}ms, idle ${pss.totalMb}MB, ${cpu.totalPct.toFixed(1)}% cpu`);
-    await app.kill(); await sleep(1500);
+    const app = liveApp = await bootAndWait(build, fixture);
+    try {
+      const startup = await collectStartup(app, fixture);
+      await sleep(10000);
+      const pids = app.family(); const c0 = cpuSnapshot(pids); await sleep(15000); const cpu = cpuPercent(c0, cpuSnapshot(pids), 15);
+      const pss = pssMb(app.family());
+      const errs = errorLines(fixture, stem, `cold-${i + 1}`); report.errors.coldStarts.push(errs);
+      runs.push({ ...startup, idlePssMb: pss.totalMb, idleCpuPct: Math.round(cpu.totalPct * 10) / 10, errorLines: errs, breakdown: pss.perPid });
+      log(`cold start ${i + 1}/${RUNS}: sessionsListed ${startup.sessionsListed}ms, blank ${startup.blankWindowMs}ms, idle ${pss.totalMb}MB, ${cpu.totalPct.toFixed(1)}% cpu, ${errs} error lines`);
+    } finally { await killLive(); await sleep(1500); }
   }
   const { breakdown: _b, ...rest } = medianTree(runs.map(({ breakdown, ...r }) => r));
   report.startup = { runs, median: rest };
@@ -1280,37 +1360,52 @@ if (ONLY.has('startup')) {
 }
 
 if (ONLY.has('history') || ONLY.has('workload') || ONLY.has('shots')) {
+  checkDeadline();
   await noiseGate(report.noise);
   const fixture = buildFixture(SCRATCH);
-  const app = await bootAndWait(build, fixture);
-  const shotDir = join(OUT, 'shots', stem); const shots = {};
-  const shot = async (name) => { if (ONLY.has('shots')) shots[name] = await capture(app, shotDir, name); };
-  await shot('welcome');
-  if (ONLY.has('history')) { report.history = await runHistoryScenario(app, fixture); log('history', JSON.stringify(report.history)); }
-  if (ONLY.has('shots')) {
-    const id = await resumeAndSettle(app, fixture, 'medium'); await shot('chat-medium');
-    await clickTitle(app, 'Settings'); await shot('settings-open'); await clickTitle(app, 'Settings');
-    await app.cdp.evaluate(`window.claude.session.destroy(${JSON.stringify(id)})`); await sleep(500);
-  }
-  if (ONLY.has('workload')) {
-    report.workload = await runWorkloadScenario(app, fixture); log('workload', JSON.stringify(report.workload));
-    await shot('six-sessions');
-    const nativeId = report.workload.sessionIds[4]; await app.cdp.evaluate(`window.claude.session.switch(${JSON.stringify(nativeId)})`); await sleep(800); await shot('native-chat');
-  }
-  report.screens = { dir: shotDir, names: Object.keys(shots) };
-  await app.kill();
+  const app = liveApp = await bootAndWait(build, fixture);
+  try {
+    const shotDir = join(OUT, 'shots', stem); const shots = {};
+    const shot = async (name) => { if (ONLY.has('shots')) shots[name] = await capture(app, shotDir, name); };
+    await shot('welcome');
+    if (ONLY.has('history')) { report.history = await runHistoryScenario(app, fixture, { repeats: HISTORY_REPEATS }); log('history medians', JSON.stringify(Object.fromEntries(Object.entries(report.history).map(([k, v]) => [k, v.median])))); }
+    if (ONLY.has('shots')) {
+      const id = await resumeAndSettle(app, fixture, 'medium'); await shot('chat-medium');
+      await clickTitle(app, 'Settings'); await shot('settings-open'); await clickTitle(app, 'Settings');
+      await app.cdp.evaluate(`window.claude.session.destroy(${JSON.stringify(id)})`); await sleep(500);
+    }
+    if (ONLY.has('workload')) {
+      const runs = [];
+      for (let i = 0; i < WORKLOAD_REPEATS; i++) { checkDeadline(); runs.push(await runWorkloadScenario(app, fixture)); log(`workload ${i + 1}/${WORKLOAD_REPEATS}: switch p95 ${runs[i].switchP95Ms}ms, long tasks ${runs[i].probe.longtaskTotalMs}ms`); }
+      report.workload = { runs: runs.map(({ pssBreakdown, ...r }) => r), median: medianTree(runs.map(({ pssBreakdown, sessionIds, ...r }) => r)), pssBreakdownFirstRun: runs[0].pssBreakdown };
+      if (ONLY.has('shots')) {
+        // Separate pass whose numbers are NOT in the median: screenshots perturb timing.
+        const shotPass = await runWorkloadScenario(app, fixture, { keepSessions: true });
+        await shot('six-sessions');
+        await app.cdp.evaluate(`window.claude.session.switch(${JSON.stringify(shotPass.sessionIds[4])})`); await sleep(800); await shot('native-chat');
+      }
+    }
+    report.screens = { dir: shotDir, names: Object.keys(shots) };
+    report.errors.scenarioBoot = errorLines(fixture, stem, 'scenario');
+  } finally { await killLive(); }
+}
+} catch (e) {
+  await killLive();
+  console.error('[perf-lab] aborted:', e.message);
+  process.exit(e.exitCode ?? 2);
 }
 
 const jsonPath = join(OUT, `${stem}.json`); writeFileSync(jsonPath, JSON.stringify(report, null, 2));
 const m = report.startup?.median ?? {};
 const md = [`# perf-lab ${stem}`, '', `sha ${report.sha} (${report.branch}${report.dirty ? ', dirty ' + report.dirty : ''}) — ${report.timestamp}`, '',
   '| metric | median |', '|---|---|',
-  ...['whenReady', 'createWindowAt', 'didFinishLoad', 'firstContentfulPaint', 'appMounted', 'sessionsListed', 'postWindowDone'].map((k) => `| startup.${k} | ${m[k] ?? '—'} ms |`),
-  ...Object.entries(m.chores ?? {}).map(([k, v]) => `| chore.${k} | ${v ?? '—'} ms |`),
+  ...['whenReady', 'createWindowAt', 'blankWindowMs', 'didFinishLoad', 'firstContentfulPaint', 'appMounted', 'sessionsListed', 'postWindowDone'].map((k) => `| startup.${k} | ${m[k] ?? '—'} ms |`),
+  ...Object.entries(m.chores ?? {}).map(([k, v]) => `| chore.${k}${k === 'announcements' ? ' (network)' : ''} | ${v ?? '—'} ms |`),
   `| idle PSS | ${report.idle?.pssMb.median ?? '—'} MB |`, `| idle CPU | ${report.idle?.cpuPct.median ?? '—'} % |`,
-  ...Object.entries(report.history ?? {}).map(([s, h]) => `| history.${s} | last10 ${h.ipcLast10Ms} ms · all ${h.ipcAllMs} ms · resume first ${h.resumeFirstMessageMs} ms · stable ${h.resumeStableMs} ms |`),
-  ...(report.workload ? [`| switch median / p95 | ${report.workload.switchMedianMs} / ${report.workload.switchP95Ms} ms |`, `| long tasks | ${report.workload.probe.longtaskCount} (${report.workload.probe.longtaskTotalMs} ms, max ${report.workload.probe.longtaskMaxMs}) |`, `| frame gaps > 40ms | ${report.workload.probe.frameGapCount} (max ${report.workload.probe.frameGapMaxMs} ms) |`, `| native first token | ${report.workload.nativeFirstTokenMs} ms |`, `| CPU during workload | ${report.workload.cpuDuringPct} % |`, `| PSS after workload | ${report.workload.pssAfterMb} MB |`] : []),
-  '', `noise: load ${report.noise.loadAvgBefore}, busy ${report.noise.machineBusyPctBefore}%, discarded ${report.noise.discardedRuns}`, ''].join('\n');
+  ...Object.entries(report.history ?? {}).map(([s, h]) => `| history.${s} (median of ${h.runs.length}) | last10 ${h.median.ipcLast10Ms} ms · all ${h.median.ipcAllMs} ms · resume first ${h.median.resumeFirstMessageMs} ms · stable ${h.median.resumeStableMs} ms |`),
+  ...(report.workload ? (({ median: w }) => [`| switch median / p95 (median of ${report.workload.runs.length}) | ${w.switchMedianMs} / ${w.switchP95Ms} ms |`, `| long tasks | ${w.probe.longtaskCount} (${w.probe.longtaskTotalMs} ms, max ${w.probe.longtaskMaxMs}) |`, `| frame gaps > 40ms | ${w.probe.frameGapCount} (max ${w.probe.frameGapMaxMs} ms) |`, `| native first token | ${w.nativeFirstTokenMs} ms |`, `| CPU during workload | ${w.cpuDuringPct} % |`, `| PSS after workload | ${w.pssAfterMb} MB |`])(report.workload) : []),
+  '', `noise: load ${report.noise.loadAvgBefore}, busy ${report.noise.machineBusyPctBefore}%, discarded ${report.noise.discardedRuns}`,
+  `errors (desktop.log ERROR lines): cold starts ${JSON.stringify(report.errors.coldStarts)}, scenario boot ${report.errors.scenarioBoot ?? '—'}`, ''].join('\n');
 writeFileSync(join(OUT, `${stem}.md`), md);
 console.log(jsonPath);
 ```
@@ -1319,7 +1414,7 @@ console.log(jsonPath);
 
 - [ ] **Step 3: Full smoke run** `node scripts/perf-lab/run.mjs --runs 2 --label smoke` → prints a JSON path; open the `.md` beside it and confirm every row has a number. Fix whatever is `—` before continuing (that is the point of the smoke).
 
-- [ ] **Step 4: Commit** `git add scripts/perf-lab/run.mjs scripts/perf-lab/README.md perf-reports/*smoke* && git commit -m "perf-lab: orchestrator, report writer, README (+ smoke report)"`
+- [ ] **Step 4: Commit** (the smoke report is NOT committed — it means nothing; delete it) `rm perf-reports/*smoke*; printf '\nperf-reports/shots/\n' >> .gitignore; git add .gitignore scripts/perf-lab/run.mjs scripts/perf-lab/README.md && git commit -m "perf-lab: orchestrator, report writer, README"`
 
 ### Task 13: Keep/reject verdict
 
@@ -1328,7 +1423,7 @@ console.log(jsonPath);
 - Test: `scripts/perf-lab/tests/compare.test.mjs`
 
 **Interfaces:**
-- Produces: `PRIMARY = ['startup.median.sessionsListed', 'startup.median.firstContentfulPaint', 'idle.pssMb.median', 'idle.cpuPct.median', 'history.medium.resumeStableMs', 'history.huge.ipcLast10Ms', 'history.huge.resumeStableMs', 'workload.switchP95Ms', 'workload.probe.longtaskTotalMs', 'workload.pssAfterMb', 'workload.cpuDuringPct']` (all lower-is-better); `get(obj, path)`; `spreadPct(report, path)` = `(max-min)/median*100` over `startup.runs`/`idle.*.runs` when the path has runs, else `0`; `verdict(baseline, candidate, { target, improveMinPct=5, regressMaxPct=3, screens }) → { keep: boolean, target: { path, base, cand, deltaPct, beyondSpread }, regressions: [{path, base, cand, deltaPct}], screens: {...}, reasons: string[] }`. Keep iff target `deltaPct <= -improveMinPct` AND `|deltaPct| > spreadPct(baseline,target)` AND no other PRIMARY path has `deltaPct > regressMaxPct + spreadPct` AND every screen `pass` (or `--ux-bugfix` given). CLI: `node scripts/perf-lab/compare.mjs <baseline.json> <candidate.json> --target <path> [--ux-bugfix]`, prints a table and exits 0 on keep / 1 on reject.
+- Produces: `PRIMARY = ['startup.median.sessionsListed', 'startup.median.firstContentfulPaint', 'startup.median.blankWindowMs', 'idle.pssMb.median', 'idle.cpuPct.median', 'history.medium.median.resumeStableMs', 'history.huge.median.ipcLast10Ms', 'history.huge.median.resumeStableMs', 'workload.median.switchP95Ms', 'workload.median.probe.longtaskTotalMs', 'workload.median.pssAfterMb', 'workload.median.cpuDuringPct']` (all lower-is-better; every one has repeated runs behind it); `get(obj, path)`; `runsFor(report, path) → number[]` resolves the sibling `runs` array for any `…median.<key>` path (`startup.median.X` → `startup.runs[].X`; `history.<size>.median.X` → `history.<size>.runs[].X`; `workload.median.a.b` → `workload.runs[].a.b`; `idle.<k>.median` → `idle.<k>.runs`); `spreadPct(report, path)` = `(max-min)/median*100` over those runs (`0` if fewer than 2); `verdict(baseline, candidate, { target, improveMinPct=5, regressMaxPct=3, screens, uxBugfix }) → { keep, target: { path, base, cand, deltaPct, beyondSpread }, regressions: [{path, base, cand, deltaPct}], screens, errors: { base, cand }, reasons: string[] }`. Keep iff target `deltaPct <= -improveMinPct` AND `|deltaPct| > spreadPct(baseline,target)` AND no other PRIMARY path has `deltaPct > regressMaxPct + spreadPct` AND every screen `pass` (or `uxBugfix`). Also REJECT if the candidate's error-line counts exceed the baseline's (a boot that logs new errors is not a clean win). CLI: `node scripts/perf-lab/compare.mjs <baseline.json> <candidate.json> --target <path> [--ux-bugfix]`, prints a table and exits 0 on keep / 1 on reject.
 
 - [ ] **Step 1: Failing test**
 
@@ -1337,8 +1432,27 @@ console.log(jsonPath);
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { verdict } from '../compare.mjs';
-const base = { startup: { runs: [{ sessionsListed: 1000 }, { sessionsListed: 1050 }, { sessionsListed: 980 }], median: { sessionsListed: 1000, firstContentfulPaint: 500 } }, idle: { pssMb: { median: 400, runs: [400, 405] }, cpuPct: { median: 2, runs: [2, 2.1] } }, history: { medium: { resumeStableMs: 300 }, huge: { ipcLast10Ms: 200, resumeStableMs: 2000 } }, workload: { switchP95Ms: 20, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30 } };
+const base = {
+  startup: { runs: [{ sessionsListed: 1000, blankWindowMs: 200 }, { sessionsListed: 1050, blankWindowMs: 210 }, { sessionsListed: 980, blankWindowMs: 190 }], median: { sessionsListed: 1000, firstContentfulPaint: 500, blankWindowMs: 200 } },
+  idle: { pssMb: { median: 400, runs: [400, 405] }, cpuPct: { median: 2, runs: [2, 2.1] } },
+  history: { medium: { runs: [{ resumeStableMs: 300 }, { resumeStableMs: 310 }], median: { resumeStableMs: 300 } }, huge: { runs: [{ ipcLast10Ms: 200, resumeStableMs: 2000 }, { ipcLast10Ms: 210, resumeStableMs: 2100 }], median: { ipcLast10Ms: 200, resumeStableMs: 2000 } } },
+  workload: { runs: [{ switchP95Ms: 20, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30 }, { switchP95Ms: 24, probe: { longtaskTotalMs: 130 }, pssAfterMb: 605, cpuDuringPct: 31 }], median: { switchP95Ms: 20, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30 } },
+  errors: { coldStarts: [0, 0, 0], scenarioBoot: 0 },
+};
 const clone = () => JSON.parse(JSON.stringify(base));
+test('a jittery workload metric does not veto inside its own spread', () => {
+  const c = clone(); c.startup.median.sessionsListed = 800; c.workload.median.probe.longtaskTotalMs = 125;   // +25%, but base spread is 30%
+  assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, true);
+});
+test('a longer blank window rejects an otherwise-faster boot', () => {
+  const c = clone(); c.startup.median.sessionsListed = 800; c.startup.median.blankWindowMs = 260;   // +30% blank box (E1 failure mode)
+  const v = verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} });
+  assert.equal(v.keep, false); assert.ok(v.regressions.some((r) => r.path === 'startup.median.blankWindowMs'));
+});
+test('new error lines reject', () => {
+  const c = clone(); c.startup.median.sessionsListed = 800; c.errors.coldStarts = [2, 0, 0];
+  assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, false);
+});
 test('keeps a real win with no regressions', () => {
   const c = clone(); c.startup.median.sessionsListed = 850;
   const v = verdict(base, c, { target: 'startup.median.sessionsListed', screens: { welcome: { pass: true } } });
@@ -1368,18 +1482,26 @@ test('rejects on a screenshot diff unless ux-bugfix', () => {
 // scripts/perf-lab/compare.mjs — the keep/reject rule from the spec, as code.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-export const PRIMARY = ['startup.median.sessionsListed', 'startup.median.firstContentfulPaint', 'idle.pssMb.median', 'idle.cpuPct.median', 'history.medium.resumeStableMs', 'history.huge.ipcLast10Ms', 'history.huge.resumeStableMs', 'workload.switchP95Ms', 'workload.probe.longtaskTotalMs', 'workload.pssAfterMb', 'workload.cpuDuringPct'];
+export const PRIMARY = ['startup.median.sessionsListed', 'startup.median.firstContentfulPaint', 'startup.median.blankWindowMs', 'idle.pssMb.median', 'idle.cpuPct.median', 'history.medium.median.resumeStableMs', 'history.huge.median.ipcLast10Ms', 'history.huge.median.resumeStableMs', 'workload.median.switchP95Ms', 'workload.median.probe.longtaskTotalMs', 'workload.median.pssAfterMb', 'workload.median.cpuDuringPct'];
 export const get = (o, path) => path.split('.').reduce((a, k) => (a == null ? undefined : a[k]), o);
+/** The per-run samples behind any `…median…` path: `<prefix>.median.<rest>` → `<prefix>.runs[].<rest>`; `idle.<k>.median` → `idle.<k>.runs`. */
+export function runsFor(report, path) {
+  const i = path.indexOf('.median');
+  if (i < 0) return [];
+  const prefix = path.slice(0, i), rest = path.slice(i + '.median'.length + 1);
+  const runs = get(report, `${prefix}.runs`) ?? [];
+  return (rest ? runs.map((r) => get(r, rest)) : runs).filter((x) => typeof x === 'number');
+}
 export function spreadPct(report, path) {
-  let runs = null;
-  if (path.startsWith('startup.median.')) runs = (get(report, 'startup.runs') ?? []).map((r) => get(r, path.slice('startup.median.'.length)));
-  else if (path === 'idle.pssMb.median') runs = get(report, 'idle.pssMb.runs'); else if (path === 'idle.cpuPct.median') runs = get(report, 'idle.cpuPct.runs');
-  runs = (runs ?? []).filter((x) => typeof x === 'number'); if (runs.length < 2) return 0;
+  const runs = runsFor(report, path); if (runs.length < 2) return 0;
   const med = get(report, path); return med ? ((Math.max(...runs) - Math.min(...runs)) / med) * 100 : 0;
 }
 const delta = (b, c) => (typeof b === 'number' && typeof c === 'number' && b !== 0 ? Math.round(((c - b) / b) * 1000) / 10 : null);
+const errorTotal = (r) => (r.errors?.coldStarts ?? []).reduce((a, b) => a + b, 0) + (r.errors?.scenarioBoot ?? 0);
 export function verdict(baseline, candidate, { target, improveMinPct = 5, regressMaxPct = 3, screens = {}, uxBugfix = false }) {
   const reasons = [];
+  const errors = { base: errorTotal(baseline), cand: errorTotal(candidate) };
+  if (errors.cand > errors.base) reasons.push(`candidate logged ${errors.cand} ERROR lines (baseline ${errors.base})`);
   const tb = get(baseline, target), tc = get(candidate, target), td = delta(tb, tc), ts = spreadPct(baseline, target);
   const beyondSpread = td !== null && Math.abs(td) > ts;
   if (td === null) reasons.push(`target ${target} missing in a report`);
@@ -1390,7 +1512,7 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
   if (regressions.length) reasons.push(`regressions: ${regressions.map((r) => `${r.path} +${r.deltaPct}%`).join(', ')}`);
   const failedScreens = Object.entries(screens).filter(([, s]) => s && s.pass === false);
   if (failedScreens.length && !uxBugfix) reasons.push(`screens differ: ${failedScreens.map(([n, s]) => `${n} ${s.pct}%`).join(', ')}`);
-  return { keep: reasons.length === 0, target: { path: target, base: tb, cand: tc, deltaPct: td, beyondSpread }, regressions, screens, reasons };
+  return { keep: reasons.length === 0, target: { path: target, base: tb, cand: tc, deltaPct: td, beyondSpread }, regressions, screens, errors, reasons };
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [b, c] = process.argv.slice(2, 4).map((p) => JSON.parse(readFileSync(p, 'utf8')));
@@ -1412,7 +1534,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
 - [ ] **Step 1:** With the machine idle, run `node scripts/perf-lab/run.mjs --runs 5 --label repeat-a` then `--label repeat-b`.
 - [ ] **Step 2:** `node scripts/perf-lab/compare.mjs perf-reports/*repeat-a.json perf-reports/*repeat-b.json --target startup.median.sessionsListed` → expect `REJECT` with reason "improved only ~0%" and **no** regressions and all screens `ok`. If a screen differs between two identical builds, the screen is non-deterministic (a clock, a random tip, a blinking element) — find it in the PNG, then either mask it (add a selector list to `FREEZE` that sets `visibility:hidden`) or capture at a moment it is stable. If any PRIMARY metric's spread exceeds 10%, raise `--runs` to 7 for that metric class and note it in the README.
-- [ ] **Step 3: Commit** the two reports + any fixes: `git add perf-reports scripts/perf-lab && git commit -m "perf-lab: repeatability verified (two identical-build runs agree)"` and **push** `git push origin master`.
+- [ ] **Step 3: Commit** the two reports (JSON + md only — shots are gitignored) + any fixes: `git add perf-reports/*.json perf-reports/*.md scripts/perf-lab .gitignore && git commit -m "perf-lab: repeatability verified (two identical-build runs agree)"` and **push** `git push origin master`.
 
 ---
 
@@ -1421,8 +1543,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 ### Task 15: Baseline + ranked findings
 
 - [ ] **Step 1:** `node scripts/perf-lab/run.mjs --runs 7 --label baseline` (machine idle).
-- [ ] **Step 2:** Write `perf-reports/2026-MM-DD-baseline-findings.md`: the `.md` summary table, then a ranked list "where the time goes" — for startup, sort `chores.*` + `createWindow` + (`didFinishLoad − createWindowAt`) + (`appMounted − didFinishLoad`) + (`sessionsListed − appMounted`) descending; for history, the three sizes' `resumeStableMs` vs `ipcAllMs` (a large gap = renderer cost, not disk); for workload, `longtaskTotalMs` and `switchP95Ms`; for memory, `breakdownMedianRun` by type. Each line ends with the file the spec's Part 3 points at for that phase.
-- [ ] **Step 3:** Create `perf-reports/LEDGER.md` with the header below and a first row for the baseline. Commit + push.
+- [ ] **Step 2:** Write `perf-reports/2026-MM-DD-baseline-findings.md`: the `.md` summary table, then a ranked list "where the time goes" — for startup, sort `chores.*` + `createWindow` + (`didFinishLoad − createWindowAt`) + (`appMounted − didFinishLoad`) + (`sessionsListed − appMounted`) descending, **marking `announcements` and the release check as `network` (excluded from the ranking — WiFi, not code)** and noting the baseline's error-line counts (must be 0; if not, the erroring phase is unranked until the error is understood); for history, the three sizes' `resumeStableMs` vs `ipcAllMs` (a large gap = renderer cost, not disk); for workload, `longtaskTotalMs` and `switchP95Ms`; for memory, `breakdownMedianRun` by type. Each line ends with the file the spec's Part 3 points at for that phase. Finish with a **proposed experiment list** (from the Task 16 cards, reordered by the measured ranking; paint-related cards flagged "needs on-screen check").
+- [ ] **Step 3:** Create `perf-reports/LEDGER.md` with the header below and a first row for the baseline. Copy the baseline screenshots to `perf-reports/review/baseline/`. Commit + push.
+- [ ] **Step 4: STOP — human gate.** Present the findings doc and the proposed experiment list to Destin. He approves, vetoes, or reorders cards (E1 changes what the app shows during boot; E6/E7 touch the Settings drawer — product calls, not the session's). No product code changes until he answers. Record his approved list at the top of `LEDGER.md`.
 
 ```markdown
 # Perf loop ledger
@@ -1441,18 +1564,20 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 1. **Non-negotiables** — copy the Global Constraints verbatim.
 2. **Per-experiment procedure** (the loop):
    ```
-   a. Pick the next experiment card (below) or derive one from the latest findings doc. Write the hypothesis + target metric path into LEDGER.md as a new row with verdict "running".
+   a. Take the next card from Destin's APPROVED list at the top of LEDGER.md (never an unapproved one). Write the hypothesis + target metric path into LEDGER.md as a new row with verdict "running".
    b. In worktrees/perf-lab, make the change. Every non-trivial edit gets a WHY comment. Product code must stay cross-platform.
    c. bash scripts/verify.sh perf-lab   → must be green (fix or abandon; never skip).
-   d. node scripts/perf-lab/run.mjs --runs 5 --label exp-<n>
+   d. node scripts/perf-lab/run.mjs --runs 5 --label exp-<n>        (aborts itself after --max-minutes 45)
    e. node scripts/perf-lab/compare.mjs perf-reports/<baseline>.json perf-reports/<exp-n>.json --target <path>
-   f. KEEP → git commit (message: "perf(<area>): <what> — <target> <base>→<cand> (<Δ%>), screens ok"); this report becomes the new baseline for the next experiment. Update the ledger row.
+   f. KEEP → git commit (message: "perf(<area>): <what> — <target> <base>→<cand> (<Δ%>), screens ok"); this report becomes the new baseline for the next experiment. Update the ledger row. Delete perf-reports/shots/<older stems> you no longer need (they are untracked working files).
       REJECT → git checkout -- . && git clean -fd (revert fully), record numbers + reason in the ledger. Never retry the same idea with a tweak more than once.
-   g. If a screenshot differs and you believe it is an OBVIOUS bug fix, tag the ledger row `ux-bugfix`, keep the PNGs, re-run compare with --ux-bugfix, and list it under "For Destin's review" in the ledger. Never silently keep a visible change.
+   g. If a screenshot differs and you believe it is an OBVIOUS bug fix: tag the ledger row `ux-bugfix`, copy the baseline+candidate PNG pair to perf-reports/review/exp-<n>/, commit ONLY the ledger + review PNGs, and STOP THE LOOP — report to Destin with the two images and wait for his answer. Do not run the next card on top of a visible change. Never silently keep one.
+   h. Paint-related cards (anything touching blur, animation, compositing, CSS effects): the rig's numbers are from a no-GPU virtual screen and may rank backwards. Before KEEP, stop and ask Destin for a 30-second on-screen look (bash scripts/run-dev.sh perf-lab --label "Perf: <card>"); his eyes decide.
+   i. Budget: at most 8 experiments per session. After the 8th (or when the approved list is exhausted), write a session summary at the bottom of LEDGER.md and stop.
    ```
-3. **When numbers look wrong** — noise gate refused (leave the machine idle), a `—` cell (a mark disappeared: run `npx vitest run tests/perf-marks-*.test.ts`), native first-token timeout (check `<fixture>/.claude/desktop.log` for engine errors), build stale (`--force-build`).
+3. **When numbers look wrong** — noise gate refused (leave the machine idle), a `—` cell (a mark disappeared: run `npx vitest run tests/perf-marks-*.test.ts`), non-zero error lines (read `scratch/perf-lab/logs/<stem>-*.log` — an erroring boot is not a baseline), native first-token timeout (check the same log for engine errors), build stale (`--force-build`), a stale app holding :9555 (`launch.mjs` sweeps it, but `ss -ltnp | grep 9555` tells you what's there).
 4. **Experiment cards** (seeded from the spec's Part 3; the baseline decides order — attack the largest measured phase first):
-   - **E1 Window before chores.** Target `startup.median.firstContentfulPaint`. Move `createWindow(...)` (main.ts `whenReady`) ahead of `install-hooks`/`legacy-cleanup`/`hook-reconcile`/`prompt-suggestion`/`retention-default`/`symlink-cleanup`/`stale-downloads`/`reconcile-mcp`/`remote-server` — anything the window's first paint does not need; keep `hookRelay.start()` and `registerThemeProtocol()` before it (sessions and theme URLs need them). Risk: IPC handlers registered inside `createWindow` may reference services started later — run the full test suite (`bash scripts/verify.sh perf-lab --full`) and check `desktop.log` for errors after boot. UX risk: an earlier window must not be a blank flash — the `welcome` screenshot and `firstContentfulPaint` keep it honest.
+   - **E1 Window before chores.** Target `startup.median.firstContentfulPaint`. Move `createWindow(...)` (main.ts `whenReady`) ahead of `install-hooks`/`legacy-cleanup`/`hook-reconcile`/`prompt-suggestion`/`retention-default`/`symlink-cleanup`/`stale-downloads`/`reconcile-mcp`/`remote-server` — anything the window's first paint does not need; keep `hookRelay.start()` and `registerThemeProtocol()` before it (sessions and theme URLs need them). Risk: IPC handlers registered inside `createWindow` may reference services started later — run the full test suite (`bash scripts/verify.sh perf-lab --full`) and check `desktop.log` for errors after boot. UX risk: an earlier window must not mean a longer blank box — `startup.median.blankWindowMs` is a PRIMARY metric and will reject exactly that outcome; the `welcome` screenshot only proves the settled state. If the honest fix is to create the window early but keep it hidden until first paint (`show: false` + `ready-to-show`), that is a behavior change Destin must approve at the Round-0 gate.
    - **E2 Parallelize independent chores.** Target `startup.median.sessionsListed`. `Promise.all` over `reconcileMcp()`, `remoteServer.start()`, `startAnnouncementService()` and the sync cleanups wrapped in `setImmediate`. Keep `rotateLog` first (it truncates the file others append to).
    - **E3 Defer chatsearch startup scan.** Target `idle.cpuPct.median` / `startup.median.postWindowDone`. `chatsearch-index/index-service.ts:271` — start the scan on `powerMonitor`/idle or 5 s after `sessions-listed`, not in the boot path.
    - **E4 Tail-read `loadHistory` for small counts.** Target `history.huge.ipcLast10Ms`. `session-browser.ts:660` reads the whole file for `count=10`; read the last ~256 KB, parse lines from the last full newline, extend backwards until `count` messages found. Dedup-by-uuid semantics must hold (add a vitest with a duplicated uuid at the boundary).
@@ -1460,7 +1585,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
    - **E6 Renderer code-splitting.** Target `startup.median.appMounted` and `idle.pssMb.median`. `React.lazy` for Settings, Marketplace, Projects, games, resume browser with `manualChunks` in `vite.config.ts`; **preload the chunks during idle after `sessions-listed`** so first open never shows a spinner (the `settings-open` screenshot must be identical).
    - **E7 Unmount the always-mounted settings drawer** (ROADMAP:409). Target `idle.pssMb.median`. Render it only when open; keep its open-state transition identical.
    - **E8 Window-switch long tasks.** Target `workload.probe.longtaskTotalMs`. Use the probe's `longtask` timestamps against `mark` entries to find which switch step blocks; typical fixes are memoizing the session list derivation in `App.tsx` and batching reducer dispatches.
-5. **Finishing** — when the cards are exhausted or two consecutive sessions produce no KEEP: rebase `perf/optimization-pass` on `origin/master`, re-run the full rig once more, generate the PR body from `LEDGER.md` (kept rows → "Changes", rejected rows → "Tried and reverted", `ux-bugfix` rows → "Needs Destin's eyes"), open the PR, and stop. Do not merge.
+5. **Finishing** — when Destin's approved list is exhausted (or he says stop): rebase `perf/optimization-pass` on `origin/master`, re-run the full rig once more (`--runs 7`) and confirm the final report still beats the Round-0 baseline on every kept target with no PRIMARY regression, generate the PR body from `LEDGER.md` (kept rows → "Changes", rejected rows → "Tried and reverted", `ux-bugfix` rows → "Needs Destin's eyes", the two baseline/final report filenames → "Evidence"), open the PR, and stop. Do not merge.
 
 - [ ] **Step 2: Commit + push** the manual. Flip the spec's `status:` to `active` in the same commit.
 
