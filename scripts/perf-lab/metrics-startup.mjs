@@ -139,10 +139,37 @@ export function startupTable({ spawnedAt, mainMarks, rendererMarks, timeOrigin, 
 // Reads the perf-log file for this run and asks the CDP-attached page for its own
 // performance entries, then fuses them. `app` carries whatever the rig's launcher
 // attaches (spawnedAt, a cdp.evaluate helper); `fixture` carries this run's paths.
-export async function collectStartup(app, fixture) {
-  const page = await app.cdp.evaluate(
-    `({ timeOrigin: performance.timeOrigin, marks: performance.getEntriesByType('mark').map(m=>({name:m.name,startTime:m.startTime})), paint: performance.getEntriesByType('paint').map(p=>({name:p.name,startTime:p.startTime})) })`,
-  );
+const PAGE_SAMPLE_EXPR = `({ timeOrigin: performance.timeOrigin, marks: performance.getEntriesByType('mark').map(m=>({name:m.name,startTime:m.startTime})), paint: performance.getEntriesByType('paint').map(p=>({name:p.name,startTime:p.startTime})) })`;
+
+/**
+ * Sample the renderer, but do NOT sample before first-contentful-paint has been
+ * recorded.
+ *
+ * WHY: callers collect as soon as the `yc:sessions-listed` mark appears, and
+ * React mounts BEFORE the browser paints the frame that mount produced. Measured
+ * on a real boot: appMounted 1000ms, sessionsListed 1001ms, and the paint entries
+ * did not exist yet — so firstPaint, firstContentfulPaint and therefore
+ * blankWindowMs all came back null. blankWindowMs is a hard-reject PRIMARY
+ * metric, so a null there does not fail loudly; it silently blinds the gate that
+ * is supposed to catch an experiment showing the window earlier but painting it
+ * later. Waiting for the entry costs a few frames and makes the metric real.
+ *
+ * The wait is bounded: if paint genuinely never happens the fields stay null and
+ * the caller still gets every mark-derived number, rather than the whole run
+ * dying over one metric.
+ */
+async function samplePageAfterPaint(cdp, { timeoutMs = 10000, everyMs = 50 } = {}) {
+  const deadline = Date.now() + timeoutMs;
+  let page = await cdp.evaluate(PAGE_SAMPLE_EXPR);
+  while (!page.paint.some((p) => p.name === 'first-contentful-paint') && Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, everyMs));
+    page = await cdp.evaluate(PAGE_SAMPLE_EXPR);
+  }
+  return page;
+}
+
+export async function collectStartup(app, fixture, opts = {}) {
+  const page = await samplePageAfterPaint(app.cdp, opts);
   return startupTable({
     spawnedAt: app.spawnedAt,
     mainMarks: parsePerfLog(readFileSync(fixture.perfLog, 'utf8')),
