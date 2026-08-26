@@ -256,8 +256,14 @@ then a card grid; empty → `EmptyState` centred in the sheet.
   ("Files 9", "Session Files 4", "Results 0"); never parentheses, never "9 files" in a
   tab, never "+9" without a tooltip naming what.
 - **G-17 List rows**: one row shape per surface family — Settings (`SettingRow`), files
-  (icon · name · meta), sessions (title · project · time · tag dots). Cards are for things
-  with a preview; rows are for things without.
+  (icon · name · meta), sessions (title · project · time · tag dots), and the **picker row**
+  (avatar/letter square · two-line title+hint · right meta · ✓ when current — the Project
+  switcher's row; Resume and All-sessions should adopt it). Cards are for things with a
+  preview; rows are for things without.
+- **G-21 Menus** (context menus and anchored popovers): `panel` surface, `md` radius,
+  `edge` border, rows of icon · label · right-aligned shortcut, `text-xs`, 28px rows,
+  destructive items last and in `destructive-fg`. The context-menu host already does
+  this; every new popover copies it rather than inventing a list.
 
 ### 4.7 States
 

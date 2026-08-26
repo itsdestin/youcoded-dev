@@ -60,6 +60,12 @@ decisions about what the user SEES. Each has a recommended default; each is
 Destin's call before Change 1 is built. The chosen answers are mirrored into
 Change 1 and pinned by Change 3 tests.
 
+> **Checkpoint RESOLVED 2026-08-17 (Destin):** all three answers are the
+> recommended defaults — C1: permission card unchanged; C2: relocate timestamp
+> / stop-reason footer / metadata to the last RENDERED bubble; C3: a running
+> tool's spinner remains visible content for the gate. Changes 1–3 are green-lit
+> as specified.
+
 **C1 — Permission-card context (recommended: no change — the card already
 shows what's being approved).** The pop-out card renders the ToolCard, which
 displays the tool name + the command/question plus the Yes / Always Allow / No

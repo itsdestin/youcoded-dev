@@ -17,7 +17,15 @@ and `bash tools/montage.sh <outDir> <montageDir>`. Batches: `plan.json` (main su
 (phone width), `plan-tall.json` (full tool gallery), `plan-lat.json` (loading states),
 `plan-e.json` (real Electron instance — launch it yourself with `--remote-debugging-port`).
 
-## Not captured (pulled from the gallery 2026-08-25)
+## Second pass (later on 2026-08-25)
+
+The capture driver was rebuilt to verify itself (`scripts/ui-review/shot.mjs`); every
+surface listed below as "not captured" was then captured and verified in all six themes —
+the `overlays-*` sheets — and a live session on the real app produced the `live-*` sheets.
+`coverage-second-pass.md` is the machine-generated record (39 covered, 2 real-app shots
+that had nothing to open). The section below is kept as history.
+
+## Not captured by the FIRST rig (pulled from the gallery 2026-08-25)
 
 A pixel-diff found sheets that were really just the parent screen because the click or
 keystroke missed. They were removed so nothing here is mislabelled. **No finding rests on

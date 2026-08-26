@@ -57,9 +57,11 @@ screenshot you can open.
   5. **Tool Gallery page chrome is dev-only** and hardcodes a dark page, so in light
      themes the gallery *page* looks broken. The cards inside it are real; the page around
      them is not a product surface. Findings about the gallery below are about the cards.
-  6. **Surfaces the rig tried to open but never did** (the click or keystroke missed, and
-     the screenshot is just the chat window — these sheets were pulled from the gallery on
-     2026-08-25 after Destin spotted them; a pixel-diff against the home screen found 27):
+  6. **Surfaces the first rig tried to open but never did** (the click or keystroke missed,
+     and the screenshot was just the chat window — these sheets were pulled from the gallery
+     on 2026-08-25 after Destin spotted them; a pixel-diff against the home screen found 27).
+     **All of them were captured and verified later the same day by the rebuilt rig — see
+     §6b; this list is kept as the record of what went wrong, not as an open gap:**
      right-click context menus (chat, session tab, composer, file row), the close-session
      prompt, the expanded "thinking" block, the Shift session switcher, composer
      attachments, the context pill, the theme-cycle editor, the first-run wizard, a
@@ -67,15 +69,16 @@ screenshot you can open.
      reached via "Browse all themes →", Projects' *Add project* and project-detail
      overlays, Development's *Report a bug* / *Contribute* sub-screens, Model Providers'
      OpenRouter/Local tabs (the dialog itself was captured), and the marketplace
-     detail/filter overlays in the workbench. **Nothing in this document is a finding about those surfaces.** Also
+     detail/filter overlays in the workbench. Also
      pulled: the `scenario-refused/no-providers/stress` sheets — those scenarios change
      the resume list and permissions data, *not* the transcript, so they are identical to
      home by design (their real effect is visible in `6-resume-browser-stress`).
   7. **The Terminal view is blank in the workbench because the workbench has no
      terminal** (no PTY). An earlier draft of this report called it "reads as a crash" —
-     that was the harness, not the app; withdrawn. Same caution for *Edit Quick Chips*
-     showing no chips: the mock may simply not serve them to the editor — **verify in the
-     real app before treating it as a bug.**
+     that was the harness, not the app; withdrawn. The real terminal was reviewed on the
+     Electron pass instead (§6b #15). Same caution for *Edit Quick Chips* showing no chips:
+     the mock may simply not serve them to the editor — **verify in the real app before
+     treating it as a bug.**
   8. The contrast probe **over-reports on glass** (meadow-mist): when a surface is
      translucent over a wallpaper the probe can't know what's behind it, so meadow's
      "408 failures" are mostly noise. Meadow findings below are from looking, not from
@@ -282,6 +285,8 @@ point of the migration: one edit at the primitive/token layer moves everything).
 | P-15 | Every dialog gets the same header (title · optional ⓘ · ✕): add it to Donate and Development; Resume Session moves "Show complete" below the search field and gets a ✕. About and Permissions get a scrollbar/fade. | 5 dialogs | Two dialogs gain a title row. |
 | P-16 | Theme-pack guarantees added to `contrast-rules.js`: edge/panel ≥ 1.3:1 (outlines survive), checkbox radius pinned, text-bearing glass ≥ 0.85 opacity or a scrim, accent may paint at most the documented set (G-8). Meadow Mist and Halftone fixed in `wecoded-themes` to pass. | packs | Meadow's buttons get borders back; halftone's checkboxes go square. |
 | P-17 | Phone width: session tab keeps ≥ 8 characters before collapsing; quick-chip row gets an edge fade + horizontal scroll; status bar collapses chips to icons; model picker wraps its options; full screens drop "Esc ·" on touch layouts; coarse-pointer hit areas extended to chips and chevrons (the Toggle already has the mechanism). | narrow layouts | Android/phone only. |
+| P-19 | Composer attachment chips: icon · name (≥ 12 characters before truncating) · always-visible ✕, `md` radius, `text-2xs`; broken thumbnails fall back to the file-type icon. | composer | Attachments become readable. |
+| P-20 | Terminal: the terminal grid fills the pane width; the terminal surface gets ≥ 0.9 `panel` opacity under wallpaper packs (a T-5 guarantee). | Terminal | No more empty right third; readable over wallpapers. |
 | P-18 | Tool cards: AskUserQuestion adopts the standard header (glyph · title · ↳ first question · chevron right-aligned); its option rows share one row style; *Submit* uses `primary` (which P-12 makes visible). The literal `\|` separator in the header becomes a 1px divider element, not text. | every tool card | The pipe character disappears; AskUserQuestion looks like its siblings. |
 
 Recommended order: **P-11 → P-12 → P-13** (tokens first — they move everything, and P-12
@@ -339,12 +344,51 @@ as a third stress theme.
   confirms finding #2 even for a user with 20 installed skills. There is an *Updates · 1*
   tab the workbench never showed.
 
+## 6b. Second pass — the surfaces the first rig could not open (2026-08-25, later the same day)
+
+After Destin pointed out the mislabelled sheets, the capture driver was rebuilt to verify
+every shot (target must exist, an `expect` selector must hold, pixels must differ from the
+baseline; misses are quarantined and listed in `coverage-second-pass.md`). With that rig
+**every surface previously listed as "unreviewed" was captured and verified in all six
+themes** (29 surfaces × 6 = 174 sheets, 0 missed — `overlays-*` in the gallery), plus a
+**live session on the real app** (`live-*`: 12 of 14 verified; the two misses are a context
+menu on an *empty* chat, which has no bubble to open one on, and the Shift switcher with a
+single session, which correctly has nothing to switch to). Two workbench gaps were closed
+in code rather than worked around: `?firstRun=<STEP>` now renders the onboarding wizard
+(youcoded branch `chore/workbench-review-switches`), and the stalled card / permission
+request turned out to live on the *native* fixture session, one tab over.
+
+Findings from this pass (numbered on from §1; same ledger rules):
+
+| # | Surface | What's there | Picture | Fix |
+|---|---|---|---|---|
+| 11 | **Close-session prompt** | Good anatomy (title + session name, tags/note card, *Mark complete* toggle-row, footer) — but the primary **"Close session" wraps to two lines** and *"Don't show again"* wraps to two lines beside its toggle, so the footer is the tallest row of the dialog. Confirmed on the real app too. | `overlays-close-session-prompt`, `live-close-session-prompt` | P-15 (footer: `prompt` width with `size="sm"` buttons, "Don't show again" as a single-line ghost toggle row above the footer) |
+| 12 | **Report a bug / Feature request** | The only dialog with **no title row and no ✕** — just a Bug/Feature segmented control, a textarea and a disabled *Continue*. Escape is the only way out. | `overlays-development-bug-report` | P-15 |
+| 13 | **Status Bar Widgets → Theme cycle editor** | Expands *inline* inside an already-clipped dialog, so the theme checklist is cut off after two rows; you scroll a dialog to find a scrollable list inside it. | `overlays-theme-cycle-editor` | P-15 (dialog → `document` size, or the editor becomes its own `prompt` dialog) |
+| 14 | **Composer attachments** | Attachment chips are ~48px squares: the document chip truncates its name to "design…", the image chip shows a broken-image glyph when the thumbnail can't load, and the remove ✕ only appears on hover. | `overlays-composer-attachments` | new **P-19**: chip = icon · name (≥ 12ch) · ✕ always visible, `md` radius, `text-2xs` |
+| 15 | **Terminal view (real app)** | The terminal fills only the **left two-thirds of the pane** — the right third is empty wallpaper — and it is painted straight onto the theme wallpaper with a light scrim, so Claude Code's TUI text sits on a busy image (Golden Sunbreak). The Terminal/Chat toggle, session pill and status bar are consistent with chat. | `live-terminal-view` | new **P-20**: terminal fits its pane width; terminal surface gets `panel` opacity ≥ 0.9 in packs (T-5 rule) |
+| 16 | **Stalled-turn card** (native session) | A red-outlined pill with braille spinner + "Provider may have stalled — no response for 4s" + *Retry* (filled) + *Stop* (outline). Reads clearly; but it is the only red *outline* container in the app and *Retry* is a filled grey pill (the dark-accent problem again, #6/P-12). | `overlays-native-session-stalled-and-permission` | P-12; keep the card |
+| 17 | **First-run wizard** | Five steps captured. Clean, centred, one card per step — the best-behaved screen in the app *because* it has almost nothing on it. Two nits: the progress bar reads "100%" on step 1 (mock value, but the bar has no step labels so a user can't tell where they are), and *Log in with Claude* is the same grey filled primary as everywhere else on dark themes. | `overlays-first-run-*` | P-12; add step "1 of 5" text to `ProgressBar` label |
+| 18 | **Project switcher** | Command-palette style ("Jump to project…", RECENT, avatar-letter rows with `files · chats` hint, ✓ on current, "＋ Add a project" footer). Well made — and a **fifth list-row style** (avatar square + two-line + right meta) the guide should name as the "picker row". | `overlays-projects-switcher` | G-17 (add "picker row" as the fourth named row; reuse for Resume and All-sessions) |
+| 19 | **Add a project** | Two option cards (name field with inline *Create* via `InputGroup`; folder picker) + a sync `Callout` + a lone *Cancel* footer. Correct primitives throughout; the *Create* inside the field is disabled-grey and there is no ✕ (Cancel only). | `overlays-projects-add-project` | none — matches G-11; P-12 makes *Create* visible |
+| 20 | **Conversation preview / Context file overlay** | Full-screen overlay with title + *Edit* (primary) + *Reveal* + *Copy path* + ✕ — the same header as the file viewer, which is right. Body is a path heading over an empty area in the mock. | `overlays-projects-conversation-preview`, `overlays-projects-context-editor` | none |
+| 21 | **Context menus** (bubble, composer, code block, file pill) | Compact, one style everywhere: icon · label · shortcut, `panel` surface, `md` radius. The only inconsistency is that "Ask about this" has an icon while the shortcuts column is empty for it. | `overlays-ctx-menu-*` | none — codify as the menu anatomy (G-21) |
+| 22 | **Shift session switcher** | Same popover as *All sessions* with the current row highlighted — consistent; inherits finding #8 (wrapping rows). | `overlays-shift-session-switcher` | P-8 |
+| 23 | **Context popup (real app)** | Big green "100%", eyebrow *STATUS BAR SHOWS* + segmented Percentage/Token counts, a split *Compact conversation* button, a `danger-outline` *Clear and start over* with explainer. Matches the guide (the split button is the documented exception). | `live-status-context-pill` | none |
+| 24 | **Live status bar (real app)** | With a real session the bar holds eight chips (model, mode, tags, 5h, 7d, context, git branch, theme, version·label). Consistent chip treatment; but 10px text across ~1,100px of chips is the densest strip in the app. | `live-live-chat-empty` | P-10 |
+
+Side-finding (not UI): the dev instance's Claude Code session logged `SessionStart:startup
+hook error — bash: ~/.claude/plugins/youcoded-core/hooks/session-start.sh: No such file or
+directory` (`live-terminal-view`). The youcoded-core clone is gone (deprecation plan) but a
+hook still points at it in shared settings. Worth a ROADMAP bug.
+
 ## 7. Method notes for the next pass
 
-- Capture rig: `scratch/ui-audit-2026-08-25/tools/shot.mjs` (raw CDP, works against the
-  workbench *or* an Electron instance via `ATTACH_PORT`), plans as JSON, `montage.sh` for
-  the side-by-side sheets, `contrast-report.mjs` for the painted-pixel probe. Re-running the
-  whole thing is ~15 minutes on this machine.
-- Worth promoting into the repo later (ROADMAP candidates): the painted-pixel contrast probe
-  as a workbench check (`scripts/workbench-contrast-check.mjs`), and a "screenshot every
-  route × theme" script so future UI PRs can attach a before/after sheet automatically.
+- The rig now lives in the repo: `scripts/ui-review/` (README there) and the `/ui-review`
+  skill. `bash scripts/ui-review/run-review.sh <worktree>` reproduces this whole review in
+  ~15 minutes: every plan × 6 themes, each shot self-verified, sheets + `coverage.md` +
+  `contrast.md` + `gallery.html`. The real-app plans (`electron-*`) need the dev instance
+  from the README. `--reports-only` rebuilds the reports after a hand re-run of one plan.
+- The first version of this rig (in `scratch/ui-audit-2026-08-25/tools/`, kept for the
+  record) had no verification and produced the 40 mislabelled sheets described in the
+  fidelity notes. Everything cited in this document was re-checked against verified sheets.

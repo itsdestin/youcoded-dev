@@ -1,37 +1,55 @@
 ---
-status: draft
+status: active
 ---
 
 # Full-Auto Interrupted by External-Directory Asks on Read Tools — Design
 
-**Date:** 2026-08-18
-**Status:** DRAFT (brainstorming — no code changed, no decisions ratified)
-**Parent:** `2026-07-15-phase2-native-harness-design.md` (§2.3 workspace jail, §2.4 permission engine)
+**Date:** 2026-08-18 · **Decided:** 2026-08-21 (Destin ratified the direction — see [Decision](#decision))
+**Parent:** `2026-07-15-phase2-native-harness-design.md` (§2.3 workspace jail, §2.4 permission engine) — this doc is the amendment proposal for those sections
 **Repo:** `youcoded/desktop/` (main-process harness: `harness-session.ts`, `tools/guards.ts`, `specialists/child-permissions.ts`)
 
-## Problem statement (as reported)
+## What this means for users (plain language)
 
-While running a **native session in Full Auto** the user saw **yes/no approval prompts for Grep and Read** tool calls during what read as an autonomous sub-task. Full Auto is supposed to let the model run autonomously (walk-away autonomy); being asked to approve every read tool call contradicts that promise and reads as a bug.
+You put the app in **Full Auto** — "walk away, don't interrupt me" — and it still popped up
+Yes/No cards asking permission to *look at* files. Helper sub-assistants were boxed into one
+small folder, so every glance at the rest of your own project triggered a prompt. Meanwhile the
+terminal side could already silently read anything on the machine — so the interruptions bought
+no protection, just friction. A related quirk: an ordinary **web search** could trip the same
+file-permission card, because the search text got mistaken for a file location.
 
-The equivalent operation — reading the same file — is already silently permitted in Full Auto through Bash. So the prompts are (in the reporter's framing) friction with no safety gained.
+**The change:** in Full Auto, the app stops interrupting for *reading* — anywhere. Every
+checkpoint that involves *changing* things (deleting, editing outside the project, pushing code,
+sudo) stays exactly as strict as today, and secrets (`.env`, SSH keys) stay locked up in every
+mode. Walk-away mode finally behaves like walk-away mode; cautious modes don't loosen at all.
+The surviving approval cards get plainer wording, reviewed by Destin before ship.
+
+## Problem statement
+
+While running a **native session in Full Auto** the user saw **yes/no approval prompts for Grep
+and Read** tool calls during what read as an autonomous sub-task. Full Auto promises walk-away
+autonomy; per-read approval cards contradict that promise.
+
+The equivalent operation — reading the same file — is already silently permitted in Full Auto
+through Bash, so the prompts are friction with no safety gained.
 
 > **UNCONFIRMED — the exact triggering paths.** We have a screenshot showing a sub-task browsing
 > `home/destin/ask-the-budget-az-worktrees/citation-locate/webapp/src/pdf/CitedTextPanel.tsx`, but no
-> session logs. We have NOT confirmed whether the prompted paths lay **inside** or **outside** the
-> session's `cwd`. That distinction separates the two hypotheses below and changes the fix. See
-> [Confirmation needed](#confirmation-needed).
+> session logs. We have NOT confirmed whether the prompted paths lay **inside** or **outside**
+> the session's cwd. The ratification below does not depend on resolving this (A is a deliberate
+> posture change either way), but confirmation still hunts for a SECOND bug hiding underneath —
+> see [Confirmation needed](#confirmation-needed).
 
 ## Confirmed facts (from code)
 
-These are read directly off `master` and are NOT in dispute:
+Read directly off `master`; verified against source 2026-08-21:
 
 1. **Full Auto's permission baseline is allow-everything.** `rulesForMode('full-auto')` returns
-   `[{ tool: '*', action: 'allow' }]` (`src/shared/permission-types.ts`). Grep/Read/Glob are additionally
-   in the always-allowed set of *every* mode. Pinned by `tests/permission-engine.test.ts`. A **rule-based**
-   ask for Grep/Read in Full Auto is therefore impossible.
+   `[{ tool: '*', action: 'allow' }]` (`src/shared/permission-types.ts`). Read/Glob/Grep are
+   additionally in the always-allowed set of *every* mode. Pinned by `tests/permission-engine.test.ts`.
+   A **rule-based** ask for Grep/Read in Full Auto is therefore impossible.
 
 2. **There is exactly one non-rule path that forces an ask regardless of mode: the external-directory
-   path guard.** `harness-session.ts` (`runOneTool`, step 4):
+   path guard.** `harness-session.ts` (`runOneTool`):
    ```ts
    const decision: PermissionDecision = externalAsk
      ? { action: 'ask', denyListed: false }
@@ -39,183 +57,153 @@ These are read directly off `master` and are NOT in dispute:
    ```
    `externalAsk` is set only when `checkPathGuard(subject, this.opts.cwd, this.opts.internalReadRoots)`
    returns `external` — i.e. the subject is **outside the session's cwd jail** (`tools/guards.ts`).
+   Note the branch **replaces** `decide()` rather than flooring it — consequence in fact 8.
 
 3. **Grep and Read both have file-path subjects.** `Grep.permissionSubject = (a) => a.path ?? '.'`,
-   `Read.permissionSubject = (a) => a.file_path`. So they are path-guarded (they are NOT in
-   `NON_PATH_SUBJECT_TOOLS`). This is why Grep/Read can hit the external guard while Bash cannot.
+   `Read.permissionSubject = (a) => a.file_path`. They are NOT in `NON_PATH_SUBJECT_TOOLS`
+   (`harness-session.ts:48` — exactly `['Bash', 'Skill', 'Task']`), which is why they hit the
+   external guard while Bash cannot.
 
-4. **A Full-Auto prompt for a non-deny-listed ask renders as the generic Yes/No row, not the Full-Auto
-   safety-stop.** The Full-Auto "Run it / Skip it / Always Allow" footer triggers ONLY on
-   `permissionMode === 'full-auto' && denyListed` (`ToolCard.tsx`). An external ask has
-   `denyListed: false` (it is not on the destructive deny-list), so it renders the ordinary approval
-   card — exactly the shape in the screenshot. So the presence of a generic Yes/No in Full Auto is
-   consistent with, and diagnostic of, an external-directory ask (`denyListed` false).
+4. **A Full-Auto prompt for a non-deny-listed ask renders as the generic Yes/No row, not the
+   Full-Auto safety-stop.** The safety-stop footer triggers ONLY on
+   `permissionMode === 'full-auto' && denyListed` (`ToolCard.tsx:343`). An external ask short-circuits
+   BEFORE `decide()` runs, so the deny-list is never consulted and `denyListed` is hardcoded false —
+   hence the ordinary approval card seen in the screenshot.
 
-5. **Bash is exempt from the path guard entirely.** It is in `NON_PATH_SUBJECT_TOOLS`
-   (`harness-session.ts:48`), so `checkPathGuard` is skipped for it. Per spec §2.3 this is an accepted
-   limitation — the guards are "honest friction, not a security boundary," and Bash can even `cat .env`.
-   **Therefore: in Full Auto, the model can already read any file on the machine** (`Bash *` is allow).
-   The jail is already porous to reads in this mode; Read/Grep/Glob just enforce it and Bash does not.
+5. **Bash is exempt from the path guard entirely** (`NON_PATH_SUBJECT_TOOLS`), an accepted Phase-2
+   limitation (parent spec §2.3: guards are "honest friction, not a security boundary"; Bash can
+   `cat .env`). **Therefore in Full Auto the model can already read any file on the machine.**
+   The jail is porous to reads in this mode; Read/Grep/Glob enforce it and Bash does not.
 
-6. **A specialist child is jailed to its own `workDir`, not the parent's workspace.**
-   `buildSpecialistSession` sets `cwd: workDir`, and `createChild` passes `opts.workDir` (the Task
-   call's `work_dir`). The path guard runs against the child's own `cwd`. So a sub-agent spawned into
-   `…/citation-locate/` is jailed to that subtree even though the work is part of a wider project.
+6. **A specialist child is jailed to its own `workDir`, not the parent's workspace**, and a child's
+   defensive asks are not the leak: the external verdict is computed below `decide()` in
+   `runOneTool`, so it forces an ask on the child too regardless of the launch envelope
+   (`buildSpecialistSession` sets `cwd: workDir`; `buildChildDecide` never sees the verdict).
+   Consistent with — not proof of — the reported symptom.
 
-7. **A child's defensive asks are not the leak.** `buildChildDecide` passes the parent's allow/ask
-   through and only auto-allows on an *envelope-granted parent 'ask'* — but the external-directory
-   verdict is computed *below* `decide()` in `runOneTool` and is not a rule at all, so it forces an ask
-   on the child too regardless of the envelope. This is consistent with, not proof of, the reported
-   symptom.
+7. **The renderer already knows which asks are external.** `askUser({…, external: externalAsk})`
+   flows broker → reducer → `ToolCard.tsx:1073`, where it suppresses "Always Allow" (correct: a
+   remembered rule can never fire on an external path). Any redesign of the surviving cards has an
+   existing hook to key off; any option changing HOW MANY external asks fire changes what that
+   suppression is worth.
+
+8. **A remembered DENY on an external path currently yields `ask`, not `deny`** — because the
+   external branch replaces `decide()` (fact 2), the user's deny rule is never consulted. Pre-existing
+   quirk, out of scope to fix here, but the amendment below must not widen it into
+   "external + full-auto beats a deny."
+
+9. **An invented-path interception sits between the verdict and the ask** (`harness-session.ts`,
+   `REQUIRES_EXISTING_TARGET = {Read, Edit}`): an outside path that doesn't exist but whose workspace
+   twin does gets a corrective error naming the real path — no ask at all. Reproduction of the bug
+   must use an outside path that EXISTS (see Confirmation matrix). The amendment must preserve this.
+
+10. **`internalReadRoots` is a third verdict besides inside/outside** (`guards.ts`): specialist-report
+    spill dirs are exempted to `ok`. Wired for root sessions only — children never inherit it
+    (`native-session-host.ts` `toolWiring` comment). Relevant context for the parked Option B.
+
+11. **WebSearch/WebFetch can falsely trip the path guard.** Their subjects are a query string and a
+    URL (`web-search.ts`, `web-fetch.ts`) and they are NOT in `NON_PATH_SUBJECT_TOOLS`, so
+    `canonicalize("../etc/passwd", cwd)` resolves a search term into a real outside path → external
+    ask on a web search. `eval/assertions.ts` documents exactly this category error. **Fix folded
+    into this change** (ratified 2026-08-21).
 
 ## The hard constraint: the jail is spec-pinned as mode-independent
 
-`2026-07-15-phase2-native-harness-design.md` §2.3 (line 62), emphasis ours:
+Parent spec §2.3: the workspace jail is a non-negotiable guard "**not overridable by any mode**";
+§2.4: tool-layer guards sit "**BELOW all configuration**." §2.3's stated known limitation is the
+Bash bypass (fact 5) — the guards are honest friction, not a security boundary.
 
-> Non-negotiable guards live here, below the permission config, **not overridable by any mode**:
-> **secret-path denial** … and the **workspace jail** (`external_directory` synthetic permission: any
-> path outside session cwd → ask, **regardless of mode**).
+**Consequence:** Option A is a deliberate amendment to a pinned, security-adjacent rule. It must
+carry a parent-spec edit, tests, WHY comments, and a docs/ROADMAP note. This document is that
+amendment proposal, now ratified.
 
-And §2.4 (line 81):
+## Decision (ratified by Destin, 2026-08-21)
 
-> The **tool-layer guards** (secret-path denial, `external_directory` jail, …) sit **BELOW all
-> configuration** — **no preset, mode, or remembered rule overrides them**.
+**Adopt Option A — Full-Auto read-only exception to the external guard — plus the web-subject fix.**
 
-**Consequence:** none of the options below is a one-line fix. Each is a deliberate amendment to a
-pinned, security-adjacent rule and must carry spec, tests (`guards`/`permission-engine`/specialist
-suites), and a docs/ROADMAP note. This spec is that amendment proposal — it is not yet approved.
+1. **In Full Auto, auto-allow external subjects for the read-only path tools (`Read`, `Grep`,
+   `Glob`).** Rationale: Bash already permits the same reads silently in this mode (fact 5), so
+   this adds zero new capability — it stops the polite read tools from asking about what the
+   terminal already does quietly. External asks remain enforced for Write/Edit, and in `ask` /
+   `auto-edit` modes.
+2. **WebSearch/WebFetch leave the path-guarded population** (their subjects are not paths). Exact
+   mechanism — a per-tool "subject is a path" flag vs. extending `NON_PATH_SUBJECT_TOOLS` — is an
+   implementation detail; the invariant to pin is *a web search can never produce an
+   external_directory ask*. Check remembered-rule implications when choosing (web tools are
+   baseline-allowed everywhere, so subject-keyed grants should be moot — verify, don't assume).
+3. **Guard-order contract (the fine print the implementation must preserve):**
+   secret/credential hard-denies → `internalReadRoots` exemption → invented-path interception
+   (fact 9) → **[NEW] full-auto read bypass** → external ask. The bypass may never fire ahead of
+   the secret denies, and never for a write tool.
+4. **Deny semantics:** a remembered/explicit deny on an external path continues to resolve to
+   `ask` (today's behavior, fact 8) — the amendment upgrades nothing past an ask and never lets
+   full-auto convert a deny into an allow. Pinned by test (below).
 
-## Design options
+**Parked / rejected:**
 
-### Option A — Full-Auto read-only exception to the external guard (L1)
+- **Option B** (widen a child's read jail to the parent's cwd in ALL modes) — parked as its own
+  future product decision. Full Auto covers the reported symptom without it; B would additionally
+  loosen `ask`/`auto-edit`, which was NOT ratified. Revisit only if post-ship verification shows
+  children in cautious modes are still prompt-storming on their own project.
+- **Option C** (silent external writes in Full Auto) — rejected for v1. A model writing files
+  outside the project is a consent question reads don't have.
 
-In **Full Auto only**, auto-allow external subjects for the **read-only path tools** (`Read`, `Grep`,
-`Glob`). External asks remain enforced for Write/Edit/Bash and in the other modes.
+## Confirmation needed (regression-hunting, no longer option-picking)
 
-- **Rationale / consistency:** in Full Auto, Bash already permits the same reads with no ask. Auto
-  allowing Read/Grep/Glob external adds **zero new capability** — it only stops the polite read tools
-  from asking about what Bash already silently allows. It makes the read-only tools honest with the
-  mode's actual posture.
-- **Safety:** no new write ability; secret-path hard-denies still run first (`guards.ts` checks
-  `isSensitivePath` / credential dirs **before** the external branch, and externalization happens only
-  after those pass). No new reach.
-- **Scope boundary that matters:** **do NOT touch auto-edit.** In auto-edit, Bash is *gated* (`*` =
-  ask), so the jail is real; letting a model silently read arbitrary non-secret files there would be a
-  genuine widening of reach. Full Auto is the only mode where the jail is already porous to reads.
+The decision above stands regardless; these checks now look for a SECOND bug underneath:
 
-> **OPEN QUESTION — confidence on "adds zero new capability".** "Bash can already read it" is true,
-> but that is a *coarse* equivalence: Bash output is truncated/scrolled and readability differs. For
-> *capability/security*, though, the equivalence holds — a model that wants a file can get it. If the
-> goal is "Full Auto = walk away", that equivalence is the whole argument; if the goal is "reads are
-> cheap and safe", Option A still works but the Bash rationale is secondary.
+| # | Check | Expected | If it fails |
+|---|---|---|---|
+| 1 | Dev worktree (`bash scripts/run-dev.sh --label "ext-guard repro"`): child in Full Auto, Read/Grep a path **inside** its `work_dir` | no ask | Different bug — the jail misfires on inside paths; file separately, A ships anyway |
+| 2 | Same, path **outside** `work_dir`, **inside** parent project, file exists | the observed ask | Confirms the reported trigger |
+| 3 | Same, outside path that does NOT exist but a workspace twin does | corrective error, no ask (fact 9) | Interception broken — separate ticket |
+| 4 | Chip↔host coupling: a session showing FULL AUTO has `modeFor.get(sessionId) === 'full-auto'` at ask time | holds | Display/state bug — file separately; A still ships as posture alignment |
 
-### Option B — Widen a child's read jail to the parent's cwd; keep write at work_dir (L2)
+Session log from the original run (Destin) remains welcome but is no longer blocking.
 
-For **specialist children**, widen the **read** jail from the child's own `workDir` to the **parent's
-`cwd`** (the actual project), while keeping **write** (Edit/Write/Bash) bounded to `workDir` as today.
+## UI checkpoint (before merge — ratified 2026-08-21)
 
-- **Rationale:** the likely actual trigger. A sub-agent spawned into a subtree that needs to research
-  across the wider repo hits an external ask on every Grep/Read. That is consent the user *already gave
-  by spawning the task* ("work on this project"), being re-litigated per read over a scope the child
-  never chose.
-- **Consistency with mode:** this is a **read≠write scoping** change, orthogonal to mode. It applies
-  in Ask/Auto-edit too, where reading the parent project is likewise not a new risk the user didn't
-  sign up for. (Contrast Option A, which is mode-specific.)
-- **Safety:** reads only; writes stay inside `work_dir`, so a child still cannot silently modify the
-  parent repo.
+Some approval cards survive every option; their copy is not yet designed. Before the backend
+amendment merges: mock the surviving Full-Auto cards in the workbench (`bash scripts/run-workbench.sh`;
+the fake IPC payload already carries `external: true` and `permissionMode`) and get Destin's
+sign-off on wording/layout. Surviving surfaces to cover:
 
-> **UNCONFIRMED — is the child jail even the trigger?** Option B's entire premise is that the prompts
-> fired on paths *outside* the child's `work_dir` but *inside* the parent project. If the prompts
-> instead fired on paths *inside* the child's worktree, then either the jail is being applied to a path
-> that should be `ok`, or the symptom is a display/state bug (chip shows FULL AUTO but the host never
-> got the mode) — and Option B is moot. **This is the single most important thing to confirm before
-> committing.**
-
-### Option C — Full Auto: no-op ALL external asks (write too) (L3)
-
-In Full Auto, make `external_directory` asks resolve to allow regardless of tool (including
-Write/Edit/Bash external).
-
-- **The most internally-consistent reading of "Bash already bypasses the jail in Full Auto."** If the
-  model can always `bash -c 'cat …'` with no ask, then the external jail is already vacuous for reads
-  in this mode, and one could argue it should be vacuous for file-tool writes too. **But C must NOT
-  defeat the destructive deny-list at the rule layer:** Bash commands like `rm`/`git push` still ask
-  through the deny-list (that is configuration, above the guard), and C must leave them intact. C would
-  silently allow external *file-tool* writes (Write/Edit on a path outside cwd) — which the deny-list
-  does not cover — and that is the part that is far more invasive than mere reads.
-- **Most invasive; largest security surface change; unanimous-recommend-against-in-one-shot.** A model
-  silently *writing* files outside the project it was asked to work on is a materially stronger consent
-  question than reading, and conflating the two is a bad default. Held as an explicitly-decided,
-  separate item only after A/B are confirmed.
-
-## Recommendation (current, subject to confirmation)
-
-> **UNCONFIRMED until [Confirmation needed](#confirmation-needed) resolves.**
-
-1. **Confirm the trigger before choosing.** If the initiated prompts were on paths *outside* the
-   child's `work_dir`, **Option B is the likely root cause and the better fix**: it fixes the *class*
-   (sub-agent can't read its own project) rather than papering over a specific mode. Option A is then a
-   legitimate follow-on consistency cleanup, best done only after confirming it isn't already resolved
-   by B.
-2. If the prompts were *not* path-related (or fired inside the jail), this becomes a **display/state
-   bug** and this whole document's premise changes — see below.
-
-Either way, because this amends a pinned security rule, the change belongs in a proper amendment to
-§2.3/§2.4 with updated `guards`/`permission-engine` and child-permission tests, WHY comments, and a
-docs/ROADMAP entry — not a drive-by code edit.
-
-## Confirmation needed
-
-The design forks on facts we have not verified. Do one or more of the following before implementing:
-
-1. **Reproduce deterministically in a dev worktree** (`bash scripts/run-dev.sh`):
-   - spawn a sub-agent in Full Auto; Grep/Read a path **inside** its `work_dir` → expect **no** ask;
-   - Grep/Read a path **outside** `work_dir` but **inside** the parent workspace → expect the observed ask.
-   - If a path *inside* `work_dir` still prompts, that is a different bug and this design's premise
-     fails.
-2. **Obtain a session log** (Destin) if the specific run is reproducibly available, to confirm whether
-   the prompted subjects were inside or outside the child jail.
-3. **Confirm the chip↔host mode coupling** is not the real issue: verify a native session displaying
-   "FULL AUTO" actually has `modeFor.get(sessionId) === 'full-auto'` at ask time (the seed path and the
-   IPC return path both feed the chip; a mismatch would be a display bug, not a policy one). The
-   external-guard hypothesis is diagnostic via the generic (non-deny-listed) card in the screenshot, which
-   is consistent with — not proof of — the external path.
-
-## Open questions for Destin
-
-1. **Desired Full-Auto posture:** is Full Auto meant to be "the user has walked away — only the
-   destructive deny-list and secret/credential hard-denies interrupt"? If so, Options A and/or C align
-   the jail with that promise. If Full Auto is still meant to pause on genuinely new *read* access
-   outside the project, then the current behavior is *correct* and the fix is instead to (a) make the
-   denial-list-style Full-Auto footer render for these asks too (better copy than a generic Yes/No), or
-   (b) improve the child jail (Option B). This is a product decision, and it decides everything.
-2. **Does a sub-agent belong to the whole project, or to its subtree?** The user-spawned-Task-as-consent
-   argument implies the child should read the parent project (Option B). If instead a child should be
-   walled to exactly its `work_dir`, then external reads staying as asks is *correct* and the only
-   fixable part is the copy/UX (render Full-Auto styling for these asks).
-3. **Is write-external ever to be silently allowed in Full Auto?** (Option C.) Recommended "no" —
-   keep it a separate decision.
+- **External WRITE asks in Full Auto** (Write/Edit outside the project) — currently the generic
+  Yes/No row; prime candidate for plainer copy ("wants to modify a file outside this project").
+- **Deny-listed safety-stop** — exists today; confirm it reads correctly next to the new copy.
+- Fact 7's `external` flag is the available hook; suppressAlwaysAllow behavior carries over.
 
 ## Scope / non-goals
 
-- No changes to `ask` or `auto-edit` external behavior are proposed by Options A/B beyond the child
-  read-scope widening in B (and even that is orthogonal to mode; it only affects children).
-- The destructive deny-list rule layer is untouched in every option.
-- Secret/credential hard-denies (`.env`, `~/.ssh`, …) remain non-overridable in every option.
-- Symlink/TOCTOU limitations of the jail (spec §2.3 KNOWN LIMITATIONS) are out of scope and unchanged.
+- No changes to `ask` or `auto-edit` external behavior (Option B parked, not included).
+- The destructive deny-list rule layer is untouched. Secret/credential hard-denies remain
+  non-overridable and first in order. Symlink/TOCTOU caveats of the jail are unchanged and
+  uncited here (the parent spec pins only the Bash-bypass limitation).
+- The fact-8 deny-yields-ask quirk is documented, not fixed, in this pass.
 
-## Testing considerations (when approved)
+## Testing considerations
 
-- **Guards:** new cases for external verdict under full-auto (read tools allow; write tools still ask).
-- **Child scoping (B):** child reads within parent cwd allowed, writes outside `work_dir` still denied;
-  root-session reads unaffected.
-- **Permission engine:** no change expected (this is not a rule-layer change), but re-run to pin that
-  full-auto's `*`-allow still does not unilaterally bypass the guard (i.e. the guard stays below config).
-- **ToolCard:** if Option A/B surface asks at all, the Full-Auto safety-stop styling question for
-  non-deny-listed external asks applies (see Open Q1).
+Real suites touched (names verified against `desktop/tests/`):
 
-## Undecided / explicitly parked
+- `tests/harness-tool-guards.test.ts` — external verdict under full-auto: read tools allow,
+  Write/Edit still ask; **secret path under full-auto still hard-denies**; **remembered deny on an
+  external path still yields `ask`** (fact 8 pin); **interception still fires** (fact 9 pin);
+  **WebSearch/WebFetch subjects never produce an external verdict**.
+- `tests/specialist-child-permissions.test.ts` / `tests/specialist-child-ask-router.test.ts` —
+  child external reads in Full Auto flow through the same bypass; envelope logic untouched.
+- `tests/permission-engine.test.ts` — no rule-layer change expected; re-run to pin that the guard
+  stays below config.
+- ToolCard tests — surviving-card rendering per the UI checkpoint.
 
-- Option C (external writes in Full Auto) — parked, held out of any first implementation.
-- Whether to adjust the Full-Auto card styling for *non*-deny-listed asks (e.g. external reads) if any
-  surface remains — depends on Open Q1.
+## Post-ship verification
+
+The ask payload already carries `external` + `permissionMode` (fact 7). After release, confirm in
+real usage that full-auto external asks drop to ~zero for read tools (session logs or a temporary
+debug counter). This converts "we believe A fixes the report" into a measured claim, and feeds the
+parked-Option-B decision with data.
+
+## Lifecycle
+
+On implementation: the amendment text lands in the parent spec (§2.3/§2.4 gain the full-auto
+read exception + the non-path-subject tool set), this doc moves to `docs/archive/specs/`, and the
+ROADMAP item flips `[x]` in the same session the merge pushes.

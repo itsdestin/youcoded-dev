@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistant settings — consolidated panel mockup</title>
+<style>
+/* ── Preflight subset (matches app) ──────────────────────── */
+*{box-sizing:border-box;border:0 solid}
+button{font:inherit;background:transparent;color:inherit;cursor:pointer;padding:0}
+body{line-height:1.5;margin:0;-webkit-font-smoothing:antialiased}
+
+/* ── Theme tokens — verbatim from globals.css ───────────── */
+.t-light{
+  --canvas:#F2F2F2;--panel:#EAEAEA;--inset:#D7D7D7;--well:#F9F9F9;
+  --accent:#1A1A1A;--on-accent:#F2F2F2;
+  --fg:#1A1A1A;--fg-2:#444444;--fg-dim:#656565;--fg-muted:#797979;--fg-faint:#989898;
+  --edge:#C0C0C0;--edge-dim:#B3B3B380;
+  color-scheme:light;
+}
+.t-dark{
+  --canvas:#111111;--panel:#191919;--inset:#222222;--well:#1C1C1C;
+  --accent:#D4D4D4;--on-accent:#111111;
+  --fg:#E0E0E0;--fg-2:#B0B0B0;--fg-dim:#999999;--fg-muted:#6C6C6C;--fg-faint:#515151;
+  --edge:#393939;--edge-dim:#44444480;
+  color-scheme:dark;
+}
+.t-midnight{
+  --canvas:#0D1117;--panel:#161B22;--inset:#21262D;--well:#0D1117;
+  --accent:#B1BAC4;--on-accent:#0D1117;
+  --fg:#C9D1D9;--fg-2:#A0AAB4;--fg-dim:#8B949E;--fg-muted:#6E7681;--fg-faint:#4E555E;
+  --edge:#343A41;--edge-dim:#3F454C80;
+  color-scheme:dark;
+}
+.t-creme{
+  --canvas:#F0E6D6;--panel:#EBE1D1;--inset:#D8CCB9;--well:#F9F0E2;
+  --accent:#3D3229;--on-accent:#F0E6D6;
+  --fg:#2C2418;--fg-2:#564938;--fg-dim:#695E4D;--fg-muted:#7D7161;--fg-faint:#9A8F7F;
+  --edge:#C4B8A6;--edge-dim:#B8AC9A80;
+  color-scheme:light;
+}
+.t-halftone{
+  --canvas:#08060e;--panel:#100e1c;--inset:#181430;--well:#0C0A14;
+  --accent:#E51F48;--on-accent:#ffffff;
+  --fg:#F0E8F8;--fg-2:#D4CAE4;--fg-dim:#A498C0;--fg-muted:#7468A0;--fg-faint:#4D417A;
+  --edge:#372D56;--edge-dim:#453B6580;
+  --radius:8px;--radius-sm:8px;--radius-md:16px;--radius-lg:24px;
+  --radius-xl:32px;--radius-2xl:36px;--radius-full:9999px;
+  color-scheme:dark;
+  background-image:linear-gradient(135deg,#08060e 0%,#18102e 25%,#200e3a 50%,rgba(232,35,74,0.07) 70%,rgba(0,184,255,0.05) 85%,#08060e 100%);
+}
+.t-halftone .tag-cc,.t-halftone .tag-loc,.t-halftone .tag-or{border-color:rgba(232,35,74,.5)}
+
+/* ── Radius tokens for non-halftone themes ──────────────── */
+.t-light,.t-dark,.t-midnight,.t-creme{--radius:4px;--radius-sm:4px;--radius-md:8px;--radius-lg:12px;--radius-xl:16px;--radius-2xl:24px;--radius-full:9999px;}
+
+/* Accent status colors — theme-independent, hardcoded (matches app rule) */
+:root{--s-ok:#2faf60;--s-ok-bg:rgba(47,175,96,.14);
+      --s-warn:#E5A50A;--s-warn-bg:rgba(229,165,10,.14);
+      --s-bad:#DD4444;--s-bad-bg:rgba(221,68,68,.13);
+      --s-auto:#F2B33D}
+
+/* ── Mockup chrome (NOT app UI) ─────────────────────────── */
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#0d0e12;color:#ccc}
+.topbar{position:sticky;top:0;z-index:60;background:#0e0f13;border-bottom:1px solid #262931;
+  padding:10px 20px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.topbar h1{font-size:13px;margin:0;font-weight:650;letter-spacing:.01em;color:#fff}
+.topbar .hint{font-size:11px;color:#8a8f99}
+.theme-ctl{display:flex;gap:6px;margin-left:auto;align-items:center}
+.theme-ctl button{font-size:10.5px;padding:4px 10px;border-radius:6px;border:1px solid #2e3138;color:#c8ccd4;background:#17181d}
+.theme-ctl button.on{background:#3a3f4d;color:#fff;border-color:#5a6278;font-weight:600}
+.legend{margin:14px 20px 4px;font-size:11px;color:#8a8f99;max-width:1180px}
+
+/* ── Page shell: side-by-side demo ──────────────────────── */
+.page{display:flex;gap:22px;padding:16px 20px 60px;max-width:1180px;margin:0 auto;align-items:flex-start}
+.stage{flex:1;min-width:0}
+
+/* ── Settings drawer simulation (the entry point) ───────── */
+.drawer-label{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#8a8f99;margin:0 0 8px}
+.drawer{width:320px;max-width:320px;border:1px solid var(--edge-dim);border-radius:var(--radius-lg);overflow:hidden;
+  background:var(--panel);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.drawer-head{padding:12px 14px;border-bottom:1px solid var(--edge);display:flex;justify-content:space-between;align-items:center}
+.drawer-head b{font-size:13px;color:var(--fg)}
+.drawer-body{padding:10px;display:flex;flex-direction:column;gap:8px}
+.row{width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-md);
+  background:var(--inset);color:var(--fg);text-align:left;font-size:12.5px;font-weight:600;transition:background .12s}
+.row:hover{filter:brightness(1.06)}
+.row .ic{width:18px;height:18px;flex:none;color:var(--fg-muted);display:flex;align-items:center;justify-content:center}
+.row .sub{margin-left:auto;font-size:10.5px;font-weight:500;color:var(--fg-faint);display:flex;align-items:center;gap:6px}
+.row .ch{color:var(--fg-faint)}
+.row.lead{border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);background:
+  color-mix(in srgb,var(--accent) 12%,var(--inset));color:var(--fg)}
+.row.lead .badge{font-size:9px;font-weight:700;letter-spacing:.08em;background:var(--accent);color:var(--on-accent);
+  border-radius:var(--radius-full);padding:1.5px 7px;margin-left:4px}
+.row .dotc{font-size:9.5px;color:var(--fg-faint);font-weight:500;margin-top:1px}
+.row-group{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-faint);padding:6px 6px 2px}
+
+/* ── Generic app utility classes ────────────────────────── */
+.hiddenaria{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+button:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ── THE LARGE PANEL ────────────────────────────────────── */
+.panel{background:var(--panel);border:1px solid var(--edge-dim);border-radius:var(--radius-xl);
+  box-shadow:0 18px 60px rgba(0,0,0,.35);overflow:hidden;display:flex;flex-direction:column}
+/* panel chrome: margin/padding to feel inset from the stage */
+.panel{padding:0}
+
+.p-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--edge);
+  flex-wrap:wrap}
+.p-title h2{margin:0;font-size:15px;font-weight:700;color:var(--fg)}
+.p-title p{margin:2px 0 0;font-size:11px;color:var(--fg-muted);max-width:560px}
+.p-actions{margin-left:auto;display:flex;gap:10px;align-items:center}
+
+/* search */
+.search{display:flex;align-items:center;gap:8px;background:var(--inset);border:1px solid var(--edge-dim);
+  border-radius:var(--radius-full);padding:7px 12px;min-width:200px;color:var(--fg-faint)}
+.search input{background:transparent;border:none;outline:none;color:var(--fg);font-size:12px;width:180px}
+.search input::placeholder{color:var(--fg-faint)}
+.search svg{width:14px;height:14px;flex:none}
+
+.fake-badge{font-size:10px;font-weight:600;color:var(--fg-2);border:1px solid var(--edge);
+  border-radius:var(--radius-full);padding:3px 10px;white-space:nowrap}
+.fake-close{width:26px;height:26px;border-radius:var(--radius-md);color:var(--fg-muted);display:flex;align-items:center;justify-content:center}
+.fake-close:hover{background:var(--inset);color:var(--fg)}
+
+/* tab bar */
+.tabs{display:flex;gap:4px;padding:4px 20px 0;border-bottom:1px solid var(--edge);flex-wrap:nowrap;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{display:flex;align-items:center;gap:7px;padding:9px 13px 11px;font-size:12px;font-weight:600;color:var(--fg-dim);
+  border-bottom:2px solid transparent;white-space:nowrap}
+.tab .t-ic{width:15px;height:15px;color:var(--fg-faint)}
+.tab:hover{color:var(--fg)}
+.tab.on{color:var(--fg);border-bottom-color:var(--accent)}
+.tab .nd{width:6px;height:6px;border-radius:50%;background:var(--s-bad);margin-left:1px}
+
+.attn-tag{font-size:9px;font-weight:700;letter-spacing:.08em;background:var(--s-bad-bg);color:var(--s-bad);
+  border-radius:var(--radius-full);padding:1px 7px}
+
+/* body */
+.p-body{display:flex;min-height:340px}
+/* left rail (developer depth): hidden, exposed via "Fuller view" toggle */
+.rail{width:196px;flex:none;border-right:1px solid var(--edge-dim);padding:12px 10px;display:none;flex-direction:column;gap:2px}
+.rail .rg{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-faint);padding:8px 8px 3px}
+.rail .ri{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--radius-md);font-size:12px;color:var(--fg-2);text-align:left}
+.rail .ri.on{background:var(--inset);color:var(--fg);font-weight:600}
+.rail .ri svg{width:14px;height:14px;color:var(--fg-muted)}
+.rail .ri .nd{margin-left:auto;width:6px;height:6px;border-radius:50%;background:var(--s-bad)}
+
+.p-content{flex:1;min-width:0;padding:18px 20px;overflow-y:auto;max-height:620px}
+.tabpane{display:none}
+.tabpane.on{display:block}
+
+/* cards & sections */
+.eyebrow{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--fg-faint);margin:0 0 8px}
+.card{background:var(--inset);border:1px solid var(--edge-dim);border-radius:var(--radius-lg);padding:3px;margin-bottom:10px}
+.card-pad{padding:6px}
+.cardline{font-size:12px;color:var(--fg);font-weight:600;padding:7px 10px}
+.cardline .s{font-size:11px;color:var(--fg-muted);font-weight:500;margin-left:6px}
+.section{margin-bottom:18px}
+
+/* setting row (mirrors ui/SettingRow) */
+.srow{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-md)}
+.srow:hover{background:var(--well)}
+.srow .ttl{font-size:12.5px;font-weight:600;color:var(--fg)}
+.srow .dsc{font-size:10.5px;color:var(--fg-muted);margin-top:1px}
+.srow .col{flex:1;min-width:0}
+.srow .ctl{flex:none;display:flex;align-items:center;gap:8px}
+.srow.open{background:var(--well);border:1px solid var(--edge-dim)}
+
+/* segmented tabs (mirrors ui SegmentedTabs) */
+.stab{display:inline-flex;background:var(--inset);border:1px solid var(--edge-dim);border-radius:var(--radius-md);padding:3px;gap:2px}
+.stab button{padding:6px 12px;border-radius:var(--radius-sm);font-size:11.5px;font-weight:600;color:var(--fg-dim);white-space:nowrap}
+.stab button:hover{color:var(--fg)}
+.stab button.on{background:var(--accent);color:var(--on-accent)}
+
+.stab.grid{display:grid;grid-template-columns:1fr 1fr 1fr}
+.stab.grid.opt3{grid-template-columns:1fr 1fr 1fr}
+.stab.grid .item{padding:9px 10px;display:flex;flex-direction:column;gap:1px;border-radius:var(--radius-sm);text-align:left}
+.stab.grid .item b{font-size:11.5px;font-weight:600;color:var(--fg-dim)}
+.stab.grid .item small{font-size:9.5px;color:var(--fg-faint)}
+.stab.grid .item.on{background:var(--accent)}
+.stab.grid .item.on b,.stab.grid .item.on small{color:var(--on-accent)}
+
+/* toggle (mirrors ui Toggle) */
+.tgl{width:36px;height:20px;border-radius:var(--radius-full);background:var(--edge);position:relative;flex:none;transition:background .15s}
+.tgl::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+.tgl.on{background:var(--accent)}
+.tgl.on::after{left:18px}
+
+/* status chip */
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--radius-full)}
+.chip .bd{width:6px;height:6px;border-radius:50%}
+.chip.ok{color:var(--s-ok);background:var(--s-ok-bg)} .chip.ok .bd{background:var(--s-ok)}
+.chip.warn{color:var(--s-warn);background:var(--s-warn-bg)} .chip.warn .bd{background:var(--s-warn)}
+.chip.bad{color:var(--s-bad);background:var(--s-bad-bg)} .chip.bad .bd{background:var(--s-bad)}
+.chip.neu{color:var(--fg-2);background:var(--inset)} .chip.neu .bd{background:var(--fg-muted)}
+
+/* info explainer */
+.info{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;
+  border:1px solid var(--fg-faint);color:var(--fg-muted);font-size:10px;font-weight:700;flex:none}
+.info:hover{border-color:var(--fg);color:var(--fg)}
+
+/* provider brand card */
+.prov{display:flex;align-items:center;gap:12px;padding:4px}
+.prov .logo{width:30px;height:30px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;flex:none}
+.logo.cc{background:#232323;color:#fff}
+.logo.or{background:#1B1B1B;color:#FF5C00}
+.logo.loc{background:var(--edge);color:var(--fg)}
+.prov .grow{flex:1;min-width:0}
+.prov .nm{font-size:13px;font-weight:700;color:var(--fg);display:flex;align-items:center;gap:7px}
+.prov .st{font-size:10.5px;color:var(--fg-muted);margin-top:1px}
+.prov .at{display:flex;align-items:center;gap:6px;flex:none;flex-wrap:wrap;justify-content:flex-end}
+
+/* buttons */
+.btn{font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:var(--radius-md);white-space:nowrap}
+.btn.pri{background:var(--accent);color:var(--on-accent)}
+.btn.sec{background:var(--inset);border:1px solid var(--edge);color:var(--fg-2)}
+.btn.sec:hover{color:var(--fg)}
+.btn.ghost{color:var(--fg-dim)} .btn.ghost:hover{color:var(--fg)}
+.btn.danger{border:1px solid var(--s-bad);color:var(--s-bad)} .btn.danger:hover{background:var(--s-bad-bg)}
+.btn[disabled]{opacity:.45;cursor:default}
+
+/* download / storage */
+.gauge{height:8px;border-radius:var(--radius-full);background:var(--edge);overflow:hidden;display:flex}
+.gauge .u{background:var(--accent);height:100%}
+.gauge .dl{background:var(--s-warn);}
+.meta-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-md)}
+.meta-row:hover{background:var(--well)}
+.meta-row .nm{font-size:12.5px;font-weight:600;color:var(--fg);flex:1;min-width:0}
+.meta-row .mt{font-size:10.5px;color:var(--fg-muted)}
+.meta-row .sz{font-size:11px;color:var(--fg-dim);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* permission mode cards */
+.pmode{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pcard{border:1px solid var(--edge-dim);border-radius:var(--radius-lg);padding:10px;background:var(--inset);
+  display:flex;flex-direction:column;gap:3px;text-align:left}
+.pcard:hover{border-color:var(--edge)}
+.pcard.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--inset))}
+.pcard b{font-size:12px;color:var(--fg)}
+.pcard .chipwrap{display:flex;gap:5px;margin-bottom:1px}
+.pcard small{font-size:10px;color:var(--fg-muted);line-height:1.35}
+.pmode .pcard:last-child{border-style:dashed}
+
+/* always-allow list */
+.al{border-radius:var(--radius-lg);background:var(--inset);border:1px solid var(--edge-dim);padding:3px}
+.alh{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-faint);padding:7px 10px 3px}
+
+/* empty-ish helpers */
+.soon{opacity:.55;pointer-events:none}
+.soon .locked{font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--fg-faint);border:1px solid var(--edge);
+  border-radius:var(--radius-full);padding:1px 6px;margin-left:6px}
+
+/* responsive */
+@media (max-width:1080px){.page{flex-direction:column}.drawer{width:100%;max-width:none}}
+@media (max-width:720px){.p-head{flex-direction:column;align-items:flex-start}.p-actions{margin-left:0;width:100%}
+ .search{width:100%}.search input{width:100%}.pmode{grid-template-columns:1fr 1fr}.p-content{max-height:none}}
+</style>
+</head>
+<body class="t-dark">
+
+<div class="topbar">
+  <h1>Assistant settings — consolidated panel · mockup</h1>
+  <span class="hint">Interactive concept only. Theme, tabs, search, toggles, grids are live.</span>
+  <div class="theme-ctl">
+    <button data-t="t-light">Light</button>
+    <button data-t="t-dark" class="on">Dark</button>
+    <button data-t="t-midnight">Midnight</button>
+    <button data-t="t-creme">Crème</button>
+    <button data-t="t-halftone">Halftone</button>
+  </div>
+</div>
+
+<p class="legend">How this lands: the <b>&nbsp;Settings drawer&nbsp;</b> (left) keeps its flat row-per-feature style; the many engine / permission / login surfaces collapse into ONE row — <b>Assistant</b> — that opens a large, searchable, tabbed panel (right). Five tabs, not a maze of nested popups.</p>
+
+<div class="page">
+
+  <!-- ── LEFT: the settings drawer (entry point) ─────────── -->
+  <div class="drawer">
+    <div class="drawer-head"><b>Settings</b><span style="font-size:14px;color:var(--fg-faint)">✕</span></div>
+    <div class="drawer-body">
+      <div class="row"><span class="ic">◎</span>Account<span class="sub">you@… <span class="ch">›</span></span></div>
+      <div class="row"><span class="ic">▣</span>Appearance<span class="sub">Dark <span class="ch">›</span></span></div>
+
+      <!-- The consolidated row — the subject of this mockup -->
+      <div class="row lead" style="cursor:pointer">
+        <span class="ic">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>
+        </span>
+        Assistant settings
+        <span class="badge">NEW</span>
+        <span class="sub">Claude Code · Sonnet <span class="ch">›</span></span>
+      </div>
+
+      <div class="row"><span class="ic">▦</span>Backup &amp; Sync<span class="sub">Synced <span class="ch">›</span></span></div>
+      <div class="row"><span class="ic">♫</span>Sound<span class="sub">30% <span class="ch">›</span></span></div>
+      <div class="row"><span class="ic">⬡</span>Package Tier<span class="sub">Developer <span class="ch">›</span></span></div>
+      <div class="row"><span class="ic">⌁</span>Remote Access<span class="sub"><span class="dotc">●</span> Connected <span class="ch">›</span></span></div>
+      <div class="row"><span class="ic">⌥</span>Performance<span class="sub"><span class="ch">›</span></span></div>
+      <div class="row"><span class="ic">{</span>Development<span class="sub"><span class="ch">›</span></span></div>
+      <div class="row"><span class="ic">⌨</span>Keyboard Shortcuts<span class="sub"><span class="ch">›</span></span></div>
+      <div class="row"><span class="ic">ⓘ</span>About<span class="sub">v1.2.4 <span class="ch">›</span></span></div>
+
+      <div class="row-group">Rows it replaces today</div>
+      <div style="font-size:10px;color:var(--fg-faint);padding:0 6px 4px;line-height:1.5">
+        Defaults · Permissions · Model Providers · plus future configs &amp; logins (Codex, etc.)
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT: the large consolidated panel ─────────────── -->
+  <div class="stage">
+    <div class="panel" id="panel">
+
+      <!-- panel header -->
+      <div class="p-head">
+        <div class="p-title">
+          <h2>Assistant settings</h2>
+          <p>Everything about how your assistant runs: which engine and model, sign-ins and API keys, local models, and what it may do on its own.</p>
+        </div>
+        <div class="p-actions">
+          <label class="search" title="Search settings (loads as you type — advances shown below)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="q" type="text" placeholder="Search settings…" autocomplete="off">
+          </label>
+          <span class="fake-close" aria-label="Close">✕</span>
+        </div>
+      </div>
+
+      <!-- tab bar -->
+      <div class="tabs" role="tablist">
+        <button class="tab on" data-tab="general" role="tab"><svg class="t-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.5-2.4 1a7 7 0 00-2-1.2L14 3h-4l-.5 2.6a7 7 0 00-2 1.2l-2.4-1-2 3.5 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.5 2.4-1a7 7 0 002 1.2L10 21h4l.5-2.6a7 7 0 002-1.2l2.4 1 2-3.5-2-1.5A7 7 0 0019 12z"/></svg>General</button>
+        <button class="tab" data-tab="providers" role="tab"><svg class="t-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg>Providers<span class="nd" title="something needs attention"></span></button>
+        <button class="tab" data-tab="local" role="tab"><svg class="t-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="14" height="14" rx="2"/><path d="M20 8v11a1 1 0 01-1 1H8"/></svg>Local models</button>
+        <button class="tab" data-tab="permissions" role="tab"><svg class="t-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5.5c0 4.3-2.9 8.1-7 9.5-4.1-1.4-7-5.2-7-9.5V6l7-3z"/></svg>Permissions</button>
+        <button class="tab" data-tab="advanced" role="tab"><svg class="t-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1 14h6M9 8h6M17 16h6"/></svg>Advanced</button>
+      </div>
+
+      <!-- body -->
+      <div class="p-body">
+
+        <!-- left rail — collapsed by default, revealed by "Fuller view" (see General) -->
+        <div class="rail" id="rail">
+          <div class="rg">In this panel</div>
+          <button class="ri" data-jump="general"><b>General</b></button>
+          <button class="ri" data-jump="providers"><b>Providers</b><span class="nd" title="needs attention"></span></button>
+          <button class="ri" data-jump="local"><b>Local models</b></button>
+          <button class="ri" data-jump="permissions"><b>Permissions</b></button>
+          <button class="ri" data-jump="advanced"><b>Advanced</b></button>
+          <div class="rg">Environment</div>
+          <button class="ri">Harness</button>
+          <button class="ri">MCP servers</button>
+          <button class="ri">Skills</button>
+          <div class="rg">Data</div>
+          <button class="ri">Storage &amp; caches</button>
+        </div>
+
+        <!-- content -->
+        <div class="p-content">
+
+          <!-- ══ GENERAL ══ -->
+          <section class="tabpane on" data-tab="general" data-group="general">
+            <p class="eyebrow">New-session defaults</p>
+            <div class="card">
+              <div class="srow">
+                <span class="info" title="Explain: which provider a brand-new session starts with">i</span>
+                <div class="col"><div class="ttl">Default engine</div><div class="dsc">What powers a new session — switch any session with the model picker</div></div>
+                <div class="ctl">
+                  <div class="stab" id="std-engine">
+                    <button data-active="1" class="on">Claude Code</button>
+                    <button data-active="0">OpenRouter</button>
+                    <button data-active="0">Local</button>
+                  </div>
+                </div>
+              </div>
+              <div class="srow">
+                <span class="info" title="Explain: which model a new session starts with">i</span>
+                <div class="col"><div class="ttl">Default model</div><div class="dsc">Claude Code sessions start here</div></div>
+                <div class="ctl">
+                  <div class="stab">
+                    <button data-active="0">Haiku</button>
+                    <button data-active="1" class="on">Sonnet</button>
+                    <button data-active="0">Opus</button>
+                    <button data-active="0">Opus 1M</button>
+                  </div>
+                </div>
+              </div>
+              <div class="srow">
+                <div class="col"><div class="ttl">Project folder</div><div class="dsc">~/Projects/youcoded-dev</div></div>
+                <div class="ctl"><button class="btn sec">Change</button><button class="btn ghost">Reset</button></div>
+              </div>
+              <div class="srow">
+                <div class="col"><div class="ttl">Ask before closing a session</div><div class="dsc">Show tag options before a session is destroyed</div></div>
+                <div class="ctl"><button class="tgl on" aria-pressed="true"></button></div>
+              </div>
+            </div>
+
+            <p class="eyebrow">Your assistant</p>
+            <div class="card">
+              <div class="srow">
+                <div class="col"><div class="ttl">Buddy floater</div><div class="dsc">A small mascot that stays visible while you work</div></div>
+                <div class="ctl"><button class="tgl" aria-pressed="false"></button></div>
+              </div>
+              <div class="srow">
+                <div class="col"><div class="ttl">Friendly mode</div><div class="dsc">Plainer replies, fewer technical terms — ideal for students &amp; teachers</div></div>
+                <div class="ctl"><button class="btn sec">On</button><button class="btn sec">Off</button></div>
+              </div>
+              <div class="srow">
+                <div class="col"><div class="ttl">Fuller view</div><div class="dsc">Show a sidebar that groups every advanced setting for power users</div></div>
+                <div class="ctl"><button class="tgl" id="rail-toggle" aria-pressed="false"></button></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══ PROVIDERS ══ -->
+          <section class="tabpane" data-tab="providers" data-group="providers">
+            <div class="card"><div class="prov">
+              <span class="logo cc">C</span>
+              <div class="grow">
+                <div class="nm">Claude Code <span class="chip ok"><span class="bd"></span>Signed in</span></div>
+                <div class="st">Connected with your Claude Pro plan · every session runs through it unless you pick another provider</div>
+              </div>
+              <div class="at">
+                <button class="btn sec">Account</button>
+                <button class="btn sec">Prefs</button>
+              </div>
+            </div></div>
+
+            <div class="card"><div class="prov">
+              <span class="logo or">○</span>
+              <div class="grow">
+                <div class="nm">OpenRouter / API <span class="chip ok"><span class="bd"></span>Connected</span></div>
+                <div class="st">One key for hundreds of models — GPT, Gemini, Llama, and more</div>
+              </div>
+              <div class="at">
+                <button class="btn sec">Test</button>
+                <button class="btn pri">Replace key</button>
+              </div>
+            </div></div>
+
+            <p class="eyebrow" style="margin-top:14px">Direct providers &amp; custom endpoints</p>
+            <div class="card">
+              <div class="srow"><div class="col"><div class="ttl">Anthropic</div></div><div class="ctl"><span class="chip ok"><span class="bd"></span>Key saved</span><button class="btn sec">Manage</button></div></div>
+              <div class="srow"><div class="col"><div class="ttl">OpenAI</div></div><div class="ctl"><button class="btn sec">Add key</button></div></div>
+              <div class="srow"><div class="col"><div class="ttl">Google Gemini</div></div><div class="ctl"><button class="btn sec">Add key</button></div></div>
+              <div class="srow"><div class="col"><div class="ttl">Custom endpoint</div><div class="dsc">Point at a self-hosted server or gateway</div></div><div class="ctl"><button class="btn sec">Configure</button></div></div>
+            </div>
+
+            <div class="card soon">
+              <div class="prov">
+                <span class="logo loc">✶</span>
+                <div class="grow">
+                  <div class="nm">Codex <span class="lock"><span class="locked">PLANNED</span></span></div>
+                  <div class="st">OpenAI's coding agent — when support lands, you'll sign in right here with the other providers.</div>
+                </div>
+                <div class="at"><button class="btn sec" disabled>Coming soon</button></div>
+              </div>
+            </div>
+
+            <p class="eyebrow" style="margin-top:14px">Web search</p>
+            <div class="card">
+              <div class="srow"><div class="col"><div class="ttl">Tavily</div><div class="dsc">Faster, more reliable web search for your assistant</div></div><div class="ctl"><button class="btn sec">Add key</button></div></div>
+              <div class="srow"><div class="col"><div class="ttl">Exa</div><div class="dsc">Optional key upgrades the free neural search</div></div><div class="ctl"><button class="btn sec">Add key</button></div></div>
+            </div>
+          </section>
+
+          <!-- ══ LOCAL MODELS ══ -->
+          <section class="tabpane" data-tab="local" data-group="local">
+            <p class="eyebrow">Storage</p>
+            <div class="card"><div class="card-pad">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--fg-2);padding:4px 6px 6px">
+                <span>Used by local models</span><span style="font-weight:600;color:var(--fg)">6.4 GB used</span>
+              </div>
+              <div class="gauge" style="margin:0 6px"><div class="u" style="width:18%"></div></div>
+              <div style="font-size:10px;color:var(--fg-faint);padding:6px 6px 2px">Disk guard: 50 GB reserved — large models need room</div>
+            </div></div>
+
+            <p class="eyebrow">Your models</p>
+            <div class="card">
+              <div class="meta-row"><span class="nm">Llama 3.3 70B <span class="chip ok" style="margin-left:6px"><span class="bd"></span>Ready</span></span><span class="mt">System</span><span class="sz">40.1 GB</span><button class="btn ghost">Remove</button></div>
+              <div class="meta-row"><span class="nm">Mistral 7B <span class="chip ok" style="margin-left:6px"><span class="bd"></span>Ready</span></span><span class="mt">System</span><span class="sz">4.1 GB</span><button class="btn ghost">Remove</button></div>
+              <div class="meta-row"><span class="nm">Gemma 3 4B <span class="chip warn" style="margin-left:6px"><span class="bd"></span>Downloading · 42%</span></span><span class="mt">Curated</span><span class="sz">3.1 GB</span><button class="btn sec">Pause</button></div>
+              <div class="meta-row"><span class="nm">Qwen 2.5 14B</span><span class="mt">Curated</span><span class="sz">9.0 GB</span><button class="btn pri">Install</button></div>
+              <div class="meta-row"><span class="nm">DeepSeek-R1 8B</span><span class="mt">Curated</span><span class="sz">4.9 GB</span><button class="btn pri">Install</button></div>
+            </div>
+            <p style="font-size:10px;color:var(--fg-muted);margin:4px 4px 0">Bigger models need more memory &amp; a good GPU. <span class="info" style="vertical-align:middle" title="Explain hardware fit">i</span></p>
+          </section>
+
+          <!-- ══ PERMISSIONS ══ -->
+          <section class="tabpane" data-tab="permissions" data-group="permissions">
+            <p class="eyebrow">Permission mode</p>
+            <div class="pmode" id="permmode">
+              <button class="pcard on"><span class="chipwrap"><span class="chip neu"><span class="bd"></span>Ask first</span></span><b>Standard</b><small>You review each action before it runs — the safe default.</small></button>
+              <button class="pcard"><span class="chipwrap"><span class="chip neu"><span class="bd"></span>Accept</span></span><b>Accept changes</b><small>File edits &amp; quick actions go ahead; you still approve commands.</small></button>
+              <button class="pcard"><span class="chipwrap"><span class="chip neu"><span class="bd"></span>Plan</span></span><b>Plan mode</b><small>Reads and plans, makes no changes until you say go.</small></button>
+            </div>
+            <div class="pmode" style="margin-top:8px">
+              <button class="pcard soon"><span class="chipwrap"><span class="chip warn"><span class="bd"></span>Auto</span></span><b>Auto mode</b><small>Claude decides what's safe. Only on Opus 1M.</small></button>
+              <button class="pcard soon" style="grid-column:span 2"><span class="chipwrap"><span class="chip bad"><span class="bd"></span>Bypass</span></span><b>Skip all prompts</b><small>Full autonomy, nothing asked. Only on your own trusted projects.</small></button>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:6px;margin:16px 2px 8px">
+              <span class="info" title="Explain: things you told your assistant it never has to ask about">i</span>
+              <p class="eyebrow" style="margin:0">Always allow — things you already approved</p>
+            </div>
+            <div class="al">
+              <div class="alh">Filesystem</div>
+              <div class="srow"><div class="col"><div class="ttl">Write to this project</div><div class="dsc">~/Projects/youcoded-dev/**</div></div><div class="ctl"><button class="btn danger">Revoke</button></div></div>
+              <div class="alh">Commands</div>
+              <div class="srow"><div class="col"><div class="ttl">npm install / build</div><div class="dsc">runs package scripts in this project</div></div><div class="ctl"><button class="btn danger">Revoke</button></div></div>
+              <div class="srow"><div class="col"><div class="ttl">git status / diff</div><div class="dsc">read-only git everywhere</div></div><div class="ctl"><button class="btn danger">Revoke</button></div></div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:6px;margin:16px 2px 8px">
+              <span class="info" title="Explain: safety rails the assistant never loosens casually">i</span>
+              <p class="eyebrow" style="margin:0">Protections</p>
+            </div>
+            <div class="card">
+              <div class="srow"><div class="col"><div class="ttl">Protected config files</div><div class="dsc">.bashrc, .gitconfig, .mcp.json</div></div><div class="ctl"><button class="tgl on" aria-pressed="true"></button></div></div>
+              <div class="srow"><div class="col"><div class="ttl">Protected directories</div><div class="dsc">.git/ and .claude/ paths</div></div><div class="ctl"><button class="tgl on" aria-pressed="true"></button></div></div>
+              <div class="srow"><div class="col"><div class="ttl">cd + redirect / cd + git compounds</div><div class="dsc">Block risky chained shell commands</div></div><div class="ctl"><button class="tgl on" aria-pressed="true"></button></div></div>
+            </div>
+          </section>
+
+          <!-- ══ ADVANCED ══ -->
+          <section class="tabpane" data-tab="advanced" data-group="advanced">
+            <p style="font-size:11px;color:var(--fg-muted);margin:0 2px 12px">For fine-grained control and developer workflows. Every advanced setting also lives on the "Fuller view" sidebar.</p>
+
+            <p class="eyebrow">Sub-agents &amp; parallelism</p>
+            <div class="card">
+              <div class="srow"><div class="col"><div class="ttl">Specialist sub-agents</div><div class="dsc">Claude can spawn specialists (researchers, editors) to work in parallel</div></div><div class="ctl"><div class="stab"><button data-active="0">Off</button><button data-active="1" class="on">On · 3</button></div></div></div>
+              <div class="srow"><div class="col"><div class="ttl">Background turns</div><div class="dsc">Let a request keep running while you switch to another chat</div></div><div class="ctl"><button class="tgl on" aria-pressed="true"></button></div></div>
+            </div>
+
+            <p class="eyebrow">Environment</p>
+            <div class="card">
+              <div class="srow"><div class="col"><div class="ttl">Harness</div><div class="dsc">The tooling that lets your assistant read files, run commands, and use tools</div></div><div class="ctl"><button class="btn sec">Manage</button></div></div>
+              <div class="srow"><div class="col"><div class="ttl">MCP servers</div><div class="dsc">More tools from external services (databases, APIs, file systems)</div></div><div class="ctl"><button class="btn sec">Manage</button></div></div>
+              <div class="srow"><div class="col"><div class="ttl">Installed skills</div><div class="dsc">Marketplace plugins and your own custom skills</div></div><div class="ctl"><button class="btn sec">Browse</button></div></div>
+            </div>
+
+            <p class="eyebrow">Toolkit</p>
+            <div class="card">
+              <div class="srow"><div class="col"><div class="ttl">Package tier</div><div class="dsc">Software bundled into your environment</div></div><div class="ctl"><div class="stab"><button data-active="0">Core</button><button data-active="1" class="on">Developer</button><button data-active="0">Full dev</button></div></div></div>
+            </div>
+
+            <div class="card" style="border-color:color-mix(in srgb,var(--fg-faint) 35%,transparent)">
+              <div class="srow">
+                <div class="col"><div class="ttl">Reset assistant settings</div><div class="dsc">Restore default engine, model, and permissions — doesn't touch your chat history or files</div></div>
+                <div class="ctl"><button class="btn danger">Reset</button></div>
+              </div>
+            </div>
+          </section>
+
+        </div><!-- /p-content -->
+      </div><!-- /p-body -->
+    </div><!-- /panel -->
+  </div><!-- /stage -->
+</div><!-- /page -->
+
+<script>
+(function(){
+  var body=document.querySelector('body');
+
+  /* theme switcher */
+  var th=document.querySelectorAll('.theme-ctl button');
+  th.forEach(function(b){b.addEventListener('click',function(){
+    th.forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+    body.className=b.getAttribute('data-t');
+  });});
+
+  var panel=document.getElementById('panel');
+  var tabs=Array.prototype.slice.call(document.querySelectorAll('.tabs .tab'));
+  var panes=Array.prototype.slice.call(document.querySelectorAll('.tabpane'));
+  var railItems=Array.prototype.slice.call(document.querySelectorAll('.rail .ri[data-jump]'));
+
+  function show(tabId){
+    tabs.forEach(function(t){t.classList.toggle('on',t.getAttribute('data-tab')===tabId)});
+    panes.forEach(function(p){p.classList.toggle('on',p.getAttribute('data-tab')===tabId)});
+    railItems.forEach(function(r){r.classList.toggle('on',r.getAttribute('data-jump')===tabId)});
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.getAttribute('data-tab'))})});
+  railItems.forEach(function(r){r.addEventListener('click',function(){show(r.getAttribute('data-jump'))})});
+
+  /* toggles */
+  document.querySelectorAll('.tgl').forEach(function(t){
+    t.addEventListener('click',function(){t.classList.toggle('on');t.setAttribute('aria-pressed',t.classList.contains('on')?'true':'false')});
+  });
+
+  /* segmented one-choice-per-group */
+  document.querySelectorAll('.stab[data-active]').forEach(function(seg){
+    seg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+      seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on')});b.classList.add('on')});
+  });
+  /* permission mode cards */
+  document.getElementById('permmode').querySelectorAll('.pcard').forEach(function(c){
+    c.addEventListener('click',function(){document.getElementById('permmode').querySelectorAll('.pcard').forEach(function(x){x.classList.remove('on')});c.classList.add('on')});
+  });
+
+  /* fuller view rail toggle */
+  var rail=document.getElementById('rail');
+  var railToggle=document.getElementById('rail-toggle');
+  var railEnabled=false;
+  railToggle.addEventListener('click',function(){
+    railEnabled=!railEnabled;
+    rail.style.display=railEnabled?'flex':'none';
+    railToggle.classList.toggle('on',railEnabled);
+    railToggle.setAttribute('aria-pressed',railEnabled?'true':'false');
+  });
+
+  /* search — filters ALL rows/cards by text, hides tabs with no matches */
+  var q=document.getElementById('q');
+  var allGroups={general:0,providers:0,local:0,permissions:0,advanced:0};
+  function doSearch(val){
+    val=val.trim().toLowerCase();
+    var anyTab=false;
+    var visibleGroup=null;
+    panes.forEach(function(pane){
+      var rows=pane.querySelectorAll('.srow,.meta-row,.prov,.pcard');
+      var matched=0;
+      rows.forEach(function(r){var hit=!val||r.textContent.toLowerCase().indexOf(val)>-1;r.style.display=hit?'':'none';if(hit)matched++});
+      var hasVisible=pane.querySelectorAll('.srow:not([style*="none"]),.meta-row:not([style*="none"]),.pcard:not([style*="none"])').length>0;
+      pane.classList.toggle('hasmatch',hasVisible);
+      if(hasVisible){anyTab=true;if(!visibleGroup)visibleGroup=pane.getAttribute('data-tab')}
+    });
+    /* hide tabs that have nothing */
+    tabs.forEach(function(t){
+      var te=t.getAttribute('data-tab');
+      var pane=panes.find(function(p){return p.getAttribute('data-tab')===te});
+      var has=pane.querySelectorAll('*').length>0 && pane.querySelectorAll('.srow:not([style*="none"]),.meta-row:not([style*="none"]),.pcard:not([style*="none"])').length>0;
+      t.style.display=has?'':'none';
+    });
+    /* jump to first matching pane (or stay) */
+    if(val&&visibleGroup)show(visibleGroup);
+    if(!val){tabs.forEach(function(t){t.style.display=''});}
+  }
+  q.addEventListener('input',function(){doSearch(q.value)});
+
+  /* make the drawer's Assistant row scroll the panel into view */
+  document.querySelector('.row.lead').addEventListener('click',function(){panel.scrollIntoView({behavior:'smooth',block:'center'});q.focus();});
+})();
+</script>
+</body>
+</html>

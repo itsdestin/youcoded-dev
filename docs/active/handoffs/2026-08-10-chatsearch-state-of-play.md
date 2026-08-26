@@ -48,6 +48,14 @@ worth building on are untested:
    continuously. Confirm the turn count does *not* move mid-session — that is
    phase 2's job, and it is worth knowing what you actually have.
 
+**2026-08-25 — Task 0 done: GO.** Destin exercised phase-1 search by hand in a
+dev instance (`run-dev.sh master --label "Chat Search check"`) against the live
+index (1,816 Claude + 154 native conversations, 14,261 indexed turns, refreshed
+2026-08-25T22:26Z) and judged recall good enough to build on: *"i think this is
+good."* No individual defect was raised against the six checks, and none of them
+was itemized separately — the verdict is a whole-feature go, not six recorded
+answers. Session-references implementation proceeds from Task 1.
+
 Run these before building more. The session-references design assumes the
 results are worth surfacing; if recall is poor, that work builds a better frame
 around the wrong picture.
