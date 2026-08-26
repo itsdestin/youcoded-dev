@@ -1,5 +1,6 @@
 ---
 status: active
+corrections: docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md
 date: 2026-08-23
 spec: docs/active/specs/2026-08-23-perf-lab-and-optimization-loop-design.md
 ---
