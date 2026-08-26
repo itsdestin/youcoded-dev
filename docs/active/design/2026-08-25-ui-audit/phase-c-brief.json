@@ -1,0 +1,398 @@
+{
+  "out": "phase-c-brief.html",
+  "images": "images/phase-c",
+  "sheets": "images/phase-c/sheets",
+  "key": "Phase C brief",
+  "runs": {
+    "today": "/home/destin/youcoded-dev/scratch/ui-phase-c-baseline"
+  },
+  "labels": {
+    "today": "Today (master, 2026-08-26)"
+  },
+  "crops": {
+    "themes-dialog": [
+      "main",
+      "settings-appearance",
+      "440x600+500+150"
+    ],
+    "theme-cards": [
+      "main",
+      "settings-appearance",
+      "400x160+520+240"
+    ],
+    "theme-edit-builtin": [
+      "main",
+      "theme-edit-builtin",
+      "440x600+500+150"
+    ],
+    "market-hero": [
+      "marketplace",
+      "marketplace",
+      "1440x200+0+50"
+    ],
+    "market-card-counts": [
+      "main",
+      "marketplace",
+      "600x150+10+375"
+    ],
+    "market-themes-rows": [
+      "marketplace",
+      "marketplace-themes",
+      "1440x300+0+150"
+    ],
+    "market-bar": [
+      "marketplace",
+      "marketplace",
+      "1440x70+0+248"
+    ],
+    "market-narrow-title": [
+      "narrow",
+      "marketplace",
+      "390x56+0+0"
+    ],
+    "market-themes-empty": [
+      "empty-marketplace",
+      "marketplace-themes",
+      "720x240+0+50"
+    ],
+    "library-empty": [
+      "empty-marketplace",
+      "library",
+      "720x320+0+0"
+    ],
+    "library-themes-empty": [
+      "empty-marketplace",
+      "library-themes",
+      "720x320+0+0"
+    ],
+    "projects-hero": [
+      "main",
+      "projects",
+      "1080x250+180+60"
+    ],
+    "projects-folders": [
+      "main",
+      "projects",
+      "1080x200+180+395"
+    ]
+  },
+  "title": "Phase C brief — Themes dialog, marketplace cards, Library, marketplace bar, Projects",
+  "lead": "Nothing here is built yet. This page shows what is <em>measurably</em> wrong on each of the five Phase C surfaces today (1:1 crops from verified screenshots of master, workbench, six themes), what I would change, and what I would leave alone. Pick per item; I build only what you pick and bring back a before/after review page. Items are in the order I recommend building them. Where the findings ledger turned out to be wrong when I checked the code, the correction is stated up front.",
+  "howto": "Read each item's <strong>measured</strong> part first — that is a number or a broken behaviour you can see in the crop. The <strong>judgment</strong> parts are taste; rejecting them costs nothing. Pick a decision under each item, add notes, then copy the feedback block at the bottom into chat.",
+  "items": [
+    {
+      "id": "P-3",
+      "title": "Themes dialog (Settings → Appearance)",
+      "kind": "mixed",
+      "sections": [
+        {
+          "h": "Correction to the ledger",
+          "html": "<p>The ledger said <em>“Browse all themes →”</em> and <em>“Browse Theme Marketplace”</em> open the same screen. <strong>They do not.</strong> The first opens <em>Your Library › Themes</em> (themes already installed on this machine — the grid above it only shows your starred ones); the second opens the <em>Marketplace</em> (themes you can install). The real problem is smaller: the two names sound like the same thing, so you cannot tell which one you want.</p>"
+        },
+        {
+          "h": "Measured",
+          "html": "<ol><li><strong>Cards jump height.</strong> The active theme's card gets a second line (<code>active</code>), and because the grid stretches each row, its neighbour grows too and shows an empty strip with a pencil floating in it. In the crop, <em>Dark</em> is about 30&nbsp;px taller than <em>Crème</em> (65 vs 34&nbsp;px) for no reason.</li><li><strong>“Edit” on a built-in opens an empty dialog.</strong> All four built-ins (Midnight, Dark, Light, Crème) are solid-colour themes, so their edit screen has nothing to offer: the whole 588&nbsp;px-tall panel holds one sentence saying it is locked. The pencil promises an editor and delivers a notice.</li><li><strong>The first button is a fourth button style.</strong> <em>Browse all themes →</em> is a hand-rolled panel-coloured box, not one of the app's shared button variants; the two below it are the shared primary and secondary. Three stacked full-width buttons in three styles.</li></ol>"
+        },
+        {
+          "h": "What I would change",
+          "html": "<ul><li>Every card the same height: the <code>active</code> label moves onto the name line (small badge at the right, where the star already sits), so no card ever grows.</li><li>The pencil on a built-in becomes <strong>disabled with a tooltip</strong>: <em>“Built-in themes can't be edited — make a copy with Build New Theme with Claude.”</em> Community themes keep a live pencil (they have real glass sliders). Alternative: hide the pencil on built-ins entirely — I recommend against that, because the tooltip is the only place that explains <em>why</em>.</li><li>Honest names: <em>All installed themes →</em> (opens Your Library) and <em>Get more themes</em> (opens the Marketplace). <em>Build New Theme with Claude</em> keeps its name.</li><li><span class=\"kind kind-judgment\">judgment</span> The first button stops being a third bordered box: it becomes a quiet text-link row under the grid (<em>All installed themes →</em>), leaving one primary (<em>Build</em>) and one secondary (<em>Get more themes</em>). Reject this and the three boxes stay, just renamed.</li></ul>"
+        },
+        {
+          "h": "What you will notice, and the risks",
+          "html": "<ul><li>The Themes grid stops looking broken when a theme is active. The pencil on Midnight/Dark/Light/Crème goes grey and explains itself on hover instead of opening a dead end.</li><li>Risk: someone who learned “Browse all themes” means “my installed themes” now reads a new label — but the old label never said that, so this can only get clearer.</li></ul>"
+        }
+      ],
+      "looks": [
+        {
+          "crop": "theme-cards",
+          "themes": [
+            "midnight",
+            "light"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "The grid with Midnight active: Dark stretches to match and shows an empty strip.",
+          "zoom": 1.5
+        },
+        {
+          "crop": "theme-edit-builtin",
+          "themes": [
+            "midnight",
+            "creme"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "What the pencil on a built-in opens today — the entire dialog."
+        },
+        {
+          "crop": "themes-dialog",
+          "themes": [
+            "midnight",
+            "halftone-dimension"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "The three stacked buttons in three styles."
+        }
+      ],
+      "sheets": [
+        "main-settings-appearance",
+        "main-theme-edit-builtin"
+      ],
+      "decision": [
+        "Build the measured fixes + the text-link row (recommended)",
+        "Build the measured fixes only — keep three boxes, renamed",
+        "Hide the pencil on built-ins instead of disabling it",
+        "Skip P-3"
+      ]
+    },
+    {
+      "id": "P-21",
+      "title": "Marketplace cards — gold hero border, ragged theme rows, “1 installs”",
+      "kind": "measured",
+      "sections": [
+        {
+          "h": "Measured",
+          "html": "<ol><li><strong>The featured card's border is hardcoded gold</strong> (<code>#d8a84b</code>, from the featured list's <code>accentColor</code>) in every theme. The other two featured entries carry their own colours too (a blue and a green), so the border changes colour as the carousel turns — and none of the three is ever the theme's. It is the only gold object on the screen next to Halftone's pink, Meadow's green and Light's black; the <em>View details</em> button inside it correctly takes the theme, which makes the border look more wrong.</li><li><strong>Theme rows are ragged inside the cards.</strong> The card boxes themselves are equal (the grid stretches them), but the content is not: a card only draws its description if it has one, and its <em>likes</em> line only if the count is non-zero. So Cotton Candy Sky, Devil's Garden and Meadow Mist stop at the author line and leave a ~40&nbsp;px hole, while their neighbours run two lines further and end with a count — five different bottom edges across seven cards.</li><li><strong>“1 installs”, “1 likes”.</strong> The counts never pluralise (two places in the card, plus the hero rail).</li></ol>"
+        },
+        {
+          "h": "What I would change",
+          "html": "<ul><li>Hero border = the theme's normal card edge, like every other card. The featured list's colour is dropped from the border entirely (recommended — one fewer colour that is not the theme's). Alternative kept from the guide (T-1): let that colour tint only the small <em>FEATURED</em> eyebrow and the dot pager. I would not: nobody reads a 12&nbsp;px eyebrow as a brand accent, and it keeps a non-theme colour alive.</li><li>Theme cards reserve the two description lines whether or not there is a description (long ones already clamp at two), and the counts row keeps its height even when there is nothing to count. Every card's text ends at the same place.</li><li><em>1 install</em>, <em>1 like</em>; <em>2 installs</em>, <em>2 likes</em>.</li></ul>"
+        },
+        {
+          "h": "What you will notice, and the risks",
+          "html": "<ul><li>The gold outline disappears from the top of the Marketplace in all six themes. Theme rows become even. Grammar is right.</li><li>Risk: a featured pack's author can no longer colour the hero — that was never a documented feature, and all three current entries use it only to paint this border.</li></ul>"
+        }
+      ],
+      "looks": [
+        {
+          "crop": "market-hero",
+          "themes": [
+            "midnight",
+            "light",
+            "halftone-dimension",
+            "meadow-mist"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "The gold border in four themes.",
+          "zoom": 0.6
+        },
+        {
+          "crop": "market-themes-rows",
+          "themes": [
+            "midnight",
+            "creme"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "The Themes tab: three cards end early, the rest run two lines further.",
+          "zoom": 0.6
+        },
+        {
+          "crop": "market-card-counts",
+          "themes": [
+            "midnight"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "“1 installs”.",
+          "zoom": 1.2
+        }
+      ],
+      "sheets": [
+        "marketplace-marketplace",
+        "marketplace-marketplace-themes"
+      ],
+      "decision": [
+        "Build all three, drop the gold entirely (recommended)",
+        "Build all three, but let the featured colour tint the eyebrow + dots",
+        "Skip P-21"
+      ]
+    },
+    {
+      "id": "P-2",
+      "title": "Your Library when nothing is installed",
+      "kind": "measured",
+      "sections": [
+        {
+          "h": "Measured — and a bug the ledger did not know about",
+          "html": "<p>A new install's Library is two headings — <em>Favorites</em>, <em>Installed</em> — over nothing. No sentence, no button, no link, while the Marketplace sits one pill away in the header.</p><p>The code actually <em>contains</em> a sentence for each empty section (<em>“Install something from the marketplace to see it here.”</em>) — it has simply never rendered. The section decides “is there content?” by counting its children, and the child is written as <code>condition &amp;&amp; &lt;grid&gt;</code>, which when false still counts as one child. So the empty message is unreachable code, on every theme, since the day it was written. That is a bug, not taste, and it gets a pinning test.</p>"
+        },
+        {
+          "h": "What I would change",
+          "html": "<ul><li>Fix the check so an empty section is actually empty, and render the app's shared <code>EmptyState</code> block (the same one Settings → Permissions, the session drawer and the Resume browser use): a sentence plus a button. <em>Installed</em> → <em>“Nothing installed yet.”</em> + <strong>Browse the Marketplace</strong>. <em>Favorites</em> → <em>“Star an installed skill and it appears here.”</em> (no button — there is nothing to star yet). Same on the Themes tab, wording adjusted.</li><li>Nothing changes when the Library has content — that state already matches the Marketplace cards (audit §6c #29).</li><li><span class=\"kind kind-judgment\">judgment</span> The <em>Skills | Themes</em> switcher under the title is a plain pair of pills at 12&nbsp;px under a 22&nbsp;px title; Projects uses bordered tabs with an icon and a count. Adopting that style here is taste — I would leave it for now and let a later phase decide tabs app-wide.</li></ul>"
+        },
+        {
+          "h": "What you will notice, and the risks",
+          "html": "<ul><li>A brand-new install sees a real empty state with a button instead of two headings and grey whispers. Risk: none for existing users — their Library is not empty.</li></ul>"
+        }
+      ],
+      "looks": [
+        {
+          "crop": "library-empty",
+          "themes": [
+            "midnight",
+            "halftone-dimension"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "A new install's Library.",
+          "zoom": 0.9
+        },
+        {
+          "crop": "library-themes-empty",
+          "themes": [
+            "light"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "Its Themes tab.",
+          "zoom": 0.9
+        }
+      ],
+      "sheets": [
+        "empty-marketplace-library"
+      ],
+      "decision": [
+        "Build the empty states (recommended)",
+        "Build the empty states + Projects-style tabs",
+        "Skip P-2"
+      ]
+    },
+    {
+      "id": "P-1",
+      "title": "Marketplace filter bar and empty states",
+      "kind": "mixed",
+      "sections": [
+        {
+          "h": "Correction to the ledger",
+          "html": "<p>The ledger called <em>New / Popular / Featured picks</em> “sorts”. They are not — they are on/off filters like the categories, and you can turn on several. So the bar has two kinds of control, not three: <strong>Plugins / Themes</strong> (pick one) and eleven <strong>filters</strong> (any number). The code groups them as Type · Vibe · Meta and separates the groups with a thin line, but paints all thirteen the same.</p>"
+        },
+        {
+          "h": "Measured",
+          "html": "<ol><li><strong>Two empty messages at once.</strong> When a filter matches nothing, the Themes tab shows <em>“0 results”</em> and, under it, <em>“Nothing matches those filters.”</em> — the same fact twice, with no button to clear the filters.</li><li><strong>“Explore everything” with nothing under it.</strong> While the registry loads (or when it cannot be reached) the heading renders alone; there is no loading placeholder and no “could not reach the marketplace” state.</li><li><strong>Phone width truncates the title to “Ma…”.</strong> The right-hand controls take their full width and the title gets what is left.</li></ol>"
+        },
+        {
+          "h": "What I would change",
+          "html": "<ul><li>One empty state: the count line stays, the duplicate sentence becomes the shared <code>EmptyState</code> with a <strong>Clear filters</strong> button.</li><li>Loading: a short row of placeholder cards under the heading; unreachable registry: the shared error block with Retry (this is the rule in <code>docs/error-message-standards.md</code>).</li><li>Phone: the title keeps its full word; the Library/Back controls shrink first.</li><li><span class=\"kind kind-judgment\">judgment</span> <em>Plugins / Themes</em> becomes the app's <code>SegmentedTabs</code> control (the same two-way switch the Library uses for <em>Skills | Themes</em>), in the same position; the eleven filters stay pills; the search field gets a magnifier icon. That makes “pick one” and “pick any” look different. Reject it and the bar stays as it is.</li></ul>"
+        },
+        {
+          "h": "What you will notice, and the risks",
+          "html": "<ul><li>The bar's first two pills turn into a two-position switch; everything else stays where it was, so muscle memory holds. Empty and loading states stop looking broken.</li><li>Risk: the segmented switch is a visible change on the most-used marketplace control — which is exactly why it is tagged judgment.</li></ul>"
+        }
+      ],
+      "looks": [
+        {
+          "crop": "market-bar",
+          "themes": [
+            "midnight",
+            "light"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "Thirteen identical pills for two kinds of control.",
+          "zoom": 0.6
+        },
+        {
+          "crop": "market-themes-empty",
+          "themes": [
+            "midnight"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "Nothing matches: two messages, no way out.",
+          "zoom": 0.9
+        },
+        {
+          "crop": "market-narrow-title",
+          "themes": [
+            "midnight"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "Phone width: “Ma…”.",
+          "zoom": 1.5
+        }
+      ],
+      "sheets": [
+        "marketplace-marketplace",
+        "empty-marketplace-marketplace-themes"
+      ],
+      "decision": [
+        "Build the measured fixes + the Plugins/Themes switch (recommended)",
+        "Build the measured fixes only",
+        "Skip P-1"
+      ]
+    },
+    {
+      "id": "P-5",
+      "title": "Projects header card",
+      "kind": "mixed",
+      "sections": [
+        {
+          "h": "Correction to the ledger",
+          "html": "<p>Two of the ledger's three complaints are stale. <em>Rename</em> and <em>Remove from YouCoded</em> are already the shared small button (the same size as <em>+ Add file</em>), not a custom 11&nbsp;px outline. And the folder cards' “tab” notch is deliberate: it was reworked after your feedback on 2026-07-19 (all four body corners rounded so the nub reads as a folder, not a glitch). I am <strong>not</strong> proposing to touch either.</p>"
+        },
+        {
+          "h": "Measured",
+          "html": "<ol><li><strong>Projects is the only full screen that hides the wallpaper.</strong> Its root paints an opaque canvas; Library and Marketplace let the theme's wallpaper through. In Halftone and Meadow, Projects is the one screen that goes flat.</li><li><strong>Two accent-filled buttons in one card.</strong> <em>New Conversation</em> (primary) and <em>Turn on sync for this project</em> (also primary, nested inside the grey status chip). The design guide's rule is one accent action per card.</li></ol>"
+        },
+        {
+          "h": "What I would change",
+          "html": "<ul><li>Projects adopts the same transparent root as Library/Marketplace, so the wallpaper shows in community packs. Built-in themes look identical (their canvas is a flat colour anyway).</li><li><em>Turn on sync for this project</em> becomes the small <strong>secondary</strong> button inside the chip; <em>New Conversation</em> stays the card's one accent. <span class=\"kind kind-judgment\">judgment</span> — it is the guide's rule, but it makes the sync nudge quieter, which you may not want.</li><li>Left alone: Rename/Remove, the folder nub, the document previews (the ledger's “~9&nbsp;px raw Markdown” is the intended thumbnail look).</li></ul>"
+        },
+        {
+          "h": "What you will notice, and the risks",
+          "html": "<ul><li>In Halftone/Meadow, Projects gets the same see-through background as its two sibling screens. Risk: readability of the header card over a busy wallpaper — the card is already a glass panel, the same as the Marketplace hero, so it should hold; I will show all six themes in the review.</li><li>The green “Turn on sync” pill becomes an outlined one; users who never noticed it will notice it less.</li></ul>"
+        }
+      ],
+      "looks": [
+        {
+          "crop": "projects-hero",
+          "themes": [
+            "halftone-dimension",
+            "meadow-mist",
+            "midnight"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "The header card — flat background in the two wallpaper themes; two filled accent buttons.",
+          "zoom": 0.7
+        },
+        {
+          "crop": "projects-folders",
+          "themes": [
+            "midnight"
+          ],
+          "cols": [
+            "today"
+          ],
+          "note": "The folder nub, for reference — not proposed to change.",
+          "zoom": 0.7
+        }
+      ],
+      "sheets": [
+        "main-projects"
+      ],
+      "decision": [
+        "Build the wallpaper fix + secondary sync button (recommended)",
+        "Build the wallpaper fix only",
+        "Skip P-5"
+      ]
+    }
+  ],
+  "closing": "<h2 id=\"other\">What I am not proposing</h2><ul><li>Re-grouping the marketplace bar into three visually distinct control types with a sort dropdown — the ledger's plan was based on a wrong reading of the controls (there is no sort).</li><li>Removing the folder nub or changing document thumbnails on Projects.</li><li>Changing the Library's tab style unless you pick that option.</li><li>Anything on the Themes dialog's toggles (<em>Reduce Visual Effects</em>, <em>Message Timestamps</em>).</li></ul>"
+}

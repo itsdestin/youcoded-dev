@@ -588,10 +588,11 @@
      "settle": 900
     },
     {
-     "click": "[aria-label='Edit Midnight']",
+     "click": "js:document.querySelector(\"[role=button].border-accent [aria-label^='Edit ']\")",
      "settle": 900
     }
-   ]
+   ],
+   "expect": "js:document.body.textContent.includes('Edit: ')"
   },
   {
    "name": "theme-edit-community",

@@ -14,6 +14,11 @@
 - `phase-b-brief.html` / `phase-b-review.html` (specs `phase-b-brief.json`, `phase-b-review.json`) —
   the Phase B brief (problems only, from master) and the review page it led to. Both carry a
   banner with the decisions (P-15 approved as revised, P-18 approved, P-10 rejected; youcoded #328).
+- `phase-c-brief.html` (spec `phase-c-brief.json`, crops in `images/phase-c/` from
+  `scratch/ui-phase-c-baseline/`, a sweep of master at `c04739df`) — the Phase C brief: what is
+  measurably wrong on the Themes dialog, marketplace cards, empty Library, marketplace bar and
+  Projects header, with the ledger's wrong claims corrected up front (see the P-3/P-5/P-1/P-2/P-21
+  rows in the findings ledger). Awaiting Destin's picks; the review page follows.
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
   (the original pass: 103 of 104 — "Known Issues" opens an external link; the latest full sweep
   of master, 2026-08-26 after Phase B, verified 112 of 112). `contrast.md` — the painted-pixel
