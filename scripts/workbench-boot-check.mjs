@@ -34,7 +34,13 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const PORT = process.argv[2] ?? '5233';
-const CDP_PORT = 9977;
+// One Chrome debugging port per workbench port: two sessions running boot checks
+// against different worktrees (5233 and 5243, 2026-08-25) shared 9977, the second
+// attached to the first's Chrome and hung for 40 minutes. Override with
+// BOOT_CHECK_CDP_PORT if a port is taken.
+const CDP_PORT = Number(process.env.BOOT_CHECK_CDP_PORT ?? 9977 + (Number(PORT) - 5173));
+// A boot check that cannot finish is a failure, not a wait: cap the whole run.
+setTimeout(() => { console.error('boot-check: timed out after 4 minutes'); process.exit(1); }, 240000).unref();
 const BASE = `http://127.0.0.1:${PORT}/?mode=workbench`;
 
 // Every surface the workbench can show. A boot failure in any one of them is a

@@ -32,8 +32,12 @@ else
   THEMES="${3:-midnight,light,halftone-dimension,meadow-mist,creme,dark}"
   REPORTS_ONLY=0
 fi
-PORT_OFFSET="${YOUCODED_PORT_OFFSET:-60}"
+# Offset 300 (Vite 5473): a port no other tool defaults to. Offset 60 (5233) is the
+# workbench default, and on 2026-08-25 a review "reused" another session's workbench on
+# it and screenshotted the wrong worktree for 40 minutes without any error.
+PORT_OFFSET="${YOUCODED_PORT_OFFSET:-300}"
 VITE_PORT=$((5173 + PORT_OFFSET))
+export WB_PORT=$VITE_PORT     # shot.mjs rewrites the plans' hardcoded 5233 to this
 mkdir -p "$OUT/sheets"
 STARTED_WB=0
 if [[ "$REPORTS_ONLY" == 0 ]]; then
@@ -50,6 +54,15 @@ if ! curl -s "http://127.0.0.1:$VITE_PORT/" >/dev/null 2>&1; then
 else
   STARTED_WB=0
 fi
+# Whatever answers on the port MUST be serving the worktree under review. A stale or
+# foreign server produces perfectly verified screenshots of the wrong code.
+if [[ -d "$ROOT/worktrees/$TARGET" ]]; then TDIR="$ROOT/worktrees/$TARGET"; elif [[ -d "$TARGET/desktop" ]]; then TDIR="$(cd "$TARGET" && pwd)"; else TDIR="$TARGET"; fi
+VITE_PID="$(ss -ltnp "sport = :$VITE_PORT" 2>/dev/null | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2)"
+VITE_CWD="$(readlink "/proc/${VITE_PID:-0}/cwd" 2>/dev/null || true)"
+if [[ "$VITE_CWD" != "$TDIR/desktop" ]]; then
+  echo "[ui-review] REFUSING: port $VITE_PORT is served from '${VITE_CWD:-nothing}', not '$TDIR/desktop'. Stop that server or pass YOUCODED_PORT_OFFSET=<other>."; exit 1
+fi
+echo "[ui-review] workbench :$VITE_PORT serves $VITE_CWD (pid $VITE_PID)"
 node "$ROOT/scripts/workbench-boot-check.mjs" "$VITE_PORT" > "$OUT/boot-check.log" 2>&1 || { echo "[ui-review] workbench boot check FAILED — see $OUT/boot-check.log"; exit 1; }
 
 # 2. Capture jobs: one (plan, theme, shard) per Chrome process, through a queue of
@@ -71,13 +84,13 @@ for plan in "$HERE"/plans/*.json; do
   for t in "${T[@]}"; do
     for ((k=0; k<n; k++)); do
       idx=$((idx+1))
-      echo "$plan $name $t $k/$n $((9930+idx))" >> "$jobfile"
+      echo "$plan $name $t $k/$n $((30000 + PORT_OFFSET + idx))" >> "$jobfile"   # CDP ports keyed by offset so two reviews never share one
     done
   done
 done
 echo "[ui-review] $idx capture jobs, $JOBS at a time…"
 run_job() { CDP_PORT=$5 SHARD=$4 node "$HERE/shot.mjs" "$1" "$OUT/shots-$2" "$3" > "$OUT/run-$2-$3-${4%/*}.log" 2>&1 || true; }
-export -f run_job; export HERE OUT
+export -f run_job; export HERE OUT WB_PORT
 xargs -P "$JOBS" -L 1 bash -c 'run_job "$@"' _ < "$jobfile"
 fi
 rm -rf "$OUT/sheets"/*.jpg

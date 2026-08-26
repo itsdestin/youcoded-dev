@@ -16,7 +16,18 @@ Default output: `scratch/ui-review-<date>/` (git-ignored) with `gallery.html`,
 Runs the UI Workbench (real renderer, fake backend, headless Chrome) — **never the live
 app**. A full 6-theme sweep runs one Chrome per (plan, theme, shard) through a queue of `UI_REVIEW_JOBS` workers (default 24) — about 5 minutes on this machine; `UI_REVIEW_PLANS=main,overlays` limits a run to the plans a PR touches.
 
-## Why it can be trusted (the 2026-08-25 lesson)
+## Why it can be trusted (the 2026-08-25 lessons)
+
+**The server is checked before the shots are.** `run-review.sh` starts its own workbench on
+a dedicated port (offset 300 → Vite 5473) and refuses to run unless the process on that
+port has the worktree under review as its working directory. Later on 2026-08-25 a run
+"reused" another session's workbench on the default port and produced 40 minutes of
+perfectly *verified* screenshots of the wrong branch — every shot proved it opened, none
+was of the code being reviewed. Verification of the picture cannot catch a wrong server;
+only checking the server can. Plans still say `127.0.0.1:5233`; `shot.mjs` rewrites that
+to `WB_PORT`. The boot check likewise gets a debugging port derived from the Vite port
+(two sessions sharing 9977 hung one of them) and a 4-minute watchdog.
+
 
 The first run of this rig filed 40 screenshots of the plain chat window under labels like
 "context menu" because a click missed and nothing noticed; the findings written from them
@@ -26,6 +37,10 @@ had to be retracted. `shot.mjs` therefore verifies every shot three ways before 
 2. the shot's `expect` selector/JS must be truthy afterwards (e.g. `[role=dialog]`);
 3. the result must differ from the post-boot baseline (ImageMagick RMSE), unless the plan
    says `sameAsBaseline: true` on purpose.
+
+Before the fixed boot wait, `shot.mjs` polls until the page has painted real text (a plan
+may set `ready` to a stricter expression — `marketplace.json` waits for its cards), so a
+slow boot under a 24-Chrome sweep does not turn into a miss.
 
 Failed shots go to `_unverified/` (never into a sheet) and `coverage.md` lists them with
 the reason. **A review must quote `coverage.md` and call unverified surfaces "unreviewed"

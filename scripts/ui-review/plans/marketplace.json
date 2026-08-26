@@ -161,5 +161,7 @@
    ],
    "expect": "[title='Open marketplace']"
   }
- ]
+ ],
+ "ready": "/civic report|no plugins|no themes|nothing (here|installed)/i.test(document.body.textContent)",
+ "readyMax": 30000
 }

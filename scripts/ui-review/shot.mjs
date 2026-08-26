@@ -54,6 +54,10 @@ const [SHARD_K, SHARD_N] = (process.env.SHARD ?? '0/1').split('/').map(Number);
 plan.shots = plan.shots.filter((_, i) => i % SHARD_N === SHARD_K);
 const THEMES = (themeArg ?? 'midnight').split(',');
 const CDP_PORT = Number(process.env.CDP_PORT ?? 9978);
+// Plans hardcode the workbench default (127.0.0.1:5233); WB_PORT points them at the
+// server run-review.sh actually started for this worktree.
+const WB_PORT = process.env.WB_PORT;
+const wb = (u) => (WB_PORT && u ? u.replace('127.0.0.1:5233', `127.0.0.1:${WB_PORT}`) : u);
 const ATTACH = process.env.ATTACH_PORT ? Number(process.env.ATTACH_PORT) : 0;
 const PORT = ATTACH || CDP_PORT;
 const W = plan.width ?? 1440, H = plan.height ?? 900;
@@ -194,7 +198,18 @@ for (const theme of THEMES) {
     const entry = { theme, name: s.name, verified: false, reasons: [], errors: [], contrastFails: [] };
     try {
       if (ATTACH) { await sess.evaluate(`localStorage.setItem('youcoded-theme', ${JSON.stringify(theme)})`); await sess.send('Page.reload'); }
-      else await sess.send('Page.navigate', { url: s.url ?? plan.base });
+      else await sess.send('Page.navigate', { url: wb(s.url ?? plan.base) });
+      // Readiness poll BEFORE the fixed boot wait: with 24 Chromes loading at once the
+      // renderer can take longer than the boot wait just to paint its first frame, and a
+      // fixed wait then produces honest-but-useless misses ("MISSING [title=Settings]" in
+      // 7 surfaces × 6 themes on the first full sharded sweep, 2026-08-25). The poll
+      // waits for the app to have painted real text, then the plan's boot wait still
+      // applies on top for data fetches and animations.
+      const READY = plan.ready ?? "document.readyState === 'complete' && document.body.innerText.trim().length > 20";
+      for (const t0 = Date.now(); Date.now() - t0 < (plan.readyMax ?? 30000);) {
+        if (await sess.evaluate(`!!(${READY})`).catch(() => false)) break;
+        await new Promise(r => setTimeout(r, 250));
+      }
       await new Promise(r => setTimeout(r, s.boot ?? plan.boot ?? 3500));
       const preFails = await sess.run(plan.pre);
       const baseline = join(tdir, `_baseline-${s.name}.png`);
