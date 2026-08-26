@@ -21,8 +21,20 @@ export function connect(wsUrl) {
   return new Promise((resolve, reject) => {
     const ws = new WebSocket(wsUrl);
     let id = 0; const pending = new Map(); const listeners = new Map();
+    let closedReason = null;
+    // WHY: without this, a CDP target that dies mid-request (the app crashed, the
+    // diff-Chrome was killed by a concurrent run) leaves every in-flight promise
+    // pending FOREVER — the rig hangs with no error instead of failing. Measured:
+    // a killed browser produced an unsettled top-level await, not a rejection.
+    // Rejecting on close turns a whole class of silent hangs into loud failures.
+    const failAllPending = (why) => {
+      closedReason = why;
+      for (const [, { rej }] of pending) rej(new Error(`CDP connection ${why} (${wsUrl})`));
+      pending.clear();
+    };
     ws.addEventListener('open', () => resolve(api));
-    ws.addEventListener('error', (e) => reject(new Error(`ws error: ${e.message || e}`)));
+    ws.addEventListener('error', (e) => { failAllPending('errored'); reject(new Error(`ws error: ${e.message || e}`)); });
+    ws.addEventListener('close', (e) => failAllPending(`closed (code ${e?.code ?? '?'})`));
     ws.addEventListener('message', (ev) => {
       const msg = JSON.parse(ev.data);
       if (msg.id && pending.has(msg.id)) {
@@ -34,6 +46,9 @@ export function connect(wsUrl) {
     });
     const api = {
       send(method, params = {}) {
+        // Send-after-close must reject immediately rather than queue a promise
+        // nothing will ever settle.
+        if (closedReason) return Promise.reject(new Error(`CDP connection ${closedReason}; cannot send ${method}`));
         return new Promise((res, rej) => { const i = ++id; pending.set(i, { res, rej }); ws.send(JSON.stringify({ id: i, method, params })); });
       },
       on(method, cb) { if (!listeners.has(method)) listeners.set(method, []); listeners.get(method).push(cb); },
