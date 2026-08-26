@@ -1,0 +1,55 @@
+{
+  "out": "phase-b-brief.html",
+  "images": "images/phase-b-brief",
+  "key": "Phase B brief",
+  "runs": {"before": "/home/destin/youcoded-dev/scratch/ui-phase-a-final"},
+  "labels": {"before": "Today (master, after Phase A)"},
+  "title": "Phase B brief — what's wrong, and what I'd change",
+  "lead": "Nothing is built yet. Each item shows the problem as it is in the app right now (1:1 crops from tonight's sweep of master), then the change I'd make and what you'd see. Say which to build; the built version comes back on a review page with before/after crops like Phase A's.",
+  "howto": "Look at each crop, read the proposal, pick <em>Build it</em>, <em>Build the measured part only</em> or <em>Skip</em>, add notes, then <em>Copy feedback</em> at the bottom and paste it into the chat.",
+  "items": [
+    {
+      "id": "P-15", "title": "Two dialogs have no title and no ✕; two footers wrap", "kind": "measured",
+      "sections": [
+        {"h": "The problem", "html": "<p><strong>Report a bug / Feature request</strong> opens as a bare box: a Bug/Feature switch, a text area and a <em>Continue</em> button. No title says what it is, and there is no ✕ — Escape is the only way out. <strong>Donate</strong> is the same: three lines of copy and two buttons, no title row, no ✕. Every other dialog in the app has the same header (title · optional ⓘ · ✕), so these two are the exceptions.</p><p>In the <strong>Close session</strong> prompt the footer is the tallest row of the dialog: <em>\"Don't show again\"</em> wraps onto two lines beside its toggle, and the primary button breaks into <em>\"Close / session\"</em>. Both happen in every theme (the light crop below shows it most clearly).</p>"},
+        {"h": "What I'd change", "html": "<ul><li>Give both dialogs the shared header: <em>\"Report a bug\"</em> / <em>\"Support YouCoded\"</em> as the title, a ✕ on the right. Same component every other dialog already uses; no new styling.</li><li>Close-session footer: the buttons go to the small size the rest of the dialog uses, and <em>\"Don't show again\"</em> becomes its own one-line row above the buttons instead of squeezing beside them.</li><li>Also in this item (small): the <em>About</em> and <em>Permissions</em> dialogs cut their content off with no scrollbar or fade to say there is more — add the fade every other scrolling dialog has.</li></ul>"},
+        {"h": "What you'd notice, and the risk", "html": "<p>Two dialogs gain a title row and a ✕ (a few pixels taller). The close-session prompt gets a little taller by one row and the buttons stop wrapping. Nothing else moves. Risk: essentially none — this is applying the existing dialog anatomy to the two places that skipped it.</p>"}
+      ],
+      "looks": [
+        {"crop": "bugreport-dialog", "themes": ["midnight", "light"], "cols": ["before"], "note": "Report a bug — no title, no ✕."},
+        {"crop": "donate-dialog", "themes": ["midnight", "light"], "cols": ["before"], "note": "Donate — no title row, no ✕."},
+        {"crop": "close-dialog", "themes": ["light", "midnight"], "cols": ["before"], "note": "Close session — the footer wraps (\"Don't show / again\", \"Close / session\")."}
+      ],
+      "decision": ["Build it", "Build the headers + footer only (skip About/Permissions fade)", "Skip"]
+    },
+    {
+      "id": "P-18", "title": "Tool cards: a typed \"|\" in every header, and the AskUserQuestion card's odd header", "kind": "mixed",
+      "sections": [
+        {"h": "The problem — measured part", "html": "<p>Every tool card's header reads <code>⊘ | Reading ChatView.tsx ↳ components/</code>. That <code>|</code> is a literal text character, not a divider: it is the wrong colour on some themes, it is read aloud by screen readers, and it doesn't line up with the icon. It appears on every tool call in every conversation, so it is the most-seen glitch in the app.</p>"},
+        {"h": "The problem — judgment part", "html": "<p>The <strong>AskUserQuestion</strong> card (when the assistant asks you to choose) uses a different header from its siblings: <code>ⓘ | Framework ▾</code> instead of <em>glyph · title · ↳ first question · chevron</em>, and its option rows use their own row style. It works; it just doesn't look like the card next to it. This is a consistency call, not a defect.</p>"},
+        {"h": "What I'd change", "html": "<ul><li><strong>Measured:</strong> replace the typed <code>|</code> with a real 1-pixel divider element in the header — same position, drawn with the theme's edge colour. Invisible change except that the bar sits straight and takes the theme's colour.</li><li><strong>Judgment (can skip):</strong> AskUserQuestion adopts the standard header (glyph · \"Question\" · ↳ the first question · chevron on the right) and its option rows use the same row style as the other cards' rows; <em>Submit</em> stays a primary button.</li></ul>"},
+        {"h": "What you'd notice, and the risk", "html": "<p>The divider: nothing, except the pipe character is gone. The AskUserQuestion header: that card looks like the others; risk is that people are used to its current shape — it's the card they interact with most.</p>"}
+      ],
+      "looks": [
+        {"crop": "toolcard-header", "themes": ["midnight", "light"], "cols": ["before"], "note": "A tool-card header — the \"|\" after the status glyph is typed text.", "zoom": 1.5},
+        {"crop": "askuser", "themes": ["midnight"], "cols": ["before"], "note": "AskUserQuestion card in the tool gallery — its header (ⓘ | Framework ▾) and own row style."}
+      ],
+      "decision": ["Build both", "Build the divider only (skip the AskUserQuestion header)", "Skip"]
+    },
+    {
+      "id": "P-10", "title": "Status bar: 10px text and a two-row wrap on phones; the orange model chip", "kind": "mixed",
+      "sections": [
+        {"h": "The problem — measured part", "html": "<p>The status bar's chip text is 10px. The design guide's floor for anything informational is 11px (G-5) — the status bar is the only surface still below it. At phone width (390px) the chips wrap onto a second row with the theme chip orphaned on its own line, which pushes the composer up.</p>"},
+        {"h": "The problem — judgment part", "html": "<p>The model chip (<code>Sonnet | Auto Effort</code>) has an orange outline while every other chip is grey, so the model reads as a warning. The theme-name chip is drawn like a button but is a label. Both are choices, not defects.</p>"},
+        {"h": "What I'd change", "html": "<ul><li><strong>Measured:</strong> text goes from 10px to 11px (the bar gets ~2px taller); at phone width the chips collapse to their icons before they are allowed to wrap, so the bar stays one row.</li><li><strong>Judgment (can skip):</strong> all chips take the same grey outline and the model chip shows the model's icon instead of the orange border; the theme chip becomes a plain label with the cycle control appearing on hover.</li></ul>"},
+        {"h": "What you'd notice, and the risk", "html": "<p>Slightly larger status text everywhere and no second row on phones. If you also take the judgment part: the orange outline disappears — if you rely on that orange to spot the model at a glance, say so and it stays.</p>"}
+      ],
+      "looks": [
+        {"crop": "statusbar-tight", "themes": ["midnight", "light"], "cols": ["before"], "note": "Status bar at 1:1 — 10px text; the model chip's orange outline.", "zoom": 2},
+        {"crop": "narrow-bottom", "themes": ["midnight", "light"], "cols": ["before"], "note": "Phone width (390px) — the bar wraps and the theme chip sits alone on a second row."}
+      ],
+      "decision": ["Build both", "Build the text size + phone wrap only (keep the orange chip)", "Skip"]
+    }
+  ],
+  "closing": "<h2 id=\"other\">Not in Phase B</h2><ul><li>Anything on screens (Marketplace, Library, Projects, Themes) — that is Phase C, and most of it is judgment; it gets its own brief like this one.</li><li>Phase A's rejected items stay rejected.</li></ul>"
+}
