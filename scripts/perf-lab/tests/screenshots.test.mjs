@@ -200,6 +200,13 @@ test('capture writes a PNG and always removes the freeze style, even when it fai
     await cdp.send('Page.enable');
     const out = mkdtempSync(join(tmpdir(), 'pl-cap-'));
 
+    // Give the page real, painted content. capture() now REFUSES to save a frame
+    // that has not reached first-contentful-paint (a blank shot silently passes the
+    // parity gate against another blank shot), so a bare about:blank is rejected
+    // by design — this test must supply something to paint.
+    await cdp.evaluate(`document.body.innerHTML = '<h1 style="color:#fff;background:#123">perf-lab capture fixture — painted content</h1>'`);
+    await cdp.evaluate('new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))');
+
     const p = await capture({ cdp }, out, 'welcome');
     assert.equal(p, join(out, 'welcome.png'));
     assert.equal(readFileSync(p).subarray(1, 4).toString(), 'PNG', 'a real PNG landed on disk');
@@ -212,6 +219,21 @@ test('capture writes a PNG and always removes the freeze style, even when it fai
     } } };
     await assert.rejects(() => capture(broken, out, 'welcome'), /boom/);
     assert.equal(await cdp.evaluate("!!document.getElementById('__perf-freeze')"), false, 'unfrozen on failure too');
+  });
+});
+
+test('capture refuses to save a frame that never painted', async () => {
+  // The regression this pins: `welcome` was shot before first-contentful-paint and
+  // landed as a 4.5 KB blank rectangle, which the parity gate then compared against
+  // another blank rectangle and passed.
+  await withHeadlessChrome(async (cdp) => {
+    await cdp.send('Page.enable');
+    const out = mkdtempSync(join(tmpdir(), 'pl-blank-'));
+    await cdp.evaluate("document.body.innerHTML = ''");
+    await assert.rejects(
+      () => capture({ cdp }, out, 'welcome', { timeoutMs: 1500 }),
+      /had not painted|Refusing to save a blank frame/);
+    assert.equal(existsSync(join(out, 'welcome.png')), false, 'no blank PNG was written');
   });
 });
 

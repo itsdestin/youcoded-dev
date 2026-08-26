@@ -493,6 +493,43 @@ async function resumeAndSettle(app, fixture, size) {
  * it twice opens and closes. It lives in a ternary branch, so a layout that renders
  * the OTHER branch has no such button; that is why this throws by name.
  */
+/**
+ * Is the Settings drawer actually ON SCREEN?
+ *
+ * Not "does its close button exist" — SettingsPanel is ALWAYS MOUNTED and merely
+ * translated off-screen (`open ? 'translate-x-0' : '-translate-x-full'`,
+ * SettingsPanel.tsx:237), so `[aria-label="Close settings"]` is in the DOM either
+ * way. Measured: open puts that button at x~289, closed translates the panel
+ * -320px so the same button reports a NEGATIVE x. Duplicated here rather than
+ * imported so run.mjs keeps working when scenario-workload.mjs is absent (it is
+ * loaded lazily on purpose — see loadWorkload).
+ */
+const SETTINGS_OPEN_EXPR = `(() => {
+  const el = document.querySelector('[aria-label="Close settings"]');
+  if (!el) return false;
+  const r = el.getBoundingClientRect();
+  return r.width > 0 && r.x >= 0;
+})()`;
+
+/**
+ * Guarantee the Settings drawer is CLOSED before a screenshot.
+ *
+ * WHY: it covers the left 320px, and it was measured stuck open across the
+ * six-sessions AND native-chat shots — three of the five gated screens became
+ * variations of "Settings open", so any UI change behind the drawer was invisible
+ * to the parity gate. A screen that hides a third of itself is not a screen.
+ */
+async function ensureSettingsClosed(app, label) {
+  for (let i = 0; i < 3; i++) {
+    if (!(await app.cdp.evaluate(SETTINGS_OPEN_EXPR))) return;
+    await app.cdp.evaluate(`(() => { const x = document.querySelector('[aria-label="Close settings"]'); if (x) x.click(); })()`);
+    await sleep(600);
+  }
+  if (await app.cdp.evaluate(SETTINGS_OPEN_EXPR)) {
+    throw new Error(`perf-lab screenshot "${label}": the Settings drawer would not close, and it covers the left 320px. Refusing to save a screen that hides a third of itself.`);
+  }
+}
+
 async function clickTitle(app, title) {
   const selector = `[title=${JSON.stringify(title)}]`;
   const box = await app.cdp.evaluate(
@@ -696,6 +733,7 @@ async function main(argv) {
             await clickTitle(app, 'Settings');
             await shot('settings-open');
             await clickTitle(app, 'Settings');
+            await ensureSettingsClosed(app, 'post-settings-open');
             await app.cdp.evaluate(`window.claude.session.destroy(${JSON.stringify(id)})`).catch(() => {});
             await sleep(500);
           } catch (e) {
@@ -721,6 +759,7 @@ async function main(argv) {
               // taking screenshots perturbs the very timings it would contribute.
               checkDeadline();
               const shotPass = await runWorkloadScenario(app, fixture, { keepSessions: true });
+              await ensureSettingsClosed(app, 'six-sessions');
               await shot('six-sessions');
               // The keepSessions pass creates ids[0..3] = Claude Code, ids[4..5] = native
               // (scenario-workload.mjs:449-471), so index 4 named 'native-0' is the native chat.
@@ -740,6 +779,7 @@ async function main(argv) {
                 const sw = await app.cdp.evaluate(`window.__perfLab.switchTo(4, 'native-0', ${ids.length})`);
                 if (sw?.ok) {
                   await sleep(800);
+                  await ensureSettingsClosed(app, 'native-chat');
                   await shot('native-chat');
                 } else {
                   shotFailures.push(`native-chat: could not switch to the native session (mode ${sw?.mode ?? '?'}, pane ${sw?.paneBefore} -> ${sw?.paneAfter}${sw?.reason ? `, ${sw.reason}` : ''}) — refusing to save a screenshot of the wrong conversation`);

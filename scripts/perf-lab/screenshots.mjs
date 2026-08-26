@@ -159,8 +159,39 @@ export const UNFREEZE = `(() => { document.getElementById('__perf-freeze')?.remo
  * The orchestrator drives the navigation and decides WHEN each screen is captured
  * (see SCREEN_NAMES); this module only knows HOW.
  */
-export async function capture(app, outDir, name) {
+/**
+ * Refuse to shoot a screen that has not painted yet.
+ *
+ * WHY this exists: `welcome` was captured the moment the boot marks appeared, but
+ * first-contentful-paint on this app lands ~4s after spawn — so the saved PNG was
+ * a completely blank dark rectangle (4.5 KB against 142 KB for a real screen).
+ * That is worse than a missing shot, because the parity gate then compares blank
+ * against blank and PASSES: one of the five gated screens was silently blind.
+ * This mirrors the rule the workspace already applies to its UI review — a shot
+ * must PROVE it captured something, and a surface that was not really captured is
+ * "unreviewed", never "unchanged".
+ */
+async function waitForPainted(app, name, { timeoutMs = 20000, everyMs = 100, minTextLen = 20 } = {}) {
+  const deadline = Date.now() + timeoutMs;
+  let last = null;
+  while (Date.now() < deadline) {
+    last = await app.cdp.evaluate(`({
+      fcp: performance.getEntriesByType('paint').some(p => p.name === 'first-contentful-paint'),
+      textLen: document.body.innerText.trim().length,
+      nodes: document.body.querySelectorAll('*').length
+    })`);
+    if (last.fcp && last.textLen >= minTextLen) return last;
+    await sleep(everyMs);
+  }
+  throw new Error(
+    `perf-lab screenshot "${name}": the page had not painted after ${timeoutMs}ms ` +
+    `(first-contentful-paint=${last?.fcp}, visible text=${last?.textLen} chars, ${last?.nodes} nodes). ` +
+    'Refusing to save a blank frame — a blank shot passes the parity gate against another blank shot.');
+}
+
+export async function capture(app, outDir, name, paintOpts = {}) {
   mkdirSync(outDir, { recursive: true });
+  await waitForPainted(app, name, paintOpts);
   await app.cdp.evaluate(FREEZE); await sleep(300);
   let data;
   // WHY try/finally: the draft unfroze only on the happy path, so ONE failed screenshot left

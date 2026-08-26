@@ -677,11 +677,29 @@ export async function runWorkloadScenario(app, fixture, {
  * click at the gear's coordinates would hit the SCRIM, not the gear. Both happen
  * to close the panel, but only one of them is the thing we said we measured.
  *
- * Open/closed is confirmed via the panel's close button (aria-label="Close
- * settings", SettingsPanel.tsx:269-273). If the gear is missing entirely — a
- * narrow window moves it into the ||| overflow menu (HeaderBar.tsx:429-441) —
- * we report that instead of throwing the whole run away.
+ * Open/closed is measured from the panel's ON-SCREEN POSITION, not from whether
+ * its close button exists.
+ *
+ * WHY (this was a real bug): SettingsPanel is ALWAYS MOUNTED and hidden by a CSS
+ * transform (`open ? 'translate-x-0' : '-translate-x-full'`, SettingsPanel.tsx:237),
+ * so `[aria-label="Close settings"]` is in the DOM whether the drawer is open or
+ * shut. Testing for its existence therefore returned `true` unconditionally, and
+ * this function reported `{opened:true, closed:false}` on every run no matter what
+ * actually happened. Measured instead: when open the close button sits at x≈289;
+ * when closed the panel is translated -320px so the same button reports a NEGATIVE
+ * x. That is a real discriminator.
+ *
+ * If the gear is missing entirely — a narrow window moves it into the ||| overflow
+ * menu (HeaderBar.tsx:429-441) — we report that instead of throwing the run away.
  */
+// True only when the drawer is actually on screen. Kept as one expression so the
+// scenario and the orchestrator's screenshot sequence cannot drift apart.
+export const SETTINGS_OPEN_EXPR = `(() => {
+  const el = document.querySelector('[aria-label="Close settings"]');
+  if (!el) return false;
+  const r = el.getBoundingClientRect();
+  return r.width > 0 && r.x >= 0;
+})()`;
 async function toggleSettings(cdp, { dwellMs = 800, settleMs = 500 } = {}) {
   const opened = await cdp.evaluate(`(async () => {
     const btn = document.querySelector('button[title="Settings"]');
@@ -693,13 +711,27 @@ async function toggleSettings(cdp, { dwellMs = 800, settleMs = 500 } = {}) {
   if (!opened.ok) return { opened: false, closed: false, reason: opened.reason };
   await sleep(dwellMs);
   const state = await cdp.evaluate(`(async () => {
-    const wasOpen = !!document.querySelector('[aria-label="Close settings"]');
+    const wasOpen = ${SETTINGS_OPEN_EXPR};
     const btn = document.querySelector('button[title="Settings"]');
     if (btn) btn.click();
     await window.__perfLab.nextFrame2();
     return { wasOpen };
   })()`);
   await sleep(settleMs);
-  const stillOpen = await cdp.evaluate(`!!document.querySelector('[aria-label="Close settings"]')`);
+  let stillOpen = await cdp.evaluate(SETTINGS_OPEN_EXPR);
+  // Fall back to the drawer's OWN close button — which is what a user reaches for
+  // and is never behind the scrim. Leaving the drawer open would occlude the left
+  // 320px of every screenshot taken after this point: measured, the six-sessions
+  // and native-chat shots both came back with Settings covering the sidebar, so
+  // three of the five gated screens were near-duplicates of each other.
+  if (stillOpen) {
+    await cdp.evaluate(`(async () => {
+      const x = document.querySelector('[aria-label="Close settings"]');
+      if (x) x.click();
+      await window.__perfLab.nextFrame2();
+    })()`);
+    await sleep(settleMs);
+    stillOpen = await cdp.evaluate(SETTINGS_OPEN_EXPR);
+  }
   return { opened: state.wasOpen, closed: !stillOpen };
 }
