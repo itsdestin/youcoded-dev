@@ -1,0 +1,165 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "marketplace",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 2000
+    }
+   ],
+   "expect": "js:/featured|results/i.test(document.body.textContent) && /civic report/i.test(document.body.textContent)"
+  },
+  {
+   "name": "marketplace-detail",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 2000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=button],article')].find(b=>b.getBoundingClientRect().top>150 && b.getBoundingClientRect().height>90 && b.getBoundingClientRect().width>200 && b.getBoundingClientRect().width<600)",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:/what.s inside/i.test(document.body.textContent)"
+  },
+  {
+   "name": "marketplace-themes",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 2000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Themes')",
+     "settle": 2000
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Meadow Mist')"
+  },
+  {
+   "name": "marketplace-theme-detail",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 2000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Themes')",
+     "settle": 2000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=button],article')].find(b=>b.getBoundingClientRect().top>150 && b.getBoundingClientRect().height>90 && b.getBoundingClientRect().width>200 && b.getBoundingClientRect().width<600)",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:/Esc \u00b7 Close|Install|Installed|Uninstall/.test(document.body.textContent) && !!document.querySelector('[class*=overlay], [role=dialog]') || document.body.textContent.includes('Esc \u00b7 Close')"
+  },
+  {
+   "name": "marketplace-search",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 2000
+    },
+    {
+     "click": "input[placeholder^='Search']",
+     "settle": 200
+    },
+    {
+     "type": "civic"
+    },
+    {
+     "wait": 1200
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Civic Report')"
+  },
+  {
+   "name": "marketplace-empty",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&marketplace=empty",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 2000
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Explore everything')"
+  },
+  {
+   "name": "library",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 2000
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Installed')"
+  },
+  {
+   "name": "library-themes",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 2000
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Themes')",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "skills-drawer",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 900
+    }
+   ],
+   "expect": "[title='Open marketplace']"
+  }
+ ]
+}

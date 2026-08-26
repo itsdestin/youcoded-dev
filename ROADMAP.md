@@ -864,6 +864,7 @@ surface, not a history.
   sweep, every shot must prove it opened, `coverage.md` names what didn't) and the `/ui-review`
   skill — and the previously unreviewed surfaces were captured (findings §6b, ledger now
   P-1…P-20). Re-run the sweep before/after any UI tranche; a review must quote `coverage.md`.
+- [ ] Two theme-marketplace previews (Devil's Garden, Kuromi Dreamer) render blank in the Electron app but load fine in a browser from the same registry URLs — an image-load problem in Electron (CSP / timing), not missing files `bug` `#marketplace` (added 2026-08-25; `docs/active/design/2026-08-25-ui-audit-findings.md` §6c #28)
 - [ ] Shared settings still register a `SessionStart` hook at `~/.claude/plugins/youcoded-core/hooks/session-start.sh`, which the app now deletes — every new Claude Code session logs "No such file or directory" `bug` `#hooks` (added 2026-08-25; seen in the UI-review dev instance, `docs/active/design/2026-08-25-ui-audit/images/live-terminal-view.jpg`). The deprecation plan removes the clone but not the hook registration; the bundled write-guard path should replace it.
   Gated on the UI consistency system entry above. Not scoped — no list of tweaks exists yet; this is
   a review appointment, not a work item. Feed anything it produces back through `components/ui/` +

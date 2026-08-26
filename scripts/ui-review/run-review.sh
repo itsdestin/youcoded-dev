@@ -41,7 +41,10 @@ if [[ "$REPORTS_ONLY" == 0 ]]; then
 # 1. Workbench (reuse one that is already up on this port).
 if ! curl -s "http://127.0.0.1:$VITE_PORT/" >/dev/null 2>&1; then
   echo "[ui-review] starting workbench on :$VITE_PORT for $TARGET"
-  (YOUCODED_PORT_OFFSET=$PORT_OFFSET nohup bash "$ROOT/scripts/run-workbench.sh" "$TARGET" > "$OUT/workbench.log" 2>&1 &)
+  # VITE_NO_WATCH: a capture sweep never edits files, and a watching Vite can
+  # die with ENOSPC when the live app + a dev instance already hold the inotify
+  # budget (vite.config.ts explains).
+  (VITE_NO_WATCH=1 YOUCODED_PORT_OFFSET=$PORT_OFFSET nohup bash "$ROOT/scripts/run-workbench.sh" "$TARGET" > "$OUT/workbench.log" 2>&1 &)
   for i in $(seq 1 60); do curl -s "http://127.0.0.1:$VITE_PORT/" >/dev/null 2>&1 && break; sleep 1; done
   STARTED_WB=1
 else

@@ -71,10 +71,18 @@ screen's *New Session* needs a JS `.click()` (the mouse click lands on the masco
 `?scenario=default|empty|no-providers|refused|stress` (resume list / permissions /
 providers data — the transcript never changes), `?stalled=1` (parks the native session's
 turn → red stalled card), `?firstRun=<STEP>` (onboarding wizard; added 2026-08-25),
+`?marketplace=empty` (registry-less Marketplace/Library; the default is a sampled registry
+fixture, `dev/workbench/fixtures/marketplace/registry.ts`, added 2026-08-25),
 `?view=tools|compare` (tool gallery / permission-card comparison), `?latency=<ms>`.
-Fidelity gaps the workbench has: no PTY (Terminal is blank — review it on Electron), no
-marketplace registry (empty cards — Electron), Backup & Sync crashes on mock data, theme
-`localStorage` key is honoured (Electron ignores it and uses the profile's theme).
+Fidelity gaps the workbench has: no PTY (Terminal is blank — review it on Electron),
+Backup & Sync crashes on mock data, theme `localStorage` key is honoured (Electron ignores
+it and uses the profile's theme). Marketplace install counts/ratings come from the live
+worker even in the workbench. `expect` checks on marketplace text must be case-insensitive
+— the eyebrows are uppercased by CSS, so `textContent` still says "Featured".
+
+If the workbench dies with `ENOSPC` (file watchers), start it with `VITE_NO_WATCH=1`
+(run-review.sh already does): the live app plus one dev instance can hold ~495k of the
+524k inotify watches on this machine.
 
 ## Real-app pass (Electron)
 

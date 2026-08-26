@@ -51,10 +51,14 @@ screenshot you can open.
   checks what actually got painted, so it catches hardcoded colours and translucent
   surfaces the token audit can't see. Its numbers are quoted below as e.g. "2.0:1".
 - **Fidelity gaps — things this pass could not judge, so nobody should think they passed:**
-  1. **Marketplace / Library cards.** The workbench has no registry data, so Marketplace
-     renders "Explore everything" over nothing and Library shows two empty headings. The
-     real-app pass covers the theme marketplace with live registry data (see §6) but
-     plugin cards were only captured there too — they were never seen in the 6 themes.
+  1. **Marketplace / Library cards — RESOLVED later on 2026-08-25.** The workbench had no
+     registry data, so Marketplace rendered "Explore everything" over nothing and Library
+     showed two empty headings; only the real-app pass (one theme) had cards. youcoded PR
+     #326 gives the workbench a sampled registry fixture (30 plugins, all 7 themes, featured
+     hero/rails, 5 installed) plus `?marketplace=empty` for the empty states, and the
+     `marketplace-*` sheets now show Marketplace, its Themes tab, search, the plugin and
+     theme detail overlays, Library (Skills + Themes) and the skills drawer **in all six
+     themes** (9 surfaces × 6 verified). Findings from those sheets are §6c.
   2. **Backup & Sync** crashes in the workbench (`SyncPopup: Cannot read properties of
      undefined (reading 'length')` — a mock-data gap, not an app bug; the real app
      renders it fine, see §6). The setup wizard was not captured.
@@ -391,6 +395,28 @@ Side-finding (not UI): the dev instance's Claude Code session logged `SessionSta
 hook error — bash: ~/.claude/plugins/youcoded-core/hooks/session-start.sh: No such file or
 directory` (`live-terminal-view`). The youcoded-core clone is gone (deprecation plan) but a
 hook still points at it in shared settings. Worth a ROADMAP bug.
+
+## 6c. Marketplace and Library with real cards, six themes (2026-08-25, after PR #326)
+
+With registry data the Marketplace's default view is not the flat grid the real-app pass
+showed — it is a **featured layout**: a hero card ("FEATURED · Civic Report · View
+details" with dot pager), the filter bar, then horizontal rails ("Destin's picks", "If you
+journal", "For everyday life"). That changes finding #1: the 13-pill bar is still the
+problem, but the surface underneath is well structured. New findings:
+
+| # | Surface | What's there | Picture | Fix |
+|---|---|---|---|---|
+| 25 | **Featured hero border is a hardcoded gold** (`accentColor` from `featured.json`) in every theme — it sits beside Halftone's pink, Meadow's green and Light's black primaries as the only gold object on the screen. The hero's *View details* button correctly takes the theme, which makes the border look more wrong, not less. | `marketplace-marketplace` | **T-1** (semantic set): `accentColor` may tint the eyebrow/dot pager, never the border; border = `edge` |
+| 26 | **Rails clip their last card with no affordance** — "Superpowers" is cut at the right edge in every theme with no fade, arrow or scrollbar. Same defect as the phone-width quick-chip row (P-17). | `marketplace-marketplace` | P-17's edge-fade + scroll pattern, applied to rails |
+| 27 | **Theme cards have two heights** on the Themes tab: entries without a description (Cotton Candy Sky, Devil's Garden, Meadow Mist) end at the author line, the others run two lines further, so rows are ragged. | `marketplace-marketplace-themes` | G-16 cards: fixed card height, description clamps to 2 lines or reserves them |
+| 28 | The two theme previews that were **blank on the real app** (Devil's Garden, Kuromi Dreamer — §6) **load fine in the workbench browser**, so the missing images are not missing files: verify the Electron image load (CSP / `theme-asset://` / timing) rather than the registry. | `marketplace-marketplace-themes` vs `e-theme-marketplace` | ROADMAP bug, verify in a dev instance |
+| 29 | **Library with content** is consistent with the Marketplace cards (same species, `INSTALLED` badge, tag chip) in all six themes; the *Favorites* section is a single card on its own row, which reads fine when populated — finding #2 is now only about the **empty** state (`?marketplace=empty`). | `marketplace-library`, `marketplace-library-themes` | P-2 scope narrowed to empty states |
+| 30 | **Skills drawer with skills** fills its row with real cards and reads well; the drawer's category pills are still the smallest text in the app (#9 stands). | `marketplace-skills-drawer` | P-9 |
+| 31 | **Meadow Mist / Halftone**: cards are translucent over the wallpaper and stay readable; the Library header in Meadow is a glass band with dark title text over sky — same T-5/T-6 note as before. Plugin-detail overlay is opaque in both packs (consistent with G-16's "text-bearing layers ≥ 0.85"). | `marketplace-marketplace-detail` | none |
+
+Real numbers note: the cards' "1 installs / ★★★★ (1)" come from the **live** marketplace
+worker (the stats context fetches it directly, even in the workbench), so those are real
+counts, not fixture values. "1 installs" (singular/plural) is a copy bug: → G-19 counts.
 
 ## 7. Method notes for the next pass
 

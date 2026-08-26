@@ -2,8 +2,10 @@
 
 - `gallery.html` — every captured surface, all themes side by side. Open the file in the
   app's file viewer or a browser. Names are `<plan>-<surface>` (`main-`, `overlays-`,
-  `narrow-`, `tall-`, `latency-` from the workbench sweep; `live-` and `e-` from the real
-  app); the findings doc cites them.
+  `narrow-`, `tall-`, `latency-`, `marketplace-` from the workbench sweep; `live-` and
+  `e-` from the real app); the findings doc cites them. `marketplace-*` exists because
+  youcoded PR #326 gave the workbench registry data — before that those surfaces were
+  empty in every theme.
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
   (103 of 104; "Known Issues" opens an external link). `contrast.md` — the painted-pixel
   contrast probe's raw output (over-reports on glass themes; read, don't paste).
