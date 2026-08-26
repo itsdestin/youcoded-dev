@@ -61,8 +61,8 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 
 ## Remote access state sync (`main/remote-server.ts`, `RemoteSnapshotExporter.tsx`)
 - **Remote clients hydrate via `chat:hydrate` on connect** — no parallel replay buffer; extend `serializeChatState`/`deserializeChatState` instead. `chat:export-snapshot` has a 2s timeout.
-- **`attentionState` is authoritative on DESKTOP only** — remote browsers get `attentionMap` via `status:data` and MUST NOT run their own classifier. The shim's `attentionMap` diff is load-bearing. `RemoteSnapshotExporter` is Electron-only by design.
+- **`attentionState` is authoritative on DESKTOP only** — remote browsers get `attentionMap` via `status:data` and MUST NOT run their own classifier. The shim's `attentionMap` diff is load-bearing.
 
 ## UI iteration tooling
-- **Building or redesigning UI? `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`, port 5233); `run-dev.sh` only for real event ordering/PTY/main process. Unbacked channels → `mock-shim.ts` `MOCK_ONLY`; review under `stress`/`empty` + latency. **After ANY shim change run `node scripts/workbench-boot-check.mjs`.** Depth: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
-- **Reviewing UI or a before/after? `bash scripts/ui-review/run-review.sh <worktree>`** — every surface × 6 themes, self-verified; `coverage.md` names what did NOT open. Standard `docs/active/design/2026-08-25-ui-design-guide.md`; skill `/ui-review`.
+- **Building or redesigning UI? `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`); `run-dev.sh` only for PTY/main-process behaviour. Unbacked channels → `mock-shim.ts` `MOCK_ONLY`; review under `stress`/`empty`. **After ANY shim change run `node scripts/workbench-boot-check.mjs`.** Spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
+- **UI review sweep: `bash scripts/ui-review/run-review.sh <worktree>`** — self-verified shots × 6 themes; read `coverage.md`; `/ui-review`.
