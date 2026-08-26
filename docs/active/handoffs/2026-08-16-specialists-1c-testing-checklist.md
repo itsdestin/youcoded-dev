@@ -20,6 +20,20 @@ related:
 > --offset 2 --profile specialists-1c`) and a real cloud model. **Run check 9b
 > first** — it is the permissions-leak check between helpers.
 >
+> **Agent-run 2026-08-26 (Task 14 Step 3, partial):** an agent launched the real dev
+> build (Electron + Vite, `--profile specialists-1c`, offset 2) and verified through its
+> debugging port, without a model: the app boots to the home screen; the real catalog call
+> returns the four built-ins each stamped `builtin`; the real grant-store call reads the
+> existing project folders; **Settings → Specialists** renders (tiers, "Available
+> specialists · 5", Built in / Your specialists groups, Refresh / Open folder); **Settings →
+> Permissions** renders the mode explainer and two folder cards from real data. Opening
+> Specialists created the starter `~/.youcoded/specialists/example.md` — that is the
+> designed first-visit behaviour, and the agent deleted the folder afterwards so your
+> normal app is untouched. **Every check that needs a real hire (1, 2, 4, 5, 9b, 9d, 9e,
+> 9f) and the project-folder checks (7, 8, 9 — they need a conversation open in a
+> folder) were deliberately left for you:** they spend money on a cloud model and are
+> interactive, which the workspace rules say to hand over rather than script.
+>
 > **Update 2026-08-26 (later):** the branch has been merged onto master and re-verified,
 > so the ordering risk below is gone. Two decisions changed what checks 9b/9e/9f
 > expect — see those checks: a file-defined helper now always shows a consent card
