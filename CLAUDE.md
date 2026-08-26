@@ -114,9 +114,17 @@ bash scripts/run-dev.sh <branch-or-worktree> --label "Feature Name"
 
 **Always pass `--label "<Feature Name>"`** so Destin can tell concurrent dev instances apart; without it the title falls back to the branch name. When another dev instance may be running, also pass a distinct `--offset` **and** `--profile` — a collision SIGKILLs the window. `--dry-run` prints the resolved target/ports/title without launching; `--list` shows registered worktrees. Ports, what's isolated, what's shared (`~/.claude/`), and the caveats: `docs/local-dev.md`.
 
+### New Features & UI/UX Changes
+
+When designing new features or making changes to user-facing app interfaces, the first step should always be to visualize and design the UI/UX of the final feature. Planning sessions should prioritize iterative UI design using the workbench and other tooling to help Destin shape the final user experience of the feature before building backend. When Destin provides final sign-off on the UI/UX design for the feature, the UI/UX should be treated as largely final and backend should be designed around the UI/UX accordingly. The standard every new surface is measured against is `docs/active/design/2026-08-25-ui-design-guide.md` (five laws, primitives, per-surface anatomies, checklist); show him the change as a theme sheet from the UI review rig below, not a description.
+
 ### UI Workbench
 
 `bash scripts/run-workbench.sh` boots the **real renderer** in a browser tab (Vite only — no Electron, no PTY) against a fake `window.claude`, on port 5233. Every menu is clickable and stateful, so **new feature UI is built here before its backend exists** — channels with no backend go in `MOCK_ONLY`, which is then the backend to-do list. Toolbar switches scenario (`default`/`empty`/`no-providers`/`refused`/`stress`), fake IPC latency, narrow viewport, and the tool gallery that replaced `?mode=tool-sandbox`. Use `run-dev.sh` instead when you need real event ordering, PTY, or main-process behaviour. **After any change to the mock shim run `node scripts/workbench-boot-check.mjs`** — it loads all seven routes headless and fails on a console error; the unit suite passed while the app crashed at boot three times running. Rule: `.claude/rules/react-renderer.md`; spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
+
+### UI review (autonomous screenshot sweep)
+
+`bash scripts/ui-review/run-review.sh <worktree>` screenshots **every** screen, dialog, drawer, popover and menu in all six themes (workbench, headless, ~15 min), builds side-by-side theme sheets, a painted-pixel contrast report and `gallery.html` — and **every shot must prove it opened** (target found, `expect` held, pixels changed) or it lands in `coverage.md` as a miss. **Read `coverage.md` before writing any finding; a surface that isn't `covered` is "unreviewed", never "fine".** Use it for the whole-app review pass (`/ui-review` skill: capture → fix misses → judge against `docs/active/design/2026-08-25-ui-design-guide.md` → numbered ledger) and as the before/after sheet for any UI PR (re-run only the affected plan). Terminal, marketplace data, sync and live sessions need the real-app pass in `scripts/ui-review/README.md`. Born from the 2026-08-25 review, whose first rig filed 40 mislabelled sheets — that failure is why the verification exists.
 
 ### CDP eval (live renderer inspection)
 

@@ -12,6 +12,9 @@ verify:
   - path: youcoded/desktop/src/renderer/components/RemoteSnapshotExporter.tsx
   - path: youcoded/desktop/src/renderer/hooks/useSessionAttention.ts
     contains: "useSyncExternalStore"
+  - path: scripts/ui-review/run-review.sh
+  - path: scripts/ui-review/shot.mjs
+    contains: "identical to baseline"
   - path: youcoded/desktop/src/renderer/components/ui/Button.tsx
     contains: "mergeClasses"
   - test: youcoded/desktop/src/renderer/components/ui/Button.test.tsx
@@ -62,3 +65,4 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 
 ## UI iteration tooling
 - **Building or redesigning UI? Use `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`, port 5233); `run-dev.sh` only for real event ordering/PTY/main-process behaviour. Unbacked channels go in `mock-shim.ts`'s `MOCK_ONLY`; review under `stress`/`empty` + latency. **After ANY shim change run `node scripts/workbench-boot-check.mjs`.** Depth: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
+- **Reviewing UI, or showing a before/after? `bash scripts/ui-review/run-review.sh <worktree>`** sweeps every surface × 6 themes headlessly and self-verifies each shot; `coverage.md` lists what did NOT open — cite it, never assume. Design standard: `docs/active/design/2026-08-25-ui-design-guide.md`; procedure: `/ui-review` skill; rig docs: `scripts/ui-review/README.md`. New workbench switches (`?firstRun=`, `?stalled=`…) get a `workbench-boot-check.mjs` route AND a plan entry.
