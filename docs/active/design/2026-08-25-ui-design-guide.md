@@ -120,16 +120,18 @@ treatment must never paint a background, or the two become the same grey block
 (pinned in `Button.test.tsx`). Do not propose a colour accent for them again. It may **not**
 paint borders of resting containers (composer outline, header outline), bubble stripes,
 the count badge, or the *Chat* tab at rest. Theme packs inherit this list — a pack that
-paints accent on eight things (Halftone today) is over budget; P-16 turns this into a
-rule the theme validator can check.
+paints accent on eight things (Halftone today) is over budget. This stays a **review**
+rule — the validator does not check it (P-16, decided 2026-08-25: no new pack rules).
 
 ### 2.4 Spacing, borders, shadows, motion
 
 - Rhythm is 4px. Card padding 12/16, dialog padding 16 (`panel`) / 20 (`document`), row
   height 40–44 (settings rows are 51 and stay that way — decision in spec §20).
 - Borders are `edge` (1px) on `panel`-level containers and `edge-dim` on `inset` ones.
-  **Every secondary button and every field has a visible border in every theme** — P-16
-  makes the theme validator refuse packs where `edge` ≈ `panel`.
+  **Every secondary button and every field has a visible border in every theme.** The
+  validator already refuses `edge-dim` below 1.3:1 on `panel`; the gap in practice is glass
+  over a bright wallpaper (Meadow Mist, fixed in the pack 2026-08-25 — P-16), which no
+  flat-token rule catches, so check it on the sheet.
 - Shadows only on floating layers (dialogs, popovers, toasts) — `Overlay.tsx` owns the
   layer and z-index; nothing else sets `z-`.
 - Motion: 150ms ease for hover/press, 200ms for drawers and sheets; all of it behind
@@ -320,6 +322,10 @@ the validator (`theme-validator.ts` + vendored `contrast-rules.js`) enforces:
 3. One `primary` per view (G-4). Selected states are visible in **midnight** (the
    hardest theme for it).
 4. Text ≥ `text-2xs` for anything informational (G-5); `fg-faint` only on decoration (G-6).
+0. **Before any of the above: is the problem measured or a preference?** A proposal must
+   name the number it fixes (a ratio, a size, a count) or the behaviour that is broken (no
+   close button, text wraps, a literal `|`). Anything else is a judgment call — label it so,
+   show the baseline neutrally, and do not dress it as a defect (P-12, 2026-08-25).
 5. Dialog has the G-10 header and scrolls per G-11; size chosen by content.
 6. Counts per G-19, chips per G-14, empty/loading/error per §4.7.
 7. Screenshot sheet: `default`, `empty`, `stress` scenarios × **midnight, light,

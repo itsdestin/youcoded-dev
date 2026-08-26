@@ -1,0 +1,18 @@
+{
+  "_comment": "Shared 1:1 crop regions for review pages: name → [plan, shot, WxH+X+Y] on the 1440×900 workbench shots (overlays/main) — calibrated 2026-08-25. A spec may override or add entries under its own `crops`.",
+  "bubble":     ["main", "home", "560x90+880+30"],
+  "statusbar":  ["main", "home", "720x60+0+840"],
+  "send":       ["main", "composer-typed", "260x70+1180+830"],
+  "drawer":     ["main", "settings-drawer", "320x420+0+60"],
+  "drawerfull": ["main", "settings-drawer", "330x900+0+0"],
+  "themes":     ["main", "settings-appearance", "440x600+500+160"],
+  "model":      ["main", "model-picker", "440x340+500+290"],
+  "resume":     ["main", "resume-browser", "460x480+490+215"],
+  "toolcard":   ["main", "tool-card-expanded", "1200x420+20+40"],
+  "stalled":    ["overlays", "native-session-stalled-and-permission", "620x70+20+220"],
+  "firstrun":   ["overlays", "first-run-authenticate", "440x460+500+230"],
+  "close":      ["overlays", "close-session-prompt", "450x370+590+335"],
+  "bugreport":  ["overlays", "development-bug-report", "700x500+370+200"],
+  "market":     ["marketplace", "marketplace", "1440x420+0+40"],
+  "library":    ["marketplace", "library", "1440x330+0+40"]
+}

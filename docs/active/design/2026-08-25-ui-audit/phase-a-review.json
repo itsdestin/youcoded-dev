@@ -1,0 +1,79 @@
+{
+  "out": "phase-a-review.html",
+  "images": "images/phase-a",
+  "sheets": "images/phase-a/sheets",
+  "key": "Phase A",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-review-2026-08-25",
+    "A": "/home/destin/youcoded-dev/scratch/ui-phase-a",
+    "B": "/home/destin/youcoded-dev/scratch/ui-phase-a-mono"
+  },
+  "labels": {"before": "Before (today)", "A": "After", "B": "After"},
+  "title": "Phase A review — readable greys, a real accent, lighter bubbles",
+  "lead": "Four changes to the app's colour tokens and two theme packs. Every picture below is a 1:1 crop from a verified screenshot of the real app UI (workbench, six themes); the full-window sheets are linked under each section. Nothing here is merged — it lives on the branch <code>feat/ui-phase-a-tokens</code> (and <code>feat/ui-phase-a-mono</code> for option B).",
+  "banner": "<strong>Decided 2026-08-25.</strong> P-11 approved (youcoded #327). P-12 rejected — the dark themes stay monochrome by design; the baseline signals \"selected\" by fill and \"disabled\" by dimming, and that convention is now pinned. P-13 rejected. P-16 minimal — only Meadow Mist's outline strength (wecoded-themes #27); glass, Halftone and the validator rule untouched (a 1.5:1 outline rule would fail 6 of 7 published packs that look fine). The page is kept as the record of what was shown. Tags were added after the fact: P-12 and P-13 were judgment calls presented as if they were defects — the reason they were rejected on sight.",
+  "items": [
+    {
+      "id": "P-11", "title": "Grey helper text becomes readable", "kind": "measured",
+      "sections": [
+        {"h": "The problem", "html": "<p>The app has five levels of text colour, from strongest (<code>fg</code>, body text) to faintest (<code>fg-faint</code>). The second-faintest one, <code>fg-muted</code>, is used for the small helper lines you actually read: the sub-line under every Settings row, timestamps, file sizes, the status bar chips, \"no results\" copy. It sits mostly on <em>raised</em> surfaces (cards, rows, dialogs), and there it measured <span class=\"bad\">3.0–3.3 : 1</span> in every built-in theme. The accessibility standard for small text is <span class=\"good\">4.5 : 1</span> (WCAG AA). 3 : 1 is the bar for <em>large</em> headlines, and the app's own theme checker was only demanding that.</p><p>The faintest level, <code>fg-faint</code>, is at about 2 : 1 — fine for a divider line or a disabled chevron, unreadable for a word. 18 places were using it for words anyway (the \"Skip setup\" link in the onboarding wizard, a timestamp, an \"or\", the placeholder in dropdowns…), and the loading spinner cycled through it as one of its colours.</p>"},
+        {"h": "What changed", "html": "<ul><li>In each of the four built-in themes, <code>fg-muted</code> was moved toward the body-text colour until it clears 4.5 : 1 on the raised surfaces. The step above it (<code>fg-dim</code>) — and in Crème the step above that — was nudged the same way so the three greys stay in order rather than collapsing into one.</li><li><code>fg-faint</code> is now <em>decorative-only</em>: the 18 text uses moved up to <code>fg-muted</code>; dividers, dots, icon-only buttons and disabled chips keep it (60 places, each checked by hand). The spinner drops it from its cycle.</li><li>A test now pins all of this (<code>fg-muted</code> ≥ 4.5 : 1 on raised surfaces, ladder stays ordered, <code>fg-faint</code> stays decorative), so a future theme edit can't quietly regress it.</li></ul><table class=\"num\"><thead><tr><th>Theme</th><th>fg-muted on a card, before</th><th>after</th><th>fg-dim on a card, before</th><th>after</th></tr></thead><tbody><tr><td>Midnight</td><td>3.31</td><td>4.53</td><td>4.95</td><td>5.34</td></tr><tr><td>Dark</td><td>3.03</td><td>4.55</td><td>5.58</td><td>5.58 (unchanged)</td></tr><tr><td>Light</td><td>3.02</td><td>4.51</td><td>4.05</td><td>5.34</td></tr><tr><td>Crème</td><td>3.01</td><td>4.52</td><td>4.01</td><td>5.31</td></tr></tbody></table>"}
+      ],
+      "looks": [
+        {"crop": "drawer", "themes": ["midnight", "dark", "light", "creme"], "cols": ["before", "A"], "note": "Settings drawer — the sub-line under each row is fg-muted. Crop at 1:1."},
+        {"crop": "statusbar", "themes": ["midnight", "dark", "light", "creme"], "cols": ["before", "A"], "note": "Composer + status bar — chip text and the \"Message Claude…\" placeholder."},
+        {"crop": "resume", "themes": ["midnight", "light"], "cols": ["before", "A"], "note": "Resume Session — project, model, size and date lines under each session."},
+        {"crop": "firstrun", "themes": ["midnight", "light"], "cols": ["before", "A"], "note": "Onboarding wizard — \"Skip setup\" at the bottom was one of the 18 fg-faint text sites (now fg-muted, with a visible hover step)."}
+      ],
+      "sections_after": [],
+      "sheets": ["dark-main-settings-drawer", "light-main-settings-drawer", "dark-main-resume-browser", "light-main-resume-browser", "dark-overlays-first-run-authenticate", "light-overlays-first-run-authenticate"],
+      "decision": ["Approve", "Approve with changes", "Reject"]
+    },
+    {
+      "id": "P-12", "title": "Give the dark themes a real accent (A), or keep grey and add a second signal (B)", "kind": "judgment",
+      "sections": [
+        {"h": "The problem", "html": "<p>Every theme has one \"accent\" colour that means <em>this is the main action</em> or <em>this is the one that's selected</em>: the primary button, the chosen model, the active theme card, the send arrow, your own chat bubble. In Midnight and Dark the accent is a light grey that is almost the same colour as body text (they differ by only 1.27 : 1 and 1.12 : 1). A light-grey block with dark text is also what a <em>disabled</em> control often looks like in other apps — so primary and selected things <em>could</em> read as switched off. Look at the Model &amp; Effort picker below: \"Max\" is disabled and \"Auto\" is selected. <strong>Nothing measurable fails here</strong> — the contrast on those buttons is 9–12 : 1; the baseline distinguishes them by fill vs. dimming. This is a convention argument.</p><p>Light and Crème don't have this problem: their accent is near-black, and a black fill on a light screen is unmistakably \"on\". Halftone and Meadow bring their own accents (pink, green). So this only concerns the two dark built-ins.</p>"},
+        {"h": "Option A — a real accent colour", "html": "<ul><li>Midnight: <code>#6CA0DC</code>, a soft blue (it sits next to Midnight's blue links, which is deliberate — GitHub does the same).</li><li>Dark: <code>#8DA6C9</code>, a steel blue-grey, so Dark stays the quieter of the two.</li><li>Text on the accent stays <em>dark</em> (the canvas colour), as it is today. White text was considered and rejected by arithmetic: a blue dark enough for white text to reach 4.5 : 1 is too dark for blue text to be readable on the black background — and the app uses the accent as text in 47 places. Measured: dark-on-accent 6.9 : 1 (Midnight) and 7.6 : 1 (Dark); accent as text on a card 5.6 and 6.4 : 1.</li></ul>"},
+        {"h": "Option B — keep the grey, add a second signal", "html": "<ul><li>The theme engine notices when a dark theme's accent is \"just another grey\" (within 1.5 : 1 of the text colour) and flags it. Only then, primary/selected controls get <strong>bold text plus a thin dark line just inside their edge</strong> (a double-border look), and disabled primary buttons lose their fill and take a dashed outline. Nothing changes in themes that have a real accent.</li><li>Side effect you can see below: your own chat bubble shares the primary-button recipe, so it gets the inner line too.</li><li>Not visible in any capture: the dashed \"disabled\" outline — no screen in the sweep has a disabled primary button.</li></ul>"}
+      ],
+      "looks": [
+        {"crop": "model", "themes": ["midnight", "dark"], "cols": ["before", "A", "B"], "labels": {"A": "A — blue accent", "B": "B — grey + signal"}, "note": "Model & Effort — \"Sonnet\" and \"Auto\" are selected; \"Max\" is disabled."},
+        {"crop": "themes", "themes": ["midnight", "dark"], "cols": ["before", "A", "B"], "labels": {"A": "A — blue accent", "B": "B — grey + signal"}, "note": "Appearance → Themes — the active card and the primary \"Build New Theme\" button."},
+        {"crop": "stalled", "themes": ["midnight", "dark"], "cols": ["before", "A", "B"], "labels": {"A": "A — blue accent", "B": "B — grey + signal"}, "note": "Stalled-turn card — \"Retry\" is a primary button, \"Stop\" secondary."},
+        {"crop": "send", "themes": ["midnight", "dark"], "cols": ["before", "A", "B"], "labels": {"A": "A — blue accent", "B": "B — grey + signal"}, "note": "Composer with text — the send arrow is accent-filled."},
+        {"crop": "bubble", "themes": ["midnight", "dark"], "cols": ["before", "A", "B"], "labels": {"A": "A — blue accent", "B": "B — grey + signal"}, "note": "Your own message bubble (accent-filled on dark themes)."}
+      ],
+      "sheets": ["dark-main-home", "dark-main-model-picker", "dark-main-settings-appearance", "dark-overlays-native-session-stalled-and-permission", "dark-main-marketplace", "dark-main-library", "dark-main-projects", "dark-overlays-close-session-prompt", "dark-overlays-first-run-authenticate"],
+      "decision": ["A — blue accent", "A, but a different colour (say which in notes)", "B — grey + signal", "B, without the bubble outline", "Neither / leave as is"]
+    },
+    {
+      "id": "P-13", "title": "Your bubble on light themes: grey instead of solid black", "kind": "judgment",
+      "sections": [
+        {"h": "The problem", "html": "<p>On Light and Crème the accent is near-black, so your own messages render as solid black blocks — the heaviest object on an otherwise pale screen. Nothing fails a number; this is a weight/taste argument.</p>"},
+        {"h": "What changed", "html": "<p>The theme engine stamps the page with whether the current theme is a light or dark scheme. On light schemes the user bubble is drawn on the \"inset\" grey (the same surface as the assistant's bubble) with normal body text. Dark schemes keep their accent-coloured bubble. This is how claude.ai draws the user bubble in both modes.</p>"},
+        {"h": "What you will notice, and the risks", "html": "<ul><li>Your messages stop being the darkest thing on a light screen.</li><li>Scope: the rule keys on \"light scheme\", so <strong>every light community pack</strong> (Meadow Mist today) gets the grey bubble too. Halftone is dark and keeps its pink-glow bubble.</li></ul>"}
+      ],
+      "looks": [
+        {"crop": "bubble", "themes": ["light", "creme", "meadow-mist"], "cols": ["before", "A"], "note": "Your message bubble, 1:1. Meadow Mist is a light scheme, so the rule catches it too."}
+      ],
+      "sheets": ["light-main-home", "light-main-composer-typed", "packs-main-home"],
+      "decision": ["Approve — all light schemes (as built)", "Approve — but built-in Light/Crème only", "Change — grey bubble in every theme", "Reject"]
+    },
+    {
+      "id": "P-16", "title": "Theme-pack fixes: outlines and glass in Meadow Mist and Halftone", "kind": "mixed",
+      "sections": [
+        {"h": "The problem", "html": "<p>Two bundled community packs draw their panels as translucent glass over a wallpaper. In Meadow Mist the glass was 58 % solid, and its border colour is used at 50 % opacity on top of that — so outlined (\"secondary\") buttons and the edges of rows faded into the sky behind them (<strong>measured</strong>: finding T-5/T-6, the outline composited over the wallpaper bottoms out near 1 : 1). Halftone's glass was 78 %, readable — the Halftone part and the glass changes are <strong>judgment</strong>.</p>"},
+        {"h": "What changed (the visible half — the packs)", "html": "<ul><li>Meadow Mist: border-dim opacity 50 % → 80 %; panel glass 58 % → 85 % solid.</li><li>Halftone Dimension: panel glass 78 % → 85 % solid. Its checkboxes were <em>already</em> square, so nothing to do there.</li><li>These are edits to the copies bundled in the workbench for review; on approval the same edits go to the <code>wecoded-themes</code> repo.</li></ul>"},
+        {"h": "The invisible half (only after approval)", "html": "<p>The rules the theme checker enforces on every submitted pack would gain: <em>border-dim on panel ≥ 1.5 : 1</em> (was 1.3), <em>glass that carries text ≥ 85 % solid</em>. The checker file lives in three repos and must be merged in a fixed order, which is why it isn't in this branch.</p>"}
+      ],
+      "looks": [
+        {"crop": "drawerfull", "themes": ["halftone-dimension", "meadow-mist"], "cols": ["before", "A"], "note": "Settings drawer over the wallpaper — row outlines and how much wallpaper shows through.", "zoom": 0.75},
+        {"crop": "close", "themes": ["meadow-mist"], "cols": ["before", "A"], "note": "Close-session prompt in Meadow Mist — the \"Cancel\" outline and the card edges."},
+        {"crop": "bubble", "themes": ["halftone-dimension", "meadow-mist"], "cols": ["before", "A"], "note": "Both packs' user bubble. Halftone keeps its accent (dark scheme); Meadow follows P-13."}
+      ],
+      "sheets": ["packs-main-settings-drawer", "packs-main-home", "packs-overlays-close-session-prompt", "packs-main-marketplace", "packs-main-library"],
+      "decision": ["Approve (85 %)", "Approve, but Meadow at 75 %", "Approve outlines only, keep the glass as it was", "Reject"]
+    }
+  ],
+  "closing": "<h2 id=\"other\">What did <em>not</em> change, and what to ignore</h2><ul><li>No layout, spacing, copy or component moved anywhere in Phase A.</li><li>Halftone's checkboxes: already square, untouched.</li><li>The \"before\" Marketplace and Library screenshots were taken before the workbench had sample marketplace data, so those two screens have no honest before/after in this round.</li><li>All checks pass on both branches: types, 6,068 unit tests, dead-code, lint and the code-shape invariants.</li><li>Every screenshot in this page was verified by the capture rig (112 of 112 surfaces, six themes for the branch; 77 of 77 for option B in the two dark themes). None is a mislabelled capture.</li></ul>"
+}

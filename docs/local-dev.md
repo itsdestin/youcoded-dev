@@ -83,6 +83,13 @@ This is intentional — isolating these would mean dev can't test against your r
 
 - **Plugin install/uninstall mutates your real state.** Installing a plugin in dev adds it to your built app's enabled plugins too. Clean up after testing if you don't want that to stick.
 - **Windows OneDrive.** If `~/.claude/` lives under a OneDrive-synced folder, two writers can produce conflict copies. Check with `(Resolve-Path ~/.claude).Path` in PowerShell — if the path starts with a OneDrive folder, either exclude `.claude` from sync or accept the occasional conflict file.
+- **Concurrent Claude sessions share the defaults — give each its own offset.** `run-workbench.sh`
+  defaults to Vite 5233 and `workbench-boot-check.mjs` used to pin Chrome's debugging port at
+  9977; on 2026-08-25 two sessions collided on both: one boot check hung 40 minutes attached to
+  the other's Chrome, and a screenshot sweep "reused" the other session's workbench and shot the
+  wrong worktree. Never reuse a server you did not start without checking what it serves
+  (`ss -ltnp 'sport = :5233'` → pid → `readlink /proc/<pid>/cwd`); the review rig now does this
+  itself and runs on its own port (5473). Pass `YOUCODED_PORT_OFFSET` per session.
 - **Second dev run fails noisily.** `strictPort: true` in `vite.config.ts` means if the dev port is already taken, Vite errors instead of silently picking the next one. Kill the stale process or bump `YOUCODED_PORT_OFFSET`. To find what's holding the port: `netstat -ano | grep ":5223 "` (substitute your chosen Vite port).
 - **If dev crashes, close only the dev window.** The built app is unaffected.
 - **Launching dev from inside a Claude Code session used to break chat view.** Because `run-dev.sh` may be run via a Claude session's Bash tool, the dev Electron inherits `CLAUDECODE`/`CLAUDE_CODE_CHILD_SESSION`/`CLAUDE_CODE_SESSION_ID`. Those previously flowed into every spawned `claude`, which then ran as a *nested* session and wrote no transcript → chat view stayed empty while terminal view worked. `pty-worker.js` now strips these before spawn, so dev works no matter how it's launched. See `docs/PITFALLS.md → Local Dev & Launch Environment` (youcoded#106). If you ever see "responses only in terminal, never in chat" again, confirm the strip is present in `pty-worker.js`.

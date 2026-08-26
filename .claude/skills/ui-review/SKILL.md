@@ -16,7 +16,8 @@ ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
 2. `bash scripts/ui-review/run-review.sh <worktree>` — ~5 min. It boots the
    workbench, runs every plan × 6 themes, verifies each shot, builds sheets, `coverage.md`,
    `contrast.md`, `gallery.html` under `scratch/ui-review-<date>/`.
-3. **Read `coverage.md` first.** Every `MISSED`/`partial` row is either a selector to fix
+3. **Read the first log line** — it must say `workbench :<port> serves <your worktree>/desktop`;
+   the rig aborts otherwise. Then **read `coverage.md`.** Every `MISSED`/`partial` row is either a selector to fix
    (add a `dump` action, find the control, add an `expect`, re-run that one plan) or a
    genuine gap to list as *unreviewed*. Do not write a finding about a surface that is not
    `covered`. Do not stop at "one dev-instance session away" — fix the selector.
@@ -51,10 +52,24 @@ ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
 
 ## 4. Improve (when asked, or as the follow-up)
 
-Each approved `P-n` goes through the `ui-mockup` workflow: edit the primitive/token in a
-worktree, re-run **only the affected plan** (`node scripts/ui-review/shot.mjs plans/main.json
-<out> <themes>`), and hand Destin the before/after sheet numbered by change. Tokens first
-(they move every surface), then the four most-seen screens.
+Work phase by phase (findings §5 groups them). Per phase: worktree, edits, `verify.sh`,
+then a **review page** — never a gallery, never a chat summary:
+
+1. Capture the branch: `bash scripts/ui-review/run-review.sh <worktree> scratch/<phase>`
+   (it starts its own server on Vite 5473 and refuses if that port serves another worktree).
+   For a second variant, a second worktree + run dir.
+2. Write `docs/active/design/<audit>/<phase>-review.json` (copy `phase-a-review.json`), then
+   `python3 scripts/ui-review/review-page.py crop <spec>` and `… build <spec>`. Crop regions
+   come from `scripts/ui-review/crops.json`; add new ones there.
+3. Every item on the page carries, in this order: the problem **with the measured number
+   or the broken behaviour**, exactly what was edited, 1:1 crops of the element per theme
+   (before / after, a column per variant), what he'll notice + the risks *against* the
+   change, alternatives considered, and a decision control. **Tag each item `measured`,
+   `judgment` or `mixed`** and say which parts are which — on 2026-08-25 a taste argument
+   (P-12) went in as if it were a defect and was rightly rejected on sight.
+4. Hand Destin the page path; he pastes the generated feedback block. Act on it exactly;
+   record the decisions in the findings ledger (the row, not a new section), the guide,
+   the ROADMAP entry, and a `banner` on the page. Merge, archive, clean up.
 
 ## Red flags
 
@@ -63,3 +78,7 @@ worktree, re-run **only the affected plan** (`node scripts/ui-review/shot.mjs pl
 - "Reads as a crash" on a workbench surface → check for a mock gap (no PTY, no registry,
   `undefined` in copy) before calling it an app bug.
 - A count you did not measure ("13 pills", "six primaries") → count on the full-res PNG.
+- A proposal whose "problem" has no number and no broken behaviour → it is `judgment`; say so,
+  show the baseline neutrally, and expect a no.
+- A sweep whose shots show something not on the branch (a card, a feature) → wrong server;
+  the ownership check exists because this happened for 40 minutes on 2026-08-25.

@@ -284,6 +284,12 @@ worktree/PR with one before/after sheet from `scripts/ui-review/run-review.sh`, 
 phases are judged against screens that already include the earlier ones. The reason for
 the order is in each phase's first line.
 
+**Tags (added 2026-08-25 after Phase A):** every remaining row starts with **[measured]**
+(a number or a broken behaviour), **[judgment]** (a consistency/taste argument — the baseline
+is not broken), or **[mixed]**. Phase A taught the difference: P-12 and P-13 were judgment
+calls presented as defects and were rejected on sight. Judgment items get a light proposal
+shown against a neutral baseline, and "no" is the expected answer for most of them.
+
 ### Phase A — tokens and theme guarantees (do first: every later before/after looks different once these land)
 
 One edit at the token/theme layer moves every surface at once, so nothing in B–F should be
@@ -299,6 +305,12 @@ P-18 below. Verify with a **full** rig run (all plans, 6 themes).
 
 ### Phase B — shared primitives (one component, many surfaces)
 
+**Trimmed proposal (2026-08-25, after Phase A):** build only the measured parts first —
+P-15's title row + ✕ on the two headerless dialogs and the wrapping footers; P-18's literal
+`|` → a divider element; P-10's 10px text → the 11px floor and the phone-width wrap. Show
+the judgment parts (AskUserQuestion header layout, the orange model-chip outline, the
+theme-chip treatment) as separate, clearly-tagged items on the same review page.
+
 These are edits to a primitive that N surfaces inherit; doing them before the per-screen
 work in C means those screens are drawn with the corrected parts. P-18 needs P-12 (its
 *Submit* button only becomes visible with a real accent). Verify: `main` + `overlays` +
@@ -306,9 +318,9 @@ work in C means those screens are drawn with the corrected parts. P-18 needs P-1
 
 | # | Proposal | Touches | Risk / what users will notice |
 |---|---|---|---|
-| P-15 | Every dialog gets the same header (title · optional ⓘ · ✕): add it to Donate and Development; Resume Session moves "Show complete" below the search field and gets a ✕. About and Permissions get a scrollbar/fade. | 5 dialogs | Two dialogs gain a title row. |
-| P-18 | Tool cards: AskUserQuestion adopts the standard header (glyph · title · ↳ first question · chevron right-aligned); its option rows share one row style; *Submit* uses `primary` (which P-12 makes visible). The literal `\|` separator in the header becomes a 1px divider element, not text. | every tool card | The pipe character disappears; AskUserQuestion looks like its siblings. **P-12 rejected → *Submit* already uses `primary`; nothing to add there.** |
-| P-10 | Status bar: all chips share one treatment (grey outline); the model chip signals "current model" with the model's *icon*, not an orange outline; the theme chip is a label (no border) with the cycle affordance on hover; text floor `text-2xs`; at phone width chips collapse to icons before wrapping. | Status bar (every session) | The orange outline disappears; text one step larger. |
+| P-15 | **[measured]** two dialogs have no title and no ✕ (Escape is the only exit); footers wrap. Every dialog gets the same header (title · optional ⓘ · ✕): add it to Donate and Development; Resume Session moves "Show complete" below the search field and gets a ✕. About and Permissions get a scrollbar/fade. | 5 dialogs | Two dialogs gain a title row. |
+| P-18 | **[mixed]** measured: a literal `\|` text character in every tool-card header; judgment: the AskUserQuestion header layout. Tool cards: AskUserQuestion adopts the standard header (glyph · title · ↳ first question · chevron right-aligned); its option rows share one row style; *Submit* uses `primary` (which P-12 makes visible). The literal `\|` separator in the header becomes a 1px divider element, not text. | every tool card | The pipe character disappears; AskUserQuestion looks like its siblings. **P-12 rejected → *Submit* already uses `primary`; nothing to add there.** |
+| P-10 | **[mixed]** measured: 10px text is below the 11px floor (G-5) and the bar wraps to two rows at phone width; judgment: the orange outline and the theme-chip treatment. Status bar: all chips share one treatment (grey outline); the model chip signals "current model" with the model's *icon*, not an orange outline; the theme chip is a label (no border) with the cycle affordance on hover; text floor `text-2xs`; at phone width chips collapse to icons before wrapping. | Status bar (every session) | The orange outline disappears; text one step larger. |
 
 ### Phase C — the four screens users see most
 
@@ -319,11 +331,11 @@ numbered before/afters. P-2's tab style copies Projects', so P-5 goes first. Ver
 
 | # | Proposal | Touches | Risk / what users will notice |
 |---|---|---|---|
-| P-3 | Themes dialog: all cards one height (active card gets a badge + pencil *inline*, not a second row); stable order (active first, then favourites A–Z); the three CTAs become **one** primary (*Build New Theme with Claude*) + **one** secondary (*Browse themes* — marketplace *is* "all themes"); "Edit built-in" becomes a disabled pencil with a tooltip instead of an empty dialog. | Appearance, Library › Themes | "Browse all themes →" disappears (it and "Browse Theme Marketplace" open the same screen). |
-| P-5 | Projects header card: one primary (*New Conversation*), *Rename/Remove* become `size="sm"` secondary/`danger-outline` at the same scale as *+ Add file*; the sync chip becomes a status row with a secondary button; folder-card notch removed (folder icon carries the meaning); preview text floors at `text-2xs`. Projects also adopts the wallpaper (`layer-screen`) like Library/Marketplace. | Projects | The folder "tab" look goes away; in community packs Projects becomes translucent like its siblings. |
-| P-1 | Marketplace bar → three distinct groups: a **SegmentedTabs** for Plugins/Themes, **filter pills** for categories, a **Select** for sort; search field gets the shared `SearchFilterPill` shape; one empty state (`EmptyState` with a "Clear filters" action). | Marketplace | Visible re-layout of the bar; muscle memory for the two tabs is preserved (same position). |
-| P-2 | Library → `EmptyState` under each heading ("No favourites yet — ★ a skill in the Marketplace" with a button); tab group adopts Projects' bordered icon+label+count style. Scope is the **empty** states only — with content the Library already matches the Marketplace cards (§6c #29). | Library | New users finally see something; nothing moves for users with content. |
-| P-21 | *(new, from §6c)* Marketplace cards: the featured hero's hardcoded gold border becomes `edge` (the pack's `accentColor` may tint only the eyebrow and dot pager — T-1); theme cards get one fixed height with the description clamped/reserved at 2 lines (#27); install/rating counts pluralise correctly ("1 install", G-19). | Marketplace | The gold outline disappears; theme rows stop being ragged. |
+| P-3 | **[mixed]** measured: two buttons open the same screen, "Edit built-in" opens an empty dialog, cards jump height; judgment: the rest of the re-layout. Themes dialog: all cards one height (active card gets a badge + pencil *inline*, not a second row); stable order (active first, then favourites A–Z); the three CTAs become **one** primary (*Build New Theme with Claude*) + **one** secondary (*Browse themes* — marketplace *is* "all themes"); "Edit built-in" becomes a disabled pencil with a tooltip instead of an empty dialog. | Appearance, Library › Themes | "Browse all themes →" disappears (it and "Browse Theme Marketplace" open the same screen). |
+| P-5 | **[judgment]** Projects header card: one primary (*New Conversation*), *Rename/Remove* become `size="sm"` secondary/`danger-outline` at the same scale as *+ Add file*; the sync chip becomes a status row with a secondary button; folder-card notch removed (folder icon carries the meaning); preview text floors at `text-2xs`. Projects also adopts the wallpaper (`layer-screen`) like Library/Marketplace. | Projects | The folder "tab" look goes away; in community packs Projects becomes translucent like its siblings. |
+| P-1 | **[judgment]** the bar works; it is a consistency argument. Marketplace bar → three distinct groups: a **SegmentedTabs** for Plugins/Themes, **filter pills** for categories, a **Select** for sort; search field gets the shared `SearchFilterPill` shape; one empty state (`EmptyState` with a "Clear filters" action). | Marketplace | Visible re-layout of the bar; muscle memory for the two tabs is preserved (same position). |
+| P-2 | **[measured]** a new user's Library shows nothing at all — no copy, no way forward. Library → `EmptyState` under each heading ("No favourites yet — ★ a skill in the Marketplace" with a button); tab group adopts Projects' bordered icon+label+count style. Scope is the **empty** states only — with content the Library already matches the Marketplace cards (§6c #29). | Library | New users finally see something; nothing moves for users with content. |
+| P-21 | **[measured]** a hardcoded gold border ignores every theme; ragged card heights; "1 installs". *(new, from §6c)* Marketplace cards: the featured hero's hardcoded gold border becomes `edge` (the pack's `accentColor` may tint only the eyebrow and dot pager — T-1); theme cards get one fixed height with the description clamped/reserved at 2 lines (#27); install/rating counts pluralise correctly ("1 install", G-19). | Marketplace | The gold outline disappears; theme rows stop being ragged. |
 
 ### Phase D — chat-adjacent surfaces (the composer, the transcript, the drawers)
 
@@ -333,11 +345,11 @@ one screen and one PR. P-6 needs P-12. Verify: `main` + `overlays` plans, plus t
 
 | # | Proposal | Touches | Risk / what users will notice |
 |---|---|---|---|
-| P-6 | Welcome screen: *New Session* uses the real primary treatment from P-12; *Resume Session* stays secondary; add a Settings gear to this screen's corner (today Settings is unreachable here without expanding the form). | Welcome | A gear appears on the welcome screen. **P-12 rejected → P-6 is now only the Settings gear; the primary treatment stays as is.** |
-| P-19 | Composer attachment chips: icon · name (≥ 12 characters before truncating) · always-visible ✕, `md` radius, `text-2xs`; broken thumbnails fall back to the file-type icon. | composer | Attachments become readable. |
-| P-14 | Find bar gets its own `panel` surface anchored top-right *above* the transcript instead of inside the user bubble. | find | The bar stops covering the first message. |
-| P-9 | Skills drawer: category pills use the shared filter-pill shape/size; the two icon buttons leave the search field and sit beside it as `size="icon"` buttons with names; the *Add Skills* card becomes an `EmptyState` centred in the row when there are no skills, and a normal last card when there are. | Skills drawer | Search field looks like every other one. |
-| P-20 | Terminal: the terminal grid fills the pane width; the terminal surface takes the ≥ 0.9 `panel` opacity guarantee from P-16 under wallpaper packs. | Terminal | No more empty right third; readable over wallpapers. |
+| P-6 | **[measured]** Settings is unreachable from the welcome screen without expanding the form. Welcome screen: *New Session* uses the real primary treatment from P-12; *Resume Session* stays secondary; add a Settings gear to this screen's corner (today Settings is unreachable here without expanding the form). | Welcome | A gear appears on the welcome screen. **P-12 rejected → P-6 is now only the Settings gear; the primary treatment stays as is.** |
+| P-19 | **[measured]** chip names truncate after ~4 characters; text below the floor; broken thumbnails. Composer attachment chips: icon · name (≥ 12 characters before truncating) · always-visible ✕, `md` radius, `text-2xs`; broken thumbnails fall back to the file-type icon. | composer | Attachments become readable. |
+| P-14 | **[measured]** the find bar covers the first message. Find bar gets its own `panel` surface anchored top-right *above* the transcript instead of inside the user bubble. | find | The bar stops covering the first message. |
+| P-9 | **[mixed]** measured: category pills are the smallest text in the app; judgment: the rest. Skills drawer: category pills use the shared filter-pill shape/size; the two icon buttons leave the search field and sit beside it as `size="icon"` buttons with names; the *Add Skills* card becomes an `EmptyState` centred in the row when there are no skills, and a normal last card when there are. | Skills drawer | Search field looks like every other one. |
+| P-20 | **[measured]** the terminal grid stops at 2/3 of the pane; unreadable over wallpapers. Terminal: the terminal grid fills the pane width; the terminal surface takes the ≥ 0.9 `panel` opacity guarantee from P-16 under wallpaper packs. | Terminal | No more empty right third; readable over wallpapers. |
 
 ### Phase E — small dialogs and popovers
 
@@ -345,9 +357,9 @@ Contained, low-risk, no dependencies; batch into one PR. Verify: `main` + `overl
 
 | # | Proposal | Touches | Risk / what users will notice |
 |---|---|---|---|
-| P-4 | Model Providers: one button vocabulary per card (secondary chips for *Add key/Test*, `danger-outline` *Remove*), *Add provider* becomes a secondary button (not full-width outline), never render `undefined` (fall back to "—"), dialog scroll shows a scrollbar. | Model Providers | None visible beyond consistency. |
-| P-7 | Keyboard Shortcuts → `panel` (420px) size; rows grid-aligned (label column + key column); dialog scrolls with a visible scrollbar. | one dialog | Wider dialog. |
-| P-8 | All-sessions popover width becomes `min(28rem, 88vw)` and rows truncate to one line with a title tooltip; scroll cue via bottom fade. | one popover | Rows stop wrapping. |
+| P-4 | **[mixed]** measured: renders the word `undefined`, no scrollbar; judgment: button vocabulary. Model Providers: one button vocabulary per card (secondary chips for *Add key/Test*, `danger-outline` *Remove*), *Add provider* becomes a secondary button (not full-width outline), never render `undefined` (fall back to "—"), dialog scroll shows a scrollbar. | Model Providers | None visible beyond consistency. |
+| P-7 | **[measured]** rows wrap in a dialog too narrow for its own content. Keyboard Shortcuts → `panel` (420px) size; rows grid-aligned (label column + key column); dialog scrolls with a visible scrollbar. | one dialog | Wider dialog. |
+| P-8 | **[measured]** rows wrap to two lines. All-sessions popover width becomes `min(28rem, 88vw)` and rows truncate to one line with a title tooltip; scroll cue via bottom fade. | one popover | Rows stop wrapping. |
 
 ### Phase F — phone width (last: it is judged on the screens the earlier phases produce)
 
@@ -357,7 +369,7 @@ Marketplace rails (§6c #26), so ship both together. Verify: `narrow` plan, and 
 
 | # | Proposal | Touches | Risk / what users will notice |
 |---|---|---|---|
-| P-17 | Phone width: session tab keeps ≥ 8 characters before collapsing; quick-chip row gets an edge fade + horizontal scroll (same pattern applied to the Marketplace rails, which clip their last card on desktop too); status bar collapses chips to icons; model picker wraps its options; full screens drop "Esc ·" on touch layouts; coarse-pointer hit areas extended to chips and chevrons (the Toggle already has the mechanism). | narrow layouts + Marketplace rails | Android/phone only, except the rails' fade, which appears on desktop. |
+| P-17 | **[measured]** clipping and wrapping at 390px with no scroll affordance. Phone width: session tab keeps ≥ 8 characters before collapsing; quick-chip row gets an edge fade + horizontal scroll (same pattern applied to the Marketplace rails, which clip their last card on desktop too); status bar collapses chips to icons; model picker wraps its options; full screens drop "Esc ·" on touch layouts; coarse-pointer hit areas extended to chips and chevrons (the Toggle already has the mechanism). | narrow layouts + Marketplace rails | Android/phone only, except the rails' fade, which appears on desktop. |
 
 ### Summary
 

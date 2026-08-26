@@ -6,7 +6,7 @@
   `e-` from the real app); the findings doc cites them. `marketplace-*` exists because
   youcoded PR #326 gave the workbench registry data — before that those surfaces were
   empty in every theme.
-- `phase-a-review.html` (built by `build-phase-a-review.py` from `images/phase-a/`) — the
+- `phase-a-review.html` (spec `phase-a-review.json`; built by `python3 scripts/ui-review/review-page.py build <spec>` from `images/phase-a/`) — the
   review page Destin decided Phase A on: per change, the problem with numbers, the exact
   edit, 1:1 before/after crops, risks, alternatives, and an approve/reject control that
   assembles a copyable feedback block. **This is the template for every later phase** —
