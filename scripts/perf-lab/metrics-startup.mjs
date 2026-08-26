@@ -23,10 +23,20 @@ export function parsePerfLog(text) {
   return marks;
 }
 
-// Chore mark suffix (`main:chore:<name>:done`) for each of the 14 boot chores, in the
-// order main.ts runs them. Order matters here ONLY as the fallback chain described below.
+// Chore mark suffix (`main:chore:<name>:done`) for each of the 16 boot chores, in the
+// order main.ts runs them. THIS ORDER IS LOAD-BEARING: each chore's duration is
+// mark[n] − mark[n−1], so a key in the wrong slot silently bills one chore's time to
+// its neighbour. It must match the source order of the perfMark() calls in main.ts's
+// whenReady block, which tests/perf-marks-placement.test.ts pins from the other side.
+//
+// `prelude` and `ipcPrefs` are not chores in the "app does a startup task" sense —
+// they exist so the work that used to hide inside their successors is measured as
+// itself: prelude = runAnalyticsOnLaunch + app.getGPUInfo + first-run detection (was
+// billed to installHooks); ipcPrefs = the favorites/game/home-path ipcMain.handle
+// registrations + Menu.setApplicationMenu(null) (was billed to themeProtocol).
 const CHORES = [
   ['rotateLog', 'rotate-log'],
+  ['prelude', 'prelude'],
   ['installHooks', 'install-hooks'],
   ['hookRelay', 'hook-relay'],
   ['legacyCleanup', 'legacy-cleanup'],
@@ -38,8 +48,12 @@ const CHORES = [
   ['reconcileMcp', 'reconcile-mcp'],
   ['announcements', 'announcements'],
   ['remoteServer', 'remote-server'],
+  ['ipcPrefs', 'ipc-prefs'],
   ['themeProtocol', 'theme-protocol'],
-  ['authStore', 'auth-store'],
+  // Renamed from authStore: the window covers createAuthStore +
+  // registerMarketplaceApiHandlers + remoteServer.setAccountStore +
+  // registerSocialHandlers — four registrations, not one store.
+  ['accounts', 'accounts'],
 ];
 
 /**
@@ -96,14 +110,25 @@ export function startupTable({ spawnedAt, mainMarks, rendererMarks, timeOrigin, 
     createWindowAt,
     didFinishLoad: rel(main('main:main-window:did-finish-load')),
     postWindowDone: rel(main('main:post-window:done')),
-    indexStart: renderer('yc:index-start'),
+    // performance.timeOrigin IS the renderer page's navigation start, so this is ms
+    // from process spawn to the moment the page began loading — no product-side mark
+    // needed (and no inline <script> in index.html, which a renderer CSP could block).
+    // WHY it matters: `modulesEvaluated - documentStart` is the bundle-evaluation
+    // window (React, react-dom, CSS, App.tsx and the whole component graph), which was
+    // entirely invisible while the mark that follows it was still named as if it fired
+    // at the START of the module rather than after every import had evaluated.
+    documentStart: rel(timeOrigin),
+    // ESM hoists imports above the module body, so this mark fires AFTER the bundle
+    // finished evaluating — hence the name. See src/renderer/index.tsx.
+    modulesEvaluated: renderer('yc:modules-evaluated'),
     rootRender: renderer('yc:root-render'),
     firstPaint: paintAt('first-paint'),
     firstContentfulPaint,
     appMounted: renderer('yc:app-mounted'),
     sessionsListed: renderer('yc:sessions-listed'),
-    // The window is created visible (main.ts:612). This is the blank-box time — a hard-reject
-    // metric because settled screenshots cannot see an experiment that lengthens it (e.g. E1).
+    // The window is created visible — main.ts:620, `show: !opts?.inactive && !opts?.buddy`.
+    // This is the blank-box time — a hard-reject metric because settled screenshots cannot
+    // see an experiment that lengthens it (e.g. E1).
     // Both operands can be null (missing create-window:start mark, or FCP never fired) —
     // guard explicitly rather than let `null - null` silently become 0.
     blankWindowMs:
