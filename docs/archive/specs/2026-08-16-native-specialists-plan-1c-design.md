@@ -1,5 +1,6 @@
 ---
-status: active
+status: shipped
+shipped: 2026-08-26  # youcoded merge 62c1f182
 date: 2026-08-16
 revised: 2026-08-16 (two independent reviews — see the handoff doc for what changed and why)
 type: spec
@@ -10,7 +11,7 @@ relates:
   - docs/archive/plans/2026-08-12-native-specialists-plan-1a-core.md
   - docs/archive/plans/2026-08-12-native-specialists-plan-1b-background-durability.md
   - docs/archive/handoffs/2026-08-20-specialists-1b-testing-checklist.md
-  - docs/active/handoffs/2026-08-16-specialists-1c-handoff.md   # review-round history + reviewer verdicts live THERE, not here
+  - docs/archive/handoffs/2026-08-16-specialists-1c-handoff.md   # review-round history + reviewer verdicts live THERE, not here
 ui_branch: youcoded feat/specialists-1c-ui (worktree worktrees/specialists-1c) — the approved renderer, built workbench-first; §7 lists where it trails this spec
 ---
 

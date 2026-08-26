@@ -22,7 +22,7 @@ supersedes: docs/active/investigations/2026-07-19-agent-orchestration-landscape.
 >   ten shipped files (`registry.ts`, `child-permissions.ts`, `delegated-models.ts`,
 >   `delegation-ledger.ts`, `limits.ts`, `report-budget.ts`, …).
 > - Plan 1c (definitions folder, CC mapping, chat UI) is written
->   (`docs/active/plans/2026-08-16-native-specialists-plan-1c-implementation.md`) and in flight
+>   (`docs/archive/plans/2026-08-16-native-specialists-plan-1c-implementation.md`) and in flight
 >   across four worktrees (`feat/specialists-1c-defs`, `-t12`, `-t13`, `-ui`), not yet merged.
 >
 > **The orchestration layer itself (stage two — declarative plans / DAG) is still unbuilt:**

@@ -1,9 +1,10 @@
 ---
-status: active
+status: shipped
+shipped: 2026-08-26  # youcoded merge 62c1f182
 created: 2026-08-16
 last_reviewed: 2026-08-26
-spec: docs/active/specs/2026-08-16-native-specialists-plan-1c-design.md
-plan: docs/active/plans/2026-08-16-native-specialists-plan-1c-implementation.md
+spec: docs/archive/specs/2026-08-16-native-specialists-plan-1c-design.md
+plan: docs/archive/plans/2026-08-16-native-specialists-plan-1c-implementation.md
 checklist: docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md
 branch: youcoded feat/specialists-1c-ui (worktree worktrees/specialists-1c) — 47 commits, unmerged, no PR
 ---
@@ -50,7 +51,7 @@ Explore, propose a scope, and confirm it with Destin before building.
 ## Addendum 2026-08-16 — what happened after this handoff (for the next agent)
 
 **Scope was settled with Destin, then the UI was designed workbench-first before any
-backend.** Spec: `docs/active/specs/2026-08-16-native-specialists-plan-1c-design.md`
+backend.** Spec: `docs/archive/specs/2026-08-16-native-specialists-plan-1c-design.md`
 (rules R1–R12 + the channel contract). Branch: youcoded `feat/specialists-1c-ui`,
 worktree `worktrees/specialists-1c` — the real renderer against `MOCK_ONLY` channels;
 seeded workbench session "specialists demo" (`wb-3`) drives review.
@@ -169,7 +170,7 @@ two halves).
 ### Next step
 
 The implementation plan is written:
-`docs/active/plans/2026-08-16-native-specialists-plan-1c-implementation.md` (Task 0 =
+`docs/archive/plans/2026-08-16-native-specialists-plan-1c-implementation.md` (Task 0 =
 the reload-bug fix on its own branch first; Tasks 1–9 backend on `feat/specialists-1c-ui`;
 Tasks 10–13 the §7 renderer edits; 14 hands-on checklist; 15 docs/archive). Execute it
 with `superpowers:subagent-driven-development` in the existing worktree.

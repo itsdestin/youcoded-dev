@@ -1,9 +1,10 @@
 ---
-status: active
+status: shipped
+shipped: 2026-08-26  # youcoded merge 62c1f182
 date: 2026-08-16
-spec: docs/active/specs/2026-08-16-native-specialists-plan-1c-design.md
+spec: docs/archive/specs/2026-08-16-native-specialists-plan-1c-design.md
 parent_spec: docs/active/specs/2026-08-11-native-specialists-design.md
-handoff: docs/active/handoffs/2026-08-16-specialists-1c-handoff.md   # review history and rejected alternatives live THERE, not here
+handoff: docs/archive/handoffs/2026-08-16-specialists-1c-handoff.md   # review history and rejected alternatives live THERE, not here
 repos: [youcoded]
 sequence: plan 1c of 3 for spec stage one (1a SHIPPED 8db46236; 1b SHIPPED e5ec5b3c; 1c = chat UI backend + definitions from files + Settings)
 ui_branch: youcoded feat/specialists-1c-ui (worktree worktrees/specialists-1c) — the approved renderer already lives here; this plan lands the backend on the SAME branch and closes the §7 renderer gaps
@@ -562,7 +563,7 @@ No new component: the desktop-only look is `EmptyState` (`components/ui/states.t
 - Modify: `docs/MAP.md` (Specialists row: add `catalog.ts`, `definition-files.ts`, `frontmatter.ts`, renderer `SpecialistsChip.tsx` / `SpecialistsSection.tsx` / `SpecialistEnvelope.tsx` / `hooks/useSpecialists.ts`, the new tests)
 - Modify: `ROADMAP.md` (`#specialists` items at lines 31, 34, 36, 38: 34/36/38 → `[x]` with the merge sha; 31 → rewritten to depend on a delete-conversation feature; add ideas: promote fg→bg, transcript viewer, project native folder, per-helper tokens/cost, strict per-action toggle, live-updating Settings roster (watchers))
 - Modify: `youcoded/desktop/CLAUDE.md` only if the workbench gained a verb (it did not in this plan — skip unless Task 10 added one)
-- Move: `docs/active/specs/2026-08-16-native-specialists-plan-1c-design.md` → `docs/archive/specs/`, `status: shipped`; this plan → `docs/archive/plans/`; the 1c handoff → `docs/archive/handoffs/`; parent spec `2026-08-11-native-specialists-design.md` stays active only if stage two is still planned there — check its own status line and update `relates:` paths.
+- Move: `docs/archive/specs/2026-08-16-native-specialists-plan-1c-design.md` → `docs/archive/specs/`, `status: shipped`; this plan → `docs/archive/plans/`; the 1c handoff → `docs/archive/handoffs/`; parent spec `2026-08-11-native-specialists-design.md` stays active only if stage two is still planned there — check its own status line and update `relates:` paths.
 
 - [ ] **Step 1:** Write the rule + doc + MAP edits; `node scripts/audit-anchors.mjs` → 0 failures.
 - [ ] **Step 2:** ROADMAP flips/rewrites (dated, with the sha once known).

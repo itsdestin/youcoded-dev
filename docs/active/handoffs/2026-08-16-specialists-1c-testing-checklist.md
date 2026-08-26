@@ -2,8 +2,8 @@
 status: active
 created: 2026-08-16
 related:
-  - docs/active/specs/2026-08-16-native-specialists-plan-1c-design.md
-  - docs/active/plans/2026-08-16-native-specialists-plan-1c-implementation.md
+  - docs/archive/specs/2026-08-16-native-specialists-plan-1c-design.md
+  - docs/archive/plans/2026-08-16-native-specialists-plan-1c-implementation.md
   - docs/archive/handoffs/2026-08-20-specialists-1b-testing-checklist.md
 ---
 
