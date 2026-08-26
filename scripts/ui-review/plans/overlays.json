@@ -1,0 +1,418 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "ctx-menu-assistant-bubble",
+   "actions": [
+    {
+     "rightClick": "js:document.querySelector('.assistant-bubble p, .assistant-bubble')",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=menu]"
+  },
+  {
+   "name": "ctx-menu-user-bubble",
+   "actions": [
+    {
+     "rightClick": ".user-bubble",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=menu]"
+  },
+  {
+   "name": "ctx-menu-composer",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 150
+    },
+    {
+     "type": "draft text to right-click"
+    },
+    {
+     "rightClick": "[placeholder^='Message']",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=menu]"
+  },
+  {
+   "name": "ctx-menu-code-block",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 100
+    },
+    {
+     "key": "o",
+     "modifiers": 2,
+     "settle": 700
+    },
+    {
+     "rightClick": "js:document.querySelector('.chat-scroll pre')",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=menu]"
+  },
+  {
+   "name": "ctx-menu-file-pill",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 100
+    },
+    {
+     "key": "o",
+     "modifiers": 2,
+     "settle": 700
+    },
+    {
+     "rightClick": "js:document.querySelector('.chat-scroll [data-file-path]')",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=menu]"
+  },
+  {
+   "name": "close-session-prompt",
+   "actions": [
+    {
+     "click": "[title='All Sessions']",
+     "settle": 600
+    },
+    {
+     "click": "js:document.querySelector('[title=\"Close Session\"]')",
+     "settle": 800
+    }
+   ],
+   "expect": "[role=dialog], [role=alertdialog]"
+  },
+  {
+   "name": "shift-session-switcher",
+   "actions": [
+    {
+     "click": "js:document.querySelector('.chat-scroll')",
+     "settle": 200
+    },
+    {
+     "keyDown": "Shift"
+    },
+    {
+     "wait": 700
+    }
+   ],
+   "expect": "[title='Close Session']"
+  },
+  {
+   "name": "composer-attachments",
+   "actions": [
+    {
+     "dispatch": {
+      "name": "buddy:attach-file",
+      "detail": {
+       "filePath": "/home/destin/Documents/design-notes.md"
+      }
+     }
+    },
+    {
+     "dispatch": {
+      "name": "buddy:attach-file",
+      "detail": {
+       "filePath": "/home/destin/Pictures/screenshot.png"
+      }
+     }
+    },
+    {
+     "wait": 500
+    }
+   ],
+   "expect": "[aria-label^='Remove']"
+  },
+  {
+   "name": "theme-cycle-editor",
+   "actions": [
+    {
+     "click": "[title='Customize Status Bar']",
+     "settle": 700
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "wait": 300
+    },
+    {
+     "click": "[aria-label='Edit theme cycle']",
+     "settle": 700
+    }
+   ]
+  },
+  {
+   "name": "native-session-stalled-and-permission",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&stalled=1",
+   "actions": [
+    {
+     "click": "[title='theme contrast pass']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('*')].some(e=>/may have stalled/.test(e.textContent))"
+  },
+  {
+   "name": "native-session",
+   "actions": [
+    {
+     "click": "[title='theme contrast pass']",
+     "settle": 1200
+    }
+   ]
+  },
+  {
+   "name": "projects-switcher",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "[title='Switch project']",
+     "settle": 800
+    }
+   ],
+   "expect": "[aria-label='Switch project']"
+  },
+  {
+   "name": "projects-add-project",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "[title='Switch project']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/add a project/i.test(b.textContent))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "projects-conversation-preview",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label=Conversations]",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.getBoundingClientRect().top>360 && /fix chat scroll stick|menu internals/.test(b.textContent))",
+     "settle": 1000
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "projects-context-editor",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label=Context]",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.getBoundingClientRect().top>420 && b.getBoundingClientRect().width>300 && /\\.md|CLAUDE|rules|context/i.test(b.textContent))",
+     "settle": 1000
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "projects-how-context-works",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label=Context]",
+     "settle": 900
+    },
+    {
+     "click": "js:document.querySelector('[aria-label^=\"How \"][aria-label$=\"context works\"]')",
+     "settle": 900
+    }
+   ],
+   "expect": "[aria-label='How context works']"
+  },
+  {
+   "name": "development-bug-report",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Development') && b.textContent.includes('Report'))",
+     "settle": 900
+    },
+    {
+     "click": "[title^='Report a Bug']",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "development-contribute",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Development') && b.textContent.includes('Report'))",
+     "settle": 900
+    },
+    {
+     "click": "[title^='Contribute']",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "providers-local-scrolled",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "wait": 500
+    }
+   ]
+  },
+  {
+   "name": "permissions-scrolled",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Permissions\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "wait": 500
+    }
+   ]
+  },
+  {
+   "name": "about-scrolled",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"About\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "wait": 500
+    }
+   ]
+  },
+  {
+   "name": "thinking-chip-hover",
+   "actions": [
+    {
+     "hover": "[data-testid=thinking-indicator]",
+     "settle": 600
+    }
+   ],
+   "sameAsBaseline": true
+  },
+  {
+   "name": "first-run-detect-prerequisites",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&firstRun=DETECT_PREREQUISITES",
+   "boot": 4500,
+   "actions": [
+    {
+     "wait": 300
+    }
+   ],
+   "sameAsBaseline": true
+  },
+  {
+   "name": "first-run-install-prerequisites",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&firstRun=INSTALL_PREREQUISITES",
+   "boot": 4500,
+   "actions": [
+    {
+     "wait": 300
+    }
+   ],
+   "sameAsBaseline": true
+  },
+  {
+   "name": "first-run-enable-developer-mode",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&firstRun=ENABLE_DEVELOPER_MODE",
+   "boot": 4500,
+   "actions": [
+    {
+     "wait": 300
+    }
+   ],
+   "sameAsBaseline": true
+  },
+  {
+   "name": "first-run-authenticate",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&firstRun=AUTHENTICATE",
+   "boot": 4500,
+   "actions": [
+    {
+     "wait": 300
+    }
+   ],
+   "sameAsBaseline": true
+  },
+  {
+   "name": "first-run-launch-wizard",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&firstRun=LAUNCH_WIZARD",
+   "boot": 4500,
+   "actions": [
+    {
+     "wait": 300
+    }
+   ],
+   "sameAsBaseline": true
+  }
+ ]
+}

@@ -1,0 +1,65 @@
+---
+name: ui-review
+description: Autonomous whole-app UI review — screenshot every YouCoded surface in every theme with self-verifying capture, then judge the sheets against the design guide and write numbered findings/proposals. Use when Destin asks to "review the UI", "look at every screen", "find the ugliest surfaces", "check the themes", or before/after a UI change lands. Works without any human clicking.
+---
+
+# /ui-review — autonomous UI review
+
+The rig is `scripts/ui-review/` (README there). This skill is the procedure around it.
+Standard: `docs/active/design/2026-08-25-ui-design-guide.md`. Last full review and its
+ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
+
+## 1. Capture (no judgement yet)
+
+1. `bash setup.sh`, then a worktree for the branch under review (`cp -al` its
+   `node_modules`). Never the main checkout, never the live app.
+2. `bash scripts/ui-review/run-review.sh <worktree>` — waits ~15 min. It boots the
+   workbench, runs every plan × 6 themes, verifies each shot, builds sheets, `coverage.md`,
+   `contrast.md`, `gallery.html` under `scratch/ui-review-<date>/`.
+3. **Read `coverage.md` first.** Every `MISSED`/`partial` row is either a selector to fix
+   (add a `dump` action, find the control, add an `expect`, re-run that one plan) or a
+   genuine gap to list as *unreviewed*. Do not write a finding about a surface that is not
+   `covered`. Do not stop at "one dev-instance session away" — fix the selector.
+4. If the change touches the terminal, marketplace data, sync or a live session, run the
+   Electron pass from the README as well (`electron-welcome`, `electron-live-session`).
+
+## 2. Judge
+
+- Work from the **sheets** (all themes side by side), then open full-res PNGs for anything
+  you are about to cite. Halftone Dimension and Meadow Mist are the stress themes; a
+  surface that survives them survives.
+- For scale, fan out: one reviewer agent per family (settings, chat/composer/status bar,
+  screens/drawers, tool cards/states/narrow), each told the exact file paths and asked for
+  ranked findings citing files. Then verify their top claims yourself before repeating them
+  — reviewers have called mock data an app bug and a missing PTY a crash.
+- Use `contrast.md` for numbers, not conclusions: it over-reports on glass and on
+  sliding-indicator tabs. Cite a ratio only after looking at the pixel.
+- Separate three buckets every time: **app bug** (hardcoded colour, wrong primitive),
+  **token/guide gap** (the rule doesn't exist yet), **theme-pack problem** (the pack
+  violates a guarantee). Different owners, different fixes.
+
+## 3. Write
+
+- Findings doc under `docs/active/design/<date>-ui-audit-findings.md`: how captured +
+  fidelity gaps (from `coverage.md`, verbatim), ranked worst surfaces, same-thing-drawn-N-
+  ways table, per-theme contrast, what's good, then a **numbered ledger P-n** Destin
+  approves by number (visible change · surfaces touched · what users will notice).
+- Copy the gallery + sheets into `docs/active/design/<date>-ui-audit/` (images
+  git-ignored by the existing rule; README says how to regenerate).
+- Update the design guide only for rules that changed; new rules get the next `G-n`.
+- ROADMAP entry: the whole-UI review item gets an update line pointing at the docs.
+
+## 4. Improve (when asked, or as the follow-up)
+
+Each approved `P-n` goes through the `ui-mockup` workflow: edit the primitive/token in a
+worktree, re-run **only the affected plan** (`node scripts/ui-review/shot.mjs plans/main.json
+<out> <themes>`), and hand Destin the before/after sheet numbered by change. Tokens first
+(they move every surface), then the four most-seen screens.
+
+## Red flags
+
+- A sheet that looks like the plain chat window under another name → the capture missed;
+  the rig should have caught it — check `coverage.md`, fix the plan, never file it.
+- "Reads as a crash" on a workbench surface → check for a mock gap (no PTY, no registry,
+  `undefined` in copy) before calling it an app bug.
+- A count you did not measure ("13 pills", "six primaries") → count on the full-res PNG.

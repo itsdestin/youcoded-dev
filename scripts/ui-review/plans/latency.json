@@ -1,0 +1,76 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=2000&scenario=default",
+ "shots": [
+  {
+   "name": "home-1s",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=2000&scenario=default",
+   "boot": 900,
+   "actions": [],
+   "sameAsBaseline": true,
+   "probe": false
+  },
+  {
+   "name": "settings-account",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=2000&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 400
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Account\"))",
+     "settle": 900
+    }
+   ],
+   "probe": false
+  },
+  {
+   "name": "projects",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=2000&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 500
+    }
+   ],
+   "probe": false
+  },
+  {
+   "name": "marketplace",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=2000&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 600
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 600
+    }
+   ],
+   "probe": false
+  },
+  {
+   "name": "resume",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=2000&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 100
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 500
+    }
+   ],
+   "probe": false
+  }
+ ]
+}

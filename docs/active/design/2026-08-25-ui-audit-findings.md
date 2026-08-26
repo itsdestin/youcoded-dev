@@ -21,10 +21,18 @@ screenshot you can open.
 
 - **Gallery (start here):** `docs/active/design/2026-08-25-ui-audit/gallery.html` — one
   row per surface, every theme side by side. Open the file path in the app's file viewer or
-  a browser. Each picture is named `<batch>-<surface>`; findings below cite that name.
-- **Full-resolution originals** (1440×900 PNGs, ~600 of them) are in
-  `scratch/ui-audit-2026-08-25/` (git-ignored, this machine only), laid out as
-  `<batch>/<theme>/<surface>.png`.
+  a browser. Each picture is named `<plan>-<surface>`: `main-` (screens, settings, overlays
+  reached from the chat), `overlays-` (context menus, prompts, wizard, project overlays…),
+  `narrow-` (390 px), `tall-` (full tool gallery + compare view), `latency-` (loading
+  states), `live-` (real app, live session) and `e-` (real app, welcome/marketplace/sync).
+  Findings below cite those names. Every `main/overlays/narrow/tall/latency` sheet comes
+  from one end-to-end run of `scripts/ui-review/run-review.sh` on 2026-08-25 whose
+  `coverage.md` (copied next to the gallery) shows 103 of 104 planned surfaces verified in
+  all six themes; the one miss ("Known Issues") opens an external link and has nothing to
+  show.
+- **Full-resolution originals** (1440×900 / 390×844 / 1440×4200 PNGs) are in
+  `scratch/ui-review-2026-08-25/shots-<plan>/<theme>/<surface>.png` (git-ignored, this
+  machine only); the real-app originals are in `scratch/ui-audit-2026-08-25/shots-e*/`.
 - Themes captured: the four built-ins (**midnight, dark, light, creme**) plus the two
   community packs the workbench bundles (**halftone-dimension** = the standard stress theme,
   **meadow-mist** = glass over a wallpaper), plus **golden-sunbreak** on the real app.
@@ -50,10 +58,12 @@ screenshot you can open.
   2. **Backup & Sync** crashes in the workbench (`SyncPopup: Cannot read properties of
      undefined (reading 'length')` — a mock-data gap, not an app bug; the real app
      renders it fine, see §6). The setup wizard was not captured.
-  3. **Right-click context menus** never opened under either synthetic right-click method,
-     so they are unreviewed.
-  4. **First-run wizard** — the real app skipped it (Claude Code is installed here) and the
-     workbench mock has no switch for it. Unreviewed.
+  3. **Right-click context menus** did not open under the first rig; the rebuilt rig opens
+     them with a real right-button press on `.assistant-bubble` / `.user-bubble` / the
+     composer / a code block / a file pill — reviewed in §6b #21.
+  4. **First-run wizard** — the real app skips it (Claude Code is installed here) and the
+     mock had no switch; `?firstRun=<STEP>` was added to the workbench (youcoded PR #325)
+     and all five steps are reviewed in §6b #17.
   5. **Tool Gallery page chrome is dev-only** and hardcodes a dark page, so in light
      themes the gallery *page* looks broken. The cards inside it are real; the page around
      them is not a product surface. Findings about the gallery below are about the cards.
@@ -72,7 +82,7 @@ screenshot you can open.
      detail/filter overlays in the workbench. Also
      pulled: the `scenario-refused/no-providers/stress` sheets — those scenarios change
      the resume list and permissions data, *not* the transcript, so they are identical to
-     home by design (their real effect is visible in `6-resume-browser-stress`).
+     home by design (their real effect is visible in `main-resume-browser-stress`).
   7. **The Terminal view is blank in the workbench because the workbench has no
      terminal** (no PTY). An earlier draft of this report called it "reads as a crash" —
      that was the harness, not the app; withdrawn. The real terminal was reviewed on the
@@ -96,28 +106,28 @@ user sees it. "Fix" names the design-guide rule (`G-n`) or a proposal (`P-n`, §
 
 | # | Surface | What's wrong (what a user sees) | Picture | Fix |
 |---|---|---|---|---|
-| 1 | **Marketplace** | One bar holds 13 identical grey pills that mean three different things (tabs *Plugins/Themes*, categories *School…Home*, sorts *New/Popular/Featured*); the search box is smaller than the pills and has no icon; the "Explore everything" heading is followed by nothing until data loads; the Themes tab shows two empty-state messages at once ("0 results" *and* "Nothing matches those filters."). At phone width the title truncates to "Ma…". | `3-marketplace`, `3-marketplace-themes`, `narrow-n-marketplace`, `e-marketplace-plugins` | P-1, G-14, G-18 |
-| 2 | **Your Library** | Two bare headings ("Favorites", "Installed") on an empty page: no explanation, no button, no link to the marketplace that sits one pill away in the header. 22px title over 12px tabs reads as scaffolding. Fully empty state is the *normal* state for a new user. | `3-library`, `3-library-themes` | P-2, G-18 |
-| 3 | **Themes dialog (Settings → Appearance)** | Theme cards come in two heights — the active card gets a second row ("active" + pencil) and *its row-mate stretches to match*, showing an empty strip with a pencil — so the 2×3 grid looks broken; three stacked full-width buttons in three different styles ("Browse all themes →" outline-with-fill, "✦ Build New Theme with Claude" filled, "Browse Theme Marketplace" outline) with two of them near-duplicates. Editing a built-in opens a 590px-tall dialog that is 90% empty except a note saying you can't edit it. | `1-settings-appearance`, `3-theme-edit`, `3-theme-edit-halftone` | P-3, G-9, G-10 |
-| 4 | **Model Providers** | Five button shapes in one dialog (outline chips *Add key/Test*, red outline *Remove*, filled pill *Connect to OpenRouter*, full-width outline *Add provider*, small *Detect* chip; in the real app, six filled-accent *Download*/*Add key* primaries stacked in one list); the dialog clips its bottom with a fade and no scrollbar; under the fade the workbench shows literal `Installed undefined · undefined · stopped` (mock data — the real app fills real values, but the component has no fallback for a missing value). | `1-settings-model-providers` (see the meadow-mist sheet's clipped bottom), `e-providers-local` | P-4, G-9, G-11 |
-| 5 | **Projects header card** | Three button scales in one card: a big filled *New Conversation* top-right, tiny 11px outline *Rename* / *Remove from YouCoded* bottom-left, and a filled pill *Turn on sync for this project* nested inside a chip. Folder cards draw a small "tab" notch that overlaps the card border and reads as a glitch; document cards render raw Markdown at ~9px and cut mid-line. Also the **only full screen that ignores the theme wallpaper** (opaque in halftone and meadow while Library/Marketplace show it). | `1-projects`, `2-projects-conversations` | P-5, G-9, G-16, T-6 |
-| 6 | **Empty / welcome screen** | *New Session* is a pale grey pill that reads as disabled next to the outlined *Resume Session* (the accent on dark built-ins is near-white, so "filled primary" = "grey"); the mascot in halftone is a blurred smear with two stray hairlines; in meadow *Resume Session* is dark text on translucent blue over blue trees. Real app adds: Settings is unreachable from this screen except via New Session → Model → "Manage models…". | `1-scenario-empty`, `e-empty`, `e-new-session-form` | P-6, G-8, G-13 |
-| 7 | **Keyboard Shortcuts** | Uses the narrow "prompt" dialog width, so labels wrap to two lines while key chips don't, rows go uneven, and the list clips at "Send message" with no scroll cue — meadow-mist (a sans font) reveals an 11th row the monospace themes never show. | `1-settings-keyboard-shortcuts` | P-7, G-11 |
-| 8 | **All-sessions popover** | Fixed width tuned to one font: monospace titles wrap 2–3 lines ("gpt-5.6 / debug / session") with the project name jammed beside them; the last row is clipped in half with no scroll indication. Meadow (sans) fits every row on one line. | `1-all-sessions-menu` | P-8, G-11 |
-| 9 | **Skills drawer (bottom sheet)** | One dashed *＋ Add Skills* card alone at the far left of an empty 1400px row; category pills are the smallest text in the app (~11px) and use a different shape from every other filter pill; two unlabeled icon buttons live *inside* the search field; *★ Favorites only* orphaned at the far right. | `1-skills-drawer`, `narrow-n-skills-drawer` | P-9, G-14, G-18 |
-| 10 | **Status bar** | 10px text; the model chip ("Sonnet \| Auto Effort") is orange-outlined while every other chip is grey, so the model reads as a warning; the theme-name chip looks like a button but is a label; at phone width it wraps to two rows with the theme chip orphaned. In halftone the bar floats centred in its own pill. | `1-home`, `narrow-n-home` | P-10, G-15 |
+| 1 | **Marketplace** | One bar holds 13 identical grey pills that mean three different things (tabs *Plugins/Themes*, categories *School…Home*, sorts *New/Popular/Featured*); the search box is smaller than the pills and has no icon; the "Explore everything" heading is followed by nothing until data loads; the Themes tab shows two empty-state messages at once ("0 results" *and* "Nothing matches those filters."). At phone width the title truncates to "Ma…". | `main-marketplace`, `main-marketplace-themes`, `narrow-marketplace`, `e-marketplace-plugins` | P-1, G-14, G-18 |
+| 2 | **Your Library** | Two bare headings ("Favorites", "Installed") on an empty page: no explanation, no button, no link to the marketplace that sits one pill away in the header. 22px title over 12px tabs reads as scaffolding. Fully empty state is the *normal* state for a new user. | `main-library`, `main-library-themes` | P-2, G-18 |
+| 3 | **Themes dialog (Settings → Appearance)** | Theme cards come in two heights — the active card gets a second row ("active" + pencil) and *its row-mate stretches to match*, showing an empty strip with a pencil — so the 2×3 grid looks broken; three stacked full-width buttons in three different styles ("Browse all themes →" outline-with-fill, "✦ Build New Theme with Claude" filled, "Browse Theme Marketplace" outline) with two of them near-duplicates. Editing a built-in opens a 590px-tall dialog that is 90% empty except a note saying you can't edit it. | `main-settings-appearance`, `main-theme-edit-builtin`, `main-theme-edit-community` | P-3, G-9, G-10 |
+| 4 | **Model Providers** | Five button shapes in one dialog (outline chips *Add key/Test*, red outline *Remove*, filled pill *Connect to OpenRouter*, full-width outline *Add provider*, small *Detect* chip; in the real app, six filled-accent *Download*/*Add key* primaries stacked in one list); the dialog clips its bottom with a fade and no scrollbar; under the fade the workbench shows literal `Installed undefined · undefined · stopped` (mock data — the real app fills real values, but the component has no fallback for a missing value). | `main-settings-model-providers` (see the meadow-mist sheet's clipped bottom), `e-providers-local` | P-4, G-9, G-11 |
+| 5 | **Projects header card** | Three button scales in one card: a big filled *New Conversation* top-right, tiny 11px outline *Rename* / *Remove from YouCoded* bottom-left, and a filled pill *Turn on sync for this project* nested inside a chip. Folder cards draw a small "tab" notch that overlaps the card border and reads as a glitch; document cards render raw Markdown at ~9px and cut mid-line. Also the **only full screen that ignores the theme wallpaper** (opaque in halftone and meadow while Library/Marketplace show it). | `main-projects`, `main-projects-conversations` | P-5, G-9, G-16, T-6 |
+| 6 | **Empty / welcome screen** | *New Session* is a pale grey pill that reads as disabled next to the outlined *Resume Session* (the accent on dark built-ins is near-white, so "filled primary" = "grey"); the mascot in halftone is a blurred smear with two stray hairlines; in meadow *Resume Session* is dark text on translucent blue over blue trees. Real app adds: Settings is unreachable from this screen except via New Session → Model → "Manage models…". | `main-welcome-empty`, `e-empty`, `e-new-session-form` | P-6, G-8, G-13 |
+| 7 | **Keyboard Shortcuts** | Uses the narrow "prompt" dialog width, so labels wrap to two lines while key chips don't, rows go uneven, and the list clips at "Send message" with no scroll cue — meadow-mist (a sans font) reveals an 11th row the monospace themes never show. | `main-settings-keyboard-shortcuts` | P-7, G-11 |
+| 8 | **All-sessions popover** | Fixed width tuned to one font: monospace titles wrap 2–3 lines ("gpt-5.6 / debug / session") with the project name jammed beside them; the last row is clipped in half with no scroll indication. Meadow (sans) fits every row on one line. | `main-all-sessions-menu` | P-8, G-11 |
+| 9 | **Skills drawer (bottom sheet)** | One dashed *＋ Add Skills* card alone at the far left of an empty 1400px row; category pills are the smallest text in the app (~11px) and use a different shape from every other filter pill; two unlabeled icon buttons live *inside* the search field; *★ Favorites only* orphaned at the far right. | `main-skills-drawer`, `narrow-skills-drawer` | P-9, G-14, G-18 |
+| 10 | **Status bar** | 10px text; the model chip ("Sonnet \| Auto Effort") is orange-outlined while every other chip is grey, so the model reads as a warning; the theme-name chip looks like a button but is a label; at phone width it wraps to two rows with the theme chip orphaned. In halftone the bar floats centred in its own pill. | `main-home`, `narrow-home` | P-10, G-15 |
 
 Honourable mentions (real, smaller): **Find bar** has no surface of its own and lands
-*inside* the user bubble, truncating it (`6-find-bar`); **Edit Quick Chips** shows only
-"+ Add Chip" and none of the seven chips in the strip (`1-edit-quick-chips`) — *verify in the
+*inside* the user bubble, truncating it (`main-find-bar`); **Edit Quick Chips** shows only
+"+ Add Chip" and none of the seven chips in the strip (`main-edit-quick-chips`) — *verify in the
 real app; may be mock data*; clicking **"Browse all themes →"** opens Library › Themes
-behind the dialog but leaves the Themes dialog open on top (`2-theme-marketplace`) — verify; **Tags & note** is a dialog inside a
-dialog with 9px labels and a full-width *Done* footer no sibling has (`1-tags-note-popover`);
+behind the dialog but leaves the Themes dialog open on top (`main-library-themes`) — verify; **Tags & note** is a dialog inside a
+dialog with 9px labels and a full-width *Done* footer no sibling has (`main-tags-note-popover`);
 **Status Bar Widgets** clips its last section label ("CODE") with no scroll cue
-(`1-customize-status-bar`); **Donate** and **Development** are the only dialogs with no
-title row or ✕ (`1-settings-donate`, `2-development-bug-report`); **About** is a 500px wall
-of legal text cut mid-word (`1-settings-about`); **Session Defaults** shows four model names
-with no selected state and files harmless rows under "DANGER ZONE" (`1-settings-defaults`).
+(`main-customize-status-bar`); **Donate** and **Development** are the only dialogs with no
+title row or ✕ (`main-settings-donate`, `overlays-development-bug-report`); **About** is a 500px wall
+of legal text cut mid-word (`main-settings-about`); **Session Defaults** shows four model names
+with no selected state and files harmless rows under "DANGER ZONE" (`main-settings-defaults`).
 
 ## 2. Same thing, drawn more than one way
 
@@ -126,24 +136,24 @@ the ways it is currently drawn.
 
 | Concept | Currently drawn as… | Where | Rule |
 |---|---|---|---|
-| **"This is selected"** | filled dark pill (header *Chat*), filled rect (model picker *Sonnet*), orange *outline* (status-bar model chip), nothing at all (quick chips; Session Defaults model row; Projects tabs in midnight where accent ≈ grey) | `1-home`, `1-model-picker`, `1-settings-defaults` | G-8 |
-| **Primary action** | filled rounded-rect (*New Conversation*, *Sign in to YouCoded*), full-width filled (*Build New Theme*), full-width outline (*Add provider*, *Browse Theme Marketplace*), filled pill inside a chip (*Turn on sync*), outline pill (*+ Add file*), grey pill (*New Session*, *Submit* in AskUserQuestion) | `1-projects`, `1-settings-appearance`, `1-scenario-empty`, `tall-*-gallery-p1` | G-9 |
-| **Permission buttons** | saturated filled green/blue/red pills (*Yes / Always Allow / No*) — the only place in the app with coloured filled pills; the *Stop* card uses a `|` divider between them in one row and none in the next | `tall-*-gallery-p1`, `tall-*-compare-tall` | G-9 (documented exception, decision 61) |
-| **Chips / pills** | quick chips 12px rounded-rect outline; status-bar chips 10px outline; tag pills 9px coloured; skills-drawer category pills ~11px filled; marketplace pills 12px filled-grey; header *Chat/Terminal* segmented filled | `1-home`, `1-skills-drawer`, `3-marketplace` | G-14 |
-| **Search field** | Projects ~260px pill + filter icon; Session Files full-width pill + filter icon; Marketplace ~195px, no icon, smaller placeholder; Skills drawer full-width + magnifier + two icon buttons inside | `1-projects`, `1-session-files-pane`, `3-marketplace`, `1-skills-drawer` | G-12 |
-| **Counts** | "Files 9" (tab numeral), "9 files" (stat row), "Session Files (4)", "0 results", "+9" (session strip) | `1-projects`, `1-session-files-pane`, `3-marketplace-themes` | G-19 |
+| **"This is selected"** | filled dark pill (header *Chat*), filled rect (model picker *Sonnet*), orange *outline* (status-bar model chip), nothing at all (quick chips; Session Defaults model row; Projects tabs in midnight where accent ≈ grey) | `main-home`, `main-model-picker`, `main-settings-defaults` | G-8 |
+| **Primary action** | filled rounded-rect (*New Conversation*, *Sign in to YouCoded*), full-width filled (*Build New Theme*), full-width outline (*Add provider*, *Browse Theme Marketplace*), filled pill inside a chip (*Turn on sync*), outline pill (*+ Add file*), grey pill (*New Session*, *Submit* in AskUserQuestion) | `main-projects`, `main-settings-appearance`, `main-welcome-empty`, `tall-tool-gallery` | G-9 |
+| **Permission buttons** | saturated filled green/blue/red pills (*Yes / Always Allow / No*) — the only place in the app with coloured filled pills; the *Stop* card uses a `|` divider between them in one row and none in the next | `tall-tool-gallery`, `tall-compare` | G-9 (documented exception, decision 61) |
+| **Chips / pills** | quick chips 12px rounded-rect outline; status-bar chips 10px outline; tag pills 9px coloured; skills-drawer category pills ~11px filled; marketplace pills 12px filled-grey; header *Chat/Terminal* segmented filled | `main-home`, `main-skills-drawer`, `main-marketplace` | G-14 |
+| **Search field** | Projects ~260px pill + filter icon; Session Files full-width pill + filter icon; Marketplace ~195px, no icon, smaller placeholder; Skills drawer full-width + magnifier + two icon buttons inside | `main-projects`, `main-session-files-pane`, `main-marketplace`, `main-skills-drawer` | G-12 |
+| **Counts** | "Files 9" (tab numeral), "9 files" (stat row), "Session Files (4)", "0 results", "+9" (session strip) | `main-projects`, `main-session-files-pane`, `main-marketplace-themes` | G-19 |
 | **Back / close** | full screens: text "Esc · Back to chat"; side panes: ✕; dialogs: ✕ (some with ‹ back, some with ⓘ); Donate/Development: nothing | everywhere | G-10 |
-| **Screen header** | Projects: 16px title in a 50px bar; Library/Marketplace: 22px title in a 55px bar, Marketplace alone has a logo before the title | `1-projects`, `3-library`, `3-marketplace` | G-16 |
+| **Screen header** | Projects: 16px title in a 50px bar; Library/Marketplace: 22px title in a 55px bar, Marketplace alone has a logo before the title | `main-projects`, `main-library`, `main-marketplace` | G-16 |
 | **Tabs** | Projects: icon + label + count in a bordered group; Library: bare pills; Marketplace: visually identical to category/sort pills | same | G-14 |
-| **List row** | Conversations/Context: bordered cards with icon square; Session Files: flat rows with dividers, no icon; Files: preview cards; Settings drawer: card rows with icon + subtitle + chevron; Resume browser: bordered cards with tag pills | `2-projects-conversations`, `1-session-files-pane`, `1-settings-drawer`, `6-resume-browser-stress` | G-17 |
-| **Empty state** | Connect 4: icon + title + sentence + button (good); Marketplace: one centred sentence; Skills: dashed add-card; Library: nothing | `1-games-connect4`, `3-marketplace-themes`, `1-skills-drawer`, `3-library` | G-18 |
-| **Dialog header** | title + ✕; title + ⓘ + ✕; title + subtitle; no header (Donate, Development); *Resume Session* has a "SHOW COMPLETE" toggle where ✕ should be and no ✕ | `1-settings-*`, `6-resume-browser` | G-10 |
-| **Section label** | uppercase 10px ("MODEL", "RATE LIMITS", "CLAUDE CODE ⓘ") vs sentence case ("Password", "Keep awake") inside the same Remote Access dialog; "DANGER ZONE" over non-dangerous rows | `1-settings-remote-access`, `1-settings-defaults` | G-11 |
-| **Radii in one view** | bubbles 16 / tool cards 8 / dialog buttons 6 / chips 4 / send button & *Done* full-round — all visible in one chat screen | `6-tool-cards-all-expanded` | G-3 |
-| **Overlay backdrop** | built-ins dim; community packs blur the whole page (theme choice — fine, but the filters popover in halftone is opaque while the pane it sits on is glass) | `2-session-files-filter` (halftone) | T-5 |
-| **Checkbox shape** | square in built-ins; round (radio-looking) in halftone and meadow because the packs set a global radius | `1-customize-status-bar` | T-3 |
-| **Tool-card header** | consistent everywhere (`glyph | bold title ↳ dim path … chevron`) **except** AskUserQuestion, which has no path, a different glyph, and its chevron inline after the title instead of right-aligned; its body mixes bordered two-line radio rows with borderless one-line checkbox rows | `tall-*-gallery-p1` | G-20 |
-| **The literal `\|` separator** in every tool-card header is `fg-faint` at **2.0:1** — decorative, but it is the third character in every card the user reads | `1-home` and 70+ others | G-6 |
+| **List row** | Conversations/Context: bordered cards with icon square; Session Files: flat rows with dividers, no icon; Files: preview cards; Settings drawer: card rows with icon + subtitle + chevron; Resume browser: bordered cards with tag pills | `main-projects-conversations`, `main-session-files-pane`, `main-settings-drawer`, `main-resume-browser-stress` | G-17 |
+| **Empty state** | Connect 4: icon + title + sentence + button (good); Marketplace: one centred sentence; Skills: dashed add-card; Library: nothing | `main-games-connect4`, `main-marketplace-themes`, `main-skills-drawer`, `main-library` | G-18 |
+| **Dialog header** | title + ✕; title + ⓘ + ✕; title + subtitle; no header (Donate, Development); *Resume Session* has a "SHOW COMPLETE" toggle where ✕ should be and no ✕ | `main-settings-*`, `main-resume-browser` | G-10 |
+| **Section label** | uppercase 10px ("MODEL", "RATE LIMITS", "CLAUDE CODE ⓘ") vs sentence case ("Password", "Keep awake") inside the same Remote Access dialog; "DANGER ZONE" over non-dangerous rows | `main-settings-remote-access`, `main-settings-defaults` | G-11 |
+| **Radii in one view** | bubbles 16 / tool cards 8 / dialog buttons 6 / chips 4 / send button & *Done* full-round — all visible in one chat screen | `main-tool-cards-all-expanded` | G-3 |
+| **Overlay backdrop** | built-ins dim; community packs blur the whole page (theme choice — fine, but the filters popover in halftone is opaque while the pane it sits on is glass) | `main-session-files-filter` (halftone) | T-5 |
+| **Checkbox shape** | square in built-ins; round (radio-looking) in halftone and meadow because the packs set a global radius | `main-customize-status-bar` | T-3 |
+| **Tool-card header** | consistent everywhere (`glyph | bold title ↳ dim path … chevron`) **except** AskUserQuestion, which has no path, a different glyph, and its chevron inline after the title instead of right-aligned; its body mixes bordered two-line radio rows with borderless one-line checkbox rows | `tall-tool-gallery` | G-20 |
+| **The literal `\|` separator** in every tool-card header is `fg-faint` at **2.0:1** — decorative, but it is the third character in every card the user reads | `main-home` and 70+ others | G-6 |
 
 ## 3. Theme and contrast findings
 
@@ -166,7 +176,7 @@ Numbers are painted-pixel ratios from the probe; "AA" = 4.5:1 for normal text.
   cause behind finding #6 and half of §2's "selected state" row. → **P-12** (give dark
   built-ins a real accent, or give primary/selected a second signal besides fill).
 - **Light:** the user bubble is **solid black** — the heaviest object on the screen, heavier
-  than any button (`1-home` light). The find bar disappears inside it (`6-find-bar`). The
+  than any button (`main-home` light). The find bar disappears inside it (`main-find-bar`). The
   composer is a grey pill that reads disabled. "Signed in with your Claude account" is lime
   on light grey (lowest-contrast text in Settings). The *Priority* tag is `#c99700`-ish on
   light grey at **2.2:1**. The "Stopped before pushing code" amber heading is **1.5:1** on
@@ -175,7 +185,7 @@ Numbers are painted-pixel ratios from the probe; "AA" = 4.5:1 for normal text.
 - **Creme:** same as light plus: chevrons and the grey-dot icons in the Settings drawer are
   very low contrast on beige; *Remove* red and *Signed in* green look pasted on.
 - **Disabled "Max" effort** is **2.3:1** in every theme with no explanation of why it's
-  disabled (`1-model-picker`). → G-6.
+  disabled (`main-model-picker`). → G-6.
 
 ### Hardcoded colours that ignore every theme (app bugs)
 
@@ -193,14 +203,14 @@ minimum. → **T-1**.
   *Install Tailscale*, *Cancel* (Donate) all render as bare text — the pack's `edge` is so
   close to its `panel` that outline buttons vanish. Off-state toggles are a pale-green knob
   on a pale-green track; unselected radios nearly invisible; *unchecked* checkboxes in
-  Status Bar Widgets vanish entirely (`1-customize-status-bar` meadow). **The app should
+  Status Bar Widgets vanish entirely (`main-customize-status-bar` meadow). **The app should
   guarantee** a minimum edge/panel contrast (a SURFACE rule in `contrast-rules.js`) so a
   pack cannot erase its own outlines.
 - **T-3 Community radius cascades into controls.** Halftone/meadow set big radii and the
   square checkbox becomes a circle (looks like a radio). Checkbox should pin `--radius-sm`
   regardless of pack.
 - **T-4 Halftone's text-shadow fringe** applies to *dialog titles* at 14px, where it reads
-  as a rendering fault rather than an effect (`1-settings-buddy-floater` halftone). The
+  as a rendering fault rather than an effect (`main-settings-buddy-floater` halftone). The
   pack should scope the effect to display sizes; the app could expose a
   `--display-effect` hook so packs stop targeting arbitrary headings.
 - **T-5 Glass vs opaque mismatches.** In halftone the Session Files pane is glass but its
@@ -221,7 +231,7 @@ minimum. → **T-1**.
 ### Phone width (390px)
 
 - Session tab collapses to a single letter ("f") next to "+9"; in halftone the letter
-  disappears entirely (`narrow-n-home`).
+  disappears entirely (`narrow-home`).
 - Quick-chip row clips "Fix Te…" at the right edge with no fade or scroll affordance.
 - Status bar wraps to two rows; theme chip orphaned on the second.
 - Model picker clips its last option ("Fable") — the four model buttons don't wrap.
@@ -234,7 +244,7 @@ minimum. → **T-1**.
 
 ### Loading states (2s fake latency)
 
-Captured in `lat-*`: home, Settings → Account, Projects, Marketplace, Resume all show their
+Captured in `latency-*`: home, Settings → Account, Projects, Marketplace, Resume all show their
 `LoadingState` with a named subject ("Loading projects…") — consistent, and the one place
 the migration's primitives are visibly doing their job. No findings.
 

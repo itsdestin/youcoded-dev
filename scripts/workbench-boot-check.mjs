@@ -49,6 +49,7 @@ const ROUTES = [
   ['app · stress', '&child=1&scenario=stress'],
   ['tool gallery', '&child=1&view=tools'],
   ['comparisons', '&child=1&view=compare'],
+  ['assistant settings', '&child=1&view=assistant-final'],
   // The parked-turn opt-in (toolbar "Stalled turn" toggle → ?stalled=1). It
   // replays the fixture's `{"type":"stalled"}` line, which is the ONLY way the
   // red "Provider may have stalled" card, its live count-up timer and its
@@ -60,6 +61,10 @@ const ROUTES = [
   // card it summons does.
   ['parent frame · stalled toggle on', '&stalled=1'],
   ['app · default + stalled turn', '&child=1&scenario=default&stalled=1'],
+  // `?firstRun=<STEP>` (mock-shim.ts) renders the onboarding wizard, which no
+  // click can reach once setup is complete. Added 2026-08-25 with the UI-review
+  // rig so the wizard is a standing route rather than a surface nobody sees.
+  ['app · first-run wizard', '&child=1&scenario=default&firstRun=AUTHENTICATE'],
 ];
 
 const CHROME = ['google-chrome-stable', 'google-chrome', 'chromium', 'chromium-browser'];

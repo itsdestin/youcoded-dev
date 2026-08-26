@@ -1,0 +1,23 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "width": 1440,
+ "height": 4200,
+ "shots": [
+  {
+   "name": "tool-gallery",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&view=tools",
+   "boot": 5000,
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "js:document.body.textContent.includes('TodoWrite')"
+  },
+  {
+   "name": "compare",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&view=compare",
+   "boot": 4000,
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "js:document.body.textContent.includes('Always')"
+  }
+ ]
+}

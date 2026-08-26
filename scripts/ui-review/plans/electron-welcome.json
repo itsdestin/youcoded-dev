@@ -1,0 +1,637 @@
+{
+ "base": "http://localhost:5233/",
+ "boot": 4500,
+ "shots": [
+  {
+   "name": "e-empty",
+   "actions": [],
+   "sameAsBaseline": true
+  },
+  {
+   "name": "e-new-session-form",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    }
+   ]
+  },
+  {
+   "name": "e-new-session-model",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "e-new-session-model-filter",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label='Filter and sort']",
+     "settle": 700
+    }
+   ]
+  },
+  {
+   "name": "e-resume",
+   "actions": [
+    {
+     "clickText": "Resume Session",
+     "settle": 2000
+    }
+   ]
+  },
+  {
+   "name": "e-settings-model-providers",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-providers-local",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "eval": "(()=>{const d=document.querySelector('[role=dialog]')||document.body;const s=[...d.querySelectorAll('*')].find(e=>e.scrollHeight>e.clientHeight+100 && /auto|scroll/.test(getComputedStyle(e).overflowY));if(s)s.scrollTop=s.scrollHeight;})()"
+    },
+    {
+     "wait": 600
+    }
+   ]
+  },
+  {
+   "name": "e-settings",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    }
+   ]
+  },
+  {
+   "name": "e-settings-account",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Account\"))",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-settings-appearance",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Appearance\"))",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-settings-backup-sync",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Backup & Sync\"))",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-settings-remote-access",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Remote Access\"))",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-settings-defaults",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Defaults\"))",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-settings-permissions",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Permissions\"))",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-settings-development",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Development\"))",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-settings-keyboard-shortcuts",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Keyboard Shortcuts\"))",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-settings-about",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"About\"))",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-theme-marketplace",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Appearance\"))",
+     "settle": 1500
+    },
+    {
+     "clickText": "Browse Theme Marketplace",
+     "settle": 3000
+    }
+   ]
+  },
+  {
+   "name": "e-theme-marketplace-detail",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Appearance\"))",
+     "settle": 1500
+    },
+    {
+     "clickText": "Browse Theme Marketplace",
+     "settle": 3000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=button],a,article,div.card-interactive')].find(b=>b.getBoundingClientRect().height>80 && b.getBoundingClientRect().top>110 && b.getBoundingClientRect().width>150 && b.getBoundingClientRect().width<600)",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-marketplace-plugins",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Appearance\"))",
+     "settle": 1500
+    },
+    {
+     "clickText": "Browse Theme Marketplace",
+     "settle": 3000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Plugins')",
+     "settle": 2500
+    }
+   ]
+  },
+  {
+   "name": "e-marketplace-plugin-detail",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Appearance\"))",
+     "settle": 1500
+    },
+    {
+     "clickText": "Browse Theme Marketplace",
+     "settle": 3000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Plugins')",
+     "settle": 2500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=button],a,article,div.card-interactive')].find(b=>b.getBoundingClientRect().height>80 && b.getBoundingClientRect().top>110 && b.getBoundingClientRect().width>150 && b.getBoundingClientRect().width<600)",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "e-marketplace-search",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Appearance\"))",
+     "settle": 1500
+    },
+    {
+     "clickText": "Browse Theme Marketplace",
+     "settle": 3000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Plugins')",
+     "settle": 2500
+    },
+    {
+     "click": "input[placeholder^='Search']",
+     "settle": 200
+    },
+    {
+     "type": "journal"
+    },
+    {
+     "wait": 1200
+    }
+   ]
+  },
+  {
+   "name": "e-marketplace-dump",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Appearance\"))",
+     "settle": 1500
+    },
+    {
+     "clickText": "Browse Theme Marketplace",
+     "settle": 3000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Plugins')",
+     "settle": 2500
+    },
+    {
+     "dump": true
+    }
+   ],
+   "probe": false
+  },
+  {
+   "name": "e-library",
+   "actions": [
+    {
+     "eval": "window.dispatchEvent(new CustomEvent('youcoded:open-library',{detail:{tab:'skills'}}))"
+    },
+    {
+     "wait": 2000
+    }
+   ]
+  },
+  {
+   "name": "e-library-themes",
+   "actions": [
+    {
+     "eval": "window.dispatchEvent(new CustomEvent('youcoded:open-library',{detail:{tab:'themes'}}))"
+    },
+    {
+     "wait": 2000
+    }
+   ]
+  },
+  {
+   "name": "e-sync-explainer",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Backup & Sync\"))",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/what is this|about|info|explain/i.test(b.getAttribute('aria-label')||b.getAttribute('title')||''))",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "e-appearance-about",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label=Model]",
+     "settle": 800
+    },
+    {
+     "clickText": "Manage models\u2026",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Appearance\"))",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='What is this?']",
+     "settle": 900
+    }
+   ]
+  }
+ ]
+}

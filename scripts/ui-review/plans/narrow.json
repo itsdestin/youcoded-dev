@@ -1,0 +1,247 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "width": 390,
+ "height": 844,
+ "shots": [
+  {
+   "name": "home",
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "[aria-label='Open menu']"
+  },
+  {
+   "name": "menu",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    }
+   ]
+  },
+  {
+   "name": "settings",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Settings\").test(b.textContent.trim()))",
+     "settle": 1000
+    }
+   ],
+   "expect": "[aria-label='Close settings']"
+  },
+  {
+   "name": "settings-appearance",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Settings\").test(b.textContent.trim()))",
+     "settle": 1000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "settings-providers",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Settings\").test(b.textContent.trim()))",
+     "settle": 1000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "projects",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Projects\").test(b.textContent.trim()))",
+     "settle": 1000
+    }
+   ],
+   "expect": "[aria-label=Files]"
+  },
+  {
+   "name": "session-files",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Session Files\").test(b.textContent.trim()))",
+     "settle": 1000
+    }
+   ]
+  },
+  {
+   "name": "connect4",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Connect 4\").test(b.textContent.trim()))",
+     "settle": 1000
+    }
+   ]
+  },
+  {
+   "name": "all-sessions",
+   "actions": [
+    {
+     "click": "[title='All Sessions']",
+     "settle": 700
+    }
+   ]
+  },
+  {
+   "name": "tags",
+   "actions": [
+    {
+     "click": "[title^='Tags & note']",
+     "settle": 700
+    }
+   ],
+   "expect": "[placeholder^='Search or create']"
+  },
+  {
+   "name": "model-picker",
+   "actions": [
+    {
+     "click": "[title^='Click to change model']",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "skills-drawer",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    }
+   ],
+   "expect": "[title='Open marketplace']"
+  },
+  {
+   "name": "marketplace",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "library",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1200
+    }
+   ]
+  },
+  {
+   "name": "resume-stress",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    }
+   ]
+  },
+  {
+   "name": "terminal-no-pty",
+   "actions": [
+    {
+     "click": "[title='Switch to terminal']",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "tool-expanded",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Reading ChatView.tsx'))",
+     "settle": 600
+    }
+   ]
+  },
+  {
+   "name": "composer-typed",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "Can you review the theme tokens and tell me what looks off in the marketplace?"
+    }
+   ]
+  },
+  {
+   "name": "stress-permissions",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Settings\").test(b.textContent.trim()))",
+     "settle": 1000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Permissions\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog]"
+  }
+ ]
+}

@@ -1,21 +1,20 @@
 # UI audit 2026-08-25 — screenshot evidence
 
 - `gallery.html` — every captured surface, all themes side by side. Open the file in the
-  app's file viewer or a browser. Names are `<batch>-<surface>`; the findings doc cites them.
-- `images/` — the JPEG sheets the gallery shows (~15 MB, **git-ignored** on purpose, same
+  app's file viewer or a browser. Names are `<plan>-<surface>` (`main-`, `overlays-`,
+  `narrow-`, `tall-`, `latency-` from the workbench sweep; `live-` and `e-` from the real
+  app); the findings doc cites them.
+- `coverage.md` — machine-generated: which planned surfaces were verified in which themes
+  (103 of 104; "Known Issues" opens an external link). `contrast.md` — the painted-pixel
+  contrast probe's raw output (over-reports on glass themes; read, don't paste).
+- `images/` — the JPEG sheets the gallery shows (~13 MB, **git-ignored** on purpose, same
   convention as the perf-lab screenshots; they exist on the machine that ran the audit).
-- Full-resolution PNG originals (~600, 1440×900 and 390×844) and the capture tooling live in
-  `scratch/ui-audit-2026-08-25/` (git-ignored): `tools/shot.mjs` (raw-CDP screenshot
-  driver; works against the UI Workbench or an Electron instance via `ATTACH_PORT`),
-  `tools/plan*.json` (what was clicked), `tools/montage.sh`, `tools/contrast-report.mjs`
-  (painted-pixel contrast probe), `tools/contrast-report.md` (its output).
+- Full-resolution PNG originals live in `scratch/ui-review-2026-08-25/` (workbench sweep)
+  and `scratch/ui-audit-2026-08-25/shots-e*/` (real app), both git-ignored.
 
-Regenerate: `bash scripts/run-workbench.sh <worktree>` in one terminal, then
-`CDP_PORT=9981 node scratch/ui-audit-2026-08-25/tools/shot.mjs <plan.json> <outDir> midnight,light,...`
-and `bash tools/montage.sh <outDir> <montageDir>`. Batches: `plan.json` (main surfaces),
-`plan2.json`/`plan3.json`/`plan6.json` (deeper + composer-driven), `plan-narrow3.json`
-(phone width), `plan-tall.json` (full tool gallery), `plan-lat.json` (loading states),
-`plan-e.json` (real Electron instance — launch it yourself with `--remote-debugging-port`).
+**Regenerate everything:** `bash scripts/ui-review/run-review.sh <worktree>` (≈15 min), then
+copy `sheets/*.jpg` here and run `python3 scripts/ui-review/make-gallery.py images gallery.html`.
+The real-app plans need the dev instance described in `scripts/ui-review/README.md`.
 
 ## Second pass (later on 2026-08-25)
 

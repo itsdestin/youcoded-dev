@@ -1,0 +1,172 @@
+{
+ "base": "http://localhost:5233/",
+ "boot": 4500,
+ "shots": [
+  {
+   "name": "e2-create-session",
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label='Skip Permissions']",
+     "settle": 600
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Create Session')",
+     "settle": 8000
+    }
+   ],
+   "expect": "[title=Settings]"
+  },
+  {
+   "name": "e2-live-chat-empty",
+   "actions": [
+    {
+     "wait": 300
+    }
+   ],
+   "sameAsBaseline": true,
+   "expect": "[title=Settings]"
+  },
+  {
+   "name": "e2-terminal-view",
+   "actions": [
+    {
+     "click": "[title=Terminal]",
+     "settle": 2500
+    }
+   ],
+   "expect": "js:document.querySelector('.xterm, .xterm-screen, canvas, [class*=terminal]')"
+  },
+  {
+   "name": "e2-ctx-menu-composer",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 150
+    },
+    {
+     "type": "draft text"
+    },
+    {
+     "rightClick": "[placeholder^='Message']",
+     "settle": 700
+    }
+   ],
+   "expect": "[role=menu]"
+  },
+  {
+   "name": "e2-ctx-menu-chat",
+   "actions": [
+    {
+     "rightClick": "js:document.querySelector('.chat-scroll')",
+     "settle": 700
+    }
+   ],
+   "expect": "[role=menu]"
+  },
+  {
+   "name": "e2-shift-switcher",
+   "actions": [
+    {
+     "click": "js:document.querySelector('.chat-scroll')",
+     "settle": 200
+    },
+    {
+     "keyDown": "Shift"
+    },
+    {
+     "wait": 700
+    }
+   ],
+   "expect": "[title='Close Session']"
+  },
+  {
+   "name": "e2-session-files",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 1000
+    }
+   ]
+  },
+  {
+   "name": "e2-status-context-pill",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('.status-bar button')].find(b=>/context/i.test(b.getAttribute('title')||b.getAttribute('aria-label')||b.textContent))",
+     "settle": 800
+    }
+   ]
+  },
+  {
+   "name": "e2-status-model-chip",
+   "actions": [
+    {
+     "click": "[title^='Click to change model']",
+     "settle": 800
+    }
+   ]
+  },
+  {
+   "name": "e2-status-tags",
+   "actions": [
+    {
+     "click": "[title^='Tags & note']",
+     "settle": 800
+    }
+   ]
+  },
+  {
+   "name": "e2-permission-mode-cycle",
+   "actions": [
+    {
+     "click": "[title^='Click to cycle permission']",
+     "settle": 600
+    }
+   ]
+  },
+  {
+   "name": "e2-all-sessions",
+   "actions": [
+    {
+     "click": "[title='All Sessions']",
+     "settle": 700
+    }
+   ]
+  },
+  {
+   "name": "e2-close-session-prompt",
+   "actions": [
+    {
+     "click": "[title='All Sessions']",
+     "settle": 700
+    },
+    {
+     "click": "js:document.querySelector('[title=\"Close Session\"]')",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "e2-close-session-confirmed",
+   "actions": [
+    {
+     "click": "[title='All Sessions']",
+     "settle": 700
+    },
+    {
+     "click": "js:document.querySelector('[title=\"Close Session\"]')",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button, [role=alertdialog] button')].find(b=>/^(close|end|yes|close session)/i.test(b.textContent.trim()))",
+     "settle": 3000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session')"
+  }
+ ]
+}

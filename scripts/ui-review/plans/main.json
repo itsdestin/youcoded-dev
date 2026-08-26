@@ -1,0 +1,663 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "home",
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "[title=Settings]"
+  },
+  {
+   "name": "settings-drawer",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    }
+   ],
+   "expect": "[aria-label='Close settings']"
+  },
+  {
+   "name": "settings-account",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Account\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-appearance",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-buddy-floater",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Buddy Floater\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-sound",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Sound\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-backup-sync",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Backup & Sync\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "js:document.querySelector('[role=dialog]')||[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Retry')"
+  },
+  {
+   "name": "settings-model-providers",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-remote-access",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Remote Access\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-defaults",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Defaults\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-permissions",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Permissions\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-development",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Development') && b.textContent.includes('Report'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[title^='Report a Bug']"
+  },
+  {
+   "name": "settings-keyboard-shortcuts",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Keyboard Shortcuts\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-donate",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Donate\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-about",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"About\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "projects",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    }
+   ],
+   "expect": "[aria-label=Files]"
+  },
+  {
+   "name": "projects-conversations",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label=Conversations]",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "projects-context",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label=Context]",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "projects-file-filter",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/filter/i.test(b.getAttribute('aria-label')||b.getAttribute('title')||''))",
+     "settle": 700
+    }
+   ]
+  },
+  {
+   "name": "terminal-view-no-pty",
+   "actions": [
+    {
+     "click": "[title=Terminal]",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "all-sessions-menu",
+   "actions": [
+    {
+     "click": "[title='All Sessions']",
+     "settle": 600
+    }
+   ],
+   "expect": "[title='Close Session']"
+  },
+  {
+   "name": "session-files-pane",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    }
+   ],
+   "expect": "[title='Close drawer']"
+  },
+  {
+   "name": "session-files-filter",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/filter/i.test(b.getAttribute('aria-label')||b.getAttribute('title')||''))",
+     "settle": 700
+    }
+   ]
+  },
+  {
+   "name": "games-connect4",
+   "actions": [
+    {
+     "click": "[title='Connect 4']",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "tool-card-expanded",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Reading ChatView.tsx'))",
+     "settle": 600
+    }
+   ]
+  },
+  {
+   "name": "tool-cards-all-expanded",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 100
+    },
+    {
+     "key": "o",
+     "modifiers": 2,
+     "settle": 800
+    }
+   ]
+  },
+  {
+   "name": "skills-drawer",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    }
+   ],
+   "expect": "[title='Open marketplace']"
+  },
+  {
+   "name": "marketplace",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    }
+   ],
+   "expect": "[aria-label='Open Your Library'], [title='Your Library']"
+  },
+  {
+   "name": "marketplace-themes",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Themes')",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "library",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1200
+    }
+   ],
+   "expect": "[title='Marketplace']"
+  },
+  {
+   "name": "library-themes",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1200
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Themes')",
+     "settle": 1200
+    }
+   ]
+  },
+  {
+   "name": "model-picker",
+   "actions": [
+    {
+     "click": "[title^='Click to change model']",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "tags-note-popover",
+   "actions": [
+    {
+     "click": "[title^='Tags & note']",
+     "settle": 600
+    }
+   ],
+   "expect": "[placeholder^='Search or create']"
+  },
+  {
+   "name": "customize-status-bar",
+   "actions": [
+    {
+     "click": "[title='Customize Status Bar']",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "edit-quick-chips",
+   "actions": [
+    {
+     "click": "[title='Edit quick chips']",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "composer-typed",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "Can you review the theme tokens and tell me what looks off in the marketplace screen? I think the pills are too small."
+    },
+    {
+     "wait": 300
+    }
+   ]
+  },
+  {
+   "name": "command-drawer-slash",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/"
+    },
+    {
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "command-drawer-search",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/git"
+    },
+    {
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "preferences-config",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/config"
+    },
+    {
+     "key": "Enter",
+     "settle": 1000
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "resume-browser",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    }
+   ],
+   "expect": "[placeholder^='Search sessions']"
+  },
+  {
+   "name": "resume-browser-stress",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1500
+    }
+   ],
+   "expect": "[placeholder^='Search sessions']"
+  },
+  {
+   "name": "find-bar",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 100
+    },
+    {
+     "key": "f",
+     "modifiers": 2,
+     "settle": 700
+    },
+    {
+     "type": "scroll"
+    },
+    {
+     "wait": 500
+    }
+   ]
+  },
+  {
+   "name": "theme-about",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label='What is this?']",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "theme-edit-builtin",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label='Edit Midnight']",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "theme-edit-community",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label='Edit Halftone Dimension']",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "permissions-stress",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Permissions\"))",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "providers-none",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=no-providers",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "welcome-empty",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty",
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session')"
+  },
+  {
+   "name": "tool-gallery-top",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&view=tools",
+   "boot": 5000,
+   "actions": [],
+   "sameAsBaseline": true
+  },
+  {
+   "name": "compare-view",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&view=compare",
+   "boot": 4000,
+   "actions": [],
+   "sameAsBaseline": true
+  }
+ ]
+}
