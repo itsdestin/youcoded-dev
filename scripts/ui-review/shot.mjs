@@ -47,6 +47,11 @@ import { join } from 'node:path';
 const [planPath, outDir, themeArg] = process.argv.slice(2);
 if (!planPath || !outDir) { console.error('usage: node shot.mjs <plan.json> <outDir> [themes]'); process.exit(2); }
 const plan = JSON.parse(readFileSync(planPath, 'utf8'));
+// SHARD=k/n runs every n-th shot starting at k, so run-review.sh can spread one plan
+// over many Chrome processes: the sweep is wall-clock bound (each shot pays a fixed
+// page-boot wait), not CPU bound — 18 processes left a 32-core box 85% idle.
+const [SHARD_K, SHARD_N] = (process.env.SHARD ?? '0/1').split('/').map(Number);
+plan.shots = plan.shots.filter((_, i) => i % SHARD_N === SHARD_K);
 const THEMES = (themeArg ?? 'midnight').split(',');
 const CDP_PORT = Number(process.env.CDP_PORT ?? 9978);
 const ATTACH = process.env.ATTACH_PORT ? Number(process.env.ATTACH_PORT) : 0;
@@ -224,7 +229,7 @@ for (const theme of THEMES) {
 }
 // Unique per run (plan + themes + time) so a targeted re-run never clobbers an
 // earlier manifest — coverage.mjs merges them oldest-first.
-const mf = join(outDir, `manifest-${planPath.split('/').pop().replace(/\.json$/, '')}-${THEMES.join('-')}-${Date.now()}.json`);
+const mf = join(outDir, `manifest-${planPath.split('/').pop().replace(/\.json$/, '')}-${THEMES.join('-')}-s${SHARD_K}of${SHARD_N}-${Date.now()}.json`);
 writeFileSync(mf, JSON.stringify(manifest, null, 2));
 console.log(`\n${summary.verified}/${manifest.length} shots verified. Manifest: ${mf}`);
 if (summary.unverified.length) { console.log('Unverified (moved to _unverified/):'); for (const u of summary.unverified) console.log('  ' + u); }

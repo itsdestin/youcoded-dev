@@ -52,22 +52,33 @@ else
 fi
 node "$ROOT/scripts/workbench-boot-check.mjs" "$VITE_PORT" > "$OUT/boot-check.log" 2>&1 || { echo "[ui-review] workbench boot check FAILED — see $OUT/boot-check.log"; exit 1; }
 
-# 2. Plans, two themes per process so a full sweep stays under ~15 minutes.
+# 2. Capture jobs: one (plan, theme, shard) per Chrome process, through a queue of
+# UI_REVIEW_JOBS workers (default 24). A sweep is wall-clock bound — every shot pays
+# a fixed page-boot wait — so the win is breadth: the old 2-themes-per-process layout
+# took ~15 min with the machine 85% idle; sharding brings a full sweep to ~5 min (main+overlays for two themes: 2 min).
+# Each job gets its own CDP port (9931 + index). SHARD=k/n is honoured by shot.mjs.
 IFS=',' read -r -a T <<< "$THEMES"
-port=9930
-pids=()
+JOBS="${UI_REVIEW_JOBS:-24}"
+PER_SHARD="${UI_REVIEW_SHARD_SIZE:-8}"     # shots per process before the plan is split further
+jobfile="$OUT/jobs.txt"; : > "$jobfile"
+idx=0
 for plan in "$HERE"/plans/*.json; do
   name="$(basename "$plan" .json)"
   case "$name" in electron-*) continue;; esac
-  for ((i=0; i<${#T[@]}; i+=2)); do
-    pair="${T[$i]}${T[$((i+1))]:+,${T[$((i+1))]}}"
-    port=$((port+1))
-    CDP_PORT=$port node "$HERE/shot.mjs" "$plan" "$OUT/shots-$name" "$pair" > "$OUT/run-$name-$port.log" 2>&1 &
-    pids+=($!)
+  # UI_REVIEW_PLANS=main,overlays limits a run to the plans a PR touches.
+  if [[ -n "${UI_REVIEW_PLANS:-}" && ",${UI_REVIEW_PLANS}," != *",$name,"* ]]; then continue; fi
+  n=$(node -e "const p=require('$plan');console.log(Math.max(1,Math.ceil(p.shots.length/$PER_SHARD)))")
+  for t in "${T[@]}"; do
+    for ((k=0; k<n; k++)); do
+      idx=$((idx+1))
+      echo "$plan $name $t $k/$n $((9930+idx))" >> "$jobfile"
+    done
   done
 done
-echo "[ui-review] ${#pids[@]} capture processes running…"
-wait "${pids[@]}" || true
+echo "[ui-review] $idx capture jobs, $JOBS at a time…"
+run_job() { CDP_PORT=$5 SHARD=$4 node "$HERE/shot.mjs" "$1" "$OUT/shots-$2" "$3" > "$OUT/run-$2-$3-${4%/*}.log" 2>&1 || true; }
+export -f run_job; export HERE OUT
+xargs -P "$JOBS" -L 1 bash -c 'run_job "$@"' _ < "$jobfile"
 fi
 rm -rf "$OUT/sheets"/*.jpg
 

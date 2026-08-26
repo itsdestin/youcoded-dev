@@ -13,7 +13,7 @@ ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
 
 1. `bash setup.sh`, then a worktree for the branch under review (`cp -al` its
    `node_modules`). Never the main checkout, never the live app.
-2. `bash scripts/ui-review/run-review.sh <worktree>` — waits ~15 min. It boots the
+2. `bash scripts/ui-review/run-review.sh <worktree>` — ~5 min. It boots the
    workbench, runs every plan × 6 themes, verifies each shot, builds sheets, `coverage.md`,
    `contrast.md`, `gallery.html` under `scratch/ui-review-<date>/`.
 3. **Read `coverage.md` first.** Every `MISSED`/`partial` row is either a selector to fix

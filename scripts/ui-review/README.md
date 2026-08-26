@@ -14,7 +14,7 @@ bash scripts/ui-review/run-review.sh <worktree> [outDir] [themes]
 Default output: `scratch/ui-review-<date>/` (git-ignored) with `gallery.html`,
 `coverage.md`, `contrast.md`, `sheets/` and the raw `shots-<plan>/<theme>/*.png`.
 Runs the UI Workbench (real renderer, fake backend, headless Chrome) — **never the live
-app**. ~15 minutes for 6 themes on this machine.
+app**. A full 6-theme sweep runs one Chrome per (plan, theme, shard) through a queue of `UI_REVIEW_JOBS` workers (default 24) — about 5 minutes on this machine; `UI_REVIEW_PLANS=main,overlays` limits a run to the plans a PR touches.
 
 ## Why it can be trusted (the 2026-08-25 lesson)
 
@@ -38,6 +38,7 @@ the reason. **A review must quote `coverage.md` and call unverified surfaces "un
 | `shot.mjs` | raw-CDP driver: boots the page per shot, runs actions, verifies, screenshots, runs the contrast probe. `ATTACH_PORT=<port>` drives a running Electron instance instead of headless Chrome. |
 | `plans/*.json` | what to open. `main` (screens + settings + overlays), `overlays` (context menus, prompts, wizard, stalled card, project overlays…), `narrow` (390 px), `tall` (full tool gallery), `latency` (2 s fake IPC → loading states), `electron-welcome` + `electron-live-session` (real app; see below). |
 | `montage.sh` | one sheet per surface, themes side by side, verified shots only. |
+| `montage-ab.sh` | before/after sheets for a UI PR: `montage-ab.sh <out> <plan/name,…> <themes> before=<runA> after=<runB> [more=<runC>]` — one sheet per surface, a row per theme, a column per run. |
 | `contrast-report.mjs` | aggregates the painted-pixel probe (fg vs *actual* bg) — catches hardcoded colours and translucent surfaces the token audit can't. Over-reports on glass themes; read it, don't paste it. |
 | `coverage.mjs` | covered / partial / MISSED per surface × theme, with reasons. |
 | `make-gallery.py` | the HTML gallery. |
