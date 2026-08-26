@@ -175,3 +175,59 @@ Verified running: `:99` at `1600x1000x24`, X.Org 21.1.24, `xdpyinfo` answering.
 `launch.mjs`'s `resolveXvfbBin()` prefers `$XVFB_BIN`, then `Xvfb` on PATH, then
 this vendored copy — so a proper system install silently takes over if one ever
 lands, and no code changes when it does.
+
+## 12. The plan's toy model could never answer
+
+The plan specified `stories260K.gguf` ("small enough that a native session costs
+nothing"). It cost nothing because it never worked. Its GGUF metadata says
+`llama.context_length = 2048`, and llama.cpp clamps `-c` down to a model's trained
+context — while the app's agent system prompt measures **4,244 tokens**. Every
+native send came back:
+
+    context size (2048 tokens), try increasing it (provider error 400)
+
+rendered into the chat pane. It is also a story-completion model with no chat
+template, so it was the wrong shape twice over.
+
+Replaced with Qwen2.5-0.5B-Instruct Q4_K_M (~470 MB, 32,768-token context, real
+chat template), and the fixture's `contextSize` raised 4096 → 16384. Verified: the
+app now reads the 4,244-token prompt and the model replies. Both the 2048 and the
+4096 ceilings were observed directly, one after the other, which is what
+identified the two separate causes.
+
+## 13. A 50,000-message conversation freezes the renderer for ~2 minutes
+
+`history.huge` (25,000 turns → 50,000 messages) never stabilised, so
+`history.huge.median.resumeStableMs` — a PRIMARY metric and the target of
+experiment card E5 — reported `null` on every sample.
+
+The cause is not the rig. Measured:
+
+- `loadHistory(…, 0, true)` returned all 50,000 messages in **258 ms**
+- the resumed conversation then took **~122 seconds** to finish rendering
+- the renderer's main thread is blocked solid throughout: a CDP `evaluate` issued
+  during the freeze does not return until the render completes
+
+So the cost is entirely render-side, not disk or IPC. The watch ceiling was raised
+90 s → 240 s so the metric is measurable at all.
+
+Note what that ceiling can and cannot buy: because the page is frozen, the in-page
+sampler cannot sample DURING the block, so `resumeStableMs` for `huge` is
+effectively "when the freeze ended, plus the stability window". That is the honest
+user-visible number, not a fine-grained render profile.
+
+## 14. One optional metric could abort four PRIMARY ones
+
+The workload journey timed the native first token before doing its switching,
+streaming and CPU sampling. When the native leg threw (see #12), the whole
+scenario aborted — and `switchP95Ms`, `probe.longtaskTotalMs`, `pssAfterMb` and
+`cpuDuringPct` were all lost with it. The first real run produced a report with
+four PRIMARY paths `undefined`.
+
+The native leg is now non-fatal: its timings go `null` and `nativeFailure` quotes
+what the pane actually showed. A local-model problem is a fixture issue, not a
+reason to lose the responsiveness measurements.
+
+The orchestrator's `validateReport` did catch this and refused to let the report be
+ranked (exit 4, naming each blind path), which is the behaviour that made the
+failure obvious instead of silent.
