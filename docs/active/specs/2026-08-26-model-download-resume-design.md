@@ -141,7 +141,7 @@ misleading number in a shipping UI.
 ### 3.3 One list, not two
 
 `models:orphaned-partials` is folded into `models:installed` and the channel is
-**deleted**. Enumerated 2026-08-26 (`rg -n 'orphaned-partials|ORPHANED_PARTIALS|orphanedPartials'
+**deleted**; `models:resume` (§3.5) takes its place on the same surfaces. Enumerated 2026-08-26 (`rg -n 'orphaned-partials|ORPHANED_PARTIALS|orphanedPartials'
 desktop/src desktop/tests app/src`), every site that must go or change:
 `shared/types.ts:1387` and `preload.ts:357` (channel constant), `preload.ts:1274`
 (bridge), `ipc-handlers.ts:2699` (handler), `remote-server.ts:1220` (WS case),
@@ -158,10 +158,17 @@ that can disagree — the exact failure mode this spec exists to fix. `ipc-chann
 
 ### 3.4 An unfinished model is not offerable
 
-`EngineSupervisor.listModels()` and `EngineManager.liveModels()` — which feed
-`engine:models`, and through it the new-conversation picker and the mid-session swap
-popup — filter out incomplete entries. Settings is where you act on an unfinished
-download; the picker is where you choose something that can load.
+Rather than filtering incomplete entries at each consumer, there is **one scan of the
+cache dir and two views of it**. `scanLocalDownloads()` reports every download on disk
+with its part counts and byte totals; `scanGgufCache()` becomes that scan filtered to
+complete sets. Everything already downstream of `scanGgufCache` — `EngineSupervisor.listModels()`,
+`EngineManager.liveModels()`, `engine:models`, the new-conversation picker, the
+mid-session swap popup — is fixed by construction, with no change at those call sites
+and no second place for the rule to be forgotten. Only the Settings list
+(`installedModels()`) reads the unfiltered scan.
+
+Settings is where you act on an unfinished download; the picker is where you choose
+something that can load.
 
 This is the same class as the 2026-08-16 "listed is not servable" bug and its fix
 follows the same rule stated at `engine-supervisor.ts`: **a row the server cannot serve
@@ -170,15 +177,40 @@ must not be offered as a choice.** The `ensureServable` chokepoint in
 
 ### 3.5 Resume
 
-Resume reads the manifest, calls the existing `models.download(repo, quant)`, and the
-row becomes a progress bar **in place** — it does not jump to the in-progress area
-above. On completion the row becomes an ordinary complete row.
+Resume is a new `models:resume` channel taking the model id. Main reads the manifest
+and calls its own `download(repo, quant)` with the recorded file set. The renderer never
+sees or reconstructs the manifest, and resume needs **no Hugging Face round trip** — it
+works with the API unreachable, which matters because the interruption that stranded the
+download is often the network itself.
+
+This is why the manifest records the full file set and fingerprints rather than just the
+repo name: the alternative is the renderer re-fetching the repo's file list and hoping it
+still matches what was half-downloaded.
+
+The row becomes a progress bar **in place** — it does not jump to the in-progress area
+above. On completion it becomes an ordinary complete row.
+
+Channel arithmetic: `models:orphaned-partials` goes, `models:resume` arrives. Net zero,
+and the parity test covers the new one on the same five surfaces.
 
 Resume failures use the existing inline error line on the row (already built, already
 tested: `PartialRow`'s `resumeError`). No new error surface.
 
 `PartialRow` is retired in favour of the unified list row — it exists only because
 in-flight and leftover downloads render in two different places today.
+
+### 3.5a How a live download and a disk row stay one row
+
+The list rows come from `models:installed` (a disk read, refreshed on demand); live
+progress comes from the `download-progress` event stream. They are matched on
+`repo` + `quant`, both of which a resumable row carries from its manifest. While a
+download is in flight its row shows the live byte count; otherwise it shows what is on
+disk.
+
+The list refreshes on the **first** progress event for a download id (a brand-new
+download has no disk row yet) and on every terminal state (`done`, `error`, `cancelled`).
+An `untraceable` row has no repo to match on and can never be live — it cannot be
+resumed, which is the whole reason it is labelled that way.
 
 ### 3.6 Discard
 
@@ -235,8 +267,10 @@ New or changed tests, all desktop:
   byte counts; `liveModels()` omits incomplete entries.
 - `fit-estimator.test.ts` — a resume passes on free space that would refuse the same
   download from scratch.
-- `ipc-channels.test.ts` — `models:orphaned-partials` is gone from all five surfaces;
-  `models:installed` parity holds.
+- `ipc-channels.test.ts` — `models:orphaned-partials` is gone from all five surfaces and
+  `models:resume` is present on all of them; `models:installed` parity holds.
+- `engine-manager.test.ts` — resume reads the manifest and starts a download with the
+  recorded file set, with no Hugging Face call.
 - `local-models-partial-row.test.tsx` — reworked for the unified row (it currently
   pins `PartialRow`, which this retires): Resume calls `download` with the manifest's
   repo and quant; an untraceable row offers no Resume; Discard's confirmation names the

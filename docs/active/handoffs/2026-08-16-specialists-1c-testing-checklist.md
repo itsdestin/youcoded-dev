@@ -20,9 +20,18 @@ related:
 > --offset 2 --profile specialists-1c`) and a real cloud model. **Run check 9b
 > first** — it is the permissions-leak check between helpers.
 >
-> Ordering risk: master is 89 commits ahead of this branch's last master merge, so
-> rebase/merge and re-verify **before** spending the ~35 minutes here, or the
-> results describe code that no longer exists.
+> **Update 2026-08-26 (later):** the branch has been merged onto master and re-verified,
+> so the ordering risk below is gone. Two decisions changed what checks 9b/9e/9f
+> expect — see those checks: a file-defined helper now always shows a consent card
+> even in auto-edit mode (D1), and Always allow IS offered for file-defined helpers,
+> scoped by where the file lives (D2).
+>
+> **Shared state warning:** the dev window shares `~/.youcoded/` with your normal
+> YouCoded. That means a file you drop in `~/.youcoded/specialists/` (check 7) also
+> appears in your normal app's Settings → Specialists, and any **Always allow** you
+> click in the dev window (9b, 9f) is remembered in your normal app too. Nothing here
+> can break the normal app, but when you're done, open the normal app's
+> Settings → Permissions and remove the test grants, and delete the test files.
 
 Plan 1c changes how a hired helper looks and is managed: everything about one
 helper lives on one card and in one popup, helpers can be defined by dropping
@@ -250,15 +259,76 @@ Settings explains why your file didn't load.
 1. Hire the built-in **Worker** in this folder and click **Always allow**.
 2. Now hire the project's `code-reviewer` (from check 8) — a **different**,
    read-write helper in the same folder.
-3. **You should see** a consent card appear again for `code-reviewer`, with
-   **no Always-allow button offered at all** — its card says "This project's
-   .claude/agents/code-reviewer.md" as before.
+3. **You should see** a consent card appear again for `code-reviewer`. Its
+   card says "This project's .claude/agents/code-reviewer.md" as before. It
+   DOES offer **Always allow** (changed 2026-08-26 — decision D2), with a
+   small grey note under the buttons reading "Always allow applies to this
+   helper in **<this folder's name>** only, because it is defined inside the
+   project. If you edit its file, you'll be asked again." Don't click it yet.
 4. Hire the built-in Worker a second time. **You should see** it go through
    with no card — the earlier Always-allow still covers it.
 
-**Wrong if:** step 3's card offers Always-allow, or worse, doesn't appear at
-all (that means the Worker's earlier grant leaked to a different helper —
-tell whoever's handling this immediately, it's a security-relevant one).
+**Wrong if:** step 3's card doesn't appear at all (that means the Worker's
+earlier grant leaked to a different helper — tell whoever's handling this
+immediately, it's a security-relevant one); or the note is missing, or names
+the wrong folder.
+
+| Result | Notes |
+|---|---|
+| | |
+
+---
+
+### 9e. Auto-edit mode still asks before a file-defined helper runs
+
+1. Switch the conversation's permission mode to **Auto-edit** (status-bar chip).
+2. Ask the assistant to hire the built-in **Worker**. **You should see** no
+   card at all — auto-edit already covers built-in helpers, as before.
+3. Ask it to hire the project's `code-reviewer` (or `docs-writer` from
+   check 7). **You should see** a consent card anyway — a helper defined by a
+   file always asks, because its file could say anything (decision D1).
+4. Switch back to **Ask** when done.
+
+**Wrong if:** step 2 shows a card (built-ins got stricter — not intended), or
+step 3 shows none (a file-defined helper ran with no consent in auto-edit).
+
+| Result | Notes |
+|---|---|
+| | |
+
+---
+
+### 9f. Always allow for a helper — where it reaches, and when it stops
+
+Two kinds of file-defined helper, two widths of grant (decision D2):
+
+**Your own helper (`~/.youcoded/specialists/docs-writer.md` from check 7):**
+1. Hire `docs-writer`. **You should see** the card's note read "Always allow
+   applies to this helper in every project. If you edit its file, you'll be
+   asked again." Click **Always allow**.
+2. Open a native conversation in a **different** folder and hire `docs-writer`
+   there. **You should see** no card — the grant travels with your own helper.
+3. Open **Settings → Permissions**. **You should see** the grant described in
+   words — "Let the docs-writer specialist edit files in every project" (or
+   "…work in every project" for a read-only one) — not a raw code like
+   `file:docs-writer@a1b2c3`.
+4. Edit `docs-writer.md` (change anything — even one word of its
+   description) and hire it again in either folder. **You should see** the
+   card come back, because the file no longer matches the one you approved.
+
+**The project's helper (`.claude/agents/code-reviewer.md` from check 8):**
+5. Hire `code-reviewer` in the project folder and click **Always allow**.
+   Hire it again there — no card.
+6. Copy that same `code-reviewer.md` into a **different** project's
+   `.claude/agents/` and hire it there. **You should see** a card — a
+   project's own helper is only ever trusted in that project.
+7. Settings → Permissions should describe it as "Let the code-reviewer
+   specialist work in <the project folder>".
+
+**Wrong if:** step 2 or 5's repeat shows a card (grant didn't stick); step 4
+or 6 shows NO card (a changed file, or another project's copy, ran on an old
+approval — security-relevant, report immediately); step 3 or 7 shows a raw
+`file:…@…` string.
 
 | Result | Notes |
 |---|---|
