@@ -64,5 +64,5 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 - **`attentionState` is authoritative on DESKTOP only** — remote browsers get `attentionMap` via `status:data` and MUST NOT run their own classifier. The shim's `attentionMap` diff is load-bearing.
 
 ## UI iteration tooling
-- **Building or redesigning UI? `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`); `run-dev.sh` only for PTY/main-process behaviour. Unbacked channels → `mock-shim.ts` `MOCK_ONLY`; review under `stress`/`empty`. **After ANY shim change run `node scripts/workbench-boot-check.mjs`.** Spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
-- **UI review sweep: `bash scripts/ui-review/run-review.sh <worktree>`** — self-verified shots × 6 themes; read `coverage.md`; `/ui-review`.
+- **Building or redesigning UI? `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`); `run-dev.sh` only for PTY/main-process behaviour. Unbacked channels → `MOCK_ONLY`; review under `stress`/`empty`. **After ANY shim change: `node scripts/workbench-boot-check.mjs`.** Spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
+- **UI review sweep: `bash scripts/ui-review/run-review.sh <worktree>`** — self-verified, 6 themes; read `coverage.md`; `/ui-review`.
