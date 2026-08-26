@@ -275,38 +275,105 @@ the migration's primitives are visibly doing their job. No findings.
 10. **Token discipline in built-ins**: apart from the hardcoded list in §3, nothing in the
     four built-ins is painted outside the token set. The migration held.
 
-## 5. Ledger — proposals to approve by number
+## 5. Ledger — proposals to approve by number, in the order to build them
 
-Each is a *visible* change. "Touches" says how many surfaces move at once (that is the
-point of the migration: one edit at the primitive/token layer moves everything).
+Each row is a *visible* change; "Touches" says how many surfaces move at once. Numbers are
+the original P-numbers (never renumbered — approve or reject by number, e.g. "all of A,
+B without P-18"). The rows are grouped into **phases in build order**: each phase is one
+worktree/PR with one before/after sheet from `scripts/ui-review/run-review.sh`, and later
+phases are judged against screens that already include the earlier ones. The reason for
+the order is in each phase's first line.
+
+### Phase A — tokens and theme guarantees (do first: every later before/after looks different once these land)
+
+One edit at the token/theme layer moves every surface at once, so nothing in B–F should be
+judged until these are in. P-12 is the one real decision in the ledger; it gates P-6 and
+P-18 below. Verify with a **full** rig run (all plans, 6 themes).
 
 | # | Proposal | Touches | Risk / what users will notice |
 |---|---|---|---|
-| P-1 | Marketplace bar → three distinct groups: a **SegmentedTabs** for Plugins/Themes, **filter pills** for categories, a **Select** for sort; search field gets the shared `SearchFilterPill` shape; one empty state (`EmptyState` with a "Clear filters" action). | Marketplace only | Visible re-layout of the bar; muscle memory for the two tabs is preserved (same position). |
-| P-2 | Library → `EmptyState` under each heading ("No favourites yet — ★ a skill in the Marketplace" with a button); tab group adopts Projects' bordered icon+label+count style. | Library | New users finally see something; nothing moves for users with content. |
+| P-11 | Tokens: `fg-muted` on raised surfaces (`inset`/`well`) is bumped to ≥4.5:1 in all four built-ins; `fg-faint` becomes *decorative-only* (dividers, disabled), never a spinner — spinners use `fg-muted`. | every surface | Muted text gets slightly lighter/darker; nothing moves. |
+| P-12 | Dark built-ins get a real accent (a muted blue for midnight, a warm grey-blue for dark — chosen so `on-accent` stays white and links stay AA on inset), so *primary* and *selected* stop looking disabled. Alternative if Destin wants to keep the monochrome look: primary/selected gain a second signal (thicker border + bold) and "disabled" gets a dashed border. | every primary/selected in midnight & dark | This is the most visible change in the ledger — every primary button and selected tab in the two most-used themes changes colour. Halftone/meadow unaffected. **Decision needed: real accent, or monochrome + second signal.** |
+| P-13 | Light/creme user bubble → `inset` (grey) with `fg` text instead of solid black; assistant bubble unchanged. | chat, light + creme | The user's own messages stop being the darkest thing on screen. |
+| P-16 | Theme-pack guarantees added to `contrast-rules.js`: edge/panel ≥ 1.3:1 (outlines survive), checkbox radius pinned, text-bearing glass ≥ 0.85 opacity or a scrim, accent may paint at most the documented set (G-8), terminal surface ≥ 0.9 opacity (the P-20 guarantee). Meadow Mist and Halftone fixed in `wecoded-themes` to pass. Lands last in this phase so it pins P-11/P-12's numbers as rules packs cannot regress. | packs | Meadow's buttons get borders back; halftone's checkboxes go square. |
+
+### Phase B — shared primitives (one component, many surfaces)
+
+These are edits to a primitive that N surfaces inherit; doing them before the per-screen
+work in C means those screens are drawn with the corrected parts. P-18 needs P-12 (its
+*Submit* button only becomes visible with a real accent). Verify: `main` + `overlays` +
+`tall` plans.
+
+| # | Proposal | Touches | Risk / what users will notice |
+|---|---|---|---|
+| P-15 | Every dialog gets the same header (title · optional ⓘ · ✕): add it to Donate and Development; Resume Session moves "Show complete" below the search field and gets a ✕. About and Permissions get a scrollbar/fade. | 5 dialogs | Two dialogs gain a title row. |
+| P-18 | Tool cards: AskUserQuestion adopts the standard header (glyph · title · ↳ first question · chevron right-aligned); its option rows share one row style; *Submit* uses `primary` (which P-12 makes visible). The literal `\|` separator in the header becomes a 1px divider element, not text. | every tool card | The pipe character disappears; AskUserQuestion looks like its siblings. |
+| P-10 | Status bar: all chips share one treatment (grey outline); the model chip signals "current model" with the model's *icon*, not an orange outline; the theme chip is a label (no border) with the cycle affordance on hover; text floor `text-2xs`; at phone width chips collapse to icons before wrapping. | Status bar (every session) | The orange outline disappears; text one step larger. |
+
+### Phase C — the four screens users see most
+
+Each is a single full screen with its own bar/header; they share the "one primary, one
+secondary" rule (G-14) and the `EmptyState` primitive, so build them as one PR with four
+numbered before/afters. P-2's tab style copies Projects', so P-5 goes first. Verify:
+`main` + `marketplace` plans (default **and** `?marketplace=empty`).
+
+| # | Proposal | Touches | Risk / what users will notice |
+|---|---|---|---|
 | P-3 | Themes dialog: all cards one height (active card gets a badge + pencil *inline*, not a second row); stable order (active first, then favourites A–Z); the three CTAs become **one** primary (*Build New Theme with Claude*) + **one** secondary (*Browse themes* — marketplace *is* "all themes"); "Edit built-in" becomes a disabled pencil with a tooltip instead of an empty dialog. | Appearance, Library › Themes | "Browse all themes →" disappears (it and "Browse Theme Marketplace" open the same screen). |
-| P-4 | Model Providers: one button vocabulary per card (secondary chips for *Add key/Test*, `danger-outline` *Remove*), *Add provider* becomes a secondary button (not full-width outline), never render `undefined` (fall back to "—"), dialog scroll shows a scrollbar. | Model Providers | None visible beyond consistency. |
 | P-5 | Projects header card: one primary (*New Conversation*), *Rename/Remove* become `size="sm"` secondary/`danger-outline` at the same scale as *+ Add file*; the sync chip becomes a status row with a secondary button; folder-card notch removed (folder icon carries the meaning); preview text floors at `text-2xs`. Projects also adopts the wallpaper (`layer-screen`) like Library/Marketplace. | Projects | The folder "tab" look goes away; in community packs Projects becomes translucent like its siblings. |
+| P-1 | Marketplace bar → three distinct groups: a **SegmentedTabs** for Plugins/Themes, **filter pills** for categories, a **Select** for sort; search field gets the shared `SearchFilterPill` shape; one empty state (`EmptyState` with a "Clear filters" action). | Marketplace | Visible re-layout of the bar; muscle memory for the two tabs is preserved (same position). |
+| P-2 | Library → `EmptyState` under each heading ("No favourites yet — ★ a skill in the Marketplace" with a button); tab group adopts Projects' bordered icon+label+count style. Scope is the **empty** states only — with content the Library already matches the Marketplace cards (§6c #29). | Library | New users finally see something; nothing moves for users with content. |
+| P-21 | *(new, from §6c)* Marketplace cards: the featured hero's hardcoded gold border becomes `edge` (the pack's `accentColor` may tint only the eyebrow and dot pager — T-1); theme cards get one fixed height with the description clamped/reserved at 2 lines (#27); install/rating counts pluralise correctly ("1 install", G-19). | Marketplace | The gold outline disappears; theme rows stop being ragged. |
+
+### Phase D — chat-adjacent surfaces (the composer, the transcript, the drawers)
+
+Single surfaces each, but all sit next to the transcript, so their before/afters share
+one screen and one PR. P-6 needs P-12. Verify: `main` + `overlays` plans, plus the
+`electron-live-session` plan for P-20 (the workbench has no terminal).
+
+| # | Proposal | Touches | Risk / what users will notice |
+|---|---|---|---|
 | P-6 | Welcome screen: *New Session* uses the real primary treatment from P-12; *Resume Session* stays secondary; add a Settings gear to this screen's corner (today Settings is unreachable here without expanding the form). | Welcome | A gear appears on the welcome screen. |
+| P-19 | Composer attachment chips: icon · name (≥ 12 characters before truncating) · always-visible ✕, `md` radius, `text-2xs`; broken thumbnails fall back to the file-type icon. | composer | Attachments become readable. |
+| P-14 | Find bar gets its own `panel` surface anchored top-right *above* the transcript instead of inside the user bubble. | find | The bar stops covering the first message. |
+| P-9 | Skills drawer: category pills use the shared filter-pill shape/size; the two icon buttons leave the search field and sit beside it as `size="icon"` buttons with names; the *Add Skills* card becomes an `EmptyState` centred in the row when there are no skills, and a normal last card when there are. | Skills drawer | Search field looks like every other one. |
+| P-20 | Terminal: the terminal grid fills the pane width; the terminal surface takes the ≥ 0.9 `panel` opacity guarantee from P-16 under wallpaper packs. | Terminal | No more empty right third; readable over wallpapers. |
+
+### Phase E — small dialogs and popovers
+
+Contained, low-risk, no dependencies; batch into one PR. Verify: `main` + `overlays`.
+
+| # | Proposal | Touches | Risk / what users will notice |
+|---|---|---|---|
+| P-4 | Model Providers: one button vocabulary per card (secondary chips for *Add key/Test*, `danger-outline` *Remove*), *Add provider* becomes a secondary button (not full-width outline), never render `undefined` (fall back to "—"), dialog scroll shows a scrollbar. | Model Providers | None visible beyond consistency. |
 | P-7 | Keyboard Shortcuts → `panel` (420px) size; rows grid-aligned (label column + key column); dialog scrolls with a visible scrollbar. | one dialog | Wider dialog. |
 | P-8 | All-sessions popover width becomes `min(28rem, 88vw)` and rows truncate to one line with a title tooltip; scroll cue via bottom fade. | one popover | Rows stop wrapping. |
-| P-9 | Skills drawer: category pills use the shared filter-pill shape/size; the two icon buttons leave the search field and sit beside it as `size="icon"` buttons with names; the *Add Skills* card becomes an `EmptyState` centred in the row when there are no skills, and a normal last card when there are. | Skills drawer | Search field looks like every other one. |
-| P-10 | Status bar: all chips share one treatment (grey outline); the model chip signals "current model" with the model's *icon*, not an orange outline; the theme chip is a label (no border) with the cycle affordance on hover; text floor `text-2xs`; at phone width chips collapse to icons before wrapping. | Status bar | The orange outline disappears; text one step larger. |
-| P-11 | Tokens: `fg-muted` on raised surfaces (`inset`/`well`) is bumped to ≥4.5:1 in all four built-ins; `fg-faint` becomes *decorative-only* (dividers, disabled), never a spinner — spinners use `fg-muted`. | every surface | Muted text gets slightly lighter/darker; nothing moves. |
-| P-12 | Dark built-ins get a real accent (a muted blue for midnight, a warm grey-blue for dark — chosen so `on-accent` stays white and links stay AA on inset), so *primary* and *selected* stop looking disabled. Alternative if Destin wants to keep the monochrome look: primary/selected gain a second signal (thicker border + bold) and "disabled" gets a dashed border. | every primary/selected in midnight & dark | This is the most visible change in the ledger — every primary button and selected tab in the two most-used themes changes colour. Halftone/meadow unaffected. |
-| P-13 | Light/creme user bubble → `inset` (grey) with `fg` text instead of solid black; assistant bubble unchanged. | chat, light + creme | The user's own messages stop being the darkest thing on screen. |
-| P-14 | Find bar gets its own `panel` surface anchored top-right *above* the transcript instead of inside the user bubble. | find | The bar stops covering the first message. |
-| P-15 | Every dialog gets the same header (title · optional ⓘ · ✕): add it to Donate and Development; Resume Session moves "Show complete" below the search field and gets a ✕. About and Permissions get a scrollbar/fade. | 5 dialogs | Two dialogs gain a title row. |
-| P-16 | Theme-pack guarantees added to `contrast-rules.js`: edge/panel ≥ 1.3:1 (outlines survive), checkbox radius pinned, text-bearing glass ≥ 0.85 opacity or a scrim, accent may paint at most the documented set (G-8). Meadow Mist and Halftone fixed in `wecoded-themes` to pass. | packs | Meadow's buttons get borders back; halftone's checkboxes go square. |
-| P-17 | Phone width: session tab keeps ≥ 8 characters before collapsing; quick-chip row gets an edge fade + horizontal scroll; status bar collapses chips to icons; model picker wraps its options; full screens drop "Esc ·" on touch layouts; coarse-pointer hit areas extended to chips and chevrons (the Toggle already has the mechanism). | narrow layouts | Android/phone only. |
-| P-19 | Composer attachment chips: icon · name (≥ 12 characters before truncating) · always-visible ✕, `md` radius, `text-2xs`; broken thumbnails fall back to the file-type icon. | composer | Attachments become readable. |
-| P-20 | Terminal: the terminal grid fills the pane width; the terminal surface gets ≥ 0.9 `panel` opacity under wallpaper packs (a T-5 guarantee). | Terminal | No more empty right third; readable over wallpapers. |
-| P-18 | Tool cards: AskUserQuestion adopts the standard header (glyph · title · ↳ first question · chevron right-aligned); its option rows share one row style; *Submit* uses `primary` (which P-12 makes visible). The literal `\|` separator in the header becomes a 1px divider element, not text. | every tool card | The pipe character disappears; AskUserQuestion looks like its siblings. |
 
-Recommended order: **P-11 → P-12 → P-13** (tokens first — they move everything, and P-12
-changes how every later "before/after" looks), then **P-3, P-1, P-2, P-5** (the four
-surfaces users see most), then the rest. Each goes through the workbench with a numbered
-before/after, per the `ui-mockup` skill.
+### Phase F — phone width (last: it is judged on the screens the earlier phases produce)
+
+One PR; the edge-fade + horizontal-scroll pattern it introduces is also the fix for the
+Marketplace rails (§6c #26), so ship both together. Verify: `narrow` plan, and the
+`marketplace` plan for the rails.
+
+| # | Proposal | Touches | Risk / what users will notice |
+|---|---|---|---|
+| P-17 | Phone width: session tab keeps ≥ 8 characters before collapsing; quick-chip row gets an edge fade + horizontal scroll (same pattern applied to the Marketplace rails, which clip their last card on desktop too); status bar collapses chips to icons; model picker wraps its options; full screens drop "Esc ·" on touch layouts; coarse-pointer hit areas extended to chips and chevrons (the Toggle already has the mechanism). | narrow layouts + Marketplace rails | Android/phone only, except the rails' fade, which appears on desktop. |
+
+### Summary
+
+| Phase | Items | Why here | Rig plans to re-run |
+|---|---|---|---|
+| A | P-11, P-12, P-13, P-16 | tokens move everything; P-12 is the decision | full run |
+| B | P-15, P-18, P-10 | shared parts, inherited by C–E | main, overlays, tall |
+| C | P-3, P-5, P-1, P-2, P-21 | the four most-seen screens (+ marketplace card fixes) | main, marketplace (default + empty) |
+| D | P-6, P-19, P-14, P-9, P-20 | everything beside the transcript | main, overlays, electron-live-session |
+| E | P-4, P-7, P-8 | contained dialogs/popovers | main, overlays |
+| F | P-17 | phone width, judged last | narrow, marketplace |
+
+Each phase goes through the workbench with numbered before/afters, per the `ui-mockup`
+skill; the guide (`2026-08-25-ui-design-guide.md`) gets its rule text finalised as each
+phase's decisions land.
+
 
 ## 6. Real-app pass (Electron dev instance)
 
@@ -406,9 +473,9 @@ problem, but the surface underneath is well structured. New findings:
 
 | # | Surface | What's there | Picture | Fix |
 |---|---|---|---|---|
-| 25 | **Featured hero border is a hardcoded gold** (`accentColor` from `featured.json`) in every theme — it sits beside Halftone's pink, Meadow's green and Light's black primaries as the only gold object on the screen. The hero's *View details* button correctly takes the theme, which makes the border look more wrong, not less. | `marketplace-marketplace` | **T-1** (semantic set): `accentColor` may tint the eyebrow/dot pager, never the border; border = `edge` |
-| 26 | **Rails clip their last card with no affordance** — "Superpowers" is cut at the right edge in every theme with no fade, arrow or scrollbar. Same defect as the phone-width quick-chip row (P-17). | `marketplace-marketplace` | P-17's edge-fade + scroll pattern, applied to rails |
-| 27 | **Theme cards have two heights** on the Themes tab: entries without a description (Cotton Candy Sky, Devil's Garden, Meadow Mist) end at the author line, the others run two lines further, so rows are ragged. | `marketplace-marketplace-themes` | G-16 cards: fixed card height, description clamps to 2 lines or reserves them |
+| 25 | **Featured hero border is a hardcoded gold** (`accentColor` from `featured.json`) in every theme — it sits beside Halftone's pink, Meadow's green and Light's black primaries as the only gold object on the screen. The hero's *View details* button correctly takes the theme, which makes the border look more wrong, not less. | `marketplace-marketplace` | **P-21** (T-1 semantic set: `accentColor` may tint the eyebrow/dot pager, never the border; border = `edge`) |
+| 26 | **Rails clip their last card with no affordance** — "Superpowers" is cut at the right edge in every theme with no fade, arrow or scrollbar. Same defect as the phone-width quick-chip row (P-17). | `marketplace-marketplace` | P-17 (its edge-fade + scroll pattern, applied to rails) |
+| 27 | **Theme cards have two heights** on the Themes tab: entries without a description (Cotton Candy Sky, Devil's Garden, Meadow Mist) end at the author line, the others run two lines further, so rows are ragged. | `marketplace-marketplace-themes` | P-21 (G-16 cards: fixed card height, description clamps to 2 lines or reserves them) |
 | 28 | The two theme previews that were **blank on the real app** (Devil's Garden, Kuromi Dreamer — §6) **load fine in the workbench browser**, so the missing images are not missing files: verify the Electron image load (CSP / `theme-asset://` / timing) rather than the registry. | `marketplace-marketplace-themes` vs `e-theme-marketplace` | ROADMAP bug, verify in a dev instance |
 | 29 | **Library with content** is consistent with the Marketplace cards (same species, `INSTALLED` badge, tag chip) in all six themes; the *Favorites* section is a single card on its own row, which reads fine when populated — finding #2 is now only about the **empty** state (`?marketplace=empty`). | `marketplace-library`, `marketplace-library-themes` | P-2 scope narrowed to empty states |
 | 30 | **Skills drawer with skills** fills its row with real cards and reads well; the drawer's category pills are still the smallest text in the app (#9 stands). | `marketplace-skills-drawer` | P-9 |
@@ -416,7 +483,7 @@ problem, but the surface underneath is well structured. New findings:
 
 Real numbers note: the cards' "1 installs / ★★★★ (1)" come from the **live** marketplace
 worker (the stats context fetches it directly, even in the workbench), so those are real
-counts, not fixture values. "1 installs" (singular/plural) is a copy bug: → G-19 counts.
+counts, not fixture values. "1 installs" (singular/plural) is a copy bug: → P-21 (G-19 counts).
 
 ## 7. Method notes for the next pass
 
