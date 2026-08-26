@@ -357,6 +357,17 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
   Object.assign(env, {
     HOME: fixture.home,
     DISPLAY: display,
+    // WHY these two, plus the --ozone-platform=x11 argv flag below: deleting
+    // WAYLAND_DISPLAY is NOT enough to keep Electron off the real desktop.
+    // Chromium's Ozone auto-detection sees XDG_SESSION_TYPE=wayland and connects
+    // to the DEFAULT socket name ($XDG_RUNTIME_DIR/wayland-0) on its own, so it
+    // silently ignored DISPLAY=:99 and opened on Destin's 2560x1440 screen —
+    // measured: screen.width 2560 while Xvfb :99 is 1600x1000. That both
+    // invalidates every number (real GPU compositing, his machine's activity in
+    // the sample) and pops a window onto his desktop on every one of the 5-7
+    // boots a run performs. Forcing x11 pins the app to the virtual display.
+    XDG_SESSION_TYPE: 'x11',
+    ELECTRON_OZONE_PLATFORM_HINT: 'x11',
     // Read from process.env (the REAL environment) and written into `env` (our copy),
     // so there is no self-reference. filter(Boolean) keeps an absent PATH from
     // becoming the literal string "undefined" or a stray trailing colon (an empty
@@ -389,7 +400,9 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
   // — a detached app outlives the rig — is covered three ways: the stdio pipes are
   // unref'd so the rig can exit, an exit/SIGINT/SIGTERM handler group-kills on the way
   // out, and the next run's sweep() would kill any orphan before launching anyway.
-  const proc = spawn(binary, [`--remote-debugging-port=${cdpPort}`, '--no-sandbox'], {
+  // --ozone-platform=x11 is the decisive half of the Wayland fix above: the env
+  // vars express the preference, this flag removes the choice.
+  const proc = spawn(binary, [`--remote-debugging-port=${cdpPort}`, '--no-sandbox', '--ozone-platform=x11'], {
     env, cwd: fixture.home, stdio: ['ignore', 'pipe', 'pipe'], detached: true,
   });
   proc.stdout.on('data', tailSink(out));
