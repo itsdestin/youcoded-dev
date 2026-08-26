@@ -28,6 +28,9 @@ verify:
   - test: youcoded/desktop/tests/injection-budget.test.ts
   - test: youcoded/desktop/tests/path-triggers.test.ts
   - test: youcoded/desktop/tests/rule-injection.test.ts
+  - test: youcoded/desktop/tests/send-user-file-tool.test.ts
+  - path: youcoded/desktop/src/main/harness/tools/send-user-file.ts
+    contains: "permissionSubject: \\(\\) => undefined"
   - path: youcoded/desktop/src/main/harness/mcp/mcp-registry.ts
     contains: "secretRef"
   - path: youcoded/desktop/src/main/harness/mcp/mcp-client.ts

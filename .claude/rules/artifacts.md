@@ -34,6 +34,12 @@ verify:
   - test: youcoded/desktop/tests/artifacts/canonicalize.test.ts
   - test: youcoded/desktop/tests/artifacts/cas-write.test.ts
   - test: youcoded/desktop/tests/ipc-channels.test.ts
+  - test: youcoded/desktop/tests/deliverable-auto-open.test.ts
+  - test: youcoded/desktop/tests/deliverables-card.test.tsx
+  - path: youcoded/desktop/src/renderer/state/deliverable-auto-open.ts
+    contains: "FRESH_WINDOW_MS"
+  - path: youcoded/desktop/src/shared/artifacts/types.ts
+    contains: "'delivered'"
 ---
 # Artifact Viewer (Session Drawer + Project View)
 
