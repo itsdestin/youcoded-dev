@@ -43,7 +43,7 @@
   "items": [
     {
       "id": "P-15",
-      "title": "Every dialog gets a title and a ✕; the close-session footer stops wrapping",
+      "title": "Every dialog gets a title and a ✕ — and no Cancel beside it",
       "kind": "measured",
       "sections": [
         {
@@ -51,12 +51,12 @@
           "html": "<p><strong>Report a bug</strong> and <strong>Donate</strong> were the only dialogs with no title row and no ✕ — Escape was the only way out. The <strong>Development</strong> menu that leads to the bug report drew its own small uppercase heading instead of the shared header. In the <strong>Close session</strong> prompt, the footer was the tallest row of the dialog: <em>\"Don't show again\"</em> wrapped onto two lines beside its toggle and the primary button broke into <em>\"Close / session\"</em>.</p><p>(The ledger also said About and Permissions cut their content with no scroll cue — checking the code, both already have the fade. Nothing to do there; the claim was stale.)</p>"
         },
         {
-          "h": "What changed",
-          "html": "<ul><li>The three dialogs now pass a <code>title</code> to the shared <code>Dialog</code> component, which draws the same header every other dialog has (title · ✕). Bug report's title follows the Bug/Feature switch: <em>Report a bug</em> / <em>Request a feature</em>. Donate is titled <em>Support YouCoded</em>. Development is titled <em>Development</em>.</li><li>Close session: the header also moves to the shared one (title + the session name as subtitle). <em>\"Don't show again\"</em> becomes its own one-line row with the standard toggle, above a right-aligned <em>Cancel</em> / <em>Close session</em> pair at the small button size, so nothing wraps.</li><li>Two redundant \"portal\" wrappers (a leftover from before <code>Dialog</code> handled that itself) were removed — no visible effect.</li></ul>"
+          "h": "What changed (as revised)",
+          "html": "<ul><li><strong>Report a bug</strong>, <strong>Donate</strong> and the <strong>Development</strong> menu pass a <code>title</code> to the shared <code>Dialog</code>, which draws the same header every other dialog has (title · ✕). Bug report's title follows the Bug/Feature switch.</li><li><strong>Donate</strong> is retitled <em>Support YouCoded</em>; with a ✕ to dismiss it, the <em>Cancel</em> button is gone and the body is one line of explanation and one full-width action, <em>Open Buy Me a Coffee</em>.</li><li><strong>Close session</strong>: the header is the shared one (title + session name); <em>Cancel</em> is gone (the ✕ is cancel); <em>\"Don't show again\"</em> stays bottom-left on the standard switch, and with a single button on the right nothing wraps.</li></ul>"
         },
         {
           "h": "What you will notice, and the risks",
-          "html": "<ul><li>Three dialogs are a title row taller and gain a ✕ in the corner.</li><li>The close-session prompt is one row taller; its buttons are slightly smaller and no longer wrap; the toggle is the standard one.</li><li>Risk: near zero — this is the existing dialog anatomy applied to the places that skipped it.</li></ul>"
+          "html": "<ul><li>Three dialogs gain a title row and a ✕. Two lose their <em>Cancel</em> button — the ✕ (and Escape) do that job. Risk: someone used to clicking Cancel in the close-session prompt reaches for the ✕ instead; nothing else changes.</li></ul>"
         }
       ],
       "looks": [
@@ -117,7 +117,7 @@
         "overlays-close-session-prompt"
       ],
       "decision": [
-        "Approve",
+        "Approve as revised",
         "Approve with changes",
         "Reject"
       ]
@@ -176,63 +176,8 @@
         "Approve the divider only (revert the AskUserQuestion changes)",
         "Reject"
       ]
-    },
-    {
-      "id": "P-10",
-      "title": "Status bar: readable text, one row on phones; grey chips",
-      "kind": "mixed",
-      "sections": [
-        {
-          "h": "The problem",
-          "html": "<p><strong>Measured:</strong> the status bar's text was 10px, the last surface under the app's 11px floor for anything you read (G-5). At phone width (390px) the chips wrapped to a second row with the theme name orphaned, pushing the composer up.</p><p><strong>Judgment:</strong> the model chip carried a brand-orange outline while every other chip was grey, so the model read as a warning; the theme chip was drawn as a button but is a label.</p>"
-        },
-        {
-          "h": "What changed",
-          "html": "<ul><li><strong>Measured:</strong> text is 11px (the bar is ~2px taller). Below phone width the bar no longer wraps: the model chip drops its <em>| Auto Effort</em> suffix, the Priority chip shows only its dots, and the theme chip shows a small palette icon (hover for the name).</li><li><strong>Judgment:</strong> the model chip's border and text use the same grey as every chip; the brand colour stays on the model's icon only. The theme chip loses its border and background and shows a small cycle glyph on hover.</li></ul>"
-        },
-        {
-          "h": "What you will notice, and the risks",
-          "html": "<ul><li>Slightly larger status text; one row on phones.</li><li>The orange outline is gone — if you used it to find the model at a glance, the icon still carries the colour, but say so if that isn't enough.</li></ul>"
-        }
-      ],
-      "looks": [
-        {
-          "crop": "statusbar-tight",
-          "themes": [
-            "midnight",
-            "light",
-            "creme"
-          ],
-          "cols": [
-            "before",
-            "A"
-          ],
-          "note": "Status bar at 2×.",
-          "zoom": 2
-        },
-        {
-          "crop": "narrow-bottom",
-          "themes": [
-            "midnight",
-            "light"
-          ],
-          "cols": [
-            "before",
-            "A"
-          ],
-          "note": "Phone width (390px)."
-        }
-      ],
-      "sheets": [
-        "main-home",
-        "narrow-home"
-      ],
-      "decision": [
-        "Approve both",
-        "Approve the text size + phone wrap only (keep the orange chip and theme button)",
-        "Reject"
-      ]
     }
   ],
-  "closing": "<h2 id=\"other\">What did <em>not</em> change</h2><ul><li>No token, colour or spacing changed outside the elements shown.</li><li>About/Permissions: already had the scroll fade; the ledger line was wrong and is corrected.</li><li>All checks pass on the branch (types, full test suite, dead code, lint, invariants); the sweep of the branch verified every planned surface in six themes (see coverage.md).</li></ul>"
+  "closing": "<h2 id=\"other\">What did <em>not</em> change</h2><ul><li>P-10 (status bar) — rejected in review; reverted, unchanged from master.</li><li>No token, colour or spacing changed outside the elements shown.</li><li>About/Permissions: already had the scroll fade; the ledger line was wrong and is corrected.</li></ul>",
+  "banner": "<strong>Revised 2026-08-26 after review.</strong> P-10 <strong>rejected</strong> — the status bar is unchanged (its section is removed from this page; the ledger records the decision). P-15 <strong>approved with changes</strong>, now built as shown below: no <em>Cancel</em> button where the dialog has a ✕ (Donate, Close session); the Donate dialog is one explanation and one action; <em>\"Don't show again\"</em> stays bottom-left. P-18 is still open — decide it below."
 }

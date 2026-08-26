@@ -28,15 +28,15 @@
 <h1>Phase B review — dialog headers, tool-card dividers, the status bar</h1>
 <p class="lead">Three items from the ledger, built on the branch <code>feat/ui-phase-b</code> and shown as 1:1 crops from verified screenshots of the real app (workbench, six themes). Each item has a measured part (a broken behaviour or a number) and, where marked, a judgment part built alongside so you can see it — reject the judgment part and only the measured fix ships.</p>
 <div class="box"><strong>How to review.</strong> Read each section, look at the crops, click a decision and add notes if you want something different. The bar at the bottom collects everything into one block of text — press <em>Copy feedback</em> and paste it into the chat. Your selections are remembered by this page if you close it and come back.<br><span style="font-size:13px">Each change is tagged: <span class="kind kind-measured">measured</span> A number or a broken behaviour you can check — not taste. · <span class="kind kind-judgment">judgment</span> A consistency/taste argument. The baseline is not broken; say no freely. · <span class="kind kind-mixed">mixed</span> Part measured, part judgment — the sections say which is which.</span></div>
-
-<p class="toc"><a href="#P-15">P-15 Every dialog gets a title and a ✕; the close-session footer stops wrapping</a> <a href="#P-18">P-18 Tool cards: a real divider instead of a typed "|"; AskUserQuestion looks like its siblings</a> <a href="#P-10">P-10 Status bar: readable text, one row on phones; grey chips</a> <a href="#fb">Feedback</a></p>
-<h2 id="P-15">P-15 — Every dialog gets a title and a ✕; the close-session footer stops wrapping <span class="kind kind-measured" title="A number or a broken behaviour you can check — not taste.">measured</span></h2>
+<div class="box warn"><strong>Revised 2026-08-26 after review.</strong> P-10 <strong>rejected</strong> — the status bar is unchanged (its section is removed from this page; the ledger records the decision). P-15 <strong>approved with changes</strong>, now built as shown below: no <em>Cancel</em> button where the dialog has a ✕ (Donate, Close session); the Donate dialog is one explanation and one action; <em>"Don't show again"</em> stays bottom-left. P-18 is still open — decide it below.</div>
+<p class="toc"><a href="#P-15">P-15 Every dialog gets a title and a ✕ — and no Cancel beside it</a> <a href="#P-18">P-18 Tool cards: a real divider instead of a typed "|"; AskUserQuestion looks like its siblings</a> <a href="#fb">Feedback</a></p>
+<h2 id="P-15">P-15 — Every dialog gets a title and a ✕ — and no Cancel beside it <span class="kind kind-measured" title="A number or a broken behaviour you can check — not taste.">measured</span></h2>
 <h3>The problem</h3>
 <p><strong>Report a bug</strong> and <strong>Donate</strong> were the only dialogs with no title row and no ✕ — Escape was the only way out. The <strong>Development</strong> menu that leads to the bug report drew its own small uppercase heading instead of the shared header. In the <strong>Close session</strong> prompt, the footer was the tallest row of the dialog: <em>"Don't show again"</em> wrapped onto two lines beside its toggle and the primary button broke into <em>"Close / session"</em>.</p><p>(The ledger also said About and Permissions cut their content with no scroll cue — checking the code, both already have the fade. Nothing to do there; the claim was stale.)</p>
-<h3>What changed</h3>
-<ul><li>The three dialogs now pass a <code>title</code> to the shared <code>Dialog</code> component, which draws the same header every other dialog has (title · ✕). Bug report's title follows the Bug/Feature switch: <em>Report a bug</em> / <em>Request a feature</em>. Donate is titled <em>Support YouCoded</em>. Development is titled <em>Development</em>.</li><li>Close session: the header also moves to the shared one (title + the session name as subtitle). <em>"Don't show again"</em> becomes its own one-line row with the standard toggle, above a right-aligned <em>Cancel</em> / <em>Close session</em> pair at the small button size, so nothing wraps.</li><li>Two redundant "portal" wrappers (a leftover from before <code>Dialog</code> handled that itself) were removed — no visible effect.</li></ul>
+<h3>What changed (as revised)</h3>
+<ul><li><strong>Report a bug</strong>, <strong>Donate</strong> and the <strong>Development</strong> menu pass a <code>title</code> to the shared <code>Dialog</code>, which draws the same header every other dialog has (title · ✕). Bug report's title follows the Bug/Feature switch.</li><li><strong>Donate</strong> is retitled <em>Support YouCoded</em>; with a ✕ to dismiss it, the <em>Cancel</em> button is gone and the body is one line of explanation and one full-width action, <em>Open Buy Me a Coffee</em>.</li><li><strong>Close session</strong>: the header is the shared one (title + session name); <em>Cancel</em> is gone (the ✕ is cancel); <em>"Don't show again"</em> stays bottom-left on the standard switch, and with a single button on the right nothing wraps.</li></ul>
 <h3>What you will notice, and the risks</h3>
-<ul><li>Three dialogs are a title row taller and gain a ✕ in the corner.</li><li>The close-session prompt is one row taller; its buttons are slightly smaller and no longer wrap; the toggle is the standard one.</li><li>Risk: near zero — this is the existing dialog anatomy applied to the places that skipped it.</li></ul>
+<ul><li>Three dialogs gain a title row and a ✕. Two lose their <em>Cancel</em> button — the ✕ (and Escape) do that job. Risk: someone used to clicking Cancel in the close-session prompt reaches for the ✕ instead; nothing else changes.</li></ul>
 <h3>Look</h3>
 <div class="crops">
 <p class="capnote">Report a bug.</p>
@@ -92,7 +92,7 @@
 </tbody></table></div>
 <p>Full sheets: <a href="images/phase-b/sheets/overlays-development-bug-report.jpg">overlays-development-bug-report</a> · <a href="images/phase-b/sheets/main-settings-donate.jpg">main-settings-donate</a> · <a href="images/phase-b/sheets/main-settings-development.jpg">main-settings-development</a> · <a href="images/phase-b/sheets/overlays-close-session-prompt.jpg">overlays-close-session-prompt</a></p>
 <div class="decide" data-item="P-15">
-  <div class="radios"><label><input type="radio" name="P-15" value="Approve"> Approve</label><label><input type="radio" name="P-15" value="Approve with changes"> Approve with changes</label><label><input type="radio" name="P-15" value="Reject"> Reject</label></div>
+  <div class="radios"><label><input type="radio" name="P-15" value="Approve as revised"> Approve as revised</label><label><input type="radio" name="P-15" value="Approve with changes"> Approve with changes</label><label><input type="radio" name="P-15" value="Reject"> Reject</label></div>
   <textarea data-notes="P-15" placeholder="Notes (optional): what to change, what you like, what worries you"></textarea>
 </div>
 <h2 id="P-18">P-18 — Tool cards: a real divider instead of a typed "|"; AskUserQuestion looks like its siblings <span class="kind kind-mixed" title="Part measured, part judgment — the sections say which is which.">mixed</span></h2>
@@ -132,55 +132,14 @@
   <div class="radios"><label><input type="radio" name="P-18" value="Approve both"> Approve both</label><label><input type="radio" name="P-18" value="Approve the divider only (revert the AskUserQuestion changes)"> Approve the divider only (revert the AskUserQuestion changes)</label><label><input type="radio" name="P-18" value="Reject"> Reject</label></div>
   <textarea data-notes="P-18" placeholder="Notes (optional): what to change, what you like, what worries you"></textarea>
 </div>
-<h2 id="P-10">P-10 — Status bar: readable text, one row on phones; grey chips <span class="kind kind-mixed" title="Part measured, part judgment — the sections say which is which.">mixed</span></h2>
-<h3>The problem</h3>
-<p><strong>Measured:</strong> the status bar's text was 10px, the last surface under the app's 11px floor for anything you read (G-5). At phone width (390px) the chips wrapped to a second row with the theme name orphaned, pushing the composer up.</p><p><strong>Judgment:</strong> the model chip carried a brand-orange outline while every other chip was grey, so the model read as a warning; the theme chip was drawn as a button but is a label.</p>
-<h3>What changed</h3>
-<ul><li><strong>Measured:</strong> text is 11px (the bar is ~2px taller). Below phone width the bar no longer wraps: the model chip drops its <em>| Auto Effort</em> suffix, the Priority chip shows only its dots, and the theme chip shows a small palette icon (hover for the name).</li><li><strong>Judgment:</strong> the model chip's border and text use the same grey as every chip; the brand colour stays on the model's icon only. The theme chip loses its border and background and shows a small cycle glyph on hover.</li></ul>
-<h3>What you will notice, and the risks</h3>
-<ul><li>Slightly larger status text; one row on phones.</li><li>The orange outline is gone — if you used it to find the model at a glance, the icon still carries the colour, but say so if that isn't enough.</li></ul>
-<h3>Look</h3>
-<div class="crops">
-<p class="capnote">Status bar at 2×.</p>
-<table><thead><tr><th></th><th>Before (master today)</th><th>After (branch feat/ui-phase-b)</th></tr></thead><tbody>
-<tr><th class="theme">Midnight</th>
-<td><img src="images/phase-b/statusbar-tight--midnight--before.png" style="zoom:2" loading="lazy" alt="statusbar-tight midnight before"></td>
-<td><img src="images/phase-b/statusbar-tight--midnight--A.png" style="zoom:2" loading="lazy" alt="statusbar-tight midnight A"></td>
-</tr>
-<tr><th class="theme">Light</th>
-<td><img src="images/phase-b/statusbar-tight--light--before.png" style="zoom:2" loading="lazy" alt="statusbar-tight light before"></td>
-<td><img src="images/phase-b/statusbar-tight--light--A.png" style="zoom:2" loading="lazy" alt="statusbar-tight light A"></td>
-</tr>
-<tr><th class="theme">Crème</th>
-<td><img src="images/phase-b/statusbar-tight--creme--before.png" style="zoom:2" loading="lazy" alt="statusbar-tight creme before"></td>
-<td><img src="images/phase-b/statusbar-tight--creme--A.png" style="zoom:2" loading="lazy" alt="statusbar-tight creme A"></td>
-</tr>
-</tbody></table></div>
-<div class="crops">
-<p class="capnote">Phone width (390px).</p>
-<table><thead><tr><th></th><th>Before (master today)</th><th>After (branch feat/ui-phase-b)</th></tr></thead><tbody>
-<tr><th class="theme">Midnight</th>
-<td><img src="images/phase-b/narrow-bottom--midnight--before.png" style="zoom:1.0" loading="lazy" alt="narrow-bottom midnight before"></td>
-<td><img src="images/phase-b/narrow-bottom--midnight--A.png" style="zoom:1.0" loading="lazy" alt="narrow-bottom midnight A"></td>
-</tr>
-<tr><th class="theme">Light</th>
-<td><img src="images/phase-b/narrow-bottom--light--before.png" style="zoom:1.0" loading="lazy" alt="narrow-bottom light before"></td>
-<td><img src="images/phase-b/narrow-bottom--light--A.png" style="zoom:1.0" loading="lazy" alt="narrow-bottom light A"></td>
-</tr>
-</tbody></table></div>
-<p>Full sheets: <a href="images/phase-b/sheets/main-home.jpg">main-home</a> · <a href="images/phase-b/sheets/narrow-home.jpg">narrow-home</a></p>
-<div class="decide" data-item="P-10">
-  <div class="radios"><label><input type="radio" name="P-10" value="Approve both"> Approve both</label><label><input type="radio" name="P-10" value="Approve the text size + phone wrap only (keep the orange chip and theme button)"> Approve the text size + phone wrap only (keep the orange chip and theme button)</label><label><input type="radio" name="P-10" value="Reject"> Reject</label></div>
-  <textarea data-notes="P-10" placeholder="Notes (optional): what to change, what you like, what worries you"></textarea>
-</div>
-<h2 id="other">What did <em>not</em> change</h2><ul><li>No token, colour or spacing changed outside the elements shown.</li><li>About/Permissions: already had the scroll fade; the ledger line was wrong and is corrected.</li><li>All checks pass on the branch (types, full test suite, dead code, lint, invariants); the sweep of the branch verified every planned surface in six themes (see coverage.md).</li></ul>
+<h2 id="other">What did <em>not</em> change</h2><ul><li>P-10 (status bar) — rejected in review; reverted, unchanged from master.</li><li>No token, colour or spacing changed outside the elements shown.</li><li>About/Permissions: already had the scroll fade; the ledger line was wrong and is corrected.</li></ul>
 <h2 id="fb">Feedback</h2>
 <p>This block is generated from your choices above. Copy it and paste it into the chat.</p>
 <textarea id="feedback" readonly></textarea>
 <div id="summary"><span class="st" id="status">No decisions yet.</span><button id="copy">Copy feedback</button></div>
 <script>
 (function(){
-  const items=["P-15", "P-18", "P-10"]; const KEY="Phase B";
+  const items=["P-15", "P-18"]; const KEY="Phase B";
   let state={}; try{ state=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){}
   function render(){
     const lines=[KEY+' feedback ('+new Date().toISOString().slice(0,10)+')']; let decided=0;
