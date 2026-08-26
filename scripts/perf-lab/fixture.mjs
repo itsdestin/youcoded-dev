@@ -22,10 +22,21 @@ const WORKSPACE = resolve(HERE, '..', '..');
 export const ASSETS_DIR = join(WORKSPACE, 'scratch', 'perf-lab', 'assets');
 const ENGINE_PIN_TS = join(WORKSPACE, 'youcoded', 'desktop', 'src', 'main', 'engine', 'engine-pin.ts');
 
-// A toy 1.1 MB llama.cpp model. Real enough for the engine to load and answer,
-// small enough that a native session costs nothing and starts instantly.
-const GGUF_URL = 'https://huggingface.co/ggml-org/models/resolve/main/tinyllamas/stories260K.gguf';
-const GGUF_NAME = 'stories260K.gguf';
+// The smallest model that can actually hold a native conversation in THIS app.
+//
+// WHY not the 1.1 MB stories260K toy the plan specified: measured, its GGUF
+// metadata says llama.context_length = 2048, and llama.cpp clamps -c down to a
+// model's trained context. The app's agent system prompt is larger than that, so
+// every native send came back "context size (2048 tokens), try increasing it
+// (provider error 400)" — the model could never answer, no matter how the engine
+// was configured. stories260K is also a story-completion toy with no chat
+// template, so it was the wrong shape twice over.
+//
+// Qwen2.5-0.5B-Instruct is ~470 MB with a 32,768-token context and a real chat
+// template: still small enough to load fast and cost nothing, big enough that
+// nativeFirstTokenMs measures the app's path rather than a 400.
+const GGUF_URL = 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf';
+const GGUF_NAME = 'qwen2.5-0.5b-instruct-q4_k_m.gguf';
 
 // ---------------------------------------------------------------------------
 // Slug + transcript shapes — mirrors of app code, verified against it
@@ -296,7 +307,13 @@ export function buildFixture(root, { engineSrc, ggufSrc, log = () => {} } = {}) 
   // engine-config.ts:34-43 reads cfg.engine.{cacheDir,backend,contextSize}. cacheDir
   // points at the fixture's model dir so the app never sees the real ~/.cache/llama.cpp.
   w('.youcoded/config.json', JSON.stringify({
-    v: 1, engine: { backend: pin.backend, contextSize: 4096, cacheDir: models },
+    // contextSize 16384, not the plan's 4096: llama.cpp clamps -c to the model's
+    // trained context, and the app's agent system prompt is bigger than 4096
+    // tokens — measured, a 4096 fixture answered every native send with
+    // "context size (4096 tokens), try increasing it (provider error 400)".
+    // Qwen2.5-0.5B trains to 32768, so 16384 leaves real headroom while keeping
+    // the KV cache small enough to load fast.
+    v: 1, engine: { backend: pin.backend, contextSize: 16384, cacheDir: models },
   }));
   // Exactly ProvidersFile (provider-registry.ts:34) seeded with BUILT_INS
   // (provider-registry.ts:21-26). No secretRef — the fixture holds no API keys,

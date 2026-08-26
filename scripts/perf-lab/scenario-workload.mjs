@@ -506,23 +506,45 @@ export async function runWorkloadScenario(app, fixture, {
     // There is no 'refused'. A failure MUST be caught here — waiting 120 s on a
     // turn that was never dispatched, then throwing a timeout, would blame the
     // app for the rig's mistake.
+    // The native leg is measured but is NOT allowed to abort the scenario.
+    //
+    // WHY: nativeFirstTokenMs is a nice-to-have; switchP95Ms, probe.longtaskTotalMs,
+    // pssAfterMb and cpuDuringPct are all PRIMARY keep/reject metrics that come
+    // LATER in this same journey. Letting a local-model problem throw here cost us
+    // all four — measured, an unanswerable model aborted the whole run and the
+    // report came back with four PRIMARY paths undefined. A model that will not
+    // answer is a fixture/engine problem, not a reason to lose the workload.
+    // On failure the two timings are null and nativeFailure says what happened.
     const tSend = Date.now();
+    let nativeEchoMs = null;
+    let nativeFirstTokenMs = null;
+    let nativeFailure = null;
     const send = await cdp.evaluate(
       `window.claude.native.send(${JSON.stringify(nat[0].id)}, 'Once upon a time')`);
     if (!send || send.status === 'failed') {
-      throw new Error(`workload: native.send was not dispatched — the app returned ${JSON.stringify(send)} (reason '${send?.reason}'). No first-token timing is possible.`);
+      nativeFailure = `native.send was not dispatched — the app returned ${JSON.stringify(send)} (reason '${send?.reason}')`;
+    } else {
+      // Two stages, because the FIRST growth is the app echoing the prompt back as
+      // a user bubble, not a model token. Baseline again on the echo, then wait for
+      // text beyond it. Caveat kept honest: any in-transcript status text the app
+      // renders after the echo would also satisfy stage two, so this is an upper
+      // bound on "engine spawn + model load + first chunk", not a token timestamp.
+      try {
+        await waitFor(cdp, `window.__perfLab.chatLen() > ${baseLen}`, { timeoutMs: 30000, everyMs: 50 });
+        nativeEchoMs = Date.now() - tSend;
+        const echoLen = await cdp.evaluate(`window.__perfLab.chatLen()`);
+        await waitFor(cdp, `window.__perfLab.chatLen() > ${echoLen + 12}`, { timeoutMs: 120000, everyMs: 50 });
+        nativeFirstTokenMs = Date.now() - tSend;
+      } catch (err) {
+        // Quote what the pane actually shows — a provider 400 renders INTO the
+        // chat, so this is usually the real reason in the app's own words.
+        let shown = '';
+        // Read the visible pane the same way chatLen() does; there is no chatText helper.
+        try { shown = await cdp.evaluate(`(()=>{const p=[...document.querySelectorAll('.chat-scroll')].find(e=>!e.closest('[aria-hidden="true"]')); return p ? p.innerText.slice(-200) : '';})()`); } catch { /* pane gone */ }
+        nativeFailure = `${err.message}${shown ? ` — pane shows: ${JSON.stringify(shown)}` : ''}`;
+      }
     }
-
-    // Two stages, because the FIRST growth is the app echoing the prompt back as
-    // a user bubble, not a model token. Baseline again on the echo, then wait for
-    // text beyond it. Caveat kept honest: any in-transcript status text the app
-    // renders after the echo would also satisfy stage two, so this is an upper
-    // bound on "engine spawn + model load + first chunk", not a token timestamp.
-    await waitFor(cdp, `window.__perfLab.chatLen() > ${baseLen}`, { timeoutMs: 30000, everyMs: 50 });
-    const nativeEchoMs = Date.now() - tSend;
-    const echoLen = await cdp.evaluate(`window.__perfLab.chatLen()`);
-    await waitFor(cdp, `window.__perfLab.chatLen() > ${echoLen + 12}`, { timeoutMs: 120000, everyMs: 50 });
-    const nativeFirstTokenMs = Date.now() - tSend;
+    if (nativeFailure) console.error(`[perf-lab] workload: native leg failed, continuing — ${nativeFailure}`);
 
     // ── Workload window: stream + switch + sample CPU, all over ONE clock ──
     const targets = pickStreamTargets(fixture, before, { count: 3 });
@@ -585,9 +607,11 @@ export async function runWorkloadScenario(app, fixture, {
       sessionsCreated: ids.length,
       ccCreateMedianMs: median(ccMs),
       nativeCreateMs: nat[0].ms,
-      nativeSendStatus: send.status,
+      nativeSendStatus: send?.status ?? null,
       nativeEchoMs,
       nativeFirstTokenMs,
+      // null when the native leg failed; the string says why, in the app's words.
+      nativeFailure,
       // Only pill clicks feed the PRIMARY switch metrics. An overflow-menu switch
       // also pays for opening a menu, so mixing the two would poison the
       // distribution; it is reported separately instead.

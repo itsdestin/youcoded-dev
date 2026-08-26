@@ -61,7 +61,21 @@ export const NUMERIC_KEYS = [
 const STABLE_MS = 1000;
 // In-page ceiling for one resume watch. Past this we report a timeout rather than
 // a number — see medianRun's null handling.
-const WATCH_TIMEOUT_MS = 90000;
+//
+// WHY 240s and not the 90s this started at: measured on the `huge` fixture
+// (25,000 turns -> 50,000 messages), the resumed conversation took ~122 SECONDS
+// to finish rendering, and the renderer's main thread is blocked solid for that
+// whole stretch — a CDP evaluate issued during it does not return until the
+// render completes. At 90s every `huge` sample timed out and reported null, so
+// history.huge.median.resumeStableMs (a PRIMARY metric, and the target of
+// experiment card E5) was permanently blind. The ceiling has to clear the real
+// cost or the gate cannot see the thing it exists to protect.
+//
+// Note what this timeout can and cannot do: because the page is frozen, the
+// in-page sampler cannot take samples DURING the block, so resumeStableMs for
+// huge is effectively "when the freeze ended, plus the stability window". That
+// is the honest user-visible number; it is not a fine-grained render profile.
+const WATCH_TIMEOUT_MS = 240000;
 // In-page sampling period. 16ms ≈ one frame; the sampler runs INSIDE the page so
 // this is the true resolution of resumeStableMs, with no CDP latency added.
 const SAMPLE_MS = 16;
