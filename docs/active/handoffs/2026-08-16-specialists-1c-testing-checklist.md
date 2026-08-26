@@ -308,10 +308,12 @@ Two kinds of file-defined helper, two widths of grant (decision D2):
    asked again." Click **Always allow**.
 2. Open a native conversation in a **different** folder and hire `docs-writer`
    there. **You should see** no card — the grant travels with your own helper.
-3. Open **Settings → Permissions**. **You should see** the grant described in
-   words — "Let the docs-writer specialist edit files in every project" (or
-   "…work in every project" for a read-only one) — not a raw code like
-   `file:docs-writer@a1b2c3`.
+3. Open **Settings → Permissions**. **You should see** a card at the top
+   titled **"All projects"** (not under any folder), and inside it the grant
+   described in words — "Let the docs-writer specialist edit files in every
+   project" (or "…work in every project" for a read-only one) — not a raw
+   code like `file:docs-writer@a1b2c3`. Removing it there should make the next
+   hire ask again, in every folder.
 4. Edit `docs-writer.md` (change anything — even one word of its
    description) and hire it again in either folder. **You should see** the
    card come back, because the file no longer matches the one you approved.
@@ -322,8 +324,9 @@ Two kinds of file-defined helper, two widths of grant (decision D2):
 6. Copy that same `code-reviewer.md` into a **different** project's
    `.claude/agents/` and hire it there. **You should see** a card — a
    project's own helper is only ever trusted in that project.
-7. Settings → Permissions should describe it as "Let the code-reviewer
-   specialist work in <the project folder>".
+7. Settings → Permissions should list it under **that project's folder card**
+   (not "All projects") as "Let the code-reviewer specialist work in <the
+   project folder>".
 
 **Wrong if:** step 2 or 5's repeat shows a card (grant didn't stick); step 4
 or 6 shows NO card (a changed file, or another project's copy, ran on an old
