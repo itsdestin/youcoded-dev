@@ -1,6 +1,6 @@
 ---
 title: Deliverables card — implementation plan
-status: active
+status: shipped
 date: 2026-08-25
 spec: docs/active/specs/2026-08-25-deliverables-card-design.md
 branch: youcoded feat/send-user-file-card (worktree `worktrees/send-user-file`)

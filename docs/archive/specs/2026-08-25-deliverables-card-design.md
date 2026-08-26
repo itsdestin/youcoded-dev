@@ -1,6 +1,6 @@
 ---
 title: Deliverables card — SendUserFile in chat, natively mirrored
-status: active
+status: shipped
 date: 2026-08-25
 reviewed: 2026-08-25
 plan: docs/active/plans/2026-08-25-deliverables-card.md
