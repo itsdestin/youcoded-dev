@@ -1,0 +1,128 @@
+// scripts/perf-lab/metrics-startup.mjs — fuses the main-process perf log (epoch ms,
+// via perfMark()) and the renderer's performance.mark()/paint entries (ms since the
+// renderer's own timeOrigin) into ONE table where every number is ms since the rig
+// spawned the app process. That's the only clock a perf report can compare across runs.
+import { readFileSync } from 'node:fs';
+
+// WHY: a crash mid-write, or a chore that never ran, means the log can have a
+// truncated final line or simply be missing a name entirely. JSON.parse throwing
+// on a partial line must not take the whole parse down with it — skip and move on.
+// Last-occurrence-wins (plain Map.set) matches the log being append-only: if a name
+// is somehow written twice, the later line is the truth.
+export function parsePerfLog(text) {
+  const marks = new Map();
+  for (const line of text.split('\n')) {
+    if (!line.trim()) continue;
+    try {
+      const entry = JSON.parse(line);
+      marks.set(entry.name, entry.t);
+    } catch {
+      // malformed/truncated line (e.g. a crash mid-write) — ignore, not fatal.
+    }
+  }
+  return marks;
+}
+
+// Chore mark suffix (`main:chore:<name>:done`) for each of the 14 boot chores, in the
+// order main.ts runs them. Order matters here ONLY as the fallback chain described below.
+const CHORES = [
+  ['rotateLog', 'rotate-log'],
+  ['installHooks', 'install-hooks'],
+  ['hookRelay', 'hook-relay'],
+  ['legacyCleanup', 'legacy-cleanup'],
+  ['hookReconcile', 'hook-reconcile'],
+  ['promptSuggestion', 'prompt-suggestion'],
+  ['retentionDefault', 'retention-default'],
+  ['symlinkCleanup', 'symlink-cleanup'],
+  ['staleDownloads', 'stale-downloads'],
+  ['reconcileMcp', 'reconcile-mcp'],
+  ['announcements', 'announcements'],
+  ['remoteServer', 'remote-server'],
+  ['themeProtocol', 'theme-protocol'],
+  ['authStore', 'auth-store'],
+];
+
+/**
+ * @param {object} args
+ * @param {number} args.spawnedAt - epoch ms when the rig spawned the app process. The zero point every output number is relative to.
+ * @param {Map<string, number>} args.mainMarks - parsePerfLog() output (epoch ms per mark name).
+ * @param {{name: string, startTime: number}[]} args.rendererMarks - performance.mark() entries, ms since args.timeOrigin.
+ * @param {number} args.timeOrigin - the renderer's performance.timeOrigin (epoch ms), converts renderer clock -> epoch ms.
+ * @param {{name: string, startTime: number}[]} args.paint - performance paint entries, ms since args.timeOrigin.
+ */
+export function startupTable({ spawnedAt, mainMarks, rendererMarks, timeOrigin, paint }) {
+  // rel() is the one place spawnedAt-subtraction happens, so every field is undefined-safe
+  // the same way: a missing mark (chore never ran, mark not yet fired) is `null`, never NaN.
+  const rel = (epochMs) => (epochMs === undefined ? null : Math.round(epochMs - spawnedAt));
+  const main = (name) => mainMarks.get(name); // undefined if that mark never fired
+  // Renderer/paint entries are read off .name via find() rather than pre-indexed into a Map:
+  // both arrays are tiny (a handful of marks), and find() reads the same either way whether
+  // the entry is present or absent — no separate "does this Map have the key" branch needed.
+  const renderer = (name) => {
+    const entry = rendererMarks.find((m) => m.name === name);
+    return entry === undefined ? null : rel(timeOrigin + entry.startTime);
+  };
+  const paintAt = (name) => {
+    const entry = paint.find((p) => p.name === name);
+    return entry === undefined ? null : rel(timeOrigin + entry.startTime);
+  };
+
+  // Each chore's duration is measured from the PREVIOUS mark that actually fired — starting
+  // at main:when-ready, then chaining chore-to-chore. WHY: chores are optional/conditional in
+  // main.ts (a feature flag can skip one), so if chore N's mark never wrote, chore N+1's
+  // duration must still mean something — it spans back to the last mark that DID fire, not to
+  // a `null` that would poison every duration after it. `prev` only advances past a chore whose
+  // mark actually fired; a missing mark leaves `prev` untouched so the NEXT chore absorbs the gap.
+  const chores = {};
+  let prev = main('main:when-ready');
+  for (const [key, markSuffix] of CHORES) {
+    const t = main(`main:chore:${markSuffix}:done`);
+    chores[key] = t === undefined || prev === undefined ? null : Math.round(t - prev);
+    if (t !== undefined) prev = t;
+  }
+
+  const cwStart = main('main:create-window:start');
+  const cwDone = main('main:create-window:done');
+  const createWindowAt = rel(cwStart);
+  const firstContentfulPaint = paintAt('first-contentful-paint');
+
+  return {
+    whenReady: rel(main('main:when-ready')),
+    chores,
+    createWindow: cwStart !== undefined && cwDone !== undefined ? Math.round(cwDone - cwStart) : null,
+    // Not itself in the plan's abbreviated StartupMetrics field list, but blankWindowMs (below)
+    // is computed from it and both are asserted by the test / read by compare.mjs's
+    // `startup.median.*` paths — so it's part of the real output shape.
+    createWindowAt,
+    didFinishLoad: rel(main('main:main-window:did-finish-load')),
+    postWindowDone: rel(main('main:post-window:done')),
+    indexStart: renderer('yc:index-start'),
+    rootRender: renderer('yc:root-render'),
+    firstPaint: paintAt('first-paint'),
+    firstContentfulPaint,
+    appMounted: renderer('yc:app-mounted'),
+    sessionsListed: renderer('yc:sessions-listed'),
+    // The window is created visible (main.ts:612). This is the blank-box time — a hard-reject
+    // metric because settled screenshots cannot see an experiment that lengthens it (e.g. E1).
+    // Both operands can be null (missing create-window:start mark, or FCP never fired) —
+    // guard explicitly rather than let `null - null` silently become 0.
+    blankWindowMs:
+      firstContentfulPaint !== null && createWindowAt !== null ? firstContentfulPaint - createWindowAt : null,
+  };
+}
+
+// Reads the perf-log file for this run and asks the CDP-attached page for its own
+// performance entries, then fuses them. `app` carries whatever the rig's launcher
+// attaches (spawnedAt, a cdp.evaluate helper); `fixture` carries this run's paths.
+export async function collectStartup(app, fixture) {
+  const page = await app.cdp.evaluate(
+    `({ timeOrigin: performance.timeOrigin, marks: performance.getEntriesByType('mark').map(m=>({name:m.name,startTime:m.startTime})), paint: performance.getEntriesByType('paint').map(p=>({name:p.name,startTime:p.startTime})) })`,
+  );
+  return startupTable({
+    spawnedAt: app.spawnedAt,
+    mainMarks: parsePerfLog(readFileSync(fixture.perfLog, 'utf8')),
+    rendererMarks: page.marks,
+    timeOrigin: page.timeOrigin,
+    paint: page.paint,
+  });
+}
