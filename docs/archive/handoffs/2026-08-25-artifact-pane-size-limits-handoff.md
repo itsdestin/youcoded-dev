@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-08-25
 spec: docs/active/specs/2026-08-25-artifact-pane-size-limits-design.md
 plan: docs/active/plans/2026-08-25-artifact-pane-size-limits-plan.md
