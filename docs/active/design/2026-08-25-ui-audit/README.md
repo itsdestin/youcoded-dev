@@ -6,6 +6,11 @@
   `e-` from the real app); the findings doc cites them. `marketplace-*` exists because
   youcoded PR #326 gave the workbench registry data — before that those surfaces were
   empty in every theme.
+- `phase-a-review.html` (built by `build-phase-a-review.py` from `images/phase-a/`) — the
+  review page Destin decided Phase A on: per change, the problem with numbers, the exact
+  edit, 1:1 before/after crops, risks, alternatives, and an approve/reject control that
+  assembles a copyable feedback block. **This is the template for every later phase** —
+  a gallery of shrunken windows with no rationale was rejected as a review surface.
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
   (103 of 104; "Known Issues" opens an external link). `contrast.md` — the painted-pixel
   contrast probe's raw output (over-reports on glass themes; read, don't paste).
