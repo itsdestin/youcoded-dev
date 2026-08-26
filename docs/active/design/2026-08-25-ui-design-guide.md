@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 date: 2026-08-25
 owner: Destin (decisions) / Claude (draft)
 related: 2026-08-25-ui-audit-findings.md (the evidence), docs/archive/specs/2026-07-16-ui-consistency-design-spec.md (the migration that made this possible)
@@ -55,8 +55,9 @@ One view may show all of them, but the same *role* must never appear at two radi
 
 **G-5 Text has a floor.** Body `text-sm` (14px) · UI labels `text-xs` (12px) · captions,
 counts and eyebrows `text-2xs` (11px) · **nothing below `text-2xs` may carry information.**
-`text-3xs`/`text-4xs` (10/9px) exist for decorative glyphs and the status bar *only until
-P-10 lands*, after which the status bar floors at `text-2xs` too.
+`text-3xs`/`text-4xs` (10/9px) exist for decorative glyphs. The **status bar is the one
+documented exception** that carries information at `text-3xs`: raising it to 11px was proposed
+(P-10) and Destin rejected it on 2026-08-26 — keep it at 10px and do not re-propose.
 
 ---
 
@@ -187,8 +188,9 @@ and Projects stay reachable — P-6) and shows one `primary` (*New Session*) and
 
 ### 4.2 Chat
 
-- User bubble: `inset` surface, `fg` text, `xl` radius, right-aligned. (Light/creme move
-  off solid black — P-13.) Assistant bubble: `inset`, left-aligned, no accent stripe.
+- User bubble: `accent` surface, `on-accent` text, `xl` radius, right-aligned — in **every**
+  theme (a grey bubble on light schemes, P-13, was rejected 2026-08-25; the solid bubble is the
+  decision). Assistant bubble: `inset`, left-aligned, no accent stripe.
 - Timestamps `text-2xs` `fg-muted`, inside the bubble, bottom-right.
 - **G-20 Tool card**: header row = status glyph · 1px divider · `font-medium` verb +
   filename · `↳` `fg-muted` path · chevron **right-aligned**; body = file chip (type badge ·

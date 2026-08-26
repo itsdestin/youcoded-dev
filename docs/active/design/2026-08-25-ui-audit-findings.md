@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 date: 2026-08-25
 owner: Destin (decisions) / Claude (audit)
 related: 2026-08-25-ui-design-guide.md, 2026-08-25-ui-audit/gallery.html
@@ -119,7 +119,7 @@ user sees it. "Fix" names the design-guide rule (`G-n`) or a proposal (`P-n`, §
 | 7 | **Keyboard Shortcuts** | Uses the narrow "prompt" dialog width, so labels wrap to two lines while key chips don't, rows go uneven, and the list clips at "Send message" with no scroll cue — meadow-mist (a sans font) reveals an 11th row the monospace themes never show. | `main-settings-keyboard-shortcuts` | P-7, G-11 |
 | 8 | **All-sessions popover** | Fixed width tuned to one font: monospace titles wrap 2–3 lines ("gpt-5.6 / debug / session") with the project name jammed beside them; the last row is clipped in half with no scroll indication. Meadow (sans) fits every row on one line. | `main-all-sessions-menu` | P-8, G-11 |
 | 9 | **Skills drawer (bottom sheet)** | One dashed *＋ Add Skills* card alone at the far left of an empty 1400px row; category pills are the smallest text in the app (~11px) and use a different shape from every other filter pill; two unlabeled icon buttons live *inside* the search field; *★ Favorites only* orphaned at the far right. | `main-skills-drawer`, `narrow-skills-drawer` | P-9, G-14, G-18 |
-| 10 | **Status bar** | 10px text; the model chip ("Sonnet \| Auto Effort") is orange-outlined while every other chip is grey, so the model reads as a warning; the theme-name chip looks like a button but is a label; at phone width it wraps to two rows with the theme chip orphaned. In halftone the bar floats centred in its own pill. | `main-home`, `narrow-home` | P-10, G-15 |
+| 10 | **Status bar** | 10px text; the model chip ("Sonnet \| Auto Effort") is orange-outlined while every other chip is grey, so the model reads as a warning; the theme-name chip looks like a button but is a label; at phone width it wraps to two rows with the theme chip orphaned. In halftone the bar floats centred in its own pill. | `main-home`, `narrow-home` | P-10 — **rejected 2026-08-26** (10px stays by decision); G-15 |
 
 Honourable mentions (real, smaller): **Find bar** has no surface of its own and lands
 *inside* the user bubble, truncating it (`main-find-bar`); **Edit Quick Chips** shows only
@@ -179,12 +179,16 @@ Numbers are painted-pixel ratios from the probe; "AA" = 4.5:1 for normal text.
   selected Projects tab and the selected filter pills all read as disabled. This is the root
   cause behind finding #6 and half of §2's "selected state" row. → **P-12** (give dark
   built-ins a real accent, or give primary/selected a second signal besides fill).
+  **Decided 2026-08-25: REJECTED** — both options were built and shown; the monochrome look
+  is intentional and the fill/dim convention already tells selected from disabled. This was a
+  convention argument, not a measured defect (see §5).
 - **Light:** the user bubble is **solid black** — the heaviest object on the screen, heavier
   than any button (`main-home` light). The find bar disappears inside it (`main-find-bar`). The
   composer is a grey pill that reads disabled. "Signed in with your Claude account" is lime
   on light grey (lowest-contrast text in Settings). The *Priority* tag is `#c99700`-ish on
   light grey at **2.2:1**. The "Stopped before pushing code" amber heading is **1.5:1** on
-  cream. The diff `+` marker green is **1.9:1**. → P-13 (light bubble weight), **T-1**
+  cream. The diff `+` marker green is **1.9:1**. → P-13 (light bubble weight — **rejected
+  2026-08-25**, the solid bubble stays), **T-1**
   (semantic colours need light-theme variants).
 - **Creme:** same as light plus: chevrons and the grey-dot icons in the Settings drawer are
   very low contrast on beige; *Remove* red and *Signed in* green look pasted on.
@@ -280,7 +284,8 @@ the migration's primitives are visibly doing their job. No findings.
 Each row is a *visible* change; "Touches" says how many surfaces move at once. Numbers are
 the original P-numbers (never renumbered — approve or reject by number, e.g. "all of A,
 B without P-18"). The rows are grouped into **phases in build order**: each phase is one
-worktree/PR with one before/after sheet from `scripts/ui-review/run-review.sh`, and later
+worktree/PR, captured with `scripts/ui-review/run-review.sh` and decided on a review page
+built by `scripts/ui-review/review-page.py` (rationale · 1:1 crops · decision control), and later
 phases are judged against screens that already include the earlier ones. The reason for
 the order is in each phase's first line.
 
@@ -293,8 +298,8 @@ shown against a neutral baseline, and "no" is the expected answer for most of th
 ### Phase A — tokens and theme guarantees (do first: every later before/after looks different once these land)
 
 One edit at the token/theme layer moves every surface at once, so nothing in B–F should be
-judged until these are in. P-12 is the one real decision in the ledger; it gates P-6 and
-P-18 below. Verify with a **full** rig run (all plans, 6 themes).
+judged until these are in. (P-12 was the one real decision here and was rejected, so it
+gates nothing below.) Verify with a **full** rig run (all plans, 6 themes).
 
 | # | Proposal | Touches | Risk / what users will notice |
 |---|---|---|---|
@@ -305,7 +310,7 @@ P-18 below. Verify with a **full** rig run (all plans, 6 themes).
 
 ### Phase B — shared primitives (one component, many surfaces)
 
-**Trimmed proposal (2026-08-25, after Phase A):** build only the measured parts first —
+**Trimmed proposal (2026-08-25, after Phase A — historical; outcome in the rows):** build only the measured parts first —
 P-15's title row + ✕ on the two headerless dialogs and the wrapping footers; P-18's literal
 `|` → a divider element; P-10's 10px text → the 11px floor and the phone-width wrap. Show
 the judgment parts (AskUserQuestion header layout, the orange model-chip outline, the
@@ -340,7 +345,8 @@ numbered before/afters. P-2's tab style copies Projects', so P-5 goes first. Ver
 ### Phase D — chat-adjacent surfaces (the composer, the transcript, the drawers)
 
 Single surfaces each, but all sit next to the transcript, so their before/afters share
-one screen and one PR. P-6 needs P-12. Verify: `main` + `overlays` plans, plus the
+one screen and one PR. P-6 is now only the Settings gear (its primary-treatment half died
+with P-12). Verify: `main` + `overlays` plans, plus the
 `electron-live-session` plan for P-20 (the workbench has no terminal).
 
 | # | Proposal | Touches | Risk / what users will notice |
@@ -382,7 +388,7 @@ Marketplace rails (§6c #26), so ship both together. Verify: `narrow` plan, and 
 | E | P-4, P-7, P-8 | contained dialogs/popovers | main, overlays |
 | F | P-17 | phone width, judged last | narrow, marketplace |
 
-Each phase goes through the workbench with numbered before/afters, per the `ui-mockup`
+Each phase is built in a worktree and decided on a review page (`/ui-review` §4), per the `ui-mockup`
 skill; the guide (`2026-08-25-ui-design-guide.md`) gets its rule text finalised as each
 phase's decisions land.
 

@@ -965,12 +965,13 @@ surface, not a history.
   **Update 2026-08-25 — the review pass itself is DONE; the decisions are not.** ~600 headless
   screenshots of every surface × 6 themes (+ a real Electron pass) are distilled into
   `docs/active/design/2026-08-25-ui-audit-findings.md` (ten worst surfaces ranked, the
-  same-thing-drawn-N-ways table, per-theme contrast findings, and an 18-item ledger P-1…P-18
-  for Destin to approve by number) and `docs/active/design/2026-08-25-ui-design-guide.md`
+  same-thing-drawn-N-ways table, per-theme contrast findings, and a ledger for Destin to
+  approve by number — 18 items at first, 21 now, grouped into build phases A–F) and `docs/active/design/2026-08-25-ui-design-guide.md`
   (the standard: five laws, tokens/surfaces/type/radii, primitive usage, per-surface
   anatomies, theme-pack guarantees, pre-review checklist). Evidence sheets:
-  `docs/active/design/2026-08-25-ui-audit/gallery.html`. Recommended order P-11 → P-12 →
-  P-13 (tokens first), then P-3/P-1/P-2/P-5. Tick this item when the ledger is decided.
+  `docs/active/design/2026-08-25-ui-audit/gallery.html`. Decisions are recorded phase by
+  phase below; tick this item when phases C–F are decided (C is next: a brief of the measured
+  bits first, since most of C is judgment).
   **Later 2026-08-25:** the first rig had filed 40 mislabelled sheets; it was rebuilt as
   reusable, self-verifying tooling — `scripts/ui-review/` (`run-review.sh` does the whole
   sweep, every shot must prove it opened, `coverage.md` names what didn't) and the `/ui-review`

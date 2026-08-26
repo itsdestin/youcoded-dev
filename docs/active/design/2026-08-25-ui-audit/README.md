@@ -11,8 +11,12 @@
   edit, 1:1 before/after crops, risks, alternatives, and an approve/reject control that
   assembles a copyable feedback block. **This is the template for every later phase** —
   a gallery of shrunken windows with no rationale was rejected as a review surface.
+- `phase-b-brief.html` / `phase-b-review.html` (specs `phase-b-brief.json`, `phase-b-review.json`) —
+  the Phase B brief (problems only, from master) and the review page it led to. Both carry a
+  banner with the decisions (P-15 approved as revised, P-18 approved, P-10 rejected; youcoded #328).
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
-  (103 of 104; "Known Issues" opens an external link). `contrast.md` — the painted-pixel
+  (the original pass: 103 of 104 — "Known Issues" opens an external link; the latest full sweep
+  of master, 2026-08-26 after Phase B, verified 112 of 112). `contrast.md` — the painted-pixel
   contrast probe's raw output (over-reports on glass themes; read, don't paste).
 - `images/` — the JPEG sheets the gallery shows (~13 MB, **git-ignored** on purpose, same
   convention as the perf-lab screenshots; they exist on the machine that ran the audit).
