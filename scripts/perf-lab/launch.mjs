@@ -23,10 +23,11 @@
 // re-read from /proc and confirm still matches.
 //
 // Node built-ins only: the workspace root has no package.json and must not gain one.
-import { spawn } from 'node:child_process';
-import { readFileSync, rmSync } from 'node:fs';
+import { spawn, spawnSync } from 'node:child_process';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { isAbsolute, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { connect, listTargets, waitForMainTarget } from './cdp.mjs';
 import { findFamily } from './procs.mjs';
 
@@ -239,13 +240,37 @@ function probeDisplay(display) {
  * quote the real cause (ENOENT, or Xvfb's own exit code + stderr) rather than
  * guessing at one.
  */
+/**
+ * Where to find an Xvfb binary, in priority order:
+ *   1. $XVFB_BIN — an explicit override
+ *   2. `Xvfb` on PATH — a normal system install
+ *   3. the vendored copy under scratch/perf-lab/assets/ — extracted from the
+ *      distro package into a user prefix, no root needed
+ *
+ * WHY (3) exists: installing xorg-server-xvfb needs sudo, which this rig cannot
+ * do, and on this machine the package DB was stale enough that the install
+ * 404'd. Extracting the same package to a user prefix needs no root and every
+ * shared library it wants is already present — verified running at
+ * 1600x1000x24. This mirrors how the engine and the toy model self-provision:
+ * the rig should not be blocked on a privileged step it can do without.
+ */
+export function resolveXvfbBin() {
+  if (process.env.XVFB_BIN) return process.env.XVFB_BIN;
+  const onPath = spawnSync('sh', ['-c', 'command -v Xvfb'], { encoding: 'utf8' });
+  if (onPath.status === 0 && onPath.stdout.trim()) return onPath.stdout.trim();
+  const vendored = resolve(fileURLToPath(new URL('.', import.meta.url)), '..', '..', 'scratch', 'perf-lab', 'assets', 'xvfb-prefix', 'usr', 'bin', 'Xvfb');
+  if (existsSync(vendored)) return vendored;
+  return 'Xvfb';   // let the spawn fail with a real ENOENT, reported below
+}
+
 export async function startXvfb(display = ':99', { timeoutMs = 8000 } = {}) {
   if (await probeDisplay(display)) return { proc: null, display, reused: true };
 
   const stderr = [];
   let spawnError = null;
   let exit = null;
-  const proc = spawn('Xvfb', [display, '-screen', '0', '1600x1000x24', '-nolisten', 'tcp'], {
+  const xvfbBin = resolveXvfbBin();
+  const proc = spawn(xvfbBin, [display, '-screen', '0', '1600x1000x24', '-nolisten', 'tcp'], {
     stdio: ['ignore', 'ignore', 'pipe'],
   });
   proc.on('error', (err) => { spawnError = err; });           // explicit: an ENOENT here must not be an unhandled rejection
