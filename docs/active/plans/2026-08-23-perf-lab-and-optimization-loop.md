@@ -6,6 +6,25 @@ spec: docs/active/specs/2026-08-23-perf-lab-and-optimization-loop-design.md
 
 # Perf Lab & Autonomous Optimization Loop — Implementation Plan
 
+> **EXECUTION STATE (verified 2026-08-26): DISPATCHED, NOT STARTED. 0 of 70 steps done.**
+> - Nothing exists yet: `ls scripts/perf-lab perf-reports` → "No such file or directory" in the
+>   workspace repo, and `git ls-tree -r --name-only origin/master -- scripts | grep -i perf` → no
+>   hits in the app repo. No `perf/optimization-pass` branch and no `worktrees/perf-lab/`
+>   (`git branch -a --list '*perf*'` → nothing).
+> - **It was approved to proceed, and handed to another machine.** Session `fd3ccd90…`
+>   ("YouCoded Performance Optimization Plan") ended 2026-08-25 20:19 telling Destin to install Xvfb
+>   (`sudo pacman -S --needed xorg-server-xvfb`) and start a fresh Opus session on the plan;
+>   `perf-lab-session-prompt.md` (workspace root, untracked, written 2026-08-26 00:15) is the
+>   ready-to-paste handoff prompt for "the other Linux device". Review session `6cd80a90…`
+>   ("Perf Lab Plan Review") closed 2026-08-25 20:06 and its findings are already folded in
+>   (commit `3906953`).
+> - **Neither human gate has been reached:** the Task 14 repeatability check-in and the Task 15
+>   Step 4 Round-0 approval gate both still lie ahead. No product code may change before Round 0.
+> - Open host prerequisites on the target device (from the handoff prompt): Xvfb,
+>   `google-chrome-stable`, Node 26+, the `stories260K.gguf` toy model, and the pre-downloaded
+>   `b9992-cpu` llama-server build — the last two exist only on this machine.
+> - The ROADMAP carries no item for this work.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a one-command, headless, reproducible performance-measurement rig for the desktop app, add permanent startup timing marks to the app, capture a baseline, then run an autonomous measure → change → re-measure loop whose kept wins ship as one `perf/optimization-pass` PR.

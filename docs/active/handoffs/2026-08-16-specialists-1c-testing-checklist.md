@@ -9,6 +9,21 @@ related:
 
 # Specialists 1c — hands-on testing checklist
 
+> **Status 2026-08-26: NOTHING IN THIS CHECKLIST HAS BEEN RUN.** All 15 `| Result |`
+> tables are still empty. The plan's Task 14 Step 3 asked an agent to run checks 1,
+> 2, 4, 5, 7, 8, 9, 9b and 9d itself in a dev window and record what it saw; that
+> never happened — the session hit its weekly usage limit the same night the
+> checklist was written. The checklist itself is **actionable as written** (each
+> check states what to do, what you should see, and what would be wrong) and needs
+> no rework, but it needs a dev instance
+> (`bash scripts/run-dev.sh worktrees/specialists-1c --label "Specialists 1c"
+> --offset 2 --profile specialists-1c`) and a real cloud model. **Run check 9b
+> first** — it is the permissions-leak check between helpers.
+>
+> Ordering risk: master is 89 commits ahead of this branch's last master merge, so
+> rebase/merge and re-verify **before** spending the ~35 minutes here, or the
+> results describe code that no longer exists.
+
 Plan 1c changes how a hired helper looks and is managed: everything about one
 helper lives on one card and in one popup, helpers can be defined by dropping
 in a file, and there's a new Settings page for them. This checklist walks

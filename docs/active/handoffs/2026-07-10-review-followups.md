@@ -2,6 +2,40 @@
 status: active
 ---
 
+> **Status re-verified 2026-08-26 against `origin/master` `dbbb9139`.** Corrections to the
+> body below, each backed by a `git grep … origin/master`:
+>
+> - **"Kotlin `ProjectManager.kt` still has `detectOrphan` / `rebuildIndex` mirrors" is
+>   FALSE — already done.** `git grep -rn "detectOrphan\|rebuildIndex" origin/master`
+>   returns exactly one hit, and it is a tombstone comment in TypeScript
+>   (`desktop/src/main/artifacts/project-manager.ts:150`: "detectOrphan / rebuildIndex were
+>   removed in the 2026-07-10 dead-code…"). Nothing named either function exists under
+>   `app/`. Strike this item.
+> - **The `sync-spaces` 120 s idle poll is still live** (`sync-spaces/engine.ts:78`
+>   `this.pollMs = opts.pollMs ?? 120_000`), but its guard note — *"owned by the sync
+>   sessions while Phase 2 is in flight — don't touch"* — **is stale**. Sync Phase 2 shipped
+>   (2a `#116`, 2b `#121`, 2c `#126`) and native sync parity shipped as M2 (`#212`,
+>   merge `60d56a67`). This is now free to pick up.
+> - **Still open, verified present:** hidden-xterm WebGL detach (`TerminalView.tsx` disposes
+>   the addon only on `onContextLoss`, never on hide); `buildStatusData`'s triplicated
+>   read-with-fallback loop (no `readPerSession` helper exists anywhere in `desktop/src`);
+>   `FOLDERS_LIST` path-equality still hand-rolls `path.resolve(...).toLowerCase()`
+>   three times (`ipc-handlers.ts:1178,1182,1189`) instead of `canonicalize()`;
+>   `SettingsPanel.tsx` is now **2,721** lines (was 2,489 — it grew).
+> - **Still open, decision not taken:** the `marketplace:get-config` / `set-config` chain is
+>   still wired across all four surfaces (`ipc-handlers.ts:1439`, `preload.ts:148-149`,
+>   `remote-shim.ts:916-918`, `shared/types.ts:1159-1160`) with `ConfigForm.tsx` gone —
+>   dormant exactly as described. **Blocked on Destin:** are config-schema plugins on the
+>   roadmap or not?
+> - The two `App.tsx` items are correctly struck: tranche 1 shipped, remaining tranches are
+>   in `docs/active/investigations/2026-07-17-appinner-decomposition-map.md`. Note `App.tsx`
+>   is **3,652** lines today, so the decomposition never reduced total file size.
+>
+> With the Kotlin item struck, everything left here is opportunistic cleanup with no
+> deadline. Recommend moving to `docs/archive/handoffs/` and re-filing the six surviving
+> items as ROADMAP `#tech-debt` entries, so the workspace has one ledger instead of two.
+
+
 # Master Review — Deferred Follow-ups (non-remote)
 
 **Date:** 2026-07-10

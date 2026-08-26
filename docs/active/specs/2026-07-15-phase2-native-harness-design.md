@@ -1,8 +1,36 @@
 ---
-status: active
+status: shipped
 ---
 
 # Phase 2 — Native Harness v1: Tools + Permissions: Design
+
+> ## Status 2026-08-26 — SHIPPED; `status:` corrected `active` → `shipped`
+>
+> All three Phase 2 plans are on `youcoded` master and have been for over a month. The header
+> below still says "APPROVED … Ready for implementation planning", which was true on
+> 2026-07-15 and has been misleading since:
+>
+> - **Plan A** (agent loop, ten core tools, permission engine, broker, resume rebuild,
+>   prompt assembly, StatusBar mode chip) — PR #149, master `5f423287`, 2026-07-16.
+> - **Plan B** (WebFetch, WebSearch, AskUserQuestion, Assistant/Coder presets) — PR #156,
+>   merge `2fd316e1`, 2026-07-16.
+> - **Plan C** (local reliability, compaction, StatusBar usage bridge) — PR #268,
+>   merge `12f71d07`, 2026-07-29.
+> - `native.supported` was flipped true in production 2026-07-16 (PR #160), ahead of this
+>   spec's own Phase-2.1 gate, on Destin's explicit call.
+>
+> Two §4.5 details drifted and are recorded here rather than silently: the
+> `native:usage-report` → `status:data` cache path this spec designed is **dead** — see
+> `ipc-handlers.ts:1979` and `App.tsx:1218`, which say so in comments and route status data
+> through the desktop+remote path instead. Everything else in §4 shipped substantially as
+> written.
+>
+> **Keep, don't delete:** two live docs still cite this spec by path —
+> `docs/active/plans/2026-08-21-full-auto-external-read-bypass.md` and
+> `docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md` — because
+> §0's settled decisions (we own the loop; the transcript-event emit surface is frozen) are
+> still binding on new work. **Recommended: move to `docs/archive/specs/`** and update those
+> two references. (Not moved here; Destin's call.)
 
 **Date:** 2026-07-15
 **Status:** APPROVED (Destin, 2026-07-15) — approved section-by-section in session, then re-approved after a second-session review's six findings were folded in (`96de1c2`). Ready for implementation planning.

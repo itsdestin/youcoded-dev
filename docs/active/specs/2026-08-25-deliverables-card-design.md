@@ -10,6 +10,31 @@ branch: youcoded feat/send-user-file-card (worktree `worktrees/send-user-file`)
 
 # Deliverables card
 
+> **Status 2026-08-26:** implementation is complete through plan Task 9 on
+> `feat/send-user-file-card` (worktree `worktrees/send-user-file`, 24 commits,
+> head `8003fd6c`). **Not merged, no PR open.** Destin signed off Checkpoints 1,
+> 2 and 2.5 on 2026-08-25; **Checkpoint 3 (native session in a dev instance) was
+> never completed** — the 2026-08-26 session that set it up ended on an
+> unresolved question instead (below). Full build ledger:
+> `worktrees/send-user-file/.superpowers/sdd/progress.md`.
+>
+> **Open blocker — unexplained dev-instance OOM.** On 2026-08-26 a dev instance
+> running this branch grew its Electron main process to ~2.78 GB over ~73
+> minutes and was killed by V8. It is *not established* that this branch caused
+> it (Destin's testing was light; the new bounded structures cap at 200/500
+> entries and cannot account for gigabytes), but this feature adds appends to
+> the same artifact-append path that already caused a 2026-08-15 OOM, and the
+> whole-branch review found nothing sequences the two new `transcript:event`
+> handlers that both write artifact state (workspace `ROADMAP.md`, commit
+> `9021250`). The session's own recommendation was **do not merge until this is
+> settled**, by either (a) comparing memory growth against a `master` dev
+> instance over a comparable stretch, or (b) directly finding what retains
+> memory. Destin had not chosen when the session ended.
+>
+> Sections corrected below to match what shipped: **§2.3** (collapse seed),
+> **§2.4** (a new failure reopens the card), **§2.5/§3.1** (auto-open no longer
+> takes an identical path to a click), **§13 row 13**.
+
 ## 1. What this is
 
 Claude Code ships a built-in tool, `SendUserFile`, whose job is to hand the user a
@@ -87,10 +112,26 @@ except the two items marked **fix**.
   it until the user opens it. Collapsed it is one line:
   "Deliverables 4 · caption ▾".
 - Collapse state is local to the card (not persisted), like a tool card.
-- The initial state is seeded from the current Ctrl+O mode
-  (`useState(() => getInitialExpanded(false))`), exactly as `ToolCard` does, so a
-  card mounting during an active expand-all still comes up open and one mounting
-  after a collapse-all stays closed. Ctrl+O keeps working in both directions.
+- The initial state is seeded from the current Ctrl+O mode, exactly as
+  `ToolCard` does, so a card mounting during an active expand-all still comes up
+  open and one mounting after a collapse-all stays closed. Ctrl+O keeps working
+  in both directions.
+- **Correction 2026-08-26 (as built):** the seed is
+  `useState(() => getInitialExpanded(hasFailure))`, not `getInitialExpanded(false)`
+  as this section originally said — a card whose *replayed* history already holds
+  a failed delivery mounts open. The mount-time seed is not enough on its own:
+  a live call is created `running` and flips to `failed` in the same mounted card,
+  so the card also watches the set of failed call ids (`failedIds`) and opens on a
+  **newly** failed id, gated by a `surfacedFailedIds` ref so a call that merely
+  *recovers* — or one the user has already seen and collapsed — cannot pop it back
+  open. Commits `7e97d215` → `ada2fbcc` → `c36bcc60` → `8003fd6c`; a single
+  aggregate `hasFailure` boolean was tried first and is wrong, because it cannot
+  change value twice.
+- **Known and accepted (2026-08-26):** with a Ctrl+O collapse-all active, opening
+  a conversation whose history holds a failed delivery mounts the card closed with
+  the failure already marked surfaced, so nothing opens it. Collapse-all is an
+  explicit global instruction and the same silence follows a collapse-all pressed
+  over an already-open failed card. Told to Destin.
 
 ### 2.4 States
 
@@ -113,6 +154,18 @@ extracted from `FilepathToken` so a pill and a tile can never disagree: session
 artifact list → whole project (tracked + on-disk) → artifactify. Untracked files
 (a scratchpad chart) therefore still open. Invariant kept: **a file clicked in chat
 always opens the artifact viewer, never Project View.**
+
+**Correction 2026-08-26 (as built):** a click and an auto-open no longer take an
+identical path. `openFilepath` gained a `drawerOpensImmediately` option (default
+`true` = click unchanged); auto-open passes `false`, which (a) delays opening the
+drawer until the file actually resolves, so a failed auto-open does nothing at
+all, and (b) **skips the whole-project disk scan** (`listAllFiles`) on a tracked
+miss and artifactifies instead. (b) is load-bearing, not an optimisation: a
+discovered on-disk record's `id` is a relative path rather than a persisted
+sidecar ULID, and the tracker's debounced whole-session refresh replaces the
+session list wholesale, silently orphaning such a selection — which is the
+"panel opened but my file isn't selected" bug Checkpoint 2.5 found (commits
+`18280a6b`, `7e97d215`).
 
 ## 3. Auto-open (`display: "render"`)
 
@@ -419,5 +472,5 @@ file, "effective display", and record-on-call).
 | 10 | Lifted "Deliverables · N" card, caption in header; multi-call merge | approved (label renamed from "Files" — Destin) |
 | 11 | Filmstrip body, 224/176px tiles, arrow-only Open | approved (R2·D) |
 | 12 | Scroll-aware left/right fades | approved (Destin's addition) |
-| 13 | Collapsible like a tool card, open by default, Ctrl+O applies | approved (Destin's addition) |
+| 13 | Collapsible like a tool card, Ctrl+O applies | approved (Destin's addition). **"Open by default" was reversed 2026-08-26 — see §2.3; the card ships COLLAPSED by default** |
 | — | R1·B accent-edge collapsible, R1·C bare filmstrip, R2·E wrapped names, R2·F no fade | rejected — decision: A then D |

@@ -11,6 +11,47 @@ ui_branch: youcoded feat/specialists-1c-ui (worktree worktrees/specialists-1c) �
 
 # Native Specialists Plan 1c — Implementation
 
+> **Status 2026-08-26 (paused, mid-task — the checkboxes below are STALE):** All 82
+> `- [ ]` boxes in this plan are still unchecked and **none of them reflects
+> reality** — nobody ticked them as the work landed. Measured against
+> `git log origin/master..feat/specialists-1c-ui` (47 commits, last one
+> `6dd6a1a4`, 2026-08-16):
+>
+> - **Task 0 — SHIPPED.** Own branch `fix/permission-ask-replay`, youcoded **PR
+>   #322**, merged to master as `bf55513e`. Do not redo it.
+> - **Tasks 1–13 — BUILT on `feat/specialists-1c-ui`, unmerged.** Every task has
+>   matching commits (`a02bd61c` ledger chokepoint, `ef3925d0` frontmatter +
+>   loaders, `2bdca0b0` catalog, `077cf65b` per-cwd roster + hire subject,
+>   `9b502808` notes/steer/stop, `c3a011f3` PermissionHeld, `9e11ecc5` thinking
+>   rows, `c009ddf0` five-surface channels, `b3e8ae13`/`978e9cc7` replay + remote
+>   buffer, `f9379ab9` renderer on the real bridge, `ba3da133` reducer note rows,
+>   `afdeba5a` held-ask copy + note cap, `c19f9191` Settings states + tier errors),
+>   and the branch adds 23 new files including 9 new test files.
+> - **Task 14 — NOT DONE.** The checklist doc was written
+>   (`docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md`), but
+>   **Step 3 was never performed**: all 15 Result cells are blank, so not one of
+>   the nine agent-runnable checks (1, 2, 4, 5, 7, 8, 9, 9b, 9d) has been run.
+> - **Task 15 Steps 1–2 — DONE** (workspace commit `de0d700` rule + MAP;
+>   ROADMAP status text on the `#specialists` items). **Step 3 — impossible**
+>   until the branch merges. Note the side effect: the rule/MAP anchors point at
+>   branch-only files, so `node scripts/audit-anchors.mjs` has failed on the daily
+>   workspace CI cron since 2026-08-16 (11 anchors + 14 MAP paths + 3 rule globs).
+>
+> **Also stale:** Global Constraints says line anchors were verified against master
+> `b79db26a` and branch HEAD `5718d44d`. Master is now `dbbb9139` — **89 commits
+> ahead of the branch's last master merge (`5222a66f`)** — and branch HEAD is
+> `6dd6a1a4`. Re-locate every line anchor by symbol before editing.
+>
+> **Task 15's ROADMAP instruction is wrong on one point:** it says to flip the item
+> at "line 34" to `[x]`. That item (consent-key canonicalization) was already `[x]`
+> from plan **1b** and is genuinely on master (`f9fcd065` / `e5ec5b3c`, both
+> verified with `git branch -r --contains`). Only the three `#specialists` UX items
+> — consent-card copy, "reads complete while still working", and the background
+> ask/report placement — are 1c's to flip, and only on merge.
+>
+> **Blocked on Destin before merge:** the auto-edit permission-mode question in the
+> handoff's "Addendum 2026-08-26". Four uncommitted files also sit in the worktree.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Read the spec first; this plan assumes it.
 
 **Goal:** Ship the backend the approved 1c renderer expects (a live run feed off the delegation ledger, notes on the run record, held asks, thinking rows, `specialists:*` channels), let users define specialists as files (personal folder + Claude Code's two `.claude/agents/` folders, re-read when they change, mapped through the strict tool table), finish Settings → Specialists, and close the renderer gaps in spec §7.

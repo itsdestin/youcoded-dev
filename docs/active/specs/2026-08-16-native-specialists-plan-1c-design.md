@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 date: 2026-08-16
 revised: 2026-08-16 (two independent reviews — see the handoff doc for what changed and why)
 type: spec
@@ -15,6 +15,18 @@ ui_branch: youcoded feat/specialists-1c-ui (worktree worktrees/specialists-1c) �
 ---
 
 # Native specialists — plan 1c design (chat UI, management popup, definitions, Settings)
+
+> **Status 2026-08-26:** `status:` corrected from `draft` to `active` — this spec
+> was approved by Destin on 2026-08-16 and 47 commits were built against it on
+> `feat/specialists-1c-ui` (worktree `worktrees/specialists-1c`), unmerged. The
+> spec still matches what was built, with one section now historical: **§7 "Where
+> the UI branch trails this spec" is CLOSED** — all seven items landed (verified
+> on the branch: `specialists.openFolder` and its `MOCK_ONLY` row are gone,
+> `mock-only.ts:11` records the removal; zero `specialists:run-changed` strings
+> remain in `desktop/src`; loading/failed/desktop-only split, held-ask copy, the
+> 2,000-char note cap, note rows rebuilt from `run.notes`, and the provenance line
+> all have commits and tests). Read §7 as a record of what was done, not as a
+> to-do list.
 
 **Approved by Destin 2026-08-16 in the UI Workbench** ("good enough for now"), then
 revised the same day on two independent reviews. Plan 1c is the last piece of stage one

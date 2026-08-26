@@ -7,6 +7,40 @@ related-pr: youcoded#174
 
 # Multi-model cwd contract + model guidance
 
+> ## Status 2026-08-26 — 3 of 4 work items UNBUILT; item 2 was solved a DIFFERENT way
+>
+> Verified against `youcoded` `origin/master` (`dbbb9139`) on 2026-08-26:
+>
+> - **Item 1 (Bash `workdir` parameter) — not built.**
+>   `git grep -n 'workdir' origin/master -- desktop/src/main/harness` → **no output**.
+> - **Item 2 (file tools reject relative paths, loudly) — not built as written, and partly
+>   OBSOLETED by what shipped instead.** `read.ts:72` still declares
+>   `file_path: z.string().describe('Absolute or workspace-relative path')` — the exact string
+>   this plan flagged as inviting the ambiguous call. What shipped on 2026-08-11 instead is a
+>   softer, bidirectional *hint* layer in `harness/tools/guards.ts`: `shellCwdMissHint()` (a
+>   file-tool miss names the Bash cwd if the file is really there) and `workspaceRootMissHint()`
+>   (a Bash miss names the workspace root), both confirming the alternative exists on disk before
+>   naming it. Used by `read.ts`, `glob.ts:171`, `grep.ts:408`, `bash.ts:871`.
+>   **The residual hazard the hints do NOT cover:** they only fire on a MISS. When the same
+>   relative name exists under BOTH the workspace root and the moved shell cwd, `Read foo.txt`
+>   still silently opens the root's copy while `cat foo.txt` opens the other — the original
+>   silent-divergence bug, untouched.
+> - **Item 3 (imperative per-tool description contract) — not built** in the shape written here;
+>   the descriptions still permit workspace-relative paths.
+> - **Item 4 (one canonical `<cwd-rules>` block) — not built.**
+>   `git grep -n 'cwd-rules' origin/master -- desktop/src` → no output;
+>   `prompt-assembly.ts:81` emits only the bare line `` `Working directory: ${i.cwd}` ``.
+> - No branch or worktree exists for this work.
+>
+> Last activity: 2026-07-18 (written the day PR #174 merged). It is still queued —
+> `docs/active/plans/2026-08-11-native-sessions-remaining-work.md` §"Step 7 — M6 item 5" owns
+> the scheduling and ROADMAP line 30 lists "cwd contract" in the ordered remainder.
+>
+> **Before building: item 2 needs Destin's call, not code.** The shipped hint layer already
+> covers the loud-failure case this plan wanted; the question left is whether the file tools
+> should now *reject* relative paths outright (breaks nothing today but changes every model's
+> habits) or keep accepting them with hints (leaves the both-files-exist silent case open).
+
 ## Problem
 
 PR #174 makes Bash's working directory persist between calls (scoped to the workspace,

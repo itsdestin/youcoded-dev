@@ -8,6 +8,39 @@ branch: youcoded feat/send-user-file-card (worktree `worktrees/send-user-file`)
 
 # Deliverables Card Implementation Plan
 
+> **Status 2026-08-26:** Tasks 1–9 are **complete**; Task 10 (finish/merge) and
+> Checkpoint 3 are not. The `- [ ]` boxes below were **never ticked** — the real
+> record of what was done, with commit shas, review verdicts and every carried
+> Minor, is `worktrees/send-user-file/.superpowers/sdd/progress.md` plus the
+> `fix-*-report.md` files beside it. Do not read the unchecked boxes as
+> outstanding work.
+>
+> Task-by-task landing: T1 `eb3d9217`, T2 `91e0180c`, T3 `6983bd2e`,
+> T4 `358174c1`, T5 `c779fd5b`, T6 `e9575e64`, T7 `7496be55`, T8 `8cdd6764`
+> (+ fix `21a1840a`), T9 workspace commit `51adee6`. Post-Checkpoint-2.5 owner
+> changes and review fixes: `18280a6b`, `cc20fc2c`, `e114e3aa`, `884b849f`,
+> `9acbc41d`, `7e97d215`, `ada2fbcc`, `c36bcc60`, `8003fd6c`.
+>
+> **Two corrections to this plan's own text:**
+> 1. **Task 9, Step 1 is wrong where it says "Expected: all anchors resolve."**
+>    Anchors resolve against the `youcoded/` main checkout, which is on `master`,
+>    so the six anchors this task adds cannot resolve until the branch merges.
+>    Verified 2026-08-26: `node scripts/audit-anchors.mjs` reports all six as
+>    failures (`missing:` for five files, `/'delivered'/ not found` for
+>    `types.ts`). They **do** resolve against the worktree, so they will go green
+>    at merge — but until then this task's commit leaves the workspace mechanical
+>    audit (and the daily `workspace-ci.yml` cron) red. Same shape as the 12
+>    anchors already carried for other unmerged branches.
+> 2. **Task 10's first box ("`verify.sh --full` exits 0") is not currently
+>    achievable** for a reason unrelated to this branch:
+>    `tests/mcp-startup-wiring.test.ts` times out under machine load and fails on
+>    `master` too (recorded in workspace `ROADMAP.md`, commit `878ac44`). Every
+>    test belonging to this feature passes.
+>
+> **Open blocker before Task 10:** an unexplained dev-instance OOM (~2.78 GB main
+> process over ~73 minutes, 2026-08-26) — see the spec's status block. Not
+> attributed to this branch, not cleared either.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Render Claude Code's `SendUserFile` as the approved in-bubble "Deliverables" card, auto-open explicitly-rendered files once per reply, track delivered files in the file panel, and give native sessions the same tool.

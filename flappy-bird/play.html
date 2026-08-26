@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sky Hopper</title>
+  <style>
+    :root { color-scheme: dark; --ink: #17233d; --cream: #fff8e7; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      display: grid; place-items: center; min-height: 100vh; padding: 18px;
+      overflow: hidden; font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      color: var(--cream); background: radial-gradient(circle at 50% -10%, #324c7d, #111a31 70%);
+    }
+    .shell { width: min(94vw, 440px); text-align: center; }
+    .topline { display: flex; align-items: end; justify-content: space-between; margin: 0 4px 10px; }
+    h1 { margin: 0; font-size: clamp(1.7rem, 7vw, 2.35rem); letter-spacing: .08em; line-height: 1; }
+    .tag { color: #9bb1db; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; }
+    .frame { position: relative; padding: 8px; border: 1px solid #566a98; border-radius: 22px; background: #1e2c4d; box-shadow: 0 24px 70px #050914aa, inset 0 1px #ffffff22; }
+    canvas { display: block; width: 100%; height: auto; aspect-ratio: 420 / 680; border-radius: 15px; background: #86d5ed; cursor: pointer; touch-action: manipulation; }
+    .hud { position: absolute; inset: 17px 20px auto; display: flex; justify-content: space-between; pointer-events: none; font-weight: 800; text-shadow: 0 2px 3px #17233d99; }
+    .hud span { display: grid; gap: 1px; min-width: 70px; font-size: 1.65rem; }
+    .hud small { color: #e8f6ffcc; font-size: .55rem; letter-spacing: .15em; }
+    .panel { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+    .card { width: min(84%, 300px); padding: 24px 20px 20px; border: 1px solid #ffffff30; border-radius: 18px; background: #17233de8; box-shadow: 0 15px 35px #07102280; backdrop-filter: blur(8px); }
+    .card h2 { margin: 0 0 8px; font-size: 1.8rem; }
+    .card p { margin: 0 0 17px; color: #c6d4ef; line-height: 1.45; }
+    button { pointer-events: auto; border: 0; border-radius: 999px; padding: 11px 22px; color: var(--ink); background: #ffd166; font: inherit; font-weight: 850; cursor: pointer; box-shadow: 0 5px 0 #bd8841; }
+    button:active { transform: translateY(3px); box-shadow: 0 2px 0 #bd8841; }
+    .hidden { display: none; }
+    .hint { margin: 11px 0 0; color: #8ea4ce; font-size: .78rem; }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="topline"><h1>SKY HOPPER</h1><div class="tag">one more try</div></div>
+    <div class="frame">
+      <canvas id="game" width="420" height="680" aria-label="Sky Hopper game"></canvas>
+      <div class="hud"><span><small>SCORE</small><b id="score">0</b></span><span><small>BEST</small><b id="best">0</b></span></div>
+      <div class="panel" id="panel"><section class="card"><h2 id="panelTitle">Ready?</h2><p id="panelText">Guide the little hopper through the gaps. Tap, click, or press Space to flap.</p><button id="start">Start flying</button></section></div>
+    </div>
+    <p class="hint">SPACE / ↑ / CLICK / TAP to flap · P to pause</p>
+  </main>
+<script>
+(() => {
+  const canvas = document.querySelector('#game'), ctx = canvas.getContext('2d');
+  const scoreEl = document.querySelector('#score'), bestEl = document.querySelector('#best');
+  const panel = document.querySelector('#panel'), title = document.querySelector('#panelTitle'), text = document.querySelector('#panelText'), start = document.querySelector('#start');
+  const W = canvas.width, H = canvas.height, ground = H - 62;
+  const bird = { x: 105, y: H * .45, vy: 0, r: 16, tilt: 0 };
+  const physics = { gravity: 1450, flap: -440, speed: 178, gap: 174, pipeW: 70 };
+  let pipes = [], score = 0, best = Number(localStorage.getItem('sky-hopper-best') || 0), state = 'ready', last = 0, spawnClock = 0, worldTime = 0;
+  bestEl.textContent = best;
+
+  function reset() { bird.y = H * .45; bird.vy = 0; bird.tilt = 0; pipes = []; score = 0; spawnClock = .15; scoreEl.textContent = 0; }
+  function begin() { reset(); state = 'playing'; panel.classList.add('hidden'); flap(); }
+  function flap() { if (state === 'ready' || state === 'dead') { begin(); return; } if (state === 'paused') { state = 'playing'; panel.classList.add('hidden'); } bird.vy = physics.flap; }
+  function pause() { if (state === 'playing') { state = 'paused'; title.textContent = 'Paused'; text.textContent = 'Take a breath. Your run is waiting for you.'; start.textContent = 'Keep flying'; panel.classList.remove('hidden'); } }
+  function spawn() { const min = 105, max = ground - physics.gap - 105; pipes.push({ x: W + 20, top: min + Math.random() * (max - min), passed: false }); }
+  function die() { if (state !== 'playing') return; state = 'dead'; if (score > best) { best = score; localStorage.setItem('sky-hopper-best', best); bestEl.textContent = best; } title.textContent = 'Flight ended'; text.textContent = `You scored ${score}. Ready to beat it?`; start.textContent = 'Try again'; panel.classList.remove('hidden'); }
+  function hit() {
+    if (bird.y - bird.r < 0 || bird.y + bird.r > ground) return true;
+    return pipes.some(p => bird.x + bird.r > p.x && bird.x - bird.r < p.x + physics.pipeW && (bird.y - bird.r < p.top || bird.y + bird.r > p.top + physics.gap));
+  }
+  function update(dt) {
+    worldTime += dt; if (state !== 'playing') return;
+    bird.vy += physics.gravity * dt; bird.y += bird.vy * dt; bird.tilt = Math.max(-.45, Math.min(1.25, bird.vy / 520));
+    spawnClock -= dt; if (spawnClock <= 0) { spawn(); spawnClock = 1.55; }
+    pipes.forEach(p => { p.x -= physics.speed * dt; if (!p.passed && p.x + physics.pipeW < bird.x) { p.passed = true; score++; scoreEl.textContent = score; } });
+    pipes = pipes.filter(p => p.x + physics.pipeW > -10); if (hit()) die();
+  }
+  function cloud(x, y, s) { ctx.fillStyle = '#ffffff40'; ctx.beginPath(); ctx.arc(x, y, 18*s, 0, 7); ctx.arc(x+24*s, y-10*s, 25*s, 0, 7); ctx.arc(x+54*s, y, 19*s, 0, 7); ctx.fill(); }
+  function draw() {
+    const sky = ctx.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, '#79c9ed'); sky.addColorStop(1, '#d4f2e9'); ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+    cloud((W - (worldTime * 10 % 550)) + 40, 135, 1.1); cloud((W - (worldTime * 6 % 620)) + 200, 245, .7);
+    ctx.fillStyle = '#94d895'; ctx.beginPath(); ctx.moveTo(0, ground - 72); ctx.quadraticCurveTo(80, ground - 126, 170, ground - 58); ctx.quadraticCurveTo(280, ground - 132, W, ground - 62); ctx.lineTo(W, ground); ctx.lineTo(0, ground); ctx.fill();
+    pipes.forEach(p => { drawPipe(p.x, 0, physics.pipeW, p.top, true); drawPipe(p.x, p.top + physics.gap, physics.pipeW, ground - p.top - physics.gap, false); });
+    ctx.fillStyle = '#efd27a'; ctx.fillRect(0, ground, W, H-ground); ctx.fillStyle = '#d6b75d'; for (let x = -((worldTime*physics.speed)%34); x < W; x += 34) ctx.fillRect(x, ground + 13, 18, 5);
+    ctx.save(); ctx.translate(bird.x, bird.y); ctx.rotate(bird.tilt); ctx.fillStyle = '#ffd166'; ctx.strokeStyle = '#bd7338'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(0, 0, 20, 15, 0, 0, 7); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#eea23e'; ctx.beginPath(); ctx.ellipse(-6, 8, 11, 6, -.3, 0, 7); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(8, -7, 7, 0, 7); ctx.fill(); ctx.fillStyle = '#17233d'; ctx.beginPath(); ctx.arc(10, -7, 3, 0, 7); ctx.fill(); ctx.fillStyle = '#f47c48'; ctx.beginPath(); ctx.moveTo(16, -1); ctx.lineTo(30, 4); ctx.lineTo(16, 7); ctx.fill(); ctx.restore();
+  }
+  function drawPipe(x, y, w, h, top) { if (h <= 0) return; const g = ctx.createLinearGradient(x, 0, x+w, 0); g.addColorStop(0, '#2a9d72'); g.addColorStop(.5, '#65c68a'); g.addColorStop(1, '#207258'); ctx.fillStyle = g; ctx.fillRect(x, y, w, h); ctx.fillStyle = '#42b77a'; const capY = top ? h - 26 : y; ctx.fillRect(x-6, capY, w+12, 26); ctx.strokeStyle = '#1c674e'; ctx.lineWidth = 3; ctx.strokeRect(x, y, w, h); }
+  function loop(t) { const dt = Math.min((t-last)/1000 || 0, .035); last = t; update(dt); draw(); requestAnimationFrame(loop); }
+  canvas.addEventListener('pointerdown', e => { e.preventDefault(); flap(); }); start.addEventListener('click', begin);
+  window.addEventListener('keydown', e => { if (['Space','ArrowUp'].includes(e.code)) { e.preventDefault(); flap(); } if (e.code === 'KeyP') pause(); });
+  reset(); draw(); requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

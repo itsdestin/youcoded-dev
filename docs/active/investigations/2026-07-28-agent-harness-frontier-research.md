@@ -8,6 +8,14 @@ tags: [agents, harness, workflow, productivity, practices]
 
 # What the best agent operators actually do
 
+> **REVIEW 2026-08-26 — KEEP ACTIVE. Live input to open work.** `ROADMAP.md`'s
+> "context + knowledge app features" item names this document as its background, and its five
+> sequenced ideas (ContextPopup as a real surface → correction capture → work state as an object →
+> shareable knowledge packs → provenance/revocation) come out of Part 2 here. Re-archive together
+> with `docs/active/specs/2026-07-28-context-knowledge-app-features-outline.md` when that item
+> ships or is dropped. Not re-verified line by line — its claims are about other people's
+> harnesses, not this codebase, so they age by publication date rather than by our commits.
+
 Practitioner-focused sweep: Anthropic's own engineers, Karpathy, Moonshot/Kimi, Microsoft's
 field study, Every's compounding-engineering crowd. Ends with a concrete change list for this
 workspace, based on what's actually configured here today.

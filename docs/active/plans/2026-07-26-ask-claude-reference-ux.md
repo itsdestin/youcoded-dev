@@ -1,5 +1,7 @@
 ---
 status: active
+parked: 2026-07-28
+branch: feat/ask-claude-reference-ux (worktree worktrees/ask-reference, youcoded PR #263 — DRAFT)
 date: 2026-07-26
 spec: docs/active/specs/2026-07-26-ask-claude-reference-ux-design.md
 artifact: https://claude.ai/code/artifact/bed5f7ea-1a2e-431f-9d2c-563fd3bcdee4
@@ -11,6 +13,40 @@ repo: youcoded (desktop renderer only)
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development
 > (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use
 > checkbox (`- [ ]`) syntax for tracking.
+
+> ## STATUS AS OF 2026-08-26 — ALL NINE TASKS LANDED; PLAN CHECKBOXES WERE NEVER TICKED
+>
+> **The unticked `- [ ]` boxes below are bookkeeping debt, not remaining work.** Verified
+> 2026-08-26: `grep -c '^\s*- \[x\]'` returns **0** and `grep -c '^\s*- \[ \]'` returns **67**,
+> yet every one of Tasks 1–9 has a matching commit on `feat/ask-claude-reference-ux`:
+>
+> | Task | Commit |
+> |---|---|
+> | 1 `PendingReference` context | `945f008c` |
+> | 2 `build-reference.ts` builder | `f2e93f66` |
+> | 3 menu → reference wiring | `3f437931` |
+> | 4 InputBar placeholder + send assembly | `946b2ccd` |
+> | 5 `buildUnionPath` geometry | `701af2eb` |
+> | 6 `ReferenceOverlay` scrim/layer/cancel | `35c5777a` |
+> | 7 traced outline | `f2b1ec00` |
+> | 8 FLIP travel to centre | `bf7ce633` |
+> | 9 reduced effects / reduced motion | `d4775ec6` |
+>
+> Nine further fix commits followed (through `cf44e6c3`, 2026-07-28). Do NOT re-execute this
+> plan task-by-task — the code exists. What is unfinished is **acceptance**, not construction.
+>
+> **Where it actually stands:** youcoded PR #263 is an open GitHub *draft* titled "DRAFT /
+> INCOMPLETE" whose body enumerates eight known-open items and recommends the overlay layer be
+> rewritten rather than patched further. Destin's verdict (conversation `81c6d4ca`, 2026-07-28):
+> *"the 'ask about this' ui was decent for messages, but janky af for the artifact viewer. needs
+> some additional work before integrating."*
+>
+> **"Final verification" below is misleading as written.** The dev-instance pass across the
+> themes and Destin's sign-off *did happen* — five rounds of it — and the outcome was a **no**
+> on the artifact-viewer variant. Those two boxes are not waiting to be run; they were run and
+> failed. The mechanical boxes (`vitest`, `tsc`, the `rg` sweeps) passed as of 2026-07-28 per
+> the PR body (3551 tests, `tsc --noEmit` clean) and are stale now — the branch has not been
+> rebased since, and master moved 245 renderer commits.
 
 **Goal:** Replace the v1 "Ask about this" behaviour — which pastes a raw prompt scaffold into the
 composer — with a held reference: the source is pinned on screen behind a window-wide scrim with a
@@ -1869,6 +1905,18 @@ Append to the reference block in `globals.css`:
    verified 2026-07-26 that theme-engine.ts applies reducedEffects by zeroing
    the blur vars and never writes a data-reduced-effects attribute, so an
    attribute selector on <html> would be dead CSS. */
+/* CORRECTION 2026-08-26 — the sentence above is FALSE and was false on the day
+   it claims to have been verified. At this branch's own merge-base
+   (f89fd848, 2026-07-26), `desktop/src/renderer/themes/theme-engine.ts:445`
+   already contained `root.setAttribute('data-reduced-effects', '')`
+   (:447 removes it). An `[data-reduced-effects]` selector on <html> was NOT
+   dead CSS, so the bespoke `data-reduced` stamp was never necessary.
+
+   This now matters twice over: master commit `b3239f6f` (2026-07-30) built the
+   app-wide Reduced Effects CSS convention on exactly that `[data-reduced-effects]`
+   attribute and pinned it with `desktop/tests/reduced-effects-animations.test.ts`.
+   Any resumption of this work should drop `data-reduced` and gate the reference
+   animations the way the rest of the app now does. */
 .reference-trace[data-reduced="true"] path.outline {
   animation: none;
   stroke-dashoffset: 0;

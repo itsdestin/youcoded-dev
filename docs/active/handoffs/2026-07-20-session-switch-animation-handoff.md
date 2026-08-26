@@ -95,3 +95,61 @@ the mockup's timing produces the crossfade he rejected.
 Halftone Dimension's `custom_css` targets `.chat-bubble.user` / `.chat-bubble.assistant`, which
 match **nothing** in the live renderer (it uses `.user-bubble` / `.assistant-bubble`). That pack's
 bubble glow and assistant border-left are dead in the shipping app. Logged to ROADMAP under Bugs.
+
+---
+
+## Status re-check — 2026-08-26 (no code touched)
+
+Dormant 37 days. Everything above is still the plan; three claims in it have gone stale
+and one new blocker appeared. Verified against `origin/master` at `73e2defe`.
+
+**Branch / PR.** `feat/session-switch-animation` @ `5a9b37fa`, pushed to origin, worktree
+`worktrees/session-switch-animation` (68 MB, clean). PR
+[youcoded#192](https://github.com/itsdestin/youcoded/pull/192) is still **OPEN / DRAFT**,
+zero comments, `updatedAt` unchanged since it was opened — nobody has touched it.
+`git rev-list --count origin/master..feat/session-switch-animation` = **1**;
+`…feat/session-switch-animation..origin/master` = **1076**.
+
+**Now conflicts.** `git merge-tree --write-tree origin/master feat/session-switch-animation`
+exits 1: `CONFLICT (content) desktop/src/renderer/components/ChatView.tsx`. `SessionStrip.tsx`
+and `globals.css` still auto-merge. ChatView grew 887 → 1070 lines on master since the
+branch point.
+
+**NEW BLOCKER — `content-visibility` supersedes the mechanism.** `81c9562d` (2026-08-06,
+"perf(renderer): take inactive sessions out of layout during resize") added to the ChatView
+root, at `ChatView.tsx:707` on master:
+
+    contentVisibility: sessionActive ? 'visible' : 'hidden',
+
+with `sessionActive={s.id === sessionId}` (`App.tsx:2822`). A non-selected session's pane
+subtree is now skipped entirely, so its `.timeline-entry` elements cannot be intersecting
+and the IntersectionObserver strips `in-view` from them. Both of this branch's animation
+selectors are `.session-leaving .timeline-entry.in-view` /
+`.session-entering .timeline-entry.in-view`, and `ChatView`'s `useLayoutEffect` assigns the
+`--switch-i` stagger by `root.querySelectorAll('.timeline-entry.in-view')`. On the current
+master that query is expected to return **zero** elements at the moment of a switch, and the
+outgoing pane's `paneShown` hold cannot paint a subtree master has taken out of rendering.
+**Not yet measured in a running app** — but it must be resolved before the merge conflict is
+worth touching, because it may change the design rather than the code.
+
+**"No test coverage" is now FALSE for ChatView.** Three master test files import and render
+it — `desktop/tests/chat-pane-layout-containment.test.tsx` (added by the same `81c9562d`),
+`chatview-empty-response-gate.test.tsx` (2026-08-21), `compacting-status-singleness.test.tsx`
+(2026-08-16). Still true for `SessionStrip` (no test renders it;
+`desktop/tests/pack-sessions.test.ts` remains 9 pure cases). Master's ChatView also takes
+three props the branch's copy does not (`sessionActive`, `onCancelQueued`, `onEditQueued`).
+
+**Line citations above are stale; the substance survives.** On master `maxWidth` is
+`SessionStrip.tsx:827-829` (was 785-787) and the `transition: … 'none'` is `:831` (was 789) —
+both still exactly as described, and `pack-sessions.ts:53` still reads "the active pill is
+ALWAYS expanded". The file moved to `desktop/src/renderer/components/header/pack-sessions.ts`.
+`row-fade-in` is `globals.css:1550`, not 1168-1171. The `in-view` IntersectionObserver is
+alive at `ChatView.tsx:287-294`. `reducedEffects` still ships (`theme-context.tsx:81`).
+
+**Design approval confirmed**, not assumed: conversation `4ebc0e97` (2026-07-20) — Destin on
+the mockup, *"okay that's much better. clear to implement"*, then after `run-dev.sh`, *"good.
+create a pr, explicitly note it will need additional work/refinement in a future session
+before merge."* The draft state is what he asked for, not a stall.
+
+Outstanding items 1–5 above are all still open and unchanged. Item 3 should now be read as
+"SessionStrip has no test coverage; ChatView does".

@@ -10,6 +10,15 @@ feeds: the M7 subagents + orchestration design (spec forthcoming)
 
 # Subagent platform research — August 2026
 
+> **REVIEW 2026-08-26 — KEEP ACTIVE until specialists plan 1c merges, then archive with it.**
+> It did its job: `docs/active/specs/2026-08-11-native-specialists-design.md` cites it as its
+> research base, and specialist plans 1a (`8db46236`) and 1b (`e5ec5b3c`) are both on
+> `origin/master`. The one part still un-consumed is the **orchestration** half — stage two /
+> declarative plans — which has a spec but no design decision taken. Plan 1c is built on branch
+> `feat/specialists-1c-ui` (head `d269c576`) and NOT merged
+> (`git branch -a --contains d269c576` lists that branch only). No unconsumed recommendation that
+> is not already reachable from the specialists ROADMAP items.
+
 Six parallel research tracks run 2026-08-11 to feed the M7 native subagents design:
 (1) landscape survey of which platforms are even relevant now, (2) platform-independent
 orchestration practices/evidence, (3) closed-platform UX + durability deep dive,

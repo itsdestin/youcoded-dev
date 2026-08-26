@@ -1,5 +1,5 @@
 ---
-status: active
+status: active — NOT FIXED, re-verified 2026-08-26
 date: 2026-08-16
 tags: [local-models, memory, strix-halo, oom, engine]
 ---
@@ -10,6 +10,17 @@ Loading Qwen3.5-122B and Qwen3.6-35B concurrently exhausted the machine's memory
 triggered the kernel OOM killer, and killed YouCoded, Chrome, Steam, and Plasma's
 desktop shell. Root cause verified from kernel logs; YouCoded's memory guard was
 reached but is structurally unable to prevent this class of event.
+
+> **STILL UNFIXED — verified against `origin/master` 2026-08-26, ten days after the crash.**
+> All four defects are untouched: `MODELS_MAX = 2` is unchanged (`engine-supervisor.ts:47`);
+> `git grep -n "gtt|mem_info_gtt" origin/master -- desktop/src` → **0 hits**, so the unified-memory
+> ceiling is still never read; `checkMemoryForLoad` still computes
+> `capacity = totalMemBytes + (totalVramBytes ?? 0)` off TOTAL memory (`fit-estimator.ts`), and the
+> over-commit path still returns a dismissible `'tight'` warning ending "You can still continue."
+> Tracked on `ROADMAP.md` as an open `bug` `#local-models` `#engine` `#memory`. **Blocked on
+> Destin**, not on build effort: decisions (a) auto-unload vs. toast vs. hard-block and (b) whether
+> a single model is capped by the GPU-pool ceiling are both explicitly "do not guess". Until one of
+> those is answered, the same two models will take the desktop down again.
 
 ## What actually happened
 

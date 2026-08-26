@@ -16,6 +16,36 @@ status: active
 
 **Scope note:** This is a cross-repo plan. It touches three repos: `youcoded-dev` (workspace), `youcoded` (the app — both `desktop/` and `app/`), and `youcoded-core` (the repo being deprecated). All paths in this document are rooted at `C:/Users/desti/youcoded-dev/` unless otherwise specified.
 
+> **GATE STATUS, VERIFIED 2026-08-26 (127 days after this plan was written).**
+> **Phase 1 is code-complete on `master` but Release N has never shipped, so the repo cannot be
+> archived and `youcoded-core` is still the live hook source for every user.**
+>
+> - **What is on `master` and correct:** the desktop and Android bundled copies of
+>   `write-guard.sh` (`desktop/hook-scripts/write-guard.sh`, `app/src/main/assets/write-guard.sh`)
+>   are byte-identical and both carry the `exit 2` + stderr blocking contract, pinned by
+>   `desktop/tests/write-guard-contract.test.ts`; the clone path is gone
+>   (`first-run.ts:272` — "cloneToolkit() was removed"); launch-time deletion exists on both
+>   platforms (`desktop/src/main/legacy-cleanup.ts` + `main.ts:1371`, `Bootstrap.kt:863-877`).
+>   So CLAUDE.md's "hook fixes must land in BOTH places" was honored — youcoded-core PR #119's
+>   exit-code fix is mirrored in both app copies.
+> - **What has NOT happened:** none of that has ever been released.
+>   `git log -1 --format=%h c86cd429` — the latest tag `v1.2.4` is dated **2026-05-18**;
+>   `git merge-base --is-ancestor 4eaeb621 v1.2.4` → **NO**; `git cat-file -e
+>   v1.2.4:desktop/src/main/legacy-cleanup.ts` → **ABSENT**. The Phase 1 merge (`4eaeb621`) landed
+>   on master **2026-07-07**, seven weeks *after* the last release. `gh release list` shows nothing
+>   newer than v1.2.4, and `desktop/package.json` on master still reads `"version": "1.2.4"`.
+> - **So: Release N = v1.3.0, unshipped.** `ROADMAP.md`'s "Ship v1.3" item is still open on gates
+>   (3) Connect-GitHub live sign-in and (4) release mechanics. Release N+1 = v1.3.1.
+>   Task 11 (smoke-test Release N) has **0 of 8 steps checked**, and Phase 2 cannot start until
+>   Destin has run Release N for one to two weeks.
+> - **Practical consequence:** every claim of the form "the app no longer clones youcoded-core" is
+>   true of the source tree and false of every install in the world. `youcoded-core` last moved
+>   2026-07-15 and is still the hook source for existing installs. **Archiving is two releases
+>   away, and release one has not been cut in 100 days.**
+> - Related open ROADMAP bug: shared settings still register a `SessionStart` hook at
+>   `~/.claude/plugins/youcoded-core/hooks/session-start.sh`, which this plan's cleanup deletes —
+>   every new Claude Code session logs "No such file or directory".
+
 **Phase gates:**
 - Phase 1 → Phase 2: Release N has shipped and Destin has run it on his own machine without issues for roughly one to two weeks. Legacy clone is confirmed removed on his machine; write-guard still works.
 - Phase 2 → Phase 3: Release N+1 has shipped. A global grep for `youcoded-core` in the `youcoded` repo returns zero matches outside historical changelogs.

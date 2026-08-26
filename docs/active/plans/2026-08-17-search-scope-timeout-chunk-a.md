@@ -1,4 +1,27 @@
+---
+status: draft
+date: 2026-08-17
+spec: docs/active/specs/2026-08-17-search-scope-and-timeout-design.md
+---
+
 # Grep/Glob Search Scope + Timeout (Chunk A) Implementation Plan
+
+> **EXECUTION STATE (verified 2026-08-26): NOT STARTED. 0 of 29 steps done; no code, no branch, no worktree.**
+> - None of the plan's new symbols exist on master:
+>   `git grep -n 'toolTimeoutMs\|combineSignals\|forwardAbortSignal\|resolveSearchRoot' origin/master -- desktop/src`
+>   → no hits. `git grep -n 'timeout' origin/master -- desktop/src/main/harness/tools/grep.ts
+>   desktop/src/main/harness/tools/glob.ts desktop/src/main/harness/tools/registry.ts` → no hits, so
+>   Grep and Glob are still unbounded on master and a bare search still roots at `ctx.cwd`.
+> - No branch or worktree: `git branch -a --list '*search*' '*scope*' '*timeout*' '*chunk*'` returns only
+>   the unrelated `feat/permission-ask-timeout` and `feat/chatsearch-session-refs`.
+> - The last session on this plan (`7cab9ce5…`, 2026-08-17 10:51) finished the **review revision**
+>   (defects D1–D5 folded in) and stopped. Nothing was implemented after the review.
+> - **Chunk B has no plan.** It is specified only inside the parent spec
+>   (`docs/active/specs/2026-08-17-search-scope-and-timeout-design.md` §"Chunk B", lines ~194–321:
+>   gitignore/hidden semantics + Glob rewrite + opt-in). No Chunk B implementation plan exists, and
+>   `grep -rn -i 'chunk b' ROADMAP.md` returns nothing — the roadmap does not know about the split.
+> - Blocked on nothing but scheduling: no human gate, no dependency. It is a ready-to-run plan.
+
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

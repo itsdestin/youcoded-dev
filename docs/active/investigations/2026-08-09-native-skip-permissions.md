@@ -7,6 +7,26 @@ scope: youcoded/desktop — native harness permissions, Claude Code bypass parit
 
 # Skip Permissions for native sessions
 
+> **STATUS 2026-08-26 — NOTHING FROM THIS DOCUMENT HAS BEEN BUILT OR TRACKED, 17 days on.**
+> - Step 1 unbuilt: `NativePermissionMode` on `origin/master` is still
+>   `'ask' | 'auto-edit' | 'full-auto'` (`shared/permission-types.ts:7`) — no `'bypass'`.
+> - Steps 2–4 unbuilt and **absent from `ROADMAP.md`**: `grep -ni "sandbox|scratch workspace|rm
+>   analyzer|PermissionOverrides|landlock" ROADMAP.md` returns no matching item.
+> - **No document anywhere references this one** (`rg -l 2026-08-09-native-skip-permissions
+>   --glob '*.md'` → only itself). Its source conversation `d964c1da` is tagged
+>   `Follow-Up Needed` and has been idle since 2026-08-10.
+> - **The §2 finding is a live user-facing falsehood, still shipping.**
+>   `desktop/src/renderer/components/SkipPermissionsInfoTooltip.tsx:42` on master still reads
+>   "Even with the toggle on, Claude will still stop and ask before doing the really risky stuff…",
+>   which measurement against CC v2.1.226 showed to be false on the Claude Code path. That is a
+>   `bug`, independent of the native feature, and it is on no list. **This is the single highest-
+>   priority item in this document and should be filed on `ROADMAP.md` immediately.**
+> - Not superseded by the full-auto external-read work
+>   (`docs/active/plans/2026-08-21-full-auto-external-read-bypass.md`) — that plan lifts the
+>   external-directory ask for three READ tools inside `full-auto`; it does not add a bypass mode,
+>   an `rm` analyzer, or touch the stale overrides.
+> - Frontmatter stays `draft`, which is honest: no code was written and no decision was taken.
+
 **The ask:** make the "Skip Permissions" toggle work for native-runtime sessions, auto-approving
 basically everything except a narrowly defined set of tool calls, matching Claude Code's
 `--dangerously-skip-permissions`.

@@ -2,6 +2,40 @@
 status: active
 ---
 
+> **Status re-verified 2026-08-26 against `origin/master` `dbbb9139` — 47 days after this
+> doc was written, four and a half findings are still open verbatim.** Every line number
+> below was re-read off master, not inferred.
+>
+> - **Finding 1 — only HALF fixed; the inline "FIXED 2026-07-20" note below over-claims.**
+>   `msg-` ids got a per-boot epoch (`chat-reducer.ts:21-24`) and the empty snapshot is now
+>   rejected. But `nextGroupId()` (`:27-29`) and `nextTurnId()` (`:51-53`) still start at 0
+>   with no epoch and are reseeded nowhere — and those two ARE looked up by key
+>   (`assistantTurns.set(currentTurnId, …)`, `toolGroups.set(currentGroupId, …)`), which is
+>   the exact overwrite this finding describes. The 2026-07-20 PR spec deliberately scoped
+>   Commit 1 to message ids on the argument that they are "used only as React keys" — true
+>   of `msg-`, not of `turn-`/`group-`. **The severity-HIGH half of Finding 1 is unfixed.**
+> - **Finding 2 — OPEN, unchanged.** `remote-server.ts:437-442` is still
+>   `buf += data` + `buf.slice(...)` against `PTY_BUFFER_SIZE = 4MB` (`:43`), and
+>   `broadcast()` still `JSON.stringify`s before checking `this.clients` — there is no
+>   `if (this.clients.size === 0) return;`.
+> - **Finding 3 — OPEN, and now WORSE.** `defaults:get`/`defaults:set` still build a
+>   3-key `DEFAULTS_INITIAL` inline (`:1510`, `:1521`); `folders:list`/`folders:add` still
+>   read/parse/write `~/.claude/youcoded-folders.json` by hand with a plain `writeFile`
+>   (`:1604-1643`) instead of importing `saved-folders.ts`. `ROADMAP.md:91` records that a
+>   THIRD inline copy has since appeared (`folders:set-description`) and that Destin
+>   deliberately deferred the unification on 2026-08-06 because `folders:rename` over the
+>   WebSocket has zero test coverage — **write that test first**.
+> - **Finding 4 — OPEN.** This is Commit 2 of
+>   `docs/active/plans/2026-07-20-remote-hydration-pr-spec.md`; nothing shipped
+>   (no `hydrates` flag, no `hydrationPending`, 500 ms timer still at `remote-server.ts:758`).
+> - **Finding 5 — OPEN and tracked nowhere.** `transcript-watcher.ts:35` is still a bare
+>   `const timestamp = Date.now();`. This is the only finding in this doc with no ROADMAP
+>   entry — see the ROADMAP patch in the 2026-08-26 review.
+>
+> The "Coordination" section's three items all landed long ago. Keep this doc `active`:
+> it is the only place Findings 2, 3 and 5 are written down in fix-shape detail.
+
+
 # Remote Access / Remote Server — Review Findings Handoff
 
 **Date:** 2026-07-10

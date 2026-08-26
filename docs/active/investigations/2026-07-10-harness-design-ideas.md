@@ -4,6 +4,15 @@ status: active
 
 # Harness Design Ideas for the YouCoded Native Harness
 
+> **REVIEW 2026-08-26 — finished read; RECOMMEND ARCHIVE to `docs/archive/investigations/`.**
+> This was the Phase 0 research deliverable that fed `docs/active/specs/2026-07-15-phase2-native-harness-design.md`,
+> whose implementation plans are already in `docs/archive/plans/`. Everything it proposed that was
+> going to be built has been built (the loop, typed parts, doom-loop detection, queued sends,
+> retry). It is now background reading, not an input to open work: nothing in `ROADMAP.md`
+> references it, and the one live doc that cites it
+> (`2026-08-11-subagent-platform-research.md`) cites it as prior art. No unconsumed recommendation
+> found. `status:` stays `active` only until the move; it is not accurate today.
+
 **Date:** 2026-07-10
 **Status:** Research report — Phase 0 deliverable (roadmap §Phase 0 step 5; ADR 010's sanctioned substitute for the leaked source). Feeds the Phase 2 harness spec.
 **Provenance:** Web + open-source research over legitimate sources only — opencode (anomalyco/opencode, MIT: repo, DeepWiki, official docs), Vercel AI SDK v6 docs, Anthropic's published engineering blog and Agent SDK documentation, and llama.cpp/local-model community reports. No proprietary source accessed; prompt discussion is structural only.

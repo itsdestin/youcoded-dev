@@ -1,10 +1,17 @@
 ---
-status: draft
+status: active
 date: 2026-08-23
 topic: Perf lab + autonomous optimization loop for the desktop app
 ---
 
 # Perf Lab & Autonomous Optimization Loop — Design
+
+> **STATUS 2026-08-26:** promoted `draft` → `active` — the decisions below were made with Destin
+> on 2026-08-23, the implementation plan derived from them
+> (`docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md`) was reviewed and revised
+> 2026-08-25, and a handoff prompt was written 2026-08-26 to run it on a second Linux device.
+> **No rig or measurement exists yet** (`ls scripts/perf-lab perf-reports` → no such directory;
+> no `perf/optimization-pass` branch), and the Round-0 human gate has not been reached.
 
 ## Goal
 

@@ -5,6 +5,13 @@ status: active
 # AppInner Decomposition Map
 
 > **Tranche 1 SHIPPED 2026-07-17** (youcoded merge `f1ab07fc`; plan archived at `docs/archive/plans/2026-07-17-appinner-tranche1-perf.md`). Tranches 2-4 remain.
+>
+> **Re-verified 2026-08-26 — keep active.** Tranches 2–4 are still open and ARE tracked
+> (`ROADMAP.md` → "Staged AppInner decomposition (App.tsx) — tranche 1 SHIPPED, 2–4 remain",
+> which names this file as its cluster map). Live input to open work; do not archive until
+> tranche 4 lands or is formally dropped. Note the doc's own caution: it was mapped on a
+> different branch, so **re-anchor by symbol name, not line number** — `App.tsx` is ~3,679 lines
+> today against the 3,356 recorded here.
 
 **Date:** 2026-07-17
 **Status:** Investigation — extraction map for the staged decomposition of `AppInner` in `youcoded/desktop/src/renderer/App.tsx`. Feeds the ROADMAP item "Staged AppInner decomposition". Mapped on branch `feat/buddy-feedback-tuning` (line numbers will drift as that branch and master evolve — re-anchor by symbol name, not line, when executing).

@@ -1,12 +1,32 @@
 ---
 title: Deliverables card — implementation handoff
-status: active
+status: superseded
 date: 2026-08-25
 plan: docs/active/plans/2026-08-25-deliverables-card.md
 spec: docs/active/specs/2026-08-25-deliverables-card-design.md
 ---
 
 # Handoff prompt (paste into a new session)
+
+> **Status 2026-08-26: SPENT — do not paste this.** The implementation session
+> it was written for ran, and Tasks 1–9 landed on `feat/send-user-file-card`
+> (head `8003fd6c`, 24 commits, working tree clean, nothing pushed, no PR).
+> Its instructions are now actively misleading: "Stop before Task 8" and the
+> Checkpoint 2.5 handoff are both in the past, and the plan's own text has since
+> been corrected in two places.
+>
+> **Pick the work up from:** the spec's status block
+> (`docs/active/specs/2026-08-25-deliverables-card-design.md`) for what changed
+> during the build and what is blocking, and
+> `worktrees/send-user-file/.superpowers/sdd/progress.md` for the commit-by-commit
+> ledger, review verdicts and carried Minors.
+>
+> **What is actually left:** the unexplained ~2.78 GB dev-instance OOM has to be
+> ruled in or out before merge (Destin had not chosen how when the session
+> ended); Checkpoint 3 (native session in a dev instance) is unsigned; then
+> plan Task 10. One merge conflict is waiting against `origin/master`, in
+> `desktop/src/renderer/dev/workbench/fixtures/artifacts.ts` — both sides append
+> fixtures to the same array.
 
 Implement `docs/active/plans/2026-08-25-deliverables-card.md` using superpowers:subagent-driven-development (fall back to superpowers:executing-plans if subagents are unavailable). Read the plan in full first; its spec is `docs/active/specs/2026-08-25-deliverables-card-design.md`.
 

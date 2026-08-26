@@ -4,6 +4,19 @@ date: 2026-07-19
 kind: investigation
 ---
 
+> **Re-verified against `origin/master` `dbbb9139` on 2026-08-26.** Finding-by-finding:
+> **1a/1b fixed** (empty-hydrate guard + `degraded` flag, merge `2f8132cf`);
+> **1c, 2 (partially), 3, 4, 5 all still live.** The msg-id half of Finding 2 shipped as
+> `ID_EPOCH`; the `turn-`/`group-` half did not (`chat-reducer.ts:27-29,51-53` — no epoch,
+> no reseed). The 500 ms replay timer is still at `remote-server.ts:758` and the snapshot
+> still carries no `activeSessionId`/`viewModes`. Remedies live in
+> `docs/active/plans/2026-07-20-remote-hydration-pr-spec.md` (Commits 2-3) and
+> `ROADMAP.md:543`. Finding 5 (terminal replay as one multi-MB blob) is tracked in
+> `ROADMAP.md:511` "Remote first-connect is slow", Tier 2/3. Nothing here needs
+> re-investigating — recommend moving to `docs/archive/investigations/` once Destin
+> answers the PR spec's open question.
+
+
 # Remote-access UI state: hydration jank + drift investigation
 
 **Reported symptom:** "The UI state in remote access mode is often buggy and rarely correctly matches the desktop UI. Initial chat hydration on connect feels odd/janky."

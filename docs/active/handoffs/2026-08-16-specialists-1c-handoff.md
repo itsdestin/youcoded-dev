@@ -1,3 +1,22 @@
+---
+status: active
+created: 2026-08-16
+last_reviewed: 2026-08-26
+spec: docs/active/specs/2026-08-16-native-specialists-plan-1c-design.md
+plan: docs/active/plans/2026-08-16-native-specialists-plan-1c-implementation.md
+checklist: docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md
+branch: youcoded feat/specialists-1c-ui (worktree worktrees/specialists-1c) — 47 commits, unmerged, no PR
+---
+
+> **Status 2026-08-26 (paused, mid-task):** The opening paragraph below is
+> HISTORICAL and no longer true — plan 1c is written (spec + plan + checklist all
+> exist, see the frontmatter) and Tasks 0–13 plus Task 15 Steps 1–2 are built.
+> Work stopped on **2026-08-16 23:07 local** because the session hit its weekly
+> Claude usage limit mid-turn (transcript `8c00`, "Specialists Plan 1c Docs",
+> tagged `#Follow-Up Needed`), not at a task boundary. Read the
+> "Addendum 2026-08-26" section at the very bottom of this file for exactly where
+> it stopped and what is still open.
+
 # Handoff: native specialists — plan 1c
 
 Native specialists shipped plans **1a** (foreground) and **1b** (background,
@@ -154,3 +173,98 @@ The implementation plan is written:
 the reload-bug fix on its own branch first; Tasks 1–9 backend on `feat/specialists-1c-ui`;
 Tasks 10–13 the §7 renderer edits; 14 hands-on checklist; 15 docs/archive). Execute it
 with `superpowers:subagent-driven-development` in the existing worktree.
+
+---
+
+## Addendum 2026-08-26 — where it actually stopped, and what is still open
+
+**Verified by re-review on 2026-08-26. Nothing below is from memory.**
+
+### Where it stopped
+
+Last commit `6dd6a1a4`, **2026-08-16T23:00:30-07:00**. Four files were then edited
+at 23:04-23:06 and never committed. The session that was driving the work (`8c00`
+"Specialists Plan 1c Docs", tagged `#Follow-Up Needed`) ended at
+**2026-08-17T06:07:52Z** with `You've hit your weekly limit - resets Aug 19, 7am`.
+This was **not a clean boundary** - an in-flight fix agent had just finished and a
+question to Destin was left unanswered.
+
+### The four uncommitted files in `worktrees/specialists-1c`
+
+`git status --porcelain` -> 4 `M` files, ~66 insertions:
+`desktop/src/main/harness/harness-session.ts`,
+`desktop/src/main/harness/native-session-host.ts`,
+`desktop/src/renderer/dev/workbench/mock-shim.ts`,
+`desktop/tests/workbench-shim-semantics.test.ts`.
+
+They are the *output of the final whole-branch review's three fixes*, applied but
+never committed:
+
+1. `harness-session.ts` - rewrite a WHY comment in `syncTaskTool` that asserted the
+   roster is stable for a turn. It isn't: `roster.resolve()` reads catalog state at
+   call time, and `specialists:list` (which the renderer fires on every hire-card
+   mount) calls `reload()` on the shared catalog instance.
+2. `native-session-host.ts` - rewrite the `envelopeGranted: true` comment, which
+   claimed "the ask was the consent". Untrue in auto-edit mode, where no card is
+   ever shown.
+3. `mock-shim.ts` + `workbench-shim-semantics.test.ts` - a **real workbench bug**:
+   `shell` had no hand-written entry, so `shell.openPath` fell through to the
+   catch-all proxy, which resolves unknown members to `[]`; `[]` is truthy, so
+   Settings -> Specialists' "Open folder" always popped a blank error box. Fixed to
+   resolve `''` (the real success value), with a regression test.
+
+**Worth committing.** Two comment corrections that stop a future session trusting a
+false invariant (this branch has already been bitten twice by exactly that), plus a
+genuine dev-surface bug fix with its own test.
+
+### The one open question for Destin - nothing on disk records it
+
+The final review surfaced a safety finding that was put to Destin as a two-option
+choice and **never answered before the limit hit**:
+
+> In the **auto-edit** permission mode, hiring a helper is pre-approved outright -
+> no card, no saved rule. Both of 1c's hire-grant protections (the `:file:<id>`
+> subject and the suppressed Always-allow button) only operate when a card is shown
+> or a stored rule is checked, so **neither runs in that mode**. Because 1c lets a
+> helper be defined by a file *inside a repo you opened*, opening someone else's
+> repo in auto-edit mode could let a helper that repo shipped run shell commands
+> with no prompt at all. Pre-existing for the built-in Worker; new only in what can
+> feed it.
+>
+> Options put to Destin: **(a)** ship it and file a ROADMAP bug, or **(b)** exclude
+> file-defined helpers from auto-edit's blanket approval, so a repo's helper always
+> shows a card.
+
+`grep -nic 'auto-edit' ROADMAP.md` -> **0**. This question exists nowhere durable
+except a truncated chat transcript. **Blocked on Destin - answer before merging.**
+
+### What is done, what is not
+
+- **Tasks 0-13: built.** Task 0 shipped separately as youcoded **PR #322**, merged
+  to master (`bf55513e`).
+- **Task 14 (hands-on): NOT run.** The checklist doc exists and is good, but all 15
+  Result cells are blank, including the nine the plan asked an agent to run itself.
+- **Task 15 Steps 1-2: done** (rule section, MAP row, ROADMAP status text).
+  **Step 3 (post-merge cleanup/archive): not possible - nothing merged.**
+- **No PR exists** for `feat/specialists-1c-ui`
+  (`gh pr list --head feat/specialists-1c-ui --state all` -> `[]`).
+
+### The three extra worktrees are redundant
+
+`git merge-base --is-ancestor <b> feat/specialists-1c-ui` succeeds for
+`feat/specialists-1c-defs`, `feat/specialists-1c-t12` and `feat/specialists-1c-t13`;
+`git rev-list --count feat/specialists-1c-ui..<b>` is **0** for all three, and
+`git status --porcelain` in `worktrees/specialists-1c-defs`, `-ipc` and `-ui2` is
+empty. **Nothing is lost by removing all three** - but do NOT remove
+`worktrees/specialists-1c`, which holds the uncommitted work above.
+
+### Task 15 Step 1 was run against the branch, not master - workspace CI is red
+
+`node scripts/audit-anchors.mjs` -> `MECHANICAL PASS: FAILURES`. Of the 18 failing
+anchors, **11 are `.claude/rules/native-specialists.md`** pointing at files that
+exist only on the unmerged branch (`catalog.ts`, `definition-files.ts`,
+`frontmatter.ts`, five tests, plus the `private async mutate` and
+`isSubagentDisplayEvent` regexes). Of the 20 missing MAP paths, **14 are the same
+1c files**, and all 3 failing rule globs are 1c renderer globs. This has been red
+on the daily workspace CI cron since 2026-08-16 and clears itself the moment the
+branch merges - but until then it masks any *other* anchor drift.

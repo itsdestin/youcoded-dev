@@ -4,6 +4,16 @@ status: active
 
 # Full-Auto Interrupted by External-Directory Asks on Read Tools — Design
 
+> **STATUS (verified 2026-08-26): ratified, unbuilt.** Destin ratified the direction 2026-08-21 and
+> the implementation plan (`docs/active/plans/2026-08-21-full-auto-external-read-bypass.md`) was
+> finalized 2026-08-23, but **zero code exists**: `git grep -n isWalkAwayRead origin/master --
+> desktop/src` → no hits, and `NON_PATH_SUBJECT_TOOLS` on master is still
+> `new Set(['Bash', 'Skill', 'Task'])` (`harness-session.ts:48`) — WebSearch/WebFetch were never
+> added. The "UI checkpoint" below **was never held**: no workbench session on the surviving
+> approval cards ever ran, so Destin has not signed off on any card copy. The worktree
+> `worktrees/full-auto-reads` (`feat/full-auto-read-bypass`) exists with 0 commits ahead of master.
+> The ROADMAP carries no item for this work.
+
 **Date:** 2026-08-18 · **Decided:** 2026-08-21 (Destin ratified the direction — see [Decision](#decision))
 **Parent:** `2026-07-15-phase2-native-harness-design.md` (§2.3 workspace jail, §2.4 permission engine) — this doc is the amendment proposal for those sections
 **Repo:** `youcoded/desktop/` (main-process harness: `harness-session.ts`, `tools/guards.ts`, `specialists/child-permissions.ts`)

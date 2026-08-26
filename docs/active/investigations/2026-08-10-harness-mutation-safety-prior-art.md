@@ -12,6 +12,12 @@ date: 2026-08-10
 > consistently, per an in-code WHY comment that treats hash as the correct long-term answer.
 > This doc is that recommendation's justification — see the open ROADMAP item. Re-archive
 > once the hash migration ships.
+>
+> **Re-verified 2026-08-26:** still correct to keep active. Both tools still compare mtime
+> (`edit.ts:77`, `edit.ts:135`, `write.ts:55`, `write.ts:66`) and
+> `git grep -n "createHash|sha256" origin/master -- desktop/src/main/harness/tools/` → **0 hits**.
+> The recommendation IS tracked — `ROADMAP.md` → "Move Write's and Edit's staleness checks from
+> mtime to a content hash" — so this is a live input to open work, not an unconsumed finding.
 
 # Prior art for file-mutation safety and shell result metadata: what mature harnesses do
 

@@ -8,6 +8,43 @@ status: draft
 **Status:** Draft — design + interactive mockup, awaiting Destin's review
 **Prototype:** `docs/active/prototypes/2026-08-17-assistant-settings-panel.html`
 
+> **STATUS (verified 2026-08-26): superseded in part by a later React mockup that Destin has still
+> never signed off on, and that mockup is UNCOMMITTED and AT RISK.**
+>
+> **The real current prototype is not the HTML file above.** On 2026-08-18 a follow-up session
+> (`1e322bd4…`, "Consolidated Assistant Settings Panel") rebuilt this surface in the actual renderer
+> as `youcoded/desktop/src/renderer/components/AssistantSettingsFinal.tsx` +
+> `AssistantSettingsShared.tsx`, viewable at
+> `?mode=workbench&view=assistant-final`. Those two files are **untracked in the MAIN CHECKOUT**
+> (`git -C youcoded status --porcelain` → `?? desktop/src/renderer/components/AssistantSettings*.tsx`),
+> which violates the workspace worktree rule. They are 16.5 KB + 17.1 KB of hand-written work with
+> **no copy anywhere in git history** — losing them loses the whole second design round. The route
+> that renders them lives in an *uncommitted hunk* of `desktop/src/renderer/index.tsx`, and the
+> `Dialog` size it needs (`app: min(820px, 92vw)`) is an uncommitted hunk of
+> `desktop/src/renderer/components/ui/Dialog.tsx` + `tests/dialog-shell.test.tsx`. All five pieces
+> must move together or the mockup does not boot.
+>
+> **Claims below that the later mockup deliberately reversed (do not build from them):**
+> - *"5 tabs"* / *"The five tabs"* (General · Providers · Local models · Permissions · Advanced) —
+>   the final is **4 provider-first pages**: Claude Code · OpenRouter · Local · Global. The reviewer's
+>   verdict was that an engine picker stacked above tabs is "navigation inside navigation".
+> - *"one large, **searchable**, tabbed panel"* and the whole "Search" section — the search box was
+>   **removed** as noise at four tabs.
+> - *"Friendly mode (new — plain-reply toggle)"* and Open Question 4 — **dropped**; it is not a real
+>   setting and inventing one was the finding.
+> - *"the mockup renders ~900px"* (Open Question 3) — the built `app` Dialog size is **820px**.
+> - *"New `AssistantSettingsPanel.tsx`"* — the file that exists is `AssistantSettingsFinal.tsx`.
+> - *"add a `xlarge`/`document` width"* — the width added is named `app`.
+> - The design also asserts every mode is shared across providers; the 2026-08-17 fact-check
+>   disproved that (Claude Code sessions use NORMAL/ACCEPT CHANGES/PLAN/AUTO/BYPASS; OpenRouter and
+>   Local are native sessions using ASK FIRST/AUTO EDIT/FULL AUTO — the unions share no strings).
+>
+> **`status: draft` is still correct.** The 2026-08-18 session ended with the assistant declaring the
+> mockup "complete, verified, and live" and Destin never replied (session `lastActive` is that same
+> assistant turn, 2026-08-18T05:27:29Z). No approval exists, so nothing here is settled.
+> The ROADMAP has no item for this panel — only a `**Related:**` mention inside the
+> "Tell the USER when context files were truncated" item.
+
 ## The problem in one sentence
 
 Today, the things that make your assistant *your* assistant live in four or more separate settings popups that have already started to blur into each other — **Defaults** (default model, skip-permissions), **Permissions** (always-allow grants), **Model Providers** (engine/Claude Code/OpenRouter/local models/web search), plus whatever the next engine (Codex) and the next hundred config options would have become.

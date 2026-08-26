@@ -1,5 +1,5 @@
 ---
-status: partly applied 2026-07-28 — Proposals 1 and 2 done; 3, 4 and 5 still open
+status: partly applied 2026-07-28 — Proposals 1 and 2 done; 3, 4 and 5 STILL OPEN and untracked (re-verified 2026-08-26)
 scope: workspace conventions (CLAUDE.md, .claude/rules/, scripts/)
 source: the menu-internals session, 2026-07-26 → 2026-07-28 (26 commits, PR #264)
 ---
@@ -13,6 +13,21 @@ source: the menu-internals session, 2026-07-26 → 2026-07-28 (26 commits, PR #2
 >
 > **Still open: Proposals 3 (spec counts anchored or dated), 4 (staging hygiene) and 5
 > (`run-dev.sh --list`).**
+>
+> **Re-verified 2026-08-26, 29 days on — all three are still unapplied, and none is on `ROADMAP.md`.**
+> - Proposal 3: `grep -n "Re-measure|dated observation|stale by construction" CLAUDE.md
+>   .claude/rules/*.md` → no match. The `verify:` anchor mechanism exists but the convention was
+>   never extended to spec counts.
+> - Proposal 4: `grep -n "git add -A|git add \.|Stage explicit paths" CLAUDE.md` → no match.
+>   Neither staging line reached Working Rules.
+> - Proposal 5: `scripts/run-dev.sh` still documents `--list` as "List registered worktrees (path +
+>   branch)"; `grep -n "lsof|pgrep|ps -" scripts/run-dev.sh` → no match, so it still cannot show
+>   what is *running*.
+> - Section 4's five authoring papercuts never reached `docs/PITFALLS.md` either
+>   (`grep -ni "papercut|heredoc|JSX comment" docs/PITFALLS.md` → no match).
+> - **Nothing in the workspace references this document** (`rg -l
+>   2026-07-28-session-retrospective-guardrails --glob '*.md'` → only itself), which is exactly the
+>   invisibility that keeps these open.
 
 Every item below is a real mistake from this session, not a hypothetical. The point of writing them
 down together is that **seven of them are the same mistake**, and the workspace already has a rule

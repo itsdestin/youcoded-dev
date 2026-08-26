@@ -4,6 +4,41 @@ date: 2026-07-20
 kind: plan
 ---
 
+> **Verified against `origin/master` `dbbb9139` on 2026-08-26 — still accurate, still
+> unbuilt past Commit 1.** Every check below was run as `git grep <term> origin/master`.
+>
+> - **Commit 1 — SHIPPED, but only the half this spec scoped.** `ID_EPOCH` is live
+>   (`chat-reducer.ts:21-24`), the empty-hydrate guard is live (`chat-reducer.ts:470-478`),
+>   `degraded?: true` rides the envelope (`chat-types.ts` `SerializedChatState`,
+>   `chat-snapshot.ts:34,44`, `RemoteSnapshotExporter.tsx`), and the pinning tests live in
+>   `desktop/src/renderer/state/__tests__/chat-reducer.test.ts` (merge `2f8132cf`).
+>   **Not covered, and still a live defect:** `nextGroupId()` / `nextTurnId()`
+>   (`chat-reducer.ts:27-29,51-53`) have no epoch and are reseeded nowhere
+>   (`git grep -n "turnCounter\|groupCounter\|ID_EPOCH" origin/master -- desktop/src desktop/tests`
+>   returns only those definitions). Turn/group ids are looked up by key
+>   (`assistantTurns.set(currentTurnId, …)`), so the 2026-07-10 review's Finding 1
+>   mechanism — a fresh remote client minting `turn-1` over a hydrated `turn-1` —
+>   is unchanged. That handoff's "FIXED 2026-07-20" note over-claims.
+> - **Commit 2 — NOT shipped.** No `hydrates` flag on either `auth:ok`, no
+>   `hydrationPending` / `pendingHydrationQueue` / `HYDRATION_TIMEOUT_MS` anywhere in
+>   `desktop/src`, and the 500 ms wall-clock guess is still at `remote-server.ts:758`
+>   with its original comment.
+> - **Commit 3 — NOT shipped.** `SerializedChatState` carries only `sessions` +
+>   `degraded` (no `ui`), `RemoteSnapshotExporter.tsx` still serializes
+>   `serializeChatState(chatStateRef.current)` with no `activeSessionId`/`viewModes`,
+>   and `handleToggleView` still broadcasts `switch-view` only when
+>   `getPlatform() === 'android'` (`App.tsx:2427-2437` — the spec's `2248-2258` line
+>   numbers have drifted).
+>
+> **The open question is still open.** Nothing in `ROADMAP.md`, `docs/active/`, or
+> `docs/audits/` answers "does remote still land on a different session/view than the
+> desktop?" — and Commit 3 is the only work that fixes it, so the answer decides
+> whether anything here gets built at all. **This is a decision for Destin, not build
+> work**: he can settle it in about a minute by connecting a phone to his desktop and
+> looking at which conversation and which view (chat vs terminal) it opens on.
+> Recommend keeping this doc `active` until he answers.
+
+
 > **Status 2026-07-20:** Commit 1 shipped in youcoded merge `2f8132cf` (ids +
 > empty-snapshot guard, 3 pinning tests). Commits 2 and 3 are NOT done. The
 > checkpoint below was reached and Destin reported connect "significantly

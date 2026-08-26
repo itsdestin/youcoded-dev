@@ -136,3 +136,124 @@ lands.
   approximations; `MOCK_ONLY` until the backend exists.
 - After any change to the workbench mock, run
   `node scripts/workbench-boot-check.mjs` (default 5233; pass the port).
+
+---
+
+## Status — 2026-08-26 review (workstream sweep)
+
+**⚠ LOSS RISK: the entire body of work is UNCOMMITTED. It exists in exactly one
+place on disk and nowhere else.**
+
+```
+$ git -C worktrees/context-truncation rev-list --count origin/master..feat/context-truncation-notice
+0
+$ git -C worktrees/context-truncation log -1 --format='%h %ad' --date=short
+a3f38fcd 2026-08-17     # = a merge commit already on origin/master
+```
+
+The branch `feat/context-truncation-notice` is **zero commits ahead of
+origin/master** — its tip IS an ancestor of master (and 55 commits behind it).
+Everything described in the table above is 10 modified files + 2 untracked new
+components in the working tree of `worktrees/context-truncation`, never
+committed, never pushed, never stashed. A `git checkout`, a `git worktree
+remove`, a `git clean`, or an `npm ci` that follows a linked `node_modules` in
+that worktree destroys it. Recovering it costs a full re-design round with
+Destin, because the tabbed layout was visually approved, not specified.
+
+**First action for the next session: commit it.** `git add -A && git commit` in
+the worktree, on the existing branch, then push the branch. It does not need to
+be finished, reviewed, or merged to be safe — only committed.
+
+### Where it stopped (clean boundary, not a half-edit)
+
+File mtimes cluster at **2026-08-17 16:40–17:41 local**; the source session
+(`3d4eb48a`, native, deepseek-v4-flash) ended at 2026-08-18T00:53:31Z having
+just written this handoff, the ROADMAP entry and the plan update. Its final
+verification in-transcript: `npx tsc --noEmit` → exit 0, and
+`chat-reducer.test.ts` + `workbench-fixture-actions.test.ts` +
+`workbench-mock-contract.test.ts` → 150 tests passed. The session stopped at a
+deliberate handoff point. Nothing is mid-edit.
+
+The session did NOT commit the worktree — its own explanation was about the
+*workspace* repo having concurrent uncommitted changes from other sessions. That
+reasoning never applied to the app worktree, which was clean apart from this
+work.
+
+### Corrections to the body above
+
+1. **"ROADMAP `#656`" is a LINE NUMBER, not an item id.** The ROADMAP has no
+   numbered items (`grep -rn '#656' *.md` finds only this handoff). Line 656 of
+   `ROADMAP.md` at commit `b73801e` (2026-08-16) was the "Tell the USER when
+   context files were truncated" item; today it sits at **line 695**, and the
+   design-approved paragraph is at line 700. Cite the item by title, not by line.
+2. **`droppedMcpServers` "zero non-test readers today" is FALSE** and was already
+   false when written. `git grep -n droppedMcpServers origin/master` returns 13
+   hits; `harness-session.ts:916` has emitted a `WARN` log naming the dropped
+   tail since `b9c97cf3` (2026-07-31). The *problem-statement* claim — **zero UI
+   readers** — is still TRUE: nothing under `src/renderer/**` or `app/**` reads
+   it, and `droppedServerIds` appears at exactly one call site repo-wide.
+3. **"4-surface parity rule (`preload.ts` + `remote-shim.ts` + `SessionService.kt`
+   + `ipc-channels.test.ts`)" lists the guard test as a surface and omits
+   `ipc-handlers.ts`.** Per `.claude/rules/ipc-bridge.md` the four surfaces are
+   `preload.ts`, `remote-shim.ts`, `ipc-handlers.ts`, `SessionService.kt`;
+   `ipc-channels.test.ts` is the test that pins them. `.claude/rules/
+   native-permissions.md` counts **five** for a request/response channel (adding
+   the `remote-server.ts` WS case). A push event still needs a remote-server
+   broadcast path, so budget for five.
+4. **"The cloud (full) state is a green mirror of the same layout" is not built
+   in the compare view.** `SFX_CTX_FULL` is declared at `registry.tsx:118` and
+   referenced nowhere else (`grep -n SFX_CTX_FULL` → 1 hit, the declaration);
+   both round-1 candidates render `SFX_CTX` with `trimmed`. The green/full state
+   IS exercised — but through the workbench `claude-code.jsonl` fixture driving
+   the **v1** `SessionContextPopup`, not through the approved tabbed candidate.
+   Whoever ports candidate B to production must design the untrimmed state; it
+   has not been seen tabbed.
+5. **`native-session-host.ts:3331` is at `src/main/harness/native-session-host.ts`**
+   (the `harness/` segment is missing above). Line number verified exact.
+   `prompt-assembly.ts:52` and `harness-session.ts:758` are both exact.
+6. **"npx eslint and workbench-boot-check.mjs pass" is unverified by this review**
+   — the transcript records only `tsc --noEmit` and the three vitest files at
+   session end. Treat the eslint/knip/boot-check claim as unconfirmed until
+   `bash scripts/verify.sh` is re-run.
+7. **Port 5235 / `YOUCODED_PORT_OFFSET=62` is session-specific and stale.** Pick a
+   free offset.
+
+### Code state, as reviewed (read-only; no build run)
+
+Reviewed by reading the diff and cross-checking every import and prop against
+the primitives on disk. **Verdict: coherent and committable.** No syntax
+problems, no dangling references. Every import resolves and every prop exists:
+`Callout` (`tone="warning"`, `title`), `SettingRow` (`variant="item"`, `title`,
+`value`), `SegmentedTabs` (`variant="contained"`, `tabs/value/onChange`),
+`Dialog` (`size="document"` is a real `DialogSize`, `scrollBody`, `subtitle`),
+`UnifiedDiff` (`oldStr`/`newStr`), `FilepathToken`
+(`path`/`sessionId`/`variant`/`label`), `useEscClose(open, onClose)`. `useRef`
+is already imported in `ChatView.tsx`. `CompareSurface`'s `frame`/`paneWidth`/
+`rounds` all exist.
+
+Two cosmetic defects, neither build-breaking:
+- `SFX_CTX_FULL` is dead (see correction 4). `tsconfig.json` sets no
+  `noUnusedLocals` and `eslint.config.mjs` carries no `no-unused-vars`, so
+  neither gate fires — but it is dead weight that misrepresents coverage.
+- `SessionContextBanner.tsx`'s header comment says "Dismissal still hides the
+  strip for the session". There is no dismiss control on the strip — a v1
+  leftover. Delete the sentence when the file is next touched.
+
+**Not verified (tooling forbidden in this review):** `tsc --noEmit`, `vitest`,
+`eslint`, `knip`, the ast-grep scan, `workbench-boot-check.mjs`, and any visual
+check of the rendered panel.
+
+### Rebase outlook
+
+Master moved 55 commits since the branch base. Only three touched files changed
+on master, and none of their hunks overlap this work:
+
+| File | master hunks since `a3f38fcd` | this work's hunks | overlap |
+|---|---|---|---|
+| `ChatView.tsx` | `@@ -1,6` (one import), `@@ -790,7` (assistant-turn gate) | 17 / 169 / 748 / 1062 | none |
+| `chat-types.ts` | `@@ -77,6` (`AssistantTurn`) | 99 / 292 / 320 / 415 / 719 / 759 / 806 | none |
+| `chat-reducer.ts` | `@@ -8,6`, `@@ -1404,14`, `@@ -1420,11` | 668 | none |
+| registry / fixture-loader / mock-only / fixtures / both test files | 0 commits | — | none |
+
+Expect a clean 3-way merge with line-offset shifts only. Not machine-verified —
+no `git apply --check` was run.

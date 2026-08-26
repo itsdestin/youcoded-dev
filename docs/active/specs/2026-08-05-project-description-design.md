@@ -1,8 +1,32 @@
 ---
-status: draft
+status: active
 ---
 
 # Per-project description — design
+
+> **Status — 2026-08-26 (review pass).** Implementation is **complete and unmerged**
+> on `feat/project-description` (worktree `worktrees/project-description`), 13 commits,
+> last commit `95af1cb3` on 2026-08-06. The branch has **never been pushed** — `git
+> ls-remote --heads origin | grep -i project-desc` returns nothing — and no PR exists.
+> All nine plan tasks landed; `bash scripts/verify.sh project-description --full` passed
+> at the time (recorded in the branch's untracked `.superpowers/sdd/pd-final-fixes-report.md`).
+> Work stopped mid-review: the last session asked Destin to reload the workbench and look
+> at two unapproved layout tweaks, and he never answered. **What is stale below:**
+> - §6 ledger row **13** ("Status glyph replaces the bare dot") was **reverted** on
+>   2026-08-06 (`337341db`, Task 6). `grep -c "icon:" ProjectHero.tsx` → `0`; the pill
+>   renders `w-2 h-2 rounded-full` at lines 513 and 618. Ledger rows **19–20** are missing:
+>   `95af1cb3` moved New Conversation to the bottom-right and swapped the description
+>   editor from a single-line input to an auto-sized Textarea. **Neither is approved.**
+> - §7 "Still needed when the backend lands" — all three now exist:
+>   `desktop/tests/sync-spaces-project-registry.test.ts` (merge convergence + tolerant
+>   `parseEntry`) and the `syncspaces:set-project-description` / `folders:set-description`
+>   parity blocks in `desktop/tests/ipc-channels.test.ts`.
+> - §8 open questions **1, 3, 4 are settled**: (1) card reverted to the dot (Task 6);
+>   (3) cog sync entries stripped (Task 7, `33029857`); (4) a cap **is** enforced —
+>   `PROJECT_DESCRIPTION_MAX = 200`, used at `project-registry.ts:80,273`,
+>   `ipc-handlers.ts:1174`, `remote-server.ts:1635`, and as a keystroke cap in
+>   `ProjectHero.tsx:400`. Question 2 (truncate vs wrap) is still unconfirmed.
+> - §9 rollout is **not done**. The mixed-version hazard is unchanged and still gates release.
 
 Each project gets a short, user-written description that syncs between devices
 and appears on the project card and in the project list. It is a **label for the
