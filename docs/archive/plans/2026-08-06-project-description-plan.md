@@ -1,32 +1,27 @@
 ---
-status: active
+status: shipped
 ---
 
 # Per-Project Description Implementation Plan
 
-> **Status — 2026-08-26 (review pass).** **All nine tasks are implemented and committed**
-> on `feat/project-description`, despite every `- [ ]` below still being unchecked
-> (`grep -c -- '- \[ \]'` → 68, `grep -c -- '- \[x\]'` → 0). The checkboxes were never
-> ticked; the per-task evidence lives in the branch worktree's **untracked**
-> `.superpowers/sdd/pd-task-{1..9}-report.md` plus `pd-final-fixes-report.md`.
-> Task→commit map: T1 `ab16b338`, T2 `33b60756`, T3 `312d69cf`, T4 `f7f36552`,
-> T5 `eb6380f5`, T6 `337341db`, T7 `33029857`, T8 (verification only, no code),
-> T9 `1528d94a` + `9afef2e8`, final review fixes `5cdd8b01`, plus an unreviewed UI
-> tweak `95af1cb3`.
+> **Status — SHIPPED 2026-08-26.** All nine tasks are implemented and merged to
+> `youcoded` master. The `- [ ]` checkboxes below were never ticked during
+> execution; the task->commit map is the record instead:
+> T1 `ab16b338`, T2 `33b60756`, T3 `312d69cf`, T4 `f7f36552`, T5 `eb6380f5`,
+> T6 `337341db`, T7 `33029857`, T8 (verification only, no code),
+> T9 `1528d94a` + `9afef2e8`, final review fixes `5cdd8b01`, Destin's first UI
+> pass `95af1cb3`, his second `3a0db918`. Per-task evidence lived in the
+> worktree's untracked `.superpowers/sdd/` and went with the worktree.
 >
-> **Verification checklist status:** `verify.sh --full` and the workbench boot check
-> passed on 2026-08-06 (both recorded in the sdd reports); `./gradlew test` was run in
-> Task 5 but **not** re-run after the later commits; **all three manual cross-device
-> checks are outstanding and blocked on Destin.** The boot check now covers 12 routes,
-> not the 8 named below.
+> **Verification:** `verify.sh --full` green except one PRE-EXISTING failure in
+> `harness-eval-orchestrator.test.ts`, confirmed failing identically on master
+> at `73e2defe` (ROADMAP bug filed). `./gradlew test` last ran in Task 5 and was
+> NOT re-run after the later commits — no Kotlin changed after T5, but that is
+> reasoning, not a run.
 >
-> **Task 9 Step 5 (flip spec to shipped, archive docs, flip ROADMAP) was deliberately
-> deferred to merge time and is not done.**
->
-> **Two single-copy risks.** (1) The branch has never been pushed — it exists only in
-> Destin's local `youcoded` repo. (2) The `.superpowers/sdd/` ledger is untracked, so
-> the only record of what each task did lives on disk in the worktree. Losing either
-> loses the work.
+> **The three manual cross-device checks below are still OUTSTANDING.** They
+> need two real devices and a real build, so they are Destin's to run before the
+> release this ships in.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -36,7 +31,7 @@ status: active
 
 **Tech Stack:** TypeScript (Electron main + React renderer), Vitest, Kotlin (Android), JSON file stores.
 
-**Spec:** `docs/active/specs/2026-08-05-project-description-design.md`
+**Spec:** `docs/archive/specs/2026-08-05-project-description-design.md`
 
 **Branch:** Work continues on `feat/project-description` (worktree `worktrees/project-description`), which already carries the approved UI as a workbench mockup against fake channels. This plan replaces those fakes with real ones and applies three decisions made after the mockup was approved.
 
@@ -979,7 +974,7 @@ git commit -am "feat(project-view): switcher rows read the real description" || 
 - Modify: `desktop/src/renderer/dev/workbench/mock-only.ts`
 - Modify: `desktop/src/renderer/dev/workbench/mock-shim.ts`
 - Modify: `.claude/rules/sync-spaces.md` (workspace repo)
-- Modify: `docs/active/specs/2026-08-05-project-description-design.md` (workspace repo)
+- Modify: `docs/archive/specs/2026-08-05-project-description-design.md` (workspace repo)
 
 - [ ] **Step 1: Empty the MOCK_ONLY registry**
 

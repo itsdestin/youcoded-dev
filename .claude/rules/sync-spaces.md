@@ -56,9 +56,7 @@ verify:
   - test: youcoded/desktop/tests/device-activity-label.test.ts
   - test: youcoded/desktop/tests/sync-warnings-lifecycle.test.ts
   - test: youcoded/desktop/tests/github-connect.test.ts
-  # sync-spaces-project-registry.test.ts exists only on feat/project-description (youcoded ab16b338);
-  # the rule text shipped ahead of the merge and broke the anchors CI. Restore this anchor when it lands:
-  #   - test: youcoded/desktop/tests/sync-spaces-project-registry.test.ts
+  - test: youcoded/desktop/tests/sync-spaces-project-registry.test.ts
 ---
 # Sync Spaces, SyncHub, backup & GitHub-connect
 
@@ -87,7 +85,7 @@ verify:
 ## Project UX + discovery
 - **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — ALL dot state from pure `sync-dot-state.ts`; labels pinned.
 - **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); **fold-on-read** prevents resurrection; schema stays 1.
-- **Per-field merge (`{v, at}` `laterOf` wrappers, NEVER whole-entry; `description` LWW by its OWN `descriptionUpdatedAt`) lands with `feat/project-description` (in flight, 2026-08-12) — that branch, not master; its verify anchor (`sync-spaces-project-registry.test.ts`) is parked in the frontmatter until merge.**
+- **Per-field merge: `laterOf` takes `{v, at}` wrappers, NEVER whole entries; `description` is LWW on its OWN `descriptionUpdatedAt`, never `updatedAt`.** WHY both halves: a whole-entry `laterOf` falls through to a `JSON.stringify` tie-break that reads `displayName`/`state` first, which broke associativity in 2,116 of 32,768 triples (folds in `readdirSync` order, so two devices with byte-identical files disagreed); and a shared clock makes a description write on one device revert a rename made on another, because the merge picks the newer entry wholesale. Shipped 2026-08-26, youcoded PR #330 (`abd935a3`). Guard: `sync-spaces-project-registry.test.ts`.
 
 ## Device registry
 - **TWO identities, NEVER merged: `getDeviceIdentity(userData)` = per-INSTALL (leases); `getMachineIdentity(builtAppUserData)` = per-MACHINE (registry), which READS, never mints — `null` ⇒ register NOTHING.**

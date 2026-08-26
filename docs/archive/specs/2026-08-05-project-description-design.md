@@ -1,32 +1,21 @@
 ---
-status: active
+status: shipped
 ---
 
 # Per-project description — design
 
-> **Status — 2026-08-26 (review pass).** Implementation is **complete and unmerged**
-> on `feat/project-description` (worktree `worktrees/project-description`), 13 commits,
-> last commit `95af1cb3` on 2026-08-06. The branch has **never been pushed** — `git
-> ls-remote --heads origin | grep -i project-desc` returns nothing — and no PR exists.
-> All nine plan tasks landed; `bash scripts/verify.sh project-description --full` passed
-> at the time (recorded in the branch's untracked `.superpowers/sdd/pd-final-fixes-report.md`).
-> Work stopped mid-review: the last session asked Destin to reload the workbench and look
-> at two unapproved layout tweaks, and he never answered. **What is stale below:**
-> - §6 ledger row **13** ("Status glyph replaces the bare dot") was **reverted** on
->   2026-08-06 (`337341db`, Task 6). `grep -c "icon:" ProjectHero.tsx` → `0`; the pill
->   renders `w-2 h-2 rounded-full` at lines 513 and 618. Ledger rows **19–20** are missing:
->   `95af1cb3` moved New Conversation to the bottom-right and swapped the description
->   editor from a single-line input to an auto-sized Textarea. **Neither is approved.**
-> - §7 "Still needed when the backend lands" — all three now exist:
->   `desktop/tests/sync-spaces-project-registry.test.ts` (merge convergence + tolerant
->   `parseEntry`) and the `syncspaces:set-project-description` / `folders:set-description`
->   parity blocks in `desktop/tests/ipc-channels.test.ts`.
-> - §8 open questions **1, 3, 4 are settled**: (1) card reverted to the dot (Task 6);
->   (3) cog sync entries stripped (Task 7, `33029857`); (4) a cap **is** enforced —
->   `PROJECT_DESCRIPTION_MAX = 200`, used at `project-registry.ts:80,273`,
->   `ipc-handlers.ts:1174`, `remote-server.ts:1635`, and as a keystroke cap in
->   `ProjectHero.tsx:400`. Question 2 (truncate vs wrap) is still unconfirmed.
-> - §9 rollout is **not done**. The mixed-version hazard is unchanged and still gates release.
+> **Status — SHIPPED 2026-08-26.** Merged to `youcoded` master from
+> `feat/project-description`. All nine plan tasks landed, plus three UI fixes
+> from Destin's visual pass (`3a0db918`): the sync pill's hover state, the
+> "Add a description" affordance, and the description editor's geometry.
+> `verify.sh --full` is green apart from one PRE-EXISTING failure in
+> `harness-eval-orchestrator.test.ts`, verified failing identically on master
+> at `73e2defe` and unrelated to this feature (ROADMAP bug filed).
+>
+> **Deliberately not done:** the three manual cross-device checks in the plan
+> (§Verification) need two real devices and a real build. They are Destin's to
+> run, and §9's mixed-version hazard below is unchanged and still gates the
+> release this ships in.
 
 Each project gets a short, user-written description that syncs between devices
 and appears on the project card and in the project list. It is a **label for the
@@ -267,19 +256,25 @@ currently unpinned.
 
 ---
 
-## 8. Open questions
+## 8. Open questions — all resolved
 
-1. **Dots vs glyphs.** The card now uses status glyphs; switcher rows still use
-   plain colored dots, and `sync-spaces.md` pins the dots as the one sanctioned
-   status-color use. Either the rows get glyphs too or the card goes back to a
-   dot — two visual languages for one status is the wrong answer.
-2. **Truncate vs wrap.** The card description wraps within a max width; the
-   switcher line truncates. Deliberate, but unconfirmed.
-3. **Cog redundancy.** The popover now offers every sync action at every width,
-   so the narrow cog's sync entries duplicate it. Stripping them would leave the
-   cog as Rename + Remove. Nothing is stranded either way.
-4. **Length limit.** No cap is enforced. A cap belongs at the setter if one is
-   wanted; the UI truncates rather than rejects today.
+1. **Dots vs glyphs — RESOLVED: the card went back to a dot.** Destin's call
+   2026-08-06. `sync-spaces.md` pins the plain colored dot as the one sanctioned
+   status-color use, and two visual languages for one status was the wrong
+   answer. Implemented in `337341db`.
+2. **Truncate vs wrap — RESOLVED: kept as built.** The card wraps within a max
+   width, the switcher line truncates. Confirmed by Destin's visual pass
+   2026-08-26; the two surfaces have different space budgets, so one rule for
+   both would either waste the card or clip the row.
+3. **Cog redundancy — RESOLVED: stripped from the cog.** Destin's call
+   2026-08-06. The narrow cog is now Rename + Remove only; every sync action
+   lives in the pill's popover at every width. Implemented in `33029857`.
+4. **Length limit — RESOLVED: a 200-character soft cap.** Destin's call
+   2026-08-06. `PROJECT_DESCRIPTION_MAX = 200` is enforced in BOTH setters
+   (`project-registry.ts`, `saved-folders.ts`), on both remote surfaces
+   (`ipc-handlers.ts`, `remote-server.ts`), in Kotlin (`WorkingDirStore.kt`),
+   and as a keystroke cap on the editor — so the limit holds no matter which
+   surface writes.
 
 ---
 
