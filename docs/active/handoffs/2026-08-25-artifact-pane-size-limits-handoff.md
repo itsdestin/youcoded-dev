@@ -10,7 +10,9 @@ tags: [renderer, artifacts, ux, ipc, android]
 
 # Handoff: artifact pane size limits
 
-**Where to start next session:** the plan's `## Status` block, then Task 6.
+**Where to start next session:** all nine tasks are done. The only thing left before
+merge is Destin looking at the finished feature against the real backend — see
+"What remains". The plan's `## Status` block has the commit table.
 
 ## What this is
 
@@ -20,12 +22,17 @@ artifact pane."* The message was false: images are governed by a 50 MB ceiling, 
 work fixes that, and turns the text limit from a wall into a readable partial view that
 can never be saved over the original.
 
-## State: Stage 1 + Stage 2A shipped to a branch, reviewed, not merged
+## State: ALL NINE TASKS DONE on a branch. Not merged, not pushed.
 
-Eight commits on `feat/artifact-size-limits`, worktree at `worktrees/artifact-size-limits`
+Thirteen commits on `feat/artifact-size-limits`, worktree at `worktrees/artifact-size-limits`
 (`node_modules` hardlinked with `cp -al` — never symlink it, `CLAUDE.md`).
 
 ```
+3619d93e  workbench mock refuses a full read above the ceiling, like main
+5c797056  Android mirrors the head sniff and text prefix        (Task 9)
+7e14cca1  every content update carries its metadata; tooLarge retired (Task 8)
+42906ca1  artifacts:get sniffs the head; { full } through both transports (Task 7)
+0b6707e2  textPrefix + decideOverCapRead, pure and pinned       (Task 6)
 e7f2d42b  cap to 3 MB, terser banner copy
 8c098c84  over-cap files read-only everywhere; banner → bottom bar
 94a05602  checkpoint fixes: truncated plumbing, real footer size, mp4 fixture
@@ -36,21 +43,34 @@ cc3537ed  honest handoff copy
 d1d10687  rendersFromBytesOnly
 ```
 
-**Working today, in the app:** photos, PDFs, spreadsheets and Word docs no longer touch
-the text editor's size gate, so the reported bug is fixed; the duplicate whole-file disk
-read for under-cap binaries is gone; the "can't show this" messages state the true reason
-(size / unsupported format / a text-extension file whose bytes aren't text) instead of one
-false sentence; the over-size message finally renders the button it always named.
+**Working in the real app now, on both platforms:** photos, PDFs, spreadsheets and Word
+docs no longer touch the text editor's size gate (the reported bug); the duplicate
+whole-file disk read for under-cap binaries is gone; the handoff messages state the true
+reason instead of one false sentence; a big text file opens as a readable prefix with the
+**Large File** bar rather than a refusal; **Load the whole file** works up to 12 MB and is
+not offered above it; an over-cap file that turns out not to be text routes to the format
+handoff instead of the text editor's error; and a file served as a prefix is read-only at
+every entry point, including after a full load and including a file that grows past the
+cap while it is open.
 
-**Working only in the Workbench:** the partial-view bar. The real backend does not serve
-`truncated` yet — that's Stage 2B. Until then the desktop app still refuses over-cap text
-with the old message, and `tooLarge` is still live (7 references, listed in Task 8).
+`tooLarge` is gone from all three trees — desktop source, desktop tests, and Kotlin.
+
+**The one thing left: Destin has not looked at any of this against the REAL backend.**
+Everything he reviewed was the Workbench's fake one, and that review found four defects
+that every test had passed. See "What remains".
 
 ## Verification state
 
-- `bash scripts/verify.sh worktrees/artifact-size-limits` — all green **except**
-  `tests/harness-eval-orchestrator.test.ts`, which fails identically on a clean
-  `origin/master` worktree. **Pre-existing, verified, not this work.** Don't chase it.
+- `bash scripts/verify.sh worktrees/artifact-size-limits` — all green. (The known
+  `tests/harness-eval-orchestrator.test.ts` failure reproduces identically on a clean
+  `origin/master` worktree — **pre-existing, verified, not this work.** Don't chase it.)
+- Android: **176 tests, 0 failures across 19 classes** on a forced rerun, including the
+  six `textPrefix` cases mirrored from the TS suite so the two cannot drift.
+  `./gradlew` needs `ANDROID_HOME=~/.android-sdk`,
+  `JAVA_HOME=/usr/lib/jvm/java-21-openjdk` (AGP's jlink transform rejects the machine's
+  default JDK 26) and `-x bundleWebUi` (that task packages the *desktop* app and wants
+  `rpmbuild`). None of that is caused by this change; `node_modules` in the worktree and
+  the main checkout were both confirmed intact at 640 entries afterwards.
 - `node scripts/workbench-boot-check.mjs 5243` — 12/12 routes clean. Note the default port
   5233 is held by another session's workbench; this branch's runs on **5243**
   (`YOUCODED_PORT_OFFSET=70 bash scripts/run-workbench.sh worktrees/artifact-size-limits`).
@@ -99,11 +119,24 @@ that existed at the time:
   `default:` case and answer `{ unsupported: true }`. The artifact pane cannot open **any**
   file over remote access on a desktop host, so a size prompt there would guard an
   unreachable path. Already-known gap — `ROADMAP.md:526-529` lists "the rest of
-  `artifacts:*`" as unbridged — so **append a line to that entry, do not create a new one.**
+  `artifacts:*`" as unbridged — so a line was appended to that entry (commit `273e834`
+  in `youcoded-dev`); no duplicate was created.
 
 ## What remains
 
-**Stage 2B — the backend** (plan Tasks 6–8). Unblocked; the decisions it needed are made.
+**Destin looks at it against the real backend.** This is the only work left before merge:
+
+```bash
+bash scripts/run-dev.sh worktrees/artifact-size-limits --label "Artifact Size Limits"
+```
+
+Four things to open: a >3 MB log (partial bar + **Load the whole file**), a >12 MB one
+(no load action, **Open externally** instead), a >3 MB file that isn't text (format
+handoff, not the text refusal), and the originally-reported 2.3 MB PNG.
+
+**Everything below is DONE — kept for the record.**
+
+**Stage 2B — the backend** (plan Tasks 6–8). ✅
 
 - **Task 6** — `shared/artifacts/over-cap-read.ts`: `textPrefix()` (trim to the last
   newline; fall back to a UTF-8 character boundary when there is no newline, or when the
@@ -121,9 +154,8 @@ that existed at the time:
   without refreshing it, so a file that *grows* past the cap while open keeps its Edit
   button and saving truncates it.
 
-**Stage 2C — Android** (Task 9). `EDIT_MAX_BYTES` is already 3 MB there; the head-sniff,
-`textPrefix`, `readFully`, the two other constants and the `full` flag are outstanding.
-Gradle is safe to run in this worktree (hardlinked `node_modules`, not a symlink).
+**Stage 2C — Android** (Task 9). ✅ Head sniff, `textPrefix`, `readFully`, both constants
+and the `full` flag all landed, with the shared cases pinned on both sides.
 
 **Stage 3 — remote.** Cancelled, see above.
 

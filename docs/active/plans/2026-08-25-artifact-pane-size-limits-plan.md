@@ -55,11 +55,15 @@ Testing Library (jsdom opt-in per file), Kotlin (Android mirror), Vite (UI Workb
 - **Do not merge or push.** Stop at the checkpoint and at the end; Destin decides when
   work lands.
 
-## Status — 2026-08-25
+## Status — 2026-08-25 (ALL TASKS COMPLETE)
 
-**Stage 1 and Stage 2A are implemented, reviewed by Destin in the Workbench, and
-committed** on `feat/artifact-size-limits` (worktree `worktrees/artifact-size-limits`).
-Nothing is merged or pushed.
+**Every task (1–9) is implemented and committed** on `feat/artifact-size-limits`
+(worktree `worktrees/artifact-size-limits`). Nothing is merged or pushed.
+
+Stage 1 + 2A were reviewed by Destin in the Workbench at the checkpoint; Stages 2B and 2C
+landed after it. **Outstanding before merge: Destin has not yet looked at the finished
+feature running against the REAL backend** (`bash scripts/run-dev.sh`) — up to now the
+partial view has only ever been seen against the Workbench's fake one.
 
 | Commit | What |
 |---|---|
@@ -71,6 +75,11 @@ Nothing is merged or pushed.
 | `94a05602` | checkpoint fixes: `truncated` plumbing, real footer size, mp4 fixture |
 | `8c098c84` | checkpoint fixes: over-cap files read-only everywhere; banner moved to bottom bar |
 | `e7f2d42b` | cap raised to 3 MB; banner copy shortened |
+| `0b6707e2` | `textPrefix` + `decideOverCapRead`, pure and pinned (Task 6) |
+| `42906ca1` | `artifacts:get` sniffs the head; `{ full }` through both transports (Task 7) |
+| `7e14cca1` | every content update carries its metadata; `tooLarge` retired (Task 8) |
+| `5c797056` | Android mirrors the head sniff and text prefix (Task 9) |
+| `3619d93e` | the Workbench mock refuses a full read above the ceiling, like main |
 
 **Four defects were found by *looking at it*, all of which passed every test that existed
 at the time.** They are the argument for keeping the checkpoint before the backend:
@@ -95,10 +104,21 @@ at the time.** They are the argument for keeping the checkpoint before the backe
   *"Large File — Showing 3.0/8.4 MB"*.
 - Sizes stay MiB-based; "Open in default app" stays the above-ceiling escape.
 
-**Known deliberate gap while Stage 2B is outstanding:** the real backend does not serve
-`truncated` yet, so partial-view behaviour is visible only in the Workbench. The desktop
-app still refuses over-cap text with the old message. `tooLarge` is therefore still live
-and is retired in Task 8.
+**Verification state**
+
+- `bash scripts/verify.sh worktrees/artifact-size-limits` — all green.
+- Android: `176 tests, 0 failures across 19 classes` on a forced rerun
+  (`--rerun-tasks`), including all six mirrored `textPrefix` cases.
+- `node scripts/workbench-boot-check.mjs 5243` — 12/12 routes clean.
+- Every regression test added in this workstream was verified to **fail without its fix**.
+- `tests/harness-eval-orchestrator.test.ts` fails identically on a clean `origin/master`
+  worktree. **Pre-existing, verified, not this work.** Don't chase it.
+
+**Android build-environment note** (nothing to do with this change): `./gradlew` here needs
+`ANDROID_HOME=~/.android-sdk`, `JAVA_HOME=/usr/lib/jvm/java-21-openjdk` (AGP's jlink
+transform rejects the machine's default JDK 26), and `-x bundleWebUi` (that task packages
+the *desktop* app, which needs `rpmbuild`). `node_modules` in the worktree and the main
+checkout were both confirmed intact at 640 entries afterwards.
 
 ## Verified facts this plan relies on
 
@@ -851,7 +871,7 @@ nothing but this stage.
 
 # Stage 2B — the backend
 
-## Task 6: `textPrefix` + `decideOverCapRead`
+## ✅ Task 6 — DONE: `textPrefix` + `decideOverCapRead`
 
 **Files:**
 - Create: `desktop/src/shared/artifacts/over-cap-read.ts`
@@ -866,7 +886,7 @@ nothing but this stage.
 *The real branch lives here, and `ipc-handlers.ts` calls it — so the test exercises the
 shipped decision rather than a copy of it re-implemented inside the test file.*
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `desktop/tests/over-cap-read.test.ts`:
 
@@ -928,12 +948,12 @@ describe('decideOverCapRead', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/over-cap-read.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `desktop/src/shared/artifacts/over-cap-read.ts`:
 
@@ -990,12 +1010,12 @@ export function decideOverCapRead(head: Uint8Array, window: Uint8Array, _sizeByt
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run tests/over-cap-read.test.ts`
 Expected: PASS (8 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add desktop/src/shared/artifacts/over-cap-read.ts desktop/tests/over-cap-read.test.ts
@@ -1004,7 +1024,7 @@ git commit -m "feat(artifacts): pure over-cap read decision — head sniff plus 
 
 ---
 
-## Task 7: the handler, the preload, the shim, the thumbnail
+## ✅ Task 7 — DONE: the handler, the preload, the shim, the thumbnail
 
 **Files:**
 - Modify: `main/ipc-handlers.ts` (handler at `:3692`; size gate `:3734-3739`; return `:3757`)
@@ -1012,7 +1032,7 @@ git commit -m "feat(artifacts): pure over-cap read decision — head sniff plus 
 - Modify: `renderer/remote-shim.ts:1227-1232`
 - Modify: `renderer/components/ArtifactThumbnail.tsx:141`
 
-- [ ] **Step 1: Rewrite the size gate**
+- [x] **Step 1: Rewrite the size gate**
 
 Add `decideOverCapRead` and `FULL_READ_MAX_BYTES` to the imports, add `opts` to the
 handler signature, and replace `:3734-3739`:
@@ -1066,7 +1086,7 @@ clear the banner:
              truncated: false, sizeBytes: st.size, mtimeMs: st.mtimeMs };
 ```
 
-- [ ] **Step 2: Thread `opts` through both transports**
+- [x] **Step 2: Thread `opts` through both transports**
 
 `preload.ts:1310`:
 ```ts
@@ -1089,7 +1109,7 @@ viewers work for remote browsers. They do not — `remote-server.ts` bridges onl
       // `default:` case. Kept wired for when that bridge lands (ROADMAP #remote).
 ```
 
-- [ ] **Step 3: Stop a 2 MB prefix landing in thumbnail state**
+- [x] **Step 3: Stop a 2 MB prefix landing in thumbnail state**
 
 `ArtifactThumbnail.tsx:141` — it calls `artifacts.get` for text/html previews and now gets
 a 2 MB string where it used to get `content: null` and fall back to the extension glyph:
@@ -1100,7 +1120,7 @@ a 2 MB string where it used to get `content: null` and fall back to the extensio
       .then((res: any) => setPreview(res?.content?.slice(0, 2000) ?? null))
 ```
 
-- [ ] **Step 4: Verify and commit**
+- [x] **Step 4: Verify and commit**
 
 Run from the workspace root: `bash scripts/verify.sh worktrees/artifact-size-limits`
 
@@ -1112,7 +1132,7 @@ git commit -m "feat(artifacts): over-cap reads sniff the head instead of refusin
 
 ---
 
-## Task 8: one content-update path, and retire `tooLarge`
+## ✅ Task 8 — DONE: one content-update path, and retire `tooLarge`
 
 > **HALF OF THIS TASK IS ALREADY DONE** (commit `8c098c84`). The editability predicate
 > `canEditArtifact` exists at `artifact-views/edit-permission.ts`, is pinned by
@@ -1140,7 +1160,7 @@ git commit -m "feat(artifacts): over-cap reads sniff the head instead of refusin
 > while open would keep its Edit button and saving would truncate it. The predicate cannot
 > fix that alone — the metadata has to travel with the text.
 
-- [ ] **Step 1: Write the failing predicate test**
+- [x] **Step 1: Write the failing predicate test**
 
 Create `desktop/tests/edit-permission.test.ts`:
 
@@ -1174,12 +1194,12 @@ describe('canEditArtifact', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/edit-permission.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Implement the predicate**
+- [x] **Step 3: Implement the predicate**
 
 Create `.../artifact-views/edit-permission.ts`:
 
@@ -1209,7 +1229,7 @@ export function canEditArtifact(
 }
 ```
 
-- [ ] **Step 4: Write the failing behaviour tests**
+- [x] **Step 4: Write the failing behaviour tests**
 
 Append to `desktop/tests/active-artifact-view.test.tsx` (jsdom + `mountView` already
 present). Also **fix `:70`**, which asserts on `tooLarge`, to use `sizeBytes: 5e6`.
@@ -1256,7 +1276,7 @@ describe('content updates always carry their metadata', () => {
 });
 ```
 
-- [ ] **Step 5: Implement `applyDiskRead` and route every path through it**
+- [x] **Step 5: Implement `applyDiskRead` and route every path through it**
 
 In `useArtifactContent.ts`:
 
@@ -1329,12 +1349,12 @@ Wire both hosts: add `onDiskRead={applyDiskRead}` beside `onContentChange={setCo
 
 Finally, drop `tooLarge` from `mock-shim.ts` and from `fixtures/artifacts.ts`'s comment.
 
-- [ ] **Step 6: Run the tests**
+- [x] **Step 6: Run the tests**
 
 Run: `npx vitest run tests/edit-permission.test.ts tests/active-artifact-view.test.tsx tests/artifact-content-loading.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 7: Prove the flag is gone and the paths are closed**
+- [x] **Step 7: Prove the flag is gone and the paths are closed**
 
 ```bash
 cd worktrees/artifact-size-limits
@@ -1348,7 +1368,7 @@ it is an open data-loss path; close it before committing.
 Run from the workspace root: `bash scripts/verify.sh worktrees/artifact-size-limits`
 and `node scripts/workbench-boot-check.mjs`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add desktop/src/renderer desktop/tests
@@ -1359,7 +1379,7 @@ git commit -m "fix(artifacts): derive editability from size; every content updat
 
 # Stage 2C — Android
 
-## Task 9: mirror the response shape
+## ✅ Task 9 — DONE: mirror the response shape
 
 **Files:**
 - Modify: `app/src/main/kotlin/com/youcoded/app/artifacts/EditablePathPolicy.kt:70-74`
@@ -1371,7 +1391,7 @@ git commit -m "fix(artifacts): derive editability from size; every content updat
 > `readFully`, `FULL_READ_MAX_BYTES`, `READ_BINARY_MAX_BYTES` and the `full` flag are all
 > still outstanding.
 
-- [ ] **Step 1: Add the Kotlin helpers**
+- [x] **Step 1: Add the Kotlin helpers**
 
 In `EditablePathPolicy.kt`, beside `EDIT_MAX_BYTES` (and fix its `tooLarge` comment):
 
@@ -1418,7 +1438,7 @@ In `EditablePathPolicy.kt`, beside `EDIT_MAX_BYTES` (and fix its `tooLarge` comm
         }
 ```
 
-- [ ] **Step 2: Replace the bridge's size gate**
+- [x] **Step 2: Replace the bridge's size gate**
 
 `SessionService.kt:3365-3372` — read the `full` flag from the payload (`:3304-3305` is
 where the other named keys are read) and replace the `tooLarge` block:
@@ -1455,13 +1475,13 @@ Add `.put("sizeBytes", resolved.length()).put("truncated", false)` to the under-
 response so `canEditArtifact` has a size on Android too, and replace the literal
 `50L * 1024 * 1024` at `:3416` with `EditablePathPolicy.READ_BINARY_MAX_BYTES`.
 
-- [ ] **Step 3: Add the Kotlin test**
+- [x] **Step 3: Add the Kotlin test**
 
 Extend the existing `EditablePathPolicy` test with the same four `textPrefix` cases the TS
 suite pins (newline trim, no-newline fallback, early-newline floor, multi-byte boundary),
 so the two implementations cannot drift.
 
-- [ ] **Step 4: Build and test Android**
+- [x] **Step 4: Build and test Android**
 
 ```bash
 cd worktrees/artifact-size-limits && ./scripts/build-web-ui.sh && ./gradlew test
@@ -1469,7 +1489,7 @@ cd worktrees/artifact-size-limits && ./scripts/build-web-ui.sh && ./gradlew test
 Expected: PASS. (Safe here — this worktree's `node_modules` is a `cp -al` copy, not a
 symlink; Gradle's `bundleWebUi` runs `npm ci` and would empty a shared symlinked copy.)
 
-- [ ] **Step 5: Final proof and commit**
+- [x] **Step 5: Final proof and commit**
 
 ```bash
 rg -n 'tooLarge' desktop/src desktop/tests app/src   # expect NO output at all
@@ -1482,12 +1502,19 @@ git commit -m "feat(android): mirror the over-cap head sniff and text prefix"
 
 ## Post-implementation
 
-- [ ] **Do not add a new ROADMAP entry for the remote gap** — `ROADMAP.md:526-529` already
+- [x] **Do not add a new ROADMAP entry for the remote gap** — `ROADMAP.md:526-529` already
       covers it and explicitly lists "the rest of `artifacts:*`" as unbridged. Append the
       one concrete consequence this work established: *the artifact pane cannot open any
       file at all over remote access on a desktop host, so anything size- or
       preview-related for remote is unreachable until that bridge exists.*
-- [ ] Report to Destin: the five checkpoint questions' outcomes, and the remote finding.
+- [x] Report to Destin: the five checkpoint questions' outcomes, and the remote finding.
+- [ ] **Destin looks at the finished feature against the REAL backend** —
+      `bash scripts/run-dev.sh worktrees/artifact-size-limits --label "Artifact Size Limits"`,
+      then open a >3 MB log (partial bar + **Load the whole file**), a >12 MB one (no load
+      action, **Open externally**), a >3 MB non-text file (format handoff, not the text
+      refusal), and the originally-reported 2.3 MB PNG. Everything shipped so far was seen
+      only against the Workbench's fake backend; the checkpoint's four defects are the
+      reason this step is not optional.
 - [ ] **On merge, close the loop** (`CLAUDE.md` → Document lifecycle): move this plan and
       the spec from `docs/active/` to `docs/archive/`, and flip the ROADMAP item in the
       same session. "Merge means merge AND push AND archive the docs AND flip the item."
