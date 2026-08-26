@@ -1,0 +1,238 @@
+{
+  "out": "phase-b-review.html",
+  "images": "images/phase-b",
+  "sheets": "images/phase-b/sheets",
+  "key": "Phase B",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-phase-a-final",
+    "A": "/home/destin/youcoded-dev/scratch/ui-phase-b"
+  },
+  "labels": {
+    "before": "Before (master today)",
+    "A": "After (branch feat/ui-phase-b)"
+  },
+  "crops": {
+    "close-dialog": [
+      "overlays",
+      "close-session-prompt",
+      "360x400+535+235"
+    ],
+    "bugreport-dialog": [
+      "overlays",
+      "development-bug-report",
+      "470x330+485+285"
+    ],
+    "donate-dialog": [
+      "main",
+      "settings-donate",
+      "370x260+525+315"
+    ],
+    "development-menu": [
+      "main",
+      "settings-development",
+      "380x300+530+300"
+    ],
+    "toolcard-header": [
+      "main",
+      "tool-card-expanded",
+      "400x34+40+170"
+    ]
+  },
+  "title": "Phase B review — dialog headers, tool-card dividers, the status bar",
+  "lead": "Three items from the ledger, built on the branch <code>feat/ui-phase-b</code> and shown as 1:1 crops from verified screenshots of the real app (workbench, six themes). Each item has a measured part (a broken behaviour or a number) and, where marked, a judgment part built alongside so you can see it — reject the judgment part and only the measured fix ships.",
+  "items": [
+    {
+      "id": "P-15",
+      "title": "Every dialog gets a title and a ✕; the close-session footer stops wrapping",
+      "kind": "measured",
+      "sections": [
+        {
+          "h": "The problem",
+          "html": "<p><strong>Report a bug</strong> and <strong>Donate</strong> were the only dialogs with no title row and no ✕ — Escape was the only way out. The <strong>Development</strong> menu that leads to the bug report drew its own small uppercase heading instead of the shared header. In the <strong>Close session</strong> prompt, the footer was the tallest row of the dialog: <em>\"Don't show again\"</em> wrapped onto two lines beside its toggle and the primary button broke into <em>\"Close / session\"</em>.</p><p>(The ledger also said About and Permissions cut their content with no scroll cue — checking the code, both already have the fade. Nothing to do there; the claim was stale.)</p>"
+        },
+        {
+          "h": "What changed",
+          "html": "<ul><li>The three dialogs now pass a <code>title</code> to the shared <code>Dialog</code> component, which draws the same header every other dialog has (title · ✕). Bug report's title follows the Bug/Feature switch: <em>Report a bug</em> / <em>Request a feature</em>. Donate is titled <em>Support YouCoded</em>. Development is titled <em>Development</em>.</li><li>Close session: the header also moves to the shared one (title + the session name as subtitle). <em>\"Don't show again\"</em> becomes its own one-line row with the standard toggle, above a right-aligned <em>Cancel</em> / <em>Close session</em> pair at the small button size, so nothing wraps.</li><li>Two redundant \"portal\" wrappers (a leftover from before <code>Dialog</code> handled that itself) were removed — no visible effect.</li></ul>"
+        },
+        {
+          "h": "What you will notice, and the risks",
+          "html": "<ul><li>Three dialogs are a title row taller and gain a ✕ in the corner.</li><li>The close-session prompt is one row taller; its buttons are slightly smaller and no longer wrap; the toggle is the standard one.</li><li>Risk: near zero — this is the existing dialog anatomy applied to the places that skipped it.</li></ul>"
+        }
+      ],
+      "looks": [
+        {
+          "crop": "bugreport-dialog",
+          "themes": [
+            "midnight",
+            "light"
+          ],
+          "cols": [
+            "before",
+            "A"
+          ],
+          "note": "Report a bug."
+        },
+        {
+          "crop": "donate-dialog",
+          "themes": [
+            "midnight",
+            "light"
+          ],
+          "cols": [
+            "before",
+            "A"
+          ],
+          "note": "Donate."
+        },
+        {
+          "crop": "development-menu",
+          "themes": [
+            "midnight",
+            "light"
+          ],
+          "cols": [
+            "before",
+            "A"
+          ],
+          "note": "Development menu (the step before the bug report)."
+        },
+        {
+          "crop": "close-dialog",
+          "themes": [
+            "light",
+            "midnight",
+            "meadow-mist"
+          ],
+          "cols": [
+            "before",
+            "A"
+          ],
+          "note": "Close session — the footer."
+        }
+      ],
+      "sheets": [
+        "overlays-development-bug-report",
+        "main-settings-donate",
+        "main-settings-development",
+        "overlays-close-session-prompt"
+      ],
+      "decision": [
+        "Approve",
+        "Approve with changes",
+        "Reject"
+      ]
+    },
+    {
+      "id": "P-18",
+      "title": "Tool cards: a real divider instead of a typed \"|\"; AskUserQuestion looks like its siblings",
+      "kind": "mixed",
+      "sections": [
+        {
+          "h": "The problem",
+          "html": "<p><strong>Measured:</strong> every tool-card header, and the button row of the full-auto stop card, used a typed <code>|</code> character as a divider. It takes the text colour rather than the theme's line colour, sits on the text baseline instead of centred, and screen readers read it aloud. It appears on every tool call in every conversation.</p><p><strong>Judgment:</strong> the AskUserQuestion card's header stopped after its label (<code>ⓘ | Framework ▾</code>) while every other card reads <em>label ↳ detail</em>; its option rows used their own corner radius and colours; and its radio/checkbox glyph's rounding was written in a way the styling tool cannot see, so it may not have been drawn round at all.</p>"
+        },
+        {
+          "h": "What changed",
+          "html": "<ul><li><strong>Measured:</strong> both dividers are now a 1-pixel line element in the theme's edge colour, centred, invisible to screen readers.</li><li><strong>Judgment:</strong> the AskUserQuestion header now reads <em>Framework ↳ Which framework should the new dashboard use?</em> like its siblings; its option rows use one shared row style (medium corners, edge-coloured border, accent tint when selected); the round/square glyph is now written so it actually renders.</li></ul>"
+        },
+        {
+          "h": "What you will notice, and the risks",
+          "html": "<ul><li>The pipe character is gone from every tool card; a thin line sits in its place.</li><li>AskUserQuestion's header carries the first question, so you can read what is being asked without expanding; its rows look like the rest of the app's rows. Risk: this is the card you interact with most, so its shape changing is the most noticeable thing in Phase B — that is why it is tagged judgment.</li></ul>"
+        }
+      ],
+      "looks": [
+        {
+          "crop": "toolcard-header",
+          "themes": [
+            "midnight",
+            "light"
+          ],
+          "cols": [
+            "before",
+            "A"
+          ],
+          "note": "A tool-card header — the divider after the status glyph.",
+          "zoom": 2
+        },
+        {
+          "crop": "askuser",
+          "themes": [
+            "midnight",
+            "dark"
+          ],
+          "cols": [
+            "before",
+            "A"
+          ],
+          "note": "AskUserQuestion card in the tool gallery."
+        }
+      ],
+      "sheets": [
+        "main-tool-card-expanded",
+        "tall-tool-gallery"
+      ],
+      "decision": [
+        "Approve both",
+        "Approve the divider only (revert the AskUserQuestion changes)",
+        "Reject"
+      ]
+    },
+    {
+      "id": "P-10",
+      "title": "Status bar: readable text, one row on phones; grey chips",
+      "kind": "mixed",
+      "sections": [
+        {
+          "h": "The problem",
+          "html": "<p><strong>Measured:</strong> the status bar's text was 10px, the last surface under the app's 11px floor for anything you read (G-5). At phone width (390px) the chips wrapped to a second row with the theme name orphaned, pushing the composer up.</p><p><strong>Judgment:</strong> the model chip carried a brand-orange outline while every other chip was grey, so the model read as a warning; the theme chip was drawn as a button but is a label.</p>"
+        },
+        {
+          "h": "What changed",
+          "html": "<ul><li><strong>Measured:</strong> text is 11px (the bar is ~2px taller). Below phone width the bar no longer wraps: the model chip drops its <em>| Auto Effort</em> suffix, the Priority chip shows only its dots, and the theme chip shows a small palette icon (hover for the name).</li><li><strong>Judgment:</strong> the model chip's border and text use the same grey as every chip; the brand colour stays on the model's icon only. The theme chip loses its border and background and shows a small cycle glyph on hover.</li></ul>"
+        },
+        {
+          "h": "What you will notice, and the risks",
+          "html": "<ul><li>Slightly larger status text; one row on phones.</li><li>The orange outline is gone — if you used it to find the model at a glance, the icon still carries the colour, but say so if that isn't enough.</li></ul>"
+        }
+      ],
+      "looks": [
+        {
+          "crop": "statusbar-tight",
+          "themes": [
+            "midnight",
+            "light",
+            "creme"
+          ],
+          "cols": [
+            "before",
+            "A"
+          ],
+          "note": "Status bar at 2×.",
+          "zoom": 2
+        },
+        {
+          "crop": "narrow-bottom",
+          "themes": [
+            "midnight",
+            "light"
+          ],
+          "cols": [
+            "before",
+            "A"
+          ],
+          "note": "Phone width (390px)."
+        }
+      ],
+      "sheets": [
+        "main-home",
+        "narrow-home"
+      ],
+      "decision": [
+        "Approve both",
+        "Approve the text size + phone wrap only (keep the orange chip and theme button)",
+        "Reject"
+      ]
+    }
+  ],
+  "closing": "<h2 id=\"other\">What did <em>not</em> change</h2><ul><li>No token, colour or spacing changed outside the elements shown.</li><li>About/Permissions: already had the scroll fade; the ledger line was wrong and is corrected.</li><li>All checks pass on the branch (types, full test suite, dead code, lint, invariants); the sweep of the branch verified every planned surface in six themes (see coverage.md).</li></ul>"
+}
