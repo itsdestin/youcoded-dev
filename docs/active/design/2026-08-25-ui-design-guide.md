@@ -74,8 +74,8 @@ Every theme provides four stacked surfaces. Use them by *depth*, never by colour
 | `well` | the deepest cut | search surfaces inside drawers, code blocks, disabled fills |
 
 Rule **G-6 — text-on-surface pairs.** `fg` on anything. `fg-2` on anything. `fg-dim` on
-`canvas`/`panel` only. `fg-muted` on `canvas`/`panel` freely; on `inset`/`well` only after
-P-11 raises it to AA (until then: not for information). `fg-faint` is **decorative only** —
+`canvas`/`panel` only. `fg-muted` anywhere, including `inset`/`well` — since P-11 (shipped
+2026-08-25) every built-in clears 4.5:1 there, pinned by `theme-builtin-sources.test.ts`. `fg-faint` is **decorative only** —
 dividers, disabled labels, the `|` between glyph and title — never a spinner, never a
 value, never a date. The token audit (`scripts/audit-theme-contrast.mjs`) already
 enforces the pairs it knows; the painted-pixel probe in the findings doc is how you
@@ -113,7 +113,11 @@ in" — is a bug (§3 of the findings lists them).
 
 **G-8 Where the accent may paint.** `accent` is for *state*, not decoration: the selected
 segment in a SegmentedTabs, the on-state of a Toggle/Checkbox/Radio, the focus ring, the
-primary button fill, the send button, links, and the active session dot. It may **not**
+primary button fill, the send button, links, and the active session dot. **Midnight and Dark
+are monochrome by design** (decision 2026-08-25, P-12 rejected): their accent is a light grey,
+*selected/primary* is signalled by the fill, *disabled* by dimming — and the disabled
+treatment must never paint a background, or the two become the same grey block
+(pinned in `Button.test.tsx`). Do not propose a colour accent for them again. It may **not**
 paint borders of resting containers (composer outline, header outline), bubble stripes,
 the count badge, or the *Chat* tab at rest. Theme packs inherit this list — a pack that
 paints accent on eight things (Halftone today) is over budget; P-16 turns this into a
@@ -139,7 +143,7 @@ rule the theme validator can check.
 
 | Primitive | Use for | Don't |
 |---|---|---|
-| `Button` `primary` | the one main action (G-4) | full-width fills as "section CTAs"; grey fills that read disabled (P-12) |
+| `Button` `primary` | the one main action (G-4) | full-width fills as "section CTAs"; a *disabled* state that paints a fill (G-8) |
 | `Button` `secondary` | every other action; also the "browse / open / manage" links inside dialogs | outline-with-fill hybrids ("Browse all themes →") |
 | `Button` `ghost` | dismiss/cancel next to a primary, icon buttons at rest | using ghost for the *only* action in a view |
 | `Button` `danger` / `danger-outline` | destructive confirm / destructive option among neutrals | red text without a button shape; red for "important" |
@@ -297,9 +301,11 @@ A community theme may change colours, radii, fonts, wallpaper, glass, mascots an
 the validator (`theme-validator.ts` + vendored `contrast-rules.js`) enforces:
 
 - The 15 tokens plus derived `link`/`destructive` pass the HARD/SURFACE rules (today).
-- **New (P-16):** `edge` vs `panel` ≥ 1.3:1 so outlines survive; text-bearing glass layers
-  are ≥ 0.85 opaque *or* carry a scrim; checkbox/radio radius is pinned; the accent budget
-  (G-8) is a lint warning.
+- **P-16 (decided 2026-08-25, minimal):** no new validator rule. A 1.5:1 outline rule was
+  measured against the registry and would fail 6 of 7 published packs (1.30–1.38) that look
+  fine; Meadow's invisible outlines were a glass-over-wallpaper problem, fixed in the pack
+  (`edge-dim` 50% → 80% alpha, wecoded-themes #27). Checkbox radius is already a literal 4px
+  in `Checkbox.tsx`. The accent budget (G-8) stays a review rule, not a lint.
 - `custom_css` may target the documented hooks (`.send-btn` is *not* one — see spec §11)
   and the display-size headings; it should not restyle `[role=dialog] h2`.
 - Packs are reviewed under the same screenshot rig as the app: the six-theme sheet in the

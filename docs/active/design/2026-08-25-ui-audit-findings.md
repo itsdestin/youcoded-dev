@@ -292,10 +292,10 @@ P-18 below. Verify with a **full** rig run (all plans, 6 themes).
 
 | # | Proposal | Touches | Risk / what users will notice |
 |---|---|---|---|
-| P-11 | Tokens: `fg-muted` on raised surfaces (`inset`/`well`) is bumped to ≥4.5:1 in all four built-ins; `fg-faint` becomes *decorative-only* (dividers, disabled), never a spinner — spinners use `fg-muted`. | every surface | Muted text gets slightly lighter/darker; nothing moves. |
-| P-12 | Dark built-ins get a real accent (a muted blue for midnight, a warm grey-blue for dark — chosen so `on-accent` stays white and links stay AA on inset), so *primary* and *selected* stop looking disabled. Alternative if Destin wants to keep the monochrome look: primary/selected gain a second signal (thicker border + bold) and "disabled" gets a dashed border. | every primary/selected in midnight & dark | This is the most visible change in the ledger — every primary button and selected tab in the two most-used themes changes colour. Halftone/meadow unaffected. **Decision needed: real accent, or monochrome + second signal.** |
-| P-13 | Light/creme user bubble → `inset` (grey) with `fg` text instead of solid black; assistant bubble unchanged. | chat, light + creme | The user's own messages stop being the darkest thing on screen. |
-| P-16 | Theme-pack guarantees added to `contrast-rules.js`: edge/panel ≥ 1.3:1 (outlines survive), checkbox radius pinned, text-bearing glass ≥ 0.85 opacity or a scrim, accent may paint at most the documented set (G-8), terminal surface ≥ 0.9 opacity (the P-20 guarantee). Meadow Mist and Halftone fixed in `wecoded-themes` to pass. Lands last in this phase so it pins P-11/P-12's numbers as rules packs cannot regress. | packs | Meadow's buttons get borders back; halftone's checkboxes go square. |
+| P-11 | Tokens: `fg-muted` on raised surfaces (`inset`/`well`) is bumped to ≥4.5:1 in all four built-ins; `fg-faint` becomes *decorative-only* (dividers, disabled), never a spinner — spinners use `fg-muted`. | every surface | Muted text gets slightly lighter/darker; nothing moves. **Decided 2026-08-25: approved, shipped** (youcoded #327; pin: `theme-builtin-sources.test.ts` "built-in text ladder"). |
+| P-12 | Dark built-ins get a real accent (a muted blue for midnight, a warm grey-blue for dark — chosen so `on-accent` stays white and links stay AA on inset), so *primary* and *selected* stop looking disabled. Alternative if Destin wants to keep the monochrome look: primary/selected gain a second signal (thicker border + bold) and "disabled" gets a dashed border. | every primary/selected in midnight & dark | This is the most visible change in the ledger — every primary button and selected tab in the two most-used themes changes colour. Halftone/meadow unaffected. **Decision needed: real accent, or monochrome + second signal.** **Decided 2026-08-25: REJECTED.** Both options built and shown (`phase-a-review.html`); Destin found the baseline fine and the options worse. Nothing measurable failed — the finding was a convention argument. Rule now in the guide (G-8): the dark built-ins are monochrome by design; disabled never paints a fill (`Button.test.tsx`). |
+| P-13 | Light/creme user bubble → `inset` (grey) with `fg` text instead of solid black; assistant bubble unchanged. | chat, light + creme | The user's own messages stop being the darkest thing on screen. **Decided 2026-08-25: REJECTED** — user bubble unchanged in every theme. |
+| P-16 | Theme-pack guarantees added to `contrast-rules.js`: edge/panel ≥ 1.3:1 (outlines survive), checkbox radius pinned, text-bearing glass ≥ 0.85 opacity or a scrim, accent may paint at most the documented set (G-8), terminal surface ≥ 0.9 opacity (the P-20 guarantee). Meadow Mist and Halftone fixed in `wecoded-themes` to pass. Lands last in this phase so it pins P-11/P-12's numbers as rules packs cannot regress. | packs | Meadow's buttons get borders back; halftone's checkboxes go square. **Decided 2026-08-25: minimal.** Only Meadow `edge-dim` 50% → 80% alpha (wecoded-themes #27 + the workbench copy in youcoded #327). Glass, Halftone and the validator untouched: a 1.5:1 outline rule fails 6 of 7 published packs (1.30–1.38) that look fine; Halftone checkboxes were already square. |
 
 ### Phase B — shared primitives (one component, many surfaces)
 
@@ -307,7 +307,7 @@ work in C means those screens are drawn with the corrected parts. P-18 needs P-1
 | # | Proposal | Touches | Risk / what users will notice |
 |---|---|---|---|
 | P-15 | Every dialog gets the same header (title · optional ⓘ · ✕): add it to Donate and Development; Resume Session moves "Show complete" below the search field and gets a ✕. About and Permissions get a scrollbar/fade. | 5 dialogs | Two dialogs gain a title row. |
-| P-18 | Tool cards: AskUserQuestion adopts the standard header (glyph · title · ↳ first question · chevron right-aligned); its option rows share one row style; *Submit* uses `primary` (which P-12 makes visible). The literal `\|` separator in the header becomes a 1px divider element, not text. | every tool card | The pipe character disappears; AskUserQuestion looks like its siblings. |
+| P-18 | Tool cards: AskUserQuestion adopts the standard header (glyph · title · ↳ first question · chevron right-aligned); its option rows share one row style; *Submit* uses `primary` (which P-12 makes visible). The literal `\|` separator in the header becomes a 1px divider element, not text. | every tool card | The pipe character disappears; AskUserQuestion looks like its siblings. **P-12 rejected → *Submit* already uses `primary`; nothing to add there.** |
 | P-10 | Status bar: all chips share one treatment (grey outline); the model chip signals "current model" with the model's *icon*, not an orange outline; the theme chip is a label (no border) with the cycle affordance on hover; text floor `text-2xs`; at phone width chips collapse to icons before wrapping. | Status bar (every session) | The orange outline disappears; text one step larger. |
 
 ### Phase C — the four screens users see most
@@ -333,7 +333,7 @@ one screen and one PR. P-6 needs P-12. Verify: `main` + `overlays` plans, plus t
 
 | # | Proposal | Touches | Risk / what users will notice |
 |---|---|---|---|
-| P-6 | Welcome screen: *New Session* uses the real primary treatment from P-12; *Resume Session* stays secondary; add a Settings gear to this screen's corner (today Settings is unreachable here without expanding the form). | Welcome | A gear appears on the welcome screen. |
+| P-6 | Welcome screen: *New Session* uses the real primary treatment from P-12; *Resume Session* stays secondary; add a Settings gear to this screen's corner (today Settings is unreachable here without expanding the form). | Welcome | A gear appears on the welcome screen. **P-12 rejected → P-6 is now only the Settings gear; the primary treatment stays as is.** |
 | P-19 | Composer attachment chips: icon · name (≥ 12 characters before truncating) · always-visible ✕, `md` radius, `text-2xs`; broken thumbnails fall back to the file-type icon. | composer | Attachments become readable. |
 | P-14 | Find bar gets its own `panel` surface anchored top-right *above* the transcript instead of inside the user bubble. | find | The bar stops covering the first message. |
 | P-9 | Skills drawer: category pills use the shared filter-pill shape/size; the two icon buttons leave the search field and sit beside it as `size="icon"` buttons with names; the *Add Skills* card becomes an `EmptyState` centred in the row when there are no skills, and a normal last card when there are. | Skills drawer | Search field looks like every other one. |
@@ -363,7 +363,7 @@ Marketplace rails (§6c #26), so ship both together. Verify: `narrow` plan, and 
 
 | Phase | Items | Why here | Rig plans to re-run |
 |---|---|---|---|
-| A | P-11, P-12, P-13, P-16 | tokens move everything; P-12 is the decision | full run |
+| A | P-11, P-12, P-13, P-16 | **DONE 2026-08-25** — P-11 shipped; P-12, P-13 rejected; P-16 minimal (Meadow outline only) | full run |
 | B | P-15, P-18, P-10 | shared parts, inherited by C–E | main, overlays, tall |
 | C | P-3, P-5, P-1, P-2, P-21 | the four most-seen screens (+ marketplace card fixes) | main, marketplace (default + empty) |
 | D | P-6, P-19, P-14, P-9, P-20 | everything beside the transcript | main, overlays, electron-live-session |
