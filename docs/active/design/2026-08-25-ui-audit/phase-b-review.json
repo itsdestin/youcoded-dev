@@ -179,5 +179,5 @@
     }
   ],
   "closing": "<h2 id=\"other\">What did <em>not</em> change</h2><ul><li>P-10 (status bar) — rejected in review; reverted, unchanged from master.</li><li>No token, colour or spacing changed outside the elements shown.</li><li>About/Permissions: already had the scroll fade; the ledger line was wrong and is corrected.</li></ul>",
-  "banner": "<strong>Revised 2026-08-26 after review.</strong> P-10 <strong>rejected</strong> — the status bar is unchanged (its section is removed from this page; the ledger records the decision). P-15 <strong>approved with changes</strong>, now built as shown below: no <em>Cancel</em> button where the dialog has a ✕ (Donate, Close session); the Donate dialog is one explanation and one action; <em>\"Don't show again\"</em> stays bottom-left. P-18 is still open — decide it below."
+  "banner": "<strong>Decided 2026-08-26.</strong> P-15 approved as revised and P-18 approved — merged as youcoded #328. P-10 rejected; the status bar is unchanged. The page is kept as the record of what was shown."
 }
