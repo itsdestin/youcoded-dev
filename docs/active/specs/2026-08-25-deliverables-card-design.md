@@ -182,8 +182,8 @@ JSON for it.
   will want to look at — reports, mockups, screenshots, built pages — not scratch
   or intermediate files; don't re-send an unchanged file; you may pick **one**
   file per turn to display immediately with `display: 'render'`; everything else
-  attaches. Full text lives in the tool file and is covered by the description
-  budget test if one applies.
+  attaches. The full text lives in the tool file; no description-budget test
+  exists today (verified 2026-08-25), so its length is a review item.
 
 ## 4. Claude Code guidance
 
