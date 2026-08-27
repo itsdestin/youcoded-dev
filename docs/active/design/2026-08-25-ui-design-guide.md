@@ -232,16 +232,21 @@ and Projects stay reachable — P-6) and shows one `primary` (*New Session*) and
 **G-16** One header: 48px `panel` band, `text-lg` title left (with the screen's icon for
 all three or none), right side = cross-link `secondary sm` (e.g. *Your Library* ↔
 *Marketplace*) then the back affordance. Back affordance = `Esc · Back to chat` on desktop
-(keyboard-capable) and a `CloseButton` on touch layouts. Below the header: a tab group in
-the Projects style (`SegmentedTabs` with icon + label + muted count), then the
-`SearchFilterPill`, then content on `canvas`. All three screens are `layer-screen` and
-show a pack's wallpaper the same way (T-6).
+(keyboard-capable) and a `CloseButton` on touch layouts. Below the header: the content
+switcher is `SegmentedTabs variant="pill"` — one rounded-full pill of icon + label + muted
+count segments, chip-sized (`px-3 py-1 text-sm`) so it matches the filter pills beside it
+(Library *Plugins | Themes*, Marketplace *All | Plugins | Themes*; shipped Phase C, #332) —
+then the `SearchFilterPill`, then content on `canvas`. **Copy:** the user-facing word is
+*Plugins*, never *Skills* (Destin, 2026-08-27). Library and Marketplace are see-through to a
+pack's wallpaper (T-6); **Projects stays opaque by decision** (P-5 declined 2026-08-27 —
+do not re-propose).
 
 - Cards (`lg`, `panel`, `edge`, `card-interactive` hover): one card species per grid;
-  document previews floor at `text-2xs` and fade, never cut mid-line; folders are marked
-  by icon, not by a notch.
-- Header card on Projects: eyebrow *PROJECT* · title · path · stat row · **one** primary;
-  secondary actions as `sm` buttons in one row at one scale.
+  document previews are the intended thumbnail look; the folder "tab" nub is Destin's
+  2026-07-19 call and stays. Secondary affordances that sit on a picture (the favourite
+  star on a theme card) appear on hover / keyboard focus only, so the picture stays clean.
+- Header card on Projects: unchanged by decision (P-5, 2026-08-27) — *New Conversation*
+  and *Turn on sync* both stay filled; Rename / Remove are already the shared `sm` buttons.
 
 ### 4.5 Side panes and sheets
 
