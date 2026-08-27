@@ -300,11 +300,79 @@ pinging. **This is why §3.1's retraction survives its own instrument:** main me
 large as reported. It also means the freeze is **worse** than the 12 s reported.
 Recorded as `MEASURES.biasDirection`, with a per-run warning and `probeCoveragePct`.
 
+## 3c. The second sweep (2026-08-27, afternoon) — four more rig defects, and the first trusted run
+
+Before re-running, the app branch was found **124 commits behind master** (it would have
+measured five-day-old code, missing the other session's OOM fix #335). Rebased cleanly,
+then the full run: `perf-reports/2026-08-27-1141-16ea12e-post-rebase-baseline` —
+26 min, 20/20 metrics, zero app errors, load 1.1. **The first run to trust.**
+
+| metric | value | run-to-run |
+|---|---|---|
+| startup → session list | **0.94 s** | 2% |
+| open medium (5,000 entries), fully rendered | **14.8 s** | 4% |
+| open huge (7,000) | **22.0 s** | 6% |
+| switch into huge, six sessions open | **11.1 s** | 4% |
+| freeze split, huge | renderer 16.5 s / main 0.27 s | 12% / 62% |
+| six sessions, PSS | **7.0 GB** | 5% |
+| files panel: open large markdown / keystroke | 1.1 s / 33 ms | 12% / — |
+
+The 124 commits changed the switch cost not at all (10.1 s → 10.1 s).
+
+Then the entry count that now travels beside every switch timing exposed **four more
+rig defects**, each found by the previous fix's run and closed the same afternoon
+(`139efb2`, `88aa50c`, `ee0a08e`, `a718a56`, `39374a7`):
+
+| # | defect | how it presented | fix |
+|---|---|---|---|
+| 6 | `cc-1` ('medium') created in project **beta** while its transcript lives under **alpha** (`t.cwd ?? cwd`, and the fixture record had no `cwd`) — it resumed NOTHING | "medium, 319 entries, 1.4 s" beside a 5,000-entry medium taking 14.8 s in the history scenario | fixture records `cwd`; scenario refuses a record without one |
+| 7 | the streamer picked "any transcript that appeared after boot" — the only such file was the **empty control's** | control under continuous load, posting the 20 s cap; loaded sessions received no stream; `streamedFiles` 1–2 against a description saying 3 | `streamTargetsFor()` streams into medium + small **by name**; run records `streamedInto` |
+| 8 | repeats shared one boot and the streamer appended to the fixture files; truncating them back did not hold because **the app keeps its own copy of every transcript under `~/YouCoded/Personal/Conversations` and re-extends the original from it** | every number grew run over run on an unchanged app (huge 10.9 → 13.9 → 14.6 s); panes holding 2× the transcript | **one fresh boot + fresh fixture per repeat**, like stall/artifacts; byte-size check at repeat start; `over` count when a pane holds more than its label |
+| 9 | the 3-frame stability settle could never settle a streaming session | 0 of 6 such switches settled | for streaming sessions the clock stops at the first frame showing everything that had arrived by the click |
+
+Also swapped `workload.median.switchPaintedP95Ms` out of PRIMARY for
+`workload.median.switchPaintedBySize.huge.medianMs` — the pooled p95 was the maximum of
+~18 samples, a third of them the control; the huge bucket is Destin's case and moved
+4–12% run to run.
+
+**Proof it holds** — `2026-08-27-2207-16ea12e-per-boot`: no size warning; huge
+11.4 / 11.2 / 12.6 s; **every label verified by count** (huge 7,000/7,000; small
+1,134/1,134; control 0/0).
+
+**Two app findings from the clean runs, not yet in the defect register:**
+- **Switching into an EMPTY conversation takes ~1.7 s while two other sessions stream**
+  (1.70 / 1.72 / 2.60 s across three fresh boots; native sessions the same). A fixed
+  switch tax under background load, independent of conversation size — plausibly the
+  "lag when I switch around" Destin reports. Nothing to render, still 1.7 s.
+- **Switching into a 5,000-entry conversation that is being streamed into** ran out the
+  20 s cap in 2 of 3 repeats (~1,800 entries rendered) and took 10.4 s in the third.
+  Bimodal; reported as a floor, never averaged.
+- The app's transcript mirror (`~/YouCoded/Personal/Conversations/claude/transcripts/…`)
+  is **bigger than the original** it mirrors (small: 7.4 MB vs 4.7 MB) and writes back
+  into `~/.claude/projects`. Unverified whether that is by design (takeover) or a bug
+  class of its own; worth a look by whoever owns `conversations/`.
+
+**Decorative metrics, measured:** `replayStall.medium.mainProcessStallMaxMs` moves
+173% run to run, `replayStall.huge.ipcTotalStallMs` 78%, `ipcMaxMs` 60–70%. With 3
+repeats they can neither register a win nor a regression. They stay in PRIMARY as the
+"did the fix just move work to the other thread" guard, but they do not guard. The
+honest replacement is main-process CPU time from `/proc` over the replay window.
+
 ## 4. What remains
 
-1. **Wire `scenario-replay-stall` and `scenario-artifacts` into `run.mjs`** — report schema, `--only` phases, `.md` summary rows.
-2. **Add stall metrics to `compare.mjs` PRIMARY.** Nominated with reasoning by the scenario author: `replayStall.medium.median.mainProcessStallMaxMs`, `…mainProcessStallMs`, and `replayStall.huge.median.rendererLongtaskMaxMs` — the last specifically so a "fix" that moves work off the main process but merely relocates it into the renderer cannot read as a clean win.
-3. **Shakedown run.** Both new scenarios have never touched the real app. Expect selector/wait failures. They are written to fail loudly with the real cause rather than return a plausible zero — treat the first run as a shakedown, **not** a baseline.
+1. ~~Wire stall + artifacts into run.mjs~~ — done (`05ee447`).
+2. ~~Add stall metrics to PRIMARY~~ — done; see §3c for which of them turned out decorative.
+3. ~~Shakedown run~~ → **done and superseded**: the trusted baseline is
+   `2026-08-27-1141-16ea12e-post-rebase-baseline`; the workload phase's trusted shape is
+   `2026-08-27-2207-16ea12e-per-boot`.
+3b. **The eyeball calibration — NOT DONE, blocks acting on any number.** `node
+   scripts/perf-lab/eyeball.mjs` boots the rig's exact build with the rig's fixture on
+   Destin's real screen (shifted ports, throwaway HOME, never `/opt/YouCoded`) and prints
+   what to count. Rig says ~22 s to open huge, ~11 s to switch into it. If Destin's
+   count is in that neighbourhood the rig is calibrated; if it is wildly off, the
+   headless/no-GPU configuration is rig defect #10 and nothing below should be built on
+   these numbers.
+3c. **Replace the decorative stall metrics** (§3c) with main-process CPU seconds from `/proc`.
 4. **`--stress` tier** to restore the 50,000-message regime (needs `WATCH_TIMEOUT_MS` raised), so the default suite stays fast enough to cycle on.
 5. **Per-surface baseline** with realistic content.
 6. **Round-0 gate** — bring Destin a ranked card list. **No product code changes before he approves it.** Proposed replacement list:
@@ -319,6 +387,11 @@ Recorded as `MEASURES.biasDirection`, with a per-run warning and `probeCoverageP
 8. **Thresholds.** A stress suite still needs a human to say "3.3 s is unacceptable, 200 ms is fine." Propose from the baseline; do not invent.
 
 **Zero optimizations have shipped. No PR has been opened. Nothing is pushed.**
+
+A note on the harness, not the rig: twice this afternoon a `run_in_background` Bash task
+running the rig was killed ~15–25 s after launch with no user action (feedback drafted).
+Launching detached — `setsid nohup … &` — and watching the log with `Monitor` worked
+every time; plain background Bash watchers were killed the same way.
 
 ---
 
@@ -369,7 +442,8 @@ recalibration, and is therefore **not comparable to any report produced after co
 
 ## 7. Machine state at handoff
 
-- Worktree `worktrees/perf-lab` on `perf/optimization-pass`, 4 commits ahead of `origin/master`, **not pushed**.
-- Workspace `master` has 30 commits, **not pushed**.
+- Worktree `worktrees/perf-lab` on `perf/optimization-pass`, **rebased onto `origin/master` 2026-08-27** (40feb750), 4 commits ahead, **not pushed**. Built binary at `desktop/release/linux-unpacked/` matches `16ea12e`.
+- Workspace `master` has ~38 commits, **not pushed**.
+- The eyeball fixture, if launched, lives at `scratch/perf-lab/eyeball/`; the rig's at `scratch/perf-lab/home/`. Both throwaway.
 - A session-long `systemd-inhibit` (`who=claude-perf-session`) may still be holding the machine awake — kill it when done: `pkill -f 'who=claude-perf-session'`.
 - Xvfb may still be running on `:99`. Harmless; `startXvfb` reuses it.
