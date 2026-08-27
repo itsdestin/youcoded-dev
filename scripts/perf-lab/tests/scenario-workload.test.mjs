@@ -7,7 +7,10 @@
 // computed from the fixture, and a settle below it is reported as unverified.
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { ENTRIES_PER_TURN, expectedEntries, STREAM_SIZES, streamTargetsFor, MEASURES } from '../scenario-workload.mjs';
+import { ENTRIES_PER_TURN, expectedEntries, STREAM_SIZES, streamTargetsFor, restoreStreamTargets, MEASURES } from '../scenario-workload.mjs';
+import { mkdtempSync, writeFileSync, appendFileSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const fixture = {
   projects: { alpha: '/f/projects/alpha', beta: '/f/projects/beta' },
@@ -61,5 +64,31 @@ describe('MEASURES tells the truth about the stream and the settle rule', () => 
   test('the painted clock says a stable count below the conversation size is not a settle', () => {
     assert.match(MEASURES.clocks.switchPaintedMedianMs, /at least what the conversation holds/);
     assert.ok(MEASURES.clocks['switchPaintedBySize.huge.medianMs'], 'the PRIMARY switch metric must have its clock defined');
+  });
+});
+
+describe('restoreStreamTargets', () => {
+  // Measured 2026-08-27: without this, repeat 2 resumed a 'medium' holding repeat
+  // 1's streamed turns — huge switch 10.9 -> 13.9 -> 14.6 s across three repeats
+  // of an unchanged app.
+  test('cuts each transcript back to its pre-stream bytes and empties the list', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'perf-lab-restore-'));
+    try {
+      const path = join(dir, 'm.jsonl');
+      writeFileSync(path, 'line1\nline2\n');
+      const list = [{ path, size: readFileSync(path).length }];
+      appendFileSync(path, 'streamed\nstreamed\n');
+      const warnings = [];
+      restoreStreamTargets(list, warnings);
+      assert.equal(readFileSync(path, 'utf8'), 'line1\nline2\n');
+      assert.deepEqual(warnings, []);
+      assert.equal(list.length, 0, 'a second call (the finally fallback) must be a no-op');
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+  test('a file that cannot be restored is a WARNING in the run, not a silent bigger conversation', () => {
+    const warnings = [];
+    restoreStreamTargets([{ path: '/nonexistent/perf-lab/x.jsonl', size: 10 }], warnings);
+    assert.equal(warnings.length, 1);
+    assert.match(warnings[0], /LARGER conversation than labelled/);
   });
 });

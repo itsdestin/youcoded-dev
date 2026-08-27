@@ -11,7 +11,7 @@
 // the app really produced, never one the rig faked.
 //
 // Node built-ins only (the workspace root has no package.json and must not gain one).
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, statSync, truncateSync } from 'node:fs';
 import { waitFor } from './cdp.mjs';
 import { cpuSnapshot, cpuPercent, pssMb } from './procs.mjs';
 import { transcriptLines } from './fixture.mjs';
@@ -282,7 +282,7 @@ async function installPageHelpers(cdp) {
        * overflow dropdown, so that is what we drive, and it is reported and
        * aggregated SEPARATELY because it also pays for opening a menu.
        */
-      switchTo: async (listIdx, name, sessionCount, measurePainted, expectedEntries) => {
+      switchTo: async (listIdx, name, sessionCount, measurePainted, expectedEntries, streaming) => {
         const t0 = performance.now();
         const paneBefore = visiblePaneIdx();
         const ps = pills();
@@ -363,6 +363,12 @@ async function installPageHelpers(cdp) {
           // from "paused" from "wrong transcript"; the count can. A null expectation
           // (native sessions) keeps the stability-only rule.
           const reached = (expectedEntries == null) || n >= expectedEntries;
+          // A STREAMING session never holds still — its count moves every time the
+          // watcher ingests a turn (measured: 0 of 6 such switches settled under the
+          // stability rule, all posting the cap). For it, "painted" is the first
+          // frame showing everything that had arrived by the click. Stability is
+          // required only where it can exist.
+          if (n >= 0 && reached && streaming) { last = n; settled = true; break; }
           if (n >= 0 && n === last && reached) { if (++stableFrames >= 3) { settled = true; break; } }
           else { stableFrames = 0; last = n; }
           await new Promise((r) => requestAnimationFrame(r));
@@ -490,6 +496,28 @@ export const STREAM_SIZES = Object.freeze(['medium', 'small']);
  * described, and each target carries its size so the run records exactly who was
  * streamed into (`streamedInto`, `streamedTurnsBySize`).
  */
+/**
+ * Cuts each streamed-into transcript back to the byte length it had before the
+ * streamer touched it, and empties the list so a second call is a no-op.
+ *
+ * WHY. The streamer appends to the FIXTURE's own transcript files and the workload
+ * repeats share one boot — so without this, repeat 2 resumes a 'medium' that
+ * already holds repeat 1's ~1,600 streamed turns, and every number grows run over
+ * run. Measured 2026-08-27 (stream-fix run): huge switch 10.9 → 13.9 → 14.6 s,
+ * long tasks 272 s → 459 s → 518 s, 'medium' showing 15,248 entries against 6,380
+ * expected. Truncation is exact: nothing but the streamer writes these files
+ * (fake-claude only creates a missing one; the app never writes CC transcripts).
+ * A failure is pushed to `warnings` because the next repeat would then measure a
+ * LARGER conversation than its label says.
+ */
+export function restoreStreamTargets(list, warnings = []) {
+  while (list.length) {
+    const r = list.shift();
+    try { truncateSync(r.path, r.size); }
+    catch (err) { warnings.push(`workload: could not restore ${r.path} to ${r.size} bytes (${err.message}) — later repeats in this boot resume a LARGER conversation than labelled`); }
+  }
+}
+
 export function streamTargetsFor(fixture, sizes = STREAM_SIZES) {
   const out = [];
   for (const size of sizes) {
@@ -587,10 +615,11 @@ export const MEASURES = {
     '3 of the 4 CC sessions are RESUMED from real transcripts (huge, medium, small), each in its transcript\'s own project folder; the 4th is deliberately left EMPTY as a control',
     'a transcript streams into the medium and small sessions throughout the window — never into huge (the one clean loaded switch) and never into the empty control; the run records streamedInto and streamedTurnsBySize',
     '40 switches spread evenly across the same window the CPU sample covers',
+    'the streamed-into transcripts are cut back to their original bytes after every repeat, so repeat N resumes the same conversation repeat 1 did',
   ],
   clocks: {
     switchMedianMs: 'click -> the visible pane CONTAINER swapped (2 animation frames). Does NOT wait for messages.',
-    switchPaintedMedianMs: 'click -> the messages are on screen: entry count stable for 3 frames AND at least what the conversation holds (2 per turn, plus what streamed in so far). A stable count below that is a render pause or the wrong conversation, not a settle. This is the number a user would recognise.',
+    switchPaintedMedianMs: 'click -> the messages are on screen: entry count stable for 3 frames AND at least what the conversation holds (2 per turn, plus what streamed in so far). A stable count below that is a render pause or the wrong conversation, not a settle. For the two STREAMING sessions the count never holds still, so their clock stops at the first frame showing everything that had arrived by the click. This is the number a user would recognise.',
     'switchPaintedBySize.huge.medianMs': 'the same clock, for switches INTO the huge conversation only — the PRIMARY switch metric, because it is the case Destin lives in and the only bucket no stream touches',
     cpuDuringPct: 'whole-process CPU across the workload window, from /proc',
   },
@@ -610,6 +639,8 @@ export async function runWorkloadScenario(app, fixture, {
   const ids = [];
   const warnings = [];
   let streamer = null;
+  // Byte lengths of the streamed-into transcripts before streaming — see restoreStreamTargets.
+  const streamRestore = [];
   try {
   // Installed INSIDE the try, not before it. FIXED 2026-08-27: these two lines sat
   // above `try {`, so a throw from the SECOND install skipped the finally that
@@ -779,6 +810,7 @@ export async function runWorkloadScenario(app, fixture, {
     if (targets.length !== STREAM_SIZES.length) {
       warnings.push(`workload: only ${targets.length}/${STREAM_SIZES.length} stream targets exist in the fixture (${targets.map((t) => t.size).join(', ') || 'none'}) — the load is lighter than this scenario describes`);
     }
+    for (const t of targets) streamRestore.push({ path: t.path, size: statSync(t.path).size });
     const windowMs = cpuSampleSeconds * 1000;
     // The relationship is explicit, not coincidental: the switches are spread
     // evenly across the SAME window the CPU sample and the streamer cover, so
@@ -820,8 +852,9 @@ export async function runWorkloadScenario(app, fixture, {
       const expected = size === 'empty' ? 0
         : t ? expectedEntries(t.turns, streamer.state.turnsBySize[size] ?? 0)
         : null;
+      const streaming = STREAM_SIZES.includes(size);
       const r = await cdp.evaluate(
-        `window.__perfLab.switchTo(${idx}, ${JSON.stringify(names[idx])}, ${ids.length}, ${paintedThis}, ${expected === null ? 'null' : expected})`);
+        `window.__perfLab.switchTo(${idx}, ${JSON.stringify(names[idx])}, ${ids.length}, ${paintedThis}, ${expected === null ? 'null' : expected}, ${streaming})`);
       // FIXED 2026-08-27: the timing used to be recorded BEFORE and independently
       // of `r.ok`. `ok` means the visible pane actually moved — so a click that
       // landed on nothing contributed its ~30 ms two-rAF non-event to
@@ -834,7 +867,7 @@ export async function runWorkloadScenario(app, fixture, {
       else { failedSwitches++; if (switchFailures.length < 5) switchFailures.push(r.reason); }
       if (r.ok) verifiedSwitches++;
       switches.push({
-        i, idx, name: names[idx], size, mode: r.mode, ok: r.ok, ms: r.ms,
+        i, idx, name: names[idx], size, streaming, mode: r.mode, ok: r.ok, ms: r.ms,
         paintedMs: r.paintedMs, entries: r.entries, expected: r.expectedEntries,
         settled: r.settled, short: r.short,
       });
@@ -881,6 +914,9 @@ export async function runWorkloadScenario(app, fixture, {
 
     const streamed = { ...streamer.state };
     streamer = null;
+    // Put the fixture transcripts back to their pre-stream bytes NOW, so a failure
+    // lands in this run's warnings; the finally below is the throw-path fallback.
+    restoreStreamTargets(streamRestore, warnings);
 
     // ── Settings open/close ──────────────────────────────────────────────
     // PSS is read twice: before the Settings toggle and after it, so a memory
@@ -984,6 +1020,7 @@ export async function runWorkloadScenario(app, fixture, {
     // poisoning every later scenario in the same boot. Cleanup is best-effort on
     // purpose — a cleanup failure must not mask the original error.
     if (streamer) { try { streamer.stop(); } catch { /* already stopped */ } }
+    restoreStreamTargets(streamRestore);
     if (!keepSessions) {
       for (const id of ids) {
         try { await cdp.evaluate(`window.claude.session.destroy(${JSON.stringify(id)})`); } catch { /* session already gone */ }
