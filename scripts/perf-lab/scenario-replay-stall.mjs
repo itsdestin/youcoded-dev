@@ -64,9 +64,15 @@ const POLL_MS = 500;
 // Consecutive unchanged polls that count as "done rendering" (4 × 500ms = 2s).
 const STABLE_SAMPLES = 4;
 // Hard ceiling on one resume watch. 240s matches scenario-history's, for the same
-// measured reason: the `huge` fixture (25,000 turns → 50,000 messages) takes ~122s to
-// finish rendering with the renderer blocked solid for much of it. A ceiling below the
-// real cost makes every huge sample a timeout, which is a permanently blind gate.
+// measured reason: a resume can block the renderer for MINUTES, and a ceiling below the
+// real cost makes every huge sample a timeout — a permanently blind gate.
+//
+// The 240s figure came from the plain-prose fixture, where `huge` was 25,000 turns /
+// 50,000 messages and rendered in ~122s. Since 9060b0d the fixture generates realistic
+// code-heavy content and `huge` is 3,500 turns / 7,000 messages, chosen precisely so it
+// stays under THIS ceiling (fixture.mjs SIZES documents the calibration). So the number
+// is still right, but do not read "25,000 turns" out of this comment — that regime is
+// only reachable via a raised ceiling plus larger SIZES.
 // A ceiling is still MANDATORY: without one, a wedged renderer hangs the rig forever
 // (a CDP evaluate never returns while the main thread is blocked, and cdp.mjs never
 // times a request out on its own).
