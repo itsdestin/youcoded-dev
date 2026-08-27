@@ -1,5 +1,7 @@
 # UI audit 2026-08-25 — screenshot evidence
 
+> Pages dated before 2026-08-27 were built by the v1 `review-cards.py` / `review-page.py`, which no longer exist in that form; their JSON specs stay as the record of what was asked. New decks use the v2 tool (`phase-c-review-v2.json` is the template; `scripts/ui-review/README.md`).
+
 - `gallery.html` — every captured surface, all themes side by side. Open the file in the
   app's file viewer or a browser. Names are `<plan>-<surface>` (`main-`, `overlays-`,
   `narrow-`, `tall-`, `latency-`, `marketplace-` from the workbench sweep; `live-` and

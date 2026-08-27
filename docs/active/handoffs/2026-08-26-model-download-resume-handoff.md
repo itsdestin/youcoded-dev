@@ -55,7 +55,7 @@ The plan was reviewed once against the code and rewritten. These were real error
 
 ## 4. The gate (Task 2, Step 13) — how to present it
 
-Destin reviews UI as a **cards page**, not a gallery and not prose: `python3 scripts/ui-review/review-cards.py build <spec.json>` (header comment documents the JSON). One card per item, the screenshot is the hero, numbered markers drawn on the image, a one-line problem + one-line fix + Yes/No per marker. He rejected both a gallery and a prose-first page on 2026-08-26 ("gotta read WAY too much text in different areas… images are poorly organized/annotated"). The plan says "present the sheets"; **this is the format**.
+Destin reviews UI as a **review deck** (v2 since 2026-08-27 — the format below is superseded): `python3 scripts/ui-review/review-cards.py serve <spec.json>` in the background; one point per step, Before | After with the changed region boxed by the rig, a headline and three cards (What changed / You'll notice / Risk), Yes / No / Other; answers reach Claude on Submit. Spec template: `docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json`; rules in `scripts/ui-review/README.md`. The v1 description that follows is kept for the record only — the old JSON shape no longer builds. He rejected both a gallery and a prose-first page on 2026-08-26 ("gotta read WAY too much text in different areas… images are poorly organized/annotated"). The plan says "present the sheets"; **this is the format**.
 
 Cards to build, from the rig's shots in all six themes:
 
