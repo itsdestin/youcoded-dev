@@ -324,6 +324,10 @@ class DiffTests(unittest.TestCase):
     def test_box_never_leaves_the_image(self):
         c = os.path.join(self.d, 'c.png'); subprocess.run(['magick', self.a, '-fill', 'red', '-draw', 'rectangle 0,0 9,9', c], check=True)
         box = diff_bbox(self.a, c); self.assertEqual((box['x'], box['y']), (0, 0))
+    def test_whole_image_change_is_the_whole_image(self):
+        # Trim of a uniform image is empty whether nothing or everything changed; the border in diff_bbox tells them apart.
+        w = os.path.join(self.d, 'w.png'); subprocess.run(['magick', '-size', '200x100', 'xc:white', w], check=True)
+        self.assertEqual(diff_bbox(self.a, w), {'x': 0, 'y': 0, 'w': 200, 'h': 100})
 
 if __name__ == '__main__': unittest.main()
 ```
@@ -381,11 +385,15 @@ def px_to_pct(box, size):
 
 def diff_bbox(a, b, threshold='6%', pad=6):
     """Bounding box (crop pixels) of what differs between two same-size PNGs; None if nothing does.
-    `%@` is ImageMagick's trim box of the thresholded difference (`0x0+W+H` when nothing differs);
-    the 3×3 dilate (`Square:1` — `Square:3` would be 7×7 and grow the box 3 px a side) joins
-    hairline changes into one region."""
+    `%@` is ImageMagick's trim box of the thresholded difference; the 3×3 dilate (`Square:1` —
+    `Square:3` would be 7×7 and grow the box 3 px a side) joins hairline changes into one region.
+    WHY the 1 px black border: trim of a UNIFORM image is `0x0+W+H` whether it is all black
+    (nothing changed) or all white (everything changed) — a whole-surface change read as "nothing
+    differs" until 2026-08-27. The border gives trim something to shrink from: identical → 0x0,
+    everything → WxH+1+1, so x and y come back shifted by 1."""
     out = subprocess.run(['magick', a, b, '-compose', 'difference', '-composite', '-threshold', threshold,
-                          '-morphology', 'Dilate', 'Square:1', '-format', '%@', 'info:'],
+                          '-morphology', 'Dilate', 'Square:1', '-bordercolor', 'black', '-border', '1',
+                          '-format', '%@', 'info:'],
                          capture_output=True, text=True, check=True).stdout.strip()
     m = GEO.fullmatch(out)
     if not m:
@@ -393,6 +401,7 @@ def diff_bbox(a, b, threshold='6%', pad=6):
     w, h, x, y = map(int, m.groups())
     if w * h < 4:
         return None
+    x, y = x - 1, y - 1   # undo the border's shift
     W, H = image_size(a)
     x0, y0 = max(0, x - pad), max(0, y - pad)
     x1, y1 = min(W, x + w + pad), min(H, y + h + pad)
@@ -402,7 +411,7 @@ def diff_bbox(a, b, threshold='6%', pad=6):
 - [ ] **Step 4: Run to verify pass**
 
 Run: `python3 -m unittest scripts/ui-review/tests/test_boxes.py -v 2>&1 | tail -3`
-Expected: `OK` (9 tests). Measured on 2026-08-27 with ImageMagick 7.1.2: identical images print `0x0+200+100` (plus a harmless warning on stderr, exit 0) — the `w * h < 4` guard turns that into `None`; the 40×30 rectangle comes back as `42x32+49+19` after the 3×3 dilate.
+Expected: `OK` (10 tests). Measured on 2026-08-27 with ImageMagick 7.1.2, with the border: identical images print `0x0+202+102` (plus a harmless warning on stderr, exit 0) — the `w * h < 4` guard turns that into `None`; a fully changed image prints `200x100+1+1`; the 40×30 rectangle comes back `42x32+50+20` after the 3×3 dilate (→ 49,19 once the border shift is undone).
 
 - [ ] **Step 5: Commit**
 
@@ -776,7 +785,8 @@ class BuildTests(unittest.TestCase):
     def test_builds_one_self_describing_page(self):
         html, warnings = build_page(self.spec, self.boxes)
         self.assertIn('<title>Fixture review</title>', html); self.assertIn('const DECK=', html)
-        self.assertIn('[data-theme="midnight"]{--canvas:#0D1117', html)      # tokens inlined
+        self.assertIn('<html lang="en" data-theme="midnight">', html)         # first paint already wears the first theme
+        self.assertIn(':root[data-theme="midnight"]{--canvas:#0D1117', html)  # tokens inlined, and outranking page.css's :root defaults
         self.assertIn('.chip{', html); self.assertIn("fetch('/answers'", html)  # css + js inlined
         self.assertEqual(warnings, [])
     def test_deck_data_shape(self):
@@ -803,6 +813,10 @@ class BuildTests(unittest.TestCase):
         self.assertIn('[data-theme="halftone-dimension"]{', tokens_css(t)); self.assertIn('--radius-md:16px', tokens_css(t))
     def test_unknown_theme_is_an_error(self):
         with self.assertRaises(SpecError): theme_tokens(['no-such-theme'])
+    def test_theme_tokens_outrank_the_page_defaults(self):
+        # page.css sets the deck's default radii under a bare :root in a LATER <style>; the theme block must be more specific or it loses the tie.
+        for line in tokens_css(theme_tokens(['midnight', 'halftone-dimension'])).split('\n'): self.assertTrue(line.startswith(':root[data-theme="'), line)
+        self.assertRegex(open(os.path.join(os.path.dirname(HERE), 'deck', 'page.css')).read(), r':root\{[^}]*--radius-md:')
     def test_script_safe_json(self):
         self.spec['steps'][0]['notice'] = 'a </script> tag'
         html, _ = build_page(self.spec, self.boxes); self.assertNotIn('</script> tag', html)
@@ -818,7 +832,7 @@ Expected: `ModuleNotFoundError: No module named 'deck.build'`
 - [ ] **Step 3: Write `page.html.tmpl`**
 
 ```html
-<!doctype html><html lang="en" data-theme="midnight"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>__TITLE__</title>
+<!doctype html><html lang="en" data-theme="__THEME__"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>__TITLE__</title>
 <style id="tokens">/*TOKENS*/</style>
 <style>/*CSS*/</style></head><body>
 <div class="deck">
@@ -1011,6 +1025,7 @@ figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.
     // Read by the render test: the choice, and the scores it was made from (so the test checks the RULE, not a table).
     document.body.dataset.layout = score[best] < 0.5 ? 'compact' : best;
     document.body.dataset.scores = JSON.stringify(score);
+    window.__deckReady = true;   // the render test waits for this — set only once a real layout has been chosen
     const b = $('#inner .frame .box'); if (b && zoom > 1) b.scrollIntoView({ block: 'center', inline: 'center' });
   }
 
@@ -1021,7 +1036,7 @@ figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.
     a.seconds = (a.seconds || 0) + Math.round((Date.now() - stepStart) / 1000); a.theme = theme; a.zoom = zoom;
     state.answers[id] = a;
   }
-  function go(i) { record(); cur = Math.max(0, Math.min(N - 1, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render(); }
+  function go(i) { if (state.submitted) return; record(); cur = Math.max(0, Math.min(N - 1, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render(); }   // after Submit nothing moves or saves
   $$('.ans').forEach(b => b.onclick = () => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), v: b.dataset.v }; paintState(); $('#note').focus(); });
   $('#note').addEventListener('input', e => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note: e.target.value }; });
   $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
@@ -1035,7 +1050,7 @@ figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.
     return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + counts.skip + ' skipped\n' + lines.join('\n');
   }
   function openDialog() {
-    record(); save();
+    record(); stepStart = Date.now(); paintState(); save();   // reset the clock (Keep reviewing → Done must not count twice) and grey the step just marked skip
     const missing = DECK.steps.map((st, i) => [(state.answers[st.id] || {}).v, i]).filter(([v]) => !v || v === 'skip').map(([, i]) => i + 1);
     $('#skipped').style.display = missing.length ? 'flex' : 'none';
     $('#skipn').textContent = missing.length + (missing.length === 1 ? ' step has' : ' steps have') + ' no answer (step' + (missing.length > 1 ? 's ' : ' ') + missing.join(', ') + ').';
@@ -1069,7 +1084,7 @@ figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.
   $('#zin').onclick = () => setZoom(zoom + 0.1); $('#zout').onclick = () => setZoom(zoom - 0.1);
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    if (e.key === 'ArrowRight') go(cur + 1); if (e.key === 'ArrowLeft') go(cur - 1);
+    if (!state.submitted) { if (e.key === 'ArrowRight') go(cur + 1); if (e.key === 'ArrowLeft') go(cur - 1); }
     if (e.key === '+' || e.key === '=') setZoom(zoom + 0.1); if (e.key === '-') setZoom(zoom - 0.1); if (e.key === '0') setZoom(1);
     if (e.key === 'l') { loupeOn = !loupeOn; if (!loupeOn) loupe.style.display = 'none'; document.body.classList.toggle('no-loupe', !loupeOn); }
   });
@@ -1078,7 +1093,7 @@ figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.
     const q = new URLSearchParams(location.search);
     cur = q.get('step') ? Math.max(0, Math.min(N - 1, +q.get('step') - 1)) : Math.max(0, Math.min(N - 1, state.cur || 0));
     if (q.get('theme') && DECK.themes.includes(q.get('theme'))) theme = q.get('theme');
-    stepStart = Date.now(); render(); window.__deckReady = true;   // the render test waits for this
+    stepStart = Date.now(); render();   // __deckReady is set by layout() once the first picture has decoded
   });
 })();
 ```
@@ -1133,10 +1148,13 @@ def theme_tokens(themes):
 
 
 def tokens_css(tokens):
+    # `:root[data-theme=…]` (specificity 0,2,0), not `[data-theme=…]` (0,1,0): page.css declares the
+    # deck's default radii under a bare `:root` in a LATER <style>, and an equal-specificity tie goes
+    # to the later rule — so Halftone's 16 px radii never won until 2026-08-27 (inherited from the mockup).
     lines = []
     for t, tok in tokens.items():
         decl = ';'.join(f'--{k}:{v}' for k, v in tok.items() if not k.startswith('_'))
-        lines.append(f'[data-theme="{t}"]{{{decl};color-scheme:{"dark" if tok.get("_dark", True) else "light"}}}')
+        lines.append(f':root[data-theme="{t}"]{{{decl};color-scheme:{"dark" if tok.get("_dark", True) else "light"}}}')
     return '\n'.join(lines)
 
 
@@ -1174,14 +1192,15 @@ def build_page(spec, boxes):
     page = read('page.html.tmpl')
     page = page.replace('/*TOKENS*/', tokens_css(theme_tokens(spec['themes']))).replace('/*CSS*/', read('page.css')).replace('/*JS*/', read('page.js'))
     # `</` inside the JSON would end the <script>; escaping it keeps the JSON valid.
-    page = page.replace('__TITLE__', html.escape(spec['title'])).replace('__DECK__', json.dumps(deck_data(spec, boxes)).replace('</', '<\\/'))
+    page = page.replace('__TITLE__', html.escape(spec['title'])).replace('__THEME__', html.escape(spec['themes'][0]))
+    page = page.replace('__DECK__', json.dumps(deck_data(spec, boxes)).replace('</', '<\\/'))
     return page, warnings
 ```
 
 - [ ] **Step 7: Run to verify pass**
 
 Run: `python3 -m unittest scripts/ui-review/tests/test_build.py -v 2>&1 | tail -3`
-Expected: `OK` (8 tests, none skipped).
+Expected: `OK` (9 tests, none skipped).
 
 - [ ] **Step 8: Commit**
 
@@ -1355,7 +1374,10 @@ def make_server(spec, port, on_submit):
 
         def do_POST(self):
             n = int(self.headers.get('content-length') or 0)
-            state = json.loads(self.rfile.read(n) or b'{}')
+            try:
+                state = json.loads(self.rfile.read(n) or b'{}')
+            except (ValueError, TypeError):
+                return self._json(400, {'error': 'body is not JSON'})   # a reply, never a dropped connection
             if self.path == '/answers':
                 write_atomic(apath, state)
                 return self._json(200, {'ok': True})
@@ -1388,14 +1410,23 @@ def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
         try:
             with open(lock) as f:
                 other = json.load(f)
-            os.kill(other['pid'], 0)
+            # kill(pid, 0) sends nothing: ProcessLookupError = dead, PermissionError = alive but not
+            # ours. Both are OSError, so they must be told apart or a live foreign lock reads as stale.
+            try:
+                os.kill(other['pid'], 0)
+            except ProcessLookupError:
+                raise ValueError('stale')
+            except PermissionError:
+                pass   # alive
             log(f'REFUSING: {spec["_stem"]} is already served by pid {other["pid"]} at {other["url"]}')
             return 3
         except (OSError, ValueError, KeyError):
-            pass   # stale lock
+            pass   # stale or unreadable lock
     result = {}
     holder = {}
 
+    # shutdown() blocks until serve_forever() returns, so calling it on a thread serve_forever owns
+    # (every handler thread is one) would deadlock — it always runs on a throwaway thread.
     def on_submit(state):
         result['state'] = state
         threading.Thread(target=holder['srv'].shutdown, daemon=True).start()
@@ -1450,7 +1481,7 @@ def wait_for_submit(spec, timeout_min=240, poll_s=2, log=print):
 - [ ] **Step 4: Run to verify pass**
 
 Run: `python3 -m unittest scripts/ui-review/tests/test_serve.py -v 2>&1 | tail -3`
-Expected: `OK` (6 tests)
+Expected: `OK` (8 tests — the two added by the 2026-08-27 review: a non-JSON POST gets a 400 and writes nothing; a lock naming pid 1 — alive, not ours — still refuses with 3)
 
 - [ ] **Step 5: Commit**
 
@@ -1964,9 +1995,9 @@ test('deck renders at three sizes and records an answer', async () => {
     await sleep(800);
     const url = `http://127.0.0.1:${port}/fixture.html`;
     // The rule from spec §3.4, applied to the scores the page publishes: B/C/D must beat A by >5% to win;
-    // best under 50% → compact. 520 px wide cannot show two 400 px crops at half size, so compact is certain there.
+    // best under 50% → compact. At 400 px wide two 400 px crops side by side reach only ~39%, so compact is certain there (at 520 they still fit at 51% — measured 2026-08-27).
     const expected = scores => { let best = 'A'; for (const k of ['B', 'C', 'D']) if (scores[k] > scores[best] * 1.05) best = k; return scores[best] < 0.5 ? 'compact' : best; };
-    for (const size of ['1920x1080', '1100x900', '520x760']) {
+    for (const size of ['1920x1080', '1100x900', '400x760']) {
       const [w, h] = size.split('x').map(Number); const c = await cdp(await freePort(), w, h);
       try {
         await c.send('Page.navigate', { url: url + '?step=2' });
@@ -1975,7 +2006,7 @@ test('deck renders at three sizes and records an answer', async () => {
         assert.deepEqual(c.errors, [], size);
         const scores = JSON.parse(await c.evaluate('document.body.dataset.scores'));
         assert.equal(await c.evaluate('document.body.dataset.layout'), expected(scores), size + ' ' + JSON.stringify(scores));
-        if (size === '520x760') assert.equal(await c.evaluate('document.body.dataset.layout'), 'compact', size);
+        if (size === '400x760') assert.equal(await c.evaluate('document.body.dataset.layout'), 'compact', size);
         assert.equal(await c.evaluate("getComputedStyle(document.querySelector('.controls')).display !== 'none' && document.querySelector('.controls').getBoundingClientRect().bottom <= innerHeight"), true, size + ' controls on screen');
         assert.equal(await c.evaluate("document.querySelectorAll('#inner .frame').length"), 2, size);
         assert.equal(await c.evaluate("document.querySelector('#inner .box').style.left"), '25%', size + ' measured box');
