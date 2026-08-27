@@ -66,7 +66,8 @@ def run_names(spec):
 
 
 def word_count(s):
-    return len(re.findall(r"[\w''-]+", s or ''))
+    # A curly apostrophe (’, pasted from a word processor) must stay inside its word, or "it’s" counts as two.
+    return len(re.findall(r"[\w'’-]+", s or ''))
 
 
 def banned_in(text):

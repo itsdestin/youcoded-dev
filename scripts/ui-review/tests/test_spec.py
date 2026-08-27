@@ -60,5 +60,6 @@ class SpecTests(unittest.TestCase):
         self.assertTrue(any('duplicate id' in e for e in validate(s)[0]))
     def test_word_count(self):
         self.assertEqual(word_count("it's a two-line, five-word headline"), 5)
+        self.assertEqual(word_count("it’s a two-line, five-word headline"), 5)   # curly apostrophe is one word too
 
 if __name__ == '__main__': unittest.main()
