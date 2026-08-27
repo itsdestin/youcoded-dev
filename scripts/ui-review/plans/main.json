@@ -324,6 +324,7 @@
   },
   {
    "name": "skills-drawer",
+   "measure": ["js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='★ Favorites only')?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='★ Favorites only')?.parentElement?.firstElementChild", "js:document.querySelector(\"[title='Open marketplace']\")?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))"],
    "actions": [
     {
      "click": "[title='Browse skills']",
@@ -331,6 +332,12 @@
     }
    ],
    "expect": "[title='Open marketplace']"
+  },
+  {
+   "name": "skills-drawer-end",
+   "measure": ["js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))?.parentElement"],
+   "actions": [{"click": "[title='Browse skills']", "settle": 800}, {"eval": "document.querySelector('.scroll-fade').scrollTop=1e6", "settle": 400}],
+   "expect": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))"
   },
   {
    "name": "marketplace",
@@ -358,7 +365,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Themes')",
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))",
      "settle": 1500
     }
    ]
@@ -397,7 +404,7 @@
      "settle": 1200
     },
     {
-     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Themes')",
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))",
      "settle": 1200
     }
    ]
@@ -541,6 +548,7 @@
   },
   {
    "name": "find-bar",
+   "measure": ["js:document.querySelector(\"[placeholder='Find in chat']\")?.closest('.find-row, .absolute')", "[placeholder='Find in chat']"],
    "actions": [
     {
      "click": "[placeholder^='Message']",
@@ -586,12 +594,10 @@
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
      "settle": 900
-    },
-    {
-     "click": "[aria-label='Edit Midnight']",
-     "settle": 900
     }
-   ]
+   ],
+   "expect": "js:!!document.querySelector(\"[aria-label^='Customization unavailable']\")",
+   "_comment": "Since 2026-08-27 built-ins have no editor: the pencil is aria-disabled with a tooltip. The shot is the Themes dialog with at least one greyed pencil present."
   },
   {
    "name": "theme-edit-community",
@@ -640,6 +646,7 @@
   },
   {
    "name": "welcome-empty",
+   "measure": ["[title='Settings']", "[title='Projects']", "js:document.querySelector('.header-bar')", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume Session')?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session')"],
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty",
    "actions": [],
    "sameAsBaseline": true,

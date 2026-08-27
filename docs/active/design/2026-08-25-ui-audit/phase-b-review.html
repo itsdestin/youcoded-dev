@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Phase B review — dialog headers, tool-card dividers, the status bar</title>
+<style>
+  :root { --ink:#1b1b1b; --ink2:#555; --line:#d8d8d8; --bg:#fafafa; --card:#fff; --acc:#2055ca; --warnbg:#fff6e0; }
+  * { box-sizing:border-box }
+  body { margin:0; padding:24px 28px 120px; font:15px/1.55 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color:var(--ink); background:var(--bg); max-width:1500px; }
+  h1 { font-size:26px; margin:0 0 6px } h2 { font-size:21px; margin:44px 0 6px; padding-top:18px; border-top:2px solid var(--line) }
+  h3 { font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink2); margin:22px 0 6px }
+  p, li { max-width:900px } .lead { font-size:16px; color:var(--ink2) }
+  code { font:13px ui-monospace, SFMono-Regular, Menlo, monospace; background:#eee; padding:1px 4px; border-radius:3px }
+  table { border-collapse:collapse; margin:8px 0 } th, td { border:1px solid var(--line); padding:6px 10px; vertical-align:top; text-align:left }
+  th { background:#f0f0f0; font-weight:600 } .num td:not(:first-child) { text-align:right; font-variant-numeric:tabular-nums }
+  .crops table { background:#8a8a8a } .crops th { background:#e9e9e9 } .crops th.theme { white-space:nowrap }
+  .crops td { padding:6px; background:#8a8a8a } .crops img { display:block; max-width:100%; height:auto; box-shadow:0 1px 4px rgba(0,0,0,.4) }
+  .crops td.missing { color:#fff; font-style:italic } .capnote { font-size:13px; color:var(--ink2); margin:4px 0 6px }
+  .box { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:14px 18px; margin:10px 0; max-width:960px }
+  .warn { background:var(--warnbg); border-color:#e8c98a }
+  .kind { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; padding:2px 8px; border-radius:10px; vertical-align:middle; margin-left:8px; cursor:help }
+  .kind-measured { background:#e3f3e8; color:#0a6a2c } .kind-judgment { background:#fff0d6; color:#7a4d00 } .kind-mixed { background:#e8ecf7; color:#2b3f7a }
+  .decide { background:#eef3ff; border:1px solid #c5d3f5; border-radius:8px; padding:12px 16px; margin:14px 0 6px; max-width:960px }
+  .decide .radios label { display:inline-block; margin:0 18px 6px 0; cursor:pointer } .decide textarea { width:100%; min-height:56px; margin-top:6px; font:14px system-ui; padding:8px; border:1px solid #c5d3f5; border-radius:6px }
+  .bad { color:#b00020; font-weight:600 } .good { color:#0a7a2f; font-weight:600 }
+  #summary { position:fixed; right:0; bottom:0; left:0; background:#111; color:#eee; padding:10px 28px; display:flex; gap:16px; align-items:center; font-size:14px; box-shadow:0 -2px 12px rgba(0,0,0,.3) }
+  #summary button { font:14px system-ui; padding:8px 14px; border-radius:6px; border:0; background:var(--acc); color:#fff; cursor:pointer } #summary .st { flex:1; opacity:.85 }
+  #feedback { width:100%; min-height:160px; font:13px ui-monospace, monospace; padding:10px; border:1px solid var(--line); border-radius:6px }
+  .toc a { margin-right:16px }
+</style></head><body>
+<h1>Phase B review — dialog headers, tool-card dividers, the status bar</h1>
+<p class="lead">Three items from the ledger, built on the branch <code>feat/ui-phase-b</code> and shown as 1:1 crops from verified screenshots of the real app (workbench, six themes). Each item has a measured part (a broken behaviour or a number) and, where marked, a judgment part built alongside so you can see it — reject the judgment part and only the measured fix ships.</p>
+<div class="box"><strong>How to review.</strong> Read each section, look at the crops, click a decision and add notes if you want something different. The bar at the bottom collects everything into one block of text — press <em>Copy feedback</em> and paste it into the chat. Your selections are remembered by this page if you close it and come back.<br><span style="font-size:13px">Each change is tagged: <span class="kind kind-measured">measured</span> A number or a broken behaviour you can check — not taste. · <span class="kind kind-judgment">judgment</span> A consistency/taste argument. The baseline is not broken; say no freely. · <span class="kind kind-mixed">mixed</span> Part measured, part judgment — the sections say which is which.</span></div>
+<div class="box warn"><strong>Decided 2026-08-26.</strong> P-15 approved as revised and P-18 approved — merged as youcoded #328. P-10 rejected; the status bar is unchanged. The page is kept as the record of what was shown.</div>
+<p class="toc"><a href="#P-15">P-15 Every dialog gets a title and a ✕ — and no Cancel beside it</a> <a href="#P-18">P-18 Tool cards: a real divider instead of a typed "|"; AskUserQuestion looks like its siblings</a> <a href="#fb">Feedback</a></p>
+<h2 id="P-15">P-15 — Every dialog gets a title and a ✕ — and no Cancel beside it <span class="kind kind-measured" title="A number or a broken behaviour you can check — not taste.">measured</span></h2>
+<h3>The problem</h3>
+<p><strong>Report a bug</strong> and <strong>Donate</strong> were the only dialogs with no title row and no ✕ — Escape was the only way out. The <strong>Development</strong> menu that leads to the bug report drew its own small uppercase heading instead of the shared header. In the <strong>Close session</strong> prompt, the footer was the tallest row of the dialog: <em>"Don't show again"</em> wrapped onto two lines beside its toggle and the primary button broke into <em>"Close / session"</em>.</p><p>(The ledger also said About and Permissions cut their content with no scroll cue — checking the code, both already have the fade. Nothing to do there; the claim was stale.)</p>
+<h3>What changed (as revised)</h3>
+<ul><li><strong>Report a bug</strong>, <strong>Donate</strong> and the <strong>Development</strong> menu pass a <code>title</code> to the shared <code>Dialog</code>, which draws the same header every other dialog has (title · ✕). Bug report's title follows the Bug/Feature switch.</li><li><strong>Donate</strong> is retitled <em>Support YouCoded</em>; with a ✕ to dismiss it, the <em>Cancel</em> button is gone and the body is one line of explanation and one full-width action, <em>Open Buy Me a Coffee</em>.</li><li><strong>Close session</strong>: the header is the shared one (title + session name); <em>Cancel</em> is gone (the ✕ is cancel); <em>"Don't show again"</em> stays bottom-left on the standard switch, and with a single button on the right nothing wraps.</li></ul>
+<h3>What you will notice, and the risks</h3>
+<ul><li>Three dialogs gain a title row and a ✕. Two lose their <em>Cancel</em> button — the ✕ (and Escape) do that job. Risk: someone used to clicking Cancel in the close-session prompt reaches for the ✕ instead; nothing else changes.</li></ul>
+<h3>Look</h3>
+<div class="crops">
+<p class="capnote">Report a bug.</p>
+<table><thead><tr><th></th><th>Before (master today)</th><th>After (branch feat/ui-phase-b)</th></tr></thead><tbody>
+<tr><th class="theme">Midnight</th>
+<td><img src="images/phase-b/bugreport-dialog--midnight--before.png" style="zoom:1.0" loading="lazy" alt="bugreport-dialog midnight before"></td>
+<td><img src="images/phase-b/bugreport-dialog--midnight--A.png" style="zoom:1.0" loading="lazy" alt="bugreport-dialog midnight A"></td>
+</tr>
+<tr><th class="theme">Light</th>
+<td><img src="images/phase-b/bugreport-dialog--light--before.png" style="zoom:1.0" loading="lazy" alt="bugreport-dialog light before"></td>
+<td><img src="images/phase-b/bugreport-dialog--light--A.png" style="zoom:1.0" loading="lazy" alt="bugreport-dialog light A"></td>
+</tr>
+</tbody></table></div>
+<div class="crops">
+<p class="capnote">Donate.</p>
+<table><thead><tr><th></th><th>Before (master today)</th><th>After (branch feat/ui-phase-b)</th></tr></thead><tbody>
+<tr><th class="theme">Midnight</th>
+<td><img src="images/phase-b/donate-dialog--midnight--before.png" style="zoom:1.0" loading="lazy" alt="donate-dialog midnight before"></td>
+<td><img src="images/phase-b/donate-dialog--midnight--A.png" style="zoom:1.0" loading="lazy" alt="donate-dialog midnight A"></td>
+</tr>
+<tr><th class="theme">Light</th>
+<td><img src="images/phase-b/donate-dialog--light--before.png" style="zoom:1.0" loading="lazy" alt="donate-dialog light before"></td>
+<td><img src="images/phase-b/donate-dialog--light--A.png" style="zoom:1.0" loading="lazy" alt="donate-dialog light A"></td>
+</tr>
+</tbody></table></div>
+<div class="crops">
+<p class="capnote">Development menu (the step before the bug report).</p>
+<table><thead><tr><th></th><th>Before (master today)</th><th>After (branch feat/ui-phase-b)</th></tr></thead><tbody>
+<tr><th class="theme">Midnight</th>
+<td><img src="images/phase-b/development-menu--midnight--before.png" style="zoom:1.0" loading="lazy" alt="development-menu midnight before"></td>
+<td><img src="images/phase-b/development-menu--midnight--A.png" style="zoom:1.0" loading="lazy" alt="development-menu midnight A"></td>
+</tr>
+<tr><th class="theme">Light</th>
+<td><img src="images/phase-b/development-menu--light--before.png" style="zoom:1.0" loading="lazy" alt="development-menu light before"></td>
+<td><img src="images/phase-b/development-menu--light--A.png" style="zoom:1.0" loading="lazy" alt="development-menu light A"></td>
+</tr>
+</tbody></table></div>
+<div class="crops">
+<p class="capnote">Close session — the footer.</p>
+<table><thead><tr><th></th><th>Before (master today)</th><th>After (branch feat/ui-phase-b)</th></tr></thead><tbody>
+<tr><th class="theme">Light</th>
+<td><img src="images/phase-b/close-dialog--light--before.png" style="zoom:1.0" loading="lazy" alt="close-dialog light before"></td>
+<td><img src="images/phase-b/close-dialog--light--A.png" style="zoom:1.0" loading="lazy" alt="close-dialog light A"></td>
+</tr>
+<tr><th class="theme">Midnight</th>
+<td><img src="images/phase-b/close-dialog--midnight--before.png" style="zoom:1.0" loading="lazy" alt="close-dialog midnight before"></td>
+<td><img src="images/phase-b/close-dialog--midnight--A.png" style="zoom:1.0" loading="lazy" alt="close-dialog midnight A"></td>
+</tr>
+<tr><th class="theme">Meadow Mist</th>
+<td><img src="images/phase-b/close-dialog--meadow-mist--before.png" style="zoom:1.0" loading="lazy" alt="close-dialog meadow-mist before"></td>
+<td><img src="images/phase-b/close-dialog--meadow-mist--A.png" style="zoom:1.0" loading="lazy" alt="close-dialog meadow-mist A"></td>
+</tr>
+</tbody></table></div>
+<p>Full sheets: <a href="images/phase-b/sheets/overlays-development-bug-report.jpg">overlays-development-bug-report</a> · <a href="images/phase-b/sheets/main-settings-donate.jpg">main-settings-donate</a> · <a href="images/phase-b/sheets/main-settings-development.jpg">main-settings-development</a> · <a href="images/phase-b/sheets/overlays-close-session-prompt.jpg">overlays-close-session-prompt</a></p>
+<div class="decide" data-item="P-15">
+  <div class="radios"><label><input type="radio" name="P-15" value="Approve as revised"> Approve as revised</label><label><input type="radio" name="P-15" value="Approve with changes"> Approve with changes</label><label><input type="radio" name="P-15" value="Reject"> Reject</label></div>
+  <textarea data-notes="P-15" placeholder="Notes (optional): what to change, what you like, what worries you"></textarea>
+</div>
+<h2 id="P-18">P-18 — Tool cards: a real divider instead of a typed "|"; AskUserQuestion looks like its siblings <span class="kind kind-mixed" title="Part measured, part judgment — the sections say which is which.">mixed</span></h2>
+<h3>The problem</h3>
+<p><strong>Measured:</strong> every tool-card header, and the button row of the full-auto stop card, used a typed <code>|</code> character as a divider. It takes the text colour rather than the theme's line colour, sits on the text baseline instead of centred, and screen readers read it aloud. It appears on every tool call in every conversation.</p><p><strong>Judgment:</strong> the AskUserQuestion card's header stopped after its label (<code>ⓘ | Framework ▾</code>) while every other card reads <em>label ↳ detail</em>; its option rows used their own corner radius and colours; and its radio/checkbox glyph's rounding was written in a way the styling tool cannot see, so it may not have been drawn round at all.</p>
+<h3>What changed</h3>
+<ul><li><strong>Measured:</strong> both dividers are now a 1-pixel line element in the theme's edge colour, centred, invisible to screen readers.</li><li><strong>Judgment:</strong> the AskUserQuestion header now reads <em>Framework ↳ Which framework should the new dashboard use?</em> like its siblings; its option rows use one shared row style (medium corners, edge-coloured border, accent tint when selected); the round/square glyph is now written so it actually renders.</li></ul>
+<h3>What you will notice, and the risks</h3>
+<ul><li>The pipe character is gone from every tool card; a thin line sits in its place.</li><li>AskUserQuestion's header carries the first question, so you can read what is being asked without expanding; its rows look like the rest of the app's rows. Risk: this is the card you interact with most, so its shape changing is the most noticeable thing in Phase B — that is why it is tagged judgment.</li></ul>
+<h3>Look</h3>
+<div class="crops">
+<p class="capnote">A tool-card header — the divider after the status glyph.</p>
+<table><thead><tr><th></th><th>Before (master today)</th><th>After (branch feat/ui-phase-b)</th></tr></thead><tbody>
+<tr><th class="theme">Midnight</th>
+<td><img src="images/phase-b/toolcard-header--midnight--before.png" style="zoom:2" loading="lazy" alt="toolcard-header midnight before"></td>
+<td><img src="images/phase-b/toolcard-header--midnight--A.png" style="zoom:2" loading="lazy" alt="toolcard-header midnight A"></td>
+</tr>
+<tr><th class="theme">Light</th>
+<td><img src="images/phase-b/toolcard-header--light--before.png" style="zoom:2" loading="lazy" alt="toolcard-header light before"></td>
+<td><img src="images/phase-b/toolcard-header--light--A.png" style="zoom:2" loading="lazy" alt="toolcard-header light A"></td>
+</tr>
+</tbody></table></div>
+<div class="crops">
+<p class="capnote">AskUserQuestion card in the tool gallery.</p>
+<table><thead><tr><th></th><th>Before (master today)</th><th>After (branch feat/ui-phase-b)</th></tr></thead><tbody>
+<tr><th class="theme">Midnight</th>
+<td><img src="images/phase-b/askuser--midnight--before.png" style="zoom:1.0" loading="lazy" alt="askuser midnight before"></td>
+<td><img src="images/phase-b/askuser--midnight--A.png" style="zoom:1.0" loading="lazy" alt="askuser midnight A"></td>
+</tr>
+<tr><th class="theme">Dark</th>
+<td><img src="images/phase-b/askuser--dark--before.png" style="zoom:1.0" loading="lazy" alt="askuser dark before"></td>
+<td><img src="images/phase-b/askuser--dark--A.png" style="zoom:1.0" loading="lazy" alt="askuser dark A"></td>
+</tr>
+</tbody></table></div>
+<p>Full sheets: <a href="images/phase-b/sheets/main-tool-card-expanded.jpg">main-tool-card-expanded</a> · <a href="images/phase-b/sheets/tall-tool-gallery.jpg">tall-tool-gallery</a></p>
+<div class="decide" data-item="P-18">
+  <div class="radios"><label><input type="radio" name="P-18" value="Approve both"> Approve both</label><label><input type="radio" name="P-18" value="Approve the divider only (revert the AskUserQuestion changes)"> Approve the divider only (revert the AskUserQuestion changes)</label><label><input type="radio" name="P-18" value="Reject"> Reject</label></div>
+  <textarea data-notes="P-18" placeholder="Notes (optional): what to change, what you like, what worries you"></textarea>
+</div>
+<h2 id="other">What did <em>not</em> change</h2><ul><li>P-10 (status bar) — rejected in review; reverted, unchanged from master.</li><li>No token, colour or spacing changed outside the elements shown.</li><li>About/Permissions: already had the scroll fade; the ledger line was wrong and is corrected.</li></ul>
+<h2 id="fb">Feedback</h2>
+<p>This block is generated from your choices above. Copy it and paste it into the chat.</p>
+<textarea id="feedback" readonly></textarea>
+<div id="summary"><span class="st" id="status">No decisions yet.</span><button id="copy">Copy feedback</button></div>
+<script>
+(function(){
+  const items=["P-15", "P-18"]; const KEY="Phase B";
+  let state={}; try{ state=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){}
+  function render(){
+    const lines=[KEY+' feedback ('+new Date().toISOString().slice(0,10)+')']; let decided=0;
+    for(const id of items){ const s=state[id]||{}; if(s.choice) decided++;
+      lines.push(id+': '+(s.choice||'(no decision)')+(s.notes?' — '+s.notes.replace(/\s+/g,' ').trim():'')); }
+    document.getElementById('feedback').value=lines.join('\n');
+    document.getElementById('status').textContent=decided+' of '+items.length+' decided'+(decided<items.length?' — scroll up for the rest':' — ready to copy');
+  }
+  document.querySelectorAll('.decide').forEach(box=>{
+    const id=box.dataset.item; const s=state[id]||{};
+    box.querySelectorAll('input[type=radio]').forEach(r=>{ if(r.value===s.choice) r.checked=true;
+      r.addEventListener('change',()=>{ state[id]=Object.assign(state[id]||{}, {choice:r.value}); save(); }); });
+    const ta=box.querySelector('textarea'); ta.value=s.notes||'';
+    ta.addEventListener('input',()=>{ state[id]=Object.assign(state[id]||{}, {notes:ta.value}); save(); });
+  });
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} render(); }
+  document.getElementById('copy').addEventListener('click',()=>{
+    const t=document.getElementById('feedback'); t.select();
+    const done=()=>{ document.getElementById('status').textContent='Copied — paste it into the chat.'; };
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t.value).then(done,()=>{ document.execCommand('copy'); done(); }); }
+    else { document.execCommand('copy'); done(); }
+  });
+  render();
+})();
+</script>
+</body></html>

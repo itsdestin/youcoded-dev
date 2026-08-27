@@ -48,18 +48,29 @@ the reason. **A review must quote `coverage.md` and call unverified surfaces "un
 
 ## Pieces
 
+**Two sweeps at once:** `run-review.sh` now probes every CDP port it is about to use (`probe-ports.sh`) and refuses, naming the busy ports — keep offsets ≥ 100 apart and it will never trigger.
+
 | File | Job |
 |---|---|
 | `shot.mjs` | raw-CDP driver: boots the page per shot, runs actions, verifies, screenshots, runs the contrast probe. `ATTACH_PORT=<port>` drives a running Electron instance instead of headless Chrome. |
-| `plans/*.json` | what to open. `main` (screens + settings + overlays), `overlays` (context menus, prompts, wizard, stalled card, project overlays…), `narrow` (390 px), `tall` (full tool gallery), `latency` (2 s fake IPC → loading states), `electron-welcome` + `electron-live-session` (real app; see below). |
+| `plans/*.json` | what to open. `main` (screens + settings + overlays), `overlays` (context menus, prompts, wizard, stalled card, project overlays…), `narrow` (390 px), `tall` (full tool gallery), `latency` (2 s fake IPC → loading states), `marketplace` (registry data: hero, cards, detail, Library with content), `empty-marketplace` (`?marketplace=empty` — a brand-new install: nothing installed, registry unreachable; the Library/“Nothing matches” empty states), `electron-welcome` + `electron-live-session` (real app; see below). |
 | `montage.sh` | one sheet per surface, themes side by side, verified shots only. |
 | `montage-ab.sh` | before/after sheets for a UI PR: `montage-ab.sh <out> <plan/name,…> <themes> before=<runA> after=<runB> [more=<runC>]` — one sheet per surface, a row per theme, a column per run. |
 | `contrast-report.mjs` | aggregates the painted-pixel probe (fg vs *actual* bg) — catches hardcoded colours and translucent surfaces the token audit can't. Over-reports on glass themes; read it, don't paste it. |
 | `coverage.mjs` | covered / partial / MISSED per surface × theme, with reasons. |
 | `make-gallery.py` | the HTML gallery. |
-| `review-page.py` + `crops.json` | **the review surface** — `crop <spec>` cuts 1:1 crops of the affected elements from run dirs, `build <spec>` writes one page per phase: per change the problem with numbers, the exact edit, before/after crops per theme, risks, alternatives, a `measured`/`judgment`/`mixed` tag and a decision control that assembles a copyable feedback block. Spec template: `docs/active/design/2026-08-25-ui-audit/phase-a-review.json`. |
+| `review-cards.py` + `deck/` + `crops.json` | **the review surface** (v2, 2026-08-27). `build <spec>` cuts 1:1 crops from the run dirs, resolves every highlight box — from the rig's `measure` of a named element, or from the pixel difference between Before and After (the spec never carries coordinates; an optional `labels` map renames the run captions (`{"before": "Round 1", "after": "Round 2"}`)) — and writes the page; it refuses (no page) on a missing picture, an unresolved box, or a broken writing rule. A one-run deck (`runs: {"today": …}`) is a **brief** — its buttons read *build it / leave it* instead of *keep it / revert it*. A **choice step** (`variants: [{id, label, crop, summary, measured?, risk?, highlight?}, …]` instead of `crop/changed/notice`) puts several pictures of ONE question on one page with a pick-one answer (`P-19 pick B`; "None of these" reports `none`) — Destin's rule (2026-08-27): variants of the same thing are one question, never a yes/no each. Its pictures come from the deck's last run. A step may carry its own `themes` list when its picture exists in one theme only (a real-app capture — the terminal, a live session); that step shows just those pills and the deck does not demand the other themes for it (`phase-d-brief.json`, P-20). `serve <spec>` builds, serves on 127.0.0.1 (the root redirects to the deck; folders never list; the exact URL is printed as `[deck] http://…` and kept in `<spec>.serve.json`), opens the browser, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background and its exit is the notification, with the feedback summary on stdout; `wait <spec>` blocks on the answers file alone for a session that no longer holds that process. Spec template: `docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json`. |
+| `review-page.py` | the earlier prose-first review page (Phase A/B pages). Rejected as a review surface on 2026-08-26 — do not use for new phases. |
 
 ## Writing a shot
+
+`"measure": ["#send", {"text": "Send"}]` on a shot records those elements' window rectangles in
+the manifest (`measures`), which is how a review deck gets an exact highlight box. A missing
+element fails the shot. **Plan the `measure` lines before the Before run** — a measurement can
+only come from a capture, and the Before code is usually gone by the time the deck is written
+(the Phase C rebuild had to be pixel-diff only for exactly this reason). Prefer `aria-label` /
+role / `data-testid` selectors over visible text — one copy change broke three plans' `expect`s
+in a day (hand-off gap 5).
 
 ```json
 { "name": "close-session-prompt",

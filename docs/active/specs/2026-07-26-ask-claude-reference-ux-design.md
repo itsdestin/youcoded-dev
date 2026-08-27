@@ -1,16 +1,41 @@
 ---
 status: active
+parked: 2026-07-28
 date: 2026-07-26
 owner: Destin (decisions) / Claude (spec)
 artifact: https://claude.ai/code/artifact/bed5f7ea-1a2e-431f-9d2c-563fd3bcdee4
 supersedes: nothing
-implements: ROADMAP.md:366 — "Ask about this" — native compose/quoted-reference version
+branch: feat/ask-claude-reference-ux (worktree worktrees/ask-reference, youcoded PR #263 — DRAFT)
+implements: ROADMAP.md — "Ask about this" — native reference UX (search the title; the old
+  `:366` line anchor is stale — the item sits at line 806 as of 2026-08-26)
 ---
 
 # "Ask Claude about this" — native reference UX
 
-**Status: design approved in chat 2026-07-26; spec pending Destin's review. Implementation in
-flight on `feat/ask-claude-reference-ux` (27 commits ahead as of 2026-08-12).**
+> ## STATUS AS OF 2026-08-26 — PARKED, NOT IN FLIGHT
+>
+> The design in this spec is **implemented but unmerged and unaccepted**. All nine tasks of the
+> plan landed on `feat/ask-claude-reference-ux` (27 commits, +5685/−173 over 34 files, last
+> commit `cf44e6c3` on 2026-07-28). Nothing has been committed to the branch since — 29 days
+> idle as of this note.
+>
+> **youcoded PR #263 is open as a GitHub *draft*, titled "DRAFT / INCOMPLETE".** Its body says
+> the state/builder/menu/composer half is settled and well-tested, and that the **visual overlay
+> layer is not** — it absorbed five rounds of point fixes and a reviewer should expect either
+> substantial further work or a **rewrite of the overlay**. Read the PR body before trusting any
+> "how it looks" claim in §5–§8 below; those sections describe the intended design, not a
+> signed-off result.
+>
+> **Destin's own verdict (conversation `81c6d4ca`, 2026-07-28):** *"this did not go particularly
+> well. the 'ask about this' ui was decent for messages, but janky af for the artifact viewer.
+> needs some additional work before integrating."* The artifact-viewer variant (§7 / change 7 in
+> the ledger) is the specific part he rejected. That is a **product judgment blocked on Destin**,
+> not a bug list.
+>
+> `status: active` is kept because the ROADMAP item is still open and nothing supersedes this
+> spec — but read it as "parked with intent to resume", not "someone is working on it".
+
+**Design approved in chat 2026-07-26; spec never formally reviewed by Destin.**
 
 Replaces the v1 "Ask about this" behaviour (shipped 2026-07-17, youcoded PR #169) — which pastes a
 raw prompt scaffold into the composer — with a held, visible reference: the source is pinned on

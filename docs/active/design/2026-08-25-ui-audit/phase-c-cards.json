@@ -1,0 +1,463 @@
+{
+  "out": "phase-c-cards.html",
+  "images": "images/phase-c",
+  "key": "Phase C",
+  "runs": {
+    "today": "/home/destin/youcoded-dev/scratch/ui-phase-c-baseline"
+  },
+  "labels": {
+    "today": "Today"
+  },
+  "crops": {
+    "themes-dialog": [
+      "main",
+      "settings-appearance",
+      "440x600+500+150"
+    ],
+    "theme-edit-builtin": [
+      "main",
+      "theme-edit-builtin",
+      "440x600+500+150"
+    ],
+    "market-hero": [
+      "marketplace",
+      "marketplace",
+      "900x200+0+50"
+    ],
+    "market-card-counts": [
+      "main",
+      "marketplace",
+      "600x150+10+375"
+    ],
+    "market-themes-rows": [
+      "marketplace",
+      "marketplace-themes",
+      "1440x300+0+150"
+    ],
+    "market-bar": [
+      "marketplace",
+      "marketplace",
+      "760x70+0+248"
+    ],
+    "market-narrow-title": [
+      "narrow",
+      "marketplace",
+      "390x56+0+0"
+    ],
+    "market-explore-empty": [
+      "marketplace",
+      "marketplace-empty",
+      "720x160+0+50"
+    ],
+    "market-themes-empty": [
+      "empty-marketplace",
+      "marketplace-themes",
+      "720x240+0+50"
+    ],
+    "library-empty": [
+      "empty-marketplace",
+      "library",
+      "720x320+0+0"
+    ],
+    "projects-hero": [
+      "main",
+      "projects",
+      "1080x250+180+60"
+    ],
+    "market-search": [
+      "marketplace",
+      "marketplace",
+      "240x70+1180+248"
+    ]
+  },
+  "title": "Phase C — 16 points on 5 screens",
+  "lead": "Nothing is built yet. Each numbered point is one problem on today's master and one fix. Click Yes or No per point; I build the Yeses and bring the same cards back with a Before/After flip.",
+  "items": [
+    {
+      "id": "P-3",
+      "title": "Themes dialog",
+      "surface": "Settings → Appearance",
+      "image": {
+        "crop": "themes-dialog",
+        "themes": [
+          "midnight",
+          "light"
+        ],
+        "cols": [
+          "today"
+        ],
+        "fit": "none"
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "measured",
+          "what": "The active card grows a second line and its neighbour stretches to match — an empty strip with a floating pencil (Dark 65 px vs Crème 34 px).",
+          "fix": "Put “active” on the name line, so every card is one height.",
+          "at": {
+            "midnight": [
+              27,
+              24
+            ],
+            "light": [
+              27,
+              42
+            ]
+          }
+        },
+        {
+          "n": 2,
+          "kind": "measured",
+          "what": "The pencil on a built-in opens a 588 px dialog that holds one sentence (“Built-in themes are locked…”).",
+          "fix": "Grey out the pencil on the four built-ins, with a tooltip saying why; community themes keep a live pencil (they have glass sliders).",
+          "at": {
+            "midnight": [
+              90,
+              24
+            ],
+            "light": [
+              90,
+              42
+            ]
+          },
+          "why": "<p>All four built-ins are flat-colour themes, so the editor has no sliders to show — only the locked notice. Alternative: hide the pencil entirely; I recommend against it because the tooltip is the only place the <em>why</em> gets explained.</p>"
+        },
+        {
+          "n": 3,
+          "kind": "measured",
+          "what": "“Browse all themes →” and “Browse Theme Marketplace” sound like the same thing; they open different screens (your installed themes vs the Marketplace).",
+          "fix": "Rename them “All installed themes →” and “Get more themes”.",
+          "at": {
+            "midnight": [
+              14,
+              47
+            ],
+            "light": [
+              14,
+              52
+            ]
+          },
+          "why": "<p>The ledger claimed both open the same screen — wrong on checking: the first opens Your Library › Themes (the grid above only shows starred themes), the second the Marketplace.</p>"
+        },
+        {
+          "n": 4,
+          "kind": "judgment",
+          "what": "Three stacked full-width buttons in three styles; the first is a hand-rolled fourth style the shared Button does not have.",
+          "fix": "The first becomes a quiet text-link row under the grid, leaving one primary (Build) and one secondary (Get more themes).",
+          "at": {
+            "midnight": [
+              14,
+              64
+            ],
+            "light": [
+              14,
+              69
+            ]
+          }
+        }
+      ],
+      "more": [
+        {
+          "crop": "theme-edit-builtin",
+          "themes": [
+            "midnight",
+            "creme"
+          ],
+          "cols": [
+            "today"
+          ],
+          "fit": "none",
+          "note": "What the pencil opens on a built-in — the whole dialog.",
+          "points": [
+            2
+          ],
+          "zoom": 0.6
+        }
+      ]
+    },
+    {
+      "id": "P-21",
+      "title": "Marketplace cards",
+      "surface": "Marketplace",
+      "image": {
+        "crop": "market-hero",
+        "themes": [
+          "midnight",
+          "light",
+          "halftone-dimension",
+          "meadow-mist"
+        ],
+        "cols": [
+          "today"
+        ],
+        "fit": "none"
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "measured",
+          "what": "The featured card's border is a hardcoded gold in every theme (the other two featured entries bring their own blue and green).",
+          "fix": "Border = the theme's normal card edge; the entry's colour is dropped.",
+          "at": [
+            1.5,
+            50
+          ],
+          "why": "<p>The guide's T-1 alternative — let the entry colour tint only the small FEATURED eyebrow and the dot pager — keeps a non-theme colour alive for a 12 px label; I would not. Risk: a featured entry can no longer colour the hero; that was never a documented feature.</p>",
+          "risk": "Featured entries lose the ability to colour the hero (undocumented; three entries use it)."
+        },
+        {
+          "n": 2,
+          "kind": "measured",
+          "what": "Theme cards: the text ends at five different heights across seven cards — the description and the likes line only render when present.",
+          "fix": "Reserve the two description lines and the counts row, so every card's text ends in the same place.",
+          "at": [
+            10,
+            92
+          ]
+        },
+        {
+          "n": 3,
+          "kind": "measured",
+          "what": "“1 installs”, “1 likes”.",
+          "fix": "Pluralise properly (two places in the card).",
+          "at": [
+            35,
+            81
+          ]
+        }
+      ],
+      "more": [
+        {
+          "crop": "market-themes-rows",
+          "themes": [
+            "midnight",
+            "creme"
+          ],
+          "cols": [
+            "today"
+          ],
+          "points": [
+            2
+          ],
+          "note": "Themes tab: cards 1, 2 and 6 stop at the author line; the rest run on."
+        },
+        {
+          "crop": "market-card-counts",
+          "themes": [
+            "midnight"
+          ],
+          "cols": [
+            "today"
+          ],
+          "fit": "none",
+          "points": [
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "title": "Your Library, nothing installed",
+      "surface": "Library — what every new install sees",
+      "image": {
+        "crop": "library-empty",
+        "themes": [
+          "midnight",
+          "halftone-dimension"
+        ],
+        "cols": [
+          "today"
+        ]
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "measured",
+          "what": "Two headings over nothing — no sentence, no button. The empty-state sentence in the code has never rendered once: a counting bug makes every section think it has content.",
+          "fix": "Fix the bug (+ pinning test) and use the app's shared empty block: “Nothing installed yet” with a Browse the Marketplace button; Favorites gets a one-liner.",
+          "at": [
+            22,
+            62
+          ],
+          "why": "<p><code>Section</code> decides “has content?” with <code>React.Children.count(children)</code>, and the child is written <code>condition &amp;&amp; &lt;grid&gt;</code> — when false that still counts as one child. Same shared <code>EmptyState</code> block that Settings → Permissions, the session drawer and the Resume browser use. Nothing changes for a Library with content.</p>"
+        },
+        {
+          "n": 2,
+          "kind": "judgment",
+          "what": "The Skills | Themes switcher is two plain 12 px pills under a 22 px title; Projects uses bordered icon + count tabs.",
+          "fix": "Leave it — decide tabs app-wide in a later phase. (My recommendation: No.)",
+          "at": [
+            24,
+            24
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-1",
+      "title": "Marketplace bar and empty states",
+      "surface": "Marketplace",
+      "image": {
+        "crop": "market-bar",
+        "themes": [
+          "midnight",
+          "light"
+        ],
+        "cols": [
+          "today"
+        ],
+        "fit": "none"
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "judgment",
+          "what": "Plugins / Themes (pick one) is drawn exactly like the eleven filters after it (pick any).",
+          "fix": "Plugins / Themes becomes the app's two-position switch, in the same spot; the filters stay pills.",
+          "at": [
+            2.5,
+            50
+          ],
+          "why": "<p>The ledger called New / Popular / Featured picks “sorts” and wanted a dropdown — wrong: they are on/off filters like the categories. So there are two kinds of control here, not three, and no sort menu is proposed.</p>"
+        },
+        {
+          "n": 2,
+          "kind": "judgment",
+          "what": "The search box has no magnifier and is shorter than the pills beside it.",
+          "fix": "The shared search-field shape with its icon.",
+          "at": [
+            8,
+            50
+          ]
+        },
+        {
+          "n": 3,
+          "kind": "measured",
+          "what": "When nothing matches: “0 results” and “Nothing matches those filters.” at once, and no way to clear the filters.",
+          "fix": "One empty state with a Clear filters button.",
+          "at": [
+            19,
+            38
+          ]
+        },
+        {
+          "n": 4,
+          "kind": "measured",
+          "what": "“Explore everything” with nothing under it while the registry loads — or forever, if it cannot be reached.",
+          "fix": "Placeholder cards while loading; the shared error block with Retry when unreachable.",
+          "at": [
+            35,
+            62
+          ]
+        },
+        {
+          "n": 5,
+          "kind": "measured",
+          "what": "Phone width: the title truncates to “Ma…” because the right-hand controls take their full width first.",
+          "fix": "The title keeps its word; the controls shrink first.",
+          "at": [
+            32,
+            50
+          ]
+        }
+      ],
+      "more": [
+        {
+          "crop": "market-search",
+          "themes": [
+            "midnight"
+          ],
+          "cols": [
+            "today"
+          ],
+          "fit": "none",
+          "points": [
+            2
+          ]
+        },
+        {
+          "crop": "market-themes-empty",
+          "themes": [
+            "midnight"
+          ],
+          "cols": [
+            "today"
+          ],
+          "fit": "none",
+          "points": [
+            3
+          ]
+        },
+        {
+          "crop": "market-explore-empty",
+          "themes": [
+            "midnight"
+          ],
+          "cols": [
+            "today"
+          ],
+          "fit": "none",
+          "points": [
+            4
+          ]
+        },
+        {
+          "crop": "market-narrow-title",
+          "themes": [
+            "midnight"
+          ],
+          "cols": [
+            "today"
+          ],
+          "fit": "none",
+          "points": [
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "title": "Projects header card",
+      "surface": "Projects",
+      "image": {
+        "crop": "projects-hero",
+        "themes": [
+          "halftone-dimension",
+          "meadow-mist",
+          "midnight"
+        ],
+        "cols": [
+          "today"
+        ]
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "measured",
+          "what": "Projects is the only full screen that hides the theme wallpaper — its root paints an opaque canvas; Library and Marketplace let it through.",
+          "fix": "Same transparent root as its siblings. Built-in themes look identical (flat canvas anyway).",
+          "at": [
+            67,
+            76
+          ],
+          "risk": "Header readability over a busy wallpaper — the card is already a glass panel like the Marketplace hero; the review will show all six themes."
+        },
+        {
+          "n": 2,
+          "kind": "judgment",
+          "what": "Two accent-filled buttons in one card: New Conversation and Turn on sync for this project.",
+          "fix": "Turn on sync becomes the small secondary button inside its chip — one accent per card, per the guide.",
+          "at": [
+            31,
+            54
+          ],
+          "risk": "The sync nudge gets quieter."
+        }
+      ]
+    }
+  ],
+  "closing": "<h2>Checked and left alone</h2><ul><li>Projects: Rename / Remove are already the shared small button; the folder “tab” was reworked to your 2026-07-19 feedback; document previews are the intended thumbnail look.</li><li>Marketplace: no sort dropdown (there is no sort).</li><li>Themes dialog: the two toggles at the bottom.</li></ul>",
+  "banner": "<strong>Decided 2026-08-27.</strong> 13 of 16 points yes; built on <code>feat/ui-phase-c</code> and merged as youcoded #332 after two review-deck rounds (<a href='phase-c-review.html'>review 1</a>, <a href='phase-c-review2.html'>review 2</a>). P-5 declined; kept as the record of what was shown."
+}

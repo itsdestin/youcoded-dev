@@ -5,6 +5,18 @@ type: investigation
 
 # Native Agent Harness Reviews
 
+> **REVIEW 2026-08-26 — closed corpus; RECOMMEND ARCHIVE to `docs/archive/investigations/`, with
+> one caveat.** The mechanism that fed this file was replaced: the review battery became the
+> harness *evaluator* on 2026-08-13, and its runs land in
+> `docs/active/investigations/harness-eval-runs/` (most recent 2026-08-26) rather than here. The
+> last review appended was 2026-08-11; the file holds **40 `## Review:` sections** and has been
+> untouched since 2026-08-12.
+> **Caveat before archiving:** the file has no synthesis or triage section — findings were pulled
+> out ad hoc into `docs/archive/{specs,plans}/2026-08-06-harness-tool-honesty*.md` and into the
+> three tool additions recorded in `2026-08-11-native-sessions-remaining-work.md` §1, but **nobody
+> has recorded which of the 40 reviews were fully triaged**. Treat "no unconsumed findings" as
+> unproven, not as verified. If that matters, run one digest pass over the 40 before moving it.
+
 **Purpose:** Multi-model reviews of the YouCoded native agent harness (the first-party tool-use runtime that ships in the app). Each reviewing agent runs a standard battery of agentic tasks (navigate, read, write, edit, search, web) inside the harness and records an honest, first-person assessment of what works, what doesn't, and what they'd change.
 
 **Why this doc exists:** The native harness is the load-bearing piece of the v1.3+ product — it's what lets users run agents without a Claude Code install. If the harness is frustrating, brittle, or opaque, the app fails at its core promise. One model's review is a data point; several models' reviews are a pattern.

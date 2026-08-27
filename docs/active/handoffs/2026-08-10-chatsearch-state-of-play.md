@@ -160,6 +160,70 @@ marker only in v1 (open question 1); references are not persisted (2); a
 mirrored transcript may lag its origin device and the preview does not say so
 (3).
 
+## Design decisions from the 2026-08-25/26 workbench sessions
+
+**Search-results card — APPROVED.** Compare surface `chatsearch-results`, round 2
+candidate `b-closed`, ported to `ChatsearchFindCard` / `ChatsearchShowCard`.
+A titled panel whose rows carry title + a metadata line (tags as real `TagChip`s,
+then project, then the relative date pinned right) + Preview/Resume as the real
+`Button` primitive. **Closed by default**, using `ToolCard`'s own header as the
+single disclosure control — this REVERSES the plan's "expanded by default"
+constraint. Verified reason: `ToolCard`'s header already carries a chevron and
+already prints `COPY.headerFind(n)`, so a second header inside it meant two
+arrows and the same sentence twice.
+
+Three defects drove the first rejection ("i hate these") and are fixed: the two
+buttons were hand-rolled from raw classes instead of the `Button` primitive; tags
+rendered as plain `#tag` text instead of `TagChip`; and nothing signalled that the
+rows were past conversations.
+
+**Presented conversation — NEW SCOPE, look LOCKED, trigger UNDECIDED.** Destin,
+2026-08-25: the search card should stay as it is, and a *separate*, visually
+distinct thing should let the model present one or more specific conversations it
+has judged relevant, ideally mid-message. Seven compare rounds
+(`chatsearch-present`); rounds 1-4 and 6-7 rejected. **Locked: round 5 candidate
+`present-row-split`** — a Deliverables-style card (shell + header-row-as-collapse,
+closed by default) whose rows are two lines: title left with the relative date
+pinned right; project left with Preview + Resume right. No tags, no excerpt, no
+leading glyph.
+
+*Tags are deliberately absent here* though Destin asked to keep them: round 6 put
+them in three places and all three broke. Measured — two chips plus an overflow
+chip plus the project plus two buttons overflow the row at the pane's real width,
+because a real tag label is wide (`Follow-Up Needed`, not `perf`). Tags stay on
+the search card, which has the room.
+
+*The card is deliberately NOT built in production yet.* It has no trigger, and a
+component nothing renders is dead code. **The trigger is the open question**, and
+one finding constrains it hard: **the app cannot give Claude Code a custom tool.**
+Verified 2026-08-25 by searching for `mcpServers` / `.mcp.json` / any
+app-spawned server across both repos — YouCoded authors no MCP server; it only
+projects *third-party* servers into `~/.claude.json` and otherwise reaches Claude
+Code through plugins that shell out. So a `present_chat` tool on the Claude lane
+means a new `chatsearch.js` subcommand, which the never-upgrades bug
+(`skill-provider.ts` → `plugin-installer.ts:360-365`, the already-installed guard
+returns before any version comparison) keeps from existing installs. An unknown
+`cmd` degrades gracefully (`chatsearch.js:996` returns `unknown command "x"` plus
+usage, exit 0), and an old install simply never learns to call it — so the
+degradation is "the feature is absent", not "something breaks". On the native
+lane it is small: `harness/tools/` is a plain array of tool objects, and the
+harness already carries UI-only result payloads invisible to the model
+(`structuredPatch`, `harness-session.ts:1886-1893`).
+
+**Deliverables-card coupling.** The locked look re-expresses `DeliverablesCard`
+(`worktrees/send-user-file`, branch `feat/send-user-file-card`, unmerged) because
+it cannot be imported across branches. When that branch lands, extract the shared
+shell — card chrome, header-as-collapse-button, tile frame — instead of keeping
+two copies that drift. That card was also changed to closed-by-default after
+Destin saw it on a real screen, which is the same call he made here.
+
+**Environment note.** The workbench died repeatedly mid-session with Vite
+`ENOSPC` on `watch`. Cause was inotify exhaustion, not the code: the installed
+YouCoded app holds ~247k watches on its own and a second dev Electron held ~272k,
+against a 524,288 default. Raised to 1,048,576 via `/etc/sysctl.d/90-inotify.conf`
+on 2026-08-26. Worth its own look — a quarter-million watches for one app is a
+lot.
+
 ## Not started
 
 **Phases 2 and 3** of the original design — the write outbox, then digests.

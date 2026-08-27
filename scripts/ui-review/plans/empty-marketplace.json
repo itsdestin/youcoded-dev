@@ -1,0 +1,93 @@
+{
+ "_comment": "A brand-new install: nothing installed, registry unreachable (?marketplace=empty). Added 2026-08-26 for the Phase C brief — the findings called the empty Library 'the normal state for a new user' but no plan photographed it.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&marketplace=empty",
+ "ready": "/explore everything|nothing matches|installed/i.test(document.body.textContent)",
+ "readyMax": 30000,
+ "shots": [
+  {
+   "name": "library",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Installed')"
+  },
+  {
+   "name": "library-themes",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Installed themes')"
+  },
+  {
+   "name": "marketplace",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:/explore everything|nothing matches/i.test(document.body.textContent)"
+  },
+  {
+   "name": "marketplace-themes",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:/nothing matches|0 results/i.test(document.body.textContent)"
+  },
+  {
+   "name": "skills-drawer",
+   "measure": [
+    "js:document.querySelector(\"[placeholder^='Search skills']\")?.closest('[class*=fixed],[class*=absolute],[role=dialog]')"
+   ],
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    }
+   ],
+   "expect": "js:document.querySelector(\"[placeholder^='Search skills']\")"
+  }
+ ]
+}

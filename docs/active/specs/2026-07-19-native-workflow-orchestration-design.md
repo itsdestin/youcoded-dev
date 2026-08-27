@@ -1,5 +1,6 @@
 ---
-status: draft
+status: superseded
+superseded-by: docs/active/specs/2026-08-11-native-specialists-design.md
 date: 2026-07-19
 tags: [native-runtime, orchestration, subagents, local-models, competitive-research]
 repos: [youcoded]
@@ -7,6 +8,35 @@ supersedes: docs/active/investigations/2026-07-19-agent-orchestration-landscape.
 ---
 
 # Native workflow orchestration — competitive research + design direction
+
+> ## Status 2026-08-26 — SUPERSEDED as a design doc; §1–§5 kept as the research reference
+>
+> **`status:` flipped `draft` → `superseded`.** Every decision this doc left open was taken by
+> the approved M7 spec `docs/active/specs/2026-08-11-native-specialists-design.md`, and the
+> feature it was designing now ships under the name **specialists**:
+>
+> - Plan 1a (foreground specialists) merged to `youcoded` master `8db46236`, 2026-08-12.
+> - Plan 1b (background, durability, steering, permission-store v2, delegated model tiers)
+>   merged `e5ec5b3c`, 2026-08-16. Verified 2026-08-26:
+>   `git ls-tree -r --name-only origin/master -- desktop/src/main/harness/specialists` lists
+>   ten shipped files (`registry.ts`, `child-permissions.ts`, `delegated-models.ts`,
+>   `delegation-ledger.ts`, `limits.ts`, `report-budget.ts`, …).
+> - Plan 1c (definitions folder, CC mapping, chat UI) is written
+>   (`docs/archive/plans/2026-08-16-native-specialists-plan-1c-implementation.md`) and in flight
+>   across four worktrees (`feat/specialists-1c-defs`, `-t12`, `-t13`, `-ui`), not yet merged.
+>
+> **The orchestration layer itself (stage two — declarative plans / DAG) is still unbuilt:**
+> `git grep -rln 'DAG' origin/master -- desktop/src/main/harness` → no output. But it is now
+> tracked as stage two of the specialists spec, not here.
+>
+> **What still has value in this file:** §1–§5 (Claude Code dynamic workflows, Kimi Agent Swarm,
+> Codex, the "trust the architecture not the numbers" verification pass, and the legal section)
+> are primary-source research with a stated verification method, and §6.3's point that our
+> concurrency ceiling must derive from the local engine's real parallel slots is still an
+> unimplemented constraint. Cite those sections; do not plan from §6–§8.
+>
+> **Recommended:** move to `docs/archive/specs/` — it is a superseded design doc whose research
+> half remains citable. (Not moved here; that is Destin's call.)
 
 > **2026-08-11: §8's open decisions are now largely RESOLVED** by the approved
 > M7 spec (`docs/active/specs/2026-08-11-native-specialists-design.md`):

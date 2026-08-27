@@ -4,6 +4,33 @@ status: active
 
 # YouCoded Platform Vision — Multi-Model Backends, Custom Harnesses, Agents & Automations
 
+> ## Status 2026-08-26 — still `active` and correctly so, but the Progress log is 5 weeks stale
+>
+> **`status: active` is honest.** Phases 3–6 (custom harness builder, Agents & Automations
+> view, Android/cross-device, differentiators) are only described here — `ROADMAP.md` has no
+> equivalent narrative — and three separate ROADMAP entries (lines 769, 954, 995) cite this
+> file by line number as the standing *positioning* authority ("the open, personal Cowork";
+> the Claude-Code-only runtime selector; the no-wrapped-vendor-CLIs decision). Deleting or
+> archiving it would strand those citations. Keep it.
+>
+> **What is stale:** the Progress log's last dated entry is **2026-07-22**, five weeks back.
+> Everything since — M5 permissions closed 2026-08-13, specialists plans 1a (`8db46236`,
+> 2026-08-12) and 1b (`e5ec5b3c`, 2026-08-16), the MCP phase 1 landing — is recorded only in
+> `ROADMAP.md` line 30. A reader who starts here concludes less has shipped than has.
+>
+> **Two "roadmaps" is a real trap, and the split that resolves it is:**
+> - **`ROADMAP.md` is the live tracker** — what is shipped, what is queued, in what order.
+>   It is the one that gets updated, and it should stay that way.
+> - **This spec is the WHY and the not-yet-planned WHAT** — vision, market position, target
+>   architecture, and the phase bodies for work no plan has picked up yet.
+> - **`docs/active/plans/2026-08-11-native-sessions-remaining-work.md` is the execution vehicle**
+>   for the parity slice (its §1.5 maps which of this spec's phase items it took over).
+>
+> **Recommended (Destin's call, not applied here):** stop maintaining the Progress log entirely
+> and replace it with a one-line pointer to `ROADMAP.md`. It duplicates a list that is already
+> kept current elsewhere, and a duplicate that falls behind is worse than no duplicate — this is
+> the same failure the log's own 2026-07-19 restructure note was written to prevent.
+
 **Date:** 2026-07-09
 **Status:** Vision roadmap — reviewed and approved by Destin 2026-07-09 (revisions: engine hybrid framing, conventions inversion §3.4a, leaked-source ideas-only policy; phase ordering confirmed as written). Each phase gets its own spec → plan → implementation cycle.
 **Progress:** dated entries in **§ Progress log** below — this line is deliberately a pointer only.

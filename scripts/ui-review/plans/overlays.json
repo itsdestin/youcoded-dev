@@ -108,6 +108,7 @@
   },
   {
    "name": "composer-attachments",
+   "measure": ["js:document.querySelector(\"[aria-label^='Remove']\")?.parentElement?.parentElement", "js:document.querySelector(\"[aria-label^='Remove']\")?.parentElement"],
    "actions": [
     {
      "dispatch": {
@@ -310,6 +311,119 @@
      "wait": 500
     }
    ]
+  },
+  {
+   "name": "local-models-interrupted-delete-confirm",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "click": "js:[...document.querySelectorAll('div')].filter(d=>/^Download interrupted$/i.test(d.textContent.trim()))[0]?.parentElement?.querySelector('button:last-of-type')",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Delete 74.2 GB?')"
+  },
+  {
+   "name": "local-models-delete-confirm",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "clickText": "Delete",
+     "tag": "button",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('This removes the model file')"
+  },
+  {
+   "name": "local-models-resuming",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "clickText": "Resume",
+     "tag": "button",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Pause') && /DOWNLOADING|Downloading/.test(document.body.textContent)"
+  },
+  {
+   "name": "local-models-paused",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "clickText": "Resume",
+     "tag": "button",
+     "settle": 1200
+    },
+    {
+     "clickText": "Pause",
+     "tag": "button",
+     "settle": 900
+    }
+   ],
+   "expect": "js:/Download interrupted/i.test(document.body.textContent) && [...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Resume')"
+  },
+  {
+   "name": "local-models-damaged-why",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "click": "[aria-label='Why this download is damaged']",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('kept track of where downloads come from')"
   },
   {
    "name": "permissions-scrolled",

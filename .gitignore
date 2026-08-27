@@ -90,3 +90,10 @@ docs/active/design/*-ui-audit/images/
 # (scratch/ already covers the fixture HOME, the downloaded engine/model assets and
 # the per-boot desktop.log copies.)
 perf-reports/shots/
+*.answers.json
+*.answers.*.json
+*.serve.json
+
+# Python bytecode from the deck tooling + its tests
+__pycache__/
+*.pyc

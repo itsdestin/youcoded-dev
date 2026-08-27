@@ -4,6 +4,28 @@ status: draft
 
 # Project-scoped skills for native sessions — design
 
+> ## Status 2026-08-26 — NOT BUILT; the ROADMAP's "never discovered" claim re-verified TRUE
+>
+> Verified against `youcoded` `origin/master` (`dbbb9139`) on 2026-08-26:
+>
+> - `git grep -n 'scanProjectSkills\|mergeProjectSkills' origin/master` → **no output**.
+> - `git grep -n "\.claude/skills" origin/master -- desktop/src` returns only
+>   `skill-scanner.ts:14`/`:148` (the `~/.claude/skills/` pass) and `symlink-cleanup.ts:30`
+>   (`path.join(home, '.claude', 'skills')`). Every hit is home-rooted; none is cwd-rooted.
+> - `scanSkills()` (`skill-scanner.ts:21`) still takes **no arguments**, and
+>   `createSkillCatalog(entries: SkillEntry[] = scanSkills())` (`harness/skills/skill-catalog.ts:65`)
+>   still has no cwd parameter — so `NativeSessionHost`'s catalog is home-scoped per process,
+>   not per session cwd.
+> - The precedent this design leans on is intact: `command-provider.ts:72` is
+>   `const project = cwd ? scanCommandsFromDir(path.join(cwd, '.claude', 'commands')) : [];`
+>   Commands scan the project layer; skills still do not.
+> - No branch or worktree exists for this work (`git worktree list`, `git branch -a`).
+>
+> Last activity: 2026-08-06 (plan written, conversation `7e87` "Project Scoped Skills Plan").
+> **Next step: build work only.** Design was settled with Destin 2026-08-05; the plan is
+> written and re-anchored against `48202704`, so expect line-number drift (~20 days of master)
+> but not symbol drift.
+
 A skill committed into a project's `.claude/skills/` directory should work in a
 YouCoded native session, the same way it already works in a Claude Code session.
 Today it does not: skill discovery is entirely home-scoped, so a repo that ships

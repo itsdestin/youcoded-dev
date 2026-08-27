@@ -6,6 +6,28 @@ type: spec
 
 # Presence self-healing: no gate may be clearable only by an OS event
 
+> ## Status 2026-08-26 — NOT BUILT; all four parts still open, defect re-verified on master
+>
+> Verified against `youcoded` `origin/master` (`dbbb9139`) on 2026-08-26:
+>
+> - **Part 1 (wake evidence clears the latch) — not built.** `presence-socket.ts:112` is still
+>   `let suspended = false;` and `:114` still composes
+>   `engine.setDesired(rendererDesired && !suspended && !idle)`, with `:119-120` the only
+>   writer (the `powerMonitor` edge). Nothing else in the file clears it.
+> - **Part 2 (engine stall repair) — not built.** `presence-socket.ts:54` is still
+>   `noToken: 'wait'`, and `reconnecting-ws.ts:81` still schedules a retry only when
+>   `hooks.noToken === 'poll'`.
+> - **Part 4 (the silent 401) — not built.** `handler-utils.ts:36` is still
+>   `if (!result.ok && result.status === 401) store.signOut();` with no announcement.
+>   (Note: the ROADMAP entry and this spec cite this file as `ipc/handler-utils.ts`; on master
+>   it is `desktop/src/main/handler-utils.ts`.)
+> - `git log origin/master -i --grep='presence'` shows nothing after PR #215
+>   (`e6060be4`, the idle gate) — no self-healing commit landed.
+> - No branch or worktree exists for this work.
+>
+> Last activity: 2026-08-11 (spec written). **Next step: build work only** — the spec is
+> self-contained and states its own verification limits; Part 4 is separable and can ship alone.
+
 **Why now:** A friend's row in Destin's friends list read `Last seen 7/26/2026` on 2026-08-11
 while the person was demonstrably still using the app, signed in, on a MacBook. The
 investigation found no data or server defect — `users.last_seen_at` is accurate. It found a

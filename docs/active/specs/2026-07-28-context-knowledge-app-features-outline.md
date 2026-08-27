@@ -2,11 +2,38 @@
 title: "Context & knowledge as product surfaces — preliminary outline"
 date: 2026-07-28
 status: draft
-type: spec
+type: idea-source
 tags: [product, context, knowledge, sync, marketplace, memory]
 ---
 
 # Context & knowledge as product surfaces
+
+> ## Status 2026-08-26 — an IDEA SOURCE, not a buildable spec; nothing built; recommend archive
+>
+> `type:` corrected `spec` → `idea-source`. This file has no design, no interfaces, no
+> decisions and no acceptance criteria — it says so itself in its first line ("Preliminary
+> outline, not a spec") and every one of its five items ends in "needs its own spec before
+> build". Leaving it in `docs/active/specs/` makes it read as approved design work in flight.
+>
+> Verified 2026-08-26 against `youcoded` `origin/master` (`dbbb9139`) — none of the five ideas
+> has been built:
+> - `git grep -rn -i 'provenance' origin/master -- desktop/src` returns 9 hits, **none about
+>   memory**: artifact watching, eval estimates, permission-rule `grantedAt`, image counts,
+>   sync `addedBy`. There is no memory-entry provenance field anywhere (idea #5).
+> - `ContextPopup.tsx` still renders only the aggregate gauge (`:147` "N tokens remaining",
+>   `:164` a percent/tokens toggle) — no per-item token cost, no "loaded because you touched X"
+>   attribution, no per-turn capture, no session mutes (idea #1).
+> - `git -C wecoded-marketplace grep -rn -i 'knowledge.pack' origin/master` → no output
+>   (idea #4).
+>
+> **Its content is already fully mirrored into `ROADMAP.md` line 945**, which reproduces the
+> five ideas, the `1 → 2 → 5 → 3 → 4` sequencing, the OWASP ASI06 gate on #4, and the
+> explicit no-knowledge-graph decision — and cites this file by path.
+>
+> **Recommended: move to `docs/archive/specs/`** (or `docs/archive/investigations/`, beside its
+> research backing `docs/active/investigations/2026-07-28-agent-harness-frontier-research.md`).
+> The ROADMAP entry stays the live pointer; this stays the long-form source it points at.
+> Nothing here is stale — it is simply not in flight. (Not moved here; Destin's call.)
 
 **Preliminary outline, not a spec.** Five ideas from the 2026-07-28 agent-frontier research
 session, sized and sequenced but not designed. Each needs its own spec before build. Research

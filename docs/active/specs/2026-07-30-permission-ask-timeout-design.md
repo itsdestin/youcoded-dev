@@ -1,11 +1,61 @@
 ---
 status: active
 date: 2026-07-30
-reviewed: 2026-07-30
+reviewed: 2026-08-26
+pr: https://github.com/itsdestin/youcoded/pull/278
 repos: [youcoded]
 ---
 
 # Permission asks that expire silently
+
+> ## Status block — 2026-08-26 (added by a workstream review; nothing below was rewritten)
+>
+> Implemented on branch `feat/permission-ask-timeout` (worktree
+> `worktrees/perm-timeout`, 20 commits) and open as **PR #278**, unreviewed and
+> conflicting with master. Read this block before trusting any number or line
+> reference below.
+>
+> **1. The §1b decision is CLOSED — the answer was 2h, not 24h.** Destin
+> approved `7200000` / `9000000` / `10800` on 2026-07-31 and the code shipped
+> exactly that: `hook-relay.ts:21` `APP_HOLD_MS = 7200000`, `EventBridge.kt:27`
+> `PERMISSION_HOLD_MS = 7_200_000L`, `relay-blocking.js:28` default `9000000`,
+> `install-hooks.js:128` `timeout: 10800`. So **every `24h` / `24h30m` / `25h`
+> figure in the §1 tier table, in §1b, in §2c's "day-long hang", and in the
+> closing "One product decision is open" paragraph is superseded.** The tier
+> ordering and the margins — which is what the design actually rests on — are
+> unchanged.
+>
+> **2. §2d's picture of the native `PermissionBroker` is a July snapshot and is
+> now materially incomplete.** August's M5 2a/2b/2c work rebuilt that lane:
+> `permission-broker.ts` now has its own clock policy — a **root** ask has no
+> timeout at all, a routed **specialist child** ask expires at
+> `SPECIALIST_ASK_HOLD_MS = 300_000` (`harness/specialists/limits.ts:47`, 5 min)
+> into a redirect that is explicitly "not a dismissal", plus a heartbeat that
+> re-announces an open ask so a lost card can't hang the turn (2026-08-16), plus
+> `onLateResponse` for answers arriving after the deadline. `cancelOne` is at
+> `permission-broker.ts:401`, not `:97-108`. **This spec's thesis "the app owns
+> the clock" is therefore true only of the Claude Code hook-relay lane.** The
+> native lane keeps a separate, differently-shaped policy that this design never
+> reconciled with — worth a deliberate decision at rebase time rather than an
+> accident.
+>
+> **3. Line-number citations have drifted** (branch was cut at merge-base
+> `2396259a`; master has moved 663 commits since). Spot-checked:
+> `chat-reducer.ts:1234` → `case 'PERMISSION_EXPIRED'` is now at **1718**;
+> `main.ts:889` (never auto-approve AskUserQuestion) is now **main.ts:937**.
+> Treat every `file.ts:NNN` below as approximate.
+>
+> **4. `closeSocket()` no longer exists.** §2's mechanism note cites
+> `respond()`/`closeSocket()` deleting the pending entry synchronously; master
+> deleted `closeSocket` from `HookRelay` and `EventBridge` on 2026-08-22 (merge
+> `17931fc0`). The `respond()` half of the mechanism — the half the design
+> depends on — is intact.
+>
+> **5. Same-file collision to expect on rebase:** master's full-auto safety-stop
+> footer (M5 2b, 2026-08-12) added an early-return branch, a keyboard focus ring
+> (`focusIdx` / `actions.current`) and grant-width options to the **same**
+> `ToolCard` permission-prompt render this spec's expired-card and digit-rebind
+> states edit (`ToolCard.tsx:343, 561, 373, 417` on master).
 
 > **Revision note (2026-07-30 review).** Every code claim below was re-verified
 > against the checkout and against the CC binary at

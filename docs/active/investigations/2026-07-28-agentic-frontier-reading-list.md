@@ -8,6 +8,12 @@ tags: [agents, reading-list, research, harness]
 
 # Agentic frontier reading list
 
+> **REVIEW 2026-08-26 — reference material; RECOMMEND ARCHIVE to `docs/archive/investigations/`.**
+> A curated reading list, not a findings document — it carries no recommendation that could be
+> consumed or left open. **Zero documents in the workspace reference it**
+> (`rg -l 2026-07-28-agentic-frontier-reading-list --glob '*.md'` → only itself), including its own
+> companion. Archiving costs nothing and removes it from the live-doc count.
+
 Curated, ranked, with an honest note on what each one is actually worth. Companion to
 `2026-07-28-agent-harness-frontier-research.md`.
 

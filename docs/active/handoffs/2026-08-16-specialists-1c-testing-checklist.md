@@ -2,12 +2,50 @@
 status: active
 created: 2026-08-16
 related:
-  - docs/active/specs/2026-08-16-native-specialists-plan-1c-design.md
-  - docs/active/plans/2026-08-16-native-specialists-plan-1c-implementation.md
+  - docs/archive/specs/2026-08-16-native-specialists-plan-1c-design.md
+  - docs/archive/plans/2026-08-16-native-specialists-plan-1c-implementation.md
   - docs/archive/handoffs/2026-08-20-specialists-1b-testing-checklist.md
 ---
 
 # Specialists 1c — hands-on testing checklist
+
+> **Status 2026-08-26: NOTHING IN THIS CHECKLIST HAS BEEN RUN.** All 15 `| Result |`
+> tables are still empty. The plan's Task 14 Step 3 asked an agent to run checks 1,
+> 2, 4, 5, 7, 8, 9, 9b and 9d itself in a dev window and record what it saw; that
+> never happened — the session hit its weekly usage limit the same night the
+> checklist was written. The checklist itself is **actionable as written** (each
+> check states what to do, what you should see, and what would be wrong) and needs
+> no rework, but it needs a dev instance
+> (`bash scripts/run-dev.sh worktrees/specialists-1c --label "Specialists 1c"
+> --offset 2 --profile specialists-1c`) and a real cloud model. **Run check 9b
+> first** — it is the permissions-leak check between helpers.
+>
+> **Agent-run 2026-08-26 (Task 14 Step 3, partial):** an agent launched the real dev
+> build (Electron + Vite, `--profile specialists-1c`, offset 2) and verified through its
+> debugging port, without a model: the app boots to the home screen; the real catalog call
+> returns the four built-ins each stamped `builtin`; the real grant-store call reads the
+> existing project folders; **Settings → Specialists** renders (tiers, "Available
+> specialists · 5", Built in / Your specialists groups, Refresh / Open folder); **Settings →
+> Permissions** renders the mode explainer and two folder cards from real data. Opening
+> Specialists created the starter `~/.youcoded/specialists/example.md` — that is the
+> designed first-visit behaviour, and the agent deleted the folder afterwards so your
+> normal app is untouched. **Every check that needs a real hire (1, 2, 4, 5, 9b, 9d, 9e,
+> 9f) and the project-folder checks (7, 8, 9 — they need a conversation open in a
+> folder) were deliberately left for you:** they spend money on a cloud model and are
+> interactive, which the workspace rules say to hand over rather than script.
+>
+> **Update 2026-08-26 (later):** the branch has been merged onto master and re-verified,
+> so the ordering risk below is gone. Two decisions changed what checks 9b/9e/9f
+> expect — see those checks: a file-defined helper now always shows a consent card
+> even in auto-edit mode (D1), and Always allow IS offered for file-defined helpers,
+> scoped by where the file lives (D2).
+>
+> **Shared state warning:** the dev window shares `~/.youcoded/` with your normal
+> YouCoded. That means a file you drop in `~/.youcoded/specialists/` (check 7) also
+> appears in your normal app's Settings → Specialists, and any **Always allow** you
+> click in the dev window (9b, 9f) is remembered in your normal app too. Nothing here
+> can break the normal app, but when you're done, open the normal app's
+> Settings → Permissions and remove the test grants, and delete the test files.
 
 Plan 1c changes how a hired helper looks and is managed: everything about one
 helper lives on one card and in one popup, helpers can be defined by dropping
@@ -235,15 +273,79 @@ Settings explains why your file didn't load.
 1. Hire the built-in **Worker** in this folder and click **Always allow**.
 2. Now hire the project's `code-reviewer` (from check 8) — a **different**,
    read-write helper in the same folder.
-3. **You should see** a consent card appear again for `code-reviewer`, with
-   **no Always-allow button offered at all** — its card says "This project's
-   .claude/agents/code-reviewer.md" as before.
+3. **You should see** a consent card appear again for `code-reviewer`. Its
+   card says "This project's .claude/agents/code-reviewer.md" as before. It
+   DOES offer **Always allow** (changed 2026-08-26 — decision D2), with a
+   small grey note under the buttons reading "Always allow applies to this
+   helper in **<this folder's name>** only, because it is defined inside the
+   project. If you edit its file, you'll be asked again." Don't click it yet.
 4. Hire the built-in Worker a second time. **You should see** it go through
    with no card — the earlier Always-allow still covers it.
 
-**Wrong if:** step 3's card offers Always-allow, or worse, doesn't appear at
-all (that means the Worker's earlier grant leaked to a different helper —
-tell whoever's handling this immediately, it's a security-relevant one).
+**Wrong if:** step 3's card doesn't appear at all (that means the Worker's
+earlier grant leaked to a different helper — tell whoever's handling this
+immediately, it's a security-relevant one); or the note is missing, or names
+the wrong folder.
+
+| Result | Notes |
+|---|---|
+| | |
+
+---
+
+### 9e. Auto-edit mode still asks before a file-defined helper runs
+
+1. Switch the conversation's permission mode to **Auto-edit** (status-bar chip).
+2. Ask the assistant to hire the built-in **Worker**. **You should see** no
+   card at all — auto-edit already covers built-in helpers, as before.
+3. Ask it to hire the project's `code-reviewer` (or `docs-writer` from
+   check 7). **You should see** a consent card anyway — a helper defined by a
+   file always asks, because its file could say anything (decision D1).
+4. Switch back to **Ask** when done.
+
+**Wrong if:** step 2 shows a card (built-ins got stricter — not intended), or
+step 3 shows none (a file-defined helper ran with no consent in auto-edit).
+
+| Result | Notes |
+|---|---|
+| | |
+
+---
+
+### 9f. Always allow for a helper — where it reaches, and when it stops
+
+Two kinds of file-defined helper, two widths of grant (decision D2):
+
+**Your own helper (`~/.youcoded/specialists/docs-writer.md` from check 7):**
+1. Hire `docs-writer`. **You should see** the card's note read "Always allow
+   applies to this helper in every project. If you edit its file, you'll be
+   asked again." Click **Always allow**.
+2. Open a native conversation in a **different** folder and hire `docs-writer`
+   there. **You should see** no card — the grant travels with your own helper.
+3. Open **Settings → Permissions**. **You should see** a card at the top
+   titled **"All projects"** (not under any folder), and inside it the grant
+   described in words — "Let the docs-writer specialist edit files in every
+   project" (or "…work in every project" for a read-only one) — not a raw
+   code like `file:docs-writer@a1b2c3`. Removing it there should make the next
+   hire ask again, in every folder.
+4. Edit `docs-writer.md` (change anything — even one word of its
+   description) and hire it again in either folder. **You should see** the
+   card come back, because the file no longer matches the one you approved.
+
+**The project's helper (`.claude/agents/code-reviewer.md` from check 8):**
+5. Hire `code-reviewer` in the project folder and click **Always allow**.
+   Hire it again there — no card.
+6. Copy that same `code-reviewer.md` into a **different** project's
+   `.claude/agents/` and hire it there. **You should see** a card — a
+   project's own helper is only ever trusted in that project.
+7. Settings → Permissions should list it under **that project's folder card**
+   (not "All projects") as "Let the code-reviewer specialist work in <the
+   project folder>".
+
+**Wrong if:** step 2 or 5's repeat shows a card (grant didn't stick); step 4
+or 6 shows NO card (a changed file, or another project's copy, ran on an old
+approval — security-relevant, report immediately); step 3 or 7 shows a raw
+`file:…@…` string.
 
 | Result | Notes |
 |---|---|

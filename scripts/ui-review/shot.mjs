@@ -39,6 +39,10 @@
 //   {"dispatch": {"name": "buddy:attach-file", "detail": {...}}}  window CustomEvent
 //   {"scrollDialog": "bottom"|"top"|<px>}                 scroll the open dialog's body
 //   {"wait": 500}                                         pause (ms); every action accepts "settle"
+//   shot-level: "measure": ["<css or js:>", {"text": "Label", "tag": "button"}]
+//     → entry.measures[key] = {x,y,w,h} in window pixels (key = the css string or "text:<Label>");
+//       a missing element is recorded as null AND fails the shot, because a review deck asked for it.
+//   UI_REVIEW_RUN=<id>  stamped on every entry as `run` (coverage.mjs merges by it — hand-off gap 6)
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync, renameSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -67,6 +71,15 @@ mkdirSync(outDir, { recursive: true });
 const profile = mkdtempSync(join(tmpdir(), 'ui-review-'));
 const proc = ATTACH ? null : spawn('google-chrome-stable', [
   '--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
+  // Headless Chrome has NO input device, so it answers `(hover: none)` and
+  // `(pointer: coarse)` — it looks like a phone to CSS. Anything gated on a real
+  // cursor then never renders, and the shot lands in _unverified with a
+  // misleading "MISSING" instead of a wrong picture (found 2026-08-27: the
+  // artifact viewer's magnifier button was invisible to the rig for this reason).
+  // These are Blink's own enums: hover=2 (HoverTypeHover), pointer=4
+  // (PointerTypeFine). CDP's Emulation.setEmulatedMedia does NOT cover these two
+  // features — it only knows the prefers-* family — so the flags are the only way.
+  '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
   `--window-size=${W},${H}`, '--force-device-scale-factor=1',
   `--remote-debugging-port=${CDP_PORT}`, `--user-data-dir=${profile}`, 'about:blank',
 ], { stdio: 'ignore' });
@@ -126,7 +139,12 @@ async function session(theme) {
   let target;
   if (ATTACH) {
     const list = await (await fetch(`http://127.0.0.1:${ATTACH}/json/list`)).json();
-    target = list.find(t => t.type === 'page' && !/devtools|buddy/.test(t.url)) ?? list[0];
+    // Prefer the window that actually shows the app (served from the dev Vite on 127.0.0.1/localhost).
+    // WHY: the app opens helper windows too (theme-preview generator, floater); on 2026-08-27 the first
+    // 'page' target was one of those, and every shot died on its localStorage ('Access is denied').
+    target = list.find(t => t.type === 'page' && /^http:\/\/(127\.0\.0\.1|localhost):\d+/.test(t.url) && !/devtools|buddy|preview/.test(t.url))
+      ?? list.find(t => t.type === 'page' && !/devtools|buddy/.test(t.url)) ?? list[0];
+    console.error(`attach: ${list.length} targets, using ${target?.url}`);
     if (!target) throw new Error('no page target on ' + ATTACH);
   } else {
     target = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json/new?about:blank`, { method: 'PUT' })).json();
@@ -185,7 +203,7 @@ async function session(theme) {
   const shot = async (file) => { const r = await send('Page.captureScreenshot', { format: 'png' }); writeFileSync(file, Buffer.from(r.data, 'base64')); };
   const probe = async () => JSON.parse(await evaluate(PROBE));
   const close = async () => { try { ws.close(); if (!ATTACH) await fetch(`http://127.0.0.1:${CDP_PORT}/json/close/${target.id}`); } catch { /* gone */ } };
-  return { send, evaluate, run, shot, probe, errors, close, selExpr };
+  return { send, evaluate, run, shot, probe, errors, close, selExpr, textExpr };
 }
 
 await waitForCdp();
@@ -195,7 +213,8 @@ for (const theme of THEMES) {
   const tdir = join(outDir, theme); mkdirSync(join(tdir, '_unverified'), { recursive: true });
   for (const s of plan.shots) {
     const sess = await session(theme);
-    const entry = { theme, name: s.name, verified: false, reasons: [], errors: [], contrastFails: [] };
+    // run stamps UI_REVIEW_RUN on every entry so coverage.mjs can merge manifests from one sweep (hand-off gap 6).
+    const entry = { theme, name: s.name, run: process.env.UI_REVIEW_RUN ?? null, verified: false, reasons: [], errors: [], contrastFails: [] };
     try {
       if (ATTACH) { await sess.evaluate(`localStorage.setItem('youcoded-theme', ${JSON.stringify(theme)})`); await sess.send('Page.reload'); }
       else await sess.send('Page.navigate', { url: wb(s.url ?? plan.base) });
@@ -219,6 +238,16 @@ for (const theme of THEMES) {
       await new Promise(r => setTimeout(r, s.settle ?? 500));
       const file = join(tdir, `${s.name}.png`);
       await sess.shot(file);
+      // Measure named elements for the review deck (spec §4.2): same DOM the screenshot shows.
+      if (Array.isArray(s.measure)) {
+        entry.measures = {};
+        for (const m of s.measure) {
+          const key = typeof m === 'string' ? m : `text:${m.text}`;
+          const expr = typeof m === 'string' ? sess.selExpr(m) : sess.textExpr(m.text, m.tag);
+          entry.measures[key] = await sess.evaluate(`(() => { const el = ${expr}; if (!el) return null; const r = el.getBoundingClientRect(); return { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) }; })()`).catch(() => null);
+          if (!entry.measures[key]) entry.reasons.push(`measure missing: ${key}`);
+        }
+      }
       // --- verification ---
       entry.reasons.push(...realFails);
       if (s.expect) {

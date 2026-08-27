@@ -1,0 +1,159 @@
+{
+  "title": "Phase D mock-ups — pick a chip design and a terminal backing",
+  "key": "phase-d-mockups",
+  "out": "phase-d-mockups.html",
+  "images": "images/phase-d-mockups",
+  "runs": {
+    "today": "/home/destin/youcoded-dev/scratch/ui-phase-d-mockups"
+  },
+  "labels": {
+    "today": "Mock-up"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "creme",
+    "dark",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "_note": "Nothing here ships. Two questions, one pick each: which attachment chip, which terminal backing. 'None of these' + a note if none fits.",
+  "crops": {
+    "chips-a": [
+      "mockups",
+      "attachments-a",
+      "900x235+0+0"
+    ],
+    "chips-b": [
+      "mockups",
+      "attachments-b",
+      "900x300+0+245"
+    ],
+    "chips-c": [
+      "mockups",
+      "attachments-c",
+      "900x330+0+560"
+    ],
+    "term-today": [
+      "mockups",
+      "terminal-today",
+      "1000x520+0+40"
+    ],
+    "term-scrim": [
+      "mockups",
+      "terminal-scrim",
+      "1000x520+0+40"
+    ],
+    "term-solid90": [
+      "mockups",
+      "terminal-solid90",
+      "1000x520+0+40"
+    ],
+    "term-solid100": [
+      "mockups",
+      "terminal-solid100",
+      "1000x520+0+40"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-19",
+      "surface": "Composer attachments",
+      "path": "Which chip design?",
+      "headline": "Which attachment chip should the composer use? Click a picture or a button; add a note if you want a mix.",
+      "notice": "All three show the same eleven files (image, markdown, text, code, PDF, spreadsheet, audio, video, zip, a long name, unknown), then the same row at phone width. Text previews use canned lines; the real version would read the file's first lines.",
+      "variants": [
+        {
+          "id": "A",
+          "label": "Wide chip",
+          "crop": "chips-a",
+          "highlight": {
+            "selector": "[data-testid=mock-a]"
+          },
+          "summary": "One-line pill: type icon, name cut after 16 letters (full name on hover), ✕ always visible. No preview.",
+          "measured": "28 px tall; 6 of 11 fit before the row scrolls",
+          "risk": "No picture thumbnails at all."
+        },
+        {
+          "id": "B",
+          "label": "Card with name strip",
+          "crop": "chips-b",
+          "highlight": {
+            "selector": "[data-testid=mock-b]"
+          },
+          "summary": "Your direction: preview on top (thumbnail, first lines, or a big type glyph), name in an 11 px strip along the bottom, ✕ always visible.",
+          "measured": "96 × 72 px; preview text 9 px",
+          "risk": "✕ overlaps the first preview line; the row is 72 px tall vs 48 today."
+        },
+        {
+          "id": "C",
+          "label": "Bigger card",
+          "crop": "chips-c",
+          "highlight": {
+            "selector": "[data-testid=mock-c]"
+          },
+          "summary": "B one size up so the preview is actually readable; name strip 12 px.",
+          "measured": "128 × 96 px; 3 cards fit at phone width",
+          "risk": "Twice today's row height; the composer pushes the chat up noticeably."
+        }
+      ]
+    },
+    {
+      "id": "P-20.2",
+      "surface": "Terminal",
+      "path": "Which backing under wallpaper themes?",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension",
+        "midnight"
+      ],
+      "headline": "How solid should the terminal's backing be under a wallpaper theme? Midnight is the flat reference — identical in all four.",
+      "notice": "The strip above the terminal never changes. The sample screen is canned Claude Code output, not a live session.",
+      "variants": [
+        {
+          "id": "1",
+          "label": "Today",
+          "crop": "term-today",
+          "highlight": {
+            "selector": "[data-term-backing='today']"
+          },
+          "summary": "Text at 60% opacity straight over the blurred wallpaper — the theme's default.",
+          "measured": "60% opacity"
+        },
+        {
+          "id": "2",
+          "label": "Stronger scrim",
+          "crop": "term-scrim",
+          "highlight": {
+            "selector": "[data-term-backing='scrim']"
+          },
+          "summary": "Same look, the terminal drawn at 85% instead of 60%.",
+          "measured": "85% opacity",
+          "risk": "A busy wallpaper (Halftone) still competes with small text."
+        },
+        {
+          "id": "3",
+          "label": "Panel, 90% solid",
+          "crop": "term-solid90",
+          "highlight": {
+            "selector": "[data-term-backing='solid90']"
+          },
+          "summary": "The theme's panel colour at 90%, the guarantee chat panels already have; a hint of wallpaper remains.",
+          "measured": "90% panel",
+          "risk": "Meadow Mist's hand-made terminal backdrop is replaced by the flat panel colour."
+        },
+        {
+          "id": "4",
+          "label": "Panel, fully solid",
+          "crop": "term-solid100",
+          "highlight": {
+            "selector": "[data-term-backing='solid100']"
+          },
+          "summary": "A fully opaque panel — no wallpaper inside the terminal.",
+          "measured": "100% panel",
+          "risk": "Wallpaper packs lose their character in Terminal view."
+        }
+      ]
+    }
+  ]
+}

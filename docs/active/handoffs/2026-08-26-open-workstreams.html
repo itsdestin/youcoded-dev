@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Open Workstreams — 2026-08-26</title>
+<style>
+  :root{
+    --bg:#fbfbfc; --panel:#fff; --fg:#16181d; --muted:#5f6673; --edge:#e3e6ec;
+    --head:#f2f4f7; --accent:#2f6df6;
+    --you:#b45309; --you-bg:#fef3c7; --build:#3730a3; --build-bg:#e0e7ff;
+    --go:#166534; --go-bg:#dcfce7; --live:#0e7490; --live-bg:#cffafe;
+    --park:#6b7280; --park-bg:#eceef2; --risk:#9f1239; --risk-bg:#ffe4e6;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0f1115; --panel:#161920; --fg:#e8eaef; --muted:#9aa3b2; --edge:#272b34;
+    --head:#1d212a; --accent:#6f9bff;
+    --you:#fbbf24; --you-bg:#3a2c07; --build:#a5b4fc; --build-bg:#1e1b4b;
+    --go:#86efac; --go-bg:#052e16; --live:#67e8f9; --live-bg:#083344;
+    --park:#9aa3b2; --park-bg:#22262f; --risk:#fda4af; --risk-bg:#4c0519;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0f1115; --panel:#161920; --fg:#e8eaef; --muted:#9aa3b2; --edge:#272b34;
+    --head:#1d212a; --accent:#6f9bff;
+    --you:#fbbf24; --you-bg:#3a2c07; --build:#a5b4fc; --build-bg:#1e1b4b;
+    --go:#86efac; --go-bg:#052e16; --live:#67e8f9; --live-bg:#083344;
+    --park:#9aa3b2; --park-bg:#22262f; --risk:#fda4af; --risk-bg:#4c0519;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:28px 20px 64px;background:var(--bg);color:var(--fg);
+    font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:-.02em}
+  .sub{color:var(--muted);margin:0 0 22px;font-size:14px}
+  h2{font-size:17px;margin:34px 0 4px;letter-spacing:-.01em}
+  h2 .n{color:var(--muted);font-weight:400;font-size:14px}
+  .lede{color:var(--muted);font-size:13.5px;margin:0 0 12px;max-width:80ch}
+  .scroll{overflow-x:auto;border:1px solid var(--edge);border-radius:10px;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;min-width:840px;font-size:13.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--edge);vertical-align:top}
+  th{background:var(--head);font-weight:600;font-size:12px;letter-spacing:.03em;
+     text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  td.name{font-weight:600;width:20%}
+  td.name small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:2px}
+  code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+    background:var(--head);padding:1px 5px;border-radius:4px;white-space:nowrap}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.03em;
+    padding:2px 7px;border-radius:999px;white-space:nowrap}
+  .t-you{color:var(--you);background:var(--you-bg)}
+  .t-build{color:var(--build);background:var(--build-bg)}
+  .t-go{color:var(--go);background:var(--go-bg)}
+  .t-live{color:var(--live);background:var(--live-bg)}
+  .t-park{color:var(--park);background:var(--park-bg)}
+  .t-risk{color:var(--risk);background:var(--risk-bg)}
+  .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:0 0 6px}
+  .card{background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:12px 14px}
+  .card b{display:block;font-size:23px;letter-spacing:-.02em}
+  .card span{color:var(--muted);font-size:12.5px}
+  .note{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--accent);
+    border-radius:8px;padding:11px 14px;margin:12px 0;font-size:13.5px;color:var(--muted)}
+  .note b{color:var(--fg)}
+  footer{margin-top:38px;padding-top:14px;border-top:1px solid var(--edge);
+    color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Open workstreams</h1>
+<p class="sub">YouCoded workspace, reviewed 2026-08-26 — one reviewer per thread, every claim checked against the code.</p>
+
+<div class="cards">
+  <div class="card"><b>21</b><span>open workstreams</span></div>
+  <div class="card"><b>8</b><span>waiting on you</span></div>
+  <div class="card"><b>144</b><span>commits now backed up</span></div>
+  <div class="card"><b>206</b><span>open roadmap items</span></div>
+</div>
+
+<div class="note"><b>Everything is now pushed.</b> Before today, 107 commits and two piles of unsaved work existed only on this laptop. All of it is on GitHub, including two rescue commits for work that had never been saved at all. <b>Behind</b> below means how far a branch has fallen behind the main line — the bigger the number, the more rework a merge costs.</div>
+
+<h2>1. Waiting on you <span class="n">— nothing moves until you answer</span></h2>
+<p class="lede">Ordered by how long each has been sitting. None of these needs work first; they need a decision.</p>
+<div class="scroll"><table>
+<thead><tr><th>Workstream</th><th>Waiting</th><th>The question</th><th>Cost of not answering</th></tr></thead>
+<tbody>
+<tr><td class="name">Specialists plan 1c<small>helper agents</small></td><td class="num">10 days</td>
+  <td><b>A safety question you never saw.</b> The session hit your weekly limit mid-sentence. In auto-edit mode, hiring a helper skips <em>both</em> protections built for it, so a helper defined inside someone else's repo could run shell commands unprompted. Ship it and track it, or exclude file-defined helpers?</td>
+  <td>Blocks 47 commits from merging.</td></tr>
+<tr><td class="name">Deliverables card<small>files as chat cards</small></td><td class="num">today</td>
+  <td><b>An unexplained memory blocker.</b> A test window on this branch grew to 2.78&nbsp;GB in 73 minutes and was killed. Compare against a plain window for the same stretch, or dig into what's holding memory?</td>
+  <td>Finished code can't ship.</td></tr>
+<tr><td class="name">Project description<small>label on project cards</small></td><td class="num">20 days</td>
+  <td><b>Two small UI tweaks.</b> The New Conversation button moved to the bottom-right and the description box became auto-sizing. You were asked to look and never replied.</td>
+  <td>A completely finished feature idles.</td></tr>
+<tr><td class="name">Dual-model crash<small>two models at once</small></td><td class="num">10 days</td>
+  <td>Should the app auto-unload, warn, or hard-block when two models won't fit? And is a single model capped? Flagged "do not guess."</td>
+  <td>The crash is still live.</td></tr>
+<tr><td class="name">"Ask about this"<small>select text, ask</small></td><td class="num">29 days</td>
+  <td>You called it <em>"janky af for the artifact viewer."</em> Rework the overlay, or rewrite it?</td>
+  <td>27 finished commits age.</td></tr>
+<tr><td class="name">UI review Phase B<small>dialogs, status bar</small></td><td class="num">today</td>
+  <td>Three items, each with an "approve the measured part only" option — choosing that means reverting the taste half first. Two side questions also unanswered.</td>
+  <td>Merges clean today; gets harder later.</td></tr>
+<tr><td class="name">GitHub sign-in<small>v1.3 release gate</small></td><td class="num">43 days</td>
+  <td>Did you ever sign in to GitHub <em>from inside the app</em>? Sync works either way, because a terminal login satisfies it. Check Account → Connected accounts.</td>
+  <td>Holds the v1.3 release.</td></tr>
+<tr><td class="name">Perf lab<small>speed measurement rig</small></td><td class="num">3 days</td>
+  <td>Already dispatched to your other Linux machine. Two files it needs exist only on this one.</td>
+  <td>The other machine can't start.</td></tr>
+</tbody></table></div>
+
+<h2>2. Branches with real code <span class="n">— what exists and how hard it is to land</span></h2>
+<div class="scroll"><table>
+<thead><tr><th>Workstream</th><th>Branch</th><th class="num">Commits</th><th class="num">Behind</th><th class="num">Clashes</th><th>State</th></tr></thead>
+<tbody>
+<tr><td class="name">Specialists 1c<small>helper agents</small></td><td><code>feat/specialists-1c-ui</code></td><td class="num">47</td><td class="num">89</td><td class="num">4</td>
+  <td><span class="tag t-you">you</span> Built, never tested — all 15 checks in its checklist are blank. 3 of its 4 folders are redundant.</td></tr>
+<tr><td class="name">"Ask about this"</td><td><code>feat/ask-claude-reference-ux</code></td><td class="num">27</td><td class="num">806</td><td class="num">2</td>
+  <td><span class="tag t-park">parked</span> Complete + tested, but you rejected the artifact-viewer half.</td></tr>
+<tr><td class="name">Deliverables card</td><td><code>feat/send-user-file-card</code></td><td class="num">24</td><td class="num">24</td><td class="num">1</td>
+  <td><span class="tag t-you">you</span> Code done through task 9. Memory blocker above.</td></tr>
+<tr><td class="name">Permission timeout<small>asks stop expiring</small></td><td><code>feat/permission-ask-timeout</code></td><td class="num">20</td><td class="num">663</td><td class="num">8</td>
+  <td><span class="tag t-build">rework</span> PR #278 open a month, <b>never reviewed</b>, and GitHub calls it conflicting.</td></tr>
+<tr><td class="name">Past conversations<small>reference an old chat</small></td><td><code>feat/chatsearch-session-refs</code></td><td class="num">20</td><td class="num">24</td><td class="num">1</td>
+  <td><span class="tag t-live">in&nbsp;flight</span> Being built now. 11 of 18 tasks left; no backend yet.</td></tr>
+<tr><td class="name">Project description</td><td><code>feat/project-description</code></td><td class="num">13</td><td class="num">570</td><td class="num">1</td>
+  <td><span class="tag t-go">ready</span> All tasks done, tests green.</td></tr>
+<tr><td class="name">Status bar numbers<small>make every figure true</small></td><td><code>feat/statusbar-session-relevance</code></td><td class="num">8</td><td class="num">0</td><td class="num">0</td>
+  <td><span class="tag t-live">in&nbsp;flight</span> Being built now — don't touch its spec or plan.</td></tr>
+<tr><td class="name">UI Phase B</td><td><code>feat/ui-phase-b</code></td><td class="num">2</td><td class="num">0</td><td class="num">0</td>
+  <td><span class="tag t-go">ready</span> Merges clean, fully up to date.</td></tr>
+<tr><td class="name">Assistant settings<small>one settings panel</small></td><td><code>feat/assistant-settings-mockup</code></td><td class="num">2</td><td class="num">0</td><td class="num">0</td>
+  <td><span class="tag t-risk">rescued today</span> Was untracked in the main folder. Design only; never reviewed.</td></tr>
+<tr><td class="name">Session context<small>what the assistant started with</small></td><td><code>feat/context-truncation-notice</code></td><td class="num">1</td><td class="num">55</td><td class="num">0</td>
+  <td><span class="tag t-risk">rescued today</span> Approved mockup that had never been saved. No backend.</td></tr>
+<tr><td class="name">Window resize<small>black bars + lag</small></td><td><code>fix/resize-paint-race</code></td><td class="num">1</td><td class="num">320</td><td class="num">0</td>
+  <td><span class="tag t-go">most ready</span> Zero drift, tests green. Drag a window edge and it's done.</td></tr>
+<tr><td class="name">Session animation<small>switching conversations</small></td><td><code>feat/session-switch-animation</code></td><td class="num">1</td><td class="num">1076</td><td class="num">1</td>
+  <td><span class="tag t-build">design</span> A change in August likely broke what the animation relies on.</td></tr>
+<tr><td class="name">Linux floating buddy</td><td><code>fix/linux-xwayland-floater</code></td><td class="num">2</td><td class="num">982</td><td class="num">3</td>
+  <td><span class="tag t-park">shelved</span> Proven then rejected. A small window-sizing fix is trapped on it.</td></tr>
+</tbody></table></div>
+
+<h2>3. Designed but not built <span class="n">— plans with no code</span></h2>
+<div class="scroll"><table>
+<thead><tr><th>Workstream</th><th>What it does</th><th>Blocked by</th></tr></thead>
+<tbody>
+<tr><td class="name">Search timeout</td><td>Stops a file search hanging the assistant — one real case ran 181 seconds.</td><td><span class="tag t-go">just scheduling</span> Reviewed, corrected, no gate, no dependency.</td></tr>
+<tr><td class="name">Full-auto reads</td><td>Stops Full Auto interrupting to ask permission just to <em>read</em> a file outside the project.</td><td><span class="tag t-you">you</span> You approve the card wording in the workbench first.</td></tr>
+<tr><td class="name">Empty bubble fix</td><td>Removes the bare bubble that shows only a timestamp above a permission card.</td><td><span class="tag t-build">build</span> Fully specced; all your checkpoints resolved.</td></tr>
+<tr><td class="name">Project-scoped skills</td><td>Skills stored inside a project folder are never found today.</td><td><span class="tag t-build">build</span> No open questions.</td></tr>
+<tr><td class="name">Presence self-healing</td><td>The friends online indicator gets stuck and stays stuck.</td><td><span class="tag t-build">build</span> One quarter of it ships alone.</td></tr>
+<tr><td class="name">Folder rules for models</td><td>Read and Bash can silently open different files with the same name.</td><td><span class="tag t-you">you</span> Refuse loose paths, or keep the current hints?</td></tr>
+</tbody></table></div>
+
+<h2>4. Things the workspace was saying that weren't true</h2>
+<p class="lede">All corrected and pushed. A wrong document is worse than a missing one — each of these had a real chance of sending a future session the wrong way.</p>
+<div class="scroll"><table>
+<thead><tr><th>What was wrong</th><th>Why it mattered</th></tr></thead>
+<tbody>
+<tr><td class="name">Your staleness alarm reads the wrong file</td><td>It reported <b>41 days</b> and stayed quiet; the true figure is <b>125</b>. Both warning paths were dead — which is why none of this ever surfaced on its own.</td></tr>
+<tr><td class="name">The design guide states a rule you rejected</td><td><code>CLAUDE.md</code> tells every session that guide is the standard. It described a change you turned down on 2026-08-25, plus four unbuilt proposals written as current fact.</td></tr>
+<tr><td class="name">A corruption bug marked "fixed" that isn't</td><td>Connect your phone and your <b>oldest reply can turn into a copy of your newest</b>. The July fix covered one of three ID types. Two-line fix.</td></tr>
+<tr><td class="name">A shipping tooltip promises safety that isn't there</td><td>The Skip Permissions explainer says Claude still stops before risky actions. Measured: it read <code>.env</code>, wrote outside the project, wrote to <code>.git/config</code> — no prompt.</td></tr>
+<tr><td class="name">Every plan reads as untouched</td><td>Not one ticked checkbox, while the work behind it is finished. A session following any of them would rebuild code that already exists.</td></tr>
+<tr><td class="name">Daily checks red since 2026-08-16</td><td>Not real drift — the specialists branch's doc checks point at files only on that branch. Until it merges, that check can't warn you about anything else.</td></tr>
+<tr><td class="name">A settled decision written as open</td><td>The 24-hour vs 2-hour permission hold. You settled it at 2 hours and it shipped that way a month ago.</td></tr>
+</tbody></table></div>
+
+<h2>5. Housekeeping left for you</h2>
+<div class="scroll"><table>
+<thead><tr><th>Item</th><th>Why it's yours</th></tr></thead>
+<tbody>
+<tr><td class="name">Two dev servers still running</td><td>Left over from this morning, holding ports 5223 and 5243. They'll trip the next dev launch. I don't stop processes without asking.</td></tr>
+<tr><td class="name">Five folders can be removed</td><td>Three specialists folders (their work is inside a fourth), one empty, one now safely committed. Frees disk, loses nothing.</td></tr>
+<tr><td class="name">Five test leftovers</td><td><code>color-test.html</code>, <code>grid-a</code>, <code>grid-b</code>, <code>spacing-test</code>, <code>tmp-test.txt</code>. Safe to delete — I don't delete files unasked.</td></tr>
+<tr><td class="name">Main folder still has copies</td><td>The rescued mockup is safe on its own branch now, but the originals still sit loose in the main folder. Say the word and I'll clear them.</td></tr>
+<tr><td class="name">All 8 dependency updates are failing</td><td>None is safe to merge. One labelled "minor patch" carries a three-version Kotlin jump.</td></tr>
+<tr><td class="name">A "DO NOT MERGE" pull request</td><td>Should be closed — but a small Linux window-sizing fix is trapped on that branch and dies with it.</td></tr>
+</tbody></table></div>
+
+<footer>
+Reviewed 2026-08-26 by fourteen parallel reviewers, one per workstream. Every number here came from a command run that day; where a document disagreed with the code, the code won.<br>
+Full write-up: <code>docs/active/handoffs/2026-08-26-open-work-state-of-play.md</code> · Tracking: <code>ROADMAP.md</code> (30 items added for work nothing was tracking).
+</footer>
+
+</div>
+</body>
+</html>

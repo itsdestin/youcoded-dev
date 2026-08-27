@@ -1,5 +1,7 @@
 # UI audit 2026-08-25 — screenshot evidence
 
+> Pages dated before 2026-08-27 were built by the v1 `review-cards.py` / `review-page.py`, which no longer exist in that form; their JSON specs stay as the record of what was asked. New decks use the v2 tool (`phase-c-review-v2.json` is the template; `scripts/ui-review/README.md`).
+
 - `gallery.html` — every captured surface, all themes side by side. Open the file in the
   app's file viewer or a browser. Names are `<plan>-<surface>` (`main-`, `overlays-`,
   `narrow-`, `tall-`, `latency-`, `marketplace-` from the workbench sweep; `live-` and
@@ -11,8 +13,27 @@
   edit, 1:1 before/after crops, risks, alternatives, and an approve/reject control that
   assembles a copyable feedback block. **This is the template for every later phase** —
   a gallery of shrunken windows with no rationale was rejected as a review surface.
+- `phase-b-brief.html` / `phase-b-review.html` (specs `phase-b-brief.json`, `phase-b-review.json`) —
+  the Phase B brief (problems only, from master) and the review page it led to. Both carry a
+  banner with the decisions (P-15 approved as revised, P-18 approved, P-10 rejected; youcoded #328).
+- `phase-c-cards.html` (spec `phase-c-cards.json`, built by `scripts/ui-review/review-cards.py`, crops in
+  `images/phase-c/` from `scratch/ui-phase-c-baseline/`, a sweep of master at `c04739df`) — the Phase C
+  brief as a **deck**: 16 points on 5 screens, one point per step, one ring on the target, Yes/No. A
+  prose-first brief and a board-of-cards layout were both rejected the same day; the deck is the
+  template from here on. Decided 2026-08-27: 13 of 16 points yes.
+- `phase-c-review.html` (spec `phase-c-review.json`, crops in `images/phase-c-review/` from
+  `scratch/ui-phase-c-baseline/` vs `scratch/ui-phase-c-after/`, branch `feat/ui-phase-c`) — the Phase C
+  review deck: Before/After flip per point for the 13 built changes, plus two question steps
+  (P-21 #2 re-explained, P-3 #2 glass sliders on flat themes). Decided 2026-08-27: all yes with
+  four refinements.
+- `phase-c-review2.html` (spec `phase-c-review2.json`, `scratch/ui-phase-c-after/` vs
+  `scratch/ui-phase-c-after2/`) — round 2: hover-only star + taller preview cards, greyed pencil
+  with tooltip, the marketplace type switch as the Library pill (“Plugins”), and the P-21 #2
+  mock-up (theme cards reserve their text rows). Decided 2026-08-27: all yes, reservation reverted;
+  Phase C merged as youcoded #332.
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
-  (103 of 104; "Known Issues" opens an external link). `contrast.md` — the painted-pixel
+  (the original pass: 103 of 104 — "Known Issues" opens an external link; the latest full sweep
+  of master, 2026-08-26 after Phase B, verified 112 of 112). `contrast.md` — the painted-pixel
   contrast probe's raw output (over-reports on glass themes; read, don't paste).
 - `images/` — the JPEG sheets the gallery shows (~13 MB, **git-ignored** on purpose, same
   convention as the perf-lab screenshots; they exist on the machine that ran the audit).

@@ -9,6 +9,40 @@ created: 2026-08-11
 **Provenance:** produced by the Frontier-AI-Lab-Assistant workspace (`~/YouCoded/Projects/Frontier-AI-Lab-Assistant`) in three passes, all on 2026-08-11: (1) a competitive research pass over nine harnesses/agents (43 fetched sources; distilled in that workspace's `knowledge/engineering/harnesses.md`, snapshots in its `library/`), (2) an eval-infrastructure audit of this repo and ask-the-budget-az-dev, and (3) a three-agent **code verification pass against this repo at master** that corrected the doc-derived recommendations with file:line evidence. Claims below reflect the *corrected* picture.
 **Re-check trigger:** any claim about "what exists today" is dated 2026-08-11 against master; re-verify entry points before building on one after significant harness changes. The landscape file it draws on has a 30-day freshness window.
 
+> **RE-VERIFIED 2026-08-26 (15 days on). Steps 4–9 are all still unbuilt, and this document is
+> orphaned from the workspace's planning surface.** Commands run against `origin/master` in
+> `youcoded/`:
+> - step 4 — `git grep -n cache_control origin/master -- desktop/src` → **0 hits**.
+> - step 5 — `git grep -n "fsync|wireRecord|wire-log" origin/master -- desktop/src/main/harness` → **0 hits**.
+> - step 6 — `git grep -rn chatsearch origin/master -- desktop/src/main/harness` → **0 hits**.
+> - step 7 — `git grep -n "bubblewrap|bwrap|landlock" origin/master -- desktop/src` → **0 hits**.
+> - steps 8, 9 — no goal-layer or versioned-remote-protocol code; nothing has moved.
+> - step 2's two open halves (the CI gate, and driving case selection from step 1's taxonomy) are
+>   also unbuilt; the shipped evaluator itself is real (`desktop/src/main/harness/eval/`).
+>
+> **Two findings that need action, not just a date stamp:**
+>
+> 1. **Step 1's accelerator is not in version control.** `desktop/test-engine/conversation-triage.mjs`
+>    (526 lines) shows as `??` in `git status` on the main checkout. It was committed once by
+>    accident inside another session's work (`51c9531e`) and removed again by the revert
+>    `c34890d3`; `git ls-files desktop/test-engine/conversation-triage.mjs` returns nothing and it
+>    is not gitignored. One `git clean` deletes it. Commit it or accept that step 1 restarts from zero.
+> 2. **Nothing points at this document.** `rg -l 2026-08-11-super-agent-roadmap --glob '*.md'`
+>    across the workspace matches exactly one file — an *archived* spec
+>    (`docs/archive/specs/2026-08-12-harness-evaluator-design.md`). It is absent from `ROADMAP.md`,
+>    `docs/MAP.md` and `CLAUDE.md`, and none of steps 5–9 (event log, memory system, Bash
+>    containment, goal layer, remote protocol) appears anywhere in `ROADMAP.md`. So a second
+>    document named "roadmap" is carrying six untracked work items that the real planning surface
+>    has never heard of. **Recommendation: fold steps 4–9 into `ROADMAP.md` as ordinary items and
+>    retitle this file** (e.g. "harness field survey + sequencing rationale") so there is exactly
+>    one roadmap in the workspace.
+>
+> Relationship to the native-runtime program: **they do not overlap and neither supersedes the
+> other.** `2026-08-11-native-sessions-remaining-work.md` is *parity* work (make a native session
+> indistinguishable from a Claude Code one — UI, permissions, Android, onboarding). This document
+> is *capability* work (memory, containment, goals, durability) — things Claude Code does not do
+> either. Only step 4/cache overlaps anything tracked, via the `#cost` cache-efficiency bug.
+
 ## Where the native harness stands vs. the field (verified)
 
 Already at or above field standard — do not rebuild:

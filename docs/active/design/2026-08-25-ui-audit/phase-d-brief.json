@@ -1,0 +1,188 @@
+{
+  "title": "Phase D brief — five proposals beside the chat",
+  "key": "phase-d-brief",
+  "out": "phase-d-brief.html",
+  "images": "images/phase-d-brief",
+  "runs": {
+    "today": "/home/destin/youcoded-dev/scratch/ui-phase-d-today"
+  },
+  "labels": {
+    "today": "Today"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "creme",
+    "dark",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "_note": "Nothing is built yet: every picture is today's app. 'What changed' reads as 'what I propose to change'. The terminal picture is the real app captured 2026-08-25 (workbench has no terminal); its files have not changed since.",
+  "crops": {
+    "welcome": [
+      "main",
+      "welcome-empty",
+      "560x360+440+280"
+    ],
+    "attach-chips": [
+      "overlays",
+      "composer-attachments",
+      "560x110+0+740"
+    ],
+    "find-bar": [
+      "main",
+      "find-bar",
+      "600x130+840+38"
+    ],
+    "skills-pills": [
+      "main",
+      "skills-drawer",
+      "1440x50+0+568"
+    ],
+    "skills-search": [
+      "main",
+      "skills-drawer",
+      "440x60+1000+512"
+    ],
+    "skills-end": [
+      "main",
+      "skills-drawer-end",
+      "1440x130+0+770"
+    ],
+    "terminal": [
+      "electron-live-session",
+      "e2-terminal-view",
+      "1440x900+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-6.1",
+      "surface": "Welcome screen",
+      "path": "No session open",
+      "crop": "welcome",
+      "highlight": {
+        "selector": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume Session')?.parentElement"
+      },
+      "headline": "There is no way to open Settings from the welcome screen — the only two buttons start or resume a session.",
+      "changed": "Add the same Settings gear the chat screen has, in the top-left corner of the welcome screen. Nothing else on the screen moves.",
+      "measured": "2 buttons on the screen; neither opens Settings",
+      "notice": "You can change your theme, providers or permissions before starting a session, from the same corner the gear lives in once a session is open.",
+      "risk": "The gear is small and sits alone in an otherwise empty top bar, so it may look stranded until you know it is there."
+    },
+    {
+      "id": "P-19.1",
+      "surface": "Composer",
+      "path": "Chat → attached files",
+      "crop": "attach-chips",
+      "highlight": {
+        "selector": "js:document.querySelector(\"[aria-label^='Remove']\")?.parentElement"
+      },
+      "headline": "Attached files are 48 px squares: the name is cut to “design…”, a broken picture spills its file name, and ✕ shows only on hover.",
+      "changed": "Turn each square into a wide chip: a file-type icon, the name (at least 12 letters before it is cut), and an always-visible ✕. A picture that cannot load shows the icon instead of a broken image.",
+      "measured": "48 px chip, 9 px name, cut after 6 letters",
+      "notice": "You can read what you attached and remove it without hunting for a hidden ✕. Chips are about three times wider, so many attachments scroll sideways sooner.",
+      "risk": "Picture attachments lose their thumbnail in favour of an icon plus name — if you like seeing the image itself, say so."
+    },
+    {
+      "id": "P-14.1",
+      "surface": "Chat",
+      "path": "Chat → Ctrl+F",
+      "crop": "find-bar",
+      "highlight": {
+        "selector": "js:document.querySelector(\"[placeholder='Find in chat']\")?.closest('.absolute')"
+      },
+      "headline": "The find bar floats on top of your first message and hides the end of it while you search.",
+      "changed": "Give the find bar its own row above the messages, like a browser's, instead of floating over them. The messages shift down while it is open and back when it closes.",
+      "measured": "292 × 41 px bar over the first message, 48 px from the top",
+      "notice": "The message under the bar stays readable. The chat shifts down by the bar's height when you press Ctrl+F.",
+      "risk": "That shift is a visible jump each time the bar opens or closes."
+    },
+    {
+      "id": "P-9.1",
+      "surface": "Skills drawer",
+      "path": "Composer → Browse skills",
+      "crop": "skills-pills",
+      "highlight": {
+        "selector": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='★ Favorites only')?.parentElement?.firstElementChild"
+      },
+      "headline": "The category pills use 12 px text — smaller than every other filter pill in the app — and Favorites only sits alone at the far right.",
+      "changed": "Draw the pills the way the Marketplace draws its filters (14 px text, same shape and spacing), and put Favorites only at the end of the same row.",
+      "measured": "12 px text here vs 14 px in the Marketplace and Library pills",
+      "notice": "The row is easier to read and to hit, and looks like the filters you already use elsewhere. It is a few pixels taller, so the cards below start slightly lower.",
+      "risk": ""
+    },
+    {
+      "id": "P-9.2",
+      "surface": "Skills drawer",
+      "path": "Composer → Browse skills → search",
+      "crop": "skills-search",
+      "highlight": {
+        "selector": "js:document.querySelector(\"[title='Open marketplace']\")?.parentElement"
+      },
+      "headline": "Two unlabeled icon buttons live inside the search field — a pencil and a shop — where you would expect only a clear button.",
+      "changed": "Move the two buttons out of the field to sit beside it as normal icon buttons with names on hover. The search field then looks like every other one in the app.",
+      "measured": "2 buttons inside the field, 0 labels",
+      "notice": "Typing a search no longer sits next to unrelated buttons; the pencil (Your Library) and the shop (Marketplace) are still one click away, just outside the field.",
+      "risk": "The field gets about 80 px shorter to make room for the two buttons."
+    },
+    {
+      "id": "P-9.3",
+      "surface": "Skills drawer",
+      "path": "Composer → Browse skills → scrolled to the end",
+      "crop": "skills-end",
+      "highlight": {
+        "selector": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))"
+      },
+      "headline": "“Add Skills” always starts a new row of its own, even when the row above has an empty slot beside it.",
+      "changed": "Make it the last card in the same grid, so it fills the empty slot. When there are no skills at all, show the app's standard empty message centred in the drawer instead of one dashed card at the far left.",
+      "measured": "1 empty slot above, 1 card alone in a row of 3",
+      "notice": "The drawer ends without an orphan row. A brand-new install sees a message telling it what to do next.",
+      "risk": ""
+    },
+    {
+      "id": "P-20.1",
+      "surface": "Terminal",
+      "path": "Session → Terminal view (real app)",
+      "crop": "terminal",
+      "themes": [
+        "golden-sunbreak"
+      ],
+      "highlight": {
+        "box": [
+          66,
+          4.5,
+          34,
+          88
+        ]
+      },
+      "headline": "The terminal's text stops two-thirds of the way across — the right third of the pane is empty wallpaper.",
+      "changed": "Size the terminal grid to the pane's full width, so lines wrap at the pane's edge and nothing is wasted.",
+      "measured": "Text stops at 950 of 1440 px; 490 px (34%) empty",
+      "notice": "Longer lines before they wrap, and no empty strip on the right. Nothing else about the Terminal view changes.",
+      "risk": "Real-app picture from 2026-08-25 in Golden Sunbreak — the screenshot tool cannot show a terminal; the terminal's files have not changed since."
+    },
+    {
+      "id": "P-20.2",
+      "surface": "Terminal",
+      "path": "Session → Terminal view (real app)",
+      "crop": "terminal",
+      "themes": [
+        "golden-sunbreak"
+      ],
+      "highlight": {
+        "box": [
+          0,
+          36,
+          66,
+          22
+        ]
+      },
+      "headline": "Under a wallpaper theme the terminal is painted straight onto the picture, so its text competes with the image.",
+      "changed": "Give the terminal a solid-enough backing (at least 90% opaque, the theme's panel colour) under wallpaper themes, the same guarantee the chat panels already have.",
+      "measured": "Terminal text over an unscreened wallpaper; chat panels are ≥ 90% opaque",
+      "notice": "Terminal text reads like chat text does over wallpapers. Less of the wallpaper shows through in Terminal view.",
+      "risk": "Flat themes (all four built-ins) look exactly as they do now; only wallpaper packs change."
+    }
+  ]
+}

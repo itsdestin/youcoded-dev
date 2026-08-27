@@ -58,18 +58,22 @@ then a **review page** — never a gallery, never a chat summary:
 1. Capture the branch: `bash scripts/ui-review/run-review.sh <worktree> scratch/<phase>`
    (it starts its own server on Vite 5473 and refuses if that port serves another worktree).
    For a second variant, a second worktree + run dir.
-2. Write `docs/active/design/<audit>/<phase>-review.json` (copy `phase-a-review.json`), then
-   `python3 scripts/ui-review/review-page.py crop <spec>` and `… build <spec>`. Crop regions
-   come from `scripts/ui-review/crops.json`; add new ones there.
-3. Every item on the page carries, in this order: the problem **with the measured number
-   or the broken behaviour**, exactly what was edited, 1:1 crops of the element per theme
-   (before / after, a column per variant), what he'll notice + the risks *against* the
-   change, alternatives considered, and a decision control. **Tag each item `measured`,
-   `judgment` or `mixed`** and say which parts are which — on 2026-08-25 a taste argument
-   (P-12) went in as if it were a defect and was rightly rejected on sight.
-4. Hand Destin the page path; he pastes the generated feedback block. Act on it exactly;
-   record the decisions in the findings ledger (the row, not a new section), the guide,
-   the ROADMAP entry, and a `banner` on the page. Merge, archive, clean up.
+2. Write `docs/active/design/<audit>/<phase>-review.json` (copy `phase-c-review-v2.json`): one
+   step per point with `surface`, `path`, `crop`, `highlight` (`"auto"` for before/after, else
+   `{"selector": …}` measured by the rig), and the four texts — **headline** (≤ 25 words, what a
+   user sees), **changed** (what was edited, plain words, with `measured` when there is a number),
+   **notice** (what changes for users — intended and side effects), **risk** (what could look
+   wrong, or is not shown faithfully). The builder refuses jargon (token, primitive, selector,
+   IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box. **Several designs for one thing are ONE choice step** (`variants: [...]` — one page, pick one; see the README), never a yes/no step per design (`phase-d-mockups.json`).
+3. `python3 scripts/ui-review/review-cards.py serve <spec>` **in the background** (it builds
+   first; fix every `missing:` line it prints — a measurement that is missing means the plan
+   needed a `measure` line before the Before run). The browser opens itself. **The address to give Destin is the `[deck] http://127.0.0.1:<port>/<out>.html` line `serve` prints** (also in `<spec>.serve.json` next to the spec) — quote it whole; the bare port now redirects to the deck, but never guess a URL you have not read. Destin answers
+   Yes / No / Other per step with an optional note and presses Submit; the background command
+   exits with the summary (exit 0 = submitted, summary on stdout; 2 = nobody submitted before the
+   timeout; 3 = another process already serves this spec — neither 2 nor 3 carries answers, do not
+   invent a result) (`wait <spec>` if you lost the process). Never ask him to paste anything.
+4. Act on the summary exactly (`Other` + note = change it as described); record decisions in the
+   findings ledger row, the guide, the ROADMAP entry. Merge, archive, clean up.
 
 ## Red flags
 

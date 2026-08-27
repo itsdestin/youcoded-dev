@@ -2,6 +2,46 @@
 status: active
 ---
 
+> **Update 2026-08-26 — READ BEFORE §C. Gate C as written below is unanswerable, because
+> the thing it gated no longer exists.** §C says *"do NOT auto-merge #122 until Destin does
+> one live GitHub sign-in"*. PR #122 merged 2026-07-14 (`6910efbc`), so that instruction is
+> moot on its face — but more importantly the sync↔GitHub credential path was rebuilt
+> underneath it eight days later:
+>
+> - `git grep -n "'gh'" origin/master -- desktop/src/main/sync-spaces/` returns **nothing**.
+>   `space-manager.ts:8`, `service.ts:14` and `git-transport.ts:15` all import
+>   `github-client` instead. Sync now provisions repos over the REST API with the app's own
+>   token and authenticates push/pull with a per-invocation inline credential helper —
+>   shipped in PR #201 (`998d6fb0`), #202 (`95895a6b`), #203 (`647bd242`), all 2026-07-22.
+> - **But `gh` is still a valid credential SOURCE.** `combinedGithubStatus()`
+>   (`github-client.ts:378-380`) reports `authed: gh.authed || cs.connected` and
+>   `source: cs.source ?? (gh.authed ? 'gh' : null)`. So a machine with a pre-existing
+>   `gh auth login` — which Destin's Z13 has had since long before #122 — syncs perfectly
+>   **without the device-flow modal ever having run once.** Working sync is therefore NOT
+>   evidence that gate C passed.
+>
+> **What Destin actually needs to confirm (one question, ~30 seconds, no build required):**
+> in his live app, open Account → Connected accounts and read the GitHub row. If it shows a
+> connected GitHub login that he signed into **from inside YouCoded** (the Connect GitHub
+> modal's code-entry flow), gate C is closed — that is the live walkthrough, and it
+> happened. If the row is empty, or he only ever ran `gh auth login` in a terminal, gate C
+> is genuinely still open and the walkthrough has never been performed on any machine.
+>
+> **Related but separate — do not conflate:** `ROADMAP.md:503` tracks a *different*
+> outstanding check, the fresh-VM run through the first real push with **no `gh` installed
+> at all** on a build ≥ `647bd242`. That one is about proving the gh-free path; gate C is
+> about proving the in-app sign-in path. Both can be satisfied by the same VM session.
+>
+> **Gate status as of 2026-08-26:** (1) native-session safety — CLOSED (#177).
+> (2) two-device dogfood — CLOSED 2026-07-30. (3) Connect-GitHub live sign-in — **the only
+> open question, and it is a question for Destin, not build work.** (4) release mechanics —
+> open build work (`/audit` is 125 days stale; disk version is still 1.2.4 on both
+> platforms). Recommend: once Destin answers (3), move this doc to
+> `docs/archive/handoffs/` with gate (4) carried as the ROADMAP v1.3 line, since §1's
+> shipped table and §5's decisions are already mirrored in `docs/PITFALLS.md` and the
+> archived specs.
+
+
 # Handoff: Cross-Device Sync — the road to COMPLETE and SHIPPABLE
 
 **Date:** 2026-07-10

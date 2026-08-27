@@ -14,16 +14,21 @@ const dirs = process.argv.slice(2);
 const bySurface = new Map(); // name -> { themes: Map<theme, entry> }
 for (const d of dirs) {
   if (!existsSync(d)) continue;
-  // Oldest first so a later re-run of a fixed shot supersedes the earlier miss.
-  const files = readdirSync(d).filter(f => /^manifest.*\.json$/.test(f)).sort((a, b) => statSync(`${d}/${a}`).mtimeMs - statSync(`${d}/${b}`).mtimeMs);
-  for (const f of files) {
-    for (const e of JSON.parse(readFileSync(`${d}/${f}`, 'utf8'))) {
-      const key = `${d.replace(/\/$/, '').split('/').pop()}/${e.name}`;
-      const s = bySurface.get(key) ?? { themes: new Map() };
-      // Later manifests win (a re-run of a fixed shot supersedes the miss).
-      s.themes.set(e.theme, e);
-      bySurface.set(key, s);
-    }
+  // Order every entry by (run id, file time) and let the later one win per surface × theme.
+  // WHY run id first (hand-off gap 6): under load an EARLIER sweep's shard can write its manifest
+  // AFTER a newer sweep's, and "newest file wins" then resurrected a stale MISSED row. The run id
+  // (UI_REVIEW_RUN, stamped by run-review.sh) says which sweep an entry belongs to; file time only
+  // breaks ties and orders manifests from before 2026-08-27, which carry no run id (-1).
+  // Nothing is discarded: a surface only an older sweep captured stays listed — dropping
+  // everything but the newest run would silently erase the surfaces of a shard that crashed.
+  const files = readdirSync(d).filter(f => /^manifest.*\.json$/.test(f));
+  const entries = files.flatMap(f => { const mtime = statSync(`${d}/${f}`).mtimeMs; return JSON.parse(readFileSync(`${d}/${f}`, 'utf8')).map(e => ({ e, run: /^\d+$/.test(String(e.run ?? '')) ? Number(e.run) : -1, mtime })); });
+  entries.sort((a, b) => a.run - b.run || a.mtime - b.mtime);
+  for (const { e } of entries) {
+    const key = `${d.replace(/\/$/, '').split('/').pop()}/${e.name}`;
+    const s = bySurface.get(key) ?? { themes: new Map() };
+    s.themes.set(e.theme, e);   // later (by run id, then file time) wins
+    bySurface.set(key, s);
   }
 }
 const themes = [...new Set([...bySurface.values()].flatMap(s => [...s.themes.keys()]))];

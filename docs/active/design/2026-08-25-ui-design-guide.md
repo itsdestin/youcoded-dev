@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 date: 2026-08-25
 owner: Destin (decisions) / Claude (draft)
 related: 2026-08-25-ui-audit-findings.md (the evidence), docs/archive/specs/2026-07-16-ui-consistency-design-spec.md (the migration that made this possible)
@@ -55,8 +55,9 @@ One view may show all of them, but the same *role* must never appear at two radi
 
 **G-5 Text has a floor.** Body `text-sm` (14px) · UI labels `text-xs` (12px) · captions,
 counts and eyebrows `text-2xs` (11px) · **nothing below `text-2xs` may carry information.**
-`text-3xs`/`text-4xs` (10/9px) exist for decorative glyphs and the status bar *only until
-P-10 lands*, after which the status bar floors at `text-2xs` too.
+`text-3xs`/`text-4xs` (10/9px) exist for decorative glyphs. The **status bar is the one
+documented exception** that carries information at `text-3xs`: raising it to 11px was proposed
+(P-10) and Destin rejected it on 2026-08-26 — keep it at 10px and do not re-propose.
 
 ---
 
@@ -181,14 +182,18 @@ one chip treatment for all chips (`secondary`-style outline at `sm`, `text-2xs`)
 chip identifies the model by icon + name, not by colour; the theme chip is a label. At
 phone width chips collapse to icons before the bar wraps; the bar never becomes two rows.
 
-**The welcome (no-session) screen is part of the chrome**: it keeps the header (so Settings
-and Projects stay reachable — P-6) and shows one `primary` (*New Session*) and one
-`secondary` (*Resume Session*) centred with the mascot.
+**The welcome (no-session) screen is part of the chrome** (G-13, built 2026-08-27 as P-6):
+it carries the app's **bare frame** — the same header bar as a session, reduced to the
+Settings gear, the Projects folder and the window buttons (Mac: the traffic-light pill);
+no session switcher, no chat/terminal toggle, no status bar, no composer (`BareHeaderBar`).
+Below it, one `primary` (*New Session*) and one `secondary` (*Resume Session*) centred with
+the mascot. Destin's words: "just bare frame like terminal view".
 
 ### 4.2 Chat
 
-- User bubble: `inset` surface, `fg` text, `xl` radius, right-aligned. (Light/creme move
-  off solid black — P-13.) Assistant bubble: `inset`, left-aligned, no accent stripe.
+- User bubble: `accent` surface, `on-accent` text, `xl` radius, right-aligned — in **every**
+  theme (a grey bubble on light schemes, P-13, was rejected 2026-08-25; the solid bubble is the
+  decision). Assistant bubble: `inset`, left-aligned, no accent stripe.
 - Timestamps `text-2xs` `fg-muted`, inside the bubble, bottom-right.
 - **G-20 Tool card**: header row = status glyph · 1px divider · `font-medium` verb +
   filename · `↳` `fg-muted` path · chevron **right-aligned**; body = file chip (type badge ·
@@ -202,10 +207,25 @@ and Projects stay reachable — P-6) and shows one `primary` (*New Session*) and
   attach + skills icons as `ghost` icon buttons at left, stop/send as `full` circles at
   right; quick-chip row above it uses `secondary sm` chips with an edge fade when it
   overflows.
-- Find bar: its own `panel` popover anchored top-right of the transcript (P-14), never
-  inside a bubble.
-- Terminal view: not covered by this guide yet — the workbench has no terminal, so it was
-  never reviewed; review it in a dev instance before writing its anatomy.
+- **G-22 Find bar** (P-14, decided 2026-08-27 after two rounds): the bordered `panel` pill
+  (field · count · prev/next/close) sits at the right edge of an **in-flow lane** above the
+  messages — the lane paints nothing and only reserves the height, so the bar never covers a
+  message; the transcript nudges down while it is open. Not a floating popover over the
+  first bubble (rejected: it hid the message) and not a full-width strip (rejected: "I still
+  want it to be its own element/pill with border").
+- **G-23 Attachment card** (P-19, Destin picked design C of three, 2026-08-27): 128×96,
+  `md` radius, `edge` border; preview on top — a picture's thumbnail, a markdown/text/code
+  file's first ~600 bytes, otherwise a large type glyph with the extension; the name in a
+  12 px strip along the bottom with the type icon; ✕ always visible top-right. **Rendered,
+  never raw:** any tile that previews a markdown file shows formatted markdown (headings,
+  bold, lists), never `##` — and a preview inside a tile contains nothing clickable
+  (`MarkdownContent preview`), because tiles are buttons.
+- Terminal view: **G-24** under a wallpaper or gradient theme the terminal sits on the
+  theme's `panel` colour at ≥ 80% opacity (a pack asking for less is floored, more is
+  honoured); flat themes are untouched. Decided 2026-08-27 from four renderings (60% text
+  over the picture · 85% · panel 90% · panel 100%) — Destin: panel, at 80%. The rest of the
+  terminal's anatomy is still unreviewed; the workbench now shows a frozen sample screen
+  (`?termBacking=`), and the real-app pass reproduced the two-thirds-width bug (ROADMAP).
 
 ### 4.3 Settings drawer + dialogs
 
@@ -230,16 +250,21 @@ and Projects stay reachable — P-6) and shows one `primary` (*New Session*) and
 **G-16** One header: 48px `panel` band, `text-lg` title left (with the screen's icon for
 all three or none), right side = cross-link `secondary sm` (e.g. *Your Library* ↔
 *Marketplace*) then the back affordance. Back affordance = `Esc · Back to chat` on desktop
-(keyboard-capable) and a `CloseButton` on touch layouts. Below the header: a tab group in
-the Projects style (`SegmentedTabs` with icon + label + muted count), then the
-`SearchFilterPill`, then content on `canvas`. All three screens are `layer-screen` and
-show a pack's wallpaper the same way (T-6).
+(keyboard-capable) and a `CloseButton` on touch layouts. Below the header: the content
+switcher is `SegmentedTabs variant="pill"` — one rounded-full pill of icon + label + muted
+count segments, chip-sized (`px-3 py-1 text-sm`) so it matches the filter pills beside it
+(Library *Plugins | Themes*, Marketplace *All | Plugins | Themes*; shipped Phase C, #332) —
+then the `SearchFilterPill`, then content on `canvas`. **Copy:** the user-facing word is
+*Plugins*, never *Skills* (Destin, 2026-08-27). Library and Marketplace are see-through to a
+pack's wallpaper (T-6); **Projects stays opaque by decision** (P-5 declined 2026-08-27 —
+do not re-propose).
 
 - Cards (`lg`, `panel`, `edge`, `card-interactive` hover): one card species per grid;
-  document previews floor at `text-2xs` and fade, never cut mid-line; folders are marked
-  by icon, not by a notch.
-- Header card on Projects: eyebrow *PROJECT* · title · path · stat row · **one** primary;
-  secondary actions as `sm` buttons in one row at one scale.
+  document previews are the intended thumbnail look; the folder "tab" nub is Destin's
+  2026-07-19 call and stays. Secondary affordances that sit on a picture (the favourite
+  star on a theme card) appear on hover / keyboard focus only, so the picture stays clean.
+- Header card on Projects: unchanged by decision (P-5, 2026-08-27) — *New Conversation*
+  and *Turn on sync* both stay filled; Rename / Remove are already the shared `sm` buttons.
 
 ### 4.5 Side panes and sheets
 
@@ -253,9 +278,10 @@ then a card grid; empty → `EmptyState` centred in the sheet.
 
 - Toggle-row card: `inset`, title + `text-2xs` hint left, `Toggle` right. The one shape
   for every boolean setting.
-- **G-14 Chips**: three kinds, three shapes. *Filter pill* = `full` radius, `secondary`
-  outline, `text-xs`, filled `accent`/`on-accent` when active (Marketplace categories,
-  Resume filters, skills categories). *Action chip* = `md` radius `secondary sm` (quick
+- **G-14 Chips**: three kinds, three shapes. *Filter pill* = the shared `FilterChip`
+  (`px-3 py-1 rounded-full text-sm`, `inset` + `edge` border at rest, `accent`/`on-accent`
+  when active — Marketplace categories and the skills drawer's categories + Favorites-only,
+  P-9 2026-08-27; the 12 px drawer pills were rejected as the smallest text in the app). *Action chip* = `md` radius `secondary sm` (quick
   chips). *Tag/badge* = `sm` radius, dot + neutral text (session tags, counts). Tabs are
   never chips — they are `SegmentedTabs`.
 - **G-19 Counts**: a count next to a label is always `label` + space + muted numeral
@@ -310,6 +336,10 @@ the validator (`theme-validator.ts` + vendored `contrast-rules.js`) enforces:
   in `Checkbox.tsx`. The accent budget (G-8) stays a review rule, not a lint.
 - `custom_css` may target the documented hooks (`.send-btn` is *not* one — see spec §11)
   and the display-size headings; it should not restyle `[role=dialog] h2`.
+- **Terminal backing (G-24, 2026-08-27):** a pack with a wallpaper or gradient gets its
+  terminal drawn on `panel` at ≥ 0.8 opacity whatever `terminal-opacity` it declares (the
+  engine floors it); a pre-baked `terminal-value` asset shows through only faintly. The
+  Terminal Opacity slider in the theme editor still offers values below that (ROADMAP).
 - Packs are reviewed under the same screenshot rig as the app: the six-theme sheet in the
   findings doc is the acceptance artifact for a pack PR.
 
@@ -341,4 +371,5 @@ G-1 one primitive · G-2 tokens paint everything · G-3 radii by role · G-4 one
 G-5 text floor · G-6 text-on-surface pairs · G-7 eyebrows · G-8 accent budget ·
 G-9 button vocabulary (§3) · G-10 dialog header · G-11 dialog body/scroll · G-12 search
 field · G-13 welcome screen · G-14 chips · G-15 status bar · G-16 full-screen header ·
-G-17 list rows · G-18 empty states · G-19 counts · G-20 tool-card header.
+G-17 list rows · G-18 empty states · G-19 counts · G-20 tool-card header · G-21 menus · G-22 find-bar
+lane · G-23 attachment card · G-24 terminal backing floor.

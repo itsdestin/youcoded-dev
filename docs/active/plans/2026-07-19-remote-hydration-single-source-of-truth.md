@@ -1,8 +1,19 @@
 ---
-status: active
+status: superseded
 date: 2026-07-19
 kind: plan
 ---
+
+> **Superseded 2026-08-26 by `docs/active/plans/2026-07-20-remote-hydration-pr-spec.md`.**
+> That spec is the executable form of Proposal A and is the doc ROADMAP points at
+> ("Finish the remote-hydration work", `ROADMAP.md:543`). It also **reverses** one
+> instruction below: Proposal A's "gate first paint on `chat:hydrate`" must NOT be
+> built — Android's `LocalBridgeServer`/`MessageRouter.kt` never sends `chat:hydrate`,
+> so a first-paint gate hangs the Android WebView on "Connecting…" forever. Read the
+> PR spec's "Design note: why we do NOT gate first paint" instead of this file's
+> Proposal A. Kept for the root-cause analysis only. Recommend moving to
+> `docs/archive/plans/`.
+
 
 # Remote-access state sync: issue summary + proposals
 

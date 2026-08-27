@@ -1,270 +1,373 @@
 ---
 status: draft
 created: 2026-08-25
+updated: 2026-08-26
 tags: [renderer, native-runtime, ux, status-bar]
 ---
 
-# Status bar: hide what doesn't apply to the session you're in
+# Status bar: numbers that are true, and that say what they count
 
 ## 1. The problem
 
-The status bar shows 22 things. Six of them are wrong in a native session, and one
-of those six states something false.
+The status bar shows 22 things. In a native session (a local model, or one reached
+through OpenRouter or a direct API key) several of them are wrong — but not all in the
+same way, and the differences decide the fix.
 
-Every chip fed by Claude Code's `statusline.sh` is dead in a native session, because
-a native session runs no Claude Code and writes no statusline files. Some chips got
-native fallbacks on 2026-07-28 (In, Out, Cached, Reuse, Speed, Context). Six never did:
-
-| Chip | What a native session shows today |
-|---|---|
-| 5h Usage | Your Claude **subscription** limit — an app-wide number that says nothing about this session |
-| 7d Usage | Same |
-| Session Cost | `--` forever. Backwards: an OpenRouter session costs real money per token; a Claude Code session on a subscription does not |
-| Session Duration | `--` forever |
-| Active Ratio | `--` forever |
-| Code Changes | **"No changes"** — after the model has rewritten twenty files. Not blank, false |
-
-Plus the **Fast mode chip**: a Claude Code toggle read from the app-wide
-`~/.claude/youcoded-model-modes.json`. Leave Fast on and it renders over native
-sessions, where nothing honours it.
-
-The `/usage` card in chat has the same defect one layer over: `getUsageSnapshot`
-(`App.tsx`) reads only `statusData.sessionStatsMap` with no native fallback, so a
-native session gets a card whose every session field is `--` and whose only content
-is the Claude subscription bars.
-
-## 2. What the app knows, and what it doesn't
-
-`SessionProvider` is `'claude' | 'native'` — two runtimes. "Local", "OpenRouter" and
-"OpenAI key" are all *native*; what separates them is the `ProviderType` the bound
-model belongs to (`local-engine`, `openrouter`, `anthropic`, `openai`, `google`,
-`openai-compatible`).
-
-**The status bar is never told the provider type.** `StatusBar.tsx` declares a
-`modelProviderType` prop and uses it to pick the native model chip's brand colour,
-but nothing passes it — verified: three references repo-wide, all inside
-`StatusBar.tsx` itself. So the native chip's brand detection runs on the model id
-alone, and the bar cannot currently distinguish a free local model from a metered
-OpenRouter one.
-
-**The resolver already exists.** `resolvePortableModel(sessionId)`
-(`ipc-handlers.ts:2374`) returns `PortableModelRef { modelId, providerType,
-providerLabel }` and is already called at exactly the three moments that matter:
-
-- native session create and resume (`ipc-handlers.ts:731`)
-- mid-session model swap (`NATIVE_SET_BINDING`, `ipc-handlers.ts:2586`)
-
-Its result goes to the conversation store (`noteModelUsed`, for the resume selector)
-and nowhere else. The whole plumbing job is routing that same value to `SessionInfo`.
-
-## 3. Session kinds
-
-| Kind | Condition | Meaning |
+| Class | Chips | What's actually wrong |
 |---|---|---|
-| **Claude Code** | `provider === 'claude'` | Subscription; 5h/7d limits apply |
-| **Native · local** | `provider === 'native'` and `providerType === 'local-engine'` | Runs on this machine; free per token |
-| **Native · metered** | `provider === 'native'`, any other provider type | Real per-token cost |
+| **Says something false** | Code Changes | Renders **"No changes"** after the model has rewritten twenty files. Not blank — false |
+| **A control that can't act** | Fast mode | A Claude Code toggle read from the app-wide `~/.claude/youcoded-model-modes.json`. Leave it on and it renders over native sessions, where nothing honours it |
+| **Missing where it matters most** | Session Cost | `--` forever. Backwards: a native session on OpenRouter spends real money per token; a Claude Code session on a subscription does not |
+| **Blank** | Session Duration, Active Ratio | `--` forever. Ugly, not dishonest |
+| **True, but about your subscription** | 5h Usage, 7d Usage | Correct numbers about your Claude **subscription** limits — which a native session neither consumes nor is constrained by |
 
-**Two facts, degraded separately — not one kind with one fallback.** The runtime
-(`provider`) is known the instant a session exists and is never absent. The provider
-type is resolved asynchronously and can be briefly or permanently unknown.
+Two further defects, found while verifying the above, are in scope because they are the
+same disease:
 
-| Fact | Known when | If unknown |
+- **In / Out / Cached / Reuse mean two different things under one label.** For a Claude
+  Code session they are session totals. For a native session they are **the most recent
+  completed turn only** — `useNativeSessionUsage` walks backward to the last turn carrying
+  usage and returns that one turn. Same chip, same label, two measurements.
+- **Nothing counts what a specialist did.** Specialist (subagent) token spend is already
+  summed per run in `runSpecialist` (`native-session-host.ts:1619`, `SpecialistRunResult.usage`)
+  and then **discarded** — no consumer. Specialist file edits live in
+  `toolCall.subagentSegments`, not `session.toolCalls`, so any count over the latter misses
+  them. Delegating heavy work would make every number go *down*.
+
+The `/usage` card in chat has the same defects one layer over: `getUsageSnapshot`
+(`App.tsx:2071`) reads only `statusData.sessionStatsMap`, so a native session gets a card
+whose every session field is `--`.
+
+## 2. The contract: what a number counts
+
+This is the centre of the change. Every session-scoped number in the bar and in `/usage`
+obeys one sentence, and says it in its tooltip:
+
+> **Everything this session has done since you opened it — including work done by
+> specialists.**
+
+Three consequences, all stated to the user rather than hidden:
+
+1. **Specialists are included**, in tokens, cost and code changes alike. A parent session
+   is credited with what it delegated.
+2. **Input tokens are counted per request.** A long turn re-sends its history on every
+   step, and each send is counted, because that is what the provider bills. The number is
+   "what you were charged for", not "how much you typed". (Context % is unaffected — it
+   runs on a different measurement, `contextUsedTokens`, which deliberately does *not*
+   re-count history.)
+3. **Resuming a session restarts nothing that is on disk, and restarts everything that
+   isn't.** Totals are derived from the session's own recorded events, which are replayed
+   on resume — so a resumed session shows the same totals it showed before, provided the
+   replay carries them. Verified so far: `turn-complete` (with its usage payload) and
+   `tool-result` (with its `structuredPatch`) are both persisted and both flow through the
+   same renderer handler on replay as when live. **Task 0 of the plan confirms this
+   end-to-end**; if any piece turns out not to survive, the tooltip says so plainly rather
+   than the chip quietly showing a smaller number.
+
+## 3. Two mechanical rules, not a taxonomy
+
+The draft of this spec sorted sessions into three "kinds" and gave every widget a
+per-kind relevance table. That is more machinery than the problem needs, and it invented
+its own edge cases (a chip flickering into view while a session's provider type resolves).
+Two rules do the same job:
+
+**Rule 1 — a chip with no value hides, instead of printing `--` or "No changes."**
+This is already how Git Branch behaves (`show('git-branch') && gitBranch`), so it is the
+house pattern rather than a new invention. It retires Duration, Active Ratio and Speed in
+native sessions without anyone deciding they are "irrelevant", and it stays correct for
+runtimes that don't exist yet.
+
+**Rule 2 — what belongs to the other runtime does not render.**
+One plain runtime gate, `provider === 'claude'`, on the three Claude-Code-only items: the
+**5h Usage** and **7d Usage** chips, and the **Fast mode** chip. The first two describe a
+subscription a native session neither spends nor is limited by; the third is a toggle
+nothing in a native session honours. Fast mode is a fixed control rather than a registry
+widget, so it takes the gate directly.
+
+The `SessionProvider` runtime (`'claude' | 'native'`) is known the instant a session
+exists and is never absent, so Rule 2 can never flicker. Provider type
+(`local-engine`, `openrouter`, `anthropic`, …) is resolved asynchronously and is needed in
+exactly one place — pricing — where a missing answer already means "no price, no chip".
+
+**The cost of hiding 5h and 7d is real and is accepted, not mitigated.** Flipping to a
+local model *because* you are near your 5-hour limit removes the number you were watching,
+at the moment you were watching it. Two things carry that weight instead: `/usage` shows
+the subscription bars in **every** session (§10), and the Customize menu says why the chips
+are gone rather than leaving you to wonder (§9). That is the whole mitigation; the trade is
+deliberate.
+
+## 4. What each chip does, after this change
+
+| Chip | Claude Code session | Native session |
 |---|---|---|
-| Runtime (`claude` / `native`) | Always — set at session creation | n/a |
-| Provider type | After `resolvePortableModel` resolves; absent on a failed lookup | Treat as **metered** for menu copy; the Cost chip is still gated on a real price (§5), so nothing is invented |
+| 5h Usage / 7d Usage | Shown | Hidden by Rule 2 — see `/usage` (§10) |
+| Session Cost | Shown (Claude Code's own figure) | **Newly working** — shown whenever any counted work had a known price |
+| Code Changes | Claude Code's statusline count | **Newly working** — derived, includes specialists |
+| In / Out / Cached / Reuse | Session totals (Claude Code's) | **Session totals**, including specialists — no longer last-turn-only |
+| Context % | Shown | Shown (unchanged) |
+| Session Duration, Active Ratio | Shown | Hidden by Rule 1 (no data) |
+| Speed | Shown | Shown when the last turn reported it |
+| Git Branch | Shown | Already invisible today (no feed) — unchanged by this work |
+| Fast mode | Shown | Hidden by Rule 2 |
+| Model, Permission, Tags, Open Tasks, Sync, Theme, Version, Announcement | Shown | Shown |
 
-Every rule in §4 except Session Cost keys on the **runtime alone**. That matters:
-keying them on the session kind would make 5h/7d and the Fast chip flicker into view
-for the moment between a native session appearing and its provider type resolving.
-Only Session Cost consults the provider type, and it independently requires a real
-price before it renders — so a slow or failed lookup produces a missing chip, never a
-wrong number.
+**Git Branch is not a relevance decision.** It is missing because nothing feeds it, not
+because a native coder session doesn't need it. It is tracked as its own ROADMAP item under
+`## Features` (added 2026-08-25). This spec does not dim it, does not explain it away in
+the Customize menu, and does not claim it is "Claude Code only" — that sentence would be
+false, which is the exact error this document exists to remove.
 
-## 4. Relevance rules
+## 5. Session Cost
 
-Each widget gains an `appliesTo` declaration beside its existing `label` /
-`description` / `bestFor` in `WIDGET_CATEGORIES` — one registry, one place to read.
+**Priced per turn, at the model that ran that turn.** A session can change models
+mid-flight (`NATIVE_SET_BINDING`), and a specialist can run on a different model from its
+parent (`specialists/delegated-models.ts`). So a price is attached to each turn as it
+completes, and to each specialist run as it finishes — never applied retroactively to
+already-counted work.
 
-| Chip | Claude Code | Native · local | Native · metered |
-|---|---|---|---|
-| 5h Usage | ● | ○ | ○ |
-| 7d Usage | ● | ○ | ○ |
-| Session Cost | ● | ○ | ● **newly working** |
-| Code Changes | ● | ● **newly working** | ● **newly working** |
-| Session Duration | ● | ○ | ○ |
-| Active Ratio | ● | ○ | ○ |
-| Git Branch | ● | ○ | ○ |
-| Context, In, Out, Cached, Reuse, Speed | ● | ● | ● |
-| Model, Permission, Tags, Open Tasks | ● | ● | ● |
-| Sync, Theme, Version, Announcement | ● | ● | ● |
+**Cache rates are carried through, so the number is not knowingly high.** The draft
+apologised in a tooltip for over-reporting, on the grounds that the price list has only one
+input rate. It doesn't: the catalog payload carries `input_cache_read`, `input_cache_write`
+and per-model `overrides` (documented at `harness/eval/estimate.ts:389`). What drops them is
+the app's own copy — `CatalogModel.pricing` keeps only `{ in, out }`
+(`shared/provider-types.ts:38`), populated in `providers/model-catalog.ts`. Every turn
+already reports `cacheReadTokens` and `cacheCreationTokens` (`chat-types.ts:50`). Carrying
+two more rates through the catalog mapper turns an apology into an accurate figure.
 
-● shown · ○ hidden
+**It is still an estimate, and the tooltip says why in one line:** per-model price
+overrides (some models cost more above a very large prompt) are not modelled, and providers
+round. Expected to be right to within a few percent — the plan measures the real gap once
+against a provider dashboard before this ships (§12).
 
-**Git Branch stays hidden, and this is not a design statement.** It is hidden today
-because nothing feeds it, not because it is irrelevant — a native coder session in a
-repo has exactly the same need. Fixing it is tracked as its own ROADMAP item under
-`## Features` (added 2026-08-25). Its `appliesTo` is written as **Claude Code only
-with an explicit `TODO` naming that item**, so whoever lands the feed flips one line
-rather than rediscovering the reasoning.
+**The chip renders when any counted work had a known price** — not "when the session's own
+model is metered". This matters: a **local, free parent session that delegates to an
+OpenRouter specialist is spending real money**, and the draft's local-model rule would have
+hidden it. If some work was priced and some wasn't, the chip shows the priced total and the
+tooltip says work with no available price is excluded.
 
-**Fast mode chip** is a fixed control, not a registry widget, so it takes a plain
-runtime gate: rendered only for `provider === 'claude'`.
+**Never `$0.00` for "unknown".** A model with no published price (a custom
+`openai-compatible` endpoint) contributes nothing and, if it is all there is, produces no
+chip. A false zero is worse than a blank (`docs/error-message-standards.md`).
 
-## 5. Session Cost, made real
+## 6. Tokens
 
-A price exists for a model or it doesn't. `CatalogModel.pricing` (`{ in, out }`, USD
-per 1M tokens) is populated for OpenRouter and models.dev-backed rows and absent for
-local-engine models.
+In / Out / Cached / Reuse become **session totals** in native sessions, matching what the
+same chips already mean in a Claude Code session, and including specialist spend. This
+removes the worst remaining defect in the bar: two identical-looking chips that measure
+different things depending on which runtime you happen to be in.
 
-**The chip renders only when a price is known.** A local model produces no price and
-therefore no chip — which lands on the same outcome as the kind table above, but for
-a reason that stays true if a local provider ever starts reporting prices. Where the
-price is unknown for a metered provider (a custom `openai-compatible` endpoint), the
-chip is absent rather than showing `$0.00`. **A false zero is worse than a blank**
-(`docs/error-message-standards.md`; never state an unverified number).
+The tooltip states the contract from §2 — session-so-far, specialists included, input
+counted per request.
 
-**Where it is computed.** In main, mirroring the established per-binding-fact
-pattern: `NativeSessionHost` already takes `contextAndSlotsFor`, `providerTypeFor`
-and `visionSupportFor` as injected resolvers, each resolving one catalog-derived fact
-per binding on every create / resume / swap. `pricingFor(binding)` joins that family
-as a fourth. The resolved price rides the session the same way `contextLength`
-already does.
+## 7. Code Changes
 
-**What it reports.** A running total for the session, accumulated in `HarnessSession`
-across turns and emitted on the existing `turn-complete` usage payload as `costUsd` —
-the same event that already carries `tokensPerSecond`, `contextLength` and
-`contextUsedTokens`. No new IPC channel.
+No new backend work. Every native `Edit` and `Write` already returns a `structuredPatch`
+(`tools/edit.ts`, `tools/write.ts:75`), the harness emits it on the `tool-result` event
+(`harness-session.ts:1889`), the reducer stores it on the tool call
+(`chat-reducer.ts:1324-1335`) to draw the diff in tool cards, and hunk lines are prefixed
+`' '` / `'-'` / `'+'` by construction.
 
-**Two honesty constraints, both required:**
+**The count walks two places, not one:** `session.toolCalls[].structuredPatch` *and*
+`session.toolCalls[].subagentSegments[].structuredPatch` (`chat-reducer.ts:437-444`), which
+is where both native specialists and Claude Code subagents put their tool results. Counting
+only the first would miss every edit a specialist made — i.e. undercount hardest on the
+biggest sessions.
 
-1. The price list has one input price and no cached-token discount, but the app's
-   prompt caching genuinely reduces spend. The figure therefore runs **slightly
-   high**. The tooltip says *"Estimated — actual cost is lower when prompt caching
-   is working."*
-2. The total covers **this session since it was opened**. A resumed session starts
-   its count from zero, because prior turns' costs are not persisted. The tooltip
-   says so. It must not imply a lifetime total it does not have.
+**Claude Code sessions keep the statusline number.** It is Claude Code's own count and
+covers edits made through any path, including shell commands. The derived count covers what
+the Edit and Write tools did — a model that rewrites a file with `sed` or `git apply`
+contributes nothing to it. Each runtime keeps the most complete number available to it.
+They may disagree for identical work; they are not comparable across runtimes, and the
+native tooltip says the count covers edits made through the model's editing tools.
 
-## 6. Code Changes, made real
+## 8. Where the numbers come from
 
-No backend work. Every native `Edit` and `Write` already returns a `structuredPatch`
-(`tools/edit.ts:10`, `tools/write.ts:75`), the reducer already stores it on the tool
-call (`chat-reducer.ts:1324-1335`) to draw the green/red diff in tool cards, and
-`StructuredPatchHunk.lines` are prefixed `' '` / `'-'` / `'+'` by construction.
+**One source, one summation, no new persistent state.** Every total is derived in the
+renderer from the session record it already holds:
 
-Counting them in the renderer is the same shape as the existing `buildTasksById`
-derivation that already feeds the Open Tasks chip off `session.toolCalls`.
+- **Per-turn usage and cost** ride the existing `turn-complete` payload, which already
+  carries `tokensPerSecond`, `contextLength` and `contextUsedTokens`. Cost is computed in
+  main, where the binding is known — `pricingFor(binding)` joins the family of injected
+  per-binding resolvers `NativeSessionHost` already takes (`contextAndSlotsFor`,
+  `providerTypeFor`, `visionSupportFor`).
+- **Specialist usage and cost** arrive as **one new display-safe event on the parent's own
+  stream**, emitted when a specialist run finishes, carrying the child's summed usage, its
+  cost, its model, and the parent Task tool call it belongs to. The data already exists and
+  is currently thrown away (§1). It must be a new event type rather than a forwarded child
+  `turn-complete`: `SUBAGENT_DISPLAY_TYPES` (`native-session-host.ts:112`) deliberately
+  excludes a child's `turn-complete`, because a stamped one would end the *parent's* turn in
+  the reducer and misattribute the child's model. It is persisted on the parent, so replay
+  restores it like any other card content — and a **background** specialist, which finishes
+  outside any parent turn, delivers its numbers the moment it is done.
+- **Code changes** are derived from stored patches (§7), the same shape as the existing
+  `buildTasksById` derivation that already feeds the Open Tasks chip off `session.toolCalls`.
 
-**Claude Code sessions keep the statusline number.** It is Claude Code's own count
-and covers edits made through any path, including shell commands. The derived count
-covers only what the Edit and Write tools did — a model that rewrites a file with
-`sed` or `git apply` contributes nothing to it. Using the derived count for native
-and the statusline count for Claude Code keeps each runtime on the most complete
-number available to it. **They may disagree for identical work; they are not
-comparable across runtimes**, and the tooltip on the native chip says the count
-covers file edits made through the model's editing tools.
+Because all three come from the replayed record, they agree with each other and behave
+identically on resume — rather than cost living in harness memory while the others live in
+the renderer, which is how the three would drift apart.
 
-## 7. The Customize Status Bar menu
+**No new IPC channel.** One new transcript event type on an existing stream; no
+`SessionService.kt` work.
 
-Inapplicable rows stay in the list, dimmed, with a one-line reason where the
-checkbox would be:
+## 9. The Customize Status Bar menu
+
+The menu lists 19 registry widgets. Under §3's rules only three ever need explaining
+away, and the 5h/7d line is the one that matters — it is where someone goes to find out
+where their limit numbers went:
 
 | Situation | Reason line |
 |---|---|
-| 5h / 7d, Duration, Active Ratio, Git Branch in a native session | *Claude Code sessions only* |
-| Session Cost on a local model | *Local models are free to run* |
-| Session Cost with no price available | *No pricing available for this model* |
+| 5h / 7d Usage in a native session | *Claude Code sessions only* |
+| Duration / Active Ratio in a native session | *Not available in this kind of session* |
+| Session Cost, when the only counted work runs on the user's own machine | *Models on your own machine don't cost anything to run* |
 
-The user's on/off choice is untouched and returns the moment they switch to a session
-where the widget applies. The menu therefore never contradicts the bar, and it
-explains rather than hides.
+Rows stay in the list, dimmed, with the reason on its own line beneath the label — beside it,
+the longest label wrapped and that one row grew taller than the rest. The user's on/off
+choice is untouched and returns the moment they switch to a session where the widget applies,
+so the menu never contradicts the bar. `WidgetConfigPopup` takes no session context today and
+needs the same value the bar reads, from one place, so the two cannot disagree.
 
-`WidgetConfigPopup` currently takes no session context and needs the session kind
-threaded in — the same value the bar itself reads, from one source, so the two cannot
-disagree.
+**The rule is "does the chip draw anything?", not "is there priced work?".** A metered model
+with no published rate DOES draw a chip — `Cost: not listed`, whose tooltip carries the
+explanation (*"This provider bills for usage, but no price is available for this model here,
+so the session cost can't be totalled."*) — so its row must stay a live switch. Gating the menu
+on anything other than the chip's own render condition lets the bar show a chip the user
+cannot turn off; that is exactly what happened when the two conditions were written
+separately. The one-way invariant is **chip drawn ⟹ row switchable**; the reverse is allowed
+and benign (`git-branch` is the precedent — a row worth offering that currently draws
+nothing).
 
-## 8. The `/usage` card
+There is no *No published price for this model* line any more. It was one string doing two
+opposite jobs — a free local model and a metered-but-unlisted one — and it was also shown to
+a brand-new session that simply hadn't run anything yet, where it was plainly false. A reason
+must be true or it must not be shown (§4). Nothing measured yet now gets **no reason at all**.
 
-`/usage` is the escape hatch for the 5h/7d numbers the bar now hides, so **it keeps
-showing them in every session** — that is the point of it. But `getUsageSnapshot`
-must gain the same native fallbacks the status bar chips already have (tokens, cache,
-context) plus the new cost and code-change figures, or the card stays a page of `--`
-in exactly the sessions the bar just sent people to it for.
+<!-- verify: {"path": "youcoded/desktop/src/renderer/state/status-widgets.ts", "contains": "anyUnpriced"} -->
 
-Same relevance rules apply to its per-session rows: a row that does not apply is
-omitted from the card rather than rendered empty.
+Note that Model and Permission are **not** registry widgets — if either ever needs gating it
+takes a plain runtime gate like Fast mode, not an entry here.
 
-## 9. Surfaces
+## 10. The `/usage` card
 
-One React component covers desktop, the remote browser, and Android — verified: the
-Android app renders the shared web UI and has no separate status bar (its
-`statusBarsPadding()` refs are OS window insets). No IPC channel is added, so the
-five-surface parity checklist does not apply and `SessionService.kt` needs nothing.
+**`/usage` is the escape hatch for the numbers the bar now hides**, so it keeps showing the
+Claude subscription bars in **every** session — that is the point of it — labelled as
+account-wide rather than session-scoped, so the card can't recreate the confusion the bar is
+shedding. If this card is broken in native sessions, hiding the chips is indefensible; the
+two ship together.
 
-Threading `providerType` through `SessionInfo` as an **optional** field means an
-Android or remote build that does not populate it degrades to Claude Code behaviour
-per §3 — nothing hides that should not.
+`getUsageSnapshot` gains the same native sources as the chips (tokens, cache, context, cost,
+code changes) — otherwise the card is a page of `--` in exactly the sessions it matters for.
+A row that a session genuinely cannot fill is omitted rather than rendered empty. The §2
+contract sentence appears once on the card.
 
-## 10. Guards
+## 11. Surfaces
+
+One React component covers desktop, the remote browser, and Android — verified: the Android
+app renders the shared web UI and has no separate status bar (its `statusBarsPadding()` refs
+are OS window insets). No IPC channel is added, so the five-surface parity checklist does not
+apply.
+
+## 12. Checkpoints
+
+**Design gate — before any main-process work.** Build the bar and the Customize menu in the
+UI Workbench and produce theme sheets for Destin's sign-off:
+
+1. Claude Code session (5h/7d and Fast chip present) — the reference shot
+2. Native session on a local model, **side by side with (1)** — 5h, 7d and Fast gone, no cost, no Duration/Active Ratio. This pair is the one to look hardest at: it is the moment a user notices the bar shortened
+3. Native session on a metered model with a price (cost present, tooltip visible)
+4. Native session where no counted work had a price (no cost chip)
+5. Local parent session that delegated to a metered specialist (cost present — the case
+   §5 exists for)
+6. The Customize menu in a native session, with its three reason lines
+7. The `/usage` card in a native session, showing the subscription bars the bar dropped
+8. Every tooltip's exact wording — this is user-facing prose, currently decided in a table
+
+Backend work starts after sign-off.
+
+**Numbers gate — before Cost ships.** Run one real metered session, compare the chip's total
+against the provider's own dashboard, and state the measured gap in the tooltip. Ship the
+chip only if it lands inside a tolerance Destin accepts. A cost chip that is wrong is worse
+than no cost chip.
+
+## 13. Guards
 
 | Claim | Guard |
 |---|---|
-| A native session renders no 5h / 7d / Duration / Active Ratio / Fast chip | New `statusbar-session-relevance.test.tsx` |
-| A local session renders no Cost chip; a metered one with pricing does | Same |
-| A metered session with no price renders no Cost chip (never `$0.00`) | Same |
-| Code Changes counts `+`/`-` lines from stored hunks, ignores context lines | New unit test on the derivation |
-| An unresolved provider type never hides a runtime-gated chip (no 5h/7d flicker on a fresh native session) | Same |
-| Every widget in the registry declares `appliesTo` | Registry completeness test — a new widget cannot be added without deciding |
-| The bar and the Customize menu read the same session kind | Both derive from one exported helper; test asserts the menu's dimmed set equals the bar's hidden set |
+| A chip with no value renders nothing — never `--`, never "No changes" | New `statusbar-session-relevance.test.tsx` |
+| The Fast chip renders only in a Claude Code session | Same |
+| 5h / 7d render only in a Claude Code session | Same |
+| `/usage` shows the subscription bars in **both** runtimes | `usage-card` test — the escape hatch cannot regress |
+| Token totals are cumulative across turns in a native session | New unit test on the derivation |
+| Token totals include a specialist run's reported usage | Same |
+| Code Changes counts `+`/`-` lines from stored hunks, ignores context lines | Same |
+| Code Changes includes patches from `subagentSegments` | Same — the specialist-undercount regression test |
+| A turn is priced at the model in force for that turn, across a mid-session swap | New unit test on pricing |
+| A specialist is priced at its own model, not its parent's | Same |
+| A local parent that delegated to a metered specialist shows a cost | Same |
+| No counted work with a published price → no Cost chip, never `$0.00` | Same |
+| A resumed session reports the same totals it showed before resuming | New replay test |
+| The bar and the Customize menu never disagree about a widget | Both derive from one exported helper; test asserts the menu's dimmed set equals the bar's hidden set |
 
-## 11. What the user will experience — including what they won't like
+## 14. What the user will experience — including what they won't like
 
-1. **The bar visibly shortens when switching to a local session.** Up to six chips
-   drop at once and everything to their right (Theme, Version) slides left. Intended,
-   but it will read as "something broke" the first time.
-2. **The Claude budget number disappears exactly when it is acted on.** Flipping to a
-   local model *because* you are near your 5-hour limit removes the number you were
-   watching. `/usage` still has it and the Customize menu says why — but this is a
-   real cost of the decision, not a mitigated one.
-3. **Cost runs slightly high** (§5). Right to within a few percent, not to the cent.
-4. **Code-change counts differ between runtimes for the same work** (§6).
-5. **The Customize menu looks busier on native sessions** — roughly six of eighteen
-   rows dimmed.
-6. **Git Branch stays missing in native sessions** — tracked, deliberately not fixed
-   here.
+1. **The bar shortens when you switch to a native session, and it will read as a bug the
+   first time.** On a default install that is two chips — 5h and 7d — plus the Fast chip if
+   it was on; everything to their right slides left. Users who opted into Duration or Active
+   Ratio lose those too. This is intended, and it is the single most noticeable thing about
+   the change.
+2. **Your Claude budget number disappears exactly when you act on it.** Switching to a local
+   model because you are near your limit takes away the number that prompted the switch.
+   `/usage` still has it and the Customize menu says why — a real cost of the decision, not
+   a mitigated one (§3).
+3. **Numbers that were `--` start showing real values**, which will read as "new stuff
+   appeared" the first time.
+4. **In / Out jump upward in native sessions** — they now cover the whole session, not the
+   last turn, and include specialists. Anyone who had internalised the old number will see a
+   bigger one for the same work. The tooltip explains it; the chip does not.
+5. **Cost is an estimate**, right to within a few percent, not to the cent (§5).
+6. **Code-change counts differ between runtimes for the same work** (§7).
+7. **The Customize menu looks busier in native sessions** — three rows dimmed with reasons.
+8. **Git Branch stays missing in native sessions** — tracked, deliberately not touched here.
 
-## 12. Out of scope
+## 15. Out of scope
 
-- **Git Branch for native sessions.** ROADMAP `## Features`, added 2026-08-25, with
-  the verified mechanism and the cheap path (the app already reads branches via
+- **Git Branch for native sessions.** ROADMAP `## Features`, added 2026-08-25, with the
+  verified mechanism and the cheap path (the app already reads branches via
   `git:file-status`; the `.git` watcher for live updates already ships).
-- **Session Duration and Active Ratio for native sessions.** Both default to off and
-  are the least-used chips; the harness does not currently report turn wall-time.
-  Not worth harness work at this ratio.
+- **Making Session Duration and Active Ratio work in native sessions.** The harness does not
+  report turn wall-time; both are off by default and Rule 1 now hides them cleanly rather
+  than showing `--`.
 - **Slash-command and QuickChips relevance.** Verified: neither `CommandDrawer` nor
-  `QuickChips` filters by provider, so Claude-Code-only commands are offered in
-  native sessions. Same class of problem, different surface, own decision.
+  `QuickChips` filters by provider, so Claude-Code-only commands are offered in native
+  sessions. Same class of problem, different surface, its own decision.
+- **Lifetime cost across resumes.** Totals cover the recorded session; nothing sums a
+  conversation's whole history across separate runs.
 
-## 13. Open question for Destin — flagged, not decided
+## 16. Changed from the 2026-08-25 draft
 
-**In: and Out: currently mean two different things depending on the runtime, and
-nothing says so.** For a Claude Code session they are cumulative session totals
-(from the statusline). For a native session they are the **most recent completed turn
-only** — `useNativeSessionUsage` walks backward to the last turn carrying usage and
-returns that one turn's numbers. Same chip, same label, two different measurements.
-`Cached:` and `Reuse:` have the same split.
+For review — every substantive difference, so nothing lands unnoticed:
 
-This is not an irrelevance problem, so it sits outside the four changes approved for
-this spec — but it is a chip that misleads rather than one that merely doesn't apply,
-which makes it arguably more urgent than anything above. Two directions:
-
-- **Make native cumulative** — accumulate in `HarnessSession` like the new cost total,
-  so both runtimes mean "this session so far." Consistent, and the natural reading of
-  an unlabelled number. Costs a small amount of harness state.
-- **Label the difference** — leave the numbers alone and say which is which in the
-  tooltip. Nearly free, but leaves two identical-looking chips meaning different
-  things, which is the shape of problem this whole spec exists to remove.
-
-Recommendation: make native cumulative, as a follow-on rather than a scope increase
-here. Needs Destin's call before it goes anywhere.
+1. **5h / 7d hiding is retained from the draft**, confirmed by Destin 2026-08-26 after a
+   relabel-instead alternative was raised and rejected. The trade it makes is now written
+   down explicitly (§3, §14) rather than assumed.
+2. **The three-kind session taxonomy is gone**, replaced by two mechanical rules (§3). Its
+   only remaining consumer, pricing, already handles "unknown" correctly.
+3. **Specialist work is counted** in tokens, cost and code changes (§2, §6, §7, §8) — at
+   Destin's direction, and because the data already exists and was being discarded.
+4. **Native token chips become cumulative** (§6). The draft flagged this as an open question
+   and deferred it; including specialists in a last-turn-only number would have been
+   incoherent, so it is now in scope.
+5. **Cost models cache rates** instead of shipping a knowingly-high figure with an apology
+   (§5) — the draft's stated reason for the inaccuracy was wrong about the price list.
+6. **Cost appears whenever priced work happened**, including a free local session that
+   delegated to a paid specialist (§5). The draft would have hidden real spend.
+7. **Cost is priced per turn and per specialist**, at the model that actually ran (§5). The
+   draft left a mid-session model swap undefined.
+8. **All totals derive from the replayed session record** (§8), so they agree with each other
+   and survive resume together, instead of cost living in harness memory.
+9. **Git Branch is left entirely alone** (§4). The draft dimmed it with the reason "Claude
+   Code sessions only", which is false, and it is already invisible today anyway.
+10. **Design and numbers checkpoints added** (§12) — the draft had none.
+11. **Corrections:** the registry holds 19 widgets, not 18; Model and Permission are not
+    registry widgets; the draft's "up to six chips drop at once" overstated the default
+    experience, since five of the six are off by default.

@@ -228,3 +228,43 @@ interactive period not followed by a real click at N seconds).
 - Windows smearing through the transparent surface / glitchy minimize (stale Electron 41.0.3).
 - Desktop hostage: fullscreen click-eating overlay after a KWin minimize/restore poke
   (commit `da1f0238` part c).
+
+---
+
+## Status re-check — 2026-08-26 (no code touched)
+
+Shelved 34 days. The Decision section above still stands; this records what has changed
+around it. Verified against `origin/master` at `73e2defe`.
+
+**The draft PR was never named in this doc.** It is
+[youcoded#239](https://github.com/itsdestin/youcoded/pull/239) — *"[EXPERIMENT — DO NOT
+MERGE] Linux buddy floater via XWayland"*, still **OPEN / DRAFT**, zero comments, untouched
+since 2026-07-23. Branch `fix/linux-xwayland-floater` @ `f3f98212` (2 commits), pushed to
+origin, worktree `worktrees/xwayland-floater` (69 MB, clean). The shelving decision was
+recorded here (frontmatter `xwayland:` + "### Decision (Destin, 2026-07-23)") and in
+`ROADMAP.md` — the PR title is not the only record.
+
+**Now conflicts with master.** `git merge-tree --write-tree origin/master
+fix/linux-xwayland-floater` exits 1 with three conflicts:
+`desktop/src/main/main.ts` (content), `desktop/tests/ipc-handlers.test.ts` (content), and
+`desktop/tests/session-meta-native-refusal.test.ts` (**modify/delete** — deleted on master).
+2 commits ahead, **982 behind**. This is no longer a branch you can check out and run without
+work; treat it as a reference implementation, not a runnable experiment.
+
+**One genuinely shippable fix is trapped on this branch.** `BuddyWindowManager.place()`
+(`buddy-window-manager.ts`) — re-assert each buddy window's fixed size via `setBounds` on
+every move, replacing 9 `setPosition` call sites, gated on `process.platform === 'linux'`.
+Master still uses bare `setPosition` at all 9 sites (`git diff origin/master...
+fix/linux-xwayland-floater -- desktop/src/main/buddy-window-manager.ts`). It is independent
+of the ozone routing and would survive a decision to abandon XWayland entirely; if the branch
+is deleted, this goes with it. It has no pinning test (the probe that proved it was
+throwaway).
+
+**Stale path in the branch's own code**, not in this doc: `main.ts:78` on the branch cites
+`docs/active/prototypes/2026-07-22-buddy-wayland-workbench/FINDINGS.md`; that prototype now
+lives under `docs/archive/prototypes/`. Fix it if the branch is ever revived.
+
+**Status frontmatter left as `active` deliberately** — the ROADMAP item ("Buddy floater on
+Linux Wayland — XWayland route PROVEN but shelved; next attempt: native Wayland") is still
+open, and no native-Wayland attempt has been made since. Nothing in the FINAL VERDICT or the
+Decision has been falsified by anything on master.

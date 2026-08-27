@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 date: 2026-08-11
 type: spec
 repos: [youcoded]
@@ -12,6 +12,14 @@ relates:
 ---
 
 # Native specialists — subagents and plans for the native harness
+
+> **Status 2026-08-26:** `status:` corrected from `draft` to `active` — this spec
+> was approved 2026-08-11 and stage one is most of the way built. Stage-one
+> progress: **plan 1a SHIPPED** to youcoded master (`8db46236`), **plan 1b
+> SHIPPED** (`e5ec5b3c`), **plan 1c BUILT BUT UNMERGED** — 47 commits on
+> `feat/specialists-1c-ui` (worktree `worktrees/specialists-1c`), no PR opened.
+> Stage two (plans / declarative orchestration) has not started. Keep this spec
+> active until stage two is either planned or dropped.
 
 **Approved by Destin 2026-08-11, section by section.** This spec settles all of M7:
 stage one (specialists — the Task tool as child sessions) and stage two (plans — the

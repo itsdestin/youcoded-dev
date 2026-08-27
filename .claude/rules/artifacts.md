@@ -64,6 +64,7 @@ Files Claude touches are tracked in per-project sidecars + a central index. Stat
 ## Concurrency
 - **`casWrite` uses a mkdir-based lock** (bare CAS = TOCTOU data loss); central-index writers use `mutateFileUnderLock`. `appendVersion` retries CAS 5× — don't add a second loop.
 - **Append path is burst-safe** (a replayed session = ~1,000 live tool events; 2026-08-15 OOM): `appendVersion` queues per project, `*Coalesced` helpers, one tracker refresh, dedupe on `(sessionId, toolUseId)`. Handlers never call `appendVersionsDirect`.
+- **Every read goes through `readSidecarShared`; only mutate-and-write paths call `readSidecar`** (2026-08-27 OOM, PR #335 — 477 parsed copies of a 6.4 MB sidecar). One parsed copy per project, stat-validated, in-flight shared, seeded by a committed write, 60 s idle drop. The shared object is READ-ONLY: never mutate it. `casWrite` probes a 4 KB head for the comparand — never `JSON.parse` the whole file to read `updatedAt`. Guard: `sidecar-cache.test.ts`.
 
 ## Binary viewers & security — guards: `read-binary-access.test.ts`, `editable-path-policy.test.ts`, `write-authorization.test.ts`
 - **`artifacts:read-binary` is GUARDED on BOTH platforms** (`read-binary-access.ts`; Kotlin `EditablePathPolicy.kt`): project roots + tracked externals only; secret dirs refused even inside roots; 50MB gate. Viewers load bytes via this IPC, NEVER `fetch('file://…')`.

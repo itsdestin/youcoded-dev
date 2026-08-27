@@ -7,6 +7,14 @@ tags: [cache, prompt-caching, kv-cache, deepseek, openrouter, llm, cost]
 
 # Cache efficiency across cloud and local sessions (DeepSeek 50% reuse, and beyond)
 
+> **Re-verified 2026-08-26 — fully consumed, and a live input.** All four defects this doc found
+> are carried verbatim on `ROADMAP.md` under "Cache efficiency — cloud + local sessions are
+> leaving cache hits on the table", and all four are still open on `origin/master`:
+> `cache_control` → 0 hits; `provider-registry.ts:29` still sends only
+> `{'HTTP-Referer','X-Title'}` with no stable session id; the `<specialists-status>` splice is
+> still at `harness-session.ts:1596/1617`. **Nothing unconsumed here.** Archive it together with
+> that ROADMAP bug when it ships, and repoint the ROADMAP link when you do.
+
 **Trigger:** A live DeepSeek session (via OpenRouter) in the dev window showed ~50%
 cache reuse on the StatusBar chip while debugging hung Gemini sessions. Destin asked
 (a) why the number is what it is, and (b) how the app can push cache efficiency

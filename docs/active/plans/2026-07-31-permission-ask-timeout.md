@@ -1,11 +1,63 @@
 ---
 status: active
 date: 2026-07-31
+pr: https://github.com/itsdestin/youcoded/pull/278
+branch: feat/permission-ask-timeout
+worktree: worktrees/perm-timeout
 spec: docs/active/specs/2026-07-30-permission-ask-timeout-design.md
 repos: [youcoded]
 ---
 
 # Permission Ask Timeout Implementation Plan
+
+> ## Status block — 2026-08-26 (added by a workstream review; nothing below was rewritten)
+>
+> **All 11 tasks are BUILT and pushed. The plan is not "unstarted" — the `- [ ]`
+> boxes below were simply never ticked.** Verified: `git rev-list --count
+> origin/master..feat/permission-ask-timeout` = **20** commits, last one
+> `3eaafb71` (2026-07-31, `fix(permissions): close five review findings on the
+> ask-timeout branch`), worktree `worktrees/perm-timeout` clean and level with
+> `origin/feat/permission-ask-timeout`. Diffstat vs master: 39 files, +1868/-150.
+>
+> **PR #278 is OPEN, not a draft, and untouched since it was created**
+> (`gh pr view 278 --json …` → `createdAt` and `updatedAt` both
+> `2026-07-31T22:27:31Z`; `reviews: []`, `comments: []`, `reviewDecision: ""`).
+> CI was **green** on that head — all four jobs pass (`gh pr checks 278`:
+> Android build, desktop ubuntu/windows/macos) — but those runs are from
+> 2026-07-31 and predate 663 master commits.
+>
+> **What is actually blocking it, in order:**
+> 1. **Merge conflicts.** `gh pr view 278` reports `mergeable: CONFLICTING`,
+>    `mergeStateStatus: DIRTY`. `git merge-tree --write-tree origin/master
+>    feat/permission-ask-timeout` exits 1 with **8 conflicted files**:
+>    `chat-reducer.ts`, `chat-reducer.test.ts`, `ToolCard.tsx`,
+>    `ToolCard.test.tsx`, `shared/types.ts`, `hook-relay.ts`,
+>    `EventBridge.kt`, `workbench-fixture-actions.test.ts`.
+> 2. **Destin's four interactive checks** (blocked on Destin) — from the final
+>    session on 2026-07-31: answer an ask in terminal view; kill the relay
+>    mid-ask to see the digit-rebind buttons; confirm a background session keeps
+>    its red dot; eyeball the expired-card copy in the Tool Gallery and the
+>    buddy strip's longer Dismiss label at 320px.
+>
+> **Two Task 7/8 steps are now unexecutable as written.** They instruct adding
+> `clearHold`/`holdJobs.remove` to `HookRelay.closeSocket()` and
+> `EventBridge.closeSocket()`. Master **deleted both** on 2026-08-22 (merge
+> `17931fc0`, "delete dead closeSocket on both platforms" — the ROADMAP item
+> this branch's own review filed). `git grep -c closeSocket origin/master --
+> desktop/ app/` now returns only `ManagedSession.kt:1`. Drop those two
+> sub-steps during the rebase; nothing else in the design depended on them.
+>
+> **The five review findings in `3eaafb71` are all genuinely closed** (each
+> verified in the worktree): `hook-relay.ts:123-135` guards the expiry emit on
+> `respond()` returning true; `hook-relay.ts:115` derives `holdHours` from
+> `this.holdMs` and `EventBridge.kt:153-154` from `PERMISSION_HOLD_MS`;
+> `CompactToolStrip.tsx:287` reads "Dismiss — I answered in the terminal";
+> `use-prompt-detector.test.tsx:207-295` adds the four resolver cases;
+> `permission-timeout-margins.test.ts:77` pins `UNROUTABLE_HOLD_MS`.
+>
+> After merge, three cleanup items still stand: flip the ROADMAP entry to `[x]`,
+> archive this plan and the spec to `docs/archive/`, remove the worktree and
+> branch.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

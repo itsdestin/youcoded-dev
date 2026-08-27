@@ -6,6 +6,32 @@ tags: [renderer, chat, ui, reliability]
 
 # Spec: Never render a bare assistant bubble — timestamp-only bubble above permission cards
 
+> ## Status 2026-08-26 — NOT BUILT; the two 2026-08-21 empty-bubble commits did NOT solve this
+>
+> Verified against `youcoded` `origin/master` (`dbbb9139`) on 2026-08-26:
+>
+> - `git grep -n 'bubbleHasVisibleContent' origin/master` → **no output**. The plan's
+>   central deliverable does not exist.
+> - The defective gate this doc names is still verbatim on master, only moved down the
+>   file: `AssistantTurnBubble.tsx:413` is `const hasTools = bubble.toolGroupIds.length > 0;`
+>   (this doc cites it at :375), and the timestamp/metadata/stop-reason chrome still keys off
+>   `isLastBubble` (:466–:470) with no rendered-content check. `restTools` at :558 still
+>   filters `awaiting-approval` tools out of the group — step 3 of the confirmed chain.
+> - No reducer whitespace guard: `chat-reducer.ts:982` (`TRANSCRIPT_ASSISTANT_TEXT`) goes
+>   straight from the `seenUuids` dedup to `getOrCreateTurn` with no `trim()` check.
+> - **Commits `a04a30f2` and `e3c64532` (2026-08-21) are a different bug and push the other
+>   way.** They make *segment-less* turns RENDER an `empty_response` / stop-reason footer that
+>   was previously dropped by the ChatView/BubbleFeed gates, and make the segment-less mint
+>   uuid-idempotent. Neither touches `splitIntoBubbles`, the `hasTools` gate, or the
+>   awaiting-approval pop-out path. This bug — a bubble that HAS a tool-group segment whose
+>   only tool has popped out to a permission card — is untouched by both.
+> - No branch or worktree was ever started: `git worktree list` and `git branch -a` show no
+>   `bare-bubble-fix` (the path the 2026-08-18 planning session assumed).
+>
+> Last activity: 2026-08-18 (plan review round, conversation `27c3` — corrections applied,
+> plan left implementation-ready). **Next step: build work only — no open questions.** The
+> three user checkpoints were resolved by Destin 2026-08-17.
+
 > **Source:** investigation `docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md`
 > (CONFIRMED 2026-08-17, code-verified). ROADMAP Bugs entry 2026-08-17.
 > Scope chosen by Destin: view-layer fix (primary) **+** reducer guard (defense-in-depth) **+** pinning tests.

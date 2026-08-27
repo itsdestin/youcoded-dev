@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Permission cards — copy review</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{--bg:#15171b;--panel:#1d2026;--card:#22252c;--inset:#1a1d23;--edge:#33373f;--fg:#e6e6e6;--fg2:#c9c9c9;--dim:#a2a2a2;--muted:#7c7c7c;--faint:#5a5a5a;--green:#2f9e5b;--blue:#2f5fd6;--red:#c23b3b;--amber:#d9a441;--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--ui:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 var(--mono)}
+.wrap{max-width:900px;margin:0 auto;padding:24px 20px 90px}
+.top{font-family:var(--ui);color:var(--dim);margin-bottom:14px}.top b{color:var(--fg)}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--edge);font-family:var(--ui)}
+.bar button{font:inherit;padding:7px 14px;border-radius:8px;border:1px solid var(--edge);background:var(--card);color:var(--fg);cursor:pointer}.bar .primary{background:var(--blue);border-color:var(--blue);color:#fff}.count{margin-left:auto;color:var(--muted);font-size:13px}
+.surface{margin-top:40px}.desc{font-family:var(--ui);color:var(--dim);font-size:14px;margin:0 0 10px}.desc b{color:var(--fg)}.desc .n{display:inline-block;min-width:22px;color:var(--muted)}
+/* editable text */
+[contenteditable]{outline:none;border-bottom:1px dashed transparent;border-radius:3px;padding:0 1px}
+[contenteditable]:hover{border-bottom-color:var(--faint)}[contenteditable]:focus{background:rgba(47,95,214,.18);border-bottom-color:var(--blue)}
+[contenteditable].chg{background:rgba(217,164,65,.22);border-bottom-color:var(--amber)}
+.ph{color:#7aa7ff}
+/* chat card */
+.tool{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:10px 14px}
+.hdr{display:flex;align-items:center;gap:10px;font-size:15px}.hdr .ic{color:var(--muted)}.hdr .sep{width:1px;height:14px;background:var(--edge)}.hdr .lbl{color:var(--fg);font-weight:600}.hdr .sub{color:var(--muted)}.hdr .right{margin-left:auto;color:var(--muted)}
+.env{margin-top:10px;background:rgba(0,0,0,.18);border:1px solid var(--edge);border-radius:10px;padding:10px 14px;font-size:13.5px;color:var(--dim)}
+.env .h{color:var(--fg2);font-weight:600}.env .prov{color:var(--muted)}.env ul{margin:6px 0 6px 18px;padding:0}.env li{margin:2px 0}.env .foot{color:var(--muted);margin-top:6px}.env .strong{color:var(--fg2)}
+.btns{display:flex;gap:10px;margin-top:12px}.btn{font:inherit;font-size:14px;padding:6px 20px;border-radius:8px;color:#fff;border:0}.yes{background:var(--green)}.always{background:var(--blue);box-shadow:0 0 0 2px #1d2026,0 0 0 4px rgba(47,95,214,.6)}.no{background:var(--red)}
+.note{color:var(--muted);font-size:12px;margin-top:8px;line-height:1.45}
+.row{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 12px;border:1px solid var(--edge);border-radius:8px;background:var(--inset);font-size:14px}.row .ic{color:var(--muted)}.row .cmd{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act{color:var(--dim);margin:10px 0 4px;font-size:14px}
+.ghost{font:inherit;font-size:13px;padding:5px 12px;border-radius:8px;border:1px solid var(--edge);background:transparent;color:var(--fg2);margin-right:8px}
+.status{color:var(--amber);margin-top:6px;font-size:13.5px}
+/* confirm box */
+.confirm{margin-top:10px;background:var(--inset);border:1px solid var(--edge);border-radius:10px;padding:12px 14px;font-size:13.5px}.confirm .t{color:var(--fg);font-weight:600}.confirm .cmd{color:var(--muted);margin:6px 0;font-size:12.5px}.confirm .warn{color:var(--amber);margin:6px 0}.confirm .lim{color:var(--muted);margin-top:8px;font-size:12.5px}
+.radio{display:flex;flex-direction:column;gap:4px;margin:8px 0}.radio span::before{content:"◯ ";color:var(--muted)}.radio .on::before{content:"◉ ";color:var(--blue)}
+/* popup */
+.popup{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:12px 14px;max-width:560px}.popup .t{color:var(--fg);font-weight:600;font-size:15px}.popup .st{color:var(--muted);font-size:12.5px}.pill{font-size:11px;padding:1px 8px;border-radius:999px;border:1px solid var(--edge);color:var(--fg2);margin-left:8px}.pill.warn{border-color:var(--amber);color:var(--amber)}
+.chip{display:inline-block;font-size:12px;padding:3px 10px;border:1px solid var(--edge);border-radius:6px;color:var(--amber);margin-right:8px}.chip.mode{color:#e0b341;border-color:#6b5a2b}
+/* settings */
+.sec{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:14px 16px;max-width:520px;font-size:13.5px}
+.sec .lbl{color:var(--muted);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 8px}.sec .box{background:var(--inset);border:1px solid var(--edge);border-radius:10px;padding:10px 12px;color:var(--dim)}.sec .box p{margin:0 0 8px}.sec .box b{color:var(--fg)}.sec .box ul{margin:4px 0 8px 18px;padding:0}.sec .box .band{border-top:1px solid var(--edge);margin-top:8px;padding-top:8px;color:var(--muted)}
+.folder{border:1px solid var(--edge);border-radius:10px;margin-top:10px}.folder .fh{display:flex;align-items:center;padding:8px 12px;gap:10px}.folder .fh .name{color:var(--fg);font-weight:600}.folder .fh .path{color:var(--muted);font-size:12px}.folder .fh .cnt{margin-left:auto;color:var(--muted)}
+.folder .grp{padding:2px 12px 8px;color:var(--muted);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}.rule{display:flex;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid var(--edge)}.rule .rt{color:var(--fg2)}.rule .rd{color:var(--muted);font-size:12px}.rule .rb{margin-left:auto;font-size:12px;color:var(--fg2);border:1px solid var(--edge);border-radius:6px;padding:2px 8px}
+.rc{padding:8px 12px;border-top:1px solid var(--edge);color:var(--dim);font-size:12.5px}.rc .b{display:inline-block;margin:6px 8px 0 0;padding:2px 10px;border-radius:6px;border:1px solid var(--edge);font-size:12px}.rc .b.red{background:var(--red);border-color:var(--red);color:#fff}
+.expl{font-family:var(--ui);background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:16px 18px;max-width:560px;color:var(--dim);font-size:14px}.expl h4{color:var(--fg);font-size:14px;margin:12px 0 4px}.expl p{margin:0 0 8px}.expl ul{margin:0 0 8px 18px;padding:0}
+textarea{width:100%;height:220px;font:12px var(--mono);background:var(--card);color:var(--fg);border:1px solid var(--edge);border-radius:8px;padding:10px;margin-top:10px}
+</style></head><body><div class="wrap">
+<div class="top"><b>Permission cards — copy review.</b> Each card below is drawn the way it looks in the app, showing the <b>proposed</b> rewrite (narrative consent text, tailored footer, lighter wording). <b>Click any sentence and type</b> to change it; edited text turns yellow. Blue <span class="ph">{words}</span> are filled in by the app (a name, a folder). Edits are saved in this page. When you're done, press <b>Copy my changes</b> and paste the result back to Claude.</div>
+<div class="bar"><button class="primary" id="copy">Copy my changes</button><button id="reset">Reset everything</button><span class="count" id="count"></span></div>
+
+
+<!-- ───────── 1 ───────── -->
+<div class="surface"><p class="desc"><span class="n">1</span><b>Hire card — built-in, read-only helper.</b> Appears in the chat when the assistant wants to hire one of the four built-in helpers.</p>
+<div class="tool">
+ <div class="hdr"><span class="ic">?</span><span class="sep"></span><span class="lbl"><e k="hire.header">Hiring an <i class="ph">{explorer}</i></e></span><span class="sub">· <e k="hire.bg">in the background</e></span><span class="sub">↳ <i class="ph">{Summarize folder purpose}</i></span><span class="right">⌄</span></div>
+ <div class="env">
+  <div><e k="env.lead.builtin.ro"><span class="strong">The <i class="ph">{Explorer}</i></span> is built into YouCoded and is being hired with <span class="strong">read-only</span> access to <i class="ph">{project}</i>/.</e></div>
+  <ul>
+   <li><e k="env.b.ro">Cannot edit files or run commands. It reads and searches using <i class="ph">{Read, Glob, Grep, WebFetch, WebSearch}</i>.</e></li>
+   <li><e k="env.b.model.unset">Runs on the budget model — none is set in Settings, so it uses this conversation's model.</e></li>
+  </ul>
+  <div class="foot"><e k="env.foot.ro">Secrets and anything outside <i class="ph">{project}</i>/ still come to you.</e></div>
+ </div>
+ <div class="btns"><span class="btn yes"><e k="btn.yes">Yes</e></span><span class="btn always"><e k="btn.always">Always Allow</e></span><span class="btn no"><e k="btn.no">No</e></span></div>
+</div>
+<p class="desc" style="margin-top:8px"><span class="n"></span>Built-in Worker (can edit) reads: <e k="env.lead.builtin.rw"><span class="strong">The <i class="ph">{Worker}</i></span> is built into YouCoded and is being hired to <span class="strong">edit files and run commands</span> in <i class="ph">{project}</i>/.</e></p>
+</div>
+
+<!-- ───────── 2 ───────── -->
+<div class="surface"><p class="desc"><span class="n">2</span><b>Hire card — helper defined by a file in the project, can edit.</b> The origin moves into the sentence, an amber trust warning appears for any helper that isn't built in, and the footer keeps "deleting" because this one can delete.</p>
+<div class="tool">
+ <div class="hdr"><span class="ic">?</span><span class="sep"></span><span class="lbl">Hiring a <i class="ph">{code-reviewer}</i></span><span class="sub">↳ <i class="ph">{Review src/calc.js}</i></span><span class="right">⌄</span></div>
+ <div class="env">
+  <div><e k="env.lead.project.rw"><span class="strong"><i class="ph">{code-reviewer}</i></span> comes from this project's <span class="strong">.claude/agents/<i class="ph">{code-reviewer.md}</i></span> and is being hired to <span class="strong">edit files and run commands</span> in <i class="ph">{project}</i>/.</e></div>
+  <ul>
+   <li><e k="env.b.rw">Can edit files and run commands without asking again, using <i class="ph">{Read, Write, Edit, Bash}</i>.</e></li>
+   <li><e k="env.b.model.parent">Runs on this conversation's model.</e></li>
+  </ul>
+  <div class="foot" style="color:var(--amber)"><e k="env.trust.project">Its instructions come from a file in this project, not from YouCoded. Only approve it if you trust where this project came from.</e></div>
+  <div class="foot"><e k="env.foot.rw">Deleting things, secrets, and anything outside <i class="ph">{project}</i>/ still come to you.</e></div>
+ </div>
+ <div class="btns"><span class="btn yes">Yes</span><span class="btn always">Always Allow</span><span class="btn no">No</span></div>
+ <div class="note"><e k="note.project">Always allow covers this helper in <i class="ph">{project}</i> only, because it is defined inside the project. If its file changes, you'll be asked again.</e></div>
+</div>
+<p class="desc" style="margin-top:8px"><span class="n"></span>Trust line for a helper from your own folders (~/.youcoded/specialists or ~/.claude/agents), shown in the same amber: <e k="env.trust.user">Its instructions come from a file on your computer, not from YouCoded. Open the file if you're not sure what it does.</e><br><span class="n"></span>Helper from your own folder: <e k="env.lead.personal"><span class="strong"><i class="ph">{docs-writer}</i></span> comes from your specialists folder (<i class="ph">{docs-writer.md}</i>) and is being hired to <span class="strong">edit files</span> in <i class="ph">{project}</i>/.</e> — note under its buttons: <e k="note.user">Always allow covers this helper in every project. If its file changes, you'll be asked again.</e><br><span class="n"></span>From ~/.claude/agents: <e k="env.lead.ccuser"><span class="strong"><i class="ph">{foo}</i></span> comes from your ~/.claude/agents/<i class="ph">{foo.md}</i> and is being hired with <span class="strong">read-only</span> access to <i class="ph">{project}</i>/.</e><br><span class="n"></span>Can edit but no shell: <e k="env.b.rw.noshell">Can edit files without asking again, using <i class="ph">{Read, Write, Edit}</i>. Cannot run commands.</e><br><span class="n"></span>File can't be read: <e k="env.lead.unknown"><span class="strong"><i class="ph">{agent}</i></span> could not be looked up, so its tools and limits are unknown. Approve only if you know this specialist.</e><br><span class="n"></span>Other model lines: <e k="env.b.model.set">Runs on the budget model from Settings (<i class="ph">{Haiku 4.5}</i>).</e> · <e k="env.b.model.named">Runs on <i class="ph">{gpt-5.6}</i>, which the assistant chose.</e> · <e k="env.b.model.prefers">Runs on the frontier model from Settings (<i class="ph">{Opus 5}</i>) — this specialist prefers it.</e> · <e k="env.b.model.prefers.unset">Runs on this conversation's model (it prefers the frontier tier, which is not set).</e></p>
+</div>
+
+<!-- ───────── 3 ───────── -->
+<div class="surface"><p class="desc"><span class="n">3</span><b>Note / resume / stop card.</b> When the assistant messages a helper that's already running, the consent block is one line.</p>
+<div class="tool">
+ <div class="hdr"><span class="ic">?</span><span class="sep"></span><span class="lbl"><e k="mgmt.hdr.note">Note to <i class="ph">{Nova}</i></e></span><span class="right">⌄</span></div>
+ <div class="env"><e k="mgmt.note">Yes passes this note to <i class="ph">{Nova}</i> at its next step. Nothing new is granted.</e></div>
+ <div class="btns"><span class="btn yes">Yes</span><span class="btn no">No</span></div>
+</div>
+<p class="desc" style="margin-top:8px"><span class="n"></span>Resume: <e k="mgmt.resume">Yes sends <i class="ph">{Nova}</i> back to work with this brief, under the limits you already approved. Nothing new is granted.</e><br><span class="n"></span>Stop: <e k="mgmt.stop">Yes stops <i class="ph">{Nova}</i>. Its work so far is kept, and the assistant can resume it later.</e><br><span class="n"></span>Headers: <e k="mgmt.hdr.resume">Resuming <i class="ph">{Nova}</i></e> · <e k="mgmt.hdr.stop">Stopping <i class="ph">{Nova}</i></e></p>
+</div>
+
+<!-- ───────── 4 ───────── -->
+<div class="surface"><p class="desc"><span class="n">4</span><b>A helper asks you something.</b> The ask appears as a row inside the helper's own card, with the same three buttons.</p>
+<div class="tool">
+ <div class="hdr"><span class="ic">⋮</span><span class="sep"></span><span class="lbl"><i class="ph">{Sage the Steady Worker}</i></span><span class="sub">· in the background ↳ <i class="ph">{Create and delete probe.tmp}</i></span><span class="right" style="color:var(--amber)">NEEDS YOU ⌃</span></div>
+ <div class="status"><e k="run.bg">Working in the background</e> · <i class="ph">{2m 10s}</i></div>
+ <div class="act">Activity (3)</div>
+ <div class="row"><span class="ic">⊙</span><span class="cmd"><i class="ph">{Create probe.tmp and confirm it exists}</i> ↳ echo "probe" &gt; probe.tmp</span></div>
+ <div class="row"><span class="ic">⊙</span><span><e k="ask.prefix"><i class="ph">{Sage}</i> wants to:</e> <i class="ph">{Delete probe.tmp and verify it is gone}</i></span><span class="cmd">↳ rm probe.tmp</span></div>
+ <div class="btns" style="margin-left:14px"><span class="btn yes">Yes</span><span class="btn always">Always Allow</span><span class="btn no">No</span></div>
+ <div class="note" style="margin-left:14px"><e k="ask.outside">This is outside the project folder, so <i class="ph">{Sage}</i> has to ask every time.</e> <span style="color:var(--faint)">(only when the path is outside the folder; no Always Allow button then)</span></div>
+ <div style="margin-top:12px"><span class="ghost"><e k="btn.note">Send <i class="ph">{Sage}</i> a note</e></span><span class="ghost"><e k="btn.stop">Stop</e></span></div>
+</div></div>
+
+<!-- ───────── 5 ───────── -->
+<div class="surface"><p class="desc"><span class="n">5</span><b>The same ask after five minutes with no answer.</b> The helper carries on; the row stays answerable but says so.</p>
+<div class="tool">
+ <div class="row"><span class="ic">⊙</span><span><i class="ph">{Sage}</i> wants to: <i class="ph">{Delete probe.tmp}</i></span><span class="cmd">↳ rm probe.tmp</span></div>
+ <div class="note" style="margin-left:14px"><e k="ask.held.running"><i class="ph">{Sage}</i> waited 5 minutes, then carried on without this. Answering Yes now sends it as a follow-up.</e></div>
+ <div class="note" style="margin-left:14px;margin-top:4px"><span style="color:var(--faint)">(if the helper has finished by then:)</span> <e k="ask.held.done"><i class="ph">{Sage}</i> has already finished. Answering Yes tells the assistant, which can send <i class="ph">{Sage}</i> back out with your answer.</e></div>
+ <div class="btns" style="margin-left:14px"><span class="btn yes">Yes</span><span class="btn no">No</span></div>
+</div></div>
+
+<!-- ───────── 6 ───────── -->
+<div class="surface"><p class="desc"><span class="n">6</span><b>"Are you sure?" box.</b> Opens when you click Always Allow on a command — always for the dangerous list (rm, git push, sudo…), and whenever there's a wider option to choose.</p>
+<div class="tool">
+ <div class="confirm">
+  <div class="t"><e k="cf.title">Always allow this in <i class="ph">{project}</i>?</e></div>
+  <div class="cmd">rm probe.tmp</div>
+  <div class="warn"><e k="cf.danger">This can delete files or change published code, and you won't be asked again in this project.</e></div>
+  <div class="radio"><span class="on"><e k="cf.exact">Only this exact command</e></span><span><e k="cf.wide">Any <i class="ph">{rm}</i> command</e></span></div>
+  <div class="lim"><e k="cf.limits">Doesn't cover this command chained onto another one, or run with different options.</e></div>
+  <div class="btns"><span class="btn yes"><e k="cf.once">Nevermind, allow once</e></span><span class="btn no"><e k="cf.go">Always allow</e></span></div>
+ </div>
+</div>
+<p class="desc" style="margin-top:8px"><span class="n"></span>Other titles: <e k="cf.title.exact">Always allow this exact command in <i class="ph">{project}</i>?</e> · for git push: <e k="cf.push">Always allow pushing to <i class="ph">{main}</i></e> with the limit <e k="cf.push.limits">Doesn't cover deleting or force-pushing the branch, or this command chained onto another one.</e><br><span class="n"></span>A bare <code>git push</code> gets no Always Allow; instead: <e k="cf.push.none">Nothing to remember here — this pushes whichever branch is checked out at the time, so next time it could be a different one.</e></p>
+</div>
+
+<!-- ───────── 7 ───────── -->
+<div class="surface"><p class="desc"><span class="n">7</span><b>Full-auto safety stop.</b> In Full auto, a command on the dangerous list stops with this instead of running.</p>
+<div class="tool">
+ <div class="confirm">
+  <div class="t"><e k="fa.title.rm">Stopped before deleting files</e></div>
+  <div class="cmd">rm -rf build/</div>
+  <div class="warn"><e k="fa.sub">Full auto still stops here</e> — <e k="fa.rm">this permanently removes files.</e></div>
+  <div class="btns"><span class="btn yes"><e k="fa.run">Run it</e></span><span class="ghost" style="padding:6px 20px"><e k="fa.skip">Skip it</e></span><span class="btn always"><e k="fa.always">Always Allow</e></span></div>
+ </div>
+</div>
+<p class="desc" style="margin-top:8px"><span class="n"></span>The other titles and endings: <e k="fa.title.push">Stopped before pushing code</e> — <e k="fa.push">this changes your published code.</e> &nbsp;·&nbsp; <e k="fa.title.reset">Stopped before undoing commits</e> — <e k="fa.reset">this permanently discards saved work.</e> &nbsp;·&nbsp; <e k="fa.title.sudo">Stopped before an admin command</e> — <e k="fa.sudo">this runs with full control of your computer.</e> &nbsp;·&nbsp; <e k="fa.title.format">Stopped before formatting a drive</e> — <e k="fa.format">this erases everything on it.</e> &nbsp;·&nbsp; unknown: <e k="fa.title.other">Stopped before a risky command</e></p>
+</div>
+
+<!-- ───────── 8 ───────── -->
+<div class="surface"><p class="desc"><span class="n">8</span><b>Specialists popup.</b> Opens from the status-bar chip; every running helper gets a card here, and pending asks show at the top of it.</p>
+<div style="margin-bottom:8px"><span class="chip"><e k="chip.needs"><i class="ph">{1}</i> needs you</e></span><span class="chip" style="color:var(--fg2)"><e k="chip.working"><i class="ph">{2}</i> specialists</e></span><span class="chip" style="color:var(--fg2)"><e k="chip.done"><i class="ph">{1}</i> finished</e></span><span class="chip mode"><e k="mode.full">FULL AUTO</e></span> <span style="color:var(--faint);font-size:12px">← the chips in the bottom bar (modes: <e k="mode.ask">ASK FIRST</e> / <e k="mode.edit">AUTO EDIT</e>)</span></div>
+<div class="popup">
+ <div class="t"><e k="pop.title">Specialists</e></div>
+ <div class="st"><e k="pop.sub"><i class="ph">{1}</i> waiting on you · <i class="ph">{1}</i> working · <i class="ph">{1}</i> finished</e></div>
+ <div class="grp" style="color:var(--muted);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px"><e k="pop.g1">Needs you</e></div>
+ <div class="tool" style="padding:8px 12px">
+  <div><span style="color:var(--fg);font-weight:600"><i class="ph">{Sage the Steady Worker}</i></span><span class="pill warn"><e k="pill.needs">Needs you</e></span><span class="st"> · <i class="ph">{worker}</i> · <e k="pop.bg">in the background</e></span></div>
+  <div class="status" style="color:var(--dim)"><e k="run.fg">Working</e> · <i class="ph">{3m 02s}</i></div>
+  <div class="row"><span class="ic">⊙</span><span><i class="ph">{Sage}</i> wants to: <i class="ph">{Delete probe.tmp}</i></span></div>
+  <div class="btns"><span class="btn yes">Yes</span><span class="btn always">Always Allow</span><span class="btn no">No</span></div>
+  <div style="margin-top:10px"><span class="ghost"><e k="pop.note">Note</e></span><span class="ghost">Stop</span></div>
+ </div>
+ <div class="grp" style="color:var(--muted);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px"><e k="pop.g3">Finished</e></div>
+ <div class="tool" style="padding:8px 12px"><span style="color:var(--fg);font-weight:600"><i class="ph">{Nova the Expedient Explorer}</i></span><span class="pill"><e k="pill.done">Finished</e></span><div class="status" style="color:var(--dim)"><e k="run.done">Finished in <i class="ph">{43s}</i> · <i class="ph">{6}</i> steps</e></div></div>
+</div>
+<p class="desc" style="margin-top:8px"><span class="n"></span>Other status lines: <e k="run.stuck">no activity for a while — may be stuck</e> &nbsp;·&nbsp; <e k="run.stopped">Stopped after <i class="ph">{1m 4s}</i> · <i class="ph">{4}</i> steps — the assistant can pick this back up</e> &nbsp;·&nbsp; <e k="run.failed">Failed after <i class="ph">{20s}</i> · <i class="ph">{2}</i> steps</e><br><span class="n"></span>Note box hint: <e k="note.ph">Anything <i class="ph">{Sage}</i> should know mid-run — it's applied at its next step</e> &nbsp;·&nbsp; errors: <e k="err.note">Couldn't deliver the note to <i class="ph">{Sage}</i>.</e> / <e k="err.stop">Couldn't stop <i class="ph">{Sage}</i>.</e></p>
+</div>
+
+<!-- ───────── 9 ───────── -->
+<div class="surface"><p class="desc"><span class="n">9</span><b>Settings → Permissions — the mode explainer.</b> The reference card at the top of the Permissions page.</p>
+<div class="sec">
+ <div class="lbl"><e k="pm.lbl">Permission modes</e></div>
+ <div class="box">
+  <p><b><e k="pm.ask.t">Ask first</e></b> — <e k="pm.ask">Checks with you before changing a file or running a command. Reading and searching never interrupt you.</e></p>
+  <p><b><e k="pm.edit.t">Auto edit</e></b> — <e k="pm.edit">Changes files without asking. Still checks before running a command.</e></p>
+  <p><b><e k="pm.full.t">Full auto</e></b> — <e k="pm.full">Works without checking with you, so you can leave it running. It still asks before:</e></p>
+  <ul><li><e k="pm.l1">Deleting files or folders</e></li><li><e k="pm.l2">Sending your work to a shared code repository</e></li><li><e k="pm.l3">Throwing away changes you haven't saved anywhere else</e></li><li><e k="pm.l4">Anything needing your computer's administrator password</e></li></ul>
+  <div class="band"><e k="pm.foot">Each conversation has its own mode. Change it from the bar at the bottom of the chat.</e></div>
+ </div>
+</div></div>
+
+<!-- ───────── 10 ───────── -->
+<div class="surface"><p class="desc"><span class="n">10</span><b>Settings → Permissions — the "Always allowed" list.</b> The intro, the new "All projects" card, a normal folder card with one grant open, and the revoke confirmations.</p>
+<div class="sec">
+ <div class="lbl"><e k="aa.lbl">Always allowed</e></div>
+ <div class="box"><e k="aa.intro">Things you chose “Always allow” for. Your assistant stops asking before each of these. Full auto never asks anyway, except for the four above — and an “Always allow” on one of those removes even that check.</e></div>
+ <div class="folder">
+  <div class="fh"><div><div class="name"><e k="aa.all.t">All projects</e></div><div class="path"><e k="aa.all.d">Your own specialists that you always allow. These apply in every folder.</e></div></div><div class="cnt">1 ▾</div></div>
+  <div class="grp"><e k="aa.g.other">Other</e></div>
+  <div class="rule"><div><div class="rt"><e k="rule.user.rw">Let the <i class="ph">{docs-writer}</i> specialist edit files in every project</e></div><div class="rd"><e k="rule.date">Approved <i class="ph">{Aug 26, 2026}</i></e></div></div><span class="rb"><e k="aa.revoke">Revoke</e></span></div>
+ </div>
+ <div class="folder">
+  <div class="fh"><div><div class="name"><i class="ph">{specialists-1c-test}</i></div><div class="path"><i class="ph">{/home/destin/YouCoded/Projects/specialists-1c-test}</i></div></div><div class="cnt">3 ▾</div></div>
+  <div class="grp"><e k="aa.g.cmd">Commands</e></div>
+  <div class="rule"><div><div class="rt"><e k="rule.bash">Run <i class="ph">{rm probe.tmp}</i></e></div><div class="rd">Approved <i class="ph">{Aug 26, 2026}</i></div></div><span class="rb">Revoke</span></div>
+  <div class="rc"><e k="aa.row.confirm">You'll be asked the next time this comes up.</e><br><span class="b"><e k="aa.cancel">Cancel</e></span><span class="b red"><e k="aa.revoke2">Revoke</e></span></div>
+  <div class="grp"><e k="aa.g.other2">Other</e></div>
+  <div class="rule"><div><div class="rt"><e k="rule.proj.ro">Let the <i class="ph">{code-reviewer}</i> specialist work in <i class="ph">{/home/destin/YouCoded/Projects/specialists-1c-test}</i></e></div></div><span class="rb">Revoke</span></div>
+  <div class="rule"><div><div class="rt"><e k="rule.builtin.rw">Let a specialist edit files in <i class="ph">{/home/destin/YouCoded/Projects/specialists-1c-test}</i></e></div><div class="rd"><e k="rule.wide">Covers every command, not just the one it first asked about.</e> <span style="color:var(--faint)">(shown on tool-wide grants)</span></div></div><span class="rb">Revoke</span></div>
+  <div class="rc"><e k="aa.bulk.confirm">Revoke all <i class="ph">{3}</i> for <i class="ph">{specialists-1c-test}</i>? You'll be asked again the next time any of them comes up.</e><br><span class="b">Cancel</span><span class="b red"><e k="aa.bulk">Revoke all</e></span></div>
+  <div class="rc" style="color:var(--amber)"><e k="aa.stale">This one couldn't be found — it may already be gone. Reopen this screen for the current list.</e></div>
+ </div>
+ <div class="box" style="margin-top:10px;color:var(--muted)"><e k="aa.empty">Nothing yet. When you choose “Always allow” on a request, it shows up here.</e> <span style="color:var(--faint)">(empty state)</span></div>
+ <div class="box" style="margin-top:10px;color:var(--muted)"><e k="aa.norec">This folder's location wasn't recorded.</e> <span style="color:var(--faint)">(old grants with no saved path)</span></div>
+</div>
+<p class="desc" style="margin-top:8px"><span class="n"></span>Other row wordings: <e k="rule.user.ro">Let the <i class="ph">{docs-writer}</i> specialist work in every project</e> &nbsp;·&nbsp; <e k="rule.proj.rw">Let the <i class="ph">{code-reviewer}</i> specialist edit files in <i class="ph">{folder}</i></e> &nbsp;·&nbsp; <e k="rule.builtin.ro">Let a read-only specialist work in <i class="ph">{folder}</i></e> &nbsp;·&nbsp; <e k="rule.edit">Edit <i class="ph">{path}</i></e> &nbsp;·&nbsp; <e k="rule.write">Create or overwrite <i class="ph">{path}</i></e> &nbsp;·&nbsp; <e k="rule.push">Pushing to <i class="ph">{main}</i></e> &nbsp;·&nbsp; <e k="rule.any">Any <i class="ph">{git}</i> command</e> &nbsp;·&nbsp; <e k="rule.all">Do anything</e></p>
+</div>
+
+<!-- ───────── 11 ───────── -->
+<div class="surface"><p class="desc"><span class="n">11</span><b>The (i) explainer on the Permissions page.</b> Opens from the (i) button in the page's title bar.</p>
+<div class="expl">
+ <p><e k="ex.intro">The assistant asks you before doing anything that changes your computer — running a command, editing a file. Choosing “Always allow” when it asks is what puts something on this list. How often it asks in the first place is a separate setting, explained below.</e></p>
+ <h4><e k="ex.h1">How much it asks</e></h4>
+ <p><e k="ex.p1">Each conversation has its own mode, and you can change it part-way through from the bar at the bottom of the chat.</e></p>
+ <ul><li><e k="ex.b1">Ask first — asks before anything that changes your files or runs a command. Reading and searching never ask.</e></li><li><e k="ex.b2">Auto edit — edits files without asking, but still asks before running commands.</e></li><li><e k="ex.b3">Full auto — doesn't ask at all, apart from the things it always asks about. Use it when you're watching.</e></li></ul>
+ <h4><e k="ex.h2">Presets</e></h4>
+ <p><e k="ex.p2">When you start a conversation you pick a preset, which decides the starting mode.</e></p>
+ <ul><li><e k="ex.b4">Assistant — starts cautious and asks about most things.</e></li><li><e k="ex.b5">Coder — starts able to edit files without asking, since that's most of the work.</e></li></ul>
+ <h4><e k="ex.h3">Things it always asks about</e></h4>
+ <p><e k="ex.p3">The short list on this screen asks every time, whatever mode you're in — even Full auto, even in a folder where you've approved everything else. They're the things that are hardest to undo.</e></p>
+ <p><e k="ex.p4">If you choose “Always allow” on one of these, the app asks you to confirm, and from then on that one exact thing stops asking. It appears in the list like any other approval, and removing it puts the question back.</e></p>
+ <h4><e k="ex.h4">Approvals you've already given</e></h4>
+ <p><e k="ex.p5">Most approvals belong to the folder you were working in when you gave them — the same request in another folder asks again. The exception is your own specialists: allowing one of them applies in every folder, under “All projects”.</e></p>
+ <p><e k="ex.p6">Removing an approval doesn't undo anything it already did. It only means you'll be asked the next time.</e></p>
+ <h4><e k="ex.h5">Approvals you gave Claude Code</e></h4>
+ <p><e k="ex.p7">Conversations running on Claude Code keep their own separate list of approvals, which this screen doesn't manage. You can change those in Claude Code's own settings.</e></p>
+</div></div>
+
+<!-- ───────── 12 ───────── -->
+<div class="surface"><p class="desc"><span class="n">12</span><b>The (i) explainer on the Specialists page — the part about permissions.</b></p>
+<div class="expl">
+ <h4><e k="sx.h">Read-only vs can edit</e></h4>
+ <p><e k="sx.p">A read-only helper can look at files and search the web, but can't change anything or run commands. A helper that can edit is limited to the folder it was hired for. Either way, secrets and anything outside that folder still ask you — and for helpers that can edit, so does deleting things. Approving a hire is what grants this; the card in the chat says exactly what before you say yes.</e></p>
+</div></div>
+
+<h2 style="font-family:var(--ui);font-size:16px;margin-top:40px">Your changes</h2>
+<p class="top">Fills in when you press <b>Copy my changes</b> — only the sentences you altered, old → new.</p>
+<textarea id="out" readonly placeholder="Nothing yet."></textarea>
+</div>
+<script>
+const KEY='permission-cards-copy-v2';
+let saved={}; try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){saved={}}
+const els=[...document.querySelectorAll('e[k]')];
+const orig={};
+for(const el of els){const k=el.getAttribute('k');orig[k]=el.innerText;el.setAttribute('contenteditable','true');el.setAttribute('spellcheck','true');
+  if(k in saved){el.innerText=saved[k]}
+  paint(el);
+  el.addEventListener('input',()=>{const v=el.innerText;if(v===orig[k])delete saved[k];else saved[k]=v;try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){}paint(el)});
+  el.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();el.blur()}});
+}
+function paint(el){const k=el.getAttribute('k');el.classList.toggle('chg',k in saved);const n=Object.keys(saved).length;document.getElementById('count').textContent=n?n+' changed':'no changes yet'}
+function surfaceOf(el){let s=el.closest('.surface');return s?s.querySelector('.desc b').innerText.replace(/\.$/,''):''}
+document.getElementById('copy').onclick=()=>{
+  const lines=[];let last='';
+  for(const el of els){const k=el.getAttribute('k');if(!(k in saved))continue;const s=surfaceOf(el);if(s!==last){lines.push('\n## '+s);last=s}
+    lines.push('- was: '+orig[k]+'\n  now: '+saved[k]);}
+  const out=lines.length?lines.join('\n').trim():'No changes.';
+  const ta=document.getElementById('out');ta.value=out;try{navigator.clipboard.writeText(out)}catch(e){}ta.scrollIntoView({behavior:'smooth'});
+};
+document.getElementById('reset').onclick=()=>{if(!confirm('Throw away every edit on this page?'))return;saved={};try{localStorage.setItem(KEY,'{}')}catch(e){}for(const el of els){el.innerText=orig[el.getAttribute('k')];paint(el)}};
+</script></body></html>

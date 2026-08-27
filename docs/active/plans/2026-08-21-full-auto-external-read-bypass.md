@@ -1,4 +1,26 @@
+---
+status: draft
+date: 2026-08-21
+spec: docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md
+---
+
 # Full-Auto External Read Bypass + Web-Subject Guard Fix — Implementation Plan
+
+> **EXECUTION STATE (verified 2026-08-26): NOT STARTED. 0 of 37 steps done; no code exists.**
+> - `git grep -n isWalkAwayRead origin/master -- desktop/src` → no hits. Same on the feature branch:
+>   `git grep -n isWalkAwayRead feat/full-auto-read-bypass -- desktop/src` → no hits.
+> - `NON_PATH_SUBJECT_TOOLS` on master is still `new Set(['Bash', 'Skill', 'Task'])`
+>   (`harness-session.ts:48`) — WebSearch/WebFetch were never added, so the Task 4 web fix is unbuilt.
+> - Worktree `worktrees/full-auto-reads` (branch `feat/full-auto-read-bypass`) EXISTS but is empty
+>   work: `git rev-list --left-right --count origin/master...feat/full-auto-read-bypass` → `24  0`
+>   (24 behind, **0 ahead**), and `git status --porcelain` in the worktree is empty. It is a
+>   provisioned-but-unused worktree, 24 commits stale.
+> - **The Task 2 HUMAN GATE was never reached.** The last session on this plan
+>   (`a1929f41…`, "Full-Auto Read Bypass Plan") ended 2026-08-23 19:11 having only finished
+>   *rewriting* the plan; the next session in this workspace started 7 minutes later on the perf lab.
+>   No workbench approval-card session ever ran, so Destin has not seen or signed off on the copy.
+> - Next action is Task 2 (blocked on Destin), which may run in parallel with Tasks 3–4 (build work).
+
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

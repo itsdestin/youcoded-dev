@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Phase C review — 13 changes built, 2 questions</title>
+<style>
+  :root { --ink:#1a1a1a; --ink2:#666; --line:#dedede; --bg:#f4f4f2; --acc:#2055ca;
+          --meas:#0a6a2c; --measbg:#e3f3e8; --judg:#8a5a00; --judgbg:#fff0d6; --yes:#137a3a; --no:#b3261e; --more:#8a5a00 }
+  * { box-sizing:border-box }
+  html, body { height:100% } body { margin:0; font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:var(--bg); display:flex; flex-direction:column }
+  main { flex:1; display:flex; flex-direction:column; align-items:center; padding:18px 24px 8px; min-height:0 }
+  .step { display:none; width:min(1060px, 100%); flex-direction:column; min-height:0 } .step.on { display:flex }
+  .kicker { color:var(--ink2); font-size:13px; margin-bottom:8px; display:flex; gap:6px; align-items:baseline } .pid { font-weight:700; color:var(--acc) } .count { margin-left:auto; font-variant-numeric:tabular-nums }
+  .stagewrap { background:#e6e6e3; border-radius:10px; padding:10px }
+  .stage { position:relative; text-align:center; line-height:0; font-size:0; max-height:56vh; overflow:auto }
+  .frame { display:none; position:relative; line-height:0 } .frame.on { display:inline-block; max-width:100% } .frame img { display:block; max-width:100%; height:auto }
+  .missing { font:14px system-ui; color:#666; padding:40px }
+  .mk { position:absolute; transform:translate(-50%,-50%); width:46px; height:46px; border-radius:50%; border:3px solid #fff; box-shadow:0 0 0 3px var(--acc), 0 4px 14px rgba(0,0,0,.6); background:transparent; animation:pulse 1.6s ease-in-out infinite; pointer-events:none }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 3px var(--acc), 0 4px 14px rgba(0,0,0,.6) } 50% { box-shadow:0 0 0 7px rgba(32,85,202,.55), 0 4px 14px rgba(0,0,0,.6) } }
+  .figbar { display:flex; justify-content:space-between; margin-top:8px; min-height:22px } .tab, .ctab { font:12px system-ui; padding:2px 9px; border:1px solid #bbb; background:#fff; border-radius:999px; margin-right:4px; cursor:pointer; color:#444 }
+  .tab.on { background:#333; color:#fff; border-color:#333 } .ctab.on { background:var(--acc); color:#fff; border-color:var(--acc) }
+  .what { font-size:21px; font-weight:650; line-height:1.3; margin:18px 0 6px } .fix { font-size:17px; color:#1f3a78; margin:0 0 8px }
+  .meta { display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; font-size:13px; color:var(--ink2); min-height:22px }
+  .kind { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:2px 8px; border-radius:8px } .kind-measured { background:var(--measbg); color:var(--meas) } .kind-judgment { background:var(--judgbg); color:var(--judg) }
+  .risk { margin:0; color:#7a3b00 } .why summary { cursor:pointer; color:var(--acc) } .why { max-width:900px } .why p, .why ul { margin:6px 0 0 }
+  .decide { display:flex; gap:12px; align-items:center; margin-top:14px; flex-wrap:wrap }
+  .decide button { font:600 17px system-ui; padding:12px 26px; border-radius:10px; border:2px solid transparent; cursor:pointer; color:#fff } .decide kbd { font:11px ui-monospace,monospace; background:rgba(255,255,255,.25); padding:1px 5px; border-radius:4px; margin-left:8px }
+  .yes { background:var(--yes) } .no { background:var(--no) } .more { background:var(--more) } .decide button.on { border-color:#111; box-shadow:0 0 0 3px #fff, 0 0 0 5px #111 } .step.decided .decide button:not(.on) { opacity:.35 }
+  .note { flex:1; min-width:200px; font:14px system-ui; padding:10px 12px; border:1px solid var(--line); border-radius:8px }
+  nav { display:flex; align-items:center; gap:10px; padding:10px 24px 16px; justify-content:center; flex-wrap:wrap }
+  nav .arrow { font:14px system-ui; padding:6px 12px; border:1px solid #bbb; background:#fff; border-radius:8px; cursor:pointer } nav .arrow kbd { font:11px ui-monospace,monospace; color:#888; margin:0 3px }
+  .dots { display:flex; gap:5px; flex-wrap:wrap; justify-content:center } .dot { width:14px; height:14px; border-radius:50%; background:#cfcfcf; border:2px solid transparent; cursor:pointer } .dot.yes { background:var(--yes) } .dot.no { background:var(--no) } .dot.more { background:var(--more) } .dot.on { border-color:#111 } .dot.sum { border-radius:3px }
+  .summary { display:none; width:min(1060px,100%) } .summary.on { display:block } .summary h1 { font-size:22px; margin:0 0 8px } .summary table { border-collapse:collapse; width:100%; margin:10px 0 } .summary td, .summary th { border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; font-size:14px } .summary td.v-yes { color:var(--yes); font-weight:700 } .summary td.v-no { color:var(--no); font-weight:700 } .summary td.v-more { color:var(--more); font-weight:700 }
+  #feedback { width:100%; min-height:150px; font:12.5px ui-monospace,monospace; padding:10px; border:1px solid var(--line); border-radius:8px } #copy { font:600 15px system-ui; padding:10px 18px; border-radius:8px; border:0; background:var(--acc); color:#fff; cursor:pointer; margin:8px 0 } .closing { color:var(--ink2); font-size:13px }
+  #st { color:var(--ink2); font-size:13px }
+</style></head><body>
+<main>
+<section class="step" data-key="P-3:1" data-idx="0">
+  <div class="kicker"><span class="pid">P-3</span> Themes dialog · Settings → Appearance<span class="count">1 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/themes-dialog--midnight--before.png" alt=""><span class="mk" style="left:27%;top:24%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/themes-dialog--midnight--after.png" alt=""><span class="mk" style="left:27%;top:24%"></span></div><div class="frame" data-theme="light" data-col="before"><img src="images/phase-c-review/themes-dialog--light--before.png" alt=""><span class="mk" style="left:27%;top:38%"></span></div><div class="frame" data-theme="light" data-col="after"><img src="images/phase-c-review/themes-dialog--light--after.png" alt=""><span class="mk" style="left:27%;top:38%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="before"><img src="images/phase-c-review/themes-dialog--halftone-dimension--before.png" alt=""><span class="mk" style="left:27%;top:24%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="after"><img src="images/phase-c-review/themes-dialog--halftone-dimension--after.png" alt=""><span class="mk" style="left:27%;top:24%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="light">Light</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">Cards: the theme's preview picture on top, one text row at the bottom, every card the same height — the active card no longer grows and stretches its neighbour.</p>
+  <p class="fix">→ Built as you described. Built-ins got preview pictures made with the marketplace's own generator; community and user themes show their own preview.png; a theme with no picture falls back to the old colour strip.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><p class="risk">Risk: In these screenshots Halftone and Meadow show the colour-strip fallback because the screenshot rig cannot serve theme folders (theme-asset://); in the app they show their own preview.png. Built-in pictures load from the app bundle on every platform.</p></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-3:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-3:3" data-idx="1">
+  <div class="kicker"><span class="pid">P-3</span> Themes dialog · Settings → Appearance<span class="count">2 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/themes-dialog--midnight--before.png" alt=""><span class="mk" style="left:50%;top:52%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/themes-dialog--midnight--after.png" alt=""><span class="mk" style="left:50%;top:52%"></span></div><div class="frame" data-theme="light" data-col="before"><img src="images/phase-c-review/themes-dialog--light--before.png" alt=""><span class="mk" style="left:50%;top:58%"></span></div><div class="frame" data-theme="light" data-col="after"><img src="images/phase-c-review/themes-dialog--light--after.png" alt=""><span class="mk" style="left:50%;top:58%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="before"><img src="images/phase-c-review/themes-dialog--halftone-dimension--before.png" alt=""><span class="mk" style="left:50%;top:52%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="after"><img src="images/phase-c-review/themes-dialog--halftone-dimension--after.png" alt=""><span class="mk" style="left:50%;top:52%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="light">Light</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">“Your Themes” is now “Favorited Themes”; “Browse all themes →” is gone; “Browse Theme Marketplace” sits above “Build New Theme with Claude”.</p>
+  <p class="fix">→ As decided. The only way the old button was reachable was this dialog, so its plumbing in the app shell was removed too.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-3:3" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-21:1" data-idx="2">
+  <div class="kicker"><span class="pid">P-21</span> Marketplace cards · Marketplace<span class="count">3 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/market-hero--midnight--before.png" alt=""><span class="mk" style="left:1.5%;top:50%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/market-hero--midnight--after.png" alt=""><span class="mk" style="left:1.5%;top:50%"></span></div><div class="frame" data-theme="light" data-col="before"><img src="images/phase-c-review/market-hero--light--before.png" alt=""><span class="mk" style="left:1.5%;top:50%"></span></div><div class="frame" data-theme="light" data-col="after"><img src="images/phase-c-review/market-hero--light--after.png" alt=""><span class="mk" style="left:1.5%;top:50%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="before"><img src="images/phase-c-review/market-hero--halftone-dimension--before.png" alt=""><span class="mk" style="left:1.5%;top:50%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="after"><img src="images/phase-c-review/market-hero--halftone-dimension--after.png" alt=""><span class="mk" style="left:1.5%;top:50%"></span></div><div class="frame" data-theme="meadow-mist" data-col="before"><img src="images/phase-c-review/market-hero--meadow-mist--before.png" alt=""><span class="mk" style="left:1.5%;top:50%"></span></div><div class="frame" data-theme="meadow-mist" data-col="after"><img src="images/phase-c-review/market-hero--meadow-mist--after.png" alt=""><span class="mk" style="left:1.5%;top:50%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="light">Light</button><button class="tab" data-theme="halftone-dimension">Halftone</button><button class="tab" data-theme="meadow-mist">Meadow</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">The featured card's border is the theme's normal card edge; the gold (and the other entries' blue/green) is gone.</p>
+  <p class="fix">→ As decided.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-21:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-21:3" data-idx="3">
+  <div class="kicker"><span class="pid">P-21</span> Marketplace cards · Marketplace<span class="count">4 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/market-card-counts--midnight--before.png" alt=""><span class="mk" style="left:35%;top:81%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/market-card-counts--midnight--after.png" alt=""><span class="mk" style="left:35%;top:81%"></span></div></div>
+    <div class="figbar"><span class="tabs"></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">“1 install”, “1 like” — counts pluralise properly everywhere a card shows them.</p>
+  <p class="fix">→ As decided (one shared helper, with a test).</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-21:3" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-21:2" data-idx="4">
+  <div class="kicker"><span class="pid">P-21</span> Marketplace cards · Marketplace<span class="count">5 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="before"><img src="images/phase-c-review/market-themes-rows--midnight--before.png" alt=""><span class="mk" style="left:10%;top:92%"></span></div><div class="frame" data-theme="creme" data-col="before"><img src="images/phase-c-review/market-themes-rows--creme--before.png" alt=""><span class="mk" style="left:10%;top:92%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"></span></div></div>
+  <p class="what">You asked me to explain this one. Look at the Themes tab: the card BOXES are all the same size, but the words inside stop at different heights — some cards have a two-line description, some none; some have a likes count, some none. So a row of seven cards has five different “bottom edges” of text.</p>
+  <p class="fix">→ If you say Yes, every theme card reserves the same space for those two lines and the counts row whether or not it has them, so all the text lines up. If No, nothing changes.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-21:2" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-2:1" data-idx="5">
+  <div class="kicker"><span class="pid">P-2</span> Your Library · Library<span class="count">6 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/library-empty--midnight--before.png" alt=""><span class="mk" style="left:50%;top:62%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/library-empty--midnight--after.png" alt=""><span class="mk" style="left:50%;top:62%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="before"><img src="images/phase-c-review/library-empty--halftone-dimension--before.png" alt=""><span class="mk" style="left:50%;top:62%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="after"><img src="images/phase-c-review/library-empty--halftone-dimension--after.png" alt=""><span class="mk" style="left:50%;top:62%"></span></div><div class="frame" data-theme="light" data-col="before"><img src="images/phase-c-review/library-empty--light--before.png" alt=""><span class="mk" style="left:50%;top:62%"></span></div><div class="frame" data-theme="light" data-col="after"><img src="images/phase-c-review/library-empty--light--after.png" alt=""><span class="mk" style="left:50%;top:62%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button><button class="tab" data-theme="light">Light</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">A new install's Library now shows the app's standard empty message with a “Browse the Marketplace” button, instead of two headings over nothing.</p>
+  <p class="fix">→ The counting bug is fixed and pinned by a test so it cannot silently come back.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-2:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-2:2" data-idx="6">
+  <div class="kicker"><span class="pid">P-2</span> Your Library · Library<span class="count">7 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/library-tabs--midnight--before.png" alt=""><span class="mk" style="left:30%;top:75%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/library-tabs--midnight--after.png" alt=""><span class="mk" style="left:30%;top:75%"></span></div><div class="frame" data-theme="light" data-col="before"><img src="images/phase-c-review/library-tabs--light--before.png" alt=""><span class="mk" style="left:30%;top:75%"></span></div><div class="frame" data-theme="light" data-col="after"><img src="images/phase-c-review/library-tabs--light--after.png" alt=""><span class="mk" style="left:30%;top:75%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="before"><img src="images/phase-c-review/library-tabs--halftone-dimension--before.png" alt=""><span class="mk" style="left:30%;top:75%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="after"><img src="images/phase-c-review/library-tabs--halftone-dimension--after.png" alt=""><span class="mk" style="left:30%;top:75%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="light">Light</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">The Skills | Themes switcher is now the Projects-style pill: icon, label and a count of what is installed.</p>
+  <p class="fix">→ As decided. Projects itself is untouched.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-2:2" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-1:1" data-idx="7">
+  <div class="kicker"><span class="pid">P-1</span> Marketplace bar and states · Marketplace<span class="count">8 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/market-bar--midnight--before.png" alt=""><span class="mk" style="left:12%;top:50%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/market-bar--midnight--after.png" alt=""><span class="mk" style="left:12%;top:50%"></span></div><div class="frame" data-theme="light" data-col="before"><img src="images/phase-c-review/market-bar--light--before.png" alt=""><span class="mk" style="left:12%;top:50%"></span></div><div class="frame" data-theme="light" data-col="after"><img src="images/phase-c-review/market-bar--light--after.png" alt=""><span class="mk" style="left:12%;top:50%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="light">Light</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">Plugins / Themes is a two-position switch (with All), in the same spot; the eleven filters stay pills.</p>
+  <p class="fix">→ As decided. Same switch inside the phone filter sheet.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-1:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-1:2" data-idx="8">
+  <div class="kicker"><span class="pid">P-1</span> Marketplace bar and states · Marketplace<span class="count">9 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/market-search--midnight--before.png" alt=""><span class="mk" style="left:50%;top:50%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/market-search--midnight--after.png" alt=""><span class="mk" style="left:50%;top:50%"></span></div><div class="frame" data-theme="light" data-col="before"><img src="images/phase-c-review/market-search--light--before.png" alt=""><span class="mk" style="left:50%;top:50%"></span></div><div class="frame" data-theme="light" data-col="after"><img src="images/phase-c-review/market-search--light--after.png" alt=""><span class="mk" style="left:50%;top:50%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="light">Light</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">The search box is the app's shared search pill with the magnifier — the same one Projects uses.</p>
+  <p class="fix">→ As decided; on phones the same pill carries the Filters button.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-1:2" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-1:3" data-idx="9">
+  <div class="kicker"><span class="pid">P-1</span> Marketplace bar and states · Marketplace<span class="count">10 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/market-themes-empty--midnight--before.png" alt=""><span class="mk" style="left:50%;top:70%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/market-themes-empty--midnight--after.png" alt=""><span class="mk" style="left:50%;top:70%"></span></div><div class="frame" data-theme="light" data-col="before"><img src="images/phase-c-review/market-themes-empty--light--before.png" alt=""><span class="mk" style="left:50%;top:70%"></span></div><div class="frame" data-theme="light" data-col="after"><img src="images/phase-c-review/market-themes-empty--light--after.png" alt=""><span class="mk" style="left:50%;top:70%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="light">Light</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">When nothing matches: one standard empty message with a “Clear filters” button — no more “0 results” + a second sentence.</p>
+  <p class="fix">→ As decided, using the app's shared empty block.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-1:3" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-1:4" data-idx="10">
+  <div class="kicker"><span class="pid">P-1</span> Marketplace bar and states · Marketplace<span class="count">11 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/market-explore-empty--midnight--before.png" alt=""><span class="mk" style="left:35%;top:62%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/market-explore-empty--midnight--after.png" alt=""><span class="mk" style="left:35%;top:62%"></span></div></div>
+    <div class="figbar"><span class="tabs"></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">“Explore everything” shows “Loading the marketplace…” while the registry loads, and the standard error block with Retry (showing the real error) if it cannot be reached.</p>
+  <p class="fix">→ As decided. Shown only when nothing has loaded yet, so the grid never flashes to a spinner after an install.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-1:4" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="P-1:5" data-idx="11">
+  <div class="kicker"><span class="pid">P-1</span> Marketplace bar and states · Marketplace<span class="count">12 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="before"><img src="images/phase-c-review/market-narrow-title--midnight--before.png" alt=""><span class="mk" style="left:32%;top:50%"></span></div><div class="frame on" data-theme="midnight" data-col="after"><img src="images/phase-c-review/market-narrow-title--midnight--after.png" alt=""><span class="mk" style="left:32%;top:50%"></span></div></div>
+    <div class="figbar"><span class="tabs"></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">Phone width: the title reads “Marketplace”. Cause found: the “Esc · Back to chat” hint was supposed to hide on phones and never did (a class-ordering bug in the shared Button), stealing the title's room.</p>
+  <p class="fix">→ The hint is now not rendered at phone width. The underlying Button bug is filed in the ROADMAP for a proper fix.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="P-1:5" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="Q:1" data-idx="12">
+  <div class="kicker"><span class="pid">Q</span> Questions from your feedback<span class="count">13 / 13</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="before"><img src="images/phase-c-review/theme-edit-builtin--midnight--before.png" style="zoom:0.6" alt=""><span class="mk" style="left:50%;top:18%"></span></div><div class="frame" data-theme="creme" data-col="before"><img src="images/phase-c-review/theme-edit-builtin--creme--before.png" style="zoom:0.6" alt=""><span class="mk" style="left:50%;top:18%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"></span></div></div>
+  <p class="what">P-3 #2 — you expected Glass sliders behind the pencil. They are hidden on purpose for any theme with no wallpaper or gradient (all four built-ins are flat colours), so this empty dialog is what the real app shows too — not a screenshot problem.</p>
+  <p class="fix">→ Yes = show the Glass sliders on flat themes anyway (panel opacity would tint panels toward the canvas colour; blur would do nothing visible). No = leave the editor as it is. The pencil stays either way.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="Q:1" placeholder="note (optional)"></div>
+</section>
+<section class="summary"><h1>Phase C review — 13 changes built, 2 questions — your answers</h1>
+<p>Every step flips Before / After (space bar) on the same crop of the real app. Yes = keep it as built; No = revert that point; Tell me more = I explain further. Two steps at the end are questions from your feedback rather than built changes.</p>
+<table><thead><tr><th>Item</th><th>#</th><th>Point</th><th>Answer</th><th>Note</th></tr></thead><tbody id="rows"></tbody></table>
+<button id="copy">Copy feedback</button> <span id="copied"></span>
+<textarea id="feedback" readonly></textarea>
+<div class="closing"><h2>Not changed</h2><ul><li>Projects (P-5): both points declined — untouched.</li><li>The pencil on built-in themes still opens the editor (P-3 #2 declined).</li></ul></div>
+</section>
+</main>
+<nav><button class="arrow" id="prev"><kbd>←</kbd> back</button><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot sum" title="Summary"></span></span><button class="arrow" id="next">next <kbd>→</kbd></button><span id="st"></span></nav>
+<script>
+(function(){
+  const KEY="Phase C review", STEPS=[{"key": "P-3:1", "id": "P-3", "n": 1, "kind": "measured", "what": "Cards: the theme's preview picture on top, one text row at the bottom, every card the same height \u2014 the active card no longer grows and stretches its neighbour."}, {"key": "P-3:3", "id": "P-3", "n": 3, "kind": "measured", "what": "\u201cYour Themes\u201d is now \u201cFavorited Themes\u201d; \u201cBrowse all themes \u2192\u201d is gone; \u201cBrowse Theme Marketplace\u201d sits above \u201cBuild New Theme with Claude\u201d."}, {"key": "P-21:1", "id": "P-21", "n": 1, "kind": "measured", "what": "The featured card's border is the theme's normal card edge; the gold (and the other entries' blue/green) is gone."}, {"key": "P-21:3", "id": "P-21", "n": 3, "kind": "measured", "what": "\u201c1 install\u201d, \u201c1 like\u201d \u2014 counts pluralise properly everywhere a card shows them."}, {"key": "P-21:2", "id": "P-21", "n": 2, "kind": "judgment", "what": "You asked me to explain this one. Look at the Themes tab: the card BOXES are all the same size, but the words inside stop at different heights \u2014 some cards have a two-line description, some none; some have a likes count, some none. So a row of seven cards has five different \u201cbottom edges\u201d of text."}, {"key": "P-2:1", "id": "P-2", "n": 1, "kind": "measured", "what": "A new install's Library now shows the app's standard empty message with a \u201cBrowse the Marketplace\u201d button, instead of two headings over nothing."}, {"key": "P-2:2", "id": "P-2", "n": 2, "kind": "judgment", "what": "The Skills | Themes switcher is now the Projects-style pill: icon, label and a count of what is installed."}, {"key": "P-1:1", "id": "P-1", "n": 1, "kind": "judgment", "what": "Plugins / Themes is a two-position switch (with All), in the same spot; the eleven filters stay pills."}, {"key": "P-1:2", "id": "P-1", "n": 2, "kind": "judgment", "what": "The search box is the app's shared search pill with the magnifier \u2014 the same one Projects uses."}, {"key": "P-1:3", "id": "P-1", "n": 3, "kind": "measured", "what": "When nothing matches: one standard empty message with a \u201cClear filters\u201d button \u2014 no more \u201c0 results\u201d + a second sentence."}, {"key": "P-1:4", "id": "P-1", "n": 4, "kind": "measured", "what": "\u201cExplore everything\u201d shows \u201cLoading the marketplace\u2026\u201d while the registry loads, and the standard error block with Retry (showing the real error) if it cannot be reached."}, {"key": "P-1:5", "id": "P-1", "n": 5, "kind": "measured", "what": "Phone width: the title reads \u201cMarketplace\u201d. Cause found: the \u201cEsc \u00b7 Back to chat\u201d hint was supposed to hide on phones and never did (a class-ordering bug in the shared Button), stealing the title's room."}, {"key": "Q:1", "id": "Q", "n": 1, "kind": "judgment", "what": "P-3 #2 \u2014 you expected Glass sliders behind the pencil. They are hidden on purpose for any theme with no wallpaper or gradient (all four built-ins are flat colours), so this empty dialog is what the real app shows too \u2014 not a screenshot problem."}];   // STEPS: [{key,id,n,kind,what}]
+  let st={}; try{ st=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){}
+  const q=new URLSearchParams(location.search).get('step');   // ?step=N for screenshots/deep links
+  let cur=Math.min(q!=null?+q:(st.__cur||0), STEPS.length);
+  const steps=[...document.querySelectorAll('.step')], sum=document.querySelector('.summary'), dots=[...document.querySelectorAll('.dot')];
+  const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} paint(); };
+  function go(i){ cur=Math.max(0,Math.min(i,STEPS.length)); st.__cur=cur; save(); window.scrollTo(0,0); }
+  function decide(v){ if(cur>=STEPS.length) return; st[STEPS[cur].key]=v; save(); setTimeout(()=>go(cur+1), 260); }
+  function paint(){
+    steps.forEach((s,i)=>{ s.classList.toggle('on', i===cur); const v=st[s.dataset.key]; s.classList.toggle('decided', !!v);
+      s.querySelectorAll('.decide button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); });
+    sum.classList.toggle('on', cur===STEPS.length);
+    dots.forEach((d,i)=>{ d.classList.toggle('on', i===cur); if(i<STEPS.length){ const v=st[STEPS[i].key]; d.classList.toggle('yes', v==='yes'); d.classList.toggle('no', v==='no'); d.classList.toggle('more', v==='more'); } });
+    let done=0; const lines=[KEY+' feedback ('+new Date().toISOString().slice(0,10)+')']; const rows=[]; let lastId='';
+    for(const s of STEPS){ const v=st[s.key]; if(v) done++; const note=(st['note:'+s.key]||'').trim();
+      lines.push(s.id+' #'+s.n+': '+(v||'?')+(note?' — '+note:'')); rows.push('<tr><td>'+(s.id!==lastId?s.id:'')+'</td><td>'+s.n+'</td><td>'+s.what+'</td><td class="v-'+(v||'')+'">'+(v||'—')+'</td><td>'+(note?note.replace(/</g,'&lt;'):'')+'</td></tr>'); lastId=s.id; }
+    document.getElementById('feedback').value=lines.join('\n'); document.getElementById('rows').innerHTML=rows.join('');
+    document.getElementById('st').textContent=done+' of '+STEPS.length+' decided';
+  }
+  steps.forEach(s=>{ s.querySelectorAll('.decide button').forEach(b=>b.addEventListener('click',()=>decide(b.dataset.v)));
+    const n=s.querySelector('.note'); n.value=st['note:'+s.dataset.key]||''; n.addEventListener('input',()=>{ st['note:'+s.dataset.key]=n.value; save(); });
+    const show=()=>{ const t=s.querySelector('.tab.on')?.dataset.theme, c=s.querySelector('.ctab.on')?.dataset.col;
+      s.querySelectorAll('.frame').forEach(f=>f.classList.toggle('on', (!t||f.dataset.theme===t)&&(!c||f.dataset.col===c))); };
+    s.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{ s.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); show(); }));
+    s.querySelectorAll('.ctab').forEach(b=>b.addEventListener('click',()=>{ s.querySelectorAll('.ctab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); show(); }));
+  });
+  dots.forEach((d,i)=>d.addEventListener('click',()=>go(i)));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1)); document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; const k=e.key.toLowerCase();
+    if(k==='y') decide('yes'); else if(k==='n') decide('no'); else if(k==='m') decide('more'); else if(e.key==='ArrowRight') go(cur+1); else if(e.key==='ArrowLeft') go(cur-1);
+    else if(k==='t'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.tab')]; if(t.length<2) return; const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%t.length].click(); }
+    else if(e.code==='Space'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.ctab')]; if(t.length<2) return; e.preventDefault(); const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%t.length].click(); } });
+  document.getElementById('copy').addEventListener('click',()=>{ const t=document.getElementById('feedback'); const ok=()=>{ document.getElementById('copied').textContent='Copied — paste it into the chat.'; };
+    (navigator.clipboard?.writeText(t.value)||Promise.reject()).then(ok,()=>{ t.select(); document.execCommand('copy'); ok(); }); });
+  paint();
+})();
+</script>
+</body></html>

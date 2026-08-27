@@ -65,6 +65,29 @@ The status bar shows context remaining, tokens in and out, throughput, and cache
 
 ## §2 Remaining work, in order
 
+> **VERIFIED AGAINST `origin/master` 2026-08-26 (15 days after this doc was written).** Every
+> negative below is a command that was run, not an inference.
+>
+> | Step | State | Evidence (`cd youcoded && git grep -n … origin/master`) |
+> |---|---|---|
+> | 1 land the two PRs | ✅ done, as recorded | — |
+> | 2a/2b/2c permissions | ✅ done, as recorded | — |
+> | 3 truncation visibility | **unbuilt** (design approved only) | `onSessionContext` → 0 hits repo-wide. `droppedMcpServers` gained exactly ONE consumer since — a `log('WARN', …)` line at `harness-session.ts:912`, whose own comment says "a UI reading it is still a later task". No user-visible surface. |
+> | 4 model metadata | **unbuilt** | `model-catalog.ts:177-182` still parses only `pricing.prompt` / `pricing.completion`; `input_cache_read` appears nowhere outside `harness/eval/estimate.ts`. |
+> | 5 tiering + step budgets | **unbuilt** | `desktop/src/main/harness/model-step-budget.ts` still exists as its own module. |
+> | 6 M4 leftovers | **unbuilt** (image-by-path shipped) | No native cost chip — the only `costUsd` sites (`App.tsx:111/2080`, `StatusBar.tsx:1278`, `UsageCard.tsx:99`) read the Claude Code stats path. `folderless` → 0 hits. |
+> | 7 cwd contract | **unbuilt** | `workdir` → 0 hits under `harness/tools/`. |
+> | 8 MCP phase 2 | **unbuilt** | no `mcp:` channel consumer anywhere under `desktop/src/renderer/`. |
+> | 9 specialists | 1a + 1b **merged**; **1c built, NOT merged** | `git branch -a --contains d269c576` lists only `feat/specialists-1c-ui`; `origin/master` does not contain it. `SPECIALIST_RUN_CHANGED` → 0 hits on master. |
+> | 10 Android · 11 onboarding | untouched | — |
+>
+> **Divergence with `ROADMAP.md` line 30.** The ROADMAP's one-line summary still lists the
+> remaining order as "… → MCP phase 2 → **M7 subagents then orchestration** → M8 Android →
+> M9 onboarding". M7 subagents (stage one) shipped on 2026-08-12 and 2026-08-16; only
+> orchestration and plan 1c remain. §2 Step 9 below is correct; the ROADMAP line is stale and
+> should be re-cut to match it. Nothing else in §1 or §2 was found false.
+
+
 Each step says what it is, why it sits here, where the detail lives, and what finishing it means. A session picking this up starts at the first unfinished step and does not need to read anything above except §1.
 
 ### Step 1 — ~~Land the two built-and-green PRs~~ ✅ DONE 2026-08-11

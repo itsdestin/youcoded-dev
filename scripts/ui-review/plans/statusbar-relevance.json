@@ -1,0 +1,66 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=statusbar-cc",
+ "shots": [
+  {
+   "name": "bar-claude-code",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=statusbar-cc",
+   "boot": 4000,
+   "actions": [],
+   "probe": false
+  },
+  {
+   "name": "bar-native-local",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=statusbar-local",
+   "boot": 4000,
+   "actions": [],
+   "probe": false
+  },
+  {
+   "name": "bar-native-metered",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=statusbar-metered",
+   "boot": 4000,
+   "actions": [],
+   "probe": false
+  },
+  {
+   "name": "bar-native-unpriced",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=statusbar-unpriced",
+   "boot": 4000,
+   "actions": [],
+   "probe": false
+  },
+  {
+   "name": "bar-native-delegated",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=statusbar-delegated",
+   "boot": 4000,
+   "actions": [],
+   "probe": false
+  },
+  {
+   "name": "menu-native",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=statusbar-local",
+   "boot": 4000,
+   "actions": [
+    {
+     "click": "[title=\"Customize Status Bar\"]",
+     "settle": 700
+    }
+   ],
+   "expect": "js:document.body.textContent.includes(\"Claude Code sessions only\")",
+   "probe": false
+  },
+  {
+   "name": "menu-claude-code",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=statusbar-cc",
+   "boot": 4000,
+   "actions": [
+    {
+     "click": "[title=\"Customize Status Bar\"]",
+     "settle": 700
+    }
+   ],
+   "expect": "js:document.body.textContent.includes(\"5h Usage\")",
+   "probe": false
+  }
+ ]
+}
