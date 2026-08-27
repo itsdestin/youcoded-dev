@@ -64,7 +64,7 @@ A GUI for the Claude Code CLI on Windows/macOS/Linux/Android + browser remote ac
 - **Any model:** bundled local llama.cpp engine — fully offline (`b5c30d01`); local model manager with catalog + Hugging Face search + GPU-fit warnings (`6cbf1ee8`); Settings → Model Providers: Claude Code / OpenRouter / Anthropic-OpenAI-Google keys / any OpenAI-compatible endpoint (Ollama, LM Studio) / local (`83ac53fb`, `provider-types.ts:4-8`).
 - **Specialists (sub-agents):** hire a helper with a read-only or read-write charter (`8db46236`); helpers run in the background, survive restart, can be steered/resumed (`e5ec5b3c`); your own file-defined roster + Settings page (`62c1f182`).
 - **Permissions:** Settings screen listing/revoking remembered "Always allow" rules (`0ec64427`); Bash grants exact / prefix / scoped (`542b7e23`); dismissing a question ends the turn honestly (`a2b23d1f`).
-- **Sync spaces:** conversations + project files sync across devices over your own GitHub repos, instant relay, leases/"take over on this device" (`3bb8e878`…`61903850`); **the Google Drive/iCloud backup path was demolished 2026-07-15 (`0a91850e`)**.
+- **Sync spaces:** conversations + project files sync across devices over your own GitHub repos, instant relay, leases/"take over on this device" (`3bb8e878`…`61903850`); Google Drive / iCloud remain as an optional daily second copy.
 - **Project View:** per-project hero with Artifacts / All files / Conversations / Context tabs; in-app xlsx/pdf/docx/csv/image viewers (`dd85cdfd`); real code editor in the artifact pane (`1cf9cbf2`); project-wide content search (`813a6c83`); in-app git review/stage/commit/discard (`3ceba774`); "Ask about this" from a selection (`a0478dea`); Deliverables card (`46fc331c`).
 - **Chat Search:** local index over every past conversation, bundled `youcoded-chatsearch` plugin (`2f8b5671`).
 - **Accounts & social:** profile/handle, friends, presence, block, data export (`3d62baa4`, `814365c4`); Connected Accounts row (`647bd242`).
@@ -74,7 +74,7 @@ A GUI for the Claude Code CLI on Windows/macOS/Linux/Android + browser remote ac
 
 ### Removed / renamed
 - "Claude Code on every device" (README:3) and "an add-on for Claude Code" (site) no longer describe the product; Claude Code is now one provider among several.
-- Google Drive / iCloud backup is gone → sync spaces over GitHub. **The site's "Google or Apple account [Required]" card, the Backup mockup, the Journaling "stored in your Google Drive, iCloud" line and FAQ 2 are all now false.**
+- Sync model changed: **GitHub is now the primary** (conversations, projects, files in your own private repo, kept live on every device); **Google Drive / iCloud are an optional second copy** (daily dated backup via `sync-spaces/daily-backup.ts`; wording verified in `SyncPanel.tsx:33`). The old Drive-first backup path was demolished 2026-07-15 (`0a91850e`). **The site's "Google or Apple account [Required]" card, the Backup mockup ("Reading backup manifest from Google Drive … every 15m"), the Journaling "stored in your Google Drive, iCloud" line and FAQ 2 all describe the old model.**
 - `youcoded-core` mid-deprecation (code-complete, unshipped) — do not claim gone.
 - Bundled plugins 2 → 3 (+ chatsearch). Session drawer → "Session artifacts".
 - Gemini CLI provider removed (Google discontinued it 2026-06-18).
@@ -88,6 +88,8 @@ UI Phase D; context-truncation panel; Chat Search phase 2; resumable model downl
 |---|---|
 | Platforms | Windows 10+, macOS 11+, Linux x64 (AppImage/.deb/.rpm/.pacman), Android 9+ arm64, any browser via remote |
 | Sign-in / models | Claude Pro/Max · OpenRouter · Anthropic/OpenAI/Google keys · any OpenAI-compatible endpoint · bundled local engine (offline) |
+| Accounts (Destin's framing for the site, 2026-08-27) | **GitHub required** (sync + marketplace); Anthropic optional; OpenRouter optional; Google / Apple optional (Drive / iCloud second-copy backup) |
+| Site target | **1.3.0 — the first broad public release**; the site is rewritten pre-emptively for it (Destin, 2026-08-27) |
 | Marketplace | **336 plugins** + 9 integrations + 14 prompt packs (site says "150+") |
 | Themes | 7 community (Cotton Candy Sky, Devil's Garden, Golden Sunbreak, Halftone Dimension, Kuromi Dreamer, Meadow Mist, Strawberry Kitty) + 4 built-in (Light, Dark, Midnight, Crème) |
 | Bundled plugins | themes builder, marketplace publisher, chat search |
