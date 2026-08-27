@@ -2692,3 +2692,60 @@ rate.** Free is a different state and always was.
   correct but unpinned.
 - `eval/run-case.ts` ~441 constructs a 4th `HarnessSession` without pricing. Harmless (eval
   has its own estimator) but undocumented.
+
+---
+
+### Task 22: Pin the pricing behaviours nothing was guarding, and stop the tooltip over-claiming
+
+**Depends on:** Tasks 11, 12, 19, 21. These were deferred from the Task 11 and Task 19/20
+reviews because `harness-session.ts` was held by Task 12.
+
+Four items. The middle two are the important ones: they are behaviours that are **correct
+today and completely unprotected** — the reviewer deleted each and the suite stayed green.
+
+**Files:**
+- Modify: `desktop/src/main/harness/harness-session.ts`
+- Modify: `desktop/src/renderer/components/StatusBar.tsx` (the `not listed` tooltip string only)
+- Modify: `desktop/src/main/harness/eval/run-case.ts` (a comment, or thread pricing — your call)
+- Test: `desktop/tests/harness-pricing.test.ts`, `desktop/tests/native-session-host.test.ts`,
+  `desktop/tests/statusbar-session-relevance.test.tsx`
+
+- [ ] **1. `free: true` and a positive `costUsd` must not be able to coexist.**
+  `harness-session.ts` (~1949-1959) computes the two independently. The reviewer produced
+  `{"costUsd":7,"free":true}` from a `local-engine` binding whose resolver returned a rate.
+  It is unreachable in production only because `ipc-handlers.ts` short-circuits `local-engine`
+  before the catalog — so the invariant lives in the wiring, not where it is stamped.
+  Fix: `costUsd: this.opts.free ? null : costForUsage(...)`, with a test.
+
+- [ ] **2. `setBinding` re-applying pricing is unpinned.** Deleting
+  `if (pricing !== undefined) this.opts.pricing = pricing;` left **137 tests green**. The
+  behaviour is right (the reviewer's probe: turn 1 = $7 at model 1, turn 2 = $70 at model 2,
+  turn 1 never repriced) — pin it. A mid-session model swap must price only the turns that run
+  after it, and must never reprice a finished turn.
+
+- [ ] **3. The cached-token clamp is unpinned.** Replacing
+  `Math.min(usage.cacheReadTokens, usage.inputTokens)` in `pricing.ts` with the raw value left
+  **11/11 pricing tests green**. The existing "never negative" test is satisfied by the
+  trailing `Math.max(0, …)` alone. A provider reporting 5,000 cached tokens against a
+  100-token prompt would be charged **50× too much** with nothing going red. Add the test that
+  fails without the clamp.
+
+- [ ] **4. The `not listed` tooltip asserts a cause it has not verified.**
+  It currently reads *"This provider bills for usage, but no price is published for this
+  model, so the session cost can't be totalled."* But `pricingFor` returns null for **any**
+  model missing from the catalog — including a dead network with an empty cache, where a price
+  exists and simply wasn't fetched. `docs/error-message-standards.md` forbids stating an
+  unverified cause. Reword to something true in both cases, e.g. *"This provider bills for
+  usage, but no price is available for this model here, so the session cost can't be
+  totalled."* Update the test's byte-for-byte assertion to match.
+
+- [ ] **5. `eval/run-case.ts` (~441) constructs a fourth `HarnessSession` with no pricing**, so
+  eval turns get `costUsd: null, free: false`. Harmless — eval has its own estimator — but
+  undocumented. Either thread pricing or add a one-line WHY saying eval prices itself.
+
+- [ ] **6:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **7: Commit** — `test(harness): pin the pricing rules that a deletion left green`
+
+**For each of items 1–3, prove the new test is a real guard**: make the deletion the reviewer
+made, in a copy of the tree OUTSIDE the worktree (`cp -a` to /tmp — never mutate in place,
+another agent is working here), confirm the new test goes red, and report the failure text.
