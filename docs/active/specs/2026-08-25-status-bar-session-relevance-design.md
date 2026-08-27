@@ -143,7 +143,7 @@ against a provider dashboard before this ships (§12).
 model is metered". This matters: a **local, free parent session that delegates to an
 OpenRouter specialist is spending real money**, and the draft's local-model rule would have
 hidden it. If some work was priced and some wasn't, the chip shows the priced total and the
-tooltip says work with no published price is excluded.
+tooltip says work with no available price is excluded.
 
 **Never `$0.00` for "unknown".** A model with no published price (a custom
 `openai-compatible` endpoint) contributes nothing and, if it is all there is, produces no
