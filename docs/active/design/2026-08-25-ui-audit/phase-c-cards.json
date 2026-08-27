@@ -458,5 +458,6 @@
       ]
     }
   ],
-  "closing": "<h2>Checked and left alone</h2><ul><li>Projects: Rename / Remove are already the shared small button; the folder “tab” was reworked to your 2026-07-19 feedback; document previews are the intended thumbnail look.</li><li>Marketplace: no sort dropdown (there is no sort).</li><li>Themes dialog: the two toggles at the bottom.</li></ul>"
+  "closing": "<h2>Checked and left alone</h2><ul><li>Projects: Rename / Remove are already the shared small button; the folder “tab” was reworked to your 2026-07-19 feedback; document previews are the intended thumbnail look.</li><li>Marketplace: no sort dropdown (there is no sort).</li><li>Themes dialog: the two toggles at the bottom.</li></ul>",
+  "banner": "<strong>Decided 2026-08-27.</strong> 13 of 16 points yes; built on <code>feat/ui-phase-c</code> and merged as youcoded #332 after two review-deck rounds (<a href='phase-c-review.html'>review 1</a>, <a href='phase-c-review2.html'>review 2</a>). P-5 declined; kept as the record of what was shown."
 }

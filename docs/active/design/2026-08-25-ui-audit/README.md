@@ -27,7 +27,8 @@
 - `phase-c-review2.html` (spec `phase-c-review2.json`, `scratch/ui-phase-c-after/` vs
   `scratch/ui-phase-c-after2/`) — round 2: hover-only star + taller preview cards, greyed pencil
   with tooltip, the marketplace type switch as the Library pill (“Plugins”), and the P-21 #2
-  mock-up (theme cards reserve their text rows). Awaiting Destin's answers.
+  mock-up (theme cards reserve their text rows). Decided 2026-08-27: all yes, reservation reverted;
+  Phase C merged as youcoded #332.
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
   (the original pass: 103 of 104 — "Known Issues" opens an external link; the latest full sweep
   of master, 2026-08-26 after Phase B, verified 112 of 112). `contrast.md` — the painted-pixel

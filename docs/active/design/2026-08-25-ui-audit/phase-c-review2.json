@@ -156,5 +156,6 @@
       ]
     }
   ],
-  "closing": "<h2>Unchanged since round 1</h2><ul><li>Everything you approved in round 1 stays exactly as it was: hero border, plurals, Library empty state, search pill, empty/loading/error states, phone title.</li></ul>"
+  "closing": "<h2>Unchanged since round 1</h2><ul><li>Everything you approved in round 1 stays exactly as it was: hero border, plurals, Library empty state, search pill, empty/loading/error states, phone title.</li></ul>",
+  "banner": "<strong>Decided 2026-08-27.</strong> All yes: hover-only star, greyed pencil, compact pill switch on both surfaces (“Plugins”); the P-21 #2 reservation reverted as recommended. Merged as youcoded #332. Phase C is shipped."
 }

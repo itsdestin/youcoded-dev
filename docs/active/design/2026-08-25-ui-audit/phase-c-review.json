@@ -406,5 +406,6 @@
       ]
     }
   ],
-  "closing": "<h2>Not changed</h2><ul><li>Projects (P-5): both points declined — untouched.</li><li>The pencil on built-in themes still opens the editor (P-3 #2 declined).</li></ul>"
+  "closing": "<h2>Not changed</h2><ul><li>Projects (P-5): both points declined — untouched.</li><li>The pencil on built-in themes still opens the editor (P-3 #2 declined).</li></ul>",
+  "banner": "<strong>Decided 2026-08-27.</strong> All 13 built points kept; four refinements went to <a href='phase-c-review2.html'>review 2</a>. Merged as youcoded #332."
 }
