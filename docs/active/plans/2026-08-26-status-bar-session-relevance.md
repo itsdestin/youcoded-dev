@@ -2888,3 +2888,106 @@ Three small items, but the first is the kind of thing that bites a future sessio
 
 - [ ] **4:** `bash scripts/verify.sh worktrees/statusbar-relevance`
 - [ ] **5: Commit** — `test(harness): the child-missing branch is reachable, and the comment said otherwise`
+
+---
+
+### Task 26: The /usage card's untested centre, and the context row it never grew
+
+**Depends on:** Task 14. **Found by:** the Task 14 review.
+
+- [ ] **1. MAJOR — context is missing from the card in native sessions.** Spec §10 requires the
+  snapshot to gain "the same native sources as the chips (**tokens, cache, context**, cost,
+  code changes)". Four of five landed. `App.tsx`'s `getUsageSnapshot` sets
+  `contextPercent: statusData.contextMap[sid]`, which `StatusBar.tsx` documents as Claude-Code
+  only ("The native chip does NOT use this"). The bar already resolves native context as
+  `contextPercent ?? nativeChips?.contextPct`. **Failure:** a native session at 61% context
+  shows a context pill on the bar and NO context row in `/usage` — the two surfaces disagreeing
+  about one session, which is the exact thing this work exists to prevent. Thread the same
+  source the bar uses, with the same `??` precedence.
+
+- [ ] **2. MAJOR — the fix's centre has zero test coverage.** `rg getUsageSnapshot tests/`
+  returns nothing; no test imports `App.tsx` at all. The reviewer deleted the native totals
+  fallback — the thing Task 14 was built to add — and **not one of 5,820 tests went red**. Only
+  the presentation layer is guarded. Extract the snapshot body into a pure function under
+  `src/renderer/state/` and pin it: native-with-empty-totals returns non-null (this is what
+  stops `/usage` being typed at the model); Claude Code returns null; a totals zero collapses
+  to absent; a statusline zero survives.
+
+- [ ] **3. Minor — a brand-new native session gets furniture.** Nothing measured and no
+  `.usage-cache.json` → the card renders only "SESSION USAGE" and a timestamp. Better than the
+  old passthrough bug, but it needs one line of empty state.
+
+- [ ] **4. Minor — the cache cell hides a real Claude Code zero.** `UsageCard.tsx` gates on
+  `cacheTotal > 0`; `StatusBar.tsx` deliberately bails on `null`, not falsy, so a cold-cache
+  statusline `0` renders "Cached: 0" on the bar and nothing on the card. It is the exact
+  zero-rule the bar comments at length about.
+
+- [ ] **5:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **6: Commit** — `fix(usage-card): show native context, and pin the snapshot nothing tested`
+
+---
+
+### Task 27: Check our cost against the provider's own figure
+
+**Depends on:** Tasks 11, 22. **Destin chose this over the manual dashboard comparison
+(2026-08-27), so it REPLACES checkpoint Task 15.**
+
+Today nothing verifies `costForUsage`. The plan's original answer was a human running one paid
+session and eyeballing the OpenRouter dashboard — a one-off, on one model, needing Destin's
+account. OpenRouter will instead report its own authoritative cost per request, which lets the
+app check its own arithmetic continuously.
+
+Scouted 2026-08-27; every file and line below was verified then, but **re-verify before
+editing** — line numbers in this plan have been stale in every task this session.
+
+- Ask side: `src/main/providers/provider-registry.ts` — the OpenRouter branch calls
+  `createOpenAICompatible({ name:'openrouter', baseURL, apiKey, headers, includeUsage:true })`.
+  `includeUsage` is NOT the same thing: the SDK turns it into OpenAI's
+  `stream_options:{include_usage:true}` (token counts only). OpenRouter's `cost` needs
+  `usage:{include:true}` in the BODY. Add a `transformRequestBody` — the identical hook already
+  exists ~12 lines above in the same file for `parallel_tool_calls`/`return_progress`, with
+  tests in `tests/provider-registry.test.ts`.
+- Read side: add a `metadataExtractor` to the same `createOpenAICompatible` call pulling
+  `usage.cost` / `usage.cost_details`; its `buildMetadata()` surfaces as
+  `result.providerMetadata`, a sibling promise of `result.usage` — awaitable one line below the
+  existing `const usage = await result.usage` in `harness-session.ts`'s `runStreamOnce`.
+- Thread it beside the tokens through `StepUsage`, the turn accumulator, and the
+  `turn-complete` emit, where it lands next to the `costUsd` we compute.
+
+**Three things that will bite, all named by the scout:**
+1. **It is OpenRouter-shaped only.** The field must be optional everywhere, and **absent must
+   never read as zero** — this codebase is emphatic about that (`pricing.ts`, `session-totals.ts`).
+2. **Step vs turn.** Provider metadata arrives per request; `costForUsage` prices a whole turn
+   of N steps. Accumulate on both sides or you will silently compare a step to a turn.
+3. **No test scaffolding at the raw-HTTP layer.** Every existing stub returns SDK-level
+   `doStream` parts, which sit ABOVE where a raw `cost` field lives, so they cannot express one.
+   A fixture needs a `fetch` stub.
+
+- [ ] **1.** Ask for the cost. **2.** Read it. **3.** Thread it beside `costUsd`.
+- [ ] **4.** Assert agreement where it cannot mislead a user: a test over a recorded response,
+  plus a dev-only log when `|provider − ours| / provider` exceeds a threshold. **No UI.** A
+  disagreement is a bug for us, not a message for the user.
+- [ ] **5.** Report the measured agreement. That number — observed, never estimated — replaces
+  `'Not exact — a few models charge more above very large prompts.'` in the chip tooltip.
+- [ ] **6.** `estimate.ts`'s `MEASURED_ROSTER_SPEND_USD = 3.46` is a hand-copied biller number
+  whose own comment admits "the direction of the error is UNMEASURED". Say in your report
+  whether this work retires it.
+- [ ] **7:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **8: Commit** — `feat(harness): check our cost figure against the provider's own`
+
+---
+
+### Task 28: Three residues from the Task 24/25 review
+
+- [ ] **1.** `tests/native-session-host.test.ts` — a comment claims "deleting it left 151 tests
+  green". The reviewer could not reproduce 151 at any scope (full suite 5,906; related 787; the
+  file itself 140). It understates the danger rather than overstating it, so it is not a lie —
+  but it is uncheckable, in a commit about comment honesty. Replace with the reproducible fact:
+  with that line deleted the entire suite stays green except this one test.
+- [ ] **2.** `docs/active/specs/2026-08-25-status-bar-session-relevance-design.md` ~145 still
+  says "no **published** price"; the shipped copy now says "available". One word.
+- [ ] **3.** The third `missing` arm is still unpinned — mutating only
+  `'neither session was still live'` leaves all 16 tests green. One probe that drops BOTH live
+  entries after `runSpecialist` resolves closes it.
+- [ ] **4:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **5: Commit** — `test(harness): pin the last missing-session arm; make a comment checkable`
