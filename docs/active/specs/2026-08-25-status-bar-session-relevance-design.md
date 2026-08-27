@@ -229,8 +229,8 @@ needs the same value the bar reads, from one place, so the two cannot disagree.
 
 **The rule is "does the chip draw anything?", not "is there priced work?".** A metered model
 with no published rate DOES draw a chip — `Cost: not listed`, whose tooltip carries the
-explanation (*"This provider bills for usage, but no price is published for this model, so
-the session cost can't be totalled."*) — so its row must stay a live switch. Gating the menu
+explanation (*"This provider bills for usage, but no price is available for this model here,
+so the session cost can't be totalled."*) — so its row must stay a live switch. Gating the menu
 on anything other than the chip's own render condition lets the bar show a chip the user
 cannot turn off; that is exactly what happened when the two conditions were written
 separately. The one-way invariant is **chip drawn ⟹ row switchable**; the reverse is allowed
