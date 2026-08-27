@@ -2070,10 +2070,10 @@ The deck Destin reviewed as a v1 page (`phase-c-review.json`, 13 points), rebuil
 
 **Constraints this rebuild has, that a fresh review will not:**
 - **Auto-diff only.** The 2026-08-25 runs predate `measure` (Task 9), and the Before code was master before Phase C merged — it cannot be re-captured, so no step may use `selector`/`text`. Adding `measure` lines to plans is therefore NOT part of this task (it goes into the README rule in Task 15: *measure is planned before the Before run*).
-- **Two of the 13 v1 points are Before-only** (`P-21` #2 — the themes rows, and `Q` #1 — the built-in theme editor question) and cannot live in a two-run deck; both were decided on 2026-08-27 already. Leave them out and say so in the commit message. The deck has **11 steps**.
+- **Two of the 13 v1 points are Before-only** (`P-21` #2 — the themes rows, and `Q` #1 — the built-in theme editor question) and cannot live in a two-run deck; both were decided on 2026-08-27 already. Leave them out and say so in the commit message. The deck has **10 steps**: `P-1.4` (the explore-empty state) also drops out, because the after run never captured `marketplace-empty` in Meadow Mist and `themes` is deck-wide — the builder refuses rather than fakes it.
 - If `auto` reports "nothing differs" for a step in some theme (a change that only shows in certain themes), that is a real limit of the pixel diff for an old run: drop that theme from the deck's `themes` only if it affects every step; otherwise leave the step out and note it in the commit — never hand-place a `box` here.
 
-- [ ] **Step 1: Write the v2 spec** — one step per point of `phase-c-review.json`, in its order, with the v2 fields; `"auto"` everywhere. Use exactly this shape for the first three; continue for the remaining eight following the v1 `what`/`fix`/`risk` text rewritten into the four fields under the §5 rules (no banned words; headline ≤ 25 words):
+- [ ] **Step 1: Write the v2 spec** — one step per point of `phase-c-review.json`, in its order, with the v2 fields; `"auto"` everywhere. Use exactly this shape for the first three; continue for the remaining seven following the v1 `what`/`fix`/`risk` text rewritten into the four fields under the §5 rules (no banned words; headline ≤ 25 words):
 
 ```json
 {
@@ -2092,25 +2092,25 @@ The deck Destin reviewed as a v1 page (`phase-c-review.json`, 13 points), rebuil
     "market-narrow-title": ["narrow", "marketplace", "390x56+0+0"],
     "market-explore-empty": ["marketplace", "marketplace-empty", "720x160+0+50"],
     "market-themes-empty": ["empty-marketplace", "marketplace-themes", "1440x240+0+50"],
-    "library-empty": ["empty-marketplace", "library", "1440x330+0+0"],
+    "library-empty": ["empty-marketplace", "library", "1440x430+0+0"],
     "library-tabs": ["main", "library", "520x110+0+0"]
   },
   "steps": [
     { "id": "P-3.1", "surface": "Themes dialog", "path": "Settings → Appearance", "crop": "themes-dialog",
       "headline": "Every theme card is now the same height, so the active card no longer grows and stretches its neighbour.",
-      "changed": "Picture on top, one text row at the bottom, every card 92 px tall. Built-ins got preview pictures from the marketplace generator; other themes show their own preview.",
-      "measured": "Dark 65 px vs Crème 34 px before",
-      "notice": "The grid stops jumping when you pick a theme, and every card shows a real preview picture instead of a colour strip.",
-      "risk": "In these screenshots Halftone and Meadow still show the colour strip because the rig cannot serve theme folders; in the app they show their own preview." },
+      "changed": "Picture on top, one text row at the bottom, and every card the same height. Built-ins got preview pictures from the marketplace generator; other themes show their own preview.",
+      "measured": "The active card 59 px vs 34 px for every other card, before",
+      "notice": "The grid stops jumping when you pick a theme, and any theme that has a preview picture now shows it instead of a colour strip.",
+      "risk": "In these screenshots Halftone and Meadow still show the colour strip because the screenshot tool cannot load theme folders; in the app they show their own preview." },
     { "id": "P-3.3", "surface": "Themes dialog", "path": "Settings → Appearance", "crop": "themes-dialog",
       "headline": "“Your Themes” reads “Favorited Themes”, “Browse all themes →” is gone, and Browse Theme Marketplace sits above Build New Theme.",
       "changed": "Renamed the heading, removed the text-link row, reordered the two buttons.",
-      "notice": "Two fewer things to read under the theme grid; the Marketplace button comes first.",
+      "notice": "One less button under the theme grid, and the Marketplace button now comes first. The separate list of your installed themes that the old link opened is no longer reachable from here.",
       "risk": "" },
     { "id": "P-21.1", "surface": "Marketplace", "path": "Marketplace → featured card", "crop": "market-hero",
       "headline": "The featured card uses the theme’s normal card edge; the gold border is gone.",
-      "changed": "One border style for every card. The “Featured” eyebrow alone marks the featured plugin.",
-      "measured": "1 of 6 border colours remains",
+      "changed": "One border style for every card. The small FEATURED label above the name is now the only thing marking it.",
+      "measured": "3 different featured borders before, none now",
       "notice": "The Marketplace opens calmer — no single card shouts — and the featured one still reads first because it sits first.",
       "risk": "" }
   ]
@@ -2125,13 +2125,13 @@ Expected: `… crops → …`, `wrote …`, exit 0. A "nothing differs" line →
 - [ ] **Step 3: Serve**
 
 Run: `python3 scripts/ui-review/review-cards.py serve docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json --no-build` in the background.
-Expected: the browser opens on the 11-step deck; Destin's pass (spec §8) — he already saw the tool in Task 13, this is the full-length run: progress bar with 11 segments, skip, submit; the background command exits with the summary.
+Expected: the browser opens on the 10-step deck; Destin's pass (spec §8) — he already saw the tool in Task 13, this is the full-length run: progress bar with 10 segments, skip, submit; the background command exits with the summary.
 
 - [ ] **Step 4: Commit the spec and the built page**
 
 ```bash
 git add docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.html
-git commit -m "docs(ui-audit): Phase C review rebuilt as the first v2 deck (11 of 13 points — the two Before-only points cannot live in a two-run deck)"
+git commit -m "docs(ui-audit): Phase C review rebuilt as the first v2 deck (10 of 13 points — two are Before-only, one lacks a Meadow Mist capture)"
 ```
 
 ---
@@ -2231,6 +2231,6 @@ git commit -m "docs(ui-review): deck v2 flow — build, serve, wait; measure is 
 ## Self-review (2026-08-27, after the review round)
 
 - **Spec coverage:** §3 page → Tasks 6, 12; §3.2 embedded/file:// → Task 6 (`embedded`, copy fallback); §3.3 tokens → Tasks 3, 6; §3.4 layout → Task 6 `layout()` + Task 12 rule check; §4.1 spec → Task 1; §4.2 boxes → Tasks 2, 5, 9; §4.3 serve/notify → Tasks 7, 8 (+ `wait`, a fallback the spec did not have — the background process is a single point of failure otherwise); §4.4 file:// → Task 6; §4.5 summary → Task 7 (`summary`) and page (`summary()`), same format; §5 rules → Task 1; §6 gaps 1, 6, 7 → Tasks 10, 11; gap 3 → Tasks 5, 9; gap 5 → Task 15 README; gaps 2, 4 → Task 15 ROADMAP; §7 files → file map; §8 tests → Tasks 1–12; Destin's pass → Tasks 13, 14; §9 rollout → Tasks 14, 16.
-- **Deviations from the spec, all deliberate:** no `crop` command (spec §4.3 listed `crop`; a stale intermediate is the v1 bug class); `wait` added; `Square:1` not `Square:3`; coverage orders by run id rather than discarding older runs; the Phase C rebuild is auto-only and 11 steps.
+- **Deviations from the spec, all deliberate:** no `crop` command (spec §4.3 listed `crop`; a stale intermediate is the v1 bug class); `wait` added; `Square:1` not `Square:3`; coverage orders by run id rather than discarding older runs; the Phase C rebuild is auto-only and 10 steps.
 - **Names used across tasks:** `image_name` (5→6), `run_names` (1→5,6,7), `SpecError` (1→6,8), `validate` (1→6,8), `workspace_root` (1→3,6), `crop_images` (5→8,12), `build_page` (6→8), `serve`/`wait_for_submit`/`make_server`/`summary`/`answers_path`/`write_atomic` (7→8,12 test), `measure_key`/`newest_manifest_entry` (5), `document.body.dataset.layout`/`dataset.scores` + `window.__deckReady` (6→12), `entry.measures` / `entry.run` (9→5,10).
 - **Placeholders:** none; the Phase C spec in Task 14 gives the shape and the first three steps in full and states the rule for the rest (the remaining eight are the v1 points rewritten under §5 — content, not structure).
