@@ -331,3 +331,33 @@ a subprocess call to the `claude` CLI. However long `claude auth status` takes o
 user's machine is time they spend looking at an empty window, capped at 3 s by the
 safety timeout. That is a robustness question worth a ROADMAP entry; it is not a flat
 3-second tax on every user, and must not be reported as one.
+
+## 18. A claim of mine was wrong: `hastText` is not a per-re-render cost
+
+Recorded because it was stated to Destin as a headline suspect and filed on the
+ROADMAP before it was checked properly.
+
+**The wrong claim:** "`MarkdownContent.tsx:186-187` calls `hastText(node)` unmemoized,
+so every code block in the conversation re-walks its AST on every re-render, and
+re-renders fire while typing, while streaming, and on session switch."
+
+**What the source actually says:** `MarkdownContent` is wrapped in `React.memo`
+(`MarkdownContent.tsx:265`) and its `content` prop is a plain `string`. React's default
+shallow comparison therefore skips the whole component — `hastText` included — when the
+message text has not changed. An unrelated re-render costs nothing.
+
+**What remains true, and is narrower:**
+- On a **resume**, every message mounts for the first time, so all N walks happen at
+  once. That genuinely feeds the replay freeze.
+- While **streaming**, the growing bubble's `content` changes on every token, so a bubble
+  containing a large code block re-walks repeatedly. This one is real and is the best
+  remaining explanation for streaming-time spikes.
+- Cost scales with **fence count in a message**, not with conversation length.
+
+**How the error happened:** the unmemoized call was read at its call site and its cost
+extrapolated to "every render" without checking whether the component around it re-renders.
+The fix was to read fifty lines further down the same file.
+
+**The rule this suggests:** when attributing cost to a call site, establish how often the
+call site actually executes before describing its impact. A hot-looking line inside a
+memoized component is not a hot line.
