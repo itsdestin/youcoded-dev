@@ -24,7 +24,7 @@ spec: docs/active/specs/2026-08-27-review-deck-v2-design.md
 - **The worktree does NOT contain the sub-repo checkouts.** `youcoded/` and `wecoded-themes/` live only at the workspace root (one level above `worktrees/`). Everything that needs them resolves the root with `spec.workspace_root()` — walk up from the package until a directory containing `wecoded-themes/themes` is found; `YOUCODED_WORKSPACE` overrides. Tests that read those files **fail** when the root is not found — never skip (a skipped pin is no pin).
 - ImageMagick dilate is `-morphology Dilate Square:1` (a 3×3 kernel). `Square:3` is a 7×7 kernel and grows a box 3 px per side — measured on 2026-08-27, it broke the auto-box tolerances.
 - Every non-trivial edit carries a WHY comment (Destin reads the code through comments).
-- Python tests: `python3 -m unittest discover -s scripts/ui-review/tests -p 'test_*.py'`. Node tests: `node --test scripts/ui-review/tests/`.
+- Python tests: `python3 -m unittest discover -s scripts/ui-review/tests -p 'test_*.py'`. Node tests: `node --test scripts/ui-review/tests/*.test.mjs`.
 - Commit after every task with the `Co-Authored-By` / `Claude-Session` trailers from the session's Bash instructions.
 
 ---
@@ -1731,7 +1731,7 @@ Immediately after `await sess.shot(file);` (the real screenshot) and before `// 
 - [ ] **Step 4: Run to verify pass**
 
 Run: `node --test scripts/ui-review/tests/shot-measure.test.mjs 2>&1 | tail -5`
-Expected: `# pass 1`. (Chrome headless is required; the test takes ~5 s.)
+Expected: `pass 1`. (Chrome headless is required; the test takes ~5 s.)
 
 - [ ] **Step 5: Commit**
 
@@ -1799,8 +1799,8 @@ test('runs are compared per plan directory, so a re-run of one plan keeps the ot
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `node --test scripts/ui-review/tests/coverage.test.mjs 2>&1 | grep -E "^# (pass|fail)"`
-Expected: `# fail 1` — the first test: today the later file on disk wins, so the stale miss shows. (The other three pass already; they pin what must NOT change.)
+Run: `node --test scripts/ui-review/tests/coverage.test.mjs 2>&1 | grep -E "(pass|fail) [0-9]"`
+Expected: `fail 1` — the first test: today the later file on disk wins, so the stale miss shows. (The other three pass already; they pin what must NOT change.)
 
 - [ ] **Step 3: Edit `coverage.mjs`** — replace the `for (const d of dirs) { … }` block (lines 14–28) with:
 
@@ -1828,8 +1828,8 @@ for (const d of dirs) {
 
 - [ ] **Step 4: Run to verify pass**
 
-Run: `node --test scripts/ui-review/tests/coverage.test.mjs 2>&1 | grep -E "^# (pass|fail)"`
-Expected: `# pass 4`
+Run: `node --test scripts/ui-review/tests/coverage.test.mjs 2>&1 | grep -E "(pass|fail) [0-9]"`
+Expected: `pass 4`
 
 - [ ] **Step 5: Commit**
 
@@ -2033,8 +2033,8 @@ test('deck renders at three sizes and records an answer', async () => {
 
 - [ ] **Step 2: Run it**
 
-Run: `node --test scripts/ui-review/tests/deck-render.test.mjs 2>&1 | grep -E "^# (pass|fail)|not ok|Error" | head`
-Expected: `# pass 1`. If the choice disagrees with the rule, the failure message prints the scores — the bug is in `layout()`'s scoring or class application (compare with the mockup's `layout()` in `docs/active/prototypes/2026-08-27-deck-mockup-g.py`, which is the approved algorithm); never change the rule in the test.
+Run: `node --test scripts/ui-review/tests/deck-render.test.mjs 2>&1 | grep -E "(pass|fail) [0-9]|not ok|Error" | head`
+Expected: `pass 1`. If the choice disagrees with the rule, the failure message prints the scores — the bug is in `layout()`'s scoring or class application (compare with the mockup's `layout()` in `docs/active/prototypes/2026-08-27-deck-mockup-g.py`, which is the approved algorithm); never change the rule in the test.
 
 - [ ] **Step 3: Commit**
 
@@ -2197,8 +2197,8 @@ Also replace the "Two sweeps at once collide" paragraph with: "Two sweeps at onc
 
 - [ ] **Step 5: Run everything, then commit**
 
-Run: `python3 -m unittest discover -s scripts/ui-review/tests -p 'test_*.py' 2>&1 | tail -2 && node --test scripts/ui-review/tests/ 2>&1 | grep -E "^# (pass|fail)" && bash scripts/ui-review/tests/probe-ports.test.sh && node scripts/audit-anchors.mjs 2>&1 | tail -2`
-Expected: `OK` with **no skips**, `# pass 6` / `# fail 0`, `ok`, and the anchor audit unchanged from before this branch (it does not reference the deck files).
+Run: `python3 -m unittest discover -s scripts/ui-review/tests -p 'test_*.py' 2>&1 | tail -2 && node --test scripts/ui-review/tests/*.test.mjs 2>&1 | grep -E "(pass|fail) [0-9]" && bash scripts/ui-review/tests/probe-ports.test.sh && node scripts/audit-anchors.mjs 2>&1 | tail -2`
+Expected: `OK` with **no skips**, `pass 6` / `fail 0`, `ok`, and the anchor audit unchanged from before this branch (it does not reference the deck files).
 
 ```bash
 git add scripts/ui-review/README.md .claude/skills/ui-review/SKILL.md CLAUDE.md docs/active/handoffs/2026-08-27-review-deck-tooling-handoff.md ROADMAP.md .gitignore
