@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Your nine answers, built — 6 points to confirm</title>
+<style>
+  :root { --ink:#1a1a1a; --ink2:#666; --line:#dedede; --bg:#f4f4f2; --acc:#2055ca;
+          --meas:#0a6a2c; --measbg:#e3f3e8; --judg:#8a5a00; --judgbg:#fff0d6; --yes:#137a3a; --no:#b3261e; --more:#8a5a00 }
+  * { box-sizing:border-box }
+  html, body { height:100% } body { margin:0; font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:var(--bg); display:flex; flex-direction:column }
+  main { flex:1; display:flex; flex-direction:column; align-items:center; padding:18px 24px 8px; min-height:0 }
+  .step { display:none; width:min(1060px, 100%); flex-direction:column; min-height:0 } .step.on { display:flex }
+  .kicker { color:var(--ink2); font-size:13px; margin-bottom:8px; display:flex; gap:6px; align-items:baseline } .pid { font-weight:700; color:var(--acc) } .count { margin-left:auto; font-variant-numeric:tabular-nums }
+  .stagewrap { background:#e6e6e3; border-radius:10px; padding:10px }
+  .stage { position:relative; text-align:center; line-height:0; font-size:0; max-height:56vh; overflow:auto }
+  .frame { display:none; position:relative; line-height:0 } .frame.on { display:inline-block; max-width:100% } .frame img { display:block; max-width:100%; height:auto }
+  .missing { font:14px system-ui; color:#666; padding:40px }
+  .mk { position:absolute; transform:translate(-50%,-50%); width:46px; height:46px; border-radius:50%; border:3px solid #fff; box-shadow:0 0 0 3px var(--acc), 0 4px 14px rgba(0,0,0,.6); background:transparent; animation:pulse 1.6s ease-in-out infinite; pointer-events:none }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 3px var(--acc), 0 4px 14px rgba(0,0,0,.6) } 50% { box-shadow:0 0 0 7px rgba(32,85,202,.55), 0 4px 14px rgba(0,0,0,.6) } }
+  .figbar { display:flex; justify-content:space-between; margin-top:8px; min-height:22px } .tab, .ctab { font:12px system-ui; padding:2px 9px; border:1px solid #bbb; background:#fff; border-radius:999px; margin-right:4px; cursor:pointer; color:#444 }
+  .tab.on { background:#333; color:#fff; border-color:#333 } .ctab.on { background:var(--acc); color:#fff; border-color:var(--acc) }
+  .what { font-size:21px; font-weight:650; line-height:1.3; margin:18px 0 6px } .fix { font-size:17px; color:#1f3a78; margin:0 0 8px }
+  .meta { display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; font-size:13px; color:var(--ink2); min-height:22px }
+  .kind { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:2px 8px; border-radius:8px } .kind-measured { background:var(--measbg); color:var(--meas) } .kind-judgment { background:var(--judgbg); color:var(--judg) }
+  .risk { margin:0; color:#7a3b00 } .why summary { cursor:pointer; color:var(--acc) } .why { max-width:900px } .why p, .why ul { margin:6px 0 0 }
+  .decide { display:flex; gap:12px; align-items:center; margin-top:14px; flex-wrap:wrap }
+  .decide button { font:600 17px system-ui; padding:12px 26px; border-radius:10px; border:2px solid transparent; cursor:pointer; color:#fff } .decide kbd { font:11px ui-monospace,monospace; background:rgba(255,255,255,.25); padding:1px 5px; border-radius:4px; margin-left:8px }
+  .yes { background:var(--yes) } .no { background:var(--no) } .more { background:var(--more) } .decide button.on { border-color:#111; box-shadow:0 0 0 3px #fff, 0 0 0 5px #111 } .step.decided .decide button:not(.on) { opacity:.35 }
+  .note { flex:1; min-width:200px; font:14px system-ui; padding:10px 12px; border:1px solid var(--line); border-radius:8px }
+  nav { display:flex; align-items:center; gap:10px; padding:10px 24px 16px; justify-content:center; flex-wrap:wrap }
+  nav .arrow { font:14px system-ui; padding:6px 12px; border:1px solid #bbb; background:#fff; border-radius:8px; cursor:pointer } nav .arrow kbd { font:11px ui-monospace,monospace; color:#888; margin:0 3px }
+  .dots { display:flex; gap:5px; flex-wrap:wrap; justify-content:center } .dot { width:14px; height:14px; border-radius:50%; background:#cfcfcf; border:2px solid transparent; cursor:pointer } .dot.yes { background:var(--yes) } .dot.no { background:var(--no) } .dot.more { background:var(--more) } .dot.on { border-color:#111 } .dot.sum { border-radius:3px }
+  .summary { display:none; width:min(1060px,100%) } .summary.on { display:block } .summary h1 { font-size:22px; margin:0 0 8px } .summary table { border-collapse:collapse; width:100%; margin:10px 0 } .summary td, .summary th { border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; font-size:14px } .summary td.v-yes { color:var(--yes); font-weight:700 } .summary td.v-no { color:var(--no); font-weight:700 } .summary td.v-more { color:var(--more); font-weight:700 }
+  #feedback { width:100%; min-height:150px; font:12.5px ui-monospace,monospace; padding:10px; border:1px solid var(--line); border-radius:8px } #copy { font:600 15px system-ui; padding:10px 18px; border-radius:8px; border:0; background:var(--acc); color:#fff; cursor:pointer; margin:8px 0 } .closing { color:var(--ink2); font-size:13px }
+  #st { color:var(--ink2); font-size:13px }
+</style></head><body>
+<main>
+<section class="step" data-key="A:1" data-idx="0">
+  <div class="kicker"><span class="pid">A</span> The list at rest · Settings → Model Providers → Models<span class="count">1 / 6</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="creme" data-col="before"><img src="images/round2/r2-rows--creme--before.png" alt=""><span class="mk" style="left:30%;top:47%"></span></div><div class="frame on" data-theme="creme" data-col="after"><img src="images/round2/r2-rows--creme--after.png" alt=""><span class="mk" style="left:30%;top:47%"></span></div><div class="frame" data-theme="midnight" data-col="before"><img src="images/round2/r2-rows--midnight--before.png" alt=""><span class="mk" style="left:30%;top:47%"></span></div><div class="frame" data-theme="midnight" data-col="after"><img src="images/round2/r2-rows--midnight--after.png" alt=""><span class="mk" style="left:30%;top:47%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="creme">Crème</button><button class="tab" data-theme="midnight">Midnight</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">Five of your answers land on this one screen — banner, progress bar, shorter names, quality on its own line, one word for removing.</p>
+  <p class="fix">→ Flip Before/After with space. Confirm it reads the way you pictured it.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><details class="why"><summary>Why / details</summary><p>What changed here, answer by answer:</p><ul><li><strong>R1</strong> — the interrupted row now has a yellow border, a <em>DOWNLOAD INTERRUPTED</em> banner across its top, and a real progress bar at 66% even while it sits still.</li><li><strong>R3</strong> — quality moved out of the title and onto its own line, so <em>Qwen3.5-9B-Q8_0</em> is now <em>Qwen3.5-9B</em> with <em>Q8_0 · Highest quality…</em> below it. The <em>-00001-of-00004</em> part marker came out of the title for the same reason.</li><li><strong>R5</strong> — <em>Unfinished</em> is gone. The row that can't be resumed says <em>DAMAGED</em>.</li><li><strong>C8</strong> — <em>Discard</em> is gone. Every removal button says <em>Delete</em>.</li><li><strong>R2</strong> — you said no to rewrapping the row, so the names stay on one line; the full id is now a hover tooltip. Dropping the quality tag shortened them enough that nothing important is clipped any more.</li></ul></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Looks right <kbd>Y</kbd></button><button class="no" data-v="no">Change it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="A:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="A:2" data-idx="1">
+  <div class="kicker"><span class="pid">A</span> The list at rest · Settings → Model Providers → Models<span class="count">2 / 6</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="creme" data-col="before"><img src="images/round2/r2-rows--creme--before.png" alt=""><span class="mk" style="left:30%;top:68%"></span></div><div class="frame on" data-theme="creme" data-col="after"><img src="images/round2/r2-rows--creme--after.png" alt=""><span class="mk" style="left:30%;top:68%"></span></div><div class="frame" data-theme="midnight" data-col="before"><img src="images/round2/r2-rows--midnight--before.png" alt=""><span class="mk" style="left:30%;top:68%"></span></div><div class="frame" data-theme="midnight" data-col="after"><img src="images/round2/r2-rows--midnight--after.png" alt=""><span class="mk" style="left:30%;top:68%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="creme">Crème</button><button class="tab" data-theme="midnight">Midnight</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">I made the DAMAGED banner red rather than yellow — you only specified yellow for "download interrupted".</p>
+  <p class="fix">→ Keep red for damaged (yellow = stopped but fixable, red = stopped and not fixable), or make both yellow.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span><details class="why"><summary>Why / details</summary><p>The app already splits these two colours this way everywhere else — amber means "warning, you can act on this", red means "destructive / dead end". A resumable download and an unresumable one are exactly that split, and putting them both in yellow would make the one you can fix look the same as the one you can't.</p><p>Against it: two colours in one list is busier than one, and red next to a red Delete button is a lot of red on that row.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Looks right <kbd>Y</kbd></button><button class="no" data-v="no">Change it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="A:2" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="A:3" data-idx="2">
+  <div class="kicker"><span class="pid">A</span> The list at rest · Settings → Model Providers → Models<span class="count">3 / 6</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="creme" data-col="before"><img src="images/round2/r2-rows--creme--before.png" alt=""><span class="mk" style="left:45%;top:55%"></span></div><div class="frame on" data-theme="creme" data-col="after"><img src="images/round2/r2-rows--creme--after.png" alt=""><span class="mk" style="left:45%;top:55%"></span></div><div class="frame" data-theme="midnight" data-col="before"><img src="images/round2/r2-rows--midnight--before.png" alt=""><span class="mk" style="left:45%;top:55%"></span></div><div class="frame" data-theme="midnight" data-col="after"><img src="images/round2/r2-rows--midnight--after.png" alt=""><span class="mk" style="left:45%;top:55%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="creme">Crème</button><button class="tab" data-theme="midnight">Midnight</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">The quality line is cut off with "…" — the full text ("Balanced quality and size — recommended") wraps to two lines at this width.</p>
+  <p class="fix">→ Keep it clipped to one line with the full text on hover, or let it wrap and accept one extra line on every row.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span><details class="why"><summary>Why / details</summary><p>You asked (R4) for the damaged row's paragraph to collapse behind an (i) because that row was the tallest thing on screen. But giving <em>every</em> row a quality line that wraps to two lines would have added back more height than the (i) saved — the list would have ended up taller than before your feedback, not shorter.</p><p>Clipping keeps every row exactly three lines. The cost is that the recommendation word ("recommended") is the part that gets cut.</p><p>Third option if neither appeals: show only the short tag (<em>UD-Q4_K_XL</em>) and drop the plain-English gloss entirely on interrupted rows, keeping it on finished ones.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Looks right <kbd>Y</kbd></button><button class="no" data-v="no">Change it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="A:3" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="B:4" data-idx="3">
+  <div class="kicker"><span class="pid">B</span> Downloading, and pausing · After pressing Resume<span class="count">4 / 6</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="creme" data-col="before"><img src="images/round2/r2-live--creme--before.png" alt=""><span class="mk" style="left:84%;top:50%"></span></div><div class="frame on" data-theme="creme" data-col="after"><img src="images/round2/r2-live--creme--after.png" alt=""><span class="mk" style="left:84%;top:50%"></span></div><div class="frame" data-theme="midnight" data-col="before"><img src="images/round2/r2-live--midnight--before.png" alt=""><span class="mk" style="left:84%;top:50%"></span></div><div class="frame" data-theme="midnight" data-col="after"><img src="images/round2/r2-live--midnight--after.png" alt=""><span class="mk" style="left:84%;top:50%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="creme">Crème</button><button class="tab" data-theme="midnight">Midnight</button></span><span class="seg"><button class="ctab" data-col="before">Before</button><button class="ctab on" data-col="after">After</button></span></div></div>
+  <p class="what">A running download now offers one button, and it says Pause — Delete is gone while bytes are moving.</p>
+  <p class="fix">→ Flip Before/After. Confirm one button is enough.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><details class="why"><summary>Why / details</summary><p>D6 and D7 together. The in-progress card higher up the screen (the one you get from a fresh download, not a resume) says <em>Pause</em> now too, and is no longer red — pausing destroys nothing, so colouring it like a delete was a lie.</p><p>The banner disappears while it's downloading, because a moving download isn't interrupted.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Looks right <kbd>Y</kbd></button><button class="no" data-v="no">Change it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="B:4" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="B:5" data-idx="4">
+  <div class="kicker"><span class="pid">B</span> Downloading, and pausing · After pressing Resume<span class="count">5 / 6</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="creme" data-col="after"><img src="images/round2/r2-paused--creme--after.png" alt=""><span class="mk" style="left:30%;top:54%"></span></div><div class="frame" data-theme="midnight" data-col="after"><img src="images/round2/r2-paused--midnight--after.png" alt=""><span class="mk" style="left:30%;top:54%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="creme">Crème</button><button class="tab" data-theme="midnight">Midnight</button></span><span class="seg"></span></div></div>
+  <p class="what">Pressing Pause returns the row to the interrupted state — banner back, Resume and Delete back, bar holding at where it stopped.</p>
+  <p class="fix">→ Confirm this is the round trip you described.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><details class="why"><summary>Why / details</summary><p>This is the second half of D6. Note the byte count: the row comes back at the point it actually reached, not the point it started from — pausing banks the bytes, which is the whole promise of the feature.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Looks right <kbd>Y</kbd></button><button class="no" data-v="no">Change it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="B:5" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="C:6" data-idx="5">
+  <div class="kicker"><span class="pid">C</span> The damaged explanation, and the confirmation · The (i), and pressing Delete on an interrupted download<span class="count">6 / 6</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="creme" data-col="after"><img src="images/round2/r2-confirm--creme--after.png" alt=""><span class="mk" style="left:26%;top:66%"></span></div><div class="frame" data-theme="midnight" data-col="after"><img src="images/round2/r2-confirm--midnight--after.png" alt=""><span class="mk" style="left:26%;top:66%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="creme">Crème</button><button class="tab" data-theme="midnight">Midnight</button></span><span class="seg"></span></div></div>
+  <p class="what">The damaged row's paragraph now lives behind the (i), and the confirmation says Delete instead of Discard.</p>
+  <p class="fix">→ Confirm the (i) wording, and that "Why can't this be resumed?" is the right thing to put next to it.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><details class="why"><summary>Why / details</summary><p>R4 and C8. The row itself now reads <em>3.8 GB downloaded</em> with a small <em>(i) Why can't this be resumed?</em> underneath; clicking it opens the bubble you're looking at. The row went from six lines to four.</p><p>The confirmation for an interrupted download now reads <em>"Delete 74.2 GB? This removes every downloaded piece of this model."</em> with a <em>Delete download</em> button — same shape as before, one word changed.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Looks right <kbd>Y</kbd></button><button class="no" data-v="no">Change it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="C:6" placeholder="note (optional)"></div>
+</section>
+<section class="summary"><h1>Your nine answers, built — 6 points to confirm — your answers</h1>
+<p>Every answer from 2026-08-27 is in. Press space on a step that has Before/After to flip between them. Two of these are choices I had to make on your behalf, marked as such — those are the ones I most need a Yes or No on.</p>
+<table><thead><tr><th>Item</th><th>#</th><th>Point</th><th>Answer</th><th>Note</th></tr></thead><tbody id="rows"></tbody></table>
+<button id="copy">Copy feedback</button> <span id="copied"></span>
+<textarea id="feedback" readonly></textarea>
+<div class="closing"><h2>Also done, no decision needed</h2><ul><li><strong>C9 (the GB mismatch)</strong> — numbers left exactly as they are, and the app-wide question is now a ROADMAP item with the three options written out. Nothing in this feature changed.</li><li>Six screens re-shot in all six themes after the changes.</li></ul><h2>Two things you should know</h2><ul><li>I found a real defect in our own tooling while doing this: <code>workbench-boot-check.mjs</code> prints "All 12 routes mount cleanly" even when nothing is running on the port it checks. It's on the ROADMAP — it means a green boot check has been weaker evidence than we thought.</li><li>The machine was heavily loaded tonight (load average peaked near 28 with three other sessions' dev servers up), which made the screenshot rig hang once and the boot check fail different routes on every run. Nothing to do with this code — but it's why this took a while.</li></ul><h2>What happens next</h2><p>Once you confirm these, I build the machinery underneath: the record written beside each download, the honest list, the disk-space fix, and Resume actually resuming. That's tasks 3 through 10 of the plan, and it's all backend from here.</p></div>
+</section>
+</main>
+<nav><button class="arrow" id="prev"><kbd>←</kbd> back</button><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot sum" title="Summary"></span></span><button class="arrow" id="next">next <kbd>→</kbd></button><span id="st"></span></nav>
+<script>
+(function(){
+  const KEY="Download Resume R2", STEPS=[{"key": "A:1", "id": "A", "n": 1, "kind": "measured", "what": "Five of your answers land on this one screen \u2014 banner, progress bar, shorter names, quality on its own line, one word for removing."}, {"key": "A:2", "id": "A", "n": 2, "kind": "judgment", "what": "I made the DAMAGED banner red rather than yellow \u2014 you only specified yellow for \"download interrupted\"."}, {"key": "A:3", "id": "A", "n": 3, "kind": "judgment", "what": "The quality line is cut off with \"\u2026\" \u2014 the full text (\"Balanced quality and size \u2014 recommended\") wraps to two lines at this width."}, {"key": "B:4", "id": "B", "n": 4, "kind": "measured", "what": "A running download now offers one button, and it says Pause \u2014 Delete is gone while bytes are moving."}, {"key": "B:5", "id": "B", "n": 5, "kind": "measured", "what": "Pressing Pause returns the row to the interrupted state \u2014 banner back, Resume and Delete back, bar holding at where it stopped."}, {"key": "C:6", "id": "C", "n": 6, "kind": "measured", "what": "The damaged row's paragraph now lives behind the (i), and the confirmation says Delete instead of Discard."}];   // STEPS: [{key,id,n,kind,what}]
+  let st={}; try{ st=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){}
+  const q=new URLSearchParams(location.search).get('step');   // ?step=N for screenshots/deep links
+  let cur=Math.min(q!=null?+q:(st.__cur||0), STEPS.length);
+  const steps=[...document.querySelectorAll('.step')], sum=document.querySelector('.summary'), dots=[...document.querySelectorAll('.dot')];
+  const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} paint(); };
+  function go(i){ cur=Math.max(0,Math.min(i,STEPS.length)); st.__cur=cur; save(); window.scrollTo(0,0); }
+  function decide(v){ if(cur>=STEPS.length) return; st[STEPS[cur].key]=v; save(); setTimeout(()=>go(cur+1), 260); }
+  function paint(){
+    steps.forEach((s,i)=>{ s.classList.toggle('on', i===cur); const v=st[s.dataset.key]; s.classList.toggle('decided', !!v);
+      s.querySelectorAll('.decide button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); });
+    sum.classList.toggle('on', cur===STEPS.length);
+    dots.forEach((d,i)=>{ d.classList.toggle('on', i===cur); if(i<STEPS.length){ const v=st[STEPS[i].key]; d.classList.toggle('yes', v==='yes'); d.classList.toggle('no', v==='no'); d.classList.toggle('more', v==='more'); } });
+    let done=0; const lines=[KEY+' feedback ('+new Date().toISOString().slice(0,10)+')']; const rows=[]; let lastId='';
+    for(const s of STEPS){ const v=st[s.key]; if(v) done++; const note=(st['note:'+s.key]||'').trim();
+      lines.push(s.id+' #'+s.n+': '+(v||'?')+(note?' — '+note:'')); rows.push('<tr><td>'+(s.id!==lastId?s.id:'')+'</td><td>'+s.n+'</td><td>'+s.what+'</td><td class="v-'+(v||'')+'">'+(v||'—')+'</td><td>'+(note?note.replace(/</g,'&lt;'):'')+'</td></tr>'); lastId=s.id; }
+    document.getElementById('feedback').value=lines.join('\n'); document.getElementById('rows').innerHTML=rows.join('');
+    document.getElementById('st').textContent=done+' of '+STEPS.length+' decided';
+  }
+  steps.forEach(s=>{ s.querySelectorAll('.decide button').forEach(b=>b.addEventListener('click',()=>decide(b.dataset.v)));
+    const n=s.querySelector('.note'); n.value=st['note:'+s.dataset.key]||''; n.addEventListener('input',()=>{ st['note:'+s.dataset.key]=n.value; save(); });
+    const show=()=>{ const t=s.querySelector('.tab.on')?.dataset.theme, c=s.querySelector('.ctab.on')?.dataset.col;
+      s.querySelectorAll('.frame').forEach(f=>f.classList.toggle('on', (!t||f.dataset.theme===t)&&(!c||f.dataset.col===c))); };
+    s.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{ s.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); show(); }));
+    s.querySelectorAll('.ctab').forEach(b=>b.addEventListener('click',()=>{ s.querySelectorAll('.ctab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); show(); }));
+  });
+  dots.forEach((d,i)=>d.addEventListener('click',()=>go(i)));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1)); document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; const k=e.key.toLowerCase();
+    if(k==='y') decide('yes'); else if(k==='n') decide('no'); else if(k==='m') decide('more'); else if(e.key==='ArrowRight') go(cur+1); else if(e.key==='ArrowLeft') go(cur-1);
+    else if(k==='t'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.tab')]; if(t.length<2) return; const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%t.length].click(); }
+    else if(e.code==='Space'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.ctab')]; if(t.length<2) return; e.preventDefault(); const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%t.length].click(); } });
+  document.getElementById('copy').addEventListener('click',()=>{ const t=document.getElementById('feedback'); const ok=()=>{ document.getElementById('copied').textContent='Copied — paste it into the chat.'; };
+    (navigator.clipboard?.writeText(t.value)||Promise.reject()).then(ok,()=>{ t.select(); document.execCommand('copy'); ok(); }); });
+  paint();
+})();
+</script>
+</body></html>

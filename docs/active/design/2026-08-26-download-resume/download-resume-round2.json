@@ -1,0 +1,244 @@
+{
+ "out": "download-resume-round2.html",
+ "images": "images/round2",
+ "key": "Download Resume R2",
+ "runs": {
+  "before": "/home/destin/youcoded-dev/scratch/ui-review-dlresume",
+  "after": "/home/destin/youcoded-dev/scratch/ui-review-dlresume-v3"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "After"
+ },
+ "crops": {
+  "r2-rows": [
+   "overlays",
+   "providers-local-scrolled",
+   "420x400+510+195"
+  ],
+  "r2-live": [
+   "overlays",
+   "local-models-resuming",
+   "420x400+510+195"
+  ],
+  "r2-paused": [
+   "overlays",
+   "local-models-paused",
+   "420x400+510+195"
+  ],
+  "r2-why": [
+   "overlays",
+   "local-models-damaged-why",
+   "520x530+410+195"
+  ],
+  "r2-confirm": [
+   "overlays",
+   "local-models-interrupted-delete-confirm",
+   "420x400+510+195"
+  ]
+ },
+ "title": "Your nine answers, built — 6 points to confirm",
+ "lead": "Every answer from 2026-08-27 is in. Press space on a step that has Before/After to flip between them. Two of these are choices I had to make on your behalf, marked as such — those are the ones I most need a Yes or No on.",
+ "items": [
+  {
+   "id": "A",
+   "title": "The list at rest",
+   "surface": "Settings → Model Providers → Models",
+   "image": {
+    "crop": "r2-rows",
+    "themes": [
+     "creme",
+     "midnight"
+    ],
+    "cols": [
+     "before",
+     "after"
+    ],
+    "fit": "none"
+   },
+   "points": [
+    {
+     "n": 1,
+     "kind": "measured",
+     "what": "Five of your answers land on this one screen — banner, progress bar, shorter names, quality on its own line, one word for removing.",
+     "fix": "Flip Before/After with space. Confirm it reads the way you pictured it.",
+     "at": {
+      "creme": [
+       30,
+       47
+      ],
+      "midnight": [
+       30,
+       47
+      ]
+     },
+     "why": "<p>What changed here, answer by answer:</p><ul><li><strong>R1</strong> — the interrupted row now has a yellow border, a <em>DOWNLOAD INTERRUPTED</em> banner across its top, and a real progress bar at 66% even while it sits still.</li><li><strong>R3</strong> — quality moved out of the title and onto its own line, so <em>Qwen3.5-9B-Q8_0</em> is now <em>Qwen3.5-9B</em> with <em>Q8_0 · Highest quality…</em> below it. The <em>-00001-of-00004</em> part marker came out of the title for the same reason.</li><li><strong>R5</strong> — <em>Unfinished</em> is gone. The row that can't be resumed says <em>DAMAGED</em>.</li><li><strong>C8</strong> — <em>Discard</em> is gone. Every removal button says <em>Delete</em>.</li><li><strong>R2</strong> — you said no to rewrapping the row, so the names stay on one line; the full id is now a hover tooltip. Dropping the quality tag shortened them enough that nothing important is clipped any more.</li></ul>"
+    },
+    {
+     "n": 2,
+     "kind": "judgment",
+     "what": "I made the DAMAGED banner red rather than yellow — you only specified yellow for \"download interrupted\".",
+     "fix": "Keep red for damaged (yellow = stopped but fixable, red = stopped and not fixable), or make both yellow.",
+     "at": {
+      "creme": [
+       30,
+       68
+      ],
+      "midnight": [
+       30,
+       68
+      ]
+     },
+     "why": "<p>The app already splits these two colours this way everywhere else — amber means \"warning, you can act on this\", red means \"destructive / dead end\". A resumable download and an unresumable one are exactly that split, and putting them both in yellow would make the one you can fix look the same as the one you can't.</p><p>Against it: two colours in one list is busier than one, and red next to a red Delete button is a lot of red on that row.</p>"
+    },
+    {
+     "n": 3,
+     "kind": "judgment",
+     "what": "The quality line is cut off with \"…\" — the full text (\"Balanced quality and size — recommended\") wraps to two lines at this width.",
+     "fix": "Keep it clipped to one line with the full text on hover, or let it wrap and accept one extra line on every row.",
+     "at": {
+      "creme": [
+       45,
+       55
+      ],
+      "midnight": [
+       45,
+       55
+      ]
+     },
+     "why": "<p>You asked (R4) for the damaged row's paragraph to collapse behind an (i) because that row was the tallest thing on screen. But giving <em>every</em> row a quality line that wraps to two lines would have added back more height than the (i) saved — the list would have ended up taller than before your feedback, not shorter.</p><p>Clipping keeps every row exactly three lines. The cost is that the recommendation word (\"recommended\") is the part that gets cut.</p><p>Third option if neither appeals: show only the short tag (<em>UD-Q4_K_XL</em>) and drop the plain-English gloss entirely on interrupted rows, keeping it on finished ones.</p>"
+    }
+   ]
+  },
+  {
+   "id": "B",
+   "title": "Downloading, and pausing",
+   "surface": "After pressing Resume",
+   "image": {
+    "crop": "r2-live",
+    "themes": [
+     "creme",
+     "midnight"
+    ],
+    "cols": [
+     "before",
+     "after"
+    ],
+    "fit": "none"
+   },
+   "points": [
+    {
+     "n": 4,
+     "kind": "measured",
+     "what": "A running download now offers one button, and it says Pause — Delete is gone while bytes are moving.",
+     "fix": "Flip Before/After. Confirm one button is enough.",
+     "at": {
+      "creme": [
+       84,
+       50
+      ],
+      "midnight": [
+       84,
+       50
+      ]
+     },
+     "why": "<p>D6 and D7 together. The in-progress card higher up the screen (the one you get from a fresh download, not a resume) says <em>Pause</em> now too, and is no longer red — pausing destroys nothing, so colouring it like a delete was a lie.</p><p>The banner disappears while it's downloading, because a moving download isn't interrupted.</p>"
+    },
+    {
+     "n": 5,
+     "kind": "measured",
+     "what": "Pressing Pause returns the row to the interrupted state — banner back, Resume and Delete back, bar holding at where it stopped.",
+     "fix": "Confirm this is the round trip you described.",
+     "at": {
+      "creme": [
+       30,
+       54
+      ],
+      "midnight": [
+       30,
+       54
+      ]
+     },
+     "why": "<p>This is the second half of D6. Note the byte count: the row comes back at the point it actually reached, not the point it started from — pausing banks the bytes, which is the whole promise of the feature.</p>",
+     "image": {
+      "crop": "r2-paused",
+      "themes": [
+       "creme",
+       "midnight"
+      ],
+      "cols": [
+       "after"
+      ],
+      "fit": "none"
+     }
+    }
+   ]
+  },
+  {
+   "id": "C",
+   "title": "The damaged explanation, and the confirmation",
+   "surface": "The (i), and pressing Delete on an interrupted download",
+   "image": {
+    "crop": "r2-why",
+    "themes": [
+     "creme",
+     "midnight"
+    ],
+    "cols": [
+     "after"
+    ],
+    "fit": "none"
+   },
+   "points": [
+    {
+     "n": 6,
+     "kind": "measured",
+     "what": "The damaged row's paragraph now lives behind the (i), and the confirmation says Delete instead of Discard.",
+     "fix": "Confirm the (i) wording, and that \"Why can't this be resumed?\" is the right thing to put next to it.",
+     "at": {
+      "creme": [
+       26,
+       66
+      ],
+      "midnight": [
+       26,
+       66
+      ]
+     },
+     "why": "<p>R4 and C8. The row itself now reads <em>3.8 GB downloaded</em> with a small <em>(i) Why can't this be resumed?</em> underneath; clicking it opens the bubble you're looking at. The row went from six lines to four.</p><p>The confirmation for an interrupted download now reads <em>\"Delete 74.2 GB? This removes every downloaded piece of this model.\"</em> with a <em>Delete download</em> button — same shape as before, one word changed.</p>",
+     "image": {
+      "crop": "r2-confirm",
+      "themes": [
+       "creme",
+       "midnight"
+      ],
+      "cols": [
+       "after"
+      ],
+      "fit": "none"
+     }
+    }
+   ],
+   "more": [
+    {
+     "crop": "r2-why",
+     "themes": [
+      "creme",
+      "midnight"
+     ],
+     "cols": [
+      "after"
+     ],
+     "fit": "none",
+     "points": []
+    }
+   ]
+  }
+ ],
+ "closing": "<h2>Also done, no decision needed</h2><ul><li><strong>C9 (the GB mismatch)</strong> — numbers left exactly as they are, and the app-wide question is now a ROADMAP item with the three options written out. Nothing in this feature changed.</li><li>Six screens re-shot in all six themes after the changes.</li></ul><h2>Two things you should know</h2><ul><li>I found a real defect in our own tooling while doing this: <code>workbench-boot-check.mjs</code> prints \"All 12 routes mount cleanly\" even when nothing is running on the port it checks. It's on the ROADMAP — it means a green boot check has been weaker evidence than we thought.</li><li>The machine was heavily loaded tonight (load average peaked near 28 with three other sessions' dev servers up), which made the screenshot rig hang once and the boot check fail different routes on every run. Nothing to do with this code — but it's why this took a while.</li></ul><h2>What happens next</h2><p>Once you confirm these, I build the machinery underneath: the record written beside each download, the honest list, the disk-space fix, and Resume actually resuming. That's tasks 3 through 10 of the plan, and it's all backend from here.</p>",
+ "buttons": {
+  "yes": "Looks right",
+  "no": "Change it",
+  "more": "Tell me more"
+ }
+}

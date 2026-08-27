@@ -116,6 +116,8 @@ def step_html(spec, it, pt, idx, total):
     risk = f'<p class="risk">Risk: {html.escape(pt["risk"])}</p>' if pt.get('risk') else ''
     key = f'{it["id"]}:{pt["n"]}'
     surface = f' · {html.escape(it["surface"])}' if it.get('surface') else ''
+    btns = {'yes': 'Yes, build it', 'no': 'No, leave it', 'more': 'Tell me more', **spec.get('buttons', {})}
+    btn_yes, btn_no, btn_more = (html.escape(btns[k]) for k in ('yes', 'no', 'more'))
     return f'''<section class="step" data-key="{key}" data-idx="{idx}">
   <div class="kicker"><span class="pid">{it["id"]}</span> {it["title"]}{surface}<span class="count">{idx + 1} / {total}</span></div>
   <div class="stagewrap"><div class="stage">{"".join(frames)}</div>
@@ -123,7 +125,7 @@ def step_html(spec, it, pt, idx, total):
   <p class="what">{pt["what"]}</p>
   <p class="fix">→ {pt["fix"]}</p>
   <div class="meta"><span class="kind kind-{pt["kind"]}">{pt["kind"]}</span>{risk}{why}</div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">{btn_yes} <kbd>Y</kbd></button><button class="no" data-v="no">{btn_no} <kbd>N</kbd></button><button class="more" data-v="more">{btn_more} <kbd>M</kbd></button>
     <input class="note" data-note="{key}" placeholder="note (optional)"></div>
 </section>'''
 
