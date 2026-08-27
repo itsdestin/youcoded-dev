@@ -217,14 +217,32 @@ where their limit numbers went:
 
 | Situation | Reason line |
 |---|---|
-| 5h / 7d Usage in a native session | *Claude Code sessions only — see /usage* |
-| Duration / Active Ratio in a native session | *Not measured in this kind of session yet* |
-| Session Cost when no counted work had a published price | *No published price for this model* |
+| 5h / 7d Usage in a native session | *Claude Code sessions only* |
+| Duration / Active Ratio in a native session | *Not available in this kind of session* |
+| Session Cost, when the only counted work runs on the user's own machine | *Models on your own machine don't cost anything to run* |
 
-Rows stay in the list, dimmed, with the reason where the checkbox would be. The user's
-on/off choice is untouched and returns the moment they switch to a session where the widget
-applies, so the menu never contradicts the bar. `WidgetConfigPopup` takes no session context
-today and needs the same value the bar reads, from one place, so the two cannot disagree.
+Rows stay in the list, dimmed, with the reason on its own line beneath the label — beside it,
+the longest label wrapped and that one row grew taller than the rest. The user's on/off
+choice is untouched and returns the moment they switch to a session where the widget applies,
+so the menu never contradicts the bar. `WidgetConfigPopup` takes no session context today and
+needs the same value the bar reads, from one place, so the two cannot disagree.
+
+**The rule is "does the chip draw anything?", not "is there priced work?".** A metered model
+with no published rate DOES draw a chip — `Cost: not listed`, whose tooltip carries the
+explanation (*"This provider bills for usage, but no price is published for this model, so
+the session cost can't be totalled."*) — so its row must stay a live switch. Gating the menu
+on anything other than the chip's own render condition lets the bar show a chip the user
+cannot turn off; that is exactly what happened when the two conditions were written
+separately. The one-way invariant is **chip drawn ⟹ row switchable**; the reverse is allowed
+and benign (`git-branch` is the precedent — a row worth offering that currently draws
+nothing).
+
+There is no *No published price for this model* line any more. It was one string doing two
+opposite jobs — a free local model and a metered-but-unlisted one — and it was also shown to
+a brand-new session that simply hadn't run anything yet, where it was plainly false. A reason
+must be true or it must not be shown (§4). Nothing measured yet now gets **no reason at all**.
+
+<!-- verify: {"path": "youcoded/desktop/src/renderer/state/status-widgets.ts", "contains": "anyUnpriced"} -->
 
 Note that Model and Permission are **not** registry widgets — if either ever needs gating it
 takes a plain runtime gate like Fast mode, not an entry here.
