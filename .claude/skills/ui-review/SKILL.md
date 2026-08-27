@@ -60,12 +60,13 @@ then a **review page** — never a gallery, never a chat summary:
    For a second variant, a second worktree + run dir.
 2. Write `docs/active/design/<audit>/<phase>-cards.json` (copy `phase-c-cards.json`), then
    `python3 scripts/ui-review/review-cards.py crop <spec>` and `… build <spec>`. Crop regions
-   come from `scripts/ui-review/crops.json`; add new ones there. **Cards, not prose:** one
-   card per item, the screenshot is the hero with numbered markers drawn ON it, and each
-   marker has a one-line problem, a one-line fix, a `measured`/`judgment` tag and Yes/No.
-   Rationale goes under a collapsed `why`. (`review-page.py` is the older prose-first
-   format — Destin rejected it on 2026-08-26 as "WAY too much text in different areas";
-   it is kept only because the Phase A/B pages were built with it.)
+   come from `scripts/ui-review/crops.json`; add new ones there. The page is a **deck — one
+   point at a time**: one screenshot with ONE ring on the target, one line of problem, one
+   line of fix, `measured`/`judgment` tag, Yes/No (keys Y/N), progress dots, summary +
+   copyable feedback at the end. Rationale and ledger corrections go under the collapsed
+   "Why / details", never in the headline. Three formats were rejected before this one
+   (gallery → prose page → board of cards): "not clear where I'm supposed to glance/select".
+   `review-page.py` is the old prose format, kept only for the Phase A/B pages.
 3. Every item on the page carries, in this order: the problem **with the measured number
    or the broken behaviour**, exactly what was edited, 1:1 crops of the element per theme
    (before / after, a column per variant), what he'll notice + the risks *against* the

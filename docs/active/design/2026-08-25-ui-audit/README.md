@@ -16,8 +16,8 @@
   banner with the decisions (P-15 approved as revised, P-18 approved, P-10 rejected; youcoded #328).
 - `phase-c-cards.html` (spec `phase-c-cards.json`, built by `scripts/ui-review/review-cards.py`, crops in
   `images/phase-c/` from `scratch/ui-phase-c-baseline/`, a sweep of master at `c04739df`) — the Phase C
-  brief in the **cards** format: 16 points on 5 screens, markers on the image, Yes/No per point. A first
-  prose-first brief (`review-page.py`) was rejected the same day and deleted; the cards page is the
+  brief as a **deck**: 16 points on 5 screens, one point per step, one ring on the target, Yes/No. A
+  prose-first brief and a board-of-cards layout were both rejected the same day; the deck is the
   template from here on. Awaiting Destin's picks.
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
   (the original pass: 103 of 104 — "Known Issues" opens an external link; the latest full sweep
