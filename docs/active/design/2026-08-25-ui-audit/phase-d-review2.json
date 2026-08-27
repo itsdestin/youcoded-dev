@@ -1,0 +1,42 @@
+{
+  "title": "Phase D review 2 — the find bar, revised",
+  "key": "phase-d-review2",
+  "out": "phase-d-review2.html",
+  "images": "images/phase-d-review2",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-phase-d-today",
+    "after": "/home/destin/youcoded-dev/scratch/ui-phase-d-after2"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Revised"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "creme",
+    "dark",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "crops": {
+    "find-bar": [
+      "main",
+      "find-bar",
+      "700x140+740+38"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-14.1",
+      "surface": "Chat",
+      "path": "Chat → Ctrl+F",
+      "crop": "find-bar",
+      "headline": "Your note, applied: the find bar is still a bordered pill, in a lane of its own, so it never covers the first message.",
+      "changed": "The full-width strip from round 1 is gone. The pill keeps its border, shadow and panel colour; the lane around it paints nothing and only reserves the height while the bar is open.",
+      "measured": "0 px of the first message covered; the pill is the same 292 × 41 px as before",
+      "notice": "Ctrl+F: the pill appears top-right as it always did, and the messages nudge down under it instead of being covered. Esc: they slide back.",
+      "risk": "The nudge on open/close remains — that is the price of not overlapping."
+    }
+  ]
+}
