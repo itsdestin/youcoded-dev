@@ -7,13 +7,20 @@
 //
 // Node built-ins only (the workspace root has no package.json and must not gain one).
 import {
-  chmodSync, copyFileSync, cpSync, existsSync, mkdirSync, readFileSync,
-  rmSync, statSync, writeFileSync,
+  appendFileSync, chmodSync, copyFileSync, cpSync, existsSync, mkdirSync,
+  readFileSync, rmSync, statSync, writeFileSync,
 } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// The realistic-content generator. WHY it exists at all: `transcriptLines()`
+// below writes plain prose, which is the CHEAPEST thing this app can render
+// (one <p> per message). Real conversations are full of fenced code, diffs and
+// tool cards, so a prose-only fixture measured a FLOOR rather than what the
+// owner actually pays. content.mjs emits those shapes and is deterministic by
+// construction (seeded PRNG, no clock, no entropy pool) — see its header.
+import { realisticTranscriptLines, messagesPerTurn } from './content.mjs';
 
 const HERE = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -108,9 +115,133 @@ export function transcriptLines({ sessionId, cwd, turns, startedAt }) {
   return lines;
 }
 
-// small ≈ 60 KB, medium ≈ 3 MB, huge ≈ 30 MB — the three points the
-// history-reload scenario measures. Lines written = 2 x turns.
-const SIZES = { small: 50, medium: 2500, huge: 25000 };
+// ---------------------------------------------------------------------------
+// Transcript sizes — the three points the history-reload scenario measures
+// ---------------------------------------------------------------------------
+
+/**
+ * Fixed seed for the realistic generator. Same seed => byte-identical
+ * transcript bodies on every rebuild, which is what makes two perf reports
+ * comparable at all: if the content moved between runs, so would the numbers.
+ */
+export const CONTENT_SEED = 'perf-lab-v1';
+
+/**
+ * Turn counts per size. `small` and `medium` keep the turn counts they have
+ * always had, so their numbers stay comparable and stay interpretable — 2,500
+ * turns is 5,000 history messages, which is an ORDINARY conversation in this
+ * app, not a stress case.
+ *
+ * WHY `huge` dropped from 25,000 turns to 3,500 — measured, not guessed:
+ *
+ *  Realistic content costs ~6.8x the bytes of the old prose filler (measured
+ *  6.62-6.85x across seven turn counts) and writes 2.92 JSONL lines per turn
+ *  instead of 2.00, i.e. 1.46x as many TIMELINE ENTRIES to render per turn.
+ *  Only 2 of those lines per turn are history-visible (see the invariant note
+ *  on transcriptBody below); the rest are tool round-trips, which the resume
+ *  path still renders as cards.
+ *
+ *  The ceiling that decides this is NOT the 45-minute report budget, it is
+ *  scenario-history.mjs's in-page WATCH_TIMEOUT_MS = 240s per resume sample. A
+ *  resume that overruns it reports null, so history.<size>.median.resumeStableMs
+ *  — a PRIMARY metric — goes blind while still burning 240s x 5 repeats.
+ *
+ *  Two cost models, both anchored on the two measurements taken with PLAIN
+ *  content on this machine (medium 5,000 entries -> 3.5s; huge 50,000 entries
+ *  -> 124s):
+ *    (a) pessimistic — take huge's measured 2.48 ms/entry and scale it by the
+ *        4.7x bytes-per-entry that realistic content adds => ~34 ms/turn.
+ *        Deliberately harsh: it applies the per-entry cost measured at 50,000
+ *        entries (where the superlinear term dominates) to a much shorter file.
+ *    (b) two-term fit t = 0.502*n + 3.96e-5*n^2 through both plain points, with
+ *        both terms scaled 4.7x and n = 2.92 * turns.
+ *
+ *  turns   file    gen+write   resume (a)   resume (b)
+ *  25,000  224 MiB  2.33 s      850 s        1166 s   <- blows the 240s ceiling
+ *  12,000  106 MiB  0.99 s      408 s         312 s   <- blows it
+ *   8,000   70 MiB  0.64 s      272 s         157 s   <- (a) blows it
+ *   6,000   54 MiB  0.47 s      204 s          98 s   <- only 15% margin
+ *   5,000   44 MiB  0.45 s      170 s          74 s   <- 29% margin, 21 min phase
+ *   3,500   31 MiB  0.32 s      119 s          43 s   <- CHOSEN
+ *
+ *  (The table's file sizes come from a bare generator run; inside a real
+ *  fixture the longer cwd stamped on every line makes them 0.26 / 23.8 / 33.0
+ *  MiB for small / medium / huge — 57 MiB of transcript per build.)
+ *
+ *  3,500 turns holds BOTH budgets at once: 33 MiB is the same file size the old
+ *  prose `huge` had (~33 MiB), and ~119 s is the same wall clock the old `huge`
+ *  resume took (~124 s) — so the history phase costs what it already cost
+ *  (~17 min for 5 repeats across all three sizes, pessimistically) and keeps 2x
+ *  headroom under the 240 s ceiling. It is still a hard stress: 10,258 timeline
+ *  entries of real code/diff content, blocking the renderer for minutes.
+ *
+ *  THE TRADEOFF, stated plainly: the rig no longer probes the 50,000-message
+ *  regime. `huge` is now 7,000 history messages (10,258 timeline entries), 1.4x
+ *  medium's turn count rather than 10x. Reports from before this change are NOT
+ *  comparable to reports after it — different content AND different sizes. If
+ *  the 50k-message regime is wanted back, the lever is raising
+ *  WATCH_TIMEOUT_MS in scenario-history.mjs, or building that one size with
+ *  { content: 'plain' }; both are deliberate choices, not defaults.
+ */
+export const SIZES = Object.freeze({ small: 50, medium: 2500, huge: 3500 });
+
+/** Content modes buildFixture accepts. 'plain' is the pre-2026-08-27 prose
+ *  filler, kept because it is the cheapest way to get back a 50,000-message
+ *  file if someone wants to measure that regime again. */
+const CONTENT_MODES = ['realistic', 'plain'];
+
+/**
+ * The JSONL body for one transcript, in whichever content mode was asked for.
+ *
+ * THE INVARIANT THIS MUST HOLD: scenario-history.mjs:184 aborts the whole run
+ * unless `loadHistory(all).length === 2 * turns`. Both modes hold it — plain
+ * writes exactly 2 history-visible lines per turn, and realistic writes 2
+ * history-visible lines plus tool lines that loadHistory drops by construction
+ * (its tool-call assistant line carries stop_reason 'tool_use', its tool_result
+ * user line carries no promptId; loadHistory requires 'end_turn' and a
+ * promptId respectively). `messagesPerTurn` is content.mjs's exported name for
+ * that 2.
+ */
+export function transcriptBody({ content = 'realistic', sessionId, cwd, turns, startedAt, seed = CONTENT_SEED }) {
+  // Throw rather than fall back: a typo'd mode must not silently produce the
+  // cheap content and make a report look 7x faster than the app really is.
+  if (!CONTENT_MODES.includes(content)) {
+    throw new Error(`buildFixture: unknown content mode ${JSON.stringify(content)} (want one of ${CONTENT_MODES.join(', ')})`);
+  }
+  return content === 'plain'
+    ? transcriptLines({ sessionId, cwd, turns, startedAt })
+    : realisticTranscriptLines({ sessionId, cwd, turns, startedAt, seed });
+}
+
+/** History-visible messages per turn — 2 in both content modes. Re-exported so
+ *  a caller checking the invariant above never has to hardcode the number. */
+export { messagesPerTurn };
+
+/**
+ * A uuid-shaped id derived from a string, with no randomness in it.
+ *
+ * WHY: the transcripts embed their own sessionId on every line, so a
+ * randomUUID() sessionId would make an otherwise deterministic file differ
+ * byte-for-byte between rebuilds — the exact thing content.mjs went to the
+ * trouble of eliminating. Hash-derived ids keep the whole fixture reproducible.
+ * Shaped as a v4 uuid (version nibble 4, variant nibble 8) so it looks like
+ * every other CC session id, and it passes session-browser.ts's SAFE_ID_RE.
+ */
+export function stableUuid(key) {
+  const h = createHash('sha256').update(key).digest('hex');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-8${h.slice(17, 20)}-${h.slice(20, 32)}`;
+}
+
+/** Write JSONL in chunks instead of one giant concatenated string. WHY: joining
+ *  a whole transcript into a single string spikes this process's heap by the
+ *  file size (measured 1.3 GB RSS while building the 224 MiB candidate), and
+ *  buildFixture runs inside run.mjs right before it takes timings. */
+function writeJsonl(path, lines, chunkLines = 2000) {
+  writeFileSync(path, '');
+  for (let i = 0; i < lines.length; i += chunkLines) {
+    appendFileSync(path, lines.slice(i, i + chunkLines).join('\n') + '\n');
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Asset provisioning
@@ -244,9 +375,19 @@ export async function ensureAssets({ log = () => {} } = {}) {
 
 /**
  * Wipes and rebuilds <root>/home. Idempotent by construction — call it once per
- * cold-start run. The huge transcript is ~30 MB, so a rebuild is ~1s of I/O.
+ * cold-start run (a full report calls it six times). With the default realistic
+ * content the three transcripts total ~57 MiB; a whole rebuild measured 545 ms,
+ * which is mostly the 470 MB gguf copy, not the transcripts.
+ *
+ * "Idempotent" is now literal for the transcripts: same filenames, same bytes
+ * on every rebuild EXCEPT the timestamps, which are deliberately anchored to
+ * build time so the session list keeps saying "3 days ago" (see below).
+ *
+ * `content` picks the transcript filler: 'realistic' (default — fenced code,
+ * diffs, tool cards, what the app actually renders) or 'plain' (the old prose
+ * filler). Everything else about the fixture is identical between the two.
  */
-export function buildFixture(root, { engineSrc, ggufSrc, log = () => {} } = {}) {
+export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', log = () => {} } = {}) {
   // Synchronous on purpose (the plan's interface) — but provisioning needs
   // `await fetch`. So: fast sync check first, and only when an asset is genuinely
   // missing do we shell out to ourselves to run the async download once. On a
@@ -292,13 +433,16 @@ export function buildFixture(root, { engineSrc, ggufSrc, log = () => {} } = {}) 
   const transcripts = {};
   const now = Date.now();
   for (const [name, turns] of Object.entries(SIZES)) {
-    const sessionId = randomUUID();
+    // Derived, not random — see stableUuid. Two rebuilds of the same size now
+    // produce the same filename AND the same bytes inside it.
+    const sessionId = stableUuid(`${CONTENT_SEED}:${content}:${name}`);
     const path = join(home, '.claude', 'projects', slug, `${sessionId}.jsonl`);
     // Timestamps are relative to generation time, so the "N days ago" labels in
     // the session list read identically run-to-run (no pixel churn in screenshots).
-    writeFileSync(path, transcriptLines({
-      sessionId, cwd: projects.alpha, turns, startedAt: now - 3 * 86400000,
-    }).join('\n') + '\n');
+    // This is the ONE thing about a transcript that still moves between builds.
+    writeJsonl(path, transcriptBody({
+      content, sessionId, cwd: projects.alpha, turns, startedAt: now - 3 * 86400000,
+    }));
     transcripts[name] = { sessionId, slug, path, turns };
   }
 
@@ -383,7 +527,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     // The one-time provisioning path buildFixture re-enters this file for.
     await ensureAssets({ log });
   } else {
-    const root = resolve(process.argv[2] || join(WORKSPACE, 'scratch', 'perf-lab'));
-    console.log(JSON.stringify(buildFixture(root, { log }), null, 2));
+    // `--plain` swaps in the old prose filler; the default is realistic content.
+    const content = process.argv.includes('--plain') ? 'plain' : 'realistic';
+    const root = resolve(process.argv.find((a) => !a.startsWith('--') && a !== process.argv[0] && a !== process.argv[1])
+      || join(WORKSPACE, 'scratch', 'perf-lab'));
+    console.log(JSON.stringify(buildFixture(root, { content, log }), null, 2));
   }
 }
