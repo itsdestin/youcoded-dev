@@ -469,7 +469,19 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
       { id: 'openrouter', type: 'openrouter', label: 'OpenRouter', enabled: true },
     ],
   }));
-  copyFileSync(gguf, join(models, GGUF_NAME));
+  // Hardlink the model, same reasoning as the engine below: the app only READS a
+  // GGUF from cacheDir (a download writes a NEW file), so links can't write back
+  // into the cached asset.
+  //
+  // WHY this is worth doing rather than a plain copy: the model is ~470 MB and the
+  // fixture is rebuilt once per cold start, so `--runs 5` was copying ~2.3 GB per
+  // report for no benefit — it was most of the measured 545 ms rebuild cost, and
+  // that cost lands immediately before the rig starts timing a boot.
+  try {
+    execFileSync('cp', ['-al', gguf, join(models, GGUF_NAME)]);
+  } catch {
+    copyFileSync(gguf, join(models, GGUF_NAME));
+  }
 
   // Electron's userData for app name "youcoded" (desktop/package.json:2) is
   // appData/<name>, and on Linux appData = $XDG_CONFIG_HOME || $HOME/.config —
