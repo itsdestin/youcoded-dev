@@ -161,7 +161,9 @@ const errorTotal = (r) =>
   // lines live in their own counters. Omitting them here would let a change that
   // starts throwing during transcript replay or in the editor still read as a clean KEEP.
   + (r.errors?.stallBoot ?? 0)
-  + (r.errors?.artifactsBoot ?? 0);
+  + (r.errors?.artifactsBoot ?? 0)
+  // Each workload repeat is its own boot since 2026-08-27 (see run.mjs).
+  + (r.errors?.workloadBoots ?? []).reduce((a, b) => a + b, 0);
 
 /**
  * Decide KEEP or REJECT for one experiment.

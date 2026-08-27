@@ -94,6 +94,10 @@ test('new error lines reject', () => {
   const c = clone(); c.startup.median.sessionsListed = 800; c.errors.coldStarts = [2, 0, 0];
   assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, false);
 });
+test('error lines in a per-repeat workload boot reject too (each repeat is its own boot since 2026-08-27)', () => {
+  const c = clone(); c.startup.median.sessionsListed = 800; c.errors.workloadBoots = [0, 3, 0];
+  assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, false);
+});
 test('keeps a real win with no regressions', () => {
   const c = clone(); c.startup.median.sessionsListed = 850;
   const v = verdict(base, c, { target: 'startup.median.sessionsListed', screens: { welcome: { pass: true } } });

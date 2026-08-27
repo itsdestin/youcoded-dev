@@ -630,7 +630,7 @@ export const MEASURES = {
     '3 of the 4 CC sessions are RESUMED from real transcripts (huge, medium, small), each in its transcript\'s own project folder; the 4th is deliberately left EMPTY as a control',
     'a transcript streams into the medium and small sessions throughout the window — never into huge (the one clean loaded switch) and never into the empty control; the run records streamedInto and streamedTurnsBySize',
     '40 switches spread evenly across the same window the CPU sample covers',
-    'the streamed-into transcripts are cut back to their original bytes after every repeat, so repeat N resumes the same conversation repeat 1 did',
+    'every repeat is its OWN boot with a freshly built fixture — nothing (transcript bytes, the app\'s own transcript mirror, caches, leftover sessions, memory) carries from one repeat to the next; the streamed-into transcripts are also cut back to their built bytes after each repeat and their size is checked before it',
   ],
   clocks: {
     switchMedianMs: 'click -> the visible pane CONTAINER swapped (2 animation frames). Does NOT wait for messages.',

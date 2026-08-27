@@ -211,7 +211,7 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   // renames its descriptor, this fixture fails to build rather than quietly
   // rendering a report with no configuration section.
   report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES };
-  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, stallBoot: 0, artifactsBoot: 0 };
+  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0 };
   report.screens = { dir: '/tmp/shots', names: [...SCREEN_NAMES], failures: [] };
   return report;
 }

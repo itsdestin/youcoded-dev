@@ -217,7 +217,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // loudly. The report now carries its own configuration next to its numbers.
     measures: {},
     network: NETWORK_PATHS,
-    errors: { coldStarts: [], scenarioBoot: null, stallBoot: null, artifactsBoot: null },
+    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null },
     screens: null,
     aborted: null,
     incomplete: [],
@@ -460,7 +460,7 @@ export function renderMarkdown(report, stem) {
   );
   lines.push(
     `errors (desktop.log "level":"ERROR" lines): cold starts ${JSON.stringify(report.errors?.coldStarts ?? [])}, ` +
-    `scenario boot ${report.errors?.scenarioBoot ?? '—'}, ` +
+    `scenario boot ${report.errors?.scenarioBoot ?? '—'}, workload boots ${JSON.stringify(report.errors?.workloadBoots ?? [])}, ` +
     `stall boot ${report.errors?.stallBoot ?? '—'}, artifacts boot ${report.errors?.artifactsBoot ?? '—'}`,
   );
   lines.push('A boot that logged errors is not a clean measurement — do not rank a phase from one. Full logs: scratch/perf-lab/logs/.');
@@ -802,7 +802,7 @@ async function main(argv) {
     const fresh = await buildFreshness(cfg.checkout);
     const timestamp = new Date().toISOString();
     const stem = stemFor({ timestamp, sha: fresh.sha, label: cfg.label });
-    const scenarioBoot = ['history', 'workload', 'shots'].some((p) => cfg.only.has(p));
+    const scenarioBoot = ['history', 'shots'].some((p) => cfg.only.has(p));
     let xvfb;
     try { xvfb = resolveXvfbBin(); } catch (e) { xvfb = `(resolution failed: ${e.message})`; }
     const lines = [
@@ -821,7 +821,7 @@ async function main(argv) {
       `  cold-start boots  ${cfg.only.has('startup') ? cfg.runs : 0}`,
       // Named separately rather than summed: the shared boot covers three phases,
       // while stall and artifacts each take one of their own (see their phase blocks).
-      `  scenario boots    ${scenarioBoot ? 1 : 0} shared (history/workload/shots)` +
+      `  scenario boots    ${scenarioBoot ? 1 : 0} shared (history/shots) + ${cfg.only.has('workload') ? cfg.workloadRepeats : 0} workload (one per repeat)` +
         `${cfg.only.has('stall') ? ' + 1 stall' : ''}${cfg.only.has('artifacts') ? ' + 1 artifacts' : ''}`,
       `  history repeats   ${cfg.only.has('history') ? `${cfg.historyRepeats} per size (small, medium, huge)` : '—'}`,
       `  workload passes   ${cfg.only.has('workload') ? `${cfg.workloadRepeats}${cfg.only.has('shots') ? ' + 1 screenshot pass (not in the median)' : ''}` : '—'}`,
@@ -916,8 +916,37 @@ async function main(argv) {
       report.idle = buildIdleSection(runs);
     }
 
-    // ---- One scenario boot for history + workload + screenshots ------------
-    if (['history', 'workload', 'shots'].some((p) => cfg.only.has(p))) {
+    // ---- Workload: its OWN boot PER REPEAT ---------------------------------
+    // WHY (2026-08-27, stream-fix-2/3): three repeats used to share one boot. The
+    // streamer appends to the fixture transcripts; cutting them back afterwards did
+    // not hold, because the app keeps its OWN copy of every transcript under
+    // ~/YouCoded/Personal/Conversations and re-extends the original from it between
+    // repeats (measured: 'small' 266 KB at build, 2.2 MB at repeat 2, 4.7 MB at
+    // repeat 3; every pane count over its label). Fresh fixture + fresh app per
+    // repeat removes that whole class — mirrors, caches, leftover sessions, memory
+    // carried from the previous repeat — the same way the stall and artifacts
+    // phases already isolate themselves. Costs ~40 s of boot per repeat against a
+    // ~4 min repeat.
+    if (cfg.only.has('workload')) {
+      const { runWorkloadScenario, MEASURES: WORKLOAD_MEASURES } = await loadWorkload();
+      report.measures.workload = WORKLOAD_MEASURES;
+      const wruns = [];
+      for (let i = 0; i < cfg.workloadRepeats; i++) {
+        checkDeadline();
+        await noiseGate(report.noise);
+        const fixture = buildFixture(SCRATCH, { log });
+        await withBoot(build, fixture, async (app) => {
+          const r = await runWorkloadScenario(app, fixture);
+          wruns.push(r);
+          log(`workload ${i + 1}/${cfg.workloadRepeats}: switch p95 ${r.switchP95Ms}ms, long tasks ${r.probe?.longtaskTotalMs}ms, ${r.cpuDuringPct}% cpu, ${r.pssAfterMb}MB`);
+          report.errors.workloadBoots.push(readErrorLines(fixture, stem, `workload-${i + 1}`));
+        });
+      }
+      report.workload = buildWorkloadSection(wruns);
+    }
+
+    // ---- One scenario boot for history + screenshots -----------------------
+    if (['history', 'shots'].some((p) => cfg.only.has(p))) {
       checkDeadline();
       await noiseGate(report.noise);
       const fixture = buildFixture(SCRATCH, { log });
@@ -959,19 +988,11 @@ async function main(argv) {
           }
         }
 
-        if (cfg.only.has('workload')) {
-          const { runWorkloadScenario, MEASURES: WORKLOAD_MEASURES } = await loadWorkload();
-          report.measures.workload = WORKLOAD_MEASURES;
-          const wruns = [];
-          for (let i = 0; i < cfg.workloadRepeats; i++) {
-            checkDeadline();
-            const r = await runWorkloadScenario(app, fixture);
-            wruns.push(r);
-            log(`workload ${i + 1}/${cfg.workloadRepeats}: switch p95 ${r.switchP95Ms}ms, long tasks ${r.probe?.longtaskTotalMs}ms, ${r.cpuDuringPct}% cpu, ${r.pssAfterMb}MB`);
-          }
-          report.workload = buildWorkloadSection(wruns);
-
-          if (cfg.only.has('shots')) {
+        // The screenshot pass of the workload journey (numbers NOT in the median —
+        // the measured repeats each get their own boot above).
+        if (cfg.only.has('workload') && cfg.only.has('shots')) {
+          const { runWorkloadScenario } = await loadWorkload();
+          {
             try {
               // A separate pass whose numbers are deliberately NOT in the median:
               // taking screenshots perturbs the very timings it would contribute.
