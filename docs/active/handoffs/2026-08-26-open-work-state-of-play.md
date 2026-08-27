@@ -23,9 +23,14 @@ Nothing else on this page is urgent. These are.
 
 **107 commits exist on this laptop and nowhere else.** Twelve branches have never
 been pushed to GitHub: the specialists work (47 commits), the deliverables card
-(24), past-conversation references (18), project descriptions (13), and four
-smaller ones. A disk failure loses all of it. Pushing is one command per branch
-and changes nothing else.
+(24), past-conversation references (18), and five smaller ones. A disk failure
+loses all of it. Pushing is one command per branch and changes nothing else.
+
+> **Updated 2026-08-26 (later the same day):** project descriptions (13 commits)
+> came off this list — SHIPPED as youcoded PR #330, merge `abd935a3`. Two
+> corrections to what this file said about it: the branch *had* already been
+> pushed (origin held `95af1cb3`), and the tally above is therefore 13 commits
+> lighter than the 107 stated.
 
 **The session-context panel exists only as unsaved files.** 658 lines across 12
 files, including two brand-new components, on a branch with *zero* commits. A
@@ -49,7 +54,7 @@ Ordered by how long they've been waiting.
 |---|---|
 | **2026-08-16** | **A safety question you never saw.** The session hit your weekly limit mid-sentence. In auto-edit mode, hiring a helper agent skips *both* protections the specialists work built for it — so a helper defined inside someone else's repo could run shell commands unprompted. Ship it and track it, or exclude file-defined helpers from auto-edit? **This blocks the specialists merge.** |
 | **2026-08-26** | **The deliverables card's memory blocker.** ⚠ A dev instance on that branch grew to 2.78 GB in 73 minutes and was killed. Compare against a plain-master instance, or dig into what's holding memory? |
-| **2026-08-06** | **Two UI tweaks on project descriptions** — the New Conversation button moved, the description box became auto-sizing. You were asked to look; the work has been finished and idle for twenty days since. |
+| ~~2026-08-06~~ **ANSWERED 2026-08-26** | ~~Two UI tweaks on project descriptions.~~ You reviewed them in the workbench, asked for three more fixes (pill hover, the add-description affordance, the editor's geometry), approved, and the whole feature **shipped** — youcoded PR #330, merge `abd935a3`. |
 | **2026-08-16** | **The dual-model crash.** Should the app auto-unload, warn, or hard-block when two models won't fit — and is a single model capped? Explicitly flagged "do not guess." Still unfixed. |
 | **2026-07-28** | **"Ask about this."** You called it *"janky af for the artifact viewer."* The branch is complete and tested; resuming means deciding whether to rework or rewrite the overlay. |
 | now | **Phase B of the UI review** — three items, each with an "approve the measured part only" option, which means reverting the taste half before merge. Plus two questions raised and unanswered. |
@@ -64,8 +69,12 @@ Ordered by how long they've been waiting.
 Zero conflicts, zero drift, tests green. Needs you to drag a window edge once.
 Currently has no pull request and **has never been pushed**.
 
-**Project descriptions** — all nine tasks done, tests green, one trivial conflict.
-Waiting only on the two tweaks in §2.
+~~**Project descriptions**~~ — **SHIPPED 2026-08-26**, youcoded PR #330, merge
+`abd935a3`. The branch was 570 behind by then; master merged in with one
+conflict (`mock-shim.ts`, resolved as a union of both sides). Branch and
+worktree removed. **Two things it did NOT close:** the three manual cross-device
+checks still need two real devices and a real build, and spec §9's mixed-version
+hazard is unchanged — both gate the release it ships in, not the merge.
 
 **UI Phase B** — merges clean, 0 behind. Waiting on your per-item decision.
 

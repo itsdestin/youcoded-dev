@@ -302,6 +302,12 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 
 ## 21. Planned & aspirational features
 
+> **Moved out 2026-08-26:** *project descriptions* (synced, user-written) shipped —
+> youcoded PR #330. Every project takes a short label that appears on its card and in
+> the project list; it syncs for synced projects, stays local for plain folders, and
+> never enters a session's prompt.
+
+
 **In-flight (the Native Runtime Parity program — M1–M3, M5 shipped; M6–M9 open):** context truncation made visible to the user (a session-context transparency panel that accounts for what the assistant started with: system prompt, CLAUDE.md as-truncated, skill/tool lists, per-file "full vs supplied" diffs) · metadata sourcing + cost chip + capability tiering/step budgets · the cwd contract · MCP phase 2 (settings UI + server adoption + IPC) · subagents → orchestration · full Android harness parity · onboarding equality.
 
 **Core product roadmap (from the July 2026 vision doc):**
@@ -314,7 +320,7 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 - **YouCoded-managed cloud** (planned sync evolution) — zero-setup sync with client-side E2E encryption, likely a paid tier ("no GitHub needed").
 - **Conversation transcript storage plan** — the GitHub ceiling is measured and acknowledged; the goal is "every transcript available on every device, always" (optionally via a first-party store).
 - **Assistant-settings consolidated panel** — a tabbed refactor with live search.
-- **Project descriptions** (synced, user-written) · **project-scoped skills** (repo `.claude/skills/` in native sessions).
+- **Project-scoped skills** (repo `.claude/skills/` in native sessions).
 - **Chat search phases 2 + 3** — writes (tag/note/flag from search results) and per-work-item digests.
 - **Git surface phase 2** — branch ops, push/PR, repo-wide review, hunk-level staging.
 - **Editor tabs** (multiple open files) · **persistent file tree** · **go-to-definition via tree-sitter/ctags** · **HTML preview url() chasing**.
