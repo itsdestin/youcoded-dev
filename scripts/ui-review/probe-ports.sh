@@ -2,7 +2,7 @@
 # probe-ports.sh <port> [<port> ...] — exit 1 naming every port that already has a listener.
 # WHY: two review sweeps at offsets 300 and 310 overlapped their CDP port ranges and
 # deadlocked for 20 minutes with no error (2026-08-27, hand-off gap 1). Refusing loudly is
-# the fix; `ss` is the reliable local truth, `nc` is the fallback where ss is absent.
+# the fix; `ss` is the reliable local truth, bash's /dev/tcp is the fallback where ss is absent.
 busy=()
 for p in "$@"; do
   if command -v ss >/dev/null 2>&1; then
