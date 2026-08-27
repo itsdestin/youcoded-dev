@@ -148,8 +148,16 @@ not reviewed as a document.
   harmless; the remote branch was deleted by hand.
 - `.claude/rules/artifacts.md` and `ipc-bridge.md` had another session's
   uncommitted wording-trim in the working tree. The shared-read bullet was
-  committed against HEAD's version AND inserted into the working-tree copy so
-  neither commit drops it.
+  committed against HEAD's version (via a staged blob) so the trim wasn't
+  swept into my commit — but the follow-up step that re-inserted the bullet
+  into the working-tree copy opened the file for WRITING before reading it
+  and **emptied it, losing that session's uncommitted trim** (16 changed
+  lines, semantic no-ops as far as the visible part showed). The file was
+  restored to HEAD + bullet; the ~11 visible lines of the lost diff are in
+  the untracked `.claude/rules/artifacts.md.recovered-trim.partial.patch`
+  for whoever owns that trim. `ipc-bridge.md`'s pending trim was not touched.
+  Lesson (also a memory): `open(p,'w')` truncates at evaluation time — read
+  first, then write.
 - A fresh worktree has no `node_modules`; `cp -al` from the main checkout
   (never a symlink — see CLAUDE.md) took seconds.
 - `verify.sh` runs from the workspace root, not the worktree.
