@@ -240,6 +240,22 @@ the Xvfb display.
 
 ---
 
+## Keeping the machine awake
+
+This machine sleeps on idle (KDE PowerDevil), and a full run is 20+ minutes of
+mostly waiting. A suspend mid-run does **not** fail loudly — it stretches whatever
+interval straddles it, and the noise gate only samples *before* each boot, so
+nothing downstream would catch it. Wrap any real run:
+
+```bash
+systemd-inhibit --what=idle:sleep --mode=block --who="perf-lab" \
+  --why="performance measurement run in progress" \
+  node scripts/perf-lab/run.mjs --runs 5 --label exp-1
+```
+
+No root needed. The inhibitor is released when the command exits, so nothing is
+left holding the machine awake. Confirm with `systemd-inhibit --list`.
+
 ## Known limits — read before ranking anything visual
 
 **Xvfb has no GPU.** Everything renders through software rasterisation. Any measurement
