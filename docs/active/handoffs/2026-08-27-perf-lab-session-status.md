@@ -16,24 +16,72 @@ is the current truth; the plan is history.
 
 ---
 
-## 1. The objective, original and revised
+## 1. The objective — read all three, the third one governs
 
-**Original (the plan):** build a one-command headless performance rig, capture a
-baseline, then run an autonomous measure → change → re-measure loop whose kept wins
-ship as one `perf/optimization-pass` PR.
+The goal has been restated twice by Destin. Each restatement widened it, and a session
+that acts on an earlier one will build the wrong thing.
 
-**Revised (Destin, mid-session, verbatim intent):** *"turn everything we find to work
-or be useful this session into a repeatable stress test we can use to cycle and notice
-future performance issues on different app surfaces."*
+**v1 — the plan (2026-08-23).** Build a one-command headless performance rig, capture a
+baseline, then run an autonomous measure → change → re-measure loop whose kept wins ship
+as one `perf/optimization-pass` PR.
 
-That reframe is the operative goal. The **suite is the deliverable**, not a one-time
-optimization pass. Every finding becomes a permanent scenario so the next regression on
-any surface is caught by running one command instead of being re-investigated.
+**v2 — mid-session (Destin, verbatim intent).** *"turn everything we find to work or be
+useful this session into a repeatable stress test we can use to cycle and notice future
+performance issues on different app surfaces."* The **suite** became the deliverable, not
+a one-time optimization pass.
 
-The reframe was prompted by Destin reporting real, daily symptoms the rig was missing:
+That reframe was prompted by Destin reporting real, daily symptoms the rig was missing:
 frequent freezes, lagging animations, sluggishness, and moments where *"all animations
 app-wide slow down, sometimes I can't click anything."* Those reports are primary
 evidence and they redirected the whole exercise.
+
+**v3 — 2026-08-27 (Destin, verbatim). THIS IS THE OPERATIVE GOAL:**
+
+> *"the goal is to create the infrastructure to hillclimb/optimize all bug classes and
+> improve code efficiency autonomously. this work all cross-pollinates a bit, this should
+> help us improve our perf optimization rig. we will use these bugs to test the rig a bit
+> later."*
+
+### What v3 changes
+
+v2 aimed at *detecting regressions*. v3 aims at **an autonomous improvement loop**, and
+the difference is not scope — it is what counts as evidence.
+
+1. **The deliverable is the loop, not the suite and not the fixes.** The suite is one
+   component. A loop also needs a verdict function, guardrails, a ratchet, and — the part
+   nobody has built — a way to know the loop can *see*.
+2. **The 28 defects in `2026-08-27-perf-defect-classes.md` are no longer the product.
+   They are the TEST CORPUS for the rig.** Destin: *"we will use these bugs to test the
+   rig a bit later."* Each register entry is a labelled case with a known mechanism and a
+   known location. That makes them the closest thing available to ground truth.
+3. **"All bug classes" is wider than performance.** Hillclimbing needs a measurable
+   objective function; perf metrics are the ones that exist today, but the same
+   loop shape applies to any mechanically checkable property (dead code via `knip`, the
+   ast-grep invariant scans, type errors). Do not silently narrow v3 back to perf.
+
+### The consequence nobody has addressed yet
+
+**An autonomous loop is only as good as its sensitivity, and the rig's sensitivity is
+currently unknown.** `compare.mjs` keeps a change only when the improvement clears BOTH
+5% and the baseline's own run-to-run spread. That means every metric has a **detectable
+effect floor** equal to its spread — and no one has measured what those spreads are. If a
+metric's spread is 30%, the loop is structurally blind to every real 20% win on it, and
+will report "no change" forever while hillclimbing gets nowhere.
+
+Worse, we already have one proven case of a metric that was *stable and wrong*: the
+retracted 3.3 s blank window had 0.4% spread across six boots and was stable **because**
+it was a hardcoded timeout (§5). Low spread proves repeatability, never validity.
+
+So before the loop can be trusted to run unattended, two things must be measured that
+never have been:
+
+- **the spread of every PRIMARY metric**, which sets the smallest win each can prove;
+- **whether the rig detects a defect we know is there** — which is exactly what the
+  28-entry register is for.
+
+A rig that cannot detect a hand-verified defect is broken, and it will say the app is
+fine while it does so. That failure is silent by construction, which is why it has to be
+tested deliberately rather than assumed.
 
 ---
 

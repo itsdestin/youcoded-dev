@@ -432,6 +432,48 @@ action pays a full rebuild.
 
 ---
 
+## This register's second job: calibrating the rig
+
+Added 2026-08-27 after Destin restated the goal as *"infrastructure to hillclimb/optimize
+all bug classes and improve code efficiency autonomously … we will use these bugs to test
+the rig a bit later."*
+
+Under that goal the register stops being a to-do list and becomes a **labelled test
+corpus**. Each entry is a defect with a known mechanism at a known location, verified by
+reading the code rather than by trusting a measurement. That makes it the only ground
+truth available for answering the question an autonomous loop cannot answer about itself:
+
+> **Can the rig actually see a defect that is definitely there?**
+
+This matters because the failure is silent. A rig aimed at the wrong configuration, or
+using a throughput metric for a latency defect, does not error — it returns a clean
+number. Class 4 is the worked example: `idle.pssMb` and `idle.cpuPct` have been in
+`PRIMARY` the whole time, and are structurally incapable of seeing S1.
+
+### How to use the corpus
+
+For each entry the rig claims to cover, the calibration question is three-part:
+
+1. **Detection.** With the defect present, does the metric move outside the baseline's
+   own spread? If not, the metric cannot prove any fix to it either — the loop would
+   hillclimb blind.
+2. **Attribution.** Does it move the *right* metric? A main-process defect that only
+   shows up in a renderer number will send the next fix at the wrong thread.
+3. **Floor.** How large does the effect have to be before the verdict flips? That number
+   is the smallest win the loop can ever ship on that metric, and it should be published
+   beside the metric rather than discovered later by a session wondering why nothing
+   ever passes.
+
+An entry the rig cannot detect is not a bad entry. It is a **gap in the rig**, and the
+register is what makes that gap visible instead of silent.
+
+### The inversion worth stating plainly
+
+For every other purpose, a hand-verified defect the rig misses is bad news about the app.
+For calibration it is the opposite: **it is the most valuable result available**, because
+it is the only way to find out that a metric is decorative before an autonomous loop
+spends a week trusting it.
+
 ## Standing rules this register implies
 
 1. **A fix for R1 must also cover M1.** They are the same defect on two code paths. Any
