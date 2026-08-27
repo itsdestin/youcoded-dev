@@ -466,7 +466,9 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
     // from a record that had no cwd, guessed `beta` for the medium transcript
     // (which lives here, under alpha), and measured an EMPTY session labelled
     // "medium" for a day. The field the code already reached for now exists.
-    transcripts[name] = { sessionId, slug, path, turns, cwd: projects.alpha };
+    // `bytes` lets a scenario check the file is still the one that was built before
+    // measuring against it (scenario-workload streams into these and must undo it).
+    transcripts[name] = { sessionId, slug, path, turns, cwd: projects.alpha, bytes: statSync(path).size };
   }
 
   // ── Decoy transcripts: file COUNT, not file size ──────────────────────────

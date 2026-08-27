@@ -405,6 +405,14 @@ async function installPageHelpers(cdp) {
   })()`);
 }
 
+/** Destroys every session in `ids` (best effort) and empties the list, so a second call is a no-op. */
+async function destroySessions(cdp, ids) {
+  while (ids.length) {
+    const id = ids.shift();
+    try { await cdp.evaluate(`window.claude.session.destroy(${JSON.stringify(id)})`); } catch { /* session already gone */ }
+  }
+}
+
 /** Creates one session and reports how long the create invoke took. */
 async function createSession(cdp, opts) {
   const r = await cdp.evaluate(`(async () => {
@@ -513,8 +521,15 @@ export const STREAM_SIZES = Object.freeze(['medium', 'small']);
 export function restoreStreamTargets(list, warnings = []) {
   while (list.length) {
     const r = list.shift();
-    try { truncateSync(r.path, r.size); }
-    catch (err) { warnings.push(`workload: could not restore ${r.path} to ${r.size} bytes (${err.message}) — later repeats in this boot resume a LARGER conversation than labelled`); }
+    try {
+      truncateSync(r.path, r.size);
+      // Verify, don't assume: a writer still holding the file could re-grow it
+      // between the truncate and the next repeat. Measured 2026-08-27 (stream-fix-2):
+      // truncating while the app still WATCHED the file left small at 4.5 MB
+      // against a fresh 275 KB and doubled every pane's entry count in repeat 2.
+      const now = statSync(r.path).size;
+      if (now !== r.size) warnings.push(`workload: restored ${r.path} to ${r.size} bytes but it is ${now} bytes afterwards — something else is writing to it; later repeats in this boot resume a DIFFERENT conversation than labelled`);
+    } catch (err) { warnings.push(`workload: could not restore ${r.path} to ${r.size} bytes (${err.message}) — later repeats in this boot resume a LARGER conversation than labelled`); }
   }
 }
 
@@ -810,7 +825,17 @@ export async function runWorkloadScenario(app, fixture, {
     if (targets.length !== STREAM_SIZES.length) {
       warnings.push(`workload: only ${targets.length}/${STREAM_SIZES.length} stream targets exist in the fixture (${targets.map((t) => t.size).join(', ') || 'none'}) — the load is lighter than this scenario describes`);
     }
-    for (const t of targets) streamRestore.push({ path: t.path, size: statSync(t.path).size });
+    for (const t of targets) {
+      const size = statSync(t.path).size;
+      // The fixture records each transcript's byte size at build. A different size
+      // here means a previous repeat's stream was not fully undone (or something
+      // else wrote the file) — and every "N of M expected" below would be wrong.
+      const built = fixture.transcripts?.[t.size]?.bytes;
+      if (typeof built === 'number' && built !== size) {
+        warnings.push(`workload: '${t.size}' transcript is ${size} bytes at the start of this repeat, not the ${built} bytes the fixture built — a previous repeat's stream was not undone, so this repeat resumes a bigger conversation than its label says`);
+      }
+      streamRestore.push({ path: t.path, size });
+    }
     const windowMs = cpuSampleSeconds * 1000;
     // The relationship is explicit, not coincidental: the switches are spread
     // evenly across the SAME window the CPU sample and the streamer cover, so
@@ -914,9 +939,6 @@ export async function runWorkloadScenario(app, fixture, {
 
     const streamed = { ...streamer.state };
     streamer = null;
-    // Put the fixture transcripts back to their pre-stream bytes NOW, so a failure
-    // lands in this run's warnings; the finally below is the throw-path fallback.
-    restoreStreamTargets(streamRestore, warnings);
 
     // ── Settings open/close ──────────────────────────────────────────────
     // PSS is read twice: before the Settings toggle and after it, so a memory
@@ -934,8 +956,28 @@ export async function runWorkloadScenario(app, fixture, {
     // sits next to it so the two halves are separable.
     const pss = pssMb(app.family());
 
+    // Tear the sessions down HERE, before the files are restored and before the
+    // return, so restore failures land in this run's warnings. The finally below
+    // is the throw-path fallback for both.
+    //
+    // WHY destroy first, restore second (2026-08-27, stream-fix-2): the first
+    // version restored the files while the six sessions still had them open. The
+    // watcher tails by byte offset; a file that shrinks under it is re-read from
+    // zero, so repeat 2 opened panes holding roughly DOUBLE the transcript and the
+    // small file ended the boot at 4.5 MB against a fresh 275 KB. With keepSessions
+    // (the screenshot pass) nothing is restored — the pass is the last thing in
+    // the boot and the fixture is rebuilt for the next one.
+    const sessionsCreated = ids.length;   // captured BEFORE destroySessions empties the list
+    if (!keepSessions) {
+      await destroySessions(cdp, ids);
+      restoreStreamTargets(streamRestore, warnings);
+    } else if (streamRestore.length) {
+      warnings.push(`workload: keepSessions is set, so the streamed-into transcripts were NOT restored (${streamRestore.map((r) => r.path).join(', ')}) — fine for a screenshot pass, wrong for anything measured after it in this boot`);
+      streamRestore.length = 0;
+    }
+
     return {
-      sessionsCreated: ids.length,
+      sessionsCreated,
       // What each session actually held, so a reader never has to guess whether
       // "switching" meant switching between loaded conversations or empty ones.
       sessionSizes: sizeByName,
@@ -1020,12 +1062,8 @@ export async function runWorkloadScenario(app, fixture, {
     // poisoning every later scenario in the same boot. Cleanup is best-effort on
     // purpose — a cleanup failure must not mask the original error.
     if (streamer) { try { streamer.stop(); } catch { /* already stopped */ } }
+    if (!keepSessions) await destroySessions(cdp, ids);
     restoreStreamTargets(streamRestore);
-    if (!keepSessions) {
-      for (const id of ids) {
-        try { await cdp.evaluate(`window.claude.session.destroy(${JSON.stringify(id)})`); } catch { /* session already gone */ }
-      }
-    }
     // Leave no rAF loop or PerformanceObserver running into the next scenario or
     // the screenshot pass (see installProbe).
     try { await stopProbe(cdp); } catch { /* page gone */ }
