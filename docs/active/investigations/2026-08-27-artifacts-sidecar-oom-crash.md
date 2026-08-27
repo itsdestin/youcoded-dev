@@ -1,7 +1,7 @@
 ---
 title: YouCoded main-process OOM — the artifacts sidecar is now 6.4 MB and every read parses all of it
 date: 2026-08-27
-status: active
+status: shipped
 tags: [artifacts, memory, crash, conversations]
 related:
   - ROADMAP.md line 234 (PR #318, FIXED 2026-08-15 — the write-side burst)
@@ -28,9 +28,20 @@ copies ≈ 3.0 GB** against V8's 2,825 MB ceiling. The process traps and dies.
 PR #318 (2026-08-15) fixed the *write* side of exactly this bug and left all 20
 *read* sites unguarded. The file has grown 4.4 → 6.4 MB in the 12 days since.
 
-**The fix that stops the crash:** a read-side coalescer mirroring `appendQueues`,
-so concurrent reads of one project root share a single parse. No data touched.
-Trimming the file alone only postpones it.
+**The fix that stops the crash — SHIPPED 2026-08-27, youcoded PR #335 (master
+`9dc0d9c7`):** `readSidecarShared` — one parsed copy per project, validated by
+size + mtime, concurrent callers share one in-flight parse, a committed write
+seeds it — plus a 4 KB head probe for the CAS timestamp. No data touched.
+Reproduced first: the old path at N=477 concurrent reads of the real file dies
+with the journal's exact `Ineffective mark-compacts near heap limit`; the new
+path at N=477 is one parse and 25 MB peak. Trimming the file alone would only
+have postponed it.
+
+**The rest of the bug class** (a six-lens sweep found it in five places —
+transcript replay at 75 MB + 90 MB per session on every reload being the
+largest, and Android's artifact store having never received #318's write
+queue) is designed and PAUSED in
+`docs/active/specs/2026-08-27-paged-history-and-read-hardening-design.md`.
 
 **Composition of the 6.4 MB:** 39% is 107 worktrees that no longer exist on
 disk; 14% is the same edits re-recorded on each CC resume (open ROADMAP item,
@@ -46,14 +57,14 @@ Then, in order:
 
 1. Read **Verdict** → **Evidence** → **The cost of one file edit** below. That is
    the whole case; nothing else needs re-deriving.
-2. The fix is **not started**. No code has been touched. Start at
-   **Fix shape**, which lists three independent levers in priority order.
+2. Levers 1 and 3 of **Fix shape** shipped in youcoded PR #335. Lever 2 (the
+   data decisions) and the wider bug class live in the paused spec above.
 3. Do the work in a worktree (`youcoded/`, desktop only) and finish with
    `bash scripts/verify.sh <worktree>`.
 4. **Do not test against the live app** — `bash scripts/run-dev.sh` only
    (`.claude/rules/live-app-safety.md`).
-5. The reproduction has **not** been done. See **Reproduction** at the bottom —
-   the fix should not be claimed working until it has.
+5. The reproduction is done — see **Reproduction** at the bottom for the
+   numbers and the command shape to re-run it against a bigger file.
 
 ROADMAP entries for this work: search `ROADMAP.md` for
 `PR #318 queued the sidecar WRITER` (this bug) and `Six small per-session
@@ -227,7 +238,7 @@ same V8 heap OOM. There are no other crash causes on record.
   for 10 minutes under light use: flat, 860–1030 MB, no upward drift. The leak
   requires sustained agent file-writing.
 
-## Fix shape (proposed — not agreed, and not started)
+## Fix shape (levers 1 + 3 shipped in PR #335; lever 2 open)
 
 Two independent levers; the first is the real fix.
 
@@ -291,10 +302,21 @@ TTL — the 5 MB `provider-catalog-cache.json` is not duplicated),
 - A pinning test that fails when the sizing comment's assumption and the
   structure's real cost diverge, or at minimum update `artifact-store.ts:333`.
 
-## Reproduction
+## Reproduction (done 2026-08-27, with the fix)
 
-Not attempted live — per the live-app-safety rule, this was diagnosed entirely
-from the core dump, the journal, and the on-disk sidecar. A dev-instance repro
-would copy the real 6.4 MB sidecar into a scratch project and fire a replay
-burst; that has not been done and the fix should not be claimed working until it
-has.
+Never against the live app. A copy of the real sidecar (by then 6.9 MB /
+22,017 versions) in a scratch project, one Node process running the built
+`artifact-store.js` with `--max-old-space-size=2800` (the app's ceiling), and a
+`Promise.all` burst of N reads:
+
+```
+old  N=60:   60 parses, peak heap 1,188 MB, 622 ms
+old  N=477:  FATAL ERROR: Ineffective mark-compacts near heap limit
+             Allocation failed - JavaScript heap out of memory
+new  N=477:  1 parse,   peak heap 25 MB,    15 ms
+```
+
+The 477 is the copy count from the core dump; the failure text is the
+journal's. Guards: `tests/artifacts/sidecar-cache.test.ts`,
+`cas-write.test.ts` ("head probe"), `artifact-store.test.ts` ("zero
+JSON.parse on the CAS path").
