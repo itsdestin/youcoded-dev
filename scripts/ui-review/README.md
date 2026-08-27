@@ -48,7 +48,7 @@ the reason. **A review must quote `coverage.md` and call unverified surfaces "un
 
 ## Pieces
 
-**Two sweeps at once collide.** Each shard's Chrome takes CDP port `30000 + offset + index`; a second session sweeping at the same default offset (300) deadlocks both for 20+ minutes with no error (2026-08-27). Until the rig probes ports (ROADMAP bug), run a concurrent sweep with `YOUCODED_PORT_OFFSET=310` (a different Vite port AND CDP range).
+**Two sweeps at once collide.** Each shard's Chrome takes CDP port `30000 + offset + index`; the index runs to ~80 per sweep, so a second session at offset 310 still overlaps 300 and both deadlock for 20+ minutes with no error (2026-08-27). Until the rig probes ports (ROADMAP bug), keep concurrent sweeps **at least 100 apart** — `YOUCODED_PORT_OFFSET=400` (a different Vite port AND a clear CDP range).
 
 | File | Job |
 |---|---|

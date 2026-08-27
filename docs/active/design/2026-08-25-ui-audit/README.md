@@ -18,7 +18,11 @@
   `images/phase-c/` from `scratch/ui-phase-c-baseline/`, a sweep of master at `c04739df`) — the Phase C
   brief as a **deck**: 16 points on 5 screens, one point per step, one ring on the target, Yes/No. A
   prose-first brief and a board-of-cards layout were both rejected the same day; the deck is the
-  template from here on. Awaiting Destin's picks.
+  template from here on. Decided 2026-08-27: 13 of 16 points yes.
+- `phase-c-review.html` (spec `phase-c-review.json`, crops in `images/phase-c-review/` from
+  `scratch/ui-phase-c-baseline/` vs `scratch/ui-phase-c-after/`, branch `feat/ui-phase-c`) — the Phase C
+  review deck: Before/After flip per point for the 13 built changes, plus two question steps
+  (P-21 #2 re-explained, P-3 #2 glass sliders on flat themes). Awaiting Destin's answers.
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
   (the original pass: 103 of 104 — "Known Issues" opens an external link; the latest full sweep
   of master, 2026-08-26 after Phase B, verified 112 of 112). `contrast.md` — the painted-pixel

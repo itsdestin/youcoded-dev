@@ -1,0 +1,410 @@
+{
+  "out": "phase-c-review.html",
+  "images": "images/phase-c-review",
+  "key": "Phase C review",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-phase-c-baseline",
+    "after": "/home/destin/youcoded-dev/scratch/ui-phase-c-after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "crops": {
+    "themes-dialog": [
+      "main",
+      "settings-appearance",
+      "440x600+500+150"
+    ],
+    "theme-edit-builtin": [
+      "main",
+      "theme-edit-builtin",
+      "440x600+500+150"
+    ],
+    "market-hero": [
+      "marketplace",
+      "marketplace",
+      "900x200+0+50"
+    ],
+    "market-card-counts": [
+      "main",
+      "marketplace",
+      "600x150+10+375"
+    ],
+    "market-themes-rows": [
+      "marketplace",
+      "marketplace-themes",
+      "1440x300+0+150"
+    ],
+    "market-bar": [
+      "marketplace",
+      "marketplace",
+      "760x70+0+248"
+    ],
+    "market-search": [
+      "marketplace",
+      "marketplace",
+      "300x70+1120+248"
+    ],
+    "market-narrow-title": [
+      "narrow",
+      "marketplace",
+      "390x56+0+0"
+    ],
+    "market-explore-empty": [
+      "marketplace",
+      "marketplace-empty",
+      "720x160+0+50"
+    ],
+    "market-themes-empty": [
+      "empty-marketplace",
+      "marketplace-themes",
+      "1440x240+0+50"
+    ],
+    "library-empty": [
+      "empty-marketplace",
+      "library",
+      "1440x330+0+0"
+    ],
+    "library-tabs": [
+      "main",
+      "library",
+      "520x110+0+0"
+    ]
+  },
+  "title": "Phase C review — 13 changes built, 2 questions",
+  "lead": "Every step flips Before / After (space bar) on the same crop of the real app. Yes = keep it as built; No = revert that point; Tell me more = I explain further. Two steps at the end are questions from your feedback rather than built changes.",
+  "items": [
+    {
+      "id": "P-3",
+      "title": "Themes dialog",
+      "surface": "Settings → Appearance",
+      "image": {
+        "crop": "themes-dialog",
+        "themes": [
+          "midnight",
+          "light",
+          "halftone-dimension"
+        ],
+        "cols": [
+          "before",
+          "after"
+        ],
+        "fit": "none"
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "measured",
+          "what": "Cards: the theme's preview picture on top, one text row at the bottom, every card the same height — the active card no longer grows and stretches its neighbour.",
+          "fix": "Built as you described. Built-ins got preview pictures made with the marketplace's own generator; community and user themes show their own preview.png; a theme with no picture falls back to the old colour strip.",
+          "at": {
+            "midnight": [
+              27,
+              24
+            ],
+            "light": [
+              27,
+              38
+            ],
+            "halftone-dimension": [
+              27,
+              24
+            ]
+          },
+          "risk": "In these screenshots Halftone and Meadow show the colour-strip fallback because the screenshot rig cannot serve theme folders (theme-asset://); in the app they show their own preview.png. Built-in pictures load from the app bundle on every platform."
+        },
+        {
+          "n": 3,
+          "kind": "measured",
+          "what": "“Your Themes” is now “Favorited Themes”; “Browse all themes →” is gone; “Browse Theme Marketplace” sits above “Build New Theme with Claude”.",
+          "fix": "As decided. The only way the old button was reachable was this dialog, so its plumbing in the app shell was removed too.",
+          "at": {
+            "midnight": [
+              50,
+              52
+            ],
+            "light": [
+              50,
+              58
+            ],
+            "halftone-dimension": [
+              50,
+              52
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "P-21",
+      "title": "Marketplace cards",
+      "surface": "Marketplace",
+      "image": {
+        "crop": "market-hero",
+        "themes": [
+          "midnight",
+          "light",
+          "halftone-dimension",
+          "meadow-mist"
+        ],
+        "cols": [
+          "before",
+          "after"
+        ],
+        "fit": "none"
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "measured",
+          "what": "The featured card's border is the theme's normal card edge; the gold (and the other entries' blue/green) is gone.",
+          "fix": "As decided.",
+          "at": [
+            1.5,
+            50
+          ]
+        },
+        {
+          "n": 3,
+          "kind": "measured",
+          "what": "“1 install”, “1 like” — counts pluralise properly everywhere a card shows them.",
+          "fix": "As decided (one shared helper, with a test).",
+          "at": [
+            35,
+            81
+          ],
+          "image": {
+            "crop": "market-card-counts",
+            "themes": [
+              "midnight"
+            ],
+            "cols": [
+              "before",
+              "after"
+            ],
+            "fit": "none"
+          }
+        },
+        {
+          "n": 2,
+          "kind": "judgment",
+          "what": "You asked me to explain this one. Look at the Themes tab: the card BOXES are all the same size, but the words inside stop at different heights — some cards have a two-line description, some none; some have a likes count, some none. So a row of seven cards has five different “bottom edges” of text.",
+          "fix": "If you say Yes, every theme card reserves the same space for those two lines and the counts row whether or not it has them, so all the text lines up. If No, nothing changes.",
+          "at": [
+            10,
+            92
+          ],
+          "image": {
+            "crop": "market-themes-rows",
+            "themes": [
+              "midnight",
+              "creme"
+            ],
+            "cols": [
+              "before"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "title": "Your Library",
+      "surface": "Library",
+      "image": {
+        "crop": "library-empty",
+        "themes": [
+          "midnight",
+          "halftone-dimension",
+          "light"
+        ],
+        "cols": [
+          "before",
+          "after"
+        ],
+        "fit": "width"
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "measured",
+          "what": "A new install's Library now shows the app's standard empty message with a “Browse the Marketplace” button, instead of two headings over nothing.",
+          "fix": "The counting bug is fixed and pinned by a test so it cannot silently come back.",
+          "at": [
+            50,
+            62
+          ]
+        },
+        {
+          "n": 2,
+          "kind": "judgment",
+          "what": "The Skills | Themes switcher is now the Projects-style pill: icon, label and a count of what is installed.",
+          "fix": "As decided. Projects itself is untouched.",
+          "at": [
+            30,
+            75
+          ],
+          "image": {
+            "crop": "library-tabs",
+            "themes": [
+              "midnight",
+              "light",
+              "halftone-dimension"
+            ],
+            "cols": [
+              "before",
+              "after"
+            ],
+            "fit": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "P-1",
+      "title": "Marketplace bar and states",
+      "surface": "Marketplace",
+      "image": {
+        "crop": "market-bar",
+        "themes": [
+          "midnight",
+          "light"
+        ],
+        "cols": [
+          "before",
+          "after"
+        ],
+        "fit": "none"
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "judgment",
+          "what": "Plugins / Themes is a two-position switch (with All), in the same spot; the eleven filters stay pills.",
+          "fix": "As decided. Same switch inside the phone filter sheet.",
+          "at": [
+            12,
+            50
+          ]
+        },
+        {
+          "n": 2,
+          "kind": "judgment",
+          "what": "The search box is the app's shared search pill with the magnifier — the same one Projects uses.",
+          "fix": "As decided; on phones the same pill carries the Filters button.",
+          "at": [
+            50,
+            50
+          ],
+          "image": {
+            "crop": "market-search",
+            "themes": [
+              "midnight",
+              "light"
+            ],
+            "cols": [
+              "before",
+              "after"
+            ],
+            "fit": "none"
+          }
+        },
+        {
+          "n": 3,
+          "kind": "measured",
+          "what": "When nothing matches: one standard empty message with a “Clear filters” button — no more “0 results” + a second sentence.",
+          "fix": "As decided, using the app's shared empty block.",
+          "at": [
+            50,
+            70
+          ],
+          "image": {
+            "crop": "market-themes-empty",
+            "themes": [
+              "midnight",
+              "light"
+            ],
+            "cols": [
+              "before",
+              "after"
+            ],
+            "fit": "width"
+          }
+        },
+        {
+          "n": 4,
+          "kind": "measured",
+          "what": "“Explore everything” shows “Loading the marketplace…” while the registry loads, and the standard error block with Retry (showing the real error) if it cannot be reached.",
+          "fix": "As decided. Shown only when nothing has loaded yet, so the grid never flashes to a spinner after an install.",
+          "at": [
+            35,
+            62
+          ],
+          "image": {
+            "crop": "market-explore-empty",
+            "themes": [
+              "midnight"
+            ],
+            "cols": [
+              "before",
+              "after"
+            ],
+            "fit": "none"
+          }
+        },
+        {
+          "n": 5,
+          "kind": "measured",
+          "what": "Phone width: the title reads “Marketplace”. Cause found: the “Esc · Back to chat” hint was supposed to hide on phones and never did (a class-ordering bug in the shared Button), stealing the title's room.",
+          "fix": "The hint is now not rendered at phone width. The underlying Button bug is filed in the ROADMAP for a proper fix.",
+          "at": [
+            32,
+            50
+          ],
+          "image": {
+            "crop": "market-narrow-title",
+            "themes": [
+              "midnight"
+            ],
+            "cols": [
+              "before",
+              "after"
+            ],
+            "fit": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q",
+      "title": "Questions from your feedback",
+      "surface": "",
+      "image": {
+        "crop": "theme-edit-builtin",
+        "themes": [
+          "midnight",
+          "creme"
+        ],
+        "cols": [
+          "before"
+        ],
+        "fit": "none",
+        "zoom": 0.6
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "judgment",
+          "what": "P-3 #2 — you expected Glass sliders behind the pencil. They are hidden on purpose for any theme with no wallpaper or gradient (all four built-ins are flat colours), so this empty dialog is what the real app shows too — not a screenshot problem.",
+          "fix": "Yes = show the Glass sliders on flat themes anyway (panel opacity would tint panels toward the canvas colour; blur would do nothing visible). No = leave the editor as it is. The pencil stays either way.",
+          "at": [
+            50,
+            18
+          ]
+        }
+      ]
+    }
+  ],
+  "closing": "<h2>Not changed</h2><ul><li>Projects (P-5): both points declined — untouched.</li><li>The pencil on built-in themes still opens the editor (P-3 #2 declined).</li></ul>"
+}
