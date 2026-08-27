@@ -1,7 +1,8 @@
 ---
 title: Terminal text renders as solid black boxes — xterm's atlas mipmap upload is rejected by the GPU driver
 date: 2026-08-27
-status: active
+status: shipped
+shipped: youcoded PR #333, merge f9f39ee6 (2026-08-27) — option A below; chat-panel section still open
 tags: [terminal, xterm, webgl, linux, renderer]
 related:
   - youcoded 619d064a (2026-07-30 — the "heal on toggle/resize" fix; IS in the installed build, and is NOT enough)
