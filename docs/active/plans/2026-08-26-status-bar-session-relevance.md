@@ -2843,3 +2843,48 @@ while OpenRouter bills them for every turn after the swap.
 
 - [ ] **4:** `bash scripts/verify.sh worktrees/statusbar-relevance`
 - [ ] **5: Commit** — `test(harness): pin that a model swap re-reads whether the new model is free`
+
+---
+
+### Task 25: A comment that invites someone to delete working code
+
+**Depends on:** Task 23. **Found by:** the Task 23 review.
+
+Three small items, but the first is the kind of thing that bites a future session.
+
+**Files:**
+- Modify: `desktop/tests/subagent-usage-event.test.ts`
+- Modify: `desktop/src/main/harness/native-session-host.ts` (a comment only, unless you add the test in item 2)
+- Modify: `desktop/src/renderer/state/chat-reducer.ts` (one comment)
+
+- [ ] **1. The test comment is wrong, and it says live code is dead.**
+  `subagent-usage-event.test.ts` ~302-307 explains why the test stages the PARENT going
+  missing rather than the child: *"runSpecialist's own throwIfEnded already notices a missing
+  CHILD … the parent is the half that can genuinely go missing."* That is true only at the
+  point they stage it. `throwIfEnded` runs **during** the run and never again after
+  `runSpecialist` returns — and `destroy()` awaits `destroyChildrenOf(sessionId)` **before**
+  `this.live.delete(sessionId)`, so a parent teardown landing in the await gap after the run
+  resolves deletes the **child first**, leaving the parent live. The reviewer proved it with a
+  probe that wrapped `runSpecialist` to delete the child's live entry on resolve; the branch
+  fired and logged *"the specialist session was no longer live"*.
+  So the branch is reachable and its message is true — **the lie is in the comment**, and it
+  invites a future reader to delete a live branch as unreachable. Replace it with the real
+  reason (the parent half is what a `live.delete` hook inside `doStream` can stage; the child
+  half needs a post-return hook) and record the cascade order that makes the child half the
+  *more* likely one in production.
+
+- [ ] **2. Two of the three `missing` phrases are unpinned.**
+  `native-session-host.ts` ~962-964. Each phrase is individually accurate today and no branch
+  can emit a false one — but collapsing the ternary to a hardcoded
+  `'the parent session was no longer live'` **passes the current test while lying in the other
+  two cases**. Add the child-missing case (the reviewer says its probe is ~15 lines) or assert
+  the three arms directly.
+
+- [ ] **3. One line of WHY.** `chat-reducer.ts` ~1553: `if (!action.usage) return state;` stays
+  silent, and that is right — `emitSubagentUsage` types `usage` as required, so a null means a
+  malformed or legacy persisted event carrying no dollar figure, and there is no money to
+  lose. Say that at the site, so it doesn't read as a fourth silent hole next to the three
+  Task 23 just closed.
+
+- [ ] **4:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **5: Commit** — `test(harness): the child-missing branch is reachable, and the comment said otherwise`
