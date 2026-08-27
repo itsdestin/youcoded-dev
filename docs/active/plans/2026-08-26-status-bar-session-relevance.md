@@ -2373,7 +2373,12 @@ Do NOT try to infer it in the renderer from the model id.
 
 **Files:**
 - Modify: `desktop/src/renderer/state/session-totals.ts`
-- Modify: `desktop/src/renderer/state/chat-reducer.ts` (the `addSubagentUsage` call site only)
+- ~~Modify: `desktop/src/renderer/state/chat-reducer.ts`~~ — **corrected during implementation:
+  there is no `addSubagentUsage` call site to modify.** Verified repo-wide: the function is
+  exported and used only by its own tests. A specialist's spend is designed to arrive as its
+  own subagent-usage event, which **Task 12** creates; `chat-reducer.ts:1515-1529` says so in
+  its WHY block. The reducer stays unchanged here, and the specialist→`specialistCostUsd`
+  path is pinned at the module level instead.
 - Modify: `desktop/src/renderer/dev/workbench/seed-chat.ts` (`STATUSBAR_TOTALS_OVERRIDE`)
 - Test: `desktop/tests/session-totals.test.ts`, `desktop/tests/session-totals-reducer.test.ts`
 
@@ -2558,3 +2563,69 @@ three are handled:
 3. **Carry the cache rates through, or change the tooltip.** The cost tooltip already
    claims "prompt-cache discounts included". Task 10 adds `cacheRead`/`cacheWrite` to
    `CatalogModel.pricing`; Task 11 must actually USE them, or that sentence ships false.
+
+---
+
+### Task 20: The bar and the Customize menu must agree about Cost
+
+**Depends on:** Tasks 18 and 19. **Found by:** the reviews of both.
+
+Two defects, one root cause. `status-widgets.ts` decides what the menu says about
+`session-cost` from `hasPricedWork` alone, but Task 19 gave the chip a fourth state the menu
+knows nothing about.
+
+**Defect A (bar and menu structurally disagree).** With `!anyPriced && anyUnpriced` the bar now
+renders `Cost: not listed`, while the menu still DIMS the Session Cost row. The user sees a
+chip on their bar whose switch looks unavailable — and cannot turn it off. The whole reason
+`status-widgets.ts` exists is that the bar can never show a chip the menu won't offer, or
+vice versa (spec §9).
+
+**Defect B (the menu tells a metered session it is free).** A free local parent that delegated
+to a metered specialist with no published rate has `anyFree && anyUnpriced && !anyPriced`.
+`runsLocally` wins unconditionally, so the menu says "Models on your own machine don't cost
+anything to run" while metered work actually ran. Spec §5 names exactly this delegation shape
+as the one that must not be hidden.
+
+**Files:**
+- Modify: `desktop/src/renderer/state/status-widgets.ts`
+- Modify: `desktop/src/renderer/components/StatusBar.tsx` (the `relevance={{…}}` prop only)
+- Test: `desktop/tests/status-widgets.test.ts`, `desktop/tests/statusbar-widget-menu.test.tsx`
+
+**The rule, replacing the current `session-cost` branch.** `RelevanceContext` gains
+`anyUnpriced: boolean`, fed from `nativeTotals?.anyUnpriced ?? false`. Then, in order:
+
+| Session state | Chip renders | Menu row |
+|---|---|---|
+| `anyPriced` | a figure | **enabled** — no reason |
+| `!anyPriced && anyUnpriced` | `Cost: not listed` | **enabled** — no reason |
+| `anyFree` only | nothing | dimmed: `Models on your own machine don't cost anything to run` |
+| nothing measured yet | nothing | **no reason at all** |
+
+Two things to notice. First, the rule is now "does the chip render anything?" rather than
+"is there priced work?" — which is what makes bar/menu agreement structural instead of a
+coincidence that has to be maintained twice. Second, Defect B disappears on its own: when
+`anyUnpriced` is true the row is not dimmed, so there is no sentence left to contradict.
+
+**The "nothing measured yet" row is a real change, not an oversight.** Today a fresh native
+session on a perfectly ordinary metered model is told `No published price for this model`,
+which is simply false — nothing has been priced because nothing has run. A reason must be
+true or it must not be shown (spec §4); this is the same defect the whole work removes, so
+that string now fires only when it is accurate. `git-branch` is the existing precedent for a
+widget that is empty without being unavailable.
+
+- [ ] **Step 1: Write the failing tests.** The load-bearing one is a **bar/menu agreement
+  test** driven by a table of all five session shapes: for each, assert that the chip renders
+  something **iff** the menu row is enabled. Write it so a future change to either surface
+  alone turns it red. Plus per-shape assertions on the reason strings (byte-for-byte, `toBe`).
+- [ ] **Step 2: Run to verify they fail** — expect the unpriced shape and the
+  nothing-measured shape to fail.
+- [ ] **Step 3: Implement.** WHY comment at the branch explaining that the condition mirrors
+  the chip's render condition on purpose, and that the two must be changed together.
+- [ ] **Step 4: Re-prove the focusable-element guard.** Commit 10cf48cd widened
+  `rowAround()` in `statusbar-widget-menu.test.tsx` after the Task 18 review found it could
+  not see the row's "(i)" info button. The unmutated half was verified; the mutation half was
+  run only in the reviewer's scratch copy. Re-prove it here: copy the tree OUT of the
+  worktree, remove the `!reason` gate on the info button (`StatusBar.tsx` ~972), and confirm
+  the test now FAILS. Report what you saw. Do NOT mutate the worktree in place.
+- [ ] **Step 5:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **Step 6: Commit** — `fix(status-bar): the Customize menu offers the Cost row whenever the bar shows it`
