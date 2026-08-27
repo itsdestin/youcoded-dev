@@ -7,8 +7,10 @@ No copy, no paste, no "I'm done" message (spec §4.3)."""
 import http.server
 import json
 import os
+import signal
 import socketserver
 import subprocess
+import sys
 import threading
 import time
 import webbrowser
@@ -73,9 +75,11 @@ def make_server(spec, port, on_submit):
             on any other origin could otherwise forge a Submit with a form POST (which needs no
             preflight), and a DNS-rebinding name pointed at 127.0.0.1 could read the deck folder.
             Pinning both Host and Origin to our own address closes both."""
-            me = f'127.0.0.1:{self.server.server_address[1]}'
+            port = self.server.server_address[1]
+            # localhost is not rebindable in any current browser, so a hand-typed localhost URL may work too.
+            mine = {f'127.0.0.1:{port}', f'localhost:{port}', f'[::1]:{port}'}
             origin = self.headers.get('origin')
-            return (self.headers.get('host') or '') != me or (origin is not None and origin != f'http://{me}')
+            return (self.headers.get('host') or '') not in mine or (origin is not None and origin not in {f'http://{m}' for m in mine})
 
         def do_GET(self):
             if self._wrong_origin():
@@ -199,6 +203,10 @@ def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
     timer = threading.Timer(timeout_min * 60, lambda: threading.Thread(target=srv.shutdown, daemon=True).start())
     timer.daemon = True
     timer.start()
+    # A plain `kill` (SIGTERM) would end the process without running the finally below and leave
+    # the lock file behind; turning it into SystemExit lets the cleanup run.
+    if threading.current_thread() is threading.main_thread():   # signal handlers can only be set there (tests run serve() in a thread)
+        signal.signal(signal.SIGTERM, lambda *a: sys.exit(143))
     try:
         srv.serve_forever()
     finally:

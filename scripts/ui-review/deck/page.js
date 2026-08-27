@@ -50,7 +50,7 @@
     const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
     const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
-    $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered';
+    $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
     $('#save').disabled = !(a.v && a.v !== 'skip'); $('#prev').disabled = cur === 0; $('#next').disabled = cur === N - 1; $('#next').textContent = cur === N - 1 ? 'Last step' : 'Next ›';
   }
 
@@ -130,7 +130,7 @@
     // when the server is gone sends Destin back to the conversation with nothing waiting there.
     let ok = false, why = '';
     try { const r = await fetch('/submit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); ok = r.ok; if (!ok) why = 'HTTP ' + r.status; }
-    catch (e) { why = (e && e.message) || String(e); }
+    catch (e) { why = (e && e.message) || String(e); server = false; }   // the server is gone: a re-opened dialog must take the copy/paste branch, not repeat "saving as you went"
     if (!ok) {
       state.submitted = null;   // summary() then labels it "not submitted", which is the truth
       $('#dlg-text').textContent = 'The deck could not reach its server (' + why + '). Your answers up to the last save are in the answers file; copy the feedback below and paste it into the chat.';
@@ -141,7 +141,7 @@
     $('#veil').classList.remove('on'); lockSubmitted();
   };
   // A submitted deck is read-only, and says so — silently ignoring clicks read as "I can't click through the pages".
-  function lockSubmitted() { $('#done').textContent = 'Submitted ✓'; $('#done').disabled = true; $$('.ans,#save,#note').forEach(e => e.disabled = true); $('#count').textContent += ' · submitted, read-only'; }
+  function lockSubmitted() { $('#done').textContent = 'Submitted ✓'; $('#done').disabled = true; $$('.ans,#save,#note').forEach(e => e.disabled = true); paintState(); }
   $('#copy').onclick = () => { const t = $('#feedback'); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).catch(() => document.execCommand('copy')); $('#copy').textContent = 'Copied'; };
 
   // ── loupe, zoom, keys ──
