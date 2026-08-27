@@ -633,6 +633,8 @@ Claude-Session: https://claude.ai/code/session_01JT8RKNphr2HekthYqV9Qzi"
 ### Task 6: `record.mjs` — scene → WebM loop + WebP poster
 
 **Files:**
+- Create: `scripts/ui-review/cdp-helpers.mjs` — the Chrome flags, `waitForCdp`, and the `selExpr`/`textExpr`/`rectOf` selector helpers, extracted from `shot.mjs:71-95` and `:166-168` so the recorder and the screenshot driver share one copy
+- Modify: `scripts/ui-review/shot.mjs` — import those helpers instead of defining them (behaviour unchanged)
 - Create: `scripts/ui-review/record.mjs`
 - Create: `scripts/ui-review/scenes/smoke.json`
 
@@ -648,6 +650,10 @@ Claude-Session: https://claude.ai/code/session_01JT8RKNphr2HekthYqV9Qzi"
   ```
   `moveTo` interpolates the mouse over `ms`; `click` = `moveTo` (300 ms) + press; `typeSlow` sends one `Input.dispatchKeyEvent` per character; `hold` records still frames.
 
+- [ ] **Step 0: Extract the shared helpers**
+
+Create `scripts/ui-review/cdp-helpers.mjs` exporting `CHROME_FLAGS(W, H, cdpPort, profileDir)` (the argv array from `shot.mjs:73-85`, including the `--blink-settings=…` pointer line and its WHY comment), `waitForCdp(port)` (`shot.mjs:89-95`), `selExpr`, `textExpr`, `rectOfExpr` (the three expression builders at `shot.mjs:166-168`, returned as strings the caller evaluates). Then change `shot.mjs` to `import { CHROME_FLAGS, waitForCdp, selExpr, textExpr, rectOfExpr } from './cdp-helpers.mjs'` and delete its local copies — no behaviour change. Prove it: `WB_PORT=5473 CDP_PORT=10330 node scripts/ui-review/shot.mjs scripts/ui-review/plans/main.json /tmp/claude-1000/shot-regress midnight` with `SHARD=0/12` (four shots) must produce the same verified/unverified counts as before the refactor (run it once before editing and once after; compare the `manifest-*.json` `verified` fields).
+
 - [ ] **Step 1: Write the recorder**
 
 `scripts/ui-review/record.mjs`:
@@ -655,17 +661,18 @@ Claude-Session: https://claude.ai/code/session_01JT8RKNphr2HekthYqV9Qzi"
 #!/usr/bin/env node
 // Records a scripted scene in the real renderer (UI Workbench, headless Chrome,
 // raw CDP) and encodes a looping WebM + a WebP poster for the landing page.
-// Sibling of shot.mjs — same Chrome flags and selector helpers (copied rather
-// than imported so the review rig's driver stays untouched); the difference is
-// Page.startScreencast instead of one captureScreenshot, an interpolated mouse,
-// and per-key typing, because a recording of a cursor teleporting and text
-// appearing all at once does not look like a person using the app.
+// Sibling of shot.mjs — shares its Chrome flags and selector helpers through
+// cdp-helpers.mjs; the difference is Page.startScreencast instead of one
+// captureScreenshot, an interpolated mouse, and per-key typing, because a
+// recording of a cursor teleporting and text appearing all at once does not
+// look like a person using the app.
 //
 // Usage: WB_PORT=5473 CDP_PORT=10320 node record.mjs <scene.json> <outBase>
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
+import { CHROME_FLAGS, waitForCdp, selExpr, textExpr, rectOfExpr } from './cdp-helpers.mjs';
 
 const [scenePath, outBase] = process.argv.slice(2);
 if (!scenePath || !outBase) { console.error('usage: node record.mjs <scene.json> <outBase>'); process.exit(2); }
@@ -677,16 +684,9 @@ const url = scene.base.replace(/127\.0\.0\.1:\d+/, `127.0.0.1:${WB_PORT}`);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const profile = mkdtempSync(join(tmpdir(), 'ui-record-'));
-const chrome = spawn('google-chrome-stable', [
-  '--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
-  // Same as shot.mjs:82 — without a declared fine pointer, hover-gated UI never renders.
-  '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
-  `--window-size=${W},${H}`, '--force-device-scale-factor=1',
-  `--remote-debugging-port=${CDP_PORT}`, `--user-data-dir=${profile}`, 'about:blank',
-], { stdio: 'ignore' });
+const chrome = spawn('google-chrome-stable', CHROME_FLAGS(W, H, CDP_PORT, profile), { stdio: 'ignore' });
 process.on('exit', () => { chrome.kill(); rmSync(profile, { recursive: true, force: true }); });
-
-for (let i = 0; i < 80; i++) { try { await fetch(`http://127.0.0.1:${CDP_PORT}/json/version`); break; } catch { await sleep(250); } }
+await waitForCdp(CDP_PORT);
 const [target] = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`)).json();
 const ws = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise((r) => ws.addEventListener('open', r));
@@ -705,12 +705,8 @@ ws.addEventListener('message', (m) => {
 const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
 const evaluate = async (expression) => (await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true })).result?.result?.value;
 
-// ---- selectors (mirror shot.mjs:166-168) ----
-const selExpr = (s) => s.startsWith('js:') ? `(${s.slice(3)})` : `document.querySelector(${JSON.stringify(s)})`;
-const textExpr = (label, tag) => `[...document.querySelectorAll(${JSON.stringify(tag ?? 'button,a,[role=button],[role=tab],[role=menuitem],[role=option],label,span,div,h1,h2,h3,p,li')})]
-  .filter(e => e.textContent.trim() === ${JSON.stringify(label)} && e.getClientRects().length)
-  .sort((a,b) => a.getBoundingClientRect().width*a.getBoundingClientRect().height - b.getBoundingClientRect().width*b.getBoundingClientRect().height)[0]`;
-const rectOf = async (expr) => evaluate(`(() => { const e = ${expr}; if (!e) return null; e.scrollIntoView({block:'nearest'}); const r = e.getBoundingClientRect(); return { x: r.x + r.width/2, y: r.y + r.height/2 }; })()`);
+// ---- selectors (shared with shot.mjs) ----
+const rectOf = async (expr) => evaluate(rectOfExpr(expr));
 
 // ---- humanised input ----
 let cur = { x: W / 2, y: H / 2 };
@@ -812,7 +808,7 @@ Expected: `frames=… duration=~9s`, ffprobe duration ≈ 9, `.webm` under 1 MB,
 - [ ] **Step 4: Commit**
 
 ```bash
-git add scripts/ui-review/record.mjs scripts/ui-review/scenes/smoke.json && git commit -m "feat(ui-review): record.mjs — scene → looping WebM + poster over CDP screencast
+git add scripts/ui-review/cdp-helpers.mjs scripts/ui-review/shot.mjs scripts/ui-review/record.mjs scripts/ui-review/scenes/smoke.json && git commit -m "feat(ui-review): record.mjs — scene → looping WebM + poster over CDP screencast; shared cdp-helpers
 
 Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01JT8RKNphr2HekthYqV9Qzi"
