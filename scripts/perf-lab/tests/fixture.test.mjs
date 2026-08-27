@@ -5,10 +5,7 @@
 // these tests are what catch the copy drifting.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  ccProjectSlug, transcriptLines, transcriptBody, readEnginePin,
-  SIZES, CONTENT_SEED, messagesPerTurn, stableUuid,
-} from '../fixture.mjs';
+import { ccProjectSlug, transcriptLines, transcriptBody, readEnginePin, SIZES, CONTENT_SEED, messagesPerTurn, stableUuid, DECOY_TRANSCRIPTS, DECOY_PROJECT_DIRS } from '../fixture.mjs';
 
 test('ccProjectSlug matches slug-encoding.ts for a Linux path', () => {
   assert.equal(ccProjectSlug('/home/destin/x/perf lab'), '-home-destin-x-perf-lab');
@@ -174,4 +171,26 @@ test('SIZES stays inside the calibrated budget', () => {
   // Byte budget: huge must stay near the ~33 MiB the old prose fixture had.
   const bytes = transcriptBody({ ...ARGS, turns: SIZES.huge }).join('\n').length;
   assert.ok(bytes < 45 * 1024 * 1024, `huge transcript is ${(bytes / 1048576).toFixed(1)} MiB, over the 45 MiB budget`);
+});
+
+// ── The file-COUNT dimension ────────────────────────────────────────────────
+// Added 2026-08-27. Several costs in the app scale with the NUMBER of transcript
+// files, not their size: the conversation reconciler walks every .jsonl in every
+// project dir at startup and again every 30 minutes, and its own source comment
+// measures 2.8s at 600 records. The fixture had 3 files in 1 directory while the
+// real machine had 804 across 10 — so every startup number the rig ever produced
+// was taken where that whole class of defect is free. These pin the dimension
+// back in place.
+test('the fixture creates enough transcript FILES for count-scaled costs to appear', () => {
+  assert.ok(DECOY_TRANSCRIPTS >= 500,
+    `DECOY_TRANSCRIPTS is ${DECOY_TRANSCRIPTS} — below the 600-record scale the app's own reconciler comment characterises, so a count-scaled cost would not show up`);
+  assert.ok(DECOY_PROJECT_DIRS >= 5,
+    'decoys must span several project directories — the reconciler readdirs PER DIRECTORY, so putting them all in one restores file count but not directory count');
+});
+
+test('decoys are spread across directories rather than piled into one', () => {
+  assert.ok(DECOY_TRANSCRIPTS / DECOY_PROJECT_DIRS >= 10,
+    'each decoy directory should hold a meaningful number of files');
+  assert.ok(DECOY_PROJECT_DIRS <= DECOY_TRANSCRIPTS,
+    'more directories than files would leave empty directories, which walk differently');
 });

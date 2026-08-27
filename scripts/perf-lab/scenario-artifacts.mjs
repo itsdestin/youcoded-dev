@@ -272,6 +272,14 @@ export function summarise(samples) {
 export function attributeStall(ipc, probe, { stallMs = 250 } = {}) {
   const ipcMax = ipc && typeof ipc.maxMs === 'number' ? ipc.maxMs : null;
   const ltMax = probe && typeof probe.longtaskMaxMs === 'number' ? probe.longtaskMaxMs : null;
+  // An observer that never ATTACHED must never be read as "the renderer was
+  // quiet". Without this the 'main' branch below fires on ltMax === 0 and names
+  // the main process as the culprit on the strength of a measurement that never
+  // happened — a fabricated indictment, and the same shape of error this project
+  // already made once at the whole-app level and had to retract.
+  if (probe && probe.longtaskSupported === false) {
+    return { verdict: 'unknown', why: 'the renderer long-task observer never attached, so which thread blocked is UNKNOWN — not "the main process"' };
+  }
   if (ipcMax === null || ltMax === null) {
     return { verdict: 'unknown', why: 'one of the two probes reported no data for this step' };
   }
@@ -478,7 +486,7 @@ export async function installArtifactHelpers(cdp) {
       // re-binds to whatever frame is currently mounted, and the same listener
       // also catches a plain srcdoc change on a surviving element.
       html: (() => {
-        const state = { loads: [], navs: [], ready: null, bound: 0, observing: false, err: null };
+        const state = { loads: [], navs: [], ready: null, bound: 0, observing: false, err: null, obs: null };
         let seen = null;
         const bind = () => {
           const f = $('iframe[title="HTML preview"]');
@@ -501,6 +509,7 @@ export async function installArtifactHelpers(cdp) {
             if (state.observing) return true;
             try {
               const obs = new MutationObserver(bind);
+              state.obs = obs;   // teardown() needs a handle; without one it could only flip a flag
               obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['srcdoc'] });
               window.addEventListener('message', onMessage);
               state.observing = true;
@@ -511,6 +520,24 @@ export async function installArtifactHelpers(cdp) {
             return state.observing;
           },
           reset() { state.loads.length = 0; state.navs.length = 0; },
+          /**
+           * Disconnect the observer and drop the message listener.
+           *
+           * WHY THIS HAD TO EXIST. state.observing guards against installing
+           * twice — but it lives in THIS closure, and every repeat of the
+           * scenario builds a FRESH closure and overwrites window.__perfArt. So
+           * repeat 2's guard knew nothing about repeat 1's observer, which kept
+           * watching document.body with { subtree: true } while repeat 2 measured
+           * long tasks. Three repeats meant three live body-wide observers, each
+           * one adding renderer work to the measurement of the next — a leak that
+           * manufactures a regression out of nothing.
+           */
+          teardown() {
+            try { if (state.obs) state.obs.disconnect(); } catch (e) { /* already gone */ }
+            try { window.removeEventListener('message', onMessage); } catch (e) { /* already gone */ }
+            state.obs = null;
+            state.observing = false;
+          },
           /** Ask the previewed page to navigate to a section. */
           nav(id, hash) {
             const f = $('iframe[title="HTML preview"]');
@@ -606,6 +633,12 @@ export async function installArtifactHelpers(cdp) {
         },
       },
     };
+    // Tear down whatever the previous repeat installed BEFORE replacing the
+    // global. The guards inside each helper are per-closure and cannot see the
+    // last repeat's listeners, so without this every repeat leaves its observers
+    // running and the next repeat measures them.
+    try { if (window.__perfArt && window.__perfArt.html && window.__perfArt.html.teardown) window.__perfArt.html.teardown(); } catch (e) { /* nothing installed yet */ }
+    try { if (window.__perfArt && window.__perfArt.keys && window.__perfArt.keys.disarm) window.__perfArt.keys.disarm(); } catch (e) { /* nothing installed yet */ }
     window.__perfArt = helpers;
     return true;
   })()`);
@@ -924,10 +957,16 @@ export async function runArtifactScenario(app, fixture, {
   const warnings = [];
   let sessionId = null;
 
-  await installProbe(cdp);
-  await installArtifactHelpers(cdp);
-
   try {
+  // Installed INSIDE the try, not before it. FIXED 2026-08-27: these two lines sat
+  // above `try {`, so a throw from the SECOND install skipped the finally that
+  // stops them — leaving a per-frame requestAnimationFrame callback and a
+  // PerformanceObserver burning through every later scenario and every
+  // screenshot in the same boot. The probe would then be measuring the rig's own
+  // leftovers and charging them to the app.
+    await installProbe(cdp);
+    await installArtifactHelpers(cdp);
+
     // ── 0. A session with a real conversation in it ──────────────────────
     // Resumed, not fresh. WHY: fake-claude creates an EMPTY transcript for a new
     // session (fake-claude.cjs never writes turns of its own), so a fresh

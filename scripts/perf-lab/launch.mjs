@@ -19,12 +19,17 @@
 //      never signalled, whatever else it matched.
 //   3. selfChain()          — this process and every ancestor of it are excluded,
 //      so the rig can never kill the shell/agent that launched it.
+//   4. protectedAncestor()  — a process is also spared when any process ABOVE it
+//      carries a protected marker. Marker-on-own-cmdline alone was not enough: a
+//      sibling the agent spawns (say `grep -r foo <fixture>/home`) mentions a rig
+//      path, carries no marker itself, and is nobody's ancestor — so guards 1-3
+//      all waved it through and the sweep SIGKILLed another tool's work mid-write.
 // Nothing here uses process names, and nothing signals a pid it did not first
 // re-read from /proc and confirm still matches.
 //
 // Node built-ins only: the workspace root has no package.json and must not gain one.
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -79,22 +84,50 @@ export function assertSafeNeedles(needles) {
   }
 }
 
-function cmdlineOf(pid) {
+/**
+ * A process's argv, NUL-separated in /proc, joined with spaces. '' when the pid is
+ * already gone or unreadable — and '' matches no needle, so an unreadable process is
+ * never signalled. Exported so tests can drive the safety filters with a fake process
+ * table instead of the machine's real one.
+ */
+export function readCmdline(pid) {
   try { return readFileSync(`/proc/${pid}/cmdline`, 'latin1').replace(/\0/g, ' '); } catch { return ''; }
 }
 
-/** This process plus every ancestor, so the rig can never signal its own launcher. */
-function selfChain() {
-  const out = new Set([process.pid]);
-  let pid = process.pid;
-  for (let i = 0; i < 64 && pid > 1; i++) {
-    let ppid;
-    try {
-      const stat = readFileSync(`/proc/${pid}/stat`, 'utf8');
-      // Same parse as procs.mjs: after ")" the fields are state ppid pgrp …
-      ppid = Number(stat.slice(stat.lastIndexOf(')') + 2).split(' ')[1]);
-    } catch { break; }
-    if (!Number.isFinite(ppid) || ppid <= 1) break;
+/**
+ * A process's parent pid. 0 when the pid is gone or the file is unreadable, which
+ * every walk below treats as "chain ends here".
+ *
+ * WHY /proc/<pid>/status and not /proc/<pid>/stat: in /stat the executable name sits
+ * in parentheses and MAY ITSELF CONTAIN ')', so the parent pid has to be counted as
+ * an offset from the last ')' — a parse that is easy to get quietly wrong, and getting
+ * it wrong here means walking the wrong family tree while deciding what to SIGKILL.
+ * /status states it in words: a plain "PPid:\t<n>" line.
+ */
+export function readPpid(pid) {
+  try {
+    const m = /^PPid:\s*(\d+)/m.exec(readFileSync(`/proc/${pid}/status`, 'utf8'));
+    return m ? Number(m[1]) : 0;
+  } catch { return 0; }
+}
+
+// Every ancestor walk in this file stops after this many steps. /proc cannot really
+// contain a cycle, but a truncated read, a pid recycled mid-walk, or an injected
+// reader in a test can all produce one — and a walk that never ends is a rig that
+// hangs holding a half-killed app, which is worse than one that gives up.
+const ANCESTOR_WALK_CAP = 64;
+
+/**
+ * This process plus every ancestor, so the rig can never signal its own launcher
+ * (the shell, the agent, the terminal). Also the STOP LINE for the ancestor walk
+ * below — see protectedAncestor.
+ */
+export function selfChain(ppidOf = readPpid, startPid = process.pid) {
+  const out = new Set([startPid]);
+  let pid = startPid;
+  for (let i = 0; i < ANCESTOR_WALK_CAP && pid > 1; i++) {
+    const ppid = ppidOf(pid);
+    if (!Number.isFinite(ppid) || ppid <= 1 || out.has(ppid)) break;   // out.has = cycle guard
     out.add(ppid);
     pid = ppid;
   }
@@ -102,20 +135,74 @@ function selfChain() {
 }
 
 /**
- * The pids this module is willing to signal: findFamily's matches, minus pid 1,
- * minus this process and its ancestors, minus anything carrying a protected marker.
- * Returns the skipped set too, so callers can say WHY a survivor survived.
+ * Walk `pid`'s ancestry looking for a protected process, and return the first one
+ * found (or null). This is guard 4 from the header.
+ *
+ * WHY the ancestry and not just the process itself: a needle is a plain substring of
+ * a command line, so ANY program that merely NAMES a rig path matches it —
+ * `grep -r foo <fixture>/home`, an `rsync` copying the fixture out, an editor saving a
+ * file under it. Such a process is not the app, carries no protected marker of its
+ * own, and is not an ancestor of the rig, so the older filter handed it straight to
+ * SIGTERM/SIGKILL. Killing a `cp` or an editor mid-write loses somebody's data. Its
+ * PARENT, though, is the tool shell that started it, and that shell's command line
+ * does carry a marker — so asking "who started this?" is the fence that tells a
+ * bystander apart from the app we own.
+ *
+ * WHY the walk stops at `ours`: the rig's OWN Electron is, by construction, a child
+ * of this process — and this process is very often itself a child of a Claude Code
+ * tool shell, which is protected. Without the stop, the rig would inherit that
+ * protection through its parent and become unable to kill the app it just launched,
+ * which breaks teardown completely. Anything at or below the rig in the tree is the
+ * rig's own family and stays killable.
  */
-export function killableFamily(needles) {
-  const mine = selfChain();
+export function protectedAncestor(pid, { cmdlineOf = readCmdline, ppidOf = readPpid, ours = new Set() } = {}) {
+  const seen = new Set();
+  let cur = pid;
+  for (let depth = 0; depth < ANCESTOR_WALK_CAP && cur > 1; depth++) {
+    if (seen.has(cur)) break;          // cycle guard: a pid we already visited
+    seen.add(cur);
+    if (ours.has(cur)) return null;    // reached the rig itself — below here is ours to kill
+    const marker = PROTECTED_MARKERS.find((m) => cmdlineOf(cur).includes(m));
+    if (marker) return { pid: cur, marker, depth };
+    const parent = ppidOf(cur);
+    if (!Number.isFinite(parent) || parent <= 1) break;
+    cur = parent;
+  }
+  return null;
+}
+
+/**
+ * The pids this module is willing to signal: findFamily's matches, minus pid 1,
+ * minus this process and its ancestors, minus anything protected in its own right
+ * or by descent (protectedAncestor). Returns the skipped set too, so callers can
+ * say WHY a survivor survived.
+ *
+ * `deps` exists ONLY so the tests can substitute a fake process table — production
+ * callers pass one argument and get the real /proc.
+ */
+export function killableFamily(needles, deps = {}) {
+  const {
+    find = findFamily,
+    cmdlineOf = readCmdline,
+    ppidOf = readPpid,
+    selfPid = process.pid,
+    ours = selfChain(ppidOf, selfPid),
+  } = deps;
   const pids = [];
   const skipped = [];
-  for (const pid of findFamily(needles)) {
+  for (const pid of find(needles)) {
     if (pid <= 1) { skipped.push({ pid, why: 'pid <= 1' }); continue; }
-    if (mine.has(pid)) { skipped.push({ pid, why: 'this rig process or an ancestor of it' }); continue; }
-    const c = cmdlineOf(pid);
-    const marker = PROTECTED_MARKERS.find((m) => c.includes(m));
-    if (marker) { skipped.push({ pid, why: `protected: cmdline mentions ${marker}` }); continue; }
+    if (ours.has(pid)) { skipped.push({ pid, why: 'this rig process or an ancestor of it' }); continue; }
+    const prot = protectedAncestor(pid, { cmdlineOf, ppidOf, ours });
+    if (prot) {
+      skipped.push({
+        pid,
+        why: prot.pid === pid
+          ? `protected: cmdline mentions ${prot.marker}`
+          : `protected: started by pid ${prot.pid}, whose cmdline mentions ${prot.marker}`,
+      });
+      continue;
+    }
     pids.push(pid);
   }
   return { pids, skipped };
@@ -145,17 +232,29 @@ async function waitForFamilyEmpty(needles, budgetMs, everyMs = 100) {
  * invitation for two instances to share one userData and corrupt its leveldb.
  * Callers must therefore only reach here after the family is confirmed empty.
  */
-function removeSingletonLocks(userData, needles) {
-  if (!userData) return;
+export function removeSingletonLocks(userData, needles, remove = (p) => rmSync(p, { force: true })) {
+  if (!userData) return [];
   if (!isAbsolute(userData)) throw new Error(`perf-lab launch: userData ${JSON.stringify(userData)} is not an absolute path.`);
   // Containment check: the profile we clean must live inside a rig-owned needle
   // (fixture.home is always one), so this can never delete the live app's locks.
+  //
+  // The test is `=== n` or starts-with `n + '/'`, and that trailing slash is the whole
+  // point: a bare startsWith(n) would accept "<fixture>homeEVIL" as living inside
+  // "<fixture>home" — a sibling directory whose name merely begins the same way — and
+  // the rig would delete lock files out of a folder it does not own. Requiring the
+  // separator means only a real descendant qualifies.
   if (!needles.some((n) => userData === n || userData.startsWith(`${n}/`))) {
     throw new Error(`perf-lab launch: refusing to touch profile locks in ${userData} — it is not inside a rig path (${needles.join(', ')}).`);
   }
+  // `remove` is injectable ONLY so the tests can prove the guard without a real rmSync;
+  // every production caller takes the default.
+  const removed = [];
   for (const f of ['SingletonLock', 'SingletonCookie', 'SingletonSocket']) {
-    rmSync(join(userData, f), { force: true });
+    const p = join(userData, f);
+    remove(p);
+    removed.push(p);
   }
+  return removed;
 }
 
 /**
@@ -189,7 +288,7 @@ export async function sweep(needles, userData, opts = {}) {
       left = await waitForFamilyEmpty(needles, killWaitMs);
       if (left.length) {
         // Do NOT clear the profile locks here: something is still holding the profile.
-        const detail = left.map((p) => `${p} (${cmdlineOf(p).slice(0, 120) || 'cmdline unreadable'})`).join('; ');
+        const detail = left.map((p) => `${p} (${readCmdline(p).slice(0, 120) || 'cmdline unreadable'})`).join('; ');
         throw new Error(`perf-lab launch: ${left.length} process(es) survived SIGKILL and still match the rig paths: ${detail}. The profile locks were left in place on purpose — investigate before launching again.`);
       }
     }
@@ -207,9 +306,11 @@ export async function sweep(needles, userData, opts = {}) {
  */
 function groupKill(groupPid, needles, sig) {
   if (!groupPid) return;
-  const c = cmdlineOf(groupPid);
+  const c = readCmdline(groupPid);
   if (!c || !needles.some((n) => c.includes(n))) return;  // dead or recycled → never signal
-  if (PROTECTED_MARKERS.some((m) => c.includes(m))) return;
+  // Same fence as killableFamily: protected in its own right, or by descent. A group
+  // kill hits every process in the group, so it gets the stricter of the two checks.
+  if (protectedAncestor(groupPid, { ours: selfChain() })) return;
   try { process.kill(-groupPid, sig); } catch { /* group already gone */ }
 }
 
@@ -347,16 +448,53 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
   // here because HOME is the fixture.)
   // ELECTRON_RUN_AS_NODE would make the binary run as a bare Node process — no
   // window, no CDP — and NODE_OPTIONS could inject an inspector into it.
+  // DBUS_*: see the XDG_RUNTIME_DIR / DBUS_SESSION_BUS_ADDRESS note below — the
+  // session bus was the one live wire still running from this sandboxed app to
+  // Destin's real desktop. Both DBUS_STARTER_* variables are the same address under
+  // another name (systemd sets them for bus-activated services), so they go too.
   for (const k of [
     'CLAUDECODE', 'CLAUDE_CODE_CHILD_SESSION', 'CLAUDE_CODE_SESSION_ID', 'CLAUDE_CODE_ENTRYPOINT',
     'CLAUDE_CODE_EXECPATH', 'CLAUDE_EFFORT',
-    'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_CACHE_HOME',
+    'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_CACHE_HOME', 'XDG_RUNTIME_DIR',
     'WAYLAND_DISPLAY', 'YOUCODED_PROFILE',
+    'DBUS_SESSION_BUS_ADDRESS', 'DBUS_STARTER_ADDRESS', 'DBUS_STARTER_BUS_TYPE',
     'ELECTRON_RUN_AS_NODE', 'NODE_OPTIONS',
   ]) delete env[k];
+  // A runtime dir INSIDE the fixture, created 0700 (the spec requires the directory
+  // be private to its owner or software refuses to use it).
+  const runtimeDir = join(fixture.home, '.runtime');
+  mkdirSync(runtimeDir, { recursive: true, mode: 0o700 });
+
   Object.assign(env, {
     HOME: fixture.home,
     DISPLAY: display,
+    // ── CUTTING THE LAST WIRE TO THE REAL DESKTOP ────────────────────────────
+    // Deleting XDG_CONFIG/DATA/CACHE and WAYLAND_DISPLAY isolates the app's FILES
+    // and its WINDOW, but it left one live channel open: D-Bus, the bus every Linux
+    // desktop app uses to talk to the desktop itself. Over it the rig's app could
+    // raise real notifications, drive real file-picker portals, and register itself
+    // as the real session's handler for things — a sandboxed measurement run poking
+    // at Destin's working desktop, and any of that costs CPU that lands in the
+    // numbers we are here to measure.
+    //
+    // Unsetting DBUS_SESSION_BUS_ADDRESS alone does NOT close it. libdbus falls back,
+    // in order, to $XDG_RUNTIME_DIR/bus — the REAL session bus, still findable — and
+    // then to X11 autolaunch, which would fork a stray dbus-daemon under Xvfb that
+    // nothing in this rig knows how to clean up. So we do all three at once:
+    //   • XDG_RUNTIME_DIR points inside the fixture, so the "$XDG_RUNTIME_DIR/bus"
+    //     fallback finds nothing (and any other runtime file the app drops lands in
+    //     the throwaway fixture instead of /run/user/<uid>).
+    //   • DBUS_SESSION_BUS_ADDRESS names a socket inside the fixture that is never
+    //     created, so the connect fails instantly with ENOENT — that failure is what
+    //     suppresses the autolaunch fallback and its orphan daemon.
+    // Chromium tolerates having no session bus (this is exactly the situation in every
+    // headless container it runs in): it logs "Failed to connect to the bus" and boots
+    // normally, with notifications and portals degraded — neither of which the rig
+    // measures. XDG_RUNTIME_DIR is REDIRECTED rather than deleted for the same reason:
+    // absence is tolerated but is a slightly odder shape than a real, empty directory,
+    // and a run costs an hour, so the rig takes the shape closest to a normal desktop.
+    XDG_RUNTIME_DIR: runtimeDir,
+    DBUS_SESSION_BUS_ADDRESS: `unix:path=${join(runtimeDir, 'no-session-bus')}`,
     // WHY these two, plus the --ozone-platform=x11 argv flag below: deleting
     // WAYLAND_DISPLAY is NOT enough to keep Electron off the real desktop.
     // Chromium's Ozone auto-detection sees XDG_SESSION_TYPE=wayland and connects
@@ -415,6 +553,47 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
     out.text.trim() ? `stdout (last ${Math.min(out.text.length, TAIL_BYTES)} bytes):\n${out.text.trim()}` : 'stdout: (empty)',
   ].join('\n');
 
+  // ── TEARDOWN HANDLERS ARE ARMED HERE, right after spawn ───────────────────
+  // They used to be registered ~90 seconds later, only once the app's window had
+  // appeared and CDP was fully attached. That left two windows in which the rig could
+  // die with the app still alive: a Ctrl-C during the up-to-90-second wait below, and
+  // any failure in the CDP handshake. `detached: true` means the app does NOT die with
+  // the rig, so in either window a headless Electron was left running under Xvfb with
+  // nobody left who knew how to kill it — holding the CDP port and the profile lock, so
+  // the NEXT run either refused to start or silently measured the leftover. Arming the
+  // handlers before anything can go wrong closes both windows.
+  let cleanedUp = false;
+  const hardCleanup = () => {
+    // Idempotent by design. kill() sets `cleanedUp` before doing its own orderly
+    // teardown, so the 'exit' handler that fires afterwards is a no-op rather than a
+    // second round of SIGKILLs aimed at pids that may since have been reused.
+    if (cleanedUp) return;
+    cleanedUp = true;
+    // Synchronous by necessity ('exit' allows no async work), and it goes through the
+    // same killable/protected filter as everything else — an emergency is not a licence
+    // to signal something we do not own.
+    try { signalAll(killableFamily(familyNeedles).pids, 'SIGKILL'); } catch {}
+    try { groupKill(proc.pid, familyNeedles, 'SIGKILL'); } catch {}
+  };
+  const onSignal = (sig) => { hardCleanup(); process.exit(sig === 'SIGINT' ? 130 : 143); };
+  const onExit = () => hardCleanup();
+  const onSigint = () => onSignal('SIGINT');
+  const onSigterm = () => onSignal('SIGTERM');
+  process.on('exit', onExit);
+  process.on('SIGINT', onSigint);
+  process.on('SIGTERM', onSigterm);
+  let handlersAttached = true;
+  const detachHandlers = () => {
+    // Also idempotent: a caller that both kill()s and exits must not double-remove,
+    // and a caller that retries launchApp must not accumulate listeners (a full run
+    // boots the app 5-7 times, which is enough to trip Node's max-listeners warning).
+    if (!handlersAttached) return;
+    handlersAttached = false;
+    process.off('exit', onExit);
+    process.off('SIGINT', onSigint);
+    process.off('SIGTERM', onSigterm);
+  };
+
   let exitInfo = null;
   // The draft discarded stdio and had no exit handler, so a missing/crashing binary
   // showed up only as a 90-second CDP timeout. Now the death itself is the error, and
@@ -431,49 +610,36 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
     });
   });
 
+  // Everything that can fail while the app is alive lives inside this ONE try, so
+  // there is exactly one exit route and it always sweeps. Previously `connect` and the
+  // two `enable` calls sat outside it: a CDP socket that dropped between "window
+  // appeared" and "Page.enable returned" threw straight out of launchApp and left the
+  // app running, which is precisely the orphan the sweep exists to prevent.
   let target;
+  let cdp;
   try {
     // Promise.race attaches a handler to `died`, so a later exit cannot surface as an
     // unhandled rejection.
     target = await Promise.race([waitForMainTarget(cdpPort, { timeoutMs: 90000 }), died]);
+
+    // Sanity: the window we are about to drive must belong to a process that matches
+    // the rig paths. If it does not, we found someone else's browser.
+    if (killableFamily(familyNeedles).pids.length === 0) {
+      throw new Error(`perf-lab launch: a CDP target appeared on :${cdpPort} but no process matches the rig paths (${familyNeedles.join(', ')}). Refusing to measure a process this rig does not own.`);
+    }
+
+    cdp = await connect(target.webSocketDebuggerUrl);
+    await cdp.send('Runtime.enable');
+    await cdp.send('Page.enable');
   } catch (e) {
+    try { cdp?.close(); } catch {}
     await sweep(familyNeedles, fixture.userData, { groupPid: proc.pid }).catch(() => {});
+    // Disarm only AFTER the sweep: while it runs, a Ctrl-C must still reach
+    // hardCleanup. Disarming at all matters because the caller retries — see the
+    // listener-accumulation note on detachHandlers.
+    detachHandlers();
     throw e;
   }
-
-  // Sanity: the window we are about to drive must belong to a process that matches
-  // the rig paths. If it does not, we found someone else's browser.
-  if (killableFamily(familyNeedles).pids.length === 0) {
-    await sweep(familyNeedles, fixture.userData, { groupPid: proc.pid }).catch(() => {});
-    throw new Error(`perf-lab launch: a CDP target appeared on :${cdpPort} but no process matches the rig paths (${familyNeedles.join(', ')}). Refusing to measure a process this rig does not own.`);
-  }
-
-  const cdp = await connect(target.webSocketDebuggerUrl);
-  await cdp.send('Runtime.enable');
-  await cdp.send('Page.enable');
-
-  // Last-resort cleanup so a crashed or Ctrl-C'd rig cannot leave the app running.
-  // Synchronous by necessity ('exit' allows no async work), and it goes through the
-  // same killable/protected filter as everything else.
-  let cleanedUp = false;
-  const hardCleanup = () => {
-    if (cleanedUp) return;
-    cleanedUp = true;
-    try { signalAll(killableFamily(familyNeedles).pids, 'SIGKILL'); } catch {}
-    try { groupKill(proc.pid, familyNeedles, 'SIGKILL'); } catch {}
-  };
-  const onSignal = (sig) => { hardCleanup(); process.exit(sig === 'SIGINT' ? 130 : 143); };
-  const onExit = () => hardCleanup();
-  const onSigint = () => onSignal('SIGINT');
-  const onSigterm = () => onSignal('SIGTERM');
-  process.on('exit', onExit);
-  process.on('SIGINT', onSigint);
-  process.on('SIGTERM', onSigterm);
-  const detachHandlers = () => {
-    process.off('exit', onExit);
-    process.off('SIGINT', onSigint);
-    process.off('SIGTERM', onSigterm);
-  };
 
   // Unref the child and its pipes so the rig's event loop is not held open by an app
   // the caller forgot to kill; the handlers above still clean up on the way out.

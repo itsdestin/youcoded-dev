@@ -172,6 +172,34 @@ export function buildWorkloadSection(wruns) {
   return { runs: forMedian, median: medianTree(forMedian), pssBreakdownFirstRun: wruns[0]?.pssBreakdown ?? [] };
 }
 
+/**
+ * `artifacts` section. Everything numeric comes from the scenario's own `medianRun`,
+ * plus ONE field that function does not carry: `ipcSumOfSteps.pings`.
+ *
+ * WHY the ping count has to reach the report. `ipcSumOfSteps.totalStallMs` is a running
+ * SUM that starts at 0, and scenario-artifacts.mjs skips any step whose IPC probe
+ * errored. So if every single probe failed, the total is still 0 — a report that says
+ * "the app never stalled once" when the truth is that nobody ever asked it. compare.mjs
+ * reads that 0 as the best possible score and would KEEP a change that made the app
+ * unresponsive. `pings` counts the probe replies actually received, so it is the only
+ * number that can tell "nothing stalled" apart from "nothing was measured", and
+ * validateReport now refuses a report where it is zero.
+ *
+ * WHY `medianRun` is passed in rather than imported: the scenario modules are big and
+ * load LAZILY (see loadArtifacts below), while this builder has to stay importable by
+ * the unit tests with no app present. Handing the function in keeps both true, and keeps
+ * the tests building their fixtures through this exact code instead of a hand-copied
+ * imitation of it that could drift.
+ */
+export function buildArtifactsSection(aruns, medianRun) {
+  const med = medianRun(aruns);
+  return {
+    runs: aruns,
+    median: { ...med, ipcSumOfSteps: { ...med.ipcSumOfSteps, pings: median(aruns.map((r) => r.ipcSumOfSteps?.pings)) } },
+    warnings: [...new Set(aruns.flatMap((r) => r.warnings ?? []))],
+  };
+}
+
 /** The report skeleton, before any phase has filled anything in. */
 export function emptyReport({ label = '', timestamp = new Date().toISOString() } = {}) {
   return {
@@ -222,9 +250,10 @@ export function primaryPathsFor(only) {
  *
  * The second half is THE CONTRACT (see the file header): for every PRIMARY path whose
  * phase was requested, the median must be a finite number AND `runsFor` must find at
- * least one raw sample behind it. Both halves matter: a median with no samples behind
- * it makes `spreadPct()` return 0% noise, which would let pure jitter through the gate
- * as a proven win.
+ * least TWO raw samples behind it. Both halves matter, and the sample count is not a
+ * quality preference: `spreadPct()` returns 0% for anything under two samples, and 0%
+ * noise is what tells the gate that every wobble is a proven win. One run does not make
+ * the verdict weaker, it switches the noise check off entirely.
  */
 export function validateReport(report, only) {
   const problems = [];
@@ -264,6 +293,21 @@ export function validateReport(report, only) {
     const typed = report.artifacts?.median?.typing?.codeLarge?.keystroke?.medianMs;
     need(typeof typed === 'number' && Number.isFinite(typed),
       'artifacts: keystroke-to-paint was never measured on the large file — the meter did not arm, so typing cost is UNKNOWN, not zero');
+
+    // The sneakiest of the artifacts numbers, and the reason buildArtifactsSection carries
+    // `pings` at all. `ipcSumOfSteps.totalStallMs` is a SUM seeded at zero, and every step
+    // whose IPC probe errored is skipped rather than recorded. Fail every probe and the
+    // total is 0 — which is not "the app stayed responsive", it is "responsiveness was
+    // never measured", and the two are written identically in the report. compare.mjs
+    // would score that 0 as the largest possible improvement over any baseline and keep a
+    // change that froze the app solid. `pings` is the count of probe replies actually
+    // received, so zero pings is the tell. Only checked when the phase produced runs —
+    // otherwise the "no runs were recorded" line above already says it.
+    if (report.artifacts?.runs?.length > 0) {
+      const pings = report.artifacts?.median?.ipcSumOfSteps?.pings;
+      need(typeof pings === 'number' && Number.isFinite(pings) && pings > 0,
+        'artifacts: the IPC responsiveness probe never got a single reply, so artifacts.median.ipcSumOfSteps.totalStallMs is 0 because the stall total is UNMEASURED, not because the app stayed responsive — the keep/reject gate would read that zero as a perfect score');
+    }
   }
   if (only.has('shots')) {
     const got = new Set(report.screens?.names ?? []);
@@ -284,8 +328,23 @@ export function validateReport(report, only) {
     // looks perfectly healthy with no evidence underneath it.
     if (typeof v !== 'number' || !Number.isFinite(v)) {
       problems.push(`compare.mjs PRIMARY path "${path}" is ${JSON.stringify(v) ?? 'undefined'} — the keep/reject gate would be BLIND to this metric`);
-    } else if (runsFor(report, path).length === 0) {
+      continue;
+    }
+    const samples = runsFor(report, path);
+    if (samples.length === 0) {
       problems.push(`compare.mjs PRIMARY path "${path}" has a median (${v}) but NO per-run samples behind it — spreadPct() would report 0% noise and let jitter pass as a proven win`);
+    } else if (samples.length < 2) {
+      // ONE sample is not "a thin measurement", it is NO measurement of noise at all —
+      // and the gate treats the two identically, in the dangerous direction.
+      //
+      // spreadPct() needs at least two runs to see how far a number moves between
+      // identical runs; with one it returns 0. The comparison then reads "this metric has
+      // zero run-to-run noise", so ANY movement at all — a machine that was slightly
+      // busier, a boot that got unlucky — clears the noise check and is certified as a
+      // real, proven win. A single-run report therefore does not merely produce a weaker
+      // verdict, it disarms the one mechanism that separates a result from a coincidence.
+      // Two repeats is the bare minimum that can produce a spread; the real runs use 3-5.
+      problems.push(`compare.mjs PRIMARY path "${path}" has only ${samples.length} sample behind its median (${v}) — one run cannot show run-to-run spread, so spreadPct() reports 0% noise and the gate's noise check is DISARMED, not merely thin: any jitter would pass as a proven win. At least 2 repeats are required.`);
     }
   }
   return problems;
@@ -380,7 +439,11 @@ export function renderMarkdown(report, stem) {
       `| artifacts.keystroke large median / p95 | ${n(a.typing?.codeLarge?.keystroke?.medianMs, 'ms')} / ${n(a.typing?.codeLarge?.keystroke?.p95Ms, 'ms')} |`,
       `| artifacts.copy click -> "Copied!" | ${n(a.copy?.clickToCopiedMs, 'ms')} |`,
       `| artifacts long tasks | ${n(a.probe?.longtaskTotalMs, 'ms')} total, max ${n(a.probe?.longtaskMaxMs, 'ms')} |`,
-      `| artifacts IPC stall (sum over steps) | ${n(a.ipcSumOfSteps?.totalStallMs, 'ms')}, max ${n(a.ipcSumOfSteps?.maxMs, 'ms')} |`,
+      // The ping count is printed BESIDE the stall total on purpose: the total is a sum
+      // seeded at zero over probes that are skipped when they error, so "0 ms" with no
+      // pings behind it means nobody measured, not that nothing stalled. Showing the two
+      // together is what lets a human tell those apart at a glance.
+      `| artifacts IPC stall (sum over steps) | ${n(a.ipcSumOfSteps?.totalStallMs, 'ms')}, max ${n(a.ipcSumOfSteps?.maxMs, 'ms')}, from ${n(a.ipcSumOfSteps?.pings, 'probe replies')} |`,
     );
   }
 
@@ -992,7 +1055,7 @@ async function main(argv) {
           log(`artifacts ${i + 1}/${cfg.artifactRepeats}: open md large ${r.open?.mdLarge?.openMs}ms, keystroke p95 ${r.typing?.codeLarge?.keystroke?.p95Ms}ms, html swap ${r.htmlNav?.swap?.medianMs}ms, ipc stall ${r.ipcSumOfSteps?.totalStallMs}ms`);
           for (const w of r.warnings ?? []) log(`artifacts warning: ${w}`);
         }
-        report.artifacts = { runs, median: artifactMedian(runs), warnings: [...new Set(runs.flatMap((r) => r.warnings ?? []))] };
+        report.artifacts = buildArtifactsSection(runs, artifactMedian);
         report.errors.artifactsBoot = readErrorLines(fixture, stem, 'artifacts');
       });
     }

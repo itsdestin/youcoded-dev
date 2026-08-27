@@ -160,6 +160,35 @@ export async function runHistoryScenario(app, fixture, { repeats = 5 } = {}) {
   return out;
 }
 
+/**
+ * Destroy a session the Node side never learned the id of.
+ *
+ * WHY: the resume watch runs as ONE page-side promise and the id only reaches
+ * Node when it resolves. When it rejects instead — the outer withTimeout
+ * expiring is the live case — the id dies with the promise. The page stashed it
+ * on `window.__perfHistoryLastId` for exactly this moment, so the session can
+ * still be cleaned up rather than left mounted, with its whole transcript
+ * rendered, for every later repeat in the same boot.
+ *
+ * Best effort by design: this runs on a failure path, and a cleanup that throws
+ * here would replace the real error with a secondary one.
+ */
+async function destroyStrandedSession(app, warnings, size, rep) {
+  try {
+    const r = await app.cdp.evaluate(`(async () => {
+      const id = window.__perfHistoryLastId;
+      if (!id) return { skipped: true };
+      window.__perfHistoryLastId = null;
+      try { await window.claude.session.destroy(id); return { ok: true, id }; }
+      catch (e) { return { ok: false, id, error: (e && e.message) ? e.message : String(e) }; }
+    })()`);
+    if (r && r.ok) warnings.push(`${size}#${rep}: recovered and destroyed a stranded session (${r.id}) after the resume watch failed`);
+    else if (r && r.ok === false) warnings.push(`${size}#${rep}: a stranded session (${r.id}) could NOT be destroyed: ${r.error} — later repeats in this boot are measuring with it still mounted`);
+  } catch (e) {
+    warnings.push(`${size}#${rep}: could not even ask the page about a stranded session: ${e.message}`);
+  }
+}
+
 async function measureOnce(app, fixture, size, rep) {
   const t = fixture.transcripts[size];
   if (!t) throw new Error(`fixture has no '${size}' transcript (has: ${Object.keys(fixture.transcripts).join(', ')})`);
@@ -247,12 +276,25 @@ async function measureOnce(app, fixture, size, rep) {
   // between samples, and anything suspicious becomes a warning below.
   // t0 and every counter are locals of this async IIFE, so nothing leaks onto
   // `window` and no repeat can ever read a previous repeat's timing state.
-  const watch = await withTimeout(app.cdp.evaluate(`(async () => {
+  // The rejection path matters as much as the resolve path: withTimeout REJECTS
+  // on expiry, which would otherwise throw straight past the cleanup below and
+  // leave a resumed session — potentially the huge one — mounted for every later
+  // repeat in this boot, with its cost charged to whatever runs next.
+  let watch;
+  try {
+    watch = await withTimeout(app.cdp.evaluate(`(async () => {
     const count = () => ${MESSAGE_COUNT_EXPR};
     const baseline = ${baselineCount};
     const t0 = performance.now();
     let created;
     try {
+      // Stash the id on the window the instant it exists. WHY: everything below
+      // runs inside ONE page-side promise, and the Node side only learns the id
+      // when that promise RESOLVES. If it rejects — the outer withTimeout expiring
+      // is the live case — the id is lost with it, and the cleanup below has
+      // nothing to destroy. A resumed 'huge' session then stays mounted for every
+      // later repeat in this boot, and its cost is charged to whatever runs next.
+      window.__perfHistoryLastId = null;
       created = await window.claude.session.create({
         name: ${JSON.stringify(`perf-resume-${size}-${rep}`)},
         cwd: ${JSON.stringify(fixture.projects.alpha)},
@@ -265,6 +307,7 @@ async function measureOnce(app, fixture, size, rep) {
     if (!created || !created.id) {
       return { ok: false, phase: 'create', error: 'session.create resolved without an id: ' + JSON.stringify(created) };
     }
+    window.__perfHistoryLastId = created.id;
     return await new Promise((resolve) => {
       let last = -1, lastChangeMs = 0, firstMs = null, samples = 0, maxGapMs = 0;
       // "switched" = the newly-created (empty) conversation is the one on screen.
@@ -299,8 +342,16 @@ async function measureOnce(app, fixture, size, rep) {
       }, ${SAMPLE_MS});
     });
   })()`), WATCH_TIMEOUT_MS + 30000, `resume watch (${size})`);
+  } catch (err) {
+    await destroyStrandedSession(app, warnings, size, rep);
+    throw err;
+  }
 
   if (!watch.ok) {
+    // Recover and destroy anything that WAS created before the failure, then
+    // rethrow. Without this a create that succeeded and then failed downstream
+    // left the session mounted for the rest of the boot.
+    await destroyStrandedSession(app, warnings, size, rep);
     throw new Error(
       `session.create failed while resuming '${size}' (resumeSessionId=${t.sessionId}, cwd=${fixture.projects.alpha}): ${watch.error}`,
     );

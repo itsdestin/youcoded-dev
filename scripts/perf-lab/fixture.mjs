@@ -185,6 +185,23 @@ export const CONTENT_SEED = 'perf-lab-v1';
  */
 export const SIZES = Object.freeze({ small: 50, medium: 2500, huge: 3500 });
 
+/**
+ * How many TINY extra transcripts to scatter across how many project dirs.
+ *
+ * These restore the file-COUNT dimension the fixture was missing. Destin's real
+ * machine: 804 .jsonl files across 10 project directories. The fixture had 3 in 1.
+ * Costs in the app that scale with the number of files walked — the conversation
+ * reconciler at startup and on a 30-minute timer, the Resume Browser's per-record
+ * read — were therefore measured in the one configuration where they are free.
+ *
+ * 600 rather than 804: the reconciler's own source comment quotes its measured
+ * cost "at 600 records", so this lands on a number the app's authors already
+ * characterised, and it stays well clear of turning fixture setup into a
+ * noticeable part of a run.
+ */
+export const DECOY_TRANSCRIPTS = 600;
+export const DECOY_PROJECT_DIRS = 10;
+
 /** Content modes buildFixture accepts. 'plain' is the pre-2026-08-27 prose
  *  filler, kept because it is the cheapest way to get back a 50,000-message
  *  file if someone wants to measure that regime again. */
@@ -446,6 +463,47 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
     transcripts[name] = { sessionId, slug, path, turns };
   }
 
+  // ── Decoy transcripts: file COUNT, not file size ──────────────────────────
+  //
+  // WHY THESE EXIST. Measured on Destin's machine 2026-08-27:
+  //   real:    804 .jsonl files across 10 project directories
+  //   fixture: 3 files in 1 directory
+  //
+  // Several costs in the app are O(number of transcript files), not O(their
+  // size). `conversations/reconciler.ts` readdirs every project slug dir and
+  // opens every .jsonl in it — at startup AND on a 30-minute timer — and its own
+  // source comment measures 2.8s at 600 records. At three files that cost is
+  // effectively zero, so the rig's headline startup numbers have always been
+  // taken in the one configuration where that whole class of defect cannot
+  // appear. It is the same mistake as measuring idle with no sessions open and
+  // switching between empty conversations, and it is the fourth instance found.
+  //
+  // Decoys are TINY (a header line and one turn) and spread across several slug
+  // dirs, so they restore the file-count dimension for a few hundred KB and a
+  // fraction of a second of setup. They are deliberately NOT big: this is about
+  // how many files get walked, and making them large would confound that with
+  // read cost, which the size-based transcripts above already cover.
+  const decoys = [];
+  if (DECOY_TRANSCRIPTS > 0) {
+    for (let d = 0; d < DECOY_PROJECT_DIRS; d++) {
+      const decoyCwd = mk('projects', `decoy-${d}`);
+      const decoySlug = ccProjectSlug(decoyCwd);
+      mk('.claude', 'projects', decoySlug);
+      const perDir = Math.ceil(DECOY_TRANSCRIPTS / DECOY_PROJECT_DIRS);
+      for (let i = 0; i < perDir && decoys.length < DECOY_TRANSCRIPTS; i++) {
+        // stableUuid again: same fixture bytes on every rebuild, so a baseline
+        // and a candidate walk an identical directory tree.
+        const id = stableUuid(`${CONTENT_SEED}:decoy:${d}:${i}`);
+        const dp = join(home, '.claude', 'projects', decoySlug, `${id}.jsonl`);
+        writeJsonl(dp, transcriptBody({
+          content, sessionId: id, cwd: decoyCwd, turns: 1,
+          startedAt: now - (7 + (i % 90)) * 86400000,
+        }));
+        decoys.push(dp);
+      }
+    }
+  }
+
   mk('.youcoded');
   const models = mk('models');
   // engine-config.ts:34-43 reads cfg.engine.{cacheDir,backend,contextSize}. cacheDir
@@ -517,6 +575,11 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
 
   return {
     home, bin, projects, transcripts, perfLog, userData,
+    // How many transcript files the app will actually find. Reported so a reader
+    // can see the scale a number was taken at, instead of assuming a realistic
+    // library: costs that scale with file COUNT were invisible while this was 3.
+    transcriptFileCount: Object.keys(transcripts).length + decoys.length,
+    decoyTranscripts: decoys.length,
     modelId: GGUF_NAME.replace(/\.gguf$/i, ''),   // ggufIdFromFileName (cache-scan.ts:22)
     engine: { dir: engineDir, version: pin.version, backend: pin.backend, binaryRelPath: pin.binaryRelPath },
     // The env a launcher MUST use. XDG_CONFIG_HOME is pinned explicitly rather

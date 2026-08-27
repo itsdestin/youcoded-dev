@@ -70,10 +70,24 @@ export const get = (o, path) => path.split('.').reduce((a, k) => (a == null ? un
  * the leaf (the idle.<k> shape).
  */
 export function runsFor(report, path) {
-  const i = path.indexOf('.median');
-  if (i < 0) return [];
-  const prefix = path.slice(0, i);
-  const rest = path.slice(i + '.median'.length + 1); // '' when median was the last segment
+  // Split into SEGMENTS and look for a segment that is exactly `median`, rather than
+  // searching for the text ".median" anywhere in the string.
+  //
+  // WHY that distinction is worth the extra two lines: the substring search also
+  // matches the start of a longer segment. A path like `x.medianMs.median.y` splits at
+  // the wrong dot, looks for a `runs` array under the wrong prefix, finds nothing, and
+  // returns an empty sample list. Nothing about that failure is loud — an empty sample
+  // list is not an error here, it is spreadPct() answering "this metric has 0% run-to-run
+  // noise", which tells the gate that the tiniest wobble on that metric is a proven
+  // result. So a path that quietly mis-parses is a path whose noise floor silently drops
+  // to zero, which is the single most permissive value it could take.
+  const parts = path.split('.');
+  const i = parts.indexOf('median');
+  // `i < 1`, not `i < 0`: a path that STARTS with `median` has no prefix to hang a
+  // sibling `runs` array off, so there is nothing to look up.
+  if (i < 1) return [];
+  const prefix = parts.slice(0, i).join('.');
+  const rest = parts.slice(i + 1).join('.'); // '' when median was the last segment
   const runs = get(report, `${prefix}.runs`) ?? [];
   return (rest ? runs.map((r) => get(r, rest)) : runs).filter((x) => typeof x === 'number');
 }
@@ -92,6 +106,45 @@ export function spreadPct(report, path) {
 const delta = (b, c) =>
   typeof b === 'number' && typeof c === 'number' && b !== 0 ? Math.round(((c - b) / b) * 1000) / 10 : null;
 
+/**
+ * How far above a ZERO baseline a metric has to land before we call it a regression,
+ * in whatever unit that metric is reported in (milliseconds, megabytes, or percentage
+ * points — every PRIMARY metric is lower-is-better and reported in one of those).
+ *
+ * WHY a floor at all: a metric that was 0 and is now 0.4 is almost certainly the median
+ * of a couple of runs wobbling around nothing, and a gate that rejected every change on
+ * that basis would be ignored within a week.
+ *
+ * WHY 1 specifically: 1 is the smallest unit any of these metrics is meaningfully
+ * reported in — the report rounds milliseconds and megabytes to whole numbers and
+ * percentages to one decimal — so anything at or below 1 is inside the report's own
+ * rounding and cannot be told apart from noise. Anything ABOVE 1 is a real quantity that
+ * was measured and that simply did not exist before. The number is deliberately small:
+ * this gate's whole failure mode is being too willing to accept, so when in doubt it
+ * should stop the change and make a human look, not wave it through.
+ */
+export const ZERO_BASELINE_FLOOR = 1;
+
+/**
+ * The regression `delta()` structurally cannot see: baseline 0, candidate above zero.
+ *
+ * WHY this exists as its own test. delta() returns null when the baseline is 0, because
+ * dividing by zero would produce a meaningless percentage — and verdict()'s regression
+ * loop skips every null. The consequence was that "there was no freeze here before, and
+ * there is a three-second freeze here now" — the worst regression this whole rig was
+ * built to catch — registered as *no regression at all* and the change was kept. Any
+ * metric that legitimately sits at 0 in a healthy build (a stall total, a long-task
+ * total, an idle CPU reading) had a free pass to become arbitrarily bad.
+ */
+const roseFromZero = (b, c) =>
+  b === 0 && typeof c === 'number' && Number.isFinite(c) && c > ZERO_BASELINE_FLOOR;
+
+/** True when a PRIMARY path resolved to a usable number in this report. */
+const present = (report, path) => {
+  const v = get(report, path);
+  return typeof v === 'number' && Number.isFinite(v);
+};
+
 // Total ERROR-line count for a report — a boot that logs new errors is not a clean win
 // even if every timing metric improved, so this is checked independently of PRIMARY.
 const errorTotal = (r) =>
@@ -108,7 +161,10 @@ const errorTotal = (r) =>
  * Keep iff ALL of:
  *  - target improved by at least improveMinPct, AND that delta clears the
  *    baseline's own spread on that path (otherwise it's noise, not a win)
- *  - no other PRIMARY metric regressed beyond regressMaxPct + its own spread
+ *  - no other PRIMARY metric regressed beyond regressMaxPct + its own spread, which
+ *    INCLUDES a metric that was 0 in the baseline and is above ZERO_BASELINE_FLOOR now
+ *  - every PRIMARY metric was actually readable in BOTH reports — a metric the gate
+ *    could not see is not a metric the gate has cleared
  *  - every screenshot comparison passed (or the change is flagged as a UX bugfix,
  *    where a visual diff is the point, not a regression)
  *  - the candidate didn't log more ERROR lines than the baseline
@@ -124,19 +180,61 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
   const td = delta(tb, tc);
   const ts = spreadPct(baseline, target);
   const beyondSpread = td !== null && Math.abs(td) > ts;
-  if (td === null) reasons.push(`target ${target} missing in a report`);
-  else if (td > -improveMinPct) reasons.push(`target improved only ${-td}% (< ${improveMinPct}%)`);
+  if (td === null) {
+    // Two different situations both make a percentage impossible, and they need
+    // different sentences: telling an operator that a number sitting right there in the
+    // report is "missing" sends them hunting for a broken report that isn't broken.
+    reasons.push(tb === 0
+      ? `target ${target} baseline is already 0 — a lower-is-better metric at zero has no room to improve`
+      : `target ${target} missing in a report`);
+  } else if (td > -improveMinPct) reasons.push(`target improved only ${-td}% (< ${improveMinPct}%)`);
   else if (!beyondSpread) reasons.push(`target delta ${td}% is inside baseline spread ${ts.toFixed(1)}%`);
 
   const regressions = [];
   for (const p of PRIMARY) {
     if (p === target) continue; // the target's own movement is judged above, not as a regression
-    const d = delta(get(baseline, p), get(candidate, p));
+    const bv = get(baseline, p);
+    const cv = get(candidate, p);
+    if (roseFromZero(bv, cv)) {
+      // Reported with NO percentage. There is no honest percentage to quote here —
+      // "+Infinity%" or a silently omitted number would both read as a glitch, and the
+      // fact that actually matters is the one the raw values say: this cost did not
+      // exist before. deltaPct stays null so nothing downstream can accidentally do
+      // arithmetic on a fabricated figure.
+      regressions.push({ path: p, base: bv, cand: cv, deltaPct: null, fromZero: true });
+      continue;
+    }
+    const d = delta(bv, cv);
     if (d !== null && d > regressMaxPct + spreadPct(baseline, p)) {
-      regressions.push({ path: p, base: get(baseline, p), cand: get(candidate, p), deltaPct: d });
+      regressions.push({ path: p, base: bv, cand: cv, deltaPct: d });
     }
   }
-  if (regressions.length) reasons.push(`regressions: ${regressions.map((r) => `${r.path} +${r.deltaPct}%`).join(', ')}`);
+  if (regressions.length) {
+    reasons.push(`regressions: ${regressions.map((r) => (r.fromZero
+      ? `${r.path} was ZERO, now ${r.cand} — a new cost the baseline did not have`
+      : `${r.path} +${r.deltaPct}%`)).join(', ')}`);
+  }
+
+  // ── Metrics this gate could not see at all ──────────────────────────────────
+  // Until now only the TARGET's absence was reported. Every other PRIMARY path that
+  // failed to resolve in either report just produced a null delta, which the regression
+  // loop skipped — so it counted as "did not regress".
+  //
+  // That is exactly backwards, and it happens routinely rather than exceptionally:
+  // compare an old baseline against a candidate built after new metrics were added, and
+  // every one of the new metrics stops being judged, silently, while the run still
+  // prints KEEP. A gate that cannot see a metric has not cleared that metric; it has no
+  // opinion about it, and a gate with no opinion must not sign the change off.
+  const missing = [];
+  for (const p of PRIMARY) {
+    if (p === target) continue; // the target's own absence is already named above
+    const inBase = present(baseline, p);
+    const inCand = present(candidate, p);
+    if (!inBase || !inCand) missing.push({ path: p, where: !inBase && !inCand ? 'both' : (inBase ? 'candidate' : 'baseline') });
+  }
+  if (missing.length) {
+    reasons.push(`cannot judge ${missing.length} PRIMARY metric(s) — absent from a report: ${missing.map((m) => `${m.path} (${m.where})`).join(', ')}`);
+  }
 
   const failedScreens = Object.entries(screens).filter(([, s]) => s && s.pass === false);
   if (failedScreens.length && !uxBugfix) {
@@ -147,6 +245,7 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
     keep: reasons.length === 0,
     target: { path: target, base: tb, cand: tc, deltaPct: td, beyondSpread },
     regressions,
+    missing,
     screens,
     errors,
     reasons,
@@ -168,7 +267,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const v = verdict(b, c, { target, screens, uxBugfix: process.argv.includes('--ux-bugfix') });
   console.log(`target ${target}: ${v.target.base} → ${v.target.cand} (${v.target.deltaPct}%)`);
   for (const p of PRIMARY) {
-    console.log(`  ${p.padEnd(40)} ${String(get(b, p)).padStart(9)} → ${String(get(c, p)).padStart(9)}  ${delta(get(b, p), get(c, p)) ?? '—'}%`);
+    const bv = get(b, p);
+    const cv = get(c, p);
+    const d = delta(bv, cv);
+    // A bare '—' in this column used to cover two very different things: "no data" and
+    // "the baseline was zero". Only the first is a gap in the report, so the second says
+    // so in words — otherwise a reader skims past the row where a brand-new cost appeared.
+    const change = d !== null ? `${d}%` : (bv === 0 ? 'from ZERO' : 'not comparable');
+    console.log(`  ${p.padEnd(40)} ${String(bv).padStart(9)} → ${String(cv).padStart(9)}  ${change}`);
   }
   for (const [n, s] of Object.entries(screens)) console.log(`  screen ${n}: ${s.pct}% ${s.pass ? 'ok' : 'DIFF'}`);
   console.log(v.keep ? 'VERDICT: KEEP' : `VERDICT: REJECT — ${v.reasons.join('; ')}`);

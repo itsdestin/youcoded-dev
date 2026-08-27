@@ -99,6 +99,9 @@ export const NUMERIC_KEYS = [
   'rendererLongtaskCount', 'rendererLongtaskTotalMs', 'rendererLongtaskMaxMs',
   // Context for reading any of the above.
   'renderedEntries', 'elapsedMs',
+  // What fraction of the expected pings the probe actually managed. Low means the
+  // renderer blocked the probe itself, so every stall total here is a FLOOR.
+  'probeCoveragePct',
 ];
 
 /** Median of each NUMERIC_KEY across runs; a metric null in every run stays null. */
@@ -321,10 +324,23 @@ export const MEASURES = {
     rendererStallMs: 'the part overlapped by a renderer long task',
   },
   blindTo: [
+    // The big one, found by review on 2026-08-27 and previously unstated.
+    'MOST renderer blocks entirely. The IPC probe is a setInterval running INSIDE the renderer, so a blocked renderer stops it from firing at all. Only a block that begins while a ping is already outstanding produces a sample — and with a trivial handler the probe is in flight roughly 1% of the time. ipcTotalStallMs is therefore a FLOOR on unresponsiveness, not a total.',
     'main-process blocking that happens WHILE the renderer is also blocked — overlap is charged to the renderer',
     'renderer blocking under 50ms (PerformanceObserver does not report it), which is charged to the main process instead',
     'any cost that needs more than one session open to appear',
   ],
+  // WHICH WAY THE BIAS RUNS, because it decides how to read the headline.
+  // A blocked MAIN process leaves the renderer free to keep pinging, so every
+  // main-process stall is caught. A blocked RENDERER silences the probe, so most
+  // renderer stalls are missed. The sample pool is therefore enriched in
+  // main-process stalls: the attribution OVERSTATES the main process.
+  //
+  // That is why the 2026-08-27 result survives it. Main measured 0.2-1.3% of the
+  // stall despite a bias that favours main, so the renderer's true share is at
+  // least as large as reported. A main-heavy blame, by contrast, would need this
+  // bias ruled out before it could be trusted.
+  biasDirection: 'overstates the main process; understates the renderer',
 };
 
 export async function runReplayStallScenario(app, fixture, {
@@ -489,7 +505,28 @@ async function measureOnce(app, fixture, size, rep, { everyMs, timeoutMs, pollMs
       warnings.push(`${label}: renderer probe reported ${rend.errors.join('; ')}`);
     }
 
+    // The probe is a setInterval INSIDE the renderer, so a blocked renderer stops
+    // it firing. A ping gap far larger than the interval is the probe telling us
+    // it was itself frozen — during which no stall could be sampled at all. Say
+    // so, because the totals below are then a FLOOR and blame is drawn from a
+    // sample pool with most of the renderer's blocking missing from it.
+    if (typeof attr.ipcMaxPingGapMs === 'number' && attr.ipcMaxPingGapMs > 3 * everyMs) {
+      warnings.push(
+        `${size}#${rep}: the stall probe was itself blocked for up to ${attr.ipcMaxPingGapMs}ms `
+        + `(it pings every ${everyMs}ms), so it could not sample during that time. `
+        + `ipcTotalStallMs is a FLOOR, not a total, and the attribution is drawn from a pool `
+        + `that systematically misses renderer blocking — it OVERSTATES the main process.`,
+      );
+    }
+    // Expected pings over the observed window, against what actually arrived.
+    // A large shortfall is the same signal as the gap above, in a form that
+    // survives into the report rather than living only in a warning string.
+    const expectedPings = elapsed > 0 ? Math.floor(elapsed / everyMs) : null;
+
     return {
+      // How much of the run the probe was able to observe at all. Low = the
+      // renderer was blocked for most of it and the numbers below are floors.
+      probeCoveragePct: expectedPings ? Math.round((ipc.pings / expectedPings) * 1000) / 10 : null,
       // --- end-to-end unresponsiveness (what a user feels) ---
       ipcMedianMs: ipc.medianMs, ipcP95Ms: ipc.p95Ms, ipcMaxMs: ipc.maxMs,
       ipcOver250ms: ipc.over250ms, ipcOver1000ms: ipc.over1000ms,

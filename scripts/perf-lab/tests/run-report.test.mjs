@@ -24,7 +24,7 @@ import { MEASURES as STALL_MEASURES, SIZES as STALL_SIZES_REAL, medianRun as sta
 import { SCREEN_NAMES } from '../screenshots.mjs';
 import {
   EXIT, NETWORK_PATHS, PHASES, STALL_SIZES, USAGE,
-  buildIdleSection, buildStartupSection, buildWorkloadSection,
+  buildArtifactsSection, buildIdleSection, buildStartupSection, buildWorkloadSection,
   emptyReport, median, medianTree, parseArgs, phaseOfPath, primaryPathsFor,
   renderMarkdown, stemFor, validateReport,
 } from '../run.mjs';
@@ -197,7 +197,10 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   report.workload = buildWorkloadSection(wruns);
   report.replayStall = Object.fromEntries(STALL_SIZES.map((s) => [s, stallSize(stallRepeats)]));
   const aruns = Array.from({ length: artifactRepeats }, (_, i) => artifactRun(i));
-  report.artifacts = { runs: aruns, median: artifactMedian(aruns), warnings: [] };
+  // Through run.mjs's REAL builder, not a hand-assembled `{ runs, median }`: the builder
+  // is what carries `ipcSumOfSteps.pings` into the median, and a fixture that assembled
+  // the section itself would keep passing while the writer stopped carrying it.
+  report.artifacts = buildArtifactsSection(aruns, artifactMedian);
   // The REAL MEASURES exports, not hand-copied literals: if a scenario drops or
   // renames its descriptor, this fixture fails to build rather than quietly
   // rendering a report with no configuration section.
@@ -350,6 +353,51 @@ describe('validateReport', () => {
     report.artifacts.median.typing.codeLarge.keystroke.medianMs = null;
     const problems = validateReport(report, new Set(['artifacts']));
     assert.ok(problems.some((p) => p.includes('UNKNOWN, not zero')), problems.join('; '));
+  });
+
+  // A report built from ONE run of each phase looks completely healthy: every median is
+  // a real number and every path resolves. What it does not have is any evidence of how
+  // much a number moves between identical runs — and compare.mjs answers that question
+  // with 0%, which reads as "this metric never wobbles" and lets any movement at all
+  // through as a proven win. So a single-run report does not weaken the gate, it turns
+  // the noise check off, and the report must refuse rather than look fine.
+  it('refuses a single-run report: one sample makes the noise gate blind, not merely thin', () => {
+    const report = completeReport({ runs: 1 });
+    // The premise, stated out loud: the median is perfectly healthy and the spread is 0.
+    assert.equal(typeof get(report, 'startup.median.sessionsListed'), 'number');
+    assert.equal(spreadPct(report, 'startup.median.sessionsListed'), 0);
+
+    const problems = validateReport(report, new Set(['startup']));
+    assert.ok(
+      problems.some((p) => p.includes('startup.median.sessionsListed') && p.includes('only 1 sample')),
+      problems.join('; '),
+    );
+    // …and it must say WHAT that costs, not just that the count is low.
+    assert.ok(problems.some((p) => p.includes('DISARMED')), problems.join('; '));
+  });
+
+  it('still accepts two runs — two is the smallest number that can show a spread', () => {
+    assert.deepEqual(validateReport(completeReport({ runs: 2 }), new Set(['startup'])), []);
+  });
+
+  // The artifacts IPC stall total is a SUM seeded at zero over probes that are SKIPPED
+  // when they error. Fail every probe and the total is 0 — byte-for-byte identical to a
+  // run where the app never stalled, and compare.mjs would read it as the best score
+  // achievable. `pings` counts the probe replies that actually came back, so it is the
+  // only field that separates "no stall" from "no measurement".
+  it('refuses a 0 ms artifacts stall total that no probe ever reported', () => {
+    const report = completeReport();
+    for (const r of report.artifacts.runs) r.ipcSumOfSteps = { pings: 0, totalStallMs: 0, over250ms: 0, over1000ms: 0, maxMs: 0 };
+    report.artifacts = buildArtifactsSection(report.artifacts.runs, artifactMedian);
+    // The metric itself still looks like a flawless result — that is the whole problem.
+    assert.equal(get(report, 'artifacts.median.ipcSumOfSteps.totalStallMs'), 0);
+
+    const problems = validateReport(report, new Set(['artifacts']));
+    assert.ok(problems.some((p) => p.includes('UNMEASURED, not because the app stayed responsive')), problems.join('; '));
+  });
+
+  it('the ping count reaches the report at all, or the check above can never fire', () => {
+    assert.ok(get(completeReport(), 'artifacts.median.ipcSumOfSteps.pings') > 0);
   });
 });
 

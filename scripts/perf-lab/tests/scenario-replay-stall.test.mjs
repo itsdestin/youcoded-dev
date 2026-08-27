@@ -269,6 +269,32 @@ function fakeApp({
 // pollMs/settleMs 0 so the tests do not sleep; timeoutMs small so a hang fails fast.
 const FAST = { pollMs: 0, settleMs: 0, repeats: 1, timeoutMs: 5000 };
 
+// The bias this warning exists to expose runs in ONE direction, and which
+// direction decides how a result is read. A blocked MAIN process leaves the
+// renderer free to keep pinging, so main-process stalls are always sampled. A
+// blocked RENDERER stops the probe firing, so most renderer stalls are missed.
+// The pool is therefore enriched in main-process stalls — the attribution
+// OVERSTATES the main process. A renderer-heavy verdict survives that bias; a
+// main-heavy one has to rule it out first.
+test('a probe that was itself frozen says so, and says which way the bias runs', async () => {
+  const app = fakeApp();
+  const out = await runReplayStallScenario(app, fixture, FAST);
+  const w = out[SIZES[0]].warnings.join(' ');
+  assert.match(w, /the stall probe was itself blocked/);
+  assert.match(w, /OVERSTATES the main process/,
+    'the warning must name the DIRECTION of the bias — "the probe missed things" alone does not tell a reader whether to trust a main-process verdict');
+});
+
+test('probeCoveragePct reports how much of the run the probe could observe', async () => {
+  const app = fakeApp();
+  const out = await runReplayStallScenario(app, fixture, FAST);
+  for (const size of SIZES) {
+    const c = out[size].median.probeCoveragePct;
+    assert.ok(c === null || (typeof c === 'number' && c >= 0),
+      'coverage must be a number or null, never a fabricated 100%');
+  }
+});
+
 test('runReplayStallScenario reports every size with runs, median, blame and warnings', async () => {
   const app = fakeApp();
   const out = await runReplayStallScenario(app, fixture, FAST);
@@ -277,7 +303,15 @@ test('runReplayStallScenario reports every size with runs, median, blame and war
     const s = out[size];
     assert.equal(s.runs.length, 1);
     assert.equal(s.stabilizedRuns, 1);
-    assert.deepEqual(s.warnings, []);
+    // The canned data has a 4,000ms gap between pings against a 100ms interval,
+    // which means the probe itself was frozen for most of the window. That now
+    // raises a warning ON PURPOSE (added 2026-08-27): the probe is a setInterval
+    // running inside the renderer, so a blocked renderer silences it and the
+    // stall totals become a floor rather than a total. The fixture is a case of
+    // exactly that, so the warning firing here is the guard working.
+    assert.equal(s.warnings.length, 1, 'the probe-starvation warning should fire on this fixture');
+    assert.match(s.warnings[0], /FLOOR, not a total/);
+    assert.match(s.warnings[0], /OVERSTATES the main process/);
     // The canned data is a 3.25s stall with the renderer idle — the app-wide freeze.
     assert.equal(s.blame, 'main-process');
     assert.equal(s.median.mainProcessStallMs, 3253);

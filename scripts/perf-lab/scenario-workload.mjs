@@ -24,11 +24,35 @@ export function median(a) {
   const s = [...a].sort((x, y) => x - y);
   return s.length ? s[Math.floor(s.length / 2)] : null;
 }
-/** 95th percentile by nearest-rank, clamped to the last element; null when empty. */
+/**
+ * 95th percentile by nearest-rank; null when empty.
+ *
+ * FIXED 2026-08-27 — the old form used `Math.floor(n * 0.95)`, which is one rank
+ * too high. Nearest-rank is `ceil(n * 0.95) - 1`. Measured: at n=20 the old form
+ * returned the 20th value where the 19th is correct.
+ *
+ * READ THIS BEFORE TRUSTING A p95. For n <= 20, `floor(0.95n) === n - 1`, so the
+ * old form returned THE MAXIMUM for every small sample — p95 and max carried no
+ * independent information at all. The corrected form is better arithmetic but it
+ * does not rescue a small sample: with 3 values the 95th percentile genuinely IS
+ * the largest of the three. A "p95" over a handful of samples is a maximum
+ * wearing a percentile's name, which is why `p95Meaningful` exists below and why
+ * any PRIMARY metric relying on a tail must have the sample count to support one.
+ */
 export function p95(a) {
   const s = [...a].sort((x, y) => x - y);
-  return s.length ? s[Math.min(s.length - 1, Math.floor(s.length * 0.95))] : null;
+  return s.length ? s[Math.max(0, Math.ceil(s.length * 0.95) - 1)] : null;
 }
+
+/**
+ * The sample count below which a 95th percentile cannot exclude anything and is
+ * therefore just the maximum. 20 is the first n where nearest-rank picks a value
+ * that is NOT the largest.
+ */
+export const MIN_MEANINGFUL_P95 = 20;
+
+/** Does a p95 over this many samples mean anything beyond "the biggest one"? */
+export const p95Meaningful = (n) => n >= MIN_MEANINGFUL_P95;
 const round1 = (n) => (typeof n === 'number' ? Math.round(n * 10) / 10 : n);
 
 /**
@@ -181,7 +205,15 @@ export async function readProbeWindow(cdp, fromLabel, toLabel) {
       windowMs: to - from,
       longtaskCount: lt.length,
       longtaskTotalMs: lt.reduce((a, b) => a + b, 0),
-      longtaskMaxMs: Math.max(0, ...lt),
+      // null, not 0, when the observer never attached, and longtaskSupported now
+      // travels with it. FIXED 2026-08-27: this returned Math.max(0, ...[]) === 0
+      // and DROPPED longtaskSupported, and scenario-artifacts fed the result to an
+      // attributor that reads "no long task under this stall" as "the MAIN process
+      // was blocked". A broken observer therefore rendered as a confident
+      // indictment of the wrong thread — the exact mistake this project already
+      // made once and had to retract.
+      longtaskMaxMs: p.longtaskSupported ? Math.max(0, ...lt) : null,
+      longtaskSupported: p.longtaskSupported,
       frameGapCount: fg.length,
       frameGapMaxMs: Math.max(0, ...fg),
     };
@@ -270,7 +302,14 @@ async function installPageHelpers(cdp) {
           const rows = Array.prototype.slice.call(document.querySelectorAll('[data-session-idx]'))
             .filter((r) => !r.closest('[data-session-strip]') && !r.closest('.session-strip'));
           el = rows.find((r) => Number(r.getAttribute('data-session-idx')) === listIdx) || null;
-          if (!el) return { ms: null, mode: 'none', ok: false, reason: 'overflow menu opened but no row with data-session-idx=' + listIdx };
+          if (!el) {
+            // Close the menu we just opened before giving up. Leaving it open
+            // meant the NEXT menu switch toggled it shut, found no rows, and also
+            // failed — one miss became alternating failures for the rest of the
+            // run, and the open dropdown occluded every later screenshot.
+            try { trigger.click(); } catch (e) { /* trigger gone with the menu */ }
+            return { ms: null, mode: 'none', ok: false, reason: 'overflow menu opened but no row with data-session-idx=' + listIdx };
+          }
         }
         el.click();
         await nextFrame2();
@@ -531,13 +570,19 @@ export async function runWorkloadScenario(app, fixture, {
   cpuSampleSeconds = 40, switchCount = 40, keepSessions = false,
 } = {}) {
   const cdp = app.cdp;
-  await installProbe(cdp);
-  await installPageHelpers(cdp);
-
   const ids = [];
   const warnings = [];
   let streamer = null;
   try {
+  // Installed INSIDE the try, not before it. FIXED 2026-08-27: these two lines sat
+  // above `try {`, so a throw from the SECOND install skipped the finally that
+  // stops them — leaving a per-frame requestAnimationFrame callback and a
+  // PerformanceObserver burning through every later scenario and every
+  // screenshot in the same boot. The probe would then be measuring the rig's own
+  // leftovers and charging them to the app.
+    await installProbe(cdp);
+    await installPageHelpers(cdp);
+
     // ── 4 Claude Code sessions, alternating project folders ──────────────
     await mark(cdp, 'cc-create:start');
     // Snapshot the transcript dirs BEFORE any CC session exists, so the files
@@ -717,8 +762,15 @@ export async function runWorkloadScenario(app, fixture, {
       const paintedThis = (paintedSeen[idx] = (paintedSeen[idx] ?? 0) + 1) <= PAINTED_SAMPLES_PER_SESSION;
       const r = await cdp.evaluate(
         `window.__perfLab.switchTo(${idx}, ${JSON.stringify(names[idx])}, ${ids.length}, ${paintedThis})`);
-      if (r.mode === 'pill') { clickSwitches++; clickMs.push(r.ms); }
-      else if (r.mode === 'menu') { menuSwitches++; menuMs.push(r.ms); }
+      // FIXED 2026-08-27: the timing used to be recorded BEFORE and independently
+      // of `r.ok`. `ok` means the visible pane actually moved — so a click that
+      // landed on nothing contributed its ~30 ms two-rAF non-event to
+      // switchP95Ms, a keep/reject metric. A failed switch is fast precisely
+      // because nothing happened, so counting it makes the app look better the
+      // more often the rig misses. `verifiedSwitches` was already recorded and
+      // nothing acted on it.
+      if (r.mode === 'pill') { clickSwitches++; if (r.ok) clickMs.push(r.ms); }
+      else if (r.mode === 'menu') { menuSwitches++; if (r.ok) menuMs.push(r.ms); }
       else { failedSwitches++; if (switchFailures.length < 5) switchFailures.push(r.reason); }
       if (r.ok) verifiedSwitches++;
       // Painted timings are kept for EVERY real switch regardless of pill-vs-menu:

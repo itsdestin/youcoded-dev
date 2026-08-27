@@ -35,22 +35,43 @@ export async function installIpcStallProbe(cdp, { everyMs = 100 } = {}) {
     const t0 = performance.now();
     const samples = [];          // [tRel, roundTripMs]
     let timer = 0, inFlight = false, missed = 0;
+    // The still-outstanding ping, if any: [tRel, sentAtPerfNow]. Kept OUTSIDE the
+    // ping closure so a reader can see a ping that has not come back yet.
+    //
+    // WHY THIS EXISTS. The first version pushed a sample only AFTER its await
+    // resolved. So a ping that NEVER came back — a main process wedged for the
+    // rest of the run — produced no sample at all: pings 0, maxMs null,
+    // totalStallMs 0. The most catastrophic possible result was indistinguishable
+    // from a perfectly responsive app, and it is the reading a keep/reject gate
+    // would have accepted as a large improvement.
+    let outstanding = null;
     const ping = async () => {
       // Never overlap: if a ping is still outstanding the main process is busy,
       // and issuing more would queue behind it and measure our own backlog.
       if (inFlight) { missed++; return; }
       inFlight = true;
       const s = performance.now();
+      outstanding = [Math.round(s - t0), s];
+      let rejected = false;
       try { await window.claude.getPlatform(); }
-      catch (e) { /* a rejected ping still tells us the round trip took this long */ }
+      // A rejected ping still tells us the round trip took this long — but it is
+      // NOT the same evidence as a completed one. A surface that rejects
+      // instantly would otherwise log ~0ms as a healthy round trip forever.
+      catch (e) { rejected = true; }
       const e = performance.now();
-      samples.push([Math.round(s - t0), Math.round(e - s)]);
+      samples.push([Math.round(s - t0), Math.round(e - s), rejected ? 1 : 0]);
+      outstanding = null;
       inFlight = false;
     };
     timer = setInterval(ping, ${everyMs});
     window.__ipcStall = {
       t0, samples, everyMs: ${everyMs},
       missedTicks: () => missed,
+      // How long the currently-outstanding ping has been waiting, right now.
+      // null when nothing is in flight. This is the only way to see a stall that
+      // has not ENDED yet — including one that never will.
+      openStallMs: () => (outstanding === null ? null : Math.round(performance.now() - outstanding[1])),
+      rejected: () => samples.reduce((a, s) => a + (s[2] ? 1 : 0), 0),
       stop() { if (timer) clearInterval(timer); timer = 0; },
     };
     return true;
@@ -77,8 +98,16 @@ export async function readIpcStallProbe(cdp) {
     // Time spent unresponsive, counting only the part of each stall beyond the
     // ping interval — the interval itself is not a stall.
     const stallMs = p.samples.reduce((a, s) => a + Math.max(0, s[1] - p.everyMs), 0);
+    // A ping that is STILL outstanding when we read the probe. A wedged main
+    // process produces exactly this and no completed sample, so without it the
+    // worst possible outcome reads as pings 0 / stall 0 — a clean bill of health.
+    const openMs = p.openStallMs ? p.openStallMs() : null;
     return {
       pings: p.samples.length,
+      openStallMs: openMs,
+      // Round trips that came back as a REJECTION rather than a reply. A surface
+      // that fails instantly logs ~0ms, which looks like a very fast app.
+      rejectedPings: p.rejected ? p.rejected() : 0,
       missedTicks: p.missedTicks(),
       medianMs: at(0.5), p95Ms: at(0.95), maxMs: rt.length ? rt[rt.length - 1] : null,
       over100ms: over(100), over250ms: over(250), over1000ms: over(1000),
