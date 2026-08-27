@@ -2991,3 +2991,49 @@ editing** — line numbers in this plan have been stale in every task this sessi
   entries after `runSpecialist` resolves closes it.
 - [ ] **4:** `bash scripts/verify.sh worktrees/statusbar-relevance`
 - [ ] **5: Commit** — `test(harness): pin the last missing-session arm; make a comment checkable`
+
+---
+
+### Task 29: The card calls remaining context "used", and colours it backwards
+
+**Depends on:** Task 26. **Found by:** the Task 26 review.
+
+- [ ] **1. MAJOR — the context row is inverted, in words and in colour.**
+  `contextMap` is written by `statusline.sh` as context **remaining** (`ipc-handlers.ts` ~2007,
+  "context remaining %"), and `nativeChips.contextPct` is remaining too (`StatusBar.tsx` ~210,
+  "contextPct is REMAINING context"). The bar's own aria-label says
+  `"Context: ${n}% remaining"`. But `UsageCard.tsx` ~255,260 prints **"Context used {n}%"**,
+  fills the bar to `n`, and colours it with `utilizationColor` (red ≥80, amber ≥50 — a scale
+  built for *utilisation*, where high is bad).
+  **Failure:** a native session with 90% of its window still FREE renders a red bar at 90%
+  labelled "Context used". The bar says roomy; the card says nearly full; they are the same
+  number.
+  This mislabel pre-dates Task 26 — but Task 26 is what routes native sessions into it, so
+  item 1 of that task delivered the right number and re-created the disagreement in words.
+  **Fix by matching the bar, not by inventing a second convention:** the bar is the
+  established surface and says "remaining", so label the card's row "Context remaining" and
+  invert the colour scale so red means LITTLE remaining. Do not compute `100 - n` and keep the
+  "used" label — that adds a second convention for one number, which is how this class of
+  confusion starts. Pin the label AND the colour with tests.
+
+- [ ] **2. MAJOR — the backward timeline walk is untested.** Every fixture in
+  `tests/usage-snapshot.test.ts` has a single-entry timeline, so `lastTurnUsage` walking
+  forward instead of backward passes **30/30**. Real regression it would let through: a
+  multi-turn native session shows turn 1's context on the card and turn N's on the bar. Add a
+  fixture with two turns carrying different `contextUsedTokens` and assert the later one.
+
+- [ ] **3. Minor — the `isNative` gate on the context fallback is untested.** The
+  "never borrows native context for a Claude Code session" case passes `contextPercent: 30`,
+  so the statusline value wins whatever the gate does; removing `isNative ?` leaves 30/30
+  green. Drop `contextPercent` from that fixture so the test proves what its name claims.
+
+- [ ] **4. Minor — `App.tsx` ~2085-2088 comment is stale.** "Returns null if stats haven't
+  arrived yet" stopped being true when the native totals fallback landed in Task 14.
+
+- [ ] **5:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **6: Commit** — `fix(usage-card): the context row said "used" while showing what's left`
+
+Noted, not done (layering): `state/usage-snapshot.ts` imports `selectNativeStatusChips` from
+`components/StatusBar.tsx`, pulling an ~1800-line component module into a state module's
+graph. That import is CORRECT — one selector, one formula, so the bar and the card cannot
+drift — but the selector eventually belongs in `state/`. Not worth a move mid-branch.
