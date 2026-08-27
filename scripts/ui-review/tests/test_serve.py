@@ -3,7 +3,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 from fixture import make_fixture
 from deck.spec import load_spec
-from deck.serve import answers_path, make_server, serve, summary, wait_for_submit, write_atomic
+from deck.serve import answers_path, make_server, rotate_submitted, serve, summary, wait_for_submit, write_atomic
 
 def post(url, obj):
     req = urllib.request.Request(url, data=json.dumps(obj).encode(), headers={'content-type': 'application/json'}, method='POST')
@@ -87,6 +87,27 @@ class ServeTests(unittest.TestCase):
 
     def test_write_atomic(self):
         p = os.path.join(self.tmp, 'a.json'); write_atomic(p, {'x': 1}); self.assertEqual(json.load(open(p)), {'x': 1})
+    def test_a_submitted_answers_file_is_kept_aside_and_the_review_starts_fresh(self):
+        # Re-serving a deck after its submit must not load the old file: the page would see `submitted` and lock every control.
+        self.assertIsNone(rotate_submitted(self.spec, log=lambda *a: None))                                   # no file: nothing to do
+        write_atomic(answers_path(self.spec), {'answers': {'S-1': {'v': 'yes'}}})
+        self.assertIsNone(rotate_submitted(self.spec, log=lambda *a: None))                                   # saved but not submitted: keep going
+        self.assertTrue(os.path.exists(answers_path(self.spec)))
+        write_atomic(answers_path(self.spec), {'submitted': '2026-08-27T10:10:30.568Z', 'answers': {'S-1': {'v': 'yes'}}})
+        out = []; dest = rotate_submitted(self.spec, log=out.append)
+        self.assertEqual(os.path.basename(dest), 'deck.answers.202608271010.json'); self.assertTrue(os.path.exists(dest))
+        self.assertFalse(os.path.exists(answers_path(self.spec))); self.assertTrue(any('starting a fresh one' in l for l in out))
+        # and serve() does it before it starts (the lock check in test_second_serve_of_same_spec_refuses runs first)
+        write_atomic(answers_path(self.spec), {'submitted': '2026-08-27T11:00:00Z', 'answers': {}})
+        result = {}
+        def run(): result['code'] = serve(self.spec, port=0, open_browser=False, timeout_min=1, log=out.append)
+        t = threading.Thread(target=run, daemon=True); t.start()
+        for _ in range(50):
+            if any(l.startswith('[deck] http') for l in out): break
+            time.sleep(0.1)
+        self.assertFalse(os.path.exists(answers_path(self.spec))); self.assertTrue(os.path.exists(os.path.join(self.spec['_base'], 'deck.answers.202608271100.json')))
+        url = next(l for l in out if l.startswith('[deck] http')).split(' ', 1)[1]
+        post(url.rsplit('/', 1)[0] + '/submit', {'deck': 'fixture', 'answers': {}}); t.join(5); self.assertEqual(result['code'], 0)
     def test_wait_returns_0_when_the_file_says_submitted_and_2_on_timeout(self):
         out = []
         self.assertEqual(wait_for_submit(self.spec, timeout_min=0.002, poll_s=0.05, log=out.append), 2)   # ~0.12 s, no file

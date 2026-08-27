@@ -138,8 +138,10 @@
       return;   // veil stays open — there is still something for him to do here
     }
     state.submitted = new Date().toISOString();
-    $('#veil').classList.remove('on'); $('#done').textContent = 'Submitted ✓'; $('#done').disabled = true; $$('.ans,#save,#note').forEach(e => e.disabled = true);
+    $('#veil').classList.remove('on'); lockSubmitted();
   };
+  // A submitted deck is read-only, and says so — silently ignoring clicks read as "I can't click through the pages".
+  function lockSubmitted() { $('#done').textContent = 'Submitted ✓'; $('#done').disabled = true; $$('.ans,#save,#note').forEach(e => e.disabled = true); $('#count').textContent += ' · submitted, read-only'; }
   $('#copy').onclick = () => { const t = $('#feedback'); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).catch(() => document.execCommand('copy')); $('#copy').textContent = 'Copied'; };
 
   // ── loupe, zoom, keys ──
@@ -167,5 +169,6 @@
     cur = q.get('step') ? Math.max(0, Math.min(N - 1, +q.get('step') - 1)) : Math.max(0, Math.min(N - 1, state.cur || 0));
     if (q.get('theme') && DECK.themes.includes(q.get('theme'))) theme = q.get('theme');
     stepStart = Date.now(); render();
+    if (state.submitted) lockSubmitted();   // an archived (file://) deck opened after its submit shows its locked state instead of dead buttons
   });
 })();

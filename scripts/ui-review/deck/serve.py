@@ -147,6 +147,28 @@ def already_served(spec):
     return {'pid': pid, 'url': other_url}
 
 
+def rotate_submitted(spec, log=print):
+    """If the answers file already carries `submitted`, move it aside and return its new name.
+    WHY: on 2026-08-27 a deck was re-served after Destin had submitted an earlier version of it;
+    the page loaded the old file, saw `submitted`, and locked every control — "I can't click
+    through the pages". A new `serve` is a new review: the old answers stay as history next to
+    the spec (<stem>.answers.<when>.json), the new review starts empty."""
+    apath = answers_path(spec)
+    try:
+        with open(apath) as f:
+            state = json.load(f)
+    except (OSError, ValueError):
+        return None
+    when = state.get('submitted')
+    if not when:
+        return None
+    stamp = ''.join(c for c in when[:16] if c.isdigit()) or 'submitted'
+    dest = os.path.join(spec['_base'], f'{spec["_stem"]}.answers.{stamp}.json')
+    os.replace(apath, dest)
+    log(f'[deck] the previous review of this deck was submitted {when[:16].replace("T", " ")} — kept as {os.path.basename(dest)}; starting a fresh one')
+    return dest
+
+
 def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
     """Blocks. Returns 0 after a submit (summary logged), 2 on timeout, 3 if this spec is already served."""
     lock = lock_path(spec)
@@ -154,6 +176,7 @@ def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
     if other is not None:
         log(f'REFUSING: {spec["_stem"]} is already served by pid {other["pid"]} at {other["url"]}')
         return 3
+    rotate_submitted(spec, log)
     result = {}
     holder = {}
 
