@@ -111,7 +111,7 @@ from `/proc/<pid>/smaps_rollup`.
 side* to optimise. `ipcLast10Ms` / `ipcAllMs` are main-process cost (read the `.jsonl`,
 parse it, ship it over IPC). `resumeFirstMessageMs` / `resumeStableMs` are renderer
 cost (first bubble on screen / timeline stopped growing). Measured at three transcript
-sizes: small ≈ 60 KB, medium ≈ 3 MB, huge ≈ 30 MB. A run that never stabilised reports
+sizes (realistic code-heavy content, see `content.mjs`): small ≈ 0.26 MiB / 100 messages, medium ≈ 24 MiB / 5,000 messages, huge ≈ 33 MiB / 7,000 messages. A run that never stabilised reports
 `resumeStableMs: null` — **never 0** — and emits a warning that the Markdown surfaces.
 
 **Workload** — the "real use" journey: 6 mixed sessions (4 Claude Code, 2 native),

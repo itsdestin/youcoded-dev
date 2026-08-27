@@ -63,7 +63,7 @@ const STABLE_MS = 1000;
 // a number — see medianRun's null handling.
 //
 // WHY 240s and not the 90s this started at: measured on the `huge` fixture
-// (25,000 turns -> 50,000 messages), the resumed conversation took ~122 SECONDS
+// (then 25,000 turns -> 50,000 messages of PLAIN prose), the resumed conversation took ~122 SECONDS
 // to finish rendering, and the renderer's main thread is blocked solid for that
 // whole stretch — a CDP evaluate issued during it does not return until the
 // render completes. At 90s every `huge` sample timed out and reported null, so
@@ -76,6 +76,13 @@ const STABLE_MS = 1000;
 // huge is effectively "when the freeze ended, plus the stability window". That
 // is the honest user-visible number; it is not a fine-grained render profile.
 const WATCH_TIMEOUT_MS = 240000;
+// NOTE (2026-08-27): `huge` was since recalibrated from 25,000 turns to 3,500
+// (fixture.mjs SIZES) when the fixture switched to realistic code-heavy content,
+// which costs ~6.8x the bytes and 1.46x the timeline entries per turn. THIS
+// constant is the reason: at 25,000 realistic turns a resume modelled at
+// 850-1166s, so it would have blown this ceiling, reported null for a PRIMARY
+// metric, and burned 240s x 5 repeats doing it. Raise this ceiling first if you
+// ever want the 50,000-message regime back.
 // In-page sampling period. 16ms ≈ one frame; the sampler runs INSIDE the page so
 // this is the true resolution of resumeStableMs, with no CDP latency added.
 const SAMPLE_MS = 16;
