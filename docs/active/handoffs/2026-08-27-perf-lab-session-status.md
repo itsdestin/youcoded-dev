@@ -252,6 +252,54 @@ Destin reports spikes when editing files, copying text, navigating HTML artifact
   plus the ~40 MB llama.cpp engine. Both are cached under `scratch/perf-lab/assets/`
   and both are now hardlinked into the fixture, so a rebuild costs no copy.
 
+## 3b. What the RIG got wrong — the meta-finding, and the most important one
+
+Five confidently wrong conclusions this session came from the **rig**, not the app.
+Every one returned a clean, healthy-looking number rather than failing. That is the
+failure mode that matters for objective v3: a tool meant to run unattended does not
+announce that it is aimed at the wrong thing.
+
+| # | what was measured | why the defect could not appear | how it presented |
+|---|---|---|---|
+| 1 | startup blank window | a fake `claude` binary ignored argv and never answered, so App.tsx's 3s safety timeout became the primary path | **3,330 ms, 0.4% spread across six boots** — stable *because* it was a hardcoded timeout |
+| 2 | the app-wide freeze | a RAW end-to-end stall was labelled "main-process stall"; attribution was never run | named the wrong thread, and drove a fix list at ~1% of the problem |
+| 3 | idle | sampled at **zero sessions** with a **CPU average**; the suspect is per-session and a 40 ms block is 0.27% of a 15 s window | "idle CPU fine" |
+| 4 | session switching | six sessions created **fresh** (empty) | **118 ms** — same clock read 10,139 ms once they held real conversations |
+| 5 | file-count costs | fixture had **3 transcripts in 1 dir**; the real machine has **804 across 10** | startup "fine"; the reconciler's own comment measures 2.8 s at 600 records |
+
+**The generalisation, which is the durable lesson:** *stability is not validity, and
+neither is coverage.* #1 was the most stable number in the report. #3 had coverage —
+`idle.pssMb`/`idle.cpuPct` were in `PRIMARY` the whole time — pointed at the wrong
+configuration with the wrong instrument.
+
+### The class guard that replaced the three point fixes
+
+Every scenario now exports `MEASURES`: its question, its configuration, **where each
+clock starts and stops**, and **what it is blind to**. `run.mjs` renders it beside the
+numbers under "What was actually measured". A scenario claiming no blind spots fails
+its test, because that is precisely the claim that has been wrong five times.
+
+### Two independent reviews (2026-08-27), both acted on
+
+**Safety — a verified negative.** No path can signal the live app at `/opt/YouCoded`;
+all 30 write sites land inside the sandbox. `launch.mjs` — which SIGKILLs process
+families and deletes lock files — had **zero tests**; it now has 29, including the one
+real gap found (it spared its own ancestors but not a *sibling* naming a rig path).
+
+**The gate had three holes, all leaning toward ACCEPT** — a zero baseline could never
+register a regression; a missing metric was silently "no regression"; a one-sample run
+passed while the noise check was disarmed. All closed; the gate now fails closed.
+
+**The stall probe's real blind spot, and its DIRECTION.** The IPC probe is a
+`setInterval` running *inside* the renderer, so a blocked renderer stops it firing —
+only a block beginning while a ping is outstanding is sampled (~1% of the time). So
+`ipcTotalStallMs` is a **FLOOR, not a total**. Critically the bias **overstates the
+main process**, because a blocked main process leaves the renderer free to keep
+pinging. **This is why §3.1's retraction survives its own instrument:** main measured
+0.2-1.3% *despite* a bias favouring main, so the renderer's true share is at least as
+large as reported. It also means the freeze is **worse** than the 12 s reported.
+Recorded as `MEASURES.biasDirection`, with a per-run warning and `probeCoveragePct`.
+
 ## 4. What remains
 
 1. **Wire `scenario-replay-stall` and `scenario-artifacts` into `run.mjs`** — report schema, `--only` phases, `.md` summary rows.
