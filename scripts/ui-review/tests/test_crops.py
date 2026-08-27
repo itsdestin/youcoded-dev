@@ -8,7 +8,7 @@ from deck.crops import crop_images, image_name, measure_key, newest_manifest_ent
 class CropTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp(); self.spec = load_spec(make_fixture(self.tmp)); self.r = crop_images(self.spec, log=lambda *a: None)
-        self.images = os.path.join(self.spec['_base'], 'images')
+        self.images = os.path.join(self.spec['_base'], 'images', 'deck')
     def test_every_theme_and_run_is_cut_once(self):
         self.assertEqual(self.r['count'], 1 * 2 * 2)   # crops × themes × runs — S-1..3 share crop "c", so 4 files, not 12
         self.assertTrue(os.path.exists(os.path.join(self.images, image_name('c', 'light', 'after'))))

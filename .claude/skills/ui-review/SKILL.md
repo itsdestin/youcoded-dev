@@ -69,7 +69,9 @@ then a **review page** — never a gallery, never a chat summary:
    first; fix every `missing:` line it prints — a measurement that is missing means the plan
    needed a `measure` line before the Before run). The browser opens itself; Destin answers
    Yes / No / Other per step with an optional note and presses Submit; the background command
-   exits with the summary (`wait <spec>` if you lost the process). Never ask him to paste anything.
+   exits with the summary (exit 0 = submitted, summary on stdout; 2 = nobody submitted before the
+   timeout; 3 = another process already serves this spec — neither 2 nor 3 carries answers, do not
+   invent a result) (`wait <spec>` if you lost the process). Never ask him to paste anything.
 4. Act on the summary exactly (`Other` + note = change it as described); record decisions in the
    findings ledger row, the guide, the ROADMAP entry. Merge, archive, clean up.
 

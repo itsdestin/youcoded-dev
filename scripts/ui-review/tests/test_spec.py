@@ -4,7 +4,9 @@ sys.path.insert(0, os.path.dirname(HERE))
 from deck.spec import load_spec, validate, run_names, word_count, banned_in, workspace_root, SpecError
 
 def write_spec(d, **over):
-    spec = {"title": "T", "key": "t", "out": "t.html", "images": "images", "runs": {"before": "/a", "after": "/b"},
+    # images/deck names the spec stem ('deck.json'), which is what validate() wants — see
+    # test_images_folder_must_name_the_deck for the warning when it does not.
+    spec = {"title": "T", "key": "t", "out": "t.html", "images": "images/deck", "runs": {"before": "/a", "after": "/b"},
             "crops": {"c": ["main", "home", "100x50+10+20"]},
             "steps": [{"id": "S-1", "surface": "Home", "path": "Chat", "crop": "c",
                        "headline": "Short headline.", "changed": "What changed.", "notice": "You will notice."}]}
@@ -30,6 +32,12 @@ class SpecTests(unittest.TestCase):
         with self.assertRaises(SpecError): load_spec(write_spec(self.d, runs={"a": "/a", "b": "/b", "c": "/c"}))
     def test_valid_spec_has_no_errors(self):
         self.assertEqual(validate(load_spec(write_spec(self.d))), ([], []))
+    def test_images_folder_must_name_the_deck(self):
+        s = load_spec(write_spec(self.d, images='images'))
+        errors, warnings = validate(s)
+        self.assertEqual(errors, [])
+        self.assertEqual(len(warnings), 1); self.assertIn('does not contain the spec name "deck"', warnings[0])
+
     def test_headline_word_limit(self):
         s = load_spec(write_spec(self.d)); s['steps'][0]['headline'] = ' '.join(['word'] * 26)
         errors, _ = validate(s); self.assertTrue(any('26 words' in e for e in errors))

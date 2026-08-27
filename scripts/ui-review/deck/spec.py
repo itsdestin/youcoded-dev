@@ -113,4 +113,10 @@ def validate(spec):
             warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
         if st.get('measured') and not re.search(r'\d', st['measured']):
             warnings.append(f'{sid}: measured has no number in it')
+    # WHY: the crops are named after the step, not the deck, so two specs pointed at one images
+    # folder silently overwrite each other's pictures — the second build leaves the first deck
+    # showing the second deck's screenshots, with no error anywhere.
+    if spec['_stem'] not in spec['images']:
+        warnings.append(f'images "{spec["images"]}" does not contain the spec name "{spec["_stem"]}" '
+                        '— two decks sharing one images folder overwrite each other\'s pictures')
     return errors, warnings

@@ -22,10 +22,10 @@ class BuildTests(unittest.TestCase):
     def test_deck_data_shape(self):
         d = deck_data(self.spec, self.boxes)
         self.assertEqual(d['runs'], ['before', 'after']); self.assertEqual(d['themeNames']['midnight'], 'Midnight')
-        s = d['steps'][1]; self.assertEqual(s['images']['light']['after'], 'images/c--light--after.png'); self.assertEqual(s['boxes']['light']['after'], [25.0, 25.0, 20.0, 15.0])
+        s = d['steps'][1]; self.assertEqual(s['images']['light']['after'], 'images/deck/c--light--after.png'); self.assertEqual(s['boxes']['light']['after'], [25.0, 25.0, 20.0, 15.0])
         self.assertEqual(s['measured'], ''); self.assertEqual(s['risk'], '')
     def test_refuses_when_a_picture_is_missing(self):
-        os.remove(os.path.join(self.spec['_base'], 'images', 'c--light--after.png'))
+        os.remove(os.path.join(self.spec['_base'], 'images', 'deck', 'c--light--after.png'))
         with self.assertRaises(SpecError) as cm: build_page(self.spec, self.boxes)
         self.assertIn('no picture for light/after', str(cm.exception))
     def test_refuses_when_a_box_is_missing(self):

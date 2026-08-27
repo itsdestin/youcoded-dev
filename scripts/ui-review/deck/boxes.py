@@ -49,7 +49,14 @@ def diff_bbox(a, b, threshold='6%', pad=6):
     edge to shrink from in both cases, so "nothing differs" and "everything differs" stop being
     the same answer; the box is then shifted +1,+1 by the border, so x and y are corrected back.
     The 3×3 dilate (`Square:1` — `Square:3` would be 7×7 and grow the box 3 px a side) joins
-    hairline changes into one region."""
+    hairline changes into one region.
+    Different sizes → None (the step then lands in `missing:` and the deck refuses to build)."""
+    # WHY the size guard: comparing a Before and an After captured at different window widths
+    # makes ImageMagick pad the smaller one, so EVERY pixel past the narrower edge reads as
+    # "changed" — a confident ring drawn in the wrong place. A refusal is the only honest answer.
+    W, H = image_size(a)
+    if image_size(b) != (W, H):
+        return None
     out = subprocess.run(['magick', a, b, '-compose', 'difference', '-composite', '-threshold', threshold,
                           '-morphology', 'Dilate', 'Square:1', '-bordercolor', 'black', '-border', '1',
                           '-format', '%@', 'info:'],
@@ -61,7 +68,6 @@ def diff_bbox(a, b, threshold='6%', pad=6):
     x, y = x - 1, y - 1
     if w * h < 4:
         return None
-    W, H = image_size(a)
     x0, y0 = max(0, x - pad), max(0, y - pad)
     x1, y1 = min(W, x + w + pad), min(H, y + h + pad)
     return {'x': x0, 'y': y0, 'w': x1 - x0, 'h': y1 - y0}

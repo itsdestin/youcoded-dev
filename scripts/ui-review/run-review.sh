@@ -43,6 +43,12 @@ mkdir -p "$OUT/sheets"
 # below are rebuilt only for the plans this sweep actually ran (hand-off gaps 6 and 7).
 RUN_ID="$(date +%s%3N)"; export UI_REVIEW_RUN=$RUN_ID
 STARTED_WB=0
+# WHY a trap and not just a line at the end: the port probe and the boot check both `exit 1`,
+# which skipped that last line — a refused probe left Vite running on 5473, and the NEXT sweep
+# then hit the wrong-worktree refusal because a foreign server was already answering.
+# Only ever kills a workbench THIS sweep started (STARTED_WB=1); a reused one is left alone.
+cleanup_wb() { [ "${STARTED_WB:-0}" = 1 ] && pkill -f "[v]ite --port $VITE_PORT" || true; }
+trap cleanup_wb EXIT
 if [[ "$REPORTS_ONLY" == 0 ]]; then
 
 # 1. Workbench (reuse one that is already up on this port).
@@ -113,5 +119,5 @@ node "$HERE/contrast-report.mjs" "$OUT"/shots-* > "$OUT/contrast.md"
 python3 "$HERE/make-gallery.py" "$OUT/sheets" "$OUT/gallery.html" >/dev/null
 echo "[ui-review] done → $OUT/gallery.html"
 head -3 "$OUT/coverage.md"
-grep -c MISSED "$OUT/coverage.md" | xargs -I{} echo "[ui-review] {} surfaces MISSED — read $OUT/coverage.md before writing any finding"
-[ "$STARTED_WB" = 1 ] && pkill -f "[v]ite --port $VITE_PORT" || true
+(grep -c MISSED "$OUT/coverage.md" || true) | xargs -I{} echo "[ui-review] {} surfaces MISSED — read $OUT/coverage.md before writing any finding"
+# (the workbench this sweep started is stopped by the EXIT trap above, on every exit path)

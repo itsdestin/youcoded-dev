@@ -35,6 +35,12 @@ class DiffTests(unittest.TestCase):
     def test_box_never_leaves_the_image(self):
         c = os.path.join(self.d, 'c.png'); subprocess.run(['magick', self.a, '-fill', 'red', '-draw', 'rectangle 0,0 9,9', c], check=True)
         box = diff_bbox(self.a, c); self.assertEqual((box['x'], box['y']), (0, 0))
+    def test_different_sizes_get_no_box(self):
+        # A Before and an After captured at different window widths: ImageMagick would pad the
+        # narrower one and call the whole overhang "changed", drawing a ring in the wrong place.
+        wide = os.path.join(self.d, 'wide.png'); subprocess.run(['magick', '-size', '210x100', 'xc:#333333', wide], check=True)
+        self.assertIsNone(diff_bbox(self.a, wide))
+
     def test_whole_image_change_is_the_whole_image(self):
         # every pixel differs (no untouched border) — trim can't shrink from an edge without the
         # 1px border diff_bbox adds; without it this degenerates to the same box as "identical".

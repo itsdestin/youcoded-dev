@@ -24,7 +24,7 @@
   }
   async function save() {
     try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) { /* no storage */ }
-    if (server) { try { await fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); } catch (e) { /* server gone; localStorage still has it */ } }
+    if (server) { try { await fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); } catch (e) { /* server gone — the file has everything up to the last successful POST */ } }
   }
 
   // ── render the current step ──
@@ -92,8 +92,12 @@
     if (state.submitted) return;   // Fix: after Submit, arrow keys / progress segments must not keep POSTing answers
     record(); cur = Math.max(0, Math.min(N - 1, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render();
   }
-  $$('.ans').forEach(b => b.onclick = () => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), v: b.dataset.v }; paintState(); $('#note').focus(); });
-  $('#note').addEventListener('input', e => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note: e.target.value }; });
+  // Fix: save on EVERY answer, not only when the step changes — a tab closed on the last
+  // answered step used to lose that answer entirely. The note debounces so a sentence typed
+  // at speed is one POST, not one per keystroke.
+  let noteTimer = null;
+  $$('.ans').forEach(b => b.onclick = () => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), v: b.dataset.v }; paintState(); save(); $('#note').focus(); });
+  $('#note').addEventListener('input', e => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note: e.target.value }; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); });
   $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
   $('#next').onclick = () => go(cur + 1); $('#prev').onclick = () => go(cur - 1);
   $$('#steps span').forEach((s, i) => s.onclick = () => go(i));
@@ -122,8 +126,18 @@
   }
   $('#done').onclick = openDialog; $('#cancel').onclick = () => $('#veil').classList.remove('on');
   $('#submit').onclick = async () => {
+    // Fix: only a POST the server actually accepted may say "Submitted ✓". Claiming success
+    // when the server is gone sends Destin back to the conversation with nothing waiting there.
+    let ok = false, why = '';
+    try { const r = await fetch('/submit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); ok = r.ok; if (!ok) why = 'HTTP ' + r.status; }
+    catch (e) { why = (e && e.message) || String(e); }
+    if (!ok) {
+      state.submitted = null;   // summary() then labels it "not submitted", which is the truth
+      $('#dlg-text').textContent = 'The deck could not reach its server (' + why + '). Your answers up to the last save are in the answers file; copy the feedback below and paste it into the chat.';
+      $('#feedback').value = summary(); $('#feedback').style.display = 'block'; $('#copy').style.display = 'inline-flex'; $('#submit').style.display = 'none';
+      return;   // veil stays open — there is still something for him to do here
+    }
     state.submitted = new Date().toISOString();
-    try { await fetch('/submit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); } catch (e) { /* server already gone */ }
     $('#veil').classList.remove('on'); $('#done').textContent = 'Submitted ✓'; $('#done').disabled = true; $$('.ans,#save,#note').forEach(e => e.disabled = true);
   };
   $('#copy').onclick = () => { const t = $('#feedback'); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).catch(() => document.execCommand('copy')); $('#copy').textContent = 'Copied'; };

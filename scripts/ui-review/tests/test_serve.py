@@ -26,6 +26,7 @@ class ServeTests(unittest.TestCase):
         post(base + '/submit', {'deck': 'fixture', 'answers': {'S-1': {'v': 'yes'}, 'S-2': {'v': 'other', 'note': 'bigger'}}})
         t.join(5); self.assertFalse(t.is_alive())
         self.assertTrue(got['submitted']); self.assertTrue(json.load(open(answers_path(self.spec)))['submitted'])
+        srv.server_close()   # shutdown() stops serve_forever but leaves the listening socket open — unclosed, it is what the suite warns about at exit
     def test_summary_format(self):
         state = {'submitted': '2026-08-27T18:40:00Z', 'answers': {'S-1': {'v': 'yes'}, 'S-2': {'v': 'other', 'note': ' bigger '}}}
         s = summary(self.spec, state).split('\n')
@@ -64,6 +65,26 @@ class ServeTests(unittest.TestCase):
             self.assertFalse(os.path.exists(answers_path(self.spec)))
         finally:
             srv.shutdown(); srv.server_close()
+    def test_a_foreign_origin_or_host_is_refused(self):
+        # WHY: the server has no authentication, so the only thing separating Destin's browser
+        # from a page on evil.example is that the browser tells us where the request came from.
+        srv, url = make_server(self.spec, 0, lambda state: None)
+        t = threading.Thread(target=srv.serve_forever, daemon=True); t.start()
+        try:
+            base = url.rsplit('/', 1)[0]
+            req = urllib.request.Request(base + '/submit', data=json.dumps({'answers': {}}).encode(),
+                                         headers={'content-type': 'application/json', 'origin': 'http://evil.example'}, method='POST')
+            with self.assertRaises(urllib.error.HTTPError) as cm:
+                urllib.request.urlopen(req, timeout=5)
+            self.assertEqual(cm.exception.code, 403)
+            self.assertFalse(os.path.exists(answers_path(self.spec)))   # a forged submit writes nothing
+            g = urllib.request.Request(base + '/answers', headers={'host': 'evil.example'})
+            with self.assertRaises(urllib.error.HTTPError) as cm2:
+                urllib.request.urlopen(g, timeout=5)
+            self.assertEqual(cm2.exception.code, 403)
+        finally:
+            srv.shutdown(); srv.server_close()
+
     def test_write_atomic(self):
         p = os.path.join(self.tmp, 'a.json'); write_atomic(p, {'x': 1}); self.assertEqual(json.load(open(p)), {'x': 1})
     def test_wait_returns_0_when_the_file_says_submitted_and_2_on_timeout(self):

@@ -19,7 +19,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from deck.build import build_page                       # noqa: E402
 from deck.crops import crop_images                      # noqa: E402
-from deck.serve import serve, wait_for_submit           # noqa: E402
+from deck.serve import already_served, serve, wait_for_submit   # noqa: E402
 from deck.spec import SpecError, load_spec, validate    # noqa: E402
 
 
@@ -61,6 +61,12 @@ def main(argv):
             return build(spec)
         if a.cmd == 'wait':
             return wait_for_submit(spec, timeout_min=a.timeout)
+        # WHY the lock is checked before build(): a second `serve` of the same spec used to
+        # rebuild the page and re-cut the crops out from under the running server, THEN exit 3.
+        other = already_served(spec)
+        if other is not None:
+            print(f'REFUSING: {spec["_stem"]} is already served by pid {other["pid"]} at {other["url"]}', file=sys.stderr)
+            return 3
         if not a.no_build and build(spec) != 0:
             return 1
         return serve(spec, port=a.port, open_browser=not a.no_open, timeout_min=a.timeout)

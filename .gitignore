@@ -84,3 +84,7 @@ docs/active/investigations/harness-eval-runs/**
 docs/active/design/*-ui-audit/images/
 *.answers.json
 *.serve.json
+
+# Python bytecode from the deck tooling + its tests
+__pycache__/
+*.pyc

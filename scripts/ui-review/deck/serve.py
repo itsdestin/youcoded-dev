@@ -68,7 +68,18 @@ def make_server(spec, port, on_submit):
             self.end_headers()
             self.wfile.write(body)
 
+        def _wrong_origin(self):
+            """WHY: this server answers on the loopback interface with no authentication. A page
+            on any other origin could otherwise forge a Submit with a form POST (which needs no
+            preflight), and a DNS-rebinding name pointed at 127.0.0.1 could read the deck folder.
+            Pinning both Host and Origin to our own address closes both."""
+            me = f'127.0.0.1:{self.server.server_address[1]}'
+            origin = self.headers.get('origin')
+            return (self.headers.get('host') or '') != me or (origin is not None and origin != f'http://{me}')
+
         def do_GET(self):
+            if self._wrong_origin():
+                return self._json(403, {'error': 'wrong host or origin'})
             if self.path.split('?')[0] == '/answers':
                 if os.path.exists(apath):
                     with open(apath) as f:
@@ -77,6 +88,8 @@ def make_server(spec, port, on_submit):
             return super().do_GET()
 
         def do_POST(self):
+            if self._wrong_origin():
+                return self._json(403, {'error': 'wrong host or origin'})
             n = int(self.headers.get('content-length') or 0)
             try:
                 state = json.loads(self.rfile.read(n) or b'{}')
@@ -109,30 +122,38 @@ def open_url(url):
     return webbrowser.open(url)
 
 
+def already_served(spec):
+    """{'pid', 'url'} of the live process holding this spec's lock, or None (no lock, stale
+    lock, or an unreadable one). Checked BEFORE anything is built: a second `serve` used to
+    rebuild the HTML and the crops out from under the first server and only then exit 3."""
+    lock = lock_path(spec)
+    if not os.path.exists(lock):
+        return None
+    try:
+        with open(lock) as f:
+            other = json.load(f)
+        pid, other_url = other['pid'], other['url']
+    except (OSError, ValueError, KeyError):
+        return None   # unreadable/malformed lock file — treat as stale, proceed
+    try:
+        # WHY: kill(pid, 0) sends nothing; ProcessLookupError means dead,
+        # PermissionError means alive but not ours — both are OSError, so
+        # they must be told apart.
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return None   # stale lock — the pid is dead
+    except PermissionError:
+        return {'pid': pid, 'url': other_url}   # alive, owned by someone else
+    return {'pid': pid, 'url': other_url}
+
+
 def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
     """Blocks. Returns 0 after a submit (summary logged), 2 on timeout, 3 if this spec is already served."""
     lock = lock_path(spec)
-    if os.path.exists(lock):
-        try:
-            with open(lock) as f:
-                other = json.load(f)
-            pid, other_url = other['pid'], other['url']
-        except (OSError, ValueError, KeyError):
-            other = None   # unreadable/malformed lock file — treat as stale, proceed
-        if other is not None:
-            try:
-                # WHY: kill(pid, 0) sends nothing; ProcessLookupError means dead,
-                # PermissionError means alive but not ours — both are OSError, so
-                # they must be told apart.
-                os.kill(pid, 0)
-            except ProcessLookupError:
-                pass   # stale lock — the pid is dead
-            except PermissionError:
-                log(f'REFUSING: {spec["_stem"]} is already served by pid {pid} at {other_url}')
-                return 3
-            else:
-                log(f'REFUSING: {spec["_stem"]} is already served by pid {pid} at {other_url}')
-                return 3
+    other = already_served(spec)
+    if other is not None:
+        log(f'REFUSING: {spec["_stem"]} is already served by pid {other["pid"]} at {other["url"]}')
+        return 3
     result = {}
     holder = {}
 

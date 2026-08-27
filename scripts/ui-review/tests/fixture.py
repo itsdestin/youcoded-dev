@@ -17,7 +17,7 @@ def make_fixture(tmp, themes=('midnight', 'light')):
                'measures': {'#send': {'x': 600, 'y': 300, 'w': 80, 'h': 30}, 'text:Send': {'x': 600, 'y': 300, 'w': 80, 'h': 30}}} for t in themes]
         json.dump(mf, open(os.path.join(tmp, 'runs', run, 'shots-main', 'manifest-main-x.json'), 'w'))
     deck = os.path.join(tmp, 'deck'); os.makedirs(deck, exist_ok=True)
-    spec = {'title': 'Fixture review', 'key': 'fixture', 'out': 'fixture.html', 'images': 'images',
+    spec = {'title': 'Fixture review', 'key': 'fixture', 'out': 'fixture.html', 'images': 'images/deck',   # images/<spec stem>, the convention validate() warns about breaking
             'runs': {'before': os.path.join(tmp, 'runs', 'before'), 'after': os.path.join(tmp, 'runs', 'after')},
             'themes': list(themes), 'crops': {'c': ['main', 'home', GEO]},
             'steps': [
