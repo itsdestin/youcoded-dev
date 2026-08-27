@@ -155,6 +155,16 @@ Destin reports spikes when editing files, copying text, navigating HTML artifact
 
 ---
 
+### 3.7 Rig facts a future session will need
+
+- **The two new scenarios are not reachable from the CLI yet.** `run.mjs`'s
+  `PHASES = ['startup','history','workload','shots']` — `scenario-replay-stall` and
+  `scenario-artifacts` are written and unit-tested but not wired into the orchestrator,
+  the report schema, or `compare.mjs`'s PRIMARY list. That is remaining item 1.
+- **First run costs ~510 MB of download**, not 40 MB: the ~470 MB Qwen2.5-0.5B model
+  plus the ~40 MB llama.cpp engine. Both are cached under `scratch/perf-lab/assets/`
+  and both are now hardlinked into the fixture, so a rebuild costs no copy.
+
 ## 4. What remains
 
 1. **Wire `scenario-replay-stall` and `scenario-artifacts` into `run.mjs`** — report schema, `--only` phases, `.md` summary rows.
