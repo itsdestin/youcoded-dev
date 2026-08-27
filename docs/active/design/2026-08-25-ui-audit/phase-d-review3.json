@@ -1,0 +1,58 @@
+{
+  "title": "Phase D review 3 — the chips and the terminal, built",
+  "key": "phase-d-review3",
+  "out": "phase-d-review3.html",
+  "images": "images/phase-d-review3",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-phase-d-before-final",
+    "after": "/home/destin/youcoded-dev/scratch/ui-phase-d-after3"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "creme",
+    "dark",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "crops": {
+    "attach-chips": [
+      "overlays",
+      "composer-attachments",
+      "700x150+0+695"
+    ],
+    "terminal": [
+      "main",
+      "terminal-view-no-pty",
+      "1000x520+0+40"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-19.1",
+      "surface": "Composer",
+      "path": "Chat → attached files",
+      "crop": "attach-chips",
+      "headline": "Attached files are the design-C cards: a preview on top, the name in a strip along the bottom, ✕ always visible.",
+      "changed": "Markdown, text and code files show their first lines — markdown rendered properly (headings, bold, lists), never raw ##. Pictures show a thumbnail; everything else a big type glyph with the extension. The name strip is 12 px with a type icon.",
+      "measured": "128 × 96 px cards vs 48 × 48 squares; the first 600 bytes of a file are read for the preview, never more than 4 KB",
+      "notice": "You can read what you attached and see inside text files before sending. The attachment row is twice as tall as before while files are attached. The same rendered-markdown rule now applies to file thumbnails in the session files pane, Deliverables and tool cards.",
+      "risk": "In these screenshots the PNG shows the glyph, not its picture — the screenshot tool cannot load local images; in the app a picture that fails to load falls back to the same glyph rather than a broken image."
+    },
+    {
+      "id": "P-20.2",
+      "surface": "Terminal",
+      "path": "Session → Terminal view, wallpaper theme",
+      "crop": "terminal",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "headline": "Under a wallpaper theme the terminal now sits on the theme's panel colour at 80% — your pick — instead of 60% text straight over the picture.",
+      "changed": "A theme guarantee, not a setting: any theme with a wallpaper or gradient gets the panel backing at 80%; a pack asking for less is raised to 80%, one asking for more is honoured. Flat themes are byte-identical to before.",
+      "measured": "Panel colour at 80% opacity; flat themes unchanged",
+      "notice": "Terminal text reads like chat text does over wallpapers. Meadow Mist's own hand-made terminal backdrop now shows only faintly through the panel. Gradient themes get the same treatment.",
+      "risk": "The Terminal Opacity slider in the theme editor still goes below 80% on wallpaper themes, where it now does nothing — filed for a follow-up. The sample text is the workbench's frozen screen, not a live session. Flat themes are not shown here because they did not change at all — the deck refuses to ring a picture with no difference."
+    }
+  ]
+}
