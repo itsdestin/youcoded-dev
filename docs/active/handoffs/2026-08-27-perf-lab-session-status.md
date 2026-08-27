@@ -7,6 +7,11 @@ corrections: docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md
 manual: docs/active/handoffs/2026-08-26-perf-loop-operating-manual.md
 ---
 
+> **2026-08-27 evening — Destin approved cards 1–3.** The plan for the first optimization
+> cycle, with everything a fresh session needs, is
+> `docs/active/handoffs/2026-08-27-perf-cycle-1-handoff.md`. Start there; this document is
+> the history behind it.
+
 # Perf lab — where this stands
 
 **Read this before the plan.** The plan (2026-08-23) describes what we set out to
@@ -381,7 +386,11 @@ honest replacement is main-process CPU time from `/proc` over the replay window.
 3c. **Replace the decorative stall metrics** (§3c) with main-process CPU seconds from `/proc`.
 4. **`--stress` tier** to restore the 50,000-message regime (needs `WATCH_TIMEOUT_MS` raised), so the default suite stays fast enough to cycle on.
 5. **Per-surface baseline** with realistic content.
-6. **Round-0 gate** — bring Destin a ranked card list. **No product code changes before he approves it.** Proposed replacement list:
+6. ~~Round-0 gate~~ — **DONE 2026-08-27.** Decision page
+   https://claude.ai/code/artifact/e00aa59a-e4b0-466b-a49a-a8e06da22f64 ; Destin: "i like
+   1-3" → card 2 (per-token streaming costs) is cycle 1, card 1 (paged history) cycle 2,
+   card 3 (park hidden views) cycle 3. Cards 4/6 hold; card 5 is his call. The original
+   proposed list, kept for the record:
    | # | change | targets |
    |---|---|---|
    | 1 | async + chunked transcript replay | the ~3.3 s app-wide freeze |

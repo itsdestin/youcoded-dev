@@ -3,6 +3,7 @@ title: Perf lab — operating manual for the autonomous session
 status: active
 date: 2026-08-26
 last_updated: 2026-08-27
+next_step: docs/active/handoffs/2026-08-27-perf-cycle-1-handoff.md
 plan: docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md
 status_doc: docs/active/handoffs/2026-08-27-perf-lab-session-status.md
 corrections: docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md
