@@ -15,6 +15,9 @@ class BuildTests(unittest.TestCase):
         self.assertIn('[data-theme="midnight"]{--canvas:#0D1117', html)      # tokens inlined
         self.assertIn('.chip{', html); self.assertIn("fetch('/answers'", html)  # css + js inlined
         self.assertIn('<html lang="en" data-theme="midnight">', html)        # first paint matches the deck's first theme
+        self.spec['themes'] = ['light', 'midnight']                                  # …and follows the spec, not a hardcoded midnight
+        html2, _ = build_page(self.spec, self.boxes)
+        self.assertIn('<html lang="en" data-theme="light">', html2); self.assertNotIn('__THEME__', html2)
         self.assertEqual(warnings, [])
     def test_deck_data_shape(self):
         d = deck_data(self.spec, self.boxes)
