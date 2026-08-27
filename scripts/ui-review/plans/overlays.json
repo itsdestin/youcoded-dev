@@ -374,7 +374,7 @@
      "settle": 1200
     }
    ],
-   "expect": "js:document.body.textContent.includes('Downloading…') && [...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Pause')"
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Pause') && /DOWNLOADING|Downloading/.test(document.body.textContent)"
   },
   {
    "name": "local-models-paused",
@@ -401,7 +401,7 @@
      "settle": 900
     }
    ],
-   "expect": "js:document.body.textContent.includes('Download interrupted') && [...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Resume')"
+   "expect": "js:/Download interrupted/i.test(document.body.textContent) && [...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Resume')"
   },
   {
    "name": "local-models-damaged-why",

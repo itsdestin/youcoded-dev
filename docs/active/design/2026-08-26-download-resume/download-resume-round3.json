@@ -1,0 +1,160 @@
+{
+ "out": "download-resume-round3.html",
+ "images": "images/round3",
+ "key": "Download Resume R3",
+ "runs": {
+  "before": "/home/destin/youcoded-dev/scratch/ui-review-dlresume-v3",
+  "after": "/home/destin/youcoded-dev/scratch/ui-review-dlresume-v6"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "After"
+ },
+ "buttons": {
+  "yes": "Looks right",
+  "no": "Change it",
+  "more": "Tell me more"
+ },
+ "crops": {
+  "r3-rows": [
+   "overlays",
+   "providers-local-scrolled",
+   "420x400+510+195"
+  ],
+  "r3-live": [
+   "overlays",
+   "local-models-resuming",
+   "420x400+510+195"
+  ]
+ },
+ "title": "Round 3 — your four changes, plus one defect I caught",
+ "lead": "Space flips Before/After. The first point is a bug I introduced last round and found by measuring rather than looking — worth seeing even though it is already fixed.",
+ "items": [
+  {
+   "id": "F",
+   "title": "The banner label was invisible on light themes",
+   "surface": "Settings → Model Providers → Models",
+   "image": {
+    "crop": "r3-rows",
+    "themes": [
+     "creme",
+     "light"
+    ],
+    "cols": [
+     "before",
+     "after"
+    ],
+    "fit": "none"
+   },
+   "points": [
+    {
+     "n": 1,
+     "kind": "measured",
+     "what": "Last round's banner was pale amber text on a pale amber tint — 1.07:1 on Crème, 1.14:1 on Light. The words were there; they could not be seen.",
+     "fix": "All three banners are now a solid status colour with black text — 9.7:1, 7.6:1 and 5.0:1, identical in every theme.",
+     "at": {
+      "creme": [
+       50,
+       33
+      ],
+      "light": [
+       50,
+       33
+      ]
+     },
+     "why": "<p>Flip to Before on the Crème tab: <em>DOWNLOAD INTERRUPTED</em> is rendered, just not visible. On Midnight the same code measured 5.62:1, which is exactly why it looked fine in the screenshots I sent you — I was checking the theme where it happened to work.</p><p><strong>It took two goes, and the first was wrong for an instructive reason.</strong> My first fix used white text on <code>amber-700</code>, which in stock Tailwind is a dark brown (#B45309) and would have scored 5.02:1. But this app <em>remaps</em> that name: <code>globals.css:294</code> sets <code>--color-amber-700</code> to a bright orange (#FF9800), where white scores 2.06:1 — still failing. I only caught it because I re-sampled the pixels after shipping the fix instead of assuming it had worked.</p><p>The version you are looking at uses the app's three constant status colours with black text, which measures 9.7 / 7.6 / 5.0. Black rather than white because white fails on two of the three.</p><p>Two things worth keeping: the screenshot rig's contrast report <strong>never sampled this element</strong>, so a clean contrast report is not proof of contrast. And a translucent strip cannot be made safe across six themes at all — it takes its final colour from whatever sits behind it. A solid strip can.</p>"
+    }
+   ]
+  },
+  {
+   "id": "G",
+   "title": "The three banners",
+   "surface": "Downloading, interrupted, damaged",
+   "image": {
+    "crop": "r3-live",
+    "themes": [
+     "creme",
+     "midnight"
+    ],
+    "cols": [
+     "before",
+     "after"
+    ],
+    "fit": "none"
+   },
+   "points": [
+    {
+     "n": 2,
+     "kind": "measured",
+     "what": "A running download now wears a green banner in the same shape as the other two, and all three are centred.",
+     "fix": "Confirm the green, the wording, and the centring.",
+     "at": {
+      "creme": [
+       50,
+       33
+      ],
+      "midnight": [
+       50,
+       33
+      ]
+     },
+     "why": "<p>Green while it moves, amber when it stops but can carry on, red when it stops and can't. The banner text is the state name itself — <em>Downloading</em>, and <em>Verifying</em> for the checking phase at the end of a download, which is a real phase you'll see on a big model.</p><p>A finished model still has no banner at all: no news is good news, and a banner on every row would stop meaning anything.</p>"
+    },
+    {
+     "n": 3,
+     "kind": "measured",
+     "what": "The detail line lost its state word — it was \"Downloading… · 73% — 82.9 of 113.0 GB · part 3 of 4\" wrapping onto two lines.",
+     "fix": "The banner says the state, so the line below carries only numbers and fits on one.",
+     "at": {
+      "creme": [
+       30,
+       47
+      ],
+      "midnight": [
+       30,
+       47
+      ]
+     },
+     "why": "<p>This is the \"simplify a smidge\" you asked for, and it is what paid for point 4: dropping the state word freed exactly the line that letting the quality text wrap costs, so the row is the same height as before, not taller.</p><p><strong>One more trim available if you want it:</strong> the line still starts with <em>66% —</em> while a progress bar sits directly underneath saying the same thing. Dropping it leaves <em>74.2 of 113.0 GB</em>. I did not do this unasked because a precise number is easier to quote back to yourself than a bar is to read. Say the word and it goes.</p>"
+    }
+   ]
+  },
+  {
+   "id": "H",
+   "title": "Quality on its own line",
+   "surface": "Every row",
+   "image": {
+    "crop": "r3-rows",
+    "themes": [
+     "creme",
+     "midnight"
+    ],
+    "cols": [
+     "before",
+     "after"
+    ],
+    "fit": "none"
+   },
+   "points": [
+    {
+     "n": 4,
+     "kind": "measured",
+     "what": "The quality line no longer ends in \"…\" — it shows in full and wraps if it needs to.",
+     "fix": "Confirm this is what \"its own line\" meant.",
+     "at": {
+      "creme": [
+       45,
+       55
+      ],
+      "midnight": [
+       45,
+       55
+      ]
+     },
+     "why": "<p>Last round I clipped it to protect the row height. You said no. The height came back from point 3 instead, which is the better trade — nothing is hidden and nothing got taller.</p>"
+    }
+   ]
+  }
+ ],
+ "closing": "<h2>Confirmed and left alone</h2><ul><li><strong>A2</strong> — the damaged banner stays red. Yellow means \"stopped, you can fix it\"; red means \"stopped, you can't\".</li><li><strong>B5, C6</strong> — the pause round trip and the (i) explanation are as you saw them.</li></ul><h2>What happens next</h2><p>If these four are right, the design is settled and everything from here is machinery you won't see until it works: the record written beside each download, the honest list, the disk-space fix, and Resume actually resuming.</p>"
+}
