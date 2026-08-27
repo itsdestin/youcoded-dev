@@ -312,7 +312,7 @@
    ]
   },
   {
-   "name": "local-models-discard-confirm",
+   "name": "local-models-interrupted-delete-confirm",
    "actions": [
     {
      "click": "[title=Settings]",
@@ -326,12 +326,11 @@
      "scrollDialog": "bottom"
     },
     {
-     "clickText": "Discard",
-     "tag": "button",
+     "click": "js:[...document.querySelectorAll('div')].filter(d=>/^Download interrupted$/i.test(d.textContent.trim()))[0]?.parentElement?.querySelector('button:last-of-type')",
      "settle": 500
     }
    ],
-   "expect": "js:document.body.textContent.includes('Discard 74.2 GB?')"
+   "expect": "js:document.body.textContent.includes('Delete 74.2 GB?')"
   },
   {
    "name": "local-models-delete-confirm",
@@ -375,7 +374,55 @@
      "settle": 1200
     }
    ],
-   "expect": "js:document.body.textContent.includes('Downloading…')"
+   "expect": "js:document.body.textContent.includes('Downloading…') && [...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Pause')"
+  },
+  {
+   "name": "local-models-paused",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "clickText": "Resume",
+     "tag": "button",
+     "settle": 1200
+    },
+    {
+     "clickText": "Pause",
+     "tag": "button",
+     "settle": 900
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Download interrupted') && [...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Resume')"
+  },
+  {
+   "name": "local-models-damaged-why",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "click": "[aria-label='Why this download is damaged']",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('kept track of where downloads come from')"
   },
   {
    "name": "permissions-scrolled",
