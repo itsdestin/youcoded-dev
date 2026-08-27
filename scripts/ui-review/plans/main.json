@@ -548,7 +548,7 @@
   },
   {
    "name": "find-bar",
-   "measure": ["js:document.querySelector(\"[placeholder='Find in chat']\")?.closest('.absolute')", "[placeholder='Find in chat']"],
+   "measure": ["js:document.querySelector(\"[placeholder='Find in chat']\")?.closest('.find-row, .absolute')", "[placeholder='Find in chat']"],
    "actions": [
     {
      "click": "[placeholder^='Message']",
@@ -646,7 +646,7 @@
   },
   {
    "name": "welcome-empty",
-   "measure": ["js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume Session')?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session')"],
+   "measure": ["[title='Settings']", "[title='Projects']", "js:document.querySelector('.header-bar')", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume Session')?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session')"],
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty",
    "actions": [],
    "sameAsBaseline": true,
