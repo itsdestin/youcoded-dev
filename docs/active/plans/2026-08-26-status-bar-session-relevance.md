@@ -2345,3 +2345,216 @@ Shut down any dev server started for Task 15.
 | §13 guards | every task's tests; Task 1 pins the replay assumption |
 | §14 experience | 9 (the sheets are how Destin sees it) |
 | §15 out of scope | Git Branch untouched (Global Constraints, Task 2 test) |
+
+---
+
+## Design decisions from the Task 9 checkpoint (2026-08-27)
+
+Destin reviewed the deck at `docs/active/design/2026-08-26-statusbar-relevance/statusbar-cards.html`
+and answered all nine points. **Declined** (do not build): #1 reserve a second bar row;
+#2 a "Free" chip in local sessions; #5 a specialists chip. **Approved**: #3, #4, #6, #7,
+#8 (cut the pointer), #9. Tasks 17–19 below implement the six approved changes and must
+land before Task 16.
+
+A note that shapes all three: the renderer currently CANNOT tell a free local model from a
+metered model with no published price. `SessionInfo` carries no provider type, and
+`StatusBar`'s `modelProviderType` prop is declared but never passed by `App.tsx` — verified
+with `grep -rn "modelProviderType" desktop/src/renderer/`, which returns only the three
+lines inside StatusBar.tsx itself. So the distinction must come from **main**, which knows
+the provider, and ride the totals — exactly like `anyPriced`/`anyUnpriced` already do.
+Do NOT try to infer it in the renderer from the model id.
+
+---
+
+### Task 17: Totals learn "this cost nothing to run" and "specialists spent this much"
+
+**Depends on:** nothing (parallel-safe with Task 10 — disjoint files).
+**Blocks:** Tasks 18 and 19.
+
+**Files:**
+- Modify: `desktop/src/renderer/state/session-totals.ts`
+- Modify: `desktop/src/renderer/state/chat-reducer.ts` (the `addSubagentUsage` call site only)
+- Modify: `desktop/src/renderer/dev/workbench/seed-chat.ts` (`STATUSBAR_TOTALS_OVERRIDE`)
+- Test: `desktop/tests/session-totals.test.ts`, `desktop/tests/session-totals-reducer.test.ts`
+
+**Interfaces produced:**
+
+```ts
+export interface SessionTotals {
+  // …existing fields unchanged…
+  /** Some counted work ran on a model that costs nothing to run (a local
+   *  engine). Distinct from anyUnpriced, which means "metered, but we have no
+   *  published rate" — opposite situations that the bar and the Customize menu
+   *  must word differently (checkpoint decisions #3 and #9). */
+  anyFree: boolean;
+  /** Of costUsd, how much was spent by specialist runs rather than by this
+   *  session's own turns. Lets the Cost chip name where the money came from
+   *  (checkpoint decision #4) instead of leaving it to a hover tooltip. */
+  specialistCostUsd: number;
+}
+
+export interface TurnUsageLike {
+  // …existing fields unchanged…
+  /** True when the work ran on a model that costs nothing to run. Main stamps
+   *  it; Task 11 is what makes it real. Absent is treated as false. */
+  free?: boolean;
+}
+```
+
+- [ ] **Step 1: Write the failing tests** in `session-totals.test.ts`:
+  1. `emptyTotals()` has `anyFree: false` and `specialistCostUsd: 0`.
+  2. `addTurnUsage(t, { free: true })` sets `anyFree: true` and leaves `anyPriced`/
+     `anyUnpriced` untouched — free is a THIRD state, not a spelling of unpriced.
+  3. `addTurnUsage(t, { costUsd: 0.5 })` leaves `specialistCostUsd` at 0 — a parent turn's
+     cost is not specialist spend.
+  4. `addSubagentUsage(t, { costUsd: 0.5 })` adds 0.5 to BOTH `costUsd` and
+     `specialistCostUsd`.
+  5. Identity is preserved: `addTurnUsage(t, {})` still returns the SAME object reference
+     (the existing no-op short-circuit must not be broken by the new fields), and
+     `addTurnUsage(t, { free: true })` on totals that ALREADY have `anyFree: true` also
+     returns the same reference. **This is the trap** — a naive `free` branch makes every
+     free turn allocate a new object and the `useSyncExternalStore` snapshot churns.
+  6. `addSubagentUsage` still always returns a NEW object (it always increments
+     `specialistRuns`).
+
+  And in `session-totals-reducer.test.ts`: a specialist run with a cost lands in
+  `specialistCostUsd` on the parent session's totals, and a parent turn with a cost
+  does not.
+
+- [ ] **Step 2: Run to verify they fail.**
+  `cd <worktree>/desktop && npx vitest run tests/session-totals.test.ts tests/session-totals-reducer.test.ts`
+
+- [ ] **Step 3: Implement.** Add the two fields to `SessionTotals` and `emptyTotals()`.
+  Extend the existing `hasTokens/hasCost` short-circuit to a third clause so a `free: true`
+  that changes nothing still returns the same reference. In `addSubagentUsage`, add the
+  priced amount to `specialistCostUsd` alongside `costUsd`.
+
+- [ ] **Step 4: Update the workbench fixtures** in `seed-chat.ts` so the five review
+  scenarios still say what their names claim, now that free and unpriced are different:
+  - `statusbar-local`: `anyFree: true, anyUnpriced: false, specialistCostUsd: 0`
+  - `statusbar-metered`: `anyFree: false, anyUnpriced: false, specialistCostUsd: 0`
+  - `statusbar-unpriced`: `anyFree: false, anyUnpriced: true, specialistCostUsd: 0`
+    (this is the metered-but-no-published-rate case — it must NOT be free)
+  - `statusbar-delegated`: `anyFree: true, anyUnpriced: true, specialistCostUsd: 0.61`
+    (a free local parent; every cent came from its specialists)
+  - `statusbar-cc`: unchanged.
+
+- [ ] **Step 5:** `cd /home/destin/youcoded-dev && bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **Step 6: Commit** — `feat(status-bar): totals tell "free to run" apart from "no published price", and track specialist spend`
+
+---
+
+### Task 18: The Customize menu says it plainly (checkpoint #6, #7, #8, #9)
+
+**Depends on:** Task 17. **Blocks:** Task 19 (same file).
+
+**Files:**
+- Modify: `desktop/src/renderer/state/status-widgets.ts`
+- Modify: `desktop/src/renderer/components/StatusBar.tsx` (the `WidgetConfigPopup` dimmed-row
+  branch ~890-905, and the `relevance={{…}}` prop ~1697)
+- Test: `desktop/tests/status-widgets.test.ts`, `desktop/tests/statusbar-widget-menu.test.tsx`
+
+**The four changes, exactly:**
+
+1. **#8 — cut the pointer.** `'Claude Code sessions only — see /usage'` becomes
+   `'Claude Code sessions only'`. Destin's words: "yes — cut the pointer." Do NOT make it
+   a link; that option was on the card and this is the other one.
+2. **#7 — drop the promise.** `'Not measured in this kind of session yet'` becomes
+   `'Not available in this kind of session'`. The word "yet" promised a feature that is
+   not on the roadmap.
+3. **#9 — a local model is not a shop listing.** `RelevanceContext` gains
+   `runsLocally: boolean`. When `id === 'session-cost'` and there is no priced work:
+   - `runsLocally` → `"Models on your own machine don't cost anything to run"`
+   - otherwise → `'No published price for this model'` (unchanged)
+   No trailing period on any reason string — the two siblings have none.
+   Feed it in StatusBar from the totals: `runsLocally: nativeTotals?.anyFree ?? false`.
+4. **#6 — one line each, so every row is the same height.** In the dimmed-row branch,
+   the reason currently sits BESIDE the label on the same flex row, which wraps
+   "Session Duration" onto two lines and makes that row taller than its neighbours (visible
+   in all six themes). Restack it: label on its own line, reason on the line beneath it,
+   both left-aligned to the same x as the enabled rows' labels (keep the empty
+   `w-3.5 h-3.5` checkbox spacer so the left edge still lines up). The reason keeps
+   `text-3xs text-fg-muted italic`; the row keeps `opacity-50` and stays non-focusable.
+
+**Guards that must not regress** (they exist and are load-bearing):
+- The dimmed row contains ZERO focusable elements — no checkbox button, no "(i)" info
+  button, no Theme pencil. `statusbar-widget-menu.test.tsx` asserts this; keep it passing.
+- `git-branch` still gets NO reason (it is missing because nothing feeds it, not because it
+  doesn't apply — spec §4).
+- Reason strings are asserted byte-for-byte in `status-widgets.test.ts`. Update those
+  assertions to the new strings; do not loosen them to `toContain`.
+
+- [ ] **Step 1:** Write the failing tests first (new strings, the `runsLocally` branch, and a
+  DOM assertion that the label and the reason are on separate lines — assert structure, e.g.
+  the reason is not a sibling inside the same single-line flex row, rather than asserting
+  pixel height).
+- [ ] **Step 2:** Verify they fail. **Step 3:** Implement. **Step 4:** Verify they pass.
+- [ ] **Step 5:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **Step 6: Commit** — `feat(status-bar): the Customize menu explains a dimmed row in one plain line`
+
+---
+
+### Task 19: The Cost chip names what it can't price, and where the money came from
+
+**Depends on:** Tasks 17 and 18 (Task 18 edits the same file).
+
+**Files:**
+- Modify: `desktop/src/renderer/components/StatusBar.tsx` (the `session-cost` chip block
+  ~1336-1360 only)
+- Test: `desktop/tests/statusbar-session-relevance.test.tsx`
+
+**The two changes:**
+
+1. **#3 — "free" and "we can't price this" must not look identical.** Verified with
+   `magick compare`: the bar row for `statusbar-local` and `statusbar-unpriced` is currently
+   pixel-identical (0 differing pixels), because both simply hide the chip. That is the one
+   gap in this design that can cost a user money. New rule for the chip, in order:
+   - Claude Code cost present → unchanged.
+   - `anyPriced` → the figure, unchanged (including the `<$0.01` guard and the
+     "some work could not be priced" partial tooltip).
+   - **NEW**: native, `!anyPriced`, `anyUnpriced` → render a dimmed chip reading
+     `Cost: not listed`, styled like the other muted chips (no accent colour — it is an
+     absence, not an alert). Tooltip: `This provider bills for usage, but no price is
+     published for this model, so the session cost can't be totalled.`
+   - `anyFree` and nothing priced → render NOTHING, as today. Destin declined a "Free"
+     chip (#2); silence stays the answer for a local session.
+   - Nothing at all measured → render nothing (Rule 1).
+   Note both flags can be true at once (a free local parent that delegated to a metered
+   specialist). `anyPriced` wins — a real figure beats "not listed".
+
+2. **#4 — name the source.** When the chip renders a figure and
+   `specialistCostUsd > 0`, append ` · specialists`, e.g. `Cost: $0.61 · specialists`.
+   Destin approved the wording from the card. The tooltip carries the split:
+   `$X.XX of this was spent by N specialists this session delegated to.` Do not show the
+   marker when `specialistCostUsd` is 0 — most sessions never delegate, and the chip is on
+   an already-crowded bar (the width risk Destin was shown and accepted).
+
+- [ ] **Step 1: Write the failing tests** — one per branch above, plus:
+  a free local session with a metered specialist renders `$0.61 · specialists` and NOT
+  `not listed`; a metered session with no specialists renders no marker; the `<$0.01` guard
+  from commit 4c5b06d3 still holds with the marker appended.
+- [ ] **Step 2:** Verify they fail. **Step 3:** Implement. **Step 4:** Verify they pass.
+- [ ] **Step 5:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **Step 6: Commit** — `feat(status-bar): say "not listed" instead of nothing, and name specialist spend`
+
+---
+
+### Carried into Task 11 (main-process pricing)
+
+Three items the reviews and the checkpoint pushed forward. Task 11 is not done until all
+three are handled:
+
+1. **Widen the RENDERER's `TurnUsage`, not just `shared/types.ts`.** `chat-types.ts`'s
+   `TurnUsage` has no `costUsd`, so a priced turn cannot reach the totals even once main
+   stamps it. `App.tsx` already forwards the whole usage object — only the TYPE needs
+   widening. (Found by Task 5's reviewer.)
+2. **Stamp `free: true` for local-engine work, and `costUsd: null` for metered work with no
+   published rate.** Tasks 17–19 are built against these two signals; without them the new
+   "not listed" chip never fires and every local session claims "No published price".
+   Related trap found by Task 13's reviewer: `model-catalog.ts:174-183` maps OpenRouter's
+   `pricing.prompt: "0"` to a real `0` rate (the non-empty-string guard admits `"0"`), so an
+   OpenRouter `:free` model would count as PRICED. Decide there that a zero rate means
+   free, not priced.
+3. **Carry the cache rates through, or change the tooltip.** The cost tooltip already
+   claims "prompt-cache discounts included". Task 10 adds `cacheRead`/`cacheWrite` to
+   `CatalogModel.pricing`; Task 11 must actually USE them, or that sentence ships false.
