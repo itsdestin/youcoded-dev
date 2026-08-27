@@ -3,7 +3,7 @@
 WHY rules in code: on 2026-08-25 a taste argument went into a review as if it were a defect,
 and prose reviews were rejected three times for being unreadable — so the deck's vocabulary
 (headline · What changed · You'll notice · Risk) and its word limits are checked here, not
-remembered. Spec: docs/active/specs/2026-08-27-review-deck-v2-design.md §4–5."""
+remembered. Spec: docs/archive/specs/2026-08-27-review-deck-v2-design.md §4–5."""
 import json
 import os
 import re

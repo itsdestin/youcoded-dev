@@ -10,7 +10,7 @@
 Run `serve` in the background: its exit is the "review finished" signal and it prints the
 feedback summary. There is deliberately no separate crop step — a stale intermediate file drew
 wrong rings with no error in v1. Spec format + writing rules:
-docs/active/specs/2026-08-27-review-deck-v2-design.md (§4–5; archived after merge). History of the
+docs/archive/specs/2026-08-27-review-deck-v2-design.md (§4–5). History of the
 three rejected formats before this one: docs/active/handoffs/2026-08-27-review-deck-tooling-handoff.md."""
 import argparse
 import os

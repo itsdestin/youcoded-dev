@@ -1,7 +1,7 @@
 ---
-status: active
+status: shipped
 created: 2026-08-27
-spec: docs/active/specs/2026-08-27-review-deck-v2-design.md
+spec: docs/archive/specs/2026-08-27-review-deck-v2-design.md
 ---
 
 # Review Deck v2 Implementation Plan
