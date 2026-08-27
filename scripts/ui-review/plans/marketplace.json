@@ -45,7 +45,7 @@
      "settle": 2000
     },
     {
-     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Themes')",
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))",
      "settle": 2000
     }
    ],
@@ -63,7 +63,7 @@
      "settle": 2000
     },
     {
-     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Themes')",
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))",
      "settle": 2000
     },
     {
@@ -146,7 +146,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>b.textContent.trim()==='Themes')",
+     "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))",
      "settle": 1500
     }
    ]

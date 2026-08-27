@@ -48,6 +48,8 @@ the reason. **A review must quote `coverage.md` and call unverified surfaces "un
 
 ## Pieces
 
+**Two sweeps at once collide.** Each shard's Chrome takes CDP port `30000 + offset + index`; a second session sweeping at the same default offset (300) deadlocks both for 20+ minutes with no error (2026-08-27). Until the rig probes ports (ROADMAP bug), run a concurrent sweep with `YOUCODED_PORT_OFFSET=310` (a different Vite port AND CDP range).
+
 | File | Job |
 |---|---|
 | `shot.mjs` | raw-CDP driver: boots the page per shot, runs actions, verifies, screenshots, runs the contrast probe. `ATTACH_PORT=<port>` drives a running Electron instance instead of headless Chrome. |
