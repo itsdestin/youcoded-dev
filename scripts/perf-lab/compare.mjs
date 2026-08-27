@@ -24,7 +24,14 @@ export const PRIMARY = [
   // pane container swaps; this one stops when the messages are on screen. Both are
   // judged: if a change improves the container swap while the messages arrive just
   // as late, that is not a win a user would feel, and only this path shows it.
-  'workload.median.switchPaintedP95Ms',
+  //
+  // WHY the huge bucket's MEDIAN and not switchPaintedP95Ms (swapped 2026-08-27):
+  // the p95 pooled every size — it was the maximum of ~18 samples, a third of them
+  // the empty control and, on the post-rebase baseline, two buckets sitting at the
+  // 20 s cap because the streamer was writing into them. The huge bucket is the
+  // case Destin lives in, no stream touches it, and its median moved 4% run to run
+  // (11.2 / 11.1 / 10.8 s) — the steadiest switching number the rig produces.
+  'workload.median.switchPaintedBySize.huge.medianMs',
   'workload.median.probe.longtaskTotalMs',
   'workload.median.pssAfterMb',
   'workload.median.cpuDuringPct',

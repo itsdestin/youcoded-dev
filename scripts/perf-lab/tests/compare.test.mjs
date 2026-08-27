@@ -30,10 +30,10 @@ const base = {
   },
   workload: {
     runs: [
-      { switchP95Ms: 20, switchPaintedP95Ms: 2400, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30 },
-      { switchP95Ms: 24, switchPaintedP95Ms: 2500, probe: { longtaskTotalMs: 130 }, pssAfterMb: 605, cpuDuringPct: 31 },
+      { switchP95Ms: 20, switchPaintedBySize: { huge: { medianMs: 2400 } }, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30 },
+      { switchP95Ms: 24, switchPaintedBySize: { huge: { medianMs: 2500 } }, probe: { longtaskTotalMs: 130 }, pssAfterMb: 605, cpuDuringPct: 31 },
     ],
-    median: { switchP95Ms: 20, switchPaintedP95Ms: 2400, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30 },
+    median: { switchP95Ms: 20, switchPaintedBySize: { huge: { medianMs: 2400 } }, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30 },
   },
   replayStall: {
     medium: {

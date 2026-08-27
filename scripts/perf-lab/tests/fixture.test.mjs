@@ -194,3 +194,24 @@ test('decoys are spread across directories rather than piled into one', () => {
   assert.ok(DECOY_PROJECT_DIRS <= DECOY_TRANSCRIPTS,
     'more directories than files would leave empty directories, which walk differently');
 });
+
+// The record field scenario-workload reached for and did not find. Measured
+// 2026-08-27: `t.cwd ?? <guess>` guessed `beta` for a transcript written under
+// `alpha`, the session resumed nothing, and an empty conversation was reported as
+// "medium". The generator writes every fixture transcript for projects.alpha, so
+// the record must say so — the scenario now refuses a record without it.
+test('buildFixture transcript records carry the cwd they were written for', async () => {
+  const { mkdtempSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { buildFixture } = await import('../fixture.mjs');
+  const root = mkdtempSync(join(tmpdir(), 'perf-lab-cwd-'));
+  try {
+    const f = buildFixture(root, { content: 'plain' });
+    for (const size of ['small', 'medium', 'huge']) {
+      assert.equal(f.transcripts[size].cwd, f.projects.alpha, `${size}: cwd must be the project the transcript was written for`);
+    }
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});

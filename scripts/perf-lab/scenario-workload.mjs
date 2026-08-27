@@ -1,5 +1,5 @@
 // scripts/perf-lab/scenario-workload.mjs — the "real use" journey: six mixed
-// sessions open at once, a transcript streaming into three of them, and the user
+// sessions open at once, a transcript streaming into two of them, and the user
 // switching between them over and over, while a probe records long tasks and
 // dropped frames.
 //
@@ -11,11 +11,10 @@
 // the app really produced, never one the rig faked.
 //
 // Node built-ins only (the workspace root has no package.json and must not gain one).
-import { appendFileSync, readdirSync, statSync } from 'node:fs';
-import { basename, join } from 'node:path';
+import { appendFileSync } from 'node:fs';
 import { waitFor } from './cdp.mjs';
 import { cpuSnapshot, cpuPercent, pssMb } from './procs.mjs';
-import { ccProjectSlug, transcriptLines } from './fixture.mjs';
+import { transcriptLines } from './fixture.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -283,7 +282,7 @@ async function installPageHelpers(cdp) {
        * overflow dropdown, so that is what we drive, and it is reported and
        * aggregated SEPARATELY because it also pays for opening a menu.
        */
-      switchTo: async (listIdx, name, sessionCount, measurePainted) => {
+      switchTo: async (listIdx, name, sessionCount, measurePainted, expectedEntries) => {
         const t0 = performance.now();
         const paneBefore = visiblePaneIdx();
         const ps = pills();
@@ -354,7 +353,17 @@ async function installPageHelpers(cdp) {
           // timing so a reader can tell "empty conversation, fast switch" from
           // "loaded conversation that rendered nothing". n < 0 means no visible
           // pane at all, which is never a settle.
-          if (n >= 0 && n === last) { if (++stableFrames >= 3) { settled = true; break; } }
+          //
+          // AND, when the caller knows how many entries the conversation holds, the
+          // count must have REACHED it. A stable count below that is a render pause
+          // or the wrong conversation, not a finished switch. Measured 2026-08-27: a
+          // session that had resumed nothing (created in the wrong project folder)
+          // "settled" in 1.4 s at 319 entries and was reported as the 5,000-entry
+          // medium conversation switching fast. Stability alone cannot tell "done"
+          // from "paused" from "wrong transcript"; the count can. A null expectation
+          // (native sessions) keeps the stability-only rule.
+          const reached = (expectedEntries == null) || n >= expectedEntries;
+          if (n >= 0 && n === last && reached) { if (++stableFrames >= 3) { settled = true; break; } }
           else { stableFrames = 0; last = n; }
           await new Promise((r) => requestAnimationFrame(r));
         }
@@ -375,6 +384,10 @@ async function installPageHelpers(cdp) {
           // as a fast switch.
           settled: painted ? settled : null,
           entries: painted ? last : null,
+          expectedEntries: painted && expectedEntries != null ? expectedEntries : null,
+          // true = the pane never showed as many entries as the conversation holds,
+          // so the size label on this switch is NOT verified by what rendered.
+          short: painted && expectedEntries != null ? last < expectedEntries : null,
           mode,
           // The switch is only counted as real if the visible pane actually moved.
           ok: paneAfter >= 0 && paneAfter !== paneBefore,
@@ -435,43 +448,56 @@ async function waitForSessionReady(cdp, { appearMs = 1500, clearMs = 30000 } = {
 // Transcript streamer
 // ---------------------------------------------------------------------------
 
-const transcriptDir = (fixture, cwd) => join(fixture.home, '.claude', 'projects', ccProjectSlug(cwd));
+/**
+ * Timeline entries the app renders per transcript turn.
+ *
+ * Measured 2026-08-27 on the post-rebase baseline: small (50 turns) settled at
+ * exactly 100 `.timeline-entry` nodes and huge (3,500 turns) at exactly 7,000 —
+ * one per user line, one per assistant line; tool cards nest inside the assistant
+ * entry rather than adding to the count. If the app ever changes what a timeline
+ * entry is (paged history, say), this constant goes wrong and every resumed switch
+ * fails to settle and SAYS so (20 s cap + `short`). That loud failure is the
+ * intended mode — the alternative was a quiet early settle, which is what hid the
+ * wrong-cwd bug below for a day.
+ */
+export const ENTRIES_PER_TURN = 2;
 
-function listTranscripts(dir) {
-  try { return readdirSync(dir).filter((f) => f.endsWith('.jsonl')); } catch { return []; }
+/** Rendered entries a resumed session must show before its switch counts as painted. */
+export function expectedEntries(turns, streamedTurns = 0) {
+  return ENTRIES_PER_TURN * (turns + streamedTurns);
 }
 
 /**
- * Picks the transcripts to stream into: the files that appeared in the two
- * project dirs while we were creating the CC sessions.
- *
- * A set difference, not "the N newest by mtime". WHY: the fixture PRE-BUILDS
- * three transcripts in the alpha project (small/medium/huge — fixture.mjs), and
- * the huge one is ~30 MB. Ranking by mtime would work only as long as nothing
- * touched a pre-built file, and if it ever ranked wrong the rig would append to
- * a 30 MB transcript — a completely different, much heavier workload that would
- * look like a mysterious regression. The pre-built paths are also excluded
- * explicitly as a second fence. mtime is used only to order the NEW files.
+ * The resumed sessions the streamer writes into. Never `huge` — that is the one
+ * clean "switch into the biggest conversation" measurement — and never the empty
+ * control, which exists precisely to be quiet.
  */
-export function pickStreamTargets(fixture, before, { count = 3 } = {}) {
-  const prebuilt = new Set(Object.values(fixture.transcripts ?? {}).map((t) => t.path));
-  const fresh = [];
-  for (const cwd of [fixture.projects.alpha, fixture.projects.beta]) {
-    const dir = transcriptDir(fixture, cwd);
-    const seen = before.get(dir) ?? new Set();
-    for (const f of listTranscripts(dir)) {
-      if (seen.has(f)) continue;
-      const p = join(dir, f);
-      if (prebuilt.has(p)) continue;
-      let m = 0;
-      try { m = statSync(p).mtimeMs; } catch { continue; }
-      // The file's stem IS the Claude Code session id — fake-claude.cjs names the
-      // transcript `<sessionId>.jsonl`, exactly as real CC does.
-      fresh.push({ path: p, cwd, mtimeMs: m, sessionId: basename(f, '.jsonl') });
-    }
+export const STREAM_SIZES = Object.freeze(['medium', 'small']);
+
+/**
+ * The transcripts to stream into: the LIVE files of the resumed medium and small
+ * sessions, picked by NAME.
+ *
+ * REPLACES pickStreamTargets (deleted 2026-08-27), which streamed into "any
+ * transcript file that appeared after boot". fake-claude resumes a session IN
+ * PLACE (same `<id>.jsonl`), so the only file that ever appeared was the empty
+ * control's — plus, on the first repeat, the file a mis-resumed 'medium' created
+ * in the wrong project folder. Measured on the post-rebase baseline: `streamedFiles`
+ * 1–2 against a description that said 3; the control was the one session under
+ * continuous load and posted the 20 s cap; the loaded sessions got no stream at
+ * all. The description said one configuration, the rig ran another, and the
+ * numbers came back clean. Picking by name makes the configuration the one
+ * described, and each target carries its size so the run records exactly who was
+ * streamed into (`streamedInto`, `streamedTurnsBySize`).
+ */
+export function streamTargetsFor(fixture, sizes = STREAM_SIZES) {
+  const out = [];
+  for (const size of sizes) {
+    const t = fixture.transcripts?.[size];
+    if (!t) continue;
+    out.push({ size, path: t.path, cwd: t.cwd, sessionId: t.sessionId, turns: t.turns });
   }
-  fresh.sort((a, b) => b.mtimeMs - a.mtimeMs);
-  return fresh.slice(0, count);
+  return out;
 }
 
 /**
@@ -498,7 +524,14 @@ export function pickStreamTargets(fixture, before, { count = 3 } = {}) {
  * real conversation produces.
  */
 function startStreamer(targets, { everyMs = 150 } = {}) {
-  const state = { lines: 0, turns: 0, errors: [] };
+  // turnsBySize: turns appended to EACH target so far. The switch loop reads it at
+  // click time to know how many entries a streamed-into session must show before
+  // its switch counts as painted (expectedEntries). Keyed by path when a target
+  // has no size, so the counter can never be shared between two targets.
+  const state = {
+    lines: 0, turns: 0, errors: [],
+    turnsBySize: Object.fromEntries(targets.map((t) => [t.size ?? t.path, 0])),
+  };
   const timer = setInterval(() => {
     for (const t of targets) {
       try {
@@ -506,6 +539,7 @@ function startStreamer(targets, { everyMs = 150 } = {}) {
         appendFileSync(t.path, lines.join('\n') + '\n');
         state.lines += lines.length;
         state.turns += 1;
+        state.turnsBySize[t.size ?? t.path] += 1;
       } catch (err) {
         // Keep streaming, but keep the REAL reason — a silently-dead streamer
         // would turn "no load at all" into a fake clean result.
@@ -550,19 +584,22 @@ export const MEASURES = {
   question: 'Is the app responsive while several sessions are open, one is streaming, and the user switches between them?',
   configuration: [
     '6 sessions open at once (4 Claude Code + 2 native)',
-    '3 of the 4 CC sessions are RESUMED from real transcripts (huge, medium, small); the 4th is deliberately left EMPTY as a control',
-    'a transcript streams into 3 sessions throughout the window',
+    '3 of the 4 CC sessions are RESUMED from real transcripts (huge, medium, small), each in its transcript\'s own project folder; the 4th is deliberately left EMPTY as a control',
+    'a transcript streams into the medium and small sessions throughout the window — never into huge (the one clean loaded switch) and never into the empty control; the run records streamedInto and streamedTurnsBySize',
     '40 switches spread evenly across the same window the CPU sample covers',
   ],
   clocks: {
     switchMedianMs: 'click -> the visible pane CONTAINER swapped (2 animation frames). Does NOT wait for messages.',
-    switchPaintedMedianMs: 'click -> the messages are on screen (entry count stable for 3 frames). This is the number a user would recognise.',
+    switchPaintedMedianMs: 'click -> the messages are on screen: entry count stable for 3 frames AND at least what the conversation holds (2 per turn, plus what streamed in so far). A stable count below that is a render pause or the wrong conversation, not a settle. This is the number a user would recognise.',
+    'switchPaintedBySize.huge.medianMs': 'the same clock, for switches INTO the huge conversation only — the PRIMARY switch metric, because it is the case Destin lives in and the only bucket no stream touches',
     cpuDuringPct: 'whole-process CPU across the workload window, from /proc',
   },
   blindTo: [
     'conversation sizes beyond the fixture huge transcript',
     'switching under memory pressure from many MORE than 6 sessions',
     'anything requiring a real GPU — the rig runs headless under Xvfb',
+    'whether a switch into a STREAMING session feels slow because of the stream or because of the size — medium and small carry both; only huge and empty are clean',
+    'ENTRIES_PER_TURN is a measured constant, not read from the app — if the app changes what a timeline entry is, every resumed switch stops settling and the report says so, but the rig cannot fix itself',
   ],
 };
 
@@ -585,13 +622,6 @@ export async function runWorkloadScenario(app, fixture, {
 
     // ── 4 Claude Code sessions, alternating project folders ──────────────
     await mark(cdp, 'cc-create:start');
-    // Snapshot the transcript dirs BEFORE any CC session exists, so the files
-    // fake-claude creates for them can be identified by set difference.
-    const before = new Map();
-    for (const cwd of [fixture.projects.alpha, fixture.projects.beta]) {
-      const dir = transcriptDir(fixture, cwd);
-      before.set(dir, new Set(listTranscripts(dir)));
-    }
 
     // ── 4 Claude Code sessions, THREE OF THEM RESUMED FROM REAL TRANSCRIPTS ──
     //
@@ -626,8 +656,18 @@ export async function runWorkloadScenario(app, fixture, {
       }
       // A resumed session must be created in the transcript's OWN cwd, or the
       // app looks for it under the wrong project slug and silently resumes nothing.
+      //
+      // FIXED 2026-08-27: this read `t.cwd ?? cwd` while the fixture record had NO
+      // cwd field — so cc-1 ('medium', an odd index) was created in `beta` with a
+      // transcript that lives under `alpha`. It resumed nothing, started empty, and
+      // the streamer (which then targeted "new files") filled it: the report showed
+      // a "medium" conversation of 319 entries switching in 1.4 s, beside a 5,000-
+      // entry medium taking 14.8 s to open in the history scenario. The comment
+      // above was right and the code beside it did the opposite. The fixture now
+      // records cwd; a record without one is refused here rather than guessed at.
+      if (t && !t.cwd) throw new Error(`workload: fixture transcript '${size}' carries no cwd — refusing to guess which project folder to resume it in`);
       const opts = t
-        ? { name, cwd: t.cwd ?? cwd, skipPermissions: true, resumeSessionId: t.sessionId }
+        ? { name, cwd: t.cwd, skipPermissions: true, resumeSessionId: t.sessionId }
         : { name, cwd, skipPermissions: true };
       const r = await createSession(cdp, opts);
       ids.push(r.id); names.push(name); ccMs.push(r.ms);
@@ -651,6 +691,9 @@ export async function runWorkloadScenario(app, fixture, {
         provider: 'native', binding: { providerId: 'local', modelId: fixture.modelId }, preset: 'coder',
       });
       ids.push(r.id); names.push(name); nat.push(r);
+      // Labelled, not 'unknown': the per-size table used to show six switches into
+      // an 'unknown' conversation, which is a reader's question the rig can answer.
+      sizeByName[name] = 'native';
     }
 
     // ── First native token ───────────────────────────────────────────────
@@ -729,7 +772,13 @@ export async function runWorkloadScenario(app, fixture, {
     if (nativeFailure) console.error(`[perf-lab] workload: native leg failed, continuing — ${nativeFailure}`);
 
     // ── Workload window: stream + switch + sample CPU, all over ONE clock ──
-    const targets = pickStreamTargets(fixture, before, { count: 3 });
+    // Stream into the resumed medium and small sessions BY NAME — never huge (so
+    // the switch into the biggest conversation is measured clean) and never the
+    // empty control. Why not "whichever file appeared": see streamTargetsFor.
+    const targets = streamTargetsFor(fixture);
+    if (targets.length !== STREAM_SIZES.length) {
+      warnings.push(`workload: only ${targets.length}/${STREAM_SIZES.length} stream targets exist in the fixture (${targets.map((t) => t.size).join(', ') || 'none'}) — the load is lighter than this scenario describes`);
+    }
     const windowMs = cpuSampleSeconds * 1000;
     // The relationship is explicit, not coincidental: the switches are spread
     // evenly across the SAME window the CPU sample and the streamer cover, so
@@ -747,6 +796,9 @@ export async function runWorkloadScenario(app, fixture, {
     const paintedSeen = {};
     let clickSwitches = 0, menuSwitches = 0, failedSwitches = 0, verifiedSwitches = 0, unsettledSwitches = 0;
     const switchFailures = [];
+    // One row per switch. WHY: the aggregate buckets below could not tell a
+    // streamed-into empty session from a resumed medium one until this existed.
+    const switches = [];
     for (let i = 0; i < switchCount; i++) {
       const due = startedAt + i * switchEveryMs;
       const wait = due - Date.now();
@@ -760,8 +812,16 @@ export async function runWorkloadScenario(app, fixture, {
       // the rest time the container swap only, which is what switchP95Ms wanted
       // anyway. Enough samples for a median per bucket, bounded wall clock.
       const paintedThis = (paintedSeen[idx] = (paintedSeen[idx] ?? 0) + 1) <= PAINTED_SAMPLES_PER_SESSION;
+      const size = sizeByName[names[idx]] ?? 'unknown';
+      // How many entries the pane must show before this switch is "painted": what
+      // the transcript held at resume plus whatever the streamer has appended to it
+      // SO FAR. The control holds 0. Native sessions carry no expectation (null).
+      const t = fixture.transcripts?.[size];
+      const expected = size === 'empty' ? 0
+        : t ? expectedEntries(t.turns, streamer.state.turnsBySize[size] ?? 0)
+        : null;
       const r = await cdp.evaluate(
-        `window.__perfLab.switchTo(${idx}, ${JSON.stringify(names[idx])}, ${ids.length}, ${paintedThis})`);
+        `window.__perfLab.switchTo(${idx}, ${JSON.stringify(names[idx])}, ${ids.length}, ${paintedThis}, ${expected === null ? 'null' : expected})`);
       // FIXED 2026-08-27: the timing used to be recorded BEFORE and independently
       // of `r.ok`. `ok` means the visible pane actually moved — so a click that
       // landed on nothing contributed its ~30 ms two-rAF non-event to
@@ -773,6 +833,11 @@ export async function runWorkloadScenario(app, fixture, {
       else if (r.mode === 'menu') { menuSwitches++; if (r.ok) menuMs.push(r.ms); }
       else { failedSwitches++; if (switchFailures.length < 5) switchFailures.push(r.reason); }
       if (r.ok) verifiedSwitches++;
+      switches.push({
+        i, idx, name: names[idx], size, mode: r.mode, ok: r.ok, ms: r.ms,
+        paintedMs: r.paintedMs, entries: r.entries, expected: r.expectedEntries,
+        settled: r.settled, short: r.short,
+      });
       // Painted timings are kept for EVERY real switch regardless of pill-vs-menu:
       // the menu path pays extra for opening a dropdown, but the content cost we
       // are hunting is the same either way.
@@ -783,8 +848,7 @@ export async function runWorkloadScenario(app, fixture, {
         // is the control, `huge` is the case Destin actually lives in. If they
         // come out the same, conversation size is not the cost and this line of
         // reasoning is wrong.
-        const size = sizeByName[names[idx]] ?? 'unknown';
-        const b = (paintedBySize[size] ??= { ms: [], entries: [], unsettled: 0 });
+        const b = (paintedBySize[size] ??= { ms: [], entries: [], expected: [], unsettled: 0, short: 0 });
         b.ms.push(r.paintedMs);
         // The rendered entry count travels with the timing. Without it a size
         // LABEL cannot be checked against what actually appeared — and on the
@@ -792,8 +856,16 @@ export async function runWorkloadScenario(app, fixture, {
         // real inversion or proof the labels do not describe what was rendered.
         // There was no way to tell, because the count was not kept.
         if (typeof r.entries === 'number') b.entries.push(r.entries);
+        if (typeof r.expectedEntries === 'number') b.expected.push(r.expectedEntries);
         if (r.settled === false) { b.unsettled++; unsettledSwitches++; }
+        if (r.short) b.short++;
       }
+    }
+    // A bucket whose pane never reached the conversation's entry count is a bucket
+    // whose LABEL is unverified. Say which, and the three ways that happens.
+    const shortSizes = Object.entries(paintedBySize).filter(([, b]) => b.short > 0).map(([k, b]) => `${k} (${b.short}/${b.ms.length})`);
+    if (shortSizes.length) {
+      warnings.push(`workload: switches whose pane never showed as many entries as the conversation holds — ${shortSizes.join(', ')}. Either the session resumed the wrong transcript, the streamer's appends were not ingested by the watcher, or the app renders fewer entries per turn than ENTRIES_PER_TURN says; the size labels on those buckets are NOT verified by what rendered`);
     }
     if (unsettledSwitches > 0) {
       warnings.push(`workload: ${unsettledSwitches}/${verifiedSwitches} switches never settled — their timings are a FLOOR (the 20s cap), not a measurement, and must not be read as fast switches`);
@@ -860,12 +932,19 @@ export async function runWorkloadScenario(app, fixture, {
           p95Ms: p95(v.ms),
           // What actually rendered, so the size label can be checked rather than trusted.
           medianEntries: median(v.entries),
+          // What the conversation actually holds (null for native sessions). If
+          // medianEntries is below this, the label does not describe what rendered.
+          expectedEntries: median(v.expected),
+          // Switches whose pane never reached expectedEntries before the cap.
+          short: v.short,
           // Non-zero means some of the timings in this bucket are the 20s cap.
           unsettled: v.unsettled,
         }]),
       ),
       // Non-zero means some timings above are a 20s floor, not a measurement.
       unsettledSwitches,
+      // Every switch, in order, with what rendered beside what was expected.
+      switches,
       clickSwitches,
       // Always 0 by design — see switchTo(): the desktop session:switch IPC is a
       // stub that switches nothing, so it is never used as a timed fallback.
@@ -884,6 +963,10 @@ export async function runWorkloadScenario(app, fixture, {
       streamedLines: streamed.lines,
       streamedTurns: streamed.turns,
       streamedFiles: targets.length,
+      // WHICH sessions were streamed into, and how many turns each received — so
+      // "a transcript streams into N sessions" is a recorded fact, not a claim.
+      streamedInto: targets.map((t) => t.size),
+      streamedTurnsBySize: streamed.turnsBySize,
       streamErrors: streamed.errors,
       probe,
       probeWorkloadWindow: probeWorkload,

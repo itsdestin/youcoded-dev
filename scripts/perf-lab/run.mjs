@@ -405,9 +405,14 @@ export function renderMarkdown(report, stem) {
       // A bucket with unsettled switches is showing the 20s CAP, not a measurement.
       // Saying so on the row is the difference between "slow" and "we gave up".
       ...Object.entries(w.switchPaintedBySize ?? {}).map(([size, v]) =>
-        `| switch into a '${size}' conversation (n=${v?.n ?? 0}, ${n(v?.medianEntries, 'entries')}) | ` +
+        `| switch into a '${size}' conversation (n=${v?.n ?? 0}, ${n(v?.medianEntries, 'entries')}` +
+        // "of N expected" is how a reader checks the label against what rendered.
+        `${typeof v?.expectedEntries === 'number' ? ` of ${v.expectedEntries} expected` : ''}) | ` +
         `${n(v?.medianMs, 'ms')} / ${n(v?.p95Ms, 'ms')} p95` +
-        `${v?.unsettled ? ` — ⚠ ${v.unsettled} hit the 20s CAP, so this is a FLOOR` : ''} |`),
+        `${v?.unsettled ? ` — ⚠ ${v.unsettled} hit the 20s CAP, so this is a FLOOR` : ''}` +
+        `${v?.short ? ` — ⚠ ${v.short} never showed the whole conversation, so this label is NOT verified` : ''} |`),
+      // Arrays do not survive medianTree, so the streamed-into list comes from run 1.
+      `| streamed into, during the switches | ${(report.workload.runs?.[0]?.streamedInto ?? []).join(', ') || '—'} |`,
       ...(w.unsettledSwitches ? [`| ⚠ switches that never settled | ${w.unsettledSwitches} — those timings are a 20s FLOOR, not a measurement |`] : []),
       `| long tasks | ${n(p.longtaskCount, 'tasks')} (${n(p.longtaskTotalMs, 'ms')} total, max ${n(p.longtaskMaxMs, 'ms')}) |`,
       `| frame gaps > 40ms | ${n(p.frameGapCount, 'gaps')} (max ${n(p.frameGapMaxMs, 'ms')}) |`,

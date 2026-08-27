@@ -460,7 +460,13 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
     writeJsonl(path, transcriptBody({
       content, sessionId, cwd: projects.alpha, turns, startedAt: now - 3 * 86400000,
     }));
-    transcripts[name] = { sessionId, slug, path, turns };
+    // `cwd` travels with the record. WHY: a resumed session must be created in the
+    // transcript's OWN project folder or the app looks under the wrong slug and
+    // silently resumes nothing. scenario-workload read `t.cwd ?? <its own guess>`
+    // from a record that had no cwd, guessed `beta` for the medium transcript
+    // (which lives here, under alpha), and measured an EMPTY session labelled
+    // "medium" for a day. The field the code already reached for now exists.
+    transcripts[name] = { sessionId, slug, path, turns, cwd: projects.alpha };
   }
 
   // ── Decoy transcripts: file COUNT, not file size ──────────────────────────

@@ -97,17 +97,23 @@ const workloadRun = (i) => ({
   switchPaintedMedianMs: 900 + i,
   switchPaintedP95Ms: 2400 + i,
   switchPaintedBySize: {
-    huge: { n: 3, medianMs: 3100 + i, p95Ms: 3600 + i, medianEntries: 7000, unsettled: 0 },
-    medium: { n: 3, medianMs: 1200 + i, p95Ms: 1500 + i, medianEntries: 5000, unsettled: 0 },
-    small: { n: 3, medianMs: 90 + i, p95Ms: 120 + i, medianEntries: 100, unsettled: 0 },
+    // expectedEntries beside medianEntries: the label is checked against what
+    // rendered, and `short` counts switches that never reached it.
+    huge: { n: 3, medianMs: 3100 + i, p95Ms: 3600 + i, medianEntries: 7000, expectedEntries: 7000, short: 0, unsettled: 0 },
+    medium: { n: 3, medianMs: 1200 + i, p95Ms: 1500 + i, medianEntries: 5000, expectedEntries: 5000, short: 0, unsettled: 0 },
+    small: { n: 3, medianMs: 90 + i, p95Ms: 120 + i, medianEntries: 100, expectedEntries: 100, short: 0, unsettled: 0 },
     // The control: an empty conversation renders nothing and switching to it is
     // instant. The first draft of the settle rule required a NON-ZERO count, so
     // this case could never settle and reported the 20s cap — the control became
     // the slowest number in the table. Pinned here so that cannot come back.
-    empty: { n: 3, medianMs: 20 + i, p95Ms: 35 + i, medianEntries: 0, unsettled: 0 },
+    empty: { n: 3, medianMs: 20 + i, p95Ms: 35 + i, medianEntries: 0, expectedEntries: 0, short: 0, unsettled: 0 },
+    native: { n: 6, medianMs: 30 + i, p95Ms: 40 + i, medianEntries: 2, expectedEntries: null, short: 0, unsettled: 0 },
   },
   unsettledSwitches: 0,
-  sessionSizes: { 'cc-0': 'huge', 'cc-1': 'medium', 'cc-2': 'small', 'cc-3': 'empty' },
+  switches: [],
+  streamedInto: ['medium', 'small'],
+  streamedTurnsBySize: { medium: 260, small: 260 },
+  sessionSizes: { 'cc-0': 'huge', 'cc-1': 'medium', 'cc-2': 'small', 'cc-3': 'empty', 'native-0': 'native', 'native-1': 'native' },
   warnings: [],
   clickSwitches: 40,
   ipcSwitches: 0,
@@ -230,7 +236,14 @@ describe('compare.mjs PRIMARY contract', () => {
     // switchP95Ms stops when the pane container swaps, which is not the switch a
     // user sees; both are now judged so a change that speeds the container while
     // the messages arrive just as late cannot read as a win.
+    // Still 20 later that day, but switchPaintedP95Ms was SWAPPED for
+    // workload.median.switchPaintedBySize.huge.medianMs: the pooled p95 was the
+    // maximum of ~18 samples, a third of them the empty control and two buckets
+    // at the 20 s cap; the huge bucket is the case Destin lives in and moved 4%
+    // run to run.
     assert.equal(PRIMARY.length, 20, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    assert.ok(PRIMARY.includes('workload.median.switchPaintedBySize.huge.medianMs'), 'the clean huge-bucket switch metric must be judged');
+    assert.ok(!PRIMARY.includes('workload.median.switchPaintedP95Ms'), 'the pooled p95 is contaminated by the control and by streamed-into buckets');
   });
 
   it('every PRIMARY path has per-run samples behind it (runsFor finds the sibling runs array)', () => {
@@ -624,6 +637,17 @@ describe('renderMarkdown', () => {
       return rep;
     })(), 'test-stem');
     assert.match(capped, /hit the 20s CAP/, 'a bucket at the cap is rendered as if it were a measurement');
+    // A bucket whose pane never showed the whole conversation has an UNVERIFIED
+    // label. Measured 2026-08-27: "medium, 319 entries, 1.4 s" was an empty session
+    // in the wrong project folder being filled by the streamer.
+    const short = renderMarkdown((() => {
+      const rep = completeReport();
+      rep.workload.median.switchPaintedBySize.medium.short = 3;
+      return rep;
+    })(), 'test-stem');
+    assert.match(short, /never showed the whole conversation, so this label is NOT verified/);
+    assert.match(md, /of 7000 expected/, 'the expected count must be printed beside what rendered');
+    assert.match(md, /streamed into, during the switches \| medium, small/, 'who was streamed into must be a recorded fact in the summary');
   });
 
   // The anti-recurrence guard: three wrong conclusions in this project came from a
