@@ -18,17 +18,6 @@ def measure_key(hl):
     return hl['selector'] if 'selector' in hl else f'text:{hl["text"]}'
 
 
-def _images_identical(a, b):
-    """True when two same-size PNGs are pixel-identical.
-    WHY: diff_bbox trims the thresholded diff to find a bounding box; when EVERY pixel in the
-    crop changed (a whole-surface edit with no untouched border anywhere), ImageMagick's trim
-    can't find a border to shrink from and reports the same degenerate "no box" result it uses
-    for truly-identical images. `compare -metric AE` (exit 0 = identical, 1 = differs) tells
-    the two apart so a whole-surface change warns instead of being misreported as "missing"."""
-    r = subprocess.run(['magick', 'compare', '-metric', 'AE', a, b, 'null:'], capture_output=True, text=True)
-    return r.returncode == 0
-
-
 def newest_manifest_entry(run_dir, plan, shot, theme):
     """The latest manifest entry for (plan, shot, theme) in a run dir. Entries are ordered by
     run id first (the sweep's UI_REVIEW_RUN stamp, Task 9), then file time — the same rule as
@@ -86,14 +75,7 @@ def crop_images(spec, log=print):
             if hl == 'auto' and all(os.path.exists(p) for p in paths):
                 box = diff_bbox(paths[0], paths[1])
                 if box is None:
-                    if _images_identical(paths[0], paths[1]):
-                        missing.append(f'{st["id"]}: nothing differs between before and after in {theme} — name an element instead of "auto"')
-                    else:
-                        # The pictures differ but diff_bbox still returned None: a whole-surface
-                        # edit with no untouched border anywhere (see _images_identical). Report
-                        # it as the maximal share so it goes through the warning path below.
-                        warnings.append(f'{st["id"]}: the change covers 100% of the crop in {theme} — whole-surface change, name an element instead')
-                        per_run = {r: [0.0, 0.0, 100.0, 100.0] for r in runs}
+                    missing.append(f'{st["id"]}: nothing differs between before and after in {theme} — name an element instead of "auto"')
                 else:
                     size = image_size(paths[0])
                     share = box['w'] * box['h'] / (size[0] * size[1])

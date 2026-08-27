@@ -35,5 +35,10 @@ class DiffTests(unittest.TestCase):
     def test_box_never_leaves_the_image(self):
         c = os.path.join(self.d, 'c.png'); subprocess.run(['magick', self.a, '-fill', 'red', '-draw', 'rectangle 0,0 9,9', c], check=True)
         box = diff_bbox(self.a, c); self.assertEqual((box['x'], box['y']), (0, 0))
+    def test_whole_image_change_is_the_whole_image(self):
+        # every pixel differs (no untouched border) — trim can't shrink from an edge without the
+        # 1px border diff_bbox adds; without it this degenerates to the same box as "identical".
+        w = os.path.join(self.d, 'w.png'); subprocess.run(['magick', '-size', '200x100', 'xc:white', w], check=True)
+        self.assertEqual(diff_bbox(self.a, w), {'x': 0, 'y': 0, 'w': 200, 'h': 100})
 
 if __name__ == '__main__': unittest.main()
