@@ -231,3 +231,54 @@ reason to lose the responsiveness measurements.
 The orchestrator's `validateReport` did catch this and refused to let the report be
 ranked (exit 4, naming each blind path), which is the behaviour that made the
 failure obvious instead of silent.
+
+## 15. The screenshot parity gate was blind on two of five screens
+
+Found by opening the PNGs instead of trusting that five files had been written —
+the same discipline `/ui-review` already enforces ("a surface that isn't covered is
+*unreviewed*, never *fine*"). The perf lab's own capture had no such proof.
+
+**`welcome.png` was a blank dark rectangle.** 4,515 bytes against 142,372 for a
+real screen. It is captured the moment the boot marks land, but this app's
+first-contentful-paint is ~4 s after spawn. The failure is worse than a missing
+shot: a blank image compares equal to the *next* run's blank image, so the gate
+reports `pass` and one of the five screens is silently unwatched forever.
+
+`capture()` now refuses to save a frame before first-contentful-paint plus
+non-trivial visible text, and a regression test pins it.
+
+**The Settings drawer was stuck open across `six-sessions` and `native-chat`.**
+Three of the five gated screens were therefore variations of one view, with the
+left 320 px of two of them occluded — any change behind the drawer was invisible.
+
+The open/closed check was the cause of its own blindness. It tested whether
+`[aria-label="Close settings"]` **exists**, but `SettingsPanel` is always mounted
+and merely translated off-screen (`open ? 'translate-x-0' : '-translate-x-full'`,
+`SettingsPanel.tsx:237`). So the query matched whether the drawer was open or shut,
+and the scenario reported `{opened: true, closed: false}` on every run regardless
+of what actually happened — a number that described nothing.
+
+Now measured from on-screen position (open puts the button at x≈289; closed
+translates the panel −320 px, so x goes negative), with the drawer's own close
+button as a fallback and a hard pre-shot check in the orchestrator.
+
+Note the shape both bugs share, because it is the shape worth watching for: the
+rig reported success, produced five files, and passed its own gate — while
+measuring nothing. Neither was findable from the report; both took looking at the
+artifact.
+
+## 16. Suspend must be inhibited during a run
+
+The machine sleeps on idle (KDE PowerDevil), and a run is 20+ minutes of mostly
+watching. A suspend mid-run does not fail loudly — it silently stretches whatever
+interval straddles it, and the noise gate only samples *before* a boot, so nothing
+would catch it.
+
+Wrap long runs:
+
+    systemd-inhibit --what=idle:sleep --mode=block --who="perf-lab" \
+      --why="performance measurement run in progress" \
+      node scripts/perf-lab/run.mjs ...
+
+No root needed, and the inhibitor releases when the command exits, so there is
+nothing to clean up and nothing left holding the machine awake afterwards.
