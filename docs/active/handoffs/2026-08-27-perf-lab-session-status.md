@@ -365,7 +365,13 @@ honest replacement is main-process CPU time from `/proc` over the replay window.
 3. ~~Shakedown run~~ → **done and superseded**: the trusted baseline is
    `2026-08-27-1141-16ea12e-post-rebase-baseline`; the workload phase's trusted shape is
    `2026-08-27-2207-16ea12e-per-boot`.
-3b. **The eyeball calibration — NOT DONE, blocks acting on any number.** `node
+3b. ~~The eyeball calibration~~ — **DONE 2026-08-27, PASSED.** Destin opened `huge` in
+   the rig's build on his real screen: "a few messages showed up almost immediately …
+   couldn't scroll and the app was stuttery/inconsistent for about 22 s … definitely at
+   least somewhat related to the kinds of issues I've been feeling." Rig: first entry
+   visible 148 ms, fully rendered 22.0 s, worst single block 5.7 s of 16.5 s total
+   blocked. Both clocks and the *shape* (gasping, not one solid freeze) match. The
+   headless numbers are calibrated to his desktop. (Was:) `node
    scripts/perf-lab/eyeball.mjs` boots the rig's exact build with the rig's fixture on
    Destin's real screen (shifted ports, throwaway HOME, never `/opt/YouCoded`) and prints
    what to count. Rig says ~22 s to open huge, ~11 s to switch into it. If Destin's
