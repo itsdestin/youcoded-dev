@@ -1,0 +1,256 @@
+{
+ "out": "download-resume-cards.html",
+ "images": "images/download-resume",
+ "key": "Download Resume",
+ "runs": {
+  "today": "/home/destin/youcoded-dev/scratch/ui-review-dlresume"
+ },
+ "labels": {
+  "today": "New"
+ },
+ "crops": {
+  "lm-rows": [
+   "overlays",
+   "providers-local-scrolled",
+   "420x300+510+290"
+  ],
+  "lm-resume": [
+   "overlays",
+   "local-models-resuming",
+   "420x320+510+290"
+  ],
+  "lm-discard": [
+   "overlays",
+   "local-models-discard-confirm",
+   "420x300+510+390"
+  ],
+  "lm-delete": [
+   "overlays",
+   "local-models-delete-confirm",
+   "420x230+510+310"
+  ]
+ },
+ "title": "Interrupted downloads — 9 points before I build the backend",
+ "lead": "This is new UI running on fake data, so you can shape it before any of the machinery exists. Three kinds of row: a finished model, an interrupted download that can be resumed, and an old interrupted download the app can't trace. Answer Yes to change it, No to leave it as shown.",
+ "items": [
+  {
+   "id": "R",
+   "title": "The three rows at rest",
+   "surface": "Settings → Model Providers → Models",
+   "image": {
+    "crop": "lm-rows",
+    "themes": [
+     "midnight",
+     "creme"
+    ],
+    "cols": [
+     "today"
+    ],
+    "fit": "none"
+   },
+   "points": [
+    {
+     "n": 1,
+     "kind": "measured",
+     "what": "The half-finished download shows \"66%\" as text only — yet the same row grows a real progress bar the second you press Resume.",
+     "fix": "Draw the bar on the resting row too, filled to 66%, so a partial download is obvious without reading numbers.",
+     "at": {
+      "midnight": [
+       30,
+       47
+      ],
+      "creme": [
+       30,
+       47
+      ]
+     },
+     "why": "<p>A row you can act on should read at a glance. Right now the only difference between \"finished\" and \"two-thirds downloaded\" is a percentage buried in grey 9px text, while the identical row mid-download gets a full-width bar. The bar appearing and disappearing also makes the row jump in height when you resume.</p><p>Cost of doing it: the resting unfinished row gets ~8px taller. Cost of not doing it: the state this whole feature exists to surface is the least visible thing on the screen.</p>"
+    },
+    {
+     "n": 2,
+     "kind": "measured",
+     "what": "Model names are cut off — \"Qwen3.8-Flash-Next-UD-Q4_…\" — and the clipped tail is exactly the part (-00001-of-00004) that says it is a split download.",
+     "fix": "Let the name wrap to a second line, or move the buttons below it, so the full name always shows.",
+     "at": {
+      "midnight": [
+       35,
+       37
+      ],
+      "creme": [
+       35,
+       37
+      ]
+     },
+     "why": "<p>This is caused by the buttons, not the name length: the row with two buttons (Resume + Discard) truncates earlier than the row with one (Delete), and when the confirmation opens and the buttons disappear, the full name <em>\"Qwen3.8-Flash-Next-UD-Q4_K_XL-00001-of-00004\"</em> fits with room to spare. So the more you can do to a row, the less of it you can read.</p><p>Alternative I'd recommend against: shrinking the font. It makes every row harder to read to fix one row.</p>"
+    },
+    {
+     "n": 3,
+     "kind": "measured",
+     "what": "The interrupted row is the only one that never says which quality version it is — the finished row above it says \"Q8_0 · Highest quality quantization\".",
+     "fix": "Add the quality name to the interrupted row's line: \"66% — 74.2 of 113.0 GB · UD-Q4_K_XL\".",
+     "at": {
+      "midnight": [
+       30,
+       47
+      ],
+      "creme": [
+       30,
+       47
+      ]
+     },
+     "why": "<p>The app already knows it — the record written next to the download stores the exact quality string. It's just not displayed. If you have two half-finished downloads of the same model at different quality levels, today they look identical apart from their byte counts.</p>"
+    },
+    {
+     "n": 4,
+     "kind": "judgment",
+     "what": "The old untraceable download carries a permanent four-line paragraph, making the least useful row the tallest on screen.",
+     "fix": "Collapse it behind a small (i) on that row, so the explanation is one click away instead of always on.",
+     "at": {
+      "midnight": [
+       45,
+       78
+      ],
+      "creme": [
+       45,
+       78
+      ]
+     },
+     "why": "<p>The text is doing a real job — it tells you the download isn't a dead end, and that re-downloading will pick up where it stopped. The question is only whether it should shout. Arguments both ways:</p><ul><li><strong>Keep it always visible:</strong> the situation is rare and confusing, and a user who sees \"Unfinished\" with only a Delete button has no idea what to do. Hiding the answer behind an icon is how people end up deleting 74 GB they didn't have to.</li><li><strong>Collapse it:</strong> these rows will get more common the more you download, and a wall of grey text in a settings list is noise.</li></ul><p>I lean toward keeping it visible, because this row exists only for downloads that predate the fix — it should disappear from your machine over time, so its cost is temporary and its confusion is permanent.</p>"
+    },
+    {
+     "n": 5,
+     "kind": "judgment",
+     "what": "\"Unfinished\" labels only the row you CAN'T resume; the row you CAN resume just shows a percentage.",
+     "fix": "Say \"Unfinished\" on both, and let the buttons carry the difference.",
+     "at": {
+      "midnight": [
+       30,
+       63
+      ],
+      "creme": [
+       30,
+       63
+      ]
+     },
+     "why": "<p>Reading down the list today: row 2 says \"66% — 74.2 of 113.0 GB\" and row 3 says \"Unfinished — 3.8 GB downloaded\". A word that appears on only one of two unfinished things implies the other one isn't unfinished. Making both say it turns the list into: two unfinished downloads, one of which offers Resume.</p>"
+    }
+   ]
+  },
+  {
+   "id": "D",
+   "title": "While it is downloading",
+   "surface": "After pressing Resume",
+   "image": {
+    "crop": "lm-resume",
+    "themes": [
+     "midnight",
+     "creme"
+    ],
+    "cols": [
+     "today"
+    ],
+    "fit": "none"
+   },
+   "points": [
+    {
+     "n": 6,
+     "kind": "judgment",
+     "what": "A download in flight offers Cancel and Discard side by side, and nothing on screen says Cancel keeps the bytes while Discard throws them away.",
+     "fix": "Show only Cancel while it's downloading; bring Discard back once it stops.",
+     "at": {
+      "midnight": [
+       74,
+       42
+      ],
+      "creme": [
+       74,
+       42
+      ]
+     },
+     "why": "<p>Two buttons that both mean \"stop\" and differ only in whether you lose 74 GB is the kind of pair people click wrong once and never forgive. Removing Discard while live costs one extra click for someone who genuinely wants to abandon the download (Cancel, then Discard) and removes the chance of a 74 GB mistake.</p><p>Alternative: keep both but reword Discard to \"Stop and delete\". Longer, but honest. I'd take the one-button version.</p>"
+    },
+    {
+     "n": 7,
+     "kind": "judgment",
+     "what": "The stop button says \"Cancel\", but cancelling keeps every downloaded byte — it's closer to Pause.",
+     "fix": "Keep \"Cancel\" (it matches the download card above the list), or switch both to \"Pause\".",
+     "at": {
+      "midnight": [
+       65,
+       42
+      ],
+      "creme": [
+       65,
+       42
+      ]
+     },
+     "why": "<p>\"Cancel\" is the word already used by the in-progress card above this list, so using it here means one word for one action everywhere. But \"Cancel\" implies the work is thrown away, and it isn't — that's the entire point of this feature. \"Pause\" describes what actually happens.</p><p>Answering Yes here means: switch both places to Pause. No means: leave both as Cancel.</p>"
+    }
+   ]
+  },
+  {
+   "id": "C",
+   "title": "The confirmations",
+   "surface": "Pressing Discard, and pressing Delete",
+   "image": {
+    "crop": "lm-discard",
+    "themes": [
+     "midnight",
+     "creme"
+    ],
+    "cols": [
+     "today"
+    ],
+    "fit": "none"
+   },
+   "points": [
+    {
+     "n": 8,
+     "kind": "judgment",
+     "what": "Two different words for removing things: unfinished downloads are \"Discard\", finished models are \"Delete\".",
+     "fix": "Use \"Delete\" everywhere, so there's one word for one idea.",
+     "at": {
+      "midnight": [
+       72,
+       73
+      ],
+      "creme": [
+       72,
+       73
+      ]
+     },
+     "why": "<p>The case for two words: they really are different acts. Deleting a finished model throws away something that works; discarding an unfinished download throws away something that never worked. The case for one: a person scanning a settings list shouldn't have to learn a vocabulary to remove a file.</p><p>I lean toward keeping both words, because the confirmation text differs anyway (\"removes the model file\" vs \"removes every downloaded piece\"), and the two buttons sit right next to each other in the same list where the distinction is visible.</p>",
+     "image": {
+      "crop": "lm-delete",
+      "themes": [
+       "midnight",
+       "creme"
+      ],
+      "cols": [
+       "today"
+      ],
+      "fit": "none"
+     }
+    },
+    {
+     "n": 9,
+     "kind": "measured",
+     "what": "The size shown is 74.2 GB, but the Hugging Face page for the same download says 79.7 GB — the app counts a GB the strict way and the website counts it the round way.",
+     "fix": "Leave the numbers as they are (they match everywhere else in the app) — this point is just so the mismatch doesn't surprise you later.",
+     "at": {
+      "midnight": [
+       25,
+       22
+      ],
+      "creme": [
+       25,
+       22
+      ]
+     },
+     "why": "<p>Both numbers describe the exact same 79,674,559,677 bytes. The app divides by 1,073,741,824 (what Windows and your file manager do); Hugging Face divides by 1,000,000,000 (what drive manufacturers do). Every other size in YouCoded already uses the strict way, so changing it here alone would make this screen disagree with the rest of the app, and changing it app-wide is a much bigger decision than this feature.</p><p>Answer Yes only if you want me to open that app-wide question separately.</p>"
+    }
+   ]
+  }
+ ],
+ "closing": "<h2>Checked and left alone</h2><ul><li>The confirmation wording — <em>\"Discard 74.2 GB? This removes every downloaded piece of this model.\"</em> — names the real size and the real consequence, and the buttons read Keep / Discard download. No change proposed.</li><li>The red used for Delete/Discard is the app's existing destructive colour, unchanged from the rows that were already here.</li><li>All four screens captured cleanly in all six themes. Two unrelated shots in the same sweep (right-click menus on a code block and a file pill) failed to open — I confirmed by re-testing with my changes removed that they already fail on master, so they are not from this work.</li></ul><h2>What happens next</h2><p>Nothing below the surface is built yet. Once you answer these, I change the wording and layout to match, re-shoot the same four screens, and only then build the machinery: the record written beside each download, the honest list, and the Resume button actually resuming.</p>"
+}
