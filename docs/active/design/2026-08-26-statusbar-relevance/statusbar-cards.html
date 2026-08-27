@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>The status bar tells the truth about this session — 9 points before I build the backend</title>
+<style>
+  :root { --ink:#1a1a1a; --ink2:#666; --line:#dedede; --bg:#f4f4f2; --acc:#2055ca;
+          --meas:#0a6a2c; --measbg:#e3f3e8; --judg:#8a5a00; --judgbg:#fff0d6; --yes:#137a3a; --no:#b3261e; --more:#8a5a00 }
+  * { box-sizing:border-box }
+  html, body { height:100% } body { margin:0; font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:var(--bg); display:flex; flex-direction:column }
+  main { flex:1; display:flex; flex-direction:column; align-items:center; padding:18px 24px 8px; min-height:0 }
+  .step { display:none; width:min(1060px, 100%); flex-direction:column; min-height:0 } .step.on { display:flex }
+  .kicker { color:var(--ink2); font-size:13px; margin-bottom:8px; display:flex; gap:6px; align-items:baseline } .pid { font-weight:700; color:var(--acc) } .count { margin-left:auto; font-variant-numeric:tabular-nums }
+  .stagewrap { background:#e6e6e3; border-radius:10px; padding:10px }
+  .stage { position:relative; text-align:center; line-height:0; font-size:0; max-height:56vh; overflow:auto }
+  .frame { display:none; position:relative; line-height:0 } .frame.on { display:inline-block; max-width:100% } .frame img { display:block; max-width:100%; height:auto }
+  .missing { font:14px system-ui; color:#666; padding:40px }
+  .mk { position:absolute; transform:translate(-50%,-50%); width:46px; height:46px; border-radius:50%; border:3px solid #fff; box-shadow:0 0 0 3px var(--acc), 0 4px 14px rgba(0,0,0,.6); background:transparent; animation:pulse 1.6s ease-in-out infinite; pointer-events:none }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 3px var(--acc), 0 4px 14px rgba(0,0,0,.6) } 50% { box-shadow:0 0 0 7px rgba(32,85,202,.55), 0 4px 14px rgba(0,0,0,.6) } }
+  .figbar { display:flex; justify-content:space-between; margin-top:8px; min-height:22px } .tab, .ctab { font:12px system-ui; padding:2px 9px; border:1px solid #bbb; background:#fff; border-radius:999px; margin-right:4px; cursor:pointer; color:#444 }
+  .tab.on { background:#333; color:#fff; border-color:#333 } .ctab.on { background:var(--acc); color:#fff; border-color:var(--acc) }
+  .what { font-size:21px; font-weight:650; line-height:1.3; margin:18px 0 6px } .fix { font-size:17px; color:#1f3a78; margin:0 0 8px }
+  .meta { display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; font-size:13px; color:var(--ink2); min-height:22px }
+  .kind { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:2px 8px; border-radius:8px } .kind-measured { background:var(--measbg); color:var(--meas) } .kind-judgment { background:var(--judgbg); color:var(--judg) }
+  .risk { margin:0; color:#7a3b00 } .why summary { cursor:pointer; color:var(--acc) } .why { max-width:900px } .why p, .why ul { margin:6px 0 0 }
+  .decide { display:flex; gap:12px; align-items:center; margin-top:14px; flex-wrap:wrap }
+  .decide button { font:600 17px system-ui; padding:12px 26px; border-radius:10px; border:2px solid transparent; cursor:pointer; color:#fff } .decide kbd { font:11px ui-monospace,monospace; background:rgba(255,255,255,.25); padding:1px 5px; border-radius:4px; margin-left:8px }
+  .yes { background:var(--yes) } .no { background:var(--no) } .more { background:var(--more) } .decide button.on { border-color:#111; box-shadow:0 0 0 3px #fff, 0 0 0 5px #111 } .step.decided .decide button:not(.on) { opacity:.35 }
+  .note { flex:1; min-width:200px; font:14px system-ui; padding:10px 12px; border:1px solid var(--line); border-radius:8px }
+  nav { display:flex; align-items:center; gap:10px; padding:10px 24px 16px; justify-content:center; flex-wrap:wrap }
+  nav .arrow { font:14px system-ui; padding:6px 12px; border:1px solid #bbb; background:#fff; border-radius:8px; cursor:pointer } nav .arrow kbd { font:11px ui-monospace,monospace; color:#888; margin:0 3px }
+  .dots { display:flex; gap:5px; flex-wrap:wrap; justify-content:center } .dot { width:14px; height:14px; border-radius:50%; background:#cfcfcf; border:2px solid transparent; cursor:pointer } .dot.yes { background:var(--yes) } .dot.no { background:var(--no) } .dot.more { background:var(--more) } .dot.on { border-color:#111 } .dot.sum { border-radius:3px }
+  .summary { display:none; width:min(1060px,100%) } .summary.on { display:block } .summary h1 { font-size:22px; margin:0 0 8px } .summary table { border-collapse:collapse; width:100%; margin:10px 0 } .summary td, .summary th { border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; font-size:14px } .summary td.v-yes { color:var(--yes); font-weight:700 } .summary td.v-no { color:var(--no); font-weight:700 } .summary td.v-more { color:var(--more); font-weight:700 }
+  #feedback { width:100%; min-height:150px; font:12.5px ui-monospace,monospace; padding:10px; border:1px solid var(--line); border-radius:8px } #copy { font:600 15px system-ui; padding:10px 18px; border-radius:8px; border:0; background:var(--acc); color:#fff; cursor:pointer; margin:8px 0 } .closing { color:var(--ink2); font-size:13px }
+  #st { color:var(--ink2); font-size:13px }
+</style></head><body>
+<main>
+<section class="step" data-key="A:1" data-idx="0">
+  <div class="kicker"><span class="pid">A</span> How tall the bar is · Bottom of the chat window<span class="count">1 / 9</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="cc"><img src="images/statusbar/bar--midnight--cc.png" style="zoom:0.72" alt=""><span class="mk" style="left:6%;top:78%"></span></div><div class="frame on" data-theme="midnight" data-col="local"><img src="images/statusbar/bar--midnight--local.png" style="zoom:0.72" alt=""><span class="mk" style="left:6%;top:78%"></span></div><div class="frame" data-theme="creme" data-col="cc"><img src="images/statusbar/bar--creme--cc.png" style="zoom:0.72" alt=""><span class="mk" style="left:6%;top:78%"></span></div><div class="frame" data-theme="creme" data-col="local"><img src="images/statusbar/bar--creme--local.png" style="zoom:0.72" alt=""><span class="mk" style="left:6%;top:78%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"><button class="ctab" data-col="cc">Claude Code</button><button class="ctab on" data-col="local">Local model</button></span></div></div>
+  <p class="what">A Claude Code session fills two rows of chips; a local session only fills one — so the message box and the whole conversation above it shift about 25 pixels every time you switch between the two kinds of session.</p>
+  <p class="fix">→ Always reserve both rows' height, so nothing on screen moves when you switch sessions.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><p class="risk">Risk: Reserving the row wastes vertical space in the common case (most sessions are one row).</p><details class="why"><summary>Why / details</summary><p>Flip between the two pictures with the buttons under the image (or the space bar). The Claude Code bar wraps onto a second row because it has more to show. The local bar does not, so the app gives that space back to the chat — and the composer, the quick-chips row and every message jump downward.</p><p>Cost of fixing it: local sessions permanently carry ~25px of empty bar. Cost of not fixing it: switching sessions makes the page visibly lurch, which reads as a glitch rather than a layout change.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="A:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="B:2" data-idx="1">
+  <div class="kicker"><span class="pid">B</span> What a session costs · Bottom of the chat window<span class="count">2 / 9</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="local"><img src="images/statusbar/barrow--midnight--local.png" style="zoom:1.15" alt=""><span class="mk" style="left:32%;top:50%"></span></div><div class="frame" data-theme="creme" data-col="local"><img src="images/statusbar/barrow--creme--local.png" style="zoom:1.15" alt=""><span class="mk" style="left:32%;top:50%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"></span></div></div>
+  <p class="what">A local model has run 84,000 tokens of work here and the bar says nothing at all about money — there is no cost chip, just a gap between "Add tags" and "In: 84.0k".</p>
+  <p class="fix">→ Show a "Free" chip in local sessions so the absence of a bill is stated rather than implied.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span><p class="risk">Risk: One more chip competing for a bar that already wraps in Claude Code sessions.</p><details class="why"><summary>Why / details</summary><p>The rule this whole change is built on is "no real value, no chip" — a local model is not billed, so there is no number to show. The question is whether silence is the same as "free" to a person who has just watched the assistant work for ten minutes.</p><p>My recommendation is <b>No</b>. Adding a chip that always says the same word costs permanent width, and "Free" is not quite true either — it is your own electricity and your own machine. The next point covers the case where silence really is dangerous.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="B:2" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="B:3" data-idx="2">
+  <div class="kicker"><span class="pid">B</span> What a session costs · Bottom of the chat window<span class="count">3 / 9</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="unpriced"><img src="images/statusbar/barrow--midnight--unpriced.png" style="zoom:1.15" alt=""><span class="mk" style="left:32%;top:50%"></span></div><div class="frame on" data-theme="midnight" data-col="metered"><img src="images/statusbar/barrow--midnight--metered.png" style="zoom:1.15" alt=""><span class="mk" style="left:32%;top:50%"></span></div><div class="frame" data-theme="creme" data-col="unpriced"><img src="images/statusbar/barrow--creme--unpriced.png" style="zoom:1.15" alt=""><span class="mk" style="left:32%;top:50%"></span></div><div class="frame" data-theme="creme" data-col="metered"><img src="images/statusbar/barrow--creme--metered.png" style="zoom:1.15" alt=""><span class="mk" style="left:32%;top:50%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"><button class="ctab" data-col="unpriced">No listed price</button><button class="ctab on" data-col="metered">Paid model</button></span></div></div>
+  <p class="what">A free local model and a paid model whose price is not published produce a pixel-identical bar — I compared the two screenshots and the row is byte-for-byte the same. Both simply hide the cost chip.</p>
+  <p class="fix">→ When the model is metered but has no published price, show a dimmed "Cost: not listed" chip instead of hiding it.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><p class="risk">Risk: &quot;Not listed&quot; is a fourth thing to explain; some users will read it as a bug.</p><details class="why"><summary>Why / details</summary><p>Flip between the two pictures. "Paid model" shows <b>Cost: $1.37</b>. "No listed price" shows nothing — and so does a free local session. The three states collapse into two on screen.</p><p>That matters because one of them is spending real money. Someone on a metered provider whose model has no price entry sees exactly what a free local user sees, and can reasonably conclude the session is free. Today the only place that distinction exists is the Customize menu, several clicks away.</p><p>My recommendation is <b>Yes</b>. This is the one gap in the whole design that can cost the user money.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="B:3" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="C:4" data-idx="3">
+  <div class="kicker"><span class="pid">C</span> Work your specialists did · Bottom of the chat window<span class="count">4 / 9</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="delegated"><img src="images/statusbar/barrow--midnight--delegated.png" style="zoom:1.15" alt=""><span class="mk" style="left:37%;top:50%"></span></div><div class="frame" data-theme="creme" data-col="delegated"><img src="images/statusbar/barrow--creme--delegated.png" style="zoom:1.15" alt=""><span class="mk" style="left:37%;top:50%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"></span></div></div>
+  <p class="what">This session's own model is a free local one — the chip on the far left says so — yet the bar reads "Cost: $0.61". Every cent of that was spent by specialists it handed work to, and nothing on the chip says so.</p>
+  <p class="fix">→ Name the source on the chip itself, e.g. "Cost: $0.61 · specialists", instead of leaving it to the hover tooltip.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span><p class="risk">Risk: Chip width — this is the session type most likely to wrap the bar onto a second row.</p><details class="why"><summary>Why / details</summary><p>This is working exactly as you asked: the totals include what specialists spent, because that money left your account whether or not the main model was free. The design question is discoverability. The explanation currently lives only in the tooltip you get by hovering the chip, and a number that seems to contradict the model chip two inches to its left is the number most likely to be read as broken.</p><p>Cost of fixing it: the chip roughly doubles in width in exactly the sessions where the bar is most crowded. A shorter marker (a small badge, or "$0.61 ⌄") would cost less width but explain less.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="C:4" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="C:5" data-idx="4">
+  <div class="kicker"><span class="pid">C</span> Work your specialists did · Bottom of the chat window<span class="count">5 / 9</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame" data-theme="midnight" data-col="local"><img src="images/statusbar/barrow--midnight--local.png" style="zoom:1.15" alt=""><span class="mk" style="left:83%;top:50%"></span></div><div class="frame on" data-theme="midnight" data-col="delegated"><img src="images/statusbar/barrow--midnight--delegated.png" style="zoom:1.15" alt=""><span class="mk" style="left:83%;top:50%"></span></div><div class="frame" data-theme="creme" data-col="local"><img src="images/statusbar/barrow--creme--local.png" style="zoom:1.15" alt=""><span class="mk" style="left:83%;top:50%"></span></div><div class="frame" data-theme="creme" data-col="delegated"><img src="images/statusbar/barrow--creme--delegated.png" style="zoom:1.15" alt=""><span class="mk" style="left:83%;top:50%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"><button class="ctab" data-col="local">Local model</button><button class="ctab on" data-col="delegated">Local + specialists</button></span></div></div>
+  <p class="what">The line counter reads "+480 −96" here versus "+210 −45" in the same session without specialists — more than double, entirely because specialists edited files — but nothing on the bar mentions that three of them ran.</p>
+  <p class="fix">→ Add a "3 specialists" chip (off by default, switch it on from the Customize menu).</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><p class="risk">Risk: Another entry in an already long Customize list.</p><details class="why"><summary>Why / details</summary><p>Flip between the two pictures — same session, same tokens, but the edit counter jumps because specialists were involved.</p><p>The app already counts specialist runs internally for this feature; the only question is whether it earns a place on the bar. Off by default means it costs nothing until someone turns it on, which is how most of the 19 chips already work.</p><p>My recommendation is <b>Yes</b>, off by default — it is free to add now while the plumbing is open, and expensive to bolt on later.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="C:5" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="D:6" data-idx="5">
+  <div class="kicker"><span class="pid">D</span> The Customize menu's explanations · Status bar → Customize Status Bar, in a local session<span class="count">6 / 9</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="local"><img src="images/statusbar/menu--midnight--local.png" style="zoom:2" alt=""><span class="mk" style="left:17%;top:73%"></span></div><div class="frame" data-theme="creme" data-col="local"><img src="images/statusbar/menu--creme--local.png" style="zoom:2" alt=""><span class="mk" style="left:17%;top:73%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"></span></div></div>
+  <p class="what">"Session Duration" is the only label long enough to wrap onto two lines, because its explanation sits beside it on the same row — so that one row is visibly taller than every other row in the list.</p>
+  <p class="fix">→ Put each explanation on its own line beneath the label, so every row is the same height.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><details class="why"><summary>Why / details</summary><p>The explanations are right-aligned against the dialog's edge and the labels are left-aligned, so the two collide in the middle on the longest label. It happens in all six themes.</p><p>Cost of fixing it: the dialog grows taller — five explained rows × one extra line each. Cost of not fixing it: the list loses its rhythm at exactly the row a confused user is most likely to be reading.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="D:6" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="D:7" data-idx="6">
+  <div class="kicker"><span class="pid">D</span> The Customize menu's explanations · Status bar → Customize Status Bar, in a local session<span class="count">7 / 9</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="local"><img src="images/statusbar/menu--midnight--local.png" style="zoom:2" alt=""><span class="mk" style="left:90%;top:85%"></span></div><div class="frame" data-theme="creme" data-col="local"><img src="images/statusbar/menu--creme--local.png" style="zoom:2" alt=""><span class="mk" style="left:90%;top:85%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"></span></div></div>
+  <p class="what">Two rows say "Not measured in this kind of session yet." The word "yet" is a promise that this is coming.</p>
+  <p class="fix">→ Drop the promise — "Not available in this kind of session."</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span><details class="why"><summary>Why / details</summary><p>Session Duration and Active Ratio are measured only for Claude Code sessions today. There is no plan on the roadmap to measure them for local or OpenRouter sessions.</p><p>My recommendation is <b>Yes</b>, drop "yet" — unless you do intend to add it, in which case the word is doing honest work and should stay.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="D:7" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="D:8" data-idx="7">
+  <div class="kicker"><span class="pid">D</span> The Customize menu's explanations · Status bar → Customize Status Bar, in a local session<span class="count">8 / 9</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="local"><img src="images/statusbar/menu--midnight--local.png" style="zoom:2" alt=""><span class="mk" style="left:90%;top:14%"></span></div><div class="frame" data-theme="creme" data-col="local"><img src="images/statusbar/menu--creme--local.png" style="zoom:2" alt=""><span class="mk" style="left:90%;top:14%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"></span></div></div>
+  <p class="what">The rate-limit rows explain themselves as "Claude Code sessions only — see /usage". "/usage" is a typed command, and it is dead text here: you cannot click it.</p>
+  <p class="fix">→ Make it a real link that runs the command, or cut the pointer and just say "Claude Code sessions only".</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span><details class="why"><summary>Why / details</summary><p>Anyone who already knows to type <code>/usage</code> did not need the pointer; anyone who does not know will read it as an error code. Everywhere else in the app we either give people something to click or say nothing.</p><p>My recommendation is <b>Yes</b> — make it clickable. It is a two-line change now, and the row is already the right place for it.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="D:8" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="D:9" data-idx="8">
+  <div class="kicker"><span class="pid">D</span> The Customize menu's explanations · Status bar → Customize Status Bar, in a local session<span class="count">9 / 9</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="local"><img src="images/statusbar/menu--midnight--local.png" style="zoom:2" alt=""><span class="mk" style="left:68%;top:62%"></span></div><div class="frame" data-theme="creme" data-col="local"><img src="images/statusbar/menu--creme--local.png" style="zoom:2" alt=""><span class="mk" style="left:68%;top:62%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span><span class="seg"></span></div></div>
+  <p class="what">In a session running a local model on your own machine, the cost row explains itself as "No published price for this model" — language that describes a shop listing, not a model running on your laptop.</p>
+  <p class="fix">→ Say why it is actually free: "Models on your own machine don't cost anything to run."</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><details class="why"><summary>Why / details</summary><p>One explanation string is currently doing two jobs: the local case (there is no bill) and the metered-but-unlisted case (there is a bill, we just can't price it). They are opposite situations and this sentence only fits the second one.</p><p>Splitting them also gives point 3 the wording it needs — if the two cases get different sentences here, they can get different treatment on the bar too.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="D:9" placeholder="note (optional)"></div>
+</section>
+<section class="summary"><h1>The status bar tells the truth about this session — 9 points before I build the backend — your answers</h1>
+<p>Today the bar shows the same chips no matter what is running the session, so a local model gets rate-limit chips it can never fill and prints a dash instead of a number. The change: a chip with nothing real to say is simply not drawn, the Customize menu explains why in plain words instead of hiding the row, and every number now counts the work your specialists did too. Everything here is the real screen running on fake data — nothing behind it is built yet, so this is the cheap moment to change it. Answer Yes to change it, No to leave it exactly as shown.</p>
+<table><thead><tr><th>Item</th><th>#</th><th>Point</th><th>Answer</th><th>Note</th></tr></thead><tbody id="rows"></tbody></table>
+<button id="copy">Copy feedback</button> <span id="copied"></span>
+<textarea id="feedback" readonly></textarea>
+<div class="closing"><p>Everything above is renderer-only work on fake data. The next four tasks are main-process work — reading the model price list, pricing each turn, and forwarding specialist usage to the parent session — and those are expensive to redo once built, which is why this is the stop.</p><p>There is one thing already fixed that you should know about rather than vote on: a cost under one cent was rendering as <b>$0.00</b>. It now reads <b>&lt;$0.01</b>.</p></div>
+</section>
+</main>
+<nav><button class="arrow" id="prev"><kbd>←</kbd> back</button><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot sum" title="Summary"></span></span><button class="arrow" id="next">next <kbd>→</kbd></button><span id="st"></span></nav>
+<script>
+(function(){
+  const KEY="Status Bar Relevance", STEPS=[{"key": "A:1", "id": "A", "n": 1, "kind": "measured", "what": "A Claude Code session fills two rows of chips; a local session only fills one \u2014 so the message box and the whole conversation above it shift about 25 pixels every time you switch between the two kinds of session."}, {"key": "B:2", "id": "B", "n": 2, "kind": "judgment", "what": "A local model has run 84,000 tokens of work here and the bar says nothing at all about money \u2014 there is no cost chip, just a gap between \"Add tags\" and \"In: 84.0k\"."}, {"key": "B:3", "id": "B", "n": 3, "kind": "measured", "what": "A free local model and a paid model whose price is not published produce a pixel-identical bar \u2014 I compared the two screenshots and the row is byte-for-byte the same. Both simply hide the cost chip."}, {"key": "C:4", "id": "C", "n": 4, "kind": "judgment", "what": "This session's own model is a free local one \u2014 the chip on the far left says so \u2014 yet the bar reads \"Cost: $0.61\". Every cent of that was spent by specialists it handed work to, and nothing on the chip says so."}, {"key": "C:5", "id": "C", "n": 5, "kind": "measured", "what": "The line counter reads \"+480 \u221296\" here versus \"+210 \u221245\" in the same session without specialists \u2014 more than double, entirely because specialists edited files \u2014 but nothing on the bar mentions that three of them ran."}, {"key": "D:6", "id": "D", "n": 6, "kind": "measured", "what": "\"Session Duration\" is the only label long enough to wrap onto two lines, because its explanation sits beside it on the same row \u2014 so that one row is visibly taller than every other row in the list."}, {"key": "D:7", "id": "D", "n": 7, "kind": "judgment", "what": "Two rows say \"Not measured in this kind of session yet.\" The word \"yet\" is a promise that this is coming."}, {"key": "D:8", "id": "D", "n": 8, "kind": "judgment", "what": "The rate-limit rows explain themselves as \"Claude Code sessions only \u2014 see /usage\". \"/usage\" is a typed command, and it is dead text here: you cannot click it."}, {"key": "D:9", "id": "D", "n": 9, "kind": "measured", "what": "In a session running a local model on your own machine, the cost row explains itself as \"No published price for this model\" \u2014 language that describes a shop listing, not a model running on your laptop."}];   // STEPS: [{key,id,n,kind,what}]
+  let st={}; try{ st=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){}
+  const q=new URLSearchParams(location.search).get('step');   // ?step=N for screenshots/deep links
+  let cur=Math.min(q!=null?+q:(st.__cur||0), STEPS.length);
+  const steps=[...document.querySelectorAll('.step')], sum=document.querySelector('.summary'), dots=[...document.querySelectorAll('.dot')];
+  const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} paint(); };
+  function go(i){ cur=Math.max(0,Math.min(i,STEPS.length)); st.__cur=cur; save(); window.scrollTo(0,0); }
+  function decide(v){ if(cur>=STEPS.length) return; st[STEPS[cur].key]=v; save(); setTimeout(()=>go(cur+1), 260); }
+  function paint(){
+    steps.forEach((s,i)=>{ s.classList.toggle('on', i===cur); const v=st[s.dataset.key]; s.classList.toggle('decided', !!v);
+      s.querySelectorAll('.decide button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); });
+    sum.classList.toggle('on', cur===STEPS.length);
+    dots.forEach((d,i)=>{ d.classList.toggle('on', i===cur); if(i<STEPS.length){ const v=st[STEPS[i].key]; d.classList.toggle('yes', v==='yes'); d.classList.toggle('no', v==='no'); d.classList.toggle('more', v==='more'); } });
+    let done=0; const lines=[KEY+' feedback ('+new Date().toISOString().slice(0,10)+')']; const rows=[]; let lastId='';
+    for(const s of STEPS){ const v=st[s.key]; if(v) done++; const note=(st['note:'+s.key]||'').trim();
+      lines.push(s.id+' #'+s.n+': '+(v||'?')+(note?' — '+note:'')); rows.push('<tr><td>'+(s.id!==lastId?s.id:'')+'</td><td>'+s.n+'</td><td>'+s.what+'</td><td class="v-'+(v||'')+'">'+(v||'—')+'</td><td>'+(note?note.replace(/</g,'&lt;'):'')+'</td></tr>'); lastId=s.id; }
+    document.getElementById('feedback').value=lines.join('\n'); document.getElementById('rows').innerHTML=rows.join('');
+    document.getElementById('st').textContent=done+' of '+STEPS.length+' decided';
+  }
+  steps.forEach(s=>{ s.querySelectorAll('.decide button').forEach(b=>b.addEventListener('click',()=>decide(b.dataset.v)));
+    const n=s.querySelector('.note'); n.value=st['note:'+s.dataset.key]||''; n.addEventListener('input',()=>{ st['note:'+s.dataset.key]=n.value; save(); });
+    const show=()=>{ const t=s.querySelector('.tab.on')?.dataset.theme, c=s.querySelector('.ctab.on')?.dataset.col;
+      s.querySelectorAll('.frame').forEach(f=>f.classList.toggle('on', (!t||f.dataset.theme===t)&&(!c||f.dataset.col===c))); };
+    s.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{ s.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); show(); }));
+    s.querySelectorAll('.ctab').forEach(b=>b.addEventListener('click',()=>{ s.querySelectorAll('.ctab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); show(); }));
+  });
+  dots.forEach((d,i)=>d.addEventListener('click',()=>go(i)));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1)); document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; const k=e.key.toLowerCase();
+    if(k==='y') decide('yes'); else if(k==='n') decide('no'); else if(k==='m') decide('more'); else if(e.key==='ArrowRight') go(cur+1); else if(e.key==='ArrowLeft') go(cur-1);
+    else if(k==='t'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.tab')]; if(t.length<2) return; const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%t.length].click(); }
+    else if(e.code==='Space'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.ctab')]; if(t.length<2) return; e.preventDefault(); const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%t.length].click(); } });
+  document.getElementById('copy').addEventListener('click',()=>{ const t=document.getElementById('feedback'); const ok=()=>{ document.getElementById('copied').textContent='Copied — paste it into the chat.'; };
+    (navigator.clipboard?.writeText(t.value)||Promise.reject()).then(ok,()=>{ t.select(); document.execCommand('copy'); ok(); }); });
+  paint();
+})();
+</script>
+</body></html>

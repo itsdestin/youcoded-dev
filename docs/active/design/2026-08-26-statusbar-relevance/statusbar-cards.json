@@ -1,0 +1,170 @@
+{
+ "out": "statusbar-cards.html",
+ "images": "images/statusbar",
+ "key": "Status Bar Relevance",
+ "runs": {
+  "cc": "/home/destin/youcoded-dev/scratch/ui-review-statusbar-cols/cc",
+  "local": "/home/destin/youcoded-dev/scratch/ui-review-statusbar-cols/local",
+  "metered": "/home/destin/youcoded-dev/scratch/ui-review-statusbar-cols/metered",
+  "unpriced": "/home/destin/youcoded-dev/scratch/ui-review-statusbar-cols/unpriced",
+  "delegated": "/home/destin/youcoded-dev/scratch/ui-review-statusbar-cols/delegated"
+ },
+ "labels": {
+  "cc": "Claude Code",
+  "local": "Local model",
+  "metered": "Paid model",
+  "unpriced": "No listed price",
+  "delegated": "Local + specialists"
+ },
+ "crops": {
+  "bar": ["statusbar-relevance", "bar", "1440x60+0+840"],
+  "barrow": ["statusbar-relevance", "bar", "900x28+6+870"],
+  "menu": ["statusbar-relevance", "menu", "440x340+505+215"]
+ },
+ "title": "The status bar tells the truth about this session — 9 points before I build the backend",
+ "lead": "Today the bar shows the same chips no matter what is running the session, so a local model gets rate-limit chips it can never fill and prints a dash instead of a number. The change: a chip with nothing real to say is simply not drawn, the Customize menu explains why in plain words instead of hiding the row, and every number now counts the work your specialists did too. Everything here is the real screen running on fake data — nothing behind it is built yet, so this is the cheap moment to change it. Answer Yes to change it, No to leave it exactly as shown.",
+ "items": [
+  {
+   "id": "A",
+   "title": "How tall the bar is",
+   "surface": "Bottom of the chat window",
+   "image": {
+    "crop": "bar",
+    "themes": ["midnight", "creme"],
+    "cols": ["cc", "local"],
+    "zoom": 0.72
+   },
+   "points": [
+    {
+     "n": 1,
+     "kind": "measured",
+     "what": "A Claude Code session fills two rows of chips; a local session only fills one — so the message box and the whole conversation above it shift about 25 pixels every time you switch between the two kinds of session.",
+     "fix": "Always reserve both rows' height, so nothing on screen moves when you switch sessions.",
+     "at": [6, 78],
+     "why": "<p>Flip between the two pictures with the buttons under the image (or the space bar). The Claude Code bar wraps onto a second row because it has more to show. The local bar does not, so the app gives that space back to the chat — and the composer, the quick-chips row and every message jump downward.</p><p>Cost of fixing it: local sessions permanently carry ~25px of empty bar. Cost of not fixing it: switching sessions makes the page visibly lurch, which reads as a glitch rather than a layout change.</p>",
+     "risk": "Reserving the row wastes vertical space in the common case (most sessions are one row)."
+    }
+   ]
+  },
+  {
+   "id": "B",
+   "title": "What a session costs",
+   "surface": "Bottom of the chat window",
+   "image": {
+    "crop": "barrow",
+    "themes": ["midnight", "creme"],
+    "cols": ["local"],
+    "zoom": 1.15
+   },
+   "points": [
+    {
+     "n": 2,
+     "kind": "judgment",
+     "what": "A local model has run 84,000 tokens of work here and the bar says nothing at all about money — there is no cost chip, just a gap between \"Add tags\" and \"In: 84.0k\".",
+     "fix": "Show a \"Free\" chip in local sessions so the absence of a bill is stated rather than implied.",
+     "at": [32, 50],
+     "why": "<p>The rule this whole change is built on is \"no real value, no chip\" — a local model is not billed, so there is no number to show. The question is whether silence is the same as \"free\" to a person who has just watched the assistant work for ten minutes.</p><p>My recommendation is <b>No</b>. Adding a chip that always says the same word costs permanent width, and \"Free\" is not quite true either — it is your own electricity and your own machine. The next point covers the case where silence really is dangerous.</p>",
+     "risk": "One more chip competing for a bar that already wraps in Claude Code sessions."
+    },
+    {
+     "n": 3,
+     "kind": "measured",
+     "what": "A free local model and a paid model whose price is not published produce a pixel-identical bar — I compared the two screenshots and the row is byte-for-byte the same. Both simply hide the cost chip.",
+     "fix": "When the model is metered but has no published price, show a dimmed \"Cost: not listed\" chip instead of hiding it.",
+     "at": [32, 50],
+     "image": {
+      "crop": "barrow",
+      "themes": ["midnight", "creme"],
+      "cols": ["unpriced", "metered"],
+      "zoom": 1.15
+     },
+     "why": "<p>Flip between the two pictures. \"Paid model\" shows <b>Cost: $1.37</b>. \"No listed price\" shows nothing — and so does a free local session. The three states collapse into two on screen.</p><p>That matters because one of them is spending real money. Someone on a metered provider whose model has no price entry sees exactly what a free local user sees, and can reasonably conclude the session is free. Today the only place that distinction exists is the Customize menu, several clicks away.</p><p>My recommendation is <b>Yes</b>. This is the one gap in the whole design that can cost the user money.</p>",
+     "risk": "\"Not listed\" is a fourth thing to explain; some users will read it as a bug."
+    }
+   ]
+  },
+  {
+   "id": "C",
+   "title": "Work your specialists did",
+   "surface": "Bottom of the chat window",
+   "image": {
+    "crop": "barrow",
+    "themes": ["midnight", "creme"],
+    "cols": ["delegated"],
+    "zoom": 1.15
+   },
+   "points": [
+    {
+     "n": 4,
+     "kind": "judgment",
+     "what": "This session's own model is a free local one — the chip on the far left says so — yet the bar reads \"Cost: $0.61\". Every cent of that was spent by specialists it handed work to, and nothing on the chip says so.",
+     "fix": "Name the source on the chip itself, e.g. \"Cost: $0.61 · specialists\", instead of leaving it to the hover tooltip.",
+     "at": [37, 50],
+     "why": "<p>This is working exactly as you asked: the totals include what specialists spent, because that money left your account whether or not the main model was free. The design question is discoverability. The explanation currently lives only in the tooltip you get by hovering the chip, and a number that seems to contradict the model chip two inches to its left is the number most likely to be read as broken.</p><p>Cost of fixing it: the chip roughly doubles in width in exactly the sessions where the bar is most crowded. A shorter marker (a small badge, or \"$0.61 ⌄\") would cost less width but explain less.</p>",
+     "risk": "Chip width — this is the session type most likely to wrap the bar onto a second row."
+    },
+    {
+     "n": 5,
+     "kind": "measured",
+     "what": "The line counter reads \"+480 −96\" here versus \"+210 −45\" in the same session without specialists — more than double, entirely because specialists edited files — but nothing on the bar mentions that three of them ran.",
+     "fix": "Add a \"3 specialists\" chip (off by default, switch it on from the Customize menu).",
+     "at": [83, 50],
+     "image": {
+      "crop": "barrow",
+      "themes": ["midnight", "creme"],
+      "cols": ["local", "delegated"],
+      "zoom": 1.15
+     },
+     "why": "<p>Flip between the two pictures — same session, same tokens, but the edit counter jumps because specialists were involved.</p><p>The app already counts specialist runs internally for this feature; the only question is whether it earns a place on the bar. Off by default means it costs nothing until someone turns it on, which is how most of the 19 chips already work.</p><p>My recommendation is <b>Yes</b>, off by default — it is free to add now while the plumbing is open, and expensive to bolt on later.</p>",
+     "risk": "Another entry in an already long Customize list."
+    }
+   ]
+  },
+  {
+   "id": "D",
+   "title": "The Customize menu's explanations",
+   "surface": "Status bar → Customize Status Bar, in a local session",
+   "image": {
+    "crop": "menu",
+    "themes": ["midnight", "creme"],
+    "cols": ["local"],
+    "zoom": 2
+   },
+   "points": [
+    {
+     "n": 6,
+     "kind": "measured",
+     "what": "\"Session Duration\" is the only label long enough to wrap onto two lines, because its explanation sits beside it on the same row — so that one row is visibly taller than every other row in the list.",
+     "fix": "Put each explanation on its own line beneath the label, so every row is the same height.",
+     "at": [17, 73],
+     "why": "<p>The explanations are right-aligned against the dialog's edge and the labels are left-aligned, so the two collide in the middle on the longest label. It happens in all six themes.</p><p>Cost of fixing it: the dialog grows taller — five explained rows × one extra line each. Cost of not fixing it: the list loses its rhythm at exactly the row a confused user is most likely to be reading.</p>"
+    },
+    {
+     "n": 7,
+     "kind": "judgment",
+     "what": "Two rows say \"Not measured in this kind of session yet.\" The word \"yet\" is a promise that this is coming.",
+     "fix": "Drop the promise — \"Not available in this kind of session.\"",
+     "at": [90, 85],
+     "why": "<p>Session Duration and Active Ratio are measured only for Claude Code sessions today. There is no plan on the roadmap to measure them for local or OpenRouter sessions.</p><p>My recommendation is <b>Yes</b>, drop \"yet\" — unless you do intend to add it, in which case the word is doing honest work and should stay.</p>"
+    },
+    {
+     "n": 8,
+     "kind": "judgment",
+     "what": "The rate-limit rows explain themselves as \"Claude Code sessions only — see /usage\". \"/usage\" is a typed command, and it is dead text here: you cannot click it.",
+     "fix": "Make it a real link that runs the command, or cut the pointer and just say \"Claude Code sessions only\".",
+     "at": [90, 14],
+     "why": "<p>Anyone who already knows to type <code>/usage</code> did not need the pointer; anyone who does not know will read it as an error code. Everywhere else in the app we either give people something to click or say nothing.</p><p>My recommendation is <b>Yes</b> — make it clickable. It is a two-line change now, and the row is already the right place for it.</p>"
+    },
+    {
+     "n": 9,
+     "kind": "measured",
+     "what": "In a session running a local model on your own machine, the cost row explains itself as \"No published price for this model\" — language that describes a shop listing, not a model running on your laptop.",
+     "fix": "Say why it is actually free: \"Models on your own machine don't cost anything to run.\"",
+     "at": [68, 62],
+     "why": "<p>One explanation string is currently doing two jobs: the local case (there is no bill) and the metered-but-unlisted case (there is a bill, we just can't price it). They are opposite situations and this sentence only fits the second one.</p><p>Splitting them also gives point 3 the wording it needs — if the two cases get different sentences here, they can get different treatment on the bar too.</p>"
+    }
+   ]
+  }
+ ],
+ "closing": "<p>Everything above is renderer-only work on fake data. The next four tasks are main-process work — reading the model price list, pricing each turn, and forwarding specialist usage to the parent session — and those are expensive to redo once built, which is why this is the stop.</p><p>There is one thing already fixed that you should know about rather than vote on: a cost under one cent was rendering as <b>$0.00</b>. It now reads <b>&lt;$0.01</b>.</p>"
+}
