@@ -810,6 +810,65 @@ async function waitForViewer(cdp, pred, { timeoutMs = 30000, everyMs = 50 } = {}
 }
 
 // ---------------------------------------------------------------------------
+// The median contract (mirrors scenario-replay-stall.mjs NUMERIC_KEYS/medianRun)
+// ---------------------------------------------------------------------------
+
+/**
+ * The dotted paths run.mjs may take a median of across repeats. DOTTED, not flat,
+ * because this scenario returns one nested object per run rather than a flat row.
+ *
+ * Everything else on a run (`files`, `warnings`, `sizeScaling`, per-step `reason`
+ * strings) is diagnostics — a "median" of those would be nonsense.
+ *
+ * Deliberately absent: `open.htmlLarge.openMs`. The large HTML file is never opened
+ * through `openOne` (only `htmlSmall` is, at line ~1005); it is exercised through the
+ * swap loop instead, so that path would be null in every run and read as a gap in the
+ * measurement rather than the design choice it is.
+ */
+export const NUMERIC_PATHS = [
+  // Open cost, small vs large — suspects 1 (markdown parse) and 3 (CM6 tokenisation).
+  'open.codeSmall.openMs', 'open.codeLarge.openMs',
+  'open.mdSmall.openMs', 'open.mdLarge.openMs',
+  'open.htmlSmall.openMs',
+  // Suspect 2 — iframe srcDoc re-parse on every document swap.
+  'htmlNav.swap.medianMs', 'htmlNav.swap.p95Ms',
+  'htmlNav.swapSmall.medianMs', 'htmlNav.swapLarge.medianMs',
+  // Keystroke -> painted. p95 as well as median: typing jank is a TAIL problem,
+  // and a median can look healthy while every tenth keystroke visibly hitches.
+  'typing.codeSmall.keystroke.medianMs', 'typing.codeLarge.keystroke.medianMs',
+  'typing.codeSmall.keystroke.p95Ms', 'typing.codeLarge.keystroke.p95Ms',
+  // Destin's reported symptom: copying text out of the pane.
+  'copy.clickToCopiedMs',
+  // Renderer + main-process cost across the whole run.
+  'probe.longtaskTotalMs', 'probe.longtaskMaxMs',
+  'ipcSumOfSteps.totalStallMs', 'ipcSumOfSteps.maxMs', 'ipcSumOfSteps.over250ms',
+];
+
+/** Dotted-path getter — local copy so this module stays importable on its own. */
+const at = (o, path) => path.split('.').reduce((a, k) => (a == null ? undefined : a[k]), o);
+
+/**
+ * Median of each NUMERIC_PATH across runs, returned as a NESTED object mirroring the
+ * run shape — so `artifacts.median.typing.codeLarge.keystroke.medianMs` lines up with
+ * `artifacts.runs[].typing.codeLarge.keystroke.medianMs` and compare.mjs's `runsFor`
+ * can project the samples back out of the runs by the same path.
+ *
+ * A metric null (or missing) in every run stays null rather than becoming 0 — a step
+ * that never ran must not read as a step that cost nothing.
+ */
+export function medianRun(runs) {
+  const out = {};
+  for (const path of NUMERIC_PATHS) {
+    const vals = runs.map((r) => at(r, path)).filter((v) => typeof v === 'number' && Number.isFinite(v));
+    const keys = path.split('.');
+    let node = out;
+    for (const k of keys.slice(0, -1)) node = (node[k] ??= {});
+    node[keys.at(-1)] = vals.length ? median(vals) : null;
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
 // The scenario
 // ---------------------------------------------------------------------------
 

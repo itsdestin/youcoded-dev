@@ -50,8 +50,26 @@ export const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const SCRATCH = join(ROOT, 'scratch', 'perf-lab');
 const CDP_PORT = 9555;
 
-/** The four phases `--only` can select. */
-export const PHASES = ['startup', 'history', 'workload', 'shots'];
+/**
+ * The phases `--only` can select, in execution order.
+ *
+ * `history`, `workload` and `shots` share ONE boot (they are cheap to run back to back
+ * and the screenshot pass deliberately reuses the workload's six sessions). `stall` and
+ * `artifacts` each get their OWN boot — see the WHY at each phase block, but in short:
+ * both measure app-wide freezes, and a boot that already has six ChatViews mounted or a
+ * resumed 50,000-message transcript in it would charge that leftover state to whatever
+ * ran last.
+ */
+export const PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts'];
+
+/**
+ * The transcript sizes the `stall` phase measures. Duplicated from
+ * `scenario-replay-stall.mjs`'s own `SIZES` rather than imported, for the same reason
+ * SETTINGS_OPEN_EXPR is duplicated: the scenario modules load lazily, and
+ * `validateReport` is a pure function the unit tests call with no app present.
+ * `run.test.mjs` pins the two lists equal so the duplication cannot drift.
+ */
+export const STALL_SIZES = ['small', 'medium', 'huge'];
 
 /**
  * Report paths whose value is dominated by a NETWORK round trip, so they move with
@@ -163,9 +181,9 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     timestamp,
     machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version },
     noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0 },
-    startup: null, idle: null, history: null, workload: null,
+    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null,
     network: NETWORK_PATHS,
-    errors: { coldStarts: [], scenarioBoot: null },
+    errors: { coldStarts: [], scenarioBoot: null, stallBoot: null, artifactsBoot: null },
     screens: null,
     aborted: null,
     incomplete: [],
@@ -183,6 +201,8 @@ export function phaseOfPath(path) {
   if (path.startsWith('startup.') || path.startsWith('idle.')) return 'startup';
   if (path.startsWith('history.')) return 'history';
   if (path.startsWith('workload.')) return 'workload';
+  if (path.startsWith('replayStall.')) return 'stall';
+  if (path.startsWith('artifacts.')) return 'artifacts';
   return null;
 }
 
@@ -215,6 +235,30 @@ export function validateReport(report, only) {
     }
   }
   if (only.has('workload')) need(report.workload?.runs?.length > 0, 'workload: no runs were recorded');
+  if (only.has('stall')) {
+    for (const size of STALL_SIZES) {
+      need(report.replayStall?.[size]?.runs?.length > 0, `replayStall.${size}: no runs were recorded`);
+    }
+    // Attribution is the entire point of this phase. `blame` null means the renderer
+    // long-task observer never attached, so every stall was charged to the main process
+    // by default — a fabricated indictment, and exactly the shape of finding that would
+    // send the next session optimizing the wrong thread.
+    for (const size of STALL_SIZES) {
+      const s = report.replayStall?.[size];
+      if (!s?.runs?.length) continue;
+      need(s.blame != null, `replayStall.${size}: no thread attribution — the renderer long-task observer never attached, so main-vs-renderer blame is unknown, NOT "main process"`);
+    }
+  }
+  if (only.has('artifacts')) {
+    need(report.artifacts?.runs?.length > 0, 'artifacts: no runs were recorded');
+    // The typing leg is the one that silently degrades to nothing: if `beforeinput`
+    // never fires the scenario still returns, with keystroke timings null. That is an
+    // instrumentation gap, not a fast editor (scenario-artifacts.mjs pushes the same
+    // warning), so it must not read as a clean run.
+    const typed = report.artifacts?.median?.typing?.codeLarge?.keystroke?.medianMs;
+    need(typeof typed === 'number' && Number.isFinite(typed),
+      'artifacts: keystroke-to-paint was never measured on the large file — the meter did not arm, so typing cost is UNKNOWN, not zero');
+  }
   if (only.has('shots')) {
     const got = new Set(report.screens?.names ?? []);
     const missing = SCREEN_NAMES.filter((n) => !got.has(n));
@@ -299,6 +343,32 @@ export function renderMarkdown(report, stem) {
     );
   }
 
+  for (const [size, s] of Object.entries(report.replayStall ?? {})) {
+    const sm = s?.median ?? {};
+    lines.push(
+      `| stall.${size} (median of ${s?.runs?.length ?? 0}, ${s?.stabilizedRuns ?? 0} stabilized) | ` +
+      `worst freeze ${n(sm.ipcMaxMs, 'ms')} · total ${n(sm.ipcTotalStallMs, 'ms')} · ` +
+      // The blame string, never a silent default: null attribution is printed as
+      // "attribution unavailable" so it can never be read as "main process".
+      `main ${n(sm.mainProcessStallMs, 'ms')} / renderer ${n(sm.rendererStallMs, 'ms')} — ${s?.blame ?? '**attribution unavailable**'} |`,
+    );
+  }
+
+  if (report.artifacts) {
+    const a = report.artifacts.median ?? {};
+    const runN = report.artifacts.runs?.length ?? 0;
+    lines.push(
+      `| artifacts.open code small / large (median of ${runN}) | ${n(a.open?.codeSmall?.openMs, 'ms')} / ${n(a.open?.codeLarge?.openMs, 'ms')} |`,
+      `| artifacts.open markdown small / large | ${n(a.open?.mdSmall?.openMs, 'ms')} / ${n(a.open?.mdLarge?.openMs, 'ms')} |`,
+      `| artifacts.html swap median / p95 | ${n(a.htmlNav?.swap?.medianMs, 'ms')} / ${n(a.htmlNav?.swap?.p95Ms, 'ms')} |`,
+      `| artifacts.keystroke small median / p95 | ${n(a.typing?.codeSmall?.keystroke?.medianMs, 'ms')} / ${n(a.typing?.codeSmall?.keystroke?.p95Ms, 'ms')} |`,
+      `| artifacts.keystroke large median / p95 | ${n(a.typing?.codeLarge?.keystroke?.medianMs, 'ms')} / ${n(a.typing?.codeLarge?.keystroke?.p95Ms, 'ms')} |`,
+      `| artifacts.copy click -> "Copied!" | ${n(a.copy?.clickToCopiedMs, 'ms')} |`,
+      `| artifacts long tasks | ${n(a.probe?.longtaskTotalMs, 'ms')} total, max ${n(a.probe?.longtaskMaxMs, 'ms')} |`,
+      `| artifacts IPC stall (sum over steps) | ${n(a.ipcSumOfSteps?.totalStallMs, 'ms')}, max ${n(a.ipcSumOfSteps?.maxMs, 'ms')} |`,
+    );
+  }
+
   lines.push('');
   lines.push(
     `noise: load ${report.noise?.loadAvgBefore ?? '—'}, busy ${report.noise?.machineBusyPctBefore ?? '—'}%, ` +
@@ -307,7 +377,8 @@ export function renderMarkdown(report, stem) {
   );
   lines.push(
     `errors (desktop.log "level":"ERROR" lines): cold starts ${JSON.stringify(report.errors?.coldStarts ?? [])}, ` +
-    `scenario boot ${report.errors?.scenarioBoot ?? '—'}`,
+    `scenario boot ${report.errors?.scenarioBoot ?? '—'}, ` +
+    `stall boot ${report.errors?.stallBoot ?? '—'}, artifacts boot ${report.errors?.artifactsBoot ?? '—'}`,
   );
   lines.push('A boot that logged errors is not a clean measurement — do not rank a phase from one. Full logs: scratch/perf-lab/logs/.');
 
@@ -315,6 +386,12 @@ export function renderMarkdown(report, stem) {
   // warnings here is what stops a reader treating "—" as "instant".
   const warnings = Object.entries(report.history ?? {}).flatMap(([size, h]) => (h?.warnings ?? []).map((w) => `${size}: ${w}`));
   if (warnings.length) lines.push('', '## History warnings', '', ...warnings.map((w) => `- ${w}`));
+  // Same reasoning as the history warnings above: a stall size that never stabilized,
+  // or an artifacts leg whose meter never armed, reports `—` for its timings. Without
+  // the warning beside it that `—` reads as "instant" instead of "not measured".
+  const stallWarnings = Object.entries(report.replayStall ?? {}).flatMap(([size, s]) => (s?.warnings ?? []).map((w) => `${size}: ${w}`));
+  if (stallWarnings.length) lines.push('', '## Stall warnings', '', ...stallWarnings.map((w) => `- ${w}`));
+  if (report.artifacts?.warnings?.length) lines.push('', '## Artifact warnings', '', ...report.artifacts.warnings.map((w) => `- ${w}`));
   if (report.screens?.failures?.length) lines.push('', '## Screenshot failures', '', ...report.screens.failures.map((f) => `- ${f}`));
   if (report.incomplete?.length) lines.push('', '## Incomplete — do NOT rank anything from this report', '', ...report.incomplete.map((p) => `- ${p}`));
 
@@ -324,7 +401,7 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'only', 'label', 'out', 'max-minutes'];
+const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'only', 'label', 'out', 'max-minutes'];
 const BOOL_FLAGS = ['force-build', 'dry-run', 'help'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
@@ -335,11 +412,13 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   --runs <n>                cold-start runs              (default 5)
   --history-repeats <n>     resume measurements per size (default 5)
   --workload-repeats <n>    workload passes              (default 3)
+  --stall-repeats <n>       replay-stall passes per size (default 3)
+  --artifact-repeats <n>    artifact-panel passes        (default 3)
   --only a,b,c              phases: ${PHASES.join(', ')}  (default all)
   --force-build             rebuild even if the tree fingerprint is unchanged
   --label <text>            appended to the output filename stem
   --out <dir>               report directory             (default perf-reports/)
-  --max-minutes <n>         abort (exit ${EXIT.TIMEOUT}) past this budget  (default 45)
+  --max-minutes <n>         abort (exit ${EXIT.TIMEOUT}) past this budget  (default 90)
   --dry-run                 print the resolved plan and exit 0, launching nothing
   --help                    this text
 
@@ -382,7 +461,13 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     runs: posInt('runs', 5),
     historyRepeats: posInt('history-repeats', 5),
     workloadRepeats: posInt('workload-repeats', 3),
-    maxMinutes: posInt('max-minutes', 45),
+    stallRepeats: posInt('stall-repeats', 3),
+    artifactRepeats: posInt('artifact-repeats', 3),
+    // 45 -> 90 on 2026-08-27: the default selection went from 6 boots to 8 (stall and
+    // artifacts each take one of their own), and the stall phase alone is 9 transcript
+    // resumes. A deadline that fires mid-phase throws away every minute already spent,
+    // so the default is deliberately generous — narrow it with --only, not with this.
+    maxMinutes: posInt('max-minutes', 90),
     only: new Set(onlyTokens),
     label: raw.label ?? '',
     forceBuild: raw['force-build'] === true,
@@ -555,6 +640,25 @@ async function loadWorkload() {
   }
 }
 
+// Same lazy-load contract as loadWorkload above: both of these transitively import
+// scenario-workload.mjs (for the renderer long-task probe), so a static import here
+// would make `--dry-run` and every unit test pay for the whole scenario tree.
+async function loadReplayStall() {
+  try {
+    return await import('./scenario-replay-stall.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the stall phase needs scripts/perf-lab/scenario-replay-stall.mjs, which could not be loaded: ${e.message}\nRun with --only startup,history,workload,shots to skip it.`);
+  }
+}
+
+async function loadArtifacts() {
+  try {
+    return await import('./scenario-artifacts.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the artifacts phase needs scripts/perf-lab/scenario-artifacts.mjs, which could not be loaded: ${e.message}\nRun with --only startup,history,workload,shots to skip it.`);
+  }
+}
+
 /** Read the build stamp WITHOUT building — so --dry-run can report freshness honestly. */
 async function buildFreshness(checkout) {
   const desktop = join(checkout, 'desktop');
@@ -605,13 +709,20 @@ async function main(argv) {
       `  build freshness   ${cfg.forceBuild ? 'FORCED rebuild (--force-build)' : fresh.fresh ? `fresh, reused (built ${fresh.builtAt})` : 'stale or absent — will rebuild (1-3 min)'}`,
       `  Xvfb binary       ${xvfb}`,
       `  workload module   ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-workload.mjs')) ? 'present' : 'ABSENT — the workload phase would fail'}`,
+      `  stall module      ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-replay-stall.mjs')) ? 'present' : 'ABSENT — the stall phase would fail'}`,
+      `  artifacts module  ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-artifacts.mjs')) ? 'present' : 'ABSENT — the artifacts phase would fail'}`,
       '',
       `  phases            ${PHASES.map((p) => `${p}${cfg.only.has(p) ? '' : ' (skipped)'}`).join(', ')}`,
       `  cold-start boots  ${cfg.only.has('startup') ? cfg.runs : 0}`,
-      `  scenario boots    ${scenarioBoot ? 1 : 0}`,
+      // Named separately rather than summed: the shared boot covers three phases,
+      // while stall and artifacts each take one of their own (see their phase blocks).
+      `  scenario boots    ${scenarioBoot ? 1 : 0} shared (history/workload/shots)` +
+        `${cfg.only.has('stall') ? ' + 1 stall' : ''}${cfg.only.has('artifacts') ? ' + 1 artifacts' : ''}`,
       `  history repeats   ${cfg.only.has('history') ? `${cfg.historyRepeats} per size (small, medium, huge)` : '—'}`,
       `  workload passes   ${cfg.only.has('workload') ? `${cfg.workloadRepeats}${cfg.only.has('shots') ? ' + 1 screenshot pass (not in the median)' : ''}` : '—'}`,
       `  screenshots       ${cfg.only.has('shots') ? SCREEN_NAMES.join(', ') : '—'}`,
+      `  stall passes      ${cfg.only.has('stall') ? `${cfg.stallRepeats} per size (${STALL_SIZES.join(', ')}), own boot` : '—'}`,
+      `  artifact passes   ${cfg.only.has('artifacts') ? `${cfg.artifactRepeats}, own boot` : '—'}`,
       '',
       `  out dir           ${cfg.out}`,
       `  report            ${join(cfg.out, `${stem}.json`)}`,
@@ -794,6 +905,54 @@ async function main(argv) {
 
         report.screens = cfg.only.has('shots') ? { dir: shotDir, names: shotNames, failures: shotFailures } : null;
         report.errors.scenarioBoot = readErrorLines(fixture, stem, 'scenario');
+      });
+    }
+
+    // ---- Replay stall: its OWN boot ---------------------------------------
+    // WHY not the shared boot above: this phase exists to attribute an app-wide freeze
+    // to the main process or the renderer, and it resumes transcripts up to 50,000
+    // messages. Running it after `workload` would leave six ChatViews mounted
+    // (ChatView.tsx:695-707 keeps one per open session) and after `history` would leave
+    // a resumed transcript on screen — either way the renderer is already carrying work
+    // this phase did not cause, and the attribution would charge it to whatever ran
+    // last. A clean boot is the only state in which the blame means anything.
+    if (cfg.only.has('stall')) {
+      checkDeadline();
+      await noiseGate(report.noise);
+      const { runReplayStallScenario } = await loadReplayStall();
+      const fixture = buildFixture(SCRATCH, { log });
+      await withBoot(build, fixture, async (app) => {
+        report.replayStall = await runReplayStallScenario(app, fixture, { repeats: cfg.stallRepeats });
+        for (const [size, s] of Object.entries(report.replayStall)) {
+          log(`stall.${size}: ipc max ${s.median.ipcMaxMs}ms (main ${s.median.mainProcessStallMs}ms / renderer ${s.median.rendererStallMs}ms) — ${s.blame ?? 'attribution UNAVAILABLE'}, ${s.stabilizedRuns}/${s.runs.length} stabilized`);
+          for (const w of s.warnings) log(`stall.${size} warning: ${w}`);
+        }
+        report.errors.stallBoot = readErrorLines(fixture, stem, 'stall');
+      });
+    }
+
+    // ---- Artifact panel: its OWN boot --------------------------------------
+    // WHY not the shared boot: this phase types into a real CodeMirror editor and
+    // swaps HTML documents in an iframe. Both are sensitive to whatever else is
+    // mounted, and its own cleanup has to dismiss an unsaved-changes dialog — a
+    // failure there would pop that dialog over every later screenshot. Isolating it
+    // keeps a failure in this phase from silently corrupting a different one.
+    if (cfg.only.has('artifacts')) {
+      checkDeadline();
+      await noiseGate(report.noise);
+      const { runArtifactScenario, medianRun: artifactMedian } = await loadArtifacts();
+      const fixture = buildFixture(SCRATCH, { log });
+      await withBoot(build, fixture, async (app) => {
+        const runs = [];
+        for (let i = 0; i < cfg.artifactRepeats; i++) {
+          checkDeadline();
+          const r = await runArtifactScenario(app, fixture);
+          runs.push(r);
+          log(`artifacts ${i + 1}/${cfg.artifactRepeats}: open md large ${r.open?.mdLarge?.openMs}ms, keystroke p95 ${r.typing?.codeLarge?.keystroke?.p95Ms}ms, html swap ${r.htmlNav?.swap?.medianMs}ms, ipc stall ${r.ipcSumOfSteps?.totalStallMs}ms`);
+          for (const w of r.warnings ?? []) log(`artifacts warning: ${w}`);
+        }
+        report.artifacts = { runs, median: artifactMedian(runs), warnings: [...new Set(runs.flatMap((r) => r.warnings ?? []))] };
+        report.errors.artifactsBoot = readErrorLines(fixture, stem, 'artifacts');
       });
     }
   } catch (e) {

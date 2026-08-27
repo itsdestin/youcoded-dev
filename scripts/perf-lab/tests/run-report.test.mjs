@@ -19,9 +19,11 @@ import { describe, it } from 'node:test';
 
 import { PRIMARY, get, runsFor, spreadPct, verdict } from '../compare.mjs';
 import { NUMERIC_KEYS, medianRun } from '../scenario-history.mjs';
+import { medianRun as artifactMedian } from '../scenario-artifacts.mjs';
+import { SIZES as STALL_SIZES_REAL, medianRun as stallMedian, summarizeBlame } from '../scenario-replay-stall.mjs';
 import { SCREEN_NAMES } from '../screenshots.mjs';
 import {
-  EXIT, NETWORK_PATHS, PHASES, USAGE,
+  EXIT, NETWORK_PATHS, PHASES, STALL_SIZES, USAGE,
   buildIdleSection, buildStartupSection, buildWorkloadSection,
   emptyReport, median, medianTree, parseArgs, phaseOfPath, primaryPathsFor,
   renderMarkdown, stemFor, validateReport,
@@ -102,8 +104,70 @@ const workloadRun = (i) => ({
   sessionIds: ['a', 'b', 'c', 'd', 'e', 'f'],
 });
 
+/** One replay-stall run, shaped as scenario-replay-stall.mjs's measureOnce() returns it. */
+const stallRun = (i, { stable = true } = {}) => ({
+  ipcMedianMs: 4 + i,
+  ipcP95Ms: 60 + i,
+  ipcMaxMs: 3300 + i,
+  ipcOver250ms: 5 + i,
+  ipcOver1000ms: 2,
+  ipcTotalStallMs: 4200 + i,
+  ipcPings: 400,
+  ipcMissedTicks: 30 + i,
+  ipcMaxPingGapMs: 3300 + i,
+  mainProcessStallMs: 3000 + i,
+  mainProcessStallMaxMs: 2900 + i,
+  rendererStallMs: 1200 + i,
+  rendererStallMaxMs: 1100 + i,
+  rendererLongtaskCount: 40 + i,
+  rendererLongtaskTotalMs: 5000 + i,
+  rendererLongtaskMaxMs: 3200 + i,
+  renderedEntries: 5000,
+  elapsedMs: 20000 + i,
+  stability: stable ? 'stable' : 'timeout',
+  warnings: stable ? [] : [`stall#${i}: timeline never stabilized`],
+});
+
+/** A whole stall size section, built the way runReplayStallScenario builds it. */
+const stallSize = (n, opts) => {
+  const runs = Array.from({ length: n }, (_, i) => stallRun(i, opts));
+  const med = stallMedian(runs);
+  return {
+    runs,
+    median: med,
+    blame: summarizeBlame(med.mainProcessStallMs, med.rendererStallMs),
+    stabilizedRuns: runs.filter((r) => r.stability === 'stable').length,
+    warnings: [...new Set(runs.flatMap((r) => r.warnings))],
+  };
+};
+
+/** One artifacts run, shaped as scenario-artifacts.mjs's runArtifactScenario returns it. */
+const artifactRun = (i) => ({
+  open: {
+    codeSmall: { ok: true, openMs: 40 + i },
+    codeLarge: { ok: true, openMs: 320 + i },
+    mdSmall: { ok: true, openMs: 55 + i, fences: 4 },
+    mdLarge: { ok: true, openMs: 1400 + i, fences: 90 },
+    htmlSmall: { ok: true, openMs: 120 + i },
+  },
+  htmlNav: {
+    ok: true,
+    swap: { count: 4, medianMs: 210 + i, p95Ms: 400 + i, maxMs: 420 + i },
+    swapSmall: { count: 2, medianMs: 90 + i, p95Ms: 110 + i, maxMs: 115 + i },
+    swapLarge: { count: 2, medianMs: 330 + i, p95Ms: 500 + i, maxMs: 510 + i },
+  },
+  typing: {
+    codeSmall: { keystroke: { count: 30, medianMs: 12 + i, p95Ms: 30 + i, maxMs: 40 + i } },
+    codeLarge: { keystroke: { count: 30, medianMs: 46 + i, p95Ms: 180 + i, maxMs: 260 + i } },
+  },
+  copy: { ok: true, clickToCopiedMs: 25 + i },
+  probe: { longtaskCount: 20 + i, longtaskTotalMs: 2100 + i, longtaskMaxMs: 380 + i },
+  ipcSumOfSteps: { pings: 900, totalStallMs: 700 + i, over250ms: 2, over1000ms: 0, maxMs: 340 + i },
+  warnings: [],
+});
+
 /** A complete, clean report — assembled ONLY through run.mjs's real builders. */
-function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3 } = {}) {
+function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, stallRepeats = 3, artifactRepeats = 3 } = {}) {
   const cold = Array.from({ length: runs }, (_, i) => startupRun(i));
   const wruns = Array.from({ length: workloadRepeats }, (_, i) => workloadRun(i));
   const report = emptyReport({ label: 'contract', timestamp: '2026-08-26T09:30:00.000Z' });
@@ -116,7 +180,10 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3 } = 
     huge: historySize(historyRepeats),
   };
   report.workload = buildWorkloadSection(wruns);
-  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0 };
+  report.replayStall = Object.fromEntries(STALL_SIZES.map((s) => [s, stallSize(stallRepeats)]));
+  const aruns = Array.from({ length: artifactRepeats }, (_, i) => artifactRun(i));
+  report.artifacts = { runs: aruns, median: artifactMedian(aruns), warnings: [] };
+  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, stallBoot: 0, artifactsBoot: 0 };
   report.screens = { dir: '/tmp/shots', names: [...SCREEN_NAMES], failures: [] };
   return report;
 }
@@ -133,7 +200,11 @@ describe('compare.mjs PRIMARY contract', () => {
       return typeof v !== 'number' || !Number.isFinite(v);
     });
     assert.deepEqual(broken, [], `PRIMARY paths that did not resolve: ${broken.join(', ')}`);
-    assert.equal(PRIMARY.length, 12, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 12 -> 19 on 2026-08-27, when the stall and artifacts phases were wired into
+    // run.mjs (3 stall paths + 4 artifact paths). Bumping this number is not a chore:
+    // it is the moment to check that the report builder above actually produces the
+    // new paths, which is what the assertion on the line before just proved.
+    assert.equal(PRIMARY.length, 19, 'PRIMARY changed size — re-check that run.mjs still produces every path');
   });
 
   it('every PRIMARY path has per-run samples behind it (runsFor finds the sibling runs array)', () => {
@@ -233,6 +304,65 @@ describe('validateReport', () => {
     const problems = validateReport(report, new Set(['shots']));
     assert.ok(problems.some((p) => p.includes('UNREVIEWED')), problems.join('; '));
   });
+
+  // The stall phase's entire value is saying WHICH thread froze. If the renderer
+  // long-task observer never attaches, attributeStalls reports blame null rather than
+  // charging everything to the main process — and a null that slipped through the gate
+  // would send the next session optimizing a thread that was never the problem.
+  it('refuses a stall size with no thread attribution rather than reading null as "main process"', () => {
+    const report = completeReport();
+    report.replayStall.medium.blame = null;
+    const problems = validateReport(report, new Set(['stall']));
+    assert.ok(
+      problems.some((p) => p.includes('replayStall.medium') && p.includes('attribution')),
+      problems.join('; '),
+    );
+  });
+
+  // Same shape as the history-never-stabilized case above: the artifacts scenario
+  // still returns a run when the keystroke meter fails to arm, with the timings null.
+  // Null here means "not measured", and it must never be read as a fast editor.
+  it('refuses an artifacts run whose keystroke meter never armed rather than reading null as fast', () => {
+    const report = completeReport();
+    report.artifacts.median.typing.codeLarge.keystroke.medianMs = null;
+    const problems = validateReport(report, new Set(['artifacts']));
+    assert.ok(problems.some((p) => p.includes('UNKNOWN, not zero')), problems.join('; '));
+  });
+});
+
+describe('stall phase wiring', () => {
+  // run.mjs duplicates the size list rather than importing it (the scenario modules
+  // load lazily, and validateReport is a pure function the tests call with no app
+  // present). This is the guard that duplication cannot drift.
+  it('run.mjs STALL_SIZES matches scenario-replay-stall.mjs SIZES exactly', () => {
+    assert.deepEqual(STALL_SIZES, [...STALL_SIZES_REAL]);
+  });
+
+  it('every stall and artifacts PRIMARY path is owned by its own phase', () => {
+    for (const p of PRIMARY.filter((x) => x.startsWith('replayStall.'))) {
+      assert.equal(phaseOfPath(p), 'stall', `${p} is not owned by the stall phase`);
+    }
+    for (const p of PRIMARY.filter((x) => x.startsWith('artifacts.'))) {
+      assert.equal(phaseOfPath(p), 'artifacts', `${p} is not owned by the artifacts phase`);
+    }
+  });
+
+  // A `—` in the summary is how a missing number reaches a human. For attribution the
+  // blank is worse than useless, so the renderer prints an explicit phrase instead.
+  it('renderMarkdown names an unavailable attribution instead of leaving it blank', () => {
+    const report = completeReport();
+    report.replayStall.medium.blame = null;
+    const md = renderMarkdown(report, 'test-stem');
+    assert.match(md, /attribution unavailable/);
+  });
+
+  it('renderMarkdown renders a row for every stall size and for the artifact legs', () => {
+    const md = renderMarkdown(completeReport(), 'test-stem');
+    for (const size of STALL_SIZES) assert.match(md, new RegExp(`stall\\.${size}`));
+    for (const row of ['artifacts.open markdown', 'artifacts.keystroke large', 'artifacts.html swap', 'artifacts IPC stall']) {
+      assert.ok(md.includes(row), `summary is missing the "${row}" row`);
+    }
+  });
 });
 
 describe('medianTree', () => {
@@ -278,7 +408,9 @@ describe('parseArgs', () => {
     assert.equal(c.runs, 5);
     assert.equal(c.historyRepeats, 5);
     assert.equal(c.workloadRepeats, 3);
-    assert.equal(c.maxMinutes, 45);
+    assert.equal(c.stallRepeats, 3);
+    assert.equal(c.artifactRepeats, 3);
+    assert.equal(c.maxMinutes, 90);
     assert.deepEqual([...c.only].sort(), [...PHASES].sort());
     assert.equal(c.dryRun, false);
   });
@@ -292,7 +424,7 @@ describe('parseArgs', () => {
     assert.equal(c.dryRun, true);
   });
 
-  it('rejects a typo rather than silently ignoring it and wasting a 45-minute run', () => {
+  it('rejects a typo rather than silently ignoring it and wasting a 90-minute run', () => {
     assert.throws(() => parseArgs(['--run', '2']), /unknown option --run/);
     assert.throws(() => parseArgs(['--only', 'startup,startpu']), /unknown phase\(s\) startpu/);
     assert.throws(() => parseArgs(['--runs']), /--runs needs a value/);

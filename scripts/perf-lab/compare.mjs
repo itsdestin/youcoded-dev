@@ -23,6 +23,30 @@ export const PRIMARY = [
   'workload.median.probe.longtaskTotalMs',
   'workload.median.pssAfterMb',
   'workload.median.cpuDuringPct',
+
+  // ── The app-wide freeze (stall phase) ──────────────────────────────────────
+  // `medium` is the headline: 5,000 messages is ORDINARY usage and it stalls the
+  // whole app ~3.3 s. mainProcessStallMaxMs is the single worst moment — what a user
+  // actually feels as "I can't click anything" — and ipcTotalStallMs is how much of
+  // the replay was spent unresponsive in total.
+  'replayStall.medium.median.mainProcessStallMaxMs',
+  'replayStall.medium.median.ipcTotalStallMs',
+  // Deliberately a HUGE-size RENDERER metric, and the reason it is in PRIMARY at all:
+  // the obvious fix for a blocked main process is to move the work off it. If that
+  // work lands in the renderer instead, every main-process metric above improves while
+  // the app freezes exactly as much as before. This path is what makes that trade
+  // register as the regression it is rather than a win.
+  'replayStall.huge.median.rendererLongtaskMaxMs',
+
+  // ── The artifact panel (artifacts phase) ───────────────────────────────────
+  // Destin's reported spikes: opening a big document, typing in the editor, and
+  // navigating HTML previews.
+  'artifacts.median.open.mdLarge.openMs',
+  // p95, not median: typing jank is a TAIL problem. A median can look healthy while
+  // every tenth keystroke visibly hitches, which is what "jumpy" means to a user.
+  'artifacts.median.typing.codeLarge.keystroke.p95Ms',
+  'artifacts.median.htmlNav.swap.medianMs',
+  'artifacts.median.ipcSumOfSteps.totalStallMs',
 ];
 
 // Dotted-path getter used everywhere below — keeps report shape out of the decision logic.
@@ -65,7 +89,14 @@ const delta = (b, c) =>
 
 // Total ERROR-line count for a report — a boot that logs new errors is not a clean win
 // even if every timing metric improved, so this is checked independently of PRIMARY.
-const errorTotal = (r) => (r.errors?.coldStarts ?? []).reduce((a, b) => a + b, 0) + (r.errors?.scenarioBoot ?? 0);
+const errorTotal = (r) =>
+  (r.errors?.coldStarts ?? []).reduce((a, b) => a + b, 0)
+  + (r.errors?.scenarioBoot ?? 0)
+  // The stall and artifacts phases each get their own boot (run.mjs), so their error
+  // lines live in their own counters. Omitting them here would let a change that
+  // starts throwing during transcript replay or in the editor still read as a clean KEEP.
+  + (r.errors?.stallBoot ?? 0)
+  + (r.errors?.artifactsBoot ?? 0);
 
 /**
  * Decide KEEP or REJECT for one experiment.
