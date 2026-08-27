@@ -46,6 +46,8 @@ Older, rejected formats kept only for their archived pages: `scripts/ui-review/r
 
 ## Known gaps (verified, not guesses)
 
+*Update 2026-08-27 evening:* gaps 1, 3, 6 and 7 are closed (port probing, rig-measured boxes, run-id ordering, per-plan sheets). New since: **choice steps** (`variants`, pick one — Destin's rule), **per-step `themes`** for one-theme real-app captures, brief decks say *build it / leave it*, the root URL redirects to the deck, attach mode picks the app window. Still open: 2 (theme-asset:// in the workbench), 4 (attaching Destin's own screenshot), 5 (text-based `expect`s).
+
 1. **Two sweeps at once deadlock.** Shards take CDP port `30000 + offset + index`, index up
    to ~80, so two sessions at offsets 300 and 310 overlap and hang silently (2026-08-27).
    Workaround: offsets ≥ 100 apart. Fix: probe ports before use; refuse loudly.
