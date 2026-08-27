@@ -57,7 +57,8 @@ the reason. **A review must quote `coverage.md` and call unverified surfaces "un
 | `contrast-report.mjs` | aggregates the painted-pixel probe (fg vs *actual* bg) — catches hardcoded colours and translucent surfaces the token audit can't. Over-reports on glass themes; read it, don't paste it. |
 | `coverage.mjs` | covered / partial / MISSED per surface × theme, with reasons. |
 | `make-gallery.py` | the HTML gallery. |
-| `review-page.py` + `crops.json` | **the review surface** — `crop <spec>` cuts 1:1 crops of the affected elements from run dirs, `build <spec>` writes one page per phase: per change the problem with numbers, the exact edit, before/after crops per theme, risks, alternatives, a `measured`/`judgment`/`mixed` tag and a decision control that assembles a copyable feedback block. Spec template: `docs/active/design/2026-08-25-ui-audit/phase-a-review.json`. |
+| `review-cards.py` + `crops.json` | **the review surface** — `crop <spec>` cuts 1:1 crops from run dirs, `build <spec>` writes one page of CARDS: per item the screenshot is the hero (theme pills, Before/After flip on space), numbered markers are drawn on the image, and each marker has a one-line problem, a one-line fix, a `measured`/`judgment` tag and Yes/No; the answers assemble a copyable feedback block. Spec template: `docs/active/design/2026-08-25-ui-audit/phase-c-cards.json`. |
+| `review-page.py` | the earlier prose-first review page (Phase A/B pages). Rejected as a review surface on 2026-08-26 — do not use for new phases. |
 
 ## Writing a shot
 

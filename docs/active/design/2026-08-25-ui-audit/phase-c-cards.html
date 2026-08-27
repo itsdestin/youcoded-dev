@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Phase C — 16 points on 5 screens</title>
+<style>
+  :root { --ink:#1b1b1b; --ink2:#5a5a5a; --line:#dcdcdc; --bg:#f3f3f1; --card:#fff; --acc:#2055ca;
+          --meas:#0a6a2c; --measbg:#e3f3e8; --judg:#7a4d00; --judgbg:#fff0d6; --yes:#0a7a2f; --no:#b00020 }
+  * { box-sizing:border-box }
+  body { margin:0; padding:0 0 40px; font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:var(--bg) }
+  #top { position:sticky; top:0; z-index:20; background:#111; color:#eee; padding:8px 20px; display:flex; gap:14px; align-items:center; flex-wrap:wrap }
+  #top h1 { font-size:15px; margin:0; font-weight:600 } #top .jump a { color:#bbb; text-decoration:none; margin-right:10px; font-size:13px }
+  #top .jump a.done { color:#7fd49a } #top .st { margin-left:auto; font-size:13px; opacity:.9 }
+  #top button { font:13px system-ui; padding:6px 12px; border-radius:6px; border:0; background:var(--acc); color:#fff; cursor:pointer }
+  .lead { margin:14px 20px 4px; color:var(--ink2); max-width:1100px } .banner { margin:10px 20px; padding:10px 14px; background:#fff6e0; border:1px solid #e8c98a; border-radius:8px; max-width:1100px }
+  .legend { margin:0 20px 6px; font-size:12px; color:var(--ink2) }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; margin:14px 20px; overflow:hidden }
+  .card header { display:flex; align-items:center; gap:12px; padding:10px 16px; border-bottom:1px solid var(--line); background:#fafafa }
+  .card h2 { font-size:17px; margin:0 } .pid { color:var(--acc); font-weight:700; margin-right:4px } .surface { color:var(--ink2); font-size:13px }
+  .quick { margin-left:auto; display:flex; gap:6px } .quick button { font:12px system-ui; padding:4px 9px; border:1px solid var(--line); background:#fff; border-radius:6px; cursor:pointer } .quick button:hover { border-color:var(--acc) }
+  .body { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(360px,1fr); gap:0 }
+  .figs { padding:12px; border-right:1px solid var(--line); background:#ececea; min-width:0 }
+  .fig { margin:0 0 12px } .fig.extra { padding-top:8px; border-top:1px dashed #c9c9c9 }
+  .figbar { display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap }
+  .tabs .tab, .seg .ctab { font:12px system-ui; padding:3px 10px; border:1px solid #bbb; background:#fff; cursor:pointer; border-radius:999px; margin-right:4px }
+  .tabs .tab.on { background:#333; color:#fff; border-color:#333 } .seg { margin-left:auto } .seg .ctab { border-radius:6px } .seg .ctab.on { background:var(--acc); color:#fff; border-color:var(--acc) }
+  .hint { font-size:11px; color:var(--ink2) }
+  .stage { position:relative; background:#8a8a8a; border-radius:6px; overflow:hidden; line-height:0; font-size:0 }
+  /* The frame shrink-wraps the image (inline-block) so marker percentages are of the IMAGE, not of a wider stage. */
+  .frame { display:none; position:relative; line-height:0; vertical-align:top } .frame.on { display:inline-block; max-width:100% }
+  .fit-width .frame.on { display:block } .fit-width .frame img { width:100%; height:auto; display:block } .fit-none .frame img { display:block; max-width:100%; height:auto }
+  .missing { color:#fff; font-style:italic; padding:40px; line-height:1.4 }
+  .mk { position:absolute; transform:translate(-50%,-50%); width:24px; height:24px; border-radius:50%; font:700 13px/24px system-ui; text-align:center; color:#fff; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.6); cursor:pointer; z-index:2 }
+  .mk-measured { background:var(--meas) } .mk-judgment { background:var(--judg) } .mk.hot { transform:translate(-50%,-50%) scale(1.35); box-shadow:0 0 0 3px #ffde59, 0 2px 8px rgba(0,0,0,.7) }
+  .fignote { font-size:12px; color:var(--ink2); margin:6px 2px 0; line-height:1.4 }
+  .panel { padding:10px 14px 12px; display:flex; flex-direction:column; min-width:0 }
+  .points { list-style:none; margin:0; padding:0 } .pt { display:grid; grid-template-columns:28px 1fr auto; gap:10px; padding:9px 6px; border-radius:8px; border-bottom:1px solid #eee; align-items:start }
+  .pt.hot { background:#fffbe6 } .pt:last-child { border-bottom:0 }
+  .n { width:24px; height:24px; border-radius:50%; color:#fff; font:700 13px/24px system-ui; text-align:center; margin-top:1px } .n-measured { background:var(--meas) } .n-judgment { background:var(--judg) }
+  .what { font-weight:600; line-height:1.35 } .fix { color:#243d7a; margin-top:2px; line-height:1.35 } .risk { color:#7a3b00; font-size:12.5px; margin-top:3px }
+  .kind { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:1px 6px; border-radius:8px; margin-left:8px; vertical-align:middle }
+  .kind-measured { background:var(--measbg); color:var(--meas) } .kind-judgment { background:var(--judgbg); color:var(--judg) }
+  details { font-size:12.5px; color:var(--ink2); margin-top:4px } summary { cursor:pointer; color:var(--acc) } details p, details ul { margin:4px 0; padding-left:18px } details p { padding-left:0 }
+  .yn { display:flex; gap:4px } .yn button { font:12.5px system-ui; padding:4px 10px; border:1px solid #bbb; background:#fff; border-radius:6px; cursor:pointer; min-width:44px }
+  .yn button.on[data-v=yes] { background:var(--yes); color:#fff; border-color:var(--yes) } .yn button.on[data-v=no] { background:var(--no); color:#fff; border-color:var(--no) }
+  .panel textarea { margin-top:10px; width:100%; min-height:44px; font:13px system-ui; padding:6px 8px; border:1px solid var(--line); border-radius:6px; resize:vertical }
+  .closing { margin:14px 20px; max-width:1100px; color:var(--ink2); font-size:13px } .closing h2 { font-size:15px; color:var(--ink) }
+  #fb { margin:14px 20px } #feedback { width:100%; max-width:1100px; min-height:150px; font:12.5px ui-monospace,monospace; padding:10px; border:1px solid var(--line); border-radius:6px }
+  @media (max-width: 1000px) { .body { grid-template-columns:1fr } .figs { border-right:0; border-bottom:1px solid var(--line) } }
+</style></head><body>
+<div id="top"><h1>Phase C — 16 points on 5 screens</h1><span class="jump"><a href="#P-3">P-3</a><a href="#P-21">P-21</a><a href="#P-2">P-2</a><a href="#P-1">P-1</a><a href="#P-5">P-5</a><a href="#fb">feedback</a></span><span class="st" id="status"></span><button id="copy">Copy feedback</button></div>
+<p class="lead">Nothing is built yet. Each numbered point is one problem on today's master and one fix. Click Yes or No per point; I build the Yeses and bring the same cards back with a Before/After flip.</p>
+<p class="legend">Numbers on the image match the list beside it. <span class="kind kind-measured">measured</span> = a broken behaviour or a number you can check · <span class="kind kind-judgment">judgment</span> = taste; saying No costs nothing. Click Yes/No per point; hover a point to find it on the image; theme pills switch the screenshot. Your answers are kept by this page.</p>
+
+<section class="card" id="P-3" data-item="P-3">
+  <header><h2><span class="pid">P-3</span> Themes dialog</h2><span class="surface">Settings → Appearance</span>
+    <span class="quick"><button data-q="measured">Yes to measured</button><button data-q="yes">Yes to all</button><button data-q="no">No to all</button></span></header>
+  <div class="body">
+    <div class="figs"><figure class="fig fit-none" data-fig="P-3-themes-dialog"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="light">Light</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/themes-dialog--midnight--today.png" alt="themes-dialog midnight today"><span class="mk mk-measured" data-pt="1" style="left:27%;top:24%" title="The active card grows a second line and its neighbour stretches to match — an empty strip with a floating pencil (Dark 65 px vs Crème 34 px).">1</span><span class="mk mk-measured" data-pt="3" style="left:14%;top:47%" title="“Browse all themes →” and “Browse Theme Marketplace” sound like the same thing; they open different screens (your installed themes vs the Marketplace).">3</span><span class="mk mk-judgment" data-pt="4" style="left:14%;top:64%" title="Three stacked full-width buttons in three styles; the first is a hand-rolled fourth style the shared Button does not have.">4</span></div><div class="frame" data-theme="light" data-col="today"><img src="images/phase-c/themes-dialog--light--today.png" alt="themes-dialog light today"><span class="mk mk-measured" data-pt="1" style="left:27%;top:42%" title="The active card grows a second line and its neighbour stretches to match — an empty strip with a floating pencil (Dark 65 px vs Crème 34 px).">1</span><span class="mk mk-measured" data-pt="3" style="left:14%;top:52%" title="“Browse all themes →” and “Browse Theme Marketplace” sound like the same thing; they open different screens (your installed themes vs the Marketplace).">3</span><span class="mk mk-judgment" data-pt="4" style="left:14%;top:69%" title="Three stacked full-width buttons in three styles; the first is a hand-rolled fourth style the shared Button does not have.">4</span></div></div></figure><figure class="fig fit-none extra" data-fig="P-3-theme-edit-builtin"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/theme-edit-builtin--midnight--today.png" style="zoom:0.6" alt="theme-edit-builtin midnight today"><span class="mk mk-measured" data-pt="2" style="left:90%;top:24%" title="The pencil on a built-in opens a 588 px dialog that holds one sentence (“Built-in themes are locked…”).">2</span></div><div class="frame" data-theme="creme" data-col="today"><img src="images/phase-c/theme-edit-builtin--creme--today.png" style="zoom:0.6" alt="theme-edit-builtin creme today"></div></div><p class="fignote">What the pencil opens on a built-in — the whole dialog.</p></figure></div>
+    <div class="panel">
+      <ol class="points"><li class="pt" data-pt="1" data-key="P-3:1">
+  <span class="n n-measured">1</span>
+  <div class="ptbody">
+    <div class="what">The active card grows a second line and its neighbour stretches to match — an empty strip with a floating pencil (Dark 65 px vs Crème 34 px).<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ Put “active” on the name line, so every card is one height.</div>
+    
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="2" data-key="P-3:2">
+  <span class="n n-measured">2</span>
+  <div class="ptbody">
+    <div class="what">The pencil on a built-in opens a 588 px dialog that holds one sentence (“Built-in themes are locked…”).<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ Grey out the pencil on the four built-ins, with a tooltip saying why; community themes keep a live pencil (they have glass sliders).</div>
+    <details><summary>why</summary><p>All four built-ins are flat-colour themes, so the editor has no sliders to show — only the locked notice. Alternative: hide the pencil entirely; I recommend against it because the tooltip is the only place the <em>why</em> gets explained.</p></details>
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="3" data-key="P-3:3">
+  <span class="n n-measured">3</span>
+  <div class="ptbody">
+    <div class="what">“Browse all themes →” and “Browse Theme Marketplace” sound like the same thing; they open different screens (your installed themes vs the Marketplace).<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ Rename them “All installed themes →” and “Get more themes”.</div>
+    <details><summary>why</summary><p>The ledger claimed both open the same screen — wrong on checking: the first opens Your Library › Themes (the grid above only shows starred themes), the second the Marketplace.</p></details>
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="4" data-key="P-3:4">
+  <span class="n n-judgment">4</span>
+  <div class="ptbody">
+    <div class="what">Three stacked full-width buttons in three styles; the first is a hand-rolled fourth style the shared Button does not have.<span class="kind kind-judgment">judgment</span></div>
+    <div class="fix">→ The first becomes a quiet text-link row under the grid, leaving one primary (Build) and one secondary (Get more themes).</div>
+    
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li></ol>
+      <textarea data-notes="P-3" placeholder="Notes (optional)"></textarea>
+    </div>
+  </div>
+</section>
+<section class="card" id="P-21" data-item="P-21">
+  <header><h2><span class="pid">P-21</span> Marketplace cards</h2><span class="surface">Marketplace</span>
+    <span class="quick"><button data-q="measured">Yes to measured</button><button data-q="yes">Yes to all</button><button data-q="no">No to all</button></span></header>
+  <div class="body">
+    <div class="figs"><figure class="fig fit-none" data-fig="P-21-market-hero"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="light">Light</button><button class="tab" data-theme="halftone-dimension">Halftone</button><button class="tab" data-theme="meadow-mist">Meadow</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/market-hero--midnight--today.png" alt="market-hero midnight today"><span class="mk mk-measured" data-pt="1" style="left:1.5%;top:50%" title="The featured card&#x27;s border is a hardcoded gold in every theme (the other two featured entries bring their own blue and green).">1</span></div><div class="frame" data-theme="light" data-col="today"><img src="images/phase-c/market-hero--light--today.png" alt="market-hero light today"><span class="mk mk-measured" data-pt="1" style="left:1.5%;top:50%" title="The featured card&#x27;s border is a hardcoded gold in every theme (the other two featured entries bring their own blue and green).">1</span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/phase-c/market-hero--halftone-dimension--today.png" alt="market-hero halftone-dimension today"><span class="mk mk-measured" data-pt="1" style="left:1.5%;top:50%" title="The featured card&#x27;s border is a hardcoded gold in every theme (the other two featured entries bring their own blue and green).">1</span></div><div class="frame" data-theme="meadow-mist" data-col="today"><img src="images/phase-c/market-hero--meadow-mist--today.png" alt="market-hero meadow-mist today"><span class="mk mk-measured" data-pt="1" style="left:1.5%;top:50%" title="The featured card&#x27;s border is a hardcoded gold in every theme (the other two featured entries bring their own blue and green).">1</span></div></div></figure><figure class="fig fit-width extra" data-fig="P-21-market-themes-rows"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="creme">Crème</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/market-themes-rows--midnight--today.png" alt="market-themes-rows midnight today"><span class="mk mk-measured" data-pt="2" style="left:10%;top:92%" title="Theme cards: the text ends at five different heights across seven cards — the description and the likes line only render when present.">2</span></div><div class="frame" data-theme="creme" data-col="today"><img src="images/phase-c/market-themes-rows--creme--today.png" alt="market-themes-rows creme today"><span class="mk mk-measured" data-pt="2" style="left:10%;top:92%" title="Theme cards: the text ends at five different heights across seven cards — the description and the likes line only render when present.">2</span></div></div><p class="fignote">Themes tab: cards 1, 2 and 6 stop at the author line; the rest run on.</p></figure><figure class="fig fit-none extra" data-fig="P-21-market-card-counts"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/market-card-counts--midnight--today.png" alt="market-card-counts midnight today"><span class="mk mk-measured" data-pt="3" style="left:35%;top:81%" title="“1 installs”, “1 likes”.">3</span></div></div></figure></div>
+    <div class="panel">
+      <ol class="points"><li class="pt" data-pt="1" data-key="P-21:1">
+  <span class="n n-measured">1</span>
+  <div class="ptbody">
+    <div class="what">The featured card's border is a hardcoded gold in every theme (the other two featured entries bring their own blue and green).<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ Border = the theme's normal card edge; the entry's colour is dropped.</div>
+    <div class="risk">Risk: Featured entries lose the ability to colour the hero (undocumented; three entries use it).</div><details><summary>why</summary><p>The guide's T-1 alternative — let the entry colour tint only the small FEATURED eyebrow and the dot pager — keeps a non-theme colour alive for a 12 px label; I would not. Risk: a featured entry can no longer colour the hero; that was never a documented feature.</p></details>
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="2" data-key="P-21:2">
+  <span class="n n-measured">2</span>
+  <div class="ptbody">
+    <div class="what">Theme cards: the text ends at five different heights across seven cards — the description and the likes line only render when present.<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ Reserve the two description lines and the counts row, so every card's text ends in the same place.</div>
+    
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="3" data-key="P-21:3">
+  <span class="n n-measured">3</span>
+  <div class="ptbody">
+    <div class="what">“1 installs”, “1 likes”.<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ Pluralise properly (two places in the card).</div>
+    
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li></ol>
+      <textarea data-notes="P-21" placeholder="Notes (optional)"></textarea>
+    </div>
+  </div>
+</section>
+<section class="card" id="P-2" data-item="P-2">
+  <header><h2><span class="pid">P-2</span> Your Library, nothing installed</h2><span class="surface">Library — what every new install sees</span>
+    <span class="quick"><button data-q="measured">Yes to measured</button><button data-q="yes">Yes to all</button><button data-q="no">No to all</button></span></header>
+  <div class="body">
+    <div class="figs"><figure class="fig fit-width" data-fig="P-2-library-empty"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/library-empty--midnight--today.png" alt="library-empty midnight today"><span class="mk mk-measured" data-pt="1" style="left:22%;top:62%" title="Two headings over nothing — no sentence, no button. The empty-state sentence in the code has never rendered once: a counting bug makes every section think it has content.">1</span><span class="mk mk-judgment" data-pt="2" style="left:24%;top:24%" title="The Skills | Themes switcher is two plain 12 px pills under a 22 px title; Projects uses bordered icon + count tabs.">2</span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/phase-c/library-empty--halftone-dimension--today.png" alt="library-empty halftone-dimension today"><span class="mk mk-measured" data-pt="1" style="left:22%;top:62%" title="Two headings over nothing — no sentence, no button. The empty-state sentence in the code has never rendered once: a counting bug makes every section think it has content.">1</span><span class="mk mk-judgment" data-pt="2" style="left:24%;top:24%" title="The Skills | Themes switcher is two plain 12 px pills under a 22 px title; Projects uses bordered icon + count tabs.">2</span></div></div></figure></div>
+    <div class="panel">
+      <ol class="points"><li class="pt" data-pt="1" data-key="P-2:1">
+  <span class="n n-measured">1</span>
+  <div class="ptbody">
+    <div class="what">Two headings over nothing — no sentence, no button. The empty-state sentence in the code has never rendered once: a counting bug makes every section think it has content.<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ Fix the bug (+ pinning test) and use the app's shared empty block: “Nothing installed yet” with a Browse the Marketplace button; Favorites gets a one-liner.</div>
+    <details><summary>why</summary><p><code>Section</code> decides “has content?” with <code>React.Children.count(children)</code>, and the child is written <code>condition &amp;&amp; &lt;grid&gt;</code> — when false that still counts as one child. Same shared <code>EmptyState</code> block that Settings → Permissions, the session drawer and the Resume browser use. Nothing changes for a Library with content.</p></details>
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="2" data-key="P-2:2">
+  <span class="n n-judgment">2</span>
+  <div class="ptbody">
+    <div class="what">The Skills | Themes switcher is two plain 12 px pills under a 22 px title; Projects uses bordered icon + count tabs.<span class="kind kind-judgment">judgment</span></div>
+    <div class="fix">→ Leave it — decide tabs app-wide in a later phase. (My recommendation: No.)</div>
+    
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li></ol>
+      <textarea data-notes="P-2" placeholder="Notes (optional)"></textarea>
+    </div>
+  </div>
+</section>
+<section class="card" id="P-1" data-item="P-1">
+  <header><h2><span class="pid">P-1</span> Marketplace bar and empty states</h2><span class="surface">Marketplace</span>
+    <span class="quick"><button data-q="measured">Yes to measured</button><button data-q="yes">Yes to all</button><button data-q="no">No to all</button></span></header>
+  <div class="body">
+    <div class="figs"><figure class="fig fit-none" data-fig="P-1-market-bar"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="light">Light</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/market-bar--midnight--today.png" alt="market-bar midnight today"><span class="mk mk-judgment" data-pt="1" style="left:2.5%;top:50%" title="Plugins / Themes (pick one) is drawn exactly like the eleven filters after it (pick any).">1</span></div><div class="frame" data-theme="light" data-col="today"><img src="images/phase-c/market-bar--light--today.png" alt="market-bar light today"><span class="mk mk-judgment" data-pt="1" style="left:2.5%;top:50%" title="Plugins / Themes (pick one) is drawn exactly like the eleven filters after it (pick any).">1</span></div></div></figure><figure class="fig fit-none extra" data-fig="P-1-market-search"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/market-search--midnight--today.png" alt="market-search midnight today"><span class="mk mk-judgment" data-pt="2" style="left:8%;top:50%" title="The search box has no magnifier and is shorter than the pills beside it.">2</span></div></div></figure><figure class="fig fit-none extra" data-fig="P-1-market-themes-empty"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/market-themes-empty--midnight--today.png" alt="market-themes-empty midnight today"><span class="mk mk-measured" data-pt="3" style="left:19%;top:38%" title="When nothing matches: “0 results” and “Nothing matches those filters.” at once, and no way to clear the filters.">3</span></div></div></figure><figure class="fig fit-none extra" data-fig="P-1-market-explore-empty"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/market-explore-empty--midnight--today.png" alt="market-explore-empty midnight today"><span class="mk mk-measured" data-pt="4" style="left:35%;top:62%" title="“Explore everything” with nothing under it while the registry loads — or forever, if it cannot be reached.">4</span></div></div></figure><figure class="fig fit-none extra" data-fig="P-1-market-narrow-title"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button></span></div><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/phase-c/market-narrow-title--midnight--today.png" alt="market-narrow-title midnight today"><span class="mk mk-measured" data-pt="5" style="left:32%;top:50%" title="Phone width: the title truncates to “Ma…” because the right-hand controls take their full width first.">5</span></div></div></figure></div>
+    <div class="panel">
+      <ol class="points"><li class="pt" data-pt="1" data-key="P-1:1">
+  <span class="n n-judgment">1</span>
+  <div class="ptbody">
+    <div class="what">Plugins / Themes (pick one) is drawn exactly like the eleven filters after it (pick any).<span class="kind kind-judgment">judgment</span></div>
+    <div class="fix">→ Plugins / Themes becomes the app's two-position switch, in the same spot; the filters stay pills.</div>
+    <details><summary>why</summary><p>The ledger called New / Popular / Featured picks “sorts” and wanted a dropdown — wrong: they are on/off filters like the categories. So there are two kinds of control here, not three, and no sort menu is proposed.</p></details>
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="2" data-key="P-1:2">
+  <span class="n n-judgment">2</span>
+  <div class="ptbody">
+    <div class="what">The search box has no magnifier and is shorter than the pills beside it.<span class="kind kind-judgment">judgment</span></div>
+    <div class="fix">→ The shared search-field shape with its icon.</div>
+    
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="3" data-key="P-1:3">
+  <span class="n n-measured">3</span>
+  <div class="ptbody">
+    <div class="what">When nothing matches: “0 results” and “Nothing matches those filters.” at once, and no way to clear the filters.<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ One empty state with a Clear filters button.</div>
+    
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="4" data-key="P-1:4">
+  <span class="n n-measured">4</span>
+  <div class="ptbody">
+    <div class="what">“Explore everything” with nothing under it while the registry loads — or forever, if it cannot be reached.<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ Placeholder cards while loading; the shared error block with Retry when unreachable.</div>
+    
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="5" data-key="P-1:5">
+  <span class="n n-measured">5</span>
+  <div class="ptbody">
+    <div class="what">Phone width: the title truncates to “Ma…” because the right-hand controls take their full width first.<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ The title keeps its word; the controls shrink first.</div>
+    
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li></ol>
+      <textarea data-notes="P-1" placeholder="Notes (optional)"></textarea>
+    </div>
+  </div>
+</section>
+<section class="card" id="P-5" data-item="P-5">
+  <header><h2><span class="pid">P-5</span> Projects header card</h2><span class="surface">Projects</span>
+    <span class="quick"><button data-q="measured">Yes to measured</button><button data-q="yes">Yes to all</button><button data-q="no">No to all</button></span></header>
+  <div class="body">
+    <div class="figs"><figure class="fig fit-width" data-fig="P-5-projects-hero"><div class="figbar"><span class="tabs"><button class="tab on" data-theme="halftone-dimension">Halftone</button><button class="tab" data-theme="meadow-mist">Meadow</button><button class="tab" data-theme="midnight">Midnight</button></span></div><div class="stage"><div class="frame on" data-theme="halftone-dimension" data-col="today"><img src="images/phase-c/projects-hero--halftone-dimension--today.png" alt="projects-hero halftone-dimension today"><span class="mk mk-measured" data-pt="1" style="left:67%;top:76%" title="Projects is the only full screen that hides the theme wallpaper — its root paints an opaque canvas; Library and Marketplace let it through.">1</span><span class="mk mk-judgment" data-pt="2" style="left:31%;top:54%" title="Two accent-filled buttons in one card: New Conversation and Turn on sync for this project.">2</span></div><div class="frame" data-theme="meadow-mist" data-col="today"><img src="images/phase-c/projects-hero--meadow-mist--today.png" alt="projects-hero meadow-mist today"><span class="mk mk-measured" data-pt="1" style="left:67%;top:76%" title="Projects is the only full screen that hides the theme wallpaper — its root paints an opaque canvas; Library and Marketplace let it through.">1</span><span class="mk mk-judgment" data-pt="2" style="left:31%;top:54%" title="Two accent-filled buttons in one card: New Conversation and Turn on sync for this project.">2</span></div><div class="frame" data-theme="midnight" data-col="today"><img src="images/phase-c/projects-hero--midnight--today.png" alt="projects-hero midnight today"><span class="mk mk-measured" data-pt="1" style="left:67%;top:76%" title="Projects is the only full screen that hides the theme wallpaper — its root paints an opaque canvas; Library and Marketplace let it through.">1</span><span class="mk mk-judgment" data-pt="2" style="left:31%;top:54%" title="Two accent-filled buttons in one card: New Conversation and Turn on sync for this project.">2</span></div></div></figure></div>
+    <div class="panel">
+      <ol class="points"><li class="pt" data-pt="1" data-key="P-5:1">
+  <span class="n n-measured">1</span>
+  <div class="ptbody">
+    <div class="what">Projects is the only full screen that hides the theme wallpaper — its root paints an opaque canvas; Library and Marketplace let it through.<span class="kind kind-measured">measured</span></div>
+    <div class="fix">→ Same transparent root as its siblings. Built-in themes look identical (flat canvas anyway).</div>
+    <div class="risk">Risk: Header readability over a busy wallpaper — the card is already a glass panel like the Marketplace hero; the review will show all six themes.</div>
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li><li class="pt" data-pt="2" data-key="P-5:2">
+  <span class="n n-judgment">2</span>
+  <div class="ptbody">
+    <div class="what">Two accent-filled buttons in one card: New Conversation and Turn on sync for this project.<span class="kind kind-judgment">judgment</span></div>
+    <div class="fix">→ Turn on sync becomes the small secondary button inside its chip — one accent per card, per the guide.</div>
+    <div class="risk">Risk: The sync nudge gets quieter.</div>
+  </div>
+  <span class="yn"><button data-v="yes">Yes</button><button data-v="no">No</button></span>
+</li></ol>
+      <textarea data-notes="P-5" placeholder="Notes (optional)"></textarea>
+    </div>
+  </div>
+</section>
+<div class="closing"><h2>Checked and left alone</h2><ul><li>Projects: Rename / Remove are already the shared small button; the folder “tab” was reworked to your 2026-07-19 feedback; document previews are the intended thumbnail look.</li><li>Marketplace: no sort dropdown (there is no sort).</li><li>Themes dialog: the two toggles at the bottom.</li></ul></div>
+<div id="fb"><h2 style="font-size:15px">Feedback</h2><textarea id="feedback" readonly></textarea></div>
+<script>
+(function(){
+  const KEY="Phase C"; const ITEMS={"P-3": [{"n": 1, "kind": "measured"}, {"n": 2, "kind": "measured"}, {"n": 3, "kind": "measured"}, {"n": 4, "kind": "judgment"}], "P-21": [{"n": 1, "kind": "measured"}, {"n": 2, "kind": "measured"}, {"n": 3, "kind": "measured"}], "P-2": [{"n": 1, "kind": "measured"}, {"n": 2, "kind": "judgment"}], "P-1": [{"n": 1, "kind": "judgment"}, {"n": 2, "kind": "judgment"}, {"n": 3, "kind": "measured"}, {"n": 4, "kind": "measured"}, {"n": 5, "kind": "measured"}], "P-5": [{"n": 1, "kind": "measured"}, {"n": 2, "kind": "judgment"}]};   // ITEMS: {id: [{n, kind}]}
+  let st={}; try{ st=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){}
+  const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} render(); };
+  // --- decisions
+  document.querySelectorAll('.pt').forEach(li=>{
+    li.querySelectorAll('.yn button').forEach(b=>b.addEventListener('click',()=>{ st[li.dataset.key]=b.dataset.v; save(); }));
+    li.addEventListener('mouseenter',()=>hot(li.closest('.card'), li.dataset.pt, true));
+    li.addEventListener('mouseleave',()=>hot(li.closest('.card'), li.dataset.pt, false));
+  });
+  document.querySelectorAll('.quick button').forEach(b=>b.addEventListener('click',()=>{
+    const card=b.closest('.card'); const id=card.dataset.item;
+    for(const p of ITEMS[id]){ const k=id+':'+p.n;
+      if(b.dataset.q==='measured') st[k]=(p.kind==='measured')?'yes':'no'; else st[k]=b.dataset.q; }
+    save();
+  }));
+  document.querySelectorAll('textarea[data-notes]').forEach(t=>{ t.value=st['notes:'+t.dataset.notes]||'';
+    t.addEventListener('input',()=>{ st['notes:'+t.dataset.notes]=t.value; save(); }); });
+  // --- markers <-> points
+  function hot(card,n,on){ card.querySelectorAll('[data-pt="'+n+'"]').forEach(e=>e.classList.toggle('hot',on)); }
+  document.querySelectorAll('.mk').forEach(m=>{
+    m.addEventListener('mouseenter',()=>hot(m.closest('.card'), m.dataset.pt, true));
+    m.addEventListener('mouseleave',()=>hot(m.closest('.card'), m.dataset.pt, false));
+    m.addEventListener('click',()=>{ const li=m.closest('.card').querySelector('.pt[data-pt="'+m.dataset.pt+'"]'); li.scrollIntoView({block:'nearest'}); hot(m.closest('.card'), m.dataset.pt, true); setTimeout(()=>hot(m.closest('.card'), m.dataset.pt, false), 1200); });
+  });
+  // --- theme tabs + before/after
+  document.querySelectorAll('.fig').forEach(fig=>{
+    const show=()=>{ const t=fig.querySelector('.tab.on')?.dataset.theme; const c=(fig.querySelector('.ctab.on')||{}).dataset?.col;
+      fig.querySelectorAll('.frame').forEach(f=>f.classList.toggle('on', f.dataset.theme===t && (!c || f.dataset.col===c))); };
+    fig.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{ fig.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); show(); }));
+    fig.querySelectorAll('.ctab').forEach(b=>b.addEventListener('click',()=>{ fig.querySelectorAll('.ctab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); show(); }));
+    fig.addEventListener('mouseenter',()=>{ window.__fig=fig; });
+  });
+  document.addEventListener('keydown',e=>{ if(e.code!=='Space' || e.target.tagName==='TEXTAREA') return; const fig=window.__fig; if(!fig) return;
+    const tabs=[...fig.querySelectorAll('.ctab')]; if(tabs.length<2) return; e.preventDefault();
+    const i=tabs.findIndex(t=>t.classList.contains('on')); tabs[(i+1)%tabs.length].click(); });
+  // --- feedback + progress
+  function render(){
+    let total=0, done=0; const lines=[KEY+' feedback ('+new Date().toISOString().slice(0,10)+')'];
+    for(const id in ITEMS){ const parts=[]; let idDone=true;
+      for(const p of ITEMS[id]){ total++; const v=st[id+':'+p.n]; if(v) done++; else idDone=false; parts.push(p.n+' '+(v||'?')); }
+      const notes=(st['notes:'+id]||'').replace(/\s+/g,' ').trim();
+      lines.push(id+': '+parts.join(' · ')+(notes?' — '+notes:''));
+      const a=document.querySelector('#top .jump a[href="#'+id+'"]'); if(a) a.classList.toggle('done', idDone);
+    }
+    document.querySelectorAll('.pt').forEach(li=>{ const v=st[li.dataset.key]; li.querySelectorAll('.yn button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); });
+    document.getElementById('feedback').value=lines.join('\n');
+    document.getElementById('status').textContent=done+' of '+total+' points decided'+(done<total?'':' — ready to copy');
+  }
+  document.getElementById('copy').addEventListener('click',()=>{ const t=document.getElementById('feedback');
+    const ok=()=>{ document.getElementById('status').textContent='Copied — paste it into the chat.'; };
+    (navigator.clipboard?.writeText(t.value)||Promise.reject()).then(ok,()=>{ t.select(); document.execCommand('copy'); ok(); }); });
+  render();
+})();
+</script>
+</body></html>

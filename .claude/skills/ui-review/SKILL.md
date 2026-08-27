@@ -58,9 +58,14 @@ then a **review page** — never a gallery, never a chat summary:
 1. Capture the branch: `bash scripts/ui-review/run-review.sh <worktree> scratch/<phase>`
    (it starts its own server on Vite 5473 and refuses if that port serves another worktree).
    For a second variant, a second worktree + run dir.
-2. Write `docs/active/design/<audit>/<phase>-review.json` (copy `phase-a-review.json`), then
-   `python3 scripts/ui-review/review-page.py crop <spec>` and `… build <spec>`. Crop regions
-   come from `scripts/ui-review/crops.json`; add new ones there.
+2. Write `docs/active/design/<audit>/<phase>-cards.json` (copy `phase-c-cards.json`), then
+   `python3 scripts/ui-review/review-cards.py crop <spec>` and `… build <spec>`. Crop regions
+   come from `scripts/ui-review/crops.json`; add new ones there. **Cards, not prose:** one
+   card per item, the screenshot is the hero with numbered markers drawn ON it, and each
+   marker has a one-line problem, a one-line fix, a `measured`/`judgment` tag and Yes/No.
+   Rationale goes under a collapsed `why`. (`review-page.py` is the older prose-first
+   format — Destin rejected it on 2026-08-26 as "WAY too much text in different areas";
+   it is kept only because the Phase A/B pages were built with it.)
 3. Every item on the page carries, in this order: the problem **with the measured number
    or the broken behaviour**, exactly what was edited, 1:1 crops of the element per theme
    (before / after, a column per variant), what he'll notice + the risks *against* the
