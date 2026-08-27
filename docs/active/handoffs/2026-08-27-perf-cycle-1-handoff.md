@@ -39,11 +39,11 @@ rig produces is the deliverable's proof; a change without a KEEP does not ship.
 ## 2. State of the world (verified 2026-08-27 evening)
 
 - **Workspace** `youcoded-dev` on `master`, merged with `origin/master` (135 upstream
-  commits from other sessions came in the same day). **~53 local commits, NOT pushed** —
-  the rig, five reports, handoff/ROADMAP updates. Push needs Destin's OK (rule).
+  commits from other sessions came in the same day). **pushed to `origin/master` 2026-08-27 evening with Destin's OK** —
+  the rig, five reports, handoff/ROADMAP updates. Nothing local remains.
 - **Product** worktree `worktrees/perf-lab/` on `perf/optimization-pass` at `16ea12e`,
   **rebased onto master `40feb750`**, 4 commits ahead (opt-in perf marks only, zero
-  product behaviour change). NOT pushed, no PR. Built binary at
+  product behaviour change). Branch **pushed to `origin/perf/optimization-pass`**; no PR yet (cycle 1 opens it on a KEEP). Built binary at
   `worktrees/perf-lab/desktop/release/linux-unpacked/` matches `16ea12e` — the rig
   rebuilds automatically when the tree fingerprint changes.
 - **Rig**: `scripts/perf-lab/`, **285 tests** (`cd scripts/perf-lab && node --test tests/*.test.mjs`).
