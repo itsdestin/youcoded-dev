@@ -2798,3 +2798,48 @@ one that is visibly missing — the user has no way to know not to trust it.
 Prove items 1–3 with mutation, in a copy OUTSIDE the worktree (`cp -a` to /tmp): revert each
 fix and confirm a named test goes red. Item 4 has no runtime behaviour to pin — say so rather
 than inventing an assertion.
+
+---
+
+### Task 24: `setBinding`'s `free` re-apply is unguarded — and Task 22 made it load-bearing
+
+**Depends on:** Tasks 22, 23. **Found by:** the Task 22 review.
+
+`harness-session.ts` line ~739 is `if (free !== undefined) this.opts.free = free;`. The
+reviewer deleted that single line and **151 tests stayed green** — it is exactly the defect
+class Task 22 existed to remove, sitting on the line directly below the one Task 22 pinned.
+
+It matters more now than it did yesterday. Task 22 item 1 made `costUsd` depend on
+`this.opts.free` (`costUsd: this.opts.free ? null : costForUsage(...)`), so a **stale** `free`
+no longer just mislabels a turn — it suppresses the bill entirely.
+
+**The proven scenario** (the reviewer wrote and ran it): a mid-session swap from a
+`local-engine` model to an OpenRouter one. With the line deleted, turn 2 reports
+`{costUsd: null, free: true}`; with it restored, `{costUsd: 7, free: false}`. Downstream that
+sets `anyFree` and never `anyPriced` — so the Cost chip tells the user the session is free
+while OpenRouter bills them for every turn after the swap.
+
+**Files:**
+- Test: `desktop/tests/native-session-host.test.ts` (production code is already correct)
+- Modify: `desktop/src/renderer/components/StatusBar.tsx` (one string, Minor 2 below)
+
+- [ ] **1. Pin the `free` re-apply.** Add a swap test: `local-engine` → `openrouter`, asserting
+  turn 2 comes back `free: false` with a real figure, and that turn 1 keeps `free: true` with
+  `costUsd: null`. Prove it by deleting line ~739 in a copy OUTSIDE the worktree and
+  confirming the new test goes red.
+
+- [ ] **2. Strengthen the "never repriced" assertion, or soften its comment.** The reviewer
+  found the existing turn-1 half near-tautological: `data.usage` is built at emit time and
+  nothing in-process can mutate it afterwards, so the shape the test covers was never at risk.
+  The shape that IS at risk is a swap issued **while a turn is still streaming** — the test
+  awaits `waitForTurnComplete` first. Either add that case or make the comment honest about
+  what it pins. Do not leave a comment claiming a guarantee the test does not provide.
+
+- [ ] **3. One more "published" string.** `StatusBar.tsx` ~1413: *"Models with no published
+  price are not included in this total."* Weaker than the tooltip Task 22 fixed — it states an
+  exclusion rule rather than a cause — but it is the same word doing the same misleading work
+  on the same surface. Reword for consistency (e.g. "no available price"). The `UsageCard.tsx`
+  twin of this is being handled inside Task 14.
+
+- [ ] **4:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **5: Commit** — `test(harness): pin that a model swap re-reads whether the new model is free`
