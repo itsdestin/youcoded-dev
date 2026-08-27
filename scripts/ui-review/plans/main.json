@@ -586,13 +586,10 @@
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
      "settle": 900
-    },
-    {
-     "click": "js:document.querySelector(\"[role=button].border-accent [aria-label^='Edit ']\")",
-     "settle": 900
     }
    ],
-   "expect": "js:document.body.textContent.includes('Edit: ')"
+   "expect": "js:!!document.querySelector(\"[aria-label^='Customization unavailable']\")",
+   "_comment": "Since 2026-08-27 built-ins have no editor: the pencil is aria-disabled with a tooltip. The shot is the Themes dialog with at least one greyed pencil present."
   },
   {
    "name": "theme-edit-community",

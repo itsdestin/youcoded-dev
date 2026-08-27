@@ -1,0 +1,160 @@
+{
+  "out": "phase-c-review2.html",
+  "images": "images/phase-c-review2",
+  "key": "Phase C review 2",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-phase-c-after",
+    "after": "/home/destin/youcoded-dev/scratch/ui-phase-c-after2"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "crops": {
+    "themes-dialog": [
+      "main",
+      "settings-appearance",
+      "440x600+500+150"
+    ],
+    "market-bar": [
+      "marketplace",
+      "marketplace",
+      "760x70+0+248"
+    ],
+    "market-themes-rows": [
+      "main",
+      "marketplace-themes",
+      "1440x400+0+140"
+    ],
+    "library-tabs": [
+      "main",
+      "library",
+      "520x110+0+0"
+    ]
+  },
+  "title": "Phase C review 2 — your four refinements",
+  "lead": "Round 1 vs Round 2 (space bar flips). Only the four points you changed; everything else is as you approved it.",
+  "items": [
+    {
+      "id": "P-3",
+      "title": "Themes dialog",
+      "surface": "Settings → Appearance",
+      "image": {
+        "crop": "themes-dialog",
+        "themes": [
+          "midnight",
+          "light",
+          "creme"
+        ],
+        "cols": [
+          "before",
+          "after"
+        ],
+        "fit": "none"
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "measured",
+          "what": "Cards are taller so the preview shows a real slice of the mock chat; the star only appears when you hover a card (or reach it by keyboard).",
+          "fix": "The screenshots cannot hover, so no stars are visible here — that is the point. Pencil, name and “active” stay in the bottom row.",
+          "at": [
+            27,
+            24
+          ]
+        },
+        {
+          "n": 2,
+          "kind": "measured",
+          "what": "Q #1 — the pencil on a flat, non-user theme is greyed out; hovering it says “Customization unavailable for this theme”. Community themes with a wallpaper and your own themes keep a live pencil.",
+          "fix": "Replaces the empty editor. Nothing else on the card changes.",
+          "at": [
+            90,
+            31
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-1",
+      "title": "Marketplace bar",
+      "surface": "Marketplace",
+      "image": {
+        "crop": "market-bar",
+        "themes": [
+          "midnight",
+          "light"
+        ],
+        "cols": [
+          "before",
+          "after"
+        ],
+        "fit": "none"
+      },
+      "points": [
+        {
+          "n": 1,
+          "kind": "judgment",
+          "what": "All · Plugins · Themes is now the same pill the Library uses — icon, label and a count of what is in the marketplace. The Library's tab now says “Plugins” too; “Skills” is gone from both switchers.",
+          "fix": "Same control on both screens; same word.",
+          "at": [
+            16,
+            50
+          ]
+        },
+        {
+          "n": 2,
+          "kind": "judgment",
+          "what": "The Library's switcher, for comparison — “Plugins” with the installed count.",
+          "fix": "No other change here.",
+          "at": [
+            14,
+            75
+          ],
+          "image": {
+            "crop": "library-tabs",
+            "themes": [
+              "midnight",
+              "light"
+            ],
+            "cols": [
+              "before",
+              "after"
+            ],
+            "fit": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "P-21",
+      "title": "Marketplace theme cards",
+      "surface": "Marketplace › Themes",
+      "image": {
+        "crop": "market-themes-rows",
+        "themes": [
+          "midnight",
+          "creme",
+          "light"
+        ],
+        "cols": [
+          "before",
+          "after"
+        ]
+      },
+      "points": [
+        {
+          "n": 2,
+          "kind": "judgment",
+          "what": "The mock-up you asked for — and, built, it makes no visible difference. Flip Round 1 / Round 2: the card boxes were already equal (the grid stretches them), and reserving two blank lines just reserves blank. What you actually see is that Cotton Candy Sky, Devil's Garden and Meadow Mist have no description in the marketplace registry, so their cards have less text.",
+          "fix": "My recommendation: No — I revert this. If you want the rows to look full, the fix is content, not layout: write descriptions for those three themes in wecoded-themes.",
+          "at": [
+            10,
+            95
+          ]
+        }
+      ]
+    }
+  ],
+  "closing": "<h2>Unchanged since round 1</h2><ul><li>Everything you approved in round 1 stays exactly as it was: hero border, plurals, Library empty state, search pill, empty/loading/error states, phone title.</li></ul>"
+}

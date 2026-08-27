@@ -22,7 +22,12 @@
 - `phase-c-review.html` (spec `phase-c-review.json`, crops in `images/phase-c-review/` from
   `scratch/ui-phase-c-baseline/` vs `scratch/ui-phase-c-after/`, branch `feat/ui-phase-c`) — the Phase C
   review deck: Before/After flip per point for the 13 built changes, plus two question steps
-  (P-21 #2 re-explained, P-3 #2 glass sliders on flat themes). Awaiting Destin's answers.
+  (P-21 #2 re-explained, P-3 #2 glass sliders on flat themes). Decided 2026-08-27: all yes with
+  four refinements.
+- `phase-c-review2.html` (spec `phase-c-review2.json`, `scratch/ui-phase-c-after/` vs
+  `scratch/ui-phase-c-after2/`) — round 2: hover-only star + taller preview cards, greyed pencil
+  with tooltip, the marketplace type switch as the Library pill (“Plugins”), and the P-21 #2
+  mock-up (theme cards reserve their text rows). Awaiting Destin's answers.
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
   (the original pass: 103 of 104 — "Known Issues" opens an external link; the latest full sweep
   of master, 2026-08-26 after Phase B, verified 112 of 112). `contrast.md` — the painted-pixel
