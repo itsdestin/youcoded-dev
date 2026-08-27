@@ -27,6 +27,19 @@ class ServeTests(unittest.TestCase):
         t.join(5); self.assertFalse(t.is_alive())
         self.assertTrue(got['submitted']); self.assertTrue(json.load(open(answers_path(self.spec)))['submitted'])
         srv.server_close()   # shutdown() stops serve_forever but leaves the listening socket open — unclosed, it is what the suite warns about at exit
+    def test_root_is_the_deck_and_folders_never_list(self):
+        srv, url = make_server(self.spec, 0, lambda state: None)
+        t = threading.Thread(target=srv.serve_forever, daemon=True); t.start()
+        try:
+            base = url.rsplit('/', 1)[0]
+            r = urllib.request.urlopen(base + '/', timeout=5)                       # the bare port lands on the deck
+            self.assertEqual(r.geturl(), url); self.assertIn(b'deck', r.read())
+            r = urllib.request.urlopen(base + '/?step=2', timeout=5); self.assertEqual(r.geturl(), url + '?step=2')
+            os.makedirs(os.path.join(self.spec['_base'], 'images'), exist_ok=True)
+            with self.assertRaises(urllib.error.HTTPError) as cm: urllib.request.urlopen(base + '/images/', timeout=5)
+            self.assertEqual(cm.exception.code, 404)                                 # no folder listing, ever
+        finally:
+            srv.shutdown(); srv.server_close()
     def test_summary_format(self):
         state = {'submitted': '2026-08-27T18:40:00Z', 'answers': {'S-1': {'v': 'yes'}, 'S-2': {'v': 'other', 'note': ' bigger '}}}
         s = summary(self.spec, state).split('\n')

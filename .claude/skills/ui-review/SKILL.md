@@ -67,7 +67,7 @@ then a **review page** — never a gallery, never a chat summary:
    IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box.
 3. `python3 scripts/ui-review/review-cards.py serve <spec>` **in the background** (it builds
    first; fix every `missing:` line it prints — a measurement that is missing means the plan
-   needed a `measure` line before the Before run). The browser opens itself; Destin answers
+   needed a `measure` line before the Before run). The browser opens itself. **The address to give Destin is the `[deck] http://127.0.0.1:<port>/<out>.html` line `serve` prints** (also in `<spec>.serve.json` next to the spec) — quote it whole; the bare port now redirects to the deck, but never guess a URL you have not read. Destin answers
    Yes / No / Other per step with an optional note and presses Submit; the background command
    exits with the summary (exit 0 = submitted, summary on stdout; 2 = nobody submitted before the
    timeout; 3 = another process already serves this spec — neither 2 nor 3 carries answers, do not

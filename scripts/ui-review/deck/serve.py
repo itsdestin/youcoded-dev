@@ -84,12 +84,26 @@ def make_server(spec, port, on_submit):
         def do_GET(self):
             if self._wrong_origin():
                 return self._json(403, {'error': 'wrong host or origin'})
-            if self.path.split('?')[0] == '/answers':
+            path = self.path.split('?')[0]
+            if path == '/answers':
                 if os.path.exists(apath):
                     with open(apath) as f:
                         return self._json(200, json.load(f))
                 return self._json(200, {})
+            # WHY: the bare port (what a session tends to quote) used to show a folder listing of every
+            # deck in the audit folder — Destin landed on it on 2026-08-27. The root now IS the deck.
+            if path in ('/', '/index.html'):
+                self.send_response(302)
+                self.send_header('location', '/' + spec['out'] + (('?' + self.path.split('?', 1)[1]) if '?' in self.path else ''))
+                self.send_header('content-length', '0')
+                self.end_headers()
+                return
             return super().do_GET()
+
+        def list_directory(self, path):
+            # Never list a folder: the deck folder holds other decks and their answers.
+            self.send_error(404, 'not a page')
+            return None
 
         def do_POST(self):
             if self._wrong_origin():

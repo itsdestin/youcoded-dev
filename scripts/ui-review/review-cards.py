@@ -44,6 +44,10 @@ def build(spec):
 
 
 def main(argv):
+    # WHY: `serve` runs in the background with stdout redirected to a file; block-buffered, its
+    # "[deck] http://…" line only appeared at exit — so the session quoted the bare port instead.
+    if hasattr(sys.stdout, "reconfigure"):   # tests swap in a StringIO
+        sys.stdout.reconfigure(line_buffering=True)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest='cmd', required=True)
     for c in ('build', 'serve', 'wait'):
