@@ -2629,3 +2629,66 @@ widget that is empty without being unavailable.
   the test now FAILS. Report what you saw. Do NOT mutate the worktree in place.
 - [ ] **Step 5:** `bash scripts/verify.sh worktrees/statusbar-relevance`
 - [ ] **Step 6: Commit** — `fix(status-bar): the Customize menu offers the Cost row whenever the bar shows it`
+
+---
+
+### Task 21: "Free" must not mean "unpriced" (Critical, found by the Task 11 review)
+
+**Depends on:** Tasks 11, 19, 20.
+
+A cross-task collision. `session-totals.ts`'s `addUsage` sets `anyUnpriced = true` whenever
+`costUsd === null`, with no `free` guard — a rule written before `free` existed. Task 11 then
+began stamping a **local-engine** turn as `costUsd: null, free: true`, because a local model
+has no rate card. Result: **every purely local session now has `anyUnpriced === true`.**
+
+The Task 11 reviewer proved the consequence by rendering the real `StatusBar` with exactly
+what Task 11 stamps:
+
+```
+AssertionError: expected 'Add tagsCost:not listed' not to contain 'not listed'
+```
+
+So a model running on the user's own machine draws `Cost: not listed`, with the tooltip
+*"This provider bills for usage, but no price is published for this model"* — false, and
+exactly the class of quiet wrongness this whole work exists to remove. It also makes Task 20's
+`"Models on your own machine don't cost anything to run"` **unreachable dead code**, since its
+gate requires `!anyUnpriced`.
+
+`anyUnpriced` must mean what every consumer already assumes: **metered, with no published
+rate.** Free is a different state and always was.
+
+**Files:**
+- Modify: `desktop/src/renderer/state/session-totals.ts`
+- Test: `desktop/tests/session-totals.test.ts`, `desktop/tests/statusbar-session-relevance.test.tsx`
+
+- [ ] **Step 1: Write the failing tests.**
+  1. In `session-totals.test.ts`: `addTurnUsage(t, { costUsd: null, free: true })` sets
+     `anyFree` and leaves `anyUnpriced` **false**; `addTurnUsage(t, { costUsd: null })` (no
+     `free`) still sets `anyUnpriced` true. Check `addSubagentUsage` too — a **free local
+     specialist** must not mark the parent session unpriced.
+  2. In `statusbar-session-relevance.test.tsx`: the end-to-end guard the unit tests missed —
+     feed the bar the totals a purely local session actually produces and assert it renders
+     **no cost chip at all** and never the string `not listed`. This is the test whose absence
+     let the defect through; write it so it fails today.
+  3. A menu-side assertion that the local sentence is reachable again.
+- [ ] **Step 2: Run to verify they fail.**
+- [ ] **Step 3: Implement** — guard the `anyUnpriced` assignment on `u.free !== true`, in
+  every place that sets it. WHY comment: `costUsd === null` has two causes — no rate card
+  because the model is metered but unlisted, and no rate card because the model is free — and
+  only the first is `anyUnpriced`.
+- [ ] **Step 4:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **Step 5: Commit** — `fix(status-bar): a local session is free, not "not listed"`
+
+**Deferred to Task 22** (they touch `harness-session.ts`, which Task 12 holds):
+- `free: true` and a positive `costUsd` can coexist at the stamping site
+  (`harness-session.ts` ~1949-1959). Unreachable in production only because `ipc-handlers.ts`
+  short-circuits `local-engine` — the invariant lives in the wiring, not at the stamp.
+  Fix: `costUsd: this.opts.free ? null : costForUsage(...)`.
+- Two correct-but-**unpinned** behaviours, both mutation-proved by the reviewer:
+  deleting `if (pricing !== undefined) this.opts.pricing = pricing;` from `setBinding` left
+  137 tests green; replacing the `Math.min(cacheReadTokens, inputTokens)` clamp with the raw
+  value left 11/11 pricing tests green (a provider reporting 5,000 cached against 100 prompt
+  tokens would over-charge 50× with nothing red). Specialist-carries-its-own-price is also
+  correct but unpinned.
+- `eval/run-case.ts` ~441 constructs a 4th `HarnessSession` without pricing. Harmless (eval
+  has its own estimator) but undocumented.
