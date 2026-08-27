@@ -10,7 +10,7 @@
     "find-bar": ["main", "find-bar", "700x140+740+38"],
     "skills-pills": ["main", "skills-drawer", "1440x60+0+560"],
     "skills-end": ["main", "skills-drawer-end", "1440x150+0+750"],
-    "skills-empty": ["empty-marketplace", "skills-drawer", "1440x260+0+500"]
+    "skills-empty": ["empty-marketplace", "skills-drawer", "1440x270+0+630"]
   },
   "steps": [
     { "id": "P-6.1", "surface": "Welcome screen", "path": "No session open", "crop": "welcome-top",

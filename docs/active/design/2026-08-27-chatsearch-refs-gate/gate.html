@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Session references — sign-off gate</title>
+<style>
+  :root { --ink:#1a1a1a; --ink2:#666; --line:#dedede; --bg:#f4f4f2; --acc:#2055ca;
+          --meas:#0a6a2c; --measbg:#e3f3e8; --judg:#8a5a00; --judgbg:#fff0d6; --yes:#137a3a; --no:#b3261e; --more:#8a5a00 }
+  * { box-sizing:border-box }
+  html, body { height:100% } body { margin:0; font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:var(--bg); display:flex; flex-direction:column }
+  main { flex:1; display:flex; flex-direction:column; align-items:center; padding:18px 24px 8px; min-height:0 }
+  .step { display:none; width:min(1060px, 100%); flex-direction:column; min-height:0 } .step.on { display:flex }
+  .kicker { color:var(--ink2); font-size:13px; margin-bottom:8px; display:flex; gap:6px; align-items:baseline } .pid { font-weight:700; color:var(--acc) } .count { margin-left:auto; font-variant-numeric:tabular-nums }
+  .stagewrap { background:#e6e6e3; border-radius:10px; padding:10px }
+  .stage { position:relative; text-align:center; line-height:0; font-size:0; max-height:56vh; overflow:auto }
+  .frame { display:none; position:relative; line-height:0 } .frame.on { display:inline-block; max-width:100% } .frame img { display:block; max-width:100%; height:auto }
+  .missing { font:14px system-ui; color:#666; padding:40px }
+  .mk { position:absolute; transform:translate(-50%,-50%); width:46px; height:46px; border-radius:50%; border:3px solid #fff; box-shadow:0 0 0 3px var(--acc), 0 4px 14px rgba(0,0,0,.6); background:transparent; animation:pulse 1.6s ease-in-out infinite; pointer-events:none }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 3px var(--acc), 0 4px 14px rgba(0,0,0,.6) } 50% { box-shadow:0 0 0 7px rgba(32,85,202,.55), 0 4px 14px rgba(0,0,0,.6) } }
+  .figbar { display:flex; justify-content:space-between; margin-top:8px; min-height:22px } .tab, .ctab { font:12px system-ui; padding:2px 9px; border:1px solid #bbb; background:#fff; border-radius:999px; margin-right:4px; cursor:pointer; color:#444 }
+  .tab.on { background:#333; color:#fff; border-color:#333 } .ctab.on { background:var(--acc); color:#fff; border-color:var(--acc) }
+  .what { font-size:21px; font-weight:650; line-height:1.3; margin:18px 0 6px } .fix { font-size:17px; color:#1f3a78; margin:0 0 8px }
+  .meta { display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; font-size:13px; color:var(--ink2); min-height:22px }
+  .kind { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:2px 8px; border-radius:8px } .kind-measured { background:var(--measbg); color:var(--meas) } .kind-judgment { background:var(--judgbg); color:var(--judg) }
+  .risk { margin:0; color:#7a3b00 } .why summary { cursor:pointer; color:var(--acc) } .why { max-width:900px } .why p, .why ul { margin:6px 0 0 }
+  .decide { display:flex; gap:12px; align-items:center; margin-top:14px; flex-wrap:wrap }
+  .decide button { font:600 17px system-ui; padding:12px 26px; border-radius:10px; border:2px solid transparent; cursor:pointer; color:#fff } .decide kbd { font:11px ui-monospace,monospace; background:rgba(255,255,255,.25); padding:1px 5px; border-radius:4px; margin-left:8px }
+  .yes { background:var(--yes) } .no { background:var(--no) } .more { background:var(--more) } .decide button.on { border-color:#111; box-shadow:0 0 0 3px #fff, 0 0 0 5px #111 } .step.decided .decide button:not(.on) { opacity:.35 }
+  .note { flex:1; min-width:200px; font:14px system-ui; padding:10px 12px; border:1px solid var(--line); border-radius:8px }
+  nav { display:flex; align-items:center; gap:10px; padding:10px 24px 16px; justify-content:center; flex-wrap:wrap }
+  nav .arrow { font:14px system-ui; padding:6px 12px; border:1px solid #bbb; background:#fff; border-radius:8px; cursor:pointer } nav .arrow kbd { font:11px ui-monospace,monospace; color:#888; margin:0 3px }
+  .dots { display:flex; gap:5px; flex-wrap:wrap; justify-content:center } .dot { width:14px; height:14px; border-radius:50%; background:#cfcfcf; border:2px solid transparent; cursor:pointer } .dot.yes { background:var(--yes) } .dot.no { background:var(--no) } .dot.more { background:var(--more) } .dot.on { border-color:#111 } .dot.sum { border-radius:3px }
+  .summary { display:none; width:min(1060px,100%) } .summary.on { display:block } .summary h1 { font-size:22px; margin:0 0 8px } .summary table { border-collapse:collapse; width:100%; margin:10px 0 } .summary td, .summary th { border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; font-size:14px } .summary td.v-yes { color:var(--yes); font-weight:700 } .summary td.v-no { color:var(--no); font-weight:700 } .summary td.v-more { color:var(--more); font-weight:700 }
+  #feedback { width:100%; min-height:150px; font:12.5px ui-monospace,monospace; padding:10px; border:1px solid var(--line); border-radius:8px } #copy { font:600 15px system-ui; padding:10px 18px; border-radius:8px; border:0; background:var(--acc); color:#fff; cursor:pointer; margin:8px 0 } .closing { color:var(--ink2); font-size:13px }
+  #st { color:var(--ink2); font-size:13px }
+</style></head><body>
+<main>
+<section class="step" data-key="D2:1" data-idx="0">
+  <div class="kicker"><span class="pid">D2</span> Search card — open on its own, or stay closed? · Chat · search results card<span class="count">1 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/search-collapsed--midnight--today.png" alt=""><span class="mk" style="left:39%;top:47%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/search-collapsed--halftone-dimension--today.png" alt=""><span class="mk" style="left:39%;top:47%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">When Claude searches your past conversations, the result card starts closed inside its own closed group — you click twice before you see a Preview button.</p>
+  <p class="fix">→ Leave it closed like every other tool card, or open the results automatically so Preview is one click away.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span><details class="why"><summary>Why / details</summary><p>This used to open automatically for exactly this reason, and that was deliberately reversed — most searches get skimmed once and scrolled past, so a card that force-opens itself was judged more annoying than useful. Reopening it here trades that back for faster access to Preview/Resume.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="D2:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-states:1" data-idx="1">
+  <div class="kicker"><span class="pid">M-states</span> Search results — every state it can show · Tool gallery · chatsearch-find<span class="count">2 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/find-table--midnight--today.png" alt=""><span class="mk" style="left:16%;top:4%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/find-table--halftone-dimension--today.png" alt=""><span class="mk" style="left:16%;top:4%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">One list, eight different situations: found and open, blocked two different ways, gone from this device, a different assistant, no title, unreadable, and simply not found.</p>
+  <p class="fix">→ Confirm this covers everything you'd expect to see — nothing new to design here, just a look before backend work starts.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-states:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-states:2" data-idx="2">
+  <div class="kicker"><span class="pid">M-states</span> Search results — every state it can show · Tool gallery · chatsearch-find<span class="count">3 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/find-table--midnight--today.png" alt=""><span class="mk" style="left:25%;top:23%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/find-table--halftone-dimension--today.png" alt=""><span class="mk" style="left:25%;top:23%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">When Resume can't work, the row says why in plain words right where the date would be — not hidden behind a hover tooltip.</p>
+  <p class="fix">→ Confirm this reads clearly at a glance.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-states:2" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-states:3" data-idx="3">
+  <div class="kicker"><span class="pid">M-states</span> Search results — every state it can show · Tool gallery · chatsearch-find<span class="count">4 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/find-table--midnight--today.png" alt=""><span class="mk" style="left:86%;top:40%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/find-table--halftone-dimension--today.png" alt=""><span class="mk" style="left:86%;top:40%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">A conversation whose transcript is gone from this device disables its Preview button too, not just Resume — there is nothing left to read.</p>
+  <p class="fix">→ Confirm this is the right call rather than hiding the row entirely.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-states:3" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-states:4" data-idx="4">
+  <div class="kicker"><span class="pid">M-states</span> Search results — every state it can show · Tool gallery · chatsearch-find<span class="count">5 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/find-table--midnight--today.png" alt=""><span class="mk" style="left:16%;top:4%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/find-table--halftone-dimension--today.png" alt=""><span class="mk" style="left:16%;top:4%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">On a phone, there's no search index yet, so this whole list can't be built — but the small title above it still says “Found 8 past conversations,” a promise the screen underneath doesn't keep.</p>
+  <p class="fix">→ The title needs to stop claiming a list exists when it doesn't — flagged for the phone-specific follow-up work, not a decision for right now.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span><details class="why"><summary>Why / details</summary><p>Couldn't be screenshotted live — the design sandbox has no way to fake “no phone search index,” so this is confirmed by reading the code that decides what the title says versus what the list falls back to, not by a picture of it actually happening.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-states:4" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-states:5" data-idx="5">
+  <div class="kicker"><span class="pid">M-states</span> Search results — every state it can show · Tool gallery · chatsearch-find<span class="count">6 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/find-table--midnight--today.png" alt=""><span class="mk" style="left:26%;top:95%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/find-table--halftone-dimension--today.png" alt=""><span class="mk" style="left:26%;top:95%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">If Claude trims the search command's output itself (piping it through something like “| head -3”), the result renders as plain typed text instead of a card — building a card from a partial answer would risk showing wrong information.</p>
+  <p class="fix">→ Confirm this fallback is the right call.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-states:5" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-show:1" data-idx="6">
+  <div class="kicker"><span class="pid">M-show</span> Opening one specific conversation · Tool gallery · chatsearch-show<span class="count">7 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/show-card--midnight--today.png" alt=""><span class="mk" style="left:12%;top:14%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/show-card--halftone-dimension--today.png" alt=""><span class="mk" style="left:12%;top:14%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">When Claude opens one conversation by name instead of searching, the card header says “Past conversation” and shows just that one row.</p>
+  <p class="fix">→ Confirm this wording and layout are fine.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-show:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-show:2" data-idx="7">
+  <div class="kicker"><span class="pid">M-show</span> Opening one specific conversation · Tool gallery · chatsearch-show<span class="count">8 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/show-card--midnight--today.png" alt=""><span class="mk" style="left:13%;top:34%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/show-card--halftone-dimension--today.png" alt=""><span class="mk" style="left:13%;top:34%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">A technical safety check: the code that recognizes “this line names one conversation” could theoretically be fooled by a search list if two conversation ids were identical for the first 35 characters — vanishingly unlikely, and not something that has ever happened, but worth a one-line fix to close off.</p>
+  <p class="fix">→ Confirm you're fine with a small code fix here, no visual change.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-show:2" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-header:1" data-idx="8">
+  <div class="kicker"><span class="pid">M-header</span> Reading a past conversation — the top bar · Side panel · preview header<span class="count">9 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/preview-header--midnight--today.png" alt=""><span class="mk" style="left:26%;top:6%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/preview-header--halftone-dimension--today.png" alt=""><span class="mk" style="left:26%;top:6%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">Left to right: a list toggle, the conversation's title, a Resume button, a tag icon (same one as the resume screen), expand, and close.</p>
+  <p class="fix">→ Confirm this control lineup and order are right.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-header:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-header:2" data-idx="9">
+  <div class="kicker"><span class="pid">M-header</span> Reading a past conversation — the top bar · Side panel · preview header<span class="count">10 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/preview-header--midnight--today.png" alt=""><span class="mk" style="left:48%;top:88%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/preview-header--halftone-dimension--today.png" alt=""><span class="mk" style="left:48%;top:88%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">Where Claude used tools in between messages (reading files, running commands), the panel marks the gap — here, “3 tool calls not shown” — instead of pretending the conversation flowed seamlessly.</p>
+  <p class="fix">→ Confirm this marker reads clearly.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-header:2" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-top:1" data-idx="10">
+  <div class="kicker"><span class="pid">M-top</span> Reading a past conversation — scrolling further back · Side panel · preview, scrolled to top<span class="count">11 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/preview-top--midnight--today.png" alt=""><span class="mk" style="left:48%;top:38%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/preview-top--halftone-dimension--today.png" alt=""><span class="mk" style="left:48%;top:38%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">A quiet caption says “Past conversation · read-only · Claude Code”, and a “Load older” button appears once you've scrolled back as far as this panel has loaded — only 40 messages come over at once.</p>
+  <p class="fix">→ Confirm the caption wording and the Load older control are fine as-is.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-top:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-tags:1" data-idx="11">
+  <div class="kicker"><span class="pid">M-tags</span> Tagging and noting a past conversation · Side panel · tag icon<span class="count">12 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/tag-sheet-crop--midnight--today.png" alt=""><span class="mk" style="left:28%;top:34%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/tag-sheet-crop--halftone-dimension--today.png" alt=""><span class="mk" style="left:28%;top:34%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">Clicking the tag icon opens the same tag-and-note editor the Resume screen already uses — nothing new was drawn for this.</p>
+  <p class="fix">→ Confirm reusing that exact editor here is right.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-tags:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-rightclick:1" data-idx="12">
+  <div class="kicker"><span class="pid">M-rightclick</span> Right-clicking inside a past conversation · Side panel · context menu<span class="count">13 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/context-menu-crop--midnight--today.png" alt=""><span class="mk" style="left:39%;top:10%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/context-menu-crop--halftone-dimension--today.png" alt=""><span class="mk" style="left:39%;top:10%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">Right-clicking text inside a previewed conversation offers the same menu the live chat does — Ask about this, Copy, Select all — nothing missing, nothing extra.</p>
+  <p class="fix">→ Confirm this matches your expectations for a read-only view.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-rightclick:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="D3:1" data-idx="13">
+  <div class="kicker"><span class="pid">D3</span> What “Ask about this” types into your message box · Composer · after clicking Ask about this<span class="count">14 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/ask-scaffold-crop--midnight--today.png" alt=""><span class="mk" style="left:42%;top:17%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/ask-scaffold-crop--halftone-dimension--today.png" alt=""><span class="mk" style="left:42%;top:17%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">Picking “Ask about this” on something inside a past conversation types this ahead of your question: “(from the past conversation “Permission ask timeout”, id a3f2aaaa-1111-4111-8111-111111111111) Earlier, you shared this code:”</p>
+  <p class="fix">→ The id has to be in there — it's the only way Claude can go read more of that old conversation — but is the wording OK to send as-is, or does it need to read more naturally?</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span><details class="why"><summary>Why / details</summary><p>Nothing about the exact phrasing has been signed off yet. This is real captured text from the design sandbox, not a mock-up.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="D3:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="D1:1" data-idx="14">
+  <div class="kicker"><span class="pid">D1</span> “Referenced conversations” list — keep or cut? · Side panel · file list, bottom section<span class="count">15 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/referenced-crop--midnight--today.png" alt=""><span class="mk" style="left:44%;top:14%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/referenced-crop--halftone-dimension--today.png" alt=""><span class="mk" style="left:44%;top:14%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">A running list of every past conversation you've previewed this session sits at the bottom of the file list — shown here with two entries, one from each assistant.</p>
+  <p class="fix">→ Keep it, or cut it? It's the one part of this feature nobody has found a clear need for — the search result cards stay visible in the chat either way, and the reading panel works fine without this list.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span><details class="why"><summary>Why / details</summary><p>Already built and easy to remove cleanly if you'd rather not have it — this is a genuine “is this worth the screen space” call, not a bug.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="D1:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-errors:1" data-idx="15">
+  <div class="kicker"><span class="pid">M-errors</span> When a past conversation can't be read · Side panel · error states<span class="count">16 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/error-crop--midnight--today.png" alt=""><span class="mk" style="left:40%;top:33%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/error-crop--halftone-dimension--today.png" alt=""><span class="mk" style="left:40%;top:33%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">The one you can actually see today: “Couldn't read this transcript: EACCES: permission denied, open '...'” with a Retry button — the real underlying error, not a guess.</p>
+  <p class="fix">→ Confirm this reads clearly to you as a non-developer.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-errors:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-errors:2" data-idx="16">
+  <div class="kicker"><span class="pid">M-errors</span> When a past conversation can't be read · Side panel · error states<span class="count">17 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/error-crop--midnight--today.png" alt=""><span class="mk" style="left:70%;top:60%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/error-crop--halftone-dimension--today.png" alt=""><span class="mk" style="left:70%;top:60%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">If a read fails and the app genuinely doesn't know why, it says so instead of guessing: “Unable to read this transcript.” plus “The read didn't report a reason. Diagnosing will collect the app's logs so Claude can look at what happened.” — with Report a bug / Diagnose with Claude buttons instead of Retry.</p>
+  <p class="fix">→ Confirm this wording is honest and clear — this exact screen can't be forced to appear yet, so there's no picture of it, only the wording itself.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-errors:2" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-errors:3" data-idx="17">
+  <div class="kicker"><span class="pid">M-errors</span> When a past conversation can't be read · Side panel · error states<span class="count">18 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/error-crop--midnight--today.png" alt=""><span class="mk" style="left:15%;top:60%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/error-crop--halftone-dimension--today.png" alt=""><span class="mk" style="left:15%;top:60%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">Four more specific reasons a read can fail are written but not wired up to anything yet — read them now so you've seen them before they ever appear: “Not a conversation id” · “This conversation is not in the index on this device” · “This file is a helper transcript, not a conversation” · “Transcript is stored outside the folders YouCoded may read”.</p>
+  <p class="fix">→ Confirm all four read clearly in plain English — no picture for these either, they're not connected to anything yet.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-errors:3" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="M-narrow:1" data-idx="18">
+  <div class="kicker"><span class="pid">M-narrow</span> Same panel, on a phone · Side panel · 390px wide<span class="count">19 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/narrow-header--midnight--today.png" alt=""><span class="mk" style="left:66%;top:33%"></span></div><div class="frame" data-theme="halftone-dimension" data-col="today"><img src="images/narrow-header--halftone-dimension--today.png" alt=""><span class="mk" style="left:66%;top:33%"></span></div></div>
+    <div class="figbar"><span class="tabs"><button class="tab on" data-theme="midnight">Midnight</button><button class="tab" data-theme="halftone-dimension">Halftone</button></span><span class="seg"></span></div></div>
+  <p class="what">At phone width the Resume button shrinks to just an arrow icon so the whole row — list, title, Resume, tag, expand, close — still fits without crowding.</p>
+  <p class="fix">→ Confirm this still feels usable at this width.</p>
+  <div class="meta"><span class="kind kind-measured">measured</span></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="M-narrow:1" placeholder="note (optional)"></div>
+</section>
+<section class="step" data-key="D4:1" data-idx="19">
+  <div class="kicker"><span class="pid">D4</span> The card for a conversation Claude puts in front of you — how do you open it? · Design sandbox · locked look, no trigger built<span class="count">20 / 20</span></div>
+  <div class="stagewrap"><div class="stage"><div class="frame on" data-theme="midnight" data-col="today"><img src="images/present-r5--midnight--today.png" alt=""><span class="mk" style="left:64%;top:55%"></span></div></div>
+    <div class="figbar"><span class="tabs"></span><span class="seg"></span></div></div>
+  <p class="what">The look of this card is already locked in (shown here) — but nothing builds it yet, because there's no way for Claude to tell the app “show this conversation”.</p>
+  <p class="fix">→ Three ways to get there: (a) reuse an existing search command as the signal — smallest change; (b) add a new command to the search plugin — but people who already installed it won't get the update until a separate app fix ships; (c) give the YouCoded assistant (not Claude Code) a real dedicated tool for this — a small, contained change, but only works for that one assistant.</p>
+  <div class="meta"><span class="kind kind-judgment">judgment</span><details class="why"><summary>Why / details</summary><p>Verified: this app cannot hand Claude Code a brand-new custom tool the way it can for its own built-in assistant — checked by searching for any app-made tool server across the whole codebase; the app only connects Claude Code to other people's tools, or ones reached by typing a command.</p></details></div>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
+    <input class="note" data-note="D4:1" placeholder="note (optional)"></div>
+</section>
+<section class="summary"><h1>Session references — sign-off gate — your answers</h1>
+<p>Nothing here touches the backend yet — this is all fake data in the design sandbox. Four things below are real decisions only you can make (marked Judgment); the rest are already-built surfaces asking “does this look right?” (marked Measured). Click Yes, No, or Tell me more on each; nothing is built or changed until you say so.</p>
+<table><thead><tr><th>Item</th><th>#</th><th>Point</th><th>Answer</th><th>Note</th></tr></thead><tbody id="rows"></tbody></table>
+<button id="copy">Copy feedback</button> <span id="copied"></span>
+<textarea id="feedback" readonly></textarea>
+<div class="closing">That's everything. Four real decisions (D1–D4) plus a look at every other new surface — say the word whenever you're ready for backend work to start.</div>
+</section>
+</main>
+<nav><button class="arrow" id="prev"><kbd>←</kbd> back</button><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot sum" title="Summary"></span></span><button class="arrow" id="next">next <kbd>→</kbd></button><span id="st"></span></nav>
+<script>
+(function(){
+  const KEY="Chat Search Preview Gate", STEPS=[{"key": "D2:1", "id": "D2", "n": 1, "kind": "judgment", "what": "When Claude searches your past conversations, the result card starts closed inside its own closed group \u2014 you click twice before you see a Preview button."}, {"key": "M-states:1", "id": "M-states", "n": 1, "kind": "measured", "what": "One list, eight different situations: found and open, blocked two different ways, gone from this device, a different assistant, no title, unreadable, and simply not found."}, {"key": "M-states:2", "id": "M-states", "n": 2, "kind": "measured", "what": "When Resume can't work, the row says why in plain words right where the date would be \u2014 not hidden behind a hover tooltip."}, {"key": "M-states:3", "id": "M-states", "n": 3, "kind": "measured", "what": "A conversation whose transcript is gone from this device disables its Preview button too, not just Resume \u2014 there is nothing left to read."}, {"key": "M-states:4", "id": "M-states", "n": 4, "kind": "measured", "what": "On a phone, there's no search index yet, so this whole list can't be built \u2014 but the small title above it still says \u201cFound 8 past conversations,\u201d a promise the screen underneath doesn't keep."}, {"key": "M-states:5", "id": "M-states", "n": 5, "kind": "measured", "what": "If Claude trims the search command's output itself (piping it through something like \u201c| head -3\u201d), the result renders as plain typed text instead of a card \u2014 building a card from a partial answer would risk showing wrong information."}, {"key": "M-show:1", "id": "M-show", "n": 1, "kind": "measured", "what": "When Claude opens one conversation by name instead of searching, the card header says \u201cPast conversation\u201d and shows just that one row."}, {"key": "M-show:2", "id": "M-show", "n": 2, "kind": "measured", "what": "A technical safety check: the code that recognizes \u201cthis line names one conversation\u201d could theoretically be fooled by a search list if two conversation ids were identical for the first 35 characters \u2014 vanishingly unlikely, and not something that has ever happened, but worth a one-line fix to close off."}, {"key": "M-header:1", "id": "M-header", "n": 1, "kind": "measured", "what": "Left to right: a list toggle, the conversation's title, a Resume button, a tag icon (same one as the resume screen), expand, and close."}, {"key": "M-header:2", "id": "M-header", "n": 2, "kind": "measured", "what": "Where Claude used tools in between messages (reading files, running commands), the panel marks the gap \u2014 here, \u201c3 tool calls not shown\u201d \u2014 instead of pretending the conversation flowed seamlessly."}, {"key": "M-top:1", "id": "M-top", "n": 1, "kind": "measured", "what": "A quiet caption says \u201cPast conversation \u00b7 read-only \u00b7 Claude Code\u201d, and a \u201cLoad older\u201d button appears once you've scrolled back as far as this panel has loaded \u2014 only 40 messages come over at once."}, {"key": "M-tags:1", "id": "M-tags", "n": 1, "kind": "measured", "what": "Clicking the tag icon opens the same tag-and-note editor the Resume screen already uses \u2014 nothing new was drawn for this."}, {"key": "M-rightclick:1", "id": "M-rightclick", "n": 1, "kind": "measured", "what": "Right-clicking text inside a previewed conversation offers the same menu the live chat does \u2014 Ask about this, Copy, Select all \u2014 nothing missing, nothing extra."}, {"key": "D3:1", "id": "D3", "n": 1, "kind": "judgment", "what": "Picking \u201cAsk about this\u201d on something inside a past conversation types this ahead of your question: \u201c(from the past conversation \u201cPermission ask timeout\u201d, id a3f2aaaa-1111-4111-8111-111111111111) Earlier, you shared this code:\u201d"}, {"key": "D1:1", "id": "D1", "n": 1, "kind": "judgment", "what": "A running list of every past conversation you've previewed this session sits at the bottom of the file list \u2014 shown here with two entries, one from each assistant."}, {"key": "M-errors:1", "id": "M-errors", "n": 1, "kind": "measured", "what": "The one you can actually see today: \u201cCouldn't read this transcript: EACCES: permission denied, open '...'\u201d with a Retry button \u2014 the real underlying error, not a guess."}, {"key": "M-errors:2", "id": "M-errors", "n": 2, "kind": "measured", "what": "If a read fails and the app genuinely doesn't know why, it says so instead of guessing: \u201cUnable to read this transcript.\u201d plus \u201cThe read didn't report a reason. Diagnosing will collect the app's logs so Claude can look at what happened.\u201d \u2014 with Report a bug / Diagnose with Claude buttons instead of Retry."}, {"key": "M-errors:3", "id": "M-errors", "n": 3, "kind": "measured", "what": "Four more specific reasons a read can fail are written but not wired up to anything yet \u2014 read them now so you've seen them before they ever appear: \u201cNot a conversation id\u201d \u00b7 \u201cThis conversation is not in the index on this device\u201d \u00b7 \u201cThis file is a helper transcript, not a conversation\u201d \u00b7 \u201cTranscript is stored outside the folders YouCoded may read\u201d."}, {"key": "M-narrow:1", "id": "M-narrow", "n": 1, "kind": "measured", "what": "At phone width the Resume button shrinks to just an arrow icon so the whole row \u2014 list, title, Resume, tag, expand, close \u2014 still fits without crowding."}, {"key": "D4:1", "id": "D4", "n": 1, "kind": "judgment", "what": "The look of this card is already locked in (shown here) \u2014 but nothing builds it yet, because there's no way for Claude to tell the app \u201cshow this conversation\u201d."}];   // STEPS: [{key,id,n,kind,what}]
+  let st={}; try{ st=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){}
+  const q=new URLSearchParams(location.search).get('step');   // ?step=N for screenshots/deep links
+  let cur=Math.min(q!=null?+q:(st.__cur||0), STEPS.length);
+  const steps=[...document.querySelectorAll('.step')], sum=document.querySelector('.summary'), dots=[...document.querySelectorAll('.dot')];
+  const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} paint(); };
+  function go(i){ cur=Math.max(0,Math.min(i,STEPS.length)); st.__cur=cur; save(); window.scrollTo(0,0); }
+  function decide(v){ if(cur>=STEPS.length) return; st[STEPS[cur].key]=v; save(); setTimeout(()=>go(cur+1), 260); }
+  function paint(){
+    steps.forEach((s,i)=>{ s.classList.toggle('on', i===cur); const v=st[s.dataset.key]; s.classList.toggle('decided', !!v);
+      s.querySelectorAll('.decide button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); });
+    sum.classList.toggle('on', cur===STEPS.length);
+    dots.forEach((d,i)=>{ d.classList.toggle('on', i===cur); if(i<STEPS.length){ const v=st[STEPS[i].key]; d.classList.toggle('yes', v==='yes'); d.classList.toggle('no', v==='no'); d.classList.toggle('more', v==='more'); } });
+    let done=0; const lines=[KEY+' feedback ('+new Date().toISOString().slice(0,10)+')']; const rows=[]; let lastId='';
+    for(const s of STEPS){ const v=st[s.key]; if(v) done++; const note=(st['note:'+s.key]||'').trim();
+      lines.push(s.id+' #'+s.n+': '+(v||'?')+(note?' — '+note:'')); rows.push('<tr><td>'+(s.id!==lastId?s.id:'')+'</td><td>'+s.n+'</td><td>'+s.what+'</td><td class="v-'+(v||'')+'">'+(v||'—')+'</td><td>'+(note?note.replace(/</g,'&lt;'):'')+'</td></tr>'); lastId=s.id; }
+    document.getElementById('feedback').value=lines.join('\n'); document.getElementById('rows').innerHTML=rows.join('');
+    document.getElementById('st').textContent=done+' of '+STEPS.length+' decided';
+  }
+  steps.forEach(s=>{ s.querySelectorAll('.decide button').forEach(b=>b.addEventListener('click',()=>decide(b.dataset.v)));
+    const n=s.querySelector('.note'); n.value=st['note:'+s.dataset.key]||''; n.addEventListener('input',()=>{ st['note:'+s.dataset.key]=n.value; save(); });
+    const show=()=>{ const t=s.querySelector('.tab.on')?.dataset.theme, c=s.querySelector('.ctab.on')?.dataset.col;
+      s.querySelectorAll('.frame').forEach(f=>f.classList.toggle('on', (!t||f.dataset.theme===t)&&(!c||f.dataset.col===c))); };
+    s.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{ s.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); show(); }));
+    s.querySelectorAll('.ctab').forEach(b=>b.addEventListener('click',()=>{ s.querySelectorAll('.ctab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); show(); }));
+  });
+  dots.forEach((d,i)=>d.addEventListener('click',()=>go(i)));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1)); document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; const k=e.key.toLowerCase();
+    if(k==='y') decide('yes'); else if(k==='n') decide('no'); else if(k==='m') decide('more'); else if(e.key==='ArrowRight') go(cur+1); else if(e.key==='ArrowLeft') go(cur-1);
+    else if(k==='t'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.tab')]; if(t.length<2) return; const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%t.length].click(); }
+    else if(e.code==='Space'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.ctab')]; if(t.length<2) return; e.preventDefault(); const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%t.length].click(); } });
+  document.getElementById('copy').addEventListener('click',()=>{ const t=document.getElementById('feedback'); const ok=()=>{ document.getElementById('copied').textContent='Copied — paste it into the chat.'; };
+    (navigator.clipboard?.writeText(t.value)||Promise.reject()).then(ok,()=>{ t.select(); document.execCommand('copy'); ok(); }); });
+  paint();
+})();
+</script>
+</body></html>
