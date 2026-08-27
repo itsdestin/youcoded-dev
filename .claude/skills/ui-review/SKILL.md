@@ -58,24 +58,22 @@ then a **review page** — never a gallery, never a chat summary:
 1. Capture the branch: `bash scripts/ui-review/run-review.sh <worktree> scratch/<phase>`
    (it starts its own server on Vite 5473 and refuses if that port serves another worktree).
    For a second variant, a second worktree + run dir.
-2. Write `docs/active/design/<audit>/<phase>-cards.json` (copy `phase-c-cards.json`), then
-   `python3 scripts/ui-review/review-cards.py crop <spec>` and `… build <spec>`. Crop regions
-   come from `scripts/ui-review/crops.json`; add new ones there. The page is a **deck — one
-   point at a time**: one screenshot with ONE ring on the target, one line of problem, one
-   line of fix, `measured`/`judgment` tag, Yes / No / Tell me more (keys Y/N/M), progress dots, summary +
-   copyable feedback at the end. Rationale and ledger corrections go under the collapsed
-   "Why / details", never in the headline. Three formats were rejected before this one
-   (gallery → prose page → board of cards): "not clear where I'm supposed to glance/select".
-   `review-page.py` is the old prose format, kept only for the Phase A/B pages.
-3. Every item on the page carries, in this order: the problem **with the measured number
-   or the broken behaviour**, exactly what was edited, 1:1 crops of the element per theme
-   (before / after, a column per variant), what he'll notice + the risks *against* the
-   change, alternatives considered, and a decision control. **Tag each item `measured`,
-   `judgment` or `mixed`** and say which parts are which — on 2026-08-25 a taste argument
-   (P-12) went in as if it were a defect and was rightly rejected on sight.
-4. Hand Destin the page path; he pastes the generated feedback block. Act on it exactly;
-   record the decisions in the findings ledger (the row, not a new section), the guide,
-   the ROADMAP entry, and a `banner` on the page. Merge, archive, clean up.
+2. Write `docs/active/design/<audit>/<phase>-review.json` (copy `phase-c-review-v2.json`): one
+   step per point with `surface`, `path`, `crop`, `highlight` (`"auto"` for before/after, else
+   `{"selector": …}` measured by the rig), and the four texts — **headline** (≤ 25 words, what a
+   user sees), **changed** (what was edited, plain words, with `measured` when there is a number),
+   **notice** (what changes for users — intended and side effects), **risk** (what could look
+   wrong, or is not shown faithfully). The builder refuses jargon (token, primitive, selector,
+   IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box.
+3. `python3 scripts/ui-review/review-cards.py serve <spec>` **in the background** (it builds
+   first; fix every `missing:` line it prints — a measurement that is missing means the plan
+   needed a `measure` line before the Before run). The browser opens itself; Destin answers
+   Yes / No / Other per step with an optional note and presses Submit; the background command
+   exits with the summary (exit 0 = submitted, summary on stdout; 2 = nobody submitted before the
+   timeout; 3 = another process already serves this spec — neither 2 nor 3 carries answers, do not
+   invent a result) (`wait <spec>` if you lost the process). Never ask him to paste anything.
+4. Act on the summary exactly (`Other` + note = change it as described); record decisions in the
+   findings ledger row, the guide, the ROADMAP entry. Merge, archive, clean up.
 
 ## Red flags
 

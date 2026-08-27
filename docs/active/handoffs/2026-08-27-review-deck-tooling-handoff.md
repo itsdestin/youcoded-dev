@@ -1,7 +1,9 @@
 ---
-status: active
+status: shipped
 created: 2026-08-27
 ---
+
+Superseded by `docs/archive/specs/2026-08-27-review-deck-v2-design.md` (built on `feat/review-deck-v2`); gaps 1, 3, 5, 6, 7 closed there; 2 and 4 are ROADMAP ideas.
 
 # Hand-off: the UI review tooling (screenshot rig + review deck)
 

@@ -39,6 +39,10 @@
 //   {"dispatch": {"name": "buddy:attach-file", "detail": {...}}}  window CustomEvent
 //   {"scrollDialog": "bottom"|"top"|<px>}                 scroll the open dialog's body
 //   {"wait": 500}                                         pause (ms); every action accepts "settle"
+//   shot-level: "measure": ["<css or js:>", {"text": "Label", "tag": "button"}]
+//     → entry.measures[key] = {x,y,w,h} in window pixels (key = the css string or "text:<Label>");
+//       a missing element is recorded as null AND fails the shot, because a review deck asked for it.
+//   UI_REVIEW_RUN=<id>  stamped on every entry as `run` (coverage.mjs merges by it — hand-off gap 6)
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync, renameSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -185,7 +189,7 @@ async function session(theme) {
   const shot = async (file) => { const r = await send('Page.captureScreenshot', { format: 'png' }); writeFileSync(file, Buffer.from(r.data, 'base64')); };
   const probe = async () => JSON.parse(await evaluate(PROBE));
   const close = async () => { try { ws.close(); if (!ATTACH) await fetch(`http://127.0.0.1:${CDP_PORT}/json/close/${target.id}`); } catch { /* gone */ } };
-  return { send, evaluate, run, shot, probe, errors, close, selExpr };
+  return { send, evaluate, run, shot, probe, errors, close, selExpr, textExpr };
 }
 
 await waitForCdp();
@@ -195,7 +199,8 @@ for (const theme of THEMES) {
   const tdir = join(outDir, theme); mkdirSync(join(tdir, '_unverified'), { recursive: true });
   for (const s of plan.shots) {
     const sess = await session(theme);
-    const entry = { theme, name: s.name, verified: false, reasons: [], errors: [], contrastFails: [] };
+    // run stamps UI_REVIEW_RUN on every entry so coverage.mjs can merge manifests from one sweep (hand-off gap 6).
+    const entry = { theme, name: s.name, run: process.env.UI_REVIEW_RUN ?? null, verified: false, reasons: [], errors: [], contrastFails: [] };
     try {
       if (ATTACH) { await sess.evaluate(`localStorage.setItem('youcoded-theme', ${JSON.stringify(theme)})`); await sess.send('Page.reload'); }
       else await sess.send('Page.navigate', { url: wb(s.url ?? plan.base) });
@@ -219,6 +224,16 @@ for (const theme of THEMES) {
       await new Promise(r => setTimeout(r, s.settle ?? 500));
       const file = join(tdir, `${s.name}.png`);
       await sess.shot(file);
+      // Measure named elements for the review deck (spec §4.2): same DOM the screenshot shows.
+      if (Array.isArray(s.measure)) {
+        entry.measures = {};
+        for (const m of s.measure) {
+          const key = typeof m === 'string' ? m : `text:${m.text}`;
+          const expr = typeof m === 'string' ? sess.selExpr(m) : sess.textExpr(m.text, m.tag);
+          entry.measures[key] = await sess.evaluate(`(() => { const el = ${expr}; if (!el) return null; const r = el.getBoundingClientRect(); return { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) }; })()`).catch(() => null);
+          if (!entry.measures[key]) entry.reasons.push(`measure missing: ${key}`);
+        }
+      }
       // --- verification ---
       entry.reasons.push(...realFails);
       if (s.expect) {

@@ -82,3 +82,10 @@ docs/active/investigations/harness-eval-runs/**
 
 # UI-audit screenshot sheets (evidence for docs/active/design/2026-08-25-*); regenerate per the folder README
 docs/active/design/*-ui-audit/images/
+*.answers.json
+*.answers.*.json
+*.serve.json
+
+# Python bytecode from the deck tooling + its tests
+__pycache__/
+*.pyc

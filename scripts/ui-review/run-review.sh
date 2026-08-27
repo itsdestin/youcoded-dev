@@ -39,7 +39,16 @@ PORT_OFFSET="${YOUCODED_PORT_OFFSET:-300}"
 VITE_PORT=$((5173 + PORT_OFFSET))
 export WB_PORT=$VITE_PORT     # shot.mjs rewrites the plans' hardcoded 5233 to this
 mkdir -p "$OUT/sheets"
+# One id per sweep, stamped on every manifest entry: coverage merges by it, and the sheets
+# below are rebuilt only for the plans this sweep actually ran (hand-off gaps 6 and 7).
+RUN_ID="$(date +%s%3N)"; export UI_REVIEW_RUN=$RUN_ID
 STARTED_WB=0
+# WHY a trap and not just a line at the end: the port probe and the boot check both `exit 1`,
+# which skipped that last line — a refused probe left Vite running on 5473, and the NEXT sweep
+# then hit the wrong-worktree refusal because a foreign server was already answering.
+# Only ever kills a workbench THIS sweep started (STARTED_WB=1); a reused one is left alone.
+cleanup_wb() { [ "${STARTED_WB:-0}" = 1 ] && pkill -f "[v]ite --port $VITE_PORT" || true; }
+trap cleanup_wb EXIT
 if [[ "$REPORTS_ONLY" == 0 ]]; then
 
 # 1. Workbench (reuse one that is already up on this port).
@@ -74,7 +83,7 @@ IFS=',' read -r -a T <<< "$THEMES"
 JOBS="${UI_REVIEW_JOBS:-24}"
 PER_SHARD="${UI_REVIEW_SHARD_SIZE:-8}"     # shots per process before the plan is split further
 jobfile="$OUT/jobs.txt"; : > "$jobfile"
-idx=0
+idx=0; ports=()
 for plan in "$HERE"/plans/*.json; do
   name="$(basename "$plan" .json)"
   case "$name" in electron-*) continue;; esac
@@ -84,20 +93,24 @@ for plan in "$HERE"/plans/*.json; do
   for t in "${T[@]}"; do
     for ((k=0; k<n; k++)); do
       idx=$((idx+1))
-      echo "$plan $name $t $k/$n $((30000 + PORT_OFFSET + idx))" >> "$jobfile"   # CDP ports keyed by offset so two reviews never share one
+      port=$((30000 + PORT_OFFSET + idx)); ports+=("$port")
+      echo "$plan $name $t $k/$n $port" >> "$jobfile"   # CDP ports keyed by offset so two reviews never share one
     done
   done
 done
+bash "$HERE/probe-ports.sh" "${ports[@]}" || exit 1
 echo "[ui-review] $idx capture jobs, $JOBS at a time…"
 run_job() { CDP_PORT=$5 SHARD=$4 node "$HERE/shot.mjs" "$1" "$OUT/shots-$2" "$3" > "$OUT/run-$2-$3-${4%/*}.log" 2>&1 || true; }
 export -f run_job; export HERE OUT WB_PORT
 xargs -P "$JOBS" -L 1 bash -c 'run_job "$@"' _ < "$jobfile"
 fi
-rm -rf "$OUT/sheets"/*.jpg
-
 # 3. Sheets (verified shots only — misses live in _unverified/), reports, gallery.
+# A sweep rebuilds sheets only for the plans it ran (their manifests carry RUN_ID);
+# --reports-only rebuilds everything.
 for d in "$OUT"/shots-*; do
   name="${d##*/shots-}"
+  if [[ "$REPORTS_ONLY" == 0 ]] && ! grep -lq "\"run\": \"$RUN_ID\"" "$d"/manifest-*.json 2>/dev/null; then continue; fi
+  rm -f "$OUT/sheets/$name-"*.jpg
   bash "$HERE/montage.sh" "$d" "$OUT/sheets-$name" "$THEMES" >/dev/null
   for f in "$OUT/sheets-$name"/*.png; do [ -f "$f" ] && magick "$f" -resize 1800x -quality 82 "$OUT/sheets/$name-$(basename "$f" .png).jpg"; done
 done
@@ -106,5 +119,5 @@ node "$HERE/contrast-report.mjs" "$OUT"/shots-* > "$OUT/contrast.md"
 python3 "$HERE/make-gallery.py" "$OUT/sheets" "$OUT/gallery.html" >/dev/null
 echo "[ui-review] done → $OUT/gallery.html"
 head -3 "$OUT/coverage.md"
-grep -c MISSED "$OUT/coverage.md" | xargs -I{} echo "[ui-review] {} surfaces MISSED — read $OUT/coverage.md before writing any finding"
-[ "$STARTED_WB" = 1 ] && pkill -f "[v]ite --port $VITE_PORT" || true
+(grep -c MISSED "$OUT/coverage.md" || true) | xargs -I{} echo "[ui-review] {} surfaces MISSED — read $OUT/coverage.md before writing any finding"
+# (the workbench this sweep started is stopped by the EXIT trap above, on every exit path)
