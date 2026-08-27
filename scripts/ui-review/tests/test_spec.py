@@ -63,6 +63,18 @@ class SpecTests(unittest.TestCase):
     def test_warnings_for_long_risk_and_numberless_measured(self):
         s = load_spec(write_spec(self.d)); s['steps'][0]['risk'] = ' '.join(['r'] * 41); s['steps'][0]['measured'] = 'a bit taller'
         _, warnings = validate(s); self.assertEqual(len(warnings), 2)
+    def test_choice_step_rules(self):
+        from deck.spec import is_choice
+        spec = load_spec(write_spec(self.d))
+        st = {'id': 'C-1', 'surface': 'Home', 'path': 'Chat', 'headline': 'Which?', 'variants': [{'id': 'A', 'label': 'a', 'crop': 'c', 'summary': 'x'}]}
+        spec['steps'].append(st); self.assertTrue(is_choice(st))
+        errs = validate(spec)[0]; self.assertTrue(any('at least 2 variants' in e for e in errs))
+        st['variants'].append({'id': 'A', 'label': 'b', 'crop': 'nope', 'summary': 'uses a token', 'highlight': {}})
+        errs = validate(spec)[0]
+        for want in ('duplicate variant id "A"', 'unknown crop "nope"', 'banned word "token"', 'highlight must have selector, text or box'):
+            self.assertTrue(any(want in e for e in errs), (want, errs))
+        st['variants'][1] = {'id': 'B', 'label': 'b', 'crop': 'c', 'summary': 'fine'}
+        self.assertEqual([e for e in validate(spec)[0] if e.startswith('C-1')], [])   # no changed/notice needed on a choice step
     def test_duplicate_ids(self):
         s = load_spec(write_spec(self.d)); s['steps'].append(dict(s['steps'][0]))
         self.assertTrue(any('duplicate id' in e for e in validate(s)[0]))

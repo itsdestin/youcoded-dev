@@ -64,7 +64,7 @@ then a **review page** — never a gallery, never a chat summary:
    user sees), **changed** (what was edited, plain words, with `measured` when there is a number),
    **notice** (what changes for users — intended and side effects), **risk** (what could look
    wrong, or is not shown faithfully). The builder refuses jargon (token, primitive, selector,
-   IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box.
+   IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box. **Several designs for one thing are ONE choice step** (`variants: [...]` — one page, pick one; see the README), never a yes/no step per design (`phase-d-mockups.json`).
 3. `python3 scripts/ui-review/review-cards.py serve <spec>` **in the background** (it builds
    first; fix every `missing:` line it prints — a measurement that is missing means the plan
    needed a `measure` line before the Before run). The browser opens itself. **The address to give Destin is the `[deck] http://127.0.0.1:<port>/<out>.html` line `serve` prints** (also in `<spec>.serve.json` next to the spec) — quote it whole; the bare port now redirects to the deck, but never guess a URL you have not read. Destin answers

@@ -7,7 +7,7 @@ import json
 import os
 
 from .crops import image_name
-from .spec import SpecError, all_themes, run_names, step_themes, validate, workspace_root
+from .spec import SpecError, all_themes, is_choice, run_names, step_themes, validate, workspace_root
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -56,9 +56,20 @@ def tokens_css(tokens):
     return '\n'.join(lines)
 
 
+def _choice_step(spec, st, boxes, run):
+    return {
+        'id': st['id'], 'kind': 'choice', 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
+        'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
+        'variants': [{'id': v['id'], 'label': v['label'], 'summary': v['summary'], 'measured': v.get('measured', ''), 'risk': v.get('risk', '')} for v in st['variants']],
+        'images': {t: {v['id']: f'{spec["images"]}/{image_name(v["crop"], t, run)}' for v in st['variants']} for t in step_themes(spec, st)},
+        'boxes': boxes.get(st['id'], {}),
+        **({'themes': list(st['themes'])} if st.get('themes') else {}),
+    }
+
+
 def deck_data(spec, boxes):
     runs = run_names(spec)
-    steps = [{
+    steps = [_choice_step(spec, st, boxes, runs[-1]) if is_choice(st) else {
         'id': st['id'], 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
         'changed': st['changed'], 'measured': st.get('measured', ''), 'notice': st['notice'], 'risk': st.get('risk', ''),
         'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in step_themes(spec, st)},
@@ -78,6 +89,13 @@ def build_page(spec, boxes):
     runs = run_names(spec)
     for st in spec['steps']:
         for t in step_themes(spec, st):
+            if is_choice(st):
+                for v in st['variants']:
+                    if not os.path.exists(os.path.join(spec['_base'], spec['images'], image_name(v['crop'], t, runs[-1]))):
+                        errors.append(f'{st["id"]}/{v["id"]}: no picture for {t} — check coverage.md for that shot')
+                    if v.get('highlight') and v['id'] not in (boxes.get(st['id'], {}).get(t) or {}):
+                        errors.append(f'{st["id"]}/{v["id"]}: no highlight box for {t} — `crop` could not resolve it (see its output)')
+                continue
             for r in runs:
                 if not os.path.exists(os.path.join(spec['_base'], spec['images'], image_name(st['crop'], t, r))):
                     errors.append(f'{st["id"]}: no picture for {t}/{r} — run `crop` (and check coverage.md for that shot)')

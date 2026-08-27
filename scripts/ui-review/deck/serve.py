@@ -33,17 +33,20 @@ def write_atomic(path, obj):
 
 def summary(spec, state):
     """One line per step, ledger id first, in spec order (spec §4.5)."""
-    counts = {'yes': 0, 'no': 0, 'other': 0, 'skip': 0}
+    counts = {'yes': 0, 'no': 0, 'other': 0, 'pick': 0, 'skip': 0}
     lines = []
     for st in spec['steps']:
         a = (state.get('answers') or {}).get(st['id']) or {}
         v = a.get('v') or 'skip'
         counts[v] = counts.get(v, 0) + 1
         note = (a.get('note') or '').strip()
-        lines.append(f'{st["id"]} {v}' + (f' — "{note}"' if note else ''))
+        # A choice step answers with the variant it picked ("P-19 pick B"); "no" there means none of them.
+        what = f'pick {a.get("pick", "?")}' if v == 'pick' else ('none' if v == 'no' and st.get('variants') else v)
+        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else ''))
     when = (state.get('submitted') or '')[:16].replace('T', ' ')
     head = (f'{spec["key"]} · {"submitted " + when if when else "not submitted"} · '
-            f'{counts["yes"]} yes · {counts["no"]} no · {counts["other"]} other · {counts["skip"]} skipped')
+            f'{counts["yes"]} yes · {counts["no"]} no · {counts["other"]} other · '
+            + (f'{counts["pick"]} picked · ' if counts['pick'] else '') + f'{counts["skip"]} skipped')
     return head + '\n' + '\n'.join(lines)
 
 

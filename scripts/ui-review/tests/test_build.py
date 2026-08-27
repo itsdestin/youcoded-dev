@@ -71,4 +71,20 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(d['themes'], ['midnight', 'light'])                       # the deck-wide list is untouched
         self.assertIn('st.themes || DECK.themes', html)
 
+    def test_choice_step_cuts_one_picture_per_variant_from_the_last_run(self):
+        # Destin 2026-08-27: variants of one thing are ONE question on one page, not a yes/no each.
+        self.spec['steps'].append({'id': 'S-4', 'surface': 'Home', 'path': 'Chat', 'headline': 'Which one?',
+            'variants': [{'id': 'A', 'label': 'Plain', 'crop': 'c', 'summary': 'No box.'},
+                         {'id': 'B', 'label': 'Boxed', 'crop': 'c', 'summary': 'Has a box.', 'highlight': {'selector': '#send'}, 'measured': '80 px wide'}]})
+        from deck.spec import validate
+        self.assertEqual(validate(self.spec)[0], [])
+        boxes = crop_images(self.spec, log=lambda *a: None)['boxes']
+        self.assertEqual(sorted(boxes['S-4']['light']), ['B'])                       # A has no highlight, so no box — and that is fine
+        html, _ = build_page(self.spec, boxes)
+        d = deck_data(self.spec, boxes)['steps'][3]
+        self.assertEqual(d['kind'], 'choice'); self.assertEqual([v['id'] for v in d['variants']], ['A', 'B'])
+        self.assertEqual(d['images']['light'], {'A': 'images/deck/c--light--after.png', 'B': 'images/deck/c--light--after.png'})   # the LAST run
+        self.assertEqual(d['boxes']['light']['B'], [25.0, 25.0, 20.0, 15.0]); self.assertNotIn('changed', d)
+        self.assertIn('None of these', html)
+
 if __name__ == '__main__': unittest.main()

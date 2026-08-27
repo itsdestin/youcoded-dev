@@ -15,6 +15,7 @@ DEFAULT_THEMES = ['midnight', 'light', 'creme', 'dark', 'halftone-dimension', 'm
 BANNED = ['token', 'primitive', 'selector', 'ipc', 'prop', 'props', 'reducer', 'handler',
           'component', 'tailwind', 'css class', 'react', 'dom', 'z-index']
 TEXT_FIELDS = ['headline', 'changed', 'measured', 'notice', 'risk', 'surface', 'path']
+VARIANT_TEXT_FIELDS = ['label', 'summary', 'measured', 'risk']
 HEADLINE_MAX = 25
 RISK_WARN = 40
 AUTO_WARN_FRACTION = 0.6   # an auto-highlight covering more than this much of the crop is "whole surface"
@@ -76,6 +77,13 @@ def all_themes(spec):
     return seen
 
 
+def is_choice(step):
+    """A CHOICE step asks one question of several pictures — pick one. Destin (2026-08-27):
+    three variants of the same thing should not each get their own yes/no; they are one
+    question on one page. Its pictures come from the deck's LAST run (today, or after)."""
+    return bool(step.get('variants'))
+
+
 def run_names(spec):
     """Display order of the runs: before then after when both exist, else as written."""
     r = list(spec['runs'].keys())
@@ -103,6 +111,9 @@ def validate(spec):
         elif st['id'] in ids:
             errors.append(f'{sid}: duplicate id')
         ids.add(st.get('id'))
+        if is_choice(st):
+            _validate_choice(spec, st, sid, errors, warnings)
+            continue
         for k in ('surface', 'path', 'crop', 'headline', 'changed', 'notice'):
             if not st.get(k):
                 errors.append(f'{sid}: missing {k}')
@@ -133,10 +144,55 @@ def validate(spec):
             warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
         if st.get('measured') and not re.search(r'\d', st['measured']):
             warnings.append(f'{sid}: measured has no number in it')
+    _images_folder_warning(spec, warnings)
+    return errors, warnings
+
+
+def _validate_choice(spec, st, sid, errors, warnings):
+    for k in ('surface', 'path', 'headline'):
+        if not st.get(k):
+            errors.append(f'{sid}: missing {k}')
+    if word_count(st.get('headline')) > HEADLINE_MAX:
+        errors.append(f'{sid}: headline is {word_count(st["headline"])} words (max {HEADLINE_MAX})')
+    for k in TEXT_FIELDS:
+        for w in banned_in(st.get(k)):
+            errors.append(f'{sid}: {k} uses banned word "{w}"')
+    vs = st['variants']
+    if not isinstance(vs, list) or len(vs) < 2:
+        errors.append(f'{sid}: a choice step needs at least 2 variants')
+        return
+    seen = set()
+    for i, v in enumerate(vs):
+        vid = v.get('id') or f'variant {i + 1}'
+        if not v.get('id'):
+            errors.append(f'{sid}: {vid} has no id')
+        elif v['id'] in seen:
+            errors.append(f'{sid}: duplicate variant id "{v["id"]}"')
+        seen.add(v.get('id'))
+        for k in ('label', 'crop', 'summary'):
+            if not v.get(k):
+                errors.append(f'{sid}/{vid}: missing {k}')
+        if v.get('crop') and v['crop'] not in spec['_crops']:
+            errors.append(f'{sid}/{vid}: unknown crop "{v["crop"]}"')
+        for k in VARIANT_TEXT_FIELDS:
+            for w in banned_in(v.get(k)):
+                errors.append(f'{sid}/{vid}: {k} uses banned word "{w}"')
+        hl = v.get('highlight')
+        if hl is not None and not (isinstance(hl, dict) and any(k in hl for k in ('selector', 'text', 'box'))):
+            errors.append(f'{sid}/{vid}: highlight must have selector, text or box (or be omitted — the whole picture is the thing)')
+        if v.get('measured') and not re.search(r'\d', v['measured']):
+            warnings.append(f'{sid}/{vid}: measured has no number in it')
+    th = st.get('themes')
+    if th is not None and (not isinstance(th, list) or not th or not all(isinstance(t, str) for t in th)):
+        errors.append(f'{sid}: themes must be a non-empty list of theme names')
+    if word_count(st.get('risk')) > RISK_WARN:
+        warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
+
+
+def _images_folder_warning(spec, warnings):
     # WHY: the crops are named after the step, not the deck, so two specs pointed at one images
     # folder silently overwrite each other's pictures — the second build leaves the first deck
     # showing the second deck's screenshots, with no error anywhere.
     if spec['_stem'] not in spec['images']:
         warnings.append(f'images "{spec["images"]}" does not contain the spec name "{spec["_stem"]}" '
                         '— two decks sharing one images folder overwrite each other\'s pictures')
-    return errors, warnings

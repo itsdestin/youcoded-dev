@@ -40,6 +40,11 @@ class ServeTests(unittest.TestCase):
             self.assertEqual(cm.exception.code, 404)                                 # no folder listing, ever
         finally:
             srv.shutdown(); srv.server_close()
+    def test_summary_names_the_pick(self):
+        self.spec['steps'].append({'id': 'C-1', 'surface': 'Home', 'path': 'Chat', 'headline': 'Which?', 'variants': [{'id': 'A', 'label': 'a', 'crop': 'c', 'summary': 'x'}, {'id': 'B', 'label': 'b', 'crop': 'c', 'summary': 'y'}]})
+        s = summary(self.spec, {'submitted': '2026-08-27T18:40:00Z', 'answers': {'C-1': {'v': 'pick', 'pick': 'B', 'note': 'bigger'}}}).split('\n')
+        self.assertIn('1 picked', s[0]); self.assertEqual(s[-1], 'C-1 pick B — "bigger"')
+        s = summary(self.spec, {'answers': {'C-1': {'v': 'no'}}}).split('\n'); self.assertEqual(s[-1], 'C-1 none')
     def test_summary_format(self):
         state = {'submitted': '2026-08-27T18:40:00Z', 'answers': {'S-1': {'v': 'yes'}, 'S-2': {'v': 'other', 'note': ' bigger '}}}
         s = summary(self.spec, state).split('\n')

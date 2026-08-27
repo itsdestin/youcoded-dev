@@ -7,7 +7,7 @@ import os
 import subprocess
 
 from .boxes import diff_bbox, image_size, px_to_pct, rect_to_pct
-from .spec import AUTO_WARN_FRACTION, run_names, step_themes
+from .spec import AUTO_WARN_FRACTION, is_choice, run_names, step_themes
 
 
 def image_name(crop, theme, run):
@@ -41,6 +41,9 @@ def crop_images(spec, log=print):
     two = len(runs) == 2
     boxes, missing, warnings, cut = {}, [], [], set()
     for st in spec['steps']:
+        if is_choice(st):
+            _crop_choice(spec, st, runs[-1], out_dir, boxes, missing, cut)
+            continue
         plan, shot, geo = spec['_crops'][st['crop']]
         hl = st.get('highlight', 'auto' if two else None)
         boxes[st['id']] = {}
@@ -87,3 +90,37 @@ def crop_images(spec, log=print):
     for m in missing:
         log('missing: ' + m)
     return {'boxes': boxes, 'missing': missing, 'warnings': warnings, 'count': len(cut)}
+
+
+def _crop_choice(spec, st, run, out_dir, boxes, missing, cut):
+    """boxes[step][theme][variant id] — a variant without a highlight simply has no box."""
+    boxes[st['id']] = {}
+    for theme in step_themes(spec, st):
+        per = {}
+        for v in st['variants']:
+            plan, shot, geo = spec['_crops'][v['crop']]
+            src = os.path.join(spec['runs'][run], f'shots-{plan}', theme, f'{shot}.png')
+            dst = os.path.join(out_dir, image_name(v['crop'], theme, run))
+            if not os.path.exists(src):
+                missing.append(f'{st["id"]}/{v["id"]}: {theme}/{run} — {src} not captured')
+                continue
+            if dst not in cut:
+                subprocess.run(['magick', src, '-crop', geo, '+repage', dst], check=True)
+                cut.add(dst)
+            hl = v.get('highlight')
+            if not hl:
+                continue
+            if 'box' in hl:
+                per[v['id']] = hl['box']
+                continue
+            entry = newest_manifest_entry(spec['runs'][run], plan, shot, theme)
+            rect = ((entry or {}).get('measures') or {}).get(measure_key(hl))
+            if not rect:
+                missing.append(f'{st["id"]}/{v["id"]}: no measurement for {measure_key(hl)!r} in {theme}/{run} — add a "measure" line to the "{shot}" shot of plans/{plan}.json and re-run it')
+                continue
+            pct = rect_to_pct(rect, geo)
+            if pct is None:
+                missing.append(f'{st["id"]}/{v["id"]}: {measure_key(hl)!r} lies outside crop "{v["crop"]}" in {theme}/{run}')
+                continue
+            per[v['id']] = pct
+        boxes[st['id']][theme] = per

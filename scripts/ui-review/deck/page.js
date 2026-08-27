@@ -12,8 +12,27 @@
     warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>' };
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   if (window.top !== window) document.body.classList.add('embedded');
+  // What the stage shows for a step: one frame per run (before/after, or today), or — for a CHOICE
+  // step — one frame per variant, lettered. Destin (2026-08-27): variants of one thing are one
+  // question on one page, not a yes/no each.
+  const frames = st => st.kind === 'choice'
+    ? st.variants.map(v => ({ key: v.id, caption: `<span class="key">${esc(v.id)}</span>${esc(v.label)}`, pickable: true }))
+    : runs.map(r => ({ key: r, caption: esc(DECK.runLabels[r] || r), pickable: false }));
+  let curFrames = frames(DECK.steps[0]), lastStep = null;
   // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
-  if (runs.length === 1) { $('.ans[data-v="yes"]').lastChild.textContent = 'Yes, build it'; $('.ans[data-v="no"]').lastChild.textContent = 'No, leave it'; }
+  const YES = runs.length === 1 ? 'Yes, build it' : 'Yes, keep it', NO = runs.length === 1 ? 'No, leave it' : 'No, revert it';
+  function renderAnswers(st) {
+    $('#answers').innerHTML = st.kind === 'choice'
+      ? st.variants.map(v => `<button class="btn ans" data-v="pick" data-pick="${esc(v.id)}"><span class="dot pick"></span><span class="key">${esc(v.id)}</span>${esc(v.label)}</button>`).join('')
+        + `<button class="btn ans" data-v="no"><span class="dot no"></span>None of these</button><button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`
+      : `<button class="btn ans" data-v="yes"><span class="dot yes"></span>${YES}</button><button class="btn ans" data-v="no"><span class="dot no"></span>${NO}</button><button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`;
+    if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
+  }
+  function answer(v, pick) {
+    if (state.submitted) return;
+    const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), v }; if (v === 'pick') a.pick = pick; else delete a.pick;
+    state.answers[id] = a; paintState(); save(); $('#note').focus();
+  }
   $('#deck-title').textContent = DECK.title; document.title = DECK.title;
   $('#steps').innerHTML = DECK.steps.map(() => '<span></span>').join('');
   const stage = $('#stage'), inner = $('#inner'), loupe = $('#loupe');
@@ -33,16 +52,26 @@
   function render() {
     const st = DECK.steps[cur];
     const themes = st.themes || DECK.themes;   // a real-app capture exists in one theme only — that step lists just that one
-    if (!themes.includes(theme)) theme = themes[0];
+    if (st.themes && st !== lastStep) theme = st.themes[0];   // a step with its own theme list opens on the first: that list says which themes matter here
+    else if (!themes.includes(theme)) theme = themes[0];
+    lastStep = st;
     document.documentElement.dataset.theme = theme;   // before the pictures load, so a theme switch never flashes the old colours
     $('#wtitle').textContent = st.surface; $('#wsub').textContent = st.path;
-    inner.innerHTML = runs.map(r => `<figure class="frame" data-run="${esc(r)}"><figcaption>${esc(DECK.runLabels[r] || r)}</figcaption><div class="pic"><img src="${esc(st.images[theme][r])}" alt=""><span class="box"></span></div></figure>`).join('');
+    curFrames = frames(st);
+    inner.innerHTML = curFrames.map(f => `<figure class="frame${f.pickable ? ' pickable' : ''}" data-run="${esc(f.key)}"${f.pickable ? ` title="Pick ${esc(f.key)}"` : ''}><figcaption>${f.caption}</figcaption><div class="pic"><img src="${esc(st.images[theme][f.key])}" alt=""><span class="box"></span></div></figure>`).join('');
     $$('#inner .frame').forEach(f => { const b = (st.boxes[theme] || {})[f.dataset.run]; const box = f.querySelector('.box'); if (b) box.style.cssText = `left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%`; else box.style.display = 'none'; });
+    $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
+    $$('.card.variant').forEach(c => c.onclick = () => answer('pick', c.dataset.pick));
     $('#headline').textContent = st.headline;
-    $('#cards').innerHTML = `<section class="card"><h3>${ICON.change}What changed</h3><p>${esc(st.changed)}</p>${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`
-      + `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>`
-      + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '');
-    const last = runs[runs.length - 1];
+    $('#cards').innerHTML = st.kind === 'choice'
+      ? st.variants.map(v => `<section class="card variant" data-pick="${esc(v.id)}" title="Pick ${esc(v.id)}"><span class="key">${esc(v.id)}</span><div class="vbody"><h3>${esc(v.label)}</h3><p>${esc(v.summary)}</p>${v.measured ? `<p class="num">Measured: ${esc(v.measured)}</p>` : ''}${v.risk ? `<p class="r">${esc(v.risk)}</p>` : ''}</div></section>`).join('')
+        + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
+      : `<section class="card"><h3>${ICON.change}What changed</h3><p>${esc(st.changed)}</p>${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`
+        + `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>`
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '');
+    renderAnswers(st);
+    const last = curFrames[curFrames.length - 1].key;
     $('#thumbs').innerHTML = themes.map(t => `<button class="thumb${t === theme ? ' on' : ''}" data-v="${esc(t)}" title="${esc(DECK.themeNames[t])}"><img src="${esc(st.images[t][last])}" alt=""><span>${esc(DECK.themeNames[t])}</span></button>`).join('');
     $$('.thumb').forEach(b => b.onclick = () => { theme = b.dataset.v; render(); });
     $$('#inner img').forEach(i => i.addEventListener('load', layout));
@@ -50,7 +79,9 @@
   }
   function paintState() {
     const a = state.answers[DECK.steps[cur].id] || {};
-    $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v));
+    $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick)));
+    $$('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
+    $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', a.v === 'pick' && f.dataset.run === a.pick));
     const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
     const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
@@ -63,11 +94,11 @@
   function layout() {
     const c = $('#content'), step = $('#step'); const img = $('#inner img'); if (!img || !img.naturalWidth) return;
     const margin = (document.querySelector('main').clientWidth - step.clientWidth) / 2; document.body.classList.toggle('thumbs-inline', margin < 150);
-    const n = runs.length, w = img.naturalWidth, h = img.naturalHeight + CAP;
+    const n = curFrames.length, w = img.naturalWidth, h = img.naturalHeight + CAP;
     const opts = { A: 'row-below', B: 'col-right stacked', C: 'col-right', D: 'row-below stacked' }; const score = {};
     step.classList.remove('compact-step');
     for (const k in opts) {
-      if (opts[k].includes('col-right') && c.clientWidth < 820) { score[k] = 0; continue; }   // a side column needs real width
+      if (opts[k].includes('col-right') && (c.clientWidth < 820 || DECK.steps[cur].kind === 'choice')) { score[k] = 0; continue; }   // a side column needs real width; variant cards need the full row
       if (n === 1 && opts[k].includes('stacked')) { score[k] = 0; continue; }                 // one picture: stacking means nothing
       c.className = 'content ' + opts[k]; const SW = stage.clientWidth - PAD, SH = stage.clientHeight - PAD; const stacked = opts[k].includes('stacked');
       score[k] = Math.min(stacked ? SW / w : (SW - GAP * (n - 1)) / n / w, stacked ? (SH - GAP * (n - 1)) / n / h : SH / h);
@@ -100,7 +131,7 @@
   // answered step used to lose that answer entirely. The note debounces so a sentence typed
   // at speed is one POST, not one per keystroke.
   let noteTimer = null;
-  $$('.ans').forEach(b => b.onclick = () => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), v: b.dataset.v }; paintState(); save(); $('#note').focus(); });
+  $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick); });
   $('#note').addEventListener('input', e => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note: e.target.value }; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); });
   $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
   $('#next').onclick = () => go(cur + 1); $('#prev').onclick = () => go(cur - 1);
@@ -109,8 +140,8 @@
   // ── submit ──
   function summary() {
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; lines.push(st.id + ' ' + v + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
-    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + counts.skip + ' skipped\n' + lines.join('\n');
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && st.kind === 'choice' ? 'none' : v); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
+    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
   }
   function openDialog() {
     record(); save();
