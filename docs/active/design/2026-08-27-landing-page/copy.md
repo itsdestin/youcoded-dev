@@ -18,7 +18,6 @@ A few notes before the tables:
 - `(unchanged)` in the New column means the plan keeps that exact old text.
 - Blank in the Old column means this is a brand-new string with no predecessor (a new section or a new row).
 - `(removed)` means this content is being cut entirely — the Old column shows what's going away.
-- Some rows are marked **[FLAGGED]** — those are places where the source briefs were ambiguous or where I made a judgment call worth your eyes on.
 
 ---
 
@@ -30,7 +29,7 @@ A few notes before the tables:
 | Meta description: `The hyper-personalized AI assistant app. Sign in with your Claude Pro or Max plan, then make it yours with custom themes, skills, journaling, and a personal encyclopedia. Share with friends, play multiplayer games while Claude works. Windows, macOS, Linux, Android.` | `One app for Claude, hundreds of cloud models, or one that runs free on your own computer — working in your files, on every device you own. Windows, macOS, Linux, Android.` |
 | `og:title`: `YouCoded — Make Claude Yours` | `YouCoded Agent — AI for Everyone` |
 | `og:description`: `Make Claude yours — themes, skills, journaling, multiplayer, and a personal encyclopedia, all on top of your Claude Pro or Max plan. Windows, macOS, Linux, Android.` | Same new text as the meta description above (task brief groups "meta description / OG / Twitter description" as one string) |
-| `twitter:title`: `YouCoded — Make Claude Yours` | **[FLAGGED]** Not explicitly restated in the Task 10 brief. I'm assuming it matches the new `og:title` (`YouCoded Agent — AI for Everyone`) since the old page kept these identical — flag if you want it different. |
+| `twitter:title`: `YouCoded — Make Claude Yours` | `YouCoded Agent — AI for Everyone` |
 | `twitter:description`: same as old `og:description` | Same new text as the meta description above |
 | `og:image` URL: `https://itsdestin.github.io/youcoded/og-image.png` | (unchanged URL — Task 13 replaces the actual image file behind it, not the URL) |
 
@@ -211,7 +210,7 @@ The old page's "Everything the app gives you" section had 7 rows plus a 10-item 
 
 | Old | New |
 |---|---|
-| Section title: `Download YouCoded` | **[FLAGGED]** Not respecified in Task 13 brief — carrying forward as `Download YouCoded` unless the wordmark change (Row: Nav) means this should read `Download YouCoded Agent`. Worth a decision. |
+| Section title: `Download YouCoded` | `Download YouCoded Agent` |
 | Download card labels: `Download for` / `Windows` · `macOS` · `Linux` · `Android` | (unchanged — not respecified in Task 13 brief) |
 | Note line: `Free and open source. Just bring your Claude Pro or Max plan.` + `On iPhone? Use YouCoded from Safari by connecting to any computer running the app via remote access.` | `Free and open source. On iPhone? Use YouCoded Agent from Safari by connecting to any computer running the app.` |
 
@@ -224,7 +223,7 @@ The old page's "Everything the app gives you" section had 7 rows plus a 10-item 
 | Step 1: `Sign in with your Claude account. YouCoded uses your existing Claude Pro or Max subscription — the same account you use on claude.ai. No separate account, no API key. If you don't have a paid plan yet, you can sign up here.` | `Sign in with GitHub.` |
 | Step 2: `Pick a starter theme and model. Both are changeable anytime from the settings panel, so don't overthink it.` | `Choose where your AI comes from — Claude, OpenRouter, or a model on this computer (Settings → Model Providers).` |
 | Step 3: `Browse the marketplace. Skills (things that give Claude new abilities) and themes (visual overhauls) are a few taps away and shareable with friends.` | `Pick a theme and browse the marketplace.` |
-| Android extra note: `On Android, expect one extra step: the first launch runs a one-time setup that downloads and unpacks the Claude Code runtime (~400–600MB depending on the package tier you pick). Keep the app open on the setup screen until it finishes — it's fast on Wi-Fi.` | **[FLAGGED]** Task 13's own brief makes this conditional: keep only if 1.3.0 Android still downloads a runtime on first launch. I checked `app/src/main/kotlin/com/youcoded/app/` in the site-rebuild worktree and found `SetupScreen.kt` and `TierPickerScreen.kt`, which suggests a first-launch runtime download and package-tier choice still exist — so my best read is this note is **kept, wording unverified**. Task 13 must confirm and write the actual final wording; this row is a placeholder pending that check, not a transcribed final string. |
+| Android extra note: `On Android, expect one extra step: the first launch runs a one-time setup that downloads and unpacks the Claude Code runtime (~400–600MB depending on the package tier you pick). Keep the app open on the setup screen until it finishes — it's fast on Wi-Fi.` | `On Android, the first launch downloads the Claude Code runtime (~400–600 MB) — Android uses Claude only.` |
 
 ---
 
@@ -232,11 +231,11 @@ The old page's "Everything the app gives you" section had 7 rows plus a 10-item 
 
 | Old | New |
 |---|---|
-| Section label: `Common questions` | **[FLAGGED]** Not respecified in Task 13 brief — carrying forward unchanged. |
+| Section label: `Common questions` | (unchanged — not respecified in Task 13 brief) |
 | Section title: `FAQ` | (unchanged) |
 | **Q1:** `How is this different from claude.ai?` | `How is this different from ChatGPT or claude.ai?` |
 | **A1:** `Claude.ai is a chat website. YouCoded is an app built on top of Claude Code — a more powerful form of Claude that can create files, run terminal commands, manage your computer, and interact more meaningfully with a wider range of external services. Think of claude.ai as texting Claude, and YouCoded as giving Claude hands (with themes, a marketplace, games, and remote access layered on top).` | `Those are chat websites. YouCoded Agent is an app on your computer and phone that works in your own files — it opens, edits, and organizes them, runs tasks, and searches the web — and you choose the AI behind it: Claude, hundreds of cloud models, or one that runs locally for free.` |
-| **Q2:** `Is my data private?` | `Do I have to pay for anything?` **[FLAGGED — question order changed]** the old Q2 (privacy) becomes new Q3; the new Q2 is a brand-new question about cost. See below. |
+| **Q2:** `Is my data private?` | `Do I have to pay for anything?` the old Q2 (privacy) becomes new Q3; the new Q2 is a brand-new question about cost. See below. |
 | **A2 (old):** `Everything YouCoded and your installed WeCoded skills create... is stored in your own Google Drive or iCloud account... YouCoded itself sends one anonymous daily ping... You can turn this off at any time in Settings → About → Privacy...` | Moved — see new Q3/A3 below |
 | — | **New Q2:** `Do I have to pay for anything?` |
 | — | **New A2:** `No. The app is free and open source. A model that runs on your own computer costs nothing. If you want Claude, that's a Claude Pro or Max plan from Anthropic; if you want other cloud models, OpenRouter bills per use.` |
@@ -263,7 +262,7 @@ The old page's "Everything the app gives you" section had 7 rows plus a 10-item 
 |---|---|
 | Section label: `Gallery` | (unchanged — not respecified in Task 13 brief) |
 | Section title: `See what people have built.` | (unchanged) |
-| 7 images, old alt text pattern: `YouCoded <surface> in the <Theme> theme` (e.g. `YouCoded chat view in the Devils Garden theme`) | **[FLAGGED]** Task 13 brief says alt text becomes `YouCoded Agent — <surface> in the <Theme> theme`, but doesn't list which screenshots replace the old 7 — it says to use whatever `site-assets.sh` produces (`ls docs/gallery/*.webp`). The actual filenames/surfaces aren't knowable until that script runs, so there's nothing to transcribe here yet. Flagging so this row gets a pass once Task 13 lands. |
+| 7 images, old alt text pattern: `YouCoded <surface> in the <Theme> theme` (e.g. `YouCoded chat view in the Devils Garden theme`) | `YouCoded Agent — <surface> in the <Theme> theme` (filenames come from the regenerated gallery; pattern fixed, names filled in by Task 13) |
 
 ---
 
@@ -271,9 +270,9 @@ The old page's "Everything the app gives you" section had 7 rows plus a 10-item 
 
 | Old | New |
 |---|---|
-| Wordmark: `You` + `Coded` | **[FLAGGED]** No footer change specified in any brief. The nav wordmark is changing to add "Agent" (see Nav section above) but the footer's separate, simpler wordmark isn't mentioned — carrying forward unchanged unless you want it to match the nav. |
+| Wordmark: `You` + `Coded` | `YouCoded Agent` |
 | Link: `GitHub` | (unchanged) |
 | Link: `Built by Destin` | (unchanged) |
 | Badge: `Open Source` | (unchanged) |
 | Legal line: `MIT License · YouCoded is an independent, community-built project. Not affiliated with, endorsed by, or officially supported by Anthropic.` | (unchanged) |
-| Floating pill: `Download ↓` | **[FLAGGED]** Not respecified; its link target changes from `#prerequisites` to `#get-started` per Task 13's section-id rename, but the visible text isn't addressed in any brief — carrying forward unchanged. |
+| Floating pill: `Download ↓` | (unchanged) |
