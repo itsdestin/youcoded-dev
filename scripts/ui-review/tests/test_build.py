@@ -1,4 +1,4 @@
-import json, os, sys, tempfile, unittest
+import json, os, re, sys, tempfile, unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 from fixture import make_fixture
@@ -14,6 +14,7 @@ class BuildTests(unittest.TestCase):
         self.assertIn('<title>Fixture review</title>', html); self.assertIn('const DECK=', html)
         self.assertIn('[data-theme="midnight"]{--canvas:#0D1117', html)      # tokens inlined
         self.assertIn('.chip{', html); self.assertIn("fetch('/answers'", html)  # css + js inlined
+        self.assertIn('<html lang="en" data-theme="midnight">', html)        # first paint matches the deck's first theme
         self.assertEqual(warnings, [])
     def test_deck_data_shape(self):
         d = deck_data(self.spec, self.boxes)
@@ -37,6 +38,17 @@ class BuildTests(unittest.TestCase):
         t = theme_tokens(['midnight', 'halftone-dimension', 'meadow-mist'])
         self.assertEqual(t['halftone-dimension']['accent'].lower(), '#e51f48'); self.assertTrue(t['halftone-dimension']['_dark']); self.assertFalse(t['meadow-mist']['_dark'])
         self.assertIn('[data-theme="halftone-dimension"]{', tokens_css(t)); self.assertIn('--radius-md:16px', tokens_css(t))
+    def test_theme_tokens_outrank_the_page_defaults(self):
+        # page.css's defaults sit on a bare `:root{...}` (specificity 0,1,0); the theme tokens must
+        # beat that regardless of <style> tag order, so every emitted rule needs `:root[data-theme="`.
+        css = tokens_css(theme_tokens(['midnight', 'halftone-dimension']))
+        for line in css.splitlines():
+            self.assertTrue(line.startswith(':root[data-theme="'), line)
+        with open(os.path.join(os.path.dirname(HERE), 'deck', 'page.css')) as f:
+            page_css = f.read()
+        m = re.search(r':root\{([^}]*)\}', page_css)
+        self.assertIsNotNone(m, 'page.css should declare a bare :root{...} block')
+        self.assertIn('--radius-md', m.group(1))
     def test_unknown_theme_is_an_error(self):
         with self.assertRaises(SpecError): theme_tokens(['no-such-theme'])
     def test_script_safe_json(self):

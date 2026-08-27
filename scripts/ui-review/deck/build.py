@@ -48,7 +48,11 @@ def tokens_css(tokens):
     lines = []
     for t, tok in tokens.items():
         decl = ';'.join(f'--{k}:{v}' for k, v in tok.items() if not k.startswith('_'))
-        lines.append(f'[data-theme="{t}"]{{{decl};color-scheme:{"dark" if tok.get("_dark", True) else "light"}}}')
+        # Fix: page.css's defaults live on a bare `:root{...}` (specificity 0,1,0) and match <html> too,
+        # so a plain `[data-theme]` selector (also 0,1,0) tied on specificity — later-in-source page.css
+        # won — and a community theme's radius (e.g. Halftone's 16px) never applied. `:root[data-theme]`
+        # is 0,2,0, so the theme tokens always outrank the page defaults regardless of <style> order.
+        lines.append(f':root[data-theme="{t}"]{{{decl};color-scheme:{"dark" if tok.get("_dark", True) else "light"}}}')
     return '\n'.join(lines)
 
 
@@ -86,5 +90,9 @@ def build_page(spec, boxes):
     page = read('page.html.tmpl')
     page = page.replace('/*TOKENS*/', tokens_css(theme_tokens(spec['themes']))).replace('/*CSS*/', read('page.css')).replace('/*JS*/', read('page.js'))
     # `</` inside the JSON would end the <script>; escaping it keeps the JSON valid.
-    page = page.replace('__TITLE__', html.escape(spec['title'])).replace('__DECK__', json.dumps(deck_data(spec, boxes)).replace('</', '<\\/'))
+    # Fix: first paint was always Midnight regardless of the spec's own theme order — the template
+    # hardcoded data-theme="midnight" on <html>, so any deck whose first theme isn't Midnight flashed
+    # the wrong palette before page.js's render() ran. Substitute the spec's actual first theme.
+    page = page.replace('__TITLE__', html.escape(spec['title'])).replace('__THEME__', html.escape(spec['themes'][0]))
+    page = page.replace('__DECK__', json.dumps(deck_data(spec, boxes)).replace('</', '<\\/'))
     return page, warnings

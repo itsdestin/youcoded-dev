@@ -78,6 +78,7 @@
     document.body.dataset.layout = score[best] < 0.5 ? 'compact' : best;
     document.body.dataset.scores = JSON.stringify(score);
     const b = $('#inner .frame .box'); if (b && zoom > 1) b.scrollIntoView({ block: 'center', inline: 'center' });
+    window.__deckReady = true;   // the render test waits for this — set only once a real layout has been chosen
   }
 
   // ── navigation & answers ──
@@ -87,7 +88,10 @@
     a.seconds = (a.seconds || 0) + Math.round((Date.now() - stepStart) / 1000); a.theme = theme; a.zoom = zoom;
     state.answers[id] = a;
   }
-  function go(i) { record(); cur = Math.max(0, Math.min(N - 1, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render(); }
+  function go(i) {
+    if (state.submitted) return;   // Fix: after Submit, arrow keys / progress segments must not keep POSTing answers
+    record(); cur = Math.max(0, Math.min(N - 1, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render();
+  }
   $$('.ans').forEach(b => b.onclick = () => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), v: b.dataset.v }; paintState(); $('#note').focus(); });
   $('#note').addEventListener('input', e => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note: e.target.value }; });
   $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
@@ -102,6 +106,10 @@
   }
   function openDialog() {
     record(); save();
+    // Fix: record() already banked elapsed seconds into the current step's answer; without resetting
+    // stepStart, a Done -> Keep reviewing -> Done round trip would add those seconds a second time.
+    // paintState() repaints so a step that record() just marked "skip" turns grey immediately.
+    stepStart = Date.now(); paintState();
     const missing = DECK.steps.map((st, i) => [(state.answers[st.id] || {}).v, i]).filter(([v]) => !v || v === 'skip').map(([, i]) => i + 1);
     $('#skipped').style.display = missing.length ? 'flex' : 'none';
     $('#skipn').textContent = missing.length + (missing.length === 1 ? ' step has' : ' steps have') + ' no answer (step' + (missing.length > 1 ? 's ' : ' ') + missing.join(', ') + ').';
@@ -135,7 +143,7 @@
   $('#zin').onclick = () => setZoom(zoom + 0.1); $('#zout').onclick = () => setZoom(zoom - 0.1);
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    if (e.key === 'ArrowRight') go(cur + 1); if (e.key === 'ArrowLeft') go(cur - 1);
+    if (!state.submitted) { if (e.key === 'ArrowRight') go(cur + 1); if (e.key === 'ArrowLeft') go(cur - 1); }   // Fix: zoom/loupe stay live after Submit, navigation doesn't
     if (e.key === '+' || e.key === '=') setZoom(zoom + 0.1); if (e.key === '-') setZoom(zoom - 0.1); if (e.key === '0') setZoom(1);
     if (e.key === 'l') { loupeOn = !loupeOn; if (!loupeOn) loupe.style.display = 'none'; document.body.classList.toggle('no-loupe', !loupeOn); }
   });
@@ -144,6 +152,6 @@
     const q = new URLSearchParams(location.search);
     cur = q.get('step') ? Math.max(0, Math.min(N - 1, +q.get('step') - 1)) : Math.max(0, Math.min(N - 1, state.cur || 0));
     if (q.get('theme') && DECK.themes.includes(q.get('theme'))) theme = q.get('theme');
-    stepStart = Date.now(); render(); window.__deckReady = true;   // the render test waits for this
+    stepStart = Date.now(); render();
   });
 })();
