@@ -78,7 +78,12 @@ def make_server(spec, port, on_submit):
 
         def do_POST(self):
             n = int(self.headers.get('content-length') or 0)
-            state = json.loads(self.rfile.read(n) or b'{}')
+            try:
+                state = json.loads(self.rfile.read(n) or b'{}')
+            except (ValueError, TypeError):
+                # WHY: a non-JSON body must get a reply, not a dropped connection —
+                # json.loads raising unhandled here leaves the client hanging.
+                return self._json(400, {'error': 'body is not JSON'})
             if self.path == '/answers':
                 write_atomic(apath, state)
                 return self._json(200, {'ok': True})
@@ -111,16 +116,31 @@ def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
         try:
             with open(lock) as f:
                 other = json.load(f)
-            os.kill(other['pid'], 0)
-            log(f'REFUSING: {spec["_stem"]} is already served by pid {other["pid"]} at {other["url"]}')
-            return 3
+            pid, other_url = other['pid'], other['url']
         except (OSError, ValueError, KeyError):
-            pass   # stale lock
+            other = None   # unreadable/malformed lock file — treat as stale, proceed
+        if other is not None:
+            try:
+                # WHY: kill(pid, 0) sends nothing; ProcessLookupError means dead,
+                # PermissionError means alive but not ours — both are OSError, so
+                # they must be told apart.
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                pass   # stale lock — the pid is dead
+            except PermissionError:
+                log(f'REFUSING: {spec["_stem"]} is already served by pid {pid} at {other_url}')
+                return 3
+            else:
+                log(f'REFUSING: {spec["_stem"]} is already served by pid {pid} at {other_url}')
+                return 3
     result = {}
     holder = {}
 
     def on_submit(state):
         result['state'] = state
+        # WHY: shutdown() blocks until serve_forever() returns, so calling it on the
+        # thread that runs serve_forever (the handler thread is one of its children in
+        # ThreadingMixIn) would deadlock — it must run on a throwaway thread.
         threading.Thread(target=holder['srv'].shutdown, daemon=True).start()
     srv, url = make_server(spec, port, on_submit)
     holder['srv'] = srv
@@ -129,6 +149,9 @@ def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
     log(f'[deck] {url}')
     if open_browser:
         open_url(url)
+    # WHY: shutdown() blocks until serve_forever() returns, so calling it on the thread
+    # that runs serve_forever (the handler thread is one of its children in
+    # ThreadingMixIn) would deadlock — it must run on a throwaway thread.
     timer = threading.Timer(timeout_min * 60, lambda: threading.Thread(target=srv.shutdown, daemon=True).start())
     timer.daemon = True
     timer.start()

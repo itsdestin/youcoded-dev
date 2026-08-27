@@ -1,4 +1,4 @@
-import json, os, sys, tempfile, threading, time, unittest, urllib.request
+import json, os, sys, tempfile, threading, time, unittest, urllib.error, urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 from fixture import make_fixture
@@ -45,6 +45,25 @@ class ServeTests(unittest.TestCase):
     def test_second_serve_of_same_spec_refuses(self):
         json.dump({'pid': os.getpid(), 'url': 'http://127.0.0.1:1/x'}, open(os.path.join(self.spec['_base'], 'deck.serve.json'), 'w'))
         out = []; self.assertEqual(serve(self.spec, port=0, open_browser=False, timeout_min=1, log=out.append), 3); self.assertTrue(any('REFUSING' in l for l in out))
+    def test_live_lock_owned_by_someone_else_still_refuses(self):
+        # pid 1 is init — alive, not ours, so os.kill(1, 0) raises PermissionError for a
+        # normal user (or succeeds for root, in which case the lock is just "alive" too).
+        json.dump({'pid': 1, 'url': 'http://127.0.0.1:1/x'}, open(os.path.join(self.spec['_base'], 'deck.serve.json'), 'w'))
+        out = []
+        self.assertEqual(serve(self.spec, port=0, open_browser=False, timeout_min=1, log=out.append), 3)
+        self.assertTrue(any('REFUSING' in l for l in out))
+    def test_bad_json_post_gets_a_400(self):
+        srv, url = make_server(self.spec, 0, lambda state: None)
+        t = threading.Thread(target=srv.serve_forever, daemon=True); t.start()
+        try:
+            base = url.rsplit('/', 1)[0]
+            req = urllib.request.Request(base + '/answers', data=b'not json', headers={'content-type': 'application/json'}, method='POST')
+            with self.assertRaises(urllib.error.HTTPError) as cm:
+                urllib.request.urlopen(req, timeout=5)
+            self.assertEqual(cm.exception.code, 400)
+            self.assertFalse(os.path.exists(answers_path(self.spec)))
+        finally:
+            srv.shutdown(); srv.server_close()
     def test_write_atomic(self):
         p = os.path.join(self.tmp, 'a.json'); write_atomic(p, {'x': 1}); self.assertEqual(json.load(open(p)), {'x': 1})
     def test_wait_returns_0_when_the_file_says_submitted_and_2_on_timeout(self):
