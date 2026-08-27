@@ -108,7 +108,9 @@ the user moving or repointing `engine.cacheDir`.
 the declared total is on hand; the scan counts how many sibling `.gguf` files are
 actually present and marks the entry incomplete when the count is short. It also
 reports downloads that have a `.partial` but no published file at all — today those are
-invisible to every list.
+invisible to every list — and downloads that have **only a manifest** (the manifest is
+written before the first byte, so a download that failed on its very first request
+still has a row: unfinished, 0 bytes, resumable, discardable).
 
 `EngineManager.installedModels()` (the `models:installed` IPC behind the Local Models
 screen) returns one row per download on disk, in one of three states:
@@ -128,7 +130,8 @@ Two edge cases, stated so the implementation does not have to guess:
 
 - **All declared parts published, but a stray `.partial` lingers.** The model is
   `complete`. Publication is an atomic rename, so this should not occur; if it does,
-  the stray is cleaned on the next scan rather than demoting a working model.
+  the stray is ignored rather than demoting a working model, and `models:delete`
+  removes it with the rest (the list is a read; it does not delete model bytes).
 - **All parts published, but a manifest survives** (its deletion failed). Same — the
   model is `complete`, and the stale manifest is removed on the next scan. The manifest
   is a resume hint, never evidence of incompleteness; the file count is the authority.
@@ -149,8 +152,9 @@ desktop/src desktop/tests app/src`), every site that must go or change:
 `SessionService.kt:3791` (Android not-implemented list), `ipc-channels.test.ts:896`
 (parity row), plus `ModelManager.orphanedPartials()`, the now-unused `OrphanedPartial`
 type, and the comments referencing it in `model-downloader.ts:67` and
-`cache-scan.test.ts:45`. `ModelDownloader.activePartialNames()` stays — the unified
-scan still has to subtract this session's live downloads.
+`cache-scan.test.ts:45`. `ModelDownloader.activePartialNames()` goes too — its only
+caller was `orphanedPartials()`. The unified list does not subtract this session's live
+downloads; it shows them as rows with live progress attached (§3.5a).
 
 Wiring it up as a second renderer call would create two lists over the same directory
 that can disagree — the exact failure mode this spec exists to fix. `ipc-channels.test.ts`
@@ -194,7 +198,11 @@ Channel arithmetic: `models:orphaned-partials` goes, `models:resume` arrives. Ne
 and the parity test covers the new one on the same five surfaces.
 
 Resume failures use the existing inline error line on the row (already built, already
-tested: `PartialRow`'s `resumeError`). No new error surface.
+tested: `PartialRow`'s `resumeError`). No new error surface. Two kinds land there: a
+refusal at the click (disk guard, already downloading, no manifest) and — because
+`models:resume` returns as soon as the download *starts* — the download's own later
+failure (HTTP status, integrity check), read from the `error` progress event. The
+latter is what `PartialRow` shows today and must not be lost.
 
 `PartialRow` is retired in favour of the unified list row — it exists only because
 in-flight and leftover downloads render in two different places today.
