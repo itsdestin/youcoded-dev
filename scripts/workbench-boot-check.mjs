@@ -53,6 +53,9 @@ const ROUTES = [
   ['app · no-providers', '&child=1&scenario=no-providers'],
   ['app · refused', '&child=1&scenario=refused'],
   ['app · stress', '&child=1&scenario=stress'],
+  // Landing-page embed (scenario=site): the state the site's live demo boots
+  // into. Own route so a broken embed fails here, not silently on the live page.
+  ['app · scenario=site', '&child=1&scenario=site'],
   ['tool gallery', '&child=1&view=tools'],
   ['comparisons', '&child=1&view=compare'],
   ['assistant settings', '&child=1&view=assistant-final'],
