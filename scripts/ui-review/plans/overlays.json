@@ -312,6 +312,72 @@
    ]
   },
   {
+   "name": "local-models-discard-confirm",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "clickText": "Discard",
+     "tag": "button",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Discard 74.2 GB?')"
+  },
+  {
+   "name": "local-models-delete-confirm",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "clickText": "Delete",
+     "tag": "button",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('This removes the model file')"
+  },
+  {
+   "name": "local-models-resuming",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "clickText": "Resume",
+     "tag": "button",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Downloading…')"
+  },
+  {
    "name": "permissions-scrolled",
    "actions": [
     {
