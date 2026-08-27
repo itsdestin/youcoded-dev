@@ -143,50 +143,55 @@ Claude-Session: https://claude.ai/code/session_01JT8RKNphr2HekthYqV9Qzi"
 **Interfaces:**
 - Produces: `?scenario=site` — one native session `site-1` named `plan my week` (provider `native`, model bound to a local model), two past sessions, providers ready, tags. Its timeline is `site.jsonl`. Used by the embed and by scenes 1, 2, 6.
 
-- [ ] **Step 1: Read the existing session fixture shape**
+- [ ] **Step 1: Add the `site` session factory to `fixtures/sessions.ts`**
 
-```bash
-sed -n 1,60p desktop/src/renderer/dev/workbench/fixtures/sessions.ts
-```
-Note the exported name of the live-session array and the fields of the `wb-2` native row (id, name, cwd, provider, model/harnessId, status, createdAt). Reuse exactly those field names below.
-
-- [ ] **Step 2: Append `SITE_SESSIONS` to `fixtures/sessions.ts`**
-
+`sessions()` is exported as a factory (`fixtures/sessions.ts:13`) so every store gets its own array; keep that pattern. Append at the end of the file:
 ```ts
 // Landing-page embed (scenario=site): ONE native session so the first thing a
 // visitor sees is a conversation with a locally running model, not a strip of
-// eleven tabs. Field shapes mirror wb-2 above.
-export const SITE_SESSIONS = [
-  {
-    ...NATIVE_ROW_TEMPLATE,           // <- replace with the literal fields of wb-2 from Step 1
-    id: 'site-1',
-    name: 'plan my week',
-    cwd: '/home/you/Documents',
-    status: 'active',
-  },
-];
-export const SITE_PAST = [
-  { id: 'site-p1', name: 'draft the club newsletter', cwd: '/home/you/Documents', provider: 'native', lastUsed: 1_753_700_000_000 },
-  { id: 'site-p2', name: 'compare two laptops', cwd: '/home/you/Documents', provider: 'claude', lastUsed: 1_753_600_000_000 },
-];
+// eleven tabs. Field shape mirrors wb-2 above (provider + harnessId mark it native).
+export function siteSessions(): SessionInfo[] {
+  return [
+    {
+      id: 'site-1',
+      name: 'plan my week',
+      cwd: '/home/you/Documents',
+      permissionMode: 'normal',
+      skipPermissions: false,
+      status: 'idle',
+      createdAt: 1_753_790_000_000,
+      provider: 'native',
+      harnessId: 'coder',
+      model: 'qwen3-coder-30b-a3b-instruct',
+    },
+  ];
+}
 ```
-Copy the literal field list of `wb-2` in place of `...NATIVE_ROW_TEMPLATE` (there is no such template; the spread is a marker for "same fields"). Match `SITE_PAST` rows to the shape of the existing past-session array in the same file.
+
+- [ ] **Step 2: Add `sitePast()` beside `defaultPast()` in `scenarios.ts:94`**
+
+```ts
+function sitePast(): PastSession[] {
+  return [
+    past(0, 'draft the club newsletter', {
+      provider: 'native',
+      lastUsedModel: { modelId: 'qwen3-coder-30b-a3b-instruct', providerType: 'local-engine', providerLabel: 'Local' },
+    }),
+    past(1, 'compare two laptops', { tags: ['tag_work'] }),
+  ];
+}
+```
+(`past(index, name, overrides)` is the helper `defaultPast()` already uses at `:96-106`.)
 
 - [ ] **Step 3: Register the scenario**
 
-In `scenarios.ts`, add `'site'` to the `ScenarioId` union at `:11` and to `SCENARIO_IDS` at `:13-15`. In `seed()` add a branch beside `'default'`:
+In `scenarios.ts`, add `'site'` to the `ScenarioId` union (`:11`) and to `SCENARIO_IDS` (`:13-15`); import `siteSessions` from `./fixtures/sessions`. In `seed()` (`:159-187`) add a case beside `'stress'`:
 ```ts
     case 'site':
-      // Landing-page embed. Same providers/catalog/tags/defaults as default,
-      // one native session, two past rows. See fixtures/sessions.ts SITE_*.
-      return {
-        ...seedDefault(),                      // <- whatever helper `default` uses; if it inlines, copy the default object here and override:
-        sessions: SITE_SESSIONS as any,
-        past: SITE_PAST as any,
-        meta: {},
-      };
+      // Landing-page embed: providers/catalog/tags/defaults as default, one
+      // native session, two past rows, no pre-set meta.
+      return { ...base, sessions: siteSessions(), past: sitePast(), meta: {} };
 ```
-If `default` is built inline rather than via a helper, copy its object literal and override `sessions`, `past`, `meta`.
 
 - [ ] **Step 4: Write the opening conversation**
 
