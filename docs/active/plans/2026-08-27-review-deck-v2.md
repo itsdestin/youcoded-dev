@@ -10,7 +10,7 @@ spec: docs/active/specs/2026-08-27-review-deck-v2-design.md
 
 **Goal:** Replace the v1 review deck with the approved page (mockup G), a local server that saves answers to a file and exits when Destin submits, rig-measured highlight boxes, builder-enforced writing rules, and four hand-off rig fixes.
 
-**Architecture:** `scripts/ui-review/review-cards.py` becomes a thin CLI over a new `scripts/ui-review/deck/` Python package (`spec` → `boxes` → `crops` → `build` → `serve`); the page itself is three static assets (`page.html.tmpl`, `page.css`, `page.js`) that `build` inlines with the deck data as one JSON object, so the browser renders steps from data. `shot.mjs` gains a `measure` list per shot and a run id; `coverage.mjs` merges by run id per plan; `run-review.sh` probes CDP ports and scopes sheets to the run.
+**Architecture:** `scripts/ui-review/review-cards.py` becomes a thin CLI over a new `scripts/ui-review/deck/` Python package (`spec` → `boxes` → `crops` → `build` → `serve`). `build` always crops first — there is no separate crop command and no intermediate boxes file, because a stale one would draw wrong boxes with no error; `serve` builds, then serves; `wait` blocks on the answers file alone, so "Destin is done" never depends on the serving process staying alive. The page itself is three static assets (`page.html.tmpl`, `page.css`, `page.js`) that `build` inlines with the deck data as one JSON object, so the browser renders steps from data. `shot.mjs` gains a `measure` list per shot and a run id; `coverage.mjs` merges by run id per plan; `run-review.sh` probes CDP ports and scopes sheets to the run.
 
 **Tech Stack:** Python 3.14 stdlib only (`http.server`, `json`, `subprocess`, `unittest`); ImageMagick 7 (`magick`); Node 26 (`node --test`, raw CDP over `WebSocket`, `google-chrome-stable`) for the rig and the render check. No new dependencies.
 
@@ -20,7 +20,9 @@ spec: docs/active/specs/2026-08-27-review-deck-v2-design.md
 - Amber `#FFB020` is the deck's only identity colour (spec §2). Built-in token values must equal `youcoded/desktop/src/renderer/styles/globals.css` (Task 3 test).
 - Writing rules (spec §5), exact: headline ≤ 25 words; `changed` and `notice` required; banned words (case-insensitive, whole-word): `token, primitive, selector, IPC, prop, props, reducer, handler, component, Tailwind, CSS class, React, DOM, z-index`; warnings for `box` highlights, auto-highlight > 60% of the crop, risk > 40 words, `measured` without a digit.
 - Layout picker (spec §3.4): B/C need content ≥ 820px; A wins ties within 5%; best < 50% → compact; upscale cap 150%.
-- Answers file is `<spec-stem>.answers.json` next to the spec; `serve` exits 0 on submit, 2 on timeout (default 240 min), 3 when the same spec is already served.
+- Answers file is `<spec-stem>.answers.json` next to the spec; `serve` exits 0 on submit, 2 on timeout (default 240 min), 3 when the same spec is already served. `wait` exits 0/2 the same way and reads only the answers file. `.gitignore` gains `*.answers.json` and `*.serve.json`.
+- **The worktree does NOT contain the sub-repo checkouts.** `youcoded/` and `wecoded-themes/` live only at the workspace root (one level above `worktrees/`). Everything that needs them resolves the root with `spec.workspace_root()` — walk up from the package until a directory containing `wecoded-themes/themes` is found; `YOUCODED_WORKSPACE` overrides. Tests that read those files **fail** when the root is not found — never skip (a skipped pin is no pin).
+- ImageMagick dilate is `-morphology Dilate Square:1` (a 3×3 kernel). `Square:3` is a 7×7 kernel and grows a box 3 px per side — measured on 2026-08-27, it broke the auto-box tolerances.
 - Every non-trivial edit carries a WHY comment (Destin reads the code through comments).
 - Python tests: `python3 -m unittest discover -s scripts/ui-review/tests -p 'test_*.py'`. Node tests: `node --test scripts/ui-review/tests/`.
 - Commit after every task with the `Co-Authored-By` / `Claude-Session` trailers from the session's Bash instructions.
@@ -31,17 +33,18 @@ spec: docs/active/specs/2026-08-27-review-deck-v2-design.md
 
 | Path | Responsibility |
 |---|---|
-| `scripts/ui-review/review-cards.py` | CLI: `crop`, `build`, `serve`. Rewritten (v1 removed). |
+| `scripts/ui-review/review-cards.py` | CLI: `build`, `serve`, `wait`. Rewritten (v1 removed). |
 | `scripts/ui-review/deck/__init__.py` | package marker |
-| `scripts/ui-review/deck/spec.py` | load spec, merge `crops.json`, writing rules → `(errors, warnings)` |
+| `scripts/ui-review/deck/spec.py` | load spec, merge `crops.json`, `workspace_root()`, writing rules → `(errors, warnings)` |
 | `scripts/ui-review/deck/boxes.py` | geometry parsing, window-px → crop-% mapping, pixel-diff bounding box |
-| `scripts/ui-review/deck/crops.py` | cut crops with `magick`, resolve each step's highlight per theme × run, write `boxes.json` |
-| `scripts/ui-review/deck/build.py` | inline assets + tokens + deck JSON → one HTML file; refuses on missing pictures/boxes |
-| `scripts/ui-review/deck/serve.py` | HTTP server, atomic answers file, submit → exit, feedback summary, browser open |
+| `scripts/ui-review/deck/crops.py` | cut crops with `magick` (one cut per crop × theme × run), resolve each step's highlight per theme × run |
+| `scripts/ui-review/deck/build.py` | crop, then inline assets + tokens + deck JSON → one HTML file; refuses on missing pictures/boxes |
+| `scripts/ui-review/deck/serve.py` | HTTP server, atomic answers file, submit → exit, feedback summary, browser open, `wait_for_submit` |
+| `.gitignore` | `*.answers.json`, `*.serve.json` |
 | `scripts/ui-review/deck/tokens.json` | the four built-in token sets the page inlines |
 | `scripts/ui-review/deck/page.html.tmpl`, `page.css`, `page.js` | the page (from mockup G) |
 | `scripts/ui-review/tests/fixture.py` | builds a synthetic run dir + spec in a temp dir for the Python tests |
-| `scripts/ui-review/tests/test_spec.py`, `test_boxes.py`, `test_crops.py`, `test_build.py`, `test_serve.py`, `test_tokens.py` | unit tests |
+| `scripts/ui-review/tests/test_spec.py`, `test_boxes.py`, `test_crops.py`, `test_build.py`, `test_serve.py`, `test_tokens.py`, `test_cli.py` | unit tests |
 | `scripts/ui-review/tests/shot-measure.test.mjs`, `coverage.test.mjs`, `deck-render.test.mjs` | node tests |
 | `scripts/ui-review/probe-ports.sh` | exits 1 naming any listening port among its args (hand-off gap 1) |
 | `scripts/ui-review/shot.mjs` | `measure` per shot; `run` id on every manifest entry |
@@ -59,7 +62,7 @@ spec: docs/active/specs/2026-08-27-review-deck-v2-design.md
 - Test: `scripts/ui-review/tests/test_spec.py`
 
 **Interfaces:**
-- Produces: `load_spec(path) -> dict` (adds `_base`, `_stem`, `_crops`, default `themes`); `validate(spec) -> (errors: list[str], warnings: list[str])`; `run_names(spec) -> list[str]`; `word_count(s) -> int`; `banned_in(text) -> list[str]`; `SpecError(Exception)`; constants `DEFAULT_THEMES`, `BANNED`, `AUTO_WARN_FRACTION = 0.6`.
+- Produces: `load_spec(path) -> dict` (adds `_base`, `_stem`, `_crops`, default `themes`); `validate(spec) -> (errors: list[str], warnings: list[str])`; `run_names(spec) -> list[str]`; `word_count(s) -> int`; `banned_in(text) -> list[str]`; `workspace_root() -> str` (raises `SpecError` when no ancestor holds `wecoded-themes/themes` and `YOUCODED_WORKSPACE` is unset); `SpecError(Exception)`; constants `DEFAULT_THEMES`, `BANNED`, `AUTO_WARN_FRACTION = 0.6`.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -68,7 +71,7 @@ spec: docs/active/specs/2026-08-27-review-deck-v2-design.md
 import json, os, sys, tempfile, unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
-from deck.spec import load_spec, validate, run_names, word_count, banned_in, SpecError
+from deck.spec import load_spec, validate, run_names, word_count, banned_in, workspace_root, SpecError
 
 def write_spec(d, **over):
     spec = {"title": "T", "key": "t", "out": "t.html", "images": "images", "runs": {"before": "/a", "after": "/b"},
@@ -85,7 +88,12 @@ class SpecTests(unittest.TestCase):
         self.assertEqual(s['_stem'], 'deck'); self.assertIn('bubble', s['_crops']); self.assertIn('c', s['_crops'])
         self.assertEqual(s['themes'][0], 'midnight'); self.assertEqual(run_names(s), ['before', 'after'])
     def test_missing_top_level_key_raises(self):
-        with self.assertRaises(SpecError): load_spec(write_spec(self.d, steps=None) and write_spec(self.d, **{}).replace('deck.json', 'x')) if False else load_spec(self._without('title'))
+        with self.assertRaises(SpecError): load_spec(self._without('title'))
+    def test_workspace_root_holds_the_sub_repos(self):
+        # The worktree has no youcoded/ or wecoded-themes/ of its own; the root above worktrees/ does.
+        root = workspace_root()
+        self.assertTrue(os.path.isdir(os.path.join(root, 'wecoded-themes', 'themes')), root)
+        self.assertTrue(os.path.isfile(os.path.join(root, 'youcoded', 'desktop', 'src', 'renderer', 'styles', 'globals.css')), root)
     def _without(self, key):
         p = write_spec(self.d); s = json.load(open(p)); del s[key]; json.dump(s, open(p, 'w')); return p
     def test_three_runs_rejected(self):
@@ -126,13 +134,6 @@ class SpecTests(unittest.TestCase):
 if __name__ == '__main__': unittest.main()
 ```
 
-(The `test_missing_top_level_key_raises` body is deliberately the simple form — replace it with:)
-
-```python
-    def test_missing_top_level_key_raises(self):
-        with self.assertRaises(SpecError): load_spec(self._without('title'))
-```
-
 - [ ] **Step 2: Run the tests to verify they fail**
 
 Run: `cd /home/destin/youcoded-dev/worktrees/_deck-tooling && python3 -m unittest scripts/ui-review/tests/test_spec.py -v 2>&1 | tail -3`
@@ -166,6 +167,23 @@ AUTO_WARN_FRACTION = 0.6   # an auto-highlight covering more than this much of t
 
 class SpecError(Exception):
     pass
+
+
+def workspace_root():
+    """The directory that holds the sub-repo checkouts (youcoded/, wecoded-themes/).
+    WHY walk up: this package usually runs from a worktree (worktrees/<name>/scripts/…), and a
+    worktree holds only the workspace repo — the sub-repos are cloned once, at the root above
+    worktrees/. Resolving relative to the package silently found nothing on 2026-08-27."""
+    if os.environ.get('YOUCODED_WORKSPACE'):
+        return os.environ['YOUCODED_WORKSPACE']
+    d = HERE
+    while True:
+        if os.path.isdir(os.path.join(d, 'wecoded-themes', 'themes')):
+            return d
+        parent = os.path.dirname(d)
+        if parent == d:
+            raise SpecError('no workspace root above ' + HERE + ' holds wecoded-themes/themes (set YOUCODED_WORKSPACE)')
+        d = parent
 
 
 def load_spec(path):
@@ -245,7 +263,7 @@ def validate(spec):
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `python3 -m unittest scripts/ui-review/tests/test_spec.py -v 2>&1 | tail -3`
-Expected: `OK` (12 tests)
+Expected: `OK` (13 tests)
 
 - [ ] **Step 5: Commit**
 
@@ -363,9 +381,11 @@ def px_to_pct(box, size):
 
 def diff_bbox(a, b, threshold='6%', pad=6):
     """Bounding box (crop pixels) of what differs between two same-size PNGs; None if nothing does.
-    `%@` is ImageMagick's trim box of the thresholded difference; the dilate joins hairline changes."""
+    `%@` is ImageMagick's trim box of the thresholded difference (`0x0+W+H` when nothing differs);
+    the 3×3 dilate (`Square:1` — `Square:3` would be 7×7 and grow the box 3 px a side) joins
+    hairline changes into one region."""
     out = subprocess.run(['magick', a, b, '-compose', 'difference', '-composite', '-threshold', threshold,
-                          '-morphology', 'Dilate', 'Square:3', '-format', '%@', 'info:'],
+                          '-morphology', 'Dilate', 'Square:1', '-format', '%@', 'info:'],
                          capture_output=True, text=True, check=True).stdout.strip()
     m = GEO.fullmatch(out)
     if not m:
@@ -382,7 +402,7 @@ def diff_bbox(a, b, threshold='6%', pad=6):
 - [ ] **Step 4: Run to verify pass**
 
 Run: `python3 -m unittest scripts/ui-review/tests/test_boxes.py -v 2>&1 | tail -3`
-Expected: `OK` (9 tests). If `test_identical_images_have_no_box` fails because `%@` prints a non-empty box for a uniform image, print `out` and adjust the `w * h < 4` guard to the value ImageMagick returns for "nothing" (it must still pass the changed-rectangle test).
+Expected: `OK` (9 tests). Measured on 2026-08-27 with ImageMagick 7.1.2: identical images print `0x0+200+100` (plus a harmless warning on stderr, exit 0) — the `w * h < 4` guard turns that into `None`; the 40×30 rectangle comes back as `42x32+49+19` after the 3×3 dilate.
 
 - [ ] **Step 5: Commit**
 
@@ -408,10 +428,13 @@ git commit -m "feat(ui-review): highlight-box maths — measured rect to crop %,
 # scripts/ui-review/tests/test_tokens.py
 """The deck inlines the built-in token values; this pins them to globals.css so a theme
 tweak in the app cannot leave the deck wearing last month's Midnight."""
-import json, os, re, unittest
+import json, os, re, sys, unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(HERE))
+from deck.spec import workspace_root
 TOKENS = os.path.join(os.path.dirname(HERE), 'deck', 'tokens.json')
-GLOBALS = os.path.join(os.path.dirname(HERE), '..', '..', 'youcoded', 'desktop', 'src', 'renderer', 'styles', 'globals.css')
+# Resolved through workspace_root(), never relative to this file: the worktree has no youcoded/.
+GLOBALS = os.path.join(workspace_root(), 'youcoded', 'desktop', 'src', 'renderer', 'styles', 'globals.css')
 KEYS = ['canvas', 'panel', 'inset', 'well', 'accent', 'on-accent', 'fg', 'fg-2', 'fg-dim', 'fg-muted', 'fg-faint', 'edge', 'link']
 
 def css_block(css, theme):
@@ -426,8 +449,8 @@ class TokenTests(unittest.TestCase):
         for theme, tok in t.items():
             for k in KEYS: self.assertRegex(tok[k], r'^#[0-9A-Fa-f]{6}$', f'{theme}.{k}')
             self.assertIsInstance(tok['_dark'], bool)
-    @unittest.skipUnless(os.path.exists(GLOBALS), 'youcoded checkout not present')
     def test_values_match_globals_css(self):
+        self.assertTrue(os.path.exists(GLOBALS), GLOBALS + ' missing — the pin must fail, not skip')
         css = open(GLOBALS).read(); t = json.load(open(TOKENS))
         for theme, tok in t.items():
             block = css_block(css, theme)
@@ -538,7 +561,7 @@ git commit -m "test(ui-review): synthetic run fixture for the deck tests"
 
 **Interfaces:**
 - Consumes: Task 1 `run_names`, `AUTO_WARN_FRACTION`; Task 2 `rect_to_pct`, `diff_bbox`, `image_size`, `px_to_pct`.
-- Produces: `image_name(crop, theme, run) -> str` (`"<crop>--<theme>--<run>.png"`); `newest_manifest_entry(run_dir, plan, shot, theme) -> dict | None`; `measure_key(hl) -> str`; `crop_images(spec) -> {'boxes': {id: {theme: {run: [x,y,w,h]}}}, 'missing': [str], 'warnings': [str], 'count': int}` and writes `<images>/boxes.json`.
+- Produces: `image_name(crop, theme, run) -> str` (`"<crop>--<theme>--<run>.png"`); `newest_manifest_entry(run_dir, plan, shot, theme) -> dict | None` (manifests ordered by run id, then file time — the same rule as Task 10's `coverage.mjs`); `measure_key(hl) -> str`; `crop_images(spec) -> {'boxes': {id: {theme: {run: [x,y,w,h]}}}, 'missing': [str], 'warnings': [str], 'count': int}` where `count` is the number of crop FILES cut (one per crop × theme × run — steps sharing a crop share the file). Nothing is written besides the crop PNGs; `build` consumes the returned boxes directly.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -555,17 +578,18 @@ class CropTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp(); self.spec = load_spec(make_fixture(self.tmp)); self.r = crop_images(self.spec, log=lambda *a: None)
         self.images = os.path.join(self.spec['_base'], 'images')
-    def test_every_theme_and_run_is_cut(self):
-        self.assertEqual(self.r['count'], 3 * 2 * 2)   # steps × themes × runs (S-1..3 share one crop but are cut per step)
+    def test_every_theme_and_run_is_cut_once(self):
+        self.assertEqual(self.r['count'], 1 * 2 * 2)   # crops × themes × runs — S-1..3 share crop "c", so 4 files, not 12
         self.assertTrue(os.path.exists(os.path.join(self.images, image_name('c', 'light', 'after'))))
-        self.assertTrue(os.path.exists(os.path.join(self.images, 'boxes.json')))
+        self.assertEqual(sorted(os.listdir(self.images)), sorted(image_name('c', t, r) for t in ('midnight', 'light') for r in ('before', 'after')))
     def test_measured_selector_maps_into_the_crop(self):
         # crop is 400x200 at (500,250); #send at (600,300) 80x30 → 25%, 25%, 20%, 15%
         self.assertEqual(self.r['boxes']['S-2']['midnight']['before'], [25.0, 25.0, 20.0, 15.0])
         self.assertEqual(self.r['boxes']['S-3']['light']['after'], [25.0, 25.0, 20.0, 15.0])
     def test_auto_box_is_the_changed_region_inside_the_crop_only(self):
         b = self.r['boxes']['S-1']['midnight']['after']
-        # red block at window (560,260) 120x40 → crop (60,10) 120x40 → 15%,5%,30%,20%; padded by 6px (=1.5% / 3%)
+        # red block at window (560,260) 120x40 → crop (60,10) 120x40 → 15%,5%,30%,20%; the 3x3 dilate adds 1px
+        # a side and the pad 6px, so the measured box is (53,3) 134x54 → 13.25%, 1.5%, 33.5%, 27%
         self.assertAlmostEqual(b[0], 15.0, delta=2.5); self.assertAlmostEqual(b[1], 5.0, delta=4)
         self.assertAlmostEqual(b[2], 30.0, delta=5); self.assertAlmostEqual(b[3], 20.0, delta=8)
         self.assertEqual(self.r['boxes']['S-1']['midnight']['before'], b)   # same box on both pictures
@@ -574,7 +598,7 @@ class CropTests(unittest.TestCase):
         self.spec['steps'][1]['highlight'] = {'selector': '#nope'}
         r = crop_images(self.spec, log=lambda *a: None)
         self.assertTrue(any('"measure": ["#nope"]' in m and 'plans/main.json' in m for m in r['missing']))
-        self.assertNotIn('light', r['boxes']['S-2']) if 'S-2' not in r['boxes'] else self.assertEqual(r['boxes']['S-2']['light'], {})
+        self.assertEqual(r['boxes']['S-2']['light'], {})
     def test_missing_capture_is_reported_not_faked(self):
         os.remove(os.path.join(self.spec['runs']['after'], 'shots-main', 'light', 'home.png'))
         r = crop_images(self.spec, log=lambda *a: None)
@@ -588,6 +612,13 @@ class CropTests(unittest.TestCase):
     def test_newest_manifest_entry(self):
         e = newest_manifest_entry(self.spec['runs']['before'], 'main', 'home', 'light')
         self.assertEqual(e['measures']['#send']['x'], 600); self.assertIsNone(newest_manifest_entry(self.spec['runs']['before'], 'main', 'nope', 'light'))
+    def test_newest_run_id_beats_a_later_file_time(self):
+        # An earlier sweep's shard can finish (and write its manifest) AFTER a newer sweep's — the run id decides, not mtime.
+        import time
+        d = os.path.join(self.spec['runs']['before'], 'shots-main')
+        json.dump([{'name': 'home', 'theme': 'light', 'verified': True, 'run': '2', 'measures': {'#send': {'x': 1, 'y': 1, 'w': 1, 'h': 1}}}], open(os.path.join(d, 'manifest-main-newer-run.json'), 'w'))
+        old = os.path.join(d, 'manifest-main-x.json'); os.utime(old, (time.time() + 60, time.time() + 60))   # the run-'1' file is now the newest on disk
+        self.assertEqual(newest_manifest_entry(self.spec['runs']['before'], 'main', 'home', 'light')['measures']['#send']['x'], 1)
     def test_measure_key(self):
         self.assertEqual(measure_key({'selector': '#a'}), '#a'); self.assertEqual(measure_key({'text': 'Send'}), 'text:Send')
 
@@ -624,14 +655,18 @@ def measure_key(hl):
 
 
 def newest_manifest_entry(run_dir, plan, shot, theme):
-    """The latest manifest entry for (plan, shot, theme) in a run dir — later files win, like coverage.mjs."""
-    files = sorted(glob.glob(os.path.join(run_dir, f'shots-{plan}', 'manifest-*.json')), key=os.path.getmtime)
-    found = None
-    for f in files:
+    """The latest manifest entry for (plan, shot, theme) in a run dir. Entries are ordered by
+    run id first (the sweep's UI_REVIEW_RUN stamp, Task 9), then file time — the same rule as
+    coverage.mjs — so an earlier sweep's late-finishing shard cannot outrank a newer sweep."""
+    found, best = None, (-1, -1.0)
+    for f in glob.glob(os.path.join(run_dir, f'shots-{plan}', 'manifest-*.json')):
+        mtime = os.path.getmtime(f)
         with open(f) as fh:
             for e in json.load(fh):
                 if e.get('name') == shot and e.get('theme') == theme:
-                    found = e
+                    key = (int(e['run']) if str(e.get('run') or '').isdigit() else -1, mtime)
+                    if key >= best:
+                        found, best = e, key
     return found
 
 
@@ -640,7 +675,7 @@ def crop_images(spec, log=print):
     os.makedirs(out_dir, exist_ok=True)
     runs = run_names(spec)
     two = len(runs) == 2
-    boxes, missing, warnings, count = {}, [], [], 0
+    boxes, missing, warnings, cut = {}, [], [], set()
     for st in spec['steps']:
         plan, shot, geo = spec['_crops'][st['crop']]
         hl = st.get('highlight', 'auto' if two else None)
@@ -654,8 +689,9 @@ def crop_images(spec, log=print):
                     # A missing picture is a capture bug (see coverage.md), never a blank in the deck.
                     missing.append(f'{st["id"]}: {theme}/{run} — {src} not captured')
                     continue
-                subprocess.run(['magick', src, '-crop', geo, '+repage', dst], check=True)
-                count += 1
+                if dst not in cut:   # steps sharing a crop share the file — cut it once
+                    subprocess.run(['magick', src, '-crop', geo, '+repage', dst], check=True)
+                    cut.add(dst)
                 if isinstance(hl, dict) and 'box' in hl:
                     per_run[run] = hl['box']
                 elif isinstance(hl, dict):
@@ -684,23 +720,21 @@ def crop_images(spec, log=print):
                     pct = px_to_pct(box, size)
                     per_run = {r: pct for r in runs}
             boxes[st['id']][theme] = per_run
-    with open(os.path.join(out_dir, 'boxes.json'), 'w') as f:
-        json.dump(boxes, f, indent=1)
     for m in missing:
         log('missing: ' + m)
-    return {'boxes': boxes, 'missing': missing, 'warnings': warnings, 'count': count}
+    return {'boxes': boxes, 'missing': missing, 'warnings': warnings, 'count': len(cut)}
 ```
 
 - [ ] **Step 4: Run to verify pass**
 
 Run: `python3 -m unittest scripts/ui-review/tests/test_crops.py -v 2>&1 | tail -3`
-Expected: `OK` (8 tests). In `test_missing_measurement_names_the_fix` the second assertion reduces to `self.assertEqual(r['boxes']['S-2']['light'], {})` — simplify it to that line.
+Expected: `OK` (9 tests).
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add scripts/ui-review/deck/crops.py scripts/ui-review/tests/test_crops.py
-git commit -m "feat(ui-review): crop step — cut crops, resolve highlight boxes from measurements or pixel diff"
+git commit -m "feat(ui-review): crop step — cut each crop once, resolve highlight boxes from measurements or pixel diff"
 ```
 
 ---
@@ -763,9 +797,9 @@ class BuildTests(unittest.TestCase):
         with self.assertRaises(SpecError) as cm: build_page(self.spec, self.boxes)
         self.assertIn('banned word "token"', str(cm.exception))
     def test_tokens_for_community_theme_come_from_its_manifest(self):
-        t = theme_tokens(['midnight', 'halftone-dimension']) if os.path.exists(os.path.join(os.path.dirname(HERE), '..', '..', 'wecoded-themes', 'themes', 'halftone-dimension', 'manifest.json')) else None
-        if t is None: self.skipTest('wecoded-themes checkout not present')
-        self.assertEqual(t['halftone-dimension']['accent'].lower(), '#e51f48'); self.assertTrue(t['halftone-dimension']['_dark'])
+        # No skip: the worktree has no wecoded-themes/ of its own, build.py must find the workspace root's copy.
+        t = theme_tokens(['midnight', 'halftone-dimension', 'meadow-mist'])
+        self.assertEqual(t['halftone-dimension']['accent'].lower(), '#e51f48'); self.assertTrue(t['halftone-dimension']['_dark']); self.assertFalse(t['meadow-mist']['_dark'])
         self.assertIn('[data-theme="halftone-dimension"]{', tokens_css(t)); self.assertIn('--radius-md:16px', tokens_css(t))
     def test_unknown_theme_is_an_error(self):
         with self.assertRaises(SpecError): theme_tokens(['no-such-theme'])
@@ -930,6 +964,7 @@ figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.
   // ── render the current step ──
   function render() {
     const st = DECK.steps[cur];
+    document.documentElement.dataset.theme = theme;   // before the pictures load, so a theme switch never flashes the old colours
     $('#wtitle').textContent = st.surface; $('#wsub').textContent = st.path;
     inner.innerHTML = runs.map(r => `<figure class="frame" data-run="${esc(r)}"><figcaption>${esc(DECK.runLabels[r] || r)}</figcaption><div class="pic"><img src="${esc(st.images[theme][r])}" alt=""><span class="box"></span></div></figure>`).join('');
     $$('#inner .frame').forEach(f => { const b = (st.boxes[theme] || {})[f.dataset.run]; const box = f.querySelector('.box'); if (b) box.style.cssText = `left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%`; else box.style.display = 'none'; });
@@ -972,8 +1007,10 @@ figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.
     if (score[best] < 0.5) { c.className = 'content compact'; step.classList.add('compact-step'); s = Math.min((c.clientWidth - PAD) / w, 1); }
     else { c.className = 'content ' + opts[best]; s = Math.min(score[best], 1.5); }
     $$('#inner img').forEach(i => i.style.width = (i.naturalWidth * s * zoom) + 'px');
-    $('#lvl').textContent = Math.round(zoom * 100) + '%'; document.documentElement.dataset.theme = theme;
-    document.body.dataset.layout = score[best] < 0.5 ? 'compact' : best;   // read by the render test
+    $('#lvl').textContent = Math.round(zoom * 100) + '%';
+    // Read by the render test: the choice, and the scores it was made from (so the test checks the RULE, not a table).
+    document.body.dataset.layout = score[best] < 0.5 ? 'compact' : best;
+    document.body.dataset.scores = JSON.stringify(score);
     const b = $('#inner .frame .box'); if (b && zoom > 1) b.scrollIntoView({ block: 'center', inline: 'center' });
   }
 
@@ -1058,11 +1095,9 @@ import json
 import os
 
 from .crops import image_name
-from .spec import SpecError, run_names, validate
+from .spec import SpecError, run_names, validate, workspace_root
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-WORKSPACE = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
-THEME_DIRS = [os.path.join(WORKSPACE, 'wecoded-themes', 'themes')]
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
 TOKEN_KEYS = ['canvas', 'panel', 'inset', 'well', 'accent', 'on-accent', 'fg', 'fg-2', 'fg-dim', 'fg-muted', 'fg-faint', 'edge', 'link']
 RADIUS_KEYS = ['radius-sm', 'radius-md', 'radius-lg']
@@ -1072,12 +1107,14 @@ def theme_tokens(themes):
     """Built-ins from tokens.json; community themes from their manifest (tokens + shape radii + dark flag)."""
     with open(os.path.join(HERE, 'tokens.json')) as f:
         builtin = json.load(f)
+    # Community themes live in the wecoded-themes checkout at the WORKSPACE root — a worktree has none.
+    theme_dirs = [os.path.join(workspace_root(), 'wecoded-themes', 'themes')]
     out = {}
     for t in themes:
         if t in builtin:
             out[t] = builtin[t]
             continue
-        for d in THEME_DIRS:
+        for d in theme_dirs:
             mf = os.path.join(d, t, 'manifest.json')
             if os.path.exists(mf):
                 with open(mf) as f:
@@ -1091,7 +1128,7 @@ def theme_tokens(themes):
                 out[t] = tok
                 break
         else:
-            raise SpecError(f'no tokens for theme "{t}" (not built in, no manifest under {THEME_DIRS})')
+            raise SpecError(f'no tokens for theme "{t}" (not built in, no manifest under {theme_dirs})')
     return out
 
 
@@ -1144,7 +1181,7 @@ def build_page(spec, boxes):
 - [ ] **Step 7: Run to verify pass**
 
 Run: `python3 -m unittest scripts/ui-review/tests/test_build.py -v 2>&1 | tail -3`
-Expected: `OK` (8 tests, one may be skipped without `wecoded-themes`).
+Expected: `OK` (8 tests, none skipped).
 
 - [ ] **Step 8: Commit**
 
@@ -1162,7 +1199,7 @@ git commit -m "feat(ui-review): deck v2 page (approved mockup G) and the builder
 - Test: `scripts/ui-review/tests/test_serve.py`
 
 **Interfaces:**
-- Produces: `answers_path(spec) -> str`; `write_atomic(path, obj)`; `summary(spec, state) -> str` (spec §4.5 format); `make_server(spec, port, on_submit) -> (server, url)`; `serve(spec, port=0, open_browser=True, timeout_min=240, log=print) -> int` (0 submit / 2 timeout / 3 already served); `open_url(url)`.
+- Produces: `answers_path(spec) -> str`; `write_atomic(path, obj)`; `summary(spec, state) -> str` (spec §4.5 format); `make_server(spec, port, on_submit) -> (server, url)`; `serve(spec, port=0, open_browser=True, timeout_min=240, log=print) -> int` (0 submit / 2 timeout / 3 already served); `wait_for_submit(spec, timeout_min=240, poll_s=2, log=print) -> int` (0 when the answers file carries `submitted`, summary logged; 2 on timeout — reads the file only, so a session that lost the `serve` process can still wait); `open_url(url)`.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1173,7 +1210,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 from fixture import make_fixture
 from deck.spec import load_spec
-from deck.serve import answers_path, make_server, serve, summary, write_atomic
+from deck.serve import answers_path, make_server, serve, summary, wait_for_submit, write_atomic
 
 def post(url, obj):
     req = urllib.request.Request(url, data=json.dumps(obj).encode(), headers={'content-type': 'application/json'}, method='POST')
@@ -1217,6 +1254,14 @@ class ServeTests(unittest.TestCase):
         out = []; self.assertEqual(serve(self.spec, port=0, open_browser=False, timeout_min=1, log=out.append), 3); self.assertTrue(any('REFUSING' in l for l in out))
     def test_write_atomic(self):
         p = os.path.join(self.tmp, 'a.json'); write_atomic(p, {'x': 1}); self.assertEqual(json.load(open(p)), {'x': 1})
+    def test_wait_returns_0_when_the_file_says_submitted_and_2_on_timeout(self):
+        out = []
+        self.assertEqual(wait_for_submit(self.spec, timeout_min=0.002, poll_s=0.05, log=out.append), 2)   # ~0.12 s, no file
+        write_atomic(answers_path(self.spec), {'answers': {'S-1': {'v': 'yes'}}})                           # saved, not submitted
+        self.assertEqual(wait_for_submit(self.spec, timeout_min=0.002, poll_s=0.05, log=out.append), 2)
+        write_atomic(answers_path(self.spec), {'submitted': '2026-08-27T18:40:00Z', 'answers': {'S-1': {'v': 'yes'}}})
+        out.clear(); self.assertEqual(wait_for_submit(self.spec, timeout_min=1, poll_s=0.05, log=out.append), 0)
+        self.assertTrue(any('1 yes' in l and '2 skipped' in l for l in out))
 
 if __name__ == '__main__': unittest.main()
 ```
@@ -1378,23 +1423,45 @@ def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
         return 0
     log(f'[deck] no submit after {timeout_min} min — answers so far are in {answers_path(spec)}')
     return 2
+
+
+def wait_for_submit(spec, timeout_min=240, poll_s=2, log=print):
+    """Block until the answers file carries `submitted`; 0 with the summary logged, 2 on timeout.
+    WHY a second way to wait: `serve` runs as a background command and its exit is the signal —
+    but a session that was compacted, restarted or lost that process still needs to know when
+    Destin is done. This reads only the file, so it works whether or not `serve` is alive."""
+    deadline = time.monotonic() + timeout_min * 60
+    apath = answers_path(spec)
+    while True:
+        try:
+            with open(apath) as f:
+                state = json.load(f)
+            if state.get('submitted'):
+                log(summary(spec, state))
+                return 0
+        except (OSError, ValueError):
+            pass   # not written yet, or mid-write (write_atomic renames, so this is rare)
+        if time.monotonic() >= deadline:
+            log(f'[deck] no submit after {timeout_min} min — answers so far are in {apath}')
+            return 2
+        time.sleep(poll_s)
 ```
 
 - [ ] **Step 4: Run to verify pass**
 
 Run: `python3 -m unittest scripts/ui-review/tests/test_serve.py -v 2>&1 | tail -3`
-Expected: `OK` (5 tests)
+Expected: `OK` (6 tests)
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add scripts/ui-review/deck/serve.py scripts/ui-review/tests/test_serve.py
-git commit -m "feat(ui-review): deck server — answers file on every click, submit ends the process with the summary"
+git commit -m "feat(ui-review): deck server — answers file on every click, submit ends the process with the summary; wait reads the file alone"
 ```
 
 ---
 
-### Task 8: The CLI — `review-cards.py crop | build | serve`
+### Task 8: The CLI — `review-cards.py build | serve | wait`
 
 **Files:**
 - Modify: `scripts/ui-review/review-cards.py` (full replacement)
@@ -1402,7 +1469,7 @@ git commit -m "feat(ui-review): deck server — answers file on every click, sub
 
 **Interfaces:**
 - Consumes: Tasks 1, 5, 6, 7.
-- Produces: `main(argv) -> int`. Exit codes: `crop` 1 when anything is missing; `build` 1 on refusal; `serve` as Task 7.
+- Produces: `main(argv) -> int`. `build` = crop + build in one go (exit 1 on a writing-rule error, anything missing, or a refusal — the page is NOT written in that case); `serve` = build, then serve (`--no-build` skips the build; exit codes as Task 7); `wait` = `wait_for_submit` (0 / 2). There is no `crop` command and no intermediate file: a stale boxes file would draw wrong rings with no error.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1422,17 +1489,19 @@ class CliTests(unittest.TestCase):
         out, err = io.StringIO(), io.StringIO()
         with redirect_stdout(out), redirect_stderr(err): code = rc.main(list(args))
         return code, out.getvalue(), err.getvalue()
-    def test_crop_then_build(self):
-        code, out, err = self.run_cli('crop', self.p); self.assertEqual(code, 0, err); self.assertIn('12 crops', out)
-        code, out, err = self.run_cli('build', self.p); self.assertEqual(code, 0, err); self.assertTrue(os.path.exists(os.path.join(self.d, 'fixture.html')))
-    def test_build_before_crop_explains(self):
-        code, _, err = self.run_cli('build', self.p); self.assertEqual(code, 1); self.assertIn('run `crop` first', err)
-    def test_crop_reports_missing_as_failure(self):
+    def test_build_crops_and_writes_the_page(self):
+        code, out, err = self.run_cli('build', self.p); self.assertEqual(code, 0, err)
+        self.assertIn('4 crops', out); self.assertIn('wrote', out); self.assertTrue(os.path.exists(os.path.join(self.d, 'fixture.html')))
+    def test_build_reports_missing_as_failure_and_writes_no_page(self):
         s = json.load(open(self.p)); s['steps'][1]['highlight'] = {'selector': '#nope'}; json.dump(s, open(self.p, 'w'))
-        code, _, err = self.run_cli('crop', self.p); self.assertEqual(code, 1); self.assertIn('missing: S-2', err)
+        code, _, err = self.run_cli('build', self.p); self.assertEqual(code, 1); self.assertIn('missing: S-2', err)
+        self.assertFalse(os.path.exists(os.path.join(self.d, 'fixture.html')))
     def test_writing_rule_error_is_reported(self):
         s = json.load(open(self.p)); s['steps'][0]['headline'] = 'Changed the token'; json.dump(s, open(self.p, 'w'))
-        code, _, err = self.run_cli('crop', self.p); self.assertEqual(code, 1); self.assertIn('banned word', err)
+        code, _, err = self.run_cli('build', self.p); self.assertEqual(code, 1); self.assertIn('banned word', err)
+    def test_wait_reads_the_answers_file(self):
+        json.dump({'submitted': '2026-08-27T18:40:00Z', 'answers': {}}, open(os.path.join(self.d, 'deck.answers.json'), 'w'))
+        code, out, _ = self.run_cli('wait', self.p, '--timeout', '1'); self.assertEqual(code, 0); self.assertIn('3 skipped', out)
 
 if __name__ == '__main__': unittest.main()
 ```
@@ -1448,64 +1517,68 @@ Expected: failures — the v1 script has no `main`.
 #!/usr/bin/env python3
 """Review deck v2 — the page Destin approves UI changes on, one point per step.
 
-  python3 scripts/ui-review/review-cards.py crop  <spec.json>     cut the crops, resolve highlight boxes
-  python3 scripts/ui-review/review-cards.py build <spec.json>     write the HTML next to the spec
-  python3 scripts/ui-review/review-cards.py serve <spec.json> [--no-open] [--port N] [--timeout MIN]
-        serve it, open the browser, save answers to <spec>.answers.json, exit when Destin submits
+  python3 scripts/ui-review/review-cards.py build <spec.json>     cut the crops, resolve every highlight box, write the HTML next to the spec
+  python3 scripts/ui-review/review-cards.py serve <spec.json> [--no-open] [--no-build] [--port N] [--timeout MIN]
+        build it, serve it, open the browser, save answers to <spec>.answers.json, exit when Destin submits
+  python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
+        block until the answers file says submitted (for a session that no longer holds the `serve` process)
 
 Run `serve` in the background: its exit is the "review finished" signal and it prints the
-feedback summary. Spec format + writing rules: docs/active/specs/2026-08-27-review-deck-v2-design.md
-(§4–5; archived after merge). History of the three rejected formats before this one:
-docs/active/handoffs/2026-08-27-review-deck-tooling-handoff.md."""
+feedback summary. There is deliberately no separate crop step — a stale intermediate file drew
+wrong rings with no error in v1. Spec format + writing rules:
+docs/active/specs/2026-08-27-review-deck-v2-design.md (§4–5; archived after merge). History of the
+three rejected formats before this one: docs/active/handoffs/2026-08-27-review-deck-tooling-handoff.md."""
 import argparse
-import json
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from deck.build import build_page          # noqa: E402
-from deck.crops import crop_images         # noqa: E402
-from deck.serve import serve               # noqa: E402
-from deck.spec import SpecError, load_spec, validate   # noqa: E402
+from deck.build import build_page                       # noqa: E402
+from deck.crops import crop_images                      # noqa: E402
+from deck.serve import serve, wait_for_submit           # noqa: E402
+from deck.spec import SpecError, load_spec, validate    # noqa: E402
+
+
+def build(spec):
+    """Crop + resolve boxes + write the page. Returns 0, or 1 with the reasons on stderr and NO page written."""
+    errors, warnings = validate(spec)
+    if errors:
+        print('\n'.join(errors), file=sys.stderr)
+        return 1
+    r = crop_images(spec, log=lambda m: print(m, file=sys.stderr))
+    for w in warnings + r['warnings']:
+        print('warning: ' + w, file=sys.stderr)
+    print(f'{r["count"]} crops → {os.path.join(spec["_base"], spec["images"])}')
+    if r['missing']:
+        return 1
+    page, _ = build_page(spec, r['boxes'])
+    out = os.path.join(spec['_base'], spec['out'])
+    with open(out, 'w') as f:
+        f.write(page)
+    print('wrote', out)
+    return 0
 
 
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest='cmd', required=True)
-    for c in ('crop', 'build', 'serve'):
+    for c in ('build', 'serve', 'wait'):
         sub.add_parser(c).add_argument('spec')
+    for c in ('serve', 'wait'):
+        sub.choices[c].add_argument('--timeout', type=float, default=240, help='minutes to wait for a submit (exit 2 after)')
     sv = sub.choices['serve']
     sv.add_argument('--no-open', action='store_true')
+    sv.add_argument('--no-build', action='store_true', help='serve the page as it is on disk')
     sv.add_argument('--port', type=int, default=0)
-    sv.add_argument('--timeout', type=int, default=240, help='minutes to wait for a submit (exit 2 after)')
     a = ap.parse_args(argv)
     try:
         spec = load_spec(a.spec)
-        if a.cmd == 'crop':
-            errors, warnings = validate(spec)
-            if errors:
-                print('\n'.join(errors), file=sys.stderr)
-                return 1
-            r = crop_images(spec, log=lambda m: print(m, file=sys.stderr))
-            for w in warnings + r['warnings']:
-                print('warning: ' + w, file=sys.stderr)
-            print(f'{r["count"]} crops → {os.path.join(spec["_base"], spec["images"])} (boxes.json written)')
-            return 1 if r['missing'] else 0
         if a.cmd == 'build':
-            boxes_file = os.path.join(spec['_base'], spec['images'], 'boxes.json')
-            if not os.path.exists(boxes_file):
-                print('run `crop` first (no boxes.json)', file=sys.stderr)
-                return 1
-            with open(boxes_file) as f:
-                boxes = json.load(f)
-            page, warnings = build_page(spec, boxes)
-            for w in warnings:
-                print('warning: ' + w, file=sys.stderr)
-            out = os.path.join(spec['_base'], spec['out'])
-            with open(out, 'w') as f:
-                f.write(page)
-            print('wrote', out)
-            return 0
+            return build(spec)
+        if a.cmd == 'wait':
+            return wait_for_submit(spec, timeout_min=a.timeout)
+        if not a.no_build and build(spec) != 0:
+            return 1
         return serve(spec, port=a.port, open_browser=not a.no_open, timeout_min=a.timeout)
     except SpecError as e:
         print(str(e), file=sys.stderr)
@@ -1525,7 +1598,7 @@ Expected: `OK` (all tests; skips allowed)
 
 ```bash
 git add scripts/ui-review/review-cards.py scripts/ui-review/tests/test_cli.py
-git commit -m "feat(ui-review): review-cards.py v2 CLI — crop, build, serve"
+git commit -m "feat(ui-review): review-cards.py v2 CLI — build, serve, wait"
 ```
 
 ---
@@ -1659,13 +1732,22 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const run = (...dirs) => spawnSync('node', [join(HERE, '..', 'coverage.mjs'), ...dirs], { encoding: 'utf8' }).stdout;
 const entry = (name, theme, verified, run) => ({ name, theme, verified, reasons: verified ? [] : ['MISSING x'], run });
 
-test('an older run cannot leave a MISSED row behind once the plan re-ran', () => {
+test('an older run cannot leave a MISSED row behind once the plan re-ran — even when its manifest landed on disk later', () => {
+  // Gap 6 exactly: under load the FIRST sweep's shard finished after the SECOND sweep wrote its manifest,
+  // so the newest file on disk carried the stale miss. Run id must decide, not file time.
   const d = join(mkdtempSync(join(tmpdir(), 'cov-')), 'shots-main'); mkdirSync(d);
-  const old = join(d, 'manifest-old.json'); writeFileSync(old, JSON.stringify([entry('home', 'light', false, '100'), entry('settings', 'light', true, '100')]));
-  utimesSync(old, new Date(Date.now() - 60000), new Date(Date.now() - 60000));
-  writeFileSync(join(d, 'manifest-new.json'), JSON.stringify([entry('home', 'light', true, '200'), entry('settings', 'light', true, '200')]));
+  const fresh = join(d, 'manifest-new.json'); writeFileSync(fresh, JSON.stringify([entry('home', 'light', true, '200'), entry('settings', 'light', true, '200')]));
+  utimesSync(fresh, new Date(Date.now() - 60000), new Date(Date.now() - 60000));
+  writeFileSync(join(d, 'manifest-old-but-late.json'), JSON.stringify([entry('home', 'light', false, '100'), entry('settings', 'light', true, '100')]));
+  assert.match(run(d), /2 covered · 0 partial · 0 missed/);
+});
+
+test('a surface only an older run captured is still listed (a crashed shard must not erase it)', () => {
+  const d = join(mkdtempSync(join(tmpdir(), 'cov-')), 'shots-main'); mkdirSync(d);
+  writeFileSync(join(d, 'manifest-a.json'), JSON.stringify([entry('home', 'light', true, '100'), entry('settings', 'light', false, '100')]));
+  writeFileSync(join(d, 'manifest-b.json'), JSON.stringify([entry('home', 'light', true, '200')]));   // the re-run's settings shard died
   const out = run(d);
-  assert.match(out, /2 covered · 0 partial · 0 missed/);
+  assert.match(out, /1 covered · 0 partial · 1 missed/); assert.match(out, /shots-main\/settings \| MISSED/);
 });
 
 test('legacy manifests without a run id still merge newest-file-wins', () => {
@@ -1687,26 +1769,27 @@ test('runs are compared per plan directory, so a re-run of one plan keeps the ot
 - [ ] **Step 2: Run to verify failure**
 
 Run: `node --test scripts/ui-review/tests/coverage.test.mjs 2>&1 | grep -E "^# (pass|fail)"`
-Expected: `# fail 1` (the first test — the old MISS wins today only if it is newer; with the new file newer it passes by accident, so also check: swap the file ages and the old miss shows up. Either way the third assertion in Step 3 makes behaviour explicit.)
+Expected: `# fail 1` — the first test: today the later file on disk wins, so the stale miss shows. (The other three pass already; they pin what must NOT change.)
 
 - [ ] **Step 3: Edit `coverage.mjs`** — replace the `for (const d of dirs) { … }` block (lines 14–28) with:
 
 ```js
 for (const d of dirs) {
   if (!existsSync(d)) continue;
-  // Oldest first so a later re-run of a fixed shot supersedes the earlier miss.
-  const files = readdirSync(d).filter(f => /^manifest.*\.json$/.test(f)).sort((a, b) => statSync(`${d}/${a}`).mtimeMs - statSync(`${d}/${b}`).mtimeMs);
-  const entries = files.flatMap(f => JSON.parse(readFileSync(`${d}/${f}`, 'utf8')));
-  // Only the newest run's entries count for this plan (hand-off gap 6): a partial re-run under
-  // load used to leave an earlier attempt's MISSED rows in place. Entries with no run id
-  // (manifests from before 2026-08-27) keep the old newest-file-wins behaviour.
-  const runs = entries.map(e => e.run).filter(Boolean).map(Number);
-  const newest = runs.length ? Math.max(...runs) : null;
-  for (const e of entries) {
-    if (newest !== null && Number(e.run) !== newest) continue;
+  // Order every entry by (run id, file time) and let the later one win per surface × theme.
+  // WHY run id first (hand-off gap 6): under load an EARLIER sweep's shard can write its manifest
+  // AFTER a newer sweep's, and "newest file wins" then resurrected a stale MISSED row. The run id
+  // (UI_REVIEW_RUN, stamped by run-review.sh) says which sweep an entry belongs to; file time only
+  // breaks ties and orders manifests from before 2026-08-27, which carry no run id (-1).
+  // Nothing is discarded: a surface only an older sweep captured stays listed — dropping
+  // everything but the newest run would silently erase the surfaces of a shard that crashed.
+  const files = readdirSync(d).filter(f => /^manifest.*\.json$/.test(f));
+  const entries = files.flatMap(f => { const mtime = statSync(`${d}/${f}`).mtimeMs; return JSON.parse(readFileSync(`${d}/${f}`, 'utf8')).map(e => ({ e, run: /^\d+$/.test(String(e.run ?? '')) ? Number(e.run) : -1, mtime })); });
+  entries.sort((a, b) => a.run - b.run || a.mtime - b.mtime);
+  for (const { e } of entries) {
     const key = `${d.replace(/\/$/, '').split('/').pop()}/${e.name}`;
     const s = bySurface.get(key) ?? { themes: new Map() };
-    s.themes.set(e.theme, e);   // later manifests win
+    s.themes.set(e.theme, e);   // later (by run id, then file time) wins
     bySurface.set(key, s);
   }
 }
@@ -1715,13 +1798,13 @@ for (const d of dirs) {
 - [ ] **Step 4: Run to verify pass**
 
 Run: `node --test scripts/ui-review/tests/coverage.test.mjs 2>&1 | grep -E "^# (pass|fail)"`
-Expected: `# pass 3`
+Expected: `# pass 4`
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add scripts/ui-review/coverage.mjs scripts/ui-review/tests/coverage.test.mjs
-git commit -m "fix(ui-review): coverage merges only the newest run per plan — stale MISSED rows can't survive a re-run"
+git commit -m "fix(ui-review): coverage orders manifests by run id before file time — a late-finishing old shard can't resurrect a MISSED row"
 ```
 
 ---
@@ -1816,8 +1899,7 @@ done
 - [ ] **Step 4: Verify**
 
 Run: `bash scripts/ui-review/tests/probe-ports.test.sh && bash -n scripts/ui-review/run-review.sh && echo syntax-ok`
-Expected: `ok` then `syntax-ok`.
-Then a dry probe of the real script's refusal path: `python3 -m http.server 30301 --bind 127.0.0.1 >/dev/null 2>&1 & P=$!; sleep 0.5; UI_REVIEW_PLANS=latency bash scripts/ui-review/run-review.sh /nonexistent 2>&1 | head -3; kill $P` — expected to stop at the workbench/ownership check before the probe (the script refuses earlier because `/nonexistent` has no `desktop/`), which is fine; the probe is exercised by its own test.
+Expected: `ok` then `syntax-ok`. (The probe's behaviour is covered by its own test; `run-review.sh` itself needs a workbench and is exercised by the real sweep in Task 14.)
 
 - [ ] **Step 5: Commit**
 
@@ -1834,7 +1916,8 @@ git commit -m "fix(ui-review): run-review probes CDP ports, stamps a run id, reb
 - Test: `scripts/ui-review/tests/deck-render.test.mjs`
 
 **Interfaces:**
-- Consumes: Task 8 CLI (`crop`, `build`), Task 7 `serve` (run as a subprocess with `--no-open`), page's `document.body.dataset.layout` and `window.__deckReady` from Task 6.
+- Consumes: Task 8 CLI (`build`, `serve --no-build`), page's `document.body.dataset.layout`, `dataset.scores` and `window.__deckReady` from Task 6.
+- The layout assertion checks the RULE (spec §3.4) against the scores the page reports, not a table of letters: the fixture crop is 400×200 (wide and short), so side-by-side A legitimately wins where the spec's tall theme-dialog crops picked C. A hard-coded table copied from the spec would have failed here and invited "fixing" the approved algorithm.
 
 - [ ] **Step 1: Write the test**
 
@@ -1873,22 +1956,26 @@ test('deck renders at three sizes and records an answer', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'deck-'));
   const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
-  for (const cmd of ['crop', 'build']) { const r = spawnSync('python3', [RC, cmd, spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
   const port = await freePort();
-  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   let srvOut = ''; srv.stdout.on('data', d => srvOut += d);
   try {
     await sleep(800);
     const url = `http://127.0.0.1:${port}/fixture.html`;
-    const expect = { '1920x1080': 'C', '1100x900': 'C', '520x760': 'compact' };
-    for (const [size, layout] of Object.entries(expect)) {
+    // The rule from spec §3.4, applied to the scores the page publishes: B/C/D must beat A by >5% to win;
+    // best under 50% → compact. 520 px wide cannot show two 400 px crops at half size, so compact is certain there.
+    const expected = scores => { let best = 'A'; for (const k of ['B', 'C', 'D']) if (scores[k] > scores[best] * 1.05) best = k; return scores[best] < 0.5 ? 'compact' : best; };
+    for (const size of ['1920x1080', '1100x900', '520x760']) {
       const [w, h] = size.split('x').map(Number); const c = await cdp(await freePort(), w, h);
       try {
         await c.send('Page.navigate', { url: url + '?step=2' });
         for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
         await sleep(400);
         assert.deepEqual(c.errors, [], size);
-        assert.equal(await c.evaluate('document.body.dataset.layout'), layout, size);
+        const scores = JSON.parse(await c.evaluate('document.body.dataset.scores'));
+        assert.equal(await c.evaluate('document.body.dataset.layout'), expected(scores), size + ' ' + JSON.stringify(scores));
+        if (size === '520x760') assert.equal(await c.evaluate('document.body.dataset.layout'), 'compact', size);
         assert.equal(await c.evaluate("getComputedStyle(document.querySelector('.controls')).display !== 'none' && document.querySelector('.controls').getBoundingClientRect().bottom <= innerHeight"), true, size + ' controls on screen');
         assert.equal(await c.evaluate("document.querySelectorAll('#inner .frame').length"), 2, size);
         assert.equal(await c.evaluate("document.querySelector('#inner .box').style.left"), '25%', size + ' measured box');
@@ -1916,7 +2003,7 @@ test('deck renders at three sizes and records an answer', async () => {
 - [ ] **Step 2: Run it**
 
 Run: `node --test scripts/ui-review/tests/deck-render.test.mjs 2>&1 | grep -E "^# (pass|fail)|not ok|Error" | head`
-Expected: `# pass 1`. If a size picks a different layout than the table expects, print `document.body.dataset.layout` at that size and compare with the mockup at the same window size (`docs/active/prototypes/2026-08-27-deck-mockup-g.html`) — the page must match the mockup's choice; fix the page, not the table.
+Expected: `# pass 1`. If the choice disagrees with the rule, the failure message prints the scores — the bug is in `layout()`'s scoring or class application (compare with the mockup's `layout()` in `docs/active/prototypes/2026-08-27-deck-mockup-g.py`, which is the approved algorithm); never change the rule in the test.
 
 - [ ] **Step 3: Commit**
 
@@ -1927,16 +2014,35 @@ git commit -m "test(ui-review): headless render check — layouts at three sizes
 
 ---
 
-### Task 13: Rebuild the Phase C review as the first v2 deck
+### Task 13: Destin's checkpoint — a three-step Phase C deck, before the rest is written
 
 **Files:**
-- Create: `docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json`
-- Modify: `scripts/ui-review/plans/main.json`, `scripts/ui-review/plans/marketplace.json`, `scripts/ui-review/plans/empty-marketplace.json` (add `measure` where a step names an element)
+- Create: `docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json` (three steps only, for now)
+- Output (git-ignored): `docs/active/design/2026-08-25-ui-audit/images/phase-c-review-v2/`, `phase-c-review-v2.html`
+
+**Why here:** mockup G was approved as a mockup with three hand-picked crops. This is the first time the real page meets real crops, real theme tokens, the answers file and the browser hand-off — and the only remaining tasks (the ten other steps' copy, the docs) are the expensive ones to redo if something about the page needs to change. Tasks 9–11 (rig) do not depend on this look and run in parallel with it.
+
+- [ ] **Step 1: Write the three-step spec** — the JSON in Task 14 Step 1, with only its three steps, `runs` = `scratch/ui-phase-c-baseline` / `scratch/ui-phase-c-after` (the `final` run is midnight-only, so it cannot feed a six-theme deck), all three `"auto"` (the old runs carry no measurements, and the Before code no longer exists to re-capture — see Task 14).
+- [ ] **Step 2: Build and serve** — `python3 scripts/ui-review/review-cards.py serve docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json` in the background. Expected: `12 crops → …`, `wrote …`, `[deck] http://127.0.0.1:<port>/phase-c-review-v2.html`, the browser opens.
+- [ ] **Step 3: Hand it to Destin** with exactly what to try (spec §8): in the tab and in the app's file panel — hover (loupe), `+`/`−` zoom, the theme thumbnails, Yes / No / Other + a note, skip one with `Next ›`, Done → the skipped warning → Submit. Tell him the decisions are already recorded (Phase C shipped as youcoded #332) — this is a look at the tool, not a re-review. Then STOP writing deck content until the background `serve` exits (or `wait` returns) and the summary is read.
+- [ ] **Step 4: Act on what he says** before Task 14. Page changes go into `page.css` / `page.js` with the render test re-run; anything he rejects that the spec §2 approved is a spec change — note it in the spec's §2 with the date.
+
+---
+
+### Task 14: Rebuild the full Phase C review as the first v2 deck
+
+**Files:**
+- Modify: `docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json` (the remaining steps)
 - Output (git-ignored images; the HTML is committed like the v1 pages): `docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.html`
 
-This is the acceptance step: the deck Destin just reviewed as a v1 page, rebuilt from the same two runs (`scratch/ui-phase-c-baseline`, `scratch/ui-phase-c-after`).
+The deck Destin reviewed as a v1 page (`phase-c-review.json`, 13 points), rebuilt from the same two runs (`scratch/ui-phase-c-baseline`, `scratch/ui-phase-c-after`).
 
-- [ ] **Step 1: Write the v2 spec** — one step per point of `phase-c-review.json`, in its order, with the v2 fields. Every step uses `"auto"` (two runs exist) except where the v1 point had `more` pictures; those keep the same crop. Use exactly this shape for the first three; continue for all 13 following the v1 `what`/`fix`/`risk` text rewritten into the four fields under the §5 rules (no banned words; headline ≤ 25 words):
+**Constraints this rebuild has, that a fresh review will not:**
+- **Auto-diff only.** The 2026-08-25 runs predate `measure` (Task 9), and the Before code was master before Phase C merged — it cannot be re-captured, so no step may use `selector`/`text`. Adding `measure` lines to plans is therefore NOT part of this task (it goes into the README rule in Task 15: *measure is planned before the Before run*).
+- **Two of the 13 v1 points are Before-only** (`P-21` #2 — the themes rows, and `Q` #1 — the built-in theme editor question) and cannot live in a two-run deck; both were decided on 2026-08-27 already. Leave them out and say so in the commit message. The deck has **11 steps**.
+- If `auto` reports "nothing differs" for a step in some theme (a change that only shows in certain themes), that is a real limit of the pixel diff for an old run: drop that theme from the deck's `themes` only if it affects every step; otherwise leave the step out and note it in the commit — never hand-place a `box` here.
+
+- [ ] **Step 1: Write the v2 spec** — one step per point of `phase-c-review.json`, in its order, with the v2 fields; `"auto"` everywhere. Use exactly this shape for the first three; continue for the remaining eight following the v1 `what`/`fix`/`risk` text rewritten into the four fields under the §5 rules (no banned words; headline ≤ 25 words):
 
 ```json
 {
@@ -1950,7 +2056,6 @@ This is the acceptance step: the deck Destin just reviewed as a v1 page, rebuilt
     "themes-dialog": ["main", "settings-appearance", "440x600+500+150"],
     "market-hero": ["marketplace", "marketplace", "900x200+0+50"],
     "market-card-counts": ["main", "marketplace", "600x150+10+375"],
-    "market-themes-rows": ["marketplace", "marketplace-themes", "1440x300+0+150"],
     "market-bar": ["marketplace", "marketplace", "760x70+0+248"],
     "market-search": ["marketplace", "marketplace", "300x70+1120+248"],
     "market-narrow-title": ["narrow", "marketplace", "390x56+0+0"],
@@ -1981,35 +2086,34 @@ This is the acceptance step: the deck Destin just reviewed as a v1 page, rebuilt
 }
 ```
 
-- [ ] **Step 2: Crop, and act on every `missing:` line**
+- [ ] **Step 2: Build, and act on every `missing:` line**
 
-Run: `python3 scripts/ui-review/review-cards.py crop docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json`
-Expected: `… crops → … (boxes.json written)` and exit 0. If a step's `auto` reports "nothing differs" (a change the pictures don't show, e.g. a hover-only star), give that step `{"selector": "…"}`, add the printed `"measure": […]` line to the named shot in the plan, and re-run only that plan into **both** run dirs:
-`UI_REVIEW_PLANS=main bash scripts/ui-review/run-review.sh ui-phase-c scratch/ui-phase-c-after` (the worktree `ui-phase-c` is the after branch; the baseline run is master — use `YOUCODED_PORT_OFFSET=400` if another sweep is up). Then `crop` again.
+Run: `python3 scripts/ui-review/review-cards.py build docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json`
+Expected: `… crops → …`, `wrote …`, exit 0. A "nothing differs" line → the constraints above (leave the step out, say so). A "whole-surface change" warning is expected for the full-width marketplace crops — it builds anyway.
 
-- [ ] **Step 3: Build and serve**
+- [ ] **Step 3: Serve**
 
-Run: `python3 scripts/ui-review/review-cards.py build docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json && python3 scripts/ui-review/review-cards.py serve docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json` (in the background, per the CLI docstring)
-Expected: the browser opens on the deck; Destin's pass (spec §8): browser tab, then the file panel; hover, zoom, answer, skip, submit; the background command exits with the summary.
+Run: `python3 scripts/ui-review/review-cards.py serve docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json --no-build` in the background.
+Expected: the browser opens on the 11-step deck; Destin's pass (spec §8) — he already saw the tool in Task 13, this is the full-length run: progress bar with 11 segments, skip, submit; the background command exits with the summary.
 
-- [ ] **Step 4: Commit the spec, the plan `measure` lines and the built page**
+- [ ] **Step 4: Commit the spec and the built page**
 
 ```bash
-git add docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.html scripts/ui-review/plans/*.json
-git commit -m "docs(ui-audit): Phase C review rebuilt as the first v2 deck"
+git add docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.html
+git commit -m "docs(ui-audit): Phase C review rebuilt as the first v2 deck (11 of 13 points — the two Before-only points cannot live in a two-run deck)"
 ```
 
 ---
 
-### Task 14: Docs, ROADMAP, memory
+### Task 15: Docs, ROADMAP, memory, .gitignore
 
 **Files:**
-- Modify: `scripts/ui-review/README.md` (the `review-cards.py + crops.json` row and a new "Review deck" section), `.claude/skills/ui-review/SKILL.md` §4 steps 2–4, `CLAUDE.md` line 119 (the sentence naming the deck), `docs/active/handoffs/2026-08-27-review-deck-tooling-handoff.md` (status), `ROADMAP.md` (two `idea` rows), memory `feedback-review-page-format.md`.
+- Modify: `scripts/ui-review/README.md` (the `review-cards.py + crops.json` row and a new "Review deck" section), `.claude/skills/ui-review/SKILL.md` §4 steps 2–4, `CLAUDE.md` line 119 (the sentence naming the deck), `docs/active/handoffs/2026-08-27-review-deck-tooling-handoff.md` (status), `ROADMAP.md` (two `idea` rows), `.gitignore`, memory `feedback-review-page-format.md`.
 
 - [ ] **Step 1: README** — replace the `review-cards.py + crops.json` table row with:
 
 ```markdown
-| `review-cards.py` + `deck/` + `crops.json` | **the review surface** (v2, 2026-08-27). `crop <spec>` cuts 1:1 crops from the run dirs and resolves every highlight box — from the rig's `measure` of a named element, or from the pixel difference between Before and After (the spec never carries coordinates); `build <spec>` writes the page (fails on a missing picture, an unresolved box, or a broken writing rule); `serve <spec>` serves it on 127.0.0.1, opens the browser, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background and its exit is the notification, with the feedback summary on stdout. Spec template: `docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json`. |
+| `review-cards.py` + `deck/` + `crops.json` | **the review surface** (v2, 2026-08-27). `build <spec>` cuts 1:1 crops from the run dirs, resolves every highlight box — from the rig's `measure` of a named element, or from the pixel difference between Before and After (the spec never carries coordinates) — and writes the page; it refuses (no page) on a missing picture, an unresolved box, or a broken writing rule. `serve <spec>` builds, serves on 127.0.0.1, opens the browser, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background and its exit is the notification, with the feedback summary on stdout; `wait <spec>` blocks on the answers file alone for a session that no longer holds that process. Spec template: `docs/active/design/2026-08-25-ui-audit/phase-c-review-v2.json`. |
 ```
 
 and add under **Writing a shot**:
@@ -2017,8 +2121,18 @@ and add under **Writing a shot**:
 ```markdown
 `"measure": ["#send", {"text": "Send"}]` on a shot records those elements' window rectangles in
 the manifest (`measures`), which is how a review deck gets an exact highlight box. A missing
-element fails the shot. Prefer `aria-label` / role / `data-testid` selectors over visible text —
-one copy change broke three plans' `expect`s in a day (hand-off gap 5).
+element fails the shot. **Plan the `measure` lines before the Before run** — a measurement can
+only come from a capture, and the Before code is usually gone by the time the deck is written
+(the Phase C rebuild had to be pixel-diff only for exactly this reason). Prefer `aria-label` /
+role / `data-testid` selectors over visible text — one copy change broke three plans' `expect`s
+in a day (hand-off gap 5).
+```
+
+- [ ] **Step 1b: `.gitignore`** — add, next to the existing `docs/active/design/*-ui-audit/images/` line:
+
+```
+*.answers.json
+*.serve.json
 ```
 
 Also replace the "Two sweeps at once collide" paragraph with: "Two sweeps at once: `run-review.sh` now probes every CDP port it is about to use (`probe-ports.sh`) and refuses, naming the busy ports — keep offsets ≥ 100 apart and it will never trigger."
@@ -2033,16 +2147,16 @@ Also replace the "Two sweeps at once collide" paragraph with: "Two sweeps at onc
    **notice** (what changes for users — intended and side effects), **risk** (what could look
    wrong, or is not shown faithfully). The builder refuses jargon (token, primitive, selector,
    IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box.
-3. `python3 scripts/ui-review/review-cards.py crop <spec>` → fix every `missing:` line (add the
-   printed `measure` to the plan and re-run that plan) → `build <spec>` → `serve <spec>` **in the
-   background**. The browser opens itself; Destin answers Yes / No / Other per step with an
-   optional note and presses Submit; the background command exits with the summary. Never ask
-   him to paste anything.
+3. `python3 scripts/ui-review/review-cards.py serve <spec>` **in the background** (it builds
+   first; fix every `missing:` line it prints — a measurement that is missing means the plan
+   needed a `measure` line before the Before run). The browser opens itself; Destin answers
+   Yes / No / Other per step with an optional note and presses Submit; the background command
+   exits with the summary (`wait <spec>` if you lost the process). Never ask him to paste anything.
 4. Act on the summary exactly (`Other` + note = change it as described); record decisions in the
    findings ledger row, the guide, the ROADMAP entry. Merge, archive, clean up.
 ```
 
-- [ ] **Step 3: CLAUDE.md** — in the "New Features & UI/UX Changes" paragraph replace the parenthetical after `review deck` with: `(scripts/ui-review/review-cards.py — one point per step: Before | After with the changed region boxed by the rig, a headline and three cards — What changed / You'll notice / Risk — Yes / No / Other, answers saved to a file and handed to Claude on Submit; crop → build → serve)`.
+- [ ] **Step 3: CLAUDE.md** — in the "New Features & UI/UX Changes" paragraph replace the parenthetical after `review deck` with: `(scripts/ui-review/review-cards.py — one point per step: Before | After with the changed region boxed by the rig, a headline and three cards — What changed / You'll notice / Risk — Yes / No / Other, answers saved to a file and handed to Claude on Submit; \`serve <spec>\` in the background does it all)`.
 
 - [ ] **Step 4: Hand-off, ROADMAP, memory**
 
@@ -2053,20 +2167,20 @@ Also replace the "Two sweeps at once collide" paragraph with: "Two sweeps at onc
 - [ ] **Step 5: Run everything, then commit**
 
 Run: `python3 -m unittest discover -s scripts/ui-review/tests -p 'test_*.py' 2>&1 | tail -2 && node --test scripts/ui-review/tests/ 2>&1 | grep -E "^# (pass|fail)" && bash scripts/ui-review/tests/probe-ports.test.sh && node scripts/audit-anchors.mjs 2>&1 | tail -2`
-Expected: `OK`, `# pass 5` / `# fail 0`, `ok`, and the anchor audit unchanged from before this branch (it does not reference the deck files).
+Expected: `OK` with **no skips**, `# pass 6` / `# fail 0`, `ok`, and the anchor audit unchanged from before this branch (it does not reference the deck files).
 
 ```bash
-git add scripts/ui-review/README.md .claude/skills/ui-review/SKILL.md CLAUDE.md docs/active/handoffs/2026-08-27-review-deck-tooling-handoff.md ROADMAP.md
-git commit -m "docs(ui-review): deck v2 flow — crop, build, serve; measure in plans; hand-off gaps closed or filed"
+git add scripts/ui-review/README.md .claude/skills/ui-review/SKILL.md CLAUDE.md docs/active/handoffs/2026-08-27-review-deck-tooling-handoff.md ROADMAP.md .gitignore
+git commit -m "docs(ui-review): deck v2 flow — build, serve, wait; measure is planned before the Before run; hand-off gaps closed or filed"
 ```
 
 (Memory files live outside the repo; edit them directly.)
 
 ---
 
-### Task 15: Finish the branch
+### Task 16: Finish the branch
 
-- [ ] **Step 1:** `bash setup.sh` in the main checkout, then in the worktree `git fetch origin && git rebase origin/master` (docs-only conflicts, if any, keep both).
+- [ ] **Step 1:** `bash setup.sh` in the main checkout, then in the worktree `git fetch origin && git rebase origin/master` (docs-only conflicts, if any, keep both). (The branch was already rebased onto master on 2026-08-27 before Task 1, so `CLAUDE.md` line 119 exists in the worktree.)
 - [ ] **Step 2:** Push, open the PR on `youcoded-dev` with the spec's §1 table as the body, merge (merge means merge AND push), then:
   - move `docs/active/specs/2026-08-27-review-deck-v2-design.md` and this plan to `docs/archive/{specs,plans}/` with `status: shipped`;
   - flip the ROADMAP tooling entry to `[x]` with the merge sha;
@@ -2075,8 +2189,17 @@ git commit -m "docs(ui-review): deck v2 flow — crop, build, serve; measure in 
 
 ---
 
-## Self-review (done while writing)
+## Execution order (parallel where the files are disjoint)
 
-- **Spec coverage:** §3 page → Tasks 6, 12; §3.2 embedded/file:// → Task 6 (`embedded`, copy fallback); §3.3 tokens → Tasks 3, 6; §3.4 layout → Task 6 `layout()` + Task 12 assertions; §4.1 spec → Task 1; §4.2 boxes → Tasks 2, 5, 9; §4.3 serve/notify → Tasks 7, 8; §4.4 file:// → Task 6; §4.5 summary → Task 7 (`summary`) and page (`summary()`), same format; §5 rules → Task 1; §6 gaps 1, 6, 7 → Tasks 10, 11; gap 3 → Tasks 5, 9; gap 5 → Task 14 README; gaps 2, 4 → Task 14 ROADMAP; §7 files → file map; §8 tests → Tasks 1–12 and 13 (Destin's pass); §9 rollout → Tasks 13, 15.
-- **Names used across tasks:** `image_name` (5→6), `run_names` (1→5,6,7), `SpecError` (1→6,8), `validate` (1→6,8), `crop_images` (5→8,12), `build_page` (6→8), `serve`/`make_server`/`summary`/`answers_path`/`write_atomic` (7→8,12 test), `measure_key`/`newest_manifest_entry` (5), `document.body.dataset.layout` + `window.__deckReady` (6→12), `entry.measures` / `entry.run` (9→5,10).
-- **Placeholders:** none; the Phase C spec in Task 13 gives the shape and the first three steps in full and states the rule for the rest (the remaining ten are the v1 points rewritten under §5 — content, not structure).
+- **Wave 1 (parallel):** Tasks 1, 2, 3, 4 (Python, disjoint files) and 9, 10, 11 (rig, disjoint files).
+- **Wave 2 (parallel):** Task 5 (needs 1, 2, 4) and Task 7 (needs 1, 4).
+- **Wave 3:** Task 6 (needs 3, 5) → Task 8 (needs 5, 6, 7) → Task 12 (needs 8).
+- **Task 13 — Destin's look** (needs 8; nothing after it is written until he has looked). Tasks 9–11 may still be running.
+- **Then:** 14 → 15 → 16.
+
+## Self-review (2026-08-27, after the review round)
+
+- **Spec coverage:** §3 page → Tasks 6, 12; §3.2 embedded/file:// → Task 6 (`embedded`, copy fallback); §3.3 tokens → Tasks 3, 6; §3.4 layout → Task 6 `layout()` + Task 12 rule check; §4.1 spec → Task 1; §4.2 boxes → Tasks 2, 5, 9; §4.3 serve/notify → Tasks 7, 8 (+ `wait`, a fallback the spec did not have — the background process is a single point of failure otherwise); §4.4 file:// → Task 6; §4.5 summary → Task 7 (`summary`) and page (`summary()`), same format; §5 rules → Task 1; §6 gaps 1, 6, 7 → Tasks 10, 11; gap 3 → Tasks 5, 9; gap 5 → Task 15 README; gaps 2, 4 → Task 15 ROADMAP; §7 files → file map; §8 tests → Tasks 1–12; Destin's pass → Tasks 13, 14; §9 rollout → Tasks 14, 16.
+- **Deviations from the spec, all deliberate:** no `crop` command (spec §4.3 listed `crop`; a stale intermediate is the v1 bug class); `wait` added; `Square:1` not `Square:3`; coverage orders by run id rather than discarding older runs; the Phase C rebuild is auto-only and 11 steps.
+- **Names used across tasks:** `image_name` (5→6), `run_names` (1→5,6,7), `SpecError` (1→6,8), `validate` (1→6,8), `workspace_root` (1→3,6), `crop_images` (5→8,12), `build_page` (6→8), `serve`/`wait_for_submit`/`make_server`/`summary`/`answers_path`/`write_atomic` (7→8,12 test), `measure_key`/`newest_manifest_entry` (5), `document.body.dataset.layout`/`dataset.scores` + `window.__deckReady` (6→12), `entry.measures` / `entry.run` (9→5,10).
+- **Placeholders:** none; the Phase C spec in Task 14 gives the shape and the first three steps in full and states the rule for the rest (the remaining eight are the v1 points rewritten under §5 — content, not structure).
