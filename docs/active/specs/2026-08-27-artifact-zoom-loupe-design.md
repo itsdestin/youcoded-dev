@@ -3,219 +3,369 @@ status: draft
 date: 2026-08-27
 topic: Artifact viewer — zoom pill and hover loupe
 repos: [youcoded]
+revision: 2 (post-review; see Review corrections)
 ---
 
 # Artifact viewer: zoom pill + hover loupe
 
 ## Problem
 
-Images and PDFs in the artifact pane are display-only. `ImageView.tsx` renders a
-single `<img className="max-w-full max-h-full">` — a large screenshot is shrunk
-to fit the pane with no way to inspect it. `PdfView.tsx` rasterizes every page at
-a fixed `scale: 1.5` and caps each canvas at `maxWidth: 100%`, so a dense PDF is
-unreadable in a narrow pane. Neither surface offers zoom, pan, or magnification.
+Images and PDFs in the artifact pane are display-only. `ImageView.tsx:38-39`
+renders one `<img className="max-w-full max-h-full">` — a large screenshot is
+shrunk to fit the pane with no way to inspect it. `PdfView.tsx:44` rasterizes
+every page at a fixed `scale: 1.5` and caps each canvas at `maxWidth: 100%`, so
+a dense PDF is unreadable in a narrow pane. Neither surface offers zoom, pan, or
+magnification.
 
-The user's ask: a hover magnifier for images "and similar file types", plus a
-simple `+`/`−` zoom pill at the top left.
+The ask: a hover magnifier for images "and similar file types", plus a `+`/`−`
+zoom pill at the top left.
 
 ## Scope
 
 | Included | Excluded |
 |---|---|
-| `ImageView` (png, jpg, jpeg, gif, webp, bmp, ico, avif, **svg**) | `DocxView`, `XlsxView`, `CsvView` — live DOM, not pictures |
-| `PdfView` (canvas pages) | `HtmlView` — cross-document iframe; can't be sampled |
-| Desktop + remote (pointer devices) | `CodeEditorView`, `MarkdownView` — text, has its own sizing |
-| Android: pill only, no loupe | New keyboard-shortcut surface beyond `Escape` |
+| `ImageView` (png, jpg, jpeg, gif, webp, bmp, ico, avif, svg) | `DocxView`, `XlsxView`, `CsvView` — live DOM, not pictures |
+| `PdfView` (canvas pages) | `HtmlView` — cross-document iframe, unsamplable |
+| Desktop, remote browser, Android | `CodeEditorView`, `MarkdownView` — text, sizes itself |
+| One guard change in `hooks/useZoomControls.ts` (§Gesture ownership) | New IPC channels — none needed (§Non-triggers) |
 
-Rationale for the exclusions: the loupe works by drawing a second, magnified copy
-of a bitmap. Documents and HTML previews have no bitmap to copy — magnifying them
-would require screenshotting the DOM, which is slow, blurry, and worse than the
-text-sizing those viewers already have.
+The loupe works by drawing a magnified copy of a bitmap. Documents and HTML
+previews have no bitmap to copy; magnifying them would mean screenshotting the
+DOM — slow, blurry, and worse than the text sizing those viewers already have.
 
-## Behaviour
+## Review corrections
 
-### The pill
+Revision 1 was reviewed against the code and contained five load-bearing errors.
+Recorded here because each one changes the build:
 
-A floating control in the **top-left** of the viewer pane, above the content.
+1. **Ctrl+wheel is already owned app-wide.** `hooks/useZoomControls.ts:76-100`
+   registers a **capture-phase** `wheel` listener on `window`, `preventDefault`s
+   every `ctrlKey` wheel event and zooms the whole Electron frame. It does not
+   `stopPropagation`, so an unguarded viewer handler double-fires: the app and
+   the image both zoom. R1's "pinch works for free" was false. → §Gesture
+   ownership.
+2. **Android has no native pinch-zoom to protect.** `WebViewHost.kt:64-65` sets
+   `setSupportZoom(false)` + `builtInZoomControls = false`, and both copies of
+   `index.html` ship `user-scalable=no, maximum-scale=1.0`. `ImageView.tsx:39`'s
+   `touchAction: 'pinch-zoom'` is dead code. R1's highest-severity risk was a
+   phantom; the real finding is that phones have **no** image zoom today. →
+   §Touch.
+3. **A CSS transform creates no scroll extent**, and a `justify-center` child
+   larger than its flex container has its top/left overflow unreachable. R1's
+   "plain wheel still scrolls the pane" was false for images. → §Pan.
+4. **`PdfPages` has no render cancellation.** The `cancelled` flag gates the
+   loop only; the in-flight `page.render().promise` is never cancelled and
+   `RenderTask.cancel()` is called nowhere. The `PDFDocumentProxy` is a local
+   inside the effect and is discarded, and every page renders eagerly. Re-scaling
+   requires restructuring `PdfPages`, not extending it. → §PDF.
+5. **`fit` is not always the ladder floor.** `max-w-full` shrinks but never
+   upscales, so for any image smaller than the pane `fit == 100%` and R1's
+   rungs below it were undefined. → §The ladder.
+
+Also corrected: an existing pill (`ZoomOverlay.tsx`) already implements
+`[ − | % | + ]` with a reset-on-click label; a rendered `viewBox`-only SVG
+reports `naturalWidth` 300×150 regardless of its real viewBox; jsdom has no
+canvas 2D context, no `matchMedia`, no `elementFromPoint`, and all-zero
+`getBoundingClientRect`.
+
+## Gesture ownership
+
+`useZoomControls` keeps every gesture it owns today, with one exception.
+
+- **`Ctrl+wheel` / trackpad pinch:** the app-wide handler gains a single guard —
+  bail out when the event originates inside a zoomable viewer:
+  ```ts
+  if ((e.target as Element | null)?.closest?.('[data-zoomable]')) return;
+  ```
+  The viewer's root carries `data-zoomable`. Inside the picture, pinch zooms the
+  picture; anywhere else in the app, pinch zooms the app, exactly as now.
+- **`Ctrl+=` / `Ctrl+-` / `Ctrl+0` stay app-wide, unchanged.** Rebinding them by
+  focus would make the same keystroke mean two things depending on an invisible
+  focus state. The pill is the viewer's zoom control; there is no viewer-local
+  zoom shortcut.
+- **`Escape`** turns loupe mode off, registered through the existing dismissal
+  stack — `useEscClose(loupeOn, () => setLoupeOn(false))`
+  (`hooks/use-esc-close.tsx:10-30`). A raw `keydown` listener is forbidden here:
+  an unconsumed Escape forwards `\x1b` to the PTY and interrupts Claude, and the
+  Android hardware back button routes through the same stack. Consequence to
+  accept: with the loupe on, the first Escape (or Android back) turns it off
+  instead of closing the file.
+- **The two percentage readouts.** `ZoomOverlay` (`fixed top-16 right-4`, L4,
+  auto-hides after 1.5 s) reports *app* zoom; the new pill reports *picture*
+  zoom. With the guard above they can no longer be driven by the same gesture,
+  so a user never sees both move at once.
+
+## The pill
+
+Top-left of the viewer's content area.
 
 ```
 [ −  |  100%  |  +  |  ⌕ ]
 ```
 
-- **`−` / `+`** step through a fixed ladder: `fit → 50 → 75 → 100 → 150 → 200 →
-  400 → 800%`. `fit` is the entry point and the ladder's floor; a step down from
-  the smallest ladder rung that exceeds `fit` returns to `fit`. No arbitrary
-  intermediate values from the buttons (Ctrl+wheel may land between rungs; the
-  label rounds to a whole percent).
-- **The percentage label is a button** — click resets to `fit`. Tooltip:
-  "Reset to fit". This is the single escape hatch from any zoom/pan state.
-- **`⌕` toggles loupe mode.** Rendered in the pressed/active state while on.
-  Tooltip: "Magnify on hover".
-- Disabled states: `+` disabled at the ladder ceiling (or the PDF memory
-  ceiling, below); `−` disabled at `fit`.
+- **Always rendered and always visible** whenever a zoomable file is displayed —
+  no hover fade. R1's fade was wrong on three counts: Android has no
+  pointer-enter (the pill would never appear), an `opacity-0` control stays in
+  the tab order (the existing Edit cluster's bug, `SessionDrawer.tsx:755`), and
+  it needed motion rules it didn't have. It also solves discoverability: the
+  loupe is only findable because its button is on screen.
+- The pill sits in the corner of the **pane**, not of the picture. A small image
+  is centred, so the pill overlaps nothing; it only overlaps content that fills
+  the pane.
+- **Hidden entirely below a 260 px content width.** The pane can be ~107 px wide
+  (`MIN_DRAWER_WIDTH = 320` minus the 210 px file list) — narrower than the pill.
+- **`⌕` toggles loupe mode**, `aria-pressed` reflecting state, and is **absent**
+  when `window.matchMedia?.('(hover: hover) and (pointer: fine)')?.matches !==
+  true` (pattern: `InputBar.tsx:257`). Media query, not platform sniff — a
+  remote browser on a desktop has a real cursor and gets the loupe.
+- **The percentage label is a button** that resets to `fit`.
+- **Disabled states carry their reason** in `title` (design guide §4.7):
+  `−` at fit → "Already fitted to the pane"; `+` at the ladder ceiling →
+  "Already at the largest size"; `+` at the PDF page-size ceiling → "This page
+  can't be drawn any larger".
 
-**Visibility.** The pill fades in (150 ms) when the pointer enters the viewer
-pane and out when it leaves. It is **pinned visible** whenever zoom ≠ `fit` or
-loupe mode is on, because at that point it reports state, not just affordances.
-Rationale: a permanently-visible pill covers most of a 16×16 favicon.
+Primitives — no hand-rolled markup (`.claude/rules/react-renderer.md`, guards
+`tests/primitive-adoption.test.ts`, `tests/overlay-layer-authority.test.ts`):
 
-Styling follows `docs/active/design/2026-08-25-ui-design-guide.md` — the app's
-existing translucent surface token, `rounded-full`, existing icon-button sizing.
-No new colour values; must be legible over both light and dark image content, so
-the pill carries its own surface background rather than floating bare over pixels.
+- Surface: `OverlayPanel` from `components/overlays/Overlay.tsx` with a layer.
+  Never a hardcoded `z-`, blur, shadow, or radius.
+- Buttons: `Button` with `size="icon"`, whose type **requires** `aria-label`
+  (`components/ui/Button.tsx:89-90`) — accessible names come free.
+- Hover hints: native `title=`. `AnchorTip` is explicitly not for this
+  (`components/ui/AnchorTip.tsx` header).
+- Coarse-pointer hit area ≥ 44 px (design guide §4.8); `size="icon"` is 28 px, so
+  the pill needs a coarse-pointer size bump.
+- New component `components/ui/ZoomPill.tsx`, so the app owns one zoom pill.
+  `ZoomOverlay.tsx` is refactored to render it — **only if pixel-identical**;
+  if it differs at all, leave `ZoomOverlay` alone and note the duplication.
 
-### The loupe
+## The ladder
+
+`fit` is a rung, not a percentage. The reachable ladder for a given file is
+`fit`, followed by every rung in `[50, 75, 100, 150, 200, 400, 800]` **strictly
+greater than the fit scale**, ascending.
+
+- A large screenshot fits at, say, 38 % → `+` goes 50 → 75 → 100 → …
+- A 300 px image in a 900 px pane fits at 100 % (`max-w-full` never upscales) →
+  `+` goes straight to 150 %. Rungs below fit are dropped, `−` bottoms out at
+  `fit`.
+- Ctrl+wheel may land between rungs; the label rounds to a whole percent and
+  `+`/`−` jump to the next rung above/below the current scale.
+
+## Pan
+
+Zoom is a CSS `transform: scale()` on the content, so it produces **no scroll
+extent** — dragging is the only pan mechanism, and the content is positioned by
+`translate`, not by a centering flex box (whose overflow would be unreachable).
+
+- Drag to pan whenever the content is larger than the content box. Cursor
+  `grab` / `grabbing`; a pointer-down becomes a drag only after **4 px** of
+  travel, so a shaky click is still a click.
+- Translation is clamped so the content can never be dragged fully out of view.
+- **Plain wheel:** over an image, pans vertically when zoomed in and does nothing
+  at fit (the image container has never scrolled). Over a PDF, keeps scrolling
+  the page list exactly as today — at `fit` a tall PDF is already taller than the
+  pane, so scroll wins and drag-pan is inert there.
+- **Pane resize:** the drawer's resize writes `--drawer-width` straight to
+  `<html>` with no React re-render (`state/drawer-width.ts:27-29`), so
+  `useZoomPan` must observe its container with a `ResizeObserver` or fit-scale
+  goes stale mid-drag.
+
+## The loupe
 
 Active only while loupe mode is on and the pointer is over the content.
 
-- A circle ~180 px across, centred on the cursor, following it with no lag
-  (transform-driven, no React state per mousemove — see Architecture).
-- Shows the content under the cursor at **2.5× the current display scale**,
-  clamped so the effective magnification never exceeds 8× the source's native
-  resolution (beyond that there is no more detail to show, only larger pixels).
-- Soft border + shadow so it reads as a lens over the image.
-- **Edge behaviour:** the lens samples only within the content bounds. Near an
-  edge the magnified view shows the edge with the pane backdrop beyond it — it
-  never samples blank space and never jumps to stay inside.
-- Disappears immediately when the pointer leaves the content, and on `Escape`
-  (which also switches loupe mode off).
+- A circle ~180 px across, centred on the cursor, moved by writing a CSS
+  transform through a ref on `pointermove`. **No React state per move** — a
+  state-per-move implementation re-renders the viewer on every pixel of cursor
+  travel and will visibly stutter.
+- Redraw runs on `requestAnimationFrame` while the lens is open, not only on
+  pointer movement. Otherwise a stationary cursor over an animated GIF freezes
+  the magnified copy while the picture underneath keeps playing.
+- **Magnification: 2.5× the current display scale**, clamped for raster sources
+  so the effective magnification never exceeds 8× the source's native pixel size.
+  No clamp for SVG — vector content has no native resolution.
+- **Draw with the destination-rect form of `drawImage`** — the whole source
+  element scaled up and offset behind a circular clip — never the 9-argument
+  source-sub-rect form. Two reasons, both measured: a `viewBox`-only SVG reports
+  `naturalWidth` 300×150 whatever its real size, so source-rect maths is wrong
+  for it; and sampling a source rect that extends past `naturalWidth` returns
+  fully transparent pixels, which is exactly the "blank lens" this must avoid.
+  The destination form also lets Chromium re-rasterize SVG at the drawn size, so
+  a magnified SVG is genuinely sharp.
+- **All cursor→source maths is done in normalized coordinates off
+  `getBoundingClientRect()`** of the source element. On Android and remote the
+  app zoom is a CSS transform on `<html>` (`remote-shim.ts:1407-1409`); rects are
+  already scaled there, so ratios cancel the root scale out and absolute page
+  coordinates would not.
+- **Suppressed when the rendered content is smaller than the lens** — a 16 px
+  favicon under a 180 px lens is four fat pixels and a broken-looking circle.
+- **Never reads pixels back.** No `getImageData`, no `toDataURL`. A display-only
+  draw is unaffected by canvas tainting (verified not tainted today for blob:
+  images, SVG and pdf.js canvases); read-back is what tainting blocks, and
+  Android sets `allowUniversalAccessFromFileURLs = false`
+  (`WebViewHost.kt:59`).
+- **`Loupe` resolves its own source** via a `resolveSource(clientX, clientY)`
+  callback, because a PDF is one canvas *per page* and the source under the
+  cursor changes as the user scrolls. (`document.elementFromPoint` is not an
+  option — it doesn't exist in jsdom, so it would be untestable.)
+- Hidden the moment the pointer leaves the content; off on Escape.
+- `aria-hidden` — it is a decoration over content a screen reader already has.
 
-### Pan and gestures
+## Touch
 
-- **Drag to pan** whenever the content is larger than the pane. Cursor is `grab`
-  / `grabbing`. At `fit` the content isn't larger than the pane, so dragging is
-  inert (no accidental nudge).
-- **Ctrl + wheel** zooms toward the pointer position. Plain wheel keeps its
-  current behaviour (scrolling the pane). Trackpad pinch arrives as Ctrl+wheel,
-  so pinch-to-zoom works on a laptop for free.
-- Not included (explicitly declined): plain-wheel zoom (would hijack pane
-  scrolling), double-click to toggle fit/100%.
+Android and touch-screen laptops, corrected for the fact that **there is no
+native pinch to preserve**:
 
-### State and reset
-
-Zoom level, pan offset, and loupe mode are **per-file and reset on file switch**.
-`BinaryContent` already keys its child by `absolutePath`, so a hook owning this
-state inside the viewer resets naturally — no explicit teardown needed.
-
-Rationale: loupe mode is a mode. Persisting it across files produces the
-"why is this image behaving strangely?" failure a week later, with no visible
-cause. Every file opens plainly at fit-size.
-
-## PDF specifics
-
-A PDF is text, not pixels: CSS-scaling a page canvas past 100% turns glyphs to
-mush, which is the opposite of the reason to zoom a PDF.
-
-- The pill's zoom sets the pdf.js **render scale** (`page.getViewport({ scale })`),
-  so text is resampled crisp at every rung.
-- **Immediate feedback, deferred sharpness:** on a zoom change the existing
-  canvases are CSS-transformed instantly, then re-rendered at the new scale after
-  a short debounce (~150 ms). The user sees soft-then-crisp, as in every PDF
-  reader.
-- **Only visible pages re-render.** Off-screen pages are re-rendered when they
-  scroll into view.
-- **Memory ceiling.** Canvas area is capped at ~16 megapixels per page — at
-  4 bytes a pixel that is ~64 MB of backing store per visible page, which is the
-  most a handful of on-screen pages can carry without risking the renderer.
-  At the ceiling the `+` button is disabled rather than allowing the user to
-  wedge the renderer. The ceiling is expressed as a max effective scale computed
-  from the page's intrinsic size, so a huge poster PDF caps sooner than a letter
-  page.
-- Re-render must respect the existing cancellation discipline in `PdfPages`
-  (the `cancelled` flag and `loadingTask.destroy()`): a zoom change mid-render
-  cancels the in-flight page render before starting the new one, or the two race
-  and paint over each other.
-- The **loupe on a PDF samples the already-rendered canvas** — no re-render, no
-  delay. It therefore reveals detail only up to the canvas's current resolution,
-  which at `scale: 1.5` displayed at ≤ 100% width is real extra detail.
-
-## Android / touch
-
-The renderer is shared with the Android WebView, so this ships to Android too.
-
-- **The loupe button is hidden on coarse-pointer / hover-less devices**
-  (`matchMedia('(hover: hover) and (pointer: fine)')`). A magnifier that follows
-  a cursor is meaningless without a cursor; rendering a control that can do
-  nothing is worse than omitting it.
-- The `−` / `+` / reset pill **does** ship to Android.
-- `ImageView` currently sets `style={{ touchAction: 'pinch-zoom' }}`. Native
-  pinch-zoom is preserved at `fit`; our own `touch-action` handling only engages
-  once our zoom is above `fit` (so drag-to-pan works with a finger). This must be
-  verified on a device — silently killing native pinch on Android is the main
-  regression risk of this change.
+- The pill ships, with coarse-pointer hit areas.
+- Drag-to-pan works with a finger (pointer events cover both).
+- **Two-finger pinch zooms the picture**, implemented in `useZoomPan` from the
+  same pointer stream. This is a *new* capability on Android, not a restoration —
+  today a photo on a phone cannot be zoomed at all.
+- The loupe button is absent (no hover).
+- `ImageView.tsx:39`'s dead `touchAction: 'pinch-zoom'` is removed; the container
+  sets `touch-action: none` only while our zoom is above `fit`, so page scrolling
+  is untouched at rest.
 
 ## Architecture
 
-One shared unit, consumed by both viewers. Rejected alternatives: a third-party
-zoom library (new dependency, styles itself against six themes, and PDFs still
-need bespoke work) and per-viewer implementations (guaranteed drift).
+One shared unit, both viewers. Rejected: a third-party zoom library (new
+dependency, styles itself against six themes, PDFs still need bespoke work) and
+per-viewer implementations (guaranteed drift — the app already has two zoom
+pills for exactly this reason).
 
 ```
+components/ui/ZoomPill.tsx          — the control (ui/, so the guards cover it)
 components/artifact-views/zoom/
-  useZoomPan.ts     — state machine: scale ladder, fit computation, pan offset,
-                      clamping, Ctrl+wheel, pointer drag. Pure, unit-testable.
-  ZoomPill.tsx      — the control. Props: scale, canZoomIn/Out, loupeOn,
-                      loupeSupported, handlers. No knowledge of what it zooms.
-  Loupe.tsx         — the lens overlay. Props: a source (HTMLImageElement |
-                      HTMLCanvasElement), magnification, bounds. Renders into a
-                      canvas positioned by transform.
+  useZoomPan.ts   — scale ladder, fit, pan offset, clamping, wheel, drag, pinch.
+                    Takes container + content size as PLAIN ARGUMENTS.
+  Loupe.tsx       — lens overlay; props: resolveSource, magnification, diameter.
   index.ts
 ```
 
-Boundaries:
+- `useZoomPan` knows nothing about images or PDFs. Sizes are arguments, not
+  measured internally, so it is unit-testable in jsdom (where every
+  `getBoundingClientRect` is zero).
+- `Loupe` no-ops when `getContext('2d')` returns `null` — a production defense
+  and the only way it can be rendered in a jsdom test.
+- `ImageView` composes all three. `PdfView` composes them but feeds `scale` into
+  its render loop instead of into a transform.
+- **State lives in `ImageContent` / `PdfPages`, not `ImageView` / `PdfView`** —
+  `BinaryContent.tsx:65` keys the *inner* child by `absolutePath`, so only state
+  held there resets on file switch.
+- Each viewer owns **its own `relative` wrapper** carrying `data-zoomable`. The
+  only `relative` ancestor today is `ActiveArtifactView.tsx:511`, and in Project
+  View the scroller is the overlay body (`ProjectDetailOverlay.tsx:69`) — a pill
+  anchored up there would scroll away.
 
-- `useZoomPan` knows nothing about images or PDFs — it is given an intrinsic
-  content size and a container size, and returns scale/offset plus handlers.
-- `ZoomPill` is presentational.
-- `Loupe` takes a *source element* to sample. `<img>` and `<canvas>` are both
-  valid `drawImage` sources, which is exactly why both viewers can share it.
-- `ImageView` composes all three directly. `PdfView` composes them and feeds
-  `scale` into its render loop instead of into a CSS transform.
+## State and reset
 
-**Performance discipline:** cursor tracking for the loupe writes a CSS transform
-via a ref on `pointermove` — it does **not** set React state per move. Pan
-dragging follows the same pattern, committing to state only on pointer-up.
-A state-per-move implementation re-renders the whole viewer on every pixel of
-cursor travel and will visibly stutter on a large image — treat it as a defect,
-not a style preference.
+Zoom level, pan offset and loupe mode are per-file and reset on file switch (free
+via the `absolutePath` key above). Every file opens plainly at fit-size.
+
+Rationale: loupe mode is a mode. Persisting it across files produces "why is this
+picture behaving strangely?" a week later with no visible cause. Accepted cost:
+someone comparing two screenshots at 200 % re-zooms on each switch.
+
+## PDF
+
+A PDF is text, not pixels: CSS-scaling a page past 100 % turns glyphs to mush,
+which is the opposite of the reason to zoom a PDF. The pill therefore sets the
+pdf.js **render scale** (`page.getViewport({ scale })`).
+
+`PdfPages` cannot be extended to do this; it must be restructured
+(§Review corrections #4):
+
+- One React component per page, each owning `{ canvasRef, renderTask }`.
+- The `PDFDocumentProxy` is retained in a ref so a scale change does not re-run
+  `getDocument()` / `destroy()`.
+- A scale change calls `renderTask.cancel()` before starting the next render.
+  Rendering twice into one canvas without cancelling is the pdf.js
+  "Cannot use the same canvas during multiple render() operations" error.
+- Immediate feedback, deferred sharpness: existing canvases are CSS-transformed
+  instantly, then re-rendered at the new scale after ~150 ms. Soft-then-crisp,
+  as in every PDF reader.
+- Only pages intersecting the viewport re-render (IntersectionObserver); the rest
+  re-render as they scroll in. Today every page renders eagerly.
+- **Size ceiling: ~16 megapixels per page and ≤ 16384 px per dimension.** This is
+  the only defense available — measured, Chrome accepts an oversized canvas,
+  reports the requested `width`, paints nothing, and throws no exception, so
+  "catch and fall back" does not exist. Above the ceiling `+` is disabled with
+  its reason.
+- The loupe on a PDF samples the already-rendered canvas — no re-render, no
+  delay — so it reveals detail up to that canvas's current resolution.
+
+## Non-triggers
+
+Stated so a reviewer need not re-derive them:
+
+- **No new IPC channels.** `artifacts:read-binary` already exists on every
+  surface; `.claude/rules/ipc-bridge.md` five-surface parity and
+  `tests/ipc-channels.test.ts` are not engaged.
+- **The workbench cannot render an image or a PDF today** —
+  `artifacts.readBinary` has no mock implementation
+  (`src/renderer/dev/workbench/`), so every image currently shows "Preview isn't
+  available on this platform." The mock shim needs `readBinary` plus one image
+  and one PDF fixture **before** the review deck can exist, and any shim change
+  requires `node scripts/workbench-boot-check.mjs`
+  (`.claude/rules/react-renderer.md`).
 
 ## Testing
 
-Unit / DOM (vitest, `desktop/tests/`):
+Grounded in what jsdom actually supports (probed: no canvas 2D context, no
+`matchMedia`, no `elementFromPoint`, `URL.createObjectURL` undefined, all rects
+zero).
 
-- `useZoomPan`: ladder stepping in both directions, `fit` floor, ceiling clamp,
-  pan clamped to content bounds, Ctrl+wheel zooms toward the pointer, plain wheel
-  ignored.
-- `ZoomPill`: `−` disabled at fit, `+` disabled at ceiling, label click resets,
-  loupe button absent when `loupeSupported` is false.
-- `ImageView`: loupe overlay absent until toggled; removed on pointer-leave and
-  on `Escape`; state resets when `absolutePath` changes.
-- `PdfView`: a zoom change cancels the in-flight render before starting the next;
-  `+` disabled once the computed scale hits the memory ceiling.
+**Pure (the bulk of the coverage) — `useZoomPan` with sizes as arguments:**
+ladder construction for fit-below-100 % and fit-at-100 %, stepping both ways,
+ceiling clamp, pan clamped to bounds, wheel-zoom anchored to the pointer, 4 px
+drag threshold, two-pointer pinch.
 
-Not automated (per workspace rule on interactive verification): the feel of
-dragging, trackpad pinch, and the loupe tracking the cursor. Destin eyeballs
-those in a dev window.
+**DOM:**
+- `ZoomPill`: `−` disabled at fit and `+` at ceiling *with reasons*, label click
+  resets, loupe button absent when unsupported, `aria-pressed` tracks state,
+  every button has an accessible name. `matchMedia` stubbed per
+  `tests/use-narrow-viewport.test.tsx:11-33`.
+- `ImageView`: needs `URL.createObjectURL`/`revokeObjectURL` **and**
+  `window.claude.artifacts.readBinary` stubbed — no existing test gets `ImageView`
+  past the byte read (`tests/artifact-content-loading.test.tsx:214` asserts the
+  `'unavailable'` state instead). Assert: loupe absent until toggled, removed on
+  pointer-leave and on Escape, all state reset when `absolutePath` changes.
+- `Loupe`: renders and no-ops with a null 2D context.
+- `PdfView`: requires `vi.mock('pdfjs-dist')`; assert a scale change calls
+  `renderTask.cancel()` before the next render, and that `+` disables at the
+  page-size ceiling.
+- `useZoomControls`: a Ctrl+wheel inside `[data-zoomable]` does **not** zoom the
+  app; outside it, still does.
 
-Sign-off: workbench mockup → `scripts/ui-review/review-cards.py` deck (before /
-after per point) → Destin approves before the PDF work starts.
+**Not automated** (workspace rule on interactive verification): drag feel,
+trackpad pinch, the lens tracking the cursor, Android touch.
+
+**Sign-off:** workbench mock (readBinary + fixtures) → `review-cards.py` deck,
+before/after per point → six-theme × `default`/`stress` × desktop/390 px sheet
+per design-guide checklist #7, specifically the pill over a pure-white screenshot
+in Meadow Mist and Halftone → Destin approves → PDF work starts.
 
 ## Risks and accepted trade-offs
 
-1. **The pill overlaps the top-left of the content** while the pointer is in the
-   pane. Accepted; mitigated by fade-out and by the pill being small.
-2. **Trackpad pinch now zooms images.** Desirable, but it means content can zoom
-   from a gesture not consciously aimed at it.
-3. **Low-resolution sources reveal nothing under the loupe** — magnification
-   shows large soft pixels. No fix; inherent to the file.
-4. **Android native pinch could regress.** Highest-severity risk in this spec;
-   gated on device verification before merge.
-5. **PDF re-render cost.** Mitigated by debounce, visible-page-only rendering,
-   and the memory ceiling.
+1. **The pill permanently covers the top-left of content that fills the pane.**
+   Accepted — it buys Android, keyboard access and discoverability.
+2. **Escape gains a rung.** With the loupe on, Escape (and Android back) turns it
+   off before closing the file.
+3. **Pinch over a picture no longer zooms the app.** Intended, but it is a
+   behaviour change to a gesture that works today.
+4. **Low-resolution sources reveal nothing under the lens** — big soft pixels.
+   Inherent to the file; the tiny-source suppression covers the worst case.
+5. **The PDF restructure is the largest single piece of work here** and touches
+   code with a live cancellation bug. It ships as its own reviewable phase, after
+   images.
+6. **Zoom resets on every file switch** — deliberate; costs repeat zooming when
+   comparing two files.
+7. **A fourth floating overlay in a narrow pane** (find bar top-right, Edit
+   cluster bottom-right, large-file bar bottom). Mitigated by the 260 px cutoff.
 
-## Out of scope (possible follow-ups)
+## Out of scope
 
-- Fullscreen / lightbox view of an image.
-- Rotate, flip, or copy-region.
-- Zoom for docx / xlsx / html previews.
-- Remembering zoom per file across sessions.
+Fullscreen / lightbox view · rotate, flip, copy-region · zoom for docx/xlsx/html
+· remembering zoom across sessions · replacing `ZoomOverlay`'s behaviour (only
+its markup, and only if pixel-identical).
