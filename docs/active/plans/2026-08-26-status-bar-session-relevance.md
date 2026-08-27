@@ -2749,3 +2749,52 @@ today and completely unprotected** — the reviewer deleted each and the suite s
 **For each of items 1–3, prove the new test is a real guard**: make the deletion the reviewer
 made, in a copy of the tree OUTSIDE the worktree (`cp -a` to /tmp — never mutate in place,
 another agent is working here), confirm the new test goes red, and report the failure text.
+
+---
+
+### Task 23: Close the silent failures around specialist spend
+
+**Depends on:** Tasks 12, 22. **Found by:** the Task 12 review (3) and the Task 22 implementer (1).
+
+Four items. Three are the same shape: **a path where a user's money quietly stops being
+counted and nothing anywhere says so.** A cost figure that is silently short is worse than
+one that is visibly missing — the user has no way to know not to trust it.
+
+**Files:**
+- Modify: `desktop/src/main/harness/native-session-host.ts`
+- Modify: `desktop/src/renderer/state/chat-reducer.ts`
+- Modify: `desktop/src/renderer/buddy/BubbleFeed.tsx`
+- Test: `desktop/tests/native-session-host.test.ts`, `desktop/tests/subagent-usage-event.test.ts`
+
+- [ ] **1. A finished specialist can be billed AND called free.** `native-session-host.ts`
+  ~934-936 builds the roll-up as
+  `usage: { ...run.usage, costUsd: costForUsage(run.usage, pricing), free }` — the two
+  resolved from independent sources with nothing stopping them contradicting. This is the
+  same defect Task 22 item 1 just fixed for `turn-complete`; the specialist path was outside
+  that task's file scope. Fix it the same way (`free ? null : costForUsage(...)`) and pin it.
+
+- [ ] **2. The likeliest failure is the silent one.** `native-session-host.ts` ~931-934:
+  `if (parentSession && childSession)` has **no `else`**. A teardown or destroy race takes
+  that branch rather than the `catch`, so the parent's totals go short with **zero** log
+  output. The `catch` beside it logs properly; this path logs nothing. Add the `else` with a
+  specific log naming which half was missing — do not write a message that guesses a cause
+  (`docs/error-message-standards.md`).
+
+- [ ] **3. The renderer drops an orphan report silently too.** `chat-reducer.ts` ~1547. If
+  `SESSION_INIT` ordering ever slipped, money vanishes with no trace. Add a `console.warn` on
+  the **orphan branch only** — never on the dedup branch, where a second delivery is expected
+  and normal (live-plus-replay overlap). Getting that distinction wrong turns a useful warning
+  into noise that trains people to ignore it.
+
+- [ ] **4. Buddy-window parity.** `buddy/BubbleFeed.tsx` ~91 keeps its own transcript switch
+  with no `subagent-usage` case. No user-visible bug today — nothing in `buddy/` reads
+  `totals` — but its `turn-complete` case (~163) forwards usage explicitly *"if the buddy ever
+  surfaces those UIs"*, so this now contradicts its own stated policy. Mirror the `App.tsx`
+  case.
+
+- [ ] **5:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **6: Commit** — `fix(harness): a specialist's spend never goes missing without saying so`
+
+Prove items 1–3 with mutation, in a copy OUTSIDE the worktree (`cp -a` to /tmp): revert each
+fix and confirm a named test goes red. Item 4 has no runtime behaviour to pin — say so rather
+than inventing an assertion.
