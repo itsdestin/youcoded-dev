@@ -429,48 +429,64 @@ holds, the card says so.** Line numbers move — always re-grep the symbol befor
 
 ### The one measured fact to read these against
 
-From the first real rig run on this build (sha `4256ade`, **2 cold starts**, zero
+From the corrected rig on this build (sha `4256ade`, 5 cold starts, zero
 `desktop.log` ERROR lines). All figures are milliseconds since the rig spawned the process:
 
 | metric | ms from spawn |
 |---|---|
-| `whenReady` | 652 |
-| `createWindowAt` | 681 |
-| `createWindow` (duration) | 37 |
-| `didFinishLoad` | 946 |
-| `modulesEvaluated` | 944 |
-| `appMounted` | 974 |
-| `sessionsListed` | 976 |
-| `firstPaint` | 970 |
-| `firstContentfulPaint` | 4002 |
-| `blankWindowMs` | 3321 |
+| `whenReady` | ~655 |
+| `createWindowAt` | ~685 |
+| `createWindow` (duration) | ~30 |
+| `didFinishLoad` | ~963 |
+| `modulesEvaluated` | ~953 |
+| `appMounted` | ~988 |
+| `sessionsListed` | ~980 |
+| `blankWindowMs` | **~350** |
+| idle PSS | ~450 MB |
+| all sixteen boot chores, together | **~29 ms** |
 
-All **sixteen boot chores together totalled roughly 29 ms** — the largest were `prelude`
-11 ms, `rotateLog` 4 ms, `installHooks` 4 ms, `themeProtocol` 3 ms.
+**READ THIS BEFORE TRUSTING ANY EARLIER NUMBER.** An earlier version of this table
+reported `firstContentfulPaint` 4002 ms and `blankWindowMs` 3321 ms. **Those were an
+artefact of the rig, not a property of the app**, and they are wrong by an order of
+magnitude.
 
-**What that plainly implies:**
+The cause is worth knowing, because it is the exact shape of mistake this loop must not
+repeat. On a normal (setup-complete) boot the renderer gates its entire UI on
+`window.claude.firstRun.getState()` (`App.tsx:472-488`) and renders an EMPTY div until it
+resolves (`App.tsx:2669-2672`). That IPC's main-process handler calls `detectAuth()`
+(`main.ts:887` → `prerequisite-installer.ts:457`), which shells out to `claude auth status`
+and awaits its stdout. The fixture's fake `claude` originally ignored argv and idled
+forever, so the call never returned and the app fell through to its own 3-second safety
+timeout on **every** boot. Diagnosis that settled it: first-paint at 148 ms, React mounted
+at 276 ms, first-contentful-paint at 3300 ms — with only **61 ms of long tasks** in
+between. The renderer was not working. It was waiting on the rig.
+
+`fake-claude.cjs` now answers `auth status` and exits, and the measured blank window fell
+from ~3330 ms to **~350 ms**. Every pre-fix report was discarded to
+`scratch/perf-lab/discarded/` rather than kept, so nothing can be baselined against them.
+
+**What the corrected numbers plainly imply:**
 
 - **Chore-level startup work is not where the time is.** Twenty-nine milliseconds out of a
-  roughly four-second boot is under 1%. **E2 (parallelize chores) is targeting ~29 ms** and
-  must be ranked accordingly — even a perfect result is invisible. E1's value, if it has
-  any, is in *when the window appears*, not in the chores it skips past.
-- **The gap between `firstPaint` (970 ms) and `firstContentfulPaint` (4002 ms) dominates
-  everything else combined.** Something between "the window has painted" and "the window
-  has painted content" is costing about 3.3 seconds, and `blankWindowMs` (3321) is exactly
-  that gap. Any card that does not shrink it is optimizing the small half of the boot.
-  Whatever the Round-0 findings doc says about that gap is the most important sentence in
-  it.
+  ~1-second boot is under 3%. **E2 (parallelize chores) is targeting ~29 ms** and must be
+  ranked accordingly — even a perfect result is invisible.
+- **E1 has lost most of its rationale.** It existed to attack a multi-second gap between
+  window creation and painted content. That gap is ~350 ms. Do not spend a card on it
+  without re-deriving the case from the Round-0 baseline.
+- **Startup is no longer the interesting phase.** The two large, reproducible costs are
+  both in the renderer under load: resuming a 50,000-message conversation freezes the main
+  thread for **~126 seconds** (`loadHistory` returns in 243 ms, so it is entirely render
+  cost), and PSS goes from ~450 MB idle to **~2.5 GB** with six sessions open.
 
-**And the honest caveat.** That is a **single 2-run sample** taken under **software
-rendering on Xvfb with no GPU**. Two runs cannot establish a spread, and paint is precisely
-the thing this rig measures worst. So:
+**The standing caveat.** These are software-rendered on Xvfb with no GPU, which is
+precisely what this rig measures worst. Confirm against the Round-0 baseline (7 runs), and
+confirm any paint-related figure against Destin's own eyes on a real screen before keeping
+a paint-related change.
 
-- Confirm every figure above against the **Round-0 baseline** (7 runs) before ranking
-  anything from it. If the two disagree, the 7-run baseline wins.
-- The **paint figures specifically** — `firstPaint`, `firstContentfulPaint`, `blankWindowMs`
-  — must be confirmed **against Destin's own eyes on a real screen** before any
-  paint-related change is kept. A 3.3-second blank window on a GPU-less virtual display may
-  be a fraction of that on his hardware, or may not exist at all.
+**And the general lesson, which cost a day:** a number being *reproducible* says nothing
+about whether it measures what you think. `blankWindowMs` varied by 0.4% across six boots
+— it was stable precisely *because* it was a fixed timeout. Stability is not validity.
+When a figure is surprisingly large, find the mechanism before ranking it.
 
 ---
 

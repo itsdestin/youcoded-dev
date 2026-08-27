@@ -22,6 +22,28 @@ const crypto = require('node:crypto');
 // --dangerously-skip-permissions, --resume <id>, --model <id>. Only --resume
 // matters here; the rest are accepted and ignored, like extra CC flags.
 const args = process.argv.slice(2);
+
+// `claude auth status` — a ONE-SHOT subcommand, not a session. It must print JSON
+// and EXIT, because the app blocks its first contentful paint on it.
+//
+// WHY this matters enough to hardcode: on a normal (setup-complete) boot the
+// renderer's whole UI is gated behind window.claude.firstRun.getState()
+// (App.tsx:472-488), whose main-process handler calls detectAuth()
+// (main.ts:887 -> prerequisite-installer.ts:457), which runs `claude auth status`
+// and awaits its stdout. While that is outstanding App renders an EMPTY div
+// (App.tsx:2669-2672), so nothing contentful paints.
+//
+// The first version of this fake ignored argv and idled forever, so that IPC never
+// returned and the app fell through to its 3-second safety timeout on EVERY boot.
+// Measured: first-paint 148ms, first-contentful-paint 3300ms, with only 61ms of
+// long tasks in between — the renderer was idle, waiting on us. That made
+// blankWindowMs (a PRIMARY, hard-reject metric) an artefact of the rig rather than
+// a property of the app. Answering promptly here measures the app instead.
+if (args[0] === 'auth' && args[1] === 'status') {
+  process.stdout.write(JSON.stringify({ loggedIn: true, email: 'perf-lab@example.invalid' }) + '\n');
+  process.exit(0);
+}
+
 const ri = args.indexOf('--resume');
 const resuming = ri >= 0 && !!args[ri + 1];
 const sessionId = resuming ? args[ri + 1] : crypto.randomUUID();

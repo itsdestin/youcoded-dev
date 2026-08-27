@@ -282,3 +282,52 @@ Wrap long runs:
 
 No root needed, and the inhibitor releases when the command exits, so there is
 nothing to clean up and nothing left holding the machine awake afterwards.
+
+## 17. The biggest "finding" was the rig measuring itself
+
+This one is the most important entry in this file, because everything about it looked
+right.
+
+The rig reported `blankWindowMs` ≈ 3,330 ms — a window visible but empty for 3.3
+seconds on every launch — with a spread of **0.4% across six boots**. It reproduced
+across three separate runs on two different days. It was, on its face, the single
+largest cost in the whole product.
+
+It was the rig's own fault.
+
+**Mechanism.** On a normal (setup-complete) boot the renderer gates its entire UI on
+`window.claude.firstRun.getState()` (`App.tsx:472-488`) and renders an empty `<div>`
+until it resolves (`App.tsx:2669-2672`) — so the background paints but nothing
+*contentful* does. That IPC's main handler calls `detectAuth()` (`main.ts:887` →
+`prerequisite-installer.ts:457`), which shells out to **`claude auth status`** and
+awaits its stdout. The fixture's fake `claude` ignored argv and idled forever, so the
+call never returned, and `App.tsx`'s own 3-second *safety* timeout became the primary
+path on every boot.
+
+**What settled it** — not inspection, measurement: first-paint at 148 ms, React
+mounted at 276 ms, first-contentful-paint at 3300 ms, and only **61 ms of long tasks**
+in the interval. The renderer was not busy. It was idle, waiting on us. A ~3.0 s gap
+that stayed ~3.0 s even when everything before it got 3× faster is a fixed timer, not
+a workload.
+
+**Fix.** `fake-claude.cjs` answers `auth status` with `{"loggedIn":true,…}` and exits.
+Measured blank window fell **3330 ms → ~350 ms**, and idle PSS fell ~42 MB as a bonus
+(the old fake spawned for `auth status` never exited, leaking one idle Node process
+into every boot's memory figure).
+
+**Consequences.** Every pre-fix report was moved to `scratch/perf-lab/discarded/`
+rather than kept, so nothing can be baselined against them. Experiment card E1 loses
+most of its rationale — it existed to attack a multi-second gap that is now ~350 ms.
+
+**The transferable lesson.** *Stability is not validity.* A 0.4% spread was the
+strongest-looking evidence in the entire dataset, and it was strong precisely because
+a hardcoded timeout is perfectly repeatable. Before ranking a surprisingly large
+number, find the mechanism that produces it. If the main thread is idle during the
+cost, nothing in the app is doing the work — something is waiting, and it may be
+waiting on the harness.
+
+**Residual real finding.** The app's first contentful paint genuinely is gated behind
+a subprocess call to the `claude` CLI. However long `claude auth status` takes on a
+user's machine is time they spend looking at an empty window, capped at 3 s by the
+safety timeout. That is a robustness question worth a ROADMAP entry; it is not a flat
+3-second tax on every user, and must not be reported as one.
