@@ -244,6 +244,28 @@ filename) and stop. Do not start a ninth.
 
 ---
 
+## 2a. While a run is in flight, do nothing else on this machine
+
+**Rule: one rig run at a time, and no other work of your own while it runs.**
+
+The noise gate requires 1-minute load average `< 4` and machine CPU `< 10%` before
+every boot, and it retries five times before refusing. It is not decoration — a busy
+machine stretches exactly the intervals being measured.
+
+This was learned the expensive way: a repeatability run was aborted mid-flight
+(`exit 2`, "the machine never went idle across 5 attempts") because the session had
+dispatched a subagent to do unrelated file-reading work *while* the run was going.
+Load hit 4.47. Twenty minutes of measurement was thrown away, correctly.
+
+Concretely, while `run.mjs` is executing, do not: dispatch subagents, run test suites,
+run builds, run `rg`/`grep` sweeps over the repos, or start a second rig run. Read
+files if you must, but prefer to simply wait — a full run is ~20 minutes and the loop
+has no deadline. Waiting is cheaper than re-running.
+
+Note what the gate does NOT protect you from: it samples only *before* each boot, so
+load that arrives mid-boot is invisible to it. That is the real reason for this rule —
+the gate is a backstop, not a guarantee.
+
 ## 3. When numbers look wrong
 
 Most of what goes wrong here produces a *plausible* number rather than an error. Work
