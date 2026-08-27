@@ -71,6 +71,15 @@ mkdirSync(outDir, { recursive: true });
 const profile = mkdtempSync(join(tmpdir(), 'ui-review-'));
 const proc = ATTACH ? null : spawn('google-chrome-stable', [
   '--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
+  // Headless Chrome has NO input device, so it answers `(hover: none)` and
+  // `(pointer: coarse)` — it looks like a phone to CSS. Anything gated on a real
+  // cursor then never renders, and the shot lands in _unverified with a
+  // misleading "MISSING" instead of a wrong picture (found 2026-08-27: the
+  // artifact viewer's magnifier button was invisible to the rig for this reason).
+  // These are Blink's own enums: hover=2 (HoverTypeHover), pointer=4
+  // (PointerTypeFine). CDP's Emulation.setEmulatedMedia does NOT cover these two
+  // features — it only knows the prefers-* family — so the flags are the only way.
+  '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
   `--window-size=${W},${H}`, '--force-device-scale-factor=1',
   `--remote-debugging-port=${CDP_PORT}`, `--user-data-dir=${profile}`, 'about:blank',
 ], { stdio: 'ignore' });
@@ -130,7 +139,12 @@ async function session(theme) {
   let target;
   if (ATTACH) {
     const list = await (await fetch(`http://127.0.0.1:${ATTACH}/json/list`)).json();
-    target = list.find(t => t.type === 'page' && !/devtools|buddy/.test(t.url)) ?? list[0];
+    // Prefer the window that actually shows the app (served from the dev Vite on 127.0.0.1/localhost).
+    // WHY: the app opens helper windows too (theme-preview generator, floater); on 2026-08-27 the first
+    // 'page' target was one of those, and every shot died on its localStorage ('Access is denied').
+    target = list.find(t => t.type === 'page' && /^http:\/\/(127\.0\.0\.1|localhost):\d+/.test(t.url) && !/devtools|buddy|preview/.test(t.url))
+      ?? list.find(t => t.type === 'page' && !/devtools|buddy/.test(t.url)) ?? list[0];
+    console.error(`attach: ${list.length} targets, using ${target?.url}`);
     if (!target) throw new Error('no page target on ' + ATTACH);
   } else {
     target = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json/new?about:blank`, { method: 'PUT' })).json();

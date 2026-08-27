@@ -1,0 +1,88 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1",
+  "boot": 4000,
+  "width": 1440,
+  "height": 900,
+  "shots": [
+    {
+      "name": "image-fitted",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "latency-chart.png",
+          "settle": 1200
+        }
+      ],
+      "expect": "[aria-label='Zoom in']"
+    },
+    {
+      "name": "image-zoomed",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "latency-chart.png",
+          "settle": 1200
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 300
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 500
+        }
+      ],
+      "expect": "js:(() => { const b = document.querySelector(\"[aria-label^='Reset to fit']\"); return !!b && !document.querySelector(\"[aria-label='Zoom out']\").disabled; })()"
+    },
+    {
+      "name": "image-loupe",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "latency-chart.png",
+          "settle": 1200
+        },
+        {
+          "click": "[aria-label='Magnify on hover']",
+          "settle": 400
+        },
+        {
+          "hover": "js:document.querySelector('[data-zoomable] img')",
+          "settle": 900
+        }
+      ],
+      "expect": "js:(() => { const l = document.querySelector('[aria-hidden][style*=\"border-radius: 50%\"]'); return !!l && getComputedStyle(l).visibility === 'visible'; })()"
+    },
+    {
+      "name": "svg-loupe",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "pipeline-diagram.svg",
+          "settle": 1200
+        },
+        {
+          "click": "[aria-label='Magnify on hover']",
+          "settle": 400
+        },
+        {
+          "hover": "js:document.querySelector('[data-zoomable] img')",
+          "settle": 900
+        }
+      ],
+      "expect": "js:(() => { const l = document.querySelector('[aria-hidden][style*=\"border-radius: 50%\"]'); return !!l && getComputedStyle(l).visibility === 'visible'; })()"
+    }
+  ]
+}
