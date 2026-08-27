@@ -171,8 +171,8 @@ with the command recorded; it does **not** mean measured against a running app.
 
 | # | instance | class | state |
 |---|---|---|---|
-| R1 | `TranscriptWatcher.getHistory()` — sync `readFileSync` + full parse of an entire transcript, from an IPC handler (`transcript-watcher.ts:451-488`, called at `ipc-handlers.ts:2489`) | 1 | **measured**: 5,000 messages → ~3.3 s app-wide stall |
-| R2 | No timeline virtualization — `ChatView.tsx:764` maps the full timeline | 2, 3 | **measured**: 24.3 s worst renderer long task at 50,000 messages |
+| R1 | `TranscriptWatcher.getHistory()` — sync `readFileSync` + full parse of an entire transcript, from an IPC handler (`transcript-watcher.ts:451-488`, called at `ipc-handlers.ts:2489`) | 1 | **measured 2026-08-27: 43-200 ms.** Real, but **~1% of the freeze** — see the retraction below |
+| R2 | No timeline virtualization — `ChatView.tsx:764` maps the full timeline | 2, 3 | **measured: THE freeze.** 6.2-6.9 s single renderer long task at 5,000 entries; ~99% of total stall |
 | R3 | A ChatView stays mounted for every open session (`ChatView.tsx:695-707`) | 3 | **measured**: PSS 450 MB idle → 2,730 MB at six sessions |
 | R4 | `MarkdownContent.tsx:296` — four synchronous tree passes per message incl. the full highlight.js grammar set | 2, 3 | contributing cause of R2 |
 | R5 | `content-visibility:auto` removed from `globals.css:801-806` because `contain:paint` clipped theme glows | 6 | **Destin's call.** Restoring it is speed vs. how the themes look |
@@ -187,6 +187,45 @@ with the command recorded; it does **not** mean measured against a running app.
 | S4 | `listThemes()` re-reads and re-parses every local theme manifest per listing (`theme-marketplace-provider.ts:116-131`) | 1, 5 | verified |
 | S5 | Buddy glide — `setInterval(…, 16)` calling `setPosition()` on up to 3 OS windows from the main process (`buddy-window-manager.ts:227-243`) | 1, 4 | verified shape; impact unmeasured |
 | S6 | Cross-window cursor broadcast at ~30 Hz to every window during a session-pill drag (`main.ts:1184-1191`) | 1, 3 | verified — but **downgraded**, see below |
+
+### RETRACTION (2026-08-27, measured): the freeze is the renderer, not the main process
+
+Until today this register — and everything else written this session — said R1 was the
+app-wide freeze. **It is not.** `scenario-replay-stall.mjs`, run against the app for the
+first time on 2026-08-27, attributes the stall over 6 runs at two sizes:
+
+| size | total stall (3 runs) | main process | renderer | main's share |
+|---|---|---|---|---|
+| medium (5,000 entries) | 7,379 / 10,908 / 14,081 ms | 99 / 19 / 150 ms | 7,280 / 10,889 / 13,931 ms | **0.2-1.3%** |
+| huge (7,000 entries) | 12,591 / 6,466 / 18,449 ms | 162 / 43 / 200 ms | 12,429 / 6,423 / 18,249 ms | **0.7-1.3%** |
+
+Every run agrees. R1's synchronous read is real and measurable — it is the 43-200 ms — but
+the freeze is **R2**: the renderer receiving 5,000 entries and rendering all of them at
+once, with N1's unmemoized full-timeline scan and N4's markdown passes on top.
+
+**The consequences for this register:**
+
+- **R1 and M1 drop from "the fix" to "correct but ~1%."** Both remain genuine Class 1
+  defects worth fixing — synchronous whole-file I/O on the main process will matter more as
+  transcripts grow — but neither moves the symptom. My earlier claim that M1 "changes the
+  plan" was itself overstated: it is the twin of a defect that turns out to be minor.
+- **R2, N1, N2, N3 are the fix**, and they are all renderer work.
+- **Class 1's instances are not thereby exonerated.** S1, S2, S3, S4, G1 and M4 are
+  main-process blocking on *different* paths and are still untested. What was disproved is
+  R1's role in *this* symptom, not the class.
+
+**How the mistake happened, because it generalises.** The pre-attribution table's first
+column was headed "main-process IPC stall" while holding `ipcMaxMs` — the RAW end-to-end
+stall, which a blocked renderer produces just as readily, since a blocked renderer cannot
+dispatch the ping or resolve its promise. The tell was in the table the whole time: 3,353 ms
+of "main-process stall" beside 3,257 ms of "worst renderer long task." Two numbers that
+close are one number measured twice. **The measurement was right; the label was invented,
+and the culprit was named from the label.**
+
+This is the second time this session a confident finding came from reading a number as
+something it was not (the first was the retracted 3.3 s blank window). Both were caught the
+same way — by building the instrument that could actually answer the question, instead of
+inferring the answer from an instrument that could not.
 
 ### Second-pass sweep — main process (2026-08-27)
 

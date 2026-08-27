@@ -122,8 +122,8 @@ no-op unless `YOUCODED_PERF_LOG` is set.
 | startup / boot chores | in `run.mjs` | covered |
 | history reload by size | `scenario-history` | covered |
 | chat under load (6 sessions, streaming, switching) | `scenario-workload` | covered |
-| app-wide freeze on replay | `scenario-replay-stall` | **built, never run against the real app** |
-| artifacts / editor / HTML viewer | `scenario-artifacts` | **built, never run against the real app** |
+| app-wide freeze on replay | `scenario-replay-stall` | covered — **run 2026-08-27, clean first contact** |
+| artifacts / editor / HTML viewer | `scenario-artifacts` | covered — **run 2026-08-27, clean first contact** |
 | terminal | — | **NOT covered** |
 | marketplace | — | **NOT covered** |
 | sync | — | **NOT covered** |
@@ -134,26 +134,65 @@ no-op unless `YOUCODED_PERF_LOG` is set.
 
 ## 3. The findings that matter
 
-### 3.1 The app-wide freeze — measured, mechanism identified
-This is Destin's reported symptom, reproduced.
+### 3.1 The app-wide freeze — reproduced, and the cause is the RENDERER
 
-| conversation | main-process IPC stall (max) | worst single renderer long task |
-|---|---|---|
-| 100 messages | 5 ms | 117 ms |
-| **5,000 messages** | **3,353 ms** | 3,257 ms |
-| 50,000 messages | 3,190 ms | **24,329 ms** |
+> **RETRACTION (2026-08-27, measured).** Everything in this section before today said the
+> freeze was **main-process** blocking caused by `TranscriptWatcher.getHistory()`. That was
+> **wrong**, and it was wrong because of a mislabelled column, not a bad measurement. See
+> "How the mistake happened" below. The corrected finding is that the freeze is
+> **~99% renderer**.
 
-A 5,000-message conversation is **ordinary usage** and it stalls the whole app ~3.3 s.
+The freeze is real and reproduces every time. The attribution is the opposite of what was
+claimed. Measured 2026-08-27 by `scenario-replay-stall.mjs` — the scenario built
+specifically to answer this question — over **6 runs across two invocations**:
 
-**Mechanism:** `TranscriptWatcher.getHistory()`
-(`youcoded/desktop/src/main/transcript-watcher.ts:451-488`) does a synchronous
-`fs.readFileSync` of the entire transcript plus a full parse of every line, called from
-an IPC handler (`ipc-handlers.ts:2489`). The main process is single-threaded and serves
-IPC for **every** session, so while it runs nothing anywhere in the app can respond.
+| size | rendered entries | total stall | main process | renderer | main's share |
+|---|---|---|---|---|---|
+| small | 100 | 0 ms | 0 ms | 0 ms | — |
+| medium | 5,000 | 7,379 / 10,908 / 14,081 ms | 99 / 19 / 150 ms | 7,280 / 10,889 / 13,931 ms | **0.2–1.3%** |
+| huge | 7,000 | 12,591 / 6,466 / 18,449 ms | 162 / 43 / 200 ms | 12,429 / 6,423 / 18,249 ms | **0.7–1.3%** |
 
-The probe measures this with `window.claude.getPlatform()`, whose handler is
-`() => process.platform` (`ipc-handlers.ts:1387`) — zero work, so every millisecond is
-thread availability.
+Every individual run agrees. `blame` is `renderer` at both sizes in both invocations.
+Reports: `perf-reports/2026-08-27-0941-4256ade-shakedown.json` and
+`…-0944-4256ade-attribution-confirm.json`.
+
+**The corrected mechanism.** The main process *does* read the whole transcript
+synchronously — `TranscriptWatcher.getHistory()`
+(`transcript-watcher.ts:451-488`) via `ipc-handlers.ts:2489` — and that read is real, and
+it is measurable: it is the **43–200 ms** in the main-process column. It is simply not the
+freeze. The freeze is what happens next: the renderer receives 5,000 entries and renders
+**all of them at once**, synchronously, with markdown parsing and syntax highlighting per
+message (§3.2). `rendererLongtaskMaxMs` sits at 6.2–6.9 s — a single unbroken block of
+renderer main-thread work.
+
+The physics is consistent: the two costs are sequential, not concurrent. Main reads the
+file (fast), hands it over, and the renderer chokes on it for six to eighteen seconds.
+
+**How the mistake happened — this is the generalisable part.** The old table's first
+column was headed *"main-process IPC stall (max)"*. It was not that. It was `ipcMaxMs`,
+the **raw end-to-end** unresponsiveness — which a blocked *renderer* produces just as
+readily, because a blocked renderer cannot dispatch the ping or resolve its promise. The
+tell was sitting in the table the whole time: **3,353 ms of "main-process stall" next to
+3,257 ms of "worst renderer long task."** Two numbers that close together are one number
+measured twice. I read a raw quantity as an attributed one and named the culprit from it.
+
+Attribution requires the renderer long-task track to subtract; `attributeStalls` exists
+precisely to do that, and until today it had never been run against the app. **The number
+was right; the label was invented.**
+
+**Known limitation, stated rather than hidden.** Attribution charges *overlapping*
+main-and-renderer blocking entirely to the renderer, so a main-process block hiding under
+a long task would be invisible. That does not rescue the original claim: the two costs
+here are sequential by construction (the renderer cannot render data the main process has
+not finished reading), and 43–200 ms is the size a `readFileSync` + parse of this fixture
+should be.
+
+**What this changes in the fix list.** C1 (async + chunked transcript replay) and M1 (its
+native twin) target **~1%** of the freeze. They remain correct changes — synchronous whole-file
+I/O on the main process is a genuine Class 1 defect, and it will matter more as transcripts
+grow — but neither is the fix for this symptom, and shipping either alone would move
+nothing a user could feel. **C2 (virtualize the timeline) is the fix**, with C3, N1 and N2
+as the supporting cast. All four are renderer work.
 
 ### 3.2 Renderer cost is O(total messages), and unvirtualized
 - `ChatView.tsx:764` maps the full timeline; no virtualization anywhere in the renderer.

@@ -151,7 +151,15 @@ content, before the realistic-content switch and before `huge` was recalibrated,
 
 This is Destin's reported symptom, reproduced (status doc §3.1):
 
-| conversation | main-process IPC stall (max) | worst single renderer long task |
+> **RETRACTED 2026-08-27 — the table below was mislabelled and the conclusion drawn from
+> it was wrong.** Its first column was headed "main-process IPC stall" but held `ipcMaxMs`,
+> the RAW end-to-end stall, which a blocked *renderer* produces just as readily. Measured
+> attribution over 6 runs says the freeze is **~99% renderer, 0.2-1.3% main process**.
+> Full correction and the corrected table: status doc §3.1. The tell was visible here all
+> along — 3,353 ms of "main-process stall" beside 3,257 ms of "renderer long task" are one
+> number measured twice.
+
+| conversation | ~~main-process IPC stall (max)~~ **raw end-to-end stall** | worst single renderer long task |
 |---|---|---|
 | 100 messages | 5 ms | 117 ms |
 | **5,000 messages** | **3,353 ms** | 3,257 ms |

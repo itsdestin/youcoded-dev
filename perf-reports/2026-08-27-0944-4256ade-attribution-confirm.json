@@ -1,0 +1,689 @@
+{
+  "schemaVersion": 1,
+  "label": "attribution-confirm",
+  "sha": "4256ade0fb446686e9cd33843ea0bbf3d634bd3c",
+  "branch": "perf/optimization-pass",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-08-27T09:44:00.340Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "ramGb": 31,
+    "kernel": "7.1.2-2-cachyos",
+    "node": "v26.4.0"
+  },
+  "noise": {
+    "loadAvgBefore": 0.42,
+    "machineBusyPctBefore": 1.8,
+    "maxLoadAvgAccepted": 0.42,
+    "maxBusyPctAccepted": 1.8,
+    "discardedRuns": 0
+  },
+  "startup": null,
+  "idle": null,
+  "history": null,
+  "workload": null,
+  "replayStall": {
+    "small": {
+      "runs": [
+        {
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 0,
+          "ipcMaxMs": 3,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 21,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 100,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 570,
+              "roundTripMs": 3,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 600,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 700,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 800,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 900,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 2,
+          "rendererLongtaskTotalMs": 520,
+          "rendererLongtaskMaxMs": 458,
+          "longtaskSupported": true,
+          "renderedEntries": 100,
+          "expectedEntries": 100,
+          "elapsedMs": 2595,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 1,
+          "ipcMaxMs": 57,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 22,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 100,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 2500,
+              "roundTripMs": 57,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 409,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 500,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 600,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 700,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 1,
+          "rendererLongtaskTotalMs": 331,
+          "rendererLongtaskMaxMs": 331,
+          "longtaskSupported": true,
+          "renderedEntries": 100,
+          "expectedEntries": 100,
+          "elapsedMs": 2559,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 1,
+          "ipcMaxMs": 45,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 23,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 100,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 2500,
+              "roundTripMs": 45,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 387,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 400,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 500,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 600,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 1,
+          "rendererLongtaskTotalMs": 303,
+          "rendererLongtaskMaxMs": 303,
+          "longtaskSupported": true,
+          "renderedEntries": 100,
+          "expectedEntries": 100,
+          "elapsedMs": 2550,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcMedianMs": 0,
+        "ipcP95Ms": 1,
+        "ipcMaxMs": 45,
+        "ipcOver250ms": 0,
+        "ipcOver1000ms": 0,
+        "ipcTotalStallMs": 0,
+        "ipcPings": 22,
+        "ipcMissedTicks": 0,
+        "ipcMaxPingGapMs": 100,
+        "mainProcessStallMs": 0,
+        "mainProcessStallMaxMs": 0,
+        "rendererStallMs": 0,
+        "rendererStallMaxMs": 0,
+        "rendererLongtaskCount": 1,
+        "rendererLongtaskTotalMs": 331,
+        "rendererLongtaskMaxMs": 331,
+        "renderedEntries": 100,
+        "elapsedMs": 2559
+      },
+      "blame": "none",
+      "stabilizedRuns": 3,
+      "warnings": []
+    },
+    "medium": {
+      "runs": [
+        {
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 11,
+          "ipcMaxMs": 7479,
+          "ipcOver250ms": 1,
+          "ipcOver1000ms": 1,
+          "ipcTotalStallMs": 7379,
+          "ipcPings": 21,
+          "ipcMissedTicks": 1,
+          "ipcMaxPingGapMs": 14174,
+          "mainProcessStallMs": 99,
+          "mainProcessStallMaxMs": 99,
+          "rendererStallMs": 7280,
+          "rendererStallMaxMs": 7280,
+          "blame": "renderer",
+          "worstStalls": [
+            {
+              "atMs": 476,
+              "roundTripMs": 7479,
+              "stallMs": 7379,
+              "longtaskOverlapMs": 7280,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 14650,
+              "roundTripMs": 11,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 15001,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 15101,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 14700,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 5,
+          "rendererLongtaskTotalMs": 14468,
+          "rendererLongtaskMaxMs": 7280,
+          "longtaskSupported": true,
+          "renderedEntries": 5000,
+          "expectedEntries": 5000,
+          "elapsedMs": 16681,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 4766,
+          "ipcMaxMs": 6342,
+          "ipcOver250ms": 2,
+          "ipcOver1000ms": 2,
+          "ipcTotalStallMs": 10908,
+          "ipcPings": 24,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 8116,
+          "mainProcessStallMs": 19,
+          "mainProcessStallMaxMs": 17,
+          "rendererStallMs": 10889,
+          "rendererStallMaxMs": 6240,
+          "blame": "renderer",
+          "worstStalls": [
+            {
+              "atMs": 8344,
+              "roundTripMs": 6342,
+              "stallMs": 6242,
+              "longtaskOverlapMs": 6240,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 228,
+              "roundTripMs": 4766,
+              "stallMs": 4666,
+              "longtaskOverlapMs": 4649,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 14692,
+              "roundTripMs": 63,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 14755,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 15092,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 6,
+          "rendererLongtaskTotalMs": 14473,
+          "rendererLongtaskMaxMs": 6173,
+          "longtaskSupported": true,
+          "renderedEntries": 5000,
+          "expectedEntries": 5000,
+          "elapsedMs": 16751,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 3360,
+          "ipcMaxMs": 10921,
+          "ipcOver250ms": 2,
+          "ipcOver1000ms": 2,
+          "ipcTotalStallMs": 14081,
+          "ipcPings": 22,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 10921,
+          "mainProcessStallMs": 150,
+          "mainProcessStallMaxMs": 150,
+          "rendererStallMs": 13931,
+          "rendererStallMaxMs": 10671,
+          "blame": "renderer",
+          "worstStalls": [
+            {
+              "atMs": 438,
+              "roundTripMs": 10921,
+              "stallMs": 10821,
+              "longtaskOverlapMs": 10671,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 11359,
+              "roundTripMs": 3360,
+              "stallMs": 3260,
+              "longtaskOverlapMs": 3336,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 14777,
+              "roundTripMs": 10,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 15129,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 14800,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 5,
+          "rendererLongtaskTotalMs": 14449,
+          "rendererLongtaskMaxMs": 6929,
+          "longtaskSupported": true,
+          "renderedEntries": 5000,
+          "expectedEntries": 5000,
+          "elapsedMs": 16779,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcMedianMs": 0,
+        "ipcP95Ms": 3360,
+        "ipcMaxMs": 7479,
+        "ipcOver250ms": 2,
+        "ipcOver1000ms": 2,
+        "ipcTotalStallMs": 10908,
+        "ipcPings": 22,
+        "ipcMissedTicks": 0,
+        "ipcMaxPingGapMs": 10921,
+        "mainProcessStallMs": 99,
+        "mainProcessStallMaxMs": 99,
+        "rendererStallMs": 10889,
+        "rendererStallMaxMs": 7280,
+        "rendererLongtaskCount": 5,
+        "rendererLongtaskTotalMs": 14468,
+        "rendererLongtaskMaxMs": 6929,
+        "renderedEntries": 5000,
+        "elapsedMs": 16751
+      },
+      "blame": "renderer",
+      "stabilizedRuns": 3,
+      "warnings": []
+    },
+    "huge": {
+      "runs": [
+        {
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 71,
+          "ipcMaxMs": 12691,
+          "ipcOver250ms": 1,
+          "ipcOver1000ms": 1,
+          "ipcTotalStallMs": 12591,
+          "ipcPings": 21,
+          "ipcMissedTicks": 1,
+          "ipcMaxPingGapMs": 20476,
+          "mainProcessStallMs": 162,
+          "mainProcessStallMaxMs": 162,
+          "rendererStallMs": 12429,
+          "rendererStallMaxMs": 12429,
+          "blame": "renderer",
+          "worstStalls": [
+            {
+              "atMs": 448,
+              "roundTripMs": 12691,
+              "stallMs": 12591,
+              "longtaskOverlapMs": 12429,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 20924,
+              "roundTripMs": 71,
+              "stallMs": 0,
+              "longtaskOverlapMs": 63,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 21002,
+              "roundTripMs": 5,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 21383,
+              "roundTripMs": 2,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 21444,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 8,
+          "rendererLongtaskTotalMs": 20682,
+          "rendererLongtaskMaxMs": 6939,
+          "longtaskSupported": true,
+          "renderedEntries": 7000,
+          "expectedEntries": 7000,
+          "elapsedMs": 22993,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 713,
+          "ipcMaxMs": 5953,
+          "ipcOver250ms": 2,
+          "ipcOver1000ms": 1,
+          "ipcTotalStallMs": 6466,
+          "ipcPings": 22,
+          "ipcMissedTicks": 1,
+          "ipcMaxPingGapMs": 19414,
+          "mainProcessStallMs": 43,
+          "mainProcessStallMaxMs": 43,
+          "rendererStallMs": 6423,
+          "rendererStallMaxMs": 5810,
+          "blame": "renderer",
+          "worstStalls": [
+            {
+              "atMs": 271,
+              "roundTripMs": 5953,
+              "stallMs": 5853,
+              "longtaskOverlapMs": 5810,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 19685,
+              "roundTripMs": 713,
+              "stallMs": 613,
+              "longtaskOverlapMs": 678,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 20397,
+              "roundTripMs": 65,
+              "stallMs": 0,
+              "longtaskOverlapMs": 50,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 20859,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 20500,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 9,
+          "rendererLongtaskTotalMs": 20083,
+          "rendererLongtaskMaxMs": 6901,
+          "longtaskSupported": true,
+          "renderedEntries": 7000,
+          "expectedEntries": 7000,
+          "elapsedMs": 22479,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 6104,
+          "ipcMaxMs": 11280,
+          "ipcOver250ms": 3,
+          "ipcOver1000ms": 3,
+          "ipcTotalStallMs": 18449,
+          "ipcPings": 21,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 11280,
+          "mainProcessStallMs": 200,
+          "mainProcessStallMaxMs": 200,
+          "rendererStallMs": 18249,
+          "rendererStallMaxMs": 10980,
+          "blame": "renderer",
+          "worstStalls": [
+            {
+              "atMs": 2524,
+              "roundTripMs": 11280,
+              "stallMs": 11180,
+              "longtaskOverlapMs": 10980,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 13804,
+              "roundTripMs": 6104,
+              "stallMs": 6004,
+              "longtaskOverlapMs": 6091,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 148,
+              "roundTripMs": 1365,
+              "stallMs": 1265,
+              "longtaskOverlapMs": 1317,
+              "blame": "renderer"
+            },
+            {
+              "atMs": 20113,
+              "roundTripMs": 33,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 20382,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 7,
+          "rendererLongtaskTotalMs": 19700,
+          "rendererLongtaskMaxMs": 6229,
+          "longtaskSupported": true,
+          "renderedEntries": 7000,
+          "expectedEntries": 7000,
+          "elapsedMs": 21989,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcMedianMs": 0,
+        "ipcP95Ms": 713,
+        "ipcMaxMs": 11280,
+        "ipcOver250ms": 2,
+        "ipcOver1000ms": 1,
+        "ipcTotalStallMs": 12591,
+        "ipcPings": 21,
+        "ipcMissedTicks": 1,
+        "ipcMaxPingGapMs": 19414,
+        "mainProcessStallMs": 162,
+        "mainProcessStallMaxMs": 162,
+        "rendererStallMs": 12429,
+        "rendererStallMaxMs": 10980,
+        "rendererLongtaskCount": 8,
+        "rendererLongtaskTotalMs": 20083,
+        "rendererLongtaskMaxMs": 6901,
+        "renderedEntries": 7000,
+        "elapsedMs": 22479
+      },
+      "blame": "renderer",
+      "stabilizedRuns": 3,
+      "warnings": []
+    }
+  },
+  "artifacts": null,
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": null,
+    "stallBoot": 0,
+    "artifactsBoot": null
+  },
+  "screens": null,
+  "aborted": null,
+  "incomplete": []
+}
