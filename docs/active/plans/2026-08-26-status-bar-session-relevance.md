@@ -3037,3 +3037,48 @@ Noted, not done (layering): `state/usage-snapshot.ts` imports `selectNativeStatu
 `components/StatusBar.tsx`, pulling an ~1800-line component module into a state module's
 graph. That import is CORRECT — one selector, one formula, so the bar and the card cannot
 drift — but the selector eventually belongs in `state/`. Not worth a move mid-branch.
+
+---
+
+### Task 30: The self-check can't see the models it matters most on
+
+**Depends on:** Task 27. **Found by:** the Task 27 review.
+
+- [ ] **1. MAJOR — the floor makes cheap models permanently unchecked.**
+  `pricing.ts` — `COST_COMPARE_FLOOR_USD = 0.001`, applied per TURN. On a cheap model
+  (Gemini Flash class, ~$0.10/M in) a 3k-in / 100-out turn costs ~$0.00034, so
+  `costDisagreement` returns `null` **forever** on that model. A 50% systematic error across
+  hundreds of such turns is completely invisible — and those turns still sum into a session
+  chip the user reads. The floor exists to stop rounding noise dominating a tiny number, which
+  is right; comparing only per-turn is what is wrong.
+  **Fix:** accumulate BOTH figures across the session and compare the sums once the total
+  crosses the floor. The sum crosses it long before any single turn does. Keep the per-turn
+  check as well — it localises a fault to one turn — but the session sum is what catches a
+  systematic error.
+
+- [ ] **2. Minor — `provider-registry.ts` argues both sides of its own claim.** The OpenRouter
+  branch still passes `includeUsage: true`, which the SDK compiles to
+  `stream_options: { include_usage: true }` — the exact parameter the comment eight lines below
+  quotes OpenRouter calling deprecated and inert. Harmless on the wire; contradictory to read.
+  Drop it **from the OpenRouter branch only** — it stays live and necessary on the local-engine
+  and generic `openai-compatible` branches.
+
+- [ ] **3. Minor — a test name overstates what it proves.** `provider-registry.test.ts`'s
+  "sends no request-body parameter to ask for cost" asserts only that `transformRequestBody` is
+  `undefined` — while the body still carries the deprecated parameter. Assert on the captured
+  body instead. The scaffolding is already there and unused: `provider-cost-check.test.ts`'s
+  `turnAgainst()` captures and returns `sentBody`, and **no test ever reads it**. Reading it
+  closes items 2 and 3 together.
+
+- [ ] **4. Minor — an unexercised guard.** Deleting the `if (c !== undefined)` guard in
+  `processChunk` (`pricing.ts` ~110) turns nothing red. Its job is "a later cost-less chunk must
+  not erase an earlier figure", and every fixture puts usage in the final chunk. One fixture
+  with a trailing cost-less chunk covers it.
+
+- [ ] **5:** `bash scripts/verify.sh worktrees/statusbar-relevance`
+- [ ] **6: Commit** — `fix(harness): compare the session's cost too, not just each turn's`
+
+**Do NOT try to fix the compaction blind spot here.** The review measured that
+`generateSummary`'s tokens enter neither our figure nor the provider sum, so a long compacting
+session's chip is ~25% low — but both sides exclude it identically, so the comparison stays
+honest and this task's job is unaffected. It is on ROADMAP.md with the measurement.
