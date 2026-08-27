@@ -1,8 +1,33 @@
 ---
-status: active
+status: superseded-in-part
 date: 2026-08-23
+superseded_by: docs/active/handoffs/2026-08-27-perf-lab-session-status.md
 spec: docs/active/specs/2026-08-23-perf-lab-and-optimization-loop-design.md
+corrections: docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md
 ---
+
+> ## ⚠️ SUPERSEDED IN PART — read the status doc first
+>
+> **`docs/active/handoffs/2026-08-27-perf-lab-session-status.md` is the current truth.**
+> This plan records what we set out to build on 2026-08-23. All 16 tasks were
+> implemented, but two things changed:
+>
+> 1. **The objective changed.** On 2026-08-27 Destin redirected the work: the
+>    deliverable is a **repeatable per-surface stress suite** to cycle on, not a
+>    one-time optimization pass. Two scenarios the plan never imagined
+>    (`scenario-replay-stall`, `scenario-artifacts`) exist because of that.
+> 2. **Several specifics in this plan are factually wrong about this machine and
+>    this app** — eighteen verified corrections are logged in
+>    `docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md`. Among
+>    them: a selector that matches nothing, a toy model that could never answer,
+>    a `node --test` invocation that fails, and assets the plan assumed existed.
+>
+> **Do not follow this plan's Task 16 experiment cards.** Measurement killed E1,
+> E2 and E3 (startup is ~1s with 29ms of chores). The replacement list is in the
+> status doc §4.
+>
+> Task checkboxes below are left unticked as written; treat the status doc's
+> "what is built" table as the record of completion.
 
 # Perf Lab & Autonomous Optimization Loop — Implementation Plan
 

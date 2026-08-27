@@ -1,0 +1,479 @@
+{
+  "schemaVersion": 1,
+  "label": "switch-fix",
+  "sha": "4256ade0fb446686e9cd33843ea0bbf3d634bd3c",
+  "branch": "perf/optimization-pass",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-08-27T10:07:19.758Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "ramGb": 31,
+    "kernel": "7.1.2-2-cachyos",
+    "node": "v26.4.0"
+  },
+  "noise": {
+    "loadAvgBefore": 1.18,
+    "machineBusyPctBefore": 2.3,
+    "maxLoadAvgAccepted": 1.18,
+    "maxBusyPctAccepted": 2.3,
+    "discardedRuns": 0
+  },
+  "startup": null,
+  "idle": null,
+  "history": null,
+  "workload": {
+    "runs": [
+      {
+        "sessionsCreated": 6,
+        "sessionSizes": {
+          "cc-0": "huge",
+          "cc-1": "medium",
+          "cc-2": "small",
+          "cc-3": "empty"
+        },
+        "warnings": [
+          "workload: 20/40 switches never settled — their timings are a FLOOR (the 20s cap), not a measurement, and must not be read as fast switches"
+        ],
+        "ccCreateMedianMs": 17,
+        "nativeCreateMs": 1034,
+        "nativeSendStatus": "sent",
+        "nativeEchoMs": 241,
+        "nativeFirstTokenMs": 6221,
+        "nativeFailure": null,
+        "switchMedianMs": 1005.7,
+        "switchP95Ms": 10139.3,
+        "switchPaintedMedianMs": 20559.8,
+        "switchPaintedP95Ms": 22094.7,
+        "switchPaintedBySize": {
+          "huge": {
+            "n": 7,
+            "medianMs": 11156.4,
+            "p95Ms": 13507.8
+          },
+          "medium": {
+            "n": 7,
+            "medianMs": 21535,
+            "p95Ms": 22182.5
+          },
+          "small": {
+            "n": 7,
+            "medianMs": 1772.3,
+            "p95Ms": 2099.1
+          },
+          "empty": {
+            "n": 7,
+            "medianMs": 21686.4,
+            "p95Ms": 22094.7
+          },
+          "unknown": {
+            "n": 12,
+            "medianMs": 20559.8,
+            "p95Ms": 20857.5
+          }
+        },
+        "unsettledSwitches": 20,
+        "clickSwitches": 40,
+        "ipcSwitches": 0,
+        "menuSwitches": 0,
+        "menuSwitchMedianMs": null,
+        "failedSwitches": 0,
+        "switchFailures": [],
+        "verifiedSwitches": 40,
+        "overflowed": false,
+        "firstSwitchMode": "pill",
+        "streamedLines": 14300,
+        "streamedTurns": 7150,
+        "streamedFiles": 2,
+        "streamErrors": [],
+        "probe": {
+          "longtaskCount": 1682,
+          "longtaskTotalMs": 564845,
+          "longtaskMaxMs": 12102,
+          "frameGapCount": 1667,
+          "frameGapMaxMs": 12439,
+          "longtaskSupported": true,
+          "observedMs": 597050,
+          "frames": 3168,
+          "framesPerSec": 5.3,
+          "marks": [
+            {
+              "t": 4,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 26719,
+              "label": "native-create:start"
+            },
+            {
+              "t": 28086,
+              "label": "native-send:start"
+            },
+            {
+              "t": 55851,
+              "label": "workload:start"
+            },
+            {
+              "t": 594589,
+              "label": "workload:end"
+            },
+            {
+              "t": 594889,
+              "label": "settings:open"
+            },
+            {
+              "t": 597046,
+              "label": "settings:closed"
+            }
+          ],
+          "errors": []
+        },
+        "probeWorkloadWindow": {
+          "windowMs": 538738,
+          "longtaskCount": 1642,
+          "longtaskTotalMs": 534528,
+          "longtaskMaxMs": 12102,
+          "frameGapCount": 1601,
+          "frameGapMaxMs": 12439
+        },
+        "cpuDuringPct": 142.1,
+        "cpuWindowSeconds": 538.4,
+        "pssAfterMb": 5292.8,
+        "pssBeforeSettingsMb": 5307.3,
+        "settings": {
+          "opened": true,
+          "closed": true
+        }
+      },
+      {
+        "sessionsCreated": 6,
+        "sessionSizes": {
+          "cc-0": "huge",
+          "cc-1": "medium",
+          "cc-2": "small",
+          "cc-3": "empty"
+        },
+        "warnings": [
+          "workload: 20/40 switches never settled — their timings are a FLOOR (the 20s cap), not a measurement, and must not be read as fast switches"
+        ],
+        "ccCreateMedianMs": 168,
+        "nativeCreateMs": 161,
+        "nativeSendStatus": "sent",
+        "nativeEchoMs": 255,
+        "nativeFirstTokenMs": 6184,
+        "nativeFailure": null,
+        "switchMedianMs": 724.1,
+        "switchP95Ms": 9988.3,
+        "switchPaintedMedianMs": 20613.4,
+        "switchPaintedP95Ms": 21801.2,
+        "switchPaintedBySize": {
+          "huge": {
+            "n": 7,
+            "medianMs": 10715.6,
+            "p95Ms": 12959.7
+          },
+          "medium": {
+            "n": 7,
+            "medianMs": 20681.5,
+            "p95Ms": 20794.1
+          },
+          "small": {
+            "n": 7,
+            "medianMs": 1613.6,
+            "p95Ms": 1715.1
+          },
+          "empty": {
+            "n": 7,
+            "medianMs": 21473.3,
+            "p95Ms": 22119.7
+          },
+          "unknown": {
+            "n": 12,
+            "medianMs": 20621,
+            "p95Ms": 20741.8
+          }
+        },
+        "unsettledSwitches": 20,
+        "clickSwitches": 40,
+        "ipcSwitches": 0,
+        "menuSwitches": 0,
+        "menuSwitchMedianMs": null,
+        "failedSwitches": 0,
+        "switchFailures": [],
+        "verifiedSwitches": 40,
+        "overflowed": false,
+        "firstSwitchMode": "pill",
+        "streamedLines": 6974,
+        "streamedTurns": 3487,
+        "streamedFiles": 1,
+        "streamErrors": [],
+        "probe": {
+          "longtaskCount": 1968,
+          "longtaskTotalMs": 550564,
+          "longtaskMaxMs": 11690,
+          "frameGapCount": 1968,
+          "frameGapMaxMs": 12008,
+          "longtaskSupported": true,
+          "observedMs": 583631,
+          "frames": 3488,
+          "framesPerSec": 6,
+          "marks": [
+            {
+              "t": 1,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 26548,
+              "label": "native-create:start"
+            },
+            {
+              "t": 28846,
+              "label": "native-send:start"
+            },
+            {
+              "t": 55832,
+              "label": "workload:start"
+            },
+            {
+              "t": 581276,
+              "label": "workload:end"
+            },
+            {
+              "t": 581532,
+              "label": "settings:open"
+            },
+            {
+              "t": 583629,
+              "label": "settings:closed"
+            }
+          ],
+          "errors": []
+        },
+        "probeWorkloadWindow": {
+          "windowMs": 525444,
+          "longtaskCount": 1932,
+          "longtaskTotalMs": 521525,
+          "longtaskMaxMs": 11690,
+          "frameGapCount": 1890,
+          "frameGapMaxMs": 12008
+        },
+        "cpuDuringPct": 137.7,
+        "cpuWindowSeconds": 525.2,
+        "pssAfterMb": 5095.7,
+        "pssBeforeSettingsMb": 5099.1,
+        "settings": {
+          "opened": true,
+          "closed": true
+        }
+      }
+    ],
+    "median": {
+      "sessionsCreated": 6,
+      "sessionSizes": {
+        "cc-0": null,
+        "cc-1": null,
+        "cc-2": null,
+        "cc-3": null
+      },
+      "ccCreateMedianMs": 168,
+      "nativeCreateMs": 1034,
+      "nativeSendStatus": null,
+      "nativeEchoMs": 255,
+      "nativeFirstTokenMs": 6221,
+      "nativeFailure": null,
+      "switchMedianMs": 1005.7,
+      "switchP95Ms": 10139.3,
+      "switchPaintedMedianMs": 20613.4,
+      "switchPaintedP95Ms": 22094.7,
+      "switchPaintedBySize": {
+        "huge": {
+          "n": 7,
+          "medianMs": 11156.4,
+          "p95Ms": 13507.8
+        },
+        "medium": {
+          "n": 7,
+          "medianMs": 21535,
+          "p95Ms": 22182.5
+        },
+        "small": {
+          "n": 7,
+          "medianMs": 1772.3,
+          "p95Ms": 2099.1
+        },
+        "empty": {
+          "n": 7,
+          "medianMs": 21686.4,
+          "p95Ms": 22119.7
+        },
+        "unknown": {
+          "n": 12,
+          "medianMs": 20621,
+          "p95Ms": 20857.5
+        }
+      },
+      "unsettledSwitches": 20,
+      "clickSwitches": 40,
+      "ipcSwitches": 0,
+      "menuSwitches": 0,
+      "menuSwitchMedianMs": null,
+      "failedSwitches": 0,
+      "verifiedSwitches": 40,
+      "overflowed": null,
+      "firstSwitchMode": null,
+      "streamedLines": 14300,
+      "streamedTurns": 7150,
+      "streamedFiles": 2,
+      "probe": {
+        "longtaskCount": 1968,
+        "longtaskTotalMs": 564845,
+        "longtaskMaxMs": 12102,
+        "frameGapCount": 1968,
+        "frameGapMaxMs": 12439,
+        "longtaskSupported": null,
+        "observedMs": 597050,
+        "frames": 3488,
+        "framesPerSec": 6
+      },
+      "probeWorkloadWindow": {
+        "windowMs": 538738,
+        "longtaskCount": 1932,
+        "longtaskTotalMs": 534528,
+        "longtaskMaxMs": 12102,
+        "frameGapCount": 1890,
+        "frameGapMaxMs": 12439
+      },
+      "cpuDuringPct": 142.1,
+      "cpuWindowSeconds": 538.4,
+      "pssAfterMb": 5292.8,
+      "pssBeforeSettingsMb": 5307.3,
+      "settings": {
+        "opened": null,
+        "closed": null
+      }
+    },
+    "pssBreakdownFirstRun": [
+      {
+        "pid": 501926,
+        "type": "main",
+        "mb": 174.5
+      },
+      {
+        "pid": 501928,
+        "type": "zygote",
+        "mb": 12.3
+      },
+      {
+        "pid": 501929,
+        "type": "zygote",
+        "mb": 12.5
+      },
+      {
+        "pid": 501957,
+        "type": "zygote",
+        "mb": 94.8
+      },
+      {
+        "pid": 501961,
+        "type": "utility",
+        "mb": 29.1
+      },
+      {
+        "pid": 501981,
+        "type": "zygote",
+        "mb": 4695.9
+      },
+      {
+        "pid": 502077,
+        "type": "pty-worker",
+        "mb": 21.7
+      },
+      {
+        "pid": 502084,
+        "type": "fake-claude",
+        "mb": 21.5
+      },
+      {
+        "pid": 502104,
+        "type": "utility",
+        "mb": 22.7
+      },
+      {
+        "pid": 502157,
+        "type": "pty-worker",
+        "mb": 21.7
+      },
+      {
+        "pid": 502164,
+        "type": "fake-claude",
+        "mb": 21.5
+      },
+      {
+        "pid": 502184,
+        "type": "pty-worker",
+        "mb": 21.7
+      },
+      {
+        "pid": 502191,
+        "type": "fake-claude",
+        "mb": 21.5
+      },
+      {
+        "pid": 502204,
+        "type": "pty-worker",
+        "mb": 21.7
+      },
+      {
+        "pid": 502211,
+        "type": "fake-claude",
+        "mb": 21.5
+      },
+      {
+        "pid": 502220,
+        "type": "llama-server",
+        "mb": 8.5
+      },
+      {
+        "pid": 502243,
+        "type": "llama-server",
+        "mb": 69.5
+      }
+    ]
+  },
+  "replayStall": null,
+  "artifacts": null,
+  "measures": {
+    "workload": {
+      "scenario": "workload",
+      "question": "Is the app responsive while several sessions are open, one is streaming, and the user switches between them?",
+      "configuration": [
+        "6 sessions open at once (4 Claude Code + 2 native)",
+        "3 of the 4 CC sessions are RESUMED from real transcripts (huge, medium, small); the 4th is deliberately left EMPTY as a control",
+        "a transcript streams into 3 sessions throughout the window",
+        "40 switches spread evenly across the same window the CPU sample covers"
+      ],
+      "clocks": {
+        "switchMedianMs": "click -> the visible pane CONTAINER swapped (2 animation frames). Does NOT wait for messages.",
+        "switchPaintedMedianMs": "click -> the messages are on screen (entry count stable for 3 frames). This is the number a user would recognise.",
+        "cpuDuringPct": "whole-process CPU across the workload window, from /proc"
+      },
+      "blindTo": [
+        "conversation sizes beyond the fixture huge transcript",
+        "switching under memory pressure from many MORE than 6 sessions",
+        "anything requiring a real GPU — the rig runs headless under Xvfb"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": 0,
+    "stallBoot": null,
+    "artifactsBoot": null
+  },
+  "screens": null,
+  "aborted": null,
+  "incomplete": []
+}
