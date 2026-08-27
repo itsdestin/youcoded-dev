@@ -108,6 +108,7 @@
   },
   {
    "name": "composer-attachments",
+   "measure": ["js:document.querySelector(\"[aria-label^='Remove']\")?.parentElement?.parentElement", "js:document.querySelector(\"[aria-label^='Remove']\")?.parentElement"],
    "actions": [
     {
      "dispatch": {

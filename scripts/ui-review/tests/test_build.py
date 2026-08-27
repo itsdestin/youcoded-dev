@@ -58,4 +58,17 @@ class BuildTests(unittest.TestCase):
         self.spec['steps'][0]['notice'] = 'a </script> tag'
         html, _ = build_page(self.spec, self.boxes); self.assertNotIn('</script> tag', html)
 
+    def test_step_with_its_own_theme_list(self):
+        # A real-app capture exists in one theme only; that step lists it and the deck must not demand the others.
+        self.spec['steps'][1]['themes'] = ['light']
+        boxes = crop_images(self.spec, log=lambda *a: None)['boxes']
+        self.assertEqual(sorted(boxes['S-2']), ['light'])                          # cropped for the step's theme only
+        os.remove(os.path.join(self.spec['_base'], 'images', 'deck', 'c--midnight--after.png')); os.remove(os.path.join(self.spec['_base'], 'images', 'deck', 'c--midnight--before.png'))
+        self.spec['steps'] = [self.spec['steps'][1]]                                # midnight missing must not block THIS step
+        html, _ = build_page(self.spec, boxes)
+        d = deck_data(self.spec, boxes)
+        self.assertEqual(d['steps'][0]['themes'], ['light']); self.assertEqual(sorted(d['steps'][0]['images']), ['light'])
+        self.assertEqual(d['themes'], ['midnight', 'light'])                       # the deck-wide list is untouched
+        self.assertIn('st.themes || DECK.themes', html)
+
 if __name__ == '__main__': unittest.main()

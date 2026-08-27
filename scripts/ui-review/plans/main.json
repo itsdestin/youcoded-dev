@@ -324,6 +324,7 @@
   },
   {
    "name": "skills-drawer",
+   "measure": ["js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='★ Favorites only')?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='★ Favorites only')?.parentElement?.firstElementChild", "js:document.querySelector(\"[title='Open marketplace']\")?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))"],
    "actions": [
     {
      "click": "[title='Browse skills']",
@@ -331,6 +332,12 @@
     }
    ],
    "expect": "[title='Open marketplace']"
+  },
+  {
+   "name": "skills-drawer-end",
+   "measure": ["js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))?.parentElement"],
+   "actions": [{"click": "[title='Browse skills']", "settle": 800}, {"eval": "document.querySelector('.scroll-fade').scrollTop=1e6", "settle": 400}],
+   "expect": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))"
   },
   {
    "name": "marketplace",
@@ -541,6 +548,7 @@
   },
   {
    "name": "find-bar",
+   "measure": ["js:document.querySelector(\"[placeholder='Find in chat']\")?.closest('.absolute')", "[placeholder='Find in chat']"],
    "actions": [
     {
      "click": "[placeholder^='Message']",
@@ -638,6 +646,7 @@
   },
   {
    "name": "welcome-empty",
+   "measure": ["js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume Session')?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session')"],
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty",
    "actions": [],
    "sameAsBaseline": true,

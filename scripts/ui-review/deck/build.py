@@ -7,7 +7,7 @@ import json
 import os
 
 from .crops import image_name
-from .spec import SpecError, run_names, validate, workspace_root
+from .spec import SpecError, all_themes, run_names, step_themes, validate, workspace_root
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -61,12 +61,15 @@ def deck_data(spec, boxes):
     steps = [{
         'id': st['id'], 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
         'changed': st['changed'], 'measured': st.get('measured', ''), 'notice': st['notice'], 'risk': st.get('risk', ''),
-        'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in spec['themes']},
+        'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in step_themes(spec, st)},
         'boxes': boxes.get(st['id'], {}),
+        # Only when the step narrows the deck's list — page.js falls back to DECK.themes otherwise.
+        **({'themes': list(st['themes'])} if st.get('themes') else {}),
     } for st in spec['steps']]
+    every = all_themes(spec)
     return {'title': spec['title'], 'key': spec['key'], 'runs': runs,
             'runLabels': {'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
-            'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in spec['themes']},
+            'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},
             'steps': steps}
 
 
@@ -74,7 +77,7 @@ def build_page(spec, boxes):
     errors, warnings = validate(spec)
     runs = run_names(spec)
     for st in spec['steps']:
-        for t in spec['themes']:
+        for t in step_themes(spec, st):
             for r in runs:
                 if not os.path.exists(os.path.join(spec['_base'], spec['images'], image_name(st['crop'], t, r))):
                     errors.append(f'{st["id"]}: no picture for {t}/{r} — run `crop` (and check coverage.md for that shot)')
@@ -88,7 +91,7 @@ def build_page(spec, boxes):
         with open(os.path.join(HERE, name)) as f:
             return f.read()
     page = read('page.html.tmpl')
-    page = page.replace('/*TOKENS*/', tokens_css(theme_tokens(spec['themes']))).replace('/*CSS*/', read('page.css')).replace('/*JS*/', read('page.js'))
+    page = page.replace('/*TOKENS*/', tokens_css(theme_tokens(all_themes(spec)))).replace('/*CSS*/', read('page.css')).replace('/*JS*/', read('page.js'))
     # `</` inside the JSON would end the <script>; escaping it keeps the JSON valid.
     # Fix: first paint was always Midnight regardless of the spec's own theme order — the template
     # hardcoded data-theme="midnight" on <html>, so any deck whose first theme isn't Midnight flashed

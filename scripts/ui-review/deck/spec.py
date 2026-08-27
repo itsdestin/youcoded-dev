@@ -59,6 +59,23 @@ def load_spec(path):
     return spec
 
 
+def step_themes(spec, step):
+    """The themes a step is shown in: its own `themes` list when it has one, else the deck's.
+    WHY: a real-app capture (the Electron pass — terminal, live session) exists in ONE theme, the
+    profile's; without a per-step list that surface could never sit in a six-theme deck."""
+    return list(step.get('themes') or spec['themes'])
+
+
+def all_themes(spec):
+    """Every theme any step uses, deck order first, in first-seen order."""
+    seen = list(spec['themes'])
+    for st in spec['steps']:
+        for t in st.get('themes') or []:
+            if t not in seen:
+                seen.append(t)
+    return seen
+
+
 def run_names(spec):
     """Display order of the runs: before then after when both exist, else as written."""
     r = list(spec['runs'].keys())
@@ -109,6 +126,9 @@ def validate(spec):
                 warnings.append(f'{sid}: hand-placed box — prefer a selector so the rig measures it')
         else:
             errors.append(f'{sid}: highlight must be "auto" or an object')
+        th = st.get('themes')
+        if th is not None and (not isinstance(th, list) or not th or not all(isinstance(t, str) for t in th)):
+            errors.append(f'{sid}: themes must be a non-empty list of theme names')
         if word_count(st.get('risk')) > RISK_WARN:
             warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
         if st.get('measured') and not re.search(r'\d', st['measured']):

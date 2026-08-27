@@ -12,6 +12,8 @@
     warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>' };
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   if (window.top !== window) document.body.classList.add('embedded');
+  // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
+  if (runs.length === 1) { $('.ans[data-v="yes"]').lastChild.textContent = 'Yes, build it'; $('.ans[data-v="no"]').lastChild.textContent = 'No, leave it'; }
   $('#deck-title').textContent = DECK.title; document.title = DECK.title;
   $('#steps').innerHTML = DECK.steps.map(() => '<span></span>').join('');
   const stage = $('#stage'), inner = $('#inner'), loupe = $('#loupe');
@@ -30,6 +32,8 @@
   // ── render the current step ──
   function render() {
     const st = DECK.steps[cur];
+    const themes = st.themes || DECK.themes;   // a real-app capture exists in one theme only — that step lists just that one
+    if (!themes.includes(theme)) theme = themes[0];
     document.documentElement.dataset.theme = theme;   // before the pictures load, so a theme switch never flashes the old colours
     $('#wtitle').textContent = st.surface; $('#wsub').textContent = st.path;
     inner.innerHTML = runs.map(r => `<figure class="frame" data-run="${esc(r)}"><figcaption>${esc(DECK.runLabels[r] || r)}</figcaption><div class="pic"><img src="${esc(st.images[theme][r])}" alt=""><span class="box"></span></div></figure>`).join('');
@@ -39,7 +43,7 @@
       + `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>`
       + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '');
     const last = runs[runs.length - 1];
-    $('#thumbs').innerHTML = DECK.themes.map(t => `<button class="thumb${t === theme ? ' on' : ''}" data-v="${esc(t)}" title="${esc(DECK.themeNames[t])}"><img src="${esc(st.images[t][last])}" alt=""><span>${esc(DECK.themeNames[t])}</span></button>`).join('');
+    $('#thumbs').innerHTML = themes.map(t => `<button class="thumb${t === theme ? ' on' : ''}" data-v="${esc(t)}" title="${esc(DECK.themeNames[t])}"><img src="${esc(st.images[t][last])}" alt=""><span>${esc(DECK.themeNames[t])}</span></button>`).join('');
     $$('.thumb').forEach(b => b.onclick = () => { theme = b.dataset.v; render(); });
     $$('#inner img').forEach(i => i.addEventListener('load', layout));
     layout(); paintState();

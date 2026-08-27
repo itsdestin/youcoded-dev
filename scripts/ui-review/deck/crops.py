@@ -7,7 +7,7 @@ import os
 import subprocess
 
 from .boxes import diff_bbox, image_size, px_to_pct, rect_to_pct
-from .spec import AUTO_WARN_FRACTION, run_names
+from .spec import AUTO_WARN_FRACTION, run_names, step_themes
 
 
 def image_name(crop, theme, run):
@@ -44,7 +44,7 @@ def crop_images(spec, log=print):
         plan, shot, geo = spec['_crops'][st['crop']]
         hl = st.get('highlight', 'auto' if two else None)
         boxes[st['id']] = {}
-        for theme in spec['themes']:
+        for theme in step_themes(spec, st):
             per_run = {}
             for run in runs:
                 src = os.path.join(spec['runs'][run], f'shots-{plan}', theme, f'{shot}.png')
