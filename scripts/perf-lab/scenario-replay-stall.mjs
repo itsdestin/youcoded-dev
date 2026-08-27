@@ -306,6 +306,27 @@ function withTimeout(promise, ms, what) {
  * the per-run samples to exist. 3 rather than history's 5 because the `huge` resume
  * costs ~2 minutes per sample.
  */
+/** What this scenario measures — see scenario-workload.mjs MEASURES for why these exist. */
+export const MEASURES = {
+  scenario: 'stall',
+  question: 'When a conversation is opened, how long is the app unresponsive, and WHICH THREAD was blocked?',
+  configuration: [
+    'one session at a time, resumed from a prebuilt transcript',
+    'three sizes: small (~100 entries), medium (~5,000), huge (~7,000)',
+    'nothing else running — a clean boot, so no other session contributes',
+  ],
+  clocks: {
+    ipcTotalStallMs: 'sum of IPC round trips beyond the ping interval — RAW unresponsiveness, says nothing about which thread',
+    mainProcessStallMs: 'the part of that with NO renderer long task under it',
+    rendererStallMs: 'the part overlapped by a renderer long task',
+  },
+  blindTo: [
+    'main-process blocking that happens WHILE the renderer is also blocked — overlap is charged to the renderer',
+    'renderer blocking under 50ms (PerformanceObserver does not report it), which is charged to the main process instead',
+    'any cost that needs more than one session open to appear',
+  ],
+};
+
 export async function runReplayStallScenario(app, fixture, {
   repeats = 3,
   sizes = SIZES,

@@ -31,6 +31,14 @@ export function p95(a) {
 }
 const round1 = (n) => (typeof n === 'number' ? Math.round(n * 10) / 10 : n);
 
+/**
+ * How many visits to each session get the full "wait for the messages" clock.
+ * The rest time the container swap only. See the sampling comment in the switch
+ * loop: measuring all 40 cost 10 minutes a repeat and moved the switches outside
+ * the CPU window the scenario claims they sit in.
+ */
+export const PAINTED_SAMPLES_PER_SESSION = 3;
+
 // ---------------------------------------------------------------------------
 // Responsiveness probe
 // ---------------------------------------------------------------------------
@@ -243,7 +251,7 @@ async function installPageHelpers(cdp) {
        * overflow dropdown, so that is what we drive, and it is reported and
        * aggregated SEPARATELY because it also pays for opening a menu.
        */
-      switchTo: async (listIdx, name, sessionCount) => {
+      switchTo: async (listIdx, name, sessionCount, measurePainted) => {
         const t0 = performance.now();
         const paneBefore = visiblePaneIdx();
         const ps = pills();
@@ -267,8 +275,67 @@ async function installPageHelpers(cdp) {
         el.click();
         await nextFrame2();
         const paneAfter = visiblePaneIdx();
+        const paneMs = Math.round((performance.now() - t0) * 10) / 10;
+
+        // ── Second clock: wait for the CONTENT, not just the container ──────
+        //
+        // WHY TWO CLOCKS AND NOT ONE. paneMs stops two rAFs after the click.
+        // That is defensible — rAF callbacks cannot run while the main thread is
+        // blocked, and the second rAF fires only after frame 1's layout+paint has
+        // completed, so a blocking render SHOULD show up in it. But "should" is
+        // exactly the word that produced two wrong findings in this project
+        // already, so we no longer argue about it: we measure both and let the
+        // report show whether they agree.
+        //
+        // If settleMs is ~0 everywhere, paneMs was always sufficient and this
+        // costs us nothing. If settleMs is large while paneMs stays small,
+        // then the pane swaps early and the messages arrive later — the switch
+        // number was measuring the container, and every "switching is fine"
+        // reading taken from it was measuring the wrong thing.
+        //
+        // Counts .timeline-entry inside the VISIBLE pane only. Every open
+        // session keeps a mounted ChatView (see this file's header), so an
+        // unscoped count would sum every session's messages and never settle.
+        const settleT0 = performance.now();
+        let last = -1, stableFrames = 0, settled = false;
+        while (measurePainted && performance.now() - settleT0 < 20000) {
+          const p = visiblePane();
+          const n = p ? p.querySelectorAll('.timeline-entry').length : -1;
+          // Settle on a STABLE count, whether or not that count is zero.
+          //
+          // The first draft required n > 0, reasoning that a 0 which is stable
+          // immediately would report an instant switch into a conversation that
+          // never rendered. Measured 2026-08-27: that guard inverted the failure
+          // rather than removing it. An EMPTY conversation has 0 entries forever,
+          // so it could never satisfy n > 0, spun to the 20s cap, and reported
+          // 21,686 ms for a switch that is genuinely instant — turning the one
+          // session that exists as a CONTROL into the slowest number in the table.
+          //
+          // A stable 0 is now an honest settle, and the entries field travels with the
+          // timing so a reader can tell "empty conversation, fast switch" from
+          // "loaded conversation that rendered nothing". n < 0 means no visible
+          // pane at all, which is never a settle.
+          if (n >= 0 && n === last) { if (++stableFrames >= 3) { settled = true; break; } }
+          else { stableFrames = 0; last = n; }
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+        const settleMs = Math.round((performance.now() - settleT0) * 10) / 10;
+
+        // A switch we chose not to measure reports null, never 0: a zero here
+        // would be averaged in as an instantaneous switch.
+        const painted = measurePainted;
         return {
-          ms: Math.round((performance.now() - t0) * 10) / 10,
+          ms: paneMs,
+          measuredPainted: !!painted,
+          // Click through to the messages actually being on screen. This is the
+          // number a user would recognise as "how long the switch took".
+          paintedMs: painted ? Math.round((paneMs + settleMs) * 10) / 10 : null,
+          settleMs: painted ? settleMs : null,
+          // false = the entry count never held still for three frames. The
+          // timings are then a floor, not a measurement, and must not be read
+          // as a fast switch.
+          settled: painted ? settled : null,
+          entries: painted ? last : null,
           mode,
           // The switch is only counted as real if the visible pane actually moved.
           ok: paneAfter >= 0 && paneAfter !== paneBefore,
@@ -423,6 +490,43 @@ function startStreamer(targets, { everyMs = 150 } = {}) {
  * @param {number} [opts.switchCount=40] switches performed inside that window.
  * @param {boolean} [opts.keepSessions=false] leave the six sessions open.
  */
+/**
+ * What this scenario actually measures — the anti-recurrence guard.
+ *
+ * WHY THIS EXISTS. Three times this project has drawn a confident conclusion from
+ * a number measured in a configuration where the defect could not appear:
+ *   - idle sampled with ZERO sessions open, so a per-session cost read as zero;
+ *   - the app-wide freeze attributed from a RAW total, so the wrong thread was blamed;
+ *   - session switching timed between EMPTY conversations, so 118 ms read as healthy.
+ * None of those failed loudly. Each returned a clean number.
+ *
+ * So every scenario now states its configuration in the report itself. A reader
+ * seeing "switching: 118 ms" also sees what was being switched between and where
+ * the clock started and stopped, and can judge whether the number means what its
+ * name implies. It is cheap, and it is the only guard that addresses the class
+ * rather than the three instances.
+ */
+export const MEASURES = {
+  scenario: 'workload',
+  question: 'Is the app responsive while several sessions are open, one is streaming, and the user switches between them?',
+  configuration: [
+    '6 sessions open at once (4 Claude Code + 2 native)',
+    '3 of the 4 CC sessions are RESUMED from real transcripts (huge, medium, small); the 4th is deliberately left EMPTY as a control',
+    'a transcript streams into 3 sessions throughout the window',
+    '40 switches spread evenly across the same window the CPU sample covers',
+  ],
+  clocks: {
+    switchMedianMs: 'click -> the visible pane CONTAINER swapped (2 animation frames). Does NOT wait for messages.',
+    switchPaintedMedianMs: 'click -> the messages are on screen (entry count stable for 3 frames). This is the number a user would recognise.',
+    cpuDuringPct: 'whole-process CPU across the workload window, from /proc',
+  },
+  blindTo: [
+    'conversation sizes beyond the fixture huge transcript',
+    'switching under memory pressure from many MORE than 6 sessions',
+    'anything requiring a real GPU — the rig runs headless under Xvfb',
+  ],
+};
+
 export async function runWorkloadScenario(app, fixture, {
   cpuSampleSeconds = 40, switchCount = 40, keepSessions = false,
 } = {}) {
@@ -431,6 +535,7 @@ export async function runWorkloadScenario(app, fixture, {
   await installPageHelpers(cdp);
 
   const ids = [];
+  const warnings = [];
   let streamer = null;
   try {
     // ── 4 Claude Code sessions, alternating project folders ──────────────
@@ -443,13 +548,45 @@ export async function runWorkloadScenario(app, fixture, {
       before.set(dir, new Set(listTranscripts(dir)));
     }
 
+    // ── 4 Claude Code sessions, THREE OF THEM RESUMED FROM REAL TRANSCRIPTS ──
+    //
+    // WHY RESUMED (changed 2026-08-27, and this is the whole point of the fix).
+    // Until today all six sessions were created FRESH. A fresh session holds
+    // nothing, so the 40 switches below were switching between near-empty
+    // conversations — and the rig duly reported `switchP95Ms` 118 ms and called
+    // session switching healthy. Destin switches between conversations with
+    // thousands of messages, which is the configuration in which the suspected
+    // cost (every open session keeps a mounted, unvirtualized ChatView) actually
+    // exists. Measuring the empty case and reporting it as "switching" is the
+    // same mistake as measuring idle with zero sessions open.
+    //
+    // Each fixture transcript is resumed AT MOST ONCE — `resumeSessionId` names
+    // one specific stored session, and pointing two live sessions at the same id
+    // is not a configuration the app is built for.
+    //
+    // The 4th stays fresh ON PURPOSE: it is the control. A switch INTO the empty
+    // session should stay cheap, and if it does not, the cost is not the
+    // conversation size and this whole line of reasoning is wrong.
     const ccMs = [];
     const names = [];
+    const resumeOrder = ['huge', 'medium', 'small'];
+    const sizeByName = {};
     for (let i = 0; i < 4; i++) {
       const cwd = i % 2 ? fixture.projects.beta : fixture.projects.alpha;
       const name = `cc-${i}`;
-      const r = await createSession(cdp, { name, cwd, skipPermissions: true });
+      const size = resumeOrder[i];
+      const t = size ? fixture.transcripts?.[size] : null;
+      if (size && !t) {
+        warnings.push(`workload: fixture has no '${size}' transcript, so cc-${i} was created EMPTY — its switch timings measure an empty conversation, not a loaded one`);
+      }
+      // A resumed session must be created in the transcript's OWN cwd, or the
+      // app looks for it under the wrong project slug and silently resumes nothing.
+      const opts = t
+        ? { name, cwd: t.cwd ?? cwd, skipPermissions: true, resumeSessionId: t.sessionId }
+        : { name, cwd, skipPermissions: true };
+      const r = await createSession(cdp, opts);
       ids.push(r.id); names.push(name); ccMs.push(r.ms);
+      sizeByName[name] = t ? size : 'empty';
       await waitForSessionReady(cdp);
     }
 
@@ -560,20 +697,54 @@ export async function runWorkloadScenario(app, fixture, {
     const cpuBefore = cpuSnapshot(pids);
     const startedAt = Date.now();
 
-    const clickMs = [], menuMs = [];
-    let clickSwitches = 0, menuSwitches = 0, failedSwitches = 0, verifiedSwitches = 0;
+    const clickMs = [], menuMs = [], paintedMs = [];
+    const paintedBySize = {};
+    const paintedSeen = {};
+    let clickSwitches = 0, menuSwitches = 0, failedSwitches = 0, verifiedSwitches = 0, unsettledSwitches = 0;
     const switchFailures = [];
     for (let i = 0; i < switchCount; i++) {
       const due = startedAt + i * switchEveryMs;
       const wait = due - Date.now();
       if (wait > 0) await sleep(wait);
       const idx = i % ids.length;
+      // Sampling, not measuring every switch. The painted wait costs SECONDS on a
+      // loaded conversation (measured: 11 s into `huge`), so doing it on all 40
+      // switches took 10 minutes per repeat and pushed the switches outside the
+      // CPU-sample window this scenario says they sit inside. The first
+      // PAINTED_SAMPLES_PER_SESSION visits to each session are measured properly;
+      // the rest time the container swap only, which is what switchP95Ms wanted
+      // anyway. Enough samples for a median per bucket, bounded wall clock.
+      const paintedThis = (paintedSeen[idx] = (paintedSeen[idx] ?? 0) + 1) <= PAINTED_SAMPLES_PER_SESSION;
       const r = await cdp.evaluate(
-        `window.__perfLab.switchTo(${idx}, ${JSON.stringify(names[idx])}, ${ids.length})`);
+        `window.__perfLab.switchTo(${idx}, ${JSON.stringify(names[idx])}, ${ids.length}, ${paintedThis})`);
       if (r.mode === 'pill') { clickSwitches++; clickMs.push(r.ms); }
       else if (r.mode === 'menu') { menuSwitches++; menuMs.push(r.ms); }
       else { failedSwitches++; if (switchFailures.length < 5) switchFailures.push(r.reason); }
       if (r.ok) verifiedSwitches++;
+      // Painted timings are kept for EVERY real switch regardless of pill-vs-menu:
+      // the menu path pays extra for opening a dropdown, but the content cost we
+      // are hunting is the same either way.
+      if (r.ok && typeof r.paintedMs === 'number') {
+        paintedMs.push(r.paintedMs);
+        // Bucketed by the size of the conversation being switched INTO. This is
+        // the comparison the whole change exists to make: switching into `empty`
+        // is the control, `huge` is the case Destin actually lives in. If they
+        // come out the same, conversation size is not the cost and this line of
+        // reasoning is wrong.
+        const size = sizeByName[names[idx]] ?? 'unknown';
+        const b = (paintedBySize[size] ??= { ms: [], entries: [], unsettled: 0 });
+        b.ms.push(r.paintedMs);
+        // The rendered entry count travels with the timing. Without it a size
+        // LABEL cannot be checked against what actually appeared — and on the
+        // 2026-08-27 run 'huge' settled faster than 'medium', which is either a
+        // real inversion or proof the labels do not describe what was rendered.
+        // There was no way to tell, because the count was not kept.
+        if (typeof r.entries === 'number') b.entries.push(r.entries);
+        if (r.settled === false) { b.unsettled++; unsettledSwitches++; }
+      }
+    }
+    if (unsettledSwitches > 0) {
+      warnings.push(`workload: ${unsettledSwitches}/${verifiedSwitches} switches never settled — their timings are a FLOOR (the 20s cap), not a measurement, and must not be read as fast switches`);
     }
     // Hold the window open so the CPU sample really covers cpuSampleSeconds even
     // if the switches finished early.
@@ -605,6 +776,10 @@ export async function runWorkloadScenario(app, fixture, {
 
     return {
       sessionsCreated: ids.length,
+      // What each session actually held, so a reader never has to guess whether
+      // "switching" meant switching between loaded conversations or empty ones.
+      sessionSizes: sizeByName,
+      warnings,
       ccCreateMedianMs: median(ccMs),
       nativeCreateMs: nat[0].ms,
       nativeSendStatus: send?.status ?? null,
@@ -617,6 +792,28 @@ export async function runWorkloadScenario(app, fixture, {
       // distribution; it is reported separately instead.
       switchMedianMs: median(clickMs),
       switchP95Ms: p95(clickMs),
+      // ── The switch numbers that include the CONTENT (added 2026-08-27) ──────
+      // switchMedianMs/switchP95Ms above stop when the pane container swaps.
+      // These stop when the messages are actually on screen. Both are reported
+      // so the report itself shows whether they agree — see switchTo's comment.
+      switchPaintedMedianMs: median(paintedMs),
+      switchPaintedP95Ms: p95(paintedMs),
+      // Switch cost bucketed by the size of the conversation switched INTO.
+      // `empty` is the control. If empty and huge cost the same, conversation
+      // size is not the driver and the hypothesis is wrong.
+      switchPaintedBySize: Object.fromEntries(
+        Object.entries(paintedBySize).map(([k, v]) => [k, {
+          n: v.ms.length,
+          medianMs: median(v.ms),
+          p95Ms: p95(v.ms),
+          // What actually rendered, so the size label can be checked rather than trusted.
+          medianEntries: median(v.entries),
+          // Non-zero means some of the timings in this bucket are the 20s cap.
+          unsettled: v.unsettled,
+        }]),
+      ),
+      // Non-zero means some timings above are a 20s floor, not a measurement.
+      unsettledSwitches,
       clickSwitches,
       // Always 0 by design — see switchTo(): the desktop session:switch IPC is a
       // stub that switches nothing, so it is never used as a timed fallback.

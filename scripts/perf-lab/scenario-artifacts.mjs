@@ -888,6 +888,27 @@ export function medianRun(runs) {
  * @param {boolean} [opts.keepSession=false] leave the session + drawer open
  *   (for the screenshot pass)
  */
+/** What this scenario measures — see scenario-workload.mjs MEASURES for why these exist. */
+export const MEASURES = {
+  scenario: 'artifacts',
+  question: 'What does the files panel cost to open, edit, and navigate?',
+  configuration: [
+    'one session, resumed from the small transcript',
+    'six artifacts registered: code / markdown / HTML, each in a small and a large size',
+    '30 keystrokes typed into a real CodeMirror editor at ~45ms spacing',
+  ],
+  clocks: {
+    'open.*.openMs': 'click the row -> the viewer reports the right document mounted',
+    'typing.*.keystroke': 'keydown -> painted, measured in-page via beforeinput',
+    'htmlNav.swap': 'select a different HTML artifact -> the iframe load event',
+  },
+  blindTo: [
+    'documents above EDIT_MAX_BYTES (3 MB) — the pane serves a read-only prefix, so typing is not measured there',
+    'real clipboard cost: MarkdownContent fires writeText without awaiting it',
+    'GPU-accelerated scrolling in the viewer — headless Xvfb has no compositor',
+  ],
+};
+
 export async function runArtifactScenario(app, fixture, {
   smallBytes = 3000,
   largeBytes = 400000,

@@ -122,6 +122,25 @@ function withTimeout(promise, ms, what) {
  * @param {{cdp: {evaluate(expr: string): Promise<any>}}} app
  * @param {{transcripts: Record<string, {sessionId: string, slug: string, turns: number}>, projects: {alpha: string}}} fixture
  */
+/** What this scenario measures — see scenario-workload.mjs MEASURES for why these exist. */
+export const MEASURES = {
+  scenario: 'history',
+  question: 'How long does loading a conversation take, at three sizes?',
+  configuration: [
+    'one session at a time, resumed from a prebuilt transcript',
+    'three sizes: small, medium, huge',
+  ],
+  clocks: {
+    ipcLast10Ms: 'the loadHistory IPC call for the last 10 messages',
+    ipcAllMs: 'the loadHistory IPC call for the whole transcript',
+    resumeStableMs: 'resume -> the rendered entry count stops changing',
+  },
+  blindTo: [
+    'which THREAD the time was spent on — that is the stall scenario',
+    'anything requiring more than one session open',
+  ],
+};
+
 export async function runHistoryScenario(app, fixture, { repeats = 5 } = {}) {
   const out = {};
   for (const size of ['small', 'medium', 'huge']) {

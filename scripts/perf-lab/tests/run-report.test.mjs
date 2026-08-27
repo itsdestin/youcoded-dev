@@ -18,9 +18,9 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { PRIMARY, get, runsFor, spreadPct, verdict } from '../compare.mjs';
-import { NUMERIC_KEYS, medianRun } from '../scenario-history.mjs';
-import { medianRun as artifactMedian } from '../scenario-artifacts.mjs';
-import { SIZES as STALL_SIZES_REAL, medianRun as stallMedian, summarizeBlame } from '../scenario-replay-stall.mjs';
+import { MEASURES as HISTORY_MEASURES, NUMERIC_KEYS, medianRun } from '../scenario-history.mjs';
+import { MEASURES as ARTIFACT_MEASURES, medianRun as artifactMedian } from '../scenario-artifacts.mjs';
+import { MEASURES as STALL_MEASURES, SIZES as STALL_SIZES_REAL, medianRun as stallMedian, summarizeBlame } from '../scenario-replay-stall.mjs';
 import { SCREEN_NAMES } from '../screenshots.mjs';
 import {
   EXIT, NETWORK_PATHS, PHASES, STALL_SIZES, USAGE,
@@ -94,6 +94,21 @@ const workloadRun = (i) => ({
   nativeFirstTokenMs: 3000 + i,
   switchMedianMs: 6 + i,
   switchP95Ms: 18 + i,
+  switchPaintedMedianMs: 900 + i,
+  switchPaintedP95Ms: 2400 + i,
+  switchPaintedBySize: {
+    huge: { n: 3, medianMs: 3100 + i, p95Ms: 3600 + i, medianEntries: 7000, unsettled: 0 },
+    medium: { n: 3, medianMs: 1200 + i, p95Ms: 1500 + i, medianEntries: 5000, unsettled: 0 },
+    small: { n: 3, medianMs: 90 + i, p95Ms: 120 + i, medianEntries: 100, unsettled: 0 },
+    // The control: an empty conversation renders nothing and switching to it is
+    // instant. The first draft of the settle rule required a NON-ZERO count, so
+    // this case could never settle and reported the 20s cap — the control became
+    // the slowest number in the table. Pinned here so that cannot come back.
+    empty: { n: 3, medianMs: 20 + i, p95Ms: 35 + i, medianEntries: 0, unsettled: 0 },
+  },
+  unsettledSwitches: 0,
+  sessionSizes: { 'cc-0': 'huge', 'cc-1': 'medium', 'cc-2': 'small', 'cc-3': 'empty' },
+  warnings: [],
   clickSwitches: 40,
   ipcSwitches: 0,
   streamedLines: 800,
@@ -183,6 +198,10 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   report.replayStall = Object.fromEntries(STALL_SIZES.map((s) => [s, stallSize(stallRepeats)]));
   const aruns = Array.from({ length: artifactRepeats }, (_, i) => artifactRun(i));
   report.artifacts = { runs: aruns, median: artifactMedian(aruns), warnings: [] };
+  // The REAL MEASURES exports, not hand-copied literals: if a scenario drops or
+  // renames its descriptor, this fixture fails to build rather than quietly
+  // rendering a report with no configuration section.
+  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES };
   report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, stallBoot: 0, artifactsBoot: 0 };
   report.screens = { dir: '/tmp/shots', names: [...SCREEN_NAMES], failures: [] };
   return report;
@@ -204,7 +223,11 @@ describe('compare.mjs PRIMARY contract', () => {
     // run.mjs (3 stall paths + 4 artifact paths). Bumping this number is not a chore:
     // it is the moment to check that the report builder above actually produces the
     // new paths, which is what the assertion on the line before just proved.
-    assert.equal(PRIMARY.length, 19, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 19 -> 20 on 2026-08-27: workload.median.switchPaintedP95Ms. The existing
+    // switchP95Ms stops when the pane container swaps, which is not the switch a
+    // user sees; both are now judged so a change that speeds the container while
+    // the messages arrive just as late cannot read as a win.
+    assert.equal(PRIMARY.length, 20, 'PRIMARY changed size — re-check that run.mjs still produces every path');
   });
 
   it('every PRIMARY path has per-run samples behind it (runsFor finds the sibling runs array)', () => {
@@ -327,6 +350,58 @@ describe('validateReport', () => {
     report.artifacts.median.typing.codeLarge.keystroke.medianMs = null;
     const problems = validateReport(report, new Set(['artifacts']));
     assert.ok(problems.some((p) => p.includes('UNKNOWN, not zero')), problems.join('; '));
+  });
+});
+
+describe('every scenario declares what it measures', () => {
+  // WHY THIS SUITE EXISTS. Three wrong conclusions in this project came from a
+  // number measured in a configuration where the defect could not appear:
+  // idle at zero sessions; the freeze attributed from a raw total; switching
+  // between empty conversations. None failed loudly — each returned a clean
+  // number. The MEASURES descriptors are the anti-recurrence guard, and a guard
+  // nothing pins is a guard that quietly disappears.
+  //
+  // scenario-workload.mjs is loaded DYNAMICALLY here for the same reason run.mjs
+  // loads it lazily: a static import would pull the whole scenario tree into
+  // every unit test. It is included because a rename there was the one mutation
+  // the earlier tests did not catch.
+  const load = async () => Object.fromEntries(await Promise.all(
+    ['workload', 'replay-stall', 'artifacts', 'history'].map(async (n) => [n, (await import(`../scenario-${n}.mjs`)).MEASURES]),
+  ));
+
+  it('exports MEASURES from all four scenario modules', async () => {
+    for (const [name, m] of Object.entries(await load())) {
+      assert.ok(m && typeof m === 'object', `scenario-${name}.mjs does not export MEASURES`);
+    }
+  });
+
+  it('every descriptor names its question, its configuration and its blind spots', async () => {
+    for (const [name, m] of Object.entries(await load())) {
+      assert.equal(typeof m.scenario, 'string', `${name}: no scenario name`);
+      assert.ok(m.question?.endsWith('?'), `${name}: question must be a question`);
+      assert.ok(Array.isArray(m.configuration) && m.configuration.length > 0, `${name}: no configuration listed`);
+      // Blind spots are the load-bearing half. A scenario claiming to be blind to
+      // nothing is making the exact claim that has been wrong three times.
+      assert.ok(Array.isArray(m.blindTo) && m.blindTo.length > 0, `${name}: claims no blind spots`);
+      assert.ok(m.clocks && Object.keys(m.clocks).length > 0, `${name}: does not say where its clocks start and stop`);
+    }
+  });
+
+  // The specific regression that motivated the whole change: the workload scenario
+  // used to switch between six sessions created FRESH (i.e. empty) and report
+  // switchP95Ms 118ms as if it meant switching between real conversations.
+  it('workload states that its sessions are resumed, and keeps an empty control', async () => {
+    const m = (await load()).workload;
+    const text = m.configuration.join(' ').toLowerCase();
+    assert.match(text, /resumed/, 'workload no longer says its sessions are resumed — if that changed, the switch numbers are measuring empty conversations again');
+    assert.match(text, /empty/, 'workload no longer keeps an EMPTY control session, so there is nothing to compare a loaded switch against');
+  });
+
+  it('workload distinguishes the two switch clocks', async () => {
+    const c = (await load()).workload.clocks;
+    assert.match(c.switchMedianMs, /container|pane/i);
+    assert.match(c.switchMedianMs, /NOT wait|does not wait/i);
+    assert.match(c.switchPaintedMedianMs, /on screen|painted/i);
   });
 });
 
@@ -484,9 +559,34 @@ describe('renderMarkdown', () => {
     assert.ok(md.includes('| idle PSS |'));
     assert.ok(md.includes('| idle CPU |'));
     for (const s of ['small', 'medium', 'huge']) assert.ok(md.includes(`| history.${s} `), `no history.${s} row`);
-    for (const row of ['switch median / p95', 'long tasks', 'frame gaps > 40ms', 'native first token', 'CPU during workload', 'PSS after workload']) {
+    for (const row of ['switch, pane swapped', 'switch, messages on screen', 'long tasks', 'frame gaps > 40ms', 'native first token', 'CPU during workload', 'PSS after workload']) {
       assert.ok(md.includes(row), `no "${row}" row`);
     }
+    // The per-size breakdown is the comparison the resumed-sessions change exists
+    // to make: 'empty' is the control, 'huge' is the case Destin lives in.
+    for (const size of ['huge', 'medium', 'small', 'empty']) {
+      assert.ok(md.includes(`switch into a '${size}' conversation`), `no per-size switch row for '${size}'`);
+    }
+    // A capped bucket must SAY it is capped. Measured 2026-08-27: three of five
+    // buckets were sitting at the 20s cap and the table presented them as
+    // ordinary medians, which made the empty control look like the slowest case.
+    const capped = renderMarkdown((() => {
+      const rep = completeReport();
+      rep.workload.median.switchPaintedBySize.medium.unsettled = 2;
+      return rep;
+    })(), 'test-stem');
+    assert.match(capped, /hit the 20s CAP/, 'a bucket at the cap is rendered as if it were a measurement');
+  });
+
+  // The anti-recurrence guard: three wrong conclusions in this project came from a
+  // number measured in a configuration where the defect could not appear, and every
+  // one of them returned a clean number rather than failing. The configuration now
+  // ships beside the numbers, and this pins that it actually reaches the summary.
+  it('carries each scenario\'s configuration beside its numbers', () => {
+    assert.ok(md.includes('## What was actually measured'), 'no configuration section');
+    assert.ok(md.includes('**Question:**'), 'no question line');
+    assert.ok(md.includes('**Blind to:**'), 'no blind-spot list');
+    assert.ok(md.includes('Where each clock starts and stops'), 'no clock definitions');
   });
 
   it('footers carry noise and the desktop.log ERROR counts', () => {

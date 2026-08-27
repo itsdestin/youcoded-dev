@@ -43,7 +43,7 @@ import { buildFixture } from './fixture.mjs';
 import { launchApp, resolveXvfbBin, startXvfb } from './launch.mjs';
 import { collectStartup } from './metrics-startup.mjs';
 import { cpuPercent, cpuSnapshot, loadAvg1, machineBusyPct, pssMb } from './procs.mjs';
-import { MESSAGE_COUNT_EXPR, runHistoryScenario } from './scenario-history.mjs';
+import { MEASURES as HISTORY_MEASURES, MESSAGE_COUNT_EXPR, runHistoryScenario } from './scenario-history.mjs';
 import { SCREEN_NAMES, capture } from './screenshots.mjs';
 
 export const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
@@ -182,6 +182,12 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version },
     noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0 },
     startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null,
+    // Per-phase "what was actually measured" descriptors, harvested from each
+    // scenario's MEASURES export. See scenario-workload.mjs MEASURES for why:
+    // three wrong conclusions in this project came from numbers measured in a
+    // configuration where the defect could not appear, and none of them failed
+    // loudly. The report now carries its own configuration next to its numbers.
+    measures: {},
     network: NETWORK_PATHS,
     errors: { coldStarts: [], scenarioBoot: null, stallBoot: null, artifactsBoot: null },
     screens: null,
@@ -334,7 +340,16 @@ export function renderMarkdown(report, stem) {
     const w = report.workload.median ?? {};
     const p = w.probe ?? {};
     lines.push(
-      `| switch median / p95 (median of ${report.workload.runs?.length ?? 0}) | ${n(w.switchMedianMs, 'ms')} / ${n(w.switchP95Ms, 'ms')} |`,
+      `| switch, pane swapped (median of ${report.workload.runs?.length ?? 0}) | ${n(w.switchMedianMs, 'ms')} / ${n(w.switchP95Ms, 'ms')} p95 |`,
+      // The row that matters: the container swapping is not the switch a user sees.
+      `| **switch, messages on screen** | **${n(w.switchPaintedMedianMs, 'ms')} / ${n(w.switchPaintedP95Ms, 'ms')} p95** |`,
+      // A bucket with unsettled switches is showing the 20s CAP, not a measurement.
+      // Saying so on the row is the difference between "slow" and "we gave up".
+      ...Object.entries(w.switchPaintedBySize ?? {}).map(([size, v]) =>
+        `| switch into a '${size}' conversation (n=${v?.n ?? 0}, ${n(v?.medianEntries, 'entries')}) | ` +
+        `${n(v?.medianMs, 'ms')} / ${n(v?.p95Ms, 'ms')} p95` +
+        `${v?.unsettled ? ` — ⚠ ${v.unsettled} hit the 20s CAP, so this is a FLOOR` : ''} |`),
+      ...(w.unsettledSwitches ? [`| ⚠ switches that never settled | ${w.unsettledSwitches} — those timings are a 20s FLOOR, not a measurement |`] : []),
       `| long tasks | ${n(p.longtaskCount, 'tasks')} (${n(p.longtaskTotalMs, 'ms')} total, max ${n(p.longtaskMaxMs, 'ms')}) |`,
       `| frame gaps > 40ms | ${n(p.frameGapCount, 'gaps')} (max ${n(p.frameGapMaxMs, 'ms')}) |`,
       `| native first token | ${n(w.nativeFirstTokenMs, 'ms')} |`,
@@ -393,6 +408,28 @@ export function renderMarkdown(report, stem) {
   if (stallWarnings.length) lines.push('', '## Stall warnings', '', ...stallWarnings.map((w) => `- ${w}`));
   if (report.artifacts?.warnings?.length) lines.push('', '## Artifact warnings', '', ...report.artifacts.warnings.map((w) => `- ${w}`));
   if (report.screens?.failures?.length) lines.push('', '## Screenshot failures', '', ...report.screens.failures.map((f) => `- ${f}`));
+  // Configuration beside the numbers. A reader must never have to guess whether
+  // "switching: 118ms" meant switching between loaded conversations or empty ones.
+  const measures = Object.values(report.measures ?? {});
+  if (measures.length) {
+    lines.push('', '## What was actually measured', '',
+      'Every number above was produced in a specific configuration. Three wrong conclusions',
+      'in this project came from a number measured where the defect could not appear, and none',
+      'of them failed loudly — they returned clean numbers. Read the configuration with the number.', '');
+    for (const m of measures) {
+      lines.push(`### ${m.scenario}`, '', `**Question:** ${m.question}`, '', '**Configuration:**');
+      for (const c of m.configuration ?? []) lines.push(`- ${c}`);
+      if (m.clocks) {
+        lines.push('', '**Where each clock starts and stops:**');
+        for (const [k, v] of Object.entries(m.clocks)) lines.push(`- \`${k}\` — ${v}`);
+      }
+      if (m.blindTo?.length) {
+        lines.push('', '**Blind to:**');
+        for (const b of m.blindTo) lines.push(`- ${b}`);
+      }
+      lines.push('');
+    }
+  }
   if (report.incomplete?.length) lines.push('', '## Incomplete — do NOT rank anything from this report', '', ...report.incomplete.map((p) => `- ${p}`));
 
   lines.push('');
@@ -832,6 +869,7 @@ async function main(argv) {
 
         if (cfg.only.has('history')) {
           report.history = await runHistoryScenario(app, fixture, { repeats: cfg.historyRepeats });
+          report.measures.history = HISTORY_MEASURES;
           for (const [size, h] of Object.entries(report.history)) {
             log(`history.${size}: last10 ${h.median.ipcLast10Ms}ms, all ${h.median.ipcAllMs}ms, stable ${h.median.resumeStableMs}ms (${h.stabilizedRuns}/${h.runs.length} stabilized)`);
           }
@@ -854,7 +892,8 @@ async function main(argv) {
         }
 
         if (cfg.only.has('workload')) {
-          const { runWorkloadScenario } = await loadWorkload();
+          const { runWorkloadScenario, MEASURES: WORKLOAD_MEASURES } = await loadWorkload();
+          report.measures.workload = WORKLOAD_MEASURES;
           const wruns = [];
           for (let i = 0; i < cfg.workloadRepeats; i++) {
             checkDeadline();
@@ -919,7 +958,8 @@ async function main(argv) {
     if (cfg.only.has('stall')) {
       checkDeadline();
       await noiseGate(report.noise);
-      const { runReplayStallScenario } = await loadReplayStall();
+      const { runReplayStallScenario, MEASURES: STALL_MEASURES } = await loadReplayStall();
+      report.measures.stall = STALL_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
       await withBoot(build, fixture, async (app) => {
         report.replayStall = await runReplayStallScenario(app, fixture, { repeats: cfg.stallRepeats });
@@ -940,7 +980,8 @@ async function main(argv) {
     if (cfg.only.has('artifacts')) {
       checkDeadline();
       await noiseGate(report.noise);
-      const { runArtifactScenario, medianRun: artifactMedian } = await loadArtifacts();
+      const { runArtifactScenario, medianRun: artifactMedian, MEASURES: ARTIFACT_MEASURES } = await loadArtifacts();
+      report.measures.artifacts = ARTIFACT_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
       await withBoot(build, fixture, async (app) => {
         const runs = [];

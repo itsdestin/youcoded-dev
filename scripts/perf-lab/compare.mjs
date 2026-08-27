@@ -20,6 +20,11 @@ export const PRIMARY = [
   'history.huge.median.ipcLast10Ms',
   'history.huge.median.resumeStableMs',
   'workload.median.switchP95Ms',
+  // The switch metric that includes the CONTENT. switchP95Ms above stops when the
+  // pane container swaps; this one stops when the messages are on screen. Both are
+  // judged: if a change improves the container swap while the messages arrive just
+  // as late, that is not a win a user would feel, and only this path shows it.
+  'workload.median.switchPaintedP95Ms',
   'workload.median.probe.longtaskTotalMs',
   'workload.median.pssAfterMb',
   'workload.median.cpuDuringPct',
