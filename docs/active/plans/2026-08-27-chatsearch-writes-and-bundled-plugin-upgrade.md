@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 created: 2026-08-27
 spec: docs/active/specs/2026-08-27-chatsearch-writes-and-bundled-plugin-upgrade-design.md
 ---
@@ -10,7 +10,7 @@ spec: docs/active/specs/2026-08-27-chatsearch-writes-and-bundled-plugin-upgrade-
 
 **Goal:** The chatsearch skill can mark conversations complete and bulk-manage tags/notes through a file outbox the app drains; bundled skills upgrade at launch when their `plugin.json` version is newer.
 
-**Architecture:** Two independent tracks, each its own worktree/branch, mergeable separately. **Track A** — the CLI (`wecoded-marketplace/youcoded-chatsearch`) writes `~/.youcoded/chatsearch/outbox/<uuid>.json`; a new desktop module `chatsearch-index/outbox-drain.ts` watches the folder, applies each op through `noteFlagChanged` / `noteSessionNote` / `getTagRegistry()`, fires the same broadcasts the IPC handlers fire, and writes `done/<uuid>.ack.json`. **Track B** — `LocalSkillProvider.reconcileBundledPlugins()` replaces `ensureBundledPluginsInstalled()`: refresh the private cache clone, compare `plugin.json` versions, upgrade via temp-dir + rename unless the installed tree was modified locally; Android port; `${CLAUDE_PLUGIN_ROOT}` substitution in the native harness; marketplace CI guard.
+**Architecture:** Two independent tracks, each its own worktree/branch, mergeable separately. **Track A** — the CLI (`wecoded-marketplace/youcoded-chatsearch`) writes `~/.youcoded/chatsearch/outbox/<uuid>.json`; a new desktop module `chatsearch-index/outbox-drain.ts` watches the folder, applies each op through `noteFlagChanged` / `noteSessionNote` / `getTagRegistry()`, fires the same broadcasts the IPC handlers fire, and writes `done/<uuid>.ack.json`. **Track B** — `LocalSkillProvider.reconcileBundledPlugins()` replaces `ensureBundledPluginsInstalled()`: refresh the private cache clone (1 h gate), compare `plugin.json` versions, upgrade via temp-dir + rename; Android port; `${CLAUDE_PLUGIN_ROOT}` substitution in the native harness; marketplace `sync.js` copies each plugin's `plugin.json` version into the index so the app and the listing agree on ONE number; marketplace CI guard.
 
 **Tech Stack:** TypeScript (Electron main), Node ESM (CLI, `node --test`), Vitest, Kotlin (Android, JUnit4), GitHub Actions.
 
@@ -21,7 +21,9 @@ spec: docs/active/specs/2026-08-27-chatsearch-writes-and-bundled-plugin-upgrade-
 - Every non-trivial edit carries a `// WHY:` comment (Destin reads code through comments).
 - Error strings are specific and accurate, or general and non-committal — never a guessed cause (`docs/error-message-standards.md`).
 - Outbox request/receipt format `v: 1`; index meta format stays `CHATSEARCH_FORMAT_VERSION = 1` (additive field only).
-- Note cap: 8,000 characters (matches `SESSION_SET_NOTE`). Receipt wait: 2,000 ms, 50 ms poll. Receipt retention: 24 h. Stale `processing/` recovery: 10 min. Poll fallback: 5 s.
+- Note cap: 8,000 characters (matches `SESSION_SET_NOTE`). Receipt wait: 2,000 ms, 50 ms poll. Receipt retention: 24 h. Stale `processing/` recovery: 10 min. Poll fallback: 5 s. Marketplace cache refresh gate: 1 h (the existing `CACHE_REFRESH_MS`).
+- **One version number per plugin.** `plugin.json` is the source of truth; `index.json` copies it (B7). The app never compares a `plugin.json` version against a synthetic index version — the renderer's "Update available" badge compares the package record against the index, so both must live in the same space or every bundled plugin shows a badge it cannot clear (its Update button is disabled).
+- `note` **append** is idempotent: a request whose dated line is already in the note reports `already`. A retried `close` must never double-append.
 - Dev-instance rule: non-empty `process.env.YOUCODED_PROFILE` ⇒ dev. Overrides: `YOUCODED_CHATSEARCH_OUTBOX=1` (drain anyway), `YOUCODED_BUNDLED_UPGRADE=1` (reconcile anyway).
 - Never `git pull`/`reset` `~/.claude/plugins/marketplaces/youcoded/`. Only the cache clone `~/.claude/youcoded-marketplace-cache/wecoded-marketplace/` is refreshed.
 - Commit only by explicit path (`git add <file>`), never `-A` — other sessions keep untracked files around.
@@ -46,17 +48,17 @@ spec: docs/active/specs/2026-08-27-chatsearch-writes-and-bundled-plugin-upgrade-
 
 **Track B — desktop**
 - Create `src/shared/version-compare.ts`; modify `src/renderer/state/marketplace-context.tsx`
-- Modify `src/main/plugin-installer.ts` — `readInstalledPluginVersion`, `hashPluginTree`, `refreshLocalMarketplaceCache`, `upgradePluginFromLocal`; real version in registry
+- Modify `src/main/plugin-installer.ts` — `readPluginVersion`, `refreshLocalMarketplaceCache`, `upgradePluginFromLocal`, `runGit` error passthrough; real version in registry
 - Modify `src/main/skill-provider.ts` — `reconcileBundledPlugins`, fixed `install()`/`update()`
-- Modify `src/shared/types.ts` — `PackageInfo.installedHash`, `SkillEntry.sourceMarketplace`
+- Modify `src/shared/types.ts` — `SkillEntry.sourceMarketplace`
 - Modify `src/main/harness/skills/skill-catalog.ts` — `${CLAUDE_PLUGIN_ROOT}`
-- Create `tests/version-compare.test.ts`, `tests/plugin-installer-upgrade.test.ts`, `tests/bundled-plugins-reconcile.test.ts`, `tests/skill-catalog-plugin-root.test.ts`; rewrite `tests/skill-provider-bundled.test.ts`; extend `tests/bundled-plugins-parity.test.ts`
+- Create `tests/version-compare.test.ts`, `tests/plugin-installer-upgrade.test.ts`, `tests/skill-catalog-plugin-root.test.ts`; rewrite `tests/skill-provider-bundled.test.ts`; extend `tests/bundled-plugins-parity.test.ts`
 
 **Track B — Android (`youcoded/app/src/main/kotlin/com/youcoded/app/skills/`)**
 - Create `VersionCompare.kt`; modify `PluginInstaller.kt`, `LocalSkillProvider.kt`; create `app/src/test/kotlin/com/youcoded/app/skills/PluginInstallerUpgradeTest.kt`
 
-**Track B — marketplace CI**
-- Modify `wecoded-marketplace/.github/workflows/validate-plugin-pr.yml`
+**Track B — marketplace (`wecoded-marketplace/`)**
+- Modify `.github/workflows/validate-plugin-pr.yml` (B6), `scripts/sync.js` (B7)
 
 ---
 
@@ -248,6 +250,13 @@ export function appendNoteText(existing: string, day: string, text: string): str
   const line = `${day}: ${text}`;
   return existing.trim() ? `${existing}\n\n${line}` : line;
 }
+
+/** WHY: a retried `close` (the CLI timed out, the assistant re-sent it) must not
+ *  append the same line twice. Matched on the text alone — a retry after
+ *  midnight carries a different date. */
+export function hasDatedLine(existing: string, text: string): boolean {
+  return existing.split('\n').some((l) => /^\d{4}-\d{2}-\d{2}: /.test(l) && l.slice(12) === text);
+}
 ```
 
 - [ ] **Step 2: Failing tests — write `tests/chatsearch-outbox.test.ts`**
@@ -262,13 +271,13 @@ import path from 'node:path';
 // store functions and broadcast" — we assert on the calls, and use real files
 // in a tmp home for the mailbox itself (same rule as chatsearch-index-reschedule).
 const flagCalls: any[] = []; const noteCalls: any[] = []; const broadcasts: any[] = [];
-let metaChanged = 0;
+let metaChanged = 0; let storeAvailable = true;
 const records = new Map<string, { note: string; flags: Record<string, { value: boolean }> }>();
 vi.mock('../src/main/conversations/service', () => ({
-  getConversationStore: () => ({
+  getConversationStore: () => storeAvailable ? {
     root: () => '/store/A',
     get: async (_p: string, id: string) => records.get(id) ?? null,
-  }),
+  } : null,
   noteFlagChanged: async (id: string, flag: string, value: boolean) => { flagCalls.push([id, flag, value]); return { ok: true }; },
   noteSessionNote: async (id: string, note: string) => { noteCalls.push([id, note]); return { ok: true }; },
   emitConversationMetaChanged: () => { metaChanged++; },
@@ -283,7 +292,7 @@ vi.mock('../src/main/conversations/tag-registry-service', () => ({
 }));
 vi.mock('../src/main/ipc-handlers', () => ({ broadcastSessionMeta: (id: string, p: any) => { broadcasts.push([id, p]); } }));
 
-import { parseOutboxRequest, appendNoteText } from '../src/main/chatsearch-index/outbox-format';
+import { parseOutboxRequest, appendNoteText, hasDatedLine } from '../src/main/chatsearch-index/outbox-format';
 import { applyOutboxRequest, drainOutboxOnce, outboxDir } from '../src/main/chatsearch-index/outbox-drain';
 
 let home: string;
@@ -294,7 +303,7 @@ const T = [{ provider: 'claude', id: 'c1' }];
 
 beforeEach(() => {
   home = fs.mkdtempSync(path.join(os.tmpdir(), 'yc-outbox-'));
-  flagCalls.length = 0; noteCalls.length = 0; broadcasts.length = 0; created.length = 0; metaChanged = 0;
+  flagCalls.length = 0; noteCalls.length = 0; broadcasts.length = 0; created.length = 0; metaChanged = 0; storeAvailable = true;
   records.clear();
   records.set('c1', { note: '', flags: {} });
   records.set('c2', { note: 'old', flags: { complete: { value: true } } });
@@ -319,6 +328,14 @@ describe('parseOutboxRequest', () => {
 describe('appendNoteText', () => {
   it('no leading newlines on an empty note', () => { expect(appendNoteText('', '2026-08-27', 'x')).toBe('2026-08-27: x'); });
   it('two newlines after an existing note', () => { expect(appendNoteText('old', '2026-08-27', 'x')).toBe('old\n\n2026-08-27: x'); });
+});
+
+describe('hasDatedLine', () => {
+  it('matches on the text, whatever the date', () => {
+    expect(hasDatedLine('old\n\n2026-08-26: superseded', 'superseded')).toBe(true);
+    expect(hasDatedLine('old\n\n2026-08-26: superseded by X', 'superseded')).toBe(false);
+    expect(hasDatedLine('superseded', 'superseded')).toBe(false); // undated body text is not a dated line
+  });
 });
 
 describe('applyOutboxRequest', () => {
@@ -348,6 +365,17 @@ describe('applyOutboxRequest', () => {
     records.set('c1', { note: 'x'.repeat(7990), flags: {} });
     const rc = await applyOutboxRequest(req([{ op: 'note', targets: T, mode: 'append', text: 'y'.repeat(20) }]) as any, deps);
     expect(rc.results[0].status).toBe('refused'); expect(rc.results[0].error).toMatch(/8000/); expect(noteCalls).toEqual([]);
+  });
+  it('append is idempotent — a line already in the note reports already and writes nothing', async () => {
+    records.set('c1', { note: 'old\n\n2026-08-26: superseded', flags: {} });
+    const rc = await applyOutboxRequest(req([{ op: 'note', targets: T, mode: 'append', text: 'superseded' }]) as any, deps);
+    expect(rc.results[0].status).toBe('already'); expect(noteCalls).toEqual([]);
+  });
+  it('no store → every target is an error, never not-found', async () => {
+    storeAvailable = false;
+    const rc = await applyOutboxRequest(req([{ op: 'flag', targets: T, flag: 'complete', value: true }]) as any, deps);
+    expect(rc.results[0]).toMatchObject({ status: 'error', error: expect.stringMatching(/storage is not available/) });
+    expect(flagCalls).toEqual([]);
   });
   it('unknown tag is refused with the existing labels; create:true creates once', async () => {
     const r1 = await applyOutboxRequest(req([{ op: 'tag', targets: T, add: ['perms'], remove: [] }]) as any, deps);
@@ -407,11 +435,15 @@ describe('drainOutboxOnce', () => {
     await drainOutboxOnce(opts());
     expect(fs.existsSync(p)).toBe(false);
   });
-  it('two drainers racing one file produce exactly one receipt', async () => {
+  it('a file another instance already claimed is skipped, not applied twice', async () => {
+    // WHY not two drainers in Promise.all: everything up to the rename claim is
+    // synchronous, so the second call would always see an empty folder and the
+    // test would pass without exercising the race. Simulate the loser instead.
     write('66666666-2222-3333-4444-555555555555.json', req([{ op: 'flag', targets: T, flag: 'complete', value: true }]));
-    const [a, b] = await Promise.all([drainOutboxOnce(opts()), drainOutboxOnce(opts())]);
-    expect(a + b).toBe(1);
-    expect(flagCalls).toHaveLength(1);
+    const proc = path.join(outboxDir(home), 'processing'); fs.mkdirSync(proc, { recursive: true });
+    fs.renameSync(path.join(outboxDir(home), '66666666-2222-3333-4444-555555555555.json'), path.join(proc, '66666666-2222-3333-4444-555555555555.json'));
+    expect(await drainOutboxOnce(opts())).toBe(0);
+    expect(flagCalls).toEqual([]);
   });
 });
 ```
@@ -427,7 +459,7 @@ import path from 'node:path';
 import { app } from 'electron';
 import { chatsearchDir } from './index-store';
 import {
-  NOTE_MAX_CHARS, OUTBOX_FORMAT_VERSION, parseOutboxRequest, appendNoteText,
+  NOTE_MAX_CHARS, OUTBOX_FORMAT_VERSION, parseOutboxRequest, appendNoteText, hasDatedLine,
   type OutboxRequest, type OutboxReceipt, type ReceiptResult, type OutboxTarget,
 } from './outbox-format';
 import { getConversationStore, noteFlagChanged, noteSessionNote, emitConversationMetaChanged } from '../conversations/service';
@@ -439,7 +471,8 @@ import { log } from '../logger';
 const POLL_MS = 5_000;
 const RECEIPT_TTL_MS = 24 * 3600_000;
 const PROCESSING_STALE_MS = 10 * 60_000;
-const SWEEP_MS = 3600_000;
+type Store = NonNullable<ReturnType<typeof getConversationStore>>;
+const STORE_DOWN = 'conversation storage is not available right now — retry with YouCoded open';
 
 export function outboxDir(homeRoot: string): string { return path.join(chatsearchDir(homeRoot), 'outbox'); }
 
@@ -455,9 +488,8 @@ function writeJsonAtomic(target: string, value: unknown): void {
   fs.renameSync(tmp, target);
 }
 
-async function applyFlag(t: OutboxTarget, flagKey: string, value: boolean): Promise<ReceiptResult> {
-  const store = getConversationStore();
-  const rec = store ? await store.get(t.provider, t.id) : null;
+async function applyFlag(store: Store, t: OutboxTarget, flagKey: string, value: boolean): Promise<ReceiptResult> {
+  const rec = await store.get(t.provider, t.id);
   if (!rec) return { ...t, op: 'flag', status: 'not-found' };
   const current = rec.flags?.[flagKey]?.value === true;
   if (current === value) return { ...t, op: 'flag', status: 'already' };
@@ -472,15 +504,23 @@ async function applyFlag(t: OutboxTarget, flagKey: string, value: boolean): Prom
 export async function applyOutboxRequest(req: OutboxRequest, deps: ApplyDeps): Promise<OutboxReceipt> {
   const results: ReceiptResult[] = [];
   const createdTags: Array<{ id: string; label: string }> = [];
+  const receipt = (): OutboxReceipt => ({ v: OUTBOX_FORMAT_VERSION, id: req.id, appliedAt: new Date().toISOString(), appVersion: deps.appVersion, results, createdTags });
   const store = getConversationStore();
+  // WHY error and not not-found: the store is null only while starting or after
+  // quit began. "Not found" would be a wrong, permanent answer for a real conversation.
+  if (!store) {
+    for (const op of req.ops) for (const t of op.targets) results.push({ ...t, op: op.op, status: 'error', error: STORE_DOWN });
+    return receipt();
+  }
 
   for (const op of req.ops) {
     if (op.op === 'flag') {
-      for (const t of op.targets) results.push(await applyFlag(t, op.flag, op.value));
+      for (const t of op.targets) results.push(await applyFlag(store, t, op.flag, op.value));
     } else if (op.op === 'note') {
       for (const t of op.targets) {
-        const rec = store ? await store.get(t.provider, t.id) : null;
+        const rec = await store.get(t.provider, t.id);
         if (!rec) { results.push({ ...t, op: 'note', status: 'not-found' }); continue; }
+        if (op.mode === 'append' && hasDatedLine(rec.note ?? '', op.text)) { results.push({ ...t, op: 'note', status: 'already' }); continue; }
         const next = op.mode === 'set' ? op.text : appendNoteText(rec.note ?? '', deps.today(), op.text);
         if (next.length > NOTE_MAX_CHARS) { results.push({ ...t, op: 'note', status: 'refused', error: `note would exceed ${NOTE_MAX_CHARS} characters (${next.length})` }); continue; }
         if (next === (rec.note ?? '')) { results.push({ ...t, op: 'note', status: 'already' }); continue; }
@@ -515,7 +555,7 @@ export async function applyOutboxRequest(req: OutboxRequest, deps: ApplyDeps): P
       for (const t of op.targets) {
         let worst: ReceiptResult | null = null; let applied = false;
         for (const [tag, value] of [...adds.map((a) => [a, true] as const), ...removes.map((r) => [r, false] as const)]) {
-          const r = await applyFlag(t, tagFlagKey(tag.id), value);
+          const r = await applyFlag(store, t, tagFlagKey(tag.id), value);
           if (r.status === 'applied') applied = true;
           if (r.status === 'not-found' || r.status === 'error') { worst = { ...r, op: 'tag' }; break; }
         }
@@ -524,7 +564,7 @@ export async function applyOutboxRequest(req: OutboxRequest, deps: ApplyDeps): P
     }
   }
   if (results.some((r) => r.status === 'applied')) emitConversationMetaChanged();
-  return { v: OUTBOX_FORMAT_VERSION, id: req.id, appliedAt: new Date().toISOString(), appVersion: deps.appVersion, results, createdTags };
+  return receipt();
 }
 
 function recoverStaleProcessing(dir: string): void {
@@ -558,7 +598,7 @@ export async function drainOutboxOnce(opts: DrainOpts): Promise<number> {
   sweepReceipts(dir);
   let handled = 0;
   for (const name of fs.readdirSync(dir)) {
-    if (!name.endsWith('.json') || name.includes('.tmp-')) continue;
+    if (!name.endsWith('.json')) continue; // the CLI's temp files end in .tmp-<pid>, so they never match
     const src = path.join(dir, name);
     let raw: string;
     try { raw = fs.readFileSync(src, 'utf8'); } catch { continue; }
@@ -592,7 +632,6 @@ export async function drainOutboxOnce(opts: DrainOpts): Promise<number> {
 // ---- lifecycle -------------------------------------------------------------
 let watcher: fs.FSWatcher | null = null;
 let pollTimer: NodeJS.Timeout | null = null;
-let sweepTimer: NodeJS.Timeout | null = null;
 let running = false;
 let rerun = false;
 
@@ -625,15 +664,14 @@ export function startOutboxDrain(): void {
     watcher.on('error', () => { watcher?.close(); watcher = null; });
   } catch { watcher = null; }
   // WHY a poll alongside fs.watch: Windows drops notifications; 5 s matches subagent-watcher.
+  // Every pass also sweeps old receipts, so no separate sweep timer exists.
   pollTimer = setInterval(() => { void drainSerialized(); }, POLL_MS); pollTimer.unref?.();
-  sweepTimer = setInterval(() => { const o = liveOpts(); if (o) sweepReceipts(outboxDir(o.homeRoot)); }, SWEEP_MS); sweepTimer.unref?.();
   void drainSerialized(); // launch drain — requests queued while the app was closed
 }
 
 export function stopOutboxDrain(): void {
   watcher?.close(); watcher = null;
   if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-  if (sweepTimer) { clearInterval(sweepTimer); sweepTimer = null; }
 }
 ```
 
@@ -742,7 +780,7 @@ test('an unknown id refuses the whole command before anything is written', async
 
 test('receipt prints a stored receipt or says it is not there yet', async () => {
   const home = fixture();
-  assert.match(await runChatsearch({ cmd: 'receipt', id: 'nope' }, env(home)), /no receipt yet for request nope/);
+  assert.match(await runChatsearch({ cmd: 'receipt', id: 'nope' }, env(home)), /no receipt for request nope — either YouCoded has not applied it yet/);
   fakeApp(home, 'r1', [{ provider: 'claude', id: 'a3f2aaaa', op: 'flag', status: 'applied' }]);
   assert.match(await runChatsearch({ cmd: 'receipt', id: 'r1' }, env(home)), /applied 1 · already 0/);
 });
@@ -752,7 +790,7 @@ test('an index without storeRoot refuses writes and says why', async () => {
   const metaPath = path.join(home, '.youcoded', 'chatsearch', 'claude-meta.json');
   const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8')); delete meta.storeRoot; fs.writeFileSync(metaPath, JSON.stringify(meta));
   const out = await runChatsearch({ cmd: 'flag', ids: ['a3f2'], flag: 'complete', value: true }, env(home));
-  assert.match(out, /this index was written by a YouCoded that predates writes — open YouCoded 1\.3\.1 or newer once/);
+  assert.match(out, /this index was written by an older YouCoded — update YouCoded, open it once, then retry/);
 });
 ```
 
@@ -781,7 +819,8 @@ function storeRootOf(index) {
   for (const p of index.providers) if (p.present && p.meta && typeof p.meta.storeRoot === 'string' && p.meta.storeRoot) return p.meta.storeRoot;
   return null;
 }
-const NO_STORE_ROOT = 'this index was written by a YouCoded that predates writes — open YouCoded 1.3.1 or newer once, then retry';
+// WHY no version number: the release that carries this is not fixed, and a wrong one is a misleading error.
+const NO_STORE_ROOT = 'this index was written by an older YouCoded — update YouCoded, open it once, then retry';
 
 const targetsOf = (entries) => entries.map((e) => ({ provider: e.provider, id: e.id }));
 
@@ -857,7 +896,8 @@ async function cmdReceipt(req, index) {
   const id = String(req.id || '').trim();
   if (!id) return 'receipt needs "id": the request id printed by a Queued write';
   try { return renderReceipt(JSON.parse(await fsp.readFile(path.join(index.dir, 'outbox', 'done', `${id}.ack.json`), 'utf8')), index); }
-  catch { return `no receipt yet for request ${id} — YouCoded has not applied it (is it open?)`; }
+  // WHY two causes: receipts are deleted after 24 h, so "not applied" alone would be wrong for an old request.
+  catch { return `no receipt for request ${id} — either YouCoded has not applied it yet (is it open?), or it applied more than a day ago and the receipt has been cleaned up`; }
 }
 ```
 Dispatch (replace :994-996):
@@ -911,7 +951,8 @@ and writes a request the app applies — the tool itself never edits anything.
 
 Rules:
 - **Show the user the list before any write touching more than five conversations**, and wait for a yes.
-- `Queued: YouCoded is not running…` is not a failure. The change lands when the app opens; check with `receipt` if it matters now.
+- `Queued: YouCoded is not running…` is not a failure. The change lands when the app opens; check with `receipt` if it matters now. **Never re-send a write that came back `Queued`.**
+- **The receipt is the confirmation.** The search index catches up a few seconds after a write, so a `find` run right away still shows the old state — do not re-run `find` to check, and do not conclude the write failed.
 - One unknown id refuses the whole command before anything is written — fix the id and re-run.
 - Every result line says `applied`, `already` (nothing changed), `not found`, `refused` (with why) or `error`. Report the summary line to the user verbatim.
 ```
@@ -954,7 +995,7 @@ describe('isNewerVersion', () => {
 - [ ] **Step 2: FAIL. Step 3: Move the function body verbatim from marketplace-context.tsx:26-45 into `version-compare.ts` with `export`; in the tsx file replace the definition with `import { isNewerVersion } from '../../shared/version-compare';`.**
 - [ ] **Step 4: PASS; `tsc --noEmit` clean. Commit** `git add src/shared/version-compare.ts src/renderer/state/marketplace-context.tsx tests/version-compare.test.ts && git commit -m "refactor: isNewerVersion moves to shared so main can compare plugin versions"`
 
-### Task B2: Installer primitives — installed version, tree hash, cache refresh, upgrade
+### Task B2: Installer primitives — installed version, cache refresh, upgrade
 
 **Files:**
 - Modify: `src/main/plugin-installer.ts`
@@ -963,9 +1004,9 @@ describe('isNewerVersion', () => {
 
 **Interfaces (all exported from `plugin-installer.ts`):**
 - `readPluginVersion(dir: string): string | null` — reads `plugin.json` or `.claude-plugin/plugin.json` (rename of `readCachedPluginVersion`, exported)
-- `hashPluginTree(dir: string): string` — sha256 over sorted relative paths + bytes, skipping `.git`, `node_modules`, `.youcoded-*`
-- `refreshLocalMarketplaceCache(sourceMarketplace?: string): Promise<{ ok: boolean; error?: string }>` — clone if missing, else `git fetch` + `reset --hard`; **no timestamp gate** (callers decide when)
+- `refreshLocalMarketplaceCache(sourceMarketplace?: string): Promise<{ ok: boolean; refreshed: boolean; error?: string }>` — clone if missing; otherwise `git fetch` + `reset --hard` only when the last refresh is older than `CACHE_REFRESH_MS` (1 h — the gate `installFromLocal` already uses; an upgrade still lands within an hour of any launch, and every launch of every install does NOT hit GitHub)
 - `upgradePluginFromLocal(id: string, sourceRef: string, sourceMarketplace?: string): Promise<InstallResult>` — copy cache tree to `<PLUGINS_DIR>/.upgrade-<id>-<pid>`, then swap: rename old → `.old-<id>-<pid>`, rename new → `<id>`, delete old. Registers with the **real** version.
+- `runGit` — when git produces no output (typically: git is not installed), the result carries the OS error message instead of an empty string.
 
 - [ ] **Step 1: Test** (pattern 2 — temp HOME + `vi.resetModules()` + dynamic import; a fake cache clone is just a directory, so no git runs)
 
@@ -993,14 +1034,11 @@ describe('plugin-installer upgrade primitives', () => {
     expect(readPluginVersion(path.join(home, 'b'))).toBe('3.0.0');
     expect(readPluginVersion(path.join(home, 'c'))).toBeNull();
   });
-  it('hashPluginTree is stable, order-independent, and ignores .git', async () => {
-    const { hashPluginTree } = await import('../src/main/plugin-installer');
-    w(path.join(home, 't', 'b.txt'), 'B'); w(path.join(home, 't', 'a', 'x.txt'), 'X'); w(path.join(home, 't', '.git', 'HEAD'), 'ref');
-    const h1 = hashPluginTree(path.join(home, 't'));
-    w(path.join(home, 't', '.git', 'HEAD'), 'other');
-    expect(hashPluginTree(path.join(home, 't'))).toBe(h1);
-    w(path.join(home, 't', 'b.txt'), 'B2');
-    expect(hashPluginTree(path.join(home, 't'))).not.toBe(h1);
+  it('refreshLocalMarketplaceCache skips the network inside the 1 h gate', async () => {
+    const { refreshLocalMarketplaceCache } = await import('../src/main/plugin-installer');
+    fs.mkdirSync(cacheDir(), { recursive: true });
+    fs.writeFileSync(path.join(cacheDir(), '.youcoded-last-pull'), String(Date.now())); // the file setCacheTimestamp writes (:218)
+    expect(await refreshLocalMarketplaceCache('youcoded')).toEqual({ ok: true, refreshed: false });
   });
   it('upgradePluginFromLocal swaps the tree and registers the real version', async () => {
     const mod = await import('../src/main/plugin-installer');
@@ -1028,44 +1066,33 @@ describe('plugin-installer upgrade primitives', () => {
 - [ ] **Step 3: Implement** in `plugin-installer.ts`:
 
 ```ts
-import crypto from 'node:crypto';
-
 export function readPluginVersion(dir: string): string | null { /* body of readCachedPluginVersion, unchanged */ }
 // keep a private alias so existing call sites compile:
 const readCachedPluginVersion = readPluginVersion;
 
-const HASH_SKIP = new Set(['.git', 'node_modules']);
-/** WHY: "did the user edit this skill?" — compared against the hash recorded at install. */
-export function hashPluginTree(dir: string): string {
-  const files: string[] = [];
-  const walk = (d: string, rel: string) => {
-    for (const e of fs.readdirSync(d, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-      if (HASH_SKIP.has(e.name) || e.name.startsWith('.youcoded-')) continue;
-      const r = rel ? `${rel}/${e.name}` : e.name;
-      if (e.isDirectory()) walk(path.join(d, e.name), r); else if (e.isFile()) files.push(r);
-    }
-  };
-  walk(dir, '');
-  const h = crypto.createHash('sha256');
-  for (const f of files) { h.update(f); h.update('\0'); h.update(fs.readFileSync(path.join(dir, f))); h.update('\0'); }
-  return h.digest('hex');
-}
+// In runGit's error branch (:141-143): when git printed nothing, keep the OS
+// error — "fetch failed: " with nothing after it is a misleading error.
+//   const printed = `${stderr}\n${stdout}`.trim();
+//   resolve({ ok: false, output: printed || err.message });
 
-export async function refreshLocalMarketplaceCache(sourceMarketplace?: string): Promise<{ ok: boolean; error?: string }> {
+export async function refreshLocalMarketplaceCache(sourceMarketplace?: string): Promise<{ ok: boolean; refreshed: boolean; error?: string }> {
   const cacheRepo = path.join(CACHE_DIR, getCacheRepoName(sourceMarketplace));
   const repoUrl = getMarketplaceRepo(sourceMarketplace);
-  const branch = process.env.YOUCODED_MARKETPLACE_BRANCH || 'master';
+  // marketplaceBranch: today a local const inside installFromLocal (:245) — hoist that one line to module level so both callers share it; don't re-read the env var here.
   if (!fs.existsSync(cacheRepo)) {
     fs.mkdirSync(CACHE_DIR, { recursive: true });
-    const { ok, output } = await runGit('clone', '--depth', '1', '--branch', branch, repoUrl, cacheRepo);
-    if (!ok) return { ok: false, error: `clone failed: ${output.slice(0, 200)}` };
-    setCacheTimestamp(cacheRepo); return { ok: true };
+    const { ok, output } = await runGit('clone', '--depth', '1', '--branch', marketplaceBranch, repoUrl, cacheRepo);
+    if (!ok) return { ok: false, refreshed: false, error: `clone failed: ${output.slice(0, 200)}` };
+    setCacheTimestamp(cacheRepo); return { ok: true, refreshed: true };
   }
+  // WHY the same 1 h gate as installFromLocal: reconcile runs on EVERY launch of
+  // EVERY install; without a gate that is a GitHub round-trip per app start.
+  if (Date.now() - getCacheTimestamp(cacheRepo) < CACHE_REFRESH_MS) return { ok: true, refreshed: false };
   const f = await runGit('-C', cacheRepo, 'fetch', 'origin');
-  if (!f.ok) return { ok: false, error: `fetch failed: ${f.output.slice(0, 200)}` };
-  const r = await runGit('-C', cacheRepo, 'reset', '--hard', `origin/${branch}`);
-  if (!r.ok) return { ok: false, error: `reset failed: ${r.output.slice(0, 200)}` };
-  setCacheTimestamp(cacheRepo); return { ok: true };
+  if (!f.ok) return { ok: false, refreshed: false, error: `fetch failed: ${f.output.slice(0, 200)}` };
+  const r = await runGit('-C', cacheRepo, 'reset', '--hard', `origin/${marketplaceBranch}`);
+  if (!r.ok) return { ok: false, refreshed: false, error: `reset failed: ${r.output.slice(0, 200)}` };
+  setCacheTimestamp(cacheRepo); return { ok: true, refreshed: true };
 }
 
 /** Replace an installed plugin with the cache clone's copy. Never rmSync's the
@@ -1103,20 +1130,20 @@ In `installPlugin` (:390-396) replace `version: '1.0.0', // real version flows �
 - [ ] **Step 4: PASS; `tsc` clean. Commit**
 ```bash
 git add src/main/plugin-installer.ts src/main/skill-provider.ts tests/plugin-installer-upgrade.test.ts
-git commit -m "feat(plugins): upgrade primitives — real versions, tree hash, cache refresh, atomic swap"
+git commit -m "feat(plugins): upgrade primitives — real versions, gated cache refresh, atomic swap"
 ```
 
 ### Task B3: `reconcileBundledPlugins` + honest `update()`
 
 **Files:**
 - Modify: `src/main/skill-provider.ts` (`ensureBundledPluginsInstalled` :806-812, `update` :284-332, `install` :246-260)
-- Modify: `src/shared/types.ts:594-605` (`PackageInfo.installedHash?: string`), `SkillEntry` (add `sourceMarketplace?: string`)
-- Modify: `src/main/skill-config-store.ts` (add `setPackageHash(id, hash)`)
+- Modify: `src/shared/types.ts` — `SkillEntry` (add `sourceMarketplace?: string`)
 - Test: rewrite `tests/skill-provider-bundled.test.ts`
 
 **Interfaces:**
-- `LocalSkillProvider.reconcileBundledPlugins(): Promise<Array<{ id: string; action: 'installed' | 'upgraded' | 'unchanged' | 'skipped-modified' | 'skipped-dev' | 'failed'; from?: string; to?: string; error?: string }>>`
+- `LocalSkillProvider.reconcileBundledPlugins(): Promise<Array<{ id: string; action: 'installed' | 'upgraded' | 'unchanged' | 'skipped-dev' | 'failed'; from?: string; to?: string; error?: string }>>`
 - `ensureBundledPluginsInstalled()` stays as the public name `main.ts:206` calls; its body becomes `await this.reconcileBundledPlugins()` with logging.
+- Bundled plugins are app-owned: a newer cache copy always replaces the installed tree. Edits to a bundled skill go through the marketplace repo, never the install folder. (No local-modification fingerprint — it would leave a hand-edited copy silently on an old version forever, with only a log line to say so.)
 
 - [ ] **Step 1: Test** (rewrite the file)
 
@@ -1126,7 +1153,7 @@ import { BUNDLED_PLUGIN_IDS } from '../src/shared/bundled-plugins';
 
 const inst = vi.hoisted(() => ({
   installPlugin: vi.fn(), upgradePluginFromLocal: vi.fn(), refreshLocalMarketplaceCache: vi.fn(),
-  readPluginVersion: vi.fn(), hashPluginTree: vi.fn(), isPluginInstalled: vi.fn(),
+  readPluginVersion: vi.fn(), isPluginInstalled: vi.fn(),
 }));
 vi.mock('../src/main/plugin-installer', () => inst);
 import { LocalSkillProvider } from '../src/main/skill-provider';
@@ -1134,17 +1161,15 @@ import { LocalSkillProvider } from '../src/main/skill-provider';
 const entry = (id: string, version: string) => ({ id, type: 'plugin', version, sourceType: 'local', sourceRef: id, sourceMarketplace: 'youcoded' });
 
 describe('LocalSkillProvider.reconcileBundledPlugins', () => {
-  let p: LocalSkillProvider; const pkgs: Record<string, any> = {};
+  let p: LocalSkillProvider; const versions: Record<string, string> = {};
   beforeEach(() => {
     vi.clearAllMocks(); delete process.env.YOUCODED_PROFILE; delete process.env.YOUCODED_BUNDLED_UPGRADE;
     p = new LocalSkillProvider();
-    for (const k of Object.keys(pkgs)) delete pkgs[k];
+    for (const k of Object.keys(versions)) delete versions[k];
     vi.spyOn(p as any, 'fetchIndex').mockResolvedValue(BUNDLED_PLUGIN_IDS.map((id) => entry(id, '1.0.0')));
-    vi.spyOn(p.configStore, 'getPackage' as any).mockImplementation((id: string) => pkgs[id]);
-    vi.spyOn(p.configStore, 'setPackageHash').mockImplementation((id: string, h: string) => { pkgs[id] = { ...(pkgs[id] ?? {}), installedHash: h }; });
-    inst.refreshLocalMarketplaceCache.mockResolvedValue({ ok: true });
+    vi.spyOn(p.configStore, 'updatePackageVersion').mockImplementation((id: string, v: string) => { versions[id] = v; });
+    inst.refreshLocalMarketplaceCache.mockResolvedValue({ ok: true, refreshed: true });
     inst.isPluginInstalled.mockReturnValue(true);
-    inst.hashPluginTree.mockReturnValue('H1');
     inst.readPluginVersion.mockImplementation((dir: string) => dir.includes('youcoded-marketplace-cache') ? '0.2.0' : '0.1.0');
     inst.upgradePluginFromLocal.mockResolvedValue({ status: 'installed' });
     inst.installPlugin.mockResolvedValue({ status: 'installed' });
@@ -1156,24 +1181,19 @@ describe('LocalSkillProvider.reconcileBundledPlugins', () => {
     process.env.YOUCODED_BUNDLED_UPGRADE = '1';
     expect((await p.reconcileBundledPlugins()).some((r) => r.action === 'upgraded')).toBe(true);
   });
-  it('upgrades when the cache copy is newer and records the new hash', async () => {
+  it('upgrades when the cache copy is newer and records the plugin.json version', async () => {
     const r = await p.reconcileBundledPlugins();
     expect(r.find((x) => x.id === 'youcoded-chatsearch')).toMatchObject({ action: 'upgraded', from: '0.1.0', to: '0.2.0' });
     expect(inst.upgradePluginFromLocal).toHaveBeenCalledWith('youcoded-chatsearch', 'youcoded-chatsearch', 'youcoded');
-    expect(pkgs['youcoded-chatsearch'].installedHash).toBe('H1');
+    expect(versions['youcoded-chatsearch']).toBe('0.2.0');
   });
   it('leaves an equal version alone', async () => {
     inst.readPluginVersion.mockReturnValue('0.2.0');
     expect((await p.reconcileBundledPlugins()).every((r) => r.action === 'unchanged')).toBe(true);
     expect(inst.upgradePluginFromLocal).not.toHaveBeenCalled();
   });
-  it('skips a locally modified install and says so', async () => {
-    pkgs['youcoded-chatsearch'] = { installedHash: 'RECORDED' }; // current tree hashes to H1 ≠ RECORDED
-    const r = await p.reconcileBundledPlugins();
-    expect(r.find((x) => x.id === 'youcoded-chatsearch')?.action).toBe('skipped-modified');
-    expect(inst.upgradePluginFromLocal).not.toHaveBeenCalledWith('youcoded-chatsearch', expect.anything(), expect.anything());
-  });
-  it('a missing recorded hash counts as unmodified — one-time catch-up', async () => {
+  it('still compares against the last cache copy when the refresh fails', async () => {
+    inst.refreshLocalMarketplaceCache.mockResolvedValue({ ok: false, refreshed: false, error: 'fetch failed: offline' });
     expect((await p.reconcileBundledPlugins()).find((x) => x.id === 'youcoded-chatsearch')?.action).toBe('upgraded');
   });
   it('installs a bundled id that is not installed, refetching the index once when it is absent', async () => {
@@ -1200,21 +1220,12 @@ describe('LocalSkillProvider.reconcileBundledPlugins', () => {
 - [ ] **Step 2: FAIL.**
 - [ ] **Step 3: Implement.**
 
-`types.ts` — `PackageInfo`: add `/** sha256 of the installed tree at install/upgrade time — "did the user edit it?" */ installedHash?: string;`. `SkillEntry`: add `sourceMarketplace?: string;` next to `sourceRef`.
+`types.ts` — `SkillEntry`: add `sourceMarketplace?: string;` next to `sourceRef`. (`skill-config-store.ts` is untouched — `getPackage` and `updatePackageVersion` already exist at :224 and :259.)
 
-`skill-config-store.ts` — next to `updatePackageVersion`:
-```ts
-  getPackage(id: string): PackageInfo | undefined { return this.load().packages?.[id]; }
-  setPackageHash(id: string, hash: string): void {
-    const config = this.load(); const pkg = config.packages?.[id]; if (!pkg) return;
-    pkg.installedHash = hash; this.save();
-  }
-```
-
-`skill-provider.ts` — imports: `import { installPlugin, upgradePluginFromLocal, refreshLocalMarketplaceCache, readPluginVersion, hashPluginTree, isPluginInstalled } from './plugin-installer';` plus `isNewerVersion` from `../shared/version-compare`, `BUNDLED_PLUGIN_IDS` (already), and `pluginInstallDir` (already). Replace :806-812:
+`skill-provider.ts` — imports: `import { installPlugin, upgradePluginFromLocal, refreshLocalMarketplaceCache, readPluginVersion, isPluginInstalled } from './plugin-installer';` plus `isNewerVersion` from `../shared/version-compare`, `BUNDLED_PLUGIN_IDS` (already), and `pluginInstallDir` (already). Replace :806-812:
 
 ```ts
-  type ReconcileAction = 'installed' | 'upgraded' | 'unchanged' | 'skipped-modified' | 'skipped-dev' | 'failed';
+  type ReconcileAction = 'installed' | 'upgraded' | 'unchanged' | 'skipped-dev' | 'failed';
   async reconcileBundledPlugins(): Promise<Array<{ id: string; action: ReconcileAction; from?: string; to?: string; error?: string }>> {
     const ids = [...BUNDLED_PLUGIN_IDS];
     // WHY: ~/.claude is shared with the live app; a run-dev.sh copy must never rewrite the real install.
@@ -1237,22 +1248,17 @@ describe('LocalSkillProvider.reconcileBundledPlugins', () => {
       if (!isPluginInstalled(id)) {
         const r = await installPlugin({ id, sourceType: entry.sourceType || 'local', sourceRef, sourceMarketplace: mp, description: entry.description, author: (entry as any).author, version: entry.version });
         if (r.status !== 'installed') { out.push({ id, action: 'failed', error: (r as any).error ?? r.status }); continue; }
+        // WHY plugin.json's version, not the index's: B7 makes the index copy plugin.json,
+        // so the renderer's "Update available" compare (package record vs index) stays in one number space.
         this.configStore.recordPackageInstall(id, { version: readPluginVersion(installDir) ?? entry.version ?? '1.0.0', source: 'marketplace', installedAt: new Date().toISOString(), removable: true, components: [{ type: 'plugin', path: installDir }] });
-        this.configStore.setPackageHash(id, hashPluginTree(installDir));
         this.installedCache = null; this.onCacheInvalidated?.();
         out.push({ id, action: 'installed', to: readPluginVersion(installDir) ?? undefined }); continue;
       }
       const installed = readPluginVersion(installDir); const available = readPluginVersion(path.join(os.homedir(), '.claude', 'youcoded-marketplace-cache', 'wecoded-marketplace', sourceRef));
       if (!isNewerVersion(installed ?? undefined, available ?? undefined)) { out.push({ id, action: 'unchanged', from: installed ?? undefined }); continue; }
-      const recorded = this.configStore.getPackage(id)?.installedHash;
-      if (recorded && hashPluginTree(installDir) !== recorded) {
-        log('WARN', 'bundled-plugins', `${id} was modified locally; not upgrading ${installed} → ${available}`);
-        out.push({ id, action: 'skipped-modified', from: installed ?? undefined, to: available ?? undefined }); continue;
-      }
       const r = await upgradePluginFromLocal(id, sourceRef, mp);
       if (r.status !== 'installed') { out.push({ id, action: 'failed', from: installed ?? undefined, to: available ?? undefined, error: (r as any).error ?? r.status }); continue; }
       this.configStore.updatePackageVersion(id, available ?? '1.0.0');
-      this.configStore.setPackageHash(id, hashPluginTree(installDir));
       this.installedCache = null; this.onCacheInvalidated?.();
       out.push({ id, action: 'upgraded', from: installed ?? undefined, to: available ?? undefined });
     }
@@ -1269,11 +1275,11 @@ describe('LocalSkillProvider.reconcileBundledPlugins', () => {
     }
   }
 ```
-Also `update()` (:319): when `result.status === 'already_installed'`, call `upgradePluginFromLocal(...)` for `sourceType === 'local'` before bumping the recorded version — so the Settings "Update" button actually replaces files. Record the hash after.
+Also `update()` (:319): when `result.status === 'already_installed'`, call `upgradePluginFromLocal(...)` for `sourceType === 'local'` before bumping the recorded version — so the Settings "Update" button actually replaces files. Record `readPluginVersion(installDir) ?? entry.version` — same number space as the index (B7).
 
 - [ ] **Step 4: PASS. `bash scripts/verify.sh worktrees/bundled-upgrade` green. Commit**
 ```bash
-git add src/main/skill-provider.ts src/main/skill-config-store.ts src/shared/types.ts tests/skill-provider-bundled.test.ts
+git add src/main/skill-provider.ts src/shared/types.ts tests/skill-provider-bundled.test.ts
 git commit -m "fix(plugins): bundled skills upgrade at launch when their plugin.json is newer; Update button really updates"
 ```
 
@@ -1313,13 +1319,13 @@ and return `body`.
 
 **Files:**
 - Create: `app/src/main/kotlin/com/youcoded/app/skills/VersionCompare.kt`
-- Modify: `app/src/main/kotlin/com/youcoded/app/skills/PluginInstaller.kt`, `LocalSkillProvider.kt:487-493`, `SkillConfigStore.kt` (add `setPackageHash`/`getPackage`)
+- Modify: `app/src/main/kotlin/com/youcoded/app/skills/PluginInstaller.kt`, `LocalSkillProvider.kt:487-493`
 - Create: `app/src/test/kotlin/com/youcoded/app/skills/PluginInstallerUpgradeTest.kt`
 - Modify: `desktop/tests/bundled-plugins-parity.test.ts`
 
 **Interfaces (Kotlin):**
 - `object VersionCompare { fun isNewer(installed: String?, latest: String?): Boolean }` — port of B1.
-- `PluginInstaller.readPluginVersion(dir: File): String?`, `hashPluginTree(dir: File): String`, `suspend fun refreshLocalMarketplaceCache(sourceMarketplace: String?): Boolean`, `suspend fun upgradeFromLocal(id: String, sourceRef: String, sourceMarketplace: String?): InstallResult`, `fun cacheSourceDir(sourceRef: String, sourceMarketplace: String?): File`
+- `PluginInstaller.readPluginVersion(dir: File): String?`, `suspend fun refreshLocalMarketplaceCache(sourceMarketplace: String?): Boolean` (same 1 h gate as desktop, using the class's existing cache-timestamp helpers), `suspend fun upgradeFromLocal(id: String, sourceRef: String, sourceMarketplace: String?): InstallResult`, `fun cacheSourceDir(sourceRef: String, sourceMarketplace: String?): File`
 - `LocalSkillProvider.reconcileBundledPlugins(): JSONArray` of `{id, action, from?, to?, error?}`; `ensureBundledPluginsInstalled()` calls it and logs.
 
 - [ ] **Step 1: Parity pin first (desktop test)** — add to `bundled-plugins-parity.test.ts`:
@@ -1328,7 +1334,7 @@ and return `body`.
     const kt = (f: string) => fs.readFileSync(path.resolve(__dirname, '..', '..', 'app', 'src', 'main', 'kotlin', 'com', 'youcoded', 'app', 'skills', f), 'utf8');
     expect(kt('LocalSkillProvider.kt')).toMatch(/fun reconcileBundledPlugins\(/);
     expect(kt('PluginInstaller.kt')).toMatch(/fun upgradeFromLocal\(/);
-    expect(kt('PluginInstaller.kt')).toMatch(/fun hashPluginTree\(/);
+    expect(kt('PluginInstaller.kt')).toMatch(/fun refreshLocalMarketplaceCache\(/);
     expect(kt('VersionCompare.kt')).toMatch(/fun isNewer\(/);
   });
 ```
@@ -1347,12 +1353,12 @@ class PluginInstallerUpgradeTest {
         assertFalse(VersionCompare.isNewer("1.0.0", "1.0.0")); assertFalse(VersionCompare.isNewer(null, "1.0.0"))
         assertTrue(VersionCompare.isNewer("v1.2", "1.2.1"))
     }
-    @Test fun `hashPluginTree ignores dot-git and is order independent`() {
-        write("t/b.txt", "B"); write("t/a/x.txt", "X"); write("t/.git/HEAD", "ref")
+    @Test fun `readPluginVersion reads root or dot-claude-plugin manifests`() {
+        write("a/plugin.json", """{"version":"0.2.0"}"""); write("b/.claude-plugin/plugin.json", """{"version":"3.0.0"}""")
         val installer = PluginInstaller(tmpHome, mock(Bootstrap::class.java), SkillConfigStore(tmpHome))
-        val h1 = installer.hashPluginTree(File(tmpHome, "t"))
-        write("t/.git/HEAD", "other"); assertEquals(h1, installer.hashPluginTree(File(tmpHome, "t")))
-        write("t/b.txt", "B2"); assertNotEquals(h1, installer.hashPluginTree(File(tmpHome, "t")))
+        assertEquals("0.2.0", installer.readPluginVersion(File(tmpHome, "a")))
+        assertEquals("3.0.0", installer.readPluginVersion(File(tmpHome, "b")))
+        assertNull(installer.readPluginVersion(File(tmpHome, "c")))
     }
     @Test fun `upgradeFromLocal swaps the tree and registers the real version`() = runTest {
         write(".claude/youcoded-marketplace-cache/wecoded-marketplace/youcoded-chatsearch/plugin.json", """{"name":"youcoded-chatsearch","version":"0.2.0"}""")
@@ -1395,21 +1401,13 @@ object VersionCompare {
     fun readPluginVersion(dir: File): String? = listOf(File(dir, "plugin.json"), File(dir, ".claude-plugin/plugin.json"))
         .firstOrNull { it.exists() }?.let { runCatching { JSONObject(it.readText()).optString("version").takeIf { v -> v.isNotEmpty() } }.getOrNull() }
 
-    /** WHY: "did the user edit this skill?" — compared against the hash recorded at install. */
-    fun hashPluginTree(dir: File): String {
-        val md = java.security.MessageDigest.getInstance("SHA-256")
-        dir.walkTopDown().onEnter { !(it.name == ".git" || it.name == "node_modules" || it.name.startsWith(".youcoded-")) }
-            .filter { it.isFile }.map { it.relativeTo(dir).path.replace(File.separatorChar, '/') to it }
-            .sortedBy { it.first }
-            .forEach { (rel, f) -> md.update(rel.toByteArray()); md.update(0); md.update(f.readBytes()); md.update(0) }
-        return md.digest().joinToString("") { "%02x".format(it) }
-    }
-
     fun cacheSourceDir(sourceRef: String, sourceMarketplace: String?): File = File(File(cacheDir, getCacheRepoName(sourceMarketplace)), sourceRef)
 
     suspend fun refreshLocalMarketplaceCache(sourceMarketplace: String?): Boolean = withContext(Dispatchers.IO) {
         val cacheRepo = File(cacheDir, getCacheRepoName(sourceMarketplace)); val repoUrl = getMarketplaceRepo(sourceMarketplace)
         if (!cacheRepo.exists()) { cacheDir.mkdirs(); return@withContext runGit("clone", "--depth", "1", repoUrl, cacheRepo.absolutePath).also { if (it) setCacheTimestamp(cacheRepo) } }
+        // WHY the 1 h gate (same as installFromLocal): reconcile runs on every launch; no gate = a GitHub round-trip per app start, on a phone.
+        if (System.currentTimeMillis() - getCacheTimestamp(cacheRepo) < CACHE_REFRESH_MS) return@withContext true
         if (!runGit("-C", cacheRepo.absolutePath, "fetch", "origin")) return@withContext false
         runGit("-C", cacheRepo.absolutePath, "reset", "--hard", "origin/master").also { if (it) setCacheTimestamp(cacheRepo) }
     }
@@ -1436,8 +1434,6 @@ object VersionCompare {
         InstallResult.Success
     }
 ```
-`SkillConfigStore.kt` — `fun getPackage(id: String): JSONObject? = getPackages().optJSONObject(id)` and `fun setPackageHash(id: String, hash: String) { val pkgs = getPackages(); pkgs.optJSONObject(id)?.put("installedHash", hash) ?: return; config.put("packages", pkgs); save() }`.
-
 `LocalSkillProvider.kt` — replace :487-493:
 ```kotlin
     suspend fun reconcileBundledPlugins(): JSONArray {
@@ -1455,16 +1451,14 @@ object VersionCompare {
             if (!installer.isInstalled(id)) {
                 val r = installer.install(entry)
                 if (r !is PluginInstaller.InstallResult.Success) { out.put(row.put("action", "failed").put("error", (r as? PluginInstaller.InstallResult.Failed)?.error ?: r.toString())); continue }
-                configStore.setPackageHash(id, installer.hashPluginTree(installDir)); installedCache = null
-                out.put(row.put("action", "installed")); continue
+                installedCache = null
+                out.put(row.put("action", "installed").put("to", installer.readPluginVersion(installDir))); continue
             }
             val installed = installer.readPluginVersion(installDir); val available = installer.readPluginVersion(installer.cacheSourceDir(sourceRef, mp))
             if (!VersionCompare.isNewer(installed, available)) { out.put(row.put("action", "unchanged").put("from", installed)); continue }
-            val recorded = configStore.getPackage(id)?.optString("installedHash")?.takeIf { it.isNotEmpty() }
-            if (recorded != null && installer.hashPluginTree(installDir) != recorded) { out.put(row.put("action", "skipped-modified").put("from", installed).put("to", available)); continue }
             val r = installer.upgradeFromLocal(id, sourceRef, mp)
             if (r !is PluginInstaller.InstallResult.Success) { out.put(row.put("action", "failed").put("error", (r as? PluginInstaller.InstallResult.Failed)?.error ?: r.toString())); continue }
-            configStore.updatePackageVersion(id, available ?: "1.0.0"); configStore.setPackageHash(id, installer.hashPluginTree(installDir)); installedCache = null
+            configStore.updatePackageVersion(id, available ?: "1.0.0"); installedCache = null
             out.put(row.put("action", "upgraded").put("from", installed).put("to", available))
         }
         if ((0 until out.length()).any { out.getJSONObject(it).optString("action") in setOf("installed", "upgraded") }) { onPluginsChanged?.invoke(); hookReconciler?.reconcile(); mcpReconciler?.reconcile() }
@@ -1481,7 +1475,7 @@ Use whatever the class already names its index getter (`getMarketplaceEntry` at 
 - [ ] **Step 4: Both test commands PASS** (`./gradlew :app:testDebugUnitTest --tests "com.youcoded.app.skills.PluginInstallerUpgradeTest" -x bundleWebUi`; `npx vitest run tests/bundled-plugins-parity.test.ts`).
 - [ ] **Step 5: Commit**
 ```bash
-git add app/src/main/kotlin/com/youcoded/app/skills/VersionCompare.kt app/src/main/kotlin/com/youcoded/app/skills/PluginInstaller.kt app/src/main/kotlin/com/youcoded/app/skills/LocalSkillProvider.kt app/src/main/kotlin/com/youcoded/app/skills/SkillConfigStore.kt app/src/test/kotlin/com/youcoded/app/skills/PluginInstallerUpgradeTest.kt desktop/tests/bundled-plugins-parity.test.ts
+git add app/src/main/kotlin/com/youcoded/app/skills/VersionCompare.kt app/src/main/kotlin/com/youcoded/app/skills/PluginInstaller.kt app/src/main/kotlin/com/youcoded/app/skills/LocalSkillProvider.kt app/src/test/kotlin/com/youcoded/app/skills/PluginInstallerUpgradeTest.kt desktop/tests/bundled-plugins-parity.test.ts
 git commit -m "fix(android): bundled skills upgrade at launch — port of the desktop reconcile"
 ```
 
@@ -1527,11 +1521,50 @@ Add `- uses: actions/setup-node@v7` with `node-version: 20` before the last step
 - [ ] **Step 2: Sanity-run the shell locally** against the Track A branch: `BASE=$(git merge-base master HEAD)` then the loop body — expect `youcoded-chatsearch: 0.1.0 -> 0.2.0`.
 - [ ] **Step 3: Commit** `git add .github/workflows/validate-plugin-pr.yml && git commit -m "ci: bundled plugin changes must bump plugin.json"`
 
+### Task B7: The marketplace index copies each plugin's own version
+
+**Files:**
+- Modify: `wecoded-marketplace/scripts/sync.js` (`mapEntry` loop for local entries ~:335-347; the diff loop ~:419-440)
+
+**Why this task exists:** `sync.js` gives every listing its own made-up version — `1.0.0`, then the last digit bumped whenever the listing *text* changes (`hasChanges` ignores file edits). Chat Search is listed as `1.0.0` while its `plugin.json` says `0.1.0`. The app's marketplace screen shows "Update available" when the installed package record is behind the listing; B3 records `plugin.json` versions, so without this task `isNewerVersion('0.2.0', '1.0.0')` is true → every bundled plugin shows a badge forever, and their Update button is disabled (`MarketplaceDetailOverlay.tsx:276`), so nothing clears it. After this task, the listing carries the same number the app compares, and a `plugin.json` bump (B6 guarantees one) moves the listing on the next rebuild.
+
+- [ ] **Step 1: Implement.** In the local-entries loop, after `mapEntry(...)`:
+```js
+    // WHY: bundled plugins (and any in-repo plugin with a plugin.json version)
+    // must be listed under the SAME version the app reads from plugin.json —
+    // the app's "Update available" badge compares the two. Plugins without a
+    // manifest version keep the synthetic bump-on-metadata-change below.
+    if (!isPrompt && entry.sourceType === "local") {
+      const pluginDir = path.join(__dirname, "..", entry.sourceRef);
+      for (const rel of ["plugin.json", ".claude-plugin/plugin.json"]) {
+        try {
+          const v = JSON.parse(fs.readFileSync(path.join(pluginDir, rel), "utf8")).version;
+          if (typeof v === "string" && v) { entry.version = v; entry.manifestVersion = true; break; }
+        } catch { /* no manifest here — try the next layout */ }
+      }
+    }
+```
+In the diff loop, immediately after `const prev = previousById.get(entry.id);`, short-circuit the three existing branches so a manifest-pinned version is never overwritten and `publishedAt` moves when it changes:
+```js
+    if (entry.manifestVersion) {
+      delete entry.manifestVersion;
+      if (prev && prev.version !== entry.version) { entry.publishedAt = today; updated++; }
+      else if (prev) { entry.publishedAt = prev.publishedAt; if (prev.deprecated) { entry.deprecated = prev.deprecated; entry.deprecatedAt = prev.deprecatedAt; } unchanged++; }
+      else added++;
+      finalEntries.push(entry); continue;
+    }
+```
+(`today` = the existing `new Date().toISOString().split("T")[0] + "T00:00:00Z"` expression — hoist it to a const.)
+
+- [ ] **Step 2: Check locally without committing the rebuilt index.** `node scripts/sync.js` (it is what CI runs; set `GITHUB_TOKEN` for rate limits) → confirm `youcoded-chatsearch` in `index.json` now reads `0.2.0` (or `0.1.0` if A6 has not merged yet) and `wecoded-marketplace-publisher` reads `0.1.0`. Then `git checkout -- index.json skills/index.json stats.json sync-report.json` — CI's `rebuild` job regenerates them on merge; only the script is committed.
+
+- [ ] **Step 3: Commit** `git add scripts/sync.js && git commit -m "fix(index): list in-repo plugins under their plugin.json version — the app compares against it"`
+
 ---
 
 ## Finishing
 
 1. Track A: `bash scripts/verify.sh worktrees/chatsearch-writes` green → PR to `youcoded`; `npm test` green in `wecoded-marketplace` → PR there (the CLI PR must land **after** or **with** the CI job from B6, or its own bump is the first thing the new job checks — either order passes).
-2. Track B: `bash scripts/verify.sh worktrees/bundled-upgrade` green + Android test class green → PR to `youcoded`.
-3. Manual check for Destin (not automatable, per CLAUDE.md): launch a dev instance with `YOUCODED_CHATSEARCH_OUTBOX=1 YOUCODED_BUNDLED_UPGRADE=1`, run `{"cmd":"close","ids":["<one test conversation>"],"reason":"test"}` from a Claude Code session, watch the conversation list repaint and the receipt print. Then remove the test note in the app.
-4. After merge: ROADMAP lines 67–72 and 189 → `[x]`; spec + this plan move to `docs/archive/`; the 08-27 inventory's "mark complete in the app" list can be executed with `close`.
+2. Track B: `bash scripts/verify.sh worktrees/bundled-upgrade` green + Android test class green → PR to `youcoded`. **B7 must merge before or with the `youcoded` PR** — the app change without the index change is the permanent-badge bug. The index rebuild only runs when a plugin dir changes, so the first rebuild that picks up B7 is the A6 merge (chatsearch bump); merge B6+B7 first, then A6.
+3. Manual check for Destin (not automatable, per CLAUDE.md): launch a dev instance with `YOUCODED_CHATSEARCH_OUTBOX=1 YOUCODED_BUNDLED_UPGRADE=1`, run `{"cmd":"close","ids":["<one test conversation>"],"reason":"test"}` from a Claude Code session, watch the conversation list repaint and the receipt print. Run the same `close` again → every line says `already`. Then remove the test note in the app. Open Settings → marketplace: no "Update available" badge on the three bundled plugins.
+4. After merge: ROADMAP lines 67–72 (chatsearch phase 2 + "bundled plugins never upgraded" + "newly bundled plugin cannot install for 24h" — B3's refetch fixes it) and 189 (`${CLAUDE_PLUGIN_ROOT}`) → `[x]`; spec + this plan move to `docs/archive/`; the 08-27 inventory's "mark complete in the app" list can be executed with `close`.

@@ -191,21 +191,22 @@ New function `reconcileBundledPlugins()` replaces the body of
    - installed → compare `plugin.json` `version` of the cache-clone copy with
      the installed copy (semver compare; the renderer's `isNewerVersion` moves
      to `shared/` so both use one function). Not newer → nothing.
-   - newer → **local-modification check**: the app records a content
-     fingerprint of every bundled plugin it installs
-     (`~/.claude/youcoded-skills.json`, new `installedHash` per package —
-     sha256 over sorted relative paths + file bytes). If the installed tree's
-     current fingerprint ≠ recorded → log
-     `bundled plugin <id> was modified locally; not upgrading` and stop for
-     that id. No recorded fingerprint (installs from before this change) is
-     treated as **unmodified** — a one-time pass that fixes every existing
-     install, and the fingerprint is recorded from then on.
-   - otherwise → copy the cache-clone tree over the install via a temp
+   - newer → copy the cache-clone tree over the install via a temp
      directory + rename (never `rmSync` the live directory first), re-register
-     with the real `plugin.json` version, record the new fingerprint, keep
-     `~/.claude/youcoded-config/<id>.json` untouched.
+     with the real `plugin.json` version, keep
+     `~/.claude/youcoded-config/<id>.json` untouched. Bundled plugins are
+     app-owned: there is no local-modification check. (One would leave a
+     hand-edited copy silently on an old version forever, with only a log line
+     to say so; edits to a bundled skill belong in the marketplace repo.)
 5. `registerPluginInstall` records the real `plugin.json` version everywhere
    it previously wrote `'1.0.0'`.
+6. **One version number per plugin.** The marketplace `index.json` lists an
+   in-repo plugin under its `plugin.json` version (`sync.js` copies it; the
+   synthetic bump-on-metadata-change stays only for plugins without a manifest
+   version). The renderer's "Update available" badge compares the installed
+   package record against the index, so the two must share one number space —
+   otherwise every bundled plugin shows a badge its disabled Update button
+   can never clear.
 
 ### B3. The fix — Android
 
@@ -250,13 +251,15 @@ Desktop (`desktop/tests/`):
   creates once and applies; `append` formatting on empty and non-empty notes;
   8,000-char cap; wrong `storeRoot` left in place; dev instance without the
   override never drains; launch drain; stale `processing/` recovery; sweep;
-  two drainers racing one file → exactly one receipt.
-- `bundled-plugins-reconcile.test.ts` — fake `PLUGINS_DIR`, fake cache clone,
-  no network, no real `~/.claude`: fresh install; newer → upgraded and
-  re-registered with real version; same version → untouched; locally modified
-  → skipped with log; missing fingerprint → upgraded once and recorded; dev
-  instance → no-op; bundled id missing from index → one refetch; install
-  failure → logged.
+  a file another instance already claimed is skipped; `append` of a line
+  already in the note → `already`; store unavailable → `error`, never
+  `not-found`.
+- `plugin-installer-upgrade.test.ts` + `skill-provider-bundled.test.ts` —
+  fake `PLUGINS_DIR`, fake cache clone, no network, no real `~/.claude`: fresh
+  install; newer → upgraded and re-registered with real version; same version
+  → untouched; cache refresh inside the 1 h gate skips the network; refresh
+  failure still compares against the last copy; dev instance → no-op; bundled
+  id missing from index → one refetch; install failure → logged.
 - `bundled-plugins-parity.test.ts` — extended per B3.
 - harness skill-render test per B4.
 - `skill-provider-bundled.test.ts` — rewritten for `reconcileBundledPlugins`.
