@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build a one-point-at-a-time UI review page (a "deck"). Each step shows ONE screenshot
-with ONE marker, one line of problem, one line of fix, and two buttons: Yes / No. Nothing
-else competes. Keyboard: Y / N decide (and advance), ← → move, T cycles themes, space
+with ONE marker, one line of problem, one line of fix, and three buttons: Yes / No /
+Tell me more. Nothing else competes. Keyboard: Y / N / M decide (and advance), ← → move, T cycles themes, space
 flips Before/After when the step has both. Progress dots at the bottom jump; the last
 step is the summary with the copyable feedback block.
 
@@ -123,14 +123,14 @@ def step_html(spec, it, pt, idx, total):
   <p class="what">{pt["what"]}</p>
   <p class="fix">→ {pt["fix"]}</p>
   <div class="meta"><span class="kind kind-{pt["kind"]}">{pt["kind"]}</span>{risk}{why}</div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="{key}" placeholder="note (optional)"></div>
 </section>'''
 
 
 CSS = '''
   :root { --ink:#1a1a1a; --ink2:#666; --line:#dedede; --bg:#f4f4f2; --acc:#2055ca;
-          --meas:#0a6a2c; --measbg:#e3f3e8; --judg:#8a5a00; --judgbg:#fff0d6; --yes:#137a3a; --no:#b3261e }
+          --meas:#0a6a2c; --measbg:#e3f3e8; --judg:#8a5a00; --judgbg:#fff0d6; --yes:#137a3a; --no:#b3261e; --more:#8a5a00 }
   * { box-sizing:border-box }
   html, body { height:100% } body { margin:0; font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:var(--bg); display:flex; flex-direction:column }
   main { flex:1; display:flex; flex-direction:column; align-items:center; padding:18px 24px 8px; min-height:0 }
@@ -150,12 +150,12 @@ CSS = '''
   .risk { margin:0; color:#7a3b00 } .why summary { cursor:pointer; color:var(--acc) } .why { max-width:900px } .why p, .why ul { margin:6px 0 0 }
   .decide { display:flex; gap:12px; align-items:center; margin-top:14px; flex-wrap:wrap }
   .decide button { font:600 17px system-ui; padding:12px 26px; border-radius:10px; border:2px solid transparent; cursor:pointer; color:#fff } .decide kbd { font:11px ui-monospace,monospace; background:rgba(255,255,255,.25); padding:1px 5px; border-radius:4px; margin-left:8px }
-  .yes { background:var(--yes) } .no { background:var(--no) } .decide button.on { border-color:#111; box-shadow:0 0 0 3px #fff, 0 0 0 5px #111 } .step.decided .decide button:not(.on) { opacity:.35 }
+  .yes { background:var(--yes) } .no { background:var(--no) } .more { background:var(--more) } .decide button.on { border-color:#111; box-shadow:0 0 0 3px #fff, 0 0 0 5px #111 } .step.decided .decide button:not(.on) { opacity:.35 }
   .note { flex:1; min-width:200px; font:14px system-ui; padding:10px 12px; border:1px solid var(--line); border-radius:8px }
   nav { display:flex; align-items:center; gap:10px; padding:10px 24px 16px; justify-content:center; flex-wrap:wrap }
   nav .arrow { font:14px system-ui; padding:6px 12px; border:1px solid #bbb; background:#fff; border-radius:8px; cursor:pointer } nav .arrow kbd { font:11px ui-monospace,monospace; color:#888; margin:0 3px }
-  .dots { display:flex; gap:5px; flex-wrap:wrap; justify-content:center } .dot { width:14px; height:14px; border-radius:50%; background:#cfcfcf; border:2px solid transparent; cursor:pointer } .dot.yes { background:var(--yes) } .dot.no { background:var(--no) } .dot.on { border-color:#111 } .dot.sum { border-radius:3px }
-  .summary { display:none; width:min(1060px,100%) } .summary.on { display:block } .summary h1 { font-size:22px; margin:0 0 8px } .summary table { border-collapse:collapse; width:100%; margin:10px 0 } .summary td, .summary th { border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; font-size:14px } .summary td.v-yes { color:var(--yes); font-weight:700 } .summary td.v-no { color:var(--no); font-weight:700 }
+  .dots { display:flex; gap:5px; flex-wrap:wrap; justify-content:center } .dot { width:14px; height:14px; border-radius:50%; background:#cfcfcf; border:2px solid transparent; cursor:pointer } .dot.yes { background:var(--yes) } .dot.no { background:var(--no) } .dot.more { background:var(--more) } .dot.on { border-color:#111 } .dot.sum { border-radius:3px }
+  .summary { display:none; width:min(1060px,100%) } .summary.on { display:block } .summary h1 { font-size:22px; margin:0 0 8px } .summary table { border-collapse:collapse; width:100%; margin:10px 0 } .summary td, .summary th { border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; font-size:14px } .summary td.v-yes { color:var(--yes); font-weight:700 } .summary td.v-no { color:var(--no); font-weight:700 } .summary td.v-more { color:var(--more); font-weight:700 }
   #feedback { width:100%; min-height:150px; font:12.5px ui-monospace,monospace; padding:10px; border:1px solid var(--line); border-radius:8px } #copy { font:600 15px system-ui; padding:10px 18px; border-radius:8px; border:0; background:var(--acc); color:#fff; cursor:pointer; margin:8px 0 } .closing { color:var(--ink2); font-size:13px }
   #st { color:var(--ink2); font-size:13px }
 '''
@@ -174,7 +174,7 @@ JS = '''
     steps.forEach((s,i)=>{ s.classList.toggle('on', i===cur); const v=st[s.dataset.key]; s.classList.toggle('decided', !!v);
       s.querySelectorAll('.decide button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); });
     sum.classList.toggle('on', cur===STEPS.length);
-    dots.forEach((d,i)=>{ d.classList.toggle('on', i===cur); if(i<STEPS.length){ const v=st[STEPS[i].key]; d.classList.toggle('yes', v==='yes'); d.classList.toggle('no', v==='no'); } });
+    dots.forEach((d,i)=>{ d.classList.toggle('on', i===cur); if(i<STEPS.length){ const v=st[STEPS[i].key]; d.classList.toggle('yes', v==='yes'); d.classList.toggle('no', v==='no'); d.classList.toggle('more', v==='more'); } });
     let done=0; const lines=[KEY+' feedback ('+new Date().toISOString().slice(0,10)+')']; const rows=[]; let lastId='';
     for(const s of STEPS){ const v=st[s.key]; if(v) done++; const note=(st['note:'+s.key]||'').trim();
       lines.push(s.id+' #'+s.n+': '+(v||'?')+(note?' — '+note:'')); rows.push('<tr><td>'+(s.id!==lastId?s.id:'')+'</td><td>'+s.n+'</td><td>'+s.what+'</td><td class="v-'+(v||'')+'">'+(v||'—')+'</td><td>'+(note?note.replace(/</g,'&lt;'):'')+'</td></tr>'); lastId=s.id; }
@@ -191,7 +191,7 @@ JS = '''
   dots.forEach((d,i)=>d.addEventListener('click',()=>go(i)));
   document.getElementById('prev').addEventListener('click',()=>go(cur-1)); document.getElementById('next').addEventListener('click',()=>go(cur+1));
   document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; const k=e.key.toLowerCase();
-    if(k==='y') decide('yes'); else if(k==='n') decide('no'); else if(e.key==='ArrowRight') go(cur+1); else if(e.key==='ArrowLeft') go(cur-1);
+    if(k==='y') decide('yes'); else if(k==='n') decide('no'); else if(k==='m') decide('more'); else if(e.key==='ArrowRight') go(cur+1); else if(e.key==='ArrowLeft') go(cur-1);
     else if(k==='t'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.tab')]; if(t.length<2) return; const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%%t.length].click(); }
     else if(e.code==='Space'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.ctab')]; if(t.length<2) return; e.preventDefault(); const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%%t.length].click(); } });
   document.getElementById('copy').addEventListener('click',()=>{ const t=document.getElementById('feedback'); const ok=()=>{ document.getElementById('copied').textContent='Copied — paste it into the chat.'; };

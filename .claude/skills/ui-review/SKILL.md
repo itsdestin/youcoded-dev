@@ -62,7 +62,7 @@ then a **review page** — never a gallery, never a chat summary:
    `python3 scripts/ui-review/review-cards.py crop <spec>` and `… build <spec>`. Crop regions
    come from `scripts/ui-review/crops.json`; add new ones there. The page is a **deck — one
    point at a time**: one screenshot with ONE ring on the target, one line of problem, one
-   line of fix, `measured`/`judgment` tag, Yes/No (keys Y/N), progress dots, summary +
+   line of fix, `measured`/`judgment` tag, Yes / No / Tell me more (keys Y/N/M), progress dots, summary +
    copyable feedback at the end. Rationale and ledger corrections go under the collapsed
    "Why / details", never in the headline. Three formats were rejected before this one
    (gallery → prose page → board of cards): "not clear where I'm supposed to glance/select".

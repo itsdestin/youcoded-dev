@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><title>Phase C — 16 points on 5 screens</title>
 <style>
   :root { --ink:#1a1a1a; --ink2:#666; --line:#dedede; --bg:#f4f4f2; --acc:#2055ca;
-          --meas:#0a6a2c; --measbg:#e3f3e8; --judg:#8a5a00; --judgbg:#fff0d6; --yes:#137a3a; --no:#b3261e }
+          --meas:#0a6a2c; --measbg:#e3f3e8; --judg:#8a5a00; --judgbg:#fff0d6; --yes:#137a3a; --no:#b3261e; --more:#8a5a00 }
   * { box-sizing:border-box }
   html, body { height:100% } body { margin:0; font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:var(--bg); display:flex; flex-direction:column }
   main { flex:1; display:flex; flex-direction:column; align-items:center; padding:18px 24px 8px; min-height:0 }
@@ -22,12 +22,12 @@
   .risk { margin:0; color:#7a3b00 } .why summary { cursor:pointer; color:var(--acc) } .why { max-width:900px } .why p, .why ul { margin:6px 0 0 }
   .decide { display:flex; gap:12px; align-items:center; margin-top:14px; flex-wrap:wrap }
   .decide button { font:600 17px system-ui; padding:12px 26px; border-radius:10px; border:2px solid transparent; cursor:pointer; color:#fff } .decide kbd { font:11px ui-monospace,monospace; background:rgba(255,255,255,.25); padding:1px 5px; border-radius:4px; margin-left:8px }
-  .yes { background:var(--yes) } .no { background:var(--no) } .decide button.on { border-color:#111; box-shadow:0 0 0 3px #fff, 0 0 0 5px #111 } .step.decided .decide button:not(.on) { opacity:.35 }
+  .yes { background:var(--yes) } .no { background:var(--no) } .more { background:var(--more) } .decide button.on { border-color:#111; box-shadow:0 0 0 3px #fff, 0 0 0 5px #111 } .step.decided .decide button:not(.on) { opacity:.35 }
   .note { flex:1; min-width:200px; font:14px system-ui; padding:10px 12px; border:1px solid var(--line); border-radius:8px }
   nav { display:flex; align-items:center; gap:10px; padding:10px 24px 16px; justify-content:center; flex-wrap:wrap }
   nav .arrow { font:14px system-ui; padding:6px 12px; border:1px solid #bbb; background:#fff; border-radius:8px; cursor:pointer } nav .arrow kbd { font:11px ui-monospace,monospace; color:#888; margin:0 3px }
-  .dots { display:flex; gap:5px; flex-wrap:wrap; justify-content:center } .dot { width:14px; height:14px; border-radius:50%; background:#cfcfcf; border:2px solid transparent; cursor:pointer } .dot.yes { background:var(--yes) } .dot.no { background:var(--no) } .dot.on { border-color:#111 } .dot.sum { border-radius:3px }
-  .summary { display:none; width:min(1060px,100%) } .summary.on { display:block } .summary h1 { font-size:22px; margin:0 0 8px } .summary table { border-collapse:collapse; width:100%; margin:10px 0 } .summary td, .summary th { border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; font-size:14px } .summary td.v-yes { color:var(--yes); font-weight:700 } .summary td.v-no { color:var(--no); font-weight:700 }
+  .dots { display:flex; gap:5px; flex-wrap:wrap; justify-content:center } .dot { width:14px; height:14px; border-radius:50%; background:#cfcfcf; border:2px solid transparent; cursor:pointer } .dot.yes { background:var(--yes) } .dot.no { background:var(--no) } .dot.more { background:var(--more) } .dot.on { border-color:#111 } .dot.sum { border-radius:3px }
+  .summary { display:none; width:min(1060px,100%) } .summary.on { display:block } .summary h1 { font-size:22px; margin:0 0 8px } .summary table { border-collapse:collapse; width:100%; margin:10px 0 } .summary td, .summary th { border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; font-size:14px } .summary td.v-yes { color:var(--yes); font-weight:700 } .summary td.v-no { color:var(--no); font-weight:700 } .summary td.v-more { color:var(--more); font-weight:700 }
   #feedback { width:100%; min-height:150px; font:12.5px ui-monospace,monospace; padding:10px; border:1px solid var(--line); border-radius:8px } #copy { font:600 15px system-ui; padding:10px 18px; border-radius:8px; border:0; background:var(--acc); color:#fff; cursor:pointer; margin:8px 0 } .closing { color:var(--ink2); font-size:13px }
   #st { color:var(--ink2); font-size:13px }
 </style></head><body>
@@ -39,7 +39,7 @@
   <p class="what">The active card grows a second line and its neighbour stretches to match — an empty strip with a floating pencil (Dark 65 px vs Crème 34 px).</p>
   <p class="fix">→ Put “active” on the name line, so every card is one height.</p>
   <div class="meta"><span class="kind kind-measured">measured</span></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-3:1" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-3:2" data-idx="1">
@@ -49,7 +49,7 @@
   <p class="what">The pencil on a built-in opens a 588 px dialog that holds one sentence (“Built-in themes are locked…”).</p>
   <p class="fix">→ Grey out the pencil on the four built-ins, with a tooltip saying why; community themes keep a live pencil (they have glass sliders).</p>
   <div class="meta"><span class="kind kind-measured">measured</span><details class="why"><summary>Why / details</summary><p>All four built-ins are flat-colour themes, so the editor has no sliders to show — only the locked notice. Alternative: hide the pencil entirely; I recommend against it because the tooltip is the only place the <em>why</em> gets explained.</p></details></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-3:2" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-3:3" data-idx="2">
@@ -59,7 +59,7 @@
   <p class="what">“Browse all themes →” and “Browse Theme Marketplace” sound like the same thing; they open different screens (your installed themes vs the Marketplace).</p>
   <p class="fix">→ Rename them “All installed themes →” and “Get more themes”.</p>
   <div class="meta"><span class="kind kind-measured">measured</span><details class="why"><summary>Why / details</summary><p>The ledger claimed both open the same screen — wrong on checking: the first opens Your Library › Themes (the grid above only shows starred themes), the second the Marketplace.</p></details></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-3:3" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-3:4" data-idx="3">
@@ -69,7 +69,7 @@
   <p class="what">Three stacked full-width buttons in three styles; the first is a hand-rolled fourth style the shared Button does not have.</p>
   <p class="fix">→ The first becomes a quiet text-link row under the grid, leaving one primary (Build) and one secondary (Get more themes).</p>
   <div class="meta"><span class="kind kind-judgment">judgment</span></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-3:4" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-21:1" data-idx="4">
@@ -79,7 +79,7 @@
   <p class="what">The featured card's border is a hardcoded gold in every theme (the other two featured entries bring their own blue and green).</p>
   <p class="fix">→ Border = the theme's normal card edge; the entry's colour is dropped.</p>
   <div class="meta"><span class="kind kind-measured">measured</span><p class="risk">Risk: Featured entries lose the ability to colour the hero (undocumented; three entries use it).</p><details class="why"><summary>Why / details</summary><p>The guide's T-1 alternative — let the entry colour tint only the small FEATURED eyebrow and the dot pager — keeps a non-theme colour alive for a 12 px label; I would not. Risk: a featured entry can no longer colour the hero; that was never a documented feature.</p></details></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-21:1" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-21:2" data-idx="5">
@@ -89,7 +89,7 @@
   <p class="what">Theme cards: the text ends at five different heights across seven cards — the description and the likes line only render when present.</p>
   <p class="fix">→ Reserve the two description lines and the counts row, so every card's text ends in the same place.</p>
   <div class="meta"><span class="kind kind-measured">measured</span></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-21:2" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-21:3" data-idx="6">
@@ -99,7 +99,7 @@
   <p class="what">“1 installs”, “1 likes”.</p>
   <p class="fix">→ Pluralise properly (two places in the card).</p>
   <div class="meta"><span class="kind kind-measured">measured</span></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-21:3" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-2:1" data-idx="7">
@@ -109,7 +109,7 @@
   <p class="what">Two headings over nothing — no sentence, no button. The empty-state sentence in the code has never rendered once: a counting bug makes every section think it has content.</p>
   <p class="fix">→ Fix the bug (+ pinning test) and use the app's shared empty block: “Nothing installed yet” with a Browse the Marketplace button; Favorites gets a one-liner.</p>
   <div class="meta"><span class="kind kind-measured">measured</span><details class="why"><summary>Why / details</summary><p><code>Section</code> decides “has content?” with <code>React.Children.count(children)</code>, and the child is written <code>condition &amp;&amp; &lt;grid&gt;</code> — when false that still counts as one child. Same shared <code>EmptyState</code> block that Settings → Permissions, the session drawer and the Resume browser use. Nothing changes for a Library with content.</p></details></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-2:1" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-2:2" data-idx="8">
@@ -119,7 +119,7 @@
   <p class="what">The Skills | Themes switcher is two plain 12 px pills under a 22 px title; Projects uses bordered icon + count tabs.</p>
   <p class="fix">→ Leave it — decide tabs app-wide in a later phase. (My recommendation: No.)</p>
   <div class="meta"><span class="kind kind-judgment">judgment</span></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-2:2" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-1:1" data-idx="9">
@@ -129,7 +129,7 @@
   <p class="what">Plugins / Themes (pick one) is drawn exactly like the eleven filters after it (pick any).</p>
   <p class="fix">→ Plugins / Themes becomes the app's two-position switch, in the same spot; the filters stay pills.</p>
   <div class="meta"><span class="kind kind-judgment">judgment</span><details class="why"><summary>Why / details</summary><p>The ledger called New / Popular / Featured picks “sorts” and wanted a dropdown — wrong: they are on/off filters like the categories. So there are two kinds of control here, not three, and no sort menu is proposed.</p></details></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-1:1" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-1:2" data-idx="10">
@@ -139,7 +139,7 @@
   <p class="what">The search box has no magnifier and is shorter than the pills beside it.</p>
   <p class="fix">→ The shared search-field shape with its icon.</p>
   <div class="meta"><span class="kind kind-judgment">judgment</span></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-1:2" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-1:3" data-idx="11">
@@ -149,7 +149,7 @@
   <p class="what">When nothing matches: “0 results” and “Nothing matches those filters.” at once, and no way to clear the filters.</p>
   <p class="fix">→ One empty state with a Clear filters button.</p>
   <div class="meta"><span class="kind kind-measured">measured</span></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-1:3" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-1:4" data-idx="12">
@@ -159,7 +159,7 @@
   <p class="what">“Explore everything” with nothing under it while the registry loads — or forever, if it cannot be reached.</p>
   <p class="fix">→ Placeholder cards while loading; the shared error block with Retry when unreachable.</p>
   <div class="meta"><span class="kind kind-measured">measured</span></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-1:4" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-1:5" data-idx="13">
@@ -169,7 +169,7 @@
   <p class="what">Phone width: the title truncates to “Ma…” because the right-hand controls take their full width first.</p>
   <p class="fix">→ The title keeps its word; the controls shrink first.</p>
   <div class="meta"><span class="kind kind-measured">measured</span></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-1:5" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-5:1" data-idx="14">
@@ -179,7 +179,7 @@
   <p class="what">Projects is the only full screen that hides the theme wallpaper — its root paints an opaque canvas; Library and Marketplace let it through.</p>
   <p class="fix">→ Same transparent root as its siblings. Built-in themes look identical (flat canvas anyway).</p>
   <div class="meta"><span class="kind kind-measured">measured</span><p class="risk">Risk: Header readability over a busy wallpaper — the card is already a glass panel like the Marketplace hero; the review will show all six themes.</p></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-5:1" placeholder="note (optional)"></div>
 </section>
 <section class="step" data-key="P-5:2" data-idx="15">
@@ -189,7 +189,7 @@
   <p class="what">Two accent-filled buttons in one card: New Conversation and Turn on sync for this project.</p>
   <p class="fix">→ Turn on sync becomes the small secondary button inside its chip — one accent per card, per the guide.</p>
   <div class="meta"><span class="kind kind-judgment">judgment</span><p class="risk">Risk: The sync nudge gets quieter.</p></div>
-  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button>
+  <div class="decide"><button class="yes" data-v="yes">Yes, build it <kbd>Y</kbd></button><button class="no" data-v="no">No, leave it <kbd>N</kbd></button><button class="more" data-v="more">Tell me more <kbd>M</kbd></button>
     <input class="note" data-note="P-5:2" placeholder="note (optional)"></div>
 </section>
 <section class="summary"><h1>Phase C — 16 points on 5 screens — your answers</h1>
@@ -215,7 +215,7 @@
     steps.forEach((s,i)=>{ s.classList.toggle('on', i===cur); const v=st[s.dataset.key]; s.classList.toggle('decided', !!v);
       s.querySelectorAll('.decide button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); });
     sum.classList.toggle('on', cur===STEPS.length);
-    dots.forEach((d,i)=>{ d.classList.toggle('on', i===cur); if(i<STEPS.length){ const v=st[STEPS[i].key]; d.classList.toggle('yes', v==='yes'); d.classList.toggle('no', v==='no'); } });
+    dots.forEach((d,i)=>{ d.classList.toggle('on', i===cur); if(i<STEPS.length){ const v=st[STEPS[i].key]; d.classList.toggle('yes', v==='yes'); d.classList.toggle('no', v==='no'); d.classList.toggle('more', v==='more'); } });
     let done=0; const lines=[KEY+' feedback ('+new Date().toISOString().slice(0,10)+')']; const rows=[]; let lastId='';
     for(const s of STEPS){ const v=st[s.key]; if(v) done++; const note=(st['note:'+s.key]||'').trim();
       lines.push(s.id+' #'+s.n+': '+(v||'?')+(note?' — '+note:'')); rows.push('<tr><td>'+(s.id!==lastId?s.id:'')+'</td><td>'+s.n+'</td><td>'+s.what+'</td><td class="v-'+(v||'')+'">'+(v||'—')+'</td><td>'+(note?note.replace(/</g,'&lt;'):'')+'</td></tr>'); lastId=s.id; }
@@ -232,7 +232,7 @@
   dots.forEach((d,i)=>d.addEventListener('click',()=>go(i)));
   document.getElementById('prev').addEventListener('click',()=>go(cur-1)); document.getElementById('next').addEventListener('click',()=>go(cur+1));
   document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; const k=e.key.toLowerCase();
-    if(k==='y') decide('yes'); else if(k==='n') decide('no'); else if(e.key==='ArrowRight') go(cur+1); else if(e.key==='ArrowLeft') go(cur-1);
+    if(k==='y') decide('yes'); else if(k==='n') decide('no'); else if(k==='m') decide('more'); else if(e.key==='ArrowRight') go(cur+1); else if(e.key==='ArrowLeft') go(cur-1);
     else if(k==='t'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.tab')]; if(t.length<2) return; const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%t.length].click(); }
     else if(e.code==='Space'){ const s=steps[cur]; if(!s) return; const t=[...s.querySelectorAll('.ctab')]; if(t.length<2) return; e.preventDefault(); const i=t.findIndex(x=>x.classList.contains('on')); t[(i+1)%t.length].click(); } });
   document.getElementById('copy').addEventListener('click',()=>{ const t=document.getElementById('feedback'); const ok=()=>{ document.getElementById('copied').textContent='Copied — paste it into the chat.'; };
