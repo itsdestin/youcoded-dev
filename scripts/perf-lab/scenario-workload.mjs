@@ -391,9 +391,15 @@ async function installPageHelpers(cdp) {
           settled: painted ? settled : null,
           entries: painted ? last : null,
           expectedEntries: painted && expectedEntries != null ? expectedEntries : null,
-          // true = the pane never showed as many entries as the conversation holds,
-          // so the size label on this switch is NOT verified by what rendered.
+          // short = the cap hit before the pane showed as many entries as the
+          // conversation holds: the app did not finish rendering it in 20 s.
+          // over  = the pane showed MORE than the transcript holds — the signature
+          // of the wrong conversation, or of the file being re-read on top of
+          // itself (measured 2026-08-27: 11,974 of 5,842 when the app's own
+          // transcript mirror re-extended a file between repeats). Either way the
+          // size label on that switch is NOT verified by what rendered.
           short: painted && expectedEntries != null ? last < expectedEntries : null,
+          over: painted && expectedEntries != null ? last > expectedEntries * 1.1 + 8 : null,
           mode,
           // The switch is only counted as real if the visible pane actually moved.
           ok: paneAfter >= 0 && paneAfter !== paneBefore,
@@ -894,7 +900,7 @@ export async function runWorkloadScenario(app, fixture, {
       switches.push({
         i, idx, name: names[idx], size, streaming, mode: r.mode, ok: r.ok, ms: r.ms,
         paintedMs: r.paintedMs, entries: r.entries, expected: r.expectedEntries,
-        settled: r.settled, short: r.short,
+        settled: r.settled, short: r.short, over: r.over,
       });
       // Painted timings are kept for EVERY real switch regardless of pill-vs-menu:
       // the menu path pays extra for opening a dropdown, but the content cost we
@@ -906,7 +912,7 @@ export async function runWorkloadScenario(app, fixture, {
         // is the control, `huge` is the case Destin actually lives in. If they
         // come out the same, conversation size is not the cost and this line of
         // reasoning is wrong.
-        const b = (paintedBySize[size] ??= { ms: [], entries: [], expected: [], unsettled: 0, short: 0 });
+        const b = (paintedBySize[size] ??= { ms: [], entries: [], expected: [], unsettled: 0, short: 0, over: 0 });
         b.ms.push(r.paintedMs);
         // The rendered entry count travels with the timing. Without it a size
         // LABEL cannot be checked against what actually appeared — and on the
@@ -917,13 +923,22 @@ export async function runWorkloadScenario(app, fixture, {
         if (typeof r.expectedEntries === 'number') b.expected.push(r.expectedEntries);
         if (r.settled === false) { b.unsettled++; unsettledSwitches++; }
         if (r.short) b.short++;
+        if (r.over) b.over++;
       }
     }
-    // A bucket whose pane never reached the conversation's entry count is a bucket
-    // whose LABEL is unverified. Say which, and the three ways that happens.
+    // Two different failures, said differently. `short` is the app running out the
+    // 20 s cap before the conversation was on screen — a real (slow) measurement
+    // whose timing is a floor. `over` is the pane holding MORE than the transcript:
+    // the label does not describe what rendered, and the timing must not be read
+    // under it. (A pane that settles BELOW the count cannot happen — settle requires
+    // reaching it — so `short` always coincides with `unsettled`.)
     const shortSizes = Object.entries(paintedBySize).filter(([, b]) => b.short > 0).map(([k, b]) => `${k} (${b.short}/${b.ms.length})`);
     if (shortSizes.length) {
-      warnings.push(`workload: switches whose pane never showed as many entries as the conversation holds — ${shortSizes.join(', ')}. Either the session resumed the wrong transcript, the streamer's appends were not ingested by the watcher, or the app renders fewer entries per turn than ENTRIES_PER_TURN says; the size labels on those buckets are NOT verified by what rendered`);
+      warnings.push(`workload: the app did not finish rendering the conversation within the 20 s cap — ${shortSizes.join(', ')}. Those timings are a FLOOR. (If this is every switch into a size, also consider: the streamer's appends not ingested by the watcher, or ENTRIES_PER_TURN no longer matching what the app renders.)`);
+    }
+    const overSizes = Object.entries(paintedBySize).filter(([, b]) => b.over > 0).map(([k, b]) => `${k} (${b.over}/${b.ms.length})`);
+    if (overSizes.length) {
+      warnings.push(`workload: switches whose pane showed MORE entries than the conversation holds — ${overSizes.join(', ')}. The size label does not describe what rendered (wrong conversation, or the file re-read on top of itself); those timings must not be read under it`);
     }
     if (unsettledSwitches > 0) {
       warnings.push(`workload: ${unsettledSwitches}/${verifiedSwitches} switches never settled — their timings are a FLOOR (the 20s cap), not a measurement, and must not be read as fast switches`);
@@ -1015,6 +1030,8 @@ export async function runWorkloadScenario(app, fixture, {
           expectedEntries: median(v.expected),
           // Switches whose pane never reached expectedEntries before the cap.
           short: v.short,
+          // Switches whose pane held more than expectedEntries — label unverified.
+          over: v.over,
           // Non-zero means some of the timings in this bucket are the 20s cap.
           unsettled: v.unsettled,
         }]),

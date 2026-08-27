@@ -410,7 +410,8 @@ export function renderMarkdown(report, stem) {
         `${typeof v?.expectedEntries === 'number' ? ` of ${v.expectedEntries} expected` : ''}) | ` +
         `${n(v?.medianMs, 'ms')} / ${n(v?.p95Ms, 'ms')} p95` +
         `${v?.unsettled ? ` — ⚠ ${v.unsettled} hit the 20s CAP, so this is a FLOOR` : ''}` +
-        `${v?.short ? ` — ⚠ ${v.short} never showed the whole conversation, so this label is NOT verified` : ''} |`),
+        `${v?.short ? ` — ⚠ ${v.short} never showed the whole conversation, so this label is NOT verified` : ''}` +
+        `${v?.over ? ` — ⚠ ${v.over} showed MORE than the conversation holds, so this label is NOT verified` : ''} |`),
       // Arrays do not survive medianTree, so the streamed-into list comes from run 1.
       `| streamed into, during the switches | ${(report.workload.runs?.[0]?.streamedInto ?? []).join(', ') || '—'} |`,
       ...(w.unsettledSwitches ? [`| ⚠ switches that never settled | ${w.unsettledSwitches} — those timings are a 20s FLOOR, not a measurement |`] : []),

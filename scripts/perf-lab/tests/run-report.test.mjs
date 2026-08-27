@@ -99,7 +99,7 @@ const workloadRun = (i) => ({
   switchPaintedBySize: {
     // expectedEntries beside medianEntries: the label is checked against what
     // rendered, and `short` counts switches that never reached it.
-    huge: { n: 3, medianMs: 3100 + i, p95Ms: 3600 + i, medianEntries: 7000, expectedEntries: 7000, short: 0, unsettled: 0 },
+    huge: { n: 3, medianMs: 3100 + i, p95Ms: 3600 + i, medianEntries: 7000, expectedEntries: 7000, short: 0, over: 0, unsettled: 0 },
     medium: { n: 3, medianMs: 1200 + i, p95Ms: 1500 + i, medianEntries: 5000, expectedEntries: 5000, short: 0, unsettled: 0 },
     small: { n: 3, medianMs: 90 + i, p95Ms: 120 + i, medianEntries: 100, expectedEntries: 100, short: 0, unsettled: 0 },
     // The control: an empty conversation renders nothing and switching to it is
@@ -646,6 +646,15 @@ describe('renderMarkdown', () => {
       return rep;
     })(), 'test-stem');
     assert.match(short, /never showed the whole conversation, so this label is NOT verified/);
+    // The other direction: a pane holding MORE than the transcript (measured
+    // 2026-08-27: 11,974 of 5,842 when the app's transcript mirror re-extended a
+    // file between repeats) is the signature of a wrong label, not a slow app.
+    const over = renderMarkdown((() => {
+      const rep = completeReport();
+      rep.workload.median.switchPaintedBySize.small.over = 2;
+      return rep;
+    })(), 'test-stem');
+    assert.match(over, /showed MORE than the conversation holds, so this label is NOT verified/);
     assert.match(md, /of 7000 expected/, 'the expected count must be printed beside what rendered');
     assert.match(md, /streamed into, during the switches \| medium, small/, 'who was streamed into must be a recorded fact in the summary');
   });
