@@ -41,7 +41,7 @@ have postponed it.
 transcript replay at 75 MB + 90 MB per session on every reload being the
 largest, and Android's artifact store having never received #318's write
 queue) is designed and PAUSED in
-`docs/active/specs/2026-08-27-paged-history-and-read-hardening-design.md`.
+`docs/archive/specs/2026-08-27-paged-history-and-read-hardening-design.md`.
 
 **Composition of the 6.4 MB:** 39% is 107 worktrees that no longer exist on
 disk; 14% is the same edits re-recorded on each CC resume (open ROADMAP item,

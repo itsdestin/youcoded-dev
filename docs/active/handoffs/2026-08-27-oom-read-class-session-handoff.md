@@ -5,7 +5,7 @@ status: active
 tags: [artifacts, memory, crash, conversations, chat-reducer, android, handoff]
 related:
   - docs/active/investigations/2026-08-27-artifacts-sidecar-oom-crash.md (the crash; status shipped)
-  - docs/active/specs/2026-08-27-paged-history-and-read-hardening-design.md (the rest; PAUSED, unreviewed)
+  - docs/archive/specs/2026-08-27-paged-history-and-read-hardening-design.md (the rest; PAUSED, unreviewed)
   - ROADMAP.md → "The app still OOM-crashes on a long session" ([x]), "Paged conversation history" ([ ]), "Android artifact store has neither the write queue nor a read guard" ([ ])
 ---
 

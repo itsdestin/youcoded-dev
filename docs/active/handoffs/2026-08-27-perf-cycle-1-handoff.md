@@ -204,7 +204,7 @@ Plain background watchers were killed the same way; `Monitor` polling for `^EXIT
 
 ## 5. Cycle 2 — card 1, paged history (do NOT start until cycle 1 has shipped or been rejected)
 
-- Spec: `docs/active/specs/2026-08-27-paged-history-and-read-hardening-design.md`
+- Spec: `docs/archive/specs/2026-08-27-paged-history-and-read-hardening-design.md`
   (**draft, PAUSED, unreviewed, no plan** — written by the other session from an
   approved conversation). Their handoff:
   `docs/active/handoffs/2026-08-27-oom-read-class-session-handoff.md`.

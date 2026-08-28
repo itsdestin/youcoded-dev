@@ -8,7 +8,7 @@
 
 **Tech Stack:** TypeScript, Electron (main + preload + renderer), React, a WebSocket remote bridge, Node `fs` streaming (`readline`/`createReadStream`), Vitest + jsdom, the perf-lab rig (Node, CDP).
 
-**Spec:** `docs/active/specs/2026-08-27-paged-history-and-read-hardening-design.md` (reviewed 2026-08-28 — read its `## Spec review` section first; this plan implements §2 for desktop only, with the 12 corrections applied).
+**Spec:** `docs/archive/specs/2026-08-27-paged-history-and-read-hardening-design.md` (reviewed 2026-08-28 — read its `## Spec review` section first; this plan implements §2 for desktop only, with the 12 corrections applied).
 
 **Repo:** all app code is in `/home/destin/youcoded-dev/youcoded/` (`desktop/`). Rig code is in `/home/destin/youcoded-dev/scripts/perf-lab/`. Work in the worktree `worktrees/perf-lab/` on branch `perf/paged-history` (already created off master `97600ddd`). Run `bash scripts/verify.sh worktrees/perf-lab` from the workspace root after each task group.
 

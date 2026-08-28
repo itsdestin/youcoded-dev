@@ -2,7 +2,7 @@
 title: Paged conversation history + read-side hardening (the rest of the OOM bug class)
 date: 2026-08-27
 status: draft
-review: REVIEWED 2026-08-28 against master 97600ddd (three parallel code sweeps, every claim checked) — see '## Spec review' at the end. §2 is cycle 2 of the perf programme; §3/§4 stay separate ROADMAP items. Decisions 2026-08-28: 1a/2a — cycle 2 = desktop paging + start-at-end only; Android on-device paging and eviction are later cycles. Plan: docs/active/plans/2026-08-28-paged-history-cycle-2.md
+review: REVIEWED 2026-08-28 against master 97600ddd (three parallel code sweeps, every claim checked) — see '## Spec review' at the end. §2 is cycle 2 of the perf programme; §3/§4 stay separate ROADMAP items. Decisions 2026-08-28: 1a/2a — cycle 2 = desktop paging + start-at-end only; Android on-device paging and eviction are later cycles. Plan: docs/archive/plans/2026-08-28-paged-history-cycle-2.md
 tags: [artifacts, memory, crash, conversations, chat-reducer, android]
 related:
   - docs/active/investigations/2026-08-27-artifacts-sidecar-oom-crash.md (the crash and the six-lens sweep this spec answers)
