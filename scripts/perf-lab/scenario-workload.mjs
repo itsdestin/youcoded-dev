@@ -482,9 +482,31 @@ async function waitForSessionReady(cdp, { appearMs = 1500, clearMs = 30000 } = {
  */
 export const ENTRIES_PER_TURN = 2;
 
-/** Rendered entries a resumed session must show before its switch counts as painted. */
+/** Entries a transcript holds ON DISK. Still the honest description of the
+ *  fixture; no longer what the app renders — see renderedEntries. */
 export function expectedEntries(turns, streamedTurns = 0) {
   return ENTRIES_PER_TURN * (turns + streamedTurns);
+}
+
+/**
+ * Turns the app KEEPS RENDERED after a paged open (app perf cycle 2). Must stay
+ * equal to PAGE_TURNS in desktop/src/main/transcript-page.ts — pinned by
+ * tests/scenario-workload.test.mjs. If the app's page size changes and this does
+ * not, every resumed switch waits for entries that will never arrive and pins at
+ * the 20 s cap, which reads as a catastrophic regression.
+ */
+export const PAGE_TURNS = 30;
+
+/**
+ * Rendered entries a resumed session must show before its switch counts as
+ * painted. The app renders the last PAGE_TURNS turns, NOT the whole transcript,
+ * so this — not expectedEntries — is the settle target.
+ *
+ * `streamedTurns` is deliberately unclamped: the streamer appends to the END of
+ * the transcript, so its turns are the newest and are always inside the page.
+ */
+export function renderedEntries(turns, streamedTurns = 0) {
+  return ENTRIES_PER_TURN * (Math.min(turns, PAGE_TURNS) + streamedTurns);
 }
 
 /**
@@ -882,7 +904,7 @@ export async function runWorkloadScenario(app, fixture, {
       // SO FAR. The control holds 0. Native sessions carry no expectation (null).
       const t = fixture.transcripts?.[size];
       const expected = size === 'empty' ? 0
-        : t ? expectedEntries(t.turns, streamer.state.turnsBySize[size] ?? 0)
+        : t ? renderedEntries(t.turns, streamer.state.turnsBySize[size] ?? 0)
         : null;
       const streaming = STREAM_SIZES.includes(size);
       const r = await cdp.evaluate(

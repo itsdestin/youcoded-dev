@@ -31,7 +31,7 @@
 //
 // Node built-ins only (the workspace root has no package.json and must not gain one).
 import { installIpcStallProbe, stopIpcStallProbe, readIpcStallProbe } from './probe-ipc.mjs';
-import { installProbe, stopProbe, readProbe } from './scenario-workload.mjs';
+import { installProbe, stopProbe, readProbe, renderedEntries } from './scenario-workload.mjs';
 // WHY import the selector and the median rule instead of re-declaring them: both are
 // hard-won and already documented at length in scenario-history.mjs. A second copy is
 // a second thing to drift. MESSAGE_COUNT_EXPR in particular carries two facts that a
@@ -437,10 +437,14 @@ async function measureOnce(app, fixture, size, rep, { everyMs, timeoutMs, pollMs
     sessionId = created.id;
 
     // ---- 4. Wait until the timeline stops growing ---------------------------
+    // App perf cycle 2: a resume renders the last PAGE_TURNS turns, not the whole
+    // transcript, so "stopped changing" alone would accept a half-drawn first
+    // page. Require the page's own entry count first.
+    const expectedRendered = renderedEntries(t.turns);
     let last = -1, stable = 0;
     while (Date.now() < deadline) {
       const n = await evalBeforeDeadline(app, MESSAGE_COUNT_EXPR, deadline, `timeline entry count (${size})`);
-      if (n === last && n > 0) { if (++stable >= stableSamples) break; }
+      if (n === last && n >= expectedRendered) { if (++stable >= stableSamples) break; }
       else { stable = 0; last = n; }
       if (pollMs > 0) await sleep(pollMs);
     }
@@ -547,7 +551,10 @@ async function measureOnce(app, fixture, size, rep, { everyMs, timeoutMs, pollMs
       longtaskSupported: rend.longtaskSupported,
       // --- context ---
       renderedEntries: entries,
-      expectedEntries: 2 * t.turns, // fixture.mjs writes exactly 2 JSONL lines per turn
+      // What the app should have PAINTED (last page), and what the file holds.
+      // They stopped being the same number in app perf cycle 2.
+      expectedEntries: expectedRendered,
+      onDiskEntries: 2 * t.turns, // fixture.mjs writes exactly 2 JSONL lines per turn
       // Null, never the timeout value. A draft of the original diagnostic reported its
       // ceiling as though the resume had finished then — a failure that reads as data.
       elapsedMs: timedOut ? null : elapsed,

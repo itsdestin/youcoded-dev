@@ -16,6 +16,10 @@
 //
 // Node built-ins only (the workspace root has no package.json and must not gain one).
 
+// PAGE_TURNS/renderedEntries live in scenario-workload.mjs (one definition, one
+// place to keep in step with the app's transcript-page.ts).
+import { renderedEntries } from './scenario-workload.mjs';
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
@@ -285,6 +289,11 @@ async function measureOnce(app, fixture, size, rep) {
     watch = await withTimeout(app.cdp.evaluate(`(async () => {
     const count = () => ${MESSAGE_COUNT_EXPR};
     const baseline = ${baselineCount};
+    // Entries a PAGED resume must reach before "stopped changing" means "done"
+    // (app perf cycle 2). Without it the 1s stability rule accepts a first page
+    // that is still waiting on the rest of its own turns — a settle the app has
+    // not actually reached, reported as a win.
+    const expected = ${renderedEntries(t.turns)};
     const t0 = performance.now();
     let created;
     try {
@@ -328,16 +337,17 @@ async function measureOnce(app, fixture, size, rep) {
             last = n;
             lastChangeMs = elapsed;
             if (firstMs === null && n > 0) firstMs = Math.round(elapsed);
-          } else if (n > 0 && elapsed - lastChangeMs >= ${STABLE_MS}) {
-            // Stability is only meaningful once SOMETHING rendered. Without the
-            // n > 0 guard an empty timeline would "stabilize" after 1s and report
-            // a resume that never happened as the fastest run in the set.
+          } else if (n >= expected && elapsed - lastChangeMs >= ${STABLE_MS}) {
+            // Stability is only meaningful once the page has actually rendered.
+            // n >= expected subsumes the old n > 0 guard (expected is never 0
+            // here) — without it an empty timeline would "stabilize" after 1s
+            // and report a resume that never happened as the fastest run.
             done({ timedOut: false, firstMs, stableMs: Math.round(lastChangeMs), count: n });
             return;
           }
         }
         if (elapsed >= ${WATCH_TIMEOUT_MS}) {
-          done({ timedOut: true, firstMs, stableMs: null, count: n, lastChangeMs: Math.round(lastChangeMs), switched });
+          done({ timedOut: true, firstMs, stableMs: null, count: n, expected, lastChangeMs: Math.round(lastChangeMs), switched });
         }
       }, ${SAMPLE_MS});
     });

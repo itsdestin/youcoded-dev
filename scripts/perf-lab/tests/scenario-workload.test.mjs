@@ -7,7 +7,7 @@
 // computed from the fixture, and a settle below it is reported as unverified.
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { ENTRIES_PER_TURN, expectedEntries, STREAM_SIZES, streamTargetsFor, restoreStreamTargets, MEASURES } from '../scenario-workload.mjs';
+import { ENTRIES_PER_TURN, expectedEntries, renderedEntries, PAGE_TURNS, STREAM_SIZES, streamTargetsFor, restoreStreamTargets, MEASURES } from '../scenario-workload.mjs';
 import { mkdtempSync, writeFileSync, appendFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -30,6 +30,24 @@ describe('expectedEntries', () => {
   test('counts what the streamer has appended so far, so a streamed-into session can still settle', () => {
     assert.equal(expectedEntries(2500, 0), 5000);
     assert.equal(expectedEntries(2500, 7), 5014);
+  });
+});
+
+describe('renderedEntries (paged history, app cycle 2)', () => {
+  test('mirrors the app: PAGE_TURNS is 30, and it must match transcript-page.ts', () => {
+    assert.equal(PAGE_TURNS, 30);
+  });
+  test('a short conversation renders every turn; a long one renders only the last page', () => {
+    assert.equal(renderedEntries(10), ENTRIES_PER_TURN * 10);
+    assert.equal(renderedEntries(50), ENTRIES_PER_TURN * PAGE_TURNS);
+    assert.equal(renderedEntries(3500), ENTRIES_PER_TURN * PAGE_TURNS);
+  });
+  test('streamed turns are NOT clamped — they are the newest, so they are always in the page', () => {
+    assert.equal(renderedEntries(3500, 7), ENTRIES_PER_TURN * (PAGE_TURNS + 7));
+    assert.equal(renderedEntries(10, 3), ENTRIES_PER_TURN * 13);
+  });
+  test('expectedEntries survives unchanged — it still describes what is ON DISK', () => {
+    assert.equal(expectedEntries(3500), 7000);
   });
 });
 

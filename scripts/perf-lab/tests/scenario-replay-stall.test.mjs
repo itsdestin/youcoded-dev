@@ -186,8 +186,11 @@ const fixture = {
   },
 };
 
-/** The counts the timeline reports after a resume: grows, then holds steady. */
-const GROWTH = [5, 40, 40, 40, 40, 40, 40, 40];
+/** The counts the timeline reports after a resume: grows, then holds steady.
+ *  App perf cycle 2: a resume paints the last PAGE_TURNS (30) turns x 2 entries
+ *  = 60, whatever the transcript's size — and the settle rule now REQUIRES that
+ *  count, so a plateau below it is a half-drawn page, not a finished resume. */
+const GROWTH = [5, 60, 60, 60, 60, 60, 60, 60];
 
 function fakeApp({
   ipc = {},
@@ -318,7 +321,7 @@ test('runReplayStallScenario reports every size with runs, median, blame and war
     assert.equal(s.median.rendererStallMs, 0);
     assert.equal(s.median.ipcMaxMs, 3353);
     assert.equal(s.median.rendererLongtaskMaxMs, 117);
-    assert.equal(s.median.renderedEntries, 40);
+    assert.equal(s.median.renderedEntries, 60); // one paged resume: 30 turns x 2 entries
     assert.equal(typeof s.median.elapsedMs, 'number');
     // Every key compare.mjs may take a median of must be present on the median object.
     assert.deepEqual(Object.keys(s.median).sort(), [...NUMERIC_KEYS].sort());
@@ -330,7 +333,8 @@ test('the run carries the diagnostics that are NOT medianable', async () => {
   const run = out.medium.runs[0];
   assert.equal(run.stability, 'stable');
   assert.equal(run.blame, 'main-process');
-  assert.equal(run.expectedEntries, 5000);        // 2 lines per turn, 2500 turns
+  assert.equal(run.expectedEntries, 60);          // the PAINTED page: 30 turns x 2 entries
+  assert.equal(run.onDiskEntries, 5000);          // what the file holds: 2 lines per turn, 2500 turns
   assert.equal(run.timedOutAfterMs, null);
   assert.equal(run.worstStalls[0].blame, 'main-process');
   assert.equal(run.longtaskSupported, true);
