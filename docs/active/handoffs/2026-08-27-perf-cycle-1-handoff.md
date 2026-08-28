@@ -1,7 +1,7 @@
 ---
 title: Perf optimization cycle 1 — handoff for the session that runs it
 status: active
-cycle_1_result: REJECT by the gate (rig blind to the change); Destin chose to SHIP on the pinning tests, 2026-08-28 — PR opened from perf/optimization-pass
+cycle_1_result: SHIPPED 2026-08-28 — youcoded PR #342, merge 97600ddd (gate said REJECT because the rig is blind to the per-token path; Destin chose to ship on the pinning tests)
 date: 2026-08-27
 supersedes_for_next_steps: docs/active/handoffs/2026-08-27-perf-lab-session-status.md
 approved_by: Destin, 2026-08-27 ("i like 1-3")
@@ -15,8 +15,11 @@ decision_page: https://claude.ai/code/artifact/e00aa59a-e4b0-466b-a49a-a8e06da22
 
 ## Cycle 1 result (2026-08-28, measured) — REJECT by the gate; **Destin chose (c): ship on the tests** ("we will ship now, file the rig issue", 2026-08-28)
 
-**The change is built, tested and committed; the rig cannot see it.** Three commits on
-`perf/optimization-pass` (worktree `worktrees/perf-lab/`, NOT pushed, no PR):
+**SHIPPED — youcoded PR #342, merged to master as `97600ddd` (2026-08-28).** Windows CI was red on
+the PR with the SAME pre-existing failures master carries (ROADMAP `#ci`, nine Windows-only
+specialist tests); ubuntu/macOS/build green. The worktree `worktrees/perf-lab/` and its branch
+`perf/optimization-pass` are deliberately KEPT (the rig's default `--checkout`), fast-forwarded to
+master after the merge; cycle 2 should branch from there. Three commits:
 
 | commit | what | pinning test (red on the old code, green on the new) |
 |---|---|---|
