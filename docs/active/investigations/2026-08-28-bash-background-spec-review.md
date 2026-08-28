@@ -1,7 +1,7 @@
 ---
 title: Review — Background execution for the native Bash tool (G-1 spec)
 date: 2026-08-28
-status: applied — every finding folded into the spec 2026-08-28 (B: cap on explicit starts only; C: handed-off runs apply neither cwd nor env, registry unlinks the env file; readCursor kept as lastReadBytes — the same number, named plainly)
+status: shipped — every finding folded into the spec 2026-08-28 (B: cap on explicit starts only; C: handed-off runs apply neither cwd nor env, registry unlinks the env file; readCursor kept as lastReadBytes — the same number, named plainly)
 reviews: docs/active/specs/2026-08-28-bash-background-execution-design.md
 ---
 

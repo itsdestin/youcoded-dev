@@ -1,7 +1,7 @@
 ---
 title: Background Bash Execution Implementation Plan (ledger G-1)
 date: 2026-08-28
-status: active
+status: shipped
 spec: docs/active/specs/2026-08-28-bash-background-execution-design.md
 review: docs/active/investigations/2026-08-28-bash-background-spec-review.md
 branch: youcoded feat/bash-background-ui (worktree worktrees/bash-bg) — continues the renderer mockup commit 69d066a3
@@ -22,7 +22,8 @@ tags: [native-runtime, harness, harness-tools, renderer, ipc-bridge]
 
 - Cap **5** explicit background starts running at once (`MAX_EXPLICIT_RUNNING`); a hand-off is never counted and never refused (D5).
 - **8** `BashOutput` reads per turn (`BASH_OUTPUT_READS_PER_TURN`); the 9th is `isError: true` (D7).
-- Wire tail **40** lines (`WIRE_TAIL_LINES`); main-side ring **200** lines (`RING_LINES`); finished-notice tail **50** lines (`NOTICE_TAIL_LINES`).
+- Wire tail **40** lines (`WIRE_TAIL_LINES`); main-side ring **200** lines (`RING_LINES`); finished-notice tail **50** lines (`NOTICE_TAIL_LINES`); one `BashOutput` read returns at most **1 MB** (`READ_MAX_BYTES`), read positionally from the log — never the whole file.
+- The 7-day spill sweep MOVES from `bash.ts` to `spill-paths.ts` and is called by the registry too — in `bash.ts` it only fired on a foreground spill, so a user whose long commands all ran in the background never swept anything.
 - Kill = `SIGTERM` to the process group, `SIGKILL` after **2 s** (`TERM_GRACE_MS`); Windows `taskkill /PID <pid> /T /F`, falling back to `child.kill()`.
 - `KillShell` waits at most **5 s** for the exit (`KILL_WAIT_MS`).
 - `'change'` events debounced to ≤4 per second per run (`CHANGE_DEBOUNCE_MS = 250`).
@@ -44,7 +45,8 @@ All paths under `/home/destin/youcoded-dev/worktrees/bash-bg/desktop/` unless ma
 
 | File | Responsibility |
 |---|---|
-| `src/main/harness/tools/shell-text.ts` **(new)** | The two probe sentinels + `stripAnsi` + `stripSentinelLines` — shared by `bash.ts` and the registry without a runtime import cycle |
+| `src/main/harness/tools/shell-text.ts` **(new)** | The two probe sentinels + `stripAnsi` + `stripSentinelLines` + `normalizeNewlines` — shared by `bash.ts` and the registry without a runtime import cycle |
+| `src/main/harness/tools/spill-paths.ts` | The 7-day retention sweep MOVES here from `bash.ts` — the registry writes into the same tree and must sweep it too (its own module header already names "one definition, two importers" as the reason it exists) |
 | `src/main/harness/shell-registry.ts` **(new)** | `ShellRegistry`: start / adopt / read / list / kill / killAll, group spawn + tree kill (`spawnDetached`, `killTree`), log-from-first-byte, 200-line ring, 40-line wire view, `'change'`/`'exit'` events, `formatElapsed`, `formatFinishedNotice`, `stateText` |
 | `src/main/harness/tools/bash.ts` | `run_in_background`, hand-off at the time limit, detached foreground spawn + tree kill on abort, new description text |
 | `src/main/harness/tools/bash-output.ts` **(new)** | `BashOutput` tool (id mode / list mode / unknown id) |
@@ -69,23 +71,66 @@ All paths under `/home/destin/youcoded-dev/worktrees/bash-bg/desktop/` unless ma
 
 ---
 
+### Task 0: Make the branch green before building on it
+
+`bash scripts/verify.sh worktrees/bash-bg` FAILS on the branch as it stands, before this plan
+touches anything: 5 failures in `tests/workbench-fixture-actions.test.ts`, all
+`expected [ 'shell_run' ] to deeply equal []`. The mockup commit `69d066a3` taught
+`fixture-loader.ts` a new fixture line kind (`shell_run`, at `fixture-loader.ts:273`) but never
+added it to the guard test's `KNOWN_KINDS` allowlist. The loader handles it correctly — only the
+allowlist is stale.
+
+This has to be fixed FIRST, or every "run to verify failure" step below is read against a tree
+that is already red and no later `verify: OK` means anything.
+
+**Files:** `tests/workbench-fixture-actions.test.ts`
+
+- [ ] **Step 1: Confirm the failure is exactly this and nothing else** — `cd /home/destin/youcoded-dev/worktrees/bash-bg/desktop && npx vitest run tests/workbench-fixture-actions.test.ts` — Expected: 5 failed, all five `bash-background-*` fixtures, all reporting `shell_run`.
+
+- [ ] **Step 2: Add the kind to the allowlist**, after the `'stalled',` line in `KNOWN_KINDS`:
+
+```ts
+  // G-1 background Bash: the live run record a Bash card renders from
+  // (fixture-loader.ts dispatches it as SHELL_RUN_CHANGED). Landed with the
+  // card mockup in 69d066a3; this allowlist was missed, leaving the branch red.
+  'shell_run',
+```
+
+- [ ] **Step 3: Verify** — `cd /home/destin/youcoded-dev && bash scripts/verify.sh worktrees/bash-bg` — Expected last line `verify: OK`. **Do not start Task 1 until this passes** — a green baseline is what makes every later run informative.
+
+- [ ] **Step 4: Commit**
+
+```bash
+cd /home/destin/youcoded-dev/worktrees/bash-bg && git add desktop/tests/workbench-fixture-actions.test.ts && git commit -m "fix(tests): allow the shell_run fixture kind the card mockup added (G-1 Task 0)
+
+69d066a3 taught fixture-loader.ts to dispatch SHELL_RUN_CHANGED from a
+'shell_run' fixture line but never added the kind to this guard's allowlist,
+so all five bash-background fixtures failed it and the branch was red.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FW77yMCvebQ79KQ9AQwGnj"
+```
+
+---
+
 ### Task 1: `shell-text.ts` + `ShellRegistry`
 
 **Files:**
 - Create `src/main/harness/tools/shell-text.ts`
 - Create `src/main/harness/shell-registry.ts`
-- Modify `src/main/harness/tools/bash.ts` (sentinel constants + `stripAnsi` move to `shell-text.ts`, re-exported)
+- Modify `src/main/harness/tools/bash.ts` (sentinel constants + `stripAnsi` move to `shell-text.ts`, re-exported; the spill sweep moves to `spill-paths.ts`)
+- Modify `src/main/harness/tools/spill-paths.ts` (receives the sweep)
 - Test `tests/shell-registry.test.ts`, `tests/shell-registry-win-kill.test.ts`
 
 **Interfaces:**
-- Consumes: `spillDirFor(sessionId)` (`tools/spill-paths.ts`), `ShellRunView`/`ShellStopReason` (`shared/types.ts`, on the branch).
+- Consumes: `spillDirFor(sessionId)` + `sweepOldSpillFilesOnce()` (`tools/spill-paths.ts`), `ShellRunView`/`ShellStopReason` (`shared/types.ts`, on the branch).
 - Produces:
   - `export function spawnDetached(cmd: string, args: string[], opts: SpawnOptions): ChildProcess`
   - `export function killTree(child: ChildProcess, opts?: { graceMs?: number }): void`
   - `export function formatElapsed(ms: number): string` → `"3m 02s"`, `"11m 42s"`, `"40m"`, `"1h 5m"`, `"12s"`
   - `export function stateText(run: ShellRun, now?: number): string` → `running · 3m 02s` / `exited 0 · 3m 02s` / `stopped (by you) · 3m 02s`
   - `export function formatFinishedNotice(run: ShellRun, tail: string): string`
-  - `export class ShellRegistry extends EventEmitter` with `start(spec: ShellStartSpec): ShellStartResult`, `adopt(spec: ShellAdoptSpec): ShellRun`, `get(id)`, `list(): ShellRun[]`, `runningExplicitIds(): string[]`, `read(id): Promise<{ run: ShellRun; text: string } | undefined>`, `tailText(run, lines): string`, `toView(run): ShellRunView`, `kill(id, reason, opts?): Promise<KillResult>`, `killAll(reason, opts?): Promise<void>`; events `'change'` (`ShellRunView`) and `'exit'` (`ShellRun`).
+  - `export class ShellRegistry extends EventEmitter` with `start(spec: ShellStartSpec): ShellStartResult`, `adopt(spec: ShellAdoptSpec): ShellRun`, `get(id)`, `list(): ShellRun[]`, `runningExplicitIds(): string[]`, `read(id): Promise<{ run: ShellRun; text: string; truncated: boolean } | undefined>`, `tailText(run, lines): string`, `toView(run): ShellRunView`, `kill(id, reason, opts?): Promise<KillResult>`, `killAll(reason, opts?): Promise<void>`; events `'change'` (`ShellRunView`) and `'exit'` (`ShellRun`).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -101,10 +146,11 @@ import * as os from 'os';
 import * as path from 'path';
 import { spawn } from 'child_process';
 import {
-  ShellRegistry, MAX_EXPLICIT_RUNNING, RING_LINES, WIRE_TAIL_LINES,
+  ShellRegistry, MAX_EXPLICIT_RUNNING, RING_LINES, WIRE_TAIL_LINES, READ_MAX_BYTES,
   formatElapsed, formatFinishedNotice, stateText, spawnDetached,
 } from '../src/main/harness/shell-registry';
-import { CWD_SENTINEL, ENV_SENTINEL, stripSentinelLines } from '../src/main/harness/tools/shell-text';
+import { spillRoot, sweepOldSpillFiles } from '../src/main/harness/tools/spill-paths';
+import { CWD_SENTINEL, ENV_SENTINEL, stripSentinelLines, normalizeNewlines } from '../src/main/harness/tools/shell-text';
 
 const posix = process.platform !== 'win32';
 const BASH = { shellCmd: '/bin/bash', shellArgs: ['-c'] };
@@ -149,6 +195,12 @@ describe('formatElapsed / stateText / formatFinishedNotice', () => {
   it('stripSentinelLines drops only the probe lines', () => {
     expect(stripSentinelLines(`a\n${CWD_SENTINEL}/x\nb\n${ENV_SENTINEL}/tmp/e\n`)).toBe('a\nb\n');
     expect(stripSentinelLines('plain')).toBe('plain');
+  });
+  it('normalizeNewlines turns a redrawing progress bar into lines, and leaves CRLF alone', () => {
+    // A \r-redrawn progress bar is ONE endless line otherwise — the ring never
+    // trims it and `partial` grows without bound (review 2026-08-28).
+    expect(normalizeNewlines('10%\r50%\r100%\n')).toBe('10%\n50%\n100%\n');
+    expect(normalizeNewlines('a\r\nb\r\n')).toBe('a\nb\n');
   });
 });
 
@@ -267,6 +319,41 @@ describe.skipIf(!posix)('ShellRegistry (POSIX processes)', () => {
     expect(fs.existsSync(envFile)).toBe(false);
   });
 
+  it("an adopted run's seeded head is ANSI-stripped like everything that follows it", async () => {
+    // bash.ts keeps headBuf RAW and strips only at write time (bash.ts's own
+    // spill does `stripAnsi(headBuf)`), so the registry must strip it too —
+    // otherwise the first half of a handed-off log is colour codes and the
+    // second half is clean, and BashOutput hands the model `[1m[30m RUN`.
+    const child = spawnDetached('/bin/bash', ['-c', 'echo tail-part'], { cwd: dir, stdio: ['ignore', 'pipe', 'pipe'] });
+    const run = reg.adopt({ toolUseId: 'tu-a', command: 'x', cwd: dir, child, startedAt: Date.now(), seedLog: '[1mBOLD[0m head\n', recent: '', logPath: null, logStream: null, captureEnv: false });
+    await run.exited;
+    const read = await reg.read(run.shellId);
+    expect(read!.text).toBe('BOLD head\ntail-part\n');
+    expect(fs.readFileSync(run.logPath, 'utf8')).not.toContain('');
+  });
+
+  it('a redrawing progress bar cannot grow the partial line without bound', async () => {
+    const r = reg.start(startSpec(`printf 'p 1\\rp 2\\rp 3\\n'`, dir));
+    if (!r.ok) throw new Error('start failed');
+    await r.run.exited;
+    expect(r.run.tail).toEqual(['p 1', 'p 2', 'p 3']);
+    expect(r.run.partial).toBe('');
+  });
+
+  it('read() is bounded: a huge log returns only the last READ_MAX_BYTES, and says nothing false about it', async () => {
+    // 12 MB of output must not become a 12 MB string in the main process.
+    const r = reg.start(startSpec(`for i in $(seq 1 200000); do echo "line-$i-padding-padding-padding"; done`, dir));
+    if (!r.ok) throw new Error('start failed');
+    await r.run.exited;
+    const read = await reg.read(r.run.shellId);
+    expect(read!.text.length).toBeLessThanOrEqual(READ_MAX_BYTES);
+    expect(read!.truncated).toBe(true);
+    expect(read!.text.endsWith('line-200000-padding-padding-padding\n')).toBe(true);
+    // The cursor still advances to the END of the file, so the next read is
+    // "since your last look" and not a replay of the same tail.
+    expect((await reg.read(r.run.shellId))!.text).toBe('');
+  }, 60_000);
+
   it('toView is the ShellRunView shape the card renders', async () => {
     const r = reg.start(startSpec('echo v', dir));
     if (!r.ok) throw new Error('start failed');
@@ -274,6 +361,23 @@ describe.skipIf(!posix)('ShellRegistry (POSIX processes)', () => {
     const v = reg.toView(r.run);
     expect(Object.keys(v).sort()).toEqual(['detached', 'endedAt', 'exitCode', 'logPath', 'shellId', 'startedAt', 'status', 'stopReason', 'tail', 'toolUseId']);
     expect(v.detached).toBe(false);
+  });
+});
+
+describe('spill retention sweep (moved out of bash.ts so background logs are swept too)', () => {
+  it('deletes files past the TTL and leaves fresh ones, in any session folder', async () => {
+    const sess = path.join(spillRoot(), `sweep-test-${process.pid}`);
+    fs.mkdirSync(sess, { recursive: true });
+    const old = path.join(sess, 'bash-old.txt');
+    const fresh = path.join(sess, 'bash-fresh.txt');
+    fs.writeFileSync(old, 'x');
+    fs.writeFileSync(fresh, 'x');
+    const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
+    fs.utimesSync(old, eightDaysAgo, eightDaysAgo);
+    await sweepOldSpillFiles();
+    expect(fs.existsSync(old)).toBe(false);
+    expect(fs.existsSync(fresh)).toBe(true);
+    fs.rmSync(sess, { recursive: true, force: true });
   });
 });
 ```
@@ -348,6 +452,17 @@ export function stripAnsi(s: string): string {
   return s.replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, '').replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, '');
 }
 
+/** Turn a redrawing progress bar into ordinary lines.
+ *  Why: npm, gradle, pip and docker redraw one status line with a carriage
+ *  return and NO newline. Left alone, the registry's line splitter never sees
+ *  a break, so the whole run collects into one endless "unfinished line" that
+ *  the 200-line ring can never trim and the log grows with — the 2026-08-28
+ *  review's unbounded-memory case. CRLF collapses to LF first so Windows line
+ *  endings do not double up. */
+export function normalizeNewlines(s: string): string {
+  return s.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+}
+
 /** Drop the probe's own sentinel lines from text the model or the card sees.
  *  Why filter on READ and not in the file: a handed-off command prints its
  *  sentinels when it finally exits, minutes after adoption, by which time the
@@ -364,12 +479,35 @@ export function stripSentinelLines(text: string): string {
 In `src/main/harness/tools/bash.ts`: delete the local `const CWD_SENTINEL = '__YC_CWD__';`, `const ENV_SENTINEL = '__YC_ENVFILE__';` and the whole `export function stripAnsi(...)` block (keep their doc comments' substance in shell-text.ts as above), and add after the `./types` import:
 
 ```ts
-import { CWD_SENTINEL, ENV_SENTINEL, stripAnsi } from './shell-text';
+import { CWD_SENTINEL, ENV_SENTINEL, stripAnsi, stripSentinelLines } from './shell-text';
 // Why re-exported: harness-tools-core.test.ts and prerequisite-installer-era
 // callers import stripAnsi from here; moving the implementation must not move
 // the import path out from under them.
 export { stripAnsi };
 ```
+
+**Move the retention sweep to `spill-paths.ts`.** Cut `SPILL_TTL_MS`, `sweepScheduled` and
+`sweepOldSpillFilesOnce()` out of `bash.ts` (they sit above `export const BashTool`, with the
+long "module-level once-flag, not a timer" comment — keep that comment verbatim) and paste them
+into `src/main/harness/tools/spill-paths.ts`, adding `import * as fs from 'fs';` there. Split the
+body into two exports and leave the `spillRoot()`/`cutoff` logic otherwise byte-identical:
+
+```ts
+/** The sweep itself, always runs. Exported so a test can drive it directly. */
+export async function sweepOldSpillFiles(): Promise<void> { /* the existing body, awaited */ }
+
+/** Once per process, on the first spill anything writes. G-1: the ShellRegistry
+ *  writes into this same tree, so the sweep can no longer live in bash.ts —
+ *  a user whose commands all run in the BACKGROUND would never have triggered
+ *  it there, and the logs would accumulate forever (2026-08-28 review). */
+export function sweepOldSpillFilesOnce(): void {
+  if (sweepScheduled) return;
+  sweepScheduled = true;
+  void sweepOldSpillFiles().catch(() => { /* best-effort, retried next launch */ });
+}
+```
+
+In `bash.ts`, change the import to `import { spillDirFor, spillRoot, sweepOldSpillFilesOnce } from './spill-paths';` — the one call site inside `startSpill()` is unchanged.
 
 `src/main/harness/shell-registry.ts`:
 
@@ -388,8 +526,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { randomBytes } from 'crypto';
 import type { ShellRunView, ShellStopReason } from '../../shared/types';
-import { spillDirFor } from './tools/spill-paths';
-import { ENV_SENTINEL, stripAnsi, stripSentinelLines } from './tools/shell-text';
+import { spillDirFor, sweepOldSpillFilesOnce } from './tools/spill-paths';
+import { ENV_SENTINEL, normalizeNewlines, stripAnsi, stripSentinelLines } from './tools/shell-text';
 
 /** Explicit background starts allowed at once (spec §3.6). Hand-offs never count (D5). */
 export const MAX_EXPLICIT_RUNNING = 5;
@@ -405,8 +543,15 @@ export const TERM_GRACE_MS = 2_000;
 export const KILL_WAIT_MS = 5_000;
 /** ≤4 'change' events per second per run (spec §5.1). */
 export const CHANGE_DEBOUNCE_MS = 250;
-/** Ended runs kept for list()/BashOutput after they finish; oldest pruned past this. */
-export const MAX_RETAINED_ENDED = 50;
+/** Most bytes one read() returns. A 20-minute build's log runs to hundreds of
+ *  MB; reading all of it into the main process to slice off the tail is how you
+ *  wedge the app (2026-08-28 review). 1 MB is far more than the 200 lines
+ *  BashOutput shows, so nothing the model can see is lost by this bound. */
+export const READ_MAX_BYTES = 1_000_000;
+/** Hard ceiling on the unfinished last line, after \r normalization — a single
+ *  genuinely enormous line (minified JSON, a base64 blob) is flushed rather
+ *  than held in memory forever. */
+const MAX_PARTIAL_CHARS = 64_000;
 
 export interface ShellRun {
   shellId: string;
@@ -569,7 +714,12 @@ export class ShellRegistry extends EventEmitter {
 
   get(shellId: string): ShellRun | undefined { return this.runs.get(shellId); }
 
-  /** Every run this session has had, oldest first (ended ones are retained — see MAX_RETAINED_ENDED). */
+  /** Every run this session has had, oldest first — finished ones INCLUDED and
+   *  never evicted. Why no cap: a finished run holds at most 200 short lines
+   *  (tens of KB), while evicting one would make BashOutput answer "No
+   *  background command sh-abcd" about a command that plainly existed — a
+   *  false statement, which docs/error-message-standards.md forbids. The
+   *  registry dies with the conversation, so nothing accumulates across them. */
   list(): ShellRun[] { return [...this.runs.values()]; }
 
   runningExplicitIds(): string[] {
@@ -616,6 +766,10 @@ export class ShellRegistry extends EventEmitter {
       fs.mkdirSync(dir, { recursive: true });
       logPath = path.join(dir, `bash-${Date.now()}-${shellId}.txt`);
       logStream = fs.createWriteStream(logPath);
+      // The 7-day sweep used to fire only from bash.ts's foreground spill; a
+      // user whose long commands all run in the background would never have
+      // triggered it, and these logs would pile up forever (2026-08-28 review).
+      sweepOldSpillFilesOnce();
     }
     // A write error must never crash the main process — the run keeps going
     // and BashOutput/the notice fall back to the in-memory tail.
@@ -628,7 +782,11 @@ export class ShellRegistry extends EventEmitter {
       startedAt: spec.startedAt, status: 'running', detached: flags.detached, explicit: flags.explicit,
       reported: false, exited, resolveExited, logPending: 0, logWaiters: [], logDone: null, changeTimer: null,
     };
-    if (spec.seedLog && !spec.logStream) this.writeLog(run, spec.seedLog);
+    // stripAnsi, because bash.ts keeps headBuf RAW and strips only at write
+    // time (its own spill does `stripAnsi(headBuf)`). Without this the seeded
+    // half of a handed-off log carries colour codes while everything after it
+    // is clean, and the model's first BashOutput reads `[1m[30m RUN`.
+    if (spec.seedLog && !spec.logStream) this.writeLog(run, stripAnsi(normalizeNewlines(spec.seedLog)));
     if (spec.recent) this.ingest(run, spec.recent, false);
     this.runs.set(shellId, run);
     spec.child.stdout?.on('data', (d) => this.ingest(run, String(d), true));
@@ -668,10 +826,13 @@ export class ShellRegistry extends EventEmitter {
   }
 
   private ingest(run: ShellRun, raw: string, live: boolean): void {
-    const text = stripAnsi(raw);
+    const text = stripAnsi(normalizeNewlines(raw));
     if (live) this.writeLog(run, text);
     const lines = (run.partial + text).split('\n');
     run.partial = lines.pop() ?? '';
+    // A single line with no newline in sight (minified JSON, a base64 blob)
+    // would otherwise sit in memory unbounded — flush it as a line instead.
+    if (run.partial.length > MAX_PARTIAL_CHARS) { lines.push(run.partial); run.partial = ''; }
     for (const line of lines) run.tail.push(line);
     if (run.tail.length > RING_LINES) run.tail.splice(0, run.tail.length - RING_LINES);
     if (live) this.scheduleChange(run);
@@ -693,7 +854,6 @@ export class ShellRegistry extends EventEmitter {
       run.logStream.end(() => res());
     });
     if (run.captureEnv) this.unlinkEnvFile(run);
-    this.pruneEnded();
     this.emitChangeNow(run);
     run.resolveExited();
     this.emit('exit', run);
@@ -710,11 +870,6 @@ export class ShellRegistry extends EventEmitter {
       if (file) { try { fs.unlinkSync(file); } catch { /* already gone */ } }
       return;
     }
-  }
-
-  private pruneEnded(): void {
-    const ended = this.list().filter((r) => r.status !== 'running').sort((a, b) => (a.endedAt ?? 0) - (b.endedAt ?? 0));
-    while (ended.length > MAX_RETAINED_ENDED) this.runs.delete(ended.shift()!.shellId);
   }
 
   private scheduleChange(run: ShellRun): void {
@@ -743,16 +898,45 @@ export class ShellRegistry extends EventEmitter {
   }
 
   /** New output since the last read (first read: everything so far). The log's
-   *  byte length at the last read IS the cursor (review §5.2). */
-  async read(shellId: string): Promise<{ run: ShellRun; text: string } | undefined> {
+   *  byte length at the last read IS the cursor (review §5.2).
+   *
+   *  Reads POSITIONALLY and bounded: never load the whole log. A long build's
+   *  log runs to hundreds of MB, and eight polls a turn would each have loaded
+   *  all of it just to slice off the tail (2026-08-28 review). When more than
+   *  READ_MAX_BYTES is new, the LAST READ_MAX_BYTES are returned, `truncated`
+   *  says so, and the cursor still advances to the end of the file — so the
+   *  next read is genuinely "since your last look" rather than a replay. */
+  async read(shellId: string): Promise<{ run: ShellRun; text: string; truncated: boolean } | undefined> {
     const run = this.runs.get(shellId);
     if (!run) return undefined;
     await this.flushLog(run);
-    let buf: Buffer;
-    try { buf = fs.readFileSync(run.logPath); } catch { buf = Buffer.alloc(0); }
-    const chunk = buf.subarray(run.lastReadBytes).toString('utf8');
-    run.lastReadBytes = buf.length;
-    return { run, text: stripSentinelLines(chunk) };
+    let fd: number | undefined;
+    let text = '';
+    let truncated = false;
+    let size = run.lastReadBytes;
+    try {
+      fd = fs.openSync(run.logPath, 'r');
+      size = fs.fstatSync(fd).size;
+      const pending = Math.max(0, size - run.lastReadBytes);
+      const want = Math.min(pending, READ_MAX_BYTES);
+      truncated = pending > want;
+      if (want > 0) {
+        const buf = Buffer.alloc(want);
+        fs.readSync(fd, buf, 0, want, size - want);
+        text = buf.toString('utf8');
+        // A bounded read can start mid-line; drop the first partial line rather
+        // than hand the model half a word it cannot place.
+        if (truncated) text = text.slice(text.indexOf('\n') + 1);
+      }
+    } catch {
+      // The log is best-effort (a write error, a swept file). Fall back to the
+      // in-memory ring so a read still answers with the truth we do hold.
+      text = run.lastReadBytes === 0 ? this.tailText(run, RING_LINES) : '';
+    } finally {
+      if (fd !== undefined) { try { fs.closeSync(fd); } catch { /* already closed */ } }
+    }
+    run.lastReadBytes = size;
+    return { run, text: stripSentinelLines(text), truncated };
   }
 
   /** Kill the family and wait up to KILL_WAIT_MS for the exit. The reason is
@@ -779,12 +963,14 @@ export class ShellRegistry extends EventEmitter {
 
 ```bash
 cd /home/destin/youcoded-dev && bash scripts/verify.sh worktrees/bash-bg
-cd /home/destin/youcoded-dev/worktrees/bash-bg && git add desktop/src/main/harness/shell-registry.ts desktop/src/main/harness/tools/shell-text.ts desktop/src/main/harness/tools/bash.ts desktop/tests/shell-registry.test.ts desktop/tests/shell-registry-win-kill.test.ts && git commit -m "feat(harness): ShellRegistry — process-group runs, log from first byte, tree kill (G-1 Task 1)
+cd /home/destin/youcoded-dev/worktrees/bash-bg && git add desktop/src/main/harness/shell-registry.ts desktop/src/main/harness/tools/shell-text.ts desktop/src/main/harness/tools/spill-paths.ts desktop/src/main/harness/tools/bash.ts desktop/tests/shell-registry.test.ts desktop/tests/shell-registry-win-kill.test.ts && git commit -m "feat(harness): ShellRegistry — process-group runs, log from first byte, tree kill (G-1 Task 1)
 
 One registry per session owns every Bash command that outlives its call:
 detached spawn, SIGTERM→SIGKILL group kill (taskkill /T on Windows), on-disk
 log from the first byte, 200-line ring, 40-line wire view, debounced change
-events, env-file cleanup on exit. Nothing uses it yet.
+events, env-file cleanup on exit. Reads are positional and bounded so a huge
+log is never loaded whole. The 7-day spill sweep moves to spill-paths.ts so
+these logs are swept too. Nothing uses it yet.
 
 Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01FW77yMCvebQ79KQ9AQwGnj"
@@ -1125,7 +1311,7 @@ describe.skipIf(!posix)('Task 4: hand-off at the time limit', () => {
     const r: any = await BashTool.execute({ command: 'echo early; node -e "setTimeout(()=>{}, 4000)"', timeout: 400 }, ctx());
     expect(r.isError).toBeFalsy();
     expect(r.timedOut).toBe(false);
-    expect(r.text).toMatch(/^Still running after 0s — handed off to the background \(shell id sh-[0-9a-f]{4}\)\. You'll be told when it finishes\./);
+    expect(r.text).toMatch(/^Still running after \d+s — handed off to the background \(shell id sh-[0-9a-f]{4}\)\. You'll be told when it finishes\./);
     expect(r.text).not.toMatch(/exit 124|SIGKILL|force-killed/);
     expect(r.text).toContain('early');                       // output so far, under the usual bounds
     const run = reg.list()[0];
@@ -1203,6 +1389,24 @@ const LEADING_SLEEP = /^\s*sleep\b/;
 Inside `execute`'s Promise executor: capture `const startedAt = Date.now();` right before the `let child;` spawn block, and declare `let handedOffTo: string | null = null;` next to `let done = false;`.
 
 In `finish()`:
+- Guard the probe block. Change `if (probe) {` to the pair below, so a hand-off can never apply the
+  cwd or env of a command that is still running. Today it "passes" only because a command that has
+  not exited has not printed its sentinel yet — but the timer can fire in the same instant the
+  command finishes, and then the sentinel IS in the buffer and the cwd WOULD be applied to a run
+  the tool result calls handed off:
+
+```ts
+        // G-1: a handed-off call must not apply the probe's results — the cwd
+        // and env belong to a command still running in the background (D6, and
+        // the registry unlinks the env temp file when it finally exits). The
+        // sentinels are stripped for display only.
+        if (probe && handedOffTo) {
+          headBuf = stripSentinelLines(headBuf);
+          tailBuf = stripSentinelLines(tailBuf);
+        } else if (probe) {
+```
+  (the existing block's body and its closing brace are untouched.)
+
 - Change the meta line: replace `const meta = [\`cwd: ${effectiveCwd}\`, \`exit ${code ?? '?'}\`];` with
 ```ts
         // A handed-off call has no exit yet — say so, and name the log the
@@ -1253,7 +1457,10 @@ Replace the whole `const timer = setTimeout(() => { … }, timeout);` block with
         handedOffTo = run.shellId;
         spillPath = run.logPath;
         finish(
-          `Still running after ${formatElapsed(timeout)} — handed off to the background (shell id ${run.shellId}). You'll be told when it finishes. Output so far:\n`,
+          // Real elapsed, not the configured limit: the two differ (the timer
+          // fires late under load), and "after 2m" must describe the command,
+          // not the setting.
+          `Still running after ${formatElapsed(Date.now() - startedAt)} — handed off to the background (shell id ${run.shellId}). You'll be told when it finishes. Output so far:\n`,
           false,
           undefined,
           false,
@@ -1261,7 +1468,7 @@ Replace the whole `const timer = setTimeout(() => { … }, timeout);` block with
       }, timeout);
 ```
 
-- [ ] **Step 4: Run to verify pass** — `npx vitest run tests/bash-background.test.ts tests/harness-tools-core.test.ts tests/harness-tool-conformance.test.ts tests/native-tools-polish.test.ts` — Expected: PASS. `harness-tools-core`'s `'times out and reports it'` and the `'timeout representation'` cases still pass because their contexts carry no `shells`.
+- [ ] **Step 4: Run to verify pass** — `npx vitest run tests/bash-background.test.ts tests/harness-tools-core.test.ts tests/harness-tool-conformance.test.ts tests/native-tools-polish.test.ts` — Expected: PASS. `harness-tools-core`'s `'times out and reports it'` and the `'timeout representation'` cases still pass because their contexts carry no `shells`. The `probe && handedOffTo` guard is deliberately NOT pinned by a test: reproducing "the command exits in the same millisecond the timer fires" is not something a test can do reliably, and a defensive guard whose test is flaky is worse than none. Its reasoning lives in the comment at the edit site.
 
 - [ ] **Step 5: Commit**
 
@@ -1501,7 +1708,7 @@ export const BashOutputTool = defineTool({
     const running = reg?.list().filter((r) => r.status === 'running').map((r) => r.shellId) ?? [];
     const read = reg ? await reg.read(args.shell_id) : undefined;
     if (!read) return { text: unknownId(args.shell_id, running), isError: true };
-    const { run, text } = read;
+    const { run, text, truncated } = read;
     const state = stateText(run);
     if (!text.trim()) {
       return {
@@ -1513,6 +1720,13 @@ export const BashOutputTool = defineTool({
     const all = text.replace(/\n$/, '').split('\n');
     const shown = all.slice(-BASH_OUTPUT_MAX_LINES);
     const body = `${run.shellId} · ${state}\n${shown.join('\n')}`;
+    // `truncated` means the registry itself capped the read (the log grew by
+    // more than READ_MAX_BYTES since the last look), so `all.length` is NOT the
+    // true total — say "more than", never a count we did not measure. Bounds
+    // reports null for an unknown total; the hint names the log either way.
+    if (truncated) {
+      return { text: body, bounds: { shown: shown.length, total: null, unit: 'lines' as const, moreHint: `more than this arrived since your last look — the full output is in the log: ${run.logPath}` } };
+    }
     return all.length > BASH_OUTPUT_MAX_LINES
       ? { text: body, bounds: { shown: shown.length, total: all.length, unit: 'lines' as const, moreHint: `the earlier lines are in the log: ${run.logPath}` } }
       : { text: body };
@@ -1552,8 +1766,13 @@ export const KillShellTool = defineTool({
     await reg.kill(run.shellId, 'assistant');
     const elapsed = formatElapsed((run.endedAt ?? Date.now()) - run.startedAt);
     const tail = reg.tailText(run, 20).trim() || '(no output)';
-    const still = run.status === 'running' ? ' It had not exited after 5 s; the kill signal was sent and it should be gone shortly.' : '';
-    return { text: `Stopped ${run.shellId} after ${elapsed} (was: ${run.command}).${still} Last lines:\n${tail}\nFull log: ${run.logPath}` };
+    // Never open with "Stopped" for a process that is demonstrably still
+    // alive — the old wording said "Stopped X" and then, one sentence later,
+    // that it had not stopped. Two verbs, one true each time.
+    const head = run.status === 'running'
+      ? `Sent the stop signal to ${run.shellId} (was: ${run.command}), but it had not exited after 5 s — it should be gone shortly.`
+      : `Stopped ${run.shellId} after ${elapsed} (was: ${run.command}).`;
+    return { text: `${head} Last lines:\n${tail}\nFull log: ${run.logPath}` };
   },
 });
 ```
@@ -1666,7 +1885,7 @@ Claude-Session: https://claude.ai/code/session_01FW77yMCvebQ79KQ9AQwGnj"
 **Interfaces:**
 - Produces in `shared/types.ts`:
   ```ts
-  export interface SpecialistInjectedMeta { childId: string; title: string; agentType: string; description?: string; status: 'completed' | 'failed'; steps?: number; parentToolCallId?: string }
+  export interface SpecialistInjectedMeta { kind?: undefined; childId: string; title: string; agentType: string; description?: string; status: 'completed' | 'failed'; steps?: number; parentToolCallId?: string }
   export interface ShellInjectedMeta { kind: 'shell'; runs: Array<{ shellId: string; toolUseId: string; exitCode?: number; stopReason?: ShellStopReason; elapsedMs: number; logPath: string }> }
   export type InjectedMeta = SpecialistInjectedMeta | ShellInjectedMeta;   // TranscriptEvent.data.injectedMeta
   export type ShellEvent = { sessionId: string; run: ShellRunView };
@@ -1804,6 +2023,47 @@ describe('G-1 background Bash — registry lifetime and finished notices', () =>
     spy.mockRestore();
   });
 
+  it.skipIf(!posix)('END TO END: the model starts a background command and gets its finished notice on the right card', async () => {
+    // The one test that crosses every seam at once. Every other test in this
+    // plan builds one layer's input by hand — this one lets the real Bash tool
+    // mint the run, so the chain that nothing else covers is exercised:
+    // ctx.toolCallId -> run.toolUseId -> the toolUseId the card is keyed by,
+    // and the ShellRunView the renderer receives. A break anywhere in it means
+    // the card silently never updates, which no unit test would notice.
+    await host.destroyAll();
+    const bashThenStop = async () => scriptedModel([
+      stream(toolCallChunk('c1', 'Bash', { command: 'echo hello-e2e; exit 5', run_in_background: true }), finishChunk('tool-calls')),
+      stream(...textChunks('t', 'started'), finishChunk('stop')),
+      stream(...textChunks('t2', 'noted'), finishChunk('stop')),   // the notice turn
+    ]) as any;
+    host = new NativeSessionHost(store, bashThenStop, NO_CONTEXT, async () => null, async () => null);
+    await host.create({ sessionId: 'e2e', cwd: root, binding });
+    host.setPermissionMode('e2e', 'full-auto');   // Bash is not deny-listed, so no ask
+
+    const views: any[] = [];
+    host.on('shell-event', (e: any) => views.push(e));
+    const notice = waitForEvent(host, (e) => e.type === 'user-message' && e.data.injected === 'shell-complete');
+    const startResult = waitForEvent(host, (e) => e.type === 'tool-result' && e.data.toolName === 'Bash');
+
+    host.send('e2e', 'start it');
+    const res = await startResult;
+    expect(res.data.toolResult).toMatch(/^Started in the background \(shell id sh-[0-9a-f]{4}\)\./);
+    const shellId = /shell id (sh-[0-9a-f]{4})/.exec(res.data.toolResult)![1];
+
+    const e = await notice;
+    expect(e.data.text).toContain(`[Background command ${shellId} finished · exit 5`);
+    expect(e.data.text).toContain('hello-e2e');
+    // The whole point: the meta's toolUseId is the id of the Bash tool-use
+    // event, so the reducer can find the card this notice belongs to.
+    const meta = e.data.injectedMeta;
+    expect(meta.kind).toBe('shell');
+    expect(meta.runs).toHaveLength(1);
+    expect(meta.runs[0]).toMatchObject({ shellId, exitCode: 5 });
+    expect(meta.runs[0].toolUseId).toBe(res.data.toolUseId);
+    // And the live push carries the same id, on the same card.
+    expect(views.some((v) => v.sessionId === 'e2e' && v.run.shellId === shellId && v.run.toolUseId === res.data.toolUseId)).toBe(true);
+  }, 20_000);
+
   it.skipIf(!posix)("shell-event fires with the ShellRunView and shellRunsFor replays it", async () => {
     const views: any[] = [];
     host.on('shell-event', (e: any) => views.push(e));
@@ -1829,6 +2089,13 @@ describe('G-1 background Bash — registry lifetime and finished notices', () =>
  *  rather than parsed back out of the prose the model reads.
  *  `parentToolCallId` names the Task card that started this child. */
 export interface SpecialistInjectedMeta {
+  /** G-1: the union's discriminant, declared here as always-absent so every
+   *  reader can write `meta.kind === 'shell'`. Without it TypeScript rejects
+   *  reading `.kind` off the union at all, and the code has to alternate
+   *  between `'kind' in meta` and `.kind` — which is exactly how the first
+   *  draft of this plan shipped a compile error into drainDeliveries. Optional
+   *  and undefined, so no persisted specialist record changes shape. */
+  kind?: undefined;
   childId: string;
   title: string;
   agentType: string;
@@ -1872,7 +2139,7 @@ Also add `NATIVE_KILL_SHELL: 'native:kill-shell',` after `NATIVE_SESSIONS_LIST` 
   // G-1: `meta` is now a union; this card renders the specialist shape. A
   // shell-complete turn only reaches it when its Bash card is not on the
   // timeline (the reducer folds it otherwise) — then it degrades to prose.
-  const spec = meta && !('kind' in meta) ? meta : undefined;
+  const spec = meta?.kind === 'shell' ? undefined : meta;
 ```
 and replace every following `meta` read in the component body with `spec` (`failed`, `label`, `detailParts`, `body`).
 
@@ -1882,7 +2149,7 @@ and replace every following `meta` read in the component body with `spec` (`fail
   async runNotice(text: string, meta?: InjectedMeta): Promise<void> {
     // G-1: the discriminant tells the renderer which card folds this turn —
     // a Task card (specialist report) or a Bash card (shell-complete).
-    const injected = meta && 'kind' in meta && meta.kind === 'shell' ? 'shell-complete' : 'specialist-report';
+    const injected = meta?.kind === 'shell' ? 'shell-complete' : 'specialist-report';
     return this.beginTurn(text, () => this.emitEvent('user-message', {
       text, injected,
       ...(meta ? { injectedMeta: meta } : {}),
@@ -1907,6 +2174,12 @@ Fields — replace `private pendingHostNotices = new Map<string, string[]>();` w
    *  need an owner that can kill them at app quit and re-attach them if the
    *  same conversation is resumed in this process. */
   private shellRegistries = new Map<string, ShellRegistry>();
+  /** G-1: registries whose conversation was closed and whose kill is still in
+   *  flight. Why a second collection: a close sends SIGTERM and escalates to
+   *  SIGKILL two seconds later, but the registry leaves shellRegistries at
+   *  once — so quitting the app inside that window left a process that ignores
+   *  SIGTERM alive with nothing left to reach it. destroyAll sweeps this too. */
+  private drainingShellRegistries = new Set<ShellRegistry>();
 ```
 
 Add methods (next to `queueHostNotice`):
@@ -2002,7 +2275,7 @@ Add methods (next to `queueHostNotice`):
         const batch = headIsShell ? notices.filter((n) => n.meta?.kind === 'shell') : [head];
         const text = batch.map((n) => n.text).join('\n\n');
         const meta: InjectedMeta | undefined = headIsShell
-          ? { kind: 'shell', runs: batch.flatMap((n) => (n.meta && 'kind' in n.meta ? n.meta.runs : [])) }
+          ? { kind: 'shell', runs: batch.flatMap((n) => (n.meta?.kind === 'shell' ? n.meta.runs : [])) }
           : head.meta;
         try {
           await entry.session.runNotice(text, meta);
@@ -2028,9 +2301,14 @@ Add methods (next to `queueHostNotice`):
       const reg = this.shellRegistries.get(sessionId);
       if (reg) {
         this.shellRegistries.delete(sessionId);
+        // Held until the kill settles so app-quit can still reach a process
+        // that is ignoring SIGTERM inside the 2 s escalation window.
+        this.drainingShellRegistries.add(reg);
         // Signals are sent synchronously; only the exit wait is deferred —
         // closing a tab must not stall on a stubborn process.
-        void reg.killAll('conversation-closed').catch((err) => log('WARN', 'NativeSessionHost', 'killAll on destroy failed', { sessionId, error: String(err) }));
+        void reg.killAll('conversation-closed')
+          .catch((err) => log('WARN', 'NativeSessionHost', 'killAll on destroy failed', { sessionId, error: String(err) }))
+          .finally(() => this.drainingShellRegistries.delete(reg));
       }
     }
 ```
@@ -2046,6 +2324,12 @@ Add methods (next to `queueHostNotice`):
       void reg.killAll('app-quit', { graceMs: 0 }).catch((err) => log('WARN', 'NativeSessionHost', 'killAll on quit failed', { sessionId: id, error: String(err) }));
     }
     this.shellRegistries.clear();
+    // A conversation closed seconds ago is still escalating SIGTERM→SIGKILL;
+    // finish the job now rather than let the escalation timer die with us.
+    for (const reg of this.drainingShellRegistries) {
+      void reg.killAll('app-quit', { graceMs: 0 }).catch(() => { /* already gone */ });
+    }
+    this.drainingShellRegistries.clear();
 ```
 
 `interrupt` — untouched (the test pins it).
@@ -2212,6 +2496,14 @@ Claude-Session: https://claude.ai/code/session_01FW77yMCvebQ79KQ9AQwGnj"
         break;
       }
 ```
+
+**Android's copy of the shim is a tracked build artifact.** `app/src/main/assets/web/remote-shim.js`
+is the compiled output of `remote-shim.ts` and IS committed. The phone's WebView reads `on.shellEvent`
+out of that file, and Task 8 subscribes to it unguarded (`window.claude.on.shellEvent(...)`, matching
+how `specialistEvent` is already called), so a stale bundle would be a TypeError at mount. Gradle's
+`bundleWebUi` regenerates it on every Android build, so nothing breaks at runtime — but do NOT hand-edit
+it, and expect the next Android build to produce a diff in it. That regeneration is why this task needs
+no Android build of its own; the Kotlin change really is one string.
 
 `SessionService.kt` — after the `"native:sessions-list",` line in the not-implemented `when` list:
 ```kotlin
@@ -2450,7 +2742,7 @@ export function markOrphanedShellRuns(toolCalls: Map<string, ToolCallState>): Ma
       // is not appended. A record the live push already set is never
       // overwritten (it has the real tail); a missing or still-'running' one
       // is filled from the meta so a resumed transcript reads correctly.
-      if (action.injected === 'shell-complete' && action.injectedMeta && 'kind' in action.injectedMeta) {
+      if (action.injected === 'shell-complete' && action.injectedMeta?.kind === 'shell') {
         const toolCalls = new Map(session.toolCalls);
         let folded = false;
         for (const r of action.injectedMeta.runs) {
@@ -2478,7 +2770,7 @@ export function markOrphanedShellRuns(toolCalls: Map<string, ToolCallState>): Ma
         }
       }
 ```
-- Guard the existing specialist fold: change `if (action.injected && action.injectedMeta) {` to `if (action.injected && action.injectedMeta && !('kind' in action.injectedMeta)) {`.
+- Guard the existing specialist fold: change `if (action.injected && action.injectedMeta) {` to `if (action.injected && action.injectedMeta && action.injectedMeta.kind !== 'shell') {`.
 - `TRANSCRIPT_REPLAY_COMPLETE`: replace the case body with:
 
 ```ts
@@ -2604,9 +2896,15 @@ cap is gone). `BashOutput` reads new output since the last look (or lists this c
   filtered ON READ (tail, BashOutput, notice) while the raw log keeps them. The cap (5) counts
   explicit starts only; a hand-off always succeeds (D5).
 - **Output: on disk from the first byte, a 200-line ring in memory, 40 lines on the wire.**
-  The log reuses the spill naming + 7-day sweep (`spill-paths.ts`). `lastReadBytes` (the log's
-  byte length at the last BashOutput) is the read cursor. `'change'` events are debounced to ≤4/s
-  per run and carry a `ShellRunView` with the last 40 lines — the phone on cellular is the reader.
+  The log reuses the spill naming and the 7-day sweep, which MOVED to `spill-paths.ts` in this
+  change so background logs are swept too (in `bash.ts` it only ever fired from a foreground
+  spill). `lastReadBytes` (the log's byte length at the last BashOutput) is the read cursor, and
+  the read is POSITIONAL and capped at `READ_MAX_BYTES` — never load a multi-hundred-MB build log
+  into the main process to slice off its tail. Carriage-return redraws are normalized to newlines
+  (`normalizeNewlines`) so a progress bar cannot grow one unfinished line without bound.
+  `'change'` events are debounced to ≤4/s per run and carry a `ShellRunView` with the last 40
+  lines — the phone on cellular is the reader.
+  <!-- verify: {"path": "youcoded/desktop/src/main/harness/tools/spill-paths.ts", "contains": "sweepOldSpillFiles"} -->
 - **Delivery reuses the specialists' idle-boundary path.** `queueHostNotice(parentId, text,
   meta, whyDropped)` → `drainDeliveries` → `runNotice(text, meta)` with `injected:
   'shell-complete'`; `injectedMeta` is the union `SpecialistInjectedMeta | ShellInjectedMeta`, the
@@ -2638,6 +2936,13 @@ cap is gone). `BashOutput` reads new output since the last look (or lists this c
 - **Concurrent writes** by a background command to files the assistant is editing are not detected.
 - **Windows tree kill** relies on `taskkill /T`; the grandchild test is POSIX-only, the Windows
   path is unit-mocked.
+- **The cap of 5 is per registry, and every specialist child gets its own** — a conversation running
+  five helpers can therefore hold thirty background commands at once. Deliberate: a helper that
+  cannot start its own build is a helper that cannot do its job, and every one of those runs still
+  dies with its child under `conversation-closed`.
+- **A read is capped at 1 MB per call** (`READ_MAX_BYTES`). A command that prints more than that
+  between two `BashOutput` calls has its older lines skipped, not queued — `bounds.total` goes to
+  `null` ("at least N") and the hint names the log, which holds everything.
 
 Rule: `.claude/rules/harness-tools.md` → the "Background Bash" bullet.
 ```
@@ -2741,4 +3046,25 @@ At merge time (after the youcoded PR lands on `origin/master`): `git mv` the thr
 - §5.1 says the registry is "owned by `HarnessSession`"; here the HOST owns its lifetime (map keyed by session id) and the session only holds the reference — otherwise a taken-over session's runs are unreachable at app quit, breaking D2's second half.
 - §5.4's meta shape is a single run; D8 (several notices → one turn) forces a LIST (`runs[]`), and `logPath` is added so a resumed card can name its log.
 - A user Stop (card button) sends a finished notice ("stopped by you") — the spec is silent; the model must not keep believing its server is up. KillShell still sends none.
-- `MAX_RETAINED_ENDED = 50` bounds how many finished runs `list()` keeps — the spec had no bound.
+- Finished runs are kept for the life of the conversation with no cap. An earlier draft evicted past 50, which saved tens of KB and bought a false "No background command sh-abcd" about a command that plainly existed.
+
+---
+
+## Review pass 2026-08-28 (second reader) — changes folded in above
+
+Verified against the branch, not inferred. Eight fixes, all already applied in the tasks:
+
+1. **A compile error in Task 6.** `drainDeliveries` read `.kind` off a union whose specialist half had no such field; `tsc` rejects that. Fixed by declaring `kind?: undefined` on `SpecialistInjectedMeta` and using `.kind === 'shell'` at all five sites, instead of alternating with `'kind' in meta`.
+2. **A handed-off log was half colour codes.** `bash.ts` keeps `headBuf` RAW and strips ANSI only at write time (`bash.ts:633`); the seed write did not. The model's first `BashOutput` after a hand-off would have read `[1m[30m RUN`. Now `stripAnsi(normalizeNewlines(seedLog))`.
+3. **Background logs were never swept.** The 7-day sweep only ever fired from `startSpill()` inside `bash.ts`; the registry opens its own log and never called it, so a user whose long commands all run in the background leaked every log forever. Sweep moved to `spill-paths.ts` (whose own header names "one definition, two importers" as its reason to exist) and called from `register()`.
+4. **A hand-off could still apply the command's `cwd`.** The "never applies cwd" property held only because an unfinished command has not printed its sentinel yet — the timer can fire in the same instant it finishes. Now guarded explicitly on `handedOffTo`.
+5. **`read()` loaded the entire log every call.** Hundreds of MB, up to eight times a turn. Now a positional read bounded by `READ_MAX_BYTES`, with `truncated` reported honestly (`bounds.total: null` → "at least N", never a count we did not measure).
+6. **A redrawing progress bar grew one line without bound.** npm/gradle/pip/docker redraw with `\r` and no newline, so the line splitter never fired. `normalizeNewlines` + a `MAX_PARTIAL_CHARS` ceiling.
+7. **Close-then-quit inside 2 s left a process alive.** A close removed the registry from the map immediately but escalated SIGTERM→SIGKILL two seconds later; quitting in that window left nothing able to reach a process ignoring SIGTERM. `drainingShellRegistries` holds it until the kill settles, and `destroyAll` sweeps that set too.
+8. **`KillShell` said "Stopped X" and then that X had not stopped.** Two headline verbs now, one true in each case.
+
+Also added: **Task 0** — `verify.sh` fails on the branch *before* this plan changes anything (5 failures; the mockup commit added a `shell_run` fixture kind the guard test's allowlist never learned). Every "expected: FAIL / expected: PASS" step below is only meaningful against a green baseline, so that goes first.
+
+Also added: **one end-to-end test** (Task 6) — the only test in the plan that crosses every seam, letting the real Bash tool mint the run so the `ctx.toolCallId → run.toolUseId → card key` chain is actually exercised. Every other test builds one layer's input by hand, and a break in that chain means the card silently never updates.
+
+Checked and found sound, no change needed: `ctx.toolCallId` is populated for every tool call (`harness-session.ts:2873`), so the card key is real; transcript events are forwarded to the renderer synchronously before the tool executes (`native-session-host.ts:2647`), so the first `shell-event` cannot beat its own card into existence; `SESSION_DESTROY` fires only on an explicit close (`ipc-handlers.ts:837`), so switching conversations does not kill background commands and the `keepShells` mapping in Task 7 is right; `recentCalls` is already a per-turn local, so the doom-loop edit needs no new reset; the rule body really is at 597 of 600 words, so Task 10's three trims are required.
