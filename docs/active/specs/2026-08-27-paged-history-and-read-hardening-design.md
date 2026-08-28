@@ -2,7 +2,7 @@
 title: Paged conversation history + read-side hardening (the rest of the OOM bug class)
 date: 2026-08-27
 status: draft
-review: PAUSED — unreviewed. Destin approved the design direction in conversation on 2026-08-27 but asked to ship only the crash fix now; this document has NOT been reviewed as a spec and no plan exists for it.
+review: REVIEWED 2026-08-28 against master 97600ddd (three parallel code sweeps, every claim checked) — see '## Spec review' at the end. §2 is cycle 2 of the perf programme; §3/§4 stay separate ROADMAP items. Plan: pending Destin's two scope decisions in the review.
 tags: [artifacts, memory, crash, conversations, chat-reducer, android]
 related:
   - docs/active/investigations/2026-08-27-artifacts-sidecar-oom-crash.md (the crash and the six-lens sweep this spec answers)
@@ -248,3 +248,109 @@ one to paper over this.
   launch while the installed app predates the slug split — stops on upgrade).
 - Capping the bytes of a single tool result kept in the reducer; virtualising
   the ChatView list.
+
+## Spec review (2026-08-28, against master `97600ddd`)
+
+Every claim in §2 was checked against the code by three read-only sweeps (main-process
+readers, renderer/reducer, perf rig). What holds, what was wrong, and what the plan must
+do differently. §3 and §4 were NOT reviewed here — they are not cycle 2.
+
+### Verified (the spec is right)
+
+- Replay reads the whole transcript synchronously (`transcript-watcher.ts:456-492`,
+  `readFileSync`, then every `agent-*.jsonl` the same way) and sends one IPC message per
+  event (`ipc-handlers.ts:2568-2570`). `loadHistory` reads the whole file and slices AFTER
+  parsing (`session-browser.ts:677-685`). `model:read-last` likewise.
+- The live tailer starts at `offset: 0` for an existing file (`transcript-watcher.ts:390`),
+  so a resumed session is delivered TWICE (replay + live) — a documented pathology that
+  OOM-killed main on 2026-08-15 (`docs/artifacts.md:10`). `SubagentWatcher.scanDirectory`
+  fires an unbounded parallel read per pre-existing file from byte 0 (`:209-288`).
+- The five renderer load paths exist (`App.tsx:1715`, `:1787`, `:2425`, `:2456-2459`,
+  `ChatView.tsx:77-82`) plus the buddy window's own (`BubbleFeed.tsx:285`); `resumeInfo` is
+  live and is the SOLE data source for the expand button (10 usages).
+- No virtualisation anywhere (`ChatView.tsx:810` plain `.map`); `content-visibility:auto`
+  was tried and removed (`globals.css:804`) — do not reintroduce it.
+- `.claude/rules/chat-reducer.md:40` says the `toolCalls` Map is never cleared and the
+  ast-grep rule `toolcalls-never-cleared.yml` enforces it; eviction must be sanctioned there.
+- `seenUuids` is cloned on every uuid-bearing event (5 sites) — O(n²) on a full replay.
+- `chat:hydrate` sends the ENTIRE timeline (`chat-types.ts:783-814`, `serializeChatState`).
+- Backward 64 KB chunk scan pattern exists in `readTranscriptMeta` (`transcript-utils.ts:41`).
+
+### Wrong or missing — the plan must differ from §2 here
+
+1. **`transcript:replay-from-start` is desktop-only.** It is not on `remote-shim.ts`
+   (a no-op stub at `:1473`), not a `remote-server.ts` WS case, and absent from Android
+   (`rg` over `app/` → nothing). "Remove it from all three surfaces" is moot; only
+   `preload.ts` + `ipc-handlers.ts` carry it. The phone hydrates via `chat:hydrate`;
+   on-device Android gets history ONLY through its live tailer starting at offset 0.
+2. **Events carry no byte offset** (`TranscriptEvent` = type/sessionId/uuid/timestamp/data).
+   §2's eviction cursor ("every user-prompt entry carries the byte offset of its line")
+   requires adding one: the tailer's `readNewLines` and the page reader both know line
+   starts, so `data.offset` on `user-message` is cheap on desktop; Android's
+   `TranscriptWatcher.parseLine` must mirror it when Android pages.
+3. **Reducer ids are global counters, not transcript uuids** (`chat-reducer.ts:21-54`;
+   `turn-N`/`group-N` are not even epoch-prefixed; `hist-` uses a third counter). Rewriting
+   id minting to uuids is a deep change. **Recommended instead:** keep the counters —
+   prepend cannot collide because counters only grow — and get idempotency from the
+   CURSOR discipline (one in-flight page per session, cursor monotonic, main single-flight
+   per `(session, cursor)`), not from id identity. Eviction removes a timeline RANGE, not
+   ids.
+4. **Overlap between the first page and the live tailer must be removed, not deduped.**
+   Main-side dedupe (`transcript-watcher.ts:463-482`, `:691-707`) only skips repeated
+   `assistant-text`; tool events on the overlap window would render twice. Fix: the first
+   page request happens AFTER `startWatching`, and the page reader takes the tailer's start
+   offset as the page's END boundary — page = `[boundary, tailerStart)`, tailer = `[tailerStart, ∞)`.
+   No overlap, no dedupe needed.
+5. **`HISTORY_LOADED`/`hasMore` has a hidden dependant:** `pty-input-gate.ts:37` keys the
+   input gate on the resume-time `HISTORY_LOADED` dispatch. Retiring it must re-key the
+   gate on the first page's arrival.
+6. **`TRANSCRIPT_REPLAY_COMPLETE` clears `attentionState`/`errorMessage`**
+   (`chat-reducer.ts:1690-1697`, documented latent bug). Only the FIRST page may fire it;
+   later pages must never.
+7. **The native replay handler re-sends more than transcript events** — broker-held
+   permission asks (`ipc-handlers.ts:2578`) and specialist run records (`:2596`). The first
+   page must preserve those out-of-band sends. `NativeSessionHost.getHistory` returns null
+   for NON-LIVE sessions (`:3760`), so the native page reader must read `SessionStore`
+   files, not the live host.
+8. **Two reducer instances.** The buddy window runs its own `chatReducer`
+   (`BubbleFeed.tsx:265-270`); every new history action needs a buddy-side dispatcher.
+9. **`ipc-channels.test.ts` does not enforce global parity** — it is opt-in per channel
+   (hand-listed describe blocks). `transcript:page` must get its own block.
+10. **`hasMore` already exists** as a one-shot toggle (`HISTORY_LOADED` action field,
+    "last 10" vs "all"). Replace it, do not extend it.
+11. **Reuse, don't reinvent:** `ResumeBrowser.tsx:525-538, 1363` already implements the
+    top-sentinel + `hasMore` IntersectionObserver pattern; `fs-read-head.ts`,
+    `NativeHome.readSessionHead` (`native-home.ts:188`) and `readSessionTranscriptMeta`
+    (`session-browser.ts:287`) are the existing bounded readers.
+12. **`artifact-tracker.ts` has no session-removal case** and the real action is
+    `SESSION_REMOVE` (no D). §4 housekeeping, not cycle 2.
+
+### The rig must change WITH this feature (budgeted into cycle 2)
+
+- `scenario-history.mjs:326-341` settles on ANY non-zero count holding still for 1 s — it
+  would accept a first-page render as "done" and report a fake win. It must require
+  `n >= ENTRIES_PER_TURN × min(turns, PAGE_TURNS)`. Same at `scenario-replay-stall.mjs:443`
+  (its `expectedEntries` is computed and unused).
+- `scenario-workload.mjs:365-374` requires `n >= 2 × turns` and would pin every switch at
+  its 20 s cap (PRIMARY `switchPaintedBySize.huge.medianMs` → ~20,000). Add
+  `PAGE_TURNS` and `renderedEntries(turns) = ENTRIES_PER_TURN × min(turns, PAGE_TURNS)`;
+  keep `expectedEntries` exported for its tests.
+- `history.*.resumeStableMs` stays the KEEP metric: it is the same user-facing clock
+  ("conversation open and usable"), now honestly guarded. Tests to update are listed in
+  the rig sweep (`tests/scenario-workload.test.mjs:25,30,64`,
+  `tests/scenario-history.test.mjs:67-93`, `tests/scenario-replay-stall.test.mjs:305,333`,
+  `tests/run-report.test.mjs:100-112,332,636`).
+- Optional, later: a separate `resumeFullHistoryMs` clock that scrolls to the top until
+  `hasMore` is false — a new metric, never folded into `resumeStableMs`.
+
+### Scope decisions for Destin (2026-08-28)
+
+- **D1 — Android in this cycle?** On-device Android needs a Kotlin tail-page reader +
+  start-at-end (§2, "Phone, other windows, Android"). Recommended: desktop first (the phone
+  over remote is covered automatically via `chat:hydrate` + a `transcript:page` WS case);
+  Android on-device as the following cycle, with the shared UI degrading to today's
+  behaviour where `transcript:page` is unsupported.
+- **D2 — Eviction in this cycle?** Paging + start-at-end delivers the open/switch win.
+  Eviction is the memory half (needs the byte-offset field, a per-turn visibility
+  observer, a timer, and scroll anchoring on removal). Recommended: cycle 2 = paging;
+  eviction joins cycle 3 (park hidden views), which is the memory cycle anyway.
