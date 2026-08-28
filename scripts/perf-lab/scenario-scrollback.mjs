@@ -62,6 +62,10 @@ export const SCROLL_SIZES = Object.freeze(['huge', 'medium', 'small']);
  * (a cursor that never advances) spin forever.
  */
 export const MAX_PAGES = 200;
+/** Idle window before the ceiling is collected and read — see the ceiling block. */
+export const CEILING_SETTLE_MS = 5000;
+/** Idle window before a per-leg reading, for the same reason as the ceiling. */
+export const LEG_SETTLE_MS = 2000;
 export const PER_SESSION_BUDGET_MS = 180000;
 /** One page load may legitimately take a while on `huge`; past this we stop asking. */
 const PAGE_TIMEOUT_MS = 30000;
@@ -156,6 +160,39 @@ async function installScrollHelpers(cdp) {
       },
 
       /**
+       * How many timeline entries across EVERY session are rendering as an empty
+       * spacer rather than their content.
+       *
+       * WHY the rig counts this rather than inferring it from PSS: on 2026-08-28
+       * a change that folds off-screen entries reported a ceiling 200 MB WORSE
+       * than baseline with a DOM node count identical to it, and there was no way
+       * to tell "the optimization never engaged" from "it engaged and the reading
+       * was taken too early". A memory number cannot answer that; a count of
+       * childless entries can. Same rule as the screenshot pass: a mechanism that
+       * cannot prove it ran is reported as unproven, never as ineffective.
+       *
+       * Unscoped to the visible pane on purpose — background sessions are where
+       * most of the folding should happen.
+       */
+      folded: () => {
+        const all = document.querySelectorAll('.timeline-entry');
+        let empty = 0;
+        for (const el of all) if (el.childElementCount === 0) empty++;
+        // Split by pane as well as in total. A single number could not tell
+        // "folding only works in the pane you are looking at" from "folding
+        // works everywhere but weakly", and those have completely different
+        // fixes (2026-08-28: three builds all reported ~730 of 12,100, which no
+        // aggregate could explain).
+        const panes = Array.prototype.slice.call(document.querySelectorAll('.chat-scroll')).map((p) => {
+          const es = p.querySelectorAll('.timeline-entry');
+          let e = 0;
+          for (const el of es) if (el.childElementCount === 0) e++;
+          return { visible: !p.closest('[aria-hidden="true"]'), total: es.length, folded: e };
+        });
+        return { total: all.length, folded: empty, panes };
+      },
+
+      /**
        * One page turn, driven the way a user drives it: put the scroller at the
        * top so the sentinel crosses the IntersectionObserver, then wait for the
        * entry count to GROW.
@@ -231,6 +268,7 @@ export const NUMERIC_KEYS = [
   'floorDomNodes', 'ceilingDomNodes', 'deltaDomNodes',
   'floorListeners', 'ceilingListeners', 'deltaListeners',
   'releasedMb', 'totalPagesLoaded', 'totalEntriesLoaded',
+  'foldedEntries', 'totalEntries',
 ];
 
 /** Median of the numbers in `xs`; null (never NaN) if there are none. */
@@ -348,6 +386,11 @@ export async function runScrollbackScenario(app, fixture, { onProgress } = {}) {
         warnings.push(`scrollback: ${size}: stopped at the ${Math.round(PER_SESSION_BUDGET_MS / 1000)}s budget after ${pages} pages — the ceiling is a FLOOR for this conversation`);
       }
 
+      // Give the app's own idle work a chance to run before reading the leg, for
+      // the same reason the ceiling settles — otherwise a per-leg number reports
+      // the app mid-transition and reads as a regression.
+      await sleep(LEG_SETTLE_MS);
+      const legFold = await cdp.evaluate(`window.__perfScroll.folded()`);
       const after = await readMemory(app);
       const state = await cdp.evaluate(`window.__perfScroll.state()`);
       totalPagesLoaded += pages;
@@ -361,16 +404,36 @@ export async function runScrollbackScenario(app, fixture, { onProgress } = {}) {
         pssAfterMb: after.pssMb,
         jsHeapAfterMb: after.jsHeapMb,
         domNodesAfter: after.domNodes,
+        // Measured while THIS conversation is still the visible one.
+        foldedInPane: legFold?.panes?.find((p) => p.visible)?.folded ?? null,
+        entriesInPane: legFold?.panes?.find((p) => p.visible)?.total ?? null,
+        foldedEverywhere: legFold?.folded ?? null,
       };
-      onProgress?.({ size, pages, reachedTop, entries: perSize[size].entriesAfter, pssMb: after.pssMb, partial: false });
+      onProgress?.({ size, pages, reachedTop, entries: perSize[size].entriesAfter, pssMb: after.pssMb, partial: false,
+        folded: perSize[size].foldedInPane, inPane: perSize[size].entriesInPane });
     }
 
     // ── The ceiling ──────────────────────────────────────────────────────
-    // GC first: a rise that a collection removes was never retained, and reporting
-    // it would over-state the prize cycle 3 is chasing.
+    // SETTLE FIRST, THEN COLLECT, THEN READ — the order is load-bearing.
+    //
+    // Any optimisation that reacts to the viewport is lazy by construction: it
+    // waits for scrolling to stop before doing its work. Reading immediately
+    // after the last scroll therefore measures the app MID-TRANSITION, and
+    // collecting before that work has run leaves its freed nodes uncollected at
+    // the moment the reading is taken. Both push the number the wrong way, and
+    // the result reads as "the change made things worse" rather than "the
+    // reading was early" (2026-08-28: exactly this, a 200 MB apparent
+    // regression). CEILING_SETTLE_MS must stay comfortably above any in-app idle
+    // timer; the app's entry-folding idle is 800 ms.
+    await sleep(CEILING_SETTLE_MS);
+    const settled = await cdp.evaluate(`window.__perfScroll.folded()`);
     const gcOk = await forceGc(app);
     if (!gcOk) warnings.push('scrollback: HeapProfiler.collectGarbage was refused, so the ceiling may include garbage that had not been swept — read deltaPssMb as an upper bound');
     const ceiling = await readMemory(app);
+    // Reported next to the ceiling so a reader can never mistake "the mechanism
+    // did not engage" for "the mechanism did not help".
+    ceiling.foldedEntries = settled?.folded ?? null;
+    ceiling.totalEntries = settled?.total ?? null;
 
     // ── The control: does switching away release anything? ───────────────
     // Today it must not (nothing evicts, hidden views stay mounted). This reading
@@ -394,6 +457,8 @@ export async function runScrollbackScenario(app, fixture, { onProgress } = {}) {
     return {
       floor, ceiling, released, perSize, warnings,
       ...riseSplit(floor, ceiling),
+      foldedEntries: ceiling.foldedEntries,
+      totalEntries: ceiling.totalEntries,
       releasedMb: released ? released.releasedMb : null,
       totalPagesLoaded,
       totalEntriesLoaded: Object.values(perSize).reduce(

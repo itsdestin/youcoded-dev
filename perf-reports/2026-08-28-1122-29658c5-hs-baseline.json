@@ -1,0 +1,693 @@
+{
+  "schemaVersion": 1,
+  "label": "hs-baseline",
+  "sha": "29658c5b4cee387a7a796f25951c9188d05a3f71",
+  "branch": "",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-08-28T11:22:25.986Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "ramGb": 31,
+    "kernel": "7.1.2-2-cachyos",
+    "node": "v26.4.0"
+  },
+  "noise": {
+    "loadAvgBefore": 1.13,
+    "machineBusyPctBefore": 2.1,
+    "maxLoadAvgAccepted": 1.13,
+    "maxBusyPctAccepted": 2.2,
+    "discardedRuns": 0
+  },
+  "startup": {
+    "runs": [
+      {
+        "whenReady": 651,
+        "chores": {
+          "rotateLog": 4,
+          "prelude": 11,
+          "installHooks": 3,
+          "hookRelay": 2,
+          "legacyCleanup": 0,
+          "hookReconcile": 1,
+          "promptSuggestion": 0,
+          "retentionDefault": 1,
+          "symlinkCleanup": 0,
+          "staleDownloads": 0,
+          "reconcileMcp": 1,
+          "announcements": 1,
+          "remoteServer": 1,
+          "ipcPrefs": 0,
+          "themeProtocol": 2,
+          "accounts": 1
+        },
+        "createWindow": 37,
+        "createWindowAt": 679,
+        "didFinishLoad": 905,
+        "postWindowDone": 719,
+        "documentStart": 703,
+        "modulesEvaluated": 901,
+        "rootRender": 904,
+        "firstPaint": 923,
+        "firstContentfulPaint": 1003,
+        "appMounted": 930,
+        "sessionsListed": 931,
+        "blankWindowMs": 324,
+        "idlePssMb": 463.9,
+        "idleCpuPct": 0.1,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 1131694,
+            "type": "main",
+            "mb": 225.8
+          },
+          {
+            "pid": 1131696,
+            "type": "zygote",
+            "mb": 13.6
+          },
+          {
+            "pid": 1131697,
+            "type": "zygote",
+            "mb": 13.7
+          },
+          {
+            "pid": 1131725,
+            "type": "zygote",
+            "mb": 89.2
+          },
+          {
+            "pid": 1131729,
+            "type": "utility",
+            "mb": 30.5
+          },
+          {
+            "pid": 1131748,
+            "type": "zygote",
+            "mb": 91
+          }
+        ]
+      },
+      {
+        "whenReady": 657,
+        "chores": {
+          "rotateLog": 3,
+          "prelude": 12,
+          "installHooks": 4,
+          "hookRelay": 2,
+          "legacyCleanup": 0,
+          "hookReconcile": 1,
+          "promptSuggestion": 0,
+          "retentionDefault": 1,
+          "symlinkCleanup": 0,
+          "staleDownloads": 0,
+          "reconcileMcp": 1,
+          "announcements": 1,
+          "remoteServer": 0,
+          "ipcPrefs": 0,
+          "themeProtocol": 3,
+          "accounts": 1
+        },
+        "createWindow": 39,
+        "createWindowAt": 686,
+        "didFinishLoad": 920,
+        "postWindowDone": 728,
+        "documentStart": 711,
+        "modulesEvaluated": 919,
+        "rootRender": 919,
+        "firstPaint": 951,
+        "firstContentfulPaint": 1011,
+        "appMounted": 946,
+        "sessionsListed": 947,
+        "blankWindowMs": 325,
+        "idlePssMb": 467.8,
+        "idleCpuPct": 0,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 1131896,
+            "type": "main",
+            "mb": 229.8
+          },
+          {
+            "pid": 1131898,
+            "type": "zygote",
+            "mb": 13.5
+          },
+          {
+            "pid": 1131899,
+            "type": "zygote",
+            "mb": 13.4
+          },
+          {
+            "pid": 1131948,
+            "type": "zygote",
+            "mb": 89.3
+          },
+          {
+            "pid": 1131952,
+            "type": "utility",
+            "mb": 30.7
+          },
+          {
+            "pid": 1131973,
+            "type": "zygote",
+            "mb": 91.1
+          }
+        ]
+      },
+      {
+        "whenReady": 666,
+        "chores": {
+          "rotateLog": 3,
+          "prelude": 11,
+          "installHooks": 3,
+          "hookRelay": 2,
+          "legacyCleanup": 0,
+          "hookReconcile": 1,
+          "promptSuggestion": 1,
+          "retentionDefault": 0,
+          "symlinkCleanup": 0,
+          "staleDownloads": 1,
+          "reconcileMcp": 0,
+          "announcements": 1,
+          "remoteServer": 1,
+          "ipcPrefs": 0,
+          "themeProtocol": 2,
+          "accounts": 1
+        },
+        "createWindow": 37,
+        "createWindowAt": 693,
+        "didFinishLoad": 930,
+        "postWindowDone": 733,
+        "documentStart": 717,
+        "modulesEvaluated": 927,
+        "rootRender": 928,
+        "firstPaint": 953,
+        "firstContentfulPaint": 1025,
+        "appMounted": 955,
+        "sessionsListed": 956,
+        "blankWindowMs": 332,
+        "idlePssMb": 464,
+        "idleCpuPct": 0,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 1132153,
+            "type": "main",
+            "mb": 227.1
+          },
+          {
+            "pid": 1132155,
+            "type": "zygote",
+            "mb": 13.5
+          },
+          {
+            "pid": 1132156,
+            "type": "zygote",
+            "mb": 13.6
+          },
+          {
+            "pid": 1132192,
+            "type": "zygote",
+            "mb": 89.2
+          },
+          {
+            "pid": 1132196,
+            "type": "utility",
+            "mb": 31.8
+          },
+          {
+            "pid": 1132215,
+            "type": "zygote",
+            "mb": 88.8
+          }
+        ]
+      },
+      {
+        "whenReady": 667,
+        "chores": {
+          "rotateLog": 4,
+          "prelude": 11,
+          "installHooks": 3,
+          "hookRelay": 2,
+          "legacyCleanup": 0,
+          "hookReconcile": 1,
+          "promptSuggestion": 0,
+          "retentionDefault": 1,
+          "symlinkCleanup": 0,
+          "staleDownloads": 0,
+          "reconcileMcp": 1,
+          "announcements": 1,
+          "remoteServer": 0,
+          "ipcPrefs": 0,
+          "themeProtocol": 3,
+          "accounts": 1
+        },
+        "createWindow": 38,
+        "createWindowAt": 695,
+        "didFinishLoad": 926,
+        "postWindowDone": 736,
+        "documentStart": 721,
+        "modulesEvaluated": 922,
+        "rootRender": 924,
+        "firstPaint": 857,
+        "firstContentfulPaint": 1021,
+        "appMounted": 952,
+        "sessionsListed": 953,
+        "blankWindowMs": 326,
+        "idlePssMb": 469.2,
+        "idleCpuPct": 0,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 1132377,
+            "type": "main",
+            "mb": 230
+          },
+          {
+            "pid": 1132379,
+            "type": "zygote",
+            "mb": 13.5
+          },
+          {
+            "pid": 1132380,
+            "type": "zygote",
+            "mb": 13.6
+          },
+          {
+            "pid": 1132408,
+            "type": "zygote",
+            "mb": 89.2
+          },
+          {
+            "pid": 1132412,
+            "type": "utility",
+            "mb": 32
+          },
+          {
+            "pid": 1132431,
+            "type": "zygote",
+            "mb": 90.9
+          }
+        ]
+      },
+      {
+        "whenReady": 657,
+        "chores": {
+          "rotateLog": 4,
+          "prelude": 11,
+          "installHooks": 3,
+          "hookRelay": 2,
+          "legacyCleanup": 1,
+          "hookReconcile": 0,
+          "promptSuggestion": 1,
+          "retentionDefault": 0,
+          "symlinkCleanup": 1,
+          "staleDownloads": 0,
+          "reconcileMcp": 0,
+          "announcements": 1,
+          "remoteServer": 1,
+          "ipcPrefs": 0,
+          "themeProtocol": 3,
+          "accounts": 1
+        },
+        "createWindow": 38,
+        "createWindowAt": 686,
+        "didFinishLoad": 918,
+        "postWindowDone": 727,
+        "documentStart": 711,
+        "modulesEvaluated": 916,
+        "rootRender": 917,
+        "firstPaint": 843,
+        "firstContentfulPaint": 1007,
+        "appMounted": 944,
+        "sessionsListed": 946,
+        "blankWindowMs": 321,
+        "idlePssMb": 464.9,
+        "idleCpuPct": 0,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 1132575,
+            "type": "main",
+            "mb": 225.7
+          },
+          {
+            "pid": 1132577,
+            "type": "zygote",
+            "mb": 13.4
+          },
+          {
+            "pid": 1132578,
+            "type": "zygote",
+            "mb": 13.5
+          },
+          {
+            "pid": 1132606,
+            "type": "zygote",
+            "mb": 89.3
+          },
+          {
+            "pid": 1132610,
+            "type": "utility",
+            "mb": 31.4
+          },
+          {
+            "pid": 1132630,
+            "type": "zygote",
+            "mb": 91.6
+          }
+        ]
+      }
+    ],
+    "median": {
+      "whenReady": 657,
+      "chores": {
+        "rotateLog": 4,
+        "prelude": 11,
+        "installHooks": 3,
+        "hookRelay": 2,
+        "legacyCleanup": 0,
+        "hookReconcile": 1,
+        "promptSuggestion": 0,
+        "retentionDefault": 1,
+        "symlinkCleanup": 0,
+        "staleDownloads": 0,
+        "reconcileMcp": 1,
+        "announcements": 1,
+        "remoteServer": 1,
+        "ipcPrefs": 0,
+        "themeProtocol": 3,
+        "accounts": 1
+      },
+      "createWindow": 38,
+      "createWindowAt": 686,
+      "didFinishLoad": 920,
+      "postWindowDone": 728,
+      "documentStart": 711,
+      "modulesEvaluated": 919,
+      "rootRender": 919,
+      "firstPaint": 923,
+      "firstContentfulPaint": 1011,
+      "appMounted": 946,
+      "sessionsListed": 947,
+      "blankWindowMs": 325,
+      "idlePssMb": 464.9,
+      "idleCpuPct": 0,
+      "errorLines": 0
+    }
+  },
+  "idle": {
+    "pssMb": {
+      "median": 464.9,
+      "runs": [
+        463.9,
+        467.8,
+        464,
+        469.2,
+        464.9
+      ]
+    },
+    "cpuPct": {
+      "median": 0,
+      "runs": [
+        0.1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "breakdownMedianRun": [
+      {
+        "pid": 1132575,
+        "type": "main",
+        "mb": 225.7
+      },
+      {
+        "pid": 1132577,
+        "type": "zygote",
+        "mb": 13.4
+      },
+      {
+        "pid": 1132578,
+        "type": "zygote",
+        "mb": 13.5
+      },
+      {
+        "pid": 1132606,
+        "type": "zygote",
+        "mb": 89.3
+      },
+      {
+        "pid": 1132610,
+        "type": "utility",
+        "mb": 31.4
+      },
+      {
+        "pid": 1132630,
+        "type": "zygote",
+        "mb": 91.6
+      }
+    ]
+  },
+  "history": {
+    "small": {
+      "runs": [
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 2,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 455,
+          "resumeStableMs": 455,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 2,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 672,
+          "resumeStableMs": 672,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 2,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 659,
+          "resumeStableMs": 659,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 2,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 652,
+          "resumeStableMs": 652,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 2,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 642,
+          "resumeStableMs": 642,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcLast10Ms": 2,
+        "ipcAllMs": 2,
+        "ipcAllCount": 100,
+        "resumeFirstMessageMs": 652,
+        "resumeStableMs": 652,
+        "resumeMessageCount": 60
+      },
+      "stabilizedRuns": 5,
+      "warnings": []
+    },
+    "medium": {
+      "runs": [
+        {
+          "ipcLast10Ms": 126,
+          "ipcAllMs": 146,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 660,
+          "resumeStableMs": 660,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 126,
+          "ipcAllMs": 137,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 650,
+          "resumeStableMs": 650,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 127,
+          "ipcAllMs": 135,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 653,
+          "resumeStableMs": 653,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 123,
+          "ipcAllMs": 130,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 645,
+          "resumeStableMs": 645,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 120,
+          "ipcAllMs": 131,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 647,
+          "resumeStableMs": 647,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcLast10Ms": 126,
+        "ipcAllMs": 135,
+        "ipcAllCount": 5000,
+        "resumeFirstMessageMs": 650,
+        "resumeStableMs": 650,
+        "resumeMessageCount": 60
+      },
+      "stabilizedRuns": 5,
+      "warnings": []
+    },
+    "huge": {
+      "runs": [
+        {
+          "ipcLast10Ms": 159,
+          "ipcAllMs": 191,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 620,
+          "resumeStableMs": 620,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 168,
+          "ipcAllMs": 197,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 622,
+          "resumeStableMs": 622,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 165,
+          "ipcAllMs": 188,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 616,
+          "resumeStableMs": 616,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 168,
+          "ipcAllMs": 186,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 618,
+          "resumeStableMs": 618,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 163,
+          "ipcAllMs": 194,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 615,
+          "resumeStableMs": 615,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcLast10Ms": 165,
+        "ipcAllMs": 191,
+        "ipcAllCount": 7000,
+        "resumeFirstMessageMs": 618,
+        "resumeStableMs": 618,
+        "resumeMessageCount": 60
+      },
+      "stabilizedRuns": 5,
+      "warnings": []
+    }
+  },
+  "workload": null,
+  "replayStall": null,
+  "artifacts": null,
+  "scrollback": null,
+  "measures": {
+    "history": {
+      "scenario": "history",
+      "question": "How long does loading a conversation take, at three sizes?",
+      "configuration": [
+        "one session at a time, resumed from a prebuilt transcript",
+        "three sizes: small, medium, huge"
+      ],
+      "clocks": {
+        "ipcLast10Ms": "the loadHistory IPC call for the last 10 messages",
+        "ipcAllMs": "the loadHistory IPC call for the whole transcript",
+        "resumeStableMs": "resume -> the rendered entry count stops changing"
+      },
+      "blindTo": [
+        "which THREAD the time was spent on — that is the stall scenario",
+        "anything requiring more than one session open"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "scenarioBoot": 0,
+    "workloadBoots": [],
+    "stallBoot": null,
+    "artifactsBoot": null,
+    "scrollbackBoot": null
+  },
+  "screens": null,
+  "aborted": null,
+  "incomplete": []
+}

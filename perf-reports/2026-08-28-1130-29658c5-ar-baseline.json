@@ -1,0 +1,2386 @@
+{
+  "schemaVersion": 1,
+  "label": "ar-baseline",
+  "sha": "29658c5b4cee387a7a796f25951c9188d05a3f71",
+  "branch": "",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-08-28T11:30:35.689Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "ramGb": 31,
+    "kernel": "7.1.2-2-cachyos",
+    "node": "v26.4.0"
+  },
+  "noise": {
+    "loadAvgBefore": 1.8,
+    "machineBusyPctBefore": 1.5,
+    "maxLoadAvgAccepted": 1.8,
+    "maxBusyPctAccepted": 1.5,
+    "discardedRuns": 0
+  },
+  "startup": null,
+  "idle": null,
+  "history": null,
+  "workload": null,
+  "replayStall": null,
+  "artifacts": {
+    "runs": [
+      {
+        "projectRoot": "/home/destin/youcoded-dev/scratch/perf-lab/home/projects/alpha",
+        "resumedTranscript": {
+          "sessionId": "a24ee6d5-ce4a-473d-888d-dea6724419c6",
+          "turns": 50
+        },
+        "artifactsRegistered": 6,
+        "files": {
+          "codeSmall": {
+            "name": "perf-small.ts",
+            "rel": "perf-artifacts/perf-small.ts",
+            "bytes": 3247
+          },
+          "codeLarge": {
+            "name": "perf-large.ts",
+            "rel": "perf-artifacts/perf-large.ts",
+            "bytes": 400258
+          },
+          "mdSmall": {
+            "name": "perf-small.md",
+            "rel": "perf-artifacts/perf-small.md",
+            "bytes": 3539,
+            "fences": 6
+          },
+          "mdLarge": {
+            "name": "perf-large.md",
+            "rel": "perf-artifacts/perf-large.md",
+            "bytes": 401775,
+            "fences": 699
+          },
+          "htmlSmall": {
+            "name": "perf-small.html",
+            "rel": "perf-artifacts/perf-small.html",
+            "bytes": 4289,
+            "sections": 4
+          },
+          "htmlLarge": {
+            "name": "perf-large.html",
+            "rel": "perf-artifacts/perf-large.html",
+            "bytes": 345049,
+            "sections": 6
+          }
+        },
+        "create": {
+          "ok": true,
+          "createMs": 13,
+          "resumedTurns": 50,
+          "probe": {
+            "windowMs": 596,
+            "longtaskCount": 2,
+            "longtaskTotalMs": 415,
+            "longtaskMaxMs": 350,
+            "longtaskSupported": true,
+            "frameGapCount": 2,
+            "frameGapMaxMs": 361
+          },
+          "ipc": {
+            "pings": 3,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 2,
+            "p95Ms": 10,
+            "maxMs": 10,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 488,
+                "roundTripMs": 10
+              },
+              {
+                "atMs": 504,
+                "roundTripMs": 2
+              },
+              {
+                "atMs": 550,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 10ms, under the 250ms stall threshold"
+          }
+        },
+        "drawerOpen": {
+          "ok": true,
+          "openMs": 3,
+          "listedMs": 4,
+          "probe": {
+            "windowMs": 53,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 1,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 51,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "open": {
+          "codeSmall": {
+            "ok": true,
+            "openMs": 361,
+            "bytes": 3247,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-small.ts",
+            "probe": {
+              "windowMs": 365,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 42
+            },
+            "ipc": {
+              "pings": 7,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 0,
+              "p95Ms": 2,
+              "maxMs": 2,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 363,
+                  "roundTripMs": 2
+                },
+                {
+                  "atMs": 50,
+                  "roundTripMs": 0
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 0
+                },
+                {
+                  "atMs": 150,
+                  "roundTripMs": 0
+                },
+                {
+                  "atMs": 200,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 2ms, under the 250ms stall threshold"
+            },
+            "chunkLoadIncluded": true
+          },
+          "codeLarge": {
+            "ok": true,
+            "openMs": 62,
+            "bytes": 400258,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-large.ts",
+            "probe": {
+              "windowMs": 76,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 2,
+              "p95Ms": 2,
+              "maxMs": 2,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 76,
+                  "roundTripMs": 2
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 2ms, under the 250ms stall threshold"
+            },
+            "chunkLoadIncluded": false
+          },
+          "mdSmall": {
+            "ok": true,
+            "openMs": 493,
+            "bytes": 3539,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-small.md",
+            "probe": {
+              "windowMs": 494,
+              "longtaskCount": 2,
+              "longtaskTotalMs": 465,
+              "longtaskMaxMs": 318,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 474
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 10,
+              "p95Ms": 10,
+              "maxMs": 10,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 474,
+                  "roundTripMs": 10
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 10ms, under the 250ms stall threshold"
+            },
+            "fences": 6
+          },
+          "mdLarge": {
+            "ok": true,
+            "openMs": 1214,
+            "bytes": 401775,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-large.md",
+            "probe": {
+              "windowMs": 1219,
+              "longtaskCount": 2,
+              "longtaskTotalMs": 1164,
+              "longtaskMaxMs": 598,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 1163
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 28,
+              "p95Ms": 28,
+              "maxMs": 28,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 1191,
+                  "roundTripMs": 28
+                },
+                {
+                  "atMs": 1219,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 28ms, under the 250ms stall threshold"
+            },
+            "fences": 699
+          },
+          "htmlSmall": {
+            "ok": true,
+            "openMs": 114,
+            "bytes": 4289,
+            "viewer": null,
+            "docPath": null,
+            "probe": {
+              "windowMs": 118,
+              "longtaskCount": 1,
+              "longtaskTotalMs": 58,
+              "longtaskMaxMs": 58,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 61
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 1,
+              "p95Ms": 1,
+              "maxMs": 1,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 65,
+                  "roundTripMs": 1
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "htmlNav": {
+          "ok": true,
+          "swaps": [
+            {
+              "to": "htmlLarge",
+              "ms": 88,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 77,
+              "ok": true,
+              "bytes": 4289
+            },
+            {
+              "to": "htmlLarge",
+              "ms": 81,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 84,
+              "ok": true,
+              "bytes": 4289
+            }
+          ],
+          "swap": {
+            "count": 4,
+            "medianMs": 84,
+            "p95Ms": 88,
+            "maxMs": 88
+          },
+          "swapSmall": {
+            "count": 2,
+            "medianMs": 84,
+            "p95Ms": 84,
+            "maxMs": 84
+          },
+          "swapLarge": {
+            "count": 2,
+            "medianMs": 88,
+            "p95Ms": 88,
+            "maxMs": 88
+          },
+          "inPage": {
+            "count": 4,
+            "medianMs": 28.8,
+            "p95Ms": 30.1,
+            "maxMs": 30.1
+          },
+          "inPageNavs": [
+            {
+              "to": "#s1",
+              "ms": 28.8,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s2",
+              "ms": 20.5,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s3",
+              "ms": 30.1,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s1",
+              "ms": 20.3,
+              "ok": true,
+              "reason": null
+            }
+          ],
+          "inPageReason": null,
+          "framesBound": 5,
+          "probe": {
+            "windowMs": 466,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 3,
+            "frameGapMaxMs": 60
+          },
+          "ipc": {
+            "pings": 9,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 3,
+            "maxMs": 3,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 113,
+                "roundTripMs": 3
+              },
+              {
+                "atMs": 200,
+                "roundTripMs": 2
+              },
+              {
+                "atMs": 400,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 50,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+          }
+        },
+        "typing": {
+          "codeSmall": {
+            "ok": true,
+            "bytes": 3247,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 28,
+              "p95Ms": 33.1,
+              "maxMs": 33.2
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 4,
+              "p95Ms": 9,
+              "maxMs": 14
+            },
+            "saveMs": 33,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 1965,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 55
+            },
+            "ipc": {
+              "pings": 39,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 0,
+              "p95Ms": 3,
+              "maxMs": 17,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 58,
+                  "roundTripMs": 17
+                },
+                {
+                  "atMs": 650,
+                  "roundTripMs": 3
+                },
+                {
+                  "atMs": 800,
+                  "roundTripMs": 1
+                },
+                {
+                  "atMs": 101,
+                  "roundTripMs": 0
+                },
+                {
+                  "atMs": 150,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 17ms, under the 250ms stall threshold"
+            }
+          },
+          "codeLarge": {
+            "ok": true,
+            "bytes": 400258,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 32.2,
+              "p95Ms": 33.8,
+              "maxMs": 34
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 5,
+              "p95Ms": 7,
+              "maxMs": 10
+            },
+            "saveMs": 33,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 1982,
+              "longtaskCount": 1,
+              "longtaskTotalMs": 52,
+              "longtaskMaxMs": 52,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 55
+            },
+            "ipc": {
+              "pings": 39,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 0,
+              "p95Ms": 2,
+              "maxMs": 11,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 60,
+                  "roundTripMs": 11
+                },
+                {
+                  "atMs": 363,
+                  "roundTripMs": 2
+                },
+                {
+                  "atMs": 965,
+                  "roundTripMs": 1
+                },
+                {
+                  "atMs": 1364,
+                  "roundTripMs": 1
+                },
+                {
+                  "atMs": 1715,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 11ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "copy": {
+          "ok": true,
+          "source": "chat-transcript",
+          "clickToCopiedMs": 27.8,
+          "codeBlocksInScope": 23,
+          "copiedChars": 1336,
+          "probe": {
+            "windowMs": 29,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "sizeScaling": {
+          "bytesRatio": 123.3,
+          "codeOpenRatio": 0.17,
+          "markdownOpenRatio": 2.46,
+          "markdownFenceRatio": 116.5,
+          "keystrokeRatio": 1.15,
+          "htmlSwapRatio": 1.05
+        },
+        "probe": {
+          "longtaskCount": 8,
+          "longtaskTotalMs": 2154,
+          "longtaskMaxMs": 598,
+          "frameGapCount": 11,
+          "frameGapMaxMs": 1163,
+          "longtaskSupported": true,
+          "observedMs": 7467,
+          "frames": 313,
+          "framesPerSec": 41.9,
+          "marks": [
+            {
+              "t": 5,
+              "label": "artifacts:session:start"
+            },
+            {
+              "t": 601,
+              "label": "artifacts:session:end"
+            },
+            {
+              "t": 632,
+              "label": "artifacts:drawer-open:start"
+            },
+            {
+              "t": 685,
+              "label": "artifacts:drawer-open:end"
+            },
+            {
+              "t": 688,
+              "label": "artifacts:open-codeSmall:start"
+            },
+            {
+              "t": 1053,
+              "label": "artifacts:open-codeSmall:end"
+            },
+            {
+              "t": 1087,
+              "label": "artifacts:open-codeLarge:start"
+            },
+            {
+              "t": 1163,
+              "label": "artifacts:open-codeLarge:end"
+            },
+            {
+              "t": 1169,
+              "label": "artifacts:open-mdSmall:start"
+            },
+            {
+              "t": 1663,
+              "label": "artifacts:open-mdSmall:end"
+            },
+            {
+              "t": 1674,
+              "label": "artifacts:open-mdLarge:start"
+            },
+            {
+              "t": 2893,
+              "label": "artifacts:open-mdLarge:end"
+            },
+            {
+              "t": 2897,
+              "label": "artifacts:open-htmlSmall:start"
+            },
+            {
+              "t": 3015,
+              "label": "artifacts:open-htmlSmall:end"
+            },
+            {
+              "t": 3017,
+              "label": "artifacts:html-nav:start"
+            },
+            {
+              "t": 3483,
+              "label": "artifacts:html-nav:end"
+            },
+            {
+              "t": 3485,
+              "label": "artifacts:type-codeSmall:start"
+            },
+            {
+              "t": 5450,
+              "label": "artifacts:type-codeSmall:end"
+            },
+            {
+              "t": 5452,
+              "label": "artifacts:type-codeLarge:start"
+            },
+            {
+              "t": 7434,
+              "label": "artifacts:type-codeLarge:end"
+            },
+            {
+              "t": 7436,
+              "label": "artifacts:copy-code:start"
+            },
+            {
+              "t": 7465,
+              "label": "artifacts:copy-code:end"
+            }
+          ],
+          "errors": []
+        },
+        "ipcSumOfSteps": {
+          "pings": 104,
+          "totalStallMs": 0,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "maxMs": 28
+        },
+        "warnings": []
+      },
+      {
+        "projectRoot": "/home/destin/youcoded-dev/scratch/perf-lab/home/projects/alpha",
+        "resumedTranscript": {
+          "sessionId": "a24ee6d5-ce4a-473d-888d-dea6724419c6",
+          "turns": 50
+        },
+        "artifactsRegistered": 6,
+        "files": {
+          "codeSmall": {
+            "name": "perf-small.ts",
+            "rel": "perf-artifacts/perf-small.ts",
+            "bytes": 3247
+          },
+          "codeLarge": {
+            "name": "perf-large.ts",
+            "rel": "perf-artifacts/perf-large.ts",
+            "bytes": 400258
+          },
+          "mdSmall": {
+            "name": "perf-small.md",
+            "rel": "perf-artifacts/perf-small.md",
+            "bytes": 3539,
+            "fences": 6
+          },
+          "mdLarge": {
+            "name": "perf-large.md",
+            "rel": "perf-artifacts/perf-large.md",
+            "bytes": 401775,
+            "fences": 699
+          },
+          "htmlSmall": {
+            "name": "perf-small.html",
+            "rel": "perf-artifacts/perf-small.html",
+            "bytes": 4289,
+            "sections": 4
+          },
+          "htmlLarge": {
+            "name": "perf-large.html",
+            "rel": "perf-artifacts/perf-large.html",
+            "bytes": 345049,
+            "sections": 6
+          }
+        },
+        "create": {
+          "ok": true,
+          "createMs": 5,
+          "resumedTurns": 50,
+          "probe": {
+            "windowMs": 152,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 3,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 51,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 0ms, under the 250ms stall threshold"
+          }
+        },
+        "drawerOpen": {
+          "ok": true,
+          "openMs": 0,
+          "listedMs": 1,
+          "probe": {
+            "windowMs": 29,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "open": {
+          "codeSmall": {
+            "ok": true,
+            "openMs": 33,
+            "bytes": 3247,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-small.ts",
+            "probe": {
+              "windowMs": 34,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": null,
+              "p95Ms": null,
+              "maxMs": null,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": []
+            },
+            "stall": {
+              "verdict": "unknown",
+              "why": "one of the two probes reported no data for this step"
+            },
+            "chunkLoadIncluded": true
+          },
+          "codeLarge": {
+            "ok": true,
+            "openMs": 41,
+            "bytes": 400258,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-large.ts",
+            "probe": {
+              "windowMs": 42,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": null,
+              "p95Ms": null,
+              "maxMs": null,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": []
+            },
+            "stall": {
+              "verdict": "unknown",
+              "why": "one of the two probes reported no data for this step"
+            },
+            "chunkLoadIncluded": false
+          },
+          "mdSmall": {
+            "ok": true,
+            "openMs": 682,
+            "bytes": 3539,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-small.md",
+            "probe": {
+              "windowMs": 685,
+              "longtaskCount": 3,
+              "longtaskTotalMs": 648,
+              "longtaskMaxMs": 282,
+              "longtaskSupported": true,
+              "frameGapCount": 2,
+              "frameGapMaxMs": 420
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 15,
+              "p95Ms": 15,
+              "maxMs": 15,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 425,
+                  "roundTripMs": 15
+                },
+                {
+                  "atMs": 682,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 15ms, under the 250ms stall threshold"
+            },
+            "fences": 6
+          },
+          "mdLarge": {
+            "ok": true,
+            "openMs": 1141,
+            "bytes": 401775,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-large.md",
+            "probe": {
+              "windowMs": 1147,
+              "longtaskCount": 2,
+              "longtaskTotalMs": 1087,
+              "longtaskMaxMs": 585,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 1081
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 5,
+              "p95Ms": 5,
+              "maxMs": 5,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 1142,
+                  "roundTripMs": 5
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+            },
+            "fences": 699
+          },
+          "htmlSmall": {
+            "ok": true,
+            "openMs": 119,
+            "bytes": 4289,
+            "viewer": null,
+            "docPath": null,
+            "probe": {
+              "windowMs": 123,
+              "longtaskCount": 1,
+              "longtaskTotalMs": 57,
+              "longtaskMaxMs": 57,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 72
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 3,
+              "p95Ms": 3,
+              "maxMs": 3,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 64,
+                  "roundTripMs": 3
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "htmlNav": {
+          "ok": true,
+          "swaps": [
+            {
+              "to": "htmlLarge",
+              "ms": 83,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 81,
+              "ok": true,
+              "bytes": 4289
+            },
+            {
+              "to": "htmlLarge",
+              "ms": 82,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 83,
+              "ok": true,
+              "bytes": 4289
+            }
+          ],
+          "swap": {
+            "count": 4,
+            "medianMs": 83,
+            "p95Ms": 83,
+            "maxMs": 83
+          },
+          "swapSmall": {
+            "count": 2,
+            "medianMs": 83,
+            "p95Ms": 83,
+            "maxMs": 83
+          },
+          "swapLarge": {
+            "count": 2,
+            "medianMs": 83,
+            "p95Ms": 83,
+            "maxMs": 83
+          },
+          "inPage": {
+            "count": 4,
+            "medianMs": 29.2,
+            "p95Ms": 30,
+            "maxMs": 30
+          },
+          "inPageNavs": [
+            {
+              "to": "#s1",
+              "ms": 29.2,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s2",
+              "ms": 20.1,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s3",
+              "ms": 30,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s1",
+              "ms": 20.3,
+              "ok": true,
+              "reason": null
+            }
+          ],
+          "inPageReason": null,
+          "framesBound": 5,
+          "probe": {
+            "windowMs": 468,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 3,
+            "frameGapMaxMs": 60
+          },
+          "ipc": {
+            "pings": 9,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 19,
+            "maxMs": 19,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 250,
+                "roundTripMs": 19
+              },
+              {
+                "atMs": 107,
+                "roundTripMs": 3
+              },
+              {
+                "atMs": 400,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 50,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 19ms, under the 250ms stall threshold"
+          }
+        },
+        "typing": {
+          "codeSmall": {
+            "ok": true,
+            "bytes": 3247,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 30.8,
+              "p95Ms": 33.2,
+              "maxMs": 33.6
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 4,
+              "p95Ms": 9,
+              "maxMs": 104
+            },
+            "saveMs": 32,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 2046,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 44
+            },
+            "ipc": {
+              "pings": 38,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 2,
+              "medianMs": 0,
+              "p95Ms": 12,
+              "maxMs": 112,
+              "over100ms": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 62,
+              "worst": [
+                {
+                  "atMs": 250,
+                  "roundTripMs": 112
+                },
+                {
+                  "atMs": 65,
+                  "roundTripMs": 12
+                },
+                {
+                  "atMs": 1300,
+                  "roundTripMs": 2
+                },
+                {
+                  "atMs": 1900,
+                  "roundTripMs": 1
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 112ms, under the 250ms stall threshold"
+            }
+          },
+          "codeLarge": {
+            "ok": true,
+            "bytes": 400258,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 28.7,
+              "p95Ms": 33,
+              "maxMs": 33.4
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 4,
+              "p95Ms": 8,
+              "maxMs": 10
+            },
+            "saveMs": 33,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 1965,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 52
+            },
+            "ipc": {
+              "pings": 39,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 0,
+              "p95Ms": 12,
+              "maxMs": 16,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 350,
+                  "roundTripMs": 16
+                },
+                {
+                  "atMs": 60,
+                  "roundTripMs": 12
+                },
+                {
+                  "atMs": 403,
+                  "roundTripMs": 2
+                },
+                {
+                  "atMs": 1400,
+                  "roundTripMs": 2
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 16ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "copy": {
+          "ok": true,
+          "source": "chat-transcript",
+          "clickToCopiedMs": 28.3,
+          "codeBlocksInScope": 23,
+          "copiedChars": 1336,
+          "probe": {
+            "windowMs": 29,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "sizeScaling": {
+          "bytesRatio": 123.3,
+          "codeOpenRatio": 1.24,
+          "markdownOpenRatio": 1.67,
+          "markdownFenceRatio": 116.5,
+          "keystrokeRatio": 0.93,
+          "htmlSwapRatio": 1
+        },
+        "probe": {
+          "longtaskCount": 6,
+          "longtaskTotalMs": 1792,
+          "longtaskMaxMs": 585,
+          "frameGapCount": 9,
+          "frameGapMaxMs": 1081,
+          "longtaskSupported": true,
+          "observedMs": 6779,
+          "frames": 291,
+          "framesPerSec": 42.9,
+          "marks": [
+            {
+              "t": 2,
+              "label": "artifacts:session:start"
+            },
+            {
+              "t": 154,
+              "label": "artifacts:session:end"
+            },
+            {
+              "t": 183,
+              "label": "artifacts:drawer-open:start"
+            },
+            {
+              "t": 212,
+              "label": "artifacts:drawer-open:end"
+            },
+            {
+              "t": 214,
+              "label": "artifacts:open-codeSmall:start"
+            },
+            {
+              "t": 248,
+              "label": "artifacts:open-codeSmall:end"
+            },
+            {
+              "t": 250,
+              "label": "artifacts:open-codeLarge:start"
+            },
+            {
+              "t": 292,
+              "label": "artifacts:open-codeLarge:end"
+            },
+            {
+              "t": 294,
+              "label": "artifacts:open-mdSmall:start"
+            },
+            {
+              "t": 979,
+              "label": "artifacts:open-mdSmall:end"
+            },
+            {
+              "t": 981,
+              "label": "artifacts:open-mdLarge:start"
+            },
+            {
+              "t": 2128,
+              "label": "artifacts:open-mdLarge:end"
+            },
+            {
+              "t": 2139,
+              "label": "artifacts:open-htmlSmall:start"
+            },
+            {
+              "t": 2262,
+              "label": "artifacts:open-htmlSmall:end"
+            },
+            {
+              "t": 2263,
+              "label": "artifacts:html-nav:start"
+            },
+            {
+              "t": 2731,
+              "label": "artifacts:html-nav:end"
+            },
+            {
+              "t": 2733,
+              "label": "artifacts:type-codeSmall:start"
+            },
+            {
+              "t": 4779,
+              "label": "artifacts:type-codeSmall:end"
+            },
+            {
+              "t": 4781,
+              "label": "artifacts:type-codeLarge:start"
+            },
+            {
+              "t": 6746,
+              "label": "artifacts:type-codeLarge:end"
+            },
+            {
+              "t": 6748,
+              "label": "artifacts:copy-code:start"
+            },
+            {
+              "t": 6777,
+              "label": "artifacts:copy-code:end"
+            }
+          ],
+          "errors": []
+        },
+        "ipcSumOfSteps": {
+          "pings": 94,
+          "totalStallMs": 62,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "maxMs": 112
+        },
+        "warnings": []
+      },
+      {
+        "projectRoot": "/home/destin/youcoded-dev/scratch/perf-lab/home/projects/alpha",
+        "resumedTranscript": {
+          "sessionId": "a24ee6d5-ce4a-473d-888d-dea6724419c6",
+          "turns": 50
+        },
+        "artifactsRegistered": 6,
+        "files": {
+          "codeSmall": {
+            "name": "perf-small.ts",
+            "rel": "perf-artifacts/perf-small.ts",
+            "bytes": 3247
+          },
+          "codeLarge": {
+            "name": "perf-large.ts",
+            "rel": "perf-artifacts/perf-large.ts",
+            "bytes": 400258
+          },
+          "mdSmall": {
+            "name": "perf-small.md",
+            "rel": "perf-artifacts/perf-small.md",
+            "bytes": 3539,
+            "fences": 6
+          },
+          "mdLarge": {
+            "name": "perf-large.md",
+            "rel": "perf-artifacts/perf-large.md",
+            "bytes": 401775,
+            "fences": 699
+          },
+          "htmlSmall": {
+            "name": "perf-small.html",
+            "rel": "perf-artifacts/perf-small.html",
+            "bytes": 4289,
+            "sections": 4
+          },
+          "htmlLarge": {
+            "name": "perf-large.html",
+            "rel": "perf-artifacts/perf-large.html",
+            "bytes": 345049,
+            "sections": 6
+          }
+        },
+        "create": {
+          "ok": true,
+          "createMs": 6,
+          "resumedTurns": 50,
+          "probe": {
+            "windowMs": 144,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 2,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 0ms, under the 250ms stall threshold"
+          }
+        },
+        "drawerOpen": {
+          "ok": true,
+          "openMs": 0,
+          "listedMs": 1,
+          "probe": {
+            "windowMs": 24,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "open": {
+          "codeSmall": {
+            "ok": true,
+            "openMs": 33,
+            "bytes": 3247,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-small.ts",
+            "probe": {
+              "windowMs": 34,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": null,
+              "p95Ms": null,
+              "maxMs": null,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": []
+            },
+            "stall": {
+              "verdict": "unknown",
+              "why": "one of the two probes reported no data for this step"
+            },
+            "chunkLoadIncluded": true
+          },
+          "codeLarge": {
+            "ok": true,
+            "openMs": 43,
+            "bytes": 400258,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-large.ts",
+            "probe": {
+              "windowMs": 44,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": null,
+              "p95Ms": null,
+              "maxMs": null,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": []
+            },
+            "stall": {
+              "verdict": "unknown",
+              "why": "one of the two probes reported no data for this step"
+            },
+            "chunkLoadIncluded": false
+          },
+          "mdSmall": {
+            "ok": true,
+            "openMs": 700,
+            "bytes": 3539,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-small.md",
+            "probe": {
+              "windowMs": 706,
+              "longtaskCount": 3,
+              "longtaskTotalMs": 659,
+              "longtaskMaxMs": 274,
+              "longtaskSupported": true,
+              "frameGapCount": 2,
+              "frameGapMaxMs": 424
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 17,
+              "p95Ms": 17,
+              "maxMs": 17,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 427,
+                  "roundTripMs": 17
+                },
+                {
+                  "atMs": 701,
+                  "roundTripMs": 5
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 17ms, under the 250ms stall threshold"
+            },
+            "fences": 6
+          },
+          "mdLarge": {
+            "ok": true,
+            "openMs": 1113,
+            "bytes": 401775,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-large.md",
+            "probe": {
+              "windowMs": 1118,
+              "longtaskCount": 2,
+              "longtaskTotalMs": 1068,
+              "longtaskMaxMs": 570,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 1066
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 26,
+              "p95Ms": 26,
+              "maxMs": 26,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 1092,
+                  "roundTripMs": 26
+                },
+                {
+                  "atMs": 1118,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 26ms, under the 250ms stall threshold"
+            },
+            "fences": 699
+          },
+          "htmlSmall": {
+            "ok": true,
+            "openMs": 118,
+            "bytes": 4289,
+            "viewer": null,
+            "docPath": null,
+            "probe": {
+              "windowMs": 120,
+              "longtaskCount": 1,
+              "longtaskTotalMs": 56,
+              "longtaskMaxMs": 56,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 64
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 4,
+              "p95Ms": 4,
+              "maxMs": 4,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 62,
+                  "roundTripMs": 4
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "htmlNav": {
+          "ok": true,
+          "swaps": [
+            {
+              "to": "htmlLarge",
+              "ms": 75,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 59,
+              "ok": true,
+              "bytes": 4289
+            },
+            {
+              "to": "htmlLarge",
+              "ms": 106,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 66,
+              "ok": true,
+              "bytes": 4289
+            }
+          ],
+          "swap": {
+            "count": 4,
+            "medianMs": 75,
+            "p95Ms": 106,
+            "maxMs": 106
+          },
+          "swapSmall": {
+            "count": 2,
+            "medianMs": 66,
+            "p95Ms": 66,
+            "maxMs": 66
+          },
+          "swapLarge": {
+            "count": 2,
+            "medianMs": 106,
+            "p95Ms": 106,
+            "maxMs": 106
+          },
+          "inPage": {
+            "count": 4,
+            "medianMs": 22.5,
+            "p95Ms": 28.9,
+            "maxMs": 28.9
+          },
+          "inPageNavs": [
+            {
+              "to": "#s1",
+              "ms": 28.9,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s2",
+              "ms": 21.1,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s3",
+              "ms": 11.9,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s1",
+              "ms": 22.5,
+              "ok": true,
+              "reason": null
+            }
+          ],
+          "inPageReason": null,
+          "framesBound": 5,
+          "probe": {
+            "windowMs": 461,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 5,
+            "frameGapMaxMs": 68
+          },
+          "ipc": {
+            "pings": 9,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 3,
+            "maxMs": 3,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 101,
+                "roundTripMs": 3
+              },
+              {
+                "atMs": 167,
+                "roundTripMs": 3
+              },
+              {
+                "atMs": 267,
+                "roundTripMs": 3
+              },
+              {
+                "atMs": 50,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 200,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+          }
+        },
+        "typing": {
+          "codeSmall": {
+            "ok": true,
+            "bytes": 3247,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 28.9,
+              "p95Ms": 32.7,
+              "maxMs": 32.9
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 4,
+              "p95Ms": 11,
+              "maxMs": 74
+            },
+            "saveMs": 31,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 1998,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 43
+            },
+            "ipc": {
+              "pings": 38,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 1,
+              "medianMs": 0,
+              "p95Ms": 3,
+              "maxMs": 69,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 19,
+              "worst": [
+                {
+                  "atMs": 300,
+                  "roundTripMs": 69
+                },
+                {
+                  "atMs": 75,
+                  "roundTripMs": 3
+                },
+                {
+                  "atMs": 1000,
+                  "roundTripMs": 1
+                },
+                {
+                  "atMs": 1600,
+                  "roundTripMs": 1
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 69ms, under the 250ms stall threshold"
+            }
+          },
+          "codeLarge": {
+            "ok": true,
+            "bytes": 400258,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 30.2,
+              "p95Ms": 32.9,
+              "maxMs": 33.6
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 4,
+              "p95Ms": 7,
+              "maxMs": 8
+            },
+            "saveMs": 34,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 1965,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 50
+            },
+            "ipc": {
+              "pings": 39,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 0,
+              "p95Ms": 5,
+              "maxMs": 30,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 63,
+                  "roundTripMs": 30
+                },
+                {
+                  "atMs": 452,
+                  "roundTripMs": 5
+                },
+                {
+                  "atMs": 1450,
+                  "roundTripMs": 3
+                },
+                {
+                  "atMs": 400,
+                  "roundTripMs": 1
+                },
+                {
+                  "atMs": 1600,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 30ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "copy": {
+          "ok": true,
+          "source": "chat-transcript",
+          "clickToCopiedMs": 29.4,
+          "codeBlocksInScope": 23,
+          "copiedChars": 1336,
+          "probe": {
+            "windowMs": 31,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "sizeScaling": {
+          "bytesRatio": 123.3,
+          "codeOpenRatio": 1.3,
+          "markdownOpenRatio": 1.59,
+          "markdownFenceRatio": 116.5,
+          "keystrokeRatio": 1.04,
+          "htmlSwapRatio": 1.61
+        },
+        "probe": {
+          "longtaskCount": 6,
+          "longtaskTotalMs": 1783,
+          "longtaskMaxMs": 570,
+          "frameGapCount": 11,
+          "frameGapMaxMs": 1066,
+          "longtaskSupported": true,
+          "observedMs": 6700,
+          "frames": 287,
+          "framesPerSec": 42.8,
+          "marks": [
+            {
+              "t": 2,
+              "label": "artifacts:session:start"
+            },
+            {
+              "t": 146,
+              "label": "artifacts:session:end"
+            },
+            {
+              "t": 175,
+              "label": "artifacts:drawer-open:start"
+            },
+            {
+              "t": 199,
+              "label": "artifacts:drawer-open:end"
+            },
+            {
+              "t": 201,
+              "label": "artifacts:open-codeSmall:start"
+            },
+            {
+              "t": 235,
+              "label": "artifacts:open-codeSmall:end"
+            },
+            {
+              "t": 237,
+              "label": "artifacts:open-codeLarge:start"
+            },
+            {
+              "t": 281,
+              "label": "artifacts:open-codeLarge:end"
+            },
+            {
+              "t": 283,
+              "label": "artifacts:open-mdSmall:start"
+            },
+            {
+              "t": 989,
+              "label": "artifacts:open-mdSmall:end"
+            },
+            {
+              "t": 991,
+              "label": "artifacts:open-mdLarge:start"
+            },
+            {
+              "t": 2109,
+              "label": "artifacts:open-mdLarge:end"
+            },
+            {
+              "t": 2118,
+              "label": "artifacts:open-htmlSmall:start"
+            },
+            {
+              "t": 2238,
+              "label": "artifacts:open-htmlSmall:end"
+            },
+            {
+              "t": 2240,
+              "label": "artifacts:html-nav:start"
+            },
+            {
+              "t": 2701,
+              "label": "artifacts:html-nav:end"
+            },
+            {
+              "t": 2702,
+              "label": "artifacts:type-codeSmall:start"
+            },
+            {
+              "t": 4700,
+              "label": "artifacts:type-codeSmall:end"
+            },
+            {
+              "t": 4701,
+              "label": "artifacts:type-codeLarge:start"
+            },
+            {
+              "t": 6666,
+              "label": "artifacts:type-codeLarge:end"
+            },
+            {
+              "t": 6668,
+              "label": "artifacts:copy-code:start"
+            },
+            {
+              "t": 6699,
+              "label": "artifacts:copy-code:end"
+            }
+          ],
+          "errors": []
+        },
+        "ipcSumOfSteps": {
+          "pings": 94,
+          "totalStallMs": 19,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "maxMs": 69
+        },
+        "warnings": []
+      }
+    ],
+    "median": {
+      "open": {
+        "codeSmall": {
+          "openMs": 33
+        },
+        "codeLarge": {
+          "openMs": 43
+        },
+        "mdSmall": {
+          "openMs": 682
+        },
+        "mdLarge": {
+          "openMs": 1141
+        },
+        "htmlSmall": {
+          "openMs": 118
+        }
+      },
+      "htmlNav": {
+        "swap": {
+          "medianMs": 83,
+          "p95Ms": 88
+        },
+        "swapSmall": {
+          "medianMs": 83
+        },
+        "swapLarge": {
+          "medianMs": 88
+        }
+      },
+      "typing": {
+        "codeSmall": {
+          "keystroke": {
+            "medianMs": 28.9,
+            "p95Ms": 33.1
+          }
+        },
+        "codeLarge": {
+          "keystroke": {
+            "medianMs": 30.2,
+            "p95Ms": 33
+          }
+        }
+      },
+      "copy": {
+        "clickToCopiedMs": 28.3
+      },
+      "probe": {
+        "longtaskTotalMs": 1792,
+        "longtaskMaxMs": 585
+      },
+      "ipcSumOfSteps": {
+        "totalStallMs": 19,
+        "maxMs": 69,
+        "over250ms": 0,
+        "pings": 94
+      }
+    },
+    "warnings": []
+  },
+  "scrollback": null,
+  "measures": {
+    "artifacts": {
+      "scenario": "artifacts",
+      "question": "What does the files panel cost to open, edit, and navigate?",
+      "configuration": [
+        "one session, resumed from the small transcript",
+        "six artifacts registered: code / markdown / HTML, each in a small and a large size",
+        "30 keystrokes typed into a real CodeMirror editor at ~45ms spacing"
+      ],
+      "clocks": {
+        "open.*.openMs": "click the row -> the viewer reports the right document mounted",
+        "typing.*.keystroke": "keydown -> painted, measured in-page via beforeinput",
+        "htmlNav.swap": "select a different HTML artifact -> the iframe load event"
+      },
+      "blindTo": [
+        "documents above EDIT_MAX_BYTES (3 MB) — the pane serves a read-only prefix, so typing is not measured there",
+        "real clipboard cost: MarkdownContent fires writeText without awaiting it",
+        "GPU-accelerated scrolling in the viewer — headless Xvfb has no compositor"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": null,
+    "workloadBoots": [],
+    "stallBoot": null,
+    "artifactsBoot": 0,
+    "scrollbackBoot": null
+  },
+  "screens": null,
+  "aborted": null,
+  "incomplete": []
+}
