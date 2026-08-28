@@ -1106,3 +1106,98 @@ Watch with `Monitor` for `^EXIT `.
 - **The one soft spot** is T12 Step 2's baseline comparability — called out honestly rather than papered over, exactly as the rig sweep warned. The absolute `resumeStableMs` for huge is the meaningful number and does not depend on the settle-rule change.
 - **Idempotency** rests on cursor discipline (one in-flight page per session via `history.loading`, monotonic cursor), NOT on uuid ids — the report confirmed ids are global counters and prepend cannot collide.
 - **No overlap to dedupe:** T4 makes the tailer start at EOF and T5 makes the first page end there.
+
+---
+
+## Results (2026-08-28)
+
+**Built:** Tasks 1–11 complete on `perf/paged-history` (worktree `worktrees/perf-lab/`),
+tip `984b11af`. `bash scripts/verify.sh worktrees/perf-lab` passes all five checks. Full
+desktop suite: 6,613 pass / 2 fail — both `xterm-webgl-mipmap-patch.test.ts`, which fails
+identically on untouched master (`node_modules` predates PR #333's postinstall patch;
+verified by grepping both checkouts). Not related to this work.
+
+### Three defects the rig found that 6,600 passing tests did not
+
+All three are the SAME shape: a feature had come to depend on the whole-file replay as a
+side effect, and paging removed it. This is the cost of the change nobody could have
+predicted from the code alone, and it is the entire justification for measuring.
+
+1. **History was requested from three call sites, not from "a session appeared."**
+   (`9fa2c0fa`) The rig resumes with a direct `window.claude.session.create`, bypassing
+   App's resume handler — nothing asked for a page, so every history repeat sat at its
+   240 s timeout with an empty timeline. Real fragility: any entry point other than the
+   three (a session adopted from the directory, one created through the session API)
+   rendered EMPTY. Now a session-list effect covers every route, guarded by
+   `firstPageAsked`, with a 3×400 ms retry for the window before CC's hook reports the
+   transcript path.
+2. **The session Files drawer showed a stale list.** (`e7bea8c0`) Its list was loaded once
+   by ChatView at mount and then refreshed only because the artifact tool-use tracker
+   listens to transcript events — so re-streaming history happened to re-list the files.
+   The drawer now lists its own session on open, against the RESOLVED `projectRoot`.
+   Deliberately NOT routed through the tool-use tracker: that appends a version per tool
+   call and would re-append every historical version (the 2026-08-15 OOM incident).
+3. **A page re-rendered what was already on screen.** (`984b11af`) `HISTORY_PAGE_LOADED`
+   replays onto a scratch state; the scratch started with an EMPTY `seenUuids`, so the
+   uuid dedup the per-event handlers already carry never fired, and a just-sent prompt
+   came back from the transcript as a second identical bubble. Caught by the `native-chat`
+   screenshot at 14.04% DIFF; 0.2% after the fix. Seeding the scratch with the live
+   session's `seenUuids` reuses the existing dedup instead of adding a second one.
+
+### Measurement
+
+`perf-reports/2026-08-28-0325-984b11a-cycle2-paged.json` vs baseline
+`perf-reports/2026-08-28-0001-047da49-cycle1-n1n2n3.json` (shipped cycle-1 code).
+
+| metric | before | after |
+|---|---|---|
+| `history.huge.median.resumeStableMs` | 21550 | **614** (−97.2%) |
+| `history.medium.median.resumeStableMs` | 14049 | **644** (−95.4%) |
+| `workload.median.switchP95Ms` | 10052 | **233** (−97.7%) |
+| `workload.median.switchPaintedBySize.huge.medianMs` | 11112 | **194** (−98.3%) |
+| `workload.median.probe.longtaskTotalMs` | 227376 | **4521** (−98%) |
+| `workload.median.pssAfterMb` | 7004 | **1721** (−75.4%) |
+| `replayStall.medium.median.ipcTotalStallMs` | 14491 | **0** (−100%) |
+| `replayStall.huge.median.rendererLongtaskMaxMs` | 5366 | **155** (−97.1%) |
+
+Reproduced across three consecutive full runs (huge resume 615 / 614 / 617 ms), 5/5
+stabilized every time. `chat-medium`, `settings-open` and `six-sessions` screenshots are
+byte-identical to the baseline.
+
+`history.small.resumeStableMs` went 405 → 643 ms: a genuine ~240 ms cost, the IPC
+round-trip a small conversation now pays where the tailer used to stream it. Not a PRIMARY
+metric; sub-second either way.
+
+### Gate verdict: REJECT — and every reason accounted for
+
+`compare.mjs … --target history.huge.median.resumeStableMs` reports REJECT on four items.
+None of them is the change being bad:
+
+- **`workload.median.cpuDuringPct` +65.9%** — a RATE, not a total. `cpuWindowSeconds` fell
+  195 → 40 for the same 40 `verifiedSwitches` (and `unsettledSwitches` 3 → 0). Total CPU
+  work: **358 → 122 CPU-seconds, −66%**. The rig records both numbers, which is the only
+  reason this was checkable rather than arguable. *Rig gap: `cpuDuringPct` is a PRIMARY
+  metric that cannot be compared across runs of different duration — it should be a total,
+  or paired with one, in the gate.*
+- **`artifacts.median.ipcSumOfSteps.totalStallMs` 0 → 58 ms** — REAL and deliberate: the
+  drawer's new list-on-open IPC (defect 2). Baseline's own runs were 0/0/70, so this metric
+  is noisy, but the cost is real and is the price of the drawer showing correct data.
+- **`screen welcome` 2.21%** — NOT this change: `79fe9f73 feat(ui): welcome screen gets the
+  bare frame (P-6)` is on master but not in the baseline commit `047da49`. Verified by
+  `git show 047da493:…App.tsx | grep -c chrome-glass--bare` → 0, HEAD → 2. The welcome shot
+  is byte-stable across 5 master-era runs and byte-stable across 4 of this branch's runs —
+  a deterministic difference owned by another PR.
+- **`screen native-chat` 0.2%** — the known cycle-1 rig defect (photographs a real local
+  model's non-deterministic reply). It was 14.04% before defect 3 was fixed.
+
+### Open
+
+- **Destin's eyeball on scroll feel is the final gate** and has NOT been done:
+  `bash scripts/run-dev.sh worktrees/perf-lab --label "Paged History"` → open a huge
+  conversation → scroll up → confirm no jump as older turns prepend.
+- A master-baseline re-measurement with the CURRENT rig would remove the welcome-screen
+  difference from the comparison and put both sides on identical footing. Offered, not yet
+  run.
+- Task 12 remains: PR (ask first), archive spec + plan, flip the ROADMAP item, update
+  `now.md`. Deferred by decision: eviction → cycle 3; Android on-device paging; §4 smaller
+  readers.
