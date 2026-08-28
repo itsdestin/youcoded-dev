@@ -39,7 +39,7 @@ end of this plan for the measured reasons and where it goes instead.
 - **Size discipline.** ~2,600 rows come from our own registry alone (302 live bundles + 2,084 skills + 103 specialists + 125 connections, measured against `index.json`), and today's rows average 1.1 KB. Expect roughly 5,000 rows / 4–6 MB. Any change that materially grows that needs a paging story first; D1's free tier allows 5 M row-reads/day, i.e. about 1,000 uncached catalog fetches.
 - `CatalogMeta` is `desktop/src/shared/catalog-types.ts` on the app branch. This plan adds two optional fields there (Task 5): `upstreamId?: string`, `stars?: number`. Nothing else in the shape changes.
 - Ids must satisfy the installer's `^[a-zA-Z0-9_-]+$` (`plugin-installer.ts:41`) **except** member rows, which use `<bundle>/<name>` and are never installed directly (Plan 3 routes them to the bundle). Mirrored ids are prefixed by source: `mcp-…`, `docker-…`, `copilot-…`, `cursorrules-…`.
-- Worker conventions: errors are plain-text lowercase messages (`src/lib/errors.ts`); `parseJsonBody` for JSON; public GETs go in `isPublicReadPath`; migrations `NNNN_snake_case.sql`, this plan is **0006**, unconditionally — Plan 1 owns 0005 and merges first. Do **not** swap them: D1 records applied migrations by filename and applies in order, so a 0005 added after 0006 has run is applied out of order. `[env.test]` mirrors any new var; tests `DELETE FROM` their tables in `beforeEach`.
+- Worker conventions: errors are plain-text lowercase messages (`src/lib/errors.ts`); `parseJsonBody` for JSON; public GETs go in `isPublicReadPath`; migrations `NNNN_snake_case.sql`, this plan is **0006**, unconditionally — Plan 1's `0005_feedback.sql` merged 2026-08-28 (wecoded-marketplace#71), so 0006 is now simply the next number. Do **not** swap them: D1 records applied migrations by filename and applies in order, so a 0005 added after 0006 has run is applied out of order. `[env.test]` mirrors any new var; tests `DELETE FROM` their tables in `beforeEach`.
 - **Ids may contain a slash.** Bundle members are `<bundle>/<name>`; `validateId` is length-only, but Hono's `:param` never crosses a slash, so every id-taking route needs a two-segment form (Task 4). Same trap Plan 1 hits with `/comments`.
 - Ingest never writes to the repo; it POSTs. The token is `CATALOG_INGEST_TOKEN` (Worker secret, CI secret `MARKETPLACE_CATALOG_INGEST_TOKEN`), compared with `crypto.subtle.timingSafeEqual`-equivalent constant-time logic.
 - **There must be a kill switch.** `CATALOG_ENABLED` (a `wrangler.toml` `[vars]` value, Task 2) — set it to `"0"`, commit, and `GET /catalog` answers 503, which both clients already handle by falling back to `index.json`. Without it, one bad ingest run reaches every device within the hour and the only remedy is writing and deploying code under pressure.
@@ -869,8 +869,10 @@ Then push and open the PR (`feat(worker): catalog service — storage, ingest ro
 
 **Why this belongs to this plan and not Plan 1.** `validateId` only checks the length (1–128
 chars), so today anyone signed in can record an install, a vote or a comment against an id
-that does not exist — unbounded junk rows in D1, and a spam vector with no ceiling if the
-rate limiter turns out to be inert (Plan 1, Task 0). The Worker has never had a way to know
+that does not exist — unbounded junk rows in D1, and a spam vector with **no ceiling at all** — Plan 1's Task 0
+measured `checkRateLimit` in production on 2026-08-28 and it blocked 0 of 160 requests
+against a 60/minute cap, so this is the standing state until the Worker moves to a custom
+domain, not a hypothetical. The Worker has never had a way to know
 which ids are real. **`catalog_items` is that list**, so the check becomes possible for the
 first time exactly here.
 
@@ -942,8 +944,9 @@ instead of an unhandled throw. Switch it.
 
 - [ ] **Step 4: Run** `npm test && npm run typecheck` → PASS. **Step 5: Commit** `git add src/lib/validate.ts src/feedback/routes.ts src/installs/routes.ts src/ratings/routes.ts test/ && git commit -m "feat(worker): installs, votes and comments must name a listing that exists"`.
 
-> **Sequencing:** this task edits files Plan 1 created, so it must run after Plan 1 has
-> merged. If Plan 1 is still open, do this task last in this plan and rebase.
+> **Sequencing:** this task edits files Plan 1 created. Plan 1's Worker half merged
+> 2026-08-28 (wecoded-marketplace#71/#72/#73), so those files are on master and this runs in
+> its normal place — rebase onto master first, since `feedback/routes.ts` moved after #73.
 
 ---
 
