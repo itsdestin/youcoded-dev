@@ -213,7 +213,7 @@ saying yes.
 
 **Breaks users**
 1. Installed plugins get wiped when Claude Code re-clones its marketplace folder; user-installed ones stay dead (ROADMAP:693). Needs an app-owned install root.
-2. Bundled plugins are never upgraded after first install (ROADMAP:69) — plan exists (`docs/active/plans/2026-08-27-chatsearch-writes-and-bundled-plugin-upgrade.md`).
+2. Bundled plugins are never upgraded after first install (ROADMAP:69). **IN FLIGHT** — branch `fix/bundled-plugin-upgrade`, worktree `worktrees/bundled-upgrade`, 8 commits, review round 1 done 2026-08-27, no PR yet. Also makes the plugin Update button really update and ports the upgrade to Android.
 3. Theme "Update available" badge has no working action (ROADMAP:715). Quick.
 4. Android can't install/connect integrations — stubbed (`SessionService.kt:1100`, youcoded #78).
 5. A newly published bundled plugin is invisible for 24h (cache TTL, ROADMAP:71). Quick-ish; Layer A removes the cause.
@@ -229,7 +229,7 @@ saying yes.
 13. Phone-width rails clip (audit P-17); raw markdown in detail `longDescription`.
 14. google-services: OAuth 7-day re-auth unverified in the wild (#9), no macOS/Linux E2E (#8).
 15. `mcpServers` extracted as empty for all 336 entries.
-16. `${CLAUDE_PLUGIN_ROOT}` unset in Bash → chatsearch's documented command fails (ROADMAP:189).
+16. `${CLAUDE_PLUGIN_ROOT}` unset in Bash → chatsearch's documented command fails (ROADMAP:189). **IN FLIGHT** on the same `fix/bundled-plugin-upgrade` branch.
 17. Secret *content* scan is a warning, not a block (`validate-plugin-pr.yml:161`).
 18. Share-link import throws "not yet implemented" (`skill-provider.ts:591`).
 19. Android missing: delete own review, like a theme, refresh theme registry.
@@ -247,13 +247,13 @@ saying yes.
 
 ---
 
-## 6. Decisions Destin needs to make (in order)
+## 6. Decisions
 
-1. **Scope of ambition**: (a) polish what exists + fix the bug list, (b) Layers A–D inside
-   the app, or (c) A–E including becoming a public sub-registry others can read. My
-   recommendation is **(b) now, designed so (c) is a flip later** — (c) costs little extra
-   if the catalog is in the database from the start, but it is a public commitment (uptime,
-   abuse handling) that shouldn't be made before the trust layer exists.
+**Decided 2026-08-27 (Destin):** option **(b)** — Layers A–D inside the app now — with **(c), the public sub-registry (Layer E), as a clear intended follow-up**, not a maybe. Both are on `ROADMAP.md` under Features. Build A so E is a switch: every catalog row carries source repo, exact commit and license from day one.
+
+Remaining decisions, in order:
+
+1. ~~Scope of ambition~~ — decided above.
 2. **Mirror files or link only, by default?** Recommendation: **mirror metadata for
    everything; mirror files only where the license allows; install always fetches from the
    pinned upstream commit.** This keeps us out of the EU-database-right and copyright
