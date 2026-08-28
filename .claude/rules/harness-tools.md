@@ -60,26 +60,26 @@ verify:
 ---
 # Native harness tools, web tools, skills/injection & MCP
 
-Session lifecycle: sibling rule `native-runtime.md`. **Depth + why for every bullet: `youcoded/docs/native-runtime.md` (Plan A/B rule-overflow, "Tool output honesty", M3 skills/injection, MCP sections).**
+Session lifecycle: `native-runtime.md`. **Depth + why for every bullet: `youcoded/docs/native-runtime.md` (Plan A/B rule-overflow, "Tool output honesty", M3 skills/injection, MCP sections).**
 
 ## Core tools — guards: `harness-tools-core`/`harness-tool-guards`/`harness-tool-bounds` tests
 - **The file-tool guards (secret paths, cwd jail) are honest friction, NOT a sandbox — Bash bypasses them.** Never present them as a security boundary or glob toward one.
 - **Bash cwd is SCOPED-PERSISTENT; the file tools are not** — `shellCwd` tracks across calls (`__YC_CWD__` sentinel); a `cd` outside `ctx.cwd` is reverted AND announced; only cwd persists (resets on resume); file tools still resolve against `ctx.cwd`; PowerShell stays stateless.
-- **Tools emit FORWARD SLASHES; Bash reports cwd in the ROOT'S SPELLING** — `toPosix()` is the one output normalizer; `rebaseReportedCwd()` re-expresses `pwd` in `ctx.cwd`'s vocabulary; containment is checked BEFORE the rebase; **`ctx.cwd` is never canonicalized** (permission-store key). **VACUOUS on Linux** — fail only on Windows/macOS CI (`eba51705`). Four known traps: `docs/archive/specs/2026-08-11-harness-cross-platform-path-vocabulary.md`.
+- **Tools emit FORWARD SLASHES; Bash reports cwd in the ROOT'S SPELLING** — `toPosix()` is the one output normalizer; `rebaseReportedCwd()` re-expresses `pwd` in `ctx.cwd`'s vocabulary; containment is checked BEFORE the rebase; **`ctx.cwd` is never canonicalized** (permission-store key). **VACUOUS on Linux** — fail only on Windows/macOS CI (`eba51705`). Traps: `docs/archive/specs/2026-08-11-harness-cross-platform-path-vocabulary.md`.
 - **Schemas are `.strict()` (MCP pass-through); PDF extraction is SERIALIZED (`pdf-text.ts`); Write REFUSES omission placeholders; served-reads dedupe CLEARS on compaction/resume; Bash text has NO pipe advice** — depth: doc "Native tools — 2026-08-26 ledger"; guards: `tool-arg-errors`, `read-pdf`, `native-tools-polish`.
 - **Tools DECLARE what they omitted (`bounds`); `defineTool`/`composeNotice` render it** — never hand-written truncation prose; `moreHint` is the tool's own vocabulary — guards: `tool-registry-manifest`/`harness-tool-conformance`, ast-grep `tool-bounds-not-hand-rolled`.
 
 ## Web tools (Plan B) — guards: `net-guard`/`web-fetch-tool`/`search-backends`/`search-service` tests
 - **WebFetch/WebSearch follow redirects MANUALLY and re-validate every hop** (scheme + literal IP + DNS answer) — the SSRF bypass class. Never `redirect:'follow'`.
 - **WebFetch keeps its pre-parse complexity guard (`MAX_TAGS`/`MAX_DEPTH`)** — Readability is synchronous and ~quadratic in DOM depth.
-- **WebSearch walks a data-driven backend chain** (tavily → exa → ddg; refreshes from the repo's `search-chain.json`). **DDG `202` = rate-limited, NEVER retried.** Backend ids from IPC are whitelisted.
+- **WebSearch walks a data-driven backend chain** (tavily → exa → ddg; refreshes from the repo's `search-chain.json`). **DDG `202` = rate-limited, NEVER retried.** IPC backend ids are whitelisted.
 - **Search keys are `safeStorage`-encrypted; `search-providers.json` holds only `secretRef`s**; `search:*` has 5-surface parity; `search:test` never throws (guards: `search-key-store`/`ipc-channels`).
 - **AskUserQuestion rides the permission-ask rail** — the broker threads `decision.updatedInput`; `formatAnswers` is TOTAL (a throw bricks the session). **A human dismissal ENDS the turn** (broker `dismissed`) — guards: `native-permission-broker`/`ask-user-question-tool`/`harness-session-loop`.
 
 ## Skills & injection (M3) — guards: `skill-catalog`/`skill-tool-gating`/`injection-budget`/`project-instruction-budget`/`path-triggers`/`rule-injection`/`slash-routing` tests
 - **Injection is MESSAGES, never a prompt edit** (`prompt-assembly.ts` stays byte-stable) — a prompt change discards the KV cache prefix.
 - **Injected content is bounded by the profile; truncation announces itself** (budgets from the REAL window; unmeasured = small, frontier providers exempt).
-- **The ROOT project-instruction file is OUTLINED to fit (`fitProjectInstructions`), never tail-cut** — every heading survives; the notice says only what happened; **sizing is fixed at session start — `setBinding` does NOT re-apply it.**
+- **The ROOT project-instruction file is OUTLINED to fit (`fitProjectInstructions`), never tail-cut** — every heading survives; the notice states what happened; **sizing is fixed at session start — `setBinding` does NOT re-apply it.**
 - **`Skill` is CONDITIONAL and absent from `NATIVE_TOOL_NAMES`** — attached only when the profile affords its catalog; re-synced on `setBinding`; `/skill-name` works on every model.
 - **A rule with no `paths:` is SKIPPED, never global** — eager rules ride every turn.
 - **`native:*` four-surface parity is pinned** (`ipc-channels.test.ts` → "native:* channel parity").
