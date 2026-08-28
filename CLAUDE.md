@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Workspace guidance for Claude Code. Subsystem details live in `docs/` and `.claude/rules/` — loaded only when relevant. **Start any non-trivial task at `docs/MAP.md`**, which maps every subsystem to its entry points, rule, lazy doc, and guard tests. **First action each session:** `bash setup.sh` (see [Workspace Setup](#workspace-setup)).
+Workspace guidance for Claude Code. Subsystem details live in `docs/` and `.claude/rules/` — loaded only when relevant. **Start any non-trivial task at `docs/MAP.md`**, which maps every subsystem to its entry points, rule, lazy doc, and guard tests — plus a **Hot paths** table (what Destin calls a screen → its exact file) and an **On-disk state** table (what the app writes under `~/.youcoded`, `~/.config/youcoded*`, `~/.cache/llama.cpp`). The session-start hook already injected all three, so look there before searching for a file. **First action each session:** `bash setup.sh` (see [Workspace Setup](#workspace-setup)).
 
 ## About This Project
 
@@ -52,6 +52,8 @@ When you need to verify runtime behavior (GPU usage, DOM state, IPC responses, t
 ```bash
 cd <repo> && git fetch origin && git pull origin master
 ```
+
+**Expect the main checkout to be dirty and behind, and branch off `origin/master` anyway.** Concurrent sessions leave uncommitted work in `youcoded/`, which makes both `setup.sh` and `git pull` skip that repo *without failing* — on 2026-08-27 the main checkout sat 146 commits behind for two days. Two consequences: `git worktree add <path> -b <branch> origin/master` (never bare `master`), and **Serena is pinned to the main checkout, so its answers are that stale copy**. The session-start hook prints the behind-count when it is non-zero.
 
 **Use worktrees for non-trivial work.** Any work beyond a handful of lines or narrowly-scoped bug fixes must be done in a separate git worktree (or use the Agent tool with `isolation: "worktree"`). This prevents multiple concurrent Claude sessions from overwriting each other's changes.
 

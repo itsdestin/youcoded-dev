@@ -93,3 +93,97 @@ test('per-repo state still reports branch and recent commits', () => {
   assert.match(out, /Recent commits:/);
   fs.rmSync(ws, { recursive: true, force: true });
 });
+
+// --- worktree annotations (2026-08-28) ---------------------------------------
+// 22 of 55 sessions in the 2026-08-26→28 audit re-derived dirty/ahead per worktree
+// with their own git calls. The branch name alone never answered the question they
+// were actually asking, which is "is there work in here, and has it landed yet".
+
+test('a worktree reports its uncommitted file count', () => {
+  const { ws, repo } = makeWorkspace();
+  const wtPath = path.join(ws, 'worktrees', 'plan-c');
+  git(repo, 'worktree', 'add', '-q', '-b', 'feat/x', wtPath);
+  fs.writeFileSync(path.join(wtPath, 'scratch.txt'), 'in progress\n');
+  const out = runHook(ws);
+  assert.match(out, /plan-c .*1 uncommitted file\(s\)/, 'dirty count must be reported');
+  fs.rmSync(ws, { recursive: true, force: true });
+});
+
+test('a worktree with no upstream says so instead of printing a bare comma', () => {
+  // The throwaway repo has no `origin`, so the ahead-count cannot be computed.
+  // An unknown must read as unknown — the earlier draft emitted "— , 1 file(s)".
+  const { ws, repo } = makeWorkspace();
+  const wtPath = path.join(ws, 'worktrees', 'plan-c');
+  git(repo, 'worktree', 'add', '-q', '-b', 'feat/x', wtPath);
+  const out = runHook(ws);
+  assert.match(out, /plan-c .*no upstream to compare against/);
+  assert.doesNotMatch(out, /— ,/, 'never emit an empty leading clause');
+  fs.rmSync(ws, { recursive: true, force: true });
+});
+
+// --- orientation block (2026-08-28) ------------------------------------------
+// MAP.md was consulted in 39 of 55 sessions but at MEDIAN tool call #20. The block
+// is GENERATED from MAP.md so it cannot drift; these tests pin that it is generated
+// and not, say, a copy that silently stops matching the map.
+
+const MAP_FIXTURE = `# Workspace Map
+
+| Subsystem | Entry points | Rule | Depth doc | Guard tests |
+|---|---|---|---|---|
+| Chat & transcript | \`youcoded/desktop/src/renderer/state/chat-reducer.ts\`<br>\`youcoded/desktop/src/main/transcript-watcher.ts\` | chat-reducer | \`youcoded/docs/chat-reducer.md\` | manual |
+| Build & release | \`youcoded/app/build.gradle.kts\` (with a note) | — | \`docs/build-and-release.md\` | manual |
+
+## Hot paths — the exact file, without a search
+
+Prose that explains why this table exists and must NOT be injected.
+
+| You'd call it | File |
+|---|---|
+| quick chips | \`youcoded/desktop/src/renderer/components/QuickChips.tsx\` |
+
+**Four files are too big to read whole** — query symbols.
+
+## On-disk state — what the app writes on this machine
+
+More prose that must not be injected.
+
+| Path | What's in it | Defined in |
+|---|---|---|
+| \`~/.youcoded/config.json\` | settings | \`youcoded/desktop/src/main/native-home.ts\` |
+`;
+
+test('the orientation block is generated from MAP.md, first entry point only', () => {
+  const { ws } = makeWorkspace();
+  fs.mkdirSync(path.join(ws, 'docs'), { recursive: true });
+  fs.writeFileSync(path.join(ws, 'docs', 'MAP.md'), MAP_FIXTURE);
+  const out = runHook(ws);
+
+  assert.match(out, /### Subsystems — open this file first/);
+  assert.match(
+    out,
+    /Chat & transcript -> youcoded\/desktop\/src\/renderer\/state\/chat-reducer\.ts {2}\[chat-reducer\]/,
+    'subsystem row collapses to its FIRST entry point plus the rule',
+  );
+  assert.doesNotMatch(out, /transcript-watcher/, 'later entry points are not injected');
+  assert.match(out, /Build & release -> youcoded\/app\/build\.gradle\.kts {2}\[no rule\]/,
+    'a trailing parenthetical is dropped and an em-dash rule reads as "no rule"');
+
+  // Both lookup tables, rows and bold callouts only.
+  assert.match(out, /quick chips \| `youcoded\/desktop\/src\/renderer\/components\/QuickChips\.tsx`/);
+  assert.match(out, /`~\/\.youcoded\/config\.json`/);
+  assert.match(out, /\*\*Four files are too big to read whole\*\*/);
+  assert.doesNotMatch(out, /must NOT be injected|must not be injected/, 'MAP prose stays in MAP');
+  assert.doesNotMatch(out, /^\|---/m, 'table separator rows are stripped');
+
+  fs.rmSync(ws, { recursive: true, force: true });
+});
+
+test('a missing MAP.md prints no orientation heading at all', () => {
+  // Half a block is worse than none: a header with nothing under it reads as
+  // "there is nothing to know here", the same failure shape as the vanished
+  // worktree section this file was written for.
+  const { ws } = makeWorkspace();
+  const out = runHook(ws);
+  assert.doesNotMatch(out, /Where things are/);
+  fs.rmSync(ws, { recursive: true, force: true });
+});

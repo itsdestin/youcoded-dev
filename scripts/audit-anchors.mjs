@@ -131,13 +131,21 @@ export function harvestDocAnchors(text) {
 // Every backtick-quoted path inside MAP's table rows (lines starting with '|').
 // Cells with prose ("manual (visual)") have no backticks; rule names have no '/';
 // paths with spaces are not paths.
+//
+// Skipped: anything that isn't repo-relative. MAP's "On-disk state" table names
+// runtime locations the app writes on a user's machine (`~/.youcoded/config.json`,
+// `<project>/.youcoded/artifacts.json`) — resolving those against the workspace root
+// would report every one of them missing and drown the real failures. Their drift
+// protection is the table's "Defined in" column, which IS a repo path and is checked.
+const REPO_RELATIVE = (p) => !/^[~/<]/.test(p);
+
 export function harvestMapPaths(text) {
   const paths = new Set();
   for (const line of text.split(/\r?\n/)) {
     if (!line.startsWith('|')) continue;
     for (const m of line.matchAll(/`([^`]+)`/g)) {
       const p = m[1];
-      if (p.includes('/') && !p.includes(' ')) paths.add(p);
+      if (p.includes('/') && !p.includes(' ') && REPO_RELATIVE(p)) paths.add(p);
     }
   }
   return [...paths];

@@ -93,6 +93,22 @@ Prose mentioning \`docs/never-harvested.md\` outside the table.
   ].sort());
 });
 
+test('harvestMapPaths: on-disk runtime paths are not resolved against the repo', () => {
+  // MAP's "On-disk state" table names locations on the user's MACHINE. Before this
+  // skip they were harvested as repo paths and every one reported missing, which
+  // would have buried the real failures the checker exists to surface.
+  const paths = harvestMapPaths(`| Path | What's in it | Defined in |
+|---|---|---|
+| \`~/.youcoded/config.json\` | settings | \`youcoded/desktop/src/main/native-home.ts\` |
+| \`<project>/.youcoded/artifacts.json\` | file history | \`youcoded/desktop/src/main/artifacts/artifact-store.ts\` |
+| \`/opt/YouCoded/resources\` | the installed app | \`docs/build-and-release.md\` |`);
+  assert.deepEqual(paths.sort(), [
+    'docs/build-and-release.md',
+    'youcoded/desktop/src/main/artifacts/artifact-store.ts',
+    'youcoded/desktop/src/main/native-home.ts',
+  ].sort(), 'only the repo-relative "Defined in" column is checkable');
+});
+
 test('globToRegex: ** crosses slashes, * does not', () => {
   assert.ok(globToRegex('a/**').test('a/b/c.ts'));
   assert.ok(!globToRegex('a/**').test('ab/c.ts'));
