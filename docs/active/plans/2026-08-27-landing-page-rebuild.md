@@ -19,8 +19,9 @@ audit: docs/active/investigations/2026-08-27-landing-page-audit.md
 
 - **Target is 1.3.0.** Rows 1–8 describe master; row 9 is labelled `Roadmap` and drawn, never recorded.
 - **Copy standard:** concrete nouns, fewest words, lead with the difference. Forbidden in headlines: "harness", "agentic", "open-source", "built with Claude Code", "does real work", "powerful", "seamless". "Claude Code", "MCP", "git" appear only in row 8.
-- **Wordmark:** "YouCoded **Agent**" ("Agent" visually subordinate). Subheader: **"AI for Everyone."**
-- **Hero:** "Make AI *Useful.* → *Fun.* → *Yours.*" — exactly three cycler states; word delays 1.1 s / 2.3 s / 3.5 s (1.2 s spacing); themes midnight → halftone → crème; page rests on "Yours."/crème.
+- **Wordmark:** "YouCoded **Assistant**" ("Agent" visually subordinate). Subheader: **"Agentic AI for Everyone."**
+- **Hero:** "Make AI *Useful.* → *Fun.* → *Yours.*" — exactly three cycler states; word delays 1.1 s / 2.3 s / 3.5 s (1.2 s spacing); themes midnight → halftone → crème; page rests on "Yours."/crème. One sentence under it: *A self-improving, customizable AI agent. Use any AI model from any provider to build or accomplish anything you want.* **No hero buttons** — the existing floating "Download ↓" pill (`#floating-cta`) stays and is the CTA (Destin, copy review 2026-08-28).
+- **Section order:** hero → What is this? → live embed → rows (Destin, 2026-08-28: the embed sits *below* "What is this?").
 - **Accounts:** GitHub Required · Anthropic Optional · OpenRouter Optional · Google/Apple Optional (Drive/iCloud second copy).
 - **Never claim** (audit §6): long-running background commands, PDF/Word reading in the native harness, automations as shipped, native models on Android, IDE features, MCP *settings UI*.
 - **Keep verbatim:** "YouCoded is an independent, community-built project. Not affiliated with, endorsed by, or officially supported by Anthropic."
@@ -28,7 +29,7 @@ audit: docs/active/investigations/2026-08-27-landing-page-audit.md
 - **Embed budget is met:** measured 2026-08-27 — main renderer chunk 636 KB gzipped + 140 KB CSS; PDF/Docx/Xlsx viewers are lazy chunks the embed never loads. No trimming task is needed.
 - **Workbench ports:** recording and boot checks use `YOUCODED_PORT_OFFSET=300` (Vite 5473, CDP 9977+300=10277 for the boot check) so they never collide with a live workbench on 5233 or run-dev on 5223.
 - **After ANY change to `mock-shim.ts`, `scenarios.ts`, or `seed-chat.ts`:** `node scripts/workbench-boot-check.mjs 5473` must pass. **Before claiming a desktop task done:** `bash scripts/verify.sh worktrees/site-rebuild` must pass.
-- **Copy review gate:** nothing merges before Destin has marked up `docs/active/design/2026-08-27-landing-page/copy.md` (Task 10).
+- **Copy review:** done 2026-08-28 via the page-shaped preview (`docs/active/design/2026-08-27-landing-page/copy.preview.answers.md`); its edits are folded into Tasks 10–12 below. Everything not edited there is approved as written.
 
 ## File map
 
@@ -993,12 +994,12 @@ Expected: boot check ok, nine `frames=…` lines, gallery `du` under 1.5 MB tota
 **Files:**
 - Modify: `docs/index.html` — `<head>` (`:1-32`), cycler CSS (`:584-656`), nav (`:2646-2677`), hero (`:2678-2695`), intro JS (`:3484` onward: `THEMES`, `HERO_THEME_SEQUENCE`, `intro-mode` lift at 6300 ms)
 
-- [ ] **Step 1: Head** — `<title>YouCoded Agent — AI for Everyone</title>`; meta description / OG / Twitter description: `One app for Claude, hundreds of cloud models, or one that runs free on your own computer — working in your files, on every device you own. Windows, macOS, Linux, Android.`; `og:title` `YouCoded Agent — AI for Everyone`; keep `og:image` URL (Task 13 creates the file).
+- [ ] **Step 1: Head** — `<title>YouCoded Assistant — Agentic AI for Everyone</title>`; meta description / OG / Twitter description: `One app for Claude, hundreds of cloud models, or one that runs free on your own computer — working in your files, on every device you own. Windows, macOS, Linux, Android.`; `og:title` `YouCoded Assistant — Agentic AI for Everyone`; keep `og:image` URL (Task 13 creates the file).
 
 - [ ] **Step 2: Wordmark** — in the nav logo block replace `You<span class="…">Coded</span>` (keep the existing accent span) with:
 ```html
-<span class="nav-logo-text">You<span class="nav-logo-accent">Coded</span> <span class="nav-logo-agent">Agent</span></span>
-<span class="nav-logo-sub">AI for Everyone.</span>
+<span class="nav-logo-text">You<span class="nav-logo-accent">Coded</span> <span class="nav-logo-agent">Assistant</span></span>
+<span class="nav-logo-sub">Agentic AI for Everyone.</span>
 ```
 CSS (add after `.nav-logo-sub`): `.nav-logo-agent { font-weight: 500; opacity: .72; letter-spacing: .01em; }`. Keep the existing accent class name (read the current markup at `:2647-2652` and reuse its class).
 
@@ -1014,40 +1015,36 @@ CSS (add after `.nav-logo-sub`): `.nav-logo-agent { font-weight: 500; opacity: .
     </span>
   </span>
 </h1>
-<p class="hero-sub">One app for Claude, hundreds of cloud models, or one that runs free on your own computer — working in your files, on every device you own.</p>
-<div class="hero-actions">
-  <a class="btn btn-primary" href="#get-started">Download</a>
-  <a class="btn btn-ghost" href="#see-it">See it work</a>
-</div>
+<p class="hero-sub">A self-improving, customizable AI agent. Use any AI model from any provider to build or accomplish anything you want.</p>
 ```
 Read the current markup at `:2678-2695` first and keep any wrapper elements the JS measures (`.cycler-sizer`, `.cycler-stage`, the `--cycler-width` measuring code).
 
 - [ ] **Step 4: Cycler timing** — CSS `:612-623`: `.cycler-word-1 { animation-delay: 1.1s }`, `.cycler-word-2 { animation-delay: 2.3s }`, `.cycler-word-3 { animation-delay: 3.5s }`; the final word rule (today `.cycler-word-4`, the one that stays) becomes `.cycler-word-3` with the "rest" keyframes; delete `.cycler-word-4`/`-5` rules and the reduced-motion `display:none` list becomes `-1, -2`. JS `HERO_THEME_SEQUENCE` → `[{theme:'midnight',at:1000},{theme:'halftone',at:2200},{theme:'creme',at:3400}]`; the intro-mode lift (`6300`) → `4300`; the word-measuring loop iterates 3 words. `THEMES` (manual cycle) stays `['midnight','creme','halftone','strawberry-kitty']`.
 
-- [ ] **Step 5: Buttons CSS** — reuse the site's existing button styles if present (`grep -n "\.btn" docs/index.html`); if none, add `.hero-actions{display:flex;gap:12px;justify-content:center;margin-top:20px}.btn{padding:12px 22px;border-radius:12px;font-weight:600}.btn-primary{background:var(--title-highlight);color:#fff}.btn-ghost{border:1px solid var(--border);color:inherit}` using the page's existing CSS variables (read `:33-140` for the variable names).
+- [ ] **Step 5: Hero CSS** — `.hero-sub{max-width:720px;margin:18px auto 0;font-size:20px;line-height:1.5;color:var(--text-secondary);text-align:center}`. No buttons; keep `#floating-cta` ("Download ↓") exactly as it is today.
 
-- [ ] **Step 6: Look** — `python3 -m http.server 8765 --directory docs` and capture with `node /home/destin/youcoded-dev/scripts/ui-review/site-fullpage.mjs` (create it from the scratchpad `fullshot.mjs` used on 2026-08-27: navigate, wait 6 s, scroll through, capture full page at 1440 and 390). Check: three words cycle, page rests on crème with "Yours.", buttons render, nothing overlaps at 390.
+- [ ] **Step 6: Look** — `python3 -m http.server 8765 --directory docs` and capture with `node /home/destin/youcoded-dev/scripts/ui-review/site-fullpage.mjs` (create it from the scratchpad `fullshot.mjs` used on 2026-08-27: navigate, wait 6 s, scroll through, capture full page at 1440 and 390). Check: three words cycle, page rests on crème with "Yours.", the sentence sits under it, the floating Download pill still appears, nothing overlaps at 390.
 
-- [ ] **Step 7: Commit** `git add docs/index.html && git commit -m "feat(site): YouCoded Agent wordmark, three-state hero, CTA buttons"` (+ trailers).
+- [ ] **Step 7: Commit** `git add docs/index.html && git commit -m "feat(site): YouCoded Assistant wordmark, three-state hero, CTA buttons"` (+ trailers).
 
 ### Task 11: Live embed section
 
 **Files:**
-- Modify: `docs/index.html` — insert `<section id="see-it">` between hero and About; CSS; JS
+- Modify: `docs/index.html` — insert `<section id="see-it">` AFTER the About section (hero → About → embed → rows); CSS; JS
 
-- [ ] **Step 1: Markup** (after the hero `</header>`):
+- [ ] **Step 1: Markup** (after the About `</section>` and its divider — the embed sits below "What is this?"):
 ```html
 <section class="embed-section" id="see-it">
   <div class="container">
     <div class="section-label">Try it</div>
-    <h2 class="section-title">This is the app. Click around.</h2>
-    <p class="section-desc">Type a message, open the model picker, switch the look — it's the real interface running on a pretend computer. Nothing you do here leaves this page.</p>
+    <h2 class="section-title">Click around, I guess.</h2>
+    <p class="section-desc">Type a message, open the model picker, or switch the theme. This demo is a pixel-perfect representation of the real app's interface.</p>
     <div class="embed-frame">
       <div class="embed-titlebar"><span></span><span></span><span></span></div>
       <div class="embed-stage">
-        <img class="embed-poster" src="site/media/row1-any-ai.webp" alt="YouCoded Agent chat window" width="1440" height="900">
+        <img class="embed-poster" src="site/media/row1-any-ai.webp" alt="YouCoded Assistant chat window" width="1440" height="900">
         <button class="embed-start" type="button">Start the demo</button>
-        <iframe class="embed-iframe" title="YouCoded Agent live demo" loading="lazy" data-src="site/index.html?mode=workbench&amp;child=1&amp;scenario=site&amp;latency=150&amp;reply=demo"></iframe>
+        <iframe class="embed-iframe" title="YouCoded Assistant live demo" loading="lazy" data-src="site/index.html?mode=workbench&amp;child=1&amp;scenario=site&amp;latency=150&amp;reply=demo"></iframe>
       </div>
       <div class="embed-swatches" role="group" aria-label="Change the theme">
         <button data-theme="midnight" style="--sw:#0b1020">Midnight</button>
@@ -1126,8 +1123,8 @@ The `localStorage` write before `src` is set targets `about:blank`'s origin, not
 
 - [ ] **Step 1: About copy** — replace the three paragraphs inside `.intro-box` with:
 ```html
-<p>Most AI lives in a chat box on someone else's website. YouCoded Agent lives on your computer and phone, working in your own files — with Claude, hundreds of other models, or one that runs free on your machine. The look, the plugins, and your data are all yours.</p>
-<p class="permission-note">Nothing happens without your permission. YouCoded Agent asks before it acts.</p>
+<p>YouCoded is a fully-customizable AI assistant that works with your own files and data to autonomously accomplish tasks. Review and organize large spreadsheets, compile the latest medical or financial research, draft an email or slideshow, or build new features in large coding projects. With YouCoded, you can utilize OpenRouter to access any AI model from any provider including Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and more. YouCoded also allows you to download and run open source AI models on your own device, if your hardware supports it. YouCoded is built to become a fully-modular and open source assistant platform, as the app itself integrates the ability for all users to build and share skills, tools, themes, and app improvements. Because YouCoded was designed from the ground up to improved by individuals with no coding or development interest, it can quickly outpace development of competing closed agents in a way that is driven by what users really want.</p>
+<p class="permission-note">Nothing happens without your permission. YouCoded Assistant asks before it acts.</p>
 ```
 
 - [ ] **Step 2: Row template** — every row is:
@@ -1218,7 +1215,7 @@ CSS: `.roadmap-mock{display:grid;grid-template-columns:30% 1fr;gap:12px;padding:
 
 - [ ] **Step 1: Story** — keep both paragraphs; append:
 ```html
-<p>YouCoded Agent is what that kind of AI looks like when it's built for everyone — not just the people who already know how to use it.</p>
+<p>YouCoded Assistant is what that kind of AI looks like when it's built for everyone — not just the people who already know how to use it.</p>
 ```
 
 - [ ] **Step 2: Get started** — section id `get-started`; title `Two minutes of setup.`; four `.prereq-card`s in this order (reuse the existing card markup and badge classes):
@@ -1229,10 +1226,10 @@ CSS: `.roadmap-mock{display:grid;grid-template-columns:30% 1fr;gap:12px;padding:
 Line under the cards: `Or skip the paid ones entirely — run a model on your own computer, free and offline.`
 Grid CSS: the current three-column grid becomes `grid-template-columns:repeat(auto-fit,minmax(220px,1fr))`.
 
-- [ ] **Step 3: Download** — note line becomes `Free and open source. On iPhone? Use YouCoded Agent from Safari by connecting to any computer running the app.`; in the install modal's shared "After install" `<details>`, the three steps become: `Sign in with GitHub.` · `Choose where your AI comes from — Claude, OpenRouter, or a model on this computer (Settings → Model Providers).` · `Pick a theme and browse the marketplace.` Android extra line keeps the runtime-download note only if 1.3.0 still downloads a runtime on first launch (check `app/` — `rg -n "runtime" app/src/main/java --max-count 3`); otherwise delete it.
+- [ ] **Step 3: Download** — note line becomes `Free and open source. On iPhone? Use YouCoded Assistant from Safari by connecting to any computer running the app.`; in the install modal's shared "After install" `<details>`, the three steps become: `Sign in with GitHub.` · `Choose where your AI comes from — Claude, OpenRouter, or a model on this computer (Settings → Model Providers).` · `Pick a theme and browse the marketplace.` Android extra line keeps the runtime-download note only if 1.3.0 still downloads a runtime on first launch (check `app/` — `rg -n "runtime" app/src/main/java --max-count 3`); otherwise delete it.
 
 - [ ] **Step 4: FAQ** — seven items:
-1. `How is this different from ChatGPT or claude.ai?` — `Those are chat websites. YouCoded Agent is an app on your computer and phone that works in your own files — it opens, edits, and organizes them, runs tasks, and searches the web — and you choose the AI behind it: Claude, hundreds of cloud models, or one that runs locally for free.`
+1. `How is this different from ChatGPT or claude.ai?` — `Those are chat websites. YouCoded Assistant is an app on your computer and phone that works in your own files — it opens, edits, and organizes them, runs tasks, and searches the web — and you choose the AI behind it: Claude, hundreds of cloud models, or one that runs locally for free.`
 2. `Do I have to pay for anything?` — `No. The app is free and open source. A model that runs on your own computer costs nothing. If you want Claude, that's a Claude Pro or Max plan from Anthropic; if you want other cloud models, OpenRouter bills per use.`
 3. `Is my data private?` — `Your conversations, files, and settings live in your own GitHub (and, if you add them, your Google Drive or iCloud). Cloud models see what you send them while they work; a local model sends nothing anywhere. The app sends one anonymous daily ping — a hash of your device ID, the app version, platform, and rough region — so we can see how many people use it. No IP address, no username, no message content. Turn it off in Settings → About → Privacy.`
 4. `What platforms does it run on?` — `Windows, macOS, Linux, and Android, plus any web browser by connecting to a computer running the app. Apple integrations (iMessage, Apple Notes, and so on) work on macOS only.`
@@ -1240,9 +1237,9 @@ Grid CSS: the current three-column grid becomes `grid-template-columns:repeat(au
 6. `Is "agentic" AI safe?` — `The app asks before it changes anything, and every standing permission you grant is listed on one screen where you can revoke it. AI still makes mistakes, so keep an eye on what it's doing — and be careful with full-auto mode, which lets it act without asking.`
 7. `Who built this?` — keep the current answer verbatim.
 
-- [ ] **Step 5: Gallery** — keep the section; replace the seven `<img>`s with the WebPs `site-assets.sh` produced (`ls docs/gallery/*.webp`), alt text `YouCoded Agent — <surface> in the <Theme> theme`.
+- [ ] **Step 5: Gallery** — keep the section; replace the seven `<img>`s with the WebPs `site-assets.sh` produced (`ls docs/gallery/*.webp`), alt text `YouCoded Assistant — <surface> in the <Theme> theme`.
 
-- [ ] **Step 6: og-image** — `magick docs/gallery/home-midnight.webp -resize 1200x630^ -gravity center -extent 1200x630 -fill white -font DejaVu-Sans-Bold -pointsize 64 -gravity southwest -annotate +48+48 "YouCoded Agent" -pointsize 30 -annotate +48+128 "AI for Everyone." docs/og-image.png` then `ls -la docs/og-image.png` (< 400 KB).
+- [ ] **Step 6: og-image** — `magick docs/gallery/home-midnight.webp -resize 1200x630^ -gravity center -extent 1200x630 -fill white -font DejaVu-Sans-Bold -pointsize 64 -gravity southwest -annotate +48+48 "YouCoded Assistant" -pointsize 30 -annotate +48+128 "AI for Everyone." docs/og-image.png` then `ls -la docs/og-image.png` (< 400 KB).
 
 - [ ] **Step 7: Dead CSS** — delete the rules for `.hero-tagline`, `.hero-platforms`, `.hero-btn`, `.hero-highlights`, `.hero-mini-mockup`, `.steps-flow`, `.step-item`, `.features-grid`, `.android-pitch`, `.android-stack`, `.android-gate`, and the JS that un-hides `.android-gate`. Check each with `grep -c "<classname>" docs/index.html` → exactly the CSS occurrences you are deleting, no markup.
 
@@ -1255,5 +1252,5 @@ Grid CSS: the current three-column grid becomes `grid-template-columns:repeat(au
 - [ ] **Step 3: Downloads still resolve** — headless: navigate, wait 3 s, `expect: "js:/releases\\/download\\//.test(document.querySelector('#dl-linux').href)"`.
 - [ ] **Step 4: Link preview** — `curl -sI http://127.0.0.1:8765/og-image.png | head -1` → `200`.
 - [ ] **Step 5: Desktop suite** — `bash scripts/verify.sh worktrees/site-rebuild` passes; `node scripts/workbench-boot-check.mjs 5473` passes against the **static** `docs/site` build (Task 1 Step 4).
-- [ ] **Step 6: Push the branch** (`git push -u origin site/1.3-rebuild`) and open a PR titled `site: rebuild for 1.3.0 — YouCoded Agent` with the four "before" captures from 2026-08-27 and the new full-page captures. **Do not merge** — the site goes live when Destin says the 1.3.0 story is public. Stop the workbench on 5473 and the static server.
+- [ ] **Step 6: Push the branch** (`git push -u origin site/1.3-rebuild`) and open a PR titled `site: rebuild for 1.3.0 — YouCoded Assistant` with the four "before" captures from 2026-08-27 and the new full-page captures. **Do not merge** — the site goes live when Destin says the 1.3.0 story is public. Stop the workbench on 5473 and the static server.
 - [ ] **Step 7:** Move `docs/active/specs/2026-08-27-landing-page-rebuild-design.md` and this plan to `docs/archive/` **only after** the PR merges; until then flip nothing.

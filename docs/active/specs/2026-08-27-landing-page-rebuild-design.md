@@ -16,8 +16,8 @@ The site at `itsdestin.github.io/youcoded` (`youcoded/docs/index.html`) was last
 | Target | The 1.3.0 product on master, published pre-emptively for that release |
 | Voice | Audience-neutral, plain English (option B). Sell a useful product, not an open-source tech demo. No "harness", "agentic", "open-source", "built with Claude Code" in headlines |
 | Copy standard | Concrete nouns, the fewest words, lead with the actual difference. "AI assistant that does real work" was rejected as meaningless. **Every changed string is reviewed by Destin in one old→new document before launch** |
-| Wordmark | "YouCoded **Agent**" (styled variant; "Agent" visually subordinate). Subheader: **"AI for Everyone."** |
-| Hero | "Make AI *Useful.* → *Fun.* → *Yours.*" — exactly three cycler states, slightly faster than today (~1.2 s gaps vs ~1.55 s), theme crossfades re-timed to match, page rests on "Yours." |
+| Wordmark | "YouCoded **Assistant**" (styled variant; "Assistant" visually subordinate). Subheader: **"Agentic AI for Everyone."** (Destin, copy review 2026-08-28) |
+| Hero | "Make AI *Useful.* → *Fun.* → *Yours.*" — exactly three cycler states, slightly faster than today (~1.2 s gaps vs ~1.55 s), theme crossfades re-timed to match, page rests on "Yours." Sentence under it: *A self-improving, customizable AI agent. Use any AI model from any provider to build or accomplish anything you want.* No hero buttons — the floating "Download ↓" pill is the CTA |
 | Accounts | **GitHub required** (sync, marketplace, sign-in). Anthropic, OpenRouter, Google/Apple all **optional** (Google/Apple = Drive/iCloud second-copy backup) |
 | Gallery | Keep the horizontal strip, refresh its images |
 | Agents & Automations | Gets a row, visibly labelled **Roadmap** — sketch-style mock, not a recorded loop |
@@ -26,10 +26,11 @@ The site at `itsdestin.github.io/youcoded` (`youcoded/docs/index.html`) was last
 ## Page structure (same general layout as today)
 
 1. **Nav** — wordmark + subheader · About · Features · Download · FAQ · theme-cycle button.
-2. **Hero** — headline with the 3-state cycler; one sentence; two buttons: **Download** (→ #get-started) and **See it work** (→ the live embed).
-3. **Live embed** — the real renderer in a window frame; theme swatches and a model chip the visitor can click. See *Demo pipeline → Live embed*.
-4. **What is this?** — one short box. Placeholder copy (draft 1, to be reviewed):
-   > Most AI lives in a chat box on someone else's website. YouCoded Agent lives on your computer and phone, working in your own files — with Claude, hundreds of other models, or one that runs free on your machine. The look, the plugins, and your data are all yours.
+2. **Hero** — headline with the 3-state cycler; one sentence; no buttons.
+3. **What is this?** — (moved above the embed, Destin 2026-08-28)
+4. **Live embed** — below "What is this?"; the real renderer in a window frame; theme swatches and a model chip the visitor can click. See *Demo pipeline → Live embed*.
+4b. **What is this?** (content) — one short box. Placeholder copy (draft 1, to be reviewed):
+   > Most AI lives in a chat box on someone else's website. YouCoded Assistant lives on your computer and phone, working in your own files — with Claude, hundreds of other models, or one that runs free on your machine. The look, the plugins, and your data are all yours.
    Followed by the permission note ("Nothing happens without your permission…").
 5. **Showcase rows** (label · headline · ≤2 sentences · recorded loop, alternating sides):
 
