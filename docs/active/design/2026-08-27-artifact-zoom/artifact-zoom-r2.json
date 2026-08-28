@@ -1,0 +1,41 @@
+{
+  "title": "Picture zoom — your two changes",
+  "key": "artifact-zoom-r2",
+  "out": "artifact-zoom-r2.html",
+  "images": "images/artifact-zoom-r2",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/e02dc6b0-1e1b-4291-a5b5-d3560b22642a/scratchpad/deck-r1",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/e02dc6b0-1e1b-4291-a5b5-d3560b22642a/scratchpad/deck-r2"
+  },
+  "themes": ["midnight", "light", "halftone-dimension", "meadow-mist", "creme", "dark"],
+  "crops": {
+    "viewer-top": ["artifact-zoom", "image-fitted", "500x300+940+45"],
+    "lens-centre": ["artifact-zoom", "image-loupe", "300x300+1100+280"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Picture viewer",
+      "path": "Session files → any image",
+      "crop": "viewer-top",
+      "highlight": "auto",
+      "headline": "The zoom bar moved to the top-right corner and lost some padding.",
+      "changed": "Same four controls, now right-aligned under the file's own toolbar icons rather than in the opposite corner. Tighter: the gaps between buttons are gone and the percentage is narrower.",
+      "measured": "About 150px wide before, about 128px now",
+      "notice": "It lines up with the icon row directly above it instead of pulling your eye to the other side of the pane. Because it is narrower, it also stays visible in a slightly narrower pane than before.",
+      "risk": "The Find bar (Ctrl+F) also opens in this corner. On an image there is no text to find, so opening it there is unlikely — but if you do, the two overlap while it is open."
+    },
+    {
+      "id": "R-2",
+      "surface": "Magnifier lens",
+      "path": "Session files → any image → magnifier on",
+      "crop": "lens-centre",
+      "highlight": { "box": [30, 30, 40, 40] },
+      "headline": "A small crosshair now marks the exact point being magnified at the centre of the lens.",
+      "changed": "Two short strokes crossing at the lens centre, drawn dark-under-light so they read on a bright or a dark picture. Nothing else about the lens changed.",
+      "measured": "7px arms with a 3px gap at the centre, so the marked pixel itself is never covered",
+      "notice": "Your mouse cursor was always visible — the system draws it on top of everything, including the lens — but on a magnified picture it was ambiguous which pixel it was actually resting on. The crosshair answers that. The screenshots here cannot show a cursor at all, which is why it looks absent.",
+      "risk": "It is one more mark inside the circle. It is deliberately small and gapped at the centre so it does not cover the detail you are inspecting."
+    }
+  ]
+}

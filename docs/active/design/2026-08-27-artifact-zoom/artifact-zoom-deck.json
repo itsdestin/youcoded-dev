@@ -1,0 +1,92 @@
+{
+  "title": "Picture zoom + magnifier",
+  "key": "artifact-zoom",
+  "out": "artifact-zoom-deck.html",
+  "images": "images/artifact-zoom-deck",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/e02dc6b0-1e1b-4291-a5b5-d3560b22642a/scratchpad/deck-before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/e02dc6b0-1e1b-4291-a5b5-d3560b22642a/scratchpad/deck-after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension",
+    "meadow-mist",
+    "creme",
+    "dark"
+  ],
+  "crops": {
+    "viewer-fitted": [
+      "artifact-zoom",
+      "image-fitted",
+      "500x740+940+45"
+    ],
+    "viewer-zoomed": [
+      "artifact-zoom",
+      "image-zoomed",
+      "500x740+940+45"
+    ],
+    "viewer-loupe": [
+      "artifact-zoom",
+      "image-loupe",
+      "500x740+940+45"
+    ],
+    "viewer-svg": [
+      "artifact-zoom",
+      "svg-loupe",
+      "500x740+940+45"
+    ]
+  },
+  "steps": [
+    {
+      "id": "Z-1",
+      "surface": "Picture viewer",
+      "path": "Session files \u2192 any image",
+      "crop": "viewer-fitted",
+      "highlight": "auto",
+      "headline": "A picture now has zoom controls in the top-left corner instead of being stuck at whatever size fits.",
+      "changed": "A small bar with minus, the current size, plus, and a magnifier. The size is also a button \u2014 click it to snap back to fitting the pane. Minus is greyed out here because you are already fitted, and hovering it says so rather than leaving you guessing.",
+      "measured": "This 1600\u00d71000 picture is shown at 15% of its real size \u2014 previously with no way to see more",
+      "notice": "The bar is always there while a picture is open, not only when you hover, so you can find the magnifier without knowing it exists. It sits in the pane's corner, so a small picture is never covered \u2014 only one that fills the pane.",
+      "risk": "Pinching a picture on the trackpad now zooms the PICTURE, where before it zoomed the whole app. Pinching anywhere else still zooms the app exactly as it does today."
+    },
+    {
+      "id": "Z-2",
+      "surface": "Picture viewer",
+      "path": "Session files \u2192 any image",
+      "crop": "viewer-loupe",
+      "highlight": {
+        "box": [
+          30,
+          36,
+          40,
+          29
+        ]
+      },
+      "headline": "With the magnifier on, a lens follows your cursor and makes small print readable without changing the view.",
+      "changed": "Clicking the magnifier turns on lens mode; moving over the picture shows a circle magnifying whatever is under the cursor. Inside it the text reads 'quick brown fox jumps over the lazy dog'; outside it, the same text is a grey smear.",
+      "measured": "Lens is 180px across at 2.5\u00d7 the current size; it switches off with Escape or the same button",
+      "notice": "The picture itself does not move, so you keep your place. The lens hides itself when you leave the picture, and on a picture smaller than the lens it does not appear at all \u2014 there would be nothing to reveal.",
+      "risk": "On a low-resolution picture the lens shows big soft pixels, because there is no hidden detail to find. The magnifier button is not offered on a phone, where there is no cursor for a lens to follow."
+    },
+    {
+      "id": "Z-3",
+      "surface": "Picture viewer",
+      "path": "Session files \u2192 any .svg drawing",
+      "crop": "viewer-svg",
+      "highlight": {
+        "box": [
+          30,
+          36,
+          40,
+          29
+        ]
+      },
+      "headline": "The magnifier works on drawings too, and on a drawing it is genuinely sharp rather than just bigger.",
+      "changed": "The same lens, over a .svg drawing. A drawing has no fixed resolution, so it is REDRAWN at the magnified size instead of being stretched: the small caption inside the circle is crisp. Nothing else about how drawings are displayed has changed.",
+      "measured": "6px caption in the drawing: unreadable on the page, legible in the lens",
+      "notice": "Drawings look exactly as they did before \u2014 same size, same position. The only difference is that the magnifier now opens on them at all.",
+      "risk": "A photo cannot do this. Magnify one far enough and you get bigger pixels, not more detail, which is why the lens stops at 8\u00d7 a photo's real resolution."
+    }
+  ]
+}

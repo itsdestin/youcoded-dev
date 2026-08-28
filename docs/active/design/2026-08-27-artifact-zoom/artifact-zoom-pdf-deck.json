@@ -1,0 +1,80 @@
+{
+  "title": "PDF zoom + magnifier",
+  "key": "artifact-zoom-pdf",
+  "out": "artifact-zoom-pdf-deck.html",
+  "images": "images/artifact-zoom-pdf-deck",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/e02dc6b0-1e1b-4291-a5b5-d3560b22642a/scratchpad/pdfdeck-before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/e02dc6b0-1e1b-4291-a5b5-d3560b22642a/scratchpad/pdfdeck-after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension",
+    "meadow-mist",
+    "creme",
+    "dark"
+  ],
+  "crops": {
+    "pdf-top": [
+      "artifact-zoom-pdf",
+      "pdf-base",
+      "500x740+940+45"
+    ],
+    "pdf-zoomed": [
+      "artifact-zoom-pdf",
+      "pdf-zoomed",
+      "500x520+940+45"
+    ],
+    "pdf-lens": [
+      "artifact-zoom-pdf",
+      "pdf-loupe",
+      "500x520+940+45"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "PDF viewer",
+      "path": "Session files \u2192 any PDF",
+      "crop": "pdf-top",
+      "highlight": "auto",
+      "headline": "PDFs get the same zoom bar as pictures, in the same corner.",
+      "changed": "Minus, the current size, plus, and the magnifier \u2014 identical to the picture viewer, so the control does not move when you switch between a photo and a document. 100% means the size a PDF has always opened at.",
+      "measured": "Pages were fixed at one size with no control of any kind",
+      "notice": "Nothing about how a PDF first opens has changed: same size, same position, same scrolling. The bar is simply there now.",
+      "risk": "Ctrl+F opens the Find bar in this corner too, and on a PDF searching is a real thing to do. The zoom bar steps down while the Find bar is open, the same as it does on a picture."
+    },
+    {
+      "id": "P-2",
+      "surface": "PDF viewer",
+      "path": "Session files \u2192 any PDF \u2192 zoom in twice",
+      "crop": "pdf-zoomed",
+      "highlight": "auto",
+      "headline": "Zooming a PDF redraws the page bigger and SHARPER, rather than blowing up a blurry copy.",
+      "changed": "The page is re-rendered at the new size by the PDF engine itself, so the text is crisp at 200% and at 400%. Enlarging a picture cannot do this \u2014 a photo just gets bigger pixels.",
+      "measured": "6pt lines that are a grey smear at 100% are ordinary readable text at 200%",
+      "notice": "The page becomes wider than the pane, so it scrolls sideways as well as down. Zoom snaps to set sizes (100, 150, 200, 400\u2026) rather than sliding.",
+      "risk": "Redrawing is not instant on a big document \u2014 expect a brief moment before the page sharpens. Very large pages stop at a size limit, and the plus button then explains why it is greyed out rather than producing a blank page."
+    },
+    {
+      "id": "P-3",
+      "surface": "PDF viewer",
+      "path": "Session files \u2192 any PDF \u2192 magnifier on",
+      "crop": "pdf-lens",
+      "highlight": {
+        "box": [
+          32,
+          48,
+          36,
+          35
+        ]
+      },
+      "headline": "The magnifier works on PDF pages, for reading fine print without leaving your place.",
+      "changed": "Same lens and same crosshair as on a picture. It reads whatever page is under the cursor, so it keeps working as you scroll through the document, and it shows nothing in the gaps between pages.",
+      "measured": "The 6pt line under the lens reads 'legible only when enlarged'; the same line outside it does not",
+      "notice": "The lens is instant \u2014 it magnifies the page as already drawn, with no redraw and no pause. That also means it is slightly softer than zooming in properly.",
+      "risk": "For a long read, zooming is better than the lens: zoom redraws sharp, the lens only enlarges what is on screen."
+    }
+  ]
+}
