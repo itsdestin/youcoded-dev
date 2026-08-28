@@ -49,7 +49,8 @@ const framesDir = mkdtempSync(join(tmpdir(), 'ui-frames-'));
 // the file — any early exit (a MISSING selector, a failed click) left hundreds
 // of screencast PNGs behind in the temp dir. Register cleanup once, here, so
 // every exit path (including process.exit(1) calls above) clears it.
-process.on('exit', () => { try { rmSync(framesDir, { recursive: true, force: true }); } catch { /* best effort */ } });
+// KEEP_FRAMES=1 keeps them — the ffmpeg-failure path below is undiagnosable otherwise.
+process.on('exit', () => { if (process.env.KEEP_FRAMES === '1') { console.error(`frames kept: ${framesDir}`); return; } try { rmSync(framesDir, { recursive: true, force: true }); } catch { /* best effort */ } });
 ws.addEventListener('message', (m) => {
   const d = JSON.parse(m.data);
   if (d.id && pending.has(d.id)) { pending.get(d.id)(d); pending.delete(d.id); }
