@@ -1,0 +1,35 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "ready": "/civic report|no plugins|no themes|nothing (here|installed)/i.test(document.body.textContent)",
+  "readyMax": 30000,
+  "width": 390,
+  "height": 844,
+  "shots": [
+    {
+      "name": "grid-narrow",
+      "actions": [
+        {"click": "[title='Browse skills']", "settle": 800},
+        {"click": "[title='Open marketplace']", "settle": 1500}
+      ],
+      "expect": "js:/civic report/i.test(document.body.textContent)"
+    },
+    {
+      "name": "filters-narrow",
+      "actions": [
+        {"click": "[title='Browse skills']", "settle": 800},
+        {"click": "[title='Open marketplace']", "settle": 1500},
+        {"click": "js:[...document.querySelectorAll('button')].find(b=>/filters/i.test(b.getAttribute('aria-label')||b.textContent))", "settle": 800}
+      ],
+      "expect": "js:/Apply/.test(document.body.textContent)"
+    },
+    {
+      "name": "detail-narrow",
+      "actions": [
+        {"click": "[title='Browse skills']", "settle": 800},
+        {"click": "[title='Open marketplace']", "settle": 1500},
+        {"click": "js:document.querySelector('[data-marketplace-card=\"civic-report\"]')", "settle": 1500}
+      ],
+      "expect": "js:/what.s inside/i.test(document.body.textContent)"
+    }
+  ]
+}

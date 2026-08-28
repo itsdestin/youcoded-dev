@@ -1,0 +1,122 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "ready": "/civic report|no plugins|no themes|nothing (here|installed)/i.test(document.body.textContent)",
+  "readyMax": 30000,
+  "shots": [
+    {
+      "name": "grid",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 800
+        },
+        {
+          "click": "[title='Open marketplace']",
+          "settle": 2000
+        }
+      ],
+      "expect": "js:/featured|results/i.test(document.body.textContent) && /civic report/i.test(document.body.textContent)",
+      "measure": [
+        "[aria-label='Type']"
+      ]
+    },
+    {
+      "name": "skills-tab",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 800
+        },
+        {
+          "click": "[title='Open marketplace']",
+          "settle": 2000
+        },
+        {
+          "click": "js:(()=>{const b=[...document.querySelectorAll('[aria-label=Type] button,[aria-label=Type] [role=tab]')];return b.find(x=>/^Skills/.test(x.textContent.trim()))||b.find(x=>/^Plugins/.test(x.textContent.trim()))})()",
+          "settle": 1500
+        }
+      ],
+      "expect": "js:/result/i.test(document.body.textContent)"
+    },
+    {
+      "name": "search-split",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 800
+        },
+        {
+          "click": "[title='Open marketplace']",
+          "settle": 2000
+        },
+        {
+          "eval": "(()=>{const i=document.querySelector(\"input[aria-label='Search the marketplace']\");const s=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;s.call(i,'brainstorm');i.dispatchEvent(new Event('input',{bubbles:true}));})()",
+          "settle": 1500
+        }
+      ],
+      "expect": "js:/result/i.test(document.body.textContent) && /brainstorming|superpowers/i.test(document.body.textContent)"
+    },
+    {
+      "name": "detail",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 800
+        },
+        {
+          "click": "[title='Open marketplace']",
+          "settle": 2000
+        },
+        {
+          "click": "js:document.querySelector('[data-marketplace-card=\"civic-report\"]')",
+          "settle": 1500
+        }
+      ],
+      "expect": "js:/what.s inside/i.test(document.body.textContent)"
+    },
+    {
+      "name": "detail-feedback",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 800
+        },
+        {
+          "click": "[title='Open marketplace']",
+          "settle": 2000
+        },
+        {
+          "click": "js:document.querySelector('[data-marketplace-card=\"civic-report\"]')",
+          "settle": 1500
+        },
+        {
+          "eval": "(()=>{const els=[...document.querySelectorAll('div')].filter(d=>/auto|scroll/.test(getComputedStyle(d).overflowY)&&d.scrollHeight>d.clientHeight+40);const o=els.find(d=>d.getBoundingClientRect().left>40)||els[0];if(o)o.scrollTop=o.scrollHeight;})()",
+          "settle": 600
+        }
+      ],
+      "expect": "js:/reviews|feedback/i.test(document.body.textContent)"
+    },
+    {
+      "name": "detail-caution",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 800
+        },
+        {
+          "click": "[title='Open marketplace']",
+          "settle": 2000
+        },
+        {
+          "eval": "(()=>{const i=document.querySelector(\"input[aria-label='Search the marketplace']\");const s=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;s.call(i,'browser');i.dispatchEvent(new Event('input',{bubbles:true}));})()",
+          "settle": 1500
+        },
+        {
+          "click": "js:document.querySelector('[data-marketplace-card=\"browser-use\"]')",
+          "settle": 1500
+        }
+      ],
+      "expect": "js:/browser use/i.test(document.body.textContent) && /Esc \u00b7 Close|Install/.test(document.body.textContent)"
+    }
+  ]
+}

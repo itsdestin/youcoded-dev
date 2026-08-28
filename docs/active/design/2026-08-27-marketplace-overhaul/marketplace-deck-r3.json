@@ -1,0 +1,71 @@
+{
+  "title": "Marketplace overhaul \u2014 round 3",
+  "key": "marketplace-overhaul-r3",
+  "out": "marketplace-deck-r3.html",
+  "images": "images/marketplace-deck-r3",
+  "labels": {
+    "before": "Round 2",
+    "after": "Round 3"
+  },
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/mp-r2",
+    "after": "/home/destin/youcoded-dev/scratch/mp-r3"
+  },
+  "crops": {
+    "one-card": [
+      "marketplace-overhaul",
+      "grid",
+      "300x200+15+400"
+    ],
+    "cards": [
+      "marketplace-overhaul",
+      "grid",
+      "1440x200+0+400"
+    ],
+    "detail-top": [
+      "marketplace-overhaul",
+      "detail",
+      "1240x200+100+130"
+    ],
+    "phone-cards": [
+      "marketplace-overhaul-narrow",
+      "grid-narrow",
+      "390x220+0+330"
+    ]
+  },
+  "steps": [
+    {
+      "id": "star-and-installs",
+      "surface": "Marketplace \u00b7 every card",
+      "path": "Marketplace \u2192 any rail",
+      "crop": "cards",
+      "highlight": "auto",
+      "headline": "The favorite star sits right beside INSTALLED, and install counts show as a download arrow plus the number.",
+      "changed": "The star (or the download button for uninstalled items) moved out of the card's corner into the title row, next to the status pill. '412 installs' became \u2b07 412.",
+      "notice": "The title row is now [INSTALLED][\u2605] for installed items and [\u2b07] for the rest; nothing floats over the card any more. Hover the number for the words.",
+      "risk": "Long titles truncate a few characters earlier because the row now holds two controls."
+    },
+    {
+      "id": "author-chip",
+      "surface": "Marketplace \u00b7 every card + detail page",
+      "path": "Marketplace \u2192 any card \u2192 badge row; Civic Report \u2192 header",
+      "crop": "one-card",
+      "highlight": "auto",
+      "headline": "The author is a chip in the badge row \u2014 Likely safe \u00b7 YouCoded \u00b7 @destin \u2014 on cards and on the detail page.",
+      "changed": "The grey author line under the title is gone; a person-icon chip joins the two trust badges. The byline keeps only the kind (Skill / Connection) for non-plugin items.",
+      "notice": "Three chips do NOT fit a rail card: the author truncates to '@de\u2026' (full name on hover). On the wider grid cards and on phones it fits. This is the honest state, not a polish miss I hid.",
+      "risk": "If '@de\u2026' is unacceptable there are two ways out \u2014 let the chip row wrap to a second line on rail cards, or show the shield without its word on cards (as on phones). Say which in Other."
+    },
+    {
+      "id": "author-chip-detail",
+      "surface": "Detail page \u00b7 header",
+      "path": "Marketplace \u2192 Civic Report",
+      "crop": "detail-top",
+      "highlight": "auto",
+      "headline": "Same three chips on the detail page, under the title.",
+      "changed": "The byline reads just 'Plugin'; the trust line reads Likely safe \u00b7 YouCoded \u00b7 @destin \u00b7 then the source.",
+      "notice": "Hovering the author chip says 'Published by @destin'.",
+      "risk": "None beyond the card change."
+    }
+  ]
+}
