@@ -1,7 +1,6 @@
 ---
 paths:
   - "youcoded/docs/index.html"
-  - "youcoded/docs/site/**"
   - "youcoded/docs/gallery/**"
   - "scripts/ui-review/**"
   - "youcoded/desktop/src/renderer/dev/workbench/**"
@@ -15,7 +14,7 @@ verify:
     contains: "Recording a loop"
   - path: scripts/ui-review/copy-preview.py
   # App-side anchors (mock-shim __workbenchAppearanceSync, reply-script splitTurns,
-  # fixture-loader turn_complete, workbench-reply-script.test.ts, docs/media/** glob)
+  # fixture-loader turn_complete, workbench-reply-script.test.ts, docs/media/** and docs/site/** globs)
   # are added when youcoded PR #360 merges — anchors resolve against the main checkout.
   - test: youcoded/desktop/tests/workbench-fixture-actions.test.ts
 ---
