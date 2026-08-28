@@ -1,0 +1,37 @@
+{
+  "title": "Editing a quick chip's prompt",
+  "key": "chip-edit-review",
+  "out": "review.html",
+  "images": "images/chip-edit-review",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/ab268ef5-0c1d-4828-9829-b9e0bb055516/scratchpad/chips-review/before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/ab268ef5-0c1d-4828-9829-b9e0bb055516/scratchpad/chips-review/after"
+  },
+  "themes": [
+    "midnight",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "chip-dialog": [
+      "chips",
+      "chip-editor-row-open",
+      "440x520+500+190"
+    ]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Quick chips",
+      "path": "Composer \u2192 pencil \u2192 tap a chip",
+      "crop": "chip-dialog",
+      "headline": "Tapping a chip in the editor opens it, so you can rewrite the prompt it sends instead of deleting the chip and building it again.",
+      "changed": "The row you tap expands into a name box and a full prompt box, with Save and Cancel. It uses the same two boxes the Add Chip form already uses. Both pictures show the same click: on the left it does nothing, on the right the row opens.",
+      "measured": "3 steps to reword a prompt before (delete, re-add, drag back into place); 1 now",
+      "notice": "The prompt box is three lines tall, so you can read the whole prompt \u2014 the one-line preview in the closed row is clipped to about six words and always has been. A small pencil appears on a row when you point at it, so it is visible that rows can be opened. Dragging a row to reorder still works and does not open it; Escape closes the open row first, then the window.",
+      "risk": "The row you have open closes without saving if you delete or drag any chip while it is open \u2014 the app tracks chips by position, so a shifted position could otherwise write your edit onto the wrong chip.",
+      "highlight": {
+        "selector": "[data-chip-idx='2']"
+      }
+    }
+  ]
+}
