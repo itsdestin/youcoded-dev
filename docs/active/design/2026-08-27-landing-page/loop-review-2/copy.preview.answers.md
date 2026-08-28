@@ -1,0 +1,23 @@
+# Copy preview — edits (2026-08-28 08:23)
+
+- **LOOP OTHER** `row1.loop`: model should start as claude, not qwen. 
+- **LOOP YES** `row2.loop`
+- **EDIT** `row3.desc`
+  - was: Open and organize spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.
+  - now: Open spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.
+- **EDIT** `row4.desc`
+  - was: Tag and annotate conversations, pin the ones that matter, and hide the ones you'll never go back to. Quick chips run the prompts you use every day in one tap.
+  - now: Tag and annotate conversations, pin the ones that matter, and hide the ones you'll never go back to. Quick chips run the prompts you use&nbsp;every day in one tap.
+- **LOOP OTHER** `row5.loop`: this is kinda broken. message never really sends, doesn't visibly sync to phone. also i don't think we show the maximize/minimize/close buttons on phone. and think the phone left/right bezels just a smidge/
+- **EDIT** `row6.desc`
+  - was: Build a theme by describing it — wallpapers, colors, mascots. Browse 300+ plugins from the WeCoded marketplace: journaling, a personal encyclopedia, calendar and email integrations, and whatever your friends publish.
+  - now: Build a theme by describing it - customize wallpapers, app colors, mascots. Browse 300+ plugins from the marketplace: journaling, a personal encyclopedia, calendar and email integrations, and whatever your friends publish.
+- **LOOP YES** `row7.loop`
+- **LOOP YES** `row6.loop`
+- **LOOP YES** `row8.loop`
+- **EDIT** `gs.title`
+  - was: Two minutes of setup.
+  - now: You may need a few accounts.
+- **EDIT** `gs.card2`
+  - was: One account, hundreds of models from every AI company. Pay only for what you use.
+  - now: One account provides access to hundreds of models from every AI company. Pay only for what you use.

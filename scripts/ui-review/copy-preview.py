@@ -43,7 +43,7 @@ ROWS = [
      'LOOP · Crème — "go through this morning\'s email and handle what you can": Gmail search (MCP), the Quarterly Report skill loads, reads the numbers, asks before writing the draft (you click Yes), two calendar events (one asked), "want me to tell Dr. Patel?", "yes, send it", asks before sending, Sent. Email and calendar are MCP integrations the user connects first — not built in.',
      'Integrations · WeCoded', 'Connect your services.', 'With skills from the WeCoded marketplace, YouCoded can link with all of the following services: [18 clickable tags: Google Drive … Canva]'),
     ('row3', 'Logical management', 'Project view keeps your files, conversations, and assistant instructions organized.',
-     'Open and organize spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.',
+     'Open spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.',
      'LOOP · Light — Project View: Files tab opens a PDF and a spreadsheet in-app; the editor pane; one project-wide search.', '', '', ''),
     ('row4', 'Stay organized', 'Tags, notes, and shortcuts.',
      'Tag and annotate conversations, pin the ones that matter, and hide the ones you\'ll never go back to. Quick chips run the prompts you use every day in one tap.',
@@ -54,7 +54,7 @@ ROWS = [
      'Cross-Device Backup & Sync', 'Start anywhere. Pick up everywhere.',
      'Your skills, conversations, themes, and settings are automatically backed up to your preferred provider — Google Drive, iCloud, or GitHub — every 15 minutes, then downsynced to your other Windows, macOS, Linux, and Android devices. Switch machines mid-thought without losing a beat. Doubles as a full restore-from-backup when you set up a new device. Not something Claude Code does natively.'),
     ('row6', 'Make it yours', 'Describe a look. Install a plugin. Share both.',
-     'Build a theme by describing it — wallpapers, colors, mascots. Browse 300+ plugins from the WeCoded marketplace: journaling, a personal encyclopedia, calendar and email integrations, and whatever your friends publish.',
+     'Build a theme by describing it — customize wallpapers, app colors, mascots. Browse 300+ plugins from the marketplace: journaling, a personal encyclopedia, calendar and email integrations, and whatever your friends publish.',
      'LOOP · Midnight → Golden Sunbreak — "build me a theme with the vibe of outdoor anime art" typed; Write cards; the app re-skins to Golden Sunbreak; then a pan across the real marketplace.',
      'Theme Builder · WeCoded Marketplace · Journaling', 'Build a theme just by describing it. / Browse, share, and download everything that makes the app yours. / Talk about your day. The structure happens on its own.',
      'Tell Claude the vibe you want and it builds full UI themes with custom wallpapers, colors, particle effects, icons, and mascot characters. Imagine "Liquid Glass", but built by a single guy in his bedroom who still outdid Apple\'s entire visual design team. Share your themes directly with friends or publish them to the WeCoded Marketplace for anyone to download. / Themes, skills, and integrations — all in one place. Install what you want, then share what you build. The marketplace is the core of how YouCoded stays fun, social, and personal instead of feeling like another boring AI tool. / Just start talking — about work, people, whatever\'s on your mind. Claude asks follow-up questions, pulls out tasks and calendar events without you having to ask, indexes information about your friends and family, and slowly builds a searchable history of your life…'),
@@ -106,7 +106,7 @@ CARDS = [
      'A Claude Pro or Max plan lets you use Claude — the model YouCoded was built with.', 'See Claude plans &rarr;',
      'Anthropic · Required · Paid — A Claude Pro ($20/mo) or Max ($100–200/mo) subscription for Claude Code, which powers everything in YouCoded. The app itself is free — you\'re paying for the AI.'),
     ('OpenRouter', 'optional', 'Optional', 'paid', 'Pay as you go',
-     'One account, hundreds of models from every AI company. Pay only for what you use.', 'Create an OpenRouter account &rarr;', ''),
+     'One account provides access to hundreds of models from every AI company. Pay only for what you use.', 'Create an OpenRouter account &rarr;', ''),
     ('Google or Apple', 'optional', 'Optional', 'free', 'Free',
      'An extra copy of your data in Google Drive or iCloud, on top of GitHub.', '',
      'Google or Apple · Required · Free — WeCoded marketplace skills store your personal data in your own Google Drive or iCloud account.'),
@@ -172,7 +172,7 @@ def body():
       + ed('p', 'story.p3', 'YouCoded Assistant is what that kind of AI looks like when it\'s built for everyone — not just the people who already know how to use it.', '(new third paragraph)', 'origin-story-text', ' style="margin-top:16px"')
       + '<a class="origin-story-link">Built by Destin &rarr;</a></div></div></section>')
     a('<div class="container"><div class="divider"></div></div>')
-    a('<section id="get-started"><div class="container">' + ed('p', 'gs.label', 'Get started', 'Get started', 'section-label') + ed('h2', 'gs.title', 'Two minutes of setup.', 'You\'ll need a couple of accounts.', 'section-title') + '<div class="prereq-grid rv-four">')
+    a('<section id="get-started"><div class="container">' + ed('p', 'gs.label', 'Get started', 'Get started', 'section-label') + ed('h2', 'gs.title', 'You may need a few accounts.', 'You\'ll need a couple of accounts.', 'section-title') + '<div class="prereq-grid rv-four">')
     for i, (name, b1c, b1, b2c, b2, text, link, old) in enumerate(CARDS):
         a(f'<div class="prereq-card"><div class="prereq-header"><h3>{name}</h3><div class="prereq-badges"><span class="prereq-badge {b1c}">{b1}</span><span class="prereq-badge {b2c}">{b2}</span></div></div>'
           + ed('p', f'gs.card{i}', text, old) + (f'<a class="prereq-link">{link}</a>' if link else '') + '</div>')
@@ -217,7 +217,7 @@ body.intro-mode{overflow:auto}
 .row-media{border-radius:var(--radius);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25);border:1px solid var(--border);background:#0b1020}
 .row-video{display:block;width:100%;height:auto}
 .row-media-duo{position:relative;background:transparent;box-shadow:none;border:0;overflow:visible;margin-bottom:6%}
-.phone-bezel{position:absolute;right:-3%;bottom:-8%;width:24%;border-radius:22px;padding:6px;background:#111;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.phone-bezel{position:absolute;right:-3%;bottom:-8%;width:24%;border-radius:22px;padding:8px 4px;background:#111;box-shadow:0 20px 50px rgba(0,0,0,.35)}
 .phone-bezel .row-video{border-radius:16px}
 .rv-judge{margin-top:14px;padding:12px 14px;border:1px solid var(--border-accent);border-radius:var(--radius-sm);background:var(--accent-subtle);font-size:14px;color:var(--text-secondary)}
 .rv-judge.yes{border-color:#2e7d4f}.rv-judge.no{border-color:#b23b3b}.rv-judge.other{border-color:#c98a2e}

@@ -1,5 +1,5 @@
 {
-  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=any-ai&seed=none&title=model+test",
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=any-ai&seed=none&title=model+test&model=anthropic/claude-sonnet-4-6",
   "theme": "midnight",
   "boot": 3000,
   "actions": [

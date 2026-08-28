@@ -1145,10 +1145,10 @@ The `localStorage` write before `src` is set targets `about:blank`'s origin, not
 Rows and their strings (LABEL · HEADLINE · BODY · FILE):
 1. `Seamless integration` · `Tools and conversations work across any model.` · `Select from hundreds of models via OpenRouter, use Claude Code with your subscription plan, or pick an offline, private model to run on your own computer. Switch models mid-conversation without interruption.` · `row1-any-ai`
 2. `Genuinely useful` · `Give it a task and it does real work, with boundaries you can trust.` · `It reads your files, writes new ones, develops repeatable skills and workflows, searches the web, and helps you manage your computer and your life more efficiently. Permission modes let you restrict the model to match your level of comfort.` · `row2-does-things`
-3. `Logical management` · `Project view keeps your files, conversations, and assistant instructions organized.` · `Open and organize spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.` · `row3-projects`
+3. `Logical management` · `Project view keeps your files, conversations, and assistant instructions organized.` · `Open spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.` · `row3-projects`
 4. `Stay organized` · `Tags, notes, and shortcuts.` · `Tag and annotate conversations, pin the ones that matter, and hide the ones you'll never go back to. Quick chips run the prompts you use every day in one tap.` · `row4-organized`
 5. `Works everywhere` · `Start on your laptop. Finish on your phone.` · `Windows, macOS, Linux, Android, and any browser. Your conversations and files stay in sync through your own private GitHub, so what you started here is waiting there.` · `row5-follow` (+ phone, see Step 4)
-6. `Make it yours` · `Describe a look. Install a plugin. Share both.` · `Build a theme by describing it — wallpapers, colors, mascots. Browse 300+ plugins from the WeCoded marketplace: journaling, a personal encyclopedia, calendar and email integrations, and whatever your friends publish.` · `row6-yours`
+6. `Make it yours` · `Describe a look. Install a plugin. Share both.` · `Build a theme by describing it — customize wallpapers, app colors, mascots. Browse 300+ plugins from the marketplace: journaling, a personal encyclopedia, calendar and email integrations, and whatever your friends publish.` · `row6-yours`
 7. `Play while it works` · `Challenge a friend while it thinks.` · `Long tasks take a minute. Play Connect Four with a friend in the side panel, see who's online, and get back to the answer when it's ready.` · `row7-play`
 8. `For builders` · `Made to be customized and work with you.` · `Run Claude Code as a first-class session next to the app's own agent. Review, stage, and commit changes without leaving the window. Connect tools over MCP. Download and run local models with a GPU-fit check.` · `row8-builders`
 9. Roadmap row — see Step 5.
@@ -1218,10 +1218,10 @@ CSS: `.roadmap-mock{display:grid;grid-template-columns:30% 1fr;gap:12px;padding:
 <p>YouCoded Assistant is what that kind of AI looks like when it's built for everyone — not just the people who already know how to use it.</p>
 ```
 
-- [ ] **Step 2: Get started** — section id `get-started`; title `Two minutes of setup.`; four `.prereq-card`s in this order (reuse the existing card markup and badge classes):
+- [ ] **Step 2: Get started** — section id `get-started`; title `You may need a few accounts.`; four `.prereq-card`s in this order (reuse the existing card markup and badge classes):
 1. **GitHub** [Required] [Free] — `Keeps your conversations and files in sync across devices and delivers marketplace updates. Sign up with your Google or Apple account.` → `Create a GitHub account →`
 2. **Anthropic** [Optional] [Paid] — `A Claude Pro or Max plan lets you use Claude — the model YouCoded was built with.` → `See Claude plans →`
-3. **OpenRouter** [Optional] [Pay as you go] — `One account, hundreds of models from every AI company. Pay only for what you use.` → `Create an OpenRouter account →`
+3. **OpenRouter** [Optional] [Pay as you go] — `One account provides access to hundreds of models from every AI company. Pay only for what you use.` → `Create an OpenRouter account →`
 4. **Google or Apple** [Optional] [Free] — `An extra copy of your data in Google Drive or iCloud, on top of GitHub.` → no link
 Line under the cards: `Or skip the paid ones entirely — run a model on your own computer, free and offline.`
 Grid CSS: the current three-column grid becomes `grid-template-columns:repeat(auto-fit,minmax(220px,1fr))`.
