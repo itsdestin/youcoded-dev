@@ -69,6 +69,9 @@ test('deck renders at three sizes and records an answer', async () => {
           assert.deepEqual(c.errors, [], 'clip step');
           assert.equal(await c.evaluate("document.querySelectorAll('#inner video').length"), 2, 'clip videos');
           assert.equal(await c.evaluate("document.querySelector('#replay').hidden"), false, 'replay shown');
+          assert.equal(await c.evaluate("[...document.querySelectorAll('#inner video')].every(v => v.paused)"), true, 'clips start paused');
+          await c.evaluate("document.querySelector('#replay').click()"); await sleep(300);
+          assert.equal(await c.evaluate("[...document.querySelectorAll('#inner video')].every(v => !v.paused)"), true, 'replay plays both');
           assert.equal(await c.evaluate("document.querySelectorAll('#thumbs .thumb').length"), 0, 'no theme thumbs on a clip');
         }
       } finally { c.close(); }

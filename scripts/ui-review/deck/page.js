@@ -18,8 +18,9 @@
   const frames = st => st.kind === 'choice'
     ? st.variants.map(v => ({ key: v.id, caption: `<span class="key">${esc(v.id)}</span>${esc(v.label)}`, pickable: true }))
     : runs.map(r => ({ key: r, caption: esc(DECK.runLabels[r] || r), pickable: false }));
-  // CLIP step: one <video> per run instead of a still. Muted + looping so both play on
-  // their own; native controls so a bug can be paused and scrubbed; ↻ restarts both together.
+  // CLIP step: one <video> per run instead of a still. They start PAUSED on their poster
+  // (Destin, 2026-08-28) — ↻ or `r` plays both from the start together; native controls
+  // so a bug can be paused and scrubbed; muted + looping once started.
   const media = (st, f) => st.kind === 'clip'
     ? `<video src="${esc(st.clips[f.key])}"${st.posters[f.key] ? ` poster="${esc(st.posters[f.key])}"` : ''} muted loop playsinline controls preload="auto"></video>`
     : `<img src="${esc(st.images[theme][f.key])}" alt=""><span class="box"></span>`;
@@ -74,7 +75,7 @@
     inner.innerHTML = curFrames.map(f => `<figure class="frame${f.pickable ? ' pickable' : ''}${st.kind === 'clip' ? ' clip' : ''}" data-run="${esc(f.key)}"${f.pickable ? ` title="Pick ${esc(f.key)}"` : ''}><figcaption>${f.caption}</figcaption><div class="pic">${media(st, f)}</div></figure>`).join('');
     $$('#inner .frame .box').forEach(box => { const b = ((st.boxes || {})[theme] || {})[box.closest('.frame').dataset.run]; if (b) box.style.cssText = `left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%`; else box.style.display = 'none'; });
     $('#replay').hidden = st.kind !== 'clip';
-    if (st.kind === 'clip') { const vs = $$('#inner video'); let ready = 0; vs.forEach(v => { v.addEventListener('loadedmetadata', layout); v.addEventListener('canplay', () => { if (++ready === vs.length) replay(); }, { once: true }); }); }
+    if (st.kind === 'clip') $$('#inner video').forEach(v => v.addEventListener('loadedmetadata', layout));
     $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
     $$('.card.variant').forEach(c => c.onclick = () => answer('pick', c.dataset.pick));
     $('#headline').textContent = st.headline;
