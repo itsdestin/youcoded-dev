@@ -21,10 +21,17 @@
   let curFrames = frames(DECK.steps[0]), lastStep = null;
   // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
   const YES = runs.length === 1 ? 'Yes, build it' : 'Yes, keep it', NO = runs.length === 1 ? 'No, leave it' : 'No, revert it';
+  const pickBtn = o => `<button class="btn ans" data-v="pick" data-pick="${esc(o.id)}" title="${esc(o.label)}"><span class="dot pick"></span><span class="key">${esc(o.id)}</span><span>${esc(o.label)}</span></button>`;
   function renderAnswers(st) {
+    // A DECIDE step's options ARE its answers, so there is no yes/no: picking one is the answer,
+    // and "Other" carries anything he wants instead. No "None of these" — with written options
+    // that button and "Other" would mean the same thing twice.
     $('#answers').innerHTML = st.kind === 'choice'
-      ? st.variants.map(v => `<button class="btn ans" data-v="pick" data-pick="${esc(v.id)}"><span class="dot pick"></span><span class="key">${esc(v.id)}</span>${esc(v.label)}</button>`).join('')
+      ? st.variants.map(pickBtn).join('')
         + `<button class="btn ans" data-v="no"><span class="dot no"></span>None of these</button><button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`
+      : st.kind === 'decide'
+      ? st.options.map(pickBtn).join('')
+        + `<button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`
       : `<button class="btn ans" data-v="yes"><span class="dot yes"></span>${YES}</button><button class="btn ans" data-v="no"><span class="dot no"></span>${NO}</button><button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`;
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
@@ -63,9 +70,14 @@
     $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
     $$('.card.variant').forEach(c => c.onclick = () => answer('pick', c.dataset.pick));
     $('#headline').textContent = st.headline;
+    const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><span class="key">${esc(o.id)}</span><div class="vbody"><h3>${esc(o.label)}</h3><p>${esc(o.summary)}</p>${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
     $('#cards').innerHTML = st.kind === 'choice'
-      ? st.variants.map(v => `<section class="card variant" data-pick="${esc(v.id)}" title="Pick ${esc(v.id)}"><span class="key">${esc(v.id)}</span><div class="vbody"><h3>${esc(v.label)}</h3><p>${esc(v.summary)}</p>${v.measured ? `<p class="num">Measured: ${esc(v.measured)}</p>` : ''}${v.risk ? `<p class="r">${esc(v.risk)}</p>` : ''}</div></section>`).join('')
+      ? st.variants.map(v => optionCard(v, '')).join('')
         + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
+      : st.kind === 'decide'
+      ? (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+        + st.options.map(o => optionCard(o, ' option')).join('')
         + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
       : `<section class="card"><h3>${ICON.change}What changed</h3><p>${esc(st.changed)}</p>${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`
         + `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>`
@@ -98,7 +110,7 @@
     const opts = { A: 'row-below', B: 'col-right stacked', C: 'col-right', D: 'row-below stacked' }; const score = {};
     step.classList.remove('compact-step');
     for (const k in opts) {
-      if (opts[k].includes('col-right') && (c.clientWidth < 820 || DECK.steps[cur].kind === 'choice')) { score[k] = 0; continue; }   // a side column needs real width; variant cards need the full row
+      if (opts[k].includes('col-right') && (c.clientWidth < 820 || DECK.steps[cur].kind === 'choice')) { score[k] = 0; continue; }   // a side column needs real width; variant PICTURES need the full row (a decide step has only one picture, so it keeps the column)
       if (n === 1 && opts[k].includes('stacked')) { score[k] = 0; continue; }                 // one picture: stacking means nothing
       c.className = 'content ' + opts[k]; const SW = stage.clientWidth - PAD, SH = stage.clientHeight - PAD; const stacked = opts[k].includes('stacked');
       score[k] = Math.min(stacked ? SW / w : (SW - GAP * (n - 1)) / n / w, stacked ? (SH - GAP * (n - 1)) / n / h : SH / h);

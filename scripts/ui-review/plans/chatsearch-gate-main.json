@@ -1,0 +1,338 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "group-collapsed",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/\\d+ tools \\(/.test(b.textContent))",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Found 2 past conversations')",
+   "measure": [
+    "js:[...document.querySelectorAll('button')].find(b=>/\\d+ tools \\(/.test(b.textContent))"
+   ]
+  },
+  {
+   "name": "card-expanded",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/\\d+ tools \\(/.test(b.textContent))",
+     "settle": 500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Found 2 past conversations'))",
+     "settle": 500
+    }
+   ],
+   "expect": "[title='Read this conversation in the side pane']",
+   "measure": [
+    "js:document.querySelector(\"[title='Read this conversation in the side pane']\")?.closest('li')"
+   ]
+  },
+  {
+   "name": "android-fallback",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "eval": "(() => { const cs = window.claude.chatsearch; cs.resolve = async () => ({ok:false, error:'not-implemented-on-mobile'}); window.__csOverridden = typeof cs.resolve === 'function'; })()",
+     "settle": 100
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/\\d+ tools \\(/.test(b.textContent))",
+     "settle": 500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Found 2 past conversations'))",
+     "settle": 600
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('chatsearch.js') && ![...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Preview')",
+   "measure": [
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Found 2 past conversations'))"
+   ]
+  },
+  {
+   "name": "gallery-find",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&view=tools",
+   "boot": 5000,
+   "actions": [
+    {
+     "eval": "(() => { const keep=['chatsearch-find','chatsearch-find-piped']; document.querySelectorAll('section').forEach(sec=>{ let any=false; [...sec.children].forEach(div=>{ const h3=div.querySelector && div.querySelector('h3'); if(!h3) return; if(keep.includes(h3.textContent.trim())){any=true;} else {div.style.display='none';} }); if(!any) sec.style.display='none'; }); window.scrollTo(0,0); })()",
+     "settle": 300
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Found 8 past conversations'))",
+     "settle": 500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('first 3 lines'))",
+     "settle": 400
+    },
+    {
+     "eval": "[...document.querySelectorAll('h3')].find(h=>h.textContent.trim()==='chatsearch-find-piped')?.scrollIntoView({block:'center'})",
+     "settle": 400
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Found 8 past conversations')",
+   "measure": [
+    "js:[...document.querySelectorAll('li')].find(li=>li.textContent.includes('Permission ask timeout'))",
+    {
+     "text": "Not synced to this device yet"
+    },
+    "js:[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Preview'&&b.disabled)[0]",
+    "js:[...document.querySelectorAll('h3')].find(h=>h.textContent.trim()==='chatsearch-find-piped')?.parentElement"
+   ]
+  },
+  {
+   "name": "gallery-show",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&view=tools",
+   "boot": 5000,
+   "actions": [
+    {
+     "eval": "(() => { const keep=['chatsearch-show']; document.querySelectorAll('section').forEach(sec=>{ let any=false; [...sec.children].forEach(div=>{ const h3=div.querySelector && div.querySelector('h3'); if(!h3) return; if(keep.includes(h3.textContent.trim())){any=true;} else {div.style.display='none';} }); if(!any) sec.style.display='none'; }); window.scrollTo(0,0); })()",
+     "settle": 300
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Past conversation'))",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Past conversation')",
+   "measure": [
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Past conversation'))"
+   ]
+  },
+  {
+   "name": "preview-panel",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "dispatch": {
+      "name": "youcoded:preview-session",
+      "detail": {
+       "provider": "claude",
+       "id": "a3f2aaaa-1111-4111-8111-111111111111",
+       "title": "Permission ask timeout"
+      }
+     },
+     "settle": 1200
+    }
+   ],
+   "expect": "[aria-label='Organize Permission ask timeout']",
+   "measure": [
+    "js:document.querySelector(\"[aria-label='Organize Permission ask timeout']\")?.closest('aside')?.querySelector(\"[title='Continue this conversation in a new tab']\")",
+    "js:[...document.querySelectorAll('*')].filter(e=>e.children.length===0&&/tools? — not shown/.test(e.textContent)).pop()"
+   ]
+  },
+  {
+   "name": "preview-panel-top",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "dispatch": {
+      "name": "youcoded:preview-session",
+      "detail": {
+       "provider": "claude",
+       "id": "a3f2aaaa-1111-4111-8111-111111111111",
+       "title": "Permission ask timeout"
+      }
+     },
+     "settle": 1200
+    },
+    {
+     "scrollDialog": "top",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Load older')",
+   "measure": [
+    "js:[...document.querySelectorAll('*')].find(e=>e.children.length===0&&/ · read-only$/.test(e.textContent))",
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Load older')"
+   ]
+  },
+  {
+   "name": "tag-sheet",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "dispatch": {
+      "name": "youcoded:preview-session",
+      "detail": {
+       "provider": "claude",
+       "id": "a3f2aaaa-1111-4111-8111-111111111111",
+       "title": "Permission ask timeout"
+      }
+     },
+     "settle": 1200
+    },
+    {
+     "click": "[aria-label='Organize Permission ask timeout']",
+     "settle": 400
+    }
+   ],
+   "expect": "[role='dialog'][aria-label='Tags and note']",
+   "measure": [
+    "[role='dialog'][aria-label='Tags and note']"
+   ]
+  },
+  {
+   "name": "context-menu-preview",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "dispatch": {
+      "name": "youcoded:preview-session",
+      "detail": {
+       "provider": "claude",
+       "id": "a3f2aaaa-1111-4111-8111-111111111111",
+       "title": "Permission ask timeout"
+      }
+     },
+     "settle": 1200
+    },
+    {
+     "rightClick": "js:document.querySelector('[data-conversation-id] .assistant-bubble')",
+     "settle": 500
+    }
+   ],
+   "expect": "[role=menu]",
+   "measure": [
+    "[role=menu]"
+   ]
+  },
+  {
+   "name": "ask-scaffold",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "dispatch": {
+      "name": "youcoded:preview-session",
+      "detail": {
+       "provider": "claude",
+       "id": "a3f2aaaa-1111-4111-8111-111111111111",
+       "title": "Permission ask timeout"
+      }
+     },
+     "settle": 1200
+    },
+    {
+     "rightClick": "js:document.querySelector('[data-conversation-id] .assistant-bubble')",
+     "settle": 500
+    },
+    {
+     "clickText": "Ask about this",
+     "tag": "[role=menuitem]",
+     "settle": 500
+    },
+    {
+     "eval": "const t=document.querySelector(\"[placeholder^='Message']\"); if(t) t.scrollTop=0;",
+     "settle": 300
+    }
+   ],
+   "expect": "js:document.querySelector(\"[placeholder^='Message']\")?.value?.includes('past conversation')",
+   "measure": [
+    "js:document.querySelector(\"[placeholder^='Message']\")"
+   ]
+  },
+  {
+   "name": "referenced-list",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "dispatch": {
+      "name": "youcoded:preview-session",
+      "detail": {
+       "provider": "claude",
+       "id": "a3f2aaaa-1111-4111-8111-111111111111",
+       "title": "Permission ask timeout"
+      }
+     },
+     "settle": 900
+    },
+    {
+     "dispatch": {
+      "name": "youcoded:preview-session",
+      "detail": {
+       "provider": "native",
+       "id": "7a21eeee-5555-4555-8555-555555555555",
+       "title": "Draft the newsletter"
+      }
+     },
+     "settle": 900
+    },
+    {
+     "click": "[title='Show list']",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Referenced conversations')",
+   "measure": [
+    "js:[...document.querySelectorAll('*')].find(e=>e.children.length===0&&e.textContent.trim()==='Referenced conversations')?.parentElement"
+   ]
+  },
+  {
+   "name": "preview-error",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "dispatch": {
+      "name": "youcoded:preview-session",
+      "detail": {
+       "provider": "claude",
+       "id": "ee0011aa-7777-4777-8777-777777777777",
+       "title": "Conversation whose file is unreadable"
+      }
+     },
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('EACCES')",
+   "measure": [
+    "js:[...document.querySelectorAll('*')].find(e=>e.children.length===0&&e.textContent.includes('EACCES'))",
+    "js:[...document.querySelectorAll('button')].find(b=>/Retry/i.test(b.textContent))"
+   ]
+  },
+  {
+   "name": "resume-popover",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "boot": 4000,
+   "actions": [
+    {
+     "dispatch": {
+      "name": "youcoded:preview-session",
+      "detail": {
+       "provider": "claude",
+       "id": "a3f2aaaa-1111-4111-8111-111111111111",
+       "title": "Permission ask timeout"
+      }
+     },
+     "settle": 1200
+    },
+    {
+     "click": "js:document.querySelector(\"[aria-label='Organize Permission ask timeout']\")?.closest('aside')?.querySelector(\"[title='Continue this conversation in a new tab']\")",
+     "settle": 600
+    }
+   ],
+   "expect": "[role='dialog'][aria-label='Resume options']",
+   "measure": [
+    "[role='dialog'][aria-label='Resume options']"
+   ]
+  }
+ ]
+}
