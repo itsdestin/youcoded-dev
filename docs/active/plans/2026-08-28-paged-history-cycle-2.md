@@ -1201,3 +1201,24 @@ None of them is the change being bad:
 - Task 12 remains: PR (ask first), archive spec + plan, flip the ROADMAP item, update
   `now.md`. Deferred by decision: eviction → cycle 3; Android on-device paging; §4 smaller
   readers.
+
+### Tooling fixed in this session (`e50de2d`)
+
+Every one comes from a defect this cycle actually hit, so cycle 3 does not pay for it again:
+
+- **Per-repeat progress** in the history and stall scenarios (`onProgress`), printed by
+  `run.mjs` with an explicit `TIMED OUT`. The 40-minute silence that cost this session an
+  hour cannot recur — those phases logged only on completion.
+- **The gate compares `workload.median.cpuTotalSeconds`**, not `cpuDuringPct`. A rate rises
+  when a phase gets faster; `compare.mjs` derives the total from `pct × window` for older
+  reports so existing baselines stay usable.
+- **A screenshot DIFF reports its bounding box and detects a whole-frame vertical shift** —
+  `welcome: 2.21% DIFF @ 1171x552+17+6 — looks like a downward shift of 15px`.
+- **`scripts/perf-lab/bg-run.sh`** — the detached launch, done right, printing the `Monitor`
+  filter that catches `TIMED OUT`/`aborted`/`EXIT` as well as progress.
+- **`README.md` → "Reading a REJECT"**, a table of the four REJECT shapes seen so far, and
+  **`docs/PITFALLS.md` → "Removing a broadcast"**, the class that produced all three bugs.
+
+One `verify.sh` run failed while the dev Electron instance was starting and passed on three
+consecutive re-runs; the log was already gone. Recorded as an unexplained single flake under
+load, not as fixed.
