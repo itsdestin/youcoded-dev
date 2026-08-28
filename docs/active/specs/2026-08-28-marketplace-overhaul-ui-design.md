@@ -157,10 +157,14 @@ Source: repo · MIT · pinned to 4f1c2a9
 Absent block = "a plugin, community, not checked" and every new surface hides itself,
 so today's registry keeps loading.
 
-Feedback (Worker): `/stats` plugins gain `thumbs_up`, `thumbs_down` and themes gain
-`installs` (theme cards sit in the same grid as plugin cards, which show a download count);
-new routes `GET /comments/:id`, `POST /comments`, `POST /thumbs` (value up · down · null),
-`GET /thumbs/:id` (the caller's own vote, so the buttons do not forget it between visits).
+Feedback (Worker): `/stats` plugins gain `thumbs_up` and `thumbs_down`; new routes
+`GET /comments/:id`, `POST /comments`, `POST /thumbs` (value up · down · null, returning the
+plugin's new totals so a vote moves the number without re-fetching `/stats`), `GET /thumbs/:id`
+(the caller's own vote, so the buttons do not forget it between visits), and an admin pair
+`GET /admin/comments` + `DELETE /admin/comments/:id` — the only comment takedown path in v1.
+Theme cards **do not** gain an install count: the app never reports a theme install to the
+Worker (`installTheme` installs to disk only), so the field would read `0` forever. Making it
+real is three ordered steps tracked in the app-wiring plan, not a Worker field.
 A vote below **5 total** shows a count — "3 of 4 people found this helpful" — not a
 percentage; one up-vote is not "100%". Shapes
 in `desktop/src/renderer/state/marketplace-api-client.ts` and the workbench fake
@@ -215,10 +219,14 @@ glyphs on cards; vibe/meta chips in the bar; "Tools" as the MCP word; star ratin
 
 ## 5. Deferred (ROADMAP entries)
 - Per-item install of a bundle member (today installing a member installs its bundle).
-- **Report a comment.** The Worker's `reports` table is keyed to a *rating*
-  (`rating_user_id`, `rating_plugin_id`), so it cannot take a comment id without a schema
-  change. Rather than ship a button that does nothing, v1 renders **no** Report affordance on
-  comments; the AI classifier still hides flagged text at post time. What is **not** deferred
+- **Report a comment.** The Worker's `reports` table records a *rating* — but only by
+  convention: its PK is a plain random id and `rating_user_id` / `rating_plugin_id` are
+  ordinary columns with no foreign key. Pointing it at a comment costs a migration (a nullable
+  `comment_id`, plus relaxing two `NOT NULL`s — a SQLite table rebuild, which migration 0003
+  already does five times) **and** the reporting UI, admin queue and resolution flow to match.
+  Real work, not a redesign; out of scope for v1, not out of reach. Rather than ship a button
+  that does nothing — or worse, the one that shipped in the mockup, which filed a report
+  against the commenter's *star rating* — v1 renders **no** Report affordance on comments; the AI classifier still hides flagged text at post time. What is **not** deferred
   is the takedown itself — `GET /admin/comments` + `DELETE /admin/comments/:id` ship in Plan 1
   (Task 4c), so anything the classifier misses can be removed without touching the database by
   hand. Only the *reader's* route to flagging it is missing.

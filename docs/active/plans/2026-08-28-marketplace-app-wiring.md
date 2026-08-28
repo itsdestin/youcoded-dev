@@ -1061,12 +1061,24 @@ git commit -m "fix(marketplace): prompts install under their marketplace id and 
 Each is a one-liner-to-an-hour, each is in a file this branch already rewrites, and each would
 otherwise need its own PR against the same code.
 
-- [ ] **Theme cards show a download count.** Plan 1 adds `installs` to `/stats`'s themes.
-  `MarketplaceCard.tsx:108-113` reads installs only from `stats.plugins`, so the guard is dead
-  code on every theme card while the like count renders fine — plugins show downloads and
-  themes show likes side by side in one grid. Read `themeStats?.installs` too. Check whether
-  the app actually records a theme install (`POST /installs` with `theme:<slug>`); if it does
-  not, add it in `theme-marketplace-provider.ts` where the install completes.
+- [ ] **Theme cards show a download count — all three halves land here.** Plan 1 was going to
+  add `installs` to `/stats`'s themes and has withdrawn it, because the premise was false:
+  **the app never tells the Worker a theme was installed.** `installTheme()`
+  (`marketplace-context.tsx:285`) installs to disk and never calls `marketplaceApi.install()`;
+  the sole caller of that is the skill path at line 253. So the `installs` table holds zero
+  theme rows and the field would have read `0` forever. Do it in this order, or not at all:
+  1. Record the install — `installTheme` also calls `marketplaceApi.install('theme:' + slug)`
+     after the disk install succeeds (fire-and-forget; a stats failure must not fail an
+     install). Android's theme install path needs the same call.
+  2. Worker — `/stats` gains `themes[slug].installs`, counted from `installs` rows whose
+     `plugin_id` starts with `theme:`, prefix stripped; and skip those ids when seeding
+     `plugins` so one row is not reported twice. That is a small `wecoded-marketplace` PR.
+  3. Card — `MarketplaceCard.tsx:108-116` reads installs only from `stats.plugins`
+     (`pluginStats` is `undefined` for a theme, so `installs` is always 0 and the count never
+     renders). Read `themeStats?.installs` too.
+
+  Steps 2 and 3 are worthless without step 1. If you only have time for one, do none of them
+  and leave the ROADMAP item.
 - [ ] **Two theme previews render blank** (Devil's Garden, Kuromi Dreamer — ROADMAP:1042).
   Same grid, same component.
 - [ ] **Rails clip at phone width** (UI audit P-17) and **`longDescription` renders raw
