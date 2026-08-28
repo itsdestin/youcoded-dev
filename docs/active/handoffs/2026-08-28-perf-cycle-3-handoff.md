@@ -48,6 +48,48 @@ not". The open question is not how big the prize is — it is how much of the wo
 rendered DOM (which parking frees) versus reducer data (which only eviction frees), because
 that decides which of the two changes below is the real fix.
 
+### Measured, 2026-08-28 — `perf-reports/2026-08-28-0733-8935c28-probe-scrollback.json`
+
+One repeat (a probe, not a baseline — the report is stamped INCOMPLETE for exactly that
+reason, and a keep/reject decision needs 2+). Same six sessions, each of the three
+resumed conversations scrolled to its beginning; every leg reached the top.
+
+| | floor (nothing scrolled) | ceiling (all three read to the top, post-GC) |
+|---|---|---|
+| PSS | 1,492.5 MB | **4,443.2 MB** (+2,950.7) |
+| peak BEFORE the forced GC | — | 5,950.1 MB |
+| JS heap, live | 20 MB | 534.4 MB |
+| JS heap, committed | 22 MB | 1,111.9 MB |
+| DOM nodes | 23,461 | **1,464,735** (62x) |
+| event listeners | 945 | 31,427 |
+
+**Destin's reading was right and the plan's was wrong.** Paging moved where a
+conversation starts; the ceiling is untouched. 12,100 messages read back cost ~2.95 GB
+retained, and the pre-paging figure (7.0 GB) was measured with streaming and 40 switches
+on top, so this is the same regime rather than a smaller one.
+
+Three findings that should shape the plan:
+
+1. **Nothing is released, and now there is a number for it.** Switching away from every
+   scrolled conversation and forcing a GC gave back **42.1 MB of 2,950.7 — 1.4%**. That
+   is the control: no existing mechanism bounds this, so any cycle-3 change is starting
+   from zero rather than improving something partial.
+2. **The rise is mostly RENDERED, not stored.** Live JS objects account for 514 MB and
+   V8's committed heap for 1,090 MB; the remaining **~1,861 MB (63%) is DOM, layout and
+   paint** — 1.44 M nodes, ~119 per message. Eviction frees both halves (dropping a
+   timeline entry unmounts its DOM too); parking a hidden view frees only the DOM half,
+   and only for the five sessions you are not looking at. **A third option the two-way
+   framing missed: virtualizing the message list** — render only what is on screen —
+   attacks the 63% directly without dropping any data, and is the only one of the three
+   that also helps the conversation currently in front of you.
+3. **Scrolling back gets slower the more the APP holds, not the conversation.** Page-turn
+   medians ran huge 429 ms (116 pages, scrolled first), medium 887 ms (83 pages), small
+   **987 ms for its single page** — a 50-turn conversation, slowest of the three, because
+   by then the app held 1.46 M nodes. Cost is global, so a change that bounds total
+   rendered nodes should show up here as well as in PSS.
+
+Phase cost: ~3 minutes per repeat after the build, so 3 repeats is ~10 minutes.
+
 **The rig now measures this.** `scripts/perf-lab/scenario-scrollback.mjs` (phase
 `scrollback`, own boot, runs last) opens the same six sessions the workload phase opens,
 scrolls each resumed conversation to its beginning, and reports the ceiling post-GC split

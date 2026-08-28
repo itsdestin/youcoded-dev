@@ -208,8 +208,9 @@ export const MEASURES = {
     'floor.pssMb': 'whole-process PSS with all six sessions open and NOTHING scrolled — the paged state every other phase measures',
     'ceiling.pssMb': 'the same reading after all three conversations have been scrolled to the beginning, post-GC',
     deltaPssMb: 'ceiling - floor: what scrolling back costs. THE cycle-3 number.',
-    deltaJsHeapMb: 'the share of that rise in the JS heap — reducer state and React fibers. Only EVICTION frees this.',
-    deltaNonJsMb: 'the rise NOT explained by the JS heap — DOM, layout, paint. PARKING a hidden view frees this.',
+    deltaJsHeapMb: 'live JS objects added — reducer state and React fibers. Only EVICTION frees this. Same as jsShareMinMb.',
+    jsShareMaxMb: 'committed V8 heap added. PSS counts what V8 asked the OS for, not what is live inside it, so this is the UPPER bound on the JS share.',
+    deltaNonJsMb: 'PSS rise minus the UPPER bound on JS — a LOWER bound on the DOM/layout/paint share. This is what parking a hidden view frees.',
     releasedMb: 'ceiling - (reading after switching away from every scrolled session and forcing a GC). Expected ~0 today, because nothing evicts; this is the metric a cycle-3 change has to move.',
     'perSize.*.pageMedianMs': 'how long one page turn takes, per conversation — does scrolling back get slower as the window grows?',
   },
@@ -225,8 +226,10 @@ export const MEASURES = {
 /** The fields compare.mjs may take a median of across repeats. */
 export const NUMERIC_KEYS = [
   'floorPssMb', 'ceilingPssMb', 'deltaPssMb',
-  'floorJsHeapMb', 'ceilingJsHeapMb', 'deltaJsHeapMb', 'deltaNonJsMb',
+  'floorJsHeapMb', 'ceilingJsHeapMb', 'deltaJsHeapMb',
+  'jsShareMinMb', 'jsShareMaxMb', 'deltaNonJsMb',
   'floorDomNodes', 'ceilingDomNodes', 'deltaDomNodes',
+  'floorListeners', 'ceilingListeners', 'deltaListeners',
   'releasedMb', 'totalPagesLoaded', 'totalEntriesLoaded',
 ];
 
@@ -261,6 +264,17 @@ export function medianRun(runs) {
   }
   return out;
 }
+
+/**
+ * How often to report progress DURING one conversation's scroll-back.
+ *
+ * WHY this exists at all: `huge` is ~117 pages, and a per-LEG callback leaves the
+ * phase silent for minutes at a time. The rig has already paid for that once — a
+ * history phase that logged only at the end presented a broken app as 40 minutes of
+ * nothing (2026-08-28). A phase that can be quiet longer than a person will wait has
+ * to say what it is doing while it does it.
+ */
+export const PROGRESS_EVERY_PAGES = 10;
 
 /**
  * @param {{cdp: {evaluate(expr: string): Promise<any>, send(m: string, p?: object): Promise<any>}, family(): number[]}} app
@@ -323,6 +337,9 @@ export async function runScrollbackScenario(app, fixture, { onProgress } = {}) {
         pages++;
         if (typeof r.ms === 'number') pageMs.push(r.ms);
         last = r;
+        if (pages % PROGRESS_EVERY_PAGES === 0) {
+          onProgress?.({ size, pages, entries: r.entries, lastPageMs: r.ms, partial: true });
+        }
       }
       if (!reachedTop && !timedOut && pages >= MAX_PAGES) {
         warnings.push(`scrollback: ${size}: stopped at the ${MAX_PAGES}-page cap without reaching the beginning — the ceiling is a FLOOR for this conversation`);
@@ -345,7 +362,7 @@ export async function runScrollbackScenario(app, fixture, { onProgress } = {}) {
         jsHeapAfterMb: after.jsHeapMb,
         domNodesAfter: after.domNodes,
       };
-      onProgress?.({ size, pages, reachedTop, entries: perSize[size].entriesAfter, pssMb: after.pssMb });
+      onProgress?.({ size, pages, reachedTop, entries: perSize[size].entriesAfter, pssMb: after.pssMb, partial: false });
     }
 
     // ── The ceiling ──────────────────────────────────────────────────────
@@ -412,17 +429,36 @@ export function riseSplit(floor, ceiling) {
   const sub = (a, b) => (typeof a === 'number' && typeof b === 'number' && Number.isFinite(a) && Number.isFinite(b)
     ? round1(a - b) : null);
   const deltaPssMb = sub(ceiling.pssMb, floor.pssMb);
-  const deltaJsHeapMb = sub(ceiling.jsHeapMb, floor.jsHeapMb);
+  // USED heap and COMMITTED heap are both needed, and using the wrong one silently
+  // mis-attributes the rise.
+  //
+  // PSS counts pages the process has actually committed, so V8's committed heap is in
+  // it in FULL — not just the live objects inside it. Measured 2026-08-28: used heap
+  // rose 514 MB while committed rose 1,090 MB over the same scroll-back. Subtracting
+  // the USED figure therefore credits ~576 MB of V8's own arena to the DOM, and the
+  // DOM share is exactly what decides between parking and eviction. So:
+  //   jsShareMinMb  = live reducer state + fibers          (lower bound on JS)
+  //   jsShareMaxMb  = everything V8 asked the OS for       (upper bound on JS)
+  //   deltaNonJsMb  = PSS rise minus the UPPER bound       (lower bound on the DOM)
+  // Each bound is taken in the direction that CANNOT overstate the case it supports.
+  const jsShareMinMb = sub(ceiling.jsHeapMb, floor.jsHeapMb);
+  const jsShareMaxMb = sub(ceiling.jsHeapTotalMb, floor.jsHeapTotalMb);
   return {
     floorPssMb: floor.pssMb ?? null,
     ceilingPssMb: ceiling.pssMb ?? null,
     deltaPssMb,
     floorJsHeapMb: floor.jsHeapMb ?? null,
     ceilingJsHeapMb: ceiling.jsHeapMb ?? null,
-    deltaJsHeapMb,
-    deltaNonJsMb: (deltaPssMb != null && deltaJsHeapMb != null) ? round1(deltaPssMb - deltaJsHeapMb) : null,
+    // Kept as the name every earlier report used; it IS the live-object figure.
+    deltaJsHeapMb: jsShareMinMb,
+    jsShareMinMb,
+    jsShareMaxMb,
+    deltaNonJsMb: (deltaPssMb != null && jsShareMaxMb != null) ? round1(deltaPssMb - jsShareMaxMb) : null,
     floorDomNodes: floor.domNodes ?? null,
     ceilingDomNodes: ceiling.domNodes ?? null,
     deltaDomNodes: sub(ceiling.domNodes, floor.domNodes),
+    floorListeners: floor.listeners ?? null,
+    ceilingListeners: ceiling.listeners ?? null,
+    deltaListeners: sub(ceiling.listeners, floor.listeners),
   };
 }

@@ -509,9 +509,10 @@ export function renderMarkdown(report, stem) {
       '| what | value |',
       '|---|---|',
       `| PSS floor -> ceiling | ${n(s.floorPssMb, 'MB')} -> ${n(s.ceilingPssMb, 'MB')} (**+${n(s.deltaPssMb, 'MB')}**) |`,
-      `| of which JS heap (only EVICTION frees) | ${n(s.deltaJsHeapMb, 'MB')} |`,
-      `| of which non-JS: DOM/layout/paint (PARKING frees) | ${n(s.deltaNonJsMb, 'MB')} |`,
+      `| JS share (only EVICTION frees) | ${n(s.jsShareMinMb, 'MB')} live … ${n(s.jsShareMaxMb, 'MB')} committed |`,
+      `| non-JS share: DOM/layout/paint (PARKING frees), lower bound | ${n(s.deltaNonJsMb, 'MB')} |`,
       `| DOM nodes floor -> ceiling | ${n(s.floorDomNodes)} -> ${n(s.ceilingDomNodes)} (+${n(s.deltaDomNodes)}) |`,
+      `| event listeners floor -> ceiling | ${n(s.floorListeners)} -> ${n(s.ceilingListeners)} (+${n(s.deltaListeners)}) |`,
       `| released by switching away + GC | ${n(s.releasedMb, 'MB')} |`,
       `| pages loaded / entries added | ${n(s.totalPagesLoaded)} / ${n(s.totalEntriesLoaded)} |`,
       '',
@@ -1185,8 +1186,9 @@ async function main(argv) {
             // Per LEG, not per repeat: one leg can legitimately take minutes on the
             // huge conversation, and a phase that can be quiet that long has to say
             // what it is doing — the 2026-08-28 lesson from 40 minutes of silence.
-            onProgress: ({ size, pages, reachedTop, entries, pssMb }) =>
-              log(`scrollback ${i + 1}/${cfg.scrollbackRepeats}: ${size} — ${pages} pages, ${entries} entries, PSS ${pssMb}MB${reachedTop ? '' : ' (DID NOT reach the top)'}`),
+            onProgress: (e) => log(e.partial
+              ? `scrollback ${i + 1}/${cfg.scrollbackRepeats}: ${e.size} — ${e.pages} pages in, ${e.entries} entries, last page ${e.lastPageMs}ms`
+              : `scrollback ${i + 1}/${cfg.scrollbackRepeats}: ${e.size} DONE — ${e.pages} pages, ${e.entries} entries, PSS ${e.pssMb}MB${e.reachedTop ? '' : ' (DID NOT reach the top)'}`),
           });
           runs.push(r);
           log(`scrollback ${i + 1}/${cfg.scrollbackRepeats}: floor ${r.floorPssMb}MB -> ceiling ${r.ceilingPssMb}MB (+${r.deltaPssMb}MB; heap +${r.deltaJsHeapMb}MB, non-JS +${r.deltaNonJsMb}MB, ${r.deltaDomNodes} nodes), released on switch-away ${r.releasedMb}MB`);

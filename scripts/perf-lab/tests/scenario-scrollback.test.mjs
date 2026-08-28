@@ -30,28 +30,44 @@ const leg = (over = {}) => ({
 const run = (over = {}) => ({
   perSize: Object.fromEntries(SCROLL_SIZES.map((s) => [s, leg()])),
   floorPssMb: 1720, ceilingPssMb: 6800, deltaPssMb: 5080,
-  floorJsHeapMb: 300, ceilingJsHeapMb: 2100, deltaJsHeapMb: 1800, deltaNonJsMb: 3280,
+  floorJsHeapMb: 300, ceilingJsHeapMb: 2100, deltaJsHeapMb: 1800,
+  jsShareMinMb: 1800, jsShareMaxMb: 2400, deltaNonJsMb: 2680,
   floorDomNodes: 12000, ceilingDomNodes: 210000, deltaDomNodes: 198000,
+  floorListeners: 945, ceilingListeners: 31427, deltaListeners: 30482,
   releasedMb: 0.4, totalPagesLoaded: 120, totalEntriesLoaded: 7200,
   ...over,
 });
 
 describe('riseSplit — the phase\'s whole conclusion', () => {
   it('splits the PSS rise into the heap share and the DOM share', () => {
-    const s = riseSplit({ pssMb: 1720, jsHeapMb: 300, domNodes: 12000 },
-                        { pssMb: 6800, jsHeapMb: 2100, domNodes: 210000 });
+    const s = riseSplit({ pssMb: 1720, jsHeapMb: 300, jsHeapTotalMb: 340, domNodes: 12000 },
+                        { pssMb: 6800, jsHeapMb: 2100, jsHeapTotalMb: 2500, domNodes: 210000 });
     assert.equal(s.deltaPssMb, 5080);
     assert.equal(s.deltaJsHeapMb, 1800);
-    assert.equal(s.deltaNonJsMb, 3280);
     assert.equal(s.deltaDomNodes, 198000);
+  });
+
+  it('subtracts the COMMITTED heap, not the used heap, when sizing the DOM share', () => {
+    // The mis-attribution this pins, measured 2026-08-28: used heap rose 514 MB while
+    // committed rose 1,090 MB over the same scroll-back. PSS counts what V8 asked the
+    // OS for, so subtracting the USED figure credits ~576 MB of V8's own arena to the
+    // DOM — and the DOM share is exactly what picks between parking and eviction.
+    const s = riseSplit({ pssMb: 1492.5, jsHeapMb: 20, jsHeapTotalMb: 22 },
+                        { pssMb: 4443.2, jsHeapMb: 534.4, jsHeapTotalMb: 1111.9 });
+    assert.equal(s.deltaPssMb, 2950.7);
+    assert.equal(s.jsShareMinMb, 514.4, 'live objects');
+    assert.equal(s.jsShareMaxMb, 1089.9, 'committed heap');
+    assert.equal(s.deltaNonJsMb, 1860.8, 'the DOM share must be the LOWER bound, i.e. PSS minus committed heap');
+    assert.ok(s.deltaNonJsMb < s.deltaPssMb - s.jsShareMinMb,
+      'subtracting the used heap would have overstated the DOM share');
   });
 
   it('reports null — never 0 — when the heap was never measured', () => {
     // The failure this pins: with a `?? 0` the whole 5,080 MB rise would be credited
     // to the DOM, and "park hidden views" would look like the complete fix for a cost
     // that is mostly reducer state. A null makes validateReport fail the report.
-    const s = riseSplit({ pssMb: 1720, jsHeapMb: null, domNodes: null },
-                        { pssMb: 6800, jsHeapMb: null, domNodes: null });
+    const s = riseSplit({ pssMb: 1720, jsHeapMb: null, jsHeapTotalMb: null, domNodes: null },
+                        { pssMb: 6800, jsHeapMb: null, jsHeapTotalMb: null, domNodes: null });
     assert.equal(s.deltaPssMb, 5080);
     assert.equal(s.deltaJsHeapMb, null);
     assert.equal(s.deltaNonJsMb, null, 'an unmeasured heap must not attribute the rise to the DOM');
