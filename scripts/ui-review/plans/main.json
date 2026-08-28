@@ -99,6 +99,7 @@
      "settle": 900
     }
    ],
+   "measure": ["[role=dialog][aria-label='Model Providers']", "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Model Providers\"] button')].find(b=>b.textContent.trim()==='Add provider')", "js:document.querySelector('[role=dialog][aria-label=\"Model Providers\"] .scroll-fade')"],
    "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
   },
   {
@@ -169,6 +170,7 @@
      "settle": 900
     }
    ],
+   "measure": ["[role=dialog][aria-label='Keyboard Shortcuts']", "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Keyboard Shortcuts\"] kbd')].find(k=>k.textContent.includes('Arrow Up/Down'))?.parentElement", "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Keyboard Shortcuts\"] kbd')].find(k=>k.textContent.trim()==='Enter')?.parentElement"],
    "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
   },
   {
@@ -265,6 +267,7 @@
      "settle": 600
     }
    ],
+   "measure": ["js:document.querySelector('.glass-overlay.overlay-no-drag.fixed')", "js:[...document.querySelectorAll('.glass-overlay.fixed button')].find(b=>b.textContent.includes('gpt-5.6'))"],
    "expect": "[title='Close Session']"
   },
   {

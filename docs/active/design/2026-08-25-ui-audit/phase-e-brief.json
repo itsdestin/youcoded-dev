@@ -1,0 +1,96 @@
+{
+ "title": "Phase E brief — three small windows",
+ "key": "phase-e-brief",
+ "out": "phase-e-brief.html",
+ "images": "images/phase-e-brief",
+ "runs": {
+  "today": "/home/destin/youcoded-dev/scratch/ui-phase-e-today"
+ },
+ "labels": {
+  "today": "Today"
+ },
+ "themes": [
+  "midnight",
+  "light",
+  "creme",
+  "dark",
+  "halftone-dimension",
+  "meadow-mist"
+ ],
+ "_note": "Nothing is built yet: every picture is today's app on master. 'What changed' reads as 'what I propose to change'. The audit's fourth Phase E item — the word 'undefined' printed in the local-models list — no longer happens; the list was rewritten since, so there is nothing left to fix and it is not in this brief.",
+ "crops": {
+  "shortcuts": [
+   "main",
+   "settings-keyboard-shortcuts",
+   "400x516+520+192"
+  ],
+  "sessions": [
+   "main",
+   "all-sessions-menu",
+   "360x430+546+20"
+  ],
+  "providers": [
+   "main",
+   "settings-model-providers",
+   "470x620+485+140"
+  ]
+ },
+ "steps": [
+  {
+   "id": "P-7.1",
+   "surface": "Keyboard Shortcuts",
+   "path": "Settings → Keyboard Shortcuts",
+   "crop": "shortcuts",
+   "highlight": {
+    "selector": "[role=dialog][aria-label='Keyboard Shortcuts']"
+   },
+   "headline": "Three of the thirteen shortcuts are cut off the bottom of this window, and it does not scroll — so you can never read them.",
+   "changed": "Widen the window from 340 to 420 pixels, line the labels and keys up in two columns, and let the list scroll so all thirteen are reachable.",
+   "measured": "340 px wide; 4 of the 10 visible labels wrap to two lines; 3 of 13 rows unreachable at any window size",
+   "notice": "Every shortcut fits on one line, and the three hidden ones appear: open the skill drawer, close a menu, and move between the permission buttons.",
+   "risk": "The window covers a little more of the screen behind it, and a future shortcut with a very long name could still wrap."
+  },
+  {
+   "id": "P-8.1",
+   "surface": "All sessions menu",
+   "path": "Title bar → All Sessions",
+   "crop": "sessions",
+   "highlight": {
+    "selector": "js:document.querySelector('.glass-overlay.overlay-no-drag.fixed')"
+   },
+   "headline": "Session names wrap onto two and three lines in this narrow menu, so fewer sessions fit and the last row is sliced in half.",
+   "changed": "Widen the menu to about 448 pixels and keep every session on one line, shortened with “…” and shown in full when you rest the pointer on it.",
+   "measured": "288 px wide; 6 of 10 names wrap; the tallest row is 70 px against 42 px for a one-line row",
+   "notice": "Around nine sessions fit where six did, rows stop varying in height, and the project name sits clear of the name instead of jammed beside it.",
+   "risk": "The menu covers more of the window behind it, and a long name is hidden behind “…” until you hover it."
+  },
+  {
+   "id": "P-4.1",
+   "surface": "Model Providers",
+   "path": "Settings → Model Providers",
+   "crop": "providers",
+   "highlight": {
+    "selector": "js:document.querySelector('[role=dialog][aria-label=\"Model Providers\"] .scroll-fade')"
+   },
+   "headline": "This window scrolls, but the only hint is a slight dimming at the bottom edge — it ends mid-section at “Local models” with no scroll bar.",
+   "changed": "Give a window that has more content below it a thin scroll bar down its right edge, on top of the soft dimming that is already there.",
+   "measured": "588 px of window holding about 900 px of content; the bottom edge dims text by about a quarter; no scroll bar in any of the six themes",
+   "notice": "You can see at a glance that there is more below and how far down you are. This reaches every scrolling panel in the app, not only this one — Settings sections, menus, the sync log.",
+   "risk": "It is a wide change for one complaint: a bar appears in many places at once, and on the picture-backed themes it is one more grey line over the artwork."
+  },
+  {
+   "id": "P-4.2",
+   "surface": "Model Providers",
+   "path": "Settings → Model Providers",
+   "crop": "providers",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Model Providers\"] button')].find(b=>b.textContent.trim()==='Add provider')"
+   },
+   "headline": "One window, four button shapes: a filled pill, small outlined chips, a red outlined one, and a full-width outlined “Add provider”.",
+   "changed": "Make “Add provider” a small button like “Add key” and “Test”, leaving “Connect to OpenRouter” as the only filled button in the window.",
+   "measured": "4 button shapes in one window; “Add provider” is 386 px wide against 60–80 px for the rest",
+   "notice": "“Add provider” stops reading as the most important thing on the page. Nothing changes about what any button does.",
+   "risk": "A smaller “Add provider” is easier to miss when you are hunting for it. This one is taste, not a defect — today's layout is not broken."
+  }
+ ]
+}

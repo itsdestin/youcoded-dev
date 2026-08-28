@@ -227,6 +227,24 @@ the mascot. Destin's words: "just bare frame like terminal view".
   terminal's anatomy is still unreviewed; the workbench now shows a frozen sample screen
   (`?termBacking=`), and the real-app pass reproduced the two-thirds-width bug (ROADMAP).
 
+- **G-25 Session row** (P-8, decided 2026-08-28 over three rounds): a row in the All
+  Sessions menu (and the Shift switcher, the same menu) is **two lines sharing one left
+  edge** — the session name on line one, one line only, cut with `…` and carrying the full
+  name as its `title`; the project folder on line two behind a small folder mark. The right
+  column carries the **status pill** on line one and the session's **tag chips** on line two.
+  A name never wraps (rejected: three-line names made rows 42–70 px and the list ragged), and
+  the project never sits beside the name (it stole the width that caused the wrap).
+- **G-26 Session status pill**: the bare status dot is a pill — dot + word — tinted with its
+  own colour at ~15% with a 30% border, the **word in the theme's text colour** because the
+  status palette is fixed (`bg-green-400` and friends) and a coloured word failed contrast on
+  the pale themes. Words come from `STATUS_LABEL` (`StatusDot.tsx`), one place: Working ·
+  Needs Input · Needs a Look · Response Ready · Inactive. Amber keeps its own word (picked
+  2026-08-28 over folding it into red's, which would have made two colours say one thing).
+- **G-27 Tags in a list row**: tags read as the picker's **named chips** (`TagChip`), never
+  colour-only dots — capped at three plus a `+N` that names the rest on hover, with the note
+  page-mark after them. Destin, 2026-08-28: "tags should not be dots, but full chips with
+  spelled names."
+
 ### 4.3 Settings drawer + dialogs
 
 - Drawer: `panel`, 320px, title row (*Settings* + `CloseButton`), then `SettingRow` cards
@@ -235,8 +253,12 @@ the mascot. Destin's words: "just bare frame like terminal view".
 - **G-10 Dialog header**: title (`text-base` `font-medium`) left · optional ⓘ · `CloseButton`
   right · hairline. **Every** dialog, including confirmations (Donate) and menus
   (Development). A back arrow appears only when the dialog navigated *within itself*.
-- **G-11 Dialog body**: eyebrow sections (G-7); content scrolls inside the body with a
-  visible scrollbar and a bottom fade — the header never scrolls; nothing is ever clipped
+- **G-11 Dialog body**: eyebrow sections (G-7); content scrolls inside the body — the shared
+  body hides the scrollbar and fades the edge instead (`.scroll-fade`); a visible bar was
+  proposed as P-4 and **declined 2026-08-28** (it would land in every scrolling panel for one
+  dialog's complaint). A dialog must never switch the body off and then overflow: `prompt` +
+  `scrollBody={false}` put three keyboard shortcuts beyond reach at every window size (P-7,
+  guarded by `menu-row-reachability.test.ts`). The header never scrolls; nothing is ever clipped
   silently. Pick size by content: `prompt` for a question, `panel` for settings,
   `document` for prose/lists longer than ~8 rows.
 - Footer: only when there is a decision to confirm — right-aligned `ghost` Cancel +
@@ -372,4 +394,5 @@ G-5 text floor · G-6 text-on-surface pairs · G-7 eyebrows · G-8 accent budget
 G-9 button vocabulary (§3) · G-10 dialog header · G-11 dialog body/scroll · G-12 search
 field · G-13 welcome screen · G-14 chips · G-15 status bar · G-16 full-screen header ·
 G-17 list rows · G-18 empty states · G-19 counts · G-20 tool-card header · G-21 menus · G-22 find-bar
-lane · G-23 attachment card · G-24 terminal backing floor.
+lane · G-23 attachment card · G-24 terminal backing floor · G-25 session row · G-26 session
+status pill · G-27 tags in a list row.

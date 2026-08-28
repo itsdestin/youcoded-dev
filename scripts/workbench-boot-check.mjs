@@ -62,6 +62,7 @@ const ROUTES = [
   // Attachment-chip design mock-ups (three candidates over eleven sample
   // files). A standalone surface, so it needs its own route to be mount-checked.
   ['attachment chip mock-ups', '&child=1&view=attachments'],
+  ['session status pills', '&child=1&view=session-pills'],
   // The parked-turn opt-in (toolbar "Stalled turn" toggle → ?stalled=1). It
   // replays the fixture's `{"type":"stalled"}` line, which is the ONLY way the
   // red "Provider may have stalled" card, its live count-up timer and its
