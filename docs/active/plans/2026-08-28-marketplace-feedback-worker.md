@@ -65,6 +65,13 @@ Cloudflare Cache API. Cloudflare documents the Cache API as having **no effect o
 ratings (install-gated, one row per plugin); an **open comment box needs sign-in only**, so
 one account could post without limit.
 
+> **The actual cure is a custom domain, and it is not in this plan.** The Cache API — and
+> therefore Cloudflare's edge cache in general — is a no-op on `*.workers.dev`. On a real
+> domain the limiter works as originally written *and* `GET /catalog` stops being re-served
+> from D1 on every refresh (Plan 2, Task 4). One DNS change fixes both. Until it happens the
+> Worker has to do the work itself, which is what Step 2 and Plan 2's version row are.
+> ROADMAP: "Put the Worker on a custom domain".
+
 - [ ] **Step 1: Measure it against production**
 
 Sign in, then post the same report 70 times in a loop against
@@ -734,6 +741,99 @@ feedbackRoutes.get("/thumbs/:plugin_id", requireAuth, (c) => myVote(c, c.req.par
 
 ---
 
+### Task 4c: A comment can be taken down
+
+v1 ships **no** Report button (spec §5 — the `reports` table is keyed to a rating, so
+reusing it is not the small change it looks like) and **no** delete-your-own (deferred).
+That is fine for the reader; it is not fine for us. As written, the only remedy for a
+comment the classifier let through is hand-editing the production database. A public
+comment box with no takedown path is not something to ship and fix later.
+
+Two routes, mirroring `DELETE /admin/ratings/:user_id/:plugin_id` (`src/reports/routes.ts:38`)
+exactly — same gate, same `hidden = 1` mechanism the classifier already uses, so a hidden
+comment disappears from `GET /comments/:id` with no further work.
+
+**Files:**
+- Modify: `worker/src/comments/routes.ts`
+- Test: `worker/test/comments.test.ts`
+
+**Interfaces:**
+- `GET /admin/comments?hidden=0|1&limit=100` (`requireAuth` + `requireAdminAccount`) →
+  `{ comments: Array<{ id, plugin_id, user_id, text, created_at, hidden }> }`, newest first.
+  There is no report queue to work from, so this is the queue: the recent comments, readable.
+- `DELETE /admin/comments/:id` (same gate) → `{ ok: true }`; `404` when the id is unknown,
+  which is the same "your list was stale" honesty the permissions screen uses. Sets
+  `hidden = 1` — never deletes the row, so a mistaken takedown is reversible by hand and the
+  author's other comments are untouched.
+
+- [ ] **Step 1: Failing tests** — append to `test/comments.test.ts`:
+
+```ts
+  it("an admin can hide a comment, and a non-admin cannot", async () => {
+    const author = await createTestAccount({ githubId: "1", login: "u" });
+    const authorToken = await issueTestSession(author);
+    await SELF.fetch("https://test.local/comments", { method: "POST",
+      headers: { Authorization: `Bearer ${authorToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ plugin_id: "foo", text: "something awful" }) });
+    const { comments } = await (await SELF.fetch("https://test.local/comments/foo")).json<{ comments: Array<{ id: string }> }>();
+    const id = comments[0]!.id;
+
+    // A signed-in non-admin is refused (403, not 401 — they ARE authenticated).
+    expect((await SELF.fetch(`https://test.local/admin/comments/${id}`, { method: "DELETE",
+      headers: { Authorization: `Bearer ${authorToken}` } })).status).toBe(403);
+
+    const adminToken = await issueTestSession(await createTestAccount({ githubId: "424242", login: "admin" }));
+    const admin = { Authorization: `Bearer ${adminToken}` };
+    expect((await SELF.fetch(`https://test.local/admin/comments/${id}`, { method: "DELETE", headers: admin })).status).toBe(200);
+
+    // Gone from the public read, still in the table, and visible in the admin queue.
+    expect((await (await SELF.fetch("https://test.local/comments/foo")).json<{ comments: unknown[] }>()).comments).toEqual([]);
+    const q = await (await SELF.fetch("https://test.local/admin/comments?hidden=1", { headers: admin })).json<{ comments: Array<{ id: string }> }>();
+    expect(q.comments.map((c) => c.id)).toEqual([id]);
+  });
+
+  it("hiding an id that is not there reports it, rather than claiming success", async () => {
+    const adminToken = await issueTestSession(await createTestAccount({ githubId: "424242", login: "admin" }));
+    expect((await SELF.fetch("https://test.local/admin/comments/nope", { method: "DELETE",
+      headers: { Authorization: `Bearer ${adminToken}` } })).status).toBe(404);
+  });
+```
+
+- [ ] **Step 2: Run** → FAIL (404 on both admin paths).
+
+- [ ] **Step 3: Implement** — append to `src/comments/routes.ts`:
+
+```ts
+// Moderation. There is no Report button in v1 and no report queue behind it, so the
+// queue IS the recent-comments list: an admin reads it and hides what does not belong.
+// Same gate and same `hidden` flag as DELETE /admin/ratings/:user_id/:plugin_id.
+commentRoutes.get("/admin/comments", requireAuth, async (c) => {
+  await requireAdminAccount(c);
+  const hidden = c.req.query("hidden") === "1" ? 1 : 0;
+  const limit = Math.min(Number(c.req.query("limit")) || 100, 500);
+  const { results } = await c.env.DB
+    .prepare("SELECT id, plugin_id, user_id, text, created_at, hidden FROM comments WHERE hidden = ? ORDER BY created_at DESC LIMIT ?")
+    .bind(hidden, limit).all();
+  return c.json({ comments: results });
+});
+
+// Hides, never deletes: a takedown must be reversible, and the row is the only record
+// that the comment existed at all.
+commentRoutes.delete("/admin/comments/:id", requireAuth, async (c) => {
+  await requireAdminAccount(c);
+  const res = await c.env.DB.prepare("UPDATE comments SET hidden = 1 WHERE id = ?").bind(c.req.param("id")).run();
+  if (res.meta.changes === 0) throw notFound("comment not found");
+  return c.json({ ok: true });
+});
+```
+(import `requireAdminAccount` from `../auth/admin` and `notFound` from the errors module the
+file already uses for `badRequest`.)
+
+- [ ] **Step 4: Run** `npx vitest run test/comments.test.ts && npm run typecheck` → PASS.
+- [ ] **Step 5: Commit** `git add src/comments/routes.ts test/comments.test.ts && git commit -m "feat(worker): admin can hide a comment"`.
+
+---
+
 ### Task 5: `GET /stats` gains `thumbs_up` / `thumbs_down`, and themes gain `installs`
 
 **Files:**
@@ -870,6 +970,12 @@ git commit -m "feat(worker): /stats carries thumbs_up / thumbs_down per plugin"
 In `worker/README.md` line 3, change the summary to name the feature: "install tracking, ratings, **thumbs + comments**, and theme likes". While there: the README claims three route groups and the Worker serves **eleven** (12 route modules) — `/social`, `/sync`, `/app`, `/stats` and `/reports` go undocumented. Listing them is a two-minute fix and this is the only PR that will be near the file. In the Moderation workflow section add:
 
 ```markdown
+`GET /admin/comments` lists recent comments (add `?hidden=1` to see what has already been
+taken down) and `DELETE /admin/comments/:id` hides one. Both need an admin GitHub identity,
+the same gate as `DELETE /admin/ratings/:user_id/:plugin_id`. Hiding never deletes the row.
+**This is the only takedown path in v1** — there is no user-facing Report button on comments
+(the `reports` table is keyed to a rating; see the spec's deferred list).
+
 Comments (`POST /comments`) go through the same `llama-guard-3-8b` classifier as
 reviews; a flagged comment is stored with `hidden = 1` and never listed by
 `GET /comments/:plugin_id`. Thumbs (`POST /thumbs`) carry no text and are not

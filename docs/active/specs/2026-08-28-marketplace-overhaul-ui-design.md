@@ -218,7 +218,10 @@ glyphs on cards; vibe/meta chips in the bar; "Tools" as the MCP word; star ratin
 - **Report a comment.** The Worker's `reports` table is keyed to a *rating*
   (`rating_user_id`, `rating_plugin_id`), so it cannot take a comment id without a schema
   change. Rather than ship a button that does nothing, v1 renders **no** Report affordance on
-  comments; the AI classifier still hides flagged text at post time.
+  comments; the AI classifier still hides flagged text at post time. What is **not** deferred
+  is the takedown itself — `GET /admin/comments` + `DELETE /admin/comments/:id` ship in Plan 1
+  (Task 4c), so anything the classifier misses can be removed without touching the database by
+  hand. Only the *reader's* route to flagging it is missing.
 - **Delete your own comment** — reviews had it (`marketplace:rate:delete`); comments ship
   without it on every platform.
 - **Real descriptions for bundle members.** A member's description is deliberately **empty**

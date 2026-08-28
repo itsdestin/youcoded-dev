@@ -11,7 +11,7 @@ part: 2 of 3 (catalog service) — 2026-08-28-marketplace-feedback-worker.md is 
 
 **Goal:** A catalog the app can read that carries, for every listing, the block the approved UI renders — kind, who published it, whether this version was checked, what it can do, licence, pinned commit — built hourly from four sources and served by the WeCoded Worker.
 
-**Architecture:** Two halves. **Serve:** the Worker stores one row per listing in D1 (`catalog_items`, full entry as JSON + a few indexed columns) and answers `GET /catalog` (everything the app shows, with an `ETag`) and `GET /catalog/:id`; an ingest token guards `POST /admin/catalog/*`. **Ingest:** a dependency-free Node 20 script tree in `wecoded-marketplace/scripts/catalog/` runs in GitHub Actions every hour, pulls each source (our own `index.json`, Docker's MCP catalog, `github/awesome-copilot`, `PatrickJS/awesome-cursorrules`), normalises to `SkillEntry + catalog`, computes capabilities and a rule-based scan from the files **at the repo's current HEAD**, and upserts in batches. A per-source "finish" call retires rows the run did not see.
+**Architecture:** Two halves. **Serve:** the Worker stores one row per listing in D1 (`catalog_items`, full entry as JSON + a few indexed columns) and answers `GET /catalog` (everything the app shows, with an `ETag`) and `GET /catalog/:id`; an ingest token guards `POST /admin/catalog/*`. **Ingest:** a dependency-free Node 20 script tree in `wecoded-marketplace/scripts/catalog/` runs in GitHub Actions every hour, pulls each source (our own `index.json`, Docker's MCP catalog, `github/awesome-copilot`, `PatrickJS/awesome-cursorrules`), normalises to `SkillEntry + catalog`, computes capabilities and a rule-based scan from the files **at the repo's current HEAD**, and upserts in batches. A per-source "finish" call retires rows the run did not see — but refuses to retire more than a fifth of a source at once, because a scraper that collected 12 of 257 rows is broken, not authoritative.
 
 Two rules make the whole thing safe to run unattended, and they are the difference between a
 background job and a liability:
@@ -54,9 +54,9 @@ end of this plan for the measured reasons and where it goes instead.
 ## File structure
 
 **Worker (`wecoded-marketplace/worker`)**
-- `migrations/0006_catalog.sql` — `catalog_items`, `catalog_runs`.
+- `migrations/0006_catalog.sql` — `catalog_items`, `catalog_runs`, `catalog_meta`.
 - `src/catalog/auth.ts` — `requireIngestToken`.
-- `src/catalog/routes.ts` — `catalogRoutes`: `GET /catalog`, `GET /catalog/:id` (+ two-segment member form), `POST /admin/catalog/upsert`, `POST /admin/catalog/finish`, `GET /admin/catalog/shas`.
+- `src/catalog/routes.ts` — `catalogRoutes`: `GET /catalog`, `GET /catalog/:id` (+ two-segment member form), `POST /admin/catalog/upsert`, `POST /admin/catalog/finish`, `GET /admin/catalog/shas`, `GET /admin/catalog/health`.
 - `src/types.ts` — `CATALOG_INGEST_TOKEN`, `CATALOG_ENABLED`; `wrangler.toml` `[vars]` + `[env.test.vars]`; `test/env.d.ts`; `.github/workflows/worker-deploy.yml` secret push.
 - `test/catalog.test.ts`, `test/catalog-auth.test.ts`, `test/schema.test.ts`, `test/cors.test.ts`.
 
@@ -73,7 +73,7 @@ end of this plan for the measured reasons and where it goes instead.
 
 ---
 
-### Task 1: Migration — `catalog_items`, `catalog_runs`
+### Task 1: Migration — `catalog_items`, `catalog_runs`, `catalog_meta`
 
 **Files:**
 - Create: `worker/migrations/0006_catalog.sql`
@@ -84,6 +84,7 @@ end of this plan for the measured reasons and where it goes instead.
 ```ts
     expect(names).toContain("catalog_items");
     expect(names).toContain("catalog_runs");
+    expect(names).toContain("catalog_meta");
 ```
 
 - [ ] **Step 2: Run** `cd /home/destin/youcoded-dev/wecoded-marketplace && git checkout -b feat/catalog-service master && cd worker && npx vitest run test/schema.test.ts` → FAIL.
@@ -104,11 +105,18 @@ CREATE TABLE catalog_items (
   deprecated INTEGER NOT NULL DEFAULT 0,
   source_commit TEXT,                  -- the commit whose FILES were scanned; drives the
                                        -- "only re-read what changed" skip in the ingest
+  scan_rules TEXT,                     -- version of the rule set behind the stored verdict.
+                                       -- The skip key is (commit, scan_rules), so bumping
+                                       -- SCAN_RULES_VERSION re-scans the whole catalog by
+                                       -- itself instead of waiting for a manual --force-rescan
+                                       -- that nobody remembers to run.
   run_id TEXT NOT NULL,                -- the ingest run that last touched the row
   updated_at INTEGER NOT NULL,
   entry_json TEXT NOT NULL
 );
-CREATE INDEX idx_catalog_served ON catalog_items(deprecated);
+-- (deprecated, id), not (deprecated) alone: GET /catalog walks the served rows in id order
+-- by keyset (`WHERE deprecated = 0 AND id > ?`), and D1 bills rows SCANNED, not returned.
+CREATE INDEX idx_catalog_served ON catalog_items(deprecated, id);
 CREATE INDEX idx_catalog_source_run ON catalog_items(source, run_id);
 CREATE INDEX idx_catalog_part_of ON catalog_items(part_of_id);
 
@@ -125,9 +133,25 @@ CREATE TABLE catalog_runs (
   PRIMARY KEY (id, source)
 );
 CREATE INDEX idx_catalog_runs_source ON catalog_runs(source, finished_at);
+
+-- Exactly one row (id = 'v'). Every write to catalog_items bumps `version`, and that
+-- number IS the ETag of GET /catalog.
+--
+-- This table is the difference between the catalog working and the catalog running out
+-- of database quota in its first week. Without it, answering "nothing has changed" means
+-- reading every catalog row to compute the ETag first — so the cheap reply costs exactly
+-- as much as sending the whole 5,000-row payload. D1's free tier allows 5 M row-reads a
+-- day; at one full read per client refresh that is a few hundred refreshes a day for the
+-- entire user base. With it, an unchanged reply reads ONE row.
+CREATE TABLE catalog_meta (
+  id TEXT PRIMARY KEY,
+  version INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+INSERT INTO catalog_meta (id, version, updated_at) VALUES ('v', 1, 0);
 ```
 
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** `git add migrations/0006_catalog.sql test/schema.test.ts && git commit -m "feat(worker): catalog_items + catalog_runs tables"`.
+- [ ] **Step 4: Run** → PASS. **Step 5: Commit** `git add migrations/0006_catalog.sql test/schema.test.ts && git commit -m "feat(worker): catalog_items + catalog_runs + catalog_meta tables"`.
 
 ---
 
@@ -226,7 +250,7 @@ and mount it in `src/index.ts` (`import { catalogRoutes } from "./catalog/routes
 
 ---
 
-### Task 3: Admin ingest routes — upsert (merging), finish, shas
+### Task 3: Admin ingest routes — upsert (merging), finish (guarded), shas, health
 
 **Files:**
 - Modify: `worker/src/catalog/routes.ts`
@@ -234,8 +258,22 @@ and mount it in `src/index.ts` (`import { catalogRoutes } from "./catalog/routes
 
 **Interfaces:**
 - `POST /admin/catalog/upsert` body `{ source, run_id, entries: Array<SkillEntry & { catalog: CatalogMeta }> }` (≤ 500 entries) → `{ ok: true, upserted: number }`. Creates the `catalog_runs` row on first sight of `(run_id, source)`. Each entry's `id`, `catalog.itemType`, `catalog.partOf?.id`, `catalog.sourceCommit`, `deprecated` are read into columns. **Merges, never clobbers** — see below.
-- `POST /admin/catalog/finish` body `{ source, run_id, note? }` → `{ ok: true, retired: number }`: rows of that source with `run_id != this run` become `deprecated = 1`; run row gets `finished_at`.
-- `GET /admin/catalog/shas?source=…` → `{ shas: Record<id, sourceCommit> }` — what the catalog already has on file, so the ingest can skip re-downloading files for unchanged entries.
+- `POST /admin/catalog/finish` body `{ source, run_id, note?, allow_mass_retire? }` → `{ ok: true, retired: number, refused?: { wouldRetire: number, live: number } }`: rows of that source with `run_id != this run` become `deprecated = 1`; run row gets `finished_at`. **Refuses a mass retirement** — see below.
+- `GET /admin/catalog/shas?source=…` → `{ shas: Record<id, string> }` — the ingest's skip key per id, `"<sourceCommit>:<scanRulesVersion>"`. Not a bare commit: the scan rules are half of "is what we have still current".
+- `GET /admin/catalog/health` (`requireAuth` + `requireAdminAccount` — the same admin gate `DELETE /admin/ratings/:user_id/:plugin_id` already uses, `src/reports/routes.ts:38`) → `{ version, sources: Array<{ source, live, lastFinishedAt, lastRetired, lastNote }> }`. Read-only. **This is how a human answers "is the catalog still being fed?"** — a stalled ingest produces no error anywhere, just an unchanging catalog, and GitHub silently disables a repository's `schedule:` triggers after 60 days of inactivity. A source whose `lastFinishedAt` is hours old is the tell.
+
+**The retire guard (the other important part).** A `finish` that would delist more than
+`MAX_RETIRE_FRACTION` (20%) of a source's live rows refuses, retires nothing, records the
+refusal in `catalog_runs.note`, and returns `refused`. The ingest turns that into a failed
+workflow run.
+
+Why: the four upstream sources are projects we do not control. The day `awesome-cursorrules`
+renames `rules/` we collect 12 prompts instead of 257, and today's `finish` would delist the
+other 245 — visibly, in everyone's app, until someone noticed. A partial scrape is not
+evidence that 245 listings were deleted. `skipFinish` (Task 6) already covers the source that
+collects *nothing*; this covers the one that collects *some*. Sources below
+`RETIRE_GUARD_FLOOR` (10 live rows) are exempt — a ratio means nothing at that size — and
+`allow_mass_retire: true` is the deliberate override for a real bulk removal.
 
 **The merge rule (the important part of this task).** The incoming entry is merged onto the
 stored one before it is written:
@@ -257,6 +295,7 @@ a user could ever explain. With it, a degraded run simply changes nothing.
 ```ts
 import { env, SELF } from "cloudflare:test";
 import { describe, it, expect, beforeEach } from "vitest";
+import { createTestAccount, issueTestSession } from "./helpers";
 
 const TOKEN = { "Content-Type": "application/json", "X-Catalog-Token": "test-ingest-token" };
 const entry = (id: string, extra: Record<string, unknown> = {}) => ({
@@ -304,6 +343,60 @@ describe("catalog ingest routes", () => {
       .first<{ upserted: number; retired: number; finished_at: number }>();
     expect(run).toMatchObject({ upserted: 1, retired: 1 });
     expect(run!.finished_at).toBeGreaterThan(0);
+  });
+
+  it("finish REFUSES to retire most of a source in one run", async () => {
+    // A scraper whose upstream moved a folder: 20 rows last hour, 2 this hour.
+    const many = Array.from({ length: 20 }, (_, i) => entry(`c${String(i).padStart(2, "0")}`));
+    await post("/admin/catalog/upsert", { source: "cursorrules", run_id: "r1", entries: many });
+    await post("/admin/catalog/finish", { source: "cursorrules", run_id: "r1" });
+    await post("/admin/catalog/upsert", { source: "cursorrules", run_id: "r2", entries: many.slice(0, 2) });
+    const res = await post("/admin/catalog/finish", { source: "cursorrules", run_id: "r2" });
+    expect(await res.json()).toEqual({ ok: true, retired: 0, refused: { wouldRetire: 18, live: 20 } });
+    // Nothing was delisted, and the refusal is on the run record.
+    expect((await env.DB.prepare("SELECT COUNT(*) AS n FROM catalog_items WHERE deprecated = 1").first<{ n: number }>())!.n).toBe(0);
+    expect((await env.DB.prepare("SELECT note FROM catalog_runs WHERE id = 'r2' AND source = 'cursorrules'").first<{ note: string }>())!.note)
+      .toMatch(/refused/);
+    // …and the override goes through.
+    const forced = await post("/admin/catalog/finish", { source: "cursorrules", run_id: "r2", allow_mass_retire: true });
+    expect((await forced.json<{ retired: number }>()).retired).toBe(18);
+  });
+
+  it("health reports live counts and when each source last finished", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("h1"), entry("h2")] });
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r1" });
+    // Admin identity, not the ingest token — this one is for a person, not the robot.
+    // Same helper pair the reports tests use (test/helpers.ts); githubId 424242 is the
+    // id configured in [env.test.vars] ADMIN_USER_IDS.
+    const token = await issueTestSession(await createTestAccount({ githubId: "424242", login: "admin" }));
+    const res = await SELF.fetch("https://test.local/admin/catalog/health", { headers: { Authorization: `Bearer ${token}` } });
+    const body = await res.json<{ sources: Array<{ source: string; live: number; lastFinishedAt: number }> }>();
+    expect(body.sources).toEqual([expect.objectContaining({ source: "docker", live: 2 })]);
+    expect(body.sources[0]!.lastFinishedAt).toBeGreaterThan(0);
+    // …and the ingest token alone does not open it — a robot credential is not a person.
+    expect((await SELF.fetch("https://test.local/admin/catalog/health", { headers: { "X-Catalog-Token": "test-ingest-token" } })).status).toBe(401);
+  });
+
+  it("a small source is exempt from the retire guard", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("s1"), entry("s2"), entry("s3")] });
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r1" });
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r2", entries: [entry("s1")] });
+    expect((await (await post("/admin/catalog/finish", { source: "docker", run_id: "r2" })).json<{ retired: number }>()).retired).toBe(2);
+  });
+
+  it("every write bumps the catalog version, and shas carry the scan rule set", async () => {
+    const v = async () => (await env.DB.prepare("SELECT version FROM catalog_meta WHERE id = 'v'").first<{ version: number }>())!.version;
+    const before = await v();
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [
+      entry("vv", { catalog: { itemType: "tool", origin: { tier: "community" }, capabilities: [],
+        sourceCommit: "abc1234", scan: { status: "checked", checkedAt: "2026-08-28T00:00:00Z", rules: "3" } } }),
+    ] });
+    expect(await v()).toBeGreaterThan(before);
+    const after = await v();
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r1" });
+    expect(await v()).toBeGreaterThan(after);
+    const res = await SELF.fetch("https://test.local/admin/catalog/shas?source=docker", { headers: { "X-Catalog-Token": "test-ingest-token" } });
+    expect((await res.json<{ shas: Record<string, string> }>()).shas).toEqual({ vv: "abc1234:3" });
   });
 
   it("rejects batches over 500 or without a source", async () => {
@@ -377,6 +470,11 @@ export const catalogRoutes = new Hono<HonoEnv>();
 
 const SOURCES = new Set(["wecoded", "anthropic", "docker", "awesome-copilot", "cursorrules"]);
 const MAX_BATCH = 500;
+/** A `finish` may never delist more than this share of a source's live rows in one run —
+ *  a partial scrape is a broken scrape, not a bulk deletion. Sources with fewer than
+ *  RETIRE_GUARD_FLOOR live rows are exempt (a ratio is meaningless at that size). */
+export const MAX_RETIRE_FRACTION = 0.2;
+export const RETIRE_GUARD_FLOOR = 10;
 
 interface IngestCatalog {
   itemType?: string;
@@ -444,32 +542,59 @@ catalogRoutes.post("/admin/catalog/upsert", requireIngestToken, async (c) => {
   const stored = new Map(existing.map((r) => [r.id, r.entry_json]));
 
   const stmt = c.env.DB.prepare(
-    `INSERT INTO catalog_items (id, source, item_type, part_of_id, deprecated, source_commit, run_id, updated_at, entry_json)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO catalog_items (id, source, item_type, part_of_id, deprecated, source_commit, scan_rules, run_id, updated_at, entry_json)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET source = excluded.source, item_type = excluded.item_type,
        part_of_id = excluded.part_of_id, deprecated = excluded.deprecated,
-       source_commit = excluded.source_commit,
+       source_commit = excluded.source_commit, scan_rules = excluded.scan_rules,
        run_id = excluded.run_id, updated_at = excluded.updated_at, entry_json = excluded.entry_json`
   );
   const batch = body.entries.map((raw) => {
     if (typeof raw.id !== "string" || !raw.id || raw.id.length > 200) throw badRequest("entry without a valid id");
     if (!raw.catalog || typeof raw.catalog.itemType !== "string") throw badRequest(`entry ${raw.id} has no catalog.itemType`);
     const e = mergeOntoStored(raw, stored.get(raw.id) ?? null);
+    // scan_rules comes off the MERGED entry, so a run that kept a stored verdict also
+    // keeps the rule version that produced it.
     return stmt.bind(e.id, body.source, e.catalog!.itemType, e.catalog!.partOf?.id ?? null, e.deprecated ? 1 : 0,
-      e.catalog!.sourceCommit ?? null, body.run_id, now, JSON.stringify(e));
+      e.catalog!.sourceCommit ?? null, (e.catalog!.scan as { rules?: string } | undefined)?.rules ?? null,
+      body.run_id, now, JSON.stringify(e));
   });
   await c.env.DB.batch(batch);
   await c.env.DB.prepare("UPDATE catalog_runs SET upserted = upserted + ? WHERE id = ? AND source = ?")
     .bind(batch.length, body.run_id, body.source).run();
+  await bumpCatalogVersion(c.env.DB, now);
   return c.json({ ok: true, upserted: batch.length });
 });
 
+/** The ETag of GET /catalog is this number. Bumped by every write, so a client can never
+ *  be told "nothing changed" about a catalog that changed mid-run — at worst it refetches
+ *  once more than it needed to. */
+async function bumpCatalogVersion(db: D1Database, now: number): Promise<void> {
+  await db.prepare("UPDATE catalog_meta SET version = version + 1, updated_at = ? WHERE id = 'v'").bind(now).run();
+}
+
 catalogRoutes.post("/admin/catalog/finish", requireIngestToken, async (c) => {
-  const body = await parseJsonBody<{ source?: string; run_id?: string; note?: string }>(c);
+  const body = await parseJsonBody<{ source?: string; run_id?: string; note?: string; allow_mass_retire?: boolean }>(c);
   if (!body.source || !SOURCES.has(body.source)) throw badRequest("unknown source");
   if (!body.run_id) throw badRequest("invalid run_id");
   const now = Math.floor(Date.now() / 1000);
   await ensureRun(c.env.DB, body.run_id, body.source, now);
+
+  // The retire guard. Count first, delist second: a scrape that collected a fraction of a
+  // source is a broken scrape, not 245 deletions. See the Interfaces note above.
+  const counts = await c.env.DB
+    .prepare(`SELECT COUNT(*) AS live, SUM(CASE WHEN run_id != ? THEN 1 ELSE 0 END) AS stale
+              FROM catalog_items WHERE source = ? AND deprecated = 0`)
+    .bind(body.run_id, body.source).first<{ live: number; stale: number }>();
+  const live = counts?.live ?? 0;
+  const wouldRetire = counts?.stale ?? 0;
+  if (!body.allow_mass_retire && live >= RETIRE_GUARD_FLOOR && wouldRetire > live * MAX_RETIRE_FRACTION) {
+    const note = `refused: would retire ${wouldRetire} of ${live} live rows`;
+    await c.env.DB.prepare("UPDATE catalog_runs SET finished_at = ?, retired = 0, note = ? WHERE id = ? AND source = ?")
+      .bind(now, note, body.run_id, body.source).run();
+    return c.json({ ok: true, retired: 0, refused: { wouldRetire, live } });
+  }
+
   // Retire what this run did not see. Rows keep their JSON so a listing that
   // vanished upstream can be revived by a later run (deprecated flips back to 0
   // on the next upsert).
@@ -479,27 +604,59 @@ catalogRoutes.post("/admin/catalog/finish", requireIngestToken, async (c) => {
   const retired = r.meta.changes ?? 0;
   await c.env.DB.prepare("UPDATE catalog_runs SET finished_at = ?, retired = ?, note = ? WHERE id = ? AND source = ?")
     .bind(now, retired, body.note ?? null, body.run_id, body.source).run();
+  if (retired) await bumpCatalogVersion(c.env.DB, now);
   return c.json({ ok: true, retired });
 });
 
 // What the catalog already has on file, so the ingest can skip re-downloading a
-// plugin's files when its commit has not moved. This one route is what turns a
-// ~6,000-request hourly job into a ~160-request one.
+// plugin's files when nothing about the verdict would change. This one route is what
+// turns a ~6,000-request hourly job into a ~160-request one.
+//
+// The value is `<commit>:<scanRulesVersion>`, not a bare commit. A repo that has not
+// moved but was scanned by an OLDER rule set is NOT up to date, and the ingest must
+// re-read it. That is what makes "improve the scanner" a one-line version bump instead
+// of a manual full rescan someone has to remember.
+//
+// Keyset, not OFFSET — the same reason as GET /catalog: OFFSET re-scans everything it
+// skips, so paging 5,000 rows in blocks of 1,000 bills ~15,000 row-reads, not 5,000.
 catalogRoutes.get("/admin/catalog/shas", requireIngestToken, async (c) => {
   const source = c.req.query("source") ?? "";
   if (!SOURCES.has(source)) throw badRequest("unknown source");
   const shas: Record<string, string> = {};
-  for (let offset = 0; ; offset += 1000) {
+  let after = "";
+  for (;;) {
     const { results } = await c.env.DB
-      .prepare("SELECT id, source_commit FROM catalog_items WHERE source = ? AND source_commit IS NOT NULL ORDER BY id LIMIT 1000 OFFSET ?")
-      .bind(source, offset)
-      .all<{ id: string; source_commit: string }>();
-    for (const r of results) shas[r.id] = r.source_commit;
+      .prepare("SELECT id, source_commit, scan_rules FROM catalog_items WHERE source = ? AND source_commit IS NOT NULL AND id > ? ORDER BY id LIMIT 1000")
+      .bind(source, after)
+      .all<{ id: string; source_commit: string; scan_rules: string | null }>();
+    for (const r of results) shas[r.id] = `${r.source_commit}:${r.scan_rules ?? ""}`;
     if (results.length < 1000) break;
+    after = results[results.length - 1].id;
   }
   return c.json({ shas });
 });
+
+// "Is the catalog still being fed?" — the one question no error message ever answers,
+// because a stalled ingest fails silently: the rows just stop changing. Admin-gated
+// (same identity check as /admin/analytics/*), read-only, cheap.
+catalogRoutes.get("/admin/catalog/health", requireAuth, async (c) => {
+  await requireAdminAccount(c);
+  const meta = await c.env.DB.prepare("SELECT version, updated_at FROM catalog_meta WHERE id = 'v'")
+    .first<{ version: number; updated_at: number }>();
+  const { results } = await c.env.DB.prepare(
+    `SELECT i.source AS source,
+            COUNT(*) AS live,
+            (SELECT MAX(finished_at) FROM catalog_runs r WHERE r.source = i.source) AS lastFinishedAt,
+            (SELECT r.retired FROM catalog_runs r WHERE r.source = i.source ORDER BY r.finished_at DESC LIMIT 1) AS lastRetired,
+            (SELECT r.note FROM catalog_runs r WHERE r.source = i.source ORDER BY r.finished_at DESC LIMIT 1) AS lastNote
+     FROM catalog_items i WHERE i.deprecated = 0 GROUP BY i.source ORDER BY i.source`
+  ).all();
+  return c.json({ version: meta?.version ?? 0, updatedAt: meta?.updated_at ?? 0, sources: results });
+});
 ```
+(also import `requireAuth` from `../auth/middleware` and `requireAdminAccount` from
+`../auth/admin` — the same two the reports routes import — and add `/admin/catalog/health`
+to the route list in `worker/README.md`.)
 
 - [ ] **Step 4: Run** `npx vitest run test/catalog.test.ts test/catalog-auth.test.ts && npm run typecheck` → PASS. **Step 5: Commit** `git add src/catalog/routes.ts test/catalog.test.ts && git commit -m "feat(worker): catalog ingest — merging upsert, finish, shas"`.
 
@@ -564,6 +721,21 @@ describe("GET /catalog", () => {
     expect((await res.json<{ entry: { id: string } }>()).entry.id).toBe("superpowers/brainstorming");
   });
 
+  it("answers 304 from the version row, without reading the catalog", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("a1")] });
+    const first = await SELF.fetch("https://test.local/catalog");
+    const etag = first.headers.get("etag")!;
+    expect(etag).toMatch(/^"cat-\d+"$/);
+    const again = await SELF.fetch("https://test.local/catalog", { headers: { "If-None-Match": etag } });
+    expect(again.status).toBe(304);
+    expect(await again.text()).toBe("");
+    // A write moves the version, so the same conditional request now gets the payload.
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r2", entries: [entry("a2")] });
+    const third = await SELF.fetch("https://test.local/catalog", { headers: { "If-None-Match": etag } });
+    expect(third.status).toBe(200);
+    expect(third.headers.get("etag")).not.toBe(etag);
+  });
+
   it("returns more than one internal page", async () => {
     const many = Array.from({ length: 500 }, (_, i) => entry(`e${String(i).padStart(3, "0")}`));
     await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: many });
@@ -606,35 +778,52 @@ export function catalogDisabled(env: { CATALOG_ENABLED?: string }): boolean {
   return env.CATALOG_ENABLED === "0";
 }
 
-// GET /catalog — everything the app shows. Read in pages of 500 so a large catalog
-// never trips D1's single-statement result cap.
+// GET /catalog — everything the app shows.
 //
-// The stored JSON is CONCATENATED, not parsed and re-serialised: at a few thousand
-// rows the naive JSON.parse-then-c.json costs megabytes of pointless work on every
-// request. And the ETag is the point of the whole route — the response is several
-// MB, both clients refresh hourly (phones on mobile data), and *.workers.dev is not
-// served from Cloudflare's edge cache, so without a 304 every device pays full
-// price 24 times a day and every request re-reads every row out of D1.
+// Two things in here are load-bearing, and both are about cost, not speed:
+//
+// 1. THE ETAG COMES FROM ONE ROW, AND THE 304 IS ANSWERED BEFORE ANY CATALOG ROW IS
+//    READ. The obvious version — read the rows, derive an ETag from them, then maybe
+//    reply 304 — makes the "nothing changed" answer cost exactly as much database work
+//    as sending the whole several-MB payload, which defeats the entire point. D1's free
+//    tier allows 5 M row-reads/day; a full catalog read is ~5,000 of them. That is a few
+//    hundred client refreshes a day for the whole user base if every refresh pays full
+//    price, and both clients refresh hourly. With the version row, an unchanged refresh
+//    costs ONE row-read and the budget stops being the binding constraint.
+// 2. KEYSET PAGING (`id > last`), NEVER OFFSET. D1 bills rows SCANNED, and OFFSET
+//    re-scans everything it skips: 5,000 rows in pages of 500 costs ~27,500 row-reads
+//    with OFFSET and 5,000 with a keyset. Same answer, five times the bill.
+//
+// The stored JSON is also CONCATENATED, not parsed and re-serialised: at a few thousand
+// rows the naive JSON.parse-then-c.json costs megabytes of pointless work per request.
+//
+// (All of this exists because *.workers.dev is not served from Cloudflare's edge cache.
+// On a custom domain the cache would absorb these repeats before they ever reach us —
+// see the ROADMAP entry. Until then the Worker is the cache.)
 catalogRoutes.get("/catalog", async (c) => {
   if (catalogDisabled(c.env)) {
     return c.text("catalog temporarily unavailable", 503);
   }
-  const parts: string[] = [];
-  let newest = 0;
-  for (let offset = 0; ; offset += 500) {
-    const { results } = await c.env.DB
-      .prepare("SELECT entry_json, updated_at FROM catalog_items WHERE deprecated = 0 ORDER BY id LIMIT 500 OFFSET ?")
-      .bind(offset)
-      .all<{ entry_json: string; updated_at: number }>();
-    for (const r of results) { parts.push(r.entry_json); if (r.updated_at > newest) newest = r.updated_at; }
-    if (results.length < 500) break;
-  }
-  const etag = `"cat-${newest}-${parts.length}"`;
+  const meta = await c.env.DB.prepare("SELECT version, updated_at FROM catalog_meta WHERE id = 'v'")
+    .first<{ version: number; updated_at: number }>();
+  const etag = `"cat-${meta?.version ?? 0}"`;
   c.header("Cache-Control", "public, max-age=300");
   c.header("ETag", etag);
   if (c.req.header("If-None-Match") === etag) return c.body(null, 304);
+
+  const parts: string[] = [];
+  let after = "";
+  for (;;) {
+    const { results } = await c.env.DB
+      .prepare("SELECT id, entry_json FROM catalog_items WHERE deprecated = 0 AND id > ? ORDER BY id LIMIT 500")
+      .bind(after)
+      .all<{ id: string; entry_json: string }>();
+    for (const r of results) parts.push(r.entry_json);
+    if (results.length < 500) break;
+    after = results[results.length - 1]!.id;
+  }
   c.header("Content-Type", "application/json");
-  return c.body(`{"generated_at":${newest},"entries":[${parts.join(",")}]}`);
+  return c.body(`{"generated_at":${meta?.updated_at ?? 0},"entries":[${parts.join(",")}]}`);
 });
 
 async function oneEntry(c: Context<HonoEnv>, id: string) {
@@ -763,7 +952,7 @@ instead of an unhandled throw. Switch it.
 **Files:**
 - Modify: `/home/destin/youcoded-dev/worktrees/marketplace-ui/desktop/src/shared/catalog-types.ts`
 
-- [ ] **Step 1: Add the two optional fields** to `CatalogMeta` after `sourceCommit`:
+- [ ] **Step 1: Add the two optional fields** to `CatalogMeta` after `sourceCommit`, and one to `scan`:
 
 ```ts
   /** The listing's id in its upstream registry (reverse-DNS MCP name, Docker
@@ -773,6 +962,16 @@ instead of an unhandled throw. Switch it.
    *  `metadata.githubStars`, our own repo lookups). Display and future ranking
    *  only — nothing hides a listing based on it. */
   stars?: number;
+```
+
+and widen `scan` (line 69) by one optional field:
+
+```ts
+  /** `rules` is the version of the scan rule set that produced this verdict
+   *  (`SCAN_RULES_VERSION`, Task 7). Never rendered — the ingest reads it back through
+   *  `/admin/catalog/shas` so that improving the scanner re-scans the catalog on the
+   *  next hourly run instead of waiting for someone to remember `--force-rescan`. */
+  scan: { status: ScanStatus; checkedAt?: string; findings?: string[]; rules?: string };
 ```
 
 - [ ] **Step 2:** `cd /home/destin/youcoded-dev && bash scripts/verify.sh marketplace-ui` → OK. Commit on the app branch: `git commit -am "feat(catalog-types): upstreamId + stars"`.
@@ -789,7 +988,7 @@ instead of an unhandled throw. Switch it.
 - `http.mjs`: `getJson(url, {headers?}) → any` (throws `Error("GET <url> → <status>")`), `getText(url)`, `postJson(url, body, {headers?})`, `github(pathOrUrl) → any` (adds `Authorization: Bearer ${process.env.GITHUB_TOKEN}` + `Accept: application/vnd.github+json`, tracks `x-ratelimit-remaining` in `github.remaining`, throws `RateLimited` when < 200), `githubRaw(owner, repo, sha, path) → string`.
 - `entry.mjs`: `slug(s) → string` (lowercase, `[^a-z0-9_-]` → `-`, collapse, trim); `licenseToSpdx(name) → string | undefined`; `makeEntry({ id, itemType, displayName, description, author, repoUrl, sourceType, sourceRef, sourceSubdir?, sourceCommit?, origin, mirroredFrom?, license?, upstreamId?, stars?, capabilities, scan, partOf?, tags?, category?, tagline?, prompt?, components? }) → SkillEntry` filling `type`, `version`, `publishedAt`, `sourceMarketplace`, `visibility`… exactly the fields `index.json` rows carry today plus `catalog`.
 - `worker.mjs`: `createWorkerClient({ host, token }) → { shas(source), upsert(source, runId, entries), finish(source, runId, note?) }`; `upsert` splits into batches of 500 and returns the total.
-- `build.mjs`: `node scripts/catalog/build.mjs --source docker [--dry-run] [--force-rescan]`; without `--source` runs all; `--dry-run` writes `catalog-dry-run-<source>.json` and never POSTs; `--force-rescan` ignores the stored commits and re-reads every file (use it after a change to `capabilities.mjs`, not routinely).
+- `build.mjs`: `node scripts/catalog/build.mjs --source docker [--dry-run] [--force-rescan] [--allow-mass-retire]`; without `--source` runs all; `--dry-run` writes `catalog-dry-run-<source>.json` and never POSTs; `--force-rescan` ignores the stored keys and re-reads every file (an emergency lever — a routine rule change should bump `SCAN_RULES_VERSION`, which does the same thing automatically); `--allow-mass-retire` overrides the Worker's retire guard for a genuine bulk removal. **The script exits non-zero when any source errors, gets refused, or produces zero rows** — a broken scraper must never leave a green run behind it.
 
 - [ ] **Step 1: Failing tests**
 
@@ -999,7 +1198,8 @@ export function createWorkerClient({ host, token, fetchImpl = fetch }) {
       }
       return total;
     },
-    finish: (source, runId, note) => call("POST", "/admin/catalog/finish", { source, run_id: runId, ...(note ? { note } : {}) }),
+    finish: (source, runId, note, allowMassRetire) =>
+      call("POST", "/admin/catalog/finish", { source, run_id: runId, ...(note ? { note } : {}), ...(allowMassRetire ? { allow_mass_retire: true } : {}) }),
   };
 }
 ```
@@ -1008,7 +1208,7 @@ export function createWorkerClient({ host, token, fetchImpl = fetch }) {
 ```js
 #!/usr/bin/env node
 // Catalog ingest — pulls every source, normalises, upserts to the Worker.
-//   node scripts/catalog/build.mjs [--source <name>] [--dry-run] [--force-rescan]
+//   node scripts/catalog/build.mjs [--source <name>] [--dry-run] [--force-rescan] [--allow-mass-retire]
 // Env: CATALOG_INGEST_TOKEN (required unless --dry-run), GITHUB_TOKEN (required),
 //      CATALOG_HOST (default https://wecoded-marketplace-api.destinj101.workers.dev)
 import fs from "node:fs";
@@ -1020,6 +1220,9 @@ const pick = (flag) => { const i = process.argv.indexOf(flag); return i >= 0 ? p
 const only = pick("--source");
 const dryRun = args.has("--dry-run");
 const forceRescan = args.has("--force-rescan");
+// Deliberate override for a real bulk removal upstream. Without it the Worker refuses to
+// delist more than a fifth of a source in one run — see Task 3, "the retire guard".
+const allowMassRetire = args.has("--allow-mass-retire");
 const host = process.env.CATALOG_HOST ?? "https://wecoded-marketplace-api.destinj101.workers.dev";
 
 const SOURCES = {
@@ -1056,9 +1259,17 @@ for (const name of names) {
       if (dryRun) { fs.writeFileSync(`catalog-dry-run-${src}.json`, JSON.stringify(rows, null, 2)); console.log(`[${src}] dry-run: ${rows.length} rows`); continue; }
       if (!rows.length && skipFinish) { console.log(`[${src}] unchanged — nothing to do`); continue; }
       const upserted = await client.upsert(src, runId, rows);
-      const { retired } = await client.finish(src, runId);
-      report.sources[src] = { upserted, retired, ms: Date.now() - started };
+      const { retired, refused } = await client.finish(src, runId, undefined, allowMassRetire);
+      report.sources[src] = { upserted, retired, ...(refused ? { refused } : {}), ms: Date.now() - started };
       console.log(`[${src}] upserted ${upserted}, retired ${retired}`);
+      // A refusal means this source collected a fraction of what the catalog holds — a
+      // broken scraper, an upstream rename, a rate limit. Nothing was delisted (that is
+      // the guard working), but the run is NOT healthy and must not look green.
+      if (refused) {
+        console.error(`[${src}] REFUSED: collected only ${collected(refused)} — retiring ${refused.wouldRetire} of ${refused.live} was blocked. ` +
+          `Fix the source, or re-run with force_rescan / allow_mass_retire if the removal is real.`);
+        process.exitCode = 1;
+      }
     }
   } catch (err) {
     report.sources[name] = { error: String(err && err.message || err) };
@@ -1066,7 +1277,22 @@ for (const name of names) {
     process.exitCode = 1;
   }
 }
+// Declared as a function, not a const: it is called from the loop above, which runs before
+// this line is reached.
+function collected(r) { return `${r.live - r.wouldRetire} of ${r.live} rows`; }
+
+// A source that ran, threw nothing, and produced nothing is the silent failure this whole
+// job is exposed to: the catalog would simply freeze at yesterday's data while the workflow
+// stayed green. `skipFinish` (genuinely unchanged) reports no counts at all, so it does not
+// trip this.
+for (const [src, r] of Object.entries(report.sources)) {
+  if (!r.error && !r.refused && r.upserted === 0) {
+    console.error(`[${src}] produced 0 rows — the source is broken or its upstream moved.`);
+    process.exitCode = 1;
+  }
+}
 fs.writeFileSync("catalog-report.json", JSON.stringify(report, null, 2));
+if (process.exitCode) console.error(`\ncatalog ingest finished WITH ERRORS — see catalog-report.json`);
 ```
 
 - [ ] **Step 4: Run** `node --test scripts/catalog/test/` → PASS (4). **Step 5: Commit** `git add scripts/catalog && git commit -m "feat(catalog): ingest scaffold — http, entry, worker client, build"`.
@@ -1080,6 +1306,12 @@ fs.writeFileSync("catalog-report.json", JSON.stringify(report, null, 2));
 - Test: `scripts/catalog/test/capabilities.test.mjs`
 
 **Interfaces:**
+- `SCAN_RULES_VERSION: string` and `skipKey(sha) → string` — **bump the version in the same
+  commit as any change to the rules below.** The ingest skips re-reading a repo whose commit
+  has not moved; without the rule version in that key, making the scanner smarter would
+  re-check nothing, and every existing verdict would keep its old answer forever until a
+  human remembered to run `--force-rescan`. With it, the bump *is* the rescan: the next
+  hourly run finds every stored key stale and re-reads the corpus once.
 - `scanFiles(files: Array<{ path: string; text: string }>, { title }) → { capabilities: Capability[], findings: string[], hosts: string[] }` — pure.
 - `addsLine(components) → Capability | null` — e.g. `Adds 3 skills, 1 command and 2 specialists`.
 - `mcpCapabilities(mcpJsonText, { title }) → Capability[]` — from `.mcp.json` servers: `command` → shell, `env` keys → secret, `url` → network.
@@ -1090,7 +1322,11 @@ fs.writeFileSync("catalog-report.json", JSON.stringify(report, null, 2));
 ```js
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { scanFiles, addsLine, mcpCapabilities, hooksCapability } from "../lib/capabilities.mjs";
+import { scanFiles, addsLine, mcpCapabilities, hooksCapability, skipKey, SCAN_RULES_VERSION } from "../lib/capabilities.mjs";
+
+test("the skip key carries the rule version, so a bump invalidates every stored verdict", () => {
+  assert.equal(skipKey("abc1234"), `abc1234:${SCAN_RULES_VERSION}`);
+});
 
 test("a plain SKILL.md yields no capabilities and no findings", () => {
   const r = scanFiles([{ path: "SKILL.md", text: "# Brainstorm\nAsk one question at a time." }], { title: "X" });
@@ -1146,6 +1382,14 @@ test("addsLine", () => {
 // "What this can do" and the automatic check — computed from FILES, never from
 // an author's description (spec §1.6/§1.7). Findings are plain sentences a
 // non-technical user can act on; each rule names what it saw.
+//
+// Bump SCAN_RULES_VERSION on ANY change to the rules in this file — it is half the
+// ingest's skip key (`<commit>:<version>`), so bumping it re-scans the whole catalog on
+// the next hourly run. Leaving it alone after tightening a rule means the tightening
+// never actually runs against anything already listed.
+export const SCAN_RULES_VERSION = "1";
+export const skipKey = (sha) => `${sha}:${SCAN_RULES_VERSION}`;
+
 const SCRIPT_EXT = /\.(sh|bash|zsh|py|js|mjs|cjs|ts|rb|ps1)$/i;
 const HOST_RE = /https?:\/\/([a-z0-9.-]+\.[a-z]{2,})(?::\d+)?/gi;
 const ENV_KEY_RE = /\b([A-Z][A-Z0-9_]{2,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD|API_KEY))\b/g;
@@ -1233,7 +1477,7 @@ export function addsLine(c) {
 **Interfaces:**
 - `collect({ log }) → { entries, sources: { wecoded: SkillEntry[], anthropic: SkillEntry[] } }` — reads `index.json` at the repo root (the output of `sync.js`), drops `deprecated`, and for every plugin emits: the bundle row (`itemType: 'plugin'`, origin `youcoded` for `sourceMarketplace === 'youcoded'`, else `verified` with `mirroredFrom: 'anthropics/claude-plugins-official'`), plus member rows: `components.skills[]` → `skill`, `components.agents[]` → `specialist`, `hasMcpConfig || mcpServers.length` → one `tool` row named `<displayName> (connection)`. Members: id `<bundle>/<name>`, `partOf`, inherit origin/scan/license/commit, `capabilities: []`.
 - **Version resolution — read this before writing the code.** `sourceCommit` must be the repo's **current HEAD**, resolved this run, and *never* the `sourceSha` already sitting in `index.json`. 236 of the 302 live entries carry a `sourceSha` that `sync.js` stamped whenever it last ran; re-using it would pin the catalog — and therefore every install (Plan 3 Task 2) — to a months-old commit that never moves again, so the Update button would re-fetch the same frozen version forever and report success. HEAD comes from the same cached `/repos/{o}/{r}` call that supplies stars and licence (`default_branch` → `/commits/{branch}`, or just `/commits/HEAD`), one per distinct repo per run. `sourceSha` is only a last-resort display value if the lookup fails.
-- **Only re-read what changed.** `collect` receives `known` — `{ id: sourceCommit }` from the Worker. When the resolved HEAD equals `known[id]`, the entry is emitted **without** `capabilities` and with `scan` omitted, and no files are downloaded; the Worker's merge rule (Task 3) keeps the stored verdict and its `checkedAt`. This is the difference between ~6,000 raw fetches an hour and a few dozen. `--force-rescan` bypasses it.
+- **Only re-read what changed.** `collect` receives `known` — `{ id: "<sourceCommit>:<scanRulesVersion>" }` from the Worker. When `skipKey(resolvedHead)` equals `known[id]`, the entry is emitted **without** `capabilities` and with `scan` omitted, and no files are downloaded; the Worker's merge rule (Task 3) keeps the stored verdict and its `checkedAt`. This is the difference between ~6,000 raw fetches an hour and a few dozen. The rule version is in the key on purpose: a scanner improvement must invalidate every stored verdict, so `--force-rescan` is for emergencies, not for routine rule changes.
 - File fetch for scanning (only for entries whose HEAD moved): `local` → read from the repo checkout (`<sourceRef>/`), `url`/`git-subdir` → GitHub Tree at the resolved sha then raw fetch of: `.mcp.json`, `hooks/hooks.json`, `.claude-plugin/plugin.json`, and up to 20 files under `scripts/`, `hooks/`, `bin/` with `SCRIPT_EXT`, each ≤ 64 KB. `scan.status`: `caution`/`checked` when fetched; `unchecked` when the fetch failed (log why) — and the merge rule makes that harmless for an entry that was previously checked.
 - Licence: `local` → the repo's LICENSE (MIT — hard-code `MIT` for `sourceMarketplace === 'youcoded'`); GitHub → `/repos/{o}/{r}` `license.spdx_id` (guard null / `NOASSERTION`), cached per repo within the run. Stars from the same call.
 
@@ -1313,7 +1557,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { github, githubRaw } from "../lib/http.mjs";
 import { makeEntry } from "../lib/entry.mjs";
-import { scanFiles, addsLine, mcpCapabilities, hooksCapability } from "../lib/capabilities.mjs";
+import { scanFiles, addsLine, mcpCapabilities, hooksCapability, skipKey, SCAN_RULES_VERSION } from "../lib/capabilities.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const OFFICIAL = "anthropics/claude-plugins-official";
@@ -1386,7 +1630,9 @@ export async function normalise(index, files = fetchFiles, repo = repoFacts(), k
     const sourceCommit = facts.head ?? (isOurs ? undefined : e.sourceSha);
     // Unchanged since the catalog last looked → emit the row with no scan and no
     // capabilities and download nothing; the Worker's merge rule keeps what it has.
-    const unchanged = !!sourceCommit && known[e.id] === sourceCommit;
+    // skipKey, not the bare commit: an unmoved repo scanned by an older rule set is not
+    // up to date. See Interfaces, "Only re-read what changed".
+    const unchanged = !!sourceCommit && known[e.id] === skipKey(sourceCommit);
     if (unchanged) skipped++;
     const fetched = unchanged ? { ok: false, files: [], skipped: true } : await files(e, sourceCommit);
     const scanned = fetched.ok ? scanFiles(fetched.files, { title: e.displayName }) : null;
@@ -1398,7 +1644,9 @@ export async function normalise(index, files = fetchFiles, repo = repoFacts(), k
     }
     const adds = addsLine(e.components); if (adds) caps.push(adds);
     const scan = scanned
-      ? (scanned.findings.length ? { status: "caution", checkedAt: new Date().toISOString(), findings: scanned.findings } : { status: "checked", checkedAt: new Date().toISOString() })
+      ? (scanned.findings.length
+          ? { status: "caution", checkedAt: new Date().toISOString(), findings: scanned.findings, rules: SCAN_RULES_VERSION }
+          : { status: "checked", checkedAt: new Date().toISOString(), rules: SCAN_RULES_VERSION })
       : { status: "unchecked" };
     const base = {
       source: isOurs ? "wecoded" : "anthropic",
@@ -1623,6 +1871,7 @@ export async function collect({ log }) {
 ```js
 import { github, githubRaw } from "../lib/http.mjs";
 import { makeEntry, slug } from "../lib/entry.mjs";
+import { skipKey, SCAN_RULES_VERSION } from "../lib/capabilities.mjs";
 const REPO = "PatrickJS/awesome-cursorrules";
 
 function frontmatter(text) {
@@ -1641,7 +1890,7 @@ export function normalise(files, { sha }) {
       description: meta.description || `Cursor rules: ${name}.`, author: "PatrickJS", repoUrl: `https://github.com/${REPO}/blob/main/${path}`,
       sourceType: "file", sourceRef: `https://raw.githubusercontent.com/${REPO}/${sha}/${path}`, prompt: body.trim().slice(0, 32 * 1024),
       origin: "community", mirroredFrom: "PatrickJS/awesome-cursorrules", license: "CC0-1.0", sourceCommit: sha, upstreamId: path,
-      capabilities: [], scan: { status: "checked", checkedAt: new Date().toISOString() },   // plain text, no code — read in full above
+      capabilities: [], scan: { status: "checked", checkedAt: new Date().toISOString(), rules: SCAN_RULES_VERSION },   // plain text, no code — read in full above
     });
   });
 }
@@ -1652,7 +1901,7 @@ export async function collect({ log, known = {} }) {
   // catalog last read it, download nothing — re-emitting them would be ~257
   // pointless raw fetches an hour. One sample id is enough to tell.
   const sampled = Object.keys(known).find((k) => k.startsWith("cursorrules-"));
-  if (sampled && known[sampled] === head.sha) {
+  if (sampled && known[sampled] === skipKey(head.sha)) {
     log(`unchanged at ${head.sha.slice(0, 7)} — skipping`);
     return { entries: [], skipFinish: true };
   }
@@ -1699,8 +1948,20 @@ on:
     inputs:
       source: { description: "one source (blank = all)", required: false, default: "" }
       force_rescan: { description: "re-read every file, ignoring stored commits", type: boolean, default: false }
+      allow_mass_retire: { description: "let a run delist >20% of a source (a REAL bulk removal upstream)", type: boolean, default: false }
 
 concurrency: { group: catalog-ingest, cancel-in-progress: false }
+
+# WHO NOTICES WHEN THIS BREAKS.
+# `build.mjs` exits non-zero when any source errors, is refused by the retire guard, or
+# produces zero rows — so a broken scraper turns this run red and GitHub emails the repo
+# owner about a failed scheduled workflow. That is the alarm; there is no other one, which
+# is why the script must never swallow a bad source into a green run.
+# The hole it does not cover: **GitHub disables `schedule:` triggers on a repository with
+# 60 days of no activity**, silently. A dead cron produces no failures at all, just a
+# catalog frozen at its last good hour. `GET /admin/catalog/health` (Task 3) is how a human
+# checks; it is also the thing to wire into the admin dashboard if this repo ever goes
+# quiet for a season.
 
 jobs:
   ingest:
@@ -1722,8 +1983,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           RESCAN=""; if [ "${{ inputs.force_rescan }}" = "true" ]; then RESCAN="--force-rescan"; fi
+          MASS=""; if [ "${{ inputs.allow_mass_retire }}" = "true" ]; then MASS="--allow-mass-retire"; fi
           SRC=""; if [ -n "${{ inputs.source }}" ]; then SRC="--source ${{ inputs.source }}"; fi
-          node scripts/catalog/build.mjs $SRC $RESCAN
+          node scripts/catalog/build.mjs $SRC $RESCAN $MASS
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: catalog-report, path: catalog-report.json, retention-days: 14 }
@@ -1756,11 +2018,11 @@ Four one-liners that would otherwise each need their own PR, and one that matter
    → `favorites[]`, where it resolves to nothing. Point it at `wecoded-themes-plugin`.
    (Cleaning the dead entry out of existing profiles is app-side; ROADMAP it.)
 
-- [ ] **Step 2: Docs** — `docs/catalog.md`: what the catalog is, the four sources with their licences and the mirror/link decision (Docker repo MIT but served JSON unlicensed — we store metadata only; awesome-copilot MIT; cursorrules CC0; Anthropic official Apache-2.0 for the 53 local, the rest are pointers), **the merge rule and why a degraded run must never downgrade a row**, the "only re-read what changed" skip and `--force-rescan`, what "Likely safe" means in v1 (rule-based; SkillSpector is the next step), the `CATALOG_ENABLED` kill switch and how to use it, how to run locally (`--dry-run`), the retire semantics, and the env vars. README/CONTRIBUTING corrections as listed.
+- [ ] **Step 2: Docs** — `docs/catalog.md`: what the catalog is, the four sources with their licences and the mirror/link decision (Docker repo MIT but served JSON unlicensed — we store metadata only; awesome-copilot MIT; cursorrules CC0; Anthropic official Apache-2.0 for the 53 local, the rest are pointers), **the merge rule and why a degraded run must never downgrade a row**, **the retire guard and when to use `allow_mass_retire`**, **`SCAN_RULES_VERSION` — bump it to re-scan the whole catalog, do not reach for `--force-rescan`**, the "only re-read what changed" skip, what "Likely safe" means in v1 (rule-based; SkillSpector is the next step), the `CATALOG_ENABLED` kill switch and how to use it, how to run locally (`--dry-run`), the retire semantics, and the env vars. README/CONTRIBUTING corrections as listed.
 
 - [ ] **Step 3: Commit, push, PR** — `git add .github/workflows/catalog-ingest.yml docs/catalog.md README.md CONTRIBUTING.md && git commit -m "feat(catalog): hourly ingest workflow + docs"`; push; `gh pr create` titled `feat(catalog): ingest pipeline — four sources → Worker catalog` with the standard footer. Before merging: the Worker PR from Task 4 is merged and deployed, and Destin has added `MARKETPLACE_CATALOG_INGEST_TOKEN` (tell him in the PR: `openssl rand -hex 32`, paste into repo Settings → Secrets; the Worker deploy pushes the same value to the Worker).
 
-- [ ] **Step 4: First real run** — `gh workflow run catalog-ingest.yml --repo itsdestin/wecoded-marketplace -f force_rescan=true`, then `gh run watch`. Expected: report artifact with `upserted` per source and no `error`. Then:
+- [ ] **Step 4: First real run** — `gh workflow run catalog-ingest.yml --repo itsdestin/wecoded-marketplace -f force_rescan=true`, then `gh run watch`. Expected: **a green run** (the script exits non-zero on any error, refusal or empty source) and a report artifact with `upserted` per source and no `error` / `refused`. Then:
 
 ```bash
 curl -s https://wecoded-marketplace-api.destinj101.workers.dev/catalog | python3 -c "

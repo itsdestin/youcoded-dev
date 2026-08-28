@@ -17,7 +17,7 @@ part: 3 of 3 (app wiring) — needs 2026-08-28-marketplace-catalog-service.md de
 
 ## Global Constraints
 
-- Catalog contract (produced by Plan 2, consumed here — the two plans must agree): `GET https://wecoded-marketplace-api.destinj101.workers.dev/catalog` → `200 { generated_at: number, entries: SkillEntry[] }` where every entry has the `index.json` fields **plus** `catalog: CatalogMeta` (`desktop/src/shared/catalog-types.ts`), members carry `catalog.partOf`, deprecated rows are omitted. `Cache-Control: public, max-age=300`, **`ETag`**, and **`304 Not Modified`** when the client sends a matching `If-None-Match`. Any origin allowed.
+- Catalog contract (produced by Plan 2, consumed here — the two plans must agree): `GET https://wecoded-marketplace-api.destinj101.workers.dev/catalog` → `200 { generated_at: number, entries: SkillEntry[] }` where every entry has the `index.json` fields **plus** `catalog: CatalogMeta` (`desktop/src/shared/catalog-types.ts`), members carry `catalog.partOf`, deprecated rows are omitted. `Cache-Control: public, max-age=300`, **`ETag`**, and **`304 Not Modified`** when the client sends a matching `If-None-Match`. Any origin allowed. **Treat the ETag as an opaque string** — it is `"cat-<version>"` today, where the version is a counter the Worker bumps on every write, and nothing on the client may parse or compare it for ordering. Store it, send it back, compare it for equality.
 - **The 304 is mandatory on both platforms, not an optimisation.** The response is several megabytes (~5,000 rows at ~1.1 KB), both platforms refresh hourly, Android does it over mobile data, and Cloudflare's edge cache does not apply to `*.workers.dev` — so a client that ignores the ETag re-downloads the whole catalog 24 times a day and makes the Worker re-read every row out of D1 each time. Store the ETag alongside the cache and send it back; on 304, refresh the cache's timestamp and keep the body.
 - Also `503` from `/catalog`: Plan 2's `CATALOG_ENABLED` kill switch. Treat it exactly like any other failure — fall through to `index.json`. Do not special-case it, do not surface an error; that is the whole point of it.
 - Desktop cache dir stays `~/.claude/youcoded-marketplace-cache/` (five code sites name it; the docs are wrong — `docs/registries.md:12` — fix that line in Task 5, not the code).
@@ -125,7 +125,7 @@ describe('fetchIndex — catalog first, index.json fallback', () => {
 
   it('sends If-None-Match once it has an ETag, and keeps the body on a 304', async () => {
     fetchMock
-      .mockResolvedValueOnce(new Response(JSON.stringify({ generated_at: 1, entries: [CATALOG_ROW] }), { status: 200, headers: { ETag: '"cat-1-1"' } }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ generated_at: 1, entries: [CATALOG_ROW] }), { status: 200, headers: { ETag: '"cat-7"' } }))
       .mockResolvedValueOnce(new Response(null, { status: 304 }));
     const p = makeProvider();
     await p.listMarketplace();
@@ -135,7 +135,7 @@ describe('fetchIndex — catalog first, index.json fallback', () => {
     fs.writeFileSync(file, JSON.stringify({ ...raw, fetchedAt: 0 }));
     const entries = await p.listMarketplace();
     const init = fetchMock.mock.calls[1][1] as RequestInit;
-    expect((init.headers as Record<string, string>)['If-None-Match']).toBe('"cat-1-1"');
+    expect((init.headers as Record<string, string>)['If-None-Match']).toBe('"cat-7"');
     expect(entries[0].id).toBe('superpowers');          // 304 → cached body reused
     expect(fetchMock).toHaveBeenCalledTimes(2);         // never fell through to index.json
   });
@@ -525,7 +525,7 @@ class MarketplaceFetcherCatalogTest {
     @Test
     fun `prefers the Worker catalog and keeps the catalog block`() {
         val hits = mutableListOf<String>()
-        val f = MarketplaceFetcher(home(), readUrl = { url, _ -> hits += url; if (url.endsWith("/catalog")) HttpText(200, catalogBody, "\"cat-1-1\"") else error("unexpected $url") })
+        val f = MarketplaceFetcher(home(), readUrl = { url, _ -> hits += url; if (url.endsWith("/catalog")) HttpText(200, catalogBody, "\"cat-7\"") else error("unexpected $url") })
         val arr = f.fetchIndex()
         assertEquals(1, hits.size)
         assertTrue(hits[0].endsWith("/catalog"))
@@ -559,12 +559,12 @@ class MarketplaceFetcherCatalogTest {
         var first = true
         val f = MarketplaceFetcher(h, readUrl = { _, tag ->
             seen += tag
-            if (first) { first = false; HttpText(200, catalogBody, "\"cat-1-1\"") } else HttpText(304, "", null)
+            if (first) { first = false; HttpText(200, catalogBody, "\"cat-7\"") } else HttpText(304, "", null)
         })
         f.fetchIndex()
         expireCache(File(h, ".claude/youcoded-marketplace-cache/catalog.json"))
         val arr = f.fetchIndex()
-        assertEquals(listOf(null, "\"cat-1-1\""), seen)
+        assertEquals(listOf(null, "\"cat-7\""), seen)
         assertEquals("superpowers", arr.getJSONObject(0).getString("id"))
     }
 }
@@ -1075,6 +1075,15 @@ otherwise need its own PR against the same code.
   app-side of that, decide whether to prune the stale `theme-builder` string out of existing
   `~/.claude/youcoded-skills.json` → `favorites[]` on load, or leave it. A favourite that
   resolves to nothing is invisible, so "leave it" is defensible — say which you chose.
+- [ ] **An installed item that is no longer listed says so.** When the catalog loads and an
+  installed plugin's id is absent from it, the item was delisted upstream — it keeps working,
+  but it will never update again and nobody is maintaining it. Library shows nothing today.
+  Add a quiet "No longer listed" line on the Library row. **The guard is the whole feature:**
+  render it only when `fetchIndex` actually served the *catalog* (not the `index.json`
+  fallback, not the stale cache) — otherwise one unreachable Worker labels every installed
+  item on the machine as abandoned, which is a far worse bug than the one being fixed. That
+  means `fetchIndex` must report which source answered; add it to the result envelope rather
+  than inferring it in the renderer.
 - [ ] Run `bash scripts/verify.sh marketplace-ui` and commit as one `fix(marketplace):` commit
   naming each item.
 
