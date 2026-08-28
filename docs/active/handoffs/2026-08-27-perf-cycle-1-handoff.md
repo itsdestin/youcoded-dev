@@ -1,7 +1,7 @@
 ---
 title: Perf optimization cycle 1 — handoff for the session that runs it
 status: active
-cycle_1_result: REJECT by the gate (rig blind to the change) — decision pending, see the first section
+cycle_1_result: REJECT by the gate (rig blind to the change); Destin chose to SHIP on the pinning tests, 2026-08-28 — PR opened from perf/optimization-pass
 date: 2026-08-27
 supersedes_for_next_steps: docs/active/handoffs/2026-08-27-perf-lab-session-status.md
 approved_by: Destin, 2026-08-27 ("i like 1-3")
@@ -13,7 +13,7 @@ decision_page: https://claude.ai/code/artifact/e00aa59a-e4b0-466b-a49a-a8e06da22
 **Read this first, then only what it points at.** The status doc
 (`2026-08-27-perf-lab-session-status.md`) is the full history; this is the plan.
 
-## Cycle 1 result (2026-08-28, measured) — REJECT by the gate; Destin's decision pending
+## Cycle 1 result (2026-08-28, measured) — REJECT by the gate; **Destin chose (c): ship on the tests** ("we will ship now, file the rig issue", 2026-08-28)
 
 **The change is built, tested and committed; the rig cannot see it.** Three commits on
 `perf/optimization-pass` (worktree `worktrees/perf-lab/`, NOT pushed, no PR):
