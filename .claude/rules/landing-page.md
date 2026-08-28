@@ -1,7 +1,6 @@
 ---
 paths:
   - "youcoded/docs/index.html"
-  - "youcoded/docs/media/**"
   - "youcoded/docs/site/**"
   - "youcoded/docs/gallery/**"
   - "scripts/ui-review/**"
@@ -15,13 +14,9 @@ verify:
   - path: scripts/ui-review/README.md
     contains: "Recording a loop"
   - path: scripts/ui-review/copy-preview.py
-  - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
-    contains: "__workbenchAppearanceSync"
-  - path: youcoded/desktop/src/renderer/dev/workbench/reply-script.ts
-    contains: "splitTurns"
-  - path: youcoded/desktop/src/renderer/dev/workbench/fixture-loader.ts
-    contains: "turn_complete"
-  - test: youcoded/desktop/tests/workbench-reply-script.test.ts
+  # App-side anchors (mock-shim __workbenchAppearanceSync, reply-script splitTurns,
+  # fixture-loader turn_complete, workbench-reply-script.test.ts, docs/media/** glob)
+  # are added when youcoded PR #360 merges — anchors resolve against the main checkout.
   - test: youcoded/desktop/tests/workbench-fixture-actions.test.ts
 ---
 # Landing page (itsdestin.github.io/youcoded) + demo-clip tooling
