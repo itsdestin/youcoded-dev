@@ -70,6 +70,13 @@ const base = {
       ipcSumOfSteps: { totalStallMs: 700, pings: 900 },
     },
   },
+  scrollback: {
+    runs: [
+      { ceilingPssMb: 6800, deltaPssMb: 5080, perSize: { huge: { pageMedianMs: 90 } } },
+      { ceilingPssMb: 6900, deltaPssMb: 5180, perSize: { huge: { pageMedianMs: 94 } } },
+    ],
+    median: { ceilingPssMb: 6800, deltaPssMb: 5080, perSize: { huge: { pageMedianMs: 90 } } },
+  },
   errors: { coldStarts: [0, 0, 0], scenarioBoot: 0 },
 };
 const clone = () => JSON.parse(JSON.stringify(base));

@@ -41,6 +41,28 @@ export const PRIMARY = [
   // the old fields for reports that predate it — see get().
   'workload.median.cpuTotalSeconds',
 
+  // ── The scroll-back CEILING (scrollback phase) ─────────────────────────────
+  // workload.median.pssAfterMb above is the paged FLOOR: six sessions open, none
+  // scrolled. It fell 7003.7 -> 1721.1 MB across cycle 2 and that is a real win,
+  // but it is not a bound — a page loaded by scrolling up is prepended and nothing
+  // removes it, so the same six sessions climb back toward the old figure as the
+  // user reads back through them. Gating only on the floor would sign off a change
+  // that made the first screen cheap and left the ceiling exactly where it was.
+  //
+  // ceilingPssMb is the number a cycle-3 change has to move; deltaPssMb is what the
+  // scrolling itself costs, and it is judged separately so a change that lowers the
+  // ceiling only by lowering the floor cannot pass as a fix for accumulation.
+  'scrollback.median.ceilingPssMb',
+  'scrollback.median.deltaPssMb',
+  // Scrolling back must not get slower as the window grows — the obvious eviction
+  // bug is to make re-reading an evicted stretch of conversation expensive, and
+  // every memory metric above would improve while it happened.
+  'scrollback.median.perSize.huge.pageMedianMs',
+  // NOT in this list, deliberately: scrollback.median.releasedMb is HIGHER-is-better
+  // (it is the memory a switch-away gives back, ~0 today), and every path here is
+  // read as lower-is-better. Putting it in would score the very improvement cycle 3
+  // is chasing as a regression. It is reported in the summary table instead.
+
   // ── The app-wide freeze (stall phase) ──────────────────────────────────────
   // `medium` is the headline: 5,000 messages is ORDINARY usage and it stalls the
   // whole app ~3.3 s. mainProcessStallMaxMs is the single worst moment — what a user
