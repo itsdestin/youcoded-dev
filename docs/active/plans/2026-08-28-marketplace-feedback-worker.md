@@ -26,6 +26,8 @@ part: 1 of 3 (feedback routes) — see also 2026-08-28-marketplace-catalog-servi
 - Worker tests share one D1 (`singleWorker: true`): every `describe` that writes must `DELETE FROM` its tables in `beforeEach`.
 - App IPC channels for marketplace writes are string literals in `desktop/src/main/marketplace-api-handlers.ts` (`CHANNELS` array + `ipcMain.handle("…")`), inlined constants in `desktop/src/main/preload.ts` `IPC` block, `invoke('…')` in `desktop/src/renderer/remote-shim.ts`, and a `"…" -> { }` arm in `app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt`. (`remote-server.ts` has no `marketplace:rate` case today — the remote browser cannot rate either; this plan matches that, it does not fix it.)
 - Copy: "Helpful" / "Not for me" / "Post comment" as approved; comment limit **2000** characters; comments need sign-in only, votes need sign-in **and** a prior install.
+- **A vote that fails must not look like it worked.** The mockup's `castVote` swallows every error (`.catch(() => undefined)`) while leaving the thumb lit — and today it fails *every time*, because the component builds its API client with `getToken: () => null` and the route needs a token. Task 9 fixes the token; it must also stop the swallowing. Optimistic UI is fine; optimistic UI that never reconciles is a lie.
+- **`plugin_id` is not checked against anything.** `validateId` only bounds the length, so votes, comments and installs can be recorded for ids that do not exist. The Worker has no way to know what is real until Plan 2 creates `catalog_items` — so the existence check lands in **Plan 2** (its Task 5), not here. Do not try to add it in this plan.
 - **No Report button on comments in v1** (spec §5): the `reports` table is keyed to a rating (`rating_user_id`, `rating_plugin_id`) and cannot take a comment id without a schema change. Ship no affordance rather than a dead one.
 - App work happens on `youcoded` branch `feat/marketplace-overhaul-ui` (worktree `worktrees/marketplace-ui`); Worker work on a new `wecoded-marketplace` branch `feat/feedback-routes` (from `master`). Run `bash scripts/verify.sh marketplace-ui` (workspace root) before calling any app task done; `cd worker && npm test && npm run typecheck` for Worker tasks.
 
@@ -669,14 +671,78 @@ git commit -m "feat(worker): comments — POST /comments (sign-in, moderated) + 
 
 ---
 
-### Task 5: `GET /stats` gains `thumbs_up` / `thumbs_down`
+### Task 4b: `GET /thumbs/:plugin_id` — what did *I* vote?
+
+**Files:**
+- Modify: `worker/src/feedback/routes.ts`, `worker/test/feedback.test.ts`
+
+**Why this exists:** without it the buttons forget you. `/stats` carries the totals but not
+*your* row, and the component seeds its state from nothing — so you vote 👍, close the page,
+reopen it, and neither thumb is lit. The user reads that as "my vote didn't save" and votes
+again. One authed read fixes it.
+
+**Interfaces:**
+- Produces: `GET /thumbs/:plugin_id` and `GET /thumbs/:bundle/:name`, `requireAuth` → `200 { vote: "up" | "down" | null }`. Authed, so it is **not** a public read path — the renderer calls it only when signed in.
+
+- [ ] **Step 1: Failing test** — append to `worker/test/feedback.test.ts`:
+
+```ts
+describe("GET /thumbs/:plugin_id", () => {
+  beforeEach(async () => {
+    for (const t of TABLES) await env.DB.prepare(`DELETE FROM ${t}`).run();
+  });
+
+  it("401s without a token", async () => {
+    expect((await SELF.fetch("https://test.local/thumbs/foo:bar")).status).toBe(401);
+  });
+
+  it("returns null before voting, then the vote, for plugin and member ids", async () => {
+    const { token, account } = await seed();
+    const get = (id: string) => SELF.fetch(`https://test.local/thumbs/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    expect(await (await get("foo:bar")).json()).toEqual({ vote: null });
+    await seedInstall(account.userId, "foo:bar");
+    await post("/thumbs", token, { plugin_id: "foo:bar", value: "down" });
+    expect(await (await get("foo:bar")).json()).toEqual({ vote: "down" });
+
+    await seedInstall(account.userId, "superpowers/brainstorming");
+    await post("/thumbs", token, { plugin_id: "superpowers/brainstorming", value: "up" });
+    expect(await (await get("superpowers/brainstorming")).json()).toEqual({ vote: "up" });
+  });
+});
+```
+
+- [ ] **Step 2: Run** `npx vitest run test/feedback.test.ts` → FAIL (404s).
+
+- [ ] **Step 3: Implement** — append to `worker/src/feedback/routes.ts`:
+
+```ts
+// GET /thumbs/<id> → { vote } — the CALLER's own vote, so the buttons can show
+// what you already chose instead of resetting every time the page opens.
+// Authed and per-user, therefore deliberately NOT in isPublicReadPath.
+async function myVote(c: Context<HonoEnv>, pluginId: string) {
+  const row = await c.env.DB
+    .prepare("SELECT vote FROM thumbs WHERE user_id = ? AND plugin_id = ?")
+    .bind(c.get("userId"), validateId(pluginId))
+    .first<{ vote: number }>();
+  return c.json({ vote: row ? (row.vote === 1 ? "up" : "down") : null });
+}
+feedbackRoutes.get("/thumbs/:bundle/:name", requireAuth, (c) => myVote(c, `${c.req.param("bundle")}/${c.req.param("name")}`));
+feedbackRoutes.get("/thumbs/:plugin_id", requireAuth, (c) => myVote(c, c.req.param("plugin_id")));
+```
+
+- [ ] **Step 4: Run** → PASS. **Step 5: Commit** `git add src/feedback/routes.ts test/feedback.test.ts && git commit -m "feat(worker): GET /thumbs/:id — the caller's own vote"`.
+
+---
+
+### Task 5: `GET /stats` gains `thumbs_up` / `thumbs_down`, and themes gain `installs`
 
 **Files:**
 - Modify: `worker/src/stats/routes.ts` (whole file is 44 lines)
 - Test: `worker/test/stats.test.ts`
 
 **Interfaces:**
-- Produces: every `plugins[id]` in `/stats` has `thumbs_up: number` and `thumbs_down: number` (0 when none). The app's `StatsResponse` already types them optional; nothing else changes.
+- Produces: every `plugins[id]` in `/stats` has `thumbs_up: number` and `thumbs_down: number` (0 when none), and every `themes[slug]` gains `installs: number`.
+- **Why themes gain installs:** the grid puts plugin cards and theme cards side by side, and plugin cards show a download count. Theme cards show a like count and *cannot* show installs, because `/stats` has no such field — the shape is `themes: Record<string, { likes: number }>` and `MarketplaceCard` reads installs only from `stats.plugins`, so the guard is dead code on every theme card. One extra `GROUP BY` closes it. The app already records theme installs the same way as plugins (`POST /installs` with the theme's id); if it does not, that half is Plan 3's — check before assuming.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -699,9 +765,19 @@ Append inside `describe("GET /stats", …)` in `worker/test/stats.test.ts` (reus
     expect(body.plugins["voted"]).toMatchObject({ thumbs_up: 1, thumbs_down: 1 });
     expect(body.plugins["installed-only"]).toMatchObject({ installs: 1, thumbs_up: 0, thumbs_down: 0 });
   });
+
+  it("themes report installs as well as likes, so theme cards can show both", async () => {
+    const a = await createTestAccount({ login: "t1" });
+    const now = Math.floor(Date.now() / 1000);
+    await env.DB.prepare("INSERT INTO theme_likes (user_id, theme_id, liked_at) VALUES (?, 'golden-sunbreak', ?)").bind(a.userId, now).run();
+    await env.DB.prepare("INSERT INTO installs (user_id, plugin_id, installed_at) VALUES (?, 'theme:golden-sunbreak', ?)").bind(a.userId, now).run();
+
+    const body = await (await SELF.fetch("https://test.local/stats")).json<{ themes: Record<string, { likes: number; installs: number }> }>();
+    expect(body.themes["golden-sunbreak"]).toMatchObject({ likes: 1, installs: 1 });
+  });
 ```
 
-Add `"thumbs"` to that file's `beforeEach` table-clearing list and `import { createTestAccount } from "./helpers";` if missing.
+Add `"thumbs"` and `"theme_likes"` to that file's `beforeEach` table-clearing list and `import { createTestAccount } from "./helpers";` if missing. (Check the real column names on `theme_likes` first — the test above assumes `(user_id, theme_id, liked_at)`.)
 
 - [ ] **Step 2: Run to see it fail**
 
@@ -712,9 +788,10 @@ Expected: FAIL — `thumbs_up` undefined.
 
 In `worker/src/stats/routes.ts`:
 
-Change line 7 to:
+Change lines 7–8 to:
 ```ts
 interface PluginAgg { installs: number; review_count: number; rating: number; thumbs_up: number; thumbs_down: number }
+interface ThemeAgg { likes: number; installs: number }
 ```
 
 Add a fourth query after `likeRows` (after line 22):
@@ -751,6 +828,23 @@ Replace the two object literals that seed/merge `plugins` so every entry carries
   }
 ```
 
+Theme installs share the `installs` table under a `theme:<slug>` id, so they are counted from
+the same rows and then stripped of the prefix. Replace the `themes` block:
+```ts
+  // Theme cards sit in the same grid as plugin cards, which show a download
+  // count — so themes need one too. Theme installs are recorded in `installs`
+  // under `theme:<slug>`; strip the prefix so the key matches the registry slug.
+  const themes: Record<string, ThemeAgg> = {};
+  for (const r of likeRows.results) themes[r.theme_id] = { likes: r.n, installs: 0 };
+  for (const r of installRows.results) {
+    if (!r.plugin_id.startsWith("theme:")) continue;
+    const slug = r.plugin_id.slice("theme:".length);
+    themes[slug] = { likes: themes[slug]?.likes ?? 0, installs: r.n };
+  }
+```
+…and, so the same rows are not also reported as a plugin, skip `theme:`-prefixed ids when
+seeding `plugins` from `installRows`.
+
 - [ ] **Step 4: Run to see it pass, then the whole suite**
 
 Run: `npx vitest run test/stats.test.ts && npm test && npm run typecheck`
@@ -773,7 +867,7 @@ git commit -m "feat(worker): /stats carries thumbs_up / thumbs_down per plugin"
 
 - [ ] **Step 1: Update the docs**
 
-In `worker/README.md` line 3, change the summary to name the feature: "install tracking, ratings, **thumbs + comments**, and theme likes". In the Moderation workflow section add:
+In `worker/README.md` line 3, change the summary to name the feature: "install tracking, ratings, **thumbs + comments**, and theme likes". While there: the README claims three route groups and the Worker serves **eleven** (12 route modules) — `/social`, `/sync`, `/app`, `/stats` and `/reports` go undocumented. Listing them is a two-minute fix and this is the only PR that will be near the file. In the Moderation workflow section add:
 
 ```markdown
 Comments (`POST /comments`) go through the same `llama-guard-3-8b` classifier as
@@ -788,7 +882,8 @@ In `docs/worker-backend.md`, add to the route list:
 | `POST /thumbs` | auth + prior install | `{ plugin_id, value: "up" \| "down" \| null }` → `{ ok, vote }` |
 | `POST /comments` | auth | `{ plugin_id, text ≤ 2000 }` → `{ ok, id, hidden }` |
 | `GET /comments/:plugin_id` | public (any origin) | `{ comments: [...] }` newest first, 50 max |
-| `GET /stats` | public | now includes `thumbs_up` / `thumbs_down` per plugin |
+| `GET /thumbs/:plugin_id` | auth | `{ vote: "up" \| "down" \| null }` — the caller's own vote |
+| `GET /stats` | public | now includes `thumbs_up` / `thumbs_down` per plugin, and `installs` per theme |
 ```
 
 - [ ] **Step 2: Commit, push, open the PR**
@@ -825,7 +920,7 @@ Expected: PR opens; `Worker CI` must be green before merge. **Merge it before st
 - Modify: `desktop/src/renderer/state/marketplace-api-client.ts` (the three `listComments` / `postComment` / `setThumb` members added on the branch)
 
 **Interfaces:**
-- Produces: `postComment(input): Promise<{ ok: true; id: string; hidden: boolean }>`; `setThumb(input): Promise<{ ok: true; vote: "up" | "down" | null }>`; `listComments` unchanged **except** that it must NOT `encodeURIComponent` the id — a member id is `<bundle>/<name>` and the slash has to stay a path separator (`/comments/${pluginId}`), matching the two-segment route from Task 4. Check what it does today and fix it if it encodes.
+- Produces: `postComment(input): Promise<{ ok: true; id: string; hidden: boolean }>`; `setThumb(input): Promise<{ ok: true; vote: "up" | "down" | null }>`; `getThumb(pluginId: string): Promise<{ vote: "up" | "down" | null }>` (GET `/thumbs/${pluginId}`, auth, id NOT url-encoded); `listComments` unchanged **except** that it must NOT `encodeURIComponent` the id — a member id is `<bundle>/<name>` and the slash has to stay a path separator (`/comments/${pluginId}`), matching the two-segment route from Task 4. Check what it does today and fix it if it encodes.
 
 - [ ] **Step 1: Edit the interface and the implementation**
 
@@ -835,6 +930,8 @@ In the interface block (added on the branch under `listRatings`), replace the tw
   postComment(input: { plugin_id: string; text: string }): Promise<{ ok: true; id: string; hidden: boolean }>;
   /** `null` clears the user's vote. Requires a prior install (403 otherwise). */
   setThumb(input: { plugin_id: string; value: 'up' | 'down' | null }): Promise<{ ok: true; vote: 'up' | 'down' | null }>;
+  /** The caller's own vote, so the buttons don't forget it between visits. */
+  getThumb(pluginId: string): Promise<{ vote: 'up' | 'down' | null }>;
 ```
 
 and the implementations:
@@ -844,6 +941,10 @@ and the implementations:
       request<{ ok: true; id: string; hidden: boolean }>("/comments", { method: "POST", body: JSON.stringify(input), auth: true }),
     setThumb: (input) =>
       request<{ ok: true; vote: 'up' | 'down' | null }>("/thumbs", { method: "POST", body: JSON.stringify(input), auth: true }),
+    // No encodeURIComponent: a bundle member id is `<bundle>/<name>` and the slash
+    // must stay a path separator (the Worker registers a two-segment route for it).
+    getThumb: (pluginId) =>
+      request<{ vote: 'up' | 'down' | null }>(`/thumbs/${pluginId}`, { auth: true }),
 ```
 
 - [ ] **Step 2: Type-check and commit**
@@ -878,7 +979,10 @@ Append to `desktop/tests/ipc-channels.test.ts` (copy the shape of the `permissio
 
 ```ts
 describe('marketplace feedback channel parity', () => {
-  const NEW_TYPES = ['marketplace:thumb', 'marketplace:comment'];
+  // Three, not two: reading your OWN vote is an authed GET, so it cannot be a
+  // direct renderer fetch the way the public comment list is — the token lives
+  // in main.
+  const NEW_TYPES = ['marketplace:thumb', 'marketplace:thumb:get', 'marketplace:comment'];
   const read = (...p: string[]) => fs.readFileSync(path.join(__dirname, '..', ...p), 'utf8');
 
   it('exposed in preload.ts', () => {
@@ -910,6 +1014,7 @@ Expected: FAIL — 4 new tests fail (strings absent).
 `desktop/src/main/marketplace-api-handlers.ts` — add to `CHANNELS`:
 ```ts
   "marketplace:thumb",
+  "marketplace:thumb:get",
   "marketplace:comment",
 ```
 and after the `marketplace:rate:delete` handler:
@@ -918,6 +1023,9 @@ and after the `marketplace:rate:delete` handler:
   // main because the token lives here; the renderer's client has none.
   ipcMain.handle("marketplace:thumb", (_e, input: { plugin_id: string; value: 'up' | 'down' | null }): Promise<ApiResult<{ vote: 'up' | 'down' | null }>> =>
     wrap(async () => { const r = await client.setThumb(input); return { vote: r.vote }; })
+  );
+  ipcMain.handle("marketplace:thumb:get", (_e, pluginId: string): Promise<ApiResult<{ vote: 'up' | 'down' | null }>> =>
+    wrap(async () => ({ vote: (await client.getThumb(pluginId)).vote }))
   );
   ipcMain.handle("marketplace:comment", (_e, input: { plugin_id: string; text: string }): Promise<ApiResult<{ id: string; hidden: boolean }>> =>
     wrap(async () => { const r = await client.postComment(input); return { id: r.id, hidden: r.hidden }; })
@@ -928,12 +1036,15 @@ and after the `marketplace:rate:delete` handler:
 `desktop/src/main/preload.ts` — in the `IPC` block next to `MARKETPLACE_THEME_LIKE`:
 ```ts
   MARKETPLACE_THUMB: 'marketplace:thumb',
+  MARKETPLACE_THUMB_GET: 'marketplace:thumb:get',
   MARKETPLACE_COMMENT: 'marketplace:comment',
 ```
 and in `marketplaceApi` after `likeTheme`:
 ```ts
     thumb: (input: { plugin_id: string; value: 'up' | 'down' | null }): Promise<ApiResult<{ vote: 'up' | 'down' | null }>> =>
       ipcRenderer.invoke(IPC.MARKETPLACE_THUMB, input),
+    myThumb: (pluginId: string): Promise<ApiResult<{ vote: 'up' | 'down' | null }>> =>
+      ipcRenderer.invoke(IPC.MARKETPLACE_THUMB_GET, pluginId),
     comment: (input: { plugin_id: string; text: string }): Promise<ApiResult<{ id: string; hidden: boolean }>> =>
       ipcRenderer.invoke(IPC.MARKETPLACE_COMMENT, input),
 ```
@@ -942,6 +1053,8 @@ and in `marketplaceApi` after `likeTheme`:
 ```ts
       thumb: (input: { plugin_id: string; value: 'up' | 'down' | null }): Promise<ApiResult<{ vote: 'up' | 'down' | null }>> =>
         invoke('marketplace:thumb', input),
+      myThumb: (pluginId: string): Promise<ApiResult<{ vote: 'up' | 'down' | null }>> =>
+        invoke('marketplace:thumb:get', pluginId),
       comment: (input: { plugin_id: string; text: string }): Promise<ApiResult<{ id: string; hidden: boolean }>> =>
         invoke('marketplace:comment', input),
 ```
@@ -959,6 +1072,12 @@ and in `marketplaceApi` after `likeTheme`:
             if (value == null) put("value", JSONObject.NULL) else put("value", value)
         }
         val (code, body) = request("/thumbs", method = "POST", body = payload, auth = true)
+        return if (code in 200..299) ApiResult.Ok(body) else errFromResponse(code, body)
+    }
+
+    /** GET /thumbs/{id} — the caller's own vote, or null. */
+    suspend fun getThumb(pluginId: String): ApiResult<JSONObject> {
+        val (code, body) = request("/thumbs/$pluginId", method = "GET", auth = true)
         return if (code in 200..299) ApiResult.Ok(body) else errFromResponse(code, body)
     }
 
@@ -982,6 +1101,14 @@ and in `marketplaceApi` after `likeTheme`:
                 val result = marketplaceApiClient.setThumb(pluginId, value)
                 msg.id?.let {
                     // value shape: { vote: "up" | "down" | null }
+                    bridgeServer.respond(ws, msg.type, it, result.toJson { v -> JSONObject().put("vote", v.opt("vote") ?: JSONObject.NULL) })
+                }
+            }
+
+            "marketplace:thumb:get" -> {
+                val pluginId = msg.payload.optString("plugin_id", "")
+                val result = marketplaceApiClient.getThumb(pluginId)
+                msg.id?.let {
                     bridgeServer.respond(ws, msg.type, it, result.toJson { v -> JSONObject().put("vote", v.opt("vote") ?: JSONObject.NULL) })
                 }
             }
@@ -1013,7 +1140,7 @@ git commit -m "feat(marketplace): marketplace:thumb + marketplace:comment on des
 
 ---
 
-### Task 9: App — FeedbackSection uses the channels; workbench fakes them
+### Task 9: App — FeedbackSection uses the channels, and stops lying
 
 **Files:**
 - Modify: `desktop/src/renderer/components/marketplace/FeedbackSection.tsx`
@@ -1022,7 +1149,19 @@ git commit -m "feat(marketplace): marketplace:thumb + marketplace:comment on des
 - Test: `desktop/tests/feedback-section.test.tsx` (new)
 
 **Interfaces:**
-- Consumes: `window.claude.marketplaceApi.thumb` / `.comment` (Task 8); `useMarketplaceStats().refresh()`; `CommentList` (unchanged, still reads the public route directly).
+- Consumes: `window.claude.marketplaceApi.thumb` / `.myThumb` / `.comment` (Task 8); `useMarketplaceStats().refresh()`; `CommentList` (unchanged, still reads the public route directly).
+
+**Six defects to fix in one pass.** The mockup was built against invented data, so none of
+these showed up; all six are visible the first time a real person uses it.
+
+| # | Today | Fix |
+|---|---|---|
+| 1 | Votes **always fail** — the component builds its client with `getToken: () => null` and `setThumb` needs a token, so `request()` throws 401 locally, `.catch(() => undefined)` eats it, and the thumb stays lit. | Go through `window.claude.marketplaceApi` (the token lives in main). |
+| 2 | A failure still renders as success. | On `ok: false`, put the thumb back and say so. Never swallow. |
+| 3 | Your own vote is never loaded — reopen the page and neither thumb is lit, so you vote again. | Seed from `myThumb` on mount when signed in. |
+| 4 | No in-flight guard: rapid clicks fire overlapping writes and a full `/stats` refetch each, and the *last response* wins rather than the last click. | Disable both buttons while a vote is in flight. |
+| 5 | One up-vote renders "Helpful 100%" — and cards show the percentage with **no** count at all. Also literally "1 votes". | Below `MIN_VOTES_FOR_PCT` (5) show the count, not a percentage. Pluralise. |
+| 6 | The reason a disabled button is disabled is a `title` tooltip — invisible on touch (Android runs this same bundle), and suppressed on disabled buttons by several engines. | Render the reason as visible muted text under the buttons. |
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1034,6 +1173,7 @@ import React from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, cleanup, screen, fireEvent, waitFor } from '@testing-library/react';
 
+const myThumb = vi.fn().mockResolvedValue({ ok: true, value: { vote: null } });
 const thumb = vi.fn().mockResolvedValue({ ok: true, value: { vote: 'up' } });
 const comment = vi.fn().mockResolvedValue({ ok: true, value: { id: 'c1', hidden: false } });
 const refresh = vi.fn();
@@ -1045,13 +1185,13 @@ vi.mock('../src/renderer/state/marketplace-stats-context', () => ({
 vi.mock('../src/renderer/components/marketplace/CommentList', () => ({ default: () => <div data-testid="comments" /> }));
 vi.mock('../src/renderer/components/marketplace/SignInPromptModal', () => ({ default: () => null }));
 
-import FeedbackSection from '../src/renderer/components/marketplace/FeedbackSection';
+import FeedbackSection, { thumbsLabel } from '../src/renderer/components/marketplace/FeedbackSection';
 
 afterEach(cleanup);
 
 describe('FeedbackSection', () => {
   it('votes through window.claude.marketplaceApi.thumb and refreshes stats', async () => {
-    (window as any).claude = { marketplaceApi: { thumb, comment } };
+    (window as any).claude = { marketplaceApi: { thumb, myThumb, comment } };
     render(<FeedbackSection pluginId="p1" installed />);
     expect(screen.getByText('90%')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: /helpful/i }));
@@ -1059,8 +1199,47 @@ describe('FeedbackSection', () => {
     await waitFor(() => expect(refresh).toHaveBeenCalled());
   });
 
+  it('shows the vote you already cast, instead of forgetting it', async () => {
+    myThumb.mockResolvedValueOnce({ ok: true, value: { vote: 'down' } });
+    (window as any).claude = { marketplaceApi: { thumb, myThumb, comment } };
+    render(<FeedbackSection pluginId="p1" installed />);
+    await waitFor(() => expect((screen.getByRole('button', { name: /not for me/i }) as HTMLButtonElement).getAttribute('aria-pressed')).toBe('true'));
+  });
+
+  it('puts the thumb back and says so when the vote fails', async () => {
+    thumb.mockResolvedValueOnce({ ok: false, status: 403, message: 'must install plugin before voting' });
+    (window as any).claude = { marketplaceApi: { thumb, myThumb, comment } };
+    render(<FeedbackSection pluginId="p1" installed />);
+    const btn = screen.getByRole('button', { name: /helpful/i });
+    fireEvent.click(btn);
+    await waitFor(() => expect(screen.getByText(/couldn.t save your vote/i)).toBeTruthy());
+    expect(btn.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('ignores a second click while the first is still saving', async () => {
+    let release!: (v: unknown) => void;
+    thumb.mockReturnValueOnce(new Promise((r) => { release = r; }));
+    (window as any).claude = { marketplaceApi: { thumb, myThumb, comment } };
+    render(<FeedbackSection pluginId="p1" installed />);
+    const up = screen.getByRole('button', { name: /helpful/i }) as HTMLButtonElement;
+    fireEvent.click(up);
+    await waitFor(() => expect(up.disabled).toBe(true));
+    fireEvent.click(up);
+    fireEvent.click(screen.getByRole('button', { name: /not for me/i }));
+    expect(thumb).toHaveBeenCalledTimes(1);
+    release({ ok: true, value: { vote: 'up' } });
+  });
+
+  it('shows a count, not a percentage, until there are enough votes', () => {
+    (window as any).claude = { marketplaceApi: { thumb, myThumb, comment } };
+    expect(thumbsLabel(1, 0)).toBe('1 person found this helpful');
+    expect(thumbsLabel(2, 1)).toBe('2 of 3 people found this helpful');
+    expect(thumbsLabel(9, 1)).toBe('Helpful 90%');
+    expect(thumbsLabel(0, 0)).toBeNull();
+  });
+
   it('posts a comment through window.claude.marketplaceApi.comment', async () => {
-    (window as any).claude = { marketplaceApi: { thumb, comment } };
+    (window as any).claude = { marketplaceApi: { thumb, myThumb, comment } };
     render(<FeedbackSection pluginId="p1" installed />);
     fireEvent.change(screen.getByLabelText('Write a comment'), { target: { value: 'Does it work offline?' } });
     fireEvent.click(screen.getByRole('button', { name: /post comment/i }));
@@ -1068,17 +1247,19 @@ describe('FeedbackSection', () => {
   });
 
   it('renders no Report control on a comment (no backend for it in v1)', () => {
-    (window as any).claude = { marketplaceApi: { thumb, comment } };
+    (window as any).claude = { marketplaceApi: { thumb, myThumb, comment } };
     render(<FeedbackSection pluginId="p1" installed />);
     expect(screen.queryByRole('button', { name: /report/i })).toBeNull();
   });
 
-  it('disables voting until installed, with the reason', () => {
-    (window as any).claude = { marketplaceApi: { thumb, comment } };
+  it('disables voting until installed, and says why in VISIBLE text (no touch hover)', () => {
+    (window as any).claude = { marketplaceApi: { thumb, myThumb, comment } };
     render(<FeedbackSection pluginId="p1" installed={false} />);
     const btn = screen.getByRole('button', { name: /helpful/i }) as HTMLButtonElement;
     expect(btn.disabled).toBe(true);
-    expect(btn.title).toMatch(/install it first/i);
+    // Rendered text, not a title attribute — Android runs this same bundle and
+    // has no hover, and disabled buttons suppress title in several engines.
+    expect(screen.getByText(/install it first/i)).toBeTruthy();
   });
 });
 ```
@@ -1090,34 +1271,100 @@ Expected: FAIL — `thumb` never called (the component calls a token-less HTTP c
 
 - [ ] **Step 3: Rewire the component**
 
-In `FeedbackSection.tsx` remove the `createMarketplaceApiClient` / `MARKETPLACE_API_HOST` import and the `const client = …` line, and replace `castVote` and `post`:
+In `FeedbackSection.tsx` remove the `createMarketplaceApiClient` / `MARKETPLACE_API_HOST`
+import and the `const client = …` line (that client had `getToken: () => null`, which is why
+every vote 401s today), then:
 
+**1. The summary label — a count until a percentage means something.**
 ```ts
-  // Votes and comments need the sign-in token, which lives in the main process —
-  // so they go through window.claude.marketplaceApi (same path as theme likes),
-  // never a renderer-side HTTP client. ApiResult: ok:false carries status+message.
-  const castVote = (v: 'up' | 'down') => {
-    if (!auth.signedIn) { setSignIn('vote'); return; }
-    const next = vote === v ? null : v;
-    setVote(next);
-    window.claude.marketplaceApi.thumb({ plugin_id: pluginId, value: next })
-      .then((r) => { if (r.ok) void stats.refresh(); else setVote(vote); })
-      .catch(() => setVote(vote));
-  };
+/** Below this many votes a percentage is theatre: one up-vote is not "100%".
+ *  Cards show this string too, and cards have no room for a separate count. */
+export const MIN_VOTES_FOR_PCT = 5;
+const people = (n: number) => `${n} ${n === 1 ? 'person' : 'people'}`;
 
-  const post = () => {
-    const text = draft.trim();
-    if (!text) return;
-    if (!auth.signedIn) { setSignIn('comment'); return; }
-    setPosting(true);
-    window.claude.marketplaceApi.comment({ plugin_id: pluginId, text })
-      .then((r) => { if (r.ok) { setDraft(''); setRefresh((n) => n + 1); } })
-      .catch(() => undefined)
-      .finally(() => setPosting(false));
+/** The one-line summary used on cards and in the section header. null = say nothing. */
+export function thumbsLabel(up?: number, down?: number): string | null {
+  const u = up ?? 0, d = down ?? 0, total = u + d;
+  if (total === 0) return null;
+  if (total < MIN_VOTES_FOR_PCT) {
+    return d === 0 ? `${people(u)} found this helpful` : `${u} of ${people(total)} found this helpful`;
+  }
+  return `Helpful ${Math.round((u / total) * 100)}%`;
+}
+```
+Replace `thumbsSummary` / `ThumbsSummary`'s percentage rendering with this, and drop the
+`{total.toLocaleString()} votes` span in the header for the low-count case (it currently
+renders "1 votes").
+
+**2. Load the vote the user already cast.**
+```ts
+  const [vote, setVote] = useState<'up' | 'down' | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [voteError, setVoteError] = useState<string | null>(null);
+
+  // Without this the buttons forget you: vote, leave, come back, and neither
+  // thumb is lit — which reads as "it didn't save" and gets you voting twice.
+  useEffect(() => {
+    if (!auth.signedIn) { setVote(null); return; }
+    let live = true;
+    void window.claude.marketplaceApi.myThumb(pluginId).then((r) => {
+      if (live && r.ok) setVote(r.value.vote);
+    });
+    return () => { live = false; };
+  }, [pluginId, auth.signedIn]);
+```
+
+**3. Voting — one at a time, and honest about failure.**
+```ts
+  // Through window.claude.marketplaceApi because the sign-in token lives in the
+  // main process (same path as theme likes), never a renderer-side HTTP client.
+  // `saving` is a real guard, not politeness: without it rapid clicks fire
+  // overlapping writes plus a full /stats refetch each, and the last RESPONSE
+  // wins rather than the last click.
+  const castVote = (v: 'up' | 'down') => {
+    if (saving) return;
+    if (!auth.signedIn) { setSignIn('vote'); return; }
+    const previous = vote;
+    const next = vote === v ? null : v;
+    setVote(next); setSaving(true); setVoteError(null);
+    window.claude.marketplaceApi.thumb({ plugin_id: pluginId, value: next })
+      .then((r) => {
+        if (r.ok) { void stats.refresh(); return; }
+        // Never swallow: a vote that did not save must not look like it did.
+        setVote(previous);
+        setVoteError(r.status === 403 ? "Install it first — only people who have used it can vote." : "Couldn't save your vote. Try again.");
+      })
+      .catch(() => { setVote(previous); setVoteError("Couldn't save your vote. Try again."); })
+      .finally(() => setSaving(false));
   };
 ```
 
-If `window.claude` is typed without `marketplaceApi.thumb`, Task 8's `types.ts` edit provides it; `tsc` tells you.
+**4. Comments — same honesty.** Keep the existing shape, but replace
+`.catch(() => undefined)` with a `setCommentError("Couldn't post your comment. Try again.")`
+and handle `r.ok === false` the same way. A comment the classifier hid (`r.value.hidden`)
+should say so plainly — "Posted. It's held for review." — rather than silently vanishing from
+a list the user just posted to.
+
+**5. The disabled reason becomes visible text, not a tooltip.**
+```tsx
+  const voteReason = !installed
+    ? 'Install it first — only people who have used it can vote'
+    : !auth.signedIn ? 'Sign in to vote' : null;
+```
+```tsx
+  <Button … disabled={!installed || saving} aria-pressed={vote === 'up'}>…</Button>
+  …
+  {/* Visible, not a `title`: Android runs this same bundle and has no hover, and
+      several engines suppress title on a disabled button entirely. */}
+  {(voteReason || voteError) && (
+    <p className={`text-xs mt-1 ${voteError ? 'text-danger' : 'text-fg-muted'}`} role={voteError ? 'status' : undefined}>
+      {voteError ?? voteReason}
+    </p>
+  )}
+```
+
+If `window.claude` is typed without `marketplaceApi.thumb` / `.myThumb`, Task 8's `types.ts`
+edit provides it; `tsc` tells you.
 
 - [ ] **Step 4: Fake the two channels in the workbench**
 
@@ -1132,6 +1379,10 @@ In `desktop/src/renderer/dev/workbench/mock-shim.ts`, inside the hand-written im
         await fetch(`${MARKETPLACE_API_HOST}/thumbs`, { method: 'POST', body: JSON.stringify(input) });
         return { ok: true as const, value: { vote: input.value } };
       },
+      myThumb: async (pluginId: string) => {
+        const r = await fetch(`${MARKETPLACE_API_HOST}/thumbs/${pluginId}`);
+        return { ok: true as const, value: await r.json() as { vote: 'up' | 'down' | null } };
+      },
       comment: async (input: { plugin_id: string; text: string }) => {
         const r = await fetch(`${MARKETPLACE_API_HOST}/comments`, { method: 'POST', body: JSON.stringify(input) });
         const { id } = await r.json() as { id: string };
@@ -1143,7 +1394,7 @@ In `desktop/src/renderer/dev/workbench/mock-shim.ts`, inside the hand-written im
 
 - [ ] **Step 5: Run the test, the gate, and commit**
 
-Run: `npx vitest run tests/feedback-section.test.tsx` → PASS (4).
+Run: `npx vitest run tests/feedback-section.test.tsx` → PASS (9).
 Run: `cd /home/destin/youcoded-dev && bash scripts/verify.sh marketplace-ui` → OK.
 
 ```bash
@@ -1167,7 +1418,7 @@ Expected: `['installs', 'rating', 'review_count', 'thumbs_down', 'thumbs_up']`
 
 - [ ] **Step 2: Flag the interactive check for Destin — do not script it**
 
-Tell Destin: launch `bash scripts/run-dev.sh marketplace-ui --label "Marketplace feedback"` (say so before it opens a window), open a plugin's page, sign in, vote, post a comment, reload — the vote and comment persist. That is his 30-second pass.
+Tell Destin: launch `bash scripts/run-dev.sh marketplace-ui --label "Marketplace feedback"` (say so before it opens a window), then on a plugin's page, signed in: **vote, close the page, reopen it — the thumb you chose must still be lit.** Then post a comment and reload. Also worth one deliberate misuse: click Helpful ten times fast; it should register once, not ten times, and nothing should flicker. That is his 30-second pass.
 
 - [ ] **Step 3: ROADMAP + docs**
 

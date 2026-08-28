@@ -228,10 +228,10 @@ saying yes.
 
 **Breaks users**
 1. Installed plugins get wiped when Claude Code re-clones its marketplace folder; user-installed ones stay dead (ROADMAP:693). Needs an app-owned install root.
-2. Bundled plugins are never upgraded after first install (ROADMAP:69). **IN FLIGHT** — branch `fix/bundled-plugin-upgrade`, worktree `worktrees/bundled-upgrade`, 8 commits, review round 1 done 2026-08-27, no PR yet. Also makes the plugin Update button really update and ports the upgrade to Android.
-3. Theme "Update available" badge has no working action (ROADMAP:715). Quick.
+2. ~~Bundled plugins are never upgraded after first install (ROADMAP:69).~~ **SHIPPED 2026-08-27** — youcoded#345 + #346, wecoded-marketplace#69 + #70. `reconcileBundledPlugins()` is on master on both platforms, and the index now publishes each plugin's own `plugin.json` version so the Update badge compares one number space.
+3. Theme "Update available" badge has no working action (**ROADMAP:725**). The `theme:update` IPC exists end-to-end and `MarketplaceCard` renders the Update label; the break is in the click path between the card/detail overlay and that IPC. **Fold into the overhaul** — the UI branch rewrites exactly that corner element.
 4. Android can't install/connect integrations — stubbed (`SessionService.kt:1100`, youcoded #78).
-5. A newly published bundled plugin is invisible for 24h (cache TTL, ROADMAP:71). Quick-ish; Layer A removes the cause.
+5. ~~A newly published bundled plugin is invisible for 24h (cache TTL, ROADMAP:71).~~ **SHIPPED 2026-08-27** in the same batch (one refetch per process when a bundled id is missing). Layer A's hourly catalog shortens the general staleness window too.
 6. Deleted `youcoded-core` SessionStart hook path still registered → error on every new session (ROADMAP:1043). Quick.
 
 **Degrades / latent**
@@ -244,7 +244,7 @@ saying yes.
 13. Phone-width rails clip (audit P-17); raw markdown in detail `longDescription`.
 14. google-services: OAuth 7-day re-auth unverified in the wild (#9), no macOS/Linux E2E (#8).
 15. `mcpServers` extracted as empty for all 336 entries.
-16. `${CLAUDE_PLUGIN_ROOT}` unset in Bash → chatsearch's documented command fails (ROADMAP:189). **IN FLIGHT** on the same `fix/bundled-plugin-upgrade` branch.
+16. `${CLAUDE_PLUGIN_ROOT}` unset in Bash → chatsearch's documented command fails (ROADMAP:189). Rode the same 2026-08-27 batch — confirm it landed before re-listing it.
 17. Secret *content* scan is a warning, not a block (`validate-plugin-pr.yml:161`).
 18. Share-link import throws "not yet implemented" (`skill-provider.ts:591`).
 19. Android missing: delete own review, like a theme, refresh theme registry.

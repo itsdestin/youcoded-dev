@@ -672,6 +672,92 @@ Then push and open the PR (`feat(worker): catalog service — storage, ingest ro
 
 ---
 
+### Task 4b: Votes, comments and installs must name a listing that exists
+
+**Files:**
+- Modify: `worker/src/lib/validate.ts` (add `requireCatalogId`), `worker/src/feedback/routes.ts`, `worker/src/installs/routes.ts`, `worker/src/ratings/routes.ts`
+- Test: `worker/test/feedback.test.ts`, `worker/test/installs.test.ts`
+
+**Why this belongs to this plan and not Plan 1.** `validateId` only checks the length (1–128
+chars), so today anyone signed in can record an install, a vote or a comment against an id
+that does not exist — unbounded junk rows in D1, and a spam vector with no ceiling if the
+rate limiter turns out to be inert (Plan 1, Task 0). The Worker has never had a way to know
+which ids are real. **`catalog_items` is that list**, so the check becomes possible for the
+first time exactly here.
+
+**Interfaces:**
+- Produces: `requireCatalogId(db, id, label?) → Promise<string>` — validates the shape, then `SELECT 1 FROM catalog_items WHERE id = ?`; throws `badRequest("unknown plugin_id")` on a miss. Applied to `POST /thumbs`, `POST /comments`, `POST /installs`, `POST /ratings`, and the `GET` reads that take an id.
+- **Two escape hatches, both deliberate:** theme ids (`theme:<slug>`) are not in `catalog_items` — they live in the themes registry, so `theme:`-prefixed ids skip the lookup. And if `catalog_items` is **empty** (a fresh database, or the ingest has never run) the check passes everything: an unpopulated catalog must not lock users out of installing.
+
+- [ ] **Step 1: Failing test** — append to `worker/test/feedback.test.ts`:
+
+```ts
+describe("ids must name a real listing", () => {
+  beforeEach(async () => {
+    for (const t of [...TABLES, "catalog_items"]) await env.DB.prepare(`DELETE FROM ${t}`).run();
+  });
+
+  it("400s a vote or comment for an id that is not in the catalog", async () => {
+    const { token, account } = await seed();
+    // A populated catalog is what turns the check on.
+    await env.DB.prepare("INSERT INTO catalog_items (id, source, item_type, deprecated, run_id, updated_at, entry_json) VALUES ('real', 'wecoded', 'plugin', 0, 'r1', 1, '{}')").run();
+    await seedInstall(account.userId, "made-up");
+    expect((await post("/thumbs", token, { plugin_id: "made-up", value: "up" })).status).toBe(400);
+    expect((await post("/comments", token, { plugin_id: "made-up", text: "hi" })).status).toBe(400);
+    await seedInstall(account.userId, "real");
+    expect((await post("/thumbs", token, { plugin_id: "real", value: "up" })).status).toBe(200);
+  });
+
+  it("lets everything through while the catalog is empty, and always allows theme ids", async () => {
+    const { token, account } = await seed();
+    await seedInstall(account.userId, "anything");
+    expect((await post("/thumbs", token, { plugin_id: "anything", value: "up" })).status).toBe(200);
+    await env.DB.prepare("INSERT INTO catalog_items (id, source, item_type, deprecated, run_id, updated_at, entry_json) VALUES ('real', 'wecoded', 'plugin', 0, 'r1', 1, '{}')").run();
+    expect((await post("/installs", token, { plugin_id: "theme:golden-sunbreak" })).status).toBe(200);
+  });
+});
+```
+
+- [ ] **Step 2: Run** → FAIL (400 expected, 200 received).
+
+- [ ] **Step 3: Implement** — append to `worker/src/lib/validate.ts`:
+
+```ts
+// An id that names something we actually list. `validateId` only bounds the
+// length, which let a signed-in account write installs/votes/comments against
+// invented ids — junk rows with no ceiling. catalog_items is the list of real
+// ones, so this is only possible once the catalog exists (Plan 2, Task 1).
+//
+// Two deliberate escapes: theme ids live in the themes registry, not the
+// catalog; and an EMPTY catalog (fresh DB, ingest never ran) passes everything,
+// because an unpopulated catalog must never lock a user out of installing.
+export async function requireCatalogId(db: D1Database, raw: string | undefined | null, label = "plugin_id"): Promise<string> {
+  const id = validateId(raw, label);
+  if (id.startsWith("theme:")) return id;
+  const hit = await db.prepare("SELECT 1 AS ok FROM catalog_items WHERE id = ? LIMIT 1").bind(id).first<{ ok: number }>();
+  if (hit) return id;
+  const any = await db.prepare("SELECT 1 AS ok FROM catalog_items LIMIT 1").first<{ ok: number }>();
+  if (!any) return id;                       // catalog not populated yet — allow
+  throw badRequest(`unknown ${label}`);
+}
+```
+
+Swap `validateId(body.plugin_id)` for `await requireCatalogId(c.env.DB, body.plugin_id)` in
+`POST /thumbs`, `POST /comments`, `POST /installs` and `POST /ratings`. Leave the public
+**read** routes (`GET /comments/<id>`, `GET /catalog/<id>`) on plain `validateId` — a read of
+an unknown id already answers empty or 404 and costs one indexed lookup either way.
+
+While in `installs/routes.ts`: it parses with `c.req.json<…>()` directly. Every other route
+uses `parseJsonBody` (`src/lib/parse-json.ts`), which returns a clean 400 on malformed input
+instead of an unhandled throw. Switch it.
+
+- [ ] **Step 4: Run** `npm test && npm run typecheck` → PASS. **Step 5: Commit** `git add src/lib/validate.ts src/feedback/routes.ts src/installs/routes.ts src/ratings/routes.ts test/ && git commit -m "feat(worker): installs, votes and comments must name a listing that exists"`.
+
+> **Sequencing:** this task edits files Plan 1 created, so it must run after Plan 1 has
+> merged. If Plan 1 is still open, do this task last in this plan and rebase.
+
+---
+
 ### Task 5: Shared type additions (app branch)
 
 **Files:**
@@ -1175,6 +1261,9 @@ test("normalise emits a bundle row + member rows with partOf", () => {
     assert.ok(members.length >= 3);
     const skill = members.find((m) => m.catalog.itemType === "skill");
     assert.match(skill.id, /^[^/]+\/[^/]+$/);
+    // A member's description must NOT repeat its bundle's name — that is what
+    // makes a search for the bundle also return every one of its members.
+    assert.equal(skill.description, "");
     assert.equal(skill.catalog.partOf.id, skill.pluginName);
     assert.ok(members.some((m) => m.catalog.itemType === "specialist"));
     assert.ok(members.some((m) => m.catalog.itemType === "tool"));
@@ -1326,10 +1415,17 @@ export async function normalise(index, files = fetchFiles, repo = repoFacts(), k
       capabilities: unchanged ? undefined : caps, scan: unchanged ? undefined : scan }));
     const member = (itemType, name, displayName, description) => out.push(makeEntry({ ...base, id: `${e.id}/${name}`, itemType, displayName, description,
       sourceType: e.sourceType, sourceRef: e.sourceRef, sourceSubdir: e.sourceSubdir, pluginName: e.id, partOf: { id: e.id, displayName: e.displayName }, capabilities: [], scan }));
+    // Member descriptions are left EMPTY, not filled with "Part of <bundle>."
+    // The card already shows a `Part of X` chip, and putting the bundle's name
+    // into every member's description makes searching that bundle's name match
+    // all of its members: type "superpowers" and you get the bundle plus 14
+    // near-identical cards. A blank description is honest and does not pollute
+    // the search corpus. Real descriptions come from each SKILL.md's frontmatter
+    // in the follow-up below.
     const c = e.components ?? {};
-    for (const s of c.skills ?? []) member("skill", s, titleCase(s), `Part of ${e.displayName}.`);
-    for (const a of c.agents ?? []) member("specialist", a, titleCase(a), `A specialist from ${e.displayName}.`);
-    if ((c.mcpServers ?? []).length || c.hasMcpConfig) member("tool", "connection", `${e.displayName} (connection)`, `The connection ${e.displayName} sets up.`);
+    for (const s of c.skills ?? []) member("skill", s, titleCase(s), "");
+    for (const a of c.agents ?? []) member("specialist", a, titleCase(a), "");
+    if ((c.mcpServers ?? []).length || c.hasMcpConfig) member("tool", "connection", `${e.displayName} (connection)`, "");
   }
   return out;
 }
@@ -1346,7 +1442,10 @@ export async function collect({ log, known = {} }) {
 }
 ```
 
-Member descriptions are generic here; the ingest reads each `SKILL.md`'s frontmatter `description` in a follow-up (one raw fetch per skill — 2,000 calls, out of the hourly budget; ROADMAP).
+Member descriptions are **empty** here, deliberately — see the comment in the code. The
+ingest reads each `SKILL.md`'s frontmatter `description` in a follow-up (one raw fetch per
+skill — ~2,000 calls, out of the hourly budget; ROADMAP). Until then a member card shows its
+name, its kind, and its `Part of X` chip, which is enough to pick it out of a list.
 
 - [ ] **Step 4: Run** `node --test scripts/catalog/test/` → PASS. Then a real dry run: `GITHUB_TOKEN=$(gh auth token) node scripts/catalog/build.mjs --source wecoded --dry-run` → writes `catalog-dry-run-wecoded.json` and `catalog-dry-run-anthropic.json`; open one bundle and eyeball `catalog.capabilities` against its repo, **and check that `catalog.sourceCommit` matches that repo's current branch tip on GitHub, not the entry's `sourceSha`.** Add `catalog-dry-run-*.json` and `catalog-report.json` to `.gitignore`.
 
@@ -1578,6 +1677,9 @@ export async function collect({ log, known = {} }) {
 **Files:**
 - Create: `.github/workflows/catalog-ingest.yml`
 - Create: `docs/catalog.md` (repo-local)
+- Modify: `.github/workflows/validate-plugin-pr.yml` — make the secret **content** scan blocking
+- Delete: `themes/index.json`; prune `overrides/`
+- Modify: `curated-defaults.json`
 - Modify: `README.md` (root; fix the stale counts while there — **compute every number from `index.json` at edit time; do not copy one from a doc.** As of 2026-08-28 it is 339 entries / 302 live / 13 live YouCoded / 289 live Anthropic, and those move on every plugin merge. Also delete the claim that `stats.json` is "rebuilt daily by CI" — no such CI exists), `CONTRIBUTING.md` (remove "edit index.json"; plugins live at the top level, not `plugins/`)
 
 - [ ] **Step 1: Workflow**
@@ -1626,6 +1728,33 @@ jobs:
         if: always()
         with: { name: catalog-report, path: catalog-report.json, retention-days: 14 }
 ```
+
+- [ ] **Step 1b: Close the marketplace-repo cruft while we are in here**
+
+Four one-liners that would otherwise each need their own PR, and one that matters:
+
+1. **The secret-content scan must block, not warn.** `.github/workflows/validate-plugin-pr.yml`
+   (~line 161) prints `::warning::` and does not set `FOUND_SECRETS=1`, so a live token in a
+   file passes CI — while secret-looking *filenames* correctly fail. This plan's scanner
+   (Task 7, `HARDCODED_KEY_RE`) already treats the same patterns as a **Caution** finding on
+   the listing, so after this ships the identical rule exists in two places at two strengths.
+   Make the content scan set `FOUND_SECRETS=1` like the filename checks do, and widen its
+   patterns to match `capabilities.mjs` (`sk-`, `ghp_`, `gho_`, `AKIA`, `xox[baprs]-`).
+   **Say so in the PR body:** this can fail a submission that passed yesterday, which is the
+   intent, but it should not be a surprise.
+2. **Delete `themes/index.json`.** It is a 2-of-7 subset of the themes registry, generated
+   `2026-04-07`, superseded by `wecoded-themes/registry/theme-registry.json` (7 themes,
+   regenerated continuously). Nothing reads it. Leaving a stale second registry in the tree
+   is how a future session ships against the wrong file.
+3. **Prune `overrides/`.** 24 files: **13 target ids that are deprecated**, and one
+   (`youcoded-drive`) targets an id that does not exist — the registry's is `google-drive`.
+   Delete the 13, fix or delete the one. Verify with a script over `index.json`, do not
+   eyeball it.
+4. **`curated-defaults.json` names `theme-builder`, which is not a registry id.** The plugin
+   is `wecoded-themes-plugin`; `theme-builder` is a skill inside it. This is not a silent
+   no-op — the bare string is already written into users' `~/.claude/youcoded-skills.json`
+   → `favorites[]`, where it resolves to nothing. Point it at `wecoded-themes-plugin`.
+   (Cleaning the dead entry out of existing profiles is app-side; ROADMAP it.)
 
 - [ ] **Step 2: Docs** — `docs/catalog.md`: what the catalog is, the four sources with their licences and the mirror/link decision (Docker repo MIT but served JSON unlicensed — we store metadata only; awesome-copilot MIT; cursorrules CC0; Anthropic official Apache-2.0 for the 53 local, the rest are pointers), **the merge rule and why a degraded run must never downgrade a row**, the "only re-read what changed" skip and `--force-rescan`, what "Likely safe" means in v1 (rule-based; SkillSpector is the next step), the `CATALOG_ENABLED` kill switch and how to use it, how to run locally (`--dry-run`), the retire semantics, and the env vars. README/CONTRIBUTING corrections as listed.
 

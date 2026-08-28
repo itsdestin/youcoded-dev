@@ -1,0 +1,96 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "lens-over-picture",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    },
+    {
+     "clickText": "latency-chart.png",
+     "settle": 2600
+    },
+    {
+     "click": "[aria-label='Magnify on hover']",
+     "settle": 500
+    },
+    {
+     "hover": "js:document.querySelector('[data-zoomable] img')",
+     "settle": 700
+    }
+   ],
+   "expect": "js:(() => { const l = document.querySelector('[aria-hidden][style*=\"border-radius: 50%\"]'); return !!l && getComputedStyle(l).visibility === 'visible'; })()"
+  },
+  {
+   "name": "lens-over-pill",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    },
+    {
+     "clickText": "latency-chart.png",
+     "settle": 2600
+    },
+    {
+     "click": "[aria-label='Magnify on hover']",
+     "settle": 500
+    },
+    {
+     "hover": "[aria-label='Zoom in']",
+     "settle": 700
+    }
+   ],
+   "expect": "js:(() => { const l = document.querySelector('[aria-hidden][style*=\"border-radius: 50%\"]'); return !!l && getComputedStyle(l).visibility === 'hidden'; })()"
+  },
+  {
+   "name": "lens-off-picture",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    },
+    {
+     "clickText": "latency-chart.png",
+     "settle": 2600
+    },
+    {
+     "click": "[aria-label='Magnify on hover']",
+     "settle": 500
+    },
+    {
+     "eval": "window.dispatchEvent(new PointerEvent('pointermove',{clientX:980,clientY:730,bubbles:true}))",
+     "settle": 700
+    }
+   ],
+   "expect": "js:(() => { const l = document.querySelector('[aria-hidden][style*=\"border-radius: 50%\"]'); return !!l && getComputedStyle(l).visibility === 'hidden'; })()"
+  },
+  {
+   "name": "lens-outside-pane",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    },
+    {
+     "clickText": "latency-chart.png",
+     "settle": 2600
+    },
+    {
+     "click": "[aria-label='Magnify on hover']",
+     "settle": 500
+    },
+    {
+     "hover": "js:document.querySelector('textarea, input')",
+     "settle": 700
+    }
+   ],
+   "expect": "js:(() => { const l = document.querySelector('[aria-hidden][style*=\"border-radius: 50%\"]'); return !!l && getComputedStyle(l).visibility === 'hidden'; })()"
+  }
+ ]
+}

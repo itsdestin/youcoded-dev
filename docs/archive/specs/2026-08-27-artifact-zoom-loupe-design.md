@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-08-27
 topic: Artifact viewer — zoom pill and hover loupe
 repos: [youcoded]

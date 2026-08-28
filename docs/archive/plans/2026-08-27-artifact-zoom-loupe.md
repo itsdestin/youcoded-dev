@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-08-27
 spec: docs/active/specs/2026-08-27-artifact-zoom-loupe-design.md
 repos: [youcoded]

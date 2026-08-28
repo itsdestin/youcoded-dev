@@ -1,0 +1,38 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "lens-behind-dialog",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    },
+    {
+     "clickText": "latency-chart.png",
+     "settle": 2600
+    },
+    {
+     "click": "[aria-label='Magnify on hover']",
+     "settle": 500
+    },
+    {
+     "hover": "js:document.querySelector('[data-zoomable] img')",
+     "settle": 600
+    },
+    {
+     "click": "[title='Settings']",
+     "settle": 1200
+    },
+    {
+     "eval": "window.dispatchEvent(new PointerEvent('pointermove',{clientX:1200,clientY:400,bubbles:true}))",
+     "settle": 700
+    }
+   ],
+   "expect": "js:(() => { const l = document.querySelector('[aria-hidden][style*=\"border-radius: 50%\"]'); return !!l && getComputedStyle(l).visibility === 'hidden'; })()"
+  }
+ ]
+}
