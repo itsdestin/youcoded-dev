@@ -47,6 +47,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync, renameSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { CHROME_FLAGS, waitForCdp, selExpr, textExpr, rectOfExpr } from './cdp-helpers.mjs';
 
 const [planPath, outDir, themeArg] = process.argv.slice(2);
 if (!planPath || !outDir) { console.error('usage: node shot.mjs <plan.json> <outDir> [themes]'); process.exit(2); }
@@ -69,30 +70,9 @@ const SAME_THRESHOLD = plan.sameThreshold ?? 0.006; // RMSE (0..1) below which t
 mkdirSync(outDir, { recursive: true });
 
 const profile = mkdtempSync(join(tmpdir(), 'ui-review-'));
-const proc = ATTACH ? null : spawn('google-chrome-stable', [
-  '--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
-  // Headless Chrome has NO input device, so it answers `(hover: none)` and
-  // `(pointer: coarse)` — it looks like a phone to CSS. Anything gated on a real
-  // cursor then never renders, and the shot lands in _unverified with a
-  // misleading "MISSING" instead of a wrong picture (found 2026-08-27: the
-  // artifact viewer's magnifier button was invisible to the rig for this reason).
-  // These are Blink's own enums: hover=2 (HoverTypeHover), pointer=4
-  // (PointerTypeFine). CDP's Emulation.setEmulatedMedia does NOT cover these two
-  // features — it only knows the prefers-* family — so the flags are the only way.
-  '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
-  `--window-size=${W},${H}`, '--force-device-scale-factor=1',
-  `--remote-debugging-port=${CDP_PORT}`, `--user-data-dir=${profile}`, 'about:blank',
-], { stdio: 'ignore' });
+const proc = ATTACH ? null : spawn('google-chrome-stable', CHROME_FLAGS(W, H, CDP_PORT, profile), { stdio: 'ignore' });
 const cleanup = () => { if (proc) proc.kill(); try { rmSync(profile, { recursive: true, force: true }); } catch { /* best effort */ } };
 process.on('exit', cleanup);
-
-async function waitForCdp() {
-  for (let i = 0; i < 80; i++) {
-    try { const r = await fetch(`http://127.0.0.1:${PORT}/json/version`); if (r.ok) return; } catch { /* not up */ }
-    await new Promise(r => setTimeout(r, 250));
-  }
-  throw new Error(`CDP endpoint on ${PORT} never came up`);
-}
 
 // RMSE between two PNGs via ImageMagick; null if compare is unavailable.
 function rmse(a, b) {
@@ -163,9 +143,7 @@ async function session(theme) {
   await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
   if (!ATTACH) await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});}catch{}` });
   const evaluate = async (expression) => { const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }); if (r.exceptionDetails) throw new Error('eval: ' + (r.exceptionDetails.exception?.description ?? r.exceptionDetails.text)); return r.result?.value; };
-  const selExpr = (s) => s.startsWith('js:') ? `(${s.slice(3)})` : `document.querySelector(${JSON.stringify(s)})`;
-  const textExpr = (t, tag) => `[...document.querySelectorAll(${JSON.stringify(tag ?? 'button,a,[role=button],[role=tab],[role=menuitem],[role=option],label,span,div,h1,h2,h3,p,li')})].filter(e => e.offsetParent !== null && e.textContent.trim() === ${JSON.stringify(t)}).sort((a,b)=>a.querySelectorAll('*').length-b.querySelectorAll('*').length)[0]`;
-  const rectOf = async (expr) => evaluate(`(() => { const el = ${expr}; if (!el) return null; el.scrollIntoView({block:'nearest'}); const r = el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height}; })()`);
+  const rectOf = async (expr) => evaluate(rectOfExpr(expr));
   const mouse = async (x, y, button) => {
     await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
     if (!button) return;
@@ -206,7 +184,7 @@ async function session(theme) {
   return { send, evaluate, run, shot, probe, errors, close, selExpr, textExpr };
 }
 
-await waitForCdp();
+await waitForCdp(PORT);
 const manifest = [];
 const summary = { verified: 0, unverified: [] };
 for (const theme of THEMES) {
