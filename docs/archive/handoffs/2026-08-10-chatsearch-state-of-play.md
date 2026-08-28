@@ -1,9 +1,9 @@
 ---
-status: active
+status: shipped
 created: 2026-08-10
 related:
   - docs/active/specs/2026-08-05-chat-search-design.md
-  - docs/active/specs/2026-08-10-chatsearch-session-references-design.md
+  - docs/archive/specs/2026-08-10-chatsearch-session-references-design.md
   - docs/archive/plans/2026-08-05-chatsearch-phase1-plan.md
 ---
 
@@ -66,9 +66,9 @@ app.
 ## Specced, not built
 
 **Session references** —
-`docs/active/specs/2026-08-10-chatsearch-session-references-design.md`
+`docs/archive/specs/2026-08-10-chatsearch-session-references-design.md`
 (`status: active`, revised 2026-08-25) with an implementation plan at
-`docs/active/plans/2026-08-25-chatsearch-session-references-plan.md`.
+`docs/archive/plans/2026-08-25-chatsearch-session-references-plan.md`.
 
 Preview and Resume from a search hit. **Nothing is built.** No branch, no
 worktree, no CLI change.

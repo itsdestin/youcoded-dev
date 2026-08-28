@@ -1,8 +1,8 @@
 ---
-status: active
+status: shipped
 created: 2026-08-25
-spec: docs/active/specs/2026-08-10-chatsearch-session-references-design.md
-handoff: docs/active/handoffs/2026-08-10-chatsearch-state-of-play.md
+spec: docs/archive/specs/2026-08-10-chatsearch-session-references-design.md
+handoff: docs/archive/handoffs/2026-08-10-chatsearch-state-of-play.md
 ---
 
 # Chat Search — Session References Implementation Plan
@@ -67,7 +67,7 @@ handoff: docs/active/handoffs/2026-08-10-chatsearch-state-of-play.md
 
 ### Task 0: Go / no-go — exercise phase 1 by hand (Destin, ~20 minutes)
 
-The handoff (`docs/active/handoffs/2026-08-10-chatsearch-state-of-play.md`, "The gap") says phase 1 has never been used by a person and lists six checks. If recall is poor, cards would be "a better frame around the wrong picture."
+The handoff (`docs/archive/handoffs/2026-08-10-chatsearch-state-of-play.md`, "The gap") says phase 1 has never been used by a person and lists six checks. If recall is poor, cards would be "a better frame around the wrong picture."
 
 - [ ] `cd /home/destin/youcoded-dev && bash scripts/run-dev.sh master --label "Chat Search check"` (never the installed app).
 - [ ] Destin asks the assistant, in his own words, about three things he genuinely remembers working on — at least one done on another device — **without** saying "search". Note: did it reach for chatsearch unprompted? Did the right conversation appear? Did a `†` row still show a real title and date? Did `show` alone answer, or did it need `turns`/`tail`?
@@ -1277,7 +1277,7 @@ This is the spec's Step 1. Do not start Task 8 without an explicit "approved" fr
   - narrow viewport for all of the above; `empty` and `stress` scenarios; two themes.
 - [ ] **Decisions Destin confirms or changes** (each is a `COPY` entry or a one-line default; none has been approved yet): expanded-by-default cards; "Resume…" for the assistant lane; "Claude Code" / "YouCoded assistant" as lane labels; "Found N past conversations" / "Past conversation" headers; relative time vs date; the `†` glyph; the "Raw output" disclosure; "— N tool calls not shown —" and "— start of conversation —" wording; tail 40 / max 200; the pane subtitle; **the Phase B error sentences** (`COPY.errNotAnId`, `errNotIndexed`, `errNotAConversation`, `errOutsideRoots`, `errReadPrefix`) — read them aloud; and whether `show` needs to stand apart (→ Task 14).
 - [ ] **Iterate:** each round → edit → `node scripts/workbench-boot-check.mjs` → commit `feat(chatsearch-refs): design round N — <what changed>`. Report and stop between rounds.
-- [ ] **Record the sign-off:** append a dated line to `docs/active/handoffs/2026-08-10-chatsearch-state-of-play.md` — *"Design signed off by Destin on <date> after N rounds; approved commit <sha>; Referenced list: kept/cut; show segment: yes/no."* Commit in the workspace repo. Only then continue.
+- [ ] **Record the sign-off:** append a dated line to `docs/archive/handoffs/2026-08-10-chatsearch-state-of-play.md` — *"Design signed off by Destin on <date> after N rounds; approved commit <sha>; Referenced list: kept/cut; show segment: yes/no."* Commit in the workspace repo. Only then continue.
 
 ---
 

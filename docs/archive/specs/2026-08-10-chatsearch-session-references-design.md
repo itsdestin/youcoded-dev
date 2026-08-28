@@ -1,12 +1,12 @@
 ---
-status: active
+status: shipped
 created: 2026-08-10
 updated: 2026-08-25
 supersedes: none
 related:
   - docs/active/specs/2026-08-05-chat-search-design.md
-  - docs/active/plans/2026-08-25-chatsearch-session-references-plan.md
-  - docs/active/handoffs/2026-08-10-chatsearch-state-of-play.md
+  - docs/archive/plans/2026-08-25-chatsearch-session-references-plan.md
+  - docs/archive/handoffs/2026-08-10-chatsearch-state-of-play.md
 ---
 
 # Chat Search — session references in chat
