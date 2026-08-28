@@ -1118,6 +1118,24 @@ otherwise need its own PR against the same code.
 
 ### Task 10: Verify end-to-end, merge, close out
 
+- [ ] **Step 0: Settle the "Not checked" shield before anything merges**
+
+The spec (§1.6) carries an open question that nothing in these plans resolves on its own,
+which means it resolves by default the moment this branch merges — and the default is the
+option that was never tested against real data. The badge component already exists on the
+branch, so this is a decision, not a build.
+
+Measure the real ratio first; it is one command against the live catalog:
+```bash
+curl -s https://wecoded-marketplace-api.destinj101.workers.dev/catalog \
+  | python3 -c "import json,sys,collections; e=json.load(sys.stdin)['entries']; \
+      print(collections.Counter((x.get('catalog') or {}).get('scan',{}).get('status','none') for x in e))"
+```
+If `unchecked` is a large share — the estimate was roughly half — put **one** small deck to
+Destin: keep the grey shield, or render no shield at all when the status is `unchecked` so the
+badge only ever appears when it has something to say. Build whichever he picks, then continue.
+Do not merge with the question still open.
+
 - [ ] **Step 1: Full desktop gate + a real-data smoke**
 
 Run: `cd /home/destin/youcoded-dev && bash scripts/verify.sh marketplace-ui --full` → OK.
