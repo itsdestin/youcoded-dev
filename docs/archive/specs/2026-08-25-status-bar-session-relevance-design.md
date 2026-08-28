@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 created: 2026-08-25
 updated: 2026-08-26
 tags: [renderer, native-runtime, ux, status-bar]
