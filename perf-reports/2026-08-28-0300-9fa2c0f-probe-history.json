@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "label": "probe-history",
+  "sha": "9fa2c0fa7b691aeac1ea8af37aa64f9c54b10fa6",
+  "branch": "perf/paged-history",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-08-28T03:00:17.971Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "ramGb": 31,
+    "kernel": "7.1.2-2-cachyos",
+    "node": "v26.4.0"
+  },
+  "noise": {
+    "loadAvgBefore": 3.28,
+    "machineBusyPctBefore": 1.8,
+    "maxLoadAvgAccepted": 3.28,
+    "maxBusyPctAccepted": 1.8,
+    "discardedRuns": 0
+  },
+  "startup": null,
+  "idle": null,
+  "history": {
+    "small": {
+      "runs": [
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 2,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 449,
+          "resumeStableMs": 449,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcLast10Ms": 2,
+        "ipcAllMs": 2,
+        "ipcAllCount": 100,
+        "resumeFirstMessageMs": 449,
+        "resumeStableMs": 449,
+        "resumeMessageCount": 60
+      },
+      "stabilizedRuns": 1,
+      "warnings": []
+    },
+    "medium": {
+      "runs": [
+        {
+          "ipcLast10Ms": 112,
+          "ipcAllMs": 136,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 685,
+          "resumeStableMs": 685,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcLast10Ms": 112,
+        "ipcAllMs": 136,
+        "ipcAllCount": 5000,
+        "resumeFirstMessageMs": 685,
+        "resumeStableMs": 685,
+        "resumeMessageCount": 60
+      },
+      "stabilizedRuns": 1,
+      "warnings": []
+    },
+    "huge": {
+      "runs": [
+        {
+          "ipcLast10Ms": 180,
+          "ipcAllMs": 192,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 624,
+          "resumeStableMs": 624,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcLast10Ms": 180,
+        "ipcAllMs": 192,
+        "ipcAllCount": 7000,
+        "resumeFirstMessageMs": 624,
+        "resumeStableMs": 624,
+        "resumeMessageCount": 60
+      },
+      "stabilizedRuns": 1,
+      "warnings": []
+    }
+  },
+  "workload": null,
+  "replayStall": null,
+  "artifacts": null,
+  "measures": {
+    "history": {
+      "scenario": "history",
+      "question": "How long does loading a conversation take, at three sizes?",
+      "configuration": [
+        "one session at a time, resumed from a prebuilt transcript",
+        "three sizes: small, medium, huge"
+      ],
+      "clocks": {
+        "ipcLast10Ms": "the loadHistory IPC call for the last 10 messages",
+        "ipcAllMs": "the loadHistory IPC call for the whole transcript",
+        "resumeStableMs": "resume -> the rendered entry count stops changing"
+      },
+      "blindTo": [
+        "which THREAD the time was spent on — that is the stall scenario",
+        "anything requiring more than one session open"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": 0,
+    "workloadBoots": [],
+    "stallBoot": null,
+    "artifactsBoot": null
+  },
+  "screens": null,
+  "aborted": null,
+  "incomplete": [
+    "compare.mjs PRIMARY path \"history.medium.median.resumeStableMs\" has only 1 sample behind its median (685) — one run cannot show run-to-run spread, so spreadPct() reports 0% noise and the gate's noise check is DISARMED, not merely thin: any jitter would pass as a proven win. At least 2 repeats are required.",
+    "compare.mjs PRIMARY path \"history.huge.median.ipcLast10Ms\" has only 1 sample behind its median (180) — one run cannot show run-to-run spread, so spreadPct() reports 0% noise and the gate's noise check is DISARMED, not merely thin: any jitter would pass as a proven win. At least 2 repeats are required.",
+    "compare.mjs PRIMARY path \"history.huge.median.resumeStableMs\" has only 1 sample behind its median (624) — one run cannot show run-to-run spread, so spreadPct() reports 0% noise and the gate's noise check is DISARMED, not merely thin: any jitter would pass as a proven win. At least 2 repeats are required."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "label": "probe-artifacts",
+  "sha": "9fa2c0fa7b691aeac1ea8af37aa64f9c54b10fa6",
+  "branch": "perf/paged-history",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-08-28T03:09:24.263Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "ramGb": 31,
+    "kernel": "7.1.2-2-cachyos",
+    "node": "v26.4.0"
+  },
+  "noise": {
+    "loadAvgBefore": 1.41,
+    "machineBusyPctBefore": 2.5,
+    "maxLoadAvgAccepted": 1.41,
+    "maxBusyPctAccepted": 2.5,
+    "discardedRuns": 0
+  },
+  "startup": null,
+  "idle": null,
+  "history": null,
+  "workload": null,
+  "replayStall": null,
+  "artifacts": null,
+  "measures": {
+    "artifacts": {
+      "scenario": "artifacts",
+      "question": "What does the files panel cost to open, edit, and navigate?",
+      "configuration": [
+        "one session, resumed from the small transcript",
+        "six artifacts registered: code / markdown / HTML, each in a small and a large size",
+        "30 keystrokes typed into a real CodeMirror editor at ~45ms spacing"
+      ],
+      "clocks": {
+        "open.*.openMs": "click the row -> the viewer reports the right document mounted",
+        "typing.*.keystroke": "keydown -> painted, measured in-page via beforeinput",
+        "htmlNav.swap": "select a different HTML artifact -> the iframe load event"
+      },
+      "blindTo": [
+        "documents above EDIT_MAX_BYTES (3 MB) — the pane serves a read-only prefix, so typing is not measured there",
+        "real clipboard cost: MarkdownContent fires writeText without awaiting it",
+        "GPU-accelerated scrolling in the viewer — headless Xvfb has no compositor"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": null,
+    "workloadBoots": [],
+    "stallBoot": null,
+    "artifactsBoot": null
+  },
+  "screens": null,
+  "aborted": "artifacts: the session-files drawer never opened — artifacts: the drawer opened but never listed perf-small.ts within 30s. It listed []. The files were registered against projectRoot \"/home/destin/youcoded-dev/scratch/perf-lab/home/projects/alpha\"; if the drawer resolved a different project root, every open below would have measured a miss instead of a file.",
+  "incomplete": [
+    "artifacts: no runs were recorded",
+    "artifacts: keystroke-to-paint was never measured on the large file — the meter did not arm, so typing cost is UNKNOWN, not zero",
+    "compare.mjs PRIMARY path \"artifacts.median.open.mdLarge.openMs\" is undefined — the keep/reject gate would be BLIND to this metric",
+    "compare.mjs PRIMARY path \"artifacts.median.typing.codeLarge.keystroke.p95Ms\" is undefined — the keep/reject gate would be BLIND to this metric",
+    "compare.mjs PRIMARY path \"artifacts.median.htmlNav.swap.medianMs\" is undefined — the keep/reject gate would be BLIND to this metric",
+    "compare.mjs PRIMARY path \"artifacts.median.ipcSumOfSteps.totalStallMs\" is undefined — the keep/reject gate would be BLIND to this metric"
+  ]
+}

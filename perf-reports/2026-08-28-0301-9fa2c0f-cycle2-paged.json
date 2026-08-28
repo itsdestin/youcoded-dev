@@ -1,0 +1,4045 @@
+{
+  "schemaVersion": 1,
+  "label": "cycle2-paged",
+  "sha": "9fa2c0fa7b691aeac1ea8af37aa64f9c54b10fa6",
+  "branch": "perf/paged-history",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-08-28T03:01:00.328Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "ramGb": 31,
+    "kernel": "7.1.2-2-cachyos",
+    "node": "v26.4.0"
+  },
+  "noise": {
+    "loadAvgBefore": 2.5,
+    "machineBusyPctBefore": 2.6,
+    "maxLoadAvgAccepted": 3.94,
+    "maxBusyPctAccepted": 2.6,
+    "discardedRuns": 0
+  },
+  "startup": {
+    "runs": [
+      {
+        "whenReady": 660,
+        "chores": {
+          "rotateLog": 3,
+          "prelude": 12,
+          "installHooks": 3,
+          "hookRelay": 2,
+          "legacyCleanup": 0,
+          "hookReconcile": 1,
+          "promptSuggestion": 1,
+          "retentionDefault": 0,
+          "symlinkCleanup": 1,
+          "staleDownloads": 0,
+          "reconcileMcp": 0,
+          "announcements": 1,
+          "remoteServer": 1,
+          "ipcPrefs": 0,
+          "themeProtocol": 3,
+          "accounts": 1
+        },
+        "createWindow": 37,
+        "createWindowAt": 689,
+        "didFinishLoad": 918,
+        "postWindowDone": 728,
+        "documentStart": 713,
+        "modulesEvaluated": 916,
+        "rootRender": 918,
+        "firstPaint": 845,
+        "firstContentfulPaint": 1009,
+        "appMounted": 945,
+        "sessionsListed": 946,
+        "blankWindowMs": 320,
+        "idlePssMb": 466.9,
+        "idleCpuPct": 0,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 853484,
+            "type": "main",
+            "mb": 227
+          },
+          {
+            "pid": 853486,
+            "type": "zygote",
+            "mb": 13.5
+          },
+          {
+            "pid": 853487,
+            "type": "zygote",
+            "mb": 13.7
+          },
+          {
+            "pid": 853515,
+            "type": "zygote",
+            "mb": 89.8
+          },
+          {
+            "pid": 853519,
+            "type": "utility",
+            "mb": 31.2
+          },
+          {
+            "pid": 853539,
+            "type": "zygote",
+            "mb": 91.7
+          }
+        ]
+      },
+      {
+        "whenReady": 662,
+        "chores": {
+          "rotateLog": 4,
+          "prelude": 10,
+          "installHooks": 3,
+          "hookRelay": 2,
+          "legacyCleanup": 0,
+          "hookReconcile": 1,
+          "promptSuggestion": 1,
+          "retentionDefault": 0,
+          "symlinkCleanup": 0,
+          "staleDownloads": 0,
+          "reconcileMcp": 1,
+          "announcements": 1,
+          "remoteServer": 1,
+          "ipcPrefs": 0,
+          "themeProtocol": 2,
+          "accounts": 2
+        },
+        "createWindow": 36,
+        "createWindowAt": 690,
+        "didFinishLoad": 918,
+        "postWindowDone": 728,
+        "documentStart": 713,
+        "modulesEvaluated": 917,
+        "rootRender": 918,
+        "firstPaint": 845,
+        "firstContentfulPaint": 1005,
+        "appMounted": 944,
+        "sessionsListed": 944,
+        "blankWindowMs": 315,
+        "idlePssMb": 465.7,
+        "idleCpuPct": 0,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 853838,
+            "type": "main",
+            "mb": 225.9
+          },
+          {
+            "pid": 853840,
+            "type": "zygote",
+            "mb": 13.7
+          },
+          {
+            "pid": 853841,
+            "type": "zygote",
+            "mb": 13.6
+          },
+          {
+            "pid": 853869,
+            "type": "zygote",
+            "mb": 90.1
+          },
+          {
+            "pid": 853873,
+            "type": "utility",
+            "mb": 30.8
+          },
+          {
+            "pid": 853893,
+            "type": "zygote",
+            "mb": 91.5
+          }
+        ]
+      },
+      {
+        "whenReady": 658,
+        "chores": {
+          "rotateLog": 4,
+          "prelude": 10,
+          "installHooks": 3,
+          "hookRelay": 2,
+          "legacyCleanup": 0,
+          "hookReconcile": 1,
+          "promptSuggestion": 1,
+          "retentionDefault": 0,
+          "symlinkCleanup": 0,
+          "staleDownloads": 0,
+          "reconcileMcp": 1,
+          "announcements": 1,
+          "remoteServer": 1,
+          "ipcPrefs": 0,
+          "themeProtocol": 2,
+          "accounts": 1
+        },
+        "createWindow": 37,
+        "createWindowAt": 685,
+        "didFinishLoad": 907,
+        "postWindowDone": 725,
+        "documentStart": 710,
+        "modulesEvaluated": 905,
+        "rootRender": 906,
+        "firstPaint": 938,
+        "firstContentfulPaint": 998,
+        "appMounted": 933,
+        "sessionsListed": 934,
+        "blankWindowMs": 313,
+        "idlePssMb": 466.5,
+        "idleCpuPct": 0,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 854033,
+            "type": "main",
+            "mb": 227.4
+          },
+          {
+            "pid": 854035,
+            "type": "zygote",
+            "mb": 13.7
+          },
+          {
+            "pid": 854036,
+            "type": "zygote",
+            "mb": 13.6
+          },
+          {
+            "pid": 854064,
+            "type": "zygote",
+            "mb": 90.2
+          },
+          {
+            "pid": 854068,
+            "type": "utility",
+            "mb": 31.1
+          },
+          {
+            "pid": 854088,
+            "type": "zygote",
+            "mb": 90.5
+          }
+        ]
+      },
+      {
+        "whenReady": 658,
+        "chores": {
+          "rotateLog": 4,
+          "prelude": 12,
+          "installHooks": 3,
+          "hookRelay": 2,
+          "legacyCleanup": 0,
+          "hookReconcile": 1,
+          "promptSuggestion": 1,
+          "retentionDefault": 0,
+          "symlinkCleanup": 1,
+          "staleDownloads": 0,
+          "reconcileMcp": 0,
+          "announcements": 1,
+          "remoteServer": 1,
+          "ipcPrefs": 0,
+          "themeProtocol": 3,
+          "accounts": 1
+        },
+        "createWindow": 38,
+        "createWindowAt": 688,
+        "didFinishLoad": 920,
+        "postWindowDone": 728,
+        "documentStart": 712,
+        "modulesEvaluated": 918,
+        "rootRender": 919,
+        "firstPaint": 852,
+        "firstContentfulPaint": 1012,
+        "appMounted": 946,
+        "sessionsListed": 947,
+        "blankWindowMs": 324,
+        "idlePssMb": 464.6,
+        "idleCpuPct": 0,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 854236,
+            "type": "main",
+            "mb": 226.9
+          },
+          {
+            "pid": 854238,
+            "type": "zygote",
+            "mb": 13.4
+          },
+          {
+            "pid": 854239,
+            "type": "zygote",
+            "mb": 13.4
+          },
+          {
+            "pid": 854268,
+            "type": "zygote",
+            "mb": 90.2
+          },
+          {
+            "pid": 854272,
+            "type": "utility",
+            "mb": 31
+          },
+          {
+            "pid": 854293,
+            "type": "zygote",
+            "mb": 89.6
+          }
+        ]
+      },
+      {
+        "whenReady": 655,
+        "chores": {
+          "rotateLog": 4,
+          "prelude": 11,
+          "installHooks": 4,
+          "hookRelay": 2,
+          "legacyCleanup": 0,
+          "hookReconcile": 1,
+          "promptSuggestion": 1,
+          "retentionDefault": 0,
+          "symlinkCleanup": 0,
+          "staleDownloads": 0,
+          "reconcileMcp": 1,
+          "announcements": 1,
+          "remoteServer": 1,
+          "ipcPrefs": 0,
+          "themeProtocol": 2,
+          "accounts": 2
+        },
+        "createWindow": 36,
+        "createWindowAt": 685,
+        "didFinishLoad": 840,
+        "postWindowDone": 723,
+        "documentStart": 708,
+        "modulesEvaluated": 838,
+        "rootRender": 839,
+        "firstPaint": 884,
+        "firstContentfulPaint": 932,
+        "appMounted": 867,
+        "sessionsListed": 868,
+        "blankWindowMs": 247,
+        "idlePssMb": 467.2,
+        "idleCpuPct": 0,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 854461,
+            "type": "main",
+            "mb": 228
+          },
+          {
+            "pid": 854463,
+            "type": "zygote",
+            "mb": 13.7
+          },
+          {
+            "pid": 854464,
+            "type": "zygote",
+            "mb": 13.6
+          },
+          {
+            "pid": 854492,
+            "type": "zygote",
+            "mb": 90
+          },
+          {
+            "pid": 854496,
+            "type": "utility",
+            "mb": 30.7
+          },
+          {
+            "pid": 854515,
+            "type": "zygote",
+            "mb": 91.2
+          }
+        ]
+      }
+    ],
+    "median": {
+      "whenReady": 658,
+      "chores": {
+        "rotateLog": 4,
+        "prelude": 11,
+        "installHooks": 3,
+        "hookRelay": 2,
+        "legacyCleanup": 0,
+        "hookReconcile": 1,
+        "promptSuggestion": 1,
+        "retentionDefault": 0,
+        "symlinkCleanup": 0,
+        "staleDownloads": 0,
+        "reconcileMcp": 1,
+        "announcements": 1,
+        "remoteServer": 1,
+        "ipcPrefs": 0,
+        "themeProtocol": 2,
+        "accounts": 1
+      },
+      "createWindow": 37,
+      "createWindowAt": 688,
+      "didFinishLoad": 918,
+      "postWindowDone": 728,
+      "documentStart": 712,
+      "modulesEvaluated": 916,
+      "rootRender": 918,
+      "firstPaint": 852,
+      "firstContentfulPaint": 1005,
+      "appMounted": 944,
+      "sessionsListed": 944,
+      "blankWindowMs": 315,
+      "idlePssMb": 466.5,
+      "idleCpuPct": 0,
+      "errorLines": 0
+    }
+  },
+  "idle": {
+    "pssMb": {
+      "median": 466.5,
+      "runs": [
+        466.9,
+        465.7,
+        466.5,
+        464.6,
+        467.2
+      ]
+    },
+    "cpuPct": {
+      "median": 0,
+      "runs": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "breakdownMedianRun": [
+      {
+        "pid": 854033,
+        "type": "main",
+        "mb": 227.4
+      },
+      {
+        "pid": 854035,
+        "type": "zygote",
+        "mb": 13.7
+      },
+      {
+        "pid": 854036,
+        "type": "zygote",
+        "mb": 13.6
+      },
+      {
+        "pid": 854064,
+        "type": "zygote",
+        "mb": 90.2
+      },
+      {
+        "pid": 854068,
+        "type": "utility",
+        "mb": 31.1
+      },
+      {
+        "pid": 854088,
+        "type": "zygote",
+        "mb": 90.5
+      }
+    ]
+  },
+  "history": {
+    "small": {
+      "runs": [
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 2,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 450,
+          "resumeStableMs": 450,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 9,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 656,
+          "resumeStableMs": 656,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 2,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 649,
+          "resumeStableMs": 649,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 2,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 646,
+          "resumeStableMs": 646,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 2,
+          "ipcAllMs": 2,
+          "ipcAllCount": 100,
+          "resumeFirstMessageMs": 641,
+          "resumeStableMs": 641,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcLast10Ms": 2,
+        "ipcAllMs": 2,
+        "ipcAllCount": 100,
+        "resumeFirstMessageMs": 646,
+        "resumeStableMs": 646,
+        "resumeMessageCount": 60
+      },
+      "stabilizedRuns": 5,
+      "warnings": []
+    },
+    "medium": {
+      "runs": [
+        {
+          "ipcLast10Ms": 116,
+          "ipcAllMs": 136,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 654,
+          "resumeStableMs": 654,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 130,
+          "ipcAllMs": 141,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 647,
+          "resumeStableMs": 647,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 123,
+          "ipcAllMs": 138,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 650,
+          "resumeStableMs": 650,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 118,
+          "ipcAllMs": 129,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 642,
+          "resumeStableMs": 642,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 115,
+          "ipcAllMs": 130,
+          "ipcAllCount": 5000,
+          "resumeFirstMessageMs": 647,
+          "resumeStableMs": 647,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcLast10Ms": 118,
+        "ipcAllMs": 136,
+        "ipcAllCount": 5000,
+        "resumeFirstMessageMs": 647,
+        "resumeStableMs": 647,
+        "resumeMessageCount": 60
+      },
+      "stabilizedRuns": 5,
+      "warnings": []
+    },
+    "huge": {
+      "runs": [
+        {
+          "ipcLast10Ms": 164,
+          "ipcAllMs": 194,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 619,
+          "resumeStableMs": 619,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 164,
+          "ipcAllMs": 188,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 619,
+          "resumeStableMs": 619,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 164,
+          "ipcAllMs": 193,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 617,
+          "resumeStableMs": 617,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 165,
+          "ipcAllMs": 187,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 615,
+          "resumeStableMs": 615,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "ipcLast10Ms": 163,
+          "ipcAllMs": 192,
+          "ipcAllCount": 7000,
+          "resumeFirstMessageMs": 614,
+          "resumeStableMs": 614,
+          "resumeMessageCount": 60,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcLast10Ms": 164,
+        "ipcAllMs": 192,
+        "ipcAllCount": 7000,
+        "resumeFirstMessageMs": 617,
+        "resumeStableMs": 617,
+        "resumeMessageCount": 60
+      },
+      "stabilizedRuns": 5,
+      "warnings": []
+    }
+  },
+  "workload": {
+    "runs": [
+      {
+        "sessionsCreated": 6,
+        "sessionSizes": {
+          "cc-0": "huge",
+          "cc-1": "medium",
+          "cc-2": "small",
+          "cc-3": "empty",
+          "native-0": "native",
+          "native-1": "native"
+        },
+        "warnings": [],
+        "ccCreateMedianMs": 7,
+        "nativeCreateMs": 348,
+        "nativeSendStatus": "sent",
+        "nativeEchoMs": 58,
+        "nativeFirstTokenMs": 165,
+        "nativeFailure": null,
+        "switchMedianMs": 106.9,
+        "switchP95Ms": 225.1,
+        "switchPaintedMedianMs": 173.9,
+        "switchPaintedP95Ms": 231,
+        "switchPaintedBySize": {
+          "huge": {
+            "n": 3,
+            "medianMs": 202,
+            "p95Ms": 231,
+            "medianEntries": 60,
+            "expectedEntries": 60,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "medium": {
+            "n": 3,
+            "medianMs": 225.4,
+            "p95Ms": 229.8,
+            "medianEntries": 152,
+            "expectedEntries": 152,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "small": {
+            "n": 3,
+            "medianMs": 207.2,
+            "p95Ms": 223.9,
+            "medianEntries": 166,
+            "expectedEntries": 166,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "empty": {
+            "n": 3,
+            "medianMs": 95.3,
+            "p95Ms": 112.6,
+            "medianEntries": 0,
+            "expectedEntries": 0,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "native": {
+            "n": 6,
+            "medianMs": 80.9,
+            "p95Ms": 96,
+            "medianEntries": 2,
+            "expectedEntries": null,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          }
+        },
+        "unsettledSwitches": 0,
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 188.7,
+            "paintedMs": 231,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 1,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 229.6,
+            "paintedMs": 229.8,
+            "entries": 72,
+            "expected": 72,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 2,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 206.9,
+            "paintedMs": 207.2,
+            "entries": 86,
+            "expected": 86,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 3,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 47.7,
+            "paintedMs": 112.6,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 4,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 43.5,
+            "paintedMs": 80.6,
+            "entries": 2,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 5,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 52.2,
+            "paintedMs": 95.9,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 6,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 134.6,
+            "paintedMs": 180.9,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 7,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 173.7,
+            "paintedMs": 173.9,
+            "entries": 152,
+            "expected": 152,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 8,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 181.1,
+            "paintedMs": 181.3,
+            "entries": 166,
+            "expected": 166,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 9,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 39.2,
+            "paintedMs": 95.3,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 10,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 45.2,
+            "paintedMs": 96,
+            "entries": 2,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 11,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 33.6,
+            "paintedMs": 80.9,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 12,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 156.4,
+            "paintedMs": 202,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 13,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 225.1,
+            "paintedMs": 225.4,
+            "entries": 232,
+            "expected": 232,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 14,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 223.5,
+            "paintedMs": 223.9,
+            "entries": 246,
+            "expected": 246,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 15,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 33.5,
+            "paintedMs": 94.7,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 16,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 38.5,
+            "paintedMs": 80,
+            "entries": 3,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 17,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 43.4,
+            "paintedMs": 80.1,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 18,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 106.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 19,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 191,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 20,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 200.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 21,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 39.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 22,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 32.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 23,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 31.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 24,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 108,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 25,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 191,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 26,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 203.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 27,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 34.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 28,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 33.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 29,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 33.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 30,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 107.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 31,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 207.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 32,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 217.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 33,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 38.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 34,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 33.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 35,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 32.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 36,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 106.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 37,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 220.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 38,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 236.7,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 39,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 39.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          }
+        ],
+        "clickSwitches": 40,
+        "ipcSwitches": 0,
+        "menuSwitches": 0,
+        "menuSwitchMedianMs": null,
+        "failedSwitches": 0,
+        "switchFailures": [],
+        "verifiedSwitches": 40,
+        "overflowed": false,
+        "firstSwitchMode": "pill",
+        "streamedLines": 1060,
+        "streamedTurns": 530,
+        "streamedFiles": 2,
+        "streamedInto": [
+          "medium",
+          "small"
+        ],
+        "streamedTurnsBySize": {
+          "medium": 265,
+          "small": 265
+        },
+        "streamErrors": [],
+        "probe": {
+          "longtaskCount": 37,
+          "longtaskTotalMs": 4485,
+          "longtaskMaxMs": 278,
+          "frameGapCount": 49,
+          "frameGapMaxMs": 280,
+          "longtaskSupported": true,
+          "observedMs": 43555,
+          "frames": 2360,
+          "framesPerSec": 54.2,
+          "marks": [
+            {
+              "t": 2,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 1290,
+              "label": "native-create:start"
+            },
+            {
+              "t": 1706,
+              "label": "native-send:start"
+            },
+            {
+              "t": 2165,
+              "label": "workload:start"
+            },
+            {
+              "t": 42175,
+              "label": "workload:end"
+            },
+            {
+              "t": 42201,
+              "label": "settings:open"
+            },
+            {
+              "t": 43555,
+              "label": "settings:closed"
+            }
+          ],
+          "errors": []
+        },
+        "probeWorkloadWindow": {
+          "windowMs": 40010,
+          "longtaskCount": 33,
+          "longtaskTotalMs": 3693,
+          "longtaskMaxMs": 215,
+          "longtaskSupported": true,
+          "frameGapCount": 41,
+          "frameGapMaxMs": 237
+        },
+        "cpuDuringPct": 315.8,
+        "cpuWindowSeconds": 40,
+        "pssAfterMb": 1739.1,
+        "pssBeforeSettingsMb": 1738.8,
+        "settings": {
+          "opened": true,
+          "closed": true
+        }
+      },
+      {
+        "sessionsCreated": 6,
+        "sessionSizes": {
+          "cc-0": "huge",
+          "cc-1": "medium",
+          "cc-2": "small",
+          "cc-3": "empty",
+          "native-0": "native",
+          "native-1": "native"
+        },
+        "warnings": [],
+        "ccCreateMedianMs": 8,
+        "nativeCreateMs": 346,
+        "nativeSendStatus": "sent",
+        "nativeEchoMs": 19,
+        "nativeFirstTokenMs": 176,
+        "nativeFailure": null,
+        "switchMedianMs": 102.8,
+        "switchP95Ms": 230,
+        "switchPaintedMedianMs": 186.4,
+        "switchPaintedP95Ms": 278.5,
+        "switchPaintedBySize": {
+          "huge": {
+            "n": 3,
+            "medianMs": 220.5,
+            "p95Ms": 270.7,
+            "medianEntries": 60,
+            "expectedEntries": 60,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "medium": {
+            "n": 3,
+            "medianMs": 209,
+            "p95Ms": 226.6,
+            "medianEntries": 152,
+            "expectedEntries": 152,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "small": {
+            "n": 3,
+            "medianMs": 234.3,
+            "p95Ms": 278.5,
+            "medianEntries": 166,
+            "expectedEntries": 166,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "empty": {
+            "n": 3,
+            "medianMs": 101.6,
+            "p95Ms": 102.6,
+            "medianEntries": 0,
+            "expectedEntries": 0,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "native": {
+            "n": 6,
+            "medianMs": 86.6,
+            "p95Ms": 87.9,
+            "medianEntries": 2,
+            "expectedEntries": null,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          }
+        },
+        "unsettledSwitches": 0,
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 220.5,
+            "paintedMs": 270.7,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 1,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 208.8,
+            "paintedMs": 209,
+            "entries": 72,
+            "expected": 72,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 2,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 234.2,
+            "paintedMs": 234.3,
+            "entries": 86,
+            "expected": 86,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 3,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 45.2,
+            "paintedMs": 101.6,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 4,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 50.1,
+            "paintedMs": 87,
+            "entries": 2,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 5,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 40.5,
+            "paintedMs": 87.9,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 6,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 171.9,
+            "paintedMs": 220.5,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 7,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 226.4,
+            "paintedMs": 226.6,
+            "entries": 152,
+            "expected": 152,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 8,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 188.1,
+            "paintedMs": 188.3,
+            "entries": 166,
+            "expected": 166,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 9,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 41.8,
+            "paintedMs": 102.6,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 10,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 42.1,
+            "paintedMs": 86.6,
+            "entries": 2,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 11,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 37.7,
+            "paintedMs": 81.1,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 12,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 148.9,
+            "paintedMs": 186.8,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 13,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 186.2,
+            "paintedMs": 186.4,
+            "entries": 232,
+            "expected": 232,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 14,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 278.2,
+            "paintedMs": 278.5,
+            "entries": 246,
+            "expected": 246,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 15,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 35,
+            "paintedMs": 94.7,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 16,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 38.1,
+            "paintedMs": 84.7,
+            "entries": 3,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 17,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 39.2,
+            "paintedMs": 85.7,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 18,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 107.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 19,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 189.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 20,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 200,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 21,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 35.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 22,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 35.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 23,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 30.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 24,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 102.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 25,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 189.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 26,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 204.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 27,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 33.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 28,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 48.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 29,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 31.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 30,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 102.6,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 31,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 211.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 32,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 215.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 33,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 32.6,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 34,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 38.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 35,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 31.7,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 36,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 105.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 37,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 224.7,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 38,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 230,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 39,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 89.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          }
+        ],
+        "clickSwitches": 40,
+        "ipcSwitches": 0,
+        "menuSwitches": 0,
+        "menuSwitchMedianMs": null,
+        "failedSwitches": 0,
+        "switchFailures": [],
+        "verifiedSwitches": 40,
+        "overflowed": false,
+        "firstSwitchMode": "pill",
+        "streamedLines": 1060,
+        "streamedTurns": 530,
+        "streamedFiles": 2,
+        "streamedInto": [
+          "medium",
+          "small"
+        ],
+        "streamedTurnsBySize": {
+          "medium": 265,
+          "small": 265
+        },
+        "streamErrors": [],
+        "probe": {
+          "longtaskCount": 38,
+          "longtaskTotalMs": 4687,
+          "longtaskMaxMs": 281,
+          "frameGapCount": 59,
+          "frameGapMaxMs": 296,
+          "longtaskSupported": true,
+          "observedMs": 44820,
+          "frames": 2398,
+          "framesPerSec": 53.5,
+          "marks": [
+            {
+              "t": 5,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 2537,
+              "label": "native-create:start"
+            },
+            {
+              "t": 2954,
+              "label": "native-send:start"
+            },
+            {
+              "t": 3423,
+              "label": "workload:start"
+            },
+            {
+              "t": 43432,
+              "label": "workload:end"
+            },
+            {
+              "t": 43458,
+              "label": "settings:open"
+            },
+            {
+              "t": 44820,
+              "label": "settings:closed"
+            }
+          ],
+          "errors": []
+        },
+        "probeWorkloadWindow": {
+          "windowMs": 40009,
+          "longtaskCount": 34,
+          "longtaskTotalMs": 3858,
+          "longtaskMaxMs": 226,
+          "longtaskSupported": true,
+          "frameGapCount": 51,
+          "frameGapMaxMs": 243
+        },
+        "cpuDuringPct": 325.7,
+        "cpuWindowSeconds": 40,
+        "pssAfterMb": 1735.4,
+        "pssBeforeSettingsMb": 1735.2,
+        "settings": {
+          "opened": true,
+          "closed": true
+        }
+      },
+      {
+        "sessionsCreated": 6,
+        "sessionSizes": {
+          "cc-0": "huge",
+          "cc-1": "medium",
+          "cc-2": "small",
+          "cc-3": "empty",
+          "native-0": "native",
+          "native-1": "native"
+        },
+        "warnings": [],
+        "ccCreateMedianMs": 9,
+        "nativeCreateMs": 348,
+        "nativeSendStatus": "sent",
+        "nativeEchoMs": 71,
+        "nativeFirstTokenMs": 175,
+        "nativeFailure": null,
+        "switchMedianMs": 103.6,
+        "switchP95Ms": 235.4,
+        "switchPaintedMedianMs": 170.3,
+        "switchPaintedP95Ms": 269.1,
+        "switchPaintedBySize": {
+          "huge": {
+            "n": 3,
+            "medianMs": 183.1,
+            "p95Ms": 202.9,
+            "medianEntries": 60,
+            "expectedEntries": 60,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "medium": {
+            "n": 3,
+            "medianMs": 219.9,
+            "p95Ms": 269.1,
+            "medianEntries": 152,
+            "expectedEntries": 152,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "small": {
+            "n": 3,
+            "medianMs": 200.2,
+            "p95Ms": 253.9,
+            "medianEntries": 166,
+            "expectedEntries": 166,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "empty": {
+            "n": 3,
+            "medianMs": 114.7,
+            "p95Ms": 147.8,
+            "medianEntries": 0,
+            "expectedEntries": 0,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "native": {
+            "n": 6,
+            "medianMs": 83.1,
+            "p95Ms": 99.9,
+            "medianEntries": 2,
+            "expectedEntries": null,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          }
+        },
+        "unsettledSwitches": 0,
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 127.9,
+            "paintedMs": 170.3,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 1,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 219.8,
+            "paintedMs": 219.9,
+            "entries": 72,
+            "expected": 72,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 2,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 184,
+            "paintedMs": 184.1,
+            "entries": 86,
+            "expected": 86,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 3,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 63.2,
+            "paintedMs": 147.8,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 4,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 45.8,
+            "paintedMs": 83.1,
+            "entries": 2,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 5,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 50.5,
+            "paintedMs": 99.3,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 6,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 160.8,
+            "paintedMs": 202.9,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 7,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 202.2,
+            "paintedMs": 202.4,
+            "entries": 152,
+            "expected": 152,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 8,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 200,
+            "paintedMs": 200.2,
+            "entries": 166,
+            "expected": 166,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 9,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 46.6,
+            "paintedMs": 114.7,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 10,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 59.7,
+            "paintedMs": 99.9,
+            "entries": 2,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 11,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 39,
+            "paintedMs": 81.8,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 12,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 118.4,
+            "paintedMs": 183.1,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 13,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 268.8,
+            "paintedMs": 269.1,
+            "entries": 232,
+            "expected": 232,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 14,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 253.6,
+            "paintedMs": 253.9,
+            "entries": 246,
+            "expected": 246,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 15,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 32,
+            "paintedMs": 99.7,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 16,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 41.6,
+            "paintedMs": 81.3,
+            "entries": 3,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 17,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 30.4,
+            "paintedMs": 74.2,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 18,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 105.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 19,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 181.6,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 20,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 194.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 21,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 33.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 22,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 31.7,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 23,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 41.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 24,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 103.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 25,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 192.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 26,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 206.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 27,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 39.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 28,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 33.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 29,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 32.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 30,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 103.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 31,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 217.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 32,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 222,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 33,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 34.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 34,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 46.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 35,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 34.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 36,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 103.6,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 37,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 229,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 38,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 235.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 39,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 40.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          }
+        ],
+        "clickSwitches": 40,
+        "ipcSwitches": 0,
+        "menuSwitches": 0,
+        "menuSwitchMedianMs": null,
+        "failedSwitches": 0,
+        "switchFailures": [],
+        "verifiedSwitches": 40,
+        "overflowed": false,
+        "firstSwitchMode": "pill",
+        "streamedLines": 1060,
+        "streamedTurns": 530,
+        "streamedFiles": 2,
+        "streamedInto": [
+          "medium",
+          "small"
+        ],
+        "streamedTurnsBySize": {
+          "medium": 265,
+          "small": 265
+        },
+        "streamErrors": [],
+        "probe": {
+          "longtaskCount": 41,
+          "longtaskTotalMs": 4720,
+          "longtaskMaxMs": 293,
+          "frameGapCount": 48,
+          "frameGapMaxMs": 307,
+          "longtaskSupported": true,
+          "observedMs": 43709,
+          "frames": 2359,
+          "framesPerSec": 54,
+          "marks": [
+            {
+              "t": 2,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 1433,
+              "label": "native-create:start"
+            },
+            {
+              "t": 1848,
+              "label": "native-send:start"
+            },
+            {
+              "t": 2315,
+              "label": "workload:start"
+            },
+            {
+              "t": 42325,
+              "label": "workload:end"
+            },
+            {
+              "t": 42351,
+              "label": "settings:open"
+            },
+            {
+              "t": 43708,
+              "label": "settings:closed"
+            }
+          ],
+          "errors": []
+        },
+        "probeWorkloadWindow": {
+          "windowMs": 40010,
+          "longtaskCount": 37,
+          "longtaskTotalMs": 3910,
+          "longtaskMaxMs": 259,
+          "longtaskSupported": true,
+          "frameGapCount": 39,
+          "frameGapMaxMs": 267
+        },
+        "cpuDuringPct": 326.8,
+        "cpuWindowSeconds": 40,
+        "pssAfterMb": 1721.9,
+        "pssBeforeSettingsMb": 1721.7,
+        "settings": {
+          "opened": true,
+          "closed": true
+        }
+      }
+    ],
+    "median": {
+      "sessionsCreated": 6,
+      "sessionSizes": {
+        "cc-0": null,
+        "cc-1": null,
+        "cc-2": null,
+        "cc-3": null,
+        "native-0": null,
+        "native-1": null
+      },
+      "ccCreateMedianMs": 8,
+      "nativeCreateMs": 348,
+      "nativeSendStatus": null,
+      "nativeEchoMs": 58,
+      "nativeFirstTokenMs": 175,
+      "nativeFailure": null,
+      "switchMedianMs": 103.6,
+      "switchP95Ms": 230,
+      "switchPaintedMedianMs": 173.9,
+      "switchPaintedP95Ms": 269.1,
+      "switchPaintedBySize": {
+        "huge": {
+          "n": 3,
+          "medianMs": 202,
+          "p95Ms": 231,
+          "medianEntries": 60,
+          "expectedEntries": 60,
+          "short": 0,
+          "over": 0,
+          "unsettled": 0
+        },
+        "medium": {
+          "n": 3,
+          "medianMs": 219.9,
+          "p95Ms": 229.8,
+          "medianEntries": 152,
+          "expectedEntries": 152,
+          "short": 0,
+          "over": 0,
+          "unsettled": 0
+        },
+        "small": {
+          "n": 3,
+          "medianMs": 207.2,
+          "p95Ms": 253.9,
+          "medianEntries": 166,
+          "expectedEntries": 166,
+          "short": 0,
+          "over": 0,
+          "unsettled": 0
+        },
+        "empty": {
+          "n": 3,
+          "medianMs": 101.6,
+          "p95Ms": 112.6,
+          "medianEntries": 0,
+          "expectedEntries": 0,
+          "short": 0,
+          "over": 0,
+          "unsettled": 0
+        },
+        "native": {
+          "n": 6,
+          "medianMs": 83.1,
+          "p95Ms": 96,
+          "medianEntries": 2,
+          "expectedEntries": null,
+          "short": 0,
+          "over": 0,
+          "unsettled": 0
+        }
+      },
+      "unsettledSwitches": 0,
+      "clickSwitches": 40,
+      "ipcSwitches": 0,
+      "menuSwitches": 0,
+      "menuSwitchMedianMs": null,
+      "failedSwitches": 0,
+      "verifiedSwitches": 40,
+      "overflowed": null,
+      "firstSwitchMode": null,
+      "streamedLines": 1060,
+      "streamedTurns": 530,
+      "streamedFiles": 2,
+      "streamedTurnsBySize": {
+        "medium": 265,
+        "small": 265
+      },
+      "probe": {
+        "longtaskCount": 38,
+        "longtaskTotalMs": 4687,
+        "longtaskMaxMs": 281,
+        "frameGapCount": 49,
+        "frameGapMaxMs": 296,
+        "longtaskSupported": null,
+        "observedMs": 43709,
+        "frames": 2360,
+        "framesPerSec": 54
+      },
+      "probeWorkloadWindow": {
+        "windowMs": 40010,
+        "longtaskCount": 34,
+        "longtaskTotalMs": 3858,
+        "longtaskMaxMs": 226,
+        "longtaskSupported": null,
+        "frameGapCount": 41,
+        "frameGapMaxMs": 243
+      },
+      "cpuDuringPct": 325.7,
+      "cpuWindowSeconds": 40,
+      "pssAfterMb": 1735.4,
+      "pssBeforeSettingsMb": 1735.2,
+      "settings": {
+        "opened": null,
+        "closed": null
+      }
+    },
+    "pssBreakdownFirstRun": [
+      {
+        "pid": 854758,
+        "type": "main",
+        "mb": 166.6
+      },
+      {
+        "pid": 854760,
+        "type": "zygote",
+        "mb": 12.4
+      },
+      {
+        "pid": 854761,
+        "type": "zygote",
+        "mb": 12.3
+      },
+      {
+        "pid": 854790,
+        "type": "zygote",
+        "mb": 94.6
+      },
+      {
+        "pid": 854794,
+        "type": "utility",
+        "mb": 28.7
+      },
+      {
+        "pid": 854814,
+        "type": "zygote",
+        "mb": 426.7
+      },
+      {
+        "pid": 854908,
+        "type": "pty-worker",
+        "mb": 21.7
+      },
+      {
+        "pid": 854915,
+        "type": "fake-claude",
+        "mb": 21.5
+      },
+      {
+        "pid": 854923,
+        "type": "pty-worker",
+        "mb": 21.7
+      },
+      {
+        "pid": 854930,
+        "type": "fake-claude",
+        "mb": 21.5
+      },
+      {
+        "pid": 854940,
+        "type": "pty-worker",
+        "mb": 21.7
+      },
+      {
+        "pid": 854947,
+        "type": "fake-claude",
+        "mb": 21.5
+      },
+      {
+        "pid": 854955,
+        "type": "pty-worker",
+        "mb": 21.7
+      },
+      {
+        "pid": 854962,
+        "type": "fake-claude",
+        "mb": 21.5
+      },
+      {
+        "pid": 854998,
+        "type": "llama-server",
+        "mb": 8.6
+      },
+      {
+        "pid": 855021,
+        "type": "llama-server",
+        "mb": 795
+      },
+      {
+        "pid": 855070,
+        "type": "utility",
+        "mb": 21.4
+      }
+    ]
+  },
+  "replayStall": {
+    "small": {
+      "runs": [
+        {
+          "probeCoveragePct": 88,
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 1,
+          "ipcMaxMs": 9,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 22,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 100,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 451,
+              "roundTripMs": 9,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 1800,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 500,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 600,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 700,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 2,
+          "rendererLongtaskTotalMs": 406,
+          "rendererLongtaskMaxMs": 341,
+          "longtaskSupported": true,
+          "renderedEntries": 60,
+          "expectedEntries": 60,
+          "onDiskEntries": 100,
+          "elapsedMs": 2596,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "probeCoveragePct": 96.2,
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 3,
+          "ipcMaxMs": 93,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 25,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 262,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 2500,
+              "roundTripMs": 93,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 662,
+              "roundTripMs": 3,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 300,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 100,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 200,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 1,
+          "rendererLongtaskTotalMs": 195,
+          "rendererLongtaskMaxMs": 195,
+          "longtaskSupported": true,
+          "renderedEntries": 60,
+          "expectedEntries": 60,
+          "onDiskEntries": 100,
+          "elapsedMs": 2673,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "probeCoveragePct": 96.2,
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 2,
+          "ipcMaxMs": 72,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 25,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 247,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 2500,
+              "roundTripMs": 72,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 647,
+              "roundTripMs": 2,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 100,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 200,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 300,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 1,
+          "rendererLongtaskTotalMs": 188,
+          "rendererLongtaskMaxMs": 188,
+          "longtaskSupported": true,
+          "renderedEntries": 60,
+          "expectedEntries": 60,
+          "onDiskEntries": 100,
+          "elapsedMs": 2658,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcMedianMs": 0,
+        "ipcP95Ms": 2,
+        "ipcMaxMs": 72,
+        "ipcOver250ms": 0,
+        "ipcOver1000ms": 0,
+        "ipcTotalStallMs": 0,
+        "ipcPings": 25,
+        "ipcMissedTicks": 0,
+        "ipcMaxPingGapMs": 247,
+        "mainProcessStallMs": 0,
+        "mainProcessStallMaxMs": 0,
+        "rendererStallMs": 0,
+        "rendererStallMaxMs": 0,
+        "rendererLongtaskCount": 1,
+        "rendererLongtaskTotalMs": 195,
+        "rendererLongtaskMaxMs": 195,
+        "renderedEntries": 60,
+        "elapsedMs": 2658,
+        "probeCoveragePct": 96.2
+      },
+      "blame": "none",
+      "stabilizedRuns": 3,
+      "warnings": []
+    },
+    "medium": {
+      "runs": [
+        {
+          "probeCoveragePct": 96.2,
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 2,
+          "ipcMaxMs": 64,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 25,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 253,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 2500,
+              "roundTripMs": 64,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 653,
+              "roundTripMs": 2,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 100,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 200,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 300,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 1,
+          "rendererLongtaskTotalMs": 186,
+          "rendererLongtaskMaxMs": 186,
+          "longtaskSupported": true,
+          "renderedEntries": 60,
+          "expectedEntries": 60,
+          "onDiskEntries": 5000,
+          "elapsedMs": 2664,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "probeCoveragePct": 96.2,
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 2,
+          "ipcMaxMs": 37,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 25,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 244,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 2500,
+              "roundTripMs": 37,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 644,
+              "roundTripMs": 2,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 100,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 200,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 300,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 1,
+          "rendererLongtaskTotalMs": 179,
+          "rendererLongtaskMaxMs": 179,
+          "longtaskSupported": true,
+          "renderedEntries": 60,
+          "expectedEntries": 60,
+          "onDiskEntries": 5000,
+          "elapsedMs": 2658,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "probeCoveragePct": 96.2,
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 2,
+          "ipcMaxMs": 12,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 25,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 252,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 2500,
+              "roundTripMs": 12,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 652,
+              "roundTripMs": 2,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 100,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 200,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 300,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 1,
+          "rendererLongtaskTotalMs": 183,
+          "rendererLongtaskMaxMs": 183,
+          "longtaskSupported": true,
+          "renderedEntries": 60,
+          "expectedEntries": 60,
+          "onDiskEntries": 5000,
+          "elapsedMs": 2662,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcMedianMs": 0,
+        "ipcP95Ms": 2,
+        "ipcMaxMs": 37,
+        "ipcOver250ms": 0,
+        "ipcOver1000ms": 0,
+        "ipcTotalStallMs": 0,
+        "ipcPings": 25,
+        "ipcMissedTicks": 0,
+        "ipcMaxPingGapMs": 252,
+        "mainProcessStallMs": 0,
+        "mainProcessStallMaxMs": 0,
+        "rendererStallMs": 0,
+        "rendererStallMaxMs": 0,
+        "rendererLongtaskCount": 1,
+        "rendererLongtaskTotalMs": 183,
+        "rendererLongtaskMaxMs": 183,
+        "renderedEntries": 60,
+        "elapsedMs": 2662,
+        "probeCoveragePct": 96.2
+      },
+      "blame": "none",
+      "stabilizedRuns": 3,
+      "warnings": []
+    },
+    "huge": {
+      "runs": [
+        {
+          "probeCoveragePct": 96.2,
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 2,
+          "ipcMaxMs": 10,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 25,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 219,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 2500,
+              "roundTripMs": 10,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 619,
+              "roundTripMs": 2,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 100,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 200,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 300,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 1,
+          "rendererLongtaskTotalMs": 154,
+          "rendererLongtaskMaxMs": 154,
+          "longtaskSupported": true,
+          "renderedEntries": 60,
+          "expectedEntries": 60,
+          "onDiskEntries": 7000,
+          "elapsedMs": 2626,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "probeCoveragePct": 96.2,
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 2,
+          "ipcMaxMs": 10,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 25,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 224,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 2500,
+              "roundTripMs": 10,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 624,
+              "roundTripMs": 2,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 100,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 200,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 300,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 1,
+          "rendererLongtaskTotalMs": 153,
+          "rendererLongtaskMaxMs": 153,
+          "longtaskSupported": true,
+          "renderedEntries": 60,
+          "expectedEntries": 60,
+          "onDiskEntries": 7000,
+          "elapsedMs": 2637,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        },
+        {
+          "probeCoveragePct": 96.2,
+          "ipcMedianMs": 0,
+          "ipcP95Ms": 2,
+          "ipcMaxMs": 10,
+          "ipcOver250ms": 0,
+          "ipcOver1000ms": 0,
+          "ipcTotalStallMs": 0,
+          "ipcPings": 25,
+          "ipcMissedTicks": 0,
+          "ipcMaxPingGapMs": 221,
+          "mainProcessStallMs": 0,
+          "mainProcessStallMaxMs": 0,
+          "rendererStallMs": 0,
+          "rendererStallMaxMs": 0,
+          "blame": "none",
+          "worstStalls": [
+            {
+              "atMs": 2500,
+              "roundTripMs": 10,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 621,
+              "roundTripMs": 2,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 2200,
+              "roundTripMs": 1,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 100,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            },
+            {
+              "atMs": 200,
+              "roundTripMs": 0,
+              "stallMs": 0,
+              "longtaskOverlapMs": 0,
+              "blame": "main-process"
+            }
+          ],
+          "rendererLongtaskCount": 1,
+          "rendererLongtaskTotalMs": 152,
+          "rendererLongtaskMaxMs": 152,
+          "longtaskSupported": true,
+          "renderedEntries": 60,
+          "expectedEntries": 60,
+          "onDiskEntries": 7000,
+          "elapsedMs": 2632,
+          "timedOutAfterMs": null,
+          "stability": "stable",
+          "warnings": []
+        }
+      ],
+      "median": {
+        "ipcMedianMs": 0,
+        "ipcP95Ms": 2,
+        "ipcMaxMs": 10,
+        "ipcOver250ms": 0,
+        "ipcOver1000ms": 0,
+        "ipcTotalStallMs": 0,
+        "ipcPings": 25,
+        "ipcMissedTicks": 0,
+        "ipcMaxPingGapMs": 221,
+        "mainProcessStallMs": 0,
+        "mainProcessStallMaxMs": 0,
+        "rendererStallMs": 0,
+        "rendererStallMaxMs": 0,
+        "rendererLongtaskCount": 1,
+        "rendererLongtaskTotalMs": 153,
+        "rendererLongtaskMaxMs": 153,
+        "renderedEntries": 60,
+        "elapsedMs": 2632,
+        "probeCoveragePct": 96.2
+      },
+      "blame": "none",
+      "stabilizedRuns": 3,
+      "warnings": []
+    }
+  },
+  "artifacts": null,
+  "measures": {
+    "workload": {
+      "scenario": "workload",
+      "question": "Is the app responsive while several sessions are open, one is streaming, and the user switches between them?",
+      "configuration": [
+        "6 sessions open at once (4 Claude Code + 2 native)",
+        "3 of the 4 CC sessions are RESUMED from real transcripts (huge, medium, small), each in its transcript's own project folder; the 4th is deliberately left EMPTY as a control",
+        "a transcript streams into the medium and small sessions throughout the window — never into huge (the one clean loaded switch) and never into the empty control; the run records streamedInto and streamedTurnsBySize",
+        "40 switches spread evenly across the same window the CPU sample covers",
+        "every repeat is its OWN boot with a freshly built fixture — nothing (transcript bytes, the app's own transcript mirror, caches, leftover sessions, memory) carries from one repeat to the next; the streamed-into transcripts are also cut back to their built bytes after each repeat and their size is checked before it"
+      ],
+      "clocks": {
+        "switchMedianMs": "click -> the visible pane CONTAINER swapped (2 animation frames). Does NOT wait for messages.",
+        "switchPaintedMedianMs": "click -> the messages are on screen: entry count stable for 3 frames AND at least what the conversation holds (2 per turn, plus what streamed in so far). A stable count below that is a render pause or the wrong conversation, not a settle. For the two STREAMING sessions the count never holds still, so their clock stops at the first frame showing everything that had arrived by the click. This is the number a user would recognise.",
+        "switchPaintedBySize.huge.medianMs": "the same clock, for switches INTO the huge conversation only — the PRIMARY switch metric, because it is the case Destin lives in and the only bucket no stream touches",
+        "cpuDuringPct": "whole-process CPU across the workload window, from /proc"
+      },
+      "blindTo": [
+        "conversation sizes beyond the fixture huge transcript",
+        "switching under memory pressure from many MORE than 6 sessions",
+        "anything requiring a real GPU — the rig runs headless under Xvfb",
+        "per-TOKEN streaming cost: the streamer appends WHOLE turns (a user line + an assistant line per 150 ms tick) through the Claude Code transcript path, so the renderer sees ~7 renders/s per target, each appending timeline entries — never the native harness's hundreds of same-turn deltas per second, none of which append an entry. A fix that only helps the per-delta path (cycle-1 N2/N3) is under-represented here; measuring it needs a native-provider streaming variant",
+        "whether a switch into a STREAMING session feels slow because of the stream or because of the size — medium and small carry both; only huge and empty are clean",
+        "ENTRIES_PER_TURN is a measured constant, not read from the app — if the app changes what a timeline entry is, every resumed switch stops settling and the report says so, but the rig cannot fix itself"
+      ]
+    },
+    "history": {
+      "scenario": "history",
+      "question": "How long does loading a conversation take, at three sizes?",
+      "configuration": [
+        "one session at a time, resumed from a prebuilt transcript",
+        "three sizes: small, medium, huge"
+      ],
+      "clocks": {
+        "ipcLast10Ms": "the loadHistory IPC call for the last 10 messages",
+        "ipcAllMs": "the loadHistory IPC call for the whole transcript",
+        "resumeStableMs": "resume -> the rendered entry count stops changing"
+      },
+      "blindTo": [
+        "which THREAD the time was spent on — that is the stall scenario",
+        "anything requiring more than one session open"
+      ]
+    },
+    "stall": {
+      "scenario": "stall",
+      "question": "When a conversation is opened, how long is the app unresponsive, and WHICH THREAD was blocked?",
+      "configuration": [
+        "one session at a time, resumed from a prebuilt transcript",
+        "three sizes: small (~100 entries), medium (~5,000), huge (~7,000)",
+        "nothing else running — a clean boot, so no other session contributes"
+      ],
+      "clocks": {
+        "ipcTotalStallMs": "sum of IPC round trips beyond the ping interval — RAW unresponsiveness, says nothing about which thread",
+        "mainProcessStallMs": "the part of that with NO renderer long task under it",
+        "rendererStallMs": "the part overlapped by a renderer long task"
+      },
+      "blindTo": [
+        "MOST renderer blocks entirely. The IPC probe is a setInterval running INSIDE the renderer, so a blocked renderer stops it from firing at all. Only a block that begins while a ping is already outstanding produces a sample — and with a trivial handler the probe is in flight roughly 1% of the time. ipcTotalStallMs is therefore a FLOOR on unresponsiveness, not a total.",
+        "main-process blocking that happens WHILE the renderer is also blocked — overlap is charged to the renderer",
+        "renderer blocking under 50ms (PerformanceObserver does not report it), which is charged to the main process instead",
+        "any cost that needs more than one session open to appear"
+      ],
+      "biasDirection": "overstates the main process; understates the renderer"
+    },
+    "artifacts": {
+      "scenario": "artifacts",
+      "question": "What does the files panel cost to open, edit, and navigate?",
+      "configuration": [
+        "one session, resumed from the small transcript",
+        "six artifacts registered: code / markdown / HTML, each in a small and a large size",
+        "30 keystrokes typed into a real CodeMirror editor at ~45ms spacing"
+      ],
+      "clocks": {
+        "open.*.openMs": "click the row -> the viewer reports the right document mounted",
+        "typing.*.keystroke": "keydown -> painted, measured in-page via beforeinput",
+        "htmlNav.swap": "select a different HTML artifact -> the iframe load event"
+      },
+      "blindTo": [
+        "documents above EDIT_MAX_BYTES (3 MB) — the pane serves a read-only prefix, so typing is not measured there",
+        "real clipboard cost: MarkdownContent fires writeText without awaiting it",
+        "GPU-accelerated scrolling in the viewer — headless Xvfb has no compositor"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "scenarioBoot": 0,
+    "workloadBoots": [
+      0,
+      0,
+      0
+    ],
+    "stallBoot": 0,
+    "artifactsBoot": null
+  },
+  "screens": {
+    "dir": "/home/destin/youcoded-dev/perf-reports/shots/2026-08-28-0301-9fa2c0f-cycle2-paged",
+    "names": [
+      "welcome",
+      "chat-medium",
+      "settings-open",
+      "six-sessions",
+      "native-chat"
+    ],
+    "failures": []
+  },
+  "aborted": "artifacts: the session-files drawer never opened — artifacts: the drawer opened but never listed perf-small.ts within 30s. It listed []. The files were registered against projectRoot \"/home/destin/youcoded-dev/scratch/perf-lab/home/projects/alpha\"; if the drawer resolved a different project root, every open below would have measured a miss instead of a file.",
+  "incomplete": [
+    "artifacts: no runs were recorded",
+    "artifacts: keystroke-to-paint was never measured on the large file — the meter did not arm, so typing cost is UNKNOWN, not zero",
+    "compare.mjs PRIMARY path \"artifacts.median.open.mdLarge.openMs\" is undefined — the keep/reject gate would be BLIND to this metric",
+    "compare.mjs PRIMARY path \"artifacts.median.typing.codeLarge.keystroke.p95Ms\" is undefined — the keep/reject gate would be BLIND to this metric",
+    "compare.mjs PRIMARY path \"artifacts.median.htmlNav.swap.medianMs\" is undefined — the keep/reject gate would be BLIND to this metric",
+    "compare.mjs PRIMARY path \"artifacts.median.ipcSumOfSteps.totalStallMs\" is undefined — the keep/reject gate would be BLIND to this metric"
+  ]
+}
