@@ -253,7 +253,7 @@ const mark = (cdp, label) =>
  *    React serialises `inert={false}` as `inert=""` on some versions, which makes
  *    an `[inert]` test match every pane and the answer always empty.
  */
-async function installPageHelpers(cdp) {
+export async function installPageHelpers(cdp) {
   await cdp.evaluate(`(() => {
     const strip = () => document.querySelector('[data-session-strip]') || document.querySelector('.session-strip');
     const pills = () => { const s = strip(); return s ? Array.prototype.slice.call(s.querySelectorAll('[data-session-idx]')) : []; };
@@ -447,7 +447,7 @@ async function createSession(cdp, opts) {
  * window to appear first — and if it never does (the create finished faster than
  * the poll), that is fine and we move on rather than failing the run.
  */
-async function waitForSessionReady(cdp, { appearMs = 1500, clearMs = 30000 } = {}) {
+export async function waitForSessionReady(cdp, { appearMs = 1500, clearMs = 30000 } = {}) {
   const gone = `!document.body.innerText.includes('Initializing session')`;
   const t0 = Date.now();
   let appeared = false;
@@ -677,6 +677,106 @@ export const MEASURES = {
   ],
 };
 
+/**
+ * Opens THE journey configuration: 4 Claude Code sessions (huge / medium / small
+ * resumed from real transcripts, the 4th deliberately left EMPTY as a control)
+ * plus 2 native harness sessions.
+ *
+ * WHY this is a shared export and not inline in the workload scenario: `workload`
+ * and `scrollback` must open the SAME six sessions or their PSS numbers cannot be
+ * lined up — and lining them up is the whole point of the scrollback phase.
+ * Workload measures the paged FLOOR these six settle at; scrollback measures the
+ * CEILING the same six reach once the user has scrolled each one back. Two copies
+ * of this session list would drift apart and the comparison would quietly stop
+ * meaning anything, which is exactly the failure the handoff of 2026-08-28
+ * records (a headline number outliving the configuration it was measured in).
+ *
+ * `ids` is MUTATED in place rather than returned, so a caller's finally-block
+ * teardown covers every session that was created before a throw.
+ *
+ * `mark()` no-ops when the long-task probe is not installed (it checks for
+ * window.__perfProbe), so a caller that does not install the probe still works.
+ */
+export async function openJourneySessions(cdp, fixture, { ids, warnings = [] } = {}) {
+  // ── 4 Claude Code sessions, alternating project folders ──────────────
+  await mark(cdp, 'cc-create:start');
+
+  // ── 4 Claude Code sessions, THREE OF THEM RESUMED FROM REAL TRANSCRIPTS ──
+  //
+  // WHY RESUMED (changed 2026-08-27, and this is the whole point of the fix).
+  // Until today all six sessions were created FRESH. A fresh session holds
+  // nothing, so the 40 switches below were switching between near-empty
+  // conversations — and the rig duly reported `switchP95Ms` 118 ms and called
+  // session switching healthy. Destin switches between conversations with
+  // thousands of messages, which is the configuration in which the suspected
+  // cost (every open session keeps a mounted, unvirtualized ChatView) actually
+  // exists. Measuring the empty case and reporting it as "switching" is the
+  // same mistake as measuring idle with zero sessions open.
+  //
+  // Each fixture transcript is resumed AT MOST ONCE — `resumeSessionId` names
+  // one specific stored session, and pointing two live sessions at the same id
+  // is not a configuration the app is built for.
+  //
+  // The 4th stays fresh ON PURPOSE: it is the control. A switch INTO the empty
+  // session should stay cheap, and if it does not, the cost is not the
+  // conversation size and this whole line of reasoning is wrong.
+  const ccMs = [];
+  const names = [];
+  const resumeOrder = ['huge', 'medium', 'small'];
+  const sizeByName = {};
+  for (let i = 0; i < 4; i++) {
+    const cwd = i % 2 ? fixture.projects.beta : fixture.projects.alpha;
+    const name = `cc-${i}`;
+    const size = resumeOrder[i];
+    const t = size ? fixture.transcripts?.[size] : null;
+    if (size && !t) {
+      warnings.push(`workload: fixture has no '${size}' transcript, so cc-${i} was created EMPTY — its switch timings measure an empty conversation, not a loaded one`);
+    }
+    // A resumed session must be created in the transcript's OWN cwd, or the
+    // app looks for it under the wrong project slug and silently resumes nothing.
+    //
+    // FIXED 2026-08-27: this read `t.cwd ?? cwd` while the fixture record had NO
+    // cwd field — so cc-1 ('medium', an odd index) was created in `beta` with a
+    // transcript that lives under `alpha`. It resumed nothing, started empty, and
+    // the streamer (which then targeted "new files") filled it: the report showed
+    // a "medium" conversation of 319 entries switching in 1.4 s, beside a 5,000-
+    // entry medium taking 14.8 s to open in the history scenario. The comment
+    // above was right and the code beside it did the opposite. The fixture now
+    // records cwd; a record without one is refused here rather than guessed at.
+    if (t && !t.cwd) throw new Error(`workload: fixture transcript '${size}' carries no cwd — refusing to guess which project folder to resume it in`);
+    const opts = t
+      ? { name, cwd: t.cwd, skipPermissions: true, resumeSessionId: t.sessionId }
+      : { name, cwd, skipPermissions: true };
+    const r = await createSession(cdp, opts);
+    ids.push(r.id); names.push(name); ccMs.push(r.ms);
+    sizeByName[name] = t ? size : 'empty';
+    await waitForSessionReady(cdp);
+  }
+
+  // ── 2 native (YouCoded harness) sessions ─────────────────────────────
+  // `binding` and `preset` are absent from preload's TS type for session.create
+  // (preload.ts:376-377) but ARE forwarded verbatim by structured clone and are
+  // what main reads (ipc-handlers.ts:681); session-manager.ts:85-87 THROWS if a
+  // fresh native session has no binding. skipPermissions is passed false to
+  // match the journey — the native branch hardcodes false anyway
+  // (session-manager.ts:95-96), since there is no PTY for it to affect.
+  await mark(cdp, 'native-create:start');
+  const nat = [];
+  for (let i = 0; i < 2; i++) {
+    const name = `native-${i}`;
+    const r = await createSession(cdp, {
+      name, cwd: fixture.projects.alpha, skipPermissions: false,
+      provider: 'native', binding: { providerId: 'local', modelId: fixture.modelId }, preset: 'coder',
+    });
+    ids.push(r.id); names.push(name); nat.push(r);
+    // Labelled, not 'unknown': the per-size table used to show six switches into
+    // an 'unknown' conversation, which is a reader's question the rig can answer.
+    sizeByName[name] = 'native';
+  }
+
+  return { names, ccMs, sizeByName, nat };
+}
+
 export async function runWorkloadScenario(app, fixture, {
   cpuSampleSeconds = 40, switchCount = 40, keepSessions = false,
 } = {}) {
@@ -696,81 +796,7 @@ export async function runWorkloadScenario(app, fixture, {
     await installProbe(cdp);
     await installPageHelpers(cdp);
 
-    // ── 4 Claude Code sessions, alternating project folders ──────────────
-    await mark(cdp, 'cc-create:start');
-
-    // ── 4 Claude Code sessions, THREE OF THEM RESUMED FROM REAL TRANSCRIPTS ──
-    //
-    // WHY RESUMED (changed 2026-08-27, and this is the whole point of the fix).
-    // Until today all six sessions were created FRESH. A fresh session holds
-    // nothing, so the 40 switches below were switching between near-empty
-    // conversations — and the rig duly reported `switchP95Ms` 118 ms and called
-    // session switching healthy. Destin switches between conversations with
-    // thousands of messages, which is the configuration in which the suspected
-    // cost (every open session keeps a mounted, unvirtualized ChatView) actually
-    // exists. Measuring the empty case and reporting it as "switching" is the
-    // same mistake as measuring idle with zero sessions open.
-    //
-    // Each fixture transcript is resumed AT MOST ONCE — `resumeSessionId` names
-    // one specific stored session, and pointing two live sessions at the same id
-    // is not a configuration the app is built for.
-    //
-    // The 4th stays fresh ON PURPOSE: it is the control. A switch INTO the empty
-    // session should stay cheap, and if it does not, the cost is not the
-    // conversation size and this whole line of reasoning is wrong.
-    const ccMs = [];
-    const names = [];
-    const resumeOrder = ['huge', 'medium', 'small'];
-    const sizeByName = {};
-    for (let i = 0; i < 4; i++) {
-      const cwd = i % 2 ? fixture.projects.beta : fixture.projects.alpha;
-      const name = `cc-${i}`;
-      const size = resumeOrder[i];
-      const t = size ? fixture.transcripts?.[size] : null;
-      if (size && !t) {
-        warnings.push(`workload: fixture has no '${size}' transcript, so cc-${i} was created EMPTY — its switch timings measure an empty conversation, not a loaded one`);
-      }
-      // A resumed session must be created in the transcript's OWN cwd, or the
-      // app looks for it under the wrong project slug and silently resumes nothing.
-      //
-      // FIXED 2026-08-27: this read `t.cwd ?? cwd` while the fixture record had NO
-      // cwd field — so cc-1 ('medium', an odd index) was created in `beta` with a
-      // transcript that lives under `alpha`. It resumed nothing, started empty, and
-      // the streamer (which then targeted "new files") filled it: the report showed
-      // a "medium" conversation of 319 entries switching in 1.4 s, beside a 5,000-
-      // entry medium taking 14.8 s to open in the history scenario. The comment
-      // above was right and the code beside it did the opposite. The fixture now
-      // records cwd; a record without one is refused here rather than guessed at.
-      if (t && !t.cwd) throw new Error(`workload: fixture transcript '${size}' carries no cwd — refusing to guess which project folder to resume it in`);
-      const opts = t
-        ? { name, cwd: t.cwd, skipPermissions: true, resumeSessionId: t.sessionId }
-        : { name, cwd, skipPermissions: true };
-      const r = await createSession(cdp, opts);
-      ids.push(r.id); names.push(name); ccMs.push(r.ms);
-      sizeByName[name] = t ? size : 'empty';
-      await waitForSessionReady(cdp);
-    }
-
-    // ── 2 native (YouCoded harness) sessions ─────────────────────────────
-    // `binding` and `preset` are absent from preload's TS type for session.create
-    // (preload.ts:376-377) but ARE forwarded verbatim by structured clone and are
-    // what main reads (ipc-handlers.ts:681); session-manager.ts:85-87 THROWS if a
-    // fresh native session has no binding. skipPermissions is passed false to
-    // match the journey — the native branch hardcodes false anyway
-    // (session-manager.ts:95-96), since there is no PTY for it to affect.
-    await mark(cdp, 'native-create:start');
-    const nat = [];
-    for (let i = 0; i < 2; i++) {
-      const name = `native-${i}`;
-      const r = await createSession(cdp, {
-        name, cwd: fixture.projects.alpha, skipPermissions: false,
-        provider: 'native', binding: { providerId: 'local', modelId: fixture.modelId }, preset: 'coder',
-      });
-      ids.push(r.id); names.push(name); nat.push(r);
-      // Labelled, not 'unknown': the per-size table used to show six switches into
-      // an 'unknown' conversation, which is a reader's question the rig can answer.
-      sizeByName[name] = 'native';
-    }
+    const { names, ccMs, sizeByName, nat } = await openJourneySessions(cdp, fixture, { ids, warnings });
 
     // ── First native token ───────────────────────────────────────────────
     // Switch by CLICKING the pill. window.claude.session.switch() is a no-op stub

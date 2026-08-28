@@ -60,7 +60,7 @@ const CDP_PORT = 9555;
  * resumed 50,000-message transcript in it would charge that leftover state to whatever
  * ran last.
  */
-export const PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts'];
+export const PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'scrollback'];
 
 /**
  * The transcript sizes the `stall` phase measures. Duplicated from
@@ -209,7 +209,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     timestamp,
     machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version },
     noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0 },
-    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null,
+    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, scrollback: null,
     // Per-phase "what was actually measured" descriptors, harvested from each
     // scenario's MEASURES export. See scenario-workload.mjs MEASURES for why:
     // three wrong conclusions in this project came from numbers measured in a
@@ -217,7 +217,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // loudly. The report now carries its own configuration next to its numbers.
     measures: {},
     network: NETWORK_PATHS,
-    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null },
+    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, scrollbackBoot: null },
     screens: null,
     aborted: null,
     incomplete: [],
@@ -237,6 +237,7 @@ export function phaseOfPath(path) {
   if (path.startsWith('workload.')) return 'workload';
   if (path.startsWith('replayStall.')) return 'stall';
   if (path.startsWith('artifacts.')) return 'artifacts';
+  if (path.startsWith('scrollback.')) return 'scrollback';
   return null;
 }
 
@@ -309,6 +310,26 @@ export function validateReport(report, only) {
         'artifacts: the IPC responsiveness probe never got a single reply, so artifacts.median.ipcSumOfSteps.totalStallMs is 0 because the stall total is UNMEASURED, not because the app stayed responsive — the keep/reject gate would read that zero as a perfect score');
     }
   }
+  if (only.has('scrollback')) {
+    need(report.scrollback?.runs?.length > 0, 'scrollback: no runs were recorded');
+    if (report.scrollback?.runs?.length > 0) {
+      const m = report.scrollback.median ?? {};
+      // A conversation that never reached its beginning makes the CEILING a floor,
+      // and a floor read as a ceiling would under-state the thing cycle 3 exists to
+      // bound. The scenario already warns; this makes it fail the report.
+      const short = Object.entries(m.perSize ?? {}).filter(([, b]) => b.reachedTopEveryRun !== true).map(([k]) => k);
+      need(short.length === 0,
+        `scrollback: ${short.join(', ')} never scrolled to the beginning in every repeat, so scrollback.median.ceilingPssMb is a FLOOR of the ceiling, not the ceiling — do not size a change from it`);
+      // deltaNonJsMb is the metric that decides between parking and eviction. It is
+      // null when the CDP Performance domain gave nothing, and a null there must
+      // not pass as "the split was measured and the DOM share is zero".
+      need(typeof m.deltaJsHeapMb === 'number' && Number.isFinite(m.deltaJsHeapMb),
+        'scrollback: the JS-heap reading is missing, so the rise cannot be split into "what eviction frees" and "what parking frees" — the phase measured a total it cannot attribute');
+      // A scroll-back that loaded no pages measured an idle app, not a ceiling.
+      need(typeof m.totalPagesLoaded === 'number' && m.totalPagesLoaded > 0,
+        'scrollback: not one page was loaded, so floor and ceiling are the same reading — the sentinel was never crossed (check data-history-sentinel in ChatView.tsx)');
+    }
+  }
   if (only.has('shots')) {
     const got = new Set(report.screens?.names ?? []);
     const missing = SCREEN_NAMES.filter((n) => !got.has(n));
@@ -363,7 +384,9 @@ export function stemFor({ timestamp, sha, label }) {
  */
 export function renderMarkdown(report, stem) {
   const m = report.startup?.median ?? {};
-  const n = (v, unit) => (typeof v === 'number' && Number.isFinite(v) ? `${v} ${unit}` : '—');
+  // `unit` defaults to '' so a bare count (DOM nodes, page counts) does not render
+  // as "7431 undefined". A non-number is always an em dash, never 0 — see validateReport.
+  const n = (v, unit = '') => (typeof v === 'number' && Number.isFinite(v) ? `${v}${unit ? ` ${unit}` : ''}` : '—');
   const STARTUP_KEYS = ['whenReady', 'createWindowAt', 'blankWindowMs', 'didFinishLoad', 'firstContentfulPaint', 'appMounted', 'sessionsListed', 'postWindowDone'];
   const isNetwork = (path) => NETWORK_PATHS.includes(path);
 
@@ -462,7 +485,7 @@ export function renderMarkdown(report, stem) {
   lines.push(
     `errors (desktop.log "level":"ERROR" lines): cold starts ${JSON.stringify(report.errors?.coldStarts ?? [])}, ` +
     `scenario boot ${report.errors?.scenarioBoot ?? '—'}, workload boots ${JSON.stringify(report.errors?.workloadBoots ?? [])}, ` +
-    `stall boot ${report.errors?.stallBoot ?? '—'}, artifacts boot ${report.errors?.artifactsBoot ?? '—'}`,
+    `stall boot ${report.errors?.stallBoot ?? '—'}, artifacts boot ${report.errors?.artifactsBoot ?? '—'}, scrollback boot ${report.errors?.scrollbackBoot ?? '—'}`,
   );
   lines.push('A boot that logged errors is not a clean measurement — do not rank a phase from one. Full logs: scratch/perf-lab/logs/.');
 
@@ -476,6 +499,30 @@ export function renderMarkdown(report, stem) {
   const stallWarnings = Object.entries(report.replayStall ?? {}).flatMap(([size, s]) => (s?.warnings ?? []).map((w) => `${size}: ${w}`));
   if (stallWarnings.length) lines.push('', '## Stall warnings', '', ...stallWarnings.map((w) => `- ${w}`));
   if (report.artifacts?.warnings?.length) lines.push('', '## Artifact warnings', '', ...report.artifacts.warnings.map((w) => `- ${w}`));
+  if (report.scrollback) {
+    const s = report.scrollback.median ?? {};
+    const runN = report.scrollback.runs?.length ?? 0;
+    lines.push(
+      '',
+      `## Scroll-back ceiling (median of ${runN})`,
+      '',
+      '| what | value |',
+      '|---|---|',
+      `| PSS floor -> ceiling | ${n(s.floorPssMb, 'MB')} -> ${n(s.ceilingPssMb, 'MB')} (**+${n(s.deltaPssMb, 'MB')}**) |`,
+      `| JS share (only EVICTION frees) | ${n(s.jsShareMinMb, 'MB')} live … ${n(s.jsShareMaxMb, 'MB')} committed |`,
+      `| non-JS share: DOM/layout/paint (PARKING frees), lower bound | ${n(s.deltaNonJsMb, 'MB')} |`,
+      `| DOM nodes floor -> ceiling | ${n(s.floorDomNodes)} -> ${n(s.ceilingDomNodes)} (+${n(s.deltaDomNodes)}) |`,
+      `| event listeners floor -> ceiling | ${n(s.floorListeners)} -> ${n(s.ceilingListeners)} (+${n(s.deltaListeners)}) |`,
+      `| released by switching away + GC | ${n(s.releasedMb, 'MB')} |`,
+      `| pages loaded / entries added | ${n(s.totalPagesLoaded)} / ${n(s.totalEntriesLoaded)} |`,
+      '',
+      '| conversation | pages | entries after | page median / p95 | PSS after | reached the top every run |',
+      '|---|---|---|---|---|---|',
+      ...Object.entries(s.perSize ?? {}).map(([k, b]) =>
+        `| ${k} | ${n(b.pages)} | ${n(b.entriesAfter)} | ${n(b.pageMedianMs, 'ms')} / ${n(b.pageP95Ms, 'ms')} | ${n(b.pssAfterMb, 'MB')} | ${b.reachedTopEveryRun ? 'yes' : '**NO — the ceiling is a floor**'} |`),
+    );
+  }
+  if (report.scrollback?.warnings?.length) lines.push('', '## Scroll-back warnings', '', ...report.scrollback.warnings.map((w) => `- ${w}`));
   if (report.screens?.failures?.length) lines.push('', '## Screenshot failures', '', ...report.screens.failures.map((f) => `- ${f}`));
   // Configuration beside the numbers. A reader must never have to guess whether
   // "switching: 118ms" meant switching between loaded conversations or empty ones.
@@ -507,13 +554,14 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'only', 'label', 'out', 'max-minutes'];
+const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
 const BOOL_FLAGS = ['force-build', 'dry-run', 'help'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
 
   node scripts/perf-lab/run.mjs [options]
 
+  --scrollback-repeats <n>  scroll-back ceiling passes   (default 3, own boot)
   --checkout <dir>          youcoded checkout to build   (default worktrees/perf-lab)
   --runs <n>                cold-start runs              (default 5)
   --history-repeats <n>     resume measurements per size (default 5)
@@ -569,6 +617,12 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     workloadRepeats: posInt('workload-repeats', 3),
     stallRepeats: posInt('stall-repeats', 3),
     artifactRepeats: posInt('artifact-repeats', 3),
+    // 3 by default like the other own-boot phases: compare.mjs judges a change
+    // against the run-to-run spread, and one sample of a memory ceiling can
+    // neither prove nor veto anything. Each repeat is a full scroll-back of three
+    // conversations, so this is the most expensive phase per repeat — raise it
+    // only when a delta is close to the noise.
+    scrollbackRepeats: posInt('scrollback-repeats', 3),
     // 45 -> 90 on 2026-08-27: the default selection went from 6 boots to 8 (stall and
     // artifacts each take one of their own), and the stall phase alone is 9 transcript
     // resumes. A deadline that fires mid-phase throws away every minute already spent,
@@ -765,6 +819,14 @@ async function loadArtifacts() {
   }
 }
 
+async function loadScrollback() {
+  try {
+    return await import('./scenario-scrollback.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the scrollback phase needs scripts/perf-lab/scenario-scrollback.mjs, which could not be loaded: ${e.message}\nRun with --only startup,history,workload,shots to skip it.`);
+  }
+}
+
 /** Read the build stamp WITHOUT building — so --dry-run can report freshness honestly. */
 async function buildFreshness(checkout) {
   const desktop = join(checkout, 'desktop');
@@ -817,18 +879,20 @@ async function main(argv) {
       `  workload module   ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-workload.mjs')) ? 'present' : 'ABSENT — the workload phase would fail'}`,
       `  stall module      ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-replay-stall.mjs')) ? 'present' : 'ABSENT — the stall phase would fail'}`,
       `  artifacts module  ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-artifacts.mjs')) ? 'present' : 'ABSENT — the artifacts phase would fail'}`,
+      `  scrollback module ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-scrollback.mjs')) ? 'present' : 'ABSENT — the scrollback phase would fail'}`,
       '',
       `  phases            ${PHASES.map((p) => `${p}${cfg.only.has(p) ? '' : ' (skipped)'}`).join(', ')}`,
       `  cold-start boots  ${cfg.only.has('startup') ? cfg.runs : 0}`,
       // Named separately rather than summed: the shared boot covers three phases,
       // while stall and artifacts each take one of their own (see their phase blocks).
       `  scenario boots    ${scenarioBoot ? 1 : 0} shared (history/shots) + ${cfg.only.has('workload') ? cfg.workloadRepeats : 0} workload (one per repeat)` +
-        `${cfg.only.has('stall') ? ' + 1 stall' : ''}${cfg.only.has('artifacts') ? ' + 1 artifacts' : ''}`,
+        `${cfg.only.has('stall') ? ' + 1 stall' : ''}${cfg.only.has('artifacts') ? ' + 1 artifacts' : ''}${cfg.only.has('scrollback') ? ' + 1 scrollback' : ''}`,
       `  history repeats   ${cfg.only.has('history') ? `${cfg.historyRepeats} per size (small, medium, huge)` : '—'}`,
       `  workload passes   ${cfg.only.has('workload') ? `${cfg.workloadRepeats}${cfg.only.has('shots') ? ' + 1 screenshot pass (not in the median)' : ''}` : '—'}`,
       `  screenshots       ${cfg.only.has('shots') ? SCREEN_NAMES.join(', ') : '—'}`,
       `  stall passes      ${cfg.only.has('stall') ? `${cfg.stallRepeats} per size (${STALL_SIZES.join(', ')}), own boot` : '—'}`,
       `  artifact passes   ${cfg.only.has('artifacts') ? `${cfg.artifactRepeats}, own boot` : '—'}`,
+      `  scrollback passes ${cfg.only.has('scrollback') ? `${cfg.scrollbackRepeats}, own boot` : '—'}`,
       '',
       `  out dir           ${cfg.out}`,
       `  report            ${join(cfg.out, `${stem}.json`)}`,
@@ -1100,6 +1164,42 @@ async function main(argv) {
         }
         report.artifacts = buildArtifactsSection(runs, artifactMedian);
         report.errors.artifactsBoot = readErrorLines(fixture, stem, 'artifacts');
+      });
+    }
+
+    // ---- Scroll-back ceiling: its OWN boot ---------------------------------
+    // WHY not the shared boot: this phase deliberately drives memory to the worst
+    // case it can reach — three long conversations loaded end to end. Anything that
+    // ran after it in the same boot would be measured under that pressure and would
+    // look like a regression it did not cause. It runs LAST for the same reason.
+    if (cfg.only.has('scrollback')) {
+      checkDeadline();
+      await noiseGate(report.noise);
+      const { runScrollbackScenario, medianRun: scrollMedian, MEASURES: SCROLL_MEASURES } = await loadScrollback();
+      report.measures.scrollback = SCROLL_MEASURES;
+      const fixture = buildFixture(SCRATCH, { log });
+      await withBoot(build, fixture, async (app) => {
+        const runs = [];
+        for (let i = 0; i < cfg.scrollbackRepeats; i++) {
+          checkDeadline();
+          const r = await runScrollbackScenario(app, fixture, {
+            // Per LEG, not per repeat: one leg can legitimately take minutes on the
+            // huge conversation, and a phase that can be quiet that long has to say
+            // what it is doing — the 2026-08-28 lesson from 40 minutes of silence.
+            onProgress: (e) => log(e.partial
+              ? `scrollback ${i + 1}/${cfg.scrollbackRepeats}: ${e.size} — ${e.pages} pages in, ${e.entries} entries, last page ${e.lastPageMs}ms`
+              : `scrollback ${i + 1}/${cfg.scrollbackRepeats}: ${e.size} DONE — ${e.pages} pages, ${e.entries} entries, PSS ${e.pssMb}MB${e.reachedTop ? '' : ' (DID NOT reach the top)'}`),
+          });
+          runs.push(r);
+          log(`scrollback ${i + 1}/${cfg.scrollbackRepeats}: floor ${r.floorPssMb}MB -> ceiling ${r.ceilingPssMb}MB (+${r.deltaPssMb}MB; heap +${r.deltaJsHeapMb}MB, non-JS +${r.deltaNonJsMb}MB, ${r.deltaDomNodes} nodes), released on switch-away ${r.releasedMb}MB`);
+          for (const w of r.warnings ?? []) log(`scrollback warning: ${w}`);
+        }
+        report.scrollback = {
+          runs,
+          median: scrollMedian(runs),
+          warnings: runs.flatMap((r) => r.warnings ?? []),
+        };
+        report.errors.scrollbackBoot = readErrorLines(fixture, stem, 'scrollback');
       });
     }
   } catch (e) {

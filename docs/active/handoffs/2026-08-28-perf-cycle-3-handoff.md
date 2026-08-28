@@ -17,9 +17,11 @@ verify before committing to any of it.
 | 2 | paged conversation history | SHIPPED — youcoded PR #349, merge `a09b58c6` (+ docs PR #351, `8935c28f`). |
 | 3 | **park hidden views** — and/or **evict off-screen turns** | NOT STARTED. Read §2 before planning: its premise moved. |
 
-Current master: `youcoded` at `8935c28f` or later. Baseline report for any A/B:
-`perf-reports/2026-08-28-0325-984b11a-cycle2-paged.json` (EXIT 0, all phases, three
-consecutive runs agreeing).
+Current master: `youcoded` at `8935c28f`. Baseline report for any A/B:
+**`perf-reports/2026-08-28-0803-8935c28-cycle3-baseline.json`** (EXIT 0, every phase
+including `scrollback`, 3 repeats). It supersedes the cycle-2 baseline
+(`…-0325-984b11a-cycle2-paged.json`), which has no scrollback numbers — comparing against
+that one leaves the three ceiling metrics unjudged.
 
 ## 2. READ THIS FIRST: what paging did and did NOT bound
 
@@ -48,45 +50,72 @@ not". The open question is not how big the prize is — it is how much of the wo
 rendered DOM (which parking frees) versus reducer data (which only eviction frees), because
 that decides which of the two changes below is the real fix.
 
-## 3. The two candidate changes (they are NOT the same thing)
+### Measured, 2026-08-28 — the cycle-3 baseline
 
-They free different memory. **Parking frees rendered DOM for sessions you are not looking
-at; it does NOT free reducer state** — `timeline`, `toolCalls`, `toolGroups` and
-`assistantTurns` all live in the chat store and survive an unmount. **Only eviction (b)
-frees those**, and it also drops the DOM as a consequence. So (b) is the direct answer to
-scroll-back accumulation and (a) is complementary, not a substitute.
+`perf-reports/2026-08-28-0803-8935c28-cycle3-baseline.json` — EXIT 0, every phase, 3
+repeats, `aborted: null`, `incomplete: []`, and every conversation reached its beginning
+on every repeat. It agrees with the cycle-2 report (`…-0325-984b11a-cycle2-paged.json`)
+on all 20 pre-existing PRIMARY metrics inside noise (largest 7.5%, most under 4%), so the
+app and the rig are unchanged and the new numbers can be read straight. **A/B any cycle-3
+change against THIS report.**
 
-### (a) Park hidden views — cycle-1 handoff §6
-`ChatView.tsx` keeps every open session's view mounted (`content-visibility: hidden`,
-deliberately NOT `display:none`). Unmount a hidden session's view and rebuild on switch;
-after paging a view starts at only ~30 turns, so the rebuild is cheap — but a view the
-user has scrolled back through is arbitrarily large, and rebuilding THAT is not cheap
-unless (b) has already bounded it.
-- KEEP metric: `workload.median.pssAfterMb`.
-- Guards: `workload.median.switchPaintedBySize.*` must not rise; **scroll position must
-  survive a switch** (needs a pinning test — the rig cannot see it).
-- Note the interaction with cycle 2: an unmounted view loses `history.cursor` unless it is
-  in the reducer, which it IS (`SessionChatState.history`) — so a rebuilt view still knows
-  where it was in the transcript. Verify, don't assume.
+| | floor (nothing scrolled) | ceiling (all three read to the top, post-GC) |
+|---|---|---|
+| PSS | 1,539.4 MB | **4,306.0 MB** (+2,764.5) |
+| JS heap, live | ~20 MB | +514.2 MB |
+| JS heap, committed | ~22 MB | +949.9 MB |
+| DOM nodes | ~23,500 | **+1,441,256** |
+| released by switching away + a forced GC | — | **41.0 MB — 1.5%** |
 
-### (b) Evict off-screen turns — archived spec §2 "Eviction"
-Bounds a SINGLE long-lived session rather than many open ones. Design as specced (reviewed
-2026-08-28, but never implemented):
-- Every user-prompt timeline entry already carries the byte offset of its transcript line —
-  **`transcript-page.ts` stamps `data.offset` on user-message events today, unused**. That
-  is the seed a new cursor is minted from. The live tailer does NOT stamp it yet.
-- ChatView tracks `lastVisibleAt` per turn with one IntersectionObserver; a 60 s interval
-  dispatches `HISTORY_EVICT { sessionId, beforeOffset }` when loaded turns >
-  `2 × PAGE_TURNS` AND the oldest loaded run has been out of view > `EVICT_AFTER_MS`
-  (5 min) AND that run has no tool in `activeTurnToolIds`, no open permission ask, and is
-  not `currentTurnId`. Never drop below `PAGE_TURNS` loaded turns.
-- The reducer removes those timeline entries and their `toolCalls` / `toolGroups` /
-  `assistantTurns` entries, then sets the cursor to the boundary. Scrolling up re-fetches.
-- **This is the one sanctioned deletion from `toolCalls`.** `.claude/rules/chat-reducer.md`
-  says that Map is never cleared and `scripts/ast-grep/rules/toolcalls-never-cleared.yml`
-  enforces it — both must be amended, not bypassed.
-- Its value is the whole of the scroll-back ceiling in §2, plus however far a session grows
-  from live streaming. Both paths only ADD; nothing subtracts today.
+**Destin's reading was right and the plan's was wrong.** Paging moved where a
+conversation starts; the ceiling is untouched. 12,100 messages read back cost ~2.76 GB
+retained, and the pre-paging 7.0 GB figure was measured with streaming and 40 switches on
+top, so this is the same regime rather than a smaller one.
+
+Three findings that should shape the plan:
+
+1. **Nothing is released, and now there is a number for it.** 41 MB of 2,764 — 1.5%.
+   That is the control: no existing mechanism bounds this, so a cycle-3 change starts
+   from zero rather than improving something partial. It is also what `releasedMb` is
+   for — the metric a change has to move.
+2. **The rise is mostly RENDERED, not stored.** Live JS objects account for 514 MB and
+   V8's committed heap for 950 MB; the remaining **~1,896 MB (69%) is DOM, layout and
+   paint** — 1.44 M nodes, ~119 per message. Eviction frees both halves (dropping a
+   timeline entry unmounts its DOM too); parking a hidden view frees only the DOM half,
+   and only for the five sessions you are not looking at. **A third option the two-way
+   framing missed: virtualizing the message list** — render only what is on screen —
+   attacks the 69% directly without dropping any data, and is the only one of the three
+   that also helps the conversation currently in front of you.
+3. **Every page turn gets more expensive as the window grows, linearly.** One `huge` leg,
+   measured every 10 pages: 201 ms at 10 pages loaded, then 268, 365, 475, 610, and
+   **705 ms at 110 pages** — 3.5x, and the conversation being scrolled never changed.
+   The cost tracks what the APP holds, not what the conversation holds: `small` (50
+   turns) posted the slowest single page of the run at **1,001 ms**, because by then the
+   app held 1.46 M nodes. So a change that bounds total rendered nodes should show up
+   here as well as in PSS — and `scrollback.median.perSize.huge.pageMedianMs` is PRIMARY
+   precisely so a fix that trades this away cannot pass.
+
+Phase cost: ~3 minutes per repeat after the build; the full 3-repeat run above took 17
+minutes end to end including every other phase.
+
+### Two things already verified in the renderer (2026-08-28)
+
+**There is no virtualization today, and the `in-view` class is not it.** `ChatView.tsx`
+renders every timeline entry in full; the `IntersectionObserver` at :408 exists only to
+toggle a `.in-view` class that gates a `backdrop-filter` on wallpaper themes. Off-screen
+entries lose the blur and keep every node. That is why 12,100 messages become 1.46 M nodes.
+
+**`observeEntry` never unobserves — and that alone would make eviction free nothing.**
+`ref={observeEntry}` (:1025) calls `observe(el)` for every entry and there is no
+`unobserve` anywhere in `src/renderer/` (verified: the only matches in the tree are three
+test mocks). An `IntersectionObserver` holds a STRONG reference to each observed target,
+so an entry removed from the DOM stays reachable from the live observer for as long as
+that session's ChatView is mounted. Today nothing removes an entry, so it never fires.
+The moment eviction (or virtualization) unmounts one, the node and its subtree are
+retained and the memory win is zero — while every test still passes and the reducer looks
+correct. **Fix this first, with a test, before building either change.** It is the same
+hazard as §4 pointed the other way: a mechanism that is load-bearing only once you start
+removing things.
 
 ## 4. The trap this programme keeps hitting — read before touching the reducer
 
@@ -155,7 +184,10 @@ exists).
 - The "rotating extras" (`native-session-host.test.ts`, `git-service.test.ts`) are
   timing-sensitive **on any platform**, not just Windows — #351 flaked one on ubuntu and it
   passed on re-run. Re-run before believing them.
-- Two LOCAL test failures (`xterm-webgl-mipmap-patch.test.ts`) are environmental: this
-  machine's `node_modules` predates PR #333's postinstall patch. They fail identically on
-  untouched master. `npm ci` in a checkout would clear them.
+- **The main checkout's `node_modules` is badly stale** — confirmed 2026-08-28: 468
+  packages installed against 640 after a fresh `npm ci`, with `ulid`, `ai`, `@codemirror/*`
+  and `pdfjs-dist` missing outright. A perf-lab build against it fails at `tsc` with ~40
+  `Cannot find module` errors. This is also what the two LOCAL `xterm-webgl-mipmap-patch`
+  failures were: `node_modules` predating PR #333's postinstall patch. `npm ci` clears
+  both. `worktrees/perf-lab` was reinstalled on 2026-08-28; the main checkout was NOT.
 - Work in a worktree; `cp -al` for `node_modules`, never a symlink.
