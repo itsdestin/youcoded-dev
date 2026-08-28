@@ -7,9 +7,11 @@
   python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
         block until the answers file says submitted (for a session that no longer holds the `serve` process)
 
-Three step kinds, each named by its own fields: APPROVE (`changed`+`notice`, yes/no),
+Four step kinds, each named by its own fields: APPROVE (`changed`+`notice`, yes/no),
 CHOICE (`variants` — a picture per option, pick one), DECIDE (`options` — one picture of
-today plus written options, pick one). Wording-only questions are not a step: ask in chat.
+today plus written options, pick one), CLIP (`clip` — a RECORDING per run instead of a still,
+for animations, hovers, transitions and bugs that only show in motion; files from
+`scripts/ui-review/record-pair.sh`, Before | After play side by side with a shared replay). Wording-only questions are not a step: ask in chat.
 
 Run `serve` in the background: its exit is the "review finished" signal and it prints the
 feedback summary. There is deliberately no separate crop step — a stale intermediate file drew

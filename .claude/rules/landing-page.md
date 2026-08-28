@@ -69,6 +69,12 @@ reload; the iframe ignores the pointer until the visitor clicks once.
 **Why:** a reload flashed the poster; an interactive iframe under the wheel trapped page
 scroll ("janky").
 
+## Motion in a review deck
+**Invariant:** an animation, hover or visual bug is reviewed as a deck CLIP step
+(`"clip": "<scene>"`, recordings from `scripts/ui-review/record-pair.sh <scene> <before> <after> <clips-dir>`),
+never as a prose description or a still that can't show it.
+**Guard:** `tests/test_spec.py` ClipStepTests, `tests/deck-render.test.mjs` (clip step).
+
 ## Copy and review
 **Invariant:** page copy is reviewed in place with `scripts/ui-review/copy-preview.py serve
 … [--media docs/media]` (edit text on a page-shaped preview; per-row loop verdicts) — never

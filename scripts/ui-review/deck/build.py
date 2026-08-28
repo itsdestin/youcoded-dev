@@ -7,7 +7,7 @@ import json
 import os
 
 from .crops import image_name
-from .spec import SpecError, all_themes, is_choice, is_decide, run_names, step_themes, validate, workspace_root
+from .spec import SpecError, all_themes, is_choice, is_decide, run_names, step_themes, validate, workspace_root, is_clip, clip_files
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -80,10 +80,20 @@ def _decide_step(spec, st, boxes, runs):
     }
 
 
+def _clip_step(spec, st, runs):
+    """Before | After (or Today) as recordings. No boxes: motion is the highlight."""
+    vids, posters = clip_files(spec, st)
+    return {'id': st['id'], 'kind': 'clip', 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
+            'changed': st['changed'], 'measured': st.get('measured', ''), 'notice': st['notice'], 'risk': st.get('risk', ''),
+            'clips': {r: vids[r] for r in runs},
+            'posters': {r: (posters[r] if posters[r] and os.path.exists(os.path.join(spec['_base'], posters[r])) else '') for r in runs}}
+
+
 def deck_data(spec, boxes):
     runs = run_names(spec)
     steps = [_choice_step(spec, st, boxes, runs[-1]) if is_choice(st)
-             else _decide_step(spec, st, boxes, runs) if is_decide(st) else {
+             else _decide_step(spec, st, boxes, runs) if is_decide(st)
+             else _clip_step(spec, st, runs) if is_clip(st) else {
         'id': st['id'], 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
         'changed': st['changed'], 'measured': st.get('measured', ''), 'notice': st['notice'], 'risk': st.get('risk', ''),
         'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in step_themes(spec, st)},
@@ -102,6 +112,12 @@ def build_page(spec, boxes):
     errors, warnings = validate(spec)
     runs = run_names(spec)
     for st in spec['steps']:
+        if is_clip(st):
+            vids, _ = clip_files(spec, st)
+            for r in runs:
+                if not vids[r] or not os.path.exists(os.path.join(spec['_base'], vids[r])):
+                    errors.append(f'{st["id"]}: no recording for {r} ({vids[r]}) — run `scripts/ui-review/record-pair.sh <scene> <before> <after> {os.path.join(spec["images"], "clips")}`')
+            continue
         for t in step_themes(spec, st):
             if is_choice(st):
                 for v in st['variants']:

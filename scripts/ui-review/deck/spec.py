@@ -96,6 +96,25 @@ def is_decide(step):
     return bool(step.get('options'))
 
 
+def is_clip(step):
+    """A CLIP step shows a RECORDING per run (before/after, or today) instead of a still: an
+    animation, a hover, a transition, a bug that only shows in motion. `clip` is a scene name
+    (files at <images>/clips/<name>--<run>.webm, made by record-pair.sh) or {run: path}."""
+    return bool(step.get('clip'))
+
+
+def clip_files(spec, step):
+    """{run: relative path to the .webm} for a clip step, and the same for posters (.webp)."""
+    c = step['clip']
+    runs = run_names(spec)
+    if isinstance(c, str):
+        vids = {r: f"{spec['images']}/clips/{c}--{r}.webm" for r in runs}
+    else:
+        vids = {r: c.get(r) for r in runs}
+    posters = {r: (re.sub(r'\.webm$', '.webp', v) if v else None) for r, v in vids.items()}
+    return vids, posters
+
+
 def run_names(spec):
     """Display order of the runs: before then after when both exist, else as written."""
     r = list(spec['runs'].keys())
@@ -128,6 +147,9 @@ def validate(spec):
             continue
         if is_decide(st):
             _validate_decide(spec, st, sid, errors, warnings)
+            continue
+        if is_clip(st):
+            _validate_clip(spec, st, sid, errors)
             continue
         for k in ('surface', 'path', 'crop', 'headline', 'changed', 'notice'):
             if not st.get(k):
@@ -258,3 +280,24 @@ def _images_folder_warning(spec, warnings):
     if spec['_stem'] not in spec['images']:
         warnings.append(f'images "{spec["images"]}" does not contain the spec name "{spec["_stem"]}" '
                         '— two decks sharing one images folder overwrite each other\'s pictures')
+
+
+def _validate_clip(spec, st, sid, errors):
+    for k in ('surface', 'path', 'headline', 'changed', 'notice'):
+        if not st.get(k):
+            errors.append(f'{sid}: missing {k}')
+    for k in ('crop', 'highlight', 'variants', 'options'):
+        if st.get(k):
+            errors.append(f'{sid}: a clip step has no {k} — the recording IS the picture')
+    if word_count(st.get('headline')) > HEADLINE_MAX:
+        errors.append(f'{sid}: headline is {word_count(st["headline"])} words (max {HEADLINE_MAX})')
+    for k in TEXT_FIELDS:
+        for w in banned_in(st.get(k)):
+            errors.append(f'{sid}: {k} uses banned word "{w}"')
+    c = st['clip']
+    if isinstance(c, dict):
+        for r in run_names(spec):
+            if not c.get(r):
+                errors.append(f'{sid}: clip has no file for run "{r}"')
+    elif not isinstance(c, str) or not re.fullmatch(r'[\w.-]+', c):
+        errors.append(f'{sid}: clip must be a scene name or {{run: path}}')

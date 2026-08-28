@@ -7,7 +7,7 @@ import os
 import subprocess
 
 from .boxes import diff_bbox, image_size, px_to_pct, rect_to_pct
-from .spec import AUTO_WARN_FRACTION, is_choice, run_names, step_themes
+from .spec import AUTO_WARN_FRACTION, is_choice, run_names, step_themes, is_clip
 
 
 def image_name(crop, theme, run):
@@ -44,6 +44,8 @@ def crop_images(spec, log=print):
         if is_choice(st):
             _crop_choice(spec, st, runs[-1], out_dir, boxes, missing, cut)
             continue
+        if is_clip(st):
+            continue   # a recording, not a still — checked for existence in build_page
         plan, shot, geo = spec['_crops'][st['crop']]
         hl = st.get('highlight', 'auto' if two else None)
         boxes[st['id']] = {}

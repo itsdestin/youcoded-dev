@@ -30,7 +30,7 @@ async function cdp(port, w, h) {
 
 test('deck renders at three sizes and records an answer', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'deck-'));
-  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}, clip=True))`], { encoding: 'utf8' });
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
   { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
   const port = await freePort();
@@ -61,7 +61,15 @@ test('deck renders at three sizes and records an answer', async () => {
           await c.evaluate("document.querySelector('#note').value='fine'; document.querySelector('#note').dispatchEvent(new Event('input'))");
           await c.evaluate("document.querySelector('#save').click()"); await sleep(600);
           assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'Home');
-          assert.equal(await c.evaluate("document.querySelector('#count').textContent"), 'step 3 of 3 · 1 answered');
+          assert.equal(await c.evaluate("document.querySelector('#count').textContent"), 'step 3 of 4 · 1 answered');
+          // CLIP step: a <video> per run, the replay button shown, no theme thumbs, no console errors
+          await c.send('Page.navigate', { url: url + '?step=4' });
+          for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+          await sleep(400);
+          assert.deepEqual(c.errors, [], 'clip step');
+          assert.equal(await c.evaluate("document.querySelectorAll('#inner video').length"), 2, 'clip videos');
+          assert.equal(await c.evaluate("document.querySelector('#replay').hidden"), false, 'replay shown');
+          assert.equal(await c.evaluate("document.querySelectorAll('#thumbs .thumb').length"), 0, 'no theme thumbs on a clip');
         }
       } finally { c.close(); }
     }
@@ -70,7 +78,7 @@ test('deck renders at three sizes and records an answer', async () => {
     // submit ends the server with the summary on stdout
     await fetch(`http://127.0.0.1:${port}/submit`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(answers) });
     const code = await new Promise(r => srv.on('exit', r));
-    assert.equal(code, 0); assert.match(srvOut, /fixture · submitted .* · 1 yes · 0 no · 0 other · 2 skipped/); assert.match(srvOut, /S-2 yes — "fine"/);
+    assert.equal(code, 0); assert.match(srvOut, /fixture · submitted .* · 1 yes · 0 no · 0 other · 3 skipped/); assert.match(srvOut, /S-2 yes — "fine"/);
     assert.equal(existsSync(join(dirname(spec), 'deck.serve.json')), false);
   } finally { if (srv.exitCode === null) srv.kill(); }
 });

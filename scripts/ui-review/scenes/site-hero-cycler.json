@@ -1,0 +1,2 @@
+{ "base": "http://127.0.0.1:8765/", "theme": null, "boot": 250, "width": 1440, "height": 700,
+  "actions": [ {"hold": 4600} ] }

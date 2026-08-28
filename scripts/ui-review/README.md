@@ -134,6 +134,20 @@ a signed-in account with a scripted friend for the games. The workbench serves w
 `VITE_NO_WATCH=1`, so **restart it after editing a fixture or the mock shim** — the
 recorder otherwise films the previous code and every frame still "verifies".
 
+### Clips in a review deck (motion, hover, transitions, visual bugs)
+
+A deck step can show a recording per run instead of a still — the reviewer sees Before and
+After playing side by side, with native controls (pause, scrub) and ↻ to restart both together:
+
+```
+bash scripts/ui-review/record-pair.sh scripts/ui-review/scenes/<scene>.json <before> <after> <deck-dir>/images/<deck>/clips
+# <before>/<after>: a worktree name (its workbench is booted, one at a time) or a URL (a page served at two commits)
+```
+then in the deck spec: `{ "id": "…", "surface": "…", "path": "…", "clip": "<scene>", "headline": "…",
+"changed": "…", "notice": "…", "risk": "…" }` — no `crop`, no `highlight`. `review-cards.py build`
+refuses the deck if a run's recording is missing. First real use: the hero-cycler overlap,
+`docs/active/design/2026-08-27-landing-page/clip-deck/`.
+
 Rebuild every landing-page asset at once (loops, gallery stills, live embed):
 `bash scripts/ui-review/site-assets.sh <worktree>` — refuses a workbench serving a
 different tree, and refuses to overwrite a gallery when any shot failed verification.

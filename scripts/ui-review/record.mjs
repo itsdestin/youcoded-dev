@@ -22,7 +22,11 @@ const CDP_PORT = Number(process.env.CDP_PORT ?? 10320);
 const W = scene.width ?? 1440, H = scene.height ?? 900;
 // Scenes hardcode the workbench default (127.0.0.1:5473); swap it for whatever
 // port this worktree's workbench actually started on, same trick as shot.mjs's `wb()`.
-const url = scene.base.replace(/127\.0\.0\.1:\d+/, `127.0.0.1:${WB_PORT}`);
+let url = scene.base.replace(/127\.0\.0\.1:\d+/, `127.0.0.1:${WB_PORT}`);
+// BASE_URL=<origin>: record the same scene against another server entirely (a static
+// page at two commits, a remote build) — the scene's path and query are kept, only the
+// origin changes. Used by record-pair.sh for review-deck CLIP steps.
+if (process.env.BASE_URL) { const b = new URL(process.env.BASE_URL), u = new URL(scene.base); url = b.origin + u.pathname + u.search + u.hash; }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const profile = mkdtempSync(join(tmpdir(), 'ui-record-'));

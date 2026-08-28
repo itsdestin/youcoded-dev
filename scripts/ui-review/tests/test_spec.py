@@ -101,3 +101,24 @@ class SpecTests(unittest.TestCase):
         self.assertEqual(word_count("it’s a two-line, five-word headline"), 5)   # curly apostrophe is one word too
 
 if __name__ == '__main__': unittest.main()
+
+
+class ClipStepTests(unittest.TestCase):
+    def setUp(self): self.d = tempfile.mkdtemp()
+    def _spec(self, clip):
+        return load_spec(write_spec(self.d, steps=[{"id": "C-1", "surface": "Home", "path": "Chat", "clip": clip,
+                                                    "headline": "It moves.", "changed": "Now animated.", "notice": "Motion."}]))
+    def test_scene_name_clip_validates_and_names_its_files(self):
+        from deck.spec import clip_files
+        s = self._spec("hero"); errors, _ = validate(s); self.assertEqual(errors, [])
+        vids, posters = clip_files(s, s['steps'][0])
+        self.assertEqual(vids, {"before": "images/deck/clips/hero--before.webm", "after": "images/deck/clips/hero--after.webm"})
+        self.assertEqual(posters["after"], "images/deck/clips/hero--after.webp")
+    def test_explicit_files_need_every_run(self):
+        errors, _ = validate(self._spec({"before": "a.webm"}))
+        self.assertTrue(any('no file for run "after"' in e for e in errors), errors)
+    def test_clip_step_rejects_crop_and_banned_words(self):
+        s = self._spec("hero"); s['steps'][0]['crop'] = 'c'; s['steps'][0]['changed'] = 'the reducer moved'
+        errors, _ = validate(s)
+        self.assertTrue(any('has no crop' in e for e in errors), errors)
+        self.assertTrue(any('banned word "reducer"' in e for e in errors), errors)
