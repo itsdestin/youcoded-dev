@@ -2,8 +2,8 @@
 title: Background Bash Execution Implementation Plan (ledger G-1)
 date: 2026-08-28
 status: shipped
-spec: docs/active/specs/2026-08-28-bash-background-execution-design.md
-review: docs/active/investigations/2026-08-28-bash-background-spec-review.md
+spec: docs/archive/specs/2026-08-28-bash-background-execution-design.md
+review: docs/archive/investigations/2026-08-28-bash-background-spec-review.md
 branch: youcoded feat/bash-background-ui (worktree worktrees/bash-bg) — continues the renderer mockup commit 69d066a3
 tags: [native-runtime, harness, harness-tools, renderer, ipc-bridge]
 ---

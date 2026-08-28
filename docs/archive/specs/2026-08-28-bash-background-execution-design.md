@@ -2,7 +2,7 @@
 title: Background execution for the native Bash tool (ledger G-1)
 date: 2026-08-28
 status: shipped
-review: Reviewed 2026-08-28 — docs/active/investigations/2026-08-28-bash-background-spec-review.md (16 findings, all applied or decided here; the two open judgment calls decided by Claude, approved by Destin "update as you see fit"). UI approved 5/5 on deck docs/active/design/2026-08-28-bash-background/. Plan: docs/active/plans/2026-08-28-bash-background-execution.md (10 tasks, 47 steps; its five deviations folded back here 2026-08-28).
+review: Reviewed 2026-08-28 — docs/archive/investigations/2026-08-28-bash-background-spec-review.md (16 findings, all applied or decided here; the two open judgment calls decided by Claude, approved by Destin "update as you see fit"). UI approved 5/5 on deck docs/active/design/2026-08-28-bash-background/. Plan: docs/archive/plans/2026-08-28-bash-background-execution.md (10 tasks, 47 steps; its five deviations folded back here 2026-08-28).
 tags: [native-runtime, harness, harness-tools, renderer, ipc-bridge]
 related:
   - docs/active/investigations/2026-08-26-native-tools-vs-other-harnesses.md (§5 Bash, ledger G-1)
