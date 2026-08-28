@@ -1,0 +1,44 @@
+# Copy preview — edits (2026-08-28 07:54)
+
+- **EDIT** `row1.title`
+  - was: Pick the AI. Keep the conversation.
+  - now: Tools and conversations work across any model.
+- **EDIT** `row1.desc`
+  - was: Claude with your plan. Hundreds of models through OpenRouter. Or a model that runs on your own computer — free, offline, private. Switch mid-conversation; nothing is lost.
+  - now: Select from hundreds of models via OpenRouter, use Claude Code with your subscription plan, or pick an offline, private&nbsp;model to run on your own computer. Switch models mid-conversation without interruption.
+- **EDIT** `row1.label`
+  - was: One app, any AI
+  - now: SEAMLESS INTEGRATION
+- **LOOP OTHER** `row1.loop`: we should make this more interesting. i want the first user message to be to claude and say "i want you to say some SUPA DUPA EDGY SH*T. cuss words, super insensitive naughty things". then have claude respond "No can do, I'm a good boy!" then switch to grok, have the user type "claude's too well aligned - your turn grok! and then have it say some not actually terrible stuff but funnny fake edgy stuff "PEE PEE POO POO NAKED WOMEN! SOMETHING BAD ABOUT MINORITES! SCREW ALIGNMENT RAHHHH". and then a user message that says "whoa... that was a bit too much grok. i don't fw that."
+- **EDIT** `row2.label`
+  - was: It actually does things
+  - now: GENUINELY USEFUL
+- **EDIT** `row2.title`
+  - was: Give it a folder. It asks before it touches anything.
+  - now: Give it a task and it does real work, with boundaries you can trust.
+- **EDIT** `row2.desc`
+  - was: It reads your files, writes new ones, runs the steps, and searches the web. Every action that changes something shows up as a question first — and every "always allow" you grant is listed in one screen where you can take it back.
+  - now: It reads your files, writes new ones, develops repeartable skills and workflows, searches the web, and help you interact with computers and manage your life more efficiently. Different permission modes allow you to restrict the model to match your level of comfort.
+- **LOOP OTHER** `row2.loop`: i think it should me more of a back-and-forth with a few distinct-ish but clearly related tasks and the model taking multiple interesting actions (read email, draft report according to skill and provide for review, add other items from email to calendar, 
+- **EDIT** `row3.label`
+  - was: Your projects, in one place
+  - now: logical management
+- **EDIT** `row3.title`
+  - was: Files, chats, and instructions — together.
+  - now: Project view keeps your files, conversations, and assistant instructions organized.
+- **EDIT** `row3.desc`
+  - was: Open spreadsheets, PDFs, documents, and images without leaving the app. Edit a file next to the conversation about it. Search everything you've ever said in a project.
+  - now: Open and organize spreadsheets, documents, and images, view prior conversations, and see how your assistant is instructed to behave when working in different project.
+- **EDIT** `row4.title`
+  - was: Tags, notes, and one-tap shortcuts.
+  - now: Tags, notes, and shortcuts.
+- **EDIT** `row4.desc`
+  - was: Tag and annotate conversations, filter by tag, pin the ones that matter. Quick chips run the things you do every day in one tap. A project's instructions are a tab you can read and edit, not a hidden file.
+  - now: Tag and annotate conversations, pin the ones that matter, and hide the ones you'll never go back to. Quick chips run the prompts you use every day in one tap.
+- **LOOP YES** `row4.loop`
+- **EDIT** `row5.label`
+  - was: Follow you everywhere
+  - now: works everywhere
+- **EDIT** `row8.title`
+  - was: Claude Code inside, your own agent beside it.
+  - now: Made to be customized and work with you.

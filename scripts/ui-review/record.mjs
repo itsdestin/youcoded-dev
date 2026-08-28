@@ -122,6 +122,19 @@ for (const a of scene.actions) {
   else if (a.clickText) await click(textExpr(a.clickText, a.tag));
   else if (a.typeSlow != null) await typeSlow(a.typeSlow, a.cps);
   else if (a.key) await key(a.key, a.modifiers ?? 0);
+  // waitFor / waitForText: poll until the element is on screen (default 20 s),
+  // recording the whole time. Scripted replies stream at their own pace, so a
+  // fixed `settle` before a click on a permission card is a race — row2's first
+  // "Yes" fired 2 s before the card existed on 2026-08-28. Wait for the thing,
+  // not the clock; this is what makes a scene survive a copy or timing change.
+  else if (a.waitFor || a.waitForText) {
+    // waitForText is a CONTAINS match (textExpr is exact): a wait targets a
+    // sentence that is still streaming in, so its full text is a moving target.
+    const containsExpr = (text, tag) => `[...document.querySelectorAll(${JSON.stringify(tag ?? '*')})].filter(e => e.offsetParent !== null && e.textContent.includes(${JSON.stringify(text)})).sort((a,b)=>a.querySelectorAll('*').length-b.querySelectorAll('*').length)[0]`;
+    const expr = a.waitFor ? selExpr(a.waitFor) : containsExpr(a.waitForText, a.tag);
+    const deadline = Date.now() + (a.timeout ?? 20000);
+    while (!(await rectOf(expr))) { if (Date.now() > deadline) throw new Error(`TIMEOUT waiting for ${expr}`); await sleep(150); }
+  }
   else if (a.eval) await evaluate(a.eval);
   await sleep(a.settle ?? 400);
 }

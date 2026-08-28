@@ -1,12 +1,75 @@
-{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=receipts",
-  "theme": "creme", "boot": 3000,
+{
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=inbox",
+  "theme": "creme",
+  "boot": 3000,
   "actions": [
-    {"hold": 600}, {"click": "[placeholder^='Message']", "settle": 200},
-    {"typeSlow": "turn the receipts in my Receipts folder into a spreadsheet", "cps": 18}, {"key": "Enter", "settle": 9000},
-    {"hold": 800},
-    {"clickText": "Yes", "tag": "button", "settle": 2500},
-    {"hold": 800},
-    {"click": "[title=Settings]", "settle": 700},
-    {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Permissions\"))", "settle": 1200},
-    {"hold": 2000}
-  ] }
+    {
+      "hold": 500
+    },
+    {
+      "click": "[placeholder^='Message']",
+      "settle": 200
+    },
+    {
+      "typeSlow": "go through this morning's email and handle what you can",
+      "cps": 30
+    },
+    {
+      "key": "Enter",
+      "settle": 800
+    },
+    {
+      "waitForText": "Yes",
+      "tag": "button",
+      "settle": 900
+    },
+    {
+      "clickText": "Yes",
+      "tag": "button",
+      "settle": 1500
+    },
+    {
+      "waitForText": "Yes",
+      "tag": "button",
+      "settle": 900
+    },
+    {
+      "clickText": "Yes",
+      "tag": "button",
+      "settle": 1500
+    },
+    {
+      "waitForText": "Want me to tell",
+      "tag": "p",
+      "timeout": 15000,
+      "settle": 1200
+    },
+    {
+      "click": "[placeholder^='Message']",
+      "settle": 200
+    },
+    {
+      "typeSlow": "yes, send it",
+      "cps": 30
+    },
+    {
+      "key": "Enter",
+      "settle": 600
+    },
+    {
+      "waitForText": "Yes",
+      "tag": "button",
+      "settle": 900
+    },
+    {
+      "clickText": "Yes",
+      "tag": "button",
+      "settle": 1500
+    },
+    {
+      "waitForText": "newsletters",
+      "tag": "p",
+      "settle": 2200
+    }
+  ]
+}
