@@ -1,11 +1,58 @@
 ---
-status: active
+status: shipped
 created: 2026-08-28
+shipped: 2026-08-28
 spec: docs/active/specs/2026-08-28-marketplace-overhaul-ui-design.md
 part: 1 of 3 (feedback routes) — see also 2026-08-28-marketplace-catalog-service.md, 2026-08-28-marketplace-app-wiring.md
 ---
 
 # Marketplace Feedback (thumbs + comments) Implementation Plan
+
+> **SHIPPED 2026-08-28.** Worker: `wecoded-marketplace` PRs #71, #72, #73 — all merged and
+> deployed green, routes hand-verified against production. App: committed on `youcoded`
+> branch `feat/marketplace-overhaul-ui`, unmerged pending Plans 2–3.
+>
+> **What hand-verification found that this plan did not predict.** Every item below was
+> invisible to 229 Worker tests and a green desktop gate; each was caught by voting in a dev
+> build, and the last three by attaching a debugger to the live renderer rather than
+> reasoning about the code.
+>
+> 1. **The install gate refused votes on plugins the user demonstrably had.** `installs` only
+>    ever recorded installs made *while signed in*. Bundled plugins are auto-installed at
+>    launch by `skill-provider.installMany()` and were never reported at all — so nobody
+>    could vote on the three plugins every user has. Same for anything installed while signed
+>    out or on another device. Fixed by an install reconcile (`desktop/src/main/install-reconcile.ts`,
+>    on sign-in and at launch) plus a batch `POST /installs` (#72) so it costs one request and
+>    one rate-limit tick instead of N.
+> 2. **…and reconciling plugin DIRECTORIES was not enough.** The provider surfaces each
+>    scanned skill as its own marketplace item with its own Feedback section
+>    (`superpowers:brainstorming` — 22 on one profile). Votes are cast in that id space, so
+>    the reconcile must report it too. Missing this moved the same failure one level down.
+> 3. **`GET /thumbs/:id` had to return the plugin's totals, not just the caller's vote** (#73).
+>    Seeding only the vote produced a **lit thumb beside "No votes yet"** on reopen: the vote
+>    was fresh from the server while the count fell back to the `/stats` snapshot taken at app
+>    start. `/stats` is `max-age=300`, so it can never be refreshed into agreeing.
+> 4. **The card is a third consumer, and it was stale AND wrong.** Cards read
+>    `plugins[id]` from the stats context, which nothing updated after a vote — the detail
+>    page said 0% while its own card said 100%. Fixed with `applyThumbs()` on the stats
+>    context. Separately, `ThumbsSummary` (what every card renders) had no low-count guard, so
+>    one like showed **"100%"**; below `MIN_VOTES_FOR_PCT` it now shows the raw count.
+> 5. **A main-process handler silently dropped two fields** and nothing caught it: `tsc` was
+>    happy, and every component test mocks that layer, so `verify.sh` went green with the bug
+>    in place. Guard added in `ipc-channels.test.ts` (mutation-tested).
+>
+> **The through-line: three of the five are the same mistake — the app and the Worker
+> disagreeing about an id, or a number living in more than one place.** Plans 2 and 3 touch
+> both again; check any new count against every surface that renders it, and any new id
+> against the space the UI actually uses.
+>
+> **Also corrected here:** `checkRateLimit` was measured **dead in production** (160 requests
+> against a 60/min limit, zero 429s — the Cache API is a no-op on `*.workers.dev`), and
+> `test/setup.ts`'s Workers AI stub was found never to have worked, so the classifier's
+> flagged path is unreachable under vitest. Both documented at their source.
+>
+> **Not verified:** the Android code has never been compiled — no Android SDK on this
+> machine. It is Kotlin-consistent with its neighbours, nothing more.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
