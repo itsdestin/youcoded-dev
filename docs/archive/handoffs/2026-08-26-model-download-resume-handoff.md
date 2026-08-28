@@ -1,17 +1,17 @@
 ---
-status: active
+status: shipped
 created: 2026-08-26
 kind: implementation-handoff
-spec: docs/active/specs/2026-08-26-model-download-resume-design.md
-plan: docs/active/plans/2026-08-26-model-download-resume.md
+spec: docs/archive/specs/2026-08-26-model-download-resume-design.md
+plan: docs/archive/plans/2026-08-26-model-download-resume.md
 ---
 
 # Handoff: interrupted model downloads — implement the plan
 
 For the session that builds this. Read in this order, then start at the plan's Task 0:
 
-1. `docs/active/specs/2026-08-26-model-download-resume-design.md` — what and why (10 min).
-2. `docs/active/plans/2026-08-26-model-download-resume.md` — every step, every test, every command. It is the deliverable's contract; this handoff is the context the plan deliberately leaves out.
+1. `docs/archive/specs/2026-08-26-model-download-resume-design.md` — what and why (10 min).
+2. `docs/archive/plans/2026-08-26-model-download-resume.md` — every step, every test, every command. It is the deliverable's contract; this handoff is the context the plan deliberately leaves out.
 3. This file — the traps, the history, and the one place the plan needs a tool it doesn't name.
 
 The plan is executed with `superpowers:subagent-driven-development` (or `executing-plans`), one task at a time, in a worktree. **Task 2 ends at a human gate. Nothing after it starts until Destin has approved the sheets.**
