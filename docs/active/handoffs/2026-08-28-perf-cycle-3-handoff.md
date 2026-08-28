@@ -21,30 +21,47 @@ Current master: `youcoded` at `8935c28f` or later. Baseline report for any A/B:
 `perf-reports/2026-08-28-0325-984b11a-cycle2-paged.json` (EXIT 0, all phases, three
 consecutive runs agreeing).
 
-## 2. READ THIS FIRST: cycle 3's premise moved, and nobody has re-checked it
+## 2. READ THIS FIRST: what paging did and did NOT bound
 
-The cycle-1 handoff (§6) sized card 3 as **"463 MB → 7.0 GB at six sessions"**. That
-7.0 GB was measured when every open session rendered its ENTIRE transcript.
+The cycle-1 handoff (§6) sized card 3 as **"463 MB → 7.0 GB at six sessions"**. That 7.0 GB
+was measured when every open session rendered its ENTIRE transcript on open.
 
-**Paging already took most of it.** Same rig, same fixture, six sessions:
+Paging moved the STARTING point, not the ceiling. Same rig, same fixture, six sessions:
 
 | | before paging | after paging |
 |---|---|---|
 | `workload.median.pssAfterMb` | 7003.7 | **1721.1** (−75.4%) |
 | `idle.pssMb.median` | 461.2 | 466.2 (unchanged) |
 
-So card 3's remaining headroom is 1.7 GB → something above 466 MB idle, not 7.0 GB → 463
-MB. It may still be worth doing; it is no longer the same size of prize, and **the first
-task of cycle 3 is to re-derive the number rather than inherit it**. This is exactly the
-mistake the ROADMAP's own "supersede the empty-fixture numbers" note records from
-2026-08-27 — a stale headline number outliving the thing it measured.
+**1721 MB is a FLOOR, not a new ceiling.** The rig never scrolls back, so that number is
+"six sessions at `PAGE_TURNS` turns each". A page loaded by scrolling up is PREPENDED and
+never removed (`chat-reducer.ts` → `HISTORY_PAGE_LOADED`, no cap, no eviction anywhere in
+the reducer), and every open session's view stays mounted (`App.tsx` renders
+`sessions.map(<ChatView>)`; hidden ones only get `content-visibility: hidden`, which skips
+layout but keeps rendering state alive). So a user who scrolls to the top of each of six
+long conversations rebuilds the whole 7 GB working set — just gradually, and only if they
+ask for it.
+
+**That accumulation is what cycle 3 is for.** Do not read the 75% drop as "most of the
+prize is already collected"; read it as "the default case is fixed, the worst case is
+not". The open question is not how big the prize is — it is how much of the working set is
+rendered DOM (which parking frees) versus reducer data (which only eviction frees), because
+that decides which of the two changes below is the real fix.
 
 ## 3. The two candidate changes (they are NOT the same thing)
+
+They free different memory. **Parking frees rendered DOM for sessions you are not looking
+at; it does NOT free reducer state** — `timeline`, `toolCalls`, `toolGroups` and
+`assistantTurns` all live in the chat store and survive an unmount. **Only eviction (b)
+frees those**, and it also drops the DOM as a consequence. So (b) is the direct answer to
+scroll-back accumulation and (a) is complementary, not a substitute.
 
 ### (a) Park hidden views — cycle-1 handoff §6
 `ChatView.tsx` keeps every open session's view mounted (`content-visibility: hidden`,
 deliberately NOT `display:none`). Unmount a hidden session's view and rebuild on switch;
-after paging a view is only ~30 turns, so the rebuild is cheap.
+after paging a view starts at only ~30 turns, so the rebuild is cheap — but a view the
+user has scrolled back through is arbitrarily large, and rebuilding THAT is not cheap
+unless (b) has already bounded it.
 - KEEP metric: `workload.median.pssAfterMb`.
 - Guards: `workload.median.switchPaintedBySize.*` must not rise; **scroll position must
   survive a switch** (needs a pinning test — the rig cannot see it).
@@ -68,8 +85,8 @@ Bounds a SINGLE long-lived session rather than many open ones. Design as specced
 - **This is the one sanctioned deletion from `toolCalls`.** `.claude/rules/chat-reducer.md`
   says that Map is never cleared and `scripts/ast-grep/rules/toolcalls-never-cleared.yml`
   enforces it — both must be amended, not bypassed.
-- Its value depends on how far a real session grows AFTER load. Paging bounded the initial
-  render; live streaming is now the only way the window grows. Measure that first.
+- Its value is the whole of the scroll-back ceiling in §2, plus however far a session grows
+  from live streaming. Both paths only ADD; nothing subtracts today.
 
 ## 4. The trap this programme keeps hitting — read before touching the reducer
 
