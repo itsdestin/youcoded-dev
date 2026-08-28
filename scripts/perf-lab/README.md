@@ -203,6 +203,38 @@ continuously, 40 session switches, with the renderer probe running throughout.
 `probe.longtaskTotalMs` (total main-thread blocking), `cpuDuringPct` and `pssAfterMb`
 (the cost of holding all that open) come next.
 
+### `scenario-scrollback.mjs` — the memory CEILING *(own boot, runs last)*
+Every other memory number in this rig is a **floor**. Since cycle 2 a conversation
+opens at its last 30 turns, and no other scenario ever scrolls back — so
+`workload.median.pssAfterMb` describes six sessions with nothing read back.
+Scrolling up prepends a page and **nothing removes it** (`chat-reducer.ts`
+`HISTORY_PAGE_LOADED`; there is no eviction), and every open session's ChatView stays
+mounted (`App.tsx` renders `sessions.map(<ChatView>)`). Six long conversations read to
+the top rebuild the pre-paging working set, gradually.
+
+This phase opens the **same six sessions the workload phase opens** (shared
+`openJourneySessions`, so floor and ceiling are comparable numbers), scrolls each
+resumed conversation to its beginning one at a time, and reads PSS, CDP
+`JSHeapUsedSize` and DOM node count at both ends, post-GC.
+
+**Look first at `ceilingPssMb`** — the number cycle 3 exists to bound. Then the split,
+which is the point of the phase:
+
+| metric | what it is | which change frees it |
+|---|---|---|
+| `deltaJsHeapMb` | reducer state + React fibers | **eviction** only |
+| `deltaNonJsMb` | PSS rise the heap does not explain: DOM, layout, paint | **parking a hidden view** |
+| `releasedMb` | what switching away + a forced GC gives back | ~0 today; the metric a cycle-3 change must move |
+
+`releasedMb` is deliberately **not** a PRIMARY metric — it is higher-is-better and the
+gate reads every PRIMARY path as lower-is-better, so gating on it would score the
+cycle-3 win as a regression.
+
+A leg that does not reach the beginning of its conversation FAILS the report rather
+than reporting a smaller ceiling: a ceiling measured half-way is a floor, and a median
+cannot say so. Same for a missing heap reading — an unattributable rise would point
+cycle 3 at the wrong change.
+
 ### `scenario-replay-stall.mjs` — the app-wide freeze *(never run against the real app)*
 The same measurement as history, asked the other way round. History asks "how long
 until the conversation is on screen?" — a cost the user asked for. This asks **"how
@@ -301,11 +333,18 @@ account: corrections doc §17.
 | | PSS |
 |---|---|
 | idle | **~450 MB** |
-| six sessions open | **~2,730 MB** |
+| six sessions open, pre-paging | **~7,000 MB** |
+| six sessions open, after cycle 2 | **~1,720 MB** |
 
-`ChatView.tsx:695-707` keeps a ChatView **mounted for every open session**
+`ChatView.tsx` keeps a ChatView **mounted for every open session**
 (`content-visibility: hidden`, deliberately not `display: none`, for resize
 performance). This matches the "worse with more sessions" report exactly.
+
+**Read the 1,720 MB as a FLOOR, not a bound.** It is six sessions with nothing
+scrolled back. Paging moved where a conversation starts, not how large it can get —
+see the `scrollback` phase above for the ceiling, and
+`docs/active/handoffs/2026-08-28-perf-cycle-3-handoff.md` §2 for why this distinction
+already caused one mis-sized plan.
 
 ### Which old reports you may compare against
 

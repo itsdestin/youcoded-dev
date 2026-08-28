@@ -1,0 +1,185 @@
+# perf-lab 2026-08-28-0732-nosha-probe-scrollback
+
+sha — (—) — 2026-08-28T07:32:32.206Z
+machine: AMD Ryzen 7 5700X3D 8-Core Processor · 31 GB · kernel 7.1.2-2-cachyos · node v26.4.0
+
+> **ABORTED:** [tsc] "npx tsc" exited 2:
+src/main/harness/compaction.ts(5,35): error TS2307: Cannot find module 'ai' or its corresponding type declarations.
+src/main/harness/eval/judge.ts(28,30): error TS2307: Cannot find module 'ai' or its corresponding type declarations.
+src/main/harness/eval/openrouter-factory.ts(7,40): error TS2307: Cannot find module '@ai-sdk/openai-compatible' or its corresponding type declarations.
+src/main/harness/harness-session.ts(18,96): error TS2307: Cannot find module 'ai' or its corresponding type declarations.
+src/main/harness/history-rebuild.ts(27,75): error TS2307: Cannot find module 'ai' or its corresponding type declarations.
+src/main/harness/mcp/mcp-client.ts(6,24): error TS2307: Cannot find module '@modelcontextprotocol/sdk/client/index.js' or its corresponding type declarations.
+src/main/harness/mcp/mcp-client.ts(7,38): error TS2307: Cannot find module '@modelcontextprotocol/sdk/client/stdio.js' or its corresponding type declarations.
+src/main/harness/mcp/mcp-client.ts(8,47): error TS2307: Cannot find module '@modelcontextprotocol/sdk/client/streamableHttp.js' or its corresponding type declarations.
+src/main/harness/mcp/mcp-client.ts(9,35): error TS2307: Cannot find module '@modelcontextprotocol/sdk/client/auth.js' or its corresponding type declarations.
+src/main/harness/mcp/mcp-client.ts(10,37): error TS2307: Cannot find module '@modelcontextprotocol/sdk/types.js' or its corresponding type declarations.
+src/main/harness/mcp/mcp-client.ts(11,32): error TS2307: Cannot find module '@modelcontextprotocol/sdk/shared/transport.js' or its corresponding type declarations.
+src/main/harness/mcp/mcp-tools.ts(6,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/message-size.ts(6,35): error TS2307: Cannot find module 'ai' or its corresponding type declarations.
+src/main/harness/pdf-text.ts(22,28): error TS2307: Cannot find module 'pdfjs-dist' or its corresponding type declarations.
+src/main/harness/pdf-text.ts(25,24): error TS2307: Cannot find module 'pdfjs-dist/legacy/build/pdf.mjs' or its corresponding type declarations.
+src/main/harness/tools/arg-errors.ts(13,24): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/arg-errors.ts(52,70): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/main/harness/tools/ask-user-question.ts(8,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/ask-user-question.ts(46,37): error TS7006: Parameter 'qq' implicitly has an 'any' type.
+src/main/harness/tools/bash.ts(13,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/bash.ts(512,29): error TS18046: 'a' is of type 'unknown'.
+src/main/harness/tools/bash.ts(514,30): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/bash.ts(525,70): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/bash.ts(532,33): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/bash.ts(544,66): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/bash.ts(556,71): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/bash.ts(556,99): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(2,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/edit.ts(3,33): error TS2307: Cannot find module 'diff' or its corresponding type declarations.
+src/main/harness/tools/edit.ts(10,75): error TS7006: Parameter 'h' implicitly has an 'any' type.
+src/main/harness/tools/edit.ts(71,29): error TS18046: 'a' is of type 'unknown'.
+src/main/harness/tools/edit.ts(73,26): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(74,36): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(85,33): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(94,33): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(113,32): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(119,23): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(129,20): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(130,22): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(130,44): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(131,24): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(131,47): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(133,43): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(144,25): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/edit.ts(151,30): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/glob.ts(5,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/glob.ts(144,29): error TS18046: 'a' is of type 'unknown'.
+src/main/harness/tools/glob.ts(150,24): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/glob.ts(152,34): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/glob.ts(156,27): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/glob.ts(171,39): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/glob.ts(186,32): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(3,41): error TS2307: Cannot find module '@vscode/ripgrep' or its corresponding type declarations.
+src/main/harness/tools/grep.ts(6,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/grep.ts(269,29): error TS18046: 'a' is of type 'unknown'.
+src/main/harness/tools/grep.ts(271,18): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(294,9): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(294,42): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(300,9): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(300,54): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(301,9): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(301,54): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(302,9): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(302,54): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(305,9): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(306,9): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(311,9): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(311,42): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(312,9): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(315,37): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(335,50): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(336,28): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/grep.ts(432,43): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/model-search.ts(6,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/read.ts(3,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/read.ts(106,29): error TS18046: 'a' is of type 'unknown'.
+src/main/harness/tools/read.ts(108,26): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(122,39): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(148,38): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(157,44): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(166,54): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(167,78): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(178,40): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(182,42): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(184,41): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(185,36): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(188,40): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(188,76): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(196,22): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(197,63): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(197,86): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(198,57): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(201,20): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(202,28): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(203,36): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(221,23): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(227,60): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/read.ts(239,38): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/send-user-file.ts(8,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/send-user-file.ts(47,23): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/send-user-file.ts(82,15): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/skill.ts(12,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/task.ts(15,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/todo-write.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/todo-write.ts(21,23): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/todo-write.ts(22,18): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/todo-write.ts(22,37): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/main/harness/tools/todo-write.ts(23,42): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/types.ts(4,24): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/web-fetch.ts(11,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/web-fetch.ts(12,29): error TS2307: Cannot find module '@mozilla/readability' or its corresponding type declarations.
+src/main/harness/tools/web-fetch.ts(13,27): error TS2307: Cannot find module 'linkedom' or its corresponding type declarations.
+src/main/harness/tools/web-search.ts(4,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/write.ts(3,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/main/harness/tools/write.ts(63,29): error TS18046: 'a' is of type 'unknown'.
+src/main/harness/tools/write.ts(65,26): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/write.ts(66,36): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/write.ts(73,34): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/write.ts(103,34): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/write.ts(114,51): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/write.ts(127,48): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/write.ts(127,64): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/write.ts(140,52): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/write.ts(140,71): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/write.ts(142,44): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/tools/write.ts(142,59): error TS18046: 'args' is of type 'unknown'.
+src/main/harness/wire-adapter.ts(21,35): error TS2307: Cannot find module 'ai' or its corresponding type declarations.
+src/main/ipc-handlers.ts(34,30): error TS2307: Cannot find module 'ai' or its corresponding type declarations.
+src/main/models/model-downloader.ts(15,22): error TS2307: Cannot find module 'ulid' or its corresponding type declarations.
+src/main/providers/provider-registry.ts(8,22): error TS2307: Cannot find module 'ulid' or its corresponding type declarations.
+src/main/providers/provider-registry.ts(9,40): error TS2307: Cannot find module '@ai-sdk/openai-compatible' or its corresponding type declarations.
+src/main/providers/provider-registry.ts(12,33): error TS2307: Cannot find module '@ai-sdk/anthropic' or its corresponding type declarations.
+src/main/providers/provider-registry.ts(13,30): error TS2307: Cannot find module '@ai-sdk/openai' or its corresponding type declarations.
+src/main/providers/provider-registry.ts(14,42): error TS2307: Cannot find module '@ai-sdk/google' or its corresponding type declarations.
+src/main/providers/provider-registry.ts(15,36): error TS2307: Cannot find module 'ai' or its corresponding type declarations.
+src/main/providers/secrets-store.ts(9,22): error TS2307: Cannot find module 'ulid' or its corresponding type declarations.
+src/renderer/components/artifact-views/CodeEditorView.tsx(20,91): error TS2307: Cannot find module '@codemirror/view' or its corresponding type declarations.
+src/renderer/components/artifact-views/CodeEditorView.tsx(21,58): error TS2307: Cannot find module '@codemirror/state' or its corresponding type declarations.
+src/renderer/components/artifact-views/CodeEditorView.tsx(22,70): error TS2307: Cannot find module '@codemirror/commands' or its corresponding type declarations.
+src/renderer/components/artifact-views/CodeEditorView.tsx(23,81): error TS2307: Cannot find module '@codemirror/language' or its corresponding type declarations.
+src/renderer/components/artifact-views/CodeEditorView.tsx(24,38): error TS2307: Cannot find module '@codemirror/search' or its corresponding type declarations.
+src/renderer/components/artifact-views/CodeEditorView.tsx(25,27): error TS2307: Cannot find module '@codemirror/language-data' or its corresponding type declarations.
+src/renderer/components/artifact-views/CodeEditorView.tsx(73,37): error TS7006: Parameter 'u' implicitly has an 'any' type.
+src/renderer/components/artifact-views/CodeEditorView.tsx(93,25): error TS7006: Parameter 'support' implicitly has an 'any' type.
+src/renderer/components/artifact-views/PdfView.tsx(3,24): error TS2307: Cannot find module 'pdfjs-dist' or its corresponding type declarations.
+src/renderer/components/artifact-views/XlsxView.tsx(2,26): error TS2307: Cannot find module 'exceljs' or its corresponding type declarations.
+src/renderer/components/artifact-views/cm/cm-theme.ts(6,28): error TS2307: Cannot find module '@codemirror/view' or its corresponding type declarations.
+src/renderer/components/artifact-views/cm/cm-theme.ts(7,32): error TS2307: Cannot find module '@codemirror/state' or its corresponding type declarations.
+src/renderer/components/artifact-views/cm/cm-theme.ts(8,52): error TS2307: Cannot find module '@codemirror/language' or its corresponding type declarations.
+src/renderer/components/artifact-views/cm/cm-theme.ts(9,22): error TS2307: Cannot find module '@lezer/highlight' or its corresponding type declarations.
+src/renderer/components/artifact-views/cm/editor-registry.ts(8,33): error TS2307: Cannot find module '@codemirror/view' or its corresponding type declarations.
+src/renderer/components/artifact-views/cm/editor-registry.ts(66,15): error TS2307: Cannot find module '@codemirror/search' or its corresponding type declarations.
+src/renderer/components/diff/UnifiedDiff.tsx(18,42): error TS2307: Cannot find module 'diff' or its corresponding type declarations.
+src/shared/artifacts/ulid.ts(1,22): error TS2307: Cannot find module 'ulid' or its corresponding type declarations.
+> The rows below are whatever had been measured when the run stopped.
+
+| metric | median |
+|---|---|
+| startup.whenReady | — |
+| startup.createWindowAt | — |
+| startup.blankWindowMs | — |
+| startup.didFinishLoad | — |
+| startup.firstContentfulPaint | — |
+| startup.appMounted | — |
+| startup.sessionsListed | — |
+| startup.postWindowDone (network) | — |
+| idle PSS | — |
+| idle CPU | — |
+
+noise: load —, busy —%, worst accepted load — / busy —%, discarded 0
+errors (desktop.log "level":"ERROR" lines): cold starts [], scenario boot —, workload boots [], stall boot —, artifacts boot —, scrollback boot —
+A boot that logged errors is not a clean measurement — do not rank a phase from one. Full logs: scratch/perf-lab/logs/.
+
+## Incomplete — do NOT rank anything from this report
+
+- scrollback: no runs were recorded
+- compare.mjs PRIMARY path "scrollback.median.ceilingPssMb" is undefined — the keep/reject gate would be BLIND to this metric
+- compare.mjs PRIMARY path "scrollback.median.deltaPssMb" is undefined — the keep/reject gate would be BLIND to this metric
+- compare.mjs PRIMARY path "scrollback.median.perSize.huge.pageMedianMs" is undefined — the keep/reject gate would be BLIND to this metric

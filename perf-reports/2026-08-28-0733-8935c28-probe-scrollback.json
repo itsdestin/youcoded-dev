@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "label": "probe-scrollback",
+  "sha": "8935c28fee8f1cbb6cba9d54515d6c4aeba95643",
+  "branch": "",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-08-28T07:33:30.816Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "ramGb": 31,
+    "kernel": "7.1.2-2-cachyos",
+    "node": "v26.4.0"
+  },
+  "noise": {
+    "loadAvgBefore": 1.05,
+    "machineBusyPctBefore": 1.4,
+    "maxLoadAvgAccepted": 1.05,
+    "maxBusyPctAccepted": 1.4,
+    "discardedRuns": 0
+  },
+  "startup": null,
+  "idle": null,
+  "history": null,
+  "workload": null,
+  "replayStall": null,
+  "artifacts": null,
+  "scrollback": {
+    "runs": [
+      {
+        "floor": {
+          "pssMb": 1492.5,
+          "jsHeapMb": 20,
+          "jsHeapTotalMb": 22,
+          "domNodes": 23461,
+          "listeners": 945
+        },
+        "ceiling": {
+          "pssMb": 4443.2,
+          "jsHeapMb": 534.4,
+          "jsHeapTotalMb": 1111.9,
+          "domNodes": 1464735,
+          "listeners": 31427
+        },
+        "released": {
+          "pssMb": 4401.1,
+          "jsHeapMb": 534.8,
+          "jsHeapTotalMb": 963.9,
+          "domNodes": 1464722,
+          "listeners": 31421,
+          "releasedMb": 42.1
+        },
+        "perSize": {
+          "huge": {
+            "pages": 116,
+            "entriesBefore": 60,
+            "entriesAfter": 7000,
+            "reachedTop": true,
+            "pageMedianMs": 429,
+            "pageP95Ms": 722,
+            "pssAfterMb": 4123.3,
+            "jsHeapAfterMb": 396.6,
+            "domNodesAfter": 867143
+          },
+          "medium": {
+            "pages": 83,
+            "entriesBefore": 60,
+            "entriesAfter": 5000,
+            "reachedTop": true,
+            "pageMedianMs": 887,
+            "pageP95Ms": 1125,
+            "pssAfterMb": 5963.5,
+            "jsHeapAfterMb": 580.2,
+            "domNodesAfter": 1460861
+          },
+          "small": {
+            "pages": 1,
+            "entriesBefore": 60,
+            "entriesAfter": 100,
+            "reachedTop": true,
+            "pageMedianMs": 987,
+            "pageP95Ms": 987,
+            "pssAfterMb": 5950.1,
+            "jsHeapAfterMb": 690.1,
+            "domNodesAfter": 1464750
+          }
+        },
+        "warnings": [],
+        "floorPssMb": 1492.5,
+        "ceilingPssMb": 4443.2,
+        "deltaPssMb": 2950.7,
+        "floorJsHeapMb": 20,
+        "ceilingJsHeapMb": 534.4,
+        "deltaJsHeapMb": 514.4,
+        "deltaNonJsMb": 2436.3,
+        "floorDomNodes": 23461,
+        "ceilingDomNodes": 1464735,
+        "deltaDomNodes": 1441274,
+        "releasedMb": 42.1,
+        "totalPagesLoaded": 200,
+        "totalEntriesLoaded": 11920,
+        "sessionsCreated": 6
+      }
+    ],
+    "median": {
+      "floorPssMb": 1492.5,
+      "ceilingPssMb": 4443.2,
+      "deltaPssMb": 2950.7,
+      "floorJsHeapMb": 20,
+      "ceilingJsHeapMb": 534.4,
+      "deltaJsHeapMb": 514.4,
+      "deltaNonJsMb": 2436.3,
+      "floorDomNodes": 23461,
+      "ceilingDomNodes": 1464735,
+      "deltaDomNodes": 1441274,
+      "releasedMb": 42.1,
+      "totalPagesLoaded": 200,
+      "totalEntriesLoaded": 11920,
+      "perSize": {
+        "huge": {
+          "pages": 116,
+          "entriesAfter": 7000,
+          "pageMedianMs": 429,
+          "pageP95Ms": 722,
+          "pssAfterMb": 4123.3,
+          "jsHeapAfterMb": 396.6,
+          "reachedTopEveryRun": true
+        },
+        "medium": {
+          "pages": 83,
+          "entriesAfter": 5000,
+          "pageMedianMs": 887,
+          "pageP95Ms": 1125,
+          "pssAfterMb": 5963.5,
+          "jsHeapAfterMb": 580.2,
+          "reachedTopEveryRun": true
+        },
+        "small": {
+          "pages": 1,
+          "entriesAfter": 100,
+          "pageMedianMs": 987,
+          "pageP95Ms": 987,
+          "pssAfterMb": 5950.1,
+          "jsHeapAfterMb": 690.1,
+          "reachedTopEveryRun": true
+        }
+      }
+    },
+    "warnings": []
+  },
+  "measures": {
+    "scrollback": {
+      "scenario": "scrollback",
+      "question": "How much memory does the app accumulate when the user scrolls back through long conversations, and is any of it ever released?",
+      "configuration": [
+        "the SAME six sessions the workload phase opens (openJourneySessions), so the floor and the ceiling are comparable numbers",
+        "each of the three RESUMED conversations (huge, medium, small) is scrolled to its beginning, one at a time, largest first",
+        "a page turn is driven the way a user drives it — scroll the pane to the top and wait for the entry count to GROW; the app's own data-history-sentinel (rendered only while history.hasMore) is what says whether there is more",
+        "nothing streams during this phase: the only thing growing the window is the scroll-back itself",
+        "the ceiling is read AFTER a forced GC, so a rise means retained memory rather than uncollected garbage"
+      ],
+      "clocks": {
+        "floor.pssMb": "whole-process PSS with all six sessions open and NOTHING scrolled — the paged state every other phase measures",
+        "ceiling.pssMb": "the same reading after all three conversations have been scrolled to the beginning, post-GC",
+        "deltaPssMb": "ceiling - floor: what scrolling back costs. THE cycle-3 number.",
+        "deltaJsHeapMb": "the share of that rise in the JS heap — reducer state and React fibers. Only EVICTION frees this.",
+        "deltaNonJsMb": "the rise NOT explained by the JS heap — DOM, layout, paint. PARKING a hidden view frees this.",
+        "releasedMb": "ceiling - (reading after switching away from every scrolled session and forcing a GC). Expected ~0 today, because nothing evicts; this is the metric a cycle-3 change has to move.",
+        "perSize.*.pageMedianMs": "how long one page turn takes, per conversation — does scrolling back get slower as the window grows?"
+      },
+      "blindTo": [
+        "conversations larger than the fixture huge transcript (3,500 turns)",
+        "whether the user would ever scroll this far — this is a CEILING, deliberately the worst case, not a typical session",
+        "the cost of scrolling back DOWN again, and of re-rendering a conversation whose pages were evicted (there is no eviction to measure yet)",
+        "anything requiring a real GPU — the rig runs headless under Xvfb, so the paint half of deltaNonJsMb is a software-raster figure",
+        "per-session attribution of PSS: /proc reports the whole app family, so a per-conversation delta is only clean because they are scrolled ONE AT A TIME"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": null,
+    "workloadBoots": [],
+    "stallBoot": null,
+    "artifactsBoot": null,
+    "scrollbackBoot": 0
+  },
+  "screens": null,
+  "aborted": null,
+  "incomplete": [
+    "compare.mjs PRIMARY path \"scrollback.median.ceilingPssMb\" has only 1 sample behind its median (4443.2) — one run cannot show run-to-run spread, so spreadPct() reports 0% noise and the gate's noise check is DISARMED, not merely thin: any jitter would pass as a proven win. At least 2 repeats are required.",
+    "compare.mjs PRIMARY path \"scrollback.median.deltaPssMb\" has only 1 sample behind its median (2950.7) — one run cannot show run-to-run spread, so spreadPct() reports 0% noise and the gate's noise check is DISARMED, not merely thin: any jitter would pass as a proven win. At least 2 repeats are required.",
+    "compare.mjs PRIMARY path \"scrollback.median.perSize.huge.pageMedianMs\" has only 1 sample behind its median (429) — one run cannot show run-to-run spread, so spreadPct() reports 0% noise and the gate's noise check is DISARMED, not merely thin: any jitter would pass as a proven win. At least 2 repeats are required."
+  ]
+}

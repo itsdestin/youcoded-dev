@@ -6,6 +6,10 @@ node_modules/
 
 # Cloned repos (managed by setup.sh)
 youcoded/
+# ...and as a SYMLINK. `youcoded/` with a trailing slash matches a directory only,
+# so a symlink of the same name slipped past it and reached master on 2026-08-28
+# (a workspace worktree has no sub-repo clones, and one was linked in to run the rig).
+youcoded
 youcoded-core/
 youcoded-admin/
 wecoded-themes/

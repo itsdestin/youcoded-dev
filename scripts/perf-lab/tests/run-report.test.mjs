@@ -21,6 +21,7 @@ import { PRIMARY, get, runsFor, spreadPct, verdict } from '../compare.mjs';
 import { MEASURES as HISTORY_MEASURES, NUMERIC_KEYS, medianRun } from '../scenario-history.mjs';
 import { MEASURES as ARTIFACT_MEASURES, medianRun as artifactMedian } from '../scenario-artifacts.mjs';
 import { MEASURES as STALL_MEASURES, SIZES as STALL_SIZES_REAL, medianRun as stallMedian, summarizeBlame } from '../scenario-replay-stall.mjs';
+import { MEASURES as SCROLL_MEASURES, SCROLL_SIZES, medianRun as scrollMedian } from '../scenario-scrollback.mjs';
 import { SCREEN_NAMES } from '../screenshots.mjs';
 import {
   EXIT, NETWORK_PATHS, PHASES, STALL_SIZES, USAGE,
@@ -190,7 +191,34 @@ const artifactRun = (i) => ({
 });
 
 /** A complete, clean report — assembled ONLY through run.mjs's real builders. */
-function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, stallRepeats = 3, artifactRepeats = 3 } = {}) {
+/**
+ * One scroll-back repeat. Every number is plausible rather than round, and
+ * `reachedTop` is true on every leg — a leg that did NOT reach the top is the
+ * failure case validateReport must catch, so it belongs in its own test, never in
+ * the "complete report" fixture.
+ */
+function scrollbackRun(i) {
+  const perSize = {};
+  for (const size of SCROLL_SIZES) {
+    perSize[size] = {
+      pages: 40 + i, entriesBefore: 60, entriesAfter: 2460 + i, reachedTop: true,
+      pageMedianMs: 90 + i, pageP95Ms: 210 + i, pssAfterMb: 2100 + i * 10,
+      jsHeapAfterMb: 700 + i * 5, domNodesAfter: 90000 + i * 100,
+    };
+  }
+  return {
+    perSize, warnings: [],
+    floor: {}, ceiling: {}, released: {},
+    floorPssMb: 1720 + i, ceilingPssMb: 6800 + i * 10, deltaPssMb: 5080 + i * 9,
+    floorJsHeapMb: 300 + i, ceilingJsHeapMb: 2100 + i, deltaJsHeapMb: 1800 + i,
+    deltaNonJsMb: 3280 + i * 8,
+    floorDomNodes: 12000, ceilingDomNodes: 210000 + i * 100, deltaDomNodes: 198000 + i * 100,
+    releasedMb: 0.4, totalPagesLoaded: 120 + i, totalEntriesLoaded: 7200 + i,
+    sessionsCreated: 6,
+  };
+}
+
+function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, stallRepeats = 3, artifactRepeats = 3, scrollbackRepeats = 3 } = {}) {
   const cold = Array.from({ length: runs }, (_, i) => startupRun(i));
   const wruns = Array.from({ length: workloadRepeats }, (_, i) => workloadRun(i));
   const report = emptyReport({ label: 'contract', timestamp: '2026-08-26T09:30:00.000Z' });
@@ -212,8 +240,13 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   // The REAL MEASURES exports, not hand-copied literals: if a scenario drops or
   // renames its descriptor, this fixture fails to build rather than quietly
   // rendering a report with no configuration section.
-  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES };
-  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0 };
+  const sruns = Array.from({ length: scrollbackRepeats }, (_, i) => scrollbackRun(i));
+  // Through the scenario's REAL medianRun, for the same reason the artifacts section
+  // is: `perSize.*.reachedTopEveryRun` is computed there, and a hand-assembled median
+  // would keep passing after the scenario stopped carrying it.
+  report.scrollback = { runs: sruns, median: scrollMedian(sruns), warnings: [] };
+  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, scrollback: SCROLL_MEASURES };
+  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, scrollbackBoot: 0 };
   report.screens = { dir: '/tmp/shots', names: [...SCREEN_NAMES], failures: [] };
   return report;
 }
@@ -243,7 +276,15 @@ describe('compare.mjs PRIMARY contract', () => {
     // maximum of ~18 samples, a third of them the empty control and two buckets
     // at the 20 s cap; the huge bucket is the case Destin lives in and moved 4%
     // run to run.
-    assert.equal(PRIMARY.length, 20, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 20 -> 23 on 2026-08-28: the three scrollback paths. workload.median.pssAfterMb
+    // is the paged FLOOR (six sessions open, none scrolled back) and cycle 2 cut it
+    // 75%; nothing bounded the CEILING, because a page loaded by scrolling up is
+    // prepended and never removed. A gate that judged only the floor would sign off a
+    // change that left accumulation exactly where it was.
+    assert.equal(PRIMARY.length, 23, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    assert.ok(PRIMARY.includes('scrollback.median.ceilingPssMb'), 'the ceiling is the cycle-3 target and must be judged');
+    assert.ok(!PRIMARY.includes('scrollback.median.releasedMb'),
+      'releasedMb is HIGHER-is-better; every PRIMARY path is read as lower-is-better, so including it would score the cycle-3 win as a regression');
     assert.ok(PRIMARY.includes('workload.median.switchPaintedBySize.huge.medianMs'), 'the clean huge-bucket switch metric must be judged');
     assert.ok(!PRIMARY.includes('workload.median.switchPaintedP95Ms'), 'the pooled p95 is contaminated by the control and by streamed-into buckets');
   });
@@ -429,10 +470,10 @@ describe('every scenario declares what it measures', () => {
   // every unit test. It is included because a rename there was the one mutation
   // the earlier tests did not catch.
   const load = async () => Object.fromEntries(await Promise.all(
-    ['workload', 'replay-stall', 'artifacts', 'history'].map(async (n) => [n, (await import(`../scenario-${n}.mjs`)).MEASURES]),
+    ['workload', 'replay-stall', 'artifacts', 'history', 'scrollback'].map(async (n) => [n, (await import(`../scenario-${n}.mjs`)).MEASURES]),
   ));
 
-  it('exports MEASURES from all four scenario modules', async () => {
+  it('exports MEASURES from every scenario module', async () => {
     for (const [name, m] of Object.entries(await load())) {
       assert.ok(m && typeof m === 'object', `scenario-${name}.mjs does not export MEASURES`);
     }
