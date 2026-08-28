@@ -2,7 +2,7 @@
 title: Paged conversation history + read-side hardening (the rest of the OOM bug class)
 date: 2026-08-27
 status: draft
-review: REVIEWED 2026-08-28 against master 97600ddd (three parallel code sweeps, every claim checked) — see '## Spec review' at the end. §2 is cycle 2 of the perf programme; §3/§4 stay separate ROADMAP items. Plan: pending Destin's two scope decisions in the review.
+review: REVIEWED 2026-08-28 against master 97600ddd (three parallel code sweeps, every claim checked) — see '## Spec review' at the end. §2 is cycle 2 of the perf programme; §3/§4 stay separate ROADMAP items. Decisions 2026-08-28: 1a/2a — cycle 2 = desktop paging + start-at-end only; Android on-device paging and eviction are later cycles. Plan: docs/active/plans/2026-08-28-paged-history-cycle-2.md
 tags: [artifacts, memory, crash, conversations, chat-reducer, android]
 related:
   - docs/active/investigations/2026-08-27-artifacts-sidecar-oom-crash.md (the crash and the six-lens sweep this spec answers)
@@ -343,7 +343,7 @@ do differently. §3 and §4 were NOT reviewed here — they are not cycle 2.
 - Optional, later: a separate `resumeFullHistoryMs` clock that scrolls to the top until
   `hasMore` is false — a new metric, never folded into `resumeStableMs`.
 
-### Scope decisions for Destin (2026-08-28)
+### Scope decisions — DECIDED by Destin 2026-08-28: "1a/2a" (desktop now, Android next cycle; paging only, eviction moves to cycle 3)
 
 - **D1 — Android in this cycle?** On-device Android needs a Kotlin tail-page reader +
   start-at-end (§2, "Phone, other windows, Android"). Recommended: desktop first (the phone
