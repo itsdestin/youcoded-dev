@@ -153,7 +153,10 @@ mkdirSync(dirname(outBase), { recursive: true });
 const enc = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', join(framesDir, 'list.txt'),
   '-vf', `scale=${W}:-2,fps=24,format=yuv420p`, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '33', '-row-mt', '1', '-an', `${outBase}.webm`]);
 if (enc.status !== 0) { console.error(enc.stderr.toString()); process.exit(1); }
-spawnSync('magick', [join(framesDir, 'f00000.png'), '-quality', '82', `${outBase}.webp`]);
+// Poster = the LAST frame, not the first: a loop that starts in an empty chat
+// (rows 1/2/6/7 since 2026-08-28) would otherwise show a blank window wherever
+// the video isn't playing yet — before scroll, reduced-motion, slow networks.
+spawnSync('magick', [join(framesDir, `f${String(frames.length - 1).padStart(5, '0')}.png`), '-quality', '82', `${outBase}.webp`]);
 // framesDir cleanup now happens in the exit handler registered above (covers
 // error exits too, not just this success path).
 console.log(`frames=${frames.length} duration=${duration.toFixed(1)}s out=${outBase}.webm`);
