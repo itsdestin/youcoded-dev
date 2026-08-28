@@ -37,3 +37,73 @@ Rules live in `.claude/rules/`; depth docs are read-on-demand (`youcoded/docs/`,
 | Marketplace worker | `wecoded-marketplace/worker/src/lib/analytics.ts`<br>`wecoded-marketplace/worker/src/lib/admin-filter.ts` | worker-backend | `wecoded-marketplace/docs/worker-backend.md` | `wecoded-marketplace/worker/test/analytics-lib.test.ts`<br>`wecoded-marketplace/worker/test/admin-filter.test.ts`<br>`wecoded-marketplace/.github/workflows/worker-ci.yml` (pre-merge typecheck+test) |
 | youcoded-core plugin | `youcoded-core/hooks/hooks-manifest.json`<br>`youcoded-core/plugin.json` | youcoded-toolkit | `docs/toolkit-structure.md` | manual (hook runtime) |
 | Build & release | `youcoded/app/build.gradle.kts`<br>`youcoded/scripts/build-web-ui.sh`<br>`youcoded/.github/workflows/desktop-test-build.yml` (beta builds)<br>`youcoded/desktop/src/shared/version-line.ts` | — | `docs/build-and-release.md` | `youcoded/.github/workflows/desktop-release.yml`<br>`youcoded/desktop/tests/version-line.test.ts` |
+
+## Hot paths — the exact file, without a search
+
+Product vocabulary on the left (what Destin calls the thing), exact file on the right.
+This table exists because sessions were spending 3–7 tool calls each rediscovering the
+same two dozen files; the 2026-08-28 transcript audit measured `ipc-handlers.ts` alone
+being hunted for by 11 of 55 sessions. `/audit` checks every path here, and the
+session-start hook prints this table into every session, so a lookup costs zero calls.
+
+| You'd call it | File |
+|---|---|
+| the chat transcript / message list | `youcoded/desktop/src/renderer/components/ChatView.tsx` |
+| tool cards, permission prompts, question cards | `youcoded/desktop/src/renderer/components/ToolCard.tsx` |
+| the input bar / composer | `youcoded/desktop/src/renderer/components/InputBar.tsx` |
+| quick chips (the row above the input bar) | `youcoded/desktop/src/renderer/components/QuickChips.tsx` |
+| window chrome, layout, the "No Active Session" screen | `youcoded/desktop/src/renderer/App.tsx` |
+| the status bar | `youcoded/desktop/src/renderer/components/StatusBar.tsx` |
+| the session drawer / session list | `youcoded/desktop/src/renderer/components/SessionDrawer.tsx` |
+| the resume browser | `youcoded/desktop/src/renderer/components/ResumeBrowser.tsx` |
+| Settings (every section) | `youcoded/desktop/src/renderer/components/SettingsPanel.tsx` |
+| the themes screen | `youcoded/desktop/src/renderer/components/ThemeScreen.tsx` |
+| the model picker / model dropdown | `youcoded/desktop/src/renderer/components/model/ModelPicker.tsx` |
+| the local models screen (download, load, delete) | `youcoded/desktop/src/renderer/components/LocalModelsSection.tsx` |
+| the file/artifact panel (images, PDFs, code, sheets) | `youcoded/desktop/src/renderer/components/artifact-views/ActiveArtifactView.tsx` |
+| the projects page and its context editor | `youcoded/desktop/src/renderer/components/project-view/` |
+| the marketplace screen and its cards | `youcoded/desktop/src/renderer/components/marketplace/` |
+| the terminal pane | `youcoded/desktop/src/renderer/components/TerminalView.tsx` |
+| buddy mode (the floating window) | `youcoded/desktop/src/renderer/components/buddy/` |
+| the Permissions settings screen | `youcoded/desktop/src/renderer/components/PermissionsSection.tsx` |
+| the specialists chip + popup | `youcoded/desktop/src/renderer/components/SpecialistsChip.tsx` |
+| the fake backend the Workbench runs against | `youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts` |
+| every main-process IPC channel (the switchboard) | `youcoded/desktop/src/main/ipc-handlers.ts` |
+| what the renderer is allowed to call | `youcoded/desktop/src/main/preload.ts` |
+| one native (non-Claude-Code) agent turn | `youcoded/desktop/src/main/harness/harness-session.ts` |
+| the native session registry / specialists parent | `youcoded/desktop/src/main/harness/native-session-host.ts` |
+| what's downloaded and whether it's complete | `youcoded/desktop/src/main/engine/cache-scan.ts` |
+| where GGUFs and the engine binary live | `youcoded/desktop/src/main/engine/engine-config.ts` |
+| the `~/.youcoded` directory itself | `youcoded/desktop/src/main/native-home.ts` |
+| listing resumable Claude Code sessions | `youcoded/desktop/src/main/session-browser.ts` |
+
+**Four files are too big to read whole** — query symbols, never `cat`: `youcoded/desktop/src/main/ipc-handlers.ts`, `youcoded/desktop/src/renderer/App.tsx`, `youcoded/desktop/src/renderer/state/chat-reducer.ts`, `youcoded/desktop/src/main/harness/native-session-host.ts`. See `.claude/rules/code-search.md`.
+
+**Where shared types live** — six sessions in two days guessed wrong on `ConversationRecord`:
+
+| Kind of type | File |
+|---|---|
+| anything crossing the IPC boundary (main ↔ renderer) | `youcoded/desktop/src/shared/types.ts` |
+| chat state, turns, tool calls, usage | `youcoded/desktop/src/renderer/state/chat-types.ts` |
+| `ConversationRecord`, flags, tags | `youcoded/desktop/src/main/conversations/store-core.ts` |
+| one file per domain — permissions, models, providers, engine, tags | `youcoded/desktop/src/shared/` |
+
+## On-disk state — what the app writes on this machine
+
+Not repo paths. Sessions kept hunting for these with `find /home/destin`, twice timing
+out at two minutes. The **Defined in** column is the repo file that decides the location,
+so `/audit` catches a move.
+
+| Path | What's in it | Defined in |
+|---|---|---|
+| `~/.youcoded/config.json` | native-runtime settings (engine cache dir, pins) | `youcoded/desktop/src/main/native-home.ts` |
+| `~/.youcoded/providers.json` | provider entries; secrets are `secretRef`s only | `youcoded/desktop/src/main/providers/provider-registry.ts` |
+| `~/.youcoded/permissions.json` | remembered "Always allow" grants | `youcoded/desktop/src/main/harness/permission-store.ts` |
+| `~/.youcoded/sessions/<project-slug>/` | native session transcripts (`.jsonl`) | `youcoded/desktop/src/main/session-browser.ts` |
+| `~/.youcoded/chatsearch/` | the conversation search index | `youcoded/desktop/src/main/chatsearch-index/index-store.ts` |
+| `~/.youcoded/specialists/` | personal specialist definitions | `youcoded/desktop/src/main/harness/specialists/definition-files.ts` |
+| `<project>/.youcoded/artifacts.json` | per-project file history (the OOM sidecar) | `youcoded/desktop/src/main/artifacts/artifact-store.ts` |
+| `~/.config/youcoded/` | Electron `userData` for the **live** app — caches, cookies, model catalog | `youcoded/desktop/src/main/main.ts` |
+| `~/.config/youcoded-dev/` | the same, for `run-dev.sh` instances (isolated on purpose) | `scripts/run-dev.sh` |
+| `~/.cache/llama.cpp/` | downloaded GGUF model files (llama.cpp's own default) | `youcoded/desktop/src/main/engine/engine-config.ts` |
+| `~/.claude/projects/<slug>/*.jsonl` | Claude Code transcripts (what chatsearch indexes) | `youcoded/desktop/src/main/transcript-watcher.ts` |

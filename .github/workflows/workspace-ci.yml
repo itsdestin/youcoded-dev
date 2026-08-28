@@ -76,6 +76,15 @@ jobs:
       - name: Test the anchor checker
         run: node --test scripts/audit-anchors.test.mjs
 
+      # The SessionStart/PreToolUse hooks are code that reports on state, and both
+      # already have suites — neither of which ran anywhere. That is the failure
+      # shape context-inject.test.mjs was written about: a check that stops
+      # checking goes quiet, not red. !cancelled() so a red anchors step above
+      # does not silently skip them.
+      - name: Test the workspace hooks
+        if: ${{ !cancelled() }}
+        run: node --test .claude/hooks/context-inject.test.mjs .claude/hooks/glob-guard.test.mjs
+
       # --no-diff skips the "which subsystems changed since the last audit
       # report" computation. That is a scoping aid for the /audit agent and needs
       # git history plus a dated report; the mechanical anchor pass does not.
