@@ -1,0 +1,6 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=150",
+  "theme": "halftone-dimension", "boot": 3000,
+  "actions": [
+    {"hold": 600}, {"click": "[title='Connect 4']", "settle": 1200},
+    {"hold": 2500}
+  ] }

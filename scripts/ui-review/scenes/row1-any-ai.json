@@ -1,0 +1,17 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=any-ai",
+  "theme": "midnight", "boot": 3000,
+  "actions": [
+    {"hold": 700},
+    {"click": "[title*='click to change model']", "settle": 900},
+    {"hold": 900},
+    {"clickText": "GPT-5", "tag": "button", "settle": 700},
+    {"key": "Escape", "settle": 600},
+    {"click": "[placeholder^='Message']", "settle": 200},
+    {"typeSlow": "keep going from where we were", "cps": 18}, {"key": "Enter", "settle": 4500},
+    {"hold": 1000},
+    {"click": "[title*='click to change model']", "settle": 900},
+    {"hold": 700},
+    {"clickText": "Qwen2.5 Coder 14B", "tag": "button", "settle": 900},
+    {"key": "Escape", "settle": 600},
+    {"hold": 1500}
+  ] }
