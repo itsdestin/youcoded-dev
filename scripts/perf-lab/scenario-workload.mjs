@@ -648,6 +648,7 @@ export const MEASURES = {
     'conversation sizes beyond the fixture huge transcript',
     'switching under memory pressure from many MORE than 6 sessions',
     'anything requiring a real GPU — the rig runs headless under Xvfb',
+    'per-TOKEN streaming cost: the streamer appends WHOLE turns (a user line + an assistant line per 150 ms tick) through the Claude Code transcript path, so the renderer sees ~7 renders/s per target, each appending timeline entries — never the native harness\'s hundreds of same-turn deltas per second, none of which append an entry. A fix that only helps the per-delta path (cycle-1 N2/N3) is under-represented here; measuring it needs a native-provider streaming variant',
     'whether a switch into a STREAMING session feels slow because of the stream or because of the size — medium and small carry both; only huge and empty are clean',
     'ENTRIES_PER_TURN is a measured constant, not read from the app — if the app changes what a timeline entry is, every resumed switch stops settling and the report says so, but the rig cannot fix itself',
   ],
