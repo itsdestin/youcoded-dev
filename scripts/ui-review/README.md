@@ -94,6 +94,50 @@ Development sub-screens are `[title^='Report a Bug']` etc.; project overlays ope
 chips have a *random* label — match `[data-testid=thinking-indicator]`; the welcome
 screen's *New Session* needs a JS `.click()` (the mouse click lands on the mascot layer).
 
+## Recording a loop (animated demo)
+
+`record.mjs` films the workbench through CDP and writes one WebM loop + a WebP poster —
+the landing page's row demos, and any future "show me the feature" clip. One JSON per
+scene, same vocabulary as a shot plus typing and waiting:
+
+```
+scripts/ui-review/scenes/row2-does-things.json
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=inbox",
+  "theme": "creme", "boot": 3000,
+  "actions": [
+    {"click": "[placeholder^='Message']", "settle": 200},
+    {"typeSlow": "go through this morning's email and handle what you can", "cps": 30},
+    {"key": "Enter"},
+    {"waitForText": "Yes", "tag": "button"}, {"clickText": "Yes", "tag": "button", "settle": 1500},
+    {"hold": 1800}
+  ] }
+```
+
+| action | does |
+|---|---|
+| `click` / `clickText` (+`tag`) | move the cursor there (interpolated, visible) and click; `js:` selectors work as in shots |
+| `typeSlow` (+`cps`) | per-key typing at N chars/second |
+| `key` (+`modifiers`) | one key — `Enter`, `Escape`, … |
+| `waitFor` / `waitForText` (+`tag`, `timeout`) | poll until the element is on screen (contains-match for text; default 20 s). **Use this before clicking anything a scripted reply produces** — a fixed `settle` is a race |
+| `hold` | keep recording for N ms; `settle` on any action is the pause after it |
+
+```
+WB_PORT=5473 CDP_PORT=10330 node scripts/ui-review/record.mjs scripts/ui-review/scenes/<scene>.json <out-base>
+# → <out-base>.webm + <out-base>.webp (VP9 crf 33, 24 fps, 1440×900)
+```
+
+What the model "says" is a fixture, not a model: `?reply=<name>` picks
+`desktop/src/renderer/dev/workbench/fixtures/replies/<name>.jsonl` — assistant text,
+tool cards, permission asks (the loop answers them with a real click), one
+`turn_complete` per turn; the Nth message sent plays the Nth turn. `?signedIn=1` gives
+a signed-in account with a scripted friend for the games. The workbench serves with
+`VITE_NO_WATCH=1`, so **restart it after editing a fixture or the mock shim** — the
+recorder otherwise films the previous code and every frame still "verifies".
+
+Rebuild every landing-page asset at once (loops, gallery stills, live embed):
+`bash scripts/ui-review/site-assets.sh <worktree>` — refuses a workbench serving a
+different tree, and refuses to overwrite a gallery when any shot failed verification.
+
 ## Workbench switches the plans rely on
 
 `?scenario=default|empty|no-providers|refused|stress` (resume list / permissions /
