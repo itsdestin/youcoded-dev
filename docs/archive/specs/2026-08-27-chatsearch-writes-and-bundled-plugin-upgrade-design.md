@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 created: 2026-08-27
 kind: design
 implements: docs/active/specs/2026-08-05-chat-search-design.md §"Writes" (phase 2)

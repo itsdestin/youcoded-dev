@@ -1,7 +1,7 @@
 ---
-status: active
+status: shipped
 created: 2026-08-27
-spec: docs/active/specs/2026-08-27-chatsearch-writes-and-bundled-plugin-upgrade-design.md
+spec: docs/archive/specs/2026-08-27-chatsearch-writes-and-bundled-plugin-upgrade-design.md
 ---
 
 # Chat Search writes + bundled-skill upgrade — Implementation Plan
