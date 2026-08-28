@@ -1,0 +1,112 @@
+{
+ "title": "Commands that keep running",
+ "key": "bash-background",
+ "out": "bash-background.html",
+ "images": "images-bash-background",
+ "runs": {
+  "today": "/home/destin/youcoded-dev/scratch/ui-bash-bg"
+ },
+ "labels": {
+  "today": "Design"
+ },
+ "themes": [
+  "midnight",
+  "halftone-dimension"
+ ],
+ "lead": "Today a command the assistant runs is killed after 10 minutes, and nothing can outlive a call — no dev servers, no long builds. The design you approved in chat: the assistant can run a command in the background, you see it live on its card with a Stop button, and the assistant is told when it finishes. These are the card's five states, built in the design sandbox with invented output. Five Yes/No steps.",
+ "crops": {
+  "running": [
+   "bg",
+   "bash-background-running",
+   "930x420+255+0"
+  ],
+  "detached": [
+   "bg",
+   "bash-background-detached",
+   "930x420+255+0"
+  ],
+  "finished": [
+   "bg",
+   "bash-background-finished",
+   "930x420+255+0"
+  ],
+  "failed": [
+   "bg",
+   "bash-background-failed",
+   "930x420+255+0"
+  ],
+  "stopped": [
+   "bg",
+   "bash-background-stopped",
+   "930x420+255+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "BG.1",
+   "surface": "Chat · command card",
+   "path": "Chat → the assistant starts a command in the background",
+   "crop": "running",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('span')].find(s=>s.childElementCount===0&&s.textContent.startsWith('Running in the background'))"
+   },
+   "headline": "A background command shows a live status strip with a Stop button, and its output keeps updating while you chat.",
+   "changed": "The card header gains “· in the background” and a spinner. Below the command sits a strip: “Running in the background · 2m 18s” with the one action that ends it — Stop. Under that, the last lines of output (“Live output”), then the path of the full log file.",
+   "measured": "Strip 44 px tall; output box shows up to 20 lines",
+   "notice": "Stop ends the command and everything it launched, so stopping a dev server really stops the server. The timer ticks every second. You can keep chatting; the assistant keeps working.",
+   "risk": "The live output only refreshes when new lines arrive — a command that prints nothing looks frozen even when it is working (the ticking timer is the sign of life)."
+  },
+  {
+   "id": "BG.2",
+   "surface": "Chat · command card",
+   "path": "Chat → a normal command hits its time limit",
+   "crop": "detached",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('span')].find(s=>s.childElementCount===0&&s.textContent.startsWith('Hit its time limit'))"
+   },
+   "headline": "A command that hits its time limit is moved to the background instead of being killed, and the strip says so.",
+   "changed": "Same strip, different second line: “Hit its time limit and kept running in the background — you'll be told when it finishes.” No new button.",
+   "notice": "A 12-minute build now simply finishes. The 10-minute hard cap is gone; the assistant is told at the 2-minute mark that the command moved, and carries on.",
+   "risk": "A command that is genuinely stuck (waiting for input it will never get) now sits in the background instead of dying — Stop is the way out, and the timer makes the wait visible."
+  },
+  {
+   "id": "BG.3",
+   "surface": "Chat · command card",
+   "path": "Chat → a background command finishes",
+   "crop": "finished",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('span')].find(s=>s.childElementCount===0&&s.textContent.startsWith('Exit 0'))"
+   },
+   "headline": "When it finishes, the strip is replaced by a green “Exit 0 · 11m 42s” chip and the card reads like any finished command.",
+   "changed": "The header drops “· in the background” and shows the tick. Two chips at the top: “Background” and “Exit 0 · 11m 42s” (green for exit 0). Output and the log path stay.",
+   "notice": "The assistant is told at its next pause — exit code, the last lines, the log path — and picks the work back up. Nothing lands mid-sentence.",
+   "risk": "Chips are uppercase small text, the app's existing chip style; a long elapsed time (“1h 12m”) still fits."
+  },
+  {
+   "id": "BG.4",
+   "surface": "Chat · command card",
+   "path": "Chat → a background command fails",
+   "crop": "failed",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('span')].find(s=>s.childElementCount===0&&s.textContent.startsWith('Exit 1'))"
+   },
+   "headline": "A non-zero exit shows a red “Exit 1” chip and the header's cross, with the failing output right there.",
+   "changed": "Same layout as a success; the exit chip turns red and the header icon is the failure cross. The last lines of output usually carry the reason.",
+   "notice": "The assistant sees the same exit code and lines, so it can act on the failure without you relaying it.",
+   "risk": "Exit code alone is the signal — a command that prints “error” but exits 0 shows green, as it would in a terminal."
+  },
+  {
+   "id": "BG.5",
+   "surface": "Chat · command card",
+   "path": "Chat → you close the conversation with a command still running",
+   "crop": "stopped",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('span')].find(s=>s.childElementCount===0&&s.textContent.startsWith('Stopped when the conversation closed'))"
+   },
+   "headline": "A command that was stopped says who stopped it and after how long — never a mystery.",
+   "changed": "An amber chip names the reason — “Stopped by you”, “Stopped by the assistant”, “Stopped when the conversation closed”, or “Stopped when the app quit” — plus “after 40m”. The header shows the stopped mark and a STOPPED tag, same as a stopped helper.",
+   "notice": "Closing a conversation or quitting the app stops what it started, and the card records that. Switching conversations does not stop anything.",
+   "risk": "If the app crashes (not quits), nothing gets the chance to stop the command or write this chip — the command keeps running and the card shows the last state it knew."
+  }
+ ]
+}
