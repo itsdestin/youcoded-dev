@@ -1,6 +1,7 @@
 ---
 title: Perf optimization cycle 1 — handoff for the session that runs it
 status: active
+cycle_1_result: SHIPPED 2026-08-28 — youcoded PR #342, merge 97600ddd (gate said REJECT because the rig is blind to the per-token path; Destin chose to ship on the pinning tests)
 date: 2026-08-27
 supersedes_for_next_steps: docs/active/handoffs/2026-08-27-perf-lab-session-status.md
 approved_by: Destin, 2026-08-27 ("i like 1-3")
@@ -11,6 +12,74 @@ decision_page: https://claude.ai/code/artifact/e00aa59a-e4b0-466b-a49a-a8e06da22
 
 **Read this first, then only what it points at.** The status doc
 (`2026-08-27-perf-lab-session-status.md`) is the full history; this is the plan.
+
+## Cycle 1 result (2026-08-28, measured) — REJECT by the gate; **Destin chose (c): ship on the tests** ("we will ship now, file the rig issue", 2026-08-28)
+
+**SHIPPED — youcoded PR #342, merged to master as `97600ddd` (2026-08-28).** Windows CI was red on
+the PR with the SAME pre-existing failures master carries (ROADMAP `#ci`, nine Windows-only
+specialist tests); ubuntu/macOS/build green. The worktree `worktrees/perf-lab/` and its branch
+`perf/optimization-pass` are deliberately KEPT (the rig's default `--checkout`), fast-forwarded to
+master after the merge; cycle 2 should branch from there. Three commits:
+
+| commit | what | pinning test (red on the old code, green on the new) |
+|---|---|---|
+| `c5e1e2d3` | N1 — `findArchiveBoundary` memoized on `state.timeline` identity | `tests/chatview-archive-boundary-memo.test.tsx` — 4 streamed deltas: 5 scans → 1 |
+| `4935e8d0` | N2 — `lastActivityAt` dropped from the auto-scroll effect deps (the content-wrapper ResizeObserver already re-pins growth, after layout) | `tests/chatview-scroll-pin-deps.test.tsx` — 4 deltas read `scrollHeight` 4× → 0×; an appended entry and a thinking toggle still pin |
+| `047da493` | N3 — bubble split memoized on `turn.segments` (not `turn`); `splitIntoBubbles`/`collectTurnSkills` typed `Pick<AssistantTurn,'segments'>` so the key cannot silently go stale | `tests/assistant-turn-split-depends-on-segments.test.tsx` |
+
+`bash scripts/verify.sh worktrees/perf-lab` → all five checks pass. N3 was NOT done the way §3
+suggests ("block count + last block length" would still miss on every token, since the last
+block's length changes per token); keying on the `segments` array — which the reducer only
+replaces when a segment changes — is the exact input identity.
+
+**Measurement** (both full runs, 20/20, `incomplete: []`, 0 error lines in every boot):
+
+- baseline `perf-reports/2026-08-27-2330-16ea12e-cycle1-baseline` (pristine `16ea12e`; the
+  first attempt `…-2259-…` aborted in artifacts 3/3 on the drawer flake below and is kept only
+  as evidence of it)
+- target `perf-reports/2026-08-28-0001-047da49-cycle1-n1n2n3`
+- gate: `node scripts/perf-lab/compare.mjs <baseline>.json <target>.json --target workload.median.switchPaintedBySize.empty.medianMs`
+
+| metric | baseline (per run) | fixed (per run) | read |
+|---|---|---|---|
+| `switchPaintedBySize.empty.medianMs` (this cycle's target) | **1660.6** (1611 / 1661 / 2650) | **1585.2** (1585 / 1486 / 2631) | −4.5%, inside the baseline's own spread → **not a win** |
+| `switchPaintedBySize.small.medianMs` | 1491 (1395 / 1491 / 3612) | 1415 (1415 / 1143 / 8240) | still bimodal |
+| `probe.longtaskTotalMs` | 233 s (224 / 233 / 340) | 227 s (227 / 210 / 312) | noise |
+| `switchPaintedBySize.huge.medianMs` (PRIMARY guard) | 11013 | 11112 | +0.9%, inside spread → **no regression** |
+| `replayStall.huge.rendererLongtaskMaxMs` (PRIMARY guard) | 6350 (6350 / 6967 / 6053) | 5366 (5366 / 6181 / 5259) | −15.5%, every run lower — suggestive, one metric |
+| `history.huge.resumeStableMs` | 21524 | 21550 | unchanged, as expected (not targeted) |
+| `workload.cpuDuringPct` | 168.1 (165.6 / 168.1 / 168.8) | 183.8 (183.8 / 168.1 / 184.2) | **+9.3%, flagged as a regression** — whole-process, no per-process breakdown exists, 2 of 3 runs; the target run started at load avg 3.65 (accepted) straight after the build + verify.sh. Unexplained |
+| screen `native-chat` | — | 6.14% pixels differ | **rig defect, not a regression** — see below |
+
+**Verdict: REJECT** ("target improved only 4.5% (< 5%); regressions: cpuDuringPct +9.3%;
+screens differ: native-chat 6.14%").
+
+**Why the rig cannot see this change — and why bisecting (§4 step 5) was NOT run.** The
+workload streamer appends WHOLE turns (a user line + an assistant line per 150 ms tick) through
+the Claude Code transcript path, so every render it causes appends timeline entries. N2 removes
+the forced reflow only for dispatches that do NOT append an entry (native deltas — hundreds per
+turn in real use); N3 only pays off within a live turn that receives many deltas; N1's scan is
+microseconds at 7,000 entries. In the rig all three are invisible by construction, so running
+`--only workload` three more times per commit would measure noise three times. Recorded in the
+scenario's `MEASURES.blindTo` and in ROADMAP (#performance #tooling).
+
+**Two rig defects found by this cycle** (both now in ROADMAP / §7):
+1. `native-chat` is not a valid parity screen: it shows a real local model's (Qwen 0.5B) reply,
+   which changes every run. Identical-code runs differ by 6.88% (2259 vs 2330) and 4.61% (1141 vs
+   2330) against a 5% threshold; the fixed build vs 2259 differs by 1.03%.
+2. The artifacts phase's session-files drawer is flaky: 1 of 9 repeats listed `[]` for 30 s and
+   aborted the run (`…-2259-…`); 1 of 3 in the target run returned `undefined` numbers for a repeat
+   without aborting (the median over the other two was used — check `artifacts.runs`).
+
+**Decision for Destin (rule: a change without a KEEP does not ship):**
+- (a) **park the branch** until the rig has a native-delta streaming scenario, then re-gate —
+  the loop working as designed: the change exposed a rig gap;
+- (b) build that scenario next (a scripted native provider driving `TRANSCRIPT_ASSISTANT_TEXT`
+  deltas with a `partId`), re-measure, and ship on a KEEP — recommended, because the per-token
+  path is the one he actually experiences while a model types;
+- (c) ship on the strength of the pinning tests alone — his call, against the loop's rule.
+
+Cycle 2 (§5) does not depend on this decision and can start.
 
 ## 0. What Destin approved, in his words
 
@@ -178,6 +247,12 @@ position must survive (add a pinning test).
    Not a rig problem any more (fresh boot per repeat); possibly an app bug class.
 4. Coverage still missing: terminal, marketplace, sync, theme switching, buddy windows.
 5. Perf-lab is not in CI (`grep -rn perf-lab .github/workflows/` → nothing).
+6. **`native-chat` is not a valid parity screen** (real local-model reply, differs 4.6–6.9% between
+   identical-code runs) and **the artifacts drawer flakes ~1 in 9 repeats** (once aborting a run,
+   once silently dropping out of the median). Both in ROADMAP, found by cycle 1.
+7. **The workload streams whole turns, never native per-token deltas** — the exact path cards
+   N2/N3 fix. Declared in `MEASURES.blindTo`; a native-delta scenario is the prerequisite for
+   re-gating cycle 1 (ROADMAP).
 
 ## 8. What this project learned, compressed (the part worth carrying to any rig)
 
