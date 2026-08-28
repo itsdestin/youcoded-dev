@@ -2,7 +2,7 @@
 title: Background execution for the native Bash tool (ledger G-1)
 date: 2026-08-28
 status: active
-review: Reviewed 2026-08-28 — docs/active/investigations/2026-08-28-bash-background-spec-review.md (16 findings, all applied or decided here; the two open judgment calls decided by Claude, approved by Destin "update as you see fit"). UI approved 5/5 on deck docs/active/design/2026-08-28-bash-background/. Next: superpowers:writing-plans.
+review: Reviewed 2026-08-28 — docs/active/investigations/2026-08-28-bash-background-spec-review.md (16 findings, all applied or decided here; the two open judgment calls decided by Claude, approved by Destin "update as you see fit"). UI approved 5/5 on deck docs/active/design/2026-08-28-bash-background/. Plan: docs/active/plans/2026-08-28-bash-background-execution.md (10 tasks, 47 steps; its five deviations folded back here 2026-08-28).
 tags: [native-runtime, harness, harness-tools, renderer, ipc-bridge]
 related:
   - docs/active/investigations/2026-08-26-native-tools-vs-other-harnesses.md (§5 Bash, ledger G-1)
@@ -136,7 +136,10 @@ interface ShellRun {
 `start(spec)`, `adopt(child, …)` (hand-off: same process, no restart), `read(id)`,
 `list()`, `kill(id, reason)`, `killAll(reason)`; emits `'change'` with a `ShellRunView`
 whose `tail` is the **last 40 lines** (wire), not the 200-line ring (review G), debounced to
-≤4 events/s per run. Owned by `HarnessSession` next to `shellCwd`. `NativeSessionHost.destroy`
+≤4 events/s per run. **Lifetime owned by `NativeSessionHost`** (a map keyed by session id);
+`HarnessSession` holds only the reference — a taken-over session's runs must still be
+reachable at app quit (D2), which session-owned state could not guarantee. `list()` keeps
+at most 50 ended runs so a long conversation cannot grow it without bound. `NativeSessionHost.destroy`
 → `killAll('conversation-closed')` **except on the holder-takeover and session-exit paths**
 (`createHolderTakeover`'s `destroyNative`, the exit backstop), which pass a flag so the
 registry is left alone (D2; review D). `destroyAll` → `killAll('app-quit')`.
@@ -166,7 +169,10 @@ and a caller-supplied liveness message (its current "late permission answer" war
 print about a finished build — review I5). `drainDeliveries` concatenates every queued shell
 notice into **one** `runNotice` call (D8). `runNotice(text, meta)` gains the `injected`
 discriminant `'shell-complete'`; `injectedMeta` in `shared/types.ts` becomes a union of the
-specialist shape and `{ kind: 'shell'; shellId; toolUseId; exitCode; elapsedMs }`. The renderer
+specialist shape and `{ kind: 'shell'; runs: Array<{ shellId; toolUseId; exitCode?; stopReason?;
+elapsedMs; logPath }> }` — a list, because D8 puts several finishes in one turn, and `logPath`
+so a resumed card can still name its log. **A Stop from the card also sends a notice**
+("stopped by you"), so the model learns its server is gone; a `KillShell` sends none. The renderer
 folds the bubble into the launching card (fixture `bash-background-finished` is that state).
 
 ### 5.5 Hand-off — NEW
@@ -187,7 +193,9 @@ text. Never at the cap (D5). Never for a leading `sleep`.
 
 ### 5.7 Resume — NEW rule
 On history rebuild, any card whose `shellRun` was `running` and has no live registry entry
-renders `stopped / app-quit`.
+renders `stopped / app-quit`. The final state is never persisted, so a run that was stopped
+shortly before the quit — or one still running on another device after a takeover — also
+reads "Stopped when the app quit" after a restart. Accepted (§8).
 
 ## 6. Renderer
 On `feat/bash-background-ui` already: `ShellRunView` + `shellRun`, `SHELL_RUN_CHANGED`,
@@ -220,6 +228,8 @@ MOCK_ONLY row; tests.
   detected.
 - **Windows tree kill** relies on `taskkill /T`; verified by the grandchild test on
   windows-latest.
+- **Resume wording** (§5.7): after a restart the card cannot tell "stopped just before the
+  quit" from "killed by the quit"; both read "Stopped when the app quit".
 
 ## 9. Follow-ups (ROADMAP, filed 2026-08-28 under "Background Bash follow-ups")
 Typing into a running command (D1 → Codex's shape); a "Running commands" list outside the chat
