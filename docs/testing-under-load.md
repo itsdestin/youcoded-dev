@@ -3,8 +3,9 @@
 Depth for `.claude/rules/test-suite-hygiene.md`. Read that rule first; this file is the
 evidence behind it, kept out of the rule so the rule stays inside its word budget.
 
-Fixed 2026-08-28 in youcoded **#362** (the flakiness) and **#363** (Windows, plus two
-classes #362 did not reach).
+Fixed 2026-08-28 in youcoded **#362** (the first five causes) and **#363** (Windows, plus
+seven more classes #362 did not reach). **Twelve causes in total** — the count matters only
+because the list grew twice AFTER CI had gone green, which is the real lesson here.
 
 ## Why this mattered more than a red suite
 
@@ -33,9 +34,10 @@ for i in 1 2 3; do npx vitest run > /tmp/run-$i.txt 2>&1 & sleep 3; done; wait
 | | before | after |
 |---|---|---|
 | 3 concurrent full runs | **6 files failed**, a different set each run | — |
-| 4 concurrent full runs | — | **4/4 green**, 7,429 tests each, 0 unhandled errors |
+| 6 concurrent full runs | (never attempted) | **6/6 green**, 0 unhandled errors |
+| Desktop CI (ubuntu/macOS/Windows) | red since 2026-08-16 | **green** at `0371c265` |
 
-## The seven causes
+## Causes 1–7 — the flakiness (#362) and the first Windows round (#363)
 
 ### 1. One shared sandbox HOME for every checkout (#362)
 `vitest.config.ts` pointed every checkout at `os.tmpdir()/youcoded-vitest-home`, and
@@ -99,6 +101,82 @@ directory behind every run; five had accumulated, keeping `git status` dirty.
 fixes they pin. `process.cpuUsage()` is immune to descheduling, so the original 1,000ms
 budgets stand unchanged and still catch every regression.
 
+## Causes 8–12 — found by local stress, after CI had already gone green once
+
+The list above was written when CI first passed on all three platforms. It was not the
+end. Running **six concurrent full suites locally** — a far harsher load than any real
+scenario, and the thing that should have been done first — surfaced five more, each a
+distinct mechanism. Do this before believing a suite is stable:
+
+```bash
+cd youcoded/desktop
+for i in 1 2 3 4 5 6; do npx vitest run > /tmp/run-$i.txt 2>&1 & sleep 2; done; wait
+```
+
+### 8. Another fixed shared temp path, outside the sandbox
+Bash spills output to `os.tmpdir()/youcoded-harness-bash-output/<sessionId>`, resolved
+from `os.tmpdir()` directly — correct for production, and therefore **not covered by the
+HOME redirect of cause 1**. Every test run used `sessionId: 'test'`, so concurrent suites
+shared one directory and the `afterEach` deleted it out from under the others:
+`expect(fs.existsSync(r.outputPath)).toBe(true)` failed on a file that had been written
+and then removed by a different process. Session ids are per-process now, here and in the
+two background-shell tests (whose log filenames embed a `shellId` that restarts at 1 in
+every process).
+
+**The general lesson: a HOME redirect does not catch a path built from `os.tmpdir()`.**
+When you sandbox by environment, anything resolving a temp path directly escapes it.
+
+### 9. Hand-rolled poll ceilings
+Cause 3 raised `vi.waitFor`'s default, but 18 loops poll by hand
+(`for (let i = 0; i < 50; i++) { …; await sleep(10) }` — a 500 ms ceiling) and no default
+can reach those. ubuntu CI failed `expected [] to deep equally contain …` on a permission
+rule that *was* persisted, just not within half a second under load. These loops already
+wait on a real condition; only the ceiling was wrong, so the fix was a named tries count
+sized to ~15 s at each loop's own interval.
+
+### 10. A second, competing deadline
+`harness-review-runner` passed `runCase` its own 60 s wall-clock deadline while asserting
+about the **step budget**. Two clocks raced to end the same run, and under load the wrong
+one won: `expected 'timeout' to be 'budget'`. That reports as a *wrong value*, which reads
+like broken wrap-up reasoning rather than "this was slow". Every deadline that is not its
+test's subject now uses one constant set far **above** vitest's budget, so vitest is the
+single authority and a genuine hang is always reported as a timeout.
+
+**Two budgets that can both end the same operation is a bug even when both are generous.**
+
+### 11. Reading a fire-and-forget write one-shot
+`spawnSpecialist` resolves on the report; the ledger's completion write lands behind it.
+macOS CI failed `expected 'running' to be 'completed'` while the report assertion on the
+line above passed. Distinct from cause 9 in the same way a missing wait differs from a
+short one — there was no wait at all.
+
+### 12. A 2× timing margin
+The stall-watchdog test drove progress every 60 ms against a 120 ms budget, so one
+scheduler hiccup tripped the watchdog and the test failed as though progress did not
+re-arm it. Now 40 ms against 600 ms — a 15× margin — while 1,800 ms vs 600 ms keeps
+"would have expired without progress" true three times over. **The assertion's meaning did
+not change; only the headroom did.** When a timing test is flaky, check the ratio it
+depends on before touching what it asserts.
+
+## Two traps created while fixing this
+
+Recorded because both are easy to repeat, and both were caught by measurement rather than
+by review:
+
+**A `vi.waitFor` under fake timers perturbs what it waits for.** Added to a test that
+installs `vi.useFakeTimers({ toFake: [… 'Date'] })`, the wait advances the fake clock on
+every check — so a 15 s budget drove ~300 synthetic clock jumps through a system whose
+staleness logic is driven by that same clock. It ran its full budget and never saw the
+result. Fix: hand time back to the real clock (`vi.useRealTimers()`) once the fake-clock
+part of the test is done.
+
+**Raising the ceiling of a loop with no break condition is pure cost.**
+`transcript-watcher`'s negative assertion — "give the read every chance to fire, then
+require silence" — has no early exit, so every iteration is paid on every run. Sizing it
+like the wait-for-success loops turned a 250 ms pause into 15 s and made that file **6×
+slower** (3.16 s → 18.04 s) for no added confidence. Caught only by timing the file before
+and after. **Before raising any loop's ceiling, check whether it can exit early.**
+
 ## Windows: two real product bugs, not test bugs
 
 Both shipped. Both were visible only on the CI leg being ignored.
@@ -130,6 +208,17 @@ platform you don't run is a guard in name only.
 
 **~100 fixed sleeps remain** across the suite (36 in `native-session-host.test.ts`) of the
 form `await new Promise((r) => setTimeout(r, N))`. Not all are waits — some legitimately
-let time pass — but each one that stands in for a signal is a latent version of cause 3.
-Converting them wholesale, blind, would be more dangerous than leaving them; convert the
-ones you touch. Tracked in ROADMAP.
+let time pass, and at least one is a negative assertion that MUST stay small (see the
+second trap above) — but each one that stands in for a signal is a latent version of
+causes 9–12. Converting them wholesale, blind, would be more dangerous than leaving them;
+convert the ones you touch.
+
+**`mcp-startup-wiring.test.ts` still exceeds 30 s at EIGHT concurrent suites**, because it
+`await import()`s all 3,906 lines of `ipc-handlers.ts` inside the test body. The import
+cannot be hoisted: that file's `os` mock is a closure over a per-test temp dir, so a static
+import would evaluate before the dir exists. Eight concurrent suites is far past any real
+scenario (CI runs one) and six is green, so this was left rather than restructured on
+speculation. If it ever fails on real CI, the fix is to restructure the mock so the import
+can move to module scope — **not** to raise the number again.
+
+Both are tracked in ROADMAP.

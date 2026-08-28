@@ -28,7 +28,7 @@ verify:
 **A test that fails only sometimes is worse than one that fails always** — it teaches
 every session to disbelieve the suite, and a real failure beside it becomes invisible. A
 bug breaking every Windows PDF read sat in a CI log labelled "pre-existing" for twelve
-days. Seven causes, fixed 2026-08-28 (youcoded#362, #363). Evidence:
+days. Twelve causes, fixed 2026-08-28 (youcoded#362, #363). Evidence:
 `docs/testing-under-load.md`.
 
 ## Never assert on wall-clock time
