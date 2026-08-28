@@ -9,13 +9,17 @@ paths:
   - "youcoded/desktop/src/renderer/hooks/usePtyRawBytes.ts"
   - "youcoded/terminal-emulator-vendored/**"
   - "youcoded/shared-fixtures/**"
-last_verified: 2026-08-16
+last_verified: 2026-08-27
 verify:
   - path: youcoded/desktop/src/renderer/state/chat-reducer.ts
   - path: youcoded/desktop/src/renderer/state/chat-reducer.ts
     contains: "NATIVE_PARTS_DROPPED"
   - path: youcoded/desktop/src/renderer/state/chat-types.ts
     contains: "stalledSince"
+  - path: youcoded/desktop/src/main/transcript-page.ts
+    contains: "PAGE_TURNS"
+  - path: youcoded/desktop/src/renderer/state/transcript-page-actions.ts
+    contains: "pageEventToAction"
   - path: youcoded/desktop/src/renderer/hooks/useAttentionClassifier.ts
     contains: "hasBuffer"
   - path: youcoded/desktop/src/renderer/state/attention-classifier.ts
@@ -26,6 +30,9 @@ verify:
   - test: youcoded/desktop/src/renderer/hooks/useAttentionClassifier.test.tsx
   - test: youcoded/desktop/tests/attention-strip.test.tsx
   - test: youcoded/desktop/tests/transcript-watcher.test.ts
+  - test: youcoded/desktop/tests/transcript-page.test.ts
+  - test: youcoded/desktop/tests/history-paging-reducer.test.ts
+  - test: youcoded/desktop/tests/chatview-history-sentinel.test.tsx
   - test: youcoded/desktop/tests/attention-classifier-parity.test.ts
   - test: youcoded/desktop/tests/raw-byte-listener-contract.test.ts
   - path: scripts/ast-grep/rules/toolcalls-never-cleared.yml
@@ -47,6 +54,13 @@ Chat state + the JSONL transcript watcher that feeds it + the Android byte pipel
 - **A permission ask binds ONLY to a running tool with a MATCHING NAME** — no name-agnostic fallback · a card naming one tool while authorizing another is a CONSENT bug · guard: "PERMISSION_REQUEST tool identity".
 - **`TRANSCRIPT_REPLAY_COMPLETE` reaps replay-orphaned `running` tools ONLY when `sessionIdle`, marking them failed, never complete** — the same replay fires on a live re-dock · guard: "TRANSCRIPT_REPLAY_COMPLETE".
 - **`attentionState` is classifier-driven, not timer-driven** — `useAttentionClassifier` ticks the xterm buffer every 1s; transcript events + `PERMISSION_REQUEST` reset to `'ok'`. **Both of its `'ok'` dispatch sites are gated on `hasBuffer`: a classifier must never reset a state it never set** — without it a phone re-docking to a PARKED desktop session lost the card at mount.
+
+## Paged history (perf cycle 2) — guards: `transcript-page`, `history-paging-reducer`, `chatview-history-sentinel` tests
+- **History arrives one PAGE at a time, never as a whole file** — `readTranscriptPage` (`main/transcript-page.ts`), last 30 turns / 2 MB before a byte offset. `HISTORY_LOADED` + the "See previous messages" button are RETIRED.
+- **`HISTORY_PAGE_LOADED` PREPENDS by replaying the page through the same per-event cases the live path uses** (`pageEventToAction` → `chatReducer` on a scratch state). Never hand-build timeline entries for history — that is what made the old `hist-` bubbles card-less. Counter ids mean an older page can't collide with what's on screen; paging only unions maps page-first, so it never clears `toolCalls` (eviction, which would, is cycle 3).
+- **`history: {cursor, hasMore, loading}` — dispatch `HISTORY_PAGE_REQUESTED` BEFORE awaiting the fetch.** `loading` is the one-in-flight guard and is the whole of paging's idempotency.
+- **The live tailer starts at EOF on an existing file and the first page ends at `getStartOffset()`** — that is what makes page and live structurally non-overlapping. Restoring `offset: 0` re-emits the whole transcript on every resume.
+- **`requestTranscriptReplay` survives for exactly ONE caller** — the ownership handoff, which also re-sends broker-held asks and specialist runs (main-memory only). Never on a first-load path.
 
 ## Transcript watcher read-integrity (`transcript-watcher.ts`, `subagent-watcher.ts`) — guard: `transcript-watcher.test.ts`
 - **`readNewLines` isolates each emit in try/catch** — don't collapse to a batch wrapper.
