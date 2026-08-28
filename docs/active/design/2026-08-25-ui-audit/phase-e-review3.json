@@ -1,0 +1,29 @@
+{
+ "title": "Phase E review 3 — tags spelled out",
+ "key": "phase-e-review3",
+ "out": "phase-e-review3.html",
+ "images": "images/phase-e-review3",
+ "runs": {
+  "before": "/home/destin/youcoded-dev/scratch/ui-phase-e-after2",
+  "after": "/home/destin/youcoded-dev/scratch/ui-phase-e-after3"
+ },
+ "labels": { "before": "Dots", "after": "Named chips" },
+ "themes": ["midnight", "light", "creme", "dark", "halftone-dimension", "meadow-mist"],
+ "crops": {
+  "sessions": ["main", "all-sessions-menu", "490x400+470+14"]
+ },
+ "steps": [
+  {
+   "id": "P-8.4",
+   "surface": "All sessions menu",
+   "path": "Title bar → All Sessions",
+   "crop": "sessions",
+   "highlight": { "selector": "js:[...document.querySelectorAll('.glass-overlay.fixed button')].find(b=>b.textContent.includes('gpt-5.6'))" },
+   "headline": "Tags are spelled out now — the same named chips the tag picker uses — instead of coloured dots you had to hover to read.",
+   "changed": "Each tag on a session shows as its own named chip under the status pill. Past three, the rest collapse into a count that names them when you rest on it. The page mark for a note is unchanged.",
+   "measured": "up to 3 named chips per row, then a count; row height unchanged at 47 px",
+   "notice": "You can read a session's tags without hovering. A session with several tags gives its folder name less room, since the chips take the width they need.",
+   "risk": "A long tag name eats into the folder name beside it; the folder is the one that shortens with “…”."
+  }
+ ]
+}

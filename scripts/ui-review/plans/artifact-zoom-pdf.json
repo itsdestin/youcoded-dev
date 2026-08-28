@@ -1,0 +1,70 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1",
+  "boot": 4000,
+  "width": 1440,
+  "height": 900,
+  "shots": [
+    {
+      "name": "pdf-base",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "scroll-perf-report.pdf",
+          "settle": 3000
+        },
+        {
+          "click": "js:document.querySelector('canvas')",
+          "settle": 800
+        }
+      ],
+      "expect": "[aria-label='Zoom in']"
+    },
+    {
+      "name": "pdf-zoomed",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "scroll-perf-report.pdf",
+          "settle": 3000
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 1200
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 1800
+        }
+      ],
+      "expect": "js:!document.querySelector(\"[aria-label='Zoom out']\").disabled"
+    },
+    {
+      "name": "pdf-loupe",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "scroll-perf-report.pdf",
+          "settle": 3000
+        },
+        {
+          "click": "[aria-label='Magnify on hover']",
+          "settle": 500
+        },
+        {
+          "hover": "js:document.querySelector('[data-zoomable] canvas')",
+          "settle": 900
+        }
+      ],
+      "expect": "js:(() => { const l = document.querySelector('[aria-hidden][style*=\"border-radius: 50%\"]'); return !!l && getComputedStyle(l).visibility === 'visible'; })()"
+    }
+  ]
+}

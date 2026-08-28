@@ -1,0 +1,72 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "four-clicks",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    },
+    {
+     "clickText": "latency-chart.png",
+     "settle": 2600
+    },
+    {
+     "click": "[aria-label='Zoom in']",
+     "settle": 500
+    },
+    {
+     "click": "[aria-label='Zoom in']",
+     "settle": 500
+    },
+    {
+     "click": "[aria-label='Zoom in']",
+     "settle": 500
+    },
+    {
+     "click": "[aria-label='Zoom in']",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.querySelector(\"[aria-label^='Reset to fit']\").textContent.trim() === '150%'"
+  },
+  {
+   "name": "then-zoom-out",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    },
+    {
+     "clickText": "latency-chart.png",
+     "settle": 2600
+    },
+    {
+     "click": "[aria-label='Zoom in']",
+     "settle": 500
+    },
+    {
+     "click": "[aria-label='Zoom in']",
+     "settle": 500
+    },
+    {
+     "click": "[aria-label='Zoom in']",
+     "settle": 500
+    },
+    {
+     "click": "[aria-label='Zoom in']",
+     "settle": 500
+    },
+    {
+     "click": "[aria-label='Zoom out']",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.querySelector(\"[aria-label^='Reset to fit']\").textContent.trim() === '100%'"
+  }
+ ]
+}

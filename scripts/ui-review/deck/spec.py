@@ -16,6 +16,8 @@ BANNED = ['token', 'primitive', 'selector', 'ipc', 'prop', 'props', 'reducer', '
           'component', 'tailwind', 'css class', 'react', 'dom', 'z-index']
 TEXT_FIELDS = ['headline', 'changed', 'measured', 'notice', 'risk', 'surface', 'path']
 VARIANT_TEXT_FIELDS = ['label', 'summary', 'measured', 'risk']
+# A decide OPTION is words only — no picture — so `cost` carries what it would cost to take it.
+OPTION_TEXT_FIELDS = ['label', 'summary', 'measured', 'cost']
 HEADLINE_MAX = 25
 RISK_WARN = 40
 AUTO_WARN_FRACTION = 0.6   # an auto-highlight covering more than this much of the crop is "whole surface"
@@ -84,6 +86,16 @@ def is_choice(step):
     return bool(step.get('variants'))
 
 
+def is_decide(step):
+    """A DECIDE step asks one question of ONE picture and several WRITTEN options — pick one.
+    Destin (2026-08-27): a two-sided question ("open it, or leave it closed?") answered with
+    "Yes, build it / No, leave it" is ambiguous — yes to which half? CHOICE cannot ask it,
+    because CHOICE needs a photograph of every option and the alternatives do not exist yet.
+    Two panels: the picture of how it is today on the left, the options merged into the
+    decision column on the right."""
+    return bool(step.get('options'))
+
+
 def run_names(spec):
     """Display order of the runs: before then after when both exist, else as written."""
     r = list(spec['runs'].keys())
@@ -113,6 +125,9 @@ def validate(spec):
         ids.add(st.get('id'))
         if is_choice(st):
             _validate_choice(spec, st, sid, errors, warnings)
+            continue
+        if is_decide(st):
+            _validate_decide(spec, st, sid, errors, warnings)
             continue
         for k in ('surface', 'path', 'crop', 'headline', 'changed', 'notice'):
             if not st.get(k):
@@ -146,6 +161,53 @@ def validate(spec):
             warnings.append(f'{sid}: measured has no number in it')
     _images_folder_warning(spec, warnings)
     return errors, warnings
+
+
+def _validate_decide(spec, st, sid, errors, warnings):
+    """Same picture rules as a normal step (one crop, one highlight), but the right-hand column
+    is the options list instead of What changed / You'll notice."""
+    for k in ('surface', 'path', 'crop', 'headline'):
+        if not st.get(k):
+            errors.append(f'{sid}: missing {k}')
+    if st.get('crop') and st['crop'] not in spec['_crops']:
+        errors.append(f'{sid}: unknown crop "{st["crop"]}" (add it to crops.json or the spec\'s "crops")')
+    if word_count(st.get('headline')) > HEADLINE_MAX:
+        errors.append(f'{sid}: headline is {word_count(st["headline"])} words (max {HEADLINE_MAX})')
+    for k in TEXT_FIELDS:
+        for w in banned_in(st.get(k)):
+            errors.append(f'{sid}: {k} uses banned word "{w}"')
+    hl = st.get('highlight')
+    if hl is None:
+        errors.append(f'{sid}: a decide step needs a highlight (it shows one picture, so there is nothing to diff)')
+    elif not (isinstance(hl, dict) and any(k in hl for k in ('selector', 'text', 'box'))):
+        errors.append(f'{sid}: highlight must have selector, text or box')
+    elif 'box' in hl:
+        warnings.append(f'{sid}: hand-placed box — prefer a selector so the rig measures it')
+    opts = st['options']
+    if not isinstance(opts, list) or len(opts) < 2:
+        errors.append(f'{sid}: a decide step needs at least 2 options')
+        return
+    seen = set()
+    for i, o in enumerate(opts):
+        oid = o.get('id') or f'option {i + 1}'
+        if not o.get('id'):
+            errors.append(f'{sid}: {oid} has no id')
+        elif o['id'] in seen:
+            errors.append(f'{sid}: duplicate option id "{o["id"]}"')
+        seen.add(o.get('id'))
+        for k in ('label', 'summary'):
+            if not o.get(k):
+                errors.append(f'{sid}/{oid}: missing {k}')
+        for k in OPTION_TEXT_FIELDS:
+            for w in banned_in(o.get(k)):
+                errors.append(f'{sid}/{oid}: {k} uses banned word "{w}"')
+        if o.get('measured') and not re.search(r'\d', o['measured']):
+            warnings.append(f'{sid}/{oid}: measured has no number in it')
+    th = st.get('themes')
+    if th is not None and (not isinstance(th, list) or not th or not all(isinstance(t, str) for t in th)):
+        errors.append(f'{sid}: themes must be a non-empty list of theme names')
+    if word_count(st.get('risk')) > RISK_WARN:
+        warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
 
 
 def _validate_choice(spec, st, sid, errors, warnings):

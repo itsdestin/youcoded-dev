@@ -132,7 +132,7 @@ When designing new features or making changes to user-facing app interfaces, the
 
 ### Local build & test
 
-**Before claiming a desktop change is done, run `bash scripts/verify.sh [<worktree>]`.** One command, one exit code: `tsc --noEmit`, `vitest related` on the files you changed, `knip`, `eslint`, and the ast-grep invariant scan — in parallel, ~10s for a small diff. It runs the FULL suite automatically when the diff touches test infra (`vitest.config.ts`, `package.json`, `tests/__mocks__/`), since that invalidates the affected-test mapping; `--full` forces it, `--dry-run` prints the plan. **It covers `youcoded/desktop` only** — it says so on exit, and Android/worker still need their own commands below.
+**Before claiming a desktop change is done, run `bash scripts/verify.sh [<worktree>]`.** One command, one exit code: `tsc --noEmit`, `vitest related` on the files you changed **plus every source-scanning guard** (the `*-authority` suites read the tree at runtime, so `related` can never reach them — one slipped a banned class past two green runs on 2026-08-28), `knip`, `eslint`, and the ast-grep invariant scan — in parallel, ~10s for a small diff. It runs the FULL suite automatically when the diff touches test infra (`vitest.config.ts`, `package.json`, `tests/__mocks__/`), since that invalidates the affected-test mapping; `--full` forces it, `--dry-run` prints the plan. **It covers `youcoded/desktop` only** — it says so on exit, and Android/worker still need their own commands below.
 
 ```bash
 # Desktop

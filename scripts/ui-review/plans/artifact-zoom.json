@@ -13,7 +13,7 @@
         },
         {
           "clickText": "latency-chart.png",
-          "settle": 1200
+          "settle": 2600
         }
       ],
       "expect": "[aria-label='Zoom in']"
@@ -27,7 +27,7 @@
         },
         {
           "clickText": "latency-chart.png",
-          "settle": 1200
+          "settle": 2600
         },
         {
           "click": "[aria-label='Zoom in']",
@@ -49,7 +49,7 @@
         },
         {
           "clickText": "latency-chart.png",
-          "settle": 1200
+          "settle": 2600
         },
         {
           "click": "[aria-label='Magnify on hover']",
@@ -71,7 +71,7 @@
         },
         {
           "clickText": "pipeline-diagram.svg",
-          "settle": 1200
+          "settle": 2600
         },
         {
           "click": "[aria-label='Magnify on hover']",

@@ -7,6 +7,10 @@
   python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
         block until the answers file says submitted (for a session that no longer holds the `serve` process)
 
+Three step kinds, each named by its own fields: APPROVE (`changed`+`notice`, yes/no),
+CHOICE (`variants` — a picture per option, pick one), DECIDE (`options` — one picture of
+today plus written options, pick one). Wording-only questions are not a step: ask in chat.
+
 Run `serve` in the background: its exit is the "review finished" signal and it prints the
 feedback summary. There is deliberately no separate crop step — a stale intermediate file drew
 wrong rings with no error in v1. Spec format + writing rules:

@@ -1,0 +1,206 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1",
+  "boot": 4000,
+  "width": 1440,
+  "height": 900,
+  "shots": [
+    {
+      "name": "step-1-50",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "latency-chart.png",
+          "settle": 2600
+        },
+        {
+          "click": "js:document.querySelector('[data-zoomable] img')",
+          "settle": 1200
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        }
+      ],
+      "expect": "js:document.querySelector(\"[aria-label^='Reset to fit']\").textContent.trim() === '50%'",
+      "probe": false
+    },
+    {
+      "name": "step-2-75",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "latency-chart.png",
+          "settle": 2600
+        },
+        {
+          "click": "js:document.querySelector('[data-zoomable] img')",
+          "settle": 1200
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        }
+      ],
+      "expect": "js:document.querySelector(\"[aria-label^='Reset to fit']\").textContent.trim() === '75%'",
+      "probe": false
+    },
+    {
+      "name": "step-3-100",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "latency-chart.png",
+          "settle": 2600
+        },
+        {
+          "click": "js:document.querySelector('[data-zoomable] img')",
+          "settle": 1200
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        }
+      ],
+      "expect": "js:document.querySelector(\"[aria-label^='Reset to fit']\").textContent.trim() === '100%'",
+      "probe": false
+    },
+    {
+      "name": "step-4-150",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "latency-chart.png",
+          "settle": 2600
+        },
+        {
+          "click": "js:document.querySelector('[data-zoomable] img')",
+          "settle": 1200
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        }
+      ],
+      "expect": "js:document.querySelector(\"[aria-label^='Reset to fit']\").textContent.trim() === '150%'",
+      "probe": false
+    },
+    {
+      "name": "step-5-200",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "latency-chart.png",
+          "settle": 2600
+        },
+        {
+          "click": "js:document.querySelector('[data-zoomable] img')",
+          "settle": 1200
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        }
+      ],
+      "expect": "js:document.querySelector(\"[aria-label^='Reset to fit']\").textContent.trim() === '200%'",
+      "probe": false
+    },
+    {
+      "name": "step-6-400",
+      "actions": [
+        {
+          "click": "[title='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "latency-chart.png",
+          "settle": 2600
+        },
+        {
+          "click": "js:document.querySelector('[data-zoomable] img')",
+          "settle": 1200
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        },
+        {
+          "click": "[aria-label='Zoom in']",
+          "settle": 450
+        }
+      ],
+      "expect": "js:document.querySelector(\"[aria-label^='Reset to fit']\").textContent.trim() === '400%'",
+      "probe": false
+    }
+  ]
+}

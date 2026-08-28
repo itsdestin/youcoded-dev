@@ -1,0 +1,77 @@
+{
+ "title": "Phase E review 2 — the session row, rebuilt to your sketch",
+ "key": "phase-e-review2",
+ "out": "phase-e-review2.html",
+ "images": "images/phase-e-review2",
+ "runs": {
+  "before": "/home/destin/youcoded-dev/scratch/ui-phase-e-after",
+  "after": "/home/destin/youcoded-dev/scratch/ui-phase-e-after2"
+ },
+ "labels": {
+  "before": "Last round",
+  "after": "Now"
+ },
+ "themes": [
+  "midnight",
+  "light",
+  "creme",
+  "dark",
+  "halftone-dimension",
+  "meadow-mist"
+ ],
+ "crops": {
+  "sessions": [
+   "main",
+   "all-sessions-menu",
+   "490x540+470+14"
+  ],
+  "pills-five": [
+   "pills",
+   "pills-five",
+   "660x300+20+24"
+  ],
+  "pills-four": [
+   "pills",
+   "pills-four",
+   "660x300+20+24"
+  ]
+ },
+ "steps": [
+  {
+   "id": "P-8.2",
+   "surface": "All sessions menu",
+   "path": "Title bar → All Sessions",
+   "crop": "sessions",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('.glass-overlay.fixed button')].find(b=>b.textContent.includes('gpt-5.6'))"
+   },
+   "headline": "Name and folder start at the same left edge; a pill on the right says what the session is doing, tag marks under it.",
+   "changed": "The dot left the front of the name and became a pill that says the state in words. The folder name gets a small folder mark. Tags on a session show as coloured dots below the pill, with a page mark when the session has a note; resting on them names them.",
+   "measured": "row 47 px, was 49; 9 rows visible; up to 4 marks per row",
+   "notice": "You can read what a session is doing without remembering what a colour meant, and see which sessions carry tags or a note. The DANGER mark on a bypass session stays, just left of the pill.",
+   "risk": "Each row carries more, so a tagged session with a long name is busier, and the 6 px tag marks are colour only until you hover them."
+  },
+  {
+   "id": "P-8.3",
+   "surface": "All sessions menu",
+   "path": "The words in the pill",
+   "headline": "You named four states. The app has a fifth colour — amber, “may have stalled” — needing its own word or red's.",
+   "variants": [
+    {
+     "id": "A",
+     "label": "Five words",
+     "crop": "pills-five",
+     "summary": "Amber gets its own word, “Needs a Look”. Every colour says exactly what it means, at the cost of one word you did not ask for.",
+     "risk": "Five things to learn instead of four."
+    },
+    {
+     "id": "B",
+     "label": "Four words",
+     "crop": "pills-four",
+     "summary": "Amber says “Needs Input”, the same as red. Only your four words ever appear, but two different colours say the same thing and one of them is a guess.",
+     "risk": "A stalled turn and a permission prompt read alike, so you would open the session to find out which it is."
+    }
+   ]
+  }
+ ]
+}

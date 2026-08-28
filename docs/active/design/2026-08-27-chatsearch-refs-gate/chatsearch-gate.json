@@ -1,0 +1,357 @@
+{
+ "out": "chatsearch-gate.html",
+ "images": "images-chatsearch-gate",
+ "key": "Chat Search Preview Gate",
+ "runs": {
+  "today": "/home/destin/youcoded-dev/scratch/ui-chatsearch-gate"
+ },
+ "labels": {
+  "today": "Today"
+ },
+ "themes": [
+  "midnight",
+  "halftone-dimension"
+ ],
+ "title": "Past conversations — sign-off",
+ "lead": "Everything below is real, captured from the design sandbox with fake data — no back end exists yet. Most steps just ask “does this look right?” — Yes or No. Three are decisions with options to pick from: how much opens by itself when Claude searches, whether the “Referenced conversations” list stays, and how Claude hands you a conversation.",
+ "crops": {
+  "search-collapsed": [
+   "gate",
+   "group-collapsed",
+   "440x232+22+296"
+  ],
+  "card-expanded": [
+   "gate",
+   "card-expanded",
+   "545x372+22+296"
+  ],
+  "find-table": [
+   "gate",
+   "gallery-find",
+   "925x480+258+118"
+  ],
+  "show-card": [
+   "gate",
+   "gallery-show",
+   "925x185+258+215"
+  ],
+  "preview-header": [
+   "gate",
+   "preview-panel",
+   "480x110+950+36"
+  ],
+  "preview-top": [
+   "gate",
+   "preview-panel-top",
+   "480x150+950+80"
+  ],
+  "tag-sheet-crop": [
+   "gate",
+   "tag-sheet",
+   "270x205+1085+80"
+  ],
+  "context-menu-crop": [
+   "gate",
+   "context-menu-preview",
+   "200x140+1130+175"
+  ],
+  "ask-scaffold-crop": [
+   "gate",
+   "ask-scaffold",
+   "1440x90+0+795"
+  ],
+  "referenced-crop": [
+   "gate",
+   "referenced-list",
+   "250x110+945+690"
+  ],
+  "error-crop": [
+   "gate",
+   "preview-error",
+   "480x90+960+120"
+  ],
+  "narrow-header": [
+   "gate",
+   "preview-narrow",
+   "390x60+0+40"
+  ],
+  "present-r5": [
+   "gate",
+   "present-round5",
+   "340x220+950+255"
+  ],
+  "preview-body": [
+   "gate",
+   "preview-panel",
+   "480x400+960+300"
+  ],
+  "piped-card": [
+   "gate",
+   "gallery-find",
+   "925x230+258+612"
+  ]
+ },
+ "steps": [
+  {
+   "id": "D2-expand",
+   "surface": "Chat · search results",
+   "path": "Chat → Claude searches your past conversations",
+   "crop": "search-collapsed",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('button')].find(b=>/\\d+ tools \\(/.test(b.textContent))"
+   },
+   "headline": "When Claude searches, how much should be open already?",
+   "options": [
+    {
+     "id": "a",
+     "label": "Leave both shut",
+     "summary": "The group of tools is shut, and the results card inside it is shut too.",
+     "measured": "2 clicks to reach Preview",
+     "cost": "Your chat stays quiet, but opening a conversation always takes two clicks."
+    },
+    {
+     "id": "b",
+     "label": "Open the results",
+     "summary": "One click on the group and the conversations are already there.",
+     "measured": "1 click to reach Preview",
+     "cost": "Nothing moves until you ask, and the card is ready when you do."
+    },
+    {
+     "id": "c",
+     "label": "Open both",
+     "summary": "The conversations are on screen the moment the search finishes.",
+     "measured": "0 clicks to reach Preview",
+     "cost": "Pushes the rest of your chat down every time Claude searches, even when you only wanted the answer."
+    }
+   ]
+  },
+  {
+   "id": "M-row",
+   "surface": "Chat · search results, opened",
+   "path": "Chat → open the search card",
+   "crop": "card-expanded",
+   "highlight": {
+    "selector": "js:document.querySelector(\"[title='Read this conversation in the side pane']\")?.closest('li')"
+   },
+   "headline": "One result row: title on top, project, date and tags underneath, two buttons at the right.",
+   "changed": "Every found conversation becomes a row you can act on.",
+   "notice": "Preview and Resume sit in the same place on every row, so your eye never hunts for them."
+  },
+  {
+   "id": "M-states",
+   "surface": "Design sandbox · search results",
+   "path": "Sandbox → tool gallery → chatsearch-find",
+   "crop": "find-table",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('li')].find(li=>li.textContent.includes('Permission ask timeout'))"
+   },
+   "headline": "Eight situations one search can return, shown together in the design sandbox.",
+   "changed": "Found and openable, blocked two different ways, gone from this device, a conversation from the other assistant, no title, unreadable, and simply not found.",
+   "notice": "Every case has a row — none of them silently disappears from the list.",
+   "measured": "8 situations on one screen"
+  },
+  {
+   "id": "M-blocked",
+   "surface": "Design sandbox · search results",
+   "path": "Sandbox → tool gallery → chatsearch-find",
+   "crop": "find-table",
+   "highlight": {
+    "text": "Not synced to this device yet"
+   },
+   "headline": "When Resume cannot work, the row says why in words, where the date would normally sit.",
+   "changed": "The reason replaces the date instead of hiding inside a hover tooltip.",
+   "notice": "You can tell at a glance why a button is greyed out, without pointing at it."
+  },
+  {
+   "id": "M-tombstone",
+   "surface": "Design sandbox · search results",
+   "path": "Sandbox → tool gallery → chatsearch-find",
+   "crop": "find-table",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Preview'&&b.disabled)[0]"
+   },
+   "headline": "A conversation whose saved text is gone from this device greys out Preview as well as Resume.",
+   "changed": "Both buttons switch off together when there is nothing left to read.",
+   "notice": "The row still appears, so you know the conversation existed rather than wondering why it vanished."
+  },
+  {
+   "id": "M-piped",
+   "surface": "Design sandbox · trimmed search output",
+   "path": "Sandbox → tool gallery → chatsearch-find-piped",
+   "crop": "piped-card",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('h3')].find(h=>h.textContent.trim()==='chatsearch-find-piped')?.parentElement"
+   },
+   "headline": "If Claude trims the search output itself, the answer stays plain text instead of becoming a card.",
+   "changed": "A shortened result is shown exactly as it came back.",
+   "notice": "No buttons on a trimmed result — building a card from half an answer could point you at the wrong conversation."
+  },
+  {
+   "id": "M-show",
+   "surface": "Design sandbox · single conversation",
+   "path": "Sandbox → tool gallery → chatsearch-show",
+   "crop": "show-card",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Past conversation'))"
+   },
+   "headline": "Opening one named conversation shows a single row under the heading “Past conversation”.",
+   "changed": "Searching and opening one conversation get their own headings.",
+   "notice": "One row, same two buttons — nothing else changes between the two shapes."
+  },
+  {
+   "id": "M-header",
+   "surface": "Side panel · reading a past conversation",
+   "path": "Search result → Preview",
+   "crop": "preview-header",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume')"
+   },
+   "headline": "The reading panel's top bar: list, title, Resume, tag, expand, close.",
+   "changed": "Resume is a labelled button in the bar, the way file views carry their buttons.",
+   "notice": "Resume opens the conversation as a new tab in this window — not a separate window."
+  },
+  {
+   "id": "M-toolgap",
+   "surface": "Side panel · reading a past conversation",
+   "path": "Search result → Preview",
+   "crop": "preview-body",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('*')].filter(e=>e.children.length===0&&/tool calls? not shown/.test(e.textContent)).pop()"
+   },
+   "headline": "Where Claude used tools between messages, the panel marks the gap instead of hiding it.",
+   "changed": "A quiet line counts what is not shown, for example “3 tool calls not shown”.",
+   "notice": "The conversation never looks like it flowed straight through when it did not."
+  },
+  {
+   "id": "M-caption",
+   "surface": "Side panel · scrolled to the top",
+   "path": "Search result → Preview → scroll up",
+   "crop": "preview-top",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('*')].find(e=>e.children.length===0&&e.textContent.startsWith('Past conversation · read-only'))"
+   },
+   "headline": "A caption at the top says this is a past conversation, read-only, and which assistant it came from.",
+   "changed": "The panel names what you are looking at rather than looking like a live chat.",
+   "notice": "You cannot type into it; the caption says so before you try."
+  },
+  {
+   "id": "M-loadolder",
+   "surface": "Side panel · scrolled to the top",
+   "path": "Search result → Preview → scroll up",
+   "crop": "preview-top",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Load older')"
+   },
+   "headline": "Only the most recent stretch loads; “Load older” fetches the previous stretch on demand.",
+   "changed": "The panel pages backwards instead of loading a whole long conversation at once.",
+   "notice": "Long conversations open immediately; older parts arrive when you ask for them.",
+   "measured": "40 messages per load"
+  },
+  {
+   "id": "M-tags",
+   "surface": "Side panel · tag icon",
+   "path": "Preview → tag icon",
+   "crop": "tag-sheet-crop",
+   "highlight": {
+    "selector": "[role='dialog'][aria-label='Tags and note']"
+   },
+   "headline": "The tag icon opens the same tag-and-note editor the resume screen already uses.",
+   "changed": "Nothing new was drawn — the existing editor was reused as-is.",
+   "notice": "Tags and notes you add here are the same ones the resume screen shows."
+  },
+  {
+   "id": "M-rightclick",
+   "surface": "Side panel · right-click menu",
+   "path": "Preview → right-click a message",
+   "crop": "context-menu-crop",
+   "highlight": {
+    "selector": "[role=menu]"
+   },
+   "headline": "Right-clicking inside a past conversation offers the same menu the live chat does.",
+   "changed": "Ask about this, Copy and Select all now work inside a previewed conversation.",
+   "notice": "Nothing extra and nothing missing compared with right-clicking your current chat."
+  },
+  {
+   "id": "D1-referenced",
+   "surface": "Side panel · file list",
+   "path": "Preview two conversations → open the list",
+   "crop": "referenced-crop",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('*')].find(e=>e.children.length===0&&e.textContent.trim()==='Referenced conversations')?.parentElement"
+   },
+   "headline": "Keep the running list of conversations you have opened, or cut it?",
+   "options": [
+    {
+     "id": "a",
+     "label": "Keep it",
+     "summary": "Every past conversation you open this session collects under the file list.",
+     "cost": "Costs a slice of a list you already scroll, and titles are cut to about one word at that width."
+    },
+    {
+     "id": "b",
+     "label": "Cut it",
+     "summary": "The list goes away; the search cards stay in your chat, which is how you got there anyway.",
+     "cost": "Nothing to lose — it comes out cleanly, and the reading panel does not depend on it."
+    }
+   ]
+  },
+  {
+   "id": "M-error",
+   "surface": "Side panel · unreadable conversation",
+   "path": "Preview a conversation whose saved text cannot be opened",
+   "crop": "error-crop",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('*')].find(e=>e.children.length===0&&e.textContent.includes('EACCES'))"
+   },
+   "headline": "When a conversation cannot be read, the panel shows the real reason and a Retry button.",
+   "changed": "The underlying failure is repeated word for word instead of being replaced by a guess.",
+   "notice": "The text can look technical, because it is the machine's own words — but it is never invented."
+  },
+  {
+   "id": "M-narrow",
+   "surface": "Side panel · phone width",
+   "path": "Preview at 390 across",
+   "crop": "narrow-header",
+   "highlight": {
+    "selector": "js:document.querySelector(\"[aria-label='Organize Permission ask timeout']\")?.parentElement"
+   },
+   "headline": "At phone width Resume shrinks to an arrow so the whole bar still fits.",
+   "changed": "The bar keeps all six controls at 390 across instead of dropping any.",
+   "notice": "Nothing wraps or gets cut off, but Resume loses its word at this width.",
+   "measured": "390 across"
+  },
+  {
+   "id": "D4-present",
+   "surface": "Design sandbox · settled look",
+   "path": "Sandbox → compare → Round 5",
+   "crop": "present-r5",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('button')].filter(b=>/Referenced conversations/.test(b.textContent))[2]?.closest('div')"
+   },
+   "headline": "The look is settled. How should Claude actually hand you a conversation?",
+   "themes": [
+    "midnight"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "label": "Reuse a command",
+     "summary": "Treat one of its existing commands as the signal to draw this card.",
+     "cost": "Smallest change and works today, but it borrows a command meant for something else, so it can fire when you did not want it."
+    },
+    {
+     "id": "b",
+     "label": "New plugin command",
+     "summary": "A command that means exactly this, and nothing else.",
+     "cost": "Cleanest meaning, but anyone who already installed the plugin will not receive it until a separate fix ships."
+    },
+    {
+     "id": "c",
+     "label": "Build it for YouCoded",
+     "summary": "Build it properly for the assistant that lives in this app.",
+     "cost": "Small and contained, but it works only for that assistant — never for Claude Code."
+    }
+   ]
+  }
+ ]
+}

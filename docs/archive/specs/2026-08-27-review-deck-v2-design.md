@@ -188,6 +188,29 @@ not.
 - `id` is Claude's ledger key (`P-3.1`), never rendered on the page.
 - Answers, notes and what was looked at are keyed by `id` in the answers file.
 
+**Three step kinds.** A step is whichever its own fields make it:
+
+| Kind | Named by | Stage shows | Right column | Answers |
+|---|---|---|---|---|
+| approve (default) | `changed` + `notice` | one picture per run | What changed · You'll notice · Risk | Yes · No · Other |
+| choice | `variants` | one picture per variant, lettered | one card per variant | one per variant · None of these · Other |
+| decide | `options` | ONE picture (how it is today) | the options themselves | one per option · Other |
+
+A DECIDE step (added 2026-08-27) asks a question whose alternatives have not been built,
+so there is nothing to photograph: the picture shows today, and each option is words —
+`{id, label, summary, measured?, cost?}`. `cost` renders muted, not amber: an option's
+consequence is often good news, and the Risk colour would call it a warning.
+
+Why it exists: a two-sided question ("open it, or leave it closed?") wearing
+`Yes, build it / No, leave it` is ambiguous — yes to which half? CHOICE could not ask it,
+because CHOICE demands a photograph of every option. Destin, 2026-08-27: *"decide should
+just be two panels then. the image panel, and the options panel can merge with the
+decision panel in decide mode."*
+
+Deliberately NOT added, same session: a wording-only step (no picture) and a
+report-a-defect step. *"skip report. skip read. (at that point you should just use plain
+chat)."* A deck step must have a picture; anything else is a chat message.
+
 ### 4.2 Highlight boxes
 
 **Measured (`selector` / `text`).** `shot.mjs` gains a per-shot `measure` list (the

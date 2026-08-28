@@ -1,0 +1,136 @@
+{
+  "title": "Marketplace overhaul — round 1",
+  "key": "marketplace-overhaul-r1",
+  "out": "marketplace-deck.html",
+  "images": "images/marketplace-deck",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/mp-before",
+    "after": "/home/destin/youcoded-dev/scratch/mp-after"
+  },
+  "crops": {
+    "type-pill": ["marketplace-overhaul", "grid", "1440x110+0+250"],
+    "cards": ["marketplace-overhaul", "grid", "1440x190+0+415"],
+    "one-card": ["marketplace-overhaul", "grid", "300x180+15+415"],
+    "skills-grid": ["marketplace-overhaul", "skills-tab", "1440x600+0+60"],
+    "search": ["marketplace-overhaul", "search-split", "1440x560+0+60"],
+    "detail-top": ["marketplace-overhaul", "detail", "1240x340+100+130"],
+    "caution": ["marketplace-overhaul", "detail-caution", "1240x400+100+130"],
+    "feedback": ["marketplace-overhaul", "detail-feedback", "1240x330+100+500"],
+    "phone-cards": ["marketplace-overhaul-narrow", "grid-narrow", "390x220+0+330"],
+    "phone-filters": ["marketplace-overhaul-narrow", "filters-narrow", "390x400+0+444"]
+  },
+  "steps": [
+    {
+      "id": "type-switch",
+      "surface": "Marketplace · filter bar",
+      "path": "Marketplace → the row under the featured banner",
+      "crop": "type-pill",
+      "highlight": {"selector": "[aria-label='Type']"},
+      "headline": "The type switch names every kind of thing you can install: Plugins, Skills, Specialists, Tools, Prompts, Themes.",
+      "changed": "Two choices (Plugins | Themes) became seven, each with a count. 'Tools' is the word for MCP servers; 'Specialists' is the app's word for agent definitions.",
+      "notice": "Skills 22 counts skills that live inside plugins too — pick Skills and every one of them shows up on its own. All 42 counts only what the grouped view shows.",
+      "risk": "Seven words is the widest this row has been; below about 1000px the vibe chips wrap to a second line. The phone version is step 9."
+    },
+    {
+      "id": "card-trust",
+      "surface": "Marketplace · every card",
+      "path": "Marketplace → any rail or the grid",
+      "crop": "one-card",
+      "highlight": "auto",
+      "headline": "Every card says who made it and whether it was checked — two small marks, never a score.",
+      "changed": "Under the author: YouCoded / Verified / Community (who published it) and Checked / Caution / Not checked yet (the automatic check on this version). Hover either for the plain-words meaning.",
+      "notice": "Green dot = checked, amber = caution with a count, grey = not checked yet. Grey is deliberate: most mirrored items start unchecked and red everywhere would be noise.",
+      "risk": "The badge row costs one line on every card; rails get a little taller."
+    },
+    {
+      "id": "card-bottom",
+      "surface": "Marketplace · every card",
+      "path": "Marketplace → any card, bottom row",
+      "crop": "cards",
+      "highlight": "auto",
+      "headline": "Thumbs-up percent replaces the star rating, and risky abilities show as small glyphs at the right.",
+      "changed": "Bottom row is now: 👍 93% · installs · what's inside · then glyphs for runs-commands, uses-internet, needs-a-key, runs-on-its-own. The vote count moved to the detail page.",
+      "notice": "Stars are gone from cards entirely. Cards with no votes yet show no percent rather than 0%. The glyphs are hidden on phones (the detail page carries them).",
+      "risk": "A short row on a narrow card can truncate 'what's inside' first; the glyphs stay visible."
+    },
+    {
+      "id": "split-view",
+      "surface": "Marketplace · Skills tab",
+      "path": "Marketplace → type switch → Skills",
+      "crop": "skills-grid",
+      "highlight": "auto",
+      "headline": "Pick a type and the view splits: every skill is its own card, including ones that live inside a plugin.",
+      "changed": "Before, choosing a type filtered bundles. Now it lists items of that kind — skills from Superpowers appear individually with a 'Part of Superpowers' tag that jumps to the bundle.",
+      "notice": "The byline reads 'Skill · Anthropic' so each card says what it is. Standalone skills mirrored from GitHub's list sit beside them with the same badges.",
+      "risk": "The Skills grid is long (22 today, thousands once the catalog is real); the default view stays grouped so this only happens when you ask for a type."
+    },
+    {
+      "id": "search-split",
+      "surface": "Marketplace · search",
+      "path": "Marketplace → search box → type 'brainstorm'",
+      "crop": "search",
+      "highlight": "auto",
+      "headline": "Search finds the skill itself, not just the bundle that contains it.",
+      "changed": "Typing 'brainstorm' returns the Brainstorming skill (tagged Part of Superpowers) alongside the Superpowers plugin. Before, only the bundle came back and you had to dig.",
+      "notice": "A chip on its own (a vibe, New, Popular) still shows the grouped view; only typing or picking a type splits things out.",
+      "risk": "Results can double up — a bundle and three of its skills — when a word matches both. Ranking is by registry order for now."
+    },
+    {
+      "id": "detail-trust",
+      "surface": "Detail page · header",
+      "path": "Marketplace → Civic Report → top of the page",
+      "crop": "detail-top",
+      "highlight": "auto",
+      "headline": "The page opens with who made it, whether it was checked, and 'What this can do' — before the description.",
+      "changed": "Under the title: type and author, the two badges, and where it was mirrored from. Then a plain-words list — connects to the internet (which host), needs a key (which one), saves files where, what it adds.",
+      "notice": "Install/Uninstall stays where it was; the list sits directly under it so it's read before deciding. Items that do nothing risky say so instead of showing an empty box.",
+      "risk": "This pushes About and What's inside down one screen on shorter windows."
+    },
+    {
+      "id": "detail-caution",
+      "surface": "Detail page · a flagged item",
+      "path": "Marketplace → search 'browser' → Browser Use",
+      "crop": "caution",
+      "highlight": "auto",
+      "headline": "When the automatic check flags something, the reasons appear inside the same box, in plain words.",
+      "changed": "Browser Use shows Community · Caution 2, and its list ends with 'The automatic check flagged:' followed by the two findings.",
+      "notice": "The Install button is unchanged — this informs, it doesn't block. Amber dots, no red, no scary banner.",
+      "risk": "The findings are written by the scanner; wording quality will vary until the scanner's phrasing rules exist."
+    },
+    {
+      "id": "feedback",
+      "surface": "Detail page · Feedback",
+      "path": "Marketplace → Civic Report → scroll to the bottom",
+      "crop": "feedback",
+      "highlight": "auto",
+      "headline": "Reviews became Feedback: one-tap Helpful / Not for me, plus an open comment thread.",
+      "changed": "The star widget, the 'Write a review' button and the review form are gone. In their place: 'Helpful 93% · 127 votes', two vote buttons, comments with relative dates, and a comment box.",
+      "notice": "Voting still needs install + sign-in so strangers can't game it. Commenting needs sign-in only, so you can ask a question before installing.",
+      "risk": "Existing star reviews in the database are not shown anywhere; there are almost none, but the data would be orphaned."
+    },
+    {
+      "id": "phone",
+      "surface": "Marketplace · phone width",
+      "path": "Marketplace at 390px → Filters",
+      "crop": "phone-filters",
+      "highlight": "auto",
+      "headline": "On a phone the seven-way type switch scrolls sideways inside the Filters sheet instead of being cut off.",
+      "changed": "The Type row in the sheet bleeds to the edges and scrolls; cards keep both badges on one line by showing only the dot for the check status.",
+      "notice": "The fourth segment peeks in at the right edge as the hint that the row scrolls.",
+      "risk": "No fade at the edge yet — the peeking segment is the only cue."
+    },
+    {
+      "id": "tools-name",
+      "surface": "Marketplace · filter bar",
+      "path": "Marketplace → type switch",
+      "crop": "type-pill",
+      "highlight": {"selector": "[aria-label='Type']"},
+      "headline": "What should MCP servers be called in the switch?",
+      "options": [
+        {"id": "tools", "label": "Tools (recommended)", "summary": "Short, and matches how people describe them ('give it a tool that can read my calendar'). The detail page still says 'MCP server' in the fine print."},
+        {"id": "connections", "label": "Connections", "summary": "Emphasises linking to a service, but overlaps with the Integrations rail ('Connect your stuff') that already exists."},
+        {"id": "mcp", "label": "MCP servers", "summary": "Exact, but jargon — the accessibility rule says a college student shouldn't need to know the acronym."}
+      ]
+    }
+  ]
+}

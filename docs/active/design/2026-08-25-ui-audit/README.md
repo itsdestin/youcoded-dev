@@ -46,6 +46,23 @@
   “panel, at 80%” (after a scrim-vs-panel explanation in chat).
 - `phase-d-review3.html` (`scratch/ui-phase-d-before-final/` vs `scratch/ui-phase-d-after3/`) — chips
   and terminal as built. Yes, yes. Phase D merged as youcoded #339.
+- `phase-e-brief.html` (spec `phase-e-brief.json`, one-run “today” deck from `scratch/ui-phase-e-today/`,
+  master `c16d38f1`) — the Phase E brief: 4 points (shortcuts list, all-sessions menu, Model
+  Providers scroll cue, Model Providers button shapes). Decided 2026-08-28: P-7 and P-8 yes,
+  both P-4 halves no. The audit's fourth Phase E item (the word `undefined` in the local-models
+  list) was dropped BEFORE the brief: a fresh capture showed the list had been rewritten and no
+  longer prints it.
+- `phase-e-review.html` (`scratch/ui-phase-e-today/` vs `scratch/ui-phase-e-after/`) — the two
+  built changes. Both yes; P-8 with a redesign of the row (“sessions should stick to 1 line,
+  project should go below on second line… new dot+text in a pill… small file icon before the
+  project name and tag icons on the right”).
+- `phase-e-review2.html` (`scratch/ui-phase-e-after/` vs `scratch/ui-phase-e-after2/`) — the row
+  rebuilt to that sketch, plus a **choice step** on the one state he had not named: give amber
+  its own word, or fold it into red's. Yes, and **pick A** (five words). The choice's pictures
+  come from a dev-only page, `?mode=workbench&child=1&view=session-pills`, which renders the
+  shipping pill in all five states with `?pills=four|five` as the A/B.
+- `phase-e-review3.html` (`scratch/ui-phase-e-after2/` vs `scratch/ui-phase-e-after3/`) — tags as
+  named chips instead of coloured dots. Yes. Phase E merged as youcoded #347.
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
   (the original pass: 103 of 104 — "Known Issues" opens an external link; the latest full sweep
   of master, 2026-08-26 after Phase B, verified 112 of 112). `contrast.md` — the painted-pixel

@@ -87,4 +87,22 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(d['boxes']['light']['B'], [25.0, 25.0, 20.0, 15.0]); self.assertNotIn('changed', d)
         self.assertIn('None of these', html)
 
+    def test_decide_step_is_one_picture_beside_written_options(self):
+        # Destin 2026-08-27: a two-sided question cannot wear yes/no buttons. Two panels — the
+        # picture of how it is today, and the options merged into the decision column.
+        self.spec['steps'].append({'id': 'S-4', 'surface': 'Home', 'path': 'Chat', 'crop': 'c',
+            'highlight': {'selector': '#send'}, 'headline': 'Where should the block go?',
+            'options': [{'id': 'a', 'label': 'Leave it', 'summary': 'Nothing moves.', 'cost': 'Stays crowded.'},
+                        {'id': 'b', 'label': 'Move it down', 'summary': 'It drops below.', 'measured': '40 px down'}]})
+        from deck.spec import validate
+        self.assertEqual(validate(self.spec)[0], [])
+        boxes = crop_images(self.spec, log=lambda *a: None)['boxes']
+        html, _ = build_page(self.spec, boxes)
+        d = deck_data(self.spec, boxes)['steps'][3]
+        self.assertEqual(d['kind'], 'decide'); self.assertEqual([o['id'] for o in d['options']], ['a', 'b'])
+        self.assertEqual(d['options'][0]['cost'], 'Stays crowded.')
+        self.assertNotIn('changed', d)                                  # no What changed card
+        self.assertEqual(sorted(d['images']['light']), ['after', 'before'])   # a picture per run, like a normal step
+        self.assertEqual(d['boxes']['light']['after'], [25.0, 25.0, 20.0, 15.0])
+
 if __name__ == '__main__': unittest.main()

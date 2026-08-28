@@ -7,7 +7,7 @@ import json
 import os
 
 from .crops import image_name
-from .spec import SpecError, all_themes, is_choice, run_names, step_themes, validate, workspace_root
+from .spec import SpecError, all_themes, is_choice, is_decide, run_names, step_themes, validate, workspace_root
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -67,9 +67,23 @@ def _choice_step(spec, st, boxes, run):
     }
 
 
+def _decide_step(spec, st, boxes, runs):
+    """One picture (the last run — how it is today) and the written options beside it."""
+    return {
+        'id': st['id'], 'kind': 'decide', 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
+        'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
+        'options': [{'id': o['id'], 'label': o['label'], 'summary': o['summary'],
+                     'measured': o.get('measured', ''), 'cost': o.get('cost', '')} for o in st['options']],
+        'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in step_themes(spec, st)},
+        'boxes': boxes.get(st['id'], {}),
+        **({'themes': list(st['themes'])} if st.get('themes') else {}),
+    }
+
+
 def deck_data(spec, boxes):
     runs = run_names(spec)
-    steps = [_choice_step(spec, st, boxes, runs[-1]) if is_choice(st) else {
+    steps = [_choice_step(spec, st, boxes, runs[-1]) if is_choice(st)
+             else _decide_step(spec, st, boxes, runs) if is_decide(st) else {
         'id': st['id'], 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
         'changed': st['changed'], 'measured': st.get('measured', ''), 'notice': st['notice'], 'risk': st.get('risk', ''),
         'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in step_themes(spec, st)},

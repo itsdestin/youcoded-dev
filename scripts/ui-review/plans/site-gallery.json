@@ -1,0 +1,94 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "home",
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "[title=Settings]"
+  },
+  {
+   "name": "marketplace",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    }
+   ],
+   "expect": "[aria-label='Open Your Library'], [title='Your Library']"
+  },
+  {
+   "name": "projects",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    }
+   ],
+   "expect": "[aria-label=Files]"
+  },
+  {
+   "name": "model-picker",
+   "actions": [
+    {
+     "click": "[title^='Click to change model']",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "tags",
+   "actions": [
+    {
+     "click": "[title^='Tags & note']",
+     "settle": 600
+    }
+   ],
+   "expect": "[placeholder^='Search or create']"
+  },
+  {
+   "name": "connect4",
+   "actions": [
+    {
+     "click": "[title='Connect 4']",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "themes",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "permissions",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Permissions\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  }
+ ]
+}

@@ -1,0 +1,64 @@
+{
+ "title": "Phase E review — the two windows, before and after",
+ "key": "phase-e-review",
+ "out": "phase-e-review.html",
+ "images": "images/phase-e-review",
+ "runs": {
+  "before": "/home/destin/youcoded-dev/scratch/ui-phase-e-today",
+  "after": "/home/destin/youcoded-dev/scratch/ui-phase-e-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Built"
+ },
+ "themes": [
+  "midnight",
+  "light",
+  "creme",
+  "dark",
+  "halftone-dimension",
+  "meadow-mist"
+ ],
+ "crops": {
+  "shortcuts": [
+   "main",
+   "settings-keyboard-shortcuts",
+   "470x570+490+165"
+  ],
+  "sessions": [
+   "main",
+   "all-sessions-menu",
+   "490x540+470+14"
+  ]
+ },
+ "steps": [
+  {
+   "id": "P-7.1",
+   "surface": "Keyboard Shortcuts",
+   "path": "Settings → Keyboard Shortcuts",
+   "crop": "shortcuts",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Keyboard Shortcuts\"] kbd')].find(k=>k.textContent.includes('Arrow Up/Down'))?.parentElement"
+   },
+   "headline": "All thirteen shortcuts now fit, one line each, keys in their own column — the three that could not be reached are the last three rows.",
+   "changed": "The window is 420 pixels wide instead of 340 and uses the standard title bar and scrolling body, so nothing can be cut off again. Labels and keys sit in two columns. One label lost the word “view” so it holds one line.",
+   "measured": "13 of 13 rows readable, was 10; every label one line, was 4 wrapped; rows a uniform 29 px, were 33 and 45",
+   "notice": "The window is a little wider and taller, and the title now sits in the same bar every other settings window uses, with the same close button.",
+   "risk": "On a short window the list scrolls rather than clipping — the bottom edge dims to show it. If you knew the old shortcut order, three rows you never saw are now at the end."
+  },
+  {
+   "id": "P-8.1",
+   "surface": "All sessions menu",
+   "path": "Title bar → All Sessions",
+   "crop": "sessions",
+   "highlight": {
+    "selector": "js:[...document.querySelectorAll('.glass-overlay.fixed button')].find(b=>b.textContent.includes('gpt-5.6'))"
+   },
+   "headline": "Session names hold one line with the project folder underneath, and eight and a half sessions fit where six and a half did.",
+   "changed": "The menu is 448 pixels wide instead of 288, the name is cut with “…” and shown in full when you rest the pointer on it, the project folder moved from beside the name to a line under it, and the list holds 432 pixels instead of 336.",
+   "measured": "every row 49 px, were 42–70; 8.5 rows visible, were 6.5; menu 448 px wide, was 288",
+   "notice": "Rows are all the same height, so the list stops looking ragged. The same menu opens when you hold Shift, so that one changes too. The DANGER badge stays on the right of its row.",
+   "risk": "A very long name is now hidden behind “…” until you hover it, and with short names the right half of the menu is empty. The menu also covers more of the window behind it."
+  }
+ ]
+}

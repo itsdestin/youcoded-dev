@@ -1,0 +1,35 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&view=compare",
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "present-round5",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&view=compare",
+   "boot": 3000,
+   "actions": [
+    {
+     "click": "[aria-label='Surface']",
+     "settle": 400
+    },
+    {
+     "clickText": "Presented conversation",
+     "tag": "[role=option]",
+     "settle": 400
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^R5/.test(b.textContent.trim()))",
+     "settle": 500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].filter(b=>/Referenced conversations/.test(b.textContent))[2]",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Two lines, full width') && document.body.textContent.includes('Preview')",
+   "measure": [
+    "js:[...document.querySelectorAll('button')].filter(b=>/Referenced conversations/.test(b.textContent))[2]?.closest('div')"
+   ]
+  }
+ ]
+}

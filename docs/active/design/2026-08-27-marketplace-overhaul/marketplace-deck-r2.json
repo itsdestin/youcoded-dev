@@ -1,0 +1,98 @@
+{
+  "title": "Marketplace overhaul — round 2",
+  "key": "marketplace-overhaul-r2",
+  "out": "marketplace-deck-r2.html",
+  "images": "images/marketplace-deck-r2",
+  "labels": {"before": "Round 1", "after": "Round 2"},
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/mp-after",
+    "after": "/home/destin/youcoded-dev/scratch/mp-r2"
+  },
+  "crops": {
+    "filter-row": ["marketplace-overhaul", "grid", "1440x110+0+250"],
+    "one-card": ["marketplace-overhaul", "grid", "300x200+15+400"],
+    "cards": ["marketplace-overhaul", "grid", "1440x200+0+400"],
+    "skills-grid": ["marketplace-overhaul", "skills-tab", "1440x420+0+60"],
+    "detail-top": ["marketplace-overhaul", "detail", "1240x200+100+130"],
+    "phone-filters": ["marketplace-overhaul-narrow", "filters-narrow", "390x420+0+424"]
+  },
+  "steps": [
+    {
+      "id": "one-row",
+      "surface": "Marketplace · filter bar",
+      "path": "Marketplace → the row under the featured banner",
+      "crop": "filter-row",
+      "highlight": {"selector": "[aria-label='Type']"},
+      "headline": "The filter bar is one row: the type switch, a Vibe dropdown, a Show dropdown, and search.",
+      "changed": "Seven vibe chips became a 'Any vibe' dropdown (pick one). New / Popular / Featured picks became a 'Show' dropdown: Everything, Featured picks, Newest first, Most installed.",
+      "notice": "Nothing wraps any more. Vibe is now pick-one (it was pick-many) — two vibes at once is gone. Search shrinks first if the window gets narrow.",
+      "risk": "Below roughly 1100px wide the search box gets short; the bar never wraps but it can feel tight."
+    },
+    {
+      "id": "connections",
+      "surface": "Marketplace · filter bar",
+      "path": "Marketplace → type switch",
+      "crop": "filter-row",
+      "highlight": {"selector": "[aria-label='Type']"},
+      "headline": "MCP servers are called Connections, per your pick.",
+      "changed": "The segment reads Connections 5; the byline on those cards reads 'Connection · Notion'; 'Adds 1 connection' in What this can do.",
+      "notice": "The detail page's fine print still says MCP server, so someone who knows the term can confirm what it is.",
+      "risk": "You flagged it: real non-MCP tools may arrive later and want a different word. The internal name stays 'tool' so renaming is a one-line copy change."
+    },
+    {
+      "id": "likely-safe",
+      "surface": "Marketplace · every card",
+      "path": "Marketplace → any card → badge row",
+      "crop": "one-card",
+      "highlight": "auto",
+      "headline": "The check badge is a grey shield with a tick reading 'Likely safe', and it comes first.",
+      "changed": "Checked → grey shield-tick 'Likely safe'. Caution → amber shield-! 'Caution 2'. Not checked → empty grey shield 'Not checked'. Then the origin badge (YouCoded / Verified / Community).",
+      "notice": "Hover either badge for a one-sentence explanation ('Likely' because no check is perfect…). On phones the shield shows without its word so the row stays on one line.",
+      "risk": "Hover doesn't exist on touch — the same sentence needs a tap target there; not built this round."
+    },
+    {
+      "id": "card-anatomy",
+      "surface": "Marketplace · every card",
+      "path": "Marketplace → any rail",
+      "crop": "cards",
+      "highlight": "auto",
+      "headline": "Cards have a fixed shape: title, byline, badges, two-line blurb, then abilities in words, then feedback and contents.",
+      "changed": "The globe/key glyphs are gone. In their place a line of words — 'Uses the internet · Needs a key' — on its own row, only when there is something to say. The blurb always reserves two lines so cards in a row line up.",
+      "notice": "Bottom row now reads feedback on the left (👍 93% · 412 installs) and contents on the right (1 skill · 1 command), each side truncating on its own instead of fighting for one line.",
+      "risk": "Cards are about one line taller than round 1; rails scroll a little more."
+    },
+    {
+      "id": "split-cards",
+      "surface": "Marketplace · Skills tab",
+      "path": "Marketplace → type switch → Skills",
+      "crop": "skills-grid",
+      "highlight": "auto",
+      "headline": "The same cleaned-up card in the split view, where most cards have no numbers yet.",
+      "changed": "Badge order and the reserved blurb height apply here too, so a card with 'Part of Superpowers' and one without sit at the same height.",
+      "notice": "Skills with no votes show no percent rather than 0%; the contents line is empty for a single skill, so those cards end with the badge row.",
+      "risk": "Whether the empty bottom on single-skill cards reads as tidy or unfinished is your call."
+    },
+    {
+      "id": "phone-sheet",
+      "surface": "Marketplace · phone width",
+      "path": "Marketplace at 390px → Filters",
+      "crop": "phone-filters",
+      "highlight": "auto",
+      "headline": "The phone Filters sheet: the type row scrolls inside the sheet's edges, and the chips are the same two dropdowns.",
+      "changed": "Round 1 let the type row bleed past the sheet's padding, which looked like overflow. It now scrolls within the padding. Vibe and Show are full-width dropdowns.",
+      "notice": "The fourth segment is cut at the padding edge — that's the cue that the row scrolls.",
+      "risk": "Still no fade at the edge; the cut segment is the only hint."
+    },
+    {
+      "id": "detail-badges",
+      "surface": "Detail page · header",
+      "path": "Marketplace → Civic Report",
+      "crop": "detail-top",
+      "highlight": "auto",
+      "headline": "The detail page's trust line uses the same shield-first order and 'Likely safe' wording.",
+      "changed": "Only the badge order and wording changed here; What this can do and Feedback are as you approved them.",
+      "notice": "Same two badges as the card, slightly larger, then 'from anthropics/…' and 'Part of …' when they apply.",
+      "risk": "None beyond the wording."
+    }
+  ]
+}
