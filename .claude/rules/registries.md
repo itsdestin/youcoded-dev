@@ -21,12 +21,12 @@ verify:
 
 # Registries: themes, marketplace, plugin install, announcements
 
-Both registries are GitHub repos fetched at runtime via `raw.githubusercontent.com` (no scheduled CI rebuild). **Registry-repo depth: workspace `docs/registries.md`. MCP-authoring depth: `wecoded-marketplace/docs/mcp-authoring.md`.**
+Both registries are GitHub repos fetched at runtime via `raw.githubusercontent.com` — no *scheduled* rebuild, but both rebuild **on merge** (`validate-plugin-pr.yml` → `rebuild`; themes CI regenerates registry + previews). **Registry-repo depth: workspace `docs/registries.md`. MCP-authoring depth: `wecoded-marketplace/docs/mcp-authoring.md`.**
 
 ## Theme & skill registries
-- **`wecoded-themes/registry/theme-registry.json` is auto-generated on CI merge** — don't hand-edit. Each theme: `themes/{slug}/manifest.json` + assets. **15 required CSS tokens** (canvas, panel, inset, well, accent, on-accent, fg, fg-2, fg-dim, fg-muted, fg-faint, edge, edge-dim, scrollbar-thumb, scrollbar-hover). CSS safety (CI-enforced): NO `@import`, external URLs, `expression()`, `javascript:`. Manifest >10MB or duplicate slug fails CI.
+- **`wecoded-themes/registry/theme-registry.json` is auto-generated on CI merge** — don't hand-edit. Each theme: `themes/{slug}/manifest.json` + assets. **15 required CSS tokens** and four CSS-safety bans, both CI-enforced and both listed in `docs/registries.md`. Manifest >10MB or duplicate slug fails CI.
 - **Any content change to a published theme MUST bump the manifest `version`** — the app only offers Update when registry version > recorded install version (`isNewerVersion`); no bump → installed users see a no-op "Installed" button forever (depth: `docs/registries.md`). Guard: none — candidate for a CI diff check.
-- **`wecoded-marketplace`:** `index.json` (combined) + `marketplace.json` (YouCoded-only); synced from upstream via `scripts/sync.js`. Entries with `sourceMarketplace: "youcoded"` are never overwritten. App caches 24h at `~/.claude/wecoded-marketplace-cache/`.
+- **`wecoded-marketplace`:** root `index.json` (bare array — **this is what both apps fetch**) + `skills/index.json` (same entries wrapped, written first by `sync.js`) + `marketplace.json` (YouCoded-only). Entries with `sourceMarketplace: "youcoded"` are never overwritten by upstream sync. App caches 24h at `~/.claude/youcoded-marketplace-cache/` — **`youcoded-`**, not `wecoded-` (7 code sites).
 
 ## Theme marketplace entries (`local-theme-synthesizer.ts`) — guard: `local-theme-synthesizer.test.ts`
 - **`isLocal` is distinct from `installed`.** `installed` = a `manifest.json` exists at `~/.claude/wecoded-themes/<slug>/`; `isLocal` = synthesized because no registry entry exists (user-built, unpublished). Code branching on "deletable forever vs reinstallable" reads `isLocal`, NOT `installed`.
@@ -40,7 +40,7 @@ Both registries are GitHub repos fetched at runtime via `raw.githubusercontent.c
 
 ## MCP plugin authoring (marketplace plugins) — **read `wecoded-marketplace/docs/mcp-authoring.md` before shipping a stdio MCP server**
 - **`bash` is NOT on the Windows system PATH** — don't write `command:"bash"` in `mcp-manifest.json`; use a real on-PATH binary (`node`/`uvx`/`python`) or bash's 8.3 short name (`C:\PROGRA~1\Git\usr\bin\bash.exe` — spaces break the spawn). MSYS `/c/...` paths work only as ARGS, never `command`.
-- **`${PACKAGE_DIR}` is expanded by YouCoded's `reconcileMcp()`, NOT Claude Code** — non-YouCoded CLI users get a literal placeholder. **Pin `mcp>=1.0.0,<2.0.0`** (0.x→1.x is dict→Pydantic breaking). **`claude mcp list` is a liar** (verifies only `initialize`) — verify with in-session `/mcp` (full `tools/list`). Test the handshake end-to-end with a Node spawn-probe before submission. Ten more footguns (venv activate, `PYTHONIOENCODING`, pywinrt, `rsync`, system-Python gating) are in the staging doc.
+- **`${PACKAGE_DIR}` is expanded by YouCoded's `reconcileMcp()`, NOT Claude Code** — non-YouCoded CLI users get a literal placeholder. **Pin `mcp>=1.0.0,<2.0.0`** (0.x→1.x is dict→Pydantic breaking). **`claude mcp list` is a liar** (verifies only `initialize`) — verify with in-session `/mcp` (full `tools/list`). Spawn-probe the handshake before submission. Ten more footguns are in that doc.
 
 ## Announcements (`announcement-service.ts`, `shared/announcement.ts`)
 - **Source of truth is `youcoded/announcements.txt`** (app repo), NOT youcoded-core. `/announce` writes there; public URL `raw.githubusercontent.com/itsdestin/youcoded/master/announcements.txt`.

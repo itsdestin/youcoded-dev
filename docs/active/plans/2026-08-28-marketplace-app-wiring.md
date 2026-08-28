@@ -27,6 +27,7 @@ part: 3 of 3 (app wiring) — needs 2026-08-28-marketplace-catalog-service.md de
 - Every desktop change: `bash scripts/verify.sh marketplace-ui` from the workspace root before "done". Android: `cd worktrees/marketplace-ui && ./gradlew test -x bundleWebUi` (the `-x` is mandatory in a hardlinked worktree — see CLAUDE.md).
 - Never guess in error strings: git failures surface `output.slice(0, 200)` verbatim, as the installer already does.
 - App work is on `youcoded` branch `feat/marketplace-overhaul-ui`, worktree `/home/destin/youcoded-dev/worktrees/marketplace-ui`.
+- **Line numbers in this plan are hints, not addresses.** They were read on 2026-08-28 against the branch *before* the mandated rebase onto master, and Plan 1's app half (14 commits) has since moved several of these files. Every citation names the symbol or the string as well — locate by that, and treat a number that does not match as drift, not as a sign the claim is wrong. Re-checked 2026-08-28: the Update-action findings, `reconcileBundledPlugins()` at `skill-provider.ts:906` (master), `createPromptSkill` at `skill-config-store.ts:196` and the prompt install branch at `skill-provider.ts:254` all still hold.
 
 ---
 
@@ -40,7 +41,7 @@ part: 3 of 3 (app wiring) — needs 2026-08-28-marketplace-catalog-service.md de
 - Create `app/src/test/kotlin/com/youcoded/app/skills/MarketplaceFetcherCatalogTest.kt`.
 - Modify `desktop/src/renderer/dev/workbench/fixtures/marketplace/catalog.ts` header comment only (it now mirrors a real contract).
 - Modify `docs/registries.md`, `.claude/rules/registries.md` (workspace) — the catalog is the source; `index.json` is the fallback.
-- Modify `desktop/src/renderer/components/marketplace/MarketplaceCard.tsx`, `MarketplaceDetailOverlay.tsx`, `desktop/src/renderer/components/LibraryScreen.tsx` — connect the Update action (Task 7), theme download counts + the small fixes (Task 9).
+- Modify `desktop/src/renderer/components/marketplace/MarketplaceCard.tsx`, `MarketplaceDetailOverlay.tsx`, `desktop/src/renderer/components/library/LibraryScreen.tsx` — connect the Update action (Task 7), theme download counts + the small fixes (Task 9).
 - Modify `desktop/src/main/skill-config-store.ts`, `skill-provider.ts` — prompts keep their marketplace id and stop reporting updates they did not perform (Task 8).
 - Create `desktop/tests/marketplace-update-action.test.tsx`, `desktop/tests/prompt-install-update.test.ts`.
 
@@ -770,7 +771,9 @@ Replace the header's "nothing in this file ships" paragraph with:
 
 - [ ] **Step 2: Fix the registry docs** (workspace repo `/home/destin/youcoded-dev`)
 
-`docs/registries.md`: line 3 — replace the "No CI rebuild on either" sentence with "The app reads the Worker's `/catalog` (rebuilt hourly by `catalog-ingest.yml` in wecoded-marketplace, conditional-GET'd via ETag) and falls back to `index.json` on GitHub; `index.json` is rebuilt by `validate-plugin-pr.yml` on plugin merges." Line 12 — the cache dir is `~/.claude/youcoded-marketplace-cache/` (five code sites; the doc said `wecoded-`). Add a line naming the `CATALOG_ENABLED` kill switch and what it does (503 → clients fall back to `index.json`), since that is the thing a future session needs to find in a hurry. Apply the same corrections to `.claude/rules/registries.md`.
+**Two of the three corrections this task used to carry are already done** (2026-08-28, fixed on sight in both `docs/registries.md` and `.claude/rules/registries.md` because they contradicted shipping code, not the catalog): the "No CI rebuild on either" claim (`validate-plugin-pr.yml` has a `rebuild` job on merge) and the cache directory (`youcoded-marketplace-cache`, 7 code sites, not `wecoded-`). The doc also now says which of the two `index.json` files the apps actually fetch.
+
+What is left for this task, and only makes sense once the catalog is live: say in both files that **the app reads the Worker's `/catalog` first** (rebuilt hourly by `catalog-ingest.yml`, conditional-GET'd via ETag) and falls back to the GitHub `index.json`, and name the **`CATALOG_ENABLED` kill switch** and what it does (503 → clients fall back). That kill switch is the thing a future session needs to find in a hurry.
 
 - [ ] **Step 3: Commit (two repos)**
 
@@ -870,15 +873,17 @@ and above `MetadataChips` a `Callout` (`tone="info"`): "This connection isn't in
 ### Task 7: Connect the Update action — it has never been wired to anything
 
 **The finding (verified 2026-08-28, master).** The app can update a plugin or a theme. A user
-cannot. `MarketplaceCard.tsx:351-360` renders the word **"Update"** inside a plain `<span>`
-with no click handler; `LibraryScreen.tsx:265-280` lists everything with `updateAvailable` and
+cannot. `MarketplaceCard.tsx` renders the word **"Update"** inside a plain `<span>`
+with no click handler (`rg -n "'Update' : 'Installed'"` — line 381 on the branch as of
+2026-08-28); `library/LibraryScreen.tsx:265` lists everything with `updateAvailable` and
 offers no action either — clicking a row just opens the detail overlay, which shows
 Install/Uninstall and no Update. The function that performs it, `update(id, type)`
-(`marketplace-context.tsx:308-326`), is exported from the provider and has **zero call sites
+(`marketplace-context.tsx`, `rg -n "const update = "` — the body is around 326-340),
+is exported from the provider and has **zero call sites
 in the entire renderer** (`rg '\.update\(' desktop/src/renderer/{components,state}` finds
 only its own definition and an unrelated `registry.update`). Behind it everything is real and
-reachable from main: `skills:update` (`ipc-handlers.ts:1497`), `skillProvider.update`
-(`skill-provider.ts:326`), and for themes `updateTheme(slug)`
+reachable from main: `skills:update` (`ipc-handlers.ts:1488`, `IPC.SKILLS_UPDATE`), `skillProvider.update`
+(`skill-provider.ts:284`), and for themes `updateTheme(slug)`
 (`theme-marketplace-provider.ts:255-266`, which re-runs `installTheme` over the same slug).
 
 So the badge is decorative, app-wide, for both kinds. The only thing that self-heals is
@@ -892,7 +897,7 @@ costs a fraction of doing it later.
 **Files:**
 - Modify: `desktop/src/renderer/components/marketplace/MarketplaceCard.tsx` (the corner element)
 - Modify: `desktop/src/renderer/components/marketplace/MarketplaceDetailOverlay.tsx` (header actions, both the skill and theme bodies)
-- Modify: `desktop/src/renderer/components/LibraryScreen.tsx` (the Updates tab rows)
+- Modify: `desktop/src/renderer/components/library/LibraryScreen.tsx` (the Updates tab rows)
 - Test: `desktop/tests/marketplace-update-action.test.tsx` (new)
 
 **Interfaces:**
@@ -968,7 +973,7 @@ Run: `npx vitest run tests/marketplace-update-action.test.tsx` → PASS (4).
 Run: `bash scripts/verify.sh marketplace-ui` → OK.
 
 ```bash
-git add desktop/src/renderer/components/marketplace/MarketplaceCard.tsx desktop/src/renderer/components/marketplace/MarketplaceDetailOverlay.tsx desktop/src/renderer/components/LibraryScreen.tsx desktop/tests/marketplace-update-action.test.tsx
+git add desktop/src/renderer/components/marketplace/MarketplaceCard.tsx desktop/src/renderer/components/marketplace/MarketplaceDetailOverlay.tsx desktop/src/renderer/components/library/LibraryScreen.tsx desktop/tests/marketplace-update-action.test.tsx
 git commit -m "feat(marketplace): the Update badge is a button that actually updates, for plugins and themes"
 ```
 

@@ -1,15 +1,15 @@
 # Registries (Marketplace & Themes)
 
-Both registries are GitHub repos fetched at runtime by apps via `raw.githubusercontent.com`. No CI rebuild on either — registries are rebuilt manually or on merge.
+Both registries are GitHub repos fetched at runtime by apps via `raw.githubusercontent.com`. Neither is rebuilt on a *schedule*, but **both rebuild on merge** — `validate-plugin-pr.yml`'s `rebuild` job regenerates `marketplace.json`, `skills/index.json` and the root `index.json` on a push to master, and `wecoded-themes` regenerates its registry and preview PNGs the same way. (Corrected 2026-08-28: this line used to say "No CI rebuild on either", which was wrong in both repos.)
 
 ## Skill Marketplace (`wecoded-marketplace/`)
 
 Recent restructure (unified-marketplace merge) split the registry into `/skills/` and `/themes/` subdirectories. The `sync.js` rewrite added diffing, version tracking, and deprecation logic.
 
-- `index.json` — entries from both sources
+- **Two index files, and the apps read the ROOT one.** `index.json` at the repo root is a bare JSON array (339 entries) and is what `skill-provider.ts` / `MarketplaceFetcher.kt` fetch. `skills/index.json` is the same entries wrapped in `{ version, generatedBy, entries }` — `sync.js` writes that one first and regenerates the root file after it for backward compatibility. Read the root file unless you specifically want the wrapper.
 - `marketplace.json` — YouCoded-only entries
 - Synced from upstream via `scripts/sync.js`. Entries with `sourceMarketplace: "youcoded-core"` are never overwritten by upstream sync
-- Apps cache for 24 hours at `~/.claude/wecoded-marketplace-cache/`
+- Apps cache for 24 hours at `~/.claude/youcoded-marketplace-cache/` — **`youcoded-`, not `wecoded-`** (7 code sites across desktop and Android; verified 2026-08-28, this line had it wrong)
 - CI: `.github/workflows/validate-plugin-pr.yml` validates community plugin PRs
 
 ## Theme Registry (`wecoded-themes/`)
