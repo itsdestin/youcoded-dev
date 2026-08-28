@@ -9,20 +9,42 @@ part: 2 of 3 (catalog service) — 2026-08-28-marketplace-feedback-worker.md is 
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** A catalog the app can read that carries, for every listing, the block the approved UI renders — kind, who published it, whether this version was checked, what it can do, licence, pinned commit — built hourly from five sources and served by the WeCoded Worker.
+**Goal:** A catalog the app can read that carries, for every listing, the block the approved UI renders — kind, who published it, whether this version was checked, what it can do, licence, pinned commit — built hourly from four sources and served by the WeCoded Worker.
 
-**Architecture:** Two halves. **Serve:** the Worker stores one row per listing in D1 (`catalog_items`, full entry as JSON + a few indexed columns) and answers `GET /catalog` (everything the app shows) and `GET /catalog/:id`; an ingest token guards `POST /admin/catalog/*`. **Ingest:** a dependency-free Node 20 script tree in `wecoded-marketplace/scripts/catalog/` runs in GitHub Actions every hour, pulls each source (our own `index.json`, the official MCP Registry, Docker's MCP catalog, `github/awesome-copilot`, `PatrickJS/awesome-cursorrules`), normalises to `SkillEntry + catalog`, computes capabilities and a rule-based scan from the files at the pinned commit, and upserts in batches. A per-source "finish" call retires rows the run did not see. The MCP Registry is ingested in full but only its quality slice (GitHub stars ≥ 25 or also in Docker's catalog) is served — enrichment catches up 400 repos per run.
+**Architecture:** Two halves. **Serve:** the Worker stores one row per listing in D1 (`catalog_items`, full entry as JSON + a few indexed columns) and answers `GET /catalog` (everything the app shows, with an `ETag`) and `GET /catalog/:id`; an ingest token guards `POST /admin/catalog/*`. **Ingest:** a dependency-free Node 20 script tree in `wecoded-marketplace/scripts/catalog/` runs in GitHub Actions every hour, pulls each source (our own `index.json`, Docker's MCP catalog, `github/awesome-copilot`, `PatrickJS/awesome-cursorrules`), normalises to `SkillEntry + catalog`, computes capabilities and a rule-based scan from the files **at the repo's current HEAD**, and upserts in batches. A per-source "finish" call retires rows the run did not see.
+
+Two rules make the whole thing safe to run unattended, and they are the difference between a
+background job and a liability:
+
+1. **Never downgrade (Task 3).** An upsert that arrives without a field the stored row already
+   has — `stars`, `license`, `sourceCommit` — keeps the stored value; an incoming
+   `scan.status: "unchecked"` never overwrites a stored `checked`/`caution`. A rate-limited,
+   half-finished or otherwise degraded run therefore *fails to improve* the catalog instead of
+   visibly damaging it. Without this, one bad hour flips "Likely safe" to "Not checked" across
+   the grid and back again.
+2. **Only re-read what changed (Task 8).** The ingest asks the Worker for the commit it has on
+   file for each id, and re-downloads a plugin's files only when HEAD differs. That is ~95% of
+   the run's GitHub traffic removed, and it is nearly free to implement *because* of rule 1 —
+   an unchanged entry is upserted without `capabilities`/`scan`, and the merge keeps what is
+   already stored.
+
+**Deliberately not here:** the official MCP Registry (25,291 servers). See **Deferred** at the
+end of this plan for the measured reasons and where it goes instead.
 
 **Tech Stack:** Hono + D1 + vitest-pool-workers (Worker); Node 20 `fetch` + `node:test` (ingest, zero npm deps, like `scripts/sync.js`); GitHub Actions cron.
 
 ## Global Constraints
 
-- Contract with Plan 3 (must not drift): `GET /catalog` → `200 { generated_at: number, entries: SkillEntry[] }`; each entry has the `index.json` fields plus `catalog: CatalogMeta`; deprecated rows omitted; `Cache-Control: public, max-age=300`; any origin.
+- Contract with Plan 3 (must not drift): `GET /catalog` → `200 { generated_at: number, entries: SkillEntry[] }`; each entry has the `index.json` fields plus `catalog: CatalogMeta`; deprecated rows omitted; `Cache-Control: public, max-age=300`; **`ETag: "<generated_at>"`, and `304 Not Modified` with an empty body when the client sends a matching `If-None-Match`**; any origin. The 304 is not a nicety: the response is a few megabytes, both platforms refresh hourly, phones do it on mobile data, and Cloudflare's edge cache does not apply to `*.workers.dev` — so without it every device pays full price 24 times a day and every request re-reads every row out of D1.
+- **Size discipline.** ~2,600 rows come from our own registry alone (302 live bundles + 2,084 skills + 103 specialists + 125 connections, measured against `index.json`), and today's rows average 1.1 KB. Expect roughly 5,000 rows / 4–6 MB. Any change that materially grows that needs a paging story first; D1's free tier allows 5 M row-reads/day, i.e. about 1,000 uncached catalog fetches.
 - `CatalogMeta` is `desktop/src/shared/catalog-types.ts` on the app branch. This plan adds two optional fields there (Task 5): `upstreamId?: string`, `stars?: number`. Nothing else in the shape changes.
 - Ids must satisfy the installer's `^[a-zA-Z0-9_-]+$` (`plugin-installer.ts:41`) **except** member rows, which use `<bundle>/<name>` and are never installed directly (Plan 3 routes them to the bundle). Mirrored ids are prefixed by source: `mcp-…`, `docker-…`, `copilot-…`, `cursorrules-…`.
-- Worker conventions: errors are plain-text lowercase messages (`src/lib/errors.ts`); `parseJsonBody` for JSON; public GETs go in `isPublicReadPath`; migrations `NNNN_snake_case.sql`, next is **0006** (0005 is Plan 1's — if Plan 1 has not merged, this plan's migration is 0005 and Plan 1's becomes 0006; whoever merges second renumbers); `[env.test]` mirrors any new var; tests `DELETE FROM` their tables in `beforeEach`.
+- Worker conventions: errors are plain-text lowercase messages (`src/lib/errors.ts`); `parseJsonBody` for JSON; public GETs go in `isPublicReadPath`; migrations `NNNN_snake_case.sql`, this plan is **0006**, unconditionally — Plan 1 owns 0005 and merges first. Do **not** swap them: D1 records applied migrations by filename and applies in order, so a 0005 added after 0006 has run is applied out of order. `[env.test]` mirrors any new var; tests `DELETE FROM` their tables in `beforeEach`.
+- **Ids may contain a slash.** Bundle members are `<bundle>/<name>`; `validateId` is length-only, but Hono's `:param` never crosses a slash, so every id-taking route needs a two-segment form (Task 4). Same trap Plan 1 hits with `/comments`.
 - Ingest never writes to the repo; it POSTs. The token is `CATALOG_INGEST_TOKEN` (Worker secret, CI secret `MARKETPLACE_CATALOG_INGEST_TOKEN`), compared with `crypto.subtle.timingSafeEqual`-equivalent constant-time logic.
-- GitHub calls from ingest always send `Authorization: Bearer ${GITHUB_TOKEN}` (60/hr unauthenticated is not survivable); respect `x-ratelimit-remaining` — stop enriching when < 200.
+- **There must be a kill switch.** `CATALOG_ENABLED` (a `wrangler.toml` `[vars]` value, Task 2) — set it to `"0"`, commit, and `GET /catalog` answers 503, which both clients already handle by falling back to `index.json`. Without it, one bad ingest run reaches every device within the hour and the only remedy is writing and deploying code under pressure.
+- **GitHub budget is the binding constraint.** `secrets.GITHUB_TOKEN` inside Actions is limited to **1,000 API requests per hour per repository** (not 5,000 — that is a personal access token), and `http.mjs` stops at 200 remaining, so a run has ~800 calls. The "only re-read what changed" rule keeps a steady-state hourly run at roughly **~160** calls (one `/repos/{o}/{r}` per distinct repo, cached per run; 153 distinct repos across the 237 live `url`/`git-subdir` entries) plus a handful for the other sources. If a run ever hits `RateLimited`, that is the signal the skip logic has stopped working — do not "fix" it by raising the threshold. If the budget genuinely needs to grow later, a fine-grained PAT in a repo secret gets 5,000/hr; do not reach for that first.
+- Raw file downloads (`raw.githubusercontent.com`) do not count against the API limit but have their own throttle, and they are the run's wall clock: at up to 20 files per plugin, re-reading everything is ~6,000 sequential fetches. Steady state must be dozens, not thousands.
 - Capabilities and scan findings are **computed from files**, never taken from an author's description. Wording is plain: "Runs commands on your computer", "Connects to the internet · api.notion.com", "Needs a Notion key · NOTION_TOKEN", "Runs automatically after every file edit", "Adds 3 skills and 1 command".
 - Scan status: `caution` when any finding; `checked` when the files were fetched and scanned with no finding; `unchecked` when files could not be fetched (rate limit, no repo). Never `checked` without having read the files.
 - Worker work on `wecoded-marketplace` branch `feat/catalog-service` from `master`; `cd worker && npm test && npm run typecheck` before each commit; the ingest scripts run `node --test scripts/catalog/test`.
@@ -34,18 +56,17 @@ part: 2 of 3 (catalog service) — 2026-08-28-marketplace-feedback-worker.md is 
 **Worker (`wecoded-marketplace/worker`)**
 - `migrations/0006_catalog.sql` — `catalog_items`, `catalog_runs`.
 - `src/catalog/auth.ts` — `requireIngestToken`.
-- `src/catalog/routes.ts` — `catalogRoutes`: `GET /catalog`, `GET /catalog/:id`, `POST /admin/catalog/upsert`, `POST /admin/catalog/finish`, `GET /admin/catalog/last-run`.
-- `src/types.ts` — `CATALOG_INGEST_TOKEN`; `wrangler.toml` `[env.test.vars]`; `test/env.d.ts`; `.github/workflows/worker-deploy.yml` secret push.
+- `src/catalog/routes.ts` — `catalogRoutes`: `GET /catalog`, `GET /catalog/:id` (+ two-segment member form), `POST /admin/catalog/upsert`, `POST /admin/catalog/finish`, `GET /admin/catalog/shas`.
+- `src/types.ts` — `CATALOG_INGEST_TOKEN`, `CATALOG_ENABLED`; `wrangler.toml` `[vars]` + `[env.test.vars]`; `test/env.d.ts`; `.github/workflows/worker-deploy.yml` secret push.
 - `test/catalog.test.ts`, `test/catalog-auth.test.ts`, `test/schema.test.ts`, `test/cors.test.ts`.
 
 **Ingest (`wecoded-marketplace/scripts/catalog/`)**
 - `lib/http.mjs` — `getJson`, `getText`, `github` (auth + rate-limit aware), `postJson`.
 - `lib/entry.mjs` — `slug`, `makeEntry`, `licenseToSpdx`, `CATALOG_SOURCES`.
 - `lib/capabilities.mjs` — `scanFiles(files) → { capabilities, findings }`, `addsLine(components)`.
-- `lib/worker.mjs` — `startRun`, `upsertBatch`, `finishRun`, `lastRun`.
-- `sources/wecoded.mjs`, `sources/docker.mjs`, `sources/awesome-copilot.mjs`, `sources/cursorrules.mjs`, `sources/mcp-registry.mjs` — each exports `async function collect(ctx) → SkillEntry[]`.
-- `enrich.mjs` — GitHub stars / licence / HEAD sha for rows that lack them.
-- `build.mjs` — orchestrator (`--source <name>`, `--dry-run`, `--full`).
+- `lib/worker.mjs` — `shas`, `upsert` (batched), `finish`.
+- `sources/wecoded.mjs`, `sources/docker.mjs`, `sources/awesome-copilot.mjs`, `sources/cursorrules.mjs` — each exports `async function collect(ctx) → { entries, … }`.
+- `build.mjs` — orchestrator (`--source <name>`, `--dry-run`, `--force-rescan`).
 - `test/*.test.mjs` + `test/fixtures/*.json` (the samples captured on 2026-08-28).
 - `.github/workflows/catalog-ingest.yml`.
 - `docs/catalog.md` (repo-local reference), workspace `docs/registries.md` (Plan 3 edits it).
@@ -77,20 +98,22 @@ part: 2 of 3 (catalog service) — 2026-08-28-marketplace-feedback-worker.md is 
 -- and retire queries filter on.
 CREATE TABLE catalog_items (
   id TEXT PRIMARY KEY,
-  source TEXT NOT NULL,                -- wecoded | anthropic | mcp-registry | docker | awesome-copilot | cursorrules
+  source TEXT NOT NULL,                -- wecoded | anthropic | docker | awesome-copilot | cursorrules
   item_type TEXT NOT NULL,             -- plugin | skill | specialist | tool | prompt
   part_of_id TEXT,                     -- bundle id for member rows
-  slice INTEGER NOT NULL DEFAULT 1,    -- 1 = served by GET /catalog; 0 = stored, not shown (quality filter)
   deprecated INTEGER NOT NULL DEFAULT 0,
+  source_commit TEXT,                  -- the commit whose FILES were scanned; drives the
+                                       -- "only re-read what changed" skip in the ingest
   run_id TEXT NOT NULL,                -- the ingest run that last touched the row
   updated_at INTEGER NOT NULL,
   entry_json TEXT NOT NULL
 );
-CREATE INDEX idx_catalog_served ON catalog_items(deprecated, slice);
+CREATE INDEX idx_catalog_served ON catalog_items(deprecated);
 CREATE INDEX idx_catalog_source_run ON catalog_items(source, run_id);
 CREATE INDEX idx_catalog_part_of ON catalog_items(part_of_id);
 
--- One row per (source, run). finished_at NULL = still running / crashed.
+-- One row per (source, run). finished_at NULL = still running / crashed. Kept purely
+-- for "did the ingest run, and what did it do" — nothing reads it to make a decision.
 CREATE TABLE catalog_runs (
   id TEXT NOT NULL,
   source TEXT NOT NULL,
@@ -146,7 +169,14 @@ describe("ingest token", () => {
   // carries a fixed test value. Empty/absent → those routes answer 503.
   CATALOG_INGEST_TOKEN?: string;
 ```
-`worker/wrangler.toml` `[env.test.vars]` — add `CATALOG_INGEST_TOKEN = "test-ingest-token"`. `worker/test/env.d.ts` — add `CATALOG_INGEST_TOKEN?: string;`.
+`worker/src/types.ts` — also add the kill switch:
+```ts
+  // Kill switch for GET /catalog. "0" → 503, which both clients already handle by
+  // falling back to index.json. A bad ingest run reaches every device within the
+  // hour; this is the way to stop it with a commit instead of a code change.
+  CATALOG_ENABLED?: string;
+```
+`worker/wrangler.toml` — add `CATALOG_ENABLED = "1"` to the top-level `[vars]` block (next to `CUTOVER_TIMESTAMP`) **and** `CATALOG_INGEST_TOKEN = "test-ingest-token"` + `CATALOG_ENABLED = "1"` to `[env.test.vars]`. `worker/test/env.d.ts` — add `CATALOG_INGEST_TOKEN?: string;` and `CATALOG_ENABLED?: string;`.
 
 `worker/src/catalog/auth.ts`:
 ```ts
@@ -196,16 +226,31 @@ and mount it in `src/index.ts` (`import { catalogRoutes } from "./catalog/routes
 
 ---
 
-### Task 3: Admin ingest routes — upsert, finish, last-run
+### Task 3: Admin ingest routes — upsert (merging), finish, shas
 
 **Files:**
 - Modify: `worker/src/catalog/routes.ts`
 - Test: `worker/test/catalog.test.ts`
 
 **Interfaces:**
-- `POST /admin/catalog/upsert` body `{ source, run_id, entries: Array<SkillEntry & { catalog: CatalogMeta }>, slice?: Record<string, 0|1> }` (≤ 500 entries) → `{ ok: true, upserted: number }`. Creates the `catalog_runs` row on first sight of `(run_id, source)`. Each entry's `id`, `catalog.itemType`, `catalog.partOf?.id`, `deprecated` are read into columns; `slice` defaults to 1 unless `slice[id] === 0`.
+- `POST /admin/catalog/upsert` body `{ source, run_id, entries: Array<SkillEntry & { catalog: CatalogMeta }> }` (≤ 500 entries) → `{ ok: true, upserted: number }`. Creates the `catalog_runs` row on first sight of `(run_id, source)`. Each entry's `id`, `catalog.itemType`, `catalog.partOf?.id`, `catalog.sourceCommit`, `deprecated` are read into columns. **Merges, never clobbers** — see below.
 - `POST /admin/catalog/finish` body `{ source, run_id, note? }` → `{ ok: true, retired: number }`: rows of that source with `run_id != this run` become `deprecated = 1`; run row gets `finished_at`.
-- `GET /admin/catalog/last-run?source=…` → `{ run: { id, started_at, finished_at, upserted, retired } | null }` (last **finished** run).
+- `GET /admin/catalog/shas?source=…` → `{ shas: Record<id, sourceCommit> }` — what the catalog already has on file, so the ingest can skip re-downloading files for unchanged entries.
+
+**The merge rule (the important part of this task).** The incoming entry is merged onto the
+stored one before it is written:
+
+| Situation | Result |
+|---|---|
+| incoming `catalog.stars` / `license` / `sourceCommit` is absent, stored has one | keep the stored value |
+| incoming `catalog.scan.status === "unchecked"`, stored is `checked` or `caution` | keep the stored `scan` **including its `checkedAt`**, so the badge shows its real age |
+| incoming `catalog.capabilities` is absent or empty, stored has some | keep the stored list |
+| anything the incoming entry *does* state | wins |
+
+Why: a run that could not read a repo's files is not evidence that the repo became unsafe, and
+a run that ran out of GitHub budget is not evidence that a licence disappeared. Without this
+rule the badges and licences flap hour to hour and listings drop out of the grid for no reason
+a user could ever explain. With it, a degraded run simply changes nothing.
 
 - [ ] **Step 1: Failing tests** — `worker/test/catalog.test.ts`:
 
@@ -235,8 +280,8 @@ describe("catalog ingest routes", () => {
     ] });
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true, upserted: 2 });
-    const row = await env.DB.prepare("SELECT item_type, part_of_id, slice, run_id FROM catalog_items WHERE id = ?").bind("bundle/skill-a").first();
-    expect(row).toEqual({ item_type: "skill", part_of_id: "bundle", slice: 1, run_id: "r1" });
+    const row = await env.DB.prepare("SELECT item_type, part_of_id, run_id FROM catalog_items WHERE id = ?").bind("bundle/skill-a").first();
+    expect(row).toEqual({ item_type: "skill", part_of_id: "bundle", run_id: "r1" });
   });
 
   it("a second upsert of the same id replaces the row", async () => {
@@ -255,17 +300,61 @@ describe("catalog ingest routes", () => {
     expect(await res.json()).toEqual({ ok: true, retired: 1 });
     const b = await env.DB.prepare("SELECT deprecated FROM catalog_items WHERE id = 'docker-b'").first<{ deprecated: number }>();
     expect(b!.deprecated).toBe(1);
-    const last = await (await SELF.fetch("https://test.local/admin/catalog/last-run?source=docker", { headers: TOKEN })).json<{ run: { id: string; upserted: number; retired: number } | null }>();
-    expect(last.run).toMatchObject({ id: "r2", upserted: 1, retired: 1 });
+    const run = await env.DB.prepare("SELECT upserted, retired, finished_at FROM catalog_runs WHERE id = 'r2' AND source = 'docker'")
+      .first<{ upserted: number; retired: number; finished_at: number }>();
+    expect(run).toMatchObject({ upserted: 1, retired: 1 });
+    expect(run!.finished_at).toBeGreaterThan(0);
   });
 
-  it("honours slice=0 and rejects batches over 500 or without a source", async () => {
-    await post("/admin/catalog/upsert", { source: "mcp-registry", run_id: "r1", entries: [entry("mcp-z")], slice: { "mcp-z": 0 } });
-    const row = await env.DB.prepare("SELECT slice FROM catalog_items WHERE id = 'mcp-z'").first<{ slice: number }>();
-    expect(row!.slice).toBe(0);
+  it("rejects batches over 500 or without a source", async () => {
     const big = Array.from({ length: 501 }, (_, i) => entry(`e${i}`));
     expect((await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: big })).status).toBe(400);
     expect((await post("/admin/catalog/upsert", { run_id: "r1", entries: [entry("q")] })).status).toBe(400);
+  });
+
+  it("NEVER downgrades: a degraded run keeps the stored scan, licence, stars and commit", async () => {
+    const good = entry("keeper", { catalog: { itemType: "plugin", origin: { tier: "youcoded" },
+      scan: { status: "checked", checkedAt: "2026-08-28T00:00:00Z" },
+      capabilities: [{ kind: "shell", label: "Runs commands on your computer" }],
+      license: "MIT", sourceCommit: "abc1234", stars: 91 } });
+    await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r1", entries: [good] });
+
+    // r2 is what a rate-limited run emits: it could not read the files or the repo.
+    const degraded = entry("keeper", { catalog: { itemType: "plugin", origin: { tier: "youcoded" },
+      scan: { status: "unchecked" }, capabilities: [] } });
+    await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r2", entries: [degraded] });
+
+    const row = await env.DB.prepare("SELECT entry_json, source_commit, run_id FROM catalog_items WHERE id = 'keeper'")
+      .first<{ entry_json: string; source_commit: string; run_id: string }>();
+    const cat = JSON.parse(row!.entry_json).catalog;
+    expect(cat.scan).toEqual({ status: "checked", checkedAt: "2026-08-28T00:00:00Z" });
+    expect(cat.license).toBe("MIT");
+    expect(cat.stars).toBe(91);
+    expect(cat.sourceCommit).toBe("abc1234");
+    expect(cat.capabilities).toHaveLength(1);
+    expect(row!.source_commit).toBe("abc1234");
+    // …but the row was still touched, so `finish` will not retire it.
+    expect(row!.run_id).toBe("r2");
+  });
+
+  it("an UPGRADE still wins — a real scan replaces an unchecked one", async () => {
+    await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r1", entries: [entry("up")] });
+    const better = entry("up", { catalog: { itemType: "plugin", origin: { tier: "youcoded" },
+      scan: { status: "caution", checkedAt: "2026-08-28T01:00:00Z", findings: ["Downloads and runs code from the internet (install.sh)"] },
+      capabilities: [], license: "MIT", sourceCommit: "def5678" } });
+    await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r2", entries: [better] });
+    const cat = JSON.parse((await env.DB.prepare("SELECT entry_json FROM catalog_items WHERE id = 'up'").first<{ entry_json: string }>())!.entry_json).catalog;
+    expect(cat.scan.status).toBe("caution");
+    expect(cat.scan.findings).toHaveLength(1);
+  });
+
+  it("reports the commits it has on file so the ingest can skip unchanged entries", async () => {
+    await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r1", entries: [
+      entry("a", { catalog: { itemType: "plugin", origin: { tier: "youcoded" }, scan: { status: "checked" }, capabilities: [], sourceCommit: "aaa1111" } }),
+      entry("b"),
+    ] });
+    const { shas } = await (await SELF.fetch("https://test.local/admin/catalog/shas?source=wecoded", { headers: TOKEN })).json<{ shas: Record<string, string> }>();
+    expect(shas).toEqual({ a: "aaa1111" });
   });
 });
 ```
@@ -286,14 +375,48 @@ import { parseJsonBody } from "../lib/parse-json";
 
 export const catalogRoutes = new Hono<HonoEnv>();
 
-const SOURCES = new Set(["wecoded", "anthropic", "mcp-registry", "docker", "awesome-copilot", "cursorrules"]);
+const SOURCES = new Set(["wecoded", "anthropic", "docker", "awesome-copilot", "cursorrules"]);
 const MAX_BATCH = 500;
 
+interface IngestCatalog {
+  itemType?: string;
+  partOf?: { id?: string };
+  scan?: { status?: string; checkedAt?: string; findings?: string[] };
+  capabilities?: unknown[];
+  license?: string;
+  sourceCommit?: string;
+  stars?: number;
+  [k: string]: unknown;
+}
 interface IngestEntry {
   id?: string;
   deprecated?: boolean;
-  catalog?: { itemType?: string; partOf?: { id?: string } };
+  catalog?: IngestCatalog;
   [k: string]: unknown;
+}
+
+// THE MERGE RULE. An ingest run that could not read a repo's files is not evidence
+// that the repo became unsafe, and a run that ran out of GitHub budget is not
+// evidence that a licence vanished — so a field the incoming row does not state
+// keeps whatever is already on file, and an "unchecked" scan never overwrites a
+// real one. Consequence: a degraded run changes nothing instead of flipping badges
+// and dropping listings out of the grid for reasons no user could explain.
+const SCAN_RANK: Record<string, number> = { unchecked: 0, checked: 1, caution: 1 };
+function mergeOntoStored(incoming: IngestEntry, storedJson: string | null): IngestEntry {
+  if (!storedJson) return incoming;
+  let stored: IngestEntry;
+  try { stored = JSON.parse(storedJson) as IngestEntry; } catch { return incoming; }
+  const a = incoming.catalog ?? {};
+  const b = stored.catalog ?? {};
+  const merged: IngestCatalog = { ...b, ...a };
+  for (const k of ["license", "sourceCommit", "stars", "upstreamId"] as const) {
+    if (a[k] === undefined && b[k] !== undefined) merged[k] = b[k];
+  }
+  if ((SCAN_RANK[a.scan?.status ?? "unchecked"] ?? 0) < (SCAN_RANK[b.scan?.status ?? "unchecked"] ?? 0)) {
+    merged.scan = b.scan;                                    // keep the real verdict AND its age
+    if (!a.capabilities?.length && b.capabilities?.length) merged.capabilities = b.capabilities;
+  }
+  return { ...stored, ...incoming, catalog: merged };
 }
 
 async function ensureRun(db: D1Database, runId: string, source: string, now: number): Promise<void> {
@@ -302,7 +425,7 @@ async function ensureRun(db: D1Database, runId: string, source: string, now: num
 }
 
 catalogRoutes.post("/admin/catalog/upsert", requireIngestToken, async (c) => {
-  const body = await parseJsonBody<{ source?: string; run_id?: string; entries?: IngestEntry[]; slice?: Record<string, number> }>(c);
+  const body = await parseJsonBody<{ source?: string; run_id?: string; entries?: IngestEntry[] }>(c);
   if (!body.source || !SOURCES.has(body.source)) throw badRequest("unknown source");
   if (!body.run_id || body.run_id.length > 64) throw badRequest("invalid run_id");
   if (!Array.isArray(body.entries) || body.entries.length === 0) throw badRequest("entries must be a non-empty array");
@@ -310,18 +433,30 @@ catalogRoutes.post("/admin/catalog/upsert", requireIngestToken, async (c) => {
   const now = Math.floor(Date.now() / 1000);
   await ensureRun(c.env.DB, body.run_id, body.source, now);
 
+  // Read the stored JSON for this batch's ids in ONE query, so the merge costs a
+  // single extra round trip per 500 rows rather than one per row.
+  const ids = body.entries.map((e) => e.id).filter((x): x is string => typeof x === "string" && x.length > 0);
+  const placeholders = ids.map(() => "?").join(",");
+  const { results: existing } = ids.length
+    ? await c.env.DB.prepare(`SELECT id, entry_json FROM catalog_items WHERE id IN (${placeholders})`)
+        .bind(...ids).all<{ id: string; entry_json: string }>()
+    : { results: [] as Array<{ id: string; entry_json: string }> };
+  const stored = new Map(existing.map((r) => [r.id, r.entry_json]));
+
   const stmt = c.env.DB.prepare(
-    `INSERT INTO catalog_items (id, source, item_type, part_of_id, slice, deprecated, run_id, updated_at, entry_json)
+    `INSERT INTO catalog_items (id, source, item_type, part_of_id, deprecated, source_commit, run_id, updated_at, entry_json)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET source = excluded.source, item_type = excluded.item_type,
-       part_of_id = excluded.part_of_id, slice = excluded.slice, deprecated = excluded.deprecated,
+       part_of_id = excluded.part_of_id, deprecated = excluded.deprecated,
+       source_commit = excluded.source_commit,
        run_id = excluded.run_id, updated_at = excluded.updated_at, entry_json = excluded.entry_json`
   );
-  const batch = body.entries.map((e) => {
-    if (typeof e.id !== "string" || !e.id || e.id.length > 200) throw badRequest("entry without a valid id");
-    if (!e.catalog || typeof e.catalog.itemType !== "string") throw badRequest(`entry ${e.id} has no catalog.itemType`);
-    const slice = body.slice?.[e.id] === 0 ? 0 : 1;
-    return stmt.bind(e.id, body.source, e.catalog.itemType, e.catalog.partOf?.id ?? null, slice, e.deprecated ? 1 : 0, body.run_id, now, JSON.stringify(e));
+  const batch = body.entries.map((raw) => {
+    if (typeof raw.id !== "string" || !raw.id || raw.id.length > 200) throw badRequest("entry without a valid id");
+    if (!raw.catalog || typeof raw.catalog.itemType !== "string") throw badRequest(`entry ${raw.id} has no catalog.itemType`);
+    const e = mergeOntoStored(raw, stored.get(raw.id) ?? null);
+    return stmt.bind(e.id, body.source, e.catalog!.itemType, e.catalog!.partOf?.id ?? null, e.deprecated ? 1 : 0,
+      e.catalog!.sourceCommit ?? null, body.run_id, now, JSON.stringify(e));
   });
   await c.env.DB.batch(batch);
   await c.env.DB.prepare("UPDATE catalog_runs SET upserted = upserted + ? WHERE id = ? AND source = ?")
@@ -347,18 +482,26 @@ catalogRoutes.post("/admin/catalog/finish", requireIngestToken, async (c) => {
   return c.json({ ok: true, retired });
 });
 
-catalogRoutes.get("/admin/catalog/last-run", requireIngestToken, async (c) => {
+// What the catalog already has on file, so the ingest can skip re-downloading a
+// plugin's files when its commit has not moved. This one route is what turns a
+// ~6,000-request hourly job into a ~160-request one.
+catalogRoutes.get("/admin/catalog/shas", requireIngestToken, async (c) => {
   const source = c.req.query("source") ?? "";
   if (!SOURCES.has(source)) throw badRequest("unknown source");
-  const run = await c.env.DB
-    .prepare("SELECT id, started_at, finished_at, upserted, retired FROM catalog_runs WHERE source = ? AND finished_at IS NOT NULL ORDER BY finished_at DESC LIMIT 1")
-    .bind(source)
-    .first<{ id: string; started_at: number; finished_at: number; upserted: number; retired: number }>();
-  return c.json({ run: run ?? null });
+  const shas: Record<string, string> = {};
+  for (let offset = 0; ; offset += 1000) {
+    const { results } = await c.env.DB
+      .prepare("SELECT id, source_commit FROM catalog_items WHERE source = ? AND source_commit IS NOT NULL ORDER BY id LIMIT 1000 OFFSET ?")
+      .bind(source, offset)
+      .all<{ id: string; source_commit: string }>();
+    for (const r of results) shas[r.id] = r.source_commit;
+    if (results.length < 1000) break;
+  }
+  return c.json({ shas });
 });
 ```
 
-- [ ] **Step 4: Run** `npx vitest run test/catalog.test.ts test/catalog-auth.test.ts && npm run typecheck` → PASS. **Step 5: Commit** `git add src/catalog/routes.ts test/catalog.test.ts && git commit -m "feat(worker): catalog ingest — upsert / finish / last-run"`.
+- [ ] **Step 4: Run** `npx vitest run test/catalog.test.ts test/catalog-auth.test.ts && npm run typecheck` → PASS. **Step 5: Commit** `git add src/catalog/routes.ts test/catalog.test.ts && git commit -m "feat(worker): catalog ingest — merging upsert, finish, shas"`.
 
 ---
 
@@ -378,17 +521,47 @@ describe("GET /catalog", () => {
     for (const t of ["catalog_items", "catalog_runs"]) await env.DB.prepare(`DELETE FROM ${t}`).run();
   });
 
-  it("returns served rows only — not deprecated, not slice 0 — with a 5-minute cache header", async () => {
-    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("shown"), entry("hidden-slice"), entry("gone")], slice: { "hidden-slice": 0 } });
+  it("returns live rows only, with a 5-minute cache header and an ETag", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("shown"), entry("gone")] });
     await post("/admin/catalog/upsert", { source: "docker", run_id: "r2", entries: [entry("shown")] });
     await post("/admin/catalog/finish", { source: "docker", run_id: "r2" });
     const res = await SELF.fetch("https://test.local/catalog");
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("public, max-age=300");
+    expect(res.headers.get("etag")).toBeTruthy();
     const body = await res.json<{ generated_at: number; entries: Array<{ id: string; catalog: unknown }> }>();
     expect(body.entries.map((e) => e.id)).toEqual(["shown"]);
     expect(body.entries[0].catalog).toBeTruthy();
     expect(typeof body.generated_at).toBe("number");
+  });
+
+  it("answers 304 with an empty body when the client already has this version", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("a")] });
+    const first = await SELF.fetch("https://test.local/catalog");
+    const etag = first.headers.get("etag")!;
+    const again = await SELF.fetch("https://test.local/catalog", { headers: { "If-None-Match": etag } });
+    expect(again.status).toBe(304);
+    expect(await again.text()).toBe("");
+    // A new upsert moves the ETag, so the client fetches for real again.
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r2", entries: [entry("b")] });
+    const third = await SELF.fetch("https://test.local/catalog", { headers: { "If-None-Match": etag } });
+    expect(third.status).toBe(200);
+  });
+
+  it("the kill switch turns the catalog off without a code change", async () => {
+    // env is snapshotted at worker start, so drive the branch directly.
+    expect(catalogDisabled({ CATALOG_ENABLED: "0" })).toBe(true);
+    expect(catalogDisabled({ CATALOG_ENABLED: "1" })).toBe(false);
+    expect(catalogDisabled({})).toBe(false);
+  });
+
+  it("a bundle MEMBER id (with a slash) resolves", async () => {
+    await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r1", entries: [
+      entry("superpowers/brainstorming", { catalog: { itemType: "skill", partOf: { id: "superpowers", displayName: "Superpowers" }, origin: { tier: "verified" }, scan: { status: "unchecked" }, capabilities: [] } }),
+    ] });
+    const res = await SELF.fetch("https://test.local/catalog/superpowers/brainstorming");
+    expect(res.status).toBe(200);
+    expect((await res.json<{ entry: { id: string } }>()).entry.id).toBe("superpowers/brainstorming");
   });
 
   it("returns more than one internal page", async () => {
@@ -407,10 +580,15 @@ describe("GET /catalog", () => {
 });
 ```
 
+Import `catalogDisabled` at the top of `test/catalog.test.ts`:
+```ts
+import { catalogDisabled } from "../src/catalog/routes";
+```
+
 Append to `test/cors.test.ts` (same shape as the ratings origin test):
 ```ts
   it("GET /catalog and GET /catalog/:id accept any origin", async () => {
-    for (const p of ["/catalog", "/catalog/some-id"]) {
+    for (const p of ["/catalog", "/catalog/some-id", "/catalog/some-bundle/some-member"]) {
       const res = await SELF.fetch(`https://test.local${p}`, { headers: { Origin: "https://nowhere.example" } });
       expect(res.headers.get("access-control-allow-origin")).toBe("*");
     }
@@ -422,39 +600,75 @@ Append to `test/cors.test.ts` (same shape as the ratings origin test):
 - [ ] **Step 3: Implement** — append to `routes.ts`:
 
 ```ts
-// GET /catalog — everything the app shows. Read in pages of 500 so a large
-// catalog never trips D1's single-statement result cap; generated_at is the
-// newest updated_at so clients can tell whether anything changed.
+/** Kill switch — see wrangler.toml [vars] CATALOG_ENABLED. Exported so a test can
+ *  drive the branch: cloudflare:test snapshots env at worker start. */
+export function catalogDisabled(env: { CATALOG_ENABLED?: string }): boolean {
+  return env.CATALOG_ENABLED === "0";
+}
+
+// GET /catalog — everything the app shows. Read in pages of 500 so a large catalog
+// never trips D1's single-statement result cap.
+//
+// The stored JSON is CONCATENATED, not parsed and re-serialised: at a few thousand
+// rows the naive JSON.parse-then-c.json costs megabytes of pointless work on every
+// request. And the ETag is the point of the whole route — the response is several
+// MB, both clients refresh hourly (phones on mobile data), and *.workers.dev is not
+// served from Cloudflare's edge cache, so without a 304 every device pays full
+// price 24 times a day and every request re-reads every row out of D1.
 catalogRoutes.get("/catalog", async (c) => {
-  const entries: unknown[] = [];
+  if (catalogDisabled(c.env)) {
+    return c.text("catalog temporarily unavailable", 503);
+  }
+  const parts: string[] = [];
   let newest = 0;
   for (let offset = 0; ; offset += 500) {
     const { results } = await c.env.DB
-      .prepare("SELECT entry_json, updated_at FROM catalog_items WHERE deprecated = 0 AND slice = 1 ORDER BY id LIMIT 500 OFFSET ?")
+      .prepare("SELECT entry_json, updated_at FROM catalog_items WHERE deprecated = 0 ORDER BY id LIMIT 500 OFFSET ?")
       .bind(offset)
       .all<{ entry_json: string; updated_at: number }>();
-    for (const r of results) { entries.push(JSON.parse(r.entry_json)); if (r.updated_at > newest) newest = r.updated_at; }
+    for (const r of results) { parts.push(r.entry_json); if (r.updated_at > newest) newest = r.updated_at; }
     if (results.length < 500) break;
   }
+  const etag = `"cat-${newest}-${parts.length}"`;
   c.header("Cache-Control", "public, max-age=300");
-  return c.json({ generated_at: newest, entries });
+  c.header("ETag", etag);
+  if (c.req.header("If-None-Match") === etag) return c.body(null, 304);
+  c.header("Content-Type", "application/json");
+  return c.body(`{"generated_at":${newest},"entries":[${parts.join(",")}]}`);
 });
 
-catalogRoutes.get("/catalog/:id", async (c) => {
-  const id = c.req.param("id");
+async function oneEntry(c: Context<HonoEnv>, id: string) {
+  if (catalogDisabled(c.env)) return c.text("catalog temporarily unavailable", 503);
   const row = await c.env.DB.prepare("SELECT entry_json FROM catalog_items WHERE id = ? AND deprecated = 0")
-    .bind(id).first<{ entry_json: string }>();
+    .bind(validateId(id, "catalog id")).first<{ entry_json: string }>();
   if (!row) throw notFound("not found");
   c.header("Cache-Control", "public, max-age=300");
-  return c.json({ entry: JSON.parse(row.entry_json) });
-});
+  c.header("Content-Type", "application/json");
+  return c.body(`{"entry":${row.entry_json}}`);
+}
+
+// Two-segment form FIRST — a bundle member's id is `<bundle>/<name>` and Hono's
+// `:id` never matches across a slash.
+catalogRoutes.get("/catalog/:bundle/:name", (c) => oneEntry(c, `${c.req.param("bundle")}/${c.req.param("name")}`));
+catalogRoutes.get("/catalog/:id", (c) => oneEntry(c, c.req.param("id")));
 ```
+(add `import type { Context } from "hono";` and `import { validateId } from "../lib/validate";` to the file's imports.)
 
-`src/index.ts` `isPublicReadPath` — add `if (path === "/catalog") return true;` and `"/catalog/"` to the prefix list (member ids contain `/`, so for the catalog prefix allow one **or two** segments: `rest.split("/").length <= 2`). Because Hono's `:id` does not match a slash, register the member route explicitly: `catalogRoutes.get("/catalog/:bundle/:name", …)` that joins the two params with `/` and reuses the single-id handler (extract the body into `async function one(c, id)`).
+`src/index.ts` `isPublicReadPath` — add:
+```ts
+  if (path === "/catalog") return true;
+  if (path.startsWith("/catalog/")) {
+    const parts = path.slice("/catalog/".length).split("/");
+    return parts.length <= 2 && parts.every((p) => p.length > 0);
+  }
+```
+The `ETag` / `If-None-Match` pair also has to survive CORS: add `"If-None-Match"` to
+`allowHeaders` and `"ETag"` to `exposeHeaders` on the public-read CORS config, or Android's
+WebView will never see the header and will re-download the whole catalog every hour.
 
-- [ ] **Step 4: Run** `npm test && npm run typecheck` → PASS. **Step 5: Commit** `git add src/catalog/routes.ts src/index.ts test/catalog.test.ts test/cors.test.ts && git commit -m "feat(worker): GET /catalog + GET /catalog/:id (public, 5-min cache)"`.
+- [ ] **Step 4: Run** `npm test && npm run typecheck` → PASS. **Step 5: Commit** `git add src/catalog/routes.ts src/index.ts test/catalog.test.ts test/cors.test.ts && git commit -m "feat(worker): GET /catalog + GET /catalog/:id (public, ETag/304, kill switch)"`.
 
-Then push and open the PR (`feat(worker): catalog service — storage, ingest routes, public reads`) with the secret instruction from Task 2; **merge it before Task 11's first real run.** Body ends with the standard Claude Code footer.
+Then push and open the PR (`feat(worker): catalog service — storage, ingest routes, public reads`) with the secret instruction from Task 2; **merge it before Task 10's first real run.** Body ends with the standard Claude Code footer.
 
 ---
 
@@ -469,7 +683,9 @@ Then push and open the PR (`feat(worker): catalog service — storage, ingest ro
   /** The listing's id in its upstream registry (reverse-DNS MCP name, Docker
    *  slug, …) — shown in the detail footer, used by the ingest to dedupe. */
   upstreamId?: string;
-  /** GitHub stars at ingest time — the quality slice for mirrored sources. */
+  /** GitHub stars at ingest time, where the source reports them (Docker's
+   *  `metadata.githubStars`, our own repo lookups). Display and future ranking
+   *  only — nothing hides a listing based on it. */
   stars?: number;
 ```
 
@@ -486,8 +702,8 @@ Then push and open the PR (`feat(worker): catalog service — storage, ingest ro
 **Interfaces:**
 - `http.mjs`: `getJson(url, {headers?}) → any` (throws `Error("GET <url> → <status>")`), `getText(url)`, `postJson(url, body, {headers?})`, `github(pathOrUrl) → any` (adds `Authorization: Bearer ${process.env.GITHUB_TOKEN}` + `Accept: application/vnd.github+json`, tracks `x-ratelimit-remaining` in `github.remaining`, throws `RateLimited` when < 200), `githubRaw(owner, repo, sha, path) → string`.
 - `entry.mjs`: `slug(s) → string` (lowercase, `[^a-z0-9_-]` → `-`, collapse, trim); `licenseToSpdx(name) → string | undefined`; `makeEntry({ id, itemType, displayName, description, author, repoUrl, sourceType, sourceRef, sourceSubdir?, sourceCommit?, origin, mirroredFrom?, license?, upstreamId?, stars?, capabilities, scan, partOf?, tags?, category?, tagline?, prompt?, components? }) → SkillEntry` filling `type`, `version`, `publishedAt`, `sourceMarketplace`, `visibility`… exactly the fields `index.json` rows carry today plus `catalog`.
-- `worker.mjs`: `createWorkerClient({ host, token }) → { lastRun(source), upsert(source, runId, entries, slice?), finish(source, runId, note?) }`; `upsert` splits into batches of 500 and returns the total.
-- `build.mjs`: `node scripts/catalog/build.mjs --source docker [--dry-run] [--full]`; without `--source` runs all; `--dry-run` writes `catalog-dry-run.json` and never POSTs.
+- `worker.mjs`: `createWorkerClient({ host, token }) → { shas(source), upsert(source, runId, entries), finish(source, runId, note?) }`; `upsert` splits into batches of 500 and returns the total.
+- `build.mjs`: `node scripts/catalog/build.mjs --source docker [--dry-run] [--force-rescan]`; without `--source` runs all; `--dry-run` writes `catalog-dry-run-<source>.json` and never POSTs; `--force-rescan` ignores the stored commits and re-reads every file (use it after a change to `capabilities.mjs`, not routinely).
 
 - [ ] **Step 1: Failing tests**
 
@@ -512,6 +728,7 @@ test("licenseToSpdx maps Docker's free-text names and passes SPDX through", () =
 
 test("makeEntry emits the index.json shape plus catalog", () => {
   const e = makeEntry({
+    source: "docker",
     id: "docker-brave", itemType: "tool", displayName: "Brave Search", description: "d", author: "brave",
     repoUrl: "https://github.com/brave/brave-search-mcp-server", sourceType: "mcp-registry", sourceRef: "docker:mcp/brave-search",
     origin: "verified", mirroredFrom: "Docker MCP Catalog", license: "MIT", upstreamId: "brave", capabilities: [], scan: { status: "unchecked" },
@@ -561,8 +778,10 @@ test("a non-2xx from the Worker throws with the body", async () => {
 `scripts/catalog/lib/http.mjs`:
 ```js
 // Tiny fetch helpers — no deps, like scripts/sync.js. GitHub calls are
-// authenticated (60/hr unauthenticated does not survive an enrichment pass)
-// and rate-limit aware: below 200 remaining we stop rather than get banned.
+// authenticated (60/hr unauthenticated is not survivable) and rate-limit aware:
+// below 200 remaining we stop rather than get banned. The budget is 1,000/hr per
+// repository for Actions' GITHUB_TOKEN, so hitting this is a signal that the
+// "only re-read what changed" skip has stopped working — not a reason to raise it.
 export class RateLimited extends Error {}
 
 async function check(res, url) {
@@ -607,7 +826,7 @@ export function githubRaw(owner, repo, sha, path) {
 ```js
 // The shape the app reads: today's index.json row + `catalog`. Keep in step
 // with desktop/src/shared/types.ts SkillEntry and catalog-types.ts CatalogMeta.
-export const CATALOG_SOURCES = ["wecoded", "anthropic", "mcp-registry", "docker", "awesome-copilot", "cursorrules"];
+export const CATALOG_SOURCES = ["wecoded", "anthropic", "docker", "awesome-copilot", "cursorrules"];
 
 export function slug(s) {
   return String(s).toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
@@ -630,7 +849,7 @@ export function licenseToSpdx(name) {
   return SPDX.get(k) ?? (/^[A-Za-z0-9.+-]+$/.test(name.trim()) ? name.trim() : undefined);
 }
 
-const SOURCE_MARKETPLACE = { wecoded: "youcoded", anthropic: "anthropic", "mcp-registry": "mcp-registry", docker: "docker", "awesome-copilot": "awesome-copilot", cursorrules: "cursorrules" };
+const SOURCE_MARKETPLACE = { wecoded: "youcoded", anthropic: "anthropic", docker: "docker", "awesome-copilot": "awesome-copilot", cursorrules: "cursorrules" };
 
 /** Build one catalog row. `source` is the ingest source name; everything the UI
  *  reads lives under `catalog`. Fields absent from the input are omitted, not
@@ -669,7 +888,7 @@ export function makeEntry(o) {
   return entry;
 }
 ```
-(`source` is the ingest source; `makeEntry` callers pass it as `o.source`. Fix the test's expectation accordingly: pass `source: "docker"` in the `makeEntry` call in `entry.test.mjs`.)
+(`source` is the ingest source and every `makeEntry` caller passes it as `o.source` — the test above does too.)
 
 `scripts/catalog/lib/worker.mjs`:
 ```js
@@ -683,13 +902,13 @@ export function createWorkerClient({ host, token, fetchImpl = fetch }) {
     return text ? JSON.parse(text) : {};
   }
   return {
-    lastRun: (source) => call("GET", `/admin/catalog/last-run?source=${encodeURIComponent(source)}`).then((r) => r.run),
-    async upsert(source, runId, entries, slice) {
+    // Commits the catalog already has on file, keyed by id — the input to the
+    // "only re-read what changed" skip in every source.
+    shas: (source) => call("GET", `/admin/catalog/shas?source=${encodeURIComponent(source)}`).then((r) => r.shas ?? {}),
+    async upsert(source, runId, entries) {
       let total = 0;
       for (let i = 0; i < entries.length; i += 500) {
-        const chunk = entries.slice(i, i + 500);
-        const sub = slice ? Object.fromEntries(chunk.filter((e) => slice[e.id] === 0).map((e) => [e.id, 0])) : undefined;
-        const r = await call("POST", "/admin/catalog/upsert", { source, run_id: runId, entries: chunk, ...(sub && Object.keys(sub).length ? { slice: sub } : {}) });
+        const r = await call("POST", "/admin/catalog/upsert", { source, run_id: runId, entries: entries.slice(i, i + 500) });
         total += r.upserted;
       }
       return total;
@@ -703,7 +922,7 @@ export function createWorkerClient({ host, token, fetchImpl = fetch }) {
 ```js
 #!/usr/bin/env node
 // Catalog ingest — pulls every source, normalises, upserts to the Worker.
-//   node scripts/catalog/build.mjs [--source <name>] [--dry-run] [--full]
+//   node scripts/catalog/build.mjs [--source <name>] [--dry-run] [--force-rescan]
 // Env: CATALOG_INGEST_TOKEN (required unless --dry-run), GITHUB_TOKEN (required),
 //      CATALOG_HOST (default https://wecoded-marketplace-api.destinj101.workers.dev)
 import fs from "node:fs";
@@ -714,7 +933,7 @@ const args = new Set(process.argv.slice(2));
 const pick = (flag) => { const i = process.argv.indexOf(flag); return i >= 0 ? process.argv[i + 1] : undefined; };
 const only = pick("--source");
 const dryRun = args.has("--dry-run");
-const full = args.has("--full");
+const forceRescan = args.has("--force-rescan");
 const host = process.env.CATALOG_HOST ?? "https://wecoded-marketplace-api.destinj101.workers.dev";
 
 const SOURCES = {
@@ -722,7 +941,6 @@ const SOURCES = {
   docker: () => import("./sources/docker.mjs"),
   "awesome-copilot": () => import("./sources/awesome-copilot.mjs"),
   cursorrules: () => import("./sources/cursorrules.mjs"),
-  "mcp-registry": () => import("./sources/mcp-registry.mjs"),
 };
 
 const runId = `${new Date().toISOString().replace(/[-:T]/g, "").slice(0, 14)}-${process.env.GITHUB_RUN_ID ?? "local"}`;
@@ -735,14 +953,23 @@ for (const name of names) {
   const started = Date.now();
   try {
     const { collect } = await SOURCES[name]();
-    const lastRun = client ? await client.lastRun(name) : null;
-    const { entries, slice = {}, sources: subSources } = await collect({ lastRun, full, log: (m) => console.log(`[${name}] ${m}`) });
-    // A source may emit rows under several Worker sources (wecoded emits
-    // "wecoded" and "anthropic"); group and upsert per Worker source.
+    // What the catalog already knows, so the source can skip re-reading files
+    // whose commit has not moved. A source that emits under several Worker
+    // sources (wecoded → "wecoded" + "anthropic") gets both maps merged.
+    let known = {};
+    if (client && !forceRescan) {
+      for (const src of name === "wecoded" ? ["wecoded", "anthropic"] : [name]) {
+        Object.assign(known, await client.shas(src));
+      }
+    }
+    // skipFinish: the source is byte-identical to last run and emitted nothing.
+    // It must NOT reach `finish`, which would retire every one of its rows.
+    const { entries, sources: subSources, skipFinish } = await collect({ known, log: (m) => console.log(`[${name}] ${m}`) });
     const groups = subSources ?? { [name]: entries };
     for (const [src, rows] of Object.entries(groups)) {
       if (dryRun) { fs.writeFileSync(`catalog-dry-run-${src}.json`, JSON.stringify(rows, null, 2)); console.log(`[${src}] dry-run: ${rows.length} rows`); continue; }
-      const upserted = await client.upsert(src, runId, rows, slice);
+      if (!rows.length && skipFinish) { console.log(`[${src}] unchanged — nothing to do`); continue; }
+      const upserted = await client.upsert(src, runId, rows);
       const { retired } = await client.finish(src, runId);
       report.sources[src] = { upserted, retired, ms: Date.now() - started };
       console.log(`[${src}] upserted ${upserted}, retired ${retired}`);
@@ -919,7 +1146,9 @@ export function addsLine(c) {
 
 **Interfaces:**
 - `collect({ log }) → { entries, sources: { wecoded: SkillEntry[], anthropic: SkillEntry[] } }` — reads `index.json` at the repo root (the output of `sync.js`), drops `deprecated`, and for every plugin emits: the bundle row (`itemType: 'plugin'`, origin `youcoded` for `sourceMarketplace === 'youcoded'`, else `verified` with `mirroredFrom: 'anthropics/claude-plugins-official'`), plus member rows: `components.skills[]` → `skill`, `components.agents[]` → `specialist`, `hasMcpConfig || mcpServers.length` → one `tool` row named `<displayName> (connection)`. Members: id `<bundle>/<name>`, `partOf`, inherit origin/scan/license/commit, `capabilities: []`.
-- File fetch for scanning: `local` → read from the repo checkout (`<sourceRef>/`), `url`/`git-subdir` → GitHub Tree at `sourceSha` (or `/commits/HEAD` → sha) then raw fetch of: `.mcp.json`, `hooks/hooks.json`, `.claude-plugin/plugin.json`, and up to 20 files under `scripts/`, `hooks/`, `bin/` with `SCRIPT_EXT`, each ≤ 64 KB. `scan.status`: `caution`/`checked` when fetched; `unchecked` when the fetch failed (log why).
+- **Version resolution — read this before writing the code.** `sourceCommit` must be the repo's **current HEAD**, resolved this run, and *never* the `sourceSha` already sitting in `index.json`. 236 of the 302 live entries carry a `sourceSha` that `sync.js` stamped whenever it last ran; re-using it would pin the catalog — and therefore every install (Plan 3 Task 2) — to a months-old commit that never moves again, so the Update button would re-fetch the same frozen version forever and report success. HEAD comes from the same cached `/repos/{o}/{r}` call that supplies stars and licence (`default_branch` → `/commits/{branch}`, or just `/commits/HEAD`), one per distinct repo per run. `sourceSha` is only a last-resort display value if the lookup fails.
+- **Only re-read what changed.** `collect` receives `known` — `{ id: sourceCommit }` from the Worker. When the resolved HEAD equals `known[id]`, the entry is emitted **without** `capabilities` and with `scan` omitted, and no files are downloaded; the Worker's merge rule (Task 3) keeps the stored verdict and its `checkedAt`. This is the difference between ~6,000 raw fetches an hour and a few dozen. `--force-rescan` bypasses it.
+- File fetch for scanning (only for entries whose HEAD moved): `local` → read from the repo checkout (`<sourceRef>/`), `url`/`git-subdir` → GitHub Tree at the resolved sha then raw fetch of: `.mcp.json`, `hooks/hooks.json`, `.claude-plugin/plugin.json`, and up to 20 files under `scripts/`, `hooks/`, `bin/` with `SCRIPT_EXT`, each ≤ 64 KB. `scan.status`: `caution`/`checked` when fetched; `unchecked` when the fetch failed (log why) — and the merge rule makes that harmless for an entry that was previously checked.
 - Licence: `local` → the repo's LICENSE (MIT — hard-code `MIT` for `sourceMarketplace === 'youcoded'`); GitHub → `/repos/{o}/{r}` `license.spdx_id` (guard null / `NOASSERTION`), cached per repo within the run. Stars from the same call.
 
 - [ ] **Step 1: Failing test** — `scripts/catalog/test/wecoded.test.mjs`:
@@ -931,7 +1160,7 @@ import { normalise } from "../sources/wecoded.mjs";
 import sample from "./fixtures/index-sample.json" with { type: "json" };
 
 test("normalise emits a bundle row + member rows with partOf", () => {
-  const fake = { files: async () => ({ ok: true, files: [{ path: "SKILL.md", text: "hi" }] }), repo: async () => ({ stars: 12, license: "MIT", sha: "abc1234" }) };
+  const fake = { files: async () => ({ ok: true, files: [{ path: "SKILL.md", text: "hi" }] }), repo: async () => ({ stars: 12, license: "MIT", head: "abc1234" }) };
   const rows = normalise(sample, fake.files, fake.repo);
   return rows.then((out) => {
     const bundles = out.filter((r) => r.catalog.itemType === "plugin");
@@ -941,7 +1170,7 @@ test("normalise emits a bundle row + member rows with partOf", () => {
     const an = bundles.find((b) => b.sourceMarketplace === "anthropic");
     assert.equal(an.catalog.origin.tier, "verified");
     assert.equal(an.catalog.origin.mirroredFrom, "anthropics/claude-plugins-official");
-    assert.equal(an.catalog.sourceCommit, an.sourceSha ?? "abc1234");
+    assert.equal(an.catalog.sourceCommit, "abc1234");   // today's HEAD, not the frozen sourceSha
     const members = out.filter((r) => r.catalog.partOf);
     assert.ok(members.length >= 3);
     const skill = members.find((m) => m.catalog.itemType === "skill");
@@ -957,6 +1186,28 @@ test("normalise emits a bundle row + member rows with partOf", () => {
 test("a failed file fetch leaves the bundle unchecked, never checked", async () => {
   const rows = await normalise(sample, async () => ({ ok: false, files: [] }), async () => null);
   assert.ok(rows.filter((r) => !r.catalog.partOf).every((b) => b.catalog.scan.status === "unchecked"));
+});
+
+test("pins to today's HEAD, never to the stale sourceSha in index.json", async () => {
+  const repo = async () => ({ stars: 1, license: "MIT", head: "newhead1" });
+  const rows = await normalise(sample, async () => ({ ok: true, files: [] }), repo);
+  const external = rows.filter((r) => !r.catalog.partOf && r.sourceMarketplace === "anthropic");
+  assert.ok(external.length > 0);
+  for (const b of external) {
+    assert.equal(b.catalog.sourceCommit, "newhead1");
+    assert.notEqual(b.catalog.sourceCommit, b.sourceSha);   // the frozen value must NOT win
+  }
+});
+
+test("an unchanged entry downloads nothing and states no scan (the merge rule keeps it)", async () => {
+  let fetches = 0;
+  const repo = async () => ({ stars: 1, license: "MIT", head: "samehead" });
+  const known = Object.fromEntries(sample.filter((e) => !e.deprecated).map((e) => [e.id, "samehead"]));
+  const rows = await normalise(sample, async () => { fetches++; return { ok: true, files: [] }; }, repo, known);
+  assert.equal(fetches, 0);
+  const bundles = rows.filter((r) => !r.catalog.partOf);
+  assert.ok(bundles.every((b) => b.catalog.scan === undefined));
+  assert.ok(bundles.every((b) => (b.catalog.capabilities ?? []).length === 0));
 });
 ```
 
@@ -987,7 +1238,7 @@ function parseRepo(url) {
 
 /** Files worth scanning for one plugin. Returns { ok, files } — ok=false means
  *  "could not read", which must surface as scan.status 'unchecked'. */
-export async function fetchFiles(entry) {
+export async function fetchFiles(entry, sha) {
   const wanted = (p) => /^(\.mcp\.json|hooks\/hooks\.json|\.claude-plugin\/plugin\.json)$/.test(p) || (/^(scripts|hooks|bin)\//.test(p) && SCRIPT_EXT.test(p));
   if (entry.sourceType === "local") {
     const dir = path.join(ROOT, entry.sourceRef);
@@ -998,10 +1249,8 @@ export async function fetchFiles(entry) {
     return { ok: true, files, sha: undefined };
   }
   const gh = parseRepo(entry.sourceRef);
-  if (!gh) return { ok: false, files: [] };
+  if (!gh || !sha) return { ok: false, files: [] };
   try {
-    const sha = entry.sourceSha ?? (await github(`/repos/${gh.owner}/${gh.repo}/commits/HEAD`))?.sha;
-    if (!sha) return { ok: false, files: [] };
     const tree = await github(`/repos/${gh.owner}/${gh.repo}/git/trees/${sha}?recursive=1`);
     const prefix = entry.sourceSubdir ? entry.sourceSubdir.replace(/\/$/, "") + "/" : "";
     const paths = (tree?.tree ?? []).filter((t) => t.type === "blob" && t.path.startsWith(prefix)).map((t) => t.path.slice(prefix.length)).filter(wanted).slice(0, MAX_FILES);
@@ -1021,19 +1270,36 @@ export function repoFacts() {
     if (!gh) return null;
     const key = `${gh.owner}/${gh.repo}`;
     if (!cache.has(key)) {
-      cache.set(key, github(`/repos/${key}`).then((r) => r ? { stars: r.stargazers_count, license: r.license?.spdx_id && r.license.spdx_id !== "NOASSERTION" ? r.license.spdx_id : undefined, pushedAt: r.pushed_at } : null).catch(() => null));
+      // One call per distinct repo per run — 153 across the 237 live url/git-subdir
+      // entries. `head` is the CURRENT tip: the catalog pins to what the author
+      // publishes today, never to the stale sourceSha in index.json (see Interfaces).
+      cache.set(key, github(`/repos/${key}`)
+        .then(async (r) => r ? {
+          stars: r.stargazers_count,
+          license: r.license?.spdx_id && r.license.spdx_id !== "NOASSERTION" ? r.license.spdx_id : undefined,
+          pushedAt: r.pushed_at,
+          head: (await github(`/repos/${key}/commits/${r.default_branch}`))?.sha,
+        } : null)
+        .catch(() => null));
     }
     return cache.get(key);
   };
 }
 
-export async function normalise(index, files = fetchFiles, repo = repoFacts()) {
+export async function normalise(index, files = fetchFiles, repo = repoFacts(), known = {}) {
   const out = [];
+  let skipped = 0;
   for (const e of index) {
     if (e.deprecated || e.type === "prompt") continue;
     const isOurs = e.sourceMarketplace === "youcoded";
     const facts = isOurs ? { license: "MIT" } : (await repo(e.repoUrl ?? e.sourceRef)) ?? {};
-    const fetched = await files(e);
+    // The version we are listing: today's HEAD. NEVER e.sourceSha — see Interfaces.
+    const sourceCommit = facts.head ?? (isOurs ? undefined : e.sourceSha);
+    // Unchanged since the catalog last looked → emit the row with no scan and no
+    // capabilities and download nothing; the Worker's merge rule keeps what it has.
+    const unchanged = !!sourceCommit && known[e.id] === sourceCommit;
+    if (unchanged) skipped++;
+    const fetched = unchanged ? { ok: false, files: [], skipped: true } : await files(e, sourceCommit);
     const scanned = fetched.ok ? scanFiles(fetched.files, { title: e.displayName }) : null;
     const caps = [];
     if (scanned) {
@@ -1045,7 +1311,6 @@ export async function normalise(index, files = fetchFiles, repo = repoFacts()) {
     const scan = scanned
       ? (scanned.findings.length ? { status: "caution", checkedAt: new Date().toISOString(), findings: scanned.findings } : { status: "checked", checkedAt: new Date().toISOString() })
       : { status: "unchecked" };
-    const sourceCommit = e.sourceSha ?? fetched.sha;
     const base = {
       source: isOurs ? "wecoded" : "anthropic",
       origin: isOurs ? "youcoded" : "verified",
@@ -1055,7 +1320,10 @@ export async function normalise(index, files = fetchFiles, repo = repoFacts()) {
       version: e.version, publishedAt: e.publishedAt,
     };
     out.push(makeEntry({ ...base, id: e.id, itemType: "plugin", displayName: e.displayName, description: e.description, tagline: e.tagline, longDescription: e.longDescription,
-      sourceType: e.sourceType, sourceRef: e.sourceRef, sourceSubdir: e.sourceSubdir, sourceSha: e.sourceSha, components: e.components, capabilities: caps, scan }));
+      sourceType: e.sourceType, sourceRef: e.sourceRef, sourceSubdir: e.sourceSubdir, sourceSha: e.sourceSha, components: e.components,
+      // A skipped entry states nothing about its files; the Worker keeps the stored
+      // scan and capabilities rather than downgrading them to "Not checked".
+      capabilities: unchanged ? undefined : caps, scan: unchanged ? undefined : scan }));
     const member = (itemType, name, displayName, description) => out.push(makeEntry({ ...base, id: `${e.id}/${name}`, itemType, displayName, description,
       sourceType: e.sourceType, sourceRef: e.sourceRef, sourceSubdir: e.sourceSubdir, pluginName: e.id, partOf: { id: e.id, displayName: e.displayName }, capabilities: [], scan }));
     const c = e.components ?? {};
@@ -1068,10 +1336,10 @@ export async function normalise(index, files = fetchFiles, repo = repoFacts()) {
 
 const titleCase = (s) => s.replace(/[-_]/g, " ").replace(/^./, (ch) => ch.toUpperCase());
 
-export async function collect({ log }) {
+export async function collect({ log, known = {} }) {
   const index = JSON.parse(fs.readFileSync(path.join(ROOT, "index.json"), "utf8"));
   log(`index.json: ${index.length} rows`);
-  const rows = await normalise(index);
+  const rows = await normalise(index, fetchFiles, repoFacts(), known);
   const sources = { wecoded: rows.filter((r) => r.sourceMarketplace === "youcoded"), anthropic: rows.filter((r) => r.sourceMarketplace === "anthropic") };
   log(`wecoded ${sources.wecoded.length}, anthropic ${sources.anthropic.length}`);
   return { entries: rows, sources };
@@ -1080,7 +1348,7 @@ export async function collect({ log }) {
 
 Member descriptions are generic here; the ingest reads each `SKILL.md`'s frontmatter `description` in a follow-up (one raw fetch per skill — 2,000 calls, out of the hourly budget; ROADMAP).
 
-- [ ] **Step 4: Run** `node --test scripts/catalog/test/` → PASS. Then a real dry run: `GITHUB_TOKEN=$(gh auth token) node scripts/catalog/build.mjs --source wecoded --dry-run` → writes `catalog-dry-run-wecoded.json` and `catalog-dry-run-anthropic.json`; open one bundle and eyeball `catalog.capabilities` against its repo. Add `catalog-dry-run-*.json` and `catalog-report.json` to `.gitignore`.
+- [ ] **Step 4: Run** `node --test scripts/catalog/test/` → PASS. Then a real dry run: `GITHUB_TOKEN=$(gh auth token) node scripts/catalog/build.mjs --source wecoded --dry-run` → writes `catalog-dry-run-wecoded.json` and `catalog-dry-run-anthropic.json`; open one bundle and eyeball `catalog.capabilities` against its repo, **and check that `catalog.sourceCommit` matches that repo's current branch tip on GitHub, not the entry's `sourceSha`.** Add `catalog-dry-run-*.json` and `catalog-report.json` to `.gitignore`.
 
 - [ ] **Step 5: Commit** `git add scripts/catalog .gitignore && git commit -m "feat(catalog): wecoded source — bundles, members, scan"`.
 
@@ -1279,8 +1547,16 @@ export function normalise(files, { sha }) {
   });
 }
 
-export async function collect({ log }) {
+export async function collect({ log, known = {} }) {
   const head = await github(`/repos/${REPO}/commits/HEAD`);
+  // 257 files that change roughly never. If the repo tip has not moved since the
+  // catalog last read it, download nothing — re-emitting them would be ~257
+  // pointless raw fetches an hour. One sample id is enough to tell.
+  const sampled = Object.keys(known).find((k) => k.startsWith("cursorrules-"));
+  if (sampled && known[sampled] === head.sha) {
+    log(`unchanged at ${head.sha.slice(0, 7)} — skipping`);
+    return { entries: [], skipFinish: true };
+  }
   const tree = (await github(`/repos/${REPO}/git/trees/${head.sha}?recursive=1`))?.tree ?? [];
   const paths = tree.filter((t) => t.type === "blob" && /^rules\/[^/]+\.mdc$/.test(t.path)).map((t) => t.path);
   const files = [];
@@ -1297,146 +1573,12 @@ export async function collect({ log }) {
 
 ---
 
-### Task 10: Source — official MCP Registry, with the quality slice + enrichment
-
-**Files:**
-- Create: `scripts/catalog/sources/mcp-registry.mjs`, `scripts/catalog/enrich.mjs`
-- Test: `scripts/catalog/test/mcp-registry.test.mjs` with fixture `mcp-registry-sample.json` (the two `servers[]` objects from 2026-08-28: one with `packages`, one remote-only).
-
-**Interfaces:**
-- `normalise(servers, { dockerRepos: Set<string>, stars: Map<string, number> }) → { entries, slice }` — one `tool` row per `servers[].server` whose `_meta["io.modelcontextprotocol.registry/official"].status === "active"`; id `mcp-<slug(name)>`; `upstreamId: name`; origin `verified` when `repository.source === "github"` (the registry proved namespace ownership) else `community`; capabilities from `packages[].environmentVariables[]` (`isSecret` → secret; others → `adds`-style "Configured with X"), `packages[].registryType/identifier` → `adds` "Runs as npm package @x/y" / "Runs as Python package …" / "Runs as Docker image …", `remotes[].url` host → network, `remotes[].headers[].isSecret` → secret; `scan: unchecked`; `stars` from the map; `slice[id] = 0` unless `stars >= 25` or the repo (owner/name lowercased) is in `dockerRepos`.
-- `collect({ lastRun, full, log })` — pages `/v0.1/servers?version=latest&limit=100` with `cursor`; adds `updated_since=<lastRun.finished_at ISO>` unless `full`; **status is filtered client-side** (the query param is ignored by the registry). On a delta run, `finish` must NOT retire the untouched rows — so a delta run returns `{ entries, slice, noRetire: true }` and `build.mjs` skips `finish` when `noRetire` (add that branch: `if (!noRetire) await client.finish(...)`; otherwise log "delta run — no retire").
-- `enrich.mjs` — `GET /admin/catalog/…` is not needed: enrichment runs inside `collect` for up to 400 repos per run that have no `stars` yet, in `updated_at` order, via `github('/repos/{o}/{r}')`, stopping on `RateLimited`. Persist by re-upserting those rows (they are in the run anyway).
-
-- [ ] **Step 1: Failing test** — `scripts/catalog/test/mcp-registry.test.mjs`:
-
-```js
-import { test } from "node:test";
-import assert from "node:assert/strict";
-import sample from "./fixtures/mcp-registry-sample.json" with { type: "json" };
-import { normalise } from "../sources/mcp-registry.mjs";
-
-test("normalise: id, verified-by-namespace, package + secret capabilities, slice by stars/docker", () => {
-  const { entries, slice } = normalise(sample.servers, { dockerRepos: new Set(), stars: new Map([["agenttrust/mcp-server", 40]]) });
-  const a = entries.find((e) => e.catalog.upstreamId === "ai.agenttrust/mcp-server");
-  assert.equal(a.id, "mcp-ai-agenttrust-mcp-server");
-  assert.equal(a.catalog.itemType, "tool");
-  assert.equal(a.catalog.origin.tier, "verified");
-  assert.equal(a.catalog.origin.mirroredFrom, "Official MCP Registry");
-  assert.equal(a.repoUrl, "https://github.com/agenttrust/mcp-server");
-  assert.ok(a.catalog.capabilities.some((c) => c.kind === "secret" && c.detail === "AGENTTRUST_API_KEY"));
-  assert.ok(a.catalog.capabilities.some((c) => c.kind === "adds" && /npm package @agenttrust\/mcp-server/.test(c.label)));
-  assert.equal(a.catalog.stars, 40);
-  assert.equal(slice[a.id], undefined);                       // served
-  const remote = entries.find((e) => e.catalog.upstreamId !== "ai.agenttrust/mcp-server");
-  assert.ok(remote.catalog.capabilities.some((c) => c.kind === "network"));
-  assert.equal(slice[remote.id], 0);                            // no stars, not in docker → stored, not shown
-});
-
-test("deprecated / deleted servers are skipped", () => {
-  const dep = JSON.parse(JSON.stringify(sample.servers[0]));
-  dep._meta["io.modelcontextprotocol.registry/official"].status = "deprecated";
-  const { entries } = normalise([dep], { dockerRepos: new Set(), stars: new Map() });
-  assert.equal(entries.length, 0);
-});
-```
-
-- [ ] **Step 2: Run** → FAIL.
-
-- [ ] **Step 3: Implement** `sources/mcp-registry.mjs`:
-
-```js
-// Official MCP Registry — CC0 data, invites sub-registries (ToS §10–11).
-// Ingested in FULL, served only above the quality bar (stars ≥ 25 or also in
-// Docker's catalog) so the app's grid is not 25,000 unstarred rows.
-import { getJson, github, RateLimited } from "../lib/http.mjs";
-import { makeEntry, slug } from "../lib/entry.mjs";
-const BASE = "https://registry.modelcontextprotocol.io/v0.1/servers";
-const META = "io.modelcontextprotocol.registry/official";
-const MIN_STARS = 25, ENRICH_PER_RUN = 400;
-
-const repoKey = (url) => { const m = String(url ?? "").match(/github\.com\/([^/]+)\/([^/.#?]+)/); return m ? `${m[1]}/${m[2]}`.toLowerCase() : null; };
-
-export function normalise(servers, { dockerRepos, stars }) {
-  const entries = [], slice = {};
-  for (const item of servers) {
-    const s = item.server ?? item;
-    const meta = item._meta?.[META] ?? {};
-    if (meta.status && meta.status !== "active") continue;
-    if (meta.isLatest === false) continue;
-    const key = repoKey(s.repository?.url);
-    const title = s.title || s.name.split("/").pop();
-    const caps = [];
-    for (const p of s.packages ?? []) {
-      const what = { npm: `npm package ${p.identifier}`, pypi: `Python package ${p.identifier}`, oci: `Docker image ${p.identifier}`, nuget: `.NET package ${p.identifier}`, mcpb: `bundle ${p.identifier}` }[p.registryType] ?? `${p.registryType} package ${p.identifier}`;
-      caps.push({ kind: "adds", label: `Runs as ${what}` });
-      for (const v of p.environmentVariables ?? []) caps.push(v.isSecret ? { kind: "secret", label: `Needs a ${title} key`, detail: v.name } : { kind: "adds", label: `Configured with ${v.name}` });
-    }
-    for (const r of s.remotes ?? []) {
-      const h = String(r.url ?? "").match(/^https?:\/\/([^/:]+)/); if (h) caps.push({ kind: "network", label: "Connects to the internet", detail: h[1] });
-      for (const hd of r.headers ?? []) if (hd.isSecret) caps.push({ kind: "secret", label: `Needs a ${title} key`, detail: hd.name });
-    }
-    if (!caps.some((c) => c.kind === "network") && (s.packages ?? []).length) caps.push({ kind: "network", label: "Connects to the internet" });
-    const id = `mcp-${slug(s.name)}`;
-    const st = key ? stars.get(key) : undefined;
-    entries.push(makeEntry({
-      source: "mcp-registry", id, itemType: "tool", displayName: title, description: s.description ?? "", author: s.name.split("/")[0],
-      repoUrl: key ? `https://github.com/${key}` : s.websiteUrl, version: s.version, publishedAt: meta.publishedAt, updatedAt: meta.updatedAt,
-      sourceType: "mcp-registry", sourceRef: `mcp:${s.name}`, sourceSubdir: s.repository?.subfolder,
-      origin: s.repository?.source === "github" ? "verified" : "community", mirroredFrom: "Official MCP Registry",
-      upstreamId: s.name, stars: st, capabilities: caps, scan: { status: "unchecked" },
-    }));
-    if (!((st ?? 0) >= MIN_STARS || (key && dockerRepos.has(key)))) slice[id] = 0;
-  }
-  return { entries, slice };
-}
-
-export async function collect({ lastRun, full, log }) {
-  const since = !full && lastRun?.finished_at ? new Date(lastRun.finished_at * 1000).toISOString() : null;
-  const servers = [];
-  let cursor;
-  do {
-    const u = new URL(BASE); u.searchParams.set("version", "latest"); u.searchParams.set("limit", "100");
-    if (since) u.searchParams.set("updated_since", since); if (cursor) u.searchParams.set("cursor", cursor);
-    const page = await getJson(u.toString());
-    servers.push(...(page.servers ?? []));
-    cursor = page.metadata?.nextCursor || undefined;
-  } while (cursor);
-  log(`${servers.length} servers (${since ? "since " + since : "full"})`);
-
-  // Docker overlap: a repo Docker ships is served regardless of stars.
-  const docker = await getJson("https://desktop.docker.com/mcp/catalog/v3/catalog.json").catch(() => ({ registry: {} }));
-  const dockerRepos = new Set(Object.values(docker.registry ?? {}).map((d) => repoKey(d.upstream)).filter(Boolean));
-
-  // Enrich up to ENRICH_PER_RUN repos with stars (5,000 req/hr budget shared with everything else).
-  const stars = new Map();
-  let enriched = 0;
-  for (const item of servers) {
-    const key = repoKey((item.server ?? item).repository?.url);
-    if (!key || stars.has(key) || enriched >= ENRICH_PER_RUN) continue;
-    try { const r = await github(`/repos/${key}`); if (r) stars.set(key, r.stargazers_count ?? 0); enriched++; }
-    catch (e) { if (e instanceof RateLimited) { log(`enrichment stopped: ${e.message}`); break; } }
-  }
-  log(`enriched ${enriched} repos; ${dockerRepos.size} docker repos`);
-  const { entries, slice } = normalise(servers, { dockerRepos, stars });
-  return { entries, slice, noRetire: !!since };
-}
-```
-
-Add to `build.mjs` the `noRetire` branch described in Interfaces. Stars for rows enriched in an earlier run but not re-listed by a delta run are preserved because delta runs only touch changed servers (the Worker keeps the old JSON).
-
-- [ ] **Step 4: Run** `node --test scripts/catalog/test/` → PASS. `GITHUB_TOKEN=$(gh auth token) node scripts/catalog/build.mjs --source mcp-registry --dry-run --full` → ~25k rows in ~5 min (253 pages + 400 GitHub calls); check `catalog-dry-run-mcp-registry.json` size (expect 15–30 MB) — that is the stored set; the served slice is what matters for the app.
-
-- [ ] **Step 5: Commit** `git add scripts/catalog && git commit -m "feat(catalog): official MCP Registry source with quality slice + star enrichment"`.
-
----
-
-### Task 11: The workflow, docs, first real run
+### Task 10: The workflow, docs, first real run
 
 **Files:**
 - Create: `.github/workflows/catalog-ingest.yml`
 - Create: `docs/catalog.md` (repo-local)
-- Modify: `README.md` (root; fix the stale counts while there: 174 → the real number from `index.json`, "26/148" → "13 YouCoded / 287 Anthropic"), `CONTRIBUTING.md` (remove "edit index.json"; plugins live at the top level, not `plugins/`)
+- Modify: `README.md` (root; fix the stale counts while there — **compute every number from `index.json` at edit time; do not copy one from a doc.** As of 2026-08-28 it is 339 entries / 302 live / 13 live YouCoded / 289 live Anthropic, and those move on every plugin merge. Also delete the claim that `stats.json` is "rebuilt daily by CI" — no such CI exists), `CONTRIBUTING.md` (remove "edit index.json"; plugins live at the top level, not `plugins/`)
 
 - [ ] **Step 1: Workflow**
 
@@ -1444,23 +1586,28 @@ Add to `build.mjs` the `noRetire` branch described in Interfaces. Stars for rows
 name: Catalog ingest
 
 on:
+  # Hourly is the only trigger. There is deliberately NO `push` trigger on
+  # index.json: the job that rebuilds it (validate-plugin-pr.yml → rebuild)
+  # commits with `[skip ci]` in the message, and GitHub skips every workflow for
+  # such a commit — so a push trigger would look right and never once fire.
+  # A merged plugin PR therefore appears within the hour, which is the promise.
   schedule:
-    - cron: "13 * * * *"        # hourly: our index + deltas from the MCP Registry
-    - cron: "41 3 * * 1"        # weekly full MCP Registry pass (retires vanished servers)
+    - cron: "13 * * * *"
   workflow_dispatch:
     inputs:
       source: { description: "one source (blank = all)", required: false, default: "" }
-      full: { description: "full MCP Registry pass", type: boolean, default: false }
-  push:
-    branches: [master]
-    paths: ["index.json", "scripts/catalog/**", ".github/workflows/catalog-ingest.yml"]
+      force_rescan: { description: "re-read every file, ignoring stored commits", type: boolean, default: false }
 
 concurrency: { group: catalog-ingest, cancel-in-progress: false }
 
 jobs:
   ingest:
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    # A steady-state run is minutes: ~160 GitHub API calls and a few dozen raw
+    # file downloads, because unchanged entries are skipped. 30 minutes is the
+    # ceiling for a --force-rescan; if a NORMAL run approaches it, the skip logic
+    # has broken — investigate, do not raise this.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -1469,21 +1616,22 @@ jobs:
       - name: Ingest
         env:
           CATALOG_INGEST_TOKEN: ${{ secrets.MARKETPLACE_CATALOG_INGEST_TOKEN }}
+          # 1,000 API requests/hour per repository. http.mjs stops at 200 left.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          FULL=""; if [ "${{ github.event.schedule }}" = "41 3 * * 1" ] || [ "${{ inputs.full }}" = "true" ]; then FULL="--full"; fi
+          RESCAN=""; if [ "${{ inputs.force_rescan }}" = "true" ]; then RESCAN="--force-rescan"; fi
           SRC=""; if [ -n "${{ inputs.source }}" ]; then SRC="--source ${{ inputs.source }}"; fi
-          node scripts/catalog/build.mjs $SRC $FULL
+          node scripts/catalog/build.mjs $SRC $RESCAN
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: catalog-report, path: catalog-report.json, retention-days: 14 }
 ```
 
-- [ ] **Step 2: Docs** — `docs/catalog.md`: what the catalog is, the five sources with their licences and the mirror/link decision (MCP Registry CC0; Docker repo MIT but served JSON unlicensed — we store metadata only; awesome-copilot MIT; cursorrules CC0; Anthropic official Apache-2.0 for the 53 local, the rest are pointers), the quality slice rule, what "Likely safe" means in v1 (rule-based; SkillSpector is the next step), how to run locally (`--dry-run`), the retire semantics, and the two env vars. README/CONTRIBUTING corrections as listed.
+- [ ] **Step 2: Docs** — `docs/catalog.md`: what the catalog is, the four sources with their licences and the mirror/link decision (Docker repo MIT but served JSON unlicensed — we store metadata only; awesome-copilot MIT; cursorrules CC0; Anthropic official Apache-2.0 for the 53 local, the rest are pointers), **the merge rule and why a degraded run must never downgrade a row**, the "only re-read what changed" skip and `--force-rescan`, what "Likely safe" means in v1 (rule-based; SkillSpector is the next step), the `CATALOG_ENABLED` kill switch and how to use it, how to run locally (`--dry-run`), the retire semantics, and the env vars. README/CONTRIBUTING corrections as listed.
 
-- [ ] **Step 3: Commit, push, PR** — `git add .github/workflows/catalog-ingest.yml docs/catalog.md README.md CONTRIBUTING.md && git commit -m "feat(catalog): hourly ingest workflow + docs"`; push; `gh pr create` titled `feat(catalog): ingest pipeline — five sources → Worker catalog` with the standard footer. Before merging: the Worker PR from Task 4 is merged and deployed, and Destin has added `MARKETPLACE_CATALOG_INGEST_TOKEN` (tell him in the PR: `openssl rand -hex 32`, paste into repo Settings → Secrets; the Worker deploy pushes the same value to the Worker).
+- [ ] **Step 3: Commit, push, PR** — `git add .github/workflows/catalog-ingest.yml docs/catalog.md README.md CONTRIBUTING.md && git commit -m "feat(catalog): hourly ingest workflow + docs"`; push; `gh pr create` titled `feat(catalog): ingest pipeline — four sources → Worker catalog` with the standard footer. Before merging: the Worker PR from Task 4 is merged and deployed, and Destin has added `MARKETPLACE_CATALOG_INGEST_TOKEN` (tell him in the PR: `openssl rand -hex 32`, paste into repo Settings → Secrets; the Worker deploy pushes the same value to the Worker).
 
-- [ ] **Step 4: First real run** — `gh workflow run catalog-ingest.yml --repo itsdestin/wecoded-marketplace -f full=true`, then `gh run watch`. Expected: report artifact with `upserted` per source and no `error`. Then:
+- [ ] **Step 4: First real run** — `gh workflow run catalog-ingest.yml --repo itsdestin/wecoded-marketplace -f force_rescan=true`, then `gh run watch`. Expected: report artifact with `upserted` per source and no `error`. Then:
 
 ```bash
 curl -s https://wecoded-marketplace-api.destinj101.workers.dev/catalog | python3 -c "
@@ -1492,6 +1640,61 @@ print(len(e), collections.Counter(x['sourceMarketplace'] for x in e))
 print(collections.Counter(x['catalog']['itemType'] for x in e))
 print(collections.Counter(x['catalog']['scan']['status'] for x in e))"
 ```
-Expected: a few thousand rows; every row has `catalog`; scan statuses are a mix of `checked`, `caution` and `unchecked` (never all `checked`). Paste the numbers into the PR.
+Expected: roughly 5,000 rows; every row has `catalog`; scan statuses are a mix of `checked`, `caution` and `unchecked` (never all `checked`). Paste the numbers into the PR.
 
-- [ ] **Step 5: ROADMAP** (workspace) — under the overhaul entry note "catalog service live <date>"; add follow-ups: SkillSpector / Cisco skill-scanner as a second scan stage; member descriptions from SKILL.md frontmatter; Docker `toolsUrl` fetch for tool descriptions; Layer E (sub-registry API) now has its data.
+- [ ] **Step 4b: Prove the two rules that make this safe to leave running**
+
+```bash
+API=https://wecoded-marketplace-api.destinj101.workers.dev
+# Response size, and that a repeat fetch is free.
+curl -s -o /dev/null -w 'bytes=%{size_download}\n' $API/catalog
+ETAG=$(curl -sI $API/catalog | grep -i '^etag:' | cut -d' ' -f2- | tr -d '\r')
+curl -s -o /dev/null -w 'repeat=%{http_code} bytes=%{size_download}\n' -H "If-None-Match: $ETAG" $API/catalog
+```
+Expected: a few MB the first time, **`repeat=304 bytes=0`** the second. If the repeat is 200,
+the ETag path is broken and every device will re-download the whole catalog hourly — stop and
+fix it before Plan 3 ships.
+
+Then let the **second** hourly run happen and compare: the `catalog-report.json` artifact
+should show far fewer than the first run's numbers touched, the run should finish in minutes,
+and no row's `scan.status` should have moved from `checked` to `unchecked`. That is the merge
+rule and the skip rule both working. Re-run this check the first time a run *does* hit the
+GitHub limit — that is the failure the merge rule exists for.
+
+- [ ] **Step 5: ROADMAP** (workspace) — under the overhaul entry note "catalog service live <date>"; add follow-ups: **the official MCP Registry source (see Deferred below)**; SkillSpector / Cisco skill-scanner as a second scan stage; member descriptions from SKILL.md frontmatter; Docker `toolsUrl` fetch for tool descriptions; Layer E (sub-registry API) now has its data.
+
+---
+
+## Deferred: the official MCP Registry
+
+Cut from this plan on 2026-08-28 after the review in
+`docs/active/investigations/2026-08-28-marketplace-overhaul-plan-review.md`. It belongs with
+**Layer E** (the sub-registry API), where the full 25,291-server corpus is the point rather
+than a cost. The reasons, all measured rather than felt:
+
+- **Nothing could be done with the rows.** They are not installable (the installer has no
+  `mcp-registry` source type — Plan 3 Task 6 correctly shows "Open source" instead of
+  Install), not rateable (a vote requires a prior install), and never scanned. So they would
+  arrive as thousands of grey "Not checked" cards diluting the grid the curation exists to
+  protect.
+- **The quality filter could not get its inputs.** Which servers to show was decided by GitHub
+  stars, looked up at ≤400 repos per run — against 25,291 servers, and only on the *weekly*
+  full pass, because the hourly delta run only walks the servers that changed. That is roughly
+  **62 weeks** before the filter knows what to filter.
+- **It flipped listings on and off.** A popular server updated mid-week came back through a
+  delta run with no star count in hand, fell under the bar and vanished from the marketplace
+  until some later run happened to look it up. (The merge rule in Task 3 now prevents that
+  class of bug generally — but the star mechanism would still have needed rethinking.)
+- **It was most of the cost.** ~400 GitHub calls per run out of a ~800-call budget, most of
+  the response bytes, and the `slice` column / delta runs / `noRetire` branch /
+  `catalog_runs` watermark that existed only to serve it. Removing it took roughly 400 lines,
+  one column, one route and one cron schedule out of this plan.
+- **The approved UI does not need it.** Docker's ~320 servers fill the **Connections** tab
+  with *better* data — declared secrets with their env var names, allowed hosts, volumes,
+  OAuth, tool counts — and real provenance, at about 1% of the cost.
+
+When it comes back, it needs: a persistent star store (enrich once, keep the value — the
+merge rule already supports this), a real `updated_since` watermark that a delta run updates
+(the old design never set `finished_at` on a delta run, so every hourly run re-fetched
+everything since the last *weekly* pass), an install path for MCP servers, and a paging story
+for `/catalog`. Strategy doc §6 decision 3 is updated to match.

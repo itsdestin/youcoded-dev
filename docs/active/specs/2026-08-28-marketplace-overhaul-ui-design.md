@@ -103,7 +103,7 @@ WHAT THIS CAN DO                         ← BEFORE the description
 ABOUT
 WHAT'S INSIDE  (members are links to their own pages)
 FEEDBACK  Helpful 93% · 127 votes            [👍 Helpful] [👎 Not for me]
-  comments (avatar · handle · relative date · report), newest first
+  comments (avatar · handle · relative date), newest first        ← no Report in v1, see §5
   [comment box]                                                [Post comment]
 Source: repo · MIT · pinned to 4f1c2a9
 ```
@@ -140,7 +140,13 @@ Feedback (Worker): `/stats` plugins gain `thumbs_up`, `thumbs_down`; new routes
 in `desktop/src/renderer/state/marketplace-api-client.ts` and the workbench fake
 `desktop/src/renderer/dev/workbench/fixtures/marketplace/worker-api-mock.ts`.
 
-Member ids in the mock are `<bundle>/<name>`; the catalog design fixes the real scheme.
+Member ids are `<bundle>/<name>` — the real scheme, fixed by the catalog design.
+**Consequence for every route that takes an id:** a member page's Feedback section calls
+`/comments/superpowers/brainstorming`, which is **two** path segments. A single-segment
+route (`:plugin_id`) will not match it, and `isPublicReadPath` rejects it, so a skill's own
+page would show a comment box that 404s on desktop and is CORS-blocked on Android. Both the
+feedback routes and `/catalog/:id` must accept one **or two** segments. (`validateId` itself
+is length-only — 1–128 chars — so the ids are fine; it is purely the route shape.)
 
 ## 3. Decision ledger (three decks, 20 steps)
 
@@ -183,6 +189,12 @@ glyphs on cards; vibe/meta chips in the bar; "Tools" as the MCP word; star ratin
 
 ## 5. Deferred (ROADMAP entries)
 - Per-item install of a bundle member (today installing a member installs its bundle).
+- **Report a comment.** The Worker's `reports` table is keyed to a *rating*
+  (`rating_user_id`, `rating_plugin_id`), so it cannot take a comment id without a schema
+  change. Rather than ship a button that does nothing, v1 renders **no** Report affordance on
+  comments; the AI classifier still hides flagged text at post time.
+- **Delete your own comment** — reviews had it (`marketplace:rate:delete`); comments ship
+  without it on every platform.
 - Tap-to-explain for the badges on touch (hover-only today).
 - Edge fade on the phone sheet's scrolling type row.
 - The `'skill'`→`'plugin'` handover means Library's "browse marketplace" lands on Plugins; confirm Android's Library does the same.

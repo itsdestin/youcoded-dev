@@ -6,29 +6,34 @@ tags: [marketplace, wecoded, plugins, themes, skills, mcp, trust, strategy]
 
 # WeCoded marketplace — where it is, where the field is, where to take it (2026-08-27)
 
-Written for Destin, in plain language. Every number below was measured today by a research
+Written for Destin, in plain language. Every number below was measured by a research
 agent (commands and URLs are in the session, and the ones that matter are inline). Items
 marked ⚠️ could not be verified and should not be repeated as fact.
+
+**Counts re-measured 2026-08-28** against `wecoded-marketplace/index.json` after a review
+pass; the originals were off by a few in every row. Registry counts drift every time a
+plugin PR merges — **never hard-code one into a doc or a README; compute it from
+`index.json`.** The review that found these: `docs/active/investigations/2026-08-28-marketplace-overhaul-plan-review.md`.
 
 ---
 
 ## 1. What the marketplace is today
 
-**In one sentence:** a static list of ~300 Claude Code plugins (287 of them copied from
+**In one sentence:** a static list of ~300 Claude Code plugins (289 of them copied from
 Anthropic's official list, 13 ours), 7 themes and 9 "integrations", served as JSON files
 from GitHub, with a small Cloudflare backend that stores sign-ins, install counts, star
 ratings, reviews and theme likes.
 
 | Thing | Count | Where it lives |
 |---|---|---|
-| Plugins shown in the app | **300** (336 in the file; 36 hidden as deprecated) | `wecoded-marketplace/index.json` |
-| …from Anthropic's official list | 287 | copied by `scripts/sync.js` |
-| …ours | 13 | top-level dirs in `wecoded-marketplace/` |
-| Skills *inside* those plugins | 2,066 | not browsable on their own |
-| Commands / agents / hooks | 190 / 109 / 26 | same |
-| MCP servers | **0 extracted** (126 plugins have an MCP config, but the extractor records no names) | `MarketplaceDetailOverlay.tsx:436` shows a placeholder |
+| Plugins shown in the app | **302** (339 in the file; 37 hidden as deprecated) | `wecoded-marketplace/index.json` |
+| …from Anthropic's official list | 289 live (312 incl. deprecated) | copied by `scripts/sync.js` |
+| …ours | 13 live (27 incl. deprecated; only **12** have a matching folder) | top-level dirs in `wecoded-marketplace/` |
+| Skills *inside* those plugins | 2,084 live (2,193 incl. deprecated) | not browsable on their own |
+| Commands / agents / hooks | 191 / 103 / 29 live | same |
+| MCP servers | **0 extracted** (125 live plugins have an MCP config, but the extractor records no names) | `MarketplaceDetailOverlay.tsx:472` shows a placeholder |
 | Themes | 7 | separate repo `wecoded-themes` |
-| Integrations | 9 (5 usable; Android can't install any) | `integrations/index.json` |
+| Integrations | 9 (**4** marked available; Android can't install any) | `integrations/index.json` |
 | "Prompt" items | 0 live (all 14 deprecated) | the type is dead |
 
 **Where it pulls from.** One place: Anthropic's `claude-plugins-official/.claude-plugin/marketplace.json`
@@ -47,12 +52,21 @@ size/enum/ID rules; secret-looking *contents* only produce a warning (`validate-
 — a live token passes). Nothing scans scripts, hooks or MCP configs for bad behaviour. No
 license check. No "verified" badge, no permission summary before install, no sandbox. Reviews
 are moderated by an on-Worker AI classifier. The one real runtime guard: post-install shell
-commands only run for repos under `itsdestin/` (`plugin-installer.ts:110`).
+commands only run for repos under **`itsdestin/` or `destinationunknown/`**
+(`TRUSTED_POSTINSTALL_ORGS`, `plugin-installer.ts:111`).
 
 **Backend (Cloudflare Worker).** Sign-in via GitHub, installs (counted), ratings (one per
 installed plugin), theme likes, reports, `GET /stats`, plus the friends/presence/sync-hub
-routes the social features use. No catalog search, no catalog API — the catalog is not in a
-database at all.
+routes the social features use — **11 path prefixes across 12 route modules**, of which
+`worker/README.md` documents three. No catalog search, no catalog API — the catalog is not
+in a database at all.
+
+⚠️ **The rate limiter may not work in production.** `worker/src/lib/rate-limit.ts` keeps its
+counters only in the Cloudflare Cache API, which Cloudflare documents as having **no effect
+on `*.workers.dev` deployments** — and the Worker is served from
+`wecoded-marketplace-api.destinj101.workers.dev`. If that holds, every `checkRateLimit` call
+returns "allowed". Unverified against production; it gates ratings and reports today and
+would gate comments tomorrow, so it needs a live check before any un-gated write ships.
 
 **Honest verdict.** The *shell* is good: one screen, rails, detail overlay with readable
 skill files, reviews, sign-in, install counts. The *inside* is thin: one upstream, no
@@ -187,7 +201,8 @@ saying yes.
 
 ### Layer D — Presentation and organization
 - Keep the hero + rails (they're good). Replace the Type chip with real type filters and add
-  category chips derived from the data (the schema comment at `schema.js:7` promised this).
+  category chips derived from the data (every entry already carries a `category`; the comment
+  at `scripts/schema.js:6` promises chips derived from **life areas**, not categories).
 - **Collections**: user-made, shareable lists ("my freshman survival kit") — fits the social
   pillar, and rails become just Destin's collections.
 - Per-item page additions: origin badge, "What this can do", scan verdict, versions +
@@ -221,7 +236,7 @@ saying yes.
 
 **Degrades / latent**
 7. Community theme CSS can inject uncapped `@keyframes` (30% CPU forever; Reduced Effects won't stop it) (ROADMAP:381).
-8. Worker CI is red; 3 dependabot PRs blocked (vitest-pool-workers peer conflict, run 31659268423). Matters because deploy = tests → migrations → prod.
+8. Worker CI is red; 3 dependabot PRs blocked — #63 (workers-types 4→5), #61 (vitest 2.1.9→4.1.10), #60 (worker minor/patch group), all failing `test` on the same `ERESOLVE`: `@cloudflare/vitest-pool-workers@0.5.41` peers `vitest 2.0.x–2.1.x`. Matters because deploy = tests → migrations → prod.
 9. Two theme previews blank in-app (Devil's Garden, Kuromi Dreamer) (ROADMAP:1042).
 10. Theme `icons` override: advertised badge, wired to nothing (youcoded #45).
 11. `stats.json` is empty and 5 months stale; README says "rebuilt daily". Install/like counts for themes never tracked (marketplace #6).
@@ -233,17 +248,18 @@ saying yes.
 17. Secret *content* scan is a warning, not a block (`validate-plugin-pr.yml:161`).
 18. Share-link import throws "not yet implemented" (`skill-provider.ts:591`).
 19. Android missing: delete own review, like a theme, refresh theme registry.
+20. ⚠️ `checkRateLimit` stores counters only in the Cloudflare Cache API, which is documented as a no-op on `*.workers.dev` — so ratings/reports/installs may have **no rate limit in production**. Needs a live check (hammer a limited route ~70× and look for a 429). Blocks any sign-in-only write, e.g. comments.
 
 **Docs / cruft (all one-liners)**
-20. README: 174 entries → actually 336; "26 YouCoded / 148 imported" → 13 / 287.
-21. CONTRIBUTING: `plugins/<id>/` dir doesn't exist; tells people to hand-edit generated `index.json`.
-22. `docs/registries.md:3` says "no CI rebuild" — wrong; both docs name the wrong cache dir (`wecoded-` vs `youcoded-marketplace-cache`).
-23. `PITFALLS.md:21` names a `sourceMarketplace: "youcoded-core"` value that occurs 0 times.
-24. `curated-defaults.json` names `theme-builder`, which isn't a registry id → first-run favorite no-ops.
-25. `wecoded-marketplace/themes/index.json` is an abandoned 2-theme duplicate registry; 13/24 `overrides/` target deprecated entries, one targets a missing id; root `index.json` and `skills/index.json` duplicate 380 KB.
-26. `worker/README.md` describes 3 route groups; there are 9.
-27. `/theme-builder` never run end-to-end since the Kit rewrite (ROADMAP:687).
-28. Latest `/audit` report is 43 days old, predates all of the above.
+21. README: 174 entries → **compute from `index.json`** (339 today); "26 YouCoded / 148 imported" is likewise wrong — count it, don't copy a number from here, it drifts on every plugin merge. README also claims `stats.json` is "rebuilt daily by CI"; no such CI exists.
+22. CONTRIBUTING: `plugins/<id>/` dir doesn't exist; tells people to hand-edit generated `index.json`.
+23. `docs/registries.md:3` says "no CI rebuild" — wrong; both docs name the wrong cache dir (`wecoded-` vs `youcoded-marketplace-cache`).
+24. `PITFALLS.md:21` names a `sourceMarketplace: "youcoded-core"` value that occurs 0 times.
+25. `curated-defaults.json` names `theme-builder`, which isn't a registry id (the plugin is `wecoded-themes-plugin`; the scanner would key it `wecoded-themes-plugin:theme-builder`). Worse than a no-op: the bare string is **already written into `~/.claude/youcoded-skills.json` → `favorites[]`**, where it resolves to nothing.
+26. `wecoded-marketplace/themes/index.json` is an abandoned 2-theme duplicate registry; 13/24 `overrides/` target deprecated entries, one targets a missing id; root `index.json` and `skills/index.json` duplicate 380 KB.
+27. `worker/README.md` describes 3 route groups; there are **11** (12 route modules). It documents none of `/social`, `/sync`, `/app`, `/stats`, `/reports`.
+28. `/theme-builder` never run end-to-end since the Kit rewrite (ROADMAP:687).
+29. Latest `/audit` report is 43 days old, predates all of the above.
 
 ---
 
@@ -259,9 +275,17 @@ Remaining decisions, in order:
    pinned upstream commit.** This keeps us out of the EU-database-right and copyright
    traps the research surfaced, and still gives one-click installs.
 3. **How much to index**: the whole MCP registry (25k, mostly junk at ≤1 star) or a
-   quality-filtered slice (≥10★, active, licensed, scanned)? Recommendation: **ingest
-   everything into the database, *show* the filtered slice by default** with a "show all"
-   toggle — search still finds the long tail, the grid stays curated.
+   quality-filtered slice (≥10★, active, licensed, scanned)? ~~Recommendation: ingest
+   everything, show the filtered slice with a "show all" toggle.~~ **Revised 2026-08-28
+   after the plan review:** the MCP Registry is **cut from the first build entirely** and
+   moves to the Layer E follow-up. Reasons, all measured: its entries cannot be installed by
+   our installer, cannot be rated (voting needs a prior install), and are never scanned — so
+   they arrive as thousands of grey "Not checked" cards; and the star lookup that decides
+   which ones to show is capped at 400 repos per run against a 25,291-row corpus, i.e. **~62
+   weeks** before the filter even has its inputs. Docker's ~320 servers fill the Connections
+   tab with better data (declared secrets, allowed hosts, volumes, OAuth) at ~1% of the cost.
+   A "show all" toggle is therefore moot for now; revisit it with Layer E, where the full
+   corpus is the point. See `2026-08-28-marketplace-catalog-service.md` → Deferred.
 4. **Gate model for community submissions**: bot-first with human escalation (Obsidian) —
    the only model a one-person team can staff. Full human review (Raycast/Codex) doesn't
    scale; zero-gate auto-index is what got ClawHub owned.

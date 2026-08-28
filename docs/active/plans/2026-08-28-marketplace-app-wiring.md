@@ -17,8 +17,11 @@ part: 3 of 3 (app wiring) — needs 2026-08-28-marketplace-catalog-service.md de
 
 ## Global Constraints
 
-- Catalog contract (produced by Plan 2, consumed here — the two plans must agree): `GET https://wecoded-marketplace-api.destinj101.workers.dev/catalog` → `200 { generated_at: number, entries: SkillEntry[] }` where every entry has the `index.json` fields **plus** `catalog: CatalogMeta` (`desktop/src/shared/catalog-types.ts`), members carry `catalog.partOf`, deprecated rows are omitted. `Cache-Control: public, max-age=300`. Any origin allowed.
-- Desktop cache dir stays `~/.claude/youcoded-marketplace-cache/` (five code sites name it; the docs are wrong — `docs/registries.md:12` — fix that line in Task 6, not the code).
+- Catalog contract (produced by Plan 2, consumed here — the two plans must agree): `GET https://wecoded-marketplace-api.destinj101.workers.dev/catalog` → `200 { generated_at: number, entries: SkillEntry[] }` where every entry has the `index.json` fields **plus** `catalog: CatalogMeta` (`desktop/src/shared/catalog-types.ts`), members carry `catalog.partOf`, deprecated rows are omitted. `Cache-Control: public, max-age=300`, **`ETag`**, and **`304 Not Modified`** when the client sends a matching `If-None-Match`. Any origin allowed.
+- **The 304 is mandatory on both platforms, not an optimisation.** The response is several megabytes (~5,000 rows at ~1.1 KB), both platforms refresh hourly, Android does it over mobile data, and Cloudflare's edge cache does not apply to `*.workers.dev` — so a client that ignores the ETag re-downloads the whole catalog 24 times a day and makes the Worker re-read every row out of D1 each time. Store the ETag alongside the cache and send it back; on 304, refresh the cache's timestamp and keep the body.
+- Also `503` from `/catalog`: Plan 2's `CATALOG_ENABLED` kill switch. Treat it exactly like any other failure — fall through to `index.json`. Do not special-case it, do not surface an error; that is the whole point of it.
+- Desktop cache dir stays `~/.claude/youcoded-marketplace-cache/` (five code sites name it; the docs are wrong — `docs/registries.md:12` — fix that line in Task 5, not the code).
+- **`fetchIndex()` is the only thing this plan makes hourly.** `curated-defaults.json` and the featured list are separate fetches from raw GitHub on the 24-hour `INDEX_TTL`, so the hero and the curated rails still lag up to a day. That is out of scope here; say so rather than claiming "new items appear within an hour" of anything but the grid. (While in the area, note the live bug: `curated-defaults.json` names `theme-builder`, which is not a registry id — the plugin is `wecoded-themes-plugin` — and the bare string is already sitting in `~/.claude/youcoded-skills.json` → `favorites[]` resolving to nothing. Fix belongs in the marketplace repo; ROADMAP it.)
 - **Conflict warning:** `desktop/src/main/skill-provider.ts` and `plugin-installer.ts` are also edited on the in-flight branch `fix/bundled-plugin-upgrade` (worktree `worktrees/bundled-upgrade`). Merge that branch to master **before** starting Task 1, then rebase `feat/marketplace-overhaul-ui` onto master (`git rebase master` in `worktrees/marketplace-ui`) and re-run `bash scripts/verify.sh marketplace-ui`. Do not start this plan while both branches are unmerged.
 - Every desktop change: `bash scripts/verify.sh marketplace-ui` from the workspace root before "done". Android: `cd worktrees/marketplace-ui && ./gradlew test -x bundleWebUi` (the `-x` is mandatory in a hardlinked worktree — see CLAUDE.md).
 - Never guess in error strings: git failures surface `output.slice(0, 200)` verbatim, as the installer already does.
@@ -116,6 +119,23 @@ describe('fetchIndex — catalog first, index.json fallback', () => {
     expect(entries[0].catalog).toBeUndefined();
   });
 
+  it('sends If-None-Match once it has an ETag, and keeps the body on a 304', async () => {
+    fetchMock
+      .mockResolvedValueOnce(new Response(JSON.stringify({ generated_at: 1, entries: [CATALOG_ROW] }), { status: 200, headers: { ETag: '"cat-1-1"' } }))
+      .mockResolvedValueOnce(new Response(null, { status: 304 }));
+    const p = makeProvider();
+    await p.listMarketplace();
+    // Age the cache past the TTL so the second call goes to the network.
+    const file = path.join(home, '.claude', 'youcoded-marketplace-cache', 'catalog.json');
+    const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
+    fs.writeFileSync(file, JSON.stringify({ ...raw, fetchedAt: 0 }));
+    const entries = await p.listMarketplace();
+    const init = fetchMock.mock.calls[1][1] as RequestInit;
+    expect((init.headers as Record<string, string>)['If-None-Match']).toBe('"cat-1-1"');
+    expect(entries[0].id).toBe('superpowers');          // 304 → cached body reused
+    expect(fetchMock).toHaveBeenCalledTimes(2);         // never fell through to index.json
+  });
+
   it('serves the catalog from cache within the TTL', async () => {
     fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ generated_at: 1, entries: [CATALOG_ROW] }), { status: 200 }));
     const p = makeProvider();
@@ -169,14 +189,21 @@ Replace `fetchIndex()` (lines 654–670) with:
     // 1. Fresh catalog cache.
     const cachedCatalog = this.readCache<SkillEntry[]>(CATALOG_CACHE, CATALOG_TTL);
     if (cachedCatalog) return cachedCatalog;
-    // 2. The Worker's catalog.
+    // 2. The Worker's catalog. The ETag matters: this response is several MB and we
+    //    ask for it every hour, so on the ~23 hours out of 24 when nothing changed
+    //    the Worker answers 304 with an empty body and we keep what we have.
+    //    A 503 here is the CATALOG_ENABLED kill switch — treat it as any failure.
     if (CATALOG_URL) {
       try {
-        const resp = await fetch(CATALOG_URL);
-        if (resp.ok) {
+        const prevTag = this.readCacheEtag(CATALOG_CACHE);
+        const resp = await fetch(CATALOG_URL, prevTag ? { headers: { 'If-None-Match': prevTag } } : undefined);
+        if (resp.status === 304) {
+          const stale = this.readCache<SkillEntry[]>(CATALOG_CACHE, Infinity);
+          if (stale) { this.touchCache(CATALOG_CACHE, prevTag); return stale; }
+        } else if (resp.ok) {
           const body = await resp.json() as { entries?: SkillEntry[] };
           if (Array.isArray(body.entries)) {
-            this.writeCache(CATALOG_CACHE, body.entries);
+            this.writeCache(CATALOG_CACHE, body.entries, resp.headers.get('ETag') ?? undefined);
             return body.entries;
           }
         }
@@ -200,6 +227,12 @@ Replace `fetchIndex()` (lines 654–670) with:
   }
 ```
 
+`writeCache` / `readCache` gain an optional `etag` on the envelope they already write
+(`{ fetchedAt, data }` → `{ fetchedAt, etag?, data }`), plus two small helpers:
+`readCacheEtag(file)` reads it back regardless of age, and `touchCache(file, etag)` rewrites
+only `fetchedAt` so a 304 resets the TTL without re-serialising megabytes. Existing callers
+are unaffected — the field is optional and every other cache omits it.
+
 In `invalidateCache()` add `CATALOG_CACHE` to the file list:
 
 ```ts
@@ -208,7 +241,7 @@ In `invalidateCache()` add `CATALOG_CACHE` to the file list:
 
 - [ ] **Step 5: Run to see it pass, then the gate**
 
-Run: `npx vitest run tests/skill-provider-catalog.test.ts` → PASS (4).
+Run: `npx vitest run tests/skill-provider-catalog.test.ts` → PASS (5).
 Run: `cd /home/destin/youcoded-dev && bash scripts/verify.sh marketplace-ui` → OK. (`knip` may flag the renderer import from main — `marketplace-api-handlers.ts` already does the same import, so it is allowed; if knip complains, it lists the exact rule.)
 
 - [ ] **Step 6: Commit**
@@ -228,7 +261,17 @@ git commit -m "feat(marketplace): desktop reads the Worker catalog first, index.
 - Test: `desktop/tests/plugin-installer-pin.test.ts`
 
 **Interfaces:**
-- Produces: `MarketplaceEntry.sourceCommit?: string`; `pinToCommit(dir: string, commit: string): Promise<{ ok: boolean; output: string }>`; the provider passes `sourceCommit: entry.catalog?.sourceCommit ?? entry.sourceSha`.
+- Produces: `MarketplaceEntry.sourceCommit?: string`; `pinToCommit(dir: string, commit: string): Promise<{ ok: boolean; output: string }>`; the provider passes **`sourceCommit: entry.catalog?.sourceCommit`** — the catalog's value **and nothing else**.
+
+> **Do not add `?? entry.sourceSha`.** It is the obvious-looking fallback and it is wrong.
+> `sourceSha` is whatever `sync.js` stamped into `index.json` the last time it ran, and **236
+> of the 302 live entries carry one**. Today those entries install the author's current
+> version (a plain `clone --depth 1`, no sha). Falling back to `sourceSha` would freeze them
+> at a months-old commit that never moves, and the Update button — which the in-flight
+> `fix/bundled-plugin-upgrade` branch exists to make work — would re-fetch that same frozen
+> commit and report success while changing nothing. An entry with no `catalog` block must
+> keep today's behaviour: latest. Plan 2 Task 8 resolves the repo's real HEAD every hour, so
+> `catalog.sourceCommit` is a *current* pin, which is the only kind worth having.
 
 - [ ] **Step 1: Find how installer tests stub git**
 
@@ -253,6 +296,13 @@ describe('pinToCommit', () => {
       ['-C', '/tmp/x', 'fetch', '--depth', '1', 'origin', 'e91a6c0'],
       ['-C', '/tmp/x', 'checkout', '--detach', 'e91a6c0'],
     ]);
+  });
+
+  it('is not reached for an entry with no catalog block — those still install latest', async () => {
+    // Guards the regression the `?? sourceSha` fallback would cause.
+    const entry = { id: 'x', sourceType: 'url', sourceRef: 'https://github.com/o/r.git', sourceSha: 'stale123' } as any;
+    await installPlugin(entry);
+    expect(calls.some((c) => c.includes('checkout'))).toBe(false);
   });
 
   it('returns git output verbatim when the fetch fails (no guessed cause)', async () => {
@@ -314,7 +364,11 @@ async function installFromUrl(id: string, url: string, commit?: string): Promise
 }
 ```
 
-and in `installFromGitSubdir(id, repoUrl, subdir, commit?)`, right after the sparse clone succeeds and before `sparse-checkout set`:
+and in `installFromGitSubdir(id, repoUrl, subdir, commit?)` — **after `sparse-checkout set`,
+not before it.** Read the existing function first and place the call so the sparse paths are
+already configured: `checkout --detach` materialises whatever the sparse config allows at that
+moment, so pinning before the paths are set defeats the sparse clone and pulls the whole tree.
+The order is: sparse clone → `sparse-checkout set <subdir>` → `pinToCommit` → read the subdir.
 
 ```ts
     if (commit) {
@@ -337,14 +391,17 @@ In the switch:
 `skill-provider.ts` — in the `installPlugin({ … })` call add:
 
 ```ts
-      // Plan 3: pin to the commit the catalog checked; sourceSha is sync.js's
-      // older name for the same fact on url/git-subdir entries.
-      sourceCommit: marketplaceEntry.catalog?.sourceCommit ?? marketplaceEntry.sourceSha,
+      // Plan 3: pin to the commit the catalog scanned — and ONLY that. Deliberately
+      // no `?? sourceSha` fallback: that field is a stale snapshot from whenever
+      // sync.js last ran (236 of 302 live entries have one), so falling back to it
+      // would freeze those plugins at an old version forever and make Update a
+      // no-op that claims success. No catalog block → today's behaviour (latest).
+      sourceCommit: marketplaceEntry.catalog?.sourceCommit,
 ```
 
 - [ ] **Step 5: Run to see it pass, then the gate; commit**
 
-Run: `npx vitest run tests/plugin-installer-pin.test.ts` → PASS (2). `cd /home/destin/youcoded-dev && bash scripts/verify.sh marketplace-ui` → OK.
+Run: `npx vitest run tests/plugin-installer-pin.test.ts` → PASS (3). `cd /home/destin/youcoded-dev && bash scripts/verify.sh marketplace-ui` → OK.
 
 ```bash
 git add desktop/src/main/plugin-installer.ts desktop/src/main/skill-provider.ts desktop/tests/plugin-installer-pin.test.ts
@@ -378,6 +435,16 @@ describe('install — a member row installs its bundle', () => {
     // Second call is the recursion onto the bundle.
     expect(spy).toHaveBeenNthCalledWith(2, 'superpowers');
   });
+
+  it('does not recurse forever on a catalog that points a row at itself', async () => {
+    const loop = { ...CATALOG_ROW, id: 'loopy',
+      catalog: { ...CATALOG_ROW.catalog, itemType: 'skill', partOf: { id: 'loopy', displayName: 'Loopy' } } };
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ generated_at: 1, entries: [loop] }), { status: 200 }));
+    const p = makeProvider();
+    const spy = vi.spyOn(p, 'install');
+    await p.install('loopy').catch(() => undefined);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
 });
 ```
 
@@ -395,7 +462,16 @@ At the top of `install(id)` in `skill-provider.ts`, after the entry lookup:
     // inside a bundle is installed by installing the bundle — per-item install
     // is a ROADMAP follow-up. The UI already shows a member as installed when
     // its bundle is.
-    if (entry.catalog?.partOf) return this.install(entry.catalog.partOf.id);
+    // The id check is a cycle guard, not paranoia: partOf comes from a catalog
+    // built by a background job we do not control at install time, and a row that
+    // points at itself (or a two-row loop) would recurse until the process dies.
+    // One hop only — a member's bundle is never itself a member.
+    const parent = entry.catalog?.partOf?.id;
+    if (parent && parent !== id) {
+      const bundle = entries.find((e) => e.id === parent);
+      if (!bundle?.catalog?.partOf) return this.install(parent);
+      return { status: 'failed', error: `catalog error: ${id} and ${parent} both claim to be inside another item` };
+    }
 ```
 
 - [ ] **Step 4: Pass, gate, commit**
@@ -445,7 +521,7 @@ class MarketplaceFetcherCatalogTest {
     @Test
     fun `prefers the Worker catalog and keeps the catalog block`() {
         val hits = mutableListOf<String>()
-        val f = MarketplaceFetcher(home(), readUrl = { url -> hits += url; if (url.endsWith("/catalog")) catalogBody else error("unexpected $url") })
+        val f = MarketplaceFetcher(home(), readUrl = { url, _ -> hits += url; if (url.endsWith("/catalog")) HttpText(200, catalogBody, "\"cat-1-1\"") else error("unexpected $url") })
         val arr = f.fetchIndex()
         assertEquals(1, hits.size)
         assertTrue(hits[0].endsWith("/catalog"))
@@ -455,7 +531,7 @@ class MarketplaceFetcherCatalogTest {
     @Test
     fun `falls back to index json when the Worker fails`() {
         val hits = mutableListOf<String>()
-        val f = MarketplaceFetcher(home(), readUrl = { url -> hits += url; if (url.endsWith("/catalog")) error("503") else indexBody })
+        val f = MarketplaceFetcher(home(), readUrl = { url, _ -> hits += url; if (url.endsWith("/catalog")) error("503") else HttpText(200, indexBody, null) })
         val arr = f.fetchIndex()
         assertEquals(2, hits.size)
         assertTrue(hits[1].endsWith("/index.json"))
@@ -467,9 +543,25 @@ class MarketplaceFetcherCatalogTest {
     fun `serves the catalog from cache within the TTL`() {
         var n = 0
         val h = home()
-        val f = MarketplaceFetcher(h, readUrl = { n++; catalogBody })
+        val f = MarketplaceFetcher(h, readUrl = { _, _ -> n++; HttpText(200, catalogBody, null) })
         f.fetchIndex(); f.fetchIndex()
         assertEquals(1, n)
+    }
+
+    @Test
+    fun `sends the stored ETag and keeps the body on a 304`() {
+        val h = home()
+        val seen = mutableListOf<String?>()
+        var first = true
+        val f = MarketplaceFetcher(h, readUrl = { _, tag ->
+            seen += tag
+            if (first) { first = false; HttpText(200, catalogBody, "\"cat-1-1\"") } else HttpText(304, "", null)
+        })
+        f.fetchIndex()
+        expireCache(File(h, ".claude/youcoded-marketplace-cache/catalog.json"))
+        val arr = f.fetchIndex()
+        assertEquals(listOf(null, "\"cat-1-1\""), seen)
+        assertEquals("superpowers", arr.getJSONObject(0).getString("id"))
     }
 }
 ```
@@ -484,18 +576,24 @@ Expected: compilation FAIL — no `readUrl` parameter.
 `MarketplaceFetcher.kt` — constructor gains the injectable reader; constants gain the catalog URL:
 
 ```kotlin
+/** Minimal response the fetcher needs; `httpGet` sends If-None-Match when `etag` is non-null. */
+data class HttpText(val status: Int, val body: String, val etag: String?)
+
 class MarketplaceFetcher(
     private val homeDir: File,
     private val bundledIndexProvider: (() -> JSONArray)? = null,
-    // Injectable for unit tests; production reads the URL directly.
-    private val readUrl: (String) -> String = { URL(it).readText() },
+    // Injectable for unit tests; production reads the URL directly. Returns the
+    // status, body and ETag because the catalog is conditional-GET'd (304 → reuse).
+    private val readUrl: (String, String?) -> HttpText = ::httpGet,
 ) {
     private val cacheDir = File(homeDir, ".claude/youcoded-marketplace-cache")
     private val registryBase = "https://raw.githubusercontent.com/itsdestin/wecoded-marketplace/master"
     // Marketplace overhaul (Plan 3): the Worker's catalog carries the
     // type / origin / scan / capabilities block; index.json is the fallback.
-    // Same host as MarketplaceApiClient — keep the two in sync.
-    private val catalogUrl = "https://wecoded-marketplace-api.destinj101.workers.dev/catalog"
+    // The host string is duplicated from MarketplaceApiClient.kt (desktop reads
+    // MARKETPLACE_API_HOST); Step 7 pins the two together with a parity test so
+    // they cannot drift the way IPC channel names used to.
+    private val catalogUrl = "$API_HOST/catalog"
     private val statsTtl = 60 * 60 * 1000L       // 1 hour
     private val indexTtl = 24 * 60 * 60 * 1000L   // 24 hours
     private val catalogTtl = 60 * 60 * 1000L      // 1 hour — CI refreshes hourly
@@ -512,11 +610,25 @@ Replace `fetchIndex()`:
         // 1. Fresh catalog cache.
         readCache(catalogFile, catalogTtl)?.let { parseArray(it) }?.let { return it }
         // 2. The Worker's catalog: { generated_at, entries: [...] } — cache only the array.
+        //    Send the stored ETag: this response is several MB and we ask hourly, so
+        //    on the ~23 hours in 24 when nothing changed the Worker answers 304 with
+        //    an empty body and the phone spends a few hundred bytes instead of ~5 MB
+        //    of the user's mobile data. `readUrl` therefore returns the status and
+        //    the ETag alongside the body (see the signature change below).
         try {
-            val entries = JSONObject(readUrl(catalogUrl)).getJSONArray("entries")
-            writeCache(catalogFile, entries.toString())
-            return entries
+            val prev = readCacheEtag(catalogFile)
+            val res = readUrl(catalogUrl, prev)
+            if (res.status == 304) {
+                readCache(catalogFile, Long.MAX_VALUE)?.let { parseArray(it) }?.let {
+                    touchCache(catalogFile); return it
+                }
+            } else {
+                val entries = JSONObject(res.body).getJSONArray("entries")
+                writeCache(catalogFile, entries.toString(), res.etag)
+                return entries
+            }
         } catch (e: Exception) {
+            // Includes the 503 from the CATALOG_ENABLED kill switch — same handling.
             Log.w("MarketplaceFetcher", "Catalog fetch failed, trying index.json", e)
         }
         // 3. Raw index.json (pre-overhaul path).
@@ -582,9 +694,11 @@ and in `installFromGitSubdir(id, repoUrl, subdir, commit: String?)`, after the s
 In the `when (sourceType)` block (lines 115–124), read the commit once above it and pass it:
 
 ```kotlin
-            // Plan 3: the catalog's pinned commit; sourceSha is sync.js's older name.
-            val commit = entry.optJSONObject("catalog")?.optString("sourceCommit", "")
-                ?.ifEmpty { null } ?: entry.optString("sourceSha", "").ifEmpty { null }
+            // Plan 3: the catalog's pinned commit, and ONLY that — deliberately no
+            // fallback to sourceSha, which is a stale snapshot from whenever sync.js
+            // last ran (236 of 302 live entries have one) and would freeze those
+            // plugins forever. No catalog block → null → today's behaviour (latest).
+            val commit = entry.optJSONObject("catalog")?.optString("sourceCommit", "")?.ifEmpty { null }
             val result = when (sourceType) {
                 "local" -> installFromLocal(id, sourceRef, sourceMarketplace)
                 "url" -> installFromUrl(id, sourceRef, commit)
@@ -597,13 +711,23 @@ In the `when (sourceType)` block (lines 115–124), read the commit once above i
 
 ```kotlin
         // Marketplace overhaul (spec §1.4): a member of a bundle installs the bundle.
+        // `!= id` is a cycle guard — partOf comes from a background-built catalog we
+        // do not control, and a self-referencing row would recurse until the process
+        // dies. One hop only; a bundle is never itself a member. Mirrors desktop.
         entry.optJSONObject("catalog")?.optJSONObject("partOf")?.optString("id", "")
-            ?.takeIf { it.isNotEmpty() }?.let { return install(it) }
+            ?.takeIf { it.isNotEmpty() && it != id }?.let { return install(it) }
 ```
 
 (Match the real function name and return type you find; keep the recursion on the same entry point the WebView calls.)
 
-- [ ] **Step 6: Run Android tests and commit**
+- [ ] **Step 6: Pin the two host strings together**
+
+Add to `desktop/tests/ipc-channels.test.ts` (it already reads Kotlin source as text for the
+channel-parity blocks): assert that `MarketplaceFetcher.kt`'s host constant and
+`marketplace-api-client.ts`'s `MARKETPLACE_API_HOST` are the same string. Two hand-maintained
+copies of a URL in two languages is exactly the drift the IPC parity tests exist to catch.
+
+- [ ] **Step 7: Run Android tests and commit**
 
 Run: `./gradlew test -x bundleWebUi` → BUILD SUCCESSFUL.
 
@@ -632,7 +756,7 @@ Replace the header's "nothing in this file ships" paragraph with:
 
 - [ ] **Step 2: Fix the registry docs** (workspace repo `/home/destin/youcoded-dev`)
 
-`docs/registries.md`: line 3 — replace the "No CI rebuild on either" sentence with "The app reads the Worker's `/catalog` (rebuilt hourly by `catalog-ingest.yml` in wecoded-marketplace) and falls back to `index.json` on GitHub; `index.json` is rebuilt by `validate-plugin-pr.yml` on plugin merges." Line 12 — the cache dir is `~/.claude/youcoded-marketplace-cache/` (five code sites; the doc said `wecoded-`). Apply the same two corrections to `.claude/rules/registries.md`.
+`docs/registries.md`: line 3 — replace the "No CI rebuild on either" sentence with "The app reads the Worker's `/catalog` (rebuilt hourly by `catalog-ingest.yml` in wecoded-marketplace, conditional-GET'd via ETag) and falls back to `index.json` on GitHub; `index.json` is rebuilt by `validate-plugin-pr.yml` on plugin merges." Line 12 — the cache dir is `~/.claude/youcoded-marketplace-cache/` (five code sites; the doc said `wecoded-`). Add a line naming the `CATALOG_ENABLED` kill switch and what it does (503 → clients fall back to `index.json`), since that is the thing a future session needs to find in a hurry. Apply the same corrections to `.claude/rules/registries.md`.
 
 - [ ] **Step 3: Commit (two repos)**
 
@@ -645,7 +769,15 @@ cd /home/destin/youcoded-dev && git add docs/registries.md .claude/rules/registr
 
 ### Task 6: Rows the installer cannot install — hide Install, show the source
 
-Plan 2 emits rows with `sourceType: "mcp-registry"` (Connections from the MCP Registry / Docker — installed through the MCP settings, not as a plugin) and `sourceType: "file"` (a single markdown file: awesome-copilot agents/instructions). Today's installer answers both with `Unknown source type`, and the UI would show a green Install that fails. Prompt rows (`type: "prompt"` with inline `prompt` text, from awesome-cursorrules) already install through the provider's prompt path.
+Plan 2 emits rows with `sourceType: "mcp-registry"` (Connections from Docker's MCP catalog — installed through the MCP settings, not as a plugin) and `sourceType: "file"` (a single markdown file: awesome-copilot agents/instructions). Today's installer answers both with `Unknown source type`, and the UI would show a green Install that fails. Prompt rows (`type: "prompt"` with inline `prompt` text, from awesome-cursorrules) are supposed to install through the provider's prompt path.
+
+> **Verify that path actually works before trusting it.** There are **zero** live prompt
+> entries in the registry today — all 14 are deprecated, and the strategy doc calls the type
+> dead. This plan routes 257 cursorrules onto a code path nothing has exercised in months.
+> Before Step 3, install one prompt row end-to-end in a dev instance (or write a provider
+> test that does) and confirm it lands where the app expects. If it has rotted, the honest
+> move is `isInstallableSource` returning `false` for prompts too, plus a ROADMAP item — a
+> "prompt" that shows Install and then fails is worse than one that shows Open source.
 
 **Files:**
 - Modify: `desktop/src/renderer/components/marketplace/MarketplaceDetailOverlay.tsx` (the Install/Uninstall block in `SkillBody`'s header)
@@ -729,9 +861,20 @@ Run: `cd /home/destin/youcoded-dev && bash scripts/verify.sh marketplace-ui --fu
 Run: `curl -s https://wecoded-marketplace-api.destinj101.workers.dev/catalog | python3 -c "import json,sys; d=json.load(sys.stdin); e=d['entries']; print(len(e), sum(1 for x in e if x.get('catalog')), sum(1 for x in e if (x.get('catalog') or {}).get('partOf')))"`
 Expected: three numbers — total rows, rows with a catalog block (must equal total), member rows (> 0).
 
+Then prove the hourly refresh is actually cheap, on both platforms:
+```bash
+API=https://wecoded-marketplace-api.destinj101.workers.dev
+ETAG=$(curl -sI $API/catalog | grep -i '^etag:' | cut -d' ' -f2- | tr -d '\r')
+curl -s -o /dev/null -w 'repeat=%{http_code} bytes=%{size_download}\n' -H "If-None-Match: $ETAG" $API/catalog
+```
+Expected `repeat=304 bytes=0`. Then, in a dev instance, expire the cache file
+(`fetchedAt: 0`) and relaunch: the log should show the conditional request and no
+re-download. If the app re-downloads several MB, the ETag wiring is wrong and it will do
+that hourly on every user's device, including phones on mobile data — that blocks the merge.
+
 - [ ] **Step 2: Hand it to Destin for the interactive pass — do not script it**
 
-Say before launching: `bash scripts/run-dev.sh marketplace-ui --label "Marketplace overhaul"` opens a window. He checks: the type switch counts, a Skills-tab card with "Part of …", a detail page's badges and "What this can do" showing REAL values (compare one against its GitHub repo), install a `url`-sourced plugin and confirm `git -C ~/.claude/plugins/marketplaces/youcoded/plugins/<id> rev-parse HEAD` equals its `sourceCommit`. Then kill the dev window.
+Say before launching: `bash scripts/run-dev.sh marketplace-ui --label "Marketplace overhaul"` opens a window. He checks: the type switch counts, a Skills-tab card with "Part of …", a detail page's badges and "What this can do" showing REAL values (compare one against its GitHub repo), install a `url`-sourced plugin and confirm `git -C ~/.claude/plugins/marketplaces/youcoded/plugins/<id> rev-parse HEAD` equals its `sourceCommit` — **and that this sha is the repo's current tip on GitHub, not an old one.** A pin to a stale commit is the one failure here that looks like success. Then kill the dev window.
 
 - [ ] **Step 3: Merge and clean up**
 
@@ -756,7 +899,9 @@ EOF
 After merge (squash or merge per repo habit) and CI green:
 
 ```bash
-cd /home/destin/youcoded-dev/youcoded && git pull origin master && git branch --contains $(git rev-parse origin/master) | grep -q master
+# Confirm the FEATURE commit is on master. `git rev-parse origin/master` would be
+# trivially true right after a pull and prove nothing.
+cd /home/destin/youcoded-dev/youcoded && git pull origin master && git branch --contains <the merge sha from the PR> | grep -q master
 git worktree remove /home/destin/youcoded-dev/worktrees/marketplace-ui
 git push origin --delete feat/marketplace-overhaul-ui; git branch -D feat/marketplace-overhaul-ui
 ```

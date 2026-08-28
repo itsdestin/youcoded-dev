@@ -21,10 +21,12 @@ part: 1 of 3 (feedback routes) — see also 2026-08-28-marketplace-catalog-servi
 - New Worker routes parse JSON with `parseJsonBody` (`src/lib/parse-json.ts`), never `c.req.json()` directly.
 - Any public `GET` must be added to `isPublicReadPath()` in `worker/src/index.ts` (lines 64–71) or Android's `Origin: null` WebView is blocked by CORS.
 - `[env.test]` in `wrangler.toml` does not inherit bindings; this plan adds none.
-- Migrations are `worker/migrations/NNNN_snake_case.sql`; next number is **0005**. CI applies them (`worker-deploy.yml`) — never run `wrangler deploy` by hand.
+- Migrations are `worker/migrations/NNNN_snake_case.sql`; this plan is **0005**, unconditionally — it merges before the catalog plan, which is 0006. Do **not** renumber either: D1 records applied migrations by filename and applies them in order, so inserting a lower number after a higher one has already run applies it out of order. CI applies them (`worker-deploy.yml`) — never run `wrangler deploy` by hand.
+- **Plugin ids may contain a slash.** A bundle member is `<bundle>/<name>` (spec §1.4) and has its own page with its own Feedback section. `validateId` is length-only (1–128 chars) so the id passes, but a Hono `:param` does not cross a slash and `isPublicReadPath` rejects a second segment — every id-taking route added here must accept one **or two** segments (Task 4).
 - Worker tests share one D1 (`singleWorker: true`): every `describe` that writes must `DELETE FROM` its tables in `beforeEach`.
 - App IPC channels for marketplace writes are string literals in `desktop/src/main/marketplace-api-handlers.ts` (`CHANNELS` array + `ipcMain.handle("…")`), inlined constants in `desktop/src/main/preload.ts` `IPC` block, `invoke('…')` in `desktop/src/renderer/remote-shim.ts`, and a `"…" -> { }` arm in `app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt`. (`remote-server.ts` has no `marketplace:rate` case today — the remote browser cannot rate either; this plan matches that, it does not fix it.)
 - Copy: "Helpful" / "Not for me" / "Post comment" as approved; comment limit **2000** characters; comments need sign-in only, votes need sign-in **and** a prior install.
+- **No Report button on comments in v1** (spec §5): the `reports` table is keyed to a rating (`rating_user_id`, `rating_plugin_id`) and cannot take a comment id without a schema change. Ship no affordance rather than a dead one.
 - App work happens on `youcoded` branch `feat/marketplace-overhaul-ui` (worktree `worktrees/marketplace-ui`); Worker work on a new `wecoded-marketplace` branch `feat/feedback-routes` (from `master`). Run `bash scripts/verify.sh marketplace-ui` (workspace root) before calling any app task done; `cd worker && npm test && npm run typecheck` for Worker tasks.
 
 ---
@@ -48,6 +50,34 @@ part: 1 of 3 (feedback routes) — see also 2026-08-28-marketplace-catalog-servi
 - Modify `desktop/src/renderer/components/marketplace/FeedbackSection.tsx` — call the channels, not a token-less client.
 - Modify `desktop/tests/ipc-channels.test.ts` — parity block for the two channels.
 - Modify `desktop/src/renderer/dev/workbench/mock-shim.ts` — fake `marketplaceApi.thumb/comment` (the fake Worker in `fixtures/marketplace/worker-api-mock.ts` already answers the HTTP side).
+
+---
+
+### Task 0: Prove the rate limiter actually limits (blocks everything else)
+
+`checkRateLimit` (`worker/src/lib/rate-limit.ts`) keeps its counters **only** in the
+Cloudflare Cache API. Cloudflare documents the Cache API as having **no effect on
+`*.workers.dev` deployments**, and the Worker is served from
+`wecoded-marketplace-api.destinj101.workers.dev`. If that holds, every call returns
+"allowed" and this plan's 20-comments-per-hour brake does not exist. That mattered less for
+ratings (install-gated, one row per plugin); an **open comment box needs sign-in only**, so
+one account could post without limit.
+
+- [ ] **Step 1: Measure it against production**
+
+Sign in, then post the same report 70 times in a loop against
+`POST /reports` (limit 20/hr) and record the status codes. Expected if the limiter works:
+20× 200 then 429s. Expected if it does not: 70× 200.
+
+- [ ] **Step 2: If it does not limit, move the counter to D1 before Task 1**
+
+Add to migration 0005: `CREATE TABLE rate_counters (key TEXT PRIMARY KEY, count INTEGER NOT
+NULL, window_start INTEGER NOT NULL);` and rewrite `checkRateLimit` as a single
+`INSERT … ON CONFLICT DO UPDATE` that resets `count` when `window_start` is older than the
+window. Add `DELETE FROM rate_counters WHERE window_start < ?` to the existing daily cron
+(`wrangler.toml` `crons = ["17 6 * * *"]`). Every existing caller keeps the same signature,
+so nothing else changes — and ratings/reports/installs gain the limit they were supposed to
+have all along. Note the finding in `ROADMAP.md` either way.
 
 ---
 
@@ -132,7 +162,7 @@ git commit -m "feat(worker): thumbs + comments tables (marketplace feedback)"
 - Test: `worker/test/feedback-validate.test.ts`
 
 **Interfaces:**
-- Produces: `MAX_COMMENT_LEN = 2000`; `parseVote(raw: unknown): 1 | -1 | null` (throws `Error("value must be up, down or null")`); `validateCommentText(raw: unknown): string` (throws `Error` with the reason: empty / too long / URL / spam).
+- Produces: `MAX_COMMENT_LEN = 2000`, `MAX_COMMENT_LINKS = 2`; `parseVote(raw: unknown): 1 | -1 | null` (throws `Error("value must be up, down or null")`); `validateCommentText(raw: unknown): string` (throws `Error` with the reason: empty / too long / too many links / spam).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -160,9 +190,14 @@ describe("validateCommentText", () => {
   it("rejects empty, overlong, URL and repeated-character spam", () => {
     expect(() => validateCommentText("   ")).toThrow("comment is empty");
     expect(() => validateCommentText("x".repeat(MAX_COMMENT_LEN + 1))).toThrow("comment too long");
-    expect(() => validateCommentText("see https://evil.example")).toThrow("URLs are not allowed in comments");
-    expect(() => validateCommentText("aaaaaaaaaaaaaaa")).toThrow("comment appears to be spam");
+    expect(() => validateCommentText("aaaaaaaaaaaaaaaaaaaaaaaaa")).toThrow("comment appears to be spam");
     expect(() => validateCommentText(42)).toThrow("comment is empty");
+  });
+  it("allows a link — the most useful comment on a plugin is often one", () => {
+    expect(validateCommentText("known issue, see https://github.com/x/y/issues/3")).toContain("issues/3");
+  });
+  it("rejects a comment that is mostly links", () => {
+    expect(() => validateCommentText("https://a.example https://b.example https://c.example https://d.example")).toThrow("too many links");
   });
   it("allows exactly MAX_COMMENT_LEN characters", () => {
     expect(validateCommentText("y".repeat(MAX_COMMENT_LEN)).length).toBe(MAX_COMMENT_LEN);
@@ -185,6 +220,8 @@ Create `worker/src/feedback/validate.ts`:
 // the message in badRequest(), the same split ratings/moderation.ts uses.
 
 export const MAX_COMMENT_LEN = 2000;
+/** Links per comment. A link or two is a citation; five is an advert. */
+export const MAX_COMMENT_LINKS = 2;
 
 /** Body `value` for POST /thumbs → the stored vote. null clears the vote. */
 export function parseVote(raw: unknown): 1 | -1 | null {
@@ -194,17 +231,26 @@ export function parseVote(raw: unknown): 1 | -1 | null {
   throw new Error("value must be up, down or null");
 }
 
-/** Comment text before persisting: trimmed, bounded, no URLs, no
- *  repeated-character spam — the review rules, with a 2000-char limit
- *  (comments are a conversation; 500 was the review cap). */
+/** Comment text before persisting: trimmed, bounded, at most a couple of links,
+ *  no long repeated-character runs — the review rules relaxed for a conversation
+ *  (2000 chars, not the review cap of 500).
+ *
+ *  Reviews banned URLs outright. Comments must NOT: on a plugin thread "known
+ *  issue, see github.com/x/y/issues/3" is the single most useful thing anyone
+ *  can leave, and banning it would train people not to bother. Link SPAM is the
+ *  actual worry, so cap the count instead; the llama-guard classifier in the
+ *  route is the second line. The repeated-character run is 20+, not 10+, so an
+ *  ASCII rule (`----------`) or an ellipsis is not "spam". */
 export function validateCommentText(raw: unknown): string {
   const trimmed = typeof raw === "string" ? raw.trim() : "";
   if (trimmed.length === 0) throw new Error("comment is empty");
   if (trimmed.length > MAX_COMMENT_LEN) {
     throw new Error(`comment too long (${trimmed.length} > ${MAX_COMMENT_LEN})`);
   }
-  if (/https?:\/\//i.test(trimmed)) throw new Error("URLs are not allowed in comments");
-  if (/(.)\1{9,}/.test(trimmed)) throw new Error("comment appears to be spam");
+  if ((trimmed.match(/https?:\/\//gi) ?? []).length > MAX_COMMENT_LINKS) {
+    throw new Error(`too many links (at most ${MAX_COMMENT_LINKS})`);
+  }
+  if (/(.)\1{19,}/.test(trimmed)) throw new Error("comment appears to be spam");
   return trimmed;
 }
 ```
@@ -212,7 +258,7 @@ export function validateCommentText(raw: unknown): string {
 - [ ] **Step 4: Run to see it pass**
 
 Run: `npx vitest run test/feedback-validate.test.ts`
-Expected: PASS (3 tests)
+Expected: PASS (5 tests)
 
 - [ ] **Step 5: Commit**
 
@@ -413,7 +459,7 @@ git commit -m "feat(worker): POST /thumbs — one install-gated vote per user pe
 
 **Interfaces:**
 - Consumes: `classifyReview(ai, text)` (`src/ratings/moderation.ts:31` — reused as-is; it is a generic text classifier), `randomToken(16)` (`src/lib/crypto.ts:3`), `validateCommentText` (Task 2).
-- Produces: `POST /comments` body `{ plugin_id, text }` → `200 { ok: true, id: string, hidden: boolean }`; `GET /comments/:plugin_id` → `200 { comments: Array<{ id, user_id, user_login, user_avatar_url, text, created_at }> }` newest first, max 50, hidden excluded, any origin allowed.
+- Produces: `POST /comments` body `{ plugin_id, text }` → `200 { ok: true, id: string, hidden: boolean }`; `GET /comments/:plugin_id` **and** `GET /comments/:bundle/:name` → `200 { comments: Array<{ id, user_id, user_login, user_avatar_url, text, created_at }> }` newest first, max 50, hidden excluded, any origin allowed. The two-segment form is how a bundle **member** page reads its thread (`superpowers/brainstorming`, spec §1.4 and §2).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -440,12 +486,12 @@ describe("POST /comments + GET /comments/:plugin_id", () => {
     expect(body.id).toMatch(/^[0-9a-f]{32}$/);
   });
 
-  it("400s on empty text, URLs and overlong text", async () => {
+  it("400s on empty text, link spam and overlong text", async () => {
     const { token } = await seed();
     expect((await post("/comments", token, { plugin_id: "foo:bar", text: "   " })).status).toBe(400);
-    const r = await post("/comments", token, { plugin_id: "foo:bar", text: "go to https://x.y" });
+    const r = await post("/comments", token, { plugin_id: "foo:bar", text: "a https://a.x b https://b.x c https://c.x" });
     expect(r.status).toBe(400);
-    expect(await r.text()).toBe("URLs are not allowed in comments");
+    expect(await r.text()).toBe("too many links (at most 2)");
     expect((await post("/comments", token, { plugin_id: "foo:bar", text: "z".repeat(2001) })).status).toBe(400);
   });
 
@@ -473,18 +519,31 @@ describe("POST /comments + GET /comments/:plugin_id", () => {
     const res = await SELF.fetch("https://test.local/comments/nothing-here");
     expect(await res.json()).toEqual({ comments: [] });
   });
+
+  it("reads a bundle MEMBER's thread — the id has a slash", async () => {
+    const { token } = await seed("bob");
+    const memberId = "superpowers/brainstorming";
+    expect((await post("/comments", token, { plugin_id: memberId, text: "does this need a key?" })).status).toBe(200);
+    // Unencoded: this is how the renderer builds the URL for a member page.
+    const res = await SELF.fetch("https://test.local/comments/superpowers/brainstorming");
+    expect(res.status).toBe(200);
+    const { comments } = await res.json<{ comments: Array<{ text: string }> }>();
+    expect(comments.map((c) => c.text)).toEqual(["does this need a key?"]);
+  });
 });
 ```
 
 Append to `worker/test/cors.test.ts` (copy the shape of the existing `GET /ratings/:plugin_id accepts any origin` test at lines 37–44 and change the path):
 
 ```ts
-  it("GET /comments/:plugin_id accepts any origin", async () => {
-    const res = await SELF.fetch("https://test.local/comments/some-plugin", {
-      headers: { Origin: "https://nowhere.example" },
-    });
-    expect(res.status).toBe(200);
-    expect(res.headers.get("access-control-allow-origin")).toBe("*");
+  it("GET /comments accepts any origin, for a plugin id and a member id", async () => {
+    for (const p of ["/comments/some-plugin", "/comments/some-plugin/some-member"]) {
+      const res = await SELF.fetch(`https://test.local${p}`, {
+        headers: { Origin: "https://nowhere.example" },
+      });
+      expect(res.status).toBe(200);
+      expect(res.headers.get("access-control-allow-origin")).toBe("*");
+    }
   });
 ```
 
@@ -500,6 +559,7 @@ Expected: FAIL — comments tests 404; the CORS test fails on status/header.
 Append to `worker/src/feedback/routes.ts` (add `classifyReview`, `randomToken`, `validateCommentText` to the imports):
 
 ```ts
+import type { Context } from "hono";
 import { classifyReview } from "../ratings/moderation";
 import { randomToken } from "../lib/crypto";
 import { parseVote, validateCommentText } from "./validate";   // replaces the parseVote-only import
@@ -531,11 +591,15 @@ feedbackRoutes.post("/comments", requireAuth, async (c) => {
   return c.json({ ok: true, id, hidden: hidden === 1 });
 });
 
-// GET /comments/:plugin_id → { comments } — public, newest first, LIMIT 50,
-// hidden excluded. Wire names match GET /ratings (user_login / user_avatar_url)
-// because the app's CommentList already reads them.
-feedbackRoutes.get("/comments/:plugin_id", async (c) => {
-  const pluginId = validateId(c.req.param("plugin_id"));
+// GET /comments/<id> → { comments } — public, newest first, LIMIT 50, hidden
+// excluded. Wire names match GET /ratings (user_login / user_avatar_url) because
+// the app's CommentList already reads them.
+//
+// TWO routes, one handler: a bundle member's id is `<bundle>/<name>` (spec §1.4),
+// and Hono's `:param` never matches across a slash — a single-segment route would
+// 404 every member page's comment thread. Register the two-segment form FIRST so
+// it wins the match.
+async function listComments(c: Context<HonoEnv>, pluginId: string) {
   const ip = c.req.raw.headers.get("CF-Connecting-IP") ?? "unknown";
   if (!(await checkRateLimit(`comments-list:${ip}`, 60, 60))) {
     throw tooMany("too many requests");
@@ -560,7 +624,12 @@ feedbackRoutes.get("/comments/:plugin_id", async (c) => {
     created_at: row.created_at,
   }));
   return c.json({ comments });
-});
+}
+
+feedbackRoutes.get("/comments/:bundle/:name", (c) =>
+  listComments(c, validateId(`${c.req.param("bundle")}/${c.req.param("name")}`))
+);
+feedbackRoutes.get("/comments/:plugin_id", (c) => listComments(c, validateId(c.req.param("plugin_id"))));
 ```
 
 Edit `worker/src/index.ts` `isPublicReadPath` (lines 64–71) so it reads:
@@ -571,11 +640,16 @@ Edit `worker/src/index.ts` `isPublicReadPath` (lines 64–71) so it reads:
 // Anything else falls through to strict.
 function isPublicReadPath(path: string): boolean {
   if (path === "/stats") return true;
-  for (const prefix of ["/ratings/", "/comments/"]) {
-    if (path.startsWith(prefix)) {
-      const rest = path.slice(prefix.length);
-      return rest.length > 0 && !rest.includes("/");
-    }
+  if (path.startsWith("/ratings/")) {
+    const rest = path.slice("/ratings/".length);
+    return rest.length > 0 && !rest.includes("/");
+  }
+  // /comments/<plugin_id> OR /comments/<bundle>/<member> — a bundle member's id
+  // carries a slash (spec §1.4). Two segments max; Android's WebView sends
+  // `Origin: null`, so a miss here is a CORS block, not just a 404.
+  if (path.startsWith("/comments/")) {
+    const parts = path.slice("/comments/".length).split("/");
+    return parts.length <= 2 && parts.every((p) => p.length > 0);
   }
   return false;
 }
@@ -584,7 +658,7 @@ function isPublicReadPath(path: string): boolean {
 - [ ] **Step 4: Run to see them pass**
 
 Run: `npx vitest run test/feedback.test.ts test/cors.test.ts && npm run typecheck`
-Expected: PASS (feedback 9 tests, cors all tests); typecheck clean.
+Expected: PASS (feedback 10 tests, cors all tests); typecheck clean.
 
 - [ ] **Step 5: Commit**
 
@@ -751,7 +825,7 @@ Expected: PR opens; `Worker CI` must be green before merge. **Merge it before st
 - Modify: `desktop/src/renderer/state/marketplace-api-client.ts` (the three `listComments` / `postComment` / `setThumb` members added on the branch)
 
 **Interfaces:**
-- Produces: `postComment(input): Promise<{ ok: true; id: string; hidden: boolean }>`; `setThumb(input): Promise<{ ok: true; vote: "up" | "down" | null }>`; `listComments` unchanged.
+- Produces: `postComment(input): Promise<{ ok: true; id: string; hidden: boolean }>`; `setThumb(input): Promise<{ ok: true; vote: "up" | "down" | null }>`; `listComments` unchanged **except** that it must NOT `encodeURIComponent` the id — a member id is `<bundle>/<name>` and the slash has to stay a path separator (`/comments/${pluginId}`), matching the two-segment route from Task 4. Check what it does today and fix it if it encodes.
 
 - [ ] **Step 1: Edit the interface and the implementation**
 
@@ -943,6 +1017,7 @@ git commit -m "feat(marketplace): marketplace:thumb + marketplace:comment on des
 
 **Files:**
 - Modify: `desktop/src/renderer/components/marketplace/FeedbackSection.tsx`
+- Modify: `desktop/src/renderer/components/marketplace/CommentList.tsx` — remove the per-comment **Report** affordance (spec §5: the `reports` table is keyed to a rating and cannot take a comment id; ship nothing rather than a dead button)
 - Modify: `desktop/src/renderer/dev/workbench/mock-shim.ts` (hand-written `marketplaceApi` members — search `handWritten(` and the existing `likeTheme` fake if any; otherwise add a `marketplaceApi` object next to the other hand-written namespaces)
 - Test: `desktop/tests/feedback-section.test.tsx` (new)
 
@@ -990,6 +1065,12 @@ describe('FeedbackSection', () => {
     fireEvent.change(screen.getByLabelText('Write a comment'), { target: { value: 'Does it work offline?' } });
     fireEvent.click(screen.getByRole('button', { name: /post comment/i }));
     await waitFor(() => expect(comment).toHaveBeenCalledWith({ plugin_id: 'p1', text: 'Does it work offline?' }));
+  });
+
+  it('renders no Report control on a comment (no backend for it in v1)', () => {
+    (window as any).claude = { marketplaceApi: { thumb, comment } };
+    render(<FeedbackSection pluginId="p1" installed />);
+    expect(screen.queryByRole('button', { name: /report/i })).toBeNull();
   });
 
   it('disables voting until installed, with the reason', () => {
@@ -1062,7 +1143,7 @@ In `desktop/src/renderer/dev/workbench/mock-shim.ts`, inside the hand-written im
 
 - [ ] **Step 5: Run the test, the gate, and commit**
 
-Run: `npx vitest run tests/feedback-section.test.tsx` → PASS (3).
+Run: `npx vitest run tests/feedback-section.test.tsx` → PASS (4).
 Run: `cd /home/destin/youcoded-dev && bash scripts/verify.sh marketplace-ui` → OK.
 
 ```bash
@@ -1078,6 +1159,9 @@ git commit -m "feat(marketplace): FeedbackSection votes and comments through the
 
 Run: `curl -s https://wecoded-marketplace-api.destinj101.workers.dev/comments/civic-report`
 Expected: `{"comments":[]}` (or real rows).
+Run: `curl -s https://wecoded-marketplace-api.destinj101.workers.dev/comments/superpowers/brainstorming`
+Expected: `{"comments":[]}` — **not** a 404. This is the member-page path; a 404 here means
+the two-segment route from Task 4 did not register.
 Run: `curl -s https://wecoded-marketplace-api.destinj101.workers.dev/stats | python3 -c "import json,sys; d=json.load(sys.stdin); p=next(iter(d['plugins'].values())); print(sorted(p))"`
 Expected: `['installs', 'rating', 'review_count', 'thumbs_down', 'thumbs_up']`
 
@@ -1088,3 +1172,8 @@ Tell Destin: launch `bash scripts/run-dev.sh marketplace-ui --label "Marketplace
 - [ ] **Step 3: ROADMAP + docs**
 
 In `ROADMAP.md`'s overhaul entry, note "feedback routes shipped <date>"; the deferred items in the spec §5 stay. Nothing to archive yet — the branch is not merged until Plan 3 lands (the cards still need the catalog for their badges).
+
+Add these ROADMAP items in the same session:
+- **Delete your own comment** — reviews had it (`marketplace:rate:delete`), comments do not, on any platform.
+- **Report a comment** — needs a `reports` schema that can key to a comment id, not just a rating; the button is deliberately absent until then (spec §5).
+- Whatever Task 0 found about `checkRateLimit` — either "moved to D1, ratings/reports/installs now genuinely limited" or "verified working on workers.dev, no change".
