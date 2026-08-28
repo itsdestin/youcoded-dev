@@ -1,0 +1,4 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=demo",
+  "theme": "midnight", "boot": 3000,
+  "actions": [ {"hold": 600}, {"click": "[placeholder^='Message']", "settle": 300},
+               {"typeSlow": "what's in my Documents folder?", "cps": 20}, {"key": "Enter", "settle": 5000}, {"hold": 1200} ] }

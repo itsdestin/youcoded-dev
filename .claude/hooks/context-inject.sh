@@ -20,12 +20,20 @@ collect_repo_state() {
 
     [[ ! -d "$repo_dir/.git" ]] && return
 
-    local branch recent dirty dirty_count
+    local branch recent dirty dirty_count behind
     branch=$(git -C "$repo_dir" branch --show-current 2>/dev/null || echo "detached")
     recent=$(git -C "$repo_dir" log --oneline -3 2>/dev/null || echo "  (no commits)")
     dirty=$(git -C "$repo_dir" status --porcelain 2>/dev/null | head -5)
+    # How far this checkout trails its upstream, as of the LAST fetch (no network
+    # here — a hook must not block on it). WHY: the main youcoded checkout sat 146
+    # commits behind for two days on 2026-08-27 and nothing said so; Serena is
+    # pinned to it, so every symbol lookup was answering from stale code.
+    behind=$(git -C "$repo_dir" rev-list --count 'HEAD..@{u}' 2>/dev/null || echo "0")
 
     echo "### $repo_name (on \`$branch\`)"
+    if [[ "$behind" =~ ^[0-9]+$ && "$behind" -gt 0 ]]; then
+        echo "⚠ ${behind} commits behind its upstream as of the last fetch — run \`git -C $repo_name pull --ff-only\` before trusting Serena or this summary"
+    fi
     echo "Recent commits:"
     echo '```'
     echo "$recent" | sed 's/^/  /'

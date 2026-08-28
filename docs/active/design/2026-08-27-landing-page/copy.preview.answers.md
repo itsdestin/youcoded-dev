@@ -1,0 +1,24 @@
+# Copy preview — edits (2026-08-28 00:43)
+
+- **CUT** `hero.btn2`: See it work
+  - why: the actual section is literally right below. unnecessary
+- **CUT** `hero.btn1`: Download
+  - why: i want to just keep the old floating download button that stays at the bottom of the screen.
+- **EDIT** `embed.title`
+  - was: This is the app. Click around.
+  - now: Click around, I guess.
+- **EDIT** `embed.desc`
+  - was: Type a message, open the model picker, switch the look — it's the real interface running on a pretend computer. Nothing you do here leaves this page.
+  - now: Type a message, open the model picker, or switch the theme. This demo is a pixel-perfect representation of the real app's interface.&nbsp;
+- **EDIT** `about.p1`
+  - was: Most AI lives in a chat box on someone else's website. YouCoded Agent lives on your computer and phone, working in your own files — with Claude, hundreds of other models, or one that runs free on your machine. The look, the plugins, and your data are all yours.
+  - now: YouCoded is a fully-customizable AI assistant that works with your own files and data to autonomously accomplish tasks.&nbsp; Review and organize large spreadsheets, compile the latest medical or financial research, draft an email or slideshow, or build new features in large coding projects. With YouCoded, you can utilize OpenRouter to access any AI model from any provider including Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and more. YouCoded also allows you to download and run open source AI models on your own device, if your hardware supports it. YouCoded is built to become a fully-modular and open source assistant platform, as the app itself integrates the ability for all users to build and share skills, tools, themes, and app improvements. Because YouCoded was designed from the ground up to improved by individuals with no coding or development interest, it can quickly outpace development of competing closed agents in a way that is driven by what users really want.
+- **EDIT** `nav.agent`
+  - was: Agent
+  - now: Assistant
+- **EDIT** `nav.sub`
+  - was: AI for Everyone.
+  - now: Agentic AI for Everyone.
+- **EDIT** `hero.sub`
+  - was: One app for Claude, hundreds of cloud models, or one that runs free on your own computer — working in your files, on every device you own.
+  - now: A self-improving, customizable AI agent. Use any AI model from any provider to build or accomplish anything you want.
