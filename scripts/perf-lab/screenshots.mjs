@@ -123,9 +123,53 @@ const DIFF_EXPR = (aB64, bB64) => `(async () => {
     const w = Math.max(A.width, B.width), h = Math.max(A.height, B.height);
     const px = (img) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(img, 0, 0); return g.getImageData(0, 0, w, h).data; };
     const a = px(A), b = px(B); let differing = 0;
-    for (let i = 0; i < a.length; i += 4) { if (Math.abs(a[i]-b[i]) > 16 || Math.abs(a[i+1]-b[i+1]) > 16 || Math.abs(a[i+2]-b[i+2]) > 16 || Math.abs(a[i+3]-b[i+3]) > 16) differing++; }
+    // Bounding box of the change, so a DIFF says WHERE. Reading a percentage and
+    // then hand-writing a one-off image differ to find out whether "2.21%" was a
+    // real regression or a 15px shift cost real time on 2026-08-28.
+    let minX = w, minY = h, maxX = -1, maxY = -1;
+    const differs = (i, j) => Math.abs(a[i]-b[j]) > 16 || Math.abs(a[i+1]-b[j+1]) > 16 || Math.abs(a[i+2]-b[j+2]) > 16 || Math.abs(a[i+3]-b[j+3]) > 16;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4;
+        if (differs(i, i)) {
+          differing++;
+          if (x < minX) minX = x; if (x > maxX) maxX = x;
+          if (y < minY) minY = y; if (y > maxY) maxY = y;
+        }
+      }
+    }
     const total = w * h;
-    return { total, differing, pct: Math.round(differing / total * 10000) / 100,
+    const pct = Math.round(differing / total * 10000) / 100;
+
+    // Is the whole frame just SHIFTED vertically? That is the signature of a
+    // layout change above the content (a header appearing, a row being added) —
+    // visually enormous as a pixel count, and almost never the thing under test.
+    // Sampled every 2nd row/column: this only has to name the offset, not measure it.
+    let shift = null;
+    if (differing > 0 && A.width === B.width && A.height === B.height) {
+      let best = null;
+      for (let dy = -40; dy <= 40; dy++) {
+        if (dy === 0) continue;
+        let bad = 0, seen = 0;
+        for (let y = Math.max(0, -dy); y < Math.min(h, h - dy); y += 2) {
+          for (let x = 0; x < w; x += 2) {
+            seen++;
+            if (differs((y * w + x) * 4, ((y + dy) * w + x) * 4)) bad++;
+          }
+        }
+        if (seen === 0) continue;
+        const p = bad / seen;
+        if (best === null || p < best.p) best = { dy, p };
+      }
+      // Only claim a shift when aligning on it explains nearly all of the change.
+      if (best && best.p * 100 < Math.max(0.05, pct * 0.2)) {
+        shift = { dy: best.dy, residualPct: Math.round(best.p * 10000) / 100 };
+      }
+    }
+
+    return { total, differing, pct,
+             box: maxX < 0 ? null : { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 },
+             shift,
              a: { width: A.width, height: A.height }, b: { width: B.width, height: B.height },
              sizeMatch: A.width === B.width && A.height === B.height };
   })()`;

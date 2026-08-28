@@ -68,6 +68,28 @@ The point is not "get a number". It is to get a number you can *defend* — meas
 a quiet machine, repeated enough times to know its own noise band, taken against a
 build that is byte-identical to what ships, with every boot's error log counted.
 
+### Launch it with `bg-run.sh`, not by hand
+
+```bash
+bash scripts/perf-lab/bg-run.sh --label cycle3-eviction        # a full run
+bash scripts/perf-lab/bg-run.sh --only history --history-repeats 1 --label probe
+```
+
+A full run is ~26 minutes, which is longer than an agent turn, and there are three
+ways to lose one that have all actually happened:
+
+- a `run_in_background` Bash task running the rig is **killed ~15–25 s after launch**
+  with no user action — `setsid nohup` survives, a plain `&` does not;
+- the log redirect and `--out` resolve against the **shell's cwd**, so a session whose
+  cwd had drifted into a worktree launched a run that died instantly with its log
+  written where nobody looked;
+- a watcher that greps only for *progress* lines is **silent through a hang**, and
+  silence is indistinguishable from "still running".
+
+`bg-run.sh` handles all three: it cds to the workspace root, launches detached, and
+prints the exact `Monitor` filter to watch it with — one that matches `TIMED OUT`,
+`aborted` and `EXIT` as well as progress.
+
 Start with `--dry-run`. It resolves everything — checkout, build freshness, boot
 counts, output paths, the deadline, and exactly which `compare.mjs` metrics the
 selected phases are on the hook for — and exits 0 having launched nothing.
@@ -337,6 +359,24 @@ Getting it back means raising `WATCH_TIMEOUT_MS` in `scenario-history.mjs`, or b
 that one size with `{ content: 'plain' }` — both deliberate choices, not defaults.
 
 ---
+
+## Reading a REJECT
+
+The gate is deliberately conservative and a REJECT is a **prompt to investigate, not a
+verdict on the change**. Cycle 2 shipped a 97% win whose first gate run rejected on
+four items, none of which was the change being bad. Run each one down before arguing
+with it — and equally, before accepting it:
+
+| the gate says | check |
+|---|---|
+| a **rate** regressed (`…Pct`) | compare the matching total. A change that makes a phase finish faster raises every rate in it. `cpuTotalSeconds` is gated for exactly this reason; `cpuDuringPct` is context only. |
+| a metric "was ZERO, now N" | look at the baseline's own per-run spread — `0, 0, 70` is not a zero baseline. Then decide whether N is a cost you *chose* (it may be the price of a correctness fix, and worth saying so out loud). |
+| a screen DIFFs | the differ now prints the bounding box and names a whole-frame vertical shift. A shift means a layout change **above** the content — often another PR's, so check `git log <baseline-sha>..HEAD` before assuming it is yours. |
+| a screen DIFFs by a lot | look at the PNG. A 14% diff on `native-chat` in cycle 2 was a genuine duplicate-message bug that no test caught. |
+
+`screen native-chat` photographs a real local model's reply, so it has a permanent
+non-deterministic floor of a few tenths of a percent. Anything meaningfully above that
+is real.
 
 ## Hard rules
 

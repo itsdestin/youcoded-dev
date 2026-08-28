@@ -353,12 +353,17 @@ export async function runReplayStallScenario(app, fixture, {
   pollMs = POLL_MS,
   stableSamples = STABLE_SAMPLES,
   settleMs = 500,
+  // Fires after EVERY repeat — see the WHY on runHistoryScenario's onProgress.
+  // A phase that can hang for its own timeout budget must report per repeat.
+  onProgress,
 } = {}) {
   const out = {};
   for (const size of sizes) {
     const runs = [];
     for (let rep = 0; rep < repeats; rep++) {
-      runs.push(await measureOnce(app, fixture, size, rep, { everyMs, timeoutMs, pollMs, stableSamples, settleMs }));
+      const run = await measureOnce(app, fixture, size, rep, { everyMs, timeoutMs, pollMs, stableSamples, settleMs });
+      runs.push(run);
+      onProgress?.({ size, rep, repeats, run });
     }
     const med = medianRun(runs);
     out[size] = {

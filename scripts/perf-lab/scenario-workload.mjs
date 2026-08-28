@@ -664,7 +664,8 @@ export const MEASURES = {
     switchMedianMs: 'click -> the visible pane CONTAINER swapped (2 animation frames). Does NOT wait for messages.',
     switchPaintedMedianMs: 'click -> the messages are on screen: entry count stable for 3 frames AND at least what the conversation holds (2 per turn, plus what streamed in so far). A stable count below that is a render pause or the wrong conversation, not a settle. For the two STREAMING sessions the count never holds still, so their clock stops at the first frame showing everything that had arrived by the click. This is the number a user would recognise.',
     'switchPaintedBySize.huge.medianMs': 'the same clock, for switches INTO the huge conversation only — the PRIMARY switch metric, because it is the case Destin lives in and the only bucket no stream touches',
-    cpuDuringPct: 'whole-process CPU across the workload window, from /proc',
+    cpuDuringPct: 'whole-process CPU across the workload window, from /proc — a RATE. Context only; never compare it across runs of different duration.',
+    cpuTotalSeconds: 'CPU-seconds of whole-process work across the workload window (rate x window). Duration-independent, so this is the one the keep/reject gate compares.',
   },
   blindTo: [
     'conversation sizes beyond the fixture huge transcript',
@@ -1090,6 +1091,14 @@ export async function runWorkloadScenario(app, fixture, {
       probeWorkloadWindow: probeWorkload,
       cpuDuringPct: round1(cpu.totalPct),
       cpuWindowSeconds: round1(elapsedSec),
+      // CPU-SECONDS, the duration-independent total. cpuDuringPct is a RATE, so
+      // it cannot be compared across runs whose windows differ — and a change
+      // that makes the phase FASTER raises the rate while lowering the work.
+      // That is not hypothetical: paged history cut this window 195s -> 40s for
+      // the same 40 switches, and the gate read the resulting +66% rate as a
+      // regression while total CPU work had fallen 358 -> 122 CPU-seconds
+      // (2026-08-28). The gate compares THIS path.
+      cpuTotalSeconds: round1(cpu.totalPct * elapsedSec / 100),
       pssAfterMb: pss.totalMb,
       pssBeforeSettingsMb: pssBefore.totalMb,
       pssBreakdown: pss.perPid,

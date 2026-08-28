@@ -30,10 +30,10 @@ const base = {
   },
   workload: {
     runs: [
-      { switchP95Ms: 20, switchPaintedBySize: { huge: { medianMs: 2400 } }, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30 },
-      { switchP95Ms: 24, switchPaintedBySize: { huge: { medianMs: 2500 } }, probe: { longtaskTotalMs: 130 }, pssAfterMb: 605, cpuDuringPct: 31 },
+      { switchP95Ms: 20, switchPaintedBySize: { huge: { medianMs: 2400 } }, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30, cpuWindowSeconds: 100, cpuTotalSeconds: 30 },
+      { switchP95Ms: 24, switchPaintedBySize: { huge: { medianMs: 2500 } }, probe: { longtaskTotalMs: 130 }, pssAfterMb: 605, cpuDuringPct: 31, cpuWindowSeconds: 100, cpuTotalSeconds: 31 },
     ],
-    median: { switchP95Ms: 20, switchPaintedBySize: { huge: { medianMs: 2400 } }, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30 },
+    median: { switchP95Ms: 20, switchPaintedBySize: { huge: { medianMs: 2400 } }, probe: { longtaskTotalMs: 100 }, pssAfterMb: 600, cpuDuringPct: 30, cpuWindowSeconds: 100, cpuTotalSeconds: 30 },
   },
   replayStall: {
     medium: {
@@ -76,6 +76,20 @@ const clone = () => JSON.parse(JSON.stringify(base));
 
 // The guard on the fixture itself. If PRIMARY gains a path and nobody adds it here, every
 // verdict() test below would quietly go back to grading a partial report.
+test('cpuTotalSeconds is derived for a report that predates it, so old baselines stay comparable', () => {
+  // cpuTotalSeconds replaced cpuDuringPct in PRIMARY on 2026-08-28 (a rate cannot
+  // be compared across runs of different duration). A missing PRIMARY path fails
+  // the gate CLOSED, which would have retired every existing baseline — so the
+  // total is derived from the rate x window a legacy report already carries.
+  const legacy = { workload: { median: { cpuDuringPct: 183.8, cpuWindowSeconds: 194.8 } } };
+  assert.equal(get(legacy, 'workload.median.cpuTotalSeconds'), 358.0);
+  // A report that carries the field directly is used as-is, never recomputed.
+  const modern = { workload: { median: { cpuDuringPct: 304.9, cpuWindowSeconds: 40, cpuTotalSeconds: 122 } } };
+  assert.equal(get(modern, 'workload.median.cpuTotalSeconds'), 122);
+  // Nothing to derive from stays undefined, so the gate still fails closed.
+  assert.equal(get({ workload: { median: {} } }, 'workload.median.cpuTotalSeconds'), undefined);
+});
+
 test('the fixture carries every PRIMARY path, or every test below is judging a partial report', () => {
   const gaps = PRIMARY.filter((p) => typeof get(base, p) !== 'number');
   assert.deepEqual(gaps, [], `fixture is missing: ${gaps.join(', ')}`);

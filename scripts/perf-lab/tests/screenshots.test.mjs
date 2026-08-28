@@ -8,6 +8,30 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { diffPngs, renderTestPng, compareScreens, capture, withHeadlessChrome, FREEZE, UNFREEZE, SCREEN_NAMES } from '../screenshots.mjs';
 
+test('diffPngs reports WHERE the change is, and names a whole-frame vertical shift', async () => {
+  // A DIFF percentage alone cannot be acted on: 2.21% on the welcome screen was a
+  // 15px shift from a header appearing (another PR's UI change), not a regression
+  // in the change under test. Finding that out by hand cost real time on
+  // 2026-08-28; the differ says it now.
+  const dir = mkdtempSync(join(tmpdir(), 'shot-shift-'));
+  const a = join(dir, 'a.png'), b = join(dir, 'b.png');
+  const bg = { x: 0, y: 0, w: 200, h: 200, color: '#ffffff' };
+  writeFileSync(a, await renderTestPng(200, 200, [bg, { x: 20, y: 40, w: 160, h: 60, color: '#101820' }]));
+  // The same content, 15px lower — a header appeared above it.
+  writeFileSync(b, await renderTestPng(200, 200, [bg, { x: 20, y: 55, w: 160, h: 60, color: '#101820' }]));
+  const r = await diffPngs(a, b);
+  assert.equal(r.shift?.dy, 15, 'should recognise the 15px downward shift');
+  assert.ok(r.box && r.box.h > 0, 'should report a bounding box for the change');
+  assert.ok(r.box.y >= 40 && r.box.y <= 41, `box should start at the moved block, got y=${r.box?.y}`);
+
+  // A LOCAL change is not a shift, and must not be reported as one.
+  const c = join(dir, 'c.png');
+  writeFileSync(c, await renderTestPng(200, 200, [bg, { x: 20, y: 40, w: 160, h: 60, color: '#101820' }, { x: 5, y: 5, w: 12, h: 12, color: '#ff0000' }]));
+  const local = await diffPngs(a, c);
+  assert.equal(local.shift, null, 'a local change must not be labelled a shift');
+  assert.deepEqual({ x: local.box.x, y: local.box.y }, { x: 5, y: 5 });
+});
+
 test('diffPngs counts changed pixels (needs google-chrome-stable)', async () => {
   const d = mkdtempSync(join(tmpdir(), 'pl-shots-'));
   const a = join(d, 'a.png'), b = join(d, 'b.png');

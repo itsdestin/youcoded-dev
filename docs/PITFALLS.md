@@ -49,6 +49,11 @@ Single-repo (youcoded desktop) invariants — moved out 2026-08-12 per this file
   - Never persist overlay state before the init pull resolves — a pre-init persist writes the placeholder `{0,0}` and poisons `buddy-positions.json` for every later boot.
   - The keep-above Settings toggle is a saved preference, not an actual-state indicator (KDE-only; the resolved boolean only drives a transient hint, not state reconciliation).
 
+## Removing a broadcast
+
+- **A broadcast nothing asked for is still load-bearing.** Perf cycle 2 stopped replaying the whole transcript on every open. That broke THREE unrelated features that had come to depend on the replay as a side effect — and **none of the 6,600 passing desktop tests saw any of them** (2026-08-28): first-load history was only requested from three specific call sites, so a session arriving by any other route rendered EMPTY; the session Files drawer's list was only ever refreshed because the artifact tool-use tracker listens to transcript events; and paged history re-rendered entries already on screen because its scratch replay started with an empty `seenUuids`. All three were found by the perf rig, one of them by a screenshot. *Rule:* before removing or narrowing a broadcast, `rg` the CHANNEL (not the function name) to enumerate every listener, and ask of each one what it does when the broadcast stops. The fix is always to make the consumer ASK for what it needs rather than wait to be told. *Guard:* `youcoded/desktop/tests/history-paging-reducer.test.ts`, `session-drawer-lists-on-open.test.tsx`; depth in `.claude/rules/chat-reducer.md` → Paged history.
+- **A rate is not a measurement you can compare across runs.** `workload.median.cpuDuringPct` was a PRIMARY gate metric; making the phase 5x faster raised the rate 66% while total work FELL 66%, and the gate called it a regression. Gate on totals (`cpuTotalSeconds`), keep rates as context. *Guard:* `scripts/perf-lab/compare.mjs` PRIMARY list + its `get()` derivation for older reports.
+
 ## Documentation Drift
 
 - **Fix on sight.** A doc/rule/CLAUDE.md claim that contradicts current code gets fixed in the session you notice it — verify against code, cite the verification in the commit. There is no drift ledger to defer into. *Guard:* the fix + its commit message.

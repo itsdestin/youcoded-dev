@@ -145,12 +145,23 @@ export const MEASURES = {
   ],
 };
 
-export async function runHistoryScenario(app, fixture, { repeats = 5 } = {}) {
+/**
+ * `onProgress({ size, rep, repeats, run })` fires after EVERY repeat.
+ *
+ * WHY it exists: this phase used to log only when all 15 repeats were done, so a
+ * change that stopped history rendering was indistinguishable from a slow
+ * machine — 40 minutes of total silence while every repeat burned its 240s watch
+ * timeout (2026-08-28). A phase that can hang for the length of its own timeout
+ * budget must report per repeat, not per phase.
+ */
+export async function runHistoryScenario(app, fixture, { repeats = 5, onProgress } = {}) {
   const out = {};
   for (const size of ['small', 'medium', 'huge']) {
     const runs = [];
     for (let rep = 0; rep < repeats; rep++) {
-      runs.push(await measureOnce(app, fixture, size, rep));
+      const run = await measureOnce(app, fixture, size, rep);
+      runs.push(run);
+      onProgress?.({ size, rep, repeats, run });
     }
     out[size] = {
       runs,

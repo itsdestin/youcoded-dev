@@ -34,7 +34,12 @@ export const PRIMARY = [
   'workload.median.switchPaintedBySize.huge.medianMs',
   'workload.median.probe.longtaskTotalMs',
   'workload.median.pssAfterMb',
-  'workload.median.cpuDuringPct',
+  // CPU-SECONDS, not the percentage. cpuDuringPct is a RATE: a change that makes
+  // the workload phase finish faster raises it while doing strictly less work.
+  // That fired for real on 2026-08-28 (window 195s -> 40s for the same 40
+  // switches; rate +66%, total work -66%) and read as a regression. Derived from
+  // the old fields for reports that predate it — see get().
+  'workload.median.cpuTotalSeconds',
 
   // ── The app-wide freeze (stall phase) ──────────────────────────────────────
   // `medium` is the headline: 5,000 messages is ORDINARY usage and it stalls the
@@ -62,7 +67,28 @@ export const PRIMARY = [
 ];
 
 // Dotted-path getter used everywhere below — keeps report shape out of the decision logic.
-export const get = (o, path) => path.split('.').reduce((a, k) => (a == null ? undefined : a[k]), o);
+const rawGet = (o, path) => path.split('.').reduce((a, k) => (a == null ? undefined : a[k]), o);
+
+/**
+ * Read a metric path, deriving the ones a report may predate.
+ *
+ * `workload.median.cpuTotalSeconds` replaced `cpuDuringPct` in PRIMARY on
+ * 2026-08-28 (a rate cannot be compared across runs of different duration).
+ * Reports written before that carry the rate and the window instead, and a
+ * missing PRIMARY path fails the gate CLOSED — which would have made every
+ * existing baseline unusable. Deriving it keeps them comparable, and the
+ * derivation is exact: the new field is computed the same way at write time.
+ */
+export const get = (o, path) => {
+  const direct = rawGet(o, path);
+  if (direct !== undefined) return direct;
+  if (path === 'workload.median.cpuTotalSeconds') {
+    const pct = rawGet(o, 'workload.median.cpuDuringPct');
+    const secs = rawGet(o, 'workload.median.cpuWindowSeconds');
+    if (typeof pct === 'number' && typeof secs === 'number') return Math.round(pct * secs / 100 * 10) / 10;
+  }
+  return undefined;
+};
 
 /**
  * The per-run samples behind any `…median…` path. The report always stores a
@@ -285,7 +311,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const change = d !== null ? `${d}%` : (bv === 0 ? 'from ZERO' : 'not comparable');
     console.log(`  ${p.padEnd(40)} ${String(bv).padStart(9)} → ${String(cv).padStart(9)}  ${change}`);
   }
-  for (const [n, s] of Object.entries(screens)) console.log(`  screen ${n}: ${s.pct}% ${s.pass ? 'ok' : 'DIFF'}`);
+  for (const [n, s] of Object.entries(screens)) {
+    // A bare percentage cannot be acted on. Say where the change is, and name a
+    // whole-frame vertical shift explicitly — that shape is a layout change
+    // ABOVE the content, not a regression in what is being measured.
+    const where = s.box ? ` @ ${s.box.w}x${s.box.h}+${s.box.x}+${s.box.y}` : '';
+    const shifted = s.shift ? ` — looks like a ${s.shift.dy > 0 ? 'downward' : 'upward'} shift of ${Math.abs(s.shift.dy)}px (${s.shift.residualPct}% left over once aligned)` : '';
+    console.log(`  screen ${n}: ${s.pct}% ${s.pass ? 'ok' : 'DIFF'}${s.pass ? '' : where + shifted}`);
+  }
   console.log(v.keep ? 'VERDICT: KEEP' : `VERDICT: REJECT — ${v.reasons.join('; ')}`);
   process.exit(v.keep ? 0 : 1);
 }

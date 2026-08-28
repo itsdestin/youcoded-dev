@@ -966,7 +966,17 @@ async function main(argv) {
         await shot('welcome');
 
         if (cfg.only.has('history')) {
-          report.history = await runHistoryScenario(app, fixture, { repeats: cfg.historyRepeats });
+          report.history = await runHistoryScenario(app, fixture, {
+            repeats: cfg.historyRepeats,
+            // Per-repeat, not per-phase: 15 repeats x a 240s watch timeout is 60
+            // minutes of silence when something stops history rendering, which is
+            // indistinguishable from a slow machine. Says `TIMED OUT` explicitly —
+            // silence must never be the way a failure is reported.
+            onProgress: ({ size, rep, repeats, run }) => log(
+              `history.${size} ${rep + 1}/${repeats}: ${run.stability === 'stable'
+                ? `stable ${run.resumeStableMs}ms, ${run.resumeMessageCount} entries`
+                : `TIMED OUT after ${run.timedOutAfterMs ?? '?'}ms with ${run.resumeMessageCount ?? 0} entries on screen`}`),
+          });
           report.measures.history = HISTORY_MEASURES;
           for (const [size, h] of Object.entries(report.history)) {
             log(`history.${size}: last10 ${h.median.ipcLast10Ms}ms, all ${h.median.ipcAllMs}ms, stable ${h.median.resumeStableMs}ms (${h.stabilizedRuns}/${h.runs.length} stabilized)`);
@@ -1052,7 +1062,13 @@ async function main(argv) {
       report.measures.stall = STALL_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
       await withBoot(build, fixture, async (app) => {
-        report.replayStall = await runReplayStallScenario(app, fixture, { repeats: cfg.stallRepeats });
+        report.replayStall = await runReplayStallScenario(app, fixture, {
+          repeats: cfg.stallRepeats,
+          onProgress: ({ size, rep, repeats, run }) => log(
+            `stall.${size} ${rep + 1}/${repeats}: ${run.stability === 'stable'
+              ? `ipc max ${run.ipcMaxMs}ms, ${run.renderedEntries} entries`
+              : `TIMED OUT after ${run.timedOutAfterMs ?? '?'}ms with ${run.renderedEntries ?? 0} entries on screen`}`),
+        });
         for (const [size, s] of Object.entries(report.replayStall)) {
           log(`stall.${size}: ipc max ${s.median.ipcMaxMs}ms (main ${s.median.mainProcessStallMs}ms / renderer ${s.median.rendererStallMs}ms) — ${s.blame ?? 'attribution UNAVAILABLE'}, ${s.stabilizedRuns}/${s.runs.length} stabilized`);
           for (const w of s.warnings) log(`stall.${size} warning: ${w}`);

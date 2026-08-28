@@ -120,6 +120,8 @@ const workloadRun = (i) => ({
   streamedLines: 800,
   probe: { longtaskCount: 12 + i, longtaskTotalMs: 900 + i, longtaskMaxMs: 210 + i, frameGapCount: 30 + i, frameGapMaxMs: 120 + i },
   cpuDuringPct: 35 + i,
+  cpuWindowSeconds: 100,
+  cpuTotalSeconds: 35 + i,
   pssAfterMb: 900 + i,
   pssBreakdown: [{ pid: 300 + i, type: 'renderer', mb: 500 }],
   sessionIds: ['a', 'b', 'c', 'd', 'e', 'f'],
