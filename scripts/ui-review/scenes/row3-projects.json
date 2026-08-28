@@ -1,0 +1,10 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=150",
+  "theme": "light", "boot": 3000,
+  "actions": [
+    {"hold": 600}, {"click": "[title=Projects]", "settle": 1200},
+    {"hold": 900},
+    {"click": "[title='latency-chart.png']", "settle": 1500},
+    {"hold": 1200},
+    {"key": "Escape", "settle": 600},
+    {"click": "[aria-label=Context]", "settle": 1200}, {"hold": 1500}
+  ] }

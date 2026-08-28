@@ -1,8 +1,8 @@
 ---
-status: draft
+status: shipped
 created: 2026-08-26
-updated: 2026-08-26
-spec: docs/active/specs/2026-08-26-model-download-resume-design.md
+updated: 2026-08-27
+spec: docs/archive/specs/2026-08-26-model-download-resume-design.md
 tags: [local-models, engine, renderer, downloads]
 ---
 
@@ -24,7 +24,7 @@ tags: [local-models, engine, renderer, downloads]
 - **Every non-trivial edit carries a WHY comment.** Destin is a non-developer and reads comments to understand the code.
 - **Error messages follow `docs/error-message-standards.md`** — specific and accurate, or general and non-committal. Never a guessed cause.
 - **Repo:** `youcoded`. Everything below is relative to `youcoded/desktop/` unless stated.
-- **Spec:** `docs/active/specs/2026-08-26-model-download-resume-design.md` in the `youcoded-dev` workspace repo. Read it before Task 1.
+- **Spec:** `docs/archive/specs/2026-08-26-model-download-resume-design.md` in the `youcoded-dev` workspace repo. Read it before Task 1.
 - **Copy follows the spec's §3.2 wording** (Resume / Discard on an unfinished row, Delete elsewhere, `66% — 74.2 of 113.0 GB`). The workbench gate (Task 2, Step 13) is where Destin can change any of it; until he does, do not paraphrase.
 - **"GB" in this app means 1024³ bytes.** `gb()` in `LocalModelsSection.tsx:24` divides by 1073741824, so Destin's 79,674,559,677-byte partial renders as **74.2 GB** and the 121,334,654,784-byte total as **113.0 GB** — not the 79.7 / 121.3 Hugging Face shows. Every number in this plan's tests and fixtures uses the app's convention. Changing the convention is an app-wide decision and out of scope.
 - **`.tsx` tests need `// @vitest-environment jsdom` on line 1** (`vitest.config.ts:43`), and this repo has **no `@testing-library/user-event`** — use `fireEvent` + `act` like the existing row test does.
@@ -89,7 +89,7 @@ Replace lines 65–86 of `src/shared/model-manager-types.ts` (the `lastUsedAt` c
 
 ```ts
 /** What state a download on disk is in. A model is only usable when every
- *  declared part is published — see docs/active/specs/2026-08-26-model-download-resume-design.md.
+ *  declared part is published — see docs/archive/specs/2026-08-26-model-download-resume-design.md.
  *    complete    — every part present; the ordinary case
  *    unfinished  — short of parts (a .partial, or nothing but a manifest yet),
  *                  WITH a manifest → resumable
@@ -707,7 +707,7 @@ Create `src/main/models/download-manifest.ts`:
 // the download, so it cannot drift out of sync with the cache dir, and it
 // survives the user repointing engine.cacheDir.
 //
-// Spec: docs/active/specs/2026-08-26-model-download-resume-design.md §3.1
+// Spec: docs/archive/specs/2026-08-26-model-download-resume-design.md §3.1
 import * as fs from 'fs';
 import * as path from 'path';
 import type { DownloadManifest, QuantOption } from '../../shared/model-manager-types';
@@ -1931,7 +1931,7 @@ Write `/tmp/claude-1000/pr-body.md` with exactly these five sections, filled in 
 actually happened — no section may be omitted:
 
 1. **What broke** — one paragraph, the 2026-08-26 interruption and the three stacked
-   defects, linking `docs/active/specs/2026-08-26-model-download-resume-design.md`.
+   defects, linking `docs/archive/specs/2026-08-26-model-download-resume-design.md`.
 2. **What changed** — the manifest (and "a manifest alone is a row"), the single scan with two views, the three row states with the download's own failure message, the same-file-different-repo refusal, `models:orphaned-partials` → `models:resume`, the disk-guard fix. One line each.
 3. **Dev-instance checks** — the five checks from Steps 2–3, each with its observed
    outcome. A check not run is written as "not run", never omitted.
@@ -1950,8 +1950,8 @@ Close with the standard footer:
 In `youcoded-dev`:
 
 ```bash
-git mv docs/active/specs/2026-08-26-model-download-resume-design.md docs/archive/specs/
-git mv docs/active/plans/2026-08-26-model-download-resume.md docs/archive/plans/
+git mv docs/archive/specs/2026-08-26-model-download-resume-design.md docs/archive/specs/
+git mv docs/archive/plans/2026-08-26-model-download-resume.md docs/archive/plans/
 ```
 
 Set both files' `status:` frontmatter to `shipped`, flip the ROADMAP bug entry (`ROADMAP.md:103`, "An interrupted model download is unresumable…") to `[x]` with the merge SHA, and update `docs/MAP.md`'s "Local engine & models" row to name `download-manifest.ts` and `scanLocalDownloads`. Commit and push. "Merge means merge AND push AND archive AND flip the roadmap item."

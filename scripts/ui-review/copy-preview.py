@@ -70,7 +70,7 @@ ROWS = [
 
 FAQ = [
     ('How is this different from ChatGPT or claude.ai?',
-     'Those are chat websites. YouCoded Agent is an app on your computer and phone that works in your own files — it opens, edits, and organizes them, runs tasks, and searches the web — and you choose the AI behind it: Claude, hundreds of cloud models, or one that runs locally for free.',
+     'Those are chat websites. YouCoded Assistant is an app on your computer and phone that works in your own files — it opens, edits, and organizes them, runs tasks, and searches the web — and you choose the AI behind it: Claude, hundreds of cloud models, or one that runs locally for free.',
      'How is this different from claude.ai?',
      'Claude.ai is a chat website. YouCoded is an app built on top of Claude Code — a more powerful form of Claude that can create files, run terminal commands, manage your computer, and interact more meaningfully with a wider range of external services. Think of claude.ai as texting Claude, and YouCoded as giving Claude hands (with themes, a marketplace, games, and remote access layered on top).'),
     ('Do I have to pay for anything?',
@@ -113,30 +113,54 @@ CARDS = [
 ]
 
 
+MEDIA = {'dir': None, 'gaps': {}}
+SCENE_FILE = {'row1': 'row1-any-ai', 'row2': 'row2-does-things', 'row3': 'row3-projects', 'row4': 'row4-organized',
+              'row5': 'row5-follow', 'row6': 'row6-yours', 'row7': 'row7-play', 'row8': 'row8-builders'}
+
+
+def media_block(rid, scene):
+    """The row's loop when the media dir has it (with a Yes/No/Other verdict), else the dashed placeholder."""
+    name = SCENE_FILE.get(rid)
+    d = MEDIA['dir']
+    have = d and name and os.path.exists(os.path.join(d, name + '.webm'))
+    if not have:
+        return f'<div class="ph-media"><div>{E(scene)}</div></div>'
+    phone = rid == 'row5' and os.path.exists(os.path.join(d, 'row5-phone.webm'))
+    vid = lambda n: f'<video class="row-video" muted loop playsinline preload="metadata" poster="media/{n}.webp"><source src="media/{n}.webm" type="video/webm"></video>'
+    inner = vid(name) + (f'<div class="phone-bezel">{vid("row5-phone")}</div>' if phone else '')
+    gap = MEDIA['gaps'].get(rid, '')
+    what = scene.split(' — ', 1)[-1] if ' — ' in scene else scene
+    return (f'<div class="row-media{" row-media-duo" if phone else ""}">{inner}</div>'
+            f'<div class="rv-judge" data-j="{rid}.loop"><div class="rv-what"><b>What this loop shows:</b> {E(what)}' + (f'<br><b>Known gap:</b> {E(gap)}' if gap else '') + '</div>'
+            '<div class="rv-q">Does this loop tell this row\'s story? <button data-v="yes">Yes</button><button data-v="no">No</button><button data-v="other">Other</button>'
+            '<input class="rv-note" placeholder="note — what\'s missing / wrong / better"></div></div>')
+
+
 def body():
     p = []
     a = p.append
     a('<nav class="nav"><div class="nav-inner"><a href="#" class="nav-logo"><img src="favicon-dark.svg" alt="" class="nav-icon" width="22" height="22">'
-      '<span class="nav-logo-text"><span>You<span style="color: var(--title-highlight)">Coded</span> ' + ed('span', 'nav.agent', 'Agent', '', 'nav-logo-agent') + '</span>'
-      + ed('span', 'nav.sub', 'AI for Everyone.', 'For Claude Code by Anthropic', 'nav-logo-sub') + '</span></a>'
+      '<span class="nav-logo-text"><span>You<span style="color: var(--title-highlight)">Coded</span> ' + ed('span', 'nav.agent', 'Assistant', 'Agent', 'nav-logo-agent') + '</span>'
+      + ed('span', 'nav.sub', 'Agentic AI for Everyone.', 'For Claude Code by Anthropic', 'nav-logo-sub') + '</span></a>'
       '<ul class="nav-links"><li><a href="#about">About</a></li><li><a href="#demo">Features</a></li><li><a href="#get-started">Download</a></li><li><a href="#faq">FAQ</a></li></ul></div></nav>')
     a('<header class="hero" id="top"><div class="container"><h1>Make AI <span class="word-cycler-static" style="color:var(--title-highlight);font-style:italic">Yours.</span></h1>'
       '<p class="rv-caption">animates: <b>Useful.</b> → <b>Fun.</b> → <b>Yours.</b> (was: Make Claude Useful. → Fun. → Cute. → Yours.)</p>'
-      + ed('p', 'hero.sub', 'One app for Claude, hundreds of cloud models, or one that runs free on your own computer — working in your files, on every device you own.', '(no sentence under the headline today)', 'hero-sub')
-      + '<div class="hero-actions">' + ed('a', 'hero.btn1', 'Download', '(no buttons today)', 'btn btn-primary') + ed('a', 'hero.btn2', 'See it work', '', 'btn btn-ghost') + '</div></div></header>')
-    a('<section id="see-it"><div class="container">' + ed('p', 'embed.label', 'Try it', '', 'section-label') + ed('h2', 'embed.title', 'This is the app. Click around.', '', 'section-title')
-      + ed('p', 'embed.desc', 'Type a message, open the model picker, switch the look — it\'s the real interface running on a pretend computer. Nothing you do here leaves this page.', '', 'section-desc')
-      + '<div class="ph-media ph-embed"><div><b>LIVE EMBED</b> — the real app, clickable, in a window frame.<br>Theme swatches under it: Midnight · Crème · Light · Dark · Halftone · Meadow Mist · Golden Sunbreak</div></div></div></section>')
+      + ed('p', 'hero.sub', 'A self-improving, customizable AI agent. Use any AI model from any provider to build or accomplish anything you want.', '(no sentence under the headline today)', 'hero-sub')
+      + '</div></header>')
     a('<div class="container"><div class="divider"></div></div>')
     a('<section id="about"><div class="container">' + ed('p', 'about.label', 'What is this?', 'What is this?', 'section-label') + ed('h2', 'about.title', 'More than a chatbot.', 'More than a chatbot.', 'section-title')
-      + '<div class="intro-box">' + ed('p', 'about.p1', 'Most AI lives in a chat box on someone else\'s website. YouCoded Agent lives on your computer and phone, working in your own files — with Claude, hundreds of other models, or one that runs free on your machine. The look, the plugins, and your data are all yours.',
+      + '<div class="intro-box">' + ed('p', 'about.p1', 'YouCoded is a fully-customizable AI assistant that works with your own files and data to autonomously accomplish tasks. Review and organize large spreadsheets, compile the latest medical or financial research, draft an email or slideshow, or build new features in large coding projects. With YouCoded, you can utilize OpenRouter to access any AI model from any provider including Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and more. YouCoded also allows you to download and run open source AI models on your own device, if your hardware supports it. YouCoded is built to become a fully-modular and open source assistant platform, as the app itself integrates the ability for all users to build and share skills, tools, themes, and app improvements. Because YouCoded was designed from the ground up to improved by individuals with no coding or development interest, it can quickly outpace development of competing closed agents in a way that is driven by what users really want.',
                                         'YouCoded is an add-on of sorts for Claude Code, a powerful agentic AI tool from Anthropic that can create and edit any type of file, search the web, run terminal commands, and navigate your screen. While Claude Code was designed for coding, YouCoded turns it into something else entirely — a fully capable and customizable agentic AI assistant that doesn\'t require you to know how to use AI or understand what "agentic" means. With YouCoded, you can teach Claude to navigate emails from any provider, read and summarize your texts, rebuild your spreadsheets, help you study, and more. You get the most intriguing and intuitive form of AI available today, all without needing to become a fratty tech-bro to do it. // YouCoded combines that powerful AI with a themeable chat UI, a community marketplace WeCoded to share and download "skills" (instructions that give your Claude new abilities), multiplayer mini-games, custom integrations with external services, and remote access from any browser.')
-      + ed('p', 'about.perm', 'Nothing happens without your permission. YouCoded Agent asks before it acts.', 'Nothing happens without your permission. YouCoded will always ask before taking any action.', 'permission-note') + '</div></div></section>')
+      + ed('p', 'about.perm', 'Nothing happens without your permission. YouCoded Assistant asks before it acts.', 'Nothing happens without your permission. YouCoded will always ask before taking any action.', 'permission-note') + '</div></div></section>')
+    a('<div class="container"><div class="divider"></div></div>')
+    a('<section id="see-it"><div class="container">' + ed('p', 'embed.label', 'Try it', '', 'section-label') + ed('h2', 'embed.title', 'Click around, I guess.', '', 'section-title')
+      + ed('p', 'embed.desc', 'Type a message, open the model picker, or switch the theme. This demo is a pixel-perfect representation of the real app\'s interface.', '', 'section-desc')
+      + '<div class="ph-media ph-embed"><div><b>LIVE EMBED</b> — the real app, clickable, in a window frame.<br>Theme swatches under it: Midnight · Crème · Light · Dark · Halftone · Meadow Mist · Golden Sunbreak</div></div></div></section>')
     a('<div class="container"><div class="divider"></div></div>')
     a('<section class="demo-section" id="demo"><div class="container">' + ed('p', 'demo.label', 'What you get', 'What you get', 'section-label') + ed('h2', 'demo.title', 'Everything the app gives you.', 'Everything the app gives you.', 'section-title') + '<div class="showcase-grid">')
     for i, (rid, label, title, desc, scene, ol, ot, od) in enumerate(ROWS):
         a(f'<div class="showcase-item{" reverse" if i % 2 else ""}"><div class="showcase-text">' + ed('span', rid + '.label', label, ol, 'showcase-label') + ed('h3', rid + '.title', title, ot, 'showcase-title') + ed('p', rid + '.desc', desc, od, 'showcase-desc')
-          + f'</div><div class="ph-media"><div>{E(scene)}</div></div></div>')
+          + '</div>' + media_block(rid, scene) + '</div>')
     a('<div class="showcase-item reverse"><div class="showcase-text">' + ed('span', 'row9.label', 'Roadmap <span class="roadmap-chip">Coming after 1.3</span>', '', 'showcase-label') + ed('h3', 'row9.title', 'Hand it off.', '', 'showcase-title')
       + ed('p', 'row9.desc', 'Set up a job once — what to do, which tools it may use, where to stop and check with you — then run it on a schedule or send it from your phone. Results and approvals land in an inbox. First: run now and scheduled runs. Later: kick off from an incoming email or a changed file.', '', 'showcase-desc')
       + '</div><div class="ph-media ph-sketch"><div><b>SKETCH, not a recording</b> — dashed-outline Agents view: a named automation with a schedule, "Run now" from a phone, an inbox entry waiting for approval.</div></div></div>')
@@ -145,7 +169,7 @@ def body():
     a('<section class="origin-story-section" id="story"><div class="container">' + ed('p', 'story.label', 'Story', 'Story', 'section-label') + ed('h2', 'story.title', 'How we got here.', 'How we got here.', 'section-title') + '<div class="origin-story">'
       + '<p class="origin-story-text rv-unchanged">Honestly, I really just wanted a cooler and more efficient way to journal and track my own tasks/goals. The very first thing I built with Claude is the Journaling and Life History system (now available in the marketplace), and I pretty quickly decided that I wanted to share it with my friends. However, the thought of installing and opening "Claude Code" in the terminal scared away most people almost immediately. I realized that the idea of advanced agentic AI is still rather new to most people, and that persuading them to adopt my fancy new journaling system would require it to be <em>much</em> more accessible and user-friendly. Towards this end, I kind of just&hellip; kept adding things. And now we\'re here.</p>'
       + '<p class="origin-story-text rv-unchanged" style="margin-top:16px">Every line of YouCoded was written through conversation with Claude by me, <strong>someone who has never written code</strong>. Every feature, every platform port, every theme, every multiplayer game. The entire app was built, and is currently maintained, without a single line typed by hand.</p>'
-      + ed('p', 'story.p3', 'YouCoded Agent is what that kind of AI looks like when it\'s built for everyone — not just the people who already know how to use it.', '(new third paragraph)', 'origin-story-text', ' style="margin-top:16px"')
+      + ed('p', 'story.p3', 'YouCoded Assistant is what that kind of AI looks like when it\'s built for everyone — not just the people who already know how to use it.', '(new third paragraph)', 'origin-story-text', ' style="margin-top:16px"')
       + '<a class="origin-story-link">Built by Destin &rarr;</a></div></div></section>')
     a('<div class="container"><div class="divider"></div></div>')
     a('<section id="get-started"><div class="container">' + ed('p', 'gs.label', 'Get started', 'Get started', 'section-label') + ed('h2', 'gs.title', 'Two minutes of setup.', 'You\'ll need a couple of accounts.', 'section-title') + '<div class="prereq-grid rv-four">')
@@ -153,9 +177,9 @@ def body():
         a(f'<div class="prereq-card"><div class="prereq-header"><h3>{name}</h3><div class="prereq-badges"><span class="prereq-badge {b1c}">{b1}</span><span class="prereq-badge {b2c}">{b2}</span></div></div>'
           + ed('p', f'gs.card{i}', text, old) + (f'<a class="prereq-link">{link}</a>' if link else '') + '</div>')
     a('</div>' + ed('p', 'gs.line', 'Or skip the paid ones entirely — run a model on your own computer, free and offline.', '', 'download-note') + '</div></section>')
-    a('<section class="download-section" id="download"><div class="container">' + ed('h2', 'dl.title', 'Download YouCoded Agent', 'Download YouCoded', 'section-title')
+    a('<section class="download-section" id="download"><div class="container">' + ed('h2', 'dl.title', 'Download YouCoded Assistant', 'Download YouCoded', 'section-title')
       + '<div class="download-grid">' + ''.join(f'<a class="download-card"><div class="download-card-text"><span class="download-card-label">Download for</span><span class="download-card-platform">{pl}</span></div></a>' for pl in ('Windows', 'macOS', 'Linux', 'Android')) + '</div>'
-      + ed('p', 'dl.note', 'Free and open source.<br>On iPhone? Use YouCoded Agent from Safari by connecting to any computer running the app.', 'Free and open source. Just bring your Claude Pro or Max plan. / On iPhone? Use YouCoded from Safari by connecting to any computer running the app via remote access.', 'download-note')
+      + ed('p', 'dl.note', 'Free and open source.<br>On iPhone? Use YouCoded Assistant from Safari by connecting to any computer running the app.', 'Free and open source. Just bring your Claude Pro or Max plan. / On iPhone? Use YouCoded from Safari by connecting to any computer running the app via remote access.', 'download-note')
       + '<div class="rv-modal"><b>Install popup → "After install" steps:</b> ' + ed('span', 'dl.step1', '1. Sign in with GitHub.', '1. Sign in with your Claude Pro or Max plan') + ' ' + ed('span', 'dl.step2', '2. Choose where your AI comes from — Claude, OpenRouter, or a model on this computer (Settings → Model Providers).', '2. Pick a starter theme and model') + ' ' + ed('span', 'dl.step3', '3. Pick a theme and browse the marketplace.', '3. Browse the marketplace')
       + ' <em>Android only:</em> ' + ed('span', 'dl.android', 'On Android, the first launch downloads the Claude Code runtime (~400–600 MB) — Android uses Claude only.', 'Android: first launch downloads the Claude Code runtime (~400–600MB depending on the package tier you pick)') + '</div></div></section>')
     a('<div class="container"><div class="divider"></div></div>')
@@ -165,7 +189,7 @@ def body():
     a('</div></div></section>')
     a('<section class="gallery-section" id="gallery"><div class="container">' + ed('p', 'gal.label', 'Gallery', 'Gallery', 'section-label') + ed('h2', 'gal.title', 'See what people have built.', 'See what people have built.', 'section-title')
       + '<div class="ph-media ph-strip"><div>GALLERY STRIP — fresh screenshots of the current app across themes (same strip as today, new images)</div></div></div></section>')
-    a('<footer><div class="container"><div class="footer-inner"><a class="footer-logo"><span>You<span style="color: var(--title-highlight)">Coded</span> Agent</span></a><div class="footer-links"><a>GitHub</a><a>Built by Destin</a><span class="rv-badge">Open Source</span></div></div>'
+    a('<footer><div class="container"><div class="footer-inner"><a class="footer-logo"><span>You<span style="color: var(--title-highlight)">Coded</span> Assistant</span></a><div class="footer-links"><a>GitHub</a><a>Built by Destin</a><span class="rv-badge">Open Source</span></div></div>'
       + '<p class="footer-legal rv-unchanged">MIT License · YouCoded is an independent, community-built project. Not affiliated with, endorsed by, or officially supported by Anthropic.</p></div></footer>')
     return '\n'.join(p)
 
@@ -189,6 +213,21 @@ body.intro-mode{overflow:auto}
 .roadmap-chip{margin-left:8px;border:1px solid var(--title-highlight);color:var(--title-highlight);border-radius:999px;padding:1px 8px;font-size:10px}
 .rv-badge{font-family:var(--font-mono);font-size:11px;border:1px solid var(--border);border-radius:999px;padding:2px 8px}
 .footer-legal{color:var(--text-faint);font-size:12px;margin-top:10px}
+/* real loops */
+.row-media{border-radius:var(--radius);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25);border:1px solid var(--border);background:#0b1020}
+.row-video{display:block;width:100%;height:auto}
+.row-media-duo{position:relative;background:transparent;box-shadow:none;border:0;overflow:visible;margin-bottom:6%}
+.phone-bezel{position:absolute;right:-3%;bottom:-8%;width:24%;border-radius:22px;padding:6px;background:#111;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.phone-bezel .row-video{border-radius:16px}
+.rv-judge{margin-top:14px;padding:12px 14px;border:1px solid var(--border-accent);border-radius:var(--radius-sm);background:var(--accent-subtle);font-size:14px;color:var(--text-secondary)}
+.rv-judge.yes{border-color:#2e7d4f}.rv-judge.no{border-color:#b23b3b}.rv-judge.other{border-color:#c98a2e}
+.rv-what{margin-bottom:10px;line-height:1.5}.rv-what b{color:var(--text-primary)}
+.rv-q{display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:var(--text-primary);font-weight:600}
+.rv-q button{border:1px solid var(--border);background:transparent;color:var(--text-primary);border-radius:999px;padding:5px 14px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}
+.rv-judge.yes .rv-q button[data-v=yes]{background:#2e7d4f;color:#fff;border-color:#2e7d4f}
+.rv-judge.no .rv-q button[data-v=no]{background:#b23b3b;color:#fff;border-color:#b23b3b}
+.rv-judge.other .rv-q button[data-v=other]{background:#c98a2e;color:#fff;border-color:#c98a2e}
+.rv-note{flex:1 1 260px;border:1px solid var(--border);border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;background:transparent;color:var(--text-primary)}
 /* review chrome */
 [data-c]{outline:1px dashed transparent;outline-offset:3px;border-radius:4px;transition:outline-color .15s;position:relative}
 body.rv-hint [data-c]{outline-color:rgba(127,127,127,.35)}
@@ -213,12 +252,12 @@ REVIEW_JS = r'''
   const els=$$('[data-c]'); const orig={}; els.forEach(e=>orig[e.dataset.c]=e.innerHTML);
   const state={deck:KEY,started:new Date().toISOString(),submitted:null,answers:{}};
   const bar=document.createElement('div'); bar.id='rvbar';
-  bar.innerHTML='<span><b id="rv-n">0</b> edited · <b id="rv-x">0</b> cut</span><button id="rv-hint" aria-pressed="false">Show editable</button><button id="rv-old" aria-pressed="false">Show old text</button><button class="go" id="rv-submit">Submit</button>';
+  bar.innerHTML='<span><b id="rv-n">0</b> edited · <b id="rv-x">0</b> cut<span id="rv-l"></span></span><button id="rv-hint" aria-pressed="false">Show editable</button><button id="rv-old" aria-pressed="false">Show old text</button><button class="go" id="rv-submit">Submit</button>';
   document.body.appendChild(bar);
-  const st=document.createElement('div'); st.id='rvstatus'; st.textContent='Click any text to rewrite it in place — saves as you type. Hover a block for ✕ to cut it. "Show old text" reveals what each block replaces.'; document.body.appendChild(st);
+  const st=document.createElement('div'); st.id='rvstatus'; st.textContent=$$('.rv-judge').length?'Each row: watch the loop under its words, answer Yes / No / Other, add a note if it isn\'t Yes. Text is still editable in place. Submit when done.':'Click any text to rewrite it in place — saves as you type. Hover a block for ✕ to cut it. "Show old text" reveals what each block replaces.'; document.body.appendChild(st);
   async function load(){ try{const r=await fetch('/answers',{cache:'no-store'}); if(r.ok){server=true;const j=await r.json(); if(j&&j.answers)Object.assign(state,j);return;}}catch(e){} try{const j=JSON.parse(localStorage.getItem(KEY)||'null'); if(j&&j.answers)Object.assign(state,j);}catch(e){} }
   let t; function save(){ clearTimeout(t); t=setTimeout(async()=>{ try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){} if(server){ try{ await fetch('/answers',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(state)}); st.textContent='Saved.'; }catch(e){ st.textContent='Server gone — edits kept in this browser; tell Claude.'; } } },250); }
-  function paint(){ let n=0,x=0; Object.values(state.answers).forEach(a=>{ if(a.v==='other')n++; if(a.v==='no')x++; }); $('#rv-n').textContent=n; $('#rv-x').textContent=x; }
+  function paint(){ let n=0,x=0,ly=0,ln=0,lt=$$('.rv-judge').length; Object.entries(state.answers).forEach(([k,a])=>{ if(k.endsWith('.loop')){ if(a.v==='yes')ly++; else if(a.v)ln++; return; } if(a.v==='other')n++; if(a.v==='no')x++; }); $('#rv-n').textContent=n; $('#rv-x').textContent=x; const l=$('#rv-l'); if(l) l.textContent=lt?` · loops ${ly} yes / ${ln} no-other / ${lt-ly-ln} open`:''; }
   els.forEach(e=>{
     e.contentEditable='true'; e.spellcheck=true;
     const x=document.createElement('span'); x.className='rv-x'; x.title='Cut this block'; x.textContent='✕'; x.contentEditable='false'; e.appendChild(x);
@@ -227,6 +266,11 @@ REVIEW_JS = r'''
     e.addEventListener('input',()=>{ const clone=e.cloneNode(true); clone.querySelector('.rv-x')?.remove(); const html=clone.innerHTML.trim(); if(html===orig[e.dataset.c].trim()){ delete state.answers[e.dataset.c]; e.classList.remove('rv-edited'); } else { state.answers[e.dataset.c]={v:'other',note:html}; e.classList.add('rv-edited'); e.classList.remove('rv-no'); } paint(); save(); });
     x.addEventListener('mousedown',ev=>{ ev.preventDefault(); ev.stopPropagation(); if(e.classList.contains('rv-no')){ e.classList.remove('rv-no'); delete state.answers[e.dataset.c]; } else { const why=prompt('Cut this block — why? (optional)')||''; state.answers[e.dataset.c]={v:'no',note:why}; e.classList.add('rv-no'); e.classList.remove('rv-edited'); } paint(); save(); });
   });
+  // loops: play when on screen, pause off; per-row verdicts share the answers file
+  if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) e.target.play().catch(()=>{}); else e.target.pause(); }),{threshold:.3}); $$('.row-video').forEach(v=>io.observe(v)); }
+  $$('.rv-judge').forEach(j=>{ const id=j.dataset.j; const note=j.querySelector('.rv-note'); const a=state.answers[id]; if(a&&a.v){ j.classList.add(a.v); note.value=a.note||''; }
+    j.querySelectorAll('button[data-v]').forEach(b=>b.onclick=()=>{ j.classList.remove('yes','no','other'); j.classList.add(b.dataset.v); state.answers[id]={v:b.dataset.v,note:note.value}; paint(); save(); if(b.dataset.v!=='yes') note.focus(); });
+    note.addEventListener('input',()=>{ const cur=state.answers[id]||{v:'other'}; cur.note=note.value; state.answers[id]=cur; if(!j.classList.contains('yes')&&!j.classList.contains('no')){ j.classList.add('other'); cur.v='other'; } save(); }); });
   $('#rv-hint').onclick=function(){ const on=this.getAttribute('aria-pressed')!=='true'; this.setAttribute('aria-pressed',on); document.body.classList.toggle('rv-hint',on); };
   $('#rv-old').onclick=function(){ const on=this.getAttribute('aria-pressed')!=='true'; this.setAttribute('aria-pressed',on); document.body.classList.toggle('rv-show-old',on); };
   $('#rv-submit').onclick=async function(){ state.submitted=new Date().toISOString(); if(server){ try{ await fetch('/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(state)}); st.textContent='Submitted — Claude has your edits.'; }catch(e){ st.textContent='Submit failed — server gone; the edits are in this browser, tell Claude.'; } } else { try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){} st.textContent='Submitted locally (no server) — tell Claude.'; } this.disabled=true; };
@@ -269,6 +313,9 @@ def write_edits(out_dir, page_path):
     orig = {m.group(1): strip_tags(m.group(2)) for m in re.finditer(r'data-c="([^"]+)"[^>]*>(.*?)</(?:p|h2|h3|span|a)>', page, re.S)}
     lines = [f'# Copy preview — edits ({(state.get("submitted") or "")[:16].replace("T", " ")})', '']
     for cid, a in (state.get('answers') or {}).items():
+        if cid.endswith('.loop'):
+            lines.append(f'- **LOOP {a.get("v", "?").upper()}** `{cid}`' + (f': {a["note"]}' if a.get('note') else ''))
+            continue
         if a.get('v') == 'other':
             lines.append(f'- **EDIT** `{cid}`\n  - was: {orig.get(cid, "?")}\n  - now: {strip_tags(a.get("note", ""))}')
         elif a.get('v') == 'no':
@@ -286,9 +333,20 @@ def main():
     sub = ap.add_subparsers(dest='cmd', required=True)
     for name in ('build', 'serve'):
         s = sub.add_parser(name); s.add_argument('site'); s.add_argument('out_dir')
+        s.add_argument('--media', help='dir of <scene>.webm/.webp loops to drop into the rows (copied to <out-dir>/media)')
+        s.add_argument('--gap', action='append', default=[], help='rowN=known gap text, shown on that row')
         if name == 'serve':
             s.add_argument('--no-open', action='store_true'); s.add_argument('--port', type=int, default=0); s.add_argument('--timeout', type=int, default=240)
     a = ap.parse_args()
+    if a.media:
+        import shutil
+        md = os.path.join(a.out_dir, 'media'); os.makedirs(md, exist_ok=True)
+        for f in os.listdir(a.media):
+            if f.endswith(('.webm', '.webp')):
+                shutil.copy(os.path.join(a.media, f), os.path.join(md, f))
+        MEDIA['dir'] = md
+    for g in a.gap:
+        k, _, v = g.partition('='); MEDIA['gaps'][k] = v
     out, ids = build(a.site, a.out_dir)
     print(f'[copy-preview] built {out} — {len(ids)} editable blocks')
     if a.cmd == 'build':

@@ -1,0 +1,8 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150",
+  "theme": "meadow-mist", "boot": 3000,
+  "actions": [
+    {"hold": 1800},
+    {"click": "[placeholder^='Message']", "settle": 200},
+    {"typeSlow": "yes, add reminders the night before each block", "cps": 18},
+    {"hold": 3200}
+  ] }

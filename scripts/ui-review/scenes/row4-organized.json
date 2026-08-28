@@ -1,0 +1,15 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=150",
+  "theme": "dark", "boot": 3000,
+  "actions": [
+    {"hold": 600},
+    {"click": "[title^='Tags & note']", "settle": 900}, {"hold": 700},
+    {"clickText": "work", "tag": "button", "settle": 700},
+    {"click": "[placeholder^='Search or create']", "settle": 200}, {"typeSlow": "midterm", "cps": 16}, {"key": "Enter", "settle": 800},
+    {"key": "Escape", "settle": 600},
+    {"click": "[placeholder^='Message']", "settle": 200}, {"typeSlow": "/resume", "cps": 16}, {"key": "Enter", "settle": 1400},
+    {"hold": 1200},
+    {"click": "[placeholder^='Search sessions']", "settle": 200}, {"typeSlow": "scroll", "cps": 16}, {"hold": 1800},
+    {"key": "Escape", "settle": 600},
+    {"clickText": "Journal", "tag": "button", "settle": 800},
+    {"hold": 1200}
+  ] }

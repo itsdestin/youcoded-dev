@@ -1,0 +1,14 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=theme-builder",
+  "theme": "midnight", "boot": 3000,
+  "actions": [
+    {"hold": 500}, {"click": "[placeholder^='Message']", "settle": 200},
+    {"typeSlow": "build me a theme with the vibe of outdoor anime art", "cps": 18}, {"key": "Enter", "settle": 6500},
+    {"hold": 800},
+    {"click": "[title='Browse skills']", "settle": 800}, {"click": "[title='Open marketplace']", "settle": 1500},
+    {"click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))", "settle": 1200},
+    {"click": "[data-marketplace-card='theme:golden-sunbreak']", "settle": 1500},
+    {"clickText": "Apply theme", "tag": "button", "settle": 1800},
+    {"key": "Escape", "settle": 700},
+    {"click": "[aria-label='Exit marketplace']", "settle": 1200},
+    {"hold": 1800}
+  ] }

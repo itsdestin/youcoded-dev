@@ -1,10 +1,10 @@
 ---
-status: active
+status: shipped
 created: 2026-08-27
 kind: implementation-handoff
 supersedes_context_for: docs/active/handoffs/2026-08-26-model-download-resume-handoff.md
-spec: docs/active/specs/2026-08-26-model-download-resume-design.md
-plan: docs/active/plans/2026-08-26-model-download-resume.md
+spec: docs/archive/specs/2026-08-26-model-download-resume-design.md
+plan: docs/archive/plans/2026-08-26-model-download-resume.md
 ---
 
 # Continuation handoff — interrupted model downloads

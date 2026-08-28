@@ -1,0 +1,10 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150",
+  "theme": "meadow-mist", "width": 390, "height": 844, "boot": 3000,
+  "actions": [
+    {"hold": 1500},
+    {"click": "[aria-label='Open menu']", "settle": 700},
+    {"hold": 900},
+    {"key": "Escape", "settle": 500},
+    {"eval": "document.querySelector('[data-testid=chat-scroll],main')?.scrollBy({top:400,behavior:'smooth'})"},
+    {"hold": 2000}
+  ] }
