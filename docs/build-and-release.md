@@ -26,7 +26,7 @@ A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `deskt
 
 ### App (Desktop + Android)
 1. Bump `versionCode` + `versionName` in `youcoded/app/build.gradle.kts`
-2. Regenerate the landing-page demos: `bash scripts/ui-review/site-assets.sh <worktree>`, review `docs/gallery` + `docs/site/media`, commit them with the version bump — the site's loops and embed are built from the renderer and go stale otherwise.
+2. Regenerate the landing-page demos: `bash scripts/ui-review/site-assets.sh <worktree>`, review `docs/gallery` + `docs/media`, commit them with the version bump — the site's loops and embed are built from the renderer and go stale otherwise.
 3. Tag `vX.Y.Z` in youcoded on master
 4. Both platform workflows trigger → single GitHub Release with all artifacts
 

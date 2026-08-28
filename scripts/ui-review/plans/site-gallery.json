@@ -58,9 +58,23 @@
    "actions": [
     {
      "click": "[title='Connect 4']",
-     "settle": 900
+     "settle": 1500
+    },
+    {
+     "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(4)",
+     "settle": 1600
+    },
+    {
+     "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(3)",
+     "settle": 1600
+    },
+    {
+     "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(5)",
+     "settle": 1600
     }
-   ]
+   ],
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&signedIn=1",
+   "expect": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(1)"
   },
   {
    "name": "themes",

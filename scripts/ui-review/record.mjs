@@ -45,6 +45,11 @@ const ws = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise((r) => ws.addEventListener('open', r));
 let id = 0; const pending = new Map(); const frames = [];
 const framesDir = mkdtempSync(join(tmpdir(), 'ui-frames-'));
+// Fix: this used to only get cleaned up on the success path at the bottom of
+// the file — any early exit (a MISSING selector, a failed click) left hundreds
+// of screencast PNGs behind in the temp dir. Register cleanup once, here, so
+// every exit path (including process.exit(1) calls above) clears it.
+process.on('exit', () => { try { rmSync(framesDir, { recursive: true, force: true }); } catch { /* best effort */ } });
 ws.addEventListener('message', (m) => {
   const d = JSON.parse(m.data);
   if (d.id && pending.has(d.id)) { pending.get(d.id)(d); pending.delete(d.id); }
@@ -135,6 +140,7 @@ const enc = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-s
   '-vf', `scale=${W}:-2,fps=24,format=yuv420p`, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '33', '-row-mt', '1', '-an', `${outBase}.webm`]);
 if (enc.status !== 0) { console.error(enc.stderr.toString()); process.exit(1); }
 spawnSync('magick', [join(framesDir, 'f00000.png'), '-quality', '82', `${outBase}.webp`]);
-rmSync(framesDir, { recursive: true, force: true });
+// framesDir cleanup now happens in the exit handler registered above (covers
+// error exits too, not just this success path).
 console.log(`frames=${frames.length} duration=${duration.toFixed(1)}s out=${outBase}.webm`);
 process.exit(0);

@@ -1,6 +1,15 @@
-{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=150",
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=150&signedIn=1",
   "theme": "halftone-dimension", "boot": 3000,
   "actions": [
-    {"hold": 600}, {"click": "[title='Connect 4']", "settle": 1200},
-    {"hold": 2500}
+    {"hold": 600},
+    {"click": "[placeholder^='Message']", "settle": 200},
+    {"typeSlow": "summarize the last three meeting notes into one page", "cps": 18},
+    {"key": "Enter", "settle": 1500},
+    {"click": "[title='Connect 4']", "settle": 1500},
+    {"hold": 1200},
+    {"click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(4)", "settle": 1600},
+    {"click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(3)", "settle": 1600},
+    {"click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(5)", "settle": 1600},
+    {"click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(2)", "settle": 1600},
+    {"hold": 1800}
   ] }

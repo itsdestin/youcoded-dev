@@ -822,7 +822,7 @@ Claude-Session: https://claude.ai/code/session_01JT8RKNphr2HekthYqV9Qzi"
 
 **Interfaces:**
 - Consumes: selectors proven in `plans/main.json` / `overlays.json` / `narrow.json` (quoted below); `?reply=` scripts from Task 3; `scenario=site` from Task 2.
-- Produces: `docs/site/media/row<N>.webm` + `.webp` via Task 8.
+- Produces: `docs/media/row<N>.webm` + `.webp` via Task 8.
 
 Each scene file is `{ base, theme, boot, actions }` as in Task 6. Where a selector is uncertain, first run the rig's `dump` action through `shot.mjs` (`{"dump": true}` lists clickable controls) and pin an `aria-label`/`title` selector — never a text match that a copy change breaks.
 
@@ -921,7 +921,7 @@ Expected: nine `.webm`/`.webp` pairs, none `FAILED`. For each, extract three fra
 #!/usr/bin/env bash
 # Regenerates every landing-page demo asset from the REAL renderer:
 #   docs/site/           the live embed (npm run build:site)
-#   docs/site/media/     one WebM loop + WebP poster per showcase row (record.mjs)
+#   docs/media/     one WebM loop + WebP poster per showcase row (record.mjs)
 #   docs/gallery/        gallery stills as WebP (shot.mjs + magick)
 # Run before every release so the site can never drift from the app again.
 # Usage: bash scripts/ui-review/site-assets.sh <worktree-or-path>
@@ -942,10 +942,10 @@ trap '[ "${STARTED:-0}" = 1 ] && pkill -f "[v]ite --port $WB_PORT" || true' EXIT
 node "$WS/scripts/workbench-boot-check.mjs" "$WB_PORT"
 
 # 2. loops
-mkdir -p "$OUT/site/media"
+mkdir -p "$OUT/media"
 i=0
 for scene in row1-any-ai row2-does-things row3-projects row4-organized row5-follow row5-phone row6-yours row7-play row8-builders; do
-  CDP_PORT=$((10320 + i)) node "$HERE/record.mjs" "$HERE/scenes/$scene.json" "$OUT/site/media/$scene"; i=$((i+1))
+  CDP_PORT=$((10320 + i)) node "$HERE/record.mjs" "$HERE/scenes/$scene.json" "$OUT/media/$scene"; i=$((i+1))
 done
 
 # 3. gallery
@@ -958,11 +958,11 @@ for f in "$TMP"/*/*.png; do
   theme="$(basename "$(dirname "$f")")"; name="$(basename "$f" .png)"
   magick "$f" -resize 1200x -quality 80 "$OUT/gallery/$name-$theme.webp"
 done
-du -sh "$OUT/site/media" "$OUT/gallery"
+du -sh "$OUT/media" "$OUT/gallery"
 
 # 4. embed (needs the workbench stopped? no — vite build is independent of the dev server)
 (cd "$TDIR/desktop" && npm run build:site >/dev/null)
-echo "site assets regenerated under $OUT — review docs/gallery and docs/site/media, then commit them"
+echo "site assets regenerated under $OUT — review docs/gallery and docs/media, then commit them"
 ```
 
 - [ ] **Step 3: Run it end to end**
@@ -972,7 +972,7 @@ bash scripts/ui-review/site-assets.sh site-rebuild 2>&1 | tail -15
 ```
 Expected: boot check ok, nine `frames=…` lines, gallery `du` under 1.5 MB total, media under 8 MB total, `site assets regenerated`. If media exceeds 8 MB, raise `-crf` in `record.mjs` to 36 and re-run.
 
-- [ ] **Step 4: Release checklist** — in `docs/build-and-release.md`, in the desktop release steps, add a line: `- Regenerate the landing-page demos: \`bash scripts/ui-review/site-assets.sh <worktree>\`, review \`docs/gallery\` + \`docs/site/media\`, commit them with the version bump — the site's loops and embed are built from the renderer and go stale otherwise.`
+- [ ] **Step 4: Release checklist** — in `docs/build-and-release.md`, in the desktop release steps, add a line: `- Regenerate the landing-page demos: \`bash scripts/ui-review/site-assets.sh <worktree>\`, review \`docs/gallery\` + \`docs/media\`, commit them with the version bump — the site's loops and embed are built from the renderer and go stale otherwise.`
 
 - [ ] **Step 5: Commit** (workspace: `scripts/ui-review/site-assets.sh scripts/ui-review/plans/site-gallery.json docs/build-and-release.md`; app worktree: `docs/site docs/gallery`).
 
@@ -1042,7 +1042,7 @@ Read the current markup at `:2678-2695` first and keep any wrapper elements the 
     <div class="embed-frame">
       <div class="embed-titlebar"><span></span><span></span><span></span></div>
       <div class="embed-stage">
-        <img class="embed-poster" src="site/media/row1-any-ai.webp" alt="YouCoded Assistant chat window" width="1440" height="900">
+        <img class="embed-poster" src="media/row1-any-ai.webp" alt="YouCoded Assistant chat window" width="1440" height="900">
         <button class="embed-start" type="button">Start the demo</button>
         <iframe class="embed-iframe" title="YouCoded Assistant live demo" loading="lazy" data-src="site/index.html?mode=workbench&amp;child=1&amp;scenario=site&amp;latency=150&amp;reply=demo"></iframe>
       </div>
@@ -1136,8 +1136,8 @@ The `localStorage` write before `src` is set targets `about:blank`'s origin, not
     <p class="showcase-desc">BODY</p>
   </div>
   <div class="row-media">
-    <video class="row-video" muted loop playsinline preload="none" poster="site/media/FILE.webp" width="1440" height="900" aria-label="ALT">
-      <source src="site/media/FILE.webm" type="video/webm">
+    <video class="row-video" muted loop playsinline preload="none" poster="media/FILE.webp" width="1440" height="900" aria-label="ALT">
+      <source src="media/FILE.webm" type="video/webm">
     </video>
   </div>
 </div>
@@ -1174,8 +1174,8 @@ CSS: `.row-media{border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(
 - [ ] **Step 4: Row 5 composition** — `.row-media` for row 5 holds two videos:
 ```html
 <div class="row-media row-media-duo">
-  <video class="row-video" … poster="site/media/row5-follow.webp"><source src="site/media/row5-follow.webm" type="video/webm"></video>
-  <div class="phone-bezel"><video class="row-video" … poster="site/media/row5-phone.webp"><source src="site/media/row5-phone.webm" type="video/webm"></video></div>
+  <video class="row-video" … poster="media/row5-follow.webp"><source src="media/row5-follow.webm" type="video/webm"></video>
+  <div class="phone-bezel"><video class="row-video" … poster="media/row5-phone.webp"><source src="media/row5-phone.webm" type="video/webm"></video></div>
 </div>
 ```
 CSS: `.row-media-duo{position:relative;background:transparent;box-shadow:none;border:0;overflow:visible}.phone-bezel{position:absolute;right:-4%;bottom:-6%;width:24%;border-radius:22px;padding:6px;background:#111;box-shadow:0 20px 50px rgba(0,0,0,.35)}.phone-bezel .row-video{border-radius:16px}`.
