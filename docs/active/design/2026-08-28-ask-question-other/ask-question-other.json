@@ -1,0 +1,82 @@
+{
+ "title": "Question cards — type your own answer",
+ "key": "ask-question-other",
+ "out": "ask-question-other.html",
+ "images": "images-ask-question-other",
+ "runs": {
+  "before": "/home/destin/youcoded-dev/scratch/ui-ask-other-before",
+  "after": "/home/destin/youcoded-dev/scratch/ui-ask-other-after"
+ },
+ "themes": [
+  "midnight",
+  "halftone-dimension"
+ ],
+ "lead": "When the assistant asks you a multiple-choice question, today you can only pick from its list — if none fit, Dismiss ends the turn and it starts over. Three steps, all Yes/No: the new Other choice, what happens when you pick it, and the note you can add to a normal choice.",
+ "crops": {
+  "ask-card": [
+   "ask",
+   "ask-idle",
+   "930x660+255+0"
+  ],
+  "ask-card-other": [
+   "ask",
+   "ask-other",
+   "930x660+255+0"
+  ],
+  "ask-card-note": [
+   "ask",
+   "ask-note",
+   "930x660+255+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "G2.1",
+   "surface": "Chat · question card",
+   "path": "Chat → the assistant asks you a question",
+   "crop": "ask-card",
+   "highlight": "auto",
+   "headline": "Every question now ends with an Other choice and a small text box under the list.",
+   "changed": "An Other row (“Type your own answer”) is added after the assistant's own choices on every question, and one text box sits below the list. Nothing else on the card moves.",
+   "measured": "Card grows about 40 px per question",
+   "notice": "You always have a way out of a list that doesn't fit. The box reads “Add a note…” until you pick Other. Cards with four questions get four boxes, so they are taller than before.",
+   "risk": "On a very long card with four questions the extra height means more scrolling before you reach Submit."
+  },
+  {
+   "id": "G2.2",
+   "surface": "Chat · question card",
+   "path": "Chat → pick Other",
+   "crop": "ask-card-other",
+   "highlight": {
+    "box": [
+     2,
+     36,
+     96,
+     14
+    ]
+   },
+   "headline": "Pick Other and the box asks you to explain — Submit waits until you have typed something.",
+   "changed": "Choosing Other flips the box to “Explain…”, puts the cursor in it, and keeps Submit greyed out until there is text. What you type is sent as your answer in place of a listed choice; the assistant is told it was your own wording.",
+   "notice": "You can answer in your own words without leaving the card. On a pick-several question, Other joins the boxes you ticked (“Charts, plus my own idea”). Ctrl+Enter inside the box submits.",
+   "risk": "Before this change the picture on the left had no Other row, so the left picture simply shows a normal choice selected."
+  },
+  {
+   "id": "G2.3",
+   "surface": "Chat · question card",
+   "path": "Chat → pick a listed answer, then type",
+   "crop": "ask-card-note",
+   "highlight": {
+    "box": [
+     2,
+     44,
+     96,
+     6
+    ]
+   },
+   "headline": "Pick a listed answer and the box becomes an optional note that travels with your choice.",
+   "changed": "With a normal choice selected the box stays “Add a note…”. Anything typed is sent alongside the choice as a note (“your choice, plus: but keep the bundle small”); leave it empty and nothing extra is sent.",
+   "notice": "You can steer the assistant without rejecting its options — “yes, but…”. Works the same for Claude Code sessions and the app's own assistant.",
+   "risk": "If you type a note and then switch to Other, the same text becomes your answer — the box keeps what you wrote."
+  }
+ ]
+}
