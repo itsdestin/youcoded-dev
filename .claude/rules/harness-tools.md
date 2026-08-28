@@ -8,7 +8,7 @@ paths:
   - "youcoded/desktop/src/main/harness/skills/**"
   - "youcoded/desktop/src/main/harness/search/**"
   - "youcoded/desktop/src/main/mcp-reconciler.ts"
-last_verified: 2026-08-11
+last_verified: 2026-08-28
 verify:
   - path: youcoded/desktop/src/main/harness/tools/guards.ts
     contains: "toPosix"
@@ -29,8 +29,18 @@ verify:
   - test: youcoded/desktop/tests/path-triggers.test.ts
   - test: youcoded/desktop/tests/rule-injection.test.ts
   - test: youcoded/desktop/tests/send-user-file-tool.test.ts
+  - path: youcoded/desktop/src/main/harness/tools/arg-errors.ts
+    contains: "unknown parameter"
+  - path: youcoded/desktop/src/main/harness/pdf-text.ts
+    contains: "serialized"
+  - path: youcoded/desktop/src/main/harness/tools/write.ts
+    contains: "detectOmissionPlaceholder"
+  - test: youcoded/desktop/tests/tool-arg-errors.test.ts
+  - test: youcoded/desktop/tests/native-tools-polish.test.ts
+  - test: youcoded/desktop/tests/read-pdf.test.ts
+  - test: youcoded/desktop/tests/ask-user-question-card-other.test.tsx
   - path: youcoded/desktop/src/main/harness/tools/send-user-file.ts
-    contains: "permissionSubject: \\(\\) => undefined"
+    contains: "permissionSubject: \(\) => undefined"
   - path: youcoded/desktop/src/main/harness/mcp/mcp-registry.ts
     contains: "secretRef"
   - path: youcoded/desktop/src/main/harness/mcp/mcp-client.ts
@@ -54,29 +64,30 @@ Session lifecycle: sibling rule `native-runtime.md`. **Depth + why for every bul
 
 ## Core tools — guards: `harness-tools-core`/`harness-tool-guards`/`harness-tool-bounds` tests
 - **The file-tool guards (secret paths, cwd jail) are honest friction, NOT a sandbox — Bash bypasses them.** Never present them as a security boundary or glob toward one.
-- **Bash cwd is SCOPED-PERSISTENT; the file tools are not** — `shellCwd` tracks across calls (newline-terminated `__YC_CWD__` sentinel); a `cd` outside `ctx.cwd` is reverted AND announced; only cwd persists (resets on resume); file tools still resolve against `ctx.cwd`; PowerShell stays stateless.
-- **Tools emit FORWARD SLASHES; Bash reports cwd in the ROOT'S SPELLING** — `toPosix()` is the one output normalizer; `rebaseReportedCwd()` re-expresses `pwd` in `ctx.cwd`'s vocabulary; containment is checked BEFORE the rebase; **`ctx.cwd` is never canonicalized** (permission-store key). **These guards are VACUOUS on Linux** — they fail only on Windows/macOS CI (`eba51705`). Four known traps: `docs/archive/specs/2026-08-11-harness-cross-platform-path-vocabulary.md`.
-- **Tools DECLARE what they omitted (`bounds`); `defineTool`/`composeNotice` render it** — never hand-written truncation prose; `moreHint` is the tool's own vocabulary (per-call, else the static fallback) — guards: `tool-registry-manifest`/`harness-tool-conformance`, ast-grep `tool-bounds-not-hand-rolled`.
+- **Bash cwd is SCOPED-PERSISTENT; the file tools are not** — `shellCwd` tracks across calls (`__YC_CWD__` sentinel); a `cd` outside `ctx.cwd` is reverted AND announced; only cwd persists (resets on resume); file tools still resolve against `ctx.cwd`; PowerShell stays stateless.
+- **Tools emit FORWARD SLASHES; Bash reports cwd in the ROOT'S SPELLING** — `toPosix()` is the one output normalizer; `rebaseReportedCwd()` re-expresses `pwd` in `ctx.cwd`'s vocabulary; containment is checked BEFORE the rebase; **`ctx.cwd` is never canonicalized** (permission-store key). **VACUOUS on Linux** — fail only on Windows/macOS CI (`eba51705`). Four known traps: `docs/archive/specs/2026-08-11-harness-cross-platform-path-vocabulary.md`.
+- **Schemas are `.strict()` (MCP pass-through); PDF extraction is SERIALIZED (`pdf-text.ts`); Write REFUSES omission placeholders; served-reads dedupe CLEARS on compaction/resume; Bash text has NO pipe advice** — depth: doc "Native tools — 2026-08-26 ledger"; guards: `tool-arg-errors`, `read-pdf`, `native-tools-polish`.
+- **Tools DECLARE what they omitted (`bounds`); `defineTool`/`composeNotice` render it** — never hand-written truncation prose; `moreHint` is the tool's own vocabulary — guards: `tool-registry-manifest`/`harness-tool-conformance`, ast-grep `tool-bounds-not-hand-rolled`.
 
 ## Web tools (Plan B) — guards: `net-guard`/`web-fetch-tool`/`search-backends`/`search-service` tests
-- **WebFetch/WebSearch follow redirects MANUALLY and re-validate every hop** (scheme + literal IP + DNS answer) — the SSRF bypass class; honest friction. Never `redirect:'follow'`.
-- **WebFetch keeps its pre-parse complexity guard (`MAX_TAGS`/`MAX_DEPTH`)** — Readability is synchronous + ~quadratic in DOM depth; the 5MB cap is not a cost bound.
-- **WebSearch walks a data-driven backend chain** (tavily → exa → ddg; ships in-app, refreshes from `raw.githubusercontent.com/itsdestin/youcoded/master/search-chain.json`). **DDG `202` = rate-limited, NEVER retried.** Backend ids from IPC are whitelisted.
+- **WebFetch/WebSearch follow redirects MANUALLY and re-validate every hop** (scheme + literal IP + DNS answer) — the SSRF bypass class. Never `redirect:'follow'`.
+- **WebFetch keeps its pre-parse complexity guard (`MAX_TAGS`/`MAX_DEPTH`)** — Readability is synchronous and ~quadratic in DOM depth.
+- **WebSearch walks a data-driven backend chain** (tavily → exa → ddg; refreshes from the repo's `search-chain.json`). **DDG `202` = rate-limited, NEVER retried.** Backend ids from IPC are whitelisted.
 - **Search keys are `safeStorage`-encrypted; `search-providers.json` holds only `secretRef`s**; `search:*` has 5-surface parity; `search:test` never throws (guards: `search-key-store`/`ipc-channels`).
-- **AskUserQuestion rides the permission-ask rail** — the broker threads `decision.updatedInput`; `formatAnswers` is TOTAL (a throw = dangling tool_call = bricked session). **A human dismissal ENDS the turn** (broker `dismissed`) — guards: `native-permission-broker`/`ask-user-question-tool`/`harness-session-loop`.
+- **AskUserQuestion rides the permission-ask rail** — the broker threads `decision.updatedInput`; `formatAnswers` is TOTAL (a throw bricks the session). **A human dismissal ENDS the turn** (broker `dismissed`) — guards: `native-permission-broker`/`ask-user-question-tool`/`harness-session-loop`.
 
 ## Skills & injection (M3) — guards: `skill-catalog`/`skill-tool-gating`/`injection-budget`/`project-instruction-budget`/`path-triggers`/`rule-injection`/`slash-routing` tests
-- **Injection is MESSAGES, never a prompt edit** (`prompt-assembly.ts` stays byte-stable) — a mid-session prompt change discards the KV cache prefix.
+- **Injection is MESSAGES, never a prompt edit** (`prompt-assembly.ts` stays byte-stable) — a prompt change discards the KV cache prefix.
 - **Injected content is bounded by the profile; truncation announces itself** (budgets from the REAL window; unmeasured = small, frontier providers exempt).
 - **The ROOT project-instruction file is OUTLINED to fit (`fitProjectInstructions`), never tail-cut** — every heading survives; the notice says only what happened; **sizing is fixed at session start — `setBinding` does NOT re-apply it.**
 - **`Skill` is CONDITIONAL and absent from `NATIVE_TOOL_NAMES`** — attached only when the profile affords its catalog; re-synced on `setBinding`; `/skill-name` works on every model.
-- **A rule with no `paths:` is SKIPPED, never global** — an eager rule rides every turn.
+- **A rule with no `paths:` is SKIPPED, never global** — eager rules ride every turn.
 - **`native:*` four-surface parity is pinned** (`ipc-channels.test.ts` → "native:* channel parity").
 
 ## MCP (M3) — guards: the seven `mcp-*.test.ts` suites
 - **MCP secret plaintext NEVER enters `~/.youcoded/mcp.json`** — `secretRef` only; plaintext in `SecretsStore`.
-- **Attachment is WHOLE-SERVER, in registry order, dropping from the END** — a model can't reason over a partial tool set.
+- **Attachment is WHOLE-SERVER, in registry order, dropping from the END** — no partial tool sets.
 - **Grants are PER-TOOL (`mcp__{server}__{tool}`), not per-server** (`permissionSubject` → `undefined`) — a server update can add a destructive tool (no revocation UI until M5).
-- **`stderr: 'pipe'` on the stdio transport is LOAD-BEARING** — the SDK's `'inherit'` default hides a failing server's only explanation.
-- **A server's own annotations (`readOnlyHint`, `destructiveHint`) are IGNORED** — not a trusted authority about its own danger.
+- **`stderr: 'pipe'` on the stdio transport is LOAD-BEARING** — `'inherit'` hides a failing server's only explanation.
+- **A server's own annotations (`readOnlyHint`, `destructiveHint`) are IGNORED** — not trusted about its own danger.
 - **Projection into `~/.claude.json` NEVER overwrites an unowned entry** — ownership is the TOP-LEVEL `_youcodedOwnedMcpServers: string[]`; colliding unowned ids are SKIPPED into `skippedCollisions`.
