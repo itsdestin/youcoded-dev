@@ -1,5 +1,5 @@
 {
-  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=inbox",
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=inbox&seed=none&title=morning+inbox",
   "theme": "creme",
   "boot": 3000,
   "actions": [
