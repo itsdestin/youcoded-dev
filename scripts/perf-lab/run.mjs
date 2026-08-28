@@ -553,7 +553,7 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'only', 'label', 'out', 'max-minutes'];
+const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
 const BOOL_FLAGS = ['force-build', 'dry-run', 'help'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.

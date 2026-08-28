@@ -48,6 +48,15 @@ not". The open question is not how big the prize is — it is how much of the wo
 rendered DOM (which parking frees) versus reducer data (which only eviction frees), because
 that decides which of the two changes below is the real fix.
 
+**The rig now measures this.** `scripts/perf-lab/scenario-scrollback.mjs` (phase
+`scrollback`, own boot, runs last) opens the same six sessions the workload phase opens,
+scrolls each resumed conversation to its beginning, and reports the ceiling post-GC split
+three ways — `deltaJsHeapMb` (what eviction frees), `deltaNonJsMb` (what parking frees) and
+`deltaDomNodes`. `releasedMb` records what switching away plus a forced GC gives back:
+~0 today, and the metric a cycle-3 change has to move. Three of its paths are PRIMARY, so
+the gate now judges the ceiling and not only the floor. **Run it before planning either
+change** — README → "scenario-scrollback.mjs".
+
 ## 3. The two candidate changes (they are NOT the same thing)
 
 They free different memory. **Parking frees rendered DOM for sessions you are not looking
@@ -155,7 +164,10 @@ exists).
 - The "rotating extras" (`native-session-host.test.ts`, `git-service.test.ts`) are
   timing-sensitive **on any platform**, not just Windows — #351 flaked one on ubuntu and it
   passed on re-run. Re-run before believing them.
-- Two LOCAL test failures (`xterm-webgl-mipmap-patch.test.ts`) are environmental: this
-  machine's `node_modules` predates PR #333's postinstall patch. They fail identically on
-  untouched master. `npm ci` in a checkout would clear them.
+- **The main checkout's `node_modules` is badly stale** — confirmed 2026-08-28: 468
+  packages installed against 640 after a fresh `npm ci`, with `ulid`, `ai`, `@codemirror/*`
+  and `pdfjs-dist` missing outright. A perf-lab build against it fails at `tsc` with ~40
+  `Cannot find module` errors. This is also what the two LOCAL `xterm-webgl-mipmap-patch`
+  failures were: `node_modules` predating PR #333's postinstall patch. `npm ci` clears
+  both. `worktrees/perf-lab` was reinstalled on 2026-08-28; the main checkout was NOT.
 - Work in a worktree; `cp -al` for `node_modules`, never a symlink.
