@@ -423,6 +423,16 @@ git commit -m "feat(marketplace): installs check out the catalog's pinned commit
 **Interfaces:**
 - Produces: `install('<bundle>/<name>')` behaves exactly like `install('<bundle>')` and returns its result.
 
+> **Fold in the mid-session votability bug while you are here** (ROADMAP, added 2026-08-28,
+> found by hand-testing Plan 1). The single-install path reports only the **bundle** id to
+> the Worker, never the member ids the provider then surfaces as their own listings — so a
+> vote on a freshly installed member's page is refused until the next launch re-runs
+> `reconcileInstalls()`. This task is the moment that stops being an edge case: after it,
+> the id the user clicked to install is routinely a *member* id and the page they land on is
+> that member's. Report the member ids too, or call the reconcile after a successful install
+> (`POST /installs` takes a batch since wecoded-marketplace#72, so one call covers all of
+> them).
+
 - [ ] **Step 1: Write the failing test**
 
 Append to `desktop/tests/skill-provider-catalog.test.ts`:
