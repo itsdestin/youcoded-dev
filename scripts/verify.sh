@@ -126,6 +126,20 @@ for f in "${CHANGED[@]:-}"; do
   REL+=("${f#desktop/}")
 done
 
+# Source-scanning guards — the `*-authority` suites and their relatives — read
+# the source tree at RUNTIME (guard-scope, or their own join(__dirname,'..','src')).
+# `vitest related` walks the IMPORT graph, so it can never relate one of them to a
+# file you changed: they are invisible to every partial run, while being exactly
+# the guards a new edit is most likely to trip. They are also nearly free (27
+# files, ~1.2s), so every related run gets them appended.
+# 2026-08-28: a `text-[13px]` passed a green verify.sh twice and turned CI red on
+# all three platforms — type-scale-authority.test.ts had never been run.
+SCANNERS=()
+if [[ $RUN_FULL -eq 0 && ${#REL[@]} -gt 0 ]]; then
+  mapfile -t SCANNERS < <(cd "$DESKTOP" && grep -rlE "helpers/guard-scope|'\.\.', *'src'" tests --include='*.test.ts' --include='*.test.tsx' 2>/dev/null | sort || true)
+  REL+=("${SCANNERS[@]:-}")
+fi
+
 # ---------- run the checks, in parallel ----------
 #
 # tsc, vitest, knip and eslint are independent and each takes tens of seconds,
@@ -150,7 +164,7 @@ elif [[ -n "$BROAD_HIT" ]]; then
 elif [[ ${#REL[@]} -eq 0 ]]; then
   echo "  tests: none — no changed TS/JS files under desktop/"
 else
-  echo "  tests: related to ${#REL[@]} changed file(s)"
+  echo "  tests: related to ${#CHANGED[@]} changed file(s) + ${#SCANNERS[@]} source-scanning guards"
 fi
 echo ""
 
