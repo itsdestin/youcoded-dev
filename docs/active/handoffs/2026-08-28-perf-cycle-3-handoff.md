@@ -139,6 +139,25 @@ Bounds a SINGLE long-lived session rather than many open ones. Design as specced
 - Its value is the whole of the scroll-back ceiling in §2, plus however far a session grows
   from live streaming. Both paths only ADD; nothing subtracts today.
 
+### Two things already verified in the renderer (2026-08-28)
+
+**There is no virtualization today, and the `in-view` class is not it.** `ChatView.tsx`
+renders every timeline entry in full; the `IntersectionObserver` at :408 exists only to
+toggle a `.in-view` class that gates a `backdrop-filter` on wallpaper themes. Off-screen
+entries lose the blur and keep every node. That is why 12,100 messages become 1.46 M nodes.
+
+**`observeEntry` never unobserves — and that alone would make eviction free nothing.**
+`ref={observeEntry}` (:1025) calls `observe(el)` for every entry and there is no
+`unobserve` anywhere in `src/renderer/` (verified: the only matches in the tree are three
+test mocks). An `IntersectionObserver` holds a STRONG reference to each observed target,
+so an entry removed from the DOM stays reachable from the live observer for as long as
+that session's ChatView is mounted. Today nothing removes an entry, so it never fires.
+The moment eviction (or virtualization) unmounts one, the node and its subtree are
+retained and the memory win is zero — while every test still passes and the reducer looks
+correct. **Fix this first, with a test, before building either change.** It is the same
+hazard as §4 pointed the other way: a mechanism that is load-bearing only once you start
+removing things.
+
 ## 4. The trap this programme keeps hitting — read before touching the reducer
 
 Four features broke in cycle 2, all the same shape: they depended on whole-file replay as
