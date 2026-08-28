@@ -1,6 +1,8 @@
 ---
 paths:
   - "youcoded/docs/index.html"
+  - "youcoded/docs/media/**"
+  - "youcoded/docs/site/**"
   - "youcoded/docs/gallery/**"
   - "scripts/ui-review/**"
   - "youcoded/desktop/src/renderer/dev/workbench/**"
@@ -13,9 +15,13 @@ verify:
   - path: scripts/ui-review/README.md
     contains: "Recording a loop"
   - path: scripts/ui-review/copy-preview.py
-  # App-side anchors (mock-shim __workbenchAppearanceSync, reply-script splitTurns,
-  # fixture-loader turn_complete, workbench-reply-script.test.ts, docs/media/** and docs/site/** globs)
-  # are added when youcoded PR #360 merges — anchors resolve against the main checkout.
+  - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
+    contains: "__workbenchAppearanceSync"
+  - path: youcoded/desktop/src/renderer/dev/workbench/reply-script.ts
+    contains: "splitTurns"
+  - path: youcoded/desktop/src/renderer/dev/workbench/fixture-loader.ts
+    contains: "turn_complete"
+  - test: youcoded/desktop/tests/workbench-reply-script.test.ts
   - test: youcoded/desktop/tests/workbench-fixture-actions.test.ts
 ---
 # Landing page (itsdestin.github.io/youcoded) + demo-clip tooling
@@ -23,7 +29,7 @@ verify:
 The site is `youcoded/docs/index.html` (GitHub Pages serves `/docs`). Its pictures are
 NOT drawn: every loop, still and the live embed come from the real renderer through the
 workbench. **How-to for all of it: `scripts/ui-review/README.md` → "Recording a loop".**
-Rebuilt 2026-08-28 for 1.3.0: `docs/archive/specs/2026-08-27-landing-page-rebuild-design.md` (or `docs/active/` until merged).
+Rebuilt 2026-08-28 for 1.3.0 (youcoded #360): `docs/archive/specs/2026-08-27-landing-page-rebuild-design.md`.
 
 ## Assets are generated, never hand-edited
 **Invariant:** `bash scripts/ui-review/site-assets.sh <worktree>` regenerates `docs/media/`

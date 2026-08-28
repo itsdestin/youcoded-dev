@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-08-27
 topic: Landing page rebuild for the 1.3.0 release — positioning, structure, live/recorded app demos
 audit: docs/active/investigations/2026-08-27-landing-page-audit.md

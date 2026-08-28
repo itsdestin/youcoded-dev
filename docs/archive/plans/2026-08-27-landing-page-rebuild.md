@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-08-27
 spec: docs/active/specs/2026-08-27-landing-page-rebuild-design.md
 audit: docs/active/investigations/2026-08-27-landing-page-audit.md

@@ -146,7 +146,7 @@ bash scripts/ui-review/record-pair.sh scripts/ui-review/scenes/<scene>.json <bef
 then in the deck spec: `{ "id": "…", "surface": "…", "path": "…", "clip": "<scene>", "headline": "…",
 "changed": "…", "notice": "…", "risk": "…" }` — no `crop`, no `highlight`. `review-cards.py build`
 refuses the deck if a run's recording is missing. First real use: the hero-cycler overlap,
-`docs/active/design/2026-08-27-landing-page/clip-deck/`.
+`docs/archive/design/2026-08-27-landing-page/clip-deck/`.
 
 Rebuild every landing-page asset at once (loops, gallery stills, live embed):
 `bash scripts/ui-review/site-assets.sh <worktree>` — refuses a workbench serving a

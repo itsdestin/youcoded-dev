@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-08-27
 topic: Landing page (itsdestin.github.io/youcoded) — staleness audit, feature diff, positioning inputs for the rebuild
 ---
