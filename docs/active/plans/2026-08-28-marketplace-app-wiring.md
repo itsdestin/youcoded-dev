@@ -9,7 +9,7 @@ part: 3 of 3 (app wiring) — needs 2026-08-28-marketplace-catalog-service.md de
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** The approved marketplace UI runs on real data — desktop and Android read the Worker's `/catalog` (with the static `index.json` as the fallback), installs pin to the catalog's upstream commit, installing a member installs its bundle, and the mockup branch merges.
+**Goal:** The approved marketplace UI runs on real data — desktop and Android read the Worker's `/catalog` (with the static `index.json` as the fallback), installs pin to the catalog's upstream commit, installing a member installs its bundle, **the Update badge becomes a button that actually updates**, and the mockup branch merges.
 
 **Architecture:** `skill-provider.ts` (desktop main) and `MarketplaceFetcher.kt` (Android) gain a catalog fetch in front of the existing `index.json` fetch, same on-disk cache envelope, 1-hour TTL, three-step fallback (Worker → raw GitHub → stale cache). `plugin-installer.ts` / `PluginInstaller.kt` accept `sourceCommit` and check it out after the shallow clone. The renderer needs no change: it already renders `entry.catalog`. The workbench keeps its fixture catalog (it never talks to the network).
 
@@ -40,6 +40,9 @@ part: 3 of 3 (app wiring) — needs 2026-08-28-marketplace-catalog-service.md de
 - Create `app/src/test/kotlin/com/youcoded/app/skills/MarketplaceFetcherCatalogTest.kt`.
 - Modify `desktop/src/renderer/dev/workbench/fixtures/marketplace/catalog.ts` header comment only (it now mirrors a real contract).
 - Modify `docs/registries.md`, `.claude/rules/registries.md` (workspace) — the catalog is the source; `index.json` is the fallback.
+- Modify `desktop/src/renderer/components/marketplace/MarketplaceCard.tsx`, `MarketplaceDetailOverlay.tsx`, `desktop/src/renderer/components/LibraryScreen.tsx` — connect the Update action (Task 7), theme download counts + the small fixes (Task 9).
+- Modify `desktop/src/main/skill-config-store.ts`, `skill-provider.ts` — prompts keep their marketplace id and stop reporting updates they did not perform (Task 8).
+- Create `desktop/tests/marketplace-update-action.test.tsx`, `desktop/tests/prompt-install-update.test.ts`.
 
 ---
 
@@ -854,7 +857,230 @@ and above `MetadataChips` a `Callout` (`tone="info"`): "This connection isn't in
 
 ---
 
-### Task 7: Verify end-to-end, merge, close out
+### Task 7: Connect the Update action — it has never been wired to anything
+
+**The finding (verified 2026-08-28, master).** The app can update a plugin or a theme. A user
+cannot. `MarketplaceCard.tsx:351-360` renders the word **"Update"** inside a plain `<span>`
+with no click handler; `LibraryScreen.tsx:265-280` lists everything with `updateAvailable` and
+offers no action either — clicking a row just opens the detail overlay, which shows
+Install/Uninstall and no Update. The function that performs it, `update(id, type)`
+(`marketplace-context.tsx:308-326`), is exported from the provider and has **zero call sites
+in the entire renderer** (`rg '\.update\(' desktop/src/renderer/{components,state}` finds
+only its own definition and an unrelated `registry.update`). Behind it everything is real and
+reachable from main: `skills:update` (`ipc-handlers.ts:1497`), `skillProvider.update`
+(`skill-provider.ts:326`), and for themes `updateTheme(slug)`
+(`theme-marketplace-provider.ts:255-266`, which re-runs `installTheme` over the same slug).
+
+So the badge is decorative, app-wide, for both kinds. The only thing that self-heals is
+bundled plugins, which `reconcileBundledPlugins()` upgrades at launch without any UI.
+
+**This belongs in this plan.** Task 2 adds commit-pinning so "which version do I have" becomes
+exact and reproducible — which is worth nothing while the user has no way to act on a version
+being out of date. And this plan's branch rewrites that exact card corner, so wiring it now
+costs a fraction of doing it later.
+
+**Files:**
+- Modify: `desktop/src/renderer/components/marketplace/MarketplaceCard.tsx` (the corner element)
+- Modify: `desktop/src/renderer/components/marketplace/MarketplaceDetailOverlay.tsx` (header actions, both the skill and theme bodies)
+- Modify: `desktop/src/renderer/components/LibraryScreen.tsx` (the Updates tab rows)
+- Test: `desktop/tests/marketplace-update-action.test.tsx` (new)
+
+**Interfaces:**
+- Produces: clicking **Update** anywhere it is shown calls `mp.update(id, kind)` and shows an in-progress state, then the badge clears. Failure surfaces the real message from `update()`'s result — never a guessed cause (`docs/error-message-standards.md`).
+
+- [ ] **Step 1: Failing test** — `desktop/tests/marketplace-update-action.test.tsx`, arranged
+the way `tests/marketplace-card-compact.test.tsx` arranges providers, with `update` a `vi.fn()`
+on the marketplace context:
+
+```tsx
+it('the card Update label is a button that calls update()', async () => {
+  render(<MarketplaceCard item={{ kind: 'skill', entry: row() }} onOpen={() => {}} installed updateAvailable />);
+  const btn = screen.getByRole('button', { name: /update/i });
+  fireEvent.click(btn);
+  await waitFor(() => expect(update).toHaveBeenCalledWith('x', 'skill'));
+});
+
+it('clicking Update does not also open the detail overlay', async () => {
+  const onOpen = vi.fn();
+  render(<MarketplaceCard item={{ kind: 'skill', entry: row() }} onOpen={onOpen} installed updateAvailable />);
+  fireEvent.click(screen.getByRole('button', { name: /update/i }));
+  expect(onOpen).not.toHaveBeenCalled();
+});
+
+it('a theme card updates through the theme path', async () => {
+  render(<MarketplaceCard item={{ kind: 'theme', entry: themeRow() }} onOpen={() => {}} installed updateAvailable />);
+  fireEvent.click(screen.getByRole('button', { name: /update/i }));
+  await waitFor(() => expect(update).toHaveBeenCalledWith('golden-sunbreak', 'theme'));
+});
+
+it('shows the real failure message, not a guess', async () => {
+  update.mockResolvedValueOnce({ ok: false, error: "fatal: couldn't find remote ref abc123" });
+  render(<MarketplaceCard item={{ kind: 'skill', entry: row() }} onOpen={() => {}} installed updateAvailable />);
+  fireEvent.click(screen.getByRole('button', { name: /update/i }));
+  await waitFor(() => expect(screen.getByText(/couldn't find remote ref/i)).toBeTruthy());
+});
+```
+
+- [ ] **Step 2: Run** `npx vitest run tests/marketplace-update-action.test.tsx` → FAIL — "Update"
+is not a button, so `getByRole('button', …)` finds nothing.
+
+- [ ] **Step 3: Implement**
+
+`MarketplaceCard.tsx` — the corner currently renders one `<span>` for all three of
+Installing / Update / Installed. Split it: keep the span for Installing and Installed, and
+make Update a real `<button>` that calls `mp.update(entry.id, kind)` and
+**`e.stopPropagation()`s** so it does not also trigger the card's open handler. While it runs,
+show "Updating…" and disable it.
+
+`MarketplaceDetailOverlay.tsx` — in both bodies, when `updateAvailable`, put an **Update**
+button next to Uninstall. This is the fix ROADMAP:725 diagnosed for themes: the theme path
+works, `installTheme` on an installed slug already overwrites in place, but the overlay swaps
+to the uninstall affordance once installed so the user's only route today is
+uninstall-then-reinstall.
+
+`LibraryScreen.tsx` — the Updates tab rows get the same button. A tab named "Updates" that
+cannot update is the version of this bug a user meets first.
+
+- [ ] **Step 4: Which comparison decides `updateAvailable`**
+
+`marketplace-context.tsx:356-373` compares **version strings** (`isNewerVersion(pkg.version,
+entry.version)`), and returns false when either side is missing. Task 2 adds a second, sharper
+fact: the installed commit vs `catalog.sourceCommit`. Use **both** — "either differs" means an
+update is available — and keep them separate in the code with a comment saying why: the
+version is what an author bumps deliberately, the commit is what actually changed. Note the
+existing sharp edge while you are there: a plugin whose `plugin.json` carries no version is
+recorded as `'1.0.0'` (`skill-provider.ts:292`) and can be flagged spuriously; the commit
+comparison is what rescues those.
+
+- [ ] **Step 5: Run, gate, commit**
+
+Run: `npx vitest run tests/marketplace-update-action.test.tsx` → PASS (4).
+Run: `bash scripts/verify.sh marketplace-ui` → OK.
+
+```bash
+git add desktop/src/renderer/components/marketplace/MarketplaceCard.tsx desktop/src/renderer/components/marketplace/MarketplaceDetailOverlay.tsx desktop/src/renderer/components/LibraryScreen.tsx desktop/tests/marketplace-update-action.test.tsx
+git commit -m "feat(marketplace): the Update badge is a button that actually updates, for plugins and themes"
+```
+
+---
+
+### Task 8: Installed prompts stop pretending they update
+
+**The finding (verified 2026-08-28, master).** Installing a `type: "prompt"` entry works —
+`skill-provider.ts:254-263` calls `configStore.createPromptSkill`. Updating one cannot, for
+two independent reasons, and it **reports success anyway**:
+
+1. **No package record.** The plugin and theme paths call `recordPackageInstall`; the prompt
+   path does not. So `packages[id]` is undefined and `marketplace-context.tsx:359` hits
+   `if (!pkg) continue` — an installed prompt can never be flagged as out of date.
+2. **The marketplace id is thrown away.** `createPromptSkill`
+   (`skill-config-store.ts:196-206`) mints its own `user:<timestamp>-<random>` id. The update
+   branch (`skill-provider.ts:333-344`) then looks the entry up **by the marketplace id**,
+   never matches, skips the content overwrite, still calls `updatePackageVersion`, and returns
+   `{ ok: true }`. A silent false success.
+
+Today this is invisible: there are **zero** live prompt entries (all 14 are deprecated). Plan
+2 introduces **257** of them from awesome-cursorrules, all of which would install as permanent
+one-time snapshots and lie when refreshed.
+
+**Files:**
+- Modify: `desktop/src/main/skill-config-store.ts` (`createPromptSkill` keeps a provided id), `desktop/src/main/skill-provider.ts` (prompt install records a package; prompt update finds the row or fails honestly)
+- Test: `desktop/tests/prompt-install-update.test.ts` (new)
+
+**Interfaces:**
+- Produces: installing a marketplace prompt stores it under the **marketplace id** and records a `PackageInfo`, so the Update badge works; `update(id)` on a prompt either rewrites the content or returns `{ ok: false, error }` — never `{ ok: true }` having done nothing.
+- Version: Plan 2 stamps cursorrules rows `version: "1.0.0"` and never moves it, so a version compare alone can never fire for them. Have the catalog use the **short `sourceCommit`** as the prompt's version (a one-line change in `sources/cursorrules.mjs`: `version: sha.slice(0, 7)`), which makes "the upstream file changed" visible through the machinery that already exists.
+
+- [ ] **Step 1: Failing test**
+
+```ts
+it('a marketplace prompt is stored under its marketplace id and records a package', async () => {
+  const p = makeProvider();
+  await p.install('cursorrules-android-jetpack-compose');
+  const cfg = store.load();
+  expect(cfg.privateSkills.some((s) => s.id === 'cursorrules-android-jetpack-compose')).toBe(true);
+  expect(store.getPackage('cursorrules-android-jetpack-compose')).toBeTruthy();
+});
+
+it('updating a prompt rewrites its content', async () => {
+  const p = makeProvider();
+  await p.install('cursorrules-android-jetpack-compose');
+  registryPrompt = 'NEW TEXT';
+  await p.update('cursorrules-android-jetpack-compose');
+  expect(store.load().privateSkills.find((s) => s.id === 'cursorrules-android-jetpack-compose')!.prompt).toBe('NEW TEXT');
+});
+
+it('updating a prompt that is not there fails loudly instead of claiming success', async () => {
+  const r = await makeProvider().update('cursorrules-not-installed');
+  expect(r.ok).toBe(false);
+  expect(r.error).toMatch(/not installed/i);
+});
+```
+
+- [ ] **Step 2: Run** → FAIL (stored under a `user:` id; third case returns `ok: true`).
+
+- [ ] **Step 3: Implement**
+
+`skill-config-store.ts` — `createPromptSkill` takes an optional `id` and uses it when given:
+```ts
+// A marketplace prompt must keep its marketplace id: update() looks the row up
+// by that id, and minting a `user:` one here is why prompt updates silently did
+// nothing and still reported success. Hand-made prompts keep the generated id.
+const id = skill.id ?? `user:${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+```
+
+`skill-provider.ts` prompt install branch — pass the marketplace id through and record the
+package the same way the plugin branch does (`recordPackageInstall(entry.id, entry.version …)`).
+
+`skill-provider.ts` prompt update branch — when `findIndex` misses, **return the failure**:
+```ts
+if (idx < 0) return { ok: false, error: `${id} is not installed as a prompt` };
+```
+and only call `updatePackageVersion` after the content was actually written.
+
+- [ ] **Step 4: If any of that turns out bigger than it looks, disable instead**
+
+A prompt that shows Install and then quietly does nothing is worse than one that shows
+"Open source". If this task runs long, make `isInstallableSource` (Task 6) return `false` for
+prompts, ship the 257 as browsable-not-installable, and put the fix on the ROADMAP. Decide
+that deliberately — do not half-fix it.
+
+- [ ] **Step 5: Run, gate, commit**
+
+Run: `npx vitest run tests/prompt-install-update.test.ts` → PASS (3). `bash scripts/verify.sh marketplace-ui` → OK.
+
+```bash
+git add desktop/src/main/skill-config-store.ts desktop/src/main/skill-provider.ts desktop/tests/prompt-install-update.test.ts
+git commit -m "fix(marketplace): prompts install under their marketplace id and updates no longer claim a success they did not perform"
+```
+
+---
+
+### Task 9: The small things that are cheaper to fix while we are in these files
+
+Each is a one-liner-to-an-hour, each is in a file this branch already rewrites, and each would
+otherwise need its own PR against the same code.
+
+- [ ] **Theme cards show a download count.** Plan 1 adds `installs` to `/stats`'s themes.
+  `MarketplaceCard.tsx:108-113` reads installs only from `stats.plugins`, so the guard is dead
+  code on every theme card while the like count renders fine — plugins show downloads and
+  themes show likes side by side in one grid. Read `themeStats?.installs` too. Check whether
+  the app actually records a theme install (`POST /installs` with `theme:<slug>`); if it does
+  not, add it in `theme-marketplace-provider.ts` where the install completes.
+- [ ] **Two theme previews render blank** (Devil's Garden, Kuromi Dreamer — ROADMAP:1042).
+  Same grid, same component.
+- [ ] **Rails clip at phone width** (UI audit P-17) and **`longDescription` renders raw
+  markdown** in the detail overlay. Both are in the two files above.
+- [ ] **A dead favourite sits in the profile.** Plan 2 fixes `curated-defaults.json`
+  app-side of that, decide whether to prune the stale `theme-builder` string out of existing
+  `~/.claude/youcoded-skills.json` → `favorites[]` on load, or leave it. A favourite that
+  resolves to nothing is invisible, so "leave it" is defensible — say which you chose.
+- [ ] Run `bash scripts/verify.sh marketplace-ui` and commit as one `fix(marketplace):` commit
+  naming each item.
+
+---
+
+### Task 10: Verify end-to-end, merge, close out
 
 - [ ] **Step 1: Full desktop gate + a real-data smoke**
 
@@ -875,7 +1101,7 @@ that hourly on every user's device, including phones on mobile data — that blo
 
 - [ ] **Step 2: Hand it to Destin for the interactive pass — do not script it**
 
-Say before launching: `bash scripts/run-dev.sh marketplace-ui --label "Marketplace overhaul"` opens a window. He checks: the type switch counts, a Skills-tab card with "Part of …", a detail page's badges and "What this can do" showing REAL values (compare one against its GitHub repo), install a `url`-sourced plugin and confirm `git -C ~/.claude/plugins/marketplaces/youcoded/plugins/<id> rev-parse HEAD` equals its `sourceCommit` — **and that this sha is the repo's current tip on GitHub, not an old one.** A pin to a stale commit is the one failure here that looks like success. Then kill the dev window.
+Say before launching: `bash scripts/run-dev.sh marketplace-ui --label "Marketplace overhaul"` opens a window. He checks: the type switch counts, a Skills-tab card with "Part of …", a detail page's badges and "What this can do" showing REAL values (compare one against its GitHub repo), **an item showing "Update" — click it and confirm it actually updates and the badge clears** (try one plugin and one theme), install a `url`-sourced plugin and confirm `git -C ~/.claude/plugins/marketplaces/youcoded/plugins/<id> rev-parse HEAD` equals its `sourceCommit` — **and that this sha is the repo's current tip on GitHub, not an old one.** A pin to a stale commit is the one failure here that looks like success. Then kill the dev window.
 
 - [ ] **Step 3: Merge and clean up**
 
@@ -889,6 +1115,8 @@ Spec: youcoded-dev docs/active/specs/2026-08-28-marketplace-overhaul-ui-design.m
 - type switch (Plugins · Skills · Specialists · Connections · Prompts · Themes), grouped/split rule
 - Likely safe / origin / author chips, "What this can do", thumbs + comments
 - desktop + Android read /catalog first, index.json fallback; installs pin to the catalog's commit; member installs its bundle
+- **the Update badge is now a button.** It never was: the label was a plain span with no handler, and `update(id, type)` had zero call sites in the renderer — so no plugin and no theme could be updated from the UI, only bundled plugins self-upgrading at launch. Fixes ROADMAP:725 (themes) and the same bug for plugins.
+- prompts install under their marketplace id and no longer report updates they did not perform
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 

@@ -49,6 +49,13 @@ Discovery (nothing filtered): hero → filter bar → integrations rail → cura
 Commands and hooks are **not** kinds — they only exist inside a plugin.
 
 ### 1.4 Grouped when browsing, split when looking for something specific
+
+A typed search shows members **and** bundles — approved (R1-5): typing "brainstorm" should find
+the Brainstorming skill *and* Superpowers. What must **not** happen is a search for a bundle's
+own name returning that bundle plus all fourteen of its members, which is what happens if
+member rows carry a "Part of <bundle>" description. The catalog therefore leaves member
+descriptions empty (§5) rather than the screen de-duplicating after the fact — the fix belongs
+to the data, not the filter.
 | Where | What a card is |
 |---|---|
 | All / discovery (hero, rails, Explore everything) | one card per **bundle** or standalone item; members of bundles never appear |
@@ -84,6 +91,21 @@ Uses the internet · Needs a key                  ← risky abilities as WORDS, 
 
 Hover on any chip gives a one-sentence explanation (e.g. *"Likely" because no check is
 perfect — see What this can do*). Touch has no hover: a tap explanation is a follow-up (§5).
+
+> **Open question, raised 2026-08-28 by the plan review — needs one more look before build.**
+> The decks showed a healthy mix of Likely safe / Caution / Not checked, because the fixture
+> data was invented. The real ratio is not that. The scanner reads files only for our own
+> ~2,600 rows and the 257 cursorrules; Docker, awesome-copilot and everything else mirrored
+> arrives `unchecked` — so **roughly half the catalog, and nearly every card in the mirrored
+> sources, will carry the grey shield.** A grid of grey shields may read as "this marketplace
+> is unsafe" rather than "we haven't looked yet".
+>
+> The alternative is to render **no** shield when the status is `unchecked`, so the badge only
+> ever appears when it has something to say, and its absence is the neutral state. That is a
+> reversal of an approved decision, so it is written here as a question rather than a change:
+> it wants one small deck against real ingest data. Nothing else in the design moves either
+> way. (The `@de…` author-chip truncation on rail cards was approved on its merits — R3-2 —
+> and is *not* being reopened.)
 
 ### 1.7 Detail page
 ```
@@ -135,8 +157,12 @@ Source: repo · MIT · pinned to 4f1c2a9
 Absent block = "a plugin, community, not checked" and every new surface hides itself,
 so today's registry keeps loading.
 
-Feedback (Worker): `/stats` plugins gain `thumbs_up`, `thumbs_down`; new routes
-`GET /comments/:id`, `POST /comments`, `POST /thumbs` (value up · down · null). Shapes
+Feedback (Worker): `/stats` plugins gain `thumbs_up`, `thumbs_down` and themes gain
+`installs` (theme cards sit in the same grid as plugin cards, which show a download count);
+new routes `GET /comments/:id`, `POST /comments`, `POST /thumbs` (value up · down · null),
+`GET /thumbs/:id` (the caller's own vote, so the buttons do not forget it between visits).
+A vote below **5 total** shows a count — "3 of 4 people found this helpful" — not a
+percentage; one up-vote is not "100%". Shapes
 in `desktop/src/renderer/state/marketplace-api-client.ts` and the workbench fake
 `desktop/src/renderer/dev/workbench/fixtures/marketplace/worker-api-mock.ts`.
 
@@ -195,6 +221,11 @@ glyphs on cards; vibe/meta chips in the bar; "Tools" as the MCP word; star ratin
   comments; the AI classifier still hides flagged text at post time.
 - **Delete your own comment** — reviews had it (`marketplace:rate:delete`); comments ship
   without it on every platform.
+- **Real descriptions for bundle members.** A member's description is deliberately **empty**
+  in v1: filling it with "Part of Superpowers." made searching a bundle's name match every one
+  of its members, so typing "superpowers" returned the bundle plus fourteen near-identical
+  cards. The card's `Part of X` chip already carries that fact. Real text comes from each
+  `SKILL.md`'s frontmatter once the ingest can afford ~2,000 extra fetches.
 - Tap-to-explain for the badges on touch (hover-only today).
 - Edge fade on the phone sheet's scrolling type row.
 - The `'skill'`→`'plugin'` handover means Library's "browse marketplace" lands on Plugins; confirm Android's Library does the same.
