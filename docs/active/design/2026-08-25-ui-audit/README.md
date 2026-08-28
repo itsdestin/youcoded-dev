@@ -31,6 +31,21 @@
   with tooltip, the marketplace type switch as the Library pill (“Plugins”), and the P-21 #2
   mock-up (theme cards reserve their text rows). Decided 2026-08-27: all yes, reservation reverted;
   Phase C merged as youcoded #332.
+- `phase-d-brief.html` (spec `phase-d-brief.json`, one-run “today” deck from `scratch/ui-phase-d-today/`,
+  master `40feb750`) — the Phase D brief: 8 points (welcome gear, attachment chips, find bar, skills
+  drawer ×3, terminal ×2 from a real-app capture in one theme — the first per-step `themes` use).
+  Decided 2026-08-27: 4 yes, 1 no, 3 “other” (frame instead of a gear; mock-ups wanted for chips and
+  the terminal backing; terminal width to reproduce first).
+- `phase-d-review.html` (spec `phase-d-review.json`, `scratch/ui-phase-d-today/` vs
+  `scratch/ui-phase-d-after/`) — the four built changes. Decided: all yes except the find bar
+  (“keep it a bordered pill, just don’t overlap my message”).
+- `phase-d-review2.html` — the find bar as a bordered pill in its own reserved lane. Yes.
+- `phase-d-mockups.html` (spec `phase-d-mockups.json`, from `scratch/ui-phase-d-mockups/`) — the
+  first **choice-step** deck: two questions, several pictures each, pick one (attachment chip
+  A/B/C; terminal backing today/scrim/90%/100%). Decided: chip C with rendered markdown; terminal
+  “panel, at 80%” (after a scrim-vs-panel explanation in chat).
+- `phase-d-review3.html` (`scratch/ui-phase-d-before-final/` vs `scratch/ui-phase-d-after3/`) — chips
+  and terminal as built. Yes, yes. Phase D merged as youcoded #339.
 - `coverage.md` — machine-generated: which planned surfaces were verified in which themes
   (the original pass: 103 of 104 — "Known Issues" opens an external link; the latest full sweep
   of master, 2026-08-26 after Phase B, verified 112 of 112). `contrast.md` — the painted-pixel

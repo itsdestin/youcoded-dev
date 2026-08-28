@@ -384,7 +384,7 @@ Marketplace rails (§6c #26), so ship both together. Verify: `narrow` plan, and 
 | A | P-11, P-12, P-13, P-16 | **DONE 2026-08-25** — P-11 shipped; P-12, P-13 rejected; P-16 minimal (Meadow outline only) | full run |
 | B | P-15, P-18, P-10 | **DONE 2026-08-26** — P-15 shipped (revised), P-18 shipped, P-10 rejected | main, overlays, tall |
 | C | P-3, P-5, P-1, P-2, P-21 | the four most-seen screens (+ marketplace card fixes) | main, marketplace (default + empty)  **DONE 2026-08-27 (#332; P-5 declined)** |
-| D | P-6, P-19, P-14, P-9, P-20 | everything beside the transcript | main, overlays, electron-live-session | **BUILT 2026-08-27** — P-6 frame, P-14 lane+pill, P-9 pills/Add Skills/empty, P-19 design-C chips, P-20.2 panel 80%; P-20.1 reproduced → ROADMAP bug. **SHIPPED 2026-08-27 (youcoded #339)** — all five points; P-20.1 → ROADMAP bug; P-9.2 declined |
+| D | P-6, P-19, P-14, P-9, P-20 | everything beside the transcript | main, overlays, electron-live-session | **SHIPPED 2026-08-27 (youcoded #339)** — P-6 bare frame, P-14 lane + bordered pill, P-9 pills / Add Skills / empty state (P-9.2 declined), P-19 design-C cards with rendered-markdown previews, P-20.2 panel at 80%; P-20.1 reproduced → ROADMAP bug. Decks: `phase-d-brief`, `phase-d-review`, `phase-d-review2`, `phase-d-mockups`, `phase-d-review3` |
 | E | P-4, P-7, P-8 | contained dialogs/popovers | main, overlays |
 | F | P-17 | phone width, judged last | narrow, marketplace |
 
