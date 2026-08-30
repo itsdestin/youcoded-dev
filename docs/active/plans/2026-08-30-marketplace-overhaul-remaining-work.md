@@ -36,7 +36,9 @@ shipped on 2026-08-28**; its own document, `2026-08-28-marketplace-feedback-work
 - The whole app-side UI, on `youcoded` branch `feat/marketplace-overhaul-ui`
   (worktree `/home/destin/youcoded-dev/worktrees/marketplace-ui`): the type switch, the trust
   chips, "What this can do", the Feedback section, and every component this plan touches.
-  It is behind master and must be rebased before Task 1.
+  As of 2026-08-30 it is **247 commits behind and 14 ahead** of `origin/master`, off a
+  merge-base from 2026-08-27, and master has since landed the bundled-plugin-upgrade work
+  and 14 feedback commits in the same card/overlay/provider files. Rebasing it is **Task 0**.
 
 **Not started — this document:**
 - The catalog service (Worker half + hourly ingest) that gives those cards real data.
@@ -46,7 +48,8 @@ shipped on 2026-08-28**; its own document, `2026-08-28-marketplace-feedback-work
 
 **Known-unverified, inherited:** the Android code written for Plan 1 has never been compiled —
 there is no Android SDK on this machine. It is Kotlin-consistent with its neighbours, nothing
-more. The same will be true of Task 19 unless an SDK appears.
+more. Task 19 is compiled and unit-tested by `android-ci.yml` on the PR instead (Global
+Constraints → App).
 
 **Reading old references.** "Plan 1" in the task bodies below means the shipped feedback work
 above. All other cross-references have been renumbered into this document's single task
@@ -70,9 +73,10 @@ plus a few indexed columns) and answers `GET /catalog` (everything the app shows
 runs in GitHub Actions every hour, pulls each source (our own `index.json`, Docker's MCP
 catalog, `github/awesome-copilot`, `PatrickJS/awesome-cursorrules`), normalises to
 `SkillEntry + catalog`, computes capabilities and a rule-based scan from the files **at the
-repo's current HEAD**, and upserts in batches. A per-source "finish" call retires rows the run
-did not see — but refuses to retire more than a fifth of a source at once, because a scraper
-that collected 12 of 257 rows is broken, not authoritative.
+repo's current HEAD**, and upserts in batches. It then compares what it saw against the ids
+the Worker already holds for that source and sends the difference to a per-source "finish"
+call as an explicit retire list — which refuses to retire more than a fifth of a source at
+once, because a scraper that collected 12 of 257 rows is broken, not authoritative.
 
 **Consume.** `skill-provider.ts` (desktop main) and `MarketplaceFetcher.kt` (Android) gain a
 catalog fetch in front of the existing `index.json` fetch, same on-disk cache envelope, 1-hour
@@ -80,20 +84,28 @@ TTL, three-step fallback (Worker → raw GitHub → stale cache). `plugin-instal
 `PluginInstaller.kt` accept `sourceCommit` and check it out after the shallow clone. The
 renderer needs no change: it already renders `entry.catalog`.
 
-**Two rules make the ingest safe to run unattended**, and they are the difference between a
+**Three rules make the ingest safe to run unattended**, and they are the difference between a
 background job and a liability:
 
 1. **Never downgrade (Task 6).** An upsert that arrives without a field the stored row already
-   has — `stars`, `license`, `sourceCommit` — keeps the stored value; an incoming
+   has — `stars`, `license`, `sourceCommit`, `publishedAt` — keeps the stored value; an incoming
    `scan.status: "unchecked"` never overwrites a stored `checked`/`caution`. A rate-limited,
    half-finished or otherwise degraded run therefore *fails to improve* the catalog instead of
    visibly damaging it. Without this, one bad hour flips "Likely safe" to "Not checked" across
    the grid and back again.
 2. **Only re-read what changed (Task 12).** The ingest asks the Worker for the commit it has on
    file for each id, and re-downloads a plugin's files only when HEAD differs. That is ~95% of
-   the run's GitHub traffic removed, and it is nearly free to implement *because* of rule 1 —
-   an unchanged entry is upserted without `capabilities`/`scan`, and the merge keeps what is
-   already stored.
+   the run's GitHub traffic removed. An unchanged entry is **not sent at all** — the source
+   reports its id (and its members' ids) as *skipped*, so the retire step knows it was seen.
+3. **Never write an unchanged row (Task 6).** The Worker merges every incoming row onto the
+   stored one and, when the result is byte-identical, writes nothing. This is the rule that
+   keeps the catalog inside D1's **write** budget — **100,000 rows written per day on the free
+   tier**, with index updates counted on top. A design that rewrote every row every hour to
+   mark it "seen" would spend ~96,000 of those on rows that did not change; this design spends
+   them only on what moved. "Seen" is carried by the ingest instead (rule 2's skipped list plus
+   what it sent), and retirement is an explicit id list, so nothing has to be written to prove
+   a row is still alive. Corollary for every source file: **never stamp a per-run value
+   (`new Date()`, a run id) into a row that did not change**, or the skip never fires.
 
 **Deliberately not here:** the official MCP Registry (25,291 servers). See **Deferred** at the
 end for the measured reasons and where it goes instead.
@@ -105,18 +117,22 @@ end for the measured reasons and where it goes instead.
 
 ## Order of work
 
-Five phases. The ordering is not arbitrary — Phase 1 is first because it is the only work that
-depends on nothing and can go out on its own; Phase 3 is a gate, not a task list.
+Six phases, counting the rebase. The ordering is not arbitrary — Phase 0 goes first because
+every task on the app branch is a guess until it lands; Phase 1 next because it depends on
+nothing else and can go out on its own; Phase 3 is a decision that may add one small build,
+not a task list.
 
 | Phase | Tasks | Repo / branch | Depends on |
 |---|---|---|---|
-| **1 — App fixes that depend on nothing** | 1–3 | `youcoded` `feat/marketplace-overhaul-ui` | nothing (rebase first) |
+| **0 — Rebase the app branch** | 0 | `youcoded` `feat/marketplace-overhaul-ui` | nothing |
+| **1 — App fixes that depend on nothing** | 1–3 | `youcoded` `feat/marketplace-overhaul-ui` | Task 0 |
 | **2 — Catalog service** | 4–14 | `wecoded-marketplace` `feat/catalog-service` (Task 9 is on the app branch) | nothing |
 | **3 — Settle the shield** | 15 | decision + `youcoded` branch | Phase 2 deployed with real data |
-| **4 — App reads the catalog** | 16–21 | `youcoded` `feat/marketplace-overhaul-ui` | Phase 2 deployed, Phase 3 decided |
-| **5 — Verify, merge, close out** | 22 | both | Phases 1–4 |
+| **4 — App reads the catalog** | 16–22 | `youcoded` `feat/marketplace-overhaul-ui` | Phase 2 deployed, Phase 3 decided |
+| **5 — Verify, merge, close out** | 23 | both | Phases 0–4 |
 
-Phases 1 and 2 are independent of each other and can run in parallel in separate worktrees.
+Phases 1 and 2 are independent of each other and can run in parallel in separate worktrees
+once Task 0 is done.
 Phase 3 cannot start until Phase 2's first real ingest run has populated the live catalog,
 because the whole point of it is to look at real numbers. Nothing in Phase 4 or 5 merges
 until Phase 3 is answered.
@@ -149,7 +165,9 @@ until Phase 3 is answered.
   skills + 103 specialists + 125 connections, measured against `index.json`), and today's rows
   average 1.1 KB. Expect roughly 5,000 rows / 4–6 MB. Any change that materially grows that
   needs a paging story first; D1's free tier allows 5 M row-reads/day, i.e. about 1,000
-  uncached catalog fetches.
+  uncached catalog fetches. The **write** side is tighter: 100,000 rows written/day, index
+  updates counted on top. Rule 3 (Architecture) is what keeps an hourly job under it; any
+  change that writes rows the ingest did not change needs the same scrutiny as a paging change.
 - `CatalogMeta` lives in `desktop/src/shared/catalog-types.ts` on the app branch. This plan
   adds two optional fields there (Task 9): `upstreamId?: string`, `stars?: number`. Nothing
   else in the shape changes.
@@ -180,9 +198,11 @@ until Phase 3 is answered.
 - **GitHub budget is the binding constraint.** `secrets.GITHUB_TOKEN` inside Actions is limited
   to **1,000 API requests per hour per repository** (not 5,000 — that is a personal access
   token), and `http.mjs` stops at 200 remaining, so a run has ~800 calls. The "only re-read
-  what changed" rule keeps a steady-state hourly run at roughly **~160** calls (one
-  `/repos/{o}/{r}` per distinct repo, cached per run; 153 distinct repos across the 237 live
-  `url`/`git-subdir` entries) plus a handful for the other sources. If a run ever hits
+  what changed" rule keeps a steady-state hourly run at roughly **~420** calls (two per
+  distinct repo — `/repos/{o}/{r}` for stars and licence, then its branch tip — cached per
+  run; **207** distinct repos across the 237 live `url`/`git-subdir` entries, measured
+  2026-08-30) plus a handful for the other sources. If that number ever needs to shrink,
+  `git ls-remote <url> HEAD` resolves a branch tip with zero API calls. If a run ever hits
   `RateLimited`, that is the signal the skip logic has stopped working — do not "fix" it by
   raising the threshold. If the budget genuinely needs to grow later, a fine-grained PAT in a
   repo secret gets 5,000/hr; do not reach for that first.
@@ -205,10 +225,9 @@ until Phase 3 is answered.
 
 - App work is on `youcoded` branch `feat/marketplace-overhaul-ui`, worktree
   `/home/destin/youcoded-dev/worktrees/marketplace-ui`.
-- **Rebase before Task 1.** The branch predates the bundled-plugin-upgrade merge
-  (youcoded#345/#346, wecoded-marketplace#69/#70, shipped 2026-08-27) and touches the same
-  files, and it is behind master besides. `git rebase master` in `worktrees/marketplace-ui`,
-  then `bash scripts/verify.sh marketplace-ui`, before any task below.
+- **Task 0 is the rebase, and nothing on the app branch starts before it.** The branch
+  predates the bundled-plugin-upgrade merge (youcoded#345/#346, wecoded-marketplace#69/#70,
+  shipped 2026-08-27), touches the same files, and is 247 commits behind besides.
 - **What that shipped work means here:** the Update badge now compares the plugin's own
   `plugin.json` **version string**, published per entry by wecoded-marketplace#69. Pinning
   (Task 17) adds a second, sharper signal — the installed commit vs the catalog's
@@ -222,12 +241,16 @@ until Phase 3 is answered.
   and the curated rails still lag up to a day. That is out of scope; say so rather than
   claiming "new items appear within an hour" of anything but the grid.
 - Every desktop change: `bash scripts/verify.sh marketplace-ui` from the workspace root before
-  "done". Android: `cd worktrees/marketplace-ui && ./gradlew test -x bundleWebUi` (the `-x` is
-  mandatory in a hardlinked worktree — see CLAUDE.md).
+  "done". Android: **there is no Android SDK on this machine** (no `ANDROID_HOME`, no
+  `local.properties`, confirmed 2026-08-30), so Kotlin is compiled and unit-tested by
+  `android-ci.yml` on the PR (`./gradlew test`, then `assembleDebug`). Write it
+  Kotlin-consistent with its neighbours, push, read CI — and say in the PR that this is how it
+  was verified. If an SDK is present, `cd worktrees/marketplace-ui && ./gradlew test -x bundleWebUi`
+  (the `-x` is mandatory in a hardlinked worktree — see CLAUDE.md).
 - Never guess in error strings: git failures surface `output.slice(0, 200)` verbatim, as the
   installer already does.
 - **Line numbers in this plan are hints, not addresses.** They were read on 2026-08-28 against
-  the branch *before* the mandated rebase, and the shipped feedback work (14 app commits) has
+  the branch *before* Task 0's rebase, and the shipped feedback work (14 app commits) has
   since moved several of these files. Every citation names the symbol or the string as well —
   locate by that, and treat a number that does not match as drift, not as a sign the claim is
   wrong.
@@ -262,7 +285,8 @@ until Phase 3 is answered.
 - Modify `desktop/src/main/skill-provider.ts` — `fetchIndex()` tries the catalog first;
   `install()` resolves members to bundles and passes `sourceCommit`.
 - Modify `desktop/src/main/plugin-installer.ts` — `MarketplaceEntry.sourceCommit?`,
-  `pinToCommit()` after clone in `installFromUrl` / `installFromGitSubdir`.
+  `pinToCommit()` after clone in `installFromUrl` / `installFromGitSubdir`, `InstallResult.commit?`
+  reporting what was checked out; `skill-config-store.ts` — `PackageInfo.commit?` (Task 17).
 - Create `desktop/tests/skill-provider-catalog.test.ts`, `desktop/tests/plugin-installer-pin.test.ts`.
 - Modify `app/src/main/kotlin/com/youcoded/app/skills/MarketplaceFetcher.kt` — `fetchIndex()`
   catalog-first.
@@ -273,7 +297,7 @@ until Phase 3 is answered.
   only (it now mirrors a real contract).
 - Modify `desktop/src/renderer/components/marketplace/MarketplaceCard.tsx`,
   `MarketplaceDetailOverlay.tsx`, `desktop/src/renderer/components/library/LibraryScreen.tsx` —
-  connect the Update action (Task 1), theme download counts + the small fixes (Task 3).
+  connect the Update action (Task 1), the small fixes (Task 3), theme download counts (Task 22).
 - Modify `desktop/src/main/skill-config-store.ts`, `skill-provider.ts` — prompts keep their
   marketplace id and stop reporting updates they did not perform (Task 2).
 - Create `desktop/tests/marketplace-update-action.test.tsx`, `desktop/tests/prompt-install-update.test.ts`.
@@ -284,13 +308,39 @@ until Phase 3 is answered.
 
 ---
 
+## Phase 0 — Rebase the app branch
+
+### Task 0: Rebase `feat/marketplace-overhaul-ui` onto `origin/master`
+
+Do this first, today, and nothing else on the app branch until it is done. As of 2026-08-30
+the branch is 247 commits behind and 14 ahead, its merge-base is 2026-08-27, and master has
+since landed the bundled-plugin-upgrade work (youcoded#345/#346) and 14 feedback commits in
+the same card/overlay/provider files this plan edits. Every line number and every "the code
+does X" claim below was read before those landed; the rebase is where they get re-checked.
+
+- [ ] `cd /home/destin/youcoded-dev/worktrees/marketplace-ui && git fetch origin && git rebase origin/master`
+  — resolve conflicts keeping BOTH master's feedback/upgrade changes and this branch's UI; when
+  in doubt, master wins in main-process files and this branch wins in renderer files.
+- [ ] `bash scripts/verify.sh marketplace-ui` → OK (`--full` if
+  it reports that test infra moved).
+- [ ] From the worktree's `desktop/`: `node scripts/workbench-boot-check.mjs` — the branch adds
+  workbench fixtures, and a rebase is exactly when a fixture stops matching a changed type.
+- [ ] `git push --force-with-lease origin feat/marketplace-overhaul-ui`. No feature commit; the
+  rebase is its own deliverable.
+- [ ] Re-verify the Task 1 findings against the rebased tree: `rg -n "'Update' : 'Installed'"`,
+  `rg -n '\.update\(' desktop/src/renderer`, and what the bundled-plugin launch path now does
+  (`rg -n "BUNDLED_PLUGIN_IDS" desktop/src/main/skill-provider.ts`). If any moved, fix the
+  citation in this document in the same commit that starts Task 1.
+
+---
+
 ## Phase 1 — App fixes that depend on nothing
 
 Three fixes on the app branch that need no catalog, no Worker change and no decision. They are
 first because they can be built, verified and reviewed while Phase 2 is still being written,
 and because the first of them fixes a button that has never worked at all.
 
-**Rebase the branch onto master before starting** (see Global Constraints → App).
+**Task 0 first.**
 
 ### Task 1: Connect the Update action — it has never been wired to anything
 
@@ -308,8 +358,11 @@ reachable from main: `skills:update` (`ipc-handlers.ts:1488`, `IPC.SKILLS_UPDATE
 (`skill-provider.ts:284`), and for themes `updateTheme(slug)`
 (`theme-marketplace-provider.ts:255-266`, which re-runs `installTheme` over the same slug).
 
-So the badge is decorative, app-wide, for both kinds. The only thing that self-heals is
-bundled plugins, which `reconcileBundledPlugins()` upgrades at launch without any UI.
+So the badge is decorative, app-wide, for both kinds. The only thing that moves on its own is
+the bundled-plugin launch path in `skill-provider.ts` (the method that walks
+`BUNDLED_PLUGIN_IDS`, called from `main.ts`) — on the pre-rebase branch it only installs what
+is missing; whether master's bundled-plugin-upgrade merge made it upgrade too is what Task 0
+re-checks. Either way it has no UI.
 
 **This belongs in this plan.** Task 17 adds commit-pinning so "which version do I have" becomes
 exact and reproducible — which is worth nothing while the user has no way to act on a version
@@ -370,7 +423,7 @@ make Update a real `<button>` that calls `mp.update(entry.id, kind)` and
 show "Updating…" and disable it.
 
 `MarketplaceDetailOverlay.tsx` — in both bodies, when `updateAvailable`, put an **Update**
-button next to Uninstall. This is the fix ROADMAP:725 diagnosed for themes: the theme path
+button next to Uninstall. This is the fix ROADMAP:736 diagnosed for themes: the theme path
 works, `installTheme` on an installed slug already overwrites in place, but the overlay swaps
 to the uninstall affordance once installed so the user's only route today is
 uninstall-then-reinstall.
@@ -382,12 +435,15 @@ cannot update is the version of this bug a user meets first.
 
 `marketplace-context.tsx:356-373` compares **version strings** (`isNewerVersion(pkg.version,
 entry.version)`), and returns false when either side is missing. Task 17 adds a second, sharper
-fact: the installed commit vs `catalog.sourceCommit`. Use **both** — "either differs" means an
+fact: the commit the installer actually checked out — recorded on the package as
+`PackageInfo.commit` — vs `catalog.sourceCommit`. Use **both** — "either differs" means an
 update is available — and keep them separate in the code with a comment saying why: the
-version is what an author bumps deliberately, the commit is what actually changed. Note the
-existing sharp edge while you are there: a plugin whose `plugin.json` carries no version is
-recorded as `'1.0.0'` (`skill-provider.ts:292`) and can be flagged spuriously; the commit
-comparison is what rescues those.
+version is what an author bumps deliberately, the commit is what actually changed. A package
+with no `commit` recorded (anything installed before Task 17) contributes nothing to the
+commit compare — no spurious badge on old installs. Note the existing sharp edge while you
+are there: a marketplace entry with no version is recorded as `'1.0.0'` (`skill-provider.ts`,
+the `|| '1.0.0'` fallbacks) and can be flagged spuriously; the commit comparison is what
+rescues those.
 
 - [ ] **Step 5: Run, gate, commit**
 
@@ -416,7 +472,7 @@ two independent reasons, and it **reports success anyway**:
    never matches, skips the content overwrite, still calls `updatePackageVersion`, and returns
    `{ ok: true }`. A silent false success.
 
-Today this is invisible: there are **zero** live prompt entries (all 14 are deprecated). Plan
+Today this is invisible: there are **zero** live prompt entries (all 14 are deprecated). Phase
 2 introduces **257** of them from awesome-cursorrules, all of which would install as permanent
 one-time snapshots and lie when refreshed.
 
@@ -495,44 +551,16 @@ git commit -m "fix(marketplace): prompts install under their marketplace id and 
 
 ### Task 3: The small things that are cheaper to fix while we are in these files
 
-Each is a one-liner-to-an-hour, each is in a file this branch already rewrites, and each would
-otherwise need its own PR against the same code.
+Two genuine one-liners in files this branch already rewrites. (Three more items used to live
+here — theme download counts, the dead favourite, and "No longer listed" — but none of them
+depends on nothing: the first spans the Worker, desktop and Android; the second is a
+`curated-defaults.json` change that lands in Phase 2; the third needs the catalog. They are
+**Task 22** now, after the catalog exists, so this phase stays finishable in one sitting.)
 
-- [ ] **Theme cards show a download count — all three halves land here.** Plan 1 was going to
-  add `installs` to `/stats`'s themes and has withdrawn it, because the premise was false:
-  **the app never tells the Worker a theme was installed.** `installTheme()`
-  (`marketplace-context.tsx:285`) installs to disk and never calls `marketplaceApi.install()`;
-  the sole caller of that is the skill path at line 253. So the `installs` table holds zero
-  theme rows and the field would have read `0` forever. Do it in this order, or not at all:
-  1. Record the install — `installTheme` also calls `marketplaceApi.install('theme:' + slug)`
-     after the disk install succeeds (fire-and-forget; a stats failure must not fail an
-     install). Android's theme install path needs the same call.
-  2. Worker — `/stats` gains `themes[slug].installs`, counted from `installs` rows whose
-     `plugin_id` starts with `theme:`, prefix stripped; and skip those ids when seeding
-     `plugins` so one row is not reported twice. That is a small `wecoded-marketplace` PR.
-  3. Card — `MarketplaceCard.tsx:108-116` reads installs only from `stats.plugins`
-     (`pluginStats` is `undefined` for a theme, so `installs` is always 0 and the count never
-     renders). Read `themeStats?.installs` too.
-
-  Steps 2 and 3 are worthless without step 1. If you only have time for one, do none of them
-  and leave the ROADMAP item.
-- [ ] **Two theme previews render blank** (Devil's Garden, Kuromi Dreamer — ROADMAP:1042).
-  Same grid, same component.
+- [ ] **Two theme previews render blank** (Devil's Garden, Kuromi Dreamer — ROADMAP:1130).
+  Same grid, same component as Task 1.
 - [ ] **Rails clip at phone width** (UI audit P-17) and **`longDescription` renders raw
-  markdown** in the detail overlay. Both are in the two files above.
-- [ ] **A dead favourite sits in the profile.** Phase 2 fixes `curated-defaults.json`
-  app-side of that, decide whether to prune the stale `theme-builder` string out of existing
-  `~/.claude/youcoded-skills.json` → `favorites[]` on load, or leave it. A favourite that
-  resolves to nothing is invisible, so "leave it" is defensible — say which you chose.
-- [ ] **An installed item that is no longer listed says so.** When the catalog loads and an
-  installed plugin's id is absent from it, the item was delisted upstream — it keeps working,
-  but it will never update again and nobody is maintaining it. Library shows nothing today.
-  Add a quiet "No longer listed" line on the Library row. **The guard is the whole feature:**
-  render it only when `fetchIndex` actually served the *catalog* (not the `index.json`
-  fallback, not the stale cache) — otherwise one unreachable Worker labels every installed
-  item on the machine as abandoned, which is a far worse bug than the one being fixed. That
-  means `fetchIndex` must report which source answered; add it to the result envelope rather
-  than inferring it in the renderer.
+  markdown** in the detail overlay. Marketplace screen and `MarketplaceDetailOverlay.tsx`.
 - [ ] Run `bash scripts/verify.sh marketplace-ui` and commit as one `fix(marketplace):` commit
   naming each item.
 
@@ -586,15 +614,19 @@ CREATE TABLE catalog_items (
                                        -- SCAN_RULES_VERSION re-scans the whole catalog by
                                        -- itself instead of waiting for a manual --force-rescan
                                        -- that nobody remembers to run.
-  run_id TEXT NOT NULL,                -- the ingest run that last touched the row
-  updated_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,         -- last time the CONTENT changed — not "last seen"
   entry_json TEXT NOT NULL
 );
+-- There is deliberately NO run_id / "last touched" column. A row is written only when its
+-- content changes (Task 6), and "still alive" is proven by the ingest's explicit retire list,
+-- never by rewriting the row. Rewriting ~4,000 rows an hour to mark them seen would spend the
+-- entire free-tier write budget (100,000 rows/day, index writes counted on top) on nothing.
+--
 -- (deprecated, id), not (deprecated) alone: GET /catalog walks the served rows in id order
 -- by keyset (`WHERE deprecated = 0 AND id > ?`), and D1 bills rows SCANNED, not returned.
+-- This is the only index on the table: every index is one more write per row change, and
+-- nothing in this plan filters by part_of_id or item_type.
 CREATE INDEX idx_catalog_served ON catalog_items(deprecated, id);
-CREATE INDEX idx_catalog_source_run ON catalog_items(source, run_id);
-CREATE INDEX idx_catalog_part_of ON catalog_items(part_of_id);
 
 -- One row per (source, run). finished_at NULL = still running / crashed. Kept purely
 -- for "did the ingest run, and what did it do" — nothing reads it to make a decision.
@@ -649,7 +681,7 @@ import { describe, it, expect } from "vitest";
 
 describe("ingest token", () => {
   it("401s without the header, 401s with a wrong token, 200s with the test token", async () => {
-    const body = JSON.stringify({ source: "docker", run_id: "r1" });
+    const body = JSON.stringify({ source: "docker", run_id: "r1", retire: [] });
     const headers = { "Content-Type": "application/json" };
     expect((await SELF.fetch("https://test.local/admin/catalog/finish", { method: "POST", headers, body })).status).toBe(401);
     expect((await SELF.fetch("https://test.local/admin/catalog/finish", { method: "POST", headers: { ...headers, "X-Catalog-Token": "nope" }, body })).status).toBe(401);
@@ -726,45 +758,59 @@ and mount it in `src/index.ts` (`import { catalogRoutes } from "./catalog/routes
 
 ---
 
-### Task 6: Admin ingest routes — upsert (merging), finish (guarded), shas, health
+### Task 6: Admin ingest routes — upsert (merging, write-skipping), finish (explicit retire, guarded), shas, health
 
 **Files:**
 - Modify: `worker/src/catalog/routes.ts`
 - Test: `worker/test/catalog.test.ts`
 
 **Interfaces:**
-- `POST /admin/catalog/upsert` body `{ source, run_id, entries: Array<SkillEntry & { catalog: CatalogMeta }> }` (≤ 500 entries) → `{ ok: true, upserted: number }`. Creates the `catalog_runs` row on first sight of `(run_id, source)`. Each entry's `id`, `catalog.itemType`, `catalog.partOf?.id`, `catalog.sourceCommit`, `deprecated` are read into columns. **Merges, never clobbers** — see below.
-- `POST /admin/catalog/finish` body `{ source, run_id, note?, allow_mass_retire? }` → `{ ok: true, retired: number, refused?: { wouldRetire: number, live: number } }`: rows of that source with `run_id != this run` become `deprecated = 1`; run row gets `finished_at`. **Refuses a mass retirement** — see below.
-- `GET /admin/catalog/shas?source=…` → `{ shas: Record<id, string> }` — the ingest's skip key per id, `"<sourceCommit>:<scanRulesVersion>"`. Not a bare commit: the scan rules are half of "is what we have still current".
+- `POST /admin/catalog/upsert` body `{ source, run_id, entries: Array<SkillEntry & { catalog: CatalogMeta }> }` (≤ 500 entries) → `{ ok: true, upserted: number, unchanged: number }`. Creates the `catalog_runs` row on first sight of `(run_id, source)`. Each entry's `id`, `catalog.itemType`, `catalog.partOf?.id`, `catalog.sourceCommit`, `deprecated` are read into columns. **Merges, never clobbers** — see below — and **writes only rows whose merged JSON differs from what is stored**; `unchanged` counts the rest. A row arriving without `publishedAt` gets the insert time on first sight and keeps it thereafter.
+- `POST /admin/catalog/finish` body `{ source, run_id, retire: string[], note?, allow_mass_retire? }` → `{ ok: true, retired: number, refused?: { wouldRetire: number, live: number } }`: the listed ids of that source become `deprecated = 1`; the run row gets `finished_at`. **The list is computed by the ingest** (what `/shas` said the catalog holds, minus what the run sent, minus what its sources reported as skipped — Task 10); the Worker never infers "not seen" from anything, so nothing has to be written to prove a row is alive. **Refuses a mass retirement** — see below.
+- `GET /admin/catalog/shas?source=…` → `{ shas: Record<id, string> }` — **every live id** of the source, valued `"<sourceCommit>:<scanRulesVersion>"` (either half may be empty). Two consumers: a source skips re-reading an id whose value matches its current key, and `build.mjs` treats the key set as "what the catalog holds" when computing the retire list. Not a bare commit: the scan rules are half of "is what we have still current".
 - `GET /admin/catalog/health` (`requireAuth` + `requireAdminAccount` — the same admin gate `DELETE /admin/ratings/:user_id/:plugin_id` already uses, `src/reports/routes.ts:38`) → `{ version, sources: Array<{ source, live, lastFinishedAt, lastRetired, lastNote }> }`. Read-only. **This is how a human answers "is the catalog still being fed?"** — a stalled ingest produces no error anywhere, just an unchanging catalog, and GitHub silently disables a repository's `schedule:` triggers after 60 days of inactivity. A source whose `lastFinishedAt` is hours old is the tell.
 
-**The retire guard (the other important part).** A `finish` that would delist more than
-`MAX_RETIRE_FRACTION` (20%) of a source's live rows refuses, retires nothing, records the
+**The write-skip (rule 3 — why this catalog fits in the free tier).** The upsert already reads
+the stored JSON to merge onto it. Serialise the merged entry and compare it to the stored
+string; if equal, skip the row. Key order is stable because the merge spreads the stored object
+first, so a row that has not changed serialises to the same bytes it was stored as. Every
+Docker and awesome-copilot row is sent every hour and lands here as `unchanged`; every
+degraded-run row (rule 1) merges back to exactly what was stored and lands here too. The
+catalog version bumps only when at least one row was written, so a no-op hour keeps every
+client's ETag valid.
+
+**The retire guard (the other important part).** A `finish` whose `retire` list is more than
+`MAX_RETIRE_FRACTION` (20%) of the source's live rows refuses, retires nothing, records the
 refusal in `catalog_runs.note`, and returns `refused`. The ingest turns that into a failed
 workflow run.
 
 Why: the four upstream sources are projects we do not control. The day `awesome-cursorrules`
-renames `rules/` we collect 12 prompts instead of 257, and today's `finish` would delist the
-other 245 — visibly, in everyone's app, until someone noticed. A partial scrape is not
-evidence that 245 listings were deleted. `skipFinish` (Task 10) already covers the source that
-collects *nothing*; this covers the one that collects *some*. Sources below
+renames `rules/` we collect 12 prompts instead of 257, the retire list is 245 long, and
+without the guard those 245 would vanish — visibly, in everyone's app, until someone noticed.
+A long retire list is evidence of a broken scraper, not of 245 deletions. Sources below
 `RETIRE_GUARD_FLOOR` (10 live rows) are exempt — a ratio means nothing at that size — and
 `allow_mass_retire: true` is the deliberate override for a real bulk removal.
 
-**The merge rule (the important part of this task).** The incoming entry is merged onto the
-stored one before it is written:
+**The merge rule (rule 1).** The incoming entry is merged onto the stored one before it is
+compared and written:
 
 | Situation | Result |
 |---|---|
-| incoming `catalog.stars` / `license` / `sourceCommit` is absent, stored has one | keep the stored value |
-| incoming `catalog.scan.status === "unchecked"`, stored is `checked` or `caution` | keep the stored `scan` **including its `checkedAt`**, so the badge shows its real age |
+| incoming `catalog.stars` / `license` / `sourceCommit` / `upstreamId` is absent, stored has one | keep the stored value |
+| incoming `catalog.scan.status === "unchecked"` (or no `scan` at all), stored is `checked` or `caution` | keep the stored `scan` **including its `checkedAt`**, so the badge shows its real age |
 | incoming `catalog.capabilities` is absent or empty, stored has some | keep the stored list |
+| incoming has no `publishedAt` | keep the stored one; on first insert, stamp now |
 | anything the incoming entry *does* state | wins |
 
 Why: a run that could not read a repo's files is not evidence that the repo became unsafe, and
 a run that ran out of GitHub budget is not evidence that a licence disappeared. Without this
 rule the badges and licences flap hour to hour and listings drop out of the grid for no reason
-a user could ever explain. With it, a degraded run simply changes nothing.
+a user could ever explain. With it, a degraded run merges back to what was stored — and, by
+the write-skip, changes nothing at all.
+
+**Two D1 limits the code below is shaped by:** at most **100 bound parameters per query** (so
+the stored-JSON lookup and the retire `IN (…)` both chunk at 100 — a single 500-placeholder
+`IN` fails), and rows *scanned* are billed, which is why every walk is keyset, never OFFSET.
 
 - [ ] **Step 1: Failing tests** — `worker/test/catalog.test.ts`:
 
@@ -782,6 +828,8 @@ const entry = (id: string, extra: Record<string, unknown> = {}) => ({
   ...extra,
 });
 const post = (path: string, body: unknown) => SELF.fetch(`https://test.local${path}`, { method: "POST", headers: TOKEN, body: JSON.stringify(body) });
+const version = async () => (await env.DB.prepare("SELECT version FROM catalog_meta WHERE id = 'v'").first<{ version: number }>())!.version;
+const stored = async (id: string) => JSON.parse((await env.DB.prepare("SELECT entry_json FROM catalog_items WHERE id = ?").bind(id).first<{ entry_json: string }>())!.entry_json);
 
 describe("catalog ingest routes", () => {
   beforeEach(async () => {
@@ -794,53 +842,79 @@ describe("catalog ingest routes", () => {
       entry("bundle/skill-a", { catalog: { itemType: "skill", partOf: { id: "bundle", displayName: "Bundle" }, origin: { tier: "community" }, scan: { status: "unchecked" }, capabilities: [] } }),
     ] });
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ ok: true, upserted: 2 });
-    const row = await env.DB.prepare("SELECT item_type, part_of_id, run_id FROM catalog_items WHERE id = ?").bind("bundle/skill-a").first();
-    expect(row).toEqual({ item_type: "skill", part_of_id: "bundle", run_id: "r1" });
+    expect(await res.json()).toEqual({ ok: true, upserted: 2, unchanged: 0 });
+    const row = await env.DB.prepare("SELECT item_type, part_of_id FROM catalog_items WHERE id = ?").bind("bundle/skill-a").first();
+    expect(row).toEqual({ item_type: "skill", part_of_id: "bundle" });
   });
 
   it("a second upsert of the same id replaces the row", async () => {
     await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r1", entries: [entry("x", { description: "old" })] });
-    await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r2", entries: [entry("x", { description: "new" })] });
-    const row = await env.DB.prepare("SELECT entry_json, run_id FROM catalog_items WHERE id = 'x'").first<{ entry_json: string; run_id: string }>();
-    expect(JSON.parse(row!.entry_json).description).toBe("new");
-    expect(row!.run_id).toBe("r2");
+    const res = await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r2", entries: [entry("x", { description: "new" })] });
+    expect(await res.json()).toEqual({ ok: true, upserted: 1, unchanged: 0 });
+    expect((await stored("x")).description).toBe("new");
     expect((await env.DB.prepare("SELECT COUNT(*) AS n FROM catalog_items").first<{ n: number }>())!.n).toBe(1);
   });
 
-  it("finish retires rows of that source the run did not touch, and records the run", async () => {
+  it("an IDENTICAL upsert writes nothing and leaves the catalog version alone", async () => {
+    // This is the write budget: Docker and copilot send every row every hour, and D1's
+    // free tier allows 100,000 row-writes a day. Unchanged must cost zero writes.
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("same")] });
+    const before = await version();
+    const res = await post("/admin/catalog/upsert", { source: "docker", run_id: "r2", entries: [entry("same")] });
+    expect(await res.json()).toEqual({ ok: true, upserted: 0, unchanged: 1 });
+    expect(await version()).toBe(before);
+  });
+
+  it("stamps publishedAt on first sight and keeps it afterwards", async () => {
+    const { publishedAt: _drop, ...noDate } = entry("dated");
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [noDate] });
+    const first = (await stored("dated")).publishedAt as string;
+    expect(first).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    const res = await post("/admin/catalog/upsert", { source: "docker", run_id: "r2", entries: [noDate] });
+    expect(await res.json()).toEqual({ ok: true, upserted: 0, unchanged: 1 });   // the stamp did not make it "changed"
+    expect((await stored("dated")).publishedAt).toBe(first);
+  });
+
+  it("finish retires exactly the listed ids of that source, and records the run", async () => {
     await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("docker-a"), entry("docker-b")] });
-    await post("/admin/catalog/upsert", { source: "docker", run_id: "r2", entries: [entry("docker-a")] });
-    const res = await post("/admin/catalog/finish", { source: "docker", run_id: "r2" });
+    const res = await post("/admin/catalog/finish", { source: "docker", run_id: "r1", retire: ["docker-b"] });
     expect(await res.json()).toEqual({ ok: true, retired: 1 });
-    const b = await env.DB.prepare("SELECT deprecated FROM catalog_items WHERE id = 'docker-b'").first<{ deprecated: number }>();
-    expect(b!.deprecated).toBe(1);
-    const run = await env.DB.prepare("SELECT upserted, retired, finished_at FROM catalog_runs WHERE id = 'r2' AND source = 'docker'")
+    const dep = async (id: string) => (await env.DB.prepare("SELECT deprecated FROM catalog_items WHERE id = ?").bind(id).first<{ deprecated: number }>())!.deprecated;
+    expect(await dep("docker-b")).toBe(1);
+    expect(await dep("docker-a")).toBe(0);
+    const run = await env.DB.prepare("SELECT upserted, retired, finished_at FROM catalog_runs WHERE id = 'r1' AND source = 'docker'")
       .first<{ upserted: number; retired: number; finished_at: number }>();
-    expect(run).toMatchObject({ upserted: 1, retired: 1 });
+    expect(run).toMatchObject({ upserted: 2, retired: 1 });
     expect(run!.finished_at).toBeGreaterThan(0);
   });
 
+  it("finish never touches another source's rows, even if named", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("docker-a")] });
+    await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r1", entries: [entry("w1")] });
+    const res = await post("/admin/catalog/finish", { source: "docker", run_id: "r1", retire: ["w1"] });
+    expect(await res.json()).toEqual({ ok: true, retired: 0 });
+  });
+
   it("finish REFUSES to retire most of a source in one run", async () => {
-    // A scraper whose upstream moved a folder: 20 rows last hour, 2 this hour.
+    // A scraper whose upstream moved a folder: 20 rows last hour, 2 this hour → an 18-id list.
     const many = Array.from({ length: 20 }, (_, i) => entry(`c${String(i).padStart(2, "0")}`));
     await post("/admin/catalog/upsert", { source: "cursorrules", run_id: "r1", entries: many });
-    await post("/admin/catalog/finish", { source: "cursorrules", run_id: "r1" });
-    await post("/admin/catalog/upsert", { source: "cursorrules", run_id: "r2", entries: many.slice(0, 2) });
-    const res = await post("/admin/catalog/finish", { source: "cursorrules", run_id: "r2" });
+    await post("/admin/catalog/finish", { source: "cursorrules", run_id: "r1", retire: [] });
+    const gone = many.slice(2).map((e) => e.id);
+    const res = await post("/admin/catalog/finish", { source: "cursorrules", run_id: "r2", retire: gone });
     expect(await res.json()).toEqual({ ok: true, retired: 0, refused: { wouldRetire: 18, live: 20 } });
     // Nothing was delisted, and the refusal is on the run record.
     expect((await env.DB.prepare("SELECT COUNT(*) AS n FROM catalog_items WHERE deprecated = 1").first<{ n: number }>())!.n).toBe(0);
     expect((await env.DB.prepare("SELECT note FROM catalog_runs WHERE id = 'r2' AND source = 'cursorrules'").first<{ note: string }>())!.note)
       .toMatch(/refused/);
     // …and the override goes through.
-    const forced = await post("/admin/catalog/finish", { source: "cursorrules", run_id: "r2", allow_mass_retire: true });
+    const forced = await post("/admin/catalog/finish", { source: "cursorrules", run_id: "r2", retire: gone, allow_mass_retire: true });
     expect((await forced.json<{ retired: number }>()).retired).toBe(18);
   });
 
   it("health reports live counts and when each source last finished", async () => {
     await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("h1"), entry("h2")] });
-    await post("/admin/catalog/finish", { source: "docker", run_id: "r1" });
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r1", retire: [] });
     // Admin identity, not the ingest token — this one is for a person, not the robot.
     // Same helper pair the reports tests use (test/helpers.ts); githubId 424242 is the
     // id configured in [env.test.vars] ADMIN_USER_IDS.
@@ -855,33 +929,31 @@ describe("catalog ingest routes", () => {
 
   it("a small source is exempt from the retire guard", async () => {
     await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("s1"), entry("s2"), entry("s3")] });
-    await post("/admin/catalog/finish", { source: "docker", run_id: "r1" });
-    await post("/admin/catalog/upsert", { source: "docker", run_id: "r2", entries: [entry("s1")] });
-    expect((await (await post("/admin/catalog/finish", { source: "docker", run_id: "r2" })).json<{ retired: number }>()).retired).toBe(2);
+    expect((await (await post("/admin/catalog/finish", { source: "docker", run_id: "r1", retire: ["s2", "s3"] })).json<{ retired: number }>()).retired).toBe(2);
   });
 
-  it("every write bumps the catalog version, and shas carry the scan rule set", async () => {
-    const v = async () => (await env.DB.prepare("SELECT version FROM catalog_meta WHERE id = 'v'").first<{ version: number }>())!.version;
-    const before = await v();
+  it("a write bumps the catalog version, a retire bumps it, an empty finish does not", async () => {
+    const before = await version();
     await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [
       entry("vv", { catalog: { itemType: "tool", origin: { tier: "community" }, capabilities: [],
         sourceCommit: "abc1234", scan: { status: "checked", checkedAt: "2026-08-28T00:00:00Z", rules: "3" } } }),
     ] });
-    expect(await v()).toBeGreaterThan(before);
-    const after = await v();
-    await post("/admin/catalog/finish", { source: "docker", run_id: "r1" });
-    expect(await v()).toBeGreaterThan(after);
-    const res = await SELF.fetch("https://test.local/admin/catalog/shas?source=docker", { headers: { "X-Catalog-Token": "test-ingest-token" } });
-    expect((await res.json<{ shas: Record<string, string> }>()).shas).toEqual({ vv: "abc1234:3" });
+    const afterWrite = await version();
+    expect(afterWrite).toBeGreaterThan(before);
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r1", retire: [] });
+    expect(await version()).toBe(afterWrite);                 // nothing changed for a client
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r2", retire: ["vv"] });
+    expect(await version()).toBeGreaterThan(afterWrite);      // a delisting is a change
   });
 
-  it("rejects batches over 500 or without a source", async () => {
+  it("rejects batches over 500, ids over 128 chars, or a missing source", async () => {
     const big = Array.from({ length: 501 }, (_, i) => entry(`e${i}`));
     expect((await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: big })).status).toBe(400);
+    expect((await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("x".repeat(129))] })).status).toBe(400);
     expect((await post("/admin/catalog/upsert", { run_id: "r1", entries: [entry("q")] })).status).toBe(400);
   });
 
-  it("NEVER downgrades: a degraded run keeps the stored scan, licence, stars and commit", async () => {
+  it("NEVER downgrades: a degraded run keeps the stored scan, licence, stars and commit — and writes nothing", async () => {
     const good = entry("keeper", { catalog: { itemType: "plugin", origin: { tier: "youcoded" },
       scan: { status: "checked", checkedAt: "2026-08-28T00:00:00Z" },
       capabilities: [{ kind: "shell", label: "Runs commands on your computer" }],
@@ -891,19 +963,16 @@ describe("catalog ingest routes", () => {
     // r2 is what a rate-limited run emits: it could not read the files or the repo.
     const degraded = entry("keeper", { catalog: { itemType: "plugin", origin: { tier: "youcoded" },
       scan: { status: "unchecked" }, capabilities: [] } });
-    await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r2", entries: [degraded] });
+    const res = await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r2", entries: [degraded] });
+    // Merged back to exactly what was stored → the write-skip sees no difference.
+    expect(await res.json()).toEqual({ ok: true, upserted: 0, unchanged: 1 });
 
-    const row = await env.DB.prepare("SELECT entry_json, source_commit, run_id FROM catalog_items WHERE id = 'keeper'")
-      .first<{ entry_json: string; source_commit: string; run_id: string }>();
-    const cat = JSON.parse(row!.entry_json).catalog;
+    const cat = (await stored("keeper")).catalog;
     expect(cat.scan).toEqual({ status: "checked", checkedAt: "2026-08-28T00:00:00Z" });
     expect(cat.license).toBe("MIT");
     expect(cat.stars).toBe(91);
     expect(cat.sourceCommit).toBe("abc1234");
     expect(cat.capabilities).toHaveLength(1);
-    expect(row!.source_commit).toBe("abc1234");
-    // …but the row was still touched, so `finish` will not retire it.
-    expect(row!.run_id).toBe("r2");
   });
 
   it("an UPGRADE still wins — a real scan replaces an unchecked one", async () => {
@@ -912,18 +981,20 @@ describe("catalog ingest routes", () => {
       scan: { status: "caution", checkedAt: "2026-08-28T01:00:00Z", findings: ["Downloads and runs code from the internet (install.sh)"] },
       capabilities: [], license: "MIT", sourceCommit: "def5678" } });
     await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r2", entries: [better] });
-    const cat = JSON.parse((await env.DB.prepare("SELECT entry_json FROM catalog_items WHERE id = 'up'").first<{ entry_json: string }>())!.entry_json).catalog;
+    const cat = (await stored("up")).catalog;
     expect(cat.scan.status).toBe("caution");
     expect(cat.scan.findings).toHaveLength(1);
   });
 
-  it("reports the commits it has on file so the ingest can skip unchanged entries", async () => {
+  it("shas lists EVERY live id with its commit and rule version, and drops retired ones", async () => {
     await post("/admin/catalog/upsert", { source: "wecoded", run_id: "r1", entries: [
-      entry("a", { catalog: { itemType: "plugin", origin: { tier: "youcoded" }, scan: { status: "checked" }, capabilities: [], sourceCommit: "aaa1111" } }),
-      entry("b"),
+      entry("a", { catalog: { itemType: "plugin", origin: { tier: "youcoded" }, scan: { status: "checked", rules: "1" }, capabilities: [], sourceCommit: "aaa1111" } }),
+      entry("b"),   // no commit, no rules — still listed, so the ingest knows it exists
     ] });
-    const { shas } = await (await SELF.fetch("https://test.local/admin/catalog/shas?source=wecoded", { headers: TOKEN })).json<{ shas: Record<string, string> }>();
-    expect(shas).toEqual({ a: "aaa1111" });
+    const shas = async () => (await (await SELF.fetch("https://test.local/admin/catalog/shas?source=wecoded", { headers: TOKEN })).json<{ shas: Record<string, string> }>()).shas;
+    expect(await shas()).toEqual({ a: "aaa1111:1", b: ":" });
+    await post("/admin/catalog/finish", { source: "wecoded", run_id: "r1", retire: ["b"] });
+    expect(await shas()).toEqual({ a: "aaa1111:1" });
   });
 });
 ```
@@ -939,15 +1010,22 @@ describe("catalog ingest routes", () => {
 import { Hono } from "hono";
 import type { HonoEnv } from "../types";
 import { requireIngestToken } from "./auth";
-import { badRequest, notFound } from "../lib/errors";
+import { badRequest } from "../lib/errors";
 import { parseJsonBody } from "../lib/parse-json";
+import { requireAuth } from "../auth/middleware";
+import { requireAdminAccount } from "../auth/admin";
 
 export const catalogRoutes = new Hono<HonoEnv>();
 
 const SOURCES = new Set(["wecoded", "anthropic", "docker", "awesome-copilot", "cursorrules"]);
 const MAX_BATCH = 500;
+/** Same bound as validateId (lib/validate.ts), so every stored id can be read back through
+ *  GET /catalog/:id. */
+const MAX_ID = 128;
+/** D1 allows at most 100 bound parameters per statement — every `IN (…)` below chunks at this. */
+const IN_CHUNK = 100;
 /** A `finish` may never delist more than this share of a source's live rows in one run —
- *  a partial scrape is a broken scrape, not a bulk deletion. Sources with fewer than
+ *  a long retire list is a broken scrape, not a bulk deletion. Sources with fewer than
  *  RETIRE_GUARD_FLOOR live rows are exempt (a ratio is meaningless at that size). */
 export const MAX_RETIRE_FRACTION = 0.2;
 export const RETIRE_GUARD_FLOOR = 10;
@@ -955,47 +1033,67 @@ export const RETIRE_GUARD_FLOOR = 10;
 interface IngestCatalog {
   itemType?: string;
   partOf?: { id?: string };
-  scan?: { status?: string; checkedAt?: string; findings?: string[] };
+  scan?: { status?: string; checkedAt?: string; findings?: string[]; rules?: string };
   capabilities?: unknown[];
   license?: string;
   sourceCommit?: string;
   stars?: number;
+  upstreamId?: string;
   [k: string]: unknown;
 }
 interface IngestEntry {
   id?: string;
   deprecated?: boolean;
+  publishedAt?: string;
   catalog?: IngestCatalog;
   [k: string]: unknown;
 }
 
-// THE MERGE RULE. An ingest run that could not read a repo's files is not evidence
-// that the repo became unsafe, and a run that ran out of GitHub budget is not
-// evidence that a licence vanished — so a field the incoming row does not state
-// keeps whatever is already on file, and an "unchecked" scan never overwrites a
-// real one. Consequence: a degraded run changes nothing instead of flipping badges
-// and dropping listings out of the grid for reasons no user could explain.
+// THE MERGE RULE (rule 1). An ingest run that could not read a repo's files is not
+// evidence that the repo became unsafe, and a run that ran out of GitHub budget is not
+// evidence that a licence vanished — so a field the incoming row does not state keeps
+// whatever is already on file, and an "unchecked" scan never overwrites a real one.
+// Consequence: a degraded run merges back to what was stored, and the write-skip below
+// then writes nothing at all.
+//
+// Key order matters for the write-skip: the STORED object is spread first, so an
+// unchanged row serialises to the same bytes it was stored as.
 const SCAN_RANK: Record<string, number> = { unchecked: 0, checked: 1, caution: 1 };
-function mergeOntoStored(incoming: IngestEntry, storedJson: string | null): IngestEntry {
-  if (!storedJson) return incoming;
+function mergeOntoStored(incoming: IngestEntry, storedJson: string | null, nowIso: string): IngestEntry {
+  if (!storedJson) return incoming.publishedAt ? incoming : { ...incoming, publishedAt: nowIso };
   let stored: IngestEntry;
   try { stored = JSON.parse(storedJson) as IngestEntry; } catch { return incoming; }
   const a = incoming.catalog ?? {};
   const b = stored.catalog ?? {};
   const merged: IngestCatalog = { ...b, ...a };
   for (const k of ["license", "sourceCommit", "stars", "upstreamId"] as const) {
-    if (a[k] === undefined && b[k] !== undefined) merged[k] = b[k];
+    if (a[k] === undefined && b[k] !== undefined) (merged as Record<string, unknown>)[k] = b[k];
   }
   if ((SCAN_RANK[a.scan?.status ?? "unchecked"] ?? 0) < (SCAN_RANK[b.scan?.status ?? "unchecked"] ?? 0)) {
     merged.scan = b.scan;                                    // keep the real verdict AND its age
-    if (!a.capabilities?.length && b.capabilities?.length) merged.capabilities = b.capabilities;
   }
-  return { ...stored, ...incoming, catalog: merged };
+  if (!a.capabilities?.length && b.capabilities?.length) merged.capabilities = b.capabilities;
+  const out: IngestEntry = { ...stored, ...incoming, catalog: merged };
+  if (!incoming.publishedAt && stored.publishedAt) out.publishedAt = stored.publishedAt;
+  return out;
 }
 
 async function ensureRun(db: D1Database, runId: string, source: string, now: number): Promise<void> {
   await db.prepare("INSERT OR IGNORE INTO catalog_runs (id, source, started_at) VALUES (?, ?, ?)")
     .bind(runId, source, now).run();
+}
+
+/** The ETag of GET /catalog is this number. Bumped by every write that changes what a
+ *  client would receive — never by a no-op hour, so an unchanged catalog keeps every
+ *  client's cached copy valid. */
+async function bumpCatalogVersion(db: D1Database, now: number): Promise<void> {
+  await db.prepare("UPDATE catalog_meta SET version = version + 1, updated_at = ? WHERE id = 'v'").bind(now).run();
+}
+
+function chunks<T>(xs: T[], n: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < xs.length; i += n) out.push(xs.slice(i, i + n));
+  return out;
 }
 
 catalogRoutes.post("/admin/catalog/upsert", requireIngestToken, async (c) => {
@@ -1005,65 +1103,74 @@ catalogRoutes.post("/admin/catalog/upsert", requireIngestToken, async (c) => {
   if (!Array.isArray(body.entries) || body.entries.length === 0) throw badRequest("entries must be a non-empty array");
   if (body.entries.length > MAX_BATCH) throw badRequest(`at most ${MAX_BATCH} entries per request`);
   const now = Math.floor(Date.now() / 1000);
+  const nowIso = new Date(now * 1000).toISOString();
   await ensureRun(c.env.DB, body.run_id, body.source, now);
 
-  // Read the stored JSON for this batch's ids in ONE query, so the merge costs a
-  // single extra round trip per 500 rows rather than one per row.
-  const ids = body.entries.map((e) => e.id).filter((x): x is string => typeof x === "string" && x.length > 0);
-  const placeholders = ids.map(() => "?").join(",");
-  const { results: existing } = ids.length
-    ? await c.env.DB.prepare(`SELECT id, entry_json FROM catalog_items WHERE id IN (${placeholders})`)
-        .bind(...ids).all<{ id: string; entry_json: string }>()
-    : { results: [] as Array<{ id: string; entry_json: string }> };
-  const stored = new Map(existing.map((r) => [r.id, r.entry_json]));
+  for (const raw of body.entries) {
+    if (typeof raw.id !== "string" || !raw.id || raw.id.length > MAX_ID) throw badRequest("entry without a valid id");
+    if (!raw.catalog || typeof raw.catalog.itemType !== "string") throw badRequest(`entry ${raw.id} has no catalog.itemType`);
+  }
+
+  // Read the stored JSON for this batch's ids up front — one query per 100 ids (the D1
+  // parameter cap), not one per row — because the merge AND the write-skip both need it.
+  const stored = new Map<string, string>();
+  for (const ids of chunks(body.entries.map((e) => e.id as string), IN_CHUNK)) {
+    const { results } = await c.env.DB
+      .prepare(`SELECT id, entry_json FROM catalog_items WHERE id IN (${ids.map(() => "?").join(",")})`)
+      .bind(...ids).all<{ id: string; entry_json: string }>();
+    for (const r of results) stored.set(r.id, r.entry_json);
+  }
 
   const stmt = c.env.DB.prepare(
-    `INSERT INTO catalog_items (id, source, item_type, part_of_id, deprecated, source_commit, scan_rules, run_id, updated_at, entry_json)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO catalog_items (id, source, item_type, part_of_id, deprecated, source_commit, scan_rules, updated_at, entry_json)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET source = excluded.source, item_type = excluded.item_type,
        part_of_id = excluded.part_of_id, deprecated = excluded.deprecated,
        source_commit = excluded.source_commit, scan_rules = excluded.scan_rules,
-       run_id = excluded.run_id, updated_at = excluded.updated_at, entry_json = excluded.entry_json`
+       updated_at = excluded.updated_at, entry_json = excluded.entry_json`
   );
-  const batch = body.entries.map((raw) => {
-    if (typeof raw.id !== "string" || !raw.id || raw.id.length > 200) throw badRequest("entry without a valid id");
-    if (!raw.catalog || typeof raw.catalog.itemType !== "string") throw badRequest(`entry ${raw.id} has no catalog.itemType`);
-    const e = mergeOntoStored(raw, stored.get(raw.id) ?? null);
+  let unchanged = 0;
+  const batch: D1PreparedStatement[] = [];
+  for (const raw of body.entries) {
+    const e = mergeOntoStored(raw, stored.get(raw.id as string) ?? null, nowIso);
+    const json = JSON.stringify(e);
+    // THE WRITE-SKIP (rule 3). Same bytes as stored → no write, no version bump. This is
+    // what keeps an hourly job that re-sends ~1,200 Docker/copilot rows inside D1's
+    // 100,000 row-writes/day. A row that was retired and has reappeared always differs
+    // (deprecated flips), so revival still writes.
+    if (json === stored.get(raw.id as string)) { unchanged++; continue; }
     // scan_rules comes off the MERGED entry, so a run that kept a stored verdict also
     // keeps the rule version that produced it.
-    return stmt.bind(e.id, body.source, e.catalog!.itemType, e.catalog!.partOf?.id ?? null, e.deprecated ? 1 : 0,
-      e.catalog!.sourceCommit ?? null, (e.catalog!.scan as { rules?: string } | undefined)?.rules ?? null,
-      body.run_id, now, JSON.stringify(e));
-  });
-  await c.env.DB.batch(batch);
-  await c.env.DB.prepare("UPDATE catalog_runs SET upserted = upserted + ? WHERE id = ? AND source = ?")
-    .bind(batch.length, body.run_id, body.source).run();
-  await bumpCatalogVersion(c.env.DB, now);
-  return c.json({ ok: true, upserted: batch.length });
+    batch.push(stmt.bind(e.id, body.source, e.catalog!.itemType, e.catalog!.partOf?.id ?? null, e.deprecated ? 1 : 0,
+      e.catalog!.sourceCommit ?? null, e.catalog!.scan?.rules ?? null, now, json));
+  }
+  if (batch.length) {
+    await c.env.DB.batch(batch);
+    await c.env.DB.prepare("UPDATE catalog_runs SET upserted = upserted + ? WHERE id = ? AND source = ?")
+      .bind(batch.length, body.run_id, body.source).run();
+    await bumpCatalogVersion(c.env.DB, now);
+  }
+  return c.json({ ok: true, upserted: batch.length, unchanged });
 });
 
-/** The ETag of GET /catalog is this number. Bumped by every write, so a client can never
- *  be told "nothing changed" about a catalog that changed mid-run — at worst it refetches
- *  once more than it needed to. */
-async function bumpCatalogVersion(db: D1Database, now: number): Promise<void> {
-  await db.prepare("UPDATE catalog_meta SET version = version + 1, updated_at = ? WHERE id = 'v'").bind(now).run();
-}
-
 catalogRoutes.post("/admin/catalog/finish", requireIngestToken, async (c) => {
-  const body = await parseJsonBody<{ source?: string; run_id?: string; note?: string; allow_mass_retire?: boolean }>(c);
+  const body = await parseJsonBody<{ source?: string; run_id?: string; retire?: unknown; note?: string; allow_mass_retire?: boolean }>(c);
   if (!body.source || !SOURCES.has(body.source)) throw badRequest("unknown source");
   if (!body.run_id) throw badRequest("invalid run_id");
+  if (!Array.isArray(body.retire) || !body.retire.every((x) => typeof x === "string" && x.length > 0 && x.length <= MAX_ID)) {
+    throw badRequest("retire must be an array of ids");
+  }
+  const ids = [...new Set(body.retire as string[])];
   const now = Math.floor(Date.now() / 1000);
   await ensureRun(c.env.DB, body.run_id, body.source, now);
 
-  // The retire guard. Count first, delist second: a scrape that collected a fraction of a
-  // source is a broken scrape, not 245 deletions. See the Interfaces note above.
+  // The retire guard. Count first, delist second: a long list is a broken scrape, not
+  // 245 deletions. See the Interfaces note above.
   const counts = await c.env.DB
-    .prepare(`SELECT COUNT(*) AS live, SUM(CASE WHEN run_id != ? THEN 1 ELSE 0 END) AS stale
-              FROM catalog_items WHERE source = ? AND deprecated = 0`)
-    .bind(body.run_id, body.source).first<{ live: number; stale: number }>();
+    .prepare("SELECT COUNT(*) AS live FROM catalog_items WHERE source = ? AND deprecated = 0")
+    .bind(body.source).first<{ live: number }>();
   const live = counts?.live ?? 0;
-  const wouldRetire = counts?.stale ?? 0;
+  const wouldRetire = ids.length;
   if (!body.allow_mass_retire && live >= RETIRE_GUARD_FLOOR && wouldRetire > live * MAX_RETIRE_FRACTION) {
     const note = `refused: would retire ${wouldRetire} of ${live} live rows`;
     await c.env.DB.prepare("UPDATE catalog_runs SET finished_at = ?, retired = 0, note = ? WHERE id = ? AND source = ?")
@@ -1071,22 +1178,28 @@ catalogRoutes.post("/admin/catalog/finish", requireIngestToken, async (c) => {
     return c.json({ ok: true, retired: 0, refused: { wouldRetire, live } });
   }
 
-  // Retire what this run did not see. Rows keep their JSON so a listing that
-  // vanished upstream can be revived by a later run (deprecated flips back to 0
-  // on the next upsert).
-  const r = await c.env.DB
-    .prepare("UPDATE catalog_items SET deprecated = 1, updated_at = ? WHERE source = ? AND run_id != ? AND deprecated = 0")
-    .bind(now, body.source, body.run_id).run();
-  const retired = r.meta.changes ?? 0;
+  // Retire the listed ids — of THIS source only, so a mistaken id can never reach across.
+  // Rows keep their JSON so a listing that vanished upstream can be revived by a later
+  // upsert (deprecated flips back to 0, which the write-skip sees as a change).
+  let retired = 0;
+  for (const part of chunks(ids, IN_CHUNK)) {
+    const r = await c.env.DB
+      .prepare(`UPDATE catalog_items SET deprecated = 1, updated_at = ? WHERE source = ? AND deprecated = 0 AND id IN (${part.map(() => "?").join(",")})`)
+      .bind(now, body.source, ...part).run();
+    retired += r.meta.changes ?? 0;
+  }
   await c.env.DB.prepare("UPDATE catalog_runs SET finished_at = ?, retired = ?, note = ? WHERE id = ? AND source = ?")
     .bind(now, retired, body.note ?? null, body.run_id, body.source).run();
   if (retired) await bumpCatalogVersion(c.env.DB, now);
   return c.json({ ok: true, retired });
 });
 
-// What the catalog already has on file, so the ingest can skip re-downloading a
-// plugin's files when nothing about the verdict would change. This one route is what
-// turns a ~6,000-request hourly job into a ~160-request one.
+// What the catalog already holds for a source: EVERY live id, valued "<commit>:<rules>".
+// Two consumers. The sources compare the value against their current skip key and do not
+// re-download an unchanged repo (the ~6,000-fetch hour becomes a few dozen). build.mjs
+// uses the KEY SET as "what exists", subtracts what the run sent or skipped, and sends the
+// remainder to `finish` as the retire list — which is why every live id must be here,
+// commit or no commit.
 //
 // The value is `<commit>:<scanRulesVersion>`, not a bare commit. A repo that has not
 // moved but was scanned by an OLDER rule set is NOT up to date, and the ingest must
@@ -1102,12 +1215,12 @@ catalogRoutes.get("/admin/catalog/shas", requireIngestToken, async (c) => {
   let after = "";
   for (;;) {
     const { results } = await c.env.DB
-      .prepare("SELECT id, source_commit, scan_rules FROM catalog_items WHERE source = ? AND source_commit IS NOT NULL AND id > ? ORDER BY id LIMIT 1000")
+      .prepare("SELECT id, source_commit, scan_rules FROM catalog_items WHERE source = ? AND deprecated = 0 AND id > ? ORDER BY id LIMIT 1000")
       .bind(source, after)
-      .all<{ id: string; source_commit: string; scan_rules: string | null }>();
-    for (const r of results) shas[r.id] = `${r.source_commit}:${r.scan_rules ?? ""}`;
+      .all<{ id: string; source_commit: string | null; scan_rules: string | null }>();
+    for (const r of results) shas[r.id] = `${r.source_commit ?? ""}:${r.scan_rules ?? ""}`;
     if (results.length < 1000) break;
-    after = results[results.length - 1].id;
+    after = results[results.length - 1]!.id;
   }
   return c.json({ shas });
 });
@@ -1130,11 +1243,10 @@ catalogRoutes.get("/admin/catalog/health", requireAuth, async (c) => {
   return c.json({ version: meta?.version ?? 0, updatedAt: meta?.updated_at ?? 0, sources: results });
 });
 ```
-(also import `requireAuth` from `../auth/middleware` and `requireAdminAccount` from
-`../auth/admin` — the same two the reports routes import — and add `/admin/catalog/health`
-to the route list in `worker/README.md`.)
+(add `/admin/catalog/health` to the moderation section of `worker/README.md` — there is no
+standalone route list there; the admin routes are named inline.)
 
-- [ ] **Step 4: Run** `npx vitest run test/catalog.test.ts test/catalog-auth.test.ts && npm run typecheck` → PASS. **Step 5: Commit** `git add src/catalog/routes.ts test/catalog.test.ts && git commit -m "feat(worker): catalog ingest — merging upsert, finish, shas"`.
+- [ ] **Step 4: Run** `npx vitest run test/catalog.test.ts test/catalog-auth.test.ts && npm run typecheck` → PASS. **Step 5: Commit** `git add src/catalog/routes.ts test/catalog.test.ts && git commit -m "feat(worker): catalog ingest — merging, write-skipping upsert; explicit-list finish; shas"`.
 
 ---
 
@@ -1156,8 +1268,7 @@ describe("GET /catalog", () => {
 
   it("returns live rows only, with a 5-minute cache header and an ETag", async () => {
     await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("shown"), entry("gone")] });
-    await post("/admin/catalog/upsert", { source: "docker", run_id: "r2", entries: [entry("shown")] });
-    await post("/admin/catalog/finish", { source: "docker", run_id: "r2" });
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r1", retire: ["gone"] });
     const res = await SELF.fetch("https://test.local/catalog");
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("public, max-age=300");
@@ -1327,9 +1438,12 @@ catalogRoutes.get("/catalog/:id", (c) => oneEntry(c, c.req.param("id")));
     return parts.length <= 2 && parts.every((p) => p.length > 0);
   }
 ```
-The `ETag` / `If-None-Match` pair also has to survive CORS: add `"If-None-Match"` to
-`allowHeaders` and `"ETag"` to `exposeHeaders` on the public-read CORS config, or Android's
-WebView will never see the header and will re-download the whole catalog every hour.
+The `ETag` / `If-None-Match` pair also has to survive CORS for any *browser* client: add
+`"If-None-Match"` to `allowHeaders` and `"ETag"` to `exposeHeaders` on the public-read CORS
+config (`exposeHeaders` does not exist on either config today). Neither app is affected —
+desktop fetches from Electron's main process and Android from Kotlin, where CORS does not
+apply — but the remote web UI and the workbench are browsers, and a browser that cannot read
+`ETag` re-downloads the whole catalog every hour.
 
 - [ ] **Step 4: Run** `npm test && npm run typecheck` → PASS. **Step 5: Commit** `git add src/catalog/routes.ts src/index.ts test/catalog.test.ts test/cors.test.ts && git commit -m "feat(worker): GET /catalog + GET /catalog/:id (public, ETag/304, kill switch)"`.
 
@@ -1367,7 +1481,7 @@ describe("ids must name a real listing", () => {
   it("400s a vote or comment for an id that is not in the catalog", async () => {
     const { token, account } = await seed();
     // A populated catalog is what turns the check on.
-    await env.DB.prepare("INSERT INTO catalog_items (id, source, item_type, deprecated, run_id, updated_at, entry_json) VALUES ('real', 'wecoded', 'plugin', 0, 'r1', 1, '{}')").run();
+    await env.DB.prepare("INSERT INTO catalog_items (id, source, item_type, deprecated, updated_at, entry_json) VALUES ('real', 'wecoded', 'plugin', 0, 1, '{}')").run();
     await seedInstall(account.userId, "made-up");
     expect((await post("/thumbs", token, { plugin_id: "made-up", value: "up" })).status).toBe(400);
     expect((await post("/comments", token, { plugin_id: "made-up", text: "hi" })).status).toBe(400);
@@ -1379,7 +1493,7 @@ describe("ids must name a real listing", () => {
     const { token, account } = await seed();
     await seedInstall(account.userId, "anything");
     expect((await post("/thumbs", token, { plugin_id: "anything", value: "up" })).status).toBe(200);
-    await env.DB.prepare("INSERT INTO catalog_items (id, source, item_type, deprecated, run_id, updated_at, entry_json) VALUES ('real', 'wecoded', 'plugin', 0, 'r1', 1, '{}')").run();
+    await env.DB.prepare("INSERT INTO catalog_items (id, source, item_type, deprecated, updated_at, entry_json) VALUES ('real', 'wecoded', 'plugin', 0, 1, '{}')").run();
     expect((await post("/installs", token, { plugin_id: "theme:golden-sunbreak" })).status).toBe(200);
   });
 });
@@ -1466,8 +1580,8 @@ and widen `scan` (line 69) by one optional field:
 **Interfaces:**
 - `http.mjs`: `getJson(url, {headers?}) → any` (throws `Error("GET <url> → <status>")`), `getText(url)`, `postJson(url, body, {headers?})`, `github(pathOrUrl) → any` (adds `Authorization: Bearer ${process.env.GITHUB_TOKEN}` + `Accept: application/vnd.github+json`, tracks `x-ratelimit-remaining` in `github.remaining`, throws `RateLimited` when < 200), `githubRaw(owner, repo, sha, path) → string`.
 - `entry.mjs`: `slug(s) → string` (lowercase, `[^a-z0-9_-]` → `-`, collapse, trim); `licenseToSpdx(name) → string | undefined`; `makeEntry({ id, itemType, displayName, description, author, repoUrl, sourceType, sourceRef, sourceSubdir?, sourceCommit?, origin, mirroredFrom?, license?, upstreamId?, stars?, capabilities, scan, partOf?, tags?, category?, tagline?, prompt?, components? }) → SkillEntry` filling `type`, `version`, `publishedAt`, `sourceMarketplace`, `visibility`… exactly the fields `index.json` rows carry today plus `catalog`.
-- `worker.mjs`: `createWorkerClient({ host, token }) → { shas(source), upsert(source, runId, entries), finish(source, runId, note?) }`; `upsert` splits into batches of 500 and returns the total.
-- `build.mjs`: `node scripts/catalog/build.mjs --source docker [--dry-run] [--force-rescan] [--allow-mass-retire]`; without `--source` runs all; `--dry-run` writes `catalog-dry-run-<source>.json` and never POSTs; `--force-rescan` ignores the stored keys and re-reads every file (an emergency lever — a routine rule change should bump `SCAN_RULES_VERSION`, which does the same thing automatically); `--allow-mass-retire` overrides the Worker's retire guard for a genuine bulk removal. **The script exits non-zero when any source errors, gets refused, or produces zero rows** — a broken scraper must never leave a green run behind it.
+- `worker.mjs`: `createWorkerClient({ host, token }) → { shas(source), upsert(source, runId, entries), finish(source, runId, retire, note?, allowMassRetire?) }`; `upsert` splits into batches of 500 and returns `{ upserted, unchanged }` summed across them.
+- `build.mjs`: `node scripts/catalog/build.mjs --source docker [--dry-run] [--force-rescan] [--allow-mass-retire]`; without `--source` runs all; `--dry-run` writes `catalog-dry-run-<source>.json` and never POSTs; `--force-rescan` ignores the stored keys and re-reads every file (an emergency lever — a routine rule change should bump `SCAN_RULES_VERSION`, which does the same thing automatically); `--allow-mass-retire` overrides the Worker's retire guard for a genuine bulk removal. **The retire list is computed here, per Worker source: the ids `/shas` returned, minus the ids this run sent, minus the ids the source reported as `skipped`.** A source's `collect` may return `skipped: string[]` for ids it saw but did not emit because nothing changed (rule 2); they count as seen. **The script exits non-zero when any source errors, gets refused, or sees zero rows (nothing sent, unchanged or skipped)** — a broken scraper must never leave a green run behind it.
 
 - [ ] **Step 1: Failing tests**
 
@@ -1502,7 +1616,7 @@ test("makeEntry emits the index.json shape plus catalog", () => {
   assert.equal(e.catalog.itemType, "tool");
   assert.equal(e.catalog.origin.tier, "verified");
   assert.equal(e.catalog.license, "MIT");
-  assert.match(e.publishedAt, /^\d{4}-\d{2}-\d{2}T/);
+  assert.equal(e.publishedAt, undefined);   // never "today" — the Worker stamps first-seen; a daily-changing value would defeat its write-skip
   assert.equal(e.category, "development");
 });
 ```
@@ -1521,7 +1635,7 @@ test("upsert batches at 500 and sums the counts", async () => {
   }});
   const entries = Array.from({ length: 1201 }, (_, i) => ({ id: `e${i}`, catalog: { itemType: "plugin" } }));
   const n = await client.upsert("docker", "run-1", entries);
-  assert.equal(n, 1201);
+  assert.deepEqual(n, { upserted: 1201, unchanged: 0 });
   assert.equal(calls.length, 3);
   assert.equal(calls[0].body.entries.length, 500);
   assert.equal(calls[2].body.entries.length, 201);
@@ -1531,7 +1645,7 @@ test("upsert batches at 500 and sums the counts", async () => {
 
 test("a non-2xx from the Worker throws with the body", async () => {
   const client = createWorkerClient({ host: "https://w.test", token: "t", fetchImpl: async () => new Response("unknown source", { status: 400 }) });
-  await assert.rejects(() => client.finish("docker", "r"), /400.*unknown source/);
+  await assert.rejects(() => client.finish("docker", "r", []), /400.*unknown source/);
 });
 ```
 
@@ -1617,9 +1731,13 @@ const SOURCE_MARKETPLACE = { wecoded: "youcoded", anthropic: "anthropic", docker
 
 /** Build one catalog row. `source` is the ingest source name; everything the UI
  *  reads lives under `catalog`. Fields absent from the input are omitted, not
- *  nulled, so JSON stays small. */
+ *  nulled, so JSON stays small.
+ *
+ *  NOTHING in here may depend on the clock. The Worker skips writing a row whose
+ *  merged JSON equals what it stored (rule 3); a `publishedAt: today` default would
+ *  make every row "change" once a day and burn ~4,000 writes on nothing. Rows without
+ *  a date get stamped by the Worker on first insert and keep that value. */
 export function makeEntry(o) {
-  const today = new Date().toISOString().split("T")[0] + "T00:00:00Z";
   const entry = {
     id: o.id,
     type: o.itemType === "prompt" ? "prompt" : "plugin",
@@ -1629,8 +1747,6 @@ export function makeEntry(o) {
     author: o.author ?? "",
     tags: o.tags ?? [],
     version: o.version ?? "1.0.0",
-    publishedAt: o.publishedAt ?? today,
-    updatedAt: o.updatedAt ?? today,
     sourceMarketplace: SOURCE_MARKETPLACE[o.source ?? o.mirroredFromKey ?? "wecoded"] ?? o.source ?? "wecoded",
     sourceType: o.sourceType,
     sourceRef: o.sourceRef,
@@ -1646,7 +1762,7 @@ export function makeEntry(o) {
       ...(typeof o.stars === "number" ? { stars: o.stars } : {}),
     },
   };
-  for (const k of ["sourceSubdir", "sourceSha", "repoUrl", "tagline", "longDescription", "lifeArea", "audience", "components", "prompt", "pluginName", "deprecated"]) {
+  for (const k of ["publishedAt", "updatedAt", "sourceSubdir", "sourceSha", "repoUrl", "tagline", "longDescription", "lifeArea", "audience", "components", "prompt", "pluginName", "deprecated"]) {
     if (o[k] !== undefined) entry[k] = o[k];
   }
   return entry;
@@ -1670,15 +1786,18 @@ export function createWorkerClient({ host, token, fetchImpl = fetch }) {
     // "only re-read what changed" skip in every source.
     shas: (source) => call("GET", `/admin/catalog/shas?source=${encodeURIComponent(source)}`).then((r) => r.shas ?? {}),
     async upsert(source, runId, entries) {
-      let total = 0;
+      const total = { upserted: 0, unchanged: 0 };
       for (let i = 0; i < entries.length; i += 500) {
         const r = await call("POST", "/admin/catalog/upsert", { source, run_id: runId, entries: entries.slice(i, i + 500) });
-        total += r.upserted;
+        total.upserted += r.upserted ?? 0;
+        total.unchanged += r.unchanged ?? 0;
       }
       return total;
     },
-    finish: (source, runId, note, allowMassRetire) =>
-      call("POST", "/admin/catalog/finish", { source, run_id: runId, ...(note ? { note } : {}), ...(allowMassRetire ? { allow_mass_retire: true } : {}) }),
+    // `retire` is the explicit list of ids to delist — computed by build.mjs, never inferred
+    // by the Worker. Always called, even with an empty list: that is what records the run.
+    finish: (source, runId, retire, note, allowMassRetire) =>
+      call("POST", "/admin/catalog/finish", { source, run_id: runId, retire, ...(note ? { note } : {}), ...(allowMassRetire ? { allow_mass_retire: true } : {}) }),
   };
 }
 ```
@@ -1721,32 +1840,37 @@ for (const name of names) {
   const started = Date.now();
   try {
     const { collect } = await SOURCES[name]();
-    // What the catalog already knows, so the source can skip re-reading files
-    // whose commit has not moved. A source that emits under several Worker
-    // sources (wecoded → "wecoded" + "anthropic") gets both maps merged.
-    let known = {};
-    if (client && !forceRescan) {
-      for (const src of name === "wecoded" ? ["wecoded", "anthropic"] : [name]) {
-        Object.assign(known, await client.shas(src));
-      }
-    }
-    // skipFinish: the source is byte-identical to last run and emitted nothing.
-    // It must NOT reach `finish`, which would retire every one of its rows.
-    const { entries, sources: subSources, skipFinish } = await collect({ known, log: (m) => console.log(`[${name}] ${m}`) });
+    // What the catalog already holds: every LIVE id → "<commit>:<rules>", one map per
+    // Worker source (wecoded emits under "wecoded" AND "anthropic"). Two jobs: the source
+    // compares values to skip re-reading unchanged repos, and this loop uses the KEY SET
+    // to work out what to retire. --force-rescan blanks the values but keeps the keys —
+    // a full re-read must still know what exists.
+    const workerSources = name === "wecoded" ? ["wecoded", "anthropic"] : [name];
+    const knownBySrc = {};
+    for (const src of workerSources) knownBySrc[src] = client ? await client.shas(src) : {};
+    const known = forceRescan ? {} : Object.assign({}, ...Object.values(knownBySrc));
+    // `skipped`: ids the source saw but did not emit because nothing about them changed
+    // (rule 2). They count as SEEN — never as retired — and cost the Worker nothing.
+    const { entries, sources: subSources, skipped = [] } = await collect({ known, log: (m) => console.log(`[${name}] ${m}`) });
     const groups = subSources ?? { [name]: entries };
+    const skippedSet = new Set(skipped);
     for (const [src, rows] of Object.entries(groups)) {
-      if (dryRun) { fs.writeFileSync(`catalog-dry-run-${src}.json`, JSON.stringify(rows, null, 2)); console.log(`[${src}] dry-run: ${rows.length} rows`); continue; }
-      if (!rows.length && skipFinish) { console.log(`[${src}] unchanged — nothing to do`); continue; }
-      const upserted = await client.upsert(src, runId, rows);
-      const { retired, refused } = await client.finish(src, runId, undefined, allowMassRetire);
-      report.sources[src] = { upserted, retired, ...(refused ? { refused } : {}), ms: Date.now() - started };
-      console.log(`[${src}] upserted ${upserted}, retired ${retired}`);
-      // A refusal means this source collected a fraction of what the catalog holds — a
-      // broken scraper, an upstream rename, a rate limit. Nothing was delisted (that is
-      // the guard working), but the run is NOT healthy and must not look green.
+      if (dryRun) { fs.writeFileSync(`catalog-dry-run-${src}.json`, JSON.stringify(rows, null, 2)); console.log(`[${src}] dry-run: ${rows.length} rows, ${skipped.length} skipped`); continue; }
+      const sent = new Set(rows.map((r) => r.id));
+      const skippedHere = Object.keys(knownBySrc[src]).filter((id) => skippedSet.has(id)).length;
+      // The retire list: what the catalog holds for this source minus what this run saw.
+      // Computed HERE so the Worker never has to write a row to learn it is still alive.
+      const retire = Object.keys(knownBySrc[src]).filter((id) => !sent.has(id) && !skippedSet.has(id));
+      const { upserted, unchanged } = await client.upsert(src, runId, rows);
+      const { retired, refused } = await client.finish(src, runId, retire, undefined, allowMassRetire);
+      report.sources[src] = { sent: rows.length, upserted, unchanged, skipped: skippedHere, retired, ...(refused ? { refused } : {}), ms: Date.now() - started };
+      console.log(`[${src}] sent ${rows.length} (wrote ${upserted}, unchanged ${unchanged}), skipped ${skippedHere}, retired ${retired}`);
+      // A refusal means this run saw a fraction of what the catalog holds — a broken
+      // scraper, an upstream rename, a rate limit. Nothing was delisted (that is the guard
+      // working), but the run is NOT healthy and must not look green.
       if (refused) {
-        console.error(`[${src}] REFUSED: collected only ${collected(refused)} — retiring ${refused.wouldRetire} of ${refused.live} was blocked. ` +
-          `Fix the source, or re-run with force_rescan / allow_mass_retire if the removal is real.`);
+        console.error(`[${src}] REFUSED: this run saw only ${refused.live - refused.wouldRetire} of ${refused.live} live rows — retiring ${refused.wouldRetire} was blocked. ` +
+          `Fix the source, or re-run with allow_mass_retire if the removal is real.`);
         process.exitCode = 1;
       }
     }
@@ -1756,17 +1880,14 @@ for (const name of names) {
     process.exitCode = 1;
   }
 }
-// Declared as a function, not a const: it is called from the loop above, which runs before
-// this line is reached.
-function collected(r) { return `${r.live - r.wouldRetire} of ${r.live} rows`; }
 
-// A source that ran, threw nothing, and produced nothing is the silent failure this whole
-// job is exposed to: the catalog would simply freeze at yesterday's data while the workflow
-// stayed green. `skipFinish` (genuinely unchanged) reports no counts at all, so it does not
-// trip this.
+// A source that ran, threw nothing, and saw nothing is the silent failure this whole job
+// is exposed to: the catalog would simply freeze at yesterday's data while the workflow
+// stayed green. "Saw" is sent + skipped — a source that was genuinely unchanged reports
+// everything as skipped and passes.
 for (const [src, r] of Object.entries(report.sources)) {
-  if (!r.error && !r.refused && r.upserted === 0) {
-    console.error(`[${src}] produced 0 rows — the source is broken or its upstream moved.`);
+  if (!r.error && !r.refused && (r.sent ?? 0) + (r.skipped ?? 0) === 0) {
+    console.error(`[${src}] saw 0 rows — the source is broken or its upstream moved.`);
     process.exitCode = 1;
   }
 }
@@ -1956,7 +2077,7 @@ export function addsLine(c) {
 **Interfaces:**
 - `collect({ log }) → { entries, sources: { wecoded: SkillEntry[], anthropic: SkillEntry[] } }` — reads **the root** `index.json` (a bare 339-entry array — *not* `skills/index.json`, which is the same entries wrapped in `{version, generatedBy, entries}`; `sync.js` writes the wrapper first and regenerates the root file after it, and the root file is the one both apps fetch), drops `deprecated`, and for every plugin emits: the bundle row (`itemType: 'plugin'`, origin `youcoded` for `sourceMarketplace === 'youcoded'`, else `verified` with `mirroredFrom: 'anthropics/claude-plugins-official'`), plus member rows: `components.skills[]` → `skill`, `components.agents[]` → `specialist`, `hasMcpConfig || mcpServers.length` → one `tool` row named `<displayName> (connection)`. Members: id `<bundle>/<name>`, `partOf`, inherit origin/scan/license/commit, `capabilities: []`.
 - **Version resolution — read this before writing the code.** `sourceCommit` must be the repo's **current HEAD**, resolved this run, and *never* the `sourceSha` already sitting in `index.json`. 236 of the 302 live entries carry a `sourceSha` that `sync.js` stamped whenever it last ran; re-using it would pin the catalog — and therefore every install (Task 17) — to a months-old commit that never moves again, so the Update button would re-fetch the same frozen version forever and report success. HEAD comes from the same cached `/repos/{o}/{r}` call that supplies stars and licence (`default_branch` → `/commits/{branch}`, or just `/commits/HEAD`), one per distinct repo per run. `sourceSha` is only a last-resort display value if the lookup fails.
-- **Only re-read what changed.** `collect` receives `known` — `{ id: "<sourceCommit>:<scanRulesVersion>" }` from the Worker. When `skipKey(resolvedHead)` equals `known[id]`, the entry is emitted **without** `capabilities` and with `scan` omitted, and no files are downloaded; the Worker's merge rule (Task 6) keeps the stored verdict and its `checkedAt`. This is the difference between ~6,000 raw fetches an hour and a few dozen. The rule version is in the key on purpose: a scanner improvement must invalidate every stored verdict, so `--force-rescan` is for emergencies, not for routine rule changes.
+- **Only re-read what changed.** `collect` receives `known` — `{ id: "<sourceCommit>:<scanRulesVersion>" }` from the Worker. When `skipKey(resolvedHead)` equals `known[id]`, the entry — **and every member row under it** — is **not emitted at all**; their ids go in the returned `skipped` list and no files are downloaded. The Worker never sees them, so it writes nothing (rule 3), and `build.mjs` counts them as seen so `finish` does not retire them. This is the difference between ~6,000 raw fetches an hour and a few dozen, and between ~2,600 row-writes an hour and a few dozen. The rule version is in the key on purpose: a scanner improvement must invalidate every stored verdict, so `--force-rescan` is for emergencies, not for routine rule changes. `normalise` therefore returns `{ rows, skipped }`.
 - File fetch for scanning (only for entries whose HEAD moved): `local` → read from the repo checkout (`<sourceRef>/`), `url`/`git-subdir` → GitHub Tree at the resolved sha then raw fetch of: `.mcp.json`, `hooks/hooks.json`, `.claude-plugin/plugin.json`, and up to 20 files under `scripts/`, `hooks/`, `bin/` with `SCRIPT_EXT`, each ≤ 64 KB. `scan.status`: `caution`/`checked` when fetched; `unchecked` when the fetch failed (log why) — and the merge rule makes that harmless for an entry that was previously checked.
 - Licence: `local` → the repo's LICENSE (MIT — hard-code `MIT` for `sourceMarketplace === 'youcoded'`); GitHub → `/repos/{o}/{r}` `license.spdx_id` (guard null / `NOASSERTION`), cached per repo within the run. Stars from the same call.
 
@@ -1966,12 +2087,13 @@ export function addsLine(c) {
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { normalise } from "../sources/wecoded.mjs";
+import { skipKey } from "../lib/capabilities.mjs";
 import sample from "./fixtures/index-sample.json" with { type: "json" };
 
-test("normalise emits a bundle row + member rows with partOf", () => {
+test("normalise emits a bundle row + member rows with partOf", async () => {
   const fake = { files: async () => ({ ok: true, files: [{ path: "SKILL.md", text: "hi" }] }), repo: async () => ({ stars: 12, license: "MIT", head: "abc1234" }) };
-  const rows = normalise(sample, fake.files, fake.repo);
-  return rows.then((out) => {
+  const { rows: out } = await normalise(sample, fake.files, fake.repo);
+  {
     const bundles = out.filter((r) => r.catalog.itemType === "plugin");
     assert.equal(bundles.length, 3);
     const yc = bundles.find((b) => b.sourceMarketplace === "youcoded");
@@ -1992,17 +2114,17 @@ test("normalise emits a bundle row + member rows with partOf", () => {
     assert.ok(members.some((m) => m.catalog.itemType === "tool"));
     assert.ok(bundles.every((b) => b.catalog.scan.status === "checked"));
     assert.ok(bundles.some((b) => b.catalog.capabilities.some((c) => c.kind === "adds")));
-  });
+  }
 });
 
 test("a failed file fetch leaves the bundle unchecked, never checked", async () => {
-  const rows = await normalise(sample, async () => ({ ok: false, files: [] }), async () => null);
+  const { rows } = await normalise(sample, async () => ({ ok: false, files: [] }), async () => null);
   assert.ok(rows.filter((r) => !r.catalog.partOf).every((b) => b.catalog.scan.status === "unchecked"));
 });
 
 test("pins to today's HEAD, never to the stale sourceSha in index.json", async () => {
   const repo = async () => ({ stars: 1, license: "MIT", head: "newhead1" });
-  const rows = await normalise(sample, async () => ({ ok: true, files: [] }), repo);
+  const { rows } = await normalise(sample, async () => ({ ok: true, files: [] }), repo);
   const external = rows.filter((r) => !r.catalog.partOf && r.sourceMarketplace === "anthropic");
   assert.ok(external.length > 0);
   for (const b of external) {
@@ -2011,15 +2133,24 @@ test("pins to today's HEAD, never to the stale sourceSha in index.json", async (
   }
 });
 
-test("an unchanged entry downloads nothing and states no scan (the merge rule keeps it)", async () => {
-  let fetches = 0;
+test("an unchanged entry is not emitted at all — it and its members are reported as skipped", async () => {
+  const fetched = [];
   const repo = async () => ({ stars: 1, license: "MIT", head: "samehead" });
-  const known = Object.fromEntries(sample.filter((e) => !e.deprecated).map((e) => [e.id, "samehead"]));
-  const rows = await normalise(sample, async () => { fetches++; return { ok: true, files: [] }; }, repo, known);
-  assert.equal(fetches, 0);
-  const bundles = rows.filter((r) => !r.catalog.partOf);
-  assert.ok(bundles.every((b) => b.catalog.scan === undefined));
-  assert.ok(bundles.every((b) => (b.catalog.capabilities ?? []).length === 0));
+  // The Worker's view: every live GitHub-sourced id already at today's HEAD + rule version.
+  const external = sample.filter((e) => !e.deprecated && e.sourceMarketplace !== "youcoded");
+  const known = Object.fromEntries(external.map((e) => [e.id, skipKey("samehead")]));
+  const { rows, skipped } = await normalise(sample, async (e) => { fetched.push(e.id); return { ok: true, files: [] }; }, repo, known);
+  // Nothing GitHub-sourced was downloaded or emitted…
+  assert.ok(fetched.every((id) => sample.find((e) => e.id === id).sourceMarketplace === "youcoded"));
+  assert.ok(rows.every((r) => r.sourceMarketplace === "youcoded"));
+  // …and every skipped bundle AND its members are in `skipped`, so finish never retires them.
+  for (const e of external) {
+    assert.ok(skipped.includes(e.id));
+    for (const s of e.components?.skills ?? []) assert.ok(skipped.includes(`${e.id}/${s}`));
+  }
+  // Our own `local` plugins have no GitHub HEAD to compare, so they are read from the
+  // checkout every run — no network, and the Worker's write-skip makes it free.
+  assert.ok(fetched.length > 0);
 });
 ```
 
@@ -2082,9 +2213,10 @@ export function repoFacts() {
     if (!gh) return null;
     const key = `${gh.owner}/${gh.repo}`;
     if (!cache.has(key)) {
-      // One call per distinct repo per run — 153 across the 237 live url/git-subdir
-      // entries. `head` is the CURRENT tip: the catalog pins to what the author
-      // publishes today, never to the stale sourceSha in index.json (see Interfaces).
+      // Two calls per distinct repo per run (facts, then the branch tip) — 207 repos
+      // across the 237 live url/git-subdir entries, so ~420 calls at steady state.
+      // `head` is the CURRENT tip: the catalog pins to what the author publishes
+      // today, never to the stale sourceSha in index.json (see Interfaces).
       cache.set(key, github(`/repos/${key}`)
         .then(async (r) => r ? {
           stars: r.stargazers_count,
@@ -2098,22 +2230,36 @@ export function repoFacts() {
   };
 }
 
+/** Member ids a bundle row implies — needed WITHOUT fetching anything, so a skipped
+ *  bundle can report its members as seen too. Mirrors the `member(...)` calls below. */
+function memberIds(e) {
+  const c = e.components ?? {};
+  return [
+    ...(c.skills ?? []).map((s) => `${e.id}/${s}`),
+    ...(c.agents ?? []).map((a) => `${e.id}/${a}`),
+    ...(((c.mcpServers ?? []).length || c.hasMcpConfig) ? [`${e.id}/connection`] : []),
+  ];
+}
+
 export async function normalise(index, files = fetchFiles, repo = repoFacts(), known = {}) {
   const out = [];
-  let skipped = 0;
+  const skipped = [];
   for (const e of index) {
     if (e.deprecated || e.type === "prompt") continue;
     const isOurs = e.sourceMarketplace === "youcoded";
     const facts = isOurs ? { license: "MIT" } : (await repo(e.repoUrl ?? e.sourceRef)) ?? {};
     // The version we are listing: today's HEAD. NEVER e.sourceSha — see Interfaces.
     const sourceCommit = facts.head ?? (isOurs ? undefined : e.sourceSha);
-    // Unchanged since the catalog last looked → emit the row with no scan and no
-    // capabilities and download nothing; the Worker's merge rule keeps what it has.
+    // Unchanged since the catalog last looked → do not emit it, do not download anything;
+    // report it (and its members) as skipped so the retire step knows it was seen. The
+    // Worker never hears about it, so it writes nothing (rule 3).
     // skipKey, not the bare commit: an unmoved repo scanned by an older rule set is not
     // up to date. See Interfaces, "Only re-read what changed".
-    const unchanged = !!sourceCommit && known[e.id] === skipKey(sourceCommit);
-    if (unchanged) skipped++;
-    const fetched = unchanged ? { ok: false, files: [], skipped: true } : await files(e, sourceCommit);
+    if (!!sourceCommit && known[e.id] === skipKey(sourceCommit)) {
+      skipped.push(e.id, ...memberIds(e));
+      continue;
+    }
+    const fetched = await files(e, sourceCommit);
     const scanned = fetched.ok ? scanFiles(fetched.files, { title: e.displayName }) : null;
     const caps = [];
     if (scanned) {
@@ -2137,9 +2283,7 @@ export async function normalise(index, files = fetchFiles, repo = repoFacts(), k
     };
     out.push(makeEntry({ ...base, id: e.id, itemType: "plugin", displayName: e.displayName, description: e.description, tagline: e.tagline, longDescription: e.longDescription,
       sourceType: e.sourceType, sourceRef: e.sourceRef, sourceSubdir: e.sourceSubdir, sourceSha: e.sourceSha, components: e.components,
-      // A skipped entry states nothing about its files; the Worker keeps the stored
-      // scan and capabilities rather than downgrading them to "Not checked".
-      capabilities: unchanged ? undefined : caps, scan: unchanged ? undefined : scan }));
+      capabilities: caps, scan }));
     const member = (itemType, name, displayName, description) => out.push(makeEntry({ ...base, id: `${e.id}/${name}`, itemType, displayName, description,
       sourceType: e.sourceType, sourceRef: e.sourceRef, sourceSubdir: e.sourceSubdir, pluginName: e.id, partOf: { id: e.id, displayName: e.displayName }, capabilities: [], scan }));
     // Member descriptions are left EMPTY, not filled with "Part of <bundle>."
@@ -2154,7 +2298,7 @@ export async function normalise(index, files = fetchFiles, repo = repoFacts(), k
     for (const a of c.agents ?? []) member("specialist", a, titleCase(a), "");
     if ((c.mcpServers ?? []).length || c.hasMcpConfig) member("tool", "connection", `${e.displayName} (connection)`, "");
   }
-  return out;
+  return { rows: out, skipped };
 }
 
 const titleCase = (s) => s.replace(/[-_]/g, " ").replace(/^./, (ch) => ch.toUpperCase());
@@ -2162,10 +2306,10 @@ const titleCase = (s) => s.replace(/[-_]/g, " ").replace(/^./, (ch) => ch.toUppe
 export async function collect({ log, known = {} }) {
   const index = JSON.parse(fs.readFileSync(path.join(ROOT, "index.json"), "utf8"));
   log(`index.json: ${index.length} rows`);
-  const rows = await normalise(index, fetchFiles, repoFacts(), known);
+  const { rows, skipped } = await normalise(index, fetchFiles, repoFacts(), known);
   const sources = { wecoded: rows.filter((r) => r.sourceMarketplace === "youcoded"), anthropic: rows.filter((r) => r.sourceMarketplace === "anthropic") };
-  log(`wecoded ${sources.wecoded.length}, anthropic ${sources.anthropic.length}`);
-  return { entries: rows, sources };
+  log(`wecoded ${sources.wecoded.length}, anthropic ${sources.anthropic.length}, skipped ${skipped.length} unchanged`);
+  return { entries: rows, sources, skipped };
 }
 ```
 
@@ -2243,6 +2387,7 @@ test("cursorrules: one prompt row per .mdc, CC0, text inline", () => {
   assert.equal(row.type, "prompt");
   assert.equal(row.catalog.itemType, "prompt");
   assert.equal(row.catalog.license, "CC0-1.0");
+  assert.equal(row.version, "88ab01d");   // the commit IS the version — see Task 2; "1.0.0" would never move
   assert.match(row.description, /Jetpack Compose/);
   assert.ok(row.prompt.includes("Jetpack Compose"));
   assert.equal(row.catalog.scan.status, "checked");
@@ -2344,7 +2489,9 @@ export async function collect({ log }) {
   return { entries };
 }
 ```
-`sourceType: "file"` rows (a single markdown file) cannot be installed by the current installer; Task 21 hides Install for `sourceType` ∉ {local,url,git-subdir}.
+`sourceType: "file"` rows (a single markdown file) cannot be installed by the current installer; Task 21 hides Install for `sourceType` ∉ {local,url,git-subdir} — **including the `instructions/*` rows above, which are `type: "prompt"` but carry no `prompt` text** (they are pointers, not inline prompts).
+
+Docker and awesome-copilot rows are sent every run; the Worker's write-skip (rule 3) makes that free when nothing changed. That only holds if **nothing in these two files varies per run** — no `new Date()`, no run id, no "fetched at" — which is why neither source stamps a `checkedAt` and `makeEntry` no longer defaults dates.
 
 `sources/cursorrules.mjs`:
 ```js
@@ -2366,6 +2513,9 @@ export function normalise(files, { sha }) {
     const { meta, body } = frontmatter(text);
     return makeEntry({
       source: "cursorrules", id: `cursorrules-${slug(name)}`, itemType: "prompt", displayName: name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      // The short commit is the version (Task 2): the app's Update badge compares version
+      // strings, and a fixed "1.0.0" would mean an edited rule upstream never shows as one.
+      version: sha.slice(0, 7),
       description: meta.description || `Cursor rules: ${name}.`, author: "PatrickJS", repoUrl: `https://github.com/${REPO}/blob/main/${path}`,
       sourceType: "file", sourceRef: `https://raw.githubusercontent.com/${REPO}/${sha}/${path}`, prompt: body.trim().slice(0, 32 * 1024),
       origin: "community", mirroredFrom: "PatrickJS/awesome-cursorrules", license: "CC0-1.0", sourceCommit: sha, upstreamId: path,
@@ -2379,10 +2529,11 @@ export async function collect({ log, known = {} }) {
   // 257 files that change roughly never. If the repo tip has not moved since the
   // catalog last read it, download nothing — re-emitting them would be ~257
   // pointless raw fetches an hour. One sample id is enough to tell.
-  const sampled = Object.keys(known).find((k) => k.startsWith("cursorrules-"));
-  if (sampled && known[sampled] === skipKey(head.sha)) {
+  const mine = Object.keys(known).filter((k) => k.startsWith("cursorrules-"));
+  if (mine.length && known[mine[0]] === skipKey(head.sha)) {
     log(`unchanged at ${head.sha.slice(0, 7)} — skipping`);
-    return { entries: [], skipFinish: true };
+    // Everything the catalog holds for this source was seen: nothing sent, nothing retired.
+    return { entries: [], skipped: mine };
   }
   const tree = (await github(`/repos/${REPO}/git/trees/${head.sha}?recursive=1`))?.tree ?? [];
   const paths = tree.filter((t) => t.type === "blob" && /^rules\/[^/]+\.mdc$/.test(t.path)).map((t) => t.path);
@@ -2445,7 +2596,7 @@ concurrency: { group: catalog-ingest, cancel-in-progress: false }
 jobs:
   ingest:
     runs-on: ubuntu-latest
-    # A steady-state run is minutes: ~160 GitHub API calls and a few dozen raw
+    # A steady-state run is minutes: ~420 GitHub API calls and a few dozen raw
     # file downloads, because unchanged entries are skipped. 30 minutes is the
     # ceiling for a --force-rescan; if a NORMAL run approaches it, the skip logic
     # has broken — investigate, do not raise this.
@@ -2495,9 +2646,9 @@ Four one-liners that would otherwise each need their own PR, and one that matter
    is `wecoded-themes-plugin`; `theme-builder` is a skill inside it. This is not a silent
    no-op — the bare string is already written into users' `~/.claude/youcoded-skills.json`
    → `favorites[]`, where it resolves to nothing. Point it at `wecoded-themes-plugin`.
-   (Cleaning the dead entry out of existing profiles is app-side; ROADMAP it.)
+   (Cleaning the dead entry out of existing profiles is app-side — Task 22.)
 
-- [ ] **Step 2: Docs** — `docs/catalog.md`: what the catalog is, the four sources with their licences and the mirror/link decision (Docker repo MIT but served JSON unlicensed — we store metadata only; awesome-copilot MIT; cursorrules CC0; Anthropic official Apache-2.0 for the 53 local, the rest are pointers), **the merge rule and why a degraded run must never downgrade a row**, **the retire guard and when to use `allow_mass_retire`**, **`SCAN_RULES_VERSION` — bump it to re-scan the whole catalog, do not reach for `--force-rescan`**, the "only re-read what changed" skip, what "Likely safe" means in v1 (rule-based; SkillSpector is the next step), the `CATALOG_ENABLED` kill switch and how to use it, how to run locally (`--dry-run`), the retire semantics, and the env vars. README/CONTRIBUTING corrections as listed.
+- [ ] **Step 2: Docs** — `docs/catalog.md`: what the catalog is, the four sources with their licences and the mirror/link decision (Docker repo MIT but served JSON unlicensed — we store metadata only; awesome-copilot MIT; cursorrules CC0; Anthropic official Apache-2.0 for the 53 local, the rest are pointers), **the merge rule and why a degraded run must never downgrade a row**, **the write-skip and why no source may stamp a per-run value into a row that did not change**, **the retire guard, that the retire list is computed by the ingest, and when to use `allow_mass_retire`**, **`SCAN_RULES_VERSION` — bump it to re-scan the whole catalog, do not reach for `--force-rescan`**, the "only re-read what changed" skip, what "Likely safe" means in v1 (rule-based; SkillSpector is the next step), the `CATALOG_ENABLED` kill switch and how to use it, how to run locally (`--dry-run`), the retire semantics, and the env vars. README/CONTRIBUTING corrections as listed.
 
 - [ ] **Step 3: Commit, push, PR** — `git add .github/workflows/catalog-ingest.yml docs/catalog.md README.md CONTRIBUTING.md && git commit -m "feat(catalog): hourly ingest workflow + docs"`; push; `gh pr create` titled `feat(catalog): ingest pipeline — four sources → Worker catalog` with the standard footer. Before merging: the Worker PR from Task 7 is merged and deployed, and Destin has added `MARKETPLACE_CATALOG_INGEST_TOKEN` (tell him in the PR: `openssl rand -hex 32`, paste into repo Settings → Secrets; the Worker deploy pushes the same value to the Worker).
 
@@ -2525,11 +2676,18 @@ Expected: a few MB the first time, **`repeat=304 bytes=0`** the second. If the r
 the ETag path is broken and every device will re-download the whole catalog hourly — stop and
 fix it before the app-wiring phase ships.
 
-Then let the **second** hourly run happen and compare: the `catalog-report.json` artifact
-should show far fewer than the first run's numbers touched, the run should finish in minutes,
-and no row's `scan.status` should have moved from `checked` to `unchecked`. That is the merge
-rule and the skip rule both working. Re-run this check the first time a run *does* hit the
-GitHub limit — that is the failure the merge rule exists for.
+Then let the **second** hourly run happen and read its `catalog-report.json`: for
+`wecoded`/`anthropic`, `skipped` should be nearly everything and `sent` small; for
+`docker`/`awesome-copilot`, `sent` is everything but `unchanged` is nearly all of it; across
+every source, `upserted` (rows actually written) should be in the dozens, the run should
+finish in minutes, and no row's `scan.status` should have moved from `checked` to
+`unchecked`. That is all three rules working. Then cross-check the one number the report
+cannot see — **rows written, on the D1 dashboard** (Cloudflare → Workers & Pages → D1 → the
+database → Metrics): the hour should be in the hundreds, not thousands. If it is thousands,
+some source is stamping a per-run value (a date, a timestamp) into rows that did not change,
+defeating the write-skip; find it before the second day, because the free tier is 100,000
+row-writes/day. Re-run this check the first time a run *does* hit the GitHub limit — that is
+the failure the merge rule exists for.
 
 - [ ] **Step 5: ROADMAP** (workspace) — under the overhaul entry note "catalog service live <date>"; add follow-ups: **the official MCP Registry source (see Deferred below)**; SkillSpector / Cisco skill-scanner as a second scan stage; member descriptions from SKILL.md frontmatter; Docker `toolsUrl` fetch for tool descriptions; Layer E (sub-registry API) now has its data.
 
@@ -2556,7 +2714,9 @@ curl -s https://wecoded-marketplace-api.destinj101.workers.dev/catalog \
   | python3 -c "import json,sys,collections; e=json.load(sys.stdin)['entries']; \
       print(collections.Counter((x.get('catalog') or {}).get('scan',{}).get('status','none') for x in e))"
 ```
-If `unchecked` is a large share — the estimate was roughly half — put **one** small deck to
+If `unchecked` is a large share — the pre-build estimate is roughly a third: Docker and
+awesome-copilot rows are never file-scanned, while our own and Anthropic's bundles and their
+members carry a real verdict — put **one** small deck to
 Destin: keep the grey shield, or render no shield at all when the status is `unchecked` so the
 badge only ever appears when it has something to say. Build whichever he picks in the branch, then continue.
 **Nothing in Phase 4 or 5 may merge with this question still open.**
@@ -2568,8 +2728,8 @@ badge only ever appears when it has something to say. Build whichever he picks i
 Back on the app branch. Everything here needs Phase 2 deployed and its first ingest run
 finished, because these tasks are verified against the live `/catalog`, not against a fixture.
 
-Desktop first (Tasks 16–18), then Android (Task 19) which mirrors all three, then the two
-pieces that are neither (Tasks 20–21).
+Desktop first (Tasks 16–18), then Android (Task 19) which mirrors all three, then the three
+pieces that are neither (Tasks 20–22).
 
 ### Task 16: Desktop — `fetchIndex()` reads the catalog first
 
@@ -2790,7 +2950,8 @@ git commit -m "feat(marketplace): desktop reads the Worker catalog first, index.
 - Test: `desktop/tests/plugin-installer-pin.test.ts`
 
 **Interfaces:**
-- Produces: `MarketplaceEntry.sourceCommit?: string`; `pinToCommit(dir: string, commit: string): Promise<{ ok: boolean; output: string }>`; the provider passes **`sourceCommit: entry.catalog?.sourceCommit`** — the catalog's value **and nothing else**.
+- Produces: `MarketplaceEntry.sourceCommit?: string`; `pinToCommit(dir: string, commit: string): Promise<{ ok: boolean; output: string; commit?: string }>` (the full sha actually checked out); `InstallResult.commit?: string`; `PackageInfo.commit?: string` (`skill-config-store.ts`), written by `recordPackageInstall` — **this is the installed side of the commit comparison Task 1 Step 4 names; without it that comparison has no data.** `PackageInfo` already reaches the renderer through the existing packages map, so no new IPC channel. The provider passes **`sourceCommit: entry.catalog?.sourceCommit`** — the catalog's value **and nothing else**.
+- **Update is safe with a pinned checkout.** `update()` re-runs `installPlugin` (`skill-provider.ts:305`), which deletes the folder and clones fresh — it never `git pull`s, so a detached HEAD is never a problem. Do not "improve" it into a pull.
 
 > **Do not add `?? entry.sourceSha`.** It is the obvious-looking fallback and it is wrong.
 > `sourceSha` is whatever `sync.js` stamped into `index.json` the last time it ran, and **236
@@ -2819,12 +2980,23 @@ describe('pinToCommit', () => {
   it('fetches the commit shallowly and checks it out, in that order', async () => {
     const calls: string[][] = [];
     // (use the git stub from Step 1 to push every argv into `calls` and succeed)
+    // (stub `rev-parse HEAD` to print the full sha)
     const r = await pinToCommit('/tmp/x', 'e91a6c0');
     expect(r.ok).toBe(true);
+    expect(r.commit).toBe('e91a6c0ffffffffffffffffffffffffffffffff');
     expect(calls).toEqual([
       ['-C', '/tmp/x', 'fetch', '--depth', '1', 'origin', 'e91a6c0'],
       ['-C', '/tmp/x', 'checkout', '--detach', 'e91a6c0'],
+      ['-C', '/tmp/x', 'rev-parse', 'HEAD'],
     ]);
+  });
+
+  it('records the checked-out commit on the package, so Update can compare it later', async () => {
+    const entry = { id: 'x', sourceType: 'url', sourceRef: 'https://github.com/o/r.git', sourceCommit: 'e91a6c0' } as any;
+    const r = await installPlugin(entry);
+    expect(r).toMatchObject({ status: 'installed', commit: 'e91a6c0ffffffffffffffffffffffffffffffff' });
+    // …and, through the provider (arrange as in tests/skill-provider-catalog.test.ts):
+    // expect(store.getPackage('x')?.commit).toBe('e91a6c0ffffffffffffffffffffffffffffffff');
   });
 
   it('is not reached for an entry with no catalog block — those still install latest', async () => {
@@ -2866,10 +3038,15 @@ Add the helper next to `installFromUrl`:
 // a shallow fetch, so fetch it and detach onto it. On failure the git output
 // is returned untouched — an "unknown sha" and a network error read differently
 // and the user must see which.
-export async function pinToCommit(dir: string, commit: string): Promise<{ ok: boolean; output: string }> {
+export async function pinToCommit(dir: string, commit: string): Promise<{ ok: boolean; output: string; commit?: string }> {
   const fetched = await runGit('-C', dir, 'fetch', '--depth', '1', 'origin', commit);
   if (!fetched.ok) return fetched;
-  return runGit('-C', dir, 'checkout', '--detach', commit);
+  const checked = await runGit('-C', dir, 'checkout', '--detach', commit);
+  if (!checked.ok) return checked;
+  // Report the FULL sha we landed on: the package record stores it, and Task 1's
+  // Update compare reads it back against the catalog's sourceCommit.
+  const head = await runGit('-C', dir, 'rev-parse', 'HEAD');
+  return { ok: true, output: checked.output, commit: head.ok ? head.output.trim() : commit };
 }
 ```
 
@@ -2888,9 +3065,15 @@ async function installFromUrl(id: string, url: string, commit?: string): Promise
   if (commit) {
     const pinned = await pinToCommit(targetDir, commit);
     if (!pinned.ok) return { status: 'failed', error: `could not check out the listed version ${commit}: ${pinned.output.slice(0, 200)}` };
+    return { status: 'installed', commit: pinned.commit };
   }
   return { status: 'installed' };
 }
+```
+
+(`InstallResult` gains `commit?: string`; `installFromGitSubdir` returns it the same way.)
+
+```ts
 ```
 
 and in `installFromGitSubdir(id, repoUrl, subdir, commit?)` — **after `sparse-checkout set`,
@@ -2917,6 +3100,12 @@ In the switch:
         break;
 ```
 
+`skill-config-store.ts` — `PackageInfo` gains `commit?: string`, and `recordPackageInstall`
+takes it as an optional extra argument (spread onto the existing record, the way `remember()`
+in the permission store keeps its entry). `skill-provider.ts` — after a successful
+`installPlugin`, pass `result.commit` through to `recordPackageInstall`. No `commit` recorded
+= nothing to compare = no badge from the commit path (Task 1 Step 4).
+
 `skill-provider.ts` — in the `installPlugin({ … })` call add:
 
 ```ts
@@ -2933,8 +3122,8 @@ In the switch:
 Run: `npx vitest run tests/plugin-installer-pin.test.ts` → PASS (3). `cd /home/destin/youcoded-dev && bash scripts/verify.sh marketplace-ui` → OK.
 
 ```bash
-git add desktop/src/main/plugin-installer.ts desktop/src/main/skill-provider.ts desktop/tests/plugin-installer-pin.test.ts
-git commit -m "feat(marketplace): installs check out the catalog's pinned commit"
+git add desktop/src/main/plugin-installer.ts desktop/src/main/skill-provider.ts desktop/src/main/skill-config-store.ts desktop/tests/plugin-installer-pin.test.ts
+git commit -m "feat(marketplace): installs check out the catalog's pinned commit and record it"
 ```
 
 ---
@@ -3057,6 +3246,12 @@ class MarketplaceFetcherCatalogTest {
         "scan":{"status":"checked"},"capabilities":[],"sourceCommit":"e91a6c0"}}]}"""
     private val indexBody = """[{"id":"superpowers","type":"plugin","displayName":"Superpowers","description":"x","category":"development"}]"""
 
+    /** Ages the on-disk envelope past its TTL. Matches `writeCache`'s `{ fetchedAt, etag?, data }`
+     *  shape — if the Kotlin envelope names the field differently, change it here, not there. */
+    private fun expireCache(file: File) {
+        val json = JSONObject(file.readText()); json.put("fetchedAt", 0L); file.writeText(json.toString())
+    }
+
     @Test
     fun `prefers the Worker catalog and keeps the catalog block`() {
         val hits = mutableListOf<String>()
@@ -3105,10 +3300,13 @@ class MarketplaceFetcherCatalogTest {
 }
 ```
 
-- [ ] **Step 2: Run to see it fail**
+- [ ] **Step 2: Run to see it fail — if you can**
 
-Run: `cd /home/destin/youcoded-dev/worktrees/marketplace-ui && ./gradlew test -x bundleWebUi --tests '*MarketplaceFetcherCatalogTest*'`
-Expected: compilation FAIL — no `readUrl` parameter.
+There is no Android SDK on this machine (Global Constraints → App), so the honest sequence is:
+write the test, write the code (Step 3), push, and read `android-ci.yml` on the PR — that run
+is the compile check and the test run. If an SDK *is* present:
+`cd /home/destin/youcoded-dev/worktrees/marketplace-ui && ./gradlew test -x bundleWebUi --tests '*MarketplaceFetcherCatalogTest*'`
+→ compilation FAIL — no `readUrl` parameter.
 
 - [ ] **Step 3: Implement the fetcher**
 
@@ -3173,7 +3371,7 @@ Replace `fetchIndex()`:
         // 3. Raw index.json (pre-overhaul path).
         readCache(indexFile, indexTtl)?.let { parseArray(it) }?.let { return it }
         try {
-            val data = readUrl("$registryBase/index.json")
+            val data = readUrl("$registryBase/index.json", null).body
             val arr = JSONArray(data)
             writeCache(indexFile, data)
             return arr
@@ -3188,11 +3386,11 @@ Replace `fetchIndex()`:
     }
 ```
 
-(`Log.w` in a JVM unit test: if `android.util.Log` is not stubbed in this module's test config, check `app/build.gradle.kts` for `unitTests.isReturnDefaultValues = true`; add it if absent — the existing fetcher tests, if any, already rely on it.)
+(`Log.w` in a JVM unit test throws `Method w in android.util.Log not mocked` unless stubbed. **`app/build.gradle.kts` has no `testOptions` block at all today** (verified 2026-08-30) — add `testOptions { unitTests.isReturnDefaultValues = true }` inside `android { }`, and say so in the commit: it changes what every JVM test in the module sees from Android framework calls — they return defaults instead of throwing.)
 
 - [ ] **Step 4: Run the fetcher test to see it pass**
 
-Run: `./gradlew test -x bundleWebUi --tests '*MarketplaceFetcherCatalogTest*'` → BUILD SUCCESSFUL.
+With an SDK: `./gradlew test -x bundleWebUi --tests '*MarketplaceFetcherCatalogTest*'` → BUILD SUCCESSFUL. Without one: this is checked by CI in Step 7.
 
 - [ ] **Step 5: Pin installs and route members (no new test — mirrors Task 17/3; Gradle's existing installer tests must stay green)**
 
@@ -3266,9 +3464,11 @@ channel-parity blocks): assert that `MarketplaceFetcher.kt`'s host constant and
 `marketplace-api-client.ts`'s `MARKETPLACE_API_HOST` are the same string. Two hand-maintained
 copies of a URL in two languages is exactly the drift the IPC parity tests exist to catch.
 
-- [ ] **Step 7: Run Android tests and commit**
+- [ ] **Step 7: Commit, push, and read CI**
 
-Run: `./gradlew test -x bundleWebUi` → BUILD SUCCESSFUL.
+With an SDK: `./gradlew test -x bundleWebUi` → BUILD SUCCESSFUL. Without one: commit, push, and
+watch the `android-ci.yml` run on the branch — it must be green before Task 23, and the PR
+body says that is how Android was verified.
 
 ```bash
 git add app/src/main/kotlin/com/youcoded/app/skills/MarketplaceFetcher.kt app/src/main/kotlin/com/youcoded/app/skills/PluginInstaller.kt app/src/main/kotlin/com/youcoded/app/skills/LocalSkillProvider.kt app/src/test/kotlin/com/youcoded/app/skills/MarketplaceFetcherCatalogTest.kt
@@ -3326,7 +3526,7 @@ Phase 2 emits rows with `sourceType: "mcp-registry"` (Connections from Docker's 
 - Test: `desktop/tests/marketplace-not-installable.test.tsx`
 
 **Interfaces:**
-- Produces: `isInstallableSource(entry: SkillEntry): boolean` exported from `desktop/src/shared/catalog-types.ts` — `true` for `local | url | git-subdir`, or `type === 'prompt'`; `false` for `mcp-registry`, `file`, unknown.
+- Produces: `isInstallableSource(entry: SkillEntry): boolean` exported from `desktop/src/shared/catalog-types.ts` — `true` for `local | url | git-subdir`, or `type === 'prompt'` **with non-empty `prompt` text**; `false` for `mcp-registry`, `file`, unknown — **including the 193 awesome-copilot instructions rows, which are `type: "prompt"` but carry no text** (Task 13 lists them as pointers). Without the text check they would show Install and install an empty prompt.
 
 - [ ] **Step 1: Failing test** — `desktop/tests/marketplace-not-installable.test.tsx` (arrange providers the way `tests/marketplace-card-compact.test.tsx` does):
 
@@ -3341,8 +3541,8 @@ import MarketplaceCard from '../src/renderer/components/marketplace/MarketplaceC
 
 afterEach(cleanup);
 
-const row = (sourceType: string, type: 'plugin' | 'prompt' = 'plugin') => ({
-  id: 'x', type, displayName: 'X', description: 'd', category: 'development', prompt: '/x', source: 'marketplace', visibility: 'published',
+const row = (sourceType: string, type: 'plugin' | 'prompt' = 'plugin', prompt = '/x') => ({
+  id: 'x', type, displayName: 'X', description: 'd', category: 'development', prompt, source: 'marketplace', visibility: 'published',
   sourceType, sourceRef: 'mcp:x', repoUrl: 'https://github.com/o/r',
   catalog: { itemType: 'tool', origin: { tier: 'community' }, scan: { status: 'unchecked' }, capabilities: [] },
 } as any);
@@ -3352,7 +3552,8 @@ describe('rows the installer cannot install', () => {
     expect(isInstallableSource(row('url'))).toBe(true);
     expect(isInstallableSource(row('git-subdir'))).toBe(true);
     expect(isInstallableSource(row('local'))).toBe(true);
-    expect(isInstallableSource(row('file', 'prompt'))).toBe(true);
+    expect(isInstallableSource(row('file', 'prompt', 'You are a Jetpack Compose expert…'))).toBe(true);
+    expect(isInstallableSource(row('file', 'prompt', ''))).toBe(false);     // awesome-copilot instructions: a prompt row with no text
     expect(isInstallableSource(row('mcp-registry'))).toBe(false);
     expect(isInstallableSource(row('file'))).toBe(false);
   });
@@ -3373,8 +3574,10 @@ describe('rows the installer cannot install', () => {
 /** Can the app's installer take this row? Plugins from git, and prompt rows
  *  (installed as a private prompt). Connections from the MCP Registry and
  *  single-file rows are listed but not installable yet (ROADMAP). */
-export function isInstallableSource(entry: { type?: string; sourceType?: string }): boolean {
-  if (entry.type === 'prompt') return true;
+export function isInstallableSource(entry: { type?: string; sourceType?: string; prompt?: string }): boolean {
+  // A prompt row installs only when the text is in the row. awesome-copilot's
+  // instructions are `type: "prompt"` pointers with NO text; Install would store nothing.
+  if (entry.type === 'prompt') return typeof entry.prompt === 'string' && entry.prompt.trim().length > 0;
   return entry.sourceType === 'local' || entry.sourceType === 'url' || entry.sourceType === 'git-subdir';
 }
 ```
@@ -3394,9 +3597,49 @@ and above `MetadataChips` a `Callout` (`tone="info"`): "This connection isn't in
 
 ---
 
+### Task 22: The fixes that needed the catalog first
+
+Three items that used to sit in Task 3 and could not honestly be called "depends on nothing".
+
+- [ ] **Theme cards show a download count — all three halves land here.** Plan 1 was going to
+  add `installs` to `/stats`'s themes and has withdrawn it, because the premise was false:
+  **the app never tells the Worker a theme was installed.** `installTheme()`
+  (`marketplace-context.tsx:285`) installs to disk and never calls `marketplaceApi.install()`;
+  the sole caller of that is the skill path at line 253. So the `installs` table holds zero
+  theme rows and the field would have read `0` forever. Do it in this order, or not at all:
+  1. Record the install — `installTheme` also calls `marketplaceApi.install('theme:' + slug)`
+     after the disk install succeeds (fire-and-forget; a stats failure must not fail an
+     install). Android's theme install path needs the same call. (Task 8 already lets
+     `theme:` ids through the catalog check.)
+  2. Worker — `/stats` gains `themes[slug].installs`, counted from `installs` rows whose
+     `plugin_id` starts with `theme:`, prefix stripped; and skip those ids when seeding
+     `plugins` so one row is not reported twice. That is a small `wecoded-marketplace` PR.
+  3. Card — `MarketplaceCard.tsx:108-116` reads installs only from `stats.plugins`
+     (`pluginStats` is `undefined` for a theme, so `installs` is always 0 and the count never
+     renders). Read `themeStats?.installs` too.
+
+  Steps 2 and 3 are worthless without step 1. If you only have time for one, do none of them
+  and leave the ROADMAP item.
+- [ ] **A dead favourite sits in the profile.** Task 14 fixes `curated-defaults.json`;
+  app-side, decide whether to prune the stale `theme-builder` string out of existing
+  `~/.claude/youcoded-skills.json` → `favorites[]` on load, or leave it. A favourite that
+  resolves to nothing is invisible, so "leave it" is defensible — say which you chose.
+- [ ] **Not built here: "No longer listed".** When an installed plugin's id is absent from the
+  catalog it was delisted upstream — it keeps working but will never update again. Showing
+  that on the Library row is right, **but only when the *catalog* answered `fetchIndex`** —
+  never the `index.json` fallback, never the stale cache — or one unreachable Worker labels
+  every installed item on the machine as abandoned. That guard needs the renderer to learn
+  which source answered, which is a new IPC-parity surface (all the bridge platforms), not a
+  small fix. It goes to the ROADMAP in Task 23 Step 4 with that rationale attached, so
+  whoever builds it builds the guard first.
+- [ ] Run `bash scripts/verify.sh marketplace-ui`; push and read `android-ci.yml` for the Kotlin
+  half; commit as `fix(marketplace): theme download counts (app + worker) and the dead favourite`.
+
+---
+
 ## Phase 5 — Verify end-to-end, merge, close out
 
-### Task 22: Verify end-to-end, merge, close out
+### Task 23: Verify end-to-end, merge, close out
 
 - [ ] **Step 1: Full desktop gate + a real-data smoke**
 
@@ -3417,7 +3660,7 @@ that hourly on every user's device, including phones on mobile data — that blo
 
 - [ ] **Step 2: Hand it to Destin for the interactive pass — do not script it**
 
-Say before launching: `bash scripts/run-dev.sh marketplace-ui --label "Marketplace overhaul"` opens a window. He checks: the type switch counts, a Skills-tab card with "Part of …", a detail page's badges and "What this can do" showing REAL values (compare one against its GitHub repo), **an item showing "Update" — click it and confirm it actually updates and the badge clears** (try one plugin and one theme), install a `url`-sourced plugin and confirm `git -C ~/.claude/plugins/marketplaces/youcoded/plugins/<id> rev-parse HEAD` equals its `sourceCommit` — **and that this sha is the repo's current tip on GitHub, not an old one.** A pin to a stale commit is the one failure here that looks like success. Then kill the dev window.
+Say before launching: `bash scripts/run-dev.sh marketplace-ui --label "Marketplace overhaul"` opens a window. He checks: the type switch counts, a Skills-tab card with "Part of …", a detail page's badges and "What this can do" showing REAL values (compare one against its GitHub repo), **an item showing "Update" — click it and confirm it actually updates and the badge clears** (try one plugin and one theme), install a `url`-sourced plugin and confirm `git -C ~/.claude/plugins/marketplaces/youcoded/plugins/<id> rev-parse HEAD` equals its `sourceCommit` — **and that this sha is the repo's current tip on GitHub, not an old one.** A pin to a stale commit is the one failure here that looks like success. Finally, a plugin installed *before* this branch (no recorded commit) must show no Update badge it did not show before — the commit compare stays silent without data. Then kill the dev window.
 
 - [ ] **Step 3: Merge and clean up**
 
@@ -3430,8 +3673,9 @@ Spec: youcoded-dev docs/active/specs/2026-08-28-marketplace-overhaul-ui-design.m
 
 - type switch (Plugins · Skills · Specialists · Connections · Prompts · Themes), grouped/split rule
 - Likely safe / origin / author chips, "What this can do", thumbs + comments
-- desktop + Android read /catalog first, index.json fallback; installs pin to the catalog's commit; member installs its bundle
-- **the Update badge is now a button.** It never was: the label was a plain span with no handler, and `update(id, type)` had zero call sites in the renderer — so no plugin and no theme could be updated from the UI, only bundled plugins self-upgrading at launch. Fixes ROADMAP:725 (themes) and the same bug for plugins.
+- desktop + Android read /catalog first, index.json fallback; installs pin to the catalog's commit and record it; member installs its bundle
+- Android verified by android-ci.yml on this PR (no SDK on the dev machine)
+- **the Update badge is now a button.** It never was: the label was a plain span with no handler, and `update(id, type)` had zero call sites in the renderer — so no plugin and no theme could be updated from the UI, nothing outside the bundled-plugin launch path. Fixes ROADMAP:736 (themes) and the same bug for plugins.
 - prompts install under their marketplace id and no longer report updates they did not perform
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
@@ -3453,7 +3697,7 @@ git push origin --delete feat/marketplace-overhaul-ui; git branch -D feat/market
 
 - [ ] **Step 4: Archive + ROADMAP (workspace repo)**
 
-Move `docs/active/specs/2026-08-28-marketplace-overhaul-ui-design.md`, this plan and the three original plans it consolidates (`2026-08-28-marketplace-feedback-worker.md`, `2026-08-28-marketplace-catalog-service.md`, `2026-08-28-marketplace-app-wiring.md`), and `docs/active/investigations/2026-08-27-marketplace-strategy.md` to `docs/archive/` with `status: shipped`; flip the ROADMAP overhaul entry to `[x]` with the merge SHAs; leave the "public sub-registry" entry open. Commit by explicit path; push.
+Move `docs/active/specs/2026-08-28-marketplace-overhaul-ui-design.md`, this plan and the three original plans it consolidates (`2026-08-28-marketplace-feedback-worker.md`, `2026-08-28-marketplace-catalog-service.md`, `2026-08-28-marketplace-app-wiring.md`), and `docs/active/investigations/2026-08-27-marketplace-strategy.md` to `docs/archive/` with `status: shipped`; flip the ROADMAP overhaul entry to `[x]` with the merge SHAs; leave the "public sub-registry" entry open. Add the follow-ups this plan hands off that are **not** on the ROADMAP yet (checked 2026-08-30): per-item install of a bundle member (spec §1.4/§5); member descriptions from each `SKILL.md`'s frontmatter (~2,000 raw fetches, only when the bundle's HEAD moved); "No longer listed" on the Library row with the catalog-only guard from Task 22; the dead-favourite cleanup if Task 22 chose "leave it". Commit by explicit path; push.
 
 ---
 
