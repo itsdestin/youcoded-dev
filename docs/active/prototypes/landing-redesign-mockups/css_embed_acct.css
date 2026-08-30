@@ -1,0 +1,34 @@
+
+/* ---- live demo: the real app, booted in an iframe, themed with the page ---- */
+/* No overflow:hidden here: a rounded CLIP on any ancestor of the iframe makes
+   Chrome ignore the app's own glass cutout and blur the entire window (framed
+   wallpaper themes). Radius stays for the border + shadow shape; the matching
+   content rounding is injected INSIDE the iframe (see bootEmbed). */
+.frame.embed{overflow:visible;background:transparent}
+.embed-stage{position:relative;aspect-ratio:16/10}
+.embed-poster,.embed-iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.embed-poster{object-fit:cover;border-radius:var(--radius)}
+/* The iframe is present but invisible until it has loaded; .live swaps it in
+   over the poster so the visitor never sees a blank white frame. */
+.embed-iframe{opacity:0;transition:opacity .35s}
+.embed.live .embed-iframe{opacity:1}
+.embed.live .embed-poster,.embed.live .embed-start{display:none}
+/* Until the first click the iframe ignores the pointer so page scroll passes through. */
+.embed.live:not(.interactive) .embed-iframe{pointer-events:none}
+.embed-interact{position:absolute;inset:0;z-index:2;width:100%;height:100%;background:transparent;border:0;cursor:pointer;font:inherit;color:transparent}
+.embed-interact::after{content:"Click to try it";position:absolute;left:50%;top:62%;transform:translate(-50%,-50%);padding:8px 16px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:13px;font-weight:600;backdrop-filter:blur(6px)}
+.embed.interactive .embed-interact{display:none}
+.embed-start{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;padding:12px 26px;border-radius:999px;
+  font:inherit;font-weight:700;font-size:.9rem;background:var(--accent);color:var(--on-accent);border:0;cursor:pointer;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .15s}
+.embed-start:hover{transform:translate(-50%,-50%) scale(1.05)}
+
+/* ---- account cards: the whole card is the link ---- */
+.acct{display:block;color:inherit;text-decoration:none;cursor:pointer;
+  transition:transform .18s,box-shadow .18s,border-color .18s}
+.acct:hover,.acct:focus-visible{transform:translateY(-3px);border-color:var(--accent);outline:none;
+  box-shadow:0 20px 44px -20px rgba(var(--accent-rgb),.6)}
+.acct:hover .acct-link,.acct:focus-visible .acct-link{text-decoration:underline}
+.acct-link{display:inline-block;margin-top:12px;font-size:.83rem;font-weight:700;color:var(--accent)}
+.acct-alt{display:block;margin-top:5px;font-size:.83rem;font-weight:600;color:var(--accent);opacity:.75;text-decoration:none}
+.acct-alt:hover{opacity:1;text-decoration:underline}

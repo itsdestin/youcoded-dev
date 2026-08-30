@@ -1,0 +1,63 @@
+
+/* ==========================================================================
+   INSTALL-TIPS MODAL
+   Restored from the live page: clicking a platform button opens the
+   "Before you install" guidance (SmartScreen, Gatekeeper, the Linux distro
+   picker, Android sideloading) instead of downloading straight away. The
+   copy and the script are the real ones; only the skin is new.
+   Each variant's stylesheet sets --m-bg / --m-fg / --m-dim / --m-line.
+   ========================================================================== */
+.install-modal{display:none;position:fixed;inset:0;z-index:200}
+.install-modal[data-open]{display:block}
+.install-modal-scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.install-modal-panel{position:relative;max-width:620px;margin:6vh auto;max-height:88vh;overflow-y:auto;
+  background:var(--m-bg);color:var(--m-fg);border:1px solid var(--m-line);border-radius:18px;
+  padding:34px 34px 0;box-shadow:0 40px 90px -30px rgba(0,0,0,.8);
+  -webkit-backdrop-filter:blur(30px) saturate(1.4);backdrop-filter:blur(30px) saturate(1.4)}
+.install-modal-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:9px;
+  border:1px solid var(--m-line);background:transparent;color:var(--m-dim);font-size:1.2rem;
+  line-height:1;cursor:pointer;display:grid;place-items:center}
+.install-modal-close:hover{color:var(--m-fg)}
+.install-modal-title{font-size:1.3rem;font-weight:800;letter-spacing:-.025em;margin-right:40px}
+.install-modal-intro{margin-top:14px;color:var(--m-dim);font-size:.94rem}
+.install-modal-section{margin-top:20px}
+.install-modal-section ol{margin:0;padding-left:20px;font-size:.92rem;color:var(--m-fg)}
+.install-modal-section li{margin-bottom:9px;line-height:1.55}
+.install-modal-section li:last-child{margin-bottom:0}
+.install-modal-section strong{font-weight:700}
+.install-modal-section code,.install-modal-note code{
+  font-family:var(--font-mono);font-size:.84em;padding:2px 6px;border-radius:5px;
+  background:rgba(127,127,127,.18);border:1px solid var(--m-line)}
+.install-modal-note{margin-top:14px;padding:12px 14px;border-radius:10px;font-size:.87rem;
+  color:var(--m-dim);border:1px solid var(--m-line);background:rgba(127,127,127,.10)}
+.install-modal-details{margin-top:20px;border-top:1px solid var(--m-line);padding-top:14px}
+.install-modal-details summary{cursor:pointer;list-style:none;font-weight:700;font-size:.95rem;
+  display:flex;align-items:center;gap:9px}
+.install-modal-details summary::-webkit-details-marker{display:none}
+.install-modal-details summary::before{content:'\25B8';color:var(--accent);transition:transform .18s}
+.install-modal-details[open] summary::before{transform:rotate(90deg)}
+/* Linux distro picker */
+.distro-picker{margin-top:18px;border:1px solid var(--m-line);border-radius:12px;padding:14px 16px}
+.distro-picker legend{padding:0 6px;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--accent)}
+.distro-option{display:flex;gap:11px;align-items:flex-start;padding:8px 0;cursor:pointer}
+.distro-option input{margin-top:4px;accent-color:var(--accent)}
+.distro-option-text{display:flex;flex-direction:column}
+.distro-option-label{font-weight:600;font-size:.9rem}
+.distro-option-hint{font-size:.79rem;color:var(--m-dim)}
+/* sticky footer so the button is always reachable in a long list of steps */
+.install-modal-footer{position:sticky;bottom:0;margin:22px -34px 0;padding:16px 34px;
+  background:var(--m-solid);border-top:1px solid var(--m-line);
+  border-radius:0 0 18px 18px;display:flex;justify-content:flex-end}
+.install-modal-download-btn{background:var(--accent);color:var(--on-accent);text-decoration:none;
+  padding:12px 24px;border-radius:999px;font-weight:700;font-size:.92rem}
+.install-modal-download-btn[data-initiated]{opacity:.6;pointer-events:none}
+@media(max-width:700px){
+  .install-modal-panel{margin:0;max-height:100vh;border-radius:0;padding:26px 20px 0}
+  .install-modal-footer{margin:20px -20px 0;padding:14px 20px;border-radius:0}
+}
+
+/* The author display:flex above would beat the hidden attribute (UA rule);
+   the iOS popup hides the footer because there is nothing to download. */
+.install-modal-footer[hidden]{display:none}

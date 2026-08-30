@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouCoded landing page — compare</title>
+<link rel="icon" href="favicon-dark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Deliberately neutral shell — grey, no colour of its own — so it doesn't
+   tint your read of six pages that are all about colour. */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bar:56px;--ink:#0B0C0E;--ink2:#131519;--line:rgba(255,255,255,.10);
+      --tx:#EDEFF2;--dim:#8A9099;--hi:#5EA9F0}
+html,body{height:100%}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--ink);color:var(--tx);overflow:hidden}
+.bar{height:var(--bar);display:flex;align-items:center;gap:14px;padding:0 14px;
+  background:var(--ink2);border-bottom:1px solid var(--line);position:relative;z-index:2}
+.title{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.tabs{display:flex;gap:6px;overflow-x:auto;flex:1}
+.tabs::-webkit-scrollbar{height:0}
+.tab{display:flex;align-items:baseline;gap:7px;padding:8px 11px;border-radius:8px;cursor:pointer;
+  background:transparent;border:1px solid transparent;color:var(--dim);white-space:nowrap;
+  font-family:inherit;font-size:.86rem;transition:.15s}
+.tab:hover{background:rgba(255,255,255,.05);color:var(--tx)}
+.tab.on{background:rgba(255,255,255,.09);border-color:var(--line);color:var(--tx)}
+.tab .k{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--hi);font-weight:500}
+.tab .n{font-weight:700}
+.tab .d{font-size:.74rem;color:var(--dim);font-weight:400}
+.tab.on .d{color:#A7AEB7}
+.sep{width:1px;height:26px;background:var(--line);flex:none;margin:0 2px}
+.hint{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#5C636C;white-space:nowrap}
+.stack{position:absolute;inset:var(--bar) 0 0 0}
+iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--ink);
+  opacity:0;pointer-events:none}
+iframe.on{opacity:1;pointer-events:auto}
+.spinner{position:absolute;inset:var(--bar) 0 0 0;display:grid;place-items:center;
+  color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em}
+.spinner[hidden]{display:none}
+@media(max-width:1200px){.tab .d{display:none}}
+@media(max-width:760px){.title,.hint{display:none}}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <span class="title">Landing page</span>
+  <div class="tabs" id="tabs"></div>
+  <span class="hint">1&ndash;9</span>
+</div>
+<div class="stack" id="stack"></div>
+<div class="spinner" id="spinner" hidden>loading&hellip;</div>
+
+<script>
+// Newest first — the four header arrangements of D (all share the Skin look),
+// then the other two skins, then the first round.
+var VARIANTS = [
+  { key:'D1', file:'mockup-d1-centred.html',   name:'Centred',    desc:'stacked' },
+  { key:'D2', file:'mockup-d2-split.html',     name:'Split',      desc:'text left, app right' },
+  { key:'D3', file:'mockup-d3-appfirst.html',  name:'App first',  desc:'huge app' },
+  { key:'D4', file:'mockup-d4-themefirst.html',name:'Theme first',desc:'swatches lead' },
+  { sep:true },
+  { key:'E', file:'mockup-e-liquid.html',    name:'Liquid',    desc:'' },
+  { key:'F', file:'mockup-f-frame.html',     name:'Frame',     desc:'' },
+  { sep:true },
+  { key:'A', file:'mockup-a-editorial.html', name:'Editorial', desc:'' },
+  { key:'B', file:'mockup-b-theater.html',   name:'Theater',   desc:'' },
+  { key:'C', file:'mockup-c-bento.html',     name:'Bento',     desc:'' }
+];
+
+var tabsEl = document.getElementById('tabs');
+var stack  = document.getElementById('stack');
+var spin   = document.getElementById('spinner');
+var items  = VARIANTS.filter(function(v){ return !v.sep; });
+var frames = {}, buttons = {}, current = null;
+
+VARIANTS.forEach(function(v){
+  if (v.sep) { var s = document.createElement('span'); s.className = 'sep'; tabsEl.appendChild(s); return; }
+  var b = document.createElement('button');
+  b.className = 'tab'; b.type = 'button';
+  b.innerHTML = '<span class="k">' + v.key + '</span><span class="n">' + v.name +
+                '</span>' + (v.desc ? '<span class="d">' + v.desc + '</span>' : '');
+  b.onclick = function(){ select(v.key); };
+  tabsEl.appendChild(b);
+  buttons[v.key] = b;
+});
+
+// Each page loads only the first time you open its tab (they pull real video),
+// then stays in the DOM so its scroll position survives tab switching.
+function select(key){
+  if (key === current) return;
+  var v = items.filter(function(x){ return x.key === key; })[0];
+  if (!v) return;
+  if (!frames[key]) {
+    var f = document.createElement('iframe');
+    f.title = 'Variant ' + key + ' — ' + v.name;
+    f.src = v.file;
+    spin.hidden = false;
+    f.addEventListener('load', function(){ spin.hidden = true; }, { once:true });
+    stack.appendChild(f);
+    frames[key] = f;
+  }
+  Object.keys(frames).forEach(function(k){ frames[k].classList.toggle('on', k === key); });
+  Object.keys(buttons).forEach(function(k){ buttons[k].classList.toggle('on', k === key); });
+  current = key;
+  location.hash = key;
+  try { frames[key].contentWindow.focus(); } catch(e){}
+}
+
+addEventListener('keydown', function(e){
+  if (e.target !== document.body && e.target !== document.documentElement) return;
+  var i = items.map(function(x){ return x.key; }).indexOf(current);
+  if (e.key >= '1' && e.key <= String(items.length)) { select(items[+e.key - 1].key); }
+  else if (e.key === 'ArrowRight') { select(items[(i + 1) % items.length].key); }
+  else if (e.key === 'ArrowLeft')  { select(items[(i - 1 + items.length) % items.length].key); }
+});
+
+var start = (location.hash || '').replace('#','').toUpperCase();
+select(items.some(function(x){ return x.key === start; }) ? start : 'D1');
+</script>
+</body>
+</html>

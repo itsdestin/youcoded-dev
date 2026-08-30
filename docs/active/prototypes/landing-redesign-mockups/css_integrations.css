@@ -1,0 +1,26 @@
+
+/* ==========================================================================
+   INTEGRATIONS (restored)
+   Chips wrap into a block; clicking one reveals its description underneath.
+   Icons are the original SVGs from docs/icons/.
+   ========================================================================== */
+.integrations-intro{opacity:.8;font-size:.98rem}
+.integrations-tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}
+.integration-tag{display:inline-flex;align-items:center;gap:9px;padding:9px 15px;border-radius:999px;
+  border:1px solid var(--m-line, rgba(127,127,127,.3));background:rgba(127,127,127,.10);
+  font:inherit;font-size:.87rem;font-weight:600;color:inherit;cursor:pointer;transition:.15s}
+.integration-tag:hover{border-color:var(--accent);background:rgba(127,127,127,.18);transform:translateY(-1px)}
+.integration-tag.active{border-color:var(--accent);background:var(--accent);color:var(--on-accent)}
+.integration-tag.active .tag-icon{filter:none}
+.integration-tag.soon{opacity:.55;cursor:default;font-style:italic;font-weight:500}
+.integration-tag.soon:hover{transform:none;border-color:var(--m-line, rgba(127,127,127,.3))}
+.tag-icon{width:17px;height:17px;flex:none}
+/* Reserve the space the description will occupy so opening one doesn't shove
+   the rest of the page down — the old version jumped on every click. */
+.integration-desc{margin-top:16px;min-height:0;font-size:.94rem;opacity:0;max-height:0;overflow:hidden;
+  transition:opacity .2s, max-height .25s, padding .2s;padding:0 16px}
+.integration-desc.visible{opacity:1;max-height:220px;padding:14px 16px;
+  border-left:3px solid var(--accent);background:rgba(127,127,127,.10);border-radius:0 10px 10px 0}
+.integration-desc-name{color:var(--accent);font-weight:700}
+.integrations .prereq-note{margin-top:20px;font-size:.88rem;opacity:.7}
+.integrations .prereq-note strong{opacity:1}

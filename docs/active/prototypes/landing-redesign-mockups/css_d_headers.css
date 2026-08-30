@@ -1,0 +1,58 @@
+
+/* ==========================================================================
+   HEADER ARRANGEMENTS (D1–D4)
+   Only the block above "More than a chatbot." differs. The "Try it / Click
+   around, I guess." heading is gone from all four — the app speaks for itself.
+   ========================================================================== */
+.hero-app{margin-top:30px}
+.hero .embed{position:relative;aspect-ratio:16/10}
+.hero .embed img{width:100%;height:100%;object-fit:cover}
+.embed .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--accent);
+  color:var(--on-accent);padding:12px 26px;border-radius:999px;font-weight:700;font-size:.9rem;
+  box-shadow:0 12px 30px -8px rgba(var(--accent-rgb),.7)}
+
+/* --- D2 SPLIT ------------------------------------------------------------ */
+/* The app runs off the right edge of the window: it reads as a real screen
+   sitting on the desktop rather than a picture pasted into a column. */
+.hero-split{padding:calc(var(--nav-h) + 68px) 0 0}
+.split-in{display:grid;grid-template-columns:minmax(400px,45%) 1fr;align-items:center;gap:48px;
+  max-width:1560px;margin:0 auto;padding-left:max(30px,calc((100vw - var(--wide)) / 2))}
+.hero-split h1,.hero-split .hero-sub,.hero-split .kicker,.hero-split .hero-note{text-align:left}
+.hero-split .hero-sub{margin-left:0;max-width:480px}
+.hero-split .dlrow{justify-content:flex-start;gap:8px}
+.hero-split .dlbtn{padding:11px 15px;font-size:.85rem}
+.hero-split .dlbtn svg{width:15px;height:15px}
+.hero-split h1{font-size:clamp(2.8rem,5.2vw,4.6rem)}
+.split-app .embed{min-width:820px;aspect-ratio:16/10}
+.split-app .frame{border-right:none;border-radius:var(--radius) 0 0 var(--radius)}
+
+/* --- D3 APP FIRST -------------------------------------------------------- */
+/* Minimal type, a very large app, and the download row on a glass bar that
+   sits half-overlapping the bottom of the screen. */
+.hero-appfirst{padding:calc(var(--nav-h) + 46px) 0 0}
+.hero-appfirst h1{font-size:clamp(2.6rem,5.4vw,4.4rem)}
+.hero-appfirst .hero-sub{font-size:1.06rem;margin-top:12px}
+.hero-appfirst .hero-app{margin-top:28px}
+.dlbar{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center;
+  margin:-34px auto 0;position:relative;z-index:2;width:fit-content;max-width:100%;
+  padding:16px 22px;border-radius:999px}
+.dlbar-label{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  opacity:.65;white-space:nowrap}
+.dlbar .dlrow{margin-top:0}
+.dlbar .hero-note{margin-top:0;white-space:nowrap}
+
+/* --- D4 THEME FIRST ------------------------------------------------------ */
+/* The swatches move out of the nav and become the page's headline control. */
+body:has(.hero-themefirst) .nav .swatches{display:none}
+.themebar{margin-top:26px;margin-bottom:6px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.themebar-label{font-size:.92rem;opacity:.8;text-shadow:0 1px 12px rgba(var(--canvas-rgb),.9)}
+.swatches-big{gap:9px;padding:9px;border-radius:999px}
+.swatches-big .sw{width:34px;height:34px}
+.swatches-big .sw span{inset:6px}
+
+@media(max-width:1000px){
+  .split-in{grid-template-columns:1fr;padding:0 30px}
+  .split-app .embed{min-width:0}
+  .split-app .frame{border-right:1px solid var(--hair);border-radius:var(--radius)}
+  .dlbar{margin-top:20px;border-radius:var(--radius)}
+}
