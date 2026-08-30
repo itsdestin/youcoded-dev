@@ -8,7 +8,7 @@ paths:
   - "youcoded/desktop/src/renderer/state/artifact-tool-use-tracker.ts"
   - "youcoded/desktop/src/renderer/state/ArtifactContext.tsx"
   - "youcoded/desktop/src/shared/artifacts/**"
-last_verified: 2026-08-13
+last_verified: 2026-08-30
 verify:
   - test: youcoded/desktop/tests/artifacts/artifact-tool-use-tracker.test.ts
   - path: youcoded/desktop/src/main/artifacts/artifact-store.ts
@@ -34,6 +34,10 @@ verify:
   - test: youcoded/desktop/tests/artifacts/canonicalize.test.ts
   - test: youcoded/desktop/tests/artifacts/cas-write.test.ts
   - test: youcoded/desktop/tests/ipc-channels.test.ts
+  - test: youcoded/desktop/tests/missing-artifacts-cache.test.tsx
+  - test: youcoded/desktop/tests/session-drawer-settle-hold.test.tsx
+  - path: youcoded/desktop/src/renderer/hooks/useMissingArtifacts.ts
+    contains: "NEVER cleared before"
   - test: youcoded/desktop/tests/deliverable-auto-open.test.ts
   - test: youcoded/desktop/tests/deliverables-card.test.tsx
   - path: youcoded/desktop/src/renderer/state/deliverable-auto-open.ts
@@ -58,7 +62,7 @@ Files Claude touches are tracked in per-project sidecars + a central index. Stat
 
 ## Paths & counts
 - **Project list = saved folders (`youcoded-folders.json`), NOT the central index.** `buildSavedFolderProjects` reuses an index entry by canonical path, else synths one whose `id` IS the path (id-as-path fallback is traversal-guarded).
-- **Two single-source count helpers:** `countArtifacts` vs `countAllFiles` — don't recompute inline (282-vs-1209 drift). Badge subtracts orphans via `checkExistence`.
+- **Two single-source count helpers:** `countArtifacts` vs `countAllFiles` — don't recompute inline (282-vs-1209 drift). Badge AND drawer subtract orphans via ONE shared cwd-keyed cache (`hooks/useMissingArtifacts.ts`), never cleared before its replacement lands — per-component copies flashed deleted rows on every drawer open · depth: `youcoded/docs/artifacts.md` → Orphan detection.
 - **`canonicalize()` is the sole source of truth for path equality** (TS + Kotlin, shared fixture).
 
 ## Concurrency
