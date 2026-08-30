@@ -8,6 +8,7 @@ reviews:
   - docs/active/plans/2026-08-28-marketplace-feedback-worker.md
   - docs/active/plans/2026-08-28-marketplace-catalog-service.md
   - docs/active/plans/2026-08-28-marketplace-app-wiring.md
+note: the last two plans above were consolidated 2026-08-30 into docs/active/plans/2026-08-30-marketplace-overhaul-remaining-work.md
 applied: 2026-08-28
 ---
 

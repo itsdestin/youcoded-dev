@@ -1,11 +1,18 @@
 ---
-status: active
+status: superseded
+superseded: 2026-08-30
+superseded_by: docs/active/plans/2026-08-30-marketplace-overhaul-remaining-work.md
 created: 2026-08-28
 spec: docs/active/specs/2026-08-28-marketplace-overhaul-ui-design.md
-part: 3 of 3 (app wiring) — needs 2026-08-28-marketplace-catalog-service.md deployed first; 2026-08-28-marketplace-feedback-worker.md is independent
+part: 3 of 3 (app wiring) — consolidated into the plan named in `superseded_by`; its tasks are now Phases 1, 3, 4 and 5
 ---
 
 # Marketplace App Wiring Implementation Plan
+
+> **SUPERSEDED 2026-08-30.** Every unfinished task in this document was moved, renumbered
+> and re-ordered into **`docs/active/plans/2026-08-30-marketplace-overhaul-remaining-work.md`**,
+> which is now the only authoritative plan for the remaining marketplace work. This file is
+> kept for history; do not implement from it.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

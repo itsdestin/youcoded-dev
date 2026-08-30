@@ -3,14 +3,16 @@ status: shipped
 created: 2026-08-28
 shipped: 2026-08-28
 spec: docs/active/specs/2026-08-28-marketplace-overhaul-ui-design.md
-part: 1 of 3 (feedback routes) — see also 2026-08-28-marketplace-catalog-service.md, 2026-08-28-marketplace-app-wiring.md
+part: 1 of 3 (feedback routes) — the remaining two parts were consolidated into 2026-08-30-marketplace-overhaul-remaining-work.md
 ---
 
 # Marketplace Feedback (thumbs + comments) Implementation Plan
 
 > **SHIPPED 2026-08-28.** Worker: `wecoded-marketplace` PRs #71, #72, #73 — all merged and
 > deployed green, routes hand-verified against production. App: committed on `youcoded`
-> branch `feat/marketplace-overhaul-ui`, unmerged pending Plans 2–3.
+> branch `feat/marketplace-overhaul-ui`, unmerged pending the rest of the overhaul —
+> **`docs/active/plans/2026-08-30-marketplace-overhaul-remaining-work.md`**, which supersedes
+> Plans 2 and 3 and is the only live plan for what is left.
 >
 > **What hand-verification found that this plan did not predict.** Every item below was
 > invisible to 229 Worker tests and a green desktop gate; each was caught by voting in a dev

@@ -285,7 +285,7 @@ Remaining decisions, in order:
    weeks** before the filter even has its inputs. Docker's ~320 servers fill the Connections
    tab with better data (declared secrets, allowed hosts, volumes, OAuth) at ~1% of the cost.
    A "show all" toggle is therefore moot for now; revisit it with Layer E, where the full
-   corpus is the point. See `2026-08-28-marketplace-catalog-service.md` → Deferred.
+   corpus is the point. See `2026-08-30-marketplace-overhaul-remaining-work.md` → Deferred.
 4. **Gate model for community submissions**: bot-first with human escalation (Obsidian) —
    the only model a one-person team can staff. Full human review (Raycast/Codex) doesn't
    scale; zero-gate auto-index is what got ClawHub owned.
