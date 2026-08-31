@@ -47,6 +47,10 @@ To ship a worker change:
 
 If you need to flip a `[vars]` value (e.g. `CUTOVER_TIMESTAMP`), commit it to `wrangler.toml` and merge — same auto-deploy path. Wrangler `secret put` is for secrets only and lives in CI's `Push secrets` step (`MARKETPLACE_GH_CLIENT_ID`, `MARKETPLACE_GH_CLIENT_SECRET`, `KNOWN_DEV_DEVICES`, etc.). Adding a new secret means a Repo → Settings → Secrets entry plus a one-line addition to the workflow's `Push secrets` step.
 
+**The catalog ingest is a SECOND workflow in that repo, and it is scheduled** (`catalog-ingest.yml`, hourly at :13, shipped 2026-08-31). It rebuilds what the app reads from four upstream sources and posts it to the Worker; `wecoded-marketplace/docs/catalog.md` is the reference. Two things a release-time reader needs:
+- **`CATALOG_ENABLED` is a release-grade lever.** Set it to `"0"` in `wrangler.toml`, commit, merge: `GET /catalog` answers 503 and both apps fall back to `index.json` silently, with no user-visible error. That is the way to stop a bad catalog reaching every device within the hour, without shipping code under pressure.
+- **A red run of that workflow IS the alarm** — `build.mjs` exits non-zero on any source erroring, being refused by the retire guard, or seeing zero rows, and GitHub emails the owner. There is no other alert. The gap it cannot cover: GitHub silently disables `schedule:` triggers after 60 days of repo inactivity, and a dead cron just freezes the catalog. `GET /admin/catalog/health` is the manual check. This is the repo's **first** scheduled workflow, so that rule has never applied here before.
+
 ## Local dev loop (desktop)
 
 The supported way to iterate on desktop changes while the installed/built app stays open for real work:
