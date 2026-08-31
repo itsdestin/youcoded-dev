@@ -144,6 +144,39 @@ Headless Chrome for your own verification is expected.
     from. `CYCLER_JS` re-measures on `document.fonts.ready`.
 16. **`--embed-fade` goes in the SVG mask, never an overlay.** Nothing can paint
     the page's wallpaper back over an iframe, and a clip would set off landmine 1.
+17. **The mask is TWO layers now** (2026-08-31): the rounded-rect SVG, rebuilt only
+    on resize/theme change, intersected with a CSS gradient whose stop is
+    `--fade-stop`. Re-encoding the whole SVG data URL per scroll step is what made
+    the hero's fade-back-in feel rough. Scroll writes ONE property; measured 0 SVG
+    rebuilds across 100 scroll steps, down from ~50.
+18. **Anything scroll-driven must be rAF-coalesced.** `placeFloat` reads three
+    rects and four computed styles; running it straight off the `scroll` listener
+    forces a synchronous layout on every wheel tick.
+19. **A centred pill changes width when the theme changes**, because each theme
+    brings its own webfont. Measured: the download row was 765.6 / 751.4 / 749.0px
+    across the four picker themes, i.e. an 8px sideways hop on every mascot click.
+    Fix is `lockPillWidth()` -- measure every picker theme's font after
+    `document.fonts.ready` and pin the widest. Lock BOTH boxes; pinning only the
+    download pill still left 2.4px.
+20. **`body.fade-d .dlfloat` (0,2,0) outranks a bare `.dlfloat` in the narrow
+    media query.** The phone-width layout never applied: the row stayed absolutely
+    positioned and went FIXED as soon as you scrolled. Same shape as landmine 14.
+21. **The deck's `remeasure()` ran during the intro and before the fonts landed,
+    and nothing re-ran it.** Cached `base` was 1773 against a true 1710, so every
+    card activated 63px late and every card's fade came off a ladder that did not
+    exist. It now re-runs on `fonts.ready`, on `load`, at 3.2s, and from a
+    ResizeObserver on `.decktext`.
+22. **Deck playback is its OWN index, and it is a LIST.** A card climbs 913px
+    before it parks, so tying `play()` to the park left every demo frozen on its
+    poster for most of a screen-height; and during a hand-off two cards are on
+    screen with neither faded, so one running clip froze the one you were reading.
+    Clips run once half the card is on screen and stop at `--d > 0.7`; at most two
+    at a time. `preload="none"` also means nothing is fetched until asked, so
+    `warm()` fetches one clip ahead.
+23. **The first clip used to start at page load and never rewind.** `onDeck()`
+    runs at script time, `show(0)` played it 1,700px above the fold, and `show()`
+    short-circuits on `i === cur` -- so the first demo a visitor ever saw was
+    already mid-story. The playback list is `[]` until the deck is approaching.
 
 ## Decisions locked with Destin (don't reopen)
 

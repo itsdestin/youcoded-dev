@@ -3,6 +3,25 @@
 import json, io, os
 import os
 BASE = os.path.dirname(os.path.abspath(__file__))  # portable: run from wherever this file lives
+
+# ---------------------------------------------------------------------------
+# COPY VARIANT (2026-08-31). `python3 build.py` emits the page as agreed;
+# `YC_VARIANT=b python3 build.py` emits mockup-landing-b.html with different
+# WORDS and a different card ORDER, and nothing else -- same skin, same header,
+# same clips, same layout, so the only thing being compared is the argument.
+#
+# Why a whole second process rather than a parameter: BODY and DEMOS are
+# module-level f-strings evaluated at import, so the copy they close over is
+# fixed the moment this file is read. Re-running the module in a fresh process
+# with a different VARIANT is a two-line change; deferring those f-strings into
+# functions is a refactor of a 1,400-line generator mid-iteration.
+#
+# Variant B's thesis, from the 2026-08-31 competitive review: the page leads with
+# claims every rival also makes (any model, free, open source, works on your
+# files, asks permission) and buries the three things NO rival has. B inverts
+# that order and cuts the repetition -- measured on A: the model story appears
+# 6 times, "free and open source" 6, "runs locally" 5, "asks permission" 5.
+VARIANT = os.environ.get('YC_VARIANT', 'a')
 THEMES = json.load(open(BASE + '/themes.json'))
 
 FEATURES = [
@@ -18,6 +37,49 @@ FEATURES = [
 ]
 ROADMAP = ("Roadmap","Hand it off.","Set up a job once — what to do, which tools it may use, where to stop and check with you — then run it on a schedule or send it from your phone. Results and approvals land in an inbox. First: run now and scheduled runs. Later: kick off from an incoming email or a changed file.")
 
+# ---------------------------------------------------------------------------
+# VARIANT B copy. Same nine clips, reordered so the page opens on the only
+# capability a visitor can PICTURE and the platform breadth six of eight rivals
+# cannot match, and closes on the developer material. Card 3 is the one the
+# review found buried: user tags, private notes and one-tap prompt buttons are
+# each held by ZERO of the eight competitors surveyed 2026-08-31.
+# ---------------------------------------------------------------------------
+if VARIANT == 'b':
+    FEATURES = [
+ ("Real work, edited live","Hand it a spreadsheet, get something you can actually read.","Attach a file and ask for what you want out of it. The assistant reads it, builds the page, and hands it back in the panel beside the conversation — where you can open it, change it yourself, and watch the change take effect.","row2-artifact-edit"),
+ ("Works everywhere","A real app on Windows, macOS, Linux and Android.","Not a browser tab — an app on every machine you own, plus any browser by connecting to a computer running it. Your conversations and files sync through your own private GitHub, so there is no server of ours in the middle holding your work.","row5-follow"),
+ ("Nobody else does this","Your own tags. Your own notes.","On your computer, colour-code conversations however you like and leave a private note on any of them. Pin what matters and hide what you are done with, on any device — nothing is ever deleted. And the prompts you use every day sit above the message box as buttons, not commands you have to remember.","row4-organized"),
+ ("Genuinely useful","Give it a task and it does real work, with boundaries you can trust.","It reads your files, writes new ones, develops repeatable skills and workflows, searches the web, and helps you manage your computer and your life more efficiently. Permission modes let you restrict the model to match your level of comfort.","row2-does-things"),
+ ("Any model, and what it costs","Switch mid-conversation. Watch the meter.","Hundreds of models through OpenRouter, Claude on the plan you already pay for, or a private one running offline on your own computer. The status bar is yours to build: nineteen widgets covering how much of your plan is left, what this conversation has cost, how much room the model has, and more.","row1-any-ai"),
+ ("Logical management","Project view keeps your files, conversations, and assistant instructions organized.","Open spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.","row3-projects"),
+ ("Make it yours","Describe a look. Install a plugin. Share both.","Build a theme by describing it — wallpapers, colours, mascots — then send it to a friend. The marketplace carries our own plugins for journaling, a personal encyclopedia and calendar and email, plus every Claude Code plugin, installable in one tap.","row6-yours"),
+ ("Play while it works","Chess, Connect Four, Flappy Bird and 2048.","Long tasks take a minute. Play a friend at chess or Connect Four in the side panel, or beat your own score at Flappy Bird and 2048 with a friend leaderboard behind it. See who is online, and get back to the answer when it is ready.","row7-play"),
+ ("For builders","Use the Claude plan you already pay for.","Run Claude Code as a first-class session next to the app's own agent — your existing Pro or Max subscription, not per-token billing. Review, stage and commit changes without leaving the window. Connect tools over MCP. Download and run local models with a GPU-fit check.","row8-builders"),
+    ]
+    ROADMAP = ("Roadmap","Hand it off.","Set up a job once — what to do, which tools it may use, where to stop and check with you — then run it on a schedule or start it from your phone. \u201cEvery morning at 8, summarise my new GitHub issues and ping me if any look urgent.\u201d Results and approvals land in an inbox.")
+    ABOUT_P2 = ("It runs as a real app on Windows, macOS, Linux and Android \u2014 not a website \u2014 and your "
+                "conversations, files and settings move between them through your own private GitHub. "
+                "Nothing passes through a server of ours, because there isn't one.")
+    ABOUT_P3 = ("You pick the AI behind it: Claude on a plan you already pay for, hundreds of cloud models "
+                "through one OpenRouter account, or a free model running offline on your own machine. And the "
+                "app is meant to be extended by the people using it \u2014 skills, tools and themes are built by "
+                "describing what you want, which is how this entire app was built in the first place.")
+    INTEG_INTRO = "With skills from the WeCoded marketplace, YouCoded can link with services like these:"
+    KICKER = "Free &middot; Open source &middot; Windows, Mac, Linux &amp; Android"
+    SUBTITLE = "It works in your own files, does the task, and hands back something you can open and edit yourself."
+else:
+    ABOUT_P2 = ("With YouCoded, you can utilize OpenRouter to access any AI model from any provider including "
+                "Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and more. YouCoded also allows you to "
+                "download and run open source AI models on your own device, if your hardware supports it.")
+    ABOUT_P3 = ("YouCoded is built to become a fully-modular and open source assistant platform, as the app "
+                "itself integrates the ability for all users to build and share skills, tools, themes, and app "
+                "improvements. Because YouCoded was designed from the ground up to be improved by individuals "
+                "with no coding or development interest, it can quickly outpace development of competing closed "
+                "agents in a way that is driven by what users really want.")
+    INTEG_INTRO = "With skills from the WeCoded marketplace, YouCoded can link with all of the following services:"
+    KICKER = "Free &middot; Open source &middot; BYO model"
+    SUBTITLE = "A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way."
+
 FAQ = [
  ("How is this different from ChatGPT or claude.ai?","Those are chat websites. YouCoded Assistant is an app on your computer and phone that works in your own files — it opens, edits, and organizes them, runs tasks, and searches the web — and you choose the AI behind it: Claude, hundreds of cloud models, or one that runs locally for free."),
  ("Do I have to pay for anything?","No. The app is free and open source. A model that runs on your own computer costs nothing. If you want Claude, that's a Claude Pro or Max plan from Anthropic; if you want other cloud models, OpenRouter bills per use."),
@@ -27,6 +89,19 @@ FAQ = [
  ('Is "agentic" AI safe?',"The app asks before it changes anything, and every standing permission you grant is listed on one screen where you can revoke it. AI still makes mistakes, so keep an eye on what it's doing — and be careful with full-auto mode, which lets it act without asking."),
  ("Who built this?","So far, it's just me (Destin). However, my intention is for this open-source project to become something we all build together. I believe one of the greatest potential goods of AI comes from its ability to revolutionize the world of open-source software. This project is just one example of what AI can allow us to create: an app owned by nobody, improved by everybody — all without anyone needing to learn how to code or even understand what “open-source” is. No profit motive, no ulterior incentives — just people making cool shit and sharing it with other people :)"),
 ]
+
+if VARIANT == 'b':
+    # A's answer argues against 2023's ChatGPT. Both ChatGPT's desktop app and
+    # Claude Cowork reach local files now, so "those are chat websites" is no
+    # longer true and a reader who knows that stops trusting the rest of the page.
+    # B contrasts on the three things that ARE still true and checkable.
+    FAQ[0] = ("How is this different from ChatGPT or claude.ai?",
+              "Those are chat products, and their newer desktop versions can reach some of your files. "
+              "YouCoded is a full app that works in your own folders on Windows, macOS, Linux and Android \u2014 "
+              "opening, editing and organizing your real files, running tasks and searching the web. You choose "
+              "the AI behind it: Claude, hundreds of cloud models, or one that runs on your own computer for "
+              "free. And your conversations and files sync through your own private GitHub rather than a "
+              "company's servers.")
 
 ACCOUNTS = [
  ("GitHub",["Required","Free"],"Keeps your conversations and files in sync across devices and delivers marketplace updates. Sign up with your Google or Apple account.","Create a GitHub account &rarr;","https://github.com/signup",None),
@@ -267,13 +342,13 @@ ADJ_SLOT = '''<span class="word-cycler cy-adj" data-steps="0|1,0|1,-1" aria-hidd
 def flank_header(prefix, words, suffix='', italic_last=False):
     return f'''<header class="hero hero-centred hero-flank" id="top">
   <div class="wrap">
-    <p class="kicker">Free &middot; Open source &middot; BYO model</p>
+    <p class="kicker">{KICKER}</p>
     <div class="flankrow">
       <div class="mrow mrow-l">{mascots(only=PICKER[:2])}</div>
       <h1>{prefix}{cycler(words, italic_last)}{suffix}</h1>
       <div class="mrow mrow-r">{mascots(only=PICKER[2:])}</div>
     </div>
-    <p class="hero-sub">A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way.</p>
+    <p class="hero-sub">{SUBTITLE}</p>
     <div class="dlrow">
         {dl_buttons()}
     </div>
@@ -525,8 +600,8 @@ BODY = f'''
   <div class="panel prose">
     <p class="big">YouCoded is a fully-customizable AI assistant that works with your own files and data to autonomously accomplish tasks. Review and organize large spreadsheets, compile the latest medical or financial research, draft an email or slideshow, or build new features in large coding projects.</p>
     <div class="cols">
-      <p>With YouCoded, you can utilize OpenRouter to access any AI model from any provider including Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and more. YouCoded also allows you to download and run open source AI models on your own device, if your hardware supports it.</p>
-      <p>YouCoded is built to become a fully-modular and open source assistant platform, as the app itself integrates the ability for all users to build and share skills, tools, themes, and app improvements. Because YouCoded was designed from the ground up to improved by individuals with no coding or development interest, it can quickly outpace development of competing closed agents in a way that is driven by what users really want.</p>
+      <p>{ABOUT_P2}</p>
+      <p>{ABOUT_P3}</p>
     </div>
     <p class="permission">Nothing happens without your permission. YouCoded Assistant asks before it acts.</p>
   </div>
@@ -540,7 +615,7 @@ BODY = f'''
 <section id="integrations"><div class="wrap">
   <p class="eyebrow">Integrations</p><h2>Connect your services.</h2>
   <div class="panel integrations">
-    <p class="integrations-intro">With skills from the WeCoded marketplace, YouCoded can link with all of the following services:</p>
+    <p class="integrations-intro">{INTEG_INTRO}</p>
     <div class="integrations-tags">
     <button class="integration-tag" tabindex="0" data-desc="YouCoded can automatically back up your journal entries, Encyclopedia, and system files to Google Drive — keeping everything safe and synced across sessions."><img class="tag-icon" src="icons/google-drive.svg" alt="">Google Drive</button>
     <button class="integration-tag" tabindex="0" data-desc="YouCoded can create, read, and edit documents — drafting cover letters, memos, reports, and more directly in Google Docs."><img class="tag-icon" src="icons/google-docs.svg" alt="">Google Docs</button>
@@ -713,11 +788,25 @@ function syncEmbedTheme(){
 // The page must NOT clip the iframe with overflow/clip-path (Chrome smears
 // the app's glass blur over the whole window), and rounding from INSIDE the
 // app hits the same bug one level down. What does work: a mask-image on the
-// wrapper — an SVG rounded rectangle regenerated at the embed's current size.
-// Set while the reveal is animating, so maskEmbed() draws that frame's fade
-// instead of the variant's resting one. A mask cannot be CSS-transitioned, so
-// the reveal steps the gradient stop and regenerates the data URL each frame.
-var embedFade = null;
+// wrapper.
+//
+// TWO mask layers, intersected (2026-08-31). Layer 1 is the rounded rectangle,
+// an SVG data URL that only has to be rebuilt when the embed's SIZE or the
+// theme's corner RADIUS changes. Layer 2 is a plain CSS gradient whose stop is
+// the custom property --fade-stop. The dissolve therefore costs ONE property
+// write per frame instead of re-encoding and re-rasterising a data URL, which
+// is what made the scroll reveal stutter: the old maskEmbed() rebuilt the whole
+// SVG on every scroll event, inside an unthrottled listener.
+var embedFade = null;     // null = use the variant's resting --embed-fade
+var maskRect = '', maskW = 0, maskH = 0, maskRad = -1, maskRest = 1;
+function setFadeStop(fz){
+  if (!embed) return;
+  // A stop at 100 percent is a no-op gradient, so the resting "no dissolve"
+  // case costs nothing extra.
+  embed.style.setProperty('--fade-stop', (fz * 100).toFixed(2) + String.fromCharCode(37));
+}
+// Rebuild layer 1 and re-attach both layers. Cheap enough on resize/theme
+// change; never called from the scroll path.
 function maskEmbed(){
   if (!embed) return;
   var b = embed.getBoundingClientRect();
@@ -728,22 +817,26 @@ function maskEmbed(){
   // height; 1 means no dissolve. It goes in the MASK, not an overlay: nothing
   // can paint the page's wallpaper back over an iframe, and a clip would set
   // off the blur-smear bug this whole mask exists to avoid.
-  var fz = parseFloat(getComputedStyle(embed).getPropertyValue('--embed-fade'));
-  if (!(fz > 0)) fz = 1;
-  if (embedFade !== null) fz = embedFade;
-  var grad = '', fill = '';
-  if (fz < 1) {
-    grad = '<defs><linearGradient id="ef" x1="0" y1="0" x2="0" y2="1">' +
-           '<stop offset="' + fz.toFixed(3) + '" stop-color="#fff" stop-opacity="1"/>' +
-           '<stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>';
-    fill = ' fill="url(#ef)"';
+  maskRest = parseFloat(getComputedStyle(embed).getPropertyValue('--embed-fade'));
+  if (!(maskRest > 0)) maskRest = 1;
+  if (w !== maskW || h !== maskH || rad !== maskRad) {
+    maskW = w; maskH = h; maskRad = rad;
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">' +
+              '<rect width="'+w+'" height="'+h+'" rx="'+rad+'" ry="'+rad+'" fill="#fff"/></svg>';
+    maskRect = 'url("data:image/svg+xml,'+encodeURIComponent(svg)+'")';
+    var pc = String.fromCharCode(37);
+    var layers = maskRect + ', linear-gradient(to bottom, #fff var(--fade-stop, 100' + pc + '), transparent 100' + pc + ')';
+    embed.style.webkitMaskImage = layers; embed.style.maskImage = layers;
+    embed.style.webkitMaskSize = '100' + pc + ' 100' + pc + ', 100' + pc + ' 100' + pc;
+    embed.style.maskSize = embed.style.webkitMaskSize;
+    embed.style.webkitMaskRepeat = 'no-repeat, no-repeat';
+    embed.style.maskRepeat = 'no-repeat, no-repeat';
+    // Safari spells the intersect operator differently and only understands it
+    // on the -webkit- property.
+    embed.style.webkitMaskComposite = 'source-in';
+    embed.style.maskComposite = 'intersect';
   }
-  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">' + grad +
-            '<rect width="'+w+'" height="'+h+'" rx="'+rad+'" ry="'+rad+'"'+fill+'/></svg>';
-  var url = 'url("data:image/svg+xml,'+encodeURIComponent(svg)+'")';
-  embed.style.webkitMaskImage = url; embed.style.maskImage = url;
-  embed.style.webkitMaskSize = '100' + String.fromCharCode(37) + ' 100' + String.fromCharCode(37);
-  embed.style.maskSize = embed.style.webkitMaskSize;
+  setFadeStop(embedFade !== null ? embedFade : maskRest);
 }
 var maskTimer = null;
 if (embed) {
@@ -801,11 +894,15 @@ function bootEmbed(){
 // bottom of the window once its own resting spot would have scrolled off.
 var dlFloat = document.querySelector('.dlfloat'), heroApp = document.querySelector('.hero-app');
 var forceDock = false, DOCK_GAP = 34, restBottom = 0;
-// How far past the docking point the page must scroll for the embed's dissolve
-// to lift completely.
-var REVEAL_SPAN = 300, lastK = null, demoRevealed = false;
+var demoRevealed = false, lastFz = null;
+// Below 820px the pill is not a floating object at all -- it sits in the flow
+// under the demo. The docked rule is `body.fade-d .dlfloat.docked`, which
+// OUTRANKS the media query's `position:static`, so without this guard a narrow
+// window turned the row into a fixed overlay the moment you scrolled.
+var wideMQ = matchMedia('(min-width: 821px)');
 function placeFloat(){
   if (!dlFloat || !heroApp || getComputedStyle(dlFloat).display === 'none') return;
+  if (!wideMQ.matches) { dlFloat.classList.remove('docked', 'hidden'); return; }
   var h = dlFloat.offsetHeight;
   var hr = heroApp.getBoundingClientRect();
   // Where it WOULD sit: .dlfloat is bottom:-1 percent of .hero-app, i.e. it hangs
@@ -820,33 +917,96 @@ function placeFloat(){
   var dock = forceDock || natTop < dockTop;
   dlFloat.classList.toggle('docked', dock);
 
-  // The dissolve lifts once the pill has visibly parted company with the embed.
-  // Anchored on the embed's own bottom edge passing the docked pill, NOT on the
-  // docking moment: the pill docks while the embed's bottom is still below the
-  // fold, so anchoring there meant the hidden state was already lifting by the
-  // time it first came into view.
-  if (!demoRevealed) {
-    var rest = parseFloat(getComputedStyle(embed).getPropertyValue('--embed-fade'));
-    if (rest > 0 && rest < 1) {
-      var k = Math.max(0, Math.min(1, (innerHeight - DOCK_GAP - hr.bottom) / REVEAL_SPAN));
-      // Quantised: below this the mask is regenerated dozens of times a second
-      // for a change nobody can see.
-      if (lastK === null || Math.abs(k - lastK) > 0.012) {
-        lastK = k;
-        embedFade = rest + (1 - rest) * k;
-        maskEmbed();
-      }
-    }
+  // --- The dissolve heals as the dissolved band scrolls up past the pill.
+  // Anchored on the embed's own BOTTOM EDGE relative to the TOP of the docked
+  // pill, and spanning the height of the dissolved band itself. Two things this
+  // fixes, both measured 2026-08-31 at 1728x1080:
+  //   * the old anchor (the hero's bottom vs the docking line) was already at
+  //     k=0.007 at rest, so the demo started un-dissolving on the FIRST wheel
+  //     notch -- there was never a moment of the pill simply floating in the fade;
+  //   * the old 300px span finished the reveal at scrollY 305, by which point the
+  //     window being revealed was already sliding off the top of the screen.
+  // Now it starts once the fade's own top edge reaches the pill and ends when the
+  // whole band has passed it, so the healing tracks the thing you are watching.
+  if (!demoRevealed && embed && maskRest < 1) {
+    var er = embed.getBoundingClientRect();
+    var band = Math.max(120, er.height * (1 - maskRest));   // the dissolved strip
+    var k = Math.max(0, Math.min(1, ((innerHeight - DOCK_GAP - h) - er.bottom) / band));
+    k = k * k * (3 - 2 * k);                                // ease in AND out
+    var fz = maskRest + (1 - maskRest) * k;
+    // Quantised only enough to skip sub-pixel writes. The old 0.012 step moved
+    // the gradient's start by 8px at a time on a 672px window, which is what
+    // read as the fade "stepping"; a property write is cheap enough to do at
+    // 30x that resolution.
+    if (lastFz === null || Math.abs(fz - lastFz) > 0.0004) { lastFz = fz; embedFade = fz; setFadeStop(fz); }
   }
   // The footer carries the page's real download call to action; a floating copy
   // of it on top of that reads as a bug.
   var f = document.querySelector('footer');
   dlFloat.classList.toggle('hidden', !!f && f.getBoundingClientRect().top < innerHeight - 40);
 }
+// One pass per animation frame, never one per scroll EVENT. placeFloat reads
+// three rects and four computed styles; running it straight off the listener
+// forces a synchronous layout on every wheel tick, which is the other half of
+// why the reveal felt rough.
+var floatQueued = false;
+function queueFloat(){
+  if (floatQueued) return;
+  floatQueued = true;
+  requestAnimationFrame(function(){ floatQueued = false; placeFloat(); });
+}
 if (dlFloat) {
   placeFloat();
-  addEventListener('scroll', placeFloat, { passive: true });
-  addEventListener('resize', placeFloat);
+  addEventListener('scroll', queueFloat, { passive: true });
+  addEventListener('resize', queueFloat);
+}
+
+// --- Stop the pill sliding sideways when the theme changes.
+// Every theme carries its own webfont, so the five platform labels re-measure
+// on each mascot click and the pill -- which is centred -- slides. Measured
+// 2026-08-31: 765.6px in Comfortaa, 751.4 in Nunito, 749.0 in DM Sans, i.e. an
+// 8px sideways hop every time you pick a mascot. Pin the pill to the widest of
+// the four picker themes so its box never changes again.
+// Read off the picker itself rather than duplicating the list -- and CORE_JS is
+// percent-formatted, so a third interpolation slot here would be a build break.
+var PICKER_SLUGS = [].slice.call(document.querySelectorAll('.mascot')).map(function(m){ return m.dataset.theme; });
+function lockPillWidth(){
+  // BOTH boxes in the row, not just the download pill: "Try Demo" re-measures
+  // too, and locking only one still left 2.4px of slide.
+  var boxes = [].slice.call(document.querySelectorAll('.dlpill, .trypill'));
+  if (!boxes.length || getComputedStyle(dlFloat).display === 'none') return;
+  // Narrow layout wraps the chips onto several lines, so a pinned width there
+  // would fight the wrap instead of steadying anything.
+  if (!wideMQ.matches) { boxes.forEach(function(b){ b.style.width = ''; }); return; }
+  var root = document.documentElement, saved = root.style.getPropertyValue('--font-theme');
+  var max = boxes.map(function(){ return 0; });
+  PICKER_SLUGS.forEach(function(slug){
+    var t = THEMES[slug]; if (!t) return;
+    root.style.setProperty('--font-theme', t.font || "'DM Sans', system-ui, sans-serif");
+    boxes.forEach(function(b, i){ var w = b.getBoundingClientRect().width; if (w > max[i]) max[i] = w; });
+  });
+  if (saved) root.style.setProperty('--font-theme', saved); else root.style.removeProperty('--font-theme');
+  boxes.forEach(function(b, i){
+    if (max[i] > 0) { b.style.width = Math.ceil(max[i]) + 'px'; b.style.justifyContent = 'center'; }
+  });
+}
+if (dlFloat) {
+  // Every picker theme's webfont has to be in the document before the widths
+  // mean anything -- a width measured in the fallback face is the WRONG number
+  // (the same trap as the headline cycler's, landmine 15).
+  PICKER_SLUGS.forEach(function(slug){
+    var t = THEMES[slug];
+    if (t && t.fontUrl && !fontLinks[t.fontUrl]) {
+      var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = t.fontUrl;
+      document.head.appendChild(l); fontLinks[t.fontUrl] = 1;
+    }
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ lockPillWidth(); placeFloat(); });
+  else lockPillWidth();
+  addEventListener('resize', function(){
+    document.querySelectorAll('.dlpill, .trypill').forEach(function(b){ b.style.width = ''; });
+    lockPillWidth();
+  });
 }
 
 var tryPill = document.querySelector('.trypill');
@@ -862,13 +1022,16 @@ if (tryPill && embed) {
     embed.classList.add('interactive');
     document.querySelector('.hero-app').classList.add('revealed');
     demoRevealed = true; forceDock = true; placeFloat();
-    var from = parseFloat(getComputedStyle(embed).getPropertyValue('--embed-fade')) || 1;
+    // Start from whatever the scroll has already healed, not from the variant's
+    // resting value -- otherwise pressing Try Demo part-way down the page snaps
+    // the dissolve BACK before clearing it.
+    var from = (embedFade !== null ? embedFade : maskRest) || 1;
     var t0 = performance.now(), DUR = 520;
     (function step(now){
       var k = Math.min(1, (now - t0) / DUR);
       k = 1 - Math.pow(1 - k, 3);
       embedFade = from + (1 - from) * k;
-      maskEmbed();
+      setFadeStop(embedFade);
       if (k < 1) requestAnimationFrame(step);
     })(t0);
   });
@@ -920,42 +1083,83 @@ if (dotsEl) {
   dots = [].slice.call(dotsEl.children);
 }
 var cur = -1;
-function show(i){
-  if (i === cur) return;
-  var prev = cur; cur = i;
-  slides.forEach(function(s, n){ s.classList.toggle('on', n === i);
+// Which clip is RUNNING. Deliberately separate from `cur` (which card's copy is
+// showing): in the deck a card slides most of a screen-height up before it parks
+// at its rest line, and tying playback to the park moment left every demo frozen
+// on its poster for that whole climb. Measured 2026-08-31 at 1728x1080: 913px of
+// scrolling between a card appearing and its clip being told to play.
+var playing = [], deckDrivesVideo = false;
+// Which clips are RUNNING. A LIST, not one index, and deliberately separate from
+// `cur` (which card's copy is showing). Two things forced both choices, both
+// measured 2026-08-31 at 1728x1080:
+//   * a deck card climbs 913px before it parks at its rest line, and playback was
+//     tied to the park, so every demo sat frozen on its poster for that whole
+//     climb -- most of a screen-height of looking at a still picture;
+//   * during a hand-off TWO cards are on screen and neither is faded yet, so a
+//     single running clip meant the one you were still reading froze the moment
+//     the next one arrived.
+function playSlides(list){
+  if (list.length === playing.length && list.every(function(n, i){ return n === playing[i]; })) return;
+  var was = playing; playing = list;
+  slides.forEach(function(s, n){
+    if (s.tagName !== 'VIDEO') return;
+    if (list.indexOf(n) < 0) { s.pause(); return; }
+    if (was.indexOf(n) >= 0) return;   // already running -- do NOT restart it
     // Rewound on activation, not resumed. A clip that carries on from wherever
     // it was left shows a visitor the middle of a demo they have not seen the
     // start of, and it drifts out of step with the phone overlay beside it.
-    if (s.tagName === 'VIDEO') {
-      if (n === i) { try { s.currentTime = 0; } catch (e) {} s.play().catch(function(){}); }
-      else s.pause();
-    } });
+    warm(s); try { s.currentTime = 0; } catch (e) {} s.play().catch(function(){});
+  });
+  // Nothing is fetched for a clip until it is asked to play (preload="none" keeps
+  // the page light -- ten clips is about 3MB), so the one AFTER the last running
+  // clip is fetched now. Without it the first moments of every demo are a still
+  // poster while the file arrives.
+  var next = list.length ? list[list.length - 1] + 1 : 0;
+  if (slides[next]) warm(slides[next]);
   // The phone overlay is deliberately NOT a slide (it would shift every card's
   // clip by one), so nothing above starts it. Without this it sat on its poster
-  // forever while the desktop clip beside it played. Restarted from 0 together
-  // with its partner: the two are different lengths, so left free-running they
-  // drift apart and stop reading as the same conversation on two devices.
-  document.querySelectorAll('.deck-phone video').forEach(function(v){
-    var n = +v.closest('.deck-phone').getAttribute('data-phone-for');
-    if (n !== i) { v.pause(); return; }
-    // The pair is the SAME take at two sizes, so they cover the same story --
-    // but the encodes come out slightly different lengths (frame timing, not
-    // content). Playing the phone at duration-ratio speed makes it traverse its
-    // whole clip in exactly the desktop clip's time, so the two stay on the same
-    // moment for the whole loop instead of drifting apart after the first pass.
-    var desk = slides[i];
-    function lock(){
-      if (v.duration && desk && desk.duration) {
-        v.playbackRate = Math.max(0.5, Math.min(2, v.duration / desk.duration));
-      }
-    }
-    lock();
-    v.addEventListener('loadedmetadata', lock, { once: true });
-    if (desk) desk.addEventListener('loadedmetadata', lock, { once: true });
+  // forever while the desktop clip beside it played.
+  document.querySelectorAll('.deck-phone').forEach(function(ph){
+    var v = ph.querySelector('video'); if (!v) return;
+    var n = +ph.getAttribute('data-phone-for');
+    if (list.indexOf(n) < 0) { v.pause(); return; }
+    if (was.indexOf(n) >= 0) return;
+    warm(v); lockRate(v, slides[n]);
     try { v.currentTime = 0; } catch (e) {}
     v.play().catch(function(){});
   });
+}
+function playSlide(i){ playSlides(i >= 0 ? [i] : []); }
+// The pair is the SAME take at two sizes, so they cover the same story -- but the
+// encodes come out slightly different lengths (frame timing, not content). Playing
+// the phone at duration-ratio speed makes it traverse its whole clip in exactly the
+// desktop clip's time, so the two stay on the same moment for the whole loop
+// instead of drifting apart after the first pass.
+function lockRate(v, desk){
+  function lock(){
+    if (v.duration && desk && desk.duration) {
+      v.playbackRate = Math.max(0.5, Math.min(2, v.duration / desk.duration));
+    }
+  }
+  lock();
+  v.addEventListener('loadedmetadata', lock, { once: true });
+  if (desk) desk.addEventListener('loadedmetadata', lock, { once: true });
+}
+// preload="none" means networkState stays EMPTY until something asks. Flipping
+// the attribute and calling load() is what actually starts the fetch.
+function warm(v){
+  if (!v || v.dataset.warm) return;
+  v.dataset.warm = '1';
+  v.preload = 'auto';
+  try { v.load(); } catch (e) {}
+}
+function show(i){
+  if (i === cur) return;
+  var prev = cur; cur = i;
+  slides.forEach(function(s, n){ s.classList.toggle('on', n === i); });
+  // The deck runs its clips off its own, earlier line; every other layout still
+  // starts the clip at the moment the card becomes the active one.
+  if (!deckDrivesVideo) playSlide(i);
   steps.forEach(function(s, n){
     s.classList.toggle('active', n === i);
     // 'past' lets a replaced block leave UPWARDS while the new one arrives from
@@ -1036,6 +1240,20 @@ if (document.querySelector('.demo-deck')) {
   function flowY(n){ return base + n * stride; }
   remeasure();
   addEventListener('resize', function(){ remeasure(); onDeck(); });
+  // remeasure() ran while `body.intro-mode > section` still carried its 34px
+  // rise AND before the web fonts landed, and nothing ever re-ran it. Measured
+  // 2026-08-31: the cached base was 1773 against a true 1710, so every card in
+  // the deck activated 63px later than it should and every card's fade was
+  // computed off a ladder that did not exist. Re-measure once the intro is over
+  // and once the fonts have settled, and let a ResizeObserver catch the rest
+  // (lazy images and the clips themselves change the column's height too).
+  function relayout(){ remeasure(); onDeck(); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+  setTimeout(relayout, 3200);                 // just past the intro's 2.36s + .62s exit
+  addEventListener('load', relayout);
+  if (window.ResizeObserver) new ResizeObserver(relayout).observe(flow);
+  // The deck starts a clip on its OWN line, well before the card parks.
+  deckDrivesVideo = true;
   var onDeck = function(){
     // 'd' is how many card-lengths the scroll has travelled since this card
     // reached the top -- a CONTINUOUS number, not a count of cards on top of it.
@@ -1053,6 +1271,15 @@ if (document.querySelector('.demo-deck')) {
     // off the top as an intact slab. Its distance travelled keeps rising like
     // everything else's, so it dissolves on its way out for free.
     var best = 0, head = scrollY + stick;
+    // A SECOND line, for playback only: a card's clip starts once more than half
+    // the card is on screen, which is roughly 600px of scrolling before it reaches
+    // its rest line. -1 until the deck is actually approaching, so the first clip
+    // does not sit looping 1,700px above the fold from the moment the page loads
+    // (it did, and then never rewound, so the first demo you ever saw was already
+    // mid-story).
+    // The playback line: a card's clip runs once more than half of it is on
+    // screen -- roughly 600px of scrolling before it reaches its rest line.
+    var vidHead = scrollY + innerHeight - steps[0].offsetHeight * 0.5, live = [];
     steps.forEach(function(s, n){
       var y = flowY(n);
       if (head >= y - 2) best = n;
@@ -1071,8 +1298,14 @@ if (document.querySelector('.demo-deck')) {
       d = Math.max(0, Math.min(2.2, d));
       s.style.setProperty('--d', d.toFixed(3));
       s.classList.toggle('buried', d > 0.002);
+      // Running if it has risen far enough AND has not yet dissolved away.
+      // opacity is 1 - d*0.85, so past 0.7 there is little left to watch.
+      if (vidHead >= y && d < 0.7) live.push(n);
     });
     show(best);
+    // Once the whole deck is behind you, nothing should still be looping.
+    var fr = flow.getBoundingClientRect();
+    playSlides(fr.bottom < 0 || fr.top > innerHeight ? [] : live);
   };
   addEventListener('scroll', onDeck, { passive: true }); onDeck();
 }
@@ -1370,6 +1603,8 @@ BUILDS = [
 ]
 for row in BUILDS:
     f, title, css, dflt, hdr = row[:5]
+    if VARIANT != 'a':
+        f = f.replace('.html', '-' + VARIANT + '.html')
     navpicker = row[5] if len(row) > 5 else True
     demo = row[6] if len(row) > 6 else 'theater'
     sheet = open(BASE + '/' + css).read() + MODAL_VARS[css] + MODAL_CSS + INTEG_CSS + EMBED_CSS + FADE_CSS + NAV_CSS
@@ -1378,6 +1613,14 @@ for row in BUILDS:
     js = MODAL_JS + (CYCLER_JS if '{CYCLER}' not in HEADERS[hdr] and 'word-cycler' in HEADERS[hdr] else '')
     body_class = 'intro-mode' if 'word-cycler' in HEADERS[hdr] else ''
     if len(row) > 7 and row[7]: body_class += ' ' + row[7]
-    open(OUT + f, 'w').write(page(title, sheet, dflt, header=hdr, extra_js=js,
-                                  navpicker=navpicker, body_class=body_class, demo=demo))
+    html = page(title, sheet, dflt, header=hdr, extra_js=js,
+                navpicker=navpicker, body_class=body_class, demo=demo)
+    if VARIANT == 'b':
+        # "Safari" appears ZERO times in the marketplace's 339-entry registry
+        # (checked 2026-08-31), and integrations/index.json lists only four
+        # services as available. A chip promising a link that does not exist is
+        # the first thing a sceptic checks.
+        import re as _re
+        html = _re.sub(r'<button class="integration-tag"[^>]*>(?:(?!</button>).)*?Safari</button>\s*', '', html, flags=_re.S)
+    open(OUT + f, 'w').write(html)
     print('wrote', f)

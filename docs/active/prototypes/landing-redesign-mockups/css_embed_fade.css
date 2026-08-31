@@ -3,14 +3,19 @@
    the page, and the download chips move down to float over the dissolve as one
    shared pill, with a small "Try Demo" pill beside it that clears the fade.
 
-   The fade is cut into the SVG mask maskEmbed() already applies for the rounded
-   corners. It is NOT a gradient overlay and NOT overflow/clip-path: a clipping
-   ancestor over this iframe makes Chromium smear the app's own glass blur
-   across the whole demo window. Masks are safe; clips are not.
+   The fade is a MASK, in two intersected layers: the rounded-rectangle SVG that
+   maskEmbed() builds, and a plain CSS gradient whose stop is --fade-stop. It is
+   NOT a gradient overlay and NOT overflow/clip-path: a clipping ancestor over
+   this iframe makes Chromium smear the app's own glass blur across the whole
+   demo window. Masks are safe; clips are not.
+   (Two layers because the scroll reveal used to re-encode the whole SVG data URL
+   on every scroll event -- that, plus an unthrottled listener, is what made the
+   demo's fade-back-in feel rough. Now one scroll frame writes one property.)
    =========================================================================== */
 
 /* Where the dissolve starts, as a fraction of the embed's height. 1 = no fade.
-   Read by maskEmbed() off the computed style, so a variant only sets this. */
+   The RESTING value, read by maskEmbed() off the computed style, so a variant
+   only sets this; the live value the scroll drives is --fade-stop, in percent. */
 .embed{--embed-fade:1}
 /* Round one, parked: A .54 no crop / B .36 no crop / C .58 at 16-by-7.6. */
 body.fade-a .embed{--embed-fade:.54}
@@ -127,8 +132,16 @@ body.fade-c .hero>.wrap>.dlrow,
 body.fade-d .hero>.wrap>.dlrow{display:none}
 
 @media (prefers-reduced-motion:reduce){.trypill .dot{animation:none}}
+/* NARROW: the row stops being a floating object and sits in the flow under the
+   demo. The selectors have to carry the body class -- `body.fade-d .dlfloat`
+   sets position:absolute at specificity (0,2,0) and outranked a bare `.dlfloat`
+   here, so on a phone-width window the row stayed absolutely positioned and
+   then went FIXED the moment you scrolled (same shape as landmine 14). */
 @media(max-width:820px){
-  .dlfloat{position:static;transform:none;flex-wrap:wrap;justify-content:center;margin-top:18px}
+  body.fade-a .dlfloat,body.fade-b .dlfloat,body.fade-c .dlfloat,body.fade-d .dlfloat,
+  body.fade-a .dlfloat.docked,body.fade-b .dlfloat.docked,
+  body.fade-c .dlfloat.docked,body.fade-d .dlfloat.docked{
+    position:static;transform:none;flex-wrap:wrap;justify-content:center;margin-top:18px;bottom:auto}
   .dlpill{flex-wrap:wrap;justify-content:center}
   .embed{--embed-fade:1 !important}
 }

@@ -7,7 +7,7 @@ const [url, prefix, ...times] = process.argv.slice(2);
 const PORT = Number(process.env.CDP_PORT || 9944);
 const profile = mkdtempSync(join(tmpdir(), 'is-'));
 const chrome = spawn('google-chrome-stable', ['--headless=new', `--remote-debugging-port=${PORT}`,
-  `--user-data-dir=${profile}`, '--window-size=1440,900', '--hide-scrollbars',
+  `--user-data-dir=${profile}`, `--window-size=${process.env.VS_W||1440},${process.env.VS_H||900}`, '--hide-scrollbars',
   '--force-device-scale-factor=1', '--no-first-run', '--disable-gpu', 'about:blank'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let list = [];
