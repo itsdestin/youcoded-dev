@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-08-27
 tags: [marketplace, wecoded, plugins, themes, skills, mcp, trust, strategy]
 ---

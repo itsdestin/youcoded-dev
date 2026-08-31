@@ -1,0 +1,198 @@
+/* ===========================================================================
+   HERO FADE (2026-08-31, Destin) — the bottom of the live demo dissolves into
+   the page, and the download chips move down to float over the dissolve as one
+   shared pill, with a small "Try Demo" pill beside it that clears the fade.
+
+   The fade is cut into the SVG mask maskEmbed() already applies for the rounded
+   corners. It is NOT a gradient overlay and NOT overflow/clip-path: a clipping
+   ancestor over this iframe makes Chromium smear the app's own glass blur
+   across the whole demo window. Masks are safe; clips are not.
+   =========================================================================== */
+
+/* Where the dissolve starts, as a fraction of the embed's height. 1 = no fade.
+   Read by maskEmbed() off the computed style, so a variant only sets this. */
+.embed{--embed-fade:1}
+/* Round one, parked: A .54 no crop / B .36 no crop / C .58 at 16-by-7.6. */
+body.fade-a .embed{--embed-fade:.54}
+body.fade-b .embed{--embed-fade:.36}
+body.fade-c .embed{--embed-fade:.58}
+/* Round two (Destin 2026-08-31): halfway between B and C on both axes -- the
+   crop lands between 16/10 and 16/7.6, the dissolve between .36 and .58. */
+body.fade-d .embed{--embed-fade:.47}
+body.fade-d .hero .embed,body.fade-d .embed-stage{aspect-ratio:16/8.8}
+/* C also crops the window itself: the clip is 16/10 and the conversation only
+   fills its top third, so most of what dissolves is empty app. */
+/* BOTH, and .embed needs the .hero prefix to outrank `.hero .embed` in the
+   header sheet. The embed carries its own aspect-ratio -- setting only the
+   stage left a short stage inside a 16/10 box, so the dissolve ran 184px past
+   the app and the app's chrome came out at 57 percent alpha instead of nothing. */
+body.fade-c .hero .embed,body.fade-c .embed-stage{aspect-ratio:16/7.6}
+
+.hero-app{position:relative}       /* the float is positioned against this.
+                                      NEVER add overflow here — see above. */
+
+/* --- the floating row ---------------------------------------------------- */
+/* The markup ships on every flank page; only a fade variant turns it on, so
+   the unmodified landing page keeps its original row above the embed. */
+.dlfloat{display:none}
+body.fade-a .dlfloat,body.fade-b .dlfloat,body.fade-c .dlfloat,body.fade-d .dlfloat{
+  position:absolute;left:50%;transform:translateX(-50%);z-index:3;
+  /* stretch, not center: it is what makes the Try Demo pill exactly as tall as
+     the download pill without either one hard-coding a height. */
+  display:flex;align-items:stretch;gap:12px;
+  transition:opacity .34s ease, transform .34s ease}
+body.fade-a .dlfloat{bottom:15%}
+body.fade-b .dlfloat{bottom:7%}
+body.fade-c .dlfloat{bottom:9%}
+/* The pill hangs just past the embed's bottom edge. At 3.5 percent it spanned 87.5
+   to 96.5 percent of the window and the app's composer sits at 88.5 to 94.5 percent -- i.e.
+   the pill covered the message box completely. This clears it. */
+body.fade-d .dlfloat{bottom:-1%}
+/* The pill hangs past the embed, so the section below needs the clearance the
+   embed's own box no longer provides -- without it the next kicker sat 31px
+   under the pill. */
+body.fade-d .hero-app{margin-bottom:34px}
+/* DOCKED (Destin 2026-08-31). Two ways in: scrolling far enough that the pill's
+   own resting spot would have gone above the bottom of the window, or pressing
+   Try Demo -- which hands the whole embed over to the live app, so the pill has
+   nothing left to float over and gets out of the way downward.
+
+   Positioned by JS, not `position:sticky`: sticky only holds while the element's
+   own PARENT is on screen, and this pill lives inside the hero -- it would come
+   unstuck the moment the hero scrolled past, which is exactly when it is needed.
+
+   The switch is invisible in normal scrolling because the pill's resting spot is
+   already near the bottom of the window when it happens; it only reads as a snap
+   when Try Demo triggers it early. */
+/* Selector must carry a body class too: `body.fade-d .dlfloat` sets the resting
+   position and outranks a bare `.dlfloat.docked` on specificity, so the docked
+   rule silently lost and the pill scrolled away with the page. */
+body.fade-a .dlfloat.docked,body.fade-b .dlfloat.docked,
+body.fade-c .dlfloat.docked,body.fade-d .dlfloat.docked{
+  position:fixed;bottom:24px;top:auto;z-index:65}
+body.fade-a .dlfloat.hidden,body.fade-b .dlfloat.hidden,
+body.fade-c .dlfloat.hidden,body.fade-d .dlfloat.hidden{
+  opacity:0;transform:translateX(-50%) translateY(14px);pointer-events:none}
+/* The page's own floating "up to Download" pill would be a second bottom-centred
+   download control on the same screen. */
+body.fade-d .topcta{display:none !important}
+
+/* One shared pill holding all five platforms, instead of five separate pills.
+   The glass and the hairline belong to the container now; the chips inside are
+   bare so the group reads as a single object. */
+.dlpill{display:flex;align-items:center;gap:4px;padding:7px;border-radius:999px;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(1.5);
+  backdrop-filter:blur(var(--blur)) saturate(1.5);
+  border:1px solid var(--hair);
+  box-shadow:inset 0 1px 0 var(--glass-hi), 0 22px 50px -18px var(--ink)}
+.dlchip{display:flex;align-items:center;gap:9px;padding:12px 19px;border-radius:999px;white-space:nowrap;
+  text-decoration:none;color:var(--fg);font-weight:700;font-size:.92rem;
+  background:transparent;border:1px solid transparent;
+  transition:background .18s, color .18s}
+.dlchip svg{width:18px;height:18px;fill:currentColor}
+.dlchip:hover{background:rgba(var(--fg-rgb),.09)}
+.dlchip.primary{background:var(--accent);color:var(--on-accent);
+  box-shadow:0 10px 26px -10px rgba(var(--accent-rgb),.65)}
+.dlchip.primary:hover{background:var(--accent)}
+
+/* Deliberately much smaller than the download pill: downloading is the page's
+   job, trying the demo is the consolation prize. */
+.trypill{display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:0 21px;border-radius:999px;white-space:nowrap;
+  font:inherit;font-weight:700;font-size:.88rem;color:var(--fg);cursor:pointer;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(1.5);
+  backdrop-filter:blur(var(--blur)) saturate(1.5);
+  border:1px solid var(--hair);
+  box-shadow:inset 0 1px 0 var(--glass-hi), 0 22px 50px -18px var(--ink);
+  transition:transform .18s, border-color .18s}
+.trypill:hover{transform:scale(1.05);border-color:var(--accent)}
+.trypill .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 0 rgba(var(--accent-rgb),.55);animation:trydot 2.6s ease-out infinite}
+@keyframes trydot{0%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),.55)}
+                  70%,100%{box-shadow:0 0 0 9px rgba(var(--accent-rgb),0)}}
+
+/* The whole-embed "Click to try it" overlay keeps its click target, but its
+   label lives at 62% — inside the dissolve, where it would be half-erased and
+   fighting the pill for the same job. */
+body.fade-a .embed-interact::after,
+body.fade-b .embed-interact::after,
+body.fade-c .embed-interact::after,
+body.fade-d .embed-interact::after{display:none}
+/* The old row above the embed is replaced by the floating one, not duplicated. */
+body.fade-a .hero>.wrap>.dlrow,
+body.fade-b .hero>.wrap>.dlrow,
+body.fade-c .hero>.wrap>.dlrow,
+body.fade-d .hero>.wrap>.dlrow{display:none}
+
+@media (prefers-reduced-motion:reduce){.trypill .dot{animation:none}}
+@media(max-width:820px){
+  .dlfloat{position:static;transform:none;flex-wrap:wrap;justify-content:center;margin-top:18px}
+  .dlpill{flex-wrap:wrap;justify-content:center}
+  .embed{--embed-fade:1 !important}
+}
+
+
+/* ===========================================================================
+   ROUND TWO — separating the pills from the wallpaper (Destin 2026-08-31).
+   Four ways of doing it, one per page:
+     pill-ring    thin glass, but a hard dark ring OUTSIDE the light hairline
+     pill-solid   not glass at all — an opaque slab of the theme's own canvas
+     pill-accent  a ring in the theme accent, with a soft glow of the same
+   plus `legend-on`, "DOWNLOAD" straddling the download pill's top border,
+   shown on one page only; it composes with any of the three.
+   =========================================================================== */
+
+/* RING. One light hairline inside, one dark ring outside. A single border can
+   only ever disappear against half the wallpapers it lands on -- a light-on-
+   dark pair reads on both, which is the same trick the app's own chrome uses. */
+body.pill-ring .dlpill,body.pill-ring .trypill{
+  border-color:var(--glass-hi);
+  box-shadow:0 0 0 1.5px rgba(0,0,0,.32), inset 0 1px 0 var(--glass-hi),
+             0 24px 54px -18px var(--ink)}
+
+/* SOLID. Separation by material rather than by line. The blur is dropped
+   entirely: at this opacity it costs paint time and shows nothing. */
+body.pill-solid .dlpill,body.pill-solid .trypill{
+  background:rgba(var(--canvas-rgb),.93);
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+  border:1px solid rgba(var(--fg-rgb),.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 30px 64px -20px var(--ink)}
+body.pill-solid .dlchip:hover{background:rgba(var(--fg-rgb),.10)}
+
+/* ACCENT. The ring is the live theme's accent, so the pill changes colour with
+   the mascot picker and reads as part of the page rather than pasted on it. */
+body.pill-accent .dlpill,body.pill-accent .trypill{
+  border-color:transparent;
+  box-shadow:0 0 0 1.5px rgba(var(--accent-rgb),.9),
+             0 0 24px -2px rgba(var(--accent-rgb),.40),
+             inset 0 1px 0 var(--glass-hi), 0 24px 54px -18px var(--ink)}
+
+/* LEGEND. Its own small chip rather than a notch cut out of the border: the
+   pill is translucent, so there is no opaque colour to repaint the border gap
+   with -- a chip that straddles the edge reads as deliberate, a half-erased
+   line would not. Left-anchored (Destin 2026-08-31) -- it straddles the top edge
+   above the filled Windows chip, which is where he wants it. */
+.dl-legend{display:none}
+body.legend-on .dlpill{position:relative;padding-top:11px}
+/* Centred on the border line, and small enough that half of it still clears the
+   filled Windows chip below (the pill carries 11px of top padding for exactly
+   that reason -- centred at the old size it hung 11px in and collided). */
+body.legend-on .dl-legend{display:block;position:absolute;top:0;left:24px;
+  transform:translateY(-50%);
+  padding:3px 9px;border-radius:999px;line-height:1;
+  font-family:var(--font-mono);font-size:.5rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--fg2);
+  background:rgba(var(--canvas-rgb),.93);
+  border:1px solid rgba(var(--fg-rgb),.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+body.pill-ring.legend-on .dl-legend{border-color:var(--glass-hi);
+  box-shadow:0 0 0 1.5px rgba(0,0,0,.32), inset 0 1px 0 var(--glass-hi)}
+/* OPAQUE, not glass. The accent ring is a box-shadow on the pill and a shadow
+   cannot be notched, so a translucent label lets the line read straight through
+   it -- which is exactly what it looked like. */
+body.pill-accent.legend-on .dl-legend{border-color:transparent;color:var(--fg);
+  background:rgb(var(--canvas-rgb));
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+  box-shadow:0 0 0 1.5px rgba(var(--accent-rgb),.9)}

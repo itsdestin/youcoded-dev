@@ -1,5 +1,7 @@
 ---
 status: shipped
+shipped_on: 2026-08-31
+merged: [youcoded#366, wecoded-marketplace#74]
 created: 2026-08-28
 shipped: 2026-08-28
 spec: docs/active/specs/2026-08-28-marketplace-overhaul-ui-design.md

@@ -85,17 +85,41 @@ body:has(.hero-themefirst) .nav .swatches{display:none}
 .m-art{position:relative;width:58%;height:58%;color:var(--a);
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.30));transition:transform .24s}
 .mascot.m-lg .m-art{width:56%;height:56%}
-/* Name shows on hover / when active — four lookalike silhouettes need a label. */
-.m-name{position:absolute;top:calc(100% + 9px);left:50%;transform:translateX(-50%) translateY(-3px);
-  font-size:11px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;
-  color:var(--fg2);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s}
-.mascot:hover{transform:translateY(-5px)}
-.mascot:hover .m-art{transform:scale(1.06)}
-.mascot:hover .m-name{opacity:.92;transform:translateX(-50%) translateY(0)}
-.mascot:hover .m-chip{box-shadow:0 18px 34px -14px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.34)}
+/* The name is kept in the DOM for screen readers ONLY -- it is never painted
+   (Destin 2026-08-30: a label appearing under the hovered chip read as clutter
+   and shoved the eye down and away from the headline it sits beside). The
+   `title` attribute is gone from the markup for the same reason: it would have
+   put the browser's own tooltip back. */
+.m-name{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* Hover GROWS the chip in place. No translateY: a lift moves the row's optical
+   baseline and makes the four chips look unaligned mid-hover. */
+.mascot:hover{transform:scale(1.10)}
+.mascot:hover .m-chip{box-shadow:0 14px 30px -16px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.34)}
 /* Active = a ring in the theme's OWN accent, so the selected chip announces
-   which colour the page is about to be. */
-.mascot.on .m-chip{border-color:var(--a);box-shadow:0 0 0 2px var(--a),0 16px 30px -14px rgba(0,0,0,.55)}
+   which colour the page is about to be -- plus it rests slightly larger than
+   its neighbours and breathes a halo in that accent, so the row reads as a
+   live control rather than four static icons. Hovering it still grows it
+   further (1.14 > 1.06), so the chip never feels unresponsive. */
+.mascot.on{transform:scale(1.06)}
+.mascot.on:hover{transform:scale(1.14)}
+.mascot.on .m-chip{border-color:var(--a);animation:mascot-breathe 3.8s ease-in-out infinite}
+.mascot.on .m-art{animation:mascot-lean 3.8s ease-in-out infinite}
+/* The pulse runs on the chip's INNER accent wash as well as the outer halo.
+   The outer halo alone was near-invisible for cotton candy: its accent is
+   purple and it sits on a purple sky, so the glow had nothing to read against.
+   The inner wash is over the chip's own glass, which every theme controls. */
+.mascot.on .m-chip::after{animation:mascot-wash 3.8s ease-in-out infinite}
+@keyframes mascot-breathe{
+  0%,100%{box-shadow:0 0 0 2px var(--a), 0 0 0 0 transparent, 0 16px 30px -14px rgba(0,0,0,.55)}
+  50%    {box-shadow:0 0 0 2px var(--a), 0 0 13px 3px var(--a), 0 16px 30px -14px rgba(0,0,0,.55)}}
+@keyframes mascot-wash{0%,100%{opacity:.26}50%{opacity:.44}}
+/* A hair of rotation on the robot itself. Any bigger and it reads as broken;
+   this much only registers as "that one is alive". */
+@keyframes mascot-lean{0%,100%{transform:rotate(-1.1deg)}50%{transform:rotate(1.1deg)}}
+@media (prefers-reduced-motion:reduce){
+  .mascot.on .m-chip,.mascot.on .m-art,.mascot.on .m-chip::after{animation:none}
+  .mascot.on .m-chip{box-shadow:0 0 0 2px var(--a),0 0 10px 2px var(--a),0 16px 30px -14px rgba(0,0,0,.55)}
+  .mascot.on .m-chip::after{opacity:.36}}
 .mascot:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 
 /* ---- M1 FLANK: two either side of the headline ---- */

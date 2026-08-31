@@ -1,5 +1,7 @@
 ---
 status: shipped
+shipped_on: 2026-08-31
+merged: [youcoded#366, wecoded-marketplace#74]
 date: 2026-08-28
 tags: [marketplace, review, catalog, feedback, plans]
 reviews:

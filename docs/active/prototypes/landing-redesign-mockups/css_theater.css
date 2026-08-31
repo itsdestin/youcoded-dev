@@ -58,7 +58,12 @@
   /* Each card stops lower than the one before, so the stack fans and the edges
      of the cards underneath stay visible. --i is set in JS. */
   top:calc(80px + var(--i,0) * var(--fan,12px));
-  display:grid;grid-template-columns:.92fr 1fr;gap:34px;align-items:start;
+  /* 2:1 -- the clip takes two thirds of the card (Destin 2026-08-30). The card
+     has no height of its own: the 16/10 clip sets it, so widening the clip is
+     also what makes the card taller. Both columns must stay IDENTICAL across
+     every card -- the deck's scroll maths derives the whole ladder from card
+     zero's height and assumes a uniform stride. */
+  display:grid;grid-template-columns:2fr 1fr;gap:30px;align-items:start;
   padding:26px 30px;border-radius:var(--radius);
   background:var(--glass-prose);
   -webkit-backdrop-filter:blur(var(--blur-prose)) saturate(1.5);
@@ -68,7 +73,7 @@
   transition:transform .35s ease, opacity .35s ease, filter .35s ease}
 /* Alternate which side the clip is on. The clip is the FIRST child in the DOM,
    so an even card just reorders it and mirrors the column ratio. */
-.demo-deck .step:nth-child(even){grid-template-columns:1fr .92fr}
+.demo-deck .step:nth-child(even){grid-template-columns:1fr 2fr}
 .demo-deck .step:nth-child(even) .deckclip{order:2}
 .demo-deck .step .deckclip{position:relative;aspect-ratio:16/10;border-radius:12px;
   overflow:hidden;border:1px solid var(--hair)}
@@ -82,8 +87,8 @@
 .demo-deck .step .deckcopy{min-width:0}
 /* A card is a much wider column than the original 300px rail, so the copy is
    set bigger here -- it reads better AND it fills more of the card. */
-.demo-deck .step h3{font-size:1.72rem}
-.demo-deck .step p{font-size:1.02rem;margin-top:15px}
+.demo-deck .step h3{font-size:1.44rem;line-height:1.18}
+.demo-deck .step p{font-size:.96rem;margin-top:13px}
 /* The last card still needs a beat stuck at the top, or it never reads as
    joining the pile -- but 46vh of it left 475px of bare wallpaper under the
    final card before the next section (measured 2026-08-30). 16vh is enough for

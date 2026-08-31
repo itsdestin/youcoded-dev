@@ -1,5 +1,7 @@
 ---
 status: superseded
+shipped_on: 2026-08-31
+merged: [youcoded#366, wecoded-marketplace#74]
 superseded: 2026-08-30
 superseded_by: docs/active/plans/2026-08-30-marketplace-overhaul-remaining-work.md
 created: 2026-08-28

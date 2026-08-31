@@ -100,7 +100,7 @@ def mascots(extra='', only=None):
     for slug in (only or PICKER):
         t = THEMES[slug]
         out.append(
-          f'<button class="mascot{extra}" data-theme="{slug}" title="{t["name"]}" '
+          f'<button class="mascot{extra}" data-theme="{slug}" '
           f'aria-label="Use the {t["name"]} look" '
           f'style="--a:{t["accent"]}">'
           f'<span class="m-chip"></span>{_mascot_svg(slug)}'
@@ -195,6 +195,17 @@ CYCLER = ''' <span class="word-cycler" aria-label="Useful, Fun, Yours.">
       </span>'''
 
 
+# The download chips relocated INTO the hero app, floating over the dissolved
+# bottom of the embed (Destin 2026-08-31). Emitted into every flank page; CSS
+# hides whichever of the two rows the variant is not using.
+DLFLOAT = f"""<div class="dlfloat">
+        <div class="dlpill">
+          <span class="dl-legend">Download</span>
+          {dl_buttons('dlchip')}
+        </div>
+        <button class="trypill" type="button"><span class="dot"></span>Try Demo</button>
+      </div>"""
+
 HEADERS = {
 
 # D1 — CENTRED. Type stacked in the middle, buttons, then the live app full width.
@@ -280,7 +291,9 @@ HEADERS = {
     <div class="dlrow">
         {dl_buttons()}
     </div>
-    <div class="hero-app">{EMBED}</div>
+    <div class="hero-app">{EMBED}
+      {DLFLOAT}
+    </div>
   </div>
 </header>''',
 
@@ -616,14 +629,32 @@ function syncEmbedTheme(){
 // the app's glass blur over the whole window), and rounding from INSIDE the
 // app hits the same bug one level down. What does work: a mask-image on the
 // wrapper — an SVG rounded rectangle regenerated at the embed's current size.
+// Set while the reveal is animating, so maskEmbed() draws that frame's fade
+// instead of the variant's resting one. A mask cannot be CSS-transitioned, so
+// the reveal steps the gradient stop and regenerates the data URL each frame.
+var embedFade = null;
 function maskEmbed(){
   if (!embed) return;
   var b = embed.getBoundingClientRect();
   var w = Math.round(b.width), h = Math.round(b.height);
   if (!w || !h) return;
   var rad = parseFloat(getComputedStyle(embed).borderRadius) || 0;
-  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">' +
-            '<rect width="'+w+'" height="'+h+'" rx="'+rad+'" ry="'+rad+'"/></svg>';
+  // --embed-fade is where the bottom starts dissolving, as a fraction of the
+  // height; 1 means no dissolve. It goes in the MASK, not an overlay: nothing
+  // can paint the page's wallpaper back over an iframe, and a clip would set
+  // off the blur-smear bug this whole mask exists to avoid.
+  var fz = parseFloat(getComputedStyle(embed).getPropertyValue('--embed-fade'));
+  if (!(fz > 0)) fz = 1;
+  if (embedFade !== null) fz = embedFade;
+  var grad = '', fill = '';
+  if (fz < 1) {
+    grad = '<defs><linearGradient id="ef" x1="0" y1="0" x2="0" y2="1">' +
+           '<stop offset="' + fz.toFixed(3) + '" stop-color="#fff" stop-opacity="1"/>' +
+           '<stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>';
+    fill = ' fill="url(#ef)"';
+  }
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">' + grad +
+            '<rect width="'+w+'" height="'+h+'" rx="'+rad+'" ry="'+rad+'"'+fill+'/></svg>';
   var url = 'url("data:image/svg+xml,'+encodeURIComponent(svg)+'")';
   embed.style.webkitMaskImage = url; embed.style.maskImage = url;
   embed.style.webkitMaskSize = '100' + String.fromCharCode(37) + ' 100' + String.fromCharCode(37);
@@ -640,6 +671,55 @@ function bootEmbed(){
   start.hidden = true;
   f.addEventListener('load', function(){ embed.classList.add('live'); inter.hidden = false; syncEmbedTheme(); });
   f.src = f.dataset.src + '#t=' + currentTheme;
+}
+// --- The download pill: floats over the embed's dissolve, then docks to the
+// bottom of the window once its own resting spot would have scrolled off.
+var dlFloat = document.querySelector('.dlfloat'), heroApp = document.querySelector('.hero-app');
+var forceDock = false, DOCK_GAP = 24;
+function placeFloat(){
+  if (!dlFloat || !heroApp || getComputedStyle(dlFloat).display === 'none') return;
+  var h = dlFloat.offsetHeight;
+  var hr = heroApp.getBoundingClientRect();
+  // Where it WOULD sit: .dlfloat is bottom:-1 percent of .hero-app, i.e. it hangs
+  // one hundredth of the hero's height past its bottom edge. Reading its own rect
+  // is no good once it is docked -- that returns the docked position.
+  var natTop = hr.bottom + hr.height * 0.01 - h;
+  var dockTop = innerHeight - h - DOCK_GAP;
+  dlFloat.classList.toggle('docked', forceDock || natTop < dockTop);
+  // The footer carries the page's real download call to action; a floating copy
+  // of it on top of that reads as a bug.
+  var f = document.querySelector('footer');
+  dlFloat.classList.toggle('hidden', !!f && f.getBoundingClientRect().top < innerHeight - 40);
+}
+if (dlFloat) {
+  placeFloat();
+  addEventListener('scroll', placeFloat, { passive: true });
+  addEventListener('resize', placeFloat);
+}
+
+var tryPill = document.querySelector('.trypill');
+if (tryPill && embed) {
+  tryPill.addEventListener('click', function(){
+    // Once the pill has docked, the demo it offers is far up the page -- pressing
+    // it there would boot a window nobody can see. Go back to it first.
+    var er = embed.getBoundingClientRect();
+    if (er.bottom < 120 || er.top > innerHeight - 120) {
+      embed.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    bootEmbed();
+    embed.classList.add('interactive');
+    document.querySelector('.hero-app').classList.add('revealed');
+    forceDock = true; placeFloat();
+    var from = parseFloat(getComputedStyle(embed).getPropertyValue('--embed-fade')) || 1;
+    var t0 = performance.now(), DUR = 520;
+    (function step(now){
+      var k = Math.min(1, (now - t0) / DUR);
+      k = 1 - Math.pow(1 - k, 3);
+      embedFade = from + (1 - from) * k;
+      maskEmbed();
+      if (k < 1) requestAnimationFrame(step);
+    })(t0);
+  });
 }
 if (embed) {
   embed.querySelector('.embed-start').addEventListener('click', function(){ bootEmbed(); embed.classList.add('interactive'); });
@@ -900,6 +980,7 @@ HEADER_CSS = open(BASE + '/css_d_headers.css').read()
 INTEG_CSS  = open(BASE + '/css_integrations.css').read()
 THEATER_CSS = open(BASE + '/css_theater.css').read()
 EMBED_CSS  = open(BASE + '/css_embed_acct.css').read()
+FADE_CSS   = open(BASE + '/css_embed_fade.css').read()
 
 def patch_modal(js):
     """iOS popup: same modal shell, no download. Minimal patches to the
@@ -1051,17 +1132,23 @@ CYCLER_JS = r'''
 # have their HEADERS and DEMOS entries below. Adding a line here brings any of
 # them back for a side-by-side.
 BUILDS = [
-    ('mockup-landing.html', 'YouCoded — Landing', 'css_d.css', 'cotton-candy-sky', 'flank', False, 'deck-fade'),
+    # Round two (2026-08-31). Round one's fade-a/b/c are parked in the CSS but no
+    # longer built -- the geometry is settled at fade-d and the open question is
+    # how the pills separate from the wallpaper. Field 8 is the body class.
+    # Settled 2026-08-31: fade-d geometry, accent ring, right-hand DOWNLOAD label.
+    # pill-ring / pill-solid and the legend-centred variant are parked in the CSS.
+    ('mockup-landing.html', 'YouCoded — Landing', 'css_d.css', 'cotton-candy-sky', 'flank', False, 'deck-fade', 'fade-d pill-accent legend-on'),
 ]
 for row in BUILDS:
     f, title, css, dflt, hdr = row[:5]
     navpicker = row[5] if len(row) > 5 else True
     demo = row[6] if len(row) > 6 else 'theater'
-    sheet = open(BASE + '/' + css).read() + MODAL_VARS[css] + MODAL_CSS + INTEG_CSS + EMBED_CSS
+    sheet = open(BASE + '/' + css).read() + MODAL_VARS[css] + MODAL_CSS + INTEG_CSS + EMBED_CSS + FADE_CSS
     if css == 'css_d.css':
         sheet += HEADER_CSS + THEATER_CSS
     js = MODAL_JS + (CYCLER_JS if '{CYCLER}' not in HEADERS[hdr] and 'word-cycler' in HEADERS[hdr] else '')
     body_class = 'intro-mode' if 'word-cycler' in HEADERS[hdr] else ''
+    if len(row) > 7 and row[7]: body_class += ' ' + row[7]
     open(OUT + f, 'w').write(page(title, sheet, dflt, header=hdr, extra_js=js,
                                   navpicker=navpicker, body_class=body_class, demo=demo))
     print('wrote', f)

@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-08-28
 tags: [marketplace, wecoded, plugins, skills, mcp, trust, feedback, ui]
 strategy: docs/active/investigations/2026-08-27-marketplace-strategy.md

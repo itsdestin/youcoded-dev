@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 created: 2026-08-30
 spec: docs/active/specs/2026-08-28-marketplace-overhaul-ui-design.md
 supersedes:
