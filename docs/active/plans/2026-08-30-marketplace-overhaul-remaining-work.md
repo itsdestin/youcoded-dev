@@ -46,10 +46,13 @@ shipped on 2026-08-28**; its own document, `2026-08-28-marketplace-feedback-work
 - Three app fixes that are independent of all of it (the Update button, prompt updates,
   small fixes).
 
-**Known-unverified, inherited:** the Android code written for Plan 1 has never been compiled —
-there is no Android SDK on this machine. It is Kotlin-consistent with its neighbours, nothing
-more. Task 19 is compiled and unit-tested by `android-ci.yml` on the PR instead (Global
-Constraints → App).
+**Corrected 2026-08-31: there IS an Android SDK on this machine**, at `/home/destin/.android-sdk`
+(2.7 GB, platform-35, licences accepted). The earlier "no SDK" conclusion came from testing for
+`ANDROID_HOME` and `local.properties`, both of which are absent while the SDK itself is not.
+Android work is therefore compiled and unit-tested **locally** — 579 tests, `assembleDebug` and
+`assembleReleaseTest` all pass — with
+`JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=/home/destin/.android-sdk ./gradlew test -x bundleWebUi`
+(the system default `java` is 26, which AGP 8.7 rejects). CI remains the second check, not the only one.
 
 **Reading old references.** "Plan 1" in the task bodies below means the shipped feedback work
 above. All other cross-references have been renumbered into this document's single task
@@ -268,12 +271,12 @@ Task 15), so it is now a small copy-and-tooltip change that can ride along with 
   and the curated rails still lag up to a day. That is out of scope; say so rather than
   claiming "new items appear within an hour" of anything but the grid.
 - Every desktop change: `bash scripts/verify.sh marketplace-ui` from the workspace root before
-  "done". Android: **there is no Android SDK on this machine** (no `ANDROID_HOME`, no
-  `local.properties`, confirmed 2026-08-30), so Kotlin is compiled and unit-tested by
-  `android-ci.yml` on the PR (`./gradlew test`, then `assembleDebug`). Write it
-  Kotlin-consistent with its neighbours, push, read CI — and say in the PR that this is how it
-  was verified. If an SDK is present, `cd worktrees/marketplace-ui && ./gradlew test -x bundleWebUi`
-  (the `-x` is mandatory in a hardlinked worktree — see CLAUDE.md).
+  "done". Android: **an SDK IS installed** at `/home/destin/.android-sdk` — the 2026-08-30 "no SDK"
+  finding tested for `ANDROID_HOME`/`local.properties`, which are absent, and missed the SDK
+  itself (corrected 2026-08-31). Compile and unit-test Kotlin **locally** before pushing:
+  `JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=/home/destin/.android-sdk ./gradlew test -x bundleWebUi`
+  (the `-x` is mandatory in a hardlinked worktree — see CLAUDE.md; the system default `java` is
+  26, which AGP 8.7 rejects). `android-ci.yml` on the PR is then confirmation, not the only check.
 - Never guess in error strings: git failures surface `output.slice(0, 200)` verbatim, as the
   installer already does.
 - **Line numbers in this plan are hints, not addresses.** They were read on 2026-08-28 against
@@ -3616,11 +3619,9 @@ class MarketplaceFetcherCatalogTest {
 
 - [ ] **Step 2: Run to see it fail — if you can**
 
-There is no Android SDK on this machine (Global Constraints → App), so the honest sequence is:
-write the test, write the code (Step 3), push, and read `android-ci.yml` on the PR — that run
-is the compile check and the test run. If an SDK *is* present:
-`cd /home/destin/youcoded-dev/worktrees/marketplace-ui && ./gradlew test -x bundleWebUi --tests '*MarketplaceFetcherCatalogTest*'`
-→ compilation FAIL — no `readUrl` parameter.
+An SDK **is** present (Global Constraints → App, corrected 2026-08-31), so run it here:
+`JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=/home/destin/.android-sdk ./gradlew test -x bundleWebUi --tests '*MarketplaceFetcherCatalogTest*'`
+→ compilation FAIL — no `readUrl` parameter. `android-ci.yml` on the PR is the second check.
 
 - [ ] **Step 3: Implement the fetcher**
 
