@@ -1,0 +1,86 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "shots": [
+    {
+      "name": "statusbar",
+      "actions": [],
+      "sameAsBaseline": true,
+      "expect": "[title^='Click to change model']"
+    },
+    {
+      "name": "model-dialog",
+      "actions": [
+        {
+          "click": "[title^='Click to change model']",
+          "settle": 700
+        }
+      ],
+      "expect": "[role=dialog]"
+    },
+    {
+      "name": "providers-local-scrolled",
+      "actions": [
+        {
+          "click": "[title=Settings]",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+          "settle": 900
+        },
+        {
+          "scrollDialog": "bottom"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "expect": "[role=dialog]"
+    },
+    {
+      "name": "resume-browser",
+      "actions": [
+        {
+          "click": "[placeholder^='Message']",
+          "settle": 200
+        },
+        {
+          "type": "/resume"
+        },
+        {
+          "key": "Enter",
+          "settle": 1400
+        }
+      ],
+      "expect": "[placeholder^='Search sessions']"
+    },
+    {
+      "name": "model-list",
+      "actions": [
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('claude via openrouter'))",
+          "settle": 1000
+        },
+        {
+          "click": "js:document.querySelector(\"[title*='click to change model']\")",
+          "settle": 800
+        },
+        {
+          "click": "[aria-label='Model'][aria-haspopup='listbox']",
+          "settle": 700
+        },
+        {
+          "click": "[aria-label='Search all models']",
+          "settle": 200
+        },
+        {
+          "type": "o"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "expect": "js:document.querySelectorAll('[data-model-picker-portal] [aria-pressed]').length >= 5"
+    }
+  ]
+}

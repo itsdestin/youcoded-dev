@@ -1,0 +1,187 @@
+{
+  "title": "Brand-aware model surfaces",
+  "key": "model-brand",
+  "out": "model-brand.html",
+  "images": "images/model-brand",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/mb-before",
+    "after": "/home/destin/youcoded-dev/scratch/mb-after"
+  },
+  "themes": [
+    "midnight",
+    "halftone-dimension",
+    "light"
+  ],
+  "crops": {
+    "statusbar": [
+      "model-brand",
+      "statusbar",
+      "400x36+466+859"
+    ],
+    "chip-dialog": [
+      "model-brand",
+      "model-dialog",
+      "440x340+505+285"
+    ],
+    "list-mark": [
+      "model-brand",
+      "model-list-mark",
+      "460x520+495+265"
+    ],
+    "list-current": [
+      "model-brand",
+      "model-list-current",
+      "460x520+495+265"
+    ],
+    "list-all": [
+      "model-brand",
+      "model-list-all",
+      "460x520+495+265"
+    ],
+    "resume": [
+      "model-brand",
+      "resume-browser",
+      "500x300+485+298"
+    ],
+    "providers": [
+      "model-brand",
+      "settings-model-providers",
+      "440x350+505+235"
+    ],
+    "local-models": [
+      "model-brand",
+      "providers-local-scrolled",
+      "410x350+530+238"
+    ]
+  },
+  "steps": [
+    {
+      "id": "MB-1",
+      "surface": "Model chip",
+      "path": "Status bar",
+      "crop": "statusbar",
+      "highlight": {
+        "box": [
+          5,
+          6,
+          61,
+          88
+        ]
+      },
+      "headline": "The model chip is readable on community themes. Today it is not.",
+      "changed": "Brand colours were only ever written for the four built-in themes. Every community theme quietly fell back to the light set no matter how dark it was. They now follow the theme's own light/dark flag, so a theme nobody has made yet is covered too.",
+      "measured": "all 7 community themes scored under the 4.5:1 readability floor; the 3 dark ones sat at 2.25-2.38:1, and land at 5.9-10.6:1",
+      "notice": "On Halftone Dimension the model name goes from a burnt dark orange you have to squint at to a legible bright one. On Midnight, Dark, Light and Creme nothing moves at all - I checked every colour value on both sides and they are identical, which is why this step only shows the community theme.",
+      "risk": "The light/dark flag is what the theme's author declared, not something measured. A theme that calls itself light but paints a dark panel would still get light colours.",
+      "themes": [
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "MB-2",
+      "surface": "Model list",
+      "path": "Anywhere you pick a model",
+      "variants": [
+        {
+          "id": "mark",
+          "label": "Marks only",
+          "crop": "list-mark",
+          "summary": "Every row gets its company mark in full colour. No model name is ever tinted. The quietest option - the list reads exactly as it does today, just with a logo you can aim at.",
+          "risk": "At a glance the list is still a wall of same-coloured text; the mark is doing all the work."
+        },
+        {
+          "id": "current",
+          "label": "Marks, plus the current model coloured",
+          "crop": "list-current",
+          "summary": "Marks on every row, and the model you are actually on is written in its company colour on the closed button. Colour means 'this is the one you are using', which is what the status bar chip already means.",
+          "risk": "Two things now carry brand colour instead of one, so the rule has to be remembered rather than seen."
+        },
+        {
+          "id": "all",
+          "label": "Every row coloured",
+          "crop": "list-all",
+          "summary": "Marks on every row and every model name written in its company colour. The most scannable by company, and the loudest.",
+          "risk": "A long list becomes many colours at once, which can read as decoration rather than meaning - the confetti problem."
+        }
+      ],
+      "headline": "How far should company colour spread through the model list?",
+      "risk": "Whichever you pick here is the rule applied everywhere else, so it is worth looking at all three."
+    },
+    {
+      "id": "MB-3",
+      "surface": "Model & Effort",
+      "path": "Click the model chip, or type /model",
+      "crop": "chip-dialog",
+      "headline": "Clicking the chip now opens the same model list every other screen uses.",
+      "changed": "The chip used to open a list built only for it - four fixed buttons, no search, no favourites, no filters, and a completely separate list again for local and cloud models. It now opens the shared list, so all of that works from the chip. Effort and Fast are unchanged and still only appear for Claude Code sessions.",
+      "measured": "removes the second of two model lists; 5 other screens already used the shared one",
+      "notice": "Searching, starring a model, and filtering by source all work from the chip for the first time. Local and cloud models appear in one list instead of two separate designs depending on which kind of session you are in.",
+      "risk": "Changing model is a dropdown instead of four buttons, so one extra click - and because the shared list opens on favourites, a fresh install now sees an empty list until you search.",
+      "highlight": {
+        "box": [
+          5,
+          21,
+          88,
+          19
+        ]
+      }
+    },
+    {
+      "id": "MB-4",
+      "surface": "Past conversations",
+      "path": "/resume",
+      "crop": "resume",
+      "headline": "Each past conversation shows which company's model it last ran on.",
+      "changed": "The grey stacked-layers glyph on the card's bottom line becomes the actual company mark. The model name beside it stays grey - the card is a row of five equal facts and colouring one would promote it above the project and the date.",
+      "notice": "Scanning your history for 'the one I did on Claude' or 'the local one' becomes a glance instead of a read.",
+      "risk": "A model whose name gives away no company keeps the old grey glyph, so the column is not uniformly filled."
+    },
+    {
+      "id": "MB-5",
+      "surface": "Model Providers",
+      "path": "Settings, then Model Providers",
+      "crop": "providers",
+      "headline": "Provider rows carry no mark for the providers most people actually have.",
+      "options": [
+        {
+          "id": "services",
+          "label": "Draw marks for the connection services too",
+          "summary": "OpenRouter, Ollama, LM Studio and Hugging Face get their own marks, so a typical provider list is fully marked instead of mostly blank.",
+          "cost": "Four new marks to draw, and to keep current if those companies restyle."
+        },
+        {
+          "id": "direct-only",
+          "label": "Direct keys only - what is already built",
+          "summary": "An Anthropic, OpenAI or Google row you added with your own key gets its mark. OpenRouter and Ollama rows stay plain text.",
+          "measured": "3 of the 5 provider kinds the app supports would show a mark",
+          "cost": "Already written. Your own list would show no marks at all today, since it is OpenRouter and Ollama."
+        },
+        {
+          "id": "leave",
+          "label": "Leave provider rows alone",
+          "summary": "Settings keeps plain text. Marks stay on models, which is where they identify something you choose between.",
+          "cost": "The row change already written gets removed."
+        }
+      ],
+      "risk": "This picture is your provider list as it is today - none of the three options is photographed, because only the first would visibly change it.",
+      "highlight": {
+        "box": [
+          4.5,
+          76,
+          89,
+          14
+        ]
+      }
+    },
+    {
+      "id": "MB-6",
+      "surface": "Local models",
+      "path": "Settings, Model Providers, scroll down",
+      "crop": "local-models",
+      "headline": "Downloadable and installed local models show who trained them.",
+      "changed": "Both lists - the ones you can download and the ones already on this computer - get the company mark, matched from the model's own name. Local weights are published under the lab that trained them, so the name is reliable.",
+      "notice": "Telling a Qwen build from a Gemma build from a Llama build stops depending on reading the filename carefully.",
+      "risk": "The mark narrows the text column by about twenty pixels, so a long description wraps one line further and the row grows taller - visible on the interrupted download in this picture."
+    }
+  ]
+}
