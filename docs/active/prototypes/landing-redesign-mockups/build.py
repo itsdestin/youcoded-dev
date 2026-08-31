@@ -132,13 +132,28 @@ MEDIA_LOCAL = {'row1-any-ai', 'row2-artifact-edit'}
 def _media_dir(key):
     return 'media-local' if key in MEDIA_LOCAL else 'media'
 
+# A second, phone-shaped clip that overlays its row's desktop one. Keyed by
+# media key so a row either has one or does not; the assets are the live site's
+# own (this is the "fake phone thing" from the pre-redesign page, brought back
+# at Destin's request 2026-08-31).
+PHONE = {'row5-follow': 'row5-phone'}
+
 def slides():
     out=[]
     for i,(_,_,_,media) in enumerate(FEATURES):
         on=' class="on"' if i==0 else ''
         extra=''
         d=_media_dir(media)
-        out.append(f'<video{on} data-i="{i}" muted loop playsinline preload="none" poster="{d}/{media}.webp"><source src="{d}/{media}.webm" type="video/webm"></video>')
+        phone=''
+        if media in PHONE:
+            pk = PHONE[media]; pd = _media_dir(pk)
+            # data-phone-for pairs it with the video above; the deck moves the
+            # pair into the card together.
+            phone = (f'<div class="deck-phone" data-phone-for="{i}">'
+                     f'<video muted loop playsinline preload="none" width="390" height="844" poster="{pd}/{pk}.webp" '
+                     f'aria-label="The same conversation on a phone">'
+                     f'<source src="{pd}/{pk}.webm" type="video/webm"></video></div>')
+        out.append(f'<video{on} data-i="{i}" muted loop playsinline preload="none" poster="{d}/{media}.webp"><source src="{d}/{media}.webm" type="video/webm"></video>' + phone)
     out.append('''<div class="sketch" data-i="8">
           <div><div class="k">Agents</div><div class="li on2">Weekly grocery list</div><div class="li">Inbox digest · 7am</div><div class="li">Receipts → spreadsheet</div></div>
           <div><div class="k">Weekly grocery list</div><div class="li">1 · Read this week's plan</div><div class="li">2 · Draft the list</div><div class="li on2">3 · Check with me before ordering</div><div class="li">4 · Send to my phone</div><div class="k" style="margin-top:14px">Inbox</div><div class="li">Needs approval · Weekly grocery list · 2 min ago</div></div>
@@ -894,7 +909,9 @@ applyTheme(%s);
 // wrap-around is written as a conditional instead of modulo.
 var PCT = String.fromCharCode(37);
 var steps  = [].slice.call(document.querySelectorAll('.step'));
-var slides = [].slice.call(document.querySelectorAll('#stage > *'));
+// The phone overlay is a #stage child too but is NOT a slide -- counting it
+// would shift every card's clip by one.
+var slides = [].slice.call(document.querySelectorAll('#stage > *:not(.deck-phone)'));
 var dotsEl = document.getElementById('dots');
 var dots = [];
 if (dotsEl) {
@@ -967,6 +984,8 @@ if (document.querySelector('.demo-deck')) {
     while (st.firstChild) copy.appendChild(st.firstChild);
     var clip = document.createElement('div'); clip.className = 'deckclip';
     if (slides[i]) clip.appendChild(slides[i]);
+    var ph = document.querySelector('.deck-phone[data-phone-for="' + i + '"]');
+    if (ph) clip.appendChild(ph);
     st.appendChild(clip); st.appendChild(copy);
   });
   var depth = document.querySelector('.deck-depth, .deck-fade');
