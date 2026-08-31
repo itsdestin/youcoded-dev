@@ -214,6 +214,24 @@ Headless Chrome for your own verification is expected.
   loop, with hover a scale and never a lift. First cut was twice this and read as
   distracting.
 
+## Decisions locked 2026-08-31 (later)
+
+- **Features deck row 2 is the artifact-edit demo.** Attach a spreadsheet, ask
+  for a chart, open the generated HTML in the panel, change one colour, save,
+  watch it repaint. The workbench half (writable artifacts, the site session's
+  own two files, `chart.jsonl`) is dev-only and lives in the worktree.
+- **The "works everywhere" card has the phone overlay back**, and the phone and
+  desktop clips are ONE TAKE AT TWO SIZES -- same script, same fixture, same
+  holds, 1440x900 and 390x844. They were previously unrelated recordings (20s vs
+  5s, different fixtures). The phone plays at duration-ratio speed so the pair
+  never drifts.
+- **Deck clips rewind on activation** rather than resuming, so a visitor always
+  sees a demo from its start.
+- **`media/` is the LIVE site's asset directory** (a symlink). Everything the
+  redesign records goes in `media-local/` and is listed in `MEDIA_LOCAL`. The
+  live rig's `row5-follow.json` scene is deliberately unmodified for the same
+  reason -- `site-assets.sh` regenerates the real page from it.
+
 ## Working rules
 
 - Deliver files/URLs as plain paths in chat. No claude.ai Artifacts.
