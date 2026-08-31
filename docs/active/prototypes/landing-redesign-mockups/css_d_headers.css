@@ -242,3 +242,50 @@ body.intro-mode > footer{transform:translateY(34px)}
   body.intro-mode .hero-app,body.intro-mode > section,body.intro-mode > footer,
   body.intro-mode > .topcta{opacity:1;pointer-events:auto;transform:none}
   body.intro-mode .flankrow{transform:none}}
+
+
+/* ---- Headline size classes for the wording variants (2026-08-31) ----------
+   The headline sits BETWEEN two mascot groups in a centred flex row, so its
+   usable width is roughly 880px at 1440 -- about 16 characters at the default
+   5.6rem. Longer wordings need a smaller setting or they wrap and push the
+   mascots apart. */
+body.h1-md h1{font-size:clamp(2.5rem,5.4vw,4.3rem)}
+body.h1-sm h1{font-size:clamp(2.1rem,4.4vw,3.5rem)}
+
+/* The resting word can be italic (variant A: "Your Assistant."). <i> and not
+   <em> -- h1's own em rule forces font-style back to normal for the accent
+   word. Weight is inherited, so the 900 italic face has to be in the font
+   request or the browser fakes it by slanting the upright. */
+.cycler-word i{font-style:italic;font-weight:inherit}
+/* Each slot's words carry their own trailing space, so the space must survive
+   collapsing -- pre, not nowrap. */
+.cycler-word,.cycler-sizer{white-space:pre}
+
+/* ---- Two-slot headline (variant A) ---------------------------------------
+   "A" holds still and black through both adjective beats, then bumps out as
+   "Your" bumps in. It is NOT one of the numbered cycler words: those all start
+   hidden and animate IN, and this one starts visible and only animates OUT. */
+.lead-hold{opacity:1;transform:translateY(0);color:var(--fg);
+  animation-name:bump-out;animation-delay:2.18s;animation-duration:.17s;
+  animation-timing-function:linear;animation-fill-mode:forwards}
+@keyframes bump-out{0%{transform:translateY(0);opacity:1}
+                    100%{transform:translateY(-110%);opacity:0}}
+.lead-final{animation-name:bump-final;animation-delay:2.18s;
+  color:var(--accent);-webkit-text-stroke:1.25px var(--accent);paint-order:stroke fill}
+/* Reduced motion and the static path: "Your" simply there, "A" simply gone. */
+@media (prefers-reduced-motion:reduce){.lead-hold{display:none}}
+body.cycler-static .lead-hold{display:none}
+
+/* ---- Flank row at narrow widths (2026-08-31) -----------------------------
+   The two mascot groups are a fixed ~138px each, so the headline's share of the
+   row shrinks faster than the headline's own type does. Measured: the longest
+   wording still fits side-by-side at 1030 and wraps to two lines by 990, so the
+   switch happens at 1020 -- below it the headline takes the whole line and all
+   four chips sit under it as one group. */
+@media(max-width:1020px){
+  .hero-flank .flankrow{flex-wrap:wrap;gap:16px}
+  .hero-flank .flankrow h1{flex:1 0 100%;order:1}
+  .hero-flank .mrow-l{order:2}
+  .hero-flank .mrow-r{order:3}
+  .hero-flank .mascot{width:54px;height:54px;border-radius:17px}
+}

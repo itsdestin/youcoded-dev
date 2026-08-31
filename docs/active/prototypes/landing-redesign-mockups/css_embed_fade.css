@@ -18,7 +18,7 @@ body.fade-b .embed{--embed-fade:.36}
 body.fade-c .embed{--embed-fade:.58}
 /* Round two (Destin 2026-08-31): halfway between B and C on both axes -- the
    crop lands between 16/10 and 16/7.6, the dissolve between .36 and .58. */
-body.fade-d .embed{--embed-fade:.47}
+body.fade-d .embed{--embed-fade:.40}
 body.fade-d .hero .embed,body.fade-d .embed-stage{aspect-ratio:16/8.8}
 /* C also crops the window itself: the clip is 16/10 and the conversation only
    fills its top third, so most of what dissolves is empty app. */
@@ -69,7 +69,7 @@ body.fade-d .hero-app{margin-bottom:34px}
    rule silently lost and the pill scrolled away with the page. */
 body.fade-a .dlfloat.docked,body.fade-b .dlfloat.docked,
 body.fade-c .dlfloat.docked,body.fade-d .dlfloat.docked{
-  position:fixed;bottom:24px;top:auto;z-index:65}
+  position:fixed;bottom:34px;top:auto;z-index:65}
 body.fade-a .dlfloat.hidden,body.fade-b .dlfloat.hidden,
 body.fade-c .dlfloat.hidden,body.fade-d .dlfloat.hidden{
   opacity:0;transform:translateX(-50%) translateY(14px);pointer-events:none}

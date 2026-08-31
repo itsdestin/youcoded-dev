@@ -1,11 +1,11 @@
 ---
 status: active
 created: 2026-08-30
-updated: 2026-08-30
+updated: 2026-08-31
 owner: landing-page redesign — iterate on the chosen direction
 ---
 
-# Handoff: landing-page redesign (checkpoint 2)
+# Handoff: landing-page redesign (checkpoint 3)
 
 Mockup-only redesign of the public landing page
 (https://itsdestin.github.io/youcoded/, source `youcoded/docs/index.html`).
@@ -22,6 +22,15 @@ Destin has settled on one design. `mockup-landing.html` is it:
   buttons either side, subtitle, download row, then the live app embed.
 - **Deck-fade features section** — one card per feature, each sticking and
   being covered by the next, with covered cards dissolving to nothing.
+- **Hero dissolve + docked download pill** (2026-08-31) — the bottom of the live
+  demo fades into the page, the five platform buttons live in one glass pill
+  floating over that fade with a small "Try Demo" pill beside it, and the pill
+  docks to the bottom of the window as you scroll on.
+- **Headline** — `An Assistant That's Useful. → Fun. → Yours.` The old
+  `Make AI Yours.` was retired: "make" frames the product as something the
+  visitor has to BUILD, which reads as developers-only.
+- **Brand** — the YC monogram is replaced by the app's own mascot in the same
+  accent tile, and the wordmark carries no accent colour at all.
 
 **It is the only page built.** Everything else is **parked, not deleted** — the
 D1–D4 headers, skins E and F, round-one A/B/C, the Dock and Crown mascot
@@ -57,6 +66,8 @@ Headless Chrome for your own verification is expected.
 | `css_d.css` | Skin base — wallpaper backdrop, glass, type, sections, FAQ, gallery. |
 | `css_d_headers.css` | Header arrangements, the mascot theme picker, the hero word cycler and intro. |
 | `css_theater.css` | The four features-section layouts (theater / pinned / deck / rail). |
+| `css_embed_fade.css` | The hero dissolve, the floating/docking download pill, its DOWNLOAD label, and the parked fade/pill skins. |
+| `css_nav.css` | The brand mark and wordmark treatments, live and parked. |
 | `css_embed_acct.css`, `css_modal.css`, `css_integrations.css` | Embed + account cards, install popup, integrations chips. |
 | `modal.js` | Install-tips popup, **verbatim from the live page** — keep byte-identical; changes go through `patch_modal()` in build.py. |
 | `mascots/` | The picker art. `default.svg` is the app's own `AppIcon`; the per-theme ones are copies from `wecoded-themes` and are currently UNUSED (see below). |
@@ -106,6 +117,22 @@ Headless Chrome for your own verification is expected.
 9. **Readability floor:** prose panels use `--panel-op-prose = max(opacity,.80)`
    and `--blur-prose = max(blur,16px)`. Don't simplify it away.
 10. `.nav-links a` outranks `.cta` — nav link styling needs `a.`-qualified selectors.
+11. **An iframe never chains its scroll to the page.** With the pointer over the
+    demo, the wheel goes to the app and STOPS there even when the app has nothing
+    left to scroll, and the page underneath sits still. There is no CSS for it
+    (`overscroll-behavior` only works inside one document). `chainWheel()` in
+    CORE_JS listens INSIDE the same-origin embed, walks up from the wheel's
+    target, and forwards to the parent when nothing on that path can still move.
+12. **`body.<state> .dlfloat` outranks `.dlfloat.docked`.** The docking rule
+    silently lost on specificity: the pill kept the class and scrolled away with
+    the page anyway. Any state rule for the pill must carry a body-class prefix.
+    Caught only because the check measured the pill's screen position rather
+    than trusting its class list.
+13. **Widths measured before the web font lands are the FALLBACK font's**, and it
+    is wider. That is where 42px of dead space after the cycler's final word came
+    from. `CYCLER_JS` re-measures on `document.fonts.ready`.
+14. **`--embed-fade` goes in the SVG mask, never an overlay.** Nothing can paint
+    the page's wallpaper back over an iframe, and a clip would set off landmine 1.
 
 ## Decisions locked with Destin (don't reopen)
 
@@ -143,6 +170,39 @@ Headless Chrome for your own verification is expected.
   differently on purpose: nothing can cover it, so its exit is driven by rising
   above its rest line.
 
+## Decisions locked 2026-08-31
+
+- **Headline: `An Assistant That's Useful. → Fun. → Yours.`** at the `h1-md`
+  size. Four alternatives were built and three rejected; a two-slot version of
+  "A Useful / A Fun / Your Assistant." was built and abandoned mid-flight.
+  The sub-headline still ends "…to work and **build** your way" — same worry,
+  not yet addressed.
+- **Hero geometry:** window cropped to 16/8.8, dissolve starts at 40 percent of
+  its height, pill rests 5 percent above the bottom edge and docks 34px above the
+  window bottom. The dissolve LIFTS as you scroll, anchored on the embed's own
+  bottom edge passing the docked pill (not on the docking moment — the pill docks
+  while that edge is still below the fold).
+- **Download pill:** one shared glass pill, accent ring, small "Try Demo" pill
+  beside it that takes its height from the row (`align-items:stretch`), and a
+  **DOWNLOAD** label straddling the top border at the LEFT. The label is opaque:
+  the ring is a box-shadow and cannot be notched, so a translucent label lets the
+  line read through it. The page's own floating "↑ Download" pill is hidden — it
+  was a second bottom-centred download control on the same screen.
+- **Try Demo** clears the dissolve over 520ms, docks the pill, and scrolls back
+  to the embed first if the visitor has already scrolled past it.
+- **Brand:** mascot in the accent tile (`brand-tile`), wordmark in ONE colour
+  (`wm-one`) — the accent now appears exactly once in the bar, in the mark.
+  Four whole-bar restyles (bare, split, glass disc, one-line lockup) were built
+  and rejected: "not great options, closer to L".
+- **The mascot has a size floor** — it silts up below about 20px on screen, the
+  same reason the theme picker uses one silhouette rather than the themed art.
+- **"More than a chatbot"** is ONE column at the same full width and left edge as
+  every other section. A centred, narrowed version was built and rejected.
+- **Kicker** is bigger/darker/tighter to the headline (0.8rem, 90 percent, 9px gap).
+- **Selected mascot chip** breathes — halo, inner wash and a 1.1° lean on a 3.8s
+  loop, with hover a scale and never a lift. First cut was twice this and read as
+  distracting.
+
 ## Working rules
 
 - Deliver files/URLs as plain paths in chat. No claude.ai Artifacts.
@@ -166,6 +226,11 @@ Headless Chrome for your own verification is expected.
   a reply fixture, a scene, and a recording. Attaching a file IS already
   scriptable: `window.dispatchEvent(new CustomEvent('buddy:attach-file', {detail:{filePath}}))`.
 - Deck: Destin may want the fade to reach three cards deep rather than two.
+- The sub-headline's "build your way" is the same framing worry the headline
+  change was meant to fix. Not raised again since; ask before rewriting copy.
+- The demo clip's dead space is now more visible, not less: the conversation
+  fills only the top third of the window, so most of what dissolves is empty
+  app. Re-filming it tighter is the fix.
 - The `mascots/<theme>.svg` files are unused now that all four buttons use
   `default.svg`. Kept in case a bigger surface wants the real art.
 - The roadmap card's sketch is forced visible in the deck (it is built to

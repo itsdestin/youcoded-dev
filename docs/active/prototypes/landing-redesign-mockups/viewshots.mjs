@@ -5,7 +5,7 @@ import { writeFileSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 const [url, prefix, ...rest] = process.argv.slice(2);
-const W = 1440, H = 900;
+const W = Number(process.env.VS_W || 1440), H = Number(process.env.VS_H || 900);
 const PORT = Number(process.env.CDP_PORT || 9989);
 const profile = mkdtempSync(join(tmpdir(), 'vs-'));
 const chrome = spawn('google-chrome-stable', ['--headless=new', `--remote-debugging-port=${PORT}`,

@@ -2,7 +2,7 @@
 import { spawn } from 'node:child_process';
 const [url, setup, waitMs, ...exprs] = process.argv.slice(2);
 const PORT = process.env.CDP_PORT || 9953;
-const chrome = spawn('google-chrome-stable', ['--headless=new', `--remote-debugging-port=${PORT}`, '--window-size=1440,900', '--no-first-run', '--user-data-dir=/tmp/claude-1000/chrome-eval-' + PORT, url], { stdio: 'ignore' });
+const chrome = spawn('google-chrome-stable', ['--headless=new', `--remote-debugging-port=${PORT}`, `--window-size=${process.env.VS_W || 1440},${process.env.VS_H || 900}`, '--no-first-run', '--user-data-dir=/tmp/claude-1000/chrome-eval-' + PORT, url], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let list = [];
 for (let i = 0; i < 60; i++) { try { list = await (await fetch(`http://127.0.0.1:${PORT}/json/list`)).json(); if (list.length) break; } catch {} await sleep(250); }

@@ -185,14 +185,23 @@ EMBED = ("""<div class="frame embed"><div class="embed-stage">
 # .cycler-sizer is a zero-width, invisible copy that keeps the line-box
 # baseline; .cycler-stage does the vertical clipping, because overflow:hidden
 # on the inline-block itself re-anchors the baseline and floats the words.
-CYCLER = ''' <span class="word-cycler" aria-label="Useful, Fun, Yours.">
-        <span class="cycler-sizer" aria-hidden="true">Useful.</span>
-        <span class="cycler-stage" aria-hidden="true">
-          <span class="cycler-word cycler-word-1">Useful.</span>
-          <span class="cycler-word cycler-word-2">Fun.</span>
-          <span class="cycler-word cycler-word-3 cycler-word-final">Yours.</span>
-        </span>
-      </span>'''
+def cycler(words, italic_last=False):
+    """Three words that bump through the same slot. Exactly three: the intro's
+    theme sequence and the CSS animation delays are written for three.
+    italic_last italicises the resting word -- <i>, not <em>, because the h1's
+    own `em` rule sets font-style back to normal."""
+    ws = []
+    for i, w in enumerate(words, 1):
+        fin = ' cycler-word-final' if i == len(words) else ''
+        body = f'<i>{w}</i>' if (italic_last and i == len(words)) else w
+        ws.append(f'<span class="cycler-word cycler-word-{i}{fin}">{body}</span>')
+    inner = '\n          '.join(ws)
+    return (' <span class="word-cycler" aria-label="' + ', '.join(words) + '">\n'
+            f'        <span class="cycler-sizer" aria-hidden="true">{words[0]}</span>\n'
+            '        <span class="cycler-stage" aria-hidden="true">\n          '
+            + inner + '\n        </span>\n      </span>')
+
+CYCLER = cycler(['Useful.', 'Fun.', 'Yours.'])
 
 
 # The download chips relocated INTO the hero app, floating over the dissolved
@@ -205,6 +214,58 @@ DLFLOAT = f"""<div class="dlfloat">
         </div>
         <button class="trypill" type="button"><span class="dot"></span>Try Demo</button>
       </div>"""
+
+def nav_bot():
+    """The app's own icon, inlined so the nav mark can tint it with currentColor.
+    Shipped on every page; CSS picks the YC monogram or this one."""
+    raw = open(BASE + '/mascots/default.svg').read()
+    raw = raw.replace('<?xml version="1.0" encoding="UTF-8"?>', '').strip()
+    return raw.replace('<svg ', '<svg class="mark-bot" ', 1)
+
+# Variant A's headline is TWO slots, not one (Destin 2026-08-31): the article
+# "A" stays black and completely still through "Useful" and "Fun", then is
+# itself replaced by an italic "Your" on the last beat while the adjective slot
+# collapses to nothing, closing "Your Assistant." up. Each word carries its own
+# trailing space so the two slots butt together with no stray gap when one of
+# them is empty.
+LEAD_SLOT = '''<span class="word-cycler cy-lead" data-steps="0,0,1" aria-label="Your">
+        <span class="cycler-sizer" aria-hidden="true">Your </span>
+        <span class="cycler-stage" aria-hidden="true">
+          <span class="cycler-word lead-hold">A </span>
+          <span class="cycler-word lead-final cycler-word-final"><i>Your </i></span>
+        </span>
+      </span>'''
+
+ADJ_SLOT = '''<span class="word-cycler cy-adj" data-steps="0|1,0|1,-1" aria-hidden="true">
+        <span class="cycler-sizer">Useful </span>
+        <span class="cycler-stage">
+          <span class="cycler-word cycler-word-1">Useful </span>
+          <span class="cycler-word cycler-word-2">Fun </span>
+        </span>
+      </span>'''
+
+# Headline wording is the one thing that varies between the flank pages
+# (2026-08-31). Destin's worry: "Make AI Yours" frames the product as something
+# you BUILD, which can read as "for developers". Every alternative below keeps
+# the three-beat cycle and drops the making verb.
+def flank_header(prefix, words, suffix='', italic_last=False):
+    return f'''<header class="hero hero-centred hero-flank" id="top">
+  <div class="wrap">
+    <p class="kicker">Free &middot; Open source &middot; BYO model</p>
+    <div class="flankrow">
+      <div class="mrow mrow-l">{mascots(only=PICKER[:2])}</div>
+      <h1>{prefix}{cycler(words, italic_last)}{suffix}</h1>
+      <div class="mrow mrow-r">{mascots(only=PICKER[2:])}</div>
+    </div>
+    <p class="hero-sub">A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way.</p>
+    <div class="dlrow">
+        {dl_buttons()}
+    </div>
+    <div class="hero-app">{EMBED}
+      {DLFLOAT}
+    </div>
+  </div>
+</header>'''
 
 HEADERS = {
 
@@ -333,6 +394,14 @@ HEADERS = {
 </header>''',
 }
 
+# The four wordings, registered after the dict so they can use flank_header().
+HEADERS['w-assistant']  = HEADERS['flank'].replace(
+    '<h1>Make AI' + CYCLER + '</h1>', '<h1>' + LEAD_SLOT + ADJ_SLOT + 'Assistant.</h1>')
+assert '<h1>' + LEAD_SLOT in HEADERS['w-assistant'], 'headline swap missed'
+HEADERS['w-thats']      = flank_header("An Assistant That's", ['Useful.', 'Fun.', 'Yours.'])
+HEADERS['w-verbs']      = flank_header("AI You'll Actually", ['Use.', 'Enjoy.', 'Own.'])
+HEADERS['w-finally']    = flank_header('Finally, AI That Is', ['Useful.', 'Fun.', 'Yours.'])
+
 # ---------------------------------------------------------------------------
 # "What you get" -- four presentations of the SAME nine features and the same
 # nine clips, so only the presentation is being compared.
@@ -426,7 +495,7 @@ BODY = f'''
 <div class="backdrop" id="backdrop"><div class="bd-layer" id="bd-a"></div><div class="bd-layer" id="bd-b"></div><div class="bd-scrim"></div></div>
 
 <nav class="nav"><div class="nav-in">
-  <a href="#top" class="logo"><span class="mark">YC</span><span class="wm">You<b>Coded</b> <i>Assistant</i><em>Agents for everyone</em></span></a>
+  <a href="#top" class="logo"><span class="mark"><span class="mark-yc">YC</span>{{MARKBOT}}</span><span class="wm"><span class="wm-name">You<b>Coded</b></span><span class="wm-rule"></span> <i>Assistant</i><em>Agents for everyone</em></span></a>
   <div class="nav-right">
     {{NAVPICKER}}
     <ul class="nav-links"><li><a href="#about">About</a></li><li><a href="#demo">Features</a></li><li><a href="#faq">FAQ</a></li></ul>
@@ -665,17 +734,60 @@ if (embed) {
   maskEmbed();
   addEventListener('resize', function(){ clearTimeout(maskTimer); maskTimer = setTimeout(maskEmbed, 150); });
 }
+// --- Scroll chaining out of the embed.
+// An iframe is its own scroll root: once the pointer is over it, the wheel goes
+// to the app and STOPS there, even when the app has nothing left to scroll. The
+// page underneath just sits still, which reads as the page being broken rather
+// than as a boundary. Browsers chain overflow within one document; they never
+// chain across a frame, and there is no CSS for it -- overscroll-behavior only
+// works INSIDE a document.
+// The embed is same-origin, so we can listen inside it: walk up from whatever
+// the wheel landed on, and if nothing along that path can still move in the
+// wheel's direction, cancel it and move the parent page by the same amount.
+function chainWheel(frame){
+  var doc; try { doc = frame.contentDocument; } catch (err) { return; }
+  if (!doc) return;
+  var view = doc.defaultView;
+  doc.addEventListener('wheel', function(e){
+    var dy = e.deltaY;
+    if (!dy) return;
+    // deltaMode 1 is lines, 2 is pages. Wheels on Linux and Firefox report lines.
+    if (e.deltaMode === 1) dy *= 16; else if (e.deltaMode === 2) dy *= view.innerHeight;
+    var n = e.target;
+    while (n && n.nodeType === 1) {
+      var oy = view.getComputedStyle(n).overflowY;
+      if ((oy === 'auto' || oy === 'scroll' || oy === 'overlay') && n.scrollHeight > n.clientHeight + 1) {
+        var room = dy > 0 ? (n.scrollHeight - n.clientHeight - n.scrollTop) : n.scrollTop;
+        if (room > 1) return;          // the app can still absorb this
+      }
+      n = n.parentNode;
+    }
+    var de = doc.scrollingElement || doc.documentElement;
+    if (de && de.scrollHeight > de.clientHeight + 1) {
+      var r2 = dy > 0 ? (de.scrollHeight - de.clientHeight - de.scrollTop) : de.scrollTop;
+      if (r2 > 1) return;
+    }
+    e.preventDefault();
+    // behavior:'instant' on purpose -- html has scroll-behavior:smooth, and
+    // letting every wheel tick start its own animation stutters badly.
+    scrollTo({ top: scrollY + dy, behavior: 'instant' });
+  }, { passive: false, capture: true });
+}
+
 function bootEmbed(){
   if (!embed || embedLive) return; embedLive = true;
   var f = embed.querySelector('.embed-iframe'), start = embed.querySelector('.embed-start'), inter = embed.querySelector('.embed-interact');
   start.hidden = true;
-  f.addEventListener('load', function(){ embed.classList.add('live'); inter.hidden = false; syncEmbedTheme(); });
+  f.addEventListener('load', function(){ embed.classList.add('live'); inter.hidden = false; syncEmbedTheme(); chainWheel(f); });
   f.src = f.dataset.src + '#t=' + currentTheme;
 }
 // --- The download pill: floats over the embed's dissolve, then docks to the
 // bottom of the window once its own resting spot would have scrolled off.
 var dlFloat = document.querySelector('.dlfloat'), heroApp = document.querySelector('.hero-app');
-var forceDock = false, DOCK_GAP = 24;
+var forceDock = false, DOCK_GAP = 34, restBottom = 0;
+// How far past the docking point the page must scroll for the embed's dissolve
+// to lift completely.
+var REVEAL_SPAN = 300, lastK = null, demoRevealed = false;
 function placeFloat(){
   if (!dlFloat || !heroApp || getComputedStyle(dlFloat).display === 'none') return;
   var h = dlFloat.offsetHeight;
@@ -683,9 +795,33 @@ function placeFloat(){
   // Where it WOULD sit: .dlfloat is bottom:-1 percent of .hero-app, i.e. it hangs
   // one hundredth of the hero's height past its bottom edge. Reading its own rect
   // is no good once it is docked -- that returns the docked position.
-  var natTop = hr.bottom + hr.height * 0.01 - h;
+  // Read the resting offset back out of CSS rather than repeating the number
+  // here -- but only while undocked, because docking replaces `bottom` with the
+  // fixed 24px gap.
+  if (!dlFloat.classList.contains('docked')) restBottom = parseFloat(getComputedStyle(dlFloat).bottom) || 0;
+  var natTop = hr.bottom - restBottom - h;
   var dockTop = innerHeight - h - DOCK_GAP;
-  dlFloat.classList.toggle('docked', forceDock || natTop < dockTop);
+  var dock = forceDock || natTop < dockTop;
+  dlFloat.classList.toggle('docked', dock);
+
+  // The dissolve lifts once the pill has visibly parted company with the embed.
+  // Anchored on the embed's own bottom edge passing the docked pill, NOT on the
+  // docking moment: the pill docks while the embed's bottom is still below the
+  // fold, so anchoring there meant the hidden state was already lifting by the
+  // time it first came into view.
+  if (!demoRevealed) {
+    var rest = parseFloat(getComputedStyle(embed).getPropertyValue('--embed-fade'));
+    if (rest > 0 && rest < 1) {
+      var k = Math.max(0, Math.min(1, (innerHeight - DOCK_GAP - hr.bottom) / REVEAL_SPAN));
+      // Quantised: below this the mask is regenerated dozens of times a second
+      // for a change nobody can see.
+      if (lastK === null || Math.abs(k - lastK) > 0.012) {
+        lastK = k;
+        embedFade = rest + (1 - rest) * k;
+        maskEmbed();
+      }
+    }
+  }
   // The footer carries the page's real download call to action; a floating copy
   // of it on top of that reads as a bug.
   var f = document.querySelector('footer');
@@ -709,7 +845,7 @@ if (tryPill && embed) {
     bootEmbed();
     embed.classList.add('interactive');
     document.querySelector('.hero-app').classList.add('revealed');
-    forceDock = true; placeFloat();
+    demoRevealed = true; forceDock = true; placeFloat();
     var from = parseFloat(getComputedStyle(embed).getPropertyValue('--embed-fade')) || 1;
     var t0 = performance.now(), DUR = 520;
     (function step(now){
@@ -959,13 +1095,13 @@ def page(title, css, default_theme, header='centred', extra_js='', navpicker=Tru
 <title>{title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400;1,9..40,900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 {css}
 </style>
 </head>
 <body class="{body_class}">
-{BODY.replace('{HEADER}', HEADERS[header]).replace('{NAVPICKER}', NAV_SWATCHES if navpicker else '').replace('{DEMOSECTION}', DEMOS[demo])}
+{BODY.replace('{HEADER}', HEADERS[header]).replace('{NAVPICKER}', NAV_SWATCHES if navpicker else '').replace('{DEMOSECTION}', DEMOS[demo]).replace('{MARKBOT}', nav_bot())}
 <script>
 {CORE_JS % (json.dumps(THEMES), json.dumps(default_theme))}
 {extra_js}
@@ -981,6 +1117,7 @@ INTEG_CSS  = open(BASE + '/css_integrations.css').read()
 THEATER_CSS = open(BASE + '/css_theater.css').read()
 EMBED_CSS  = open(BASE + '/css_embed_acct.css').read()
 FADE_CSS   = open(BASE + '/css_embed_fade.css').read()
+NAV_CSS    = open(BASE + '/css_nav.css').read()
 
 def patch_modal(js):
     """iOS popup: same modal shell, no download. Minimal patches to the
@@ -1048,8 +1185,8 @@ CYCLER_JS = r'''
 // the light pastel one is the resting state.
 // ---------------------------------------------------------------------------
 (function(){
-  var cycler = document.querySelector('.word-cycler');
-  if (!cycler) return;
+  var cyclers = [].slice.call(document.querySelectorAll('.word-cycler'));
+  if (!cyclers.length) return;
 
   var HERO_SEQUENCE = [
     // 100ms ahead of each word's CSS delay (.62 / 1.40 / 2.18s) so the 0.5s
@@ -1063,21 +1200,38 @@ CYCLER_JS = r'''
   // (so it inherits font/weight/italic), then the cycler's width is driven to
   // that number. Because the hero is centre-aligned, animating the width is
   // what slides "Make AI X" back to centre on every word change.
-  function measure(){
+  function measure(host){
     var out = [];
-    cycler.querySelectorAll('.cycler-word').forEach(function(w){
+    host.querySelectorAll('.cycler-word').forEach(function(w){
       var c = w.cloneNode(true);
+      // white-space:pre, not nowrap: a slot's words carry their own trailing
+      // space (the two-slot headline needs it), and nowrap collapses that away.
       c.style.cssText = 'position:absolute;left:-9999px;top:0;display:inline-block;' +
-        'width:auto;opacity:1;transform:none;animation:none;white-space:nowrap;visibility:hidden;';
-      cycler.appendChild(c);
+        'width:auto;opacity:1;transform:none;animation:none;white-space:pre;visibility:hidden;';
+      host.appendChild(c);
       out.push(c.getBoundingClientRect().width);
-      cycler.removeChild(c);
+      host.removeChild(c);
     });
     return out;
   }
+  // Which word each slot shows at each of the three beats. -1 means the slot is
+  // empty then and collapses to nothing -- that is how the adjective slot
+  // disappears so "Your Assistant." closes up at the end. An entry may list
+  // several words joined by "|", meaning "hold the widest of these": the slot
+  // then does not resize across those beats, so nothing either side of it
+  // shifts. Variant A needs that -- the article before it must sit perfectly
+  // still while the adjective swaps, and any width change re-centres the whole
+  // row and drags it sideways.
+  function stepsOf(host){
+    var raw = host.getAttribute('data-steps');
+    if (!raw) return [[0], [1], [2]];
+    return raw.split(',').map(function(g){
+      return g.split('|').map(function(n){ return parseInt(n, 10); });
+    });
+  }
   // +4px covers the text-stroke on "Yours." (stroke paints wider than the
   // layout box getBoundingClientRect measures) and subpixel rounding.
-  function setWidth(px){ cycler.style.setProperty('--cycler-width', (px + 4) + 'px'); }
+  function setWidth(host, px){ host.style.setProperty('--cycler-width', (px > 0 ? px + 4 : 0) + 'px'); }
 
   var timers = [];
   function endIntro(){ document.body.classList.remove('intro-mode'); }
@@ -1102,20 +1256,42 @@ CYCLER_JS = r'''
   // The headline is set in a web font; its box moves when that font arrives.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(setLift);
 
-  var widths = measure();
+  // One entry per slot: its measured word widths and its beat-to-word map.
+  var slots = cyclers.map(function(h){ return { el: h, w: measure(h), steps: stepsOf(h) }; });
+  function applyStep(i){
+    slots.forEach(function(sl){
+      var wide = 0;
+      sl.steps[i].forEach(function(idx){ if (idx >= 0 && sl.w[idx] > wide) wide = sl.w[idx]; });
+      setWidth(sl.el, wide);
+    });
+  }
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
     // Reduced motion: pin the final word and its theme, no cycling at all.
     document.body.classList.add('cycler-static');
-    if (widths[2]) setWidth(widths[2]);
+    applyStep(2);
     applyTheme('cotton-candy-sky');
     endIntro();
     return;
   }
-  if (widths.length) setWidth(widths[0]);
+  // A cycler in the MIDDLE of the headline holds one fixed slot, sized to the
+  // longest word. Letting the slot resize per word is right when the cycler
+  // ends the line -- there is nothing after it to shove -- but mid-sentence it
+  // drags the rest of the headline (and both mascot groups, since the row is
+  // centred) left and right on every beat.
+  var curStep = 0;
+  applyStep(0);
+  // Widths measured before the web font arrives are the FALLBACK font's, and it
+  // is wider -- that is where 42px of dead space after the final word came from.
+  // Re-measure once the real font has landed and re-apply the current beat.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){
+    slots.forEach(function(sl){ sl.w = measure(sl.el); });
+    applyStep(curStep);
+  });
   HERO_SEQUENCE.forEach(function(step, i){
     timers.push(setTimeout(function(){
       applyTheme(step.theme);
-      if (widths[i]) setWidth(widths[i]);
+      curStep = i;
+      applyStep(i);
     }, step.at));
   });
   // 'Yours.' starts at 2180 and settles ~2344 (its bump is done at 20% of
@@ -1132,18 +1308,20 @@ CYCLER_JS = r'''
 # have their HEADERS and DEMOS entries below. Adding a line here brings any of
 # them back for a side-by-side.
 BUILDS = [
-    # Round two (2026-08-31). Round one's fade-a/b/c are parked in the CSS but no
-    # longer built -- the geometry is settled at fade-d and the open question is
-    # how the pills separate from the wallpaper. Field 8 is the body class.
-    # Settled 2026-08-31: fade-d geometry, accent ring, right-hand DOWNLOAD label.
-    # pill-ring / pill-solid and the legend-centred variant are parked in the CSS.
-    ('mockup-landing.html', 'YouCoded — Landing', 'css_d.css', 'cotton-candy-sky', 'flank', False, 'deck-fade', 'fade-d pill-accent legend-on'),
+    # LOCKED 2026-08-31. One page. The whole session's decisions live in this one
+    # line: headline B (w-thats) at the h1-md size, the fade-d hero geometry, the
+    # accent-ring pill with its DOWNLOAD label, the mascot tile mark (brand-tile)
+    # and the single-colour wordmark (wm-one). Every rejected alternative is
+    # PARKED, not deleted -- the headers, the deck flavours, the fade and pill
+    # skins and the other wordmark treatments all still have their entries, so
+    # adding a line here brings any of them back for a side-by-side.
+    ('mockup-landing.html', 'YouCoded — Landing', 'css_d.css', 'cotton-candy-sky', 'w-thats', False, 'deck-fade', 'fade-d pill-accent legend-on h1-md brand-tile wm-one'),
 ]
 for row in BUILDS:
     f, title, css, dflt, hdr = row[:5]
     navpicker = row[5] if len(row) > 5 else True
     demo = row[6] if len(row) > 6 else 'theater'
-    sheet = open(BASE + '/' + css).read() + MODAL_VARS[css] + MODAL_CSS + INTEG_CSS + EMBED_CSS + FADE_CSS
+    sheet = open(BASE + '/' + css).read() + MODAL_VARS[css] + MODAL_CSS + INTEG_CSS + EMBED_CSS + FADE_CSS + NAV_CSS
     if css == 'css_d.css':
         sheet += HEADER_CSS + THEATER_CSS
     js = MODAL_JS + (CYCLER_JS if '{CYCLER}' not in HEADERS[hdr] and 'word-cycler' in HEADERS[hdr] else '')
