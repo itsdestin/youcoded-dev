@@ -1,0 +1,59 @@
+{
+  "title": "Head-to-head records — where your score against a friend shows up",
+  "key": "games-arcade-head-to-head",
+  "out": "head-to-head.html",
+  "images": "images/games-arcade-head-to-head",
+  "runs": {
+    "after": "/home/destin/youcoded-dev/scratch/ui-review-2026-08-31"
+  },
+  "themes": [
+    "dark",
+    "light",
+    "midnight",
+    "creme",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "crops": {
+    "lobby": [
+      "games-lobby-record",
+      "lobby-record",
+      "540x300+900+40"
+    ],
+    "result": [
+      "games-record",
+      "connect4-record",
+      "540x560+900+40"
+    ]
+  },
+  "steps": [
+    {
+      "id": "H-1",
+      "surface": "Friends list, inside a game",
+      "path": "Games → Chess (or Connect 4)",
+      "crop": "lobby",
+      "highlight": {
+        "text": "4–2, 1 draw"
+      },
+      "headline": "Your score against each friend now sits on their row, so you can see it while choosing who to play.",
+      "changed": "Each friend's row shows how you have done against them AT THIS GAME — your wins first, then theirs, and draws only when there have been some. It is per game on purpose: beating someone at Connect 4 says nothing about who is better at chess, so a combined number would mean nothing. Anyone you have never finished a game against shows no number at all rather than a zero.",
+      "measured": "1 line per friend; 0 change for a friend with no record yet",
+      "notice": "Before you challenge someone you can see whether you are ahead. Early on almost nobody will have a number, so most rows look exactly as they do today.",
+      "risk": "Seeing that a friend beats you every time could put you off challenging them, which is the opposite of what the arcade is for."
+    },
+    {
+      "id": "H-2",
+      "surface": "End of a match",
+      "path": "Games → Connect 4 → finish a game",
+      "crop": "result",
+      "highlight": {
+        "text": "You lead 2–0"
+      },
+      "headline": "When a match ends, the result card says where that leaves the two of you overall.",
+      "changed": "One line under the result: You lead 2–0, or Jake leads 3–1, or All square at 4–4. It appears a moment AFTER the result, because the server waits until both players have independently said the same thing about how the game ended before it writes anything down.",
+      "measured": "1 line added to a card that already exists; 0 other changes",
+      "notice": "Winning feels like it counted toward something. If your opponent's app never reports, or the two of you somehow disagree, no line appears and no record is written — the game result itself is unaffected either way.",
+      "risk": "A quiet gap: if the line does not appear, nothing explains why. Saying more would mean explaining a disagreement most players will never have."
+    }
+  ]
+}

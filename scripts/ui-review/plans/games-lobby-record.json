@@ -1,0 +1,24 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&autoplay=0",
+  "shots": [
+    {
+      "name": "lobby-record",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        },
+        {
+          "clickText": "Chess",
+          "settle": 1500
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Challenge') && /\\d+–\\d+/.test(document.body.textContent)",
+      "measure": [
+        {
+          "text": "4–2, 1 draw"
+        }
+      ]
+    }
+  ]
+}
