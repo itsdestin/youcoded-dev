@@ -204,3 +204,43 @@ manifest in an output directory, including runs superseded minutes earlier, with
 no recency filter (the deck's crop resolver already had one). Fixed to take the
 newest manifest per theme and surface. Worth knowing because that report is
 meant to be trusted: before the fix it could tell a session its fix had failed.
+
+## D-14 — head-to-head records ship; the record reads "4W - 2L" in a badge (2026-08-31)
+
+**Deck `head-to-head`: both steps yes.** The score shows on each friend's row in
+the lobby, and on the card at the end of a match. Destin's note on H-1: *"put in
+a pill, 4W - 2L"*.
+
+**He was right about the wording and I had argued the other way.** My first pass
+was "4–2", the convention. It relies on the reader knowing YOUR number comes
+first — and read backwards it is still a perfectly plausible record, so nothing
+tips you off that you have it wrong. "4W - 2L" removes the guess: the letters
+are not notation to learn, they are the labels themselves.
+
+**"Pill" became a badge, deliberately.** `rounded-sm`, not `rounded-full`: the
+guide (G-3) reserves the fully-round shape for the send/stop circle, avatars,
+toggles and the pill-shaped FILTER chips — all things you click. A round static
+label reads as a button that does nothing. Worth stating because it is a visible
+departure from the word he used.
+
+**Three things that made this a day rather than an hour**, all recorded so a
+future session does not re-derive them:
+
+1. The app knew the opponent's DISPLAY NAME, never their account. Two friends
+   with the same display name would have shared one record. Both players know
+   the account but by different routes (challenger knows who they challenged;
+   accepter knows who challenged them).
+2. **A rematch reuses the room.** Verified, not assumed. With the room code as
+   the match identity, the second game would have reached the server looking
+   like a duplicate and been silently discarded — you would win twice and see
+   one win.
+3. Two workbench surfaces were UNREACHABLE, which is how they stayed unexamined:
+   autoplay fires the moment presence connects (so the friend list could not be
+   photographed while signed in), and the fake opponent plays randomly (so no
+   fixed click sequence could finish a game, leaving the entire end-of-match
+   card unphotographed). `?autoplay=0` and `?bot=passive` fix both.
+
+**The rule the third one yields, and it is the same shape as D-12:** a surface
+that cannot be captured is a surface nobody reviews. When a state is only
+reachable through timing or chance, add the switch that makes it reachable —
+otherwise it is reviewed once, by hand, and never again.

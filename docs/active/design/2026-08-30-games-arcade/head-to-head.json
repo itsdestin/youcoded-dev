@@ -33,7 +33,7 @@
       "path": "Games → Chess (or Connect 4)",
       "crop": "lobby",
       "highlight": {
-        "text": "4–2, 1 draw"
+        "text": "4W - 2L - 1D"
       },
       "headline": "Your score against each friend now sits on their row, so you can see it while choosing who to play.",
       "changed": "Each friend's row shows how you have done against them AT THIS GAME — your wins first, then theirs, and draws only when there have been some. It is per game on purpose: beating someone at Connect 4 says nothing about who is better at chess, so a combined number would mean nothing. Anyone you have never finished a game against shows no number at all rather than a zero.",

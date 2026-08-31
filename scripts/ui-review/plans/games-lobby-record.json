@@ -13,10 +13,10 @@
           "settle": 1500
         }
       ],
-      "expect": "js:document.body.textContent.includes('Challenge') && /\\d+–\\d+/.test(document.body.textContent)",
+      "expect": "js:document.body.textContent.includes('Challenge') && /\\d+W - \\d+L/.test(document.body.textContent)",
       "measure": [
         {
-          "text": "4–2, 1 draw"
+          "text": "4W - 2L - 1D"
         }
       ]
     }
