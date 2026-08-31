@@ -56,3 +56,165 @@ body:has(.hero-themefirst) .nav .swatches{display:none}
   .split-app .frame{border-right:1px solid var(--hair);border-radius:var(--radius)}
   .dlbar{margin-top:20px;border-radius:var(--radius)}
 }
+
+/* ==========================================================================
+   Mascot theme picker (2026-08-30) — M1 Flank / M2 Dock / M3 Crown.
+   One robot silhouette, four colours. The chip is the CURRENT theme's glass —
+   the same material as the nav and the download buttons — so the picker reads
+   as one control that belongs to the page it is on, and the only thing that
+   differs between the four is the accent: the robot, its glow, and the ring
+   on the selected one.
+   ========================================================================== */
+.mascot{position:relative;width:62px;height:62px;padding:0;border:0;background:none;cursor:pointer;
+  display:grid;place-items:center;border-radius:20px;
+  transition:transform .24s cubic-bezier(.2,.9,.3,1.3), filter .24s}
+.mascot.m-lg{width:76px;height:76px;border-radius:24px}
+/* The chip is a separate layer so the mascot art never gets clipped or dimmed
+   along with it. */
+.m-chip{position:absolute;inset:0;border-radius:inherit;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(1.5);
+  backdrop-filter:blur(var(--blur)) saturate(1.5);
+  border:1px solid var(--hair);
+  box-shadow:inset 0 1px 0 var(--glass-hi), 0 12px 26px -16px var(--ink);
+  transition:box-shadow .24s, border-color .24s}
+.m-chip::after{content:'';position:absolute;inset:0;border-radius:inherit;
+  background:radial-gradient(circle at 50% 66%, var(--a), transparent 70%);
+  opacity:.16;transition:opacity .24s}
+.mascot:hover .m-chip::after,.mascot.on .m-chip::after{opacity:.30}
+.m-art{position:relative;width:58%;height:58%;color:var(--a);
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.30));transition:transform .24s}
+.mascot.m-lg .m-art{width:56%;height:56%}
+/* Name shows on hover / when active — four lookalike silhouettes need a label. */
+.m-name{position:absolute;top:calc(100% + 9px);left:50%;transform:translateX(-50%) translateY(-3px);
+  font-size:11px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;
+  color:var(--fg2);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s}
+.mascot:hover{transform:translateY(-5px)}
+.mascot:hover .m-art{transform:scale(1.06)}
+.mascot:hover .m-name{opacity:.92;transform:translateX(-50%) translateY(0)}
+.mascot:hover .m-chip{box-shadow:0 18px 34px -14px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.34)}
+/* Active = a ring in the theme's OWN accent, so the selected chip announces
+   which colour the page is about to be. */
+.mascot.on .m-chip{border-color:var(--a);box-shadow:0 0 0 2px var(--a),0 16px 30px -14px rgba(0,0,0,.55)}
+.mascot:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+/* ---- M1 FLANK: two either side of the headline ---- */
+.hero-flank .flankrow{display:flex;align-items:center;justify-content:center;gap:34px}
+.hero-flank .flankrow h1{margin:0}
+.hero-flank .mrow{display:flex;gap:14px}
+
+/* ---- M2 DOCK: a tab resting on the demo window's top edge ---- */
+.hero-dock .hero-app{position:relative}   /* NEVER add overflow here — it makes
+   Chromium smear the live demo's glass blur across the whole window. */
+.mdock{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);z-index:4;
+  display:flex;align-items:center;gap:12px;padding:12px 18px 14px;
+  border-radius:20px 20px 0 0;border:1px solid var(--hair);border-bottom:0;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(1.5);
+  backdrop-filter:blur(var(--blur)) saturate(1.5);
+  box-shadow:inset 0 1px 0 var(--glass-hi), 0 -10px 30px -18px var(--ink)}
+.mdock-label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  padding-right:4px}
+.mdock .mascot{width:48px;height:48px;border-radius:15px}
+.mdock .m-name{display:none}          /* replaced by the live readout below */
+.mdock-label b{font-weight:600;color:var(--fg2);margin-left:6px;letter-spacing:.04em}
+.hero-dock .hero-app{margin-top:104px}  /* the tab is ~86px tall and hangs above */
+
+/* ---- M3 CROWN: the four of them line up above everything ---- */
+.mcrown{display:flex;justify-content:center;gap:26px;margin:0 0 30px}
+
+/* ---- M1 FLANK: the live page's hero word cycler --------------------------
+   Ported from youcoded/docs/index.html. "Make AI Useful. -> Fun. -> Yours.",
+   each word bumping the last one out, each carrying a theme in with it.
+   Structure is load-bearing: the sizer is a zero-width invisible copy that
+   holds the line-box baseline, and the CLIPPING lives on an inner stage --
+   overflow:hidden on the inline-block itself re-anchors the baseline to the
+   margin edge and floats the words above "Make AI". */
+.word-cycler{position:relative;display:inline-block;vertical-align:baseline;line-height:inherit;
+  width:var(--cycler-width,auto);
+  transition:width .55s cubic-bezier(.22,1,.36,1)}
+.cycler-sizer{display:inline-block;width:0;overflow:visible;visibility:hidden;white-space:nowrap}
+.cycler-stage{position:absolute;left:0;right:0;top:-.1em;bottom:-.15em;
+  /* Vertical-only clip: words are hidden bumping in from below and out above,
+     but -50vw on the right keeps them from being cut off horizontally while
+     the cycler's width animates. */
+  clip-path:inset(0 -50vw 0 0);pointer-events:none}
+.cycler-word{position:absolute;left:0;top:.1em;width:max-content;text-align:left;white-space:nowrap;
+  line-height:inherit;opacity:0;transform:translateY(110%);
+  /* Duration and the gap below move TOGETHER. The exit is the last 15%, timed
+     to land on the next word's entry; stretch one without the other and two
+     words share the screen (the live page hit exactly this). */
+  animation-duration:.82s;animation-fill-mode:forwards;animation-iteration-count:1;
+  animation-timing-function:linear;will-change:transform,opacity;
+  transition:color .5s}
+.cycler-word-1,.cycler-word-2{animation-name:bump-through}
+.cycler-word-1{animation-delay:.62s;color:var(--accent)}
+.cycler-word-2{animation-delay:1.4s;color:var(--accent)}
+.cycler-word-3{animation-name:bump-final;animation-delay:2.18s;
+  color:var(--accent);-webkit-text-stroke:1.25px var(--accent);paint-order:stroke fill}
+@keyframes bump-through{
+  0%{transform:translateY(110%);opacity:0} 10%{transform:translateY(-9%);opacity:1}
+  16%{transform:translateY(3%);opacity:1} 20%{transform:translateY(0);opacity:1}
+  85%{transform:translateY(0);opacity:1}  92%{transform:translateY(4%);opacity:1}
+  100%{transform:translateY(-110%);opacity:0}}
+@keyframes bump-final{
+  0%{transform:translateY(110%);opacity:0} 10%{transform:translateY(-9%);opacity:1}
+  16%{transform:translateY(3%);opacity:1} 100%{transform:translateY(0);opacity:1}}
+/* Reduced motion / the JS's static path: no cycling, "Yours." simply there. */
+@media (prefers-reduced-motion:reduce){
+  .cycler-word{animation:none}
+  .cycler-word-1,.cycler-word-2{display:none}
+  .cycler-word-final{opacity:1;transform:none}}
+body.cycler-static .cycler-word{animation:none}
+body.cycler-static .cycler-word-1,body.cycler-static .cycler-word-2{display:none}
+body.cycler-static .cycler-word-final{opacity:1;transform:none}
+
+/* Yellow on a pale glass chip is the one weak pairing (Golden Sunbreak's
+   accent against a light theme's panel), so the art gets a tight dark rim.
+   Invisible on the dark themes, where it has nothing to do. */
+.m-art{filter:drop-shadow(0 0 1.2px rgba(0,0,0,.45)) drop-shadow(0 1px 2px rgba(0,0,0,.22))}
+
+/* ---- M1 FLANK: intro mode --------------------------------------------------
+   The original live-page behaviour: while the words cycle, the only things on
+   screen are the nav, the wallpaper and the headline row (with its mascots).
+   Everything else rises into place as the last word lands.
+
+   Opacity + transform ONLY. No overflow, clip-path or max-height anywhere
+   above .hero-app — a clipping ancestor makes Chromium smear the live demo's
+   glass blur across the entire window (the bug that is on the real page today).
+   That is also why there is no body-level scroll lock here. */
+/* The headline row rides down to the middle of the window for the intro and
+   glides back to its real place as the page fills in. --intro-lift is measured
+   in JS; the transform lives on .flankrow alone, never on a parent of the
+   live demo. */
+body.intro-mode .flankrow{transform:translateY(var(--intro-lift,0px));
+  /* transition:none is load-bearing. Without it the row ANIMATES INTO the
+     centred position on load -- it paints at 0, JS sets the lift, and the
+     base rule below glides it down. The intro must START centred; only the
+     exit glides. This also makes the re-measure after the web font arrives an
+     instant correction rather than a second visible slide. */
+  transition:none}
+.hero-flank .flankrow{transition:transform .62s cubic-bezier(.22,1,.36,1) .1s}
+body.intro-mode .kicker,
+body.intro-mode .hero-sub,
+body.intro-mode .dlrow,
+body.intro-mode .hero-app,
+body.intro-mode > section,
+body.intro-mode > footer,
+body.intro-mode > .topcta{opacity:0;pointer-events:none}
+/* Everything BELOW the headline also starts low and rises; the kicker sits
+   above it, so it only fades (sliding it up would run it into the headline). */
+body.intro-mode .hero-sub,
+body.intro-mode .dlrow,
+body.intro-mode .hero-app,
+body.intro-mode > section,
+body.intro-mode > footer{transform:translateY(34px)}
+/* The delay lets "Yours." settle before the page fills in behind it. */
+.hero-flank ~ section,.hero-flank ~ footer,.hero-flank ~ .topcta,
+.hero-flank .kicker,.hero-flank .hero-sub,.hero-flank .dlrow,.hero-flank .hero-app{
+  transition:opacity .58s ease .1s, transform .62s cubic-bezier(.22,1,.36,1) .1s}
+@media (prefers-reduced-motion:reduce){
+  body.intro-mode .kicker,body.intro-mode .hero-sub,body.intro-mode .dlrow,
+  body.intro-mode .hero-app,body.intro-mode > section,body.intro-mode > footer,
+  body.intro-mode > .topcta{opacity:1;pointer-events:auto;transform:none}
+  body.intro-mode .flankrow{transform:none}}

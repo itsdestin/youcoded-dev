@@ -101,7 +101,7 @@ h1 em{font-style:normal;color:var(--accent)}
 .frame img,.frame video{width:100%;border-radius:0;display:block}
 
 /* ---- sections ---- */
-section{padding:68px 0}
+section{padding:28px 0}
 .eyebrow{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;
   color:var(--accent);margin-bottom:12px}
 h2{font-family:var(--font-ui);font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-.04em;line-height:1.06;
@@ -157,14 +157,26 @@ h2{font-family:var(--font-ui);font-size:clamp(2rem,4vw,3rem);font-weight:800;let
 .closer p{opacity:.75;font-size:.9rem;margin-top:6px;max-width:420px}
 .dlrow.small{margin:0 0 0 auto;justify-content:flex-end}
 .dlrow.small .dlbtn{padding:10px 15px;font-size:.83rem}
-.faq{max-width:840px;margin-top:32px;display:flex;flex-direction:column;gap:9px}
+.faq{margin-top:32px;display:flex;flex-direction:column;gap:9px}
 .faq details{padding:0}
 .faq summary{cursor:pointer;list-style:none;padding:17px 22px;font-weight:700;font-size:.99rem;display:flex;gap:14px}
 .faq summary::-webkit-details-marker{display:none}
 .faq summary::after{content:'+';margin-left:auto;color:var(--accent);font-size:1.3rem;line-height:1}
 .faq details[open] summary::after{content:'\2013'}
 .faq .a{padding:0 22px 20px;opacity:.82;font-size:.94rem}
-.gal{display:flex;gap:16px;overflow-x:auto;padding:26px 30px 12px;scroll-snap-type:x mandatory}
+/* A custom property only animates if it is registered with a type -- without
+   these two the fade snaps on the frame you leave an edge. */
+@property --fade-l{syntax:'<length>';inherits:false;initial-value:0px}
+@property --fade-r{syntax:'<length>';inherits:false;initial-value:0px}
+.galwrap{max-width:var(--wide);margin:0 auto;padding:0 30px}
+.gal{display:flex;gap:16px;overflow-x:auto;padding:26px 0 12px;scroll-snap-type:x mandatory;
+  /* Fade widths are driven from JS so an end only dissolves when there is
+     actually more to see that way. A fixed fade ghosted the FIRST screenshot
+     at rest, which reads as damage rather than as "keep scrolling". */
+  --fade-l:0px; --fade-r:72px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fade-l),#000 calc(100% - var(--fade-r)),transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 var(--fade-l),#000 calc(100% - var(--fade-r)),transparent 100%);
+  transition:--fade-l .22s ease,--fade-r .22s ease}
 .gal::-webkit-scrollbar{height:6px}
 .gal::-webkit-scrollbar-thumb{background:rgba(var(--fg-rgb),.25);border-radius:3px}
 .gal img{width:420px;flex:none;scroll-snap-align:center}

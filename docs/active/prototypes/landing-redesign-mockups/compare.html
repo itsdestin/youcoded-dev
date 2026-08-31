@@ -58,17 +58,11 @@ iframe.on{opacity:1;pointer-events:auto}
 // Newest first — the four header arrangements of D (all share the Skin look),
 // then the other two skins, then the first round.
 var VARIANTS = [
-  { key:'D1', file:'mockup-d1-centred.html',   name:'Centred',    desc:'stacked' },
-  { key:'D2', file:'mockup-d2-split.html',     name:'Split',      desc:'text left, app right' },
-  { key:'D3', file:'mockup-d3-appfirst.html',  name:'App first',  desc:'huge app' },
-  { key:'D4', file:'mockup-d4-themefirst.html',name:'Theme first',desc:'swatches lead' },
-  { sep:true },
-  { key:'E', file:'mockup-e-liquid.html',    name:'Liquid',    desc:'' },
-  { key:'F', file:'mockup-f-frame.html',     name:'Frame',     desc:'' },
-  { sep:true },
-  { key:'A', file:'mockup-a-editorial.html', name:'Editorial', desc:'' },
-  { key:'B', file:'mockup-b-theater.html',   name:'Theater',   desc:'' },
-  { key:'C', file:'mockup-c-bento.html',     name:'Bento',     desc:'' }
+  // Checkpoint 2026-08-30 — pruned to the chosen direction plus the two
+  // alternatives worth going back to. The rest are parked in build.py.
+  { key:'L', file:'mockup-landing.html',    name:'Landing', desc:'flank header + deck' },
+  { key:'P', file:'mockup-alt-pinned.html', name:'Pinned',  desc:'alt: section locks, replaces in place' },
+  { key:'R', file:'mockup-alt-rail.html',   name:'Rail',    desc:'alt: pick one, one screen' }
 ];
 
 var tabsEl = document.getElementById('tabs');
@@ -119,7 +113,7 @@ addEventListener('keydown', function(e){
 });
 
 var start = (location.hash || '').replace('#','').toUpperCase();
-select(items.some(function(x){ return x.key === start; }) ? start : 'D1');
+select(items.some(function(x){ return x.key === start; }) ? start : 'L');
 </script>
 </body>
 </html>

@@ -66,6 +66,47 @@ def swatches():
                    f'style="--a:{t["accent"]};--c:{t["canvas"]}"><span></span></button>')
     return '\n        '.join(out)
 
+# ---------------------------------------------------------------------------
+# Mascot theme picker (2026-08-30). The button IS the theme's mascot, standing
+# on a chip filled with that theme's own backdrop.
+#
+# Only four of the seven community themes ship a mascot. Cotton Candy Sky and
+# Meadow Mist ship none — and the app's own answer for that case is to fall
+# back to AppIcon (Icons.tsx -> ThemeMascot), the built-in robot drawn in pure
+# currentColor. So those two get the built-in robot tinted with their own text
+# colour, which is exactly what the real app puts on screen.
+# ---------------------------------------------------------------------------
+PICKER = ['cotton-candy-sky', 'meadow-mist', 'halftone-dimension', 'golden-sunbreak']
+
+# 2026-08-30: every chip uses the plain built-in robot, tinted with its theme's
+# accent. The themes' own mascot art carries baked-in detail (Golden's sun rays,
+# Halftone's visor and glow) that turns to mush at 62px and made four buttons
+# that read as four different KINDS of thing. One silhouette, four colours reads
+# as one control. The per-theme art stays on disk for a bigger surface.
+MASCOT_FILE = {}
+
+
+
+def _mascot_svg(slug):
+    """Inlined, not <img>: the built-in robot is drawn in currentColor and an
+    <img> cannot inherit the button's colour."""
+    f = MASCOT_FILE.get(slug, 'default.svg')
+    raw = open(BASE + '/mascots/' + f).read()
+    raw = raw.replace('<?xml version="1.0" encoding="UTF-8"?>', '').strip()
+    return raw.replace('<svg ', '<svg class="m-art" ', 1)
+
+def mascots(extra='', only=None):
+    out=[]
+    for slug in (only or PICKER):
+        t = THEMES[slug]
+        out.append(
+          f'<button class="mascot{extra}" data-theme="{slug}" title="{t["name"]}" '
+          f'aria-label="Use the {t["name"]} look" '
+          f'style="--a:{t["accent"]}">'
+          f'<span class="m-chip"></span>{_mascot_svg(slug)}'
+          f'<span class="m-name">{t["name"]}</span></button>')
+    return '\n        '.join(out)
+
 def steps():
     out=[]
     for i,(label,title,desc,_) in enumerate(FEATURES):
@@ -82,12 +123,21 @@ def steps():
         </div>''')
     return '\n        '.join(out)
 
+# Clips re-filmed for this redesign live in media-local/, NOT in media/ --
+# media/ is a symlink into youcoded/docs/media, i.e. the real site's assets.
+# Writing there would change the live site before the redesign is approved.
+MEDIA_LOCAL = {'row1-any-ai'}
+
+def _media_dir(key):
+    return 'media-local' if key in MEDIA_LOCAL else 'media'
+
 def slides():
     out=[]
     for i,(_,_,_,media) in enumerate(FEATURES):
         on=' class="on"' if i==0 else ''
         extra=''
-        out.append(f'<video{on} data-i="{i}" muted loop playsinline preload="none" poster="media/{media}.webp"><source src="media/{media}.webm" type="video/webm"></video>')
+        d=_media_dir(media)
+        out.append(f'<video{on} data-i="{i}" muted loop playsinline preload="none" poster="{d}/{media}.webp"><source src="{d}/{media}.webm" type="video/webm"></video>')
     out.append('''<div class="sketch" data-i="8">
           <div><div class="k">Agents</div><div class="li on2">Weekly grocery list</div><div class="li">Inbox digest · 7am</div><div class="li">Receipts → spreadsheet</div></div>
           <div><div class="k">Weekly grocery list</div><div class="li">1 · Read this week's plan</div><div class="li">2 · Draft the list</div><div class="li on2">3 · Check with me before ordering</div><div class="li">4 · Send to my phone</div><div class="k" style="margin-top:14px">Inbox</div><div class="li">Needs approval · Weekly grocery list · 2 min ago</div></div>
@@ -131,12 +181,26 @@ EMBED = ("""<div class="frame embed"><div class="embed-stage">
       <iframe class="embed-iframe" title="YouCoded Assistant live demo" loading="lazy" data-src="site/index.html?mode=workbench&amp;child=1&amp;scenario=site&amp;latency=0&amp;reply=site"></iframe>
     </div></div>""")
 
+# Hero word cycler, ported from the live page (youcoded/docs/index.html).
+# .cycler-sizer is a zero-width, invisible copy that keeps the line-box
+# baseline; .cycler-stage does the vertical clipping, because overflow:hidden
+# on the inline-block itself re-anchors the baseline and floats the words.
+CYCLER = ''' <span class="word-cycler" aria-label="Useful, Fun, Yours.">
+        <span class="cycler-sizer" aria-hidden="true">Useful.</span>
+        <span class="cycler-stage" aria-hidden="true">
+          <span class="cycler-word cycler-word-1">Useful.</span>
+          <span class="cycler-word cycler-word-2">Fun.</span>
+          <span class="cycler-word cycler-word-3 cycler-word-final">Yours.</span>
+        </span>
+      </span>'''
+
+
 HEADERS = {
 
 # D1 — CENTRED. Type stacked in the middle, buttons, then the live app full width.
 'centred': f'''<header class="hero hero-centred" id="top">
   <div class="wrap">
-    <p class="kicker">Free &middot; Open source &middot; Any AI model</p>
+    <p class="kicker">Free &middot; Open source &middot; BYO model</p>
     <h1>Make AI <em>Yours.</em></h1>
     <p class="hero-sub">A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way.</p>
     <div class="dlrow">
@@ -151,7 +215,7 @@ HEADERS = {
 'split': f'''<header class="hero hero-split" id="top">
   <div class="split-in">
     <div class="split-text">
-      <p class="kicker">Free &middot; Open source &middot; Any AI model</p>
+      <p class="kicker">Free &middot; Open source &middot; BYO model</p>
       <h1>Make AI <em>Yours.</em></h1>
       <p class="hero-sub">A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way.</p>
       <div class="dlrow">
@@ -183,7 +247,7 @@ HEADERS = {
 # labelled control, so the page's headline interaction is re-skinning it.
 'themefirst': f'''<header class="hero hero-themefirst" id="top">
   <div class="wrap">
-    <p class="kicker">Free &middot; Open source &middot; Any AI model</p>
+    <p class="kicker">Free &middot; Open source &middot; BYO model</p>
     <h1>Make AI <em>Yours.</em></h1>
     <p class="hero-sub">A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way.</p>
     <div class="dlrow">
@@ -198,17 +262,160 @@ HEADERS = {
     <div class="hero-app">{EMBED}</div>
   </div>
 </header>''',
+
+# ---- Mascot-picker variants (2026-08-30). Identical to D1 CENTRED except for
+# where the four mascot buttons live. The nav swatches are gone in all three --
+# the mascots are the picker now, so two pickers would be one too many.
+
+# M1 - FLANK. Two mascots either side of the headline, standing level with it.
+'flank': f'''<header class="hero hero-centred hero-flank" id="top">
+  <div class="wrap">
+    <p class="kicker">Free &middot; Open source &middot; BYO model</p>
+    <div class="flankrow">
+      <div class="mrow mrow-l">{mascots(only=PICKER[:2])}</div>
+      <h1>Make AI{CYCLER}</h1>
+      <div class="mrow mrow-r">{mascots(only=PICKER[2:])}</div>
+    </div>
+    <p class="hero-sub">A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way.</p>
+    <div class="dlrow">
+        {dl_buttons()}
+    </div>
+    <div class="hero-app">{EMBED}</div>
+  </div>
+</header>''',
+
+# M2 - DOCK. A glass tab resting on the demo window's top edge, square-bottomed
+# so it reads as attached to the app rather than floating over the page.
+'dock': f'''<header class="hero hero-centred hero-dock" id="top">
+  <div class="wrap">
+    <p class="kicker">Free &middot; Open source &middot; BYO model</p>
+    <h1>Make AI <em>Yours.</em></h1>
+    <p class="hero-sub">A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way.</p>
+    <div class="dlrow">
+        {dl_buttons()}
+    </div>
+    <div class="hero-app">
+      <div class="mdock" role="group" aria-label="Change the look">
+        <span class="mdock-label">Look<b data-now></b></span>
+        {mascots()}
+      </div>
+      {EMBED}
+    </div>
+  </div>
+</header>''',
+
+# M3 - CROWN (wildcard). The four of them line up above the headline and greet
+# you first; the kicker moves under them.
+'crown': f'''<header class="hero hero-centred hero-crown" id="top">
+  <div class="wrap">
+    <div class="mcrown" role="group" aria-label="Change the look">{mascots(' m-lg')}</div>
+    <p class="kicker">Free &middot; Open source &middot; BYO model</p>
+    <h1>Make AI <em>Yours.</em></h1>
+    <p class="hero-sub">A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way.</p>
+    <div class="dlrow">
+        {dl_buttons()}
+    </div>
+    <div class="hero-app">{EMBED}</div>
+  </div>
+</header>''',
 }
+
+# ---------------------------------------------------------------------------
+# "What you get" -- four presentations of the SAME nine features and the same
+# nine clips, so only the presentation is being compared.
+#   theater  the original: 58vh of dim text per feature beside a sticky stage
+#   pinned   the section locks to the window; features replace each other
+#   deck     each feature is a card that slides up and stacks over the last
+#   rail     no scroll tricks at all -- pick one, it swaps in place
+# ---------------------------------------------------------------------------
+DEMOS = {
+
+'theater': f'''<section id="demo" class="demo-theater"><div class="wrap">
+  <p class="eyebrow">What you get</p><h2>Everything the app gives you.</h2>
+  <div class="theater">
+    <div class="steps" id="steps">
+        {steps()}
+    </div>
+    <div class="stagewrap"><div class="stage frame" id="stage">
+        {slides()}
+    </div><div class="dots" id="dots"></div></div>
+  </div>
+</div></section>''',
+
+'pinned': f'''<section id="demo" class="demo-pinned"><div class="wrap">
+  <p class="eyebrow">What you get</p><h2>Everything the app gives you.</h2>
+</div>
+<div class="pintrack" id="pintrack"><div class="pinstage"><div class="wrap pingrid">
+    <div class="pintext" id="steps">
+        {steps()}
+    </div>
+    <div class="pinmedia frame" id="stage">
+        {slides()}
+    </div>
+    <div class="pinbar"><i id="pinfill"></i></div>
+    <div class="pincount"><b id="pinnow">1</b> / 9</div>
+</div></div></div>
+</section>''',
+
+# Three flavours of the same stack. Only the section's modifier class differs,
+# so the markup, the cards and the clips are identical between them.
+'deck': f'''<section id="demo" class="demo-deck deck-tight"><div class="wrap">
+  <p class="eyebrow">What you get</p><h2>Everything the app gives you.</h2>
+  <div class="deck" id="deck">
+    <div class="decktext" id="steps">{steps()}</div>
+    <div class="deckmedia" id="stage">{slides()}</div>
+  </div>
+</div></section>''',
+
+'deck-depth': f'''<section id="demo" class="demo-deck deck-depth"><div class="wrap">
+  <p class="eyebrow">What you get</p><h2>Everything the app gives you.</h2>
+  <div class="deck" id="deck">
+    <div class="decktext" id="steps">{steps()}</div>
+    <div class="deckmedia" id="stage">{slides()}</div>
+  </div>
+</div></section>''',
+
+'deck-fade': f'''<section id="demo" class="demo-deck deck-fade"><div class="wrap">
+  <p class="eyebrow">What you get</p><h2>Everything the app gives you.</h2>
+  <div class="deck" id="deck">
+    <div class="decktext" id="steps">{steps()}</div>
+    <div class="deckmedia" id="stage">{slides()}</div>
+  </div>
+</div></section>''',
+
+'deck-air': f'''<section id="demo" class="demo-deck deck-air"><div class="wrap">
+  <p class="eyebrow">What you get</p><h2>Everything the app gives you.</h2>
+  <div class="deck" id="deck">
+    <div class="decktext" id="steps">{steps()}</div>
+    <div class="deckmedia" id="stage">{slides()}</div>
+  </div>
+</div></section>''',
+
+'rail': f'''<section id="demo" class="demo-rail"><div class="wrap">
+  <p class="eyebrow">What you get</p><h2>Everything the app gives you.</h2>
+  <div class="railnav" id="railnav" role="tablist" aria-label="Features"></div>
+  <div class="railgrid">
+    <div class="railtext" id="steps">
+        {steps()}
+    </div>
+    <div class="railmedia frame" id="stage">
+        {slides()}
+    </div>
+  </div>
+  <div class="railprog"><i id="railfill"></i></div>
+</div></section>''',
+}
+
+NAV_SWATCHES = ('<div class="swatches" id="swatches" role="group" aria-label="Change the look">'
+                + swatches() + '</div>')
 
 BODY = f'''
 <div class="backdrop" id="backdrop"><div class="bd-layer" id="bd-a"></div><div class="bd-layer" id="bd-b"></div><div class="bd-scrim"></div></div>
 
 <nav class="nav"><div class="nav-in">
-  <a href="#top" class="logo"><span class="mark">YC</span><span class="wm">You<b>Coded</b> <i>Assistant</i><em>Agentic AI for Everyone</em></span></a>
+  <a href="#top" class="logo"><span class="mark">YC</span><span class="wm">You<b>Coded</b> <i>Assistant</i><em>Agents for everyone</em></span></a>
   <div class="nav-right">
-    <div class="swatches" id="swatches" role="group" aria-label="Change the look">
-      {swatches()}
-    </div>
+    {{NAVPICKER}}
     <ul class="nav-links"><li><a href="#about">About</a></li><li><a href="#demo">Features</a></li><li><a href="#faq">FAQ</a></li></ul>
   </div>
 </div></nav>
@@ -227,17 +434,7 @@ BODY = f'''
   </div>
 </div></section>
 
-<section id="demo"><div class="wrap">
-  <p class="eyebrow">What you get</p><h2>Everything the app gives you.</h2>
-  <div class="theater">
-    <div class="steps" id="steps">
-        {steps()}
-    </div>
-    <div class="stagewrap"><div class="stage frame" id="stage">
-        {slides()}
-    </div><div class="dots" id="dots"></div></div>
-  </div>
-</div></section>
+{{DEMOSECTION}}
 
 <!-- INTEGRATIONS — restored from the pre-1.3 page (commit 75b1ede6^). The
      tag list, every description, the icons and the note are the originals;
@@ -300,9 +497,9 @@ BODY = f'''
 
 <section id="gallery"><div class="wrap">
   <p class="eyebrow">Gallery</p><h2>See what people have built.</h2>
-</div><div class="gal">
+</div><div class="galwrap"><div class="gal">
       {gallery()}
-</div></section>
+</div></div></section>
 
 <footer><div class="wrap"><div class="panel foot">
   <a href="#top" class="logo"><span class="mark">YC</span><span class="wm">You<b>Coded</b></span></a>
@@ -374,7 +571,13 @@ function applyTheme(slug){
   next.style.background = backdropCss(t);
   next.style.backgroundSize = 'cover'; next.style.backgroundPosition = 'center';
   next.style.opacity = 1; cur.style.opacity = 0; useA = !useA;
-  document.querySelectorAll('.sw').forEach(function(s){ s.classList.toggle('on', s.dataset.theme === slug); });
+  // '.mascot' is the 2026-08-30 mascot picker; '.sw' the older colour swatches.
+  document.querySelectorAll('[data-now]').forEach(function(n){ n.textContent = t.name; });
+  document.querySelectorAll('.sw, .mascot').forEach(function(s){
+    var on = s.dataset.theme === slug;
+    s.classList.toggle('on', on);
+    s.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
   try { localStorage.setItem('yc-mock-theme', slug); } catch(e){}
   // The demo is the real app's interface, and it keeps its theme under this
   // key (same origin, so we share storage): set it before boot, sync it after.
@@ -383,6 +586,22 @@ function applyTheme(slug){
   syncEmbedTheme();
   if (typeof maskEmbed === 'function') maskEmbed();
 }
+
+// --- Gallery scroller: dissolve an end only while there is more that way.
+(function(){
+  var gal = document.querySelector('.gal');
+  if (!gal) return;
+  function fade(){
+    var max = gal.scrollWidth - gal.clientWidth;
+    gal.style.setProperty('--fade-l', (gal.scrollLeft > 8 ? 72 : 0) + 'px');
+    gal.style.setProperty('--fade-r', (gal.scrollLeft < max - 8 ? 72 : 0) + 'px');
+  }
+  gal.addEventListener('scroll', fade, { passive: true });
+  addEventListener('resize', fade);
+  fade();
+  // The screenshots are lazy-loaded, so scrollWidth is wrong until they land.
+  gal.querySelectorAll('img').forEach(function(i){ i.addEventListener('load', fade); });
+})();
 
 // --- Live demo: boot the real app in the iframe; theme it with the page.
 var currentTheme = 'midnight';
@@ -427,7 +646,12 @@ if (embed) {
   embed.querySelector('.embed-interact').addEventListener('click', function(){ embed.classList.add('interactive'); });
   // Also boot once it scrolls into view, unless the visitor asked for less motion.
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-    new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) bootEmbed(); }); }, { threshold: 0.6 }).observe(embed);
+    // A "most of the embed is visible" threshold never becomes true when the
+    // embed is TALLER than the window (763px in an 813px viewport leaves it
+    // just short at rest), so D1's demo sat on its dark poster until the
+    // visitor scrolled. Fire instead when any part of it reaches the middle
+    // band of the window.
+    new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) bootEmbed(); }); }, { rootMargin: '-20' + String.fromCharCode(37) + ' 0px -20' + String.fromCharCode(37) + ' 0px', threshold: 0 }).observe(embed);
   }
 }
 
@@ -437,35 +661,193 @@ document.querySelectorAll('.acct[data-href]').forEach(function(card){
   card.addEventListener('click', function(e){ if (!e.target.closest('a')) go(); });
   card.addEventListener('keydown', function(e){ if (e.key === 'Enter') go(); });
 });
-document.getElementById('swatches').addEventListener('click', function(e){
-  var b = e.target.closest('.sw'); if (b) applyTheme(b.dataset.theme);
+// Delegated on the document: the mascot variants drop the #swatches container
+// entirely, and binding to it threw before applyTheme() ever ran.
+document.addEventListener('click', function(e){
+  var b = e.target.closest('.sw, .mascot'); if (b) applyTheme(b.dataset.theme);
 });
 applyTheme(%s);
 
 // --- Sticky feature theater: the step nearest the middle owns the pinned stage.
-var steps = [].slice.call(document.querySelectorAll('.step'));
+// --- "What you get": one shared show(i), four ways of choosing i ----------
+// CORE_JS is interpolated by Python's percent-formatting, so a literal
+// percent sign anywhere in here breaks the build -- INCLUDING the modulo
+// operator, which is how it bit this time, and including this comment if it
+// spelled the character out. Percent signs come from fromCharCode below;
+// wrap-around is written as a conditional instead of modulo.
+var PCT = String.fromCharCode(37);
+var steps  = [].slice.call(document.querySelectorAll('.step'));
 var slides = [].slice.call(document.querySelectorAll('#stage > *'));
 var dotsEl = document.getElementById('dots');
-steps.forEach(function(_, i){ var d = document.createElement('button'); d.className='dot';
-  d.onclick = function(){ steps[i].scrollIntoView({block:'center', behavior:'smooth'}); }; dotsEl.appendChild(d); });
-var dots = [].slice.call(dotsEl.children), cur = -1;
+var dots = [];
+if (dotsEl) {
+  steps.forEach(function(_, i){ var d = document.createElement('button'); d.className='dot';
+    d.onclick = function(){ steps[i].scrollIntoView({block:'center', behavior:'smooth'}); }; dotsEl.appendChild(d); });
+  dots = [].slice.call(dotsEl.children);
+}
+var cur = -1;
 function show(i){
-  if (i === cur) return; cur = i;
+  if (i === cur) return;
+  var prev = cur; cur = i;
   slides.forEach(function(s, n){ s.classList.toggle('on', n === i);
     if (s.tagName === 'VIDEO') { n === i ? s.play().catch(function(){}) : s.pause(); } });
-  steps.forEach(function(s, n){ s.classList.toggle('active', n === i); });
+  steps.forEach(function(s, n){
+    s.classList.toggle('active', n === i);
+    // 'past' lets a replaced block leave UPWARDS while the new one arrives from
+    // below, so the swap has a direction instead of a crossfade.
+    s.classList.toggle('past', n < i);
+  });
   dots.forEach(function(d, n){ d.classList.toggle('on', n === i); });
+  var now = document.getElementById('pinnow'); if (now) now.textContent = String(i + 1);
+  if (prev !== i && typeof onShow === 'function') onShow(i);
 }
-function onScroll(){
-  var mid = innerHeight / 2, best = 0, bd = 1e9;
-  steps.forEach(function(s, n){ var r = s.getBoundingClientRect();
-    var d = Math.abs(r.top + r.height / 2 - mid); if (d < bd) { bd = d; best = n; } });
-  show(best);
-  // The floating pill is now a "back to the download buttons" control: the
-  // download buttons live in the hero, so it pulls you to the top.
+var onShow = null;
+
+// The floating pill is a "back to the download buttons" control, and the
+// download buttons live in the hero -- so it pulls you to the top. Runs in
+// every style, which is why it is not inside any of the blocks below.
+addEventListener('scroll', function(){
   document.getElementById('topcta').classList.toggle('show', scrollY > innerHeight * 0.9);
+}, { passive: true });
+
+// --- THEATER (original): the step nearest the middle of the window wins.
+if (document.querySelector('.demo-theater')) {
+  var onTheater = function(){
+    var mid = innerHeight / 2, best = 0, bd = 1e9;
+    steps.forEach(function(s, n){ var r = s.getBoundingClientRect();
+      var d = Math.abs(r.top + r.height / 2 - mid); if (d < bd) { bd = d; best = n; } });
+    show(best);
+  };
+  addEventListener('scroll', onTheater, { passive: true }); onTheater();
 }
-addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+// --- PINNED: the section holds still and the feature inside it is replaced.
+if (document.querySelector('.demo-pinned')) {
+  var track = document.getElementById('pintrack');
+  var fill  = document.getElementById('pinfill');
+  // 46vh of scroll buys one feature. The track has to be taller than the
+  // window by exactly that much per step or the last one never arrives.
+  track.style.height = (steps.length * 46) + 'vh';
+  var onPin = function(){
+    var span = track.offsetHeight - innerHeight;
+    if (span <= 0) return;
+    var p = Math.min(1, Math.max(0, -track.getBoundingClientRect().top / span));
+    show(Math.min(steps.length - 1, Math.floor(p * steps.length * 0.999)));
+    if (fill) fill.style.width = (p * 100) + PCT;
+  };
+  addEventListener('scroll', onPin, { passive: true });
+  addEventListener('resize', onPin);
+  onPin();
+}
+
+// --- DECK: each feature is a card that sticks and the next slides over it.
+if (document.querySelector('.demo-deck')) {
+  steps.forEach(function(st, i){
+    st.style.setProperty('--i', String(i));
+    // Rehome the clip INTO the card. Building it this way in markup would mean
+    // a second copy of steps()/slides() to keep in sync for one layout.
+    var copy = document.createElement('div'); copy.className = 'deckcopy';
+    while (st.firstChild) copy.appendChild(st.firstChild);
+    var clip = document.createElement('div'); clip.className = 'deckclip';
+    if (slides[i]) clip.appendChild(slides[i]);
+    st.appendChild(clip); st.appendChild(copy);
+  });
+  var depth = document.querySelector('.deck-depth, .deck-fade');
+  // Where each card WOULD be if none of them were stuck. Measuring the cards
+  // themselves is wrong -- a stuck card reports its stuck position, so the
+  // numbers came out garbage unless the page happened to be at the very top.
+  // The container is never sticky, and every card is the same height, so the
+  // whole ladder derives from those two facts and holds at any scroll position.
+  var base = 0, stride = 0, stick = 0;
+  var flow = document.querySelector('.decktext');
+  function remeasure(){
+    var mb = parseFloat(getComputedStyle(steps[0]).marginBottom) || 0;
+    stride = steps[0].offsetHeight + mb;
+    stick = parseFloat(getComputedStyle(steps[0]).top) || 0;
+    base = flow.getBoundingClientRect().top + scrollY;
+  }
+  function flowY(n){ return base + n * stride; }
+  remeasure();
+  addEventListener('resize', function(){ remeasure(); onDeck(); });
+  var onDeck = function(){
+    // 'd' is how many card-lengths the scroll has travelled since this card
+    // reached the top -- a CONTINUOUS number, not a count of cards on top of it.
+    //
+    // This is the fix for the jank. It used to be an integer that jumped when
+    // the active card changed, with a .35s transition smoothing the jump; at
+    // any real scrolling speed every card was mid-transition, so a stack of
+    // half-faded cards was on screen at once and none of them ever finished
+    // disappearing. Tied to scroll position instead, each card is at exactly
+    // the opacity its position calls for on every frame, and the transition is
+    // off (see .deck-fade in the stylesheet).
+    //
+    // It also removes the special case for the LAST card: it can never be
+    // covered, so a count-of-cards-on-top left it at zero forever and it slid
+    // off the top as an intact slab. Its distance travelled keeps rising like
+    // everything else's, so it dissolves on its way out for free.
+    var best = 0, head = scrollY + stick;
+    steps.forEach(function(s, n){
+      var y = flowY(n);
+      if (head >= y - 2) best = n;
+      if (!depth) return;
+      var d;
+      if (n === steps.length - 1) {
+        // The last card is measured differently ON PURPOSE. Distance travelled
+        // would start dimming it the moment it arrives, while it is still the
+        // only thing on screen and supposed to be resting. Nothing can cover
+        // it, so what marks its exit is rising ABOVE the line it rests on --
+        // which only happens once the deck runs out underneath it.
+        d = (stick - s.getBoundingClientRect().top) / (s.offsetHeight * 0.55);
+      } else {
+        d = (head - y) / stride;
+      }
+      d = Math.max(0, Math.min(2.2, d));
+      s.style.setProperty('--d', d.toFixed(3));
+      s.classList.toggle('buried', d > 0.002);
+    });
+    show(best);
+  };
+  addEventListener('scroll', onDeck, { passive: true }); onDeck();
+}
+
+// --- RAIL: nothing scroll-driven. Pick one, or let it advance on its own.
+if (document.querySelector('.demo-rail')) {
+  var nav = document.getElementById('railnav');
+  var prog = document.querySelector('.railprog');
+  var timer = null, paused = false;
+  steps.forEach(function(st, i){
+    var b = document.createElement('button');
+    b.className = 'railtab'; b.type = 'button'; b.setAttribute('role', 'tab');
+    // The label carries a "Coming after 1.3" chip inside it; a tab wants the
+    // name only, so read the label's own text node rather than its textContent.
+    var lab = st.querySelector('.step-label');
+    var clone = lab ? lab.cloneNode(true) : null;
+    if (clone) { var chip = clone.querySelector('.rmchip'); if (chip) chip.remove(); }
+    b.textContent = clone ? clone.textContent.trim() : ('0' + (i + 1));
+    b.onclick = function(){ stop(); show(i); };
+    nav.appendChild(b);
+  });
+  var tabs = [].slice.call(nav.children);
+  function arm(){
+    if (paused || timer) return;
+    if (prog) { prog.classList.remove('run'); void prog.offsetWidth; prog.classList.add('run'); }
+    timer = setTimeout(function(){ timer = null; show(cur + 1 >= steps.length ? 0 : cur + 1); arm(); }, 6000);
+  }
+  // A click is the visitor taking over: the carousel stops for good rather
+  // than yanking them off the feature they just chose.
+  function stop(){ paused = true; if (timer) { clearTimeout(timer); timer = null; }
+    if (prog) prog.classList.remove('run'); }
+  onShow = function(i){ tabs.forEach(function(t, n){ t.classList.toggle('on', n === i); }); };
+  var host = document.querySelector('.demo-rail');
+  host.addEventListener('mouseenter', function(){ if (!paused && timer) { clearTimeout(timer); timer = null;
+    if (prog) prog.classList.remove('run'); } });
+  host.addEventListener('mouseleave', function(){ arm(); });
+  show(0);
+  // Only start once it is actually on screen -- otherwise it has cycled twice
+  // before the visitor scrolls down to it.
+  new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) arm(); }); },
+    { threshold: 0.35 }).observe(host);
+}
 
 // --- Integrations: click a service to read what it does (restored) ---
 document.querySelectorAll('.integration-tag').forEach(function(tag){
@@ -488,7 +870,7 @@ document.querySelectorAll('.integration-tag').forEach(function(tag){
 document.getElementById('topcta').onclick = function(){ scrollTo({ top: 0, behavior: 'smooth' }); };
 '''
 
-def page(title, css, default_theme, header='centred', extra_js=''):
+def page(title, css, default_theme, header='centred', extra_js='', navpicker=True, body_class='', demo='theater'):
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -502,8 +884,8 @@ def page(title, css, default_theme, header='centred', extra_js=''):
 {css}
 </style>
 </head>
-<body>
-{BODY.replace('{HEADER}', HEADERS[header])}
+<body class="{body_class}">
+{BODY.replace('{HEADER}', HEADERS[header]).replace('{NAVPICKER}', NAV_SWATCHES if navpicker else '').replace('{DEMOSECTION}', DEMOS[demo])}
 <script>
 {CORE_JS % (json.dumps(THEMES), json.dumps(default_theme))}
 {extra_js}
@@ -516,6 +898,7 @@ OUT = BASE + '/mockups/'
 MODAL_CSS  = open(BASE + '/css_modal.css').read()
 HEADER_CSS = open(BASE + '/css_d_headers.css').read()
 INTEG_CSS  = open(BASE + '/css_integrations.css').read()
+THEATER_CSS = open(BASE + '/css_theater.css').read()
 EMBED_CSS  = open(BASE + '/css_embed_acct.css').read()
 
 def patch_modal(js):
@@ -573,17 +956,115 @@ MODAL_VARS = {
     'css_f.css': ':root{--m-solid:#0F1115;--m-bg:#0F1115;--m-fg:var(--tx);--m-dim:var(--tx-dim);--m-line:var(--line)}',
 }
 
+CYCLER_JS = r'''
+// ---------------------------------------------------------------------------
+// Hero word cycler + theme sync, ported from the live page. Three words, each
+// carrying one of the four themes in with it; the mascot picker's highlight
+// follows, because applyTheme() already rings the matching chip.
+//
+// Meadow Mist sits the intro out -- there are three words and four themes. The
+// arc is dark -> pop -> soft, and it must END on the page's default theme, so
+// the light pastel one is the resting state.
+// ---------------------------------------------------------------------------
+(function(){
+  var cycler = document.querySelector('.word-cycler');
+  if (!cycler) return;
+
+  var HERO_SEQUENCE = [
+    // 100ms ahead of each word's CSS delay (.62 / 1.40 / 2.18s) so the 0.5s
+    // theme crossfade completes exactly as the word settles.
+    { theme: 'golden-sunbreak',     at: 520  },   // "Useful."
+    { theme: 'halftone-dimension',  at: 1300 },   // "Fun."
+    { theme: 'cotton-candy-sky',    at: 2080 }    // "Yours." - rests here
+  ];
+
+  // Each word is measured at its natural size by cloning it into the cycler
+  // (so it inherits font/weight/italic), then the cycler's width is driven to
+  // that number. Because the hero is centre-aligned, animating the width is
+  // what slides "Make AI X" back to centre on every word change.
+  function measure(){
+    var out = [];
+    cycler.querySelectorAll('.cycler-word').forEach(function(w){
+      var c = w.cloneNode(true);
+      c.style.cssText = 'position:absolute;left:-9999px;top:0;display:inline-block;' +
+        'width:auto;opacity:1;transform:none;animation:none;white-space:nowrap;visibility:hidden;';
+      cycler.appendChild(c);
+      out.push(c.getBoundingClientRect().width);
+      cycler.removeChild(c);
+    });
+    return out;
+  }
+  // +4px covers the text-stroke on "Yours." (stroke paints wider than the
+  // layout box getBoundingClientRect measures) and subpixel rounding.
+  function setWidth(px){ cycler.style.setProperty('--cycler-width', (px + 4) + 'px'); }
+
+  var timers = [];
+  function endIntro(){ document.body.classList.remove('intro-mode'); }
+  function cancel(){ timers.forEach(clearTimeout); timers = []; endIntro(); }
+  // A click on any mascot is the visitor taking over -- stop the scripted
+  // sequence so it can't yank the theme back out from under them.
+  document.addEventListener('click', function(e){ if (e.target.closest('.mascot, .sw')) cancel(); });
+
+  // Centre the headline row in the window for the length of the intro, the way
+  // the original does. Only .flankrow is moved -- NEVER an ancestor of the live
+  // demo, because a transform there would change what the app's own
+  // backdrop-filter resolves against.
+  var flank = document.querySelector('.flankrow');
+  function setLift(){
+    if (!flank || !document.body.classList.contains('intro-mode')) return;
+    flank.style.setProperty('--intro-lift', '0px');
+    var r = flank.getBoundingClientRect();
+    var lift = Math.round(innerHeight / 2 - (r.top + r.height / 2));
+    flank.style.setProperty('--intro-lift', (lift > 0 ? lift : 0) + 'px');
+  }
+  setLift();
+  // The headline is set in a web font; its box moves when that font arrives.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(setLift);
+
+  var widths = measure();
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // Reduced motion: pin the final word and its theme, no cycling at all.
+    document.body.classList.add('cycler-static');
+    if (widths[2]) setWidth(widths[2]);
+    applyTheme('cotton-candy-sky');
+    endIntro();
+    return;
+  }
+  if (widths.length) setWidth(widths[0]);
+  HERO_SEQUENCE.forEach(function(step, i){
+    timers.push(setTimeout(function(){
+      applyTheme(step.theme);
+      if (widths[i]) setWidth(widths[i]);
+    }, step.at));
+  });
+  // 'Yours.' starts at 2180 and settles ~2344 (its bump is done at 20% of
+  // 820ms). The rise fires right on that settle now -- the pause that used to
+  // sit between them is what read as a slow tail.
+  timers.push(setTimeout(endIntro, 2360));
+})();
+'''
+
+# Checkpoint 2026-08-30. Destin settled on the FLANK header with the DECK-FADE
+# features section; that is `mockup-landing.html`. Two alternatives stay built
+# because they are the ones he might still go back to. Everything else -- the
+# D1-D4 headers, skins E and F, round-one A/B/C, the Dock and Crown mascot
+# placements, and the tight/depth/air decks -- is parked, NOT deleted: every
+# HEADERS and DEMOS entry is still here, so re-adding a line below brings any
+# of them back.
 BUILDS = [
-    ('mockup-d1-centred.html',   'YouCoded — D1 Centred',    'css_d.css', 'cotton-candy-sky', 'centred'),
-    ('mockup-d2-split.html',     'YouCoded — D2 Split',      'css_d.css', 'cotton-candy-sky', 'split'),
-    ('mockup-d3-appfirst.html',  'YouCoded — D3 App first',  'css_d.css', 'cotton-candy-sky', 'appfirst'),
-    ('mockup-d4-themefirst.html','YouCoded — D4 Theme first','css_d.css', 'cotton-candy-sky', 'themefirst'),
-    ('mockup-e-liquid.html',     'YouCoded — Mockup E: Liquid','css_e.css','meadow-mist',     'centred'),
-    ('mockup-f-frame.html',      'YouCoded — Mockup F: Frame','css_f.css', 'midnight',        'centred'),
+    ('mockup-landing.html',    'YouCoded — Landing',      'css_d.css', 'cotton-candy-sky', 'flank', False, 'deck-fade'),
+    ('mockup-alt-pinned.html', 'YouCoded — Alt: Pinned',  'css_d.css', 'cotton-candy-sky', 'flank', False, 'pinned'),
+    ('mockup-alt-rail.html',   'YouCoded — Alt: Rail',    'css_d.css', 'cotton-candy-sky', 'flank', False, 'rail'),
 ]
-for f, title, css, dflt, hdr in BUILDS:
+for row in BUILDS:
+    f, title, css, dflt, hdr = row[:5]
+    navpicker = row[5] if len(row) > 5 else True
+    demo = row[6] if len(row) > 6 else 'theater'
     sheet = open(BASE + '/' + css).read() + MODAL_VARS[css] + MODAL_CSS + INTEG_CSS + EMBED_CSS
     if css == 'css_d.css':
-        sheet += HEADER_CSS
-    open(OUT + f, 'w').write(page(title, sheet, dflt, header=hdr, extra_js=MODAL_JS))
+        sheet += HEADER_CSS + THEATER_CSS
+    js = MODAL_JS + (CYCLER_JS if '{CYCLER}' not in HEADERS[hdr] and 'word-cycler' in HEADERS[hdr] else '')
+    body_class = 'intro-mode' if 'word-cycler' in HEADERS[hdr] else ''
+    open(OUT + f, 'w').write(page(title, sheet, dflt, header=hdr, extra_js=js,
+                                  navpicker=navpicker, body_class=body_class, demo=demo))
     print('wrote', f)

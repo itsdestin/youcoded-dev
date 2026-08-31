@@ -1,0 +1,174 @@
+/* ==========================================================================
+   "What you get" — three alternatives to the original scrolling theater.
+   All three drive the SAME nine .step blocks and nine <video> clips, so the
+   only thing that differs is how you move between them.
+   ========================================================================== */
+
+/* ---- T1 PINNED: the section locks to the window and features replace each
+   other inside a fixed frame. Scroll cost is 46vh per feature instead of the
+   original 58vh of dim text, and nothing is ever shown at 34% opacity. ---- */
+.demo-pinned{padding-bottom:0}
+.pintrack{position:relative}                     /* height set in JS: N * 46vh */
+.pinstage{position:sticky;top:0;height:100vh;display:flex;align-items:center}
+.pingrid{display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:48px;
+  align-items:center;width:100%;position:relative}
+.pintext{position:relative;min-height:270px}
+/* Every step occupies the same box; only the current one is on screen. This
+   is the "replace in place" -- no column of dimmed text scrolling past. */
+.demo-pinned .step{position:absolute;inset:0;min-height:0;opacity:0;
+  transform:translateY(16px);pointer-events:none;
+  transition:opacity .3s ease, transform .38s cubic-bezier(.22,1,.36,1)}
+.demo-pinned .step.active{opacity:1;transform:none;pointer-events:auto}
+.demo-pinned .step.past{transform:translateY(-16px)}
+.pinmedia{position:relative;aspect-ratio:16/10}
+.pinmedia>*{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:0;transition:opacity .28s}
+.pinmedia>.on{opacity:1}
+.pinbar{position:absolute;left:30px;right:30px;bottom:-34px;height:3px;border-radius:2px;
+  background:rgba(var(--fg-rgb),.14);overflow:hidden}
+.pinbar i{display:block;height:100%;width:0;background:var(--accent);border-radius:2px;
+  transition:width .18s linear}
+.pincount{position:absolute;right:30px;bottom:-58px;font-family:var(--font-mono);
+  font-size:.68rem;letter-spacing:.1em;opacity:.6}
+.pincount b{color:var(--accent)}
+
+/* ---- T2 DECK: one card per feature, each sticking under the last so they
+   pile up as you scroll.
+
+   Destin, 2026-08-30 — four changes over the first pass:
+     * the 34vh of background BETWEEN cards is gone. That gap was also the
+       scroll budget for each card, so it is now supplied by the card's own
+       height instead: the next card slides straight up over the last with
+       nothing empty in between.
+     * sides alternate — clip left on odd cards, right on even.
+     * the copy is top-aligned with the clip rather than centred against it.
+     * the LAST card gets the same dwell as the rest (it had margin-bottom:0,
+       so it was swept off with the section instead of coming to rest on the
+       pile). The trailing spacer on .deck is what buys it that.
+
+   Three flavours, set by a modifier class on the section:
+     .deck-tight  cards butt against each other, small fan offset
+     .deck-depth  same, but buried cards recede — scaled down and dimmed
+     .deck-air    a beat of background between cards, bigger fan
+   ---- */
+.demo-deck .deck{margin-top:26px}
+.demo-deck .decktext{display:flex;flex-direction:column}
+.demo-deck .deckmedia{display:none}              /* the clip rides inside each card */
+.demo-deck .step{min-height:0;opacity:1;position:sticky;
+  /* Each card stops lower than the one before, so the stack fans and the edges
+     of the cards underneath stay visible. --i is set in JS. */
+  top:calc(80px + var(--i,0) * var(--fan,12px));
+  display:grid;grid-template-columns:.92fr 1fr;gap:34px;align-items:start;
+  padding:26px 30px;border-radius:var(--radius);
+  background:var(--glass-prose);
+  -webkit-backdrop-filter:blur(var(--blur-prose)) saturate(1.5);
+  backdrop-filter:blur(var(--blur-prose)) saturate(1.5);
+  border:1px solid var(--hair);
+  box-shadow:inset 0 1px 0 var(--glass-hi), 0 26px 60px -28px var(--ink);
+  transition:transform .35s ease, opacity .35s ease, filter .35s ease}
+/* Alternate which side the clip is on. The clip is the FIRST child in the DOM,
+   so an even card just reorders it and mirrors the column ratio. */
+.demo-deck .step:nth-child(even){grid-template-columns:1fr .92fr}
+.demo-deck .step:nth-child(even) .deckclip{order:2}
+.demo-deck .step .deckclip{position:relative;aspect-ratio:16/10;border-radius:12px;
+  overflow:hidden;border:1px solid var(--hair)}
+.demo-deck .step .deckclip video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* The roadmap row has no clip -- it has a drawn sketch, built to CROSSFADE on
+   the shared stage, so it sits at opacity 0 unless it is the active slide. In
+   a deck every card owns its own media and nothing crossfades, so that left
+   the last card with an empty panel. It is always on here, and fills the box. */
+.demo-deck .step .deckclip .sketch{position:absolute;inset:0;opacity:1;
+  border-radius:0;border:0;padding:20px;font-size:.72rem;align-content:center}
+.demo-deck .step .deckcopy{min-width:0}
+/* A card is a much wider column than the original 300px rail, so the copy is
+   set bigger here -- it reads better AND it fills more of the card. */
+.demo-deck .step h3{font-size:1.72rem}
+.demo-deck .step p{font-size:1.02rem;margin-top:15px}
+/* The last card still needs a beat stuck at the top, or it never reads as
+   joining the pile -- but 46vh of it left 475px of bare wallpaper under the
+   final card before the next section (measured 2026-08-30). 16vh is enough for
+   the card to land and be read, and the section then ends on the normal
+   between-section gap. Its own bottom margin goes too, or that stacks on top. */
+/* On .decktext, NOT on .deck. A sticky card is bounded by its own parent, and
+   the cards live in .decktext -- a spacer outside it added trailing blank page
+   and bought the last card no dwell whatsoever, which is why it never came to
+   rest and slid off with the pile. */
+.demo-deck .decktext::after{content:'';display:block;height:var(--tail,8vh)}
+.demo-deck .step:last-child{margin-bottom:0}
+
+.deck-tight{--fan:12px}
+.deck-tight .step{margin-bottom:0}
+
+.deck-depth{--fan:10px}
+.deck-depth .step{margin-bottom:0;transform-origin:50% 0}
+/* A covered card shrinks and dulls, so the pile reads as depth rather than as
+   a flat sheet of overlapping rectangles. 'buried' is set in JS. */
+.deck-depth .step.buried{transform:scale(calc(1 - var(--d,0) * 0.018));
+  opacity:calc(1 - var(--d,0) * 0.13);filter:saturate(.82)}
+
+.deck-air{--fan:20px}
+.deck-air .step{margin-bottom:13vh}
+
+/* deck-fade — air's spacing plus depth's recede, except a card does not just
+   dim: it goes ALL THE WAY OUT once the next one is fully over it. Two
+   consequences that had to be handled together:
+     * the fan stops accumulating after two cards (min(--i,2)). Left to grow,
+       card nine would sit 210px down the window with nothing visible above it
+       -- the offset only makes sense while there is something to peek out.
+     * with everything behind it invisible, each card lands in the same place
+       as the last, so the section reads as replace-in-place with a physical
+       hand-off rather than as a growing pile. */
+/* fan:0 is the fix for the jank, not a style choice. With a fan, cards 0-2
+   stopped at 80/96/112px while 3-8 all shared 112 -- so the first three left a
+   strip poking out above the live card while they faded and the rest did not.
+   Every card lands in the same place now, so each one covers the last exactly.
+   The sense of depth comes from the scale on the card behind, not from an
+   offset. tail:0 for the same reason the fan went: nothing peeks out, so the
+   last card has nothing to sit stuck FOR -- it dissolves on its way out
+   instead (see the deck block in CORE_JS). */
+/* tail:16vh is the last card's rest. At 0 it never stuck at all: the deck ended
+   on its bottom edge, so it slid off in lockstep with the whole pile instead of
+   climbing over card 8 and coming to a stop the way every other card does. It
+   holds still for that stretch and then dissolves on the way out (the last-card
+   branch in CORE_JS), so the stretch is spent on the card, not on empty page. */
+.deck-fade{--fan:0px;--tail:16vh}
+.deck-fade .step{margin-bottom:9vh;transform-origin:50% 0;top:80px}
+/* No transition here on purpose: --d is driven straight off scroll position,
+   so every frame is already the right value. A transition would only make the
+   card lag behind the scroll, which is exactly the jank this replaced. */
+.deck-fade .step{transition:none}
+.deck-fade .step.buried{
+  transform:scale(calc(1 - var(--d,0) * 0.03));
+  opacity:calc(1 - var(--d,0) * 0.85);      /* gone a little past one card-length */
+  filter:saturate(.85);pointer-events:none}
+
+/* ---- T3 RAIL: no scroll driving anything. Pick a feature and it swaps in
+   place; it advances on its own if you leave it alone. ---- */
+.demo-rail .railnav{display:flex;flex-wrap:wrap;gap:7px;margin-top:22px}
+.railtab{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;
+  padding:8px 13px;border-radius:999px;cursor:pointer;color:var(--fg2);
+  background:var(--glass);border:1px solid var(--hair);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
+  transition:.2s}
+.railtab:hover{color:var(--fg)}
+.railtab.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.railgrid{display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:44px;
+  align-items:center;margin-top:22px}
+.demo-rail .railtext{position:relative;min-height:250px}
+.demo-rail .step{position:absolute;inset:0;min-height:0;opacity:0;transform:translateY(12px);
+  pointer-events:none;transition:opacity .26s ease, transform .32s cubic-bezier(.22,1,.36,1)}
+.demo-rail .step.active{opacity:1;transform:none;pointer-events:auto}
+.railmedia{position:relative;aspect-ratio:16/10}
+.railmedia>*{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:0;transition:opacity .26s}
+.railmedia>.on{opacity:1}
+.railprog{margin-top:16px;height:3px;border-radius:2px;background:rgba(var(--fg-rgb),.14);overflow:hidden}
+.railprog i{display:block;height:100%;width:0;background:var(--accent);border-radius:2px}
+.railprog.run i{animation:railsweep 6s linear forwards}
+@keyframes railsweep{from{width:0}to{width:100%}}
+
+@media(max-width:1000px){
+  .pingrid,.railgrid,.demo-deck .step{grid-template-columns:1fr}
+  .pinstage{position:relative;height:auto;padding:30px 0}
+  .demo-pinned .step{position:relative;inset:auto;opacity:1;transform:none}
+}
