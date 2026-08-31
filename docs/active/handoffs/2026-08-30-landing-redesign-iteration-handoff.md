@@ -23,23 +23,21 @@ Destin has settled on one design. `mockup-landing.html` is it:
 - **Deck-fade features section** — one card per feature, each sticking and
   being covered by the next, with covered cards dissolving to nothing.
 
-Two alternatives stay built because he might go back to them:
-`mockup-alt-pinned.html` (the section locks and features replace in place) and
-`mockup-alt-rail.html` (pick a feature from a list; the whole section is one
-screen, and the page is 3,300px shorter).
-
-Everything else is **parked, not deleted** — the D1–D4 headers, skins E and F,
-round-one A/B/C, the Dock and Crown mascot placements, and the tight/depth/air
-decks all still have their `HEADERS` / `DEMOS` entries in `build.py`. Adding one
-line to `BUILDS` brings any of them back.
+**It is the only page built.** Everything else is **parked, not deleted** — the
+D1–D4 headers, skins E and F, round-one A/B/C, the Dock and Crown mascot
+placements, the theater / pinned / rail features sections and the
+tight/depth/air decks all still have their `HEADERS` / `DEMOS` entries in
+`build.py`. Adding one line to `BUILDS` brings any of them back for a
+side-by-side, which is also why `compare.html` and its tab shell are still
+here with a single tab in them.
 
 ## Boot it
 
 ```bash
 cd docs/active/prototypes/landing-redesign-mockups
 bash setup.sh            # symlinks (media, media-local, mascots, gallery, icons, site), wallpapers, compare page
-python3 build.py         # regenerates the three pages into mockups/
-python3 serve.py 8901    # http://localhost:8901/compare.html   keys 1-3 / arrows
+python3 build.py         # regenerates mockup-landing.html into mockups/
+python3 serve.py 8901    # http://localhost:8901/mockup-landing.html
 ```
 
 **Serve with `serve.py`, never `python3 -m http.server`.** The latter sends no

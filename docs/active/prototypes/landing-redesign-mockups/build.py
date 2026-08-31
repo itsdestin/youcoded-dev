@@ -1044,17 +1044,14 @@ CYCLER_JS = r'''
 })();
 '''
 
-# Checkpoint 2026-08-30. Destin settled on the FLANK header with the DECK-FADE
-# features section; that is `mockup-landing.html`. Two alternatives stay built
-# because they are the ones he might still go back to. Everything else -- the
-# D1-D4 headers, skins E and F, round-one A/B/C, the Dock and Crown mascot
-# placements, and the tight/depth/air decks -- is parked, NOT deleted: every
-# HEADERS and DEMOS entry is still here, so re-adding a line below brings any
-# of them back.
+# Checkpoint 2026-08-30. One page: the FLANK header with the DECK-FADE features
+# section. Every other arrangement is PARKED, not deleted -- the D1-D4 headers,
+# skins E and F, round-one A/B/C, the Dock and Crown mascot placements, the
+# theater/pinned/rail features sections and the tight/depth/air decks all still
+# have their HEADERS and DEMOS entries below. Adding a line here brings any of
+# them back for a side-by-side.
 BUILDS = [
-    ('mockup-landing.html',    'YouCoded — Landing',      'css_d.css', 'cotton-candy-sky', 'flank', False, 'deck-fade'),
-    ('mockup-alt-pinned.html', 'YouCoded — Alt: Pinned',  'css_d.css', 'cotton-candy-sky', 'flank', False, 'pinned'),
-    ('mockup-alt-rail.html',   'YouCoded — Alt: Rail',    'css_d.css', 'cotton-candy-sky', 'flank', False, 'rail'),
+    ('mockup-landing.html', 'YouCoded — Landing', 'css_d.css', 'cotton-candy-sky', 'flank', False, 'deck-fade'),
 ]
 for row in BUILDS:
     f, title, css, dflt, hdr = row[:5]

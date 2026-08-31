@@ -58,11 +58,10 @@ iframe.on{opacity:1;pointer-events:auto}
 // Newest first — the four header arrangements of D (all share the Skin look),
 // then the other two skins, then the first round.
 var VARIANTS = [
-  // Checkpoint 2026-08-30 — pruned to the chosen direction plus the two
-  // alternatives worth going back to. The rest are parked in build.py.
-  { key:'L', file:'mockup-landing.html',    name:'Landing', desc:'flank header + deck' },
-  { key:'P', file:'mockup-alt-pinned.html', name:'Pinned',  desc:'alt: section locks, replaces in place' },
-  { key:'R', file:'mockup-alt-rail.html',   name:'Rail',    desc:'alt: pick one, one screen' }
+  // One page now. The tab shell stays because it is the stable URL Destin has
+  // been reviewing at, and because the moment a new variant is built it just
+  // needs a line here.
+  { key:'L', file:'mockup-landing.html', name:'Landing', desc:'flank header + deck' }
 ];
 
 var tabsEl = document.getElementById('tabs');
