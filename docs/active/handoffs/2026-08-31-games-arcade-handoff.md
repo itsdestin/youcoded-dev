@@ -73,10 +73,8 @@ chess must now be READ to be played, which is why they are worth re-deciding.
 
 ## Open questions for Destin
 
-- **Is Flappy's pipe gap fair?** Tuned against a bot, never confirmed by a
-  human. The first pass was unplayable and the bot is what caught it — so it is
-  a proxy, not a substitute. Ask him to play a few rounds.
-- **The two chess contrast numbers** in §3 above.
+- Nothing outstanding. Flappy's pipe gap and the chess board's contrast were
+  both settled 2026-08-31 — see the decisions list below.
 
 ## Decisions already taken — do not re-ask
 
@@ -87,6 +85,10 @@ chess must now be READ to be played, which is why they are worth re-deciding.
   never a user setting.
 - **Nothing happens when the assistant finishes** beyond the existing sound and
   status light. No auto-surfacing, no toast, no panel change.
+- **Flappy's pipe gap is final** (2026-08-31, Destin: "flappy pipes are fine").
+  A signed-off feel, not a number to optimise.
+- **The chess board ships `contrast`** (deck `board-contrast`, D-13): full
+  strength, neutral, 2.01-2.97 across the six themes.
 
 ## One more trap, learned this session
 

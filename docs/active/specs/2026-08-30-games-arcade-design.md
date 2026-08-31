@@ -617,9 +617,10 @@ Android `./gradlew test` 200 · worker 298 · 15/15 workbench routes ·
 
 ### Open, for Destin
 
-- **Is Flappy's pipe gap fair?** Tuned against a bot, never confirmed by a
-  human. The first pass was unplayable and the bot is what caught it, so the bot
-  is a proxy and not a substitute.
+- ~~Is Flappy's pipe gap fair?~~ **SETTLED 2026-08-31** (Destin: "flappy pipes
+  are fine"). The gap was tuned against a bot; the bot caught an unplayable
+  first pass, and a human has now confirmed the result. Do not re-tune it
+  without asking — it is a signed-off feel, not a number to optimise.
 - Chess is vertically centred only until it has game chat.
 - Whether solo runs record a history or only a best (§11).
 
