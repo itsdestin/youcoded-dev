@@ -99,7 +99,11 @@
      "settle": 900
     }
    ],
-   "measure": ["[role=dialog][aria-label='Model Providers']", "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Model Providers\"] button')].find(b=>b.textContent.trim()==='Add provider')", "js:document.querySelector('[role=dialog][aria-label=\"Model Providers\"] .scroll-fade')"],
+   "measure": [
+    "[role=dialog][aria-label='Model Providers']",
+    "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Model Providers\"] button')].find(b=>b.textContent.trim()==='Add provider')",
+    "js:document.querySelector('[role=dialog][aria-label=\"Model Providers\"] .scroll-fade')"
+   ],
    "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
   },
   {
@@ -170,7 +174,11 @@
      "settle": 900
     }
    ],
-   "measure": ["[role=dialog][aria-label='Keyboard Shortcuts']", "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Keyboard Shortcuts\"] kbd')].find(k=>k.textContent.includes('Arrow Up/Down'))?.parentElement", "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Keyboard Shortcuts\"] kbd')].find(k=>k.textContent.trim()==='Enter')?.parentElement"],
+   "measure": [
+    "[role=dialog][aria-label='Keyboard Shortcuts']",
+    "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Keyboard Shortcuts\"] kbd')].find(k=>k.textContent.includes('Arrow Up/Down'))?.parentElement",
+    "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Keyboard Shortcuts\"] kbd')].find(k=>k.textContent.trim()==='Enter')?.parentElement"
+   ],
    "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
   },
   {
@@ -267,7 +275,10 @@
      "settle": 600
     }
    ],
-   "measure": ["js:document.querySelector('.glass-overlay.overlay-no-drag.fixed')", "js:[...document.querySelectorAll('.glass-overlay.fixed button')].find(b=>b.textContent.includes('gpt-5.6'))"],
+   "measure": [
+    "js:document.querySelector('.glass-overlay.overlay-no-drag.fixed')",
+    "js:[...document.querySelectorAll('.glass-overlay.fixed button')].find(b=>b.textContent.includes('gpt-5.6'))"
+   ],
    "expect": "[title='Close Session']"
   },
   {
@@ -294,13 +305,14 @@
    ]
   },
   {
-   "name": "games-connect4",
+   "name": "games-picker",
    "actions": [
     {
-     "click": "[title='Connect 4']",
+     "click": "[title='Games']",
      "settle": 900
     }
-   ]
+   ],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Flappy'))"
   },
   {
    "name": "tool-card-expanded",
@@ -327,7 +339,12 @@
   },
   {
    "name": "skills-drawer",
-   "measure": ["js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='★ Favorites only')?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='★ Favorites only')?.parentElement?.firstElementChild", "js:document.querySelector(\"[title='Open marketplace']\")?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))"],
+   "measure": [
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='\u2605 Favorites only')?.parentElement",
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='\u2605 Favorites only')?.parentElement?.firstElementChild",
+    "js:document.querySelector(\"[title='Open marketplace']\")?.parentElement",
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))"
+   ],
    "actions": [
     {
      "click": "[title='Browse skills']",
@@ -338,8 +355,20 @@
   },
   {
    "name": "skills-drawer-end",
-   "measure": ["js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))?.parentElement"],
-   "actions": [{"click": "[title='Browse skills']", "settle": 800}, {"eval": "document.querySelector('.scroll-fade').scrollTop=1e6", "settle": 400}],
+   "measure": [
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))",
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))?.parentElement"
+   ],
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "eval": "document.querySelector('.scroll-fade').scrollTop=1e6",
+     "settle": 400
+    }
+   ],
    "expect": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))"
   },
   {
@@ -551,7 +580,10 @@
   },
   {
    "name": "find-bar",
-   "measure": ["js:document.querySelector(\"[placeholder='Find in chat']\")?.closest('.find-row, .absolute')", "[placeholder='Find in chat']"],
+   "measure": [
+    "js:document.querySelector(\"[placeholder='Find in chat']\")?.closest('.find-row, .absolute')",
+    "[placeholder='Find in chat']"
+   ],
    "actions": [
     {
      "click": "[placeholder^='Message']",
@@ -649,7 +681,13 @@
   },
   {
    "name": "welcome-empty",
-   "measure": ["[title='Settings']", "[title='Projects']", "js:document.querySelector('.header-bar')", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume Session')?.parentElement", "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session')"],
+   "measure": [
+    "[title='Settings']",
+    "[title='Projects']",
+    "js:document.querySelector('.header-bar')",
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume Session')?.parentElement",
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session')"
+   ],
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty",
    "actions": [],
    "sameAsBaseline": true,

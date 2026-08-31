@@ -1,0 +1,186 @@
+{
+  "title": "Games arcade — the shell, before any game is built",
+  "key": "games-arcade-step1",
+  "out": "step1-review.html",
+  "images": "images/games-arcade-step1",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/games-before",
+    "after": "/home/destin/youcoded-dev/scratch/games-after"
+  },
+  "themes": [
+    "dark",
+    "light",
+    "midnight",
+    "creme",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "crops": {
+    "pane": [
+      "games-arcade",
+      "arcade-picker",
+      "460x780+985+28"
+    ],
+    "pane-board": [
+      "games-arcade",
+      "arcade-connect4-board",
+      "460x780+985+28"
+    ],
+    "pane-signedout": [
+      "games-arcade-signedout",
+      "arcade-picker-signedout",
+      "460x780+985+28"
+    ],
+    "pane-empty": [
+      "games-arcade-states",
+      "arcade-picker-empty",
+      "460x780+985+28"
+    ],
+    "pane-degraded": [
+      "games-arcade-degraded",
+      "arcade-picker-degraded",
+      "460x780+985+28"
+    ],
+    "pane-leaderboard": [
+      "games-arcade",
+      "arcade-leaderboard",
+      "460x780+985+28"
+    ],
+    "pane-alone": [
+      "games-arcade-alone",
+      "arcade-leaderboard-alone",
+      "460x780+985+28"
+    ],
+    "chess-disc": [
+      "games-chess-disc",
+      "arcade-chess-disc",
+      "560x620+885+28"
+    ],
+    "chess-outline": [
+      "games-chess-outline",
+      "arcade-chess-outline",
+      "560x620+885+28"
+    ],
+    "chess-fill": [
+      "games-chess-fill",
+      "arcade-chess-fill",
+      "560x620+885+28"
+    ]
+  },
+  "steps": [
+    {
+      "id": "G-1",
+      "surface": "Games pane",
+      "path": "Click the gamepad button in the top bar",
+      "crop": "pane",
+      "headline": "The gamepad button now opens a shelf of four games instead of dropping you straight into Connect 4.",
+      "changed": "Four cards: Flappy, 2048, Connect 4, Chess. The two solo games come first because they are the ones you can play with nobody else around. Each card says the single thing that decides whether you tap it — your best score for the solo games, who is online for the two you play against a friend.",
+      "measured": "1 game before, 4 after; each card carries 1 line of live status",
+      "notice": "You can see whether there is anything worth doing here without clicking anything. Before, you clicked the button and landed in Connect 4's friend list whether or not anyone was there.",
+      "risk": "The button's tooltip changed from \"Connect 4\" to \"Games\", so if you navigate by muscle memory the word is different."
+    },
+    {
+      "id": "G-2",
+      "surface": "Games pane, signed out",
+      "path": "Sign out, then click the gamepad button",
+      "crop": "pane-signedout",
+      "headline": "Signed out you now get the games. Before, the pane was a sign-in wall and nothing else.",
+      "changed": "Flappy and 2048 are playable with no account at all. Connect 4 and Chess still need one, because they need a friend on the other end. A short line under the cards says what signing in adds rather than demanding it up front.",
+      "measured": "0 games playable signed out before; 2 after",
+      "notice": "Someone who has never signed in can open the pane and immediately play. Their best score is kept on this computer and goes onto the friends board later if they do sign in.",
+      "risk": "Two of the four cards still lead to a sign-in step, so the pane is not entirely account-free — the cards say so on their face rather than after a click."
+    },
+    {
+      "id": "G-3",
+      "surface": "Games pane, brand-new install",
+      "path": "First launch, nothing played, nobody online",
+      "crop": "pane-empty",
+      "headline": "On a fresh install every card says what it is rather than going blank.",
+      "changed": "The solo cards read \"Not played yet\" instead of showing a zero, and the two-player cards read \"No friends online\" instead of an empty space. Nothing is hidden and nothing is greyed out.",
+      "measured": "4 of 4 cards carry a status line in the empty case",
+      "notice": "The emptiest possible version of this pane still tells you it works and that two of the four games are ready right now.",
+      "risk": "\"Not played yet\" appears twice on a fresh install, which is repetitive but true."
+    },
+    {
+      "id": "G-4",
+      "surface": "Games pane, game server unreachable",
+      "path": "Open the pane while the multiplayer service is down",
+      "crop": "pane-degraded",
+      "headline": "If the multiplayer service is down the two solo games keep working and only the other two say why.",
+      "changed": "Connect 4 and Chess dim and read \"Can't reach the game server\". Flappy and 2048 are untouched and still show your best scores. There is no error box and nothing red.",
+      "measured": "2 of 4 cards affected by the outage; 2 unaffected",
+      "notice": "An outage in one service looks like an outage in that service, not like the whole pane being broken. You can still play, and the cards that cannot work say so in plain words.",
+      "risk": "The wording is deliberately vague about the cause — we say we cannot reach it rather than guessing why, so it will not be wrong."
+    },
+    {
+      "id": "G-5",
+      "surface": "Flappy, score board",
+      "path": "Games → Flappy",
+      "crop": "pane-leaderboard",
+      "headline": "Each solo game gets a Play button and a board of your friends' best scores, yours filled in.",
+      "changed": "Your row is filled with your theme's highlight colour, the same treatment your own messages get in chat. The column is labelled with the game's own word — \"Pipes cleared\" for Flappy, \"Score\" for 2048 — rather than a generic one.",
+      "measured": "Your row uses the same fill as your chat bubbles; friends' rows use the flat surface",
+      "notice": "You can tell your own line from your friends' at a glance without reading the names.",
+      "risk": "Play does nothing yet — the games themselves are the next step. This screen is the frame they will sit in."
+    },
+    {
+      "id": "G-6",
+      "surface": "Flappy, score board with no friends yet",
+      "path": "Games → Flappy, before adding anyone",
+      "crop": "pane-alone",
+      "headline": "When you are the only one on the board it shows you ranked first, not an empty screen.",
+      "changed": "Your score gets a real numbered row — you are first of one, which is true — and the invitation to add a friend sits underneath it as the next step rather than replacing the board.",
+      "measured": "1 real ranked row instead of an empty panel",
+      "notice": "The most common state in the first weeks reads as \"you are on the board, now bring someone\" rather than \"there is nothing here\".",
+      "risk": "Being ranked first of one could read as hollow. The line underneath is what stops it feeling like a trophy for showing up."
+    },
+    {
+      "id": "G-7",
+      "surface": "Connect 4 board",
+      "path": "Games → Connect 4 → play a friend",
+      "crop": "pane-board",
+      "headline": "Connect 4 now takes its colours from your theme instead of being red, yellow and blue everywhere.",
+      "changed": "Your pieces use your theme's highlight colour and your opponent's use the flat grey, the same way your chat bubbles differ from the assistant's. The blue board frame and the red disconnect box are gone. The turn label now names your opponent instead of saying \"yellow's turn\".",
+      "measured": "6 hardcoded colours removed from the board; 0 remain in any games screen",
+      "notice": "This is the one change to a game you already play. The board will look different in every theme — on the wallpaper themes it now sits inside the theme rather than on top of it.",
+      "risk": "You have played this board as red-versus-yellow for months. It will read as your colour versus grey now, and both players see their own pieces as the highlight.",
+      "highlight": {
+        "selector": "js:[...document.querySelectorAll('div')].find(d=>d.querySelectorAll('.rounded-full').length>=30&&d.className.includes('rounded-lg'))"
+      }
+    },
+    {
+      "id": "G-8",
+      "surface": "Chess board",
+      "path": "Games → Chess",
+      "headline": "Chess needs a way to tell your pieces from your opponent's. Three ways, pick one.",
+      "notice": "The first attempt used the same rule as Connect 4 — your pieces in the highlight colour, theirs in grey. On a board that turned out not to be enough: in the dark theme the two sit next to each other in the same grid and read as the same light grey. Chat gets away with this because your messages are also on the right and the assistant's on the left; a chess board has no such second clue.",
+      "risk": "Whichever you pick sets the rule for every two-player game after it, so it is worth looking at all three in a dark theme.",
+      "variants": [
+        {
+          "id": "disc",
+          "label": "Your pieces sit on a filled circle",
+          "crop": "chess-disc",
+          "summary": "Your piece sits on a filled circle in your theme's highlight colour with the shape cut out of it; your opponent's is a plain shape. The strongest separation of the three, and the app already works out a legible shape colour for every theme, so it cannot go grey-on-grey in any theme pack.",
+          "measured": "Two clearly different shapes per square, in all 6 themes",
+          "risk": "Busiest of the three — 16 filled circles on the board at the start of a game."
+        },
+        {
+          "id": "outline",
+          "label": "Solid pieces versus hollow ones",
+          "crop": "chess-outline",
+          "summary": "The chess convention: your pieces are solid, your opponent's are hollow outlines. They differ in shape as well as shade, so it survives the themes where the highlight colour is itself a grey. Quieter and more traditional than the circles.",
+          "measured": "Two different shapes per piece rather than two shades of one",
+          "risk": "Hollow pieces are thinner and get harder to read on a small pane or a phone."
+        },
+        {
+          "id": "fill",
+          "label": "Colour only — the first attempt",
+          "crop": "chess-fill",
+          "summary": "Kept here so the problem is visible rather than described. Both sides use the same solid shape and differ only in shade: your theme's highlight for you, grey for them. Look at this one in the dark theme and see whether you can tell the two sides apart.",
+          "measured": "Both sides render as light grey in the dark theme",
+          "risk": "Recommended against — this is the option that failed."
+        }
+      ]
+    }
+  ]
+}

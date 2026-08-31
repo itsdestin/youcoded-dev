@@ -1,0 +1,15 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&arcade=empty",
+  "shots": [
+    {
+      "name": "arcade-picker-empty",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Not played yet')"
+    }
+  ]
+}

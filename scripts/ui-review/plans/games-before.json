@@ -1,0 +1,31 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default",
+  "shots": [
+    {
+      "name": "arcade-connect4-lobby",
+      "actions": [
+        {
+          "click": "[title='Connect 4']",
+          "settle": 900
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Connect 4')"
+    },
+    {
+      "name": "arcade-connect4-board",
+      "actions": [
+        {
+          "click": "[title='Connect 4']",
+          "settle": 1200
+        },
+        {
+          "wait": 2500
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Your turn') || document.body.textContent.includes(\"'s turn\")",
+      "measure": [
+        "js:[...document.querySelectorAll('div')].find(d=>d.querySelectorAll('.rounded-full').length>=30&&d.className.includes('rounded-lg'))"
+      ]
+    }
+  ]
+}

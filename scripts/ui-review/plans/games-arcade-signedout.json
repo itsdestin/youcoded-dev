@@ -1,0 +1,15 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "shots": [
+    {
+      "name": "arcade-picker-signedout",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('play without an account')"
+    }
+  ]
+}
