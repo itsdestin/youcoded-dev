@@ -148,6 +148,14 @@ cd youcoded/desktop && npm ci && npm run build
 
 # Android (requires Desktop React UI built first)
 cd youcoded && ./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew test
+
+# Android in a WORKTREE, or when the bare commands above fail at SDK resolution.
+# The SDK IS installed (/home/destin/.android-sdk) — ANDROID_HOME is just unset,
+# and the system default java is 26, which AGP 8.7 rejects. `-x bundleWebUi` is
+# MANDATORY in a worktree: it transitively runs `npm ci`, which is destructive
+# against a hardlinked node_modules (see the worktree rule above).
+cd <worktree> && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=/home/destin/.android-sdk \
+  ./gradlew test -x bundleWebUi
 ```
 
 See `docs/build-and-release.md` for full build order, release flows, and version bumping rules.

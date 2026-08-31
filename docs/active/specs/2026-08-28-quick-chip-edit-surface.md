@@ -86,6 +86,10 @@ object — which `migrateLegacyStringChips()` then promoted on the next load int
 the exact data this feature exists to edit. Desktop was always correct
 (`c.skillId !== id`).
 
-Fixed and pinned. **Not verified locally** — this machine has no Android SDK, so
-`./gradlew test` could not run; CI is the first execution of
-`SkillConfigStoreChipsTest`.
+Fixed and pinned. **Not verified locally at the time** — believed to be because this
+machine had no Android SDK, so `./gradlew test` was not run and CI was the first
+execution of `SkillConfigStoreChipsTest`. **That belief was wrong (corrected
+2026-08-31):** the SDK is at `/home/destin/.android-sdk`; only `ANDROID_HOME` and
+`local.properties` are absent. `JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+ANDROID_HOME=/home/destin/.android-sdk ./gradlew test -x bundleWebUi` runs the suite
+locally in ~2 min, so this test can and should be run here rather than waiting on CI.
