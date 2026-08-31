@@ -2,7 +2,7 @@
 status: draft
 date: 2026-08-30
 revised: 2026-08-31
-step2: in progress — see §12
+step2: chess + scores landed — see §12
 decisions: docs/active/design/2026-08-30-games-arcade/decisions.md
 tags: [games, arcade, social, leaderboard, themes, mascot, partykit, worker]
 review: docs/active/investigations/2026-08-30-games-arcade-spec-review.md
@@ -562,64 +562,87 @@ empty/degraded shapes (§4.1, §6.5, §6.6).
 
 ---
 
-## 12. Step 2 status (2026-08-31)
+## 12. Status (2026-08-31)
 
-Branch `feat/games-arcade-shell` in `youcoded`, merged up to `master` and green
-on the full suite. Branch `feat/games-arcade-scores` in `wecoded-marketplace`.
+Branch `feat/games-arcade-shell` in `youcoded`, merged up to `master`. Branch
+`feat/games-arcade-scores` in `wecoded-marketplace`.
 **Nothing merged, pushed, or deployed.**
+
+Green: `verify.sh --full` (types, full suite, knip, eslint, ast-grep) ·
+Android `./gradlew test` 200 · worker 298 · 15/15 workbench routes ·
+11 arcade surfaces captured in six themes, 0 missed.
 
 ### Done
 
 | Piece | State |
 |---|---|
 | The arcade shell (§4) | Built, reviewed, signed off (deck `step1-review`) |
-| The state split (§3.1) | Done — shell holds seat/turnSeat/outcome; games own `play` |
-| `gameType` end to end (§3.1 item 3) | Done — the reducer keeps it; Accept opens the right game |
+| The state split (§3.1) | Shell holds seat/turnSeat/outcome; games own `play` |
+| `gameType` end to end (§3.1 item 3) | The reducer keeps it; Accept opens the right game |
 | Connect 4 retheme (§5.4) | Done, signed off |
-| Chess board + piece treatment (§5.3, §5.5) | Board drawn, `outline` chosen (deck `step1-sizing`). **Pieces do not move.** |
 | Flappy (§5.1) | Playable. Mascot flies, landscape sky, end-of-run card |
 | 2048 (§5.2) | Playable. Keyboard-first, end-of-run card |
+| **Chess (§5.3)** | **Playable.** `chess.js@1.4.0` pinned exact, own room, own client, promotion picker, S-2 selection fix |
 | End-of-run screen | Shared `RunOverCard` — one ending for every solo game |
 | Local best (§4.2) | Persists per game, survives closing the panel |
 | Pane resize (§4.3) | Own remembered width, per-game defaults |
-| Scores + records backend (§6) | Built, 292 worker tests green. **Not wired to the app.** |
+| Scores backend (§6.1) | Worker routes + `GET /games/scores` (all bests in one call) |
+| **Scores WIRED to the app** | **All five surfaces**, Android included with real arms, not stubs |
+
+### Settled while building
+
+- **Scores cross every boundary as raw numbers.** A game's wording lives only in
+  `game-registry.ts`. Mechanically enforced: `arcade-authority.test.ts` fails the
+  build if a main-process file speaks a game id, `pipes`, or `toLocaleString`.
+- **Your best is the max of the server's and this computer's.** Either can lead
+  legitimately (another device vs. an offline run). Max is the only rule that
+  never shows a number lower than one already seen.
+- **Presence is a socket fact, not an HTTP one.** `friendsOnline` moved off the
+  status channel onto the live lobby list. It had been served from a fixture, so
+  outside the workbench the versus tiles would have read "No friends online"
+  permanently.
+- **An unreachable board is labelled, never emptied** — with WHEN, never WHY.
+  401 is the exception: sign-out drops the cache so the next user on the machine
+  is never shown the previous one's friends.
 
 ### Not done
 
-1. **Chess is not playable.** Needs a rules library, pinned by version — the one
-   open dependency decision, flagged to Destin and not yet taken. The board,
-   piece treatment and pane width are settled; move input, legality, and the
-   PartyKit room are not.
-2. **The app does not talk to the scores backend.** Three channels are
-   registered in `mock-only.ts` as deliberately unbuilt: `arcade.status`,
-   `arcade.leaderboard`, `arcade.submitScore`. The Worker half of all three
-   exists. What is missing is renderer → main → Worker, on five surfaces,
-   INCLUDING a Kotlin stub in `SessionService.kt` — without it `verify.sh` goes
-   red even though Android has no games (§9).
-   Until then, friends' scores on the board are fixtures; your own best is real.
-3. **Head-to-head records are unexercised.** The attestation flow (§6.2) is
-   built and tested on the Worker but no client has ever sent a report.
+1. **Head-to-head records are unexercised.** The attestation flow (§6.2) is built
+   and tested on the Worker; no client has ever sent a report.
+2. **The chess room relays, it does not validate.** §5.3 says the room validates.
+   Both clients re-validate with `chess.js`, so a cheating client cannot corrupt
+   its peer's board — it can only waste its peer's time. Making the room
+   authoritative needs `chess.js` added to `partykit/`'s own dependencies.
+   **§5.3 should be corrected to match, or the work scheduled.**
 
-### Open, carried
+### Open, for Destin
 
-- **The picked-up square is too faint** — the legal-move dots read as causeless
-  (deck step S-2). Deferred deliberately: a selection highlight is a feedback
-  cue and cannot be judged on a still of a board that is not yet clickable.
-- **Is Flappy's pipe gap fair?** Tuned against a bot, never confirmed by a
-  human. The first pass was unplayable and the bot is what caught it, so the bot
-  is a proxy and not a substitute.
+- **The board's squares barely alternate.** Measured square-to-square contrast,
+  empty squares on rank 5: dark **1.07**, meadow-mist **1.05**, halftone **1.11**,
+  midnight **1.24**, light **1.37**, creme **1.40**. A physical board is nearer
+  2.5–3. The look was signed off when the board was a still; now that it must be
+  READ to play, this is worth re-deciding rather than silently changing.
+- **The a–h / 1–8 coordinates sit at 2.0–2.8 contrast** (`text-fg-faint`), under
+  the 4.5 target. Consistent with existing app practice for faint labels, so not
+  a regression — but this surface is new.
+- **Is Flappy's pipe gap fair?** Tuned against a bot, never confirmed by a human.
 - Chess is vertically centred only until it has game chat.
 - Whether solo runs record a history or only a best (§11).
 
-### Two lessons worth keeping
+### Three lessons worth keeping
 
 **Playing it found what testing could not, twice.** The best score never reached
 the picker, and the end-of-run card never rendered because the shell unmounted
 the game — both with every unit test green. Both are now guarded by tests that
 read source rather than behaviour, because the behaviour tests were the ones
-that missed it. Any further work on this feature should reach Destin's hands at
-each stage, not only at the end.
+that missed it.
 
 **Two spec sentences were disproved by building them** (§5.1's wallpaper sky,
-§5.5's fill-only contrast). Both were corrected in place rather than worked
-around. A spec claim that survives only because nobody built it is not verified.
+§5.5's fill-only contrast), and a third is disproved above (§5.3's validating
+room). A spec claim that survives only because nobody built it is not verified.
+
+**A fixture can hide a permanent wrong answer.** The versus tiles' "Jake is
+online" came from an arcade fixture, so the workbench showed the healthy state
+forever while the shipped app could only ever have said "No friends online".
+When a screen's fact has a live source, the mock must fake the LIVE SOURCE, not
+the screen's answer.

@@ -14,8 +14,8 @@ Written before compacting context. Everything needed to resume cold.
 
 | Repo | Branch | State |
 |---|---|---|
-| `youcoded` | `feat/games-arcade-shell` | 10 commits, merged up to `master`, full suite green, 15/15 workbench routes boot |
-| `wecoded-marketplace` | `feat/games-arcade-scores` | 1 commit, 292 worker tests green |
+| `youcoded` | `feat/games-arcade-shell` | 12 commits, merged up to `master`, `verify.sh --full` green, Android 200 green, 15/15 workbench routes boot |
+| `wecoded-marketplace` | `feat/games-arcade-scores` | 2 commits, 298 worker tests green |
 
 **Nothing merged, pushed, or deployed.** The worktree is
 `worktrees/games-arcade`. The Worker deploys automatically from `master` — never
@@ -33,29 +33,25 @@ run `wrangler deploy`.
    original review of the spec. Historical, but explains why §6.2 looks the way
    it does.
 
-## The three things left, in the order I would do them
+## What is left
 
-### 1. Wire the app to the scores backend
-The Worker half is built and tested. Missing: renderer → main → Worker for
-`arcade.status`, `arcade.leaderboard`, `arcade.submitScore`, all three currently
-registered in `desktop/src/renderer/dev/workbench/mock-only.ts` as deliberately
-unbuilt. Five surfaces each, **including a Kotlin stub in `SessionService.kt`** —
-without it `ipc-channels.test.ts` fails and `verify.sh` goes red, even though
-Android has no games. Delete the `mock-only.ts` rows as each lands; keep the
-fakes in `mock-shim.ts` so the workbench can still show the empty and stale
-states.
-
-### 2. Chess
-The board, the piece treatment (`outline`, chosen by Destin) and the pane width
-are settled. Missing: a rules library, move input, and the PartyKit room.
-
-**This needs Destin's decision first** — it adds a third-party dependency to his
-app. Flagged to him, not yet taken. Do not hand-write the rules: an
-illegal-move bug is the most visible way this project could embarrass itself.
-
-### 3. Head-to-head records
+### 1. Head-to-head records
 Built and tested on the Worker; no client has ever sent a report. Needs the
-attestation message from the game-end path.
+attestation message from the game-end path. Chess and Connect 4 both now have
+one, so this is finally reachable.
+
+### 2. The chess room relays, it does not validate
+§5.3 says the room validates. Both clients re-validate with `chess.js`, so a
+cheating client cannot corrupt its peer's board — only waste its peer's time.
+Making the room authoritative means adding `chess.js` to `partykit/`'s own
+dependencies. **Either do it or correct §5.3; do not leave the spec claiming
+something the code does not do.**
+
+### 3. Two visual questions for Destin, both measured
+The board's squares barely alternate (1.05–1.40 contrast, versus ~2.5–3 on a
+physical board) and the a–h/1–8 coordinates sit at 2.0–2.8. Numbers and method
+are in the spec's §12. Both were signed off when the board was a still image;
+chess must now be READ to be played, which is why they are worth re-deciding.
 
 ## Things that will bite you
 
@@ -77,10 +73,30 @@ attestation message from the game-end path.
 
 ## Open questions for Destin
 
-- **Is Flappy's pipe gap fair?** Tuned against a bot, never confirmed by a human.
-  The first pass was unplayable and the bot is what caught it — so it is a proxy,
-  not a substitute. Ask him to play a few rounds.
-- **The chess rules library** — adding a dependency to his app.
-- The picked-up square is too faint, so the legal-move dots read as causeless.
-  Deferred until the board is clickable, because a selection highlight is
-  feedback and cannot be judged on a still image.
+- **Is Flappy's pipe gap fair?** Tuned against a bot, never confirmed by a
+  human. The first pass was unplayable and the bot is what caught it — so it is
+  a proxy, not a substitute. Ask him to play a few rounds.
+- **The two chess contrast numbers** in §3 above.
+
+## Decisions already taken — do not re-ask
+
+- **`chess.js` is approved** (2026-08-31, Destin: "chess is good to pull in
+  external rules library"). Pinned exact at 1.4.0. Do not hand-roll chess rules.
+- **Piece treatment is `outline`** (deck G-8). `?chess=disc|fill` still renders
+  the rejected treatments for a future comparison; it is a workbench switch,
+  never a user setting.
+- **Nothing happens when the assistant finishes** beyond the existing sound and
+  status light. No auto-surfacing, no toast, no panel change.
+
+## One more trap, learned this session
+
+**A fixture can hide a permanently wrong answer.** The picker's "Jake is online"
+came from an arcade fixture, so the workbench showed the healthy state forever
+while the shipped app could only ever have said "No friends online" — the status
+channel had no presence data and never would. The rule: when a screen's fact has
+a live source, the mock must fake the LIVE SOURCE, not the screen's answer. The
+degraded scenario now pushes a real `error` presence frame for the same reason.
+
+**And `npm install <pkg>` writes `node_modules/.package-lock.json` IN PLACE**, so
+it reaches every hardlinked worktree. Measured and written up in
+`docs/PITFALLS.md`; recovery recipe is there too.

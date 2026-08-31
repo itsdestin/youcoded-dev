@@ -123,3 +123,47 @@ them:
 The pattern is the same both times: a state that only occurs in the real app,
 never in the workbench. Worth checking for directly rather than waiting to be
 told.
+
+---
+
+## D-11 — chess.js, pinned exact (2026-08-31)
+
+**Destin:** *"chess is good to pull in external rules library."*
+
+The alternative offered was hand-writing the rules: no third-party dependency,
+but realistically a week and guaranteed edge-case bugs — castling out of check,
+en passant, threefold repetition — that only surface when a friend hits them
+mid-game. `chess.js@1.4.0` is pinned exact (`--save-exact`, not a `^` range) so
+it cannot move under him.
+
+**Why this is worth writing down:** an illegal-move bug is the most visible way
+this project could embarrass itself. If a future session is tempted to drop the
+dependency and hand-roll, this is the decision it would be reversing.
+
+## D-12 — the versus tiles read presence, not a server field (2026-08-31)
+
+Not Destin's call — a defect found while wiring the backend, recorded because
+the surprising part is worth remembering.
+
+"Who is online" was being served by the arcade's *status* fixture. The workbench
+therefore showed "Jake is online" forever, while the shipped app had no presence
+data on that channel and never would: outside the workbench every versus tile
+would have said "No friends online" permanently. It now reads
+`state.onlineUsers`, the live lobby list, and the workbench's degraded scenario
+pushes a real `error` presence frame instead of a hardcoded string.
+
+**The rule this yields:** when a screen's fact has a live source, the mock must
+fake the LIVE SOURCE, not the screen's answer. A mock that fakes the answer will
+show the healthy state forever and prove nothing.
+
+## D-13 — three numbers that need Destin's eye (2026-08-31, open)
+
+Measured, not eyeballed — square-to-square contrast between two empty squares on
+rank 5: dark **1.07**, meadow-mist **1.05**, halftone-dimension **1.11**,
+midnight **1.24**, light **1.37**, creme **1.40**. A physical board sits nearer
+2.5–3. The a–h / 1–8 coordinates sit at 2.0–2.8 against a 4.5 target.
+
+**Why it is open rather than fixed:** the board's look was signed off (G-8) when
+it was a still image. It is now something you must READ to play, which changes
+what the number has to buy. Changing a signed-off look without asking is the
+kind of unexplained change that costs trust on the next proposal.
