@@ -117,21 +117,32 @@ Headless Chrome for your own verification is expected.
 9. **Readability floor:** prose panels use `--panel-op-prose = max(opacity,.80)`
    and `--blur-prose = max(blur,16px)`. Don't simplify it away.
 10. `.nav-links a` outranks `.cta` — nav link styling needs `a.`-qualified selectors.
-11. **An iframe never chains its scroll to the page.** With the pointer over the
+11. **The recorder cannot resize a panel that holds the artifact preview.**
+    That preview is a sandboxed cross-origin iframe, and Chromium's screencast
+    does not repaint an out-of-process frame after a resize — the take showed a
+    stale, clipped tile while a plain screenshot of the same state was perfect.
+    Set the geometry BEFORE the first paint instead: `record.mjs` now takes a
+    `storage` object, seeded into localStorage on new document, and the scene
+    sets `youcoded-drawer-width`.
+12. **The artifact panel's Edit button is not hover-revealed — it appears when
+    the FILE LIST is collapsed** (`editState.editing || !showList`). Clicking it
+    while the list is open is a no-op that leaves no trace, and the next step
+    fails instead. The scene clicks `button[title='Hide list']` first.
+13. **An iframe never chains its scroll to the page.** With the pointer over the
     demo, the wheel goes to the app and STOPS there even when the app has nothing
     left to scroll, and the page underneath sits still. There is no CSS for it
     (`overscroll-behavior` only works inside one document). `chainWheel()` in
     CORE_JS listens INSIDE the same-origin embed, walks up from the wheel's
     target, and forwards to the parent when nothing on that path can still move.
-12. **`body.<state> .dlfloat` outranks `.dlfloat.docked`.** The docking rule
+14. **`body.<state> .dlfloat` outranks `.dlfloat.docked`.** The docking rule
     silently lost on specificity: the pill kept the class and scrolled away with
     the page anyway. Any state rule for the pill must carry a body-class prefix.
     Caught only because the check measured the pill's screen position rather
     than trusting its class list.
-13. **Widths measured before the web font lands are the FALLBACK font's**, and it
+15. **Widths measured before the web font lands are the FALLBACK font's**, and it
     is wider. That is where 42px of dead space after the cycler's final word came
     from. `CYCLER_JS` re-measures on `document.fonts.ready`.
-14. **`--embed-fade` goes in the SVG mask, never an overlay.** Nothing can paint
+16. **`--embed-fade` goes in the SVG mask, never an overlay.** Nothing can paint
     the page's wallpaper back over an iframe, and a clip would set off landmine 1.
 
 ## Decisions locked with Destin (don't reopen)
@@ -212,19 +223,14 @@ Headless Chrome for your own verification is expected.
 
 ## Open / next
 
-- **NEW DEMO CLIP, approved and not started.** Destin asked for a features row
-  about real work + file editing: attach a spreadsheet → ask for an HTML chart →
-  edit the HTML to change a chart colour. He said "let's do it" to this plan:
-  the edit is a colour change; it goes in as row 2 without replacing anything;
-  the app-repo change is dev-only.
-  **Why it is not done:** the app does all of this for real (`HtmlView`,
-  `CsvView`/`XlsxView`, `CodeEditorView`, `artifacts:save`), but the WORKBENCH's
-  fake backend serves artifacts read-only from a static fixture list and mocks no
-  save at all — so a scripted turn cannot create a file, and an edit does nothing.
-  It needs a writable artifact store added to
-  `desktop/src/renderer/dev/workbench/mock-shim.ts` (~100 lines, dev-only), then
-  a reply fixture, a scene, and a recording. Attaching a file IS already
-  scriptable: `window.dispatchEvent(new CustomEvent('buddy:attach-file', {detail:{filePath}}))`.
+- ~~NEW DEMO CLIP~~ **DONE 2026-08-31.** Row 2 of the features deck is now
+  "Real work, edited live": attach a spreadsheet, ask for a chart, open the
+  generated HTML in the panel, edit its colour, save, watch it repaint. Clip at
+  `media-local/row2-artifact-edit.webm`, scene at
+  `scripts/ui-review/scenes/row2-artifact-edit.json`, and the app-side (dev-only)
+  half is in the worktree `worktrees/grok-clip` on branch
+  `feat/landing-demo-clips` — TWO commits, both UNPUSHED: the softened Grok line
+  and the writable-artifact mock.
 - Deck: Destin may want the fade to reach three cards deep rather than two.
 - The sub-headline's "build your way" is the same framing worry the headline
   change was meant to fix. Not raised again since; ask before rewriting copy.

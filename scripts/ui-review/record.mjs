@@ -108,7 +108,14 @@ async function key(name, modifiers = 0) {
 // ---- boot ----
 await send('Page.enable'); await send('Runtime.enable');
 await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
-await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(scene.theme ?? 'midnight')});}catch{}` });
+// `storage`: extra localStorage keys seeded BEFORE the first paint. Some panel
+// geometry (the artifact drawer's width) is a stored preference, and a scene
+// that clicks it wider mid-take gets a stale tile instead: the artifact preview
+// is a sandboxed cross-origin iframe, and Chromium's screencast does not
+// repaint one of those after a resize. Setting the width up front means it is
+// laid out correctly from the first frame.
+const seeded = { 'youcoded-theme': scene.theme ?? 'midnight', ...(scene.storage ?? {}) };
+await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{const s=${JSON.stringify(seeded)};for(const k in s)localStorage.setItem(k,String(s[k]));}catch{}` });
 await send('Page.navigate', { url });
 const READY = scene.ready ?? "document.readyState === 'complete' && document.body.innerText.trim().length > 20";
 for (let i = 0; i < 120; i++) { if (await evaluate(READY)) break; await sleep(250); }

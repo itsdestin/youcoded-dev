@@ -7,6 +7,7 @@ THEMES = json.load(open(BASE + '/themes.json'))
 
 FEATURES = [
  ("Seamless integration","Tools and conversations work across any model.","Select from hundreds of models via OpenRouter, use Claude Code with your subscription plan, or pick an offline, private model to run on your own computer. Switch models mid-conversation without interruption.","row1-any-ai"),
+ ("Real work, edited live","Hand it a spreadsheet, get something you can actually read.","Attach a file and ask for what you want out of it. The assistant reads it, builds the page, and hands it back in the panel beside the conversation — where you can open it, change it yourself, and watch the change take effect.","row2-artifact-edit"),
  ("Genuinely useful","Give it a task and it does real work, with boundaries you can trust.","It reads your files, writes new ones, develops repeatable skills and workflows, searches the web, and helps you manage your computer and your life more efficiently. Permission modes let you restrict the model to match your level of comfort.","row2-does-things"),
  ("Logical management","Project view keeps your files, conversations, and assistant instructions organized.","Open spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.","row3-projects"),
  ("Stay organized","Tags, notes, and shortcuts.","Tag and annotate conversations, pin the ones that matter, and hide the ones you'll never go back to. Quick chips run the prompts you use every day in one tap.","row4-organized"),
@@ -126,7 +127,7 @@ def steps():
 # Clips re-filmed for this redesign live in media-local/, NOT in media/ --
 # media/ is a symlink into youcoded/docs/media, i.e. the real site's assets.
 # Writing there would change the live site before the redesign is approved.
-MEDIA_LOCAL = {'row1-any-ai'}
+MEDIA_LOCAL = {'row1-any-ai', 'row2-artifact-edit'}
 
 def _media_dir(key):
     return 'media-local' if key in MEDIA_LOCAL else 'media'
