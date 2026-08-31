@@ -924,7 +924,23 @@ function show(i){
   if (i === cur) return;
   var prev = cur; cur = i;
   slides.forEach(function(s, n){ s.classList.toggle('on', n === i);
-    if (s.tagName === 'VIDEO') { n === i ? s.play().catch(function(){}) : s.pause(); } });
+    // Rewound on activation, not resumed. A clip that carries on from wherever
+    // it was left shows a visitor the middle of a demo they have not seen the
+    // start of, and it drifts out of step with the phone overlay beside it.
+    if (s.tagName === 'VIDEO') {
+      if (n === i) { try { s.currentTime = 0; } catch (e) {} s.play().catch(function(){}); }
+      else s.pause();
+    } });
+  // The phone overlay is deliberately NOT a slide (it would shift every card's
+  // clip by one), so nothing above starts it. Without this it sat on its poster
+  // forever while the desktop clip beside it played. Restarted from 0 together
+  // with its partner: the two are different lengths, so left free-running they
+  // drift apart and stop reading as the same conversation on two devices.
+  document.querySelectorAll('.deck-phone video').forEach(function(v){
+    var n = +v.closest('.deck-phone').getAttribute('data-phone-for');
+    if (n === i) { try { v.currentTime = 0; } catch (e) {} v.play().catch(function(){}); }
+    else v.pause();
+  });
   steps.forEach(function(s, n){
     s.classList.toggle('active', n === i);
     // 'past' lets a replaced block leave UPWARDS while the new one arrives from

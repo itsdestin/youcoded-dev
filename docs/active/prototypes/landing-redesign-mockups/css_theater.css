@@ -88,10 +88,11 @@
    sibling that always paints on top, so anything past the card's bottom edge is
    swallowed by whatever slides over it (measured -- the first cut at bottom:-8
    percent was a sliver under the next card). */
-/* -3.5 percent is 26px of overhang, which is the 30px grid gap between the copy
-   and the clip and no more: at -6 percent the phone sat on the last line of the
-   paragraph. */
-.deck-phone{position:absolute;left:-3.5%;bottom:5%;width:20%;z-index:2;
+/* Down and left a notch (Destin 2026-08-31), but only as far as the copy allows:
+   -5.5 percent put the bezel through the tail of "so what" on the paragraph's
+   second-to-last line. -4.5 percent is 34px of overhang against a 30px
+   copy/clip gap, which clears the text box itself. */
+.deck-phone{position:absolute;left:-4.5%;bottom:2%;width:20%;z-index:2;
   padding:5px;border-radius:20px;background:#111;
   box-shadow:0 22px 44px -12px rgba(0,0,0,.55)}
 /* aspect-ratio, not height:auto. preload="none" means there is no intrinsic
