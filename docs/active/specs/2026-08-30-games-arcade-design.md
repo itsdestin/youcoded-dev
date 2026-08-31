@@ -617,19 +617,26 @@ Android `./gradlew test` 200 · worker 298 · 15/15 workbench routes ·
 
 ### Open, for Destin
 
-- **The board's squares barely alternate.** Measured square-to-square contrast,
-  empty squares on rank 5: dark **1.07**, meadow-mist **1.05**, halftone **1.11**,
-  midnight **1.24**, light **1.37**, creme **1.40**. A physical board is nearer
-  2.5–3. The look was signed off when the board was a still; now that it must be
-  READ to play, this is worth re-deciding rather than silently changing.
-- **The a–h / 1–8 coordinates sit at 2.0–2.8 contrast** (`text-fg-faint`), under
-  the 4.5 target. Consistent with existing app practice for faint labels, so not
-  a regression — but this surface is new.
-- **Is Flappy's pipe gap fair?** Tuned against a bot, never confirmed by a human.
+- **Is Flappy's pipe gap fair?** Tuned against a bot, never confirmed by a
+  human. The first pass was unplayable and the bot is what caught it, so the bot
+  is a proxy and not a substitute.
 - Chess is vertically centred only until it has game chat.
 - Whether solo runs record a history or only a best (§11).
 
-### Three lessons worth keeping
+### Settled 2026-08-31: the board's squares (D-13)
+
+The two contrast numbers that were open here turned out to be a **bug**, not a
+matter of taste: the board asked for a tinted square and a plain one, but two
+background utilities on one element do not blend — one wins — so the tint never
+painted and both squares were raw surface values one ladder rung apart.
+
+Destin picked `contrast` (full strength, neutral) from the `board-contrast`
+deck. Shipped, measured in all six themes: creme 2.01 · light 2.16 ·
+meadow-mist 2.24 · midnight 2.51 · dark 2.77 · halftone-dimension 2.97, against
+1.05–1.40 before. Coordinates went 2.01 → 3.96. Full reasoning, including why
+the prettier theme-coloured option lost, is in decisions.md D-13.
+
+### Four lessons worth keeping
 
 **Playing it found what testing could not, twice.** The best score never reached
 the picker, and the end-of-run card never rendered because the shell unmounted
@@ -640,6 +647,16 @@ that missed it.
 **Two spec sentences were disproved by building them** (§5.1's wallpaper sky,
 §5.5's fill-only contrast), and a third is disproved above (§5.3's validating
 room). A spec claim that survives only because nobody built it is not verified.
+
+**A design that was approved is not necessarily a design that rendered.** The
+board's squares were signed off twice by eye while the code's actual output was
+two raw surface values — the tint it asked for lost a fight with another
+background and never painted. Nothing in the toolchain could see it: it
+type-checks, lints, renders, and passes a component test, because you DO get a
+background, just not the one requested. Only measuring pixels found it. That is
+now a tree-wide pinning test (`background-layer-authority.test.ts`) rather than
+a paragraph, and the general form is worth carrying: **when a visual property is
+load-bearing, measure it — do not review it by eye alone.**
 
 **A fixture can hide a permanent wrong answer.** The versus tiles' "Jake is
 online" came from an arcade fixture, so the workbench showed the healthy state

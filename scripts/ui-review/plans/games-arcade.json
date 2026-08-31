@@ -37,7 +37,7 @@
           "settle": 700
         }
       ],
-      "expect": "js:document.body.textContent.includes('Opponent') && document.querySelectorAll('.bg-well').length > 8"
+      "expect": "js:document.body.textContent.includes('Opponent') && document.querySelectorAll('[aria-label^=\"e\"][aria-label*=\", \"]').length >= 8"
     },
     {
       "name": "arcade-connect4-board",

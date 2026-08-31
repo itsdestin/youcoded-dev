@@ -156,14 +156,51 @@ pushes a real `error` presence frame instead of a hardcoded string.
 fake the LIVE SOURCE, not the screen's answer. A mock that fakes the answer will
 show the healthy state forever and prove nothing.
 
-## D-13 — three numbers that need Destin's eye (2026-08-31, open)
+## D-13 — the board's squares go to full strength, neutral (2026-08-31, SETTLED)
 
-Measured, not eyeballed — square-to-square contrast between two empty squares on
-rank 5: dark **1.07**, meadow-mist **1.05**, halftone-dimension **1.11**,
-midnight **1.24**, light **1.37**, creme **1.40**. A physical board sits nearer
-2.5–3. The a–h / 1–8 coordinates sit at 2.0–2.8 against a 4.5 target.
+**Destin picked `contrast` from the `board-contrast` deck** — full strength,
+built from the theme's text colour rather than its accent.
 
-**Why it is open rather than fixed:** the board's look was signed off (G-8) when
-it was a still image. It is now something you must READ to play, which changes
-what the number has to buy. Changing a signed-off look without asking is the
-kind of unexplained change that costs trust on the next proposal.
+**This started as a taste question and turned out to be a bug.** The board said
+`bg-inset bg-accent/[0.07]` — two background utilities on one element. They do
+not blend; one wins. So the intended tint never painted, and the two squares
+were the raw surface values one depth-ladder rung apart: measured #D7D7D7 vs
+#F9F9F9 in light and #222222 vs #1C1C1C in dark. Square-to-square contrast was
+1.05–1.40 where a physical board is nearer 2.5–3, which made a bishop's colour
+unreadable in three of the six themes. The design that was signed off is not the
+design that rendered.
+
+**What shipped**, measured on the default path in all six themes:
+creme 2.01 · light 2.16 · meadow-mist 2.24 · midnight 2.51 · dark 2.77 ·
+halftone-dimension 2.97.
+
+**Why neutral beat the prettier option.** `wood` takes the theme's own accent
+and looks markedly better in four themes — creme becomes a cream-and-brown board
+that reads like real wood. But it depends on a colour a THEME AUTHOR chose: pure
+accent measured 1.40 on halftone-dimension and 1.44 on meadow-mist, whose
+accents sit close to their own surfaces, and even blended toward `--fg` it only
+reached 1.80. `contrast` is built from `--fg`, which contrasts with its own
+surface by definition or the theme would be unreadable — so it cannot be
+defeated by a community theme nobody has reviewed, and those ship constantly.
+The rejected three stay behind `?board=`, because every future board-shaped game
+asks this same question.
+
+The a–h / 1–8 coordinates moved off `fg-faint` in the same change (2.01 → 3.96);
+they would have vanished entirely on a stronger square.
+
+**The lesson, and where it now lives.** A background that loses to another
+background is invisible at every gate we own — it type-checks, lints, renders,
+and passes a component test; you get a background, just not the one requested.
+So this became a tree-wide pinning test rather than a note:
+`desktop/tests/background-layer-authority.test.ts` fails the build on two
+unprefixed `bg-*` utilities in one class string, allows state variants like
+`hover:bg-*`, and self-checks against the real offending string so it cannot
+read green while matching nothing.
+
+**A second tool bug fell out of it.** `contrast.md` was reporting the
+coordinates' OLD colour after they had been fixed — pixels proved the fix, the
+report disagreed. Cause: `scripts/ui-review/contrast-report.mjs` unioned EVERY
+manifest in an output directory, including runs superseded minutes earlier, with
+no recency filter (the deck's crop resolver already had one). Fixed to take the
+newest manifest per theme and surface. Worth knowing because that report is
+meant to be trusted: before the fix it could tell a session its fix had failed.
