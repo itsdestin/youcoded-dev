@@ -1,0 +1,19 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&chess=outline&board=wood",
+  "shots": [
+    {
+      "name": "chess-board-wood",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        },
+        {
+          "clickText": "Chess",
+          "settle": 800
+        }
+      ],
+      "expect": "js:document.querySelectorAll('[aria-label^=\"e\"][aria-label*=\", \"]').length >= 8"
+    }
+  ]
+}

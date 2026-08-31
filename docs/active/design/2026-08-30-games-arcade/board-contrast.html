@@ -1,0 +1,364 @@
+<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chess — how dark should the dark squares be?</title>
+<style id="tokens">:root[data-theme="dark"]{--canvas:#111111;--panel:#191919;--inset:#222222;--well:#1C1C1C;--accent:#D4D4D4;--on-accent:#111111;--fg:#E0E0E0;--fg-2:#B0B0B0;--fg-dim:#999999;--fg-muted:#6C6C6C;--fg-faint:#515151;--edge:#393939;--link:#66AAFF;color-scheme:dark}
+:root[data-theme="meadow-mist"]{--canvas:#F6FAF5;--panel:#DDE9DA;--inset:#BAD0B6;--well:#C4DCBF;--accent:#2F7D55;--on-accent:#FFFFFF;--fg:#041008;--fg-2:#1E3426;--fg-dim:#33493A;--fg-muted:#465B4E;--fg-faint:#637668;--edge:#8FB191;--link:#2F7D55;--radius-sm:6px;--radius-md:10px;--radius-lg:14px;color-scheme:light}
+:root[data-theme="midnight"]{--canvas:#0D1117;--panel:#161B22;--inset:#21262D;--well:#0D1117;--accent:#B1BAC4;--on-accent:#0D1117;--fg:#C9D1D9;--fg-2:#A0AAB4;--fg-dim:#8B949E;--fg-muted:#6E7681;--fg-faint:#4E555E;--edge:#343A41;--link:#58A6FF;color-scheme:dark}
+:root[data-theme="halftone-dimension"]{--canvas:#08060e;--panel:#100e1c;--inset:#181430;--well:#0C0A14;--accent:#E51F48;--on-accent:#ffffff;--fg:#F0E8F8;--fg-2:#D4CAE4;--fg-dim:#A498C0;--fg-muted:#7468A0;--fg-faint:#4D417A;--edge:#372D56;--link:#E51F48;--radius-sm:8px;--radius-md:16px;--radius-lg:24px;color-scheme:dark}
+:root[data-theme="light"]{--canvas:#F2F2F2;--panel:#EAEAEA;--inset:#D7D7D7;--well:#F9F9F9;--accent:#1A1A1A;--on-accent:#F2F2F2;--fg:#1A1A1A;--fg-2:#444444;--fg-dim:#656565;--fg-muted:#797979;--fg-faint:#989898;--edge:#C0C0C0;--link:#2055CA;color-scheme:light}
+:root[data-theme="creme"]{--canvas:#F6EEE1;--panel:#EBE1D1;--inset:#D8CCB9;--well:#F9F0E2;--accent:#3D3229;--on-accent:#F6EEE1;--fg:#2C2418;--fg-2:#564938;--fg-dim:#695E4D;--fg-muted:#7D7161;--fg-faint:#9A8F7F;--edge:#C4B8A6;--link:#5B4A1E;color-scheme:light}</style>
+<style>/* Review deck v2 — the approved page (docs/active/prototypes/2026-08-27-deck-mockup-g.html).
+   Theme tokens are inlined by build.py into <style id="tokens">; amber is the deck's own colour. */
+:root{--radius-sm:4px;--radius-md:8px;--radius-lg:12px;--radius-full:9999px;--yes:#2E9B57;--no:#E5484D;--other:#C99700;--mark:#FFB020;--font:'Cascadia Mono','Cascadia Code','Fira Code',monospace;--content:clamp(900px,80vw,1640px)}
+*{box-sizing:border-box} html,body{height:100%;margin:0}
+body{font:13px/1.45 var(--font);color:var(--fg);background:var(--well);display:flex;flex-direction:column;padding:18px 10px 10px}
+/* the deck is a distinct surface: inset on the darker well, framed in amber, so it never reads as the app's own chrome */
+.deck{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;background:var(--canvas);border:2px solid rgba(255,176,32,.6);border-radius:14px;overflow:visible;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 8px 30px rgba(0,0,0,.25)}
+body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit button over this strip */
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);font-weight:500}
+/* the chip sits ON the frame: tool name | deck title */
+.chip{position:absolute;top:-13px;left:18px;z-index:5;display:inline-flex;align-items:center;height:26px;background:var(--mark);color:#1a1100;border-radius:7px;padding:0 10px 0 9px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.chip .k{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap} .chip .div{width:1px;height:14px;background:rgba(0,0,0,.35);margin:0 9px} .chip .t{font-size:12px;font-weight:500;white-space:nowrap}
+.wrap{width:min(var(--content),100%);margin:0 auto;display:flex;align-items:center;gap:14px;min-width:0}
+.top{height:clamp(56px,6vh,64px);flex:none;display:flex;padding:8px 20px 0;background:var(--panel);border-bottom:1px solid var(--edge);border-radius:12px 12px 0 0}
+/* Fix (2026-08-27): a long surface + path ran straight under the Prev/Next block and the step
+   counter — the header had no shrink and no truncation, so any wordy step corrupted the top bar. */
+.top .where{flex:0 1 auto;min-width:0;overflow:hidden} .top .where .id{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .where .eyebrow{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:1400px){.top .where .eyebrow,.top .where .sep{display:none}} @media (max-width:950px){.top .count{display:none}} @media (max-width:760px){.top .long{display:none} .top .nav .btn{padding:0 6px}}
+.where{display:flex;align-items:center;gap:10px} .where .id{font-weight:500;font-size:14px} .where .sep{color:var(--fg-faint)}
+.nav{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;min-width:0}
+.steps{display:flex;gap:3px;align-items:center;flex:1;max-width:360px;min-width:90px} .steps span{flex:1;height:7px;border-radius:3px;background:var(--inset);cursor:pointer;transition:transform .15s}
+.steps span:hover{transform:scaleY(1.4)} .steps span.on{box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--fg)}
+.steps span.yes,.steps span.pick{background:var(--yes)} .steps span.no{background:var(--no)} .steps span.other{background:var(--other)} .steps span.skip{background:var(--fg-faint)}
+.count{font-size:11px;color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.btn{font:inherit;font-size:12px;font-weight:500;height:32px;padding:0 14px;border-radius:var(--radius-md);border:1px solid var(--edge);background:transparent;color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;transition:background .15s,transform .15s,filter .15s}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)} .btn.ghost{border-color:transparent;color:var(--fg-2)} .btn.sm{height:28px;padding:0 10px}
+@media (hover:hover){ .btn:hover{background:var(--inset)} .btn.primary:hover{background:var(--accent);filter:brightness(1.12);transform:translateY(-1px)} .btn.ghost:hover{background:var(--inset);color:var(--fg)} }
+.btn:disabled{opacity:.45;cursor:default;transform:none;filter:none}
+.dot{width:8px;height:8px;border-radius:50%;flex:none} .dot.yes,.dot.pick{background:var(--yes)} .dot.no{background:var(--no)} .dot.other{background:var(--other)}
+.answers{display:contents}
+/* a choice step: one button per variant, lettered like its picture's caption */
+.ans .key{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:5px;background:var(--inset);border:1px solid var(--edge);font-size:11px;font-weight:700;letter-spacing:.04em} .ans.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
+.card.variant{display:flex;gap:10px;align-items:flex-start;cursor:pointer} .card.variant .key{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:5px;background:var(--panel);border:1px solid var(--edge);font-size:11px;font-weight:700}
+.card.variant .vbody{min-width:0;display:flex;flex-direction:column;gap:4px} .card.variant h3{margin:0} .card.variant p{margin:0} .card.variant .r{font-size:11px;color:var(--mark)} .card.variant .cost{font-size:11px;color:var(--fg-muted)} .card.variant.on{border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)} .card.variant.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
+@media (hover:hover){.card.variant:hover{border-color:var(--fg-muted)}}
+.frame.pickable{cursor:pointer;border-radius:var(--radius-md);padding:4px;margin:-4px} .frame.pickable.on{outline:2px solid var(--mark);outline-offset:2px} .frame.pickable figcaption .key{margin-right:6px}
+.ans{border-color:var(--edge)} .ans.on{background:var(--inset);border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+main{flex:1;min-height:0;display:flex;justify-content:center;padding:14px 20px 16px;overflow:auto}
+.step{position:relative;display:flex;width:min(var(--content),100%);flex-direction:column;gap:10px;min-height:0}
+.thumbs{position:absolute;left:calc(100% + 16px);top:0;display:flex;flex-direction:column;gap:10px}
+body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:flex-end;margin-bottom:8px}
+.thumb{border:2px solid transparent;border-radius:var(--radius-md);padding:3px;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font:11px var(--font);color:var(--fg-dim)}
+.thumb img{height:44px;width:auto;max-width:110px;object-fit:cover;border-radius:3px;display:block} .thumb.on{border-color:var(--accent);color:var(--fg)}
+/* ── the three peer containers on one grid; the class is chosen by page.js ── */
+.content{flex:1;min-height:0;display:grid;gap:12px}
+.content.row-below{grid-template-columns:1fr;grid-template-rows:1fr auto auto;grid-template-areas:"stage" "info" "ctl"}
+.content.col-right{grid-template-columns:1fr minmax(320px,30%);grid-template-rows:1fr auto;grid-template-areas:"stage info" "ctl ctl"}
+.content.compact{display:flex;flex-direction:column;flex:none}
+.compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
+.step.compact-step{flex:none;min-height:0}
+.stage{grid-area:stage} .info{grid-area:info} .controls{grid-area:ctl}
+.info,.controls{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg)}
+.info{padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto}
+.controls{padding:clamp(10px,1.2vh,14px) 16px;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(8px,0.8vw,14px)}
+.compact .controls{display:grid;grid-template-columns:1fr 1fr 1fr;position:sticky;bottom:0;z-index:3;box-shadow:0 -8px 20px rgba(0,0,0,.35)} .compact .controls .ans{max-width:none} .compact .controls .note{grid-column:1/3} .compact .controls #save{grid-column:3}
+.stage{position:relative;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);overflow:auto;min-height:0;line-height:0;font-size:0}
+.stage .inner{display:flex;justify-content:center;align-items:center;gap:18px;padding:12px 14px;min-width:100%;min-height:100%}
+.content.stacked .stage .inner{flex-direction:column;align-items:center}
+.frame{display:block;margin:0}
+figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);margin-bottom:6px;text-align:left}
+.pic{position:relative;display:inline-block} .pic img{display:block;height:auto;border-radius:var(--radius-sm);cursor:none} body.no-loupe .pic img{cursor:default}
+/* CLIP steps: a recording per run — native controls so a bug can be paused and scrubbed; no loupe, no box */
+.pic video{display:block;height:auto;border-radius:var(--radius-sm);background:#000;cursor:default}
+.zoom .replay{width:auto;padding:0 10px;font-size:12px;font-weight:500}
+.box{position:absolute;border:2px solid var(--mark);border-radius:5px;box-shadow:0 0 0 3px rgba(255,176,32,.28),0 0 14px rgba(0,0,0,.45);pointer-events:none}
+.zoom{position:sticky;top:10px;float:right;margin:10px 10px -42px 0;z-index:2;display:inline-flex;align-items:center;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-full);padding:2px;gap:2px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.zoom button{font:inherit;font-size:12px;font-weight:500;width:28px;height:26px;border:0;border-radius:var(--radius-full);background:transparent;color:var(--fg-2);cursor:pointer} .zoom .lvl{font-size:11px;color:var(--fg-dim);min-width:38px;text-align:center;font-variant-numeric:tabular-nums}
+.loupe{position:fixed;width:180px;height:180px;border-radius:50%;border:2px solid var(--fg);box-shadow:0 0 0 1px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.45);background-repeat:no-repeat;pointer-events:none;display:none;z-index:9;background-color:var(--panel)}
+.loupe::before,.loupe::after{content:"";position:absolute;left:50%;top:50%;background:var(--mark);box-shadow:0 0 0 1px rgba(0,0,0,.6)} .loupe::before{width:14px;height:2px;margin:-1px 0 0 -7px} .loupe::after{width:2px;height:14px;margin:-7px 0 0 -1px}
+.what{font-size:clamp(15px,1.15vw,19px);font-weight:500;margin:0;line-height:1.35}
+.cards{display:grid;gap:10px} .row-below .cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))} .col-right .cards{grid-template-columns:1fr} .compact .cards{grid-template-columns:1fr}
+.card{background:var(--inset);border:1px solid var(--edge);border-radius:var(--radius-md);padding:10px 12px} .card h3{margin:0 0 6px;font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);display:flex;align-items:center;gap:7px}
+.card h3 svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round} .card p{margin:0;font-size:13px;color:var(--fg);line-height:1.45} .card .num{margin-top:6px;font-size:11px;color:var(--fg-dim)}
+.card.risk{border-color:color-mix(in srgb, var(--mark) 45%, var(--edge))} .card.risk h3{color:var(--mark)}
+/* Fix (2026-08-27): a DECIDE step's buttons carry the option's own words, which are far longer
+   than "Yes, build it" — at three options they overran each other and the labels collided. The
+   label truncates and the letter never does, so `a` `b` `c` stay readable and match the cards. */
+.ans{flex:1 1 140px;max-width:280px;min-width:0;justify-content:center;height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);overflow:hidden}
+.ans>span:not(.dot):not(.key){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* A pick button sizes to its own words instead of taking an equal share: yes/no are two fixed
+   labels that look right stretched, but three option names at an equal share all truncate. */
+.ans[data-v="pick"]{flex:0 1 auto;max-width:min(340px,26vw)}
+.ans .key{flex:none} .ans .dot{width:clamp(8px,0.7vw,11px);height:clamp(8px,0.7vw,11px)}
+#save{height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);padding:0 clamp(14px,1.4vw,26px)}
+.note{flex:3 1 220px;font:inherit;font-size:clamp(12px,0.85vw,14px);height:clamp(34px,4.4vh,52px);padding:0 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)} .note::placeholder{color:var(--fg-muted)}
+.veil{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:30} .veil.on{display:flex}
+.dlg{width:min(520px,92vw);background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5)} .dlg h2{margin:0 0 10px;font-size:16px;font-weight:500} .dlg p{margin:0 0 10px;color:var(--fg-2);font-size:13px;line-height:1.5}
+.dlg .warn{display:flex;gap:8px;align-items:flex-start;background:var(--inset);border:1px solid color-mix(in srgb, var(--mark) 45%, var(--edge));border-radius:var(--radius-md);padding:10px 12px;color:var(--fg);margin:12px 0}
+.dlg .warn svg{width:16px;height:16px;flex:none;stroke:var(--mark);fill:none;stroke-width:1.8;margin-top:1px} .dlg .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+#feedback{display:none;width:100%;min-height:140px;font:12px var(--font);padding:10px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)}
+</style></head><body>
+<div class="deck">
+<div class="chip"><span class="k">Review deck</span><span class="div"></span><span class="t" id="deck-title"></span></div>
+<header class="top"><div class="wrap">
+  <div class="where"><span class="id" id="wtitle"></span><span class="sep">·</span><span class="eyebrow" id="wsub"></span></div>
+  <div class="nav"><button class="btn ghost sm" id="prev">‹ Prev</button><div class="steps" id="steps" title="Click a segment to revisit that step"></div><button class="btn ghost sm" id="next">Next ›</button></div>
+  <span class="count" id="count"></span><button class="btn" id="done">Done<span class="long"> — Submit Feedback</span></button>
+</div></header>
+<main><div class="step on" id="step">
+  <div class="thumbs" id="thumbs"></div>
+  <div class="content" id="content">
+    <div class="stage" id="stage"><div class="zoom"><button id="replay" class="replay" hidden title="Replay both from the start (r)">↻ replay</button><button id="zout" title="Zoom out (−)">−</button><span class="lvl" id="lvl">100%</span><button id="zin" title="Zoom in (+)">+</button></div><div class="inner" id="inner"></div></div>
+    <div class="info"><p class="what" id="headline"></p><div class="cards" id="cards"></div></div>
+    <div class="controls">
+      <span class="answers" id="answers"></span>
+      <input class="note" id="note" placeholder="Add a note (optional)">
+      <button class="btn primary" id="save">Save &amp; Next ›</button>
+    </div>
+  </div>
+</div></main>
+</div>
+<div class="loupe" id="loupe"></div>
+<div class="veil" id="veil"><div class="dlg"><h2>Submit your feedback?</h2><p id="dlg-text"></p>
+<div class="warn" id="skipped"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg><span><span id="skipn"></span> Skipped steps are sent as "no answer"; Claude leaves those unchanged.</span></div>
+<textarea id="feedback" readonly></textarea>
+<div class="row"><button class="btn ghost" id="cancel">Keep reviewing</button><button class="btn" id="first">Go to first skipped</button><button class="btn" id="copy">Copy feedback</button><button class="btn primary" id="submit">Submit</button></div>
+</div></div>
+<script>const DECK={"title": "Chess \u2014 how dark should the dark squares be?", "key": "games-arcade-board-contrast", "runs": ["after"], "runLabels": {"before": "Before", "after": "After", "today": "Today"}, "themes": ["dark", "meadow-mist", "midnight", "halftone-dimension", "light", "creme"], "themeNames": {"dark": "Dark", "meadow-mist": "Meadow", "midnight": "Midnight", "halftone-dimension": "Halftone", "light": "Light", "creme": "Cr\u00e8me"}, "steps": [{"id": "B-1", "kind": "choice", "surface": "Chess board", "path": "Games \u2192 Chess", "headline": "The chess board's two square shades are almost identical. Pick how strong they should be.", "notice": "", "risk": "Whichever you pick, the a-h and 1-8 edge letters have been made darker in all four pictures, because they would have vanished on a stronger square.", "variants": [{"id": "today", "label": "Leave it as it is", "summary": "What ships now. In Dark and Meadow Mist the checker pattern is essentially invisible \u2014 you can see where the pieces are but not the light and dark squares they stand on. Bishops are the practical problem: a bishop lives on one colour for the whole game, and you cannot see which.", "measured": "1.05 to 1.40 across the six themes", "risk": "Reading the board is guesswork in three of the six themes."}, {"id": "soft", "label": "Gentle", "summary": "A visible checker pattern that still sits quietly next to the conversation. The board reads as part of the app rather than as a game board dropped into it. Half the strength of the next option.", "measured": "1.50 to 1.86 across the six themes", "risk": "Still under a real board, so at a glance across the pane the pattern can still fade out."}, {"id": "contrast", "label": "Full strength, grey (I would pick this)", "summary": "The squares reach the strength a physical board has, using a grey built from your theme's own text colour. It is the only option that cannot be defeated by a theme: text always stands out against its own background, so this works on community themes nobody has looked at yet \u2014 and people publish new ones constantly.", "measured": "2.01 to 2.97 \u2014 never below 2 in any theme", "risk": "Greys, not woods. The board is unmistakably readable but it does not pick up your theme's colour the way the last option does."}, {"id": "wood", "label": "Full strength, in your theme's colour", "summary": "The dark squares take your theme's own colour, so Cr\u00e8me gets a cream-and-brown board that looks like real wood and Midnight goes blue. The prettiest of the four by some distance. Its colour is blended toward the text colour first, because pure colour alone measured 1.40 on Halftone and 1.44 on Meadow Mist \u2014 those themes' colours sit too close to their own backgrounds.", "measured": "1.80 to 2.86 \u2014 weakest on Meadow Mist (1.80) and Halftone (1.89)", "risk": "Two themes still land under the grey option, and a future community theme could land lower still, because how well it works depends on a colour its author chose."}], "images": {"dark": {"today": "images/games-arcade-board-contrast/board-today--dark--after.png", "soft": "images/games-arcade-board-contrast/board-soft--dark--after.png", "contrast": "images/games-arcade-board-contrast/board-contrast--dark--after.png", "wood": "images/games-arcade-board-contrast/board-wood--dark--after.png"}, "meadow-mist": {"today": "images/games-arcade-board-contrast/board-today--meadow-mist--after.png", "soft": "images/games-arcade-board-contrast/board-soft--meadow-mist--after.png", "contrast": "images/games-arcade-board-contrast/board-contrast--meadow-mist--after.png", "wood": "images/games-arcade-board-contrast/board-wood--meadow-mist--after.png"}, "midnight": {"today": "images/games-arcade-board-contrast/board-today--midnight--after.png", "soft": "images/games-arcade-board-contrast/board-soft--midnight--after.png", "contrast": "images/games-arcade-board-contrast/board-contrast--midnight--after.png", "wood": "images/games-arcade-board-contrast/board-wood--midnight--after.png"}, "halftone-dimension": {"today": "images/games-arcade-board-contrast/board-today--halftone-dimension--after.png", "soft": "images/games-arcade-board-contrast/board-soft--halftone-dimension--after.png", "contrast": "images/games-arcade-board-contrast/board-contrast--halftone-dimension--after.png", "wood": "images/games-arcade-board-contrast/board-wood--halftone-dimension--after.png"}, "light": {"today": "images/games-arcade-board-contrast/board-today--light--after.png", "soft": "images/games-arcade-board-contrast/board-soft--light--after.png", "contrast": "images/games-arcade-board-contrast/board-contrast--light--after.png", "wood": "images/games-arcade-board-contrast/board-wood--light--after.png"}, "creme": {"today": "images/games-arcade-board-contrast/board-today--creme--after.png", "soft": "images/games-arcade-board-contrast/board-soft--creme--after.png", "contrast": "images/games-arcade-board-contrast/board-contrast--creme--after.png", "wood": "images/games-arcade-board-contrast/board-wood--creme--after.png"}}, "boxes": {"dark": {}, "meadow-mist": {}, "midnight": {}, "halftone-dimension": {}, "light": {}, "creme": {}}}]};</script>
+<script>/* Review deck v2 — renders DECK (one JSON object the builder inlines) one step at a time.
+   Persistence: the serve.py endpoints when the page is served (GET/POST /answers, POST /submit),
+   localStorage + a copy box when it is opened as a plain file. */
+(function () {
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const N = DECK.steps.length, runs = DECK.runs;
+  let cur = 0, theme = DECK.themes[0], zoom = 1, loupeOn = true, server = false, stepStart = Date.now();
+  const state = { deck: DECK.key, started: new Date().toISOString(), submitted: null, cur: 0, answers: {} };
+  const ICON = {
+    change: '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m12.5 7.5 4 4"/></svg>',
+    eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+    warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>' };
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  if (window.top !== window) document.body.classList.add('embedded');
+  // What the stage shows for a step: one frame per run (before/after, or today), or — for a CHOICE
+  // step — one frame per variant, lettered. Destin (2026-08-27): variants of one thing are one
+  // question on one page, not a yes/no each.
+  const frames = st => st.kind === 'choice'
+    ? st.variants.map(v => ({ key: v.id, caption: `<span class="key">${esc(v.id)}</span>${esc(v.label)}`, pickable: true }))
+    : runs.map(r => ({ key: r, caption: esc(DECK.runLabels[r] || r), pickable: false }));
+  // CLIP step: one <video> per run instead of a still. They start PAUSED on their poster
+  // (Destin, 2026-08-28) — ↻ or `r` plays both from the start together; native controls
+  // so a bug can be paused and scrubbed; muted + looping once started.
+  const media = (st, f) => st.kind === 'clip'
+    ? `<video src="${esc(st.clips[f.key])}"${st.posters[f.key] ? ` poster="${esc(st.posters[f.key])}"` : ''} muted loop playsinline controls preload="auto"></video>`
+    : `<img src="${esc(st.images[theme][f.key])}" alt=""><span class="box"></span>`;
+  function replay() { const vs = $$('#inner video'); vs.forEach(v => { v.pause(); v.currentTime = 0; }); vs.forEach(v => v.play().catch(() => {})); }
+  let curFrames = frames(DECK.steps[0]), lastStep = null;
+  // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
+  const YES = runs.length === 1 ? 'Yes, build it' : 'Yes, keep it', NO = runs.length === 1 ? 'No, leave it' : 'No, revert it';
+  const pickBtn = o => `<button class="btn ans" data-v="pick" data-pick="${esc(o.id)}" title="${esc(o.label)}"><span class="dot pick"></span><span class="key">${esc(o.id)}</span><span>${esc(o.label)}</span></button>`;
+  function renderAnswers(st) {
+    // A DECIDE step's options ARE its answers, so there is no yes/no: picking one is the answer,
+    // and "Other" carries anything he wants instead. No "None of these" — with written options
+    // that button and "Other" would mean the same thing twice.
+    $('#answers').innerHTML = st.kind === 'choice'
+      ? st.variants.map(pickBtn).join('')
+        + `<button class="btn ans" data-v="no"><span class="dot no"></span>None of these</button><button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`
+      : st.kind === 'decide'
+      ? st.options.map(pickBtn).join('')
+        + `<button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`
+      : `<button class="btn ans" data-v="yes"><span class="dot yes"></span>${YES}</button><button class="btn ans" data-v="no"><span class="dot no"></span>${NO}</button><button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`;
+    if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
+  }
+  function answer(v, pick) {
+    if (state.submitted) return;
+    const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), v }; if (v === 'pick') a.pick = pick; else delete a.pick;
+    state.answers[id] = a; paintState(); save(); $('#note').focus();
+  }
+  $('#deck-title').textContent = DECK.title; document.title = DECK.title;
+  $('#steps').innerHTML = DECK.steps.map(() => '<span></span>').join('');
+  const stage = $('#stage'), inner = $('#inner'), loupe = $('#loupe');
+
+  // ── persistence ──
+  const LS = 'deck:' + DECK.key;
+  async function load() {
+    try { const r = await fetch('/answers', { cache: 'no-store' }); if (r.ok) { server = true; const j = await r.json(); if (j && j.answers) Object.assign(state, j); return; } } catch (e) { /* not served */ }
+    try { const j = JSON.parse(localStorage.getItem(LS) || 'null'); if (j && j.answers) Object.assign(state, j); } catch (e) { /* no storage */ }
+  }
+  async function save() {
+    try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) { /* no storage */ }
+    if (server) { try { await fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); } catch (e) { /* server gone — the file has everything up to the last successful POST */ } }
+  }
+
+  // ── render the current step ──
+  function render() {
+    const st = DECK.steps[cur];
+    const themes = st.themes || DECK.themes;   // a real-app capture exists in one theme only — that step lists just that one
+    if (st.themes && st !== lastStep) theme = st.themes[0];   // a step with its own theme list opens on the first: that list says which themes matter here
+    else if (!themes.includes(theme)) theme = themes[0];
+    lastStep = st;
+    document.documentElement.dataset.theme = theme;   // before the pictures load, so a theme switch never flashes the old colours
+    $('#wtitle').textContent = st.surface; $('#wsub').textContent = st.path;
+    curFrames = frames(st);
+    inner.innerHTML = curFrames.map(f => `<figure class="frame${f.pickable ? ' pickable' : ''}${st.kind === 'clip' ? ' clip' : ''}" data-run="${esc(f.key)}"${f.pickable ? ` title="Pick ${esc(f.key)}"` : ''}><figcaption>${f.caption}</figcaption><div class="pic">${media(st, f)}</div></figure>`).join('');
+    $$('#inner .frame .box').forEach(box => { const b = ((st.boxes || {})[theme] || {})[box.closest('.frame').dataset.run]; if (b) box.style.cssText = `left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%`; else box.style.display = 'none'; });
+    $('#replay').hidden = st.kind !== 'clip';
+    if (st.kind === 'clip') $$('#inner video').forEach(v => v.addEventListener('loadedmetadata', layout));
+    $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
+    $$('.card.variant').forEach(c => c.onclick = () => answer('pick', c.dataset.pick));
+    $('#headline').textContent = st.headline;
+    const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><span class="key">${esc(o.id)}</span><div class="vbody"><h3>${esc(o.label)}</h3><p>${esc(o.summary)}</p>${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+    $('#cards').innerHTML = st.kind === 'choice'
+      ? st.variants.map(v => optionCard(v, '')).join('')
+        + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
+      : st.kind === 'decide'
+      ? (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+        + st.options.map(o => optionCard(o, ' option')).join('')
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
+      : `<section class="card"><h3>${ICON.change}What changed</h3><p>${esc(st.changed)}</p>${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`
+        + `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>`
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '');
+    renderAnswers(st);
+    const last = curFrames[curFrames.length - 1].key;
+    // A clip is recorded in one theme; there are no per-theme variants to switch between.
+    $('#thumbs').innerHTML = st.kind === 'clip' ? '' : themes.map(t => `<button class="thumb${t === theme ? ' on' : ''}" data-v="${esc(t)}" title="${esc(DECK.themeNames[t])}"><img src="${esc(st.images[t][last])}" alt=""><span>${esc(DECK.themeNames[t])}</span></button>`).join('');
+    $$('.thumb').forEach(b => b.onclick = () => { theme = b.dataset.v; render(); });
+    $$('#inner img').forEach(i => i.addEventListener('load', layout));
+    layout(); paintState();
+  }
+  function paintState() {
+    const a = state.answers[DECK.steps[cur].id] || {};
+    $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick)));
+    $$('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
+    $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', a.v === 'pick' && f.dataset.run === a.pick));
+    const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
+    $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
+    const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
+    $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
+    $('#save').disabled = !(a.v && a.v !== 'skip'); $('#prev').disabled = cur === 0; $('#next').disabled = cur === N - 1; $('#next').textContent = cur === N - 1 ? 'Last step' : 'Next ›';
+  }
+
+  // ── layout: try each arrangement for real, keep the one that shows the pictures largest (spec §3.4) ──
+  const PAD = 28, CAP = 24, GAP = 18;
+  function layout() {
+    const c = $('#content'), step = $('#step'); const img = $('#inner img, #inner video'); if (!img) return;
+    const natW = img.naturalWidth || img.videoWidth, natH = img.naturalHeight || img.videoHeight; if (!natW) return;
+    const margin = (document.querySelector('main').clientWidth - step.clientWidth) / 2; document.body.classList.toggle('thumbs-inline', margin < 150);
+    const n = curFrames.length, w = natW, h = natH + CAP;
+    const opts = { A: 'row-below', B: 'col-right stacked', C: 'col-right', D: 'row-below stacked' }; const score = {};
+    step.classList.remove('compact-step');
+    for (const k in opts) {
+      if (opts[k].includes('col-right') && (c.clientWidth < 820 || DECK.steps[cur].kind === 'choice')) { score[k] = 0; continue; }   // a side column needs real width; variant PICTURES need the full row (a decide step has only one picture, so it keeps the column)
+      if (n === 1 && opts[k].includes('stacked')) { score[k] = 0; continue; }                 // one picture: stacking means nothing
+      if (DECK.steps[cur].kind === 'clip' && opts[k].includes('stacked')) { score[k] = 0; continue; }   // clips: side by side, or the two recordings can't be watched together
+      c.className = 'content ' + opts[k]; const SW = stage.clientWidth - PAD, SH = stage.clientHeight - PAD; const stacked = opts[k].includes('stacked');
+      score[k] = Math.min(stacked ? SW / w : (SW - GAP * (n - 1)) / n / w, stacked ? (SH - GAP * (n - 1)) / n / h : SH / h);
+    }
+    let best = 'A'; for (const k of ['B', 'C', 'D']) if (score[k] > score[best] * 1.05) best = k;   // A wins ties
+    let s;
+    // A clip pair is worth watching smaller: compact only under 30% (stills: 50%).
+    const floor = DECK.steps[cur].kind === 'clip' ? 0.3 : 0.5;
+    if (score[best] < floor) { c.className = 'content compact'; step.classList.add('compact-step'); s = Math.min((c.clientWidth - PAD) / w, 1); }
+    else { c.className = 'content ' + opts[best]; s = Math.min(score[best], 1.5); }
+    $$('#inner img, #inner video').forEach(i => i.style.width = ((i.naturalWidth || i.videoWidth) * s * zoom) + 'px');
+    $('#lvl').textContent = Math.round(zoom * 100) + '%';
+    // Read by the render test: the choice, and the scores it was made from (so the test checks the RULE, not a table).
+    document.body.dataset.layout = score[best] < floor ? 'compact' : best;
+    document.body.dataset.scores = JSON.stringify(score);
+    const b = $('#inner .frame .box'); if (b && zoom > 1) b.scrollIntoView({ block: 'center', inline: 'center' });
+    window.__deckReady = true;   // the render test waits for this — set only once a real layout has been chosen
+  }
+
+  // ── navigation & answers ──
+  function record() {
+    const id = DECK.steps[cur].id; const a = state.answers[id] || {};
+    if (!a.v) a.v = 'skip';
+    a.seconds = (a.seconds || 0) + Math.round((Date.now() - stepStart) / 1000); a.theme = theme; a.zoom = zoom;
+    state.answers[id] = a;
+  }
+  function go(i) {
+    if (state.submitted) return;   // Fix: after Submit, arrow keys / progress segments must not keep POSTing answers
+    record(); cur = Math.max(0, Math.min(N - 1, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render();
+  }
+  // Fix: save on EVERY answer, not only when the step changes — a tab closed on the last
+  // answered step used to lose that answer entirely. The note debounces so a sentence typed
+  // at speed is one POST, not one per keystroke.
+  let noteTimer = null;
+  $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick); });
+  $('#note').addEventListener('input', e => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note: e.target.value }; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); });
+  $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
+  $('#next').onclick = () => go(cur + 1); $('#prev').onclick = () => go(cur - 1);
+  $$('#steps span').forEach((s, i) => s.onclick = () => go(i));
+
+  // ── submit ──
+  function summary() {
+    const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && st.kind === 'choice' ? 'none' : v); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
+    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
+  }
+  function openDialog() {
+    record(); save();
+    // Fix: record() already banked elapsed seconds into the current step's answer; without resetting
+    // stepStart, a Done -> Keep reviewing -> Done round trip would add those seconds a second time.
+    // paintState() repaints so a step that record() just marked "skip" turns grey immediately.
+    stepStart = Date.now(); paintState();
+    const missing = DECK.steps.map((st, i) => [(state.answers[st.id] || {}).v, i]).filter(([v]) => !v || v === 'skip').map(([, i]) => i + 1);
+    $('#skipped').style.display = missing.length ? 'flex' : 'none';
+    $('#skipn').textContent = missing.length + (missing.length === 1 ? ' step has' : ' steps have') + ' no answer (step' + (missing.length > 1 ? 's ' : ' ') + missing.join(', ') + ').';
+    $('#first').style.display = missing.length ? 'inline-flex' : 'none'; $('#first').onclick = () => { $('#veil').classList.remove('on'); go(missing[0] - 1); };
+    $('#dlg-text').innerHTML = server
+      ? 'Your answers have been saving to a file next to this deck as you went. Submitting tells Claude you\'re finished — it picks them up in the session and replies there. <b>Nothing to copy or paste</b>: close this tab and go back to the conversation.'
+      : 'This deck is not being served, so Claude is not watching it. Copy the feedback below and paste it into the chat.';
+    $('#feedback').style.display = server ? 'none' : 'block'; $('#copy').style.display = server ? 'none' : 'inline-flex'; $('#submit').style.display = server ? 'inline-flex' : 'none';
+    $('#feedback').value = summary(); $('#veil').classList.add('on');
+  }
+  $('#done').onclick = openDialog; $('#cancel').onclick = () => $('#veil').classList.remove('on');
+  $('#submit').onclick = async () => {
+    // Fix: only a POST the server actually accepted may say "Submitted ✓". Claiming success
+    // when the server is gone sends Destin back to the conversation with nothing waiting there.
+    let ok = false, why = '';
+    try { const r = await fetch('/submit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); ok = r.ok; if (!ok) why = 'HTTP ' + r.status; }
+    catch (e) { why = (e && e.message) || String(e); server = false; }   // the server is gone: a re-opened dialog must take the copy/paste branch, not repeat "saving as you went"
+    if (!ok) {
+      state.submitted = null;   // summary() then labels it "not submitted", which is the truth
+      $('#dlg-text').textContent = 'The deck could not reach its server (' + why + '). Your answers up to the last save are in the answers file; copy the feedback below and paste it into the chat.';
+      $('#feedback').value = summary(); $('#feedback').style.display = 'block'; $('#copy').style.display = 'inline-flex'; $('#submit').style.display = 'none';
+      return;   // veil stays open — there is still something for him to do here
+    }
+    state.submitted = new Date().toISOString();
+    $('#veil').classList.remove('on'); lockSubmitted();
+  };
+  // A submitted deck is read-only, and says so — silently ignoring clicks read as "I can't click through the pages".
+  function lockSubmitted() { $('#done').textContent = 'Submitted ✓'; $('#done').disabled = true; $$('.ans,#save,#note').forEach(e => e.disabled = true); paintState(); }
+  $('#copy').onclick = () => { const t = $('#feedback'); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).catch(() => document.execCommand('copy')); $('#copy').textContent = 'Copied'; };
+
+  // ── loupe, zoom, keys ──
+  const K = 2.5, R = 90;
+  stage.addEventListener('mousemove', e => {
+    if (!loupeOn) { loupe.style.display = 'none'; return; }
+    const img = $$('#inner img').find(i => { const r = i.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom; });
+    if (!img) { loupe.style.display = 'none'; return; }
+    const r = img.getBoundingClientRect(); const x = e.clientX - r.left, y = e.clientY - r.top;
+    loupe.style.display = 'block'; loupe.style.left = (e.clientX - R) + 'px'; loupe.style.top = (e.clientY - R) + 'px';
+    loupe.style.backgroundImage = 'url("' + img.src + '")'; loupe.style.backgroundSize = (r.width * K) + 'px ' + (r.height * K) + 'px'; loupe.style.backgroundPosition = (-x * K + R) + 'px ' + (-y * K + R) + 'px';
+  });
+  stage.addEventListener('mouseleave', () => loupe.style.display = 'none');
+  function setZoom(z) { zoom = Math.max(1, Math.min(4, Math.round(z * 10) / 10)); layout(); }
+  $('#zin').onclick = () => setZoom(zoom + 0.1); $('#zout').onclick = () => setZoom(zoom - 0.1); $('#replay').onclick = replay;
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (!state.submitted) { if (e.key === 'ArrowRight') go(cur + 1); if (e.key === 'ArrowLeft') go(cur - 1); }   // Fix: zoom/loupe stay live after Submit, navigation doesn't
+    if (e.key === '+' || e.key === '=') setZoom(zoom + 0.1); if (e.key === '-') setZoom(zoom - 0.1); if (e.key === '0') setZoom(1);
+    if (e.key === 'r' && DECK.steps[cur].kind === 'clip') replay();
+    if (e.key === 'l') { loupeOn = !loupeOn; if (!loupeOn) loupe.style.display = 'none'; document.body.classList.toggle('no-loupe', !loupeOn); }
+  });
+  window.addEventListener('resize', layout);
+  load().then(() => {
+    const q = new URLSearchParams(location.search);
+    cur = q.get('step') ? Math.max(0, Math.min(N - 1, +q.get('step') - 1)) : Math.max(0, Math.min(N - 1, state.cur || 0));
+    if (q.get('theme') && DECK.themes.includes(q.get('theme'))) theme = q.get('theme');
+    stepStart = Date.now(); render();
+    if (state.submitted) lockSubmitted();   // an archived (file://) deck opened after its submit shows its locked state instead of dead buttons
+  });
+})();
+</script>
+</body></html>
