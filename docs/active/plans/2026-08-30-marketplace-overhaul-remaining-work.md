@@ -66,8 +66,26 @@ does something.
 ## Architecture
 
 **Serve.** The Worker stores one row per listing in D1 (`catalog_items`, full entry as JSON
-plus a few indexed columns) and answers `GET /catalog` (everything the app shows, with an
-`ETag`) and `GET /catalog/:id`; an ingest token guards `POST /admin/catalog/*`.
+plus a few indexed columns) — that is the source of truth the ingest merges into. But
+**`GET /catalog` does not read those rows.** At the end of an ingest run that actually changed
+something, the Worker assembles the whole catalog **once** and writes it to a KV namespace;
+every client request then serves that one pre-built object (Task 7b). `GET /catalog/:id` stays
+on D1 (one indexed row). An ingest token guards `POST /admin/catalog/*`.
+
+**Why the read path is KV and not D1** — this is the difference between a marketplace that
+serves a few hundred people and one that serves as many as show up. The catalog is identical
+for every user and changes at most once an hour: that is a *file*, not a query. Assembling it
+per request means ~5,000 D1 row-reads every time anyone opens the store, against a free-tier
+budget of 5 M row-reads/day — roughly **1,000 catalog fetches a day for the entire user base**.
+Building it once an hour instead costs ~120,000 row-reads/day total *regardless of how many
+users there are*, and the serve path becomes one KV read (100,000/day free, ~100× the old
+ceiling, and KV reads are edge-cached globally).
+
+**And KV specifically, not R2**, for one reason worth writing down: KV has its own global cache
+tier that works **on a `*.workers.dev` address**, whereas Cloudflare's HTTP cache and the Cache
+API do not (ROADMAP: "Put the Worker on a custom domain"). So this fix stands on its own and
+does not wait on the domain decision — and when the domain does land, the HTTP edge cache
+stacks on top of it rather than replacing it.
 
 **Ingest.** A dependency-free Node 20 script tree in `wecoded-marketplace/scripts/catalog/`
 runs in GitHub Actions every hour, pulls each source (our own `index.json`, Docker's MCP
@@ -119,23 +137,22 @@ end for the measured reasons and where it goes instead.
 
 Six phases, counting the rebase. The ordering is not arbitrary — Phase 0 goes first because
 every task on the app branch is a guess until it lands; Phase 1 next because it depends on
-nothing else and can go out on its own; Phase 3 is a decision that may add one small build,
-not a task list.
+nothing else and can go out on its own; Phase 3 is a settled decision that now costs only a
+copy pass, not a task list.
 
 | Phase | Tasks | Repo / branch | Depends on |
 |---|---|---|---|
 | **0 — Rebase the app branch** | 0 | `youcoded` `feat/marketplace-overhaul-ui` | nothing |
 | **1 — App fixes that depend on nothing** | 1–3 | `youcoded` `feat/marketplace-overhaul-ui` | Task 0 |
-| **2 — Catalog service** | 4–14 | `wecoded-marketplace` `feat/catalog-service` (Task 9 is on the app branch) | nothing |
-| **3 — Settle the shield** | 15 | decision + `youcoded` branch | Phase 2 deployed with real data |
-| **4 — App reads the catalog** | 16–22 | `youcoded` `feat/marketplace-overhaul-ui` | Phase 2 deployed, Phase 3 decided |
+| **2 — Catalog service** | 4–14 (incl. 7b) | `wecoded-marketplace` `feat/catalog-service` (Task 9 is on the app branch) | nothing |
+| **3 — Wording for the unchecked shield** | 15 | `youcoded` `feat/marketplace-overhaul-ui` | nothing |
+| **4 — App reads the catalog** | 16–22 | `youcoded` `feat/marketplace-overhaul-ui` | Phase 2 deployed |
 | **5 — Verify, merge, close out** | 23 | both | Phases 0–4 |
 
 Phases 1 and 2 are independent of each other and can run in parallel in separate worktrees
 once Task 0 is done.
-Phase 3 cannot start until Phase 2's first real ingest run has populated the live catalog,
-because the whole point of it is to look at real numbers. Nothing in Phase 4 or 5 merges
-until Phase 3 is answered.
+Phase 3 no longer gates anything — Destin settled it on 2026-08-30 (the shield stays; see
+Task 15), so it is now a small copy-and-tooltip change that can ride along with Phase 1.
 
 ---
 
@@ -152,6 +169,11 @@ until Phase 3 is answered.
 - **The ETag is `"cat-<version>"`** — a counter the Worker bumps on every write (Task 4's
   `catalog_meta` table). **Clients must treat it as an opaque string**: store it, send it back,
   compare it for equality. Nothing on the client may parse it or compare it for ordering.
+- **The response body is a pre-built KV object, not a query result** (Task 7b). This is
+  invisible from the client's side — same URL, same shape, same ETag semantics — and is stated
+  here only so nobody "optimises" the app around a per-request assembly that does not happen.
+  If KV is empty or unreadable the Worker falls back to assembling from D1, so the contract
+  holds either way.
 - **The 304 is mandatory on both platforms, not an optimisation.** The response is several
   megabytes, both platforms refresh hourly, Android does it over mobile data, and Cloudflare's
   edge cache does not apply to `*.workers.dev` — so a client that ignores the ETag
@@ -163,11 +185,16 @@ until Phase 3 is answered.
   it, do not surface an error; that is the whole point of it.
 - **Size discipline.** ~2,600 rows come from our own registry alone (302 live bundles + 2,084
   skills + 103 specialists + 125 connections, measured against `index.json`), and today's rows
-  average 1.1 KB. Expect roughly 5,000 rows / 4–6 MB. Any change that materially grows that
-  needs a paging story first; D1's free tier allows 5 M row-reads/day, i.e. about 1,000
-  uncached catalog fetches. The **write** side is tighter: 100,000 rows written/day, index
-  updates counted on top. Rule 3 (Architecture) is what keeps an hourly job under it; any
-  change that writes rows the ingest did not change needs the same scrutiny as a paging change.
+  average 1.1 KB. Expect roughly 5,000 rows / 4–6 MB — **measured 2026-08-31: Cloudflare
+  Brotli-compresses Worker responses automatically** (today's 382 KB `index.json` travels as
+  72 KB, 5.3×), so the wire cost is well under 1 MB. Compression does nothing for the *read*
+  cost, which is why Task 7b moves the serve path off D1 entirely.
+  **The live ceiling is now KV's 25 MB value limit — roughly 20,000 listings.** Past that the
+  object has to be sharded or moved to R2, and that is the point at which the delta-refresh and
+  card/detail-split items on the ROADMAP stop being optional. The **write** side is unchanged
+  and still tighter than it looks: 100,000 D1 rows written/day, index updates counted on top.
+  Rule 3 (Architecture) is what keeps an hourly job under it; any change that writes rows the
+  ingest did not change needs the same scrutiny as a paging change.
 - `CatalogMeta` lives in `desktop/src/shared/catalog-types.ts` on the app branch. This plan
   adds two optional fields there (Task 9): `upstreamId?: string`, `stars?: number`. Nothing
   else in the shape changes.
@@ -265,6 +292,8 @@ until Phase 3 is answered.
 - `src/catalog/routes.ts` — `catalogRoutes`: `GET /catalog`, `GET /catalog/:id` (+ two-segment
   member form), `POST /admin/catalog/upsert`, `POST /admin/catalog/finish`,
   `GET /admin/catalog/shas`, `GET /admin/catalog/health`.
+- `src/catalog/publish.ts` — `buildCatalogBody`, `publishCatalog`, `readPublished` (Task 7b:
+  assemble once per changed run into KV; serve from there).
 - `src/types.ts` — `CATALOG_INGEST_TOKEN`, `CATALOG_ENABLED`; `wrangler.toml` `[vars]` +
   `[env.test.vars]`; `test/env.d.ts`; `.github/workflows/worker-deploy.yml` secret push.
 - `test/catalog.test.ts`, `test/catalog-auth.test.ts`, `test/schema.test.ts`, `test/cors.test.ts`.
@@ -710,6 +739,26 @@ describe("ingest token", () => {
 ```
 `worker/wrangler.toml` — add `CATALOG_ENABLED = "1"` to the top-level `[vars]` block (next to `CUTOVER_TIMESTAMP`) **and** `CATALOG_INGEST_TOKEN = "test-ingest-token"` + `CATALOG_ENABLED = "1"` to `[env.test.vars]`. `worker/test/env.d.ts` — add `CATALOG_INGEST_TOKEN?: string;` and `CATALOG_ENABLED?: string;`.
 
+**Also add the KV binding now** (Task 7b needs it; doing it here keeps `wrangler.toml` edits in
+one commit). One-time provisioning, and it must happen **before** the PR merges or the deploy
+fails on an unknown namespace id:
+```bash
+npx wrangler kv namespace create CATALOG            # prints the id
+npx wrangler kv namespace create CATALOG --preview  # prints the preview id
+```
+then in `wrangler.toml`:
+```toml
+[[kv_namespaces]]
+binding = "CATALOG_KV"
+id = "<the id>"
+preview_id = "<the preview id>"
+```
+`src/types.ts` `Env` gains `CATALOG_KV?: KVNamespace;` (**optional on purpose** — Task 7b falls
+back to assembling from D1 when it is absent, so tests and any environment without the
+namespace keep working). `test/env.d.ts` gains the same. vitest-pool-workers provisions KV
+from `wrangler.toml` automatically; no test-side setup. Say in the PR body that the two
+`wrangler kv namespace create` commands must be run and the ids committed before merge.
+
 `worker/src/catalog/auth.ts`:
 ```ts
 import type { MiddlewareHandler } from "hono";
@@ -768,7 +817,7 @@ and mount it in `src/index.ts` (`import { catalogRoutes } from "./catalog/routes
 - `POST /admin/catalog/upsert` body `{ source, run_id, entries: Array<SkillEntry & { catalog: CatalogMeta }> }` (≤ 500 entries) → `{ ok: true, upserted: number, unchanged: number }`. Creates the `catalog_runs` row on first sight of `(run_id, source)`. Each entry's `id`, `catalog.itemType`, `catalog.partOf?.id`, `catalog.sourceCommit`, `deprecated` are read into columns. **Merges, never clobbers** — see below — and **writes only rows whose merged JSON differs from what is stored**; `unchanged` counts the rest. A row arriving without `publishedAt` gets the insert time on first sight and keeps it thereafter.
 - `POST /admin/catalog/finish` body `{ source, run_id, retire: string[], note?, allow_mass_retire? }` → `{ ok: true, retired: number, refused?: { wouldRetire: number, live: number } }`: the listed ids of that source become `deprecated = 1`; the run row gets `finished_at`. **The list is computed by the ingest** (what `/shas` said the catalog holds, minus what the run sent, minus what its sources reported as skipped — Task 10); the Worker never infers "not seen" from anything, so nothing has to be written to prove a row is alive. **Refuses a mass retirement** — see below.
 - `GET /admin/catalog/shas?source=…` → `{ shas: Record<id, string> }` — **every live id** of the source, valued `"<sourceCommit>:<scanRulesVersion>"` (either half may be empty). Two consumers: a source skips re-reading an id whose value matches its current key, and `build.mjs` treats the key set as "what the catalog holds" when computing the retire list. Not a bare commit: the scan rules are half of "is what we have still current".
-- `GET /admin/catalog/health` (`requireAuth` + `requireAdminAccount` — the same admin gate `DELETE /admin/ratings/:user_id/:plugin_id` already uses, `src/reports/routes.ts:38`) → `{ version, sources: Array<{ source, live, lastFinishedAt, lastRetired, lastNote }> }`. Read-only. **This is how a human answers "is the catalog still being fed?"** — a stalled ingest produces no error anywhere, just an unchanging catalog, and GitHub silently disables a repository's `schedule:` triggers after 60 days of inactivity. A source whose `lastFinishedAt` is hours old is the tell.
+- `GET /admin/catalog/health` (`requireAuth` + `requireAdminAccount` — the same admin gate `DELETE /admin/ratings/:user_id/:plugin_id` already uses, `src/reports/routes.ts:38`) → `{ version, publishedVersion, sources: Array<{ source, live, lastFinishedAt, lastRetired, lastNote }> }`. **`publishedVersion`** is the version of the pre-built KV object the public route is actually serving (Task 7b); when it lags `version` across a run that changed rows, the publish is failing silently and every request is quietly paying the old per-request D1 price — which is invisible from outside, because the fallback keeps answering correctly. Read-only. **This is how a human answers "is the catalog still being fed?"** — a stalled ingest produces no error anywhere, just an unchanging catalog, and GitHub silently disables a repository's `schedule:` triggers after 60 days of inactivity. A source whose `lastFinishedAt` is hours old is the tell.
 
 **The write-skip (rule 3 — why this catalog fits in the free tier).** The upsert already reads
 the stored JSON to merge onto it. Serialise the merged entry and compare it to the stored
@@ -1448,6 +1497,254 @@ apply — but the remote web UI and the workbench are browsers, and a browser th
 - [ ] **Step 4: Run** `npm test && npm run typecheck` → PASS. **Step 5: Commit** `git add src/catalog/routes.ts src/index.ts test/catalog.test.ts test/cors.test.ts && git commit -m "feat(worker): GET /catalog + GET /catalog/:id (public, ETag/304, kill switch)"`.
 
 Then push and open the PR (`feat(worker): catalog service — storage, ingest routes, public reads`) with the secret instruction from Task 5; **merge it before Task 14's first real run.** Body ends with the standard Claude Code footer.
+
+---
+
+### Task 7b: Serve the catalog from a pre-built KV object, not from D1
+
+**Numbered 7b rather than 8 on purpose** — Tasks 8–23 are cross-referenced by number
+throughout this document and from the ROADMAP; renumbering them to insert one task would be a
+worse trade than a lettered sub-task. Do it immediately after Task 7, in the same PR.
+
+**What this changes and what it does not.** The public contract does not move at all: same URL,
+same body shape, same `ETag`/304 semantics, same 503 kill switch. **Phase 4 needs zero
+changes** — the app cannot tell the difference. What changes is only *where the bytes come
+from*: Task 7 assembles the catalog out of ~5,000 D1 rows on every request; this task assembles
+it **once per changed ingest run** into KV and serves that object.
+
+**Why it is worth a task of its own.** At ~5,000 row-reads per assembly against a 5 M/day
+free-tier budget, the per-request version caps the entire user base at roughly **1,000 catalog
+fetches a day** — a few hundred people, and the failure mode is the catalog going dark (clients
+fall back to `index.json`, so nobody sees an error and nobody gets fresh data either). Building
+it once an hour costs ~120,000 row-reads/day *no matter how many users there are*, and the
+serve path becomes one KV read against a 100,000/day free allowance that is itself
+edge-cached. Same code, same contract, ~100× the ceiling.
+
+**KV, not R2, and not the Cache API.** KV's own global cache tier works on a `*.workers.dev`
+address; Cloudflare's HTTP cache and the Cache API do not (this is the same fact behind the
+rate limiters never having limited anything — ROADMAP: "Put the Worker on a custom domain").
+So this task stands alone and does not wait on the domain decision, and the HTTP edge cache
+stacks on top of it later rather than replacing it.
+
+**Files:**
+- Create: `worker/src/catalog/publish.ts`
+- Modify: `worker/src/catalog/routes.ts` (`GET /catalog` reads KV; `finish` publishes)
+- Test: `worker/test/catalog-publish.test.ts`
+
+**Interfaces:**
+- `buildCatalogBody(db) → Promise<string>` — the exact body string Task 7 already builds
+  (keyset walk, concatenated JSON, never parsed and re-serialised). Extracted verbatim from the
+  route so the route and the publisher can never drift into producing different bytes.
+- `publishCatalog(env) → Promise<{ version: number; bytes: number }>` — reads the version row,
+  builds the body, writes it to `CATALOG_KV` under key `catalog:v<version>` **and** writes the
+  pointer key `catalog:current` = `{ version, key, generatedAt }`. Versioned keys, not one
+  mutable key, so a client mid-download is never served half of one catalog and half of
+  another. Old versions are deleted on the next publish but one (keep N=2), which costs nothing
+  and makes a bad publish a one-line rollback of the pointer.
+- `readPublished(env) → Promise<{ version: number; body: string } | null>` — follows the
+  pointer; `null` on any miss so the caller falls back.
+- `GET /catalog`: kill switch → version row → ETag → 304 (all unchanged, and **still answered
+  before any body work**) → `readPublished()` → **if null, fall back to `buildCatalogBody(db)`**
+  and serve that.
+- `POST /admin/catalog/finish`: after the retire step, **if the catalog version moved during
+  this run**, call `publishCatalog`. A run that changed nothing publishes nothing.
+
+**Three things not to get wrong:**
+
+1. **Publish on the version, never on the clock.** The trigger is "the version counter moved",
+   which rule 3 (Architecture) already makes exact. Publishing every hour regardless would
+   rewrite a 5 MB object 24 times a day to no effect and, worse, would make the write cost
+   proportional to nothing.
+2. **The 304 must still be answered from the version row alone**, before the KV read. A KV read
+   is cheap but it is not free, and the whole point of the ETag is that "nothing changed" is the
+   cheapest possible answer.
+3. **The D1 fallback is not dead code — it is the reason this is safe to ship.** An unprovisioned
+   namespace, an empty KV, a failed publish: all of them degrade to exactly today's behaviour
+   rather than to a broken catalog. Do not delete it, and do not make `CATALOG_KV` a required
+   binding.
+
+- [ ] **Step 1: Failing tests** — `worker/test/catalog-publish.test.ts`:
+
+```ts
+import { env, SELF } from "cloudflare:test";
+import { describe, it, expect, beforeEach } from "vitest";
+import { buildCatalogBody, publishCatalog, readPublished } from "../src/catalog/publish";
+
+const TOKEN = { "Content-Type": "application/json", "X-Catalog-Token": "test-ingest-token" };
+const post = (path: string, body: unknown) =>
+  SELF.fetch(`https://test.local${path}`, { method: "POST", headers: TOKEN, body: JSON.stringify(body) });
+
+describe("the catalog is served from a pre-built object", () => {
+  beforeEach(async () => {
+    for (const t of ["catalog_items", "catalog_runs"]) await env.DB.prepare(`DELETE FROM ${t}`).run();
+    await env.DB.prepare("UPDATE catalog_meta SET version = 1 WHERE id = 'v'").run();
+  });
+
+  it("finish publishes when the version moved, and GET /catalog serves that object", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("a")] });
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r1", retire: [] });
+    const published = await readPublished(env);
+    expect(published).not.toBeNull();
+    // Prove the route is serving the OBJECT, not the rows: corrupt the rows and
+    // the response must not change.
+    await env.DB.prepare("DELETE FROM catalog_items").run();
+    const body = await (await SELF.fetch("https://test.local/catalog")).json<{ entries: Array<{ id: string }> }>();
+    expect(body.entries.map((e) => e.id)).toEqual(["a"]);
+  });
+
+  it("a run that changed nothing does not republish", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("a")] });
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r1", retire: [] });
+    const first = (await readPublished(env))!.version;
+    // Same entry again → merges to identical bytes → no write, no version bump (rule 3).
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r2", entries: [entry("a")] });
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r2", retire: [] });
+    expect((await readPublished(env))!.version).toBe(first);
+  });
+
+  it("falls back to building from D1 when nothing has been published", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("z")] });
+    await env.CATALOG_KV!.delete("catalog:current");
+    const res = await SELF.fetch("https://test.local/catalog");
+    expect(res.status).toBe(200);
+    expect((await res.json<{ entries: Array<{ id: string }> }>()).entries.map((e) => e.id)).toEqual(["z"]);
+  });
+
+  it("the 304 is answered without reading the published object at all", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("a")] });
+    await post("/admin/catalog/finish", { source: "docker", run_id: "r1", retire: [] });
+    const etag = (await SELF.fetch("https://test.local/catalog")).headers.get("etag")!;
+    await env.CATALOG_KV!.delete("catalog:current");   // if the route touched it, this breaks
+    const again = await SELF.fetch("https://test.local/catalog", { headers: { "If-None-Match": etag } });
+    expect(again.status).toBe(304);
+    expect(await again.text()).toBe("");
+  });
+
+  it("the published body is byte-identical to what the D1 path builds", async () => {
+    await post("/admin/catalog/upsert", { source: "docker", run_id: "r1", entries: [entry("a"), entry("b")] });
+    await publishCatalog(env);
+    expect((await readPublished(env))!.body).toBe(await buildCatalogBody(env.DB));
+  });
+});
+```
+
+(reuse the `entry()` helper from `test/catalog.test.ts` — export it from a shared
+`test/catalog-fixtures.ts` rather than duplicating it.)
+
+- [ ] **Step 2: Run** `npx vitest run test/catalog-publish.test.ts` → FAIL (module does not exist).
+
+- [ ] **Step 3: Implement** `worker/src/catalog/publish.ts`:
+
+```ts
+import type { HonoEnv } from "../types";
+
+type Env = HonoEnv["Bindings"];
+const POINTER = "catalog:current";
+const KEEP = 2; // current + the one before it, so a bad publish rolls back by pointer
+
+// The catalog body, built from D1. This is the SAME function the route's fallback
+// uses, extracted so the served bytes and the published bytes can never drift.
+//
+// Keyset paging (`id > last`), never OFFSET: D1 bills rows SCANNED, and OFFSET
+// re-scans everything it skips (~27,500 row-reads instead of ~5,000 for 5,000 rows).
+// The stored JSON is concatenated, never parsed and re-serialised — at a few thousand
+// rows that is megabytes of pointless work.
+export async function buildCatalogBody(db: D1Database, generatedAt = 0): Promise<string> {
+  const parts: string[] = [];
+  let after = "";
+  for (;;) {
+    const { results } = await db
+      .prepare("SELECT id, entry_json FROM catalog_items WHERE deprecated = 0 AND id > ? ORDER BY id LIMIT 500")
+      .bind(after).all<{ id: string; entry_json: string }>();
+    for (const r of results) parts.push(r.entry_json);
+    if (results.length < 500) break;
+    after = results[results.length - 1]!.id;
+  }
+  return `{"generated_at":${generatedAt},"entries":[${parts.join(",")}]}`;
+}
+
+/** Assemble the whole catalog once and store it. Called from `finish` ONLY when the
+ *  version counter moved during the run — see Task 7b note 1. */
+export async function publishCatalog(env: Env): Promise<{ version: number; bytes: number } | null> {
+  if (!env.CATALOG_KV) return null;                       // unprovisioned → route falls back to D1
+  const meta = await env.DB.prepare("SELECT version, updated_at FROM catalog_meta WHERE id = 'v'")
+    .first<{ version: number; updated_at: number }>();
+  const version = meta?.version ?? 0;
+  const body = await buildCatalogBody(env.DB, meta?.updated_at ?? 0);
+  const key = `catalog:v${version}`;
+  // Versioned key first, pointer second: a reader mid-flight either sees the old
+  // pointer (old object, still intact) or the new one (new object, fully written).
+  // A single mutable key could serve half of one catalog and half of the next.
+  await env.CATALOG_KV.put(key, body);
+  await env.CATALOG_KV.put(POINTER, JSON.stringify({ version, key, generatedAt: meta?.updated_at ?? 0 }));
+  // Best-effort GC of anything older than the last KEEP versions. A miss is harmless:
+  // KV storage is measured in GB and these objects are megabytes.
+  for (let v = version - KEEP; v > version - KEEP - 5 && v > 0; v--) {
+    try { await env.CATALOG_KV.delete(`catalog:v${v}`); } catch { /* best-effort */ }
+  }
+  return { version, bytes: body.length };
+}
+
+/** The published catalog, or null on ANY miss — caller falls back to D1. */
+export async function readPublished(env: Env): Promise<{ version: number; body: string } | null> {
+  if (!env.CATALOG_KV) return null;
+  try {
+    const ptr = await env.CATALOG_KV.get(POINTER, "json") as { version: number; key: string } | null;
+    if (!ptr) return null;
+    const body = await env.CATALOG_KV.get(ptr.key, "text");
+    return body ? { version: ptr.version, body } : null;
+  } catch {
+    return null;                                          // degrade to D1, never to an error
+  }
+}
+```
+
+`routes.ts` — `GET /catalog` keeps its kill switch, version read, ETag and 304 **exactly as
+Task 7 wrote them** (the 304 must still land before any body work), then replaces the inline
+keyset walk with:
+
+```ts
+  c.header("Content-Type", "application/json");
+  // The pre-built object is the normal path. The D1 build is the fallback that makes
+  // this safe: an unprovisioned namespace, an empty KV or a failed publish all degrade
+  // to Task 7's behaviour instead of to a broken catalog. Do not remove it.
+  const published = await readPublished(c.env);
+  if (published) return c.body(published.body);
+  return c.body(await buildCatalogBody(c.env.DB, meta?.updated_at ?? 0));
+```
+
+`routes.ts` — `POST /admin/catalog/finish`, after the retire step and the `catalog_runs`
+update:
+
+```ts
+  // Publish only when this run actually changed the catalog (rule 3 makes that exact).
+  // Republishing an unchanged catalog would rewrite a multi-MB object 24 times a day
+  // for nothing. A publish failure must NOT fail the run — the route still falls back
+  // to D1, and the next changed run republishes.
+  if (versionAfter !== versionBefore) {
+    try { await publishCatalog(c.env); }
+    catch (err) { console.error("catalog publish failed", err); }
+  }
+```
+(read the version row once before the retire step and once after; `finish` already reads it.)
+
+- [ ] **Step 4: Run** `npm test && npm run typecheck` → PASS (Task 7's suite must still be
+green unchanged — the contract did not move). **Step 5: Commit**
+
+```bash
+git add src/catalog/publish.ts src/catalog/routes.ts test/catalog-publish.test.ts test/catalog-fixtures.ts && git commit -m "feat(worker): serve the catalog from a pre-built KV object, D1 as fallback"
+```
+
+- [ ] **Step 6: After deploy, prove it is actually serving from KV.** Two calls, and the
+second is the one that matters:
+```bash
+curl -sI https://wecoded-marketplace-api.destinj101.workers.dev/catalog | grep -i etag
+curl -s https://wecoded-marketplace-api.destinj101.workers.dev/admin/catalog/health   # (admin session)
+```
+`health` reports the published version alongside the live one; if they diverge and stay
+diverged across an ingest run that changed rows, the publish is failing silently and every
+request is quietly paying the old D1 price. Add `publishedVersion` to the `health` payload in
+Task 6 for exactly this reason.
 
 ---
 
@@ -2693,33 +2990,49 @@ the failure the merge rule exists for.
 
 ---
 
-## Phase 3 — Settle the "Not checked" shield
+## Phase 3 — The unchecked shield stays; make it say why
 
-One decision, gated on Phase 2's first real run. It is a phase of its own because it must
-happen **after** there is real data to measure and **before** anything in Phase 4 or 5 merges —
-otherwise it resolves silently by default, in favour of the option nobody tested.
+**Settled 2026-08-30 by Destin, and it is not an open question any more.** The spec (§1.6)
+asked whether a grey "Not checked" shield on roughly half the grid would read as *"this
+marketplace is unsafe"*, and floated rendering no shield at all in that case. **The shield
+stays.** The reason is the one the alternative got backwards: the absence of a badge reads as
+*nothing to worry about*, and for a mirrored listing nobody has scanned, that is the wrong
+message. A visible "Not checked" tells the user this one is on them to look at — which is
+true, and is exactly the nudge worth giving.
 
-### Task 15: Settle the "Not checked" shield against real data
+That turns this phase from a decision into a copy task: the badge must now *earn* the space
+it takes, so the wording and the hover explanation have to carry the "review this yourself"
+meaning rather than just naming a state.
 
-- [ ] **Measure the real ratio, then put one choice to Destin**
+### Task 15: Make the unchecked shield say what the user should do
 
-The spec (§1.6) carries an open question that nothing else in this plan resolves, which means
-it resolves by default the moment the branch merges — and the default is the option that was
-never tested against real data. The badge component already exists on the
-branch, so this is a decision, not a build.
+**Files:**
+- Modify: the trust-badge component on the app branch (find with
+  `rg -n "Not checked" desktop/src/renderer`)
+- Test: whichever badge test already covers the three statuses (`rg -n "Likely safe" desktop/tests`)
 
-Measure the real ratio first; it is one command against the live catalog:
+**Interfaces:**
+- Produces: `scan.status === 'unchecked'` still renders the grey shield on cards and the detail
+  page. Its hover/tooltip text stops describing the system and starts telling the user what it
+  means for them — one sentence, no jargon, in the shape of "We haven't checked this one — see
+  What this can do, or open the source before installing." (Exact wording is Destin's call; put
+  it in the deck at Task 23 rather than guessing alone.)
+
+- [ ] **Step 1: Update the tooltip copy for `unchecked`** — and only the copy. The badge, its
+  colour and its placement are approved and unchanged.
+- [ ] **Step 2: Check it against the real ratio once the catalog is live.** Not to reopen the
+  decision — to see the grid the user will actually see:
+
 ```bash
 curl -s https://wecoded-marketplace-api.destinj101.workers.dev/catalog \
   | python3 -c "import json,sys,collections; e=json.load(sys.stdin)['entries']; \
       print(collections.Counter((x.get('catalog') or {}).get('scan',{}).get('status','none') for x in e))"
 ```
-If `unchecked` is a large share — the pre-build estimate is roughly a third: Docker and
-awesome-copilot rows are never file-scanned, while our own and Anthropic's bundles and their
-members carry a real verdict — put **one** small deck to
-Destin: keep the grey shield, or render no shield at all when the status is `unchecked` so the
-badge only ever appears when it has something to say. Build whichever he picks in the branch, then continue.
-**Nothing in Phase 4 or 5 may merge with this question still open.**
+  If `unchecked` turns out to dominate far past the ~half estimate, that is a signal about
+  **scanner coverage** (which sources get their files read — Task 12/13), not about the badge.
+  Raise it as a ROADMAP item; do not resolve it by hiding the badge.
+- [ ] **Step 3:** `bash scripts/verify.sh marketplace-ui` → OK; commit as
+  `feat(marketplace): the unchecked shield tells the user to review it themselves`.
 
 ---
 
@@ -2727,6 +3040,7 @@ badge only ever appears when it has something to say. Build whichever he picks i
 
 Back on the app branch. Everything here needs Phase 2 deployed and its first ingest run
 finished, because these tasks are verified against the live `/catalog`, not against a fixture.
+(Phase 3 no longer gates this — the shield question was settled on 2026-08-30.)
 
 Desktop first (Tasks 16–18), then Android (Task 19) which mirrors all three, then the three
 pieces that are neither (Tasks 20–22).

@@ -92,20 +92,20 @@ Uses the internet · Needs a key                  ← risky abilities as WORDS, 
 Hover on any chip gives a one-sentence explanation (e.g. *"Likely" because no check is
 perfect — see What this can do*). Touch has no hover: a tap explanation is a follow-up (§5).
 
-> **Open question, raised 2026-08-28 by the plan review — needs one more look before build.**
-> The decks showed a healthy mix of Likely safe / Caution / Not checked, because the fixture
-> data was invented. The real ratio is not that. The scanner reads files only for our own
-> ~2,600 rows and the 257 cursorrules; Docker, awesome-copilot and everything else mirrored
-> arrives `unchecked` — so **roughly half the catalog, and nearly every card in the mirrored
-> sources, will carry the grey shield.** A grid of grey shields may read as "this marketplace
-> is unsafe" rather than "we haven't looked yet".
+> **Settled 2026-08-30 by Destin — the shield stays.** The plan review raised whether a grey
+> "Not checked" shield on roughly half the grid (Docker, awesome-copilot and everything else
+> mirrored arrives unscanned) would read as *"this marketplace is unsafe"*, and proposed
+> rendering **no** shield for `unchecked` so a badge only appears when it has something to say.
 >
-> The alternative is to render **no** shield when the status is `unchecked`, so the badge only
-> ever appears when it has something to say, and its absence is the neutral state. That is a
-> reversal of an approved decision, so it is written here as a question rather than a change:
-> it wants one small deck against real ingest data. Nothing else in the design moves either
-> way. (The `@de…` author-chip truncation on rail cards was approved on its merits — R3-2 —
-> and is *not* being reopened.)
+> Rejected, for the reason that flips it: **no badge reads as "nothing to worry about."** For a
+> listing nobody has scanned, that is the wrong message. A visible "Not checked" tells the user
+> this one is theirs to review before installing — which is true, and is the useful nudge. What
+> changes instead is the *copy*: the hover explanation must say what the user should do, not
+> just name a state (plan Task 15). If `unchecked` ever dominates far past ~half, that is a
+> signal about scanner coverage, not about the badge.
+>
+> (The `@de…` author-chip truncation on rail cards was approved on its merits — R3-2 — and is
+> *not* being reopened.)
 
 ### 1.7 Detail page
 ```
