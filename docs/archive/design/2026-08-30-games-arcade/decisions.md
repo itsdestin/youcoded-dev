@@ -3,7 +3,7 @@ status: settled
 updated: 2026-08-31
 date: 2026-08-31
 tags: [games, arcade, review, decisions]
-spec: docs/active/specs/2026-08-30-games-arcade-design.md
+spec: docs/archive/specs/2026-08-30-games-arcade-design.md
 ---
 
 # Games arcade — Step 1 decision ledger

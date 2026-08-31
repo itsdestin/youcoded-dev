@@ -1,11 +1,11 @@
 ---
-status: draft
+status: shipped
 date: 2026-08-30
 revised: 2026-08-31
 step2: chess + scores landed — see §12
-decisions: docs/active/design/2026-08-30-games-arcade/decisions.md
+decisions: docs/archive/design/2026-08-30-games-arcade/decisions.md
 tags: [games, arcade, social, leaderboard, themes, mascot, partykit, worker]
-review: docs/active/investigations/2026-08-30-games-arcade-spec-review.md
+review: docs/archive/investigations/2026-08-30-games-arcade-spec-review.md
 ---
 
 # Games arcade — design (2026-08-30)
@@ -15,7 +15,7 @@ themed like the rest of the app, with friend leaderboards for the solo games and
 head-to-head records for the competitive ones.
 
 > **Revision note (2026-08-30).** This version incorporates the review in
-> `docs/active/investigations/2026-08-30-games-arcade-spec-review.md`, which re-checked
+> `docs/archive/investigations/2026-08-30-games-arcade-spec-review.md`, which re-checked
 > every claim against `youcoded@5018a00d`. The substantive changes: §6.2's result handoff
 > is redesigned (the original had a blocker — PartyKit never learns account ids), §3 now
 > names the shared game state as the primary breaking change, §4.3 commits to a separate
@@ -476,7 +476,7 @@ waiting on you, not the assistant finishing, and it predates this design.
 ## 8. Build order
 
 **Step 1 — UI first, alone. DONE 2026-08-31** (branch `feat/games-arcade-shell`,
-commit `3623bcd5`; ledger in `docs/active/design/2026-08-30-games-arcade/decisions.md`). Build the picker, a leaderboard, chess sizing, the empty
+commit `3623bcd5`; ledger in `docs/archive/design/2026-08-30-games-arcade/decisions.md`). Build the picker, a leaderboard, chess sizing, the empty
 states and the degraded states in the UI Workbench against fake data. **Include a two-player
 board mockup in all six review themes (§5.5)** — that is a real open question, not a
 formality. Hand Destin a review deck (`scripts/ui-review/review-cards.py`). Nothing else

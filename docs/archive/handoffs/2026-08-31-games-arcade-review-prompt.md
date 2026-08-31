@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-08-31
 tags: [games, arcade, handoff, review]
 ---
@@ -17,9 +17,9 @@ Review and merge the games arcade. Two PRs, both green, both mine:
 
 Read in this order before reviewing:
 
-1. `docs/active/specs/2026-08-30-games-arcade-design.md` — §12 is the status table; two sections are corrected in place where building disproved them.
-2. `docs/active/design/2026-08-30-games-arcade/decisions.md` — D-1…D-14, every call Destin made and why.
-3. `docs/active/handoffs/2026-08-31-games-arcade-handoff.md` — what is left and what will bite you.
+1. `docs/archive/specs/2026-08-30-games-arcade-design.md` — §12 is the status table; two sections are corrected in place where building disproved them.
+2. `docs/archive/design/2026-08-30-games-arcade/decisions.md` — D-1…D-14, every call Destin made and why.
+3. `docs/archive/handoffs/2026-08-31-games-arcade-handoff.md` — what is left and what will bite you.
 
 **One open contradiction to settle, not to gloss:** spec §5.3 says the chess room validates moves; it relays, and both clients re-validate instead. Either build the server-side referee (adds `chess.js` to `partykit/`) or correct §5.3. Do not merge leaving the spec claiming something the code does not do.
 

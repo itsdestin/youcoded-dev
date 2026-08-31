@@ -2,7 +2,7 @@
 status: applied
 date: 2026-08-30
 tags: [games, arcade, review, spec-review]
-reviews: docs/active/specs/2026-08-30-games-arcade-design.md
+reviews: docs/archive/specs/2026-08-30-games-arcade-design.md
 ---
 
 # Review — games arcade design (2026-08-30)

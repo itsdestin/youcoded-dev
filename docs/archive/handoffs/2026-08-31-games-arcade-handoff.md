@@ -1,9 +1,9 @@
 ---
-status: active
+status: shipped
 date: 2026-08-31
 tags: [games, arcade, handoff]
-spec: docs/active/specs/2026-08-30-games-arcade-design.md
-decisions: docs/active/design/2026-08-30-games-arcade/decisions.md
+spec: docs/archive/specs/2026-08-30-games-arcade-design.md
+decisions: docs/archive/design/2026-08-30-games-arcade/decisions.md
 ---
 
 # Games arcade — handoff
@@ -23,13 +23,13 @@ run `wrangler deploy`.
 
 ## Read these first, in this order
 
-1. `docs/active/specs/2026-08-30-games-arcade-design.md` — **§12 is the status
+1. `docs/archive/specs/2026-08-30-games-arcade-design.md` — **§12 is the status
    table**; the rest is the design, with two sections corrected in place where
    building disproved them.
-2. `docs/active/design/2026-08-30-games-arcade/decisions.md` — every decision
+2. `docs/archive/design/2026-08-30-games-arcade/decisions.md` — every decision
    Destin has taken, and why. Includes the ten from Step 2 that came from him
    using the dev build rather than from a review deck.
-3. `docs/active/investigations/2026-08-30-games-arcade-spec-review.md` — the
+3. `docs/archive/investigations/2026-08-30-games-arcade-spec-review.md` — the
    original review of the spec. Historical, but explains why §6.2 looks the way
    it does.
 
