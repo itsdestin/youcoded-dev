@@ -1,5 +1,6 @@
 ---
 status: settled
+updated: 2026-08-31
 date: 2026-08-31
 tags: [games, arcade, review, decisions]
 spec: docs/active/specs/2026-08-30-games-arcade-design.md
@@ -85,3 +86,40 @@ Two things fixed alongside it, both found in the capture rather than by review:
   lands it goes top-aligned like Connect 4 — the `justify-center` sits on the
   wrapper, not the board, so this is a one-line change.
 - `Play` on the solo screens is inert; the games themselves are Step 2.
+
+
+---
+
+## Decisions taken during Step 2 (2026-08-31)
+
+Not from a deck — these came out of Destin using the dev build, so they are
+recorded here rather than in an answers file.
+
+| # | Decision | Why |
+|---|---|---|
+| D-1 | **The sky is always painted.** §5.1's "the wallpaper is the sky" is deleted, not worked around | The games pane is opaque, so a wallpaper behind the app never reaches the playfield. It produced a blank field on exactly the themes with the best art |
+| D-2 | Flappy's sky is a **landscape** — sun, clouds, three hill bands at three speeds | "the art kinda sucks". Blobs and stripes read as a pattern; a horizon reads as a place. The differing speeds are what create distance |
+| D-3 | **Every solo game shares one end-of-run screen** (`RunOverCard`) | Destin asked for it for "single-player/high-score games", not just Flappy — and the two had already drifted: Flappy celebrated a new best, 2048 silently did not |
+| D-4 | The end card **leads with the score**, not the failure | A high-score game asks you to beat a number, so the number is the headline and the cause is a footnote |
+| D-5 | Falling short shows **the best you fell short of** | A target, not a scolding — it is the reason to press again |
+| D-6 | **A zero is never an achievement** | "Your best: 0 pipes" is a slightly insulting way of saying nothing |
+| D-7 | Flappy retries on **Space**, with a 450 ms lockout on the KEY path only | Destin asked for press-again-to-retry. Without the lockout the tap already in the air when you die restarts instantly and you never see your score. A click is deliberate in a way a held rhythm is not |
+| D-8 | 2048 retries on **Enter**, deliberately NOT on the arrows | On a dead board an arrow press is the reflex of someone still trying to move, not a decision to start over |
+| D-9 | **A run ending does not end the game** — the shell must not unmount it | The shell's `endRun` called `setPlaying(false)`, so the end card rendered for zero frames. A run ending is the game's moment; leaving is the player's choice |
+| D-10 | Best scores **persist to disk**, per game | §4.2 promised it; the first pass kept them in component state and forgot them when the panel closed |
+
+### The two bugs that only playing found
+
+Both had every unit test passing, and both are now guarded by tests that read
+SOURCE rather than behaviour — because behaviour tests are precisely what missed
+them:
+
+- **The best score never reached the picker or the board.** The workbench always
+  had fixture rows loaded, so the empty-board path — the only path that exists in
+  the real app today — was never exercised.
+- **The end-of-run card never rendered.** The shell threw the game away the
+  instant the run ended.
+
+The pattern is the same both times: a state that only occurs in the real app,
+never in the workbench. Worth checking for directly rather than waiting to be
+told.

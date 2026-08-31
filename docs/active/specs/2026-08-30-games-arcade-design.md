@@ -2,6 +2,7 @@
 status: draft
 date: 2026-08-30
 revised: 2026-08-31
+step2: in progress — see §12
 decisions: docs/active/design/2026-08-30-games-arcade/decisions.md
 tags: [games, arcade, social, leaderboard, themes, mascot, partykit, worker]
 review: docs/active/investigations/2026-08-30-games-arcade-spec-review.md
@@ -218,8 +219,15 @@ error screens are shell; its Connect 4 assumptions are not.
 
 ### 5.1 Flappy (solo)
 
-The showcase. The theme's mascot flies; pipes and ground are theme surfaces; where the theme
-ships a wallpaper, that is the sky.
+The showcase. The theme's mascot flies; pipes and ground are theme surfaces.
+
+**CORRECTED 2026-08-31 — the sky is always painted.** This section used to say
+"where the theme ships a wallpaper, that is the sky", and it was built that way. It does not
+work: the games pane is an **opaque panel**, so a wallpaper behind the app can never reach
+the playfield. The result was an empty field on exactly the themes with the best art — Meadow
+Mist renders a mountain range inches from what was a blank rectangle. Flappy now always paints
+its own landscape (a sun, clouds, and three bands of rolling hills at three speeds), built from
+the theme's accent mixed into the theme's own surfaces, so it still inherits every pack.
 
 The mascot rig supports this directly. It is a named-part SVG with per-part pivots and
 per-part rotation, driven by an underdamped spring, with velocity-trailing limbs and
@@ -309,7 +317,8 @@ The argument from chat was wrong because chat has a second cue a board does not:
 there, not the only signal. On a board both players' pieces sit in the same grid.
 
 **The rule for every two-player game is therefore: the two sides must differ in SHAPE, not
-only in shade.** Chess ships the traditional solid-for-you / hollow-for-them pieces
+only in shade.** (Generalised 2026-08-31: any surface where two things sit in ONE grid with no
+positional difference needs a second cue. Chat is exempt because it has position; a board is not.) Chess ships the traditional solid-for-you / hollow-for-them pieces
 (Destin's pick from three treatments, deck step G-8). Connect 4 keeps accent-vs-neutral
 discs because there the two sides *also* differ by column position and by whose turn the
 label names — but a third game must clear the shape bar, not cite Connect 4.
@@ -549,3 +558,68 @@ Judged against `docs/active/design/2026-08-25-ui-design-guide.md` in the Step 1 
 **Closed by Step 1:** the two-player contrast rule (§5.5), per-game pane widths (§4.3 —
 built, with the games pane keeping its own remembered width), and the picker/leaderboard/
 empty/degraded shapes (§4.1, §6.5, §6.6).
+
+
+---
+
+## 12. Step 2 status (2026-08-31)
+
+Branch `feat/games-arcade-shell` in `youcoded`, merged up to `master` and green
+on the full suite. Branch `feat/games-arcade-scores` in `wecoded-marketplace`.
+**Nothing merged, pushed, or deployed.**
+
+### Done
+
+| Piece | State |
+|---|---|
+| The arcade shell (§4) | Built, reviewed, signed off (deck `step1-review`) |
+| The state split (§3.1) | Done — shell holds seat/turnSeat/outcome; games own `play` |
+| `gameType` end to end (§3.1 item 3) | Done — the reducer keeps it; Accept opens the right game |
+| Connect 4 retheme (§5.4) | Done, signed off |
+| Chess board + piece treatment (§5.3, §5.5) | Board drawn, `outline` chosen (deck `step1-sizing`). **Pieces do not move.** |
+| Flappy (§5.1) | Playable. Mascot flies, landscape sky, end-of-run card |
+| 2048 (§5.2) | Playable. Keyboard-first, end-of-run card |
+| End-of-run screen | Shared `RunOverCard` — one ending for every solo game |
+| Local best (§4.2) | Persists per game, survives closing the panel |
+| Pane resize (§4.3) | Own remembered width, per-game defaults |
+| Scores + records backend (§6) | Built, 292 worker tests green. **Not wired to the app.** |
+
+### Not done
+
+1. **Chess is not playable.** Needs a rules library, pinned by version — the one
+   open dependency decision, flagged to Destin and not yet taken. The board,
+   piece treatment and pane width are settled; move input, legality, and the
+   PartyKit room are not.
+2. **The app does not talk to the scores backend.** Three channels are
+   registered in `mock-only.ts` as deliberately unbuilt: `arcade.status`,
+   `arcade.leaderboard`, `arcade.submitScore`. The Worker half of all three
+   exists. What is missing is renderer → main → Worker, on five surfaces,
+   INCLUDING a Kotlin stub in `SessionService.kt` — without it `verify.sh` goes
+   red even though Android has no games (§9).
+   Until then, friends' scores on the board are fixtures; your own best is real.
+3. **Head-to-head records are unexercised.** The attestation flow (§6.2) is
+   built and tested on the Worker but no client has ever sent a report.
+
+### Open, carried
+
+- **The picked-up square is too faint** — the legal-move dots read as causeless
+  (deck step S-2). Deferred deliberately: a selection highlight is a feedback
+  cue and cannot be judged on a still of a board that is not yet clickable.
+- **Is Flappy's pipe gap fair?** Tuned against a bot, never confirmed by a
+  human. The first pass was unplayable and the bot is what caught it, so the bot
+  is a proxy and not a substitute.
+- Chess is vertically centred only until it has game chat.
+- Whether solo runs record a history or only a best (§11).
+
+### Two lessons worth keeping
+
+**Playing it found what testing could not, twice.** The best score never reached
+the picker, and the end-of-run card never rendered because the shell unmounted
+the game — both with every unit test green. Both are now guarded by tests that
+read source rather than behaviour, because the behaviour tests were the ones
+that missed it. Any further work on this feature should reach Destin's hands at
+each stage, not only at the end.
+
+**Two spec sentences were disproved by building them** (§5.1's wallpaper sky,
+§5.5's fill-only contrast). Both were corrected in place rather than worked
+around. A spec claim that survives only because nobody built it is not verified.
