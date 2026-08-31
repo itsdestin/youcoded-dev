@@ -347,16 +347,16 @@ since landed the bundled-plugin-upgrade work (youcoded#345/#346) and 14 feedback
 the same card/overlay/provider files this plan edits. Every line number and every "the code
 does X" claim below was read before those landed; the rebase is where they get re-checked.
 
-- [ ] `cd /home/destin/youcoded-dev/worktrees/marketplace-ui && git fetch origin && git rebase origin/master`
+- [x] `cd /home/destin/youcoded-dev/worktrees/marketplace-ui && git fetch origin && git rebase origin/master`
   — resolve conflicts keeping BOTH master's feedback/upgrade changes and this branch's UI; when
   in doubt, master wins in main-process files and this branch wins in renderer files.
-- [ ] `bash scripts/verify.sh marketplace-ui` → OK (`--full` if
+- [x] `bash scripts/verify.sh marketplace-ui` → OK (`--full` if
   it reports that test infra moved).
-- [ ] From the worktree's `desktop/`: `node scripts/workbench-boot-check.mjs` — the branch adds
+- [x] From the worktree's `desktop/`: `node scripts/workbench-boot-check.mjs` — the branch adds
   workbench fixtures, and a rebase is exactly when a fixture stops matching a changed type.
-- [ ] `git push --force-with-lease origin feat/marketplace-overhaul-ui`. No feature commit; the
+- [x] `git push --force-with-lease origin feat/marketplace-overhaul-ui`. No feature commit; the
   rebase is its own deliverable.
-- [ ] Re-verify the Task 1 findings against the rebased tree: `rg -n "'Update' : 'Installed'"`,
+- [x] Re-verify the Task 1 findings against the rebased tree: `rg -n "'Update' : 'Installed'"`,
   `rg -n '\.update\(' desktop/src/renderer`, and what the bundled-plugin launch path now does
   (`rg -n "BUNDLED_PLUGIN_IDS" desktop/src/main/skill-provider.ts`). If any moved, fix the
   citation in this document in the same commit that starts Task 1.
