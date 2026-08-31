@@ -129,9 +129,9 @@ Everything in the previous checkpoint still holds. What changed this session:
   leads with claims every rival also makes and buries three that no rival has.
   Variant B is one answer to that; Destin has parked it rather than adopted it.
 - **Two cards in A are now factually behind the product**: the games card says
-  Connect Four only (there are four games on `feat/games-arcade-shell`, not yet
-  merged), and its clip shows Connect Four, so the clip needs re-filming before
-  the copy can change.
+  Connect Four only, but the four-game arcade **merged 2026-08-31** (`0cacff56`)
+  and is on master. Its clip still shows Connect Four, so the clip needs
+  re-filming before the copy can change — but nothing is blocking that now.
 - **Never put on the page without fixing first** (all verified, all in fact-sheet
   §25): the README says a Claude plan is *required* while the site says optional;
   the integrations grid promises services the registry does not back, including
@@ -150,4 +150,4 @@ Everything in the previous checkpoint still holds. What changed this session:
   TWO UNPUSHED commits.** Dev-only workbench changes: the softened Grok reply
   and the writable-artifact mock the row-2 demo needs. No PR yet.
 - `worktrees/site-themes` is **required** by `setup.sh` — do not delete it.
-- `feat/games-arcade-shell` (youcoded) holds the four-game arcade, unmerged.
+- The four-game arcade **merged 2026-08-31** (`0cacff56`). Branch deleted; film from master.

@@ -37,10 +37,14 @@ twice while this inventory was being written.
 
 ## 2. Finished or nearly finished — the cheap wins
 
-### 2.1 Games arcade — **the biggest finished thing in the workspace, and it is on one disk**
+### 2.1 Games arcade — **SHIPPED 2026-08-31, nothing left on disk**
 
-- `youcoded` branch `feat/games-arcade-shell` — **13 commits, NEVER PUSHED**
-- `wecoded-marketplace` branch `feat/games-arcade-scores` — **2 commits, NEVER PUSHED**
+- `youcoded` — merged as `0cacff56` (PR #369); branch and worktree deleted.
+- `wecoded-marketplace` — merged as `0987b96` (PR #78); auto-deployed to
+  Cloudflare, migration `0007_games.sql` applied. Branch deleted.
+- Full record, including the three bugs review caught before merge:
+  ROADMAP "Games arcade — Connect 4 becomes four games" `[x]`. Docs archived to
+  `docs/archive/specs/2026-08-30-games-arcade-design.md` and siblings.
 
 Playable Flappy, 2048, Connect 4 and full-rules chess (`chess.js` pinned 1.4.0), one
 shared end-of-run screen, local + server best scores wired across all five surfaces
