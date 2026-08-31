@@ -6,6 +6,20 @@ Both registries are GitHub repos fetched at runtime by apps via `raw.githubuserc
 
 Recent restructure (unified-marketplace merge) split the registry into `/skills/` and `/themes/` subdirectories. The `sync.js` rewrite added diffing, version tracking, and deprecation logic.
 
+- **The apps read the Worker's `/catalog` FIRST; `index.json` is the fallback.** Since the
+  catalog service (2026-08-31) both `skill-provider.ts` and `MarketplaceFetcher.kt` try
+  `https://wecoded-marketplace-api.destinj101.workers.dev/catalog` on a **1-hour** TTL, then
+  raw `index.json` on the old 24-hour TTL, then any stale cache. The catalog carries the block
+  the store renders (kind, origin, scan verdict, capabilities, licence, pinned commit) which
+  `index.json` does not; it is rebuilt hourly by `catalog-ingest.yml` in `wecoded-marketplace`.
+  Requests are conditional (`If-None-Match` → `304` → keep the cached body), which is
+  load-bearing rather than an optimisation: the response is several MB, both platforms refresh
+  hourly, Android over mobile data, and `*.workers.dev` gets no Cloudflare edge cache.
+- **Kill switch: `CATALOG_ENABLED`.** A `[vars]` value in `worker/wrangler.toml`. Set it to
+  `"0"`, commit, merge → `GET /catalog` answers **503**, and both clients treat that exactly
+  like any other failure and fall back to `index.json`. No user sees an error. This is the way
+  to stop a bad ingest run without writing and deploying code under pressure — a bad run
+  otherwise reaches every device within the hour. Depth: `wecoded-marketplace/docs/catalog.md`.
 - **Two index files, and the apps read the ROOT one.** `index.json` at the repo root is a bare JSON array (339 entries) and is what `skill-provider.ts` / `MarketplaceFetcher.kt` fetch. `skills/index.json` is the same entries wrapped in `{ version, generatedBy, entries }` — `sync.js` writes that one first and regenerates the root file after it for backward compatibility. Read the root file unless you specifically want the wrapper.
 - `marketplace.json` — YouCoded-only entries
 - Synced from upstream via `scripts/sync.js`. Entries with `sourceMarketplace: "youcoded-core"` are never overwritten by upstream sync
