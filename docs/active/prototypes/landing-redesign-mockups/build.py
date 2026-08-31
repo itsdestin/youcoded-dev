@@ -127,7 +127,7 @@ def steps():
 # Clips re-filmed for this redesign live in media-local/, NOT in media/ --
 # media/ is a symlink into youcoded/docs/media, i.e. the real site's assets.
 # Writing there would change the live site before the redesign is approved.
-MEDIA_LOCAL = {'row1-any-ai', 'row2-artifact-edit'}
+MEDIA_LOCAL = {'row1-any-ai', 'row2-artifact-edit', 'row5-follow', 'row5-phone'}
 
 def _media_dir(key):
     return 'media-local' if key in MEDIA_LOCAL else 'media'
@@ -938,8 +938,23 @@ function show(i){
   // drift apart and stop reading as the same conversation on two devices.
   document.querySelectorAll('.deck-phone video').forEach(function(v){
     var n = +v.closest('.deck-phone').getAttribute('data-phone-for');
-    if (n === i) { try { v.currentTime = 0; } catch (e) {} v.play().catch(function(){}); }
-    else v.pause();
+    if (n !== i) { v.pause(); return; }
+    // The pair is the SAME take at two sizes, so they cover the same story --
+    // but the encodes come out slightly different lengths (frame timing, not
+    // content). Playing the phone at duration-ratio speed makes it traverse its
+    // whole clip in exactly the desktop clip's time, so the two stay on the same
+    // moment for the whole loop instead of drifting apart after the first pass.
+    var desk = slides[i];
+    function lock(){
+      if (v.duration && desk && desk.duration) {
+        v.playbackRate = Math.max(0.5, Math.min(2, v.duration / desk.duration));
+      }
+    }
+    lock();
+    v.addEventListener('loadedmetadata', lock, { once: true });
+    if (desk) desk.addEventListener('loadedmetadata', lock, { once: true });
+    try { v.currentTime = 0; } catch (e) {}
+    v.play().catch(function(){});
   });
   steps.forEach(function(s, n){
     s.classList.toggle('active', n === i);
