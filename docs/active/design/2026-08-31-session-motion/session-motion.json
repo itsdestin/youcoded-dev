@@ -1,0 +1,53 @@
+{
+  "title": "Session strip and switching",
+  "key": "session-motion",
+  "out": "deck.html",
+  "images": "images/session-motion",
+  "runs": {
+    "before": "images/session-motion/before",
+    "after": "images/session-motion/after"
+  },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "pill-expand",
+      "surface": "Session strip",
+      "path": "Header",
+      "clip": "strip-pill-expand",
+      "headline": "The session name grows open instead of appearing",
+      "changed": "Clicking a session now expands its name over 200ms. Two separate bugs were switching the animation off — one left the browser with no width to animate towards, the other disabled the animation on exactly the pill you just clicked.",
+      "notice": "The strip feels less abrupt when you switch sessions. Nothing moves that did not move before.",
+      "risk": "A very long session name on a narrow window must still shorten with an ellipsis rather than pushing the strip wide."
+    },
+    {
+      "id": "hover",
+      "surface": "Session strip",
+      "path": "Header",
+      "clip": "strip-hover",
+      "headline": "Hovering reveals the name to its own length",
+      "changed": "Every name used to slide open the same fixed distance, so a short one finished early and then sat still while the animation kept going. It now stops when the name does, up to the same 120px limit.",
+      "notice": "Short session names feel snappier on hover. Long ones are unchanged.",
+      "risk": "A pill that shrinks to a dot while your cursor is already resting on it now reveals correctly; it used to stay a dot."
+    },
+    {
+      "id": "drag",
+      "surface": "Session strip",
+      "path": "Header",
+      "clip": "strip-drag",
+      "headline": "Dragging moves the pill itself, like a Chrome tab",
+      "changed": "The floating copy and the thin insertion line are gone. The real pill lifts and follows your cursor along the strip, and the pills it passes step aside so the gap is already open when you let go. Separately, dragging used to dim the wrong pill and drop into the wrong slot whenever sessions had spilled into the +8 chip.",
+      "notice": "No more one-frame jump on release. Tearing a session out into its own window is unchanged.",
+      "risk": "Pill widths and the dots/names layout are frozen while you drag, so the row cannot grow or repack under your cursor."
+    },
+    {
+      "id": "switch",
+      "surface": "Chat",
+      "path": "Main view",
+      "clip": "switch-arrival",
+      "headline": "The incoming conversation arrives instead of appearing",
+      "changed": "Switching sessions fades and lifts the incoming conversation over a quarter second. The one you are leaving is not animated at all.",
+      "notice": "Switching reads as a deliberate move rather than a hard cut. Ctrl+` between chat and terminal is untouched and stays instant.",
+      "risk": "One animated element rather than one per message, so a very long conversation costs no more than a short one."
+    }
+  ]
+}

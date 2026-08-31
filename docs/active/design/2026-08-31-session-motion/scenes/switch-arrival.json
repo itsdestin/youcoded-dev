@@ -1,0 +1,12 @@
+{
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=stress&latency=0",
+  "theme": "midnight",
+  "boot": 3000,
+  "actions": [
+    { "hold": 900 },
+    { "click": "js:document.querySelectorAll('[data-session-idx]')[1]", "settle": 1400 },
+    { "hold": 700 },
+    { "click": "js:document.querySelectorAll('[data-session-idx]')[0]", "settle": 1400 },
+    { "hold": 1000 }
+  ]
+}

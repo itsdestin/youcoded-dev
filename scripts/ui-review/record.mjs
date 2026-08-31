@@ -91,6 +91,36 @@ async function click(expr) {
   await sleep(60);
   await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: p.x, y: p.y, button: 'left', clickCount: 1 });
 }
+// Press, travel, release — the one gesture the click/moveTo pair cannot express.
+// Chromium synthesises pointerdown/pointermove/pointerup from these raw mouse
+// events, which is what SessionStrip listens to. `buttons: 1` on every move is
+// load-bearing: without it Chromium treats the moves as a hover and the strip
+// never sees a drag.
+//
+// Both endpoints are measured BEFORE the press, on purpose: the target pill
+// steps aside during the drag, so re-measuring it mid-gesture would chase a
+// moving target. The app hit-tests against its own frozen geometry too
+// (SessionStrip's pillRectsRef), so the two agree.
+async function drag(fromExpr, toExpr, ms = 800) {
+  const a = await rectOf(fromExpr);
+  if (!a) throw new Error(`MISSING ${fromExpr}`);
+  const b = await rectOf(toExpr);
+  if (!b) throw new Error(`MISSING ${toExpr}`);
+  await moveTo(a, 300);
+  await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: a.x, y: a.y, button: 'left', buttons: 1, clickCount: 1 });
+  await sleep(80);
+  const steps = Math.max(8, Math.round(ms / 16));
+  for (let i = 1; i <= steps; i++) {
+    const k = i / steps, e = 1 - Math.pow(1 - k, 3);
+    const x = a.x + (b.x - a.x) * e, y = a.y + (b.y - a.y) * e;
+    await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y, button: 'left', buttons: 1 });
+    await sleep(16);
+  }
+  await sleep(120);
+  await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: b.x, y: b.y, button: 'left', buttons: 0, clickCount: 1 });
+  cur = b;
+}
+
 async function typeSlow(text, cps = 18) {
   for (const ch of text) {
     await send('Input.dispatchKeyEvent', { type: 'keyDown', text: ch, key: ch });
@@ -130,6 +160,7 @@ for (const a of scene.actions) {
   if (a.wait != null) { await sleep(a.wait); continue; }
   if (a.moveTo) { const p = await rectOf(selExpr(a.moveTo)); if (!p) throw new Error(`MISSING ${a.moveTo}`); await moveTo(p, a.ms ?? 400); }
   else if (a.click) await click(selExpr(a.click));
+  else if (a.drag) await drag(selExpr(a.drag), selExpr(a.to), a.ms);
   else if (a.clickText) await click(textExpr(a.clickText, a.tag));
   else if (a.typeSlow != null) await typeSlow(a.typeSlow, a.cps);
   else if (a.key) await key(a.key, a.modifiers ?? 0);
