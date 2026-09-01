@@ -1,8 +1,8 @@
 ---
 paths:
-  - "wecoded-marketplace/worker/src/catalog/**"
-  - "wecoded-marketplace/scripts/catalog/**"
-  - "wecoded-marketplace/worker/migrations/**"
+  - "**/worker/src/catalog/**"
+  - "**/scripts/catalog/**"
+  - "**/worker/migrations/**"
 last_verified: 2026-08-31
 verify:
   - path: wecoded-marketplace/worker/src/catalog/routes.ts

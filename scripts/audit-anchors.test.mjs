@@ -374,3 +374,71 @@ test('yamlUnsafeFrontmatter: a backslash OUTSIDE the frontmatter is ignored', ()
     text: '---\npaths:\n  - "a/**"\n---\nBody text with a \\? regex in it.\n' }];
   assert.deepEqual(yamlUnsafeFrontmatter(ok), []);
 });
+
+
+// --- worktree-blind rule globs ------------------------------------------------
+import { worktreeBlindGlobs } from './audit-anchors.mjs';
+
+const RULE = (name, paths, text = '') => ({ name, file: `.claude/rules/${name}.md`, fm: { paths }, text });
+
+test('worktreeBlindGlobs: a repo-prefixed glob cannot match the worktree spelling', () => {
+  const r = worktreeBlindGlobs(
+    [RULE('test-suite-hygiene', ['youcoded/desktop/tests/**/*.test.ts'])],
+    ['youcoded/desktop/tests/game-reducer.test.ts'],
+  );
+  assert.equal(r.blind.length, 1);
+  assert.equal(r.blind[0].rule, 'test-suite-hygiene');
+  assert.equal(r.blind[0].fix, '**/desktop/tests/**/*.test.ts');
+  assert.deepEqual(r.exempt, []);
+});
+
+test('worktreeBlindGlobs: a "**/" glob matches both spellings and is not blind', () => {
+  const r = worktreeBlindGlobs(
+    [RULE('code-search', ['**/desktop/src/main/ipc-handlers.ts'])],
+    ['youcoded/desktop/src/main/ipc-handlers.ts'],
+  );
+  assert.deepEqual(r.blind, []);
+  assert.deepEqual(r.exempt, []);
+});
+
+test('worktreeBlindGlobs: the deliberate eager glob is exempt, with a reason', () => {
+  const r = worktreeBlindGlobs([RULE('live-app-safety', ['**'])], ['anything.ts']);
+  assert.deepEqual(r.blind, []);
+  assert.equal(r.exempt.length, 1);
+  assert.match(r.exempt[0].reason, /eager/);
+});
+
+test('worktreeBlindGlobs: a whole-repo glob is exempt — relaxing it would make it eager', () => {
+  const r = worktreeBlindGlobs([RULE('registries', ['wecoded-themes/**'])], ['wecoded-themes/a.json']);
+  assert.equal(r.exempt.length, 1);
+  assert.match(r.exempt[0].reason, /whole-repo/);
+});
+
+test('worktreeBlindGlobs: a workspace-root glob is exempt — worktrees are of the SUB-repos', () => {
+  const r = worktreeBlindGlobs([RULE('landing-page', ['scripts/ui-review/**'])], ['scripts/ui-review/run.sh']);
+  assert.equal(r.exempt.length, 1);
+  assert.match(r.exempt[0].reason, /workspace-root/);
+});
+
+// The escape hatch. NO RULE USES IT TODAY — it exists because `blind` fails the
+// run, so a future glob that must keep its repo prefix needs a way to say so or
+// the audit goes permanently red. This test is what keeps the hatch working
+// while nothing in the tree exercises it.
+test('worktreeBlindGlobs: a "# repo-pinned" glob is exempt, not blind', () => {
+  const rule = RULE('some-future-rule', ['youcoded/desktop/only-here/**'],
+    '---\npaths:\n  - "youcoded/desktop/only-here/**"   # repo-pinned\n---\n');
+  const r = worktreeBlindGlobs([rule], ['youcoded/desktop/only-here/a.ts']);
+  assert.deepEqual(r.blind, []);
+  assert.equal(r.exempt.length, 1);
+  assert.match(r.exempt[0].reason, /repo-pinned/);
+});
+
+test('worktreeBlindGlobs: reports what a relaxed glob picks up outside its own repo', () => {
+  const r = worktreeBlindGlobs(
+    [RULE('android-runtime', ['**/app/**'])],
+    ['youcoded/app/src/Main.kt', 'wecoded-marketplace/worker/src/app/routes.ts'],
+  );
+  assert.deepEqual(r.blind, []);
+  assert.equal(r.overmatch.length, 1);
+  assert.deepEqual(r.overmatch[0].files, ['wecoded-marketplace/worker/src/app/routes.ts']);
+});

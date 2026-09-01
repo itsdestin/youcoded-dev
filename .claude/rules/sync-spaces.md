@@ -1,15 +1,15 @@
 ---
 paths:
-  - "youcoded/desktop/src/main/sync-spaces/**"
-  - "youcoded/desktop/src/main/sync-service.ts"
-  - "youcoded/desktop/src/main/snapshot-retention.ts"
-  - "youcoded/desktop/src/main/conversations/symlink-sweep.ts"
-  - "youcoded/desktop/src/main/sync-hub-socket.ts"
-  - "youcoded/desktop/src/main/sync-error-classifier.ts"
-  - "youcoded/desktop/src/main/github-auth.ts"
-  - "youcoded/desktop/src/main/github-connect.ts"
-  - "youcoded/desktop/src/main/github-client.ts"
-  - "youcoded/desktop/src/main/github-fork-publish.ts"
+  - "**/desktop/src/main/sync-spaces/**"
+  - "**/desktop/src/main/sync-service.ts"
+  - "**/desktop/src/main/snapshot-retention.ts"
+  - "**/desktop/src/main/conversations/symlink-sweep.ts"
+  - "**/desktop/src/main/sync-hub-socket.ts"
+  - "**/desktop/src/main/sync-error-classifier.ts"
+  - "**/desktop/src/main/github-auth.ts"
+  - "**/desktop/src/main/github-connect.ts"
+  - "**/desktop/src/main/github-client.ts"
+  - "**/desktop/src/main/github-fork-publish.ts"
 last_verified: 2026-07-22
 verify:
   - path: youcoded/desktop/src/main/github-client.ts

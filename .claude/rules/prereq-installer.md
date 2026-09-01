@@ -1,9 +1,9 @@
 ---
 paths:
-  - "youcoded/desktop/src/main/prerequisite-installer.ts"
-  - "youcoded/desktop/src/main/first-run.ts"
-  - "youcoded/desktop/src/main/remote-config.ts"
-  - "youcoded/desktop/src/main/sync-setup-handlers.ts"
+  - "**/desktop/src/main/prerequisite-installer.ts"
+  - "**/desktop/src/main/first-run.ts"
+  - "**/desktop/src/main/remote-config.ts"
+  - "**/desktop/src/main/sync-setup-handlers.ts"
 last_verified: 2026-07-15
 verify:
   - path: youcoded/desktop/src/main/prerequisite-installer.ts

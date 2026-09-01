@@ -1,14 +1,14 @@
 ---
 paths:
-  - "youcoded/desktop/src/renderer/state/chat-reducer.ts"
-  - "youcoded/desktop/src/renderer/state/chat-types.ts"
-  - "youcoded/desktop/src/renderer/components/ChatView.tsx"
-  - "youcoded/desktop/src/main/transcript-watcher.ts"
-  - "youcoded/desktop/src/main/subagent-watcher.ts"
-  - "youcoded/desktop/src/renderer/state/attention-classifier.ts"
-  - "youcoded/desktop/src/renderer/hooks/usePtyRawBytes.ts"
-  - "youcoded/terminal-emulator-vendored/**"
-  - "youcoded/shared-fixtures/**"
+  - "**/desktop/src/renderer/state/chat-reducer.ts"
+  - "**/desktop/src/renderer/state/chat-types.ts"
+  - "**/desktop/src/renderer/components/ChatView.tsx"
+  - "**/desktop/src/main/transcript-watcher.ts"
+  - "**/desktop/src/main/subagent-watcher.ts"
+  - "**/desktop/src/renderer/state/attention-classifier.ts"
+  - "**/desktop/src/renderer/hooks/usePtyRawBytes.ts"
+  - "**/terminal-emulator-vendored/**"
+  - "**/shared-fixtures/**"
 last_verified: 2026-08-27
 verify:
   - path: youcoded/desktop/src/renderer/state/chat-reducer.ts

@@ -1,11 +1,11 @@
 ---
 paths:
-  - "youcoded/docs/index.html"
-  - "youcoded/docs/media/**"
-  - "youcoded/docs/site/**"
-  - "youcoded/docs/gallery/**"
+  - "**/docs/index.html"
+  - "**/docs/media/**"
+  - "**/docs/site/**"
+  - "**/docs/gallery/**"
   - "scripts/ui-review/**"
-  - "youcoded/desktop/src/renderer/dev/workbench/**"
+  - "**/desktop/src/renderer/dev/workbench/**"
 last_verified: 2026-08-28
 verify:
   - path: scripts/ui-review/site-assets.sh

@@ -360,6 +360,78 @@ export function affectedSubsystems(rules, changedFiles) {
   };
 }
 
+// A rule glob is "worktree-blind" when it names a sub-repo by its workspace path
+// (`youcoded/desktop/...`) and therefore cannot match the same file inside a
+// worktree (`worktrees/<name>/desktop/...`).
+//
+// WHY this exists: CLAUDE.md sends all non-trivial work into worktrees/<name>/,
+// and Claude Code matches rule globs relative to the PROJECT ROOT. So on
+// 2026-08-31, 115 of 138 glob entries were silently dead for exactly the work the
+// workspace mandates. `.claude/rules/code-search.md` had already found the fix (a
+// leading `**/`) on 2026-08-05 and nobody generalised it.
+//
+// MEASURED, not assumed: two scratch rules differing only in glob shape, aimed at
+// one file at a worktree-shaped path, in one session — `**/desktop/tests/**`
+// loaded and `youcoded/desktop/tests/**` did not. A glob also fires fine on a path
+// under the gitignored worktrees/ dir, so the relaxation reaches real worktrees.
+//
+// SCOPE, so a later reader does not over-trust this: it checks the SHAPE of a glob
+// against tracked files using this file's deliberately-simple globToRegex. It
+// cannot tell you what Claude Code's matcher actually loaded — that is
+// .claude/hooks/instructions-log.sh.
+//
+// Exemptions are NAMED AND COUNTED, never silent, and there are four kinds. The
+// last — an explicit `# repo-pinned` comment — is an ESCAPE HATCH THAT NO RULE
+// CURRENTLY USES: `blind` FAILS THE RUN, so a glob that must keep its repo prefix
+// needs a way to say so or the audit stays red forever. It is here for the first
+// rule that needs it, not for any that exist. (Two drafts of the plan pinned four
+// globs believing they needed it; measured, relaxing all four reached one extra
+// file in the whole workspace.)
+//
+// `fix` is the exact replacement string, so the migration has no second table of
+// prefixes to drift out of sync with this function.
+export function worktreeBlindGlobs(rules, trackedFiles) {
+  const blind = [], exempt = [], overmatch = [];
+  for (const rule of rules) {
+    for (const glob of rule.fm.paths) {
+      if (glob === '**') {
+        exempt.push({ rule: rule.name, glob, reason: 'the deliberate eager glob' });
+        continue;
+      }
+      const [head, ...rest] = glob.split('/');
+      if (head === '**') {
+        // Already worktree-safe. Report anything it reaches outside its own repo
+        // so a relaxation's blast radius is a visible number, not a surprise.
+        const re = globToRegex(glob);
+        const hits = trackedFiles.filter(f => re.test(f));
+        const repos = new Set(hits.map(f => f.split('/')[0]));
+        if (repos.size > 1) {
+          const count = r => hits.filter(f => f.startsWith(r + '/')).length;
+          const main = [...repos].sort((a, b) => count(b) - count(a))[0];
+          overmatch.push({ rule: rule.name, glob, files: hits.filter(f => !f.startsWith(main + '/')) });
+        }
+        continue;
+      }
+      if (!REPOS.includes(head)) {
+        exempt.push({ rule: rule.name, glob, reason: 'workspace-root path — worktrees are of the sub-repos' });
+        continue;
+      }
+      if (rest.length === 1 && rest[0] === '**') {
+        exempt.push({ rule: rule.name, glob, reason: 'whole-repo glob — relaxing it would make the rule eager' });
+        continue;
+      }
+      // An explicit opt-out, read from the rule's own source line.
+      const pinned = new RegExp(`^\\s*-\\s*"${glob.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\s*#.*repo-pinned`, 'm');
+      if (rule.text && pinned.test(rule.text)) {
+        exempt.push({ rule: rule.name, glob, reason: 'repo-pinned by an explicit comment in the rule' });
+        continue;
+      }
+      blind.push({ rule: rule.name, glob, fix: ['**', ...rest].join('/') });
+    }
+  }
+  return { blind, exempt, overmatch };
+}
+
 // ---------- main ----------
 
 const CODE_EXT = /\.(ts|tsx|js|mjs|cjs|kt|kts|java|sh|ps1|sql|toml|gradle)$/;
@@ -468,6 +540,10 @@ function main() {
     }
   }
 
+  // 4b. every rule glob must ALSO match its file inside a worktree — see
+  // worktreeBlindGlobs above for why that is not optional in this workspace.
+  result.worktreeGlobs = worktreeBlindGlobs(rules, tracked);
+
   // 4c. frontmatter must survive a STRICT YAML parser — a rule whose frontmatter
   // throws loses its paths: and loads eagerly on every session (see the function).
   result.yamlUnsafe = yamlUnsafeFrontmatter(rules);
@@ -517,7 +593,7 @@ function main() {
 
   result.ok = !result.anchors.failed.length && !result.mapPaths.missing.length
     && !result.ruleGlobs.failed.length && !result.budgets.violations.length
-    && !result.yamlUnsafe.length;
+    && !result.yamlUnsafe.length && !result.worktreeGlobs.blind.length;
 
   if (asJson) {
     console.log(JSON.stringify(result, null, 2));
@@ -539,6 +615,13 @@ function printHuman(r) {
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
+  dump('worktree-blind rule globs (these never fire on work done in worktrees/)',
+       (r.worktreeGlobs?.blind || []).map(x => `${x.rule}: ${x.glob}  ->  ${x.fix}`));
+  if (r.worktreeGlobs) {
+    console.log(`worktree-safe globs: ${r.worktreeGlobs.blind.length} blind · `
+      + `${r.worktreeGlobs.exempt.length} exempt (named) · `
+      + `${r.worktreeGlobs.overmatch.length} reaching outside their repo`);
+  }
   dump('rule frontmatter a strict YAML parser rejects (these load EAGERLY, every session)',
        (r.yamlUnsafe || []).map(u => `${u.file}: ${u.reason}`));
   dump('budget violations', r.budgets.violations);

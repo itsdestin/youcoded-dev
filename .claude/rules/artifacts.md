@@ -1,13 +1,13 @@
 ---
 paths:
-  - "youcoded/desktop/src/main/artifacts/**"
-  - "youcoded/desktop/src/renderer/components/project-view/**"
-  - "youcoded/desktop/src/renderer/components/SessionDrawer.tsx"
-  - "youcoded/desktop/src/renderer/components/artifact-views/**"
-  - "youcoded/desktop/src/renderer/state/artifact-tracker.ts"
-  - "youcoded/desktop/src/renderer/state/artifact-tool-use-tracker.ts"
-  - "youcoded/desktop/src/renderer/state/ArtifactContext.tsx"
-  - "youcoded/desktop/src/shared/artifacts/**"
+  - "**/desktop/src/main/artifacts/**"
+  - "**/desktop/src/renderer/components/project-view/**"
+  - "**/desktop/src/renderer/components/SessionDrawer.tsx"
+  - "**/desktop/src/renderer/components/artifact-views/**"
+  - "**/desktop/src/renderer/state/artifact-tracker.ts"
+  - "**/desktop/src/renderer/state/artifact-tool-use-tracker.ts"
+  - "**/desktop/src/renderer/state/ArtifactContext.tsx"
+  - "**/desktop/src/shared/artifacts/**"
 last_verified: 2026-08-30
 verify:
   - test: youcoded/desktop/tests/artifacts/artifact-tool-use-tracker.test.ts

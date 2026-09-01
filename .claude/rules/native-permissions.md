@@ -1,10 +1,10 @@
 ---
 paths:
-  - "youcoded/desktop/src/main/harness/permission-store.ts"
-  - "youcoded/desktop/src/main/harness/native-session-host.ts"
-  - "youcoded/desktop/src/shared/permission-types.ts"
-  - "youcoded/desktop/src/renderer/components/PermissionsSection.tsx"
-  - "youcoded/desktop/src/renderer/components/permissions/**"
+  - "**/desktop/src/main/harness/permission-store.ts"
+  - "**/desktop/src/main/harness/native-session-host.ts"
+  - "**/desktop/src/shared/permission-types.ts"
+  - "**/desktop/src/renderer/components/PermissionsSection.tsx"
+  - "**/desktop/src/renderer/components/permissions/**"
 last_verified: 2026-08-16
 verify:
   - path: youcoded/desktop/src/main/harness/permission-store.ts

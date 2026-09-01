@@ -1,6 +1,6 @@
 ---
 paths:
-  - "youcoded/desktop/src/renderer/**"
+  - "**/desktop/src/renderer/**"
 last_verified: 2026-07-20
 verify:
   - path: youcoded/desktop/src/renderer/hooks/use-narrow-viewport.ts

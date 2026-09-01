@@ -1,6 +1,6 @@
 ---
 paths:
-  - "youcoded/app/**"
+  - "**/app/**"
 last_verified: 2026-07-15
 verify:
   - path: youcoded/app/src/main/kotlin/com/youcoded/app/runtime/Bootstrap.kt

@@ -1,13 +1,13 @@
 ---
 paths:
-  - "youcoded/desktop/vitest.config.ts"
-  - "youcoded/desktop/tests/global-setup.ts"
-  - "youcoded/desktop/tests/setup-dom.ts"
-  - "youcoded/desktop/tests/setup-waitfor.ts"
-  - "youcoded/desktop/tests/**/*.test.ts"
-  - "youcoded/desktop/tests/**/*.test.tsx"
-  - "youcoded/desktop/src/**/*.test.ts"
-  - "youcoded/desktop/src/**/*.test.tsx"
+  - "**/desktop/vitest.config.ts"
+  - "**/desktop/tests/global-setup.ts"
+  - "**/desktop/tests/setup-dom.ts"
+  - "**/desktop/tests/setup-waitfor.ts"
+  - "**/desktop/tests/**/*.test.ts"
+  - "**/desktop/tests/**/*.test.tsx"
+  - "**/desktop/src/**/*.test.ts"
+  - "**/desktop/src/**/*.test.tsx"
 last_verified: 2026-08-28
 verify:
   - path: youcoded/desktop/vitest.config.ts

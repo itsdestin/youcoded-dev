@@ -2,14 +2,14 @@
 paths:
   # Split from native-runtime.md 2026-08-12 (rule-body budget): the harness
   # subdirectories — tool implementations, injection, skills, search, MCP.
-  - "youcoded/desktop/src/main/harness/tools/**"
-  - "youcoded/desktop/src/main/harness/injection/**"
-  - "youcoded/desktop/src/main/harness/mcp/**"
-  - "youcoded/desktop/src/main/harness/skills/**"
-  - "youcoded/desktop/src/main/harness/search/**"
-  - "youcoded/desktop/src/main/mcp-reconciler.ts"
+  - "**/desktop/src/main/harness/tools/**"
+  - "**/desktop/src/main/harness/injection/**"
+  - "**/desktop/src/main/harness/mcp/**"
+  - "**/desktop/src/main/harness/skills/**"
+  - "**/desktop/src/main/harness/search/**"
+  - "**/desktop/src/main/mcp-reconciler.ts"
   # G-1 background Bash: the registry lives one level up from tools/.
-  - "youcoded/desktop/src/main/harness/shell-registry.ts"
+  - "**/desktop/src/main/harness/shell-registry.ts"
 last_verified: 2026-08-28
 verify:
   - path: youcoded/desktop/src/main/harness/tools/guards.ts
