@@ -269,6 +269,12 @@ anchors this whole document is currently unreproducible. The script that produce
 ~80% of the tool; save it as `scripts/roadmap-staleness.mjs` and the "tool must exist before
 migration" dependency largely dissolves, because it already works against today's format.
 
+*Amended in the 2026-09-01 spec review:* superseded. The spec (§1, §6.1.3) rebuilds that
+measurement as `scripts/roadmap-legacy-worksheet.mjs` — a throwaway that parses today's
+format into the migration worksheet (including each cited file's last-commit date, which
+*is* the modified-since number) and is deleted when the migration ships. Do not also commit
+a `roadmap-staleness.mjs`.
+
 **Two candidate mechanisms** — the choice is open question 8:
 
 | | How it detects rot | False alarms | New code |
@@ -321,6 +327,9 @@ under `docs/roadmap/` with `ROADMAP.md` as a one-page index that carries "where 
 stands". (7) `source` **dropped**; in exchange the `confirmed` / `needs-verify` definitions
 were tightened — see the spec §3.3. (8) **Claim anchors as the check, modified-since as a
 hint**, with a `claim:` marker distinct from `verify:` so a rotted claim never turns CI red.
+*Amended in the 2026-09-01 spec review:* the modified-since hint was dropped (spec §8) — 54%
+noise by this document's own measurement, and the only part of the tool that needed git
+history, which CI's `--depth 1` clones lack. Anchors alone are the check.
 
 The table as it stood before those answers, for the record:
 
@@ -342,6 +351,7 @@ The table as it stood before those answers, for the record:
 | Path | What it is |
 |---|---|
 | `docs/active/specs/2026-09-01-roadmap-restructure-design.md` | **The approved design** — files, entry grammar, vocabularies, status definitions, claim anchors, the tool, the migration procedure, the tag→area map. Start here. |
+| `docs/active/plans/2026-09-01-roadmap-restructure-tooling.md` | **The implementation plan** — Part 1 builds the tool, hook and CI step (merges to master dormant); Part 2 is the migration runbook with the skeleton files and the subagent brief. Its code was assembled and run green before it was saved. |
 | `docs/archive/specs/2026-08-31-roadmap-area-taxonomy-draft.md` | The taxonomy draft the spec grew from (superseded; kept for the considered-and-rejected names) |
 | `docs/active/reviews/2026-08-31-roadmap-open-item-difficulty-ranking.md` | All 258 open items ranked into six difficulty tiers, plus 18 "fix today" items (top four verified against live code) and the already-resolved entries (see §1 for the honest tally) |
 | `.claude/commands/audit.md` → step 5 | The roadmap check that already exists on paper and has never run |
