@@ -4,6 +4,7 @@
 #
 # Usage: bash scripts/close-out.sh <branch> [<repo-dir>]
 #   e.g. bash scripts/close-out.sh feat/games-arcade-shell youcoded
+#        bash scripts/close-out.sh docs/my-branch workspace   # youcoded-dev itself
 #
 # WHY: closing out the games arcade on 2026-08-31 took eleven steps across two
 # repos and the workspace, and several were nearly missed and recovered only by
@@ -20,7 +21,12 @@ BRANCH="${1:-}"
 REPO="${2:-youcoded}"
 WORKSPACE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 [[ -z "$BRANCH" ]] && { echo "usage: bash scripts/close-out.sh <branch> [<repo-dir>]"; exit 0; }
-REPO_DIR="$WORKSPACE/$REPO"
+# `workspace` / `.` mean youcoded-dev itself, which is a normal close-out target:
+# this workspace's own docs, rules and scripts ship on branches like any sub-repo.
+case "$REPO" in
+  workspace|.|youcoded-dev) REPO_DIR="$WORKSPACE"; REPO="workspace" ;;
+  *)                        REPO_DIR="$WORKSPACE/$REPO" ;;
+esac
 [[ -e "$REPO_DIR/.git" ]] || { echo "close-out: no git repo at $REPO_DIR"; exit 0; }
 
 pass() { printf '  \033[32mOK\033[0m   %s\n' "$1"; }
@@ -38,12 +44,19 @@ SHA=$(git -C "$REPO_DIR" rev-parse --verify -q "origin/$BRANCH" 2>/dev/null \
    || git -C "$REPO_DIR" rev-parse --verify -q "$BRANCH" 2>/dev/null || true)
 BASE=$(git -C "$REPO_DIR" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
 
+# TWO MODES, because "close out" does not always mean "merged".
+# Destin routinely says wrap up / close out meaning "do the docs and workspace
+# hygiene" while the PR stays open for a fresh session to review. Reporting
+# "delete the branch" then would be actively wrong advice, so the script asks
+# whether the work landed FIRST and changes what it checks accordingly.
 MERGED=no
 if [[ -n "$SHA" ]]; then
   if git -C "$REPO_DIR" merge-base --is-ancestor "$SHA" "$BASE" 2>/dev/null; then
     pass "the branch tip is an ancestor of $BASE — the work landed"; MERGED=yes
   else
-    fail "the branch tip is NOT on $BASE — nothing below matters until it is"
+    note "not merged into $BASE yet — PRE-MERGE close-out. Branch, worktree and"
+    note "dead-name checks are SKIPPED: they would all tell you to delete things"
+    note "you still need. Docs and workspace hygiene below still apply."
   fi
 else
   # No ref anywhere is NOT evidence of a close-out: a branch that merged and was
@@ -67,42 +80,52 @@ fi
 # never-pushed (very much not done) — and this script cannot tell them apart on
 # its own. Printing a green "deleted" for both is exactly the misleading message
 # the workspace's error standard forbids, so the merge result above decides.
-if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
-  fail "remote branch still exists — git push origin --delete $BRANCH"
-elif [[ "$MERGED" == yes ]]; then
-  pass "remote branch deleted (the work is on $BASE, so it was pushed and cleaned up)"
+if [[ "$MERGED" == yes ]]; then
+  if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+    fail "remote branch still exists — git push origin --delete $BRANCH"
+  else
+    pass "remote branch deleted (the work is on $BASE, so it was pushed and cleaned up)"
+  fi
+
+  git -C "$REPO_DIR" show-ref --verify -q "refs/heads/$BRANCH" \
+    && fail "local branch still exists — git branch -D $BRANCH  (-D, not -d: --no-ff merges leave the tip non-ancestral)" \
+    || pass "local branch deleted"
+
+  WT=$(git -C "$REPO_DIR" worktree list --porcelain | sed -n 's/^worktree //p' \
+       | while read -r p; do
+           [[ "$(git -C "$p" branch --show-current 2>/dev/null)" == "$BRANCH" ]] && echo "$p"
+         done)
+  if [[ -n "$WT" ]]; then
+    fail "worktree still registered at $WT — git worktree remove '$WT'"
+  else
+    pass "no worktree left on this branch"
+  fi
+
+  for d in "$WORKSPACE"/worktrees/*/; do
+    [[ -d "$d" && ! -e "${d%/}/.git" ]] && fail "unregistered leftover directory: ${d%/}"
+  done
 else
-  note "no remote ref — either never pushed, or pushed and deleted; the merge check above is the real answer"
+  if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+    pass "pushed to origin — a reviewer can see it"
+  else
+    fail "never pushed — nobody else can review this branch yet"
+  fi
 fi
-
-git -C "$REPO_DIR" show-ref --verify -q "refs/heads/$BRANCH" \
-  && fail "local branch still exists — git branch -D $BRANCH  (-D, not -d: --no-ff merges leave the tip non-ancestral)" \
-  || pass "local branch deleted"
-
-WT=$(git -C "$REPO_DIR" worktree list --porcelain | sed -n 's/^worktree //p' \
-     | while read -r p; do
-         [[ "$(git -C "$p" branch --show-current 2>/dev/null)" == "$BRANCH" ]] && echo "$p"
-       done)
-if [[ -n "$WT" ]]; then
-  fail "worktree still registered at $WT — git worktree remove '$WT'"
-else
-  pass "no worktree left on this branch"
-fi
-
-for d in "$WORKSPACE"/worktrees/*/; do
-  [[ -d "$d" && ! -e "${d%/}/.git" ]] && fail "unregistered leftover directory: ${d%/}"
-done
 
 echo
 echo "Docs"
 
 # Scoped to THIS branch. A doc naming a branch that no longer exists holds
 # commands that error instead of answering, and claims that read as current.
-DEAD=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/ROADMAP.md" 2>/dev/null || true)
+DEAD=""
+[[ "$MERGED" == yes ]] && DEAD=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/ROADMAP.md" 2>/dev/null || true)
+if [[ "$MERGED" != yes ]]; then
+  note "docs naming this branch are FINE while it is unmerged — check skipped"
+fi
 if [[ -n "$DEAD" ]]; then
   fail "these still name the branch — commands in them will error, not answer:"
   echo "$DEAD" | sed "s|^$WORKSPACE/|       |"
-else
+elif [[ "$MERGED" == yes ]]; then
   pass "no live doc names the branch"
 fi
 
