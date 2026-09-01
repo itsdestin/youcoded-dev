@@ -346,6 +346,21 @@ export function changedFilesSince(root, shas) {
 
 // changed files × rule globs → which subsystems need semantic re-verification,
 // plus the files matching NO rule (the "new subsystem without a rule" signal).
+// Paths that legitimately match no rule. Counted and reported, never silently
+// dropped — the whole point of the "files matching NO rule" signal is that a
+// shipped subsystem with no rule shows up in it, and 607 rows of archived
+// prototypes is how that signal got ignored.
+//
+// NOT listed here on purpose: .claude/hooks/**. Those are real, tested code
+// (context-inject.test.mjs, glob-guard.test.mjs, both run by CI) and belong in
+// the signal.
+export const NO_RULE_EXPECTED = [
+  /^docs\/archive\//,
+  /^docs\/active\/prototypes\//,
+  /^scripts\/ast-grep\/fixtures\//,
+  /^flappy-bird\//,
+];
+
 export function affectedSubsystems(rules, changedFiles) {
   const affected = new Set();
   const covered = new Set();
@@ -354,9 +369,12 @@ export function affectedSubsystems(rules, changedFiles) {
       if (rule.globs.some(g => g.test(f))) { affected.add(rule.name); covered.add(f); }
     }
   }
+  const uncoveredAll = changedFiles.filter(f => !covered.has(f));
+  const uncovered = uncoveredAll.filter(f => !NO_RULE_EXPECTED.some(re => re.test(f)));
   return {
     affected: [...affected].sort(),
-    uncovered: changedFiles.filter(f => !covered.has(f)),
+    uncovered,
+    uncoveredExpected: uncoveredAll.length - uncovered.length,
   };
 }
 
@@ -601,12 +619,13 @@ function main() {
         name: r.name,
         globs: r.fm.paths.filter(g => g !== '**').map(globToRegex),
       }));
-      const { affected, uncovered } = affectedSubsystems(compiled, changed);
+      const { affected, uncovered, uncoveredExpected } = affectedSubsystems(compiled, changed);
       result.diffScope = {
         baseReport: path.relative(root, report.file).replaceAll('\\', '/'),
         changedCount: changed.length,
         affected,
         uncoveredCode: uncovered.filter(f => CODE_EXT.test(f)),
+        uncoveredExpected,
         notes,
       };
     } else {
@@ -666,7 +685,8 @@ function printHuman(r) {
       : 'diff scope: no base report with verified_shas — run /audit full');
     for (const n of r.diffScope.notes || []) console.log('  note: ' + n);
     if (r.diffScope.uncoveredCode?.length) {
-      console.log(`  changed code files matching NO rule (${r.diffScope.uncoveredCode.length}, first 20):`);
+      console.log(`  changed code files matching NO rule (${r.diffScope.uncoveredCode.length}`
+        + `, plus ${r.diffScope.uncoveredExpected ?? 0} in archives/prototypes/fixtures — expected):`);
       for (const f of r.diffScope.uncoveredCode.slice(0, 20)) console.log('    ' + f);
     }
   }

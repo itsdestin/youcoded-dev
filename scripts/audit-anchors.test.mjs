@@ -462,3 +462,27 @@ test('strayRuleDirs: no sub-repo rule dirs is the clean case', () => {
   assert.deepEqual(strayRuleDirs(tmp), []);
   fs.rmSync(tmp, { recursive: true, force: true });
 });
+
+
+// --- the "no rule covers this" signal must be readable ------------------------
+
+test('affectedSubsystems: archives, prototypes and fixtures are counted as expected-uncovered', () => {
+  const rules = [{ name: 'r', globs: [globToRegex('**/desktop/src/**')] }];
+  const r = affectedSubsystems(rules, [
+    'youcoded/desktop/src/main/x.ts',
+    'docs/archive/prototypes/2026-07-22-buddy/main.js',
+    'scripts/ast-grep/fixtures/atomic-write.ts',
+    'flappy-bird/game.js',
+    'youcoded/desktop/src/main/brand-new-subsystem.ts',
+  ]);
+  assert.deepEqual(r.affected, ['r']);
+  assert.equal(r.uncoveredExpected, 3);
+  assert.deepEqual(r.uncovered, []);
+});
+
+test('affectedSubsystems: a real uncovered code file still shows up', () => {
+  const rules = [{ name: 'r', globs: [globToRegex('**/desktop/src/**')] }];
+  const r = affectedSubsystems(rules, ['youcoded/app/src/Brand.kt', 'docs/archive/x.md']);
+  assert.deepEqual(r.uncovered, ['youcoded/app/src/Brand.kt']);
+  assert.equal(r.uncoveredExpected, 1);
+});
