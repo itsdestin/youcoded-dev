@@ -1,10 +1,13 @@
 ---
-status: active
+status: shipped
 created: 2026-08-31
 tags: [ui-review, deck, workbench, tooling]
 ---
 
 # Live Review Panes
+
+> **Shipped 2026-09-01** — itsdestin/youcoded#372 (the `?view=live` route) and
+> itsdestin/youcoded-dev#4 (the deck). The branches named below are merged and deleted.
 
 **Goal:** let a review deck carry panes of the running app that Destin can hover,
 click and drag himself, so motion and interaction can be judged by feel instead

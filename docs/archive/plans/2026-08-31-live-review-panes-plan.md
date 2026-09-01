@@ -1,13 +1,16 @@
 ---
-status: active
+status: shipped
 created: 2026-08-31
-spec: docs/active/specs/2026-08-31-live-review-panes-design.md
+spec: docs/archive/specs/2026-08-31-live-review-panes-design.md
 tags: [ui-review, deck, workbench, tooling]
 ---
 
 # Live Review Panes — implementation plan
 
-Design: `docs/active/specs/2026-08-31-live-review-panes-design.md`. This plan is
+> **Shipped 2026-09-01** — itsdestin/youcoded#372 (the `?view=live` route) and
+> itsdestin/youcoded-dev#4 (the deck). The branches named below are merged and deleted.
+
+Design: `docs/archive/specs/2026-08-31-live-review-panes-design.md`. This plan is
 the build order; the spec is the reason for each piece.
 
 Two repos, two branches. Neither half needs the other to *pass its own tests* —

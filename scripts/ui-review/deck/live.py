@@ -3,7 +3,7 @@
 A live step shows the RUNNING app instead of a screenshot — one authored candidate out of
 `compare/registry.tsx`, in its own frame, that Destin can hover, click and drag. Motion is
 judged by doing it; two recordings side by side is how the 2026-08-31 session-strip review
-failed. Spec: docs/active/specs/2026-08-31-live-review-panes-design.md.
+failed. Spec: docs/archive/specs/2026-08-31-live-review-panes-design.md.
 
 WHY this is its own module: `build.py` bakes the pane addresses into the page and `serve.py`
 starts the server those addresses point at. Both read the SAME spec through here, so a page

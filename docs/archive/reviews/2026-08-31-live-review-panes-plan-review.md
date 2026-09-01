@@ -1,11 +1,14 @@
 ---
-status: draft
+status: shipped
 created: 2026-08-31
-reviews: docs/active/plans/2026-08-31-live-review-panes-plan.md
+reviews: docs/archive/plans/2026-08-31-live-review-panes-plan.md
 tags: [ui-review, deck, workbench, review]
 ---
 
 # Review — Live Review Panes plan
+
+> **Shipped 2026-09-01** — itsdestin/youcoded#372 (the `?view=live` route) and
+> itsdestin/youcoded-dev#4 (the deck). The branches named below are merged and deleted.
 
 Every claim below was checked against the code. The command that backs it is named.
 

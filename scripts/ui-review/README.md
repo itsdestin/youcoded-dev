@@ -206,7 +206,7 @@ Things worth knowing before you author one:
   each pane says the app server is not running. A review worth looking back at should carry a
   still or a clip beside its live steps.
 
-Spec: `docs/active/specs/2026-08-31-live-review-panes-design.md`.
+Spec: `docs/archive/specs/2026-08-31-live-review-panes-design.md`.
 
 Rebuild every landing-page asset at once (loops, gallery stills, live embed):
 `bash scripts/ui-review/site-assets.sh <worktree>` — refuses a workbench serving a
