@@ -65,21 +65,32 @@
     $$('.thumb').forEach(b => b.classList.toggle('on', b.dataset.v === theme));
     $$('#inner iframe').forEach(f => { try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (e) { /* not loaded yet */ } });
   }
+  // A width the pane MEASURED for itself beats the one the spec guessed at — the number lives
+  // in the registry in the other repo, so the deck can only ever be estimating.
+  const paneWidthOf = (st, i) => {
+    const f = $$('#inner iframe')[i];
+    return Number((f && f.dataset.reportedWidth) || st.width);
+  };
   function layoutLive() {
     const st = DECK.steps[cur], c = $('#content'), step = $('#step');
     // Panes have a DECLARED width — there is no natural image size to solve an arrangement
     // from, so none of layout()'s scoring applies. One row at real size; the stage scrolls if
     // the row is wider than it is, which validate() warns about before the deck is ever built.
-    c.className = 'content row-below';
+    // A live step's problem is never horizontal room, it is vertical: one 420px pane left
+    // ~800px of empty stage either side while its own content was being cut off at the
+    // bottom. So put the cards in a side column whenever the panes still fit beside them,
+    // which hands the stage the full height of the page.
+    const info = Math.max(320, c.clientWidth * 0.30);
+    const paneRow = st.panes.reduce((sum, p, i) => sum + paneWidthOf(st, i) + (i ? 18 : 0), 0);
+    c.className = 'content ' + (c.clientWidth - info - 40 >= paneRow ? 'col-right' : 'row-below');
     step.classList.remove('compact-step');
     // ALWAYS inline, no width threshold. The theme row is absolutely positioned beside the
     // step, and a live row is wide by nature — two to four panes at real size — so the side
     // column lands outside the window and the buttons get cut in half (seen 2026-08-31).
     // There is no width at which a side column is right here, so don't compute one.
     document.body.classList.add('thumbs-inline');
-    $$('#inner iframe').forEach(f => {
-      // A width the pane MEASURED for itself beats the one the spec guessed at.
-      f.style.width = (f.dataset.reportedWidth || st.width) + 'px';
+    $$('#inner iframe').forEach((f, i) => {
+      f.style.width = paneWidthOf(st, i) + 'px';
       if (!f.style.height) f.style.height = (st.height || MIN_PANE_H) + 'px';
     });
     document.body.dataset.layout = 'live';
@@ -102,11 +113,14 @@
     // and "Other" carries anything he wants instead. No "None of these" — with written options
     // that button and "Other" would mean the same thing twice.
     const picks = pickList(st);
-    $('#answers').innerHTML = picks
-      ? picks.map(pickBtn).join('')
-        + `<button class="btn ans" data-v="no"><span class="dot no"></span>None of these</button><button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`
-      : st.kind === 'decide'
-      ? st.options.map(pickBtn).join('')
+    // Fix: the lettered options used to appear TWICE — once as the cards, once again as
+    // buttons repeating the same letter and the same label directly beneath them. Destin
+    // (2026-09-01): "two distinct multiple-choice decision rows that kinda offer the same
+    // options." The cards are the better of the two (they carry the summary, the measurement
+    // and the risk), so they are now the only place you pick. What stays here is only what a
+    // card CANNOT say: none of them, or something else entirely.
+    $('#answers').innerHTML = picks || st.kind === 'decide'
+      ? (picks ? `<button class="btn ans" data-v="no"><span class="dot no"></span>None of these</button>` : '')
         + `<button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`
       : `<button class="btn ans" data-v="yes"><span class="dot yes"></span>${YES}</button><button class="btn ans" data-v="no"><span class="dot no"></span>${NO}</button><button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`;
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
@@ -341,9 +355,12 @@
     const panes = $$('#inner iframe');
     const f = panes.find(x => x.contentWindow === e.source) || panes.find(x => x.dataset.pane === d.candidate);
     if (!f) return;
-    // Capped at the stage: past that the pane scrolls internally rather than pushing the
-    // cards and the answer buttons off the screen.
-    f.style.height = Math.max(MIN_PANE_H, Math.min(d.height, stage.clientHeight - 28)) + 'px';
+    // NOT capped at the stage. It was, and a 494px design in a 380px stage lost its bottom
+    // 114px — Destin saw a permissions list sliced mid-item (2026-09-01). A pane that scrolls
+    // inside itself is worse than a stage that scrolls: the inner scrollbar reads as part of
+    // the design, and a design you cannot see all of is not a design you can judge. The stage
+    // is `overflow:auto` already, so a tall pane makes the STAGE scroll and stays whole.
+    f.style.height = Math.max(MIN_PANE_H, d.height) + 'px';
     // WIDTH is not capped and not guessed. It comes from the registry in the other repo, so
     // the pane is the only thing that knows it; a deck-level `live.paneWidth` that is too
     // small clips the design's right-hand edge with nothing to say so (permissions-mode-control

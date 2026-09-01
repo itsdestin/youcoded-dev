@@ -69,6 +69,14 @@ figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.
    the entire pane — verified, and tracked as an open landing-page bug. A 1px border and no
    radius costs nothing and dodges it; if a pane ever needs rounding, round it from inside. */
 .pic iframe{display:block;border:1px solid var(--edge);background:var(--canvas)}
+/* Panes of different heights are TOP-aligned, not centred: three close-session designs at
+   280/279/267px sat on three different baselines and read as sloppy rather than as a
+   difference in the designs. */
+body[data-layout="live"] .stage .inner{align-items:flex-start}
+/* `.zoom` sets `display:inline-flex`, which OUTRANKS the `hidden` attribute's UA rule — so
+   hiding it from JS did nothing and the zoom pill sat on top of a pane's "open on its own"
+   link (2026-09-01). An explicit display always beats [hidden]; say so once, for everything. */
+[hidden]{display:none!important}
 /* The lettered chip needs air whatever the frame is. The existing rule for this is scoped to
    `.frame.pickable`, and a live pane is deliberately NOT pickable — so its caption read
    "aCard and row" with the letter welded to the label (seen 2026-08-31). */

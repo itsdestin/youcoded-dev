@@ -138,7 +138,10 @@ test('live step: panes, label theme row that does not reload them, no picking by
     assert.equal(await c.evaluate("document.querySelector('#thumbs').getBoundingClientRect().right <= innerWidth"), true, 'theme row on screen');
 
     // Zoom off; the magnifier has no image to work from and hides itself.
-    assert.equal(await c.evaluate("document.querySelector('#zoom').hidden"), true, 'zoom hidden');
+    // COMPUTED display, not the .hidden property: `.zoom` sets display:inline-flex, which
+    // outranks [hidden], so the property read `true` while the pill stayed on screen.
+    assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#zoom')).display"), 'none', 'zoom really hidden');
+    assert.equal(await c.evaluate("document.querySelector('#zoom').getBoundingClientRect().width"), 0, 'and takes no space');
     assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#loupe')).display"), 'none', 'no magnifier');
     assert.equal(await c.evaluate("document.querySelector('#livehint').hidden"), false, 'focus hint shown');
 
@@ -170,7 +173,15 @@ test('live step: panes, label theme row that does not reload them, no picking by
     assert.equal(await c.evaluate("document.querySelectorAll('.card.variant').length"), 2, 'a card per candidate');
     await c.evaluate("document.querySelector('.card.variant[data-pick=b]').click()"); await sleep(300);
     assert.equal(await c.evaluate("document.querySelector('#save').disabled"), false, 'the card answered');
-    assert.equal(await c.evaluate("!!document.querySelector('.ans[data-pick=b]').classList.contains('on')"), true);
+    assert.equal(await c.evaluate("document.querySelector('.card.variant[data-pick=b]').classList.contains('on')"), true, 'the picked card is marked');
+    // ONE decision row, not two. The options live on the cards; the answer row carries only
+    // what a card cannot say.
+    assert.equal(await c.evaluate("document.querySelectorAll('.ans[data-v=pick]').length"), 0, 'no lettered buttons repeating the cards');
+    assert.deepEqual(await c.evaluate("[...document.querySelectorAll('.ans')].map(b=>b.dataset.v)"), ['no', 'other'], 'None of these + Other only');
+    // A tall design is never sliced: the pane gets its full measured height and the STAGE scrolls.
+    assert.equal(await c.evaluate("document.querySelector('#inner iframe').style.height"), '220px', 'full measured height');
+    assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#stage')).overflow"), 'auto', 'the stage is what scrolls');
+    assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#inner')).alignItems"), 'flex-start', 'panes top-aligned');
 
     // The try-this step is a yes/no over one pane.
     await c.send('Page.navigate', { url: url + '?step=2' });
