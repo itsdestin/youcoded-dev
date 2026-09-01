@@ -148,6 +148,64 @@ then in the deck spec: `{ "id": "…", "surface": "…", "path": "…", "clip": 
 refuses the deck if a run's recording is missing. First real use: the hero-cycler overlap,
 `docs/archive/design/2026-08-27-landing-page/clip-deck/`.
 
+### Live panes in a review deck (motion, drag, hover — judged by doing)
+
+A recording is the wrong tool for a 200 ms animation: Destin's verdict on the 2026-08-31
+session-strip review was *"the videos are just rough to compare."* A **live** step embeds the
+RUNNING app instead — one authored candidate per pane, at its real size, that he can hover,
+click and drag himself.
+
+The candidates are the ones `youcoded`'s comparison view already uses
+(`desktop/src/renderer/dev/workbench/compare/registry.tsx`), so authoring one is authoring a
+compare candidate. **Pick-one is the default** for open-ended animation work; a try-this
+yes/no is for verifying something built to an agreed spec.
+
+```json
+{ "live": { "worktree": "session-motion" },            // deck level: one build per review
+  "steps": [
+    { "id": "expand", "surface": "Session strip", "path": "Header",
+      "headline": "Which pill expand feels right?",
+      "live": { "surface": "session-strip-expand", "round": 1 },
+      "variants": [                                     // 2-4 → pick one
+        { "id": "a", "label": "As built",  "candidate": "as-built", "summary": "200ms, gentle overshoot." },
+        { "id": "b", "label": "Snappier",  "candidate": "snappy",   "summary": "140ms, stops dead." }
+      ] },
+    { "id": "drag", "surface": "Session strip", "path": "Header",
+      "headline": "Does the drag feel right?",
+      "live": { "surface": "session-strip-drag", "round": 2, "candidate": "as-built" },
+      "changed": "The pill lifts and follows your cursor.",   // no variants → yes/no
+      "notice": "No jump when you let go.", "risk": "Widths freeze while you drag." }
+  ] }
+```
+
+Then the usual one command — `serve` boots that worktree's workbench on **:5513** and stops
+it again on exit:
+
+```bash
+python3 scripts/ui-review/review-cards.py serve <spec>       # --no-live: leave my workbench alone
+```
+
+Things worth knowing before you author one:
+
+- **`round` is not optional.** Candidate ids are unique only *within* a round and the registry
+  keeps every round forever (`close-prompt-body` reuses `labelled` and `one-line` across its
+  ten), so an address without a round silently shows the wrong design.
+- **A live-only deck names no `images` and no `runs`** — there are no screenshots. Mix live and
+  picture steps freely under one Submit; then it needs both.
+- **A click inside a pane is an interaction, not an answer.** Picking is the lettered card or
+  the answer button. And once focus is in a pane the page stops seeing key presses — the deck
+  says so under the row.
+- **One theme at a time**, switched with the usual theme row (rendered as labels). The swap is
+  sent to the panes as a message, so an animation mid-play survives it. Four candidates × six
+  themes would be 24 running copies of the app on one page.
+- **File watching stays on**, so a candidate edited while the deck is open updates the pane in
+  front of him. Close the deck when you are done rather than leaving the watcher running.
+- **It does not replay.** Reopen the review later and the cards and answers are all there, but
+  each pane says the app server is not running. A review worth looking back at should carry a
+  still or a clip beside its live steps.
+
+Spec: `docs/active/specs/2026-08-31-live-review-panes-design.md`.
+
 Rebuild every landing-page asset at once (loops, gallery stills, live embed):
 `bash scripts/ui-review/site-assets.sh <worktree>` — refuses a workbench serving a
 different tree, and refuses to overwrite a gallery when any shot failed verification.
@@ -188,6 +246,27 @@ from the live app, but it **shares `~/.claude` and the synced settings**, so the
 live-session plan turns *Skip Permissions* off before creating its one empty session and
 closes it at the end. Unset the `CLAUDE*` env vars first (see run-dev.sh) or Claude Code
 refuses to nest.
+
+## Tests
+
+They are `unittest` and `node --test`, not pytest, and they live outside a package — so the
+start directory has to be the top level too. `-t .` fails with *"Start directory is not
+importable"*, which is why nothing ran them for months:
+
+```bash
+# everything (69 tests, ~11s) — needs magick, ffmpeg and Chrome, all present on this machine
+python3 -m unittest discover -s scripts/ui-review/tests -t scripts/ui-review/tests -p 'test_*.py'
+node --test scripts/ui-review/tests/deck-render.test.mjs
+```
+
+| Suite | Needs |
+|---|---|
+| `test_spec`, `test_tokens`, `test_live` | nothing — **these three run in `workspace-ci.yml`** |
+| `test_boxes`, `test_build`, `test_crops`, `test_cli`, `test_serve` | `magick` (they cut real crops) |
+| `deck-render.test.mjs`, `coverage.test.mjs`, `shot-measure.test.mjs` | Chrome; the clip fixture also needs `ffmpeg` |
+
+Keep new deck coverage picture-free and put it in `test_live.py` where you can — that is what
+decides whether it runs on every push or only when someone remembers.
 
 ## Extending
 

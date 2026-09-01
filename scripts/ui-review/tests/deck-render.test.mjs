@@ -85,3 +85,114 @@ test('deck renders at three sizes and records an answer', async () => {
     assert.equal(existsSync(join(dirname(spec), 'deck.serve.json')), false);
   } finally { if (srv.exitCode === null) srv.kill(); }
 });
+
+// ── LIVE panes ────────────────────────────────────────────────────────────────────────────
+// A stub pane server stands in for the workbench: same two messages the real route sends
+// (a height on load, a theme swap in place), no Vite, no app, no ImageMagick. `--no-live`
+// keeps `serve` from trying to boot a real workbench for the fixture's imaginary worktree.
+test('live step: panes, label theme row that does not reload them, no picking by pane', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-live-'));
+  // The stub server has to outlive this process's setup, so it runs in its own python.
+  const stub = spawn('python3', ['-c',
+    `import sys, time; sys.path.insert(0, ${JSON.stringify(HERE)});\n` +
+    `from fixture import LivePaneServer\n` +
+    `s = LivePaneServer()\n` +
+    `print(s.base, flush=True)\n` +
+    `time.sleep(300)`], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const base = await new Promise((res, rej) => {
+    let out = ''; stub.stdout.on('data', d => { out += d; if (out.includes('\n')) res(out.trim()); });
+    stub.stderr.on('data', d => rej(new Error(String(d))));
+    setTimeout(() => rej(new Error('stub pane server never printed its address')), 10000);
+  });
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import live_spec; print(live_spec(${JSON.stringify(tmp)}, base=${JSON.stringify(base)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('live.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--no-live', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const url = `http://127.0.0.1:${port}/live.html`;
+  const c = await cdp(await freePort(), 1600, 1000);
+  try {
+    await sleep(800);
+    // Collect what the panes say about themselves. Installed before navigation so the
+    // load-time announcements are not missed.
+    await c.send('Page.addScriptToEvaluateOnNewDocument', { source: "window.__acks=[];addEventListener('message',e=>{if(e.data&&String(e.data.type||'').startsWith('stub:'))window.__acks.push(e.data);});" });
+    await c.send('Page.navigate', { url: url + '?step=1' });
+    for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+    await sleep(700);
+    assert.deepEqual(c.errors, [], 'live step console');
+
+    // Its own layout — none of layout()'s natural-size scoring applies, and __deckReady must
+    // still be set or this very test would have hung instead of failing.
+    assert.equal(await c.evaluate('document.body.dataset.layout'), 'live');
+    assert.equal(await c.evaluate("document.querySelectorAll('#inner iframe').length"), 2, 'one pane per variant');
+    assert.equal(await c.evaluate("document.querySelector('#inner iframe').style.width"), '360px', 'declared width');
+    assert.equal(await c.evaluate("document.querySelector('#inner iframe').style.height"), '220px', 'height the pane measured for itself');
+
+    // Zoom off; the magnifier has no image to work from and hides itself.
+    assert.equal(await c.evaluate("document.querySelector('#zoom').hidden"), true, 'zoom hidden');
+    assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#loupe')).display"), 'none', 'no magnifier');
+    assert.equal(await c.evaluate("document.querySelector('#livehint').hidden"), false, 'focus hint shown');
+
+    // Pop-out: the same address, in a new tab.
+    assert.equal(await c.evaluate("document.querySelectorAll('#inner .popout').length"), 2, 'a pop-out per pane');
+    assert.equal(await c.evaluate("document.querySelector('#inner .popout').getAttribute('href') === document.querySelector('#inner iframe').src"), true, 'pop-out opens the pane');
+    assert.equal(await c.evaluate("document.querySelector('#inner .popout').target"), '_blank');
+
+    // Theme row is labels, and switching must not rebuild the panes.
+    assert.equal(await c.evaluate("document.querySelectorAll('#thumbs .thumb').length"), 2, 'a button per deck theme');
+    assert.equal(await c.evaluate("document.querySelectorAll('#thumbs .thumb img').length"), 0, 'labels, not thumbnails');
+    const loadedIds = await c.evaluate("JSON.stringify(window.__acks.filter(a=>a.type==='stub:loaded').map(a=>a.id).sort())");
+    assert.equal(JSON.parse(loadedIds).length, 2, 'both panes announced themselves');
+    await c.evaluate("[...document.querySelectorAll('#thumbs .thumb')].find(b=>b.dataset.v==='light').click()"); await sleep(500);
+    const acks = JSON.parse(await c.evaluate("JSON.stringify(window.__acks)"));
+    const themed = acks.filter(a => a.type === 'stub:theme');
+    assert.equal(themed.length, 2, 'the swap reached both panes');
+    assert.ok(themed.every(a => a.theme === 'light'), 'and carried the theme');
+    assert.deepEqual(acks.filter(a => a.type === 'stub:loaded').map(a => a.id).sort(), JSON.parse(loadedIds),
+      'panes were NOT reloaded — a reload would mint new ids and re-announce');
+    assert.deepEqual(themed.map(a => a.id).sort(), JSON.parse(loadedIds), 'same documents answered');
+    assert.equal(await c.evaluate("document.documentElement.dataset.theme"), 'light', 'deck chrome followed');
+
+    // A click inside a pane is an interaction with the candidate, never an answer.
+    assert.equal(await c.evaluate("document.querySelectorAll('#inner .frame.pickable').length"), 0, 'panes are not pickable');
+    await c.evaluate("document.querySelector('#inner .frame').click()"); await sleep(200);
+    assert.equal(await c.evaluate("document.querySelector('#save').disabled"), true, 'clicking a pane recorded nothing');
+    // The lettered card does answer, exactly as it does for a picture pick-one.
+    assert.equal(await c.evaluate("document.querySelectorAll('.card.variant').length"), 2, 'a card per candidate');
+    await c.evaluate("document.querySelector('.card.variant[data-pick=b]').click()"); await sleep(300);
+    assert.equal(await c.evaluate("document.querySelector('#save').disabled"), false, 'the card answered');
+    assert.equal(await c.evaluate("!!document.querySelector('.ans[data-pick=b]').classList.contains('on')"), true);
+
+    // The try-this step is a yes/no over one pane.
+    await c.send('Page.navigate', { url: url + '?step=2' });
+    for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+    await sleep(500);
+    assert.equal(await c.evaluate("document.querySelectorAll('#inner iframe').length"), 1, 'one pane');
+    assert.equal(await c.evaluate("!!document.querySelector('.ans[data-v=yes]')"), true, 'yes/no, not pick');
+    assert.deepEqual(c.errors, [], 'try-this console');
+  } finally { c.close(); stub.kill(); if (srv.exitCode === null) srv.kill(); }
+});
+
+test('live step: a stopped app server says so, with the command that starts it', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-down-'));
+  const dead = await freePort();   // nothing is listening here
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import live_spec; print(live_spec(${JSON.stringify(tmp)}, base='http://127.0.0.1:${dead}'))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('live.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--no-live', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1400, 900);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/live.html?step=1` });
+    for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+    await sleep(600);
+    // This is also what an ARCHIVED review shows: live panes do not replay.
+    const text = await c.evaluate("document.querySelector('#inner .down') && document.querySelector('#inner .down').textContent");
+    assert.ok(text && text.trim().length > 40, 'the not-running card renders with text in it, never a blank rectangle');
+    assert.match(text, /not running/);
+    assert.match(text, new RegExp(String(dead)), 'names the address that did not answer');
+    assert.match(text, /run-workbench\.sh/, 'names the command that starts it');
+    assert.equal(await c.evaluate("document.querySelectorAll('#inner iframe').length"), 0, 'no dead iframes left behind');
+  } finally { c.close(); if (srv.exitCode === null) srv.kill(); }
+});
