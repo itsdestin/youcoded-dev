@@ -4,7 +4,7 @@
 **Status:** SHIPPED — the recommendation in Part 4 landed the same day (youcoded `d04b7b3e`). Kept as the explainer of *why* the chip measures what it measures.
 **Why this exists:** the status bar's "Hit: 100%" chip was structurally incapable of showing anything else on the providers in use here. Before picking a replacement, this is what the underlying thing actually is.
 
-**What shipped:** the chip became "Reuse" (cached ÷ whole prompt), resolved per source because Claude Code and the native harness disagree about what `inputTokens` means; zero renders as a neutral `New` on a session's first turn and stays red later. The per-turn metadata strip dropped its percentage for a raw cached-token count. `UsageCard` was deliberately left alone — it renders `/cost`, which is Anthropic data, where the old hit-rate formula is valid. The cost-estimate follow-on is recorded in `docs/active/plans/2026-08-11-native-sessions-remaining-work.md` → Step 6.
+**What shipped:** the chip became "Reuse" (cached ÷ whole prompt), resolved per source because Claude Code and the native harness disagree about what `inputTokens` means; zero renders as a neutral `New` on a session's first turn and stays red later. The per-turn metadata strip dropped its percentage for a raw cached-token count. `UsageCard` was deliberately left alone — it renders `/cost`, which is Anthropic data, where the old hit-rate formula is valid. The cost-estimate follow-on is recorded in `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md` → Step 6.
 
 ---
 

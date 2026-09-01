@@ -409,7 +409,7 @@ planned.
 5. Scope relative to Phase 4 — is this part of the Agents & Automations view, or
    a separate surface layered on it?
 6. **Does an "assistant" coordinate its "duties" through this layer?** Destin's
-   2026-09-01 framing for Phase 4 (`docs/active/specs/2026-07-09-platform-vision-roadmap.md`
+   2026-09-01 framing for Phase 4 (`docs/archive/specs/2026-07-09-platform-vision-roadmap.md`
    §3.5a, ROADMAP Someday) lets an assistant be a *coordinator* agent over several
    duties — which is orchestration wearing a user-facing name. It also lets an
    assistant be agentless (duties just run independently), so the coordinator case
@@ -430,7 +430,7 @@ planned.
 **Secondary/blog:** InfoQ, alexop.dev, therouter.ai, extraheadroom.com,
 youcanbuildthings.com, aiagentsfirst.com, moclaw.ai, developersdigest.tech.
 
-**Internal:** `docs/active/specs/2026-07-09-platform-vision-roadmap.md` (Phases
+**Internal:** `docs/archive/specs/2026-07-09-platform-vision-roadmap.md` (Phases
 3–4), `2026-07-15-phase2-native-harness-design.md` (settled decision 5),
 `2026-07-16-phase2-plan-c-local-reliability.md` (capability registry).
 

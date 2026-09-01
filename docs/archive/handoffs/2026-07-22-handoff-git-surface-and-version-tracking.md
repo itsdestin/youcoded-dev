@@ -29,7 +29,7 @@ awareness. Git appears in this codebase today **only as plumbing** — the sync 
 **Positioning constraint (inherited from the Tier 1 code-editor work, do not drift from it):** the
 framing is **NOT IDE parity** (unwinnable against Cursor on its own turf). It is *"I can trust and
 steer what the agent did to my code"* — review, diff, stage, commit, navigate. This keeps the
-non-developer audience intact (`docs/active/specs/2026-07-09-platform-vision-roadmap.md:139` — "the
+non-developer audience intact (`docs/archive/specs/2026-07-09-platform-vision-roadmap.md:139` — "the
 open, personal Cowork"). Every feature you spec must justify against that framing; anything that only
 serves IDE parity (real LSP, debugger) belongs in the separate `idea`-tagged ROADMAP entries, not
 here.

@@ -8,7 +8,7 @@ status: shipped
 
 **Goal:** Replace HarnessSession v0's tool-less loop with a multi-step agentic turn driver + seven core tools (Read, Write, Edit, Bash, Glob, Grep, TodoWrite) + the permission engine, so "fix this bug in my project" works end-to-end on an OpenRouter frontier model in a dev build.
 
-**Spec:** `docs/active/specs/2026-07-15-phase2-native-harness-design.md` (§2 is this plan's contract — read it first, especially the settled decisions and the review rulings). Research vocabulary: `docs/active/investigations/2026-07-10-harness-design-ideas.md`.
+**Spec:** `docs/archive/specs/2026-07-15-phase2-native-harness-design.md` (§2 is this plan's contract — read it first, especially the settled decisions and the review rulings). Research vocabulary: `docs/archive/investigations/2026-07-10-harness-design-ideas.md`.
 
 **Architecture:** One turn = a loop of steps; one step = one `streamText` call with tool schemas attached but NO execute functions — the driver collects `tool-call` stream parts, runs the permission gate, executes tools itself, appends results to history, and loops. All UI flows through the frozen transcript-event contract (`tool-use`/`tool-result` events → existing ToolCards; permission asks → the existing hook-event → `PERMISSION_REQUEST` path). Persistence rides the existing SessionStore untouched; resume gains a history-rebuild step.
 
@@ -1719,7 +1719,7 @@ Session construction passes `tools: CORE_TOOLS`, `decide`, `askUser: (req) => th
 - Modify: `../../docs/PITFALLS.md` (workspace repo — commit separately there)
 - Modify: `.claude/rules/native-runtime.md` (workspace repo)
 - Create: `src/renderer/dev/fixtures/bash-awaiting-approval.jsonl`
-- Modify: `../../docs/active/specs/2026-07-09-platform-vision-roadmap.md` Progress line (workspace repo, at merge time)
+- Modify: `../../docs/archive/specs/2026-07-09-platform-vision-roadmap.md` Progress line (workspace repo, at merge time)
 
 - [ ] **Step 1: Sandbox fixture for the approval state** (the one state no existing fixture covers):
 

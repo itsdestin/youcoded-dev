@@ -1847,7 +1847,7 @@ git commit -m "test(harness): contract-level conformance suite for the bounds co
 **Files:**
 - Modify: `.claude/rules/native-runtime.md` (workspace repo)
 - Modify: `youcoded/docs/native-runtime.md`
-- Modify: `docs/active/investigations/2026-08-01-native-agent-harness-reviews.md` (workspace repo)
+- Modify: `docs/archive/investigations/2026-08-01-native-agent-harness-reviews.md` (workspace repo)
 - Modify: `docs/active/specs/2026-08-06-harness-tool-honesty-design.md` → `status: shipped`
 
 - [ ] **Step 1: Add the invariant to the rule file**

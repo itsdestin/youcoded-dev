@@ -1,10 +1,13 @@
 ---
-status: active
+status: superseded
+superseded-by: docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
 created: 2026-08-11
 type: program
 supersedes:
   - docs/archive/plans/2026-07-22-native-runtime-parity-program.md
 ---
+
+> **ARCHIVED 2026-09-01.** Its §1 (what exists) and §2 (ordered remaining work, verified 2026-08-26) were folded into the consolidated doc. Steps still open there carry the same names. The live authority for the native-sessions / specialists / agents family is now `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` — vision, shipped state, remaining work and open decisions in one place. Read this file for history and research only.
 
 # Native Sessions — Current State and Remaining Work
 
@@ -187,11 +190,11 @@ Phase 1 works but has no management surface. Phase 2 is the adopt flow, the sett
 
 ### Step 9 — M7 subagents, then orchestration
 
-**DESIGNED 2026-08-11 — spec approved by Destin:** `docs/active/specs/2026-08-11-native-specialists-design.md` (user-facing name "specialists"; stage one = Task tool as child sessions, stage two = declarative plans; ratifies the 2026-07-19 orchestration spec's DAG-over-JS decision). Research base: `docs/active/investigations/2026-08-11-subagent-platform-research.md`. **SHIPPED 2026-08-12 (stage one, plan 1a):** foreground specialists end-to-end merged to youcoded master (8db46236) — Task tool, child sessions, envelope consent with deny-list cut-through, subagent-card rendering, headroom-capped reports, engine probes measured. Plan archived: `docs/archive/plans/2026-08-12-native-specialists-plan-1a-core.md`. **SHIPPED 2026-08-16 (plan 1b):** background execution, restart durability, mid-run steering, the 5-minute permission redirect, permission-store v2 (specialist+match rule identity), and delegated model tiers — merged to youcoded master (e5ec5b3c) after Destin's hands-on verification (Tests 1-9 incl. the security-critical specialist-scoped grant not leaking to the parent). Plan archived: `docs/archive/plans/2026-08-12-native-specialists-plan-1b-background-durability.md`; checklist: `docs/archive/handoffs/2026-08-20-specialists-1b-testing-checklist.md`. Remaining: plan 1c (definitions folder/CC mapping/chat UI — incl. Destin's directive that a background hire's routed ask + report render under the launching Task card), not yet written.
+**DESIGNED 2026-08-11 — spec approved by Destin:** `docs/active/specs/2026-08-11-native-specialists-design.md` (user-facing name "specialists"; stage one = Task tool as child sessions, stage two = declarative plans; ratifies the 2026-07-19 orchestration spec's DAG-over-JS decision). Research base: `docs/archive/investigations/2026-08-11-subagent-platform-research.md`. **SHIPPED 2026-08-12 (stage one, plan 1a):** foreground specialists end-to-end merged to youcoded master (8db46236) — Task tool, child sessions, envelope consent with deny-list cut-through, subagent-card rendering, headroom-capped reports, engine probes measured. Plan archived: `docs/archive/plans/2026-08-12-native-specialists-plan-1a-core.md`. **SHIPPED 2026-08-16 (plan 1b):** background execution, restart durability, mid-run steering, the 5-minute permission redirect, permission-store v2 (specialist+match rule identity), and delegated model tiers — merged to youcoded master (e5ec5b3c) after Destin's hands-on verification (Tests 1-9 incl. the security-critical specialist-scoped grant not leaking to the parent). Plan archived: `docs/archive/plans/2026-08-12-native-specialists-plan-1b-background-durability.md`; checklist: `docs/archive/handoffs/2026-08-20-specialists-1b-testing-checklist.md`. Remaining: plan 1c (definitions folder/CC mapping/chat UI — incl. Destin's directive that a background hire's routed ask + report render under the launching Task card), not yet written.
 
 **Subagents first.** The Task tool as child sessions, with a parent-session pointer and a condensed result travelling back up. The session store was deliberately designed so this lands without a schema change. Deferred once already, but core.
 
-**Orchestration strictly after.** Spec exists (`docs/active/specs/2026-07-19-native-workflow-orchestration-design.md`) with research done but **no design decision taken**. The pivotal choice is model-authored JavaScript versus a declarative graph, and the graph is favored — four unpredictable models plus sandbox elimination via schema validation. Two constraints to respect when it is picked up: concurrency must derive from the local engine's actual parallel slots rather than a copied constant, and prefix-cache stability must be measured rather than assumed.
+**Orchestration strictly after.** Spec exists (`docs/archive/specs/2026-07-19-native-workflow-orchestration-design.md`) with research done but **no design decision taken**. The pivotal choice is model-authored JavaScript versus a declarative graph, and the graph is favored — four unpredictable models plus sandbox elimination via schema validation. Two constraints to respect when it is picked up: concurrency must derive from the local engine's actual parallel slots rather than a copied constant, and prefix-cache stability must be measured rather than assumed.
 
 ### Step 10 — M8 Android native runtime
 

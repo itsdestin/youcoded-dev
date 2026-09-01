@@ -2,7 +2,7 @@
 status: superseded
 created: 2026-08-12
 type: handoff
-program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
+program: docs/archive/plans/2026-08-11-native-sessions-remaining-work.md
 ---
 
 # Handoff — M5 permissions maturity, items 2b and 2c
@@ -32,7 +32,7 @@ whatever pattern shape wins must survive being echoed in that confirm and in `de
 
 ## Read first
 
-- `docs/active/plans/2026-08-11-native-sessions-remaining-work.md` §2 Step 2 — the full statement
+- `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md` §2 Step 2 — the full statement
 - `.claude/rules/native-permissions.md` — the 2a invariants you must not break
 - `desktop/src/main/harness/permission-engine.ts` — 40 lines, the whole decision function
 
@@ -154,7 +154,7 @@ Judge it separately.
 
 > Continue the YouCoded native-sessions program. Start by reading
 > `docs/active/handoffs/2026-08-12-native-sessions-m5-2bc.md`, then
-> `docs/active/plans/2026-08-11-native-sessions-remaining-work.md` §2 Step 2.
+> `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md` §2 Step 2.
 >
 > **M5 item 2a shipped on 2026-08-12** (youcoded #311 and #312) — a user can now see and revoke
 > every "Always allow", and revocation reaches already-running sessions. What remains is **2b**

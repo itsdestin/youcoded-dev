@@ -328,7 +328,7 @@ Nothing here is captured in `ROADMAP.md` yet — that's the next step once Desti
 
 ## Appendix A — sources
 
-- **YouCoded:** `youcoded/desktop/src/main/harness/tools/*.ts`, `shared/harness-manifest.ts`, `shared/permission-types.ts`, `main/harness/harness-session.ts`, at master `73e2defe`; renderer `components/ToolCard.tsx` for the question card. Prior rounds: `docs/archive/investigations/2026-08-10-harness-output-truncation-prior-art.md`, `…-search-tools-prior-art.md`, `docs/active/investigations/2026-08-10-harness-mutation-safety-prior-art.md`.
+- **YouCoded:** `youcoded/desktop/src/main/harness/tools/*.ts`, `shared/harness-manifest.ts`, `shared/permission-types.ts`, `main/harness/harness-session.ts`, at master `73e2defe`; renderer `components/ToolCard.tsx` for the question card. Prior rounds: `docs/archive/investigations/2026-08-10-harness-output-truncation-prior-art.md`, `…-search-tools-prior-art.md`, `docs/archive/investigations/2026-08-10-harness-mutation-safety-prior-art.md`.
 - **Claude Code:** this session's live tool schemas; `Piebald-AI/claude-code-system-prompts` (v2.1.246 mirror, 515 prompt strings); `code.claude.com/docs/en/tools-reference`, `/sub-agents`; `anthropics/claude-code` CHANGELOG.
 - **Codex CLI:** `openai/codex` main @ `a26f1806` (2026-08-26): `codex-rs/core/src/tools/handlers/*_spec.rs`, `core/src/unified_exec/mod.rs`, `apply-patch/src/*.rs`, `models-manager/models.json` (the live per-model prompts — the `core/*.md` prompt files are dead), `prompts/templates/permissions/*`.
 - **Gemini CLI:** `google-gemini/gemini-cli` @ `64b5b79a` (2026-08-25): `packages/core/src/tools/definitions/model-family-sets/{default-legacy,gemini-3}.ts`, `tools/*.ts`, `utils/editCorrector.ts`, `utils/llm-edit-fixer.ts`.

@@ -14,7 +14,7 @@ status: shipped
 
 **Tech Stack:** TypeScript (Electron main + React renderer), zod, vitest, ai@7.0.22 (unchanged), new deps: `@mozilla/readability@0.6.0` + `linkedom@0.18.13` (article extraction without jsdom) + `turndown@7.2.4` (HTML→Markdown). **Task 1 verified empirically:** readability 0.6.0 does NOT work with domino (`for...of` over non-iterable NodeLists) — linkedom's `parseHTML` is the pinned DOM provider.
 
-**Spec:** `youcoded-dev/docs/active/specs/2026-07-15-phase2-native-harness-design.md` §3 (binding; §0 settled decisions apply). Research: `2026-07-15-web-search-backends.md`.
+**Spec:** `youcoded-dev/docs/archive/specs/2026-07-15-phase2-native-harness-design.md` §3 (binding; §0 settled decisions apply). Research: `2026-07-15-web-search-backends.md`.
 
 ---
 

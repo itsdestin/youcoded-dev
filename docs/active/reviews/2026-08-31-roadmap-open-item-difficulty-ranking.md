@@ -307,7 +307,7 @@ The work is understood but multi-day, or the *decision* is unmade.
 
 ## Tier 4 — programs, not items (3)
 
-- **L32 Native Runtime Parity Program** — consolidates 22 prior entries; the single plan is `docs/active/plans/2026-08-11-native-sessions-remaining-work.md`. Remaining: context truncation → M6 metadata → M6 tiering → M4 leftovers → cwd contract → MCP phase 2 → M7 orchestration → M8 Android → M9 onboarding.
+- **L32 Native Runtime Parity Program** — consolidates 22 prior entries; the single plan is `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md`. Remaining: context truncation → M6 metadata → M6 tiering → M4 leftovers → cwd contract → MCP phase 2 → M7 orchestration → M8 Android → M9 onboarding.
 - **L15 Ship v1.3** — gates (3) GitHub sign-in confirmation (yours to answer) and (4) release mechanics (`/audit`, version bumps, CHANGELOG, tag).
 - **L68 Android sync + Android-resume fixes**
 

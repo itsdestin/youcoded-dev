@@ -1,7 +1,9 @@
 ---
-status: active — partially consumed, one recommendation still open
+status: shipped
 date: 2026-08-10
 ---
+
+> **ARCHIVED 2026-09-01.** Consumed by the 2026-08-10 tool-honesty work; the one open recommendation (content-hash staleness for Write/Edit) is a `ROADMAP.md` feature item. The live authority for the native-sessions / specialists / agents family is now `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` — vision, shipped state, remaining work and open decisions in one place. Read this file for history and research only.
 
 > **Kept active 2026-08-10** (not archived alongside its sibling prior-art docs): most of
 > this doc's findings were acted on in `integration/harness-spec` (Write got Edit's

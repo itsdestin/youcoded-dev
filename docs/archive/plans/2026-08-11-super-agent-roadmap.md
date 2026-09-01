@@ -1,7 +1,10 @@
 ---
-status: active
+status: superseded
+superseded-by: docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
 created: 2026-08-11
 ---
+
+> **ARCHIVED 2026-09-01.** Its steps 2 (CI gate), 5 (event log), 6 (memory), 7 (containment), 8 (goal layer) and 9 (remote protocol) are ordinary `ROADMAP.md` items as of 2026-08-26; the sequencing rule and the field-survey findings live on in the consolidated doc §5. The live authority for the native-sessions / specialists / agents family is now `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` — vision, shipped state, remaining work and open decisions in one place. Read this file for history and research only.
 
 # Super-agent roadmap — verified sequence for consolidating the best harness mechanisms into YouCoded
 
