@@ -1,12 +1,12 @@
 ---
 paths:
-  - "youcoded/desktop/src/main/preload.ts"
-  - "youcoded/desktop/src/main/ipc-handlers.ts"
-  - "youcoded/desktop/src/renderer/remote-shim.ts"
-  - "youcoded/desktop/src/main/dev-tools.ts"
-  - "youcoded/app/**/SessionService.kt"
-  - "youcoded/app/**/LocalBridgeServer.kt"
-  - "youcoded/app/**/PlatformBridge.kt"
+  - "**/desktop/src/main/preload.ts"
+  - "**/desktop/src/main/ipc-handlers.ts"
+  - "**/desktop/src/renderer/remote-shim.ts"
+  - "**/desktop/src/main/dev-tools.ts"
+  - "**/app/**/SessionService.kt"
+  - "**/app/**/LocalBridgeServer.kt"
+  - "**/app/**/PlatformBridge.kt"
 last_verified: 2026-07-15
 verify:
   - path: youcoded/desktop/src/main/preload.ts

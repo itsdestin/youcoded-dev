@@ -72,3 +72,12 @@ Edit with the normal Edit tool · why: see the WHY block in `youcoded/.serena/pr
   a file outside a `tsconfig.json` program is a **silent false negative**.
 
 Depth, install recipe, and the full boundary list: `docs/code-intelligence.md`.
+
+## When Serena is and is not the right tool
+Measured 0 uses across 46 sessions while this lived in `CLAUDE.md` (2026-08-28 study §3),
+so it moved here, where it loads only when you are in a file that raises the question.
+
+- **Pinned to the main checkout (`youcoded/`), resolving every path against that root — it CANNOT see your worktree** and will silently answer with master's copy. Never use it to check your own branch; branch truth is `bash scripts/verify.sh`.
+- **Read-only on purpose** — an edit tool would have written to the main checkout mid-worktree.
+- **Not for:** Kotlin / `app/**` (unindexed), other sub-repos (unreachable), string-keyed things like IPC channels or CSS classes (use `rg`), or "is this dead" — `npm run knip`, because Serena reports "no references" identically whether it searched or never looked.
+- Depth: `docs/code-intelligence.md`.

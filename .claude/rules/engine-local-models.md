@@ -1,8 +1,8 @@
 ---
 paths:
-  - "youcoded/desktop/src/main/engine/**"
-  - "youcoded/desktop/src/main/models/**"
-  - "youcoded/desktop/test-engine/**"
+  - "**/desktop/src/main/engine/**"
+  - "**/desktop/src/main/models/**"
+  - "**/desktop/test-engine/**"
 last_verified: 2026-08-16
 verify:
   - path: youcoded/desktop/src/main/engine/engine-supervisor.ts

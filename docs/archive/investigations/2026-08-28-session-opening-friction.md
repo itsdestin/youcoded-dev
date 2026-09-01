@@ -1,11 +1,38 @@
 ---
 title: What every session wastes its first ten minutes on
-status: active
+status: superseded
+superseded_by: docs/archive/plans/2026-08-31-workspace-retrieval-repair.md
+closed: 2026-08-31 — every finding is shipped, carried, or resolved (table below)
 date: 2026-08-28
 method: read the opening turns + full tool streams of all 46 Claude Code sessions started in this workspace 2026-08-26 00:00 → 2026-08-28 09:00
 ---
 
 # What every session wastes its first ten minutes on
+
+## Closure — 2026-08-31
+
+**This document is closed.** Numbering below is by **SECTION** (`## 1` … `## 9`), NOT
+by the closing "in order of payoff" table, which renumbers them — the two do not line
+up, and using the wrong one marks the wrong items. Every state was re-verified against
+the tree on 2026-08-31.
+
+| § | Item | State | Evidence, verified 2026-08-31 |
+|---|---|---|---|
+| 1 | Unquoted globs abort the command | **shipped** | `.claude/hooks/glob-guard.py` + `CLAUDE.md` → Investigation discipline |
+| 2 | Auto-title hook fires ~6×/session | **carried** | still firing — observed ~4× in the 2026-08-31 repair session itself. ROADMAP `#tooling` |
+| 3 | Serena guidance is dead text (0 uses / 46) | **resolved 2026-08-31** | the `CLAUDE.md` paragraph is cut to one pointer; the depth moved into `.claude/rules/code-search.md`, which (after the glob migration) now actually fires on the files where it matters |
+| 4 | "Review the attached document" has no procedure | **carried** | `.claude/commands/` still holds only `audit.md`. ROADMAP `#tooling` |
+| 5 | Plans too long to read in one piece | **carried** | no mechanism shipped. ROADMAP `#docs` |
+| 6 | Workspace not in the state `CLAUDE.md` promises | **shipped** | `CLAUDE.md` → "branch off `origin/master`"; the session-start hook prints the behind-count |
+| 7 | **Worktrees live in three different places** | **carried — NOT superseded** | verified: the workspace root still holds `beta/`, `flappy-bird/`, `worktrees/` and `youcoded.wt/`, and `youcoded.wt` is not even a registered worktree. This is a filesystem convention; the 2026-08-31 glob migration edits rule frontmatter and touches none of it. ROADMAP `#tooling` |
+| 8 | `verify.sh` cries wolf | **resolved** | the desktop suite went green 2026-08-28 (youcoded#362); no "pre-existing failures" language remains in `scripts/verify.sh`, `CLAUDE.md` or `docs/PITFALLS.md` |
+| 9 | The same files get rediscovered — MAP stops one level too high | **shipped** | `docs/MAP.md` hot-paths table |
+
+§7 is the one to get right. An earlier draft of the 2026-08-31 plan marked it
+*superseded — Task 3 fixes the mechanism* . It does not: §7 is about worktrees
+physically living in several places on disk, which no glob change touches. Marking it
+superseded is how an open item disappears.
+
 
 Every claim below is a count taken from the session transcripts in
 `~/.claude/projects/-home-destin-youcoded-dev/`, not an impression.

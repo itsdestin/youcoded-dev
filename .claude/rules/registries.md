@@ -2,12 +2,12 @@
 paths:
   - "wecoded-themes/**"
   - "wecoded-marketplace/**"
-  - "youcoded/desktop/src/main/claude-code-registry.ts"
-  - "youcoded/desktop/src/main/local-theme-synthesizer.ts"
-  - "youcoded/desktop/src/main/theme-marketplace-provider.ts"
-  - "youcoded/desktop/src/main/announcement-service.ts"
-  - "youcoded/desktop/src/shared/announcement.ts"
-  - "youcoded/desktop/src/shared/bundled-plugins.ts"
+  - "**/desktop/src/main/claude-code-registry.ts"
+  - "**/desktop/src/main/local-theme-synthesizer.ts"
+  - "**/desktop/src/main/theme-marketplace-provider.ts"
+  - "**/desktop/src/main/announcement-service.ts"
+  - "**/desktop/src/shared/announcement.ts"
+  - "**/desktop/src/shared/bundled-plugins.ts"
 last_verified: 2026-07-15
 verify:
   - path: youcoded/desktop/src/main/claude-code-registry.ts
