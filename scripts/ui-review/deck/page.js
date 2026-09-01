@@ -354,6 +354,13 @@
     const panes = $$('#inner iframe');
     const f = panes.find(x => x.contentWindow === e.source) || panes.find(x => x.dataset.pane === d.candidate);
     if (!f) return;
+    // The pane's address carries the deck's FIRST theme, baked at build time — so a live step
+    // opened while the deck is on any other theme (switched on an earlier step, or ?theme= in
+    // the URL) showed Midnight panes inside a Light deck. Answering its height report is the
+    // right moment to correct that: the pane has MOUNTED and is listening. The iframe's own
+    // `load` event is not — it fires before the app's async boot installs the listener, and
+    // the message is dropped silently (tried that first, 2026-09-01).
+    try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (err) { /* gone */ }
     // NOT capped at the stage. It was, and a 494px design in a 380px stage lost its bottom
     // 114px — Destin saw a permissions list sliced mid-item (2026-09-01). A pane that scrolls
     // inside itself is worse than a stage that scrolls: the inner scrollbar reads as part of

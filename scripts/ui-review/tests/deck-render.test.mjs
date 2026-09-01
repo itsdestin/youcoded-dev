@@ -175,13 +175,16 @@ test('live step: panes, label theme row that does not reload them, no picking by
     // Theme row is labels, and switching must not rebuild the panes.
     assert.equal(await c.evaluate("document.querySelectorAll('#thumbs .thumb').length"), 2, 'a button per deck theme');
     assert.equal(await c.evaluate("document.querySelectorAll('#thumbs .thumb img').length"), 0, 'labels, not thumbnails');
+    // A pane must arrive wearing the DECK's theme, not the one baked into its address at
+    // build time — otherwise switching theme on step 1 leaves step 2's panes on the old one.
+    assert.deepEqual(await c.evaluate("[...new Set(window.__acks.filter(a=>a.type==='stub:theme').map(a=>a.theme))]"), ['midnight'],
+      'panes are told the theme on load, with no click');
     const loadedIds = await c.evaluate("JSON.stringify(window.__acks.filter(a=>a.type==='stub:loaded').map(a=>a.id).sort())");
     assert.equal(JSON.parse(loadedIds).length, 2, 'both panes announced themselves');
     await c.evaluate("[...document.querySelectorAll('#thumbs .thumb')].find(b=>b.dataset.v==='light').click()"); await sleep(500);
     const acks = JSON.parse(await c.evaluate("JSON.stringify(window.__acks)"));
-    const themed = acks.filter(a => a.type === 'stub:theme');
+    const themed = acks.filter(a => a.type === 'stub:theme' && a.theme === 'light');
     assert.equal(themed.length, 2, 'the swap reached both panes');
-    assert.ok(themed.every(a => a.theme === 'light'), 'and carried the theme');
     assert.deepEqual(acks.filter(a => a.type === 'stub:loaded').map(a => a.id).sort(), JSON.parse(loadedIds),
       'panes were NOT reloaded — a reload would mint new ids and re-announce');
     assert.deepEqual(themed.map(a => a.id).sort(), JSON.parse(loadedIds), 'same documents answered');
