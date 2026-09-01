@@ -187,3 +187,56 @@ test('a missing MAP.md prints no orientation heading at all', () => {
   assert.doesNotMatch(out, /Where things are/);
   fs.rmSync(ws, { recursive: true, force: true });
 });
+
+// --- audit staleness (2026-09-01) --------------------------------------------
+// ROADMAP L184: the selector took the newest audit BY FILENAME, which was the July
+// mechanical baseline (`scope: baseline`, `residue: 0`). It shadowed the real,
+// 125-day-old report, so neither warning fired for six weeks — the same "a check
+// that stops checking goes quiet" shape as the worktree section above.
+
+/** A workspace with a real report and a baseline whose NAME sorts newer. */
+function makeAudits(ws, realResidue) {
+  const dir = path.join(ws, 'docs', 'audits');
+  fs.mkdirSync(dir, { recursive: true });
+  const real = path.join(dir, '2026-04-23.md');
+  fs.writeFileSync(real, `---\ndate: 2026-04-23\nscope: full\nresidue: ${realResidue}\n---\n# Audit\n`);
+  // Dated AFTER the real report, so a plain `sort | tail -1` picks it.
+  const baseline = path.join(dir, '2026-09-01-phase9-baseline.md');
+  fs.writeFileSync(baseline, '---\ndate: 2026-09-01\nscope: baseline (mechanical only)\nresidue: 0\n---\n# Baseline\n');
+  // No git history in the throwaway workspace, so the hook falls back to mtime.
+  const hundredDaysAgo = (Date.now() - 100 * 86400 * 1000) / 1000;
+  fs.utimesSync(real, hundredDaysAgo, hundredDaysAgo);
+  const now = Date.now() / 1000;
+  fs.utimesSync(baseline, now, now);
+  return { real, baseline };
+}
+
+test('a newer-named baseline does not shadow the real report: staleness fires on the real one', () => {
+  const { ws } = makeWorkspace();
+  makeAudits(ws, 0);
+  const out = runHook(ws);
+  assert.match(out, /### ⚠️ Audit staleness/, 'a 100-day-old real report must warn');
+  assert.match(out, /Latest audit \(2026-04-23\.md\) is 100 days old/, 'and name the REAL report');
+  assert.doesNotMatch(out, /phase9-baseline/, 'the baseline is never the "latest audit"');
+  fs.rmSync(ws, { recursive: true, force: true });
+});
+
+test('residue is read from the real report, not the baseline\'s residue: 0', () => {
+  const { ws } = makeWorkspace();
+  makeAudits(ws, 3);
+  const out = runHook(ws);
+  assert.match(out, /### ⚠️ Unapplied audit findings/);
+  assert.match(out, /3 open item\(s\) in 2026-04-23\.md/);
+  fs.rmSync(ws, { recursive: true, force: true });
+});
+
+test('a fresh real report with residue: 0 stays silent', () => {
+  // The other half of the guard: the fix must not turn every session start into a warning.
+  const { ws } = makeWorkspace();
+  const { real } = makeAudits(ws, 0);
+  const now = Date.now() / 1000;
+  fs.utimesSync(real, now, now);
+  const out = runHook(ws);
+  assert.doesNotMatch(out, /Audit staleness|Unapplied audit findings/);
+  fs.rmSync(ws, { recursive: true, force: true });
+});

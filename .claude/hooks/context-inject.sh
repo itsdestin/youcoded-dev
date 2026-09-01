@@ -189,7 +189,16 @@ fi
 # or when the report's `residue:` frontmatter count is non-zero (unapplied findings).
 AUDITS_DIR="$WORKSPACE/docs/audits"
 if [[ -d "$AUDITS_DIR" ]]; then
-    LATEST_AUDIT=$(ls "$AUDITS_DIR"/[0-9]*.md 2>/dev/null | sort | tail -1)
+    # WHY newest-first with a skip, not `sort | tail -1`: the newest file BY NAME is not always
+    # the newest report. 2026-07-15-phase3-baseline.md is a mechanical-only baseline
+    # (`scope: baseline`, `residue: 0`), and picking it made the hook compute 41 days and stay
+    # silent while the last real run was 125 days old — both warnings below were dead from
+    # July to August 2026 (ROADMAP L184). Anything whose frontmatter says `scope: baseline`
+    # is skipped; the first remaining file is the report the warnings are about.
+    LATEST_AUDIT="$(ls "$AUDITS_DIR"/[0-9]*.md 2>/dev/null | sort -r | while IFS= read -r f; do
+        sed -n '2,/^---$/p' "$f" | grep -qE '^scope: *baseline' && continue
+        printf '%s\n' "$f"; break
+    done)"
     if [[ -n "$LATEST_AUDIT" ]]; then
         AUDIT_CTIME=$(git -C "$WORKSPACE" log -1 --format=%ct -- "${LATEST_AUDIT#$WORKSPACE/}" 2>/dev/null || true)
         [[ -z "$AUDIT_CTIME" ]] && AUDIT_CTIME=$(stat -c %Y "$LATEST_AUDIT" 2>/dev/null || stat -f %m "$LATEST_AUDIT" 2>/dev/null || echo "")
