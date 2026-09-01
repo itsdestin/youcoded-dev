@@ -122,7 +122,7 @@ bash scripts/run-dev.sh <branch-or-worktree> --label "Feature Name"
 
 ### New Features & UI/UX Changes
 
-When designing new features or making changes to user-facing app interfaces, the first step should always be to visualize and design the UI/UX of the final feature. Planning sessions should prioritize iterative UI design using the workbench and other tooling to help Destin shape the final user experience of the feature before building backend. When Destin provides final sign-off on the UI/UX design for the feature, the UI/UX should be treated as largely final and backend should be designed around the UI/UX accordingly. The standard every new surface is measured against is `docs/active/design/2026-08-25-ui-design-guide.md` (five laws, primitives, per-surface anatomies, checklist); show him the change as a **review deck** (scripts/ui-review/review-cards.py — one point per step: Before | After with the changed region boxed by the rig, a headline and three cards — What changed / You'll notice / Risk — Yes / No / Other, answers saved to a file and handed to Claude on Submit; `serve <spec>` in the background does it all), built from the UI review rig below; never a gallery, a prose page or a chat description (all three were rejected).
+When designing new features or making changes to user-facing app interfaces, the first step should always be to visualize and design the UI/UX of the final feature. Planning sessions should prioritize iterative UI design using the workbench and other tooling to help Destin shape the final user experience of the feature before building backend. When Destin provides final sign-off on the UI/UX design for the feature, the UI/UX should be treated as largely final and backend should be designed around the UI/UX accordingly. The standard every new surface is measured against is `docs/active/design/2026-08-25-ui-design-guide.md` (five laws, primitives, per-surface anatomies, checklist); show him the change as a **review deck** (scripts/ui-review/review-cards.py — one point per step: Before | After with the changed region boxed by the rig, a headline and three cards — What changed / You'll notice / Risk — Yes / No / Other, answers saved to a file and handed to Claude on Submit; `serve <spec>` in the background does it all), built from the UI review rig below; never a gallery, a prose page or a chat description (all three were rejected). **For motion, drag or hover, use a LIVE step** — panes of the running app he can actually operate, one authored candidate each out of `youcoded`'s `compare/registry.tsx` (`serve` boots the worktree's workbench for them). A recording is the wrong tool for a 200 ms animation: four clip steps were rejected on 2026-08-31 as "just rough to compare". `scripts/ui-review/README.md` → "Live panes".
 
 ### UI Workbench
 
@@ -136,9 +136,26 @@ When designing new features or making changes to user-facing app interfaces, the
 
 The public site (`youcoded/docs/index.html`) is built from **recordings of the real app**, not drawings: `scripts/ui-review/record.mjs` films one JSON scene (`scripts/ui-review/scenes/`) into a WebM loop + poster, and `bash scripts/ui-review/site-assets.sh <worktree>` regenerates every loop, gallery still and the live embed in one go (a desktop release-checklist step). What the demo "model" says is a reply fixture. Any "make a clip of feature X" / "update the website" request starts at `scripts/ui-review/README.md` → "Recording a loop"; the rule `.claude/rules/landing-page.md` auto-loads on the page and the rig.
 
-### CDP eval (live renderer inspection)
+### Asking a page a question, and A/B-ing the answer
 
-`scripts/cdp-eval.mjs` is a one-shot Chrome DevTools Protocol eval helper — use it to inspect or poke a live React renderer, most often the Android WebView while a debug APK is running on a device. The full `adb forward` + page-discovery recipe is in the script's header comment.
+`node scripts/ui-probe.mjs <url> [--size WxH]… [--wait '<js>'] [--eval '<js>']… [--shot p.png] [--json]` —
+launches its own headless Chrome on a free port, waits for the page's readiness flag, evaluates, screenshots,
+reports console errors (`--fail-on-error` makes them an exit code). **Reach for this instead of writing
+another CDP script**; one session wrote fifteen throwaway ones in a day. Guard: `scripts/ui-probe.test.mjs`.
+
+`bash scripts/ab-measure.sh <file>… [--prepare '<cmd>'] -- <measurement>` — answers **"did I break this, or
+was it already broken?"** by running the same measurement against `HEAD`'s copy of those files and yours.
+Restores your files on exit; never touches the index.
+
+`bash scripts/image-churn.sh [--staged] [--revert]` — changed images whose PIXELS match `HEAD`. Any generator
+that re-emits images makes these (265 in one deck rebuild) and they bury the image that really changed.
+
+`node scripts/check-doc-commands.mjs [--list] [--local]` — runs the commands in blocks marked
+`<!-- runnable -->` (or `<!-- runnable: local -->` for ones needing magick/ffmpeg/Chrome). Marking is opt-in;
+CI runs it. Born from a test command that sat wrong in two docs for months and could not start at all.
+
+`scripts/cdp-eval.mjs` is the other half of the first one: it attaches to an **already-running** CDP target by
+WebSocket URL — most often the Android WebView over `adb forward` (recipe in its header).
 
 ### Local build & test
 
