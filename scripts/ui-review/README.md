@@ -255,11 +255,25 @@ They are `unittest` and `node --test`, not pytest, and they live outside a packa
 start directory has to be the top level too. `-t .` fails with *"Start directory is not
 importable"*, which is why nothing ran them for months:
 
+The three binary-free suites, which is what CI runs:
+
+<!-- runnable -->
 ```bash
-# everything (69 tests, ~11s) — needs magick, ffmpeg and Chrome, all present on this machine
+cd scripts/ui-review/tests && python3 -m unittest test_spec test_tokens test_live
+```
+
+Everything (98 tests, ~12s) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
+
+<!-- runnable: local -->
+```bash
 python3 -m unittest discover -s scripts/ui-review/tests -t scripts/ui-review/tests -p 'test_*.py'
 node --test scripts/ui-review/tests/deck-render.test.mjs
 ```
+
+Both blocks are marked `<!-- runnable -->`, so `scripts/check-doc-commands.mjs` actually runs
+them — the first on every CI run, the second only locally. That marker exists because the
+command printed here used to be `-t .`, which cannot start at all, and nothing noticed for
+months.
 
 | Suite | Needs |
 |---|---|

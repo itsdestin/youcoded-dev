@@ -106,6 +106,15 @@ jobs:
         working-directory: scripts/ui-review/tests
         run: python3 -m unittest -v test_spec test_tokens test_live
 
+      # A command printed in a doc is a promise nobody checks. The deck's test command sat
+      # WRONG in two docs for months — `-t .` cannot start at all — which is why that suite
+      # went unrun and eight theme colours drifted. Blocks marked `<!-- runnable -->` are
+      # executed here; `<!-- runnable: local -->` ones need magick/ffmpeg/Chrome and are
+      # skipped. Marking is opt-in per block, so this only ever runs what a doc claimed.
+      - name: Run the commands the docs tell you to run
+        if: ${{ !cancelled() }}
+        run: node scripts/check-doc-commands.mjs
+
       # --no-diff skips the "which subsystems changed since the last audit
       # report" computation. That is a scoping aid for the /audit agent and needs
       # git history plus a dated report; the mechanical anchor pass does not.
