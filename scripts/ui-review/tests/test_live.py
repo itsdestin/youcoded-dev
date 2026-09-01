@@ -6,7 +6,7 @@ runner does not have. Everything here is picture-free on purpose, so this is the
 coverage that actually runs on every push. Keep it that way — a `magick` call added to this
 file silently removes it from CI.
 
-Plan: docs/active/plans/2026-08-31-live-review-panes-plan.md.
+Plan: docs/archive/plans/2026-08-31-live-review-panes-plan.md.
 """
 import json
 import os

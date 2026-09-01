@@ -4,7 +4,7 @@ created: 2026-08-31
 tags: [ui, motion, session-strip, chat-view, desktop, handoff]
 plan: docs/active/plans/2026-08-31-session-strip-and-switch-motion.md
 spec: docs/active/specs/2026-08-31-session-strip-and-switch-motion-design.md
-blocked_on: docs/active/specs/2026-08-31-live-review-panes-design.md
+blocked_on: docs/archive/specs/2026-08-31-live-review-panes-design.md
 ---
 
 # Session strip & switch motion — handoff
@@ -122,7 +122,7 @@ thinking it is easy.
 1. **Task 12's review was rejected as a medium.** The deck at
    `docs/active/design/2026-08-31-session-motion/` (spec, 4 scenes, 8 clips)
    exists and builds, and its clips are committed. It should be **re-authored as
-   live pick-one steps** once `docs/active/specs/2026-08-31-live-review-panes-design.md`
+   live pick-one steps** once `docs/archive/specs/2026-08-31-live-review-panes-design.md`
    ships. Keep the clips — a live step does not archive, so a still or clip
    alongside is still wanted.
 2. **Task 13** (per-bubble stagger) is conditional and untouched. Correct.
