@@ -74,7 +74,7 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 .stage .inner{display:flex;justify-content:center;align-items:center;gap:18px;padding:12px 14px;min-width:100%;min-height:100%}
 .content.stacked .stage .inner{flex-direction:column;align-items:center}
 .frame{display:block;margin:0}
-figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);margin-bottom:6px;text-align:left}
+figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);margin-bottom:6px;text-align:left;display:flex;align-items:center;gap:6px;min-height:24px}
 .pic{position:relative;display:inline-block} .pic img{display:block;height:auto;border-radius:var(--radius-sm);cursor:none} body.no-loupe .pic img{cursor:default}
 /* CLIP steps: a recording per run — native controls so a bug can be paused and scrubbed; no loupe, no box */
 .pic video{display:block;height:auto;border-radius:var(--radius-sm);background:#000;cursor:default}
@@ -95,10 +95,18 @@ body[data-layout="live"] .stage .inner{align-items:flex-start}
 [hidden]{display:none!important}
 /* The lettered chip needs air whatever the frame is. The existing rule for this is scoped to
    `.frame.pickable`, and a live pane is deliberately NOT pickable — so its caption read
-   "aCard and row" with the letter welded to the label (seen 2026-08-31). */
-figcaption .key{margin-right:6px}
-.popout{float:right;text-transform:none;letter-spacing:0;font-weight:400;color:var(--link);text-decoration:none}
-.popout:hover{text-decoration:underline}
+   "aCard and row" with the letter welded to the label (seen 2026-08-31). It carries the
+   deck's own marker colour and a full stop, so "A." reads as a label rather than as the
+   first letter of the words after it. */
+figcaption .key{color:var(--mark);font-weight:700}
+/* A real button, not bare blue link text — it opens a window, so it should look like
+   something you press (Destin, 2026-09-01). `margin-left:auto` rather than a float: a float
+   escapes a one-line caption box. */
+.popout{margin-left:auto;text-transform:none;letter-spacing:0;font:500 11px/1 var(--font);
+  height:24px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;flex:none;
+  border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);
+  color:var(--fg-2);text-decoration:none;transition:background .15s,color .15s,border-color .15s}
+.popout:hover{background:var(--panel);color:var(--fg);border-color:var(--fg-muted)}
 .live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--yes);margin-right:6px;vertical-align:middle}
 .livehint{font:11px/1.5 var(--font);color:var(--fg-muted);margin:10px 0 0;text-align:left}
 /* The theme row for a live step: same control, no thumbnails to put in it. */

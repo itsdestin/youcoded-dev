@@ -18,12 +18,12 @@
   // A LIVE pane is NOT pickable: a click inside it is an interaction with the candidate
   // (hover, drag, open a menu), not an answer. Picking stays on the lettered card and the
   // answer button. `open on its own` is the same address in a new tab — room and quiet.
-  const popout = url => `<a class="popout" href="${esc(url)}" target="_blank" rel="noopener" title="Open this candidate alone in a new tab">open on its own ↗</a>`;
+  const popout = url => `<a class="popout" href="${esc(url)}" target="_blank" rel="noopener" title="Open this design alone in a new browser window">Open in New Window ↗</a>`;
   const frames = st => st.kind === 'choice'
-    ? st.variants.map(v => ({ key: v.id, caption: `<span class="key">${esc(v.id)}</span>${esc(v.label)}`, pickable: true }))
+    ? st.variants.map(v => ({ key: v.id, caption: `<span class="key">${esc(v.id)}.</span>${esc(v.label)}`, pickable: true }))
     : st.kind === 'live'
     ? st.panes.map(p => ({ key: p.id, url: p.url, pickable: false,
-        caption: (p.label ? `<span class="key">${esc(p.id)}</span>${esc(p.label)}` : '<span class="live-dot"></span>Live') + popout(p.url) }))
+        caption: (p.label ? `<span class="key">${esc(p.id)}.</span>${esc(p.label)}` : '<span class="live-dot"></span>Live') + popout(p.url) }))
     : runs.map(r => ({ key: r, caption: esc(DECK.runLabels[r] || r), pickable: false }));
   // CLIP step: one <video> per run instead of a still. They start PAUSED on their poster
   // (Destin, 2026-08-28) — ↻ or `r` plays both from the start together; native controls

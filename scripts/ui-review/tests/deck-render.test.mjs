@@ -142,8 +142,12 @@ test('live step: panes, label theme row that does not reload them, no picking by
     // edge with nothing to say so, which is exactly what happened on 2026-08-31.
     assert.equal(await c.evaluate("document.querySelector('#inner iframe').style.width"), '420px', 'width the pane measured for itself');
     assert.equal(await c.evaluate("document.querySelector('#inner iframe').style.height"), '220px', 'height the pane measured for itself');
-    // The lettered chip must not weld itself to the label ("aCard and row").
-    assert.notEqual(await c.evaluate("getComputedStyle(document.querySelector('#inner figcaption .key')).marginRight"), '0px', 'letter chip has air after it');
+    // The lettered chip must not weld itself to the label ("aCard and row"). Measured as
+    // actual space, whichever way it is produced — the first fix used a margin, the caption
+    // is now a flex row with a gap, and the test should not care which.
+    const air = await c.evaluate("(()=>{const k=document.querySelector('#inner figcaption .key');"
+      + "return (parseFloat(getComputedStyle(k).marginRight)||0) + (parseFloat(getComputedStyle(k.parentElement).columnGap)||0);})()");
+    assert.ok(air >= 4, `letter chip has air after it (got ${air}px)`);
     // The theme row goes inline on a live step at ANY width — a wide row of panes pushes the
     // absolute side column off the edge of the window and the buttons get cut in half.
     assert.equal(await c.evaluate("document.body.classList.contains('thumbs-inline')"), true, 'theme row inline');
@@ -159,6 +163,12 @@ test('live step: panes, label theme row that does not reload them, no picking by
 
     // Pop-out: the same address, in a new tab.
     assert.equal(await c.evaluate("document.querySelectorAll('#inner .popout').length"), 2, 'a pop-out per pane');
+    // It opens a window, so it reads and looks like something you press — not bare link text.
+    assert.match(await c.evaluate("document.querySelector('#inner .popout').textContent"), /Open in New Window/);
+    assert.notEqual(await c.evaluate("getComputedStyle(document.querySelector('#inner .popout')).borderTopWidth"), '0px', 'the pop-out is a button, not a link');
+    // "A." reads as a label; a bare capital ran straight into the words after it.
+    assert.match(await c.evaluate("document.querySelector('#inner figcaption .key').textContent"), /^\w\.$/, 'lettered and stopped');
+    assert.notEqual(await c.evaluate("getComputedStyle(document.querySelector('#inner figcaption .key')).color"), await c.evaluate("getComputedStyle(document.querySelector('#inner figcaption')).color"), 'the letter is coloured, not the caption grey');
     assert.equal(await c.evaluate("document.querySelector('#inner .popout').getAttribute('href') === document.querySelector('#inner iframe').src"), true, 'pop-out opens the pane');
     assert.equal(await c.evaluate("document.querySelector('#inner .popout').target"), '_blank');
 
