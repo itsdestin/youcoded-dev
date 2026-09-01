@@ -71,7 +71,7 @@ git branch -D <branch>              # -D (not -d) because --no-ff merges leave t
 ```
 Verify the commit landed on master first: `git branch --contains <sha>` should list `master`. Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
 
-`bash scripts/close-out.sh <branch> [<repo>]` reports all of the above plus the docs half — live docs still naming the branch, shipped docs still under `docs/active/`, and the ROADMAP/MAP items. Read-only, always exits 0: it tells you what is left, it does not do it.
+**Run `bash scripts/close-out.sh <branch> [<repo>]` yourself** — it reports all of the above plus the docs half (live docs still naming the branch, shipped docs still under `docs/active/`, the ROADMAP and MAP items). Read-only, always exits 0: it says what is left, it does not do it, so finish every line it reports. The `wrap-up` skill runs it as its first step.
 
 **Pushing to master green-lights closing the dev server.** If you started `bash scripts/run-dev.sh` to verify a change, shut it down (plus any helper Electron processes) once the commit lands on `origin/master`. Don't leave it running unless the user explicitly asks — orphaned Vite servers hold port 5223 and trip up the next session's dev launch.
 
@@ -171,6 +171,39 @@ Why offer at all: four live rounds found **nine** real defects that 4,500 passin
 ## Known Pitfalls
 
 All architectural invariants, cross-cutting gotchas, and lessons learned live in `docs/PITFALLS.md`. **Read it before making non-trivial changes** — it covers IPC parity, chat reducer invariants, Android runtime constraints, bundled-plugin/hooks rules, release gotchas, and working conventions.
+
+## Ending a Session
+
+**When Destin says "wrap up", "close out this session", "let's finish up", "we're done",
+or asks what this session taught us — invoke the `wrap-up` skill.** Do not improvise a
+summary: the skill is the procedure, and a freehand recap is the failure mode it exists
+to replace. It also runs on its own at the end of any substantial session.
+
+It replays what the session actually did — what context loaded, what you had to hunt for
+because it was unwritten, which tooling you used and why, where you took a wrong turn —
+and turns that friction into workspace changes. Every recommendation ends the session
+**applied**, as a dated **`ROADMAP.md`** entry, or **explicitly dropped with a reason**.
+A numbered list nobody actions is the failure mode, not the output.
+
+**Why it has to be asked for.** No hook can know when a session is finished: `SessionEnd`
+fires once the session is already over (Claude cannot think then) and `Stop` fires after
+every turn. There is deliberately no tracker — a tracker for this would depend on the
+undocumented transcript format and a marker string, and when it broke it would look
+exactly like a clean record. A guard that fails silently is worse than none.
+
+**"Wrap up" does not mean "merge".** It usually means the docs and workspace hygiene
+while the branch stays open — Destin often has a fresh session review the PR first,
+because the session that wrote the code is the worst reviewer of it. Merge only on an
+explicit instruction, and never end a turn suggesting it.
+
+**Destin does not run commands.** If the wrap-up needs `scripts/close-out.sh`,
+`scripts/audit-anchors.mjs` or a test run, YOU run it and act on the output. Never end a
+turn by handing him something to type.
+
+`/audit` and `wrap-up` are the two halves of keeping this workspace honest: `/audit`
+checks the claims that a machine can check, on a nightly cron. `wrap-up` captures what
+only a session that lived through the work knows, and it dies with the transcript if
+nobody asks.
 
 ## Keeping Documentation Accurate
 

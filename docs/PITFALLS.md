@@ -37,6 +37,8 @@ This file now holds **only cross-repo invariants** — constraints that span two
 
 ## Staging: never `git add -A` in a main checkout
 
+- **`git add` with ANY nonexistent path stages NOTHING — it fails the whole call, and the next `git commit` looks like it worked.** Hit twice on 2026-08-31 in one session, both times after a `git mv`: the command listed the file's OLD path alongside real ones, git errored on the missing path, staged none of them, and the commit captured only what `git mv` had already staged — the actual content edits were silently left behind. `git status --short` before committing catches it ONLY if you read the left column: ` M` is unstaged, `M ` is staged, and the difference is one space. *Rule:* after `git add`, confirm `git status --short` shows a staged mark for every file you meant to commit; when a script produced the edits, have it write its own file list and stage from that. *Guard:* none — candidate.
+
 - **Never `git add -A` / `git add .` in the MAIN checkouts — stage explicit paths only.** The main `youcoded/` and `youcoded-dev/` checkouts routinely hold OTHER concurrent sessions' uncommitted in-flight work (that is what the worktree rule exists to protect). *Why:* on 2026-08-22 a "comment-only" commit built with `git add -A` swept 1,293 lines of another session's uncommitted work onto pushed master — four modified files AND four untracked ones — and needed a corrective revert that restored them to the working tree. `git status` before committing is not enough; the staging command itself must name the files you changed. *Guard:* none — working convention; worktrees for non-trivial work is the structural half of the same defense.
 
 ## A CI leg is red — is it yours?
