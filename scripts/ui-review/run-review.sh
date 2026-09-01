@@ -20,9 +20,13 @@
 #   <outDir>/coverage.md · contrast.md · gallery.html
 #   --reports-only <outDir> [themes]   skip capture; rebuild sheets/coverage/contrast/gallery
 #                                      (after re-running a fixed plan by hand into the same outDir)
+#   --dry-run <worktree> [outDir] [themes]   print the workbench port, the job list and the
+#                                      exact CDP port block this run would take; launch nothing
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HERE="$ROOT/scripts/ui-review"
+DRY_RUN=0
+if [[ "${1:-}" == "--dry-run" ]]; then DRY_RUN=1; shift; fi
 if [[ "${1:-}" == "--reports-only" ]]; then
   OUT="${2:?outDir}"; THEMES="${3:-midnight,light,halftone-dimension,meadow-mist,creme,dark}"
   REPORTS_ONLY=1
@@ -38,6 +42,8 @@ fi
 PORT_OFFSET="${YOUCODED_PORT_OFFSET:-300}"
 VITE_PORT=$((5173 + PORT_OFFSET))
 export WB_PORT=$VITE_PORT     # shot.mjs rewrites the plans' hardcoded 5233 to this
+# A dry run must not leave a half-made output dir behind: its only product is the printout.
+[[ "$DRY_RUN" == 1 ]] && OUT="$(mktemp -d)"
 mkdir -p "$OUT/sheets"
 # One id per sweep, stamped on every manifest entry: coverage merges by it, and the sheets
 # below are rebuilt only for the plans this sweep actually ran (hand-off gaps 6 and 7).
@@ -51,8 +57,10 @@ cleanup_wb() { [ "${STARTED_WB:-0}" = 1 ] && pkill -f "[v]ite --port $VITE_PORT"
 trap cleanup_wb EXIT
 if [[ "$REPORTS_ONLY" == 0 ]]; then
 
-# 1. Workbench (reuse one that is already up on this port).
-if ! curl -s "http://127.0.0.1:$VITE_PORT/" >/dev/null 2>&1; then
+# 1. Workbench (reuse one that is already up on this port). Skipped by --dry-run.
+if [[ "$DRY_RUN" == 1 ]]; then
+  echo "[ui-review] dry run — workbench for $TARGET would be :$VITE_PORT (YOUCODED_PORT_OFFSET=$PORT_OFFSET)"
+elif ! curl -s "http://127.0.0.1:$VITE_PORT/" >/dev/null 2>&1; then
   echo "[ui-review] starting workbench on :$VITE_PORT for $TARGET"
   # VITE_NO_WATCH: a capture sweep never edits files, and a watching Vite can
   # die with ENOSPC when the live app + a dev instance already hold the inotify
@@ -63,6 +71,7 @@ if ! curl -s "http://127.0.0.1:$VITE_PORT/" >/dev/null 2>&1; then
 else
   STARTED_WB=0
 fi
+if [[ "$DRY_RUN" == 0 ]]; then
 # Whatever answers on the port MUST be serving the worktree under review. A stale or
 # foreign server produces perfectly verified screenshots of the wrong code.
 if [[ -d "$ROOT/worktrees/$TARGET" ]]; then TDIR="$ROOT/worktrees/$TARGET"; elif [[ -d "$TARGET/desktop" ]]; then TDIR="$(cd "$TARGET" && pwd)"; else TDIR="$TARGET"; fi
@@ -73,17 +82,19 @@ if [[ "$VITE_CWD" != "$TDIR/desktop" ]]; then
 fi
 echo "[ui-review] workbench :$VITE_PORT serves $VITE_CWD (pid $VITE_PID)"
 node "$ROOT/scripts/workbench-boot-check.mjs" "$VITE_PORT" > "$OUT/boot-check.log" 2>&1 || { echo "[ui-review] workbench boot check FAILED — see $OUT/boot-check.log"; exit 1; }
+fi
 
 # 2. Capture jobs: one (plan, theme, shard) per Chrome process, through a queue of
 # UI_REVIEW_JOBS workers (default 24). A sweep is wall-clock bound — every shot pays
 # a fixed page-boot wait — so the win is breadth: the old 2-themes-per-process layout
 # took ~15 min with the machine 85% idle; sharding brings a full sweep to ~5 min (main+overlays for two themes: 2 min).
-# Each job gets its own CDP port (9931 + index). SHARD=k/n is honoured by shot.mjs.
+# Each job gets its own CDP port from a per-run block (see cdp-ports.sh). SHARD=k/n is
+# honoured by shot.mjs.
 IFS=',' read -r -a T <<< "$THEMES"
 JOBS="${UI_REVIEW_JOBS:-24}"
 PER_SHARD="${UI_REVIEW_SHARD_SIZE:-8}"     # shots per process before the plan is split further
 jobfile="$OUT/jobs.txt"; : > "$jobfile"
-idx=0; ports=()
+idx=0; specs=()
 for plan in "$HERE"/plans/*.json; do
   name="$(basename "$plan" .json)"
   case "$name" in electron-*) continue;; esac
@@ -93,13 +104,24 @@ for plan in "$HERE"/plans/*.json; do
   for t in "${T[@]}"; do
     for ((k=0; k<n; k++)); do
       idx=$((idx+1))
-      port=$((30000 + PORT_OFFSET + idx)); ports+=("$port")
-      echo "$plan $name $t $k/$n $port" >> "$jobfile"   # CDP ports keyed by offset so two reviews never share one
+      specs+=("$plan $name $t $k/$n")
     done
   done
 done
-bash "$HERE/probe-ports.sh" "${ports[@]}" || exit 1
-echo "[ui-review] $idx capture jobs, $JOBS at a time…"
+# WHY the block is chosen AFTER counting: the block must hold every job, and a full sweep is
+# 312 of them — `30000 + offset + idx` made two sweeps at nearby offsets share ports and hang
+# (ROADMAP L168). cdp-ports.sh picks a block from this run's pid, probes it, slides past a busy
+# one and refuses loudly if six in a row are taken; `$$` is passed so --dry-run and the real
+# run agree.
+CDP_BASE="$(bash "$HERE/cdp-ports.sh" "$PORT_OFFSET" "$idx" "$$")" || exit 1
+i=0
+for spec in "${specs[@]}"; do i=$((i+1)); echo "$spec $((CDP_BASE + i))" >> "$jobfile"; done
+echo "[ui-review] $idx capture jobs, $JOBS at a time, CDP ports $((CDP_BASE + 1))-$((CDP_BASE + idx))"
+if [[ "$DRY_RUN" == 1 ]]; then
+  echo "[ui-review] dry run — jobs (plan theme shard cdp-port):"
+  awk '{print "  " $2, $3, $4, $5}' "$jobfile"
+  rm -rf "$OUT"; exit 0
+fi
 run_job() { CDP_PORT=$5 SHARD=$4 node "$HERE/shot.mjs" "$1" "$OUT/shots-$2" "$3" > "$OUT/run-$2-$3-${4%/*}.log" 2>&1 || true; }
 export -f run_job; export HERE OUT WB_PORT
 xargs -P "$JOBS" -L 1 bash -c 'run_job "$@"' _ < "$jobfile"

@@ -48,7 +48,7 @@ the reason. **A review must quote `coverage.md` and call unverified surfaces "un
 
 ## Pieces
 
-**Two sweeps at once:** `run-review.sh` now probes every CDP port it is about to use (`probe-ports.sh`) and refuses, naming the busy ports — keep offsets ≥ 100 apart and it will never trigger.
+**Two sweeps at once:** each run takes its own block of CDP ports (`cdp-ports.sh`: a 400-port block starting at `30000 + offset`, chosen by the run's pid, every port probed by `probe-ports.sh`, the next block tried if one is busy, a loud refusal naming the busy ports after six). Two sessions sweeping at the default offset no longer touch each other's Chromes — the old "keep offsets ≥ 100 apart" advice was wrong anyway once a full six-theme sweep grew to 312 jobs. `YOUCODED_PORT_OFFSET` still matters for the **workbench**: two sweeps of *different* worktrees need different offsets or the second hits the wrong-worktree refusal above. `bash scripts/ui-review/run-review.sh --dry-run <worktree>` prints the workbench port, the job list and the exact CDP ports a run would take, without launching anything.
 
 | File | Job |
 |---|---|
@@ -259,11 +259,13 @@ importable"*, which is why nothing ran them for months:
 # everything (69 tests, ~11s) — needs magick, ffmpeg and Chrome, all present on this machine
 python3 -m unittest discover -s scripts/ui-review/tests -t scripts/ui-review/tests -p 'test_*.py'
 node --test scripts/ui-review/tests/deck-render.test.mjs
+bash scripts/ui-review/tests/probe-ports.test.sh && bash scripts/ui-review/tests/cdp-ports.test.sh
 ```
 
 | Suite | Needs |
 |---|---|
 | `test_spec`, `test_tokens`, `test_live` | nothing — **these three run in `workspace-ci.yml`** |
+| `probe-ports.test.sh`, `cdp-ports.test.sh` | `python3` and `ss` (they hold real ports) |
 | `test_boxes`, `test_build`, `test_crops`, `test_cli`, `test_serve` | `magick` (they cut real crops) |
 | `deck-render.test.mjs`, `coverage.test.mjs`, `shot-measure.test.mjs` | Chrome; the clip fixture also needs `ffmpeg` |
 
