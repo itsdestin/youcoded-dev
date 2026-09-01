@@ -442,3 +442,23 @@ test('worktreeBlindGlobs: reports what a relaxed glob picks up outside its own r
   assert.equal(r.overmatch.length, 1);
   assert.deepEqual(r.overmatch[0].files, ['wecoded-marketplace/worker/src/app/routes.ts']);
 });
+
+
+// --- a .claude/rules dir inside a sub-repo is unreachable and silently forks ---
+import { strayRuleDirs } from './audit-anchors.mjs';
+
+test('strayRuleDirs: a .claude/rules directory inside a sub-repo is reported', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-stray-'));
+  fs.mkdirSync(path.join(tmp, '.claude', 'rules'), { recursive: true });
+  fs.mkdirSync(path.join(tmp, 'youcoded', '.claude', 'rules'), { recursive: true });
+  fs.writeFileSync(path.join(tmp, 'youcoded', '.claude', 'rules', 'x.md'), '---\npaths:\n  - "app/**"\n---\n');
+  assert.deepEqual(strayRuleDirs(tmp), [{ repo: 'youcoded', files: ['x.md'] }]);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+test('strayRuleDirs: no sub-repo rule dirs is the clean case', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-stray-'));
+  fs.mkdirSync(path.join(tmp, '.claude', 'rules'), { recursive: true });
+  assert.deepEqual(strayRuleDirs(tmp), []);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});

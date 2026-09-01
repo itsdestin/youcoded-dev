@@ -432,6 +432,26 @@ export function worktreeBlindGlobs(rules, trackedFiles) {
   return { blind, exempt, overmatch };
 }
 
+// A .claude/rules/ directory inside a sub-repo is never loaded by a session rooted
+// at the workspace, so it cannot be reached, cannot be audited from here, and
+// silently forks whatever it duplicates.
+//
+// WHY: youcoded/.claude/rules/android-runtime.md sat at last_verified 2026-04-29
+// with no verify: block for four months, diverging in both directions from the
+// workspace copy of the same rule. Nothing could have noticed. Confirmed by
+// measurement 2026-08-31: Claude Code discovers .claude/rules/ at the PROJECT root,
+// so that copy only ever fired for a session rooted inside youcoded/.
+export function strayRuleDirs(root) {
+  const out = [];
+  for (const repo of REPOS) {
+    const dir = path.join(root, repo, '.claude', 'rules');
+    if (!fs.existsSync(dir)) continue;
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.md')).sort();
+    if (files.length) out.push({ repo, files });
+  }
+  return out;
+}
+
 // ---------- main ----------
 
 const CODE_EXT = /\.(ts|tsx|js|mjs|cjs|kt|kts|java|sh|ps1|sql|toml|gradle)$/;
@@ -544,6 +564,9 @@ function main() {
   // worktreeBlindGlobs above for why that is not optional in this workspace.
   result.worktreeGlobs = worktreeBlindGlobs(rules, tracked);
 
+  // 4d. no sub-repo may carry its own .claude/rules/ — see strayRuleDirs.
+  result.strayRules = strayRuleDirs(root);
+
   // 4c. frontmatter must survive a STRICT YAML parser — a rule whose frontmatter
   // throws loses its paths: and loads eagerly on every session (see the function).
   result.yamlUnsafe = yamlUnsafeFrontmatter(rules);
@@ -612,9 +635,20 @@ function printHuman(r) {
     console.log(`FAIL ${label}:`);
     for (const x of arr) console.log('  ' + (typeof x === 'string' ? x : JSON.stringify(x)));
   };
+  const warn = (label, arr) => {
+    if (!arr.length) return;
+    console.log(`WARN ${label}:`);
+    for (const x of arr) console.log('  ' + (typeof x === 'string' ? x : JSON.stringify(x)));
+  };
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
+  // WARN, not FAIL, and deliberately so: deleting the file is a change in ANOTHER
+  // repo, so gating on it here would turn this workspace's CI red for as long as
+  // that PR is open — the exact "permanently red check" this audit exists to end.
+  // Flip it to dump() + result.ok in the same commit that confirms the fork gone.
+  warn('rule files in a sub-repo — never loaded from the workspace, and a silent fork (needs a PR in that repo)',
+       (r.strayRules || []).flatMap(x => x.files.map(f => `${x.repo}/.claude/rules/${f}`)));
   dump('worktree-blind rule globs (these never fire on work done in worktrees/)',
        (r.worktreeGlobs?.blind || []).map(x => `${x.rule}: ${x.glob}  ->  ${x.fix}`));
   if (r.worktreeGlobs) {
