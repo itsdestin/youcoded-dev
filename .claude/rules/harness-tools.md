@@ -46,7 +46,7 @@ verify:
   - test: youcoded/desktop/tests/read-pdf.test.ts
   - test: youcoded/desktop/tests/ask-user-question-card-other.test.tsx
   - path: youcoded/desktop/src/main/harness/tools/send-user-file.ts
-    contains: "permissionSubject: \(\) => undefined"
+    contains: "permissionSubject: [(][)] => undefined"
   - path: youcoded/desktop/src/main/harness/mcp/mcp-registry.ts
     contains: "secretRef"
   - path: youcoded/desktop/src/main/harness/mcp/mcp-client.ts

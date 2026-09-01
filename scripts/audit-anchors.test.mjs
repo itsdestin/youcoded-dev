@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths,
-  globToRegex, countBodyWords,
+  globToRegex, countBodyWords, yamlUnsafeFrontmatter,
 } from './audit-anchors.mjs';
 
 test('parseRuleFrontmatter: block paths, last_verified, verify with contains', () => {
@@ -339,4 +339,38 @@ verify:
   assert.deepEqual(fm.errors, []);
   assert.deepEqual(fm.paths, ['a/**']);
   assert.deepEqual(fm.verify, [{ path: 'ok.ts' }]);
+});
+
+
+// --- frontmatter must be YAML a STRICT parser accepts -------------------------
+// Claude Code parses rule frontmatter as real YAML; parseRuleFrontmatter above is
+// line-based and far more forgiving. When the two disagree the rule silently loses
+// its paths: and loads EAGERLY on every session — measured 2026-08-31, see the
+// function's comment in audit-anchors.mjs.
+
+test('yamlUnsafeFrontmatter: an illegal escape in a double-quoted scalar is reported', () => {
+  const bad = [{ name: 'r', file: '.claude/rules/r.md',
+    text: '---\npaths:\n  - "a/**"\nverify:\n  - path: x.ts\n    contains: "specialist\\?: string"\n---\n' }];
+  const out = yamlUnsafeFrontmatter(bad);
+  assert.equal(out.length, 1);
+  assert.equal(out[0].rule, 'r');
+  assert.match(out[0].reason, /\\\?/);
+});
+
+test('yamlUnsafeFrontmatter: a regex written with character classes is fine', () => {
+  const ok = [{ name: 'r', file: '.claude/rules/r.md',
+    text: '---\npaths:\n  - "a/**"\nverify:\n  - path: x.ts\n    contains: "specialist[?]: string"\n---\n' }];
+  assert.deepEqual(yamlUnsafeFrontmatter(ok), []);
+});
+
+test('yamlUnsafeFrontmatter: YAML-legal escapes are not flagged', () => {
+  const ok = [{ name: 'r', file: '.claude/rules/r.md',
+    text: '---\npaths:\n  - "a/**"\nverify:\n  - path: x.ts\n    contains: "a\\\\b\\tc\\"d"\n---\n' }];
+  assert.deepEqual(yamlUnsafeFrontmatter(ok), []);
+});
+
+test('yamlUnsafeFrontmatter: a backslash OUTSIDE the frontmatter is ignored', () => {
+  const ok = [{ name: 'r', file: '.claude/rules/r.md',
+    text: '---\npaths:\n  - "a/**"\n---\nBody text with a \\? regex in it.\n' }];
+  assert.deepEqual(yamlUnsafeFrontmatter(ok), []);
 });

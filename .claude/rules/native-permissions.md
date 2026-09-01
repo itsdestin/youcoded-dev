@@ -22,13 +22,13 @@ verify:
   - path: youcoded/desktop/src/shared/types.ts
     contains: "PERMISSIONS_REMOVE_PROJECT"
   - path: youcoded/desktop/src/shared/permission-types.ts
-    contains: "specialist\?: string"
+    contains: "specialist[?]: string"
   - path: youcoded/desktop/src/shared/permission-types.ts
-    contains: "match\?: 'exact' \| 'glob'"
+    contains: "match[?]: 'exact' [|] 'glob'"
   - path: youcoded/desktop/src/shared/permission-types.ts
     contains: "export function sameRule"
   - path: youcoded/desktop/src/main/harness/permission-store.ts
-    contains: "sameRule\(r, rule\)"
+    contains: "sameRule[(]r, rule[)]"
   - path: youcoded/desktop/src/shared/subject-glob.ts
     contains: "BOUNDED_RUNG_VETO"
   - path: youcoded/desktop/src/shared/bash-grant-shapes.ts

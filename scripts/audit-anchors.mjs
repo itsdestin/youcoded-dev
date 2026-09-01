@@ -165,6 +165,47 @@ export function globToRegex(glob) {
   return new RegExp('^' + re + '$');
 }
 
+// Claude Code parses rule frontmatter as REAL YAML. `parseRuleFrontmatter` above is
+// line-based and much more forgiving, so the two can disagree — and when the strict
+// parser throws, the rule loses its `paths:` and Claude Code loads it EAGERLY on
+// every session, which is the opposite of what a path-scoped rule is for.
+//
+// WHY this guard exists, measured 2026-08-31 with .claude/hooks/instructions-log.sh:
+// harness-tools.md and native-permissions.md had been loading at turn zero of every
+// session for months (four separate sightings, "cause unexplained" in two
+// retrospectives). Cause: `contains: "specialist\?: string"` — a regex escape inside
+// a DOUBLE-QUOTED YAML scalar. YAML allows only a fixed escape set there, so `\?`,
+// `\(`, `\|` are parse errors that take the whole frontmatter down. The audit never
+// noticed because its own parser read the paths fine. ~1,400 words rode every
+// session, and the eager-token budget under-reported by that much.
+//
+// The fix at the edit site is a character class — `[?]`, `[(]`, `[|]` — which is
+// backslash-free, valid YAML, and the same regex. This stays dependency-free by
+// checking exactly that failure class rather than parsing YAML.
+const YAML_LEGAL_ESCAPE = /[0abtnvfre "\/\\N_LP\tx]/;   // the escapes YAML allows in "..."
+export function yamlUnsafeFrontmatter(rules) {
+  const out = [];
+  for (const rule of rules) {
+    const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(rule.text || '');
+    if (!fm) continue;
+    for (const line of fm[1].split('\n')) {
+      for (const m of line.matchAll(/"((?:[^"\\]|\\.)*)"/g)) {
+        for (const esc of m[1].matchAll(/\\(.)/g)) {
+          if (!YAML_LEGAL_ESCAPE.test(esc[1])) {
+            out.push({
+              rule: rule.name, file: rule.file,
+              reason: `illegal YAML escape \\${esc[1]} in a double-quoted scalar `
+                + `(${line.trim()}) — use a character class like [${esc[1]}] instead; `
+                + 'a frontmatter YAML error makes Claude Code load this rule EAGERLY',
+            });
+          }
+        }
+      }
+    }
+  }
+  return out;
+}
+
 export function countBodyWords(text) {
   const body = text.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
   return (body.match(/\S+/g) || []).length;
@@ -427,6 +468,10 @@ function main() {
     }
   }
 
+  // 4c. frontmatter must survive a STRICT YAML parser — a rule whose frontmatter
+  // throws loses its paths: and loads eagerly on every session (see the function).
+  result.yamlUnsafe = yamlUnsafeFrontmatter(rules);
+
   // 5. budgets: slim PITFALLS + the eager-load set (CLAUDE.md + eager rules)
   const pitfallsFile = path.join(root, 'docs', 'PITFALLS.md');
   if (fs.existsSync(pitfallsFile)) {
@@ -471,7 +516,8 @@ function main() {
   }
 
   result.ok = !result.anchors.failed.length && !result.mapPaths.missing.length
-    && !result.ruleGlobs.failed.length && !result.budgets.violations.length;
+    && !result.ruleGlobs.failed.length && !result.budgets.violations.length
+    && !result.yamlUnsafe.length;
 
   if (asJson) {
     console.log(JSON.stringify(result, null, 2));
@@ -493,6 +539,8 @@ function printHuman(r) {
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
+  dump('rule frontmatter a strict YAML parser rejects (these load EAGERLY, every session)',
+       (r.yamlUnsafe || []).map(u => `${u.file}: ${u.reason}`));
   dump('budget violations', r.budgets.violations);
   if (r.diffScope) {
     console.log(r.diffScope.baseReport
