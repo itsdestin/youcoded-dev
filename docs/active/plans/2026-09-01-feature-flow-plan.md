@@ -25,7 +25,7 @@ measured_at:
 - Python tests run from the tests directory: `cd scripts/ui-review/tests && python3 -m unittest <module>`. Never `-t .`.
 - The spec's `runs`/`images` rule: a deck with no picture steps at all names neither (today `all_live`); this plan widens that to "no picture steps" without changing what a picture deck requires.
 - Do not touch `youcoded/` — this plan is workspace-only. Commit with explicit paths (never `git add -A`).
-- Branch: `docs/feature-flow-plan` in worktree `worktrees/feature-flow` (already exists, holds the spec and this plan). Code tasks continue on the same branch.
+- Branch: if youcoded-dev PR #10 (this plan) is still open, continue on `docs/feature-flow-plan` in `worktrees/feature-flow`; if it has merged, `git worktree add worktrees/feature-flow -b feat/feature-flow origin/master` and work there.
 
 ---
 
