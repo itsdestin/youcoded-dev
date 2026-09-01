@@ -102,7 +102,6 @@
   }
   // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
   const YES = runs.length === 1 ? 'Yes, build it' : 'Yes, keep it', NO = runs.length === 1 ? 'No, leave it' : 'No, revert it';
-  const pickBtn = o => `<button class="btn ans" data-v="pick" data-pick="${esc(o.id)}" title="${esc(o.label)}"><span class="dot pick"></span><span class="key">${esc(o.id)}</span><span>${esc(o.label)}</span></button>`;
   // The things a step offers to pick between, or null if it is a yes/no. A LIVE step's
   // question shape rides in `shape`, because `kind` already says where its picture comes
   // from — so a live pick-one answers exactly like a picture pick-one.
@@ -120,9 +119,9 @@
     // and the risk), so they are now the only place you pick. What stays here is only what a
     // card CANNOT say: none of them, or something else entirely.
     $('#answers').innerHTML = picks || st.kind === 'decide'
-      ? (picks ? `<button class="btn ans" data-v="no"><span class="dot no"></span>None of these</button>` : '')
-        + `<button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`
-      : `<button class="btn ans" data-v="yes"><span class="dot yes"></span>${YES}</button><button class="btn ans" data-v="no"><span class="dot no"></span>${NO}</button><button class="btn ans" data-v="other"><span class="dot other"></span>Other</button>`;
+      ? (picks ? `<button class="btn ans" data-v="no">None of these</button>` : '')
+        + `<button class="btn ans" data-v="other">Other</button>`
+      : `<button class="btn ans" data-v="yes">${YES}</button><button class="btn ans" data-v="no">${NO}</button><button class="btn ans" data-v="other">Other</button>`;
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
   function answer(v, pick) {
