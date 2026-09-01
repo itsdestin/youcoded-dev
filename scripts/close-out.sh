@@ -46,8 +46,21 @@ if [[ -n "$SHA" ]]; then
     fail "the branch tip is NOT on $BASE — nothing below matters until it is"
   fi
 else
-  note "no ref for $BRANCH anywhere; assuming it merged and was deleted"
-  MERGED=yes
+  # No ref anywhere is NOT evidence of a close-out: a branch that merged and was
+  # cleaned up looks IDENTICAL to one that was never pushed, or whose name you
+  # mistyped. Assuming the good one printed an all-green report for a branch that
+  # never existed. There is a real answer available instead of a guess — a merge
+  # commit on $BASE names the branch it merged ("Merge pull request #N from
+  # owner/<branch>"), so look for one before concluding anything.
+  MERGE_COMMIT=$(git -C "$REPO_DIR" log "$BASE" --merges --grep="/$BRANCH\$" \
+                 --extended-regexp --format=%h -1 2>/dev/null || true)
+  if [[ -n "$MERGE_COMMIT" ]]; then
+    pass "no ref left, and $BASE carries the merge commit $MERGE_COMMIT for it — the work landed"
+    MERGED=yes
+  else
+    fail "no ref for $BRANCH anywhere, and no merge commit for it on $BASE — never pushed, or the name is wrong"
+    MERGED=unknown
+  fi
 fi
 
 # "No remote ref" has TWO opposite causes — pushed-and-deleted (done) or
@@ -57,7 +70,7 @@ fi
 if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
   fail "remote branch still exists — git push origin --delete $BRANCH"
 elif [[ "$MERGED" == yes ]]; then
-  pass "remote branch deleted (the tip is on $BASE, so it was pushed and cleaned up)"
+  pass "remote branch deleted (the work is on $BASE, so it was pushed and cleaned up)"
 else
   note "no remote ref — either never pushed, or pushed and deleted; the merge check above is the real answer"
 fi
@@ -125,7 +138,10 @@ note "bash scripts/verify.sh              (desktop only — Android and worker n
 note "node scripts/audit-anchors.mjs      (docs, rules, MAP, budgets)"
 
 echo
-if [[ $FAILED -eq 0 ]]; then
+if [[ "$MERGED" == unknown ]]; then
+  echo "Nothing here is evidence of a close-out — no ref and no merge commit for $BRANCH."
+  echo "Confirm the branch name before reading any line above as done."
+elif [[ $FAILED -eq 0 ]]; then
   echo "Nothing mechanical outstanding. The '--' lines still need a human."
 else
   echo "$FAILED mechanical item(s) outstanding. The '--' lines still need a human."
