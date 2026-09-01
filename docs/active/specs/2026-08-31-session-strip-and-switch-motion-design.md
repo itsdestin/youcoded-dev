@@ -284,6 +284,26 @@ under the pointer, and an overlay peek (the name floating over its neighbours, n
 moving) would honour it — at the cost of hiding the dots you are sweeping towards. Not
 built; a candidate for a later round if the push reads as jitter in use.
 
+### 6.1 When the switch happens — an open pick (2026-09-01)
+
+Destin, on the rebuilt round: *"I want this to work a little more like chrome, where the new
+session is selected right when I click the new session pill and begin to drag … the old
+session would collapse to status dot and new session would expand right as drag begins."*
+Three modes are built, read from a `[data-select]` ancestor (review scaffold; the workbench
+honours `?select=`), and offered as round 2 of the live deck:
+
+- **press** (default) — the session switches the instant you press, as a Chrome tab does:
+  the old name collapses, the pressed one opens, the conversation changes underneath; drag
+  it and you drag the open name.
+- **press-dot** — switches on press too, but the pill in hand stays a dot from press to
+  drop; the name opens where you let go.
+- **release** — nothing changes until you let go; what round 1 had.
+
+Selecting on press is what forced §7.4's floating-twin model: it reshapes the row while a
+drag may be starting on it. The pack for the drag is computed at pointer-down for the row it
+is about to become, with the pressed session as active. Menu rows never select on press.
+The winner becomes the only behaviour and the reader goes.
+
 ## 7. Drag — Chrome's model
 
 ### 7.1 What we do today
@@ -330,10 +350,18 @@ so no index space can drift out from under them again.
 
 Replace the ghost model with a moving-pill model.
 
-- **The pill moves, 1:1.** Its transform is the cursor's travel since pointer-down, clamped
-  to the row of pills (`clampDragDx`), with **no transition on `transform`** — an ease there
-  makes it trail the pointer like a rubber band. It lifts (shadow, `z-index`), and the focus
-  outline is suppressed in hand. Its label stays whatever it was when grabbed (§7.5).
+- **The pill moves, 1:1 — as a floating twin.** Its in-flow box stays in the row, invisible,
+  holding its slot and still animating its own width; a twin with the same markup and styles
+  floats absolutely inside the bar at the cursor (`clampFloatLeft`, **no transition on its
+  position** — an ease there makes it trail the pointer like a rubber band). The twin lifts
+  (shadow, `z-index`), carries no data attributes (tear-off placement and the perf lab walk
+  the row by `[data-session-id]` and must find one node per session), and takes no pointer
+  events. The grab point is kept as a **fraction** of the pill's width, so a pill that grows
+  from a dot to a name in hand stays under the same part of the cursor.
+- **The row can reshape underneath.** The slot is judged against **synthetic settled
+  geometry** — `layoutRects` over the pack the row is settling into, with each pill at its
+  measured full width or a dot — never against the DOM, which on a select-on-press is still
+  mid-animation when the drag starts.
 - **The target is the nearest SLOT, not the nearest neighbour.** A slot is where the pill
   would sit if dropped between a given pair of neighbours — a pure function of the frozen
   widths and the order (`slotCentres` / `nearestSlotId` in `drag-order.ts`), never of where
@@ -371,9 +399,12 @@ Chrome's tabs are uniform width and compress evenly. Ours are not, and this is w
    under the cursor by the width its neighbours had already stepped aside for — the ~150px
    void Destin photographed on 2026-09-01. The leave handler ignores the drag too; hover is
    released at the drop, where the pill becomes the active one and its name stays open anyway.
-2. **Packing freezes.** `useFrozenPack` holds the pack taken at pointer-down until release.
-3. **Geometry freezes.** Pill rects are read once at pointer-down (`pillRectsRef`);
-   re-measuring per move would feed this frame's transforms into next frame's hit-test.
+2. **Packing freezes.** The pack the drag is judged against is computed once at pointer-down
+   (for the row it is about to become) and held in a ref until release; a resize cannot
+   repack under the cursor.
+3. **Geometry is synthetic.** Pill rects are laid out once at pointer-down from that pack's
+   settled widths (`layoutRects`); the DOM is never re-measured mid-drag, because it is
+   animating towards exactly those widths.
 
 Whatever the row looked like when you pressed down is what it looks like until you let go.
 
@@ -392,8 +423,8 @@ The candidates are the real `SessionStrip` in a demo host
 of the scaffold blocks, nothing more.
 
 Deck: `docs/active/design/2026-08-31-session-motion/session-motion-live.json` — three steps:
-**feel** (pick one of Settled / Crisp / Soft), **drag** (try this, yes/no), **arrival** (pick
-one of Fade-and-lift / Fade / Cut). Per the review-deck rules, several designs of one thing
+**feel** (pick one of Settled / Crisp / Soft), **switch-when** (pick one of Press /
+Press-name-on-drop / Release, §6.1), **arrival** (pick one of Fade-and-lift / Fade / Cut). Per the review-deck rules, several designs of one thing
 are ONE choice step, never a yes/no each.
 
 ## 9. Out of scope
@@ -431,9 +462,11 @@ Per the workspace knowledge ladder, each of these is a test, not prose. All live
 
 1. **Drag state is keyed by session id, not index** — `drag-order.test.ts` reproduces the
    overflow divergence with the real packer.
-2. **The pill in hand follows the cursor, no transition on its transform; the slot is
-   nearest-slot** — `clampDragDx` / `nearestSlotId` present, `draggedSlotOffset` /
-   `nearestPillId` absent; `drag-order.test.ts` pins the half-a-dot bound.
+2. **The pill in hand is a twin that follows the cursor with no transition on its
+   position; the slot is nearest-slot over synthetic geometry** — `clampFloatLeft` /
+   `layoutRects` / `nearestSlotId` present, `draggedSlotOffset` / `nearestPillId` absent, the
+   twin carries no data attributes; `drag-order.test.ts` pins the half-a-dot bound and the
+   menu-drag fallback.
 3. **Hover survives pointer-down and the drag** — no `setHoveredId(null)` in the down
    handler; the leave handler bails during a drag.
 4. **Two curves, no overshoot** — every `--ease-*` control point ≤ 1; `--ease-bounce` gone.

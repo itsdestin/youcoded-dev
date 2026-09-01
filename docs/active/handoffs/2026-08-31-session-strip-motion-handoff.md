@@ -12,6 +12,14 @@ deck: docs/active/design/2026-08-31-session-motion/session-motion-live.json
 
 **State: rebuilt 2026-09-01, green, served as a live deck, waiting on Destin's three answers.**
 
+**Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
+and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
+opening the moment you press, before any drag. That forced a second drag model — the pill in
+hand is now a floating twin over a row that is free to reshape underneath it (spec §6.1,
+§7.4) — and the deck's second step is now a pick-one on WHEN the switch happens (press /
+press-with-name-on-drop / release) instead of the drag yes/no. Three modes are read from
+`[data-select]`; the winner becomes the only behaviour.
+
 The first cut (14 commits, 2026-08-31) was rejected in use: *"much too bouncy/aggressive"*,
 *"clicking is weird and jumpy"*, *"drag spacing is still really odd"*. This session recorded
 each gesture frame by frame in the workbench, found a mechanical cause for every complaint,
@@ -56,7 +64,7 @@ python3 scripts/ui-review/review-cards.py serve docs/active/design/2026-08-31-se
 `serve` boots the `session-motion` worktree's workbench on :5513 itself. Three steps:
 
 1. **feel** — pick one of Settled / Crisp / Soft (`[data-motion]`, speed and curve only).
-2. **drag** — yes/no on the Chrome-style drag.
+2. **switch-when** — pick one of Press / Press-name-on-drop / Release (`[data-select]`).
 3. **arrival** — pick one of Fade-and-lift / Fade / Cut (`[data-arrival]`).
 
 Answers land in `session-motion-live.answers.json` beside the spec on Submit.
@@ -64,8 +72,10 @@ Answers land in `session-motion-live.answers.json` beside the spec on Submit.
 ## After the answers
 
 1. Move the winning values into `:root` in `globals.css` and **delete** the `[data-motion]` /
-   `[data-arrival]` blocks, the `?motion=` / `?arrival=` scaffold in `index.tsx`, and the
-   `motion` / `arrival` props on `SessionStripMotionDemo` (keep the demo and its two
+   `[data-arrival]` blocks, the `?motion=` / `?arrival=` / `?select=` scaffold in `index.tsx`,
+   `readSelectOn` and the two losing branches in `SessionStrip` (the `SelectOn` type,
+   `dragMode`, `heldAsDot`), and the `motion` / `arrival` / `select` props on
+   `SessionStripMotionDemo` (keep the demo and its two
    registry surfaces with one candidate each — they are how the strip gets reviewed next time).
    Update the two `animation-frame-budget` pins that name the presets.
 2. If the drag is a "no", the answer's note says what; the model is in `drag-order.ts` and
@@ -90,8 +100,13 @@ both the worktree and the symlink go.
 
 - Measuring text: **read the label's computed font**; never assume `system-ui`. The packer
   had under-measured every name since it was written.
-- The dragged pill must have **no transition on `transform`**, and the neighbours must have
+- The twin must have **no transition on its position**, and the neighbours must have
   `transition: none` for the one render in which the DOM order changes (`reorderQuiet`).
+- A drop reorders the row and React **re-inserts the moved node, which restarts any CSS
+  animation on it** — that is why the badge's opening is armed by the switch alone
+  (`badgeArmed`), not by the drag.
+- Drag geometry is **synthetic** (`layoutRects` from the pack computed at press), never the
+  DOM: on a select-on-press the row is mid-animation when the drag starts.
 - `useLayoutEffect` with no deps in `SessionStrip` is the settle FLIP; it does a cheap null
   check every render on purpose.
 - `data-session-idx` is a cross-process contract (main.ts tear-off placement, perf-lab).
