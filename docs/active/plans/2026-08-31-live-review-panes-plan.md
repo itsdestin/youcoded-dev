@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 created: 2026-08-31
 spec: docs/active/specs/2026-08-31-live-review-panes-design.md
 tags: [ui-review, deck, workbench, tooling]

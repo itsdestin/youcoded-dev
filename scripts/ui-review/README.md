@@ -192,9 +192,11 @@ Things worth knowing before you author one:
   ten), so an address without a round silently shows the wrong design.
 - **A live-only deck names no `images` and no `runs`** — there are no screenshots. Mix live and
   picture steps freely under one Submit; then it needs both.
-- **A click inside a pane is an interaction, not an answer.** Picking is the lettered card or
-  the answer button. And once focus is in a pane the page stops seeing key presses — the deck
-  says so under the row.
+- **A click inside a pane is an interaction, not an answer.** You pick on the lettered card;
+  the row beneath carries only what a card cannot say ("None of these", "Other"). And once
+  focus is in a pane the page stops seeing key presses — the deck says so under the row.
+- **Each pane carries an "Open in New Window" button** — the same design alone, centred, in a
+  fresh tab. Room and quiet, not a wider design: the width is the registry's either way.
 - **One theme at a time**, switched with the usual theme row (rendered as labels). The swap is
   sent to the panes as a message, so an animation mid-play survives it. Four candidates × six
   themes would be 24 running copies of the app on one page.

@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 created: 2026-08-31
 tags: [ui-review, deck, workbench, tooling]
 ---
@@ -89,7 +89,7 @@ showing what it is there to show.
 
 ### Pop-out
 
-Every pane carries an **open on its own** link that opens that same candidate,
+Every pane carries an **Open in New Window** button that opens that same candidate,
 alone, in a new browser tab. What it buys is *room and quiet* — a candidate
 taller than the pane can be scrolled, and a drag or hover can be tried without
 three other panes in the corner of your eye. It is not a wider candidate: pane
