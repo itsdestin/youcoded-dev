@@ -119,9 +119,14 @@ function stripMarkdownCode(text) {
 // LOOKS like an anchor but fails JSON.parse is returned as {malformed} so the checker
 // fails it loudly instead of dropping the claim. Code (fences/inline spans) is stripped
 // first so example anchors in docs that document the format aren't mistaken for claims.
-export function harvestDocAnchors(text) {
+// `marker` is the word before the colon: 'verify' (depth docs, this script) or 'claim'
+// (roadmap reports, scripts/roadmap-check.mjs). The default keeps every existing caller as is.
+// A broken verify: is doc drift and fails CI; a broken claim: is a roadmap item to re-verify
+// and must NOT — which is why they are different words (spec §4).
+export function harvestDocAnchors(text, marker = 'verify') {
   const anchors = [];
-  for (const m of stripMarkdownCode(text).matchAll(/<!--\s*verify:\s*(\{[\s\S]*?\})\s*-->/g)) {
+  const re = new RegExp(`<!--\\s*${marker}:\\s*(\\{[\\s\\S]*?\\})\\s*-->`, 'g');
+  for (const m of stripMarkdownCode(text).matchAll(re)) {
     try { anchors.push(JSON.parse(m[1])); }
     catch { anchors.push({ malformed: m[1] }); }
   }

@@ -25,6 +25,18 @@
         ]
       }
     ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/roadmap-edit-check.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "InstructionsLoaded": [
       {
         "matcher": "path_glob_match",

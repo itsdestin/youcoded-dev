@@ -83,7 +83,7 @@ jobs:
       # does not silently skip them.
       - name: Test the workspace hooks
         if: ${{ !cancelled() }}
-        run: node --test .claude/hooks/context-inject.test.mjs .claude/hooks/glob-guard.test.mjs
+        run: node --test .claude/hooks/context-inject.test.mjs .claude/hooks/glob-guard.test.mjs .claude/hooks/roadmap-edit-check.test.mjs
 
       # The review deck — the tool Destin approves every UI change on — had ten
       # test files and no caller: not this workflow, not a script, not its README.
@@ -120,6 +120,19 @@ jobs:
       # git history plus a dated report; the mechanical anchor pass does not.
       - name: Verify anchors, MAP paths, and store budgets
         run: node scripts/audit-anchors.mjs --no-diff
+
+      # The roadmap tool's own tests gate its run, same reasoning as the anchor checker.
+      - name: Test roadmap-check
+        if: ${{ !cancelled() }}
+        run: node --test scripts/roadmap-check.test.mjs
+
+      # Structure errors fail CI. Broken claims and count drift are LISTED and never fail
+      # it — a rotted claim is the roadmap asking to be re-verified, which is the design
+      # working, and a count drift must not go red for every other session (spec §5).
+      # Dormant (one line, exit 0) until the migration branch creates docs/roadmap/.
+      - name: Roadmap structure
+        if: ${{ !cancelled() }}
+        run: node scripts/roadmap-check.mjs --quiet
 
       # check.sh falls back to `npx --yes @ast-grep/cli` when the binary is
       # absent, which re-resolves the package on every invocation. Installing it
