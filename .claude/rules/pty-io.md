@@ -1,15 +1,15 @@
 ---
 paths:
-  - "youcoded/desktop/src/main/pty-worker.js"
-  - "youcoded/app/**/PtyBridge.kt"
-  - "youcoded/desktop/src/renderer/hooks/useSubmitConfirmation.ts"
-  - "youcoded/desktop/src/renderer/state/pty-input-gate.ts"
-  - "youcoded/desktop/src/renderer/state/prompt-input.ts"
-  - "youcoded/desktop/src/renderer/parser/ink-select-parser.ts"
-  - "youcoded/app/**/InkSelectParser.kt"
-  - "youcoded/desktop/src/renderer/components/outgoing-message.ts"
-  - "youcoded/desktop/test-conpty/**"
-  - "youcoded/desktop/src/renderer/components/TerminalView.tsx"
+  - "**/desktop/src/main/pty-worker.js"
+  - "**/app/**/PtyBridge.kt"
+  - "**/desktop/src/renderer/hooks/useSubmitConfirmation.ts"
+  - "**/desktop/src/renderer/state/pty-input-gate.ts"
+  - "**/desktop/src/renderer/state/prompt-input.ts"
+  - "**/desktop/src/renderer/parser/ink-select-parser.ts"
+  - "**/app/**/InkSelectParser.kt"
+  - "**/desktop/src/renderer/components/outgoing-message.ts"
+  - "**/desktop/test-conpty/**"
+  - "**/desktop/src/renderer/components/TerminalView.tsx"
 last_verified: 2026-07-15
 verify:
   - path: youcoded/desktop/src/main/pty-worker.js

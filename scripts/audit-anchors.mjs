@@ -165,6 +165,47 @@ export function globToRegex(glob) {
   return new RegExp('^' + re + '$');
 }
 
+// Claude Code parses rule frontmatter as REAL YAML. `parseRuleFrontmatter` above is
+// line-based and much more forgiving, so the two can disagree — and when the strict
+// parser throws, the rule loses its `paths:` and Claude Code loads it EAGERLY on
+// every session, which is the opposite of what a path-scoped rule is for.
+//
+// WHY this guard exists, measured 2026-08-31 with .claude/hooks/instructions-log.sh:
+// harness-tools.md and native-permissions.md had been loading at turn zero of every
+// session for months (four separate sightings, "cause unexplained" in two
+// retrospectives). Cause: `contains: "specialist\?: string"` — a regex escape inside
+// a DOUBLE-QUOTED YAML scalar. YAML allows only a fixed escape set there, so `\?`,
+// `\(`, `\|` are parse errors that take the whole frontmatter down. The audit never
+// noticed because its own parser read the paths fine. ~1,400 words rode every
+// session, and the eager-token budget under-reported by that much.
+//
+// The fix at the edit site is a character class — `[?]`, `[(]`, `[|]` — which is
+// backslash-free, valid YAML, and the same regex. This stays dependency-free by
+// checking exactly that failure class rather than parsing YAML.
+const YAML_LEGAL_ESCAPE = /[0abtnvfre "\/\\N_LP\tx]/;   // the escapes YAML allows in "..."
+export function yamlUnsafeFrontmatter(rules) {
+  const out = [];
+  for (const rule of rules) {
+    const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(rule.text || '');
+    if (!fm) continue;
+    for (const line of fm[1].split('\n')) {
+      for (const m of line.matchAll(/"((?:[^"\\]|\\.)*)"/g)) {
+        for (const esc of m[1].matchAll(/\\(.)/g)) {
+          if (!YAML_LEGAL_ESCAPE.test(esc[1])) {
+            out.push({
+              rule: rule.name, file: rule.file,
+              reason: `illegal YAML escape \\${esc[1]} in a double-quoted scalar `
+                + `(${line.trim()}) — use a character class like [${esc[1]}] instead; `
+                + 'a frontmatter YAML error makes Claude Code load this rule EAGERLY',
+            });
+          }
+        }
+      }
+    }
+  }
+  return out;
+}
+
 export function countBodyWords(text) {
   const body = text.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
   return (body.match(/\S+/g) || []).length;
@@ -305,6 +346,21 @@ export function changedFilesSince(root, shas) {
 
 // changed files × rule globs → which subsystems need semantic re-verification,
 // plus the files matching NO rule (the "new subsystem without a rule" signal).
+// Paths that legitimately match no rule. Counted and reported, never silently
+// dropped — the whole point of the "files matching NO rule" signal is that a
+// shipped subsystem with no rule shows up in it, and 607 rows of archived
+// prototypes is how that signal got ignored.
+//
+// NOT listed here on purpose: .claude/hooks/**. Those are real, tested code
+// (context-inject.test.mjs, glob-guard.test.mjs, both run by CI) and belong in
+// the signal.
+export const NO_RULE_EXPECTED = [
+  /^docs\/archive\//,
+  /^docs\/active\/prototypes\//,
+  /^scripts\/ast-grep\/fixtures\//,
+  /^flappy-bird\//,
+];
+
 export function affectedSubsystems(rules, changedFiles) {
   const affected = new Set();
   const covered = new Set();
@@ -313,10 +369,105 @@ export function affectedSubsystems(rules, changedFiles) {
       if (rule.globs.some(g => g.test(f))) { affected.add(rule.name); covered.add(f); }
     }
   }
+  const uncoveredAll = changedFiles.filter(f => !covered.has(f));
+  const uncovered = uncoveredAll.filter(f => !NO_RULE_EXPECTED.some(re => re.test(f)));
   return {
     affected: [...affected].sort(),
-    uncovered: changedFiles.filter(f => !covered.has(f)),
+    uncovered,
+    uncoveredExpected: uncoveredAll.length - uncovered.length,
   };
+}
+
+// A rule glob is "worktree-blind" when it names a sub-repo by its workspace path
+// (`youcoded/desktop/...`) and therefore cannot match the same file inside a
+// worktree (`worktrees/<name>/desktop/...`).
+//
+// WHY this exists: CLAUDE.md sends all non-trivial work into worktrees/<name>/,
+// and Claude Code matches rule globs relative to the PROJECT ROOT. So on
+// 2026-08-31, 115 of 138 glob entries were silently dead for exactly the work the
+// workspace mandates. `.claude/rules/code-search.md` had already found the fix (a
+// leading `**/`) on 2026-08-05 and nobody generalised it.
+//
+// MEASURED, not assumed: two scratch rules differing only in glob shape, aimed at
+// one file at a worktree-shaped path, in one session — `**/desktop/tests/**`
+// loaded and `youcoded/desktop/tests/**` did not. A glob also fires fine on a path
+// under the gitignored worktrees/ dir, so the relaxation reaches real worktrees.
+//
+// SCOPE, so a later reader does not over-trust this: it checks the SHAPE of a glob
+// against tracked files using this file's deliberately-simple globToRegex. It
+// cannot tell you what Claude Code's matcher actually loaded — that is
+// .claude/hooks/instructions-log.sh.
+//
+// Exemptions are NAMED AND COUNTED, never silent, and there are four kinds. The
+// last — an explicit `# repo-pinned` comment — is an ESCAPE HATCH THAT NO RULE
+// CURRENTLY USES: `blind` FAILS THE RUN, so a glob that must keep its repo prefix
+// needs a way to say so or the audit stays red forever. It is here for the first
+// rule that needs it, not for any that exist. (Two drafts of the plan pinned four
+// globs believing they needed it; measured, relaxing all four reached one extra
+// file in the whole workspace.)
+//
+// `fix` is the exact replacement string, so the migration has no second table of
+// prefixes to drift out of sync with this function.
+export function worktreeBlindGlobs(rules, trackedFiles) {
+  const blind = [], exempt = [], overmatch = [];
+  for (const rule of rules) {
+    for (const glob of rule.fm.paths) {
+      if (glob === '**') {
+        exempt.push({ rule: rule.name, glob, reason: 'the deliberate eager glob' });
+        continue;
+      }
+      const [head, ...rest] = glob.split('/');
+      if (head === '**') {
+        // Already worktree-safe. Report anything it reaches outside its own repo
+        // so a relaxation's blast radius is a visible number, not a surprise.
+        const re = globToRegex(glob);
+        const hits = trackedFiles.filter(f => re.test(f));
+        const repos = new Set(hits.map(f => f.split('/')[0]));
+        if (repos.size > 1) {
+          const count = r => hits.filter(f => f.startsWith(r + '/')).length;
+          const main = [...repos].sort((a, b) => count(b) - count(a))[0];
+          overmatch.push({ rule: rule.name, glob, files: hits.filter(f => !f.startsWith(main + '/')) });
+        }
+        continue;
+      }
+      if (!REPOS.includes(head)) {
+        exempt.push({ rule: rule.name, glob, reason: 'workspace-root path — worktrees are of the sub-repos' });
+        continue;
+      }
+      if (rest.length === 1 && rest[0] === '**') {
+        exempt.push({ rule: rule.name, glob, reason: 'whole-repo glob — relaxing it would make the rule eager' });
+        continue;
+      }
+      // An explicit opt-out, read from the rule's own source line.
+      const pinned = new RegExp(`^\\s*-\\s*"${glob.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\s*#.*repo-pinned`, 'm');
+      if (rule.text && pinned.test(rule.text)) {
+        exempt.push({ rule: rule.name, glob, reason: 'repo-pinned by an explicit comment in the rule' });
+        continue;
+      }
+      blind.push({ rule: rule.name, glob, fix: ['**', ...rest].join('/') });
+    }
+  }
+  return { blind, exempt, overmatch };
+}
+
+// A .claude/rules/ directory inside a sub-repo is never loaded by a session rooted
+// at the workspace, so it cannot be reached, cannot be audited from here, and
+// silently forks whatever it duplicates.
+//
+// WHY: youcoded/.claude/rules/android-runtime.md sat at last_verified 2026-04-29
+// with no verify: block for four months, diverging in both directions from the
+// workspace copy of the same rule. Nothing could have noticed. Confirmed by
+// measurement 2026-08-31: Claude Code discovers .claude/rules/ at the PROJECT root,
+// so that copy only ever fired for a session rooted inside youcoded/.
+export function strayRuleDirs(root) {
+  const out = [];
+  for (const repo of REPOS) {
+    const dir = path.join(root, repo, '.claude', 'rules');
+    if (!fs.existsSync(dir)) continue;
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.md')).sort();
+    if (files.length) out.push({ repo, files });
+  }
+  return out;
 }
 
 // ---------- main ----------
@@ -427,6 +578,17 @@ function main() {
     }
   }
 
+  // 4b. every rule glob must ALSO match its file inside a worktree — see
+  // worktreeBlindGlobs above for why that is not optional in this workspace.
+  result.worktreeGlobs = worktreeBlindGlobs(rules, tracked);
+
+  // 4d. no sub-repo may carry its own .claude/rules/ — see strayRuleDirs.
+  result.strayRules = strayRuleDirs(root);
+
+  // 4c. frontmatter must survive a STRICT YAML parser — a rule whose frontmatter
+  // throws loses its paths: and loads eagerly on every session (see the function).
+  result.yamlUnsafe = yamlUnsafeFrontmatter(rules);
+
   // 5. budgets: slim PITFALLS + the eager-load set (CLAUDE.md + eager rules)
   const pitfallsFile = path.join(root, 'docs', 'PITFALLS.md');
   if (fs.existsSync(pitfallsFile)) {
@@ -457,12 +619,13 @@ function main() {
         name: r.name,
         globs: r.fm.paths.filter(g => g !== '**').map(globToRegex),
       }));
-      const { affected, uncovered } = affectedSubsystems(compiled, changed);
+      const { affected, uncovered, uncoveredExpected } = affectedSubsystems(compiled, changed);
       result.diffScope = {
         baseReport: path.relative(root, report.file).replaceAll('\\', '/'),
         changedCount: changed.length,
         affected,
         uncoveredCode: uncovered.filter(f => CODE_EXT.test(f)),
+        uncoveredExpected,
         notes,
       };
     } else {
@@ -471,7 +634,8 @@ function main() {
   }
 
   result.ok = !result.anchors.failed.length && !result.mapPaths.missing.length
-    && !result.ruleGlobs.failed.length && !result.budgets.violations.length;
+    && !result.ruleGlobs.failed.length && !result.budgets.violations.length
+    && !result.yamlUnsafe.length && !result.worktreeGlobs.blind.length;
 
   if (asJson) {
     console.log(JSON.stringify(result, null, 2));
@@ -490,9 +654,29 @@ function printHuman(r) {
     console.log(`FAIL ${label}:`);
     for (const x of arr) console.log('  ' + (typeof x === 'string' ? x : JSON.stringify(x)));
   };
+  const warn = (label, arr) => {
+    if (!arr.length) return;
+    console.log(`WARN ${label}:`);
+    for (const x of arr) console.log('  ' + (typeof x === 'string' ? x : JSON.stringify(x)));
+  };
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
+  // WARN, not FAIL, and deliberately so: deleting the file is a change in ANOTHER
+  // repo, so gating on it here would turn this workspace's CI red for as long as
+  // that PR is open — the exact "permanently red check" this audit exists to end.
+  // Flip it to dump() + result.ok in the same commit that confirms the fork gone.
+  warn('rule files in a sub-repo — never loaded from the workspace, and a silent fork (needs a PR in that repo)',
+       (r.strayRules || []).flatMap(x => x.files.map(f => `${x.repo}/.claude/rules/${f}`)));
+  dump('worktree-blind rule globs (these never fire on work done in worktrees/)',
+       (r.worktreeGlobs?.blind || []).map(x => `${x.rule}: ${x.glob}  ->  ${x.fix}`));
+  if (r.worktreeGlobs) {
+    console.log(`worktree-safe globs: ${r.worktreeGlobs.blind.length} blind · `
+      + `${r.worktreeGlobs.exempt.length} exempt (named) · `
+      + `${r.worktreeGlobs.overmatch.length} reaching outside their repo`);
+  }
+  dump('rule frontmatter a strict YAML parser rejects (these load EAGERLY, every session)',
+       (r.yamlUnsafe || []).map(u => `${u.file}: ${u.reason}`));
   dump('budget violations', r.budgets.violations);
   if (r.diffScope) {
     console.log(r.diffScope.baseReport
@@ -501,7 +685,8 @@ function printHuman(r) {
       : 'diff scope: no base report with verified_shas — run /audit full');
     for (const n of r.diffScope.notes || []) console.log('  note: ' + n);
     if (r.diffScope.uncoveredCode?.length) {
-      console.log(`  changed code files matching NO rule (${r.diffScope.uncoveredCode.length}, first 20):`);
+      console.log(`  changed code files matching NO rule (${r.diffScope.uncoveredCode.length}`
+        + `, plus ${r.diffScope.uncoveredExpected ?? 0} in archives/prototypes/fixtures — expected):`);
       for (const f of r.diffScope.uncoveredCode.slice(0, 20)) console.log('    ' + f);
     }
   }

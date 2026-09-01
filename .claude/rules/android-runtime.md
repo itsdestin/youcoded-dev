@@ -1,8 +1,12 @@
 ---
 paths:
-  - "youcoded/app/**"
+  - "**/app/**"
 last_verified: 2026-07-15
 verify:
+  - path: youcoded/app/src/main/kotlin/com/youcoded/app/runtime/DirectShellBridge.kt
+    contains: "no 600ms Enter-split here"
+  - path: youcoded/app/src/main/kotlin/com/youcoded/app/bridge/TranscriptSerializer.kt
+    contains: "anthropicRequestId"
   - path: youcoded/app/src/main/kotlin/com/youcoded/app/runtime/Bootstrap.kt
   - path: youcoded/app/src/main/kotlin/com/youcoded/app/runtime/PtyBridge.kt
   - path: youcoded/app/src/main/assets/claude-wrapper.js
@@ -29,6 +33,12 @@ Claude Code (a Node CLI) runs inside a Termux-derived environment. **Full contex
 ## Build-type parity (R8) — guard: `./gradlew :app:assembleReleaseTest` (CI: `android-ci.yml`)
 - **Release enables R8 minification; debug skips it — they are NOT equivalent.** **Don't use string-based reflection against your own code** (`getMethod`, `Class.forName`, `KClass`, `::declaredMembers`) — R8 obfuscates the name and the lookup throws. The `PluginInstaller.buildEnv()` reflection bug (`912f5ca7`) shipped a stripped env without `LD_PRELOAD` in release — every marketplace install died — while every dev/CI build was debug. Direct calls always; unavoidable reflection needs an explicit `-keep` in `proguard-rules.pro`, never a silent `try{reflection}catch{fallback}`.
 - **`Bootstrap` has a defensive `-keep` rule** — don't remove without an audit confirming nothing reflects against it. **`assembleReleaseTest`** (same R8 config, debug keystore, `.releasetest` suffix, port 9961) is the parity check — run it before tagging after touching reflection/annotation/symbol-name-dependent code. Android workflows `setup-node@v4` explicitly so `bundleWebUi` doesn't depend on the runner image's node.
+
+## PTY writes are NOT symmetric across the two bridges
+- **`PtyBridge.writeInput` keeps the 600 ms split before Enter; `DirectShellBridge.writeInput` deliberately does NOT — never "parity fix" it.** The split works around Ink's 500 ms `PASTE_TIMEOUT` in Claude Code's TUI; `DirectShellBridge` talks to raw bash, which has no paste-mode timing. The shared-env rule above is about `buildRuntimeEnv`/`deployBashEnv`, not write timing. *Guard:* the WHY comment at `DirectShellBridge.writeInput`.
+
+## Per-turn transcript metadata (Android parity)
+- **`TranscriptEvent.TurnComplete` carries `stopReason`, `model`, `usage` and `anthropicRequestId`, matching desktop's transcript-watcher output.** Preserve all four when touching `TranscriptWatcher.parseAssistantLine` or `TranscriptSerializer.turnComplete` — remote clients read them for the per-turn metadata strip, StopReasonFooter, the AttentionBanner request-id readout and sessionModels reconciliation.
 
 ## Native UI bridge pattern (deferred)
 When an IPC handler needs native Android UI: `SessionService` creates a `CompletableDeferred<T>`, calls an Activity callback, MainActivity shows the UI, the result calls `deferred.complete()`, SessionService awaits + responds. Used by `dialog:open-file`, `dialog:open-folder`, `android:scan-qr`.

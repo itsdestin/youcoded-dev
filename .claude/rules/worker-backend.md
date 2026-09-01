@@ -1,6 +1,6 @@
 ---
 paths:
-  - "wecoded-marketplace/worker/**"
+  - "**/worker/**"
 last_verified: 2026-07-15
 verify:
   - path: wecoded-marketplace/worker/src/lib/analytics.ts

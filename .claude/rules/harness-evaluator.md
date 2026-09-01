@@ -1,16 +1,16 @@
 ---
 paths:
-  - "youcoded/desktop/src/main/harness/eval/**"
-  - "youcoded/desktop/test-engine/harness-eval.mjs"
-  - "youcoded/desktop/test-engine/harness-eval-worker.mjs"
-  - "youcoded/desktop/test-engine/eval-plans/**"
-  - "youcoded/desktop/test-engine/review-harness.mjs"
-  - "youcoded/desktop/test-engine/review-roster.json"
+  - "**/desktop/src/main/harness/eval/**"
+  - "**/desktop/test-engine/harness-eval.mjs"
+  - "**/desktop/test-engine/harness-eval-worker.mjs"
+  - "**/desktop/test-engine/eval-plans/**"
+  - "**/desktop/test-engine/review-harness.mjs"
+  - "**/desktop/test-engine/review-roster.json"
   # Also fires on the code the evaluator EVALUATES, not just the evaluator — the person
   # changing a tool is the one who should be offered a run. Four live rounds found nine
   # defects here that 4,500 passing tests missed, because every test drives a scripted
   # fake model and none of them spend a real turn deciding what to do next.
-  - "youcoded/desktop/src/main/harness/tools/**"
+  - "**/desktop/src/main/harness/tools/**"
 last_verified: 2026-08-13
 verify:
   - path: youcoded/desktop/src/main/harness/eval/run-case.ts

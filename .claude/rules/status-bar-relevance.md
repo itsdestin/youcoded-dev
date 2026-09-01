@@ -1,11 +1,11 @@
 ---
 paths:
-  - "youcoded/desktop/src/renderer/components/StatusBar.tsx"
-  - "youcoded/desktop/src/renderer/components/UsageCard.tsx"
-  - "youcoded/desktop/src/renderer/state/status-widgets.ts"
-  - "youcoded/desktop/src/renderer/state/session-totals.ts"
-  - "youcoded/desktop/src/renderer/state/usage-snapshot.ts"
-  - "youcoded/desktop/src/main/harness/pricing.ts"
+  - "**/desktop/src/renderer/components/StatusBar.tsx"
+  - "**/desktop/src/renderer/components/UsageCard.tsx"
+  - "**/desktop/src/renderer/state/status-widgets.ts"
+  - "**/desktop/src/renderer/state/session-totals.ts"
+  - "**/desktop/src/renderer/state/usage-snapshot.ts"
+  - "**/desktop/src/main/harness/pricing.ts"
 last_verified: 2026-08-27
 verify:
   - path: youcoded/desktop/src/renderer/state/status-widgets.ts

@@ -14,6 +14,16 @@ youcoded-core/
 youcoded-admin/
 wecoded-themes/
 wecoded-marketplace/
+# ...and the same slashless lines for the other four. The 2026-08-28 incident
+# (see docs/PITFALLS.md -> Worktrees) only ever got a slashless `youcoded`, so a
+# worktree that symlinks ANY other sub-repo could still commit the link — and a
+# merge will overwrite the real clone with it, because git happily clobbers a
+# path it considers ignored. Verified 2026-08-31: all four showed as untracked
+# in a workspace worktree with the sub-repos linked in.
+youcoded-core
+youcoded-admin
+wecoded-themes
+wecoded-marketplace
 
 # Worktrees and temp directories
 .worktrees/

@@ -1,10 +1,33 @@
 ---
-status: partly applied 2026-07-28 — Proposals 1 and 2 done; 3, 4 and 5 STILL OPEN and untracked (re-verified 2026-08-26)
+status: superseded
+superseded_by: docs/archive/plans/2026-08-31-workspace-retrieval-repair.md
+closed: 2026-08-31 — every proposal is shipped, dropped, or on ROADMAP.md (table below)
 scope: workspace conventions (CLAUDE.md, .claude/rules/, scripts/)
 source: the menu-internals session, 2026-07-26 → 2026-07-28 (26 commits, PR #264)
 ---
 
 # What went wrong this session, and what would have stopped it
+
+## Closure — 2026-08-31
+
+**This document is closed.** Every proposal below is shipped, dropped, or carried to
+`ROADMAP.md`; nothing here is waiting to be rediscovered. States were re-verified
+against the tree on 2026-08-31, not carried forward from the frontmatter (two had
+changed since it was last written).
+
+| Proposal | State | Evidence, verified 2026-08-31 |
+|---|---|---|
+| 1 — search discipline as a procedure | **shipped** | folded into the existing `CLAUDE.md` → Investigation discipline rule |
+| 2 — guard scope + non-vacuity helpers | **shipped** | `youcoded/desktop/tests/helpers/guard-scope.ts` exists (PR #267) |
+| 3 — counts in specs are dated or anchored | **carried** | `rg 'Re-measure\|dated observation\|stale by construction' CLAUDE.md` → no match. ROADMAP `#docs` |
+| 4 — staging hygiene in `CLAUDE.md` | **shipped since this doc was written** | `docs/PITFALLS.md` → "Staging: never `git add -A` in a main checkout" — a full entry with its own heading. The frontmatter above called this open; it was stale |
+| 5 — `run-dev.sh --list` shows what is *running* | **carried** | `scripts/run-dev.sh:29` still reads "List registered worktrees (path + branch)". ROADMAP `#tooling` |
+
+Its central finding — that a claim made by reading instead of counting is the
+dominant failure mode — is now `CLAUDE.md` → Investigation discipline, and the
+2026-08-31 repair added three executable checks in that spirit (`worktreeBlindGlobs`,
+`yamlUnsafeFrontmatter`, `strayRuleDirs`).
+
 
 > **Applied 2026-07-28.** Proposal 2 (shared guard scope + non-vacuity helpers) shipped as
 > `desktop/tests/helpers/guard-scope.ts` — PR #267. Proposal 1 was folded into the EXISTING

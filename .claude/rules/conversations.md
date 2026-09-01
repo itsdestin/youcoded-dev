@@ -1,12 +1,12 @@
 ---
 paths:
-  - "youcoded/desktop/src/main/conversations/**"
-  - "youcoded/desktop/src/main/session-browser.ts"
-  - "youcoded/desktop/src/main/device-identity.ts"
+  - "**/desktop/src/main/conversations/**"
+  - "**/desktop/src/main/session-browser.ts"
+  - "**/desktop/src/main/device-identity.ts"
   # Owns the desktop→claude id map this rule's invariants depend on. Was absent
   # until 2026-07-26, so editing it injected NO rule — exactly the file where
   # the wrong-transcript bug landed.
-  - "youcoded/desktop/src/main/session-id-mapping.ts"
+  - "**/desktop/src/main/session-id-mapping.ts"
 last_verified: 2026-08-26
 verify:
   - path: youcoded/desktop/src/main/conversations/transcript-mirror.ts

@@ -5,11 +5,11 @@ paths:
   # harness files only (harness-session, native-session-host, capability-profile, …).
   # Split 2026-08-12: harness/specialists/** moved to native-specialists.md
   # (rule-body budget) — content moved, glob moved with it, no duplication.
-  - "youcoded/desktop/src/main/harness/*"
-  - "youcoded/desktop/src/main/harness/prompts/**"
-  - "youcoded/desktop/src/main/providers/**"
-  - "youcoded/desktop/src/main/native-home.ts"
-  - "youcoded/desktop/src/renderer/components/native-send.ts"
+  - "**/desktop/src/main/harness/*"
+  - "**/desktop/src/main/harness/prompts/**"
+  - "**/desktop/src/main/providers/**"
+  - "**/desktop/src/main/native-home.ts"
+  - "**/desktop/src/renderer/components/native-send.ts"
 last_verified: 2026-08-16
 verify:
   - path: youcoded/desktop/src/main/harness/harness-session.ts
