@@ -1,8 +1,8 @@
 ---
-status: active
+status: shipped
 created: 2026-08-11
 type: handoff
-program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
+program: docs/archive/plans/2026-08-11-native-sessions-remaining-work.md
 ---
 
 # Handoff — Native sessions, next up: M5 permissions maturity
@@ -11,7 +11,7 @@ Paste the block at the bottom into a fresh session, or just read this file.
 
 ## Where things stand
 
-The native-sessions program doc is `docs/active/plans/2026-08-11-native-sessions-remaining-work.md`. It is **current as of 2026-08-11** — §1 describes the shipped end state, §2 lists the remaining work in order. Step 1 is done. **Next unfinished step is Step 2, M5 permissions maturity.**
+The native-sessions program doc is `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md`. It is **current as of 2026-08-11** — §1 describes the shipped end state, §2 lists the remaining work in order. Step 1 is done. **Next unfinished step is Step 2, M5 permissions maturity.**
 
 `master` on `youcoded` was `6d3390bc` at the time of writing and is moving fast — several sessions landed work today. **Pull before doing anything.**
 
@@ -70,7 +70,7 @@ Also live: `.superpowers/sdd/progress.md` is a **different** SDD workstream (rev
 
 > Continue the YouCoded native-sessions program. Start by reading
 > `docs/active/handoffs/2026-08-11-native-sessions-next-m5-permissions.md`, then
-> `docs/active/plans/2026-08-11-native-sessions-remaining-work.md` §2 Step 2.
+> `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md` §2 Step 2.
 >
 > The task is **M5 permissions maturity, item 2a: the permissions management UI** —
 > there is currently no way for a user to undo an "Always allow." Brainstorm and spec

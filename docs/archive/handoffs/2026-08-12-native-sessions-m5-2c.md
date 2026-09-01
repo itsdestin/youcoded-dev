@@ -1,8 +1,8 @@
 ---
-status: active
+status: shipped
 created: 2026-08-12
 type: handoff
-program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
+program: docs/archive/plans/2026-08-11-native-sessions-remaining-work.md
 supersedes: docs/archive/handoffs/2026-08-12-native-sessions-m5-2bc.md
 ---
 
@@ -25,7 +25,7 @@ Allow** — instead of the generic row. Settled over four compare-view rounds (w
 
 ## Read first
 
-- `docs/active/plans/2026-08-11-native-sessions-remaining-work.md` §2 — the program statement
+- `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md` §2 — the program statement
 - `.claude/rules/native-permissions.md` — the 2a invariants you must not break
 - `desktop/src/main/harness/permission-engine.ts` — ~40 lines, the whole decision function
 - `desktop/src/shared/subject-glob.ts` — **moved by 2b** (was `main/harness/tools/`), 15 lines
@@ -130,7 +130,7 @@ surface). Brainstorm → spec (`docs/active/specs/`) → plan → worktree, the 
 
 > Continue the YouCoded native-sessions program — M5 item 2c, the last one. Start by reading
 > `docs/active/handoffs/2026-08-12-native-sessions-m5-2c.md`, then
-> `docs/active/plans/2026-08-11-native-sessions-remaining-work.md` §2.
+> `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md` §2.
 >
 > **2a and 2b are shipped** (revocation UI; full-auto safety stop). What remains: **Bash's
 > always-allow grants exactly one literal command string** — subject is the full command,

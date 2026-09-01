@@ -1,11 +1,13 @@
 ---
-status: active
+status: shipped
 ---
+
+> **ARCHIVED 2026-09-01.** Phase 0 research; everything it proposed was built in Phase 2 (July 2026). The live authority for the native-sessions / specialists / agents family is now `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` — vision, shipped state, remaining work and open decisions in one place. Read this file for history and research only.
 
 # Harness Design Ideas for the YouCoded Native Harness
 
 > **REVIEW 2026-08-26 — finished read; RECOMMEND ARCHIVE to `docs/archive/investigations/`.**
-> This was the Phase 0 research deliverable that fed `docs/active/specs/2026-07-15-phase2-native-harness-design.md`,
+> This was the Phase 0 research deliverable that fed `docs/archive/specs/2026-07-15-phase2-native-harness-design.md`,
 > whose implementation plans are already in `docs/archive/plans/`. Everything it proposed that was
 > going to be built has been built (the loop, typed parts, doom-loop detection, queued sends,
 > retry). It is now background reading, not an input to open work: nothing in `ROADMAP.md`

@@ -27,7 +27,7 @@ status: shipped
 
 **Tech Stack:** TypeScript (Electron main + React renderer), zod, vitest, ai@7.0.22 + @ai-sdk/openai-compatible@3.0.7 (both unchanged — no new deps). llama-server (bundled engine, already spawned with `--jinja`).
 
-**Spec:** `youcoded-dev/docs/active/specs/2026-07-15-phase2-native-harness-design.md` §4 (binding; §0 settled decisions apply, esp. decisions 7/9). Builds on Plans A (PR #149) and B (PR #156, merge `2fd316e1`).
+**Spec:** `youcoded-dev/docs/archive/specs/2026-07-15-phase2-native-harness-design.md` §4 (binding; §0 settled decisions apply, esp. decisions 7/9). Builds on Plans A (PR #149) and B (PR #156, merge `2fd316e1`).
 
 ---
 

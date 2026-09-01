@@ -132,7 +132,7 @@ Create `src/main/harness/review/fixture-workspace.ts`:
 // A disposable, deterministic mini-repo for the harness review battery.
 //
 // WHY a fixture rather than the real workspace (2026-08-06): the five reviews in
-// docs/active/investigations/2026-08-01-native-agent-harness-reviews.md each ran
+// docs/archive/investigations/2026-08-01-native-agent-harness-reviews.md each ran
 // against /home/destin/youcoded-dev while other sessions were changing it, and
 // each left `<model>-test-*` artifacts behind. That makes two runs incomparable
 // and pollutes the repo. An identical seeded tree per model fixes both.
@@ -748,7 +748,7 @@ git commit -m "feat(review): append reviews above the prompt block, never touchi
 **Files:**
 - Create: `test-engine/review-harness.mjs`
 - Modify: `test-engine/README.md`
-- Modify: `docs/active/investigations/2026-08-01-native-agent-harness-reviews.md` (workspace repo)
+- Modify: `docs/archive/investigations/2026-08-01-native-agent-harness-reviews.md` (workspace repo)
 
 **Interfaces:**
 - Consumes: everything above.
@@ -776,7 +776,7 @@ import { fileURLToPath } from 'url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DESKTOP = path.resolve(HERE, '..');
 const WORKSPACE = path.resolve(DESKTOP, '..', '..');
-const DOC = path.join(WORKSPACE, 'docs/active/investigations/2026-08-01-native-agent-harness-reviews.md');
+const DOC = path.join(WORKSPACE, 'docs/archive/investigations/2026-08-01-native-agent-harness-reviews.md');
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');

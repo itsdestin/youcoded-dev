@@ -15,7 +15,7 @@ status: shipped (unmerged) — §3, §4, §5, §6a implemented on integration/ha
 > merged to `youcoded` master** as of this archive date; the implementation plan
 > (`docs/archive/plans/2026-08-06-harness-tool-honesty.md`) carries the same caveat.
 
-Every finding in the five-model harness review (`docs/active/investigations/2026-08-01-native-agent-harness-reviews.md`)
+Every finding in the five-model harness review (`docs/archive/investigations/2026-08-01-native-agent-harness-reviews.md`)
 reduces to one defect class: **a tool result that lets the model mistake a bounded
 view for a complete one, or that advises an action the tool does not support.**
 This spec fixes that class structurally rather than fixing eight strings, and adds

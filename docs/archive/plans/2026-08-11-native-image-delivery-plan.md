@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 milestone: M4-followup
 spec: docs/active/specs/2026-08-11-native-image-handling.md
 ---

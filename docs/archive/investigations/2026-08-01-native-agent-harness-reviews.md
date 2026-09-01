@@ -1,7 +1,9 @@
 ---
-status: active
+status: superseded
 type: investigation
 ---
+
+> **ARCHIVED 2026-09-01.** The multi-model review battery was replaced by the harness evaluator on 2026-08-13. Caveat carried forward: nobody recorded which of the 40 reviews were triaged, so "no unconsumed findings" is unproven. The live authority for the native-sessions / specialists / agents family is now `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` — vision, shipped state, remaining work and open decisions in one place. Read this file for history and research only.
 
 # Native Agent Harness Reviews
 

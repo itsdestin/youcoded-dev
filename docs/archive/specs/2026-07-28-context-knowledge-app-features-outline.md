@@ -1,10 +1,12 @@
 ---
 title: "Context & knowledge as product surfaces — preliminary outline"
 date: 2026-07-28
-status: draft
+status: superseded
 type: idea-source
 tags: [product, context, knowledge, sync, marketplace, memory]
 ---
+
+> **ARCHIVED 2026-09-01.** Idea source only; all five ideas are mirrored in the `ROADMAP.md` Someday entry "Context + knowledge app features" and nothing was built. The live authority for the native-sessions / specialists / agents family is now `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` — vision, shipped state, remaining work and open decisions in one place. Read this file for history and research only.
 
 # Context & knowledge as product surfaces
 

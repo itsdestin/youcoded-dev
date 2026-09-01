@@ -99,7 +99,7 @@ UI Phase D; context-truncation panel; Chat Search phase 2; resumable model downl
 
 ## 6. Positioning inputs (from the workspace's own research)
 
-Authority: `docs/active/specs/2026-07-09-platform-vision-roadmap.md` §2.2 and `docs/active/investigations/2026-08-26-native-tools-vs-other-harnesses.md`.
+Authority: `docs/archive/specs/2026-07-09-platform-vision-roadmap.md` §2.2 and `docs/active/investigations/2026-08-26-native-tools-vs-other-harnesses.md`.
 
 **The lane:** "nobody currently combines (a) local-first multi-model, (b) a friendly non-developer UI, (c) a social/marketplace layer, and (d) agent automations in one consumer app. Cowork/ChatGPT Work own 'agentic assistant for normal people' but are closed + cloud-only + single-vendor. OpenClaw/Hermes own 'own your agent' but are developer-hostile to set up." → **"the open, personal Cowork."**
 

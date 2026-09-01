@@ -539,7 +539,7 @@ Expected: ALL PASS — rule layer untouched, pure guard untouched, envelope logi
 The parent spec lives in the **workspace repo** (`youcoded-dev`), while the code branch lives in **youcoded** — two different repositories, so this is its own commit pushed to `youcoded-dev`, landed in the same session as the code merge.
 
 **Files:**
-- Modify: `docs/active/specs/2026-07-15-phase2-native-harness-design.md` (§2.3 jail sentence, ~line 62; §2.4 "BELOW all configuration" sentence, ~line 81)
+- Modify: `docs/archive/specs/2026-07-15-phase2-native-harness-design.md` (§2.3 jail sentence, ~line 62; §2.4 "BELOW all configuration" sentence, ~line 81)
 
 - [ ] **Step 1: Amend §2.3.** After the sentence ending:
 
@@ -557,7 +557,7 @@ append:
 
 ```bash
 cd /home/destin/youcoded-dev
-git add docs/active/specs/2026-07-15-phase2-native-harness-design.md
+git add docs/archive/specs/2026-07-15-phase2-native-harness-design.md
 git commit -m "docs(spec): ratify full-auto read bypass amendment into §2.3/§2.4"
 ```
 

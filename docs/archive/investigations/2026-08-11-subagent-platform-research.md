@@ -1,12 +1,14 @@
 ---
 title: "Subagent platform research — landscape, practices, interop, and source digs"
 date: 2026-08-11
-status: active
+status: shipped
 type: investigation
 tags: [native-runtime, subagents, orchestration, competitive-research, m7]
 repos: [youcoded]
 feeds: the M7 subagents + orchestration design (spec forthcoming)
 ---
+
+> **ARCHIVED 2026-09-01.** Research base for the specialists spec; specialists 1a/1b/1c all merged by 2026-08-26. The orchestration half is stage two of that spec. The live authority for the native-sessions / specialists / agents family is now `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` — vision, shipped state, remaining work and open decisions in one place. Read this file for history and research only.
 
 # Subagent platform research — August 2026
 
@@ -26,9 +28,9 @@ orchestration practices/evidence, (3) closed-platform UX + durability deep dive,
 Hermes/opencode/Kilo Code, (6) source dig of Cline/Codex CLI/Goose. Every claim came
 from a 2026 source fetched live or from reading the actual repos; training-data priors
 were treated as stale throughout. Complements (does not supersede):
-`docs/active/specs/2026-07-19-native-workflow-orchestration-design.md` (CC workflows /
+`docs/archive/specs/2026-07-19-native-workflow-orchestration-design.md` (CC workflows /
 Kimi swarm / Codex verified claims + legal analysis — still current) and
-`docs/active/investigations/2026-07-10-harness-design-ideas.md` (opencode subagent
+`docs/archive/investigations/2026-07-10-harness-design-ideas.md` (opencode subagent
 survey — confirmed by the source dig).
 
 Shallow clones read during the dig (session-temp, will vanish):
