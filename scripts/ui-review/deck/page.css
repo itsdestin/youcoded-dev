@@ -2,6 +2,14 @@
    Theme tokens are inlined by build.py into <style id="tokens">; amber is the deck's own colour. */
 :root{--radius-sm:4px;--radius-md:8px;--radius-lg:12px;--radius-full:9999px;--yes:#2E9B57;--no:#E5484D;--other:#C99700;--mark:#FFB020;--font:'Cascadia Mono','Cascadia Code','Fira Code',monospace;--content:clamp(900px,80vw,1640px)}
 *{box-sizing:border-box} html,body{height:100%;margin:0}
+/* Themed scrollbars. A live pane taller than the stage makes the stage scroll, and the browser's
+   own bar is a bright slab of unrelated chrome sitting on the deck (Destin, 2026-09-01). */
+*{scrollbar-width:thin;scrollbar-color:var(--edge) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--edge);border:2px solid transparent;background-clip:padding-box;border-radius:var(--radius-full)}
+::-webkit-scrollbar-thumb:hover{background:var(--fg-muted);border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
 body{font:13px/1.45 var(--font);color:var(--fg);background:var(--well);display:flex;flex-direction:column;padding:18px 10px 10px}
 /* the deck is a distinct surface: inset on the darker well, framed in amber, so it never reads as the app's own chrome */
 .deck{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;background:var(--canvas);border:2px solid rgba(255,176,32,.6);border-radius:14px;overflow:visible;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 8px 30px rgba(0,0,0,.25)}
@@ -27,7 +35,10 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)} .btn.ghost{border-color:transparent;color:var(--fg-2)} .btn.sm{height:28px;padding:0 10px}
 @media (hover:hover){ .btn:hover{background:var(--inset)} .btn.primary:hover{background:var(--accent);filter:brightness(1.12);transform:translateY(-1px)} .btn.ghost:hover{background:var(--inset);color:var(--fg)} }
 .btn:disabled{opacity:.45;cursor:default;transform:none;filter:none}
-.dot{width:8px;height:8px;border-radius:50%;flex:none} .dot.yes,.dot.pick{background:var(--yes)} .dot.no{background:var(--no)} .dot.other{background:var(--other)}
+/* The status dots are gone (Destin, 2026-09-01: "i don't like the current status dot style").
+   Choosing looks the SAME everywhere now — a lettered card and an answer button are both
+   neutral until picked and both take the deck's amber when they are. The yes/no/other colours
+   still live in the progress strip at the top, which is where an at-a-glance read belongs. */
 .answers{display:contents}
 /* a choice step: one button per variant, lettered like its picture's caption */
 .ans .key{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:5px;background:var(--inset);border:1px solid var(--edge);font-size:11px;font-weight:700;letter-spacing:.04em} .ans.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
@@ -35,7 +46,19 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .card.variant .vbody{min-width:0;display:flex;flex-direction:column;gap:4px} .card.variant h3{margin:0} .card.variant p{margin:0} .card.variant .r{font-size:11px;color:var(--mark)} .card.variant .cost{font-size:11px;color:var(--fg-muted)} .card.variant.on{border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)} .card.variant.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
 @media (hover:hover){.card.variant:hover{border-color:var(--fg-muted)}}
 .frame.pickable{cursor:pointer;border-radius:var(--radius-md);padding:4px;margin:-4px} .frame.pickable.on{outline:2px solid var(--mark);outline-offset:2px} .frame.pickable figcaption .key{margin-right:6px}
-.ans{border-color:var(--edge)} .ans.on{background:var(--inset);border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.ans{border-color:var(--edge)}
+/* Yes and No carry their meaning in the RESTING state — a tinted border and a tinted label,
+   the same quiet-colour idiom `.card.risk` already uses for amber. Destin (2026-09-01) wanted
+   green/red back but not as a status dot, and it has to live here rather than in the chosen
+   state: amber-when-picked is now the single signal for "this is the one I picked", shared
+   with the lettered cards, and two colours competing for that job is what the dots were.
+   Mixed toward the theme's own edge/text rather than used neat, so it reads on light themes
+   too — #2E9B57 on #F2F2F2 is not enough contrast for 13px text on its own.
+   The chosen rule below is deliberately LAST: it takes the border, and leaves the label its
+   colour, so a picked answer still says which one it was. */
+.ans[data-v="yes"]{border-color:color-mix(in srgb,var(--yes) 50%,var(--edge));color:color-mix(in srgb,var(--yes) 72%,var(--fg))}
+.ans[data-v="no"]{border-color:color-mix(in srgb,var(--no) 50%,var(--edge));color:color-mix(in srgb,var(--no) 72%,var(--fg))}
+.ans.on{background:var(--inset);border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)}
 main{flex:1;min-height:0;display:flex;justify-content:center;padding:14px 20px 16px;overflow:auto}
 .step{position:relative;display:flex;width:min(var(--content),100%);flex-direction:column;gap:10px;min-height:0}
 .thumbs{position:absolute;left:calc(100% + 16px);top:0;display:flex;flex-direction:column;gap:10px}
@@ -44,13 +67,29 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 .thumb img{height:44px;width:auto;max-width:110px;object-fit:cover;border-radius:3px;display:block} .thumb.on{border-color:var(--accent);color:var(--fg)}
 /* ── the three peer containers on one grid; the class is chosen by page.js ── */
 .content{flex:1;min-height:0;display:grid;gap:12px}
-.content.row-below{grid-template-columns:1fr;grid-template-rows:1fr auto auto;grid-template-areas:"stage" "info" "ctl"}
-.content.col-right{grid-template-columns:1fr minmax(320px,30%);grid-template-rows:1fr auto;grid-template-areas:"stage info" "ctl ctl"}
+.content.row-below{grid-template-columns:1fr;grid-template-rows:1fr auto;grid-template-areas:"stage" "decide"}
+.content.col-right{grid-template-columns:1fr minmax(320px,30%);grid-template-rows:1fr;grid-template-areas:"stage decide"}
 .content.compact{display:flex;flex-direction:column;flex:none}
 .compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
+/* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the
+   answer buttons stay reachable in a narrow window, and sticky needs room to move inside its
+   PARENT — wrapped in a content-height `.decide` there is none, and the bar scrolled away
+   (measured against HEAD: "ctl on screen" true before, false after). `display:contents`
+   dissolves the wrapper so the structure is exactly what it was. One card at every width a
+   review is actually done at; a reachable answer bar when the window is too narrow for it. */
+.compact .decide{display:contents}
+/* …and because the wrapper is dissolved there, the two blocks carry the card treatment
+   themselves again. Without this they are transparent and the sticky answer bar renders
+   straight over the question text. */
+.compact .info,.compact .controls{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg)}
 .step.compact-step{flex:none;min-height:0}
-.stage{grid-area:stage} .info{grid-area:info} .controls{grid-area:ctl}
-.info,.controls{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg)}
+.stage{grid-area:stage} .decide{grid-area:decide}
+/* ONE card, not two. The question, the options and the answer controls are a single decision —
+   Destin (2026-09-01): "the two separate cards/sections for the decision rows should be a
+   single card/section." A hairline separates the question from the answer row inside it. */
+.decide{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:auto}
+.info,.controls{background:none;border:0;border-radius:0}
+
 .info{padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto}
 .controls{padding:clamp(10px,1.2vh,14px) 16px;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(8px,0.8vw,14px)}
 .compact .controls{display:grid;grid-template-columns:1fr 1fr 1fr;position:sticky;bottom:0;z-index:3;box-shadow:0 -8px 20px rgba(0,0,0,.35)} .compact .controls .ans{max-width:none} .compact .controls .note{grid-column:1/3} .compact .controls #save{grid-column:3}
@@ -58,10 +97,50 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 .stage .inner{display:flex;justify-content:center;align-items:center;gap:18px;padding:12px 14px;min-width:100%;min-height:100%}
 .content.stacked .stage .inner{flex-direction:column;align-items:center}
 .frame{display:block;margin:0}
-figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);margin-bottom:6px;text-align:left}
+figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);margin-bottom:6px;text-align:left;display:flex;align-items:center;gap:6px;min-height:24px}
 .pic{position:relative;display:inline-block} .pic img{display:block;height:auto;border-radius:var(--radius-sm);cursor:none} body.no-loupe .pic img{cursor:default}
 /* CLIP steps: a recording per run — native controls so a bug can be paused and scrubbed; no loupe, no box */
 .pic video{display:block;height:auto;border-radius:var(--radius-sm);background:#000;cursor:default}
+
+/* ── live panes ─────────────────────────────────────────────────────────────────────────
+   SQUARE CORNERS, ON PURPOSE. A rounded, clipped wrapper round an iframe makes Chrome give
+   up on the cutout the app's glass surfaces use, so a wallpaper theme (Meadow Mist) blurs
+   the entire pane — verified, and tracked as an open landing-page bug. A 1px border and no
+   radius costs nothing and dodges it; if a pane ever needs rounding, round it from inside. */
+.pic iframe{display:block;border:1px solid var(--edge);background:var(--canvas)}
+/* Panes of different heights are TOP-aligned, not centred: three close-session designs at
+   280/279/267px sat on three different baselines and read as sloppy rather than as a
+   difference in the designs. */
+body[data-layout="live"] .stage .inner{align-items:flex-start}
+/* `.zoom` sets `display:inline-flex`, which OUTRANKS the `hidden` attribute's UA rule — so
+   hiding it from JS did nothing and the zoom pill sat on top of a pane's "open on its own"
+   link (2026-09-01). An explicit display always beats [hidden]; say so once, for everything. */
+[hidden]{display:none!important}
+/* The lettered chip needs air whatever the frame is. The existing rule for this is scoped to
+   `.frame.pickable`, and a live pane is deliberately NOT pickable — so its caption read
+   "aCard and row" with the letter welded to the label (seen 2026-08-31). It carries the
+   deck's own marker colour and a full stop, so "A." reads as a label rather than as the
+   first letter of the words after it. */
+figcaption .key{color:var(--mark);font-weight:700}
+/* A real button, not bare blue link text — it opens a window, so it should look like
+   something you press (Destin, 2026-09-01). `margin-left:auto` rather than a float: a float
+   escapes a one-line caption box. */
+.popout{margin-left:auto;text-transform:none;letter-spacing:0;font:500 11px/1 var(--font);
+  height:24px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;flex:none;
+  border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);
+  color:var(--fg-2);text-decoration:none;transition:background .15s,color .15s,border-color .15s}
+.popout:hover{background:var(--panel);color:var(--fg);border-color:var(--fg-muted)}
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--yes);margin-right:6px;vertical-align:middle}
+.livehint{font:11px/1.5 var(--font);color:var(--fg-muted);margin:10px 0 0;text-align:left}
+/* The theme row for a live step: same control, no thumbnails to put in it. */
+.thumb.label-only{padding:4px 10px;border-color:var(--edge-dim);background:var(--inset)}
+.thumb.label-only.on{border-color:var(--accent);background:var(--panel);color:var(--fg)}
+.down{max-width:520px;text-align:left;border:1px solid var(--edge);border-radius:var(--radius-md);padding:18px 20px;background:var(--panel)}
+.down h3{font:600 14px var(--font);margin:0 0 8px;color:var(--fg)}
+.down p{font:13px/1.6 var(--font);color:var(--fg-2);margin:0 0 10px}
+.down p.sub{color:var(--fg-muted);font-size:12px;margin-bottom:0}
+.down pre{font:12px/1.5 var(--mono,ui-monospace,monospace);background:var(--inset);color:var(--fg);border-radius:var(--radius-sm);padding:10px 12px;margin:0 0 12px;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.down code{font:12px var(--mono,ui-monospace,monospace);background:var(--inset);border-radius:3px;padding:1px 4px}
 .zoom .replay{width:auto;padding:0 10px;font-size:12px;font-weight:500}
 .box{position:absolute;border:2px solid var(--mark);border-radius:5px;box-shadow:0 0 0 3px rgba(255,176,32,.28),0 0 14px rgba(0,0,0,.45);pointer-events:none}
 .zoom{position:sticky;top:10px;float:right;margin:10px 10px -42px 0;z-index:2;display:inline-flex;align-items:center;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-full);padding:2px;gap:2px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.25)}

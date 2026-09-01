@@ -58,6 +58,10 @@ const ROUTES = [
   ['app · scenario=site', '&child=1&scenario=site'],
   ['tool gallery', '&child=1&view=tools'],
   ['comparisons', '&child=1&view=compare'],
+  // One authored candidate on its own, with no chrome — what a review deck's LIVE panes
+  // embed. The INDEX (no ?surface) rather than a named candidate, so this guard cannot rot
+  // when a candidate is renamed; it is also the browse page and the unknown-name error page.
+  ['live candidate index', '&child=1&view=live'],
   ['assistant settings', '&child=1&view=assistant-final'],
   // Attachment-chip design mock-ups (three candidates over eleven sample
   // files). A standalone surface, so it needs its own route to be mount-checked.

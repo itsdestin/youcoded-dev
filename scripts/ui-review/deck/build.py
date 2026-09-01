@@ -7,6 +7,7 @@ import json
 import os
 
 from .crops import image_name
+from .live import has_live, is_live, live_base, live_offset, pane_url, pane_width
 from .spec import SpecError, all_themes, is_choice, is_decide, run_names, step_themes, validate, workspace_root, is_clip, clip_files
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -89,9 +90,42 @@ def _clip_step(spec, st, runs):
             'posters': {r: (posters[r] if posters[r] and os.path.exists(os.path.join(spec['_base'], posters[r])) else '') for r in runs}}
 
 
+def _live_step(spec, st):
+    """Panes onto the RUNNING app instead of pictures. One pane for a try-this, one per
+    variant for a pick-one — the question shape is the existing one, only the picture is new.
+
+    `url` is both the pane's address and its pop-out link: "open on its own" is this same
+    candidate in a new tab, which is room and quiet, not a different rendering."""
+    live = st['live']
+    theme = spec['themes'][0]   # first paint; every later theme change goes by message, not by reload
+    if st.get('variants'):
+        panes = [{'id': v['id'], 'label': v['label'], 'summary': v['summary'],
+                  'measured': v.get('measured', ''), 'risk': v.get('risk', ''),
+                  'url': pane_url(spec, live, v['candidate'], theme)} for v in st['variants']]
+    else:
+        panes = [{'id': live['candidate'], 'label': '', 'summary': '', 'measured': '', 'risk': '',
+                  'url': pane_url(spec, live, live['candidate'], theme)}]
+    return {
+        'id': st['id'], 'kind': 'live',
+        # `kind` is spent on where the picture comes from, so the QUESTION shape rides
+        # separately: `variants` in the spec still means pick-one, their absence still means
+        # yes/no. Without this the page falls through to the approve branch and a pick-one
+        # renders Yes/No buttons over panes nobody can choose between.
+        'shape': 'choice' if st.get('variants') else 'approve',
+        'surface': st['surface'], 'path': st['path'],
+        'headline': st['headline'], 'changed': st.get('changed', ''), 'measured': st.get('measured', ''),
+        'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
+        'panes': panes,
+        'width': live.get('paneWidth', pane_width(spec)),
+        'height': live.get('height'),
+        **({'themes': list(st['themes'])} if st.get('themes') else {}),
+    }
+
+
 def deck_data(spec, boxes):
     runs = run_names(spec)
-    steps = [_choice_step(spec, st, boxes, runs[-1]) if is_choice(st)
+    steps = [_live_step(spec, st) if is_live(st)
+             else _choice_step(spec, st, boxes, runs[-1]) if is_choice(st)
              else _decide_step(spec, st, boxes, runs) if is_decide(st)
              else _clip_step(spec, st, runs) if is_clip(st) else {
         'id': st['id'], 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
@@ -102,7 +136,15 @@ def deck_data(spec, boxes):
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
     } for st in spec['steps']]
     every = all_themes(spec)
-    return {'title': spec['title'], 'key': spec['key'], 'runs': runs,
+    # `command` is spelled HERE, where the offset and the worktree are both known, so the
+    # "server isn't running" card can name the exact thing to run instead of guessing.
+    tree = (spec.get('live') or {}).get('worktree', '')
+    live = {'live': {
+        'base': live_base(spec),
+        'worktree': tree,
+        'command': f'YOUCODED_PORT_OFFSET={live_offset(spec)} bash scripts/run-workbench.sh {tree}',
+    }} if has_live(spec) else {}
+    return {**live, 'title': spec['title'], 'key': spec['key'], 'runs': runs,
             'runLabels': {'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
             'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},
             'steps': steps}
@@ -112,6 +154,8 @@ def build_page(spec, boxes):
     errors, warnings = validate(spec)
     runs = run_names(spec)
     for st in spec['steps']:
+        if is_live(st):
+            continue   # nothing on disk to check — the pane is a running app; page.js probes the server
         if is_clip(st):
             vids, _ = clip_files(spec, st)
             for r in runs:

@@ -7,11 +7,15 @@
   python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
         block until the answers file says submitted (for a session that no longer holds the `serve` process)
 
-Four step kinds, each named by its own fields: APPROVE (`changed`+`notice`, yes/no),
+Five step kinds, each named by its own fields: APPROVE (`changed`+`notice`, yes/no),
 CHOICE (`variants` — a picture per option, pick one), DECIDE (`options` — one picture of
 today plus written options, pick one), CLIP (`clip` — a RECORDING per run instead of a still,
 for animations, hovers, transitions and bugs that only show in motion; files from
-`scripts/ui-review/record-pair.sh`, Before | After play side by side with a shared replay). Wording-only questions are not a step: ask in chat.
+`scripts/ui-review/record-pair.sh`, Before | After play side by side with a shared replay),
+and LIVE (`live` — panes of the RUNNING app he can hover, click and drag, one authored
+candidate each out of youcoded's compare/registry.tsx; `variants` makes it a pick-one, their
+absence a yes/no, and `serve` boots the worktree's workbench for it). Wording-only questions
+are not a step: ask in chat.
 
 Run `serve` in the background: its exit is the "review finished" signal and it prints the
 feedback summary. There is deliberately no separate crop step — a stale intermediate file drew
@@ -38,7 +42,9 @@ def build(spec):
     r = crop_images(spec, log=lambda m: print(m, file=sys.stderr))
     for w in warnings + r['warnings']:
         print('warning: ' + w, file=sys.stderr)
-    print(f'{r["count"]} crops → {os.path.join(spec["_base"], spec["images"])}')
+    # A live-only deck cuts nothing and names no images folder — spec['images'] would KeyError.
+    if 'images' in spec:
+        print(f'{r["count"]} crops → {os.path.join(spec["_base"], spec["images"])}')
     if r['missing']:
         return 1
     page, _ = build_page(spec, r['boxes'])
@@ -62,6 +68,8 @@ def main(argv):
         sub.choices[c].add_argument('--timeout', type=float, default=240, help='minutes to wait for a submit (exit 2 after)')
     sv = sub.choices['serve']
     sv.add_argument('--no-open', action='store_true')
+    sv.add_argument('--no-live', action='store_true',
+                    help="don't start or stop the app server for live panes (it's already running)")
     sv.add_argument('--no-build', action='store_true', help='serve the page as it is on disk')
     sv.add_argument('--port', type=int, default=0)
     a = ap.parse_args(argv)
@@ -79,7 +87,7 @@ def main(argv):
             return 3
         if not a.no_build and build(spec) != 0:
             return 1
-        return serve(spec, port=a.port, open_browser=not a.no_open, timeout_min=a.timeout)
+        return serve(spec, port=a.port, open_browser=not a.no_open, timeout_min=a.timeout, live=not a.no_live)
     except SpecError as e:
         print(str(e), file=sys.stderr)
         return 1
