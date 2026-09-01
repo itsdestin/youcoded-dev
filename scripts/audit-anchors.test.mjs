@@ -486,3 +486,9 @@ test('affectedSubsystems: a real uncovered code file still shows up', () => {
   assert.deepEqual(r.uncovered, ['youcoded/app/src/Brand.kt']);
   assert.equal(r.uncoveredExpected, 1);
 });
+
+test('harvestDocAnchors: marker argument — claim: anchors are invisible to the verify: pass', () => {
+  const text = 'x\n<!-- verify: {"path": "a.ts"} -->\ny\n<!-- claim: {"path": "b.ts", "contains": "z"} -->\n';
+  assert.deepEqual(harvestDocAnchors(text), [{ path: 'a.ts' }]);
+  assert.deepEqual(harvestDocAnchors(text, 'claim'), [{ path: 'b.ts', contains: 'z' }]);
+});
