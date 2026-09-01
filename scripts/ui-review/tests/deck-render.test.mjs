@@ -53,6 +53,18 @@ test('deck renders at three sizes and records an answer', async () => {
         assert.equal(await c.evaluate('document.body.dataset.layout'), expected(scores), size + ' ' + JSON.stringify(scores));
         if (size === '400x760') assert.equal(await c.evaluate('document.body.dataset.layout'), 'compact', size);
         assert.equal(await c.evaluate("getComputedStyle(document.querySelector('.controls')).display !== 'none' && document.querySelector('.controls').getBoundingClientRect().bottom <= innerHeight"), true, size + ' controls on screen');
+        // ONE decision card: the question, the options and the answer row share a border.
+        // COMPACT is the deliberate exception — the wrapper dissolves there so the sticky
+        // answer bar keeps room to move, and the two blocks carry the card themselves.
+        const merged = await c.evaluate("(()=>{const d=document.querySelector('.decide'),cs=getComputedStyle(d);"
+          + "return cs.display === 'contents' ? 'compact'"
+          + " : cs.borderTopWidth !== '0px' && d.contains(document.querySelector('.info')) && d.contains(document.querySelector('.controls'));})()");
+        assert.equal(merged, size === '400x760' ? 'compact' : true, size + ' one decision card');
+        if (size === '400x760') {
+          // Transparent here means the pinned bar renders straight over the question text.
+          assert.notEqual(await c.evaluate("getComputedStyle(document.querySelector('.controls')).backgroundColor"), 'rgba(0, 0, 0, 0)', 'compact answer bar is opaque');
+          assert.notEqual(await c.evaluate("getComputedStyle(document.querySelector('.info')).backgroundColor"), 'rgba(0, 0, 0, 0)', 'compact question block is opaque');
+        }
         assert.equal(await c.evaluate("document.querySelectorAll('#inner .frame').length"), 2, size);
         assert.equal(await c.evaluate("document.querySelector('#inner .box').style.left"), '25%', size + ' measured box');
         if (size === '1100x900') {

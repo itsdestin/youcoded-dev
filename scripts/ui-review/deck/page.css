@@ -44,13 +44,29 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 .thumb img{height:44px;width:auto;max-width:110px;object-fit:cover;border-radius:3px;display:block} .thumb.on{border-color:var(--accent);color:var(--fg)}
 /* ── the three peer containers on one grid; the class is chosen by page.js ── */
 .content{flex:1;min-height:0;display:grid;gap:12px}
-.content.row-below{grid-template-columns:1fr;grid-template-rows:1fr auto auto;grid-template-areas:"stage" "info" "ctl"}
-.content.col-right{grid-template-columns:1fr minmax(320px,30%);grid-template-rows:1fr auto;grid-template-areas:"stage info" "ctl ctl"}
+.content.row-below{grid-template-columns:1fr;grid-template-rows:1fr auto;grid-template-areas:"stage" "decide"}
+.content.col-right{grid-template-columns:1fr minmax(320px,30%);grid-template-rows:1fr;grid-template-areas:"stage decide"}
 .content.compact{display:flex;flex-direction:column;flex:none}
 .compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
+/* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the
+   answer buttons stay reachable in a narrow window, and sticky needs room to move inside its
+   PARENT — wrapped in a content-height `.decide` there is none, and the bar scrolled away
+   (measured against HEAD: "ctl on screen" true before, false after). `display:contents`
+   dissolves the wrapper so the structure is exactly what it was. One card at every width a
+   review is actually done at; a reachable answer bar when the window is too narrow for it. */
+.compact .decide{display:contents}
+/* …and because the wrapper is dissolved there, the two blocks carry the card treatment
+   themselves again. Without this they are transparent and the sticky answer bar renders
+   straight over the question text. */
+.compact .info,.compact .controls{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg)}
 .step.compact-step{flex:none;min-height:0}
-.stage{grid-area:stage} .info{grid-area:info} .controls{grid-area:ctl}
-.info,.controls{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg)}
+.stage{grid-area:stage} .decide{grid-area:decide}
+/* ONE card, not two. The question, the options and the answer controls are a single decision —
+   Destin (2026-09-01): "the two separate cards/sections for the decision rows should be a
+   single card/section." A hairline separates the question from the answer row inside it. */
+.decide{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:auto}
+.info,.controls{background:none;border:0;border-radius:0}
+.controls{border-top:1px solid var(--edge)}
 .info{padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto}
 .controls{padding:clamp(10px,1.2vh,14px) 16px;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(8px,0.8vw,14px)}
 .compact .controls{display:grid;grid-template-columns:1fr 1fr 1fr;position:sticky;bottom:0;z-index:3;box-shadow:0 -8px 20px rgba(0,0,0,.35)} .compact .controls .ans{max-width:none} .compact .controls .note{grid-column:1/3} .compact .controls #save{grid-column:3}
