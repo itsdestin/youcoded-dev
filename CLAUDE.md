@@ -85,7 +85,7 @@ Verify the commit landed on master first: `git branch --contains <sha>` should l
 
 **Query symbols before reading files, and delegate sweeps to a subagent.** The rule above is about search *completeness*; this one is about search *price*. `ipc-handlers.ts` is 3,906 lines and `App.tsx` is 3,679 — **one whole-file read costs ~10x this entire CLAUDE.md**, and a conventional IPC-parity sweep runs ~90k tokens. Escalate, stopping as soon as the question is answered: **Serena** (`get_symbols_overview`, `find_symbol`, `find_referencing_symbols`) → **ast-grep** for code *shapes* → **`rg`** for exact strings → **whole-file reads only for files you're about to edit**. Any question answered by sweeping files goes to a read-only search subagent (`Explore`, else `general-purpose`), which spends the tool calls in its own context and returns a 1–2k-token conclusion.
 
-**Serena has exactly one job here: resolved references and file shape, for code already on `master`.** It is pinned to the main checkout (`youcoded/`) and resolves every path against that root, so **it cannot see your worktree** — during worktree work it silently answers with master's copy. Use it to orient in a big file and to answer "who calls this?"; never to check your own branch. Branch truth is `bash scripts/verify.sh`. It is read-only on purpose (an edit tool would have written to the main checkout mid-worktree). Not for: Kotlin/`app/**` (unindexed), other sub-repos (unreachable), string-keyed things like IPC channels or CSS classes (`rg`), or "is this dead" (`npm run knip` — Serena reports "no references" identically whether it searched or never looked). The full rule auto-loads on the god-files: `.claude/rules/code-search.md`; depth in `docs/code-intelligence.md`.
+**Serena answers "who calls this?" and file shape, for code already on `master` — and cannot see your worktree.** Branch truth is `bash scripts/verify.sh`. Everything else about when it is and is not the right tool is in `.claude/rules/code-search.md`, which auto-loads on the god-files where the question comes up.
 
 **Prefer a tool that returns a verdict over one that returns text to interpret.** `npm run knip` for dead code, `tsc --noEmit` for types, `npm run lint` for the bug classes types can't see (conditional React hooks, floating promises in main, runtime imports of undeclared packages), `ipc-channels.test.ts` for three-surface parity, `bash scripts/ast-grep/check.sh` for the invariants that have been promoted from prose to executable scans — or `bash scripts/verify.sh` to run all of those at once against a checkout (see [Local build & test](#local-build--test)). When you codify a new invariant, an ast-grep rule beats a sentence in `.claude/rules/` — adding rules to the scan is documented in `docs/code-intelligence.md`.
 
@@ -198,6 +198,12 @@ New knowledge goes to, in descending preference: **a pinning test > an ast-grep 
 | Destin-specific preferences / session feedback | Auto-memory — LAST resort; product planning never lives in memory |
 
 **Document lifecycle:** new specs/plans/handoffs save to `docs/active/{specs,plans,handoffs,investigations,prototypes}/` with `status:` frontmatter (`draft | active | shipped | superseded`). When a feature merges, its docs move to `docs/archive/` and the ROADMAP item flips to `[x]` in the same session — "Merge means merge AND push" extends to "…AND archive the docs AND flip the roadmap item." Searches for live docs exclude `docs/archive/` by default.
+
+**A retrospective is closed in the session that acts on it.** Every finding ends as
+shipped, dropped, or a dated `ROADMAP.md` entry — then the document moves to
+`docs/archive/`. Two retrospectives sat unclosed for weeks and their unshipped half was
+independently rediscovered twice; one of the rediscovered items was the glob migration
+of 2026-08-31.
 
 ## Subsystem References (read on demand — NOT auto-loaded)
 
