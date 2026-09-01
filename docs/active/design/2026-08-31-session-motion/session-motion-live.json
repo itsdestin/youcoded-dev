@@ -1,0 +1,45 @@
+{
+  "title": "Session strip and switching — live",
+  "key": "session-motion-live",
+  "out": "deck-live.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "feel",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "Which speed feels right for the strip?",
+      "risk": "Every pane has the same mechanics — a peek stays open through a click, the badge opens after the name, a dragged pill rides under your cursor. Only speed and curve differ.",
+      "live": { "surface": "session-strip-motion", "round": 1 },
+      "variants": [
+        { "id": "settled", "label": "Settled", "candidate": "settled", "summary": "Decelerates fast and stops dead: 150ms hover, 200ms name reveal. What ships if nothing is picked." },
+        { "id": "crisp", "label": "Crisp", "candidate": "crisp", "summary": "Same curve, a third quicker: 100ms hover, 140ms reveal. Nearly instant, still not a cut." },
+        { "id": "soft", "label": "Soft", "candidate": "soft", "summary": "A plain ease and a little longer: 180ms hover, 260ms reveal. Calmer; you can see the row move." }
+      ]
+    },
+    {
+      "id": "drag",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "Does dragging feel like a Chrome tab now?",
+      "changed": "The pill you grab follows your cursor exactly along the row and never leaves it. The pills it passes step aside one at a time, so the gap is already open where it will land. When you let go it glides the last few pixels into place. Pulling a pill down past the strip still tears it out into its own window.",
+      "notice": "No more hopping from slot to slot behind the cursor, no spring back to where it started, and no void opening beside a dot you picked up while its name was showing.",
+      "risk": "A wide pill among dots moves several dots at once as it passes them — that is the row keeping the same total width, not a bug.",
+      "live": { "surface": "session-strip-motion", "round": 1, "candidate": "settled" }
+    },
+    {
+      "id": "arrival",
+      "surface": "Chat",
+      "path": "Main view",
+      "headline": "How should the conversation arrive?",
+      "risk": "The conversation you are leaving is never animated. One element moves, so a very long conversation costs no more than a short one.",
+      "live": { "surface": "session-switch-arrival", "round": 1 },
+      "variants": [
+        { "id": "lift", "label": "Fade and lift", "candidate": "lift", "summary": "The conversation fades in while rising 6px, over a quarter second." },
+        { "id": "fade", "label": "Fade only", "candidate": "fade", "summary": "The same fade, no movement. Nothing in the transcript shifts." },
+        { "id": "cut", "label": "Cut", "candidate": "cut", "summary": "No animation. The conversation is simply there, the way Chrome switches a tab." }
+      ]
+    }
+  ]
+}

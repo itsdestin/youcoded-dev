@@ -111,3 +111,6 @@ perf-reports/shots/
 # Python bytecode from the deck tooling + its tests
 __pycache__/
 *.pyc
+
+# Written beside a deck spec by review-cards.py serve (the workbench it boots for live panes)
+*.workbench.log

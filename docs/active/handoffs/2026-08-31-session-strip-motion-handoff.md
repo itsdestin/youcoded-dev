@@ -1,156 +1,105 @@
 ---
 status: active
 created: 2026-08-31
+revised: 2026-09-01
 tags: [ui, motion, session-strip, chat-view, desktop, handoff]
 plan: docs/active/plans/2026-08-31-session-strip-and-switch-motion.md
 spec: docs/active/specs/2026-08-31-session-strip-and-switch-motion-design.md
-blocked_on: docs/archive/specs/2026-08-31-live-review-panes-design.md
+deck: docs/active/design/2026-08-31-session-motion/session-motion-live.json
 ---
 
 # Session strip & switch motion — handoff
 
-**State: code complete and green. Review medium rejected. Not merged.**
+**State: rebuilt 2026-09-01, green, served as a live deck, waiting on Destin's three answers.**
 
-Tasks 1–12 of the plan are implemented, committed and verified. The work is
-blocked on ONE thing: the review deck it was presented in was clip-based, and
-Destin rejected clips as a way to judge motion — *"the videos are just rough to
-compare."* Nothing about the code is known to be wrong; it has simply not been
-approved, and some motion values may change once it is reviewed properly.
-
----
+The first cut (14 commits, 2026-08-31) was rejected in use: *"much too bouncy/aggressive"*,
+*"clicking is weird and jumpy"*, *"drag spacing is still really odd"*. This session recorded
+each gesture frame by frame in the workbench, found a mechanical cause for every complaint,
+and rebuilt the motion on top of the first cut's correctness work (id-keyed drag, the packer
+measuring the badge, the frozen pack). The spec's §3, §5.2, §6, §7.4–7.5, §8 and §11 are
+rewritten to describe what is built now; the plan is history.
 
 ## Where the work lives
 
 | | |
 |---|---|
-| Branch | `feat/session-strip-motion` (youcoded), 12 commits ahead of `origin/master` |
-| Worktree | `worktrees/session-motion` — clean |
-| "Before" worktree | `worktrees/session-motion-before` — detached at `2af35eff`, existed only to record the Before clips. **Safe to delete.** |
-| Diff | 13 files, +838 / −143 |
-| Workspace artifacts | committed to `youcoded-dev` (plan, deck spec + scenes + clips, `record.mjs` drag verb) |
+| Branch | `feat/session-strip-motion` (youcoded), merged up to `origin/master` at `57a8efc0` |
+| Worktree | `worktrees/session-motion` — clean, committed, **not pushed** at the time of writing |
+| Review deck | `docs/active/design/2026-08-31-session-motion/session-motion-live.json` — three live steps |
+| Deck branch | `feat/session-motion-review` (youcoded-dev), worktree `worktrees/motion-docs` — see "Why a workspace worktree" |
+| Verification | `bash scripts/verify.sh worktrees/session-motion` → exit 0 (types, FULL suite, knip, eslint, ast-grep); `node scripts/workbench-boot-check.mjs <port>` → 15/15 routes |
 
-Verification at the point of handoff:
+## What was wrong, by frame, and what replaced it
 
-- `bash scripts/verify.sh worktrees/session-motion` → **exit 0** (types, related tests + all 30 source-scanning guards, knip, eslint, ast-grep)
-- full desktop suite → **7573 passed, 42 skipped, 0 failed**
-- Android and the marketplace worker are untouched and were not run (desktop-only change).
+| Destin's words | Cause (measured) | Now |
+|---|---|---|
+| "clicking is weird and jumpy" | Pointer-down cleared hover, so the peek collapsed to a dot and the click re-opened it: open → shut → open | Hover untouched at pointer-down; the peek becomes the active label, then the badge opens |
+| "still seeing … truncated names" | The badge sat at full width while the name was still opening; and widths were measured in `system-ui` while the UI font is a ~15% wider monospace | Badge opens after the name (`badge-in`); fonts read off the real label |
+| jank on every click | The label animated the text's own width, so the ellipsis re-fitted every frame ("theme …", "theme cont…") | Name laid out once at `max-content`; only a clipping box's `max-width` animates, between two measured numbers; overflow fades |
+| "too bouncy/aggressive" | Spring curve on a width-like property; the whole row overshot and came back | No overshoot anywhere: `--ease-out` and `--ease-settle` only |
+| "drag spacing is still really odd" | (a) the pill was positioned by its SLOT with an ease: it hopped 26px per slot while the cursor moved 130px; (b) a dot picked up while its peek was open collapsed mid-drag, opening a ~150px void | Pill rides under the cursor 1:1, clamped to the row; target = nearest **slot** centre; hover held through the drag |
+| release jumped | Visuals cleared at pointer-up, reorder landed after the cross-window IPC | Reorder + release + settle in one render; the pill glides home (two-render FLIP) |
+| (found, not reported) | The review presets had been pasted **inside `:root`**, so `[data-motion=crisp]` swallowed `--bottom-chrome-total` and the drawer width for every normal page | Presets outside `:root`; a test pins `:root` still holds both |
+| (found, not reported) | The switch window opened from `useEffect` — one un-animated frame first on any non-click switch | Derived during render; test pins committed sequence `[false, true]` |
 
----
+## How Destin reviews it
 
-## What was built
+The deck is **live**: each pane is the real strip in the workbench's live route. He clicks,
+hovers and drags in the pane itself.
 
-| Area | Change |
-|---|---|
-| Motion tokens | Three curves + three durations in the theme-independent `:root` of `globals.css`. All three curve values already existed inline — a rename, not a new look. |
-| `use-one-shot-window.ts` | One hook: true for one animation window after a key changes, never on mount. Serves both the pill expand and the transcript arrival. |
-| `pill-label-style.ts` | Pure module for the label's width + transition. Fixes both causes of the snap: `maxWidth` was `undefined` for the active pill (nothing to interpolate), and the transition was switched off for every pack-expanded pill — which the packer guarantees the active pill always is. Uses `calc-size()`. |
-| Hover handlers | Now attached unconditionally, gated inside the handler. A pill the packer collapsed to a dot under a resting cursor used to stay a dot. |
-| Curves | The three hand-written `cubic-bezier(` in `SessionStrip.tsx` converted to tokens; the file pinned against a fourth. `steps()` deliberately untouched. |
-| `drag-order.ts` | Pure: nearest-pill hit test, canonical reorder indices, neighbour slide offsets. Everything keyed by session id. |
-| Drag state | Moved off indices onto ids end to end. Pill geometry frozen at pointer-down. |
-| `use-frozen-pack.ts` | Holds the pack taken at pointer-down so the row cannot repack under the cursor. |
-| Drag visuals | Ghost + insertion line deleted; the real pill lifts and moves, neighbours step aside. |
-| `ChatView` | The incoming conversation arrives on a session switch; the outgoing one is not animated. |
+```bash
+cd worktrees/motion-docs   # or the main checkout once it has pulled origin/master
+python3 scripts/ui-review/review-cards.py serve docs/active/design/2026-08-31-session-motion/session-motion-live.json
+# prints  [deck] http://127.0.0.1:<port>/deck-live.html   — quote that line to Destin
+```
 
----
+`serve` boots the `session-motion` worktree's workbench on :5513 itself. Three steps:
 
-## Things found during implementation that are NOT in the plan
+1. **feel** — pick one of Settled / Crisp / Soft (`[data-motion]`, speed and curve only).
+2. **drag** — yes/no on the Chrome-style drag.
+3. **arrival** — pick one of Fade-and-lift / Fade / Cut (`[data-arrival]`).
 
-Read these before touching the branch.
+Answers land in `session-motion-live.answers.json` beside the spec on Submit.
 
-### The drag bug was worse than the plan described, and it is now pinned
+## After the answers
 
-The plan said drops land in the wrong slot once sessions overflow into the "+N"
-chip. Reading `packSessions` showed *why*, and it is broader: the packer keeps
-the active pill plus a **prefix** of the others. So whenever the active session
-sits past that prefix, its position in the visible strip is not its position in
-`sessions` — meaning **dragging the active pill** was the broken case, and the
-wrong pill also dimmed for the whole drag.
+1. Move the winning values into `:root` in `globals.css` and **delete** the `[data-motion]` /
+   `[data-arrival]` blocks, the `?motion=` / `?arrival=` scaffold in `index.tsx`, and the
+   `motion` / `arrival` props on `SessionStripMotionDemo` (keep the demo and its two
+   registry surfaces with one candidate each — they are how the strip gets reviewed next time).
+   Update the two `animation-frame-budget` pins that name the presets.
+2. If the drag is a "no", the answer's note says what; the model is in `drag-order.ts` and
+   §7.4 — do not go back to slot positioning, that is the thing it replaced.
+3. Merge and push `feat/session-strip-motion`; then `feat/session-motion-review` (deck +
+   docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
+4. Clean up: `worktrees/session-motion`, `worktrees/motion-docs` (and its `worktrees`
+   symlink), `worktrees/session-switch-animation` (PR youcoded#192 — close unmerged).
 
-`tests/drag-order.test.ts` → `describe('the index spaces the strip used to mix')`
-reproduces this with the real packer. Do not delete it.
+## Why a workspace worktree, and the symlink in it
 
-### `data-session-idx` is a cross-process contract — never rename it
+The main `youcoded-dev` checkout is 29 commits behind and cannot pull: other sessions have
+uncommitted edits to `CLAUDE.md` / `ROADMAP.md` / two rules, and untracked files that
+`origin/master` now tracks. The live-deck tooling (`deck/live.py`, `?view=live`) is only on
+`origin/master`, so this session's docs and deck live in `worktrees/motion-docs`, a worktree
+of `youcoded-dev` at `origin/master`. The deck's `serve` resolves `live.worktree` under its
+own root's `worktrees/`, so that worktree holds an **untracked symlink** `worktrees →
+../../worktrees`. Once the main checkout has pulled, the deck runs from there unchanged and
+both the worktree and the symlink go.
 
-The plan originally renamed it. It is read from outside the renderer by two
-consumers that both **fail silently**:
+## Things the next session should not re-learn
 
-- `youcoded/desktop/src/main/main.ts:1167` — the main process measures the first
-  pill by that attribute, inside a string `tsc` cannot see, to place a torn-off
-  window under the cursor. A miss is swallowed (`if (!pillRect) return`).
-- `scripts/perf-lab/scenario-workload.mjs:259,301,303` — reads the attribute
-  **and its numeric value**.
-
-The branch **adds** `data-session-id` beside it. `animation-frame-budget.test.ts`
-asserts both are present.
-
-### Pill geometry must be frozen, not re-measured
-
-`getBoundingClientRect()` includes the `translateX` the neighbours carry during a
-drag. Re-measuring per pointermove feeds this frame's hit-test answer back in as
-next frame's input — pills chatter at the boundaries and the dragged pill's
-travel clamp drifts. `pillRectsRef` is filled once in `handlePointerDown`.
-
-### Three small environment facts the plan got wrong
-
-- Test files using `renderHook` need `// @vitest-environment jsdom` on line 1 —
-  this repo's vitest runs `node` by default.
-- Recording scenes must use `?mode=workbench&child=1&…`. The workbench wraps the
-  app in an iframe, so a top-level `querySelector` finds **zero** pills. This
-  cost a wrong turn; it is now in the scenes and the commit message.
-- Spreading a `NodeList` fails under this tsconfig (no `DOM.Iterable`) — use
-  `Array.from`.
-
-### `calc-size()` was verified, not assumed
-
-Checked headlessly in the app's own Chromium (146 via Electron 41.10.3):
-`CSS.supports` true for both `calc-size(max-content, size)` and the capped form,
-and it computes to a real intrinsic width. The `grid-template-columns` fallback
-documented in `pill-label-style.ts` is **not** needed.
-
-### The old bug was never reproduced end-to-end in a live window
-
-Several attempts to drive the app into the overflow state by clicking failed. The
-proof is the packer-level test plus reading the two lines of old code, not a
-recording of the old behaviour. Stated plainly so nobody repeats the attempt
-thinking it is easy.
-
----
-
-## What is NOT done
-
-1. **Task 12's review was rejected as a medium.** The deck at
-   `docs/active/design/2026-08-31-session-motion/` (spec, 4 scenes, 8 clips)
-   exists and builds, and its clips are committed. It should be **re-authored as
-   live pick-one steps** once `docs/archive/specs/2026-08-31-live-review-panes-design.md`
-   ships. Keep the clips — a live step does not archive, so a still or clip
-   alongside is still wanted.
-2. **Task 13** (per-bubble stagger) is conditional and untouched. Correct.
-3. **Destin has answered nothing.** No step was approved. Motion values are
-   provisional.
-4. **The plan's remaining Done criteria**: worktrees not removed, branch not
-   merged, spec not flipped to `shipped`, docs not archived, PR #192 not closed.
-
----
-
-## Next steps, in order
-
-1. Another session implements the live-review-panes spec.
-2. Author real alternative motion candidates in
-   `youcoded/desktop/src/renderer/dev/workbench/compare/registry.tsx` on this
-   branch — **the built behaviour is one named candidate among genuine
-   alternatives**, not the only option with two worse ones invented around it.
-   A step with no real alternative becomes a "try this" instead.
-3. Re-author the deck as live steps; hand it to Destin; act on the answers.
-4. Only then: merge, clean up both worktrees and the branch, archive the plan and
-   spec, flip the roadmap item, close youcoded PR #192 unmerged.
-
----
-
-## Housekeeping done at handoff
-
-- Deck server stopped (it was serving the superseded clip review).
-- Temporary probe scripts (`scripts/ui-review/_probe.mjs`, `_dragcheck.mjs`)
-  deleted — they were throwaway CDP helpers, not committed.
-- `worktrees/session-motion-before` is still on disk and is safe to delete; it
-  holds no work.
+- Measuring text: **read the label's computed font**; never assume `system-ui`. The packer
+  had under-measured every name since it was written.
+- The dragged pill must have **no transition on `transform`**, and the neighbours must have
+  `transition: none` for the one render in which the DOM order changes (`reorderQuiet`).
+- `useLayoutEffect` with no deps in `SessionStrip` is the settle FLIP; it does a cheap null
+  check every render on purpose.
+- `data-session-idx` is a cross-process contract (main.ts tear-off placement, perf-lab).
+  Never rename it; `data-session-id` sits beside it.
+- Recording scenes need `?mode=workbench&child=1&…`; run `record.mjs` from the workspace
+  root (paths are relative); a Vite server started before a dependency was linked caches
+  the failed resolution — restart it.
+- A youcoded worktree from before the games branch lacks `chess.js`; `cp -al` it from a
+  sibling worktree that has it, never `npm ci` in a hardlinked tree.
+- The old clip deck (`session-motion.json`, 8 clips) is kept as the record of what was
+  rejected as a medium; it is not the review.
