@@ -18,7 +18,20 @@ opening the moment you press, before any drag. That forced a second drag model �
 hand is now a floating twin over a row that is free to reshape underneath it (spec §6.1,
 §7.4) — and the deck's second step is now a pick-one on WHEN the switch happens (press /
 press-with-name-on-drop / release) instead of the drag yes/no. Three modes are read from
-`[data-select]`; the winner becomes the only behaviour.
+`[data-select]`; the winner becomes the only behaviour. **Destin picked press in the
+workbench (*"press looks pretty good actually"*) and asked for the release to be refined.**
+
+**The release, refined by numbers, not by eye.** `scripts/ui-review/drag-probe.mjs` logs
+every pill's left edge per animation frame around a scripted drop. It found two things a
+recording cannot show: the header re-centres the strip as the row reshapes after a press, so
+the floating pill was positioned against where the strip *was* (11px off at release, then a
+glide from the wrong spot); and the dots step aside by a computed width 3.4px narrower than
+the real one, so all of them hopped 3px at the drop. Now the float tracks the strip's current
+edge, and on the drop *every* pill glides from exactly where it was drawn (read off the DOM,
+the held one via its twin) to where it lands. Three probes (right, left, and a 150ms drag
+started while the name was still opening) show the real pill picking up at the twin's exact
+pixel and no jump anywhere. Also corrected: a collapsed pill renders at 28px, and the packer
+had budgeted 24 since it was written.
 
 The first cut (14 commits, 2026-08-31) was rejected in use: *"much too bouncy/aggressive"*,
 *"clicking is weird and jumpy"*, *"drag spacing is still really odd"*. This session recorded
@@ -106,7 +119,12 @@ both the worktree and the symlink go.
   animation on it** — that is why the badge's opening is armed by the switch alone
   (`badgeArmed`), not by the drag.
 - Drag geometry is **synthetic** (`layoutRects` from the pack computed at press), never the
-  DOM: on a select-on-press the row is mid-animation when the drag starts.
+  DOM: on a select-on-press the row is mid-animation when the drag starts. It is a few px off
+  the real widths; the all-pill settle at the drop is what absorbs that. Do not remove it.
+- The strip's own left edge MOVES during a drag (the header re-centres it), so anything
+  bar-local must be measured against the bar's rect at that moment, not one taken at press.
+- To judge a drop, run the probe (`scripts/ui-review/drag-probe.mjs`, header has the usage)
+  and read the table; do not record a clip and squint.
 - `useLayoutEffect` with no deps in `SessionStrip` is the settle FLIP; it does a cheap null
   check every render on purpose.
 - `data-session-idx` is a cross-process contract (main.ts tear-off placement, perf-lab).
