@@ -125,8 +125,17 @@ test('live step: panes, label theme row that does not reload them, no picking by
     // still be set or this very test would have hung instead of failing.
     assert.equal(await c.evaluate('document.body.dataset.layout'), 'live');
     assert.equal(await c.evaluate("document.querySelectorAll('#inner iframe').length"), 2, 'one pane per variant');
-    assert.equal(await c.evaluate("document.querySelector('#inner iframe').style.width"), '360px', 'declared width');
+    // The pane MEASURED 420 while the spec declared nothing (so the deck started at its 360
+    // default). Measured wins — a deck-level guess that is too small clips the design's right
+    // edge with nothing to say so, which is exactly what happened on 2026-08-31.
+    assert.equal(await c.evaluate("document.querySelector('#inner iframe').style.width"), '420px', 'width the pane measured for itself');
     assert.equal(await c.evaluate("document.querySelector('#inner iframe').style.height"), '220px', 'height the pane measured for itself');
+    // The lettered chip must not weld itself to the label ("aCard and row").
+    assert.notEqual(await c.evaluate("getComputedStyle(document.querySelector('#inner figcaption .key')).marginRight"), '0px', 'letter chip has air after it');
+    // The theme row goes inline on a live step at ANY width — a wide row of panes pushes the
+    // absolute side column off the edge of the window and the buttons get cut in half.
+    assert.equal(await c.evaluate("document.body.classList.contains('thumbs-inline')"), true, 'theme row inline');
+    assert.equal(await c.evaluate("document.querySelector('#thumbs').getBoundingClientRect().right <= innerWidth"), true, 'theme row on screen');
 
     // Zoom off; the magnifier has no image to work from and hides itself.
     assert.equal(await c.evaluate("document.querySelector('#zoom').hidden"), true, 'zoom hidden');

@@ -72,9 +72,14 @@
     // the row is wider than it is, which validate() warns about before the deck is ever built.
     c.className = 'content row-below';
     step.classList.remove('compact-step');
-    document.body.classList.toggle('thumbs-inline', (document.querySelector('main').clientWidth - step.clientWidth) / 2 < 150);
+    // ALWAYS inline, no width threshold. The theme row is absolutely positioned beside the
+    // step, and a live row is wide by nature — two to four panes at real size — so the side
+    // column lands outside the window and the buttons get cut in half (seen 2026-08-31).
+    // There is no width at which a side column is right here, so don't compute one.
+    document.body.classList.add('thumbs-inline');
     $$('#inner iframe').forEach(f => {
-      f.style.width = st.width + 'px';
+      // A width the pane MEASURED for itself beats the one the spec guessed at.
+      f.style.width = (f.dataset.reportedWidth || st.width) + 'px';
       if (!f.style.height) f.style.height = (st.height || MIN_PANE_H) + 'px';
     });
     document.body.dataset.layout = 'live';
@@ -339,6 +344,11 @@
     // Capped at the stage: past that the pane scrolls internally rather than pushing the
     // cards and the answer buttons off the screen.
     f.style.height = Math.max(MIN_PANE_H, Math.min(d.height, stage.clientHeight - 28)) + 'px';
+    // WIDTH is not capped and not guessed. It comes from the registry in the other repo, so
+    // the pane is the only thing that knows it; a deck-level `live.paneWidth` that is too
+    // small clips the design's right-hand edge with nothing to say so (permissions-mode-control
+    // is 420 while close-prompt-body is 380 — one number cannot serve a review showing both).
+    if (d.width > 0) { f.dataset.reportedWidth = d.width; f.style.width = d.width + 'px'; }
   });
   window.addEventListener('resize', layout);
   load().then(() => {

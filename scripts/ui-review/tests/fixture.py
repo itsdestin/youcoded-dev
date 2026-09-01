@@ -62,7 +62,10 @@ STUB_PANE = """<!doctype html><meta charset="utf-8"><title>stub pane</title>
   // no-reload proof.
   window.__id = 'p' + Math.random().toString(36).slice(2);
   window.__lastTheme = null;
-  parent.postMessage({type:'youcoded:pane-height', height:%(h)d, candidate:'%(id)s'}, '*');
+  // Reports a WIDTH the deck spec did not declare (the fixture leaves paneWidth unset, so
+  // the deck starts at its 360 default) — that is how the test proves the measured width
+  // wins over the guessed one.
+  parent.postMessage({type:'youcoded:pane-height', height:%(h)d, width:%(w)d, candidate:'%(id)s'}, '*');
   parent.postMessage({type:'stub:loaded', candidate:'%(id)s', id:window.__id}, '*');
   addEventListener('message', function (e) {
     if (e.data && e.data.type === 'youcoded:theme') {
@@ -77,11 +80,11 @@ STUB_PANE = """<!doctype html><meta charset="utf-8"><title>stub pane</title>
 class LivePaneServer:
     """One stub page per candidate on an ephemeral port, standing in for the workbench."""
 
-    def __init__(self, height=220):
+    def __init__(self, height=220, width=420):
         import http.server
         import socketserver
         import threading
-        page_height = height
+        page_height, page_width = height, width
 
         class H(http.server.BaseHTTPRequestHandler):
             def log_message(self, *a):
@@ -90,7 +93,7 @@ class LivePaneServer:
             def do_GET(self):
                 from urllib.parse import parse_qs, urlparse
                 cand = (parse_qs(urlparse(self.path).query).get('candidate') or [''])[0]
-                body = (STUB_PANE % {'h': page_height, 'id': cand}).encode()
+                body = (STUB_PANE % {'h': page_height, 'w': page_width, 'id': cand}).encode()
                 self.send_response(200)
                 self.send_header('content-type', 'text/html; charset=utf-8')
                 self.send_header('content-length', str(len(body)))
