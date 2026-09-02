@@ -23,9 +23,9 @@ that in the shared area with android as seen-on.
       `chat` `android` `confirmed` `checked 2026-09-01` `needs-repro` → docs/active/investigations/2026-09-01-android-event-bridge-session-map-ungated.md
 
 - [ ] Android keeps a native "layout insets" reading of the chat's header/bottom chrome that
-      nothing uses since the native terminal was removed (2026-07-22) — delete it as dead, or
-      keep it as the start of soft-keyboard inset handling?
-      `chat` `android` `decision` `checked 2026-09-01` → docs/active/investigations/2026-09-01-android-layout-insets-flow-uncollected.md
+      nothing uses since the native terminal was removed (2026-07-22). Decided 2026-09-02:
+      delete it as dead code; keyboard handling on the phone will be built its own way
+      `chat` `android` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-01-android-layout-insets-flow-uncollected.md
 
 - [ ] The 2026-07-20 soft-keyboard fix (page shrinks instead of the keyboard covering the
       input) was only checked in Chrome for Android over remote access, never in the packaged
