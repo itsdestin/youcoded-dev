@@ -102,6 +102,9 @@
   }
   // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
   const YES = runs.length === 1 ? 'Yes, build it' : 'Yes, keep it', NO = runs.length === 1 ? 'No, leave it' : 'No, revert it';
+  // A words step may relabel the buttons ("Holds / Fails" on an acceptance row): the deck's
+  // build/keep wording is about a picture, and a statement has none.
+  const yesLabel = st => st.yes || YES, noLabel = st => st.no || NO;
   // The things a step offers to pick between, or null if it is a yes/no. A LIVE step's
   // question shape rides in `shape`, because `kind` already says where its picture comes
   // from — so a live pick-one answers exactly like a picture pick-one.
@@ -121,7 +124,7 @@
     $('#answers').innerHTML = picks || st.kind === 'decide'
       ? (picks ? `<button class="btn ans" data-v="no">None of these</button>` : '')
         + `<button class="btn ans" data-v="other">Other</button>`
-      : `<button class="btn ans" data-v="yes">${YES}</button><button class="btn ans" data-v="no">${NO}</button><button class="btn ans" data-v="other">Other</button>`;
+      : `<button class="btn ans" data-v="yes">${yesLabel(st)}</button><button class="btn ans" data-v="no">${noLabel(st)}</button><button class="btn ans" data-v="other">Other</button>`;
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
   function answer(v, pick) {
@@ -153,14 +156,15 @@
     lastStep = st;
     document.documentElement.dataset.theme = theme;   // before the pictures load, so a theme switch never flashes the old colours
     $('#wtitle').textContent = st.surface; $('#wsub').textContent = st.path;
-    curFrames = frames(st);
+    // A words step has no frames: the stage is hidden by layout() and the cards fill the row.
+    curFrames = st.words ? [] : frames(st);
     inner.innerHTML = curFrames.map(f => `<figure class="frame${f.pickable ? ' pickable' : ''}${st.kind === 'clip' ? ' clip' : ''}" data-run="${esc(f.key)}"${f.pickable ? ` title="Pick ${esc(f.key)}"` : ''}><figcaption>${f.caption}</figcaption><div class="pic">${media(st, f)}</div></figure>`).join('');
     $$('#inner .frame .box').forEach(box => { const b = ((st.boxes || {})[theme] || {})[box.closest('.frame').dataset.run]; if (b) box.style.cssText = `left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%`; else box.style.display = 'none'; });
     $('#replay').hidden = st.kind !== 'clip';
     // Zoom is off on a live step: it scales a still image, and a pane at anything but real
     // size stops showing the thing it is there to show. (The magnifier needs no switch — its
     // handler looks for `#inner img`, finds none, and hides itself.)
-    $('#zoom').hidden = st.kind === 'live';
+    $('#zoom').hidden = st.kind === 'live' || !!st.words;
     $('#livehint').hidden = st.kind !== 'live';
     if (st.kind === 'live') {
       // Once a click lands inside a pane, focus is in ITS document and this page stops seeing
@@ -194,9 +198,10 @@
     // live step, where the pane deliberately isn't a pick target and the card is the big one.
     $$('.card.variant').forEach(c => c.onclick = () => answer('pick', c.dataset.pick));
     renderAnswers(st);
-    const last = curFrames[curFrames.length - 1].key;
+    const last = curFrames.length ? curFrames[curFrames.length - 1].key : null;
     // A clip is recorded in one theme; there are no per-theme variants to switch between.
-    $('#thumbs').innerHTML = st.kind === 'clip' ? ''
+    // A words step has no picture of any theme — the theme pills would be empty.
+    $('#thumbs').innerHTML = st.words ? '' : st.kind === 'clip' ? ''
       // A live step has no thumbnails to show — there is no picture of the other themes, only
       // the panes themselves, one theme at a time. Same control, rendered as plain labels.
       : st.kind === 'live' ? themes.map(t => `<button class="thumb label-only${t === theme ? ' on' : ''}" data-v="${esc(t)}" title="${esc(DECK.themeNames[t])}"><span>${esc(DECK.themeNames[t])}</span></button>`).join('')
@@ -224,6 +229,10 @@
   // ── layout: try each arrangement for real, keep the one that shows the pictures largest (spec §3.4) ──
   const PAD = 28, CAP = 24, GAP = 18;
   function layout() {
+    if (DECK.steps[cur].words) {   // no picture to size: one column of cards, answer bar under it
+      $('#content').className = 'content words'; $('#step').classList.remove('compact-step');
+      document.body.dataset.layout = 'words'; window.__deckReady = true; return;
+    }
     if (DECK.steps[cur].kind === 'live') { layoutLive(); return; }
     const c = $('#content'), step = $('#step'); const img = $('#inner img, #inner video'); if (!img) return;
     const natW = img.naturalWidth || img.videoWidth, natH = img.naturalHeight || img.videoHeight; if (!natW) return;

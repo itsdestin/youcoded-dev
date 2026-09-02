@@ -241,3 +241,33 @@ test('live step: a stopped app server says so, with the command that starts it',
     assert.equal(await c.evaluate("document.querySelectorAll('#inner iframe').length"), 0, 'no dead iframes left behind');
   } finally { c.close(); if (srv.exitCode === null) srv.kill(); }
 });
+
+test('a words-only deck renders with no stage and records a pick', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-words-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import words_spec; print(words_spec(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1400, 900);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true')); i++) await sleep(100);
+      assert.equal(await c.evaluate('document.body.dataset.layout'), 'words');
+      assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#stage')).display"), 'none');
+      assert.equal(await c.evaluate("document.querySelectorAll('.card.option').length"), 1);          // Q-1: one option
+      assert.equal(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.dataset.v).join(',')"), 'other');
+      await c.evaluate("document.querySelector('.card.option').click()");
+      await c.evaluate("document.querySelector('#save').click()");   // → Q-2
+      await c.evaluate("document.querySelector('#next').click()");   // → Q-3
+      await sleep(200);
+      assert.equal(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.textContent).join(',')"), 'Holds,Fails,Other');
+      await sleep(400);
+      const answers = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
+      assert.deepEqual([answers.answers['Q-1'].v, answers.answers['Q-1'].pick], ['pick', 'a']);
+      assert.deepEqual(c.errors, []);
+    } finally { c.close(); }
+  } finally { srv.kill(); }
+});

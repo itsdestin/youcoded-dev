@@ -8,7 +8,7 @@ import os
 
 from .crops import image_name
 from .live import has_live, is_live, live_base, live_offset, pane_url, pane_width
-from .spec import SpecError, all_themes, is_choice, is_decide, run_names, step_themes, validate, workspace_root, is_clip, clip_files
+from .spec import SpecError, all_themes, is_choice, is_decide, is_words, run_names, step_themes, validate, workspace_root, is_clip, clip_files
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -68,17 +68,36 @@ def _choice_step(spec, st, boxes, run):
     }
 
 
+def _option(o):
+    return {'id': o['id'], 'label': o['label'], 'summary': o['summary'],
+            'measured': o.get('measured', ''), 'cost': o.get('cost', '')}
+
+
 def _decide_step(spec, st, boxes, runs):
     """One picture (the last run — how it is today) and the written options beside it."""
     return {
         'id': st['id'], 'kind': 'decide', 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
         'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
-        'options': [{'id': o['id'], 'label': o['label'], 'summary': o['summary'],
-                     'measured': o.get('measured', ''), 'cost': o.get('cost', '')} for o in st['options']],
+        'options': [_option(o) for o in st['options']],
         'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in step_themes(spec, st)},
         'boxes': boxes.get(st['id'], {}),
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
     }
+
+
+def _words_step(spec, st):
+    """No picture: the cards take the whole row (page.js lays a `words` step out without a
+    stage). With `options` it answers like a decide; without, like an approve, and `yes`/`no`
+    relabel the buttons — "Holds / Fails" on an acceptance row, not "Yes, build it"."""
+    d = {'id': st['id'], 'words': True, 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
+         'changed': st.get('changed', ''), 'measured': st.get('measured', ''),
+         'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
+         'yes': st.get('yes', ''), 'no': st.get('no', ''),
+         **({'themes': list(st['themes'])} if st.get('themes') else {})}
+    if st.get('options'):
+        d['kind'] = 'decide'
+        d['options'] = [_option(o) for o in st['options']]
+    return d
 
 
 def _clip_step(spec, st, runs):
@@ -125,6 +144,7 @@ def _live_step(spec, st):
 def deck_data(spec, boxes):
     runs = run_names(spec)
     steps = [_live_step(spec, st) if is_live(st)
+             else _words_step(spec, st) if is_words(st)
              else _choice_step(spec, st, boxes, runs[-1]) if is_choice(st)
              else _decide_step(spec, st, boxes, runs) if is_decide(st)
              else _clip_step(spec, st, runs) if is_clip(st) else {
@@ -156,6 +176,8 @@ def build_page(spec, boxes):
     for st in spec['steps']:
         if is_live(st):
             continue   # nothing on disk to check — the pane is a running app; page.js probes the server
+        if is_words(st):
+            continue   # nothing on disk to check — a question, a statement or a contract has no picture
         if is_clip(st):
             vids, _ = clip_files(spec, st)
             for r in runs:

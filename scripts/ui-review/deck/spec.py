@@ -8,7 +8,7 @@ import json
 import os
 import re
 
-from .live import PANE_WIDTH, all_live, is_live, pane_width
+from .live import PANE_WIDTH, is_live, pane_width
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 UI_REVIEW = os.path.dirname(HERE)
@@ -56,10 +56,10 @@ def load_spec(path):
     for k in ('title', 'key', 'out', 'steps'):
         if k not in spec or spec[k] is None:
             raise SpecError(f'spec is missing "{k}"')
-    # `images` and `runs` describe a screenshot sweep. A deck whose every step is LIVE has no
-    # screenshots to point at, so requiring them would make the author invent a folder and a
+    # `images` and `runs` describe a screenshot sweep. A deck whose every step is LIVE, WORDS-ONLY or a
+    # CONTRACT has no screenshots to point at, so requiring them would make the author invent a folder and a
     # run that nothing ever reads. Everything downstream still wants a run NAME, so default it.
-    if all_live(spec):
+    if no_pictures(spec):
         spec.setdefault('runs', {'today': None})
     else:
         for k in ('images', 'runs'):
@@ -116,6 +116,33 @@ def is_clip(step):
     animation, a hover, a transition, a bug that only shows in motion. `clip` is a scene name
     (files at <images>/clips/<name>--<run>.webm, made by record-pair.sh) or {run: path}."""
     return bool(step.get('clip'))
+
+
+def is_contract(step):
+    """A CONTRACT step is the rows that define done (feature-flow design §3), rendered as a
+    table and answered yes/no/other as ONE step. It is a WORDS step (is_words is true for it)
+    that carries `rows`; keyed on the key's PRESENCE so an empty `rows: []` still reaches the
+    contract validator ("a contract with no rows defines nothing") instead of the picture
+    one ("missing crop"). Validation and the page come in Task 3 of the plan."""
+    return 'rows' in step
+
+
+def is_words(step):
+    """A WORDS-ONLY step has no picture at all — `"words": true`, an explicit flag rather than
+    "no crop", so a step that merely forgot its crop is still an error and never renders
+    silently pictureless. With `options` it is a decide (pick one of the written options, or
+    Other); with `rows` a contract; otherwise a statement to approve (`changed` + `notice`
+    are its body). Users: the QUESTIONS deck answered before anything is drawn, the contract,
+    and the acceptance deck's human rows (feature-flow design §3, §5, §7)."""
+    return step.get('words') is True or is_contract(step)
+
+
+def no_pictures(spec):
+    """A deck with no picture steps at all — every step is live or words-only (a contract is
+    words-only). It names no `images` folder and no `runs`; every code path that reaches for
+    either bails out first (load_spec, crops.py, build.py, review-cards.py). Widens
+    live.all_live."""
+    return bool(spec['steps']) and all(is_live(st) or is_words(st) for st in spec['steps'])
 
 
 def clip_files(spec, step):
@@ -176,6 +203,9 @@ def validate(spec):
         if is_live(st):
             _validate_live(spec, st, sid, errors, warnings)
             continue
+        if is_words(st):
+            _validate_words(spec, st, sid, errors, warnings)
+            continue
         if is_choice(st):
             _validate_choice(spec, st, sid, errors, warnings)
             continue
@@ -231,10 +261,24 @@ def _validate_decide(spec, st, sid, errors, warnings):
         errors.append(f'{sid}: highlight must have selector, text or box')
     elif 'box' in hl:
         warnings.append(f'{sid}: hand-placed box — prefer a selector so the rig measures it')
+    _validate_options(st, sid, errors, warnings, minimum=2)
+    th = st.get('themes')
+    if th is not None and (not isinstance(th, list) or not th or not all(isinstance(t, str) for t in th)):
+        errors.append(f'{sid}: themes must be a non-empty list of theme names')
+    if word_count(st.get('risk')) > RISK_WARN:
+        warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
+
+
+def _validate_options(st, sid, errors, warnings, minimum):
+    """The written options of a decide step. `minimum` is 2 for a picture decide (one option
+    plus Other is a yes/no step in disguise) and 1 for a words-only question, where the
+    recommended answer alone plus Other is exactly the shape Destin asked for (2026-09-01)."""
     opts = st['options']
-    if not isinstance(opts, list) or len(opts) < 2:
-        errors.append(f'{sid}: a decide step needs at least 2 options')
+    if not isinstance(opts, list) or len(opts) < minimum:
+        errors.append(f'{sid}: a decide step needs at least {minimum} option{"s" if minimum > 1 else ""}')
         return
+    if len(opts) > 3:
+        warnings.append(f'{sid}: {len(opts)} options — more than three usually means two questions')
     seen = set()
     for i, o in enumerate(opts):
         oid = o.get('id') or f'option {i + 1}'
@@ -251,11 +295,41 @@ def _validate_decide(spec, st, sid, errors, warnings):
                 errors.append(f'{sid}/{oid}: {k} uses banned word "{w}"')
         if o.get('measured') and not re.search(r'\d', o['measured']):
             warnings.append(f'{sid}/{oid}: measured has no number in it')
+
+
+def _validate_words(spec, st, sid, errors, warnings):
+    """No picture, so every picture field is refused rather than required — the same stance
+    as _validate_live. The question shape is the existing one: `options` → pick one. A
+    contract (`rows`) is validated by _validate_rows (Task 3), which this dispatches to."""
+    for k in ('surface', 'path', 'headline'):
+        if not st.get(k):
+            errors.append(f'{sid}: missing {k}')
+    for k in ('crop', 'clip', 'highlight', 'variants', 'live'):
+        if st.get(k):
+            errors.append(f'{sid}: a words step has no {k} — there is no picture')
+    _headline_and_words(st, sid, errors)
+    if is_contract(st):
+        _validate_rows(spec, st, sid, errors)          # Task 3 adds it; until then a contract step is not valid
+    elif st.get('options'):
+        _validate_options(st, sid, errors, warnings, minimum=1)
+    else:
+        for k in ('changed', 'notice'):
+            if not st.get(k):
+                errors.append(f'{sid}: missing {k} (a words step with no options is a statement to approve; these are its body)')
+    for k in ('yes', 'no'):
+        if st.get(k) and word_count(st[k]) > 4:
+            errors.append(f'{sid}: {k} label is {word_count(st[k])} words — a button, keep it under 5')
     th = st.get('themes')
     if th is not None and (not isinstance(th, list) or not th or not all(isinstance(t, str) for t in th)):
         errors.append(f'{sid}: themes must be a non-empty list of theme names')
     if word_count(st.get('risk')) > RISK_WARN:
         warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
+
+
+def _validate_rows(spec, st, sid, errors):
+    # Placeholder until Task 3: reaching the contract validator (not "missing crop") is
+    # already correct behaviour for is_words/is_contract — the real row checks land there.
+    errors.append(f'{sid}: contract steps are not supported yet (plan Task 3)')
 
 
 def _validate_choice(spec, st, sid, errors, warnings):

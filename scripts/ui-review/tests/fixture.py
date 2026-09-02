@@ -145,3 +145,36 @@ def live_spec(tmp, base=None, **over):
     with open(p, 'w') as f:
         json.dump(spec, f, indent=1)
     return p
+
+
+# ── words-only decks ────────────────────────────────────────────────────────────────────
+def words_spec(tmp, **over):
+    """A QUESTIONS deck: no pictures anywhere. One question with a single option (plus the
+    page's own Other), one with three, and one statement to approve with relabelled buttons.
+    Picture-free on purpose, like live_spec — this is CI coverage."""
+    deck = os.path.join(tmp, 'deck')
+    os.makedirs(deck, exist_ok=True)
+    spec = {
+        'title': 'Questions fixture', 'key': 'questions-fixture', 'out': 'questions.html',
+        'themes': ['midnight', 'light'],
+        'steps': [
+            {'id': 'Q-1', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'Where does the invite live?',
+             'options': [{'id': 'a', 'label': 'In the friends list (recommended)', 'summary': 'One place for everything about a friend.'}]},
+            {'id': 'Q-2', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'How many boards on screen at once?',
+             'options': [{'id': 'a', 'label': 'One', 'summary': 'Simplest.'},
+                         {'id': 'b', 'label': 'Two', 'summary': 'Mine and theirs.'},
+                         {'id': 'c', 'label': 'As many as fit', 'summary': 'Costs a layout rule.'}]},
+            {'id': 'Q-3', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'A game you leave keeps running for the other player.',
+             'changed': 'Stated, not asked: the alternative would surprise the friend who stayed.',
+             'notice': 'Nothing yet — this becomes a row of the contract.',
+             'yes': 'Holds', 'no': 'Fails'},
+        ],
+    }
+    spec.update(over)
+    p = os.path.join(deck, 'questions.json')
+    with open(p, 'w') as f:
+        json.dump(spec, f, indent=1)
+    return p

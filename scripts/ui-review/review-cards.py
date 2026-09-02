@@ -17,6 +17,10 @@ candidate each out of youcoded's compare/registry.tsx; `variants` makes it a pic
 absence a yes/no, and `serve` boots the worktree's workbench for it). Wording-only questions
 are not a step: ask in chat.
 
+A step may instead be WORDS-ONLY ("words": true — a question with 1–3 written options, or a
+statement to approve; no picture, no images folder needed): that is the questions deck asked
+before anything is drawn.
+
 Run `serve` in the background: its exit is the "review finished" signal and it prints the
 feedback summary. There is deliberately no separate crop step — a stale intermediate file drew
 wrong rings with no error in v1. Spec format + writing rules:

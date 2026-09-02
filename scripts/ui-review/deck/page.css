@@ -70,6 +70,9 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 .content.row-below{grid-template-columns:1fr;grid-template-rows:1fr auto;grid-template-areas:"stage" "decide"}
 .content.col-right{grid-template-columns:1fr minmax(320px,30%);grid-template-rows:1fr;grid-template-areas:"stage decide"}
 .content.compact{display:flex;flex-direction:column;flex:none}
+/* WORDS: no stage at all — the question and its option cards take the row (feature-flow §5) */
+.content.words{grid-template-columns:1fr;grid-template-rows:1fr;grid-template-areas:"decide"} .content.words .stage{display:none}
+.words .cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))} .words .card.option{min-height:96px}
 .compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
 /* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the
    answer buttons stay reachable in a narrow window, and sticky needs room to move inside its

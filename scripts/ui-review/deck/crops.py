@@ -7,8 +7,8 @@ import os
 import subprocess
 
 from .boxes import diff_bbox, image_size, px_to_pct, rect_to_pct
-from .live import all_live, is_live
-from .spec import AUTO_WARN_FRACTION, is_choice, run_names, step_themes, is_clip
+from .live import is_live
+from .spec import AUTO_WARN_FRACTION, is_choice, is_words, no_pictures, run_names, step_themes, is_clip
 
 
 def image_name(crop, theme, run):
@@ -36,9 +36,9 @@ def newest_manifest_entry(run_dir, plan, shot, theme):
 
 
 def crop_images(spec, log=print):
-    # A deck whose every step is LIVE has no stills and names no `images` folder — the very
-    # next line would KeyError on it before the loop below ever gets a chance to skip anything.
-    if all_live(spec):
+    # A deck whose every step is LIVE or WORDS-ONLY has no stills and names no `images` folder
+    # — the very next line would KeyError on it before the loop below ever gets a chance to skip anything.
+    if no_pictures(spec):
         return {'boxes': {}, 'missing': [], 'warnings': [], 'count': 0}
     out_dir = os.path.join(spec['_base'], spec['images'])
     os.makedirs(out_dir, exist_ok=True)
@@ -51,6 +51,8 @@ def crop_images(spec, log=print):
         # (Same reason validate() dispatches live first.)
         if is_live(st):
             continue   # a running app, not a still — nothing to cut, and no `crop` to look up
+        if is_words(st):
+            continue   # words only (a question, a statement, a contract) — nothing to cut, no `crop` to look up
         if is_choice(st):
             _crop_choice(spec, st, runs[-1], out_dir, boxes, missing, cut)
             continue
