@@ -262,7 +262,7 @@ The five binary-free suites, which is what CI runs:
 cd scripts/ui-review/tests && python3 -m unittest test_spec test_tokens test_live test_words test_contract
 ```
 
-Everything (119 tests, ~38s) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
+Everything (132 tests, ~20s) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
 
 <!-- runnable: local -->
 ```bash

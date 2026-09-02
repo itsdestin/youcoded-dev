@@ -45,3 +45,6 @@ answers do not support a row, the row does not exist; write what was missed into
 - Finish with: `python3 scripts/ui-review/review-cards.py contract-check <path>` and paste its
   output. A contract that does not hold (exit 1) is not delivered; the `todo: not signed`
   line is expected — signing is Destin's, after you.
+- Write it to `docs/active/design/<date>-<feature>/<feature>.contract.json` — `close-out.sh`
+  finds contracts only by that suffix, under `docs/`; anywhere else the gate reports "no
+  contract names this branch".

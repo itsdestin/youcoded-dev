@@ -74,6 +74,14 @@ class ContractStepTests(unittest.TestCase):
         s = spec_with(self.tmp, lambda r: r['steps'][0]['rows'][0].update({'statement': 'The reducer stores it.'}))
         self.assertTrue(any('C/R1: statement uses banned word "reducer"' in x for x in errs(s)))
 
+    def test_statement_too_long_names_the_acceptance_deck_headline(self):
+        # WHY: a long statement used to pass contract-check, then break the acceptance deck
+        # later with an error naming a field the contract's author never wrote (spec.py fix).
+        long_statement = ' '.join(['word'] * 30)
+        s = spec_with(self.tmp, lambda r: r['steps'][0]['rows'][0].update({'statement': long_statement}))
+        e = errs(s)
+        self.assertTrue(any('C/R1: statement is 30 words (max 25)' in x and 'acceptance deck' in x for x in e), e)
+
     def test_duplicate_row_ids(self):
         s = spec_with(self.tmp, lambda r: r['steps'][0]['rows'][1].update({'id': 'R1'}))
         self.assertTrue(any('C: duplicate row id "R1"' in x for x in errs(s)))
@@ -227,6 +235,29 @@ class ContractCheckTests(unittest.TestCase):
         with redirect_stdout(out), redirect_stderr(err):
             code = rc.main(['contract-check', p])
         self.assertEqual(code, 1); self.assertIn('never submitted', err.getvalue()); self.assertEqual(out.getvalue(), '')
+
+    def test_cli_contract_check_malformed_contract_is_not_a_traceback(self):
+        # Fix: a row with no `id` used to reach check_contract() (which assumes a well-formed
+        # spec) and raise KeyError — close-out.sh printed that under "contract does not hold",
+        # a misleading error. contract-check now validates first, same as build().
+        import importlib.util
+        spec_ = importlib.util.spec_from_file_location('review_cards', os.path.join(os.path.dirname(HERE), 'review-cards.py'))
+        rc = importlib.util.module_from_spec(spec_); spec_.loader.exec_module(rc)
+        import io
+        from contextlib import redirect_stderr, redirect_stdout
+        p = contract_spec(self.tmp)
+        with open(p) as f:
+            raw = json.load(f)
+        del raw['steps'][0]['rows'][0]['id']
+        with open(p, 'w') as f:
+            json.dump(raw, f)
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err):
+            code = rc.main(['contract-check', p])
+        self.assertEqual(code, 1)
+        self.assertIn('has no id', err.getvalue())
+        self.assertNotIn('Traceback', err.getvalue())
+        self.assertEqual(out.getvalue(), '')
 
 
 class AcceptanceTests(unittest.TestCase):

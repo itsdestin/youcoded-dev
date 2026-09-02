@@ -249,7 +249,12 @@
   function layout() {
     if (DECK.steps[cur].words) {   // no picture to size: one column of cards, answer bar under it
       $('#content').className = 'content words'; $('#step').classList.remove('compact-step');
-      document.body.dataset.layout = 'words'; window.__deckReady = true; return;
+      document.body.dataset.layout = 'words';
+      // Fix: without this, navigating from a picture step to a words step left the PREVIOUS
+      // step's scores in the DOM — a stale table the render test (and anyone reading the DOM
+      // by hand) could mistake for this step's own layout choice. Match the live branch.
+      document.body.dataset.scores = '{}';
+      window.__deckReady = true; return;
     }
     if (DECK.steps[cur].kind === 'live') { layoutLive(); return; }
     const c = $('#content'), step = $('#step'); const img = $('#inner img, #inner video'); if (!img) return;

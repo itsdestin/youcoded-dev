@@ -207,7 +207,9 @@ def contract_spec(tmp, **over):
                    'answers': {'S-1': {'v': 'yes', 'note': 'band could be thinner', 'note_kind': 'later', 'seconds': 20},
                                'S-2': {'v': 'skip', 'seconds': 1}}}, f)
     spec = {
-        'title': 'Arcade — contract', 'key': 'arcade-contract', 'out': 'contract.html', 'themes': ['midnight'],
+        # Fix: `out` must share the contract's stem (arcade.contract.html, not contract.html) —
+        # two contracts in one folder would otherwise overwrite each other's built page.
+        'title': 'Arcade — contract', 'key': 'arcade-contract', 'out': 'arcade.contract.html', 'themes': ['midnight'],
         'branch': 'feat/arcade-fixture',
         'sources': {'arcade-questions': 'q.json', 'arcade-r1': 'r1.json'},
         'steps': [{'id': 'C', 'surface': 'Games arcade', 'path': 'Contract', 'headline': 'This is what done means.',

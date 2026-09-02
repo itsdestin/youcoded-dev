@@ -94,6 +94,14 @@ def main(argv):
         if a.cmd == 'wait':
             return wait_for_submit(spec, timeout_min=a.timeout)
         if a.cmd == 'contract-check':
+            # Fix: check_contract() assumes a well-formed spec (a row with no `id` raised
+            # KeyError, which close-out.sh then printed under "contract does not hold" — a
+            # misleading error. Validate first, same as build(), so a malformed contract
+            # gets the real writing-rules message instead of a traceback.
+            errors, _ = validate(spec)
+            if errors:
+                print('\n'.join(errors), file=sys.stderr)
+                return 1
             if not contract_steps(spec):
                 print('no contract step in this spec (a step with "rows")', file=sys.stderr)
                 return 1
@@ -109,6 +117,12 @@ def main(argv):
                 print(('ok: ' if ok else 'todo: ') + line)
             return 0
         if a.cmd == 'acceptance':
+            # Fix: same as contract-check — a malformed contract must fail here with the
+            # writing-rules message, not a KeyError from acceptance_spec() later.
+            errors, _ = validate(spec)
+            if errors:
+                print('\n'.join(errors), file=sys.stderr)
+                return 1
             vpath = os.path.join(spec['_base'], spec['_stem'] + '.verdicts.json')
             try:
                 with open(vpath) as f:

@@ -121,7 +121,14 @@ echo "Contract"
 # The contract is the definition of done for a feature (docs/active/specs/2026-09-01-feature-flow-design.md).
 # It names its branch, so this is the ONLY lookup — no "branch" field, no contract, and the
 # note below says so rather than guessing which deck folder this work came from.
-CONTRACTS=$(rg -l --glob '*.contract.json' -F "\"branch\": \"$BRANCH\"" "$DOCS_DIR" 2>/dev/null || true)
+# Fix: a fixed-string match on `"branch": "$BRANCH"` missed a contract written without the
+# space after the colon (`"branch":"$BRANCH"`, still valid JSON) — a contract could sit right
+# there and this would still say "no contract names this branch". Match the colon loosely
+# instead. $BRANCH can contain "/" and "." — a "." in the regex also matches a literal "."
+# so that alone is harmless, but escape every regex metacharacter anyway so the intent reads
+# honestly as "escaped for regex use", not "happens to work".
+BRANCH_RE=$(printf '%s' "$BRANCH" | sed 's/[.[\*^$]/\\&/g')
+CONTRACTS=$(rg -l --glob '*.contract.json' -e "\"branch\"[[:space:]]*:[[:space:]]*\"$BRANCH_RE\"" "$DOCS_DIR" 2>/dev/null || true)
 if [[ -z "$CONTRACTS" ]]; then
   note "no contract names this branch — the feature flow was not used, or the contract has no \"branch\""
 else

@@ -26,8 +26,10 @@ Design: `docs/active/specs/2026-09-01-feature-flow-design.md`.
 **Invariant:** a new feature's step-2 questions are a words-only deck (`<feature>.questions.json`,
 `"words": true` decide steps, 1–3 options), served and submitted before any UI is drawn. A note
 with no tag (answers files from before 2026-09-01) counts as **just noting**, same as a tagged one.
+(untagged-note rule: `scripts/ui-review/contract-agent.md` prose — none — candidate)
 **Why:** answers in chat are not a source; a contract row must resolve to an answered step.
-**Guard:** `test_words.py`; the `ui-mockup` skill's "Before drawing anything" section (prose — not enforced).
+**Guard:** `test_words.py` covers the words-deck invariant only; the `ui-mockup` skill's
+"Before drawing anything" section (prose — not enforced).
 
 ## The contract is a deck, and its sources are answered steps
 **Invariant:** `<feature>.contract.json` is a one-step `rows` deck; every row's `source` is

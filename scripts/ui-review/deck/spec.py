@@ -355,6 +355,13 @@ def _validate_rows(spec, st, sid, errors):
         seen.add(r.get('id'))
         if not r.get('statement'):
             errors.append(f'{sid}/{rid}: missing statement')
+        # WHY: the statement becomes the acceptance deck's headline verbatim (feature-flow
+        # design §5), which enforces HEADLINE_MAX on ITS OWN pass — a long statement sails
+        # through contract-check, gets signed, then the acceptance deck refuses to build with
+        # an error naming a field the contract's author never wrote. Catch it here instead.
+        n = word_count(r.get('statement'))
+        if n > HEADLINE_MAX:
+            errors.append(f'{sid}/{rid}: statement is {n} words (max {HEADLINE_MAX}) — it becomes the acceptance deck\'s headline')
         for k in ('statement', 'threshold', 'note'):
             for w in banned_in(r.get(k)):
                 errors.append(f'{sid}/{rid}: {k} uses banned word "{w}"')
