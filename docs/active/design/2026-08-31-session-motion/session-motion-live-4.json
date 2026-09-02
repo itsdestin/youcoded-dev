@@ -1,0 +1,23 @@
+{
+  "title": "Session strip and switching — round 4",
+  "key": "session-motion-live-4",
+  "out": "deck-live-4.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "dot-in-hand",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "You now drag a dot, not a name — which way should the other dots make room?",
+      "changed": "The jank was built in, not a tuning problem: the open name you were dragging is about six dots wide, so every dot had to cross the whole name to get out of its way, and no version of that crossing looked right. Chrome never has this problem because a dragged tab is the same size as its neighbours. So now the name folds into its dot the moment a drag starts, every other dot only ever moves one dot-width, and the name opens again where you drop it. A plain click is unchanged. Two things that made the pickup itself jump were also fixed: the pill now appears exactly where it was and shrinks around your cursor, and dots make room when the pill visibly reaches them rather than where they were about to settle.",
+      "notice": "Press and drag: the name folds into a dot under your cursor, dots step aside one at a time as you pass them, the name opens where you let go. A click still opens the name straight away.",
+      "risk": "While dragging you lose the name, so a long drag is a coloured dot in hand; if that matters more than the smoothness, say so in the note.",
+      "live": { "surface": "session-strip-motion", "round": 5 },
+      "variants": [
+        { "id": "dot-slide", "label": "Dots slide", "candidate": "dot-slide", "summary": "A dot slides its one dot-width out of the way, on the fast-deceleration curve — Chrome's swap." },
+        { "id": "dot-hop", "label": "Dots hop", "candidate": "dot-hop", "summary": "A dot blinks across instead: fades out, moves while invisible, fades back in one dot-width over." }
+      ]
+    }
+  ]
+}

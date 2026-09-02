@@ -18,9 +18,12 @@
 // pill in hand), TWIN:left(width) = the floating pill. A jump between two
 // consecutive rows for any id is the jank; a glide is a run of small steps.
 //
-// The summary line is the worst overlap AHEAD of the pill's leading edge that lasts 4
-// consecutive frames (~65ms). A dot passing under the edge for a frame as it slides aside is
-// the step-aside itself; a dot still sticking out ahead after 65ms has not yielded in time.
+// The summary line is the worst STICK-OUT ahead of the pill's leading edge that lasts 4
+// consecutive frames (~65ms): how far a neighbour the pill is already over still extends past
+// the pill's leading edge. A dot passing under the edge as it steps aside is the step-aside
+// itself (with a DOT in hand the yielded neighbour sits under the pill until it is passed —
+// Chrome's swap); a dot still sticking out ahead after 65ms has not yielded in time. (Until
+// 2026-09-02 this measured the OVERLAP width instead, which scored that swap as 22px of jank.)
 // A dot that has faded below half opacity does not count (2026-09-02: dots HOP aside — they
 // blink out, jump while invisible, blink in — so geometry the eye cannot see is not a peek).
 // Such a frame prints the pill with a `~` suffix.
@@ -64,6 +67,7 @@ if (!a || !b) { console.error('MISSING pill', JSON.stringify({ a, b, count: awai
 // Per-frame logger.
 await evaluate(`(() => { window.__log = []; window.__marks = []; const tick = () => { const t = performance.now(); const rows = [];
   for (const el of document.querySelectorAll('[data-session-strip] [data-session-id]')) { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); rows.push({ id: el.dataset.sessionId, l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: cs.visibility[0], o: Math.round(parseFloat(cs.opacity)*100)/100 }); }
+  const bar = document.querySelector('[data-session-strip]'); if (bar) { const r = bar.getBoundingClientRect(); rows.push({ id: 'BAR', l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v' }); }
   const twin = document.querySelector('[data-session-strip] > div[aria-hidden]'); if (twin) { const r = twin.getBoundingClientRect(); rows.push({ id: 'TWIN', l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v' }); }
   window.__log.push({ t, rows }); requestAnimationFrame(tick); }; requestAnimationFrame(tick); })()`);
 const mark = (name) => evaluate(`window.__marks.push({ t: performance.now(), name: ${JSON.stringify(name)} })`);
@@ -99,17 +103,17 @@ for (const f of frames) {
   twinLefts.push(twin.l); if (twinLefts.length > 4) twinLefts.shift();
   const dir = Math.sign(twin.l - twinLefts[0]);
   for (const r of f.rows) {
-    if (r.id === 'TWIN' || r.v === 'h' || (r.o !== undefined && r.o < 0.5)) continue;
+    if (r.id === 'TWIN' || r.id === 'BAR' || r.v === 'h' || (r.o !== undefined && r.o < 0.5)) continue;
     const tr = twin.l + twin.w, rr = r.l + r.w;
-    const peek = dir > 0 ? (rr > tr && r.l < tr ? tr - r.l : 0)
-               : dir < 0 ? (r.l < twin.l && rr > twin.l ? rr - twin.l : 0) : 0;
+    const peek = dir > 0 ? (rr > tr && r.l < tr ? rr - tr : 0)
+               : dir < 0 ? (r.l < twin.l && rr > twin.l ? twin.l - r.l : 0) : 0;
     instant = Math.max(instant, peek);
     const hist = recent.get(r.id) ?? []; hist.push(peek); if (hist.length > 4) hist.shift(); recent.set(r.id, hist);
     const sustained = hist.length === 4 ? Math.min(...hist) : 0;
     if (sustained > worst) { worst = sustained; worstAt = { t: (f.t - rel).toFixed(0), id: r.id }; }
   }
 }
-console.log(`worst SUSTAINED peek (4 frames): ${worst.toFixed(1)}px` + (worstAt ? ` (${worstAt.id} at ${worstAt.t}ms)` : '') + `; worst single-frame overlap ${instant.toFixed(1)}px`);
+console.log(`worst SUSTAINED stick-out ahead (4 frames): ${worst.toFixed(1)}px` + (worstAt ? ` (${worstAt.id} at ${worstAt.t}ms)` : '') + `; worst single-frame stick-out ${instant.toFixed(1)}px`);
 // Print the frames from 120ms before release to 400ms after, one row per frame: id:left(width).
 for (const f of frames) {
   if (f.t < rel - 120 || f.t > rel + 400) continue;

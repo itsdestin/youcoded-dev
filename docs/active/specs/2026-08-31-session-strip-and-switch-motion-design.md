@@ -364,6 +364,17 @@ so no index space can drift out from under them again.
 
 Replace the ghost model with a moving-pill model.
 
+- **The pill in hand is a DOT (2026-09-02).** Its name closes the moment the pointer moves
+  far enough to be a drag — a click still opens it on press — and opens again where it is
+  dropped. In the drag's settled geometry it is `COLLAPSED_PILL_PX` wide, so a neighbour
+  steps exactly one dot-width: Chrome's swap, between things of one size. Before this the
+  open name (~180px) rode in hand and every dot crossed the whole pill to get out of its way;
+  neither a slide nor a blink of that crossing read right (Destin, R3: *"the interaction
+  between the selected moving pill and the other dots/sessions still feels janky"*). The
+  grab fraction is measured at drag START (the row has slid under the cursor since the
+  press), and the dot's centre is mapped from the row AS DRAWN into settled coordinates
+  (`mapToSettled`) before the yield rule runs, so a dot yields when the pill visibly
+  reaches it even while the row is still settling.
 - **The pill moves, 1:1 — as a floating twin.** Its in-flow box stays in the row, invisible,
   holding its slot and still animating its own width; a twin with the same markup and styles
   floats absolutely inside the bar at the cursor (`clampFloatLeft`, **no transition on its

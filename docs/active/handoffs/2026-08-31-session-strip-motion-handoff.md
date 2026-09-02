@@ -10,10 +10,10 @@ deck: docs/active/design/2026-08-31-session-motion/session-motion-live.json
 
 # Session strip & switch motion — handoff
 
-**State (2026-09-02, later): every question is answered. Round 2's answers are built — no
-runtime tag on pills, runtime · model in the All Sessions menu, dots hop instead of slide,
-spring arrival — and served as a round-3 live deck (one try-this step). Waiting on that
-answer; then merge.**
+**State (2026-09-02, evening): round 3's answer ("better, but the interaction between the
+selected moving pill and the other dots still feels janky") is built — the pill in hand is now
+a DOT, so every yield is one dot-width — and served as a round-4 live deck: one pick-one
+step, dots slide vs dots hop. Waiting on that pick; then delete the loser and merge.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
 but it will need to be tuned/repaired a bit. it's jank"*), **switch-when → Press** (*"further
@@ -63,6 +63,38 @@ selected pill"*), **arrival → spring**. Done since (commit on `feat/session-st
   `arrival` prop are deleted. Registry: session-strip-motion R4 (`soft-press-hop`, the one
   candidate) and the arrival rounds annotated with the picks.
 - Round 3 deck: `session-motion-live-3.json` — one try-this step on R4.
+
+Destin's round-3 answer (in chat, not the answers file): *"this is better, but the interaction
+between the selected moving pill and the other dots/sessions still feels janky."* Diagnosis
+and what was built (commit `8a03d554` on `feat/session-strip-motion`):
+
+- **The jank was structural.** The open name in hand (~180px) among 28px dots meant every
+  dot crossed the whole pill to get out of its way, and no treatment of the crossing — a
+  slide, then a blink — could look right. Chrome never has this: a dragged tab is the width
+  of its neighbours. **So the pill in hand is a dot**: the name closes the moment the pointer
+  moves far enough to be a drag (a click still opens it on press) and opens again at the
+  drop; `widthOf(dragId)` is `COLLAPSED_PILL_PX` in the drag's settled geometry, so a
+  neighbour steps exactly one dot-width.
+- **Two pickup defects the probe found once the dot was in hand.** (1) The grab fraction
+  was measured at the PRESS; by the time the drag started the row had slid ~60px under the
+  stationary cursor, so the twin appeared ~150px from its box. Now measured at drag start,
+  against the box as it is; the rAF loop that syncs the twin's width also re-anchors its
+  left, so it shrinks around the cursor. (2) Yields were judged against SETTLED geometry
+  while the row was still sliding for 260ms: seven dots yielded at once, far ahead of the
+  visible pill. A first fix interpolated each pill's rect toward settled — useless, because
+  `slotCentres` positions slots from `rects[0].left` and cumulative widths, not each
+  pill's left. What works: `mapToSettled` (drag-order.ts) maps the dot's centre from the row
+  AS DRAWN (every pill's left, its in-flight transform read off `getComputedStyle` and
+  taken back out) into settled coordinates, then `nextSlotId` runs on settled rects. Frame
+  log after: dots yield one at a time as the pill reaches them, slot always under the pill.
+- **The probe's metric changed.** It measured the OVERLAP width, which scores the same-size
+  swap (the yielded dot sits under the pill until passed — Chrome's swap) as 22px of jank.
+  It now measures how far a neighbour STICKS OUT ahead of the pill's leading edge, ignores
+  a dot below half opacity (`~` in its rows), and logs the bar's left (`BAR`). Residual:
+  0–16px sustained, which is the fade time of a hop or the slide of a same-width swap.
+- **One scaffold**: `[data-yield="slide"]` (globals.css) turns the hop back into a slide for
+  the deck; the demo's `yieldAs` prop sets it. Registry R5: `dot-slide` / `dot-hop`.
+- Round 4 deck: `session-motion-live-4.json` — one pick-one step on R5.
 
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
@@ -166,17 +198,19 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-3 answer
+## After the round-4 pick
 
-1. If the strip is a "yes": merge and push `feat/session-strip-motion`; then
-   `feat/session-motion-review` (deck + docs). Archive the spec, plan and this handoff; flip
-   ROADMAP items 1067 and 1374.
-2. If it is a "no", the note says what. The blink's shape is two numbers — the keyframes'
-   25%/75% stops and the `calc(var(--dur-hover) / 2)` delay in `SessionStrip` — and a
-   "flicker" complaint means a shorter, shallower fade, not a return to sliding. The menu
-   line's wording is `session-runtime-label.ts`, pinned by its test. Do not go back to slot
-   positioning for the drag; that is the thing §7.4 replaced.
-3. Clean up: `worktrees/session-motion`, `worktrees/motion-docs` (and its `worktrees`
+1. Delete the loser: if **slide** wins, the hop keyframes, `session-pill--hop-*`, `hopGen`
+   and the `0s … calc(var(--dur-hover) / 2)` transition go, and the drag transition becomes
+   `var(--dur-hover) var(--ease-out)` outright; if **hop** wins, only the `[data-yield]`
+   block, `--pill-yield` and the demo's `yieldAs` prop go. Either way the
+   `animation-frame-budget` pins that name them change, and spec §7.4 says which shipped.
+2. Merge and push `feat/session-strip-motion`; then `feat/session-motion-review` (deck +
+   docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
+3. If it is neither ("other"), the note says what. Do not go back to an open name in hand
+   for the drag — that is the structural cause above; and do not go back to slot
+   positioning, which §7.4 replaced.
+4. Clean up: `worktrees/session-motion`, `worktrees/motion-docs` (and its `worktrees`
    symlink), `worktrees/session-switch-animation` (PR youcoded#192 — close unmerged).
 
 ## Why a workspace worktree, and the symlink in it
