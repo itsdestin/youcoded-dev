@@ -10,7 +10,29 @@ deck: docs/active/design/2026-08-31-session-motion/session-motion-live.json
 
 # Session strip & switch motion — handoff
 
-**State: rebuilt 2026-09-01, green, served as a live deck, waiting on Destin's three answers.**
+**State (2026-09-02): Soft + Press are the shipped behaviour, tuned and measured; one question
+left — how the conversation arrives — served as a round-2 live deck.**
+
+Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
+but it will need to be tuned/repaired a bit. it's jank"*), **switch-when → Press** (*"further
+refinement/tuning on the merged soft/press variant"*), **arrival → Other** (*"i want to try a few
+slightly more interesting/bouncy options"*). Done since:
+
+- Soft's values are `:root`; the `[data-motion]` presets, the `[data-select]` modes and their
+  `?motion=` / `?select=` readers are deleted. Three curves now: `--ease-reveal` (plain ease,
+  for things that open), `--ease-out` (fast deceleration, for the dots that must LEAD a
+  dragged pill), `--ease-settle`. Rounds 1–2 stay in the registry as the record; their losing
+  candidates render what shipped and say so.
+- The "jank" in Soft had two measured causes: the label-arming window was a fixed 360ms and
+  closed before Soft's badge (260 + 180ms) finished opening, so it popped — it now reads the
+  durations off the stylesheet (`motionWindowMs`); and the step-aside was on Soft's gentle
+  ease, leaving the dragged pill over a dot — the step-aside keeps the fast curve.
+- Pickup after a press: the header re-centres the strip (~40px over 260ms) while the row
+  reshapes, so geometry laid out at press drifted from where the dots settled. The drag now
+  shifts its geometry by however far the bar has moved since press. Probes: 0px sustained
+  overlap ahead of the pill in right, left and fast drags.
+- Round 2 deck: `session-motion-live-2.json` — a try-this on the tuned strip and a pick-one on
+  four arrivals (lift / spring / grow / slide; `[data-arrival]` is the one scaffold left).
 
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
@@ -112,13 +134,11 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the answers
+## After the round-2 answers
 
-1. Move the winning values into `:root` in `globals.css` and **delete** the `[data-motion]` /
-   `[data-arrival]` blocks, the `?motion=` / `?arrival=` / `?select=` scaffold in `index.tsx`,
-   `readSelectOn` and the two losing branches in `SessionStrip` (the `SelectOn` type,
-   `dragMode`, `heldAsDot`), and the `motion` / `arrival` / `select` props on
-   `SessionStripMotionDemo` (keep the demo and its two
+1. Move the winning arrival into the `switch-arrival` keyframes' defaults in `globals.css` and
+   **delete** the `[data-arrival]` blocks, the `?arrival=` scaffold in `index.tsx`, and the
+   `arrival` prop on `SessionStripMotionDemo` (keep the demo and its two
    registry surfaces with one candidate each — they are how the strip gets reviewed next time).
    Update the two `animation-frame-budget` pins that name the presets.
 2. If the drag is a "no", the answer's note says what; the model is in `drag-order.ts` and

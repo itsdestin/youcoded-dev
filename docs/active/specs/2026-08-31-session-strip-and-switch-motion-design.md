@@ -54,13 +54,17 @@ The design guide states a rule — 150ms hover/press, 200ms drawers and sheets, 
 behind `prefers-reduced-motion` and the app's Reduce Visual Effects toggle
 (`docs/active/design/2026-08-25-ui-design-guide.md` §2.4) — and nothing enforces it.
 
-**Define two curves and three durations as CSS custom properties in `globals.css`, and use
-them for this work only.** Neither curve overshoots: `--ease-out` (`0.16, 1, 0.3, 1`) for
-reveals, hover and neighbours stepping aside, `--ease-settle` (`0.28, 0.84, 0.42, 1`) for a
-released pill gliding home; `--dur-hover: 150ms`, `--dur-reveal: 200ms`, `--dur-switch:
-240ms`. The first cut used the app's spring curve on the pill; Destin's verdict was *"much
-too bouncy/aggressive"*, and a spring on a width-like property also sends every pill to the
-right of it past its destination and back. No overshoot anywhere in this work.
+**Define three curves and three durations as CSS custom properties in `globals.css`, and use
+them for this work only.** Destin picked "Soft" from three live candidates on 2026-09-02:
+`--ease-reveal` (`0.25, 0.1, 0.25, 1`, a plain ease) for things that open — a name, a badge, a
+hover, a colour; `--ease-out` (`0.16, 1, 0.3, 1`, fast deceleration) for things that must
+lead — the dots stepping aside for a dragged pill (on the gentle ease they started too slowly
+and the pill sat over them); `--ease-settle` for a released pill gliding home.
+`--dur-hover: 180ms`, `--dur-reveal: 260ms`, `--dur-switch: 300ms`. None of the three
+overshoots: the first cut used the app's spring curve on the pill and Destin's verdict was
+*"much too bouncy/aggressive"*, and a spring on a width-like property sends every pill to the
+right of it past its destination and back. Overshoot is allowed in exactly one place — the
+switch arrival (§4.2), which is one element's transform.
 
 Existing call sites elsewhere in the app are **not** converted. Destin, 2026-08-31: a sweep
 means visual changes in surfaces unrelated to this work, which is the thing that costs
@@ -284,13 +288,13 @@ under the pointer, and an overlay peek (the name floating over its neighbours, n
 moving) would honour it — at the cost of hiding the dots you are sweeping towards. Not
 built; a candidate for a later round if the push reads as jitter in use.
 
-### 6.1 When the switch happens — an open pick (2026-09-01)
+### 6.1 When the switch happens — press (picked 2026-09-02)
 
 Destin, on the rebuilt round: *"I want this to work a little more like chrome, where the new
 session is selected right when I click the new session pill and begin to drag … the old
 session would collapse to status dot and new session would expand right as drag begins."*
-Three modes are built, read from a `[data-select]` ancestor (review scaffold; the workbench
-honours `?select=`), and offered as round 2 of the live deck:
+Three modes were built and offered as round 2 of the live deck; Destin picked **press**, and
+it is now the only behaviour (the modes and their reader are deleted):
 
 - **press** (default) — the session switches the instant you press, as a Chrome tab does:
   the old name collapses, the pressed one opens, the conversation changes underneath; drag
