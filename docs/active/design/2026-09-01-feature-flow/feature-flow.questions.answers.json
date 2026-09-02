@@ -1,37 +1,34 @@
 {
  "deck": "feature-flow-questions",
- "started": "2026-09-02T04:30:29.639Z",
- "submitted": "2026-09-02T04:52:57Z",
+ "started": "2026-09-02T10:57:54.594Z",
+ "submitted": "2026-09-02T10:59:57Z",
  "cur": 3,
  "answers": {
   "Q-1": {
    "v": "pick",
    "pick": "a",
-   "seconds": 24,
+   "seconds": 36,
    "theme": "midnight",
    "zoom": 1
   },
   "Q-2": {
-   "v": "other",
-   "note": "i'm a bit confused.",
-   "note_kind": "noting",
-   "seconds": 49,
+   "v": "pick",
+   "pick": "a",
+   "seconds": 6,
    "theme": "midnight",
    "zoom": 1
   },
   "Q-3": {
-   "v": "other",
-   "note": "i'm not sure. what is the real benefit of the current plan system? do plans actually provide the implementing sessions with useful context? what would be lost with option b , and would that be likely to cause issues?",
-   "note_kind": "noting",
-   "seconds": 153,
+   "v": "pick",
+   "pick": "a",
+   "seconds": 63,
    "theme": "midnight",
    "zoom": 1
   },
   "Q-4": {
-   "note": "confused.",
-   "v": "other",
-   "note_kind": "noting",
-   "seconds": 1121,
+   "v": "pick",
+   "pick": "a",
+   "seconds": 17,
    "theme": "midnight",
    "zoom": 1
   }

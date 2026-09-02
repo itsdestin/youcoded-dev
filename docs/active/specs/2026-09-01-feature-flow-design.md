@@ -139,6 +139,8 @@ This is prose and a file convention, not tooling; tooling waits for the data.
 
 These four are asked on the first questions deck (`docs/active/design/2026-09-01-feature-flow/feature-flow.questions.json`, plan Task 8), not in chat; the build proceeds on the assumptions and a veto is the first reopen (§6).
 
+**Answered 2026-09-02** (`feature-flow.questions.answers.json`): all four picked as recommended — acceptance deck kept, reopen proceeds on a marked default, tasks carry descriptions by default, answers files committed. The first pass (kept as the `202609020452` rotation) had Q-2/3/4 as questions; the discussion that answered them rewrote §8.
+
 1. **Four appearances** (questions, rounds, contract, acceptance) on one surface — or is the acceptance deck one too many? The contract can carry its human rows instead, at the cost of Destin ticking them before the work exists.
 2. **Reopen with a default** (§6) — proceed on a marked default when nobody answers, or always stop?
 3. **Plan tier** (§8c) — tasks carry a description by default, pre-written code only for cross-repo / stored-data / strict-ordering work? (Reworded 2026-09-02: the first wording, "skip the plan document", conflated the review loop with the document it reviews; the loop stays on every feature.)
