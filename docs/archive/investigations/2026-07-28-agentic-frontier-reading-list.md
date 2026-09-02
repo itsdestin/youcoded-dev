@@ -1,10 +1,12 @@
 ---
 title: "Agentic frontier reading list — July 2026"
 date: 2026-07-28
-status: active
+status: superseded
 type: investigation
 tags: [agents, reading-list, research, harness]
 ---
+
+> **ARCHIVED 2026-09-01.** Reading list with no inbound references; the frontier-research investigation of the same date stays active. The live authority for the native-sessions / specialists / agents family is now `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` — vision, shipped state, remaining work and open decisions in one place. Read this file for history and research only.
 
 # Agentic frontier reading list
 

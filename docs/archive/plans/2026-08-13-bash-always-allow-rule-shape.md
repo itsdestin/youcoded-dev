@@ -4,7 +4,7 @@ created: 2026-08-13
 revised: 2026-08-13
 type: plan
 spec: docs/archive/specs/2026-08-13-bash-always-allow-rule-shape.md
-program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
+program: docs/archive/plans/2026-08-11-native-sessions-remaining-work.md
 item: M5 2c — Bash always-allow rule shape
 ---
 
@@ -2130,7 +2130,7 @@ in-flight work; attribute before fixing.
 
 Then archive:
 
-Move the spec and this plan from `docs/active/{specs,plans}/` to `docs/archive/{specs,plans}/`, flip their `status:` to `shipped`, mark 2c done in `docs/active/plans/2026-08-11-native-sessions-remaining-work.md` §2, and archive `docs/active/handoffs/2026-08-12-native-sessions-m5-2c.md`. Confirm the ROADMAP entry from Task 0 Step 4 (the deferred "tell the user when a grant almost covered a command" work) is still there and accurate. Remove the worktree and delete the branch locally and remotely. Commit and push the workspace repo.
+Move the spec and this plan from `docs/active/{specs,plans}/` to `docs/archive/{specs,plans}/`, flip their `status:` to `shipped`, mark 2c done in `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md` §2, and archive `docs/active/handoffs/2026-08-12-native-sessions-m5-2c.md`. Confirm the ROADMAP entry from Task 0 Step 4 (the deferred "tell the user when a grant almost covered a command" work) is still there and accurate. Remove the worktree and delete the branch locally and remotely. Commit and push the workspace repo.
 
 ---
 

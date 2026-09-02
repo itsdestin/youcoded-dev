@@ -2,7 +2,7 @@
 status: shipped
 created: 2026-08-11
 type: spec
-program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
+program: docs/archive/plans/2026-08-11-native-sessions-remaining-work.md
 milestone: M5 item 2a
 ---
 

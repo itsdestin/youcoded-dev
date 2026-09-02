@@ -24,6 +24,11 @@ youcoded-core
 youcoded-admin
 wecoded-themes
 wecoded-marketplace
+# The roadmap-check test fixture carries a FAKE `youcoded/` sub-repo (one .ts file its
+# claim anchor points at). The slashless `youcoded` above matches at any depth, so
+# without this re-include the fixture silently never reached CI — PR #11's first run
+# failed on exactly that (98 green locally, 2 red in CI).
+!scripts/fixtures/roadmap/youcoded
 
 # Worktrees and temp directories
 .worktrees/

@@ -1,6 +1,9 @@
 ---
-status: active
+status: superseded
+superseded-by: docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
 ---
+
+> **ARCHIVED 2026-09-01.** Superseded by the consolidated vision doc; its Progress log stopped 2026-07-22 and its Phase 2 status block was stale (Plan C merged 2026-07-29). §1–§3 (market position, target architecture, llama.cpp/provider research) remain the citable research record. The live authority for the native-sessions / specialists / agents family is now `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` — vision, shipped state, remaining work and open decisions in one place. Read this file for history and research only.
 
 # YouCoded Platform Vision — Multi-Model Backends, Custom Harnesses, Agents & Automations
 
@@ -23,7 +26,7 @@ status: active
 >   It is the one that gets updated, and it should stay that way.
 > - **This spec is the WHY and the not-yet-planned WHAT** — vision, market position, target
 >   architecture, and the phase bodies for work no plan has picked up yet.
-> - **`docs/active/plans/2026-08-11-native-sessions-remaining-work.md` is the execution vehicle**
+> - **`docs/archive/plans/2026-08-11-native-sessions-remaining-work.md` is the execution vehicle**
 >   for the parity slice (its §1.5 maps which of this spec's phase items it took over).
 >
 > **Recommended (Destin's call, not applied here):** stop maintaining the Progress log entirely
@@ -60,7 +63,7 @@ status: active
 
 - **OPEN — Phase 2 Plan C**, which as of 2026-07-19 is unmerged on `feat/native-local-reliability` (16 commits, last touched 2026-07-17, no PR opened) and **far behind current master** — expect a real rebase, not a fast-forward, before it can go up for review. *(A precise commit-count lag was recorded here and went stale within a day; check it live with `git rev-list --count origin/feat/native-local-reliability..origin/master` rather than trusting a number in this doc.)*
 
-- **2026-07-22 — Native Runtime Parity Program created** (`docs/active/plans/2026-08-11-native-sessions-remaining-work.md (successor to the 2026-07-22 program doc)`) — the single execution plan for the **parity slice** of this vision, consolidating 22 ROADMAP entries into nine milestones. It carries: Phase 3 items 1 (in-app skill-surface half), 2, 4, 6, 7, 8 (as its M3/M5/M7), Phase 5 items 2–3 (as M8, keeping this spec's LAN-first internal order), and both OPEN bullets below (as M6) — plus parity debt no phase body itemizes: M1 send-queue/results/stop, M2 native conversation sync/tags/takeover (decision resolved 2026-07-22: resume ALWAYS offers the model selector, pre-filled from a synced portable `lastUsedModel` — never auto-launching the device-local binding), M4 status/reliability UX, M9 onboarding equality. Phase 4 (Agents & Automations view), Phase 6, and Phase 3 items 3 (custom harness builder) + 5 stay with this spec — new surfaces, not parity. Full mapping: program §1.5. Phase bodies below remain the WHAT for their items; the program is the WHEN/execution vehicle for the subset it names.
+- **2026-07-22 — Native Runtime Parity Program created** (`docs/archive/plans/2026-08-11-native-sessions-remaining-work.md (successor to the 2026-07-22 program doc)`) — the single execution plan for the **parity slice** of this vision, consolidating 22 ROADMAP entries into nine milestones. It carries: Phase 3 items 1 (in-app skill-surface half), 2, 4, 6, 7, 8 (as its M3/M5/M7), Phase 5 items 2–3 (as M8, keeping this spec's LAN-first internal order), and both OPEN bullets below (as M6) — plus parity debt no phase body itemizes: M1 send-queue/results/stop, M2 native conversation sync/tags/takeover (decision resolved 2026-07-22: resume ALWAYS offers the model selector, pre-filled from a synced portable `lastUsedModel` — never auto-launching the device-local binding), M4 status/reliability UX, M9 onboarding equality. Phase 4 (Agents & Automations view), Phase 6, and Phase 3 items 3 (custom harness builder) + 5 stay with this spec — new surfaces, not parity. Full mapping: program §1.5. Phase bodies below remain the WHAT for their items; the program is the WHEN/execution vehicle for the subset it names.
 
 - **OPEN — the multi-model cwd contract**, follow-up from PR #174: shipping `cd` persistence exposed a gap the harness never had to resolve when every Bash call reset to root — `Read`/`Edit`/`Write`/`Glob`/`Grep` resolve relative paths against the session root while `Bash` now resolves against the tracked, moving `shellCwd`, so `cd sub` then `Read foo.txt` silently reads the wrong file. Worse for a multi-vendor harness than for CC's single-model one: Claude Code, Codex, Kimi K3, and Grok each have a *different* trained cwd convention (persistent / per-call `workdir` param / no-persist / no native preference), so this isn't a one-off bugfix, it's a contract every current and future model binding has to hold to. Decision (from the 2026-07-18 four-way harness comparison): keep scoped persistence as the substrate — it's the only model where every vendor's fallback either works natively or fails loudly — and add (1) an optional Bash `workdir` param for one-call directory overrides without touching tracked state, (2) hard-error (not silent-resolve) when a file tool gets a relative path, (3) the contract restated in each tool's description, (4) one canonical, provider-*un*branched `<cwd-rules>` block in the system prompt (byte-stable, so it doesn't break local-model KV-cache reuse). Directly relevant to **Phase 3's custom harness builder** (item 3 above) and any future multi-model binding work — a harness a user builds around a non-Claude model inherits this same contract, so it should be settled before that surface ships, not discovered after. Full plan: `docs/active/plans/2026-07-18-multi-model-cwd-contract.md`; ROADMAP Features (added 2026-07-18, follow-up to PR #174).
 
@@ -291,12 +294,60 @@ The app stops *wrapping* Claude Code's ecosystem and starts owning a standards-b
 
 A third top-level view alongside Chat and Projects:
 
-- **Agent = named automation**: harness (preset or custom) + model binding + instructions + workspace scope + trigger.
+- **Agent = named automation**: harness (preset or custom) + model binding + instructions + workspace scope + trigger. **⚠️ Under live question — see §3.5a**, Destin's "Assistants made of Duties" framing (2026-09-01), which splits this one object into a named container and the individual jobs it is responsible for.
 - **Triggers v1:** manual "Run now," cron schedule (reuse the proven scheduling patterns from CC Routines/OpenClaw research: cron + one-time). **v2:** file-watch, webhook (needs port/tunnel decisions), app events (session ended, sync completed), inter-agent chaining.
 - **Runner:** main-process scheduler (persisted job store, survives restart, catches up on missed runs with a policy) spawning headless harness sessions with step/token budgets. Local models make 24/7 scheduled agents **free** — a genuine advantage over every cloud-metered competitor, and the reason llama.cpp-default and this view are synergistic.
 - **Run inbox:** per-agent run history (transcript = a normal session, viewable in chat UI read-only), states `scheduled / running / needs-approval / completed / failed`, surfaced via StatusBar chip + notifications (+ push via remote channel later). Approval requests from headless runs land here instead of blocking.
 - **Deliverables:** runs produce artifacts (files, reports) that flow into the existing artifact viewer/Project View.
 - **Sharing:** agent manifests are JSON → shareable to friends via the existing social layer, publishable to WeCoded later (with the skill-security scanning lesson from ClawHub applied from day one).
+
+#### 3.5a Destin's shape for it — "Assistants" made of "Duties" (idea, 2026-09-01)
+
+**Captured, not designed.** Destin's own framing of what the unit of organization in this
+view should be. It is a naming + structure proposal for §3.5's "Agent = named automation"
+bullet, and it should be reconciled with that bullet before Phase 4 is detailed — today the
+spec has ONE object (an agent = one automation), and this proposes TWO nested ones.
+
+**The two objects:**
+
+- **Assistant** (working name; "bot" was the other candidate) — the container the user
+  names and thinks in: "my Office assistant." An assistant may be any of three things, and
+  the design must not assume one: (a) a **coordinator** agent that dispatches its duties,
+  (b) the **sole** agent that performs every duty itself, or (c) **no agent at all** — a
+  purely organizational folder that groups duties which each run independently. (c) is the
+  one that keeps this cheap: grouping must not force a coordinator into existence.
+- **Duty** — one job the assistant is responsible for. Each duty is its own **specialist**
+  (the existing native-specialists mechanism, `.claude/rules/native-specialists.md`) in the
+  coordinator/multi-agent case, or its own **skill** in the sole-agent case. So a duty
+  carries the context, instructions and tools for exactly one recurring job, and the
+  specialist/skill split is an implementation detail of the assistant's shape, not a
+  separate user-facing concept.
+
+**Destin's worked example — the "Office" assistant, three duties:**
+
+1. **Check email** — read the inbox, pull calendar events and deadlines out of the mail,
+   and prepare draft reports/deliverables for supervisors using the user's own skills.
+2. **Weekly finance report** — scrape specific sites and/or pull specific files off a local
+   drive, then produce a report in a pre-determined format defined by a skill.
+3. **Reorder the shopping list** — review the list, **ping the user to confirm it is
+   accurate**, and only then place the order on Amazon.
+
+**"Ping the user" is called out as a core competency of the system, not a per-duty detail.**
+Duty 3 is the shape that matters: a scheduled run stops mid-task, asks the human a question
+in their own words, and waits — for minutes or for days — then resumes with the answer. This
+is NOT the same as §3.5's `needs-approval` run state, which is a *permission* ask (may I run
+this tool). This is a *content* check-in ("is this list right?") that the duty's own
+instructions author. Both need the run to suspend durably, survive an app restart, and reach
+the user wherever they are (inbox + notification + Android/remote push), so they likely share
+one mechanism — but they are two different questions and the UI should not merge them.
+
+**Open questions this raises for Phase 4 (none answered):** does a trigger belong to the
+assistant or to each duty (the example implies per-duty — email is daily, finance is weekly,
+shopping is on demand)? Do budgets/cost caps sit on the assistant or the duty? Does a
+coordinator assistant get its own conversation the user can talk to, or is it only ever
+scheduled? How does an assistant made of specialists share context between duties, if at all?
+And which of the three assistant shapes is the v1 default — the agentless grouping is the
+cheapest and is probably where this starts.
 
 ---
 
@@ -360,7 +411,7 @@ Delivered: ADRs 006–010; foundations spec (`2026-07-10-phase0-foundations-desi
 - **Plan A** (agent loop + core tools + permissions) — COMPLETE, merged 2026-07-16 (youcoded PR #149, master `5f423287`).
 - **Plan B** (web tools + AskUserQuestion + presets) — COMPLETE, merged 2026-07-17 (youcoded PR #156). Completes the **ten-tool** suite; presets ship as **Assistant + Coder** (Chat cut).
 - **Plan C** (local reliability, compaction, StatusBar usage bridge) — **UNMERGED**, on `feat/native-local-reliability`, no PR opened. Expect a real rebase, not a fast-forward.
-- **Task/subagents** — deferred by settled decision 5, but core/vital. Tracked in ROADMAP; the orchestration layer above it is scoped in `docs/active/specs/2026-07-19-native-workflow-orchestration-design.md`.
+- **Task/subagents** — deferred by settled decision 5, but core/vital. Tracked in ROADMAP; the orchestration layer above it is scoped in `docs/archive/specs/2026-07-19-native-workflow-orchestration-design.md`.
 - **`native.supported` flipped to true in production 2026-07-16** (PR #160), ahead of the original Phase-2-complete gate — Destin's explicit call. The "exit stays dev-gated / a Phase 2.1 pass then flips it" plan recorded here is therefore **superseded by events**; kill switch is `YOUCODED_NATIVE=0`.
 
 **Exit criteria** (unchanged, still open)**:** "fix this bug in my project" works end-to-end on Qwen3-Coder 30B locally and on any OpenRouter frontier model, with tool cards, diffs, approvals, artifacts, and projects integration indistinguishable from a CC session.
@@ -376,7 +427,7 @@ Delivered: ADRs 006–010; foundations spec (`2026-07-10-phase0-foundations-desi
 5. **Projects view integration polish:** provider badges on conversations; per-project default harness/model.
 6. **Native session dynamic context — path-scoped rules, nested CLAUDE.md, mid-session injection:** the native system prompt is deliberately byte-stable per session (KV-cache reuse for local models), so rules/skills can't mutate it mid-session — they arrive as MESSAGES instead, same as CC (a path-matcher injects a rule after a matching tool call; skills load via a Skill tool call). Injection must be gated/scaled by the capability profile (a 600-word rule can blow a small model's context). Design together with items 1–3 above, which already own this surface (ROADMAP Features, added 2026-07-16).
 7. **Permission-management UI — list/revoke remembered "Always allow" rules:** `PermissionStore` has no delete/clear/update today and no IPC to reach one — the store's own header comment calls this out by name ("rules accumulate without cap... until the Phase 3 permission-management UI lets the user prune them — intentional"). Settings surface grouped by project slug; Android parity needed (ROADMAP Features, added 2026-07-18). **Unlocks a paired bug fix:** Bash's remembered "Always allow" rule stores the exact literal command string (no prefix/glob derivation), which is *too narrow* to be useful day-to-day — but that narrowness is the only thing bounding blast radius today, so widening it safely depends on this UI shipping first (ROADMAP Bugs, added 2026-07-18).
-8. **Subagents design handoff (bridge to Phase 4):** Task/subagents were deferred from Phase 2 by explicit decision but are core/vital — child sessions with a parent-session pointer and a condensed result back are the mechanism Phase 4's headless runner and agent model both assume exists. Phase 2's loop + session store were designed so this lands without a schema change; scope the design here even if implementation lands with Phase 4 (ROADMAP Features, added 2026-07-15). **The layer ABOVE this is now scoped** — `docs/active/specs/2026-07-19-native-workflow-orchestration-design.md` (multi-agent fan-out / workflow orchestration) names this item as its hard prerequisite, since orchestration is subagents plus a coordination layer. ⚠️ **It also raises a design tension with item 6 above:** item 6 preserves a byte-stable system prompt *for* local-model KV-cache reuse, and fresh subagent contexts destroy exactly that reuse — so subagent prompts need a deliberately shared prefix, and the two items must be designed together rather than independently.
+8. **Subagents design handoff (bridge to Phase 4):** Task/subagents were deferred from Phase 2 by explicit decision but are core/vital — child sessions with a parent-session pointer and a condensed result back are the mechanism Phase 4's headless runner and agent model both assume exists. Phase 2's loop + session store were designed so this lands without a schema change; scope the design here even if implementation lands with Phase 4 (ROADMAP Features, added 2026-07-15). **The layer ABOVE this is now scoped** — `docs/archive/specs/2026-07-19-native-workflow-orchestration-design.md` (multi-agent fan-out / workflow orchestration) names this item as its hard prerequisite, since orchestration is subagents plus a coordination layer. ⚠️ **It also raises a design tension with item 6 above:** item 6 preserves a byte-stable system prompt *for* local-model KV-cache reuse, and fresh subagent contexts destroy exactly that reuse — so subagent prompts need a deliberately shared prefix, and the two items must be designed together rather than independently.
 
 **Exit criteria:** a marketplace skill installs once and triggers correctly in both a CC session and a native Qwen session; a user builds and shares a custom harness without editing files; a user can see and revoke a remembered permission grant.
 
@@ -384,12 +435,12 @@ Delivered: ADRs 006–010; foundations spec (`2026-07-10-phase0-foundations-desi
 
 **Goal:** the headline new surface.
 
-**Scope is under live question (2026-07-19).** `docs/active/specs/2026-07-19-native-workflow-orchestration-design.md` §8 open decision 5 asks whether multi-agent workflow orchestration belongs *inside* this phase or is a separate surface layered on it. That spec names items 1 + 3 below as its prerequisites (its budget enforcement depends on item 3's cost accounting, and it argues for a **hard-stopping** budget rather than the advisory warning both Anthropic and OpenAI ship). Settle the boundary before detailing this phase further.
+**Scope is under live question (2026-07-19).** `docs/archive/specs/2026-07-19-native-workflow-orchestration-design.md` §8 open decision 5 asks whether multi-agent workflow orchestration belongs *inside* this phase or is a separate surface layered on it. That spec names items 1 + 3 below as its prerequisites (its budget enforcement depends on item 3's cost accounting, and it argues for a **hard-stopping** budget rather than the advisory warning both Anthropic and OpenAI ship). Settle the boundary before detailing this phase further.
 
-1. **Agent model + store:** manifest (name, harness ref, model binding, instructions, workspace, trigger, budgets, notification prefs); CRUD UI following the Projects-view hub pattern (hero, list, detail overlay). **Budgets should include a cost budget, not just step/token/time** — see item 3's cost-chip note.
+1. **Agent model + store:** manifest (name, harness ref, model binding, instructions, workspace, trigger, budgets, notification prefs) — **but settle §3.5a first**: the assistant/duty split changes what a manifest even is, and whether trigger and budgets hang off the container or off each job; CRUD UI following the Projects-view hub pattern (hero, list, detail overlay). **Budgets should include a cost budget, not just step/token/time** — see item 3's cost-chip note.
 2. **Scheduler:** persisted cron/one-time job store in main; missed-run policy; concurrency caps; battery/AC awareness on laptops.
 3. **Headless runner:** harness sessions without a mounted chat view; step/token/time budgets; run transcript persisted as a session (viewable read-only in chat UI); artifacts flow to Project View. **Cost accounting is a prerequisite for a cost budget:** the StatusBar session cost-estimate chip (per-turn usage × the bound model's OpenRouter price, ROADMAP Features added 2026-07-18) is designed for interactive sessions but the same usage×price math is what a headless run needs to enforce a spend cap — build it once, consume it from both surfaces.
-4. **Inbox & notifications:** run states (`scheduled/running/needs-approval/completed/failed`); approval requests from headless runs queue in the inbox; StatusBar chip + native notifications; remote/Android push via existing channels. **UI reference points already flagged in knowledge-debt:** CC's `/goal` completion-condition overlay (elapsed/turns/tokens, live) is a close analog for a per-run budget display; CC's "agent view" (`claude agents`, one list of every session) is a close analog for this inbox's run-list — both are additive ideas worth a look before designing this from scratch (ROADMAP Someday, added 2026-05-18).
+4. **Inbox & notifications:** run states (`scheduled/running/needs-approval/completed/failed`); approval requests from headless runs queue in the inbox; **§3.5a adds a second, distinct suspend reason — the duty asking the user a content question ("is this shopping list right?") rather than a permission one — which Destin names as a core competency of this system, not a per-agent extra;** StatusBar chip + native notifications; remote/Android push via existing channels. **UI reference points already flagged in knowledge-debt:** CC's `/goal` completion-condition overlay (elapsed/turns/tokens, live) is a close analog for a per-run budget display; CC's "agent view" (`claude agents`, one list of every session) is a close analog for this inbox's run-list — both are additive ideas worth a look before designing this from scratch (ROADMAP Someday, added 2026-05-18).
 5. **Trigger expansion (4b):** file-watch, app events, webhook (behind explicit opt-in), agent-chaining.
 6. **Claude backend for agents too:** an automation can bind to Claude Code headless (`claude -p` / Agent SDK path) — the Agents view is backend-agnostic from day one, so Pro/Max users get frontier-model automations and local users get free 24/7 ones.
 7. **Sharing/marketplace (4c):** publish agent templates to WeCoded with security review gates (ClawHub SkillSpector lesson: scan shared skills/agents from day one). **Blocked today for remote/browser users:** remote browsers can't invoke the `social:*`/`account:*` request-response channels at all (Accounts Phase 2 follow-up #2, ROADMAP Features added 2026-07-09) — a remote client would hit a dead end trying to publish or install a shared agent template until that routing gap closes.

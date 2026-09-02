@@ -3,7 +3,7 @@ status: shipped
 date: 2026-08-12
 owner: Destin
 supersedes: nothing (widened `.claude/rules/harness-review-runner.md`, now `harness-evaluator.md`)
-roadmap: docs/active/plans/2026-08-11-super-agent-roadmap.md step 2
+roadmap: docs/archive/plans/2026-08-11-super-agent-roadmap.md step 2
 ---
 
 # Harness evaluator — design

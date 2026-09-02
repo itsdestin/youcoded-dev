@@ -33,7 +33,7 @@ related-pr: youcoded#174
 > - No branch or worktree exists for this work.
 >
 > Last activity: 2026-07-18 (written the day PR #174 merged). It is still queued —
-> `docs/active/plans/2026-08-11-native-sessions-remaining-work.md` §"Step 7 — M6 item 5" owns
+> `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md` §"Step 7 — M6 item 5" owns
 > the scheduling and ROADMAP line 30 lists "cwd contract" in the ordered remainder.
 >
 > **Before building: item 2 needs Destin's call, not code.** The shipped hint layer already

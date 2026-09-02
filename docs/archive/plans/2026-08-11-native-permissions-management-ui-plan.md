@@ -3,7 +3,7 @@ status: shipped
 created: 2026-08-11
 type: plan
 spec: docs/active/specs/2026-08-11-native-permissions-management-ui.md
-program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
+program: docs/archive/plans/2026-08-11-native-sessions-remaining-work.md
 milestone: M5 item 2a
 ---
 

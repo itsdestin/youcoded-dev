@@ -485,6 +485,6 @@ Ranked by how much a normal person would care. Every one is already shipped.
 
 ---
 
-*Compiled from the youcoded-dev workspace: `ROADMAP.md`, `docs/active/specs/2026-07-09-platform-vision-roadmap.md`, `youcoded/docs/native-runtime.md`, `youcoded/docs/sync-spaces.md`, `youcoded/docs/engine-dependencies.md`, renderer/main/Android source sweeps, and registry indexes (wecoded-marketplace: 339 index entries — 302 live, 13 YouCoded + 289 imported; wecoded-themes: 7 themes, 6 authored `claude`).*
+*Compiled from the youcoded-dev workspace: `ROADMAP.md`, `docs/archive/specs/2026-07-09-platform-vision-roadmap.md`, `youcoded/docs/native-runtime.md`, `youcoded/docs/sync-spaces.md`, `youcoded/docs/engine-dependencies.md`, renderer/main/Android source sweeps, and registry indexes (wecoded-marketplace: 339 index entries — 302 live, 13 YouCoded + 289 imported; wecoded-themes: 7 themes, 6 authored `claude`).*
 
 *Revised 2026-08-31 during the landing-page competitive review. Added: §22 (measured competitive position), §25 (claims that need fixing), §26 (unused marketing material); corrected the marketplace numbers throughout, the games section, the Android tags/notes limitation, the missing rename capability, agent-only transcript search, and the configurable status bar. Everything added carries the file, line or API it was read from; two claims that could not be re-verified offline are attributed to `ROADMAP.md` rather than asserted.*

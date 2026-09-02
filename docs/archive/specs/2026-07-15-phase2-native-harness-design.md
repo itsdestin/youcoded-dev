@@ -34,7 +34,7 @@ status: shipped
 
 **Date:** 2026-07-15
 **Status:** APPROVED (Destin, 2026-07-15) — approved section-by-section in session, then re-approved after a second-session review's six findings were folded in (`96de1c2`). Ready for implementation planning.
-**Parent:** `2026-07-09-platform-vision-roadmap.md` (Phase 2, §3.3). Builds on the shipped Phase 1 spec (`docs/archive/specs/2026-07-10-phase1-engine-providers-design.md`) and the Phase 0 research report `docs/active/investigations/2026-07-10-harness-design-ideas.md`, which supplies the design vocabulary used throughout (cited as "R§n").
+**Parent:** `2026-07-09-platform-vision-roadmap.md` (Phase 2, §3.3). Builds on the shipped Phase 1 spec (`docs/archive/specs/2026-07-10-phase1-engine-providers-design.md`) and the Phase 0 research report `docs/archive/investigations/2026-07-10-harness-design-ideas.md`, which supplies the design vocabulary used throughout (cited as "R§n").
 **Repo:** all code lands in `youcoded/desktop/` (main process + renderer + shared). Android gets inert IPC stubs only.
 
 **Goal:** real agentic sessions on the native runtime — the Assistant and Coder presets work end-to-end with the full existing chat UI (tool cards, diffs, approvals, artifacts, projects), on cloud frontier models AND on local models through the supervised engine.
