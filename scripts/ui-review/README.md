@@ -157,8 +157,10 @@ reader with **no context**, in plain words, in four parts the page renders as la
 the user experiences it) · **the proposal** (what would change, as the user would notice it) ·
 **options**, each with `pros`/`cons` about the **user's experience**, never the code. A question with
 no `options` gets Yes / No / Don't know; its proposal says what each answer leads to. "Other" plus a
-note is always there. Group as makes sense — one question per step, or a related handful on one
-scrolling step — and mix freely with picture steps. Four or more questions for Destin means a deck;
+note is always there. **Err on the side of more questions per step**: a whole area's worth on one scrolling step is
+the default; open another step only when it clearly helps his review flow (the subject changes, or
+the kind of answer does — decisions vs. "still hitting it?"), never to even the steps out (Destin,
+2026-09-02). Mix freely with picture steps. Four or more questions for Destin means a deck;
 one or two still go in chat.
 
 ```json

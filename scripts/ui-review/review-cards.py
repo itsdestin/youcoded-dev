@@ -15,7 +15,7 @@ for animations, hovers, transitions and bugs that only show in motion; files fro
 and LIVE (`live` — panes of the RUNNING app he can hover, click and drag, one authored
 candidate each out of youcoded's compare/registry.tsx; `variants` makes it a pick-one, their
 absence a yes/no, and `serve` boots the worktree's workbench for it), and QUESTION
-(`questions` — no picture; one or a related handful of written questions on one scrolling step,
+(`questions` — no picture; as many related written questions as belong together on one scrolling step,
 each in four parts — today / the problem / the proposal / options with pros and cons about the
 user's experience — written for a reader with no context; Yes / No / Don't know when it has no
 options). One or two wording-only questions still go in chat; four or more are a QUESTION step.

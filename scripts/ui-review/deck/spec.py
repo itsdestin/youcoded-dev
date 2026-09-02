@@ -118,7 +118,8 @@ def is_question(step):
     """A QUESTION step has no picture at all: one or more written questions, each in four
     parts — today / the problem / the proposal / the options — written for a reader with no
     context (Destin, 2026-09-02: he files an item, then meets it again months later). The
-    author groups: one question per step, or a related handful on one scrolling step. Options
+    author groups, erring on the side of MORE questions per step — split only when it clearly
+    helps his review flow (the subject or the kind of answer changes), never for evenness. Options
     carry pros and cons about the USER'S experience; a question with no options is
     Yes / No / Don't know. Replaces the chat list of one-liners rejected on 2026-09-01."""
     return bool(step.get('questions'))
