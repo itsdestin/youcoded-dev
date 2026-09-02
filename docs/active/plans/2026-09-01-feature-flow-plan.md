@@ -1749,7 +1749,7 @@ Then `/wrap-up`. The design doc's `status:` flips to `active` on the first run a
 
 ## Self-review
 
-**Spec coverage.** §2 defect (answers ignored) → Task 0. §3 contract format, who writes it → Tasks 3, 6. §4 gate: three facts, `contract-check`, close-out section, rotation → Tasks 4, 5. §5 questions deck (no picture, one option), note tags → Tasks 1, 2. §6 reopen → rule in Task 7 (the `default` option is an assumption; nothing built until Destin answers Q2 — a `default` field on a words decide step is a one-line addition to `_validate_words` when he does). §7 acceptance → Task 4. §8 plan tier → skill text in Task 7; roadmap loop deferred by design. §10 deferred items have no tasks, by design. Measurement → Task 8.
+**Spec coverage.** §2 defect (answers ignored) → Task 0. §3 contract format, who writes it → Tasks 3, 6. §4 gate: three facts, `contract-check`, close-out section, rotation → Tasks 4, 5. §5 questions deck (no picture, one option), note tags → Tasks 1, 2. §6 reopen → rule in Task 7 (the `default` option is an assumption; nothing built until Destin answers Q2 — a `default` field on a words decide step is a one-line addition to `_validate_words` when he does). §7 acceptance → Task 4. §8 plan tier → skill text in Task 7 (superseded 2026-09-02: §8 is now the build stage, and the skill's step 3 was rewritten on the branch to match); roadmap loop deferred by design. §10 deferred items have no tasks, by design. Measurement → Task 8.
 
 **Placeholders.** None: every code step carries its code. Task 3 Step 6 (the template) describes values rather than pasting a full JSON — acceptable because the fixture in Step 1 is the worked example, and the template is that fixture with instruction strings.
 

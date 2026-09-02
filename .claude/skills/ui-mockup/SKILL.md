@@ -95,9 +95,12 @@ Decisions must not live only in chat — and the deck answers ARE the record (th
 2. Turn the `MOCK_ONLY` entries the approved UI depends on into real handlers (main +
    `preload.ts` + `remote-shim.ts` + `SessionService.kt`, guarded by `ipc-channels.test.ts`),
    then drop them from the registry.
-3. A design spec under `docs/active/specs/` is written only when the work crosses repos,
-   touches a migration or a protocol, or has ordering constraints (design §8). Otherwise the
-   contract plus the approved decks is the plan.
+3. **Run the build stage** (design §8): a short technical design (backend, data shape, reuse)
+   → adversarial review, one findings file per round under `docs/active/reviews/`, stop on a
+   round with nothing accepted, cap three → task breakdown, descriptions by default and
+   pre-written code only for cross-repo / stored-data / strict-order work → subagent-driven
+   build with a reviewer per task. Destin is not in this stage; a contradiction with the
+   approved UI is a reopen deck, never a silent change.
 4. Add ROADMAP entries for every *fix later* note the contract agent listed, and follow the
    workspace knowledge rules (pinning test > ast-grep rule > WHY comment > path-scoped rule).
 5. At the end: write `<feature>.contract.verdicts.json` beside the contract, run

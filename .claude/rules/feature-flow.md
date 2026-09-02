@@ -61,6 +61,15 @@ submitted. `close-out.sh` relays its `ok:` / `todo:` lines and reads no answers 
 signed is not a definition of done; two readers of one file drift.
 **Guard:** `test_contract.py` (ContractCheckTests); `close-out-contract.test.sh`.
 
+## The build stage is reviewed, capped, and recorded
+**Invariant:** between the signed contract and the branch: a technical design → reviewer rounds
+that each write `docs/active/reviews/<date>-<feature>-design-review-<n>.md` (findings `R<n>-<k>`
+marked accepted / rejected / already handled, reversals tagged `reverses:`), stopping on a round
+with nothing accepted, cap three → task breakdown (descriptions by default; pre-written code
+only for cross-repo / stored-data / strict-order work) → subagent build with a reviewer per task.
+**Why:** nothing yet shows whether review rounds improve a design or churn it; the files are the data.
+**Guard:** none — candidate (design §8b: tooling after three features).
+
 ## Acceptance is graded rows plus human rows
 **Invariant:** the grader writes `<feature>.contract.verdicts.json` (beside the contract, same
 stem — the CLI reads exactly that name); `review-cards.py acceptance` refuses when a
