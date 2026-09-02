@@ -1,0 +1,24 @@
+{
+  "title": "Bubble grouping, round 3",
+  "key": "bubble-grouping-3",
+  "out": "deck-3.html",
+  "images": "images/deck-3",
+  "runs": { "before": "/home/destin/youcoded-dev/scratch/bubbles-r2", "after": "/home/destin/youcoded-dev/scratch/bubbles-r3" },
+  "themes": ["midnight", "light", "creme", "dark", "halftone-dimension", "meadow-mist"],
+  "crops": {
+    "skills-spread": ["bubbles", "skills-spread", "1240x500+0+50"],
+    "skills-chain": ["bubbles", "skills-chain", "1240x620+0+50"]
+  },
+  "steps": [
+    { "id": "B-8", "surface": "Chat view", "path": "Skills invoked at different points in one turn", "crop": "skills-spread",
+      "headline": "Two skills used in one turn read as a single line: “Invoked 2 skills: brainstorming and writing-plans”.",
+      "changed": "The two “Invoked skill” cards at the end of the turn become one card that names both skills in the order they were used. Same dashed look, same place. Three skills read “a, b and c”; the same skill used twice reads “a ×2”.",
+      "notice": "One line where there were two. If one of the skills is still launching, the line shows a spinner; if one failed, the fail mark.",
+      "risk": "A very long list of skills wraps onto a second line inside the card." },
+    { "id": "B-9", "surface": "Chat view", "path": "Two skills back to back, then a single skill in the next turn", "crop": "skills-chain",
+      "headline": "Back-to-back skills also merge into one line; a turn with a single skill keeps its own card.",
+      "changed": "Same card as the previous step. Nothing changes for a turn that used only one skill.",
+      "notice": "The first turn shows “Invoked 2 skills: ui-mockup and brainstorming” under the file card; the second turn still shows “Invoked skill: finishing-a-development-branch”.",
+      "risk": "None seen." }
+  ]
+}
