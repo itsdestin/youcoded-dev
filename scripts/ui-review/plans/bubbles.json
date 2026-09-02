@@ -91,6 +91,17 @@
         }
       ],
       "expect": "js:document.body.textContent.includes('Response truncated')"
+    },
+    {
+      "name": "silent-steps",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-silent-steps",
+      "actions": [
+        {
+          "click": "[data-session-idx='1']",
+          "settle": 1200
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('nothing needs attention')"
     }
   ]
 }
