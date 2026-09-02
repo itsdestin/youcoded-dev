@@ -105,4 +105,20 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(sorted(d['images']['light']), ['after', 'before'])   # a picture per run, like a normal step
         self.assertEqual(d['boxes']['light']['after'], [25.0, 25.0, 20.0, 15.0])
 
+    def test_question_step_builds_without_pictures(self):
+        import json, os, tempfile
+        from deck.build import build_page, deck_data
+        from deck.spec import load_spec
+        path = os.path.join(tempfile.mkdtemp(), 'q.json')
+        json.dump({'title': 'Q deck', 'key': 'q', 'out': 'q.html', 'themes': ['midnight'], 'steps': [
+            {'id': 'Q-1', 'surface': 'Roadmap', 'path': 'Sync', 'headline': 'One question',
+             'questions': [{'id': 'a', 'title': 'T?', 'today': 't', 'problem': 'p', 'proposal': 'r',
+                            'options': [{'id': 'A', 'label': 'Do it', 'pros': ['good'], 'cons': []}, {'id': 'B', 'label': 'Skip', 'cons': ['bad']}]}]}]}, open(path, 'w'))
+        spec = load_spec(path)
+        data = deck_data(spec, {})
+        self.assertEqual(data['steps'][0]['kind'], 'question')
+        self.assertEqual(data['steps'][0]['questions'][0]['options'][1]['pros'], [])
+        page, warnings = build_page(spec, {})
+        self.assertIn('"kind": "question"', page)
+
 if __name__ == '__main__': unittest.main()

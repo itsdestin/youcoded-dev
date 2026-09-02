@@ -8,7 +8,7 @@ import os
 
 from .crops import image_name
 from .live import has_live, is_live, live_base, live_offset, pane_url, pane_width
-from .spec import SpecError, all_themes, is_choice, is_decide, run_names, step_themes, validate, workspace_root, is_clip, clip_files
+from .spec import SpecError, all_themes, is_choice, is_decide, is_question, run_names, step_themes, validate, workspace_root, is_clip, clip_files
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -122,9 +122,21 @@ def _live_step(spec, st):
     }
 
 
+def _question_step(st):
+    """Words only: the group's title, then each question's four parts and its options."""
+    return {
+        'id': st['id'], 'kind': 'question', 'surface': st['surface'], 'path': st.get('path', ''), 'headline': st['headline'],
+        'questions': [{'id': q['id'], 'title': q['title'], 'today': q['today'], 'problem': q['problem'], 'proposal': q['proposal'],
+                       **({'options': [{'id': o['id'], 'label': o['label'], 'pros': list(o.get('pros', [])), 'cons': list(o.get('cons', []))}
+                                       for o in q['options']]} if q.get('options') else {})}
+                      for q in st['questions']],
+    }
+
+
 def deck_data(spec, boxes):
     runs = run_names(spec)
     steps = [_live_step(spec, st) if is_live(st)
+             else _question_step(st) if is_question(st)
              else _choice_step(spec, st, boxes, runs[-1]) if is_choice(st)
              else _decide_step(spec, st, boxes, runs) if is_decide(st)
              else _clip_step(spec, st, runs) if is_clip(st) else {
@@ -154,8 +166,8 @@ def build_page(spec, boxes):
     errors, warnings = validate(spec)
     runs = run_names(spec)
     for st in spec['steps']:
-        if is_live(st):
-            continue   # nothing on disk to check — the pane is a running app; page.js probes the server
+        if is_live(st) or is_question(st):
+            continue   # nothing on disk to check — a running app, or words only
         if is_clip(st):
             vids, _ = clip_files(spec, st)
             for r in runs:

@@ -122,3 +122,36 @@ class ClipStepTests(unittest.TestCase):
         errors, _ = validate(s)
         self.assertTrue(any('has no crop' in e for e in errors), errors)
         self.assertTrue(any('banned word "reducer"' in e for e in errors), errors)
+
+    def test_question_step_rules(self):
+        from deck.spec import is_question
+        spec = load_spec(write_spec(self.d))
+        st = {'id': 'Q-1', 'surface': 'Roadmap', 'path': 'Sync', 'headline': 'Two sync questions',
+              'questions': [{'id': 'tmp', 'title': 'Ignore stray .tmp files?', 'today': 'Sync copies files.',
+                             'problem': 'A crash can strand a .tmp file.', 'proposal': 'Ignore them everywhere.',
+                             'options': [{'id': 'A', 'label': 'Ignore .tmp everywhere', 'pros': ['No junk syncs'], 'cons': ['A real .tmp stops syncing']}]}]}
+        spec['steps'].append(st); self.assertTrue(is_question(st))
+        errs = validate(spec)[0]; self.assertTrue(any('at least 2' in e for e in errs), errs)
+        st['questions'][0]['options'].append({'id': 'A', 'label': 'uses a reducer', 'pros': 'not a list'})
+        errs = validate(spec)[0]
+        for want in ('duplicate option id "A"', 'banned word "reducer"', 'pros must be a list'):
+            self.assertTrue(any(want in e for e in errs), (want, errs))
+        st['questions'][0]['options'][1] = {'id': 'B', 'label': 'Leave it', 'pros': [], 'cons': ['Junk can reach every device']}
+        st['questions'].append({'id': 'gate', 'title': 'Does Connected accounts show the login?', 'today': 'You can sign in to GitHub in the app.',
+                                'problem': 'Nobody has checked the page shows it.', 'proposal': 'Yes closes the gate; No files a bug.'})   # no options → Yes / No / Don't know
+        errs = [e for e in validate(spec)[0] if e.startswith('Q-1')]
+        self.assertEqual(errs, [])
+        del st['questions'][1]['today']
+        self.assertTrue(any('missing today' in e for e in validate(spec)[0]))
+        st['questions'][1]['today'] = 'x'; st['crop'] = 'c'
+        self.assertTrue(any('has no crop' in e for e in validate(spec)[0]))
+
+    def test_question_only_deck_needs_no_images_or_runs(self):
+        import json, os
+        path = os.path.join(self.d, 'q.json')
+        json.dump({'title': 'Q', 'key': 'q', 'out': 'q.html', 'steps': [
+            {'id': 'Q-1', 'surface': 'Roadmap', 'headline': 'One question',
+             'questions': [{'id': 'a', 'title': 'T?', 'today': 't', 'problem': 'p', 'proposal': 'r'}]}]}, open(path, 'w'))
+        spec = load_spec(path)
+        self.assertEqual(spec['runs'], {'today': None})
+        self.assertEqual(validate(spec)[0], [])

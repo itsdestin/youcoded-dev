@@ -20,6 +20,9 @@ TEXT_FIELDS = ['headline', 'changed', 'measured', 'notice', 'risk', 'surface', '
 VARIANT_TEXT_FIELDS = ['label', 'summary', 'measured', 'risk']
 # A decide OPTION is words only — no picture — so `cost` carries what it would cost to take it.
 OPTION_TEXT_FIELDS = ['label', 'summary', 'measured', 'cost']
+# A QUESTION is words only too — four parts written for a reader with no context.
+QUESTION_TEXT_FIELDS = ['title', 'today', 'problem', 'proposal']
+QUESTION_OPTION_TEXT_FIELDS = ['label']
 HEADLINE_MAX = 25
 RISK_WARN = 40
 # Each live pane boots its own copy of the app; four is the cap (spec: Non-goals).
@@ -59,7 +62,7 @@ def load_spec(path):
     # `images` and `runs` describe a screenshot sweep. A deck whose every step is LIVE has no
     # screenshots to point at, so requiring them would make the author invent a folder and a
     # run that nothing ever reads. Everything downstream still wants a run NAME, so default it.
-    if all_live(spec):
+    if all_live(spec) or all(is_live(st) or is_question(st) for st in spec['steps']):
         spec.setdefault('runs', {'today': None})
     else:
         for k in ('images', 'runs'):
@@ -109,6 +112,16 @@ def is_decide(step):
     Two panels: the picture of how it is today on the left, the options merged into the
     decision column on the right."""
     return bool(step.get('options'))
+
+
+def is_question(step):
+    """A QUESTION step has no picture at all: one or more written questions, each in four
+    parts — today / the problem / the proposal / the options — written for a reader with no
+    context (Destin, 2026-09-02: he files an item, then meets it again months later). The
+    author groups: one question per step, or a related handful on one scrolling step. Options
+    carry pros and cons about the USER'S experience; a question with no options is
+    Yes / No / Don't know. Replaces the chat list of one-liners rejected on 2026-09-01."""
+    return bool(step.get('questions'))
 
 
 def is_clip(step):
@@ -181,6 +194,9 @@ def validate(spec):
             continue
         if is_decide(st):
             _validate_decide(spec, st, sid, errors, warnings)
+            continue
+        if is_question(st):
+            _validate_question(spec, st, sid, errors, warnings)
             continue
         if is_clip(st):
             _validate_clip(spec, st, sid, errors)
@@ -394,3 +410,61 @@ def _validate_clip(spec, st, sid, errors):
                 errors.append(f'{sid}: clip has no file for run "{r}"')
     elif not isinstance(c, str) or not re.fullmatch(r'[\w.-]+', c):
         errors.append(f'{sid}: clip must be a scene name or {{run: path}}')
+
+
+def _validate_question(spec, st, sid, errors, warnings):
+    """No picture, so none of the crop/highlight rules; `surface` names where the questions
+    come from (a roadmap area, a review), `headline` is the group's title. Every question
+    carries the four parts; an option is a label with pros/cons lists (either may be empty)."""
+    for k in ('surface', 'headline'):
+        if not st.get(k):
+            errors.append(f'{sid}: missing {k}')
+    for k in ('crop', 'highlight', 'variants', 'options', 'clip', 'live'):
+        if k in st:
+            errors.append(f'{sid}: a question step has no {k} — it is words only')
+    _headline_and_words(st, sid, errors)
+    qs = st['questions']
+    if not isinstance(qs, list) or not qs:
+        errors.append(f'{sid}: questions must be a non-empty list')
+        return
+    seen = set()
+    for i, q in enumerate(qs):
+        qid = q.get('id') or f'question {i + 1}'
+        if not q.get('id'):
+            errors.append(f'{sid}: {qid} has no id')
+        elif q['id'] in seen:
+            errors.append(f'{sid}: duplicate question id "{q["id"]}"')
+        seen.add(q.get('id'))
+        for k in QUESTION_TEXT_FIELDS:
+            if not q.get(k):
+                errors.append(f'{sid}/{qid}: missing {k} (title, today, problem and proposal are all required — the reader has no context)')
+            for w in banned_in(q.get(k)):
+                errors.append(f'{sid}/{qid}: {k} uses banned word "{w}"')
+        opts = q.get('options')
+        if opts is None:
+            continue   # Yes / No / Don't know
+        if not isinstance(opts, list) or len(opts) < 2:
+            errors.append(f'{sid}/{qid}: options must list at least 2 (or be absent for Yes / No / Don\'t know)')
+            continue
+        oseen = set()
+        for j, o in enumerate(opts):
+            oid = o.get('id') or f'option {j + 1}'
+            if not o.get('id'):
+                errors.append(f'{sid}/{qid}: {oid} has no id')
+            elif o['id'] in oseen:
+                errors.append(f'{sid}/{qid}: duplicate option id "{o["id"]}"')
+            oseen.add(o.get('id'))
+            if not o.get('label'):
+                errors.append(f'{sid}/{qid}/{oid}: missing label')
+            for w in banned_in(o.get('label')):
+                errors.append(f'{sid}/{qid}/{oid}: label uses banned word "{w}"')
+            for k in ('pros', 'cons'):
+                v = o.get(k, [])
+                if not isinstance(v, list) or not all(isinstance(x, str) for x in v):
+                    errors.append(f'{sid}/{qid}/{oid}: {k} must be a list of sentences')
+                else:
+                    for x in v:
+                        for w in banned_in(x):
+                            errors.append(f'{sid}/{qid}/{oid}: {k} uses banned word "{w}"')
+            if not o.get('pros') and not o.get('cons'):
+                warnings.append(f'{sid}/{qid}/{oid}: no pros or cons — say what this choice means for the user')

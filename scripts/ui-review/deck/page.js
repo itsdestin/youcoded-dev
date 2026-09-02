@@ -4,7 +4,7 @@
 (function () {
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
   const N = DECK.steps.length, runs = DECK.runs;
-  let cur = 0, theme = DECK.themes[0], zoom = 1, loupeOn = true, server = false, stepStart = Date.now();
+  let cur = 0, theme = DECK.themes[0], zoom = 1, loupeOn = true, server = false, stepStart = Date.now(), noteTimer = null;
   const state = { deck: DECK.key, started: new Date().toISOString(), submitted: null, cur: 0, answers: {} };
   const ICON = {
     change: '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m12.5 7.5 4 4"/></svg>',
@@ -19,7 +19,8 @@
   // (hover, drag, open a menu), not an answer. Picking stays on the lettered card and the
   // answer button. `open on its own` is the same address in a new tab — room and quiet.
   const popout = url => `<a class="popout" href="${esc(url)}" target="_blank" rel="noopener" title="Open this design alone in a new browser window">Open in New Window ↗</a>`;
-  const frames = st => st.kind === 'choice'
+  const frames = st => st.kind === 'question' ? []
+    : st.kind === 'choice'
     ? st.variants.map(v => ({ key: v.id, caption: `<span class="key">${esc(v.id)}.</span>${esc(v.label)}`, pickable: true }))
     : st.kind === 'live'
     ? st.panes.map(p => ({ key: p.id, url: p.url, pickable: false,
@@ -112,6 +113,7 @@
     // and "Other" carries anything he wants instead. No "None of these" — with written options
     // that button and "Other" would mean the same thing twice.
     const picks = pickList(st);
+    if (st.kind === 'question') { $('#answers').innerHTML = ''; return; }
     // Fix: the lettered options used to appear TWICE — once as the cards, once again as
     // buttons repeating the same letter and the same label directly beneath them. Destin
     // (2026-09-01): "two distinct multiple-choice decision rows that kinda offer the same
@@ -129,6 +131,20 @@
     const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), v }; if (v === 'pick') a.pick = pick; else delete a.pick;
     state.answers[id] = a; paintState(); save(); $('#note').focus();
   }
+  // A QUESTION step answers per question: answers[stepId].q[qid] = {pick, note}. The step's
+  // own `v` is derived (every question answered → pick; any Other → other; none → skip) so the
+  // progress strip and the skipped-steps dialog keep working unchanged.
+  function answerQ(qid, pick) {
+    if (state.submitted) return;
+    const st = DECK.steps[cur], a = state.answers[st.id] || {}; a.q = a.q || {};
+    a.q[qid] = { ...(a.q[qid] || {}), pick };
+    a.v = deriveQ(st, a); state.answers[st.id] = a; paintState(); save();
+    const n = $(`.q[data-q="${CSS.escape(qid)}"] .note`); if (n && pick === 'Other') n.focus();
+  }
+  const deriveQ = (st, a) => {
+    const picks = st.questions.map(q => ((a.q || {})[q.id] || {}).pick).filter(Boolean);
+    return !picks.length ? 'skip' : picks.includes('Other') ? 'other' : picks.length === st.questions.length ? 'pick' : 'other';
+  };
   $('#deck-title').textContent = DECK.title; document.title = DECK.title;
   $('#steps').innerHTML = DECK.steps.map(() => '<span></span>').join('');
   const stage = $('#stage'), inner = $('#inner'), loupe = $('#loupe');
@@ -176,6 +192,32 @@
     if (st.kind === 'clip') $$('#inner video').forEach(v => v.addEventListener('loadedmetadata', layout));
     $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
     $('#headline').textContent = st.headline;
+    if (st.kind === 'question') {
+      inner.innerHTML = ''; $('#replay').hidden = true; $('#zoom').hidden = true; $('#livehint').hidden = true;
+      const QI = { today: ICON.eye, problem: ICON.warn, proposal: ICON.change };
+      const yn = ['Yes', 'No', "Don't know"];
+      $('#cards').innerHTML = '<div class="qs">' + st.questions.map(q => `<div class="q" data-q="${esc(q.id)}">`
+        + `<p class="qt">${esc(q.title)}</p>`
+        + `<div class="qcards"><section class="card"><h3>${QI.today}Today</h3><p>${esc(q.today)}</p></section>`
+        + `<section class="card"><h3>${QI.problem}The problem</h3><p>${esc(q.problem)}</p></section>`
+        + `<section class="card"><h3>${QI.proposal}Proposal</h3><p>${esc(q.proposal)}</p></section></div>`
+        + (q.options
+          ? `<div class="qopts">${q.options.map(o => `<section class="card variant option" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><span class="key">${esc(o.id)}</span><div class="vbody"><h3>${esc(o.label)}</h3>`
+              + ((o.pros.length || o.cons.length) ? `<ul>${o.pros.map(p => `<li class="pro">${esc(p)}</li>`).join('')}${o.cons.map(c => `<li class="con">${esc(c)}</li>`).join('')}</ul>` : '') + `</div></section>`).join('')}</div>`
+          : '')
+        + `<div class="qrow">${(q.options ? [] : yn).map(l => `<button class="btn ans qans" data-pick="${esc(l)}">${esc(l)}</button>`).join('')}<button class="btn ans qans" data-pick="Other">Other</button><input class="note" data-q="${esc(q.id)}" placeholder="Add a note (optional)"></div>`
+        + `</div>`).join('') + '</div>';
+      $$('#cards .q').forEach(qEl => {
+        const qid = qEl.dataset.q;
+        qEl.querySelectorAll('.card.variant, .qans').forEach(el => el.onclick = () => answerQ(qid, el.dataset.pick));
+        const n = qEl.querySelector('.note');
+        n.addEventListener('input', e => { const a = state.answers[st.id] || {}; a.q = a.q || {}; a.q[qid] = { ...(a.q[qid] || {}), note: e.target.value }; a.v = a.v || deriveQ(st, a); state.answers[st.id] = a; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); });
+      });
+      renderAnswers(st);
+      $('#thumbs').innerHTML = '';
+      layout(); paintState();
+      return;
+    }
     const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><span class="key">${esc(o.id)}</span><div class="vbody"><h3>${esc(o.label)}</h3><p>${esc(o.summary)}</p>${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
     $('#cards').innerHTML = pickList(st)
       ? pickList(st).map(v => optionCard(v, '')).join('')
@@ -212,7 +254,9 @@
   function paintState() {
     const a = state.answers[DECK.steps[cur].id] || {};
     $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick)));
-    $$('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
+    if (DECK.steps[cur].kind === 'question') {
+      $$('#cards .q').forEach(qEl => { const qa = (a.q || {})[qEl.dataset.q] || {}; qEl.querySelectorAll('.card.variant, .qans').forEach(el => el.classList.toggle('on', el.dataset.pick === qa.pick)); const n = qEl.querySelector('.note'); if (document.activeElement !== n) n.value = qa.note || ''; n.placeholder = qa.pick === 'Other' ? 'Explain what you’d like instead…' : 'Add a note (optional)'; if (state.submitted) { n.disabled = true; qEl.querySelectorAll('.qans').forEach(b => b.disabled = true); } });
+    } else $$('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
     $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', a.v === 'pick' && f.dataset.run === a.pick));
     const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
@@ -225,6 +269,12 @@
   const PAD = 28, CAP = 24, GAP = 18;
   function layout() {
     if (DECK.steps[cur].kind === 'live') { layoutLive(); return; }
+    if (DECK.steps[cur].kind === 'question') {
+      // Words only: the decision card takes the whole step and scrolls; nothing to arrange.
+      $('#content').className = 'content question'; $('#step').classList.remove('compact-step');
+      document.body.classList.add('thumbs-inline'); document.body.dataset.layout = 'question'; document.body.dataset.scores = '{}';
+      window.__deckReady = true; return;
+    }
     const c = $('#content'), step = $('#step'); const img = $('#inner img, #inner video'); if (!img) return;
     const natW = img.naturalWidth || img.videoWidth, natH = img.naturalHeight || img.videoHeight; if (!natW) return;
     const margin = (document.querySelector('main').clientWidth - step.clientWidth) / 2; document.body.classList.toggle('thumbs-inline', margin < 150);
@@ -267,7 +317,6 @@
   // Fix: save on EVERY answer, not only when the step changes — a tab closed on the last
   // answered step used to lose that answer entirely. The note debounces so a sentence typed
   // at speed is one POST, not one per keystroke.
-  let noteTimer = null;
   $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick); });
   $('#note').addEventListener('input', e => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note: e.target.value }; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); });
   $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
@@ -277,7 +326,9 @@
   // ── submit ──
   function summary() {
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
+      if (st.kind === 'question') { for (const q of st.questions) { const qa = (a.q || {})[q.id] || {}; lines.push(st.id + '/' + q.id + ' ' + (qa.pick || 'skip') + (qa.note && qa.note.trim() ? ' — "' + qa.note.trim() + '"' : '')); } continue; }
+      const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
     return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
   }
   function openDialog() {

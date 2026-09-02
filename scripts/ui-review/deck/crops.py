@@ -8,7 +8,7 @@ import subprocess
 
 from .boxes import diff_bbox, image_size, px_to_pct, rect_to_pct
 from .live import all_live, is_live
-from .spec import AUTO_WARN_FRACTION, is_choice, run_names, step_themes, is_clip
+from .spec import AUTO_WARN_FRACTION, is_choice, is_question, run_names, step_themes, is_clip
 
 
 def image_name(crop, theme, run):
@@ -38,7 +38,8 @@ def newest_manifest_entry(run_dir, plan, shot, theme):
 def crop_images(spec, log=print):
     # A deck whose every step is LIVE has no stills and names no `images` folder — the very
     # next line would KeyError on it before the loop below ever gets a chance to skip anything.
-    if all_live(spec):
+    # …and the same for a deck of QUESTION steps (words only) or any mix of the two.
+    if all_live(spec) or all(is_live(st) or is_question(st) for st in spec['steps']):
         return {'boxes': {}, 'missing': [], 'warnings': [], 'count': 0}
     out_dir = os.path.join(spec['_base'], spec['images'])
     os.makedirs(out_dir, exist_ok=True)
@@ -49,7 +50,7 @@ def crop_images(spec, log=print):
         # LIVE FIRST, before is_choice: a live pick-one has `variants` too, so is_choice()
         # claims it and _crop_choice then dies on the crop those variants deliberately lack.
         # (Same reason validate() dispatches live first.)
-        if is_live(st):
+        if is_live(st) or is_question(st):
             continue   # a running app, not a still — nothing to cut, and no `crop` to look up
         if is_choice(st):
             _crop_choice(spec, st, runs[-1], out_dir, boxes, missing, cut)

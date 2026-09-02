@@ -148,6 +148,34 @@ then in the deck spec: `{ "id": "…", "surface": "…", "path": "…", "clip": 
 refuses the deck if a run's recording is missing. First real use: the hero-cycler overlap,
 `docs/archive/design/2026-08-27-landing-page/clip-deck/`.
 
+### Question steps in a review deck (decisions and "still hitting it?" lists)
+
+A step with `questions` and no picture. Destin (2026-09-02): a chat list of 38 one-liners was
+rejected — he files an item, then meets it again months later, so every question is written for a
+reader with **no context**, in plain words, in four parts the page renders as labelled cards:
+**today** (which part of the app, what it does for the user) · **the problem** (what goes wrong, as
+the user experiences it) · **the proposal** (what would change, as the user would notice it) ·
+**options**, each with `pros`/`cons` about the **user's experience**, never the code. A question with
+no `options` gets Yes / No / Don't know; its proposal says what each answer leads to. "Other" plus a
+note is always there. Group as makes sense — one question per step, or a related handful on one
+scrolling step — and mix freely with picture steps. Four or more questions for Destin means a deck;
+one or two still go in chat.
+
+```json
+{"id": "D-sync", "surface": "Decisions", "path": "Sync", "headline": "Decisions: Sync",
+ "questions": [
+   {"id": "tmp", "title": "Ignore stray .tmp files in sync?",
+    "today": "Sync copies your project files between devices…", "problem": "A crash between write and rename…",
+    "proposal": "Ignore every .tmp file everywhere, or leave it.",
+    "options": [{"id": "A", "label": "Ignore .tmp everywhere", "pros": ["No junk files ever sync"], "cons": ["A file you named .tmp silently stops syncing"]},
+                {"id": "B", "label": "Leave as is", "pros": ["Everything you name syncs"], "cons": ["A rare crash leaves junk on every device"]}]},
+   {"id": "gate", "title": "Does Connected accounts show an in-app GitHub sign-in?",
+    "today": "…", "problem": "…", "proposal": "Yes closes the v1.3 gate; No files a bug; Don't know leaves it to verify."}]}
+```
+
+Answers land per question — `D-sync/tmp A — "note"` — in `<spec>.answers.json` and in the summary
+`serve` prints on submit. A deck of only question steps needs no `images` or `runs`.
+
 ### Live panes in a review deck (motion, drag, hover — judged by doing)
 
 A recording is the wrong tool for a 200 ms animation: Destin's verdict on the 2026-08-31

@@ -46,6 +46,13 @@ def summary(spec, state):
         v = a.get('v') or 'skip'
         counts[v] = counts.get(v, 0) + 1
         note = (a.get('note') or '').strip()
+        if st.get('questions'):
+            # One line per QUESTION, not per step: a grouped step answers several things.
+            for q in st['questions']:
+                qa = (a.get('q') or {}).get(q['id']) or {}
+                qn = (qa.get('note') or '').strip()
+                lines.append(f'{st["id"]}/{q["id"]} ' + (qa.get('pick') or 'skip') + (f' — "{qn}"' if qn else ''))
+            continue
         # A choice step answers with the variant it picked ("P-19 pick B"); "no" there means none of them.
         what = f'pick {a.get("pick", "?")}' if v == 'pick' else ('none' if v == 'no' and st.get('variants') else v)
         lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else ''))
