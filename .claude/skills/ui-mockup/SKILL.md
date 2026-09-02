@@ -83,7 +83,7 @@ Decisions must not live only in chat:
 2. Turn the `MOCK_ONLY` entries the approved UI depends on into real handlers (main +
    `preload.ts` + `remote-shim.ts` + `SessionService.kt`, guarded by `ipc-channels.test.ts`),
    then drop them from the registry.
-3. Add ROADMAP entries for anything deferred, and follow the workspace knowledge rules
+3. Add roadmap entries for anything deferred (`docs/roadmap/<area>.md` — `ROADMAP.md` → "Filing an item"), and follow the workspace knowledge rules
    (pinning test > ast-grep rule > WHY comment > path-scoped rule) for anything durable.
 
 Merging cannot shift appearance, because nothing was ever copied.

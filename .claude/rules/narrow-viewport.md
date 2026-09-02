@@ -68,4 +68,4 @@ running app. · guard: `NarrowViewToggle.test.tsx`.
 Remote-specific trap: the shim overwrites `__PLATFORM__` with the **host's**
 platform, so `isTouchDevice()` is false on a phone. Feature-detect
 (`matchMedia('(pointer: coarse)')`) rather than trusting the platform string —
-see the open ROADMAP bug.
+see the open item in `docs/roadmap/remote-access.md` ("the remote shim overwrites the device platform").

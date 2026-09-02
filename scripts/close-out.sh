@@ -118,7 +118,7 @@ echo "Docs"
 # Scoped to THIS branch. A doc naming a branch that no longer exists holds
 # commands that error instead of answering, and claims that read as current.
 DEAD=""
-[[ "$MERGED" == yes ]] && DEAD=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/ROADMAP.md" 2>/dev/null || true)
+[[ "$MERGED" == yes ]] && DEAD=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/docs/roadmap" 2>/dev/null || true)
 if [[ "$MERGED" != yes ]]; then
   note "docs naming this branch are FINE while it is unmerged — check skipped"
 fi
@@ -142,7 +142,7 @@ fi
 ALL_SHIPPED=$(rg -l '^status: shipped' "$WORKSPACE/docs/active" 2>/dev/null | wc -l)
 [[ "$ALL_SHIPPED" -gt 0 ]] && note "($ALL_SHIPPED doc(s) marked shipped are still in docs/active/ overall — not necessarily yours)"
 
-note "ROADMAP: flip the item for this work to [x] in the SAME session (CLAUDE.md)"
+note "roadmap: close the item for this work in the SAME session — delete it from docs/roadmap/<area>.md, one line in docs/roadmap/shipped.md, then node scripts/roadmap-check.mjs --fix (CLAUDE.md)"
 note "docs/MAP.md: does the merged subsystem have a row and a hot path? 'no rule' is an answer; 'no row' is not"
 note "archived docs: repoint cross-links that still point at docs/active/"
 

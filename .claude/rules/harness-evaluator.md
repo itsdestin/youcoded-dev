@@ -51,7 +51,7 @@ free and needs no key; a real run needs `--key-file`.
   if `OPENROUTER_API_KEY` is in its environment, and passes worker config over **stdin** —
   never argv, never env. `delete process.env.X` is `unsetenv`: in-heap only, it never
   rewrites `/proc/<pid>/environ`, which every same-uid descendant — including a Bash call
-  the model makes — can read. **`review-harness.mjs` still has the bug** (ROADMAP). Guard:
+  the model makes — can read. **`review-harness.mjs` still has the bug** (a `decision` in `docs/roadmap/dev-workspace.md`). Guard:
   `harness-eval-key-leak.test.ts`, whose negative control must report LEAKED.
 
 - **The grader always loads from the orchestrator's own build; only the worker loads the

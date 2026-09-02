@@ -87,8 +87,8 @@ Work every finding in the same run:
 - **Decision-residue** (privacy copy, LICENSE text, deleting user-created content,
   product-behavior questions) — never auto-edit; goes to the report's `## Residue` with a
   recommendation.
-- Drift genuinely unfixable this session → ROADMAP `bug` line tagged `#docs` AND a
-  residue entry.
+- Drift genuinely unfixable this session → an entry in `docs/roadmap/dev-workspace.md`
+  under `## knowledge` (`ROADMAP.md` → "Filing an item") AND a residue entry.
 
 ### 5. Roadmap verification
 
@@ -110,8 +110,6 @@ under `## Roadmap`. Then:
 Dedup near-identical items across area files by hand (one entry, one report, keep the
 older date in the report's history line). Filing rule and grammar: the bottom of
 `ROADMAP.md` and the spec, `docs/active/specs/2026-09-01-roadmap-restructure-design.md` §2.
-Until the migration lands (`docs/roadmap/` absent) the tool prints one line and exits 0 —
-do the old manual check against `ROADMAP.md` in that case.
 
 ### 6. Gardening (the anti-rot pass)
 

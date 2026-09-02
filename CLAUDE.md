@@ -16,7 +16,7 @@ YouCoded is an open-source cross-platform AI assistant app built entirely withou
 
 **The app is the product.** Everything else — themes, skill marketplace, bundled plugins — supports the app. Documentation and code should reflect that hierarchy.
 
-**One product.** The five sub-repos are components of a single consolidated product. Planning, versioning, and roadmapping happen at the workspace level (`ROADMAP.md`); sub-repo docs exist only for knowledge physically coupled to that repo's code.
+**One product.** The five sub-repos are components of a single consolidated product. Planning, versioning, and roadmapping happen at the workspace level (`ROADMAP.md` is the index; the backlogs are `docs/roadmap/<area>.md`); sub-repo docs exist only for knowledge physically coupled to that repo's code.
 
 ## Workspace Layout
 
@@ -199,7 +199,7 @@ to replace. It also runs on its own at the end of any substantial session.
 It replays what the session actually did — what context loaded, what you had to hunt for
 because it was unwritten, which tooling you used and why, where you took a wrong turn —
 and turns that friction into workspace changes. Every recommendation ends the session
-**applied**, as a dated **`ROADMAP.md`** entry, or **explicitly dropped with a reason**.
+**applied**, as a dated roadmap entry (`docs/roadmap/<area>.md` — see `ROADMAP.md` → "Filing an item"), or **explicitly dropped with a reason**.
 A numbered list nobody actions is the failure mode, not the output.
 
 **Why it has to be asked for.** No hook can know when a session is finished: `SessionEnd`
@@ -241,16 +241,16 @@ New knowledge goes to, in descending preference: **a pinning test > an ast-grep 
 | Kind of knowledge | Home |
 |---|---|
 | Invariant / lesson | The ladder above. Slim `docs/PITFALLS.md` holds only cross-repo items |
-| Planned feature / bug / idea | `ROADMAP.md` — capture in the SAME session Destin mentions it (typed, tagged, dated; dedup first) |
-| Doc contradicting code | **Fix on sight** (verify against code; cite verification in the commit). Unfixable this session → ROADMAP `bug` tagged `#docs`. There is no drift ledger |
+| Planned feature / bug / idea | `docs/roadmap/<area>.md` — the file whose `Filing test:` line says yes (`ROADMAP.md` → "Filing an item" has the grammar). Capture in the SAME session Destin mentions it; dedup first; a symptom in Destin's words, no paths; run `node scripts/roadmap-check.mjs --fix` before committing |
+| Doc contradicting code | **Fix on sight** (verify against code; cite verification in the commit). Unfixable this session → an entry in `docs/roadmap/dev-workspace.md` under `## knowledge`. There is no drift ledger |
 | CC-version watch item | `youcoded/docs/cc-dependencies.md` |
 | Completed/superseded plans, specs, handoffs | `docs/archive/` (in-flight ones live in `docs/active/`) |
 | Destin-specific preferences / session feedback | Auto-memory — LAST resort; product planning never lives in memory |
 
-**Document lifecycle:** new specs/plans/handoffs save to `docs/active/{specs,plans,handoffs,investigations,prototypes}/` with `status:` frontmatter (`draft | active | shipped | superseded`). When a feature merges, its docs move to `docs/archive/` and the ROADMAP item flips to `[x]` in the same session — "Merge means merge AND push" extends to "…AND archive the docs AND flip the roadmap item." Searches for live docs exclude `docs/archive/` by default.
+**Document lifecycle:** new specs/plans/handoffs save to `docs/active/{specs,plans,handoffs,investigations,prototypes}/` with `status:` frontmatter (`draft | active | shipped | superseded`). When a feature merges, its docs move to `docs/archive/` and the roadmap item closes in the same session (delete it from its area file, append one line to `docs/roadmap/shipped.md`, archive its report) — "Merge means merge AND push" extends to "…AND archive the docs AND close the roadmap item." Searches for live docs exclude `docs/archive/` by default.
 
 **A retrospective is closed in the session that acts on it.** Every finding ends as
-shipped, dropped, or a dated `ROADMAP.md` entry — then the document moves to
+shipped, dropped, or a dated roadmap entry in its area file — then the document moves to
 `docs/archive/`. Two retrospectives sat unclosed for weeks and their unshipped half was
 independently rediscovered twice; one of the rediscovered items was the glob migration
 of 2026-08-31.

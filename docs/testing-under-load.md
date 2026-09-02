@@ -221,4 +221,4 @@ scenario (CI runs one) and six is green, so this was left rather than restructur
 speculation. If it ever fails on real CI, the fix is to restructure the mock so the import
 can move to module scope — **not** to raise the number again.
 
-Both are tracked in ROADMAP.
+Both are tracked in `docs/roadmap/dev-workspace.md` → `## tests`.

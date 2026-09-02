@@ -1,30 +1,62 @@
 # YouCoded roadmap
 
 ## Where the app stands
-<!-- Destin's prose: one paragraph per pillar — Social AI · Personalization · Comprehensive
-     Workspace · Accessibility · Platforms — what has shipped, what is blocking. The tool
-     never touches this section. Written in M3 step 3. -->
+<!-- Destin's prose, one paragraph per pillar. The tool never touches this section. Drafted
+     2026-09-01 from youcoded-feature-fact-sheet.md and docs/roadmap/shipped.md for Destin
+     to edit. -->
+
+**Social AI.** Friends, live presence and a four-game arcade (Chess and Connect Four
+head-to-head, Flappy Bird and 2048 with friend leaderboards) ship on desktop and Android,
+docked beside the chat so a game fills the wait while the assistant works. Blocking: a
+head-to-head forfeit is still one client's word, and what "Online" should mean on a phone is
+an open decision.
+
+**Personalization.** Themes (engine, editor, wallpaper packs, the `/theme-builder` skill),
+skills and commands, and the WeCoded marketplace for both are live on every surface, with
+account sign-in, ratings and comments behind them. Blocking: MCP servers still have no
+settings screen (phase 2 unbuilt), project-scoped skills are not discovered by native
+sessions, and Android forgets skill settings after its first launch.
+
+**Comprehensive Workspace.** The app runs its own agent (native harness: tools, permissions,
+compaction, cost, background Bash, specialists) beside Claude Code, on any provider or a
+bundled local engine; conversations are stored, titled, tagged, searched and synced; the
+files pane edits documents with version history and a git surface. Blocking: the parity
+program (M6 onward) — context truncation is invisible to the user, harness manifests are
+decorative, there is no agent memory, and the Agents & Automations view has no design.
+
+**Accessibility.** Copy and menus have been through one consistency migration (shared
+primitives, tokens, review decks); error states have one component; onboarding is still
+the conversational wizard. Blocking: the misleading-error audit (v1.3.1), browser-default
+tooltips across the app, and a first-run screen that does not exist yet.
+
+**Platforms.** Windows, macOS and Linux desktop, Android with an on-device runtime, and any
+browser through remote access; sync, backup and restore on all of them. Blocking for
+`v1.3`: one product gate (does Connected accounts show an in-app GitHub sign-in?) and the
+release mechanics; Android still lacks tags, notes, the native harness and the local engine.
 
 ## Next release
 Target: `v1.3`
+- claude-code-integration: Terminal text wraps about two-thirds of the way across the pane — Claude Code's screen and
+- dev-workspace: Ship v1.3 — the release mechanics: an `/audit` run, version bumps on both platforms (still
+- sync: The last open v1.3 gate: after signing in to GitHub from inside the app (Connect GitHub), does
 
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 0 | 0 | 0 | 0 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 0 | 0 | 0 | 0 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 0 | 0 | 0 | 0 |
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 0 | 0 | 0 | 0 |
-| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 0 | 0 | 0 | 0 |
-| [games](docs/roadmap/games.md) — the arcade | 0 | 0 | 0 | 0 |
-| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 0 | 0 | 0 | 0 |
-| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 0 | 0 | 0 | 0 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 0 | 0 | 0 | 0 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 0 | 0 | 0 | 0 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 0 | 0 | 0 | 0 |
-| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 0 | 0 | 0 | 0 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 0 | 0 | 0 | 0 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 0 | 0 | 0 | 0 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 49 | 5 | 3 | 15 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 37 | 16 | 3 | 8 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 23 | 12 | 3 | 3 |
+| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 21 | 5 | 0 | 9 |
+| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 3 | 2 | 6 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 16 | 5 | 0 | 5 |
+| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 15 | 5 | 2 | 1 |
+| [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 14 | 8 | 2 | 1 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 11 | 5 | 1 | 1 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 11 | 2 | 0 | 5 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 10 | 1 | 1 | 1 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 1 | 1 |
+| [games](docs/roadmap/games.md) — the arcade | 3 | 0 | 0 | 1 |
+| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 3 | 0 | 1 | 2 |
 
 ## Filing an item
 Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,
