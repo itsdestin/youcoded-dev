@@ -4,7 +4,7 @@ Run this as the FIRST message of a brand-new session, with the working directory
 
 ---
 
-Sync the workspace first: `cd <workspace>/youcoded-dev && bash setup.sh`. Then execute the plan at `docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md` using **superpowers:subagent-driven-development**. Do a pre-flight plan read, create the progress ledger, and run tasks continuously — do not check in with me between tasks.
+Sync the workspace first: `cd <workspace>/youcoded-dev && bash setup.sh`. Then execute the plan at `docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md` using **superpowers:subagent-driven-development**. Do a pre-flight plan read, create the progress ledger, and run tasks continuously — do not check in with me between tasks.
 
 **Before dispatching Task 1, verify these five host prerequisites and report any that are missing instead of improvising around them:**
 

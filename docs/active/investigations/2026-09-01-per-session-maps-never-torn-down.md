@@ -37,4 +37,4 @@ Add the four maps to the existing `session-exit` / `destroy()` delete lists; mak
 
 ## History
 
-Added 2026-08-27 (found sweeping main during the sidecar-OOM investigation — full list, including the structures verified CLEAN, in `docs/active/investigations/2026-08-27-artifacts-sidecar-oom-crash.md` → Secondary findings). Re-verified against master 2026-09-01 (line numbers updated; nothing fixed since).
+Added 2026-08-27 (found sweeping main during the sidecar-OOM investigation — full list, including the structures verified CLEAN, in `docs/archive/investigations/2026-08-27-artifacts-sidecar-oom-crash.md` → Secondary findings). Re-verified against master 2026-09-01 (line numbers updated; nothing fixed since).

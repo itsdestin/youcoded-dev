@@ -13,7 +13,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
 
 - [ ] Chat panel vanished from a live session (beta.16, 2026-08-27) — no messages, and new
       sessions showed no "Start a conversation" text; Destin said ignore for now
-      `chat` `desktop` `needs-verify` `checked 2026-08-27` `needs-repro` → docs/active/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
+      `chat` `desktop` `needs-verify` `checked 2026-08-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
 
 - [ ] Decide the app-wide GB convention — the Local Models row says 74.2 GB for a download
       Hugging Face lists as 79.7 GB (same bytes; the app counts 1024-based everywhere, the

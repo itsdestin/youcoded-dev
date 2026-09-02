@@ -4,7 +4,7 @@ status: active
 date: 2026-08-26
 last_updated: 2026-08-27
 next_step: docs/active/handoffs/2026-08-27-perf-cycle-1-handoff.md
-plan: docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md
+plan: docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md
 status_doc: docs/active/handoffs/2026-08-27-perf-lab-session-status.md
 corrections: docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md
 ---
@@ -48,7 +48,7 @@ a change earns the right to be kept. It is not the shape of the whole job any mo
 | `docs/active/handoffs/2026-08-27-perf-lab-session-status.md` | **The authoritative current state** — what is built, what is covered, what is measured, what remains | First. Before this manual's numbers, before the plan, before anything |
 | `docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md` | 18 verified corrections, including two retracted claims | Whenever the plan or older prose contradicts this manual — the corrections win |
 | `scripts/perf-lab/README.md` | **Operator reference for the rig** — every flag, every metric's meaning, environment/ports table, known limits | Before touching `run.mjs`. This manual deliberately does **not** repeat it |
-| `docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md` | The original plan | History only. It is wrong in places and its objective was superseded |
+| `docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md` | The original plan | History only. It is wrong in places and its objective was superseded |
 
 Two paths you will type constantly:
 
