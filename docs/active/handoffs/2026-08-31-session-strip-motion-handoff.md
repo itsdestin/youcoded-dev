@@ -10,8 +10,10 @@ deck: docs/active/design/2026-08-31-session-motion/session-motion-live.json
 
 # Session strip & switch motion — handoff
 
-**State (2026-09-02): Soft + Press are the shipped behaviour, tuned and measured; one question
-left — how the conversation arrives — served as a round-2 live deck.**
+**State (2026-09-02, later): every question is answered. Round 2's answers are built — no
+runtime tag on pills, runtime · model in the All Sessions menu, dots hop instead of slide,
+spring arrival — and served as a round-3 live deck (one try-this step). Waiting on that
+answer; then merge.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
 but it will need to be tuned/repaired a bit. it's jank"*), **switch-when → Press** (*"further
@@ -32,7 +34,35 @@ slightly more interesting/bouncy options"*). Done since:
   shifts its geometry by however far the bar has moved since press. Probes: 0px sustained
   overlap ahead of the pill in right, left and fast drags.
 - Round 2 deck: `session-motion-live-2.json` — a try-this on the tuned strip and a pick-one on
-  four arrivals (lift / spring / grow / slide; `[data-arrival]` is the one scaffold left).
+  four arrivals (lift / spring / grow / slide).
+
+Destin's round-2 answers (`session-motion-live-2.answers.json`): **strip → Other** (*"eliminate
+the 'youcoded - coder' tags in session names entirely. they still cause a bit of visual jank.
+we should instead have labels next to the project folder label in the session switcher
+dropdown that shows a 'Claude Code · Sonnet' or 'YouCoded Coder · Deepseek' … keep the
+model/brand icons used on other model surfaces. also dots still keep sliding under the
+selected pill"*), **arrival → spring**. Done since (commit on `feat/session-strip-motion`):
+
+- The badge is gone from the pill, the stylesheet, the packer's measurement and the arming
+  window (`motionWindowMs` is now `--dur-reveal` + slack). `header/session-runtime-label.ts`
+  builds the menu line — "Claude Code · Sonnet" / "YouCoded Coder · Qwen3 Coder" — from
+  `provider`, `harnessId` and `model` (the `model` field was added to both `SessionEntry`
+  types; `SessionInfo` already carried it), with `resolveModelBrand` for the mark and colour
+  and `nativeModelLabel` for the name, so it matches the status-bar chip letter for letter
+  ("Deepseek R1" is that helper's casing). Mark in brand colour, text muted like the folder,
+  capped at 55% of the row so a long local file name never pushes the folder out.
+- Dots hop: `hopGen` in `SessionStrip` bumps a per-pill generation on every CHANGE of its
+  step-aside offset (seeded at 0, so the yield on the very render the twin appears blinks
+  too — the first cut seeded with the yielded offset and the pickup dots jumped in full view);
+  the class alternates `session-pill--hop-a` / `-b`; during a drag the neighbour's transform
+  transition is `0s` delayed by half the blink. Keyframes invisible 25–75%. The probe now
+  records opacity and ignores a dot below 0.5 (`~` suffix in its rows): 0px sustained overlap
+  in right, left and fast drags.
+- Spring is the arrival: the keyframes' own values (14px, the overshooting curve inline on
+  `.switch-arrival`, `--dur-switch: 380ms`); `[data-arrival]`, `?arrival=` and the demo's
+  `arrival` prop are deleted. Registry: session-strip-motion R4 (`soft-press-hop`, the one
+  candidate) and the arrival rounds annotated with the picks.
+- Round 3 deck: `session-motion-live-3.json` — one try-this step on R4.
 
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
@@ -90,8 +120,10 @@ rewritten to describe what is built now; the plan is history.
 
 | Destin's words | Cause (measured) | Now |
 |---|---|---|
-| "clicking is weird and jumpy" | Pointer-down cleared hover, so the peek collapsed to a dot and the click re-opened it: open → shut → open | Hover untouched at pointer-down; the peek becomes the active label, then the badge opens |
-| "still seeing … truncated names" | The badge sat at full width while the name was still opening; and widths were measured in `system-ui` while the UI font is a ~15% wider monospace | Badge opens after the name (`badge-in`); fonts read off the real label |
+| "clicking is weird and jumpy" | Pointer-down cleared hover, so the peek collapsed to a dot and the click re-opened it: open → shut → open | Hover untouched at pointer-down; the peek becomes the active label |
+| "still seeing … truncated names" | The badge sat at full width while the name was still opening; and widths were measured in `system-ui` while the UI font is a ~15% wider monospace | Badge opened after the name (`badge-in`), then removed outright in R3; font read off the real label |
+| "tags … still cause a bit of visual jank" (R2) | The badge was a second motion after every name reveal, and ~96px of strip | No badge; runtime · model under the name in the All Sessions menu with the brand mark |
+| "dots still keep sliding under the selected pill" (R2) | A sliding dot is under the pill for as long as it moves, on any curve | Dots hop: fade out, jump while invisible, fade in (`pill-hop-a/b`); probe ignores dots below half opacity |
 | jank on every click | The label animated the text's own width, so the ellipsis re-fitted every frame ("theme …", "theme cont…") | Name laid out once at `max-content`; only a clipping box's `max-width` animates, between two measured numbers; overflow fades |
 | "too bouncy/aggressive" | Spring curve on a width-like property; the whole row overshot and came back | No overshoot anywhere: `--ease-out` and `--ease-settle` only |
 | "drag spacing is still really odd" | (a) the pill was positioned by its SLOT with an ease: it hopped 26px per slot while the cursor moved 130px; (b) a dot picked up while its peek was open collapsed mid-drag, opening a ~150px void | Pill rides under the cursor 1:1, clamped to the row; target = nearest **slot** centre; hover held through the drag |
@@ -134,18 +166,17 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-2 answers
+## After the round-3 answer
 
-1. Move the winning arrival into the `switch-arrival` keyframes' defaults in `globals.css` and
-   **delete** the `[data-arrival]` blocks, the `?arrival=` scaffold in `index.tsx`, and the
-   `arrival` prop on `SessionStripMotionDemo` (keep the demo and its two
-   registry surfaces with one candidate each — they are how the strip gets reviewed next time).
-   Update the two `animation-frame-budget` pins that name the presets.
-2. If the drag is a "no", the answer's note says what; the model is in `drag-order.ts` and
-   §7.4 — do not go back to slot positioning, that is the thing it replaced.
-3. Merge and push `feat/session-strip-motion`; then `feat/session-motion-review` (deck +
-   docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
-4. Clean up: `worktrees/session-motion`, `worktrees/motion-docs` (and its `worktrees`
+1. If the strip is a "yes": merge and push `feat/session-strip-motion`; then
+   `feat/session-motion-review` (deck + docs). Archive the spec, plan and this handoff; flip
+   ROADMAP items 1067 and 1374.
+2. If it is a "no", the note says what. The blink's shape is two numbers — the keyframes'
+   25%/75% stops and the `calc(var(--dur-hover) / 2)` delay in `SessionStrip` — and a
+   "flicker" complaint means a shorter, shallower fade, not a return to sliding. The menu
+   line's wording is `session-runtime-label.ts`, pinned by its test. Do not go back to slot
+   positioning for the drag; that is the thing §7.4 replaced.
+3. Clean up: `worktrees/session-motion`, `worktrees/motion-docs` (and its `worktrees`
    symlink), `worktrees/session-switch-animation` (PR youcoded#192 — close unmerged).
 
 ## Why a workspace worktree, and the symlink in it

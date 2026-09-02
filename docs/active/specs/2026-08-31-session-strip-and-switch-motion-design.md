@@ -146,7 +146,14 @@ therefore async, and it is now coupled to `content-visibility`.
 Chrome does not animate the page you are leaving either. This deletes the 120ms hold that
 was PR #192's largest open question: the incoming conversation appears immediately.
 
-How the incoming conversation arrives is a **choice step** in the review deck (§8), with two
+**Picked 2026-09-02: spring up.** The conversation fades in while rising 14px on an
+overshooting curve (`cubic-bezier(0.34, 1.56, 0.64, 1)`, `--dur-switch: 380ms`) — one
+element, `.switch-arrival`. Overshoot is fine here because it is on the transform of one
+element that moves nothing but itself; the strip's no-overshoot rule is about width-like
+properties. Chosen over fade-and-lift (the first baseline), grow-in and slide-in in round 2
+of the live deck; the `[data-arrival]` review scaffold and the `?arrival=` reader are deleted.
+
+How the incoming conversation arrives was a **choice step** in the review deck (§8), with two
 options that differ in cost by two orders of magnitude:
 
 - **A — whole-pane arrival.** The transcript container fades and lifts as one element, on
@@ -237,16 +244,19 @@ monospace (`--font-sans` is Cascadia Mono), ~15% wider, which is why names cut s
 why the packer expanded pills that did not fit. `SessionStrip` reads `getComputedStyle(…).font`
 off its own label after each commit and re-measures only when it changes.
 
-**The badge opens after the name.** On a switch the name reveals over `--dur-reveal`; the
-"YouCoded · Coder" badge then opens from 0 to its own measured width over `--dur-hover`
-(`.session-pill__badge--arriving`, a keyframe with `--badge-w` set inline). Before this it
-sat at full width while the name was still growing, so the name read as truncated for the
-whole reveal — Destin: *"prioritize showing the name over the youcoded/coder labels."* The
-badge is also the first thing to yield when a pill is squeezed (`flex-shrink: 100`), and
-never appears on a hover peek.
+**A pill is its dot and its name — the runtime tag is gone (2026-09-02).** Until round 3 a
+native session's pill also carried a "YouCoded · Coder" badge that opened after the name on
+every switch. It was ~96px the strip had no room for and a second motion to wait for; Destin:
+*"eliminate the 'youcoded - coder' tags in session names entirely. they still cause a bit of
+visual jank."* The runtime and the model now sit under the name in the All Sessions menu —
+"Claude Code · Sonnet", "YouCoded Coder · Qwen3 Coder", "YouCoded Assistant · Grok 3" — with
+the brand mark the status bar's model chip uses, in the brand colour; the text stays muted
+like the folder beside it (`header/session-runtime-label.ts`). The packer measures the name
+alone (`pill-metrics.ts`).
 
-The `'none'` kill-switch for repack churn stays, and is lifted for every pill inside a 360ms
-window armed by a change of active id — long enough for the name and then the badge. The
+The `'none'` kill-switch for repack churn stays, and is lifted for every pill inside a
+window armed by a change of active id — `--dur-reveal` plus slack, read off the stylesheet
+(`motionWindowMs`), never a literal tuned to one vocabulary. The
 window opens **in the same render as the change** (`useOneShotWindow` derives it during
 render, not in an effect), so the first painted frame already carries the transition; the
 effect-based version painted one un-animated frame first when the switch was not a click.
@@ -275,7 +285,7 @@ Three things undercut it.
    had open shut to a dot, and the click then re-opened the same pill as the active one:
    open → shut → open on every click of a dot — Destin: *"clicking is weird and jumpy."*
    Hover is no longer touched at pointer-down. The peek simply stays open and becomes the
-   active label: its box un-caps from 120px to the full name, then the badge opens.
+   active label: its box un-caps from 120px to the full name.
 
 **Not a cause:** the `'none'` kill-switch at `:896` does *not* suppress the hover reveal.
 Pack-expanded pills have no hover handlers at all (`:852-853`) and their name is already
@@ -385,10 +395,19 @@ Replace the ghost model with a moving-pill model.
   cursor travelled 130px). Nearest slot keeps the pill under the cursor **and** the gap under
   the pill: it is never more than half a neighbour-width from its hole. Dots flow under a
   wide pill one at a time.
-- **Neighbours slide aside** on `--ease-out` over `--dur-hover`, each by the dragged pill's
-  width plus one gap (`neighbourOffsets`, unchanged), so the row keeps its total width and
-  the gap **is** the indicator. Delete the floating copy, the insertion line and
-  `ghostTarget`.
+- **Neighbours HOP aside — they are never seen moving (2026-09-02).** Each yields by the
+  dragged pill's width plus one gap (`neighbourOffsets`, unchanged), so the row keeps its
+  total width and the gap **is** the indicator. But the move is not a slide: sliding a dot on
+  any curve leaves it visibly under the pill in hand for as long as it is moving, and Destin
+  saw exactly that on the tuned build (*"dots still keep sliding under the selected pill"*).
+  So a yielding dot blinks — fades out where it is (gone within a quarter of `--dur-hover`),
+  its transform changes while it is invisible (a `0s` transition delayed by half the blink),
+  and it fades back in where it now belongs (`pill-hop-a` / `pill-hop-b`, two identical
+  keyframes alternated per change of a pill's offset, which is what restarts a running CSS
+  animation). Cleared when the drag ends, so the drop and a repack never blink anything.
+  Measured after: 0px sustained overlap ahead of the pill in right, left and fast drags,
+  with the probe ignoring any dot below half opacity. Delete the floating copy, the
+  insertion line and `ghostTarget`.
 - **Release glides; nothing springs back.** The reorder, the release of the drag visuals and
   the arming of a settle all land in **one render**, so the DOM order changes in the same
   commit the transforms drop: the neighbours are already exactly where they were drawn, and
@@ -482,17 +501,23 @@ Per the workspace knowledge ladder, each of these is a test, not prose. All live
 3. **Hover survives pointer-down and the drag** — no `setHoveredId(null)` in the down
    handler; the leave handler bails during a drag.
 4. **Two curves, no overshoot** — every `--ease-*` control point ≤ 1; `--ease-bounce` gone.
-5. **The presets sit outside `:root`, and `:root` still holds `--bottom-chrome-total`** —
-   the first scaffold was pasted inside it and swallowed the rest of the block.
+5. **No review scaffold survives, and `:root` still holds `--bottom-chrome-total`** — no
+   `data-motion` / `data-select` / `data-arrival` anywhere (each was picked and deleted);
+   the first scaffold was pasted inside `:root` and swallowed the rest of the block.
 6. **The name is laid out once; the tail is one number in three places** — `LABEL_TAIL_PX`
    equals the mask stop and the name's padding; `pill-label-style.test.ts` pins numeric
    ends and the ease-out curve on `max-width`.
-7. **The badge opens after the name and only on a properly expanded pill** — the arriving
-   class, the `--dur-reveal` delay, and `!hoverPeek`.
-8. **Widths are measured in the fonts handed in** — `pill-metrics.test.ts`.
+7. **Nothing but the dot and the name is on a pill; the runtime lives in the menu** — no
+   `session-pill__badge` in the strip or the stylesheet; `sessionRuntimeLabel(s)` and a
+   `ProviderIcon` in the menu row; `session-runtime-label.test.ts` pins the wording per
+   runtime, the brand mark, and the no-guess rule for an unknown model.
+7a. **Dots hop, never slide** — during a drag a neighbour's transform transition is
+   `0s … calc(var(--dur-hover) / 2)`; the two hop keyframes are invisible from 25% to 75%.
+8. **Widths are measured in the font handed in** — `pill-metrics.test.ts`.
 9. **The one-shot window opens in the first committed render** — `use-one-shot-window.test.tsx`
    records committed values with a layout effect: `[false, true]`.
-10. **`sessionActive`, not `visible`, gates the switch animation**; the arrival and badge
-    keyframes are finite and gated on reduced motion AND Reduce Visual Effects.
+10. **`sessionActive`, not `visible`, gates the switch animation**; the arrival and hop
+    keyframes are finite and gated on reduced motion AND Reduce Visual Effects; the arrival
+    is spring (14px lift, the overshooting curve inline, `--dur-switch: 380ms`).
 11. **The existing `steps()` pins survive** — the `steps(4)` menu-row transition and the
     `steps(8)` breathing dot are still asserted (§3.1).

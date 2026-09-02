@@ -21,6 +21,9 @@
 // The summary line is the worst overlap AHEAD of the pill's leading edge that lasts 4
 // consecutive frames (~65ms). A dot passing under the edge for a frame as it slides aside is
 // the step-aside itself; a dot still sticking out ahead after 65ms has not yielded in time.
+// A dot that has faded below half opacity does not count (2026-09-02: dots HOP aside — they
+// blink out, jump while invisible, blink in — so geometry the eye cannot see is not a peek).
+// Such a frame prints the pill with a `~` suffix.
 //
 // zsh note: pass the three numbers as separate words — `${=args}` if they come
 // from a variable, or zsh hands the script "6 1 700" as ONE argument.
@@ -60,7 +63,7 @@ if (!a || !b) { console.error('MISSING pill', JSON.stringify({ a, b, count: awai
 
 // Per-frame logger.
 await evaluate(`(() => { window.__log = []; window.__marks = []; const tick = () => { const t = performance.now(); const rows = [];
-  for (const el of document.querySelectorAll('[data-session-strip] [data-session-id]')) { const r = el.getBoundingClientRect(); rows.push({ id: el.dataset.sessionId, l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: getComputedStyle(el).visibility[0] }); }
+  for (const el of document.querySelectorAll('[data-session-strip] [data-session-id]')) { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); rows.push({ id: el.dataset.sessionId, l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: cs.visibility[0], o: Math.round(parseFloat(cs.opacity)*100)/100 }); }
   const twin = document.querySelector('[data-session-strip] > div[aria-hidden]'); if (twin) { const r = twin.getBoundingClientRect(); rows.push({ id: 'TWIN', l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v' }); }
   window.__log.push({ t, rows }); requestAnimationFrame(tick); }; requestAnimationFrame(tick); })()`);
 const mark = (name) => evaluate(`window.__marks.push({ t: performance.now(), name: ${JSON.stringify(name)} })`);
@@ -96,7 +99,7 @@ for (const f of frames) {
   twinLefts.push(twin.l); if (twinLefts.length > 4) twinLefts.shift();
   const dir = Math.sign(twin.l - twinLefts[0]);
   for (const r of f.rows) {
-    if (r.id === 'TWIN' || r.v === 'h') continue;
+    if (r.id === 'TWIN' || r.v === 'h' || (r.o !== undefined && r.o < 0.5)) continue;
     const tr = twin.l + twin.w, rr = r.l + r.w;
     const peek = dir > 0 ? (rr > tr && r.l < tr ? tr - r.l : 0)
                : dir < 0 ? (r.l < twin.l && rr > twin.l ? rr - twin.l : 0) : 0;
@@ -111,6 +114,6 @@ console.log(`worst SUSTAINED peek (4 frames): ${worst.toFixed(1)}px` + (worstAt 
 for (const f of frames) {
   if (f.t < rel - 120 || f.t > rel + 400) continue;
   const dt = (f.t - rel).toFixed(0).padStart(5);
-  console.log(`${dt}ms  ` + f.rows.map((r) => `${r.id.replace('wb-', '')}:${r.l}${r.v === 'h' ? 'h' : ''}${r.id === 'TWIN' ? '(' + r.w + ')' : ''}`).join('  '));
+  console.log(`${dt}ms  ` + f.rows.map((r) => `${r.id.replace('wb-', '')}:${r.l}${r.v === 'h' ? 'h' : ''}${r.o !== undefined && r.o < 0.5 ? '~' : ''}${r.id === 'TWIN' ? '(' + r.w + ')' : ''}`).join('  '));
 }
 process.exit(0);
