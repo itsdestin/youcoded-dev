@@ -4,7 +4,8 @@ created: 2026-09-01
 type: plan
 spec: docs/active/specs/2026-09-01-feature-flow-design.md
 measured_at:
-  youcoded-dev: bc2e656 (origin/master)
+  youcoded-dev: 5dacdf7 (origin/master, merged into docs/feature-flow-plan as 6d1c11b)
+reviewed: 2026-09-01 — a second session verified every line anchor and interface against the code; the findings are folded in (see "Review changes" at the end)
 ---
 
 # Feature Flow Implementation Plan
@@ -13,7 +14,7 @@ measured_at:
 
 **Goal:** Make the review deck carry the whole feature flow — questions before drawing, a contract at sign-off, an acceptance deck at the end — with a script that checks the contract holds together and a close-out section that reports it.
 
-**Architecture:** Everything lands in the existing deck tool (`scripts/ui-review/review-cards.py` + `scripts/ui-review/deck/`). Two new step shapes — *words-only* (a step with no picture; `"words": true`) and *contract* (a step with `rows`) — plus a `contract.py` module for `contract-check` and `acceptance`. Answers files start being committed. Docs, one rule, and the `ui-mockup` skill are updated last so they describe what exists.
+**Architecture:** Everything lands in the existing deck tool (`scripts/ui-review/review-cards.py` + `scripts/ui-review/deck/`). One new step shape — *words-only* (a step with no picture; `"words": true`) — of which the *contract* step (a words step that carries `rows`) is a variant, not a fourth dispatch branch; plus a `contract.py` module for `contract-check` and `acceptance`. Answers files start being committed. Docs, one rule, and the `ui-mockup` skill are updated last so they describe what exists.
 
 **Tech Stack:** Python 3 (stdlib only, `unittest`), vanilla JS/CSS in the deck page, bash for `close-out.sh`, Node `--test` + headless Chrome for the one render test.
 
@@ -25,35 +26,29 @@ measured_at:
 - Python tests run from the tests directory: `cd scripts/ui-review/tests && python3 -m unittest <module>`. Never `-t .`.
 - The spec's `runs`/`images` rule: a deck with no picture steps at all names neither (today `all_live`); this plan widens that to "no picture steps" without changing what a picture deck requires.
 - Do not touch `youcoded/` — this plan is workspace-only. Commit with explicit paths (never `git add -A`).
-- Branch: if youcoded-dev PR #10 (this plan) is still open, continue on `docs/feature-flow-plan` in `worktrees/feature-flow`; if it has merged, `git worktree add worktrees/feature-flow -b feat/feature-flow origin/master` and work there.
+- Branch: if youcoded-dev PR #10 (this plan) is still open, continue on `docs/feature-flow-plan` in `worktrees/feature-flow` (origin/master is already merged in); if it has merged, `git worktree add worktrees/feature-flow -b feat/feature-flow origin/master` and work there.
+- **Line numbers in this plan are approximate; the quoted text beside each one is the anchor.** Find the text, never count lines.
+- **Every file the flow writes sits beside the contract and shares its stem.** `<feature>.contract.json` → `<feature>.contract.answers.json` (the sign-off), `<feature>.contract.verdicts.json` (the grader's input), `<feature>.contract.acceptance.json` (the acceptance deck), `<feature>.contract.acceptance.answers.json`. No other names.
+- **A guard named by a `mechanical` row may live on the feature branch.** `contract-check` looks for it on disk under the workspace root AND on the contract's `branch` (`git cat-file -e`), because the workspace root from a worktree is the main checkout, where a test the branch adds does not exist until merge. An uncommitted guard does not count.
 
 ---
 
 ### Task 0: Track answers files under `docs/`
 
 **Files:**
-- Modify: `.gitignore:97-98`
+- Modify: `.gitignore` (the two lines `*.answers.json` / `*.answers.*.json`, ~line 112, directly above `*.serve.json`)
 - Add to git: every `docs/**/*.answers.json` and `docs/**/*.answers.*.json` on disk in the main checkout
 
 **Interfaces:**
 - Produces: committed answers files that Task 4's `contract-check` and Task 6's dry run read.
 
-- [ ] **Step 1: Narrow the ignore to the scratch folder**
+- [ ] **Step 1: Stop ignoring answers files**
 
-Replace lines 97–98 of `.gitignore`:
-
-```
-*.answers.json
-*.answers.*.json
-```
-
-with:
+Delete the two lines `*.answers.json` and `*.answers.*.json` from `.gitignore` and put this comment where they were (`scratch/` is already ignored wholesale on its own line near the top, so throwaway decks need no pattern of their own):
 
 ```
-# Deck answers under docs/ are Destin's decisions and are COMMITTED (feature-flow design §2).
-# Only throwaway decks in scratch/ stay untracked. `*.serve.json` below is a runtime lock.
-scratch/**/*.answers.json
-scratch/**/*.answers.*.json
+# Deck answers (*.answers.json) are Destin's decisions and are COMMITTED (feature-flow design §2).
+# Throwaway decks live in scratch/, which is ignored above. `*.serve.json` is a runtime lock.
 ```
 
 - [ ] **Step 2: Verify the rule from the worktree**
@@ -61,12 +56,12 @@ scratch/**/*.answers.*.json
 Run:
 ```bash
 cd /home/destin/youcoded-dev/worktrees/feature-flow
-touch docs/active/design/probe.answers.json scratch-probe.answers.json
+touch docs/active/design/probe.answers.json
 git check-ignore -v docs/active/design/probe.answers.json; echo "docs rc=$?"
 mkdir -p scratch && touch scratch/probe.answers.json && git check-ignore -v scratch/probe.answers.json; echo "scratch rc=$?"
-rm -f docs/active/design/probe.answers.json scratch-probe.answers.json scratch/probe.answers.json
+rm -f docs/active/design/probe.answers.json scratch/probe.answers.json
 ```
-Expected: `docs rc=1` (not ignored), `scratch rc=0` with the `.gitignore:` line printed.
+Expected: `docs rc=1` (not ignored), `scratch rc=0` with the `.gitignore:…:scratch/` line printed.
 
 - [ ] **Step 3: Copy the existing answers files into the worktree and stage them**
 
@@ -91,7 +86,8 @@ git commit -m "chore(deck): commit answers files under docs/ — they are Destin
 
 Every *.answers.json was gitignored since deck v2 (d81214a). The contract in
 docs/active/specs/2026-09-01-feature-flow-design.md resolves its rows to these
-files, so they need history and a clean-checkout life. scratch/ stays ignored.
+files, so they need history and a clean-checkout life. scratch/ was already
+ignored on its own line, so throwaway decks need no pattern.
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01CiVWE2jGoEVCkp9bYYtuE2"
@@ -102,7 +98,7 @@ Claude-Session: https://claude.ai/code/session_01CiVWE2jGoEVCkp9bYYtuE2"
 ### Task 1: Words-only steps (no picture), one-option decide, per-step button labels
 
 **Files:**
-- Modify: `scripts/ui-review/deck/spec.py` (`load_spec` ~line 59; `validate` dispatch ~line 174; `_validate_decide` lines 218–259; new `is_words`, `no_pictures`, `_validate_words`, `_validate_options`)
+- Modify: `scripts/ui-review/deck/spec.py` (`load_spec` ~line 53; `validate` dispatch ~line 175; `_validate_decide` ~lines 218–258; new `is_words`, `is_contract`, `no_pictures`, `_validate_words`, `_validate_options`)
 - Modify: `scripts/ui-review/deck/crops.py:40-52` (skip words steps)
 - Modify: `scripts/ui-review/deck/build.py` (`_decide_step` ~line 63; `deck_data` ~line 122; `build_page` existence loop ~line 152)
 - Modify: `scripts/ui-review/deck/page.js` (`YES`/`NO` line 104; `render()` lines 148–210; `layout()` line 226; `renderAnswers` line 124)
@@ -248,6 +244,9 @@ class WordsTests(unittest.TestCase):
         # A step that merely FORGOT its crop is still an error, not a silent words step.
         self.assertFalse(is_words({'id': 'x', 'headline': 'h'}))
         self.assertTrue(is_words({'id': 'x', 'words': True}))
+        # A contract step (rows) is a words step too — even with no rows yet, so the empty
+        # contract gets the contract error in Task 3, not "missing crop".
+        self.assertTrue(is_words({'id': 'x', 'rows': []}))
 
 
 if __name__ == '__main__':
@@ -261,31 +260,34 @@ Expected: `ImportError: cannot import name 'is_words'`.
 
 - [ ] **Step 4: spec.py — the flag, the deck rule, the validator**
 
-In `scripts/ui-review/deck/spec.py`, after `is_clip` (~line 110) add:
+In `scripts/ui-review/deck/spec.py`, after `is_clip` (~line 114) add:
 
 ```python
+def is_contract(step):
+    """A CONTRACT step is the rows that define done (feature-flow design §3), rendered as a
+    table and answered yes/no/other as ONE step. It is a WORDS step (is_words is true for it)
+    that carries `rows`; keyed on the key's PRESENCE so an empty `rows: []` still reaches the
+    contract validator ("a contract with no rows defines nothing") instead of the picture
+    one ("missing crop"). Validation and the page come in Task 3 of the plan."""
+    return 'rows' in step
+
+
 def is_words(step):
     """A WORDS-ONLY step has no picture at all — `"words": true`, an explicit flag rather than
     "no crop", so a step that merely forgot its crop is still an error and never renders
     silently pictureless. With `options` it is a decide (pick one of the written options, or
-    Other); without, a statement to approve (`changed` + `notice` are its body). Two users:
-    the QUESTIONS deck answered before anything is drawn, and the acceptance deck's
-    human rows (feature-flow design §5, §7)."""
-    return step.get('words') is True
-
-
-def is_contract(step):
-    """A CONTRACT step is the rows that define done (feature-flow design §3), rendered as a
-    table and answered yes/no/other as ONE step. Always words-only. Validation and the page
-    come in Task 3 of the plan; the predicate lives here so no_pictures() is written once."""
-    return bool(step.get('rows'))
+    Other); with `rows` a contract; otherwise a statement to approve (`changed` + `notice`
+    are its body). Users: the QUESTIONS deck answered before anything is drawn, the contract,
+    and the acceptance deck's human rows (feature-flow design §3, §5, §7)."""
+    return step.get('words') is True or is_contract(step)
 
 
 def no_pictures(spec):
-    """A deck with no picture steps at all — every step is live, words-only or a contract.
-    It names no `images` folder and no `runs`; every code path that reaches for either
-    bails out first (load_spec, crops.py, build.py, review-cards.py). Widens live.all_live."""
-    return bool(spec['steps']) and all(is_live(st) or is_words(st) or is_contract(st) for st in spec['steps'])
+    """A deck with no picture steps at all — every step is live or words-only (a contract is
+    words-only). It names no `images` folder and no `runs`; every code path that reaches for
+    either bails out first (load_spec, crops.py, build.py, review-cards.py). Widens
+    live.all_live."""
+    return bool(spec['steps']) and all(is_live(st) or is_words(st) for st in spec['steps'])
 ```
 
 (`is_live` is already imported at the top of `spec.py`. After the next change `all_live` is no longer used in `spec.py` — drop it from that import.)
@@ -300,7 +302,7 @@ In `validate`, after the `is_live` block and before `if is_choice(st):`, add:
             continue
 ```
 
-Extract the option loop out of `_validate_decide`. Replace lines 233–256 (from `opts = st['options']` through the `measured has no number` warning) with:
+Extract the option loop out of `_validate_decide`. Replace the block from `opts = st['options']` through the `measured has no number` warning (~lines 234–253; the `themes` and `risk` checks after it stay) with:
 
 ```python
     _validate_options(st, sid, errors, warnings, minimum=2)
@@ -339,7 +341,8 @@ def _validate_options(st, sid, errors, warnings, minimum):
 
 def _validate_words(spec, st, sid, errors, warnings):
     """No picture, so every picture field is refused rather than required — the same stance
-    as _validate_live. The question shape is the existing one: `options` → pick one."""
+    as _validate_live. The question shape is the existing one: `options` → pick one. A
+    contract (`rows`) is validated by _validate_rows (Task 3), which this dispatches to."""
     for k in ('surface', 'path', 'headline'):
         if not st.get(k):
             errors.append(f'{sid}: missing {k}')
@@ -347,7 +350,9 @@ def _validate_words(spec, st, sid, errors, warnings):
         if st.get(k):
             errors.append(f'{sid}: a words step has no {k} — there is no picture')
     _headline_and_words(st, sid, errors)
-    if st.get('options'):
+    if is_contract(st):
+        _validate_rows(spec, st, sid, errors)          # Task 3 adds it; until then a contract step is not valid
+    elif st.get('options'):
         _validate_options(st, sid, errors, warnings, minimum=1)
     else:
         for k in ('changed', 'notice'):
@@ -368,14 +373,21 @@ Note the `_validate_decide` docstring's claim "at least 2 options" now lives in 
 - [ ] **Step 5: crops.py — skip words steps**
 
 In `scripts/ui-review/deck/crops.py`, change the import line to
-`from .spec import AUTO_WARN_FRACTION, is_choice, is_words, no_pictures, run_names, step_themes, is_clip`, replace `if all_live(spec):` (~line 42) with `if no_pictures(spec):`, drop `all_live` from the `.live` import if nothing else uses it there, and after the `if is_live(st): continue` in the loop add:
+`from .spec import AUTO_WARN_FRACTION, is_choice, is_words, no_pictures, run_names, step_themes, is_clip`, replace `if all_live(spec):` (~line 41) with `if no_pictures(spec):` and update the comment above it (LIVE → live or words-only), drop `all_live` from the `.live` import (nothing else in crops.py uses it), and after the `if is_live(st): continue` in the loop add:
 
 ```python
-        if is_words(st) or is_contract(st):
-            continue   # words only — nothing to cut, no `crop` to look up
+        if is_words(st):
+            continue   # words only (a question, a statement, a contract) — nothing to cut, no `crop` to look up
 ```
 
-(import `is_contract` from `.spec` alongside `is_words`.)
+Add a Task-1 step to `_validate_words`'s "until Task 3" gap: in `spec.py` define a placeholder so Task 1's suite runs green on its own:
+
+```python
+def _validate_rows(spec, st, sid, errors):
+    errors.append(f'{sid}: contract steps are not supported yet (plan Task 3)')
+```
+
+(Task 3 replaces the body. `live.all_live` stays for `test_live.py`, which pins it.)
 
 - [ ] **Step 6: build.py — the words step data and the existence loop**
 
@@ -415,8 +427,10 @@ In `build_page`'s loop, after `if is_live(st): continue`, add:
 
 ```python
         if is_words(st):
-            continue   # nothing on disk to check
+            continue   # nothing on disk to check — a question, a statement or a contract has no picture
 ```
+
+(`frames()` in page.js already falls through to `runs.map(...)` for a step with no `kind`, and `render()` ends with `layout()`, so the module-load `curFrames = frames(DECK.steps[0])` and the words layout both work with the edits in Step 7 — verified 2026-09-01.)
 
 - [ ] **Step 7: page.js — render and lay out a words step**
 
@@ -638,8 +652,8 @@ Claude-Session: https://claude.ai/code/session_01CiVWE2jGoEVCkp9bYYtuE2"
 ### Task 3: The contract step
 
 **Files:**
-- Modify: `scripts/ui-review/deck/spec.py` (`is_contract`, `_validate_contract`, dispatch, constants)
-- Modify: `scripts/ui-review/deck/build.py` (`_contract_step`, dispatch)
+- Modify: `scripts/ui-review/deck/spec.py` (`_validate_rows` body replaces Task 1's placeholder; constants)
+- Modify: `scripts/ui-review/deck/build.py` (`_words_step` gains its rows branch)
 - Modify: `scripts/ui-review/deck/page.js` (`render()` cards branch)
 - Modify: `scripts/ui-review/deck/page.css`
 - Modify: `scripts/ui-review/tests/fixture.py` (`contract_spec`)
@@ -647,7 +661,7 @@ Claude-Session: https://claude.ai/code/session_01CiVWE2jGoEVCkp9bYYtuE2"
 - Create: `scripts/ui-review/templates/contract.json` (the template Task 6's agent copies)
 
 **Interfaces:**
-- Produces: `is_contract(step) -> bool` (`bool(step.get('rows'))`); `CHECKED_BY = ('mechanical', 'deck', 'live-app', 'human')`; deck data `{'id', 'kind': 'contract', 'words': True, 'surface', 'path', 'headline', 'notice', 'risk', 'rows': [{'id','statement','checkedBy','guard','threshold','source','note','verdict','evidence'}], 'yes', 'no'}`; `fixture.contract_spec(tmp, **over) -> path` which also writes two source decks with **submitted** answers files beside it.
+- Produces: `CHECKED_BY = ('mechanical', 'deck', 'live-app', 'human')`; deck data `{'id', 'kind': 'contract', 'words': True, 'surface', 'path', 'headline', 'changed', 'measured', 'notice', 'risk', 'rows': [{'id','statement','checkedBy','guard','threshold','source','note','verdict','evidence'}], 'yes', 'no'}` (the words-step keys plus `kind`, `rows`, and defaulted button labels); `fixture.contract_spec(tmp, **over) -> path` which also writes two source decks with **submitted** answers files beside it. `is_contract` and the no-pictures / crop / build skips already exist from Task 1 — a contract step is a words step, so nothing is dispatched anew here.
 - Consumed by: Task 4 (`contract.py` reads rows and `sources`), Task 5.
 
 - [ ] **Step 1: Fixture**
@@ -778,12 +792,23 @@ class ContractStepTests(unittest.TestCase):
         s = spec_with(self.tmp, lambda r: r['steps'][0]['rows'][1].update({'id': 'R1'}))
         self.assertTrue(any('C: duplicate row id "R1"' in x for x in errs(s)))
 
+    def test_empty_rows_is_the_contract_error_not_a_missing_crop(self):
+        s = spec_with(self.tmp, lambda r: r['steps'][0].update({'rows': []}))
+        e = errs(s)
+        self.assertTrue(any('C: a contract with no rows defines nothing' in x for x in e), e)
+        self.assertFalse(any('missing crop' in x for x in e), e)
+
+    def test_contract_refuses_options(self):
+        s = spec_with(self.tmp, lambda r: r['steps'][0].update({'options': [{'id': 'a', 'label': 'x', 'summary': 'y'}]}))
+        self.assertTrue(any('C: a contract step has no options' in x for x in errs(s)))
+
     def test_deck_data_and_page(self):
         s = load_spec(contract_spec(self.tmp))
         st = deck_data(s, {})['steps'][0]
         self.assertEqual((st['kind'], st['words']), ('contract', True))
         self.assertEqual([r['id'] for r in st['rows']], ['R1', 'R2', 'R3'])
         self.assertEqual((st['yes'], st['no']), ('Yes, that is done', 'No, something is missing'))
+        self.assertNotIn('options', st)
         page, _ = build_page(s, {})
         self.assertIn('"kind": "contract"', page)
 
@@ -797,32 +822,21 @@ Expected: `ImportError: cannot import name 'is_contract'`.
 
 - [ ] **Step 3: spec.py**
 
-`is_contract` already exists (Task 1). Add near the other constants:
+`is_contract` already exists (Task 1) and `_validate_words` already dispatches a rows step to `_validate_rows`. Add near the other constants:
 
 ```python
 CHECKED_BY = ('mechanical', 'deck', 'live-app', 'human')
 SOURCE_RE = re.compile(r'^[\w.-]+#[\w.-]+$')
 ```
 
-In `validate`, before the `is_words` dispatch from Task 1:
+Replace Task 1's placeholder `_validate_rows` with (the shared words checks — surface/path/headline, picture fields refused, headline length and banned words — already ran in `_validate_words`):
 
 ```python
-        if is_contract(st):
-            _validate_contract(spec, st, sid, errors, warnings)
-            continue
-```
-
-Add:
-
-```python
-def _validate_contract(spec, st, sid, errors, warnings):
-    for k in ('surface', 'path', 'headline'):
-        if not st.get(k):
-            errors.append(f'{sid}: missing {k}')
-    for k in ('crop', 'clip', 'highlight', 'variants', 'live', 'options'):
-        if st.get(k):
-            errors.append(f'{sid}: a contract step has no {k} — the rows are the picture')
-    _headline_and_words(st, sid, errors)
+def _validate_rows(spec, st, sid, errors):
+    """The rows of a contract step (feature-flow design §3). Each row is one statement of what
+    done means, who checks it, and the answered deck step it came from."""
+    if st.get('options'):
+        errors.append(f'{sid}: a contract step has no options — the rows are its body')
     rows = st['rows']
     if not isinstance(rows, list):
         errors.append(f'{sid}: rows must be a list')
@@ -857,27 +871,34 @@ def _validate_contract(spec, st, sid, errors, warnings):
                 errors.append(f'{sid}/{rid}: a verdict needs evidence (what was run or looked at)')
     if not rows:
         errors.append(f'{sid}: a contract with no rows defines nothing')
-    if word_count(st.get('risk')) > RISK_WARN:
-        warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
 ```
+
+(The `themes` and `risk` checks at the end of `_validate_words` run for a contract step too — it returns to `_validate_words` after this.)
 
 - [ ] **Step 4: build.py**
 
-Add and dispatch **before** `is_words` in `deck_data`:
+Add the constant and give `_words_step` its rows branch (import `is_contract` from `.spec`):
 
 ```python
 ROW_KEYS = ('id', 'statement', 'checkedBy', 'guard', 'threshold', 'source', 'note', 'verdict', 'evidence')
-
-
-def _contract_step(spec, st):
-    """The rows, verbatim, and the two buttons a sign-off needs. Laid out as a words step."""
-    return {'id': st['id'], 'kind': 'contract', 'words': True, 'surface': st['surface'], 'path': st['path'],
-            'headline': st['headline'], 'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
-            'rows': [{k: r.get(k, '') for k in ROW_KEYS} for r in st['rows']],
-            'yes': st.get('yes', 'Yes, that is done'), 'no': st.get('no', 'No, something is missing')}
 ```
 
-In `build_page`'s loop, the `is_words` skip from Task 1 becomes `if is_words(st) or is_contract(st): continue` (import `is_contract`).
+In `_words_step`, replace the `if st.get('options'):` tail with:
+
+```python
+    if is_contract(st):
+        # The rows, verbatim, and the two buttons a sign-off needs; page.js draws `rows` as a table.
+        d['kind'] = 'contract'
+        d['rows'] = [{k: r.get(k, '') for k in ROW_KEYS} for r in st['rows']]
+        d['yes'] = st.get('yes') or 'Yes, that is done'
+        d['no'] = st.get('no') or 'No, something is missing'
+    elif st.get('options'):
+        d['kind'] = 'decide'
+        d['options'] = [_option(o) for o in st['options']]
+    return d
+```
+
+Nothing changes in `deck_data`, `build_page` or `crops.py`: Task 1's `is_words` skips already cover a contract step.
 
 - [ ] **Step 5: page.js and CSS**
 
@@ -903,7 +924,7 @@ In `render()`'s `$('#cards').innerHTML = …` chain, add a first branch:
 .words .cards:has(.contract){grid-template-columns:1fr}
 ```
 
-(`--yes` / `--no` are the existing answer-button colours in `page.css`; check the variable names at lines 58–60 and use whatever they are.)
+(`--yes` / `--no` are the existing answer-button colours, defined on `:root` at the top of `page.css` — verified 2026-09-01.)
 
 - [ ] **Step 6: Template**
 
@@ -912,7 +933,7 @@ Create `scripts/ui-review/templates/contract.json` — the fixture's contract sp
 - [ ] **Step 7: Run, register, commit**
 
 Run: `cd scripts/ui-review/tests && python3 -m unittest test_contract test_words test_spec -v`
-Expected: all pass (`test_contract` 8).
+Expected: all pass (`test_contract` 10).
 
 Register `test_contract` in `workspace-ci.yml`, README and MAP alongside `test_words` (Task 1 Step 11 lists the three places). Add to the `review-cards.py` docstring: `A CONTRACT step ("rows") is the definition of done signed off as one step; see docs/active/specs/2026-09-01-feature-flow-design.md.`
 
@@ -934,7 +955,9 @@ Claude-Session: https://claude.ai/code/session_01CiVWE2jGoEVCkp9bYYtuE2"
 - Test: `scripts/ui-review/tests/test_contract.py` (append)
 
 **Interfaces:**
-- Produces: `check_contract(spec) -> list[str]` (empty = holds); `answers_for(spec_path) -> (spec_dict|None, answers_dict|None, why:str)`; `acceptance_spec(spec, verdicts) -> dict`; CLI `review-cards.py contract-check <spec>` (exit 0/1, one problem per line on stderr) and `review-cards.py acceptance <contract.json>` (writes `<stem>.acceptance.json` beside it from `<stem>.verdicts.json`, prints the path; exit 1 with reasons if a graded row lacks a verdict).
+- Produces: `check_contract(spec) -> list[str]` (empty = holds); `answers_for(spec_path) -> (spec_dict|None, answers_dict|None, why:str)`; `guard_exists(root, branch, guard) -> bool` (on disk under `root`, or committed on `branch` / `origin/<branch>` in the repo the path's first segment names); `signoff(spec) -> (ok: bool, line: str)` (the contract's OWN answers file is submitted and its contract step answered `yes` — the gate's third fact, design §4); `acceptance_status(spec) -> (ok: bool, line: str)` (`<stem>.acceptance.json` exists and its answers are submitted); `acceptance_spec(spec, verdicts) -> dict`.
+- CLI `review-cards.py contract-check <spec>`: problems → one per line on stderr, exit 1. Otherwise exit 0 and print three lines, each prefixed `ok: ` or `todo: ` so `close-out.sh` (Task 5) maps them to its OK/TODO without parsing JSON: `ok: contract holds: N rows, every source answered and submitted, every guard found`, then the sign-off line, then the acceptance line. Signing and acceptance are reported, never required — the contract agent runs this before Destin has seen the deck.
+- CLI `review-cards.py acceptance <contract.json>`: writes `<stem>.acceptance.json` beside it from `<stem>.verdicts.json` (i.e. `<feature>.contract.verdicts.json`), prints the path; exit 1 with reasons if a graded row lacks a verdict.
 - Consumed by: Task 5 (`close-out.sh` calls `contract-check`), Task 6 (dry run), Task 7 (docs).
 
 - [ ] **Step 1: Failing tests**
@@ -981,6 +1004,58 @@ class ContractCheckTests(unittest.TestCase):
         self.assertTrue(any('R1: no step "S-9" in r1.json' in x for x in problems), problems)
         self.assertTrue(any('R3: guard scripts/nope.py does not exist' in x for x in problems), problems)
 
+    def test_guard_committed_on_the_branch_counts(self):
+        # A feature's mechanical rows mostly name tests the feature ADDS. From a worktree the
+        # workspace root is the main checkout, where that file does not exist until merge — so
+        # the check also looks on the contract's branch. Uncommitted still does not count.
+        import subprocess
+        from unittest import mock
+        from deck.contract import check_contract, guard_exists
+        root = os.path.join(self.tmp, 'ws'); os.makedirs(os.path.join(root, 'scripts'))
+        g = lambda *a: subprocess.run(['git', '-C', root, *a], check=True, capture_output=True, text=True)
+        g('init', '-q', '-b', 'main'); g('config', 'user.email', 't@t'); g('config', 'user.name', 't')
+        open(os.path.join(root, 'README'), 'w').write('x'); g('add', 'README'); g('commit', '-qm', 'base')
+        g('checkout', '-qb', 'feat/x')
+        open(os.path.join(root, 'scripts', 'guard.py'), 'w').write('# guard'); g('add', 'scripts/guard.py'); g('commit', '-qm', 'guard')
+        g('checkout', '-q', 'main')                      # back on main: the guard is NOT on disk
+        self.assertFalse(os.path.exists(os.path.join(root, 'scripts', 'guard.py')))
+        self.assertTrue(guard_exists(root, 'feat/x', 'scripts/guard.py'))
+        self.assertFalse(guard_exists(root, 'main', 'scripts/guard.py'))
+        self.assertFalse(guard_exists(root, 'feat/x', 'scripts/uncommitted.py'))
+        with mock.patch.dict(os.environ, {'YOUCODED_WORKSPACE': root}):
+            s = spec_with(self.tmp, lambda r: r['steps'][0]['rows'][2].update({'guard': 'scripts/guard.py'}), branch='feat/x')
+            self.assertEqual(check_contract(s), [])
+            s = spec_with(self.tmp, lambda r: r['steps'][0]['rows'][2].update({'guard': 'scripts/guard.py'}), branch='main')
+            self.assertTrue(any('R3: guard scripts/guard.py is neither on disk under' in x for x in check_contract(s)))
+
+    def test_signoff_is_the_contracts_own_answer(self):
+        from deck.contract import signoff
+        p = contract_spec(self.tmp); s = load_spec(p)
+        ok, line = signoff(s)
+        self.assertFalse(ok); self.assertIn('not signed', line)
+        ap = p.replace('.json', '.answers.json')
+        json.dump({'deck': 'arcade-contract', 'submitted': None, 'answers': {'C': {'v': 'yes'}}}, open(ap, 'w'))
+        ok, line = signoff(s)
+        self.assertFalse(ok); self.assertIn('not signed', line)             # answered but never submitted
+        json.dump({'deck': 'arcade-contract', 'submitted': '2026-09-01T11:00:00Z', 'answers': {'C': {'v': 'no', 'note': 'R2 is wrong'}}}, open(ap, 'w'))
+        ok, line = signoff(s)
+        self.assertFalse(ok); self.assertIn('answered "no"', line); self.assertIn('R2 is wrong', line)
+        json.dump({'deck': 'arcade-contract', 'submitted': '2026-09-01T11:00:00Z', 'answers': {'C': {'v': 'yes'}}}, open(ap, 'w'))
+        ok, line = signoff(s)
+        self.assertTrue(ok); self.assertIn('signed 2026-09-01 11:00', line)
+
+    def test_acceptance_status(self):
+        from deck.contract import acceptance_status
+        p = contract_spec(self.tmp); s = load_spec(p); d = os.path.dirname(p)
+        ok, line = acceptance_status(s)
+        self.assertFalse(ok); self.assertIn('acceptance deck not built', line)
+        json.dump({'key': 'x', 'steps': []}, open(os.path.join(d, 'arcade.contract.acceptance.json'), 'w'))
+        ok, line = acceptance_status(s)
+        self.assertFalse(ok); self.assertIn('acceptance deck not submitted', line)
+        json.dump({'submitted': '2026-09-01T12:00:00Z', 'answers': {'C': {'v': 'yes'}}}, open(os.path.join(d, 'arcade.contract.acceptance.answers.json'), 'w'))
+        ok, line = acceptance_status(s)
+        self.assertTrue(ok); self.assertIn('acceptance deck submitted 2026-09-01 12:00', line)
+
     def test_cli_contract_check(self):
         import importlib.util
         spec_ = importlib.util.spec_from_file_location('review_cards', os.path.join(os.path.dirname(HERE), 'review-cards.py'))
@@ -991,7 +1066,18 @@ class ContractCheckTests(unittest.TestCase):
         out, err = io.StringIO(), io.StringIO()
         with redirect_stdout(out), redirect_stderr(err):
             code = rc.main(['contract-check', p])
-        self.assertEqual(code, 0, err.getvalue()); self.assertIn('contract holds: 3 rows', out.getvalue())
+        self.assertEqual(code, 0, err.getvalue())
+        lines = out.getvalue().splitlines()
+        self.assertTrue(lines[0].startswith('ok: contract holds: 3 rows'), lines)
+        self.assertTrue(lines[1].startswith('todo: not signed'), lines)
+        self.assertTrue(lines[2].startswith('todo: acceptance deck not built'), lines)
+        # A source problem is exit 1 with the problems on stderr and nothing on stdout.
+        ap = os.path.join(os.path.dirname(p), 'r1.answers.json')
+        a = json.load(open(ap)); a['submitted'] = None; json.dump(a, open(ap, 'w'))
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err):
+            code = rc.main(['contract-check', p])
+        self.assertEqual(code, 1); self.assertIn('never submitted', err.getvalue()); self.assertEqual(out.getvalue(), '')
 
 
 class AcceptanceTests(unittest.TestCase):
@@ -1031,18 +1117,22 @@ Expected: the new cases fail with `ModuleNotFoundError: No module named 'deck.co
 Create `scripts/ui-review/deck/contract.py`:
 
 ```python
-"""The contract's three facts, and the acceptance deck built from it.
+"""The gate's three facts, and the acceptance deck built from the contract.
 
-contract-check reads what the design calls the gate (feature-flow design §4): every row's
-`source` names a step that exists in a deck the spec's `sources` map points at, that deck's
-answers were SUBMITTED, that step was answered (not skipped), and every `mechanical` guard is
-on disk. It never blocks anything — close-out.sh prints its result in a Contract section.
+contract-check reads what the design calls the gate (feature-flow design §4): (1) the contract
+holds — every row's `source` names a step that exists in a deck the spec's `sources` map points
+at, that deck's answers were SUBMITTED, that step was answered (not skipped), and every
+`mechanical` guard exists on disk or on the contract's branch; (2) the contract was SIGNED —
+its own answers file is submitted and the contract step answered yes; (3) the acceptance deck
+was submitted. Only (1) is an exit code: the contract agent runs this before Destin has seen
+the deck, so (2) and (3) are reported as `ok:` / `todo:` lines that close-out.sh relays.
 
 acceptance merges the grader's verdicts into the contract: step 1 is the table with a verdict
 beside every graded row, then one words step per human / live-app row for Destin to tick."""
 import glob
 import json
 import os
+import subprocess
 
 from .spec import is_contract, workspace_root
 
@@ -1053,6 +1143,33 @@ class AcceptanceError(Exception):
 
 def contract_steps(spec):
     return [st for st in spec['steps'] if is_contract(st)]
+
+
+def _when(stamp):
+    return (stamp or '')[:16].replace('T', ' ')
+
+
+def guard_exists(root, branch, guard):
+    """A `mechanical` row's guard, as a workspace-relative path. True if it is on disk under
+    `root`, or committed on `branch` (or `origin/<branch>`) in the repo the path's first
+    segment names — `youcoded/desktop/tests/x.test.ts` is looked up in the `youcoded` repo as
+    `desktop/tests/x.test.ts`; `scripts/x.py` in the workspace repo itself.
+    WHY the branch: from a worktree, workspace_root() is the MAIN checkout, where a test the
+    feature branch adds does not exist until merge — and those are most of the guards a
+    contract names. An uncommitted file is found nowhere, on purpose."""
+    if not guard:
+        return False
+    if os.path.exists(os.path.join(root, guard)):
+        return True
+    if not branch:
+        return False
+    first, _, rest = guard.partition('/')
+    repo, rel = (os.path.join(root, first), rest) if rest and os.path.exists(os.path.join(root, first, '.git')) else (root, guard)
+    for ref in (branch, f'origin/{branch}'):
+        r = subprocess.run(['git', '-C', repo, 'cat-file', '-e', f'{ref}:{rel}'], capture_output=True)
+        if r.returncode == 0:
+            return True
+    return False
 
 
 def answers_for(spec_path):
@@ -1111,9 +1228,36 @@ def check_contract(spec):
             a = (ans.get('answers') or {}).get(sid) or {}
             if not a.get('v') or a['v'] == 'skip':
                 problems.append(f'{tag}: step {sid} of {key} was not answered')
-            if r.get('checkedBy') == 'mechanical' and not os.path.exists(os.path.join(root, r.get('guard', ''))):
-                problems.append(f'{tag}: guard {r.get("guard")} does not exist under {root}')
+            if r.get('checkedBy') == 'mechanical' and not guard_exists(root, spec.get('branch'), r.get('guard', '')):
+                problems.append(f'{tag}: guard {r.get("guard")} is neither on disk under {root} nor committed on branch "{spec.get("branch") or "(no branch in the spec)"}"')
     return problems
+
+
+def signoff(spec):
+    """Fact (2): the contract's OWN answers — submitted, and the contract step answered yes.
+    Returns (ok, one line for close-out)."""
+    steps = contract_steps(spec)
+    sid = steps[0]['id'] if steps else None
+    _, ans, why = answers_for(os.path.join(spec['_base'], spec['_stem'] + '.json'))
+    if ans is None:
+        return False, f'not signed — {why}; serve {spec["_stem"]}.json and answer it'
+    a = (ans.get('answers') or {}).get(sid) or {}
+    if a.get('v') == 'yes':
+        return True, f'signed {_when(ans.get("submitted"))} — {sid} yes' + (f' — "{a["note"].strip()}"' if (a.get('note') or '').strip() else '')
+    if a.get('v') in ('no', 'other'):
+        return False, f'answered "{a["v"]}" {_when(ans.get("submitted"))} — the contract is not agreed' + (f': "{a["note"].strip()}"' if (a.get('note') or '').strip() else '')
+    return False, f'not signed — submitted {_when(ans.get("submitted"))} but step {sid} was skipped'
+
+
+def acceptance_status(spec):
+    """Fact (3): `<stem>.acceptance.json` exists and its newest answers file is submitted."""
+    acc = os.path.join(spec['_base'], spec['_stem'] + '.acceptance.json')
+    if not os.path.exists(acc):
+        return False, f'acceptance deck not built — write {spec["_stem"]}.verdicts.json, then review-cards.py acceptance {spec["_stem"]}.json'
+    _, ans, why = answers_for(acc)
+    if ans is None:
+        return False, f'acceptance deck not submitted — serve {os.path.basename(acc)}'
+    return True, f'acceptance deck submitted {_when(ans.get("submitted"))}'
 
 
 GRADED = ('mechanical', 'deck')
@@ -1149,7 +1293,7 @@ def acceptance_spec(spec, verdicts):
 
 - [ ] **Step 3: CLI**
 
-In `review-cards.py`: import `from deck.contract import AcceptanceError, acceptance_spec, check_contract, contract_steps`; register `for c in ('build', 'serve', 'wait', 'contract-check', 'acceptance'):`; in `main` before the `serve` branch:
+In `review-cards.py`: import `from deck.contract import AcceptanceError, acceptance_spec, acceptance_status, check_contract, contract_steps, signoff`; register `for c in ('build', 'serve', 'wait', 'contract-check', 'acceptance'):`; in `main` before the `serve` branch:
 
 ```python
         if a.cmd == 'contract-check':
@@ -1161,7 +1305,11 @@ In `review-cards.py`: import `from deck.contract import AcceptanceError, accepta
                 print('\n'.join(problems), file=sys.stderr)
                 return 1
             n = sum(len(st['rows']) for st in contract_steps(spec))
-            print(f'contract holds: {n} rows, every source answered and submitted, every guard on disk')
+            # Three facts, three lines, `ok:`/`todo:` prefixed so close-out.sh can relay them
+            # without parsing anything. Only the first is an exit code (see contract.py).
+            print(f'ok: contract holds: {n} rows, every source answered and submitted, every guard found')
+            for ok, line in (signoff(spec), acceptance_status(spec)):
+                print(('ok: ' if ok else 'todo: ') + line)
             return 0
         if a.cmd == 'acceptance':
             vpath = os.path.join(spec['_base'], spec['_stem'] + '.verdicts.json')
@@ -1187,15 +1335,17 @@ Add `import json` at the top and the two commands to the docstring:
 
 ```
   python3 scripts/ui-review/review-cards.py contract-check <feature>.contract.json
-        every row's source resolves to an answered step in a submitted deck; every mechanical guard exists (exit 1 lists what doesn't)
+        every row's source resolves to an answered step in a submitted deck and every mechanical guard exists on disk or on
+        the contract's branch (exit 1 lists what doesn't); then reports, as ok:/todo: lines, whether the contract was signed
+        (its own answers file) and whether the acceptance deck was submitted
   python3 scripts/ui-review/review-cards.py acceptance <feature>.contract.json
-        merge <feature>.verdicts.json into <feature>.acceptance.json — the contract graded, plus a yes/no per human row
+        merge <feature>.contract.verdicts.json into <feature>.contract.acceptance.json — the contract graded, plus a yes/no per human row
 ```
 
 - [ ] **Step 4: Run and commit**
 
 Run: `cd scripts/ui-review/tests && python3 -m unittest test_contract -v`
-Expected: 16 tests pass.
+Expected: 21 tests pass.
 
 ```bash
 git add scripts/ui-review/deck/contract.py scripts/ui-review/review-cards.py scripts/ui-review/tests/test_contract.py
@@ -1214,8 +1364,8 @@ Claude-Session: https://claude.ai/code/session_01CiVWE2jGoEVCkp9bYYtuE2"
 - Create: `scripts/ui-review/tests/close-out-contract.test.sh`
 
 **Interfaces:**
-- Consumes: `review-cards.py contract-check` (Task 4); a contract spec's top-level `"branch"`.
-- Produces: a `Contract` section with `OK` / `TODO` / `--` lines, always exit 0.
+- Consumes: `review-cards.py contract-check` (Task 4) — its exit code and its `ok:` / `todo:` lines; a contract spec's top-level `"branch"`.
+- Produces: a `Contract` section with `OK` / `TODO` / `--` lines, always exit 0. No JSON is read here; every fact comes from `contract-check`.
 
 - [ ] **Step 1: The test**
 
@@ -1223,13 +1373,14 @@ Create `scripts/ui-review/tests/close-out-contract.test.sh`:
 
 ```bash
 #!/usr/bin/env bash
-# close-out.sh gets a Contract section: no contract → a note; a contract that holds but whose
-# acceptance deck was never submitted → TODO; a submitted one → OK. Runs against a temp docs dir.
+# close-out.sh gets a Contract section: no contract → a note; a contract that holds but is
+# unsigned with no acceptance deck → OK + TODO + TODO; signed and accepted → three OKs; a
+# contract that does not hold → TODO with the problems indented. Runs against a temp docs dir.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; WS="$(cd "$HERE/../../.." && pwd)"
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 python3 -c "import sys; sys.path.insert(0, '$HERE'); from fixture import contract_spec; print(contract_spec('$TMP'))" >/dev/null
-mkdir -p "$TMP/docs/active/design/x" && mv "$TMP/deck/"* "$TMP/docs/active/design/x/"
+X="$TMP/docs/active/design/x"; mkdir -p "$X" && mv "$TMP/deck/"* "$X/"
 
 out=$(CLOSE_OUT_DOCS="$TMP/nothing" bash "$WS/scripts/close-out.sh" no-such-branch-zz workspace)
 grep -q "^Contract" <<<"$out" || { echo "no Contract section"; exit 1; }
@@ -1237,12 +1388,23 @@ grep -q "no contract names this branch" <<<"$out" || { echo "missing 'no contrac
 
 # pass()/fail() print colour escapes between the OK/TODO word and the message, so match loosely.
 out=$(CLOSE_OUT_DOCS="$TMP/docs" bash "$WS/scripts/close-out.sh" feat/arcade-fixture workspace)
-grep -q "OK.*contract holds" <<<"$out" || { echo "expected 'contract holds'"; echo "$out"; exit 1; }
-grep -q "TODO.*acceptance deck not submitted" <<<"$out" || { echo "expected acceptance TODO"; echo "$out"; exit 1; }
+grep -q "OK.*contract holds: 3 rows" <<<"$out" || { echo "expected 'contract holds'"; echo "$out"; exit 1; }
+grep -q "TODO.*not signed" <<<"$out" || { echo "expected unsigned TODO"; echo "$out"; exit 1; }
+grep -q "TODO.*acceptance deck not built" <<<"$out" || { echo "expected acceptance TODO"; echo "$out"; exit 1; }
 
-echo '{"submitted":"2026-09-01T12:00:00Z","answers":{"C":{"v":"yes"},"R2":{"v":"yes"}}}' > "$TMP/docs/active/design/x/arcade.contract.acceptance.answers.json"
+echo '{"submitted":"2026-09-01T11:00:00Z","answers":{"C":{"v":"yes"}}}' > "$X/arcade.contract.answers.json"
+echo '{"key":"arcade-contract-acceptance","steps":[]}' > "$X/arcade.contract.acceptance.json"
+echo '{"submitted":"2026-09-01T12:00:00Z","answers":{"C":{"v":"yes"},"R2":{"v":"yes"}}}' > "$X/arcade.contract.acceptance.answers.json"
 out=$(CLOSE_OUT_DOCS="$TMP/docs" bash "$WS/scripts/close-out.sh" feat/arcade-fixture workspace)
+grep -q "OK.*signed 2026-09-01 11:00" <<<"$out" || { echo "expected signed OK"; echo "$out"; exit 1; }
 grep -q "OK.*acceptance deck submitted" <<<"$out" || { echo "expected acceptance OK"; echo "$out"; exit 1; }
+
+python3 - "$X/r1.answers.json" <<'PY'
+import json, sys; p = sys.argv[1]; a = json.load(open(p)); a['submitted'] = None; json.dump(a, open(p, 'w'))
+PY
+out=$(CLOSE_OUT_DOCS="$TMP/docs" bash "$WS/scripts/close-out.sh" feat/arcade-fixture workspace)
+grep -q "TODO.*contract does not hold" <<<"$out" || { echo "expected does-not-hold TODO"; echo "$out"; exit 1; }
+grep -q "never submitted" <<<"$out" || { echo "expected the problem line"; echo "$out"; exit 1; }
 echo "close-out contract section: ok"
 ```
 
@@ -1272,30 +1434,33 @@ if [[ -z "$CONTRACTS" ]]; then
 else
   while IFS= read -r c; do
     REL="${c#"$WORKSPACE"/}"
+    # contract-check owns every fact (does it hold, was it signed, was acceptance submitted):
+    # exit 1 + problems on stderr when it does not hold; otherwise `ok:` / `todo:` lines
+    # that are relayed here verbatim, so this script never reads an answers file itself.
     if OUT=$(python3 "$WORKSPACE/scripts/ui-review/review-cards.py" contract-check "$c" 2>&1); then
-      pass "contract holds — $REL ($OUT)"
+      while IFS= read -r line; do
+        case "$line" in
+          ok:\ *)   pass "${line#ok: } — $REL" ;;
+          todo:\ *) fail "${line#todo: }" ;;
+          *)        note "$line" ;;
+        esac
+      done <<<"$OUT"
     else
       fail "contract does not hold — $REL:"
       echo "$OUT" | sed 's/^/       /'
-    fi
-    ACC="${c%.contract.json}.contract.acceptance.answers.json"
-    if [[ -f "$ACC" ]] && python3 -c "import json,sys; sys.exit(0 if json.load(open('$ACC')).get('submitted') else 1)" 2>/dev/null; then
-      pass "acceptance deck submitted — $(basename "$ACC")"
-    else
-      fail "acceptance deck not submitted — review-cards.py acceptance $REL, then serve the .acceptance.json it writes"
     fi
   done <<<"$CONTRACTS"
 fi
 ```
 
-(`rotate_submitted` also applies to acceptance decks; a stamped `*.acceptance.answers.*.json` that is submitted should count — add the same newest-submitted glob in the python one-liner if the first end-to-end run trips on it.)
+(Rotated answers files — `<stem>.answers.<stamp>.json` after a re-serve — are handled inside `contract-check` by `answers_for`, for the sign-off and the acceptance deck alike.)
 
 - [ ] **Step 3: Run, register, commit**
 
 Run: `bash scripts/ui-review/tests/close-out-contract.test.sh`
 Expected: `close-out contract section: ok`.
 
-Add the test to the README's local block (`bash scripts/ui-review/tests/close-out-contract.test.sh`) and to the close-out header comment (`# Contract section: feature-flow design §4`).
+Add the test to the README's local block (`bash scripts/ui-review/tests/close-out-contract.test.sh` — local because `close-out.sh` shells out to `rg` and runs `git fetch`, neither of which the CI runner is set up for) and to the close-out header comment (`# Contract section: feature-flow design §4`).
 
 ```bash
 git add scripts/close-out.sh scripts/ui-review/tests/close-out-contract.test.sh scripts/ui-review/README.md
@@ -1311,7 +1476,7 @@ Claude-Session: https://claude.ai/code/session_01CiVWE2jGoEVCkp9bYYtuE2"
 
 **Files:**
 - Create: `scripts/ui-review/contract-agent.md`
-- Create: `docs/archive/design/2026-08-30-games-arcade/games-arcade.contract.json` (the dry run's output)
+- Dry-run output (NOT committed): `scratch/feature-flow/games-arcade.contract.json`. It is a test of the prompt, not a deliverable — and a contract in `docs/` naming `feat/games-arcade-shell` would make `close-out.sh` report an unsigned contract on a branch that closed out on 2026-08-31, forever.
 
 **Interfaces:**
 - Consumes: Task 0's committed answers files, Task 3's template, Task 4's `contract-check`.
@@ -1352,9 +1517,10 @@ answers do not support a row, the row does not exist; write what was missed into
 - `no` / `skip` → no row. A skipped step is unanswered, never "fine".
 
 ## `checkedBy`
-- `mechanical` only when you can name an EXISTING test or guard path (workspace-relative) that
-  checks the statement. Do not invent one; if none exists, the row is `human` and you say so
-  in `## Not covered` ("R4 needs a test").
+- `mechanical` only when you can name a test or guard path (workspace-relative) that checks
+  the statement and EXISTS — on disk, or committed on the feature branch you were told
+  (`contract-check` looks in both places). Do not invent one; if none exists, the row is
+  `human` and you say so in `## Not covered` ("R4 needs a test").
 - `deck` when the approved step's picture IS the check (re-shot from the built branch).
 - `live-app` when only the real running app can show it (sync, other users, terminals).
 - `human` otherwise.
@@ -1365,21 +1531,24 @@ answers do not support a row, the row does not exist; write what was missed into
 - Set `branch` to the feature branch you were told; `sources` maps every deck key you cite to
   its spec path relative to the contract file.
 - Finish with: `python3 scripts/ui-review/review-cards.py contract-check <path>` and paste its
-  output. A contract that does not hold is not delivered.
+  output. A contract that does not hold (exit 1) is not delivered; the `todo: not signed`
+  line is expected — signing is Destin's, after you.
 ```
 
 - [ ] **Step 2: Dry run**
 
-Dispatch a fresh `Agent` (general-purpose) with the prompt file, the three arcade specs and answers under `docs/archive/design/2026-08-30-games-arcade/` (`step1-sizing`, `board-contrast`, `head-to-head`), branch `feat/games-arcade-shell`, output path `docs/archive/design/2026-08-30-games-arcade/games-arcade.contract.json`. (The arcade had no questions deck; say so in the dispatch.)
+Dispatch a fresh `Agent` (general-purpose) with the prompt file, the three arcade specs and answers under `docs/archive/design/2026-08-30-games-arcade/` (`step1-sizing`, `board-contrast`, `head-to-head`), branch `feat/games-arcade-shell`, output path `scratch/feature-flow/games-arcade.contract.json` (`sources` paths are relative to the contract file, so they point back into `docs/archive/…`). (The arcade had no questions deck; say so in the dispatch.)
 
-Then run: `python3 scripts/ui-review/review-cards.py contract-check docs/archive/design/2026-08-30-games-arcade/games-arcade.contract.json`
-Expected: `contract holds: N rows …`. Read the rows: a reader who knows the arcade should recognise it (the board fills the pane; a second player's board is tellable; the head-to-head layout). If a row is not traceable to a `yes`/`pick`, the prompt is wrong — fix the prompt, not the output.
+Then run: `python3 scripts/ui-review/review-cards.py contract-check scratch/feature-flow/games-arcade.contract.json`
+Expected: exit 0, `ok: contract holds: N rows …`, `todo: not signed …`, `todo: acceptance deck not built …`. Read the rows: a reader who knows the arcade should recognise it (the board fills the pane; a second player's board is tellable; the head-to-head layout). If a row is not traceable to a `yes`/`pick`, the prompt is wrong — fix the prompt, not the output. Paste the rows and the check output into the commit message below; the file itself stays in `scratch/`.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add scripts/ui-review/contract-agent.md docs/archive/design/2026-08-30-games-arcade/games-arcade.contract.json
+git add scripts/ui-review/contract-agent.md
 git commit -m "feat(deck): the contract agent prompt, dry-run against the arcade's three decks
+
+<the dry run's rows and contract-check output>
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01CiVWE2jGoEVCkp9bYYtuE2"
@@ -1448,11 +1617,22 @@ amends the contract row's `source`.
 **Why:** a chat answer is not a source (see above).
 **Guard:** none — candidate.
 
+## The gate is three facts, and one command reports them
+**Invariant:** `review-cards.py contract-check <feature>.contract.json` is the only reader of
+the gate: (1) every row's source resolves and every `mechanical` guard exists on disk or on
+the contract's `branch` (exit 1 otherwise); (2) the contract was signed — `<feature>.contract.answers.json`
+submitted with the contract step `yes`; (3) `<feature>.contract.acceptance.answers.json` is
+submitted. `close-out.sh` relays its `ok:` / `todo:` lines and reads no answers file itself.
+**Why:** a guard the branch adds is not in the main checkout until merge; a contract nobody
+signed is not a definition of done; two readers of one file drift.
+**Guard:** `test_contract.py` (ContractCheckTests); `close-out-contract.test.sh`.
+
 ## Acceptance is graded rows plus human rows
-**Invariant:** the grader writes `<feature>.verdicts.json`; `review-cards.py acceptance` refuses
-when a `mechanical` or `deck` row has no verdict. `close-out.sh` reports both facts.
+**Invariant:** the grader writes `<feature>.contract.verdicts.json` (beside the contract, same
+stem — the CLI reads exactly that name); `review-cards.py acceptance` refuses when a
+`mechanical` or `deck` row has no verdict.
 **Why:** an ungraded row is not a pass.
-**Guard:** `test_contract.py` (AcceptanceTests); `close-out-contract.test.sh`.
+**Guard:** `test_contract.py` (AcceptanceTests).
 ```
 
 - [ ] **Step 2: The skill**
@@ -1490,8 +1670,9 @@ Decisions must not live only in chat — and the deck answers ARE the record (th
    contract plus the approved decks is the plan.
 4. Add ROADMAP entries for every *fix later* note the contract agent listed, and follow the
    workspace knowledge rules (pinning test > ast-grep rule > WHY comment > path-scoped rule).
-5. At the end: write `<feature>.verdicts.json`, run `review-cards.py acceptance`, serve the
-   acceptance deck; `bash scripts/close-out.sh <branch>` reports both.
+5. At the end: write `<feature>.contract.verdicts.json` beside the contract, run
+   `review-cards.py acceptance`, serve the acceptance deck; `bash scripts/close-out.sh <branch>`
+   reports whether the contract holds, was signed, and was accepted.
 
 Merging cannot shift appearance, because nothing was ever copied.
 ```
@@ -1508,7 +1689,7 @@ Merging cannot shift appearance, because nothing was ever copied.
 Run: `node scripts/audit-anchors.mjs`
 Expected: green (the new rule's `verify:` entries resolve).
 
-Run: `cd worktrees/feature-flow && touch scripts/ui-review/deck/contract.py` in a fresh session, then `tail -3 ~/.claude/instructions-loaded.log` — expect a `feature-flow.md` line (the `**/` glob fires inside the worktree). If no session is at hand, note it in the handoff as unverified.
+In a fresh Claude session, Read `worktrees/feature-flow/scripts/ui-review/deck/contract.py` through the Read tool (a shell `touch` or `cat` loads no rule — only Claude's own file tools do), then `tail -3 ~/.claude/instructions-loaded.log` — expect a `feature-flow.md` line (the `**/` glob fires inside the worktree). If no session is at hand, note it in the handoff as unverified.
 
 - [ ] **Step 5: Commit**
 
@@ -1522,7 +1703,35 @@ Claude-Session: https://claude.ai/code/session_01CiVWE2jGoEVCkp9bYYtuE2"
 
 ---
 
-### Task 8: Run it once, end to end
+### Task 8: Ask the design's own questions on the first questions deck, then run it once end to end
+
+**Files:**
+- Create: `docs/active/design/2026-09-01-feature-flow/feature-flow.questions.json`
+
+- [ ] **Step 1: The design's four assumptions become the first questions deck**
+
+The design (§9) leaves four assumptions for Destin to veto, and Task 1 built exactly the deck meant for that — so it is used here rather than a chat question. Write `feature-flow.questions.json` (`key: feature-flow-questions`, `title: Feature flow — four assumptions`, `themes: ["midnight", "light"]`): four `"words": true` decide steps, `surface: "Feature flow"`, `path: "Design §9"`, ids `Q-1`…`Q-4`, one per §9 question, the design's assumption as the first (recommended) option with its why in `summary`, the alternative second, both in the deck's plain words. Q-1 acceptance deck (keep it / fold human rows into the contract); Q-2 reopen with a default (proceed on a marked default / always stop); Q-3 plan documents only for cross-repo, migration or ordering work (yes / always write one); Q-4 commit answers files (commit / copy beside the contract at sign-off). Validate with `review-cards.py build`.
+
+- [ ] **Step 2: Serve it without opening a window, and do not wait**
+
+```bash
+mkdir -p scratch && python3 scripts/ui-review/review-cards.py serve docs/active/design/2026-09-01-feature-flow/feature-flow.questions.json --no-open --timeout 720 > scratch/feature-flow-questions.serve.log 2>&1 &
+sleep 2 && rg -n '\[deck\] http' scratch/feature-flow-questions.serve.log
+```
+
+Put the printed URL in the final message to Destin. Everything in Tasks 0–7 was built under the design's assumptions; a veto on this deck is the first reopen (design §6) and is acted on by the session that sees the submit. Do NOT open his browser (memory: warn before opening windows).
+
+- [ ] **Step 3: Commit the spec**
+
+```bash
+git add docs/active/design/2026-09-01-feature-flow/feature-flow.questions.json
+git commit -m "docs(feature-flow): the design's four assumptions as the first questions deck
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01CiVWE2jGoEVCkp9bYYtuE2"
+```
+
+- [ ] **Step 4: The first real run**
 
 Not a code task. The next small UI feature Destin asks for runs through the whole flow: questions deck → rounds → contract → build → verdicts → acceptance → `close-out.sh`. The handoff for that feature records, from the answers files on disk:
 
@@ -1544,4 +1753,18 @@ Then `/wrap-up`. The design doc's `status:` flips to `active` on the first run a
 
 **Placeholders.** None: every code step carries its code. Task 3 Step 6 (the template) describes values rather than pasting a full JSON — acceptable because the fixture in Step 1 is the worked example, and the template is that fixture with instruction strings.
 
-**Type consistency.** `is_words` / `no_pictures` / `is_contract` / `_validate_options(st, sid, errors, warnings, minimum)` are defined in Task 1/3 and used with those names in crops.py, build.py, contract.py and every test. Deck data keys `words`, `kind`, `yes`, `no`, `rows`, `options` match between build.py and page.js. `answers_for` returns the 3-tuple both `check_contract` and the tests expect. `note_kind` values `now|later|noting` match page.js, serve.py `NOTE_KIND`, the fixture and the agent prompt.
+**Type consistency.** `is_words` / `no_pictures` / `is_contract` / `_validate_options(st, sid, errors, warnings, minimum)` / `_validate_rows(spec, st, sid, errors)` are defined in Task 1/3 and used with those names in crops.py, build.py, contract.py and every test. Deck data keys `words`, `kind`, `yes`, `no`, `rows`, `options` match between build.py and page.js. `answers_for` returns the 3-tuple that `check_contract`, `signoff`, `acceptance_status` and the tests expect; `signoff` / `acceptance_status` return `(bool, str)` and the CLI prefixes them. `note_kind` values `now|later|noting` match page.js, serve.py `NOTE_KIND`, the fixture and the agent prompt.
+
+## Review changes (2026-09-01)
+
+A second session verified the plan against the code before execution. What changed, and why:
+
+- **The gate's third fact was missing.** The design's gate is three facts; the plan checked two. `contract-check` now also reports whether the contract's own answers file is submitted with a `yes`, and whether the acceptance deck was submitted — and `close-out.sh` relays those lines instead of reading JSON itself.
+- **Guards now resolve on the branch.** `workspace_root()` from a worktree is the main checkout, so a test the feature adds was "missing" until merge. `guard_exists` also asks git for the file on the contract's `branch`.
+- **One name for the verdicts file.** The design and docs said `<feature>.verdicts.json`; the CLI read `<stem>.verdicts.json`. Everything now uses the contract's stem: `<feature>.contract.verdicts.json`.
+- **The contract is a words step, not a fourth kind.** `is_words` is true for a `rows` step; the validator and builder branch on `rows` inside the words path. One predicate in the no-pictures rule, the crop skip and the build loop instead of two.
+- **`is_contract` keys on the key's presence**, so `rows: []` reaches "a contract with no rows defines nothing".
+- **`.gitignore`:** the two lines are deleted, not replaced — `scratch/` was already ignored wholesale. The plan's line numbers were wrong (97–98 → 112–113 on master); every line number is now marked approximate with a text anchor.
+- **The arcade dry run stays in `scratch/`.** A contract for a closed-out branch under `docs/` would make close-out report it unsigned forever.
+- **Task 8 asks the design's four questions on a questions deck** — the plan's own tool, dogfooded — rather than leaving them in prose.
+- The rule-firing check now says to Read the file through Claude's tools; a shell `touch` loads no rule.

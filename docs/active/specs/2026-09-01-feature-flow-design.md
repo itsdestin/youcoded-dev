@@ -5,7 +5,7 @@ type: spec
 topic: Idea → mergeable PR. The review deck is the one surface Destin uses; a contract built from his own deck answers is what "done" means.
 plan: docs/active/plans/2026-09-01-feature-flow-plan.md
 measured_at:
-  youcoded-dev: bc2e656 (origin/master)
+  youcoded-dev: 5dacdf7 (origin/master)
   youcoded: ddac2f14
 ---
 
@@ -54,7 +54,7 @@ Three states, because "the tool exists" and "the step happens" are different fac
 
 **Already landed (youcoded-dev #3–#8):** rule globs in the `**/` form so rules fire inside worktrees (115 of the 120 `paths:` entries; the other five are workspace-root paths); the `InstructionsLoaded` hook logging every rule load to `~/.claude/instructions-loaded.log`; the mechanical audit green (`anchors 388/388`); `close-out.sh`; live review panes (the workbench in a deck step); the `/wrap-up` skill; `ui-probe.mjs` (a headless page probe — a screenshot driver, not the real-app rig §3 wants); the roadmap restructure design (`docs/active/specs/2026-09-01-roadmap-restructure-design.md`), which §8 now depends on.
 
-**One defect this design must fix first:** every `*.answers.json` is gitignored (`.gitignore` lines 97–98, added with deck v2 and never revisited). The record of Destin's decisions exists on one disk, with no history, and vanishes on a clean checkout; the arcade's hand-written ledger is committed while its three answers files are not. Everything below reads answers files, so they go into git (plan Task 0).
+**One defect this design must fix first:** every `*.answers.json` is gitignored (the two `*.answers*.json` lines in `.gitignore`, directly above `*.serve.json`; added with deck v2 and never revisited). The record of Destin's decisions exists on one disk, with no history, and vanishes on a clean checkout; the arcade's hand-written ledger is committed while its three answers files are not. Everything below reads answers files, so they go into git (plan Task 0).
 
 **Conclusion:** a pipeline to connect, one missing piece (the contract), one gate to make real (the deck), one file class to start tracking.
 
@@ -91,7 +91,7 @@ Enforcement today is CLAUDE.md plus unticked boxes: zero hits for `checkpoint` i
 - Deliverables-card plan, line 12: the boxes *"were never ticked"*; ten user-facing decisions *"vetoable until Task 6 starts"* — an expiry nothing watched.
 - Marketplace's final plan sends a copy decision *"to the deck at Task 23"*; Task 23 (*Verify end-to-end, merge, close out*) has no deck step.
 
-**The gate is three facts a script can read:** the contract file exists; every answers file its sources lean on has a non-null `submitted`; the contract deck itself was answered. `review-cards.py contract-check <contract>` checks them and that every `source` resolves and every `mechanical` guard is on disk; `close-out.sh` runs it in a `Contract` section (advisory, like the rest of the script). **Re-serving a deck rotates a submitted answers file aside** (`<stem>.answers.<stamp>.json`), so the check reads the plain file if it is submitted, else the newest rotated one that is. A hook that blocks is not proposed — a blocking hook on a design-doc workflow would be worked around the first time it fired.
+**The gate is three facts a script can read:** the contract holds (every `source` resolves to an answered step in a submitted answers file, and every `mechanical` guard exists — on disk, or committed on the contract's `branch`, since from a worktree the workspace root is the main checkout and a test the feature adds is not there until merge); the contract deck itself was answered `yes` (`<feature>.contract.answers.json`, submitted); the acceptance deck was submitted. `review-cards.py contract-check <contract>` is the one reader of all three — the first is its exit code, the other two are `ok:` / `todo:` lines — and `close-out.sh` relays them in a `Contract` section (advisory, like the rest of the script). **Re-serving a deck rotates a submitted answers file aside** (`<stem>.answers.<stamp>.json`), so the check reads the plain file if it is submitted, else the newest rotated one that is. A hook that blocks is not proposed — a blocking hook on a design-doc workflow would be worked around the first time it fired.
 
 ## 5. Contract inputs
 
@@ -112,7 +112,7 @@ When implementation disproves approved UI (arcade contrast, marketplace's dead U
 
 ## 7. Acceptance
 
-The grader writes `<feature>.verdicts.json` — `{rowId: {verdict: pass|fail, evidence}}` for every `mechanical` and `deck` row (for `deck` rows: the step re-shot from the built branch, or the live pane). `review-cards.py acceptance <contract>` merges the two into `<feature>.contract.acceptance.json`: step 1 is the contract table with verdicts beside every graded row (yes / no / other — "do you accept these verdicts"), then one words-only yes/no step per `human` and `live-app` row, buttons *Holds / Fails*. It refuses to build if any `mechanical` or `deck` row has no verdict: an ungraded row is not a pass.
+The grader writes `<feature>.contract.verdicts.json` beside the contract (every file of the flow shares the contract's stem) — `{rowId: {verdict: pass|fail, evidence}}` for every `mechanical` and `deck` row (for `deck` rows: the step re-shot from the built branch, or the live pane). `review-cards.py acceptance <contract>` merges the two into `<feature>.contract.acceptance.json`: step 1 is the contract table with verdicts beside every graded row (yes / no / other — "do you accept these verdicts"), then one words-only yes/no step per `human` and `live-app` row, buttons *Holds / Fails*. It refuses to build if any `mechanical` or `deck` row has no verdict: an ungraded row is not a pass.
 
 ## 8. Plan tier and the roadmap loop
 
@@ -121,6 +121,8 @@ The grader writes `<feature>.verdicts.json` — `{rowId: {verdict: pass|fail, ev
 **"Pick 10 roadmap things"** is its own plan, after this one. The shape exists and was run three times (`docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md` Tasks 13/16: an approved list, a deterministic verdict, named stop conditions, a spend budget, a ledger). Applied to the roadmap: list = one area file from the restructure design; verdict = `verify.sh` + `close-out.sh`; ledger = the entry. It depends on the restructure landing and on this contract (each fix needs a done-condition). The restructure's per-area files also make "every open item in the feature's area was folded in or excluded with a reason" a mechanical check, which is where §10 P6 goes.
 
 ## 9. Questions for Destin — the assumptions to veto
+
+These four are asked on the first questions deck (`docs/active/design/2026-09-01-feature-flow/feature-flow.questions.json`, plan Task 8), not in chat; the build proceeds on the assumptions and a veto is the first reopen (§6).
 
 1. **Four appearances** (questions, rounds, contract, acceptance) on one surface — or is the acceptance deck one too many? The contract can carry its human rows instead, at the cost of Destin ticking them before the work exists.
 2. **Reopen with a default** (§6) — proceed on a marked default when nobody answers, or always stop?
