@@ -7,7 +7,8 @@ topic: overnight session C — making the verification tooling honest
 
 # Session C — the verification tooling now tells the truth about itself
 
-**PRs:** youcoded#384 (the app's test tree) · youcoded-dev#19 (the workspace tooling).
+**PRs, both MERGED:** youcoded#384 -> `da955301` (the app's test tree) · youcoded-dev#19 ->
+`ba0566c` (the workspace tooling).
 Headless throughout — no dev window, no `run-dev.sh`.
 
 The short version: **three of the eight filed items were already fixed on `master`** and only
@@ -283,3 +284,32 @@ worst.
 5. **Type-aware ESLint rules on `tests/**`** — blocked on (1).
 6. **`docs/roadmap/dev-workspace.md`'s macOS sync-spaces flake** was not touched; it needs the
    macOS CI leg, which this machine is not.
+
+
+---
+
+## Addendum — the one CI failure, and why it was not mine
+
+youcoded#384's first run went green on Ubuntu, Windows and the Android leg, and **red on macOS**:
+
+```
+FAIL tests/native-session-host.test.ts > G-1 background Bash > a finished run is injected ONCE …
+AssertionError: expected '[Background command sh-4c82 finished …' to match
+  /^\[Background command sh-4c82 finished · exit 2 · \d+s\]\n\$ echo done; exit 2\ndone\nFull log: /
+```
+
+Three things established it was not this branch:
+
+1. **The diff does not reach it.** That test is at line 4969; every hunk this branch touches in
+   that file is between 2407 and 3631 (`git diff --stat` per hunk).
+2. **The macOS leg is already flaky on master.** `master`'s own run 33615851775, five hours
+   earlier and with no PR involved, failed macOS on `sync-spaces-engine` — a separate, already-filed
+   entry. Ubuntu and Windows passed the same commit.
+3. **A plain re-run of the identical commit passed**, no code change: macos-latest `success`.
+   The suite took 317 s on that runner against 37 s locally, which is the load signature.
+
+Filed as its own roadmap entry rather than fixed here, because the honest reading is not settled:
+the notice arriving without the command's stdout may be a test race OR a real product race in the
+finished-notice composer — in which case a user on a slow machine sees a background command report
+finished with none of its output. Deciding that needs a reproduction on macOS, which this machine
+is not, and guessing a fix would paper over the second possibility.

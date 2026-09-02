@@ -4,6 +4,14 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] `native-session-host` "a finished run is injected ONCE as a user turn with injected:
+      shell-complete" fails on the macOS CI leg only: the finished-notice text arrives without the
+      command's own output ("done"), so the exact-match regex misses. Passed on a plain re-run of
+      the same commit, and the same suite is green in 27 local runs — but if it is real rather
+      than a test race, a user on a slow machine sees a background command report finished with
+      no output
+      `n/a` `needs-verify` `checked 2026-09-02` `regression`
+
 - [ ] Coverage debt from the feature-flow build: nothing renders the contract table or its
       verdict column in a browser test, the close-out Contract section runs only locally so no
       unattended check guards it, and an empty verdict, a two-hash source, a corrupt verdicts file
