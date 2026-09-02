@@ -7,26 +7,90 @@
     {
       "name": "handoff",
       "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-handoff",
-      "actions": [{ "click": "[data-session-idx='1']", "settle": 1200 }],
+      "actions": [
+        {
+          "click": "[data-session-idx='1']",
+          "settle": 1200
+        }
+      ],
       "expect": "js:document.body.textContent.includes('Writing the handoff doc now')"
     },
     {
       "name": "reasoning-stop",
       "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-reasoning-stop",
-      "actions": [{ "click": "[data-session-idx='1']", "settle": 1200 }],
+      "actions": [
+        {
+          "click": "[data-session-idx='1']",
+          "settle": 1200
+        }
+      ],
       "expect": "js:document.body.textContent.includes('Interrupted.')"
     },
     {
       "name": "skill-first",
       "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-skill-first",
-      "actions": [{ "click": "[data-session-idx='1']", "settle": 1200 }],
+      "actions": [
+        {
+          "click": "[data-session-idx='1']",
+          "settle": 1200
+        }
+      ],
       "expect": "js:document.body.textContent.includes('All 42 anchors resolve')"
     },
     {
       "name": "approval",
       "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-approval",
-      "actions": [{ "click": "[data-session-idx='1']", "settle": 1200 }],
+      "actions": [
+        {
+          "click": "[data-session-idx='1']",
+          "settle": 1200
+        }
+      ],
       "expect": "js:document.body.textContent.includes('rm -rf desktop/dist')"
+    },
+    {
+      "name": "skills-spread",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-skills-spread",
+      "actions": [
+        {
+          "click": "[data-session-idx='1']",
+          "settle": 1200
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Plan written')"
+    },
+    {
+      "name": "skills-chain",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-skills-chain",
+      "actions": [
+        {
+          "click": "[data-session-idx='1']",
+          "settle": 1200
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Merged and pushed')"
+    },
+    {
+      "name": "deliverables",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-deliverables",
+      "actions": [
+        {
+          "click": "[data-session-idx='1']",
+          "settle": 1200
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('All three sent')"
+    },
+    {
+      "name": "mix",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-mix",
+      "actions": [
+        {
+          "click": "[data-session-idx='1']",
+          "settle": 1200
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Response truncated')"
     }
   ]
 }
