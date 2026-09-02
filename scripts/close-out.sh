@@ -15,6 +15,8 @@
 # Every check is scoped to the branch you name. A workspace-wide version of the
 # docs checks was tried and rejected: it produced 78 warnings on its first run,
 # including a live-but-never-pushed branch and a file path that looked like one.
+#
+# Contract section: feature-flow design §4
 set -uo pipefail
 
 BRANCH="${1:-}"
@@ -28,6 +30,8 @@ case "$REPO" in
   *)                        REPO_DIR="$WORKSPACE/$REPO" ;;
 esac
 [[ -e "$REPO_DIR/.git" ]] || { echo "close-out: no git repo at $REPO_DIR"; exit 0; }
+# Where contracts are looked for. Overridable so the test can point it at a temp folder.
+DOCS_DIR="${CLOSE_OUT_DOCS:-$WORKSPACE/docs}"
 
 pass() { printf '  \033[32mOK\033[0m   %s\n' "$1"; }
 fail() { printf '  \033[31mTODO\033[0m %s\n' "$1"; FAILED=$((FAILED+1)); }
@@ -110,6 +114,42 @@ else
   else
     fail "never pushed — nobody else can review this branch yet"
   fi
+fi
+
+echo
+echo "Contract"
+# The contract is the definition of done for a feature (docs/active/specs/2026-09-01-feature-flow-design.md).
+# It names its branch, so this is the ONLY lookup — no "branch" field, no contract, and the
+# note below says so rather than guessing which deck folder this work came from.
+# Fix: a fixed-string match on `"branch": "$BRANCH"` missed a contract written without the
+# space after the colon (`"branch":"$BRANCH"`, still valid JSON) — a contract could sit right
+# there and this would still say "no contract names this branch". Match the colon loosely
+# instead. $BRANCH can contain "/" and "." — a "." in the regex also matches a literal "."
+# so that alone is harmless, but escape every regex metacharacter anyway so the intent reads
+# honestly as "escaped for regex use", not "happens to work".
+BRANCH_RE=$(printf '%s' "$BRANCH" | sed 's/[.[\*^$]/\\&/g')
+CONTRACTS=$(rg -l --glob '*.contract.json' -e "\"branch\"[[:space:]]*:[[:space:]]*\"$BRANCH_RE\"" "$DOCS_DIR" 2>/dev/null || true)
+if [[ -z "$CONTRACTS" ]]; then
+  note "no contract names this branch — the feature flow was not used, or the contract has no \"branch\""
+else
+  while IFS= read -r c; do
+    REL="${c#"$WORKSPACE"/}"
+    # contract-check owns every fact (does it hold, was it signed, was acceptance submitted):
+    # exit 1 + problems on stderr when it does not hold; otherwise `ok:` / `todo:` lines
+    # that are relayed here verbatim, so this script never reads an answers file itself.
+    if OUT=$(python3 "$WORKSPACE/scripts/ui-review/review-cards.py" contract-check "$c" 2>&1); then
+      while IFS= read -r line; do
+        case "$line" in
+          ok:\ *)   pass "${line#ok: } — $REL" ;;
+          todo:\ *) fail "${line#todo: }" ;;
+          *)        note "$line" ;;
+        esac
+      done <<<"$OUT"
+    else
+      fail "contract does not hold — $REL:"
+      echo "$OUT" | sed 's/^/       /'
+    fi
+  done <<<"$CONTRACTS"
 fi
 
 echo

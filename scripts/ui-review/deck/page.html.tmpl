@@ -17,6 +17,8 @@
       <div class="controls">
         <span class="answers" id="answers"></span>
         <input class="note" id="note" placeholder="Add a note (optional)">
+        <!-- What the note IS — shown only once it has text; hidden means "not tagged yet". -->
+        <span class="tags" id="tags" hidden><button class="tag" data-kind="now">Fix now</button><button class="tag" data-kind="later">Fix later</button><button class="tag" data-kind="noting">Just noting</button></span>
         <button class="btn primary" id="save">Save &amp; Next ›</button>
       </div>
     </div>

@@ -1,4 +1,219 @@
-/* Review deck v2 — renders DECK (one JSON object the builder inlines) one step at a time.
+<!doctype html><html lang="en" data-theme="midnight"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Feature flow — four assumptions</title>
+<style id="tokens">:root[data-theme="midnight"]{--canvas:#0D1117;--panel:#161B22;--inset:#21262D;--well:#0D1117;--accent:#B1BAC4;--on-accent:#0D1117;--fg:#C9D1D9;--fg-2:#A0AAB4;--fg-dim:#919AA4;--fg-muted:#858D97;--fg-faint:#4E555E;--edge:#343A41;--link:#58A6FF;color-scheme:dark}
+:root[data-theme="light"]{--canvas:#F2F2F2;--panel:#EAEAEA;--inset:#D7D7D7;--well:#F9F9F9;--accent:#1A1A1A;--on-accent:#F2F2F2;--fg:#1A1A1A;--fg-2:#444444;--fg-dim:#535353;--fg-muted:#5E5E5E;--fg-faint:#989898;--edge:#C0C0C0;--link:#2055CA;color-scheme:light}</style>
+<style>/* Review deck v2 — the approved page (docs/active/prototypes/2026-08-27-deck-mockup-g.html).
+   Theme tokens are inlined by build.py into <style id="tokens">; amber is the deck's own colour. */
+:root{--radius-sm:4px;--radius-md:8px;--radius-lg:12px;--radius-full:9999px;--yes:#2E9B57;--no:#E5484D;--other:#C99700;--mark:#FFB020;--font:'Cascadia Mono','Cascadia Code','Fira Code',monospace;--content:clamp(900px,80vw,1640px)}
+*{box-sizing:border-box} html,body{height:100%;margin:0}
+/* Themed scrollbars. A live pane taller than the stage makes the stage scroll, and the browser's
+   own bar is a bright slab of unrelated chrome sitting on the deck (Destin, 2026-09-01). */
+*{scrollbar-width:thin;scrollbar-color:var(--edge) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--edge);border:2px solid transparent;background-clip:padding-box;border-radius:var(--radius-full)}
+::-webkit-scrollbar-thumb:hover{background:var(--fg-muted);border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
+body{font:13px/1.45 var(--font);color:var(--fg);background:var(--well);display:flex;flex-direction:column;padding:18px 10px 10px}
+/* the deck is a distinct surface: inset on the darker well, framed in amber, so it never reads as the app's own chrome */
+.deck{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;background:var(--canvas);border:2px solid rgba(255,176,32,.6);border-radius:14px;overflow:visible;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 8px 30px rgba(0,0,0,.25)}
+body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit button over this strip */
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);font-weight:500}
+/* the chip sits ON the frame: tool name | deck title */
+.chip{position:absolute;top:-13px;left:18px;z-index:5;display:inline-flex;align-items:center;height:26px;background:var(--mark);color:#1a1100;border-radius:7px;padding:0 10px 0 9px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.chip .k{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap} .chip .div{width:1px;height:14px;background:rgba(0,0,0,.35);margin:0 9px} .chip .t{font-size:12px;font-weight:500;white-space:nowrap}
+.wrap{width:min(var(--content),100%);margin:0 auto;display:flex;align-items:center;gap:14px;min-width:0}
+.top{height:clamp(56px,6vh,64px);flex:none;display:flex;padding:8px 20px 0;background:var(--panel);border-bottom:1px solid var(--edge);border-radius:12px 12px 0 0}
+/* Fix (2026-08-27): a long surface + path ran straight under the Prev/Next block and the step
+   counter — the header had no shrink and no truncation, so any wordy step corrupted the top bar. */
+.top .where{flex:0 1 auto;min-width:0;overflow:hidden} .top .where .id{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .where .eyebrow{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:1400px){.top .where .eyebrow,.top .where .sep{display:none}} @media (max-width:950px){.top .count{display:none}} @media (max-width:760px){.top .long{display:none} .top .nav .btn{padding:0 6px}}
+.where{display:flex;align-items:center;gap:10px} .where .id{font-weight:500;font-size:14px} .where .sep{color:var(--fg-faint)}
+.nav{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;min-width:0}
+.steps{display:flex;gap:3px;align-items:center;flex:1;max-width:360px;min-width:90px} .steps span{flex:1;height:7px;border-radius:3px;background:var(--inset);cursor:pointer;transition:transform .15s}
+.steps span:hover{transform:scaleY(1.4)} .steps span.on{box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--fg)}
+.steps span.yes,.steps span.pick{background:var(--yes)} .steps span.no{background:var(--no)} .steps span.other{background:var(--other)} .steps span.skip{background:var(--fg-faint)}
+.count{font-size:11px;color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.btn{font:inherit;font-size:12px;font-weight:500;height:32px;padding:0 14px;border-radius:var(--radius-md);border:1px solid var(--edge);background:transparent;color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;transition:background .15s,transform .15s,filter .15s}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)} .btn.ghost{border-color:transparent;color:var(--fg-2)} .btn.sm{height:28px;padding:0 10px}
+@media (hover:hover){ .btn:hover{background:var(--inset)} .btn.primary:hover{background:var(--accent);filter:brightness(1.12);transform:translateY(-1px)} .btn.ghost:hover{background:var(--inset);color:var(--fg)} }
+.btn:disabled{opacity:.45;cursor:default;transform:none;filter:none}
+/* The status dots are gone (Destin, 2026-09-01: "i don't like the current status dot style").
+   Choosing looks the SAME everywhere now — a lettered card and an answer button are both
+   neutral until picked and both take the deck's amber when they are. The yes/no/other colours
+   still live in the progress strip at the top, which is where an at-a-glance read belongs. */
+.answers{display:contents}
+/* a choice step: one button per variant, lettered like its picture's caption */
+.ans .key{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:5px;background:var(--inset);border:1px solid var(--edge);font-size:11px;font-weight:700;letter-spacing:.04em} .ans.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
+.card.variant{display:flex;gap:10px;align-items:flex-start;cursor:pointer} .card.variant .key{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:5px;background:var(--panel);border:1px solid var(--edge);font-size:11px;font-weight:700}
+.card.variant .vbody{min-width:0;display:flex;flex-direction:column;gap:4px} .card.variant h3{margin:0} .card.variant p{margin:0} .card.variant .r{font-size:11px;color:var(--mark)} .card.variant .cost{font-size:11px;color:var(--fg-muted)} .card.variant.on{border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)} .card.variant.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
+@media (hover:hover){.card.variant:hover{border-color:var(--fg-muted)}}
+.frame.pickable{cursor:pointer;border-radius:var(--radius-md);padding:4px;margin:-4px} .frame.pickable.on{outline:2px solid var(--mark);outline-offset:2px} .frame.pickable figcaption .key{margin-right:6px}
+.ans{border-color:var(--edge)}
+/* Yes and No carry their meaning in the RESTING state — a tinted border and a tinted label,
+   the same quiet-colour idiom `.card.risk` already uses for amber. Destin (2026-09-01) wanted
+   green/red back but not as a status dot, and it has to live here rather than in the chosen
+   state: amber-when-picked is now the single signal for "this is the one I picked", shared
+   with the lettered cards, and two colours competing for that job is what the dots were.
+   Mixed toward the theme's own edge/text rather than used neat, so it reads on light themes
+   too — #2E9B57 on #F2F2F2 is not enough contrast for 13px text on its own.
+   The chosen rule below is deliberately LAST: it takes the border, and leaves the label its
+   colour, so a picked answer still says which one it was. */
+.ans[data-v="yes"]{border-color:color-mix(in srgb,var(--yes) 50%,var(--edge));color:color-mix(in srgb,var(--yes) 72%,var(--fg))}
+.ans[data-v="no"]{border-color:color-mix(in srgb,var(--no) 50%,var(--edge));color:color-mix(in srgb,var(--no) 72%,var(--fg))}
+.ans.on{background:var(--inset);border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)}
+main{flex:1;min-height:0;display:flex;justify-content:center;padding:14px 20px 16px;overflow:auto}
+.step{position:relative;display:flex;width:min(var(--content),100%);flex-direction:column;gap:10px;min-height:0}
+.thumbs{position:absolute;left:calc(100% + 16px);top:0;display:flex;flex-direction:column;gap:10px}
+body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:flex-end;margin-bottom:8px}
+.thumb{border:2px solid transparent;border-radius:var(--radius-md);padding:3px;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font:11px var(--font);color:var(--fg-dim)}
+.thumb img{height:44px;width:auto;max-width:110px;object-fit:cover;border-radius:3px;display:block} .thumb.on{border-color:var(--accent);color:var(--fg)}
+/* ── the three peer containers on one grid; the class is chosen by page.js ── */
+.content{flex:1;min-height:0;display:grid;gap:12px}
+.content.row-below{grid-template-columns:1fr;grid-template-rows:1fr auto;grid-template-areas:"stage" "decide"}
+.content.col-right{grid-template-columns:1fr minmax(320px,30%);grid-template-rows:1fr;grid-template-areas:"stage decide"}
+.content.compact{display:flex;flex-direction:column;flex:none}
+/* WORDS: no stage at all — the question and its option cards take the row (feature-flow §5) */
+.content.words{grid-template-columns:1fr;grid-template-rows:1fr;grid-template-areas:"decide"} .content.words .stage{display:none}
+.words .cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))} .words .card.option{min-height:96px}
+/* CONTRACT: the rows as a table; a graded row is tinted by its verdict */
+.card.contract{overflow:auto} .card.contract table{border-collapse:collapse;width:100%;font-size:12px} .card.contract th{text-align:left;font-weight:600;color:var(--fg-dim);padding:6px 8px;border-bottom:1px solid var(--edge)} .card.contract td{padding:6px 8px;border-bottom:1px solid var(--edge);vertical-align:top}
+.card.contract .src{margin:2px 0 0;font-size:11px;color:var(--fg-muted)} .card.contract tr.pass td:last-child{color:var(--yes)} .card.contract tr.fail td:last-child{color:var(--no)}
+.words .cards:has(.contract){grid-template-columns:1fr}
+.compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
+/* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the
+   answer buttons stay reachable in a narrow window, and sticky needs room to move inside its
+   PARENT — wrapped in a content-height `.decide` there is none, and the bar scrolled away
+   (measured against HEAD: "ctl on screen" true before, false after). `display:contents`
+   dissolves the wrapper so the structure is exactly what it was. One card at every width a
+   review is actually done at; a reachable answer bar when the window is too narrow for it. */
+.compact .decide{display:contents}
+/* …and because the wrapper is dissolved there, the two blocks carry the card treatment
+   themselves again. Without this they are transparent and the sticky answer bar renders
+   straight over the question text. */
+.compact .info,.compact .controls{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg)}
+.step.compact-step{flex:none;min-height:0}
+.stage{grid-area:stage} .decide{grid-area:decide}
+/* ONE card, not two. The question, the options and the answer controls are a single decision —
+   Destin (2026-09-01): "the two separate cards/sections for the decision rows should be a
+   single card/section." A hairline separates the question from the answer row inside it. */
+.decide{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:auto}
+.info,.controls{background:none;border:0;border-radius:0}
+
+.info{padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto}
+.controls{padding:clamp(10px,1.2vh,14px) 16px;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(8px,0.8vw,14px)}
+.compact .controls{display:grid;grid-template-columns:1fr 1fr 1fr;position:sticky;bottom:0;z-index:3;box-shadow:0 -8px 20px rgba(0,0,0,.35)} .compact .controls .ans{max-width:none} .compact .controls .note{grid-column:1/3} .compact .controls #save{grid-column:3}
+.stage{position:relative;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);overflow:auto;min-height:0;line-height:0;font-size:0}
+.stage .inner{display:flex;justify-content:center;align-items:center;gap:18px;padding:12px 14px;min-width:100%;min-height:100%}
+.content.stacked .stage .inner{flex-direction:column;align-items:center}
+.frame{display:block;margin:0}
+figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);margin-bottom:6px;text-align:left;display:flex;align-items:center;gap:6px;min-height:24px}
+.pic{position:relative;display:inline-block} .pic img{display:block;height:auto;border-radius:var(--radius-sm);cursor:none} body.no-loupe .pic img{cursor:default}
+/* CLIP steps: a recording per run — native controls so a bug can be paused and scrubbed; no loupe, no box */
+.pic video{display:block;height:auto;border-radius:var(--radius-sm);background:#000;cursor:default}
+
+/* ── live panes ─────────────────────────────────────────────────────────────────────────
+   SQUARE CORNERS, ON PURPOSE. A rounded, clipped wrapper round an iframe makes Chrome give
+   up on the cutout the app's glass surfaces use, so a wallpaper theme (Meadow Mist) blurs
+   the entire pane — verified, and tracked as an open landing-page bug. A 1px border and no
+   radius costs nothing and dodges it; if a pane ever needs rounding, round it from inside. */
+.pic iframe{display:block;border:1px solid var(--edge);background:var(--canvas)}
+/* Panes of different heights are TOP-aligned, not centred: three close-session designs at
+   280/279/267px sat on three different baselines and read as sloppy rather than as a
+   difference in the designs. */
+body[data-layout="live"] .stage .inner{align-items:flex-start}
+/* `.zoom` sets `display:inline-flex`, which OUTRANKS the `hidden` attribute's UA rule — so
+   hiding it from JS did nothing and the zoom pill sat on top of a pane's "open on its own"
+   link (2026-09-01). An explicit display always beats [hidden]; say so once, for everything. */
+[hidden]{display:none!important}
+/* The lettered chip needs air whatever the frame is. The existing rule for this is scoped to
+   `.frame.pickable`, and a live pane is deliberately NOT pickable — so its caption read
+   "aCard and row" with the letter welded to the label (seen 2026-08-31). It carries the
+   deck's own marker colour and a full stop, so "A." reads as a label rather than as the
+   first letter of the words after it. */
+figcaption .key{color:var(--mark);font-weight:700}
+/* A real button, not bare blue link text — it opens a window, so it should look like
+   something you press (Destin, 2026-09-01). `margin-left:auto` rather than a float: a float
+   escapes a one-line caption box. */
+.popout{margin-left:auto;text-transform:none;letter-spacing:0;font:500 11px/1 var(--font);
+  height:24px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;flex:none;
+  border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);
+  color:var(--fg-2);text-decoration:none;transition:background .15s,color .15s,border-color .15s}
+.popout:hover{background:var(--panel);color:var(--fg);border-color:var(--fg-muted)}
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--yes);margin-right:6px;vertical-align:middle}
+.livehint{font:11px/1.5 var(--font);color:var(--fg-muted);margin:10px 0 0;text-align:left}
+/* The theme row for a live step: same control, no thumbnails to put in it. */
+.thumb.label-only{padding:4px 10px;border-color:var(--edge-dim);background:var(--inset)}
+.thumb.label-only.on{border-color:var(--accent);background:var(--panel);color:var(--fg)}
+.down{max-width:520px;text-align:left;border:1px solid var(--edge);border-radius:var(--radius-md);padding:18px 20px;background:var(--panel)}
+.down h3{font:600 14px var(--font);margin:0 0 8px;color:var(--fg)}
+.down p{font:13px/1.6 var(--font);color:var(--fg-2);margin:0 0 10px}
+.down p.sub{color:var(--fg-muted);font-size:12px;margin-bottom:0}
+.down pre{font:12px/1.5 var(--mono,ui-monospace,monospace);background:var(--inset);color:var(--fg);border-radius:var(--radius-sm);padding:10px 12px;margin:0 0 12px;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.down code{font:12px var(--mono,ui-monospace,monospace);background:var(--inset);border-radius:3px;padding:1px 4px}
+.zoom .replay{width:auto;padding:0 10px;font-size:12px;font-weight:500}
+.box{position:absolute;border:2px solid var(--mark);border-radius:5px;box-shadow:0 0 0 3px rgba(255,176,32,.28),0 0 14px rgba(0,0,0,.45);pointer-events:none}
+.zoom{position:sticky;top:10px;float:right;margin:10px 10px -42px 0;z-index:2;display:inline-flex;align-items:center;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-full);padding:2px;gap:2px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.zoom button{font:inherit;font-size:12px;font-weight:500;width:28px;height:26px;border:0;border-radius:var(--radius-full);background:transparent;color:var(--fg-2);cursor:pointer} .zoom .lvl{font-size:11px;color:var(--fg-dim);min-width:38px;text-align:center;font-variant-numeric:tabular-nums}
+.loupe{position:fixed;width:180px;height:180px;border-radius:50%;border:2px solid var(--fg);box-shadow:0 0 0 1px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.45);background-repeat:no-repeat;pointer-events:none;display:none;z-index:9;background-color:var(--panel)}
+.loupe::before,.loupe::after{content:"";position:absolute;left:50%;top:50%;background:var(--mark);box-shadow:0 0 0 1px rgba(0,0,0,.6)} .loupe::before{width:14px;height:2px;margin:-1px 0 0 -7px} .loupe::after{width:2px;height:14px;margin:-7px 0 0 -1px}
+.what{font-size:clamp(15px,1.15vw,19px);font-weight:500;margin:0;line-height:1.35}
+.cards{display:grid;gap:10px} .row-below .cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))} .col-right .cards{grid-template-columns:1fr} .compact .cards{grid-template-columns:1fr}
+.card{background:var(--inset);border:1px solid var(--edge);border-radius:var(--radius-md);padding:10px 12px} .card h3{margin:0 0 6px;font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);display:flex;align-items:center;gap:7px}
+.card h3 svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round} .card p{margin:0;font-size:13px;color:var(--fg);line-height:1.45} .card .num{margin-top:6px;font-size:11px;color:var(--fg-dim)}
+.card.risk{border-color:color-mix(in srgb, var(--mark) 45%, var(--edge))} .card.risk h3{color:var(--mark)}
+/* Fix (2026-08-27): a DECIDE step's buttons carry the option's own words, which are far longer
+   than "Yes, build it" — at three options they overran each other and the labels collided. The
+   label truncates and the letter never does, so `a` `b` `c` stay readable and match the cards. */
+.ans{flex:1 1 140px;max-width:280px;min-width:0;justify-content:center;height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);overflow:hidden}
+.ans>span:not(.dot):not(.key){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* A pick button sizes to its own words instead of taking an equal share: yes/no are two fixed
+   labels that look right stretched, but three option names at an equal share all truncate. */
+.ans[data-v="pick"]{flex:0 1 auto;max-width:min(340px,26vw)}
+.ans .key{flex:none} .ans .dot{width:clamp(8px,0.7vw,11px);height:clamp(8px,0.7vw,11px)}
+#save{height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);padding:0 clamp(14px,1.4vw,26px)}
+.note{flex:3 1 220px;font:inherit;font-size:clamp(12px,0.85vw,14px);height:clamp(34px,4.4vh,52px);padding:0 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)} .note::placeholder{color:var(--fg-muted)}
+/* Note tags: what the note IS. Shown only once a note has text; "Just noting" is preselected so nothing is inferred. */
+.tags{display:inline-flex;gap:6px} .tag{font:inherit;font-size:11px;padding:4px 9px;border:1px solid var(--edge);border-radius:999px;background:var(--well);color:var(--fg-dim);cursor:pointer} .tag.on{border-color:var(--mark);color:var(--fg);box-shadow:inset 0 0 0 1px var(--mark)}
+.compact .controls .tags{grid-column:1/4}
+.veil{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:30} .veil.on{display:flex}
+.dlg{width:min(520px,92vw);background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5)} .dlg h2{margin:0 0 10px;font-size:16px;font-weight:500} .dlg p{margin:0 0 10px;color:var(--fg-2);font-size:13px;line-height:1.5}
+.dlg .warn{display:flex;gap:8px;align-items:flex-start;background:var(--inset);border:1px solid color-mix(in srgb, var(--mark) 45%, var(--edge));border-radius:var(--radius-md);padding:10px 12px;color:var(--fg);margin:12px 0}
+.dlg .warn svg{width:16px;height:16px;flex:none;stroke:var(--mark);fill:none;stroke-width:1.8;margin-top:1px} .dlg .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+#feedback{display:none;width:100%;min-height:140px;font:12px var(--font);padding:10px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)}
+</style></head><body>
+<div class="deck">
+<div class="chip"><span class="k">Review deck</span><span class="div"></span><span class="t" id="deck-title"></span></div>
+<header class="top"><div class="wrap">
+  <div class="where"><span class="id" id="wtitle"></span><span class="sep">·</span><span class="eyebrow" id="wsub"></span></div>
+  <div class="nav"><button class="btn ghost sm" id="prev">‹ Prev</button><div class="steps" id="steps" title="Click a segment to revisit that step"></div><button class="btn ghost sm" id="next">Next ›</button></div>
+  <span class="count" id="count"></span><button class="btn" id="done">Done<span class="long"> — Submit Feedback</span></button>
+</div></header>
+<main><div class="step on" id="step">
+  <div class="thumbs" id="thumbs"></div>
+  <div class="content" id="content">
+    <div class="stage" id="stage"><div class="zoom" id="zoom"><button id="replay" class="replay" hidden title="Replay both from the start (r)">↻ replay</button><button id="zout" title="Zoom out (−)">−</button><span class="lvl" id="lvl">100%</span><button id="zin" title="Zoom in (+)">+</button></div><div class="inner" id="inner"></div><p class="livehint" id="livehint" hidden></p></div>
+    <div class="decide" id="decide">
+      <div class="info"><p class="what" id="headline"></p><div class="cards" id="cards"></div></div>
+      <div class="controls">
+        <span class="answers" id="answers"></span>
+        <input class="note" id="note" placeholder="Add a note (optional)">
+        <!-- What the note IS — shown only once it has text; hidden means "not tagged yet". -->
+        <span class="tags" id="tags" hidden><button class="tag" data-kind="now">Fix now</button><button class="tag" data-kind="later">Fix later</button><button class="tag" data-kind="noting">Just noting</button></span>
+        <button class="btn primary" id="save">Save &amp; Next ›</button>
+      </div>
+    </div>
+  </div>
+</div></main>
+</div>
+<div class="loupe" id="loupe"></div>
+<div class="veil" id="veil"><div class="dlg"><h2>Submit your feedback?</h2><p id="dlg-text"></p>
+<div class="warn" id="skipped"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg><span><span id="skipn"></span> Skipped steps are sent as "no answer"; Claude leaves those unchanged.</span></div>
+<textarea id="feedback" readonly></textarea>
+<div class="row"><button class="btn ghost" id="cancel">Keep reviewing</button><button class="btn" id="first">Go to first skipped</button><button class="btn" id="copy">Copy feedback</button><button class="btn primary" id="submit">Submit</button></div>
+</div></div>
+<script>const DECK={"title": "Feature flow \u2014 four assumptions", "key": "feature-flow-questions", "runs": ["today"], "runLabels": {"before": "Before", "after": "After", "today": "Today"}, "themes": ["midnight", "light"], "themeNames": {"midnight": "Midnight", "light": "Light"}, "steps": [{"id": "Q-1", "words": true, "surface": "Feature flow", "path": "Design \u00a79", "headline": "Is a separate acceptance deck at the end one deck too many?", "changed": "", "measured": "", "notice": "", "risk": "", "yes": "", "no": "", "kind": "decide", "options": [{"id": "a", "label": "Keep the acceptance deck (recommended)", "summary": "You tick the human rows after the work exists, and see every machine verdict beside them. One extra deck per feature.", "measured": "", "cost": ""}, {"id": "b", "label": "Fold the human rows into the contract", "summary": "One fewer deck, but you would tick 'this holds' rows before anything is built \u2014 a promise, not a check.", "measured": "", "cost": ""}]}, {"id": "Q-2", "words": true, "surface": "Feature flow", "path": "Design \u00a79", "headline": "When the build contradicts an approved design and you do not answer, proceed on a marked default or always stop?", "changed": "", "measured": "", "notice": "", "risk": "", "yes": "", "no": "", "kind": "decide", "options": [{"id": "a", "label": "Proceed on a marked default (recommended)", "summary": "The reopen deck names a default; if it times out the build continues and the acceptance deck carries a 'decided without you' row you can veto. This is what makes a one-shot build possible.", "measured": "", "cost": ""}, {"id": "b", "label": "Always stop and wait", "summary": "Nothing is ever decided for you, but every contradiction is a hard stop until you return.", "measured": "", "cost": ""}]}, {"id": "Q-3", "words": true, "surface": "Feature flow", "path": "Design \u00a78c", "headline": "Build tasks carry a description by default, with pre-written code only for cross-repo, stored-data or strict-order work?", "changed": "", "measured": "", "notice": "", "risk": "", "yes": "", "no": "", "kind": "decide", "options": [{"id": "a", "label": "Description by default (recommended)", "summary": "The technical design and its review round happen on every feature either way. Subagents write the code from a task description plus the contract; pre-written code only where getting it wrong up front is costly.", "measured": "", "cost": ""}, {"id": "b", "label": "Always pre-write the code", "summary": "Every task ships with its code typed out, as the 1,770-line plan for this feature did. Half of that was corrected after review and its line numbers were stale on day one.", "measured": "", "cost": ""}]}, {"id": "Q-4", "words": true, "surface": "Feature flow", "path": "Design \u00a79", "headline": "Commit the deck answers files to git?", "changed": "", "measured": "", "notice": "", "risk": "", "yes": "", "no": "", "kind": "decide", "options": [{"id": "a", "label": "Commit them (recommended)", "summary": "They hold your words verbatim and are the only record of decisions; ignored for three months, they lived on one disk. Already done on this branch \u2014 27 files.", "measured": "", "cost": ""}, {"id": "b", "label": "Copy them beside each contract at sign-off instead", "summary": "Keeps a feature folder self-contained, but the rounds' history stays untracked and a clean checkout has none of it.", "measured": "", "cost": ""}]}]};</script>
+<script>/* Review deck v2 — renders DECK (one JSON object the builder inlines) one step at a time.
    Persistence: the serve.py endpoints when the page is served (GET/POST /answers, POST /submit),
    localStorage + a copy box when it is opened as a plain file. */
 (function () {
@@ -426,3 +641,5 @@
     if (state.submitted) lockSubmitted();   // an archived (file://) deck opened after its submit shows its locked state instead of dead buttons
   });
 })();
+</script>
+</body></html>

@@ -36,7 +36,9 @@ def has_live(spec):
 def all_live(spec):
     """A deck with no pictures at all: it names no `images` folder and no `runs`, so every
     code path that reaches for either has to bail out before it does (spec.py, crops.py,
-    build.py, review-cards.py)."""
+    build.py, review-cards.py).
+    Superseded by `spec.no_pictures` for every production path; kept because `test_live.py`
+    pins it."""
     return bool(spec['steps']) and all(is_live(st) for st in spec['steps'])
 
 

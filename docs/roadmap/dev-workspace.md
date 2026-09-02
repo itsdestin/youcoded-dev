@@ -4,6 +4,12 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] Coverage debt from the feature-flow build: nothing renders the contract table or its
+      verdict column in a browser test, the close-out Contract section runs only locally so no
+      unattended check guards it, and an empty verdict, a two-hash source, a corrupt verdicts file
+      and a missing git are all unpinned. None is a known failure
+      `n/a` `needs-verify` `checked 2026-09-02`
+
 - [ ] About a hundred fixed sleeps still stand in for real signals across the desktop suite, and
       the MCP startup-wiring test blows even the 30 s budget once eight full suites run at once
       (times out at 5 s under lighter load) — left on purpose after youcoded#362/#363
@@ -55,6 +61,12 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+
+- [ ] The feature flow — a questions deck before anything is drawn, review rounds, a signed
+      contract, then a graded acceptance deck — is built but has never been run end to end on a
+      real feature; the first small UI feature Destin asks for is the trial, and its handoff
+      records rounds, Destin-seconds, reopens and rows that failed at acceptance
+      `n/a` `in-flight` `checked 2026-09-02` → docs/active/plans/2026-09-01-feature-flow-plan.md
 
 - [ ] The workbench boot check prints "ok" for all 12 routes and exits 0 when nothing is serving
       the port at all — a green run does not prove the app mounted
@@ -122,6 +134,12 @@ seen-on is always n/a here.
       `terminal` `n/a` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-terminal-pty-column-count.md
 
 ## knowledge
+
+- [ ] Nobody knows whether a third round of adversarial design review improves a design or just
+      churns it; after three features have run the flow, count accepted findings, reversals and
+      defect-vs-taste per round and set the default round count from the numbers — tooling for it
+      waits on that data
+      `n/a` `parked` `checked 2026-09-02` → docs/active/specs/2026-09-01-feature-flow-design.md
 
 - [ ] Work keeps existing on one disk only: on 2026-09-01 the site-themes worktree holds 40
       uncommitted files on a branch with zero commits and no remote, and landing-demo-clips has

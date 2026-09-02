@@ -1,0 +1,26 @@
+{
+ "deck": "ask-question-other",
+ "started": "2026-08-28T06:18:06.023Z",
+ "submitted": "2026-08-28T06:38:23Z",
+ "cur": 2,
+ "answers": {
+  "G2.1": {
+   "v": "yes",
+   "seconds": 29,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G2.2": {
+   "v": "yes",
+   "seconds": 1176,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G2.3": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

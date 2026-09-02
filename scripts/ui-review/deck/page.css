@@ -70,6 +70,13 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 .content.row-below{grid-template-columns:1fr;grid-template-rows:1fr auto;grid-template-areas:"stage" "decide"}
 .content.col-right{grid-template-columns:1fr minmax(320px,30%);grid-template-rows:1fr;grid-template-areas:"stage decide"}
 .content.compact{display:flex;flex-direction:column;flex:none}
+/* WORDS: no stage at all — the question and its option cards take the row (feature-flow §5) */
+.content.words{grid-template-columns:1fr;grid-template-rows:1fr;grid-template-areas:"decide"} .content.words .stage{display:none}
+.words .cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))} .words .card.option{min-height:96px}
+/* CONTRACT: the rows as a table; a graded row is tinted by its verdict */
+.card.contract{overflow:auto} .card.contract table{border-collapse:collapse;width:100%;font-size:12px} .card.contract th{text-align:left;font-weight:600;color:var(--fg-dim);padding:6px 8px;border-bottom:1px solid var(--edge)} .card.contract td{padding:6px 8px;border-bottom:1px solid var(--edge);vertical-align:top}
+.card.contract .src{margin:2px 0 0;font-size:11px;color:var(--fg-muted)} .card.contract tr.pass td:last-child{color:var(--yes)} .card.contract tr.fail td:last-child{color:var(--no)}
+.words .cards:has(.contract){grid-template-columns:1fr}
 .compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
 /* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the
    answer buttons stay reachable in a narrow window, and sticky needs room to move inside its
@@ -163,6 +170,9 @@ figcaption .key{color:var(--mark);font-weight:700}
 .ans .key{flex:none} .ans .dot{width:clamp(8px,0.7vw,11px);height:clamp(8px,0.7vw,11px)}
 #save{height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);padding:0 clamp(14px,1.4vw,26px)}
 .note{flex:3 1 220px;font:inherit;font-size:clamp(12px,0.85vw,14px);height:clamp(34px,4.4vh,52px);padding:0 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)} .note::placeholder{color:var(--fg-muted)}
+/* Note tags: what the note IS. Shown only once a note has text; "Just noting" is preselected so nothing is inferred. */
+.tags{display:inline-flex;gap:6px} .tag{font:inherit;font-size:11px;padding:4px 9px;border:1px solid var(--edge);border-radius:999px;background:var(--well);color:var(--fg-dim);cursor:pointer} .tag.on{border-color:var(--mark);color:var(--fg);box-shadow:inset 0 0 0 1px var(--mark)}
+.compact .controls .tags{grid-column:1/4}
 .veil{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:30} .veil.on{display:flex}
 .dlg{width:min(520px,92vw);background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5)} .dlg h2{margin:0 0 10px;font-size:16px;font-weight:500} .dlg p{margin:0 0 10px;color:var(--fg-2);font-size:13px;line-height:1.5}
 .dlg .warn{display:flex;gap:8px;align-items:flex-start;background:var(--inset);border:1px solid color-mix(in srgb, var(--mark) 45%, var(--edge));border-radius:var(--radius-md);padding:10px 12px;color:var(--fg);margin:12px 0}

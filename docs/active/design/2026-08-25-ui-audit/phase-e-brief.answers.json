@@ -1,0 +1,33 @@
+{
+ "deck": "phase-e-brief",
+ "started": "2026-08-28T01:56:50.970Z",
+ "submitted": "2026-08-28T01:58:44Z",
+ "cur": 3,
+ "answers": {
+  "P-7.1": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-8.1": {
+   "note": "sessions should stick to 1 line, project should go below on second line, truncate with .... and show full name on hover. ",
+   "v": "yes",
+   "seconds": 64,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-4.1": {
+   "v": "no",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-4.2": {
+   "v": "no",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

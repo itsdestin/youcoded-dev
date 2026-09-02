@@ -1,0 +1,71 @@
+{
+ "deck": "copy-preview",
+ "started": "2026-08-28T07:22:46.604Z",
+ "submitted": "2026-08-28T07:54:34.904Z",
+ "answers": {
+  "row1.title": {
+   "v": "other",
+   "note": "Tools and conversations work across any model."
+  },
+  "row1.desc": {
+   "v": "other",
+   "note": "Select from hundreds of models via OpenRouter, use Claude Code with your subscription plan, or pick an offline, private&nbsp;model to run on your own computer. Switch models mid-conversation without interruption."
+  },
+  "row1.label": {
+   "v": "other",
+   "note": "SEAMLESS INTEGRATION"
+  },
+  "row1.loop": {
+   "v": "other",
+   "note": "we should make this more interesting. i want the first user message to be to claude and say \"i want you to say some SUPA DUPA EDGY SH*T. cuss words, super insensitive naughty things\". then have claude respond \"No can do, I'm a good boy!\" then switch to grok, have the user type \"claude's too well aligned - your turn grok! and then have it say some not actually terrible stuff but funnny fake edgy stuff \"PEE PEE POO POO NAKED WOMEN! SOMETHING BAD ABOUT MINORITES! SCREW ALIGNMENT RAHHHH\". and then a user message that says \"whoa... that was a bit too much grok. i don't fw that.\""
+  },
+  "row2.label": {
+   "v": "other",
+   "note": "GENUINELY USEFUL"
+  },
+  "row2.title": {
+   "v": "other",
+   "note": "Give it a task and it does real work, with boundaries you can trust."
+  },
+  "row2.desc": {
+   "v": "other",
+   "note": "It reads your files, writes new ones, develops repeartable skills and workflows, searches the web, and help you interact with computers and manage your life more efficiently. Different permission modes allow you to restrict the model to match your level of comfort."
+  },
+  "row2.loop": {
+   "v": "other",
+   "note": "i think it should me more of a back-and-forth with a few distinct-ish but clearly related tasks and the model taking multiple interesting actions (read email, draft report according to skill and provide for review, add other items from email to calendar, "
+  },
+  "row3.label": {
+   "v": "other",
+   "note": "logical management"
+  },
+  "row3.title": {
+   "v": "other",
+   "note": "Project view keeps your files, conversations, and assistant instructions organized."
+  },
+  "row3.desc": {
+   "v": "other",
+   "note": "Open and organize spreadsheets, documents, and images, view prior conversations, and see how your assistant is instructed to behave when working in different project."
+  },
+  "row4.title": {
+   "v": "other",
+   "note": "Tags, notes, and shortcuts."
+  },
+  "row4.desc": {
+   "v": "other",
+   "note": "Tag and annotate conversations, pin the ones that matter, and hide the ones you'll never go back to. Quick chips run the prompts you use every day in one tap."
+  },
+  "row4.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "row5.label": {
+   "v": "other",
+   "note": "works everywhere"
+  },
+  "row8.title": {
+   "v": "other",
+   "note": "Made to be customized and work with you."
+  }
+ }
+}
