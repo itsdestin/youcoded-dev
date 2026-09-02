@@ -1,0 +1,61 @@
+{
+  "title": "Silent steps share a bubble",
+  "key": "bubble-steps",
+  "out": "deck.html",
+  "images": "images/deck",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/steps-before",
+    "after": "/home/destin/youcoded-dev/scratch/steps-after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "creme",
+    "dark",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "crops": {
+    "silent-steps": [
+      "bubbles",
+      "silent-steps",
+      "1240x560+0+50"
+    ],
+    "deliverables": [
+      "bubbles",
+      "deliverables",
+      "1240x520+0+50"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat view",
+      "path": "Reasoning and tool steps with nothing said between them, then a reply",
+      "crop": "silent-steps",
+      "headline": "Each bubble is one reasoning section, one message and one tool group, in that order; a new bubble begins only after the assistant has spoken.",
+      "changed": "Your correction applied: silent steps no longer stack inside the bubble. Their thoughts merge into the single “Show reasoning” at the top (in order, separated by blank lines), and their tools merge into the single group at the bottom. Renderer only; the saved conversation is untouched.",
+      "measured": "5 bubbles before, 2 after, for the same two turns",
+      "notice": "Reading top to bottom: what it thought, what it said, what it ran. Tools that ran before the sentence now sit below it, as one group (“2 tools — all complete”). Conversations where every step spoke look exactly as before.",
+      "risk": "Expanding “Show reasoning” now shows several thoughts joined together; you cannot tell which thought led to which tool."
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat view",
+      "path": "A turn where every step spoke (files sent at three points)",
+      "crop": "deliverables",
+      "highlight": {
+        "box": [
+          1,
+          2,
+          60,
+          96
+        ]
+      },
+      "headline": "Unchanged: when every step ends with a sentence, the bubbles are the same as before.",
+      "changed": "Nothing here. This step shows the boundary of the rule so you can confirm it.",
+      "notice": "Three bubbles, one per spoken step, exactly as approved this morning.",
+      "risk": "None."
+    }
+  ]
+}
