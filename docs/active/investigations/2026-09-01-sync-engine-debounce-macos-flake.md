@@ -69,5 +69,12 @@ the third datapoint for this entry's "load correlates" line, and because the pre
 one jsdom file, #366's ~40 tests) were both *additions* nobody could take back; this one was
 removable, and its removal is a cheap natural experiment for whoever picks this up.
 
+**Second `git-watcher` sighting, same day.** youcoded#386 run `33643620764` (job
+`100292634932`) failed the identical test — `git-watcher > emits one debounced event for a burst
+of .git changes`, `expected +0 to be 1` at `tests/git/git-watcher.test.ts:56` — on an unrelated
+branch (an auth log line) whose diff touches no watcher and no sync code. Two independent
+sightings of the same non-sync watcher in one day, on two different branches, is the strongest
+evidence yet that this is the FSEvents layer and not `sync-spaces/engine.ts`.
+
 **History.** Filed 2026-07-22; escalated 2026-07-23; walked back 2026-07-25; hypothesis disproven
 2026-08-12; new evidence 2026-08-31 and 2026-09-01. Cause still unknown.
