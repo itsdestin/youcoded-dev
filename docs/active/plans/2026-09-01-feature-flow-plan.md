@@ -1002,7 +1002,7 @@ class ContractCheckTests(unittest.TestCase):
                                            r['steps'][0]['rows'][2].update({'guard': 'scripts/nope.py'})))
         problems = check_contract(s)
         self.assertTrue(any('R1: no step "S-9" in r1.json' in x for x in problems), problems)
-        self.assertTrue(any('R3: guard scripts/nope.py does not exist' in x for x in problems), problems)
+        self.assertTrue(any('R3: guard scripts/nope.py is neither on disk under' in x for x in problems), problems)
 
     def test_guard_committed_on_the_branch_counts(self):
         # A feature's mechanical rows mostly name tests the feature ADDS. From a worktree the
