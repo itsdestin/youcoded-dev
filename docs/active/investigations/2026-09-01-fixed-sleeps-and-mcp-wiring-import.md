@@ -37,5 +37,23 @@ sync-spaces-engine debounce item (`2026-09-01-sync-engine-debounce-macos-flake.m
 (youcoded#366) the macOS leg went red three times on one unchanged tree with a different victim each
 run while Ubuntu and Windows passed all three.
 
+**Update 2026-09-02 — six converted, and the eight-concurrent claim did not reproduce.**
+
+*Sleeps:* 108 counted, now 102. The six taken were the ones that were not merely letting time pass:
+five copies of `send('go')` followed by `await new Promise(r => setTimeout(r, 20))` in
+`native-session-host.test.ts` — a guess that a child's turn had started, which is the exact bug
+youcoded#363 fixed once in that same file and left a helper for (`waitForTurnInFlight`, previously
+used at one site out of six) — and one whose own comment said "poll for it" above a `setTimeout(r, 30)`.
+The rest were read and left: most of the large ones (120/150/80/80/150 ms) are NEGATIVE assertions —
+"wait a bounded time and prove nothing happened" — which have no signal to wait on by construction,
+and the `setTimeout(r, 10)` majority sit inside fake model streams, where they ARE the simulated work.
+
+*MCP startup wiring:* did not exceed its budget in any of 27 full local runs on 2026-09-02 — 1 alone,
+6 concurrent, 4 pinned to 4 cores with `taskset`, and two 8-way concurrent sweeps. The 8-way sweeps
+DID break the suite, just not here: `harness-eval-orchestrator` (3/8 runs) and `harness-review-runner`
+(4/8) hit 30,000 ms, and two React tests (`comment-list`, `feedback-section`) failed on effect timing.
+All four are fixed. So the residual recorded above is still open in principle but has never been
+measured failing; the file's in-body `await import()` remains unhoistable for the reason stated.
+
 **History.** Filed 2026-08-28 as the deliberate residual of #362/#363; re-verified 2026-09-01 (the
-five in-body imports and the `os` mock are unchanged).
+five in-body imports and the `os` mock are unchanged); re-measured 2026-09-02.

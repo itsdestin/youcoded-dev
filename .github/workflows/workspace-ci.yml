@@ -85,6 +85,15 @@ jobs:
         if: ${{ !cancelled() }}
         run: node --test .claude/hooks/context-inject.test.mjs .claude/hooks/glob-guard.test.mjs .claude/hooks/roadmap-edit-check.test.mjs
 
+      # The workbench boot check reported "All 16 workbench routes mount cleanly"
+      # against a port nothing was serving — verified 2026-09-02 on a dead port,
+      # exit 0. CLAUDE.md tells every session to trust that check. These two cases
+      # need no Chrome (the preflight now runs before the browser launches), so
+      # they belong on this runner.
+      - name: Test the workbench boot check
+        if: ${{ !cancelled() }}
+        run: node --test scripts/workbench-boot-check.test.mjs
+
       # The review deck — the tool Destin approves every UI change on — had ten
       # test files and no caller: not this workflow, not a script, not its README.
       # Asked for the first time on 2026-08-31 they were not merely unrun but RED
