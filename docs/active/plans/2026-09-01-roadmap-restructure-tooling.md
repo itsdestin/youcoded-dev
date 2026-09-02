@@ -2208,7 +2208,7 @@ node scripts/roadmap-check.mjs --root <checkout-with-subrepos> --fix
 
 Expected: structure clean; zero broken claims on day one (every anchor was written today against today's code — a broken one means the agent's regex is wrong, fix the report); index rewritten.
 
-- [ ] **Step 3: Destin's pass.** One message: every `decision` item and every "could not verify" item from the agents' reports, grouped by area, one line each, yes / no / don't know. Apply the answers (yes → `checked` today and `confirmed`; no → `shipped.md` "no longer reproduces"; don't know → `needs-verify`, `checked` = its `added`). Ask him for the "Where the app stands" paragraphs in the same sitting, or draft them from `youcoded-feature-fact-sheet.md` and the shipped list for him to edit.
+- [ ] **Step 3: Destin's pass.** A question deck (`python3 scripts/questions/serve.py <spec.json>`, see CLAUDE.md → "Asking Destin many questions at once"): every `decision` item and every "could not verify" item from the agents' reports, each written for a reader with no context (today / problem / proposal / options with user-experience pros and cons). Not a chat list — that was rejected 2026-09-01. Apply the answers (yes → `checked` today and `confirmed`; no → `shipped.md` "no longer reproduces"; don't know → `needs-verify`, `checked` = its `added`). Ask him for the "Where the app stands" paragraphs in the same sitting, or draft them from `youcoded-feature-fact-sheet.md` and the shipped list for him to edit.
 
 - [ ] **Step 4: Late arrivals.**
 
