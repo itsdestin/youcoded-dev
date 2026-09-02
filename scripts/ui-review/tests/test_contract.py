@@ -86,5 +86,153 @@ class ContractStepTests(unittest.TestCase):
         self.assertIn('"kind": "contract"', page)
 
 
+class ContractCheckTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def test_fixture_contract_holds(self):
+        from deck.contract import check_contract
+        s = load_spec(contract_spec(self.tmp))
+        self.assertEqual(check_contract(s), [])
+
+    def test_unsubmitted_source_is_reported(self):
+        from deck.contract import check_contract
+        p = contract_spec(self.tmp)
+        ap = os.path.join(os.path.dirname(p), 'r1.answers.json')
+        a = json.load(open(ap)); a['submitted'] = None; json.dump(a, open(ap, 'w'))
+        problems = check_contract(load_spec(p))
+        self.assertTrue(any('R2: r1.json answers were never submitted' in x for x in problems), problems)
+
+    def test_rotated_answers_are_found(self):
+        # serve re-run after a submit moves the file to <stem>.answers.<stamp>.json (serve.rotate_submitted);
+        # the check reads the newest SUBMITTED file, whichever name it carries.
+        from deck.contract import check_contract
+        p = contract_spec(self.tmp); d = os.path.dirname(p)
+        os.replace(os.path.join(d, 'r1.answers.json'), os.path.join(d, 'r1.answers.202609010930.json'))
+        json.dump({'deck': 'arcade-r1', 'submitted': None, 'answers': {}}, open(os.path.join(d, 'r1.answers.json'), 'w'))
+        self.assertEqual(check_contract(load_spec(p)), [])
+
+    def test_skipped_step_is_not_a_source(self):
+        from deck.contract import check_contract
+        s = spec_with(self.tmp, lambda r: r['steps'][0]['rows'][1].update({'source': 'arcade-r1#S-2'}))
+        self.assertTrue(any('R2: step S-2 of arcade-r1 was not answered' in x for x in check_contract(s)))
+
+    def test_unknown_step_and_missing_guard(self):
+        from deck.contract import check_contract
+        s = spec_with(self.tmp, lambda r: (r['steps'][0]['rows'][0].update({'source': 'arcade-r1#S-9'}),
+                                           r['steps'][0]['rows'][2].update({'guard': 'scripts/nope.py'})))
+        problems = check_contract(s)
+        self.assertTrue(any('R1: no step "S-9" in r1.json' in x for x in problems), problems)
+        # WHY this text, not the brief's "does not exist": check_contract's actual message (matching
+        # design §4 and test_guard_committed_on_the_branch_counts below) always names BOTH places a
+        # guard is looked for — disk and the contract's branch — so a plain "does not exist" never
+        # appears; the brief's literal test text was stale against its own contract.py.
+        self.assertTrue(any('R3: guard scripts/nope.py is neither on disk under' in x for x in problems), problems)
+
+    def test_guard_committed_on_the_branch_counts(self):
+        # A feature's mechanical rows mostly name tests the feature ADDS. From a worktree the
+        # workspace root is the main checkout, where that file does not exist until merge — so
+        # the check also looks on the contract's branch. Uncommitted still does not count.
+        import subprocess
+        from unittest import mock
+        from deck.contract import check_contract, guard_exists
+        root = os.path.join(self.tmp, 'ws'); os.makedirs(os.path.join(root, 'scripts'))
+        g = lambda *a: subprocess.run(['git', '-C', root, *a], check=True, capture_output=True, text=True)
+        g('init', '-q', '-b', 'main'); g('config', 'user.email', 't@t'); g('config', 'user.name', 't')
+        open(os.path.join(root, 'README'), 'w').write('x'); g('add', 'README'); g('commit', '-qm', 'base')
+        g('checkout', '-qb', 'feat/x')
+        open(os.path.join(root, 'scripts', 'guard.py'), 'w').write('# guard'); g('add', 'scripts/guard.py'); g('commit', '-qm', 'guard')
+        g('checkout', '-q', 'main')                      # back on main: the guard is NOT on disk
+        self.assertFalse(os.path.exists(os.path.join(root, 'scripts', 'guard.py')))
+        self.assertTrue(guard_exists(root, 'feat/x', 'scripts/guard.py'))
+        self.assertFalse(guard_exists(root, 'main', 'scripts/guard.py'))
+        self.assertFalse(guard_exists(root, 'feat/x', 'scripts/uncommitted.py'))
+        with mock.patch.dict(os.environ, {'YOUCODED_WORKSPACE': root}):
+            s = spec_with(self.tmp, lambda r: r['steps'][0]['rows'][2].update({'guard': 'scripts/guard.py'}), branch='feat/x')
+            self.assertEqual(check_contract(s), [])
+            s = spec_with(self.tmp, lambda r: r['steps'][0]['rows'][2].update({'guard': 'scripts/guard.py'}), branch='main')
+            self.assertTrue(any('R3: guard scripts/guard.py is neither on disk under' in x for x in check_contract(s)))
+
+    def test_signoff_is_the_contracts_own_answer(self):
+        from deck.contract import signoff
+        p = contract_spec(self.tmp); s = load_spec(p)
+        ok, line = signoff(s)
+        self.assertFalse(ok); self.assertIn('not signed', line)
+        ap = p.replace('.json', '.answers.json')
+        json.dump({'deck': 'arcade-contract', 'submitted': None, 'answers': {'C': {'v': 'yes'}}}, open(ap, 'w'))
+        ok, line = signoff(s)
+        self.assertFalse(ok); self.assertIn('not signed', line)             # answered but never submitted
+        json.dump({'deck': 'arcade-contract', 'submitted': '2026-09-01T11:00:00Z', 'answers': {'C': {'v': 'no', 'note': 'R2 is wrong'}}}, open(ap, 'w'))
+        ok, line = signoff(s)
+        self.assertFalse(ok); self.assertIn('answered "no"', line); self.assertIn('R2 is wrong', line)
+        json.dump({'deck': 'arcade-contract', 'submitted': '2026-09-01T11:00:00Z', 'answers': {'C': {'v': 'yes'}}}, open(ap, 'w'))
+        ok, line = signoff(s)
+        self.assertTrue(ok); self.assertIn('signed 2026-09-01 11:00', line)
+
+    def test_acceptance_status(self):
+        from deck.contract import acceptance_status
+        p = contract_spec(self.tmp); s = load_spec(p); d = os.path.dirname(p)
+        ok, line = acceptance_status(s)
+        self.assertFalse(ok); self.assertIn('acceptance deck not built', line)
+        json.dump({'key': 'x', 'steps': []}, open(os.path.join(d, 'arcade.contract.acceptance.json'), 'w'))
+        ok, line = acceptance_status(s)
+        self.assertFalse(ok); self.assertIn('acceptance deck not submitted', line)
+        json.dump({'submitted': '2026-09-01T12:00:00Z', 'answers': {'C': {'v': 'yes'}}}, open(os.path.join(d, 'arcade.contract.acceptance.answers.json'), 'w'))
+        ok, line = acceptance_status(s)
+        self.assertTrue(ok); self.assertIn('acceptance deck submitted 2026-09-01 12:00', line)
+
+    def test_cli_contract_check(self):
+        import importlib.util
+        spec_ = importlib.util.spec_from_file_location('review_cards', os.path.join(os.path.dirname(HERE), 'review-cards.py'))
+        rc = importlib.util.module_from_spec(spec_); spec_.loader.exec_module(rc)
+        import io
+        from contextlib import redirect_stderr, redirect_stdout
+        p = contract_spec(self.tmp)
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err):
+            code = rc.main(['contract-check', p])
+        self.assertEqual(code, 0, err.getvalue())
+        lines = out.getvalue().splitlines()
+        self.assertTrue(lines[0].startswith('ok: contract holds: 3 rows'), lines)
+        self.assertTrue(lines[1].startswith('todo: not signed'), lines)
+        self.assertTrue(lines[2].startswith('todo: acceptance deck not built'), lines)
+        # A source problem is exit 1 with the problems on stderr and nothing on stdout.
+        ap = os.path.join(os.path.dirname(p), 'r1.answers.json')
+        a = json.load(open(ap)); a['submitted'] = None; json.dump(a, open(ap, 'w'))
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err):
+            code = rc.main(['contract-check', p])
+        self.assertEqual(code, 1); self.assertIn('never submitted', err.getvalue()); self.assertEqual(out.getvalue(), '')
+
+
+class AcceptanceTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def test_refuses_without_verdicts_for_graded_rows(self):
+        from deck.contract import acceptance_spec, AcceptanceError
+        s = load_spec(contract_spec(self.tmp))
+        with self.assertRaises(AcceptanceError) as cm:
+            acceptance_spec(s, {'R1': {'verdict': 'pass', 'evidence': 'answered a'}})
+        self.assertIn('R3 (mechanical) has no verdict', str(cm.exception))
+
+    def test_builds_the_acceptance_deck(self):
+        from deck.contract import acceptance_spec
+        s = load_spec(contract_spec(self.tmp))
+        acc = acceptance_spec(s, {'R1': {'verdict': 'pass', 'evidence': 'answered a'},
+                                  'R3': {'verdict': 'fail', 'evidence': 'test_contract.py: 1 failed'}})
+        self.assertEqual(acc['key'], 'arcade-contract-acceptance')
+        self.assertEqual([st['id'] for st in acc['steps']], ['C', 'R2'])
+        c, r2 = acc['steps']
+        self.assertEqual([r.get('verdict') for r in c['rows']], ['pass', None, 'fail'])
+        self.assertTrue(r2['words']); self.assertEqual((r2['yes'], r2['no']), ('Holds', 'Fails'))
+        self.assertEqual(r2['headline'], "A second player's board is tellable from mine at a glance.")
+        self.assertIn('band could be thinner', r2['changed'])
+        # It is itself a valid deck.
+        d = os.path.dirname(contract_spec(self.tmp))
+        ap = os.path.join(d, 'arcade.contract.acceptance.json'); json.dump(acc, open(ap, 'w'))
+        self.assertEqual(validate(load_spec(ap))[0], [])
+
+
 if __name__ == '__main__':
     unittest.main()
