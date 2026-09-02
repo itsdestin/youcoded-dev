@@ -65,6 +65,12 @@ class WordsTests(unittest.TestCase):
         s = spec_with(self.tmp, lambda r: r['steps'][0]['options'][0].update({'summary': 'Uses a new reducer'}))
         self.assertTrue(any('banned word "reducer"' in e for e in errs(s)))
 
+    def test_words_step_yes_no_labels_obey_the_writing_rules(self):
+        # The yes/no labels are button copy Destin reads — the same banned-word rule
+        # that already covers headline/options/etc must reach them too.
+        s = spec_with(self.tmp, lambda r: r['steps'][2].update({'yes': 'Uses the reducer'}))
+        self.assertTrue(any('Q-3: yes label uses banned word "reducer"' in e for e in errs(s)))
+
     def test_deck_data_marks_words_and_carries_labels(self):
         s = load_spec(words_spec(self.tmp))
         d = deck_data(s, {})

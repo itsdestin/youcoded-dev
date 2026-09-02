@@ -319,6 +319,10 @@ def _validate_words(spec, st, sid, errors, warnings):
     for k in ('yes', 'no'):
         if st.get(k) and word_count(st[k]) > 4:
             errors.append(f'{sid}: {k} label is {word_count(st[k])} words — a button, keep it under 5')
+        # The label is button copy Destin reads — the banned-word rule applies to every
+        # user-facing field, not just the ones with a word-count cap.
+        for w in banned_in(st.get(k)):
+            errors.append(f'{sid}: {k} label uses banned word "{w}"')
     th = st.get('themes')
     if th is not None and (not isinstance(th, list) or not th or not all(isinstance(t, str) for t in th)):
         errors.append(f'{sid}: themes must be a non-empty list of theme names')

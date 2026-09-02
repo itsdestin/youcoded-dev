@@ -14,8 +14,7 @@ for animations, hovers, transitions and bugs that only show in motion; files fro
 `scripts/ui-review/record-pair.sh`, Before | After play side by side with a shared replay),
 and LIVE (`live` — panes of the RUNNING app he can hover, click and drag, one authored
 candidate each out of youcoded's compare/registry.tsx; `variants` makes it a pick-one, their
-absence a yes/no, and `serve` boots the worktree's workbench for it). Wording-only questions
-are not a step: ask in chat.
+absence a yes/no, and `serve` boots the worktree's workbench for it).
 
 A step may instead be WORDS-ONLY ("words": true — a question with 1–3 written options, or a
 statement to approve; no picture, no images folder needed): that is the questions deck asked
