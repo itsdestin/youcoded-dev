@@ -55,6 +55,7 @@ verify:
 # Multi-model native runtime (provider seam + sessions + local reliability)
 
 `SessionProvider` is `'claude' | 'native'`. **Depth for every bullet: `youcoded/docs/native-runtime.md` + `provider-dependencies.md`. Siblings: `harness-tools.md` (tools/skills/MCP), `native-permissions.md` (Always-allow rules).**
+**Whole-family primer — vision, shipped state, remaining work, decisions owed: `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md`. Start there before planning anything in this family.**
 
 ## Provider seam (Phase 0) — guard: `ipc-channels.test.ts`
 - **`'gemini'` is GONE** — never reintroduce it.
