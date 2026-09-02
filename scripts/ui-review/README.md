@@ -160,6 +160,17 @@ The candidates are the ones `youcoded`'s comparison view already uses
 compare candidate. **Pick-one is the default** for open-ended animation work; a try-this
 yes/no is for verifying something built to an agreed spec.
 
+**Fitting panes to the page — two rules, enforced by `page.js` (`fitPanes`):**
+
+1. **A pane is never wider than the stage, and the row never scrolls sideways.** The deck
+   tries every count of panes per row and keeps the one that gives the widest panes; fixed
+   panes (a dialog, a popover) sit as many abreast as fit at their real size, then wrap.
+2. **A wide, short surface declares a width RANGE and stacks.** `paneWidth: { min, max }` in
+   the registry makes a pane fluid: the deck hands it the widest width its row allows (told
+   by message, never by reloading) — the session strip is judged full-width, three strips one
+   above the other, not three abreast at a third of their size with both ends cut off
+   (Destin, 2026-09-01). The workbench's compare tab shows fluid panes at `min`.
+
 ```json
 { "live": { "worktree": "session-motion" },            // deck level: one build per review
   "steps": [

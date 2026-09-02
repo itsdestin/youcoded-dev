@@ -195,12 +195,18 @@ class ValidationTests(unittest.TestCase):
         spec = spec_with(self.tmp, lambda r: r['steps'][1].update({'notice': 'The reducer changes.'}))
         self.assertTrue(any('banned word' in e for e in errs(spec)))
 
-    def test_panes_that_will_not_fit_are_a_warning_not_an_error(self):
+    def test_a_row_of_wide_panes_is_fine_but_one_pane_wider_than_any_screen_warns(self):
+        # Panes WRAP (page.js fitPanes), so two 900px panes are two rows, not a sideways
+        # scroll — no warning. One pane wider than LIVE_FIT_WIDTH cannot be helped by
+        # wrapping and is still a warning, never an error.
         wide = spec_with(self.tmp, lambda r: (
             r['steps'][0]['live'].update({'paneWidth': 900}),
             r['steps'][1]['live'].update({'paneWidth': 900})))
         self.assertEqual(errs(wide), [])
-        self.assertTrue(any('will not fit side by side' in w for w in warns(wide)))
+        self.assertFalse(any('sideways' in w for w in warns(wide)))
+        huge = spec_with(self.tmp, lambda r: r['steps'][1]['live'].update({'paneWidth': 2400}))
+        self.assertEqual(errs(huge), [])
+        self.assertTrue(any('wider than any screen' in w for w in warns(huge)))
 
     def test_a_live_pick_one_is_also_a_choice_step_so_live_must_be_checked_first(self):
         # THE hazard, stated out loud: a live pick-one carries `variants`, so is_choice() is

@@ -65,33 +65,69 @@
     $$('.thumb').forEach(b => b.classList.toggle('on', b.dataset.v === theme));
     $$('#inner iframe').forEach(f => { try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (e) { /* not loaded yet */ } });
   }
-  // A width the pane MEASURED for itself beats the one the spec guessed at — the number lives
-  // in the registry in the other repo, so the deck can only ever be estimating.
-  const paneWidthOf = (st, i) => {
+  // What a pane may be wide, as a range. A width the pane MEASURED for itself beats the one
+  // the spec guessed at — the number lives in the registry in the other repo, so the deck can
+  // only ever be estimating. A FLUID pane reports a [min, max] range instead of one number.
+  const paneRangeOf = (st, i) => {
     const f = $$('#inner iframe')[i];
-    return Number((f && f.dataset.reportedWidth) || st.width);
+    if (f && f.dataset.minWidth && f.dataset.maxWidth) return { min: Number(f.dataset.minWidth), max: Number(f.dataset.maxWidth) };
+    const w = Number((f && f.dataset.reportedWidth) || st.width);
+    return { min: w, max: w };
   };
+  const PANE_GAP = 18;
+  // THE FIT RULE. A pane is never wider than the stage and the row never scrolls sideways.
+  // Try every count of panes per row; a count fits when every pane's `min` fits in its share
+  // of the row. Each pane then gets its share, clamped to its range. Choose the count that
+  // gives the WIDEST panes; among equals, the most per row (fewer rows to scroll through).
+  //   - fixed panes (min = max): as many per row as fit, at their real size, then wrap;
+  //   - fluid panes (the session strip, a header row): stacked one per row at their `max`
+  //     when the stage is wide enough, at the stage's width when it is not — never three
+  //     abreast at a third of their size with both ends cut off (Destin, 2026-09-01).
+  function fitPanes(ranges, stageWidth) {
+    const n = ranges.length;
+    let best = null;
+    for (let perRow = n; perRow >= 1; perRow--) {
+      const share = Math.floor((stageWidth - PANE_GAP * (perRow - 1)) / perRow);
+      if (!ranges.every(r => r.min <= share)) continue;
+      const widths = ranges.map(r => Math.max(r.min, Math.min(r.max, share)));
+      const score = Math.min(...widths);
+      if (!best || score > best.score) best = { perRow, widths, score };
+    }
+    // Nothing fits even alone: one per row at `min`, and the stage scrolls — the honest
+    // failure, and validate() warns about a pane wider than any screen before the build.
+    return best || { perRow: 1, widths: ranges.map(r => r.min), score: 0 };
+  }
   function layoutLive() {
     const st = DECK.steps[cur], c = $('#content'), step = $('#step');
-    // Panes have a DECLARED width — there is no natural image size to solve an arrangement
-    // from, so none of layout()'s scoring applies. One row at real size; the stage scrolls if
-    // the row is wider than it is, which validate() warns about before the deck is ever built.
-    // A live step's problem is never horizontal room, it is vertical: one 420px pane left
-    // ~800px of empty stage either side while its own content was being cut off at the
-    // bottom. So put the cards in a side column whenever the panes still fit beside them,
-    // which hands the stage the full height of the page.
+    // Panes have a DECLARED width (or a range) — there is no natural image size to solve an
+    // arrangement from, so none of layout()'s scoring applies; fitPanes() decides instead.
+    // A narrow FIXED pane (a dialog) still gets the cards in a side column when it fits
+    // beside them — that hands the stage the full height of the page for a tall design.
     const info = Math.max(320, c.clientWidth * 0.30);
-    const paneRow = st.panes.reduce((sum, p, i) => sum + paneWidthOf(st, i) + (i ? 18 : 0), 0);
-    c.className = 'content ' + (c.clientWidth - info - 40 >= paneRow ? 'col-right' : 'row-below');
+    const ranges = st.panes.map((p, i) => paneRangeOf(st, i));
+    const fixedRow = ranges.reduce((sum, r, i) => sum + r.max + (i ? PANE_GAP : 0), 0);
+    const sideColumn = ranges.every(r => r.min === r.max) && c.clientWidth - info - 40 >= fixedRow;
+    c.className = 'content ' + (sideColumn ? 'col-right' : 'row-below live-fit');
     step.classList.remove('compact-step');
     // ALWAYS inline, no width threshold. The theme row is absolutely positioned beside the
     // step, and a live row is wide by nature — two to four panes at real size — so the side
     // column lands outside the window and the buttons get cut in half (seen 2026-08-31).
     // There is no width at which a side column is right here, so don't compute one.
     document.body.classList.add('thumbs-inline');
+    // The stage's inner row: its padding (14px a side) and border come off the width.
+    const stage = $('.stage');
+    const stageWidth = (sideColumn ? c.clientWidth - info - 40 : (stage ? stage.clientWidth : c.clientWidth)) - 30;
+    const fit = fitPanes(ranges, stageWidth);
     $$('#inner iframe').forEach((f, i) => {
-      f.style.width = paneWidthOf(st, i) + 'px';
+      const w = fit.widths[i];
+      f.style.width = w + 'px';
       if (!f.style.height) f.style.height = (st.height || MIN_PANE_H) + 'px';
+      // A fluid pane lays its design out at the width it is given. Told by message, never by
+      // reloading (a reload restarts the animation being judged); only when it changes.
+      if (ranges[i].min !== ranges[i].max && f.dataset.askedWidth !== String(w)) {
+        f.dataset.askedWidth = String(w);
+        try { f.contentWindow.postMessage({ type: 'youcoded:pane-width', width: w }, DECK.live.base); } catch (e) { /* not loaded yet */ }
+      }
     });
     document.body.dataset.layout = 'live';
     document.body.dataset.scores = '{}';
@@ -371,7 +407,12 @@
     // the pane is the only thing that knows it; a deck-level `live.paneWidth` that is too
     // small clips the design's right-hand edge with nothing to say so (permissions-mode-control
     // is 420 while close-prompt-body is 380 — one number cannot serve a review showing both).
-    if (d.width > 0) { f.dataset.reportedWidth = d.width; f.style.width = d.width + 'px'; }
+    if (d.width > 0) f.dataset.reportedWidth = d.width;
+    // A range means a FLUID pane: the deck fits it to the row (fitPanes), rather than taking
+    // the width it happened to mount at. A fixed pane keeps what it measured.
+    if (d.minWidth > 0 && d.maxWidth >= d.minWidth) { f.dataset.minWidth = d.minWidth; f.dataset.maxWidth = d.maxWidth; }
+    else if (d.width > 0) f.style.width = d.width + 'px';
+    layoutLive();
   });
   window.addEventListener('resize', layout);
   load().then(() => {

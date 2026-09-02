@@ -96,6 +96,22 @@ python3 scripts/ui-review/review-cards.py serve docs/active/design/2026-08-31-se
 
 Answers land in `session-motion-live.answers.json` beside the spec on Submit.
 
+## The deck's fit rule (2026-09-01, evening)
+
+Destin, looking at the deck: three strips abreast at a third of their width, both ends cut off,
+two thirds of the stage empty — *"need some rules/guidelines/tooling for better fitting things
+to the page."* Built as the general fix, not a flag for this one deck:
+
+- **A pane is never wider than the stage and the row never scrolls sideways** — `fitPanes` in
+  `deck/page.js` tries every count per row and keeps the widest panes; fixed panes wrap.
+- **A wide, short surface declares a width range and stacks** — `paneWidth: { min, max }` in
+  the registry; the deck tells the pane its width by message. The strip is `{ 460, 1400 }`.
+- **The stage takes only the height its panes need**; the question follows directly beneath.
+
+Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-render.test.mjs`
+(wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
+wider than any screen still does).
+
 ## After the answers
 
 1. Move the winning values into `:root` in `globals.css` and **delete** the `[data-motion]` /
