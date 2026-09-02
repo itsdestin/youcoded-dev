@@ -1,10 +1,14 @@
 ---
 paths:
-  - "**/scripts/ui-review/deck/**"
-  - "**/scripts/ui-review/review-cards.py"
-  - "**/scripts/ui-review/contract-agent.md"
-  - "**/docs/active/design/**"
-  - "**/scripts/close-out.sh"
+  # Workspace-root paths, written plainly like landing-page.md's `scripts/ui-review/**`:
+  # the audit's glob check requires a slash before a `**/` prefix, so `**/scripts/…`
+  # matches nothing at the root. A worktree session's project root IS the worktree, so
+  # the plain form fires there too.
+  - "scripts/ui-review/deck/**"
+  - "scripts/ui-review/review-cards.py"
+  - "scripts/ui-review/contract-agent.md"
+  - "docs/active/design/**"
+  - "scripts/close-out.sh"
 last_verified: 2026-09-01
 verify:
   - path: scripts/ui-review/deck/contract.py
