@@ -55,7 +55,41 @@ spinning card that should never have been there.
 
 ## What is waiting for you
 
-**youcoded#385 — the field-error sweep.** Open, not merged, based on #382.
+Three PRs, none merged.
+
+| PR | What it is | Why I left it |
+|---|---|---|
+| **#385** | The field-error sweep | Touches 11 screens. Nothing moves, but it is your call |
+| **#386** | A 401 sign-out now writes a log line | Half a fix on an auth surface — the notice is still owed |
+| **#387** | A CI test stops racing its own subprocess | Test-only; merge whenever |
+
+### youcoded#386 — the silent sign-out
+
+One rejected server call clears your account session. That is correct and stays — leaving the
+token would strand you "signed in" while every call failed. What was wrong is that it happened
+in **complete silence**: no toast, no log line. Presence drops with the session, so friends see
+you offline forever and you only find out by opening the friends panel. Worse, the symptom is
+indistinguishable from a separate known bug, so afterwards nobody could tell which had happened.
+
+It now writes one line naming the subsystem and the server's own reason. **That is half the fix
+and the code says so** — the spec asks for a log line *and* a user-facing notice, and the notice
+needs a copy and surface decision on an auth screen. Yours, not a 3am one. The roadmap item
+stays open for that reason.
+
+Found while writing it: the logged reason is the 401 **response body, verbatim**. A proxy or
+captive portal answering with an HTML page would have written that whole page into a log that
+keeps only 500 lines, evicting everything useful around it. Capped at 200 characters. Same
+shape as the ledger bug in #382 — I would have shipped it if I had not looked.
+
+### youcoded#387 — a test that raced itself
+
+Not a product bug: a CI test wrote to a spawned server's stdin, waited on its *stdout*, then
+asserted on its *stderr* — two pipes with nothing synchronising the second. It cost a red leg on
+#386 and had never been logged. The assertion is unchanged; only the waiting is. Mutation-checked
+that it still fails if the server stops reporting, so it tolerates lateness without hiding
+absence.
+
+### youcoded#385 — the field-error sweep
 
 Twenty-two places that drew an inline error message by hand now use the shared piece. Both
 warnings on the roadmap entry turned out to be real, and both became options on the shared
@@ -179,6 +213,35 @@ The lesson for the next session: stacking a PR on a branch you intend to delete 
 costs you the PR. Either base on master and accept the noisier diff, or merge without
 `--delete-branch` and clean up afterwards.
 
+## The CI suite is noisy, and that cost real time
+
+**Three of the four PRs tonight hit a flake — three subsystems, three platforms, two of them
+never logged before.** None was caused by the change under test; each was established rather
+than assumed (named from CI annotations, checked against the diff, full suite run locally).
+
+| Where | What failed | Verdict |
+|---|---|---|
+| macOS, twice | `git-watcher > emits one debounced event` | Known FSEvents flake — but **on a watcher that entry never named** |
+| ubuntu | `claude-code-link-mcp > survives an unparseable line` | New. Diagnosed and **fixed** (#387) |
+| local | two tests, names lost | Unreportable — the log was deleted. Fixed (`verify.sh`) |
+
+Two things worth carrying forward:
+
+**The macOS watcher fault is wider than "sync-spaces".** That entry has always named one suite.
+Tonight the *same different* watcher failed twice, on two unrelated branches, hours apart, both
+observing zero events. That is now the strongest evidence that the fault is the FSEvents layer
+itself, and the next investigation should reproduce against a bare chokidar watcher instead of
+`sync-spaces/engine.ts`. It matters beyond CI: that report warns files written just after a
+space is added may be silently missed on macOS **in production**, and the git surface watches
+`.git/` the same way. I did not touch it — its own report is explicit that a test tweak going
+green while the engine still misses early writes would hide the real defect.
+
+**I made the load worse before I made it better.** My create-race test looped 30 times, each
+iteration doing a mkdtemp, two lock-guarded fsync'd writes and a recursive delete, in parallel
+with the watcher suites that go red under exactly that load. The race is deterministic and
+reproduces on iteration 1; the loop is now 3. I did not cause the flake, but adding churn to the
+machine it fires on was mine and it bought no coverage.
+
 ## One loose end
 
 During one `scripts/verify.sh` run, **two tests failed and then passed on a re-run and in a
@@ -194,6 +257,10 @@ flake is unreportable by construction.
   (types, related tests + 33–34 source-scanning guards, knip, eslint, ast-grep).
 - One full-suite run: 7,903 passed, 42 skipped, 0 failed.
 - Android: `./gradlew test -x bundleWebUi` — 218 tests, 0 failed.
-- 24 new pinning tests. Three are mutation-verified (the guard is removed, the test is
-  confirmed to fail, the guard is restored).
+- 30 new pinning tests across four PRs. **Five are mutation-verified** — the guard is removed,
+  the test is confirmed to fail, the guard is restored: the artifact create-race (desktop and
+  Kotlin), the Preparing-card withdrawal, the FieldError exemption counter, and the MCP stderr
+  wait.
+- Every CI red tonight was named from its annotations and checked against the diff before being
+  called a flake. None was re-rolled on hope.
 - `node scripts/roadmap-check.mjs` clean after the bookkeeping.
