@@ -41,11 +41,11 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       also the docked queue strip vanishes on an app reload even though the queue still drains
       `input-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-queued-message-attachments-lost-on-edit.md
 
-- [ ] Design call: when an edit of a queued message refills the composer in the same instant the
-      user is typing, the refill currently wins (the safe order — typing winning would silently
-      destroy the queued message). Destin to decide whether to append/merge instead
-      Destin 2026-09-02: "confused" — needs a plainer explanation before it can be decided
-      `input-bar` `desktop` `decision` `checked 2026-09-02`
+- [ ] Editing a queued message puts its text into the typing box; if the box already has text,
+      the queued text silently replaces it today. Decided 2026-09-02: when the box is not empty,
+      offer a small menu — Replace or Append — and skip the menu when it is empty (same rule for
+      quick chips, user-interface)
+      `input-bar` `desktop` `needs-verify` `checked 2026-09-02`
 
 - [ ] Agents & Automations — a third top-level view beside Chat and Projects where work runs on a
       schedule or trigger without the user (cron / "run now", budgets as hard stops, an inbox of

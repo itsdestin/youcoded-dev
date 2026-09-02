@@ -15,11 +15,11 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       sessions showed no "Start a conversation" text; Destin said ignore for now
       `chat` `desktop` `needs-verify` `checked 2026-08-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
 
-- [ ] Decide the app-wide GB convention — the Local Models row says 74.2 GB for a download
-      Hugging Face lists as 79.7 GB (same bytes; the app counts 1024-based everywhere, the
-      site counts 1000-based). Keep binary everywhere, label it GiB beside a quoted source, or
-      echo the source's own number?
-      `all` `decision` `checked 2026-09-01`
+- [ ] File and model sizes disagree with websites — the Local Models row says 74.2 GB for a
+      download Hugging Face lists as 79.7 GB (same bytes; the app counts 1024-based, the site
+      1000-based). Decided 2026-09-02: count 1000-based everywhere, the way websites, phones
+      and drive labels do
+      `all` `needs-verify` `checked 2026-09-02`
 
 - [ ] Sustained sluggishness in real use — hiccups, lagging animations, freezes, on every
       surface, from launch and worse over hours and with more open sessions, on plain and
@@ -120,3 +120,8 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
 - [ ] On the touchscreen Z13, the desktop app's on-screen keyboard interactions misbehave (Destin,
       2026-09-02; details to be gathered). Investigate together with the Android keyboard item
       `input-bar` `desktop` `needs-verify` `checked 2026-09-02` `needs-repro`
+
+- [ ] Tapping a quick chip when the typing box already has text should offer a small menu —
+      Replace or Append — and skip the menu when the box is empty (Destin, 2026-09-02; same rule
+      as editing a queued message, native-harness → sessions)
+      `quick-chips` `all` `needs-verify` `checked 2026-09-02`
