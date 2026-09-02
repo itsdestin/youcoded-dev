@@ -55,13 +55,14 @@ spinning card that should never have been there.
 
 ## What is waiting for you
 
-Three PRs, none merged.
+One PR is waiting on you. Three others merged.
 
 | PR | What it is | Why I left it |
 |---|---|---|
 | **#385** | The field-error sweep | Touches 11 screens. Nothing moves, but it is your call |
-| **#386** | A 401 sign-out now writes a log line | Half a fix on an auth surface — the notice is still owed |
-| **#387** | A CI test stops racing its own subprocess | Test-only; merge whenever |
+
+**#386 and #387 have since been merged** — both invisible to the eye, both green on all four
+legs. #385 is the only thing left waiting.
 
 ### youcoded#386 — the silent sign-out
 

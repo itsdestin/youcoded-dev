@@ -37,12 +37,6 @@ seen-on is always n/a here.
       production risk is wider than sync
       `n/a` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
 
-- [ ] The send-user-link MCP test flakes on CI: it writes to a spawned server's stdin and then
-      asserts on its stderr, which can still be empty when the assertion runs (`expected '' to
-      contain 'unparseable line'`, ubuntu, youcoded#386 run 33643620764 on 2026-09-02). Brand-new
-      test, from the work merged the same day
-      `n/a` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-02-mcp-stderr-assert-race.md
-
 - [ ] subagent-view, mcp-startup-wiring and project-watcher were filed as the suites that flake
       under parallel load, but 27 full local runs on 2026-09-02 (1 alone, 6 concurrent, 4 pinned to
       4 cores, 2 x 8 concurrent) never failed any of the three — the four that DID fail at 8-way
