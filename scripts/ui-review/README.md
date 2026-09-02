@@ -269,6 +269,7 @@ Everything (119 tests, ~38s) — needs `magick`, `ffmpeg` and Chrome, all presen
 python3 -m unittest discover -s scripts/ui-review/tests -t scripts/ui-review/tests -p 'test_*.py'
 node --test scripts/ui-review/tests/deck-render.test.mjs
 bash scripts/ui-review/tests/probe-ports.test.sh && bash scripts/ui-review/tests/cdp-ports.test.sh
+bash scripts/ui-review/tests/close-out-contract.test.sh
 ```
 
 Both blocks are marked `<!-- runnable -->`, so `scripts/check-doc-commands.mjs` actually runs
