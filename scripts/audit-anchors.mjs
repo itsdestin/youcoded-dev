@@ -27,6 +27,33 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const REPOS = ['youcoded', 'youcoded-core', 'youcoded-admin', 'wecoded-themes', 'wecoded-marketplace'];
+
+// A workspace WORKTREE holds no sub-repo clones — `youcoded/` and friends are gitignored
+// directories of the MAIN checkout — so every `youcoded/...` anchor and MAP path read
+// "missing" there, and sessions worked around it by symlinking the clones in. That is
+// how a symlink got committed and clobbered the real clone on 2026-08-28
+// (docs/PITFALLS.md). Resolve sub-repos from the main checkout instead:
+// `git rev-parse --git-common-dir` names the main checkout's .git from any worktree.
+const subRepoRootCache = new Map();
+export function subRepoRoot(root) {
+  if (subRepoRootCache.has(root)) return subRepoRootCache.get(root);
+  let resolved = root;
+  if (!REPOS.some(r => fs.existsSync(path.join(root, r, '.git')))) {
+    try {
+      const common = execFileSync('git', ['-C', root, 'rev-parse', '--git-common-dir'],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+      const main = path.resolve(root, common, '..');
+      if (main !== root && REPOS.some(r => fs.existsSync(path.join(main, r, '.git')))) resolved = main;
+    } catch { /* not a git checkout — keep root; the globs will visibly match nothing */ }
+  }
+  subRepoRootCache.set(root, resolved);
+  return resolved;
+}
+// The directory a workspace-relative path resolves against: sub-repo paths against the
+// clone location, everything else (docs/, .claude/, ROADMAP.md) against the checkout itself.
+export function baseFor(root, rel) {
+  return REPOS.includes(rel.split('/')[0]) ? subRepoRoot(root) : root;
+}
 // Dirs swept for <!-- verify: --> doc anchors. docs/archive is excluded (dead docs
 // carry no live claims); node_modules is skipped by the walker.
 export const DOC_DIRS = ['docs', 'youcoded/docs', 'wecoded-marketplace/docs'];
@@ -227,7 +254,7 @@ export function checkAnchor(root, anchor) {
   }
   const rel = anchor.path ?? anchor.test;
   if (!rel) return { ok: false, reason: `anchor has neither path nor test: ${JSON.stringify(anchor)}` };
-  const abs = path.join(root, rel);
+  const abs = path.join(baseFor(root, rel), rel);
   if (!fs.existsSync(abs)) return { ok: false, reason: `missing: ${rel}` };
   if (anchor.contains !== undefined) {
     let re;
@@ -254,8 +281,9 @@ export function listTrackedFiles(root) {
     } catch { /* repo missing (setup.sh not run) — its globs will visibly match nothing */ }
   };
   ls(root, '');
+  const base = subRepoRoot(root);
   for (const r of REPOS) {
-    if (fs.existsSync(path.join(root, r, '.git'))) ls(path.join(root, r), r + '/');
+    if (fs.existsSync(path.join(base, r, '.git'))) ls(path.join(base, r), r + '/');
   }
   return files;
 }
@@ -270,7 +298,8 @@ export function currentShas(root) {
     catch { /* leave absent */ }
   };
   get('workspace', root);
-  for (const r of REPOS) if (fs.existsSync(path.join(root, r, '.git'))) get(r, path.join(root, r));
+  const base = subRepoRoot(root);
+  for (const r of REPOS) if (fs.existsSync(path.join(base, r, '.git'))) get(r, path.join(base, r));
   return shas;
 }
 
@@ -332,7 +361,7 @@ export function changedFilesSince(root, shas) {
   const changed = [];
   const notes = [];
   const dirs = { workspace: root };
-  for (const r of REPOS) dirs[r] = path.join(root, r);
+  for (const r of REPOS) dirs[r] = path.join(subRepoRoot(root), r);
   for (const [name, sha] of Object.entries(shas)) {
     const dir = dirs[name];
     if (!dir || !fs.existsSync(path.join(dir, '.git'))) { notes.push(`repo ${name} not found on disk`); continue; }
@@ -467,7 +496,7 @@ export function worktreeBlindGlobs(rules, trackedFiles) {
 export function strayRuleDirs(root) {
   const out = [];
   for (const repo of REPOS) {
-    const dir = path.join(root, repo, '.claude', 'rules');
+    const dir = path.join(subRepoRoot(root), repo, '.claude', 'rules');
     if (!fs.existsSync(dir)) continue;
     const files = fs.readdirSync(dir).filter(f => f.endsWith('.md')).sort();
     if (files.length) out.push({ repo, files });
@@ -504,6 +533,11 @@ function main() {
     }
   }
 
+  // Say so when sub-repos come from the main checkout: a worktree audit then checks
+  // THIS branch's docs against code that may be older than the branch expects.
+  if (subRepoRoot(root) !== root && !asJson) {
+    console.log(`note: sub-repos resolved from the main checkout ${subRepoRoot(root)} (this is a worktree)`);
+  }
   const result = {
     ok: true,
     anchors: { total: 0, failed: [] },
@@ -567,7 +601,7 @@ function main() {
     const mapPaths = harvestMapPaths(fs.readFileSync(mapFile, 'utf8'));
     result.mapPaths.total = mapPaths.length;
     for (const p of mapPaths) {
-      if (!fs.existsSync(path.join(root, p))) result.mapPaths.missing.push(p);
+      if (!fs.existsSync(path.join(baseFor(root, p), p))) result.mapPaths.missing.push(p);
     }
   } else {
     result.mapPaths.missing.push('docs/MAP.md (the map itself is missing)');

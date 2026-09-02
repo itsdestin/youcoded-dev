@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
 import {
   parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths,
-  globToRegex, countBodyWords, yamlUnsafeFrontmatter,
+  globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor,
 } from './audit-anchors.mjs';
 
 test('parseRuleFrontmatter: block paths, last_verified, verify with contains', () => {
@@ -491,4 +493,21 @@ test('harvestDocAnchors: marker argument — claim: anchors are invisible to the
   const text = 'x\n<!-- verify: {"path": "a.ts"} -->\ny\n<!-- claim: {"path": "b.ts", "contains": "z"} -->\n';
   assert.deepEqual(harvestDocAnchors(text), [{ path: 'a.ts' }]);
   assert.deepEqual(harvestDocAnchors(text, 'claim'), [{ path: 'b.ts', contains: 'z' }]);
+});
+
+test('subRepoRoot: a worktree resolves sub-repos from the main checkout; a checkout with clones resolves to itself', () => {
+  const { execFileSync } = require('node:child_process');
+  const main = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-main-'));
+  const git = (...a) => execFileSync('git', ['-C', main, ...a], { stdio: ['ignore', 'pipe', 'ignore'] });
+  git('init', '-q');
+  git('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-q', '--allow-empty', '-m', 'root');
+  fs.mkdirSync(path.join(main, 'youcoded', '.git'), { recursive: true }); // a clone, as far as the script checks
+  const wt = path.join(main, 'wt');
+  git('worktree', 'add', '-q', wt);
+  assert.equal(subRepoRoot(main), main);
+  assert.equal(subRepoRoot(wt), main, 'worktree must find the main checkout via --git-common-dir');
+  assert.equal(baseFor(wt, 'youcoded/desktop/x.ts'), main);
+  assert.equal(baseFor(wt, 'docs/MAP.md'), wt, 'workspace paths stay on the worktree — that is the branch under audit');
+  const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-bare-'));
+  assert.equal(subRepoRoot(bare), bare, 'not a git checkout: keep root, never throw');
 });
