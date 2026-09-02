@@ -54,7 +54,7 @@ kind: plan
 # PR spec — remote-access hydration: IDs, ordering, view-state parity
 
 Single PR, three commits. Implements the recommended subset of
-`docs/active/plans/2026-07-19-remote-hydration-single-source-of-truth.md`
+`docs/archive/plans/2026-07-19-remote-hydration-single-source-of-truth.md`
 (Proposal A) plus Finding 3 from
 `docs/active/investigations/2026-07-19-remote-access-ui-state-hydration.md`.
 

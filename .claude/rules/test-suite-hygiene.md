@@ -8,7 +8,7 @@ paths:
   - "**/desktop/tests/**/*.test.tsx"
   - "**/desktop/src/**/*.test.ts"
   - "**/desktop/src/**/*.test.tsx"
-last_verified: 2026-08-28
+last_verified: 2026-09-01
 verify:
   - path: youcoded/desktop/vitest.config.ts
     contains: "youcoded-vitest-home-"

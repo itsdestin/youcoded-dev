@@ -1,0 +1,122 @@
+# user-interface — shared primitives, chrome, layout, copy
+Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
+layout, copy. Not here: one screen only — that screen's area, with the surface token.
+
+- [ ] Browser-default hover tooltips look foreign to the app — first noticed 2026-07-28 on the
+      /clear "Cleared — still here to read" hint; every hover hint in the app is one of these
+      `all` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-app-native-tooltips.md
+
+- [ ] Error messages still guess at causes in many places — the app-wide audit of every error
+      string (desktop, Android, Worker), choosing a specific message or the two-button
+      Report/Diagnose card at each site, has not been done
+      `all` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-misleading-error-audit.md
+
+- [ ] Chat panel vanished from a live session (beta.16, 2026-08-27) — no messages, and new
+      sessions showed no "Start a conversation" text; Destin said ignore for now
+      `chat` `desktop` `needs-verify` `checked 2026-08-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
+
+- [ ] Decide the app-wide GB convention — the Local Models row says 74.2 GB for a download
+      Hugging Face lists as 79.7 GB (same bytes; the app counts 1024-based everywhere, the
+      site counts 1000-based). Keep binary everywhere, label it GiB beside a quoted source, or
+      echo the source's own number?
+      `all` `decision` `checked 2026-09-01`
+
+- [ ] Sustained sluggishness in real use — hiccups, lagging animations, freezes, on every
+      surface, from launch and worse over hours and with more open sessions, on plain and
+      glass themes alike (Destin, 2026-08-27). Cycle 1 shipped; paged history and parking
+      hidden views are next
+      `all` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
+
+- [ ] Text fields nested in cards are the same colour as the card — the model picker's
+      trigger, the close-prompt editor and the resume tag sheet all read as labels, not
+      something you can type in; each was patched separately (from youcoded #279, 2026-07-31)
+      `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-field-surface-invisible-on-inset.md
+
+- [ ] Floating things in the chat view can still land on top of each other — the reported
+      "Jump to bottom" vs "Model unloaded" overlap was fixed 2026-07-28, but the other floats
+      (attention toast, permission gates, loading spinners, sync status) were never audited
+      `chat` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-chat-float-stacking.md
+
+- [ ] Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel —
+      mockup built 2026-08-18 (four provider-first pages) and never reviewed by Destin; it now
+      lives on branch feat/assistant-settings-mockup (worktree worktrees/assistant-settings)
+      Destin 2026-09-02: not a review next session, but finishing it is a pre-1.3 priority
+      `settings` `desktop` `needs-verify` `checked 2026-09-02` `v1.3`
+
+- [ ] Switching conversation tabs feels jumpy — content pops in and the tab name expands
+      instantly instead of rolling out (Destin, 2026-07-20). Rebuilt on branch
+      feat/session-strip-motion (worktree worktrees/session-motion), code complete; the live
+      motion review is in progress in another session (Destin, 2026-09-02)
+      `desktop` `in-flight` `checked 2026-09-02` → docs/active/handoffs/2026-08-31-session-strip-motion-handoff.md
+
+- [ ] Right-clicking an image in chat or the file viewer offers nothing — no Copy image,
+      Save image as…, Copy address, or Ask about this (the menu shipped for text, code,
+      links and file pills only)
+      `desktop` `needs-verify` `checked 2026-09-01`
+
+- [ ] The right-click menu may not open from a long-press on Android — never tried on a
+      device; a long-press is also how Android starts a text selection, so the menu could
+      make selecting text harder rather than easier
+      `android` `needs-verify` `checked 2026-09-01` `needs-repro`
+
+- [ ] "Ask about this" native treatment (lift the message to screen centre, dim the window,
+      trace the selection) — built on draft PR youcoded#263, still open; Destin 2026-07-28:
+      decent for messages, "janky af" for the file viewer, needs more work before integrating
+      `desktop` `parked` `checked 2026-09-01`
+
+- [ ] Inline field error text is drawn by hand in ~30 places instead of the shared piece, at
+      two different sizes — so the same error looks different from screen to screen
+      `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-field-error-adoption.md
+
+- [ ] The project-folder picker should be a dropdown with recently used folders like every
+      other dropdown — but the app keeps no recents list at all yet (2026-07-24)
+      `all` `needs-verify` `checked 2026-09-01`
+
+- [ ] Whole-UI review — Phase F is the last phase still to decide and build: P-17 and the
+      marketplace rails (phases A–E decided and shipped 2026-08-25 → 2026-08-28)
+      `all` `needs-verify` `checked 2026-09-01`
+
+- [ ] Remove the theme chip's cycle arrow altogether (Destin 2026-09-02); the outlined chips stay —
+      special cases like the model-selector and permissions chips. Was: two Phase B chip questions: the theme chip's
+      cycle glyph only shows on hover, so Android gets no cue; and two chips (teal, and the
+      orange announcement pill) still carry coloured outlines
+      `all` `needs-verify` `checked 2026-09-02`
+
+- [ ] The main app shell is still one ~3,900-line component — three planned extraction
+      tranches remain after the first one shipped 2026-07-17 (welcome screen and session
+      hooks; memoised bottom/content areas for fewer re-renders; the event-bridge mount)
+      `all` `needs-verify` `checked 2026-09-01` `performance`
+
+- [ ] The specialists chip and the session strip (twice) still draw their own badges instead
+      of the shared one, so chips, tags and key caps do not quite match
+      `all` `needs-verify` `checked 2026-09-01`
+
+- [ ] Let a model show an image in chat on purpose — a markdown image of a local file already
+      renders inline by accident in the packaged app (2026-07-19), unconstrained in width and
+      not in the dev build
+      `all` `parked` `checked 2026-09-01` → docs/active/investigations/2026-09-01-markdown-image-capability.md
+
+- [ ] Panel-opening transitions feel abrupt and undertuned and deserve real motion design
+      (Destin, 2026-07-20) — no design pass yet; the session-switcher half is the in-flight
+      motion branch above
+      `desktop` `parked` `checked 2026-07-20`
+
+- [ ] Same per-tile blur cost the command drawer had (fixed in #277) may hit every other card grid —
+      the files tab's document cards and any future grid. Never checked what backdrop they sit over,
+      so the blur might be pure wasted GPU
+      `all` `needs-verify` `checked 2026-07-31` `performance`
+
+- [ ] An empty assistant bubble — just a timestamp, no content — appears above a permission card when
+      the only tool in that bubble popped out to the card. Spec and plan are ready
+      (`docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md`); re-verified
+      unbuilt 2026-08-26
+      `chat` `all` `needs-verify` `checked 2026-09-01`
+
+- [ ] The animation frame-budget cost ships to phones and remote browsers too, where nothing caps the
+      frame rate and Reduced Effects defaults off — and it has never been measured there. Measure on a
+      real phone before scoping
+      `all` `needs-verify` `checked 2026-08-07` `performance`
+
+- [ ] On the touchscreen Z13, the desktop app's on-screen keyboard interactions misbehave (Destin,
+      2026-09-02; details to be gathered). Investigate together with the Android keyboard item
+      `input-bar` `desktop` `needs-verify` `checked 2026-09-02` `needs-repro`

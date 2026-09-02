@@ -1,7 +1,7 @@
 ---
 paths:
   - "**/worker/**"
-last_verified: 2026-07-15
+last_verified: 2026-09-01
 verify:
   - path: wecoded-marketplace/worker/src/lib/analytics.ts
     contains: "writeAppEvent"
@@ -33,6 +33,6 @@ Opt-outable anonymous device-hash + DAU/MAU. Current design: `docs/archive/specs
 - **Country + region are read SERVER-side** (`CF-IPCountry`, `CF-IPRegionCode`, ISO 3166-2), never sent from the client. NO cross-tabulation of region with other dimensions (fingerprint risk at low cell counts) — single-dimension GROUP BY only.
 - **`adminFilterClause` + `cutoverClause` (`lib/admin-filter.ts`) are the SQL safety boundary** — hex/ISO-only sanitization is mandatory (AE has no parameter binding; we string-interpolate). `KNOWN_DEV_DEVICES` filters Destin's own hashes out by default (`?include_admins=1` bypasses).
 - **CF Analytics Engine SQL is a narrow subset, NOT full ClickHouse** — `count(DISTINCT)` only, quoted `INTERVAL '30' DAY`, its own narrow-scope token, subqueries unreliable. The four 422 gotchas in full: `docs/worker-backend.md`.
-- **Admin auth via `requireAdminAuth`** — cookie session `Bearer` OR the `youcoded-admin` skill's `X-GitHub-PAT` (traded for a platform account id via `identities`, cached 60s in `auth/pat.ts`). The `isAdminAccount()` allowlist (`auth/admin.ts`) stays inline per-route so 401 (not auth'd) vs 403 (not admin) stay distinct. `ADMIN_USER_IDS` = bare GitHub numeric ids (secret `MARKETPLACE_ADMIN_USER_IDS`), NOT `github:<id>`.
+- **Admin auth via `requireAdminAuth`** — cookie session `Bearer` OR the `youcoded-admin` skill's `X-GitHub-PAT` (traded for a platform account id via `identities`, cached 60s in `auth/pat.ts`). The `requireAdminAccount(c)` allowlist wrapper (`auth/admin.ts`) is called per-route so 401 (not auth'd) vs 403 (not admin) stay distinct. `ADMIN_USER_IDS` = bare GitHub numeric ids (secret `MARKETPLACE_ADMIN_USER_IDS`), NOT `github:<id>`.
 
 Note: SyncHub (`SyncGroupRoom` DO) worker invariants live in `.claude/rules/sync-spaces.md`.

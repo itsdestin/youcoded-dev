@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // roadmap-check.mjs — the mechanical pass over the per-area roadmap.
 //
-// Four jobs, one run (spec §5, docs/active/specs/2026-09-01-roadmap-restructure-design.md):
+// Four jobs, one run (spec §5, docs/archive/specs/2026-09-01-roadmap-restructure-design.md):
 //   1. structure   — every entry parses, every token is in its vocabulary, links resolve
 //   2. claims      — every linked report's `<!-- claim: … -->` anchors still hold
 //   3. symptom pass — items nobody has confirmed in 60 days, for Destin

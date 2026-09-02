@@ -36,7 +36,7 @@ const r = spawnSync(process.execPath, [script, '--structure', '--quiet', '--root
 if (r.status === 0) process.exit(0);
 process.stderr.write(
   'roadmap-check: the roadmap file you just wrote has structure errors — fix them now '
-  + '(entry grammar: docs/active/specs/2026-09-01-roadmap-restructure-design.md §2; '
+  + '(entry grammar: docs/archive/specs/2026-09-01-roadmap-restructure-design.md §2; '
   + 'filing rule: the bottom of ROADMAP.md)\n' + (r.stdout || '') + (r.stderr || ''),
 );
 process.exit(2);

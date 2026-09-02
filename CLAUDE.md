@@ -16,7 +16,7 @@ YouCoded is an open-source cross-platform AI assistant app built entirely withou
 
 **The app is the product.** Everything else — themes, skill marketplace, bundled plugins — supports the app. Documentation and code should reflect that hierarchy.
 
-**One product.** The five sub-repos are components of a single consolidated product. Planning, versioning, and roadmapping happen at the workspace level (`ROADMAP.md`); sub-repo docs exist only for knowledge physically coupled to that repo's code.
+**One product.** The five sub-repos are components of a single consolidated product. Planning, versioning, and roadmapping happen at the workspace level (`ROADMAP.md` is the index; the backlogs are `docs/roadmap/<area>.md`); sub-repo docs exist only for knowledge physically coupled to that repo's code.
 
 ## Workspace Layout
 
@@ -124,6 +124,10 @@ bash scripts/run-dev.sh <branch-or-worktree> --label "Feature Name"
 
 When designing new features or making changes to user-facing app interfaces, the first step should always be to visualize and design the UI/UX of the final feature. Planning sessions should prioritize iterative UI design using the workbench and other tooling to help Destin shape the final user experience of the feature before building backend. When Destin provides final sign-off on the UI/UX design for the feature, the UI/UX should be treated as largely final and backend should be designed around the UI/UX accordingly. The standard every new surface is measured against is `docs/active/design/2026-08-25-ui-design-guide.md` (five laws, primitives, per-surface anatomies, checklist); show him the change as a **review deck** (scripts/ui-review/review-cards.py — one point per step: Before | After with the changed region boxed by the rig, a headline and three cards — What changed / You'll notice / Risk — Yes / No / Other, answers saved to a file and handed to Claude on Submit; `serve <spec>` in the background does it all), built from the UI review rig below; never a gallery, a prose page or a chat description (all three were rejected). **For motion, drag or hover, use a LIVE step** — panes of the running app he can actually operate, one authored candidate each out of `youcoded`'s `compare/registry.tsx` (`serve` boots the worktree's workbench for them). A recording is the wrong tool for a 200 ms animation: four clip steps were rejected on 2026-08-31 as "just rough to compare". `scripts/ui-review/README.md` → "Live panes".
 
+### Asking Destin many questions at once
+
+**Four or more questions that need Destin's input go on a question deck, never in a chat message** — `python3 scripts/questions/serve.py <spec.json>` (run it in the background; its exit is the submit signal and it prints every answer). A wall of one-liners in chat was rejected on 2026-09-01: it assumes he remembers every item, and some were filed months earlier. Every question on the deck is written for someone with **no context**, in plain words, in four parts the page renders as labelled blocks — **today** (what exists: which part of the app, what it does for the user), **the problem** (what goes wrong, as the user experiences it), **the proposal** (what would change, as the user would notice it), and **options** (each with pros and cons **about the user's experience**, not the code). Yes/No/Don't-know questions say in the proposal what each answer leads to. Fewer than four, or wording-only, still go in chat. Spec format is in the script's header.
+
 ### UI Workbench
 
 `bash scripts/run-workbench.sh` boots the **real renderer** in a browser tab (Vite only — no Electron, no PTY) against a fake `window.claude`, on port 5233. Every menu is clickable and stateful, so **new feature UI is built here before its backend exists** — channels with no backend go in `MOCK_ONLY`, which is then the backend to-do list. Toolbar switches scenario (`default`/`empty`/`no-providers`/`refused`/`stress`), fake IPC latency, narrow viewport, and the tool gallery that replaced `?mode=tool-sandbox`. Use `run-dev.sh` instead when you need real event ordering, PTY, or main-process behaviour. **After any change to the mock shim run `node scripts/workbench-boot-check.mjs`** — it loads every registered workbench route headless (12 today) and fails on a console error; the unit suite passed while the app crashed at boot three times running. Rule: `.claude/rules/react-renderer.md`; spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
@@ -199,7 +203,7 @@ to replace. It also runs on its own at the end of any substantial session.
 It replays what the session actually did — what context loaded, what you had to hunt for
 because it was unwritten, which tooling you used and why, where you took a wrong turn —
 and turns that friction into workspace changes. Every recommendation ends the session
-**applied**, as a dated **`ROADMAP.md`** entry, or **explicitly dropped with a reason**.
+**applied**, as a dated roadmap entry (`docs/roadmap/<area>.md` — see `ROADMAP.md` → "Filing an item"), or **explicitly dropped with a reason**.
 A numbered list nobody actions is the failure mode, not the output.
 
 **Why it has to be asked for.** No hook can know when a session is finished: `SessionEnd`
@@ -241,16 +245,16 @@ New knowledge goes to, in descending preference: **a pinning test > an ast-grep 
 | Kind of knowledge | Home |
 |---|---|
 | Invariant / lesson | The ladder above. Slim `docs/PITFALLS.md` holds only cross-repo items |
-| Planned feature / bug / idea | `ROADMAP.md` — capture in the SAME session Destin mentions it (typed, tagged, dated; dedup first) |
-| Doc contradicting code | **Fix on sight** (verify against code; cite verification in the commit). Unfixable this session → ROADMAP `bug` tagged `#docs`. There is no drift ledger |
+| Planned feature / bug / idea | `docs/roadmap/<area>.md` — the file whose `Filing test:` line says yes (`ROADMAP.md` → "Filing an item" has the grammar). Capture in the SAME session Destin mentions it; dedup first; a symptom in Destin's words, no paths; run `node scripts/roadmap-check.mjs --fix` before committing |
+| Doc contradicting code | **Fix on sight** (verify against code; cite verification in the commit). Unfixable this session → an entry in `docs/roadmap/dev-workspace.md` under `## knowledge`. There is no drift ledger |
 | CC-version watch item | `youcoded/docs/cc-dependencies.md` |
 | Completed/superseded plans, specs, handoffs | `docs/archive/` (in-flight ones live in `docs/active/`) |
 | Destin-specific preferences / session feedback | Auto-memory — LAST resort; product planning never lives in memory |
 
-**Document lifecycle:** new specs/plans/handoffs save to `docs/active/{specs,plans,handoffs,investigations,prototypes}/` with `status:` frontmatter (`draft | active | shipped | superseded`). When a feature merges, its docs move to `docs/archive/` and the ROADMAP item flips to `[x]` in the same session — "Merge means merge AND push" extends to "…AND archive the docs AND flip the roadmap item." Searches for live docs exclude `docs/archive/` by default.
+**Document lifecycle:** new specs/plans/handoffs save to `docs/active/{specs,plans,handoffs,investigations,prototypes}/` with `status:` frontmatter (`draft | active | shipped | superseded`). When a feature merges, its docs move to `docs/archive/` and the roadmap item closes in the same session (delete it from its area file, append one line to `docs/roadmap/shipped.md`, archive its report) — "Merge means merge AND push" extends to "…AND archive the docs AND close the roadmap item." Searches for live docs exclude `docs/archive/` by default.
 
 **A retrospective is closed in the session that acts on it.** Every finding ends as
-shipped, dropped, or a dated `ROADMAP.md` entry — then the document moves to
+shipped, dropped, or a dated roadmap entry in its area file — then the document moves to
 `docs/archive/`. Two retrospectives sat unclosed for weeks and their unshipped half was
 independently rediscovered twice; one of the rediscovered items was the glob migration
 of 2026-08-31.

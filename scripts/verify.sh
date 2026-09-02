@@ -7,7 +7,7 @@
 # and "verified" meant whatever that session happened to remember to run. This
 # makes it one command with one exit code.
 #
-# The second reason is cost. `npm test` is 296 test files; a two-file change
+# The second reason is cost. `npm test` is ~600 test files; a two-file change
 # does not need all of them. This runs `vitest related` on the files you
 # actually touched, which is the difference between ~10s and ~2min per loop.
 #

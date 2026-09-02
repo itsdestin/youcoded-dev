@@ -38,8 +38,9 @@
 // (Same constraint documented in scripts/cdp-eval.mjs.)
 //
 // History: written for the 2026-08-06 window-resize investigation, which found that
-// App.tsx keeps every open session's ChatView in the layout tree. See ROADMAP.md →
-// "Window-resize lag has a SECOND cause" for the part that is still unexplained.
+// App.tsx keeps every open session's ChatView in the layout tree. The "second cause"
+// item was closed 2026-09-01 on youcoded PR #374 (docs/roadmap/shipped.md); if resize
+// still lags in the packaged app, file a fresh symptom in docs/roadmap/user-interface.md.
 import WebSocket from 'ws';
 
 const [, , wsUrl, stepsArg] = process.argv;

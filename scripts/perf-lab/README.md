@@ -705,4 +705,4 @@ do not invent them.
 | `docs/active/handoffs/2026-08-27-perf-lab-session-status.md` | **current truth** — coverage, findings, what remains, retractions |
 | `docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md` | the 18 verified corrections, each with its mechanism |
 | `docs/active/handoffs/2026-08-26-perf-loop-operating-manual.md` | operating the measure → change → re-measure loop |
-| `docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md` | the original plan — **history, not truth**; several of its specifics were wrong about this machine and this app |
+| `docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md` | the original plan — **history, not truth**; several of its specifics were wrong about this machine and this app |

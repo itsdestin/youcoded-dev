@@ -10,7 +10,7 @@ paths:
   - "**/desktop/src/main/github-connect.ts"
   - "**/desktop/src/main/github-client.ts"
   - "**/desktop/src/main/github-fork-publish.ts"
-last_verified: 2026-07-22
+last_verified: 2026-09-01
 verify:
   - path: youcoded/desktop/src/main/github-client.ts
     contains: "createGithubClient"
@@ -76,16 +76,16 @@ verify:
 - **Corrupt-repo heal is ONCE per space per launch** (`healedSpaces`, marked BEFORE attempting). **Self device-row recency derives from `lastSyncFor` evidence**, never `.sync-marker`.
 
 ## SyncHub (`sync-hub-socket.ts` + `SyncGroupRoom` DO)
-- **The DO is per-account, an ACCELERANT not truth** — never drop the 120s poll. **spaceKey = `repoNameForSpace()`, never the local id; signal ONLY on `pushed:true`; the hub send runs LAST in `broadcast()`, isolated.**
+- **The DO is per-account, an ACCELERANT not truth** — never drop the 120s poll. **spaceKey = `repoNameForSpace()`, never the local id; signal ONLY on `pushed:true`; the hub send runs LAST of the fan-outs in `broadcast()`, isolated.**
 - **Per-device recency rides the SAME signal** (`lastSyncByDevice` in DO storage; pure `deviceActivityLabel` renders). **Self reads the LOCAL `lastSyncEpoch`, NOT the map.**
 
 ## Import (`sync-spaces/import-project.ts`)
 - **Import MOVES the folder — never copy-and-keep-both.** The EXDEV branch re-checks `existsSync(dest)` BEFORE cpSync; store remaps degrade to WARNINGS, never silent drops.
 
 ## Project UX + discovery
-- **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — ALL dot state from pure `sync-dot-state.ts`; labels pinned.
+- **Sync status comes ONLY from pure `sync-dot-state.ts`** (every dot's state and label); other status-coloured controls are not sync.
 - **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); **fold-on-read** blocks resurrection; schema stays 1.
-- **Per-field merge: `laterOf` takes `{v, at}` wrappers, NEVER whole entries; `description` is LWW on its OWN `descriptionUpdatedAt`, never `updatedAt`.** A whole-entry `laterOf` tie-breaks on `JSON.stringify` and broke associativity; a shared clock lets a description write revert another device's rename.
+- **Per-field merge: `laterOf` takes `{v, at}` wrappers (`description` does; the name dimension passes whole entries); `description` is LWW on its OWN `descriptionUpdatedAt`, never `updatedAt`.** Whole-entry `laterOf` tie-breaks on `JSON.stringify` (broke associativity); a shared clock reverts a peer's rename.
 
 ## Device registry
 - **TWO identities, NEVER merged: `getDeviceIdentity(userData)` = per-INSTALL (leases); `getMachineIdentity(builtAppUserData)` = per-MACHINE (registry), which READS, never mints — `null` ⇒ register NOTHING.**

@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: spec
 topic: ROADMAP.md restructure — per-area files, six-field entries, roadmap-check tooling, migration
 supersedes: docs/archive/specs/2026-08-31-roadmap-area-taxonomy-draft.md
@@ -11,7 +11,7 @@ supersedes: docs/archive/specs/2026-08-31-roadmap-area-taxonomy-draft.md
 The roadmap is rewritten so that Destin can scan it and answer "am I still hitting that?",
 and so that tooling, not people, notices when an entry's claims about the code have rotted.
 The problem measurement and the review history live in
-`docs/active/handoffs/2026-09-01-roadmap-restructure-handoff.md`; this document is the
+`docs/archive/handoffs/2026-09-01-roadmap-restructure-handoff.md`; this document is the
 design as approved on 2026-09-01 and is the source of truth for the implementation plan.
 
 **The one-sentence design:** the roadmap holds *symptoms* in Destin's words, split into one

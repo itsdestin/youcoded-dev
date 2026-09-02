@@ -8,7 +8,7 @@ paths:
   - "**/desktop/src/main/announcement-service.ts"
   - "**/desktop/src/shared/announcement.ts"
   - "**/desktop/src/shared/bundled-plugins.ts"
-last_verified: 2026-07-15
+last_verified: 2026-09-01
 verify:
   - path: youcoded/desktop/src/main/claude-code-registry.ts
   - path: youcoded/desktop/src/main/local-theme-synthesizer.ts
@@ -21,10 +21,10 @@ verify:
 
 # Registries: themes, marketplace, plugin install, announcements
 
-Both registries are GitHub repos fetched at runtime via `raw.githubusercontent.com` — no *scheduled* rebuild, but both rebuild **on merge** (`validate-plugin-pr.yml` → `rebuild`; themes CI regenerates registry + previews). **Registry-repo depth: workspace `docs/registries.md`. MCP-authoring depth: `wecoded-marketplace/docs/mcp-authoring.md`.**
+Both registries are GitHub repos fetched at runtime via `raw.githubusercontent.com` — no *scheduled* rebuild, but both rebuild **on merge** (`validate-plugin-pr.yml` → `rebuild`, only when a `plugin.json` dir changed; themes CI regenerates registry + previews). **Registry-repo depth: workspace `docs/registries.md`. MCP-authoring depth: `wecoded-marketplace/docs/mcp-authoring.md`.**
 
 ## Theme & skill registries
-- **`wecoded-themes/registry/theme-registry.json` is auto-generated on CI merge** — don't hand-edit. Each theme: `themes/{slug}/manifest.json` + assets. **15 required CSS tokens** and four CSS-safety bans, both CI-enforced and both listed in `docs/registries.md`. Manifest >10MB or duplicate slug fails CI.
+- **`wecoded-themes/registry/theme-registry.json` is auto-generated on CI merge** — don't hand-edit. Each theme: `themes/{slug}/manifest.json` + assets. **15 required CSS tokens** and four CSS-safety bans, both CI-enforced and both listed in `docs/registries.md`. Theme dir >10MB or duplicate slug fails CI.
 - **Any content change to a published theme MUST bump the manifest `version`** — no bump → installed users see a no-op "Installed" forever (depth: `docs/registries.md`). Guard: none — candidate.
 - **Apps read the Worker's `/catalog` FIRST** (1h TTL, `If-None-Match`/304 **mandatory** — MBs, hourly, mobile data, `*.workers.dev` has no edge cache); `index.json` is the fallback, then stale cache. **`CATALOG_ENABLED="0"` → 503 → silent fallback.** Depth: `wecoded-marketplace/docs/catalog.md`.
 - **`wecoded-marketplace`:** root `index.json` (bare array — **the fallback both apps fetch**) + `skills/index.json` (same entries wrapped, written first by `sync.js`) + `marketplace.json` (YouCoded-only). Entries with `sourceMarketplace: "youcoded"` are never overwritten by upstream sync. App caches 24h at `~/.claude/youcoded-marketplace-cache/` — **`youcoded-`**, not `wecoded-` (7 code sites).
@@ -40,8 +40,8 @@ Both registries are GitHub repos fetched at runtime via `raw.githubusercontent.c
 - **`BUNDLED_PLUGIN_IDS` is two-way duplicated** — `desktop/src/shared/bundled-plugins.ts` + Kotlin `BundledPlugins.kt` must stay in sync. Intentionally hardcoded (offline-first + no remote force-install authority); changing it requires an app release.
 
 ## MCP plugin authoring (marketplace plugins) — **read `wecoded-marketplace/docs/mcp-authoring.md` before shipping a stdio MCP server**
-- **`bash` is NOT on the Windows system PATH** — don't write `command:"bash"` in `mcp-manifest.json`; use a real on-PATH binary (`node`/`uvx`/`python`) or bash's 8.3 short name (`C:\PROGRA~1\Git\usr\bin\bash.exe` — spaces break the spawn). MSYS `/c/...` paths work only as ARGS, never `command`.
-- **`${PACKAGE_DIR}` is expanded by YouCoded's `reconcileMcp()`, NOT Claude Code** — non-YouCoded CLI users get a literal placeholder. **Pin `mcp>=1.0.0,<2.0.0`** (0.x→1.x is dict→Pydantic breaking). **`claude mcp list` is a liar** (verifies only `initialize`) — verify with in-session `/mcp` (full `tools/list`). Spawn-probe the handshake before submission. Ten more footguns are in that doc.
+- **`bash` is NOT on the Windows system PATH** — don't write `command:"bash"` in `mcp-manifest.json`; use a real on-PATH binary (`node`/`uvx`/`python`), `command_windows`, or bash's 8.3 short name (`C:\PROGRA~1\Git\usr\bin\bash.exe` — spaces break the spawn). MSYS `/c/...` paths work only as ARGS, never `command`.
+- **The reconciler expands ONLY `{{plugin_root}}`** — `${PACKAGE_DIR}` is expanded by nobody (roadmap `marketplace`). **Pin `mcp>=1.0.0,<2.0.0`** (0.x→1.x is dict→Pydantic breaking). **`claude mcp list` lies** (verifies only `initialize`) — verify with in-session `/mcp` (full `tools/list`). Spawn-probe the handshake first; five more footguns in that doc.
 
 ## Announcements (`announcement-service.ts`, `shared/announcement.ts`)
 - **Source of truth is `youcoded/announcements.txt`** (app repo), NOT youcoded-core. `/announce` writes there; public URL `raw.githubusercontent.com/itsdestin/youcoded/master/announcements.txt`.

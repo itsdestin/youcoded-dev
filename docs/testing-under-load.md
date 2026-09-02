@@ -66,7 +66,7 @@ artificial delay, so there was nothing to optimise away.
 ### 3. `vi.waitFor`'s separate 1s budget (#363)
 **The gap #362 missed.** vitest hardcodes `timeout = 1e3` for `waitFor`/`waitUntil` and
 offers **no config option**, so raising `testTimeout` did nothing for ~60 bare calls across
-13 files. Windows CI then failed `specialist-run.test.ts` with `expected 'running' to be
+13 files (98 `vi.waitFor`/`vi.waitUntil` calls in 14 files today, all covered by the shim). Windows CI then failed `specialist-run.test.ts` with `expected 'running' to be
 'completed'` — a background specialist streaming ~69,000 characters had not finished inside
 one second. Defaulted centrally in `tests/setup-waitfor.ts`; an explicit per-call timeout
 still wins in both the options and numeric-shorthand forms.
@@ -120,8 +120,8 @@ HOME redirect of cause 1**. Every test run used `sessionId: 'test'`, so concurre
 shared one directory and the `afterEach` deleted it out from under the others:
 `expect(fs.existsSync(r.outputPath)).toBe(true)` failed on a file that had been written
 and then removed by a different process. Session ids are per-process now, here and in the
-two background-shell tests (whose log filenames embed a `shellId` that restarts at 1 in
-every process).
+two background-shell tests (whose log filenames embed a session-id constant — now pid-suffixed; shell ids
+themselves are random hex).
 
 **The general lesson: a HOME redirect does not catch a path built from `os.tmpdir()`.**
 When you sandbox by environment, anything resolving a temp path directly escapes it.
@@ -153,7 +153,8 @@ short one — there was no wait at all.
 ### 12. A 2× timing margin
 The stall-watchdog test drove progress every 60 ms against a 120 ms budget, so one
 scheduler hiccup tripped the watchdog and the test failed as though progress did not
-re-arm it. Now 40 ms against 600 ms — a 15× margin — while 1,800 ms vs 600 ms keeps
+re-arm it. Now progress every 4 ms against `STALL_MS = 250` / `STREAMING_WINDOW_MS = 400`
+(a ~100× margin) while the expiry case waits well past the window, which keeps
 "would have expired without progress" true three times over. **The assertion's meaning did
 not change; only the headroom did.** When a timing test is flaky, check the ratio it
 depends on before touching what it asserts.
@@ -214,11 +215,11 @@ causes 9–12. Converting them wholesale, blind, would be more dangerous than le
 convert the ones you touch.
 
 **`mcp-startup-wiring.test.ts` still exceeds 30 s at EIGHT concurrent suites**, because it
-`await import()`s all 3,906 lines of `ipc-handlers.ts` inside the test body. The import
+`await import()`s all ~4,500 lines of `ipc-handlers.ts` inside the test body. The import
 cannot be hoisted: that file's `os` mock is a closure over a per-test temp dir, so a static
 import would evaluate before the dir exists. Eight concurrent suites is far past any real
 scenario (CI runs one) and six is green, so this was left rather than restructured on
 speculation. If it ever fails on real CI, the fix is to restructure the mock so the import
 can move to module scope — **not** to raise the number again.
 
-Both are tracked in ROADMAP.
+Both are tracked in `docs/roadmap/dev-workspace.md` → `## tests`.

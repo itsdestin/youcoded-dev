@@ -1,3 +1,10 @@
+---
+date: 2026-05-20
+status: draft
+type: spec
+topic: Floating Glass theme — desktop-only glass chrome design
+---
+
 # Floating Glass Theme — Design
 
 **Status:** Draft for review

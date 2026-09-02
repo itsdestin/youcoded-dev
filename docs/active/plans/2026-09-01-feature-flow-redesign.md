@@ -103,7 +103,7 @@ Answers files stay the record of decisions; all three arcade decks have submitte
 
 ## 7. "Pick 10 roadmap things" — scoped out
 
-The shape already exists and was run three times: `docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md` Tasks 13/16 — an approved list, a deterministic verdict, named stop conditions, a spend budget, a ledger. Applied to the roadmap: list = a taxonomy area's items; verdict = `verify.sh` + `close-out.sh`; ledger = the ROADMAP entry. It depends on the taxonomy draft landing and on this plan's contract (each fix needs a done-condition). Its own plan, after this one. *§8 Q3.*
+The shape already exists and was run three times: `docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md` Tasks 13/16 — an approved list, a deterministic verdict, named stop conditions, a spend budget, a ledger. Applied to the roadmap: list = a taxonomy area's items; verdict = `verify.sh` + `close-out.sh`; ledger = the ROADMAP entry. It depends on the taxonomy draft landing and on this plan's contract (each fix needs a done-condition). Its own plan, after this one. *§8 Q3.*
 
 ## 8. Questions for Destin
 

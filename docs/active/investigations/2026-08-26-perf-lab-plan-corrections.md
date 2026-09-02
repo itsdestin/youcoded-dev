@@ -1,12 +1,12 @@
 ---
 status: active
 date: 2026-08-26
-plan: docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md
+plan: docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md
 ---
 
 # Perf-lab plan corrections found during execution
 
-Running list of places where `docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md`
+Running list of places where `docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md`
 turned out to be wrong about the machine or the current app source. Each one is
 verified, not assumed. These must land in `scripts/perf-lab/README.md` (Task 12)
 and the operating manual (Task 16).

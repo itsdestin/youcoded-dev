@@ -8,7 +8,7 @@ paths:
   - "**/desktop/src/renderer/state/artifact-tool-use-tracker.ts"
   - "**/desktop/src/renderer/state/ArtifactContext.tsx"
   - "**/desktop/src/shared/artifacts/**"
-last_verified: 2026-08-30
+last_verified: 2026-09-01
 verify:
   - test: youcoded/desktop/tests/artifacts/artifact-tool-use-tracker.test.ts
   - path: youcoded/desktop/src/main/artifacts/artifact-store.ts
@@ -67,7 +67,7 @@ Per-project sidecars + a central index track every file Claude touches; I/O is m
 
 ## Paths & counts
 - **Project list = saved folders (`youcoded-folders.json`), NOT the central index.** `buildSavedFolderProjects` reuses an index entry by canonical path, else synths one whose `id` IS the path (traversal-guarded).
-- **Two single-source count helpers:** `countArtifacts` vs `countAllFiles` — never recompute inline (282-vs-1209 drift). Both subtract orphans via ONE cwd-keyed cache (`useMissingArtifacts.ts`), never cleared before its replacement lands.
+- **Two single-source count helpers:** `countArtifacts` vs `countAllFiles` — never recompute inline. `countArtifacts` drops orphans (`fs.access`); `countAllFiles` is raw discovery (`artifacts/projects-index.ts`).
 
 ## Concurrency
 - **`casWrite` uses a mkdir-based lock** (bare CAS = TOCTOU data loss); central-index writers use `mutateFileUnderLock`. `appendVersion` retries CAS 5× — never add a second loop.
@@ -85,4 +85,4 @@ Per-project sidecars + a central index track every file Claude touches; I/O is m
 - **Drawer state is per-session keyed by `sessionId`**, labels SESSION-scoped; layout-level, not an overlay. Status glyphs (`●◐○`) BANNED. `.youcoded/` auto-gitignored.
 - **`showDeletedArtifacts` is SESSION-DRAWER-ONLY — deliberate** (a tombstone, not a recovery path). Cross-device-SYNCED — don't delete the "unused" flag.
 - **`EXCLUDE` has NO renderer caller** (legacy round-trip only); in-folder files can't be excluded.
-- **Android `get`/`save`/`read-binary` are REAL (SessionService.kt), NOT stubs — mirror any new desktop guard in Kotlin.** List/project/check-existence return `not-implemented-on-mobile`; `project:*` is desktop-only.
+- **Android `get`/`save`/`read-binary` are REAL (SessionService.kt), NOT stubs — mirror any new desktop guard in Kotlin.** List/project/import-file/search-content/watch-project return `not-implemented-on-mobile`; `check-existence` stubs "nothing missing"; `project:*` is desktop-only.

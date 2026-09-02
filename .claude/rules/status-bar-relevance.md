@@ -81,7 +81,7 @@ number, when there is nothing to compare.
 as "we checked and it matched".
 **Guard:** `provider-cost-check.test.ts`, `harness-pricing.test.ts`.
 
-**Known gaps, tracked in `ROADMAP.md`, not defects of this code:** the chip runs ~25% low
+**Known gaps, tracked in `docs/roadmap/native-harness.md` → `## cost`, not defects of this code:** the chip runs ~25% low
 once a session compacts (the summarize call's tokens are counted by neither side, so the
 comparison stays honest but a clean bill ≠ matching the invoice); a mid-turn model swap
 re-prices the whole turn; the session sum can average a bad model away across a swap.

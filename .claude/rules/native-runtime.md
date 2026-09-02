@@ -10,7 +10,7 @@ paths:
   - "**/desktop/src/main/providers/**"
   - "**/desktop/src/main/native-home.ts"
   - "**/desktop/src/renderer/components/native-send.ts"
-last_verified: 2026-08-16
+last_verified: 2026-09-01
 verify:
   - path: youcoded/desktop/src/main/harness/harness-session.ts
   - path: youcoded/desktop/src/main/harness/harness-session.ts
@@ -59,13 +59,13 @@ verify:
 ## Provider seam (Phase 0) — guard: `ipc-channels.test.ts`
 - **`'gemini'` is GONE** — never reintroduce it.
 - **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`.
-- **`createSession` throws for non-claude providers**; the native branch builds NO PTY worker (guard every `session.worker.X`); needs a `binding` unless resuming.
+- **`createSession` throws only for a fresh native session without a binding**; the native branch builds NO PTY worker (guard every `session.worker.X`); needs a `binding` unless resuming.
 
 ## Native sessions (Plan A) — guards: `harness-session`/`native-session-host`/`native-send`/`native-home` tests
-- **API keys: `safeStorage`-encrypted in `userData/native-secrets.json`, NEVER `~/.youcoded/`** (only a `secretRef`; no plaintext fallback); `~/.youcoded/` writes ride `NativeHome.mutateFileUnderLock` (THROWS on lock exhaustion).
+- **API keys: `safeStorage`-encrypted in `userData/native-secrets.json`, NEVER `~/.youcoded/`** (only a `secretRef`; no plaintext fallback); `~/.youcoded/` writes ride `NativeHome.mutateJson` (→ `mutateFileUnderLock`, THROWS on lock exhaustion).
 - **`SessionStore` coalesces same-`partId` deltas; display-only (`session-error`, payload-less `assistant-thinking`) is NEVER persisted.** Callers serialize per session; re-entrant `send()` throws.
 - **`send()` never throws — synchronous `NativeSendResult`** (`'sent'|'queued'` FIFO-10 `|'failed'`, real reason); the queue drains ONLY on `send()` settle; **interrupt aborts the current turn only — the queue still drains**; `destroy()` order is load-bearing (destroy → append-chain → dispose → delete).
-- **Queued messages are renderer list state, NEVER timeline**; `native:*` calls are invokes with ONE result shape on ALL transports.
+- **Queued messages are renderer list state, NEVER timeline**; `native:*` calls have ONE shape on ALL transports (invokes; interrupt/retry are fire-and-forget).
 - **The renderer native send path skips ALL PTY machinery** (`native-send.ts`); the send string MUST equal `buildOutgoingMessage(...).content`; ESC → `native.interrupt`.
 
 ## Tool loop (`harness-session.ts`) — guards: `harness-session-loop`/`harness-history-rebuild`/`harness-sdk-toolcall-contract`/`permission-engine` tests
@@ -84,7 +84,7 @@ verify:
 - **Two-stage compaction FAILS SAFE** — never drops a message, cuts on a USER boundary.
 
 ## Stall watchdog & the park — guard: `harness-stall-watchdog.test.ts`
-- **The park is a `return` that does NOT resolve the stall race** — stage 2 emits `{stalled:true}` and returns; nothing is torn down, so a chunk arriving minutes later still lands in the loop and continues the turn. That `return` IS the feature.
+- **The park is a `return` that does NOT resolve the stall race** — stage 2 emits `{stalled:true}` and returns; nothing is torn down; a late chunk still continues the turn. That `return` IS the feature.
 - **Check the park guard against the EXPRESSION, never prose — it has been mis-stated five times.** `!isSpecialistChild && (sawFirstChunk || turnEverParked) && !willRetry`, `willRetry = !emittedAny && isFirstAttempt`. `willRetry` tests `emittedAny`, NOT `sawFirstChunk` — tool-argument fragments set only the latter, so a first-attempt tool-args stall still auto-retries silently.
 - **Clock 1 stays OUT OF SCOPE** — nothing streamed this attempt and the turn never parked → still ends in the prefill `StreamStallError`. `turnEverParked` is per-TURN (cleared only at `send()` entry), so a post-park retry can never die on Clock 1.
 - **A specialist child must NEVER park** — `SUBAGENT_DISPLAY_TYPES` excludes `assistant-thinking`, so a parked child shows no card, its `send()` never settles, and the parent's `Task` waits forever.
