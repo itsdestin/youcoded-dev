@@ -33,6 +33,20 @@ started while the name was still opening) show the real pill picking up at the t
 pixel and no jump anywhere. Also corrected: a collapsed pill renders at 28px, and the packer
 had budgeted 24 since it was written.
 
+**Then the pickup and the yield (Destin: *"tune when the dots move just a smidge so the dragged
+pill doesn't overlap the dots before they move"*).** Two causes again. (1) The floating twin is
+a fresh element, so its label opened to full width the instant a drag started — while the
+in-flow box it stands in for was still mid-reveal after the press, and the dots beyond had not
+been pushed yet: 14px of overlap for the first ~40ms of every drag started right after a
+press. The twin's width now follows the in-flow box frame by frame (a rAF loop writing
+straight to the DOM). (2) The slot rule was Chrome's — a dot yields when the pill's edge passes
+its centre — and the dot then slides *through* the pill. Now only the neighbour AHEAD (in the
+direction of travel, with a 4px dead-band before a reversal counts) yields, `margin` px before
+contact (`DRAG_TUNE` in `drag-order.ts`; a wide neighbour still waits for its centre minus
+`early`, or a dot would send a 290px pill sliding aside on touch). Nothing behind the pill is
+ever touched, so the rule cannot flap while the direction holds. The probe's summary is now
+"sustained overlap ahead of the pill": 0px in all four probed drags (right, left, fast, long).
+
 The first cut (14 commits, 2026-08-31) was rejected in use: *"much too bouncy/aggressive"*,
 *"clicking is weird and jumpy"*, *"drag spacing is still really odd"*. This session recorded
 each gesture frame by frame in the workbench, found a mechanical cause for every complaint,

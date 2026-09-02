@@ -18,6 +18,10 @@
 // pill in hand), TWIN:left(width) = the floating pill. A jump between two
 // consecutive rows for any id is the jank; a glide is a run of small steps.
 //
+// The summary line is the worst overlap AHEAD of the pill's leading edge that lasts 4
+// consecutive frames (~65ms). A dot passing under the edge for a frame as it slides aside is
+// the step-aside itself; a dot still sticking out ahead after 65ms has not yielded in time.
+//
 // zsh note: pass the three numbers as separate words — `${=args}` if they come
 // from a variable, or zsh hands the script "6 1 700" as ONE argument.
 import { spawn } from 'node:child_process';
@@ -76,6 +80,33 @@ const log = await evaluate('JSON.stringify({ log: window.__log, marks: window.__
 writeFileSync(join(process.env.OUT_DIR ?? '.', 'drag-probe.json'), log);
 const { log: frames, marks } = JSON.parse(log);
 const rel = marks.find((m) => m.name === 'release').t;
+// Worst "peek" over the whole drag: the twin's leading edge over a pill that still sticks out
+// beyond it (it has not yielded yet). Right-going peek = twin.right - pill.left for pills whose
+// right edge is past the twin's right; left-going the mirror.
+// A neighbour sliding under the pill is expected and brief (one 150ms step-aside); a
+// neighbour still sticking out ahead of the pill's leading edge for longer than that is the
+// defect. So: the worst peek SUSTAINED over 4 consecutive frames (~65ms), per neighbour.
+// Only AHEAD of the pill counts: a dot tucked under the pill's trailing side is hidden by it
+// and is where a yielded dot is supposed to be. Direction = where the twin has moved over the
+// last few frames.
+let worst = 0, worstAt = null, instant = 0;
+const recent = new Map(); const twinLefts = [];
+for (const f of frames) {
+  const twin = f.rows.find((r) => r.id === 'TWIN'); if (!twin) continue;
+  twinLefts.push(twin.l); if (twinLefts.length > 4) twinLefts.shift();
+  const dir = Math.sign(twin.l - twinLefts[0]);
+  for (const r of f.rows) {
+    if (r.id === 'TWIN' || r.v === 'h') continue;
+    const tr = twin.l + twin.w, rr = r.l + r.w;
+    const peek = dir > 0 ? (rr > tr && r.l < tr ? tr - r.l : 0)
+               : dir < 0 ? (r.l < twin.l && rr > twin.l ? rr - twin.l : 0) : 0;
+    instant = Math.max(instant, peek);
+    const hist = recent.get(r.id) ?? []; hist.push(peek); if (hist.length > 4) hist.shift(); recent.set(r.id, hist);
+    const sustained = hist.length === 4 ? Math.min(...hist) : 0;
+    if (sustained > worst) { worst = sustained; worstAt = { t: (f.t - rel).toFixed(0), id: r.id }; }
+  }
+}
+console.log(`worst SUSTAINED peek (4 frames): ${worst.toFixed(1)}px` + (worstAt ? ` (${worstAt.id} at ${worstAt.t}ms)` : '') + `; worst single-frame overlap ${instant.toFixed(1)}px`);
 // Print the frames from 120ms before release to 400ms after, one row per frame: id:left(width).
 for (const f of frames) {
   if (f.t < rel - 120 || f.t > rel + 400) continue;

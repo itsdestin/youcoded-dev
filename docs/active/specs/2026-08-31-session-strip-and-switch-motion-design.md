@@ -362,7 +362,15 @@ Replace the ghost model with a moving-pill model.
   geometry** — `layoutRects` over the pack the row is settling into, with each pill at its
   measured full width or a dot — never against the DOM, which on a select-on-press is still
   mid-animation when the drag starts.
-- **The target is the nearest SLOT, not the nearest neighbour.** A slot is where the pill
+- **The neighbour ahead yields early; nothing behind is touched.** Only the neighbour in the
+  direction of travel (a 4px dead-band before a reversal counts) steps aside, `DRAG_TUNE.margin`
+  px before the pill's leading edge reaches it, so the pill never sits over a dot that has not
+  moved. A wide neighbour waits for its centre minus `early`, or a dot would send a 290px pill
+  sliding aside on touch. Because the rule only ever moves what is ahead, it cannot oscillate
+  while the direction holds; a reversal makes the dot just passed the one ahead again, and it
+  steps back at the same early point. (`nextSlotId`; the nearest-slot rule below survives only
+  as the fallback for a drag from the All Sessions menu.)
+- **Nearest slot, the fallback.** A slot is where the pill
   would sit if dropped between a given pair of neighbours — a pure function of the frozen
   widths and the order (`slotCentres` / `nearestSlotId` in `drag-order.ts`), never of where
   the neighbours are drawn right now. Nearest-neighbour is only the same question when every
