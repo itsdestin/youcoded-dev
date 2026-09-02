@@ -8,7 +8,7 @@ paths:
   - "**/desktop/src/renderer/state/artifact-tool-use-tracker.ts"
   - "**/desktop/src/renderer/state/ArtifactContext.tsx"
   - "**/desktop/src/shared/artifacts/**"
-last_verified: 2026-08-30
+last_verified: 2026-09-01
 verify:
   - test: youcoded/desktop/tests/artifacts/artifact-tool-use-tracker.test.ts
   - path: youcoded/desktop/src/main/artifacts/artifact-store.ts

@@ -6,7 +6,7 @@ paths:
   - "**/docs/gallery/**"
   - "scripts/ui-review/**"
   - "**/desktop/src/renderer/dev/workbench/**"
-last_verified: 2026-08-28
+last_verified: 2026-09-01
 verify:
   - path: scripts/ui-review/site-assets.sh
     contains: "docs/media"

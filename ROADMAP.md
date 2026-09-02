@@ -43,13 +43,13 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 49 | 5 | 3 | 15 |
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 37 | 16 | 3 | 8 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 51 | 6 | 3 | 16 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 38 | 17 | 3 | 8 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 23 | 12 | 3 | 3 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 21 | 5 | 0 | 9 |
+| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 17 | 7 | 2 | 1 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 3 | 2 | 6 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 16 | 5 | 0 | 5 |
-| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 15 | 5 | 2 | 1 |
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 14 | 8 | 2 | 1 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 11 | 5 | 1 | 1 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 11 | 2 | 0 | 5 |

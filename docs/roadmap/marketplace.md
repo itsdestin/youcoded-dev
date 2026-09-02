@@ -91,3 +91,12 @@ them. Not here: the theme renders wrong (themes).
       no notification fires — the shield only shows on the marketplace page you have no reason to
       revisit.
       `library` `all` `confirmed` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-marketplace-installed-plugin-turns-unsafe.md
+
+- [ ] Two marketplace plugins (spotify-services, youcoded-messaging) ship MCP manifests that use
+      a placeholder the app never fills in, so their server command comes out literally wrong for
+      everyone — the docs said the app expanded it; it only expands a different token
+      `marketplace-screen` `all` `needs-verify` `checked 2026-09-01`
+
+- [ ] Those same manifests list the platforms they support as a list, but the app reads a single
+      platform field — so the platform filter silently does nothing for both plugins
+      `marketplace-screen` `all` `needs-verify` `checked 2026-09-01`

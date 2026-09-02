@@ -1,7 +1,7 @@
 ---
 paths:
   - "**/desktop/src/renderer/**"
-last_verified: 2026-07-20
+last_verified: 2026-09-01
 verify:
   - path: youcoded/desktop/src/renderer/hooks/use-narrow-viewport.ts
     contains: "max-width: 639.98px"

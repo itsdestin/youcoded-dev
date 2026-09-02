@@ -4,7 +4,7 @@ paths:
   - "**/desktop/src/main/models/**"
   - "**/desktop/test-engine/**"
   - "**/desktop/src/main/providers/provider-registry.ts"
-last_verified: 2026-08-16
+last_verified: 2026-09-01
 verify:
   - path: youcoded/desktop/src/main/engine/engine-supervisor.ts
     contains: "models-dir"

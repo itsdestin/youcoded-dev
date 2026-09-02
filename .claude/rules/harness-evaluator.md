@@ -11,7 +11,7 @@ paths:
   # defects here that 4,500 passing tests missed, because every test drives a scripted
   # fake model and none of them spend a real turn deciding what to do next.
   - "**/desktop/src/main/harness/tools/**"
-last_verified: 2026-08-13
+last_verified: 2026-09-01
 verify:
   - path: youcoded/desktop/src/main/harness/eval/run-case.ts
     contains: "askUser: async"

@@ -1,7 +1,7 @@
 ---
 paths:
   - "**/app/**"
-last_verified: 2026-07-15
+last_verified: 2026-09-01
 verify:
   - path: youcoded/app/src/main/kotlin/com/youcoded/app/runtime/DirectShellBridge.kt
     contains: "no 600ms Enter-split here"
