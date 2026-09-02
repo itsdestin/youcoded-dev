@@ -24,9 +24,11 @@
 #     mapping to drive them from. A green run here says nothing about Android.
 #   * The marketplace worker has its own CI (wecoded-marketplace/.github/) and is
 #     not run here either.
-#   * `tsc --noEmit` uses desktop/tsconfig.json, whose `include` is `src/**/*`.
-#     Test files under tests/ are therefore NOT type-checked by it — vitest
-#     executes them, but esbuild strips types without checking them.
+#   * `tsc --noEmit` runs TWICE: desktop/tsconfig.json (src/**) and
+#     desktop/tsconfig.tests.json (the test tree). Until 2026-09-02 only the
+#     first existed and nothing type-checked a single test file. The second one
+#     still EXCLUDES the files that were already failing when it was introduced
+#     — the count is printed on every run so the debt cannot go quiet.
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -77,6 +79,24 @@ DESKTOP="$CHECKOUT/desktop"
   echo "error: $DESKTOP/node_modules is missing — run 'cd $DESKTOP && npm ci' first" >&2
   exit 2
 }
+
+# A SYMLINKED node_modules is not a supported shape, and it used to fail
+# silently: Vite resolved through the link to the main checkout, its file guard
+# denied the resulting path, and ~60 suites died at import with
+# `Denied ID .../github-dark.css?inline` while the summary said only "tests
+# failed". vitest.config.ts now allows the resolved directory, so the suites run
+# — but the OTHER hazard is unfixable from here and worse: `npm ci` and Gradle's
+# bundleWebUi follow the link and empty the MAIN checkout's node_modules for
+# every worktree at once (workspace CLAUDE.md, verified 2026-08-13). Say so
+# loudly rather than letting a green run imply the setup is fine.
+if [[ -L "$DESKTOP/node_modules" ]]; then
+  echo "WARNING: $DESKTOP/node_modules is a SYMLINK to $(readlink "$DESKTOP/node_modules")" >&2
+  echo "         Tests will run, but do NOT run 'npm ci' or any Gradle task in this" >&2
+  echo "         checkout — both follow the link and wipe the shared copy." >&2
+  echo "         Replace it with a hardlink farm:" >&2
+  echo "           rm '$DESKTOP/node_modules' && cp -al <main-checkout>/desktop/node_modules '$DESKTOP/node_modules'" >&2
+  echo "" >&2
+fi
 
 # Default base ref: prefer a local master, fall back to the remote. A worktree
 # created straight from origin/master may have no local master ref at all.
@@ -173,6 +193,7 @@ echo ""
 if [[ $DRY -eq 1 ]]; then
   echo "would run:"
   echo "  npx tsc --noEmit -p tsconfig.json"
+  echo "  npx tsc --noEmit -p tsconfig.tests.json"
   echo "  npm run knip"
   echo "  npm run lint"
   if [[ $RUN_FULL -eq 1 ]]; then
@@ -185,6 +206,14 @@ if [[ $DRY -eq 1 ]]; then
 fi
 
 start types "types (tsc --noEmit)" npx tsc --noEmit -p tsconfig.json
+# The test tree is its own TS project (different module resolution, allowJs for
+# the .mjs orchestrator). Separate check so a failure names which tree broke.
+# Older checkouts have no tsconfig.tests.json; skip rather than fail on them.
+if [[ -f "$DESKTOP/tsconfig.tests.json" ]]; then
+  TESTS_EXCLUDED=$(grep -cE '^ *"tests/.*\.tsx?"' "$DESKTOP/tsconfig.tests.json" || true)
+  start testtypes "types in tests/ (tsc --noEmit, ${TESTS_EXCLUDED} file(s) still excluded)" \
+    npx tsc --noEmit -p tsconfig.tests.json
+fi
 start knip  "dead code (knip)"     npm run knip --silent
 # eslint is the bug gate, not a style gate — it catches the classes tsc/knip
 # structurally cannot (conditional React hooks, floating promises in main,
@@ -203,7 +232,7 @@ fi
 start invariants "invariants (ast-grep)" bash "$ROOT/scripts/ast-grep/check.sh" "$DESKTOP/src"
 
 FAILED=0
-for key in types tests knip lint invariants; do
+for key in types testtypes tests knip lint invariants; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
   if [[ $rc -eq 0 ]]; then

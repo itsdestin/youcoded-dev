@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: workbench-boot-check.mjs reports every route "ok" when nothing is serving the port
 ---
@@ -26,4 +26,13 @@ of the app exists in the DOM; fail loudly when the port refuses a connection. Th
 anything reachable only by clicking into a panel (its header says it exercises MOUNT only) — see the
 Backup & Sync workbench crash report for that class.
 
-**History.** Filed 2026-08-27 (hit while building the download-resume UI); re-verified 2026-09-01.
+**FIXED 2026-09-02.** All three assertions from the fix shape landed, each proven to fire on its
+own: a preflight HTTP request (dead port -> exit 2, "nothing is serving the workbench on port N",
+before Chrome is even launched); the `Page.navigate` errorText plus the main document's HTTP status
+(a server answering 500 -> "server answered HTTP 500 for the page"); and `#root`, which
+`index.html` ships inline (a server that is up but is not the workbench -> "#root is not in the DOM").
+Verified green against a real workbench: 16/16 routes, exit 0. Guarded by
+`scripts/workbench-boot-check.test.mjs`, which needs no Chrome, and run by Workspace CI.
+
+**History.** Filed 2026-08-27 (hit while building the download-resume UI); re-verified 2026-09-01;
+fixed 2026-09-02.

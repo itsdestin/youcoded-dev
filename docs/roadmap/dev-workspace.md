@@ -10,30 +10,29 @@ seen-on is always n/a here.
       and a missing git are all unpinned. None is a known failure
       `n/a` `needs-verify` `checked 2026-09-02`
 
-- [ ] About a hundred fixed sleeps still stand in for real signals across the desktop suite, and
-      the MCP startup-wiring test blows even the 30 s budget once eight full suites run at once
-      (times out at 5 s under lighter load) — left on purpose after youcoded#362/#363
-      `n/a` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-fixed-sleeps-and-mcp-wiring-import.md
+- [ ] 102 fixed sleeps still stand in for real signals across the desktop suite (was 108; the six
+      worst in native-session-host — five copies of "guess 20 ms that the child's turn started",
+      the bug youcoded#363 already fixed once in that file, plus one whose own comment said "poll"
+      while it slept — now wait on the real event). The MCP startup-wiring test did not blow its
+      budget in any of 27 local runs on 2026-09-02, including two 8-way concurrent sweeps
+      `n/a` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-01-fixed-sleeps-and-mcp-wiring-import.md
 
-- [ ] The desktop test tree (~350 files) is neither type-checked nor linted — a broken type in a
-      test only shows up when the test runs
-      `n/a` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-desktop-tests-not-typechecked.md
-
-- [ ] verify.sh's related-tests fail with Vite "Denied ID …?inline" in any worktree whose
-      node_modules is a symlink to the main checkout; the hardlink-farm copy (`cp -al`) is now the
-      documented convention and sidesteps it, so a config-level fix is deliberately not now
-      `n/a` `parked` `checked 2026-09-01`
+- [ ] 57 test files are excluded from the new test typecheck — they hold the 201 type errors it
+      found on the day it was switched on, mostly fixtures built as partial objects. Named one per
+      line in `desktop/tsconfig.tests.json`; verify.sh prints the remaining count every run
+      `n/a` `confirmed` `checked 2026-09-02`
 
 - [ ] The sync-spaces engine test goes red on the macOS CI leg every week or two — on branches
       that touch nothing in sync, and on untouched master — with zero watcher events delivered;
       Ubuntu and Windows pass the same commit, and every fire also skips macOS packaging
       `n/a` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
 
-- [ ] Three suites still flake under parallel load and pass alone: subagent-view, mcp-startup-wiring
-      (5 s timeout), and project-watcher ("expected [add] to include edit", ubuntu, youcoded#375
-      run 33553046644 on 2026-09-01); the fourth member, sync-warning-self-clear, was fixed by
-      youcoded#317
-      `n/a` `needs-verify` `checked 2026-09-01`
+- [ ] subagent-view, mcp-startup-wiring and project-watcher were filed as the suites that flake
+      under parallel load, but 27 full local runs on 2026-09-02 (1 alone, 6 concurrent, 4 pinned to
+      4 cores, 2 x 8 concurrent) never failed any of the three — the four that DID fail at 8-way
+      concurrency were different files and are fixed. Either these three need a different trigger
+      (the project-watcher hit was Ubuntu CI, not local) or they are already fixed
+      `n/a` `needs-verify` `checked 2026-09-02`
 
 - [ ] The lint gate only enables rules already at zero; the deferred list at the bottom of the
       ESLint config still fires — 79 renderer floating promises and 43 exhaustive-deps hits (the
@@ -67,10 +66,6 @@ seen-on is always n/a here.
       real feature; the first small UI feature Destin asks for is the trial, and its handoff
       records rounds, Destin-seconds, reopens and rows that failed at acceptance
       `n/a` `in-flight` `checked 2026-09-02` → docs/active/plans/2026-09-01-feature-flow-plan.md
-
-- [ ] The workbench boot check prints "ok" for all 12 routes and exits 0 when nothing is serving
-      the port at all — a green run does not prove the app mounted
-      `n/a` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-boot-check-dead-port.md
 
 - [ ] Opening Settings → Backup & Sync in the workbench takes the whole thing down to "YouCoded
       failed to start"; the boot check cannot see it and the review sweep counts the error state
