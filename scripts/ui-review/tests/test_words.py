@@ -89,6 +89,16 @@ class WordsTests(unittest.TestCase):
         self.assertIn('"words": true', page)
         self.assertEqual(warnings, [])
 
+    def test_summary_names_the_note_tag(self):
+        from deck.serve import summary
+        s = load_spec(words_spec(self.tmp))
+        state = {'submitted': '2026-09-01T10:00:00Z', 'answers': {
+            'Q-1': {'v': 'pick', 'pick': 'a', 'note': 'but smaller', 'note_kind': 'now'},
+            'Q-3': {'v': 'yes', 'note': 'fine', 'note_kind': 'noting'}}}
+        lines = summary(s, state).split('\n')
+        self.assertEqual(lines[1], 'Q-1 pick a — "but smaller" [fix now]')
+        self.assertEqual(lines[3], 'Q-3 yes — "fine" [just noting]')
+
     def test_is_words_is_the_flag_not_a_guess(self):
         # A step that merely FORGOT its crop is still an error, not a silent words step.
         self.assertFalse(is_words({'id': 'x', 'headline': 'h'}))

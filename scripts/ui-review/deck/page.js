@@ -220,6 +220,10 @@
     $$('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
     $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', a.v === 'pick' && f.dataset.run === a.pick));
     const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
+    // The tag row is shown only once a note has text — nothing about an empty note is tagged.
+    const hasNote = !!(a.note && a.note.trim());
+    $('#tags').hidden = !hasNote;
+    $$('#tags .tag').forEach(b => b.classList.toggle('on', hasNote && b.dataset.kind === (a.note_kind || 'noting')));
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
     const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
     $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
@@ -278,7 +282,18 @@
   // at speed is one POST, not one per keystroke.
   let noteTimer = null;
   $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick); });
-  $('#note').addEventListener('input', e => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note: e.target.value }; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); });
+  $('#note').addEventListener('input', e => {
+    const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), note: e.target.value };
+    // A note that just gained text is "just noting" until he says otherwise — a visible default,
+    // not an inference: it is on screen, selected, and one click away from the other two.
+    if (a.note.trim() && !a.note_kind) a.note_kind = 'noting';
+    if (!a.note.trim()) delete a.note_kind;
+    state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+  });
+  $('#tags').addEventListener('click', e => {
+    const b = e.target.closest('.tag'); if (!b || state.submitted) return;
+    const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note_kind: b.dataset.kind }; paintState(); save();
+  });
   $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
   $('#next').onclick = () => go(cur + 1); $('#prev').onclick = () => go(cur - 1);
   $$('#steps span').forEach((s, i) => s.onclick = () => go(i));
@@ -286,7 +301,8 @@
   // ── submit ──
   function summary() {
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
+    // Mirrors serve.py's summary(): the note's tag prints right after its quoted text, same words.
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' + (a.note_kind ? ' [' + {now:'fix now',later:'fix later',noting:'just noting'}[a.note_kind] + ']' : '') : '')); }
     return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
   }
   function openDialog() {
@@ -322,7 +338,7 @@
     $('#veil').classList.remove('on'); lockSubmitted();
   };
   // A submitted deck is read-only, and says so — silently ignoring clicks read as "I can't click through the pages".
-  function lockSubmitted() { $('#done').textContent = 'Submitted ✓'; $('#done').disabled = true; $$('.ans,#save,#note').forEach(e => e.disabled = true); paintState(); }
+  function lockSubmitted() { $('#done').textContent = 'Submitted ✓'; $('#done').disabled = true; $$('.ans,#save,#note,.tag').forEach(e => e.disabled = true); paintState(); }
   $('#copy').onclick = () => { const t = $('#feedback'); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).catch(() => document.execCommand('copy')); $('#copy').textContent = 'Copied'; };
 
   // ── loupe, zoom, keys ──

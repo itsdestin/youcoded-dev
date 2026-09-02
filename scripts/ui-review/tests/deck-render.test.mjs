@@ -261,12 +261,20 @@ test('a words-only deck renders with no stage and records a pick', async () => {
       assert.equal(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.dataset.v).join(',')"), 'other');
       await c.evaluate("document.querySelector('.card.option').click()");
       await c.evaluate("document.querySelector('#save').click()");   // → Q-2
+      // Back up to Q-1 and tag its note — proves the tag row appears once the note has text
+      // and the pick lands next to it in the saved file (feature-flow design §5).
+      await c.evaluate("document.querySelector('#prev').click()");   // back to Q-1
+      await c.evaluate("const n = document.querySelector('#note'); n.value = 'smaller'; n.dispatchEvent(new Event('input'))");
+      assert.equal(await c.evaluate("document.querySelector('#tags').hidden"), false);
+      await c.evaluate("document.querySelector('.tag[data-kind=later]').click()");
+      await c.evaluate("document.querySelector('#save').click()");   // → Q-2 again
       await c.evaluate("document.querySelector('#next').click()");   // → Q-3
       await sleep(200);
       assert.equal(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.textContent).join(',')"), 'Holds,Fails,Other');
       await sleep(400);
       const answers = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
       assert.deepEqual([answers.answers['Q-1'].v, answers.answers['Q-1'].pick], ['pick', 'a']);
+      assert.equal(answers.answers['Q-1'].note_kind, 'later');
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
   } finally { srv.kill(); }
