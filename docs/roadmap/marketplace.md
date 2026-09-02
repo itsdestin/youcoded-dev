@@ -4,6 +4,13 @@ them. Not here: the theme renders wrong (themes).
 
 ## catalog
 
+- [ ] The marketplace distributes themes and skills but nothing that changes how the assistant is
+      instructed. Wanted: packs that replace the native harness's system prompt and its built-in tool
+      descriptions, installed the way a theme is. Undesigned, and it needs three things a theme does
+      not: a boundary so a pack cannot silently strip real safety instructions, a preview of what a
+      pack changes before installing, and a revert to the stock prompt
+      `marketplace-screen` `all` `parked` `checked 2026-09-02`
+
 - [ ] The "What this can do" panel under-reports capable plugins: measured 2026-08-31, `github`,
       `playwright`, `serena` and `context7` listed a single "Adds…" line with no shell, network or
       key. Re-checked 2026-09-01 on the live catalog: all four now show their real shell/network/key
@@ -24,6 +31,13 @@ them. Not here: the theme renders wrong (themes).
       `marketplace-screen` `all` `needs-verify` `checked 2026-08-07` `performance`
 
 ## backend
+
+- [ ] There is no way to pay a pack author anything. Wanted: a tip that splits between YouCoded and
+      the authors whose packs the user actually uses — Destin's ranking is the current theme's author
+      first, then skill and other authors by a usage signal (invocations or installs, unresolved).
+      Undesigned, and blocked on three missing pieces: an author claim-and-verify flow, a payout
+      integration, and usage numbers the marketplace does not collect yet
+      `marketplace-screen` `all` `parked` `checked 2026-09-02`
 
 - [ ] A plugin that ships from a non-default branch gets scanned against the wrong code. Four live
       listings (three `netsuite-*`, one `42crunch`) were stamped "Likely safe" having read nothing;
