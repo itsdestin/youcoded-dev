@@ -1,0 +1,32 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "boot": 4000,
+  "width": 1440,
+  "height": 900,
+  "shots": [
+    {
+      "name": "handoff",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-handoff",
+      "actions": [{ "click": "[data-session-idx='1']", "settle": 1200 }],
+      "expect": "js:document.body.textContent.includes('Writing the handoff doc now')"
+    },
+    {
+      "name": "reasoning-stop",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-reasoning-stop",
+      "actions": [{ "click": "[data-session-idx='1']", "settle": 1200 }],
+      "expect": "js:document.body.textContent.includes('Interrupted.')"
+    },
+    {
+      "name": "skill-first",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-skill-first",
+      "actions": [{ "click": "[data-session-idx='1']", "settle": 1200 }],
+      "expect": "js:document.body.textContent.includes('All 42 anchors resolve')"
+    },
+    {
+      "name": "approval",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-approval",
+      "actions": [{ "click": "[data-session-idx='1']", "settle": 1200 }],
+      "expect": "js:document.body.textContent.includes('rm -rf desktop/dist')"
+    }
+  ]
+}
