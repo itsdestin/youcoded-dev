@@ -39,8 +39,7 @@ verify:
 ---
 # Native specialists (plan 1a + 1b + 1c)
 
-Depth: `youcoded/docs/native-runtime.md` → "Specialists (plan 1a/1b/1c)" sections.
-**Whole-family primer — vision, shipped state, remaining work, decisions owed: `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md`. Start there before planning anything in this family.**
+Depth: `youcoded/docs/native-runtime.md` → "Specialists (plan 1a/1b/1c)" sections Primer: `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md`.
 Sibling rule: `native-permissions.md` (the permission-store quad/v2 half of 1b).
 
 ## Specialists (plan 1a) — guards: `specialist-run`/`specialist-registry` tests
