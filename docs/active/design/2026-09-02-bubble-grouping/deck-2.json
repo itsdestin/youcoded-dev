@@ -1,0 +1,46 @@
+{
+  "title": "Bubble grouping, round 2",
+  "key": "bubble-grouping-2",
+  "out": "deck-2.html",
+  "images": "images/deck-2",
+  "runs": { "before": "/home/destin/youcoded-dev/scratch/bubbles-before", "after": "/home/destin/youcoded-dev/scratch/bubbles-after" },
+  "themes": ["midnight", "light", "creme", "dark", "halftone-dimension", "meadow-mist"],
+  "crops": {
+    "skills-chain": ["bubbles", "skills-chain", "1240x620+0+50"],
+    "deliverables": ["bubbles", "deliverables", "1240x520+0+50"],
+    "mix": ["bubbles", "mix", "1240x740+0+40"],
+    "skills-spread": ["bubbles", "skills-spread", "1240x500+0+50"]
+  },
+  "steps": [
+    { "id": "B-4", "surface": "Chat view", "path": "Two skills back to back, a deliverable, then a skill in the next turn", "crop": "skills-chain",
+      "headline": "Two skills invoked back to back at the start of a turn no longer leave a hollow bubble above the reply.",
+      "changed": "Same fix as the single-skill case: the sliver that held nothing is skipped. The skill cards still sit at the end of the turn, after the deliverables card.",
+      "notice": "The reply starts one sliver higher. Both skill cards and the file card are where they were, and the next turn's skill is unaffected.",
+      "risk": "None seen." },
+    { "id": "B-5", "surface": "Chat view", "path": "Files sent at three points in one turn (native model with reasoning)", "crop": "deliverables",
+      "headline": "Files sent mid-turn no longer leave small empty bubbles after each Deliverables card.",
+      "changed": "The model sent a blank chunk after each file card; each blank used to become an empty bubble. Those are ignored now.",
+      "notice": "Three bubbles, one per step: report, then the regenerated charts with their tool, then the summary. The two Deliverables cards keep their captions.",
+      "risk": "The file tiles show generic icons here because the screenshot tool has no real files to thumbnail; the app shows previews." },
+    { "id": "B-6", "surface": "Chat view", "path": "One turn with reasoning, a skill, tools, an edit and a deliverable, then a cut-off turn", "crop": "mix",
+      "headline": "A busy turn reads as three steps with grouped tools, and a cut-off reply keeps its note at the bottom.",
+      "changed": "The two tools the model called in its first step share a group (“2 tools — all complete”) instead of splitting across bubbles. The truncated turn's note is unchanged.",
+      "measured": "Before: 4 bubbles for the first two steps; after: 2",
+      "notice": "Grouped tools read as one line until expanded. The skill card lands at the very end of the turn, after the file card. The second turn ends with “Response truncated”.",
+      "risk": "Before and after are scrolled differently because the before version is taller; compare the bubble count, not the position." },
+    { "id": "B-7", "surface": "Chat view", "path": "Skills invoked at different points in one turn", "crop": "skills-spread",
+      "highlight": { "box": [4, 80, 22, 11] },
+      "headline": "Where should a skill card sit when the skill was invoked partway through a turn?",
+      "options": [
+        { "id": "A", "label": "Keep it: all skill cards at the end of the turn",
+          "summary": "Today's behaviour, shown in the picture. Brainstorming was invoked before the questions and writing-plans before the plan, but both cards sit under the last bubble.",
+          "cost": "No change. You cannot tell from the cards when each skill was used." },
+        { "id": "B", "label": "Each skill card stays in the bubble where it was invoked",
+          "summary": "The brainstorming card would sit under “Starting with the design pass.” and the writing-plans card under “…Writing the plan now.” Cards still render below that bubble's tools.",
+          "cost": "A small change to the chat view. A turn that opens with a skill and nothing else would show the card in a bubble of its own." },
+        { "id": "C", "label": "Skill cards at the end, but one line each",
+          "summary": "Keep them at the end and shrink each to a single compact line so several skills cost less height.",
+          "cost": "A new compact card size to design and review." }
+      ] }
+  ]
+}
