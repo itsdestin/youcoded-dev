@@ -10,6 +10,9 @@
     change: '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m12.5 7.5 4 4"/></svg>',
     eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
     warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>' };
+  // Mirrors serve.py's NOTE_KIND: an unknown/absent note_kind (an old answers file predating
+  // tags) prints nothing in the summary rather than "[undefined]".
+  const NOTE_KIND = { now: 'fix now', later: 'fix later', noting: 'just noting' };
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   if (window.top !== window) document.body.classList.add('embedded');
   // What the stage shows for a step: one frame per run (before/after, or today), or — for a CHOICE
@@ -221,9 +224,12 @@
     $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', a.v === 'pick' && f.dataset.run === a.pick));
     const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
     // The tag row is shown only once a note has text — nothing about an empty note is tagged.
+    // A visible default, never an inference: an old answer's note (written before tags existed)
+    // has no note_kind, so it shows none selected — the default is written only when a note
+    // gains text under the #note input handler below, never painted on here.
     const hasNote = !!(a.note && a.note.trim());
     $('#tags').hidden = !hasNote;
-    $$('#tags .tag').forEach(b => b.classList.toggle('on', hasNote && b.dataset.kind === (a.note_kind || 'noting')));
+    $$('#tags .tag').forEach(b => b.classList.toggle('on', hasNote && b.dataset.kind === a.note_kind));
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
     const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
     $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
@@ -302,7 +308,7 @@
   function summary() {
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
     // Mirrors serve.py's summary(): the note's tag prints right after its quoted text, same words.
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' + (a.note_kind ? ' [' + {now:'fix now',later:'fix later',noting:'just noting'}[a.note_kind] + ']' : '') : '')); }
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); const tag = NOTE_KIND[a.note_kind]; lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' + (tag ? ' [' + tag + ']' : '') : '')); }
     return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
   }
   function openDialog() {

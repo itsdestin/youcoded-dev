@@ -275,6 +275,15 @@ test('a words-only deck renders with no stage and records a pick', async () => {
       const answers = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
       assert.deepEqual([answers.answers['Q-1'].v, answers.answers['Q-1'].pick], ['pick', 'a']);
       assert.equal(answers.answers['Q-1'].note_kind, 'later');
+      // Clearing the note must remove its tag — paintState()'s highlight is display-only and
+      // must not repaint a tag that isn't stored (the fix this test pins).
+      await c.evaluate("document.querySelectorAll('#steps span')[0].click()");   // back to Q-1
+      await c.evaluate("const n2 = document.querySelector('#note'); n2.value = ''; n2.dispatchEvent(new Event('input'))");
+      assert.equal(await c.evaluate("document.querySelector('#tags').hidden"), true);
+      await c.evaluate("document.querySelector('#save').click()");   // → Q-2, saves the cleared note
+      await sleep(400);
+      const answers2 = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
+      assert.equal('note_kind' in answers2.answers['Q-1'], false);
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
   } finally { srv.kill(); }
