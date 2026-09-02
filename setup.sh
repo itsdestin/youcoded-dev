@@ -47,11 +47,22 @@
   script_before="$(git hash-object "$ROOT/setup.sh")"
 
   git fetch origin
-  if ! git pull origin master; then
+  # --ff-only: a bare `git pull` with no pull.rebase config ABORTS on "divergent
+  # branches" (seen 2026-09-01: one local commit ahead, 33 behind) and the old message
+  # told Destin to commit or stash, which was not the problem. Name the real state.
+  if ! git pull --ff-only origin master; then
     echo ""
     echo "WARNING: sub-repos synced, but youcoded-dev itself did not update."
-    echo "Git refused rather than touching your work -- see its error above. Commit,"
-    echo "stash, or resolve, then re-run: bash setup.sh"
+    echo "  $(git status -sb | head -1)"
+    if [ -n "$(git log --oneline origin/master..HEAD)" ]; then
+      echo "Your master has local commits that are not on origin (listed below). Push them"
+      echo "(git push origin master) or rebase them onto origin:"
+      echo "  git pull --rebase --autostash origin master"
+      git log --oneline origin/master..HEAD | sed 's/^/    /'
+    else
+      echo "Git refused rather than touching uncommitted work -- see its error above. Commit,"
+      echo "stash, or resolve, then re-run: bash setup.sh"
+    fi
     exit 1
   fi
 
