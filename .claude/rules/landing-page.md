@@ -15,8 +15,8 @@ verify:
   - path: scripts/ui-review/README.md
     contains: "Recording a loop"
   - path: scripts/ui-review/copy-preview.py
-  - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
-    contains: "__workbenchAppearanceSync"
+  - path: youcoded/docs/index.html
+    contains: "Appearance"
   - path: youcoded/desktop/src/renderer/dev/workbench/reply-script.ts
     contains: "splitTurns"
   - path: youcoded/desktop/src/renderer/dev/workbench/fixture-loader.ts
@@ -69,9 +69,10 @@ Switches: `?seed=none` (empty chat), `?title=`, `?model=`, `?platform=android`,
 **Why:** every frame still "verifies" against stale code — filmed the old fixture twice.
 
 ## The live embed
-**Invariant:** the page's theme button drives the app's real Settings → Appearance; theme
-changes go through `__workbenchAppearanceSync` (the app's cross-window sync), never a
-reload; the iframe ignores the pointer until the visitor clicks once.
+**Invariant:** the page's floating theme button clicks the app's own gear + Appearance row
+inside the iframe (the swatch bar and its `__workbenchAppearanceSync` hook went in `8d077dcd`;
+the hook survives only for the workbench deck); never a reload; the iframe ignores the
+pointer until the visitor clicks once.
 **Why:** a reload flashed the poster; an interactive iframe under the wheel trapped page
 scroll ("janky").
 
@@ -84,5 +85,5 @@ never as a prose description or a still that can't show it.
 ## Copy and review
 **Invariant:** page copy is reviewed in place with `scripts/ui-review/copy-preview.py serve
 … [--media docs/media]` (edit text on a page-shaped preview; per-row loop verdicts) — never
-a table, contact sheet, or chat description (all rejected). The never-claim list lives in the
-spec's Global Constraints; the disclaimer paragraph is verbatim.
+a table, contact sheet, or chat description (all rejected). The never-claim list is the audit's,
+referenced from the spec's "Not in scope"; the footer's Anthropic non-affiliation sentence is verbatim.

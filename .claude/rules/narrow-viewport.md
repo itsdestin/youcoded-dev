@@ -23,13 +23,14 @@ features were not merely cramped but **unreachable**.
 
 **640px is the breakpoint; `useNarrowViewport()` is the source of truth.**
 Use the hook when the DOM structure branches, Tailwind's `max-sm:`/`sm:` when
-only classes change. Don't introduce a new number. · why: four competing values
+only classes change. Don't introduce a new number. (One survivor: the structural
+collapse in `globals.css` is still `@media (max-width: 700px)` — pre-pass, not a licence.) · why: four competing values
 is what produced the unreachable states · guard: `use-narrow-viewport.ts`
 (`639.98px`), `OverflowMenu.test.tsx`.
 
 **Never hide a control as the narrow "fix" unless another entry point exists.**
 `hidden sm:block` on the gamepad made Connect 4 unreachable below 640px —
-`TOGGLE_PANEL` had exactly one caller in the whole renderer, so an incoming
+`TOGGLE_PANEL` had one caller in the whole renderer then (three today), so an incoming
 challenge could never be answered. Collapse into the `|||` menu instead. ·
 guard: `OverflowMenu.test.tsx` (deleting a row fails it).
 
@@ -53,7 +54,7 @@ hung outside an `overflow:hidden` box on a 390px screen. Check the child too.
 frame border is painted by chrome-glass, NOT by the `.frame-edge` elements
 (those are flex spacers). Hide the spacers and the pane paints over the border.
 Inset the pane with **margins**, not by un-hiding spacers: `ChatView`'s
-`framed-shell` has `.frame-edge` children, `TerminalRightSlot`'s clone has none,
+`framed-shell` has two `.frame-edge` children, `TerminalRightSlot`'s clone has one,
 so the spacer route fixes chat view and leaves terminal view broken.
 
 **Hover-only affordances have no touch path.** `opacity-0 group-hover:` never
@@ -65,7 +66,7 @@ never fire on touch — don't put load-bearing copy there.
 current one. Reads correct either way in source; only obviously wrong in the
 running app. · guard: `NarrowViewToggle.test.tsx`.
 
-Remote-specific trap: the shim overwrites `__PLATFORM__` with the **host's**
-platform, so `isTouchDevice()` is false on a phone. Feature-detect
+Remote-specific trap: the server sends `platform: 'desktop'` and the shim adopts it unless
+`preservePlatform` is set (`remote-shim.ts`), so `isTouchDevice()` is false in a phone browser. Feature-detect
 (`matchMedia('(pointer: coarse)')`) rather than trusting the platform string —
 see the open item in `docs/roadmap/remote-access.md` ("the remote shim overwrites the device platform").

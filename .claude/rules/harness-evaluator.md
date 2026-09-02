@@ -38,6 +38,8 @@ verify:
   - test: youcoded/desktop/tests/harness-eval-report.test.ts
   - test: youcoded/desktop/tests/harness-review-fixture.test.ts
   - test: youcoded/desktop/tests/harness-review-runner.test.ts
+  - test: youcoded/desktop/tests/harness-eval-orchestrator.test.ts
+  - test: youcoded/desktop/tests/harness-eval-estimate.test.ts
 ---
 
 # Harness evaluator (`test-engine/harness-eval.mjs`)
@@ -72,8 +74,9 @@ free and needs no key; a real run needs `--key-file`.
 
 - **The fixture jail is held by `askUser`, not `decide`.** `decide` is fully permissive;
   `askUser` denies every ask that isn't a genuine `AskUserQuestion` — `external_directory`,
-  `doom_loop`, `max_steps`. **One path is exempt by design:** Bash's spill root
-  (`tools/spill-paths.ts`) is `ok`, so a model can read back its own truncated output.
+  `doom_loop`, `max_steps` (allowed once, `STEP_GATE_ALLOWANCE`). **Exempt by design**
+  (`tools/guards.ts`): Bash's spill root and `internalReadRoots` — a model may read back its
+  own truncated output.
   Guard: `harness-review-runner.test.ts` → "denies a Write outside the fixture".
 
 - **Uniform step budget, not the app's chat tiers** (25/50 cuts a 40–80-call run short),
