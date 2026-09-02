@@ -93,18 +93,19 @@ jobs:
       # (`-t .` cannot import a directory with no __init__.py). Same shape as the
       # hooks above: a check that stops checking goes quiet, not red.
       #
-      # ONLY these four suites. Every other one shells out to `magick` (test_boxes,
+      # ONLY these five suites. Every other one shells out to `magick` (test_boxes,
       # test_build, test_crops, test_cli, test_serve) or drives Chrome/ffmpeg (the
       # three *.test.mjs), none of which this runner has — so they stay local and
-      # scripts/ui-review/README.md says so. test_live and test_words are written
-      # picture-free on purpose to keep the new coverage on this side of that line.
+      # scripts/ui-review/README.md says so. test_live, test_words and test_contract
+      # are written picture-free on purpose to keep the new coverage on this side of
+      # that line.
       #
       # working-directory, not `-t`: the suites live outside a package, so each one
       # bootstraps its own sys.path and must be imported as a top-level module.
       - name: Test the review deck
         if: ${{ !cancelled() }}
         working-directory: scripts/ui-review/tests
-        run: python3 -m unittest -v test_spec test_tokens test_live test_words
+        run: python3 -m unittest -v test_spec test_tokens test_live test_words test_contract
 
       # A command printed in a doc is a promise nobody checks. The deck's test command sat
       # WRONG in two docs for months — `-t .` cannot start at all — which is why that suite

@@ -20,6 +20,9 @@ A step may instead be WORDS-ONLY ("words": true — a question with 1–3 writte
 statement to approve; no picture, no images folder needed): that is the questions deck asked
 before anything is drawn.
 
+A CONTRACT step ("rows") is the definition of done signed off as one step; see
+docs/active/specs/2026-09-01-feature-flow-design.md.
+
 Run `serve` in the background: its exit is the "review finished" signal and it prints the
 feedback summary. There is deliberately no separate crop step — a stale intermediate file drew
 wrong rings with no error in v1. Spec format + writing rules:

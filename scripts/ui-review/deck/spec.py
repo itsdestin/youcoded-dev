@@ -22,6 +22,11 @@ VARIANT_TEXT_FIELDS = ['label', 'summary', 'measured', 'risk']
 OPTION_TEXT_FIELDS = ['label', 'summary', 'measured', 'cost']
 HEADLINE_MAX = 25
 RISK_WARN = 40
+# A contract row's `checkedBy` — who resolves it: a guard script, this deck's own answers,
+# a running app probe, or a person. Task 4 reads this to pick its resolver.
+CHECKED_BY = ('mechanical', 'deck', 'live-app', 'human')
+# <deck key>#<step id> — the answered step a row's verdict comes from.
+SOURCE_RE = re.compile(r'^[\w.-]+#[\w.-]+$')
 # Each live pane boots its own copy of the app; four is the cap (spec: Non-goals).
 MAX_LIVE_PANES = 4
 # Wider than this and the row scrolls sideways, which defeats comparing the panes at all.
@@ -300,7 +305,7 @@ def _validate_options(st, sid, errors, warnings, minimum):
 def _validate_words(spec, st, sid, errors, warnings):
     """No picture, so every picture field is refused rather than required — the same stance
     as _validate_live. The question shape is the existing one: `options` → pick one. A
-    contract (`rows`) is validated by _validate_rows (Task 3), which this dispatches to."""
+    contract (`rows`) is validated by _validate_rows, which this dispatches to."""
     for k in ('surface', 'path', 'headline'):
         if not st.get(k):
             errors.append(f'{sid}: missing {k}')
@@ -309,7 +314,7 @@ def _validate_words(spec, st, sid, errors, warnings):
             errors.append(f'{sid}: a words step has no {k} — there is no picture')
     _headline_and_words(st, sid, errors)
     if is_contract(st):
-        _validate_rows(spec, st, sid, errors)          # Task 3 adds it; until then a contract step is not valid
+        _validate_rows(spec, st, sid, errors)
     elif st.get('options'):
         _validate_options(st, sid, errors, warnings, minimum=1)
     else:
@@ -331,9 +336,44 @@ def _validate_words(spec, st, sid, errors, warnings):
 
 
 def _validate_rows(spec, st, sid, errors):
-    # Placeholder until Task 3: reaching the contract validator (not "missing crop") is
-    # already correct behaviour for is_words/is_contract — the real row checks land there.
-    errors.append(f'{sid}: contract steps are not supported yet (plan Task 3)')
+    """The rows of a contract step (feature-flow design §3). Each row is one statement of what
+    done means, who checks it, and the answered deck step it came from."""
+    if st.get('options'):
+        errors.append(f'{sid}: a contract step has no options — the rows are its body')
+    rows = st['rows']
+    if not isinstance(rows, list):
+        errors.append(f'{sid}: rows must be a list')
+        return
+    sources = spec.get('sources') or {}
+    seen = set()
+    for i, r in enumerate(rows):
+        rid = r.get('id') or f'row {i + 1}'
+        if not r.get('id'):
+            errors.append(f'{sid}: {rid} has no id')
+        elif r['id'] in seen:
+            errors.append(f'{sid}: duplicate row id "{r["id"]}"')
+        seen.add(r.get('id'))
+        if not r.get('statement'):
+            errors.append(f'{sid}/{rid}: missing statement')
+        for k in ('statement', 'threshold', 'note'):
+            for w in banned_in(r.get(k)):
+                errors.append(f'{sid}/{rid}: {k} uses banned word "{w}"')
+        if r.get('checkedBy') not in CHECKED_BY:
+            errors.append(f'{sid}/{rid}: checkedBy must be one of {", ".join(CHECKED_BY)}')
+        if r.get('checkedBy') == 'mechanical' and not r.get('guard'):
+            errors.append(f'{sid}/{rid}: a mechanical row needs a guard (a workspace-relative test or script path)')
+        src = r.get('source') or ''
+        if not SOURCE_RE.match(src):
+            errors.append(f'{sid}/{rid}: source must look like <deck key>#<step id>')
+        elif src.split('#')[0] not in sources:
+            errors.append(f'{sid}/{rid}: source deck "{src.split("#")[0]}" is not in the spec\'s "sources"')
+        if 'verdict' in r:
+            if r['verdict'] not in ('pass', 'fail'):
+                errors.append(f'{sid}/{rid}: verdict must be pass or fail')
+            if not r.get('evidence'):
+                errors.append(f'{sid}/{rid}: a verdict needs evidence (what was run or looked at)')
+    if not rows:
+        errors.append(f'{sid}: a contract with no rows defines nothing')
 
 
 def _validate_choice(spec, st, sid, errors, warnings):

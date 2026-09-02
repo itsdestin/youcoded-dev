@@ -8,7 +8,7 @@ import os
 
 from .crops import image_name
 from .live import has_live, is_live, live_base, live_offset, pane_url, pane_width
-from .spec import SpecError, all_themes, is_choice, is_decide, is_words, run_names, step_themes, validate, workspace_root, is_clip, clip_files
+from .spec import SpecError, all_themes, is_choice, is_contract, is_decide, is_words, run_names, step_themes, validate, workspace_root, is_clip, clip_files
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -73,6 +73,10 @@ def _option(o):
             'measured': o.get('measured', ''), 'cost': o.get('cost', '')}
 
 
+# The rows keys, verbatim into deck data — page.js draws them as a table (feature-flow design §3).
+ROW_KEYS = ('id', 'statement', 'checkedBy', 'guard', 'threshold', 'source', 'note', 'verdict', 'evidence')
+
+
 def _decide_step(spec, st, boxes, runs):
     """One picture (the last run — how it is today) and the written options beside it."""
     return {
@@ -87,14 +91,21 @@ def _decide_step(spec, st, boxes, runs):
 
 def _words_step(spec, st):
     """No picture: the cards take the whole row (page.js lays a `words` step out without a
-    stage). With `options` it answers like a decide; without, like an approve, and `yes`/`no`
-    relabel the buttons — "Holds / Fails" on an acceptance row, not "Yes, build it"."""
+    stage). With `rows` it is a contract (a table, signed off yes/no); with `options` it
+    answers like a decide; without either, like an approve — and `yes`/`no` relabel the
+    buttons — "Holds / Fails" on an acceptance row, not "Yes, build it"."""
     d = {'id': st['id'], 'words': True, 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
          'changed': st.get('changed', ''), 'measured': st.get('measured', ''),
          'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
          'yes': st.get('yes', ''), 'no': st.get('no', ''),
          **({'themes': list(st['themes'])} if st.get('themes') else {})}
-    if st.get('options'):
+    if is_contract(st):
+        # The rows, verbatim, and the two buttons a sign-off needs; page.js draws `rows` as a table.
+        d['kind'] = 'contract'
+        d['rows'] = [{k: r.get(k, '') for k in ROW_KEYS} for r in st['rows']]
+        d['yes'] = st.get('yes') or 'Yes, that is done'
+        d['no'] = st.get('no') or 'No, something is missing'
+    elif st.get('options'):
         d['kind'] = 'decide'
         d['options'] = [_option(o) for o in st['options']]
     return d

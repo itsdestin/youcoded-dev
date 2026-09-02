@@ -255,14 +255,14 @@ They are `unittest` and `node --test`, not pytest, and they live outside a packa
 start directory has to be the top level too. `-t .` fails with *"Start directory is not
 importable"*, which is why nothing ran them for months:
 
-The four binary-free suites, which is what CI runs:
+The five binary-free suites, which is what CI runs:
 
 <!-- runnable -->
 ```bash
-cd scripts/ui-review/tests && python3 -m unittest test_spec test_tokens test_live test_words
+cd scripts/ui-review/tests && python3 -m unittest test_spec test_tokens test_live test_words test_contract
 ```
 
-Everything (107 tests, ~38s) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
+Everything (119 tests, ~38s) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
 
 <!-- runnable: local -->
 ```bash
@@ -278,7 +278,7 @@ months.
 
 | Suite | Needs |
 |---|---|
-| `test_spec`, `test_tokens`, `test_live`, `test_words` | nothing — **these four run in `workspace-ci.yml`** |
+| `test_spec`, `test_tokens`, `test_live`, `test_words`, `test_contract` | nothing — **these five run in `workspace-ci.yml`** |
 | `probe-ports.test.sh`, `cdp-ports.test.sh` | `python3` and `ss` (they hold real ports) |
 | `test_boxes`, `test_build`, `test_crops`, `test_cli`, `test_serve` | `magick` (they cut real crops) |
 | `deck-render.test.mjs`, `coverage.test.mjs`, `shot-measure.test.mjs` | Chrome; the clip fixture also needs `ffmpeg` |
