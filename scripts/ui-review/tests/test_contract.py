@@ -14,6 +14,19 @@ from deck.build import build_page, deck_data                        # noqa: E402
 from deck.spec import is_contract, load_spec, no_pictures, validate   # noqa: E402
 
 
+# Fix: bare `json.dump(a, open(ap, 'w'))` / `json.load(open(ap))` leave the file handle open
+# until GC — 13 ResourceWarnings across this file's tests. These two helpers are the only way
+# the tests below read or write a JSON fixture file.
+def read_json(p):
+    with open(p) as f:
+        return json.load(f)
+
+
+def write_json(p, obj):
+    with open(p, 'w') as f:
+        json.dump(obj, f)
+
+
 def spec_with(tmp, mutate, **over):
     p = contract_spec(tmp, **over)
     with open(p) as f:
@@ -99,7 +112,7 @@ class ContractCheckTests(unittest.TestCase):
         from deck.contract import check_contract
         p = contract_spec(self.tmp)
         ap = os.path.join(os.path.dirname(p), 'r1.answers.json')
-        a = json.load(open(ap)); a['submitted'] = None; json.dump(a, open(ap, 'w'))
+        a = read_json(ap); a['submitted'] = None; write_json(ap, a)
         problems = check_contract(load_spec(p))
         self.assertTrue(any('R2: r1.json answers were never submitted' in x for x in problems), problems)
 
@@ -109,7 +122,7 @@ class ContractCheckTests(unittest.TestCase):
         from deck.contract import check_contract
         p = contract_spec(self.tmp); d = os.path.dirname(p)
         os.replace(os.path.join(d, 'r1.answers.json'), os.path.join(d, 'r1.answers.202609010930.json'))
-        json.dump({'deck': 'arcade-r1', 'submitted': None, 'answers': {}}, open(os.path.join(d, 'r1.answers.json'), 'w'))
+        write_json(os.path.join(d, 'r1.answers.json'), {'deck': 'arcade-r1', 'submitted': None, 'answers': {}})
         self.assertEqual(check_contract(load_spec(p)), [])
 
     def test_skipped_step_is_not_a_source(self):
@@ -139,9 +152,13 @@ class ContractCheckTests(unittest.TestCase):
         root = os.path.join(self.tmp, 'ws'); os.makedirs(os.path.join(root, 'scripts'))
         g = lambda *a: subprocess.run(['git', '-C', root, *a], check=True, capture_output=True, text=True)
         g('init', '-q', '-b', 'main'); g('config', 'user.email', 't@t'); g('config', 'user.name', 't')
-        open(os.path.join(root, 'README'), 'w').write('x'); g('add', 'README'); g('commit', '-qm', 'base')
+        with open(os.path.join(root, 'README'), 'w') as f:
+            f.write('x')
+        g('add', 'README'); g('commit', '-qm', 'base')
         g('checkout', '-qb', 'feat/x')
-        open(os.path.join(root, 'scripts', 'guard.py'), 'w').write('# guard'); g('add', 'scripts/guard.py'); g('commit', '-qm', 'guard')
+        with open(os.path.join(root, 'scripts', 'guard.py'), 'w') as f:
+            f.write('# guard')
+        g('add', 'scripts/guard.py'); g('commit', '-qm', 'guard')
         g('checkout', '-q', 'main')                      # back on main: the guard is NOT on disk
         self.assertFalse(os.path.exists(os.path.join(root, 'scripts', 'guard.py')))
         self.assertTrue(guard_exists(root, 'feat/x', 'scripts/guard.py'))
@@ -159,25 +176,32 @@ class ContractCheckTests(unittest.TestCase):
         ok, line = signoff(s)
         self.assertFalse(ok); self.assertIn('not signed', line)
         ap = p.replace('.json', '.answers.json')
-        json.dump({'deck': 'arcade-contract', 'submitted': None, 'answers': {'C': {'v': 'yes'}}}, open(ap, 'w'))
+        write_json(ap, {'deck': 'arcade-contract', 'submitted': None, 'answers': {'C': {'v': 'yes'}}})
         ok, line = signoff(s)
         self.assertFalse(ok); self.assertIn('not signed', line)             # answered but never submitted
-        json.dump({'deck': 'arcade-contract', 'submitted': '2026-09-01T11:00:00Z', 'answers': {'C': {'v': 'no', 'note': 'R2 is wrong'}}}, open(ap, 'w'))
+        write_json(ap, {'deck': 'arcade-contract', 'submitted': '2026-09-01T11:00:00Z', 'answers': {'C': {'v': 'no', 'note': 'R2 is wrong'}}})
         ok, line = signoff(s)
         self.assertFalse(ok); self.assertIn('answered "no"', line); self.assertIn('R2 is wrong', line)
-        json.dump({'deck': 'arcade-contract', 'submitted': '2026-09-01T11:00:00Z', 'answers': {'C': {'v': 'yes'}}}, open(ap, 'w'))
+        write_json(ap, {'deck': 'arcade-contract', 'submitted': '2026-09-01T11:00:00Z', 'answers': {'C': {'v': 'yes'}}})
         ok, line = signoff(s)
         self.assertTrue(ok); self.assertIn('signed 2026-09-01 11:00', line)
 
     def test_acceptance_status(self):
         from deck.contract import acceptance_status
         p = contract_spec(self.tmp); s = load_spec(p); d = os.path.dirname(p)
+        acc_path = os.path.join(d, 'arcade.contract.acceptance.json')
         ok, line = acceptance_status(s)
         self.assertFalse(ok); self.assertIn('acceptance deck not built', line)
-        json.dump({'key': 'x', 'steps': []}, open(os.path.join(d, 'arcade.contract.acceptance.json'), 'w'))
+        # A corrupt acceptance file is a different problem than "built but not yet submitted" —
+        # the message must name the real cause instead of assuming the file was never touched.
+        with open(acc_path, 'w') as f:
+            f.write('{not valid json')
+        ok, line = acceptance_status(s)
+        self.assertFalse(ok); self.assertIn('unreadable', line)
+        write_json(acc_path, {'key': 'x', 'steps': []})
         ok, line = acceptance_status(s)
         self.assertFalse(ok); self.assertIn('acceptance deck not submitted', line)
-        json.dump({'submitted': '2026-09-01T12:00:00Z', 'answers': {'C': {'v': 'yes'}}}, open(os.path.join(d, 'arcade.contract.acceptance.answers.json'), 'w'))
+        write_json(os.path.join(d, 'arcade.contract.acceptance.answers.json'), {'submitted': '2026-09-01T12:00:00Z', 'answers': {'C': {'v': 'yes'}}})
         ok, line = acceptance_status(s)
         self.assertTrue(ok); self.assertIn('acceptance deck submitted 2026-09-01 12:00', line)
 
@@ -198,7 +222,7 @@ class ContractCheckTests(unittest.TestCase):
         self.assertTrue(lines[2].startswith('todo: acceptance deck not built'), lines)
         # A source problem is exit 1 with the problems on stderr and nothing on stdout.
         ap = os.path.join(os.path.dirname(p), 'r1.answers.json')
-        a = json.load(open(ap)); a['submitted'] = None; json.dump(a, open(ap, 'w'))
+        a = read_json(ap); a['submitted'] = None; write_json(ap, a)
         out, err = io.StringIO(), io.StringIO()
         with redirect_stdout(out), redirect_stderr(err):
             code = rc.main(['contract-check', p])
@@ -230,7 +254,7 @@ class AcceptanceTests(unittest.TestCase):
         self.assertIn('band could be thinner', r2['changed'])
         # It is itself a valid deck.
         d = os.path.dirname(contract_spec(self.tmp))
-        ap = os.path.join(d, 'arcade.contract.acceptance.json'); json.dump(acc, open(ap, 'w'))
+        ap = os.path.join(d, 'arcade.contract.acceptance.json'); write_json(ap, acc)
         self.assertEqual(validate(load_spec(ap))[0], [])
 
 

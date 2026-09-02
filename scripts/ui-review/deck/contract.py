@@ -47,7 +47,12 @@ def guard_exists(root, branch, guard):
     first, _, rest = guard.partition('/')
     repo, rel = (os.path.join(root, first), rest) if rest and os.path.exists(os.path.join(root, first, '.git')) else (root, guard)
     for ref in (branch, f'origin/{branch}'):
-        r = subprocess.run(['git', '-C', repo, 'cat-file', '-e', f'{ref}:{rel}'], capture_output=True)
+        try:
+            r = subprocess.run(['git', '-C', repo, 'cat-file', '-e', f'{ref}:{rel}'], capture_output=True)
+        except OSError:
+            # Fix: no git binary on PATH must read as "guard not found", never a traceback
+            # in close-out — the disk check above already ran, so this is the only fallback left.
+            return False
         if r.returncode == 0:
             return True
     return False
@@ -135,8 +140,12 @@ def acceptance_status(spec):
     acc = os.path.join(spec['_base'], spec['_stem'] + '.acceptance.json')
     if not os.path.exists(acc):
         return False, f'acceptance deck not built — write {spec["_stem"]}.verdicts.json, then review-cards.py acceptance {spec["_stem"]}.json'
-    _, ans, why = answers_for(acc)
+    raw, ans, why = answers_for(acc)
     if ans is None:
+        # Fix: a corrupt/unreadable acceptance deck (raw is None) is a different problem than
+        # "built but nobody submitted it" — name the real cause instead of assuming the latter.
+        if raw is None:
+            return False, f'acceptance deck unreadable — {why}'
         return False, f'acceptance deck not submitted — serve {os.path.basename(acc)}'
     return True, f'acceptance deck submitted {_when(ans.get("submitted"))}'
 

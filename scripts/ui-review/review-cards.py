@@ -113,8 +113,10 @@ def main(argv):
             try:
                 with open(vpath) as f:
                     verdicts = json.load(f)
-            except OSError:
-                print(f'no verdicts file at {vpath} — the grader writes {{rowId: {{verdict, evidence}}}} there first', file=sys.stderr)
+            # Fix: OSError alone misses invalid JSON (a truncated/malformed verdicts file) —
+            # catch both and show the real cause instead of the generic "no file" guess.
+            except (OSError, ValueError) as e:
+                print(f'cannot read verdicts file at {vpath}: {e} — the grader writes {{rowId: {{verdict, evidence}}}} there first', file=sys.stderr)
                 return 1
             try:
                 acc = acceptance_spec(spec, verdicts)
