@@ -1,0 +1,52 @@
+{
+ "deck": "marketplace-overhaul-r2",
+ "started": "2026-08-28T02:06:54.511Z",
+ "submitted": "2026-08-28T02:10:08Z",
+ "cur": 6,
+ "answers": {
+  "one-row": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "connections": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "likely-safe": {
+   "note": "instead of 412 installs, we should just show a download icon next to 412. i think the star should be in-line with/right beside \"INSTALLED\"",
+   "v": "yes",
+   "seconds": 91,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "card-anatomy": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "split-cards": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "phone-sheet": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "detail-badges": {
+   "v": "yes",
+   "note": "on all of these surface, we should make author a chip like likeyl safe/youcoded.",
+   "seconds": 31,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

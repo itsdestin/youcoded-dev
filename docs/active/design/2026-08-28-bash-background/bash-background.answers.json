@@ -1,0 +1,38 @@
+{
+ "deck": "bash-background",
+ "started": "2026-08-28T07:11:21.085Z",
+ "submitted": "2026-08-28T07:13:30Z",
+ "cur": 4,
+ "answers": {
+  "BG.1": {
+   "v": "yes",
+   "seconds": 95,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "BG.2": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "BG.3": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "BG.4": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "BG.5": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

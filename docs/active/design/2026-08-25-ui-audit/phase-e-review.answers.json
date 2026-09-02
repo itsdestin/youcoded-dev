@@ -1,0 +1,21 @@
+{
+ "deck": "phase-e-review",
+ "started": "2026-08-28T02:17:05.003Z",
+ "submitted": "2026-08-28T02:20:33Z",
+ "cur": 1,
+ "answers": {
+  "P-7.1": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-8.1": {
+   "note": "we should left-align title/project. instead of current dot, i want a new dot+text in a pill that says Working/Inactive/Response Ready/Needs Input. should be right side in-line with title. we should add a small file icon before the project name and tag icons on the right side under the activity indicator. activity indicator pill should all be translucent-ish and color of dot.",
+   "v": "yes",
+   "seconds": 193,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

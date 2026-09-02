@@ -1,0 +1,21 @@
+{
+ "deck": "games-arcade-step1-sizing",
+ "started": "2026-08-31T07:25:06.729Z",
+ "submitted": "2026-08-31T07:25:51Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "S-2": {
+   "note": "what are the little dots there that arent pieces?",
+   "v": "yes",
+   "seconds": 32,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

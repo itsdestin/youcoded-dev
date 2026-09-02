@@ -1,0 +1,28 @@
+{
+ "deck": "artifact-zoom",
+ "started": "2026-08-27T22:12:46.557Z",
+ "submitted": "2026-08-27T22:14:40Z",
+ "cur": 2,
+ "answers": {
+  "Z-1": {
+   "note": "this should be the top right, and the pill should be a bit tighter overall.",
+   "v": "yes",
+   "seconds": 57,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Z-2": {
+   "note": "need to make sure the center of the mouse cursor is still visible in the middle of the zoom region thing. ",
+   "v": "yes",
+   "seconds": 44,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Z-3": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

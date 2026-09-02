@@ -1,0 +1,66 @@
+{
+ "deck": "phase-d-mockups",
+ "started": "2026-08-27T20:39:37.814Z",
+ "submitted": "2026-08-27T20:53:32Z",
+ "cur": 1,
+ "answers": {
+  "P-19.A": {
+   "note": "no, you got rid of the thumbnails/previews which are core to the design. try again.",
+   "v": "other",
+   "seconds": 43,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-19.B": {
+   "v": "skip",
+   "seconds": 32,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-20.solid100": {
+   "v": "skip",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-20.solid90": {
+   "v": "skip",
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-20.scrim": {
+   "v": "skip",
+   "seconds": 25,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-20.today": {
+   "v": "skip",
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-19.C": {
+   "v": "skip",
+   "seconds": 15,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-20.2": {
+   "v": "other",
+   "seconds": 36,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "note": "kinda confused about the difference between scrim and stronger panel. what are these and what is the difference."
+  },
+  "P-19": {
+   "v": "pick",
+   "pick": "C",
+   "note": "we should make all tiles (here and in project view/elsewhere where they show up) render with proper markdown styling instead of be being able to see the ## and whatever else.",
+   "seconds": 67,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

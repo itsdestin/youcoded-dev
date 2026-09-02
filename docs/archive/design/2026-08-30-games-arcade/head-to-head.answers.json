@@ -1,0 +1,21 @@
+{
+ "deck": "games-arcade-head-to-head",
+ "started": "2026-08-31T10:29:59.643Z",
+ "submitted": "2026-08-31T10:31:01Z",
+ "cur": 1,
+ "answers": {
+  "H-1": {
+   "note": "put in a pill, 4W - 2L ",
+   "v": "yes",
+   "seconds": 54,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "H-2": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

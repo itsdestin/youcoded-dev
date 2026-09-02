@@ -1,0 +1,61 @@
+{
+ "deck": "phase-d-brief",
+ "started": "2026-08-27T10:57:07.280Z",
+ "submitted": "2026-08-27T11:06:44Z",
+ "cur": 7,
+ "answers": {
+  "P-6.1": {
+   "v": "yes",
+   "seconds": 149,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "i think we should actually add a full frame around the welcome screen, as exists in terminal view, with settings/projects/minimize/maximize/close. no sessions switch on welcome screen obvsiously, and no status bar chips or chat bar. just bare frame like terminal view"
+  },
+  "P-19.1": {
+   "v": "other",
+   "seconds": 159,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "i think i will want a few mockups of this. consider how these chips are handled for various filetypes, and how to handle all. name should be small strip at bottom of card and we should render a preview for most filetypes probably if cheap. or at least for basic image/markdown/etc"
+  },
+  "P-14.1": {
+   "v": "yes",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-9.1": {
+   "v": "yes",
+   "seconds": 41,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-9.2": {
+   "v": "no",
+   "note": "should still show names/action on hover tho",
+   "seconds": 80,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-9.3": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-20.1": {
+   "v": "other",
+   "note": "this may be a testing environment bug. that terminal is also too short, but i haven't experienced that in my app.",
+   "seconds": 45,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "P-20.2": {
+   "v": "other",
+   "note": "i'd want to see this rendered a few ways before committing to anything.",
+   "seconds": 45,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}
