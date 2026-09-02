@@ -21,6 +21,13 @@ One line per closed item, newest at the bottom: `- [x] YYYY-MM-DD <area> — <he
 - [x] 2026-09-01 native-harness — Native turn teardown leaves an unhandled promise rejection when a turn is aborted mid-stream (no longer reproduces: the documented repro `npx vitest run tests/harness-session.test.ts -t serialize` run on master 2026-09-01 — with Plan C's `maybeCompact` now merged into `harness-session.ts`, the exact await that exposed the race — reports 1 passed, no `Unhandled Rejection`, no error count)
 - [x] 2026-09-01 marketplace — Theme Update badge has no working action, updates unreachable from the Library (youcoded a2c4bc9c 2026-08-30, the Update badge is a button that actually updates)
 - [x] 2026-09-01 user-interface — Window-resize lag has a second, unidentified cause (youcoded PR #374, `721de02d`, 2026-08-12: the always-mounted chrome's unthrottled `window.resize` listeners in HeaderBar/useChromeGeometry are now rAF-coalesced, and `html` paints the theme canvas so exposed regions no longer show black — the "costs the same at one session as six" suspect the old entry named; if resizing still lags in the packaged app, file a fresh symptom)
+- [x] 2026-09-02 dev-workspace — Session-retrospective triage tool — dropped 2026-09-02: the /wrap-up skill makes each session report its own friction (Destin: "a better re-implementation")
+- [x] 2026-09-02 dev-workspace — Sync-spaces rule "ONE sanctioned status-color use" reworded to "sync status comes only from sync-dot-state.ts" (Destin 2026-09-02; this commit)
+- [x] 2026-09-02 marketplace — Marketplace cards under five votes keep the worded counts ("3 people found this helpful") — Destin decided 2026-09-02
+- [x] 2026-09-02 sync — v1.3 gate 3 — Account → Connected accounts shows an in-app GitHub sign-in (Destin confirmed 2026-09-02)
+- [x] 2026-09-02 themes — Theme-builder skill end-to-end run — Destin has run it since the Kit rewrite (2026-09-02)
+- [x] 2026-09-02 themes — Android terminal mode hiding the wallpaper — no longer reproduces (Destin 2026-09-02)
+- [x] 2026-09-02 sync — Sync dead-ends on a machine without gh — Destin tested the no-gh path in his macOS VM, it worked (2026-09-02)
 
 ## Shipped before 2026-09-01 (old format)
 Every `[x]` item from the single-file roadmap as it stood at the migration base, in file order — 149 were still sitting in their original sections and 19 were in the old `## Shipped` section. Copied verbatim; the tool never reads below this heading.

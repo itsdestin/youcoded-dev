@@ -40,13 +40,14 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
 - [ ] Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel —
       mockup built 2026-08-18 (four provider-first pages) and never reviewed by Destin; it now
       lives on branch feat/assistant-settings-mockup (worktree worktrees/assistant-settings)
-      `settings` `desktop` `decision` `checked 2026-09-01`
+      Destin 2026-09-02: not a review next session, but finishing it is a pre-1.3 priority
+      `settings` `desktop` `needs-verify` `checked 2026-09-02` `v1.3`
 
 - [ ] Switching conversation tabs feels jumpy — content pops in and the tab name expands
       instantly instead of rolling out (Destin, 2026-07-20). Rebuilt on branch
-      feat/session-strip-motion (worktree worktrees/session-motion), code complete; blocked
-      until the motion can be reviewed live rather than from clips, which Destin rejected
-      `desktop` `blocked` `checked 2026-09-01` → docs/active/handoffs/2026-08-31-session-strip-motion-handoff.md
+      feat/session-strip-motion (worktree worktrees/session-motion), code complete; the live
+      motion review is in progress in another session (Destin, 2026-09-02)
+      `desktop` `in-flight` `checked 2026-09-02` → docs/active/handoffs/2026-08-31-session-strip-motion-handoff.md
 
 - [ ] Right-clicking an image in chat or the file viewer offers nothing — no Copy image,
       Save image as…, Copy address, or Ask about this (the menu shipped for text, code,
@@ -75,10 +76,11 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       marketplace rails (phases A–E decided and shipped 2026-08-25 → 2026-08-28)
       `all` `needs-verify` `checked 2026-09-01`
 
-- [ ] Two chip questions left over from the Phase B review, unanswered: the theme chip's
+- [ ] Remove the theme chip's cycle arrow altogether (Destin 2026-09-02); the outlined chips stay —
+      special cases like the model-selector and permissions chips. Was: two Phase B chip questions: the theme chip's
       cycle glyph only shows on hover, so Android gets no cue; and two chips (teal, and the
       orange announcement pill) still carry coloured outlines
-      `all` `decision` `checked 2026-08-26`
+      `all` `needs-verify` `checked 2026-09-02`
 
 - [ ] The main app shell is still one ~3,900-line component — three planned extraction
       tranches remain after the first one shipped 2026-07-17 (welcome screen and session
@@ -114,3 +116,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       frame rate and Reduced Effects defaults off — and it has never been measured there. Measure on a
       real phone before scoping
       `all` `needs-verify` `checked 2026-08-07` `performance`
+
+- [ ] On the touchscreen Z13, the desktop app's on-screen keyboard interactions misbehave (Destin,
+      2026-09-02; details to be gathered). Investigate together with the Android keyboard item
+      `input-bar` `desktop` `needs-verify` `checked 2026-09-02` `needs-repro`

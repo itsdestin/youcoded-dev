@@ -7,7 +7,7 @@ has passed ~8 items — graduate it to its own file.
 - [ ] A friend's row read "Last seen 7/26/2026" on 2026-08-11 while they were still using the
       app on a MacBook — signed in, not incognito. Their presence never came back until a full
       quit-and-relaunch; nothing short of that restores it.
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-presence-suspended-latch.md
+      `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-presence-suspended-latch.md
 
 - [ ] One rejected server call quietly signs you out of your account — no notice, no log. Friends
       then see you offline forever and you only find out by opening the friends panel.

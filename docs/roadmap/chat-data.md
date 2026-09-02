@@ -21,7 +21,8 @@ produced and the panel that shows them (files).
 - [ ] "Welcome back" on cold start — after a window close, crash or OS kill, list the chats that were
       still open in the strip with checkboxes, Resume-all and Start-fresh; waiting on Destin to decide
       device scoping (chats left open on one machine must not pop up on another) and the milestone
-      `desktop` `decision` `checked 2026-09-01` → docs/active/investigations/2026-09-01-resume-on-startup-welcome-back.md
+      Destin 2026-09-02: this device only; discard any old branch and build it fresh
+      `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-resume-on-startup-welcome-back.md
 
 - [ ] You cannot rename a conversation — names are auto-generated only, on every platform; all
       eight surveyed competitors have rename (2026-08-31)

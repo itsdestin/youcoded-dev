@@ -7,24 +7,16 @@ here: installing or browsing themes (marketplace).
       friends — are still hard to read; 25 of 70 colour/theme pairs fail contrast, seen 2026-08-31
       `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-light-theme-brand-colours.md
 
-- [ ] On Android, switching to terminal mode makes the wallpaper and pattern vanish; under a
-      light theme the area behind the terminal reads as a flat dark rectangle, noticed 2026-08-12
-      `terminal` `android` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-android-terminal-mode-hides-wallpaper.md
-
 - [ ] A community theme's custom CSS can run a never-ending animation on the always-visible
       chrome, costing every user a chunk of a CPU core with no setting — not even Reduced
       Effects — that turns it off; no shipped theme does this yet, noted 2026-08-07
       `all` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-theme-css-animation-unsanitized.md
 
-- [ ] The rebuilt theme-builder skill (Kit flow, 2026-07-19) has never been run start to
-      finish — vibe in, three concepts, Kit refinement, built theme on disk — so an uploaded
-      wallpaper, the final slug rename and asset paths remain untested by a real run
-      `desktop` `needs-verify` `checked 2026-07-19`
-
 - [ ] A theme's icon overrides are accepted, and the Library shows a "custom icons" badge for
       them, but no icon anywhere in the app ever changes; build the feature or remove the
       field — Destin's call, deferred 2026-07-22
-      `library` `all` `decision` `checked 2026-09-01` → docs/active/investigations/2026-09-01-theme-icons-dead-field.md
+      Destin 2026-09-02: leave open for consideration — which icons may change, and free-form vs a fixed set, still to think through
+      `library` `all` `parked` `checked 2026-09-02` → docs/active/investigations/2026-09-01-theme-icons-dead-field.md
 
 - [ ] Destin's ask (2026-07-19): a third chrome layout with bare elements — session switcher,
       header icons, status chips, input — and no backgrounds or wrapping pills at all; the

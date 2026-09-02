@@ -60,11 +60,6 @@ seen-on is always n/a here.
       the port at all — a green run does not prove the app mounted
       `n/a` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-boot-check-dead-port.md
 
-- [ ] The session-retrospective triage tool (`conversation-triage.mjs`, 526 lines, the accelerator
-      for super-agent step 1) is gone from disk and was never in git — re-create it from the
-      2026-08-27 "Session Retrospective Mining Tool" conversation, or drop it?
-      `n/a` `decision` `checked 2026-09-01`
-
 - [ ] Opening Settings → Backup & Sync in the workbench takes the whole thing down to "YouCoded
       failed to start"; the boot check cannot see it and the review sweep counts the error state
       as covered
@@ -73,7 +68,8 @@ seen-on is always n/a here.
 - [ ] The old review-harness script still lets the model it runs read the OpenRouter key (its
       env scrub does not work); the native evaluator fixed this properly — retire the old script,
       or port the three fixes to it?
-      `n/a` `decision` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-review-harness-key-leak.md
+      Destin 2026-09-02: retire it — after checking nothing real is lost; reconsider if so
+      `n/a` `confirmed` `checked 2026-09-02` `security` → docs/active/investigations/2026-09-01-review-harness-key-leak.md
 
 - [ ] The perf rig cannot see native per-token streaming — its workload streams whole turns
       through the Claude Code transcript path, so the gate under-represents the exact path
@@ -111,19 +107,21 @@ seen-on is always n/a here.
       four before/after clip steps were "just rough to compare", and the live-pane deck shipped
       2026-09-01 — needs a design session naming the built behaviour as one real candidate among
       real alternatives, not a build step
-      `n/a` `parked` `checked 2026-09-01`
+      In progress in another session on branch feat/session-strip-motion (Destin, 2026-09-02)
+      `n/a` `in-flight` `checked 2026-09-02`
 
 - [ ] Review-deck "decide" steps cut off their last option in the side-column layout — the third
       option is sliced and you scroll to reach it (46 px cut on chatsearch-gate step 1 at
       1574x820 after the 2026-09-01 styling pass; pre-existing, not caused by live panes)
       `n/a` `needs-verify` `checked 2026-09-01`
 
-## knowledge
+- [ ] Terminal text wraps about two-thirds (only ever seen in the UI-review rig, never the live app —
+      Destin 2026-09-02; still a rig bug to fix if it persists) of the way across the pane — Claude Code's screen and
+      input line stop near 950 px in a 1440-wide window (dev instance under xvfb, 2026-08-27; Destin
+      has not seen it in his own app — check whether a maximized-at-launch window avoids it)
+      `terminal` `n/a` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-terminal-pty-column-count.md
 
-- [ ] The sync-spaces rule's line "sync dots are the ONE sanctioned status-color use" is over-broad
-      — shipped primitives already use status colours elsewhere; it means "sync status must come
-      from sync-dot-state.ts". Reword or re-scope — your call on wording, it is a rule file
-      `n/a` `decision` `checked 2026-09-01` `v1.3.1`
+## knowledge
 
 - [ ] Work keeps existing on one disk only: on 2026-09-01 the site-themes worktree holds 40
       uncommitted files on a branch with zero commits and no remote, and landing-demo-clips has
@@ -135,9 +133,9 @@ seen-on is always n/a here.
 
 - [ ] Two guardrails from the 2026-07-28 retrospective are still unshipped: spec counts are
       neither anchored nor dated (no "specs are snapshots" convention exists), and `run-dev.sh
-      --list` lists registered worktrees, not what is actually running (no offset/profile/PID);
-      plus five authoring papercuts for PITFALLS.md the old entry never listed
-      `n/a` `needs-verify` `checked 2026-09-01`
+      --list` lists registered worktrees, not what is actually running (no offset/profile/PID)
+      (the unlisted "five PITFALLS papercuts" were dropped 2026-09-02)
+      `n/a` `needs-verify` `checked 2026-09-02`
 
 - [ ] Workspace friction from the 2026-08-28 session-opening study still open: "review the attached
       document" is the #1 task shape and has no command (`.claude/commands/` still holds only
@@ -199,3 +197,8 @@ seen-on is always n/a here.
 - [ ] The Android build labels the vendored terminal emulator GPLv3 while its own VENDORED.md says
       Apache 2.0 — one of the two is wrong, and it is the licence notice users see
       `n/a` `needs-verify` `checked 2026-09-01`
+
+- [ ] The "formalization" push after 1.3: the youcoded.ai domain, app store and Play Store
+      listings, the macOS/Windows security-warning signing, an LLC — Destin, 2026-09-02, "soon-ish,
+      probably right after the 1.3 release"
+      `n/a` `parked` `checked 2026-09-02`

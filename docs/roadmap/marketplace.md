@@ -11,19 +11,12 @@ them. Not here: the theme renders wrong (themes).
       and lists only "Connects to the internet" + "Adds 6 skills" — is that honest for what it does?
       `marketplace-screen` `all` `needs-verify` `checked 2026-09-01` `security`
 
-- [ ] Below five votes a marketplace card says "3 people found this helpful" / "1 of 2 people found
-      this helpful" instead of a percentage (shipped 2026-08-28, flagged by Destin for a second look).
-      Untested: does a grid mixing worded counts and bare "Helpful 92%" read as inconsistent, and does
-      a new plugin showing "1 person found this helpful" look weaker than one showing nothing?
-      Options: keep it · show the raw count as a numeral beside the thumbs · show nothing under five.
-      One workbench deck answers it.
-      `marketplace-screen` `all` `decision` `checked 2026-08-30`
-
 - [ ] Two theme previews (Devil's Garden, Kuromi Dreamer) showed a blank band in the Electron app
       while the same registry URLs loaded fine in a browser (2026-08-25). Since 2026-08-30 a preview
       that fails to load falls back to the theme's colour swatches instead of blank — but whether the
       pictures themselves load in the app now is unverified.
-      `marketplace-screen` `desktop` `needs-verify` `checked 2026-09-01` `needs-repro`
+      Destin 2026-09-02: still failing — and previews in general are unreliable (not always created or shown correctly); fix the class
+      `marketplace-screen` `desktop` `confirmed` `checked 2026-09-02`
 
 - [ ] The stylesheet claims the marketplace grid pre-blurs one backdrop element, but no rule doing that
       could be found — so either the comment is wrong or every card carries its own live blur layer
@@ -39,9 +32,10 @@ them. Not here: the theme renders wrong (themes).
       `all` `confirmed` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-marketplace-ingest-ignores-source-git-ref.md
 
 - [ ] Put the Worker on a custom domain. It is served from a `workers.dev` address, where
-      Cloudflare's edge cache and the rate limiter both do nothing. The work is small and gated
-      only on Destin picking a domain — the same decision the landing-page rebuild needs.
-      `all` `decision` `checked 2026-09-01` → docs/active/investigations/2026-09-01-marketplace-worker-workers-dev-no-cache.md
+      Cloudflare's edge cache and the rate limiter both do nothing. The work is small; blocked on the
+      "formalization" push after 1.3 (dev-workspace → release). Destin 2026-09-02: youcoded.ai is
+      available (~$80/yr) and is the pick.
+      `all` `blocked` `checked 2026-09-02` → docs/active/investigations/2026-09-01-marketplace-worker-workers-dev-no-cache.md
 
 - [ ] The Worker's rate limit has never fired in production — measured 2026-08-28: 160 requests in
       ~2 s against a 60-per-minute route, all 200, zero 429s. Ratings, reports, installs, exports and

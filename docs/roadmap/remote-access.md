@@ -9,7 +9,8 @@ Filing test: reaching the app from another device — the protocol, the browser 
       file (not even a small note), Project View tabs are thin, the game lobby signs in but
       stays empty, several buttons throw. Which namespaces are safe to expose over a
       password-only, unencrypted channel is a decision for Destin before any bridging
-      `remote` `decision` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
+      Destin 2026-09-02: none of them until the remote channel is encrypted — blocked on that item below
+      `remote` `blocked` `checked 2026-09-02` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
 
 - [ ] Remote: "+ Add file" in the files panel uploads the file to the desktop, then the
       import fails — the upload has already landed on the host (found 2026-07-23)
@@ -18,12 +19,14 @@ Filing test: reaching the app from another device — the protocol, the browser 
 - [ ] First connect from a phone sits on a white screen for seconds, then the chat takes a
       further beat to fill in; the July byte-shaving merge changed nothing Destin could feel
       on LAN. ~2.5 s of it is scripted waiting; the white part is unmeasured on a real phone
-      `remote` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
+      Destin 2026-09-02: probably much improved; keep for a future remote-access verification pass
+      `remote` `needs-verify` `checked 2026-09-02` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
 
 - [ ] Finish the remote-hydration work: a remote browser can land on a different session or
       view than the desktop window shows, and events arriving during connect can double-apply
       or drop (commits 2 and 3 of the 2026-07-20 plan; ask Destin which still bites)
-      `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydration-ordering-and-view-parity.md
+      Destin 2026-09-02: still sees intermittent desktop/remote mismatch bugs, not sure they are exactly this
+      `remote` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-remote-hydration-ordering-and-view-parity.md
 
 - [ ] A phone browser on remote access behaves like a desktop in the terminal view — touch
       adaptations off, soft keyboard and scrolling wrong (found 2026-07-20 on Chrome/Android)
@@ -48,3 +51,8 @@ Filing test: reaching the app from another device — the protocol, the browser 
       re-implements the store inline (three copies of the same logic) and has zero test coverage.
       Destin chose to defer the refactor on 2026-08-06
       `projects` `remote` `needs-verify` `checked 2026-08-06`
+
+- [ ] Remote access runs over a password-only connection that is not encrypted on the local network,
+      which is why files, projects and games stay switched off over it (Destin, 2026-09-02).
+      Encrypting the channel unblocks all three
+      `remote` `needs-verify` `checked 2026-09-02` `security`

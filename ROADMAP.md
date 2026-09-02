@@ -36,27 +36,26 @@ release mechanics; Android still lacks tags, notes, the native harness and the l
 
 ## Next release
 Target: `v1.3`
-- claude-code-integration: Terminal text wraps about two-thirds of the way across the pane — Claude Code's screen and
 - dev-workspace: Ship v1.3 — the release mechanics: an `/audit` run, version bumps on both platforms (still
-- sync: The last open v1.3 gate: after signing in to GitHub from inside the app (Connect GitHub), does
+- user-interface: Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel —
 
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 51 | 6 | 3 | 16 |
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 38 | 17 | 3 | 8 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 23 | 12 | 3 | 3 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 51 | 7 | 1 | 16 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 38 | 18 | 0 | 8 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 24 | 15 | 1 | 3 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 21 | 5 | 0 | 9 |
-| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 17 | 7 | 2 | 1 |
-| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 3 | 2 | 6 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 16 | 5 | 0 | 5 |
-| [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 14 | 8 | 2 | 1 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 11 | 5 | 1 | 1 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 11 | 2 | 0 | 5 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 10 | 1 | 1 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 1 | 1 |
+| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 16 | 6 | 0 | 1 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 5 | 0 | 5 |
+| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 15 | 3 | 0 | 6 |
+| [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 14 | 9 | 1 | 1 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 11 | 6 | 0 | 1 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 11 | 3 | 0 | 5 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 11 | 4 | 0 | 1 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 6 | 2 | 0 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 0 | 0 | 1 |
-| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 3 | 0 | 1 | 2 |
+| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 3 | 0 | 0 | 2 |
 
 ## Filing an item
 Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,

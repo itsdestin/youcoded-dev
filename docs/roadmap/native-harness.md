@@ -28,7 +28,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       title attempts failed offline) shows a real name in the Resume Browser row but `Resuming…`
       on the session pill until the next completed turn. Fix is known; held on Destin's copy
       call — should the pill show the raw first-message text the browser row already uses?
-      `session-drawer` `desktop` `decision` `checked 2026-09-01` → docs/active/investigations/2026-09-01-resumed-native-session-no-stored-title.md
+      Destin 2026-09-02: the pill shows the first message's opening words
+      `session-drawer` `desktop` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-01-resumed-native-session-no-stored-title.md
 
 - [ ] During a cross-device takeover of a native session, a message sent in exactly the wrong
       instant runs a whole turn on the old device before the handoff proceeds (found in the M2
@@ -43,7 +44,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Design call: when an edit of a queued message refills the composer in the same instant the
       user is typing, the refill currently wins (the safe order — typing winning would silently
       destroy the queued message). Destin to decide whether to append/merge instead
-      `input-bar` `desktop` `decision` `checked 2026-07-22`
+      Destin 2026-09-02: "confused" — needs a plainer explanation before it can be decided
+      `input-bar` `desktop` `decision` `checked 2026-09-02`
 
 - [ ] Agents & Automations — a third top-level view beside Chat and Projects where work runs on a
       schedule or trigger without the user (cron / "run now", budgets as hard stops, an inbox of
@@ -124,7 +126,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] After the shell has cd'd elsewhere, Read and Bash can silently open two different files for the
       same relative name — Destin to decide: reject relative paths outright, or keep the hints and live with it
-      `desktop` `decision` `checked 2026-09-01` → docs/active/investigations/2026-09-01-multi-model-cwd-contract.md
+      Destin 2026-09-02: needs more investigation before deciding
+      `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-multi-model-cwd-contract.md
 
 - [ ] Background Bash follow-ups, deferred on purpose at the 2026-08-28 sizing: typing into a running
       command, a "Running commands" list outside the chat, and "tell me when the log says ready"

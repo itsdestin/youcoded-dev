@@ -7,7 +7,8 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       shell, YouCoded, Chrome and Steam. The app's memory warning never appeared. Waits on
       Destin: auto-unload the first model silently, with a toast, or hard-block — and whether
       one model alone should be blocked when it will not fit the GPU pool.
-      `desktop` `decision` `checked 2026-09-01` → docs/active/investigations/2026-08-16-dual-model-oom-desktop-crash.md
+      Destin 2026-09-02: warn and let me choose. The same fix must count memory for several sessions sharing one model, and must NOT warn on machines whose memory is deliberately full of cache that the model load can reclaim
+      `desktop` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-08-16-dual-model-oom-desktop-crash.md
 
 - [ ] "Run in background" option — keep the downloaded models serving other AI tools on this
       machine after the YouCoded window closes; today the engine is deliberately stopped on

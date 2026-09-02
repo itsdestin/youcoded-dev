@@ -1,11 +1,6 @@
 # sync — moving your stuff between devices
 Filing test: moving your stuff between devices, and the GitHub transport under it.
 
-- [ ] Sync dead-ends on a stock machine with no `gh` installed — "Setting up…" then a green "All synced" over an empty
-      space (beta.8 macOS VM, 2026-07-20). The gh-free path is code-complete on master; the only thing left is
-      Destin's fresh-VM pass through the first real push with no gh installed (build ≥ `647bd242`).
-      `settings/sync` `desktop` `blocked` `checked 2026-09-01`
-
 - [ ] Tag or note a conversation from a phone and an open desktop window keeps showing the old tag/note until some
       unrelated event refreshes it (other phones update fine). Found 2026-08-22.
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-set-tag-no-desktop-notify.md
@@ -37,11 +32,11 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       confirmed unneeded. From the PITFALLS "Legacy sync demolition (Plan 2c)" sweep, 2026-07-15.
       `desktop` `needs-verify` `checked 2026-09-01`
 
-- [ ] Decide: should stray `*.tmp` files be ignored by sync outright? A crash between write and rename can strand one
+- [ ] Decided 2026-09-02: ignore stray `*.tmp` files everywhere. A crash between write and rename can strand one
       in a synced folder and it then rides to every device as junk. Per-writer sweeps (PR #296) already cover the
       known writers; a blanket rule would also stop syncing and backing up any file a user genuinely named `.tmp`.
       Destin's call, deliberately not slipped into #296 (2026-08-12).
-      `desktop` `decision` `checked 2026-09-01`
+      `desktop` `confirmed` `checked 2026-09-02`
 
 - [ ] Sync will hit GitHub's size ceiling for any daily user — the Z13's Personal space was 841 MB local / 652 MB on
       GitHub against a 1 GB soft limit, nothing ever prunes, and a handful of huge transcripts are the whole cost.
@@ -72,11 +67,6 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       in the Personal space, queryable by the assistant ("what machines do I have", "can my laptop run this model"),
       with an optional Settings → System View dashboard. 2026-07-14.
       `all` `parked` `checked 2026-07-14`
-
-- [ ] The last open v1.3 gate: after signing in to GitHub from inside the app (Connect GitHub), does
-      Account → Connected accounts actually show that login? Sync working is not proof — it also works
-      after a terminal `gh auth login` without the in-app flow ever running
-      `settings/accounts` `desktop` `decision` `checked 2026-09-01` `v1.3`
 
 - [ ] In the sync setup wizard the repo-name text box sits inside the radio button's label, so
       clicking into the box also flips the radio. Bug 1 of the 2026-07-19 input-migration family

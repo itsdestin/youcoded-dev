@@ -83,7 +83,7 @@ verify:
 - **Import MOVES the folder — never copy-and-keep-both.** The EXDEV branch re-checks `existsSync(dest)` BEFORE cpSync; store remaps degrade to WARNINGS, never silent drops.
 
 ## Project UX + discovery
-- **Sync dots (green/red/gray) are the ONE sanctioned status-color use** — ALL dot state from pure `sync-dot-state.ts`; labels pinned.
+- **Sync status comes ONLY from pure `sync-dot-state.ts`** (every dot's state and label); other status-coloured controls are not sync.
 - **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); **fold-on-read** blocks resurrection; schema stays 1.
 - **Per-field merge: `laterOf` takes `{v, at}` wrappers (`description` does; the name dimension passes whole entries); `description` is LWW on its OWN `descriptionUpdatedAt`, never `updatedAt`.** Whole-entry `laterOf` tie-breaks on `JSON.stringify` (broke associativity); a shared clock reverts a peer's rename.
 

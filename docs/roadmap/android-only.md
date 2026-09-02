@@ -31,7 +31,8 @@ that in the shared area with android as seen-on.
       input) was only checked in Chrome for Android over remote access, never in the packaged
       app — open/close the keyboard in chat on a debug APK and confirm the input bar and
       bottom glass still sit right; deferred at Destin's call
-      `input-bar` `android` `needs-verify` `checked 2026-07-20`
+      Destin 2026-09-02: probably resolved, not certain; investigate together with the Z13 touchscreen keyboard issues (user-interface)
+      `input-bar` `android` `needs-verify` `checked 2026-09-02`
 
 - [ ] Android's Library doesn't show themes you built yourself on the phone until they are
       published — desktop lists them alongside the marketplace ones (still a stub 2026-09-01)
@@ -53,9 +54,8 @@ that in the shared area with android as seen-on.
 
 - [ ] What should "Online" mean on a phone? Desktop counts you present only when awake and recently
       active; on Android the presence socket lives in a background service, so a phone with a long
-      session would read Online with the screen off. Screen-on, app-in-front, or recent touch — your
-      call, then it gets built
-      `android` `decision` `checked 2026-07-23`
+      session would read Online with the screen off. Destin decided 2026-09-02: Online means the app is in front; build that
+      `android` `needs-verify` `checked 2026-09-02`
 
 - [ ] Tags and notes on a conversation work on desktop but the phone refuses both ("not implemented on
       mobile") — only pin and hide work there. The storage and sync already exist; it is the Kotlin

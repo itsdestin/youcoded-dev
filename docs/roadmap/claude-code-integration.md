@@ -4,15 +4,10 @@ terminal pane, the PTY, fake keystrokes, hooks the app plants, install and login
 here: the app's own agent (native-harness); chat bubbles shared by both (user-interface /
 chat-data).
 
-- [ ] Terminal text wraps about two-thirds of the way across the pane — Claude Code's screen and
-      input line stop near 950 px in a 1440-wide window (dev instance under xvfb, 2026-08-27; Destin
-      has not seen it in his own app — check whether a maximized-at-launch window avoids it)
-      `terminal` `desktop` `needs-verify` `checked 2026-09-01` `needs-repro` `v1.3` → docs/active/investigations/2026-09-01-terminal-pty-column-count.md
-
 - [ ] Clicking a plan-approval button other than the first ("No, refine plan", "Tell Claude what to
       change") may still approve the plan as option 1 on Claude Code 2.1.220+ (found 2026-07-30
       during the permission-timeout review; not yet tried in a dev instance)
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-plan-approval-single-write.md
+      `tool-cards` `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-plan-approval-single-write.md
 
 - [ ] On Android the permission-mode chip never shows "auto", and shows "normal" for any screen it
       cannot read — where desktop shows "unknown" (found 2026-07-17)
