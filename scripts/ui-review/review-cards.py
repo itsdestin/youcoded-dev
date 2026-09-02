@@ -15,7 +15,8 @@ for animations, hovers, transitions and bugs that only show in motion; files fro
 and LIVE (`live` — panes of the RUNNING app he can hover, click and drag, one authored
 candidate each out of youcoded's compare/registry.tsx; `variants` makes it a pick-one, their
 absence a yes/no, and `serve` boots the worktree's workbench for it). Wording-only questions
-are not a step: ask in chat.
+are not a step: one or two go in chat; four or more go on the question deck
+(scripts/questions/serve.py — today / problem / proposal / options with user-experience pros and cons).
 
 Run `serve` in the background: its exit is the "review finished" signal and it prints the
 feedback summary. There is deliberately no separate crop step — a stale intermediate file drew

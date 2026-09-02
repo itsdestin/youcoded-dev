@@ -140,7 +140,14 @@ def main(argv):
             tmp = out + '.tmp'; json.dump(state, open(tmp, 'w'), indent=1); os.replace(tmp, out)
             self._j(200, {'ok': True})
             if self.path == '/submit': done.set()
-    srv = HTTPServer(('127.0.0.1', a.port), H); threading.Thread(target=srv.serve_forever, daemon=True).start()
+    # WHY: the first deck of 2026-09-01 was left serving on 8765; the rebuilt one died with
+    # "Address already in use" and the browser opened the STALE page. Walk up to a free port.
+    srv = None
+    for port in range(a.port, a.port + 20):
+        try: srv = HTTPServer(('127.0.0.1', port), H); a.port = port; break
+        except OSError: continue
+    if srv is None: print(f'[questions] no free port in {a.port}..{a.port + 19}', file=sys.stderr); return 1
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
     url = f'http://127.0.0.1:{a.port}/'; print(f'[questions] {url}')
     if not a.no_open: webbrowser.open(url)
     if not done.wait(a.timeout * 60):

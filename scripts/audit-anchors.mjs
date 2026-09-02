@@ -123,37 +123,49 @@ export function parseRuleFrontmatter(text) {
 // is documentation of the format, not a live claim. (Found via the Phase-3 integration
 // run: the audit-rebuild plan reproduces this file's source, and every example anchor
 // inside its ```js fences and `inline` spans was harvested as a bogus failing claim.)
-function stripMarkdownCode(text) {
+// Which lines sit inside a fenced code block (the fence lines themselves count as inside).
+// Used by harvestDocAnchors to ignore example anchors that docs reproduce as source.
+function fencedLines(text) {
   const out = [];
   let fence = null; // { char, len } while inside a fenced block
-  for (const line of text.split(/\r?\n/)) {
+  for (const line of text.split('\n')) {
     if (fence) {
       const close = line.match(/^\s{0,3}(`{3,}|~{3,})\s*$/);
       if (close && close[1][0] === fence.char && close[1].length >= fence.len) fence = null;
-      continue; // drop everything inside the fence, plus the fence lines themselves
+      out.push(true);
+      continue;
     }
     const open = line.match(/^\s{0,3}(`{3,}|~{3,})/);
-    if (open) { fence = { char: open[1][0], len: open[1].length }; continue; }
-    // remove inline code spans (matching backtick runs) from this prose line
-    out.push(line.replace(/(`+)[\s\S]*?\1/g, ''));
+    if (open) { fence = { char: open[1][0], len: open[1].length }; out.push(true); continue; }
+    out.push(false);
   }
-  return out.join('\n');
+  return out;
 }
 
-// Depth docs pin individual claims with a trailing HTML comment:
-//   <!-- verify: {"path": "x.ts", "contains": "regex"} -->  or  {"test": "x.test.ts"}
-// JSON on purpose — deterministic to parse, impossible to half-match. A comment that
-// LOOKS like an anchor but fails JSON.parse is returned as {malformed} so the checker
-// fails it loudly instead of dropping the claim. Code (fences/inline spans) is stripped
-// first so example anchors in docs that document the format aren't mistaken for claims.
+// Every `<!-- verify: {...} -->` (JSON body) in a doc, in order. A malformed body is
+// returned as {malformed: "<text>"} so the checker can fail it loudly instead of
+// dropping the claim. Anchors that a doc merely QUOTES — inside a code fence, or inside an
+// inline code span on the same line — are skipped, because docs that teach the format
+// would otherwise assert their own examples.
+// WHY the skip is by position, not by stripping code first: the old version deleted every
+// backtick span BEFORE parsing, so a backtick inside an anchor's own JSON (a `contains`
+// regex quoting a template literal) was cut out of the regex before it was ever compiled —
+// seven roadmap anchors written on 2026-09-01 matched nothing and looked like drift.
 // `marker` is the word before the colon: 'verify' (depth docs, this script) or 'claim'
-// (roadmap reports, scripts/roadmap-check.mjs). The default keeps every existing caller as is.
-// A broken verify: is doc drift and fails CI; a broken claim: is a roadmap item to re-verify
-// and must NOT — which is why they are different words (spec §4).
+// (roadmap reports, scripts/roadmap-check.mjs). A broken verify: is doc drift and fails
+// CI; a broken claim: is a roadmap item to re-verify and must NOT (spec §4).
 export function harvestDocAnchors(text, marker = 'verify') {
   const anchors = [];
   const re = new RegExp(`<!--\\s*${marker}:\\s*(\\{[\\s\\S]*?\\})\\s*-->`, 'g');
-  for (const m of stripMarkdownCode(text).matchAll(re)) {
+  const fenced = fencedLines(text);
+  const lineStarts = [0];
+  for (let i = 0; i < text.length; i++) if (text[i] === '\n') lineStarts.push(i + 1);
+  for (const m of text.matchAll(re)) {
+    let li = 0;
+    while (li + 1 < lineStarts.length && lineStarts[li + 1] <= m.index) li++;
+    if (fenced[li]) continue;
+    const before = text.slice(lineStarts[li], m.index);
+    if (((before.match(/`/g) || []).length) % 2 === 1) continue; // quoted as inline code
     try { anchors.push(JSON.parse(m[1])); }
     catch { anchors.push({ malformed: m[1] }); }
   }
@@ -258,7 +270,9 @@ export function checkAnchor(root, anchor) {
   if (!fs.existsSync(abs)) return { ok: false, reason: `missing: ${rel}` };
   if (anchor.contains !== undefined) {
     let re;
-    try { re = new RegExp(anchor.contains); }
+    // 'm' so a `^`/`$` in `contains` pins a LINE, which is what every author means by it —
+    // without it `^` matched only the first byte of the file (seven anchors, 2026-09-01).
+    try { re = new RegExp(anchor.contains, 'm'); }
     catch (e) { return { ok: false, reason: `invalid contains regex /${anchor.contains}/: ${e.message}` }; }
     if (!re.test(fs.readFileSync(abs, 'utf8'))) {
       return { ok: false, reason: `/${anchor.contains}/ not found in ${rel}` };

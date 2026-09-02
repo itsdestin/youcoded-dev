@@ -32,7 +32,7 @@ collect_repo_state() {
 
     echo "### $repo_name (on \`$branch\`)"
     if [[ "$behind" =~ ^[0-9]+$ && "$behind" -gt 0 ]]; then
-        echo "⚠ ${behind} commits behind its upstream as of the last fetch — run \`git -C $repo_name pull --ff-only\` before trusting Serena or this summary"
+        echo "⚠ ${behind} commits behind its upstream as of the last fetch — run \`git -C $repo_name pull --ff-only\` before trusting Serena, this summary, or any /command or skill (they load from this checkout)"
     fi
     echo "Recent commits:"
     echo '```'

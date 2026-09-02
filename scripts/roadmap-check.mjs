@@ -268,7 +268,7 @@ export function checkStructure(rm) {
 export function countMatches(root, anchor) {
   if (anchor.contains === undefined || !anchor.path) return null;
   let re;
-  try { re = new RegExp(anchor.contains, 'g'); } catch { return null; }
+  try { re = new RegExp(anchor.contains, 'gm'); } catch { return null; }   // 'm' matches checkAnchor
   const abs = path.join(root, anchor.path);
   if (!fs.existsSync(abs)) return null;
   return [...fs.readFileSync(abs, 'utf8').matchAll(re)].length;

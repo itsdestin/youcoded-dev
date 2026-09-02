@@ -511,3 +511,19 @@ test('subRepoRoot: a worktree resolves sub-repos from the main checkout; a check
   const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-bare-'));
   assert.equal(subRepoRoot(bare), bare, 'not a git checkout: keep root, never throw');
 });
+
+test('harvestDocAnchors: a backtick INSIDE an anchor\'s JSON survives (it is the regex, not a code span)', () => {
+  // Regression 2026-09-01: seven migration anchors quoted template literals in `contains`
+  // and the old strip-code-first harvest deleted the backtick span before JSON.parse.
+  const anchors = harvestDocAnchors(
+    'Real claim. <!-- claim: {"path": "x.ts", "contains": "return `turn-\\\\$\\\\{id\\\\}`"} -->', 'claim');
+  assert.equal(anchors.length, 1);
+  assert.equal(anchors[0].contains, 'return `turn-\\$\\{id\\}`');
+});
+
+test('checkAnchor: a `^` in contains pins a line, not the first byte of the file', () => {
+  const root = makeFixture();
+  fs.writeFileSync(path.join(root, 'src', 'b.ts'), 'first\nconst WAIT_MS = 60_000;\n');
+  assert.equal(checkAnchor(root, { path: 'src/b.ts', contains: '^const WAIT_MS = 60_000' }).ok, true);
+  assert.equal(checkAnchor(root, { path: 'src/b.ts', contains: '^WAIT_MS' }).ok, false);
+});
