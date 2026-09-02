@@ -27,6 +27,24 @@ and a log line), not to remove it. Scoped separately from the presence repair �
 surface with its own blast radius; see Part 4 of
 `docs/active/specs/2026-08-11-presence-self-healing-design.md`.
 
+## Half fixed 2026-09-02 (youcoded#386 `940afe79`)
+
+The log half is done: `makeClearSessionOn401` now writes one `WARN` line to `desktop.log`
+naming the surface (bound once per handler module — social / marketplace / arcade — rather
+than at all 19 call sites) and the server's own message. Logged only when a session actually
+existed, because several in-flight calls can 401 together and `signOut()` is idempotent.
+<!-- claim: {"path": "youcoded/desktop/src/main/handler-utils.ts", "contains": "account session cleared"} -->
+
+The server message is CAPPED at 200 characters. It is the 401 response body verbatim —
+`marketplace-api-client` falls back to raw response text when the body is not JSON, so a proxy
+or captive portal answering with an HTML page would otherwise write that whole page into a log
+that keeps only its last 500 lines.
+
+**Still owed: the user-facing notice.** It needs a surface and copy decision on an auth screen
+(`docs/error-message-standards.md` applies), which is why it did not ship unattended. The WHY
+comment at the edit site records this so a later reader does not mistake the log line for the
+whole fix. Four tests cover the decorator, which previously had none.
+
 ## History
 Added 2026-08-11 (old ROADMAP.md L365). Re-verified 2026-09-01: `handler-utils.ts` has had no
 commits since 2026-07-09; the silent `signOut()` is unchanged.
