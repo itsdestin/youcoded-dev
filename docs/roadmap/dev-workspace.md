@@ -30,10 +30,12 @@ seen-on is always n/a here.
       line in `desktop/tsconfig.tests.json`; verify.sh prints the remaining count every run
       `n/a` `confirmed` `checked 2026-09-02`
 
-- [ ] The sync-spaces engine test goes red on the macOS CI leg every week or two — on branches
-      that touch nothing in sync, and on untouched master — with zero watcher events delivered;
-      Ubuntu and Windows pass the same commit, and every fire also skips macOS packaging
-      `n/a` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
+- [ ] File-watching tests go red on the macOS CI leg every week or two — on branches that touch
+      nothing in sync, and on untouched master — with zero watcher events delivered; Ubuntu and
+      Windows pass the same commit, and every fire also skips macOS packaging. 2026-09-02: it is
+      NOT only the sync-spaces engine — git-watcher failed the same way in the same run, so the
+      production risk is wider than sync
+      `n/a` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
 
 - [ ] subagent-view, mcp-startup-wiring and project-watcher were filed as the suites that flake
       under parallel load, but 27 full local runs on 2026-09-02 (1 alone, 6 concurrent, 4 pinned to

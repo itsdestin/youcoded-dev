@@ -166,6 +166,10 @@ fi
 # so they run concurrently into separate logs and are reported in a fixed order
 # afterwards. Interleaving their stdout would make the output unreadable.
 LOGDIR="$(mktemp -d)"
+# Kept ONLY on a green run. A failing run moves its logs somewhere durable
+# below, because the transcript tail is 25 lines and a flake is unreportable
+# without the rest — on 2026-09-02 two tests failed here, passed on a re-run,
+# and their NAMES were gone with the temp dir before anyone could file them.
 trap 'rm -rf "$LOGDIR"' EXIT
 
 declare -A PID LABEL
@@ -232,6 +236,7 @@ fi
 start invariants "invariants (ast-grep)" bash "$ROOT/scripts/ast-grep/check.sh" "$DESKTOP/src"
 
 FAILED=0
+FAILED_KEYS=()
 for key in types testtypes tests knip lint invariants; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
@@ -243,9 +248,21 @@ for key in types testtypes tests knip lint invariants; do
     # Last 25 lines: enough for a tsc error list or a vitest failure summary
     # without dumping a full suite run into the transcript.
     sed 's/^/      /' "$LOGDIR/$key.log" | tail -25
-    echo "      (full log was $LOGDIR/$key.log)"
+    FAILED_KEYS+=("$key")
   fi
 done
+
+# Preserve the logs for every check that failed. The old line said "(full log
+# was $LOGDIR/…)" and pointed at a path the EXIT trap was about to delete — a
+# message naming a file the reader cannot open is worse than no message.
+if [[ $FAILED -gt 0 ]]; then
+  KEEP="$ROOT/scratch/verify-$(date +%Y%m%d-%H%M%S)-$$"
+  if mkdir -p "$KEEP" 2>/dev/null; then
+    for key in "${FAILED_KEYS[@]}"; do cp "$LOGDIR/$key.log" "$KEEP/$key.log" 2>/dev/null; done
+    echo ""
+    echo "full logs: $KEEP"
+  fi
+fi
 
 echo ""
 if [[ $FAILED -eq 0 ]]; then

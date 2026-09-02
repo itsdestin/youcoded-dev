@@ -42,8 +42,8 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 51 | 8 | 0 | 16 |
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 40 | 20 | 0 | 8 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 48 | 8 | 0 | 16 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 40 | 19 | 0 | 8 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 27 | 17 | 0 | 5 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 21 | 5 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 6 | 0 | 3 |
@@ -51,7 +51,7 @@ Target: `v1.3`
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 15 | 3 | 0 | 6 |
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 14 | 9 | 0 | 1 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 12 | 3 | 0 | 6 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 11 | 6 | 0 | 1 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 11 | 6 | 1 | 1 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 11 | 4 | 0 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 6 | 2 | 0 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 0 | 0 | 1 |

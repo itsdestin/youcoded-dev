@@ -40,8 +40,8 @@ produced and the panel that shows them (files).
 
 - [ ] Every replayed chat bubble is stamped with the moment you opened the session, not when it was
       actually said — with timestamps on, an old session reads as if it all happened "now", on any
-      device
-      `chat` `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-replayed-bubbles-stamped-with-replay-time.md
+      device. Consumer audit done 2026-09-02: needs TWO decisions, not one edit — see the report
+      `chat` `all` `decision` `checked 2026-09-02` → docs/active/investigations/2026-09-01-replayed-bubbles-stamped-with-replay-time.md
 
 - [ ] After the app's window crashes and reloads, every session comes back named "New Session" — the
       title you saw was never saved, only the live window knew it

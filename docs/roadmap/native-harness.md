@@ -112,10 +112,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       hours — on 2026-08-26 a background Explorer's search sat 4 h in Google Drive before Stop killed it
       `desktop` `confirmed` `checked 2026-09-01` `urgent` → docs/active/investigations/2026-09-01-grep-glob-no-deadline.md
 
-- [ ] A "Preparing…" tool card keeps spinning beside real tool calls for the rest of the turn when
-      the model completed one tool call and dropped a second, malformed one in the same step
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-orphan-preparing-card-nonempty-step.md
-
 - [ ] On a small local vision model the assistant is told an image is "already visible earlier in
       this conversation" and gets no picture, even though it can no longer see it, until the file changes
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-trimmed-image-dedupe-cache.md
@@ -213,17 +209,9 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       Blocked on a general delete-conversation feature existing at all (none does today)
       `desktop` `blocked` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
 
-- [ ] A helper's card that already says "completed" can flip back to "running" and stay there
-      when an older update lands after a newer one (attach/replay race, slow hop)
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-specialist-run-stale-resend.md
-
 - [ ] A note sent to a background helper mid-run shows at the bottom of its Activity trail,
       after tool calls that actually happened later
       `tool-cards` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md
-
-- [ ] The assistant repeatedly steering a helper that is no longer live grows that helper's
-      ledger file without limit — the 2,000-character note cap does not cover missed steers
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-specialist-missed-steers-unclamped.md
 
 - [ ] Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user
       approves a card, the executor journals and resumes it. Approved in the 2026-08-11
