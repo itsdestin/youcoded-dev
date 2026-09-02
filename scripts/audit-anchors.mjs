@@ -640,7 +640,8 @@ function main() {
 
   result.ok = !result.anchors.failed.length && !result.mapPaths.missing.length
     && !result.ruleGlobs.failed.length && !result.budgets.violations.length
-    && !result.yamlUnsafe.length && !result.worktreeGlobs.blind.length;
+    && !result.yamlUnsafe.length && !result.worktreeGlobs.blind.length
+    && !(result.strayRules || []).length;
 
   if (asJson) {
     console.log(JSON.stringify(result, null, 2));
@@ -667,11 +668,9 @@ function printHuman(r) {
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
-  // WARN, not FAIL, and deliberately so: deleting the file is a change in ANOTHER
-  // repo, so gating on it here would turn this workspace's CI red for as long as
-  // that PR is open — the exact "permanently red check" this audit exists to end.
-  // Flip it to dump() + result.ok in the same commit that confirms the fork gone.
-  warn('rule files in a sub-repo — never loaded from the workspace, and a silent fork (needs a PR in that repo)',
+  // A FAILURE since 2026-09-02: the one stray fork (youcoded/.claude/rules/android-runtime.md)
+  // was deleted in youcoded PR #378, so a sub-repo rules dir can only be a new mistake now.
+  dump('rule files in a sub-repo — never loaded from the workspace, and a silent fork (delete it; the workspace rule owns it)',
        (r.strayRules || []).flatMap(x => x.files.map(f => `${x.repo}/.claude/rules/${f}`)));
   dump('worktree-blind rule globs (these never fire on work done in worktrees/)',
        (r.worktreeGlobs?.blind || []).map(x => `${x.rule}: ${x.glob}  ->  ${x.fix}`));

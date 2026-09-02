@@ -1,9 +1,9 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: plan
 topic: Roadmap restructure — roadmap-check tool, edit hook, CI wiring, skeleton, migration runbook
-spec: docs/active/specs/2026-09-01-roadmap-restructure-design.md
+spec: docs/archive/specs/2026-09-01-roadmap-restructure-design.md
 ---
 
 # Roadmap Restructure Implementation Plan
@@ -168,7 +168,7 @@ Expected: fails at import — `Cannot find module './roadmap-check.mjs'`.
 #!/usr/bin/env node
 // roadmap-check.mjs — the mechanical pass over the per-area roadmap.
 //
-// Four jobs, one run (spec §5, docs/active/specs/2026-09-01-roadmap-restructure-design.md):
+// Four jobs, one run (spec §5, docs/archive/specs/2026-09-01-roadmap-restructure-design.md):
 //   1. structure   — every entry parses, every token is in its vocabulary, links resolve
 //   2. claims      — every linked report's `<!-- claim: … -->` anchors still hold
 //   3. symptom pass — items nobody has confirmed in 60 days, for Destin
@@ -1594,7 +1594,7 @@ const r = spawnSync(process.execPath, [script, '--structure', '--quiet', '--root
 if (r.status === 0) process.exit(0);
 process.stderr.write(
   'roadmap-check: the roadmap file you just wrote has structure errors — fix them now '
-  + '(entry grammar: docs/active/specs/2026-09-01-roadmap-restructure-design.md §2; '
+  + '(entry grammar: docs/archive/specs/2026-09-01-roadmap-restructure-design.md §2; '
   + 'filing rule: the bottom of ROADMAP.md)\n' + (r.stdout || '') + (r.stderr || ''),
 );
 process.exit(2);
@@ -1699,7 +1699,7 @@ under `## Roadmap`. Then:
 
 Dedup near-identical items across area files by hand (one entry, one report, keep the
 older date in the report's history line). Filing rule and grammar: the bottom of
-`ROADMAP.md` and the spec, `docs/active/specs/2026-09-01-roadmap-restructure-design.md` §2.
+`ROADMAP.md` and the spec, `docs/archive/specs/2026-09-01-roadmap-restructure-design.md` §2.
 ```
 
 In step 6, change the auto-memory bullet's last sentence from `Planning content moves to ROADMAP.md —` to `Planning content moves to the area file under docs/roadmap/ whose Filing test says yes —`.
@@ -1877,7 +1877,7 @@ Expected: all tests pass; the anchor pass reports the same result it did before 
 ```bash
 git push -u origin feat/roadmap-check
 gh pr create --title "roadmap-check: the tool, hook and CI step (dormant until migration)" --body "$(cat <<'EOF'
-Spec: docs/active/specs/2026-09-01-roadmap-restructure-design.md §5.
+Spec: docs/archive/specs/2026-09-01-roadmap-restructure-design.md §5.
 
 - scripts/roadmap-check.mjs — structure / claims / symptom pass / index, --fix, dormant while docs/roadmap/ is absent
 - .claude/hooks/roadmap-edit-check.mjs — PostToolUse; exit 2 + stderr on structure errors
@@ -1903,7 +1903,7 @@ git push origin --delete feat/roadmap-check   # skip if auto-deleted
 
 - [ ] **Step 3: Hand off**
 
-Append to `docs/active/handoffs/2026-09-01-roadmap-restructure-handoff.md` §6: a row for this plan, and the sentence "Part 1 merged <date>, commit <sha>. Part 2 (migration) is the next session."
+Append to `docs/archive/handoffs/2026-09-01-roadmap-restructure-handoff.md` §6: a row for this plan, and the sentence "Part 1 merged <date>, commit <sha>. Part 2 (migration) is the next session."
 
 ---
 
@@ -2122,7 +2122,7 @@ or a release like `v1.3.1`). New items start `needs-verify` unless you reproduce
 report anchors the cause. To close an item: delete it from the area file, append one line to
 `docs/roadmap/shipped.md`, archive its report. Run `node scripts/roadmap-check.mjs --fix`
 before committing. Grammar and vocabularies:
-`docs/active/specs/2026-09-01-roadmap-restructure-design.md` §2–3.
+`docs/archive/specs/2026-09-01-roadmap-restructure-design.md` §2–3.
 ```
 
 - [ ] **Step 6: The tool passes on the empty roadmap**
@@ -2151,7 +2151,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ```
 You are migrating roadmap items into docs/roadmap/[AREA].md[, section ## [SUBLEVEL]] in the
 worktree /home/destin/youcoded-dev-migration. Read the spec first:
-docs/active/specs/2026-09-01-roadmap-restructure-design.md — §2 (entry grammar), §3 (your
+docs/archive/specs/2026-09-01-roadmap-restructure-design.md — §2 (entry grammar), §3 (your
 area's filing test and the vocabularies), §3.3 (what confirmed means), §4 (claim anchors),
 §6.2 (your procedure). Your items are in [PACKET PATH] (JSON: line, headline, text, tags,
 added, citedFiles with lastCommit, sharesFilesWith, and the ranking doc's verdict where one

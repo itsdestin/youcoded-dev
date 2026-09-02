@@ -109,7 +109,7 @@ under `## Roadmap`. Then:
 
 Dedup near-identical items across area files by hand (one entry, one report, keep the
 older date in the report's history line). Filing rule and grammar: the bottom of
-`ROADMAP.md` and the spec, `docs/active/specs/2026-09-01-roadmap-restructure-design.md` §2.
+`ROADMAP.md` and the spec, `docs/archive/specs/2026-09-01-roadmap-restructure-design.md` §2.
 
 ### 6. Gardening (the anti-rot pass)
 

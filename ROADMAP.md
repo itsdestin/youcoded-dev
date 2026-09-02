@@ -67,4 +67,4 @@ or a release like `v1.3.1`). New items start `needs-verify` unless you reproduce
 report anchors the cause. To close an item: delete it from the area file, append one line to
 `docs/roadmap/shipped.md`, archive its report. Run `node scripts/roadmap-check.mjs --fix`
 before committing. Grammar and vocabularies:
-`docs/active/specs/2026-09-01-roadmap-restructure-design.md` §2–3.
+`docs/archive/specs/2026-09-01-roadmap-restructure-design.md` §2–3.

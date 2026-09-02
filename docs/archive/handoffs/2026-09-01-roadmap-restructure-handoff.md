@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: handoff
 topic: ROADMAP.md restructure — schema, area taxonomy, anti-staleness tooling
 ---
@@ -318,7 +318,7 @@ free — the 14 items are classified one by one there; no separate validation pa
 ## 5. Open questions — all decided 2026-09-01
 
 Every question below was put to Destin on 2026-09-01 and answered. The design as decided is
-`docs/active/specs/2026-09-01-roadmap-restructure-design.md`, which supersedes the taxonomy
+`docs/archive/specs/2026-09-01-roadmap-restructure-design.md`, which supersedes the taxonomy
 draft. Decisions: (1) area is named **`claude-code-integration`** — "harness" would name the
 agent loop, which for Claude Code is Anthropic's; "integration" names the wrapper the app
 owns. (2) Ideas keep their real area with `parked`. (3) `performance`/`security` are flags;
@@ -350,8 +350,8 @@ The table as it stood before those answers, for the record:
 
 | Path | What it is |
 |---|---|
-| `docs/active/specs/2026-09-01-roadmap-restructure-design.md` | **The approved design** — files, entry grammar, vocabularies, status definitions, claim anchors, the tool, the migration procedure, the tag→area map. Start here. |
-| `docs/active/plans/2026-09-01-roadmap-restructure-tooling.md` | **The implementation plan** — Part 1 builds the tool, hook and CI step (merges to master dormant); Part 2 is the migration runbook with the skeleton files and the subagent brief. Its code was assembled and run green before it was saved. |
+| `docs/archive/specs/2026-09-01-roadmap-restructure-design.md` | **The approved design** — files, entry grammar, vocabularies, status definitions, claim anchors, the tool, the migration procedure, the tag→area map. Start here. |
+| `docs/archive/plans/2026-09-01-roadmap-restructure-tooling.md` | **The implementation plan** — Part 1 builds the tool, hook and CI step (merges to master dormant); Part 2 is the migration runbook with the skeleton files and the subagent brief. Its code was assembled and run green before it was saved. |
 | `docs/archive/specs/2026-08-31-roadmap-area-taxonomy-draft.md` | The taxonomy draft the spec grew from (superseded; kept for the considered-and-rejected names) |
 | `docs/active/reviews/2026-08-31-roadmap-open-item-difficulty-ranking.md` | All 258 open items ranked into six difficulty tiers, plus 18 "fix today" items (top four verified against live code) and the already-resolved entries (see §1 for the honest tally) |
 | `.claude/commands/audit.md` → step 5 | The roadmap check that already exists on paper and has never run |
