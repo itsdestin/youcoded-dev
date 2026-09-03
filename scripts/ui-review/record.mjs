@@ -13,6 +13,7 @@ import { mkdtempSync, rmSync, writeFileSync, readFileSync, mkdirSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { CHROME_FLAGS, waitForCdp, selExpr, textExpr, rectOfExpr } from './cdp-helpers.mjs';
+import { runAutopilot, marksFile } from './autopilot.mjs';
 
 const [scenePath, outBase] = process.argv.slice(2);
 if (!scenePath || !outBase) { console.error('usage: node record.mjs <scene.json> <outBase>'); process.exit(2); }
@@ -48,6 +49,10 @@ const target = targets.find((t) => t.type === 'page') ?? targets[0];
 const ws = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise((r) => ws.addEventListener('open', r));
 let id = 0; const pending = new Map(); const frames = [];
+// Fix: wall-clock of the FIRST screencast frame is the clip's time zero — every
+// action's start/end (stamped in Date.now()) is converted to video seconds by
+// subtracting this, in marksFile below.
+let firstFrameAt = 0;
 const framesDir = mkdtempSync(join(tmpdir(), 'ui-frames-'));
 // Fix: this used to only get cleaned up on the success path at the bottom of
 // the file — any early exit (a MISSING selector, a failed click) left hundreds
@@ -59,6 +64,7 @@ ws.addEventListener('message', (m) => {
   const d = JSON.parse(m.data);
   if (d.id && pending.has(d.id)) { pending.get(d.id)(d); pending.delete(d.id); }
   if (d.method === 'Page.screencastFrame') {
+    if (frames.length === 0) firstFrameAt = Date.now();
     const n = frames.length;
     writeFileSync(join(framesDir, `f${String(n).padStart(5, '0')}.png`), Buffer.from(d.params.data, 'base64'));
     frames.push({ n, t: d.params.metadata.timestamp });
@@ -128,7 +134,14 @@ async function typeSlow(text, cps = 18) {
     await sleep(1000 / cps * (0.7 + Math.random() * 0.6));
   }
 }
-const KEYS = { Enter: { key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r' }, Escape: { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 } };
+// Space is the Flappy flap key. It needs `code: 'Space'` and a literal ' ' as
+// both key and text — the app's handler checks e.key === ' ', and the generic
+// fallback below would have sent key 'Space', which it ignores.
+const KEYS = {
+  Enter: { key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r' },
+  Escape: { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 },
+  Space: { key: ' ', code: 'Space', windowsVirtualKeyCode: 32, text: ' ' },
+};
 async function key(name, modifiers = 0) {
   const k = KEYS[name] ?? { key: name, code: `Key${name.toUpperCase()}`, windowsVirtualKeyCode: name.toUpperCase().charCodeAt(0) };
   await send('Input.dispatchKeyEvent', { type: 'keyDown', modifiers, ...k });
@@ -155,10 +168,18 @@ await moveTo({ x: W * 0.6, y: H * 0.55 }, 1);
 // ---- record ----
 await send('Page.startScreencast', { format: 'png', everyNthFrame: 1, maxWidth: W, maxHeight: H });
 const t0 = Date.now();
-for (const a of scene.actions) {
-  if (a.hold != null) { await sleep(a.hold); continue; }
-  if (a.wait != null) { await sleep(a.wait); continue; }
-  if (a.moveTo) { const p = await rectOf(selExpr(a.moveTo)); if (!p) throw new Error(`MISSING ${a.moveTo}`); await moveTo(p, a.ms ?? 400); }
+// Fix: every action is stamped (wall-clock start/end) for the marks file, so a
+// later editing pass can trim footage by label instead of a hand-measured frame.
+// hold/wait still `continue` past `settle` (unchanged semantics, so existing
+// landing-page scenes film identically) but now go through the stamp too — they
+// are the marks a beat trims to most often.
+const stamps = [];   // one per action: wall-clock start/end, for the marks file
+for (const [i, a] of scene.actions.entries()) {
+  const kind = Object.keys(a).find((k) => !['settle', 'mark', 'tag', 'ms', 'cps', 'to', 'timeout', 'modifiers'].includes(k)) ?? 'noop';
+  const start = Date.now();
+  if (a.hold != null) await sleep(a.hold);
+  else if (a.wait != null) await sleep(a.wait);
+  else if (a.moveTo) { const p = await rectOf(selExpr(a.moveTo)); if (!p) throw new Error(`MISSING ${a.moveTo}`); await moveTo(p, a.ms ?? 400); }
   else if (a.click) await click(selExpr(a.click));
   else if (a.drag) await drag(selExpr(a.drag), selExpr(a.to), a.ms);
   else if (a.clickText) await click(textExpr(a.clickText, a.tag));
@@ -177,8 +198,18 @@ for (const a of scene.actions) {
     const deadline = Date.now() + (a.timeout ?? 20000);
     while (!(await rectOf(expr))) { if (Date.now() > deadline) throw new Error(`TIMEOUT waiting for ${expr}`); await sleep(150); }
   }
+  // autopilot: poll a JS predicate in the page and press a key when it says so —
+  // the recorder "plays" a game (Flappy) by reading its DOM instead of a fixed rhythm.
+  else if (a.autopilot) {
+    const r = await runAutopilot({
+      evaluate, press: (k) => key(k), sleep, now: () => Date.now(),
+      ms: a.autopilot.ms, every: a.autopilot.every, when: a.autopilot.when, key: a.autopilot.key, minGap: a.autopilot.minGap,
+    });
+    console.error(`autopilot: ${r.presses} presses over ${r.polls} polls`);
+  }
   else if (a.eval) await evaluate(a.eval);
-  await sleep(a.settle ?? 400);
+  stamps.push({ i, kind, mark: a.mark ?? null, start, end: Date.now() });
+  if (a.hold == null && a.wait == null) await sleep(a.settle ?? 400);
 }
 await send('Page.stopScreencast');
 await sleep(300);
@@ -193,7 +224,9 @@ const list = frames.map((f, i) => {
 writeFileSync(join(framesDir, 'list.txt'), list);
 mkdirSync(dirname(outBase), { recursive: true });
 const enc = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', join(framesDir, 'list.txt'),
-  '-vf', `scale=${W}:-2,fps=24,format=yuv420p`, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '33', '-row-mt', '1', '-an', `${outBase}.webm`]);
+  // Fix: scene-level `fps` (default 24) sets the encode frame rate — the promo
+  // films at 30 so no frame is doubled in a 30 fps edit.
+  '-vf', `scale=${W}:-2,fps=${scene.fps ?? 24},format=yuv420p`, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '33', '-row-mt', '1', '-an', `${outBase}.webm`]);
 if (enc.status !== 0) { console.error(enc.stderr.toString()); process.exit(1); }
 // Poster = the LAST frame, not the first: a loop that starts in an empty chat
 // (rows 1/2/6/7 since 2026-08-28) would otherwise show a blank window wherever
@@ -201,5 +234,9 @@ if (enc.status !== 0) { console.error(enc.stderr.toString()); process.exit(1); }
 spawnSync('magick', [join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0')}.png`), '-quality', '82', `${outBase}.webp`]);
 // framesDir cleanup now happens in the exit handler registered above (covers
 // error exits too, not just this success path).
-console.log(`frames=${frames.length} duration=${duration.toFixed(1)}s out=${outBase}.webm`);
+// Marks file: where every scene action landed in the finished clip, in video
+// seconds, so a later edit pass trims by label instead of a hand-measured frame.
+const marks = marksFile({ fps: scene.fps ?? 24, width: W, height: H, duration, firstFrameAt, stamps });
+writeFileSync(`${outBase}.marks.json`, JSON.stringify(marks, null, 1));
+console.log(`frames=${frames.length} duration=${duration.toFixed(1)}s out=${outBase}.webm marks=${outBase}.marks.json`);
 process.exit(0);

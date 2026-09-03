@@ -120,6 +120,11 @@ scripts/ui-review/scenes/row2-does-things.json
 | `key` (+`modifiers`) | one key — `Enter`, `Escape`, … |
 | `waitFor` / `waitForText` (+`tag`, `timeout`) | poll until the element is on screen (contains-match for text; default 20 s). **Use this before clicking anything a scripted reply produces** — a fixed `settle` is a race |
 | `hold` | keep recording for N ms; `settle` on any action is the pause after it |
+| `autopilot` (`ms`, `when`, `key`, `every`, `minGap`) | poll `when` (a JS expression evaluated in the page) every `every` ms for `ms` ms and press `key` when it is true — the recorder "plays" a game by reading the DOM. (Not `autoplay`: that is the workbench's own `?autoplay=<ms>` URL switch, which auto-sends the first message.) |
+| `mark` (on any action) | a label for this action in `<out>.marks.json`, which lists every action's start/end in video seconds — a timeline trims to a label, never to a hand-measured frame |
+
+Scene-level `fps` (default 24) sets the encode frame rate — the promo films at 30 so no
+frame is doubled in a 30 fps edit.
 
 ```
 WB_PORT=5473 CDP_PORT=10330 node scripts/ui-review/record.mjs scripts/ui-review/scenes/<scene>.json <out-base>
