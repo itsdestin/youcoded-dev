@@ -223,9 +223,18 @@ body.intro-mode .kicker,
 body.intro-mode .hero-sub,
 body.intro-mode .dlrow,
 body.intro-mode .hero-app,
+body.intro-mode .dlfloat,
 body.intro-mode > section,
 body.intro-mode > footer,
 body.intro-mode > .topcta{opacity:0;pointer-events:none}
+/* The pill fades on ITS OWN and is deliberately absent from the translateY list
+   below (Destin 2026-09-03: "it pops in in a really ugly way"). Measured cause:
+   it is position:fixed and used to live INSIDE .hero-app, and a transformed
+   ancestor is a containing block for fixed children -- so through the whole
+   intro exit it hung off .hero-app's box at top 851, then jumped to its real
+   docked spot (707) in ONE frame the instant that transform hit `none`. It is
+   now a sibling of .hero-app, and nothing above it moves, so the only thing
+   that changes during the reveal is opacity. */
 /* Everything BELOW the headline also starts low and rises; the kicker sits
    above it, so it only fades (sliding it up would run it into the headline). */
 body.intro-mode .hero-sub,
@@ -237,9 +246,14 @@ body.intro-mode > footer{transform:translateY(34px)}
 .hero-flank ~ section,.hero-flank ~ footer,.hero-flank ~ .topcta,
 .hero-flank .kicker,.hero-flank .hero-sub,.hero-flank .dlrow,.hero-flank .hero-app{
   transition:opacity .58s ease .1s, transform .62s cubic-bezier(.22,1,.36,1) .1s}
+/* Same fade, same delay, so the pill arrives with the rest of the page. Its
+   transform transition stays at the .34s the docked/hidden states use -- this
+   sheet loads AFTER css_embed_fade.css, so whatever is written here wins. */
+.hero-flank .dlfloat{transition:opacity .58s ease .1s, transform .34s ease}
 @media (prefers-reduced-motion:reduce){
   body.intro-mode .kicker,body.intro-mode .hero-sub,body.intro-mode .dlrow,
-  body.intro-mode .hero-app,body.intro-mode > section,body.intro-mode > footer,
+  body.intro-mode .hero-app,body.intro-mode .dlfloat,
+  body.intro-mode > section,body.intro-mode > footer,
   body.intro-mode > .topcta{opacity:1;pointer-events:auto;transform:none}
   body.intro-mode .flankrow{transform:none}}
 

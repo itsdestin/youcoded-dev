@@ -292,9 +292,8 @@ def flank_header(prefix, words, suffix='', italic_last=False):
     <div class="dlrow">
         {dl_buttons()}
     </div>
-    <div class="hero-app">{EMBED}
-      {DLFLOAT}
-    </div>
+    <div class="hero-app">{EMBED}</div>
+    {DLFLOAT}
   </div>
 </header>'''
 
@@ -383,9 +382,8 @@ HEADERS = {
     <div class="dlrow">
         {dl_buttons()}
     </div>
-    <div class="hero-app">{EMBED}
-      {DLFLOAT}
-    </div>
+    <div class="hero-app">{EMBED}</div>
+    {DLFLOAT}
   </div>
 </header>''',
 
