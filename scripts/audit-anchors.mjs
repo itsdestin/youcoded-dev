@@ -514,8 +514,9 @@ export function strayRuleDirs(root) {
 // Sub-path, not basename: `design/<a>/copy.md` and `design/<b>/copy.md` are two real
 // documents, and comparing basenames alone would report them as a duplicate.
 //
-// WARN, not FAIL, until the three known leftovers are cleared — same escalation the
-// stray-rules check went through on 2026-09-02.
+// A FAILURE since 2026-09-03: the three leftovers were deleted the same day, so a
+// shadowed live doc can only be a new mistake now — the same escalation the stray-rules
+// check went through on 2026-09-02.
 export function shadowedActiveDocs(root) {
   const rel = (base, f) => path.relative(base, f).replaceAll('\\', '/');
   const active = path.join(root, 'docs', 'active');
@@ -702,7 +703,7 @@ function main() {
   result.ok = !result.anchors.failed.length && !result.mapPaths.missing.length
     && !result.ruleGlobs.failed.length && !result.budgets.violations.length
     && !result.yamlUnsafe.length && !result.worktreeGlobs.blind.length
-    && !(result.strayRules || []).length;
+    && !(result.strayRules || []).length && !(result.shadowedDocs || []).length;
 
   if (asJson) {
     console.log(JSON.stringify(result, null, 2));
@@ -742,7 +743,7 @@ function printHuman(r) {
   }
   dump('rule frontmatter a strict YAML parser rejects (these load EAGERLY, every session)',
        (r.yamlUnsafe || []).map(u => `${u.file}: ${u.reason}`));
-  warn('live docs that also exist under docs/archive/ — same document twice; the docs/active/ copy is the stale one (delete it, or un-archive if it is genuinely back in flight)',
+  dump('live docs that also exist under docs/archive/ — same document twice; the docs/active/ copy is the stale one (delete it, or un-archive if it is genuinely back in flight)',
        (r.shadowedDocs || []).map(d => `docs/active/${d}`));
   dump('budget violations', r.budgets.violations);
   if (r.diffScope) {
