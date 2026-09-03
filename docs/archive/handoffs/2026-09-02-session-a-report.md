@@ -1,6 +1,6 @@
 ---
 date: 2026-09-02
-status: active
+status: shipped
 type: handoff
 ---
 
@@ -27,7 +27,7 @@ So I worked the two that were real, then kept going down Tier 1 and closed three
 | 4 | Artifact repair over-reclassify counter | Already shipped (`283f71ce`) |
 | 5 | Terminal Opacity slider floor | Already shipped |
 | 6 | Skip Permissions tooltip copy | Already shipped |
-| 7 | Adopt the `FieldError` primitive | **Done — youcoded#385, open for you** |
+| 7 | Adopt the `FieldError` primitive | **Done — youcoded#385, merged 2026-09-03** |
 | 8 | Three hand-rolled badges → `Badge` | **Skipped** — needs a decision, see below |
 | + | L264 `missedSteers` unbounded | **Done — youcoded#382** |
 | + | L259 stale run push rewinds a card | **Done — youcoded#382** |
@@ -53,16 +53,12 @@ spinning card that should never have been there.
 - **A "Preparing…" card left behind by a garbled tool call now disappears immediately** instead
   of spinning next to real work until the reply ends.
 
-## What is waiting for you
+## Where the PRs landed
 
-One PR is waiting on you. Three others merged.
-
-| PR | What it is | Why I left it |
-|---|---|---|
-| **#385** | The field-error sweep | Touches 11 screens. Nothing moves, but it is your call |
-
-**#386 and #387 have since been merged** — both invisible to the eye, both green on all four
-legs. #385 is the only thing left waiting.
+All four PRs are merged. #385 was held back overnight because it touches 11 screens, shown to
+Destin on 2026-09-03, and merged on his say-so (`2b65be60`). #382, #386 and #387 merged
+unattended — all three invisible to the eye, all green on all four legs. Nothing from this
+session is left open.
 
 ### youcoded#386 — the silent sign-out
 

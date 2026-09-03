@@ -44,7 +44,7 @@ Target: `v1.3`
 |---|---|---|---|---|
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 48 | 8 | 0 | 16 |
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 40 | 19 | 0 | 8 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 27 | 17 | 0 | 5 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 26 | 17 | 0 | 5 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 21 | 5 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 6 | 0 | 3 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 5 | 0 | 5 |

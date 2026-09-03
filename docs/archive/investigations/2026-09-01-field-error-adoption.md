@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: `FieldError` has one caller while ~30 sites hand-roll its markup — and the sizes disagree
 ---

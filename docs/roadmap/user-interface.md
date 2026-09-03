@@ -80,12 +80,6 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       decent for messages, "janky af" for the file viewer, needs more work before integrating
       `desktop` `parked` `checked 2026-09-01`
 
-- [ ] Inline field error text is drawn by hand in ~30 places instead of the shared piece, at
-      two different sizes — so the same error looks different from screen to screen. Swept in
-      youcoded#385 (open, awaiting Destin): 22 sites moved, 7 left with reasons, nothing changes
-      on screen
-      `all` `in-flight` `checked 2026-09-02` → docs/active/investigations/2026-09-01-field-error-adoption.md
-
 - [ ] The project-folder picker should be a dropdown with recently used folders like every
       other dropdown — but the app keeps no recents list at all yet (2026-07-24)
       `all` `needs-verify` `checked 2026-09-01`
