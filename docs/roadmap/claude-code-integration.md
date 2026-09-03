@@ -76,3 +76,17 @@ chat-data).
 - [ ] Idea: a Settings → Development toggle for Claude Code's forked-subagent flag
       (`CLAUDE_CODE_FORK_SUBAGENT`)
       `settings/development` `desktop` `parked` `checked 2026-04-21`
+
+- [ ] Chat view hangs on "Initializing session..." forever when Claude Code is waiting on its
+      trust-folder prompt — terminal view shows the prompt and answers fine, chat view never
+      surfaces it and never times out (Destin, 2026-09-03, screenshot on file: "Accessing
+      workspace: /home/destin ... Yes, I trust this folder"). The parser markers DO match that
+      wording (`ink-select-parser.ts` — `quick safety check`, `execute files here`, `yes, i
+      trust this folder`), so this is not a missing string: either `TrustGate` is not rendering
+      it into chat view, or the session-initialized gate ("first hook = initialized",
+      `App.tsx`) can never clear because CC has not started, which is a deadlock either way.
+      Note the confounder in this repro — `~/.claude/settings.json` also had 12 dangling hook
+      paths at the time, so hooks could not fire; re-verify with healthy hooks before
+      concluding. An unclearable overlay was already noted as a UX bug in the 2026-08-07
+      shipped entry and never tracked
+      `desktop` `needs-verify` `checked 2026-09-03` `needs-repro`

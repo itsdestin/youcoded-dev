@@ -245,3 +245,16 @@ seen-on is always n/a here.
       listings, the macOS/Windows security-warning signing, an LLC — Destin, 2026-09-02, "soon-ish,
       probably right after the 1.3 release"
       `n/a` `parked` `checked 2026-09-02`
+
+- [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
+      turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
+      pinned on "Initializing session..." behind CC's trust-folder prompt while terminal view
+      showed it fine. These are Ink TUI menus parsed by screen-scrape
+      (`renderer/parser/ink-select-parser.ts` → `PromptCard` / `TrustGate`), so they break
+      whenever CC rewords one, and the app has no fixture for any of them. The perf rig resumes
+      sessions by a path that skips the gate entirely, and the UI workbench has no session
+      launch at all. Wants a launch-prompt fixture set — trust folder, theme picker, login
+      method, model-switch safeguard — replayed through the parser and rendered, so a reworded
+      CC prompt fails a test instead of hanging a session. Prior art for the failure mode:
+      the 2026-07-16 "trust" substring collision in `docs/roadmap/shipped.md`
+      `desktop` `needs-verify` `checked 2026-09-03` `regression`
