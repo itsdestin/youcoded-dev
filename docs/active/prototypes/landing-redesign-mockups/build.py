@@ -4,24 +4,8 @@ import json, io, os
 import os
 BASE = os.path.dirname(os.path.abspath(__file__))  # portable: run from wherever this file lives
 
-# ---------------------------------------------------------------------------
-# COPY VARIANT (2026-08-31). `python3 build.py` emits the page as agreed;
-# `YC_VARIANT=b python3 build.py` emits mockup-landing-b.html with different
-# WORDS and a different card ORDER, and nothing else -- same skin, same header,
-# same clips, same layout, so the only thing being compared is the argument.
-#
-# Why a whole second process rather than a parameter: BODY and DEMOS are
-# module-level f-strings evaluated at import, so the copy they close over is
-# fixed the moment this file is read. Re-running the module in a fresh process
-# with a different VARIANT is a two-line change; deferring those f-strings into
-# functions is a refactor of a 1,400-line generator mid-iteration.
-#
-# Variant B's thesis, from the 2026-08-31 competitive review: the page leads with
-# claims every rival also makes (any model, free, open source, works on your
-# files, asks permission) and buries the three things NO rival has. B inverts
-# that order and cuts the repetition -- measured on A: the model story appears
-# 6 times, "free and open source" 6, "runs locally" 5, "asks permission" 5.
-VARIANT = os.environ.get('YC_VARIANT', 'a')
+# One page of record (variant A). A copy-experiment variant B existed 2026-08-31
+# and was dropped the same day — do not revive YC_VARIANT or mockup-landing-b.
 THEMES = json.load(open(BASE + '/themes.json'))
 
 FEATURES = [
@@ -37,48 +21,17 @@ FEATURES = [
 ]
 ROADMAP = ("Roadmap","Hand it off.","Set up a job once — what to do, which tools it may use, where to stop and check with you — then run it on a schedule or send it from your phone. Results and approvals land in an inbox. First: run now and scheduled runs. Later: kick off from an incoming email or a changed file.")
 
-# ---------------------------------------------------------------------------
-# VARIANT B copy. Same nine clips, reordered so the page opens on the only
-# capability a visitor can PICTURE and the platform breadth six of eight rivals
-# cannot match, and closes on the developer material. Card 3 is the one the
-# review found buried: user tags, private notes and one-tap prompt buttons are
-# each held by ZERO of the eight competitors surveyed 2026-08-31.
-# ---------------------------------------------------------------------------
-if VARIANT == 'b':
-    FEATURES = [
- ("Real work, edited live","Hand it a spreadsheet, get something you can actually read.","Attach a file and ask for what you want out of it. The assistant reads it, builds the page, and hands it back in the panel beside the conversation — where you can open it, change it yourself, and watch the change take effect.","row2-artifact-edit"),
- ("Works everywhere","A real app on Windows, macOS, Linux and Android.","Not a browser tab — an app on every machine you own, plus any browser by connecting to a computer running it. Your conversations and files sync through your own private GitHub, so there is no server of ours in the middle holding your work.","row5-follow"),
- ("Nobody else does this","Your own tags. Your own notes.","On your computer, colour-code conversations however you like and leave a private note on any of them. Pin what matters and hide what you are done with, on any device — nothing is ever deleted. And the prompts you use every day sit above the message box as buttons, not commands you have to remember.","row4-organized"),
- ("Genuinely useful","Give it a task and it does real work, with boundaries you can trust.","It reads your files, writes new ones, develops repeatable skills and workflows, searches the web, and helps you manage your computer and your life more efficiently. Permission modes let you restrict the model to match your level of comfort.","row2-does-things"),
- ("Any model, and what it costs","Switch mid-conversation. Watch the meter.","Hundreds of models through OpenRouter, Claude on the plan you already pay for, or a private one running offline on your own computer. The status bar is yours to build: nineteen widgets covering how much of your plan is left, what this conversation has cost, how much room the model has, and more.","row1-any-ai"),
- ("Logical management","Project view keeps your files, conversations, and assistant instructions organized.","Open spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.","row3-projects"),
- ("Make it yours","Describe a look. Install a plugin. Share both.","Build a theme by describing it — wallpapers, colours, mascots — then send it to a friend. The marketplace carries our own plugins for journaling, a personal encyclopedia and calendar and email, plus every Claude Code plugin, installable in one tap.","row6-yours"),
- ("Play while it works","Chess, Connect Four, Flappy Bird and 2048.","Long tasks take a minute. Play a friend at chess or Connect Four in the side panel, or beat your own score at Flappy Bird and 2048 with a friend leaderboard behind it. See who is online, and get back to the answer when it is ready.","row7-play"),
- ("For builders","Use the Claude plan you already pay for.","Run Claude Code as a first-class session next to the app's own agent — your existing Pro or Max subscription, not per-token billing. Review, stage and commit changes without leaving the window. Connect tools over MCP. Download and run local models with a GPU-fit check.","row8-builders"),
-    ]
-    ROADMAP = ("Roadmap","Hand it off.","Set up a job once — what to do, which tools it may use, where to stop and check with you — then run it on a schedule or start it from your phone. \u201cEvery morning at 8, summarise my new GitHub issues and ping me if any look urgent.\u201d Results and approvals land in an inbox.")
-    ABOUT_P2 = ("It runs as a real app on Windows, macOS, Linux and Android \u2014 not a website \u2014 and your "
-                "conversations, files and settings move between them through your own private GitHub. "
-                "Nothing passes through a server of ours, because there isn't one.")
-    ABOUT_P3 = ("You pick the AI behind it: Claude on a plan you already pay for, hundreds of cloud models "
-                "through one OpenRouter account, or a free model running offline on your own machine. And the "
-                "app is meant to be extended by the people using it \u2014 skills, tools and themes are built by "
-                "describing what you want, which is how this entire app was built in the first place.")
-    INTEG_INTRO = "With skills from the WeCoded marketplace, YouCoded can link with services like these:"
-    KICKER = "Free &middot; Open source &middot; Windows, Mac, Linux &amp; Android"
-    SUBTITLE = "It works in your own files, does the task, and hands back something you can open and edit yourself."
-else:
-    ABOUT_P2 = ("With YouCoded, you can utilize OpenRouter to access any AI model from any provider including "
-                "Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and more. YouCoded also allows you to "
-                "download and run open source AI models on your own device, if your hardware supports it.")
-    ABOUT_P3 = ("YouCoded is built to become a fully-modular and open source assistant platform, as the app "
-                "itself integrates the ability for all users to build and share skills, tools, themes, and app "
-                "improvements. Because YouCoded was designed from the ground up to be improved by individuals "
-                "with no coding or development interest, it can quickly outpace development of competing closed "
-                "agents in a way that is driven by what users really want.")
-    INTEG_INTRO = "With skills from the WeCoded marketplace, YouCoded can link with all of the following services:"
-    KICKER = "Free &middot; Open source &middot; BYO model"
-    SUBTITLE = "A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way."
+ABOUT_P2 = ("With YouCoded, you can utilize OpenRouter to access any AI model from any provider including "
+            "Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and more. YouCoded also allows you to "
+            "download and run open source AI models on your own device, if your hardware supports it.")
+ABOUT_P3 = ("YouCoded is built to become a fully-modular and open source assistant platform, as the app "
+            "itself integrates the ability for all users to build and share skills, tools, themes, and app "
+            "improvements. Because YouCoded was designed from the ground up to be improved by individuals "
+            "with no coding or development interest, it can quickly outpace development of competing closed "
+            "agents in a way that is driven by what users really want.")
+INTEG_INTRO = "With skills from the WeCoded marketplace, YouCoded can link with all of the following services:"
+KICKER = "Free &middot; Open source &middot; BYO model"
+SUBTITLE = "A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way."
 
 FAQ = [
  ("How is this different from ChatGPT or claude.ai?","Those are chat websites. YouCoded Assistant is an app on your computer and phone that works in your own files — it opens, edits, and organizes them, runs tasks, and searches the web — and you choose the AI behind it: Claude, hundreds of cloud models, or one that runs locally for free."),
@@ -89,19 +42,6 @@ FAQ = [
  ('Is "agentic" AI safe?',"The app asks before it changes anything, and every standing permission you grant is listed on one screen where you can revoke it. AI still makes mistakes, so keep an eye on what it's doing — and be careful with full-auto mode, which lets it act without asking."),
  ("Who built this?","So far, it's just me (Destin). However, my intention is for this open-source project to become something we all build together. I believe one of the greatest potential goods of AI comes from its ability to revolutionize the world of open-source software. This project is just one example of what AI can allow us to create: an app owned by nobody, improved by everybody — all without anyone needing to learn how to code or even understand what “open-source” is. No profit motive, no ulterior incentives — just people making cool shit and sharing it with other people :)"),
 ]
-
-if VARIANT == 'b':
-    # A's answer argues against 2023's ChatGPT. Both ChatGPT's desktop app and
-    # Claude Cowork reach local files now, so "those are chat websites" is no
-    # longer true and a reader who knows that stops trusting the rest of the page.
-    # B contrasts on the three things that ARE still true and checkable.
-    FAQ[0] = ("How is this different from ChatGPT or claude.ai?",
-              "Those are chat products, and their newer desktop versions can reach some of your files. "
-              "YouCoded is a full app that works in your own folders on Windows, macOS, Linux and Android \u2014 "
-              "opening, editing and organizing your real files, running tasks and searching the web. You choose "
-              "the AI behind it: Claude, hundreds of cloud models, or one that runs on your own computer for "
-              "free. And your conversations and files sync through your own private GitHub rather than a "
-              "company's servers.")
 
 ACCOUNTS = [
  ("GitHub",["Required","Free"],"Keeps your conversations and files in sync across devices and delivers marketplace updates. Sign up with your Google or Apple account.","Create a GitHub account &rarr;","https://github.com/signup",None),
@@ -1603,8 +1543,6 @@ BUILDS = [
 ]
 for row in BUILDS:
     f, title, css, dflt, hdr = row[:5]
-    if VARIANT != 'a':
-        f = f.replace('.html', '-' + VARIANT + '.html')
     navpicker = row[5] if len(row) > 5 else True
     demo = row[6] if len(row) > 6 else 'theater'
     sheet = open(BASE + '/' + css).read() + MODAL_VARS[css] + MODAL_CSS + INTEG_CSS + EMBED_CSS + FADE_CSS + NAV_CSS
@@ -1615,12 +1553,5 @@ for row in BUILDS:
     if len(row) > 7 and row[7]: body_class += ' ' + row[7]
     html = page(title, sheet, dflt, header=hdr, extra_js=js,
                 navpicker=navpicker, body_class=body_class, demo=demo)
-    if VARIANT == 'b':
-        # "Safari" appears ZERO times in the marketplace's 339-entry registry
-        # (checked 2026-08-31), and integrations/index.json lists only four
-        # services as available. A chip promising a link that does not exist is
-        # the first thing a sceptic checks.
-        import re as _re
-        html = _re.sub(r'<button class="integration-tag"[^>]*>(?:(?!</button>).)*?Safari</button>\s*', '', html, flags=_re.S)
     open(OUT + f, 'w').write(html)
     print('wrote', f)

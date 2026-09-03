@@ -22,8 +22,7 @@ Everything lives in `docs/active/prototypes/landing-redesign-mockups/`.
 ```bash
 cd docs/active/prototypes/landing-redesign-mockups
 bash setup.sh            # symlinks + wallpapers + compare page
-python3 build.py         # regenerates mockups/mockup-landing.html   (variant A)
-YC_VARIANT=b python3 build.py   # ALSO emits mockup-landing-b.html   (variant B, parked)
+python3 build.py         # regenerates mockups/mockup-landing.html
 python3 serve.py 8901    # http://localhost:8901/compare.html
 ```
 
@@ -31,15 +30,11 @@ python3 serve.py 8901    # http://localhost:8901/compare.html
 cache headers and Destin ends up reviewing a stale page and reporting your
 changes as not applied. That has already cost a round trip.
 
-**`compare.html` has two tabs and the B tab is 404 unless you ran the second
-build command.** Run both, or drop B's line from `VARIANTS` in `compare.html`.
-
 ## Where it stands (2026-08-31)
 
-**Destin has chosen variant A — the current mockup — and it is the live page of
-record.** Variant B was a copy experiment (differentiators first, table stakes
-cut); it is **parked, not deleted**, exactly like every other rejected option in
-this prototype. Its whole diff is the `if VARIANT == 'b':` blocks in `build.py`.
+**`mockup-landing.html` is the page of record.** A copy-experiment variant B
+existed for one session and was dropped — do not revive `YC_VARIANT`,
+`mockup-landing-b.html`, or a second FEATURES list.
 
 Everything in the previous checkpoint still holds. What changed this session:
 
@@ -72,7 +67,7 @@ Everything in the previous checkpoint still holds. What changed this session:
 
 | File | What it is |
 |---|---|
-| `build.py` | THE generator — headers, features rows, FAQ, all the JS, and the `VARIANT` copy blocks. Edit this, never the built HTML. |
+| `build.py` | THE generator — headers, features rows, FAQ, all the JS. Edit this, never the built HTML. |
 | `css_d.css` | Skin base: wallpaper, glass, type, sections, FAQ, gallery. |
 | `css_d_headers.css` | Hero arrangements, mascot theme picker, the word cycler and its intro. |
 | `css_theater.css` | The features-section layouts. The live one is `deck-fade`. |
@@ -80,7 +75,7 @@ Everything in the previous checkpoint still holds. What changed this session:
 | `css_nav.css` | Brand mark + wordmark treatments (live: `brand-tile` + `wm-one`). |
 | `media-local/` | Clips recorded FOR the redesign. |
 | `mockups/media/` | **Symlink into the LIVE site's assets — never write here.** |
-| `compare.html` | Tab shell. Two tabs today (A and B); add a line to `VARIANTS` to A/B something else. |
+| `compare.html` | Tab shell. One tab today; add a line to `VARIANTS` to A/B something else. |
 
 ## Tooling
 
@@ -95,20 +90,34 @@ Everything in the previous checkpoint still holds. What changed this session:
 | `node ../../../../scripts/ui-review/record.mjs <scene> <out>` | Record a demo clip. Needs the workbench up. |
 | `bash scripts/run-workbench.sh <worktree>` (from the workspace root, `YOUCODED_PORT_OFFSET=300`) | The fake-backend app on :5473, which the clips are filmed against. Headless — no window appears. |
 
-## Read next, in this order
+## Copy — what Destin signed off (2026-08-31, this session)
 
-1. `docs/active/handoffs/2026-08-30-landing-redesign-iteration-handoff.md` — the
-   full state: every locked decision, and **23 landmines** that each cost real
-   time. Landmines 17–23 are new this session (two-layer mask, rAF-coalescing,
-   the theme-font pill jump, the narrow-layout specificity trap, the deck's
-   stale ladder, deck playback being its own LIST of indices, and the first clip
-   playing from page load). **Read the landmines before touching anything.**
-2. `youcoded-feature-fact-sheet.md` (workspace root) — the product's full feature
-   inventory. **§22 is a measured competitive scan**, §25 lists claims on the
-   site that do not survive checking, and §26 lists shipped features the site
-   never mentions. This is the source for any copy argument.
-3. `ROADMAP.md` → the four `added 2026-08-31` items near `## Someday / ideas` —
-   the conversation-organizing parity work the copy is waiting on.
+Not a brief. Do not invent a new strategy doc.
+
+- **Replacement, not inventory.** The page argues that one assistant on your
+  computer and your phone takes the place of the pile of AI tabs. It does not
+  win by listing traits every rival also claims.
+- **Useful / Fun / Yours is the page**, not just the headline cycler.
+- **Destin built this by talking to it** is the proof the agent is good. That
+  currently sits in FAQ #7; it is not a cute bio.
+- **First eight seconds = work in motion.** Empty chrome and the Grok-edgy
+  “any model” clip are not the opener.
+- **The fight worth fighting is owning the agent**, not beating Cursor as an
+  editor. Git review is a feature. Ownership is a position.
+- **Banned on this page and in any copy you write for it:** “real app”,
+  “real files”, “actually reads”, “does real work”, “self-improving”, leading
+  with undo, leading with uniqueness / “nobody else has this”, a student/dev
+  chooser, “do the reading on the bus with no data plan”.
+
+`youcoded-feature-fact-sheet.md` is an **inventory**. Use it to check whether
+a claim is true. Do not quote its old pitches (they were deleted) and do not
+treat §22 as a ranking of what to put above the fold.
+
+## Read next
+
+`docs/active/handoffs/2026-08-30-landing-redesign-iteration-handoff.md` — locked
+visual decisions and **23 landmines**. Read the landmines before touching
+motion, clips, or CSS.
 
 ## How Destin works
 
@@ -125,24 +134,21 @@ Everything in the previous checkpoint still holds. What changed this session:
 
 ## Open / next
 
-- **Copy is the live question, not motion.** The competitive scan says the page
-  leads with claims every rival also makes and buries three that no rival has.
-  Variant B is one answer to that; Destin has parked it rather than adopted it.
-- **Two cards in A are now factually behind the product**: the games card says
-  Connect Four only, but the four-game arcade **merged 2026-08-31** (`0cacff56`)
-  and is on master. Its clip still shows Connect Four, so the clip needs
-  re-filming before the copy can change — but nothing is blocking that now.
-- **Never put on the page without fixing first** (all verified, all in fact-sheet
-  §25): the README says a Claude plan is *required* while the site says optional;
-  the integrations grid promises services the registry does not back, including
-  a Safari chip with zero registry presence; and the live page still carries the
-  grammar error "designed from the ground up **to improved by**" at
+- **Copy is the live question, not motion.** See the signed-off list above.
+  Do not lead with tags, notes, or “nobody else has this.”
+- **Games card is factually behind the product**: it says Connect Four only,
+  but the four-game arcade **merged 2026-08-31** (`0cacff56`) and is on master.
+  Re-film before changing that copy.
+- **Never put on the page without fixing first** (fact-sheet §25): the README
+  says a Claude plan is *required* while the site says optional; the
+  integrations grid promises services the registry does not back, including a
+  Safari chip with zero registry presence; the live page still carries
+  "designed from the ground up **to improved by**" at
   `youcoded/docs/index.html:1490` (fixed in the mockups, not on the live site).
 - Deck: Destin may still want the fade to reach three cards deep rather than two.
 - The demo clip's dead space — the conversation fills only the top third of the
-  window, so most of what dissolves is empty app. Re-filming it tighter is the fix.
-- A status-bar card would be strong (19 configurable widgets, no rival GUI has
-  one) but there is no clip of it.
+  window, so most of what dissolves is empty chrome. Re-filming it tighter is
+  the fix.
 
 ## In-flight elsewhere
 

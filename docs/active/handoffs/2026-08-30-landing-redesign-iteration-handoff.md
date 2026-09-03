@@ -110,10 +110,11 @@ Headless Chrome for your own verification is expected.
 7. **`html{scroll-behavior:smooth}` breaks scripted verification.** A `scrollTo`
    in a test animates; sample too early and you measure a position the page was
    never at. Use `scrollTo({top, behavior:'instant'})`.
-8. **Copy is preserved, not rewritten.** Every sentence on the live page appears
-   in the mockups except the Destin-approved diffs: the dropped "Click around, I
-   guess." caption, the subtitle rewrite, the nav tagline (`Agents for everyone`),
-   the kicker (`BYO model`), and the Grok demo line.
+8. **Copy used to be preserved, not rewritten** — that was the rule while motion
+   was being locked. Copy is now the live question. Do not invent a new strategy
+   doc; follow `docs/active/handoffs/2026-08-31-landing-redesign-START-HERE.md`.
+   Banned phrases: “real app”, “real files”, “actually reads”, “does real work”,
+   “self-improving”. A copy-experiment variant B was dropped — do not revive it.
 9. **Readability floor:** prose panels use `--panel-op-prose = max(opacity,.80)`
    and `--blur-prose = max(blur,16px)`. Don't simplify it away.
 10. `.nav-links a` outranks `.cta` — nav link styling needs `a.`-qualified selectors.
