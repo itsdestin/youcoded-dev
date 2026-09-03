@@ -32,8 +32,11 @@ conditions" — so a randomised sweep (`scripts/ui-review/drag-fuzz.mjs`) replac
 single-drag probe and found the real cause at last: the drag visuals hung on the
 `isDragging` REF, which pointerup flips before the drop is committed, so a hand lifting
 mid-motion saw the pill snap home and then jump. Fixed with five more behind it; youcoded
-`381ae860`; 96/96 randomised releases clean. Served as the round-11 live deck. Waiting on
-that answer; then merge.**
+`381ae860`; 96/96 randomised releases clean. Round 11: **Yes — "GOOD SHIT YOU DID IT"**
+(`session-motion-live-11.answers.json`, 2026-09-03 22:13). The motion is signed off. The
+youcoded PR is open — **itsdestin/youcoded#404** (`feat/session-strip-motion`, 38 commits);
+NOT merged — merging is Destin's call (CLAUDE.md: merge only on an explicit instruction;
+he often has a fresh session review first). The workbench and deck servers are down.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
 but it will need to be tuned/repaired a bit. it's jank"*), **switch-when → Press** (*"further
@@ -418,9 +421,9 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-11 answer
+## After the round-11 answer (Yes — awaiting the merge instruction)
 
-1. "Yes": merge and push `feat/session-strip-motion`; then `feat/session-motion-review`
+1. On "merge": merge youcoded#404 and push; then `feat/session-motion-review`
    (deck + docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
 2. "No"/"Other": the note says what. The flow has one number, `FLOW_GAP_PX` (the gap kept
    clear of the pill); a "squeeze looks odd" note means swapping the scale for an opacity
