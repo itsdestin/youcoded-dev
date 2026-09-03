@@ -1,0 +1,26 @@
+{
+  "R1": {
+    "evidence": "FilesTab exports FileViewMode = 'grid' | 'list' and renders cards for one, rows for the other; files-tab-list-view.test.tsx 'draws cards, not rows, in grid view' plus the three list-row tests, 8/8 passing on feat/file-list-view.",
+    "verdict": "pass"
+  },
+  "R3": {
+    "evidence": "files-tab-list-view.test.tsx 'gives each file a name, a kind and a relative time' asserts notes.md / Document / matches ago|just now on one row; 'gives a folder its file count and no date' asserts the folder case. Passing.",
+    "verdict": "pass"
+  },
+  "R4": {
+    "evidence": "files-tab-list-view.test.tsx 'is stored app-wide, not against a project id' asserts ProjectView holds a literal FILE_VIEW_KEY = 'youcoded.projectView.fileView' with no project id interpolated, written via localStorage.setItem(FILE_VIEW_KEY, fileView). Passing.",
+    "verdict": "pass"
+  },
+  "R6": {
+    "evidence": "Approved on the round-1 deck as F-2 (yes, no note), pictures filelist--midnight and filelist--halftone-dimension, before/after.",
+    "verdict": "pass"
+  },
+  "R8": {
+    "evidence": "Chosen on the round-2 deck as R-2 ('beside'), against variant A on the toolbar; pictures place-a / place-b in both themes. Shipped in commit ba24798c.",
+    "verdict": "pass"
+  },
+  "R9": {
+    "evidence": "Chosen on the round-2 deck as R-3 ('beside') at 390px; pictures phone-a / phone-b in both themes.",
+    "verdict": "pass"
+  }
+}
