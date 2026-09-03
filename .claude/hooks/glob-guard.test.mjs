@@ -159,3 +159,41 @@ test('survives a missing command field', () => {
   });
   assert.equal(r.status, 0);
 });
+
+// ---------------------------------------------------------------------------
+// Guard 2 — `pkill -f`, which in this harness always kills the calling shell
+// ---------------------------------------------------------------------------
+// Verified 2026-09-03: `pkill -f "zzz-unique-marker-qq7"` (matching nothing else on the
+// machine) exited 144 and the following `echo` never ran — the pattern matched the
+// `zsh -c '<whole command>'` wrapper Claude Code runs every Bash call through.
+
+for (const cmd of [
+  'pkill -f deck-render-',
+  'pkill -f "some pattern"',
+  'pkill -9 -f node',
+  'pkill -fe node',
+  'ls && pkill -f vite',
+  'foo; pkill -f bar',
+]) {
+  test(`blocks: ${cmd}`, () => {
+    const { blocked, message } = run(cmd);
+    assert.equal(blocked, true, `should have blocked: ${cmd}`);
+    assert.match(message, /kills the shell running your command|cannot work here/);
+    assert.match(message, /pgrep -af/, 'must name the safe alternative');
+  });
+}
+
+for (const cmd of [
+  'pgrep -af node',            // read-only: signals nothing
+  'pgrep -f node | head',
+  'pkill node',                // matches process NAMES, not command lines — safe
+  'pkill -9 chrome',
+  'kill 1234 5678',
+  'echo "pkill -f is the trap"',
+  'rg -n "pkill -f" docs/',
+]) {
+  test(`allows: ${cmd}`, () => {
+    const { blocked, message } = run(cmd);
+    assert.equal(blocked, false, `false positive on: ${cmd}\nhook said: ${message}`);
+  });
+}

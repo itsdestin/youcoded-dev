@@ -44,6 +44,14 @@ seen-on is always n/a here.
       (the project-watcher hit was Ubuntu CI, not local) or they are already fixed
       `n/a` `needs-verify` `checked 2026-09-02`
 
+- [ ] A whole session edited files that a path-scoped rule covers and the rule never loaded.
+      The session worked entirely through Bash (cat/sed/python heredocs, as bypass-permissions
+      mode asks for) rather than Read/Edit, and no rule injected all session — including the one
+      whose globs name the exact directory being edited. If that is how it works, every rule in
+      the workspace is silently off whenever a session edits through the shell, and the sessions
+      that most need the guardrails are the ones that lose them
+      `n/a` `needs-verify` `checked 2026-09-03`
+
 - [ ] The lint gate only enables rules already at zero; the deferred list at the bottom of the
       ESLint config still fires — 79 renderer floating promises and 43 exhaustive-deps hits (the
       highest-value set: stale-closure bugs) are unguarded

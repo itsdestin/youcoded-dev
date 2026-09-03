@@ -122,6 +122,15 @@ jobs:
         working-directory: scripts/ui-review/tests
         run: python3 -m unittest -v test_spec test_tokens test_live test_words test_contract
 
+      # close-out.sh is the one script in here that a session is TOLD to obey line by
+      # line (the wrap-up skill: "finish every line it reports"), so a wrong TODO in it
+      # is an instruction, not a suggestion. On 2026-09-03 it told a session to delete
+      # master and remove the main checkout. Needs only git, so unlike the deck's picture
+      # suites it belongs on this runner.
+      - name: close-out.sh refuses the default branch
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-default-branch.test.sh
+
       # A command printed in a doc is a promise nobody checks. The deck's test command sat
       # WRONG in two docs for months — `-t .` cannot start at all — which is why that suite
       # went unrun and eight theme colours drifted. Blocks marked `<!-- runnable -->` are

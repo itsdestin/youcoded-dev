@@ -27,6 +27,11 @@ WORKSPACE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # this workspace's own docs, rules and scripts ship on branches like any sub-repo.
 case "$REPO" in
   workspace|.|youcoded-dev) REPO_DIR="$WORKSPACE"; REPO="workspace" ;;
+  # An absolute path is taken as-is. Only the guard test uses it (it needs a throwaway
+  # repo of its own, so its assertions never depend on this machine's checkouts), but a
+  # sub-repo name resolved against $WORKSPACE silently became "$WORKSPACE//tmp/..." and
+  # reported "no git repo" — a wrong answer where a plain path was meant.
+  /*)                       REPO_DIR="$REPO"; REPO="$(basename "$REPO")" ;;
   *)                        REPO_DIR="$WORKSPACE/$REPO" ;;
 esac
 [[ -e "$REPO_DIR/.git" ]] || { echo "close-out: no git repo at $REPO_DIR"; exit 0; }
@@ -47,6 +52,22 @@ git -C "$REPO_DIR" fetch origin --quiet 2>/dev/null
 SHA=$(git -C "$REPO_DIR" rev-parse --verify -q "origin/$BRANCH" 2>/dev/null \
    || git -C "$REPO_DIR" rev-parse --verify -q "$BRANCH" 2>/dev/null || true)
 BASE=$(git -C "$REPO_DIR" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
+
+# The DEFAULT BRANCH is never a close-out target, and saying so has to come before
+# the merged/not-merged split. `master` is trivially an ancestor of `origin/master`,
+# so it lands in post-merge mode and the report reads: delete the remote branch,
+# delete the local branch, remove the worktree — pointed at master and at the main
+# checkout. The wrap-up skill tells sessions to finish every TODO the script prints,
+# so those three lines are a destructive instruction with a green tick beside them.
+# It happened on 2026-09-03: a session that had worked directly on master ran
+# `close-out.sh master workspace` and got exactly that. Refuse instead.
+if [[ "$BRANCH" == "${BASE#origin/}" || "origin/$BRANCH" == "$BASE" ]]; then
+  note "$BRANCH IS the default branch of $REPO — there is nothing to close out."
+  note "A session that worked directly on it has no branch to delete, no worktree"
+  note "to remove and no dead name to fix. Run this against a FEATURE branch, or"
+  note "skip the git half entirely and do the docs/roadmap hygiene by hand."
+  exit 0
+fi
 
 # TWO MODES, because "close out" does not always mean "merged".
 # Destin routinely says wrap up / close out meaning "do the docs and workspace
