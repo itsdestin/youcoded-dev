@@ -531,3 +531,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
   never smoothness. Spec + the rejected design:
   `docs/archive/specs/2026-08-28-cycle-3-bounding-the-conversation-window.md`. What remains:
   `docs/active/handoffs/2026-09-03-perf-next-steps-handoff.md`
+- 2026-09-03 — File-watching tests going red on the macOS CI leg every week or two. Cause: macOS `fs.watch` returns before the OS watch is armed, so changes in that window are never reported. Both watchers now reconcile on subscribe. Measured 4/15 red before, 0/15 after, on a real macOS runner under identical load (youcoded#399)

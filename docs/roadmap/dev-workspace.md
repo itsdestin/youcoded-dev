@@ -4,6 +4,16 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] On a Mac, three things can miss a change made in the split second after they start
+      watching: a new file may not appear in the Files panel, an edited theme may not
+      hot-reload, and a session title may not update. Same cause as the watcher bug fixed in
+      youcoded#399 (macOS reports the watch as live before it actually is) — those two got the
+      fix and a measured proof; these three were audited but not reproduced, so they were left
+      out of that PR rather than shipped unproven. Sites: artifacts/project-watcher.ts,
+      theme-watcher.ts, the topic watch in ipc-handlers.ts. The other four watcher sites are
+      already safe (they re-check on a timer)
+      `n/a` `confirmed` `checked 2026-09-03` → docs/archive/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
+
 - [ ] `native-session-host` "a finished run is injected ONCE as a user turn with injected:
       shell-complete" fails on the macOS CI leg only: the finished-notice text arrives without the
       command's own output ("done"), so the exact-match regex misses. Passed on a plain re-run of
@@ -29,17 +39,6 @@ seen-on is always n/a here.
       found on the day it was switched on, mostly fixtures built as partial objects. Named one per
       line in `desktop/tsconfig.tests.json`; verify.sh prints the remaining count every run
       `n/a` `confirmed` `checked 2026-09-02`
-
-- [ ] File-watching tests go red on the macOS CI leg every week or two — on branches that touch
-      nothing in sync, and on untouched master — with zero watcher events delivered; Ubuntu and
-      Windows pass the same commit, and every fire also skips macOS packaging. 2026-09-02: it is
-      NOT only the sync-spaces engine — git-watcher failed the same way in the same run, so the
-      production risk is wider than sync. 2026-09-03: "every week or two" is now understating it —
-      master went red at 4224fb85 (sync-spaces-engine) and PR #397, based on that same commit, went
-      red at git-watcher, and it repeated on an explicit re-run of the failed job. Two runs of one
-      commit failing the same test is not a race losing a coin flip; the same suite passed 5/5
-      locally. Whatever changed is macOS-side and current, and it blocks merges on a red board
-      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
 
 - [ ] subagent-view, mcp-startup-wiring and project-watcher were filed as the suites that flake
       under parallel load, but 27 full local runs on 2026-09-02 (1 alone, 6 concurrent, 4 pinned to
