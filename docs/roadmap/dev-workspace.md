@@ -281,10 +281,6 @@ seen-on is always n/a here.
       question filed under sync
       `n/a` `blocked` `checked 2026-09-01` `v1.3`
 
-- [ ] The Android build labels the vendored terminal emulator GPLv3 while its own VENDORED.md says
-      Apache 2.0 — one of the two is wrong, and it is the licence notice users see
-      `n/a` `needs-verify` `checked 2026-09-01`
-
 - [ ] The "formalization" push after 1.3: the youcoded.ai domain, app store and Play Store
       listings, the macOS/Windows security-warning signing, an LLC — Destin, 2026-09-02, "soon-ish,
       probably right after the 1.3 release"
