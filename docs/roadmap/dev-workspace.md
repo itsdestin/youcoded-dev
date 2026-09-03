@@ -148,6 +148,14 @@ seen-on is always n/a here.
 
 ## knowledge
 
+- [ ] Every plan, spec and investigation is stamped with a one-word state, but nothing checks
+      the word: 15 of them say `settled`, `review`, `applied`, `superseded-in-part` or a whole
+      sentence instead of one of the four allowed states. All 15 are already archived, so
+      nothing in flight is mislabelled today — but the same closed list is unenforced, so the
+      next one lands wherever someone types it and "what is still open?" stops being answerable
+      by looking
+      `n/a` `parked` `checked 2026-09-03`
+
 - [ ] Nobody knows whether a third round of adversarial design review improves a design or just
       churns it; after three features have run the flow, count accepted findings, reversals and
       defect-vs-taste per round and set the default round count from the numbers — tooling for it
