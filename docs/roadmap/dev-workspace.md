@@ -110,15 +110,11 @@ seen-on is always n/a here.
       silently swallowed; cause unknown
       `n/a` `needs-verify` `checked 2026-08-28` `performance`
 
-- [ ] Perf lab: the rig is built and THREE measurement cycles ran (2026-08-27/28, paged history
-      shipped as youcoded#349; cycle 3 folding is on `perf/evict-offscreen-turns`, unmerged), but
-      Destin's reframe — a repeatable stress suite that catches the daily freezes and app-wide
-      animation slowdowns on every surface — is the open half; the 2026-08-27 perf-lab handoffs
-      are the current truth, the 2026-08-23 plan is history. Cycle 3 added a `scrollback` phase
-      (the CEILING a conversation reaches once read back, not the paged floor) with three PRIMARY
-      metrics, a per-pane count proving the mechanism engaged, and a settle window before every
-      reading — the last two exist because three different bugs all presented as the same 6%
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
+- [ ] Perf lab: the rig is built and two measurement cycles ran (2026-08-27/28, paged history
+      shipped as youcoded#349), but Destin's reframe — a repeatable stress suite that catches the
+      daily freezes and app-wide animation slowdowns on every surface — is the open half; the
+      2026-08-27 perf-lab handoffs are the current truth, the 2026-08-23 plan is history
+      `n/a` `needs-verify` `checked 2026-09-01` `performance`
 
 - [ ] Harness evaluator: no CI gate yet, and the four eval cases were hand-written rather than
       drawn from a failure taxonomy over the stored conversations — waiting on the step-1 triage
@@ -229,8 +225,10 @@ seen-on is always n/a here.
 
 - [ ] Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
       from the embed's theme button and the whole app window becomes one blur; the redesign makes
-      theme switching a primary interaction so this must ship with it
-      `n/a` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-landing-embed-blur-rounded-clip.md
+      theme switching a primary interaction so this must ship with it. FIXED on a branch 2026-09-03
+      (`youcoded fix/embed-blur-rounded-clip`, `81ce5851`) — reproduced and re-verified headless;
+      open only until that branch merges
+      `n/a` `confirmed` `checked 2026-09-03` `v1.3.1` → docs/active/investigations/2026-09-01-landing-embed-blur-rounded-clip.md
 
 - [ ] Every compiled file ships inside the installer, tests included — 47 test files and 19
       workbench files in the 1.2.4 asar, none reachable; installer weight, not a blocker
@@ -270,16 +268,3 @@ seen-on is always n/a here.
       listings, the macOS/Windows security-warning signing, an LLC — Destin, 2026-09-02, "soon-ish,
       probably right after the 1.3 release"
       `n/a` `parked` `checked 2026-09-02`
-
-- [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
-      turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
-      pinned on "Initializing session..." behind CC's trust-folder prompt while terminal view
-      showed it fine. These are Ink TUI menus parsed by screen-scrape
-      (`renderer/parser/ink-select-parser.ts` → `PromptCard` / `TrustGate`), so they break
-      whenever CC rewords one, and the app has no fixture for any of them. The perf rig resumes
-      sessions by a path that skips the gate entirely, and the UI workbench has no session
-      launch at all. Wants a launch-prompt fixture set — trust folder, theme picker, login
-      method, model-switch safeguard — replayed through the parser and rendered, so a reworded
-      CC prompt fails a test instead of hanging a session. Prior art for the failure mode:
-      the 2026-07-16 "trust" substring collision in `docs/roadmap/shipped.md`
-      `desktop` `needs-verify` `checked 2026-09-03` `regression`

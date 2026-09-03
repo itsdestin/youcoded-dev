@@ -19,30 +19,41 @@
       "settle": 1500
     },
     {
-      "click": "[title='Connect 4']",
+      "click": "[title='Games']"
+    },
+    {
+      "waitForText": "2048"
+    },
+    {
+      "hold": 1500
+    },
+    {
+      "clickText": "Connect 4"
+    },
+    {
+      "waitFor": "[data-col='3']"
+    },
+    {
+      "hold": 700
+    },
+    {
+      "click": "[data-col='3']",
       "settle": 1500
     },
     {
-      "hold": 1200
+      "click": "[data-col='2']",
+      "settle": 1500
     },
     {
-      "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(4)",
+      "click": "[data-col='4']",
+      "settle": 1500
+    },
+    {
+      "click": "[data-col='1']",
       "settle": 1600
     },
     {
-      "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(3)",
-      "settle": 1600
-    },
-    {
-      "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(5)",
-      "settle": 1600
-    },
-    {
-      "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(2)",
-      "settle": 1600
-    },
-    {
-      "hold": 1800
+      "hold": 1700
     }
   ]
 }

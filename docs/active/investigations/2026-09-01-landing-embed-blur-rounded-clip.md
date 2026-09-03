@@ -22,13 +22,21 @@ chrome donut. `.embed-frame`'s `border-radius` + `overflow: hidden` is that roun
 The wrapper still carries the clip on master today:
 <!-- claim: {"path": "youcoded/docs/index.html", "contains": "\\.embed-frame \\{ border-radius: 16px; overflow: hidden"} -->
 
-**Verified fix (used by the redesign mockups' `build.py`).** Drop `overflow: hidden` from the wrapper
-(keep `border-radius` for the border/shadow shape — safe without the clip) and round the corners from
-*inside* the iframe: same-origin, so after load set `border-radius` + `overflow: hidden` + a
-transparent background on the iframe's `documentElement`.
+**Verified fix — SHIPPED to a branch 2026-09-03** (`youcoded fix/embed-blur-rounded-clip`, `81ce5851`).
+Drop `overflow: hidden` from the wrapper (keep `border-radius` for the border/shadow shape — safe
+without the clip) and round the content with a **mask** instead: an SVG rounded rect as
+`mask-image`, rebuilt on resize because one scaled rect stretches its corners when the box's aspect
+ratio changes. A mask does not trigger the bug; a clip always does.
 
-**Related, uncommitted.** Worktree `worktrees/site-themes` (branch `feat/site-embed-all-themes`, 40
-uncommitted files, 0 commits ahead, no remote as of 2026-09-01) vendors the four missing community
+**Correction (2026-09-03).** This paragraph previously said to round the corners from *inside* the
+iframe. That is wrong, and it is not what the mockups do: `build.py`'s own comment above `maskEmbed()`
+records that rounding from inside the app hits the same bug one level down, and the mockups use the
+two-layer mask (rounded rect ∩ fade gradient). Verified by reading `build.py` lines 731–783 and by
+reproducing both states headless against `docs/index.html` — before: the whole window smeared under
+Meadow Mist; after: sharp, with Midnight pixel-wise unchanged.
+
+**Related — COMMITTED 2026-09-03** as `youcoded feat/embed-community-themes` (`2b2b83d8`), replayed onto
+current master rather than its 133-commits-stale base. It vendors the four missing community
 packs (cotton-candy-sky, devils-garden, kuromi-dreamer, strawberry-kitty, ~6.5 MB) into
 `desktop/src/renderer/dev/workbench/fixtures/themes/` so the embed knows all seven —
 `__workbenchAppearanceSync({theme})` silently ignores a slug it does not have. The fixture-pinning

@@ -57,7 +57,11 @@ node "$WS/scripts/workbench-boot-check.mjs" "$WB_PORT"
 # loops on 2026-08-27). docs/media is never touched by the embed build.
 mkdir -p "$OUT/media"
 i=0
-for scene in row1-any-ai row2-does-things row3-projects row4-organized row5-follow row5-phone row6-yours row7-play row8-builders; do
+# row2-artifact-edit needs the workbench's writable-artifact mock and its
+# `chart` reply fixture (youcoded feat/landing-demo-clips). Filming it from a
+# checkout without those produces an empty artifact panel, not an error — so if
+# this clip comes out blank, check the target checkout has that branch in it.
+for scene in row1-any-ai row2-artifact-edit row2-does-things row3-projects row4-organized row5-follow row5-phone row6-yours row7-play row8-builders; do
   CDP_PORT=$((10320 + i)) node "$HERE/record.mjs" "$HERE/scenes/$scene.json" "$OUT/media/$scene"; i=$((i+1))
 done
 

@@ -16,7 +16,9 @@ FEATURES = [
  ("Stay organized","Tags, notes, and shortcuts.","Tag and annotate conversations, pin the ones that matter, and hide the ones you'll never go back to. Quick chips run the prompts you use every day in one tap.","row4-organized"),
  ("Works everywhere","Start on your laptop. Finish on your phone.","Windows, macOS, Linux, Android, and any browser. Your conversations and files stay in sync through your own private GitHub, so what you started here is waiting there.","row5-follow"),
  ("Make it yours","Describe a look. Install a plugin. Share both.","Build a theme by describing it — customize wallpapers, app colors, mascots. Browse 300+ plugins from the marketplace: journaling, a personal encyclopedia, calendar and email integrations, and whatever your friends publish.","row6-yours"),
- ("Play while it works","Challenge a friend while it thinks.","Long tasks take a minute. Play Connect Four with a friend in the side panel, see who's online, and get back to the answer when it's ready.","row7-play"),
+ # Re-filmed 2026-09-03 against master: the four-game arcade shipped in
+ # youcoded#369 and this card still said Connect Four only.
+ ("Play while it works","Four games, beside the conversation.","Long tasks take a minute. Open the arcade in the side panel \u2014 Connect 4 or chess against a friend who's online, Flappy or 2048 on your own \u2014 and go back to the answer when it's ready.","row7-play"),
  ("For builders","Made to be customized and work with you.","Run Claude Code as a first-class session next to the app's own agent. Review, stage, and commit changes without leaving the window. Connect tools over MCP. Download and run local models with a GPU-fit check.","row8-builders"),
 ]
 ROADMAP = ("Roadmap","Hand it off.","Set up a job once — what to do, which tools it may use, where to stop and check with you — then run it on a schedule or send it from your phone. Results and approvals land in an inbox. First: run now and scheduled runs. Later: kick off from an incoming email or a changed file.")
@@ -142,7 +144,7 @@ def steps():
 # Clips re-filmed for this redesign live in media-local/, NOT in media/ --
 # media/ is a symlink into youcoded/docs/media, i.e. the real site's assets.
 # Writing there would change the live site before the redesign is approved.
-MEDIA_LOCAL = {'row1-any-ai', 'row2-artifact-edit', 'row5-follow', 'row5-phone'}
+MEDIA_LOCAL = {'row1-any-ai', 'row2-artifact-edit', 'row5-follow', 'row5-phone', 'row7-play'}
 
 def _media_dir(key):
     return 'media-local' if key in MEDIA_LOCAL else 'media'
@@ -570,8 +572,13 @@ BODY = f'''
     <button class="integration-tag" tabindex="0" data-desc="YouCoded can search your inbox, read threads, and compose replies through Apple Mail."><img class="tag-icon" src="icons/apple-mail.svg" alt="">Apple Mail</button>
     <button class="integration-tag" tabindex="0" data-desc="YouCoded can manage your task list, process inbox items captured from your phone, create tasks from conversations, and help you stay on top of priorities."><img class="tag-icon" src="icons/todoist.svg" alt="">Todoist</button>
     <button class="integration-tag" tabindex="0" data-desc="YouCoded can receive marketplace updates and sync your configuration through GitHub, keeping your installation current with the latest features and fixes."><img class="tag-icon" src="icons/github.svg" alt="">GitHub</button>
-    <button class="integration-tag" tabindex="0" data-desc="YouCoded can navigate websites, fill out forms, take screenshots, and interact with web pages through Chrome."><img class="tag-icon" src="icons/chrome.svg" alt="">Chrome</button>
-    <button class="integration-tag" tabindex="0" data-desc="YouCoded can navigate websites, fill out forms, take screenshots, and interact with web pages through Safari."><img class="tag-icon" src="icons/safari.svg" alt="">Safari</button>
+    <!-- Chrome and Safari chips REMOVED 2026-09-03: both claimed "navigate websites,
+         fill out forms, take screenshots". Nothing in the registry does browser
+         automation -- measured: 0 hits for safari across the whole marketplace repo,
+         0 browser skills in skills/index.json. The nearest real things are the macOS
+         Control / Windows Control integrations, which drive the whole desktop, are
+         permission-gated and are one-platform-each. Do not restore either chip
+         without an integration behind it. -->
     <button class="integration-tag" tabindex="0" data-desc="YouCoded can generate graphics, edit presentations, and work with visual content directly in Canva."><img class="tag-icon" src="icons/canva.svg" alt="">Canva</button>
     <span class="integration-tag soon">More coming soon...</span>
     </div>
@@ -586,7 +593,7 @@ BODY = f'''
     <p>Honestly, I really just wanted a cooler and more efficient way to journal and track my own tasks/goals. The very first thing I built with Claude is the Journaling and Life History system (now available in the marketplace), and I pretty quickly decided that I wanted to share it with my friends. However, the thought of installing and opening &ldquo;Claude Code&rdquo; in the terminal scared away most people almost immediately. I realized that the idea of advanced agentic AI is still rather new to most people, and that persuading them to adopt my fancy new journaling system would require it to be <em>much</em> more accessible and user-friendly. Towards this end, I kind of just&hellip; kept adding things. And now we're here.</p>
     <p>Every line of YouCoded was written through conversation with Claude by me, <strong>someone who has never written code</strong>. Every feature, every platform port, every theme, every multiplayer game. The entire app was built, and is currently maintained, without a single line typed by hand.</p>
     <p>YouCoded Assistant is what that kind of AI looks like when it's built for everyone — not just the people who already know how to use it.</p>
-    <a class="sign" href="#">Built by Destin &rarr;</a>
+    <a class="sign" href="https://github.com/itsdestin" target="_blank" rel="noopener">Built by Destin &rarr;</a>
   </div>
 </div></section>
 
@@ -614,7 +621,7 @@ BODY = f'''
 
 <footer><div class="wrap"><div class="panel foot">
   <a href="#top" class="logo"><span class="mark">YC</span><span class="wm">You<b>Coded</b></span></a>
-  <div class="flinks"><a href="#">GitHub</a><a href="#">Built by Destin</a><span class="badge">Open Source</span></div>
+  <div class="flinks"><a href="https://github.com/itsdestin/youcoded" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/itsdestin" target="_blank" rel="noopener">Built by Destin</a><span class="badge">Open Source</span></div>
   <p class="legal">MIT License &middot; YouCoded is an independent, community-built project. Not affiliated with, endorsed by, or officially supported by Anthropic.</p>
 </div></div></footer>
 
