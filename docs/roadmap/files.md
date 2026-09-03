@@ -103,3 +103,9 @@ searched or resumed (chat-data).
       do with disk. Which watcher is the greedy one is unconfirmed (project watcher is the recursive
       one). Worked around on Destin's machine only
       `desktop` `needs-verify` `checked 2026-08-26` `performance`
+
+- [ ] Spreadsheets in the files pane are look-only: an `.xlsx` or `.csv` opens as a grid you can
+      click around, but no cell can be typed into, and "Edit" on a `.csv` drops you into the raw
+      comma-separated text instead of the grid (Destin expected in-grid editing, 2026-09-03;
+      the promo video was filmed with the assistant doing the edits instead)
+      `files-panel` `all` `confirmed` `checked 2026-09-03`
