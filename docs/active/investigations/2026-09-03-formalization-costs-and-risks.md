@@ -533,7 +533,14 @@ are Claude sessions. Nothing in 5–9 should start before 3.
 Cloudflare notes for whoever does step 6: a scoped API token (DNS + Email Routing on the
 youcoded.ai zone) lives at `~/.config/youcoded-dev/cloudflare-token` on Destin's laptop; the
 Worker's custom domain and the Pages DNS were created with it and the wrangler OAuth login.
-The site's DNS records are DNS-only (grey cloud) on purpose so GitHub can issue the certificate.
+The site's DNS records were DNS-only at first so GitHub could issue its certificate; after an hour
+GitHub still had not, so since 2026-09-03 ~17:00 the apex and `www` are **proxied through
+Cloudflare** (orange cloud), zone SSL mode **Flexible** (Cloudflare → GitHub Pages over plain HTTP,
+because GitHub presents a `*.github.io` certificate for this name and a Full-mode handshake fails),
+with Always Use HTTPS on. Visitors get a Cloudflare-issued `youcoded.ai` certificate. GitHub will
+never issue its own while proxied, and its Pages health check will report a Cloudflare IP — both
+expected. To move back to GitHub's certificate: un-proxy the records, wait for GitHub's cert, then
+switch SSL mode to Full (strict) and re-proxy, or simply stay as is.
 
 ## Open questions for Destin
 
