@@ -833,7 +833,7 @@ function bootEmbed(){
 // --- The download pill: floats over the embed's dissolve, then docks to the
 // bottom of the window once its own resting spot would have scrolled off.
 var dlFloat = document.querySelector('.dlfloat'), heroApp = document.querySelector('.hero-app');
-var forceDock = false, DOCK_GAP = 34, restBottom = 0;
+var DOCK_GAP = 34;
 var demoRevealed = false, lastFz = null;
 // Below 820px the pill is not a floating object at all -- it sits in the flow
 // under the demo. The docked rule is `body.fade-d .dlfloat.docked`, which
@@ -844,18 +844,14 @@ function placeFloat(){
   if (!dlFloat || !heroApp || getComputedStyle(dlFloat).display === 'none') return;
   if (!wideMQ.matches) { dlFloat.classList.remove('docked', 'hidden'); return; }
   var h = dlFloat.offsetHeight;
-  var hr = heroApp.getBoundingClientRect();
-  // Where it WOULD sit: .dlfloat is bottom:-1 percent of .hero-app, i.e. it hangs
-  // one hundredth of the hero's height past its bottom edge. Reading its own rect
-  // is no good once it is docked -- that returns the docked position.
-  // Read the resting offset back out of CSS rather than repeating the number
-  // here -- but only while undocked, because docking replaces `bottom` with the
-  // fixed 24px gap.
-  if (!dlFloat.classList.contains('docked')) restBottom = parseFloat(getComputedStyle(dlFloat).bottom) || 0;
-  var natTop = hr.bottom - restBottom - h;
-  var dockTop = innerHeight - h - DOCK_GAP;
-  var dock = forceDock || natTop < dockTop;
-  dlFloat.classList.toggle('docked', dock);
+  // Destin 2026-09-03: the pill is docked from the FIRST paint, not only once
+  // scrolling would have carried it off the top. Its resting spot is the embed's
+  // bottom edge, and on any window shorter than the hero that edge is below the
+  // fold -- so the page's only download control was invisible until you scrolled,
+  // which is exactly the moment a visitor decides whether to bother. Docking is
+  // now the only wide-window state, which also retires the old `forceDock` flag
+  // Try Demo used to set to dock the pill early.
+  dlFloat.classList.add('docked');
 
   // --- The dissolve heals as the dissolved band scrolls up past the pill.
   // Anchored on the embed's own BOTTOM EDGE relative to the TOP of the docked
@@ -961,7 +957,7 @@ if (tryPill && embed) {
     bootEmbed();
     embed.classList.add('interactive');
     document.querySelector('.hero-app').classList.add('revealed');
-    demoRevealed = true; forceDock = true; placeFloat();
+    demoRevealed = true; placeFloat();
     // Start from whatever the scroll has already healed, not from the variant's
     // resting value -- otherwise pressing Try Demo part-way down the page snaps
     // the dissolve BACK before clearing it.
