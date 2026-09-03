@@ -90,6 +90,12 @@ jobs:
       # exit 0. CLAUDE.md tells every session to trust that check. These two cases
       # need no Chrome (the preflight now runs before the browser launches), so
       # they belong on this runner.
+      # The two guards that keep the SHARED checkout from drifting: the commit
+      # guard and workspace-sync.sh. Both are only ever exercised on Destin's
+      # machine, so CI is the only thing that would notice them rotting.
+      - name: Test the workspace drift guards
+        run: node --test scripts/workspace-drift-guards.test.mjs
+
       - name: Test the workbench boot check
         if: ${{ !cancelled() }}
         run: node --test scripts/workbench-boot-check.test.mjs
