@@ -1,0 +1,19 @@
+{
+  "title": "Session strip and switching — round 8",
+  "key": "session-motion-live-8",
+  "out": "deck-live-8.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "swap-at-centre",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "A dot counts as passed at its middle, so the pill settles where you let go — done?",
+      "changed": "Your round-7 note. Where the pill lands comes from where the pill is drawn, never from your cursor or where you grabbed it. The cause was the rule for when a dot counts as passed: it took the pill covering all but one pixel of the dot. Let go with the pill over most of a dot but not quite all of it and the row treated the dot as not passed, so the pill slid back a whole dot-width. At the very left, where the pill can only ever reach that last pixel, letting go a hair short landed it second and it moved back to the right. A dot now counts as passed once the pill is past its middle, the way Chrome swaps tabs. The pill settles at most half a dot from where you let go, and the first slot has a comfortable margin. To keep that swap invisible, a dot the pill is crossing is always drawn twice, at its old spot and its new one, with the two sizes adding up to one whole dot; the swap just changes which one is which. Two more things the frame-by-frame probe turned up along the way: the swap was being judged from the shrunken dot's drawn position, which delayed it by a whole dot, and in a full strip hovering a dot squeezed the active name to make room for the preview, then popped it back the moment you pressed. The preview now opens only into the room the strip has free.",
+      "notice": "Let go anywhere mid-row: the pill nudges at most half a dot. Drag to the very left with the pill only past the first dot's middle and let go: it lands first. Hover a dot in this full strip: the active name stays its size.",
+      "risk": "In a full strip a hover preview is now short or does not open at all, instead of squeezing the active name.",
+      "live": { "surface": "session-strip-motion", "round": 8, "candidate": "name-flow-4" }
+    }
+  ]
+}

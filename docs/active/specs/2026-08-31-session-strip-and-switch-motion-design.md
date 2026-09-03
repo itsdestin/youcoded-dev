@@ -371,19 +371,24 @@ Replace the ghost model with a moving-pill model.
   of the dragged chip"*. Both are honoured at once: any dot the pill is over shrinks towards
   its own far edge (`--flow`, written per frame by the twin's rAF loop), keeping
   `FLOW_GAP_PX` clear of the pill; the dot ahead in the direction of travel also gets a ghost
-  (`[data-ghost]`, a clone with no data attributes) growing behind the pill at the spot it
-  will land; the yield fires at the dot's far edge (`DRAG_TUNE.margin = −28`), when it is at
-  scale 0, and the real dot takes over from the ghost at full size. Nothing touches; the
-  row never shows a hole (2–4px mean gap both sides, measured). Wide neighbours are never
+  (`[data-ghost]`, a clone with no data attributes) at its mirror spot one pill-width across
+  the pill — every covered dot has TWO images, each shrinking towards its own far edge,
+  sizes summing to one, on both sides of the yield; the yield fires at the dot's CENTRE
+  (`DRAG_TUNE.margin = −14`, Chrome's rule, R8) and swaps which image is the box without
+  changing the picture. Nothing touches; the row never shows a hole (2–4px mean gap both
+  sides, measured); the drop travels at most half a dot. (R5–R7 fired the yield at the far
+  edge, −27, and the drop travelled a whole dot — Destin, R7: "it moves back rightward a
+  bit".) Wide neighbours are never
   flowed — they slide on `--ease-out`. A 1px veil remains as a safety net for geometry the
   flow does not shape. The twin is anchored to its in-flow box plus the cursor's
   displacement since drag start (never a grab fraction — a drag starts while the row is
   still reflowing from the press), React writes its `left`/`width` once at mount and the
   rAF loop owns them after (React re-applied a stale `left` a frame late), and the dot's
   centre is mapped from the row AS DRAWN into settled coordinates (`mapToSettled`) before
-  the yield rule runs. The twin is clamped to the row of pills (first pill's left to last
-  pill's right) in that same loop, and a dot is passed 1px before its far edge (`margin`
-  −27) so the clamped pill can still take the first or last slot.
+  the yield rule runs — the drawn row read from LAYOUT positions (`offsetLeft`), never
+  from scaled rects, which mapped the centre a dot back. The twin is clamped to the row of
+  pills (first pill's left to last pill's right) in that same loop; the end slot is 13px
+  past the clamp.
 - **A drop disturbs nothing but the pill (2026-09-03).** The flow keeps running through the
   settle, fed the real pill's rect, so a mid-flow dot regrows as the pill glides off it; the
   row keeps the drag's pack (`postDropHold`) until the cursor leaves the strip, the next
@@ -402,6 +407,10 @@ Replace the ghost model with a moving-pill model.
   (text + tail + chrome, fractional — the label box's max-width is a ceiling, not a size,
   so ceil + slack over-reserved 2–3px and nudged every dot at the drop). Consequence for the
   row: a full strip shows one more session under "+N" instead of a squeezed name.
+- **A hover peek opens only into free room (2026-09-03, R7).** In a full strip the peek
+  pushed the row past its box and CSS squeezed the active name (191→78px), which popped
+  back on press. `LabelStyleInput.room` = `pillBudget` minus the packed row; a peek is as
+  wide as that allows, or does not open. Chrome does not widen a tab on hover at all.
 - **Sideways never tears off (2026-09-03, R6).** *"i still cant drag a session into the
   leftmost position"* — reaching for the first slot overshoots past the window's edge, which
   the live tear-off (and the drop routing) read as "outside the window": a peer window
@@ -557,6 +566,11 @@ Per the workspace knowledge ladder, each of these is a test, not prose. All live
    overflows; `pillBudget` reported); `animation-frame-budget.test.ts` (`stripBudget`
    subtracts the strip's padding, both packs reserve the chip, the held pill's cap is
    `target.pillBudget`).
+8b. **A peek never squeezes the row** — `pill-label-style.test.ts` (`room` caps a hover peek
+   only; the active and pack-expanded names are never capped by it).
+8c. **The yield is the centre and the swap shows nothing** — `drag-order.test.ts` (margin −14,
+   the centre lines both ways); `animation-frame-budget.test.ts` (the mirror image, a
+   direction-blind flow).
 8a. **Sideways never tears off** — `animation-frame-budget.test.ts` pins both
    `outsideOwnWindow` expressions to Y only and the absence of any `clientX < 0`.
 9. **The one-shot window opens in the first committed render** — `use-one-shot-window.test.tsx`

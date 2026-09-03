@@ -10,6 +10,10 @@
 //   node scripts/ui-review/drag-probe.mjs <url> <fromIdx> <toIdx> [dragMs] [holdAfterMs]
 //   CDP_PORT=10330  throw-away Chrome's debug port (use a fresh one per run)
 //   OUT_DIR=.       where drag-probe.json (the full per-frame log) is written
+//   PRESS_FIRST=<idx>  click this pill first and wait for the row to settle, so the drag
+//                      starts on an ACTIVE, open name (Destin drags the name he is on)
+//   GRAB=0..1          where across the pressed pill's width the press lands (default 0.5;
+//                      0.9 = "i began dragging on the right side of the session pill")
 //
 // <url> is a workbench CHILD page, e.g.
 //   'http://127.0.0.1:5513/?mode=workbench&child=1&scenario=stress&latency=0&select=press'
@@ -62,8 +66,18 @@ await send('Page.navigate', { url });
 for (let i = 0; i < 80; i++) { if (await evaluate("document.querySelectorAll('[data-session-idx]').length > 3")) break; await sleep(250); }
 await sleep(1500);
 
-const rectOf = async (idx) => evaluate(`(() => { const el = document.querySelectorAll('[data-session-idx]')[${idx}]; if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
-const a = await rectOf(Number(fromIdx)); const b = await rectOf(Number(toIdx));
+const rectOf = async (idx, frac = 0.5) => evaluate(`(() => { const el = document.querySelectorAll('[data-session-idx]')[${idx}]; if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.left + r.width * ${frac}, y: r.top + r.height / 2 }; })()`);
+if (process.env.PRESS_FIRST !== undefined) {
+  const p = await rectOf(Number(process.env.PRESS_FIRST));
+  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: p.x, y: p.y });
+  await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: p.x, y: p.y, button: 'left', buttons: 1, clickCount: 1 });
+  await sleep(60);
+  await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: p.x, y: p.y, button: 'left', buttons: 0, clickCount: 1 });
+  // Park the cursor off the strip so no hover peek is open when the drag starts.
+  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: p.x, y: p.y + 200 });
+  await sleep(900);
+}
+const a = await rectOf(Number(fromIdx), Number(process.env.GRAB ?? 0.5)); const b = await rectOf(Number(toIdx));
 // OVERSHOOT_PX: carry the cursor this much past the target pill's centre — how a person
 // drags to the END of the row (the pill is clamped there; the cursor is not).
 if (b && process.env.OVERSHOOT_PX) b.x += Number(process.env.OVERSHOOT_PX);
@@ -77,7 +91,7 @@ await evaluate(`(() => { window.__log = []; window.__marks = []; window.__cx = n
   const tick = () => { requestAnimationFrame(tick); setTimeout(sample, 0); }; const sample = () => { const t = performance.now(); const rows = [];
   for (const el of document.querySelectorAll('[data-session-strip] [data-session-id]')) { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); rows.push({ id: el.dataset.sessionId, l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: cs.visibility[0], o: Math.round(parseFloat(cs.opacity)*100)/100 }); }
   const bar = document.querySelector('[data-session-strip]'); if (bar) { const r = bar.getBoundingClientRect(); rows.push({ id: 'BAR', l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v' }); }
-  const ghost = document.querySelector('[data-session-strip] > [data-ghost]'); if (ghost) { const r = ghost.getBoundingClientRect(); rows.push({ id: 'GHOST', l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v', o: 1 }); }
+  for (const ghost of document.querySelectorAll('[data-session-strip] > [data-ghost]')) { const r = ghost.getBoundingClientRect(); rows.push({ id: 'GHOST' + ghost.dataset.ghost.replace(/^(wb|m)-/, ''), l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v', o: 1 }); }
   const twin = document.querySelector('[data-session-strip] > div[aria-hidden]:not([data-ghost])'); if (twin) { const r = twin.getBoundingClientRect(); rows.push({ id: 'TWIN', l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v', sl: twin.style.left }); }
   window.__log.push({ t, rows, cx: window.__cx }); }; requestAnimationFrame(tick); })()`);
 const mark = (name) => evaluate(`window.__marks.push({ t: performance.now(), name: ${JSON.stringify(name)} })`);

@@ -15,8 +15,11 @@ two bugs ("i still cant drag a session into the leftmost position, and they stil
 little on release"); both were measured to causes OUTSIDE the motion — the packer fitting a
 row wider than the strip (the active name squeezed 25px, so a drag planned with the wrong
 widths and the row snapped back at the drop) and the tear-off firing when the hand left the
-pane sideways. Fixed in youcoded `7bcf75cf`; served as the round-7 live deck (one try-this
-step). Waiting on that answer; then merge.**
+pane sideways. Fixed in youcoded `7bcf75cf`. Round 7 (chat): still a backward glide at the
+drop and "moves back rightward" at the left end — the yield line, not the grab point: a dot
+counted as passed only 1px before its far edge. Now passed at its centre (Chrome), with the
+flow drawing a crossed dot twice so the swap shows nothing; youcoded `4093e3ed`. Served as
+the round-8 live deck (one try-this step). Waiting on that answer; then merge.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
 but it will need to be tuned/repaired a bit. it's jank"*), **switch-when → Press** (*"further
@@ -193,6 +196,33 @@ probe at the deck pane's width (`PROBE_W=460`, a new probe env — every earlier
   Chrome; only above or below the window does.
 - Round 7 deck: `session-motion-live-7.json` — one try-this step on R7 (`name-flow-3`).
 
+**Round-7 answer (chat, 2026-09-03):** *"still janky on release, still doesn't always work
+when i release at the leftmost edge (it moves back rightward a bit. is the final positioning
+on release based on where the pill is, or my mouse cursor? it almost feels like it could be
+bouncing back because i began dragging on the right side of the session pill? but idk"*.
+Pill, not cursor — and the grab point was not it (probe `GRAB=0.9`, a new env with
+`PRESS_FIRST=<idx>`: press a pill, wait, then drag it from its right side — landed first
+every time). The cause was the yield line:
+- **The yield is at the dot's CENTRE now** (`DRAG_TUNE.margin` −14, Chrome's rule). At −27
+  (1px before the far edge) a release with the pill over 26 of a dot's 28px was not a pass
+  and the pill glided back a whole pitch; at the row's end, where the clamped pill reaches
+  the far edge by exactly 1px, a hand letting go a few px short landed second. Drop travel is
+  now ≤ half a dot (3.4px measured mid-row) and the end slot has 13px of margin.
+- **A crossed dot has two images** (the flow, rewritten): its box and a mirror one
+  pill-width across the pill, each shrinking towards its own far edge, sizes summing to one,
+  drawn on both sides of the yield — so the swap changes nothing on screen. Ghosts are keyed
+  by id; direction plays no part. A mirror the pill does not reach is drawn whole (under the
+  pill entire it sits exactly one gap past the edge; dropping it blinked the dot for a frame).
+- **Two found on the way:** the row-as-drawn was read from scaled rects, which mapped the
+  pill's centre up to a dot back and fired the centre yield at the far edge anyway (now
+  `offsetLeft`); and in a full strip a hover peek pushed the row past its box, squeezing the
+  active name 191→78px and popping it back on press (`LabelStyleInput.room`: a peek opens
+  only into `pillBudget` minus the packed row).
+- Continuity check added to the probe analysis (scratch `cont.js`, worth folding into the
+  probe): per dot, real image + ghosts, largest one-frame change in visible size — ≤ 3.4px
+  over a whole drag in every run after; 28px blinks before.
+- Round 8 deck: `session-motion-live-8.json` — one try-this step on R8 (`name-flow-4`).
+
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
 opening the moment you press, before any drag. That forced a second drag model — the pill in
@@ -295,7 +325,7 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-7 answer
+## After the round-8 answer
 
 1. "Yes": merge and push `feat/session-strip-motion`; then `feat/session-motion-review`
    (deck + docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
