@@ -1,0 +1,17 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&seed=none&reply=sheet&title=Q3+sales",
+  "theme": "midnight", "width": 1440, "height": 900, "fps": 30, "boot": 3000,
+  "storage": { "youcoded-drawer-width": 820 },
+  "actions": [
+    {"hold": 600},
+    {"eval": "dispatchEvent(new CustomEvent('buddy:attach-file',{detail:{filePath:'/home/you/Documents/Q3-sales.xlsx'}}))", "settle": 900, "mark": "attach"},
+    {"click": "button[title='Session Files'], button[aria-label='Session Files']", "settle": 900},
+    {"clickText": "Q3-sales.xlsx", "settle": 1600},
+    {"click": "[placeholder^='Message']", "settle": 200},
+    {"typeSlow": "sort it by amount and add a totals row", "cps": 28},
+    {"key": "Enter", "settle": 400},
+    {"waitForText": "biggest single month", "tag": "p", "timeout": 25000, "settle": 300, "mark": "reply"},
+    {"eval": "window.__workbenchSheet='after'", "settle": 100},
+    {"clickText": "Q3-sales.html", "settle": 500},
+    {"clickText": "Q3-sales.xlsx", "settle": 1400, "mark": "after"},
+    {"hold": 2200}
+  ] }

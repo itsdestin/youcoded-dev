@@ -116,3 +116,10 @@ perf-reports/shots/
 # Python bytecode from the deck tooling + its tests
 __pycache__/
 *.pyc
+
+# Promo footage: Remotion's render output, and public/ (filmed clips/marks under
+# public/footage/, plus generated audio assets copied in by earlier promo tasks).
+# The review posters (docs/active/prototypes/promo-2026-09/footage/*.webp) and the
+# scene JSON that produced them stay tracked; nothing under public/ or out/ does.
+scripts/promo/out/
+scripts/promo/public/

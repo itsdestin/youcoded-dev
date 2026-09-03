@@ -1,0 +1,12 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=week&lease=held%3APixel%209",
+  "theme": "midnight", "width": 1440, "height": 900, "fps": 30, "boot": 3000,
+  "actions": [
+    {"hold": 500},
+    {"click": "[title='All Sessions']", "settle": 700},
+    {"clickText": "Resume", "settle": 1000},
+    {"clickText": "compare two laptops", "settle": 900},
+    {"clickText": "Resume Session", "tag": "button", "settle": 600},
+    {"waitForText": "take over here", "timeout": 8000, "settle": 1500, "mark": "dialog"},
+    {"clickText": "Take over", "tag": "button", "settle": 1200, "mark": "takeover"},
+    {"hold": 2600}
+  ] }

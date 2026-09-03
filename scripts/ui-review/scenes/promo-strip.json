@@ -1,0 +1,8 @@
+{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=150",
+  "theme": "midnight", "width": 1440, "height": 900, "fps": 30, "boot": 3000,
+  "actions": [
+    {"hold": 900},
+    {"moveTo": "[data-session-idx='4']", "ms": 500, "settle": 300},
+    {"drag": "[data-session-idx='4']", "to": "[data-session-idx='1']", "ms": 1100, "settle": 400, "mark": "drag"},
+    {"hold": 1600}
+  ] }

@@ -1,0 +1,64 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&seed=none&reply=flappy-task&title=study+guide",
+ "theme": "halftone-dimension",
+ "width": 1440,
+ "height": 900,
+ "fps": 30,
+ "boot": 3000,
+ "storage": {
+  "youcoded-drawer-width": 600
+ },
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "turn my lecture notes into a study guide with practice questions",
+   "cps": 30
+  },
+  {
+   "key": "Enter",
+   "settle": 700
+  },
+  {
+   "click": "button[title='Games']",
+   "settle": 900,
+   "mark": "games"
+  },
+  {
+   "clickText": "Flappy",
+   "tag": "span",
+   "settle": 900
+  },
+  {
+   "waitForText": "Play",
+   "tag": "button"
+  },
+  {
+   "clickText": "Play",
+   "tag": "button",
+   "settle": 700,
+   "mark": "play"
+  },
+  {
+   "waitFor": "[data-game-keys='space']",
+   "settle": 300
+  },
+  {
+   "click": "[data-game-keys='space']",
+   "settle": 50
+  },
+  {
+   "evalFile": "flappy-pilot.js",
+   "mark": "fly",
+   "settle": 100
+  },
+  {
+   "hold": 9500
+  }
+ ]
+}
