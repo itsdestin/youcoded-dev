@@ -74,6 +74,20 @@ test('deck renders at three sizes and records an answer', async () => {
           await c.evaluate("document.querySelector('#save').click()"); await sleep(600);
           assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'Home');
           assert.equal(await c.evaluate("document.querySelector('#count').textContent"), 'step 3 of 4 · 1 answered');
+          // Prev/Next state, pinned because it is EASY TO LOSE SILENTLY: on 2026-09-03 an
+          // edit ended a line in a `//` comment and swallowed these three assignments into
+          // it. Every other assertion in this suite still passed.
+          assert.equal(await c.evaluate("document.querySelector('#prev').disabled"), false, 'Prev live off step 1');
+          assert.equal(await c.evaluate("document.querySelector('#next').textContent"), 'Next ›');
+          await c.send('Page.navigate', { url: url + '?step=1' });
+          for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+          assert.equal(await c.evaluate("document.querySelector('#prev').disabled"), true, 'Prev dead on the first step');
+          await c.send('Page.navigate', { url: url + '?step=4' });
+          for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+          assert.equal(await c.evaluate("document.querySelector('#next').disabled"), true, 'Next dead on the last step');
+          assert.equal(await c.evaluate("document.querySelector('#next').textContent"), 'Last step');
+          await c.send('Page.navigate', { url: url + '?step=3' });
+          for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
           // CLIP step: a <video> per run, the replay button shown, no theme thumbs, no console errors
           await c.send('Page.navigate', { url: url + '?step=4' });
           for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
@@ -287,4 +301,68 @@ test('a words-only deck renders with no stage and records a pick', async () => {
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
   } finally { srv.kill(); }
+});
+
+// ── the finish screen ──────────────────────────────────────────────────────────────────────
+// WHY pinned: before it existed, Submit closed the dialog and left Destin on the last step
+// with a greyed-out button — indistinguishable from a click that did nothing. The screen is
+// also the ONLY read-back of the answers, because serve.py exits the moment a submit lands.
+test('submit lands on a finish screen that reads the answers back, and the deck stays read-only', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-fin-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1440, 900);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/fixture.html` });
+    for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+    assert.equal(await c.evaluate('document.body.dataset.screen'), 'deck');
+
+    // step 1: yes + a tagged note. step 3: "other". step 2 is left with no answer on purpose.
+    await c.evaluate("document.querySelector('.ans[data-v=yes]').click(); const n=document.querySelector('#note'); n.value='amber is strong'; n.dispatchEvent(new Event('input'));");
+    await sleep(400);
+    await c.evaluate("document.querySelector('#steps span:nth-child(3)').click()"); await sleep(600);
+    await c.evaluate("document.querySelector('.ans[data-v=other]').click()"); await sleep(300);
+    await c.evaluate("document.querySelector('#done').click()"); await sleep(300);
+    await c.evaluate("document.querySelector('#submit').click()"); await sleep(1200);
+
+    assert.equal(await c.evaluate('document.body.dataset.screen'), 'finished', 'submit shows the finish screen');
+    assert.equal(await c.evaluate("document.querySelector('#step').hidden"), true, 'the step is put away');
+    // The sentence Destin asked for, verbatim — it is the whole point of the screen.
+    assert.equal(await c.evaluate("document.querySelector('.finished .lede').textContent.trim()"),
+      'The Assistant should receive your responses in just a moment.');
+    // Every step is read back, including the one with no answer.
+    const rows = JSON.parse(await c.evaluate("JSON.stringify([...document.querySelectorAll('#responses tbody tr')].map(r=>[...r.cells].map(c=>c.textContent.trim())))"));
+    assert.equal(rows.length, 3);
+    assert.equal(rows[0][2], 'Yes, keep it'); assert.match(rows[0][3], /amber is strong.*just noting/);
+    assert.equal(rows[1][2], 'No answer');
+    assert.equal(rows[2][2], 'Something else');
+    assert.match(await c.evaluate("document.querySelector('#fin-meta').textContent"), /3 steps · 1 yes · 0 no · 1 other · 1 with no answer · submitted /);
+    assert.deepEqual(c.errors, []);
+
+    // Back to the deck: browsable, but nothing on it can be changed and nothing is re-sent.
+    await c.evaluate("document.querySelector('#fin-back').click()"); await sleep(500);
+    await c.evaluate("document.querySelector('#steps span:nth-child(2)').click()"); await sleep(800);
+    assert.equal(await c.evaluate('document.body.dataset.screen'), 'deck');
+    assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^step 2 of 3 .* submitted, read-only$/, 'moved, and says it is read-only');
+    assert.equal(await c.evaluate("[...document.querySelectorAll('.ans')].every(b=>b.disabled) && document.querySelector('#save').disabled && document.querySelector('#note').disabled"), true, 'nothing answerable');
+    // The header button is the way back — disabling it would strand the answers behind a dead control.
+    assert.equal(await c.evaluate("document.querySelector('#done').disabled"), false);
+    await c.evaluate("document.querySelector('#done').click()"); await sleep(400);
+    assert.equal(await c.evaluate('document.body.dataset.screen'), 'finished', 'the header button returns to it');
+
+    // The submitted answers file is what the server banked at submit — browsing did not rewrite it.
+    const answers = JSON.parse(readFileSync(join(dirname(spec), 'deck.answers.json'), 'utf8'));
+    assert.ok(answers.submitted, 'file carries the submit stamp');
+    assert.equal(answers.answers['S-1'].v, 'yes'); assert.equal(answers.answers['S-3'].v, 'other');
+    assert.equal(answers.answers['S-2'], undefined, 'a step never opened has no entry — the finish screen still lists it as "No answer"');
+    // NOT `srv.on('exit')`: the server exited seconds ago, back at the submit, and 'exit' is
+    // emitted once — a listener attached afterwards would wait for a event that already fired.
+    for (let i = 0; i < 60 && srv.exitCode === null; i++) await sleep(100);
+    assert.equal(srv.exitCode, 0, 'the server exits on submit');
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); if (srv.exitCode === null) srv.kill(); }
 });

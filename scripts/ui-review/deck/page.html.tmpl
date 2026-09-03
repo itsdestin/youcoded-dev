@@ -23,7 +23,19 @@
       </div>
     </div>
   </div>
-</div></main>
+</div>
+<!-- The end of the deck. Shown only after the server ACCEPTS the submit — a definitive
+     "this is finished", and the only place the answers can be read back afterwards. -->
+<section class="finished" id="finished" hidden><div class="fin-wrap">
+  <div class="tick"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m7.4 12.4 3.1 3.1 6.1-6.7"/></svg></div>
+  <h1>Feedback submitted</h1>
+  <p class="lede">The Assistant should receive your responses in just a moment.</p>
+  <p class="fin-meta" id="fin-meta"></p>
+  <p class="fin-hint">Nothing to copy or paste — go back to the conversation. Your answers are below if you want to re-read them.</p>
+  <div class="fin-actions"><button class="btn ghost" id="fin-back">‹ Back to the deck</button><button class="btn" id="fin-copy">Copy responses</button></div>
+  <table class="responses" id="responses"><thead><tr><th>#</th><th>Step</th><th>Your answer</th><th>Note</th></tr></thead><tbody></tbody></table>
+</div></section>
+</main>
 </div>
 <div class="loupe" id="loupe"></div>
 <div class="veil" id="veil"><div class="dlg"><h2>Submit your feedback?</h2><p id="dlg-text"></p>
