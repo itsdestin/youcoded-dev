@@ -169,6 +169,14 @@ seen-on is always n/a here.
       has not seen it in his own app — check whether a maximized-at-launch window avoids it)
       `terminal` `n/a` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-terminal-pty-column-count.md
 
+- [ ] The landing redesign's five clips exist only in the mockup folder; the site-assets script that
+      regenerates every loop does not know their names, so the next regeneration drops them
+      `n/a` `confirmed` `checked 2026-09-03`
+
+- [ ] The landing mockup's generator still carries the two phrases removed from the live page on
+      2026-09-03 ("self-improving", "does real work"); the next rebuild-and-port reintroduces them
+      `n/a` `confirmed` `checked 2026-09-03`
+
 ## knowledge
 
 - [ ] Path-scoped rules never reach a session that edits through the Bash tool, which is what
@@ -234,6 +242,10 @@ seen-on is always n/a here.
       decompositions). Catalog: `docs/active/handoffs/2026-07-10-review-followups.md`
       `n/a` `parked` `checked 2026-08-12`
 
+- [ ] youcoded-core's status line and write-guard still reference the deleted usage-fetch script (the
+      file itself is gone there, so nothing runs) — clean up, or let the scheduled archive take it
+      `n/a` `confirmed` `checked 2026-09-03`
+
 ## release
 
 - [ ] Re-work the release method: releases tag master directly, so every release ships the
@@ -243,8 +255,9 @@ seen-on is always n/a here.
       fixes onto them — so a minor can go out while the next major is still blocked. Caveats to
       fold in when building: every fix needs a "goes in the minor?" cherry-pick decision, and the
       one-tag-both-platforms rule (ADR 005) means even a fix-only minor must coordinate an Android
-      versionCode bump and ships a paired Android build (no bare desktop-only hotfixes)
-      `n/a` `parked` `checked 2026-09-03` `v1.3.1`
+      versionCode bump and ships a paired Android build (no bare desktop-only hotfixes). Promoted to a
+      1.3 blocker 2026-09-03: store listings make bug-fix releases routine, so this must exist first
+      `n/a` `confirmed` `checked 2026-09-03` `v1.3`
 
 - [ ] Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
       from the embed's theme button and the whole app window becomes one blur; the redesign makes
@@ -281,10 +294,25 @@ seen-on is always n/a here.
       question filed under sync
       `n/a` `blocked` `checked 2026-09-01` `v1.3`
 
-- [ ] The "formalization" push after 1.3: the youcoded.ai domain, app store and Play Store
-      listings, the macOS/Windows security-warning signing, an LLC — Destin, 2026-09-02, "soon-ish,
-      probably right after the 1.3 release"
-      `n/a` `parked` `checked 2026-09-02`
+- [ ] Public-launch formalization is the 1.3 gate: signed macOS/Windows installers, a Play listing,
+      the LLC behind every account, a trademark filing. Done 2026-09-03: youcoded.ai (site, API,
+      email), the Anthropic-token fix, Android → MIT, policies linked everywhere. Destin's own
+      paperwork, the order to do it in, every open question and the year-one costs are the report
+      `n/a` `in-flight` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+
+- [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
+      Blocked until the LLC exists and the Apple / Azure signing accounts are opened in its name;
+      after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads
+      `n/a` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+
+- [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
+      a verified developer even for sideloads. Blocked on the LLC's D-U-N-S number; then the bundle
+      upload, data-safety form, content rating and account-deletion link
+      `android` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+
+- [ ] The privacy policy, terms and contributing guide still say "not a company" and name "its
+      maintainer" as the responsible party; once the LLC exists they must name it
+      `n/a` `blocked` `checked 2026-09-03` `v1.3`
 
 - [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
       turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view

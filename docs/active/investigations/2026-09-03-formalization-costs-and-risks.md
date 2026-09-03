@@ -542,12 +542,58 @@ never issue its own while proxied, and its Pages health check will report a Clou
 expected. To move back to GitHub's certificate: un-proxy the records, wait for GitHub's cert, then
 switch SSL mode to Full (strict) and re-proxy, or simply stay as is.
 
+## Destin's to-do, in order (the things only you can do)
+
+Tick these off here; each unblocks a Claude session listed in the roadmap (`v1.3` flag).
+
+- [ ] **Form the LLC** at azcc.gov — Articles of Organization ($50), statutory agent at a Maricopa
+      or Pima County address. Same day: free EIN at irs.gov, then a business bank account.
+- [ ] **D-U-N-S number** at dnb.com (free, 1–2 weeks; the slowest step — start it with the LLC).
+- [ ] **Register a DMCA agent** at copyright.gov/dmca-directory ($6) in the LLC's name.
+- [ ] **Trademark**: search tmsearch.uspto.gov for "YouCoded", then file class 9 ($350) in the LLC's
+      name; class 42 (+$350) if the marketplace/sync will be paid services. Decide first whether
+      "WeCoded" gets its own filing.
+- [ ] **Roll the Cloudflare API token** (My Profile → API Tokens → roll) — the current one passed
+      through a chat transcript — and hand the new value to a session so it can update
+      `~/.config/youcoded-dev/cloudflare-token`.
+- [ ] **Move Buy Me a Coffee** (the in-app Donate button, `buymeacoffee.com/itsdestin`) to the LLC:
+      payout account and tax details. See "Donations" below.
+- [ ] Once the D-U-N-S number arrives: **Apple Developer Program** (organization, $99/yr),
+      **Google Play Console** (organization, $25), **Azure Artifact Signing** ($9.99/mo, photo ID +
+      selfie) — all with `destin@youcoded.ai`.
+- [ ] Optional: **one hour with a lawyer** to read the Terms and confirm the Android relicense
+      ($300–600). Best done before the first paid feature.
+
+### Donations (asked 2026-09-03)
+
+The Settings → Donate button opens `buymeacoffee.com/itsdestin` in the browser after an
+"okay to open?" confirmation, on desktop and Android. How it interacts with the rest:
+
+- **Tax:** money given to an open-source project's author is **income, not a gift**, in the IRS's
+  eyes, because it is given in connection with the work. Report it. Donors cannot deduct it,
+  because YouCoded is not a registered charity; do not word the button or the page as if they can.
+- **LLC:** once the company exists, the Buy Me a Coffee account (or its payout) should belong to
+  the LLC so the money and its taxes stay on the company's books, not yours.
+- **Google Play:** Play's payments policy lets apps link out for donations only to registered
+  charities; a tip link to an individual/company can be flagged as "digital content" that must
+  use Play billing. Real-world enforcement is inconsistent — many open-source apps keep a Donate
+  link — but expect that the **Play build may need the Donate button hidden**, or switched to a
+  Play in-app "tip" product. Decide when the listing is submitted; the GitHub APK is unaffected.
+- **Apple:** not relevant — YouCoded is not in the Mac App Store and has no iOS app.
+- **Anthropic:** irrelevant — donations do not touch Claude usage, so the "no paying for or
+  reselling Claude" rule is not engaged. Keep it that way: never tie a donation tier to Claude.
+
 ## Open questions for Destin
 
 1. Should Apple/Google/Azure accounts wait for the LLC (recommended; the LLC takes days in
    Arizona, the D-U-N-S number 1–2 weeks) or open in your name now and convert later?
 2. Is "WeCoded" a brand you want to keep long-term? It decides whether to file one mark or two.
-3. Badge wording for step 9: "No leaked secrets found" is the accurate candidate; your call.
+3. Badge wording: "No leaked secrets found" is the accurate candidate; your call.
+4. First-run sentence wording (the assistant can change and delete files; backups are yours).
+5. Android's frozen Claude Code version: unblock newer releases on Android, or scope what the Play
+   listing promises?
+6. Donate button in the Play build: hide it, keep it and risk a policy flag, or switch to a Play
+   in-app tip?
 
 ## Sources
 
