@@ -34,7 +34,7 @@ the same rig and the same fixtures.
 | Spreadsheet beat | **Assistant-only.** The user asks; the panel shows the sheet change | In-grid editing does not exist (roadmap: `docs/roadmap/files.md`, filed 2026-09-03). Not faked |
 | Theme beat | **One-shot.** The theme applies the moment the assistant finishes | Promo fudge Destin approved; the real flow goes through the marketplace card |
 | Takeover beat | The real "This session is active on {device} — take over here?" dialog, triggered by a workbench fake | The dialog and copy are real; only the trigger is faked |
-| Mascot | The theme mascot art the app ships (`welcome-mascot.svg` and the per-theme `mascot-*.svg` sets), animated by Remotion with spring motion | No rig-runtime coupling; every pose we need exists as a still |
+| Mascot | The app's default buddy rig (`default-buddy-rig.ts`, the same parts and pivots the app poses) driven by Remotion springs with the app's constants; Golden Sunbreak's still SVGs for the costume change | The rig is a plain SVG string with named parts, so posing it outside the app is CSS transforms; Golden Sunbreak ships stills, not a rig |
 | Copy | Short captions, plain words; the landing page's banned list applies (no "real app", "real files", "actually", "does real work", "self-improving") | `.claude/rules/landing-page.md` |
 
 ## Storyboard
@@ -90,14 +90,14 @@ by ffmpeg at the final mux) so Reddit does not turn it down.
 
 All under `scripts/ui-review/scenes/promo-*.json`, filmed at **1920×1200** (a 16:10 window
 that sits inside the 16:9 frame with the backdrop showing around it) except the phone
-scene at 390×844 with `platform=android`. `record.mjs` gets a `scale` field
-(device scale factor 2) so Remotion can push in without softening.
+scene at 390×844 with `platform=android`. Filmed at device scale 1: the window is
+downscaled to fit the 1080p frame, so a 4 % push-in never goes past 1:1.
 
 | Beat | Scene | Needs |
 |---|---|---|
 | 2 | `promo-quick-chip` | `scenario=site&seed=none&reply=briefing` — a new reply fixture, 1 turn |
 | 3 | `promo-sheet` | The spreadsheet fixture and writable-artifacts mock from `feat/landing-demo-clips` (`ef38bfc0`, worktree `grok-clip`) cherry-picked to master, plus a reply fixture whose tool card rewrites the sheet |
-| 4 | `promo-flappy` | `record.mjs` learns `Space` as a key; the scene sends flaps on a rhythm. `reply=` any multi-tool fixture |
+| 4 | `promo-flappy` | `record.mjs` learns `Space` as a key and an `autoplay` action that reads the bird and the next gap off the DOM and flaps when needed (the game has no autopilot). `reply=flappy-task`, a ~10 s multi-tool fixture |
 | 5 | `promo-strip` | `scenario=default`; the existing `drag` action |
 | 6a | `promo-remote` | A workbench fake for `remote.*` (enabled, a link, one connected phone) so the popup renders |
 | 6b | `promo-phone` | Same as `row5-phone` (`platform=android`, `autoplay=`) |
@@ -105,7 +105,7 @@ scene at 390×844 with `platform=android`. `record.mjs` gets a `scale` field
 | 7 | `promo-theme` | `reply=theme-builder` plus a one-shot apply: the scene's last action switches the theme through the workbench's appearance hook when the final turn lands |
 
 Every workbench fake is dev-only code (the workbench never ships to users) and lands on
-`youcoded` master through a normal PR. The rig changes (`Space`, `scale`) land in
+`youcoded` master through a normal PR. The rig changes (`Space`, `autoplay`) land in
 `youcoded-dev`.
 
 ## Assembly: `scripts/promo/`
@@ -116,12 +116,14 @@ scripts/promo/
   remotion.config.ts
   src/Root.tsx          registers the one composition: Promo, 1920×1080, 30 fps
   src/Promo.tsx         the timeline: eight <Sequence>s with transitions
-  src/beats/*.tsx       one component per beat: footage in a window frame + caption + mascot cue
-  src/Mascot.tsx        the host: a pose SVG, position, and spring motion per cue
-  src/Caption.tsx       the one-line caption treatment
-  src/frames/           the laptop-window and phone chrome the footage sits in
-  assets/               mascot SVGs copied from the app, wordmark
-  music/                synth.py + song.py (the track and the UI sounds), renders to assets/
+  src/grid.ts           reads the exported beat grid; bar → frame helpers
+  src/beats/*.tsx       one component per beat: footage in a window frame + caption + mascot cues
+  src/Mascot.tsx        the host: the app's default buddy rig, posed by springs; Golden Sunbreak stills for the costume
+  src/Caption.tsx, Window.tsx, Phone.tsx, Backdrop.tsx, Footage.tsx
+  src/rig.ts, golden.ts the mascot art copied from the app
+  music/                synth.py + song.py (the track and the UI sounds), test_song.py
+  film.sh, render.sh    film every scene; final render + loudness
+  public/               the track, grid and SFX, plus a link to footage/ (gitignored)
   footage/              the recorded WebMs (gitignored)
   out/                  renders (gitignored)
 ```
