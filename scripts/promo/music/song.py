@@ -201,7 +201,8 @@ def promo_track() -> Song:
             s.hits("kick", KICK, bar, S.kick)
             snare_pat = SNR
             if sec == "groove2": snare_pat = "........x......."            # half-time
-            if bar in (13, 22, 28): snare_pat = "....x.......xxxX"          # fills before a section change
+            if bar == 22: snare_pat = "....x.......xx.."                   # fill trails off into the pre-drop-2 gap (see below)
+            elif bar in (13, 28): snare_pat = "....x.......xxxX"           # fills before a section change
             s.hits("snare", snare_pat, bar, S.snare, gain=0.8)
             s.hits("clap", SNR if sec != "groove2" else "........x.......", bar, S.clap, gain=0.5)
             s.hits("hat", HAT, bar, S.hat, gain=0.55 if not bright else 0.65)
@@ -242,11 +243,40 @@ def promo_track() -> Song:
         n = S.secs(s.bar * length)
         sw = S.onepole_hp(S.noise(n), 800 + 6000 * np.linspace(0, 1, n) ** 2) * np.linspace(0, 1, n) ** 2
         s.note("riser", start, 0, sw.astype(np.float32), 0.35)
-    # the "gap": the last beat of bar 22 is silent except the riser tail, so drop 2 lands from nothing
-    gap_from, gap_to = s.at(22, 12), s.at(23, 0)
-    for name in ("kick", "snare", "clap", "hat", "bass", "arp", "lead"):
+    # the "gap": bar 22's fill plays two 16ths (steps 12-13), then EVERY track — pad included — goes
+    # dead silent for the last half-beat (steps 14-15), so drop 2 lands from nothing. The pad's reverb
+    # and the arp's delay are applied later, inside s.mix(), which runs on the whole (now-zeroed)
+    # buffer — so the reverb/delay tail built up before the gap still rings forward into it even
+    # though the dry signal here is exactly zero.
+    gap_from, gap_to = s.at(22, 14), s.at(23, 0)
+    for name in ("kick", "snare", "clap", "hat", "bass", "arp", "lead", "pad"):
         if name in s.tracks: s.tracks[name][gap_from:gap_to] = 0
     return s
+
+
+# Sections that get lifted after the mix: bar -> dB boost. Measured: the drops sit at -10.8 dB RMS
+# per bar; the intro (0-1), break (14-15) and outro (31-32) sit at -32 dB — 22 dB down, inaudible on
+# a laptop speaker under a video. These boosts bring them to roughly -22 dB (~12 dB under the drops:
+# reads as "quiet", not "gone") without touching the drop bars or any instrument's own balance.
+LIFT_DB = {0: 9, 1: 9, 14: 10, 15: 10, 31: 9, 32: 9}
+
+
+def _lift_envelope(s: Song, lift_db: dict[int, float], ramp: float = 0.04) -> np.ndarray:
+    """Sample-length linear-in-dB envelope, `lift_db[bar]` (default 0) held flat across each bar,
+    with a `ramp`-second linear crossfade centered on every bar boundary where the value changes —
+    so a boosted section doesn't click in or out. Returns a linear (not dB) multiplier."""
+    times, dbs = [0.0], [lift_db.get(0, 0.0)]
+    for b in range(s.bars):
+        v, nxt = lift_db.get(b, 0.0), lift_db.get(b + 1, 0.0)
+        t1 = (b + 1) * s.bar
+        if v != nxt:
+            times += [t1 - ramp / 2, t1 + ramp / 2]
+            dbs += [v, nxt]
+        else:
+            times.append(t1); dbs.append(v)
+    times.append(s.n / S.SR); dbs.append(dbs[-1])   # hold the last value flat through the tail
+    env_db = np.interp(np.arange(s.n) / S.SR, times, dbs)
+    return (10 ** (env_db / 20)).astype(np.float32)
 
 
 def render_promo(out: str):
@@ -262,7 +292,12 @@ def render_promo(out: str):
     }
     gains = {"kick": 1.0, "snare": 0.8, "clap": 0.5, "hat": 0.5, "bass": 0.7, "arp": 0.42, "pad": 0.5, "lead": 0.55, "riser": 0.5}
     pans = {"arp": (0.6, 0.2), "pad": (1.0, 0.0), "hat": (0.3, -0.25), "lead": (0.5, -0.1)}
-    S.write_wav(out, s.mix(gains, fx, pans))
+    mixed = s.mix(gains, fx, pans)
+    # Apply the lift after the full mix+master so it moves the finished mix, not one instrument, then
+    # re-master (soft-clip + peak-normalize) since the boosted bars can otherwise exceed 0 dBFS.
+    lift = _lift_envelope(s, LIFT_DB)[:, None]      # (n, 1) broadcasts over both channels
+    mastered = S.master(mixed * lift)
+    S.write_wav(out, mastered)
     d = os.path.dirname(os.path.abspath(out))
     for name, make in (("pop", S.sfx_pop), ("whoosh", S.sfx_whoosh), ("chime", S.sfx_chime)):
         S.write_wav(os.path.join(d, f"sfx-{name}.wav"), S.master(S.to_stereo(make()), -3.0))
