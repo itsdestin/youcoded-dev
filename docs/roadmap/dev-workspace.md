@@ -34,8 +34,12 @@ seen-on is always n/a here.
       nothing in sync, and on untouched master — with zero watcher events delivered; Ubuntu and
       Windows pass the same commit, and every fire also skips macOS packaging. 2026-09-02: it is
       NOT only the sync-spaces engine — git-watcher failed the same way in the same run, so the
-      production risk is wider than sync
-      `n/a` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
+      production risk is wider than sync. 2026-09-03: "every week or two" is now understating it —
+      master went red at 4224fb85 (sync-spaces-engine) and PR #397, based on that same commit, went
+      red at git-watcher, and it repeated on an explicit re-run of the failed job. Two runs of one
+      commit failing the same test is not a race losing a coin flip; the same suite passed 5/5
+      locally. Whatever changed is macOS-side and current, and it blocks merges on a red board
+      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
 
 - [ ] subagent-view, mcp-startup-wiring and project-watcher were filed as the suites that flake
       under parallel load, but 27 full local runs on 2026-09-02 (1 alone, 6 concurrent, 4 pinned to
