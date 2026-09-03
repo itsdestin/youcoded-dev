@@ -30,7 +30,7 @@ the same rig and the same fixtures.
 | Footage | The real renderer in the UI Workbench (fake backend), filmed by `scripts/ui-review/record.mjs` | It is how every landing-page loop is made; nothing touches Destin's live app |
 | Assembly | **Remotion** (React-in-video, free for individuals) in a new `scripts/promo/` folder | Frame-accurate transitions, captions, overlays and music in code; ffmpeg alone looks basic, and a hand-rolled frame stepper would be a worse Remotion |
 | Output | 1920×1080, 30 fps, H.264 MP4, stereo AAC (silent track if no music) | What Reddit accepts and autoplays; the rig's screencast is ~24 fps so 30 is honest |
-| Sound | Captions carry the video. Music is optional: a free track Destin drops in as `scripts/promo/assets/music.mp3` (Pixabay or YouTube Audio Library) | Reddit autoplays muted |
+| Sound | **Composed in code** (`scripts/promo/music/`, a numpy synthesizer + sequencer) at a fixed tempo, structured to the storyboard's sections. The sequencer exports the beat grid as JSON and Remotion places every cut, caption hit and the theme drop on it. Small UI-style sounds (a pop when the mascot lands, a whoosh on cuts) come from the same synth. Captions still carry the video for muted autoplay | Destin: music must feel integrated, beats matched, not dropped in (2026-09-03). A generated track is the only kind whose grid we know exactly |
 | Spreadsheet beat | **Assistant-only.** The user asks; the panel shows the sheet change | In-grid editing does not exist (roadmap: `docs/roadmap/files.md`, filed 2026-09-03). Not faked |
 | Theme beat | **One-shot.** The theme applies the moment the assistant finishes | Promo fudge Destin approved; the real flow goes through the marketplace card |
 | Takeover beat | The real "This session is active on {device} — take over here?" dialog, triggered by a workbench fake | The dialog and copy are real; only the trigger is faked |
@@ -39,22 +39,52 @@ the same rig and the same fixtures.
 
 ## Storyboard
 
-Times are targets, not contracts. Every beat is one recorded scene plus Remotion overlays.
-"Caption" is the one line on screen; the mascot column says what the host does.
+Times are bar boundaries of the music (118 BPM, one bar = 2.03 s) — see "Music" below.
+Every beat is one recorded scene plus Remotion overlays. "Caption" is the one line on
+screen; the mascot column says what the host does.
 
 | # | Time | On screen | Caption | Mascot |
 |---|---|---|---|---|
-| 1 | 0–4 s | Dark backdrop. The app window rises into frame. Wordmark. | **YouCoded** — Useful. Fun. Yours. | Peeks up over the bottom edge (peek pose), looks around (curious), hops onto the window's title bar |
-| 2 | 4–12 s | Empty new session (midnight). Cursor taps the **Briefing** quick chip, the prompt fills, Enter, tool cards tick past. | Start with one click. | Sits on the title bar, watching |
-| 3 | 12–22 s | Attach `Q3-sales.xlsx`, type "sort by amount and add a totals row", the Session Files panel opens and shows the changed sheet. | Your files, right beside the chat. | Leans in (inquisitive) as the panel opens |
-| 4 | 22–30 s | Type a bigger task, open **Games → Flappy**, the mascot-bird flaps through pipes while the chat keeps working behind it. | Play while it works. | *Is* the bird (in the footage). The host copy on the title bar is hidden for this beat so there is one mascot on screen |
-| 5 | 30–36 s | Session strip. A pill is dragged two places left; the others step aside. | Drag your conversations into order. | Watches the pill go by, head turns |
-| 6 | 36–50 s | Settings → Remote Access popup (QR + link). Cut: a phone frame slides in, the same conversation continues there. Cut back: the laptop shows the takeover dialog "This session is active on Pixel 9 — take over here?", cursor hits **Take over**, the chat catches up. | Start on your laptop. Finish on your phone. | Hops from the laptop frame onto the phone frame and back |
-| 7 | 50–62 s | Type "build me a theme with the vibe of outdoor anime art". The reply lands and the whole app becomes Golden Sunbreak in one cut. | Describe a look. It's yours. | Changes costume to the Golden Sunbreak mascot on the same cut (shocked pose, then welcome) |
-| 8 | 62–70 s | The window settles, backdrop tints to the theme. Wordmark, platforms, link. | Free. Open source. Windows · Mac · Linux · Android. github.com/itsdestin/youcoded | Waves (welcome pose), then hops out of frame |
+| 1 | 0–4 s (bars 0–1) | Dark backdrop. The app window rises into frame. Wordmark. | **YouCoded** — Useful. Fun. Yours. | Peeks up over the bottom edge (peek pose), looks around (curious), hops onto the window's title bar |
+| 2 | 4–12 s (bars 2–5) | Empty new session (midnight). Cursor taps the **Briefing** quick chip, the prompt fills, Enter, tool cards tick past. | Start with one click. | Sits on the title bar, watching |
+| 3 | 12–20 s (bars 6–9) | Attach `Q3-sales.xlsx`, type "sort by amount and add a totals row", the Session Files panel opens and shows the changed sheet. | Your files, right beside the chat. | Leans in (inquisitive) as the panel opens |
+| 4 | 20–28 s (bars 10–13) | Type a bigger task, open **Games → Flappy**, the mascot-bird flaps through pipes while the chat keeps working behind it. | Play while it works. | *Is* the bird (in the footage). The host copy on the title bar is hidden for this beat so there is one mascot on screen |
+| 5 | 28–33 s (bars 14–15) | Session strip. A pill is dragged two places left; the others step aside. | Drag your conversations into order. | Watches the pill go by, head turns |
+| 6 | 33–47 s (bars 16–22) | Settings → Remote Access popup (QR + link). Cut: a phone frame slides in, the same conversation continues there. Cut back: the laptop shows the takeover dialog "This session is active on Pixel 9 — take over here?", cursor hits **Take over**, the chat catches up. | Start on your laptop. Finish on your phone. | Hops from the laptop frame onto the phone frame and back |
+| 7 | 47–59 s (bars 23–28) | Type "build me a theme with the vibe of outdoor anime art". The reply lands and the whole app becomes Golden Sunbreak in one cut. | Describe a look. It's yours. | Changes costume to the Golden Sunbreak mascot on the same cut (shocked pose, then welcome) |
+| 8 | 59–69 s (bars 29–33) | The window settles, backdrop tints to the theme. Wordmark, platforms, link. | Free. Open source. Windows · Mac · Linux · Android. github.com/itsdestin/youcoded | Waves (welcome pose), then hops out of frame |
 
-Transitions: a fast slide or a hard cut between beats, never a crossfade longer than
-250 ms. Each beat may hold a gentle push-in (2–4 %) on the region that changed.
+Transitions: a fast slide or a hard cut between beats, always on a downbeat, never a
+crossfade longer than 250 ms. Each beat may hold a gentle push-in (2–4 %) on the region
+that changed.
+
+## Music
+
+**Arcade synthwave** — Destin's pick from two sketches, 2026-09-03 ("a BANGER"). 118 BPM,
+A minor, chiptune pulse arps and a lead hook on top of a four-on-the-floor kick, a saw
+bass and a supersaw pad that pump with every kick. Rendered by `scripts/promo/music/song.py`
+from `synth.py`; the sketch that was approved is `arcade_synthwave()` and the full track
+is the same material arranged to the storyboard:
+
+| Bars | Time | Section | What the video does there |
+|---|---|---|---|
+| 0–1 | 0.0–4.1 | Intro: arp + pad, hats, riser | Beat 1, the mascot peeks in; the window rises on the riser |
+| 2–5 | 4.1–12.2 | **Drop 1**: full groove | Beat 2; the quick chip is tapped on the downbeat of bar 2 |
+| 6–9 | 12.2–20.3 | Groove | Beat 3, spreadsheet |
+| 10–13 | 20.3–28.5 | Groove + lead hook | Beat 4, Flappy; the hook is the bird's theme |
+| 14–15 | 28.5–32.5 | Break: drums out, arp + pad | Beat 5, the drag; quiet so the motion reads |
+| 16–17 | 32.5–36.6 | Build: riser, snare roll | Beat 6 opens on the Remote Access popup, phone slides in |
+| 18–22 | 36.6–46.8 | Groove (half-time snare) | Phone continues, takeover dialog, Take over |
+| 22, last beat | 46.3 | Fill + silence gap | The reply lands |
+| 23–28 | 46.8–59.0 | **Drop 2**: full groove + hook, brighter filter | Beat 7; the theme applies on the downbeat of bar 23 |
+| 29–32 | 59.0–67.1 | Outro: pad and arp thin out | Beat 8, wave-out |
+| 33 | 67.1 | Final hit, tail to ~69.5 | Wordmark holds |
+
+The sequencer writes `<track>.grid.json` (every bar and beat time, section marks) and the
+Remotion timeline reads it, so every cut, caption and mascot hop is placed on the grid.
+UI-style sounds from the same synth: a soft pop when the mascot lands, a whoosh on each
+cut, a chime when the theme applies. Delivered at -14 LUFS integrated (loudness-normalised
+by ffmpeg at the final mux) so Reddit does not turn it down.
 
 ## Footage: one scene file per beat
 
@@ -90,7 +120,8 @@ scripts/promo/
   src/Mascot.tsx        the host: a pose SVG, position, and spring motion per cue
   src/Caption.tsx       the one-line caption treatment
   src/frames/           the laptop-window and phone chrome the footage sits in
-  assets/               mascot SVGs copied from the app, wordmark, optional music.mp3
+  assets/               mascot SVGs copied from the app, wordmark
+  music/                synth.py + song.py (the track and the UI sounds), renders to assets/
   footage/              the recorded WebMs (gitignored)
   out/                  renders (gitignored)
 ```
