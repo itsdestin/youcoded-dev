@@ -1,3 +1,13 @@
-{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&seed=none&title=new+session",
-  "theme": "golden-sunbreak", "width": 1440, "height": 900, "fps": 30, "boot": 3000,
-  "actions": [ {"hold": 2500} ] }
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&seed=none&title=new+session",
+ "theme": "golden-sunbreak",
+ "width": 1440,
+ "height": 900,
+ "fps": 30,
+ "boot": 3000,
+ "actions": [
+  {
+   "hold": 11000
+  }
+ ]
+}
