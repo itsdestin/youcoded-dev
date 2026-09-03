@@ -1,0 +1,88 @@
+{
+ "title": "Files tab — pictures or a list — contract",
+ "key": "file-views-contract",
+ "out": "file-views.contract.html",
+ "themes": ["midnight"],
+ "branch": "feat/file-list-view",
+ "sources": {
+  "file-views-questions": "file-views.questions.json",
+  "file-views-review": "review.json",
+  "file-views-round2": "round2.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Project view → Files",
+   "path": "The Files tab — its toolbar, the 'Project Files' line, and the files below",
+   "headline": "This is what done means.",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "The Files tab has two ways to look: the picture grid you have today, and a compact list.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/files-tab-list-view.test.tsx",
+     "threshold": "the named test passes",
+     "source": "file-views-questions#Q-1"
+    },
+    {
+     "id": "R2",
+     "statement": "The switch is on screen without opening any menu, and the view you are in is the marked one.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "file-views-questions#Q-2"
+    },
+    {
+     "id": "R3",
+     "statement": "Each list row shows a small icon, the filename, its kind, and how long ago it changed.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/files-tab-list-view.test.tsx",
+     "threshold": "the named test passes",
+     "source": "file-views-questions#Q-3"
+    },
+    {
+     "id": "R4",
+     "statement": "The view you pick is remembered once for the whole app, so every project opens in it.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/files-tab-list-view.test.tsx",
+     "threshold": "the named test passes",
+     "source": "file-views-questions#Q-4"
+    },
+    {
+     "id": "R5",
+     "statement": "At phone width you keep the view you picked; neither view is forced on you.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "file-views-questions#Q-5"
+    },
+    {
+     "id": "R6",
+     "statement": "The list gives one row per file, so a folder with many files is readable.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "file-views-review#F-2"
+    },
+    {
+     "id": "R7",
+     "statement": "The search box keeps the shade it has today; only the tabs and the switch share theirs.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "file-views-round2#R-1"
+    },
+    {
+     "id": "R8",
+     "statement": "The switch sits small at the right end of the 'Project Files' line, off the toolbar.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "file-views-round2#R-2"
+    },
+    {
+     "id": "R9",
+     "statement": "At phone width the search box keeps its full width and the switch sits on the line below.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "file-views-round2#R-3"
+    }
+   ]
+  }
+ ]
+}
