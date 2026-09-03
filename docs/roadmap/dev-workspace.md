@@ -289,3 +289,26 @@ seen-on is always n/a here.
       CC prompt fails a test instead of hanging a session. Prior art for the failure mode:
       the 2026-07-16 "trust" substring collision in `docs/roadmap/shipped.md`
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
+
+- [ ] Perf rig records nothing about which RENDERER it got, so "the rig is blind to GPU" — repeated
+      in five scenarios' `blindTo` lists and used to dismiss whole classes of finding — has never
+      been verified. The app already resolves it (`main.ts` `app.getGPUInfo('complete')` →
+      `auxAttributes.glRenderer`) and the rig throws it away; `/dev/dri/renderD128` is
+      world-readable on this machine, so the runs may already have hardware acceleration. Record
+      it in `report.machine` and the claim becomes checkable instead of assumed
+      `n/a` `needs-verify` `checked 2026-09-03` `performance`
+
+- [ ] Perf rig cannot see per-TOKEN streaming cost, so perf cycle 1 can never be re-gated and the
+      known buddy-window twin has no detector. Measuring TIME needs a native stream and is hostage
+      to local-model speed; measuring WORK does not — cycle 1's defect was one forced layout per
+      token, and the CDP `Performance` domain the rig already calls exposes layout and
+      style-recalc counters. Count layouts per streamed delta and the defect class becomes an
+      exact integer, not a noisy duration (confirm the counter names on first use)
+      `n/a` `needs-verify` `checked 2026-09-03` `performance`
+
+- [ ] Perf rig cannot see CONTENT ARRIVING LATE, which is the class that hid perf cycle 3's
+      pop-in through three clean measurement runs until Destin scrolled slowly and saw it
+      (2026-09-03). It is countable rather than visual: while scrolling, count entries that are
+      inside the viewport but still rendering as a spacer — that number must always be zero.
+      Generalises past folding to any lazy render: is anything late to the screen?
+      `n/a` `needs-verify` `checked 2026-09-03` `performance`
