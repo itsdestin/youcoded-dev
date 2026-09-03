@@ -514,9 +514,9 @@ Updated 2026-09-03 after the free items above were opened as PRs. Arizona, Maric
 
 | Step | Who | What | Cost | Needs |
 |---|---|---|---|---|
-| 0 | Destin | Review and merge the five PRs above (`git commit -s` on merge if you want the DCO honoured from day one) | $0 | — |
-| 1 | Destin | Buy `youcoded.ai` (and `.com` if free); set up a mailbox on it | $160 / 2 yrs | — |
-| 2 | Claude | Point the OpenRouter attribution header and the site at the new domain; move the Worker onto it | $0 | 1 |
+| 0 | ✅ done 2026-09-03 | The five PRs above are merged | $0 | — |
+| 1 | ✅ done 2026-09-03 | `youcoded.ai` bought (Cloudflare Registrar). Email Routing: `destin@youcoded.ai` and `support@youcoded.ai` → destinmoss.work@gmail.com (support@ to be re-pointed later) | $160 / 2 yrs | — |
+| 2 | ✅ done 2026-09-03 | Site live at https://youcoded.ai (GitHub Pages custom domain, old URL redirects; youcoded#407). Worker at https://api.youcoded.ai (wecoded-marketplace#84/#85; app switched in youcoded#406). OpenRouter header → youcoded.ai (youcoded#408) | $0 | 1 |
 | 3 | Destin | File the Arizona LLC (azcc.gov, Articles of Organization, statutory agent in Maricopa/Pima); EIN at irs.gov; business bank account | $50 | — |
 | 4 | Claude | Update PRIVACY/TERMS/CONTRIBUTING to name the LLC | $0 | 3 |
 | 5 | Destin | D-U-N-S number (free, 1–2 weeks); then Apple Developer Program (organization), Google Play Console (organization), Azure Artifact Signing | $99/yr + $25 + $10/mo | 3 |
@@ -527,8 +527,13 @@ Updated 2026-09-03 after the free items above were opened as PRs. Arizona, Maric
 | 10 | Destin, optional | One hour with a lawyer: read the Terms once, confirm the Android relicense reasoning | $300–600 | 3 |
 | | | **Year-one total, doing it yourself** | **~$700 to $1,050** | |
 
-Steps 1, 3, 7 and 8 need Destin's identity and card and cannot be delegated. Steps 2, 4, 6
-and 9 are Claude sessions. Nothing in 5–9 should start before 3.
+Steps 3, 7 and 8 need Destin's identity and card and cannot be delegated. Steps 4, 6 and 9
+are Claude sessions. Nothing in 5–9 should start before 3.
+
+Cloudflare notes for whoever does step 6: a scoped API token (DNS + Email Routing on the
+youcoded.ai zone) lives at `~/.config/youcoded-dev/cloudflare-token` on Destin's laptop; the
+Worker's custom domain and the Pages DNS were created with it and the wrangler OAuth login.
+The site's DNS records are DNS-only (grey cloud) on purpose so GitHub can issue the certificate.
 
 ## Open questions for Destin
 
