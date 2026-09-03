@@ -411,6 +411,17 @@ Replace the ghost model with a moving-pill model.
   pushed the row past its box and CSS squeezed the active name (191→78px), which popped
   back on press. `LabelStyleInput.room` = `pillBudget` minus the packed row; a peek is as
   wide as that allows, or does not open. Chrome does not widen a tab on hover at all.
+- **The drag visuals hold until the drop lands (2026-09-03, R10).** The twin, the hidden
+  box and the step-aside are driven by `dragActive` STATE, set with the first real move and
+  cleared only in the same render as the reorder — never by the `isDragging` ref, which
+  pointerup flips before the drop is committed (an IPC round trip): a hand lifting
+  mid-motion saw the pill snap home and then jump to its slot (fuzzed: 116px on touch).
+  Dots never get the settle's FLIP delta (the flow owns their two images); yields are
+  judged from the twin's VISIBLE leading edge (it is still opening after a cold press);
+  only dot-sized pills flow or are veiled (the closing ex-active is a wide neighbour); the
+  post-drop peek lock lifts on leave/press only; a finger gets no peek and pressing one
+  pill closes another's. Verified by `scripts/ui-review/drag-fuzz.mjs`: 96/96 randomised
+  releases clean on contact, continuity, reversal, others and blink.
 - **The swap and the flow land in one frame (2026-09-03, R9).** A yield is a React commit;
   the flow ran a frame later in the rAF loop, so each crossing painted a frame with the dot
   doubled on one side of the pill and absent on the other — a hand rocking at the swap
@@ -580,6 +591,10 @@ Per the workspace knowledge ladder, each of these is a test, not prose. All live
    `target.pillBudget`).
 8b. **A peek never squeezes the row** — `pill-label-style.test.ts` (`room` caps a hover peek
    only; the active and pack-expanded names are never capped by it).
+8f. **The drag visuals are state until the drop lands** — `animation-frame-budget.test.ts`
+   (`dragActive`; the ref never read in render; dots skipped in the settle; the leading-edge
+   mapping; dot-sized flow; no 8px lock; no touch peek; one guarded clear on pointer-down).
+   Population check: `drag-fuzz.mjs` in youcoded-dev, not a unit test.
 8e. **The swap and the flow land in one frame** — `animation-frame-budget.test.ts` (the
    layout-effect flow; the settle-time scale and 0s transition on dots).
 8d. **A peek waits for the hand to rest** — `animation-frame-budget.test.ts` (`PEEK_DWELL_MS`,

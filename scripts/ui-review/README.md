@@ -288,3 +288,19 @@ decides whether it runs on every push or only when someone remembers.
 New surface → add a shot with an `expect` → run the one plan → check `coverage.md` shows
 it `covered` in every theme → only then write about it. New workbench switch → also add a
 route to `scripts/workbench-boot-check.mjs`.
+
+## Drag probe and drag sweep (session-pill motion)
+
+`node scripts/ui-review/drag-probe.mjs <url> <fromIdx> <toIdx> [dragMs]` drives ONE
+session-pill drag over CDP and prints every pill's left edge per frame around the drop —
+the microscope. Envs make it move like a hand: `PRESS_FIRST=<idx>`, `GRAB=0..1`,
+`PROBE_W=460` (the deck pane's width), `WOBBLE=<px>`, `AFTER=hand`, `OVERSHOOT_PX`.
+
+`node scripts/ui-review/drag-fuzz.mjs <url> [count] [seed]` is the sweep: many drags in
+a row on one page, mouse AND touch (`POINTER=mouse|touch|mix`), `DPR=1.5`, `UNLIMITED=1`
+(frame-rate cap lifted), randomised grab/path/wobble/release/after, five checks per
+release (contact, continuity, reversal, others, blink). **A release is not "clean" until
+three seeds × mouse and touch come back all-zero** — on 2026-09-03 ten rounds of single
+drags each fixed a real fault and each left the next one standing; the sweep found the
+one that mattered (the drag visuals hung on a ref pointerup flips before the drop lands)
+in its first 60 drags. Frames of any scenario are in `drag-fuzz.json`.

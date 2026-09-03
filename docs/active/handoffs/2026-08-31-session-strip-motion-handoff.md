@@ -26,8 +26,14 @@ row 5px and back. A peek now waits 150ms of rest; youcoded `6df98c7f`. Round 9 (
 dot's box a frame before the flow sized it (doubled/absent for a frame, every crossing), and
 at the drop the dots lost the transform that applied their scale (a 10px pop under the
 gliding pill). The flow now runs as a layout effect on every commit and the scale stays
-through the settle; youcoded `86adb7ce`. Served as the round-10 live deck. Waiting on that
-answer; then merge.**
+through the settle; youcoded `86adb7ce`. Round 10 (chat): "its STILL jumping around the
+switcher on release … evaluate more thoroughly until it's a smooth release under all
+conditions" — so a randomised sweep (`scripts/ui-review/drag-fuzz.mjs`) replaced the
+single-drag probe and found the real cause at last: the drag visuals hung on the
+`isDragging` REF, which pointerup flips before the drop is committed, so a hand lifting
+mid-motion saw the pill snap home and then jump. Fixed with five more behind it; youcoded
+`381ae860`; 96/96 randomised releases clean. Served as the round-11 live deck. Waiting on
+that answer; then merge.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
 but it will need to be tuned/repaired a bit. it's jank"*), **switch-when → Press** (*"further
@@ -246,7 +252,9 @@ after release; only the pill settles.
   grabbed off-centre (`GRAB`), ran at the pane's width (`PROBE_W`), kept moving after
   release (`AFTER=hand`), or rocked at the swap point (`WOBBLE`). Run all five before
   reporting a release clean — and read the per-frame continuity of every dot's two images,
-  not only the stick-out.
+  not only the stick-out. **Better: run `drag-fuzz.mjs` (mouse AND touch, `DPR=1.5`,
+  `UNLIMITED=1`, three seeds) and require every release clean on all five checks** — the
+  single-drag probe, however it is driven, is one path; the sweep is the population.
 - Round 9 deck: `session-motion-live-9.json` — one try-this step on R9 (`name-flow-5`).
 
 **Round-9 answer (chat, 2026-09-03):** *"stilll janky"*. Reproduced with `WOBBLE=7` (new
@@ -269,6 +277,44 @@ drag:
   frame; no dot's visible size changes by more than 2px between frames (the scratch
   `cont.js` metric — real image + ghosts per dot, largest one-frame change).
 - Round 10 deck: `session-motion-live-10.json` — one try-this step on R10 (`name-flow-6`).
+
+**Round-10 answer (chat, 2026-09-03):** *"its STILL jumping around the switcher on release.
+you're missing something here. try harder and evaluate more thoroughly until it's a smooth
+release under all conditions."* Facts gathered first: his machine has a touchscreen and a
+touchpad and no mouse (`/proc/bus/input/devices`), a 180Hz panel at 1.5x scale
+(`kscreen-doctor -o`), and the deck opens in Chrome. **`scripts/ui-review/drag-fuzz.mjs`**
+(new): N drags in a row on ONE page (state evolves as it does under a person), mouse or
+touch (`Input.dispatchTouchEvent`), `DPR=1.5`, `UNLIMITED=1` (frame-rate cap lifted),
+random from/to/grab/duration/wobble, release `pause|immediate|moving`, `after` still or
+hand, drags begun 0–220ms after a cold press — five checks per release (contact,
+continuity, reversal, others, blink), `drag-fuzz.json` holds every frame. First sweep: 60
+drags, 3 with a full-dot contact at the drop, 2 with the pill REVERSING 88–116px, a dozen
+with 27px blinks. Causes, all fixed in youcoded `381ae860`:
+1. **The drag visuals read the `isDragging` REF at render time.** pointerup flips it at
+   once; the drop commits after `dropResolve` (an IPC round trip; 150ms in the workbench
+   by default). The last pointermove's own render lands in the gap whenever the hand lifts
+   while still moving — a touchpad or finger always does — unmounting the twin and drawing
+   the pill at its ORIGIN with the neighbours still stepped aside; the commit then jumped
+   everything to the new order. **Every single-drag probe paused 120ms before release and
+   never saw it.** Now `dragActive` state, cleared only in `releaseVisuals`.
+2. Dots got the settle's FLIP delta (held at the old rect at full size under the settling
+   pill, then slid 128px) — dots are skipped; the flow owns their two images.
+3. Yields judged from a settled-width centre while the twin was still opening after a cold
+   press — 60px-early yields; now the visible leading edge is mapped.
+4. The post-drop peek lock lifted after 8px; a hand keeps moving, so a peek still opened
+   ~500ms after most drops — lifts on leave/press only.
+5. The old active pill, still closing, was flowed as a dot — a 77px ghost of its name; only
+   dot-sized pills flow or are veiled.
+6. Touch: a tap leaves a sticky mouse hover under the finger → a peek opened and stayed
+   56px wide through the next drag (19px contact). No peek for touch; pressing one pill
+   closes another's peek before the geometry freezes.
+Also: `deck/live.py` `pane_url` now passes `latency=0` — the pane showed a 150ms-late
+drop the app never has. After: 96/96 randomised releases clean (four sweeps × 24).
+- **Still non-zero, at the PRESS not the release:** a cold press whose new name is shorter
+  lets one or two more dots into the row and they appear at once (27px "continuity" at
+  t≈press in every sweep); the bar re-centres 6px in one frame with them. Not raised by
+  Destin; a later round if he notices.
+- Round 11 deck: `session-motion-live-11.json` — one try-this step on R11 (`name-flow-7`).
 
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
@@ -372,7 +418,7 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-10 answer
+## After the round-11 answer
 
 1. "Yes": merge and push `feat/session-strip-motion`; then `feat/session-motion-review`
    (deck + docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.

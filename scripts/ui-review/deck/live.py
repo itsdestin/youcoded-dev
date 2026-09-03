@@ -75,5 +75,10 @@ def pane_url(spec, live, candidate, theme):
         'round': live['round'],
         'candidate': candidate,
         'theme': theme,
+        # The workbench fakes 150ms on every mocked IPC by default — a knob for loading
+        # states, not for motion. In a live pane it delayed the drop of a dragged session
+        # pill by 150ms (the drop waits on a round trip that takes ~1 frame in the app), so
+        # the pane showed a release the app never has. A pane is the app's motion: no latency.
+        'latency': '0',
     })
     return f'{live_base(spec)}/?{q}'
