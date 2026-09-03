@@ -250,6 +250,35 @@ def vinyl(n: int, level=0.05):
     return (hiss + crackle) * level
 
 
+# ---------- UI-style sound effects (for the video's cuts and the mascot) ----------
+def sfx_pop():
+    """A soft 'boop' for the mascot landing: a short downward sine blip with a tiny click."""
+    n = secs(0.16)
+    f = 300 + 400 * np.exp(-np.arange(n) / (0.03 * SR))
+    body = sine(f, n) * exp_decay(n, 0.05)
+    body[:secs(0.002)] += noise(secs(0.002)) * 0.3
+    return soft_clip(body, 1.2) * 0.8
+
+
+def sfx_whoosh():
+    """A cut whoosh: noise through a rising then falling one-pole, 260 ms."""
+    n = secs(0.26)
+    t = np.linspace(0, 1, n)
+    cutoff = 400 + 5000 * np.sin(np.pi * t) ** 2
+    e = np.sin(np.pi * t) ** 1.5
+    return onepole_hp(onepole_lp(noise(n), cutoff, 2), 300) * e * 0.9
+
+
+def sfx_chime():
+    """The theme-applied chime: a bright major-ish triad, 1.3 s, with reverb."""
+    n = secs(1.3)
+    out = np.zeros(n, dtype=np.float32)
+    for i, m in enumerate((81, 88, 93)):        # A5 E6 A6
+        out += sine(midi(m), n) * exp_decay(n, 0.35 - 0.05 * i) * (0.6 - 0.12 * i)
+        out += sine(midi(m) * 2, n) * exp_decay(n, 0.12) * 0.12
+    return reverb(soft_clip(out, 1.1), 0.9, 0.3, 0.35) * 0.8
+
+
 # ---------- mixing ----------
 def place(buf: np.ndarray, clip: np.ndarray, at: int, gain=1.0):
     """Add `clip` into `buf` at sample `at` (clipped to the buffer)."""

@@ -10,6 +10,7 @@ same sketch gives byte-identical audio.
 from __future__ import annotations
 
 import json
+import os
 import sys
 
 import numpy as np
@@ -171,9 +172,106 @@ def render_b(out: str):
     S.write_wav(out, s.mix(gains, fx, pans)); return s
 
 
+# ---------------------------------------------------------------- the promo track
+def promo_track() -> Song:
+    """The approved arcade-synthwave material arranged to the storyboard (spec → Music table).
+    34 bars: intro 0-1 · drop1 2-5 · groove 6-9 · hook 10-13 · break 14-15 · build 16-17 ·
+    groove2 18-22 (half-time snare, fill on 22) · drop2 23-28 (hook, brighter) · outro 29-32 · end 33."""
+    s = Song(118, 34, tail=2.5)
+    chords = [[57, 60, 64], [57, 60, 65], [55, 60, 64], [55, 59, 62]]     # Am F/A C/G G
+    roots = [45, 41, 48, 43]
+    KICK, SNR, HAT = "x...x...x...x...", "....x.......x...", "x.x.x.x.x.x.x.xo"
+    HOOK_A = [(0, 76, 2), (2, 79, 2), (4, 81, 3), (8, 79, 2), (10, 76, 2), (12, 72, 4)]
+    HOOK_B = [(0, 74, 3), (4, 76, 3), (8, 79, 6)]
+    for name, bar in (("intro", 0), ("drop1", 2), ("groove", 6), ("hook", 10), ("break", 14), ("build", 16),
+                      ("groove2", 18), ("drop2", 23), ("outro", 29), ("end", 33)):
+        s.section(name, bar)
+
+    def section_of(bar):
+        return [sec["name"] for sec in s.sections if sec["bar"] <= bar][-1]
+
+    for bar in range(34):
+        sec = section_of(bar)
+        ch, root = chords[bar % 4], roots[bar % 4]
+        drums = sec in ("drop1", "groove", "hook", "groove2", "drop2") or (sec == "outro" and bar < 31)
+        hook = sec in ("hook", "drop2")
+        bright = sec == "drop2"
+        # --- drums
+        if drums:
+            s.hits("kick", KICK, bar, S.kick)
+            snare_pat = SNR
+            if sec == "groove2": snare_pat = "........x......."            # half-time
+            if bar in (13, 22, 28): snare_pat = "....x.......xxxX"          # fills before a section change
+            s.hits("snare", snare_pat, bar, S.snare, gain=0.8)
+            s.hits("clap", SNR if sec != "groove2" else "........x.......", bar, S.clap, gain=0.5)
+            s.hits("hat", HAT, bar, S.hat, gain=0.55 if not bright else 0.65)
+        elif sec == "build":
+            s.hits("hat", "x.x.x.x.x.x.x.x." if bar == 16 else "xxxxxxxxxxxxxxxx", bar, S.hat, gain=0.45)
+            s.hits("snare", "x...x...x...x..." if bar == 16 else "x.x.x.x.xxxxxxxx", bar, S.snare, gain=0.55)
+        elif sec in ("intro", "break"):
+            s.hits("hat", "..x...x...x...x.", bar, S.hat, gain=0.4)
+        elif sec == "end":
+            s.hits("kick", "x...............", bar, S.kick)
+            s.hits("clap", "x...............", bar, S.clap, gain=0.7)
+            s.hits("hat", "o...............", bar, S.hat, gain=0.6)
+        # --- bass
+        if drums or sec == "build":
+            for i in range(8):
+                n = root + (12 if i in (3, 7) else 0)
+                s.note("bass", bar, i * 2, S.bass_saw(n, s.beat / 2 * 0.9, cutoff=700 + (400 if bright else 0), sweep=1600), 0.9)
+        # --- arp (everywhere except the final bar)
+        if sec != "end":
+            seq = ch + [m + 12 for m in ch] + [ch[2] + 12, ch[1] + 12]
+            thin = sec in ("intro", "break", "outro")
+            for i in range(16):
+                if thin and i % 2 == 1: continue
+                s.note("arp", bar, i, S.chip_pulse(seq[i % len(seq)] + 12, s.beat / 4 * 0.85, duty=0.5 if thin else 0.25), 0.4 if thin else 0.5)
+        # --- pad
+        pad_notes = [m + (12 if sec in ("intro", "break") else 0) for m in ch]
+        s.note("pad", bar, 0, S.pad_supersaw(pad_notes, s.bar * (2.4 if sec == "end" else 1.02), cutoff=2600 if bright else (1200 if sec in ("intro", "break", "outro") else 2200)), 0.8)
+        # --- lead hook (two-bar phrase, repeats)
+        if hook:
+            prev = None
+            for step, n, ln in (HOOK_A if bar % 2 == 0 else HOOK_B):
+                s.note("lead", bar, step, S.lead_pulse(n + (12 if bright and bar % 4 >= 2 else 0), s.beat / 4 * ln * 0.95, glide_from=prev), 0.55); prev = n
+        # --- lead: one long resolving note on the end bar
+        if sec == "end":
+            s.note("lead", bar, 0, S.lead_pulse(81, s.bar * 1.6), 0.5)
+    # risers: into drop1 (bar 1) and into drop2 (bars 16-17 → landing at 23 is the fill; the build's riser spans 21-22)
+    for start, length in ((1, 1), (21, 2)):
+        n = S.secs(s.bar * length)
+        sw = S.onepole_hp(S.noise(n), 800 + 6000 * np.linspace(0, 1, n) ** 2) * np.linspace(0, 1, n) ** 2
+        s.note("riser", start, 0, sw.astype(np.float32), 0.35)
+    # the "gap": the last beat of bar 22 is silent except the riser tail, so drop 2 lands from nothing
+    gap_from, gap_to = s.at(22, 12), s.at(23, 0)
+    for name in ("kick", "snare", "clap", "hat", "bass", "arp", "lead"):
+        if name in s.tracks: s.tracks[name][gap_from:gap_to] = 0
+    return s
+
+
+def render_promo(out: str):
+    s = promo_track()
+    pump = S.sidechain(s.n, s.kicks, depth=0.65, recover=0.26)
+    fx = {
+        "arp": lambda x: S.delay(x, s.beat * 0.75, 0.3, 0.28),
+        "pad": lambda x: S.reverb(x * pump, 0.9, 0.35, 0.35),
+        "bass": lambda x: x * pump,
+        "snare": lambda x: S.reverb(x, 0.7, 0.2, 0.22),
+        "clap": lambda x: S.reverb(x, 0.8, 0.2, 0.3),
+        "lead": lambda x: S.delay(S.reverb(x, 0.8, 0.3, 0.25), s.beat * 0.5, 0.35, 0.3),
+    }
+    gains = {"kick": 1.0, "snare": 0.8, "clap": 0.5, "hat": 0.5, "bass": 0.7, "arp": 0.42, "pad": 0.5, "lead": 0.55, "riser": 0.5}
+    pans = {"arp": (0.6, 0.2), "pad": (1.0, 0.0), "hat": (0.3, -0.25), "lead": (0.5, -0.1)}
+    S.write_wav(out, s.mix(gains, fx, pans))
+    d = os.path.dirname(os.path.abspath(out))
+    for name, make in (("pop", S.sfx_pop), ("whoosh", S.sfx_whoosh), ("chime", S.sfx_chime)):
+        S.write_wav(os.path.join(d, f"sfx-{name}.wav"), S.master(S.to_stereo(make()), -3.0))
+    return s
+
+
 if __name__ == "__main__":
     which, out = sys.argv[1], sys.argv[2]
-    song = {"sketch-a": render_a, "sketch-b": render_b}[which](out)
+    song = {"sketch-a": render_a, "sketch-b": render_b, "promo": render_promo}[which](out)
     with open(out.rsplit(".", 1)[0] + ".grid.json", "w") as f:
         json.dump(song.grid(), f, indent=1)
     print(f"wrote {out} ({song.bars} bars @ {song.bpm} BPM, {song.n / S.SR:.1f}s)")
