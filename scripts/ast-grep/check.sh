@@ -38,7 +38,9 @@ fi
 # or when broadening an existing rule's coverage with a new fixture line (e.g.
 # tool-bounds-not-hand-rolled's 2026-08-06 broadening added AlsoBadTool).
 # 2026-08-12: +3 for atomic-tmp-name-per-process (template + two concat spellings).
-EXPECTED_VIOLATIONS=8
+# 2026-08-28: +1 for observer-ref-returns-cleanup (perf cycle 3 — an observed
+# element that is never released makes any later removal free nothing).
+EXPECTED_VIOLATIONS=9
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
