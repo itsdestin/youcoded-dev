@@ -343,7 +343,7 @@ performance). This matches the "worse with more sessions" report exactly.
 **Read the 1,720 MB as a FLOOR, not a bound.** It is six sessions with nothing
 scrolled back. Paging moved where a conversation starts, not how large it can get —
 see the `scrollback` phase above for the ceiling, and
-`docs/active/handoffs/2026-08-28-perf-cycle-3-handoff.md` §2 for why this distinction
+`docs/archive/handoffs/2026-08-28-perf-cycle-3-handoff.md` §2 for why this distinction
 already caused one mis-sized plan.
 
 ### Which old reports you may compare against

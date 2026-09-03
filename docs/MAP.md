@@ -54,6 +54,7 @@ session-start hook prints this table into every session, so a lookup costs zero 
 | You'd call it | File |
 |---|---|
 | the chat transcript / message list | `youcoded/desktop/src/renderer/components/ChatView.tsx` |
+| why an old message renders blank / "folding" | `youcoded/desktop/src/renderer/hooks/use-entry-folding.ts` (spacer of the height it last occupied; suspended while the find bar is open) |
 | the games pane / arcade (the gamepad button) | `youcoded/desktop/src/renderer/components/game/ArcadeShell.tsx` |
 | adding a game to the arcade | `youcoded/desktop/src/renderer/components/game/game-registry.ts` (register there; the shell needs no change) |
 | the friends leaderboard | `youcoded/desktop/src/renderer/components/game/Leaderboard.tsx` |

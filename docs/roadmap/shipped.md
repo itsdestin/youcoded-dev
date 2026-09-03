@@ -511,3 +511,23 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-09-02 files — Concurrent sidecar *creation* can still clobber a record (youcoded#382) — REOPENED after the 2026-09-01 closure above proved wrong; `null` now REQUIRES the file to be absent and corruption recovery opts in with `CAS_REPLACE_ANY`, so a caller that forgets gets a safe refusal rather than the clobber
 - [x] 2026-09-02 dev-workspace — The send-user-link MCP test raced its own subprocess: it awaited a STDOUT round-trip and then asserted on STDERR, two pipes with nothing synchronising the second (youcoded#387 `252adc6b`) — the assertion is unchanged, only the waiting; mutation-verified that it still fails if the server stops reporting
 - [x] 2026-09-03 user-interface — Inline field error text was drawn by hand in ~30 places at two different sizes (youcoded#385 `2b65be60`) — 22 sites now render through the shared `FieldError`, 7 left with recorded reasons (they are not field errors), and a guard keyed by per-file occurrence count fails if a hand-rolled copy comes back. Pixels unchanged; the one real behaviour change is that all 22 now carry `role="alert"`, so a screen reader announces errors that were previously silent
+
+- [x] Reading a long conversation back to its beginning no longer costs gigabytes `performance` `#chat`
+  (added 2026-08-28, **SHIPPED 2026-09-03 — youcoded PR #398, merge `b246a57a`**). Perf cycle 3.
+  Cycle 2 made a conversation OPEN at its last 30 turns but never bounded how large one could
+  BECOME: a page loaded by scrolling up was prepended and nothing removed it. A message more than
+  ~1.5 screens outside the viewport now renders as a spacer of the height its body last occupied;
+  nothing leaves the reducer, so scroll height is unchanged, nothing is re-fetched, and unfolding
+  is a render. Measured 3 repeats each side, same rig, baseline at the branch's parent commit:
+  ceiling PSS **4,346 → 1,784 MB (−59%)**, DOM nodes added **+1,441,274 → −6,348**, JS heap added
+  513 → 64 MB, session switch p95 243 → 112 ms, main-thread blocking 4,882 → 1,703 ms, page turn
+  medium/small 885/1,000 → 384/158 ms. No regressions (startup ≤1.8%, idle PSS +0.1%, history
+  ≤0.3%, stall identical, artifacts ≤2.4%). **Eviction was specced and REJECTED on independent
+  review** — six blocking defects, two structural: deleted uuids stay in `seenUuids` so scrolling
+  back replays nothing, and ~15 readers scan the session-lifetime tool maps. `content-visibility:
+  auto` was separately closed (its implicit `contain: paint` clips theme glows). **Four bugs in the
+  change were caught by measurement or by Destin, none by review** — the last, messages popping in
+  while scrolling, survived three clean measurement runs because the rig measures memory and counts,
+  never smoothness. Spec + the rejected design:
+  `docs/archive/specs/2026-08-28-cycle-3-bounding-the-conversation-window.md`. What remains:
+  `docs/active/handoffs/2026-09-03-perf-next-steps-handoff.md`

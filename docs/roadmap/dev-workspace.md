@@ -120,14 +120,15 @@ seen-on is always n/a here.
       silently swallowed; cause unknown
       `n/a` `needs-verify` `checked 2026-08-28` `performance`
 
-- [ ] Perf lab: the rig is built and THREE measurement cycles ran (2026-08-27/28, paged history
-      shipped as youcoded#349; cycle 3 folding is on `perf/evict-offscreen-turns`, unmerged), but
+- [ ] Perf lab: the rig is built and THREE measurement cycles have SHIPPED (2026-08-27/28 paged
+      history youcoded#349; 2026-09-03 folding youcoded#398), but
       Destin's reframe — a repeatable stress suite that catches the daily freezes and app-wide
       animation slowdowns on every surface — is the open half; the 2026-08-27 perf-lab handoffs
       are the current truth, the 2026-08-23 plan is history. Cycle 3 added a `scrollback` phase
       (the CEILING a conversation reaches once read back, not the paged floor) with three PRIMARY
       metrics, a per-pane count proving the mechanism engaged, and a settle window before every
-      reading — the last two exist because three different bugs all presented as the same 6%
+      reading — the last two exist because three different bugs all presented as the same 6%.
+      What remains, ranked: docs/active/handoffs/2026-09-03-perf-next-steps-handoff.md
       `n/a` `needs-verify` `checked 2026-09-03` `performance`
 
 - [ ] Harness evaluator: no CI gate yet, and the four eval cases were hand-written rather than

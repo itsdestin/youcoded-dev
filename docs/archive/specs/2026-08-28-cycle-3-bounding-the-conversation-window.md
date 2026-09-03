@@ -1,10 +1,10 @@
 ---
-status: active
+status: shipped
 created: 2026-08-28
 revised: 2026-09-03
 supersedes_eviction_block_in: docs/archive/specs/2026-08-27-paged-history-and-read-hardening-design.md
 baseline: perf-reports/2026-08-28-0803-8935c28-cycle3-baseline.json
-implemented_by: youcoded branch perf/evict-offscreen-turns
+shipped: youcoded PR #398, merge b246a57a (2026-09-03)
 ---
 
 # Perf cycle 3 — bounding the conversation window

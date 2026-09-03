@@ -101,7 +101,7 @@ Entries are in document order inside one scroll container, so `offsetTop` increa
 monotonically. **Binary-search it** for the first and last entry inside the viewport. That
 is ~14 property reads after one forced layout, bounded regardless of transcript length —
 which matters, because a scrolled-back conversation can hold 12,100 entries and 1.44M DOM
-nodes (`docs/active/handoffs/2026-08-28-perf-cycle-3-handoff.md` §2).
+nodes (`docs/archive/handoffs/2026-08-28-perf-cycle-3-handoff.md` §2).
 
 This keeps Destin's July constraint — *only actually-visible bubbles animate* — and makes
 it stronger: it is measured at the moment it is used, rather than inherited from an

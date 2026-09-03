@@ -42,7 +42,7 @@ park hidden views.
   tests; the rig is blind to the per-token path by construction (it streams whole turns).
 - **Cycles 2 and 3** (paged history, park hidden views) are next:
   `docs/active/handoffs/2026-08-27-perf-cycle-1-handoff.md`,
-  `docs/active/handoffs/2026-08-28-perf-cycle-3-handoff.md`. No branch open on 2026-09-01.
+  `docs/archive/handoffs/2026-08-28-perf-cycle-3-handoff.md`. No branch open on 2026-09-01.
 
 The rig still **understates** real use: fixtures are lighter than real transcripts (code
 blocks, diffs, tool cards) and no scenario runs longer than ~45 s, so accumulation over hours
