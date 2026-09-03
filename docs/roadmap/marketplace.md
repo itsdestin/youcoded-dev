@@ -108,3 +108,12 @@ them. Not here: the theme renders wrong (themes).
 - [ ] Those same manifests list the platforms they support as a list, but the app reads a single
       platform field — so the platform filter silently does nothing for both plugins
       `marketplace-screen` `all` `needs-verify` `checked 2026-09-01`
+
+- [ ] A tip jar that splits a user's donation between YouCoded and the marketplace authors whose
+      packs they actually use. Destin's proposed ranking for who appears in the split: the author
+      of the theme currently in use first, then skill and other pack authors ranked by some usage
+      signal (invocation count, install count — unresolved which). Undesigned, and every piece is
+      missing: authors have no way to claim an account or connect a payout method (Buy Me a Coffee
+      or similar), there is no split math or UI, and the usage-ranking signal does not exist in
+      marketplace analytics yet
+      `marketplace-screen` `all` `parked` `checked 2026-09-03`
