@@ -2,7 +2,7 @@
 status: shipped
 created: 2026-08-13
 type: spec
-program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
+program: docs/archive/plans/2026-08-11-native-sessions-remaining-work.md
 item: M5 2c — Bash always-allow rule shape
 handoff: docs/archive/handoffs/2026-08-12-native-sessions-m5-2c.md
 ---

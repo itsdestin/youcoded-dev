@@ -1,0 +1,18 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default",
+  "shots": [
+    {
+      "name": "flappy-dead",
+      "actions": [
+        { "click": "[title='Games']", "settle": 900 },
+        { "clickText": "Flappy", "settle": 700 },
+        { "clickText": "Play", "settle": 1200 },
+        { "click": "[data-game-keys]", "settle": 300 },
+        { "key": " ", "settle": 200 },
+        { "wait": 4000 },
+        { "eval": "window.__flappyPhase = document.body.innerText.includes('Play again')" }
+      ],
+      "expect": "js:document.body.innerText.includes('Play again')"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "title": "Games arcade — the board sizing fix",
+  "key": "games-arcade-step1-sizing",
+  "out": "step1-sizing.html",
+  "images": "images/games-arcade-step1-sizing",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/games-sizing-before",
+    "after": "/home/destin/youcoded-dev/scratch/games-after"
+  },
+  "themes": ["dark", "light", "midnight", "creme", "halftone-dimension", "meadow-mist"],
+  "crops": {
+    "pane-board": ["games-arcade", "arcade-connect4-board", "460x780+985+28"],
+    "pane-chess": ["games-arcade", "arcade-chess", "560x780+885+28"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Connect 4 board",
+      "path": "Games → Connect 4 → play a friend",
+      "crop": "pane-board",
+      "headline": "The board now fills the pane's width and the chat fills the height under it, instead of both bunching at the top.",
+      "changed": "The pieces were locked to 36 pixels no matter how wide the pane was, so the board sat small and left roughly a third of the pane empty below the chat. The board now takes the full width and keeps its shape, and the chat grows to fill whatever is left so the message box sits at the bottom. Dragging the pane wider makes the board bigger rather than adding more empty space.",
+      "measured": "Board was 276 px wide in a 420 px pane; now it fills the pane at any width. Roughly 330 px of empty space removed.",
+      "notice": "The pieces are noticeably bigger and easier to hit, and the game chat is now a real chat area rather than a three-line strip. If you drag the pane wider, everything scales with it.",
+      "risk": "Drag the pane very narrow and the pieces get small — they stop shrinking at the pane's own 320 px minimum, which is about the size they used to be."
+    },
+    {
+      "id": "S-2",
+      "surface": "Chess board",
+      "path": "Games → Chess",
+      "crop": "pane-chess",
+      "headline": "Chess pieces are now solid for you and hollow for your opponent, and the board is centred rather than pinned to the top.",
+      "changed": "Your pick from the last round is in. Your pieces are solid, your opponent's are hollow outlines, so the two sides differ in shape and not only in shade. The board also sits in the middle of the pane instead of hanging off the top edge.",
+      "measured": "Both sides were one shade of light grey before; now they differ in shape at every size",
+      "notice": "You can tell the two armies apart at a glance in every theme, including the dark ones where the old version failed.",
+      "risk": "Chess has no game chat yet, which is why the board is centred. When chat is added in the next step it will move back to the top with the chat underneath, like Connect 4."
+    }
+  ]
+}

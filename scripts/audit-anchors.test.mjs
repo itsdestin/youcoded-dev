@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
 import {
   parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths,
-  globToRegex, countBodyWords,
+  globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor,
 } from './audit-anchors.mjs';
 
 test('parseRuleFrontmatter: block paths, last_verified, verify with contains', () => {
@@ -91,6 +93,22 @@ Prose mentioning \`docs/never-harvested.md\` outside the table.
     'youcoded/desktop/tests/chat-reducer.test.ts',
     'youcoded/docs/chat-reducer.md',
   ].sort());
+});
+
+test('harvestMapPaths: on-disk runtime paths are not resolved against the repo', () => {
+  // MAP's "On-disk state" table names locations on the user's MACHINE. Before this
+  // skip they were harvested as repo paths and every one reported missing, which
+  // would have buried the real failures the checker exists to surface.
+  const paths = harvestMapPaths(`| Path | What's in it | Defined in |
+|---|---|---|
+| \`~/.youcoded/config.json\` | settings | \`youcoded/desktop/src/main/native-home.ts\` |
+| \`<project>/.youcoded/artifacts.json\` | file history | \`youcoded/desktop/src/main/artifacts/artifact-store.ts\` |
+| \`/opt/YouCoded/resources\` | the installed app | \`docs/build-and-release.md\` |`);
+  assert.deepEqual(paths.sort(), [
+    'docs/build-and-release.md',
+    'youcoded/desktop/src/main/artifacts/artifact-store.ts',
+    'youcoded/desktop/src/main/native-home.ts',
+  ].sort(), 'only the repo-relative "Defined in" column is checkable');
 });
 
 test('globToRegex: ** crosses slashes, * does not', () => {
@@ -323,4 +341,211 @@ verify:
   assert.deepEqual(fm.errors, []);
   assert.deepEqual(fm.paths, ['a/**']);
   assert.deepEqual(fm.verify, [{ path: 'ok.ts' }]);
+});
+
+
+// --- frontmatter must be YAML a STRICT parser accepts -------------------------
+// Claude Code parses rule frontmatter as real YAML; parseRuleFrontmatter above is
+// line-based and far more forgiving. When the two disagree the rule silently loses
+// its paths: and loads EAGERLY on every session — measured 2026-08-31, see the
+// function's comment in audit-anchors.mjs.
+
+test('yamlUnsafeFrontmatter: an illegal escape in a double-quoted scalar is reported', () => {
+  const bad = [{ name: 'r', file: '.claude/rules/r.md',
+    text: '---\npaths:\n  - "a/**"\nverify:\n  - path: x.ts\n    contains: "specialist\\?: string"\n---\n' }];
+  const out = yamlUnsafeFrontmatter(bad);
+  assert.equal(out.length, 1);
+  assert.equal(out[0].rule, 'r');
+  assert.match(out[0].reason, /\\\?/);
+});
+
+test('yamlUnsafeFrontmatter: a regex written with character classes is fine', () => {
+  const ok = [{ name: 'r', file: '.claude/rules/r.md',
+    text: '---\npaths:\n  - "a/**"\nverify:\n  - path: x.ts\n    contains: "specialist[?]: string"\n---\n' }];
+  assert.deepEqual(yamlUnsafeFrontmatter(ok), []);
+});
+
+test('yamlUnsafeFrontmatter: YAML-legal escapes are not flagged', () => {
+  const ok = [{ name: 'r', file: '.claude/rules/r.md',
+    text: '---\npaths:\n  - "a/**"\nverify:\n  - path: x.ts\n    contains: "a\\\\b\\tc\\"d"\n---\n' }];
+  assert.deepEqual(yamlUnsafeFrontmatter(ok), []);
+});
+
+test('yamlUnsafeFrontmatter: a backslash OUTSIDE the frontmatter is ignored', () => {
+  const ok = [{ name: 'r', file: '.claude/rules/r.md',
+    text: '---\npaths:\n  - "a/**"\n---\nBody text with a \\? regex in it.\n' }];
+  assert.deepEqual(yamlUnsafeFrontmatter(ok), []);
+});
+
+
+// --- worktree-blind rule globs ------------------------------------------------
+import { worktreeBlindGlobs } from './audit-anchors.mjs';
+
+const RULE = (name, paths, text = '') => ({ name, file: `.claude/rules/${name}.md`, fm: { paths }, text });
+
+test('worktreeBlindGlobs: a repo-prefixed glob cannot match the worktree spelling', () => {
+  const r = worktreeBlindGlobs(
+    [RULE('test-suite-hygiene', ['youcoded/desktop/tests/**/*.test.ts'])],
+    ['youcoded/desktop/tests/game-reducer.test.ts'],
+  );
+  assert.equal(r.blind.length, 1);
+  assert.equal(r.blind[0].rule, 'test-suite-hygiene');
+  assert.equal(r.blind[0].fix, '**/desktop/tests/**/*.test.ts');
+  assert.deepEqual(r.exempt, []);
+});
+
+test('worktreeBlindGlobs: a "**/" glob matches both spellings and is not blind', () => {
+  const r = worktreeBlindGlobs(
+    [RULE('code-search', ['**/desktop/src/main/ipc-handlers.ts'])],
+    ['youcoded/desktop/src/main/ipc-handlers.ts'],
+  );
+  assert.deepEqual(r.blind, []);
+  assert.deepEqual(r.exempt, []);
+});
+
+test('worktreeBlindGlobs: the deliberate eager glob is exempt, with a reason', () => {
+  const r = worktreeBlindGlobs([RULE('live-app-safety', ['**'])], ['anything.ts']);
+  assert.deepEqual(r.blind, []);
+  assert.equal(r.exempt.length, 1);
+  assert.match(r.exempt[0].reason, /eager/);
+});
+
+test('worktreeBlindGlobs: a whole-repo glob is exempt — relaxing it would make it eager', () => {
+  const r = worktreeBlindGlobs([RULE('registries', ['wecoded-themes/**'])], ['wecoded-themes/a.json']);
+  assert.equal(r.exempt.length, 1);
+  assert.match(r.exempt[0].reason, /whole-repo/);
+});
+
+test('worktreeBlindGlobs: a workspace-root glob is exempt — worktrees are of the SUB-repos', () => {
+  const r = worktreeBlindGlobs([RULE('landing-page', ['scripts/ui-review/**'])], ['scripts/ui-review/run.sh']);
+  assert.equal(r.exempt.length, 1);
+  assert.match(r.exempt[0].reason, /workspace-root/);
+});
+
+// The escape hatch. NO RULE USES IT TODAY — it exists because `blind` fails the
+// run, so a future glob that must keep its repo prefix needs a way to say so or
+// the audit goes permanently red. This test is what keeps the hatch working
+// while nothing in the tree exercises it.
+test('worktreeBlindGlobs: a "# repo-pinned" glob is exempt, not blind', () => {
+  const rule = RULE('some-future-rule', ['youcoded/desktop/only-here/**'],
+    '---\npaths:\n  - "youcoded/desktop/only-here/**"   # repo-pinned\n---\n');
+  const r = worktreeBlindGlobs([rule], ['youcoded/desktop/only-here/a.ts']);
+  assert.deepEqual(r.blind, []);
+  assert.equal(r.exempt.length, 1);
+  assert.match(r.exempt[0].reason, /repo-pinned/);
+});
+
+test('worktreeBlindGlobs: reports what a relaxed glob picks up outside its own repo', () => {
+  const r = worktreeBlindGlobs(
+    [RULE('android-runtime', ['**/app/**'])],
+    ['youcoded/app/src/Main.kt', 'wecoded-marketplace/worker/src/app/routes.ts'],
+  );
+  assert.deepEqual(r.blind, []);
+  assert.equal(r.overmatch.length, 1);
+  assert.deepEqual(r.overmatch[0].files, ['wecoded-marketplace/worker/src/app/routes.ts']);
+});
+
+
+// --- a .claude/rules dir inside a sub-repo is unreachable and silently forks ---
+import { strayRuleDirs } from './audit-anchors.mjs';
+
+test('strayRuleDirs: a .claude/rules directory inside a sub-repo is reported', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-stray-'));
+  fs.mkdirSync(path.join(tmp, '.claude', 'rules'), { recursive: true });
+  fs.mkdirSync(path.join(tmp, 'youcoded', '.claude', 'rules'), { recursive: true });
+  fs.writeFileSync(path.join(tmp, 'youcoded', '.claude', 'rules', 'x.md'), '---\npaths:\n  - "app/**"\n---\n');
+  assert.deepEqual(strayRuleDirs(tmp), [{ repo: 'youcoded', files: ['x.md'] }]);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+test('strayRuleDirs: no sub-repo rule dirs is the clean case', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-stray-'));
+  fs.mkdirSync(path.join(tmp, '.claude', 'rules'), { recursive: true });
+  assert.deepEqual(strayRuleDirs(tmp), []);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+
+// --- one document living in both docs/active/ and docs/archive/ ---------------
+import { shadowedActiveDocs } from './audit-anchors.mjs';
+
+function docsFixture(files) {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-shadow-'));
+  for (const [rel, body] of Object.entries(files)) {
+    fs.mkdirSync(path.join(tmp, path.dirname(rel)), { recursive: true });
+    fs.writeFileSync(path.join(tmp, rel), body);
+  }
+  return tmp;
+}
+
+test('shadowedActiveDocs: a live doc with an identical sub-path under archive is reported', () => {
+  const tmp = docsFixture({
+    'docs/active/specs/2026-09-01-x.md': '---\nstatus: active\n---\n',
+    'docs/archive/specs/2026-09-01-x.md': '---\nstatus: shipped\n---\n',
+  });
+  assert.deepEqual(shadowedActiveDocs(tmp), ['specs/2026-09-01-x.md']);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+// The reason it compares sub-paths and not basenames: every design folder has a copy.md.
+test('shadowedActiveDocs: the same basename under DIFFERENT sub-paths is not a duplicate', () => {
+  const tmp = docsFixture({
+    'docs/active/design/2026-09-05-b/copy.md': 'live\n',
+    'docs/archive/design/2026-08-27-a/copy.md': 'dead\n',
+  });
+  assert.deepEqual(shadowedActiveDocs(tmp), []);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+test('shadowedActiveDocs: missing docs/active or docs/archive is not a crash', () => {
+  const tmp = docsFixture({ 'docs/active/specs/a.md': 'x\n' });
+  assert.deepEqual(shadowedActiveDocs(tmp), []);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+
+// --- the "no rule covers this" signal must be readable ------------------------
+
+test('affectedSubsystems: archives, prototypes and fixtures are counted as expected-uncovered', () => {
+  const rules = [{ name: 'r', globs: [globToRegex('**/desktop/src/**')] }];
+  const r = affectedSubsystems(rules, [
+    'youcoded/desktop/src/main/x.ts',
+    'docs/archive/prototypes/2026-07-22-buddy/main.js',
+    'scripts/ast-grep/fixtures/atomic-write.ts',
+    'flappy-bird/game.js',
+    'youcoded/desktop/src/main/brand-new-subsystem.ts',
+  ]);
+  assert.deepEqual(r.affected, ['r']);
+  assert.equal(r.uncoveredExpected, 3);
+  assert.deepEqual(r.uncovered, []);
+});
+
+test('affectedSubsystems: a real uncovered code file still shows up', () => {
+  const rules = [{ name: 'r', globs: [globToRegex('**/desktop/src/**')] }];
+  const r = affectedSubsystems(rules, ['youcoded/app/src/Brand.kt', 'docs/archive/x.md']);
+  assert.deepEqual(r.uncovered, ['youcoded/app/src/Brand.kt']);
+  assert.equal(r.uncoveredExpected, 1);
+});
+
+test('harvestDocAnchors: marker argument — claim: anchors are invisible to the verify: pass', () => {
+  const text = 'x\n<!-- verify: {"path": "a.ts"} -->\ny\n<!-- claim: {"path": "b.ts", "contains": "z"} -->\n';
+  assert.deepEqual(harvestDocAnchors(text), [{ path: 'a.ts' }]);
+  assert.deepEqual(harvestDocAnchors(text, 'claim'), [{ path: 'b.ts', contains: 'z' }]);
+});
+
+test('subRepoRoot: a worktree resolves sub-repos from the main checkout; a checkout with clones resolves to itself', () => {
+  const { execFileSync } = require('node:child_process');
+  const main = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-main-'));
+  const git = (...a) => execFileSync('git', ['-C', main, ...a], { stdio: ['ignore', 'pipe', 'ignore'] });
+  git('init', '-q');
+  git('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-q', '--allow-empty', '-m', 'root');
+  fs.mkdirSync(path.join(main, 'youcoded', '.git'), { recursive: true }); // a clone, as far as the script checks
+  const wt = path.join(main, 'wt');
+  git('worktree', 'add', '-q', wt);
+  assert.equal(subRepoRoot(main), main);
+  assert.equal(subRepoRoot(wt), main, 'worktree must find the main checkout via --git-common-dir');
+  assert.equal(baseFor(wt, 'youcoded/desktop/x.ts'), main);
+  assert.equal(baseFor(wt, 'docs/MAP.md'), wt, 'workspace paths stay on the worktree — that is the branch under audit');
+  const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-bare-'));
+  assert.equal(subRepoRoot(bare), bare, 'not a git checkout: keep root, never throw');
 });

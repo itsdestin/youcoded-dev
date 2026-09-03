@@ -7,13 +7,23 @@ No copy, no paste, no "I'm done" message (spec §4.3)."""
 import http.server
 import json
 import os
+import re
 import signal
 import socketserver
 import subprocess
 import sys
 import threading
 import time
+import urllib.error
+import urllib.request
 import webbrowser
+
+from .live import VITE_BASE_PORT, has_live, live_offset
+from .spec import SpecError, workspace_root
+
+# The tag says what a note IS — next-round work, a roadmap line, or a remark — so the
+# contract agent (Task 6) can route it instead of guessing (feature-flow design §5).
+NOTE_KIND = {'now': 'fix now', 'later': 'fix later', 'noting': 'just noting'}
 
 
 def answers_path(spec):
@@ -42,7 +52,10 @@ def summary(spec, state):
         note = (a.get('note') or '').strip()
         # A choice step answers with the variant it picked ("P-19 pick B"); "no" there means none of them.
         what = f'pick {a.get("pick", "?")}' if v == 'pick' else ('none' if v == 'no' and st.get('variants') else v)
-        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else ''))
+        # The tag says what the note IS — next-round work, a roadmap line, or a remark — so the
+        # contract agent routes it instead of guessing (feature-flow design §5).
+        tag = NOTE_KIND.get(a.get('note_kind'), '')
+        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' + (f' [{tag}]' if tag else '') if note else ''))
     when = (state.get('submitted') or '')[:16].replace('T', ' ')
     head = (f'{spec["key"]} · {"submitted " + when if when else "not submitted"} · '
             f'{counts["yes"]} yes · {counts["no"]} no · {counts["other"]} other · '
@@ -190,8 +203,107 @@ def rotate_submitted(spec, log=print):
     return dest
 
 
-def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
-    """Blocks. Returns 0 after a submit (summary logged), 2 on timeout, 3 if this spec is already served."""
+def resolve_worktree(name):
+    """A worktree name, a path holding desktop/, or the main checkout — the same three shapes
+    record-pair.sh accepts, so one spelling works everywhere."""
+    ws = workspace_root()
+    for candidate in (os.path.join(ws, 'worktrees', name), name, os.path.join(ws, name)):
+        if candidate and os.path.isdir(os.path.join(candidate, 'desktop')):
+            return os.path.abspath(candidate)
+    return None
+
+
+def _listener_cwd(port):
+    """(pid, cwd) of whatever holds the port, or (None, None). Linux-only, like record-pair.sh."""
+    try:
+        out = subprocess.run(['ss', '-ltnp', f'sport = :{port}'], capture_output=True, text=True).stdout
+    except (OSError, subprocess.SubprocessError):
+        return None, None
+    m = re.search(r'pid=(\d+)', out)
+    if not m:
+        return None, None
+    pid = int(m.group(1))
+    try:
+        return pid, os.readlink(f'/proc/{pid}/cwd')
+    except OSError:
+        return pid, None
+
+
+def _answers(port):
+    try:
+        urllib.request.urlopen(f'http://127.0.0.1:{port}/', timeout=1).read(1)
+        return True
+    except urllib.error.HTTPError:
+        return True          # it answered; a status code is still an answer
+    except Exception:
+        return False
+
+
+def start_workbench(spec, log=print):
+    """Boot the workbench the live panes point at, and say whether WE started it.
+
+    WHY serve owns this: "one command produces a working review" is the whole point of the
+    deck. Returns (proc_or_None, started) — only a server we started is ours to stop."""
+    tree_name = (spec.get('live') or {}).get('worktree', '')
+    tree = resolve_worktree(tree_name)
+    if not tree:
+        raise SpecError(f'live.worktree "{tree_name}" is not a checkout with a desktop/ folder '
+                        f'(looked in {os.path.join(workspace_root(), "worktrees")}, as a path, and at the workspace root)')
+    port = VITE_BASE_PORT + live_offset(spec)
+    pid, cwd = _listener_cwd(port)
+    if pid:
+        # A FOREIGN server would show the wrong code in every pane with nothing visible to
+        # say so — the same refusal record-pair.sh makes, for the same reason.
+        if cwd != os.path.join(tree, 'desktop'):
+            raise SpecError(f'REFUSING: port {port} is already served from {cwd or "an unreadable cwd"} '
+                            f'(pid {pid}), not {os.path.join(tree, "desktop")} — stop it, or give this deck '
+                            f'another "live": {{"offset": N}}')
+        log(f'[deck] workbench for {tree_name} already running on :{port} — leaving it alone')
+        return None, False
+    log_path = os.path.join(spec['_base'], spec['_stem'] + '.workbench.log')
+    env = {**os.environ, 'YOUCODED_PORT_OFFSET': str(live_offset(spec))}
+    # NO VITE_NO_WATCH. record-pair.sh sets it because a recording is a fixed artefact; a live
+    # review is the opposite — watching on is what lets a candidate be edited while the deck
+    # is open and have the pane update in front of Destin.
+    env.pop('VITE_NO_WATCH', None)
+    with open(log_path, 'w') as lf:
+        proc = subprocess.Popen(['bash', os.path.join(workspace_root(), 'scripts', 'run-workbench.sh'), tree],
+                                stdout=lf, stderr=subprocess.STDOUT, cwd=tree, env=env,
+                                start_new_session=True)
+    log(f'[deck] starting the workbench for {tree_name} on :{port} (log: {log_path})')
+    for _ in range(60):
+        if _answers(port):
+            return proc, True
+        if proc.poll() is not None:
+            raise SpecError(f'the workbench for "{tree_name}" exited before answering on :{port} — see {log_path}')
+        time.sleep(1)
+    stop_workbench(proc)
+    raise SpecError(f'the workbench for "{tree_name}" did not answer on :{port} within 60s — see {log_path}')
+
+
+def stop_workbench(proc):
+    """Stop only a server WE started. run-workbench.sh spawns vite as a child, so the whole
+    process group has to go — killing the shell alone leaves vite holding the port."""
+    if proc is None or proc.poll() is not None:
+        return
+    try:
+        os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+    except (OSError, ProcessLookupError):
+        proc.terminate()
+    try:
+        proc.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        except (OSError, ProcessLookupError):
+            proc.kill()
+
+
+def serve(spec, port=0, open_browser=True, timeout_min=240, log=print, live=True):
+    """Blocks. Returns 0 after a submit (summary logged), 2 on timeout, 3 if this spec is already served.
+
+    `live=False` (--no-live) leaves the app server alone, for when Destin already has the
+    workbench up on that port and does not want it restarted underneath him."""
     lock = lock_path(spec)
     other = already_served(spec)
     if other is not None:
@@ -200,6 +312,11 @@ def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
     rotate_submitted(spec, log)
     result = {}
     holder = {}
+    # AFTER the already-served refusal above (which returns before the try/finally below), so
+    # everything we start is covered by the cleanup that stops it.
+    wb, wb_started = (None, False)
+    if live and has_live(spec):
+        wb, wb_started = start_workbench(spec, log)
 
     def on_submit(state):
         result['state'] = state
@@ -233,6 +350,11 @@ def serve(spec, port=0, open_browser=True, timeout_min=240, log=print):
             os.remove(lock)
         except OSError:
             pass
+        # Only a workbench WE started. One that was already running belongs to whoever
+        # started it and is left exactly as we found it.
+        if wb_started:
+            log('[deck] stopping the workbench this review started')
+            stop_workbench(wb)
     if 'state' in result:
         log(summary(spec, result['state']))
         return 0

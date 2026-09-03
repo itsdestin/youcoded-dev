@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Workspace guidance for Claude Code. Subsystem details live in `docs/` and `.claude/rules/` — loaded only when relevant. **Start any non-trivial task at `docs/MAP.md`**, which maps every subsystem to its entry points, rule, lazy doc, and guard tests. **First action each session:** `bash setup.sh` (see [Workspace Setup](#workspace-setup)).
+Workspace guidance for Claude Code. Subsystem details live in `docs/` and `.claude/rules/` — loaded only when relevant. **Start any non-trivial task at `docs/MAP.md`**, which maps every subsystem to its entry points, rule, lazy doc, and guard tests — plus a **Hot paths** table (what Destin calls a screen → its exact file) and an **On-disk state** table (what the app writes under `~/.youcoded`, `~/.config/youcoded*`, `~/.cache/llama.cpp`). The session-start hook already injected all three, so look there before searching for a file. **First action each session:** `bash setup.sh` (see [Workspace Setup](#workspace-setup)).
 
 ## About This Project
 
@@ -16,7 +16,7 @@ YouCoded is an open-source cross-platform AI assistant app built entirely withou
 
 **The app is the product.** Everything else — themes, skill marketplace, bundled plugins — supports the app. Documentation and code should reflect that hierarchy.
 
-**One product.** The five sub-repos are components of a single consolidated product. Planning, versioning, and roadmapping happen at the workspace level (`ROADMAP.md`); sub-repo docs exist only for knowledge physically coupled to that repo's code.
+**One product.** The five sub-repos are components of a single consolidated product. Planning, versioning, and roadmapping happen at the workspace level (`ROADMAP.md` is the index; the backlogs are `docs/roadmap/<area>.md`); sub-repo docs exist only for knowledge physically coupled to that repo's code.
 
 ## Workspace Layout
 
@@ -53,6 +53,8 @@ When you need to verify runtime behavior (GPU usage, DOM state, IPC responses, t
 cd <repo> && git fetch origin && git pull origin master
 ```
 
+**Expect the main checkout to be dirty and behind, and branch off `origin/master` anyway.** Concurrent sessions leave uncommitted work in `youcoded/`, which makes both `setup.sh` and `git pull` skip that repo *without failing* — on 2026-08-27 the main checkout sat 146 commits behind for two days. Two consequences: `git worktree add <path> -b <branch> origin/master` (never bare `master`), and **Serena is pinned to the main checkout, so its answers are that stale copy**. The session-start hook prints the behind-count when it is non-zero.
+
 **Use worktrees for non-trivial work.** Any work beyond a handful of lines or narrowly-scoped bug fixes must be done in a separate git worktree (or use the Agent tool with `isolation: "worktree"`). This prevents multiple concurrent Claude sessions from overwriting each other's changes.
 
 **Parallelize when possible.** Quality and speed are equally important. When building new features or making significant changes, you should endeavor to parallelize as much work as possible without sacrificing quality of the final product. Sequential work is fine when one task requires the prior completion of another, but we prefer parallelization when practical.
@@ -69,19 +71,21 @@ git branch -D <branch>              # -D (not -d) because --no-ff merges leave t
 ```
 Verify the commit landed on master first: `git branch --contains <sha>` should list `master`. Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
 
+**Run `bash scripts/close-out.sh <branch> [<repo>]` yourself** — it reports all of the above plus the docs half (live docs still naming the branch, shipped docs still under `docs/active/`, the ROADMAP and MAP items). Read-only, always exits 0: it says what is left, it does not do it, so finish every line it reports. The `wrap-up` skill runs it as its first step.
+
 **Pushing to master green-lights closing the dev server.** If you started `bash scripts/run-dev.sh` to verify a change, shut it down (plus any helper Electron processes) once the commit lands on `origin/master`. Don't leave it running unless the user explicitly asks — orphaned Vite servers hold port 5223 and trip up the next session's dev launch.
 
 **Never tell Destin to run `wrangler deploy` manually.** The Cloudflare Worker (`wecoded-marketplace/worker/`) auto-deploys on push to master via `.github/workflows/worker-deploy.yml` — CI runs tests, applies D1 migrations, deploys, and pushes secrets. To ship a Worker change, the workflow is: open a PR → merge to master → CI handles the rest. Same for `[vars]` flips like `CUTOVER_TIMESTAMP` — edit `wrangler.toml`, commit, merge. See `docs/build-and-release.md → Worker (wecoded-marketplace)`.
 
 ### Investigation discipline
 
-**Search with `rg`. Never type `grep`, and quote every glob you pass as a pattern.** Two traps, both measured over the 46 sessions of 2026-08-26→28 (64 wasted calls, 29 sessions). (1) The Bash tool runs the **login shell, which is zsh, not bash**: zsh expands an unquoted `*` *before* the command runs and aborts the entire line when nothing matches — `grep -rn X --include=*.ts src` never runs. Quoting fixes it; `rg -n X -g '*.ts' src` avoids the question. This also applies to bare globs (`ls -d ~/.config/youcoded*`) and to URLs containing `?`. (2) `grep` here is not grep — Claude Code's shell snapshot reroutes it to **ugrep**, which rejects valid POSIX syntax (`grep -o '.\{0,120\}X.\{0,120\}'` → "exceeds complexity limits") and prints different errors; `command grep` bypasses it. `rg` (`/usr/bin/rg`, real ripgrep) has neither problem. The pattern-option half of trap 1 is blocked mechanically by `.claude/hooks/glob-guard.py`; the rest is on you. **None of this reaches the product** — YouCoded's own Bash tool spawns `/bin/bash -c` explicitly and its Grep tool spawns bundled ripgrep with no shell at all.
+**Search with `rg`. Never type `grep`, and quote every glob you pass as a pattern.** Two traps, both measured over the 46 sessions of 2026-08-26→28 (64 wasted calls, 29 sessions). (1) The Bash tool runs the **login shell, which is zsh, not bash**: zsh expands an unquoted `*` *before* the command runs and aborts the entire line when nothing matches — `grep -rn X --include=*.ts src` never runs. Quoting fixes it; `rg -n X -g '*.ts' src` avoids the question. zsh also does NOT word-split `$var`, so `for f in $files` runs once with the whole list as one name — pipe lists through `xargs` instead. This also applies to bare globs (`ls -d ~/.config/youcoded*`) and to URLs containing `?`. (2) `grep` here is not grep — Claude Code's shell snapshot reroutes it to **ugrep**, which rejects valid POSIX syntax (`grep -o '.\{0,120\}X.\{0,120\}'` → "exceeds complexity limits") and prints different errors; `command grep` bypasses it. `rg` (`/usr/bin/rg`, real ripgrep) has neither problem. The pattern-option half of trap 1, and every `pkill -f` (the `zsh -c '<whole command>'` wrapper always matches its own pattern, so it kills the shell running your command — use `pgrep -af` then `kill <pid>`), are blocked mechanically by `.claude/hooks/glob-guard.py`; the rest is on you. **None of this reaches the product** — YouCoded's own Bash tool spawns `/bin/bash -c` explicitly and its Grep tool spawns bundled ripgrep with no shell at all.
 
 **Claiming a count, an exemption, or a negative requires programmatic verification.** Claims like "never called", "no mirror exists", "dead code", "only one call site", "not handled on Android" are only as good as the search that backed them — and one `grep` never establishes its own completeness. **This covers positive claims too**: "three files do X", "these two are exempt because they're popovers", "the guard covers the family" are all numbers, and a number you did not accurately measure can be actively misleading. Write the command *before* the sentence, and paste what it returned. **If the output disagrees with you, the output likely wins**. Search repo-wide FIRST and narrow after, never the reverse; use the tool that actually answers the question (`npm run knip` for dead code, a tree-wide `rg` for cross-platform parity, a failing test for "this can't happen") instead of inferring it from a pattern match. `docs/MAP.md` tells you where a subsystem *starts*, not its full extent — it is not a completeness oracle. A *surprising* negative ("dead state in a shipping app", "no Android equivalent of a core mechanism") raises the evidence bar rather than lowering it. This binds hardest at the moment a claim becomes durable — a commit message, a PR body, a ROADMAP entry — because loose talk mid-investigation is self-correcting and a wrong claim in `ROADMAP.md` outlives the session. Both misses in the 2026-07-26 wrong-transcript investigation were this exact shape (a one-file grep concluding "no Android `sessionIdMap`"; a short grep concluding `resumeInfo` was dead — both false).
 
 **Query symbols before reading files, and delegate sweeps to a subagent.** The rule above is about search *completeness*; this one is about search *price*. `ipc-handlers.ts` is 3,906 lines and `App.tsx` is 3,679 — **one whole-file read costs ~10x this entire CLAUDE.md**, and a conventional IPC-parity sweep runs ~90k tokens. Escalate, stopping as soon as the question is answered: **Serena** (`get_symbols_overview`, `find_symbol`, `find_referencing_symbols`) → **ast-grep** for code *shapes* → **`rg`** for exact strings → **whole-file reads only for files you're about to edit**. Any question answered by sweeping files goes to a read-only search subagent (`Explore`, else `general-purpose`), which spends the tool calls in its own context and returns a 1–2k-token conclusion.
 
-**Serena has exactly one job here: resolved references and file shape, for code already on `master`.** It is pinned to the main checkout (`youcoded/`) and resolves every path against that root, so **it cannot see your worktree** — during worktree work it silently answers with master's copy. Use it to orient in a big file and to answer "who calls this?"; never to check your own branch. Branch truth is `bash scripts/verify.sh`. It is read-only on purpose (an edit tool would have written to the main checkout mid-worktree). Not for: Kotlin/`app/**` (unindexed), other sub-repos (unreachable), string-keyed things like IPC channels or CSS classes (`rg`), or "is this dead" (`npm run knip` — Serena reports "no references" identically whether it searched or never looked). The full rule auto-loads on the god-files: `.claude/rules/code-search.md`; depth in `docs/code-intelligence.md`.
+**Serena answers "who calls this?" and file shape, for code already on `master` — and cannot see your worktree.** Branch truth is `bash scripts/verify.sh`. Everything else about when it is and is not the right tool is in `.claude/rules/code-search.md`, which auto-loads on the god-files where the question comes up.
 
 **Prefer a tool that returns a verdict over one that returns text to interpret.** `npm run knip` for dead code, `tsc --noEmit` for types, `npm run lint` for the bug classes types can't see (conditional React hooks, floating promises in main, runtime imports of undeclared packages), `ipc-channels.test.ts` for three-surface parity, `bash scripts/ast-grep/check.sh` for the invariants that have been promoted from prose to executable scans — or `bash scripts/verify.sh` to run all of those at once against a checkout (see [Local build & test](#local-build--test)). When you codify a new invariant, an ast-grep rule beats a sentence in `.claude/rules/` — adding rules to the scan is documented in `docs/code-intelligence.md`.
 
@@ -96,6 +100,8 @@ Verify the commit landed on master first: `git branch --contains <sha>` should l
 ## Workspace Setup
 
 **On first session**, run `bash setup.sh` to clone all repos. On subsequent sessions, run it again to pull the latest from each repo's default branch — it syncs every sub-repo *and* the workspace repo (`youcoded-dev`) itself, and resolves the workspace from its own location, so it works from any directory. Do this before any other work.
+
+**A commit made IN the shared `youcoded-dev` checkout is refused by a pre-commit hook** (`scripts/git-hooks/pre-commit`, installed by `setup.sh`); commit from a linked worktree, which the hook always allows, and push from there. This is the rule that was already written down under "Workspace push via temp worktree" — it is now enforced, because ignoring it is what let this checkout reach 110 commits behind on 2026-09-03 while silently holding the only copy of five of Destin's product ideas. `setup.sh` no longer just refuses when it cannot pull: `scripts/workspace-sync.sh` tells a duplicate local commit (already upstream under another sha) from a unique one, catches the checkout up on its own when that is provably safe, and otherwise names the exact file or commit in the way. Override, for a commit you genuinely mean to make here: `YOUCODED_ALLOW_MAIN_COMMIT=1 git commit …`.
 
 **Sub-repo code changes go to the relevant sub-repo** (e.g., `youcoded/`, `youcoded-core/`, `wecoded-themes/`, `wecoded-marketplace/`) — open PRs there, push there. Do NOT mix sub-repo code into the workspace repo (`youcoded-dev`).
 
@@ -118,19 +124,44 @@ bash scripts/run-dev.sh <branch-or-worktree> --label "Feature Name"
 
 ### New Features & UI/UX Changes
 
-When designing new features or making changes to user-facing app interfaces, the first step should always be to visualize and design the UI/UX of the final feature. Planning sessions should prioritize iterative UI design using the workbench and other tooling to help Destin shape the final user experience of the feature before building backend. When Destin provides final sign-off on the UI/UX design for the feature, the UI/UX should be treated as largely final and backend should be designed around the UI/UX accordingly. The standard every new surface is measured against is `docs/active/design/2026-08-25-ui-design-guide.md` (five laws, primitives, per-surface anatomies, checklist); show him the change as a **review deck** (scripts/ui-review/review-cards.py — one point per step: Before | After with the changed region boxed by the rig, a headline and three cards — What changed / You'll notice / Risk — Yes / No / Other, answers saved to a file and handed to Claude on Submit; `serve <spec>` in the background does it all), built from the UI review rig below; never a gallery, a prose page or a chat description (all three were rejected).
+When designing new features or making changes to user-facing app interfaces, the first step should always be to visualize and design the UI/UX of the final feature. Planning sessions should prioritize iterative UI design using the workbench and other tooling to help Destin shape the final user experience of the feature before building backend. When Destin provides final sign-off on the UI/UX design for the feature, the UI/UX should be treated as largely final and backend should be designed around the UI/UX accordingly. The standard every new surface is measured against is `docs/active/design/2026-08-25-ui-design-guide.md` (five laws, primitives, per-surface anatomies, checklist); show him the change as a **review deck** (scripts/ui-review/review-cards.py — one point per step: Before | After with the changed region boxed by the rig, a headline and three cards — What changed / You'll notice / Risk — Yes / No / Other, answers saved to a file and handed to Claude on Submit; `serve <spec>` in the background does it all), built from the UI review rig below; never a gallery, a prose page or a chat description (all three were rejected). The flow around the deck — questions deck first, contract at sign-off, acceptance deck at the end, then the build stage (technical design → capped review → task breakdown → subagent build) — is `.claude/rules/feature-flow.md`. **This overrides the brainstorming skill's habit of asking in chat:** on a YouCoded feature, its opening questions go on a questions deck (`ui-mockup` skill → "Before drawing anything"), and a chat answer is not a source for the contract. **For motion, drag or hover, use a LIVE step** — panes of the running app he can actually operate, one authored candidate each out of `youcoded`'s `compare/registry.tsx` (`serve` boots the worktree's workbench for them). A recording is the wrong tool for a 200 ms animation: four clip steps were rejected on 2026-08-31 as "just rough to compare". `scripts/ui-review/README.md` → "Live panes".
+
+### Asking Destin many questions at once
+
+**Four or more questions that need Destin's input go on a question deck, never in a chat message** — `python3 scripts/questions/serve.py <spec.json>` (run it in the background; its exit is the submit signal and it prints every answer). A wall of one-liners in chat was rejected on 2026-09-01: it assumes he remembers every item, and some were filed months earlier. Every question on the deck is written for someone with **no context**, in plain words, in four parts the page renders as labelled blocks — **today** (what exists: which part of the app, what it does for the user), **the problem** (what goes wrong, as the user experiences it), **the proposal** (what would change, as the user would notice it), and **options** (each with pros and cons **about the user's experience**, not the code). Yes/No/Don't-know questions say in the proposal what each answer leads to. Fewer than four, or wording-only, still go in chat. Spec format is in the script's header.
 
 ### UI Workbench
 
-`bash scripts/run-workbench.sh` boots the **real renderer** in a browser tab (Vite only — no Electron, no PTY) against a fake `window.claude`, on port 5233. Every menu is clickable and stateful, so **new feature UI is built here before its backend exists** — channels with no backend go in `MOCK_ONLY`, which is then the backend to-do list. Toolbar switches scenario (`default`/`empty`/`no-providers`/`refused`/`stress`), fake IPC latency, narrow viewport, and the tool gallery that replaced `?mode=tool-sandbox`. Use `run-dev.sh` instead when you need real event ordering, PTY, or main-process behaviour. **After any change to the mock shim run `node scripts/workbench-boot-check.mjs`** — it loads every registered workbench route headless (12 today) and fails on a console error; the unit suite passed while the app crashed at boot three times running. Rule: `.claude/rules/react-renderer.md`; spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
+`bash scripts/run-workbench.sh` boots the **real renderer** in a browser tab (Vite only — no Electron, no PTY) against a fake `window.claude`, on port 5233. Every menu is clickable and stateful, so **new feature UI is built here before its backend exists** — channels with no backend go in `MOCK_ONLY`, which is then the backend to-do list. Toolbar switches scenario (`default`/`empty`/`no-providers`/`refused`/`stress`), fake IPC latency, narrow viewport, and the tool gallery that replaced `?mode=tool-sandbox`. Use `run-dev.sh` instead when you need real event ordering, PTY, or main-process behaviour. **After any change to the mock shim run `node scripts/workbench-boot-check.mjs`** — it loads every registered workbench route headless (16 today) and fails on a console error, and refuses (exit 2) when nothing is serving the port; the unit suite passed while the app crashed at boot three times running. Rule: `.claude/rules/react-renderer.md`; spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
 
 ### UI review (autonomous screenshot sweep)
 
 `bash scripts/ui-review/run-review.sh <worktree>` screenshots **every** screen, dialog, drawer, popover and menu in all six themes (workbench, headless, ~5 min — one Chrome per plan×theme×shard), builds side-by-side theme sheets, a painted-pixel contrast report and `gallery.html` — and **every shot must prove it opened** (target found, `expect` held, pixels changed) or it lands in `coverage.md` as a miss. **Read `coverage.md` before writing any finding; a surface that isn't `covered` is "unreviewed", never "fine".** Use it for the whole-app review pass (`/ui-review` skill: capture → fix misses → judge against `docs/active/design/2026-08-25-ui-design-guide.md` → numbered ledger) and as the Before/After runs behind a review deck for any UI PR (re-run only the affected plans; a second concurrent sweep needs `YOUCODED_PORT_OFFSET` ≥ 100 away from the first). Terminal, marketplace data, sync and live sessions need the real-app pass in `scripts/ui-review/README.md`. Born from the 2026-08-25 review, whose first rig filed 40 mislabelled sheets — that failure is why the verification exists.
 
-### CDP eval (live renderer inspection)
+### Demo clips and the landing page
 
-`scripts/cdp-eval.mjs` is a one-shot Chrome DevTools Protocol eval helper — use it to inspect or poke a live React renderer, most often the Android WebView while a debug APK is running on a device. The full `adb forward` + page-discovery recipe is in the script's header comment.
+The public site (`youcoded/docs/index.html`) is built from **recordings of the running renderer**, not drawings: `scripts/ui-review/record.mjs` films one JSON scene (`scripts/ui-review/scenes/`) into a WebM loop + poster, and `bash scripts/ui-review/site-assets.sh <worktree>` regenerates every loop, gallery still and the live embed in one go (a desktop release-checklist step). What the demo "model" says is a reply fixture. Any "make a clip of feature X" / "update the website" request starts at `scripts/ui-review/README.md` → "Recording a loop"; the rule `.claude/rules/landing-page.md` auto-loads on the page and the rig. **Landing copy lives in** `docs/active/handoffs/2026-08-31-landing-redesign-START-HERE.md`. Do not write “real app / real files / actually reads / does real work / self-improving.” The fact sheet is inventory, not copy.
+
+### Asking a page a question, and A/B-ing the answer
+
+`node scripts/ui-probe.mjs <url> [--size WxH]… [--wait '<js>'] [--eval '<js>']… [--shot p.png] [--json]` —
+launches its own headless Chrome on a free port, waits for the page's readiness flag, evaluates, screenshots,
+reports console errors (`--fail-on-error` makes them an exit code). **Reach for this instead of writing
+another CDP script**; one session wrote fifteen throwaway ones in a day. Guard: `scripts/ui-probe.test.mjs`.
+
+`bash scripts/ab-measure.sh <file>… [--prepare '<cmd>'] -- <measurement>` — answers **"did I break this, or
+was it already broken?"** by running the same measurement against `HEAD`'s copy of those files and yours.
+Restores your files on exit; never touches the index.
+
+`bash scripts/image-churn.sh [--staged] [--revert]` — changed images whose PIXELS match `HEAD`. Any generator
+that re-emits images makes these (265 in one deck rebuild) and they bury the image that really changed.
+
+`node scripts/check-doc-commands.mjs [--list] [--local]` — runs the commands in blocks marked
+`<!-- runnable -->` (or `<!-- runnable: local -->` for ones needing magick/ffmpeg/Chrome). Marking is opt-in;
+CI runs it. Born from a test command that sat wrong in two docs for months and could not start at all.
+
+`scripts/cdp-eval.mjs` is the other half of the first one: it attaches to an **already-running** CDP target by
+WebSocket URL — most often the Android WebView over `adb forward` (recipe in its header).
 
 ### Local build & test
 
@@ -142,6 +173,14 @@ cd youcoded/desktop && npm ci && npm run build
 
 # Android (requires Desktop React UI built first)
 cd youcoded && ./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew test
+
+# Android in a WORKTREE, or when the bare commands above fail at SDK resolution.
+# The SDK IS installed (/home/destin/.android-sdk) — ANDROID_HOME is just unset,
+# and the system default java is 26, which AGP 8.7 rejects. `-x bundleWebUi` is
+# MANDATORY in a worktree: it transitively runs `npm ci`, which is destructive
+# against a hardlinked node_modules (see the worktree rule above).
+cd <worktree> && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=/home/destin/.android-sdk \
+  ./gradlew test -x bundleWebUi
 ```
 
 See `docs/build-and-release.md` for full build order, release flows, and version bumping rules.
@@ -155,6 +194,39 @@ Why offer at all: four live rounds found **nine** real defects that 4,500 passin
 ## Known Pitfalls
 
 All architectural invariants, cross-cutting gotchas, and lessons learned live in `docs/PITFALLS.md`. **Read it before making non-trivial changes** — it covers IPC parity, chat reducer invariants, Android runtime constraints, bundled-plugin/hooks rules, release gotchas, and working conventions.
+
+## Ending a Session
+
+**When Destin says "wrap up", "close out this session", "let's finish up", "we're done",
+or asks what this session taught us — invoke the `wrap-up` skill.** Do not improvise a
+summary: the skill is the procedure, and a freehand recap is the failure mode it exists
+to replace. It also runs on its own at the end of any substantial session.
+
+It replays what the session actually did — what context loaded, what you had to hunt for
+because it was unwritten, which tooling you used and why, where you took a wrong turn —
+and turns that friction into workspace changes. Every recommendation ends the session
+**applied**, as a dated roadmap entry (`docs/roadmap/<area>.md` — see `ROADMAP.md` → "Filing an item"), or **explicitly dropped with a reason**.
+A numbered list nobody actions is the failure mode, not the output.
+
+**Why it has to be asked for.** No hook can know when a session is finished: `SessionEnd`
+fires once the session is already over (Claude cannot think then) and `Stop` fires after
+every turn. There is deliberately no tracker — a tracker for this would depend on the
+undocumented transcript format and a marker string, and when it broke it would look
+exactly like a clean record. A guard that fails silently is worse than none.
+
+**"Wrap up" does not mean "merge".** It usually means the docs and workspace hygiene
+while the branch stays open — Destin often has a fresh session review the PR first,
+because the session that wrote the code is the worst reviewer of it. Merge only on an
+explicit instruction, and never end a turn suggesting it.
+
+**Destin does not run commands.** If the wrap-up needs `scripts/close-out.sh`,
+`scripts/audit-anchors.mjs` or a test run, YOU run it and act on the output. Never end a
+turn by handing him something to type.
+
+`/audit` and `wrap-up` are the two halves of keeping this workspace honest: `/audit`
+checks the claims that a machine can check, on a nightly cron. `wrap-up` captures what
+only a session that lived through the work knows, and it dies with the transcript if
+nobody asks.
 
 ## Keeping Documentation Accurate
 
@@ -175,13 +247,19 @@ New knowledge goes to, in descending preference: **a pinning test > an ast-grep 
 | Kind of knowledge | Home |
 |---|---|
 | Invariant / lesson | The ladder above. Slim `docs/PITFALLS.md` holds only cross-repo items |
-| Planned feature / bug / idea | `ROADMAP.md` — capture in the SAME session Destin mentions it (typed, tagged, dated; dedup first) |
-| Doc contradicting code | **Fix on sight** (verify against code; cite verification in the commit). Unfixable this session → ROADMAP `bug` tagged `#docs`. There is no drift ledger |
+| Planned feature / bug / idea | `docs/roadmap/<area>.md` — the file whose `Filing test:` line says yes (`ROADMAP.md` → "Filing an item" has the grammar). Capture in the SAME session Destin mentions it; dedup first; a symptom in Destin's words, no paths; run `node scripts/roadmap-check.mjs --fix` before committing |
+| Doc contradicting code | **Fix on sight** (verify against code; cite verification in the commit). Unfixable this session → an entry in `docs/roadmap/dev-workspace.md` under `## knowledge`. There is no drift ledger |
 | CC-version watch item | `youcoded/docs/cc-dependencies.md` |
 | Completed/superseded plans, specs, handoffs | `docs/archive/` (in-flight ones live in `docs/active/`) |
 | Destin-specific preferences / session feedback | Auto-memory — LAST resort; product planning never lives in memory |
 
-**Document lifecycle:** new specs/plans/handoffs save to `docs/active/{specs,plans,handoffs,investigations,prototypes}/` with `status:` frontmatter (`draft | active | shipped | superseded`). When a feature merges, its docs move to `docs/archive/` and the ROADMAP item flips to `[x]` in the same session — "Merge means merge AND push" extends to "…AND archive the docs AND flip the roadmap item." Searches for live docs exclude `docs/archive/` by default.
+**Document lifecycle:** new specs/plans/handoffs save to `docs/active/{specs,plans,handoffs,investigations,prototypes}/` with `status:` frontmatter (`draft | active | shipped | superseded`). When a feature merges, its docs move to `docs/archive/` and the roadmap item closes in the same session (delete it from its area file, append one line to `docs/roadmap/shipped.md`, archive its report) — "Merge means merge AND push" extends to "…AND archive the docs AND close the roadmap item." Searches for live docs exclude `docs/archive/` by default.
+
+**A retrospective is closed in the session that acts on it.** Every finding ends as
+shipped, dropped, or a dated roadmap entry in its area file — then the document moves to
+`docs/archive/`. Two retrospectives sat unclosed for weeks and their unshipped half was
+independently rediscovered twice; one of the rediscovered items was the glob migration
+of 2026-08-31.
 
 ## Subsystem References (read on demand — NOT auto-loaded)
 

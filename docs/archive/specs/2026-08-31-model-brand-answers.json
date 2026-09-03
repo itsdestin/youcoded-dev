@@ -1,0 +1,47 @@
+{
+ "deck": "model-brand",
+ "started": "2026-08-31T07:47:52.451Z",
+ "submitted": "2026-08-31T07:52:19Z",
+ "cur": 5,
+ "answers": {
+  "MB-1": {
+   "v": "yes",
+   "seconds": 114,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MB-2": {
+   "v": "pick",
+   "pick": "mark",
+   "seconds": 33,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MB-3": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MB-4": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MB-5": {
+   "v": "pick",
+   "pick": "leave",
+   "seconds": 47,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MB-6": {
+   "v": "yes",
+   "note": "top left in-line with the name please, not just on the left side generally",
+   "seconds": 49,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

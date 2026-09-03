@@ -514,7 +514,7 @@ So the answer to *"can we auto-install FUSE instead of telling users to run term
 When v1.3 ships `.deb`/`.rpm`/`.pacman`, that matcher still hands **every** Linux user the AppImage
 and its FUSE step. Offering deb → Debian/Ubuntu/Mint, rpm → Fedora, pacman → Arch, and AppImage only
 as the any-distro fallback covers the large majority of Linux desktops with **zero terminal**.
-Tracked in ROADMAP.
+Closed — see `docs/roadmap/shipped.md`.
 
 ## What to test where
 

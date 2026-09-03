@@ -1,6 +1,6 @@
 ---
 status: superseded
-superseded_by: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
+superseded_by: docs/archive/plans/2026-08-11-native-sessions-remaining-work.md
 superseded_on: 2026-08-11
 created: 2026-07-22
 type: program
@@ -9,10 +9,10 @@ supersedes:
   - docs/archive/plans/2026-07-22-native-sync-parity-plan.md
   - 22 ROADMAP entries (full original texts: git history of ROADMAP.md before the 2026-07-22 consolidation commits; index in §10)
 design-refs:
-  - docs/active/specs/2026-07-15-phase2-native-harness-design.md
+  - docs/archive/specs/2026-07-15-phase2-native-harness-design.md
   - docs/archive/specs/2026-07-18-native-sync-parity-design.md
-  - docs/active/specs/2026-07-19-native-workflow-orchestration-design.md
-  - docs/active/specs/2026-07-09-platform-vision-roadmap.md
+  - docs/archive/specs/2026-07-19-native-workflow-orchestration-design.md
+  - docs/archive/specs/2026-07-09-platform-vision-roadmap.md
   - docs/active/plans/2026-07-18-multi-model-cwd-contract.md
   - docs/active/plans/2026-07-16-phase2-plan-c-local-reliability.md
   - docs/active/specs/2026-07-30-native-mcp-design.md
@@ -20,7 +20,7 @@ design-refs:
 
 # Native Runtime Parity Program
 
-> **SUPERSEDED 2026-08-11 by `docs/active/plans/2026-08-11-native-sessions-remaining-work.md`. Do not plan from this file.**
+> **SUPERSEDED 2026-08-11 by `docs/archive/plans/2026-08-11-native-sessions-remaining-work.md`. Do not plan from this file.**
 >
 > It accumulated enough history, reversed decisions and stale item text that **five of its seven M4 items were wrong** when finally checked against the code — three had shipped months earlier, two were already fixed. Its per-item corrections are stamped inline below and were carried into the successor. Kept only for archaeology: which decisions were taken, when, and why.
 

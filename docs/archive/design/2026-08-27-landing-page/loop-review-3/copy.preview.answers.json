@@ -1,0 +1,39 @@
+{
+ "deck": "copy-preview",
+ "started": "2026-08-28T08:33:45.048Z",
+ "submitted": "2026-08-28T08:36:30.998Z",
+ "answers": {
+  "row1.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "row2.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "row3.loop": {
+   "v": "yes",
+   "note": "should click a markdown file instead of that png image."
+  },
+  "row4.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "row5.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "row6.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "row7.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "row8.loop": {
+   "v": "yes",
+   "note": ""
+  }
+ }
+}

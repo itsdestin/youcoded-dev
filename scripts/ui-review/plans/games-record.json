@@ -1,0 +1,52 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&bot=passive",
+  "shots": [
+    {
+      "name": "connect4-record",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        },
+        {
+          "clickText": "Connect 4",
+          "settle": 1500
+        },
+        {
+          "click": "[data-col='0']",
+          "settle": 1300
+        },
+        {
+          "click": "[data-col='0']",
+          "settle": 1300
+        },
+        {
+          "click": "[data-col='0']",
+          "settle": 1300
+        },
+        {
+          "click": "[data-col='0']",
+          "settle": 1300
+        },
+        {
+          "click": "[data-col='0']",
+          "settle": 1300
+        },
+        {
+          "click": "[data-col='0']",
+          "settle": 1300
+        },
+        {
+          "click": "[data-col='0']",
+          "settle": 1300
+        }
+      ],
+      "expect": "js:/You Win|You Lose|Draw/.test(document.body.textContent) && /lead|All square/.test(document.body.textContent)",
+      "measure": [
+        {
+          "text": "You lead 2–0"
+        }
+      ]
+    }
+  ]
+}

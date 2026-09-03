@@ -1,0 +1,291 @@
+
+/* ==========================================================================
+   HEADER ARRANGEMENTS (D1–D4)
+   Only the block above "More than a chatbot." differs. The "Try it / Click
+   around, I guess." heading is gone from all four — the app speaks for itself.
+   ========================================================================== */
+.hero-app{margin-top:30px}
+.hero .embed{position:relative;aspect-ratio:16/10}
+.hero .embed img{width:100%;height:100%;object-fit:cover}
+.embed .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--accent);
+  color:var(--on-accent);padding:12px 26px;border-radius:999px;font-weight:700;font-size:.9rem;
+  box-shadow:0 12px 30px -8px rgba(var(--accent-rgb),.7)}
+
+/* --- D2 SPLIT ------------------------------------------------------------ */
+/* The app runs off the right edge of the window: it reads as a real screen
+   sitting on the desktop rather than a picture pasted into a column. */
+.hero-split{padding:calc(var(--nav-h) + 68px) 0 0}
+.split-in{display:grid;grid-template-columns:minmax(400px,45%) 1fr;align-items:center;gap:48px;
+  max-width:1560px;margin:0 auto;padding-left:max(30px,calc((100vw - var(--wide)) / 2))}
+.hero-split h1,.hero-split .hero-sub,.hero-split .kicker,.hero-split .hero-note{text-align:left}
+.hero-split .hero-sub{margin-left:0;max-width:480px}
+.hero-split .dlrow{justify-content:flex-start;gap:8px}
+.hero-split .dlbtn{padding:11px 15px;font-size:.85rem}
+.hero-split .dlbtn svg{width:15px;height:15px}
+.hero-split h1{font-size:clamp(2.8rem,5.2vw,4.6rem)}
+.split-app .embed{min-width:820px;aspect-ratio:16/10}
+.split-app .frame{border-right:none;border-radius:var(--radius) 0 0 var(--radius)}
+
+/* --- D3 APP FIRST -------------------------------------------------------- */
+/* Minimal type, a very large app, and the download row on a glass bar that
+   sits half-overlapping the bottom of the screen. */
+.hero-appfirst{padding:calc(var(--nav-h) + 46px) 0 0}
+.hero-appfirst h1{font-size:clamp(2.6rem,5.4vw,4.4rem)}
+.hero-appfirst .hero-sub{font-size:1.06rem;margin-top:12px}
+.hero-appfirst .hero-app{margin-top:28px}
+.dlbar{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center;
+  margin:-34px auto 0;position:relative;z-index:2;width:fit-content;max-width:100%;
+  padding:16px 22px;border-radius:999px}
+.dlbar-label{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  opacity:.65;white-space:nowrap}
+.dlbar .dlrow{margin-top:0}
+.dlbar .hero-note{margin-top:0;white-space:nowrap}
+
+/* --- D4 THEME FIRST ------------------------------------------------------ */
+/* The swatches move out of the nav and become the page's headline control. */
+body:has(.hero-themefirst) .nav .swatches{display:none}
+.themebar{margin-top:26px;margin-bottom:6px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.themebar-label{font-size:.92rem;opacity:.8;text-shadow:0 1px 12px rgba(var(--canvas-rgb),.9)}
+.swatches-big{gap:9px;padding:9px;border-radius:999px}
+.swatches-big .sw{width:34px;height:34px}
+.swatches-big .sw span{inset:6px}
+
+@media(max-width:1000px){
+  .split-in{grid-template-columns:1fr;padding:0 30px}
+  .split-app .embed{min-width:0}
+  .split-app .frame{border-right:1px solid var(--hair);border-radius:var(--radius)}
+  .dlbar{margin-top:20px;border-radius:var(--radius)}
+}
+
+/* ==========================================================================
+   Mascot theme picker (2026-08-30) — M1 Flank / M2 Dock / M3 Crown.
+   One robot silhouette, four colours. The chip is the CURRENT theme's glass —
+   the same material as the nav and the download buttons — so the picker reads
+   as one control that belongs to the page it is on, and the only thing that
+   differs between the four is the accent: the robot, its glow, and the ring
+   on the selected one.
+   ========================================================================== */
+.mascot{position:relative;width:62px;height:62px;padding:0;border:0;background:none;cursor:pointer;
+  display:grid;place-items:center;border-radius:20px;
+  transition:transform .24s cubic-bezier(.2,.9,.3,1.3), filter .24s}
+.mascot.m-lg{width:76px;height:76px;border-radius:24px}
+/* The chip is a separate layer so the mascot art never gets clipped or dimmed
+   along with it. */
+.m-chip{position:absolute;inset:0;border-radius:inherit;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(1.5);
+  backdrop-filter:blur(var(--blur)) saturate(1.5);
+  border:1px solid var(--hair);
+  box-shadow:inset 0 1px 0 var(--glass-hi), 0 12px 26px -16px var(--ink);
+  transition:box-shadow .24s, border-color .24s}
+.m-chip::after{content:'';position:absolute;inset:0;border-radius:inherit;
+  background:radial-gradient(circle at 50% 66%, var(--a), transparent 70%);
+  opacity:.16;transition:opacity .24s}
+.mascot:hover .m-chip::after,.mascot.on .m-chip::after{opacity:.30}
+.m-art{position:relative;width:58%;height:58%;color:var(--a);
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.30));transition:transform .24s}
+.mascot.m-lg .m-art{width:56%;height:56%}
+/* The name is kept in the DOM for screen readers ONLY -- it is never painted
+   (Destin 2026-08-30: a label appearing under the hovered chip read as clutter
+   and shoved the eye down and away from the headline it sits beside). The
+   `title` attribute is gone from the markup for the same reason: it would have
+   put the browser's own tooltip back. */
+.m-name{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* Hover GROWS the chip in place. No translateY: a lift moves the row's optical
+   baseline and makes the four chips look unaligned mid-hover. */
+.mascot:hover{transform:scale(1.10)}
+.mascot:hover .m-chip{box-shadow:0 14px 30px -16px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.34)}
+/* Active = a ring in the theme's OWN accent, so the selected chip announces
+   which colour the page is about to be -- plus it rests slightly larger than
+   its neighbours and breathes a halo in that accent, so the row reads as a
+   live control rather than four static icons. Hovering it still grows it
+   further (1.14 > 1.06), so the chip never feels unresponsive. */
+.mascot.on{transform:scale(1.06)}
+.mascot.on:hover{transform:scale(1.14)}
+.mascot.on .m-chip{border-color:var(--a);animation:mascot-breathe 3.8s ease-in-out infinite}
+.mascot.on .m-art{animation:mascot-lean 3.8s ease-in-out infinite}
+/* The pulse runs on the chip's INNER accent wash as well as the outer halo.
+   The outer halo alone was near-invisible for cotton candy: its accent is
+   purple and it sits on a purple sky, so the glow had nothing to read against.
+   The inner wash is over the chip's own glass, which every theme controls. */
+.mascot.on .m-chip::after{animation:mascot-wash 3.8s ease-in-out infinite}
+@keyframes mascot-breathe{
+  0%,100%{box-shadow:0 0 0 2px var(--a), 0 0 0 0 transparent, 0 16px 30px -14px rgba(0,0,0,.55)}
+  50%    {box-shadow:0 0 0 2px var(--a), 0 0 13px 3px var(--a), 0 16px 30px -14px rgba(0,0,0,.55)}}
+@keyframes mascot-wash{0%,100%{opacity:.26}50%{opacity:.44}}
+/* A hair of rotation on the robot itself. Any bigger and it reads as broken;
+   this much only registers as "that one is alive". */
+@keyframes mascot-lean{0%,100%{transform:rotate(-1.1deg)}50%{transform:rotate(1.1deg)}}
+@media (prefers-reduced-motion:reduce){
+  .mascot.on .m-chip,.mascot.on .m-art,.mascot.on .m-chip::after{animation:none}
+  .mascot.on .m-chip{box-shadow:0 0 0 2px var(--a),0 0 10px 2px var(--a),0 16px 30px -14px rgba(0,0,0,.55)}
+  .mascot.on .m-chip::after{opacity:.36}}
+.mascot:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+/* ---- M1 FLANK: two either side of the headline ---- */
+.hero-flank .flankrow{display:flex;align-items:center;justify-content:center;gap:34px}
+.hero-flank .flankrow h1{margin:0}
+.hero-flank .mrow{display:flex;gap:14px}
+
+/* ---- M2 DOCK: a tab resting on the demo window's top edge ---- */
+.hero-dock .hero-app{position:relative}   /* NEVER add overflow here — it makes
+   Chromium smear the live demo's glass blur across the whole window. */
+.mdock{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);z-index:4;
+  display:flex;align-items:center;gap:12px;padding:12px 18px 14px;
+  border-radius:20px 20px 0 0;border:1px solid var(--hair);border-bottom:0;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(1.5);
+  backdrop-filter:blur(var(--blur)) saturate(1.5);
+  box-shadow:inset 0 1px 0 var(--glass-hi), 0 -10px 30px -18px var(--ink)}
+.mdock-label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  padding-right:4px}
+.mdock .mascot{width:48px;height:48px;border-radius:15px}
+.mdock .m-name{display:none}          /* replaced by the live readout below */
+.mdock-label b{font-weight:600;color:var(--fg2);margin-left:6px;letter-spacing:.04em}
+.hero-dock .hero-app{margin-top:104px}  /* the tab is ~86px tall and hangs above */
+
+/* ---- M3 CROWN: the four of them line up above everything ---- */
+.mcrown{display:flex;justify-content:center;gap:26px;margin:0 0 30px}
+
+/* ---- M1 FLANK: the live page's hero word cycler --------------------------
+   Ported from youcoded/docs/index.html. "Make AI Useful. -> Fun. -> Yours.",
+   each word bumping the last one out, each carrying a theme in with it.
+   Structure is load-bearing: the sizer is a zero-width invisible copy that
+   holds the line-box baseline, and the CLIPPING lives on an inner stage --
+   overflow:hidden on the inline-block itself re-anchors the baseline to the
+   margin edge and floats the words above "Make AI". */
+.word-cycler{position:relative;display:inline-block;vertical-align:baseline;line-height:inherit;
+  width:var(--cycler-width,auto);
+  transition:width .55s cubic-bezier(.22,1,.36,1)}
+.cycler-sizer{display:inline-block;width:0;overflow:visible;visibility:hidden;white-space:nowrap}
+.cycler-stage{position:absolute;left:0;right:0;top:-.1em;bottom:-.15em;
+  /* Vertical-only clip: words are hidden bumping in from below and out above,
+     but -50vw on the right keeps them from being cut off horizontally while
+     the cycler's width animates. */
+  clip-path:inset(0 -50vw 0 0);pointer-events:none}
+.cycler-word{position:absolute;left:0;top:.1em;width:max-content;text-align:left;white-space:nowrap;
+  line-height:inherit;opacity:0;transform:translateY(110%);
+  /* Duration and the gap below move TOGETHER. The exit is the last 15%, timed
+     to land on the next word's entry; stretch one without the other and two
+     words share the screen (the live page hit exactly this). */
+  animation-duration:.82s;animation-fill-mode:forwards;animation-iteration-count:1;
+  animation-timing-function:linear;will-change:transform,opacity;
+  transition:color .5s}
+.cycler-word-1,.cycler-word-2{animation-name:bump-through}
+.cycler-word-1{animation-delay:.62s;color:var(--accent)}
+.cycler-word-2{animation-delay:1.4s;color:var(--accent)}
+.cycler-word-3{animation-name:bump-final;animation-delay:2.18s;
+  color:var(--accent);-webkit-text-stroke:1.25px var(--accent);paint-order:stroke fill}
+@keyframes bump-through{
+  0%{transform:translateY(110%);opacity:0} 10%{transform:translateY(-9%);opacity:1}
+  16%{transform:translateY(3%);opacity:1} 20%{transform:translateY(0);opacity:1}
+  85%{transform:translateY(0);opacity:1}  92%{transform:translateY(4%);opacity:1}
+  100%{transform:translateY(-110%);opacity:0}}
+@keyframes bump-final{
+  0%{transform:translateY(110%);opacity:0} 10%{transform:translateY(-9%);opacity:1}
+  16%{transform:translateY(3%);opacity:1} 100%{transform:translateY(0);opacity:1}}
+/* Reduced motion / the JS's static path: no cycling, "Yours." simply there. */
+@media (prefers-reduced-motion:reduce){
+  .cycler-word{animation:none}
+  .cycler-word-1,.cycler-word-2{display:none}
+  .cycler-word-final{opacity:1;transform:none}}
+body.cycler-static .cycler-word{animation:none}
+body.cycler-static .cycler-word-1,body.cycler-static .cycler-word-2{display:none}
+body.cycler-static .cycler-word-final{opacity:1;transform:none}
+
+/* Yellow on a pale glass chip is the one weak pairing (Golden Sunbreak's
+   accent against a light theme's panel), so the art gets a tight dark rim.
+   Invisible on the dark themes, where it has nothing to do. */
+.m-art{filter:drop-shadow(0 0 1.2px rgba(0,0,0,.45)) drop-shadow(0 1px 2px rgba(0,0,0,.22))}
+
+/* ---- M1 FLANK: intro mode --------------------------------------------------
+   The original live-page behaviour: while the words cycle, the only things on
+   screen are the nav, the wallpaper and the headline row (with its mascots).
+   Everything else rises into place as the last word lands.
+
+   Opacity + transform ONLY. No overflow, clip-path or max-height anywhere
+   above .hero-app — a clipping ancestor makes Chromium smear the live demo's
+   glass blur across the entire window (the bug that is on the real page today).
+   That is also why there is no body-level scroll lock here. */
+/* The headline row rides down to the middle of the window for the intro and
+   glides back to its real place as the page fills in. --intro-lift is measured
+   in JS; the transform lives on .flankrow alone, never on a parent of the
+   live demo. */
+body.intro-mode .flankrow{transform:translateY(var(--intro-lift,0px));
+  /* transition:none is load-bearing. Without it the row ANIMATES INTO the
+     centred position on load -- it paints at 0, JS sets the lift, and the
+     base rule below glides it down. The intro must START centred; only the
+     exit glides. This also makes the re-measure after the web font arrives an
+     instant correction rather than a second visible slide. */
+  transition:none}
+.hero-flank .flankrow{transition:transform .62s cubic-bezier(.22,1,.36,1) .1s}
+body.intro-mode .kicker,
+body.intro-mode .hero-sub,
+body.intro-mode .dlrow,
+body.intro-mode .hero-app,
+body.intro-mode > section,
+body.intro-mode > footer,
+body.intro-mode > .topcta{opacity:0;pointer-events:none}
+/* Everything BELOW the headline also starts low and rises; the kicker sits
+   above it, so it only fades (sliding it up would run it into the headline). */
+body.intro-mode .hero-sub,
+body.intro-mode .dlrow,
+body.intro-mode .hero-app,
+body.intro-mode > section,
+body.intro-mode > footer{transform:translateY(34px)}
+/* The delay lets "Yours." settle before the page fills in behind it. */
+.hero-flank ~ section,.hero-flank ~ footer,.hero-flank ~ .topcta,
+.hero-flank .kicker,.hero-flank .hero-sub,.hero-flank .dlrow,.hero-flank .hero-app{
+  transition:opacity .58s ease .1s, transform .62s cubic-bezier(.22,1,.36,1) .1s}
+@media (prefers-reduced-motion:reduce){
+  body.intro-mode .kicker,body.intro-mode .hero-sub,body.intro-mode .dlrow,
+  body.intro-mode .hero-app,body.intro-mode > section,body.intro-mode > footer,
+  body.intro-mode > .topcta{opacity:1;pointer-events:auto;transform:none}
+  body.intro-mode .flankrow{transform:none}}
+
+
+/* ---- Headline size classes for the wording variants (2026-08-31) ----------
+   The headline sits BETWEEN two mascot groups in a centred flex row, so its
+   usable width is roughly 880px at 1440 -- about 16 characters at the default
+   5.6rem. Longer wordings need a smaller setting or they wrap and push the
+   mascots apart. */
+body.h1-md h1{font-size:clamp(2.5rem,5.4vw,4.3rem)}
+body.h1-sm h1{font-size:clamp(2.1rem,4.4vw,3.5rem)}
+
+/* The resting word can be italic (variant A: "Your Assistant."). <i> and not
+   <em> -- h1's own em rule forces font-style back to normal for the accent
+   word. Weight is inherited, so the 900 italic face has to be in the font
+   request or the browser fakes it by slanting the upright. */
+.cycler-word i{font-style:italic;font-weight:inherit}
+/* Each slot's words carry their own trailing space, so the space must survive
+   collapsing -- pre, not nowrap. */
+.cycler-word,.cycler-sizer{white-space:pre}
+
+/* ---- Two-slot headline (variant A) ---------------------------------------
+   "A" holds still and black through both adjective beats, then bumps out as
+   "Your" bumps in. It is NOT one of the numbered cycler words: those all start
+   hidden and animate IN, and this one starts visible and only animates OUT. */
+.lead-hold{opacity:1;transform:translateY(0);color:var(--fg);
+  animation-name:bump-out;animation-delay:2.18s;animation-duration:.17s;
+  animation-timing-function:linear;animation-fill-mode:forwards}
+@keyframes bump-out{0%{transform:translateY(0);opacity:1}
+                    100%{transform:translateY(-110%);opacity:0}}
+.lead-final{animation-name:bump-final;animation-delay:2.18s;
+  color:var(--accent);-webkit-text-stroke:1.25px var(--accent);paint-order:stroke fill}
+/* Reduced motion and the static path: "Your" simply there, "A" simply gone. */
+@media (prefers-reduced-motion:reduce){.lead-hold{display:none}}
+body.cycler-static .lead-hold{display:none}
+
+/* ---- Flank row at narrow widths (2026-08-31) -----------------------------
+   The two mascot groups are a fixed ~138px each, so the headline's share of the
+   row shrinks faster than the headline's own type does. Measured: the longest
+   wording still fits side-by-side at 1030 and wraps to two lines by 990, so the
+   switch happens at 1020 -- below it the headline takes the whole line and all
+   four chips sit under it as one group. */
+@media(max-width:1020px){
+  .hero-flank .flankrow{flex-wrap:wrap;gap:16px}
+  .hero-flank .flankrow h1{flex:1 0 100%;order:1}
+  .hero-flank .mrow-l{order:2}
+  .hero-flank .mrow-r{order:3}
+  .hero-flank .mascot{width:54px;height:54px;border-radius:17px}
+}

@@ -1,0 +1,15 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&arcade=degraded",
+  "shots": [
+    {
+      "name": "arcade-picker-degraded",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        }
+      ],
+      "expect": "js:document.body.textContent.includes(\"Can't reach the game server\")"
+    }
+  ]
+}

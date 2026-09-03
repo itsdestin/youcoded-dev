@@ -1,0 +1,63 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default",
+  "shots": [
+    {
+      "name": "arcade-picker",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        }
+      ],
+      "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Flappy'))"
+    },
+    {
+      "name": "arcade-leaderboard",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        },
+        {
+          "clickText": "Flappy",
+          "settle": 700
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Pipes cleared')"
+    },
+    {
+      "name": "arcade-chess",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        },
+        {
+          "clickText": "Chess",
+          "settle": 700
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Opponent') && document.querySelectorAll('[aria-label^=\"e\"][aria-label*=\", \"]').length >= 8"
+    },
+    {
+      "name": "arcade-connect4-board",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        },
+        {
+          "clickText": "Connect 4",
+          "settle": 1200
+        },
+        {
+          "wait": 2500
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Your turn') || document.body.textContent.includes(\"'s turn\")",
+      "measure": [
+        "js:[...document.querySelectorAll('div')].find(d=>d.querySelectorAll('.rounded-full').length>=30&&d.className.includes('rounded-lg'))"
+      ]
+    }
+  ]
+}

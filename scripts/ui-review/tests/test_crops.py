@@ -25,6 +25,20 @@ class CropTests(unittest.TestCase):
         self.assertAlmostEqual(b[2], 30.0, delta=5); self.assertAlmostEqual(b[3], 20.0, delta=8)
         self.assertEqual(self.r['boxes']['S-1']['midnight']['before'], b)   # same box on both pictures
         self.assertEqual(self.r['missing'], []); self.assertEqual(self.r['warnings'], [])
+    def test_a_live_step_is_skipped_and_the_stills_are_still_cut(self):
+        # MIXED deck (this one needs pictures, so it stays here rather than in test_live.py).
+        # Without the skip, spec['_crops'][st['crop']] raises KeyError on the first live step
+        # and the whole build dies before any still is cut.
+        self.spec['steps'].insert(0, {
+            'id': 'L-0', 'surface': 'Session strip', 'path': 'Header', 'headline': 'Which expand?',
+            'live': {'surface': 'strip-expand', 'round': 1},
+            'variants': [{'id': 'a', 'label': 'As built', 'candidate': 'as-built', 'summary': 'Overshoot.'},
+                         {'id': 'b', 'label': 'Snappier', 'candidate': 'snappy', 'summary': 'Stops dead.'}]})
+        r = crop_images(self.spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], [])
+        self.assertEqual(r['count'], 4)          # the three still steps, sharing crop "c"
+        self.assertNotIn('L-0', r['boxes'])      # a live step has no box: the pane IS the picture
+
     def test_missing_measurement_names_the_fix(self):
         self.spec['steps'][1]['highlight'] = {'selector': '#nope'}
         r = crop_images(self.spec, log=lambda *a: None)

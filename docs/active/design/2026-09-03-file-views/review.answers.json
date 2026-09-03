@@ -1,0 +1,30 @@
+{
+ "deck": "file-views-review",
+ "started": "2026-09-03T11:36:00.894Z",
+ "submitted": "2026-09-03T11:39:42Z",
+ "cur": 2,
+ "answers": {
+  "F-1": {
+   "v": "yes",
+   "note": "is the background the same collor as the files/converations/context pill background? it should be. otherwise good.",
+   "note_kind": "now",
+   "seconds": 72,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-2": {
+   "v": "yes",
+   "seconds": 73,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-3": {
+   "v": "other",
+   "seconds": 75,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "maybe minify this actually and put it next to \"Project Files\" . that is getting a bit cluttered. let me visually the same forr desktop also actually.",
+   "note_kind": "noting"
+  }
+ }
+}

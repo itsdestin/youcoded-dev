@@ -50,4 +50,4 @@ We will **go back and replace all existing system/app error messages** against t
 
   ~~`desktop/tests/primitive-adoption.test.ts` exempts `ErrorState` by name with this reasoning; **remove it from `INTENTIONALLY_UNADOPTED` when this audit lands**, or the guard will keep covering for it.~~ **Done 2026-07-28** — see the update above. `FieldError` is still listed and still unadopted.
 
-Tracked in `ROADMAP.md` → v1.3.1 "Misleading error messages — full audit + replacement".
+Tracked in `docs/roadmap/user-interface.md` (the misleading-errors audit, flagged `v1.3.1`) → `docs/active/investigations/2026-09-01-misleading-error-audit.md`.

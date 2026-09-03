@@ -1,0 +1,19 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&arcade=alone",
+  "shots": [
+    {
+      "name": "arcade-leaderboard-alone",
+      "actions": [
+        {
+          "click": "[title='Games']",
+          "settle": 900
+        },
+        {
+          "clickText": "Flappy",
+          "settle": 700
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Add a friend')"
+    }
+  ]
+}

@@ -22,10 +22,35 @@ The script sets three env vars and runs `npm run dev` in `<checkout>/desktop/`:
 |---|---|---|
 | Vite dev server | n/a (packaged) | `localhost:5223` |
 | Remote server default port | 9900 | 9950 |
+| Chromium remote-debugging port | never (blocked by `!app.isPackaged`) | `127.0.0.1:9272`, **on by default** |
 | Electron `userData` | `%APPDATA%/youcoded/` | `%APPDATA%/youcoded-dev/` |
 | Window title (taskbar / Alt-Tab) | YouCoded | `YouCoded - <label>` (from `--label`, else the branch name; bare env-var launch with no label → `YouCoded Dev`) |
 | localStorage (theme, font, recents) | untouched | dev-only, starts empty |
 | `~/.claude/settings.json` hooks | written by the built app | **not touched by dev** (see below) |
+
+## Inspecting a live renderer
+
+`run-dev.sh` opens Chromium's remote-debugging port by default, at `9222 + offset`
+(9272 at the default offset). `--no-devtools` turns it off.
+
+```bash
+curl -s http://127.0.0.1:9272/json/list        # find the page's webSocketDebuggerUrl
+node scripts/cdp-eval.mjs '<ws url>' '(async () => await window.claude.account.signedIn())()'
+```
+
+**Why it defaults on.** Before 2026-08-28 this needed `YOUCODED_DEVTOOLS_PORT` set by hand,
+which meant killing the app, relaunching, and losing the state you were trying to inspect.
+That cost three restarts during the marketplace-feedback debugging, and the bug it finally
+exposed — a main-process handler quietly dropping two fields — was invisible to `tsc` and to
+the entire test suite, because the component tests mock that layer. One eval against the
+live app answered in seconds what inference had got wrong twice.
+
+**Why it is safe.** Chromium binds it to `127.0.0.1` only — strictly less exposed than the
+remote server the same script starts on `0.0.0.0`. `main.ts` also ignores the variable unless
+`!app.isPackaged`, so a packaged build cannot open it however the env is set. It does mean
+any process running as you on this machine can execute JS in the **dev** renderer; that is a
+smaller step than it sounds (such a process can already read your files), and it never
+applies to the built app.
 
 ## Telling instances apart
 

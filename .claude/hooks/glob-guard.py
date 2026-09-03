@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""PreToolUse hook on Bash: stop unquoted globs that zsh throws the command away for.
+"""PreToolUse hook on Bash: stop two command shapes this harness silently destroys.
+
+Historical name — it began as the glob check below and now carries a second guard
+(`pkill -f`, at the bottom). Both are context-free: neither needs to know the working
+directory or what is on disk, so neither can be wrong about a particular session.
 
 WHY this exists (measured 2026-08-28 across the 46 sessions started 08-26 → 08-28):
 64 tool calls in two days did nothing at all, in 29 different sessions. Claude Code
@@ -91,6 +95,39 @@ def find_offender(command: str, cwd: str = ""):
     return None
 
 
+# ── guard 2: `pkill -f` ───────────────────────────────────────────────────────────────
+# Claude Code runs every Bash call as `zsh -c '<the whole command line>'`. `pkill -f`
+# matches against full command lines, and the wrapper's command line CONTAINS the pattern
+# — it is the pattern's own argument. So pkill -f always signals its own parent shell,
+# and the command it was supposed to run dies with it. Verified 2026-09-03 with a pattern
+# matching nothing else on the machine:
+#
+#     pkill -f "zzz-unique-marker-qq7"; echo survived      ->  exit 144, nothing echoed
+#
+# It has cost three sessions their shell. There is no "careful" pattern: the argument is
+# always in the caller's cmdline, so this is unconditional, which is what makes blocking
+# it free of false positives. `pgrep -f` is fine (it signals nothing) and so is a bare
+# `pkill name` (matches process NAMES, not command lines).
+PKILL_F = re.compile(r"(?:^|[|&;(]\s*|\s)pkill\s+(?:[^|&;\n]*\s)?-[a-zA-Z]*f")
+
+
+def pkill_offender(command: str):
+    """True when the command contains a `pkill -f`, which cannot succeed in this harness."""
+    if "<<" in command:
+        return False   # heredoc body is data, same reasoning as the glob guard
+    return bool(PKILL_F.search(command))
+
+
+PKILL_MESSAGE = (
+    "Blocked before it ran: `pkill -f` cannot work here. Claude Code wraps every Bash call "
+    "as `zsh -c '<your whole command>'`, and `-f` matches full command lines — so the "
+    "pattern always matches that wrapper, and pkill kills the shell running your command "
+    "before it finishes. It has cost three sessions their shell.\n"
+    "Instead: find the pids first (`pgrep -af <pattern>` is safe — it signals nothing), "
+    "then `kill <pid> <pid>` in a command that does not repeat the pattern. To match "
+    "process NAMES rather than command lines, drop the -f (`pkill node`)."
+)
+
 MESSAGE = (
     "Blocked before it ran: this shell is zsh, not bash. zsh expands `{tok}` itself "
     "before {cmd} sees it — so the tool searches for whatever filenames matched, and "
@@ -112,6 +149,15 @@ def main() -> int:
     command = (payload.get("tool_input") or {}).get("command")
     if not isinstance(command, str) or not command.strip():
         return 0
+
+    # Guard 2 first: it is a strict-refusal check, and a command doing both should hear
+    # about the one that would have killed the shell.
+    try:
+        if pkill_offender(command):
+            print(PKILL_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open, same contract as everything else in this hook
 
     try:
         token = find_offender(command)

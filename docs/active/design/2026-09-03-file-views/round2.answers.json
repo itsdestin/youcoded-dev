@@ -1,0 +1,29 @@
+{
+ "deck": "file-views-round2",
+ "started": "2026-09-03T11:44:53.995Z",
+ "submitted": "2026-09-03T11:45:42Z",
+ "cur": 2,
+ "answers": {
+  "R-1": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 27,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "pick",
+   "pick": "beside",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "pick",
+   "pick": "beside",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

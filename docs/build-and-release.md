@@ -36,7 +36,7 @@ A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `deskt
 3. If changed, creates `vX.Y.Z` tag automatically
 
 ### Worker (wecoded-marketplace)
-**The Cloudflare Worker auto-deploys on push to master — never tell Destin to run `wrangler deploy` manually.** `.github/workflows/worker-deploy.yml` runs on `push` to `master` (filtered to `worker/**` and the workflow file itself) plus `workflow_dispatch`. The job runs `npm test` → `wrangler d1 migrations apply --remote` → `wrangler deploy` → `wrangler secret put` for every required secret. Cloudflare credentials live in repo secrets (`CF_API_TOKEN`, `CF_ACCOUNT_ID`); no local `wrangler login` needed.
+**The Cloudflare Worker auto-deploys on push to master — never tell Destin to run `wrangler deploy` manually.** `.github/workflows/worker-deploy.yml` runs on `push` to `master` (filtered to `worker/**` and the workflow file itself) plus `workflow_dispatch`. The job runs `npm ci` → `npm run typecheck` → `npm test` → `wrangler d1 migrations apply --remote` → `wrangler deploy` → `wrangler secret put` for every required secret. Cloudflare credentials live in repo secrets (`CF_API_TOKEN`, `CF_ACCOUNT_ID`); no local `wrangler login` needed.
 
 **Worker PRs are tested BEFORE merge** by `.github/workflows/worker-ci.yml` (added 2026-07-23): `npm ci` → `npm run typecheck` → `npm test` on any PR touching `worker/**` or the workflow itself. Until then worker code had **no pre-merge check at all** — the tests lived only inside the deploy job above, so a broken PR merged green and first failed while deploying to production (verified: PRs #51–#55 all merged with an empty check rollup). It paid for itself immediately, catching three breaking dependency bumps at PR time.
 
@@ -45,7 +45,11 @@ To ship a worker change:
 2. Merge (squash or merge-commit, doesn't matter).
 3. CI does the rest. Smoke-test the live endpoints once Actions reports green.
 
-If you need to flip a `[vars]` value (e.g. `CUTOVER_TIMESTAMP`), commit it to `wrangler.toml` and merge — same auto-deploy path. Wrangler `secret put` is for secrets only and lives in CI's `Push secrets` step (`MARKETPLACE_GH_CLIENT_ID`, `MARKETPLACE_GH_CLIENT_SECRET`, `KNOWN_DEV_DEVICES`, etc.). Adding a new secret means a Repo → Settings → Secrets entry plus a one-line addition to the workflow's `Push secrets` step.
+If you need to flip a `[vars]` value (e.g. `CUTOVER_TIMESTAMP`), commit it to `wrangler.toml` and merge — same auto-deploy path. Wrangler `secret put` is for secrets only and lives in CI's `Push secrets` step (`MARKETPLACE_GH_CLIENT_ID`, `MARKETPLACE_GH_CLIENT_SECRET`, etc.; `KNOWN_DEV_DEVICES` is only a test var in `wrangler.toml`). Adding a new secret means a Repo → Settings → Secrets entry plus a one-line addition to the workflow's `Push secrets` step.
+
+**The catalog ingest is a SECOND workflow in that repo, and it is scheduled** (`catalog-ingest.yml`, hourly at :13, shipped 2026-08-30). It rebuilds what the app reads from four upstream sources and posts it to the Worker; `wecoded-marketplace/docs/catalog.md` is the reference. Two things a release-time reader needs:
+- **`CATALOG_ENABLED` is a release-grade lever.** Set it to `"0"` in `wrangler.toml`, commit, merge: `GET /catalog` answers 503 and both apps fall back to `index.json` silently, with no user-visible error. That is the way to stop a bad catalog reaching every device within the hour, without shipping code under pressure.
+- **A red run of that workflow IS the alarm** — `build.mjs` exits non-zero on any source erroring, being refused by the retire guard, or seeing zero rows, and GitHub emails the owner. There is no other alert. The gap it cannot cover: GitHub silently disables `schedule:` triggers after 60 days of repo inactivity, and a dead cron just freezes the catalog. `GET /admin/catalog/health` is the manual check. This is the repo's **first** scheduled workflow, so that rule has never applied here before.
 
 ## Local dev loop (desktop)
 

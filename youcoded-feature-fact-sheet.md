@@ -4,7 +4,7 @@
 >
 > **Strategic position (from the product's own vision doc, July 2026):** nobody currently combines (a) local-first multi-model freedom, (b) a friendly non-technical UI, (c) a social/marketplace layer, and (d) agent automations in one consumer app. Cowork/ChatGPT Work own "agentic assistant for normal people" but are closed, cloud-only, single-vendor. OpenClaw/Hermes own "own your agent" but are developer-hostile to set up. **That intersection is YouCoded's lane.**
 >
-> **Fast facts for marketing:** platform coverage (desktop + Android + remote in one product — no other harness ships all three) and the "every model, one UI" seam are the two headline differentiators today. The **WeCoded skills marketplace** (336 community plugins) and the **themes system** are the strongest "unique vs. harness" claims shipping right now. See §21 for planned differentiators being actively built.
+> **Fast facts for marketing (revised 2026-08-31 against a measured competitive scan — see §22):** platform coverage is the strongest claim and it is stronger than this sheet used to say: **six of the eight independent rivals surveyed have no mobile app at all**. The second-strongest is a category nobody else contests — **user-defined tags on conversations, private notes on a conversation, and saved prompts as one-tap buttons are each held by ZERO of eight rivals**. The "every model, one UI" seam is real but is **not** a differentiator: opencode, Pi, Hermes and OpenClaw all do model-agnostic + local. Marketplace size should be stated as a split, not a total — see §9.
 >
 > *Status note: compiled from the youcoded-dev workspace (source code, ROADMAP.md, native-runtime docs, vision roadmap, registry indexes) at v1.3.0-beta era, August 2026. Items in §18–§21 are explicitly labeled planned/aspirational, not shipped.*
 
@@ -92,6 +92,7 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 - **Tool cards** — each tool run renders as a card that expands to rich views: diffs, file contents, todo lists, subagent timelines. **Expand-all** toggle.
 - **User-ask cards** — interactive question prompts with answer buttons.
 - **Usage / cost / duration cards** inline in the timeline; context-% chip, model chip (provider-branded), and cost chips in the status bar.
+- **A status bar you build yourself** — **19 toggleable widgets** in categories (`StatusBar.tsx`): 5-hour and 7-day plan usage, session tags, context remaining, session cost, session time, active ratio, tokens in/out, cache stats, cache hit rate, output speed, code changes, git branch, open tasks, sync warnings, theme, version, announcements — with a "Customize Status Bar" picker. No rival GUI in the 2026-08-31 scan offers a configurable status bar; the terminal harnesses expect you to script a status line yourself.
 - **Attention & status banners** — when Claude looks stuck, a session died, or a provider config error occurred, banners surface with a "fix it" jump straight to provider settings.
 - **Stop / interrupt** button whenever a turn is in flight.
 - **Queued messages strip** — messages sent while Claude is busy dock in a strip; entries are **cancelable and editable** (edit refills the composer).
@@ -107,7 +108,9 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 
 - **Session strip / tabs** — multiple live sessions as tabs with live status dots; drag to reorder; Shift-hold for a quick switcher.
 - **Resume browser** — browse past conversations to resume, with per-row filters, per-row model choice, and skip-permissions. (Performance-tuned: opens ~100 ms even at 1,600+ conversations via chunked reveal.)
-- **Session tags & notes** — custom-colored tag set with a central **Tag Manager**, priority/complete flags, and an editable note per session.
+- **Session tags & notes** — custom-colored tag set with a central **Tag Manager**, priority/complete flags, and an editable note per session. **Tags and notes are DESKTOP ONLY** — `SessionService.kt:1511-1517` answers `session:set-tag`/`session:set-note` with `not-implemented-on-mobile`; only `set-flag` (priority/complete) is really implemented, so pin and hide do work on a phone. Verified 2026-08-31.
+- **Not implemented: renaming a conversation.** Titles are auto-generated only; `desktop/src/main/conversations/service.ts:444` says so in a comment. **This is the one session-management capability all eight surveyed rivals have** (§22).
+- **Transcript search exists but users cannot reach it.** `desktop/src/main/chatsearch-index/` is a real full-text index over every turn, exposed only as a model-invoked tool. The Resume Browser's own box matches `name`, `projectPath`, `note` and tag labels (`resume-browser-filters.ts:38-53`), not what was said. Five of eight rivals let a person search content directly.
 - **Close-session prompt** — set flags/tags/note while closing, with "don't ask again."
 - **Cross-device takeover** — a 3-state dialog (confirm / force / undeliverable) that honestly explains what happens to unsaved work when a conversation is opened on another device.
 - **Moved-session gate** — if a session is taken over elsewhere, the local view is covered with Exit / Resume-here.
@@ -159,7 +162,7 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 
 **The strongest community differentiator.**
 
-- **The WeCoded skills marketplace** — **336 community skills/plugins** (development, productivity, database, deployment, security, monitoring, integrations, personal, …) plus prompt packs, browsed/installed/updated in-app with ratings, reviews, likes, favorites.
+- **The WeCoded skills marketplace.** State the number as a split, because the repo's own README does: `index.json` holds **339 entries, 302 live — 13 YouCoded plugins and 289 imported from Anthropic's official Claude Code plugin registry** (counted by `sourceMarketplace` across all rows: 27 youcoded, 312 anthropic). Separately, the catalog service that shipped 2026-08-31 serves a much larger multi-source catalog — ROADMAP.md records **4,156 listings** across anthropic / awesome-copilot / docker / cursorrules / youcoded, measured on the live endpoint (not re-verified here). **"336 community plugins" overstates the community**: a sceptic reaches the README in one click from the site footer. The honest and stronger phrasing is "our own plugins, plus every Claude Code plugin". Content categories (development, productivity, database, deployment, security, monitoring, integrations, personal, …) plus prompt packs, browsed/installed/updated in-app with ratings, reviews, likes, favorites.
 - **Skills run on every backend** — the same skill installs once and works in both Claude Code and native sessions. (The "marketplace serves every backend" moat.)
 - **Side-slash commands that work on both runtimes** — `/clear`, `/compact`, `/model`, `/fast`, `/effort`, `/cost`, `/usage`, `/sync`, plus custom commands.
 - **A live command drawer** — typing `/` (or the compass button) opens a searchable, filter-as-you-type drawer of skills and commands.
@@ -189,7 +192,7 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 ## 11. Social & multiplayer games
 
 - **Friends graph + presence** — add friends by handle, send/accept/decline/block/unblock, see who's online live (persistent presence socket with reconnect), last-seen persistence.
-- **Multiplayer Connect Four** — play a real person over the network (board, moves, rematch, in-game chat) in a docked side panel beside the chat — **while the agent works** (the "social AI" pillar).
+- **A four-game arcade** — **Chess and Connect Four** head-to-head against a real person over the network (board, moves, rematch, in-game chat), **Flappy Bird and 2048** solo with local bests and friend leaderboards, in a docked side panel beside the chat — **while the agent works** (the "social AI" pillar). **Status 2026-08-31: SHIPPED** — merged to master as `0cacff56` (app, PR #369) and `0987b96` (Worker, PR #78, auto-deployed). All four games, friend leaderboards and head-to-head records are on master; head-to-head now has a real client (both players report over the presence socket and a record is written only when the two agree). One gap to state honestly: the **forfeit** path on the Worker has no client on either platform, so a match only becomes a record through mutual agreement (ROADMAP, `#games` `#worker`).
 - **Game lobby & presence** — who's online, challenges, pending-challenge state on the header's gamepad button.
 - **Incognito presence toggle.**
 - **Marketplace account system** — sign-in (GitHub device-code OAuth), profile with display name/handle, data export, hard delete.
@@ -337,7 +340,64 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 
 ---
 
-## 22. Gap analysis — features competitors have that YouCoded doesn't (yet)
+## 22. Competitive position — measured, not asserted (2026-08-31)
+
+> Method: two research passes against **published docs, changelogs and source repos only**, plus local counts against this workspace. "Not documented" is recorded as not-documented, never as absent. Products evaluated: **Hermes** = Nous Research's *Hermes Agent* (hermes-agent.org); **Pi** = `earendil-works/pi` (not Inflection's chatbot); **opencode** = opencode.ai / `sst/opencode`, which now redirects to `anomalyco/opencode`; plus Claude Code, Claude Cowork/claude.ai, OpenAI Codex, Cursor, OpenClaw, ChatGPT desktop, T3 Code.
+
+### 22.1 Where YouCoded ranks
+
+**For a non-technical person who wants AI to work on their own files:**
+Claude Cowork · ChatGPT (desktop) · **YouCoded (3rd)** · OpenClaw · T3 Code · opencode · Hermes · Pi · Cursor
+
+**For developers:**
+opencode · Claude Code/Cowork · Cursor · Pi · Hermes · T3 Code · OpenClaw · **YouCoded (8th)** · ChatGPT
+
+The only two products above YouCoded on the first list are Anthropic's and OpenAI's own first-party apps; **among independent products it is first.** The developer position is the correct shape for the accessibility pillar — a developer gains little over running Claude Code directly — but it has a strategic consequence: **every product ranked above it grew through developer word-of-mouth, and that channel is closed by design.** Growth has to come from somewhere else.
+
+### 22.2 Conversation organizing — the uncontested category
+
+Eight rivals, eight capabilities, checked against their own docs:
+
+| Capability | YouCoded | Rivals that have it |
+|---|---|---|
+| **User-defined tags on conversations** | yes (desktop only) | **0 of 8** — OpenClaw has one group + one icon; Claude's Agent SDK has a single-value `tagSession()`, developer-facing |
+| **A private note on a conversation** | yes (desktop only) | **0 of 8** |
+| **Saved prompts as one-tap buttons** | yes (both platforms) | **0 of 8** — all eight have `/` commands you must type |
+| Pin / favourite | yes | 3 (Hermes, OpenClaw, opencode — undocumented `ctrl+f`) |
+| Hide without deleting | yes, and **no hard delete exists at all** | 5 |
+| Search transcript content | index exists, **agent-only** | 5 (claude.ai, Codex mobile, Pi, Hermes FTS5, OpenClaw) |
+| **Rename a conversation** | **no** | **8 of 8** |
+| User-made folders for conversations | no (derived from `projectPath`) | 2 (claude.ai, OpenClaw) |
+
+**A distinction to keep straight in copy: folders for files ≠ folders for conversations.** Cursor's worktrees, Codex's environments, opencode's and Pi's cwd buckets and Hermes's Projects all derive membership from *where the session ran* — same as YouCoded's. Only claude.ai and OpenClaw let a person file a past conversation into a container they invented.
+
+### 22.3 What is genuinely differentiating, under a strict test
+
+A capability only counts if no surveyed competitor has a near-equivalent.
+
+1. **A native Android app.** opencode, Pi, Hermes, T3 Code, Cursor and OpenClaw have **no mobile app at all** — 6 of 8. (Cowork and ChatGPT do.) Stronger still: Android runs the Claude Code CLI **on-device** via bundled user-space Linux, so a phone works with no desktop nearby. Nothing else on the list does this.
+2. **Tags, private notes, and one-tap prompt buttons** — 0 of 8 each (§22.2).
+3. **Multiplayer games while a task runs** — uncontested.
+4. **Themes as a describable, shareable object.** opencode and Pi have themes; neither has a registry you publish to from inside the app by describing a vibe. Currently thin: **7 themes, 6 of them authored `claude` and 1 `itsdestin`.**
+5. **A configurable status bar** (§5) — no rival GUI offers one.
+
+### 22.4 What is NOT differentiating, despite this sheet and the site emphasising it
+
+- **Model-agnostic / bring-your-own-model** — opencode (75+ providers), Pi (15+), Hermes and OpenClaw all do it. opencode can also ride a ChatGPT Plus/Pro subscription.
+- **Running local models** — all four of the above.
+- **Claude Code inside a GUI** — T3 Code is exactly that product.
+- **MCP** — universal.
+- **Cross-device sync** — Cowork syncs; opencode has shareable session links.
+- **Free / open source / MIT** — every product on the list.
+- **"Works on your own files", "asks permission before acting", "does real work"** — said, in the same words, by Hermes, OpenClaw, opencode and Pi.
+
+### 22.5 Scale, for context
+
+opencode: **202,712 stars, 26,373 forks**. YouCoded: **6 stars, 2 forks** (both read from the GitHub API, 2026-08-31). Community size is itself a ranking input for developers and cannot be closed with features.
+
+---
+
+## 23. Gap analysis — features competitors have that YouCoded doesn't (yet)
 
 **Honest catch-up list** (from the documented July 2026 market scan + roadmap). These are things other agent/assistant products ship that YouCoded has not referenced or lacks today:
 
@@ -349,6 +409,12 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 - **IDE/extension surfaces** (VSCode/Cursor plugin, browser extension); YouCoded is a standalone app.
 - **A marketplace of prebuilt named agents** (beyond skills) — the plan to publish agent *templates* is Phase 4, not shipped.
 - **Voice input on desktop** (Android voice is also not implemented).
+
+**Parity misses found in the 2026-08-31 scan (not previously listed here):**
+
+- **Renaming a conversation** — 8 of 8 rivals ship it; YouCoded does not (§6).
+- **User-facing transcript search** — 5 of 8 ship it; YouCoded built the index and exposed it only to the model (§6). Worth noting two of the strongest rivals are *also* weak here (opencode searches only the title column; Claude Code's picker filters list rows), so closing this overtakes them rather than merely catching up.
+- **Tags and notes on Android** — an internal parity gap, not a competitive one, but it undercuts the strongest claim in §22.2 on the platform the sheet leads with.
 
 **Shipped but weaker than peers:**
 
@@ -364,7 +430,7 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 
 ---
 
-## 23. Pitches
+## 24. Pitches
 
 **One-liners:**
 
@@ -374,12 +440,51 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 
 **Three-sentence pitch (Reddit / students):**
 
-> "YouCoded is a desktop + phone + browser assistant you own. It runs Claude Code, your own local open models (llama.cpp built in — no Ollama needed), or OpenRouter models, all behind the same chat. Conversations sync across your devices, it has a 336-skill community marketplace and themes, approvals instead of full-auto surprises, and a mascot sidekick — friendly enough for your parents, deep enough for real dev work."
+> "YouCoded is a desktop + phone + browser assistant you own. It runs Claude Code, your own local open models (llama.cpp built in — no Ollama needed), or OpenRouter models, all behind the same chat. Conversations sync across your devices, it has a community marketplace carrying our own plugins plus every Claude Code plugin, and themes, approvals instead of full-auto surprises, and a mascot sidekick — friendly enough for your parents, deep enough for real dev work."
 
 **Five-sentence pitch (professionals / developers):**
 
-> "YouCoded replaces your pile of AI terminals, tabs, and tools with one app. Your Claude subscription, an OpenRouter key, or a local GGUF model all live behind the same chat UI, tool cards, approvals, artifacts, and projects. The agent's work lands in a Files workspace with version history and a git review surface, so you can see, diff, and commit what it did instead of trusting a wall of chat. Everything syncs across desktop, Android, and a browser — and a 336-plugin community marketplace plus themes make it yours. It's the open, personal Cowork: the agentic assistant for people who want to own the stack, not rent it."
+> "YouCoded replaces your pile of AI terminals, tabs, and tools with one app. Your Claude subscription, an OpenRouter key, or a local GGUF model all live behind the same chat UI, tool cards, approvals, artifacts, and projects. The agent's work lands in a Files workspace with version history and a git review surface, so you can see, diff, and commit what it did instead of trusting a wall of chat. Everything syncs across desktop, Android, and a browser — and a marketplace carrying our own plugins plus every Claude Code plugin, plus themes, make it yours. It's the open, personal Cowork: the agentic assistant for people who want to own the stack, not rent it."
 
 ---
 
-*Compiled from the youcoded-dev workspace: `ROADMAP.md`, `docs/active/specs/2026-07-09-platform-vision-roadmap.md`, `youcoded/docs/native-runtime.md`, `youcoded/docs/sync-spaces.md`, `youcoded/docs/engine-dependencies.md`, renderer/main/Android source sweeps, and registry indexes (wecoded-marketplace: 336 plugins + 14 prompt packs; wecoded-themes: 7 themes).*
+
+
+---
+
+## 25. Claims that need fixing before this sheet is quoted (verified 2026-08-31)
+
+Each of these was checked against the source named. They are cheap to fix and expensive to be caught on, because every one is reachable in about one click from the public site.
+
+- **The README contradicts the site about whether you must pay Anthropic.** `youcoded/README.md` line 77, under **Requirements**, first item: "A Claude Pro or Max plan". The site lists Anthropic as *Optional* and says you can "skip the paid ones entirely — run a model on your own computer, free and offline." Both cannot be true; the README is the stale one, and it is the first thing a developer reads.
+- **The integrations grid promises more than the registry backs.** `wecoded-marketplace/integrations/index.json` lists nine integrations and marks only **four available** (Apple Services, Google Services, iMessage, Todoist); GitHub and Canva are `planned`. The public site lists nineteen services under "YouCoded can link with **all** of the following". **"Safari" appears zero times in the 339-entry registry**, and "Chrome" matches only `browser-use` and `chrome-devtools-mcp`, which are developer tools. A `canva` plugin does exist in the main index, so the two registry files disagree with each other about Canva.
+- **"300+ plugins" / "336 community plugins" implies a community that does not exist yet.** See §9. The number is true; the impression is not, and it sits beside "whatever your friends publish" and "See what people have built".
+- **Theme authorship.** 7 theme manifests: **6 authored `claude`, 1 `itsdestin`.** The themes registry has 0 stars. Any "see what people have built" framing should wait for people.
+- **The newest download is old.** Latest release **v1.2.4, published 2026-05-18**, while the repo was pushed the same day this was written. A visitor comparing "actively built" against "last release in May" draws their own conclusion. (Recording the fact, not recommending a release.)
+- **The FAQ argues against a competitor that no longer exists.** "Those are chat websites" was true in 2023; ChatGPT's desktop app and Claude Cowork both reach local files now. Contrast instead on platform breadth, model choice, and your-own-storage — all three still hold.
+- **A grammar error was live on the public site.** `youcoded/docs/index.html:1490` read "designed from the ground up **to improved by** individuals". Fixed in the redesign mockups 2026-08-31; **not yet fixed on the live page.**
+
+---
+
+## 26. Marketing material this sheet has that the site does not use
+
+Ranked by how much a normal person would care. Every one is already shipped.
+
+1. **Automatic version history for everything the agent writes** (§7) — "no git knowledge required". This is the answer to "what if it wrecks my file", and the public site does not mention it at all.
+2. **Android runs Claude Code on-device** (§16) — a phone works with no desktop anywhere. No competitor has this; the site presents Android as a logo in a download row.
+3. **In-app viewers for CSV, Excel, DOCX, PDF, images and self-contained HTML**, plus a real CodeMirror editor (§7). The site gives this one clause.
+4. **The git review surface** (§7) — this sheet's own words: "the *what did the agent do to my code* killer feature".
+5. **Remote access with QR pairing** and Tailscale detection (§13) — currently an asterisked footnote on the site.
+6. **The buddy mascot floater** with screenshot-to-prompt (§14) — absent from the site.
+7. **A configurable 19-widget status bar** (§5) — absent from the site.
+8. **Cross-file ripgrep content search inside a project** (§7) — absent from the site.
+
+**The single sharpest forward-looking line in this document** is in §21 and is not on the site: *"Local models make 24/7 scheduled agents free"* — the headline claim against cloud-metered competitors. Second: §21's *"Nobody ships a consumer-friendly harness builder today."*
+
+**Do not build copy on the third-party-agent-CLI direction.** §20 lists it under deliberately-not-built — "a deliberate what-if, not a commitment" — even though a draft spec exists dated 2026-08-31.
+
+---
+
+*Compiled from the youcoded-dev workspace: `ROADMAP.md`, `docs/archive/specs/2026-07-09-platform-vision-roadmap.md`, `youcoded/docs/native-runtime.md`, `youcoded/docs/sync-spaces.md`, `youcoded/docs/engine-dependencies.md`, renderer/main/Android source sweeps, and registry indexes (wecoded-marketplace: 339 index entries — 302 live, 13 YouCoded + 289 imported; wecoded-themes: 7 themes, 6 authored `claude`).*
+
+*Revised 2026-08-31 during the landing-page competitive review. Added: §22 (measured competitive position), §25 (claims that need fixing), §26 (unused marketing material); corrected the marketplace numbers throughout, the games section, the Android tags/notes limitation, the missing rename capability, agent-only transcript search, and the configurable status bar. Everything added carries the file, line or API it was read from; two claims that could not be re-verified offline are attributed to `ROADMAP.md` rather than asserted.*

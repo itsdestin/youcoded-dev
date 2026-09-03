@@ -5,7 +5,7 @@ import json, os, subprocess
 
 GEO = '400x200+500+250'
 
-def make_fixture(tmp, themes=('midnight', 'light')):
+def make_fixture(tmp, themes=('midnight', 'light'), clip=False):
     for run in ('before', 'after'):
         for theme in themes:
             d = os.path.join(tmp, 'runs', run, 'shots-main', theme); os.makedirs(d, exist_ok=True)
@@ -27,4 +27,207 @@ def make_fixture(tmp, themes=('midnight', 'light')):
                  'headline': 'The send button moved.', 'changed': 'Moved 4 px.', 'notice': 'Nothing much.'},
                 {'id': 'S-3', 'surface': 'Home', 'path': 'Chat', 'crop': 'c', 'highlight': {'text': 'Send'},
                  'headline': 'Same, by text.', 'changed': 'Moved 4 px.', 'notice': 'Nothing much.'}]}
+    # A CLIP step: two 1-second recordings (a gray frame, then one with the red block) made
+    # with ffmpeg, where record-pair.sh would put them. Skipped if ffmpeg is absent.
+    clips = os.path.join(deck, 'images', 'deck', 'clips')
+    if clip: os.makedirs(clips, exist_ok=True)
+    try:
+        if not clip: raise FileNotFoundError('clip step not requested')
+        for run, colour in (('before', 'gray'), ('after', 'red')):
+            subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'lavfi', '-i', f'color=c={colour}:s=320x200:d=1:r=12',
+                            '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '40', os.path.join(clips, f'blink--{run}.webm')], check=True)
+            subprocess.run(['magick', '-size', '320x200', f'xc:{colour}', os.path.join(clips, f'blink--{run}.webp')], check=True)
+        spec['steps'].append({'id': 'S-4', 'surface': 'Home', 'path': 'Chat', 'clip': 'blink',
+                              'headline': 'The block now blinks.', 'changed': 'It animates.', 'notice': 'Motion.', 'risk': 'None.'})
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        pass
     p = os.path.join(deck, 'deck.json'); json.dump(spec, open(p, 'w'), indent=1); return p
+
+
+# ── live panes ──────────────────────────────────────────────────────────────────────────
+# A LIVE-only deck needs no screenshots at all, which is exactly why the live tests live in
+# test_live.py: no ImageMagick, no ffmpeg, no workbench — so they are the deck coverage that
+# actually runs in CI, where none of those binaries exist.
+STUB_PANE = """<!doctype html><meta charset="utf-8"><title>stub pane</title>
+<body style="margin:0">
+<div id="c" style="height:%(h)dpx">candidate %(id)s</div>
+<script>
+  // What the real route does, in miniature: report a height on load, and swap theme IN PLACE
+  // when the deck asks — never by reloading.
+  //
+  // Everything is reported back by postMessage because the deck and the panes are on
+  // different ports, so the test (which drives the deck's frame) cannot read into this
+  // document at all. `id` is minted per LOAD: if a theme click ever reloaded the pane, the
+  // id in its acknowledgement would differ from the one it announced at load. That is the
+  // no-reload proof.
+  window.__id = 'p' + Math.random().toString(36).slice(2);
+  window.__lastTheme = null;
+  // Reports a WIDTH the deck spec did not declare (the fixture leaves paneWidth unset, so
+  // the deck starts at its 360 default) — that is how the test proves the measured width
+  // wins over the guessed one.
+  parent.postMessage({type:'youcoded:pane-height', height:%(h)d, width:%(w)d, candidate:'%(id)s'}, '*');
+  parent.postMessage({type:'stub:loaded', candidate:'%(id)s', id:window.__id}, '*');
+  addEventListener('message', function (e) {
+    if (e.data && e.data.type === 'youcoded:theme') {
+      window.__lastTheme = e.data.theme;
+      parent.postMessage({type:'stub:theme', theme:e.data.theme, candidate:'%(id)s', id:window.__id}, '*');
+    }
+  });
+</script>
+"""
+
+
+class LivePaneServer:
+    """One stub page per candidate on an ephemeral port, standing in for the workbench."""
+
+    def __init__(self, height=220, width=420):
+        import http.server
+        import socketserver
+        import threading
+        page_height, page_width = height, width
+
+        class H(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *a):
+                pass
+
+            def do_GET(self):
+                from urllib.parse import parse_qs, urlparse
+                cand = (parse_qs(urlparse(self.path).query).get('candidate') or [''])[0]
+                body = (STUB_PANE % {'h': page_height, 'w': page_width, 'id': cand}).encode()
+                self.send_response(200)
+                self.send_header('content-type', 'text/html; charset=utf-8')
+                self.send_header('content-length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+        class S(socketserver.ThreadingMixIn, http.server.HTTPServer):
+            daemon_threads = True
+            allow_reuse_address = True
+
+        self.srv = S(('127.0.0.1', 0), H)
+        self.port = self.srv.server_address[1]
+        self.base = f'http://127.0.0.1:{self.port}'
+        self.thread = threading.Thread(target=self.srv.serve_forever, daemon=True)
+        self.thread.start()
+
+    def stop(self):
+        self.srv.shutdown()
+        self.srv.server_close()
+
+
+def live_spec(tmp, base=None, **over):
+    """A live-only deck: no `images`, no `runs`, one pick-one step and one try-this step."""
+    deck = os.path.join(tmp, 'deck')
+    os.makedirs(deck, exist_ok=True)
+    spec = {
+        'title': 'Live fixture', 'key': 'live-fixture', 'out': 'live.html',
+        'themes': ['midnight', 'light'],
+        # `base` beats `offset` so a fixture can point at an ephemeral port without doing
+        # arithmetic against a constant it does not care about.
+        'live': {'worktree': 'live-tree', **({'base': base} if base else {})},
+        'steps': [
+            {'id': 'L-1', 'surface': 'Session strip', 'path': 'Header',
+             'headline': 'Which pill expand feels right?',
+             'live': {'surface': 'strip-expand', 'round': 1},
+             'variants': [
+                 {'id': 'a', 'label': 'As built', 'candidate': 'as-built', 'summary': 'Gentle overshoot.'},
+                 {'id': 'b', 'label': 'Snappier', 'candidate': 'snappy', 'summary': 'Stops dead.'},
+             ]},
+            {'id': 'L-2', 'surface': 'Session strip', 'path': 'Header',
+             'headline': 'Does the drag feel right?',
+             'live': {'surface': 'strip-drag', 'round': 2, 'candidate': 'as-built'},
+             'changed': 'The pill follows your cursor.', 'notice': 'No jump on release.',
+             'risk': 'Widths freeze while you drag.'},
+        ],
+    }
+    spec.update(over)
+    p = os.path.join(deck, 'live.json')
+    with open(p, 'w') as f:
+        json.dump(spec, f, indent=1)
+    return p
+
+
+# ── words-only decks ────────────────────────────────────────────────────────────────────
+def words_spec(tmp, **over):
+    """A QUESTIONS deck: no pictures anywhere. One question with a single option (plus the
+    page's own Other), one with three, and one statement to approve with relabelled buttons.
+    Picture-free on purpose, like live_spec — this is CI coverage."""
+    deck = os.path.join(tmp, 'deck')
+    os.makedirs(deck, exist_ok=True)
+    spec = {
+        'title': 'Questions fixture', 'key': 'questions-fixture', 'out': 'questions.html',
+        'themes': ['midnight', 'light'],
+        'steps': [
+            {'id': 'Q-1', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'Where does the invite live?',
+             'options': [{'id': 'a', 'label': 'In the friends list (recommended)', 'summary': 'One place for everything about a friend.'}]},
+            {'id': 'Q-2', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'How many boards on screen at once?',
+             'options': [{'id': 'a', 'label': 'One', 'summary': 'Simplest.'},
+                         {'id': 'b', 'label': 'Two', 'summary': 'Mine and theirs.'},
+                         {'id': 'c', 'label': 'As many as fit', 'summary': 'Costs a layout rule.'}]},
+            {'id': 'Q-3', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'A game you leave keeps running for the other player.',
+             'changed': 'Stated, not asked: the alternative would surprise the friend who stayed.',
+             'notice': 'Nothing yet — this becomes a row of the contract.',
+             'yes': 'Holds', 'no': 'Fails'},
+        ],
+    }
+    spec.update(over)
+    p = os.path.join(deck, 'questions.json')
+    with open(p, 'w') as f:
+        json.dump(spec, f, indent=1)
+    return p
+
+
+# ── contract ────────────────────────────────────────────────────────────────────────────
+def contract_spec(tmp, **over):
+    """A contract deck plus the two source decks its rows point at, each with a SUBMITTED
+    answers file — so contract-check has something real to resolve. Picture-free."""
+    deck = os.path.join(tmp, 'deck')
+    os.makedirs(deck, exist_ok=True)
+    # Source deck 1: a words question, answered. Source deck 2: a picture step, answered.
+    q = {'title': 'Q', 'key': 'arcade-questions', 'out': 'q.html', 'themes': ['midnight'],
+         'steps': [{'id': 'Q-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Where does the invite live?',
+                    'options': [{'id': 'a', 'label': 'Friends list', 'summary': 'One place.'}]}]}
+    r1 = {'title': 'R1', 'key': 'arcade-r1', 'out': 'r1.html', 'images': 'images/r1', 'runs': {'today': '/nowhere'},
+          'crops': {'c': ['main', 'home', '10x10+0+0']},
+          'steps': [{'id': 'S-1', 'surface': 'Board', 'path': 'Games', 'crop': 'c', 'highlight': {'text': 'Send'},
+                     'headline': 'Boards are told apart.', 'changed': 'A colour band.', 'notice': 'Two boards.'},
+                    {'id': 'S-2', 'surface': 'Board', 'path': 'Games', 'crop': 'c', 'highlight': {'text': 'Send'},
+                     'headline': 'Skipped one.', 'changed': 'x', 'notice': 'y'}]}
+    for name, s in (('q', q), ('r1', r1)):
+        with open(os.path.join(deck, f'{name}.json'), 'w') as f:
+            json.dump(s, f, indent=1)
+    with open(os.path.join(deck, 'q.answers.json'), 'w') as f:
+        json.dump({'deck': 'arcade-questions', 'submitted': '2026-09-01T09:00:00Z',
+                   'answers': {'Q-1': {'v': 'pick', 'pick': 'a', 'seconds': 12}}}, f)
+    with open(os.path.join(deck, 'r1.answers.json'), 'w') as f:
+        json.dump({'deck': 'arcade-r1', 'submitted': '2026-09-01T09:30:00Z',
+                   'answers': {'S-1': {'v': 'yes', 'note': 'band could be thinner', 'note_kind': 'later', 'seconds': 20},
+                               'S-2': {'v': 'skip', 'seconds': 1}}}, f)
+    spec = {
+        # Fix: `out` must share the contract's stem (arcade.contract.html, not contract.html) —
+        # two contracts in one folder would otherwise overwrite each other's built page.
+        'title': 'Arcade — contract', 'key': 'arcade-contract', 'out': 'arcade.contract.html', 'themes': ['midnight'],
+        'branch': 'feat/arcade-fixture',
+        'sources': {'arcade-questions': 'q.json', 'arcade-r1': 'r1.json'},
+        'steps': [{'id': 'C', 'surface': 'Games arcade', 'path': 'Contract', 'headline': 'This is what done means.',
+                   'rows': [
+                       {'id': 'R1', 'statement': 'The invite lives in the friends list.', 'checkedBy': 'deck',
+                        'threshold': 'pass/fail', 'source': 'arcade-questions#Q-1'},
+                       {'id': 'R2', 'statement': "A second player's board is tellable from mine at a glance.",
+                        'checkedBy': 'human', 'threshold': 'pass/fail', 'source': 'arcade-r1#S-1', 'note': 'band could be thinner'},
+                       # The guard must exist under workspace_root() — which from a WORKTREE is the main
+                       # checkout, so it has to be a file already on master, not one this branch adds.
+                       {'id': 'R3', 'statement': 'The board fills the pane at every width.', 'checkedBy': 'mechanical',
+                        'guard': 'scripts/ui-review/tests/test_spec.py', 'threshold': 'the named test passes',
+                        'source': 'arcade-r1#S-1'},
+                   ]}],
+    }
+    spec.update(over)
+    # `<feature>.contract.json` — the `.contract` in the stem is what close-out.sh globs for.
+    p = os.path.join(deck, 'arcade.contract.json')
+    with open(p, 'w') as f:
+        json.dump(spec, f, indent=1)
+    return p

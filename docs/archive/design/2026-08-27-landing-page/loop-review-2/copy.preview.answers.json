@@ -1,0 +1,51 @@
+{
+ "deck": "copy-preview",
+ "started": "2026-08-28T08:16:56.567Z",
+ "submitted": "2026-08-28T08:23:08.900Z",
+ "answers": {
+  "row1.loop": {
+   "v": "other",
+   "note": "model should start as claude, not qwen. "
+  },
+  "row2.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "row3.desc": {
+   "v": "other",
+   "note": "Open spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project."
+  },
+  "row4.desc": {
+   "v": "other",
+   "note": "Tag and annotate conversations, pin the ones that matter, and hide the ones you'll never go back to. Quick chips run the prompts you use&nbsp;every day in one tap."
+  },
+  "row5.loop": {
+   "v": "other",
+   "note": "this is kinda broken. message never really sends, doesn't visibly sync to phone. also i don't think we show the maximize/minimize/close buttons on phone. and think the phone left/right bezels just a smidge/"
+  },
+  "row6.desc": {
+   "v": "other",
+   "note": "Build a theme by describing it - customize wallpapers, app colors, mascots. Browse 300+ plugins from the marketplace: journaling, a personal encyclopedia, calendar and email integrations, and whatever your friends publish."
+  },
+  "row7.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "row6.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "row8.loop": {
+   "v": "yes",
+   "note": ""
+  },
+  "gs.title": {
+   "v": "other",
+   "note": "You may need a few accounts."
+  },
+  "gs.card2": {
+   "v": "other",
+   "note": "One account provides access to hundreds of models from every AI company. Pay only for what you use."
+  }
+ }
+}

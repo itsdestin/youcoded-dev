@@ -87,15 +87,29 @@ Work every finding in the same run:
 - **Decision-residue** (privacy copy, LICENSE text, deleting user-created content,
   product-behavior questions) — never auto-edit; goes to the report's `## Residue` with a
   recommendation.
-- Drift genuinely unfixable this session → ROADMAP `bug` line tagged `#docs` AND a
-  residue entry.
+- Drift genuinely unfixable this session → an entry in `docs/roadmap/dev-workspace.md`
+  under `## knowledge` (`ROADMAP.md` → "Filing an item") AND a residue entry.
 
 ### 5. Roadmap verification
 
-For every open `[ ]` item in `ROADMAP.md`: check whether it already shipped (git log
-since its `(added YYYY-MM-DD)` date, or read the code it names). Shipped → flip to `[x]`,
-note the commit/PR in the detail line, move to `## Shipped`. Stale `in-progress` tokens
-get the same check. Dedup near-identical items (merge detail lines, keep the older date).
+One command: `node scripts/roadmap-check.mjs --fix`. Paste its output into the report
+under `## Roadmap`. Then:
+
+- **Structure errors** (exit 1): fix the file it names, re-run. Nothing else runs until it is clean.
+- **Broken claims**: `--fix` already flipped them to `needs-verify`. Re-read each report
+  it names against the code; if the diagnosis still holds, update the anchor and set the
+  item back to `confirmed` with `checked` = today. If not, rewrite the report or close the item.
+- **Claim warnings** (confirmed with no anchor; anchor matching more than one place): fix the
+  report's anchor.
+- **For Destin**: hand him the list as is — decisions first, then symptoms unconfirmed for
+  60+ days grouped by area. Yes / no / don't know per item. Apply his answers: yes →
+  re-stamp `checked` (and `needs-verify` → `confirmed`); no → move to `shipped.md` with
+  "no longer reproduces"; don't know → `needs-verify`.
+- **Index**: already rewritten by `--fix`.
+
+Dedup near-identical items across area files by hand (one entry, one report, keep the
+older date in the report's history line). Filing rule and grammar: the bottom of
+`ROADMAP.md` and the spec, `docs/archive/specs/2026-09-01-roadmap-restructure-design.md` §2.
 
 ### 6. Gardening (the anti-rot pass)
 
@@ -104,7 +118,7 @@ get the same check. Dedup near-identical items (merge detail lines, keep the old
   to `shipped`/`superseded`. Verify every doc there still has `status:` frontmatter.
 - MAP: update rows for renamed/new entry points found in steps 2–3.
 - Auto-memory (`~/.claude/projects/C--Users-desti-youcoded-dev/memory/`): delete or
-  migrate duplicative/misplaced/drifted entries. Planning content moves to ROADMAP.md —
+  migrate duplicative/misplaced/drifted entries. Planning content moves to the area file under docs/roadmap/ whose Filing test says yes —
   memory is the last-resort store.
 - Outward-facing docs: diff each repo since the last audit; review README, in-app
   privacy copy, landing-page FAQ, LICENSE, sub-repo CLAUDE.md against what changed.

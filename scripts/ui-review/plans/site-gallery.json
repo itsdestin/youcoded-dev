@@ -57,7 +57,7 @@
    "name": "connect4",
    "actions": [
     {
-     "click": "[title='Connect 4']",
+     "click": "[title='Games']",
      "settle": 1500
     },
     {

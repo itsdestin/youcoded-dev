@@ -1,0 +1,29 @@
+{
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=week",
+  "theme": "meadow-mist",
+  "boot": 3000,
+  "actions": [
+    {
+      "hold": 1200
+    },
+    {
+      "click": "[placeholder^='Message']",
+      "settle": 200
+    },
+    {
+      "typeSlow": "yes, add reminders the night before each block",
+      "cps": 30
+    },
+    {
+      "key": "Enter",
+      "settle": 600
+    },
+    {
+      "hold": 9000
+    },
+    {
+      "hold": 3500
+    }
+  ],
+  "_note": "Matched pair for the landing redesign: the same script at two viewports, so the desktop clip and the phone overlay show the same conversation at the same moment. Fixed holds instead of waitForText -- nothing is clicked after the reply, and a fixed wait takes the same time in both takes. Recorded into media-local/, never media/, which is the LIVE site's asset directory. row5-follow.json is left alone so site-assets.sh keeps regenerating the current live clip until the redesign ships."
+}

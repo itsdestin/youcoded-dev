@@ -2,7 +2,7 @@
 title: Perf lab — session status and handoff
 status: active
 date: 2026-08-27
-plan: docs/active/plans/2026-08-23-perf-lab-and-optimization-loop.md
+plan: docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md
 corrections: docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md
 manual: docs/active/handoffs/2026-08-26-perf-loop-operating-manual.md
 ---

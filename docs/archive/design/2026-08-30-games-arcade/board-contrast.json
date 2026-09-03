@@ -1,0 +1,60 @@
+{
+  "title": "Chess — how dark should the dark squares be?",
+  "key": "games-arcade-board-contrast",
+  "out": "board-contrast.html",
+  "images": "images/games-arcade-board-contrast",
+  "runs": {
+    "after": "/home/destin/youcoded-dev/scratch/ui-review-2026-08-31"
+  },
+  "themes": ["dark", "meadow-mist", "midnight", "halftone-dimension", "light", "creme"],
+  "crops": {
+    "board-today":    ["games-board-today",    "chess-board-today",    "540x610+900+40"],
+    "board-soft":     ["games-board-soft",     "chess-board-soft",     "540x610+900+40"],
+    "board-contrast": ["games-board-contrast", "chess-board-contrast", "540x610+900+40"],
+    "board-wood":     ["games-board-wood",     "chess-board-wood",     "540x610+900+40"]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Chess board",
+      "path": "Games → Chess",
+      "headline": "The chess board's two square shades are almost identical. Pick how strong they should be.",
+      "measured": "Today the two squares differ by 1.05 to 1.40 depending on theme. A wooden board is nearer 2.5 to 3. The cause: the board asked for a tinted square and a plain one, but only the plain one ever painted — so both squares have been raw interface greys, one shade apart, since the board was drawn.",
+      "risk": "Whichever you pick, the a-h and 1-8 edge letters have been made darker in all four pictures, because they would have vanished on a stronger square.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Leave it as it is",
+          "crop": "board-today",
+          "summary": "What ships now. In Dark and Meadow Mist the checker pattern is essentially invisible — you can see where the pieces are but not the light and dark squares they stand on. Bishops are the practical problem: a bishop lives on one colour for the whole game, and you cannot see which.",
+          "measured": "1.05 to 1.40 across the six themes",
+          "risk": "Reading the board is guesswork in three of the six themes."
+        },
+        {
+          "id": "soft",
+          "label": "Gentle",
+          "crop": "board-soft",
+          "summary": "A visible checker pattern that still sits quietly next to the conversation. The board reads as part of the app rather than as a game board dropped into it. Half the strength of the next option.",
+          "measured": "1.50 to 1.86 across the six themes",
+          "risk": "Still under a real board, so at a glance across the pane the pattern can still fade out."
+        },
+        {
+          "id": "contrast",
+          "label": "Full strength, grey (I would pick this)",
+          "crop": "board-contrast",
+          "summary": "The squares reach the strength a physical board has, using a grey built from your theme's own text colour. It is the only option that cannot be defeated by a theme: text always stands out against its own background, so this works on community themes nobody has looked at yet — and people publish new ones constantly.",
+          "measured": "2.01 to 2.97 — never below 2 in any theme",
+          "risk": "Greys, not woods. The board is unmistakably readable but it does not pick up your theme's colour the way the last option does."
+        },
+        {
+          "id": "wood",
+          "label": "Full strength, in your theme's colour",
+          "crop": "board-wood",
+          "summary": "The dark squares take your theme's own colour, so Crème gets a cream-and-brown board that looks like real wood and Midnight goes blue. The prettiest of the four by some distance. Its colour is blended toward the text colour first, because pure colour alone measured 1.40 on Halftone and 1.44 on Meadow Mist — those themes' colours sit too close to their own backgrounds.",
+          "measured": "1.80 to 2.86 — weakest on Meadow Mist (1.80) and Halftone (1.89)",
+          "risk": "Two themes still land under the grey option, and a future community theme could land lower still, because how well it works depends on a colour its author chose."
+        }
+      ]
+    }
+  ]
+}

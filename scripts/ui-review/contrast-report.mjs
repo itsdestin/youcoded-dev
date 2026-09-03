@@ -2,8 +2,32 @@
 import { readFileSync, existsSync } from 'node:fs';
 const dirs = process.argv.slice(2);
 const rows = [];
-import { readdirSync } from 'node:fs';
-for (const d of dirs) { if (!existsSync(d)) continue; for (const f of readdirSync(d).filter(f => /^manifest.*\.json$/.test(f))) for (const e of JSON.parse(readFileSync(`${d}/${f}`,'utf8'))) for (const f of (e.contrastFails ?? [])) rows.push({ theme: e.theme, surface: e.name, ...f }); }
+import { readdirSync, statSync } from 'node:fs';
+// NEWEST MANIFEST WINS, per (dir, theme, surface).
+//
+// WHY: an output directory ACCUMULATES manifests across runs — re-shooting one
+// plan leaves the previous run's manifest beside the new one. Without this the
+// report unioned every run it could find and listed failures that had already
+// been fixed. Measured 2026-08-31: the chess board's coordinate labels were
+// lifted from fg-faint to fg-muted, the pixels proved it, and contrast.md went
+// on reporting the OLD colour from a manifest 5 minutes older — which reads as
+// "your fix did not work". The deck's crop resolver already picks the newest
+// entry (deck/crops.py, newest_manifest_entry); this had no such filter.
+for (const d of dirs) {
+  if (!existsSync(d)) continue;
+  const latest = new Map();   // `${theme}|${name}` -> { mtime, entry }
+  const files = readdirSync(d).filter(f => /^manifest.*\.json$/.test(f));
+  for (const f of files) {
+    const mtime = statSync(`${d}/${f}`).mtimeMs;
+    for (const e of JSON.parse(readFileSync(`${d}/${f}`, 'utf8'))) {
+      const k = `${e.theme}|${e.name}`;
+      const prev = latest.get(k);
+      if (!prev || mtime > prev.mtime) latest.set(k, { mtime, entry: e });
+    }
+  }
+  for (const { entry: e } of latest.values())
+    for (const f of (e.contrastFails ?? [])) rows.push({ theme: e.theme, surface: e.name, ...f });
+}
 // dedupe identical text+path+theme, keep list of surfaces
 const key = r => `${r.theme}|${r.text}|${r.path}|${r.fg}|${r.bg}`;
 const m = new Map();

@@ -1,0 +1,23 @@
+{
+ "title": "Landing page \u2014 hero cycler fix",
+ "key": "site-hero-cycler",
+ "out": "hero-deck.html",
+ "images": "images/hero-deck",
+ "runs": {
+  "before": "/tmp/claude-1000/site-old",
+  "after": "/home/destin/youcoded-dev/worktrees/site-rebuild/docs"
+ },
+ "steps": [
+  {
+   "id": "hero-cycle",
+   "surface": "Landing page \u00b7 hero",
+   "path": "Top of the page, the first four seconds after it loads",
+   "clip": "site-hero-cycler",
+   "headline": "The three words take turns instead of piling up.",
+   "changed": "Each word's rise-hold-exit now takes 1.05 s on a 1.0 s gap (was 1.7 s on 1.2 s), so a word is gone before the next arrives. Words land at 0.9 / 1.9 / 2.9 s; the page fills in at 3.7 s.",
+   "measured": "cycle 3.7 s end to end (was 4.3 s)",
+   "notice": "Before: 'Useful.' is still sitting there when 'Fun.' rises under it, and again for 'Yours.'. After: one word at a time, a touch quicker overall.",
+   "risk": "Timing is a feel thing \u2014 if the hand-off now reads as a gap rather than a bump, the fix is a few hundredths of a second, not a rewrite."
+  }
+ ]
+}

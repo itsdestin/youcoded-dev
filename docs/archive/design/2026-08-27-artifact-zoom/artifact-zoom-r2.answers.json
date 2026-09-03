@@ -1,0 +1,22 @@
+{
+ "deck": "artifact-zoom-r2",
+ "started": "2026-08-28T01:38:19.570Z",
+ "submitted": "2026-08-28T01:39:19Z",
+ "cur": 1,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "note": "if find bar is opened, it should nudge this button/menu down.",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-2": {
+   "note": "ok",
+   "v": "yes",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

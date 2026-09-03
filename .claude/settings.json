@@ -24,6 +24,40 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/roadmap-edit-check.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "InstructionsLoaded": [
+      {
+        "matcher": "path_glob_match",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/instructions-log.sh\" path_glob_match",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "session_start",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/instructions-log.sh\" session_start",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }

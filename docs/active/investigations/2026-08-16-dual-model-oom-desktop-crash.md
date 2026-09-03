@@ -1,6 +1,8 @@
 ---
-status: active — NOT FIXED, re-verified 2026-08-26
+status: active
 date: 2026-08-16
+type: investigation
+topic: two large local models loaded together exhaust unified memory — the residency cap counts models, the guard reads total memory and never the GTT ceiling
 tags: [local-models, memory, strix-halo, oom, engine]
 ---
 
@@ -21,6 +23,8 @@ reached but is structurally unable to prevent this class of event.
 > Destin**, not on build effort: decisions (a) auto-unload vs. toast vs. hard-block and (b) whether
 > a single model is capped by the GPU-pool ceiling are both explicitly "do not guess". Until one of
 > those is answered, the same two models will take the desktop down again.
+
+**History:** filed 2026-08-16 (ROADMAP bug, hit live by Destin); re-verified unfixed 2026-08-26; re-verified again 2026-09-01 during the roadmap migration — `MODELS_MAX = 2` (`engine-supervisor.ts:48`, passed as `--models-max` at :304), `capacity = totalMemBytes + (totalVramBytes ?? 0)` (`fit-estimator.ts:66`), "You can still continue." (`fit-estimator.ts:92`), `readAmdSysfsVram` reading `mem_info_vram_total` (`gpu-detector.ts:140-149`) are all still present, and `rg -i gtt desktop/src` still finds no reader of `mem_info_gtt_total`. No commit since 2026-08-16 touched the guard. Roadmap entry: `docs/roadmap/local-models.md`, status `decision`.
 
 ## What actually happened
 
@@ -111,6 +115,7 @@ verdict `tight` — still only a soft, dismissible warning. Four structural prob
    once held. Nothing in the codebase reads `mem_info_gtt_total`.
 3. **It measures total memory, not free memory.** `capacity = totalMemBytes` ignores
    what Chrome, Steam, Discord, and Claude Code were already holding.
+   <!-- claim: {"path": "youcoded/desktop/src/main/models/fit-estimator.ts", "contains": "const capacity = totalMemBytes \\+ \\(totalVramBytes \\?\\? 0\\);"} -->
 4. **`gpu-detector` misreads this APU as a dedicated 4 GB GPU.** `readAmdSysfsVram`
    (`gpu-detector.ts:140`) reads `mem_info_vram_total`, which on Strix Halo is the
    BIOS-carved 4 GiB UMA window — above the 2 GB `MIN_DEDICATED_VRAM_BYTES` floor, so

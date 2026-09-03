@@ -1,0 +1,23 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default",
+  "shots": [
+    {
+      "name": "flappy-playing",
+      "actions": [
+        { "click": "[title='Games']", "settle": 900 },
+        { "clickText": "Flappy", "settle": 700 },
+        { "clickText": "Play", "settle": 1400 }
+      ],
+      "expect": "js:!document.body.textContent.includes('Pipes cleared')"
+    },
+    {
+      "name": "2048-playing",
+      "actions": [
+        { "click": "[title='Games']", "settle": 900 },
+        { "clickText": "2048", "settle": 700 },
+        { "clickText": "Play", "settle": 1200 }
+      ],
+      "expect": "js:document.querySelector('[data-game-keys]') !== null"
+    }
+  ]
+}

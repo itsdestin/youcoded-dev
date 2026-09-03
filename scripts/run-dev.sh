@@ -19,7 +19,8 @@
 #
 # OPTIONS
 #   --path <dir>      Launch an explicit checkout dir (contains desktop/). Overrides <worktree>.
-#   --offset <n>      Port offset (default 50: Vite 5223, remote 9950). Use a DIFFERENT value
+#   --no-devtools     Disable the remote-debugging port (on by default, localhost only)
+#   --offset <n>      Port offset (default 50: Vite 5223, remote 9950, debugger 9272). Use a DIFFERENT value
 #                     to run two dev instances at once — and pair it with --profile.
 #   --label <text>    Window-title descriptor → "YouCoded - <text>" in the taskbar/Alt-Tab,
 #                     so concurrent dev instances are tellable apart. Defaults to the branch name.
@@ -44,6 +45,8 @@ MAIN_CHECKOUT="$ROOT/youcoded"
 WORKTREE=""
 EXPLICIT_PATH=""
 OFFSET="${YOUCODED_PORT_OFFSET:-50}"
+# Remote-debugging port on by default for dev instances; --no-devtools turns it off.
+DEVTOOLS=1
 PROFILE="${YOUCODED_PROFILE:-dev}"
 LABEL=""            # window-title descriptor; defaults to the branch name below
 DRY_RUN=0
@@ -69,6 +72,7 @@ while [[ $# -gt 0 ]]; do
     --dry-run)  DRY_RUN=1; shift ;;
     --path)     EXPLICIT_PATH="${2:-}"; [[ -n "$EXPLICIT_PATH" ]] || die "--path needs a directory"; shift 2 ;;
     --offset)   OFFSET="${2:-}"; [[ -n "$OFFSET" ]] || die "--offset needs a number"; shift 2 ;;
+    --no-devtools) DEVTOOLS=0; shift ;;
     --profile)  PROFILE="${2:-}"; [[ -n "$PROFILE" ]] || die "--profile needs a name"; shift 2 ;;
     --label)    LABEL="${2:-}"; [[ -n "$LABEL" ]] || die "--label needs a descriptor"; shift 2 ;;
     -*)         die "unknown option: $1 (try --help)" ;;
@@ -134,6 +138,27 @@ export YOUCODED_PORT_OFFSET="$OFFSET"
 # localStorage, window bounds, and cache don't clobber the built app's.
 export YOUCODED_PROFILE="$PROFILE"
 
+# Chromium's remote-debugging port, ON BY DEFAULT for dev instances (2026-08-28).
+#
+# WHY default-on: without it, inspecting a live renderer means killing the app,
+# relaunching with the env var, and losing whatever state you were debugging.
+# That cost real time on the marketplace-feedback bug — three restarts to reach
+# a question one eval answered, and the bug it finally exposed (a main-process
+# handler dropping fields) was invisible to tsc AND to the whole test suite,
+# because the component tests mock that layer.
+#
+# WHY it is safe here: Chromium binds this to 127.0.0.1 only — strictly less
+# exposed than the remote server this same script starts on 0.0.0.0. It is also
+# double-gated in main.ts, which ignores the variable unless `!app.isPackaged`,
+# so a packaged build can never open it however this is set.
+#
+# It follows the same offset scheme as every other port so concurrent worktrees
+# don't collide (9222 + offset; 9272 at the default offset 50).
+# `--no-devtools` opts out.
+if [[ "$DEVTOOLS" == "1" ]]; then
+  export YOUCODED_DEVTOOLS_PORT="$((9222 + OFFSET))"
+fi
+
 # Window-title descriptor so concurrent dev instances are tellable apart in the
 # taskbar / Alt-Tab (main.ts reads this → "YouCoded - <label>"). Default to the
 # branch name (minus a feat/fix/chore prefix) when --label wasn't given, so a dev
@@ -159,6 +184,11 @@ echo "  Window title:  YouCoded - $YOUCODED_DEV_LABEL"
 echo "  Profile:       $PROFILE  (userData → %APPDATA%/youcoded-$PROFILE/)"
 echo "  Vite:          http://localhost:$((5173 + YOUCODED_PORT_OFFSET))"
 echo "  Remote server: port $((9900 + YOUCODED_PORT_OFFSET)) (if enabled in dev)"
+if [[ "$DEVTOOLS" == "1" ]]; then
+  echo "  Debugger:      http://127.0.0.1:$((9222 + OFFSET))/json/list  (localhost only; --no-devtools to disable)"
+else
+  echo "  Debugger:      off (--no-devtools)"
+fi
 echo ""
 
 if [[ "$DRY_RUN" == "1" ]]; then

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="midnight">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouCoded — Mockup B: Theater</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   MOCKUP B — "THEATER"
+   Same sections, same words. What changes:
+   - split hero: the app is visible in the first screenful
+   - THE BIG MOVE: the 9 features stop being 9 stacked blocks.
+     One big screen stays pinned on the right while the 9
+     descriptions scroll past on the left, swapping the video.
+     The app never leaves the screen and every feature gets a
+     full-size screenshot instead of a thumbnail.
+   - a progress rail shows where you are in the 9
+   ============================================================ */
+:root{
+  --bg-deep:#0D1117; --bg-surface:#12171E; --bg-card:#1c2129; --bg-elev:#222830;
+  --text-primary:#E6EDF3; --text-secondary:#A0AAB4; --text-dim:#8B949E; --text-muted:#6E7681; --text-faint:#484F58;
+  --accent:#88B4D8; --accent-warm:#a8c8e5; --accent-glow:rgba(136,180,216,.14); --accent-subtle:rgba(136,180,216,.07);
+  --border:#2A3038; --border-dim:rgba(48,54,61,.55); --border-accent:rgba(136,180,216,.32);
+  --font-display:'DM Sans',-apple-system,sans-serif; --font-mono:'JetBrains Mono',monospace;
+  --shadow:0 30px 80px -24px rgba(0,0,0,.8),0 4px 16px rgba(0,0,0,.5);
+  --nav-h:62px; --wide:1320px;
+}
+html[data-theme="creme"]{
+  --bg-deep:#FBF6EC; --bg-surface:#F4EADB; --bg-card:#FFFFFF; --bg-elev:#FBF5EA;
+  --text-primary:#2A211A; --text-secondary:#564A3C; --text-dim:#7D7060; --text-muted:#A69A89; --text-faint:#C8BDAC;
+  --accent:#C2796B; --accent-warm:#D58E80; --accent-glow:rgba(194,121,107,.14); --accent-subtle:rgba(194,121,107,.06);
+  --border:#E3D6BF; --border-dim:rgba(227,214,191,.6); --border-accent:rgba(194,121,107,.3);
+  --shadow:0 30px 80px -28px rgba(42,33,26,.28),0 4px 16px rgba(42,33,26,.07);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-display);background:var(--bg-deep);color:var(--text-primary);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .4s,color .4s}
+img,video{display:block;max-width:100%}
+.wrap{max-width:var(--wide);margin:0 auto;padding:0 36px}
+
+/* ---------- NAV ---------- */
+.nav{position:fixed;inset:0 0 auto;height:var(--nav-h);z-index:100;background:color-mix(in srgb,var(--bg-deep) 82%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--border-dim)}
+.nav-in{max-width:var(--wide);margin:0 auto;padding:0 36px;height:100%;display:flex;align-items:center;gap:30px}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:inherit;font-weight:800;letter-spacing:-.02em}
+.logo img{width:22px;height:22px}
+.logo .sub{display:block;font-family:var(--font-mono);font-size:.57rem;color:var(--text-muted);letter-spacing:.07em;text-transform:uppercase;margin-top:-3px}
+.nav-links{margin-left:auto;display:flex;align-items:center;gap:26px;list-style:none}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:.87rem;font-weight:500}
+.nav-links a:hover{color:var(--text-primary)}
+.icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:none;color:var(--text-dim);cursor:pointer}
+.nav-links a.cta{background:var(--accent);color:var(--bg-deep);padding:9px 18px;border-radius:9px;font-size:.85rem;font-weight:700;text-decoration:none}
+
+/* ---------- HERO: split, product in the first screenful ---------- */
+.hero{min-height:78vh;display:grid;grid-template-columns:minmax(380px,44%) 1fr;align-items:center;gap:56px;padding:calc(var(--nav-h) + 60px) 0 70px;max-width:1500px;margin:0 auto;padding-left:36px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-20%;right:-10%;width:900px;height:900px;background:radial-gradient(circle,var(--accent-glow),transparent 62%);pointer-events:none}
+.hero h1{font-size:clamp(2.9rem,5.2vw,4.4rem);font-weight:900;letter-spacing:-.045em;line-height:1.02}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{margin-top:22px;font-size:1.1rem;color:var(--text-secondary);max-width:480px}
+.hero-btns{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+.btn{padding:13px 24px;border-radius:11px;font-weight:700;font-size:.94rem;text-decoration:none;transition:.18s}
+.btn-p{background:var(--accent);color:var(--bg-deep)}
+.btn-p:hover{background:var(--accent-warm)}
+.btn-s{border:1px solid var(--border);color:var(--text-primary)}
+.btn-s:hover{border-color:var(--accent)}
+.hero p.hero-note{margin-top:16px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);letter-spacing:.04em}
+.hero-art{position:relative}
+.hero-art img{width:100%;min-width:760px;border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow)}
+
+/* ---------- SECTIONS ---------- */
+section{padding:110px 0}
+.band{background:var(--bg-surface);border-top:1px solid var(--border-dim);border-bottom:1px solid var(--border-dim)}
+.eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.17em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+h2{font-size:clamp(2rem,3.7vw,2.85rem);font-weight:800;letter-spacing:-.035em;line-height:1.1}
+.lede{margin-top:14px;color:var(--text-dim);font-size:1.03rem;max-width:660px}
+
+/* ABOUT: the wall of text becomes a big statement + a 2-col read */
+.about{display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-top:36px;align-items:start}
+.about-big{font-size:1.6rem;line-height:1.38;font-weight:500;letter-spacing:-.02em}
+.about-rest p{color:var(--text-secondary);font-size:.98rem}
+.about-rest p+p{margin-top:15px}
+.permission{grid-column:1/-1;margin-top:16px;padding:18px 22px;border:1px solid var(--border-accent);background:var(--accent-subtle);border-radius:11px;color:var(--text-secondary);font-size:.96rem}
+
+/* EMBED */
+.embed{margin-top:36px;position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);aspect-ratio:16/10;background:#000}
+.embed img{width:100%;height:100%;object-fit:cover}
+.embed .play{position:absolute;inset:0;display:grid;place-items:center}
+.embed .play span{background:rgba(0,0,0,.7);color:#fff;padding:13px 28px;border-radius:100px;font-weight:600;backdrop-filter:blur(8px)}
+
+/* ---------- THE THEATER ---------- */
+.theater{display:grid;grid-template-columns:minmax(300px,360px) 1fr;gap:56px;margin-top:44px;align-items:start}
+.rail{position:sticky;top:calc(var(--nav-h) + 26px);align-self:start}
+.stage{position:sticky;top:22vh;aspect-ratio:16/10;max-height:74vh;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);background:var(--bg-card)}
+.stage>*{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .45s ease}
+.stage>.on{opacity:1}
+.steps{display:flex;flex-direction:column}
+.step{min-height:64vh;display:flex;flex-direction:column;justify-content:center;padding:20px 0;opacity:.32;transition:opacity .35s}
+.step.active{opacity:1}
+.step-label{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.step h3{font-size:1.55rem;font-weight:700;letter-spacing:-.025em;line-height:1.22}
+.step p{margin-top:14px;color:var(--text-secondary);font-size:.97rem}
+/* Progress rail: 9 ticks so the reader knows how long this section is. */
+.ticks{position:fixed;left:16px;top:50%;transform:translateY(-50%);display:none;flex-direction:column;gap:9px;z-index:50}
+.ticks.show{display:flex}
+.tick{width:3px;height:20px;border-radius:2px;background:var(--border);transition:.25s}
+.tick.on{background:var(--accent);height:30px}
+.chip-rm{display:inline-block;font-family:var(--font-mono);font-size:.6rem;padding:3px 9px;border-radius:100px;border:1px dashed var(--accent);color:var(--accent);margin-left:8px;text-transform:none;letter-spacing:.04em}
+.sketch{position:absolute;inset:0;padding:26px;font-family:var(--font-mono);font-size:.8rem;color:var(--text-dim);background:var(--bg-card);display:grid;grid-template-columns:30% 1fr;gap:18px;align-content:start}
+.sketch .k{color:var(--text-primary);font-weight:600;margin-bottom:10px}
+.sketch .li{padding:8px 11px;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px}
+.sketch .on2{border-color:var(--accent);color:var(--accent)}
+
+/* STORY */
+.story{max-width:720px;margin:32px auto 0;font-size:1.04rem;color:var(--text-secondary)}
+.story p+p{margin-top:18px}.story strong{color:var(--text-primary)}
+.sign{display:inline-block;margin-top:26px;font-weight:700;color:var(--accent);text-decoration:none}
+
+/* ACCOUNTS as a stepper */
+.steps-h{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:40px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--bg-card)}
+.acct{padding:26px 22px;border-right:1px solid var(--border-dim)}
+.acct:last-child{border-right:none}
+.acct .n{font-family:var(--font-mono);font-size:.68rem;color:var(--text-faint);margin-bottom:10px}
+.acct h3{font-size:1.02rem;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.acct p{font-size:.87rem;color:var(--text-dim);margin-top:10px}
+.acct a{display:inline-block;margin-top:13px;font-size:.83rem;font-weight:600;color:var(--accent);text-decoration:none}
+.badge{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:100px;border:1px solid var(--border);color:var(--text-muted)}
+.badge.req{border-color:var(--accent);color:var(--accent)}
+.note{margin-top:22px;color:var(--text-muted);font-size:.92rem}
+
+/* DOWNLOAD band */
+.dl-band{text-align:center}
+.dl-grid{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+.dl{display:flex;align-items:center;gap:12px;padding:16px 22px;border-radius:12px;border:1px solid var(--border);background:var(--bg-card);text-decoration:none;color:inherit;transition:.18s;min-width:210px}
+.dl:hover{border-color:var(--accent);transform:translateY(-2px)}
+.dl svg{width:22px;height:22px;fill:currentColor;flex:none}
+.dl .l{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted);display:block;text-align:left}
+.dl .p{font-weight:700;font-size:.98rem;display:block;text-align:left}
+
+/* FAQ two columns */
+.faq{display:grid;grid-template-columns:1fr 1fr;gap:0 48px;margin-top:34px}
+.faq details{border-bottom:1px solid var(--border-dim);break-inside:avoid}
+.faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:600;font-size:.99rem;display:flex;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';margin-left:auto;color:var(--accent);font-size:1.3rem;line-height:1}
+.faq details[open] summary::after{content:'\2013'}
+.faq .a{padding:0 0 20px;color:var(--text-secondary);font-size:.94rem}
+
+/* GALLERY marquee, full bleed */
+.marquee{overflow:hidden;margin-top:36px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.track{display:flex;gap:18px;width:max-content;animation:slide 60s linear infinite}
+.track img{width:420px;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow)}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+footer{border-top:1px solid var(--border-dim);padding:44px 0}
+.foot{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.foot a{color:var(--text-dim);text-decoration:none;font-size:.88rem}
+.legal{width:100%;font-size:.79rem;color:var(--text-muted);margin-top:8px}
+
+@media(max-width:1000px){
+  .hero{grid-template-columns:1fr;min-height:auto;padding-right:36px}
+  .hero-art img{min-width:0}
+  .theater{grid-template-columns:1fr}
+  .stage{position:relative;top:auto;height:auto;aspect-ratio:16/10;margin-bottom:20px}
+  .stage>*{position:relative;opacity:1;display:none}.stage>.on{display:block}
+  .step{min-height:auto;opacity:1}
+  .about,.faq,.steps-h{grid-template-columns:1fr}
+  .ticks{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-in">
+  <a href="#top" class="logo"><img src="favicon-dark.svg" class="fav" alt=""><span>You<span style="color:var(--accent)">Coded</span> Assistant<span class="sub">Agentic AI for Everyone</span></span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li><li><a href="#demo">Features</a></li><li><a href="#faq">FAQ</a></li>
+    <li><button class="icon-btn" id="tt">◐</button></li>
+    <li><a class="cta" href="#download">Download</a></li>
+  </ul>
+</div></nav>
+
+<div class="ticks" id="ticks"></div>
+
+<header class="hero" id="top">
+  <div>
+    <h1>Make AI <em>Yours.</em></h1>
+    <p>A self-improving, customizable AI agent. Use any AI model from any provider to build or accomplish anything you want.</p>
+    <div class="hero-btns"><a class="btn btn-p" href="#download">Download</a><a class="btn btn-s" href="#see-it">Try it in the browser</a></div>
+    <p class="hero-note">Free &amp; open source · Windows · macOS · Linux · Android</p>
+  </div>
+  <div class="hero-art"><img src="media/embed.webp" alt="YouCoded Assistant"></div>
+</header>
+
+<section id="about"><div class="wrap">
+  <p class="eyebrow">What is this?</p><h2>More than a chatbot.</h2>
+  <div class="about">
+    <p class="about-big">YouCoded is a fully-customizable AI assistant that works with your own files and data to autonomously accomplish tasks. Review and organize large spreadsheets, compile the latest medical or financial research, draft an email or slideshow, or build new features in large coding projects.</p>
+    <div class="about-rest">
+      <p>With YouCoded, you can utilize OpenRouter to access any AI model from any provider including Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and more. YouCoded also allows you to download and run open source AI models on your own device, if your hardware supports it.</p>
+      <p>YouCoded is built to become a fully-modular and open source assistant platform, as the app itself integrates the ability for all users to build and share skills, tools, themes, and app improvements.</p>
+      <p>Because YouCoded was designed from the ground up to improved by individuals with no coding or development interest, it can quickly outpace development of competing closed agents in a way that is driven by what users really want.</p>
+    </div>
+    <p class="permission">Nothing happens without your permission. YouCoded Assistant asks before it acts.</p>
+  </div>
+</div></section>
+
+<section class="band" id="see-it"><div class="wrap">
+  <p class="eyebrow">Try it</p><h2>Click around, I guess.</h2>
+  <p class="lede">Type a message, open the model picker, or switch the theme. This demo is a pixel-perfect representation of the real app's interface.</p>
+  <div class="embed"><img src="media/embed.webp" alt=""><div class="play"><span>Start the demo →</span></div></div>
+</div></section>
+
+<!-- THE THEATER: 9 features, one pinned screen -->
+<section id="demo"><div class="wrap">
+  <p class="eyebrow">What you get</p><h2>Everything the app gives you.</h2>
+  <p class="lede">Nine things, one screen. Scroll and it changes.</p>
+  <div class="theater">
+    <div class="steps" id="steps">
+      <div class="step" data-i="0"><div class="step-label">Seamless integration</div><h3>Tools and conversations work across any model.</h3><p>Select from hundreds of models via OpenRouter, use Claude Code with your subscription plan, or pick an offline, private model to run on your own computer. Switch models mid-conversation without interruption.</p></div>
+      <div class="step" data-i="1"><div class="step-label">Genuinely useful</div><h3>Give it a task and it does real work, with boundaries you can trust.</h3><p>It reads your files, writes new ones, develops repeatable skills and workflows, searches the web, and helps you manage your computer and your life more efficiently. Permission modes let you restrict the model to match your level of comfort.</p></div>
+      <div class="step" data-i="2"><div class="step-label">Logical management</div><h3>Project view keeps your files, conversations, and assistant instructions organized.</h3><p>Open spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.</p></div>
+      <div class="step" data-i="3"><div class="step-label">Stay organized</div><h3>Tags, notes, and shortcuts.</h3><p>Tag and annotate conversations, pin the ones that matter, and hide the ones you'll never go back to. Quick chips run the prompts you use every day in one tap.</p></div>
+      <div class="step" data-i="4"><div class="step-label">Works everywhere</div><h3>Start on your laptop. Finish on your phone.</h3><p>Windows, macOS, Linux, Android, and any browser. Your conversations and files stay in sync through your own private GitHub, so what you started here is waiting there.</p></div>
+      <div class="step" data-i="5"><div class="step-label">Make it yours</div><h3>Describe a look. Install a plugin. Share both.</h3><p>Build a theme by describing it — customize wallpapers, app colors, mascots. Browse 300+ plugins from the marketplace: journaling, a personal encyclopedia, calendar and email integrations, and whatever your friends publish.</p></div>
+      <div class="step" data-i="6"><div class="step-label">Play while it works</div><h3>Challenge a friend while it thinks.</h3><p>Long tasks take a minute. Play Connect Four with a friend in the side panel, see who's online, and get back to the answer when it's ready.</p></div>
+      <div class="step" data-i="7"><div class="step-label">For builders</div><h3>Made to be customized and work with you.</h3><p>Run Claude Code as a first-class session next to the app's own agent. Review, stage, and commit changes without leaving the window. Connect tools over MCP. Download and run local models with a GPU-fit check.</p></div>
+      <div class="step" data-i="8"><div class="step-label">Roadmap <span class="chip-rm">Coming after 1.3</span></div><h3>Hand it off.</h3><p>Set up a job once — what to do, which tools it may use, where to stop and check with you — then run it on a schedule or send it from your phone. Results and approvals land in an inbox. First: run now and scheduled runs. Later: kick off from an incoming email or a changed file.</p></div>
+    </div>
+    <div class="stage" id="stage">
+      <video class="on" data-i="0" muted loop playsinline preload="none" poster="media/row1-any-ai.webp"><source src="media/row1-any-ai.webm" type="video/webm"></video>
+      <video data-i="1" muted loop playsinline preload="none" poster="media/row2-does-things.webp"><source src="media/row2-does-things.webm" type="video/webm"></video>
+      <video data-i="2" muted loop playsinline preload="none" poster="media/row3-projects.webp"><source src="media/row3-projects.webm" type="video/webm"></video>
+      <video data-i="3" muted loop playsinline preload="none" poster="media/row4-organized.webp"><source src="media/row4-organized.webm" type="video/webm"></video>
+      <video data-i="4" muted loop playsinline preload="none" poster="media/row5-follow.webp"><source src="media/row5-follow.webm" type="video/webm"></video>
+      <video data-i="5" muted loop playsinline preload="none" poster="media/row6-yours.webp"><source src="media/row6-yours.webm" type="video/webm"></video>
+      <video data-i="6" muted loop playsinline preload="none" poster="media/row7-play.webp"><source src="media/row7-play.webm" type="video/webm"></video>
+      <video data-i="7" muted loop playsinline preload="none" poster="media/row8-builders.webp"><source src="media/row8-builders.webm" type="video/webm"></video>
+      <div class="sketch" data-i="8">
+        <div><div class="k">Agents</div><div class="li on2">Weekly grocery list</div><div class="li">Inbox digest · 7am</div><div class="li">Receipts → spreadsheet</div></div>
+        <div><div class="k">Weekly grocery list</div><div class="li">1 · Read this week's plan</div><div class="li">2 · Draft the list</div><div class="li on2">3 · Check with me before ordering</div><div class="li">4 · Send to my phone</div><div class="k" style="margin-top:14px">Inbox</div><div class="li">Needs approval · Weekly grocery list · 2 min ago</div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section class="band" id="story"><div class="wrap">
+  <p class="eyebrow">Story</p><h2>How we got here.</h2>
+  <div class="story">
+    <p>Honestly, I really just wanted a cooler and more efficient way to journal and track my own tasks/goals. The very first thing I built with Claude is the Journaling and Life History system (now available in the marketplace), and I pretty quickly decided that I wanted to share it with my friends. However, the thought of installing and opening "Claude Code" in the terminal scared away most people almost immediately. I realized that the idea of advanced agentic AI is still rather new to most people, and that persuading them to adopt my fancy new journaling system would require it to be <em>much</em> more accessible and user-friendly. Towards this end, I kind of just… kept adding things. And now we're here.</p>
+    <p>Every line of YouCoded was written through conversation with Claude by me, <strong>someone who has never written code</strong>. Every feature, every platform port, every theme, every multiplayer game. The entire app was built, and is currently maintained, without a single line typed by hand.</p>
+    <p>YouCoded Assistant is what that kind of AI looks like when it's built for everyone — not just the people who already know how to use it.</p>
+    <a class="sign" href="#">Built by Destin →</a>
+  </div>
+</div></section>
+
+<section id="get-started"><div class="wrap">
+  <p class="eyebrow">Get started</p><h2>You may need a few accounts.</h2>
+  <div class="steps-h">
+    <div class="acct"><div class="n">01</div><h3>GitHub <span class="badge req">Required</span></h3><p>Keeps your conversations and files in sync across devices and delivers marketplace updates. Sign up with your Google or Apple account.</p><a href="#">Create a GitHub account →</a></div>
+    <div class="acct"><div class="n">02</div><h3>Anthropic <span class="badge">Optional</span></h3><p>A Claude Pro or Max plan lets you use Claude — the model YouCoded was built with.</p><a href="#">See Claude plans →</a></div>
+    <div class="acct"><div class="n">03</div><h3>OpenRouter <span class="badge">Optional</span></h3><p>One account provides access to hundreds of models from every AI company. Pay only for what you use.</p><a href="#">Create an OpenRouter account →</a></div>
+    <div class="acct"><div class="n">04</div><h3>Google or Apple <span class="badge">Optional</span></h3><p>An extra copy of your data in Google Drive or iCloud, on top of GitHub.</p></div>
+  </div>
+  <p class="note">Or skip the paid ones entirely — run a model on your own computer, free and offline.</p>
+</div></section>
+
+<section class="band dl-band" id="download"><div class="wrap">
+  <h2>Download YouCoded</h2>
+  <div class="dl-grid">
+    <a class="dl" href="#"><svg viewBox="0 0 24 24"><path d="M3,12V6.75L9,5.43V11.91L3,12M20,3V11.75L10,11.9V5.21L20,3M3,13L9,13.09V19.9L3,18.75V13M20,13.25V22L10,20.09V13.1L20,13.25Z"/></svg><span><span class="l">Download for</span><span class="p">Windows</span></span></a>
+    <a class="dl" href="#"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg><span><span class="l">Download for</span><span class="p">macOS</span></span></a>
+    <a class="dl" href="#"><svg viewBox="0 0 24 24"><path d="M19,16C19,17.72 18.37,19.3 17.34,20.5C17.75,20.89 18,21.41 18,22H6C6,21.41 6.25,20.89 6.66,20.5C5.63,19.3 5,17.72 5,16H3C3,14.75 3.57,13.64 4.46,12.91L4.47,12.89C6,11.81 7,10 7,8V7A5,5 0 0,1 12,2A5,5 0 0,1 17,7V8C17,10 18,11.81 19.53,12.89L19.54,12.91C20.43,13.64 21,14.75 21,16H19M16,16A4,4 0 0,0 12,12A4,4 0 0,0 8,16A4,4 0 0,0 12,20A4,4 0 0,0 16,16Z"/></svg><span><span class="l">Download for</span><span class="p">Linux</span></span></a>
+    <a class="dl" href="#"><svg viewBox="0 0 24 24"><path d="M18.44 5.56c-.68 1.16-1.36 2.33-2.03 3.5-.04-.02-.08-.03-.11-.04-1.83-.7-3.49-.8-4.42-.79-1.86.02-3.36.46-4.26.82-.09-.15-1.76-3.02-2.03-3.49a1.15 1.15 0 0 0-.14-.19c-.33-.36-.9-.49-1.38-.2-.47.28-.71.94-.39 1.5 1.95 3.37-.1-.22 1.95 3.36.02.03-.5.26-1.4 1.02C2.9 12.18.45 14.77 0 18.99h24c-.12-1.11-.37-2.1-.75-3.07-.74-1.91-1.84-3.29-2.74-4.18a12.1 12.1 0 0 0-2.13-1.69c.66-1.12 1.31-2.25 1.96-3.38.21-.36.19-.8-.01-1.12a1.1 1.1 0 0 0-.85-.53c-.52-.05-.94.31-1.05.54z"/></svg><span><span class="l">Download for</span><span class="p">Android</span></span></a>
+  </div>
+  <p class="note">Free and open source. On iPhone? Use YouCoded Assistant from Safari by connecting to any computer running the app.</p>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <p class="eyebrow">Common questions</p><h2>FAQ</h2>
+  <div class="faq">
+    <div>
+      <details open><summary>How is this different from ChatGPT or claude.ai?</summary><div class="a">Those are chat websites. YouCoded Assistant is an app on your computer and phone that works in your own files — it opens, edits, and organizes them, runs tasks, and searches the web — and you choose the AI behind it: Claude, hundreds of cloud models, or one that runs locally for free.</div></details>
+      <details><summary>Do I have to pay for anything?</summary><div class="a">No. The app is free and open source. A model that runs on your own computer costs nothing. If you want Claude, that's a Claude Pro or Max plan from Anthropic; if you want other cloud models, OpenRouter bills per use.</div></details>
+      <details><summary>Is my data private?</summary><div class="a">Your conversations, files, and settings live in your own GitHub (and, if you add them, your Google Drive or iCloud). Cloud models see what you send them while they work; a local model sends nothing anywhere. The app sends one anonymous daily ping — a hash of your device ID, the app version, platform, and rough region — so we can see how many people use it. No IP address, no username, no message content. Turn it off in Settings → About → Privacy.</div></details>
+      <details><summary>What platforms does it run on?</summary><div class="a">Windows, macOS, Linux, and Android, plus any web browser by connecting to a computer running the app. Apple integrations (iMessage, Apple Notes, and so on) work on macOS only.</div></details>
+    </div>
+    <div>
+      <details><summary>Do I need to know how to code?</summary><div class="a">No. The whole app was built by someone who has never written code, by talking to AI. If you can use ChatGPT, you can use this.</div></details>
+      <details><summary>Is "agentic" AI safe?</summary><div class="a">The app asks before it changes anything, and every standing permission you grant is listed on one screen where you can revoke it. AI still makes mistakes, so keep an eye on what it's doing — and be careful with full-auto mode, which lets it act without asking.</div></details>
+      <details><summary>Who built this?</summary><div class="a">So far, it's just me (Destin). However, my intention is for this open-source project to become something we all build together. I believe one of the greatest potential goods of AI comes from its ability to revolutionize the world of open-source software. This project is just one example of what AI can allow us to create: an app owned by nobody, improved by everybody — all without anyone needing to learn how to code or even understand what "open-source" is. No profit motive, no ulterior incentives — just people making cool shit and sharing it with other people :)</div></details>
+    </div>
+  </div>
+</div></section>
+
+<section class="band" id="gallery" style="padding-bottom:80px"><div class="wrap">
+  <p class="eyebrow">Gallery</p><h2>See what people have built.</h2>
+</div>
+<div class="marquee"><div class="track">
+  <img src="gallery/home-midnight.webp" alt=""><img src="gallery/marketplace-meadow-mist.webp" alt=""><img src="gallery/projects-light.webp" alt=""><img src="gallery/model-picker-creme.webp" alt=""><img src="gallery/connect4-halftone-dimension.webp" alt=""><img src="gallery/permissions-dark.webp" alt=""><img src="gallery/tags-midnight.webp" alt=""><img src="gallery/themes-creme.webp" alt="">
+  <img src="gallery/home-midnight.webp" alt=""><img src="gallery/marketplace-meadow-mist.webp" alt=""><img src="gallery/projects-light.webp" alt=""><img src="gallery/model-picker-creme.webp" alt=""><img src="gallery/connect4-halftone-dimension.webp" alt=""><img src="gallery/permissions-dark.webp" alt=""><img src="gallery/tags-midnight.webp" alt=""><img src="gallery/themes-creme.webp" alt="">
+</div></div></section>
+
+<footer><div class="wrap"><div class="foot">
+  <a href="#top" class="logo"><img src="favicon-dark.svg" class="fav" alt=""><span>You<span style="color:var(--accent)">Coded</span></span></a>
+  <a href="#" style="margin-left:auto">GitHub</a><a href="#">Built by Destin</a><span class="badge">Open Source</span>
+  <p class="legal">MIT License · YouCoded is an independent, community-built project. Not affiliated with, endorsed by, or officially supported by Anthropic.</p>
+</div></div></footer>
+
+<script>
+document.getElementById('tt').onclick=function(){
+  var m=document.documentElement.getAttribute('data-theme')==='midnight';
+  document.documentElement.setAttribute('data-theme',m?'creme':'midnight');
+  document.querySelectorAll('.fav').forEach(function(i){i.src=m?'favicon-light.svg':'favicon-dark.svg'});
+};
+// --- The theater: whichever step is nearest the middle of the screen owns
+// the pinned stage. Same idea as a slideshow, driven by scroll position. ---
+var steps=[].slice.call(document.querySelectorAll('.step'));
+var slides=[].slice.call(document.querySelectorAll('#stage > *'));
+var ticksEl=document.getElementById('ticks');
+steps.forEach(function(){var d=document.createElement('div');d.className='tick';ticksEl.appendChild(d)});
+var ticks=[].slice.call(ticksEl.children);
+var cur=-1;
+function show(i){
+  if(i===cur)return; cur=i;
+  slides.forEach(function(s,n){
+    s.classList.toggle('on',n===i);
+    if(s.tagName==='VIDEO'){ n===i ? s.play().catch(function(){}) : s.pause(); }
+  });
+  steps.forEach(function(s,n){s.classList.toggle('active',n===i)});
+  ticks.forEach(function(t,n){t.classList.toggle('on',n===i)});
+}
+function onScroll(){
+  var mid=innerHeight/2, best=0, bd=1e9;
+  steps.forEach(function(s,n){
+    var r=s.getBoundingClientRect(), d=Math.abs(r.top+r.height/2-mid);
+    if(d<bd){bd=d;best=n}
+  });
+  show(best);
+  var sec=document.getElementById('demo').getBoundingClientRect();
+  ticksEl.classList.toggle('show',sec.top<innerHeight*.4&&sec.bottom>innerHeight*.6);
+}
+addEventListener('scroll',onScroll,{passive:true});onScroll();
+</script>
+</body>
+</html>

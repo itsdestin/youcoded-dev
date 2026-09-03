@@ -1,14 +1,14 @@
 ---
 paths:
-  - "youcoded/desktop/src/renderer/state/chat-reducer.ts"
-  - "youcoded/desktop/src/renderer/state/chat-types.ts"
-  - "youcoded/desktop/src/renderer/components/ChatView.tsx"
-  - "youcoded/desktop/src/main/transcript-watcher.ts"
-  - "youcoded/desktop/src/main/subagent-watcher.ts"
-  - "youcoded/desktop/src/renderer/state/attention-classifier.ts"
-  - "youcoded/desktop/src/renderer/hooks/usePtyRawBytes.ts"
-  - "youcoded/terminal-emulator-vendored/**"
-  - "youcoded/shared-fixtures/**"
+  - "**/desktop/src/renderer/state/chat-reducer.ts"
+  - "**/desktop/src/renderer/state/chat-types.ts"
+  - "**/desktop/src/renderer/components/ChatView.tsx"
+  - "**/desktop/src/main/transcript-watcher.ts"
+  - "**/desktop/src/main/subagent-watcher.ts"
+  - "**/desktop/src/renderer/state/attention-classifier.ts"
+  - "**/desktop/src/renderer/hooks/usePtyRawBytes.ts"
+  - "**/terminal-emulator-vendored/**"
+  - "**/shared-fixtures/**"
 last_verified: 2026-08-27
 verify:
   - path: youcoded/desktop/src/renderer/state/chat-reducer.ts
@@ -33,6 +33,7 @@ verify:
   - test: youcoded/desktop/tests/transcript-page.test.ts
   - test: youcoded/desktop/tests/history-paging-reducer.test.ts
   - test: youcoded/desktop/tests/chatview-history-sentinel.test.tsx
+  - test: youcoded/desktop/tests/chatview-prepend-scroll-anchor.test.tsx
   - test: youcoded/desktop/tests/attention-classifier-parity.test.ts
   - test: youcoded/desktop/tests/raw-byte-listener-contract.test.ts
   - path: scripts/ast-grep/rules/toolcalls-never-cleared.yml
@@ -41,37 +42,33 @@ verify:
 ---
 # Chat reducer, transcript pipeline & terminal byte stream
 
-Chat state + the JSONL transcript watcher that feeds it + the Android byte pipeline. **Depth + why per bullet: `youcoded/docs/chat-reducer.md`.**
+**Depth + why per bullet: `youcoded/docs/chat-reducer.md`; guards + scans = frontmatter `verify:`.**
 
-## Reducer state (`chat-reducer.ts`) — guards: `chat-reducer`/`attention-reducer` tests
-- **Current-turn status checks use `activeTurnToolIds` (a Set), not the `toolCalls` Map** — the Map is never cleared (ToolCards need old results) · scan: `toolcalls-never-cleared`.
-- **Always use the `endTurn()` helper** for turn-ending paths — it fails orphaned tools, clears the Set + `isThinking`/`streamingText`/`currentTurnId`, resets `attentionState`/`stallWarning`/`stalledSince`. `SESSION_PROCESS_EXITED` and `NATIVE_SESSION_ERROR` are the only spread-then-override exceptions.
-- **`AttentionState` is `'ok'|'stuck'|'session-died'|'error'|'stalled'` — five reachable states, each with a writer.** Adding one without a writer resurrects dead `AttentionBanner` branches. `stalled` = a native turn is PARKED (RED dot, card with Retry/Stop); a stall WARNING maps to `'stuck'`, now the ONLY amber state.
-- **`stalledSince` is stamped once and held, and ONLY while already `'stalled'`** — nine `'ok'` writers never clear it, so the guard lives at the single WRITE site. `AttentionBanner` is the only reader.
-- **`NATIVE_PARTS_DROPPED` removes only the TRAILING run of matching segments**, stopping at the first non-match — part ids repeat across steps (SDK fallback `text-0`), so a whole-turn `.filter()` deleted FINISHED earlier-step paragraphs. A tool-group segment carries no `partId`, so it always stops the walk.
-- **Dedup uses the `pending` flag** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest matching pending entry, else appends. Don't "simplify" back to content matching.
-- **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits tool-use on a repeated uuid by design; every write on that path stays idempotent · scan: `no-seenuuids-on-tool-use`.
-- **A permission ask binds ONLY to a running tool with a MATCHING NAME** — no name-agnostic fallback · a card naming one tool while authorizing another is a CONSENT bug · guard: "PERMISSION_REQUEST tool identity".
-- **`TRANSCRIPT_REPLAY_COMPLETE` reaps replay-orphaned `running` tools ONLY when `sessionIdle`, marking them failed, never complete** — the same replay fires on a live re-dock · guard: "TRANSCRIPT_REPLAY_COMPLETE".
-- **`attentionState` is classifier-driven, not timer-driven** — `useAttentionClassifier` ticks the xterm buffer every 1s; transcript events + `PERMISSION_REQUEST` reset to `'ok'`. **Both of its `'ok'` dispatch sites are gated on `hasBuffer`: a classifier must never reset a state it never set** — without it a phone re-docking to a PARKED desktop session lost the card at mount.
+## Reducer state (`chat-reducer.ts`)
+- **Current-turn status checks use `activeTurnToolIds` (a Set), not the `toolCalls` Map** — the Map is never cleared (ToolCards need old results).
+- **Always use the `endTurn()` helper** on turn-ending paths — it fails orphaned tools and resets all turn state. `SESSION_PROCESS_EXITED`/`NATIVE_SESSION_ERROR` are the only spread-then-override exceptions.
+- **`AttentionState` is `'ok'|'stuck'|'session-died'|'error'|'stalled'` — five reachable states, each with a writer.** One without a writer resurrects dead `AttentionBanner` branches. `stalled` = a PARKED native turn; a stall WARNING is `'stuck'`, the ONLY amber state. **`stalledSince` is stamped once and held, ONLY while already `'stalled'`** — nine `'ok'` writers never clear it, so that guard sits at the WRITE site.
+- **`NATIVE_PARTS_DROPPED` removes only the TRAILING run of matching segments**, stopping at the first non-match: part ids repeat across steps, so a whole-turn `.filter()` deleted FINISHED paragraphs.
+- **User-message dedup uses the `pending` flag, never content matching** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest match, else appends. **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits on a repeated uuid by design, so writes there stay idempotent.
+- **A permission ask binds ONLY to a running tool with a MATCHING NAME**, no name-agnostic fallback — a card naming one tool while authorizing another is a CONSENT bug.
+- **`TRANSCRIPT_REPLAY_COMPLETE` reaps replay-orphaned `running` tools ONLY when `sessionIdle`, failed not complete** — the same replay fires on a live re-dock.
+- **`attentionState` is classifier-driven, not timer-driven** — `useAttentionClassifier` ticks the xterm buffer every 1s; transcript events and `PERMISSION_REQUEST` reset it to `'ok'`. **Both `'ok'` sites are gated on `hasBuffer`: never reset a state you never set.**
 
-## Paged history (perf cycle 2) — guards: `transcript-page`, `history-paging-reducer`, `chatview-history-sentinel`, `chatview-prepend-scroll-anchor` tests
-- **History arrives one PAGE at a time** (`main/transcript-page.ts`; 30 turns / 2 MB before a byte offset). `HISTORY_LOADED` and "See previous messages" are RETIRED.
-- **`HISTORY_PAGE_LOADED` PREPENDS by replaying through the live per-event cases**, on a scratch state seeded with the session's `seenUuids` — never hand-build history entries, and never drop that seed (an unseeded replay re-renders what is on screen).
-- **Set `HISTORY_PAGE_REQUESTED` BEFORE awaiting**: `history.loading` is the whole of paging's idempotency. The tailer starts at EOF and the first page ends at `getStartOffset()`, which is what makes page and live non-overlapping.
-- **Removing whole-file replay broke FOUR features that depended on it as a side effect**, none caught by ~7,000 tests. Enumerate a broadcast's listeners by CHANNEL before removing it.
+## Paged history (perf cycle 2)
+- **History arrives one PAGE at a time** (`transcript-page.ts`; 30 turns / 2 MB). `HISTORY_LOADED` and "See previous messages" are RETIRED.
+- **`HISTORY_PAGE_LOADED` PREPENDS by replaying through the live per-event cases**, on scratch state seeded with the session's `seenUuids` — never hand-build history entries, never drop the seed (unseeded, it re-renders what is on screen).
+- **Set `HISTORY_PAGE_REQUESTED` BEFORE awaiting**: `history.loading` is the whole of paging's idempotency. The tailer starts at EOF and page one ends at `getStartOffset()` — that keeps page and live non-overlapping.
+- **Enumerate a broadcast's listeners by CHANNEL before removing it** — dropping whole-file replay broke FOUR features relying on it, none caught by ~7,000 tests.
 
-## Transcript watcher read-integrity (`transcript-watcher.ts`, `subagent-watcher.ts`) — guard: `transcript-watcher.test.ts`
-- **`readNewLines` isolates each emit in try/catch** — don't collapse to a batch wrapper.
-- **`readNewLines` is SERIALIZED per session** (`reading` flag + coalesced rerun).
+## Transcript watcher read-integrity (`transcript-watcher.ts`, `subagent-watcher.ts`)
+- **`readNewLines` isolates each emit in try/catch and is SERIALIZED per session** (`reading` flag + coalesced rerun) — never collapse either into a batch.
 - **The incomplete-line carry is BYTES (`partialBytes: Buffer`), not a string.**
-- **SubagentWatcher polls are slow (5s) safety nets — the fast paths are event-driven** (`kickScan()`/`settleByParent()`). Don't speed them up or remove the kicks.
+- **SubagentWatcher polls are slow (5s) safety nets — the fast paths are event-driven** (`kickScan()`/`settleByParent()`). Never speed them up or drop a kick.
 - **`<local-command-stdout>`/`<local-command-stderr>` are STRIPPED ENTIRELY in `stripSystemTags`**; new slash-command output gets a NEW event type, never the user-message path.
 
-## Spinner classifier (`attention-classifier.ts`) — guard: `attention-classifier-parity.test.ts`
-- **Matches glyph + gerund + ellipsis ONLY** (no seconds counter); active-vs-stalled = glyph rotation OR `COUNTER_RE` advancement. re-run the `test-conpty` spinner probes on a CC bump · scan: `spinner-re-anchored`.
+## Spinner classifier (`attention-classifier.ts`)
+- **Matches glyph + gerund + ellipsis ONLY** (no seconds counter); active-vs-stalled = glyph rotation OR `COUNTER_RE` advance. **The `shared-fixtures/attention-classifier/` fixtures are the contract** — a regex or `BufferClass` change needs a fixture change in the SAME commit; a CC bump means re-running the `test-conpty` probes.
 
-- **The `shared-fixtures/attention-classifier/` fixtures are the contract** — a regex or `BufferClass` change needs a fixture change in the SAME commit.
-## Terminal byte stream (Android xterm-in-WebView) — guard: `raw-byte-listener-contract.test.ts`
-- **The vendored emulator is HEADLESS** (Termux v0.118.1 — `VENDORED.md` is source of truth). **`RawByteListener` fires on the terminal thread — copy bytes before any async work**; `rawByteFlow` `tryEmit`s (drops, never blocks).
-- **`pty:raw-bytes` is base64-encoded**, three-surface parity (`ipc-channels.test.ts`). **xterm is display-only on touch** (`disableStdin:true`; typing flows through InputBar). Don't reintroduce a native render path or xterm-side touch input.
+## Terminal byte stream (Android xterm-in-WebView)
+- **The vendored emulator is HEADLESS** (Termux v0.118.1; `VENDORED.md` is truth). **`RawByteListener` fires on the terminal thread — copy bytes before any async work**; `rawByteFlow` `tryEmit`s (drops, never blocks).
+- **`pty:raw-bytes` is base64-encoded**, three-surface parity. **xterm is display-only on touch** (`disableStdin:true`; typing goes through InputBar). Never reintroduce a native render path or xterm touch input.

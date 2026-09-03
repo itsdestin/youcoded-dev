@@ -5,10 +5,10 @@ paths:
   # 2026-08-13: extended for plan 1b (background/durability/steering).
   # 2026-08-16: extended for plan 1c (files, chat UI backend, Settings) — glob
   # widened to the renderer specialist components plan 1c added.
-  - "youcoded/desktop/src/main/harness/specialists/**"
-  - "youcoded/desktop/src/renderer/components/Specialists*.tsx"
-  - "youcoded/desktop/src/renderer/components/specialists/**"
-  - "youcoded/desktop/src/renderer/hooks/useSpecialists.ts"
+  - "**/desktop/src/main/harness/specialists/**"
+  - "**/desktop/src/renderer/components/Specialists*.tsx"
+  - "**/desktop/src/renderer/components/specialists/**"
+  - "**/desktop/src/renderer/hooks/useSpecialists.ts"
 last_verified: 2026-08-16
 verify:
   - path: youcoded/desktop/src/main/harness/specialists/registry.ts
@@ -39,7 +39,7 @@ verify:
 ---
 # Native specialists (plan 1a + 1b + 1c)
 
-Depth: `youcoded/docs/native-runtime.md` → "Specialists (plan 1a/1b/1c)" sections.
+Depth: `youcoded/docs/native-runtime.md` → "Specialists (plan 1a/1b/1c)". Primer: `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md`.
 Sibling rule: `native-permissions.md` (the permission-store quad/v2 half of 1b).
 
 ## Specialists (plan 1a) — guards: `specialist-run`/`specialist-registry` tests
