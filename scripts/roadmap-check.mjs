@@ -11,6 +11,7 @@
 //   node scripts/roadmap-check.mjs                     all four jobs; exit 1 only on structure errors
 //   node scripts/roadmap-check.mjs --fix               also flip broken-claim items and rewrite the index
 //   node scripts/roadmap-check.mjs --structure         job 1 only (the edit hook)
+//   node scripts/roadmap-check.mjs --vocab             print every closed token list, then exit
 //   node scripts/roadmap-check.mjs --quiet             print only structure errors (CI)
 //   node scripts/roadmap-check.mjs --root <dir>        workspace root (worktrees, tests)
 //   node scripts/roadmap-check.mjs --today YYYY-MM-DD  "today" for the 60-day rule (tests)
@@ -68,6 +69,56 @@ export function classifyToken(tok) {
   return null;
 }
 
+// Every closed list, rendered. Built from the constants above so it can never drift from
+// what classifyToken actually accepts. `--vocab` prints it; the unknown-token error quotes
+// the short half of it inline.
+//
+// Fix: a rejection used to say only "not a surface, seen-on, status, checked date or flag
+// (spec §3)" — which sent Destin off to an ARCHIVED spec to find out what the words were.
+// A validator that knows the answer must say the answer.
+export function vocabHelp() {
+  return [
+    `surface (optional, one of ${SURFACES.length}): ${SURFACES.join(' · ')}`,
+    `seen-on: ${SEEN_ON.join(' · ')}`,
+    `status: ${STATUS.join(' · ')}`,
+    'checked: `checked YYYY-MM-DD`',
+    `flags: ${FLAGS.join(' · ')} — or a release like v1.3.1`,
+    ...Object.entries(SUBLEVELS).map(([a, subs]) => `## sublevels in ${a}.md: ${subs.join(' · ')}`),
+  ].join('\n');
+}
+
+// One-line form for an error message: the four short vocabularies spelled out, the 29
+// surfaces behind a command, so the message stays readable inside a hook's stderr.
+export function tokenVocabLine() {
+  return `allowed tokens are a surface (\`node scripts/roadmap-check.mjs --vocab\` lists all ${SURFACES.length}), `
+    + `seen-on (${SEEN_ON.join(' · ')}), status (${STATUS.join(' · ')}), `
+    + '`checked YYYY-MM-DD`, then flags '
+    + `(${FLAGS.join(' · ')}) or a release like \`v1.3.1\``;
+}
+
+// Cheap edit distance, capped: `needs-repo` should suggest `needs-repro`, `release-methods`
+// should suggest nothing rather than a confident wrong guess.
+function editDistance(a, b) {
+  const prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    let diag = prev[0];
+    prev[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const tmp = prev[j];
+      prev[j] = Math.min(prev[j] + 1, prev[j - 1] + 1, diag + (a[i - 1] === b[j - 1] ? 0 : 1));
+      diag = tmp;
+    }
+  }
+  return prev[b.length];
+}
+
+export function suggestToken(tok) {
+  const best = [...SURFACES, ...SEEN_ON, ...STATUS, ...FLAGS]
+    .map(c => ({ c, d: editDistance(tok, c) }))
+    .sort((x, y) => x.d - y.d)[0];
+  return best && best.d <= 2 && best.d < tok.length ? best.c : null;
+}
+
 // A real calendar date, not just four-two-two digits: `2026-13-40` round-trips to something else.
 function isRealDate(ymd) {
   const d = new Date(`${ymd}T00:00:00Z`);
@@ -89,9 +140,16 @@ export function parseMetadata(line) {
     return { ...meta, errors };
   }
   let lastKind = -1;
+  let saidVocab = false;   // one line, many strangers: spell the vocabulary out once
   for (const tok of tokens) {
     const kind = classifyToken(tok);
-    if (!kind) { errors.push(`unknown token \`${tok}\` — not a surface, seen-on, status, checked date or flag (spec §3)`); continue; }
+    if (!kind) {
+      const near = suggestToken(tok);
+      const tail = saidVocab ? 'same vocabulary as above' : tokenVocabLine();
+      saidVocab = true;
+      errors.push(`unknown token \`${tok}\`${near ? ` (did you mean \`${near}\`?)` : ''} — ${tail}`);
+      continue;
+    }
     const idx = KIND_ORDER.indexOf(kind);
     if (idx < lastKind) errors.push(`token \`${tok}\` is out of order (order is surface, seen-on, status, checked, flags)`);
     lastKind = Math.max(lastKind, idx);
@@ -464,6 +522,8 @@ export function run({ root, fix = false, quiet = false, structureOnly = false, t
 function main() {
   const args = process.argv.slice(2);
   const flag = name => args.includes(name);
+  // Answers "what words am I allowed to write?" without opening an archived spec.
+  if (flag('--vocab')) { process.stdout.write(vocabHelp() + '\n'); process.exit(0); }
   const value = name => {
     const i = args.indexOf(name);
     if (i === -1) return undefined;

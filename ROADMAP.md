@@ -61,10 +61,21 @@ Target: `v1.3`
 Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,
 in one or two lines, no file paths and no mechanism. If you investigated, put that in a
 report under `docs/active/investigations/` with a `<!-- claim: … -->` anchor and link it with
-`→ <path>`. The last line of an entry is its tokens: optional surface, then seen-on, status,
-`checked YYYY-MM-DD`, then flags (`urgent` `needs-repro` `performance` `security` `regression`
-or a release like `v1.3.1`). New items start `needs-verify` unless you reproduced it or your
-report anchors the cause. To close an item: delete it from the area file, append one line to
+`→ <path>`. New items start `needs-verify` unless you reproduced it or your report anchors
+the cause. To close an item: delete it from the area file, append one line to
 `docs/roadmap/shipped.md`, archive its report. Run `node scripts/roadmap-check.mjs --fix`
-before committing. Grammar and vocabularies:
+before committing.
+
+The last line of an entry is its tokens, in this order. **Every one is a closed list — a
+word that is not below is an error, not a new category. Do not invent one.**
+
+| Token | Required | Allowed values |
+|---|---|---|
+| surface | optional | one of 29 — `node scripts/roadmap-check.mjs --vocab` prints them |
+| seen-on | yes | `desktop` `android` `remote` `all` `n/a` |
+| status | yes | `confirmed` `needs-verify` `in-flight` `blocked` `decision` `parked` |
+| checked | yes | `checked YYYY-MM-DD` |
+| flags | optional, repeatable | `urgent` `needs-repro` `performance` `security` `regression`, or one release like `v1.3.1` |
+
+`--vocab` also prints the `##` sublevel headings each area file may use. Full grammar:
 `docs/archive/specs/2026-09-01-roadmap-restructure-design.md` §2–3.

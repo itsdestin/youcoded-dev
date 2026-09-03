@@ -8,8 +8,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import {
-  SEEN_ON, STATUS, FLAGS, SURFACES, classifyToken, parseMetadata,
+  SEEN_ON, STATUS, FLAGS, SURFACES, SUBLEVELS, classifyToken, parseMetadata,
+  vocabHelp, tokenVocabLine, suggestToken,
 } from './roadmap-check.mjs';
 
 test('vocabularies are disjoint — a token can belong to exactly one', () => {
@@ -51,6 +53,66 @@ test('parseMetadata: unknown token is an error, never a surface', () => {
   const m = parseMetadata('`setings` `all` `confirmed` `checked 2026-07-01`');
   assert.equal(m.errors.length, 1);
   assert.match(m.errors[0], /unknown token `setings`/);
+});
+
+// The whole point of the 2026-09-03 change: a rejection has to say what IS accepted,
+// or the next session goes reading an archived spec to find out.
+test('parseMetadata: a rejection spells out every short vocabulary and how to get the surfaces', () => {
+  const [err] = parseMetadata('`release-methods` `all` `confirmed` `checked 2026-07-01`').errors;
+  for (const v of [...SEEN_ON, ...STATUS, ...FLAGS]) assert.ok(err.includes(v), `rejection omits \`${v}\``);
+  assert.match(err, /--vocab/);
+  assert.match(err, /v1\.3\.1/);
+});
+
+test('parseMetadata: a near-miss token gets a suggestion, a made-up one does not', () => {
+  assert.match(parseMetadata('`all` `needs-verif` `checked 2026-07-01`').errors[0], /did you mean `needs-verify`/);
+  assert.ok(!/did you mean/.test(parseMetadata('`release-methods` `all` `confirmed` `checked 2026-07-01`').errors[0]));
+  assert.equal(suggestToken('settings/sink'), 'settings/sync');
+  assert.equal(suggestToken('release-methods'), null);
+});
+
+test('parseMetadata: two strangers on one line spell the vocabulary out only once', () => {
+  const errs = parseMetadata('`foo` `bar` `all` `confirmed` `checked 2026-07-01`').errors;
+  assert.equal(errs.filter(e => e.includes('--vocab')).length, 1);
+  assert.match(errs[1], /same vocabulary as above/);
+});
+
+test('--vocab prints every closed list, including the sublevels', () => {
+  const out = execFileSync(process.execPath, [SCRIPT, '--vocab'], { encoding: 'utf8' });
+  for (const v of [...SURFACES, ...SEEN_ON, ...STATUS, ...FLAGS]) assert.ok(out.includes(v), `--vocab omits ${v}`);
+  for (const [area, subs] of Object.entries(SUBLEVELS)) {
+    assert.ok(out.includes(area));
+    for (const sub of subs) assert.ok(out.includes(sub), `--vocab omits sublevel ${sub}`);
+  }
+});
+
+// Drift guard: ROADMAP.md's "Filing an item" table is the copy a session reads FIRST.
+// If it and the validator ever disagree, the table is the one that misleads.
+test('ROADMAP.md "Filing an item" lists exactly the vocabularies the validator enforces', () => {
+  const md = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'ROADMAP.md'), 'utf8');
+  const section = md.slice(md.indexOf('## Filing an item'));
+  assert.ok(section.length > 0, 'ROADMAP.md has no "## Filing an item" section');
+  const row = label => {
+    const m = section.split('\n').find(l => l.startsWith(`| ${label} `));
+    assert.ok(m, `Filing an item has no \`${label}\` row`);
+    return m;
+  };
+  for (const v of SEEN_ON) assert.ok(row('seen-on').includes(`\`${v}\``), `seen-on row omits ${v}`);
+  for (const v of STATUS) assert.ok(row('status').includes(`\`${v}\``), `status row omits ${v}`);
+  for (const v of FLAGS) assert.ok(row('flags').includes(`\`${v}\``), `flags row omits ${v}`);
+  assert.ok(row('surface').includes('--vocab'), 'surface row must point at --vocab, not list 29 names twice');
+  assert.ok(row('checked').includes('checked YYYY-MM-DD'));
+  // And the rows must not name a word the validator would reject.
+  for (const label of ['seen-on', 'status', 'flags']) {
+    for (const tok of [...row(label).matchAll(/`([^`]+)`/g)].map(m => m[1])) {
+      assert.ok(classifyToken(tok) !== null, `Filing an item's ${label} row names \`${tok}\`, which classifyToken rejects`);
+    }
+  }
+});
+
+test('tokenVocabLine and vocabHelp are built from the constants, not a hand-typed copy', () => {
+  assert.ok(tokenVocabLine().includes(STATUS.join(' · ')));
+  assert.ok(vocabHelp().includes(SURFACES.join(' · ')));
 });
 
 test('parseMetadata: missing status and missing checked are separate errors', () => {

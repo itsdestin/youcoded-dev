@@ -54,7 +54,10 @@ test('exit 2 with the errors on stderr for a malformed area file', () => {
   const r = runHook(root, { file_path: path.join(root, 'docs', 'roadmap', 'sync.md') });
   assert.equal(r.status, 2);
   assert.match(r.stderr, /docs\/roadmap\/sync\.md:7 unknown token `needs-verifyy`/);
-  assert.match(r.stderr, /spec/);
+  // The hook must hand back BOTH ways to learn the vocabulary, not a pointer to an archived spec.
+  assert.match(r.stderr, /--vocab/);
+  assert.match(r.stderr, /ROADMAP\.md/);
+  assert.match(r.stderr, /did you mean `needs-verify`/);
 });
 
 test('an entry filed in ROADMAP.md itself is caught too', () => {
