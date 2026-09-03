@@ -103,12 +103,23 @@ if [[ ${#SUB_REPOS[@]} -gt 0 ]]; then
             wt_ahead=$(git -C "$wt_path" rev-list --count "$repo_base..HEAD" 2>/dev/null || echo "?")
             if [[ "$wt_ahead" == "?" ]]; then
                 wt_note="no upstream to compare against"
+            elif [[ "$wt_ahead" == "0" && "$wt_dirty" != "0" ]]; then
+                # NOT a cleanup candidate — the most fragile state there is.
+                # Nothing is committed and nothing is pushed, so this worktree
+                # holds the ONLY copy of that work. On 2026-09-03 `site-themes`
+                # sat here for four days with 4.9 MB of vendored theme packs the
+                # landing page could not ship without, and this line called it
+                # "candidate for cleanup" with the dirty count trailing behind
+                # the suggestion. A session that believed the label would have
+                # run `git worktree remove` and destroyed it.
+                wt_note="⚠ ONLY COPY — ${wt_dirty} uncommitted file(s), 0 commits, nothing pushed. Commit before anything else; do NOT remove"
             elif [[ "$wt_ahead" == "0" ]]; then
                 wt_note="nothing ahead of $repo_base; merged or empty, candidate for cleanup"
             else
                 wt_note="${wt_ahead} commit(s) ahead"
             fi
-            [[ "$wt_dirty" != "0" ]] && wt_note="${wt_note}, ${wt_dirty} uncommitted file(s)"
+            # The dirty count is already inside the only-copy note above.
+            [[ "$wt_dirty" != "0" && "$wt_ahead" != "0" ]] && wt_note="${wt_note}, ${wt_dirty} uncommitted file(s)"
             echo "  - $(basename "$wt_path") [$repo: ${wt_branch:-detached}] — ${wt_note}"
             WT_ANY=1
         done < <(git -C "$WORKSPACE/$repo" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')

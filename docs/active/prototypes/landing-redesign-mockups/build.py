@@ -1,6 +1,6 @@
 # Emits the three new landing-page variants. The BODY markup is identical in all
 # three (same sections, same words) so the only thing being compared is the look.
-import json, io, os
+import json, io, os, re
 import os
 BASE = os.path.dirname(os.path.abspath(__file__))  # portable: run from wherever this file lives
 
@@ -1565,6 +1565,29 @@ BUILDS = [
     # adding a line here brings any of them back for a side-by-side.
     ('mockup-landing.html', 'YouCoded — Landing', 'css_d.css', 'cotton-candy-sky', 'w-thats', False, 'deck-fade', 'fade-d pill-accent legend-on h1-md brand-tile wm-one'),
 ]
+def check_page(html, name):
+    """Refuse to write a page whose ids are not unique.
+
+    WHY (2026-09-03): dl_buttons() renders TWICE -- the floating pill and the
+    in-flow row it replaces -- so every download button's id existed twice. The
+    install-tips popup binds with getElementById, which returns the FIRST match:
+    the HIDDEN row. Result: not one of the five popups could be opened by a
+    visitor, and the iOS chip (href "#") did nothing at all. It looked completely
+    normal in a screenshot, and nothing here was checking.
+
+    Duplicate ids are invalid HTML anyway, so this is a cheap, general guard, not
+    a special case for the download row. Anything that must exist twice carries a
+    data- attribute instead.
+    """
+    ids = re.findall(r'\sid="([^"]+)"', html)
+    dupes = sorted({i for i in ids if ids.count(i) > 1})
+    if dupes:
+        raise SystemExit(
+            'BUILD REFUSED: ' + name + ' has duplicate id(s): ' + ', '.join(dupes) +
+            '\n  getElementById binds the FIRST one, which is often the hidden copy.'
+            '\n  Use data-<name> for anything rendered more than once.')
+
+
 for row in BUILDS:
     f, title, css, dflt, hdr = row[:5]
     navpicker = row[5] if len(row) > 5 else True
@@ -1577,5 +1600,6 @@ for row in BUILDS:
     if len(row) > 7 and row[7]: body_class += ' ' + row[7]
     html = page(title, sheet, dflt, header=hdr, extra_js=js,
                 navpicker=navpicker, body_class=body_class, demo=demo)
+    check_page(html, f)
     open(OUT + f, 'w').write(html)
     print('wrote', f)

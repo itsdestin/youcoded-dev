@@ -5,6 +5,7 @@ paths:
   - "**/docs/site/**"
   - "**/docs/gallery/**"
   - "scripts/ui-review/**"
+  - "docs/active/prototypes/landing-redesign-mockups/**"   # workspace-root path, like scripts/ui-review — a "**/" prefix here matches nothing
   - "**/desktop/src/renderer/dev/workbench/**"
 last_verified: 2026-09-01
 verify:
@@ -81,6 +82,13 @@ scroll ("janky").
 (`"clip": "<scene>"`, recordings from `scripts/ui-review/record-pair.sh <scene> <before> <after> <clips-dir>`),
 never as a prose description or a still that can't show it.
 **Guard:** `tests/test_spec.py` ClipStepTests, `tests/deck-render.test.mjs` (clip step).
+
+## The redesign prototype is where landing work happens
+**Invariant:** edit `docs/active/prototypes/landing-redesign-mockups/build.py`, never the
+built HTML and never `index.html`; read its START-HERE handoff first; serve with
+`serve.py`, never `http.server` (no cache headers → stale review).
+**Guard:** `build.py` refuses to write a page with duplicate ids — it renders the download
+row twice, and `getElementById` bound all five install popups to the hidden copy.
 
 ## Copy and review
 **Invariant:** page copy is reviewed in place with `scripts/ui-review/copy-preview.py serve

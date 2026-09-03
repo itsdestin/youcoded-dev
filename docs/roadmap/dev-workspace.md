@@ -250,6 +250,13 @@ seen-on is always n/a here.
       coupled chain, so re-run them together now that the Kotlin half is in
       `n/a` `needs-verify` `checked 2026-09-01`
 
+- [ ] The landing-page redesign is done as a design and unfinished as a page — the words on it
+      still say "self-improving" and "does real work", both of which Destin banned for this page;
+      the features deck's fade depth was never decided; and turning the mockup into the real
+      index.html (assets, embed rebuild, a theme sweep) is a session of assembly nobody has done.
+      Six branches are pushed and unmerged as of 2026-09-03
+      `n/a` `confirmed` `checked 2026-09-03` `v1.3.1` → docs/active/handoffs/2026-08-31-landing-redesign-START-HERE.md
+
 - [ ] Landing copy note, recorded so it is not re-derived: conversation tags, private notes and
       one-tap prompt chips are unique (0 of 8 competitors on 2026-08-31) but must not lead the
       landing page — uniqueness is not the argument

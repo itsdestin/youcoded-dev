@@ -109,6 +109,48 @@ test('a worktree reports its uncommitted file count', () => {
   fs.rmSync(ws, { recursive: true, force: true });
 });
 
+/** Point the sub-repo at a bare origin, so `origin/master` exists and the
+ *  hook's ahead-count is a number rather than "?" — the two only-copy tests
+ *  below are about the ahead==0 branch specifically. */
+function withOrigin(ws, repo) {
+  const remote = path.join(ws, 'origin.git');
+  git(ws, 'init', '-q', '--bare', remote);
+  git(repo, 'remote', 'add', 'origin', remote);
+  git(repo, 'push', '-q', 'origin', 'master');
+  git(repo, 'branch', '-q', '--set-upstream-to', 'origin/master', 'master');
+}
+
+test('a worktree with commits AND dirt still reports the dirty count', () => {
+  const { ws, repo } = makeWorkspace();
+  withOrigin(ws, repo);
+  const wtPath = path.join(ws, 'worktrees', 'plan-d');
+  git(repo, 'worktree', 'add', '-q', '-b', 'feat/y', wtPath);
+  fs.writeFileSync(path.join(wtPath, 'committed.txt'), 'done\n');
+  git(wtPath, 'add', '-A');
+  git(wtPath, 'commit', '-qm', 'work');
+  fs.writeFileSync(path.join(wtPath, 'scratch.txt'), 'in progress\n');
+  const out = runHook(ws);
+  assert.match(out, /plan-d .*1 uncommitted file\(s\)/, 'dirty count must survive the only-copy branch');
+  fs.rmSync(ws, { recursive: true, force: true });
+});
+
+// 2026-09-03: `site-themes` held 4.9 MB of work in exactly this state for four
+// days — 0 commits, 40 uncommitted files — and the hook called it a cleanup
+// candidate. A session that believed the label would have deleted the only copy.
+test('a worktree with dirt and NO commits is never called a cleanup candidate', () => {
+  const { ws, repo } = makeWorkspace();
+  withOrigin(ws, repo);
+  const wtPath = path.join(ws, 'worktrees', 'only-copy');
+  git(repo, 'worktree', 'add', '-q', '-b', 'feat/z', wtPath);
+  fs.writeFileSync(path.join(wtPath, 'scratch.txt'), 'the only copy\n');
+  const out = runHook(ws);
+  const line = out.split('\n').find((l) => l.includes('only-copy')) ?? '';
+  assert.ok(line, 'the worktree must be listed at all');
+  assert.doesNotMatch(line, /candidate for cleanup/, 'must not invite deletion of unsaved work');
+  assert.match(line, /ONLY COPY/, 'must say what state it is in');
+  fs.rmSync(ws, { recursive: true, force: true });
+});
+
 test('a worktree with no upstream says so instead of printing a bare comma', () => {
   // The throwaway repo has no `origin`, so the ahead-count cannot be computed.
   // An unknown must read as unknown — the earlier draft emitted "— , 1 file(s)".
