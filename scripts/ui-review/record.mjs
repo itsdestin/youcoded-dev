@@ -208,6 +208,12 @@ for (const [i, a] of scene.actions.entries()) {
     console.error(`autopilot: ${r.presses} presses over ${r.polls} polls`);
   }
   else if (a.eval) await evaluate(a.eval);
+  // evalFile: the same as eval, but the JS comes from a file beside the scene.
+  // A page-side autopilot is 2 KB of commented code; inlined in JSON it would
+  // be one unreadable line with every comment stripped (the promo's Flappy
+  // pilot, scenes/flappy-pilot.js, is the first). The file's own trailing
+  // `;` is dropped so the source can be an expression as well as a statement.
+  else if (a.evalFile) await evaluate(readFileSync(join(dirname(scenePath), a.evalFile), 'utf8').replace(/;\s*$/, ''));
   stamps.push({ i, kind, mark: a.mark ?? null, start, end: Date.now() });
   if (a.hold == null && a.wait == null) await sleep(a.settle ?? 400);
 }
