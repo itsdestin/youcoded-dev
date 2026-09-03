@@ -26,9 +26,9 @@ conversation, so that hour is spent on decisions instead of discovery.
    monetization door on Android.
 3. **Removing the download warnings costs about $220 a year plus $25 once**, and needs
    an identity (yours or an LLC's) attached to each store/signing account.
-4. **An LLC is worth forming first**, in your home state, at roughly $100 to $400 for
-   year one if you do it yourself. Then every account (Apple, Google, Microsoft,
-   trademark) is in the company's name from day one and never needs transferring.
+4. **An LLC is worth forming first**, in Arizona, for **$50** with no annual report if the
+   statutory agent sits in Maricopa or Pima County. Then every account (Apple, Google,
+   Microsoft, trademark) is in the company's name from day one and never needs transferring.
 5. **File a trademark for "YouCoded". Skip patents entirely.** Copyright you already
    own automatically.
 6. Order of operations, with costs, is at the bottom.
@@ -200,6 +200,24 @@ on a Schedule C, and there is no separate federal company return. Do not elect
 S-corporation treatment until profits are large enough that a payroll service pays for
 itself (rule of thumb: well past $50k a year in profit).
 
+### Arizona specifically (Destin's state, added 2026-09-03)
+
+Arizona is one of the cheapest and simplest states in the country for this.
+
+| Item | Arizona |
+|---|---|
+| Filing fee (Articles of Organization, Arizona Corporation Commission) | **$50** ($85 with expedited processing) |
+| Annual report | **None.** Arizona LLCs file no annual report and pay no yearly state fee |
+| Statutory agent (Arizona's name for registered agent) | Required; can be you at an Arizona street address (address becomes public) or a service at ~$50–150/yr |
+| Newspaper publication | Required within 60 days **unless the statutory agent's address is in Maricopa or Pima County**, where the state publishes online for free. Elsewhere it is ~$30–300 depending on the paper |
+| EIN | $0, irs.gov |
+| **Total, doing it yourself in Maricopa/Pima** | **$50** |
+
+One tax note for later: Arizona's sales tax (called Transaction Privilege Tax, TPT) **does** apply to
+software sold as a subscription, unlike many states. It is irrelevant while the app is free, and
+a merchant-of-record payment provider handles it when the time comes. Arizona has no separate
+LLC franchise tax.
+
 ### Things in the repo that assume there is no company
 
 - `youcoded/PRIVACY.md` line 5: "It is not a company." Rewrite to name the LLC.
@@ -288,11 +306,53 @@ conditions. YouCoded meets all three today (binary unmodified, no auth method re
 no paying-on-behalf-of-users). But you personally are the party to that contract right
 now. The LLC should be, and someone should actually read the Commercial Terms once.
 
+#### The two contracts, in plain words (added 2026-09-03 on Destin's request)
+
+Anthropic has two rulebooks. The **Consumer Terms** are what you agreed to when you signed up
+for a Claude subscription: they cover *you*, a person, using Claude.ai and Claude Code
+yourself. The **Commercial Terms** are the rulebook for *businesses that build products on
+Anthropic's technology*. Anthropic's Claude Code legal page says that "preinstalling or
+running Claude Code in your products or services" requires agreeing to the Commercial Terms.
+YouCoded installs and runs Claude Code, so YouCoded-the-product is on the business rulebook
+even though you-the-user are on the consumer one.
+
+Agreeing to the Commercial Terms costs nothing and needs no sales call; you accept them by
+running Claude Code in your product and by following their conditions. The three conditions
+that apply:
+
+1. **Do not modify the Claude Code binary**, and do not hide or disable any of its sign-in
+   methods (subscription sign-in, API key). YouCoded installs the official binary through
+   Anthropic's own installer and leaves every sign-in method alone. ✔
+2. **Do not pay for, resell or sit in the middle of Claude usage** for your users. Each user
+   signs in with their own account and is billed by Anthropic directly. YouCoded does this. ✔
+   It also rules out any future "YouCoded Pro includes Claude" plan.
+3. **Do not collect, store or pass along Claude.ai credentials or session tokens**; sign-in
+   must happen inside Anthropic's own flow. YouCoded's sign-in does happen inside Claude Code
+   (✔), but the usage meter script read the token off disk (✘, being fixed).
+
+Why the LLC matters here: a contract has two parties. Today the party on YouCoded's side is
+you personally. Once the LLC exists, it is the company, and a dispute with Anthropic is a
+dispute with the company.
+
 ### 3. Using the Claude name
 
 Allowed: saying in plain text that YouCoded "runs Claude Code" or "installs Claude Code".
 Not allowed: "Claude" or "Anthropic" in a product, feature or company name, in a logo, or
 in any way that implies Anthropic built, endorses or partnered with YouCoded.
+
+Anthropic's general Trademark Guidelines are stricter than the Claude Code page: they say
+Anthropic's marks may be used "only as specifically permitted by us," that no alteration of a
+logo is permitted, and that nothing may imply "sponsorship or endorsement, or a relationship
+or affiliation with Anthropic." The Claude Code page is the specific permission: **plain-text,
+truthful statements** that the product runs or installs Claude Code. In practice:
+
+| Allowed | Not allowed |
+|---|---|
+| "YouCoded runs Claude Code." | The Claude or Anthropic logo anywhere in the app or site |
+| "Sign in with your Claude subscription inside Claude Code." | A feature called "Claude Mode" or a tab labelled "Claude" |
+| "Works with Claude Code, OpenRouter and local models." | "Powered by Anthropic" as a badge |
+| A button that says what it does: "Diagnose with Claude" | "The official Claude desktop app" or anything implying partnership |
+| | "youcoded-claude.ai" or any domain containing their marks |
 
 Marketing that says "sign in with your Claude subscription" is accurate only because the
 sign-in happens inside Claude Code's own window. Keep that distinction visible in copy.
@@ -341,21 +401,25 @@ responsible for backups. Cheap, and it is what a court asks about first.
 
 ### 7. Licensing clean-up
 
-- **Android is not actually GPLv3.** `youcoded/app/LICENSE` and a comment in
-  `app/build.gradle.kts:225` say the Termux terminal-emulator forces GPLv3. The vendored
-  module's `LICENSE`, `NOTICE` and `VENDORED.md` all say Apache 2.0, and Termux's own
-  LICENSE.md carves `terminal-emulator/` out of the GPL. The Android runtime *downloads*
-  Termux packages at run time from `packages.termux.dev`, which is distribution of
-  separate programs, not linking. Destin is the sole author of `app/`, so it can be
-  relicensed to MIT in one commit. This was already `needs-verify` on the roadmap
-  (`docs/roadmap/dev-workspace.md:261`); this investigation resolves it. A lawyer's
-  half-hour confirming it is worth the money because it determines whether Android can
-  ever be monetized.
+- **Android is not actually GPLv3** (double-checked 2026-09-03 at Destin's request).
+  `youcoded/app/LICENSE`, the root `LICENSE`, `README.md`, `TERMS.md` and a comment in
+  `app/build.gradle.kts:225` say the Termux terminal-emulator forces GPLv3. Four independent
+  sources say otherwise: the vendored module's own `LICENSE`, `NOTICE` and `VENDORED.md` all
+  say Apache 2.0, and Termux's `LICENSE.md` at the exact vendored tag (v0.118.1) reads:
+  "released under GPLv3 only license. Exceptions: Terminal Emulator for Android code is used
+  which is released under Apache License 2.0. Check terminal-view and terminal-emulator
+  libraries." Every other Android dependency is Apache/BSD/MIT-family, and the Termux
+  packages fetched at run time from `packages.termux.dev` run as separate programs, which is
+  not linking. Destin is the sole author of `app/`. Relicensing to MIT is a documentation
+  change with no runtime effect; PR opened 2026-09-03. Roadmap item
+  `docs/roadmap/dev-workspace.md:261` (`needs-verify`) closes when it merges.
 - Desktop dependencies: **no GPL/AGPL/LGPL.** 333 MIT, 23 ISC, 19 BSD-2, 14 Apache-2.0,
   8 BSD-3, plus a handful of dual-licensed ones where the permissive option applies.
-  One package, `buffers@0.1.1`, has **no license at all**; replace it.
-- `wecoded-themes/package.json` says ISC while its LICENSE is Apache 2.0. Fix the field.
-- `youcoded-admin/` has no LICENSE file. Add MIT or make the repo private.
+  One package, `buffers@0.1.1`, declares **no license** in its package.json (its GitHub
+  README says MIT/X11). It arrives transitively via `exceljs → unzipper → binary`, so it
+  cannot be swapped alone; it goes when `exceljs` is replaced or updated. Low risk, noted.
+- `wecoded-themes/package.json` says ISC while its LICENSE is Apache 2.0. PR opened 2026-09-03.
+- `youcoded-admin/` has no LICENSE file, but the repo is **private**, so none is needed.
 - **Gemma models download with no license notice.** Google's Gemma Terms of Use require
   passing its use restrictions to downstream users; Qwen and GPT-OSS are Apache 2.0 and
   fine. Show a one-time notice with a link when a Gemma download starts.
@@ -382,6 +446,32 @@ usage, so "pay us and get Claude" is off the table; OpenRouter is bring-your-own
 today, and a YouCoded-run proxy with a markup would put you in the payments and
 data-handling business.
 
+### 8a. MIT vs Apache 2.0 (Destin asked, 2026-09-03)
+
+Both let anyone use, copy, modify, sell and close-source the code as long as they keep the
+copyright notice. The differences:
+
+| | MIT | Apache 2.0 |
+|---|---|---|
+| Length | ~170 words | ~10,000 words |
+| Patent grant | Silent. Courts generally read an implied one, but it is not written | Explicit: every contributor grants users a license to any patents their contribution touches, and **loses that license if they sue** over the project |
+| Trademark | Silent. Trademark law still applies, but the license does not say so | Explicit: "does not grant permission to use the trade names, trademarks" — forks must not call themselves by your name |
+| Modified copies | No requirement | Must state that files were changed; must carry the NOTICE file along |
+| GPL compatibility | Compatible with GPLv2 and v3 | Compatible with GPLv3 only |
+| Who uses it | Most JavaScript / hobby projects | Most corporate-backed projects (Android, Kubernetes, Swift) |
+
+**What this means for YouCoded.** The only clauses that could ever matter are the two Apache
+adds: the patent grant protects you if a *contributor* later claims a patent on something they
+contributed, and the trademark line makes "a fork may not call itself YouCoded" explicit. Both
+are small, real benefits; neither changes what users experience. The costs are a longer license,
+a NOTICE file to maintain, and slightly less appeal to hobbyist contributors.
+
+**Recommendation: stay MIT for the app.** The trademark filing gives you the name protection
+Apache's clause only restates, and the patent clause only matters once there are many
+contributors. If the project were being licensed from scratch today, Apache 2.0 would be a
+perfectly good pick, and `wecoded-marketplace` and `wecoded-themes` already use it, so the
+mix is fine. Switching later is one commit as long as the DCO sign-off is in place.
+
 ### 9. Smaller items
 
 - **Minors.** The privacy policy already says under-13s are not allowed. Add the same
@@ -402,29 +492,50 @@ data-handling business.
 
 ---
 
+## Done on 2026-09-03 (free items, opened as pull requests for Destin's review)
+
+| PR | What | Users notice |
+|---|---|---|
+| [youcoded#403](https://github.com/itsdestin/youcoded/pull/403) | Usage meter rebuilt on Claude Code's own `rate_limits` status-line data; the OAuth-token script, its 5-minute runner and the Anthropic call are gone on both platforms | Chips and status-line row look the same; they fill in after the first reply of a session instead of refreshing while idle |
+| [youcoded#400](https://github.com/itsdestin/youcoded/pull/400) | Android relicensed GPLv3 → MIT; root LICENSE, README, TERMS, gradle comment, About-screen license text corrected | Nothing at runtime; About → Licenses reads correctly |
+| [youcoded#401](https://github.com/itsdestin/youcoded/pull/401) | Privacy and Terms linked from the site footer and Settings → About (both platforms); Terms gains an Eligibility section (13+); `CONTRIBUTING.md` with DCO sign-off | Two footer links; a "Policies" row in About |
+| [wecoded-themes#28](https://github.com/itsdestin/wecoded-themes/pull/28) | `package.json` license field ISC → Apache-2.0; DCO section | None |
+| [wecoded-marketplace#83](https://github.com/itsdestin/wecoded-marketplace/pull/83) | DCO section in CONTRIBUTING (docs only; the Worker deploy workflow does not fire) | None |
+
+All three youcoded PRs merge cleanly with each other in any order (checked with `git merge-tree`).
+
+Follow-up found while doing this: `youcoded-core/hooks/statusline.sh` and `write-guard.sh` still
+*reference* `usage-fetch.js` (the file itself is not there, so that copy never made the call).
+Clean up or archive on the deprecation schedule.
+
 ## Order of operations and total cost
 
-| Step | What | Cost | Blocks |
-|---|---|---|---|
-| 1 | Buy `youcoded.ai` (and `.com` if free); fix the `youcoded.app` header | $160 / 2 yrs | — |
-| 2 | Remove or rebuild the OAuth usage fetch; link Privacy and Terms on the site and in Settings; first-run "the assistant can delete files" notice | $0 | — |
-| 3 | Form the LLC in your home state; EIN; bank account; update PRIVACY/TERMS to name it | $100–400 | 4, 5, 6 |
-| 4 | D-U-N-S number (1–2 weeks), then Apple Developer Program (org), Google Play (org), Azure Artifact Signing; wire all three into CI | $99/yr + $25 + $10/mo | 3 |
-| 5 | USPTO clearance search, file "YouCoded" class 9 | $350 (+$350 for class 42) | 3 |
-| 6 | Register DMCA agent; rename the "Likely safe" badge; fix the scan ref | $6 | 3 |
-| 7 | Relicense Android to MIT (after a lawyer confirms); fix themes/admin license fields; replace `buffers`; Gemma notice; add DCO | $0 (lawyer ~$300 if used) | — |
-| 8 | Play Store: data-safety form, content rating, first listing | $0 | 4 |
-| | **Year-one total, doing it yourself** | **~$750 to $1,200** | |
-| | With a one-hour lawyer review of the terms and the Android relicense | **+$300 to $600** | |
+Updated 2026-09-03 after the free items above were opened as PRs. Arizona, Maricopa/Pima assumed.
+
+| Step | Who | What | Cost | Needs |
+|---|---|---|---|---|
+| 0 | Destin | Review and merge the five PRs above (`git commit -s` on merge if you want the DCO honoured from day one) | $0 | — |
+| 1 | Destin | Buy `youcoded.ai` (and `.com` if free); set up a mailbox on it | $160 / 2 yrs | — |
+| 2 | Claude | Point the OpenRouter attribution header and the site at the new domain; move the Worker onto it | $0 | 1 |
+| 3 | Destin | File the Arizona LLC (azcc.gov, Articles of Organization, statutory agent in Maricopa/Pima); EIN at irs.gov; business bank account | $50 | — |
+| 4 | Claude | Update PRIVACY/TERMS/CONTRIBUTING to name the LLC | $0 | 3 |
+| 5 | Destin | D-U-N-S number (free, 1–2 weeks); then Apple Developer Program (organization), Google Play Console (organization), Azure Artifact Signing | $99/yr + $25 + $10/mo | 3 |
+| 6 | Claude | Wire signing + notarization into the desktop CI; Play `.aab` upload; data-safety form draft | $0 | 5 |
+| 7 | Destin | USPTO clearance search (tmsearch.uspto.gov), then file "YouCoded" in class 9; optionally class 42 | $350 (+$350) | 3 |
+| 8 | Destin | Register a DMCA agent (copyright.gov/dmca-directory) | $6 | 3 |
+| 9 | Claude, after Destin's wording call | Rename the "Likely safe" badge to what was checked; fix the scan-follows-wrong-ref bug; Gemma license notice on download; first-run "the assistant can change and delete files" line | $0 | Destin picks wording |
+| 10 | Destin, optional | One hour with a lawyer: read the Terms once, confirm the Android relicense reasoning | $300–600 | 3 |
+| | | **Year-one total, doing it yourself** | **~$700 to $1,050** | |
+
+Steps 1, 3, 7 and 8 need Destin's identity and card and cannot be delegated. Steps 2, 4, 6
+and 9 are Claude sessions. Nothing in 5–9 should start before 3.
 
 ## Open questions for Destin
 
-1. Which state do you live in? It sets the LLC number and whether the $800/yr California
-   tax applies.
-2. Should Apple/Google/Azure accounts wait for the LLC (recommended, weeks of delay) or
-   be opened in your name now and converted later (faster, one support ticket per vendor)?
-3. Is "WeCoded" a brand you want to keep long-term? It decides whether to file one mark or
-   two.
+1. Should Apple/Google/Azure accounts wait for the LLC (recommended; the LLC takes days in
+   Arizona, the D-U-N-S number 1–2 weeks) or open in your name now and convert later?
+2. Is "WeCoded" a brand you want to keep long-term? It decides whether to file one mark or two.
+3. Badge wording for step 9: "No leaked secrets found" is the accurate candidate; your call.
 
 ## Sources
 
@@ -442,6 +553,11 @@ data-handling business.
 - Android Authority, sideloading changes timeline: https://www.androidauthority.com/android-sideloading-changes-timeline-3679204/
 - Help Net Security, Android developer verification (2026-03-31): https://www.helpnetsecurity.com/2026/03/31/android-developer-verification-requirement/
 - LLC University, filing fees by state: https://www.llcuniversity.com/llc-filing-fees-by-state/
+- Arizona LLC fees, publication rule and no-annual-report: https://llcbuddy.com/arizona-llc/ and https://www.llcuniversity.com/arizona-llc/annual-report/
+- Arizona TPT on SaaS: https://www.swlaw.com/publication/saas-remains-subject-to-tpt-in-arizona/
+- Anthropic Trademark Guidelines: https://www.anthropic.com/legal/trademark-guidelines
+- Claude Code status line `rate_limits` fields: https://code.claude.com/docs/en/statusline
+- Termux LICENSE.md at v0.118.1 (terminal-emulator is Apache 2.0): https://raw.githubusercontent.com/termux/termux-app/v0.118.1/LICENSE.md
 - FinCEN interim final rule Q&A (BOI exemption): https://www.fincen.gov/boi/ifr-qa
 - USPTO fee restructure explained: https://www.anchorfilings.com/blog/uspto-trademark-fees-2025-restructure.html
 - YouWare (trademark neighbour): https://en.wikipedia.org/wiki/YouWare
