@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 created: 2026-08-31
 revised: 2026-09-01
 tags: [ui, motion, session-strip, chat-view, desktop]
@@ -20,7 +20,7 @@ its bubble mechanism was disabled by a performance fix that landed on 2026-08-06
 **It is still open. Close it unmerged; do not rebase it.** Its two diagnoses of the pill
 (§5.1) are still correct and are carried forward here; nothing else survives.
 
-The July handoff (`docs/active/handoffs/2026-07-20-session-switch-animation-handoff.md`)
+The July handoff (`docs/archive/handoffs/2026-07-20-session-switch-animation-handoff.md`)
 remains useful as history and should be archived when this ships.
 
 ## 2. Success criterion
@@ -64,7 +64,7 @@ and the pill sat over them); `--ease-settle` for a released pill gliding home.
 overshoots: the first cut used the app's spring curve on the pill and Destin's verdict was
 *"much too bouncy/aggressive"*, and a spring on a width-like property sends every pill to the
 right of it past its destination and back. Overshoot is allowed in exactly one place — the
-switch arrival (§4.2), which is one element's transform.
+switch arrival (§4.3), which is one element's transform.
 
 Existing call sites elsewhere in the app are **not** converted. Destin, 2026-08-31: a sweep
 means visual changes in surfaces unrelated to this work, which is the thing that costs
@@ -182,7 +182,7 @@ options that differ in cost by two orders of magnitude:
 **Build A first.** It is a handful of lines and it is the fallback if B is rejected or
 measures badly. Record both for the same clip step; §4.3 is only built if Destin picks B.
 
-### 4.3 Measuring which bubbles are on screen — only if §4.2 lands on B
+### 4.4 Measuring which bubbles are on screen — only if §4.3 lands on B
 
 At the instant of a switch, in a `useLayoutEffect` on the incoming pane, **measure which
 entries are on screen** and animate only those.
@@ -536,7 +536,7 @@ The candidates are the real `SessionStrip` in a demo host
 `globals.css` — never in code, so the winner is a value swap into `:root` and the deletion
 of the scaffold blocks, nothing more.
 
-Deck: `docs/active/design/2026-08-31-session-motion/session-motion-live.json` — three steps:
+Deck: `docs/archive/design/2026-08-31-session-motion/session-motion-live.json` — three steps:
 **feel** (pick one of Settled / Crisp / Soft), **switch-when** (pick one of Press /
 Press-name-on-drop / Release, §6.1), **arrival** (pick one of Fade-and-lift / Fade / Cut). Per the review-deck rules, several designs of one thing
 are ONE choice step, never a yes/no each.
@@ -549,7 +549,7 @@ are ONE choice step, never a yes/no each.
 - **The buddy window's `SessionPill`** — a plain dropdown with always-visible labels.
   `buddy.css`'s six stray curves stay where they are.
 - **Ctrl+` (chat↔terminal)** — §4.4.
-- **The outgoing conversation's bubbles** — §4.2.
+- **The outgoing conversation's bubbles** — §4.3.
 - **Converting call sites outside the files this work edits** — §3.
 - **Replacing the `steps()` transitions** — §3.1.
 - **Ghost lag/tilt.** Chrome's tab tracks the cursor 1:1; the carried feel comes from
@@ -559,7 +559,7 @@ are ONE choice step, never a yes/no each.
 
 | Risk | Why it matters | How it is caught |
 |---|---|---|
-| Many bubbles animating at once burns CPU | 2026-07-30 measured ~1.5–1.9ms/frame for *one* smoothly-animating element at 180Hz; §4.2 option B animates a screenful | Measure option B in the dev window on a high-refresh panel before the clip is recorded; option A is the escape hatch and is built first |
+| Many bubbles animating at once burns CPU | 2026-07-30 measured ~1.5–1.9ms/frame for *one* smoothly-animating element at 180Hz; §4.3 option B animates a screenful | Measure option B in the dev window on a high-refresh panel before the clip is recorded; option A is the escape hatch and is built first |
 | Index-space mismatch under overflow | Wrong pill drags and wrong reorder slot — invisible today, glaring once the real pill moves (§7.3) | Pinning test on the id-keyed drag state with an overflow fixture; fix lands before §7.4 |
 | The width/pack freeze is wrong | Pills change size mid-drag — worse than today's jump | Its own clip, at a window width narrow enough to force packing |
 | The measured name width disagrees with the rendered one | The label box opens to a number; one px short fades the last letter, one px long is invisible | Fonts are read off the real label (§5.2); the box's ceiling keeps 2px slack while the reserve is the exact rendered width; `pill-metrics.test.ts` pins that the handed-in font is the one measured |

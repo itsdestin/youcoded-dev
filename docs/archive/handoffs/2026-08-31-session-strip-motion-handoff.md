@@ -1,11 +1,11 @@
 ---
-status: active
+status: shipped
 created: 2026-08-31
 revised: 2026-09-01
 tags: [ui, motion, session-strip, chat-view, desktop, handoff]
-plan: docs/active/plans/2026-08-31-session-strip-and-switch-motion.md
-spec: docs/active/specs/2026-08-31-session-strip-and-switch-motion-design.md
-deck: docs/active/design/2026-08-31-session-motion/session-motion-live.json
+plan: docs/archive/plans/2026-08-31-session-strip-and-switch-motion.md
+spec: docs/archive/specs/2026-08-31-session-strip-and-switch-motion-design.md
+deck: docs/archive/design/2026-08-31-session-motion/session-motion-live.json
 ---
 
 # Session strip & switch motion — handoff
@@ -367,7 +367,7 @@ rewritten to describe what is built now; the plan is history.
 |---|---|
 | Branch | `feat/session-strip-motion` (youcoded), merged up to `origin/master` at `57a8efc0` |
 | Worktree | `worktrees/session-motion` — clean, committed, **not pushed** at the time of writing |
-| Review deck | `docs/active/design/2026-08-31-session-motion/session-motion-live.json` — three live steps |
+| Review deck | `docs/archive/design/2026-08-31-session-motion/session-motion-live.json` — three live steps |
 | Deck branch | `feat/session-motion-review` (youcoded-dev), worktree `worktrees/motion-docs` — see "Why a workspace worktree" |
 | Verification | `bash scripts/verify.sh worktrees/session-motion` → exit 0 (types, FULL suite, knip, eslint, ast-grep); `node scripts/workbench-boot-check.mjs <port>` → 15/15 routes |
 
@@ -393,7 +393,7 @@ hovers and drags in the pane itself.
 
 ```bash
 cd worktrees/motion-docs   # or the main checkout once it has pulled origin/master
-python3 scripts/ui-review/review-cards.py serve docs/active/design/2026-08-31-session-motion/session-motion-live.json
+python3 scripts/ui-review/review-cards.py serve docs/archive/design/2026-08-31-session-motion/session-motion-live.json
 # prints  [deck] http://127.0.0.1:<port>/deck-live.html   — quote that line to Destin
 ```
 

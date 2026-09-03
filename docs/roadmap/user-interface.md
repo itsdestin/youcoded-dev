@@ -64,11 +64,12 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       Destin 2026-09-02: not a review next session, but finishing it is a pre-1.3 priority
       `settings` `desktop` `needs-verify` `checked 2026-09-02` `v1.3`
 
-- [ ] Switching conversation tabs feels jumpy — content pops in and the tab name expands
-      instantly instead of rolling out (Destin, 2026-07-20). Rebuilt on branch
-      feat/session-strip-motion (worktree worktrees/session-motion), code complete; the live
-      motion review is in progress in another session (Destin, 2026-09-02)
-      `desktop` `in-flight` `checked 2026-09-02` → docs/active/handoffs/2026-08-31-session-strip-motion-handoff.md
+- [ ] Pressing a session whose name is shorter than the current one lets one or two more
+      dots into the row, and they appear at once while the bar re-centres ~6px in a single
+      frame — the only non-zero number left in the drag sweep after the 2026-09-03 rebuild
+      (`scripts/ui-review/drag-fuzz.mjs`: "continuity 27px" at t≈press in every run). Not
+      raised by Destin; the release itself is signed off (youcoded#404)
+      `desktop` `parked` `checked 2026-09-03` → docs/archive/handoffs/2026-08-31-session-strip-motion-handoff.md
 
 - [ ] Right-clicking an image in chat or the file viewer offers nothing — no Copy image,
       Save image as…, Copy address, or Ask about this (the menu shipped for text, code,
@@ -114,9 +115,9 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       `all` `parked` `checked 2026-09-01` → docs/active/investigations/2026-09-01-markdown-image-capability.md
 
 - [ ] Panel-opening transitions feel abrupt and undertuned and deserve real motion design
-      (Destin, 2026-07-20) — no design pass yet; the session-switcher half is the in-flight
-      motion branch above
-      `desktop` `parked` `checked 2026-07-20`
+      (Destin, 2026-07-20) — no design pass yet; the session-switcher half shipped on
+      2026-09-03 (youcoded#404, see shipped.md)
+      `desktop` `parked` `checked 2026-09-03`
 
 - [ ] Same per-tile blur cost the command drawer had (fixed in #277) may hit every other card grid —
       the files tab's document cards and any future grid. Never checked what backdrop they sit over,
