@@ -466,6 +466,44 @@ test('strayRuleDirs: no sub-repo rule dirs is the clean case', () => {
 });
 
 
+// --- one document living in both docs/active/ and docs/archive/ ---------------
+import { shadowedActiveDocs } from './audit-anchors.mjs';
+
+function docsFixture(files) {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-shadow-'));
+  for (const [rel, body] of Object.entries(files)) {
+    fs.mkdirSync(path.join(tmp, path.dirname(rel)), { recursive: true });
+    fs.writeFileSync(path.join(tmp, rel), body);
+  }
+  return tmp;
+}
+
+test('shadowedActiveDocs: a live doc with an identical sub-path under archive is reported', () => {
+  const tmp = docsFixture({
+    'docs/active/specs/2026-09-01-x.md': '---\nstatus: active\n---\n',
+    'docs/archive/specs/2026-09-01-x.md': '---\nstatus: shipped\n---\n',
+  });
+  assert.deepEqual(shadowedActiveDocs(tmp), ['specs/2026-09-01-x.md']);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+// The reason it compares sub-paths and not basenames: every design folder has a copy.md.
+test('shadowedActiveDocs: the same basename under DIFFERENT sub-paths is not a duplicate', () => {
+  const tmp = docsFixture({
+    'docs/active/design/2026-09-05-b/copy.md': 'live\n',
+    'docs/archive/design/2026-08-27-a/copy.md': 'dead\n',
+  });
+  assert.deepEqual(shadowedActiveDocs(tmp), []);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+test('shadowedActiveDocs: missing docs/active or docs/archive is not a crash', () => {
+  const tmp = docsFixture({ 'docs/active/specs/a.md': 'x\n' });
+  assert.deepEqual(shadowedActiveDocs(tmp), []);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+
 // --- the "no rule covers this" signal must be readable ------------------------
 
 test('affectedSubsystems: archives, prototypes and fixtures are counted as expected-uncovered', () => {

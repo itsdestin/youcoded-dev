@@ -504,6 +504,30 @@ export function strayRuleDirs(root) {
   return out;
 }
 
+// A doc under docs/active/ whose IDENTICAL sub-path also exists under docs/archive/.
+// That is one document in two places, and the live copy is the stale one — archiving
+// copies it across and the original is meant to go. On 2026-09-03 three of them sat in
+// this checkout (the 2026-09-01 roadmap-restructure spec, plan and handoff), the active
+// copies still saying `status: active` for work that had shipped; a session searching
+// live docs reads the wrong one, which is exactly the drift this file exists to catch.
+//
+// Sub-path, not basename: `design/<a>/copy.md` and `design/<b>/copy.md` are two real
+// documents, and comparing basenames alone would report them as a duplicate.
+//
+// WARN, not FAIL, until the three known leftovers are cleared — same escalation the
+// stray-rules check went through on 2026-09-02.
+export function shadowedActiveDocs(root) {
+  const rel = (base, f) => path.relative(base, f).replaceAll('\\', '/');
+  const active = path.join(root, 'docs', 'active');
+  const archive = path.join(root, 'docs', 'archive');
+  if (!fs.existsSync(active) || !fs.existsSync(archive)) return [];
+  const archived = new Set([...walkMarkdown(archive, [])].map(f => rel(archive, f)));
+  return [...walkMarkdown(active, [])]
+    .map(f => rel(active, f))
+    .filter(r => archived.has(r))
+    .sort();
+}
+
 // ---------- main ----------
 
 const CODE_EXT = /\.(ts|tsx|js|mjs|cjs|kt|kts|java|sh|ps1|sql|toml|gradle)$/;
@@ -624,6 +648,9 @@ function main() {
   // 4d. no sub-repo may carry its own .claude/rules/ — see strayRuleDirs.
   result.strayRules = strayRuleDirs(root);
 
+  // 4e. a live doc shadowed by an archived copy of itself — see shadowedActiveDocs.
+  result.shadowedDocs = shadowedActiveDocs(root);
+
   // 4c. frontmatter must survive a STRICT YAML parser — a rule whose frontmatter
   // throws loses its paths: and loads eagerly on every session (see the function).
   result.yamlUnsafe = yamlUnsafeFrontmatter(rules);
@@ -715,6 +742,8 @@ function printHuman(r) {
   }
   dump('rule frontmatter a strict YAML parser rejects (these load EAGERLY, every session)',
        (r.yamlUnsafe || []).map(u => `${u.file}: ${u.reason}`));
+  warn('live docs that also exist under docs/archive/ — same document twice; the docs/active/ copy is the stale one (delete it, or un-archive if it is genuinely back in flight)',
+       (r.shadowedDocs || []).map(d => `docs/active/${d}`));
   dump('budget violations', r.budgets.violations);
   if (r.diffScope) {
     console.log(r.diffScope.baseReport
