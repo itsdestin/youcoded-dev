@@ -13,7 +13,7 @@ has passed ~8 items — graduate it to its own file.
       then see you offline forever and you only find out by opening the friends panel. The LOG
       half shipped 2026-09-02 (youcoded#386) so it is diagnosable; the user-facing notice is
       still owed and needs a copy and surface decision on an auth screen
-      `desktop` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-01-social-401-silent-signout.md
+      `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-social-401-silent-signout.md
 
 - [ ] Friends list can show someone Online (or offline) who isn't, and stays wrong until you
       reconnect or a friend change pokes it — no periodic self-correction. Destin: "fine for now"

@@ -198,6 +198,16 @@ seen-on is always n/a here.
 
 ## release
 
+- [ ] Re-work the release method: releases tag master directly, so every release ships the
+      undifferentiated 2,370 commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
+      be cut without dragging in hordes of unreleased features. Goal: keep master as the trunk,
+      cut `release/vX.Y.x` branches off the last tag, and ship bug-fix minors by cherry-picking
+      fixes onto them — so a minor can go out while the next major is still blocked. Caveats to
+      fold in when building: every fix needs a "goes in the minor?" cherry-pick decision, and the
+      one-tag-both-platforms rule (ADR 005) means even a fix-only minor must coordinate an Android
+      versionCode bump and ships a paired Android build (no bare desktop-only hotfixes)
+      `n/a` `parked` `checked 2026-09-03` `v1.3.1`
+
 - [ ] Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
       from the embed's theme button and the whole app window becomes one blur; the redesign makes
       theme switching a primary interaction so this must ship with it
