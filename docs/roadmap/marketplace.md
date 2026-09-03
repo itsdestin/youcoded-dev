@@ -45,17 +45,6 @@ them. Not here: the theme renders wrong (themes).
       "Not checked" — and will forever, until the scan follows the branch the listing names.
       `all` `needs-verify` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-marketplace-ingest-ignores-source-git-ref.md
 
-- [ ] Put the Worker on a custom domain. It is served from a `workers.dev` address, where
-      Cloudflare's edge cache and the rate limiter both do nothing. The work is small; blocked on the
-      "formalization" push after 1.3 (dev-workspace → release). Destin 2026-09-02: youcoded.ai is
-      available (~$80/yr) and is the pick.
-      `all` `blocked` `checked 2026-09-02` → docs/active/investigations/2026-09-01-marketplace-worker-workers-dev-no-cache.md
-
-- [ ] The Worker's rate limit has never fired in production — measured 2026-08-28: 160 requests in
-      ~2 s against a 60-per-minute route, all 200, zero 429s. Ratings, reports, installs, exports and
-      public reads have no brake at all until the custom domain above lands.
-      `all` `confirmed` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-marketplace-worker-workers-dev-no-cache.md
-
 - [ ] Every marketplace refresh re-downloads the whole catalog (~1 MB on the wire, ~5,000 rows)
       even when one listing changed. Wanted: send only what changed since the client's last version,
       on both platforms. Not urgent at today's size; the unlock at ~20,000 rows.
