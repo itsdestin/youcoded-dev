@@ -411,6 +411,11 @@ Replace the ghost model with a moving-pill model.
   pushed the row past its box and CSS squeezed the active name (191→78px), which popped
   back on press. `LabelStyleInput.room` = `pillBudget` minus the packed row; a peek is as
   wide as that allows, or does not open. Chrome does not widen a tab on hover at all.
+- **A peek waits for the hand to rest (2026-09-03, R8).** A hand that keeps moving after a
+  drop drifts onto the next dot; its peek opened and closed, shifting the centred row 5px
+  and back inside the settle ("jumping/glitching back and forth on release"). A peek opens
+  after `PEEK_DWELL_MS` (150ms) of rest on a dot; leaving cancels it; an open peek follows
+  the cursor at once. The 8px `hoverLock` after a drop remains as a second guard.
 - **Sideways never tears off (2026-09-03, R6).** *"i still cant drag a session into the
   leftmost position"* — reaching for the first slot overshoots past the window's edge, which
   the live tear-off (and the drop routing) read as "outside the window": a peer window
@@ -568,6 +573,8 @@ Per the workspace knowledge ladder, each of these is a test, not prose. All live
    `target.pillBudget`).
 8b. **A peek never squeezes the row** — `pill-label-style.test.ts` (`room` caps a hover peek
    only; the active and pack-expanded names are never capped by it).
+8d. **A peek waits for the hand to rest** — `animation-frame-budget.test.ts` (`PEEK_DWELL_MS`,
+   the timer in `handleEnter`, the cancel in `handleLeave`, the instant follow once open).
 8c. **The yield is the centre and the swap shows nothing** — `drag-order.test.ts` (margin −14,
    the centre lines both ways); `animation-frame-budget.test.ts` (the mirror image, a
    direction-blind flow).

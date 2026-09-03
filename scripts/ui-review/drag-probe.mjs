@@ -14,6 +14,10 @@
 //                      starts on an ACTIVE, open name (Destin drags the name he is on)
 //   GRAB=0..1          where across the pressed pill's width the press lands (default 0.5;
 //                      0.9 = "i began dragging on the right side of the session pill")
+//   AFTER=hand         a hand does not freeze on release: jitter ±3px for 150ms, then drift
+//                      40px right, then leave the strip downwards (the 2026-09-03 R8 note:
+//                      "jumping/glitching back and forth on release" — never seen with a
+//                      cursor that holds still)
 //
 // <url> is a workbench CHILD page, e.g.
 //   'http://127.0.0.1:5513/?mode=workbench&child=1&scenario=stress&latency=0&select=press'
@@ -106,6 +110,12 @@ for (let i = 1; i <= steps; i++) { const k = i / steps, e = 1 - Math.pow(1 - k, 
 await sleep(120);
 await mark('release');
 await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: b.x, y: b.y, button: 'left', buttons: 0, clickCount: 1 });
+if (process.env.AFTER === 'hand') {
+  for (let i = 0; i < 9; i++) { await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: b.x + (i % 2 ? 3 : -3), y: b.y + (i % 3 ? 1 : -1) }); await sleep(16); }
+  for (let i = 1; i <= 8; i++) { await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: b.x + 5 * i, y: b.y }); await sleep(16); }
+  await mark('leave');
+  for (let i = 1; i <= 6; i++) { await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: b.x + 40, y: b.y + 20 * i }); await sleep(16); }
+}
 await sleep(Number(holdArg ?? 700));
 const log = await evaluate('JSON.stringify({ log: window.__log, marks: window.__marks })');
 writeFileSync(join(process.env.OUT_DIR ?? '.', 'drag-probe.json'), log);

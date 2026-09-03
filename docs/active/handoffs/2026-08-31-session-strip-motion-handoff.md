@@ -18,8 +18,11 @@ widths and the row snapped back at the drop) and the tear-off firing when the ha
 pane sideways. Fixed in youcoded `7bcf75cf`. Round 7 (chat): still a backward glide at the
 drop and "moves back rightward" at the left end — the yield line, not the grab point: a dot
 counted as passed only 1px before its far edge. Now passed at its centre (Chrome), with the
-flow drawing a crossed dot twice so the swap shows nothing; youcoded `4093e3ed`. Served as
-the round-8 live deck (one try-this step). Waiting on that answer; then merge.**
+flow drawing a crossed dot twice so the swap shows nothing; youcoded `4093e3ed`. Round 8
+(chat): "still jumping/glitching back and forth on release" — only with a hand that keeps
+moving after release: it drifts onto the next dot, whose peek opens and closes, shifting the
+row 5px and back. A peek now waits 150ms of rest; youcoded `6df98c7f`. Served as the round-9
+live deck (one try-this step). Waiting on that answer; then merge.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
 but it will need to be tuned/repaired a bit. it's jank"*), **switch-when → Press** (*"further
@@ -223,6 +226,22 @@ every time). The cause was the yield line:
   over a whole drag in every run after; 28px blinks before.
 - Round 8 deck: `session-motion-live-8.json` — one try-this step on R8 (`name-flow-4`).
 
+**Round-8 answer (chat, 2026-09-03):** *"its still jumping/glitching back and forth on
+release before settling in the final position."* Never reproduced with a cursor that holds
+still after release (every probe until then); reproduced at once with `AFTER=hand` (new probe
+env: jitter ±3px for 150ms, drift 40px, leave the strip downwards). The hand drifts onto the
+next dot → its peek opens → the centred row widens and the bar shifts 5px left → the peek
+closes as the hand leaves → the row comes back, all inside the settle. (Before this session's
+room cap the peek was up to 120px, a whole re-centre.) **A peek now opens only after the
+cursor has rested on a dot for `PEEK_DWELL_MS` (150ms)**; leaving cancels a pending one; an
+open peek still follows the cursor at once. Measured after: the bar's left never changes
+after release; only the pill settles.
+- **Lesson for the probe:** a drag probe must end like a hand, not like a script. Every
+  "release" note in R5–R8 was reproduced only once the probe pressed first (`PRESS_FIRST`),
+  grabbed off-centre (`GRAB`), ran at the pane's width (`PROBE_W`), or kept moving after
+  release (`AFTER=hand`). Run all four before reporting a release clean.
+- Round 9 deck: `session-motion-live-9.json` — one try-this step on R9 (`name-flow-5`).
+
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
 opening the moment you press, before any drag. That forced a second drag model — the pill in
@@ -325,7 +344,7 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-8 answer
+## After the round-9 answer
 
 1. "Yes": merge and push `feat/session-strip-motion`; then `feat/session-motion-review`
    (deck + docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
