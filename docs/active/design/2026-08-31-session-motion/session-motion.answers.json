@@ -1,0 +1,32 @@
+{
+ "deck": "session-motion",
+ "started": "2026-08-31T22:46:27.417Z",
+ "submitted": null,
+ "cur": 2,
+ "answers": {
+  "pill-expand": {
+   "v": "skip",
+   "seconds": 38,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "hover": {
+   "v": "skip",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "drag": {
+   "v": "skip",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "switch": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "deck": "phase-e-review2",
+ "started": "2026-08-28T02:52:46.508Z",
+ "submitted": "2026-08-28T02:54:13Z",
+ "cur": 1,
+ "answers": {
+  "P-8.2": {
+   "v": "yes",
+   "note": "tags should not be dots, but full chips with spelled names",
+   "seconds": 22,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-8.3": {
+   "v": "pick",
+   "pick": "A",
+   "seconds": 63,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

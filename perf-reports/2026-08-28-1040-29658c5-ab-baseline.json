@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 1,
+  "label": "ab-baseline",
+  "sha": "29658c5b4cee387a7a796f25951c9188d05a3f71",
+  "branch": "",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-08-28T10:40:29.744Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "ramGb": 31,
+    "kernel": "7.1.2-2-cachyos",
+    "node": "v26.4.0"
+  },
+  "noise": {
+    "loadAvgBefore": 1.34,
+    "machineBusyPctBefore": 1.5,
+    "maxLoadAvgAccepted": 1.34,
+    "maxBusyPctAccepted": 1.5,
+    "discardedRuns": 0
+  },
+  "startup": null,
+  "idle": null,
+  "history": null,
+  "workload": null,
+  "replayStall": null,
+  "artifacts": null,
+  "scrollback": {
+    "runs": [
+      {
+        "floor": {
+          "pssMb": 1490.6,
+          "jsHeapMb": 20,
+          "jsHeapTotalMb": 23.3,
+          "domNodes": 23461,
+          "listeners": 945
+        },
+        "ceiling": {
+          "pssMb": 4409.1,
+          "jsHeapMb": 533.3,
+          "jsHeapTotalMb": 1050.2,
+          "domNodes": 1464735,
+          "listeners": 31421,
+          "foldedEntries": 0,
+          "totalEntries": 12100
+        },
+        "released": {
+          "pssMb": 4362.8,
+          "jsHeapMb": 533.4,
+          "jsHeapTotalMb": 906.9,
+          "domNodes": 1464722,
+          "listeners": 31421,
+          "releasedMb": 46.3
+        },
+        "perSize": {
+          "huge": {
+            "pages": 116,
+            "entriesBefore": 60,
+            "entriesAfter": 7000,
+            "reachedTop": true,
+            "pageMedianMs": 420,
+            "pageP95Ms": 717,
+            "pssAfterMb": 3898.2,
+            "jsHeapAfterMb": 499.5,
+            "domNodesAfter": 867143,
+            "foldedInPane": 0,
+            "entriesInPane": 7000,
+            "foldedEverywhere": 0
+          },
+          "medium": {
+            "pages": 83,
+            "entriesBefore": 60,
+            "entriesAfter": 5000,
+            "reachedTop": true,
+            "pageMedianMs": 880,
+            "pageP95Ms": 1127,
+            "pssAfterMb": 5720.2,
+            "jsHeapAfterMb": 1723.2,
+            "domNodesAfter": 1460861,
+            "foldedInPane": 0,
+            "entriesInPane": 5000,
+            "foldedEverywhere": 0
+          },
+          "small": {
+            "pages": 1,
+            "entriesBefore": 60,
+            "entriesAfter": 100,
+            "reachedTop": true,
+            "pageMedianMs": 1270,
+            "pageP95Ms": 1270,
+            "pssAfterMb": 5800.8,
+            "jsHeapAfterMb": 574.3,
+            "domNodesAfter": 1464736,
+            "foldedInPane": 0,
+            "entriesInPane": 100,
+            "foldedEverywhere": 0
+          }
+        },
+        "warnings": [],
+        "floorPssMb": 1490.6,
+        "ceilingPssMb": 4409.1,
+        "deltaPssMb": 2918.5,
+        "floorJsHeapMb": 20,
+        "ceilingJsHeapMb": 533.3,
+        "deltaJsHeapMb": 513.3,
+        "jsShareMinMb": 513.3,
+        "jsShareMaxMb": 1026.9,
+        "deltaNonJsMb": 1891.6,
+        "floorDomNodes": 23461,
+        "ceilingDomNodes": 1464735,
+        "deltaDomNodes": 1441274,
+        "floorListeners": 945,
+        "ceilingListeners": 31421,
+        "deltaListeners": 30476,
+        "foldedEntries": 0,
+        "totalEntries": 12100,
+        "releasedMb": 46.3,
+        "totalPagesLoaded": 200,
+        "totalEntriesLoaded": 11920,
+        "sessionsCreated": 6
+      },
+      {
+        "floor": {
+          "pssMb": 1579.4,
+          "jsHeapMb": 21.4,
+          "jsHeapTotalMb": 24.8,
+          "domNodes": 23482,
+          "listeners": 945
+        },
+        "ceiling": {
+          "pssMb": 4333.9,
+          "jsHeapMb": 534.6,
+          "jsHeapTotalMb": 940.4,
+          "domNodes": 1464735,
+          "listeners": 31421,
+          "foldedEntries": 0,
+          "totalEntries": 12100
+        },
+        "released": {
+          "pssMb": 4308.3,
+          "jsHeapMb": 535.3,
+          "jsHeapTotalMb": 815.4,
+          "domNodes": 1464722,
+          "listeners": 31421,
+          "releasedMb": 25.6
+        },
+        "perSize": {
+          "huge": {
+            "pages": 116,
+            "entriesBefore": 60,
+            "entriesAfter": 7000,
+            "reachedTop": true,
+            "pageMedianMs": 430,
+            "pageP95Ms": 725,
+            "pssAfterMb": 4124.6,
+            "jsHeapAfterMb": 325.2,
+            "domNodesAfter": 867142,
+            "foldedInPane": 0,
+            "entriesInPane": 7000,
+            "foldedEverywhere": 0
+          },
+          "medium": {
+            "pages": 83,
+            "entriesBefore": 60,
+            "entriesAfter": 5000,
+            "reachedTop": true,
+            "pageMedianMs": 890,
+            "pageP95Ms": 1114,
+            "pssAfterMb": 5532.2,
+            "jsHeapAfterMb": 788.4,
+            "domNodesAfter": 1460861,
+            "foldedInPane": 0,
+            "entriesInPane": 5000,
+            "foldedEverywhere": 0
+          },
+          "small": {
+            "pages": 1,
+            "entriesBefore": 60,
+            "entriesAfter": 100,
+            "reachedTop": true,
+            "pageMedianMs": 993,
+            "pageP95Ms": 993,
+            "pssAfterMb": 5532.3,
+            "jsHeapAfterMb": 602.8,
+            "domNodesAfter": 1464736,
+            "foldedInPane": 0,
+            "entriesInPane": 100,
+            "foldedEverywhere": 0
+          }
+        },
+        "warnings": [],
+        "floorPssMb": 1579.4,
+        "ceilingPssMb": 4333.9,
+        "deltaPssMb": 2754.5,
+        "floorJsHeapMb": 21.4,
+        "ceilingJsHeapMb": 534.6,
+        "deltaJsHeapMb": 513.2,
+        "jsShareMinMb": 513.2,
+        "jsShareMaxMb": 915.6,
+        "deltaNonJsMb": 1838.9,
+        "floorDomNodes": 23482,
+        "ceilingDomNodes": 1464735,
+        "deltaDomNodes": 1441253,
+        "floorListeners": 945,
+        "ceilingListeners": 31421,
+        "deltaListeners": 30476,
+        "foldedEntries": 0,
+        "totalEntries": 12100,
+        "releasedMb": 25.6,
+        "totalPagesLoaded": 200,
+        "totalEntriesLoaded": 11920,
+        "sessionsCreated": 6
+      },
+      {
+        "floor": {
+          "pssMb": 1557.4,
+          "jsHeapMb": 23,
+          "jsHeapTotalMb": 26.2,
+          "domNodes": 23461,
+          "listeners": 945
+        },
+        "ceiling": {
+          "pssMb": 4345.6,
+          "jsHeapMb": 535.4,
+          "jsHeapTotalMb": 949.9,
+          "domNodes": 1464735,
+          "listeners": 31421,
+          "foldedEntries": 0,
+          "totalEntries": 12100
+        },
+        "released": {
+          "pssMb": 4308.4,
+          "jsHeapMb": 536,
+          "jsHeapTotalMb": 826.1,
+          "domNodes": 1464722,
+          "listeners": 31422,
+          "releasedMb": 37.2
+        },
+        "perSize": {
+          "huge": {
+            "pages": 116,
+            "entriesBefore": 60,
+            "entriesAfter": 7000,
+            "reachedTop": true,
+            "pageMedianMs": 435,
+            "pageP95Ms": 738,
+            "pssAfterMb": 4050.4,
+            "jsHeapAfterMb": 1030,
+            "domNodesAfter": 867143,
+            "foldedInPane": 0,
+            "entriesInPane": 7000,
+            "foldedEverywhere": 0
+          },
+          "medium": {
+            "pages": 83,
+            "entriesBefore": 60,
+            "entriesAfter": 5000,
+            "reachedTop": true,
+            "pageMedianMs": 885,
+            "pageP95Ms": 1121,
+            "pssAfterMb": 5842.3,
+            "jsHeapAfterMb": 1806.2,
+            "domNodesAfter": 1460861,
+            "foldedInPane": 0,
+            "entriesInPane": 5000,
+            "foldedEverywhere": 0
+          },
+          "small": {
+            "pages": 1,
+            "entriesBefore": 60,
+            "entriesAfter": 100,
+            "reachedTop": true,
+            "pageMedianMs": 1000,
+            "pageP95Ms": 1000,
+            "pssAfterMb": 5845.9,
+            "jsHeapAfterMb": 634.6,
+            "domNodesAfter": 1464749,
+            "foldedInPane": 0,
+            "entriesInPane": 100,
+            "foldedEverywhere": 0
+          }
+        },
+        "warnings": [],
+        "floorPssMb": 1557.4,
+        "ceilingPssMb": 4345.6,
+        "deltaPssMb": 2788.2,
+        "floorJsHeapMb": 23,
+        "ceilingJsHeapMb": 535.4,
+        "deltaJsHeapMb": 512.4,
+        "jsShareMinMb": 512.4,
+        "jsShareMaxMb": 923.7,
+        "deltaNonJsMb": 1864.5,
+        "floorDomNodes": 23461,
+        "ceilingDomNodes": 1464735,
+        "deltaDomNodes": 1441274,
+        "floorListeners": 945,
+        "ceilingListeners": 31421,
+        "deltaListeners": 30476,
+        "foldedEntries": 0,
+        "totalEntries": 12100,
+        "releasedMb": 37.2,
+        "totalPagesLoaded": 200,
+        "totalEntriesLoaded": 11920,
+        "sessionsCreated": 6
+      }
+    ],
+    "median": {
+      "floorPssMb": 1557.4,
+      "ceilingPssMb": 4345.6,
+      "deltaPssMb": 2788.2,
+      "floorJsHeapMb": 21.4,
+      "ceilingJsHeapMb": 534.6,
+      "deltaJsHeapMb": 513.2,
+      "jsShareMinMb": 513.2,
+      "jsShareMaxMb": 923.7,
+      "deltaNonJsMb": 1864.5,
+      "floorDomNodes": 23461,
+      "ceilingDomNodes": 1464735,
+      "deltaDomNodes": 1441274,
+      "floorListeners": 945,
+      "ceilingListeners": 31421,
+      "deltaListeners": 30476,
+      "releasedMb": 37.2,
+      "totalPagesLoaded": 200,
+      "totalEntriesLoaded": 11920,
+      "foldedEntries": 0,
+      "totalEntries": 12100,
+      "perSize": {
+        "huge": {
+          "pages": 116,
+          "entriesAfter": 7000,
+          "pageMedianMs": 430,
+          "pageP95Ms": 725,
+          "pssAfterMb": 4050.4,
+          "jsHeapAfterMb": 499.5,
+          "reachedTopEveryRun": true
+        },
+        "medium": {
+          "pages": 83,
+          "entriesAfter": 5000,
+          "pageMedianMs": 885,
+          "pageP95Ms": 1121,
+          "pssAfterMb": 5720.2,
+          "jsHeapAfterMb": 1723.2,
+          "reachedTopEveryRun": true
+        },
+        "small": {
+          "pages": 1,
+          "entriesAfter": 100,
+          "pageMedianMs": 1000,
+          "pageP95Ms": 1000,
+          "pssAfterMb": 5800.8,
+          "jsHeapAfterMb": 602.8,
+          "reachedTopEveryRun": true
+        }
+      }
+    },
+    "warnings": []
+  },
+  "measures": {
+    "scrollback": {
+      "scenario": "scrollback",
+      "question": "How much memory does the app accumulate when the user scrolls back through long conversations, and is any of it ever released?",
+      "configuration": [
+        "the SAME six sessions the workload phase opens (openJourneySessions), so the floor and the ceiling are comparable numbers",
+        "each of the three RESUMED conversations (huge, medium, small) is scrolled to its beginning, one at a time, largest first",
+        "a page turn is driven the way a user drives it — scroll the pane to the top and wait for the entry count to GROW; the app's own data-history-sentinel (rendered only while history.hasMore) is what says whether there is more",
+        "nothing streams during this phase: the only thing growing the window is the scroll-back itself",
+        "the ceiling is read AFTER a forced GC, so a rise means retained memory rather than uncollected garbage"
+      ],
+      "clocks": {
+        "floor.pssMb": "whole-process PSS with all six sessions open and NOTHING scrolled — the paged state every other phase measures",
+        "ceiling.pssMb": "the same reading after all three conversations have been scrolled to the beginning, post-GC",
+        "deltaPssMb": "ceiling - floor: what scrolling back costs. THE cycle-3 number.",
+        "deltaJsHeapMb": "live JS objects added — reducer state and React fibers. Only EVICTION frees this. Same as jsShareMinMb.",
+        "jsShareMaxMb": "committed V8 heap added. PSS counts what V8 asked the OS for, not what is live inside it, so this is the UPPER bound on the JS share.",
+        "deltaNonJsMb": "PSS rise minus the UPPER bound on JS — a LOWER bound on the DOM/layout/paint share. This is what parking a hidden view frees.",
+        "releasedMb": "ceiling - (reading after switching away from every scrolled session and forcing a GC). Expected ~0 today, because nothing evicts; this is the metric a cycle-3 change has to move.",
+        "perSize.*.pageMedianMs": "how long one page turn takes, per conversation — does scrolling back get slower as the window grows?"
+      },
+      "blindTo": [
+        "conversations larger than the fixture huge transcript (3,500 turns)",
+        "whether the user would ever scroll this far — this is a CEILING, deliberately the worst case, not a typical session",
+        "the cost of scrolling back DOWN again, and of re-rendering a conversation whose pages were evicted (there is no eviction to measure yet)",
+        "anything requiring a real GPU — the rig runs headless under Xvfb, so the paint half of deltaNonJsMb is a software-raster figure",
+        "per-session attribution of PSS: /proc reports the whole app family, so a per-conversation delta is only clean because they are scrolled ONE AT A TIME"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": null,
+    "workloadBoots": [],
+    "stallBoot": null,
+    "artifactsBoot": null,
+    "scrollbackBoot": 0
+  },
+  "screens": null,
+  "aborted": null,
+  "incomplete": []
+}

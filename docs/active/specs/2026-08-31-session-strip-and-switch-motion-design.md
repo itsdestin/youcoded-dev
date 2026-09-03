@@ -140,7 +140,22 @@ already — wallpaper glass (`[data-wallpaper] .in-view .bg-inset`, `theme-engin
 pausing off-screen keyword shimmer (`globals.css:1680`) — it is observer-driven and
 therefore async, and it is now coupled to `content-visibility`.
 
-### 4.2 The animation, and the one choice inside it
+### 4.2 What replaces it
+
+At the instant of a switch, in a `useLayoutEffect` on the incoming pane, **measure which
+entries are on screen** and animate only those.
+
+Entries are in document order inside one scroll container, so `offsetTop` increases
+monotonically. **Binary-search it** for the first and last entry inside the viewport. That
+is ~14 property reads after one forced layout, bounded regardless of transcript length —
+which matters, because a scrolled-back conversation can hold 12,100 entries and 1.44M DOM
+nodes (`docs/archive/handoffs/2026-08-28-perf-cycle-3-handoff.md` §2).
+
+This keeps Destin's July constraint — *only actually-visible bubbles animate* — and makes
+it stronger: it is measured at the moment it is used, rather than inherited from an
+observer that may not have run yet.
+
+### 4.3 The animation, and the one choice inside it
 
 **The outgoing conversation does not animate.** The app has already stopped drawing it, and
 Chrome does not animate the page you are leaving either. This deletes the 120ms hold that

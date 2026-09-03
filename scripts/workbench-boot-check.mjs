@@ -27,6 +27,20 @@
 //
 // Requires a Chrome/Chromium binary; it launches its own headless instance on a
 // scratch profile and cleans it up.
+//
+// FALSE-GREEN THIS SCRIPT USED TO HAVE (fixed 2026-09-02): with NOTHING serving
+// the port, Chrome rendered its own net::ERR_CONNECTION_REFUSED page for every
+// route. That page has no "failed to start" text, no #boot spinner and throws no
+// exception -- so all sixteen routes printed `ok` and the script exited 0 saying
+// "All 16 workbench routes mount cleanly". CLAUDE.md tells every session to trust
+// this check, so a dead server read as a passing app. Three things now have to be
+// true before a route counts as ok, and each is asserted separately so the failure
+// says which one broke:
+//   1. a preflight HTTP request to the workbench port succeeds (else exit 2);
+//   2. the navigation itself resolved -- CDP reports no `errorText`, and the main
+//      document response was not 4xx/5xx;
+//   3. #root is present in the DOM. index.html ships #root inline, so its absence
+//      means the bytes we loaded were not the workbench at all.
 
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
@@ -84,6 +98,29 @@ const ROUTES = [
   ['app · first-run wizard', '&child=1&scenario=default&firstRun=AUTHENTICATE'],
 ];
 
+// A dead port is the failure mode this script exists to catch and used to miss.
+// Prove something answers HTTP before spending two minutes rendering Chrome's
+// error page sixteen times.
+async function preflight() {
+  let last = null;
+  for (let i = 0; i < 3; i += 1) {
+    try {
+      const res = await fetch(BASE, { method: 'GET' });
+      if (res.ok) return;
+      last = `HTTP ${res.status}`;
+    } catch (err) {
+      last = err?.cause?.code ?? err?.message ?? String(err);
+    }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  console.error(`boot-check: nothing is serving the workbench on port ${PORT} (${last}).`);
+  console.error('           Start it first:  bash scripts/run-workbench.sh <worktree>');
+  console.error('           Refusing to report routes as passing against a dead port.');
+  process.exit(2);
+}
+
+await preflight();
+
 const CHROME = ['google-chrome-stable', 'google-chrome', 'chromium', 'chromium-browser'];
 
 function findChrome() {
@@ -134,6 +171,11 @@ async function checkRoute(url) {
   let id = 0;
   const pending = new Map();
   const errors = [];
+  // Main-document HTTP status, filled in by Network.responseReceived. A Vite dev
+  // server that is up but has lost the entry (404) or blown up (500) is a boot
+  // failure we used to render as `ok` -- the error body simply has no #boot.
+  let docStatus = null;
+  let netFailure = null;
   const send = (method, params = {}) => new Promise((res) => {
     const i = ++id;
     pending.set(i, res);
@@ -148,11 +190,27 @@ async function checkRoute(url) {
       errors.push(msg.params.exceptionDetails?.exception?.description
         ?? msg.params.exceptionDetails?.text ?? 'unknown exception');
     }
+    // Only the top-level document decides pass/fail here; a 404 on some optional
+    // asset is not a boot failure, and Runtime.exceptionThrown already covers a
+    // missing module.
+    if (msg.method === 'Network.responseReceived' && msg.params.type === 'Document'
+        && docStatus === null) {
+      docStatus = msg.params.response.status;
+    }
+    if (msg.method === 'Network.loadingFailed' && msg.params.type === 'Document'
+        && !netFailure) {
+      netFailure = msg.params.errorText ?? 'document load failed';
+    }
   };
 
   await send('Runtime.enable');
   await send('Page.enable');
-  await send('Page.navigate', { url });
+  await send('Network.enable');
+  // Page.navigate's OWN result carries errorText when the navigation never
+  // resolved (connection refused, DNS failure, bad scheme). This is the single
+  // strongest signal that the port is dead, and it was previously discarded.
+  const nav = await send('Page.navigate', { url });
+  const navError = nav?.errorText ?? null;
   // Long enough for the 3s firstRun timeout and the classifier's first tick.
   await new Promise((r) => setTimeout(r, 6000));
 
@@ -161,13 +219,17 @@ async function checkRoute(url) {
       failedToStart: document.body.innerText.includes('failed to start'),
       message: document.body.innerText.slice(0, 200),
       stillBooting: !!document.getElementById('boot'),
+      hasRoot: !!document.getElementById('root'),
     })`,
     returnByValue: true,
   });
 
   ws.close();
   await fetch(`http://127.0.0.1:${CDP_PORT}/json/close/${target.id}`);
-  return { ...JSON.parse(probe.result.value ?? '{}'), errors };
+  // A throw inside Runtime.evaluate (or a page we could not reach at all) must not
+  // read as "every assertion passed" -- default hasRoot to false, not undefined.
+  const dom = { hasRoot: false, ...JSON.parse(probe?.result?.value ?? '{}') };
+  return { ...dom, errors, navError, netFailure, docStatus };
 }
 
 await waitForCdp();
@@ -177,10 +239,18 @@ for (const [label, query] of ROUTES) {
   const r = await checkRoute(BASE + query);
   // `stillBooting` catches the case the error boundary never runs because the
   // module graph failed to load at all — the #boot spinner is still in the DOM.
-  const bad = r.failedToStart || r.stillBooting || r.errors.length > 0;
+  // The navigation/#root assertions catch the case we never loaded the workbench
+  // at all, which every one of these routes used to report as `ok`.
+  const httpBad = typeof r.docStatus === 'number' && r.docStatus >= 400;
+  const bad = r.navError || r.netFailure || httpBad || !r.hasRoot
+    || r.failedToStart || r.stillBooting || r.errors.length > 0;
   if (bad) {
     failed += 1;
     console.log(`FAIL  ${label}`);
+    if (r.navError) console.log(`      navigation failed: ${r.navError}`);
+    if (r.netFailure) console.log(`      document did not load: ${r.netFailure}`);
+    if (httpBad) console.log(`      server answered HTTP ${r.docStatus} for the page`);
+    if (!r.hasRoot) console.log('      #root is not in the DOM — this page is not the workbench');
     if (r.failedToStart) console.log(`      error boundary: ${r.message.replace(/\n/g, ' | ')}`);
     if (r.stillBooting) console.log('      never mounted (boot spinner still present)');
     for (const e of [...new Set(r.errors)].slice(0, 5)) {

@@ -34,7 +34,7 @@ blocked_on: "D5 (§3) — deny-list scope for editable paths. Do not implement �
 Make the artifact pane good enough that a developer can review, navigate, and make
 surgical edits to real code without leaving the app.
 
-**The framing is deliberately not IDE parity.** `docs/active/specs/2026-07-09-platform-vision-roadmap.md:139`
+**The framing is deliberately not IDE parity.** `docs/archive/specs/2026-07-09-platform-vision-roadmap.md:139`
 positions YouCoded as "the open, personal Cowork" with non-developer accessibility
 as core identity, and its competitive matrix (L112–139) contains no row for an
 editor, file tree, or diff view. This workstream is a considered departure from

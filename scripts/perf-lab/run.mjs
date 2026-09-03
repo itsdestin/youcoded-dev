@@ -1188,7 +1188,7 @@ async function main(argv) {
             // what it is doing — the 2026-08-28 lesson from 40 minutes of silence.
             onProgress: (e) => log(e.partial
               ? `scrollback ${i + 1}/${cfg.scrollbackRepeats}: ${e.size} — ${e.pages} pages in, ${e.entries} entries, last page ${e.lastPageMs}ms`
-              : `scrollback ${i + 1}/${cfg.scrollbackRepeats}: ${e.size} DONE — ${e.pages} pages, ${e.entries} entries, PSS ${e.pssMb}MB${e.reachedTop ? '' : ' (DID NOT reach the top)'}`),
+              : `scrollback ${i + 1}/${cfg.scrollbackRepeats}: ${e.size} DONE — ${e.pages} pages, ${e.entries} entries, ${e.folded ?? '?'}/${e.inPane ?? '?'} folded in pane, PSS ${e.pssMb}MB${e.reachedTop ? '' : ' (DID NOT reach the top)'}`),
           });
           runs.push(r);
           log(`scrollback ${i + 1}/${cfg.scrollbackRepeats}: floor ${r.floorPssMb}MB -> ceiling ${r.ceilingPssMb}MB (+${r.deltaPssMb}MB; heap +${r.deltaJsHeapMb}MB, non-JS +${r.deltaNonJsMb}MB, ${r.deltaDomNodes} nodes), released on switch-away ${r.releasedMb}MB`);

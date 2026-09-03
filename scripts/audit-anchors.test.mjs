@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
 import {
   parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths,
-  globToRegex, countBodyWords, yamlUnsafeFrontmatter,
+  globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor,
 } from './audit-anchors.mjs';
 
 test('parseRuleFrontmatter: block paths, last_verified, verify with contains', () => {
@@ -464,6 +466,44 @@ test('strayRuleDirs: no sub-repo rule dirs is the clean case', () => {
 });
 
 
+// --- one document living in both docs/active/ and docs/archive/ ---------------
+import { shadowedActiveDocs } from './audit-anchors.mjs';
+
+function docsFixture(files) {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-shadow-'));
+  for (const [rel, body] of Object.entries(files)) {
+    fs.mkdirSync(path.join(tmp, path.dirname(rel)), { recursive: true });
+    fs.writeFileSync(path.join(tmp, rel), body);
+  }
+  return tmp;
+}
+
+test('shadowedActiveDocs: a live doc with an identical sub-path under archive is reported', () => {
+  const tmp = docsFixture({
+    'docs/active/specs/2026-09-01-x.md': '---\nstatus: active\n---\n',
+    'docs/archive/specs/2026-09-01-x.md': '---\nstatus: shipped\n---\n',
+  });
+  assert.deepEqual(shadowedActiveDocs(tmp), ['specs/2026-09-01-x.md']);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+// The reason it compares sub-paths and not basenames: every design folder has a copy.md.
+test('shadowedActiveDocs: the same basename under DIFFERENT sub-paths is not a duplicate', () => {
+  const tmp = docsFixture({
+    'docs/active/design/2026-09-05-b/copy.md': 'live\n',
+    'docs/archive/design/2026-08-27-a/copy.md': 'dead\n',
+  });
+  assert.deepEqual(shadowedActiveDocs(tmp), []);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+test('shadowedActiveDocs: missing docs/active or docs/archive is not a crash', () => {
+  const tmp = docsFixture({ 'docs/active/specs/a.md': 'x\n' });
+  assert.deepEqual(shadowedActiveDocs(tmp), []);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+
 // --- the "no rule covers this" signal must be readable ------------------------
 
 test('affectedSubsystems: archives, prototypes and fixtures are counted as expected-uncovered', () => {
@@ -485,4 +525,27 @@ test('affectedSubsystems: a real uncovered code file still shows up', () => {
   const r = affectedSubsystems(rules, ['youcoded/app/src/Brand.kt', 'docs/archive/x.md']);
   assert.deepEqual(r.uncovered, ['youcoded/app/src/Brand.kt']);
   assert.equal(r.uncoveredExpected, 1);
+});
+
+test('harvestDocAnchors: marker argument — claim: anchors are invisible to the verify: pass', () => {
+  const text = 'x\n<!-- verify: {"path": "a.ts"} -->\ny\n<!-- claim: {"path": "b.ts", "contains": "z"} -->\n';
+  assert.deepEqual(harvestDocAnchors(text), [{ path: 'a.ts' }]);
+  assert.deepEqual(harvestDocAnchors(text, 'claim'), [{ path: 'b.ts', contains: 'z' }]);
+});
+
+test('subRepoRoot: a worktree resolves sub-repos from the main checkout; a checkout with clones resolves to itself', () => {
+  const { execFileSync } = require('node:child_process');
+  const main = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-main-'));
+  const git = (...a) => execFileSync('git', ['-C', main, ...a], { stdio: ['ignore', 'pipe', 'ignore'] });
+  git('init', '-q');
+  git('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-q', '--allow-empty', '-m', 'root');
+  fs.mkdirSync(path.join(main, 'youcoded', '.git'), { recursive: true }); // a clone, as far as the script checks
+  const wt = path.join(main, 'wt');
+  git('worktree', 'add', '-q', wt);
+  assert.equal(subRepoRoot(main), main);
+  assert.equal(subRepoRoot(wt), main, 'worktree must find the main checkout via --git-common-dir');
+  assert.equal(baseFor(wt, 'youcoded/desktop/x.ts'), main);
+  assert.equal(baseFor(wt, 'docs/MAP.md'), wt, 'workspace paths stay on the worktree — that is the branch under audit');
+  const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-bare-'));
+  assert.equal(subRepoRoot(bare), bare, 'not a git checkout: keep root, never throw');
 });

@@ -70,6 +70,13 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 .content.row-below{grid-template-columns:1fr;grid-template-rows:1fr auto;grid-template-areas:"stage" "decide"}
 .content.col-right{grid-template-columns:1fr minmax(320px,30%);grid-template-rows:1fr;grid-template-areas:"stage decide"}
 .content.compact{display:flex;flex-direction:column;flex:none}
+/* WORDS: no stage at all — the question and its option cards take the row (feature-flow §5) */
+.content.words{grid-template-columns:1fr;grid-template-rows:1fr;grid-template-areas:"decide"} .content.words .stage{display:none}
+.words .cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))} .words .card.option{min-height:96px}
+/* CONTRACT: the rows as a table; a graded row is tinted by its verdict */
+.card.contract{overflow:auto} .card.contract table{border-collapse:collapse;width:100%;font-size:12px} .card.contract th{text-align:left;font-weight:600;color:var(--fg-dim);padding:6px 8px;border-bottom:1px solid var(--edge)} .card.contract td{padding:6px 8px;border-bottom:1px solid var(--edge);vertical-align:top}
+.card.contract .src{margin:2px 0 0;font-size:11px;color:var(--fg-muted)} .card.contract tr.pass td:last-child{color:var(--yes)} .card.contract tr.fail td:last-child{color:var(--no)}
+.words .cards:has(.contract){grid-template-columns:1fr}
 .compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
 /* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the
    answer buttons stay reachable in a narrow window, and sticky needs room to move inside its
@@ -168,8 +175,46 @@ figcaption .key{color:var(--mark);font-weight:700}
 .ans .key{flex:none} .ans .dot{width:clamp(8px,0.7vw,11px);height:clamp(8px,0.7vw,11px)}
 #save{height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);padding:0 clamp(14px,1.4vw,26px)}
 .note{flex:3 1 220px;font:inherit;font-size:clamp(12px,0.85vw,14px);height:clamp(34px,4.4vh,52px);padding:0 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)} .note::placeholder{color:var(--fg-muted)}
+/* Note tags: what the note IS. Shown only once a note has text; "Just noting" is preselected so nothing is inferred. */
+.tags{display:inline-flex;gap:6px} .tag{font:inherit;font-size:11px;padding:4px 9px;border:1px solid var(--edge);border-radius:999px;background:var(--well);color:var(--fg-dim);cursor:pointer} .tag.on{border-color:var(--mark);color:var(--fg);box-shadow:inset 0 0 0 1px var(--mark)}
+.compact .controls .tags{grid-column:1/4}
 .veil{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:30} .veil.on{display:flex}
 .dlg{width:min(520px,92vw);background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5)} .dlg h2{margin:0 0 10px;font-size:16px;font-weight:500} .dlg p{margin:0 0 10px;color:var(--fg-2);font-size:13px;line-height:1.5}
 .dlg .warn{display:flex;gap:8px;align-items:flex-start;background:var(--inset);border:1px solid color-mix(in srgb, var(--mark) 45%, var(--edge));border-radius:var(--radius-md);padding:10px 12px;color:var(--fg);margin:12px 0}
 .dlg .warn svg{width:16px;height:16px;flex:none;stroke:var(--mark);fill:none;stroke-width:1.8;margin-top:1px} .dlg .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
 #feedback{display:none;width:100%;min-height:140px;font:12px var(--font);padding:10px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)}
+
+/* ── the finish screen ────────────────────────────────────────────────────────────────
+   Shown in place of the step once the server has ACCEPTED the submit. WHY it exists:
+   before it, Submit closed the dialog and dropped Destin back on the last step with a
+   greyed-out button — indistinguishable from "the click didn't work" (2026-09-03). It is
+   also the only way to read the answers back: the server exits on submit, so there is
+   nowhere else left to ask. */
+.finished{width:min(var(--content),100%);display:flex;justify-content:center;align-items:flex-start;overflow:auto}
+/* `margin:auto 0` rather than `align-items:center`: it centres the block when there is room
+   and simply scrolls when a long deck's table does not fit, instead of clipping its top. */
+.fin-wrap{width:min(720px,100%);margin:auto 0;text-align:center;padding:clamp(12px,4vh,44px) 4px 24px}
+.tick{width:56px;height:56px;margin:0 auto 16px;display:grid;place-items:center;border-radius:50%;background:color-mix(in srgb,var(--yes) 16%,var(--panel))}
+.tick svg{width:34px;height:34px;fill:none;stroke:var(--yes);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.finished h1{margin:0 0 8px;font:500 20px var(--font);color:var(--fg)}
+.finished .lede{margin:0 0 14px;font-size:14px;line-height:1.5;color:var(--fg-2)}
+.finished .fin-meta{margin:0 0 6px;font-size:11px;color:var(--fg-muted);font-variant-numeric:tabular-nums}
+.finished .fin-hint{margin:0 0 18px;font-size:12px;line-height:1.5;color:var(--fg-muted)}
+.fin-actions{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+/* The answers, read back. Same table idiom as a contract step so it reads as part of the deck. */
+.responses{width:100%;border-collapse:collapse;font-size:12px;text-align:left;border:1px solid var(--edge);border-radius:var(--radius-md);overflow:hidden;background:var(--panel)}
+.responses th{font-weight:600;color:var(--fg-dim);padding:7px 10px;border-bottom:1px solid var(--edge);background:var(--inset);white-space:nowrap}
+.responses td{padding:7px 10px;border-bottom:1px solid var(--edge);vertical-align:top;color:var(--fg-2)}
+.responses tr:last-child td{border-bottom:0}
+.responses td.n{color:var(--fg-muted);font-variant-numeric:tabular-nums;width:1%;white-space:nowrap}
+.responses td.step-cell{color:var(--fg)} .responses .src{margin:2px 0 0;font-size:11px;color:var(--fg-muted)}
+.responses td.v{white-space:nowrap;font-weight:500}
+.responses td.v[data-v="yes"],.responses td.v[data-v="pick"]{color:color-mix(in srgb,var(--yes) 78%,var(--fg))}
+.responses td.v[data-v="no"]{color:color-mix(in srgb,var(--no) 78%,var(--fg))}
+.responses td.v[data-v="other"]{color:color-mix(in srgb,var(--other) 82%,var(--fg))}
+.responses td.v[data-v="skip"]{color:var(--fg-muted);font-weight:400}
+.responses .kind{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:var(--radius-full);border:1px solid var(--edge);background:var(--inset);font-size:10px;color:var(--fg-muted);white-space:nowrap}
+@media (max-width:700px){.fin-actions{flex-wrap:wrap} .responses{font-size:11px} .responses th,.responses td{padding:6px 7px}}
+/* A frame whose picture could not be fetched — see the onerror in page.js for which of the
+   two reasons it prints. Bordered so it reads as a message, not as a design with no content. */
+.frame.gone .pic{display:grid;place-items:center;min-height:120px;padding:16px;border:1px dashed var(--edge);border-radius:var(--radius-md);font-size:12px;line-height:1.5;color:var(--fg-muted);text-align:center}

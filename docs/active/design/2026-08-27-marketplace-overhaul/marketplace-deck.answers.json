@@ -1,0 +1,75 @@
+{
+ "deck": "marketplace-overhaul-r1",
+ "started": "2026-08-28T01:46:19.701Z",
+ "submitted": "2026-08-28T01:53:24Z",
+ "cur": 9,
+ "answers": {
+  "type-switch": {
+   "v": "yes",
+   "note": "i would like to keep the full container thing to a single row. we should collaps some of the other filter toggle things into dropdowns or something",
+   "seconds": 54,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "card-trust": {
+   "note": "checked should be a grey shield icon thing with a check and read \"Likely Safe\" with a hover or click explanation or something. i think we can improve the layout of these cards a bit, not immediately clear what the glober/key icons mean and a lot of stuck is still getting cut of or not visually appealing/semmetrical",
+   "v": "other",
+   "seconds": 107,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "card-bottom": {
+   "v": "other",
+   "note": "see prior response",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "split-view": {
+   "v": "other",
+   "note": "see prior response, need to clean up cards a tad",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "search-split": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "detail-trust": {
+   "v": "yes",
+   "note": "i like this quite a bit",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "detail-caution": {
+   "v": "yes",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "feedback": {
+   "v": "yes",
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "phone": {
+   "v": "other",
+   "note": "see earlier response, some should collapse to dropdowns. also the type thing expands beyond the edge of the card it seems",
+   "seconds": 31,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "tools-name": {
+   "note": "i think connections for now. this is hard cuz we will eventually also add custom real-tools/harnesses that bypass mcp, but good enough for now.",
+   "v": "other",
+   "seconds": 79,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

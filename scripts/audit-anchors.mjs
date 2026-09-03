@@ -27,6 +27,33 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const REPOS = ['youcoded', 'youcoded-core', 'youcoded-admin', 'wecoded-themes', 'wecoded-marketplace'];
+
+// A workspace WORKTREE holds no sub-repo clones — `youcoded/` and friends are gitignored
+// directories of the MAIN checkout — so every `youcoded/...` anchor and MAP path read
+// "missing" there, and sessions worked around it by symlinking the clones in. That is
+// how a symlink got committed and clobbered the real clone on 2026-08-28
+// (docs/PITFALLS.md). Resolve sub-repos from the main checkout instead:
+// `git rev-parse --git-common-dir` names the main checkout's .git from any worktree.
+const subRepoRootCache = new Map();
+export function subRepoRoot(root) {
+  if (subRepoRootCache.has(root)) return subRepoRootCache.get(root);
+  let resolved = root;
+  if (!REPOS.some(r => fs.existsSync(path.join(root, r, '.git')))) {
+    try {
+      const common = execFileSync('git', ['-C', root, 'rev-parse', '--git-common-dir'],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+      const main = path.resolve(root, common, '..');
+      if (main !== root && REPOS.some(r => fs.existsSync(path.join(main, r, '.git')))) resolved = main;
+    } catch { /* not a git checkout — keep root; the globs will visibly match nothing */ }
+  }
+  subRepoRootCache.set(root, resolved);
+  return resolved;
+}
+// The directory a workspace-relative path resolves against: sub-repo paths against the
+// clone location, everything else (docs/, .claude/, ROADMAP.md) against the checkout itself.
+export function baseFor(root, rel) {
+  return REPOS.includes(rel.split('/')[0]) ? subRepoRoot(root) : root;
+}
 // Dirs swept for <!-- verify: --> doc anchors. docs/archive is excluded (dead docs
 // carry no live claims); node_modules is skipped by the walker.
 export const DOC_DIRS = ['docs', 'youcoded/docs', 'wecoded-marketplace/docs'];
@@ -119,9 +146,14 @@ function stripMarkdownCode(text) {
 // LOOKS like an anchor but fails JSON.parse is returned as {malformed} so the checker
 // fails it loudly instead of dropping the claim. Code (fences/inline spans) is stripped
 // first so example anchors in docs that document the format aren't mistaken for claims.
-export function harvestDocAnchors(text) {
+// `marker` is the word before the colon: 'verify' (depth docs, this script) or 'claim'
+// (roadmap reports, scripts/roadmap-check.mjs). The default keeps every existing caller as is.
+// A broken verify: is doc drift and fails CI; a broken claim: is a roadmap item to re-verify
+// and must NOT — which is why they are different words (spec §4).
+export function harvestDocAnchors(text, marker = 'verify') {
   const anchors = [];
-  for (const m of stripMarkdownCode(text).matchAll(/<!--\s*verify:\s*(\{[\s\S]*?\})\s*-->/g)) {
+  const re = new RegExp(`<!--\\s*${marker}:\\s*(\\{[\\s\\S]*?\\})\\s*-->`, 'g');
+  for (const m of stripMarkdownCode(text).matchAll(re)) {
     try { anchors.push(JSON.parse(m[1])); }
     catch { anchors.push({ malformed: m[1] }); }
   }
@@ -222,7 +254,7 @@ export function checkAnchor(root, anchor) {
   }
   const rel = anchor.path ?? anchor.test;
   if (!rel) return { ok: false, reason: `anchor has neither path nor test: ${JSON.stringify(anchor)}` };
-  const abs = path.join(root, rel);
+  const abs = path.join(baseFor(root, rel), rel);
   if (!fs.existsSync(abs)) return { ok: false, reason: `missing: ${rel}` };
   if (anchor.contains !== undefined) {
     let re;
@@ -249,8 +281,9 @@ export function listTrackedFiles(root) {
     } catch { /* repo missing (setup.sh not run) — its globs will visibly match nothing */ }
   };
   ls(root, '');
+  const base = subRepoRoot(root);
   for (const r of REPOS) {
-    if (fs.existsSync(path.join(root, r, '.git'))) ls(path.join(root, r), r + '/');
+    if (fs.existsSync(path.join(base, r, '.git'))) ls(path.join(base, r), r + '/');
   }
   return files;
 }
@@ -265,7 +298,8 @@ export function currentShas(root) {
     catch { /* leave absent */ }
   };
   get('workspace', root);
-  for (const r of REPOS) if (fs.existsSync(path.join(root, r, '.git'))) get(r, path.join(root, r));
+  const base = subRepoRoot(root);
+  for (const r of REPOS) if (fs.existsSync(path.join(base, r, '.git'))) get(r, path.join(base, r));
   return shas;
 }
 
@@ -327,7 +361,7 @@ export function changedFilesSince(root, shas) {
   const changed = [];
   const notes = [];
   const dirs = { workspace: root };
-  for (const r of REPOS) dirs[r] = path.join(root, r);
+  for (const r of REPOS) dirs[r] = path.join(subRepoRoot(root), r);
   for (const [name, sha] of Object.entries(shas)) {
     const dir = dirs[name];
     if (!dir || !fs.existsSync(path.join(dir, '.git'))) { notes.push(`repo ${name} not found on disk`); continue; }
@@ -462,12 +496,37 @@ export function worktreeBlindGlobs(rules, trackedFiles) {
 export function strayRuleDirs(root) {
   const out = [];
   for (const repo of REPOS) {
-    const dir = path.join(root, repo, '.claude', 'rules');
+    const dir = path.join(subRepoRoot(root), repo, '.claude', 'rules');
     if (!fs.existsSync(dir)) continue;
     const files = fs.readdirSync(dir).filter(f => f.endsWith('.md')).sort();
     if (files.length) out.push({ repo, files });
   }
   return out;
+}
+
+// A doc under docs/active/ whose IDENTICAL sub-path also exists under docs/archive/.
+// That is one document in two places, and the live copy is the stale one — archiving
+// copies it across and the original is meant to go. On 2026-09-03 three of them sat in
+// this checkout (the 2026-09-01 roadmap-restructure spec, plan and handoff), the active
+// copies still saying `status: active` for work that had shipped; a session searching
+// live docs reads the wrong one, which is exactly the drift this file exists to catch.
+//
+// Sub-path, not basename: `design/<a>/copy.md` and `design/<b>/copy.md` are two real
+// documents, and comparing basenames alone would report them as a duplicate.
+//
+// A FAILURE since 2026-09-03: the three leftovers were deleted the same day, so a
+// shadowed live doc can only be a new mistake now — the same escalation the stray-rules
+// check went through on 2026-09-02.
+export function shadowedActiveDocs(root) {
+  const rel = (base, f) => path.relative(base, f).replaceAll('\\', '/');
+  const active = path.join(root, 'docs', 'active');
+  const archive = path.join(root, 'docs', 'archive');
+  if (!fs.existsSync(active) || !fs.existsSync(archive)) return [];
+  const archived = new Set([...walkMarkdown(archive, [])].map(f => rel(archive, f)));
+  return [...walkMarkdown(active, [])]
+    .map(f => rel(active, f))
+    .filter(r => archived.has(r))
+    .sort();
 }
 
 // ---------- main ----------
@@ -499,6 +558,11 @@ function main() {
     }
   }
 
+  // Say so when sub-repos come from the main checkout: a worktree audit then checks
+  // THIS branch's docs against code that may be older than the branch expects.
+  if (subRepoRoot(root) !== root && !asJson) {
+    console.log(`note: sub-repos resolved from the main checkout ${subRepoRoot(root)} (this is a worktree)`);
+  }
   const result = {
     ok: true,
     anchors: { total: 0, failed: [] },
@@ -562,7 +626,7 @@ function main() {
     const mapPaths = harvestMapPaths(fs.readFileSync(mapFile, 'utf8'));
     result.mapPaths.total = mapPaths.length;
     for (const p of mapPaths) {
-      if (!fs.existsSync(path.join(root, p))) result.mapPaths.missing.push(p);
+      if (!fs.existsSync(path.join(baseFor(root, p), p))) result.mapPaths.missing.push(p);
     }
   } else {
     result.mapPaths.missing.push('docs/MAP.md (the map itself is missing)');
@@ -584,6 +648,9 @@ function main() {
 
   // 4d. no sub-repo may carry its own .claude/rules/ — see strayRuleDirs.
   result.strayRules = strayRuleDirs(root);
+
+  // 4e. a live doc shadowed by an archived copy of itself — see shadowedActiveDocs.
+  result.shadowedDocs = shadowedActiveDocs(root);
 
   // 4c. frontmatter must survive a STRICT YAML parser — a rule whose frontmatter
   // throws loses its paths: and loads eagerly on every session (see the function).
@@ -635,7 +702,8 @@ function main() {
 
   result.ok = !result.anchors.failed.length && !result.mapPaths.missing.length
     && !result.ruleGlobs.failed.length && !result.budgets.violations.length
-    && !result.yamlUnsafe.length && !result.worktreeGlobs.blind.length;
+    && !result.yamlUnsafe.length && !result.worktreeGlobs.blind.length
+    && !(result.strayRules || []).length && !(result.shadowedDocs || []).length;
 
   if (asJson) {
     console.log(JSON.stringify(result, null, 2));
@@ -662,11 +730,9 @@ function printHuman(r) {
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
-  // WARN, not FAIL, and deliberately so: deleting the file is a change in ANOTHER
-  // repo, so gating on it here would turn this workspace's CI red for as long as
-  // that PR is open — the exact "permanently red check" this audit exists to end.
-  // Flip it to dump() + result.ok in the same commit that confirms the fork gone.
-  warn('rule files in a sub-repo — never loaded from the workspace, and a silent fork (needs a PR in that repo)',
+  // A FAILURE since 2026-09-02: the one stray fork (youcoded/.claude/rules/android-runtime.md)
+  // was deleted in youcoded PR #378, so a sub-repo rules dir can only be a new mistake now.
+  dump('rule files in a sub-repo — never loaded from the workspace, and a silent fork (delete it; the workspace rule owns it)',
        (r.strayRules || []).flatMap(x => x.files.map(f => `${x.repo}/.claude/rules/${f}`)));
   dump('worktree-blind rule globs (these never fire on work done in worktrees/)',
        (r.worktreeGlobs?.blind || []).map(x => `${x.rule}: ${x.glob}  ->  ${x.fix}`));
@@ -677,6 +743,8 @@ function printHuman(r) {
   }
   dump('rule frontmatter a strict YAML parser rejects (these load EAGERLY, every session)',
        (r.yamlUnsafe || []).map(u => `${u.file}: ${u.reason}`));
+  dump('live docs that also exist under docs/archive/ — same document twice; the docs/active/ copy is the stale one (delete it, or un-archive if it is genuinely back in flight)',
+       (r.shadowedDocs || []).map(d => `docs/active/${d}`));
   dump('budget violations', r.budgets.violations);
   if (r.diffScope) {
     console.log(r.diffScope.baseReport

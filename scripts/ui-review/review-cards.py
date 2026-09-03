@@ -6,6 +6,12 @@
         build it, serve it, open the browser, save answers to <spec>.answers.json, exit when Destin submits
   python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
         block until the answers file says submitted (for a session that no longer holds the `serve` process)
+  python3 scripts/ui-review/review-cards.py contract-check <feature>.contract.json
+        every row's source resolves to an answered step in a submitted deck and every mechanical guard exists on disk or on
+        the contract's branch (exit 1 lists what doesn't); then reports, as ok:/todo: lines, whether the contract was signed
+        (its own answers file) and whether the acceptance deck was submitted
+  python3 scripts/ui-review/review-cards.py acceptance <feature>.contract.json
+        merge <feature>.contract.verdicts.json into <feature>.contract.acceptance.json — the contract graded, plus a yes/no per human row
 
 Five step kinds, each named by its own fields: APPROVE (`changed`+`notice`, yes/no),
 CHOICE (`variants` — a picture per option, pick one), DECIDE (`options` — one picture of
@@ -14,8 +20,14 @@ for animations, hovers, transitions and bugs that only show in motion; files fro
 `scripts/ui-review/record-pair.sh`, Before | After play side by side with a shared replay),
 and LIVE (`live` — panes of the RUNNING app he can hover, click and drag, one authored
 candidate each out of youcoded's compare/registry.tsx; `variants` makes it a pick-one, their
-absence a yes/no, and `serve` boots the worktree's workbench for it). Wording-only questions
-are not a step: ask in chat.
+absence a yes/no, and `serve` boots the worktree's workbench for it).
+
+A step may instead be WORDS-ONLY ("words": true — a question with 1–3 written options, or a
+statement to approve; no picture, no images folder needed): that is the questions deck asked
+before anything is drawn.
+
+A CONTRACT step ("rows") is the definition of done signed off as one step; see
+docs/active/specs/2026-09-01-feature-flow-design.md.
 
 Run `serve` in the background: its exit is the "review finished" signal and it prints the
 feedback summary. There is deliberately no separate crop step — a stale intermediate file drew
@@ -23,11 +35,13 @@ wrong rings with no error in v1. Spec format + writing rules:
 docs/archive/specs/2026-08-27-review-deck-v2-design.md (§4–5). History of the
 three rejected formats before this one: docs/archive/handoffs/2026-08-27-review-deck-tooling-handoff.md."""
 import argparse
+import json
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from deck.build import build_page                       # noqa: E402
+from deck.contract import AcceptanceError, acceptance_spec, acceptance_status, check_contract, contract_steps, signoff   # noqa: E402
 from deck.crops import crop_images                      # noqa: E402
 from deck.serve import already_served, serve, wait_for_submit   # noqa: E402
 from deck.spec import SpecError, load_spec, validate    # noqa: E402
@@ -62,7 +76,7 @@ def main(argv):
         sys.stdout.reconfigure(line_buffering=True)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest='cmd', required=True)
-    for c in ('build', 'serve', 'wait'):
+    for c in ('build', 'serve', 'wait', 'contract-check', 'acceptance'):
         sub.add_parser(c).add_argument('spec')
     for c in ('serve', 'wait'):
         sub.choices[c].add_argument('--timeout', type=float, default=240, help='minutes to wait for a submit (exit 2 after)')
@@ -79,6 +93,55 @@ def main(argv):
             return build(spec)
         if a.cmd == 'wait':
             return wait_for_submit(spec, timeout_min=a.timeout)
+        if a.cmd == 'contract-check':
+            # Fix: check_contract() assumes a well-formed spec (a row with no `id` raised
+            # KeyError, which close-out.sh then printed under "contract does not hold" — a
+            # misleading error. Validate first, same as build(), so a malformed contract
+            # gets the real writing-rules message instead of a traceback.
+            errors, _ = validate(spec)
+            if errors:
+                print('\n'.join(errors), file=sys.stderr)
+                return 1
+            if not contract_steps(spec):
+                print('no contract step in this spec (a step with "rows")', file=sys.stderr)
+                return 1
+            problems = check_contract(spec)
+            if problems:
+                print('\n'.join(problems), file=sys.stderr)
+                return 1
+            n = sum(len(st['rows']) for st in contract_steps(spec))
+            # Three facts, three lines, `ok:`/`todo:` prefixed so close-out.sh can relay them
+            # without parsing anything. Only the first is an exit code (see contract.py).
+            print(f'ok: contract holds: {n} rows, every source answered and submitted, every guard found')
+            for ok, line in (signoff(spec), acceptance_status(spec)):
+                print(('ok: ' if ok else 'todo: ') + line)
+            return 0
+        if a.cmd == 'acceptance':
+            # Fix: same as contract-check — a malformed contract must fail here with the
+            # writing-rules message, not a KeyError from acceptance_spec() later.
+            errors, _ = validate(spec)
+            if errors:
+                print('\n'.join(errors), file=sys.stderr)
+                return 1
+            vpath = os.path.join(spec['_base'], spec['_stem'] + '.verdicts.json')
+            try:
+                with open(vpath) as f:
+                    verdicts = json.load(f)
+            # Fix: OSError alone misses invalid JSON (a truncated/malformed verdicts file) —
+            # catch both and show the real cause instead of the generic "no file" guess.
+            except (OSError, ValueError) as e:
+                print(f'cannot read verdicts file at {vpath}: {e} — the grader writes {{rowId: {{verdict, evidence}}}} there first', file=sys.stderr)
+                return 1
+            try:
+                acc = acceptance_spec(spec, verdicts)
+            except AcceptanceError as e:
+                print(str(e), file=sys.stderr)
+                return 1
+            out = os.path.join(spec['_base'], spec['_stem'] + '.acceptance.json')
+            with open(out, 'w') as f:
+                json.dump(acc, f, indent=1)
+            print('wrote', out, '— now: review-cards.py serve', out)
+            return 0
         # WHY the lock is checked before build(): a second `serve` of the same spec used to
         # rebuild the page and re-cut the crops out from under the running server, THEN exit 3.
         other = already_served(spec)

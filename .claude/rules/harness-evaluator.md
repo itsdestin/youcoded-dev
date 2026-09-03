@@ -11,7 +11,7 @@ paths:
   # defects here that 4,500 passing tests missed, because every test drives a scripted
   # fake model and none of them spend a real turn deciding what to do next.
   - "**/desktop/src/main/harness/tools/**"
-last_verified: 2026-08-13
+last_verified: 2026-09-01
 verify:
   - path: youcoded/desktop/src/main/harness/eval/run-case.ts
     contains: "askUser: async"
@@ -38,6 +38,8 @@ verify:
   - test: youcoded/desktop/tests/harness-eval-report.test.ts
   - test: youcoded/desktop/tests/harness-review-fixture.test.ts
   - test: youcoded/desktop/tests/harness-review-runner.test.ts
+  - test: youcoded/desktop/tests/harness-eval-orchestrator.test.ts
+  - test: youcoded/desktop/tests/harness-eval-estimate.test.ts
 ---
 
 # Harness evaluator (`test-engine/harness-eval.mjs`)
@@ -51,7 +53,7 @@ free and needs no key; a real run needs `--key-file`.
   if `OPENROUTER_API_KEY` is in its environment, and passes worker config over **stdin** —
   never argv, never env. `delete process.env.X` is `unsetenv`: in-heap only, it never
   rewrites `/proc/<pid>/environ`, which every same-uid descendant — including a Bash call
-  the model makes — can read. **`review-harness.mjs` still has the bug** (ROADMAP). Guard:
+  the model makes — can read. **`review-harness.mjs` still has the bug** (a `decision` in `docs/roadmap/dev-workspace.md`). Guard:
   `harness-eval-key-leak.test.ts`, whose negative control must report LEAKED.
 
 - **The grader always loads from the orchestrator's own build; only the worker loads the
@@ -72,8 +74,9 @@ free and needs no key; a real run needs `--key-file`.
 
 - **The fixture jail is held by `askUser`, not `decide`.** `decide` is fully permissive;
   `askUser` denies every ask that isn't a genuine `AskUserQuestion` — `external_directory`,
-  `doom_loop`, `max_steps`. **One path is exempt by design:** Bash's spill root
-  (`tools/spill-paths.ts`) is `ok`, so a model can read back its own truncated output.
+  `doom_loop`, `max_steps` (allowed once, `STEP_GATE_ALLOWANCE`). **Exempt by design**
+  (`tools/guards.ts`): Bash's spill root and `internalReadRoots` — a model may read back its
+  own truncated output.
   Guard: `harness-review-runner.test.ts` → "denies a Write outside the fixture".
 
 - **Uniform step budget, not the app's chat tiers** (25/50 cuts a 40–80-call run short),

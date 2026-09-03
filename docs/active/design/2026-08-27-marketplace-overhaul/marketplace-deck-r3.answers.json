@@ -1,0 +1,26 @@
+{
+ "deck": "marketplace-overhaul-r3",
+ "started": "2026-08-28T02:40:23.006Z",
+ "submitted": "2026-08-28T02:41:23Z",
+ "cur": 2,
+ "answers": {
+  "star-and-installs": {
+   "v": "yes",
+   "seconds": 29,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "author-chip": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "author-chip-detail": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

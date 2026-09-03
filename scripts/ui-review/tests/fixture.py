@@ -145,3 +145,89 @@ def live_spec(tmp, base=None, **over):
     with open(p, 'w') as f:
         json.dump(spec, f, indent=1)
     return p
+
+
+# ── words-only decks ────────────────────────────────────────────────────────────────────
+def words_spec(tmp, **over):
+    """A QUESTIONS deck: no pictures anywhere. One question with a single option (plus the
+    page's own Other), one with three, and one statement to approve with relabelled buttons.
+    Picture-free on purpose, like live_spec — this is CI coverage."""
+    deck = os.path.join(tmp, 'deck')
+    os.makedirs(deck, exist_ok=True)
+    spec = {
+        'title': 'Questions fixture', 'key': 'questions-fixture', 'out': 'questions.html',
+        'themes': ['midnight', 'light'],
+        'steps': [
+            {'id': 'Q-1', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'Where does the invite live?',
+             'options': [{'id': 'a', 'label': 'In the friends list (recommended)', 'summary': 'One place for everything about a friend.'}]},
+            {'id': 'Q-2', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'How many boards on screen at once?',
+             'options': [{'id': 'a', 'label': 'One', 'summary': 'Simplest.'},
+                         {'id': 'b', 'label': 'Two', 'summary': 'Mine and theirs.'},
+                         {'id': 'c', 'label': 'As many as fit', 'summary': 'Costs a layout rule.'}]},
+            {'id': 'Q-3', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'A game you leave keeps running for the other player.',
+             'changed': 'Stated, not asked: the alternative would surprise the friend who stayed.',
+             'notice': 'Nothing yet — this becomes a row of the contract.',
+             'yes': 'Holds', 'no': 'Fails'},
+        ],
+    }
+    spec.update(over)
+    p = os.path.join(deck, 'questions.json')
+    with open(p, 'w') as f:
+        json.dump(spec, f, indent=1)
+    return p
+
+
+# ── contract ────────────────────────────────────────────────────────────────────────────
+def contract_spec(tmp, **over):
+    """A contract deck plus the two source decks its rows point at, each with a SUBMITTED
+    answers file — so contract-check has something real to resolve. Picture-free."""
+    deck = os.path.join(tmp, 'deck')
+    os.makedirs(deck, exist_ok=True)
+    # Source deck 1: a words question, answered. Source deck 2: a picture step, answered.
+    q = {'title': 'Q', 'key': 'arcade-questions', 'out': 'q.html', 'themes': ['midnight'],
+         'steps': [{'id': 'Q-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Where does the invite live?',
+                    'options': [{'id': 'a', 'label': 'Friends list', 'summary': 'One place.'}]}]}
+    r1 = {'title': 'R1', 'key': 'arcade-r1', 'out': 'r1.html', 'images': 'images/r1', 'runs': {'today': '/nowhere'},
+          'crops': {'c': ['main', 'home', '10x10+0+0']},
+          'steps': [{'id': 'S-1', 'surface': 'Board', 'path': 'Games', 'crop': 'c', 'highlight': {'text': 'Send'},
+                     'headline': 'Boards are told apart.', 'changed': 'A colour band.', 'notice': 'Two boards.'},
+                    {'id': 'S-2', 'surface': 'Board', 'path': 'Games', 'crop': 'c', 'highlight': {'text': 'Send'},
+                     'headline': 'Skipped one.', 'changed': 'x', 'notice': 'y'}]}
+    for name, s in (('q', q), ('r1', r1)):
+        with open(os.path.join(deck, f'{name}.json'), 'w') as f:
+            json.dump(s, f, indent=1)
+    with open(os.path.join(deck, 'q.answers.json'), 'w') as f:
+        json.dump({'deck': 'arcade-questions', 'submitted': '2026-09-01T09:00:00Z',
+                   'answers': {'Q-1': {'v': 'pick', 'pick': 'a', 'seconds': 12}}}, f)
+    with open(os.path.join(deck, 'r1.answers.json'), 'w') as f:
+        json.dump({'deck': 'arcade-r1', 'submitted': '2026-09-01T09:30:00Z',
+                   'answers': {'S-1': {'v': 'yes', 'note': 'band could be thinner', 'note_kind': 'later', 'seconds': 20},
+                               'S-2': {'v': 'skip', 'seconds': 1}}}, f)
+    spec = {
+        # Fix: `out` must share the contract's stem (arcade.contract.html, not contract.html) —
+        # two contracts in one folder would otherwise overwrite each other's built page.
+        'title': 'Arcade — contract', 'key': 'arcade-contract', 'out': 'arcade.contract.html', 'themes': ['midnight'],
+        'branch': 'feat/arcade-fixture',
+        'sources': {'arcade-questions': 'q.json', 'arcade-r1': 'r1.json'},
+        'steps': [{'id': 'C', 'surface': 'Games arcade', 'path': 'Contract', 'headline': 'This is what done means.',
+                   'rows': [
+                       {'id': 'R1', 'statement': 'The invite lives in the friends list.', 'checkedBy': 'deck',
+                        'threshold': 'pass/fail', 'source': 'arcade-questions#Q-1'},
+                       {'id': 'R2', 'statement': "A second player's board is tellable from mine at a glance.",
+                        'checkedBy': 'human', 'threshold': 'pass/fail', 'source': 'arcade-r1#S-1', 'note': 'band could be thinner'},
+                       # The guard must exist under workspace_root() — which from a WORKTREE is the main
+                       # checkout, so it has to be a file already on master, not one this branch adds.
+                       {'id': 'R3', 'statement': 'The board fills the pane at every width.', 'checkedBy': 'mechanical',
+                        'guard': 'scripts/ui-review/tests/test_spec.py', 'threshold': 'the named test passes',
+                        'source': 'arcade-r1#S-1'},
+                   ]}],
+    }
+    spec.update(over)
+    # `<feature>.contract.json` — the `.contract` in the stem is what close-out.sh globs for.
+    p = os.path.join(deck, 'arcade.contract.json')
+    with open(p, 'w') as f:
+        json.dump(spec, f, indent=1)
+    return p

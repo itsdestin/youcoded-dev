@@ -12,7 +12,7 @@ written down, never closed, and independently rediscovered twice.
 
 **This is a PROCESS, not a report generator.** A numbered list nobody actions is the
 failure mode, not the output. Every recommendation ends this session as one of three
-things: **applied**, **a dated `ROADMAP.md` entry**, or **dropped with a reason.**
+things: **applied**, **a dated roadmap entry** (`docs/roadmap/<area>.md` — `ROADMAP.md` → "Filing an item"), or **dropped with a reason.**
 
 ## Step 0 — "wrap up" DOES NOT MEAN "merge"
 
@@ -34,15 +34,16 @@ landed and reports accordingly:
 
 - **Pre-merge** (the common case): it skips branch, worktree and dead-name checks,
   because all three would tell you to delete things still in use. What remains is real:
-  is it pushed so someone can review it, and the docs/ROADMAP/MAP hygiene below.
+  is it pushed so someone can review it, and the docs/roadmap/MAP hygiene below.
 - **Post-merge:** the full cleanup — delete the remote branch, the local branch, remove
   the worktree, and fix docs that now name a dead branch.
 
 **Finish every line it reports.** A `TODO` is yours to do now. A `--` line is a judgement
 the script deliberately refuses to make — make it:
 
-- Flip the ROADMAP item for this work to `[x]` **if the work actually shipped**; if the
-  PR is still open, leave it and say so.
+- Close the roadmap item for this work **if the work actually shipped** (delete it from its
+  `docs/roadmap/<area>.md`, append one line to `docs/roadmap/shipped.md`, archive its report,
+  run `node scripts/roadmap-check.mjs --fix`); if the PR is still open, leave it and say so.
 - Does the subsystem have a `docs/MAP.md` row and a hot-path entry? "No rule" is an
   acceptable answer; "no row" is not.
 - Move docs whose `status:` is now `shipped` to `docs/archive/`, and repoint cross-links.
@@ -108,7 +109,7 @@ A numbered list. For each item, three short lines:
 1. **What to change** — the concrete edit, file named.
 2. **Why, in plain terms** — one or two sentences, no jargon. What went wrong this
    session that this prevents, and what a future session will experience differently.
-3. **Where it lands** — `applied now` / `ROADMAP` / `dropped: <reason>`.
+3. **Where it lands** — `applied now` / `roadmap` / `dropped: <reason>`.
 
 Order by how much friction it removes, not by how easy it is. Say "nothing worth
 changing" if that is the honest answer — a session that found no friction is a real
@@ -120,7 +121,8 @@ outcome, and inventing recommendations to fill a list poisons the ones that matt
   (budgets and anchors are enforced) plus `node --test scripts/*.test.mjs
   .claude/hooks/*.test.mjs` if you touched either. Never report a change as done on the
   strength of having written it — run the check and quote what it returned.
-- **ROADMAP:** add a typed, tagged, dated entry — and **dedupe by file or symbol name,
+- **Roadmap:** add an entry to the area file whose `Filing test:` says yes (`ROADMAP.md` →
+  "Filing an item"; a symptom in Destin's words, tokens on the last line) — and **dedupe by file or symbol name,
   not by symptom** first; a 2026-08-31 session filed a duplicate by searching `flaky`
   instead of `sync-spaces-engine`.
 - **Dropped:** say so in your reply, with the reason. An unrecorded "we considered and

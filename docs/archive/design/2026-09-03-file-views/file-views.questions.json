@@ -1,0 +1,113 @@
+{
+  "title": "Files tab — a way to switch how the list looks",
+  "key": "file-views-questions",
+  "out": "file-views.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Project view → Files",
+      "path": "Today: one big-picture grid, always",
+      "headline": "How many ways of looking at the file list should there be?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Two — the picture grid you have now, plus a compact list (recommended)",
+          "summary": "The grid is good for images and for a folder you know by sight. The list is good for a folder with sixty files in it, where you are reading names. Those are the two things people actually do. Two buttons, and each one has an obvious job."
+        },
+        {
+          "id": "b",
+          "label": "Three — big pictures, small pictures, and a list",
+          "summary": "What Windows Explorer does. More control, but the middle one has no clear job that the other two do not already cover, and three buttons is more to look at every time you open the tab."
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Project view → Files",
+      "path": "The toolbar row: Files/Conversations/Context on the left, search + sliders + '+ Add file' on the right",
+      "headline": "Where should the switch live?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Two small buttons on the toolbar, always visible (recommended)",
+          "summary": "Sits next to the search box. One click to switch, and you can always see at a glance which view you are in. Costs about 60 pixels of toolbar width, which on a phone pushes '+ Add file' onto its own line."
+        },
+        {
+          "id": "b",
+          "label": "Inside the sliders menu, next to Type and Sort",
+          "summary": "The toolbar stays exactly as clean as it is today. But switching becomes two clicks, and with the menu shut there is nothing telling you which view is on — so if a folder looks wrong you have to open the menu to find out why."
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Project view → Files, list view",
+      "path": "A single row in the compact list",
+      "headline": "What should each row of the list show?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Small icon, filename, kind, and when it last changed (recommended)",
+          "summary": "Example: a page glyph, 'budget-2026.md', 'Document', '2 days ago'. The date is the thing you most often want when a folder has several versions of the same idea in it. On a phone the kind and date drop off and you keep the name."
+        },
+        {
+          "id": "b",
+          "label": "The same, plus how big the file is",
+          "summary": "One more column. Useful when you are hunting for the thing that is eating disk space, which is rare here; the rest of the time it is a number you read past. It also makes the row noticeably busier on a laptop screen."
+        },
+        {
+          "id": "c",
+          "label": "Icon and filename only",
+          "summary": "The densest option — the most files on screen at once, and the fastest to scan. But two files with the same name in different folders look identical, and you lose the 'which one did I touch last' signal entirely."
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Project view → Files",
+      "path": "What happens the next time you open the tab",
+      "headline": "Should the app remember which view you picked?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Yes — one choice for the whole app (recommended)",
+          "summary": "Pick the list once and every project opens in the list until you change it. Simplest to predict: there is one answer to 'what view am I in', not one per project."
+        },
+        {
+          "id": "b",
+          "label": "Yes — remembered separately for each project",
+          "summary": "A photo-heavy project can stay on pictures while a writing project stays on the list. More tailored, but the view changes under you as you switch projects, which reads as a glitch until you work out why."
+        },
+        {
+          "id": "c",
+          "label": "No — always start on the picture grid",
+          "summary": "Nothing to store, and the tab always looks the same when you arrive. But if you prefer the list you re-pick it every single time, which is the sort of small tax that makes a feature feel unfinished."
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Project view → Files, narrow window / phone",
+      "path": "Below 640px the grid squeezes to two columns",
+      "headline": "On a phone-width window, should your choice still apply?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Yes — same view as you picked on the desktop (recommended)",
+          "summary": "The app behaves the same everywhere and never overrides you. The picture grid is cramped at two columns on a phone, but that is exactly how it already looks today, so nothing gets worse."
+        },
+        {
+          "id": "b",
+          "label": "No — force the list on narrow screens",
+          "summary": "Phone browsing gets better immediately: full-width rows instead of two thumbnail stubs. The cost is that the app quietly ignores your setting on one device, and the picture grid becomes unreachable on a phone even when you want it."
+        }
+      ]
+    }
+  ]
+}

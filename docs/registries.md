@@ -22,7 +22,7 @@ Recent restructure (unified-marketplace merge) split the registry into `/skills/
   otherwise reaches every device within the hour. Depth: `wecoded-marketplace/docs/catalog.md`.
 - **Two index files, and the apps read the ROOT one.** `index.json` at the repo root is a bare JSON array (339 entries) and is what `skill-provider.ts` / `MarketplaceFetcher.kt` fetch. `skills/index.json` is the same entries wrapped in `{ version, generatedBy, entries }` — `sync.js` writes that one first and regenerates the root file after it for backward compatibility. Read the root file unless you specifically want the wrapper.
 - `marketplace.json` — YouCoded-only entries
-- Synced from upstream via `scripts/sync.js`. Entries with `sourceMarketplace: "youcoded-core"` are never overwritten by upstream sync
+- Synced from upstream via `scripts/sync.js`. Entries with `sourceMarketplace: "youcoded"` are never overwritten by upstream sync
 - Apps cache for 24 hours at `~/.claude/youcoded-marketplace-cache/` — **`youcoded-`, not `wecoded-`** (7 code sites across desktop and Android; verified 2026-08-28, this line had it wrong)
 - CI: `.github/workflows/validate-plugin-pr.yml` validates community plugin PRs
 

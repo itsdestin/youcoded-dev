@@ -83,7 +83,22 @@ jobs:
       # does not silently skip them.
       - name: Test the workspace hooks
         if: ${{ !cancelled() }}
-        run: node --test .claude/hooks/context-inject.test.mjs .claude/hooks/glob-guard.test.mjs
+        run: node --test .claude/hooks/context-inject.test.mjs .claude/hooks/glob-guard.test.mjs .claude/hooks/roadmap-edit-check.test.mjs
+
+      # The workbench boot check reported "All 16 workbench routes mount cleanly"
+      # against a port nothing was serving — verified 2026-09-02 on a dead port,
+      # exit 0. CLAUDE.md tells every session to trust that check. These two cases
+      # need no Chrome (the preflight now runs before the browser launches), so
+      # they belong on this runner.
+      # The two guards that keep the SHARED checkout from drifting: the commit
+      # guard and workspace-sync.sh. Both are only ever exercised on Destin's
+      # machine, so CI is the only thing that would notice them rotting.
+      - name: Test the workspace drift guards
+        run: node --test scripts/workspace-drift-guards.test.mjs
+
+      - name: Test the workbench boot check
+        if: ${{ !cancelled() }}
+        run: node --test scripts/workbench-boot-check.test.mjs
 
       # The review deck — the tool Destin approves every UI change on — had ten
       # test files and no caller: not this workflow, not a script, not its README.
@@ -93,24 +108,56 @@ jobs:
       # (`-t .` cannot import a directory with no __init__.py). Same shape as the
       # hooks above: a check that stops checking goes quiet, not red.
       #
-      # ONLY these three suites. Every other one shells out to `magick` (test_boxes,
+      # ONLY these five suites. Every other one shells out to `magick` (test_boxes,
       # test_build, test_crops, test_cli, test_serve) or drives Chrome/ffmpeg (the
       # three *.test.mjs), none of which this runner has — so they stay local and
-      # scripts/ui-review/README.md says so. test_live is written picture-free on
-      # purpose to keep the new coverage on this side of that line.
+      # scripts/ui-review/README.md says so. test_live, test_words and test_contract
+      # are written picture-free on purpose to keep the new coverage on this side of
+      # that line.
       #
       # working-directory, not `-t`: the suites live outside a package, so each one
       # bootstraps its own sys.path and must be imported as a top-level module.
       - name: Test the review deck
         if: ${{ !cancelled() }}
         working-directory: scripts/ui-review/tests
-        run: python3 -m unittest -v test_spec test_tokens test_live
+        run: python3 -m unittest -v test_spec test_tokens test_live test_words test_contract
+
+      # close-out.sh is the one script in here that a session is TOLD to obey line by
+      # line (the wrap-up skill: "finish every line it reports"), so a wrong TODO in it
+      # is an instruction, not a suggestion. On 2026-09-03 it told a session to delete
+      # master and remove the main checkout. Needs only git, so unlike the deck's picture
+      # suites it belongs on this runner.
+      - name: close-out.sh refuses the default branch
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-default-branch.test.sh
+
+      # A command printed in a doc is a promise nobody checks. The deck's test command sat
+      # WRONG in two docs for months — `-t .` cannot start at all — which is why that suite
+      # went unrun and eight theme colours drifted. Blocks marked `<!-- runnable -->` are
+      # executed here; `<!-- runnable: local -->` ones need magick/ffmpeg/Chrome and are
+      # skipped. Marking is opt-in per block, so this only ever runs what a doc claimed.
+      - name: Run the commands the docs tell you to run
+        if: ${{ !cancelled() }}
+        run: node scripts/check-doc-commands.mjs
 
       # --no-diff skips the "which subsystems changed since the last audit
       # report" computation. That is a scoping aid for the /audit agent and needs
       # git history plus a dated report; the mechanical anchor pass does not.
       - name: Verify anchors, MAP paths, and store budgets
         run: node scripts/audit-anchors.mjs --no-diff
+
+      # The roadmap tool's own tests gate its run, same reasoning as the anchor checker.
+      - name: Test roadmap-check
+        if: ${{ !cancelled() }}
+        run: node --test scripts/roadmap-check.test.mjs
+
+      # Structure errors fail CI. Broken claims and count drift are LISTED and never fail
+      # it — a rotted claim is the roadmap asking to be re-verified, which is the design
+      # working, and a count drift must not go red for every other session (spec §5).
+      # Dormant (one line, exit 0) until the migration branch creates docs/roadmap/.
+      - name: Roadmap structure
+        if: ${{ !cancelled() }}
+        run: node scripts/roadmap-check.mjs --quiet
 
       # check.sh falls back to `npx --yes @ast-grep/cli` when the binary is
       # absent, which re-resolves the package on every invocation. Installing it

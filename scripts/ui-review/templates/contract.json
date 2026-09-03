@@ -1,0 +1,36 @@
+{
+ "title": "<feature name> — contract",
+ "key": "<deck key, e.g. arcade-contract>",
+ "out": "<feature>.contract.html",
+ "themes": ["midnight"],
+ "branch": "<feature branch>",
+ "sources": {
+  "<deck key>": "<spec path relative to this file>"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "<the app area this feature lives in>",
+   "path": "<the screen or menu path>",
+   "headline": "This is what done means.",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "<one sentence, in the user's experience>",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "<deck key>#<step id>",
+     "note": "<optional — a note already recorded against the source step>"
+    },
+    {
+     "id": "R2",
+     "statement": "<one sentence, in the user's experience>",
+     "checkedBy": "mechanical",
+     "guard": "<workspace-relative test or script path that must pass>",
+     "threshold": "<what the guard proves, e.g. 'the named test passes'>",
+     "source": "<deck key>#<step id>"
+    }
+   ]
+  }
+ ]
+}

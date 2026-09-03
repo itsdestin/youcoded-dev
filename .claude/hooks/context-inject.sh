@@ -65,6 +65,14 @@ if [[ ${#SUB_REPOS[@]} -gt 0 ]]; then
         collect_repo_state "$WORKSPACE/$repo" "$repo"
     done
 
+    # The workspace repo ITSELF, reported on the same terms as the sub-repos.
+    # WHY: it was the one checkout nobody watched, and it drifted 110 commits
+    # behind in three days (2026-09-03) without a single session being told.
+    # Every session pushes from a throwaway worktree per the "shared checkout is
+    # dirty" rule, so nothing ever pulls this one -- the warning is the only
+    # thing that will surface it.
+    collect_repo_state "$WORKSPACE" "youcoded-dev (workspace)"
+
     # Active worktrees — ask git, not the directory names.
     #
     # WHY: this block used to `find -maxdepth 1` for directories named

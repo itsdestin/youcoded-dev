@@ -1,0 +1,63 @@
+{
+  "title": "Files tab — a switch between pictures and a list",
+  "key": "file-views-review",
+  "out": "review.html",
+  "images": "images/file-views-review",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/43f47281-c1a8-451c-9203-e027b6a1d727/scratchpad/fv/before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/43f47281-c1a8-451c-9203-e027b6a1d727/scratchpad/fv/after"
+  },
+  "themes": [
+    "midnight",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "toolbar": [
+      "file-views",
+      "toolbar",
+      "1100x70+180+332"
+    ],
+    "filelist": [
+      "file-views",
+      "list",
+      "1090x340+180+400"
+    ],
+    "phone": [
+      "file-views-narrow",
+      "phone",
+      "390x400+0+440"
+    ]
+  },
+  "steps": [
+    {
+      "id": "F-1",
+      "surface": "Project view → Files",
+      "path": "The toolbar row, between the tabs and the search box",
+      "crop": "toolbar",
+      "headline": "Two small buttons appear next to the search box; they switch the file list between pictures and a plain list.",
+      "changed": "The pair sits in the same rounded pill shape as the Files / Conversations / Context tabs beside it, and the view you are in is the filled one. Nothing else on the row moved. Both pictures show the Files tab exactly as it opens.",
+      "notice": "Whichever you pick is remembered for every project on this device, so the app opens in that view next time. The picture grid stays the default until you press the other button, so nothing looks different until you ask for it.",
+      "risk": "The pill takes about 60 pixels off the search box, which on a phone clips its placeholder from 'Search files…' to 'Search fil…' — step 3 shows it."
+    },
+    {
+      "id": "F-2",
+      "surface": "Project view → Files",
+      "path": "The file area, list view",
+      "crop": "filelist",
+      "headline": "The list gives one row per file — icon, name, kind and when it changed — so a big folder is readable.",
+      "changed": "Same files, same order, same click. Each row is a small type icon, the filename, its kind (Document, Image, Spreadsheet, Code) and how long ago it changed. Folders keep their own row and show their file count where a date would go, because a folder has no single date of its own. Left is today's grid, right is the same folder as a list.",
+      "notice": "Loose files still come before folders, exactly as the grid orders them. Clicking a row opens the file and clicking a folder goes into it — unchanged. Search and the type filter work the same and show their results as rows too. A deleted file still shows the word 'deleted' with its name struck through.",
+      "risk": "You lose the image previews. In a folder of photos the list is a stack of near-identical names with nothing to tell them apart — which is what the grid button is for, one click away."
+    },
+    {
+      "id": "F-3",
+      "surface": "Project view → Files, phone width",
+      "path": "390px wide — the toolbar row and the files below it",
+      "crop": "phone",
+      "headline": "On a phone the switch behaves the same, and the list reads better there than the two-column grid does.",
+      "changed": "The two buttons join the row that already holds search and '+ Add file'. In the list the kind and date columns drop away and each row is a full-width filename; today's grid squeezes into two narrow thumbnails a row.",
+      "notice": "Your choice carries across devices — pick the list on the laptop and the phone opens in the list too. Neither view is forced on you at any width.",
+      "risk": "The search box on this row is now narrower and its placeholder clips to 'Search fil…'. The row still fits on one line at phone width; nothing wraps or runs off-screen."
+    }
+  ]
+}

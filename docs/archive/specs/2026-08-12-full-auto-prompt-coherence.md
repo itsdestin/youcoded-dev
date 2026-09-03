@@ -2,7 +2,7 @@
 status: shipped
 created: 2026-08-12
 type: spec
-program: docs/active/plans/2026-08-11-native-sessions-remaining-work.md
+program: docs/archive/plans/2026-08-11-native-sessions-remaining-work.md
 item: M5 · 2b — Full Auto prompt coherence
 design-record: youcoded desktop/src/renderer/dev/workbench/compare/registry.tsx → surface `full-auto-ask` (4 rounds, 2026-08-12)
 ---

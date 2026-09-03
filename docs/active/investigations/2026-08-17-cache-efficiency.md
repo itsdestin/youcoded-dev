@@ -7,13 +7,20 @@ tags: [cache, prompt-caching, kv-cache, deepseek, openrouter, llm, cost]
 
 # Cache efficiency across cloud and local sessions (DeepSeek 50% reuse, and beyond)
 
-> **Re-verified 2026-08-26 — fully consumed, and a live input.** All four defects this doc found
-> are carried verbatim on `ROADMAP.md` under "Cache efficiency — cloud + local sessions are
-> leaving cache hits on the table", and all four are still open on `origin/master`:
-> `cache_control` → 0 hits; `provider-registry.ts:29` still sends only
-> `{'HTTP-Referer','X-Title'}` with no stable session id; the `<specialists-status>` splice is
-> still at `harness-session.ts:1596/1617`. **Nothing unconsumed here.** Archive it together with
-> that ROADMAP bug when it ships, and repoint the ROADMAP link when you do.
+> **Re-verified 2026-09-01 (roadmap migration) — still a live input.** All four defects this
+> doc found are now the single `native-harness` → `cost` roadmap entry "Cache efficiency —
+> cloud + local sessions are leaving cache hits on the table" (`docs/roadmap/native-harness.md`),
+> and all four are still open on `origin/master`: `cache_control` → 0 hits in
+> `desktop/src/main/harness/` and `desktop/src/main/providers/`; `provider-registry.ts:30`
+> still sends only `{'HTTP-Referer','X-Title'}` with no stable session id; the
+> `<specialists-status>` splice-and-re-append runs every turn at `harness-session.ts:1762/1783`
+> (line refs below are from 2026-08-17 and have drifted; the mechanisms have not).
+> The claim anchor pins the splice — the one defect the original review called a genuine bug:
+<!-- claim: {"path": "youcoded/desktop/src/main/harness/harness-session.ts", "contains": "if \\(statusIdx >= 0\\) this\\.history\\.splice\\(statusIdx, 1\\)"} -->
+> Archive this doc together with that roadmap entry when it ships.
+>
+> Earlier re-verification 2026-08-26 reached the same conclusion (splice then at
+> `harness-session.ts:1596/1617`).
 
 **Trigger:** A live DeepSeek session (via OpenRouter) in the dev window showed ~50%
 cache reuse on the StatusBar chip while debugging hung Gemini sessions. Destin asked

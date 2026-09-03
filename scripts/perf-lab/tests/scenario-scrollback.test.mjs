@@ -17,7 +17,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { MEASURES, NUMERIC_KEYS, SCROLL_SIZES, MAX_PAGES, medianRun, riseSplit } from '../scenario-scrollback.mjs';
+import { MEASURES, NUMERIC_KEYS, SCROLL_SIZES, MAX_PAGES, CEILING_SETTLE_MS, medianRun, riseSplit } from '../scenario-scrollback.mjs';
 import { PAGE_TURNS } from '../scenario-workload.mjs';
 import { SIZES } from '../fixture.mjs';
 import { PRIMARY } from '../compare.mjs';
@@ -35,6 +35,7 @@ const run = (over = {}) => ({
   floorDomNodes: 12000, ceilingDomNodes: 210000, deltaDomNodes: 198000,
   floorListeners: 945, ceilingListeners: 31427, deltaListeners: 30482,
   releasedMb: 0.4, totalPagesLoaded: 120, totalEntriesLoaded: 7200,
+  foldedEntries: 0, totalEntries: 12100,
   ...over,
 });
 
@@ -112,6 +113,15 @@ describe('the phase cannot silently under-measure', () => {
     const pagesNeeded = Math.ceil(SIZES.huge / PAGE_TURNS);
     assert.ok(MAX_PAGES > pagesNeeded,
       `MAX_PAGES (${MAX_PAGES}) must exceed the ${pagesNeeded} pages the huge fixture needs at PAGE_TURNS=${PAGE_TURNS}`);
+  });
+
+  it('settles for longer than any in-app idle timer before reading the ceiling', () => {
+    // The app's entry-folding waits 800ms of scroll-idle before it does anything.
+    // Reading the ceiling sooner measures the app mid-transition and collects
+    // before the freed nodes are collectable — which on 2026-08-28 reported a
+    // 200MB REGRESSION for a change whose mechanism had simply not run yet.
+    assert.ok(CEILING_SETTLE_MS >= 3000,
+      `CEILING_SETTLE_MS (${CEILING_SETTLE_MS}) must clear the app's 800ms folding idle with room to spare`);
   });
 
   it('scrolls only conversations that HAVE older history', () => {

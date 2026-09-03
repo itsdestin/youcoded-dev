@@ -1,0 +1,61 @@
+id: observer-ref-returns-cleanup
+language: typescript
+severity: error
+message: >-
+  A callback ref that calls observe() must return a cleanup that unobserves.
+  An IntersectionObserver/ResizeObserver holds a STRONG reference to every
+  target, so a detached element stays reachable and is never freed.
+note: |
+  Use the shared hook instead of hand-rolling this:
+    src/renderer/hooks/use-observed-ref.ts  →  useObservedRef(observerRef)
+
+  TWO failures this catches, both measured on 2026-08-28 (perf cycle 3):
+
+  1. ChatView attached an observer ref to EVERY timeline entry and only ever
+     called observe(). Nothing removes a timeline entry today, so nothing leaked
+     in practice — which made it a TRAP rather than a bug: the first change that
+     removed or replaced an entry would free nothing at all, silently, with the
+     reducer correct and every test green. A conversation read to its beginning
+     holds ~1.44M DOM nodes.
+
+  2. The cleanup must be returned on EVERY path, including when the observer is
+     not built yet. React 19 picks the detach convention per call: return a
+     function and it runs that on detach; return undefined and React calls the
+     ref itself with null. Observers are built in effects, which run AFTER refs
+     attach, so an early `return` on the first render put that ref on the
+     null-call convention — and the next detach re-entered with el === null and
+     passed it to observe(). Five ChatView tests caught it.
+
+  Guard: src/renderer/hooks/use-observed-ref.test.ts
+files:
+  - "**/renderer/**/*.ts"
+  - "**/renderer/**/*.tsx"
+  # The violation fixture lives outside renderer/, so it needs its own glob —
+  # the same trick toolcalls-never-cleared.yml uses. Without it the rule silently
+  # never fires on the fixture and check.sh cannot prove the rule still works.
+  - "**/fixtures/**/observer-ref.ts"
+rule:
+  all:
+    # A ref callback shaped `(el) => { ...observe(el)... }` whose body never
+    # mentions unobserve. Matching the CALL rather than the arrow keeps this
+    # from firing on the observer-construction effects, which legitimately
+    # observe without a per-element cleanup.
+    - pattern: |
+        ($$$PARAMS) => { $$$BODY }
+    - has:
+        # BOTH spellings: real call sites are overwhelmingly `ref.current?.observe(el)`,
+        # and an optional call is a different AST node from a plain member call — a
+        # rule matching only the plain form silently never fires, which is worse than
+        # no rule at all.
+        any:
+          - pattern: $OBJ.observe($ARG)
+          - pattern: $OBJ?.observe($ARG)
+        stopBy: end
+    - not:
+        has:
+          pattern: $O2.unobserve($$$)
+          stopBy: end
+    - not:
+        has:
+          pattern: $O3.disconnect()
+          stopBy: end

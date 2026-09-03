@@ -23,7 +23,7 @@ All file paths and counts below verified against `youcoded@master` on 2026-08-31
 ### Why Codex when Gemini was deleted
 
 On 2026-07-10 the Gemini provider was removed and the runtime selector fixed at
-`Claude Code | YouCoded` (`docs/active/specs/2026-07-09-platform-vision-roadmap.md:320`).
+`Claude Code | YouCoded` (`docs/archive/specs/2026-07-09-platform-vision-roadmap.md:320`).
 The principle was **reach the MODEL, don't wrap the HARNESS**. Codex is the one case
 where that principle points the other way, and the distinguishing fact is billing:
 

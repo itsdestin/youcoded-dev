@@ -1,0 +1,34 @@
+{
+ "deck": "file-views-contract-acceptance",
+ "started": "2026-09-03T19:48:13.520Z",
+ "submitted": "2026-09-03T19:49:34Z",
+ "cur": 3,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "note": "the human checks pass as well. good to wrap up i think!",
+   "note_kind": "noting",
+   "seconds": 68,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R5": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R7": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

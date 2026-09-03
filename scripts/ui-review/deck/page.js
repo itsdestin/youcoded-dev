@@ -10,6 +10,9 @@
     change: '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m12.5 7.5 4 4"/></svg>',
     eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
     warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>' };
+  // Mirrors serve.py's NOTE_KIND: an unknown/absent note_kind (an old answers file predating
+  // tags) prints nothing in the summary rather than "[undefined]".
+  const NOTE_KIND = { now: 'fix now', later: 'fix later', noting: 'just noting' };
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   if (window.top !== window) document.body.classList.add('embedded');
   // What the stage shows for a step: one frame per run (before/after, or today), or — for a CHOICE
@@ -138,6 +141,9 @@
   }
   // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
   const YES = runs.length === 1 ? 'Yes, build it' : 'Yes, keep it', NO = runs.length === 1 ? 'No, leave it' : 'No, revert it';
+  // A words step may relabel the buttons ("Holds / Fails" on an acceptance row): the deck's
+  // build/keep wording is about a picture, and a statement has none.
+  const yesLabel = st => st.yes || YES, noLabel = st => st.no || NO;
   // The things a step offers to pick between, or null if it is a yes/no. A LIVE step's
   // question shape rides in `shape`, because `kind` already says where its picture comes
   // from — so a live pick-one answers exactly like a picture pick-one.
@@ -157,7 +163,7 @@
     $('#answers').innerHTML = picks || st.kind === 'decide'
       ? (picks ? `<button class="btn ans" data-v="no">None of these</button>` : '')
         + `<button class="btn ans" data-v="other">Other</button>`
-      : `<button class="btn ans" data-v="yes">${YES}</button><button class="btn ans" data-v="no">${NO}</button><button class="btn ans" data-v="other">Other</button>`;
+      : `<button class="btn ans" data-v="yes">${yesLabel(st)}</button><button class="btn ans" data-v="no">${noLabel(st)}</button><button class="btn ans" data-v="other">Other</button>`;
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
   function answer(v, pick) {
@@ -166,6 +172,7 @@
     state.answers[id] = a; paintState(); save(); $('#note').focus();
   }
   $('#deck-title').textContent = DECK.title; document.title = DECK.title;
+  document.body.dataset.screen = 'deck';   // 'finished' once submitted — read by deck-render.test.mjs
   $('#steps').innerHTML = DECK.steps.map(() => '<span></span>').join('');
   const stage = $('#stage'), inner = $('#inner'), loupe = $('#loupe');
 
@@ -189,14 +196,23 @@
     lastStep = st;
     document.documentElement.dataset.theme = theme;   // before the pictures load, so a theme switch never flashes the old colours
     $('#wtitle').textContent = st.surface; $('#wsub').textContent = st.path;
-    curFrames = frames(st);
+    // A words step has no frames: the stage is hidden by layout() and the cards fill the row.
+    curFrames = st.words ? [] : frames(st);
     inner.innerHTML = curFrames.map(f => `<figure class="frame${f.pickable ? ' pickable' : ''}${st.kind === 'clip' ? ' clip' : ''}" data-run="${esc(f.key)}"${f.pickable ? ` title="Pick ${esc(f.key)}"` : ''}><figcaption>${f.caption}</figcaption><div class="pic">${media(st, f)}</div></figure>`).join('');
     $$('#inner .frame .box').forEach(box => { const b = ((st.boxes || {})[theme] || {})[box.closest('.frame').dataset.run]; if (b) box.style.cssText = `left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%`; else box.style.display = 'none'; });
+    // The server EXITS on submit, so a step he never opened has no picture left to fetch. An
+    // empty frame under a caption reads as a broken deck; say which of the two it actually is.
+    $$('#inner img').forEach(i => i.onerror = () => {
+      const f = i.closest('.frame'); if (!f) return; f.classList.add('gone');
+      f.querySelector('.pic').textContent = state.submitted
+        ? 'This picture is no longer available — the review server stopped when you submitted.'
+        : 'This picture did not load (' + i.getAttribute('src') + ').';
+    });
     $('#replay').hidden = st.kind !== 'clip';
     // Zoom is off on a live step: it scales a still image, and a pane at anything but real
     // size stops showing the thing it is there to show. (The magnifier needs no switch — its
     // handler looks for `#inner img`, finds none, and hides itself.)
-    $('#zoom').hidden = st.kind === 'live';
+    $('#zoom').hidden = st.kind === 'live' || !!st.words;
     $('#livehint').hidden = st.kind !== 'live';
     if (st.kind === 'live') {
       // Once a click lands inside a pane, focus is in ITS document and this page stops seeing
@@ -213,7 +229,15 @@
     $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
     $('#headline').textContent = st.headline;
     const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><span class="key">${esc(o.id)}</span><div class="vbody"><h3>${esc(o.label)}</h3><p>${esc(o.summary)}</p>${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
-    $('#cards').innerHTML = pickList(st)
+    // CONTRACT: the rows as one table, not a card per row — grading (a `verdict` on any row)
+    // adds a Verdict column instead of always reserving one nobody has filled in yet.
+    const graded = st.kind === 'contract' && st.rows.some(r => r.verdict);
+    const rowsTable = () => `<section class="card contract"><table><thead><tr><th>#</th><th>Statement</th><th>Checked by</th><th>Threshold</th><th>From</th>${graded ? '<th>Verdict</th>' : ''}</tr></thead><tbody>${st.rows.map(r => `<tr class="${esc(r.verdict)}"><td>${esc(r.id)}</td><td>${esc(r.statement)}${r.note ? `<p class="src">“${esc(r.note)}”</p>` : ''}</td><td>${esc(r.checkedBy)}${r.guard ? `<p class="src">${esc(r.guard)}</p>` : ''}</td><td>${esc(r.threshold || 'pass / fail')}</td><td class="src">${esc(r.source)}</td>${graded ? `<td>${esc(r.verdict || '—')}${r.evidence ? `<p class="src">${esc(r.evidence)}</p>` : ''}</td>` : ''}</tr>`).join('')}</tbody></table></section>`;
+    $('#cards').innerHTML = st.kind === 'contract'
+      ? rowsTable()
+        + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
+      : pickList(st)
       ? pickList(st).map(v => optionCard(v, '')).join('')
         + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
         + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
@@ -230,9 +254,10 @@
     // live step, where the pane deliberately isn't a pick target and the card is the big one.
     $$('.card.variant').forEach(c => c.onclick = () => answer('pick', c.dataset.pick));
     renderAnswers(st);
-    const last = curFrames[curFrames.length - 1].key;
+    const last = curFrames.length ? curFrames[curFrames.length - 1].key : null;
     // A clip is recorded in one theme; there are no per-theme variants to switch between.
-    $('#thumbs').innerHTML = st.kind === 'clip' ? ''
+    // A words step has no picture of any theme — the theme pills would be empty.
+    $('#thumbs').innerHTML = st.words ? '' : st.kind === 'clip' ? ''
       // A live step has no thumbnails to show — there is no picture of the other themes, only
       // the panes themselves, one theme at a time. Same control, rendered as plain labels.
       : st.kind === 'live' ? themes.map(t => `<button class="thumb label-only${t === theme ? ' on' : ''}" data-v="${esc(t)}" title="${esc(DECK.themeNames[t])}"><span>${esc(DECK.themeNames[t])}</span></button>`).join('')
@@ -251,15 +276,33 @@
     $$('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
     $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', a.v === 'pick' && f.dataset.run === a.pick));
     const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
+    // The tag row is shown only once a note has text — nothing about an empty note is tagged.
+    // A visible default, never an inference: an old answer's note (written before tags existed)
+    // has no note_kind, so it shows none selected — the default is written only when a note
+    // gains text under the #note input handler below, never painted on here.
+    const hasNote = !!(a.note && a.note.trim());
+    $('#tags').hidden = !hasNote;
+    $$('#tags .tag').forEach(b => b.classList.toggle('on', hasNote && b.dataset.kind === a.note_kind));
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
     const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
     $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
-    $('#save').disabled = !(a.v && a.v !== 'skip'); $('#prev').disabled = cur === 0; $('#next').disabled = cur === N - 1; $('#next').textContent = cur === N - 1 ? 'Last step' : 'Next ›';
+    // browsing a submitted deck must never re-arm Save & Next
+    $('#save').disabled = !!state.submitted || !(a.v && a.v !== 'skip');
+    $('#prev').disabled = cur === 0; $('#next').disabled = cur === N - 1; $('#next').textContent = cur === N - 1 ? 'Last step' : 'Next ›';
   }
 
   // ── layout: try each arrangement for real, keep the one that shows the pictures largest (spec §3.4) ──
   const PAD = 28, CAP = 24, GAP = 18;
   function layout() {
+    if (DECK.steps[cur].words) {   // no picture to size: one column of cards, answer bar under it
+      $('#content').className = 'content words'; $('#step').classList.remove('compact-step');
+      document.body.dataset.layout = 'words';
+      // Fix: without this, navigating from a picture step to a words step left the PREVIOUS
+      // step's scores in the DOM — a stale table the render test (and anyone reading the DOM
+      // by hand) could mistake for this step's own layout choice. Match the live branch.
+      document.body.dataset.scores = '{}';
+      window.__deckReady = true; return;
+    }
     if (DECK.steps[cur].kind === 'live') { layoutLive(); return; }
     const c = $('#content'), step = $('#step'); const img = $('#inner img, #inner video'); if (!img) return;
     const natW = img.naturalWidth || img.videoWidth, natH = img.naturalHeight || img.videoHeight; if (!natW) return;
@@ -297,7 +340,10 @@
     state.answers[id] = a;
   }
   function go(i) {
-    if (state.submitted) return;   // Fix: after Submit, arrow keys / progress segments must not keep POSTing answers
+    // Fix: after Submit, arrow keys / progress segments must not keep POSTing answers — but
+    // they may still MOVE. A submitted deck is a read-only record he can page back through;
+    // record()/save() are what must not run, not the navigation itself.
+    if (state.submitted) { cur = Math.max(0, Math.min(N - 1, i)); zoom = 1; hideFinished(); render(); return; }
     record(); cur = Math.max(0, Math.min(N - 1, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render();
   }
   // Fix: save on EVERY answer, not only when the step changes — a tab closed on the last
@@ -305,15 +351,30 @@
   // at speed is one POST, not one per keystroke.
   let noteTimer = null;
   $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick); });
-  $('#note').addEventListener('input', e => { const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note: e.target.value }; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); });
+  $('#note').addEventListener('input', e => {
+    const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), note: e.target.value };
+    // A note that just gained text is "just noting" until he says otherwise — a visible default,
+    // not an inference: it is on screen, selected, and one click away from the other two.
+    if (a.note.trim() && !a.note_kind) a.note_kind = 'noting';
+    if (!a.note.trim()) delete a.note_kind;
+    state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+  });
+  $('#tags').addEventListener('click', e => {
+    const b = e.target.closest('.tag'); if (!b || state.submitted) return;
+    const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note_kind: b.dataset.kind }; paintState(); save();
+  });
   $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
-  $('#next').onclick = () => go(cur + 1); $('#prev').onclick = () => go(cur - 1);
+  // From the finish screen, Prev means "back into the deck" — the step he left, not the one
+  // before it; and there is nothing after the end, so Next is off there (see showFinished).
+  const step = d => go(document.body.dataset.screen === 'finished' ? cur : cur + d);
+  $('#next').onclick = () => step(1); $('#prev').onclick = () => step(-1);
   $$('#steps span').forEach((s, i) => s.onclick = () => go(i));
 
   // ── submit ──
   function summary() {
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
+    // Mirrors serve.py's summary(): the note's tag prints right after its quoted text, same words.
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); const tag = NOTE_KIND[a.note_kind]; lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' + (tag ? ' [' + tag + ']' : '') : '')); }
     return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
   }
   function openDialog() {
@@ -346,10 +407,65 @@
       return;   // veil stays open — there is still something for him to do here
     }
     state.submitted = new Date().toISOString();
-    $('#veil').classList.remove('on'); lockSubmitted();
+    $('#veil').classList.remove('on'); lockSubmitted(); showFinished();
   };
   // A submitted deck is read-only, and says so — silently ignoring clicks read as "I can't click through the pages".
-  function lockSubmitted() { $('#done').textContent = 'Submitted ✓'; $('#done').disabled = true; $$('.ans,#save,#note').forEach(e => e.disabled = true); paintState(); }
+  // The header button stays LIVE and becomes the way back to the finish screen: after a submit
+  // it is the only place the answers can still be read (the server exits on submit).
+  function lockSubmitted() {
+    $('#done').innerHTML = 'Submitted ✓<span class="long"> — view responses</span>';
+    $('#done').onclick = showFinished; $('#done').disabled = false;
+    $$('.ans,#save,#note,.tag').forEach(e => e.disabled = true); paintState();
+  }
+
+  // ── the finish screen ──
+  // WHY it exists: Submit used to just close the dialog, leaving him on the last step with a
+  // greyed-out button — the same thing a click that did nothing would look like. This is the
+  // definitive end of the deck, and the read-back of what was sent.
+  const ANS_LABEL = (st, a) => {
+    const v = a.v || 'skip';
+    if (v === 'skip') return 'No answer';
+    if (v === 'pick') { const o = (pickList(st) || []).find(x => x.id === a.pick); return a.pick + (o ? ' — ' + o.label : ''); }
+    if (v === 'other') return 'Something else';
+    if (v === 'no') return pickList(st) ? 'None of these' : noLabel(st);
+    return yesLabel(st);
+  };
+  function renderResponses() {
+    const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
+    const rows = DECK.steps.map((st, i) => {
+      const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
+      const note = (a.note || '').trim(); const tag = NOTE_KIND[a.note_kind];
+      return `<tr><td class="n">${i + 1}</td>`
+        + `<td class="step-cell">${esc(st.surface)}<p class="src">${esc(st.headline)}</p></td>`
+        + `<td class="v" data-v="${esc(v)}">${esc(ANS_LABEL(st, a))}</td>`
+        + `<td>${note ? esc(note) + (tag ? `<span class="kind">${esc(tag)}</span>` : '') : '<span class="src">—</span>'}</td></tr>`;
+    }).join('');
+    $('#responses').querySelector('tbody').innerHTML = rows;
+    const when = (state.submitted || '').slice(0, 16).replace('T', ' ');
+    const parts = [counts.yes + ' yes', counts.no + ' no', counts.other + ' other'];
+    if (counts.pick) parts.splice(2, 0, counts.pick + ' picked');
+    if (counts.skip) parts.push(counts.skip + ' with no answer');
+    $('#fin-meta').textContent = N + (N === 1 ? ' step' : ' steps') + ' · ' + parts.join(' · ') + (when ? ' · submitted ' + when : '');
+  }
+  function showFinished() {
+    renderResponses(); $('#step').hidden = true; $('#finished').hidden = false; document.body.dataset.screen = 'finished';
+    // The header describes what is ON SCREEN. Left saying "Home · chat — step 3 of 3" it would
+    // be labelling a step nobody is looking at. The progress strip stays: it is the summary at
+    // a glance, and clicking a segment is still the way back into that step.
+    $('#wtitle').textContent = DECK.title; $('#wsub').textContent = 'review complete';
+    $('#count').textContent = 'all ' + N + ' steps · read-only';
+    $('#prev').disabled = false; $('#next').disabled = true;   // Prev goes back into the deck; nothing follows the end
+  }
+  function hideFinished() { $('#finished').hidden = true; $('#step').hidden = false; document.body.dataset.screen = 'deck'; }
+  $('#fin-back').onclick = () => { hideFinished(); render(); };
+  $('#fin-copy').onclick = () => {
+    // A scratch textarea, not #feedback: that one lives inside the (display:none) dialog, and
+    // execCommand's fallback cannot select text in a hidden element — it would copy nothing.
+    const t = document.createElement('textarea'); t.value = summary();
+    t.style.cssText = 'position:fixed;top:0;left:0;opacity:0'; document.body.appendChild(t); t.select();
+    (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).catch(() => document.execCommand('copy')).finally(() => t.remove());
+    $('#fin-copy').textContent = 'Copied';
+  };
   $('#copy').onclick = () => { const t = $('#feedback'); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).catch(() => document.execCommand('copy')); $('#copy').textContent = 'Copied'; };
 
   // ── loupe, zoom, keys ──
@@ -370,7 +486,7 @@
   $('#zin').onclick = () => setZoom(zoom + 0.1); $('#zout').onclick = () => setZoom(zoom - 0.1); $('#replay').onclick = replay;
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    if (!state.submitted) { if (e.key === 'ArrowRight') go(cur + 1); if (e.key === 'ArrowLeft') go(cur - 1); }   // Fix: zoom/loupe stay live after Submit, navigation doesn't
+    if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1);   // go() decides what a submitted deck is allowed to do
     if (e.key === '+' || e.key === '=') setZoom(zoom + 0.1); if (e.key === '-') setZoom(zoom - 0.1); if (e.key === '0') setZoom(1);
     if (e.key === 'r' && DECK.steps[cur].kind === 'clip') replay();
     if (e.key === 'l') { loupeOn = !loupeOn; if (!loupeOn) loupe.style.display = 'none'; document.body.classList.toggle('no-loupe', !loupeOn); }
@@ -420,6 +536,6 @@
     cur = q.get('step') ? Math.max(0, Math.min(N - 1, +q.get('step') - 1)) : Math.max(0, Math.min(N - 1, state.cur || 0));
     if (q.get('theme') && DECK.themes.includes(q.get('theme'))) theme = q.get('theme');
     stepStart = Date.now(); render();
-    if (state.submitted) lockSubmitted();   // an archived (file://) deck opened after its submit shows its locked state instead of dead buttons
+    if (state.submitted) { lockSubmitted(); showFinished(); }   // an archived deck re-opened after its submit lands on the finish screen — its answers, read back — instead of a step full of dead buttons
   });
 })();

@@ -48,7 +48,7 @@ ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
 - Copy the gallery + sheets into `docs/active/design/<date>-ui-audit/` (images
   git-ignored by the existing rule; README says how to regenerate).
 - Update the design guide only for rules that changed; new rules get the next `G-n`.
-- ROADMAP entry: the whole-UI review item gets an update line pointing at the docs.
+- Roadmap entry: the whole-UI review item (in `docs/roadmap/dev-workspace.md` → `## rigs`) gets an update line pointing at the docs.
 
 ## 4. Improve (when asked, or as the follow-up)
 
@@ -64,7 +64,7 @@ then a **review page** — never a gallery, never a chat summary:
    user sees), **changed** (what was edited, plain words, with `measured` when there is a number),
    **notice** (what changes for users — intended and side effects), **risk** (what could look
    wrong, or is not shown faithfully). The builder refuses jargon (token, primitive, selector,
-   IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box. **Several designs for one thing are ONE choice step** (`variants: [...]` — one page, pick one; see the README), never a yes/no step per design (`phase-d-mockups.json`).
+   IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box. **Several designs for one thing are ONE choice step** (`variants: [...]` — one page, pick one; see the README), never a yes/no step per design (`phase-d-mockups.json`). **Anything that has to MOVE — an animation, a drag, a hover — is a LIVE step, not a clip** (`live: {surface, round}` + `variants` with a `candidate` each): panes of the running app Destin can operate himself. Four clip steps were rejected on 2026-08-31 as "just rough to compare"; a 200 ms animation is judged by doing it. `serve` boots the worktree's workbench for the panes and stops it again.
 3. `python3 scripts/ui-review/review-cards.py serve <spec>` **in the background** (it builds
    first; fix every `missing:` line it prints — a measurement that is missing means the plan
    needed a `measure` line before the Before run). The browser opens itself. **The address to give Destin is the `[deck] http://127.0.0.1:<port>/<out>.html` line `serve` prints** (also in `<spec>.serve.json` next to the spec) — quote it whole; the bare port now redirects to the deck, but never guess a URL you have not read. Destin answers
@@ -73,7 +73,7 @@ then a **review page** — never a gallery, never a chat summary:
    timeout; 3 = another process already serves this spec — neither 2 nor 3 carries answers, do not
    invent a result) (`wait <spec>` if you lost the process). Never ask him to paste anything.
 4. Act on the summary exactly (`Other` + note = change it as described); record decisions in the
-   findings ledger row, the guide, the ROADMAP entry. Merge, archive, clean up.
+   findings ledger row, the guide, the roadmap entry. Merge, archive, clean up.
 
 ## Red flags
 

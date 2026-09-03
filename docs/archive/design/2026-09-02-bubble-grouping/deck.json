@@ -1,0 +1,31 @@
+{
+  "title": "Bubble grouping fix",
+  "key": "bubble-grouping",
+  "out": "deck.html",
+  "images": "images/deck",
+  "runs": { "before": "/home/destin/youcoded-dev/scratch/bubbles-before", "after": "/home/destin/youcoded-dev/scratch/bubbles-after" },
+  "themes": ["midnight", "light", "creme", "dark", "halftone-dimension", "meadow-mist"],
+  "crops": {
+    "handoff": ["bubbles", "handoff", "1240x720+0+50"],
+    "approval": ["bubbles", "approval", "1240x260+0+50"],
+    "skill-first": ["bubbles", "skill-first", "1240x330+0+50"]
+  },
+  "steps": [
+    { "id": "B-1", "surface": "Chat view", "path": "Last night's AirPlay handoff session, replayed exactly", "crop": "handoff",
+      "headline": "Three separate tool bubbles, an empty bubble and a lone “Interrupted.” collapse into two bubbles, one per step.",
+      "changed": "Some models (DeepSeek here) send blank newline chunks between and after the tool calls they make. The app treated every blank chunk as the start of a new message, so each one opened a fresh bubble. Blank chunks that do not belong to a paragraph are now ignored; blank lines inside a paragraph still work.",
+      "measured": "7 bubbles before, 2 after, for the same conversation",
+      "notice": "Tools called in the same step stack inside one bubble as a collapsed group (“3 tools — all complete”), and the “Interrupted.” note sits under the bubble that was cut off. Two tools called back-to-back with nothing said between them also share one group, so the Write and the failed Grep read as “2 tools — 1 failed” until expanded.",
+      "risk": "The pictures replay the real session with the reasoning and prose shortened. “Read ×2” is genuine: the model read the same file twice." },
+    { "id": "B-2", "surface": "Chat view", "path": "A turn that opens with a tool that needs your permission", "crop": "approval",
+      "headline": "A tool waiting for your permission no longer leaves an empty bubble above its Yes / No card.",
+      "changed": "The permission card is pinned to the bottom of the chat, but the bubble that would have held the tool stayed on screen as an empty shell with only a timestamp. A bubble that has nothing to show is skipped now.",
+      "notice": "Nothing sits above the permission card until you answer. Once you do, the tool card appears in its bubble exactly as before.",
+      "risk": "The bubble now appears at the moment you answer instead of being there already, a small pop-in." },
+    { "id": "B-3", "surface": "Chat view", "path": "A /skill command (here /audit)", "crop": "skill-first",
+      "headline": "Starting a turn with a skill no longer leaves a thin empty bubble above the reply.",
+      "changed": "The “Invoked skill” card always shows at the end of the reply, but the bubble it originally belonged to stayed behind as an empty sliver. That sliver is gone.",
+      "notice": "The reply moves up by one sliver; the skill card is where it was.",
+      "risk": "None seen. The reply is otherwise unchanged." }
+  ]
+}

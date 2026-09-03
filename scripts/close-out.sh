@@ -15,6 +15,8 @@
 # Every check is scoped to the branch you name. A workspace-wide version of the
 # docs checks was tried and rejected: it produced 78 warnings on its first run,
 # including a live-but-never-pushed branch and a file path that looked like one.
+#
+# Contract section: feature-flow design §4
 set -uo pipefail
 
 BRANCH="${1:-}"
@@ -25,9 +27,16 @@ WORKSPACE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # this workspace's own docs, rules and scripts ship on branches like any sub-repo.
 case "$REPO" in
   workspace|.|youcoded-dev) REPO_DIR="$WORKSPACE"; REPO="workspace" ;;
+  # An absolute path is taken as-is. Only the guard test uses it (it needs a throwaway
+  # repo of its own, so its assertions never depend on this machine's checkouts), but a
+  # sub-repo name resolved against $WORKSPACE silently became "$WORKSPACE//tmp/..." and
+  # reported "no git repo" — a wrong answer where a plain path was meant.
+  /*)                       REPO_DIR="$REPO"; REPO="$(basename "$REPO")" ;;
   *)                        REPO_DIR="$WORKSPACE/$REPO" ;;
 esac
 [[ -e "$REPO_DIR/.git" ]] || { echo "close-out: no git repo at $REPO_DIR"; exit 0; }
+# Where contracts are looked for. Overridable so the test can point it at a temp folder.
+DOCS_DIR="${CLOSE_OUT_DOCS:-$WORKSPACE/docs}"
 
 pass() { printf '  \033[32mOK\033[0m   %s\n' "$1"; }
 fail() { printf '  \033[31mTODO\033[0m %s\n' "$1"; FAILED=$((FAILED+1)); }
@@ -43,6 +52,22 @@ git -C "$REPO_DIR" fetch origin --quiet 2>/dev/null
 SHA=$(git -C "$REPO_DIR" rev-parse --verify -q "origin/$BRANCH" 2>/dev/null \
    || git -C "$REPO_DIR" rev-parse --verify -q "$BRANCH" 2>/dev/null || true)
 BASE=$(git -C "$REPO_DIR" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
+
+# The DEFAULT BRANCH is never a close-out target, and saying so has to come before
+# the merged/not-merged split. `master` is trivially an ancestor of `origin/master`,
+# so it lands in post-merge mode and the report reads: delete the remote branch,
+# delete the local branch, remove the worktree — pointed at master and at the main
+# checkout. The wrap-up skill tells sessions to finish every TODO the script prints,
+# so those three lines are a destructive instruction with a green tick beside them.
+# It happened on 2026-09-03: a session that had worked directly on master ran
+# `close-out.sh master workspace` and got exactly that. Refuse instead.
+if [[ "$BRANCH" == "${BASE#origin/}" || "origin/$BRANCH" == "$BASE" ]]; then
+  note "$BRANCH IS the default branch of $REPO — there is nothing to close out."
+  note "A session that worked directly on it has no branch to delete, no worktree"
+  note "to remove and no dead name to fix. Run this against a FEATURE branch, or"
+  note "skip the git half entirely and do the docs/roadmap hygiene by hand."
+  exit 0
+fi
 
 # TWO MODES, because "close out" does not always mean "merged".
 # Destin routinely says wrap up / close out meaning "do the docs and workspace
@@ -113,12 +138,48 @@ else
 fi
 
 echo
+echo "Contract"
+# The contract is the definition of done for a feature (docs/active/specs/2026-09-01-feature-flow-design.md).
+# It names its branch, so this is the ONLY lookup — no "branch" field, no contract, and the
+# note below says so rather than guessing which deck folder this work came from.
+# Fix: a fixed-string match on `"branch": "$BRANCH"` missed a contract written without the
+# space after the colon (`"branch":"$BRANCH"`, still valid JSON) — a contract could sit right
+# there and this would still say "no contract names this branch". Match the colon loosely
+# instead. $BRANCH can contain "/" and "." — a "." in the regex also matches a literal "."
+# so that alone is harmless, but escape every regex metacharacter anyway so the intent reads
+# honestly as "escaped for regex use", not "happens to work".
+BRANCH_RE=$(printf '%s' "$BRANCH" | sed 's/[.[\*^$]/\\&/g')
+CONTRACTS=$(rg -l --glob '*.contract.json' -e "\"branch\"[[:space:]]*:[[:space:]]*\"$BRANCH_RE\"" "$DOCS_DIR" 2>/dev/null || true)
+if [[ -z "$CONTRACTS" ]]; then
+  note "no contract names this branch — the feature flow was not used, or the contract has no \"branch\""
+else
+  while IFS= read -r c; do
+    REL="${c#"$WORKSPACE"/}"
+    # contract-check owns every fact (does it hold, was it signed, was acceptance submitted):
+    # exit 1 + problems on stderr when it does not hold; otherwise `ok:` / `todo:` lines
+    # that are relayed here verbatim, so this script never reads an answers file itself.
+    if OUT=$(python3 "$WORKSPACE/scripts/ui-review/review-cards.py" contract-check "$c" 2>&1); then
+      while IFS= read -r line; do
+        case "$line" in
+          ok:\ *)   pass "${line#ok: } — $REL" ;;
+          todo:\ *) fail "${line#todo: }" ;;
+          *)        note "$line" ;;
+        esac
+      done <<<"$OUT"
+    else
+      fail "contract does not hold — $REL:"
+      echo "$OUT" | sed 's/^/       /'
+    fi
+  done <<<"$CONTRACTS"
+fi
+
+echo
 echo "Docs"
 
 # Scoped to THIS branch. A doc naming a branch that no longer exists holds
 # commands that error instead of answering, and claims that read as current.
 DEAD=""
-[[ "$MERGED" == yes ]] && DEAD=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/ROADMAP.md" 2>/dev/null || true)
+[[ "$MERGED" == yes ]] && DEAD=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/docs/roadmap" 2>/dev/null || true)
 if [[ "$MERGED" != yes ]]; then
   note "docs naming this branch are FINE while it is unmerged — check skipped"
 fi
@@ -142,7 +203,7 @@ fi
 ALL_SHIPPED=$(rg -l '^status: shipped' "$WORKSPACE/docs/active" 2>/dev/null | wc -l)
 [[ "$ALL_SHIPPED" -gt 0 ]] && note "($ALL_SHIPPED doc(s) marked shipped are still in docs/active/ overall — not necessarily yours)"
 
-note "ROADMAP: flip the item for this work to [x] in the SAME session (CLAUDE.md)"
+note "roadmap: close the item for this work in the SAME session — delete it from docs/roadmap/<area>.md, one line in docs/roadmap/shipped.md, then node scripts/roadmap-check.mjs --fix (CLAUDE.md)"
 note "docs/MAP.md: does the merged subsystem have a row and a hot path? 'no rule' is an answer; 'no row' is not"
 note "archived docs: repoint cross-links that still point at docs/active/"
 

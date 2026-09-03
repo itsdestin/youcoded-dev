@@ -46,12 +46,31 @@
   echo "Updating youcoded-dev (workspace)..."
   script_before="$(git hash-object "$ROOT/setup.sh")"
 
-  git fetch origin
-  if ! git pull origin master; then
+  # The guard that stops this checkout diverging in the first place. Git does not
+  # carry hooks between clones, so it is (re)installed from the tracked copy on
+  # every run -- that also restores it if someone deletes it.
+  hook_src="$ROOT/scripts/git-hooks/pre-commit"
+  hook_dst="$(git rev-parse --git-common-dir)/hooks/pre-commit"
+  if [ -f "$hook_src" ]; then
+    if [ ! -f "$hook_dst" ] || ! cmp -s "$hook_src" "$hook_dst"; then
+      mkdir -p "$(dirname "$hook_dst")"
+      cp "$hook_src" "$hook_dst"
+      chmod +x "$hook_dst"
+      echo "Installed the commit guard (commits belong in a worktree, not here)."
+    fi
+  fi
+
+  # NOT `git pull --ff-only`. That reports the state honestly but can only ever
+  # refuse, and its advice was `git pull --rebase --autostash` -- which is the one
+  # thing never to do to a checkout other sessions are working in, and which on
+  # 2026-09-03 would have tried to replay six commits whose changes were ALREADY
+  # upstream (copied across by hand, so different shas, guaranteed conflicts).
+  # workspace-sync.sh tells a duplicate commit from a unique one, heals the case
+  # that is provably safe, and otherwise names the exact blocking file.
+  if ! bash "$ROOT/scripts/workspace-sync.sh" "$ROOT" master; then
     echo ""
     echo "WARNING: sub-repos synced, but youcoded-dev itself did not update."
-    echo "Git refused rather than touching your work -- see its error above. Commit,"
-    echo "stash, or resolve, then re-run: bash setup.sh"
+    echo "The reason is above. Nothing in your working folder was changed."
     exit 1
   fi
 

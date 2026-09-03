@@ -1,0 +1,122 @@
+{
+ "deck": "Chat Search Preview Gate",
+ "started": "2026-08-27T22:57:04.069Z",
+ "submitted": "2026-08-27T23:13:11Z",
+ "cur": 16,
+ "answers": {
+  "D2-expand": {
+   "v": "other",
+   "seconds": 96,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "why are there two cards/types?"
+  },
+  "M-row": {
+   "v": "other",
+   "seconds": 84,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "replace circle/checkmark on this card with chat bubble thing. remove \"raw output\" and instead add some indicator of what the model actually searched for/read from the conversations."
+  },
+  "M-states": {
+   "note": "should just hide dead. need to make sure all these buttons are hover-sensitive and match otehr app themeing, tooltip for greyed buttons.",
+   "v": "yes",
+   "seconds": 81,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-blocked": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-tombstone": {
+   "v": "yes",
+   "note": "resume looks active in this screenshot row tho, may be a bug.",
+   "seconds": 36,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-piped": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-show": {
+   "note": "all searches in a turn should group into a single card. then a separate \"display/reference conversation\" method/mechanism for assistant to intentional present conversations in a table mid chat-bubble for the user. This project is blah blah, working on blah balh, see: [convo 1] /n [convo 2] /n [convo 3]. etc. This other project is blah, working on blah: convo 4. etc. \"display\" is separate from search, \"display\" is a renderer/parser trick probably while \"search\" is a tool and all \"search\" calls in one turn group together. \"search\" tool result can include the guidance to display chosen results as part of a message in renderer's specific format.",
+   "v": "other",
+   "seconds": 202,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-header": {
+   "v": "yes",
+   "note": "i want resume to be between expand and X button. i also want it to open a brief little popup that offers model/skip permissions choices if relevant for claude/native sessions and a final resume confirm menu. same as resume menus used elsewhere.",
+   "seconds": 108,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-toolgap": {
+   "note": "should style as a \"3 tools\" toolcard thing in the assistant bubbles, styled like real tool cards/groups in chat",
+   "v": "other",
+   "seconds": 59,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-caption": {
+   "note": "remove \"past conversation. put read-only to the right of the assistant.",
+   "v": "yes",
+   "seconds": 65,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-loadolder": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-tags": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-rightclick": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D1-referenced": {
+   "v": "pick",
+   "pick": "a",
+   "note": "just show title in this list, not assistant or whateva.",
+   "seconds": 38,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-error": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-narrow": {
+   "note": "make it a chat bubble icon of some sort",
+   "v": "yes",
+   "seconds": 50,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D4-present": {
+   "note": "kinda explained earlier. we may be changing this look a bit to my new table idea thing. parse bubbles for formatted text basically",
+   "v": "other",
+   "seconds": 76,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

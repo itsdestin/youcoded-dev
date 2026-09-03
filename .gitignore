@@ -24,6 +24,11 @@ youcoded-core
 youcoded-admin
 wecoded-themes
 wecoded-marketplace
+# The roadmap-check test fixture carries a FAKE `youcoded/` sub-repo (one .ts file its
+# claim anchor points at). The slashless `youcoded` above matches at any depth, so
+# without this re-include the fixture silently never reached CI — PR #11's first run
+# failed on exactly that (98 green locally, 2 red in CI).
+!scripts/fixtures/roadmap/youcoded
 
 # Worktrees and temp directories
 .worktrees/
@@ -104,8 +109,8 @@ docs/active/design/*-ui-audit/images/
 # (scratch/ already covers the fixture HOME, the downloaded engine/model assets and
 # the per-boot desktop.log copies.)
 perf-reports/shots/
-*.answers.json
-*.answers.*.json
+# Deck answers (*.answers.json) are Destin's decisions and are COMMITTED (feature-flow design §2).
+# Throwaway decks live in scratch/, which is ignored above. `*.serve.json` is a runtime lock.
 *.serve.json
 
 # Python bytecode from the deck tooling + its tests

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Refuse commits made directly in the SHARED youcoded-dev checkout.
+#
+# WHY: on 2026-09-03 this checkout was found 110 commits behind origin/master
+# with no session ever told. The reason it could not self-heal was that seven
+# commits had been made HERE instead of in a throwaway worktree, which put the
+# branch in git's "diverged" state -- and `git pull` refuses a diverged branch
+# outright, before it even looks at your files. Six of those seven turned out to
+# be duplicates another session had already copied upstream by hand; the seventh
+# held five of Destin's product ideas and existed nowhere else on earth.
+#
+# CLAUDE.md has said "push from a temp worktree, the shared checkout is dirty and
+# belongs to other sessions" for weeks. This turns that sentence into something
+# that executes. Linked worktrees are the sanctioned path and are always allowed.
+#
+# Installed (and kept current) by setup.sh, because git does not carry hooks
+# between clones. Source of truth: scripts/git-hooks/pre-commit.
+set -euo pipefail
+
+# An explicit, deliberate override -- not a mistake anyone makes by accident.
+if [ -n "${YOUCODED_ALLOW_MAIN_COMMIT:-}" ]; then
+    exit 0
+fi
+
+# A linked worktree's git-dir is .git/worktrees/<name>; the main checkout's IS
+# the common dir. Hooks are shared from the common dir, so this hook fires in
+# every worktree too -- and must let all of them through.
+git_dir=$(git rev-parse --absolute-git-dir)
+common_dir=$(cd "$(git rev-parse --git-common-dir)" && pwd -P)
+if [ "$git_dir" != "$common_dir" ]; then
+    exit 0
+fi
+
+cat >&2 <<'MSG'
+
+  ✗ Refusing to commit in the shared youcoded-dev checkout.
+
+  This folder is shared by every running session, so it is normally dirty and
+  behind. Committing here is what put it 110 commits behind on 2026-09-03 and
+  nearly lost five of Destin's product ideas.
+
+  Commit from a throwaway worktree instead, and push from there:
+
+      git worktree add /tmp/wsfix -b <branch> origin/master
+      cd /tmp/wsfix
+      # redo the edit here, stage BY EXPLICIT PATH (never `git add -A`)
+      git commit && git push origin HEAD:master
+      cd - && git worktree remove /tmp/wsfix && git branch -D <branch>
+
+  Your edits in this folder are untouched -- nothing was lost by this refusal.
+
+  If you genuinely mean to commit here, say so out loud:
+
+      YOUCODED_ALLOW_MAIN_COMMIT=1 git commit ...
+
+MSG
+exit 1
