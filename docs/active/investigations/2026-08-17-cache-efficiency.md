@@ -42,8 +42,14 @@ shape will move it much. See "Why the 50%".
 ## Why the 50% (the DeepSeek reading)
 
 The StatusBar "Reuse:" chip computes `readTokens / promptTokens` where the numerator
-and denominator come from the *same* source (`StatusBar.tsx:256-297`, `selectCacheReuse` +
-`selectReuseDisplay`). For native/OpenAI-compatible sessions:
+and denominator come from the *same* source (`selectCacheReuse` + `selectReuseDisplay`, which
+moved to `youcoded/desktop/src/renderer/state/cache-reuse.ts` on 2026-09-03 — youcoded#405 —
+when the *Claude Code* branch of that same function turned out to be double-counting its cache
+reads and pinning the chip under 50%. **That fix does not touch the reading described here**:
+the native branch was already correct, and old and new agree on every well-formed native input.
+The two-branch source logic below is now one branch — `max(inputTokens, read + create)` — which
+reduces to exactly the native rule stated here whenever `prompt_tokens` includes the reads).
+For native/OpenAI-compatible sessions:
 
 - `promptTokens = inputTokens` = the provider's whole `prompt_tokens`, which already
   *includes* cached reads (`StatusBar.tsx:238-255` — the two-branch source logic;
