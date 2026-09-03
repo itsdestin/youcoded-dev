@@ -148,6 +148,21 @@ seen-on is always n/a here.
 
 ## knowledge
 
+- [ ] Path-scoped rules never reach a session that edits through the Bash tool, which is what
+      bypass-permissions mode tells sessions to do. Measured on 2026-09-03 (session
+      43f47281): ~200 lines were changed under `desktop/src/renderer/components/project-view/`,
+      and `artifacts.md`, `react-renderer.md` and `narrow-viewport.md` — all three of whose
+      `paths:` globs match that directory — never loaded. The only two `path_glob_match` events
+      in that session were triggered by a SUBAGENT's `Read` of a file it was handed; across the
+      whole of `~/.claude/instructions-loaded.log` there have only ever been three such events.
+      Injection is keyed to Read/Edit/Write, so `sed`/`python3` edits deliver no rules and the
+      loss is silent — the session cannot tell it is missing anything. Wanted: something that
+      names the covering rules when a Bash command writes a matching path (a non-blocking
+      PreToolUse companion to `glob-guard.py`), or a `rules-for <path>` command cheap enough to
+      run before an edit. The evidence is `~/.claude/instructions-loaded.log`; measure the
+      noise before shipping a per-Bash-call hook
+      `n/a` `needs-verify` `checked 2026-09-03`
+
 - [ ] Every plan, spec and investigation is stamped with a one-word state, but nothing checks
       the word: 15 of them say `settled`, `review`, `applied`, `superseded-in-part` or a whole
       sentence instead of one of the four allowed states. All 15 are already archived, so
