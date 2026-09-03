@@ -17,6 +17,8 @@ measured_at:
 
 **Architecture:** Three layers. (1) `scripts/promo/music/` composes the track and exports its beat grid as JSON. (2) `scripts/ui-review/record.mjs` films ten scenes of the workbench (with three dev-only fakes added to `youcoded`'s mock backend) into WebM footage, and writes a **marks file** beside each clip — the video time of every scene action — so the timeline never hand-measures a frame. (3) A Remotion project in `scripts/promo/` lays footage, captions, the animated mascot rig and the audio on the grid and renders the MP4; ffmpeg loudness-normalises at the end.
 
+**Revision 2026-09-03 (during execution):** the recorder's `autopilot` action (polling the DOM over CDP every 25 ms) never got the bird past one pipe in ten takes — the 30–60 ms reaction is longer than the game forgives. Flappy is now flown by an **in-page pilot** (`scripts/ui-review/scenes/flappy-pilot.js`: a `requestAnimationFrame` loop that reads the bird and the next gap every frame and dispatches the real Space keydown; flap rule derived from the engine's own constants), injected by a new `evalFile` recorder action (`{"evalFile": "flappy-pilot.js", "mark": "fly"}` then a `hold`). Seven pipes in ten seconds on the first take. `autopilot` stays in `record.mjs` as a general action.
+
 **Revision 2026-09-03 (this session, before execution):** eight defects found in review and fixed in the text below — no room on screen for captions or the host (the window now films at 1440×900 and sits in a fixed layout with a caption band and headroom, approved from a still before any beat is built); the Flappy autopilot picked a pipe as the bird (pipe columns carry the same `will-change` marker); the theme drop landed 4 frames late (a 2-frame fade after 6-frame padding — the two theme beats are now one continuous clip, no transition); hand-measured trim frames (replaced by the marks file); 24 fps footage in a 30 fps video (the recorder takes `fps` per scene); the spec's storyboard disagreed with the plan on beats 6–7 (spec updated); the recorder action was named `autoplay`, colliding with the workbench's `?autoplay=` URL switch (now `autopilot`); and captions were a hard constraint with no test (now `captions.test.ts`).
 
 **Tech Stack:** Python 3 + numpy (music), Node 26 + raw CDP (filming), Remotion 4.0.520 + React (assembly), ffmpeg 8 (mux), vitest (youcoded tests), `node --test` and `unittest` (workspace tests).
@@ -45,7 +47,8 @@ measured_at:
 | `scripts/promo/music/synth.py` (exists) | DSP primitives. Gains three sound-effect makers (`pop`, `whoosh`, `chime`). |
 | `scripts/promo/music/song.py` (exists) | Sequencer. Gains `promo_track()` (the full arrangement) and a `promo` CLI target that writes the WAV, the grid JSON and the three SFX WAVs. |
 | `scripts/promo/music/test_song.py` | `unittest` for grid shape, section positions, length, peak, NaN. |
-| `scripts/ui-review/record.mjs` (exists) | Gains the `Space` key, the `autopilot` action, a per-scene `fps`, and the `<out>.marks.json` file. |
+| `scripts/ui-review/record.mjs` (exists) | Gains the `Space` key, the `autopilot` and `evalFile` actions, a per-scene `fps`, and the `<out>.marks.json` file. |
+| `scripts/ui-review/scenes/flappy-pilot.js` | The in-page Flappy pilot the promo scene injects (see the execution revision above). |
 | `scripts/ui-review/autopilot.mjs` | Pure loop: poll a JS predicate, press a key when true. |
 | `scripts/ui-review/autopilot.test.mjs` | `node --test` for the loop and for the marks-file shape. |
 | `scripts/ui-review/scenes/promo-*.json` (10 files) | One scene per storyboard beat (beat 6 has three, beats 1 and 8 one idle each). |

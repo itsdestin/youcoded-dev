@@ -100,7 +100,7 @@ scene action), and the timeline trims to those labels — a re-film never breaks
 |---|---|---|
 | 2 | `promo-quick-chip` | `scenario=site&seed=none&reply=briefing` — a new reply fixture, 1 turn |
 | 3 | `promo-sheet` | The spreadsheet fixture and writable-artifacts mock from `feat/landing-demo-clips` (`ef38bfc0`, worktree `grok-clip`) cherry-picked to master, plus a reply fixture whose tool card rewrites the sheet |
-| 4 | `promo-flappy` | `record.mjs` learns `Space` as a key and an `autopilot` action that reads the bird and the next gap off the DOM and flaps when needed (the game has no autopilot of its own). `reply=flappy-task`, a ~10 s multi-tool fixture |
+| 4 | `promo-flappy` | `record.mjs` learns `Space` as a key and an `evalFile` action; the scene injects an in-page pilot (`scenes/flappy-pilot.js`) that reads the bird and the next gap off the DOM every frame and presses Space when needed (the game has no autopilot of its own — and a recorder-side one polling over CDP proved too slow). `reply=flappy-task`, a ~10 s multi-tool fixture |
 | 5 | `promo-strip` | `scenario=default`; the existing `drag` action |
 | 6a | `promo-remote` | A workbench fake for `remote.*` (enabled, a link, one connected phone) so the popup renders |
 | 6b | `promo-phone` | Same as `row5-phone` (`platform=android`, `autoplay=`) |
@@ -108,7 +108,7 @@ scene action), and the timeline trims to those labels — a re-film never breaks
 | 7 | `promo-theme` | `reply=theme-builder` plus a one-shot apply: the scene's last action switches the theme through the workbench's appearance hook when the final turn lands |
 
 Every workbench fake is dev-only code (the workbench never ships to users) and lands on
-`youcoded` master through a normal PR. The rig changes (`Space`, `autopilot`, `fps`, the marks file) land in
+`youcoded` master through a normal PR. The rig changes (`Space`, `autopilot`, `evalFile`, `fps`, the marks file) land in
 `youcoded-dev`.
 
 ## Assembly: `scripts/promo/`
