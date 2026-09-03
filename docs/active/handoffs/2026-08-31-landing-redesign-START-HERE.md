@@ -86,9 +86,7 @@ Everything in the previous checkpoint still holds. What changed this session:
 | `node evalpage.mjs <url> <setupJS> <ms> <expr>…` | Print JS values instead of pictures. Same `VS_W`/`VS_H`. |
 | `node introshot.mjs <url> <prefix> <ms>…` | Shots at absolute times — the hero intro is over in 2.4s. Honours `VS_W`/`VS_H`. |
 | `node scrollprobe.mjs <url> [from] [to] [step]` | **New.** One TSV row per scroll position: pill top/left/docked/hidden, hero bottom, live `--fade-stop`, embed top. Every hero-motion bug this session was invisible in a screenshot and obvious in this column of numbers. |
-| `node introprobe.mjs <url> [ms]` | **New.** One row per frame from the FIRST PAINT: the download pill's
-top, its effective opacity (every ancestor's multiplied) and what it is positioned against. The intro is over
-before evalpage's 5s settle or viewshots' 6s, so nothing else can see it. Found the pill's 144px one-frame jump. |
+| `node introprobe.mjs <url> [ms]` | **New.** One row per frame from the FIRST PAINT: the pill's top, its effective opacity (every ancestor's multiplied) and what it is positioned against. The intro is over before evalpage's 5s settle or viewshots' 6s, so nothing else can see it. Found the pill's 144px one-frame jump. |
 | `node bands2.mjs …` | Full-viewport captures with the wallpaper flattened to white, for measuring real empty space. |
 | `node ../../../../scripts/ui-review/record.mjs <scene> <out>` | Record a demo clip. Needs the workbench up. |
 | `bash scripts/run-workbench.sh <worktree>` (from the workspace root, `YOUCODED_PORT_OFFSET=300`) | The fake-backend app on :5473, which the clips are filmed against. Headless — no window appears. |
