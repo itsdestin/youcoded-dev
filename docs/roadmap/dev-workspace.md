@@ -4,6 +4,15 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] `native-session-host` can fail its own CLEANUP on the macOS CI leg — `ENOTEMPTY` from
+      `rmHostRoot()` while deleting the temp dir, thrown out of afterEach into a test that had
+      already passed, so the red names the wrong thing. Seen 2026-09-03 on youcoded#399, passed
+      on a plain re-run of the same commit. The retrying remove the test-suite-hygiene rule
+      prescribes IS in place; its budget (10 x 25ms = 250ms) is just too small for a loaded
+      3-core runner while fire-and-forget ledger writes are still landing. Not a product bug —
+      but it fails whole runs, which is how a real failure next to it gets ignored
+      `n/a` `confirmed` `checked 2026-09-03`
+
 - [ ] On a Mac, three things can miss a change made in the split second after they start
       watching: a new file may not appear in the Files panel, an edited theme may not
       hot-reload, and a session title may not update. Same cause as the watcher bug fixed in
