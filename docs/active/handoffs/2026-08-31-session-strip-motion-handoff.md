@@ -10,10 +10,13 @@ deck: docs/active/design/2026-08-31-session-motion/session-motion-live.json
 
 # Session strip & switch motion — handoff
 
-**State (2026-09-03, evening): the flow is in ("this is MUCH better"), and round 5's three
-leftovers are fixed — the pill stops at the row's ends and can be dropped first or last, and a
-drop disturbs nothing else on the row. Served as the round-6 live deck (one try-this step).
-Waiting on that answer; then merge.**
+**State (2026-09-03, night): the flow is in ("this is MUCH better"). Round 6 came back with
+two bugs ("i still cant drag a session into the leftmost position, and they still bug out a
+little on release"); both were measured to causes OUTSIDE the motion — the packer fitting a
+row wider than the strip (the active name squeezed 25px, so a drag planned with the wrong
+widths and the row snapped back at the drop) and the tear-off firing when the hand left the
+pane sideways. Fixed in youcoded `7bcf75cf`; served as the round-7 live deck (one try-this
+step). Waiting on that answer; then merge.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
 but it will need to be tuned/repaired a bit. it's jank"*), **switch-when → Press** (*"further
@@ -166,6 +169,30 @@ the outer container rather than sliding past."* Built (commit `9fff1095`):
   the pill glides ~20px home, the ghost shrinks away, the dot regrows, nothing else moves.
 - Round 6 deck: `session-motion-live-6.json` — one try-this step on R6 (`name-flow-2`).
 
+**Round-6 answer (chat, 2026-09-03):** *"alright so a few bugs. i still cant drag a session
+into the leftmost position, and they still bug out a little on release."* Reproduced with the
+probe at the deck pane's width (`PROBE_W=460`, a new probe env — every earlier probe ran at
+1440, where neither bug shows the same way):
+- **The release:** the packer was handed the wrapper's full width (the strip's own 12px of
+  padding included) and never knew about the "+N" chip, so a full row was packed ~37px too
+  wide; the active pill is the one flex item allowed to shrink, so it rendered 169.5px for
+  a name the packer had reserved 194px for. A drag freezes the RESERVED widths: every dot
+  yielded 25px too far (one overlapped its neighbour by 8px at the first slot) and all of
+  them snapped back on release. A smaller copy of the same mismatch: `pillMetrics` reserved
+  ceil(text) + tail + slack, but the label box's max-width is a ceiling, not a size, and the
+  pill renders at text + tail + chrome — 2–3px less — so even an unsqueezed row nudged every
+  dot 2.2px at the drop (r18). Now `stripBudget()` subtracts the padding, `packSessions`
+  takes `overflowChipWidth` and re-packs with the chip reserved once anything overflows,
+  `PackResult.pillBudget` caps the held pill's settled width, and `expandedWidth` is exactly
+  text + tail + chrome (fractional). Measured after: a dot lands exactly one gap from the
+  dropped pill; nothing else moves (0px), at 460 and 1440.
+- **The first slot:** the live tear-off (and the drop routing) fired on the cursor leaving
+  the window SIDEWAYS. Reaching for the first slot overshoots past the edge — the pane's
+  strip starts 15px from it — which spawned a window and snapped the pill home (probe `a`:
+  the twin vanished the frame `clientX` went negative). Sideways never tears off now, as in
+  Chrome; only above or below the window does.
+- Round 7 deck: `session-motion-live-7.json` — one try-this step on R7 (`name-flow-3`).
+
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
 opening the moment you press, before any drag. That forced a second drag model — the pill in
@@ -268,7 +295,7 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-6 answer
+## After the round-7 answer
 
 1. "Yes": merge and push `feat/session-strip-motion`; then `feat/session-motion-review`
    (deck + docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
@@ -277,7 +304,10 @@ wider than any screen still does).
    ramp at the same positions (`--flow` → opacity), not a return to hiding. The post-drop
    holds (`postDropHold`, `hoverLock`) release on leave/press/8px — if he wants peeks back
    sooner, shorten the 8px, never add a timer. Do not close the name in hand (withdrawn),
-   and do not go back to slot positioning (§7.4 replaced it).
+   and do not go back to slot positioning (§7.4 replaced it). If a drop still moves
+   something other than the pill and the dot it was over, probe at `PROBE_W=460` FIRST and
+   compare the twin's width to `widthOf` — every "release" jank so far was a width the
+   geometry believed and the DOM did not.
 3. Clean up: `worktrees/session-motion`, `worktrees/motion-docs` (and its `worktrees`
    symlink), `worktrees/session-switch-animation` (PR youcoded#192 — close unmerged).
 

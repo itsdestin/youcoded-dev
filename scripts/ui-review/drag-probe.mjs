@@ -38,7 +38,9 @@ import { CHROME_FLAGS, waitForCdp } from './cdp-helpers.mjs';
 
 const [url, fromIdx, toIdx, msArg, holdArg] = process.argv.slice(2);
 const CDP_PORT = Number(process.env.CDP_PORT ?? 10330);
-const W = 1440, H = 600;
+// PROBE_W: the viewport width — the review deck shows the strip in a 460px pane, and a drag that
+// works at 1440 can fail there (fewer pills fit, the held name is capped at the budget).
+const W = Number(process.env.PROBE_W ?? 1440), H = 600;
 const profile = mkdtempSync(join(tmpdir(), 'drag-probe-'));
 const chrome = spawn('google-chrome-stable', CHROME_FLAGS(W, H, CDP_PORT, profile), { stdio: 'ignore' });
 process.on('exit', () => { chrome.kill(); try { rmSync(profile, { recursive: true, force: true }); } catch {} });

@@ -1,0 +1,19 @@
+{
+  "title": "Session strip and switching — round 7",
+  "key": "session-motion-live-7",
+  "out": "deck-live-7.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "real-widths-and-first-slot",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "Nothing moves at the drop but the pill, and the first slot is reachable — done?",
+      "changed": "Your two notes from round 6, both measured and neither in the motion itself. The release: the strip was fitting one more dot into the row than it really had room for, and quietly squeezing the active name by 25px to make it fit. A drag plans with the unsqueezed widths, so every dot stepped 25px too far and the whole row snapped back the moment you let go. The strip now fits only what fits (one more session goes under the +N count instead), and the width it plans with is exactly the width a name draws at. The first slot: when you reached for it, your hand overshot the edge of this pane, and the strip took that for pulling the session out into a new window — it spawned one and snapped the pill home. Now only pulling a session up or down out of the window does that, like Chrome; sideways it just stops at the end of the row.",
+      "notice": "Drag a name all the way left, keep going past the edge of the pane, let go: it lands first, and nothing else on the row moves. Drop one mid-row: the pill glides a few pixels into its slot and the dot it was over swells back, and every other dot stays exactly where it was.",
+      "risk": "A strip whose row is full shows one more session under +N than before, instead of a squeezed name. Dragging a pill sideways past a window's edge no longer opens a new window; pulling it above or below the window still does.",
+      "live": { "surface": "session-strip-motion", "round": 7, "candidate": "name-flow-3" }
+    }
+  ]
+}

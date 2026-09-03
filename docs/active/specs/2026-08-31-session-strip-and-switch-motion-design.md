@@ -391,6 +391,22 @@ Replace the ghost model with a moving-pill model.
   pill and re-centred the row 60px; and no hover peek opens after a drop until the pointer
   has moved 8px or left the strip (`hoverLock`) — the dropped pill glides out from under the
   cursor onto its neighbour.
+- **The geometry a drag is judged against is what gets drawn (2026-09-03, R6).** Destin:
+  *"they still bug out a little on release"* — the packer was packing a full row ~37px
+  wider than the strip (it was handed the wrapper's width, padding included, and did not
+  know about the "+N" chip), CSS squeezed the active name 25px to fit, and the drag —
+  frozen at the RESERVED widths — parked every dot 25px off; the row snapped back at the
+  drop. `stripBudget()` is the strip's content room; the packer reserves the chip once
+  anything overflows (`overflowChipWidth`, second pass) and reports `pillBudget`, which caps
+  the held pill's settled width; and a pill's reserved width is EXACTLY its rendered width
+  (text + tail + chrome, fractional — the label box's max-width is a ceiling, not a size,
+  so ceil + slack over-reserved 2–3px and nudged every dot at the drop). Consequence for the
+  row: a full strip shows one more session under "+N" instead of a squeezed name.
+- **Sideways never tears off (2026-09-03, R6).** *"i still cant drag a session into the
+  leftmost position"* — reaching for the first slot overshoots past the window's edge, which
+  the live tear-off (and the drop routing) read as "outside the window": a peer window
+  spawned and the pill snapped home. Only above or below the window tears off, as in Chrome;
+  the pill is clamped to the row sideways.
 - **The pill moves, 1:1 — as a floating twin.** Its in-flow box stays in the row, invisible,
   holding its slot and still animating its own width; a twin with the same markup and styles
   floats absolutely inside the bar at the cursor (`clampFloatLeft`, **no transition on its
@@ -499,7 +515,7 @@ are ONE choice step, never a yes/no each.
 | Many bubbles animating at once burns CPU | 2026-07-30 measured ~1.5–1.9ms/frame for *one* smoothly-animating element at 180Hz; §4.2 option B animates a screenful | Measure option B in the dev window on a high-refresh panel before the clip is recorded; option A is the escape hatch and is built first |
 | Index-space mismatch under overflow | Wrong pill drags and wrong reorder slot — invisible today, glaring once the real pill moves (§7.3) | Pinning test on the id-keyed drag state with an overflow fixture; fix lands before §7.4 |
 | The width/pack freeze is wrong | Pills change size mid-drag — worse than today's jump | Its own clip, at a window width narrow enough to force packing |
-| The measured name width disagrees with the rendered one | The label box opens to a number; one px short fades the last letter, one px long is invisible | Fonts are read off the real label (§5.2); 2px slack; `pill-metrics.test.ts` pins that the handed-in font is the one measured |
+| The measured name width disagrees with the rendered one | The label box opens to a number; one px short fades the last letter, one px long is invisible | Fonts are read off the real label (§5.2); the box's ceiling keeps 2px slack while the reserve is the exact rendered width; `pill-metrics.test.ts` pins that the handed-in font is the one measured |
 | The on-screen measurement is slow | It runs on the critical path of a session switch; the 0.5ms median in `ChatView.tsx:824` was a six-pane fixture, not a 12,100-message one | Measure against `perf-reports/2026-08-28-0803-8935c28-cycle3-baseline.json`, do not assume |
 | Narrow viewport and remote access pack differently | The strip is a different shape there and neither is covered by the desktop clips | Its own clip per surface |
 | Drag interacts with live tear-off | Tear-off is shipping behaviour and must not regress | Exercised in the drag clip, past the threshold |
@@ -535,7 +551,14 @@ Per the workspace knowledge ladder, each of these is a test, not prose. All live
    test in the rAF loop, `.session-pill--veiled` with both `!important`s, a dot's `0s`
    transform during a drag, `scale(var(--flow, 1))` on a dot's drag transform, the far-edge
    margin (−28); and the name stays in hand (no `id === sessionId` dot width).
-8. **Widths are measured in the font handed in** — `pill-metrics.test.ts`.
+8. **Widths are measured in the font handed in, and a reserved width is a rendered width** —
+   `pill-metrics.test.ts` (exact text + tail + chrome, no ceil, no slack; the box ceiling
+   stays above it); `pack-sessions.test.ts` (the "+N" chip is reserved once anything
+   overflows; `pillBudget` reported); `animation-frame-budget.test.ts` (`stripBudget`
+   subtracts the strip's padding, both packs reserve the chip, the held pill's cap is
+   `target.pillBudget`).
+8a. **Sideways never tears off** — `animation-frame-budget.test.ts` pins both
+   `outsideOwnWindow` expressions to Y only and the absence of any `clientX < 0`.
 9. **The one-shot window opens in the first committed render** — `use-one-shot-window.test.tsx`
    records committed values with a layout effect: `[false, true]`.
 10. **`sessionActive`, not `visible`, gates the switch animation**; the arrival keyframes
