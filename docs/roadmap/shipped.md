@@ -531,3 +531,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
   never smoothness. Spec + the rejected design:
   `docs/archive/specs/2026-08-28-cycle-3-bounding-the-conversation-window.md`. What remains:
   `docs/active/handoffs/2026-09-03-perf-next-steps-handoff.md`
+- [x] 2026-09-03 dev-workspace — The Android build labels the vendored terminal emulator GPLv3 while its own VENDORED.md says Apache 2.0 (VENDORED.md was right: Termux's LICENSE.md at v0.118.1 carves terminal-emulator out as Apache 2.0, and Destin is the sole author of app/, so the whole repo is now MIT — youcoded#400; the wider formalization plan is docs/active/investigations/2026-09-03-formalization-costs-and-risks.md)
