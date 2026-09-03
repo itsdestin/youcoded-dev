@@ -26,7 +26,8 @@ export async function runAutopilot({ evaluate, press, sleep, now, ms, every = 25
 // arrived, so without this every action lands ~2 frames before its visible
 // effect. Measured 2026-09-03 on the theme scene: the paint that a DOM
 // observer stamped at t showed up at t + 77 ms (2.3 frames at 30 fps), the
-// observer's own two rAFs being ~20 ms of that.
+// observer's own two rAFs being ~20 ms of that. With 60 ms the paint still
+// showed 1.4 frames after its mark; 100 ms put it within half a frame.
 export function marksFile({ fps, width, height, duration, firstFrameAt, stamps, captureLagMs = 0 }) {
   const sec = (ms) => Math.round(ms - (firstFrameAt - captureLagMs)) / 1000;
   return { fps, width, height, duration,
