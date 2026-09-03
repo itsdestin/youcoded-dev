@@ -214,3 +214,80 @@ introduced by this round.
 Every round-3 defect was an edit problem and every one is fixed in the edit. The
 one thing a re-film would still buy is headroom on `promo-theme` (item 4) — not
 a defect today, just no slack.
+
+## Round 4 — 2026-09-03
+
+All ten scenes were re-filmed before this round (fresh takes, fresh marks), and
+the recorder now subtracts its own 100 ms capture lag inside every marks file.
+`promo-theme` gained a `gold` mark: an in-page observer that resolves the moment
+the app's own `data-theme` becomes `golden-sunbreak`. This round spends that
+mark and fixes the one thing the whole draft still read as flat. Evidence:
+`out/review-4/` — the flip neighbourhood measured frame by frame, beat 4 sampled
+every 15 frames with the in-game PIPES counter cropped at 5x, beat 2's opening,
+beat 6's last eleven frames, the last frames of beats 7 and 8, a rendered
+before/after pair at frames 200 and 1200, and all eight cut frames.
+
+**1. The theme flip trims to the paint mark, not to a hand-measured lag.**
+`PAINT_LAG` is gone. The trim is now `markFrame('promo-theme', 'gold', 'end',
+N) - FLIP`, and this round's job was to find N. The first render used N = 1, the
+paint lag as it was measured off the raw takes — and it put the app's gold one
+frame LATE. Measured on
+that render, window-region mean RGB was 16.98/22.24/29.52 at composition frame
+1403 (bar 23) and 90.64/99.21/107.35 at 1404 — the backdrop and the host turned
+on 1403 while the app in the footage turned on 1404, exactly the two-event split
+this whole item exists to prevent.
+*Why:* `markFrame` ROUNDS the mark down. This take's `gold` mark ends at
+11.481 s = clip frame **344.43**, which rounds to 344; the measured paint is
++1.4/+1.5 frames after the mark, i.e. clip frame 346. 344 + 1 is 345, one short.
+*Fix:* the nudge is **2**. Re-rendered and re-measured: window mean RGB
+16.86/22.21/29.57 at 1402 and 90.64/99.21/107.35 at 1403 — dark on 1402, gold on
+1403, and the app, the backdrop and the host all turn on that one frame.
+**Checklist item 2 holds.** The `flip` mark is no longer used for trimming.
+*Headroom:* the trim also gained slack. `promo-theme` is 25.76 s (773 frames)
+and the beat needs 492 from clip frame 224 — **57 frames spare**, where round 3
+had one. Round 3's "no headroom left" warning is retired.
+
+**2. The window now reads as a window on the dark beats.** The app's own chat is
+almost exactly the old backdrop glow's colour, so beats 1–6 read as one flat
+dark field with a rectangle faintly implied in it. Three numbers changed: the
+midnight glow `#1f2a3a → #2a3a52`, its radial `60% 80% → 75% 90%`, and the
+window's 1 px edge ring `rgba(255,255,255,.06) → .12`. The golden theme is
+untouched — it separates on its own.
+*Measured, by rendering the same two frames from `HEAD` and from the branch:*
+the gap between the backdrop beside the window and the window's interior went
+**10.3 → 21.7** levels on beat 2 (frame 200) and **3.0 → 13.0** on beat 6
+(frame 1200); the edge ring against the same interior went 11.0 → 15.0 and
+3.7 → 12.3. Beat 6 was the worst case — a 3-level difference is below what any
+display shows as an edge, which is why that beat in particular looked like a
+screenshot pasted onto black.
+
+### Round-4 verification
+
+| Check | Result |
+|---|---|
+| the flip's three frames | **pass** — 1402 dark, **1403 gold** (app + backdrop + host together), 1404 already gold. Note the frames: `barFrame(23)` is **1403**, not 1402 — 23 × 2.0339 s × 30 = 1403.4 → 1403, which is also what rounds 1–3 recorded |
+| beat 4, frames 610–854 | **pass** — 610–613 are the outgoing cut; the Games panel holds 625–655; the bird flies from 670 to the end; the PIPES counter reads 0 (670–730), 1 (745–760), 2 (775–805), 3 (820–835), **4 (850, 854)**; frame 854 has four pipe columns on screen with the bird alive between them |
+| beat 2, frames 122–140 | **pass** — the window is fully in at 126 and the chip's result is already on it: the composer reads "brief me on" and the Briefing chip is lit. The lead-in before the click release is 3 frames (0.1 s), not 0.4 |
+| beat 6, frames 1270–1280 | **pass** — the takeover dialog ("This session is active on Pixel 9 — take over here?", Take over highlighted) holds to 1273, and 1274–1280 show the Resume Session list with **"Resuming…"**. "Initializing session…" never appears |
+| beats 7 and 8 last frames | **pass** — 1768 (mean 62.90) and 2074 (mean 50.76) are live golden-theme picture, not black. Not frozen either: consecutive frames differ (1764→1768 and 2070→2074 each move pixels every frame, mean delta ≈ 0.02/255), which a repeated last frame could not do |
+| window vs backdrop, full frames | **pass** — see item 2's measurements; the before/after pairs are `out/review-4/ab-200.png` and `ab-1200.png` |
+| every cut, start+4 | **pass** — 0 (cold open, no cut); 122 in at 126; 366 in at 370; 610 in at 614; 854 in at 858; 976 in at 980; 1281 in at 1284; 1769 in at 1772. Every one is complete on or before start+4 |
+
+### Checklist status
+
+| # | Item | Status |
+|---|---|---|
+| 1 | every cut on a downbeat | **holds** — `startFrames` is pinned by a test; all eight verified frame by frame |
+| 2 | the flip on bar 23's first frame | **holds** — dark at 1402, gold at 1403 |
+| 3 | captions inside the band, readable at 960 px | **holds** |
+| 4 | the host never covers a tool card | **holds** |
+| 5 | the phone never covers the takeover dialog | **holds** |
+| 6 | the Flappy bird clears at least four pipes | **holds** — the counter reads 4 from frame 850 and four pipe columns are on screen at 854 |
+| 7 | no clip runs out before its beat ends | **holds** — every beat asserts with plain `<Footage>`, and beat 7's margin is now 57 frames instead of 1 |
+
+### Still open
+
+Nothing found this round needs a re-film. The one caveat carried from round 3
+stands: the PIPES counter only reaches 4 in the last 0.3 s of beat 4, so the
+count is a glance rather than a read — the bird visibly passing four pipes
+across the 6.7 s shot is what carries the item.

@@ -18,17 +18,21 @@ const FLIP = barFrame(2);                       // 122 — bar 23's downbeat
 // The trim is chosen BACKWARDS from the flip: whatever the recording did before
 // it, the flip has to land on this frame.
 //
-// PAINT_LAG is why the mark alone is not enough. The 'flip' mark is when the
-// scene FIRES the theme change; the app repaints ~0.19 s later (the eval's
-// 200 ms settle plus the theme's own fade). Draft round 1 flipped the backdrop
-// and the host on bar 23 while the app in the footage stayed dark for another
-// sixth of a second.
-// RE-MEASURED on the round-3 re-film (the old number was 5, for the old take):
-// mean frame colour is 0.071/0.091/0.117 through clip frame 345 and
-// 0.364/0.398/0.425 at 346; markFrame rounds the 11.342 s mark to 340, so
-// 346 - 340 = 6. Re-measure this whenever promo-theme is re-filmed.
-const PAINT_LAG = 6;
-const FROM = markFrame('promo-theme', 'flip', 'start', PAINT_LAG) - FLIP;
+// WHY the trim comes from the 'gold' mark and not the 'flip' one: 'flip' is
+// when the scene FIRES the theme change; 'gold' is an in-page observer that
+// resolves the moment the app's own `data-theme` attribute becomes
+// 'golden-sunbreak'. The recorder already subtracts its own 100 ms capture lag
+// from every mark, so all that is left is the browser's paint: measured on two
+// takes, the first gold frame lands +1.4 and +1.5 frames after
+// markSec('promo-theme','gold','end').
+// The offset here is 2, not 1, because markFrame ROUNDS the mark down: this
+// take's gold mark ends at 11.481 s = clip frame 344.43, which rounds to 344,
+// and 344 + 1.5 is clip frame 346. Verified on the round-4 render with the
+// nudge at 1 — the app was still dark on bar 23 (composition frame 1403, window
+// mean RGB 16.98/22.24/29.52) and turned gold one frame late at 1404
+// (90.64/99.21/107.35), while the backdrop and the host turned on 1403.
+// Re-measure whenever promo-theme is re-filmed.
+const FROM = markFrame('promo-theme', 'gold', 'end', 2) - FLIP;
 if (FROM < 0) throw new Error('the theme recording has less than two bars before the flip; re-film with a longer hold');
 assertClipCovers('promo-theme', FROM, BEAT);
 const P = perch();
@@ -36,8 +40,8 @@ const P = perch();
 export const Beat7: React.FC = () => (
   <AbsoluteFill>
     <Backdrop theme="midnight" switchAt={FLIP} />
-    {/* Round 3: the re-filmed take holds 12.4 s after the flip, so this is real
-        footage end to end — the still-tail loop the short take needed is gone. */}
+    {/* The take holds 14 s after the flip, so this is real footage end to end —
+        the still-tail loop the old short take needed is gone. */}
     <Footage file="promo-theme" from={FROM} />
     <Caption text={CAPTIONS.b7} at={FLIP + 14} />
     <Mascot cues={[

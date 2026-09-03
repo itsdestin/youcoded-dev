@@ -11,6 +11,11 @@ import { CLIP, WINDOW, MAX_PUSH_IN, windowRect } from './layout';
  * perch exact and spends all the growth downward — which is why layout.ts
  * budgets 26 px of clear space above the caption band.
  *
+ * Round 4: the 1 px edge ring went .06 → .12 alpha, for the same reason the
+ * midnight glow got brighter — on the dark beats the window's own chrome is
+ * close enough to the backdrop that without a visible edge it stops reading as
+ * a window at all.
+ *
  * `scale` overrides the layout scale (beat 8's smaller window); `pushIn` grows
  * it by that fraction over the first 8 s; `dy` offsets it (beat 1's rise).
  */
@@ -23,7 +28,7 @@ export const Window: React.FC<{ scale?: number; pushIn?: number; dy?: number; op
   return (
     <div style={{ position: 'absolute', left: WINDOW.cx, top, width: CLIP.w, height: CLIP.h, opacity,
       transform: `translateX(-50%) scale(${s})`, transformOrigin: 'center top',
-      borderRadius: 16, overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06)' }}>
+      borderRadius: 16, overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.12)' }}>
       {children}
     </div>
   );
