@@ -1,0 +1,137 @@
+{
+ "title": "Files tab \u2014 pictures or a list \u2014 contract \u2014 acceptance",
+ "key": "file-views-contract-acceptance",
+ "out": "file-views.contract.acceptance.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "feat/file-list-view",
+ "sources": {
+  "file-views-questions": "file-views.questions.json",
+  "file-views-review": "review.json",
+  "file-views-round2": "round2.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Project view \u2192 Files",
+   "path": "The Files tab \u2014 its toolbar, the 'Project Files' line, and the files below",
+   "headline": "The contract, graded \u2014 accept these verdicts?",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "The Files tab has two ways to look: the picture grid you have today, and a compact list.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/files-tab-list-view.test.tsx",
+     "threshold": "the named test passes",
+     "source": "file-views-questions#Q-1",
+     "verdict": "pass",
+     "evidence": "FilesTab exports FileViewMode = 'grid' | 'list' and renders cards for one, rows for the other; files-tab-list-view.test.tsx 'draws cards, not rows, in grid view' plus the three list-row tests, 8/8 passing on feat/file-list-view."
+    },
+    {
+     "id": "R2",
+     "statement": "The switch is on screen without opening any menu, and the view you are in is the marked one.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "file-views-questions#Q-2"
+    },
+    {
+     "id": "R3",
+     "statement": "Each list row shows a small icon, the filename, its kind, and how long ago it changed.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/files-tab-list-view.test.tsx",
+     "threshold": "the named test passes",
+     "source": "file-views-questions#Q-3",
+     "verdict": "pass",
+     "evidence": "files-tab-list-view.test.tsx 'gives each file a name, a kind and a relative time' asserts notes.md / Document / matches ago|just now on one row; 'gives a folder its file count and no date' asserts the folder case. Passing."
+    },
+    {
+     "id": "R4",
+     "statement": "The view you pick is remembered once for the whole app, so every project opens in it.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/files-tab-list-view.test.tsx",
+     "threshold": "the named test passes",
+     "source": "file-views-questions#Q-4",
+     "verdict": "pass",
+     "evidence": "files-tab-list-view.test.tsx 'is stored app-wide, not against a project id' asserts ProjectView holds a literal FILE_VIEW_KEY = 'youcoded.projectView.fileView' with no project id interpolated, written via localStorage.setItem(FILE_VIEW_KEY, fileView). Passing."
+    },
+    {
+     "id": "R5",
+     "statement": "At phone width you keep the view you picked; neither view is forced on you.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "file-views-questions#Q-5"
+    },
+    {
+     "id": "R6",
+     "statement": "The list gives one row per file, so a folder with many files is readable.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "file-views-review#F-2",
+     "verdict": "pass",
+     "evidence": "Approved on the round-1 deck as F-2 (yes, no note), pictures filelist--midnight and filelist--halftone-dimension, before/after."
+    },
+    {
+     "id": "R7",
+     "statement": "The search box keeps the shade it has today; only the tabs and the switch share theirs.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "file-views-round2#R-1"
+    },
+    {
+     "id": "R8",
+     "statement": "The switch sits small at the right end of the 'Project Files' line, off the toolbar.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "file-views-round2#R-2",
+     "verdict": "pass",
+     "evidence": "Chosen on the round-2 deck as R-2 ('beside'), against variant A on the toolbar; pictures place-a / place-b in both themes. Shipped in commit ba24798c."
+    },
+    {
+     "id": "R9",
+     "statement": "At phone width the search box keeps its full width and the switch sits on the line below.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "file-views-round2#R-3",
+     "verdict": "pass",
+     "evidence": "Chosen on the round-2 deck as R-3 ('beside') at 390px; pictures phone-a / phone-b in both themes."
+    }
+   ],
+   "yes": "Yes, accept",
+   "no": "No, something is wrong"
+  },
+  {
+   "id": "R2",
+   "words": true,
+   "surface": "Project view \u2192 Files",
+   "path": "Acceptance",
+   "headline": "The switch is on screen without opening any menu, and the view you are in is the marked one.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R5",
+   "words": true,
+   "surface": "Project view \u2192 Files",
+   "path": "Acceptance",
+   "headline": "At phone width you keep the view you picked; neither view is forced on you.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R7",
+   "words": true,
+   "surface": "Project view \u2192 Files",
+   "path": "Acceptance",
+   "headline": "The search box keeps the shade it has today; only the tabs and the switch share theirs.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  }
+ ]
+}

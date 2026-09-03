@@ -67,7 +67,14 @@ approved.
   popups, `custom_css`, patterned background. If a change survives it, it survives.
 - **Review under `stress` and `empty`, not just `default`, and at non-zero latency.** A surface
   only ever seen at instant-resolve has never shown its loading states; a surface only seen on
-  five tidy rows has never been tested. This is the workbench's one real gap: appearance is
+  five tidy rows has never been tested.
+- **A new scrolling surface must be reviewed at a window height where it actually overflows.**
+  The fixtures are small (the Files tab has 9 rows in `default` AND in `stress`, measured
+  2026-09-03), so at a 900px capture height nothing scrolls and the whole overflow path goes
+  unseen. The grid/list switch shipped to Destin's dev instance with three separate scroll
+  defects — items past the fold clipped with no scrollbar, then the bar in the gutter outside
+  the container, then the thumb crossing the rounded corners — none of which any 1440x900
+  screenshot could have shown. Shrink the height until it overflows, and scroll to both ends. This is the workbench's one real gap: appearance is
   guaranteed identical, behaviour under real data is not.
 - **Explicit fidelity notes — never let an approximation pass silently.** Community themes
   render in full, artwork included (two ship by default: Halftone Dimension and Meadow Mist).

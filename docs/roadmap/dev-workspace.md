@@ -152,6 +152,21 @@ seen-on is always n/a here.
 
 ## knowledge
 
+- [ ] Path-scoped rules never reach a session that edits through the Bash tool, which is what
+      bypass-permissions mode tells sessions to do. Measured on 2026-09-03 (session
+      43f47281): ~200 lines were changed under `desktop/src/renderer/components/project-view/`,
+      and `artifacts.md`, `react-renderer.md` and `narrow-viewport.md` — all three of whose
+      `paths:` globs match that directory — never loaded. The only two `path_glob_match` events
+      in that session were triggered by a SUBAGENT's `Read` of a file it was handed; across the
+      whole of `~/.claude/instructions-loaded.log` there have only ever been three such events.
+      Injection is keyed to Read/Edit/Write, so `sed`/`python3` edits deliver no rules and the
+      loss is silent — the session cannot tell it is missing anything. Wanted: something that
+      names the covering rules when a Bash command writes a matching path (a non-blocking
+      PreToolUse companion to `glob-guard.py`), or a `rules-for <path>` command cheap enough to
+      run before an edit. The evidence is `~/.claude/instructions-loaded.log`; measure the
+      noise before shipping a per-Bash-call hook
+      `n/a` `needs-verify` `checked 2026-09-03`
+
 - [ ] Every plan, spec and investigation is stamped with a one-word state, but nothing checks
       the word: 15 of them say `settled`, `review`, `applied`, `superseded-in-part` or a whole
       sentence instead of one of the four allowed states. All 15 are already archived, so
@@ -201,6 +216,16 @@ seen-on is always n/a here.
       `n/a` `parked` `checked 2026-08-12`
 
 ## release
+
+- [ ] Re-work the release method: releases tag master directly, so every release ships the
+      undifferentiated 2,370 commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
+      be cut without dragging in hordes of unreleased features. Goal: keep master as the trunk,
+      cut `release/vX.Y.x` branches off the last tag, and ship bug-fix minors by cherry-picking
+      fixes onto them — so a minor can go out while the next major is still blocked. Caveats to
+      fold in when building: every fix needs a "goes in the minor?" cherry-pick decision, and the
+      one-tag-both-platforms rule (ADR 005) means even a fix-only minor must coordinate an Android
+      versionCode bump and ships a paired Android build (no bare desktop-only hotfixes)
+      `n/a` `parked` `checked 2026-09-03` `v1.3.1`
 
 - [ ] Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
       from the embed's theme button and the whole app window becomes one blur; the redesign makes
