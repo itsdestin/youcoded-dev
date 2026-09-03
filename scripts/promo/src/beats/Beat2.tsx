@@ -7,12 +7,13 @@ import { Mascot } from '../Mascot';
 import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
 import { barFrame } from '../grid';
+import { CUT } from '../timeline';
 import { markFrame, assertClipCovers } from '../marks';
 
 // Beat 2 (bars 2–5): the Briefing quick chip. The trim puts the chip's click
 // release on frame 3 of the beat, i.e. three frames after bar 2's downbeat, so
 // the click and the bar land together.
-const BEAT = barFrame(6) - barFrame(2) + 6;   // 250
+const BEAT = barFrame(6) - barFrame(2) + CUT;
 const FROM = markFrame('promo-quick-chip', 'chip', 'end', -3);
 const P = perch();
 assertClipCovers('promo-quick-chip', FROM, BEAT);

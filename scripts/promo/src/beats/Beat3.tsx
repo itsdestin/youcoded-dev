@@ -7,11 +7,12 @@ import { Mascot } from '../Mascot';
 import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
 import { barFrame, BAR_S } from '../grid';
+import { CUT } from '../timeline';
 import { markFrame, markSec, assertClipCovers } from '../marks';
 
 // Beat 3 (bars 6–9): the spreadsheet. Two shots of ONE recording — the request
 // going out, then a jump to the re-opened, sorted sheet.
-const BEAT = barFrame(10) - barFrame(6) + 6;   // 250
+const BEAT = barFrame(10) - barFrame(6) + CUT;
 const CUT_AT = barFrame(3);                    // 183 — the jump lands on bar 9's downbeat
 const A_FROM = markFrame('promo-sheet', 'attach', 'start', -6);
 // The recording spends ~12.4 s between attaching the file and the reply

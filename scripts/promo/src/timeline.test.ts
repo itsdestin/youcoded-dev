@@ -12,5 +12,5 @@ test('every beat starts exactly on its downbeat once transitions overlap', () =>
 test('a sequence is padded by exactly the transition that follows it', () => {
   for (const b of BEATS) assert.equal(sequenceFrames(b, barFrame), barFrame(b.bars[1]) - barFrame(b.bars[0]) + transitionFrames(b));
   assert.equal(transitionFrames(BEATS.at(-1)!), 0);
-  assert.equal(CUT, 6);
+  assert.equal(CUT, 4);
 });

@@ -7,11 +7,12 @@ import { Mascot } from '../Mascot';
 import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
 import { barFrame } from '../grid';
+import { CUT } from '../timeline';
 import { markFrame, assertClipCovers } from '../marks';
 
 // Beat 5 (bars 14–15), the break: one pill dragged two places left. No push-in
 // — the music drops out here, so the only motion should be the drag itself.
-const BEAT = barFrame(16) - barFrame(14) + 6;  // 128
+const BEAT = barFrame(16) - barFrame(14) + CUT;
 // The shot is anchored to the drag's RELEASE, not its start: 0.2 s after the
 // pill lands the recording switches to an empty new session, and draft round 1
 // ended the beat on that blank window. Ending exactly on the release also puts

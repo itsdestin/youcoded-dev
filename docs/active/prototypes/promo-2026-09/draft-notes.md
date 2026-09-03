@@ -123,3 +123,94 @@ is a longer `hold` on the last action of `promo-idle-golden`, not a longer loop.
   23. Showing both at 1x is arithmetically impossible without a cut, and the spec
   requires beat 7 to be one continuous clip. The shot reads as the request sent
   and the assistant working, which is the same beat of the story.
+
+## Round 3 — 2026-09-03
+
+Two scenes were re-filmed between rounds (`promo-flappy` with an in-page pilot,
+`promo-theme` and `promo-idle-golden` with longer final holds), so this round is
+mostly about spending that footage and removing the workarounds the short takes
+forced. Evidence: `out/review-3/` — a 69-tile contact sheet, the three flip
+frames with their mean frame colour, beat 4 sampled every 15 frames with the
+in-game PIPES counter cropped out at 4x, the bar-10 cut frame by frame, and the
+last frames of beats 7 and 8.
+
+**1. Beat 4 no longer has a hand-measured constant.** `FLIGHT_FRAMES = 107` was
+the frame the old autopilot crashed on — the one thing the plan forbids. It is
+gone with the footage that needed it. Both shots are now marks: the menu from
+the `games` mark, the flight from the `fly` mark, and `FLIGHT` is a plain design
+number saying how much of the 248-frame beat the flight gets.
+
+**2. Beat 4's menu shot showed no menu.** Found on the first round-3 render, not
+predicted: anchoring shot A to `markFrame('games', 'start', -6)` gave 2.8 s of
+an empty chat. The `games` mark records when the click FIRES (13.57 s), and the
+Games panel is still loading two seconds later — it only paints its four cards
+(Flappy / 2048 / Connect 4 / Chess) at about 16 s.
+*Fix:* anchor shot A to the mark's **end** edge instead of its start. The shot
+now opens on "Loading games…" and holds the four cards. No offset, no measured
+frame — the other edge of the same mark.
+
+**3. Beat 4 cleared three pipes, and the checklist asks for four.** Also found
+on the first round-3 render. The re-filmed pilot clears seven pipes in 9.5 s,
+but not evenly: measured off the in-game counter, it reads 0 at the launch, 1 at
+~100 frames, 3 at 165 and 4 from ~184 frames on. The 165-frame flight the round
+opened with therefore ended on 3 — the re-film's whole point, missed by 19
+frames.
+*Fix:* `FLIGHT = 200`. The counter reads 4 from composition frame 845 and holds
+it through the beat's last frame, and the menu still gets 48 frames (1.6 s),
+which is a readable shot. **Checklist item 6 now passes for the first time.**
+*Honest caveat:* "4" is only on screen for the last 0.3 s of the beat. The bird
+visibly passes four pipes across the 6.7 s shot, which is what the item asks,
+but the counter itself is not a lingering read. Buying more would cost the menu
+shot; this beat cannot hold both.
+
+**4. Beats 7 and 8 run on real footage end to end.** The re-filmed holds are
+12.4 s and 11.4 s, so `assertClipCovers` passes with a plain `<Footage>` and the
+`FootageWithStillTail` loop is deleted — nothing else used it, so the component
+is gone from `Footage.tsx` too. Round 2's measured seam (0.12 % of beat 8's
+pixels moving at each loop point) is moot: there are no seams. Last frames
+checked at 1760/1766/1768 and 2060/2070/2074 — live picture, no freeze, no
+black.
+*Watch this:* beat 7 now covers its 492 frames with **one frame to spare**. Any
+future change to `CUT`, to `PAINT_LAG`, or to where bar 23 falls will fail the
+assert. That is the assert doing its job, but it means `promo-theme` has no
+headroom left.
+
+**5. The theme flip's paint lag moved with the re-film.** `PAINT_LAG` was 5 for
+the old take. Re-measured on the new one: the frame's mean colour is
+0.071/0.091/0.117 through clip frame 345 and 0.364/0.398/0.425 at 346, and
+`markFrame` rounds the 11.342 s mark to 340 — so the lag is **6**. Verified on
+the render: composition frames 1401 and 1402 are dark, 1403 is gold, and the
+app, the backdrop and the host all turn on that one frame. **Checklist item 2
+still holds.**
+
+**6. Cuts were reading late; `CUT` is now 4 frames.** A 6-frame slide that
+starts on the downbeat is only half done 100 ms after it, so the eye registered
+the change after the beat rather than on it. At 4 frames (133 ms) the slide
+still reads as a move rather than a jump cut. Verified frame by frame at bar 10:
+608–610 are the outgoing shot, 611–613 slide, 614 is the incoming shot clean.
+No lead-in offset was added, so beat 7's flip and beat 8's link are untouched,
+and the whoosh stays at `barFrame(b) - 2`.
+
+**7. Every beat's own length now derives from `CUT`.** Beats 2–7 each carried
+their own `+ 6`, copied from the constant. Changing `CUT` would have left six
+beats computing a length two frames too long — and `assertClipCovers` would have
+been checking the wrong number. They now import `CUT`. This was latent, not
+introduced by this round.
+
+### Checklist status
+
+| # | Item | Status |
+|---|---|---|
+| 1 | every cut on a downbeat | **holds** — `startFrames` is pinned by a test; verified frame by frame at bar 10 with the new 4-frame slide |
+| 2 | the flip on bar 23's first frame | **holds** — dark at 1402, gold at 1403 |
+| 3 | captions inside the band, readable at 960 px | **holds** |
+| 4 | the host never covers a tool card | **holds** |
+| 5 | the phone never covers the takeover dialog | **holds** |
+| 6 | the Flappy bird clears at least four pipes | **holds — first time.** The counter reads 4 by the beat's last frame; see the caveat in item 3 above |
+| 7 | no clip runs out before its beat ends | **holds** — all eight beats now assert with plain `<Footage>`; margins are 1 frame (beat 7), 36 (beat 8), 111 (beat 4's flight) |
+
+### Nothing here needs a re-film
+
+Every round-3 defect was an edit problem and every one is fixed in the edit. The
+one thing a re-film would still buy is headroom on `promo-theme` (item 4) — not
+a defect today, just no slack.

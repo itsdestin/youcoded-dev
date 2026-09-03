@@ -1,12 +1,13 @@
 import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import { Backdrop } from '../Backdrop';
-import { FootageWithStillTail } from '../Footage';
+import { Footage } from '../Footage';
 import { Caption } from '../Caption';
 import { Mascot } from '../Mascot';
 import { CAPTIONS } from '../captions';
 import { perch, windowRect } from '../layout';
 import { barFrame } from '../grid';
+import { assertClipCovers } from '../marks';
 import { Sfx } from './sfx';
 
 // Beat 8 (bars 29–33), the close: the window settles smaller, the caption and
@@ -16,14 +17,15 @@ const SCALE = 0.82;
 const DY = -60;
 const R = windowRect(SCALE);
 const CAP_TOP = R.y + DY + R.h + 36;            // the caption follows the smaller window down
+assertClipCovers('promo-idle-golden', 0, BEAT);
 const P = perch(0.3, SCALE);
 
 export const Beat8: React.FC = () => (
   <AbsoluteFill>
     <Backdrop theme="golden" />
-    {/* The golden idle recording is a 2.5 s hold and this end card runs 10.2 s,
-        so it loops — nothing on that screen moves. */}
-    <FootageWithStillTail file="promo-idle-golden" from={0} beatFrames={BEAT} tail={70} scale={SCALE} dy={DY} />
+    {/* Round 3: the re-filmed hold is 11.4 s and this end card runs 10.2 s, so
+        it plays straight through — the still-tail loop is gone. */}
+    <Footage file="promo-idle-golden" from={0} scale={SCALE} dy={DY} />
     <Caption text={CAPTIONS.b8} at={6} top={CAP_TOP} size={40} />
     <Caption text={CAPTIONS.link} at={barFrame(1)} top={CAP_TOP + 62} size={30} color="#ffc030" />
     <Mascot cues={[

@@ -8,12 +8,13 @@ import { Mascot } from '../Mascot';
 import { CAPTIONS } from '../captions';
 import { PHONE, MASCOT, perch } from '../layout';
 import { barFrame } from '../grid';
+import { CUT } from '../timeline';
 import { markFrame, assertClipCovers } from '../marks';
 import { Sfx } from './sfx';
 
 // Beat 6 (bars 16–20): Remote Access on the laptop, the phone slides in and
 // carries the same conversation, then the laptop asks to take over.
-const BEAT = barFrame(21) - barFrame(16) + 6;   // 311
+const BEAT = barFrame(21) - barFrame(16) + CUT;
 const T1 = barFrame(1.5);                       // 92 — the phone slides in off the half-bar
 // WHY T2 is bar 3.75 and not bar 3: after "Take over" is clicked the app puts
 // up "Initializing session…" and holds it for the rest of the recording, which
