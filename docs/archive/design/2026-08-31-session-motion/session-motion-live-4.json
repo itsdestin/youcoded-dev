@@ -1,0 +1,19 @@
+{
+  "title": "Session strip and switching — round 4",
+  "key": "session-motion-live-4",
+  "out": "deck-live-4.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "name-veil",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "Name in hand, and no dot is ever drawn touching it — right now?",
+      "changed": "The name stays fully open while you drag, as you asked. The rule for the dots is no longer about timing but about distance: any dot that comes within ten pixels of the dragged pill is simply not drawn, it moves out of the way while hidden, and it fades back in only once the pill has moved clear of it. Nothing can be seen touching the pill, however fast or slow the drag. Two pickup fixes from the last round stay: the pill appears exactly where it was rather than jumping to your cursor, and dots make room where they are on screen rather than where they were about to settle.",
+      "notice": "Drag a name along the row: dots ahead vanish just before the pill reaches them and reappear behind it once it has passed. A wide neighbour (another open name) still slides aside. A click is unchanged.",
+      "risk": "A dot the pill is hovering next to is invisible for as long as it stays within ten pixels, so pausing a drag right beside a dot hides that dot until you move on.",
+      "live": { "surface": "session-strip-motion", "round": 5, "candidate": "name-veil" }
+    }
+  ]
+}

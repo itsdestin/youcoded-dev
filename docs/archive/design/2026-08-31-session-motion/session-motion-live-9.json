@@ -1,0 +1,19 @@
+{
+  "title": "Session strip and switching — round 9",
+  "key": "session-motion-live-9",
+  "out": "deck-live-9.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "peek-waits",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "Nothing but the pill moves after you let go, even with your hand still moving — done?",
+      "changed": "Your round-8 note. The back-and-forth never showed with a cursor that holds still after release, and showed at once with one that keeps moving the way a hand does. After you let go, your hand drifts onto the next dot; that dot's name preview opens, the row widens and shifts a few pixels, then the preview closes as your hand moves on and the row comes back. All of it inside the drop's own settle, so it read as the drop glitching. A preview now opens only once your cursor has rested on a dot for a moment (150ms). Passing over dots opens nothing. Once a preview is open, moving to the next dot still switches it instantly, so browsing names along the row feels the same as before.",
+      "notice": "Let go and keep your hand moving as you naturally would: nothing on the row moves except the pill settling into its slot. Rest on a dot for a beat: its name still previews. Sweep across the dots on the way to the menu button: the row no longer ripples.",
+      "risk": "A name preview arrives a beat later than before, after a brief rest on the dot rather than the instant the cursor touches it.",
+      "live": { "surface": "session-strip-motion", "round": 9, "candidate": "name-flow-5" }
+    }
+  ]
+}

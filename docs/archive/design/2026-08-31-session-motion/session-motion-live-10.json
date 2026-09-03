@@ -1,0 +1,19 @@
+{
+  "title": "Session strip and switching — round 10",
+  "key": "session-motion-live-10",
+  "out": "deck-live-10.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "one-frame",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "A dot never blinks or doubles while you hunt for a spot, and nothing pops at the drop — done?",
+      "changed": "Your round-9 note. I finally made the probe do what a hand does: rock back and forth a few pixels right at the point where a dot swaps from one side of the pill to the other. That showed two things no smooth drag ever did. First, at every crossing the dot's position moved one frame before its size did, so for a single frame the dot appeared doubled on one side of the pill and missing from the other. A hand hunting for a spot crosses that line several times a second, which reads as flicker. The size now changes in the same frame as the position, always. Second, at the moment of release the dots stopped applying their shrink, so a half-shrunk dot popped to full size under the settling pill while its twin image was still fading out. The shrink now stays in effect until the pill has settled.",
+      "notice": "Rock the pill back and forth over a dot and watch that dot: it should never blink or double. Let go while a dot is mid-swap: the dot behind the pill grows back as the pill settles, nothing pops. Let go and keep your hand moving: nothing else on the row moves.",
+      "risk": "None new: these are timing corrections inside motion that already existed.",
+      "live": { "surface": "session-strip-motion", "round": 10, "candidate": "name-flow-6" }
+    }
+  ]
+}

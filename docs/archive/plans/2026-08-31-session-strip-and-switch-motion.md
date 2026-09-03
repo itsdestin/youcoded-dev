@@ -1,8 +1,8 @@
 ---
-status: draft
+status: shipped
 created: 2026-08-31
 tags: [ui, motion, session-strip, chat-view, desktop]
-spec: docs/active/specs/2026-08-31-session-strip-and-switch-motion-design.md
+spec: docs/archive/specs/2026-08-31-session-strip-and-switch-motion-design.md
 ---
 
 # Session Strip and Switch Motion Implementation Plan
@@ -55,8 +55,8 @@ spec: docs/active/specs/2026-08-31-session-strip-and-switch-motion-design.md
 | `tests/drag-order.test.ts` | Create | Pure tests for drag ordering, including the overflow regression |
 | `tests/use-frozen-pack.test.tsx` | Create | `renderHook` tests for the pack freeze |
 | `tests/animation-frame-budget.test.ts` | Modify | Token existence and placement, `steps()` survival, no raw curves in `SessionStrip.tsx` |
-| `docs/active/design/2026-08-31-session-motion/scenes/*.json` | Create | Four clip scenes: pill expand, hover, drag, switch |
-| `docs/active/design/2026-08-31-session-motion/session-motion.json` | Create | The review deck spec |
+| `docs/archive/design/2026-08-31-session-motion/scenes/*.json` | Create | Four clip scenes: pill expand, hover, drag, switch |
+| `docs/archive/design/2026-08-31-session-motion/session-motion.json` | Create | The review deck spec |
 | `scripts/ui-review/record.mjs` | Modify | Add the `drag` action verb |
 
 **Deliberately NOT created: an ast-grep rule for hand-written curves.** An earlier draft added `scripts/ast-grep/rules/no-raw-cubic-bezier.yml`, a violation fixture and a bump to the shared `EXPECTED_VIOLATIONS` counter. Two reasons it is gone. (1) The workspace's own knowledge ladder puts *a pinning test above an ast-grep rule*, and Task 6 is already editing exactly the right test file — one line there does the same job for one file. (2) The draft rule **did not work**: verified 2026-08-31 by running it, `language: typescript` does not apply to `.tsx` files, so it fired on its `.ts` fixture and found **zero** of the six raw curves then sitting in `SessionStrip.tsx`. Both halves of `check.sh` went green and the guard was decorative — the exact silent-failure mode that script exists to prevent. If a future sweep does convert the whole renderer, the rule must be `language: tsx` with a `.tsx` fixture.
@@ -1785,11 +1785,11 @@ Gated on sessionActive so Ctrl+\` stays instant."
 ### Task 12: Record the clips and build the deck
 
 **Files:**
-- Create: `docs/active/design/2026-08-31-session-motion/scenes/strip-pill-expand.json`
-- Create: `docs/active/design/2026-08-31-session-motion/scenes/strip-hover.json`
-- Create: `docs/active/design/2026-08-31-session-motion/scenes/strip-drag.json`
-- Create: `docs/active/design/2026-08-31-session-motion/scenes/switch-arrival.json`
-- Create: `docs/active/design/2026-08-31-session-motion/session-motion.json` (the deck spec)
+- Create: `docs/archive/design/2026-08-31-session-motion/scenes/strip-pill-expand.json`
+- Create: `docs/archive/design/2026-08-31-session-motion/scenes/strip-hover.json`
+- Create: `docs/archive/design/2026-08-31-session-motion/scenes/strip-drag.json`
+- Create: `docs/archive/design/2026-08-31-session-motion/scenes/switch-arrival.json`
+- Create: `docs/archive/design/2026-08-31-session-motion/session-motion.json` (the deck spec)
 - Modify: `scripts/ui-review/record.mjs` (add the `drag` action verb)
 
 **Interfaces:**
@@ -1813,7 +1813,7 @@ whichever tree you name.
 
 - [ ] **Step 1: Write the scenes**
 
-Create `docs/active/design/2026-08-31-session-motion/scenes/strip-pill-expand.json`:
+Create `docs/archive/design/2026-08-31-session-motion/scenes/strip-pill-expand.json`:
 
 ```json
 {
@@ -1956,7 +1956,7 @@ Clips must land in `<images>/clips/` — that is where the deck resolves them
 its parent.
 
 ```bash
-D=docs/active/design/2026-08-31-session-motion
+D=docs/archive/design/2026-08-31-session-motion
 mkdir -p "$D/images/session-motion/clips"
 for s in strip-pill-expand strip-hover strip-drag switch-arrival; do
   bash scripts/ui-review/record-pair.sh "$D/scenes/$s.json" \
@@ -1971,7 +1971,7 @@ selectors did not match, which the rig cannot detect for you.
 
 - [ ] **Step 4: Write the deck spec and build it**
 
-Create `docs/active/design/2026-08-31-session-motion/session-motion.json`.
+Create `docs/archive/design/2026-08-31-session-motion/session-motion.json`.
 
 Three shapes the loader enforces, each of which an earlier draft got wrong:
 `runs` is an **object** mapping each run to its picture folder (`run_names()`
@@ -2042,7 +2042,7 @@ Build and serve (run `serve` in the background; its exit is the "review
 finished" signal):
 
 ```bash
-python3 scripts/ui-review/review-cards.py serve docs/active/design/2026-08-31-session-motion/session-motion.json
+python3 scripts/ui-review/review-cards.py serve docs/archive/design/2026-08-31-session-motion/session-motion.json
 ```
 
 - [ ] **Step 5: Hand Destin the deck**
@@ -2054,7 +2054,7 @@ for Claude to read on Submit.
 - [ ] **Step 6: Commit the scenes and spec**
 
 ```bash
-git add docs/active/design/2026-08-31-session-motion scripts/ui-review/record.mjs
+git add docs/archive/design/2026-08-31-session-motion scripts/ui-review/record.mjs
 git commit -m "docs(ui-review): scenes, drag verb and deck spec for session motion"
 ```
 
@@ -2079,5 +2079,5 @@ Before building it, measure. Take a before/after against `perf-reports/2026-08-2
 - [ ] The deck has been built and handed to Destin, and every step answered
 - [ ] Both worktrees removed (`session-motion`, `session-motion-before`) and the branch deleted locally and remotely
 - [ ] Spec `status:` flipped to `shipped`; spec, this plan and the deck folder moved to `docs/archive/`
-- [ ] `docs/active/handoffs/2026-07-20-session-switch-animation-handoff.md` archived
+- [ ] `docs/archive/handoffs/2026-07-20-session-switch-animation-handoff.md` archived
 - [ ] youcoded PR #192 closed unmerged

@@ -118,7 +118,12 @@ figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.
 /* Panes of different heights are TOP-aligned, not centred: three close-session designs at
    280/279/267px sat on three different baselines and read as sloppy rather than as a
    difference in the designs. */
-body[data-layout="live"] .stage .inner{align-items:flex-start}
+body[data-layout="live"] .stage .inner{align-items:flex-start;flex-wrap:wrap}
+/* A live step's stage takes only the height its panes need, and the question follows
+   directly beneath — not two thirds of the page empty with the cards at the very bottom
+   (Destin, 2026-09-01). minmax(0, auto): content-sized until the page runs out, then the
+   stage scrolls inside itself rather than pushing the cards off screen. */
+.content.row-below.live-fit{grid-template-rows:minmax(0,auto) auto;align-content:start}
 /* `.zoom` sets `display:inline-flex`, which OUTRANKS the `hidden` attribute's UA rule — so
    hiding it from JS did nothing and the zoom pill sat on top of a pane's "open on its own"
    link (2026-09-01). An explicit display always beats [hidden]; say so once, for everything. */

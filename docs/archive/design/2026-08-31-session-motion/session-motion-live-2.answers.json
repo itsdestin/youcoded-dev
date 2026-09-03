@@ -1,0 +1,22 @@
+{
+ "deck": "session-motion-live-2",
+ "started": "2026-09-02T09:03:18.438Z",
+ "submitted": "2026-09-02T09:07:29Z",
+ "cur": 1,
+ "answers": {
+  "strip-tuned": {
+   "note": "i think we should eliminate the \"youcoded - coder\" tags in session names entirely. they still cause a bit of visual jank. we should instead have labels next to the project folder label in the session swither dropdown that shows a \"Claude Code * Sonnet\" or \"YouCoded Coder * Deepseek\" or \"YouCoded Assistant * Grok\" basically. keep the modeel/brand icons used on other model surfaces. also dots still keep sliding under the selected pill. ",
+   "v": "other",
+   "seconds": 215,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "arrival": {
+   "v": "pick",
+   "pick": "spring",
+   "seconds": 35,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Session strip and switching — round 3",
+  "key": "session-motion-live-3",
+  "out": "deck-live-3.html",
+  "live": {
+    "worktree": "session-motion",
+    "paneWidth": 460
+  },
+  "themes": [
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "strip-no-tag",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "No tag on the pill, dots hop instead of slide — does it feel right now?",
+      "changed": "Your round-2 note, done. The \"YouCoded · Coder\" tag is gone from every pill: a pill is its dot and its name, nothing else, so a switch is one motion (the name opening) instead of two. What runs a session, and on what, now sits under the name in the All Sessions menu — \"Claude Code · Sonnet\", \"YouCoded Coder · Qwen3 Coder\" — with the same brand mark the model chip in the status bar uses. And a dot no longer slides aside for a dragged pill: it fades out where it is, moves while you cannot see it, and fades back in where it now belongs, so nothing is ever seen passing under the pill. The arrival you picked (spring) is the only one now.",
+      "notice": "Names open a touch quicker on a switch, since nothing opens after them. Open the menu (the chevron at the right of the strip) to see the runtime and model line. Dragging: dots blink across instead of sliding. The conversation below springs up 14px as it arrives.",
+      "risk": "A very long local model name is cut short in the menu rather than pushing the folder out; if the blink reads as flicker, say so and it becomes a shorter fade.",
+      "live": {
+        "surface": "session-strip-motion",
+        "round": 4,
+        "candidate": "soft-press-hop"
+      }
+    }
+  ]
+}

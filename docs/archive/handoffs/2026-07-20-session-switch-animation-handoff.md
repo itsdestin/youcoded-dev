@@ -1,5 +1,5 @@
 ---
-status: active
+status: superseded
 date: 2026-07-20
 owner: Destin (decisions) / Claude (execution)
 subject: Session-switch motion — draft PR youcoded#192, needs refinement before merge

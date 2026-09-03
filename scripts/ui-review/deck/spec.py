@@ -485,10 +485,12 @@ def _validate_live(spec, st, sid, errors, warnings):
         warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
     # A WARNING, never an error: the registry's real paneWidth lives in the other repo, so
     # this number is the spec's own `live.paneWidth` or the route's default — an estimate.
+    # Panes WRAP now (page.js fitPanes: never wider than the stage, never a sideways scroll),
+    # so a row of several is never the problem; one pane wider than any screen still is.
     width = pane_width(spec) if 'paneWidth' not in live else live['paneWidth']
-    if panes * width > LIVE_FIT_WIDTH:
-        warnings.append(f'{sid}: {panes} panes at {width}px will not fit side by side and the row '
-                        f'will scroll — use fewer candidates or a narrower surface')
+    if width > LIVE_FIT_WIDTH:
+        warnings.append(f'{sid}: a {width}px pane is wider than any screen the deck is read on '
+                        f'and will scroll sideways — narrow the surface or make it fluid')
 
 
 def _images_folder_warning(spec, warnings):
