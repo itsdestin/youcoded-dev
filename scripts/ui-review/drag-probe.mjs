@@ -65,11 +65,16 @@ const a = await rectOf(Number(fromIdx)); const b = await rectOf(Number(toIdx));
 if (!a || !b) { console.error('MISSING pill', JSON.stringify({ a, b, count: await evaluate("document.querySelectorAll('[data-session-idx]').length"), url: await evaluate('location.href') })); process.exit(1); }
 
 // Per-frame logger.
-await evaluate(`(() => { window.__log = []; window.__marks = []; const tick = () => { const t = performance.now(); const rows = [];
+await evaluate(`(() => { window.__log = []; window.__marks = []; window.__cx = null; window.addEventListener('pointermove', (e) => { window.__cx = e.clientX; }, true);
+  // Sample AFTER the frame has painted (a 0ms timeout queued from rAF), not inside rAF: the
+  // strip's own rAF loop runs after this one and writes the twin's position and the veil, so an
+  // in-rAF read saw the pre-write state and reported one-frame contacts that were never painted.
+  const tick = () => { requestAnimationFrame(tick); setTimeout(sample, 0); }; const sample = () => { const t = performance.now(); const rows = [];
   for (const el of document.querySelectorAll('[data-session-strip] [data-session-id]')) { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); rows.push({ id: el.dataset.sessionId, l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: cs.visibility[0], o: Math.round(parseFloat(cs.opacity)*100)/100 }); }
   const bar = document.querySelector('[data-session-strip]'); if (bar) { const r = bar.getBoundingClientRect(); rows.push({ id: 'BAR', l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v' }); }
-  const twin = document.querySelector('[data-session-strip] > div[aria-hidden]'); if (twin) { const r = twin.getBoundingClientRect(); rows.push({ id: 'TWIN', l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v' }); }
-  window.__log.push({ t, rows }); requestAnimationFrame(tick); }; requestAnimationFrame(tick); })()`);
+  const ghost = document.querySelector('[data-session-strip] > [data-ghost]'); if (ghost) { const r = ghost.getBoundingClientRect(); rows.push({ id: 'GHOST', l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v', o: 1 }); }
+  const twin = document.querySelector('[data-session-strip] > div[aria-hidden]:not([data-ghost])'); if (twin) { const r = twin.getBoundingClientRect(); rows.push({ id: 'TWIN', l: Math.round(r.left*10)/10, w: Math.round(r.width*10)/10, v: 'v', sl: twin.style.left }); }
+  window.__log.push({ t, rows, cx: window.__cx }); }; requestAnimationFrame(tick); })()`);
 const mark = (name) => evaluate(`window.__marks.push({ t: performance.now(), name: ${JSON.stringify(name)} })`);
 
 await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: a.x, y: a.y });
@@ -104,6 +109,7 @@ for (const f of frames) {
   const dir = Math.sign(twin.l - twinLefts[0]);
   for (const r of f.rows) {
     if (r.id === 'TWIN' || r.id === 'BAR' || r.v === 'h' || (r.o !== undefined && r.o < 0.5)) continue;
+    if (r.w < 1) continue;   // a dot scaled away to nothing (the flow) has no edge to stick out
     const tr = twin.l + twin.w, rr = r.l + r.w;
     const peek = dir > 0 ? (rr > tr && r.l < tr ? rr - tr : 0)
                : dir < 0 ? (r.l < twin.l && rr > twin.l ? twin.l - r.l : 0) : 0;

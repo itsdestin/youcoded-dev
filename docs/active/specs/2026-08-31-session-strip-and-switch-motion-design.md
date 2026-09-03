@@ -364,21 +364,24 @@ so no index space can drift out from under them again.
 
 Replace the ghost model with a moving-pill model.
 
-- **No dot is ever drawn touching the pill in hand (2026-09-02).** Destin, after a slide
-  and then a blink had both been tried — and after a round that collapsed the pill in hand
-  to a dot was withdrawn (*"i want to keep the fully expanded name"*): *"the problem is that
-  the dragged session kept visibly overlapping dots before they appeared to begin to move. it
-  would be fine if they teleport or fade in/fade out as long as they dont visually touch the
-  dragged pill."* The rule is geometric, not timed: a dot within `VEIL_PX` (10px) of the
-  twin, where it is drawn this frame, is not drawn at all (`.session-pill--veiled`, instant);
-  its step-aside is a plain jump while hidden; it fades back in only once clear. The twin's
-  rAF loop reads proximity off the DOM each frame and is the only thing that unveils; the
-  render veils any dot whose offset changes in the same commit that moves it. Wide neighbours
-  are never veiled — they slide on `--ease-out`. Also kept: the grab point is measured at
-  drag START (the row has slid under the cursor since the press), and the dot's centre is
-  mapped from the row AS DRAWN into settled coordinates (`mapToSettled`) before the yield
-  rule runs, so a dot yields when the pill visibly reaches it even while the row is still
-  settling.
+- **The dots flow around the pill in hand (2026-09-03).** Destin: *"the dragged session
+  kept visibly overlapping dots before they appeared to begin to move. it would be fine if
+  they teleport or fade in/fade out as long as they dont visually touch the dragged pill"*
+  — and then, on a cut that hid any dot near the pill, *"too much empty space on either side
+  of the dragged chip"*. Both are honoured at once: any dot the pill is over shrinks towards
+  its own far edge (`--flow`, written per frame by the twin's rAF loop), keeping
+  `FLOW_GAP_PX` clear of the pill; the dot ahead in the direction of travel also gets a ghost
+  (`[data-ghost]`, a clone with no data attributes) growing behind the pill at the spot it
+  will land; the yield fires at the dot's far edge (`DRAG_TUNE.margin = −28`), when it is at
+  scale 0, and the real dot takes over from the ghost at full size. Nothing touches; the
+  row never shows a hole (2–4px mean gap both sides, measured). Wide neighbours are never
+  flowed — they slide on `--ease-out`. A 1px veil remains as a safety net for geometry the
+  flow does not shape. The twin is anchored to its in-flow box plus the cursor's
+  displacement since drag start (never a grab fraction — a drag starts while the row is
+  still reflowing from the press), React writes its `left`/`width` once at mount and the
+  rAF loop owns them after (React re-applied a stale `left` a frame late), and the dot's
+  centre is mapped from the row AS DRAWN into settled coordinates (`mapToSettled`) before
+  the yield rule runs.
 - **The pill moves, 1:1 — as a floating twin.** Its in-flow box stays in the row, invisible,
   holding its slot and still animating its own width; a twin with the same markup and styles
   floats absolutely inside the bar at the cursor (`clampFloatLeft`, **no transition on its
@@ -519,9 +522,10 @@ Per the workspace knowledge ladder, each of these is a test, not prose. All live
    `session-pill__badge` in the strip or the stylesheet; `sessionRuntimeLabel(s)` and a
    `ProviderIcon` in the menu row; `session-runtime-label.test.ts` pins the wording per
    runtime, the brand mark, and the no-guess rule for an unknown model.
-7a. **No dot is drawn touching the pill in hand** — `VEIL_PX`, the proximity test in the
-   rAF loop, `.session-pill--veiled` with both `!important`s, a dot's `0s` transform during
-   a drag; and the name stays in hand (no `id === sessionId` dot width).
+7a. **No dot is drawn touching the pill in hand, and no hole** — `VEIL_PX`, the proximity
+   test in the rAF loop, `.session-pill--veiled` with both `!important`s, a dot's `0s`
+   transform during a drag, `scale(var(--flow, 1))` on a dot's drag transform, the far-edge
+   margin (−28); and the name stays in hand (no `id === sessionId` dot width).
 8. **Widths are measured in the font handed in** — `pill-metrics.test.ts`.
 9. **The one-shot window opens in the first committed render** — `use-one-shot-window.test.tsx`
    records committed values with a layout effect: `[false, true]`.

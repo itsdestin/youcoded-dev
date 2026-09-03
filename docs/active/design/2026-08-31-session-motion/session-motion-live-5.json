@@ -1,0 +1,19 @@
+{
+  "title": "Session strip and switching — round 5",
+  "key": "session-motion-live-5",
+  "out": "deck-live-5.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "flow",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "The dots now flow around the dragged name — no touching, no empty space. Right?",
+      "changed": "Your note was right, and it was measurable: hiding a dot while the pill passes over it leaves that dot's width as a hole beside the pill, about 25 pixels on each side, and no timing of the jump can remove it. So the dot no longer hides. As the pill covers a dot's space, that dot shrinks toward its far edge, always keeping the row's normal gap clear of the pill's leading edge, while a copy of it grows behind the pill at the spot it will land, keeping the same gap from the trailing edge. Once the pill has passed it completely the dot simply takes over from the copy at full size. Nothing ever touches the pill and the row never shows a hole. Measured across five kinds of drag: the space on either side of the pill averages two to four pixels, the same as between any two dots.",
+      "notice": "Drag a name along the row: the dot just ahead squeezes down as you reach it and swells back up behind you as you pass. A wide neighbour (another open name) still slides aside. A click is unchanged.",
+      "risk": "During a very fast flick the shrinking and growing are too quick to see, which is fine; if the squeeze reads as odd at slow speed, say so and it can become a plain fade at the same positions.",
+      "live": { "surface": "session-strip-motion", "round": 5, "candidate": "name-flow" }
+    }
+  ]
+}

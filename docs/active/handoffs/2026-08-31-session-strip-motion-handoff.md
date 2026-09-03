@@ -10,8 +10,9 @@ deck: docs/active/design/2026-08-31-session-motion/session-motion-live.json
 
 # Session strip & switch motion — handoff
 
-**State (2026-09-03): the name stays in hand, and NO DOT IS EVER DRAWN TOUCHING IT — a
-geometric veil, not a timed blink. Served as the round-4 live deck (one try-this step).
+**State (2026-09-03, later): the name stays in hand and THE DOTS FLOW AROUND IT — the dot
+ahead shrinks as the pill covers it, a ghost grows behind at its landing spot. No touch, no
+hole: 2–4px mean gap on both sides. Served as the round-5 live deck (one try-this step).
 Waiting on that answer; then merge.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
@@ -114,8 +115,33 @@ withdrawn round: grab point at drag start, the rAF re-anchoring the twin's left,
 and short-left drags (the probe ignores dots below half opacity, so this is exactly
 "nothing visible touches the pill").
 
-- Round 4 deck (rewritten): `session-motion-live-4.json` — one try-this step on R5
-  (`name-veil`).
+- Round 4 deck (rewritten): `session-motion-live-4.json` — one try-this step on the veil.
+
+Destin's round-4 answer (`session-motion-live-4.answers.json`): **Other** — *"too much empty
+space on either side of the dragged chip."* Measured (the probe now reports the gap from
+the pill's edges to the nearest VISIBLE pill): ~25px mean on each side, 40px peaks. And a
+hidden dot is a conserved hole — the pill is always over one dot, hidden, and its width is
+empty on one side or the other whatever the jump timing (tried: yield at the far edge,
+veil at 1px — it moved the hole, it did not shrink it). Chrome has no hole because tabs
+slide; sliding is what was rejected.
+
+**What was built (commit `abe32266`): the dot FLOWS around the pill.** Per frame, in the
+twin's rAF loop: any dot the pill is over shrinks towards its own far edge (`--flow` scale,
+`--flow-origin`), keeping `FLOW_GAP_PX` clear of the pill; the dot AHEAD in the direction of
+travel also gets a ghost (`[data-ghost]`, a `cloneNode` stripped of every data attribute)
+growing at its landing spot behind the pill, the same gap from the trailing edge; the yield
+fires at the far edge (`DRAG_TUNE.margin = −28`), when the dot is at scale 0, and the real
+dot takes over from the ghost at full size. Three fixes on the way: React re-applied a stale
+`left` to the twin a frame late (continuous-event commit after rAF) — it now writes
+`left`/`width` once at mount (`twinMount`), the rAF loop owns them; the twin is anchored to
+its in-flow box plus the cursor's displacement since drag start (`dragStartX`), not to a
+grab fraction — a cursor-anchored twin parted from its box by the rest of the press's reflow
+and sat on the dot behind; the veil exempts flowed dots (a dot scaled to nothing inside the
+pill's footprint was being veiled and faded in after its jump). Probe: 2–4px mean gap both
+sides, 0px contact every frame, no veiled frames, in right/left/fast/long/short drags. The
+probe samples AFTER paint (a 0ms timeout from rAF) — in-rAF reads saw pre-write state.
+
+- Round 5 deck: `session-motion-live-5.json` — one try-this step on R5 (`name-flow`).
 
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
@@ -219,14 +245,14 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-4 answer
+## After the round-5 answer
 
 1. "Yes": merge and push `feat/session-strip-motion`; then `feat/session-motion-review`
    (deck + docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
-2. "No"/"Other": the note says what. The veil has ONE number, `VEIL_PX` in SessionStrip
-   (how close a dot may be drawn to the pill); the fade-in is the pill's ordinary opacity
-   transition (`--dur-hover`). Do not close the name in hand (withdrawn, above), and do not
-   go back to slot positioning (§7.4 replaced it).
+2. "No"/"Other": the note says what. The flow has one number, `FLOW_GAP_PX` (the gap kept
+   clear of the pill); a "squeeze looks odd" note means swapping the scale for an opacity
+   ramp at the same positions (`--flow` → opacity), not a return to hiding. Do not close the
+   name in hand (withdrawn), and do not go back to slot positioning (§7.4 replaced it).
 3. Clean up: `worktrees/session-motion`, `worktrees/motion-docs` (and its `worktrees`
    symlink), `worktrees/session-switch-animation` (PR youcoded#192 — close unmerged).
 
