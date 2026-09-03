@@ -1,10 +1,21 @@
 ---
-status: active
+status: superseded
 created: 2026-08-28
 supersedes_for_cycle_3: docs/active/handoffs/2026-08-27-perf-cycle-1-handoff.md §6
 ---
 
 # Perf cycle 3 — handoff
+
+> **SUPERSEDED 2026-09-03 by `docs/active/specs/2026-08-28-cycle-3-bounding-the-conversation-window.md`.**
+> Cycle 3 was built and measured. Read the spec, not this — this file's §3 recommends
+> eviction, which was specced, independently reviewed and REJECTED (six blocking
+> defects, two of them structural). What shipped folds entries instead of deleting them:
+> ceiling PSS 4,346 → 1,827 MB, DOM nodes +1.44M → −8.5k, session switch 243 → 112 ms,
+> nothing regressed. Branch `perf/evict-offscreen-turns`, unmerged.
+>
+> The one part of this file still worth reading is §7 (environment facts) and §4 (the
+> "removing a broadcast" trap), which held up.
+
 
 Cycles 1 and 2 are SHIPPED. This is what remains, what changed under it, and what to
 verify before committing to any of it.

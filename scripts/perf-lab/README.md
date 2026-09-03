@@ -411,6 +411,35 @@ compare the two percentages. Then READ THE IMAGE — cycle 2's real duplicate-bu
 showed here as 14.04%, which no percentage rule could have separated from this noise.
 `NONDETERMINISTIC_SCREENS` in `screenshots.mjs` names it.
 
+## Two rules for measuring a LAZY change
+
+Both were learned the expensive way on 2026-08-28/09-03 (perf cycle 3), where three
+separate bugs each presented as the identical number and two candidate runs reported a
+REGRESSION for a change that turned out to be a 58% win.
+
+**1. Measure that the mechanism ENGAGED, not just the outcome.** An optimisation that
+reacts to the viewport, to idle time, or to a cache can fail to run at all — and a
+memory or timing number cannot tell "it ran and did not help" from "it never ran".
+Cycle 3 spent three full measurement cycles on that ambiguity. What resolved it was a
+direct count of the thing itself (`window.__perfScroll.folded()` → folded entries per
+pane), which answered it in one run. **Per-pane, not aggregate:** the aggregate read
+~730 of 12,100 for three different causes; the split (433/7000, 294/5000, 1/100) named
+the cause immediately. This is the same rule the UI review rig already enforces — every
+shot must prove it opened — applied to perf.
+
+**2. Settle before you read, and collect AFTER the work has run.** A lazy change does
+its work when the app goes idle. Reading straight after the last scroll measures the
+app mid-transition, and running a GC *before* that work leaves its freed nodes
+uncollected at the instant of the reading. Both push the number the wrong way.
+`CEILING_SETTLE_MS` / `LEG_SETTLE_MS` in `scenario-scrollback.mjs` exist for this and
+must stay above any in-app idle timer (the app's entry-folding idle is 800 ms).
+
+**And re-run the BASELINE whenever you change the instrument.** Adding a settle window
+or a new reading changes what the number means, so an old report is no longer a fair
+comparison — a candidate measured on the new rig against a baseline measured on the old
+one is not an A/B. Cycle 3's shipped figures come from a baseline re-run at the
+candidate's own parent commit, on the same rig, 3 repeats each.
+
 ## Reading a REJECT
 
 The gate is deliberately conservative and a REJECT is a **prompt to investigate, not a

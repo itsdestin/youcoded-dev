@@ -5,7 +5,7 @@ here: installing or browsing themes (marketplace).
 - [ ] On the four light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
       Strawberry Kitty) the provider brand colours — the Claude orange on the model chip and
       friends — are still hard to read; 25 of 70 colour/theme pairs fail contrast, seen 2026-08-31
-      `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-light-theme-brand-colours.md
+      `all` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-light-theme-brand-colours.md
 
 - [ ] A community theme's custom CSS can run a never-ending animation on the always-visible
       chrome, costing every user a chunk of a CPU core with no setting — not even Reduced

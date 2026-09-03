@@ -56,3 +56,12 @@ produced and the panel that shows them (files).
       round trips across 46 sessions in the 2026-08-28 study, still firing on 2026-08-31. Wants a
       fire-once-per-conversation guard
       `desktop` `needs-verify` `checked 2026-08-31` `performance`
+
+- [ ] Searching a long conversation says "no results" for text that is definitely there — since
+      paged history shipped (youcoded#349), only the most recent ~30 turns are in the DOM, and
+      `ContentFindBar.tsx` finds text by walking the DOM (`document.createTreeWalker`), so
+      everything older is unfindable and the counter reads `0/0`. Surfaced by the perf cycle-3
+      review 2026-08-28; nobody has reported it because it fails silently. Wants the match count
+      to say what was searched when `history.hasMore` — e.g. "searching recent messages, scroll
+      up to search older ones"
+      `desktop` `needs-verify` `checked 2026-09-03` `regression`

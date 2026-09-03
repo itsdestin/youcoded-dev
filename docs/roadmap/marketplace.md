@@ -43,7 +43,7 @@ them. Not here: the theme renders wrong (themes).
       listings (three `netsuite-*`, one `42crunch`) were stamped "Likely safe" having read nothing;
       the false verdicts were cleared by hand 2026-08-31 and the 13 netsuite rows now read
       "Not checked" — and will forever, until the scan follows the branch the listing names.
-      `all` `confirmed` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-marketplace-ingest-ignores-source-git-ref.md
+      `all` `needs-verify` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-marketplace-ingest-ignores-source-git-ref.md
 
 - [ ] Put the Worker on a custom domain. It is served from a `workers.dev` address, where
       Cloudflare's edge cache and the rate limiter both do nothing. The work is small; blocked on the
@@ -59,12 +59,12 @@ them. Not here: the theme renders wrong (themes).
 - [ ] Every marketplace refresh re-downloads the whole catalog (~1 MB on the wire, ~5,000 rows)
       even when one listing changed. Wanted: send only what changed since the client's last version,
       on both platforms. Not urgent at today's size; the unlock at ~20,000 rows.
-      `all` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-marketplace-catalog-payload-size.md
+      `all` `needs-verify` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-marketplace-catalog-payload-size.md
 
 - [ ] The catalog payload carries detail-page data (capabilities, scan findings, licence, member
       list) for every row, though a grid card needs a fraction of it. Wanted: a slim list payload,
       the rest fetched when a card is opened. Do this before any paging work.
-      `all` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-marketplace-catalog-payload-size.md
+      `all` `needs-verify` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-marketplace-catalog-payload-size.md
 
 - [ ] You cannot delete your own marketplace comment, on any platform. Reviews had it; comments
       have only the admin takedown route.
@@ -98,7 +98,7 @@ them. Not here: the theme renders wrong (themes).
       every author push and can flip a listing to "Caution", but the Library row never changes and
       no notification fires — the shield only shows on the marketplace page you have no reason to
       revisit.
-      `library` `all` `confirmed` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-marketplace-installed-plugin-turns-unsafe.md
+      `library` `all` `needs-verify` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-marketplace-installed-plugin-turns-unsafe.md
 
 - [ ] Two marketplace plugins (spotify-services, youcoded-messaging) ship MCP manifests that use
       a placeholder the app never fills in, so their server command comes out literally wrong for

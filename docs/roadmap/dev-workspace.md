@@ -110,11 +110,15 @@ seen-on is always n/a here.
       silently swallowed; cause unknown
       `n/a` `needs-verify` `checked 2026-08-28` `performance`
 
-- [ ] Perf lab: the rig is built and two measurement cycles ran (2026-08-27/28, paged history
-      shipped as youcoded#349), but Destin's reframe — a repeatable stress suite that catches the
-      daily freezes and app-wide animation slowdowns on every surface — is the open half; the
-      2026-08-27 perf-lab handoffs are the current truth, the 2026-08-23 plan is history
-      `n/a` `needs-verify` `checked 2026-09-01` `performance`
+- [ ] Perf lab: the rig is built and THREE measurement cycles ran (2026-08-27/28, paged history
+      shipped as youcoded#349; cycle 3 folding is on `perf/evict-offscreen-turns`, unmerged), but
+      Destin's reframe — a repeatable stress suite that catches the daily freezes and app-wide
+      animation slowdowns on every surface — is the open half; the 2026-08-27 perf-lab handoffs
+      are the current truth, the 2026-08-23 plan is history. Cycle 3 added a `scrollback` phase
+      (the CEILING a conversation reaches once read back, not the paged floor) with three PRIMARY
+      metrics, a per-pane count proving the mechanism engaged, and a settle window before every
+      reading — the last two exist because three different bugs all presented as the same 6%
+      `n/a` `needs-verify` `checked 2026-09-03` `performance`
 
 - [ ] Harness evaluator: no CI gate yet, and the four eval cases were hand-written rather than
       drawn from a failure taxonomy over the stored conversations — waiting on the step-1 triage
@@ -201,7 +205,7 @@ seen-on is always n/a here.
 - [ ] Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
       from the embed's theme button and the whole app window becomes one blur; the redesign makes
       theme switching a primary interaction so this must ship with it
-      `n/a` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-landing-embed-blur-rounded-clip.md
+      `n/a` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-landing-embed-blur-rounded-clip.md
 
 - [ ] Every compiled file ships inside the installer, tests included — 47 test files and 19
       workbench files in the 1.2.4 asar, none reachable; installer weight, not a blocker
