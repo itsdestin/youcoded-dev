@@ -29,7 +29,7 @@ the same rig and the same fixtures.
 |---|---|---|
 | Footage | The real renderer in the UI Workbench (fake backend), filmed by `scripts/ui-review/record.mjs` | It is how every landing-page loop is made; nothing touches Destin's live app |
 | Assembly | **Remotion** (React-in-video, free for individuals) in a new `scripts/promo/` folder | Frame-accurate transitions, captions, overlays and music in code; ffmpeg alone looks basic, and a hand-rolled frame stepper would be a worse Remotion |
-| Output | 1920×1080, 30 fps, H.264 MP4, stereo AAC (silent track if no music) | What Reddit accepts and autoplays; the rig's screencast is ~24 fps so 30 is honest |
+| Output | 1920×1080, 30 fps, H.264 MP4, stereo AAC (silent track if no music) | What Reddit accepts and autoplays; the promo scenes are filmed at 30 fps so no frame is doubled |
 | Sound | **Composed in code** (`scripts/promo/music/`, a numpy synthesizer + sequencer) at a fixed tempo, structured to the storyboard's sections. The sequencer exports the beat grid as JSON and Remotion places every cut, caption hit and the theme drop on it. Small UI-style sounds (a pop when the mascot lands, a whoosh on cuts) come from the same synth. Captions still carry the video for muted autoplay | Destin: music must feel integrated, beats matched, not dropped in (2026-09-03). A generated track is the only kind whose grid we know exactly |
 | Spreadsheet beat | **Assistant-only.** The user asks; the panel shows the sheet change | In-grid editing does not exist (roadmap: `docs/roadmap/files.md`, filed 2026-09-03). Not faked |
 | Theme beat | **One-shot.** The theme applies the moment the assistant finishes | Promo fudge Destin approved; the real flow goes through the marketplace card |
@@ -50,8 +50,8 @@ screen; the mascot column says what the host does.
 | 3 | 12–20 s (bars 6–9) | Attach `Q3-sales.xlsx`, type "sort by amount and add a totals row", the Session Files panel opens and shows the changed sheet. | Your files, right beside the chat. | Leans in (inquisitive) as the panel opens |
 | 4 | 20–28 s (bars 10–13) | Type a bigger task, open **Games → Flappy**, the mascot-bird flaps through pipes while the chat keeps working behind it. | Play while it works. | *Is* the bird (in the footage). The host copy on the title bar is hidden for this beat so there is one mascot on screen |
 | 5 | 28–33 s (bars 14–15) | Session strip. A pill is dragged two places left; the others step aside. | Drag your conversations into order. | Watches the pill go by, head turns |
-| 6 | 33–47 s (bars 16–22) | Settings → Remote Access popup (QR + link). Cut: a phone frame slides in, the same conversation continues there. Cut back: the laptop shows the takeover dialog "This session is active on Pixel 9 — take over here?", cursor hits **Take over**, the chat catches up. | Start on your laptop. Finish on your phone. | Hops from the laptop frame onto the phone frame and back |
-| 7 | 47–59 s (bars 23–28) | Type "build me a theme with the vibe of outdoor anime art". The reply lands and the whole app becomes Golden Sunbreak in one cut. | Describe a look. It's yours. | Changes costume to the Golden Sunbreak mascot on the same cut (shocked pose, then welcome) |
+| 6 | 33–43 s (bars 16–20) | Settings → Remote Access popup (QR + link). Cut: a phone frame slides in, the same conversation continues there. Cut back: the laptop shows the takeover dialog "This session is active on Pixel 9 — take over here?", cursor hits **Take over**, the chat catches up. | Start on your laptop. Finish on your phone. | Hops from the laptop frame onto the phone frame and back |
+| 7 | 43–59 s (bars 21–28) | Type "build me a theme with the vibe of outdoor anime art" under the build (bars 21–22). The reply lands and the whole app becomes Golden Sunbreak on the downbeat of bar 23 (47 s) — one continuous clip, no cut. | Describe a look. It's yours. | Changes costume to the Golden Sunbreak mascot on the flip (shocked pose, then welcome) |
 | 8 | 59–69 s (bars 29–33) | The window settles, backdrop tints to the theme. Wordmark, platforms, link. | Free. Open source. Windows · Mac · Linux · Android. github.com/itsdestin/youcoded | Waves (welcome pose), then hops out of frame |
 
 Transitions: a fast slide or a hard cut between beats, always on a downbeat, never a
@@ -74,7 +74,8 @@ is the same material arranged to the storyboard:
 | 10–13 | 20.3–28.5 | Groove + lead hook | Beat 4, Flappy; the hook is the bird's theme |
 | 14–15 | 28.5–32.5 | Break: drums out, arp + pad | Beat 5, the drag; quiet so the motion reads |
 | 16–17 | 32.5–36.6 | Build: riser, snare roll | Beat 6 opens on the Remote Access popup, phone slides in |
-| 18–22 | 36.6–46.8 | Groove (half-time snare) | Phone continues, takeover dialog, Take over |
+| 18–20 | 36.6–42.7 | Groove (half-time snare) | Phone continues, takeover dialog, Take over |
+| 21–22 | 42.7–46.8 | Groove continues, riser | Beat 7 begins: the theme request is typed, the tool cards tick |
 | 22, last beat | 46.3 | Fill + silence gap | The reply lands |
 | 23–28 | 46.8–59.0 | **Drop 2**: full groove + hook, brighter filter | Beat 7; the theme applies on the downbeat of bar 23 |
 | 29–32 | 59.0–67.1 | Outro: pad and arp thin out | Beat 8, wave-out |
@@ -88,16 +89,18 @@ by ffmpeg at the final mux) so Reddit does not turn it down.
 
 ## Footage: one scene file per beat
 
-All under `scripts/ui-review/scenes/promo-*.json`, filmed at **1920×1200** (a 16:10 window
-that sits inside the 16:9 frame with the backdrop showing around it) except the phone
-scene at 390×844 with `platform=android`. Filmed at device scale 1: the window is
-downscaled to fit the 1080p frame, so a 4 % push-in never goes past 1:1.
+All under `scripts/ui-review/scenes/promo-*.json`, filmed at **1440×900, 30 fps** (shown at
+98 % — 1:1 pixels, so the app's text is as crisp as the app — inside a fixed layout: headroom
+above the window for the host, a caption band below it) except the phone scene at 390×844
+with `platform=android`. The layout is one file (`src/layout.ts`) approved from a still
+before any beat is built. Each clip comes with a **marks file** (the video time of every
+scene action), and the timeline trims to those labels — a re-film never breaks the edit.
 
 | Beat | Scene | Needs |
 |---|---|---|
 | 2 | `promo-quick-chip` | `scenario=site&seed=none&reply=briefing` — a new reply fixture, 1 turn |
 | 3 | `promo-sheet` | The spreadsheet fixture and writable-artifacts mock from `feat/landing-demo-clips` (`ef38bfc0`, worktree `grok-clip`) cherry-picked to master, plus a reply fixture whose tool card rewrites the sheet |
-| 4 | `promo-flappy` | `record.mjs` learns `Space` as a key and an `autoplay` action that reads the bird and the next gap off the DOM and flaps when needed (the game has no autopilot). `reply=flappy-task`, a ~10 s multi-tool fixture |
+| 4 | `promo-flappy` | `record.mjs` learns `Space` as a key and an `autopilot` action that reads the bird and the next gap off the DOM and flaps when needed (the game has no autopilot of its own). `reply=flappy-task`, a ~10 s multi-tool fixture |
 | 5 | `promo-strip` | `scenario=default`; the existing `drag` action |
 | 6a | `promo-remote` | A workbench fake for `remote.*` (enabled, a link, one connected phone) so the popup renders |
 | 6b | `promo-phone` | Same as `row5-phone` (`platform=android`, `autoplay=`) |
@@ -105,7 +108,7 @@ downscaled to fit the 1080p frame, so a 4 % push-in never goes past 1:1.
 | 7 | `promo-theme` | `reply=theme-builder` plus a one-shot apply: the scene's last action switches the theme through the workbench's appearance hook when the final turn lands |
 
 Every workbench fake is dev-only code (the workbench never ships to users) and lands on
-`youcoded` master through a normal PR. The rig changes (`Space`, `autoplay`) land in
+`youcoded` master through a normal PR. The rig changes (`Space`, `autopilot`, `fps`, the marks file) land in
 `youcoded-dev`.
 
 ## Assembly: `scripts/promo/`
@@ -115,16 +118,18 @@ scripts/promo/
   package.json          remotion, @remotion/cli, @remotion/transitions, @remotion/google-fonts
   remotion.config.ts
   src/Root.tsx          registers the one composition: Promo, 1920×1080, 30 fps
-  src/Promo.tsx         the timeline: eight <Sequence>s with transitions
+  src/Promo.tsx         the timeline, built from timeline.ts (tested: every beat starts on its downbeat)
   src/grid.ts           reads the exported beat grid; bar → frame helpers
+  src/marks.ts          reads every clip's marks file; label → frame
+  src/layout.ts         the one set of screen coordinates (window, caption band, host perch, phone)
+  src/captions.ts       the caption strings, pinned to this document by a test
   src/beats/*.tsx       one component per beat: footage in a window frame + caption + mascot cues
   src/Mascot.tsx        the host: the app's default buddy rig, posed by springs; Golden Sunbreak stills for the costume
   src/Caption.tsx, Window.tsx, Phone.tsx, Backdrop.tsx, Footage.tsx
   src/rig.ts, golden.ts the mascot art copied from the app
   music/                synth.py + song.py (the track and the UI sounds), test_song.py
   film.sh, render.sh    film every scene; final render + loudness
-  public/               the track, grid and SFX, plus a link to footage/ (gitignored)
-  footage/              the recorded WebMs (gitignored)
+  public/               the track, grid and SFX, and footage/ — the recorded WebMs + marks (gitignored)
   out/                  renders (gitignored)
 ```
 
@@ -137,12 +142,15 @@ gradient in the active theme's colours, switching to Golden Sunbreak's at beat 7
 ## Review
 
 1. **Storyboard sign-off** — this document.
-2. **Footage check** — each scene's poster and WebM in a folder; Destin eyeballs them
-   (`docs/active/prototypes/promo-2026-09/footage-review.md` lists them with one line
-   each). Anything that looks off is re-filmed before assembly starts.
-3. **Draft render** at half size — Destin watches it. Notes come back as a list; a second
-   draft follows.
-4. **Final render.** Handed over as a path in chat. Two files: with music and without.
+2. **Layout still** — one frame with the window, a caption, the host and the phone; the
+   geometry is approved before a beat exists.
+3. **Footage check** — each scene's poster and a frame sheet of its clip
+   (`docs/active/prototypes/promo-2026-09/footage-review.md`). Anything that looks off is
+   re-filmed before assembly starts.
+4. **Draft render** at half size, reviewed frame by frame at every cut. Notes become a
+   list; a second draft follows — repeated until nothing is left on the list. (Destin,
+   2026-09-03: Claude iterates until it is proud of it; Destin sees the result.)
+5. **Final render.** Handed over as a path in chat. Two files: with music and without, plus the track as an MP3.
 
 The storyboard order and captions are Destin's to change at any step. Timing is mine.
 
