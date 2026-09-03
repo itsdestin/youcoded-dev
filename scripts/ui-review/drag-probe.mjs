@@ -62,6 +62,9 @@ await sleep(1500);
 
 const rectOf = async (idx) => evaluate(`(() => { const el = document.querySelectorAll('[data-session-idx]')[${idx}]; if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
 const a = await rectOf(Number(fromIdx)); const b = await rectOf(Number(toIdx));
+// OVERSHOOT_PX: carry the cursor this much past the target pill's centre — how a person
+// drags to the END of the row (the pill is clamped there; the cursor is not).
+if (b && process.env.OVERSHOOT_PX) b.x += Number(process.env.OVERSHOOT_PX);
 if (!a || !b) { console.error('MISSING pill', JSON.stringify({ a, b, count: await evaluate("document.querySelectorAll('[data-session-idx]').length"), url: await evaluate('location.href') })); process.exit(1); }
 
 // Per-frame logger.

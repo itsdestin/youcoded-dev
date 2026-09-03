@@ -381,7 +381,16 @@ Replace the ghost model with a moving-pill model.
   still reflowing from the press), React writes its `left`/`width` once at mount and the
   rAF loop owns them after (React re-applied a stale `left` a frame late), and the dot's
   centre is mapped from the row AS DRAWN into settled coordinates (`mapToSettled`) before
-  the yield rule runs.
+  the yield rule runs. The twin is clamped to the row of pills (first pill's left to last
+  pill's right) in that same loop, and a dot is passed 1px before its far edge (`margin`
+  −27) so the clamped pill can still take the first or last slot.
+- **A drop disturbs nothing but the pill (2026-09-03).** The flow keeps running through the
+  settle, fed the real pill's rect, so a mid-flow dot regrows as the pill glides off it; the
+  row keeps the drag's pack (`postDropHold`) until the cursor leaves the strip, the next
+  press, or the session list changes — a live repack at the drop opened a different second
+  pill and re-centred the row 60px; and no hover peek opens after a drop until the pointer
+  has moved 8px or left the strip (`hoverLock`) — the dropped pill glides out from under the
+  cursor onto its neighbour.
 - **The pill moves, 1:1 — as a floating twin.** Its in-flow box stays in the row, invisible,
   holding its slot and still animating its own width; a twin with the same markup and styles
   floats absolutely inside the bar at the cursor (`clampFloatLeft`, **no transition on its

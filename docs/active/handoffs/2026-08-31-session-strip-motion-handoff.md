@@ -10,9 +10,9 @@ deck: docs/active/design/2026-08-31-session-motion/session-motion-live.json
 
 # Session strip & switch motion — handoff
 
-**State (2026-09-03, later): the name stays in hand and THE DOTS FLOW AROUND IT — the dot
-ahead shrinks as the pill covers it, a ghost grows behind at its landing spot. No touch, no
-hole: 2–4px mean gap on both sides. Served as the round-5 live deck (one try-this step).
+**State (2026-09-03, evening): the flow is in ("this is MUCH better"), and round 5's three
+leftovers are fixed — the pill stops at the row's ends and can be dropped first or last, and a
+drop disturbs nothing else on the row. Served as the round-6 live deck (one try-this step).
 Waiting on that answer; then merge.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
@@ -143,6 +143,29 @@ probe samples AFTER paint (a 0ms timeout from rAF) — in-rAF reads saw pre-writ
 
 - Round 5 deck: `session-motion-live-5.json` — one try-this step on R5 (`name-flow`).
 
+Destin's round-5 answer: **Other** — *"this is MUCH better. you're doing a good job. however,
+it still bugs out a bit when the chip is released, and i cant seem to drag it to be the
+leftmost or rightmost session. it should also stop moving at the left/right boundaries of
+the outer container rather than sliding past."* Built (commit `9fff1095`):
+
+- **Sliding past:** the handler's `clampFloatLeft` never reached the screen once React
+  stopped writing the twin's `left` (`twinMount`). The rAF loop now clamps to the row of
+  pills (first pill's left, last pill's right, from layout positions).
+- **Never first/last:** the far-edge yield needed the pill's edge PAST the end dot's far
+  edge, and the clamped pill reaches it but never passes it. `DRAG_TUNE.margin` is −27: a
+  dot is passed 1px before its far edge. Probed with `OVERSHOOT_PX` (a new probe env: carry
+  the cursor past the target's centre, the way a hand does): a session lands first or last.
+- **The release, three things in the drop frames:** the flow stopped at the drop, so a
+  mid-flow dot popped to full size under the gliding pill (the rAF loop now runs through
+  the settle, `flowActive`, feeding the flow the REAL pill's rect); the live packer re-run
+  on the new order opened a different second pill — a 151px bloom at the drop and a 60px
+  re-centre (`postDropHold`: the row keeps the drag's pack until the cursor leaves the
+  strip, the next press, or the session list changes — never a timer); the dropped pill
+  glided out from under the cursor onto the next dot, whose hover peek opened (`hoverLock`:
+  no peek after a drop until the pointer has moved 8px or left the strip). Frames after:
+  the pill glides ~20px home, the ghost shrinks away, the dot regrows, nothing else moves.
+- Round 6 deck: `session-motion-live-6.json` — one try-this step on R6 (`name-flow-2`).
+
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
 opening the moment you press, before any drag. That forced a second drag model — the pill in
@@ -245,14 +268,16 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-5 answer
+## After the round-6 answer
 
 1. "Yes": merge and push `feat/session-strip-motion`; then `feat/session-motion-review`
    (deck + docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
 2. "No"/"Other": the note says what. The flow has one number, `FLOW_GAP_PX` (the gap kept
    clear of the pill); a "squeeze looks odd" note means swapping the scale for an opacity
-   ramp at the same positions (`--flow` → opacity), not a return to hiding. Do not close the
-   name in hand (withdrawn), and do not go back to slot positioning (§7.4 replaced it).
+   ramp at the same positions (`--flow` → opacity), not a return to hiding. The post-drop
+   holds (`postDropHold`, `hoverLock`) release on leave/press/8px — if he wants peeks back
+   sooner, shorten the 8px, never add a timer. Do not close the name in hand (withdrawn),
+   and do not go back to slot positioning (§7.4 replaced it).
 3. Clean up: `worktrees/session-motion`, `worktrees/motion-docs` (and its `worktrees`
    symlink), `worktrees/session-switch-animation` (PR youcoded#192 — close unmerged).
 
