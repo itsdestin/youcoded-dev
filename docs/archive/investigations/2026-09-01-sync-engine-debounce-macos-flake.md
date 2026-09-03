@@ -1,8 +1,8 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
-topic: sync-spaces-engine.test.ts recurring macOS CI failure — the watcher event is never delivered; the timeout knobs are already maxed and are not the answer
+topic: RESOLVED — macOS fs.watch returns before the OS watch is armed, so changes in that window are never reported; both watchers now reconcile on subscribe (youcoded#399)
 ---
 
 # `sync-spaces-engine.test.ts` on macOS: 0 pushes, forever
@@ -78,3 +78,54 @@ evidence yet that this is the FSEvents layer and not `sync-spaces/engine.ts`.
 
 **History.** Filed 2026-07-22; escalated 2026-07-23; walked back 2026-07-25; hypothesis disproven
 2026-08-12; new evidence 2026-08-31 and 2026-09-01. Cause still unknown.
+
+---
+
+## RESOLVED 2026-09-03 — macOS `fs.watch` returns before the watch is armed
+
+**Cause.** `fs.watch()` on macOS returns *before* the OS-level watch exists. libuv hands the
+request to a CoreFoundation run loop on another thread; anything that changes between the call
+returning and the arming completing is never reported — not late, never. Linux (inotify) and
+Windows (ReadDirectoryChangesW) register the watch inside the call and have no such window.
+
+**Evidence.** `desktop/scripts/diag/fswatch-probe.mjs` — bare `fs.watch`, no app code — on a
+3-core macos-latest runner:
+
+| condition | macOS | Linux |
+|---|---|---|
+| idle, write 0–100 ms after the call | 0 missed / 100 at every gap | 0 / 100 |
+| under CPU load, write immediately | **4 missed / 200** | 0 / 200 |
+| under CPU load, write 5 ms later | 1 / 200 | 0 / 200 |
+| under CPU load, write 25 ms later | 0 / 200 | 0 / 200 |
+
+Linux's measured event latency equals the injected gap exactly (armed inside the call); macOS
+carries ~10 ms of machinery regardless of the gap.
+
+This accounts for every property this entry recorded, including the ones that made it look
+mysterious: macOS only; **zero** events rather than slow ones; load-correlated (contention widens
+the window); and two unrelated subsystems hit at once — chokidar 5 no longer uses fsevents, so
+`sync-spaces/engine.ts` and `git/git-watcher.ts` both bottom out in `fs.watch`.
+
+It also explains the standing hypothesis rather than merely disproving it. "Chokidar's `ready` is
+not the same as being genuinely armed" was **correct**; it could not be confirmed because `ready`
+is a chokidar-level signal that cannot observe an OS-level window at all.
+
+**Fix** (youcoded#399). There is no "armed" event to wait for — `fs.watch` has none, so no amount
+of waiting on a signal can close this. Both watchers instead make missing the window harmless:
+subscribing schedules ONE event through the same debounce a real change uses, so a change lost to
+the window still causes consumers to re-read. A real change during the debounce coalesces into it.
+
+The production risk this entry flagged was real and is what the fix addresses: on macOS a commit
+made just after a project opens went unnoticed, and a file written just after a space was added
+stayed unsynced until something else changed. Both suites' headline tests would now pass against a
+dead watcher, so each gained one that cannot be faked (the change is made after the startup event
+has drained).
+
+**Measured on a real macOS runner under identical CPU load:** `git-watcher.test.ts` 4/15 red
+before, 0/15 after; `sync-spaces-engine.test.ts` 0/15 after. The probe reported misses in the same
+run as the green suites, so the load condition was genuinely present.
+
+**Still exposed, filed separately.** Of eight watcher call sites, four are already covered by
+existing safety-net polls (`transcript-watcher`, both `subagent-watcher` watches, `outbox-drain`).
+Three have neither poll nor reconcile: `artifacts/project-watcher.ts` (Files panel),
+`theme-watcher.ts`, and the topic-file watch in `ipc-handlers.ts`.
