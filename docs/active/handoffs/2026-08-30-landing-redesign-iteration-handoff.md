@@ -178,6 +178,14 @@ Headless Chrome for your own verification is expected.
     runs at script time, `show(0)` played it 1,700px above the fold, and `show()`
     short-circuits on `i === cur` -- so the first demo a visitor ever saw was
     already mid-story. The playback list is `[]` until the deck is approaching.
+24. **`dl_buttons()` renders TWICE, so nothing on a download button may be an
+    `id`.** The lifted `modal.js` bound the install-tips popup with
+    `getElementById`, and the hidden in-flow row comes FIRST in the document --
+    so every chip on the visible pill fell straight through to
+    /releases/latest with no install tips, and the iOS chip (href `#`) did
+    nothing at all. Buttons carry `data-dl` now and the script binds every
+    match. Re-test by clicking all five platforms in BOTH `.dlfloat` and
+    `.dlrow`; a click that navigates has silently unbound itself.
 
 ## Decisions locked with Destin (don't reopen)
 

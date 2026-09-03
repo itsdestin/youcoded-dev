@@ -73,7 +73,10 @@ def dl_buttons(cls='dlbtn', primary='Windows'):
         label = 'iOS<sup>*</sup>' if os_=='iOS' else os_
         svg = OS_SVG['macOS'] if os_=='iOS' else OS_SVG[os_]
         href = '#' if os_=='iOS' else 'https://github.com/itsdestin/youcoded/releases/latest'
-        out.append(f'<a id="{DL_ID[os_]}" class="{cls}{p}" href="{href}">'
+        # data-dl, NOT id: this page renders TWO download rows (the floating
+        # pill and the in-flow row the pill replaces), so an id would be
+        # duplicated and getElementById could only ever bind ONE of them.
+        out.append(f'<a data-dl="{DL_ID[os_]}" class="{cls}{p}" href="{href}">'
                    f'<svg viewBox="0 0 24 24" aria-hidden="true">{svg}</svg><span>{label}</span></a>')
     return '\n        '.join(out)
 
@@ -1368,9 +1371,29 @@ def patch_modal(js):
     js = js.replace(
       "resetDownloadButton(downloadKeyFor(platformKey), 'Download Now');\n        modal.setAttribute('data-open', '');",
       "resetDownloadButton(downloadKeyFor(platformKey), 'Download Now');\n        downloadBtn.parentElement.hidden = !!p.noDownload;\n        modal.setAttribute('data-open', '');")
+    # The live page has ONE download row, so modal.js binds by getElementById.
+    # This page has two (pill + in-flow), and the hidden one comes first in the
+    # document -- so every pill chip fell through to /releases/latest with no
+    # install tips at all, and the iOS chip did nothing (its href is "#").
+    # Rebind to every element carrying the platform's data-dl. Verified
+    # 2026-09-03 by clicking all five chips in both rows.
     js = js.replace(
-      "['dl-windows', 'dl-macos', 'dl-linux', 'dl-android']",
-      "['dl-windows', 'dl-macos', 'dl-linux', 'dl-android', 'dl-ios']")
+      "      ['dl-windows', 'dl-macos', 'dl-linux', 'dl-android'].forEach(function(id) {\n"
+      "        var el = document.getElementById(id);\n"
+      "        if (!el) return;\n"
+      "        el.addEventListener('click', function(e) {\n"
+      "          e.preventDefault();\n"
+      "          openModal(id);\n"
+      "        });\n"
+      "      });",
+      "      ['dl-windows', 'dl-macos', 'dl-linux', 'dl-android', 'dl-ios'].forEach(function(id) {\n"
+      "        document.querySelectorAll('[data-dl=\"' + id + '\"]').forEach(function(el) {\n"
+      "          el.addEventListener('click', function(e) {\n"
+      "            e.preventDefault();\n"
+      "            openModal(id);\n"
+      "          });\n"
+      "        });\n"
+      "      });")
     js = js.replace(
       "'<details class=\"install-modal-details\">' +\n            '<summary>After install: What to expect on first launch</summary>' +\n            '<div class=\"install-modal-section\">' + afterInstallHtml + '</div>' +\n          '</details>';",
       "(p.noDownload ? '' : '<details class=\"install-modal-details\">' +\n            '<summary>After install: What to expect on first launch</summary>' +\n            '<div class=\"install-modal-section\">' + afterInstallHtml + '</div>' +\n          '</details>');")
