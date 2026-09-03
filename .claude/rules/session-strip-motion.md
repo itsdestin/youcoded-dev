@@ -8,7 +8,7 @@ paths:
 last_verified: 2026-09-03
 verify:
   - path: youcoded/desktop/src/renderer/components/SessionStrip.tsx
-    contains: "const [dragActive, setDragActive] = useState[(]false[)]"
+    contains: "setDragActive. = useState[(]false[)]"
   - path: youcoded/desktop/src/renderer/components/SessionStrip.tsx
     contains: "if [(]dotIdsRef.current.has[(]id[)][)] continue;"
   - path: youcoded/desktop/src/renderer/components/header/drag-order.ts
