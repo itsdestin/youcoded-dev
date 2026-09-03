@@ -1,0 +1,10 @@
+import type { Beat } from '../timeline';
+import { Beat1 } from './Beat1';
+import { Beat2 } from './Beat2';
+import { Beat3 } from './Beat3';
+import { Beat4 } from './Beat4';
+import { Beat5 } from './Beat5';
+import { Beat6 } from './Beat6';
+import { Beat7 } from './Beat7';
+import { Beat8 } from './Beat8';
+export const COMPONENTS: Record<Beat['id'], React.FC> = { b1: Beat1, b2: Beat2, b3: Beat3, b4: Beat4, b5: Beat5, b6: Beat6, b7: Beat7, b8: Beat8 };
