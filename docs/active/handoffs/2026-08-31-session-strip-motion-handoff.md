@@ -21,8 +21,13 @@ counted as passed only 1px before its far edge. Now passed at its centre (Chrome
 flow drawing a crossed dot twice so the swap shows nothing; youcoded `4093e3ed`. Round 8
 (chat): "still jumping/glitching back and forth on release" — only with a hand that keeps
 moving after release: it drifts onto the next dot, whose peek opens and closes, shifting the
-row 5px and back. A peek now waits 150ms of rest; youcoded `6df98c7f`. Served as the round-9
-live deck (one try-this step). Waiting on that answer; then merge.**
+row 5px and back. A peek now waits 150ms of rest; youcoded `6df98c7f`. Round 9 (chat):
+"stilll janky" — reproduced only with a cursor that ROCKS at the swap point: the yield moved a
+dot's box a frame before the flow sized it (doubled/absent for a frame, every crossing), and
+at the drop the dots lost the transform that applied their scale (a 10px pop under the
+gliding pill). The flow now runs as a layout effect on every commit and the scale stays
+through the settle; youcoded `86adb7ce`. Served as the round-10 live deck. Waiting on that
+answer; then merge.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
 but it will need to be tuned/repaired a bit. it's jank"*), **switch-when → Press** (*"further
@@ -236,11 +241,34 @@ room cap the peek was up to 120px, a whole re-centre.) **A peek now opens only a
 cursor has rested on a dot for `PEEK_DWELL_MS` (150ms)**; leaving cancels a pending one; an
 open peek still follows the cursor at once. Measured after: the bar's left never changes
 after release; only the pill settles.
-- **Lesson for the probe:** a drag probe must end like a hand, not like a script. Every
-  "release" note in R5–R8 was reproduced only once the probe pressed first (`PRESS_FIRST`),
-  grabbed off-centre (`GRAB`), ran at the pane's width (`PROBE_W`), or kept moving after
-  release (`AFTER=hand`). Run all four before reporting a release clean.
+- **Lesson for the probe:** a drag probe must move like a hand, not like a script. Every
+  "release" note in R5–R9 was reproduced only once the probe pressed first (`PRESS_FIRST`),
+  grabbed off-centre (`GRAB`), ran at the pane's width (`PROBE_W`), kept moving after
+  release (`AFTER=hand`), or rocked at the swap point (`WOBBLE`). Run all five before
+  reporting a release clean — and read the per-frame continuity of every dot's two images,
+  not only the stick-out.
 - Round 9 deck: `session-motion-live-9.json` — one try-this step on R9 (`name-flow-5`).
+
+**Round-9 answer (chat, 2026-09-03):** *"stilll janky"*. Reproduced with `WOBBLE=7` (new
+probe env: rock the cursor ±7px at the target for 500ms before release) — a hand hunting for
+the spot, right where a dot swaps sides. Two frame-level races, both invisible to a smooth
+drag:
+- **The swap and the flow were a frame apart.** A yield is a React commit (the dot's
+  step-aside transform moves its box one pill-width across); the flow that sizes its two
+  images ran a frame later in the rAF loop, so every crossing painted one frame with the
+  box at its NEW spot at the OLD spot's scale and origin, and the ghost still at that same
+  spot — the dot doubled on one side, absent on the other (12px flicker per crossing).
+  **The flow now also runs as a `useLayoutEffect` on every commit that changes `overId`
+  or `settle`** — after the DOM changes, before paint. The rAF loop only follows the cursor.
+- **At the drop the dots lost their scale.** They kept `--flow` but the transform that
+  applied it was in the `dragging && isDot` branch only, so a half-shrunk dot popped to
+  full size under the gliding pill — 10px of contact at release — while its ghost was still
+  shrinking. Dots keep `scale(var(--flow, 1))`, its origin and a `0s` transform transition
+  while `settle !== null` too.
+- Measured after (wobble at three spots, a moving hand, 1440 stress): 0px contact in every
+  frame; no dot's visible size changes by more than 2px between frames (the scratch
+  `cont.js` metric — real image + ghosts per dot, largest one-frame change).
+- Round 10 deck: `session-motion-live-10.json` — one try-this step on R10 (`name-flow-6`).
 
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
@@ -344,7 +372,7 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-9 answer
+## After the round-10 answer
 
 1. "Yes": merge and push `feat/session-strip-motion`; then `feat/session-motion-review`
    (deck + docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.

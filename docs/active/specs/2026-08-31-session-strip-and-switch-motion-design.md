@@ -411,6 +411,13 @@ Replace the ghost model with a moving-pill model.
   pushed the row past its box and CSS squeezed the active name (191→78px), which popped
   back on press. `LabelStyleInput.room` = `pillBudget` minus the packed row; a peek is as
   wide as that allows, or does not open. Chrome does not widen a tab on hover at all.
+- **The swap and the flow land in one frame (2026-09-03, R9).** A yield is a React commit;
+  the flow ran a frame later in the rAF loop, so each crossing painted a frame with the dot
+  doubled on one side of the pill and absent on the other — a hand rocking at the swap
+  point saw it several times a second. The flow also runs as a layout effect on every commit
+  that changes `overId` or `settle`; dots keep `scale(var(--flow, 1))`, its origin and a 0s
+  transform transition through the settle (at the drop they had lost it and popped whole
+  under the gliding pill).
 - **A peek waits for the hand to rest (2026-09-03, R8).** A hand that keeps moving after a
   drop drifts onto the next dot; its peek opened and closed, shifting the centred row 5px
   and back inside the settle ("jumping/glitching back and forth on release"). A peek opens
@@ -573,6 +580,8 @@ Per the workspace knowledge ladder, each of these is a test, not prose. All live
    `target.pillBudget`).
 8b. **A peek never squeezes the row** — `pill-label-style.test.ts` (`room` caps a hover peek
    only; the active and pack-expanded names are never capped by it).
+8e. **The swap and the flow land in one frame** — `animation-frame-budget.test.ts` (the
+   layout-effect flow; the settle-time scale and 0s transition on dots).
 8d. **A peek waits for the hand to rest** — `animation-frame-budget.test.ts` (`PEEK_DWELL_MS`,
    the timer in `handleEnter`, the cancel in `handleLeave`, the instant follow once open).
 8c. **The yield is the centre and the swap shows nothing** — `drag-order.test.ts` (margin −14,

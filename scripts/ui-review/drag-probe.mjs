@@ -14,6 +14,8 @@
 //                      starts on an ACTIVE, open name (Destin drags the name he is on)
 //   GRAB=0..1          where across the pressed pill's width the press lands (default 0.5;
 //                      0.9 = "i began dragging on the right side of the session pill")
+//   WOBBLE=<px>        before release, rock the cursor ±px around the target for 500ms — a
+//                      hand hunting for the spot, right where a dot swaps sides (R9)
 //   AFTER=hand         a hand does not freeze on release: jitter ±3px for 150ms, then drift
 //                      40px right, then leave the strip downwards (the 2026-09-03 R8 note:
 //                      "jumping/glitching back and forth on release" — never seen with a
@@ -107,6 +109,11 @@ await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: a.x, y: a.y, b
 await sleep(80);
 const ms = Number(msArg ?? 700); const steps = Math.max(8, Math.round(ms / 16));
 for (let i = 1; i <= steps; i++) { const k = i / steps, e = 1 - Math.pow(1 - k, 3); await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: a.x + (b.x - a.x) * e, y: a.y + (b.y - a.y) * e, button: 'left', buttons: 1 }); await sleep(16); }
+if (process.env.WOBBLE) {
+  const amp = Number(process.env.WOBBLE);
+  await mark('wobble');
+  for (let i = 0; i < 30; i++) { await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: b.x + amp * Math.sin(i / 2), y: b.y, button: 'left', buttons: 1 }); await sleep(16); }
+}
 await sleep(120);
 await mark('release');
 await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: b.x, y: b.y, button: 'left', buttons: 0, clickCount: 1 });
