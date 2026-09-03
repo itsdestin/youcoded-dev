@@ -18,6 +18,22 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       Seen in the M2 dev repro, 2026-07-23 (CC and native alike).
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md
 
+- [ ] You can open a conversation your OTHER machine is actively working in, and nothing warns you —
+      no dialog, no pill, no note. Destin, 2026-09-03, resuming from a dev window while the same
+      sessions ran on his laptop. Mechanism is understood and is the ACQUIRER half of the item
+      above: `acquire()` in `conversations/lease-client.ts` asks the hub, and on a null reply
+      (hub down / no delivery path) holds OPTIMISTICALLY and returns ok — the never-block rule.
+      The takeover dialog's three phases (`confirm` / `force` / `undeliverable`, `App.tsx`) all
+      hang off the hub having ANSWERED, so a hub that cannot answer produces silence rather than
+      any of them. The lease-FILE fallback cannot cover this since files moved to `userData`
+      (`fbc5d296`, 2026-07-30) and two machines never share that dir. So cross-machine protection
+      is exactly as good as hub reachability, and degrades silently to none. Never-block is a
+      deliberate choice; never-WARN looks like an oversight of it — an optimistic hold could still
+      say "couldn't check your other devices". CAVEAT before acting: this repro was a dev profile,
+      whose isolated userData may mean it never connects to the hub at all, so confirm in the
+      installed app first
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-03` → docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md
+
 - [ ] Star a model as a favourite on one device and the model picker on your other device opens empty, with no hint
       why, until you type. Favourites never leave the device they were set on. From youcoded#279, 2026-07-31.
       `model-picker` `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-model-favourites-localstorage-only.md

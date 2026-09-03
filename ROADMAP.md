@@ -48,7 +48,7 @@ Target: `v1.3`
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 21 | 5 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 19 | 10 | 0 | 4 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 16 | 6 | 0 | 5 |
-| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 15 | 3 | 0 | 6 |
+| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 16 | 4 | 0 | 6 |
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 14 | 9 | 0 | 1 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 12 | 7 | 1 | 1 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 12 | 4 | 0 | 6 |
