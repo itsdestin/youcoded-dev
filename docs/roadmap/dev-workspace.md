@@ -102,8 +102,14 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-perf-rig-blind-to-native-streaming.md
 
 - [ ] Perf rig: the native-chat parity screen photographs a real local model's reply, so two
-      identical-code baselines differ by up to 6.9% and the 5% gate can reject an unchanged build
-      `n/a` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-perf-rig-native-chat-nondeterministic.md
+      identical-code baselines differ — re-measured 2026-09-03 at **14.79%**, well above the 6.9%
+      first recorded and larger than the 6.38% a real candidate change produced against the same
+      baseline, so the gate can reject an unchanged build. Now NAMED in code
+      (`screenshots.mjs` → `NONDETERMINISTIC_SCREENS`) with the rule in the perf-lab README:
+      compare baseline-against-itself before believing a diff on this screen, then read the
+      image — cycle 2's real duplicate-bubble bug showed here at 14.04%, which no percentage
+      rule separates from this noise. Remaining work is the gate itself, which still scores it
+      `n/a` `confirmed` `checked 2026-09-03` `performance` → docs/active/investigations/2026-09-01-perf-rig-native-chat-nondeterministic.md
 
 - [ ] Perf rig: the artifacts phase's session-files drawer lists nothing about 1 run in 9 —
       once for 30 s aborting a 26-minute run, once returning undefined numbers that the median

@@ -39,9 +39,14 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
 
 - [ ] Sustained sluggishness in real use — hiccups, lagging animations, freezes, on every
       surface, from launch and worse over hours and with more open sessions, on plain and
-      glass themes alike (Destin, 2026-08-27). Cycle 1 shipped; paged history and parking
-      hidden views are next
-      `all` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
+      glass themes alike (Destin, 2026-08-27). Cycles 1-3 have all shipped or are in review —
+      cycle 3 (youcoded#398, folding far-off-screen messages to a spacer) directly addresses the
+      render-cost half this item's investigation names: memory after reading six conversations
+      back 4,346 → 1,784 MB, session switch 243 → 112 ms, main-thread blocking 4,882 → 1,703 ms.
+      KEEP OPEN until Destin says real use feels better over hours — the investigation's second
+      half (every open session stays mounted) is only partly addressed, since views still mount
+      and it is their CONTENT that folds
+      `all` `confirmed` `checked 2026-09-03` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
 
 - [ ] Text fields nested in cards are the same colour as the card — the model picker's
       trigger, the close-prompt editor and the resume tag sheet all read as labels, not
