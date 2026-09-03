@@ -28,11 +28,16 @@
   },
   {
    "eval": "window.__workbenchAppearanceSync({theme:'golden-sunbreak'})",
-   "settle": 200,
+   "settle": 0,
    "mark": "flip"
   },
   {
-   "hold": 12000
+   "eval": "new Promise(r=>{const h=document.documentElement;const done=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(1)));if(h.dataset.theme==='golden-sunbreak')return done();new MutationObserver((m,o)=>{if(h.dataset.theme==='golden-sunbreak'){o.disconnect();done()}}).observe(h,{attributes:true,attributeFilter:['data-theme']})})",
+   "settle": 0,
+   "mark": "gold"
+  },
+  {
+   "hold": 14000
   }
  ]
 }

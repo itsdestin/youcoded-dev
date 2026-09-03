@@ -45,3 +45,9 @@ test('marksFile turns wall-clock stamps into video seconds and keeps the label',
   assert.deepEqual(m.actions[1], { i: 1, kind: 'clickText', mark: 'chip', start: 0.9, end: 1.3 });
   assert.equal(m.actions[0].mark, null);
 });
+
+test('marksFile shifts every stamp later by the capture lag', () => {
+  const m = marksFile({ fps: 30, width: 1, height: 1, firstFrameAt: 1000, duration: 1,
+    stamps: [{ i: 0, kind: 'click', mark: 'x', start: 1500, end: 1600 }], captureLagMs: 60 });
+  assert.deepEqual(m.actions[0], { i: 0, kind: 'click', mark: 'x', start: 0.56, end: 0.66 });
+});

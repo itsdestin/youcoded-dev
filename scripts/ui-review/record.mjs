@@ -242,7 +242,9 @@ spawnSync('magick', [join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0'
 // error exits too, not just this success path).
 // Marks file: where every scene action landed in the finished clip, in video
 // seconds, so a later edit pass trims by label instead of a hand-measured frame.
-const marks = marksFile({ fps: scene.fps ?? 24, width: W, height: H, duration, firstFrameAt, stamps });
+// 60 ms of screencast transport lag (see marksFile) — so a mark lands on the frame that shows it.
+const CAPTURE_LAG_MS = 60;
+const marks = marksFile({ fps: scene.fps ?? 24, width: W, height: H, duration, firstFrameAt, stamps, captureLagMs: CAPTURE_LAG_MS });
 writeFileSync(`${outBase}.marks.json`, JSON.stringify(marks, null, 1));
 console.log(`frames=${frames.length} duration=${duration.toFixed(1)}s out=${outBase}.webm marks=${outBase}.marks.json`);
 process.exit(0);

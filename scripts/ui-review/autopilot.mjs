@@ -21,8 +21,14 @@ export async function runAutopilot({ evaluate, press, sleep, now, ms, every = 25
 // hand-measured frame, so a re-film never breaks the edit. `firstFrameAt` is
 // the wall-clock ms at which the first screencast frame arrived — the clip's
 // time zero — and each stamp's start/end are wall-clock ms too.
-export function marksFile({ fps, width, height, duration, firstFrameAt, stamps }) {
-  const sec = (ms) => Math.round(ms - firstFrameAt) / 1000;
+// `captureLagMs`: the screencast delivers a frame this long AFTER the moment
+// it shows. The clip's time zero is the wall-clock at which the FIRST frame
+// arrived, so without this every action lands ~2 frames before its visible
+// effect. Measured 2026-09-03 on the theme scene: the paint that a DOM
+// observer stamped at t showed up at t + 77 ms (2.3 frames at 30 fps), the
+// observer's own two rAFs being ~20 ms of that.
+export function marksFile({ fps, width, height, duration, firstFrameAt, stamps, captureLagMs = 0 }) {
+  const sec = (ms) => Math.round(ms - (firstFrameAt - captureLagMs)) / 1000;
   return { fps, width, height, duration,
     actions: stamps.map((s) => ({ i: s.i, kind: s.kind, mark: s.mark ?? null, start: sec(s.start), end: sec(s.end) })) };
 }
