@@ -364,17 +364,21 @@ so no index space can drift out from under them again.
 
 Replace the ghost model with a moving-pill model.
 
-- **The pill in hand is a DOT (2026-09-02).** Its name closes the moment the pointer moves
-  far enough to be a drag — a click still opens it on press — and opens again where it is
-  dropped. In the drag's settled geometry it is `COLLAPSED_PILL_PX` wide, so a neighbour
-  steps exactly one dot-width: Chrome's swap, between things of one size. Before this the
-  open name (~180px) rode in hand and every dot crossed the whole pill to get out of its way;
-  neither a slide nor a blink of that crossing read right (Destin, R3: *"the interaction
-  between the selected moving pill and the other dots/sessions still feels janky"*). The
-  grab fraction is measured at drag START (the row has slid under the cursor since the
-  press), and the dot's centre is mapped from the row AS DRAWN into settled coordinates
-  (`mapToSettled`) before the yield rule runs, so a dot yields when the pill visibly
-  reaches it even while the row is still settling.
+- **No dot is ever drawn touching the pill in hand (2026-09-02).** Destin, after a slide
+  and then a blink had both been tried — and after a round that collapsed the pill in hand
+  to a dot was withdrawn (*"i want to keep the fully expanded name"*): *"the problem is that
+  the dragged session kept visibly overlapping dots before they appeared to begin to move. it
+  would be fine if they teleport or fade in/fade out as long as they dont visually touch the
+  dragged pill."* The rule is geometric, not timed: a dot within `VEIL_PX` (10px) of the
+  twin, where it is drawn this frame, is not drawn at all (`.session-pill--veiled`, instant);
+  its step-aside is a plain jump while hidden; it fades back in only once clear. The twin's
+  rAF loop reads proximity off the DOM each frame and is the only thing that unveils; the
+  render veils any dot whose offset changes in the same commit that moves it. Wide neighbours
+  are never veiled — they slide on `--ease-out`. Also kept: the grab point is measured at
+  drag START (the row has slid under the cursor since the press), and the dot's centre is
+  mapped from the row AS DRAWN into settled coordinates (`mapToSettled`) before the yield
+  rule runs, so a dot yields when the pill visibly reaches it even while the row is still
+  settling.
 - **The pill moves, 1:1 — as a floating twin.** Its in-flow box stays in the row, invisible,
   holding its slot and still animating its own width; a twin with the same markup and styles
   floats absolutely inside the bar at the cursor (`clampFloatLeft`, **no transition on its
@@ -406,19 +410,12 @@ Replace the ghost model with a moving-pill model.
   cursor travelled 130px). Nearest slot keeps the pill under the cursor **and** the gap under
   the pill: it is never more than half a neighbour-width from its hole. Dots flow under a
   wide pill one at a time.
-- **Neighbours HOP aside — they are never seen moving (2026-09-02).** Each yields by the
-  dragged pill's width plus one gap (`neighbourOffsets`, unchanged), so the row keeps its
-  total width and the gap **is** the indicator. But the move is not a slide: sliding a dot on
-  any curve leaves it visibly under the pill in hand for as long as it is moving, and Destin
-  saw exactly that on the tuned build (*"dots still keep sliding under the selected pill"*).
-  So a yielding dot blinks — fades out where it is (gone within a quarter of `--dur-hover`),
-  its transform changes while it is invisible (a `0s` transition delayed by half the blink),
-  and it fades back in where it now belongs (`pill-hop-a` / `pill-hop-b`, two identical
-  keyframes alternated per change of a pill's offset, which is what restarts a running CSS
-  animation). Cleared when the drag ends, so the drop and a repack never blink anything.
-  Measured after: 0px sustained overlap ahead of the pill in right, left and fast drags,
-  with the probe ignoring any dot below half opacity. Delete the floating copy, the
-  insertion line and `ghostTarget`.
+- **Neighbours step aside by the dragged pill's width plus one gap** (`neighbourOffsets`,
+  unchanged), so the row keeps its total width and the gap **is** the indicator. A dot does
+  it as a jump while veiled (above); a wide neighbour slides on `--ease-out`. (A timed blink
+  — `pill-hop-a/b`, 2026-09-02 — preceded the veil and was replaced by it: its fade-out
+  still let the pill reach the dot.) Delete the floating copy, the insertion line and
+  `ghostTarget`.
 - **Release glides; nothing springs back.** The reorder, the release of the drag visuals and
   the arming of a settle all land in **one render**, so the DOM order changes in the same
   commit the transforms drop: the neighbours are already exactly where they were drawn, and
@@ -522,13 +519,14 @@ Per the workspace knowledge ladder, each of these is a test, not prose. All live
    `session-pill__badge` in the strip or the stylesheet; `sessionRuntimeLabel(s)` and a
    `ProviderIcon` in the menu row; `session-runtime-label.test.ts` pins the wording per
    runtime, the brand mark, and the no-guess rule for an unknown model.
-7a. **Dots hop, never slide** — during a drag a neighbour's transform transition is
-   `0s … calc(var(--dur-hover) / 2)`; the two hop keyframes are invisible from 25% to 75%.
+7a. **No dot is drawn touching the pill in hand** — `VEIL_PX`, the proximity test in the
+   rAF loop, `.session-pill--veiled` with both `!important`s, a dot's `0s` transform during
+   a drag; and the name stays in hand (no `id === sessionId` dot width).
 8. **Widths are measured in the font handed in** — `pill-metrics.test.ts`.
 9. **The one-shot window opens in the first committed render** — `use-one-shot-window.test.tsx`
    records committed values with a layout effect: `[false, true]`.
-10. **`sessionActive`, not `visible`, gates the switch animation**; the arrival and hop
-    keyframes are finite and gated on reduced motion AND Reduce Visual Effects; the arrival
+10. **`sessionActive`, not `visible`, gates the switch animation**; the arrival keyframes
+    are finite and gated on reduced motion AND Reduce Visual Effects; the arrival
     is spring (14px lift, the overshooting curve inline, `--dur-switch: 380ms`).
 11. **The existing `steps()` pins survive** — the `steps(4)` menu-row transition and the
     `steps(8)` breathing dot are still asserted (§3.1).

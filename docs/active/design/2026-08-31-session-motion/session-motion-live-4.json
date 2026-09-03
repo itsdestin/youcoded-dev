@@ -6,18 +6,14 @@
   "themes": ["midnight"],
   "steps": [
     {
-      "id": "dot-in-hand",
+      "id": "name-veil",
       "surface": "Session strip",
       "path": "Header",
-      "headline": "You now drag a dot, not a name — which way should the other dots make room?",
-      "changed": "The jank was built in, not a tuning problem: the open name you were dragging is about six dots wide, so every dot had to cross the whole name to get out of its way, and no version of that crossing looked right. Chrome never has this problem because a dragged tab is the same size as its neighbours. So now the name folds into its dot the moment a drag starts, every other dot only ever moves one dot-width, and the name opens again where you drop it. A plain click is unchanged. Two things that made the pickup itself jump were also fixed: the pill now appears exactly where it was and shrinks around your cursor, and dots make room when the pill visibly reaches them rather than where they were about to settle.",
-      "notice": "Press and drag: the name folds into a dot under your cursor, dots step aside one at a time as you pass them, the name opens where you let go. A click still opens the name straight away.",
-      "risk": "While dragging you lose the name, so a long drag is a coloured dot in hand; if that matters more than the smoothness, say so in the note.",
-      "live": { "surface": "session-strip-motion", "round": 5 },
-      "variants": [
-        { "id": "dot-slide", "label": "Dots slide", "candidate": "dot-slide", "summary": "A dot slides its one dot-width out of the way, on the fast-deceleration curve — Chrome's swap." },
-        { "id": "dot-hop", "label": "Dots hop", "candidate": "dot-hop", "summary": "A dot blinks across instead: fades out, moves while invisible, fades back in one dot-width over." }
-      ]
+      "headline": "Name in hand, and no dot is ever drawn touching it — right now?",
+      "changed": "The name stays fully open while you drag, as you asked. The rule for the dots is no longer about timing but about distance: any dot that comes within ten pixels of the dragged pill is simply not drawn, it moves out of the way while hidden, and it fades back in only once the pill has moved clear of it. Nothing can be seen touching the pill, however fast or slow the drag. Two pickup fixes from the last round stay: the pill appears exactly where it was rather than jumping to your cursor, and dots make room where they are on screen rather than where they were about to settle.",
+      "notice": "Drag a name along the row: dots ahead vanish just before the pill reaches them and reappear behind it once it has passed. A wide neighbour (another open name) still slides aside. A click is unchanged.",
+      "risk": "A dot the pill is hovering next to is invisible for as long as it stays within ten pixels, so pausing a drag right beside a dot hides that dot until you move on.",
+      "live": { "surface": "session-strip-motion", "round": 5, "candidate": "name-veil" }
     }
   ]
 }

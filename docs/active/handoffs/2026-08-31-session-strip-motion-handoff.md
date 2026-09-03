@@ -10,10 +10,9 @@ deck: docs/active/design/2026-08-31-session-motion/session-motion-live.json
 
 # Session strip & switch motion — handoff
 
-**State (2026-09-02, evening): round 3's answer ("better, but the interaction between the
-selected moving pill and the other dots still feels janky") is built — the pill in hand is now
-a DOT, so every yield is one dot-width — and served as a round-4 live deck: one pick-one
-step, dots slide vs dots hop. Waiting on that pick; then delete the loser and merge.**
+**State (2026-09-03): the name stays in hand, and NO DOT IS EVER DRAWN TOUCHING IT — a
+geometric veil, not a timed blink. Served as the round-4 live deck (one try-this step).
+Waiting on that answer; then merge.**
 
 Destin's round-1 answers (`session-motion-live.answers.json`): **feel → Soft** (*"i like soft,
 but it will need to be tuned/repaired a bit. it's jank"*), **switch-when → Press** (*"further
@@ -94,7 +93,29 @@ and what was built (commit `8a03d554` on `feat/session-strip-motion`):
   0–16px sustained, which is the fade time of a hop or the slide of a same-width swap.
 - **One scaffold**: `[data-yield="slide"]` (globals.css) turns the hop back into a slide for
   the deck; the demo's `yieldAs` prop sets it. Registry R5: `dot-slide` / `dot-hop`.
-- Round 4 deck: `session-motion-live-4.json` — one pick-one step on R5.
+- ~~Round 4 deck: a pick-one on dot-slide vs dot-hop with a dot in hand~~ — **withdrawn**
+  before it was answered. Destin, on seeing it: *"no you got this wrong. i want to keep the
+  fully expanded name. the problem is that the dragged session kept visibly overlapping dots
+  before they appeared to begin to move. it would be fine if they teleport or fade in/fade
+  out as long as they dont visually touch the dragged pill."*
+
+**What was built on that (commit `0af19851`):** the pill's settled width is its full width
+again and the name never closes. The rule is now **geometric**: a dot within `VEIL_PX` (10px)
+of the twin, where it is drawn this frame, gets `.session-pill--veiled` (opacity 0,
+`transition-duration: 0s`, both `!important` against the inline transition list) — hidden at
+once; its step-aside is a plain jump (`transform … 0s` for dots during a drag) while hidden;
+and it fades back in (the pill's own 180ms opacity transition) only once clear. Two writers
+keep `veiledRef` in step: the twin's rAF loop (proximity, read off the DOM each frame; the
+only thing that ever unveils) and the render (a dot whose offset changes is veiled in the
+same commit that moves it). Wide neighbours are never veiled — they still slide on
+`--ease-out`. The hop keyframes, `hopGen` and `[data-yield]` are deleted. Kept from the
+withdrawn round: grab point at drag start, the rAF re-anchoring the twin's left,
+`mapToSettled`. Probes: **0.0px single-frame** visible stick-out in right, left, fast, long
+and short-left drags (the probe ignores dots below half opacity, so this is exactly
+"nothing visible touches the pill").
+
+- Round 4 deck (rewritten): `session-motion-live-4.json` — one try-this step on R5
+  (`name-veil`).
 
 **Later on 2026-09-01:** Destin saw the rebuild in the workbench (*"I think this is better"*)
 and asked for Chrome's select-on-press: the old session collapsing to a dot and the new one
@@ -198,19 +219,15 @@ Both rules are in `scripts/ui-review/README.md` → Live panes. Pinned by `deck-
 (wrap, no sideways scroll) and `test_live.py` (a row of wide panes no longer warns; one pane
 wider than any screen still does).
 
-## After the round-4 pick
+## After the round-4 answer
 
-1. Delete the loser: if **slide** wins, the hop keyframes, `session-pill--hop-*`, `hopGen`
-   and the `0s … calc(var(--dur-hover) / 2)` transition go, and the drag transition becomes
-   `var(--dur-hover) var(--ease-out)` outright; if **hop** wins, only the `[data-yield]`
-   block, `--pill-yield` and the demo's `yieldAs` prop go. Either way the
-   `animation-frame-budget` pins that name them change, and spec §7.4 says which shipped.
-2. Merge and push `feat/session-strip-motion`; then `feat/session-motion-review` (deck +
-   docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
-3. If it is neither ("other"), the note says what. Do not go back to an open name in hand
-   for the drag — that is the structural cause above; and do not go back to slot
-   positioning, which §7.4 replaced.
-4. Clean up: `worktrees/session-motion`, `worktrees/motion-docs` (and its `worktrees`
+1. "Yes": merge and push `feat/session-strip-motion`; then `feat/session-motion-review`
+   (deck + docs). Archive the spec, plan and this handoff; flip ROADMAP items 1067 and 1374.
+2. "No"/"Other": the note says what. The veil has ONE number, `VEIL_PX` in SessionStrip
+   (how close a dot may be drawn to the pill); the fade-in is the pill's ordinary opacity
+   transition (`--dur-hover`). Do not close the name in hand (withdrawn, above), and do not
+   go back to slot positioning (§7.4 replaced it).
+3. Clean up: `worktrees/session-motion`, `worktrees/motion-docs` (and its `worktrees`
    symlink), `worktrees/session-switch-animation` (PR youcoded#192 — close unmerged).
 
 ## Why a workspace worktree, and the symlink in it
