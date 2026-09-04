@@ -289,7 +289,7 @@ the wrong folder.
 
 | Result | Notes |
 |---|---|
-| | |
+| Security half PINNED BY TEST, passed first run (2026-09-04) | `desktop/tests/native-session-host.test.ts` → "checklist 9b: an Always-allow remembered for Worker in a folder does not satisfy code-reviewer in the SAME folder — through memory AND through disk" (on `fix/specialists-ledger-bugs`, `e8ce8001`). A real Always-allow for `worker` under folder F: worker → allow, code-reviewer → ask, both from memory and from a fresh host reading disk; replacing the scope filter with `true` makes it fail, so the pin is real. Step 3's card copy and folder name still need a live hire. |
 
 ---
 

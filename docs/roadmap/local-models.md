@@ -10,6 +10,14 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       Destin 2026-09-02: warn and let me choose. The same fix must count memory for several sessions sharing one model, and must NOT warn on machines whose memory is deliberately full of cache that the model load can reclaim
       `desktop` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-08-16-dual-model-oom-desktop-crash.md
 
+- [ ] A local model can only ever run one helper at a time, and the app over-reports the
+      context a local session has. Measured 2026-09-04 against the engine build the app ships:
+      the app asks the engine for its slot count without naming a model and under a field name
+      this build does not use, so it always reads "unknown" and falls back to one helper and to
+      the full configured window (128k) when each request really gets a quarter of it (32k).
+      Fix on youcoded `fix/engine-slot-count-field` (`984b3410`, unmerged)
+      `desktop` `in-flight` `checked 2026-09-04`
+
 - [ ] "Run in background" option — keep the downloaded models serving other AI tools on this
       machine after the YouCoded window closes; today the engine is deliberately stopped on
       quit. Destin's note during the 2026-07-20 engine-lifecycle fix; only if real demand shows.

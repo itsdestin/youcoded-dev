@@ -210,8 +210,9 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `blocked` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
 
 - [ ] A note sent to a background helper mid-run shows at the bottom of its Activity trail,
-      after tool calls that actually happened later
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md
+      after tool calls that actually happened later. Fix on youcoded `fix/specialists-ledger-bugs`
+      (`f0ac766d`, unmerged; the same branch pins checklist 9b as a test, `e8ce8001`)
+      `tool-cards` `desktop` `in-flight` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md
 
 - [ ] Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user
       approves a card, the executor journals and resumes it. Approved in the 2026-08-11

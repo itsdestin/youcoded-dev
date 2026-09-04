@@ -63,7 +63,7 @@ Target: `v1.3`
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 12 | 7 | 1 | 1 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 11 | 4 | 0 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 6 | 3 | 0 | 2 |
-| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 4 | 0 | 0 | 2 |
+| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 5 | 0 | 0 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
 
 ## Filing an item
