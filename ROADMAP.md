@@ -63,7 +63,7 @@ Target: `v1.3`
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 13 | 4 | 1 | 6 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 12 | 1 | 2 | 2 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 11 | 4 | 0 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 3 | 1 | 2 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 2 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
 
 ## Filing an item
