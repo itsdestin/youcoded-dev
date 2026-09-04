@@ -38,6 +38,49 @@ function run(command, tool_name = 'Bash') {
 // MUST BLOCK — every one of these was a real wasted call in the transcripts
 // ---------------------------------------------------------------------------
 
+// Guard 3: `rg` with -r clustered. Observed 2026-09-03 — a session typed
+// `rg -rn "cacheReadTokens" ...` out of grep muscle memory, got every match
+// with the text replaced by the literal "n", exit 0, and nearly read it as
+// real output. Its sibling `rg -nr` prints nothing at all and exits 1, which
+// is worse: a manufactured clean negative for a string that is present.
+test('blocks rg -rn (grep muscle memory; silently replaces matches with "n")', () => {
+  const { blocked, message } = run('rg -rn "cacheReadTokens" src');
+  assert.ok(blocked);
+  assert.match(message, /--replace/);
+});
+
+test('blocks rg -nr (r eats the pattern; prints nothing, exits 1 — a fake negative)', () => {
+  assert.ok(run('rg -nr alpha src').blocked);
+});
+
+test('blocks the cluster wherever it sits in the argument list', () => {
+  assert.ok(run('rg --hidden -rl TODO .').blocked);
+});
+
+test('blocks it after a pipe too', () => {
+  assert.ok(run('cat x | rg -rn foo').blocked);
+});
+
+test('ALLOWS a genuine unclustered replace', () => {
+  assert.equal(run("rg -r X alpha g.txt").blocked, false);
+});
+
+test('ALLOWS ordinary rg flags with no r in the cluster', () => {
+  assert.equal(run('rg -n "cacheReadTokens" src').blocked, false);
+  assert.equal(run("rg -ln 'TODO' src").blocked, false);
+  assert.equal(run("rg -o -a 'total_input_tokens' bin").blocked, false);
+  assert.equal(run("rg -A 4 -B 2 'pat' src").blocked, false);
+});
+
+test('ALLOWS -r clusters on OTHER tools — this is a ripgrep-only trap', () => {
+  assert.equal(run("sed -rn 's/a/b/p' file").blocked, false);
+  assert.equal(run('ls -lr').blocked, false);
+});
+
+test('ALLOWS it inside a heredoc body, which is data not a command', () => {
+  assert.equal(run("cat <<'EOF'\nrg -rn example\nEOF").blocked, false);
+});
+
 const MUST_BLOCK = [
   // The 35-hit shape: pattern option, unquoted glob.
   'grep -rn "download" --include=*.ts --include=*.tsx desktop/src',

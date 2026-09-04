@@ -131,6 +131,14 @@ jobs:
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-default-branch.test.sh
 
+      # Same reasoning, the other direction: the script must not report MERGED work as
+      # lost. Run without its optional repo argument on a workspace docs branch — the
+      # shape every wrap-up produces — it used to print "never pushed", which reads as
+      # an instruction to go and redo the work.
+      - name: close-out.sh names the right repo instead of crying "never pushed"
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-wrong-repo.test.sh
+
       # A command printed in a doc is a promise nobody checks. The deck's test command sat
       # WRONG in two docs for months — `-t .` cannot start at all — which is why that suite
       # went unrun and eight theme colours drifted. Blocks marked `<!-- runnable -->` are
