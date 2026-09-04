@@ -414,16 +414,41 @@ The contract has zero mechanical rows. Minimum to fix that:
 - `buddy-work-area.test.ts` — the resolved work area: a matched screen uses
   `availableScreenRect`, an unmatched one and a missing `org.kde.plasmashell`
   both fall back to full screen bounds, and nothing on the buddy path reads
-  `display.workArea` raw on Wayland (source scan).
+  `display.workArea` raw on Wayland (source scan). **Plus the multi-screen match
+  itself, against synthetic inventories** (§9): two and three screens, a
+  negative-offset screen left of the primary, differing per-screen scales, the
+  two systems listing screens in different orders, and a KDE screen whose bounds
+  match nothing Electron reports. This is the substitute for the hardware run
+  Destin deferred, and it covers the half that is logic rather than hardware.
 - Source scan: the pin switch stays gone (R6).
 - `ipc-channels.test.ts` — a hand-written `buddy:*` parity block.
 
 ## 9 · Out of scope, stated
 
 - GNOME and wlroots: no lever exists; the buddy is unavailable and says so.
-- **Multi-monitor is unproven** — one screen was connected during the probe. KWin
-  exposes every screen in one coordinate space with per-screen scale, so it is
-  reachable by construction, but it needs a real two-screen run.
+- **Multi-monitor is unproven on hardware, and Destin deferred the test**
+  (2026-09-04: "we will skip tv for now"). One screen was connected for every
+  probe round. KWin exposes every screen in one coordinate space with per-screen
+  scale, so a second screen is reachable by construction — but that is reasoning.
+
+  **What is actually at risk is narrow, and none of it strands the buddy.** The
+  hardware-dependent part is whether KWin's second-screen offsets behave; the
+  part that would really break is the **Electron-display → KDE-screen-name match
+  by bounds** in §0, and that is pure logic with no hardware in it. So it is
+  **unit-tested against synthetic two- and three-screen inventories** (offsets,
+  mismatched scales, a name that matches nothing, screens listed in a different
+  order by the two systems) — see §8. That shrinks the genuinely untested surface
+  to "does KDE report a real second monitor the way it reports this one".
+
+  Worst cases if it is wrong, all recoverable by dragging: the buddy opens on the
+  wrong screen, or the name match fails and `availableScreenRect` returns the
+  full rect for that screen so the buddy docks onto that screen's panel. **It
+  cannot be lost off-screen**: `show()` already runs a saved position through
+  `getDisplayMatching` + `clampToWorkArea`, which pulls an unreachable position
+  back onto the nearest live display, and that path is unchanged by this feature.
+
+  **Do the real two-screen run before release**, not before build — roadmap item
+  filed.
 - Surviving a KWin restart is untested.
 - The deb/rpm/pacman uninstall hook, deliberately (§6).
 

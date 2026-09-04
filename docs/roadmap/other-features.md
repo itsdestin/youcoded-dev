@@ -39,6 +39,13 @@ has passed ~8 items — graduate it to its own file.
       `kwin-keep-above.ts`, which only raises it). Design in flight.
       `buddy-window` `desktop` `confirmed` `checked 2026-09-04` `v1.3.1` → docs/active/prototypes/2026-09-04-buddy-kwin-helper-probe/FINDINGS.md
 
+- [ ] The Linux buddy has never been tried on two screens — every probe ran on the laptop panel
+      alone, and Destin deferred the TV test on 2026-09-04. On a second monitor the buddy may open
+      on the wrong screen, or sit on that screen's taskbar if the app fails to match KDE's name for
+      it. Not a stranding risk: an unreachable position is already pulled back to the nearest
+      screen. Do the real two-screen run before this ships.
+      `buddy-window` `desktop` `needs-verify` `checked 2026-09-04` `v1.3.1` → docs/active/design/2026-09-04-linux-buddy-helper/technical-design.md
+
 - [ ] With a buddy window open, a streaming reply makes the whole window re-lay-out on every
       token (2026-08-27) — the twin of the main-chat stutter fixed in perf cycle 1.
       `buddy-window` `desktop` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-buddy-bubblefeed-reflow-per-token.md
