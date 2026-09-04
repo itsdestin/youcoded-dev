@@ -17,7 +17,7 @@ yet.**
 ## Do this first
 
 1. Read `docs/active/design/2026-09-04-linux-buddy-helper/technical-design.md`
-   (revision 4). It is the build spec.
+   (revision 5). It is the build spec.
 2. Read the contract — `linux-buddy-helper.contract.json` in the same folder.
    13 rows, signed. It is the definition of done.
 3. Skim the three review files in `docs/active/reviews/2026-09-04-linux-buddy-helper-design-review-{1,2,3}.md`.
@@ -32,7 +32,7 @@ yet.**
 | Questions decks | answered, committed |
 | UI, built in the workbench | **merged on the branch, approved** (review round 2, B-1/B-2/B-3 all yes) |
 | Contract | signed 2026-09-04 21:10; R2/R6/R10 amended by the decide deck |
-| Technical design | revision 4, three review rounds, cap reached |
+| Technical design | revision 5 — three review rounds, cap reached; probe rounds 3/4/6 folded in |
 | **Build** | **not started** |
 | Acceptance | not started |
 
@@ -40,25 +40,38 @@ yet.**
 
 ## Next steps, in order
 
-### 0 · Four measurements before writing code
-All cheap; the probe rig is on disk and all of them are currently *assumptions*
-in the design.
+### 0 · Measurements before writing code — **two done, two need Destin**
 
-- **Three windows at 60 fps** (§3). Decides whether the per-role caption channel
-  holds or a group grammar is needed. Extend `follow-holder.js`.
-- **Multi-monitor** (§9). Needs Destin's TV connected — ask him. Does
-  `frameGeometry` address the second screen, and does per-screen scale survive?
-- **Does overwrite + `reconfigure` reload a loaded script?** (§6, row R11). If
-  not, "updates replace the helper quietly" means "at next login", a different
-  promise.
-- **Eyeball Overview and a screen-share picker mid-drag** (§2). `skipTaskbar`
-  etc. do not cover them. Destin's eyes, not a script.
+Done 2026-09-04, headless, machine left byte-identical (`kwinrc` diffed against a
+pre-probe backup). Probe FINDINGS rounds 3, 4 and 6.
+
+- ✅ **Three windows at 60 fps** (§3) — holds. 363/363 renames applied, all exact,
+  188/sec. The per-role grammar stands; no group format to write.
+- ✅ **Overwrite + `reconfigure`** (§6, R11) — **does NOT reload.** `unloadScript`
+  must come first. The update sequence is now a required, testable order.
+- ⚠️ **A defect fell out of this** (Round 6): Electron's `display.workArea` on
+  Wayland is the *full screen*, panel included, so §0's authoritative rectangle
+  was wrong and the buddy would have docked 52 px onto the taskbar. §0 is
+  rewritten around plasmashell's `StrutManager`. **Read §0 before building.**
+
+Still open, both needing Destin — one launch covers both:
+`bash docs/active/prototypes/2026-09-04-buddy-kwin-helper-probe/round5-live.sh`
+
+- **Multi-monitor** (§9). Needs the TV plugged in *before* launching. The rig has
+  one button per screen; the question is whether the window lands on the right
+  physical screen and whether the two scales survive. Round 6 raised the stakes:
+  Electron displays are matched to KDE screen names **by bounds**, and that match
+  has only ever been exercised against one screen.
+- **Eyeball Overview (Meta+W) and a screen-share picker mid-drag** (§2). The rig
+  uses the real `YC:mascot@x,y` caption and sets the three skip flags, so what he
+  sees is what a user would see.
 
 ### 1 · Task breakdown
 Descriptions, not pre-written code (feature-flow default; pre-written code only
 for cross-repo, stored-data or strict-order work). Rough shape:
 
 1. Shared qdbus module extracted from `kwin-keep-above.ts` (do not re-implement).
+   Also serves §0's `StrutManager` and `supportInformation` calls.
 2. `kwin-helper.ts` — status (version + Wayland gate), install, remove, orphan
    sweep, half-install rollback.
 3. The bundled helper package + asar handling.
@@ -71,7 +84,9 @@ for cross-repo, stored-data or strict-order work). Rough shape:
 8. Remove helper UI + the replacement consent sentence (§6 carries the exact
    wording — do not invent it).
 9. The R12 renderer migration.
-10. The eight tests in §8.
+10. The work-area resolver (§0) — `supportInformation` screen map +
+    `StrutManager`, with both fallbacks.
+11. The nine tests in §8.
 
 Then subagent build, **a reviewer per task**.
 
@@ -92,8 +107,11 @@ re-shot (one row for a new user, two once the helper is installed).
 - **`skipTaskbar` is a no-op on Wayland.** The helper sets it, from inside KWin.
 - **KWin's scripting DBus cannot tell you whether a script ran.** `run()` is
   void. Do not design a capability probe.
-- **`win.on('move')` never fires for a compositor-side move** — position is
-  never saved unless persistence moves into `place()`.
+- **`win.on('move')` never fires for a compositor-side move** (measured, Round 6)
+  — position is never saved unless persistence moves into `place()`. There is
+  **no** readback of any kind: `getBounds()` stays at `0,0` forever.
+- **Electron's `workArea` is a lie on Wayland** — equal to `bounds`, panel
+  included. Never clamp to it; use §0's resolver.
 - Dev instances share a `resourceClass` with production. Assume collision.
 
 ## Open, needs Destin

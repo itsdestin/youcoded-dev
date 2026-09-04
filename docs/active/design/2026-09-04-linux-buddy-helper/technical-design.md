@@ -1,14 +1,15 @@
 ---
 status: draft
 date: 2026-09-04
-revision: 4
+revision: 5
 feature: linux-buddy-helper
 contract: linux-buddy-helper.contract.json (13 rows, signed 2026-09-04; R2/R10 amended by decide-uninstall#D-1)
 branch: feat/linux-buddy-kwin-helper
-review: round 1 (13 findings, 13 accepted), round 2 (13 findings, 13 accepted) — docs/active/reviews/
+review: round 1 (13 findings, 13 accepted), round 2 (13 findings, 13 accepted), round 3 (10 findings, 10 accepted) — docs/active/reviews/
+measurements: probe rounds 3, 4 and 6 (2026-09-04) closed §3 and R11 and REVERSED R3-F7's work-area decision
 ---
 
-# Linux buddy helper — technical design (revision 2)
+# Linux buddy helper — technical design (revision 5)
 
 Revision 1 was reviewed adversarially and every one of its thirteen findings was
 accepted, three of them severe: a security hole, a dev-instance/production
@@ -66,11 +67,46 @@ So identity splits in two, because it was never one problem:
    Windows are governed by pid. Revision 3 conflated the two.
 
 Coordinates are validated before assignment, and `keepAbove` is never set on a
-window that failed the identity check. **Which rectangle is authoritative
-(R3-F7): Electron's `display.workArea`**, which excludes the Plasma panel — the
-same rectangle §3's dock and snap maths already clamps to. KWin's `workspace`
-bounds is the full screen and is NOT used for clamping; a buddy legal under one
-is illegal under the other.
+window that failed the identity check.
+
+**Which rectangle is authoritative — revision 5 reverses R3-F7's answer, which
+was measured false (probe Round 6).** R3-F7 chose Electron's `display.workArea`
+*because* it excludes the Plasma panel. On Wayland it does not: measured
+2026-09-04, `workArea` came back `{0,0 1707x1067}`, byte-identical to `bounds`,
+while KWin reserved 52 px for the panel (`WorkArea = 1707x1015`). There is no
+Wayland protocol that tells a client about panel struts, so this is not a bug to
+wait out.
+
+Left uncorrected, the buddy's default position
+(`workArea.height - MASCOT_SIZE.height - 24`) and every dock and snap put the
+mascot **52 px too low, sitting on the taskbar** — and `keepAbove` guarantees it
+covers the clock and tray rather than slipping behind them.
+
+**And the correction must happen in the app, not the helper.** The app gets no
+readback of a compositor-side move — measured in the same round: four moves via
+the caption channel, `getBounds()` stayed `0,0` every time, and `move` fired
+exactly once, at creation. So a clamp applied inside the helper would be
+invisible: the app's position would keep travelling past the panel while the
+window stopped, and dragging back would feel stuck until the app's number caught
+up.
+
+**So `workArea` becomes a resolved value, not a raw Electron read:**
+
+1. `org.kde.plasmashell /StrutManager availableScreenRect <screenName>` returns
+   the true rect — measured `(0, 0, 1707, 1015)`, exactly KWin's own.
+2. The screen *name* is not something Electron exposes (`display.label` is
+   `"Built-in Screen"`, not `"eDP-1"`). It comes free from
+   `supportInformation()` — the call §4 already makes for the version and
+   Wayland gates — whose `Screens` block carries `Name:`, `Geometry:` and
+   `Scale:` per screen. Electron displays match KDE screens **by bounds**.
+3. **Both failure paths degrade to the full screen rect, which is the correct
+   fail-safe:** an unknown screen name returns it (measured), and a KWin-only
+   session has no `org.kde.plasmashell` at all.
+4. Re-resolved on `display-metrics-changed` and on buddy-show, not cached for
+   the session — a panel can be moved, resized or set to auto-hide at any time.
+
+On KDE **X11** this whole path is skipped with everything else (§4's Wayland
+gate), where Electron's `workArea` is correct and already in use.
 
 ## 1 · The helper package
 
@@ -141,8 +177,10 @@ no-op on Wayland** — this repo's own verified comment
 (`buddy-overlay-manager.ts:386`) says so. Uncorrected, the user's task manager and
 Alt-Tab would show the caption with its numbers changing 60×/second during a
 drag. **The helper sets `skipTaskbar`, `skipSwitcher` and `skipPager` on the
-matched window itself** — verified writable in the KWin 6 API
-(`window.h:364/369/374`), which the app's own `skipTaskbar` is not on Wayland.
+matched window itself** — **measured 2026-09-04 (Round 5 smoke test): all three
+accept the write and read back `true`**, where the app's own `skipTaskbar` is a
+no-op on Wayland. (Revision 4 cited `window.h:364/369/374` for this; it is now a
+result, not a reading of the API.)
 
 **It does not remove the consequence entirely (R2-F5).** Those three flags do not
 cover KWin's Overview, KRunner's window search, the screen-share window picker,
@@ -168,9 +206,11 @@ So:
   `getBounds` is legitimate for width/height even on Wayland. `rectOf` returns
   the owned position spread with the size constants that already exist
   (`MASCOT_SIZE`, `CHAT_SIZE`, `BAR_SIZE`).
-- **Persistence moves off `win.on('move')`**, which never fires for a
-  compositor-side move — today that silently means the buddy's position is never
-  saved on Linux. It moves into `place()`, debounced.
+- **Persistence moves off `win.on('move')`.** Revision 4 asserted it never fires
+  for a compositor-side move; **measured 2026-09-04 (Round 6) and confirmed** —
+  four caption-channel moves produced zero `move` events and `getBounds()` stayed
+  at `0,0` throughout, so today the buddy's position is silently never saved on
+  Linux. Persistence moves into `place()`, debounced.
 - Guard: a source scan requiring `rectOf` instead of `getBounds`/`getPosition`
   on a buddy window.
 
@@ -193,10 +233,11 @@ one window's caption name *other* windows — which, before pid grouping existed
 would have let a dev instance move the live app's chat. It also rested on an
 unmeasured premise: nobody has shown that 180 renames/sec is a problem.
 
-**Measure three windows at 60 fps with the existing probe rig before building.**
-If it holds — expected — the per-role channel stays and there is one grammar, one
-handler, and no cross-window references. Only if it fails does a group grammar
-get written, and it must then be specified in full.
+**Measured 2026-09-04 (probe Round 3), and it holds.** Three windows at the real
+buddy sizes, each renamed every 16 ms: 363 renames, 363 applied, every one landing
+on the exact pixel, 188 renames/sec sustained, zero drops. So the per-role channel
+stays — one grammar, one handler, no cross-window references, and no group format
+to write.
 
 ## 4 · Detection and IPC (R1-10, R1-11, R1-12)
 
@@ -280,7 +321,7 @@ non-Linux path.
 | R9 | Buddy off leaves the helper | nothing on toggle-off |
 | R10 | *(amended)* the user can remove the helper | **Remove helper** action in the buddy popup, shown only when installed (decide-uninstall#D-1) |
 | R2 | *(amended)* consent copy | must no longer promise removal on uninstall |
-| R11 | Updates replace the helper quietly | at launch, bundled `Version` > installed → reinstall silently |
+| R11 | Updates replace the helper quietly | at launch, bundled `Version` > installed → copy files, `unloadScript`, `reconfigure` |
 | R12 | Existing users get the buddy hidden once | one-shot migration |
 
 **R10 was re-opened with Destin** because the approved consent card promised
@@ -319,10 +360,17 @@ dialog at launch. Covered by a case in `buddy-linux-migration.test.ts`.
 `App.tsx`'s boot effect, guarded against firing in the three buddy renderers or
 on remote/Android.
 
-**R11 needs a headless check before build (R1-13.3):** overwriting a loaded
-script's file and calling `reconfigure` may not make KWin reload it. The probe
-only ever tested a first enable. If it does not reload, "quietly" means "at next
-login", which is a different promise.
+**R11's update sequence, measured 2026-09-04 (probe Round 4) — and it is not the
+obvious one.** Overwriting a loaded script's file and calling `reconfigure`
+**does not reload it**: the file was replaced, `isScriptLoaded` stayed true, and
+KWin went on running the copy it had already parsed. `unloadScript` first, then
+`reconfigure`, does reload it — same session, no logout. So the update path is
+**copy files → `unloadScript` → `reconfigure`**, the same order removal uses, and
+it is a required order rather than an implementation detail: with `reconfigure`
+alone the promise silently degrades to "at next login" and a user who updated the
+app keeps running the previous helper, including one built against an older
+caption grammar. `unloadScript` on an id that is not loaded returns `false`
+harmlessly, so the install and update paths can share one sequence.
 
 ## 7 · Keep-above (R1-6)
 
@@ -348,7 +396,9 @@ The contract has zero mechanical rows. Minimum to fix that:
 
 - `kwin-helper.test.ts` — caption build/parse incl. hostile input, **identity
   gating (a foreign `resourceClass` and a wrong token are both refused)**,
-  version comparison, install plan, rollback.
+  version comparison, install plan, rollback, **and that install/update emits
+  `unloadScript` before `reconfigure`** (Round 4: `reconfigure` alone does not
+  reload an overwritten script).
 - `buddy-caption-channel.test.ts` — `place()` picks caption vs `setPosition` per
   platform × helper state; all nine write sites and three constructor sites route
   through it.
@@ -361,6 +411,10 @@ The contract has zero mechanical rows. Minimum to fix that:
   helper, including when status is unknown.
 - `buddy-remove-helper.test.ts` — the removal order above, and that removal
   targets only this install's plugin id.
+- `buddy-work-area.test.ts` — the resolved work area: a matched screen uses
+  `availableScreenRect`, an unmatched one and a missing `org.kde.plasmashell`
+  both fall back to full screen bounds, and nothing on the buddy path reads
+  `display.workArea` raw on Wayland (source scan).
 - Source scan: the pin switch stays gone (R6).
 - `ipc-channels.test.ts` — a hand-written `buddy:*` parity block.
 
@@ -387,10 +441,20 @@ Also measured: **KWin 6 geometry is fractional** — a readback gave
 `{x:733, y:463.666…, width:119.999…}` at 1.5× scale. Integers survive a round
 trip; anything the helper computes *from* a readback will not.
 
+**Two more of revision 4's open questions were closed on 2026-09-04**, both
+headless, machine left byte-identical (`kwinrc` diffed against a pre-probe backup):
+
+| Claim | Result |
+|---|---|
+| The per-role caption channel survives three windows at once (§3) | **Holds.** 363/363 renames applied, all exact, 188/sec |
+| Overwrite + `reconfigure` reloads a loaded script (§6, R11) | **False.** `unloadScript` must come first; see §6 |
+| Electron's `workArea` excludes the Plasma panel (§0, R3-F7) | **False on Wayland.** Identical to `bounds`; KWin reserves 52 px. §0 rewritten around `StrutManager` |
+| The app gets no readback of a compositor-side move (§3) | **Confirmed.** `getBounds()` frozen at `0,0`; one `move` event, at creation |
+| The helper can set `skipTaskbar`/`skipSwitcher`/`skipPager` (§2) | **Yes** — all three read back `true`; previously cited from a header file, now measured |
+
 Still unmeasured, and named as such: multi-monitor (§9), KWin-restart survival
-(§9), whether overwriting a loaded script and calling `reconfigure` actually
-reloads it (§6, R11), and whether Overview and the screen-share picker show the
-caption mid-drag (§2).
+(§9), and whether Overview and the screen-share picker show the caption mid-drag
+(§2). The last two need Destin — a second screen and his eyes respectively.
 
 ## 11 · Pre-existing defects to fix in passing
 

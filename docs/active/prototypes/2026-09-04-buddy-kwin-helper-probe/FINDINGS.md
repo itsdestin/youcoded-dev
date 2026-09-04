@@ -4,7 +4,7 @@ date: 2026-09-04
 type: prototype
 subject: KWin-helper route for the buddy floater on native Wayland
 predecessor: docs/archive/prototypes/2026-07-22-buddy-wayland-workbench/FINDINGS.md
-roadmap: docs/roadmap/other-features.md → buddy → "Buddy floater does not appear on Linux Wayland"
+roadmap: docs/roadmap/other-features.md → buddy → "Buddy floater appears but is stuck on Linux Wayland"
 ---
 
 # Buddy floater — KWin-helper probe
@@ -120,6 +120,8 @@ cd docs/active/prototypes/2026-09-04-buddy-kwin-helper-probe
 bash round0.sh        # K1-K4, headless, ~35s, opens a small window
 bash round0b.sh       # K5-K6, headless, ~40s
 bash interactive.sh   # Round 1, needs a human
+bash round3-three-windows.sh   # Round 3, headless, ~15s
+bash round5-live.sh            # Rounds 5 and 6, needs a human + the TV
 ```
 
 ## Round 2 — installation, startup order, screens (2026-09-04, headless)
@@ -156,6 +158,92 @@ mascot that silently refuses to move.
 against the pre-probe backup: identical), and the script unloaded from KWin's
 memory. Nothing from this probe is installed on the machine.
 
+## Round 3 — three windows on the channel at once (2026-09-04, headless)
+
+The technical design (§3) made the per-role caption grammar conditional on this
+measurement: revision 3 had proposed one caption carrying all three roles'
+targets, on the unmeasured premise that 180 renames/sec would be too many.
+
+```bash
+bash round3-three-windows.sh          # ~15s, opens three self-closing windows
+```
+
+Three windows at the real buddy sizes (112×112, 320×480, 300×60), each renamed
+on its own path every 16 ms. The helper counts inside the compositor and prints
+once at the end — printing per move would have pushed 360 lines into journald in
+two seconds, and journald's rate limiting would have looked exactly like dropped
+moves.
+
+| ID | Question | Verdict | Evidence |
+|----|----------|---------|----------|
+| T1 | Does every rename reach the compositor? | **YES** | `seen=121` on all three (120 sweep frames + the attach-time apply); zero drops |
+| T2 | Does every one become a real move? | **YES** | `applied=121` on all three — no coalescing, no skipped frame |
+| T3 | Does each land on the exact pixel? | **YES** | `exact=true` on all three; e.g. mascot `asked=981,357 final=981,357` |
+| T4 | Sustained rate | **188 renames/sec** | 360 renames in 1920 ms |
+
+**Verdict: the per-role channel holds.** One grammar, one handler, no
+cross-window references, no group format to specify. §3's conditional resolves
+in favour of what is already written.
+
+## Round 4 — does an overwritten helper reload? (2026-09-04, headless)
+
+R11 promises updates replace the helper *quietly*. Round 2 only ever tested a
+first enable, so "overwrite the file and call `reconfigure`" was an assumption.
+
+Installed a throwaway package (`youcodedhelperprobe`) that prints its own version
+on load, enabled it, then overwrote its code and bumped its `Version`.
+
+| ID | Question | Verdict | Evidence |
+|----|----------|---------|----------|
+| U1 | Does `reconfigure` alone reload an overwritten script? | **NO** | v2 file on disk, `isScriptLoaded=true`, and **no** load line for three seconds — KWin keeps running the copy it already parsed |
+| U2 | Does `unloadScript` → `reconfigure` reload it? | **YES** | `isScriptLoaded` false → true, `YCRELOAD\|loaded\|version=v2` — same session, no logout |
+| U3 | Is `unloadScript` safe on an id that is not loaded (the fresh-install path)? | **YES** | returns `false`, exit 0, no error |
+
+**So the update sequence is: copy files → `unloadScript` → `reconfigure`.** With
+`reconfigure` alone the promise silently degrades to "at next login", and a user
+who updates the app keeps running the previous helper — including one built
+against an older caption grammar. This is now a required, testable order rather
+than an implementation detail.
+
+**Left exactly as found.** Package removed, config key deleted (not set false),
+script unloaded; `diff` of `~/.config/kwinrc` against the pre-probe backup is
+identical.
+
+## Round 6 — where does the app get the work area? (2026-09-04, headless)
+
+Fell out of Round 5's smoke test. §0 of the technical design names **Electron's
+`display.workArea`, "which excludes the Plasma panel"**, as the rectangle every
+clamp, dock and snap is measured against. On Wayland that is false, and the
+consequence lands exactly where the buddy lives.
+
+| ID | Question | Verdict | Evidence |
+|----|----------|---------|----------|
+| W1 | Does Electron's `workArea` exclude the Plasma panel on Wayland? | **NO** | `workArea {0,0 1707x1067}` — byte-identical to `bounds`. There is no Wayland protocol that tells a client about panel struts |
+| W2 | Does KWin reserve the space? | **YES, 52 px** | `WorkArea`/`PlacementArea`/`MaximizeArea` all `0,0 1707x1015` against a `ScreenArea` of `1707x1067` |
+| W3 | Does the app get ANY readback of a compositor-side move? | **NO** | four moves via the caption channel; `getBounds()` stayed `0,0` every time; exactly one `move` event, fired at creation. §3's assertion is now measured, not reasoned |
+| W4 | Is there a DBus route to the real work area? | **YES** | `org.kde.plasmashell /StrutManager availableScreenRect <screenName>` → `(0, 0, 1707, 1015)` — the same rectangle KWin reports |
+
+**Why W1+W3 together are severe.** The buddy's default position is
+`workArea.height - MASCOT_SIZE.height - 24`, and every dock and snap clamps to
+the same rectangle. Using Electron's number on Wayland puts the mascot **52 px
+too low — sitting on top of the taskbar**, with `keepAbove` guaranteeing it
+covers the clock and system tray rather than slipping behind them. And because
+W3 says the app gets no readback, a clamp applied inside the helper would be
+invisible to the app: the app's idea of the position would keep travelling past
+the panel while the window stopped, so dragging back up would feel stuck until
+the app's number caught up. The correction has to happen **in the app, before it
+publishes a caption**.
+
+**The route, and what it costs.** `availableScreenRect` takes a KDE screen
+*name*, which Electron does not expose (`display.label` is `"Built-in Screen"`,
+not `"eDP-1"`). The names come free from `supportInformation()` — the call the
+design already makes for the version and Wayland gates — whose `Screens` block
+carries `Name:`, `Geometry:` and `Scale:` per screen, so Electron displays match
+KDE screens by bounds. Two honest caveats, both measured: an **unknown screen
+name returns the full screen rect**, which is the correct fail-safe; and
+`org.kde.plasmashell` is plasmashell, not KWin, so a KWin-only session has no
+such service and falls back to the same full rect.
+
 ## What is now settled, and what is not
 
 **Settled — all measured, none inferred:**
@@ -165,11 +253,20 @@ memory. Nothing from this probe is installed on the machine.
 - The helper installs, auto-loads from config, and picks up windows created later.
 - Destin, live: drag felt right, and **it stayed on top of a focused window** —
   the primitive that had never once been confirmed on Wayland.
+- Three windows on the channel at once: 363/363 renames applied, all exact
+  (Round 3). The per-role grammar stands.
+- Updating the helper in place needs `unloadScript` before `reconfigure`;
+  `reconfigure` alone silently keeps the old copy (Round 4).
+- The app gets **no** readback of a compositor-side move — `getBounds()` never
+  updates and `move` never fires (Round 6, W3).
+- Electron's `workArea` is the full screen on Wayland; the real one comes from
+  plasmashell's `StrutManager` (Round 6).
 
 **Not settled:**
-- Two screens (needs the TV).
+- Two screens (needs the TV) — and Round 6 raises the stakes: the
+  Electron-display-to-KDE-screen-name match is by bounds, and has only ever been
+  exercised against one screen.
 - Surviving a KWin restart in a real session — not tested, because restarting
   KWin on a live Wayland session risks the user's session. It should follow from
   P1 (config-loaded scripts start with KWin) but that is reasoning, not a result.
-- How the app ships and enables the helper, and what it does when it is missing.
 - Everything about GNOME and wlroots, where this lever does not exist.
