@@ -13,7 +13,10 @@
 //   push-in) + 16 (clear space) + 78 (caption: headline + sub-line) = 1080.
 export const FRAME = { w: 1920, h: 1080 };
 export const CLIP = { w: 1440, h: 900 };                       // what record.mjs films
-export const WINDOW = { scale: 0.96, cx: 960, cy: 528 };       // centre; 1382×864 at 0.96 → x 269–1651, y 96–960
+// Round 7: 0.96/528 → 0.92/540. WHY: the host's hops from the title bar left
+// the top of the frame (10 px of headroom); at 0.92 the window is 1325×828,
+// its top at y 126, and a 70 px hop keeps the head in frame.
+export const WINDOW = { scale: 0.92, cx: 960, cy: 540 };       // centre; 1325×828 at 0.92 → x 298–1622, y 126–954
 /** Max push-in any beat may use. Bigger and the window grows into the caption band. */
 export const MAX_PUSH_IN = 0.03;
 export const windowRect = (scale = WINDOW.scale) => {
@@ -23,7 +26,7 @@ export const windowRect = (scale = WINDOW.scale) => {
 // The caption band: a headline (size) and a smaller sub-line (sub) under it.
 // Round 6 widened it from one 44 px line to the two lines — the band grew 12 px
 // downward into what was bottom margin.
-export const CAPTION = { top: 976, h: 100, size: 42, sub: 24 };
+export const CAPTION = { top: 984, h: 96, size: 42, sub: 24 };
 export const MASCOT = { size: 120, feetIn: 34 };               // feet `feetIn` px into the window's title bar
 /** Where the host sits on the window's top edge, for a given window scale and a 0–1 position along it. */
 export const perch = (along = 0.3, scale = WINDOW.scale) => {
