@@ -310,11 +310,15 @@ rented Mac beats it — and tests arm64, which this VM can't.
 - **Apple ID sign-in won't work** (no valid serials). Irrelevant here — Claude sign-in is browser
   OAuth.
 - **Gatekeeper will block the app — this is expected and already documented for users.**
-  `youcoded/desktop/electron-builder.yml` sets no signing identity and no notarize config (an Apple
-  Developer cert is $99/yr), so the `.dmg` is unsigned and macOS blocks it on first launch. That is a
-  known, accepted trade-off, **not a bug**: the download page ships a full walkthrough for it —
+  The app is **self-signed** (`identity: '-'` in `youcoded/desktop/electron-builder.yml` — "ad-hoc",
+  no Apple certificate, no notarization; a Developer ID is $99/yr), so macOS still blocks it on
+  first launch as *unverified*. That part is a known, accepted trade-off, **not a bug**: the download
+  page ships a full walkthrough for it —
   `youcoded/docs/index.html` → `dl-macos` install-tips modal (drag to Applications → *"Apple cannot
   check it for malicious software"* → System Settings → Privacy & Security → **Open Anyway**).
+  What IS a bug: an app with **no** signature at all (no `Contents/_CodeSignature`), which macOS
+  rejects as *broken* — no "Open Anyway" button. That shipped for six weeks in 2026 and is now
+  caught by CI (`docs/build-and-release.md` → the dmg check).
   **This is the single highest-value thing a macOS VM can verify.** That walkthrough is
   hand-tuned to a specific macOS release's gatekeeping behavior (the source comment says as much),
   and Apple reworks this flow regularly — a clean VM is the only way to confirm the steps we tell

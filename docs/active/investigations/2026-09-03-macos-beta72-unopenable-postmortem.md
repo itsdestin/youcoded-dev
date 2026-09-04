@@ -54,11 +54,19 @@ tests don't prove a packaged build works"* — which is why `electron`, `koffi` 
 `@vscode/ripgrep` **majors** are pinned in the Dependabot config. electron-builder minors
 were not, and this is what came through the gap.
 
-**Fix applied** (`youcoded` branch `fix/mac-adhoc-signing`): `identity: '-'` in
-`electron-builder.yml`'s `mac:` block, which 26.15.3 still honours, restoring exactly the
-v1.2.4 state. Plus a `Verify the macOS bundle is signed` step in **both** mac-producing
-workflows that fails the build unless the packaged `.app` has a `_CodeSignature` seal and
-the identifier `com.youcoded.desktop` — the check whose absence let this ship for six weeks.
+**Fix merged 2026-09-04** (`youcoded` 2c369762, branch `fix/mac-adhoc-signing`): `identity: '-'`
+in `electron-builder.yml`'s `mac:` block, which 26.15.3 still honours (`MacTargetHelper.js`
+special-cases the string), restoring exactly the v1.2.4 state. Review before the merge kept
+the fix and hardened the guard around it: one shared `desktop/scripts/verify-mac-signature.sh`
+in **both** mac-producing workflows asks `codesign --verify --deep --strict` for a verdict
+(the original draft only checked that a `_CodeSignature` directory existed, which a stale
+seal passes) and compares the signing identifier to the bundle's own `CFBundleIdentifier`;
+`mac.forceCodeSigning: true` makes electron-builder itself fail when it cannot sign, so a
+local Mac build stops too; the entitlements the ad-hoc launch depends on
+(`disable-library-validation`) are now owned in `desktop/assets/` instead of borrowed from
+electron-builder's template; and Dependabot no longer auto-bumps electron-builder minors.
+The check whose absence let this ship for six weeks is pinned by
+`desktop/tests/verify-mac-signature.test.ts`.
 
 **Still open:** ad-hoc is not Developer ID. Users will still meet the "Apple cannot verify
 this" wall — they will simply have a button to get past it again. Notarization remains the
