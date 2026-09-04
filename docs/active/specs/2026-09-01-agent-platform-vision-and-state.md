@@ -420,7 +420,8 @@ stage two's journal. The custom harness builder has no dependency and no owner.
 - `docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md`.
 - `docs/active/design/2026-08-17-assistant-settings-panel-design.md` (the React mockup supersedes its HTML prototype).
 - `docs/active/specs/2026-08-31-codex-session-provider-design.md`.
-- `docs/active/investigations/2026-08-09-native-skip-permissions.md`, `2026-08-26-native-tools-vs-other-harnesses.md`, `2026-07-28-agent-harness-frontier-research.md` — still carry open findings.
+- `docs/active/investigations/2026-08-09-native-skip-permissions.md`, `2026-07-28-agent-harness-frontier-research.md` — still carry open findings.
+- `docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md` — **closed and archived 2026-09-04**; its ledger shipped or moved to `docs/roadmap/native-harness.md`. Still the reference for how YouCoded's tools compare with the other harnesses (§2–§7).
 - Depth: `youcoded/docs/native-runtime.md`; rules: `.claude/rules/native-runtime.md`, `native-specialists.md`, `native-permissions.md`, `harness-tools.md`, `harness-evaluator.md`.
 
 **Archived 2026-09-01 by this consolidation** (history and research only):
