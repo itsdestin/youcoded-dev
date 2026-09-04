@@ -279,12 +279,13 @@ seen-on is always n/a here.
       command gets past it. v1.2.4 was stamped correctly and 1.3.0-beta.72 is not; both dmgs read
       off directly. Affects releases, not just betas. It is not a one-time install hurdle either —
       the in-app update button downloads the same kind of build, so a Mac user who is happily
-      using the app is walked back into the same dead end on every update. FIXED on a branch
-      2026-09-03 (`youcoded fix/mac-adhoc-signing`) — restores the old behaviour and adds a build
-      check that fails if it ever stops happening again; open until that branch merges and a Mac
-      confirms the approval button is back. ON MERGE: re-add the verify anchor under the dmg
-      recipe in docs/build-and-release.md — it was dropped because it pointed at branch-only code
-      `n/a` `confirmed` `checked 2026-09-03` `urgent` `regression` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
+      using the app is walked back into the same dead end on every update. MERGED 2026-09-04
+      (`youcoded` 2c369762, after a review that hardened the guard: CI now asks macOS itself
+      whether the seal is valid, the packager fails the build on its own if it cannot sign, and
+      the packager's minor updates are bumped by hand from now on). Open only until a Mac
+      confirms the "Open Anyway" button is back on a build cut after the merge — test build run
+      33921417200 was dispatched for that on 2026-09-04
+      `n/a` `needs-verify` `checked 2026-09-04` `regression` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
 
 - [ ] No download we publish can be checked for corruption or tampering — the release carries the
       installers and nothing else, no checksum file of any kind, so neither a user nor the app's
