@@ -66,7 +66,7 @@ export const Beat10: React.FC = () => (
 /** The wind-down into the powered-down pose, from the ta-da: the arms come down, the eyes close, the body settles. */
 // Destin's pick (2026-09-04): between P1 and P5 — "crouch/sit into his legs, then tuck his arms in under the
 // left/right corners of his body" (engine `sitTuck`). The ta-da's arms come down first, then the sit and tuck.
-const POWER_DOWN = (at: number) => [A.rest(at, 12), A.sitTuck(at + 8, 34)];
+export const POWER_DOWN = (at: number) => [A.rest(at, 12), A.sitTuck(at + 8, 34)];
 const P10 = present('b10', [
   { at: MODAL_AT + 30, say: 'See you in there!', face: 'happy', side: 'L', until: B('b10', 3) - 4 },
 ], 'golden-sunbreak', Y_SPOT);
@@ -83,6 +83,7 @@ export const beat10: BeatModule = { id: 'b10', slug: 'golden-sunbreak', home: HO
     // powered-down pose (the candidates are P1–P6 in studies/EndPoseStudy.tsx; P1 until he picks)
     A.cheer(B('b10', 3), 30), A.face(B('b10', 3), 'happy'),
     A.tada(B('b10', 3) + 30, 'C', 14), A.look(B('b10', 3) + 40, 8, 0, 0),
-    ...POWER_DOWN(LEN('b10') - 66),   // done sitting before the fade starts (LEN − 30), so the wind-down is seen, not dimmed away
+    // no power-down for now (Destin, 2026-09-04: "just skip the powered down pose") — the ta-da holds through the fade;
+    // POWER_DOWN and the candidates in studies/EndPoseStudy.tsx stay for when he picks one
   ],
   bubbles: P10.bubbles };
