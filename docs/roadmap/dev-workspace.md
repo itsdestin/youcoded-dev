@@ -248,6 +248,18 @@ seen-on is always n/a here.
 
 ## release
 
+- [ ] REVERT WHEN 1.3.0 SHIPS: youcoded.ai's download buttons now hand out the newest release
+      INCLUDING pre-releases, so visitors get the 1.3.0-beta build instead of v1.2.4 from May.
+      Deliberate and temporary (Destin, 2026-09-03). On 1.3.0: put the buttons back on
+      stable-only, and delete the 1.3.0-beta pre-release so it stops being what the site serves
+      `n/a` `confirmed` `checked 2026-09-03` `v1.3.0`
+
+- [ ] Every Mac visitor gets the Apple Silicon installer. The download button picks the first
+      file whose name ends in .dmg and both Mac builds do, so an Intel Mac downloads an app that
+      cannot open — and the page offers no way to pick the other one. Windows/Linux/Android are
+      unaffected
+      `n/a` `confirmed` `checked 2026-09-03`
+
 - [ ] Re-work the release method: releases tag master directly, so every release ships the
       undifferentiated 2,370 commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
       be cut without dragging in hordes of unreleased features. Goal: keep master as the trunk,
