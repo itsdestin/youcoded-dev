@@ -16,6 +16,8 @@ import { evaluate, type Action, type HostState } from './host/engine';
 export type BubbleCue = { at: number; until?: number; text: string; slug: Slug; side?: 'L' | 'R' };
 type Props = { cues: BubbleCue[]; actions: Action[]; base: HostState };
 const FONT = 26, PAD_X = 22, PAD_Y = 11, GAP = 18, OUT = 6;
+const MAX_W = 560;   // a longer line WRAPS (Destin's twelve-word games line ran off the frame on one line, 2026-09-04)
+export const bubbleWidth = (text: string) => Math.min(text.length * FONT * 0.56 + PAD_X * 2, MAX_W + PAD_X * 2);
 
 export const Bubbles: React.FC<Props> = ({ cues, actions, base }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
@@ -33,9 +35,13 @@ export const Bubbles: React.FC<Props> = ({ cues, actions, base }) => {
   // never per frame (a host walking across x = 1280 made the bubble flip sides
   // mid-word and run off the edge for five frames in the 3c review).
   const s0 = evaluate(actions, base, cue.at);
-  const estWidth = cue.text.length * FONT * 0.56 + PAD_X * 2 + GAP + 40;
-  const fitsRight = s0.x + s0.size * 0.82 + estWidth < 1900;
-  const right = cue.side ? cue.side === 'R' : (s0.x + s0.size / 2 < 1280 && fitsRight) || s0.x + s0.size * 0.18 - estWidth < 20;
+  const estWidth = bubbleWidth(cue.text) + GAP + 40;
+  const roomRight = 1900 - (s0.x + s0.size * 0.82 + GAP + 40), roomLeft = s0.x + s0.size * 0.18 - GAP - 60;
+  const fitsRight = estWidth < roomRight + GAP + 40;
+  // a side with less room than the text wants still takes the bubble — it WRAPS to the room (a long line beside the
+  // Resume browser went to the left and covered the search field it was pointing at, 2026-09-04)
+  const right = cue.side ? cue.side === 'R' : (s0.x + s0.size / 2 < 1280 && fitsRight) || roomRight >= roomLeft;
+  const maxW = Math.max(260, Math.min(MAX_W, (right ? roomRight : roomLeft) - PAD_X * 2));
   const inS = spring({ frame: f - cue.at, fps, config: { damping: 12, stiffness: 190 } });
   const outS = f >= until ? interpolate(f - until, [0, OUT], [1, 0], { extrapolateRight: 'clamp' }) : 1;
   const scale = inS * outS;
@@ -48,7 +54,7 @@ export const Bubbles: React.FC<Props> = ({ cues, actions, base }) => {
   return (
     <div style={{ position: 'absolute', left: anchorX, top: headY, transform: `translate(${right ? GAP : -GAP}px, -50%) ${right ? '' : 'translateX(-100%)'}`, pointerEvents: 'none' }}>
       <div style={{ position: 'relative', transform: `scale(${scale.toFixed(3)})`, transformOrigin: right ? '0% 50%' : '100% 50%', opacity: Math.min(1, scale * 1.4) }}>
-        <div style={{ padding: `${PAD_Y}px ${PAD_X}px`, borderRadius: 20, background: bg, color: ink, fontFamily: family(t), fontSize: FONT, fontWeight: 600, lineHeight: 1.2, whiteSpace: 'nowrap',
+        <div style={{ padding: `${PAD_Y}px ${PAD_X}px`, borderRadius: 20, background: bg, color: ink, fontFamily: family(t), fontSize: FONT, fontWeight: 600, lineHeight: 1.2, whiteSpace: 'normal', maxWidth: maxW, width: 'max-content', textAlign: right ? 'left' : 'right',
           boxShadow: `0 8px 24px rgba(0,0,0,${t.dark ? 0.45 : 0.18}), 0 0 0 2px ${t.accent}55` }}>{cue.text}</div>
         {/* the tail: a rounded wedge pointing at the head */}
         <svg width={tail + 4} height={tail * 1.6} viewBox={`0 0 ${tail + 4} ${tail * 1.6}`}

@@ -23,18 +23,23 @@ export const TAIL_FRAMES = 74;
 export type Transition = 'wipe' | 'cut' | 'none';
 export type BeatId = 'b1' | 'b2' | 'b3' | 'b4' | 'b5' | 'b6' | 'b7' | 'b8' | 'b9' | 'b10';
 export type Beat = { id: BeatId; bars: [number, number]; after: Transition };
+// Re-cut 2026-09-04 to Destin's script edits and his section order (the script editor's
+// submit: 1 → 3 → 4 → 5 → 9 → 2 → 6 → 8 → 7 → 10). Every section is sized to its new lines
+// (a bubble needs 1.2 s + ¼ s a word): 42 bars became 53. Beats name their moments in
+// bars RELATIVE to their own start (beat.ts `B(id, k)`), so a reorder here is the only edit.
 export const BEATS: Beat[] = [
-  { id: 'b1', bars: [0, 2], after: 'cut' },             // the punch intro (prelude + bars 0–1); cotton candy from the hit
-  { id: 'b2', bars: [2, 5], after: 'wipe' },            // just ask (cotton candy)
-  { id: 'b3', bars: [5, 10], after: 'wipe' },           // describe a look: golden on 6, strawberry on 7, kuromi on 8
-  { id: 'b4', bars: [10, 13], after: 'wipe' },          // pick your model (crème)
-  { id: 'b5', bars: [13, 18], after: 'wipe' },          // files, then project view on 16 (meadow mist)
-  { id: 'b6', bars: [18, 24], after: 'wipe' },          // games with friends (golden sunbreak)
-  { id: 'b7', bars: [24, 28], after: 'wipe' },          // manage your conversations (midnight)
-  { id: 'b8', bars: [28, 33], after: 'wipe' },          // pick up on any device (devil's garden)
-  { id: 'b9', bars: [33, 38], after: 'wipe' },          // the marketplace, on drop 2 (light)
-  { id: 'b10', bars: [38, 42], after: 'none' },         // close (golden sunbreak); 44 → 42 on 2026-09-04: the close ran 15 s
+  { id: 'b1', bars: [0, 5], after: 'cut' },             // the punch intro; two hello lines under the settled window (bars 1–5)
+  { id: 'b3', bars: [5, 11], after: 'wipe' },           // describe a look: the request over bars 5–7, golden on 7 (drop 1), strawberry on 8, kuromi on 9
+  { id: 'b4', bars: [11, 15], after: 'wipe' },          // any AI, cloud or local (crème)
+  { id: 'b5', bars: [15, 21], after: 'wipe' },          // collaborate on a sheet, then project view on 19 (meadow mist)
+  { id: 'b9', bars: [21, 26], after: 'wipe' },          // the marketplace, on drop 2 (light)
+  { id: 'b2', bars: [26, 30], after: 'wipe' },          // repeatable prompts: the chips (cotton candy)
+  { id: 'b6', bars: [30, 38], after: 'wipe' },          // games (golden sunbreak): lobby 30–33, connect 4 33–35, chess 35–36.5, flappy to 38
+  { id: 'b8', bars: [38, 43], after: 'wipe' },          // resume on your phone (devil's garden); the take-over prompt is cut
+  { id: 'b7', bars: [43, 49], after: 'wipe' },          // status, search, tags & notes (midnight); the drag is cut
+  { id: 'b10', bars: [49, 53], after: 'none' },         // close (golden sunbreak): the window fills the frame, the modal
 ];
+export const TOTAL_BARS_PLANNED = 53;
 export const isFirst = (b: Beat) => b === BEATS[0];
 export const isLast = (b: Beat) => b === BEATS.at(-1);
 /** Frames a beat's sequence runs before its own first downbeat (the prelude for the first beat, the wipe's lead for the rest). */

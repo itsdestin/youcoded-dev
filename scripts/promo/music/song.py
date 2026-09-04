@@ -181,7 +181,7 @@ def render_b(out: str):
 # instrument's own balance. Re-keyed 2026-09-03 to the 44-bar plan: intro 0-1, break 24-25, and the
 # outro's last two bars (41-42, drums out from 41). Defined above promo_track() because the bar-0
 # impact hit reads LIFT_DB[0] to pre-trim itself (see there).
-LIFT_DB = {0: 9, 1: 9, 24: 10, 25: 10, 41: 9, 42: 9}
+LIFT_DB = {0: 9, 1: 9, 38: 10, 39: 10, 52: 9, 53: 9}   # re-keyed 2026-09-04 to the 53-bar cut: intro 0-1, break 38-39, the end bar 52 and its tail
 
 
 def promo_track() -> Song:
@@ -193,7 +193,7 @@ def promo_track() -> Song:
     on 23) · break 24-25 (drums out) · build 26-27 (riser, snare roll) · groove2 28-32 (half-time
     snare; riser 31-32, fill on 32) · drop2 33-37 (hook, brightest) · outro 38-40 (thins out, drums
     out from 40) · end 41 (final hit, 2.5 s tail)."""
-    s = Song(112, 42, tail=2.5)      # 118 → 112 on 2026-09-04: Destin wanted a tad more time on every shot; 44 → 42 bars the same day: the close ran 15 s
+    s = Song(112, 53, tail=2.5)      # 118 → 112 on 2026-09-04: a tad more time on every shot; 42 → 53 bars the same day: Destin's longer lines and his section order (see timeline.ts BEATS)
     chords = [[57, 60, 64], [57, 60, 65], [55, 60, 64], [55, 59, 62]]     # Am F/A C/G G
     roots = [45, 41, 48, 43]
     KICK, SNR, HAT = "x...x...x...x...", "....x.......x...", "x.x.x.x.x.x.x.xo"
@@ -203,8 +203,13 @@ def promo_track() -> Song:
     # 10-12 / 13-17 are both plain groove, so they share one mark). Bar 6 (drop 1) and 33 (drop 2)
     # must not move — the theme flips and the marketplace cut land on them. Bar 5 is still "groove"
     # by name: it carries the riser, the fill and the gap below, exactly as bar 22 did in the 34-bar cut.
-    for name, bar in (("intro", 0), ("groove", 2), ("drop1", 6), ("groove-b", 10), ("hook", 18), ("break", 24),
-                      ("build", 26), ("groove2", 28), ("drop2", 33), ("outro", 38), ("end", 41)):
+    # 53-bar plan (2026-09-04): intro 0-1 · groove 2-6 (bar 6 = riser + fill + the gap) · drop1 7-10 (the
+    # theme flips on 7, 8, 9) · groove-b 11-20 (model, files; the lead re-enters on 19 under project view;
+    # riser 19-20 + fill on 20 into drop 2) · drop2 21-25 (the marketplace) · groove 26-29 (the chips) ·
+    # hook 30-37 (games; fill on 37) · break 38-39 (the phone) · build 40-42 · groove2 43-48 (conversations,
+    # half-time) · outro 49-51 (drums out from 51) · end 52 (final hit, 2.5 s tail).
+    for name, bar in (("intro", 0), ("groove", 2), ("drop1", 7), ("groove-b", 11), ("drop2", 21), ("groove-c", 26), ("hook", 30),
+                      ("break", 38), ("build", 40), ("groove2", 43), ("outro", 49), ("end", 52)):
         s.section(name, bar)
 
     def section_of(bar):
@@ -216,14 +221,14 @@ def promo_track() -> Song:
     # would pull every other bar down by that much. Trimmed, it lands at exactly drop level.
     impact_trim = 10 ** (-LIFT_DB.get(0, 0) / 20)
 
-    for bar in range(42):
+    for bar in range(53):
         sec = section_of(bar)
         ch, root = chords[bar % 4], roots[bar % 4]
-        drums = sec in ("groove", "drop1", "groove-b", "hook", "groove2", "drop2") or (sec == "outro" and bar < 40)
+        drums = sec in ("groove", "drop1", "groove-b", "groove-c", "hook", "groove2", "drop2") or (sec == "outro" and bar < 51)
         # The lead hook: both drops, the games section, and a two-bar early entry on 16-17 (project
         # view lands on 16). Phrases alternate A/B from the bar the hook ENTERS, not from bar parity —
         # drop 2 starts on an odd bar and must still open with phrase A.
-        hook_from = {"drop1": 6, "hook": 16, "drop2": 33}.get(sec, 16 if bar in (16, 17) else None)
+        hook_from = {"drop1": 7, "hook": 30, "drop2": 21}.get(sec, 19 if bar in (19, 20) else None)
         hook = hook_from is not None
         bright = {"drop1": 1, "drop2": 2}.get(sec, 0)          # 0 plain · 1 drop 1 (brighter) · 2 drop 2 (brightest)
         # --- drums
@@ -231,21 +236,21 @@ def promo_track() -> Song:
             s.hits("kick", KICK, bar, S.kick)
             snare_pat = SNR
             if sec == "groove2": snare_pat = "........x......."            # half-time
-            if bar == 5: snare_pat = "....x.......xx.."                    # fill trails off into the pre-drop-1 gap (see below)
-            elif bar == 23: snare_pat = "....x.......xxxX"                 # fill before the break
-            elif bar == 32: snare_pat = "........x...xxxX"                 # half-time fill into drop 2
+            if bar == 6: snare_pat = "....x.......xx.."                    # fill trails off into the pre-drop-1 gap (see below)
+            elif bar == 37: snare_pat = "....x.......xxxX"                 # fill before the break
+            elif bar == 20: snare_pat = "....x.......xxxX"                 # fill into drop 2
             s.hits("snare", snare_pat, bar, S.snare, gain=0.8)
             s.hits("clap", SNR if sec != "groove2" else "........x.......", bar, S.clap, gain=0.5)
             s.hits("hat", HAT, bar, S.hat, gain=(0.55, 0.6, 0.65)[bright])
-            if bar in (7, 8):
+            if bar in (8, 9):
                 # Theme flips 2 and 3 land on these downbeats (flip 1 is bar 6, which the gap already
                 # sets up). An open hat + clap on beat 1 gives each flip a hit under it; the pad already
                 # re-triggers on every bar's downbeat, so the bass/arp/pad material is untouched.
                 s.hits("hat", "o...............", bar, S.hat, gain=0.6)
                 s.hits("clap", "x...............", bar, S.clap, gain=0.7)
         elif sec == "build":
-            s.hits("hat", "x.x.x.x.x.x.x.x." if bar == 26 else "xxxxxxxxxxxxxxxx", bar, S.hat, gain=0.45)
-            s.hits("snare", "x...x...x...x..." if bar == 26 else "x.x.x.x.xxxxxxxx", bar, S.snare, gain=0.55)
+            s.hits("hat", "x.x.x.x.x.x.x.x." if bar == 40 else "xxxxxxxxxxxxxxxx", bar, S.hat, gain=0.45)
+            s.hits("snare", "x...x...x...x..." if bar == 40 else "x.x.x.x.xxxxxxxx", bar, S.snare, gain=0.55)
         elif sec in ("intro", "break"):
             s.hits("hat", "..x...x...x...x.", bar, S.hat, gain=0.4)
             if bar == 0:
@@ -273,7 +278,7 @@ def promo_track() -> Song:
                 if thin and i % 2 == 1: continue
                 s.note("arp", bar, i, S.chip_pulse(seq[i % len(seq)] + 12, s.beat / 4 * 0.85, duty=0.5 if thin else 0.25), 0.4 if thin else 0.5)
         # --- pad (an octave up in the quiet sections; the outro climbs up once the drums leave on 41)
-        pad_notes = [m + (12 if sec in ("intro", "break") or (sec == "outro" and bar >= 40) else 0) for m in ch]
+        pad_notes = [m + (12 if sec in ("intro", "break") or (sec == "outro" and bar >= 51) else 0) for m in ch]
         s.note("pad", bar, 0, S.pad_supersaw(pad_notes, s.bar * (2.4 if sec == "end" else 1.02), cutoff=(2200, 2400, 2600)[bright] if bright or sec not in ("intro", "break", "outro") else 1200), 0.8)
         # --- lead hook (two-bar phrase, repeats)
         if hook:
@@ -286,7 +291,7 @@ def promo_track() -> Song:
             s.note("lead", bar, 0, S.lead_pulse(81, s.bar * 1.6), 0.5)
     # risers: into the groove (bar 1), into drop 1 (bar 5, over the gap bar), the build (26-27) and
     # into drop 2 (31-32). Each one is a noise swell that reaches full level right at the next downbeat.
-    for start, length in ((1, 1), (5, 1), (26, 2), (31, 2)):
+    for start, length in ((1, 1), (6, 1), (19, 2), (41, 2)):
         n = S.secs(s.bar * length)
         sw = S.onepole_hp(S.noise(n), 800 + 6000 * np.linspace(0, 1, n) ** 2) * np.linspace(0, 1, n) ** 2
         s.note("riser", start, 0, sw.astype(np.float32), 0.35)
@@ -295,7 +300,7 @@ def promo_track() -> Song:
     # lands on screen). The pad's reverb and the arp's delay are applied later, inside s.mix(), which
     # runs on the whole (now-zeroed) buffer — so the reverb/delay tail built up before the gap still
     # rings forward into it even though the dry signal here is exactly zero.
-    gap_from, gap_to = s.at(5, 14), s.at(6, 0)
+    gap_from, gap_to = s.at(6, 14), s.at(7, 0)
     for name in ("kick", "snare", "clap", "hat", "bass", "arp", "lead", "pad", "crash"):
         if name in s.tracks: s.tracks[name][gap_from:gap_to] = 0
     return s

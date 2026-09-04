@@ -7,7 +7,7 @@
 import type React from 'react';
 import type { Action } from '../host/engine';
 import type { ThemeCue } from '../tracks';
-import type { BubbleCue } from '../Bubble';
+import { bubbleWidth, type BubbleCue } from '../Bubble';
 import type { Slug } from '../themes';
 import { BEATS, localFrame, beatFrames, type BeatId } from '../timeline';
 import { barFrame } from '../grid';
@@ -18,8 +18,10 @@ export type BeatModule = {
   arrival?: 'move' | 'none';      // 'none' when the beat stages its own entrance (beat 1)
 };
 export const beatOf = (id: BeatId) => BEATS.find((b) => b.id === id)!;
-/** Local frame of an absolute bar inside beat `id`. */
+/** Local frame of an absolute bar inside beat `id`. Prefer `B` — a beat should not know where in the film it sits. */
 export const L = (id: BeatId, bar: number) => localFrame(beatOf(id), bar, barFrame);
+/** Local frame of the beat's OWN k-th bar (k may be fractional: 2.5 = the third beat of its third bar). Reordering the film never touches a beat that uses this. */
+export const B = (id: BeatId, k: number) => localFrame(beatOf(id), beatOf(id).bars[0] + k, barFrame);
 /** The beat's full length in frames (what its shots must cover). */
 export const LEN = (id: BeatId) => beatFrames(beatOf(id), barFrame);
 export const isLight = (slug: Slug) => !['midnight', 'halftone-dimension', 'devils-garden', 'golden-sunbreak'].includes(slug);
@@ -136,9 +138,10 @@ export function present(id: BeatId, lines: Line[], slug: Slug, home: Spot, cap =
       if (next && next.at < until) throw new Error(`${label} runs to ${until} but the next line starts at ${next.at}`);
       // the bubble's side: away from the target, so it never covers what is being pointed at
       // …unless it would not fit on that side (Bubble.tsx's own estimate) — then Bubble picks the side
-      const est = l.say.length * 26 * 0.56 + 44 + 18 + 40;
+      const est = bubbleWidth(l.say) + 18 + 40;
       const away = l.target ? (l.target.x >= here.x + SIZE / 2 ? 'L' : 'R') : undefined;
-      const fits = away === 'R' ? here.x + SIZE * 0.82 + est < 1900 : away === 'L' ? here.x + SIZE * 0.18 - est > 20 : true;
+      // the bubble wraps to the room it has, so 'away' only needs ~300 px of room on that side
+      const fits = away === 'R' ? here.x + SIZE * 0.82 + Math.min(est, 320) < 1900 : away === 'L' ? here.x + SIZE * 0.18 - Math.min(est, 320) > 20 : true;
       const side = l.side ?? (fits ? away : undefined);
       bubbles.push({ at: l.at + 2, until, text: l.say, slug, side });
       if (l.target) host.push(A.rest(until + 2));

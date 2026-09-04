@@ -12,19 +12,22 @@ plan: docs/active/plans/2026-09-03-promo-video-plan.md
 
 ## Where we are (2026-09-04, end of the fourth session)
 
-The whole film exists as a **half-size draft with music**: 99 s, ten beats, the mascot narrating.
-Destin reviews it **live** — he watches the draft and gives notes with timestamps in chat. The next
-session takes his notes, applies them, re-renders the draft, and repeats until he says go; then
-the final render (full size, loudness pass) and the wrap-up.
+The whole film exists as a **half-size draft with music**: 2:00, ten beats in DESTIN'S ORDER
+(1 → 3 → 4 → 5 → 9 → 2 → 6 → 8 → 7 → 10), the mascot narrating HIS lines. He reviews it
+**live** — he watches the draft and gives notes in chat, or rewrites the lines on the script
+editor (`python3 scripts/promo/script-editor.py`, run in the background; its exit is his
+Submit and it prints every changed line, note and the section order). The next session applies
+his notes, re-renders the draft, and repeats until he says go; then the final render (full
+size, loudness pass) and the wrap-up.
 
 - The draft he is looking at: `docs/active/prototypes/promo-2026-09/study/draft.mp4`
-  (and `scripts/promo/out/draft.mp4`, the same file). The page around it, with his five notes on
-  the fourth draft and what changed for each: `docs/active/prototypes/promo-2026-09/checkin-5.html`.
+  (and `scripts/promo/out/draft.mp4`, the same file). The page around it:
+  `docs/active/prototypes/promo-2026-09/checkin-6.html`. The record of his edit and how each
+  section was sized to it: `narration-v3.md`. His raw submit: `narration-v2.answers.json`.
 - **Open choices:** the caption style — nine animated variants in `study/label-reel.mp4` and the
   settled looks in `storyboard-v3/caption-variants-2.png` (G X P O K S W B R; the film uses G, no
   underline, while he picks; port his pick from `src/LabelStudy.tsx` into `src/Label.tsx` and delete
-  the study) — and the script: `narration-v2.md` is written to the footage with a word budget per
-  line; he edits the lines there and the beats are updated to match (the beats are the truth).
+  the study) — and the peek's exact pose (it is the app's docked side-peek now).
 - The branch: `feat/promo-video` in worktree `/home/destin/youcoded-dev/worktrees/promo`
   (pushed). The app's fixture branch `feat/promo-workbench-fakes`
   (`/home/destin/youcoded-dev/worktrees/promo-fakes`, PR itsdestin/youcoded#402, pushed) holds
@@ -85,8 +88,8 @@ backdrop one theme track, the bubbles one cue list. `npm run render:draft` → `
 | a face | `src/host/faces.ts` `WARM` (SVG in the rig's viewBox; `warmEye`, `warmBrow`); the sheet: `node faces-sheet.mjs <out.png> warm` | the sheet |
 | the headline | `src/Label.tsx` (glow only, no underline); the strings in `src/captions.ts` (the test pins them to the spec's storyboard table — change the spec row too); the nine animated variants are `src/LabelStudy.tsx` (`LabelReel`, `Label<D>` stills in `Root.tsx`) | `npm test`, draft; `npm run study -- LabelReel out/label-reel.mp4` |
 | a bubble's look | `src/Bubble.tsx` (pinned to the host's head; side locked per cue) | draft |
-| the music (tempo, bars, levels) | `music/song.py` `promo_track()`; bars and sections must match `src/timeline.ts` `BEATS` and both tests (`music/test_song.py`, `src/timeline.test.ts`) | `python3 song.py promo ../public/promo.wav && python3 test_song.py`, `npm test`, draft |
-| a beat longer/shorter/reordered | `BEATS` in `timeline.ts` (bars must tile 0–42) + the song's sections | as above |
+| the music (tempo, bars, levels) | `music/song.py` `promo_track()` (53 bars since 2026-09-04); bars and sections must match `src/timeline.ts` `BEATS` and both tests (`music/test_song.py`, `src/timeline.test.ts`) | `python3 song.py promo ../public/promo.wav && python3 test_song.py`, `npm test`, draft |
+| a beat longer/shorter/reordered | `BEATS` in `timeline.ts` (bars must tile 0–53; the ORDER of the list is the film's order and `beats/index.ts` MODULES must match it) + the song's sections in `music/song.py` (drop 1 = the first theme flip, drop 2 = the marketplace's first bar; `LIFT_DB`, the risers, the fills and the gap are all keyed by bar) + both tests. Beats name their moments with `B('bN', k)` — bars relative to their own start — so a reorder never touches a beat | as above |
 | what the app does on screen | the scene JSON (actions by selector, `mark`s, reply fixtures in `youcoded/desktop/src/renderer/dev/workbench/fixtures/replies/`); a different theme = the scene's `theme` + the beat's `slug` | `bash scripts/promo/film.sh /home/destin/youcoded-dev/worktrees/promo-fakes promo-<x>` (one scene ~1 min; the marks flow through with no edit), draft |
 | a shot shows loading / the wrong moment | the beat's `*_FROM` (`markFrame(scene, mark, edge, offset)`) and `rate` (a static screen can run at 0.6–0.8× to fit; `assertClipCovers` throws at bundle time if a shot outruns its clip) | draft |
 | the theme-change move on a cut | `CYCLE` / `arrival()` in `src/Promo.tsx`; Beat3's in-place flips in `Beat3.tsx` | draft |
@@ -160,6 +163,18 @@ npm run typecheck && npm test && npm run render:draft
   entering presentation stays mounted at progress 1; companions keep their own aspect; the
   Flappy autopilot runs inside the page; `VITE_NO_WATCH=1` serves stale modules — restart the
   workbench after any app change; `theme-assets.sh` runs under `pipefail`.
+
+## The script editor
+
+`python3 scripts/promo/script-editor.py` builds one card per line from `cues.sh` and
+`out/draft.mp4` (the frame at each bubble), serves it on 127.0.0.1:8791, opens the browser, and
+saves to `narration-v2.answers.json` as he types; Submit ends it and prints every changed line,
+note and the section order. Sections drag-reorder (pointer drag on ≡, or ▲▼; the open and the
+close are locked). `--build` writes a static copy (`script-editor.html`) for a look. After he
+submits: update the lines in the beats, the SCREEN descriptions in the script itself (keyed by
+line text), sizes in `timeline.ts` + `song.py` if a line does not fit, then the draft. NEVER
+restart or kill it while he may be typing, and never delete the answers file — one restart
+wiped his first edits (he had not got far; he said it was fine).
 
 ## Open decisions for Destin
 

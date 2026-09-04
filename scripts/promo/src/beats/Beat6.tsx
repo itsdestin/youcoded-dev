@@ -6,14 +6,15 @@ import { CAPTIONS } from '../captions';
 import { perch, windowRect } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
 import { A } from '../host/engine';
-import { L, LEN, present, inWindow, feetAt, type BeatModule } from './beat';
+import { B, LEN, present, inWindow, feetAt, type BeatModule } from './beat';
 import { Sfx } from './sfx';
 
-// Beat 6 (bars 18–24): games with friends, in Golden Sunbreak (was Halftone: its hooded rig made a tiny dark bird — Destin, 2026-09-04). The friends
-// lobby and a Challenge (bar 18), Connect 4 against Jake with moves both ways
-// (19–20), one chess move (21), then the Flappy flight on the hook's last two
-// bars (22–23), where the host dives INTO the game and becomes the bird.
-const T_C4 = L('b6', 19), T_CHESS = L('b6', 21), T_FLY = L('b6', 22), END = LEN('b6');
+// Beat 6 (8 bars): games with friends, in Golden Sunbreak (was Halftone: its hooded rig
+// made a tiny dark bird — Destin, 2026-09-04). The friends lobby and a Challenge (bars
+// 0–3, long enough for Destin's twelve-word line), Connect 4 against Jake with moves both
+// ways (3–5), one chess move (5–6.5), then the Flappy flight on the hook's last bar and a
+// half, where the host dives INTO the game and becomes the bird.
+const T_C4 = B('b6', 3), T_CHESS = B('b6', 5), T_FLY = B('b6', 6.5), END = LEN('b6');
 const LOBBY_FROM = markFrame('promo-games-lobby', 'challenge', 'end', 8) - T_C4;
 const C4_FROM = markFrame('promo-connect4', 'drop1', 'start', -12);
 const CHESS_FROM = markFrame('promo-chess', 'move', 'start', -24);
@@ -31,7 +32,7 @@ const Beat6: React.FC = () => (
     <Sequence from={T_C4} durationInFrames={T_CHESS - T_C4}><Footage file="promo-connect4" from={C4_FROM} /></Sequence>
     <Sequence from={T_CHESS} durationInFrames={T_FLY - T_CHESS}><Footage file="promo-chess" from={CHESS_FROM} /></Sequence>
     <Sequence from={T_FLY}><Footage file="promo-flappy" from={FLY_FROM} pushIn={0.03} /></Sequence>
-    <Label text={CAPTIONS.b6.head} at={L('b6', 18) + 4} slug="golden-sunbreak" />
+    <Label text={CAPTIONS.b6.head} at={B('b6', 0) + 4} slug="golden-sunbreak" />
     <Sfx at={T_FLY + 10} name="poof" volume={0.5} />
   </AbsoluteFill>
 );
@@ -42,9 +43,9 @@ const DROP1 = T_C4 + 12;
 // dive, which leaves from here.
 const SIDE = feetAt(0.55, 0.62);
 const P6 = present('b6', [
-  { at: 14, say: 'Challenge a friend.', spot: SIDE, target: inWindow(0.93, 0.36), face: 'welcome' },
-  { at: DROP1 + 2, say: "Connect 4. Jake's going down.", target: inWindow(0.82, 0.5), stay: true, face: 'happy' },
-  { at: T_CHESS + 6, say: 'Or chess.', target: inWindow(0.82, 0.5), stay: true, face: 'welcome', until: T_FLY - 2 },
+  { at: 14, say: 'You can play games alone or against friends while your assistant works.', spot: SIDE, target: inWindow(0.93, 0.36), face: 'welcome' },
+  { at: DROP1 + 2, say: "Try Connect 4. I'd win.", target: inWindow(0.82, 0.5), stay: true, face: 'smug' },
+  { at: T_CHESS + 6, say: 'Or perhaps chess?', target: inWindow(0.82, 0.5), stay: true, face: 'welcome', until: T_FLY - 2 },
 ], 'golden-sunbreak', P, END - 8);
 // …then dives INTO the game (the bird is the host)
 export const beat6: BeatModule = { id: 'b6', slug: 'golden-sunbreak', home: P6.home, Component: Beat6,

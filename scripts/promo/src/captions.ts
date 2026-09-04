@@ -6,7 +6,8 @@ export const CAPTIONS = {
   b2: { head: 'Just ask.', sub: 'Type what you need. It pulls your notes and gets to work.' },
   b3: { head: 'Describe a look.', yours: "It's yours.", sub: 'Or pick one from the community.' },
   b4: { head: 'Your model, your call.', sub: 'Claude, a cloud model, or one running on your machine.' },
-  b5: { head: 'Your files, beside the chat.', sub: 'Attach a spreadsheet. Ask. Watch it change.', head2: 'Everything in its project.', project: 'Every file, chat and note lives in its project.' },
+  // Destin, 2026-09-04 (the script editor): "rename this section to Collaborate with your assistant"; "change to Everything is a project."
+  b5: { head: 'Collaborate with your assistant.', sub: 'Attach a spreadsheet. Ask. Watch it change.', head2: 'Everything is a project.', project: 'Every file, chat and note lives in its project.' },
   b6: { head: 'Play while it works.', sub: 'Chess and Connect 4 with friends. Flappy on your own.' },
   b7: { head: 'Every conversation, findable.', sub: 'Search, tag, note, drag into order.' },
   b8: { head: 'Pick up on any device.', sub: 'Chats and project files sync across all your devices.' },

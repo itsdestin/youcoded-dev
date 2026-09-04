@@ -8,9 +8,9 @@ import { THEMES } from '../themes';
 import { assertClipCovers } from '../marks';
 import { A } from '../host/engine';
 import { PRE } from '../timeline';
-import { L, LEN, present, type BeatModule } from './beat';
+import { B, LEN, present, type BeatModule } from './beat';
 
-// Beat 10 (bars 38–42 + the audio tail), the close, in Golden Sunbreak. Destin,
+// Beat 10 (4 bars + the audio tail), the close, in Golden Sunbreak. Destin,
 // 2026-09-04: "the youcoded window should fully zoom in to take up most of the
 // frame, and then the text / platform list / website can all be placed in a nice
 // big popup modal in the middle of that youcoded window." So: the window arrives
@@ -19,7 +19,7 @@ import { L, LEN, present, type BeatModule } from './beat';
 // modal pops up in the middle of it carrying the wordmark, "Free. Open source.",
 // the platforms and the site. The host hops down to stand just left of the Y
 // inside the modal (the way the film began), waves with its line, cheers the
-// final hit on bar 41, and shuts down before the fade.
+// final hit on its fourth bar, and shuts down before the fade.
 const T = THEMES['golden-sunbreak'];
 const SCALE = 1.15;                                   // the biggest the 16:10 window fits in the 16:9 frame with a little air
 const WIN_H = CLIP.h * SCALE;                          // 1035
@@ -60,21 +60,21 @@ const Beat10: React.FC = () => (
     <Modal />
     <Caption head="YouCoded" at={MODAL_AT + 6} theme="golden-sunbreak" top={WORD_TOP} size={84} headColor="#fff" />
     <Caption head={CAPTIONS.b10.head} sub={CAPTIONS.b10.sub} at={MODAL_AT + 22} subAt={MODAL_AT + 28} theme="golden-sunbreak" top={WORD_TOP + 108} size={36} />
-    <Caption head={CAPTIONS.link} at={L('b10', 39) + 8} theme="golden-sunbreak" top={WORD_TOP + 108 + 100} size={36} headColor={T.accent} />
+    <Caption head={CAPTIONS.link} at={B('b10', 1) + 8} theme="golden-sunbreak" top={WORD_TOP + 108 + 100} size={36} headColor={T.accent} />
   </AbsoluteFill>
 );
 const P10 = present('b10', [
-  { at: MODAL_AT + 30, say: "That's me. See you in there!", face: 'happy', side: 'L', until: L('b10', 41) - 4 },
+  { at: MODAL_AT + 30, say: "That's me. See you in there!", face: 'happy', side: 'L', until: B('b10', 3) - 4 },
 ], 'golden-sunbreak', Y_SPOT);
 // The close: as the window grows and the modal pops up the host hops down from the title bar
 // (which is rising out of frame) to stand beside the Y inside the modal, waves with its line,
-// cheers the final hit on bar 41, and SHUTS DOWN — eyes closed, limbs tucked under — a couple
+// cheers the final hit on its fourth bar, and SHUTS DOWN — eyes closed, limbs tucked under — a couple
 // of seconds before the picture fades.
 export const beat10: BeatModule = { id: 'b10', slug: 'golden-sunbreak', home: HOME, Component: Beat10,
   host: [
     A.hop(GROW_AT + 2, 30, Y_SPOT.x, Y_SPOT.y, 90),
     A.wave(MODAL_AT + 30, 44), ...P10.host,
-    A.cheer(L('b10', 41), 30), A.face(L('b10', 41), 'happy'), A.face(L('b10', 41) + 34, 'welcome'),
-    A.look(L('b10', 41) + 40, 8, 0.5, 0), A.shutdown(L('b10', 41) + 52),
+    A.cheer(B('b10', 3), 30), A.face(B('b10', 3), 'happy'), A.face(B('b10', 3) + 34, 'welcome'),
+    A.look(B('b10', 3) + 40, 8, 0.5, 0), A.shutdown(B('b10', 3) + 52),
   ],
   bubbles: P10.bubbles };

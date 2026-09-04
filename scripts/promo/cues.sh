@@ -23,7 +23,7 @@ const out: any[] = [];
 for (const c of [...a.bubbles].sort((x, y) => x.at - y.at)) {
   const s = evaluate(a.host, { ...REST, hidden: true, costume: 'midnight' }, c.at + 6);
   const bi = BEATS.findIndex((_b, i) => c.at >= starts[i] && (i === BEATS.length - 1 || c.at < starts[i + 1]));
-  out.push({ beat: BEATS[bi].id, local: c.at - starts[bi], at: c.at, until: c.until, sec: +(c.at / 30).toFixed(1), len: +(((c.until ?? 0) - c.at) / 30).toFixed(1), backdrop: themeAt(c.at), costume: s.costume, x: Math.round(s.x), y: Math.round(s.y), side: c.side, text: c.text });
+  out.push({ beat: BEATS[bi].id, local: c.at - starts[bi], at: c.at, until: c.until, sec: +(c.at / 30).toFixed(1), len: +(((c.until ?? 0) - c.at) / 30).toFixed(1), backdrop: themeAt(c.at), costume: s.costume, x: Math.round(s.x), y: Math.round(s.y), size: Math.round(s.size), hidden: s.hidden, alpha: +s.alpha.toFixed(2), peek: +s.peek.toFixed(2), side: c.side, text: c.text });
 }
 for (const o of out) console.log(JSON.stringify(o));
 require('fs').writeFileSync(process.argv[2], JSON.stringify(out, null, 1));

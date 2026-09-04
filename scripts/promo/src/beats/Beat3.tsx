@@ -7,16 +7,18 @@ import { perch } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
 import { A } from '../host/engine';
 import { WASH } from '../Backdrop';
-import { L, LEN, present, inWindow, type BeatModule } from './beat';
+import { B, LEN, present, inWindow, type BeatModule } from './beat';
 import { Sfx } from './sfx';
 
-// Beat 3 (bars 5–10): describe a look. The request is sent under bar 5, the
-// music drops out for half a beat, and the app turns Golden Sunbreak on bar 6
-// (drop 1); Strawberry Kitty on 7, Kuromi Dreamer on 8; bar 9 holds.
+// Beat 3 (6 bars; second in the film since Destin's reorder of 2026-09-04, straight after
+// the intro on a hard cut — same theme, the host still on the title bar): describe a look.
+// The request is typed and sent over the first two bars, the music drops out for half a
+// beat, and the app turns Golden Sunbreak on the third bar (drop 1); Strawberry Kitty on
+// the fourth, Kuromi Dreamer on the fifth; the sixth holds.
 // Four shots of ONE recording cut where the app is static: A ends 8 frames
 // after Enter; B opens 27 frames before the first paint and runs through it; C
 // and D open on their paints (+2 for the browser's paint lag after the mark).
-const FLIP1 = L('b3', 6), FLIP2 = L('b3', 7), FLIP3 = L('b3', 8), END = LEN('b3');
+const FLIP1 = B('b3', 2), FLIP2 = B('b3', 3), FLIP3 = B('b3', 4), END = LEN('b3');
 const A_LEN = FLIP1 - 21;
 const A_FROM = markFrame('promo-theme', 'sent', 'end', 8) - A_LEN;
 const B_FROM = markFrame('promo-theme', 'paint1', 'end', 2) - 21;
@@ -31,14 +33,13 @@ assertClipCovers('promo-theme', C_FROM, FLIP3 - FLIP2);
 // the D shot is a static screen; at 0.8× the clip (which ends 10 frames short at 1×) covers it
 const D_RATE = 0.8;
 assertClipCovers('promo-theme', D_FROM, END - FLIP3, D_RATE);
-const P = perch(0.3);
 const Beat3: React.FC = () => (
   <AbsoluteFill>
     <Sequence durationInFrames={A_LEN}><Footage file="promo-theme" from={A_FROM} light /></Sequence>
     <Sequence from={A_LEN} durationInFrames={FLIP2 - A_LEN}><Footage file="promo-theme" from={B_FROM} /></Sequence>
     <Sequence from={FLIP2} durationInFrames={FLIP3 - FLIP2}><Footage file="promo-theme" from={C_FROM} light /></Sequence>
     <Sequence from={FLIP3}><Footage file="promo-theme" from={D_FROM} rate={D_RATE} light /></Sequence>
-    <Sequence durationInFrames={FLIP1 + WASH}><Label text={CAPTIONS.b3.head} at={L('b3', 5) + 4} slug="cotton-candy-sky" /></Sequence>
+    <Sequence durationInFrames={FLIP1 + WASH}><Label text={CAPTIONS.b3.head} at={B('b3', 0) + 4} slug="cotton-candy-sky" /></Sequence>
     <Sequence from={FLIP1 + WASH} durationInFrames={FLIP2 - FLIP1}><Label text={CAPTIONS.b3.head} at={0} slug="golden-sunbreak" still /></Sequence>
     <Sequence from={FLIP2 + WASH} durationInFrames={FLIP3 - FLIP2}><Label text={CAPTIONS.b3.head} at={0} slug="strawberry-kitty" still /></Sequence>
     <Sequence from={FLIP3 + WASH}><Label text={CAPTIONS.b3.head} at={0} slug="kuromi-dreamer" still /></Sequence>
@@ -49,21 +50,20 @@ const Beat3: React.FC = () => (
     <Sfx at={FLIP3} name="sparkle3" volume={0.35} />
   </AbsoluteFill>
 );
-// The host arrives beside the typed request (the input row, bottom of the window) and STAYS
-// there for the whole beat: the three costume changes happen in place, in the picture. The
-// two one-bar themes (Golden, Strawberry) hold 2.1 s each, which fits a two-word line and no
-// more — the draft's "Ooh. Golden hour." was pushed a whole bar late and landed over
-// Strawberry Kitty. Each flip's line starts after its move has landed and ends before the
-// next move winds up.
+// No arrival move: the intro left the host on the title bar in this very costume, and the cut
+// from the intro is a hard cut on the same screen. It points down at the typed request from the
+// bar and stays there for the whole beat — the three costume changes happen in place. The two
+// one-bar themes (Golden, Strawberry) hold 2.1 s each, which fits a two-word line and no more.
+const P = perch(0.3);
 const P3 = present('b3', [
-  { at: 8, say: 'Watch this.', target: inWindow(0.5, 0.945), stand: 'R', face: 'welcome', until: FLIP1 - 10 },
+  { at: 10, say: 'Tired of grey chatbots? Build something better.', target: inWindow(0.5, 0.945), stay: true, face: 'welcome', until: FLIP1 - 10 },
   { at: FLIP1 + 8, say: 'Golden hour.', face: 'happy', until: FLIP2 - 4 },
-  { at: FLIP2 + 8, say: 'Borrow one.', face: 'welcome', until: FLIP3 - 4 },
-  { at: FLIP3 + 10, say: 'Or make your own, and share it.', face: 'happy', until: END - 8 },
+  { at: FLIP2 + 8, say: 'Kitty cat!', face: 'happy', until: FLIP3 - 4 },
+  { at: FLIP3 + 10, say: 'Another kitty cat!', face: 'happy', until: END - 8 },
 ], 'kuromi-dreamer', P, END - 8);
 const HERE = P3.where(FLIP1);
 // The three in-place flips take the moves that need no wipe band: twirl, poof, twirl.
-export const beat3: BeatModule = { id: 'b3', slug: 'cotton-candy-sky', home: P3.home, Component: Beat3,
+export const beat3: BeatModule = { id: 'b3', slug: 'cotton-candy-sky', home: P, Component: Beat3, arrival: 'none',
   themes: [{ at: FLIP1, slug: 'golden-sunbreak' }, { at: FLIP2, slug: 'strawberry-kitty' }, { at: FLIP3, slug: 'kuromi-dreamer' }],
   host: [
     ...P3.host,

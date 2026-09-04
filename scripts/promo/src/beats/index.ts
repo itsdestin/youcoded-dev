@@ -9,4 +9,5 @@ import { beat7 } from './Beat7';
 import { beat8 } from './Beat8';
 import { beat9 } from './Beat9';
 import { beat10 } from './Beat10';
-export const MODULES: BeatModule[] = [beat1, beat2, beat3, beat4, beat5, beat6, beat7, beat8, beat9, beat10];
+// Film order (must match timeline.ts BEATS): Destin's reorder of 2026-09-04.
+export const MODULES: BeatModule[] = [beat1, beat3, beat4, beat5, beat9, beat2, beat6, beat8, beat7, beat10];

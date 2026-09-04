@@ -92,7 +92,10 @@ export function assemble(ids: BeatId[]) {
       let move = CYCLE[cycle % 3]; cycle++;
       const hasWipe = prev?.after === 'wipe';
       const entersHidden = prev?.id === 'b6';                      // the dive into Flappy leaves the host hidden
-      if (move === 'A' && (!hasWipe || entersHidden)) move = 'B';
+      // the poof is the only move that starts from NOTHING: a quick-change needs a visible host under the band and a
+      // twirl needs a body to spin — after the dive into Flappy the host stayed hidden for the rest of the film when
+      // the reorder handed that cut a twirl (2026-09-04)
+      if (entersHidden || (move === 'A' && !hasWipe)) move = 'B';
       const r = arrival(move, downbeat, start, from, m.home, m.slug, m.id);
       host.push(...r.actions); sounds.push(...r.sounds);
     }

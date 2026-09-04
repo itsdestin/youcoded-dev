@@ -16,14 +16,13 @@ import { Label } from '../Label';
 // standalone study clip; this module only places them in the film.
 if (IMPACT !== PRELUDE) throw new Error(`Intro IMPACT ${IMPACT} ≠ timeline PRELUDE ${PRELUDE}`);
 assertClipCovers('promo-idle-cotton', 0, LEN('b1') - L('b1', 1));
-// Once the window has settled the host says hello from the title bar. ONE line: the window
-// settles ~1 s before the beat ends, so there is no room for a second (the draft's "Let me show
-// you around" collided with beat 2's first line — both bubbles popped on the same frame). The
-// hello runs 36 frames into beat 2 on purpose: the cut is a hard cut on the same screen and the
-// host does not move, so nothing changes under it.
+// Once the window has settled the host says hello from the title bar — two lines, Destin's
+// (2026-09-04): the welcome, then what YouCoded is. The beat runs to bar 5 so both can be read;
+// the second ends before the next section starts.
 const HELLO = IMPACT + barFrame(1) + 32;
 const P1 = present('b1', [
-  { at: HELLO, say: "Hi! I'm your assistant.", face: 'happy', until: HELLO + 70 },
+  { at: HELLO, say: "Welcome to YouCoded! I'm your assistant.", face: 'happy' },
+  { at: HELLO + 92, say: 'YouCoded is a free, open-source, and fully personalizable AI assistant.', face: 'welcome', until: HELLO + 92 + 120 },
 ], 'cotton-candy-sky', perch(0.3));
 const Beat1: React.FC = () => (
   <AbsoluteFill>
