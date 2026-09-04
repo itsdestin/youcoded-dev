@@ -517,7 +517,7 @@ Updated 2026-09-03 after the free items above were opened as PRs. Arizona, Maric
 | 0 | ✅ done 2026-09-03 | The five PRs above are merged | $0 | — |
 | 1 | ✅ done 2026-09-03 | `youcoded.ai` bought (Cloudflare Registrar). Email Routing: `destin@youcoded.ai` and `support@youcoded.ai` → destinmoss.work@gmail.com (support@ to be re-pointed later) | $160 / 2 yrs | — |
 | 2 | ✅ done 2026-09-03 | Site live at https://youcoded.ai (GitHub Pages custom domain, old URL redirects; youcoded#407). Worker at https://api.youcoded.ai (wecoded-marketplace#84/#85; app switched in youcoded#406). OpenRouter header → youcoded.ai (youcoded#408) | $0 | 1 |
-| 3 | Destin | File the Arizona LLC (azcc.gov, Articles of Organization, statutory agent in Maricopa/Pima); EIN at irs.gov; business bank account | $50 | — |
+| 3 | Destin | **LLC formed 2026-09-03: Destin's Adventures, LLC, Arizona Business ID 25117372, approved the same evening.** Still to do: EIN at irs.gov; trade name "YouCoded" ($10, azsos.gov); business bank account | $85 paid | — |
 | 4 | Claude | Update PRIVACY/TERMS/CONTRIBUTING to name the LLC | $0 | 3 |
 | 5 | Destin | D-U-N-S number (free, 1–2 weeks); then Apple Developer Program (organization), Google Play Console (organization), Azure Artifact Signing | $99/yr + $25 + $10/mo | 3 |
 | 6 | Claude | Wire signing + notarization into the desktop CI; Play `.aab` upload; data-safety form draft | $0 | 5 |
@@ -546,10 +546,10 @@ switch SSL mode to Full (strict) and re-proxy, or simply stay as is.
 
 Tick these off here; each unblocks a Claude session listed in the roadmap (`v1.3` flag).
 
-- [ ] **Form the LLC** at arizonabusinesscenter.azcc.gov (the portal that replaced eCorp in January 2026)
-      — Articles of Organization ($85 expedited), statutory agent at a Maricopa or Pima County address.
-      Same day: free EIN at irs.gov, then a business bank account. Screen-by-screen walkthrough, taxes,
-      city licences and the liability dos/don'ts: `2026-09-03-arizona-llc-formation-guide.md` (this folder).
+- [x] **Form the LLC** — done 2026-09-03: **Destin's Adventures, LLC**, Arizona Business ID 25117372,
+      Active / In Good Standing; "YouCoded" becomes a state trade name ($10) and the Apple developer
+      name. Still open from this step: free EIN at irs.gov, then a business bank account. Walkthrough:
+      `2026-09-03-arizona-llc-formation-guide.md` (this folder).
 - [ ] **D-U-N-S number** at dnb.com (free, 1–2 weeks; the slowest step — start it with the LLC).
 - [ ] **Register a DMCA agent** at copyright.gov/dmca-directory ($6) in the LLC's name.
 - [ ] **Trademark**: search tmsearch.uspto.gov for "YouCoded", then file class 9 ($350) in the LLC's

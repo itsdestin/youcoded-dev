@@ -77,8 +77,8 @@ them. Not here: the theme renders wrong (themes).
 
 - [ ] No DMCA agent is registered ($6, ten minutes at copyright.gov), so the takedown process in the
       Terms carries no safe-harbour protection for plugin and theme copyright claims. Blocked on
-      having the LLC's name to register it under
-      `n/a` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      the LLC exists as of 2026-09-03, so this is now a ten-minute Destin task
+      `n/a` `confirmed` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 ## install
 

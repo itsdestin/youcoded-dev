@@ -301,7 +301,7 @@ seen-on is always n/a here.
       `n/a` `in-flight` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
-      Blocked until the LLC exists and the Apple / Azure signing accounts are opened in its name;
+      The LLC exists (2026-09-03); blocked until the Apple / Azure signing accounts are opened in its name;
       after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads
       `n/a` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
@@ -311,8 +311,9 @@ seen-on is always n/a here.
       `android` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] The privacy policy, terms and contributing guide still say "not a company" and name "its
-      maintainer" as the responsible party; once the LLC exists they must name it
-      `n/a` `blocked` `checked 2026-09-03` `v1.3`
+      maintainer" as the responsible party; the company now exists (Destin's Adventures, LLC,
+      Arizona, formed 2026-09-03) and they must name it
+      `n/a` `confirmed` `checked 2026-09-03` `v1.3`
 
 - [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
       turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
