@@ -203,6 +203,79 @@ def rotate_submitted(spec, log=print):
     return dest
 
 
+_TAG_KIND = {v: k for k, v in NOTE_KIND.items()}   # "fix later" → 'later', the copy box's tag back to the page's key
+
+
+def parse_pasted(spec, text):
+    """The deck's copy box, pasted back → the state the server would have written.
+
+    WHY: when the page is opened as a plain file (the browser open failed, or Destin opened the
+    html path from the chat) Submit has no server to reach, so the page shows its summary in a
+    copy box and he pastes it into the chat. On 2026-09-04 that paste arrived as ONE line — the
+    chat flattened the newlines — and nothing on this side could turn it back into an answers
+    file, so a fully answered deck read as "not submitted". This parser accepts both shapes
+    (one step per line, or everything on one line) by splitting the text at the spec's own
+    step ids, never at whitespace; the header before the first id is ignored.
+    Returns (state, problems): problems is a list of strings, empty when every segment parsed."""
+    ids = [st['id'] for st in spec['steps']]
+    by_id = {st['id']: st for st in spec['steps']}
+    alt = '|'.join(re.escape(i) for i in sorted(ids, key=len, reverse=True))
+    parts = re.split(rf'(?:(?<=\s)|^)({alt})(?=\s|$)', text.strip())
+    # parts = [header, id, segment, id, segment, …]
+    state = {'deck': spec['key'], 'answers': {}}
+    problems = []
+    seg_re = re.compile(r'^(?P<what>yes|no|other|skip|none|pick\s+\S+)'
+                        r'(?:\s+—\s+"(?P<note>.*)"(?:\s+\[(?P<tag>[^\]]+)\])?)?\s*$', re.S)
+    for i in range(1, len(parts) - 1, 2):
+        sid, seg = parts[i], parts[i + 1].strip()
+        m = seg_re.match(seg)
+        if not m:
+            problems.append(f'{sid}: could not read "{seg[:60]}" — expected yes / no / other / skip / none / pick <id>, optionally — "note" [tag]')
+            continue
+        what = m.group('what')
+        if what == 'skip':
+            continue
+        a = {}
+        if what.startswith('pick'):
+            a['v'], a['pick'] = 'pick', what.split(None, 1)[1]
+            opts = [o['id'] for o in by_id[sid].get('options') or by_id[sid].get('variants') or []]
+            if not opts:
+                problems.append(f'{sid}: "pick {a["pick"]}" but this step has no options — it answers yes / no / other')
+            elif a['pick'] not in opts:
+                problems.append(f'{sid}: picked "{a["pick"]}" but the options are {", ".join(opts)}')
+        elif what == 'none':
+            a['v'] = 'no'
+        else:
+            a['v'] = what
+        if m.group('note'):
+            a['note'] = m.group('note')
+        if m.group('tag'):
+            kind = _TAG_KIND.get(m.group('tag'))
+            if kind:
+                a['note_kind'] = kind
+            else:
+                problems.append(f'{sid}: unknown note tag [{m.group("tag")}] — one of {", ".join(NOTE_KIND.values())}')
+        state['answers'][sid] = a
+    if not state['answers'] and not problems:
+        problems.append('no step answers found — expected lines like "Q-1 pick a" or "P-3 yes" using this deck\'s step ids (' + ', '.join(ids) + ')')
+    return state, problems
+
+
+def record(spec, text, log=print):
+    """Write a pasted copy-box summary as the submitted answers file. Exit code: 0 recorded, 1 refused."""
+    state, problems = parse_pasted(spec, text)
+    if problems:
+        for p in problems:
+            log('refused: ' + p)
+        return 1
+    rotate_submitted(spec, log)
+    state['submitted'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+    write_atomic(answers_path(spec), state)
+    log(f'[deck] recorded {len(state["answers"])} answers from the paste → {os.path.basename(answers_path(spec))}')
+    log(summary(spec, state))
+    return 0
+
+
 def resolve_worktree(name):
     """A worktree name, a path holding desktop/, or the main checkout — the same three shapes
     record-pair.sh accepts, so one spelling works everywhere."""
