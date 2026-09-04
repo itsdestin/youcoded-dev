@@ -73,10 +73,12 @@ hit-test. Depth: the handoff below.
 
 ## Escape and "released over the desktop" are indistinguishable
 
-Both end with `dropEffect 'none'` and unusable coordinates (measured), so a
-release over nothing puts the pill BACK. A new window is made by dropping on the
-source window's own chat area (`SessionDropZone`: "Open in a new window"); in
-another window that surface says "Move here". Guard: `session-strip-htmldrag.test.tsx`.
+Both end with `dropEffect 'none'` and unusable coordinates (measured). Destin
+chose the desktop drop: a drag nothing accepted opens a new window, as on
+Windows/macOS — so Escape does too, and cancelling is dragging back into the
+strip. A window's only session goes back instead. The chat area is a second,
+labelled route (`SessionDropZone`: "Open in a new window" / "Move here").
+Guard: `session-strip-htmldrag.test.tsx`.
 
 ## `webContents.send` into a window that has not mounted is DROPPED
 

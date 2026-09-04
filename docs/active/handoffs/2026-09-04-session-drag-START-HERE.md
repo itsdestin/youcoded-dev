@@ -18,7 +18,7 @@ a decision any more. What is left is merging, and two small follow-ups.
 | Thing | Where it stands |
 |---|---|
 | History wrong after a tear-off | **FIXED.** PR [#409](https://github.com/itsdestin/youcoded/pull/409), `fix/tearoff-history`. CI green, `MERGEABLE`. Not merged — Destin's call |
-| Drag between windows on Wayland | **FIXED, verified live, pushed.** Branch `feat/session-drag-handoff`, head `8d88bd0d`. `verify.sh` green. **No PR yet** |
+| Drag between windows on Wayland | **FIXED, verified live, pushed.** Branch `feat/session-drag-handoff` (head in `git log`; desktop-drop and desktop-only menu landed after Destin's live review). `verify.sh` green. **No PR yet** |
 | The drag picture | **No longer a decision.** The compositor carries nothing; the strip draws the pill itself (below) |
 | Workspace docs | This handoff, the `multi-window-detach` rule and `scripts/platform-probe.mjs` are on `youcoded-dev` branch `docs/session-drag-html-drag` (supersedes `docs/tearoff-followups`, which can be deleted) |
 
@@ -69,9 +69,12 @@ The previous handoff's reason for rejecting a page-started drag — "it stops
   windows, where a release does nothing anyway.
 - **Drop targets:** the strip (reorder for our own pill, adopt for another window's) and
   the chat area (`SessionDropZone`): "Open in a new window" for our own pill, "Move
-  here" for another window's. Releasing over nothing, or pressing Escape, puts the pill
-  back. A window's only session cannot be torn off (Chrome's rule) — its zone is inert
-  and the menu item is disabled.
+  here" for another window's. Releasing over NOTHING — the bare desktop, another app —
+  opens a new window, as on Windows/macOS. So does Escape: the two are indistinguishable
+  (`dropEffect 'none'`), and Destin chose the desktop drop over Escape ("if a user wants
+  to cancel, they can just drag it back into the original session switcher"). A window's
+  only session cannot be torn off (Chrome's rule) — it goes back, its zone is inert and
+  the menu item is disabled.
 - **Right-click / long-press a pill** → "Move to new window" and "Move to window N —
   names". Works everywhere, by keyboard, and is the only cross-window route for touch.
 - Windows/macOS/X11 keep the live tear-off; pills are not draggable there.
