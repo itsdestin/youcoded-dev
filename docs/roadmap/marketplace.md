@@ -75,11 +75,6 @@ them. Not here: the theme renders wrong (themes).
       Destin's call — candidate "No leaked secrets found"
       `marketplace-screen` `all` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
-- [ ] No DMCA agent is registered ($6, ten minutes at copyright.gov), so the takedown process in the
-      Terms carries no safe-harbour protection for plugin and theme copyright claims. Blocked on
-      the LLC exists as of 2026-09-03, so this is now a ten-minute Destin task
-      `n/a` `confirmed` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
-
 ## install
 
 - [ ] 314 Docker-packaged MCP listings can be browsed but not installed — the detail page shows

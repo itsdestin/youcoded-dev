@@ -522,7 +522,7 @@ Updated 2026-09-03 after the free items above were opened as PRs. Arizona, Maric
 | 5 | Destin | D-U-N-S number (free, 1–2 weeks); then Apple Developer Program (organization), Google Play Console (organization), Azure Artifact Signing | $99/yr + $25 + $10/mo | 3 |
 | 6 | Claude | Wire signing + notarization into the desktop CI; Play `.aab` upload; data-safety form draft | $0 | 5 |
 | 7 | Destin | USPTO clearance search (tmsearch.uspto.gov), then file "YouCoded" in class 9; optionally class 42 | $350 (+$350) | 3 |
-| 8 | Destin | Register a DMCA agent (copyright.gov/dmca-directory) | $6 | 3 |
+| 8 | ✅ done 2026-09-03 | DMCA agent registered (DMCA-1079861); Terms §6 updated on the `chore/name-the-llc` branch | $6 | 3 |
 | 9 | Claude, after Destin's wording call | Rename the "Likely safe" badge to what was checked; fix the scan-follows-wrong-ref bug; Gemma license notice on download; first-run "the assistant can change and delete files" line | $0 | Destin picks wording |
 | 10 | Destin, optional | One hour with a lawyer: read the Terms once, confirm the Android relicense reasoning | $300–600 | 3 |
 | | | **Year-one total, doing it yourself** | **~$700 to $1,050** | |
@@ -553,7 +553,7 @@ Tick these off here; each unblocks a Claude session listed in the roadmap (`v1.3
       Still open from this step: the business bank account. Walkthrough:
       `2026-09-03-arizona-llc-formation-guide.md` (this folder).
 - [ ] **D-U-N-S number** at dnb.com (free, 1–2 weeks; the slowest step — start it with the LLC).
-- [ ] **Register a DMCA agent** at copyright.gov/dmca-directory ($6) in the LLC's name.
+- [x] **Register a DMCA agent** — done 2026-09-03, registration DMCA-1079861, in the LLC's name.
 - [ ] **Trademark**: search tmsearch.uspto.gov for "YouCoded", then file class 9 ($350) in the LLC's
       name; class 42 (+$350) if the marketplace/sync will be paid services. Decide first whether
       "WeCoded" gets its own filing.

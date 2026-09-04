@@ -2,6 +2,7 @@
 
 One line per closed item, newest at the bottom: `- [x] YYYY-MM-DD <area> — <headline> (<commit or PR>)`.
 
+- [x] DMCA designated agent registered with the U.S. Copyright Office in the LLC's name (Destin, 2026-09-03, registration DMCA-1079861); TERMS.md §6 names the agent on youcoded branch `chore/name-the-llc` `n/a` `confirmed` `checked 2026-09-03`
 - [x] 2026-09-01 chat-data — Chat Search phase 1: index + read-only CLI (youcoded#282 `2f8b5671`, #283 `8a06d79d`; wecoded-marketplace#65, #66)
 - [x] 2026-09-01 chat-data — Chat Search phase 2: writes — tag/untag/note/flag/close from the CLI through the outbox the app drains (youcoded#346 `db4ed2b4`; wecoded-marketplace#70 `c539d26`, chatsearch 0.2.0)
 - [x] 2026-09-01 chat-data — Chat Search session references: Preview / Resume a past conversation from a search hit, plus the reference block (youcoded#343 `3b759931`; wecoded-marketplace#68 `314617f8`)
