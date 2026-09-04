@@ -4,7 +4,6 @@ import { FPS } from './grid';
 import { Promo, FILM, Film, studyFrames } from './Promo';
 import { Intro, INTRO_FRAMES } from './intro/Intro';
 import { CaptionStudy } from './CaptionStudy';
-import { LabelStudy, LabelReel, REEL_FRAMES, DESIGNS } from './LabelStudy';
 import { HostStudy, STUDY_FRAMES } from './intro/HostStudy';
 import { TransitionStudy, TRANSITION_STUDY_FRAMES } from './studies/TransitionStudy';
 import { EndPoseStudy } from './studies/EndPoseStudy';
@@ -28,18 +27,7 @@ export const RemotionRoot: React.FC = () => (
     ))}
     {/* check-in 3b: the label + bubble captions and the three theme-transition candidates */}
     <Composition id="TransitionStudy" component={TransitionStudy} durationInFrames={TRANSITION_STUDY_FRAMES} fps={FPS} width={1920} height={1080} />
-    {/* caption STYLE variants for Destin, 2026-09-04, round two: nine animated designs (G X P O K S W B R —
-        see LabelStudy.tsx). `LabelReel` is the video (each design 2 s light, 2 s dark); the `Label<D>` /
-        `LabelDark<D>` stills draw each one settled (`at: -40`) for the sheet. */}
-    <Composition id="LabelReel" component={LabelReel} durationInFrames={REEL_FRAMES} fps={FPS} width={1920} height={1080} />
-    {DESIGNS.map((d) => (
-      <Still key={`L${d}`} id={`Label${d}`} component={LabelStudy} width={1920} height={1080}
-        defaultProps={{ design: d, slug: 'cotton-candy-sky' as const, still: 'cotton', head: 'Just ask.', kicker: 'Any model', at: -40, showTag: true }} />
-    ))}
-    {DESIGNS.map((d) => (
-      <Still key={`LD${d}`} id={`LabelDark${d}`} component={LabelStudy} width={1920} height={1080}
-        defaultProps={{ design: d, slug: 'devils-garden' as const, still: 'anydevice', head: 'Pick up on any device.', kicker: 'Any device', at: -40, showTag: true }} />
-    ))}
+    {/* the caption style is G (glow, no underline — Destin's pick, 2026-09-04); the nine-variant study is retired */}
     {(['A', 'B', 'C'] as const).map((d) => (
       <Still key={d} id={`Caption${d}`} component={CaptionStudy} width={1920} height={1080}
         defaultProps={{ design: d, slug: 'halftone-dimension' as const, still: 'connect4', head: 'Play while it works.', sub: 'Chess and Connect 4 with friends. Flappy on your own.' }} />

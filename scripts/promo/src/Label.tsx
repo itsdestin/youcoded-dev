@@ -19,8 +19,8 @@ export const Label: React.FC<Props> = ({ text, at, slug, still = false, top = CA
   const slide = still ? 1 : spring({ frame: f - at, fps, config: { damping: 18, stiffness: 120 } });
   const words = text.split(' ');
   // 2026-09-04: no accent bar ("fingernail") and, since the fourth draft, no underline either ("i don't
-  // like the underline"); the words carry a soft glow in the accent. This is variant G of LabelStudy; the
-  // one Destin picks replaces it.
+  // like the underline"); the words carry a soft glow in the accent — variant G of the nine he was shown, his pick
+  // (2026-09-04). The study (LabelStudy.tsx) is retired; its sheet and reel stay in the prototype folder.
   const glow = t.dark ? `0 0 18px ${t.accent}99, 0 3px 18px rgba(0,0,0,.6)` : `0 0 16px ${t.accent}55, 0 2px 10px ${t.canvas}, 0 1px 3px rgba(0,0,0,.25)`;   // the last shadow: pink-on-pink (Strawberry, Kuromi) needs an edge
   return (
     <div style={{ position: 'absolute', left: align === 'left' ? R.x : 0, right: align === 'left' ? undefined : 0, top, display: 'flex', flexDirection: 'column', alignItems: align === 'left' ? 'flex-start' : 'center' }}>
