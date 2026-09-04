@@ -64,7 +64,7 @@ export const Beat10: React.FC = () => (
   </AbsoluteFill>
 );
 const P10 = present('b10', [
-  { at: MODAL_AT + 30, say: "That's me. See you in there!", face: 'happy', side: 'L', until: B('b10', 3) - 4 },
+  { at: MODAL_AT + 30, say: 'See you in there!', face: 'happy', side: 'L', until: B('b10', 3) - 4 },
 ], 'golden-sunbreak', Y_SPOT);
 // The close: as the window grows and the modal pops up the host hops down from the title bar
 // (which is rising out of frame) to stand beside the Y inside the modal, waves with its line,

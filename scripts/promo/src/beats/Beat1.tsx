@@ -22,7 +22,7 @@ assertClipCovers('promo-idle-cotton', 0, LEN('b1') - L('b1', 1));
 const HELLO = IMPACT + barFrame(1) + 32;
 const P1 = present('b1', [
   { at: HELLO, say: "Welcome to YouCoded! I'm your assistant.", face: 'happy' },
-  { at: HELLO + 92, say: 'YouCoded is a free, open-source, and fully personalizable AI assistant.', face: 'welcome', until: HELLO + 92 + 120 },
+  { at: HELLO + 92, say: 'YouCoded is a free, open-source, and fully personalizable AI agent.', face: 'welcome', until: HELLO + 92 + 120 },
 ], 'cotton-candy-sky', perch(0.3));
 const Beat1: React.FC = () => (
   <AbsoluteFill>

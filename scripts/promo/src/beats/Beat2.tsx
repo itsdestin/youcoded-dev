@@ -27,6 +27,6 @@ const Beat2: React.FC = () => (
 const END = LEN('b2');
 const P2 = present('b2', [
   { at: 40, say: 'Save repeatable prompts.', target: inWindow(0.355, 0.867), stand: 'above', face: 'welcome' },
-  { at: 118, say: 'Or entire workflows. No explaining needed.', target: inWindow(0.40, 0.16), stand: 'R', face: 'happy', until: END - 8 },
+  { at: 118, say: 'Or entire workflows. No annoying re-explanation needed.', target: inWindow(0.40, 0.16), stand: 'R', face: 'happy', until: END - 8 },
 ], 'cotton-candy-sky', P, END - 8);
 export const beat2: BeatModule = { id: 'b2', slug: 'cotton-candy-sky', home: P2.home, Component: Beat2, host: P2.host, bubbles: P2.bubbles };

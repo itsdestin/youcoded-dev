@@ -28,7 +28,7 @@ OUT = os.path.join(DOCS, 'script-edits.answers.json')   # this round's edits; ea
 # text so a reordered cue list still finds its description; a line with no entry shows nothing.
 SCREEN = {
     "Welcome to YouCoded! I'm your assistant.": ("YouCoded Assistant", "The window has risen and settled; the host is on its title bar, waving."),
-    "YouCoded is a free, open-source, and fully personalizable AI assistant.": ("YouCoded Assistant", "The empty chat under the wordmark, before the first section."),
+    "YouCoded is a free, open-source, and fully personalizable AI agent.": ("YouCoded Assistant", "The empty chat under the wordmark, before the first section."),
     "Tired of grey chatbots? Build something better.": ("Describe a look.", "\"build me a theme with the vibe of outdoor anime art\" is typed and sent (two bars)."),
     "Golden hour.": ("Describe a look.", "Golden Sunbreak lands; the host has twirled into gold. One bar (2.1 s)."),
     "Kitty cat!": ("Describe a look.", "Strawberry Kitty; the host poofed into the cat. One bar (2.1 s)."),
@@ -38,11 +38,11 @@ SCREEN = {
     "Drop in a spreadsheet, ask the assistant for a sort.": ("Collaborate with your assistant.", "The spreadsheet chip appears; \"sort it by amount and add a totals row\" is typed under it."),
     "View and edit the result together.": ("Collaborate with your assistant.", "The sorted sheet re-opens in the panel beside the chat (two bars)."),
     "Manage classes, coding projects, and more with Project View.": ("Everything is a project.", "Project view: Econ 201, its file grid, then the Context tab."),
-    "There's a marketplace.": ("Add what you need.", "The marketplace grid, on the music's second drop."),
-    "Made by people like you.": ("Add what you need.", "The Remember plugin's page; Install (the host claps); \"Installed\"."),
-    "In your chat.": ("Add what you need.", "Back in the chat; the Remember chip on the strip."),
+    "There's even a marketplace for skills, themes, integrations, and more!": ("Add what you need.", "The marketplace grid, on the music's second drop."),
+    "Download things built by your coworkers or classmates.": ("Add what you need.", "The Remember plugin's page; Install (the host claps); \"Installed\"."),
+    "Just like that!": ("Add what you need.", "Back in the chat; the Remember chip on the strip."),
     "Save repeatable prompts.": ("Just ask.", "The Briefing chip is tapped; the assistant starts (\"Connecting dots\")."),
-    "Or entire workflows. No explaining needed.": ("Just ask.", "The reply streams in: \"Pulling your notes and the syllabus…\", tools running."),
+    "Or entire workflows. No annoying re-explanation needed.": ("Just ask.", "The reply streams in: \"Pulling your notes and the syllabus…\", tools running."),
     "You can play games alone or against friends while your assistant works.": ("Play while it works.", "The friends list; Challenge next to Jake (three bars)."),
     "Try Connect 4. I'd win.": ("Play while it works.", "Connect 4: our drop, then Jake's."),
     "Or perhaps chess?": ("Play while it works.", "One chess move; then the host dives into Flappy."),
@@ -51,7 +51,7 @@ SCREEN = {
     "Easily see the status of working assistants.": ("Every conversation, findable.", "The sessions menu drops from the title bar, each row with its status."),
     "Search and filter old conversations.": ("Every conversation, findable.", "The Resume browser; \"econ\" is typed and the list narrows."),
     "Or add tags and notes to help you find conversations later.": ("Every conversation, findable.", "The Organize sheet: the Priority tag on, a note typed."),
-    "That's me. See you in there!": ("YouCoded · Free. Open source. · www.youcoded.ai", "The close: the window fills the frame, the modal, the host beside the Y."),
+    "See you in there!": ("YouCoded · Free. Open source. · www.youcoded.ai", "The close: the window fills the frame, the modal, the host beside the Y."),
 }
 READ_BASE, READ_WORD = 36, 8   # frames: Destin's rule, 1.2 s + ¼ s a word (beat.ts readOf)
 
