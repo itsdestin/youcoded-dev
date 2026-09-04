@@ -10,8 +10,8 @@ export type FaceStyle = 'classic' | 'soft' | 'dot' | 'warm';
 // significantly worse" — the Golden Sunbreak and Strawberry Kitty eyes (the
 // rigs' own big dark eyes with sparkle highlights) are the model. 'classic' is
 // the style the film uses; soft/dot stay only as the record of what was tried.
-type Set = Record<'idle' | 'welcome' | 'curious' | 'shocked' | 'blink', string> & { happy?: string; dizzy?: string; smug?: string; shutdown?: string };
-const EXTRA_FACES = ['happy', 'smug', 'shutdown'] as const;   // faces a set may add beyond the rig's own five
+type Set = Record<'idle' | 'welcome' | 'curious' | 'shocked' | 'blink', string> & { happy?: string; dizzy?: string; smug?: string; shutdown?: string; asleep?: string; dozy?: string };
+const EXTRA_FACES = ['happy', 'smug', 'shutdown', 'asleep', 'dozy'] as const;   // faces a set may add beyond the rig's own five
 // The new styles draw their ink in a FIXED dark, not the theme's on-accent:
 // on a light theme the on-accent is white, and a white iris in a white eye is
 // no eye at all (the first sheet, Cotton Candy row).
@@ -82,6 +82,11 @@ const WARM: Set = {
   // idle = shutdown: eyes closed as two flat lines, a small neutral mouth; the host's `shutdown` action tucks the limbs under it
   idle: `<path d="M8 10 L10.6 10" fill="none" stroke="${INK}" stroke-width="0.8" stroke-linecap="round"/><path d="M13.4 9.8 L16 9.8" fill="none" stroke="${INK}" stroke-width="0.8" stroke-linecap="round"/><path d="M11.3 13.3 L12.7 13.3" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`,
   shutdown: `<path d="M8 10 L10.6 10" fill="none" stroke="${INK}" stroke-width="0.8" stroke-linecap="round"/><path d="M13.4 9.8 L16 9.8" fill="none" stroke="${INK}" stroke-width="0.8" stroke-linecap="round"/><path d="M11.3 13.3 L12.7 13.3" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`,
+  // asleep (2026-09-04, the powered-down alternatives): eyes closed as soft DOWNWARD arcs — the
+  // cartoon sleeping eye — and a small content smile; 'shutdown' above is the flat-line version
+  asleep: `<path d="M8 9.8 Q9.3 11 10.6 9.8" fill="none" stroke="${INK}" stroke-width="0.85" stroke-linecap="round"/><path d="M13.4 9.6 Q14.7 10.8 16 9.6" fill="none" stroke="${INK}" stroke-width="0.85" stroke-linecap="round"/><path d="M11.2 13.3 Q12 13.8 12.8 13.3" fill="none" stroke="${INK}" stroke-width="0.45" stroke-linecap="round"/>`,
+  // dozy: the welcome eyes with the lids most of the way down, the mouth a relaxed line
+  dozy: `${warmEye(9.3, 9.55, 1, 0.62)}${warmEye(14.7, 9.25, 1, 0.62)}<path d="M11.3 13.3 L12.7 13.3" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`,
   welcome: `${warmEye(9.3, 9.55)}${warmEye(14.7, 9.25)}${SMILE}`,
   // curious: the SAME two eyes, one brow up, a small off-centre mouth
   curious: `${warmEye(9.3, 9.55)}${warmEye(14.7, 9.25)}<path d="M8 7.1 L10.6 6.9" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>${warmBrow(14.7, 6.3, 0.3)}<ellipse cx="12.05" cy="13.35" rx="0.45" ry="0.5" fill="${INK}"/>`,

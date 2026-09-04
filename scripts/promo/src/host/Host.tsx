@@ -5,7 +5,7 @@ import { THEMES, rigFor, companionsFor, inkFor, type Slug } from '../themes';
 import { evaluate, type Action, type HostState } from './engine';
 import { withFaces, type FaceStyle } from './faces';
 
-const FACES: Face[] = ['idle', 'welcome', 'curious', 'shocked', 'dizzy', 'happy', 'smug', 'shutdown'];
+const FACES: Face[] = ['idle', 'welcome', 'curious', 'shocked', 'dizzy', 'happy', 'smug', 'shutdown', 'asleep', 'dozy'];
 const DEFAULT_RIG_SLUGS: Slug[] = ['midnight', 'creme', 'light', 'meadow-mist', 'devils-garden', 'cotton-candy-sky', 'golden-sunbreak'];
 
 /** One rig, posed from a HostState. `scope` keeps its style rules from leaking into another rig on screen. */
@@ -18,7 +18,7 @@ const Rig: React.FC<{ s: HostState; style: FaceStyle; scope: string }> = ({ s, s
   // a rig may skip dizzy) do not exist there, and a face the rig lacks drew NOTHING — Kuromi went
   // blank for a few frames in the draft (Destin, 2026-09-04). Fall back to a face the rig has.
   const has = (f: Face) => svg.includes(`id="rig-face-${f}"`);
-  const face: Face = has(s.face) ? s.face : s.face === 'dizzy' ? (has('shocked') ? 'shocked' : 'welcome') : s.face === 'shutdown' ? (has('idle') ? 'idle' : 'welcome') : 'welcome';
+  const face: Face = has(s.face) ? s.face : s.face === 'dizzy' ? (has('shocked') ? 'shocked' : 'welcome') : s.face === 'shutdown' || s.face === 'asleep' || s.face === 'dozy' ? (has('idle') ? 'idle' : 'welcome') : 'welcome';
   return (
     <div className={scope} style={{ width: '100%', height: '100%',
       ['--rig-accent' as string]: t.accent, ['--rig-on-accent' as string]: inkFor(s.costume), ['--rig-line' as string]: t.fg }}>

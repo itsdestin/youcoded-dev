@@ -63,6 +63,8 @@ export const Beat10: React.FC = () => (
     <Caption head={CAPTIONS.link} at={B('b10', 1) + 8} theme="golden-sunbreak" top={WORD_TOP + 108 + 100} size={36} headColor={T.accent} />
   </AbsoluteFill>
 );
+/** The wind-down into the powered-down pose, from the ta-da: the arms come down, the eyes close, the body settles. */
+const POWER_DOWN = (at: number) => [A.rest(at, 12), A.shutdown(at + 10, 18)];
 const P10 = present('b10', [
   { at: MODAL_AT + 30, say: 'See you in there!', face: 'happy', side: 'L', until: B('b10', 3) - 4 },
 ], 'golden-sunbreak', Y_SPOT);
@@ -74,7 +76,11 @@ export const beat10: BeatModule = { id: 'b10', slug: 'golden-sunbreak', home: HO
   host: [
     A.hop(GROW_AT + 2, 30, Y_SPOT.x, Y_SPOT.y, 90),
     A.wave(MODAL_AT + 30, 44), ...P10.host,
-    A.cheer(B('b10', 3), 30), A.face(B('b10', 3), 'happy'), A.face(B('b10', 3) + 34, 'welcome'),
-    A.look(B('b10', 3) + 40, 8, 0.5, 0), A.shutdown(B('b10', 3) + 52),
+    // the cheer on the final hit settles into E · ta-da (Destin's pick, 2026-09-04: arms wide, presenting the
+    // wordmark, happy), held for two seconds; then, as the picture starts to dim, it winds down into the
+    // powered-down pose (the candidates are P1–P6 in studies/EndPoseStudy.tsx; P1 until he picks)
+    A.cheer(B('b10', 3), 30), A.face(B('b10', 3), 'happy'),
+    A.tada(B('b10', 3) + 30, 'C', 14), A.look(B('b10', 3) + 40, 8, 0, 0),
+    ...POWER_DOWN(LEN('b10') - 38),
   ],
   bubbles: P10.bubbles };
