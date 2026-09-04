@@ -158,7 +158,7 @@ doesn't show up when you check the other; the over-length note sends anyway.
 
 | Result | Notes |
 |---|---|
-| | |
+| Partly pinned, not run by hand (2026-09-04) | The 2,001-character refusal is pinned by `desktop/tests/specialist-actions.test.tsx` ("exactly 2,000 characters is allowed; 2,001 is not"). The note appearing on both the card and the popup still needs a live hire. |
 
 ---
 
@@ -246,7 +246,7 @@ helper somehow gets MultiEdit, the mcp tool, or bypassed permissions anyway.
 
 | Result | Notes |
 |---|---|
-| | |
+| Pinned by test, not run by hand (2026-09-04) | All three warnings are pinned in `desktop/tests/specialist-definition-files.test.ts`: "cc: MultiEdit → Edit warning", "cc: mcp__* stripped", "cc: permissionMode → warning, never a failure". Only the consent card's file line remains a live check. |
 
 ---
 
@@ -264,7 +264,7 @@ Settings explains why your file didn't load.
 
 | Result | Notes |
 |---|---|
-| | |
+| Pinned by test, not run by hand (2026-09-04) | `desktop/tests/specialist-catalog.test.ts`: "a personal file named worker.md is SKIPPED with a collision error — built-in ids are reserved" and "a file colliding with a built-in id is skipped, never shadowing it". |
 
 ---
 
@@ -506,7 +506,7 @@ window this checklist otherwise uses.
 
 | Result | Notes |
 |---|---|
-| | |
+| Pinned by test, not run on a phone (2026-09-04) | `desktop/tests/specialists-section.test.tsx` asserts the exact "Specialists run on the desktop app…" empty state renders when the platform answers not-implemented-on-mobile (two cases). Not exercised on a real APK. |
 
 ---
 

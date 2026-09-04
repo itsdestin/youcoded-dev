@@ -67,20 +67,15 @@ re-derive from these:
 - `docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md` —
   a note sent mid-run lands at the bottom of the Activity trail, below tool
   calls that happened later.
-- `docs/active/investigations/2026-09-01-specialist-run-stale-resend.md` —
-  a late-arriving run update flips a finished card back to "running"; a run
-  record carries nothing saying which of two updates is newer.
-- `docs/active/investigations/2026-09-01-specialist-missed-steers-unclamped.md` —
-  a missed steer is stored in full in the parent's ledger, past the
-  2,000-character cap notes obey, and nothing bounds how many accumulate.
 - `docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md` —
   helper transcripts accumulate forever. **Blocked**: the app has no
   delete-a-conversation feature at all, so this waits on that existing.
 
-The middle two spent time in `docs/archive/` with `status: active` and no
-roadmap entry — invisible to `/audit`, which never scans the archive. Both were
-moved back and filed on 2026-09-04. If you archive a report, the bug it
-describes must be shipped or dropped first.
+Two more (a stale run update rewinding a finished card; missed steers stored
+unclamped) were fixed on master on 2026-09-02 (`96d82393`, `5f759d8a`) without
+closing their roadmap items — closed and archived 2026-09-04. The note-order bug
+has a fix on `fix/specialists-ledger-bugs` (youcoded, unmerged as of
+2026-09-04), which also pins checklist 9b's security half as a unit test.
 
 ## Code map
 

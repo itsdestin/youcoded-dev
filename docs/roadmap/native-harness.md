@@ -213,14 +213,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       after tool calls that actually happened later
       `tool-cards` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md
 
-- [ ] A finished helper's card can flip back to "running" — a late-arriving run update
-      overwrites the finished one, because a run record carries nothing saying which is newer
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-run-stale-resend.md
-
-- [ ] A note you send a helper that misses its window is stored in full in the parent's ledger,
-      past the 2,000-character cap notes are supposed to obey, and nothing limits how many pile up
-      `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-missed-steers-unclamped.md
-
 - [ ] Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user
       approves a card, the executor journals and resumes it. Approved in the 2026-08-11
       specialists spec (§4, §7, §8); three live probes the spec requires (local engine's real
