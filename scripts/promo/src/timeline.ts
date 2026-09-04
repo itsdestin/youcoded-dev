@@ -19,11 +19,11 @@ export const CUT = PRE + POST;
 // (69.17 s). TAIL_FRAMES holds the LAST beat open for the rest of the audio;
 // no transition follows it, so nothing else on the timeline moves.
 export const TAIL_FRAMES = 74;
-export type Transition = 'wipe' | 'none';
+export type Transition = 'wipe' | 'cut' | 'none';   // 'cut': same overlap maths, no visible wipe (beat 1 → 2 is the same window)
 export type BeatId = 'b1' | 'b2' | 'b3' | 'b4' | 'b5' | 'b6' | 'b7' | 'b8';
 export type Beat = { id: BeatId; bars: [number, number]; after: Transition };
 export const BEATS: Beat[] = [
-  { id: 'b1', bars: [0, 2], after: 'wipe' },            // cold open (midnight)
+  { id: 'b1', bars: [0, 2], after: 'cut' },             // cold open (midnight) → the same window: a hard cut, the host bounces on the beat
   { id: 'b2', bars: [2, 5], after: 'wipe' },            // one tap (midnight)
   { id: 'b3', bars: [5, 8], after: 'wipe' },            // the spreadsheet (meadow mist)
   { id: 'b4', bars: [8, 14], after: 'wipe' },           // games with friends (halftone dimension)

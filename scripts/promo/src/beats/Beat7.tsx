@@ -7,6 +7,7 @@ import { perch } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
 import { L, LEN, type BeatModule } from './beat';
 import { Sfx } from './sfx';
+import { WASH } from '../Backdrop';
 
 // Beat 7 (bars 22–29): describe a look. The request is sent under bar 22, the
 // reply lands, and on bar 23's downbeat the whole app turns Golden Sunbreak;
@@ -43,9 +44,9 @@ const Beat7: React.FC = () => (
         theme's caption is a separate element (font and colours follow the theme);
         the later ones are `still` so the headline does not re-pop. */}
     <Sequence durationInFrames={FLIP1}><Caption head={CAPTIONS.b7.head} at={L('b7', 22) + 4} theme="midnight" /></Sequence>
-    <Sequence from={FLIP1} durationInFrames={FLIP2 - FLIP1}><Caption head={CAPTIONS.b7.head} sub={CAPTIONS.b7.yours} at={0} subAt={4} theme="golden-sunbreak" still /></Sequence>
-    <Sequence from={FLIP2} durationInFrames={FLIP3 - FLIP2}><Caption head={CAPTIONS.b7.head} sub={CAPTIONS.b7.sub} at={0} subAt={6} theme="strawberry-kitty" still /></Sequence>
-    <Sequence from={FLIP3}><Caption head={CAPTIONS.b7.head} sub={CAPTIONS.b7.sub} at={0} subAt={0} theme="kuromi-dreamer" still /></Sequence>
+    <Sequence from={FLIP1} durationInFrames={FLIP2 - FLIP1 + WASH}><Caption head={CAPTIONS.b7.head} sub={CAPTIONS.b7.yours} at={0} subAt={4} theme="golden-sunbreak" still /></Sequence>
+    <Sequence from={FLIP2 + WASH} durationInFrames={FLIP3 - FLIP2}><Caption head={CAPTIONS.b7.head} sub={CAPTIONS.b7.sub} at={0} subAt={0} theme="strawberry-kitty" still /></Sequence>
+    <Sequence from={FLIP3 + WASH}><Caption head={CAPTIONS.b7.head} sub={CAPTIONS.b7.sub} at={0} subAt={0} theme="kuromi-dreamer" still /></Sequence>
     <Sfx at={FLIP1} name="chime" volume={0.55} />
     <Sfx at={FLIP2} name="chime" volume={0.45} />
     <Sfx at={FLIP3} name="chime" volume={0.45} />

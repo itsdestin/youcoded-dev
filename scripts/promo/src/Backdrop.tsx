@@ -13,6 +13,7 @@ const Field: React.FC<{ slug: Slug; drift: number }> = ({ slug, drift }) => {
   const t = THEMES[slug];
   return (
     <AbsoluteFill style={{ background: t.canvas }}>
+      {t.gradient && <AbsoluteFill style={{ background: t.gradient, opacity: 0.85 }} />}
       {t.wallpaper && <Img src={staticFile(`themes/${slug}/backdrop.jpg`)} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: t.dark ? 0.55 : 0.7 }} />}
       <AbsoluteFill style={{ background: t.canvas, opacity: t.dark ? 0.35 : 0.55 }} />
       <AbsoluteFill style={{ background: `radial-gradient(70% 85% at ${drift}% 40%, ${t.accent}${t.dark ? '33' : '22'} 0%, transparent 70%)` }} />
@@ -22,7 +23,7 @@ const Field: React.FC<{ slug: Slug; drift: number }> = ({ slug, drift }) => {
   );
 };
 
-export const WASH = 14;   // frames a theme change takes to sweep the backdrop
+export const WASH = 8;   // frames a theme change takes to sweep the backdrop
 /**
  * The field behind everything. `themes` is the absolute-frame track; at each
  * change the new field sweeps out from the window's centre as an expanding

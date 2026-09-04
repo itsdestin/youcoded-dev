@@ -30,6 +30,10 @@ assertClipCovers('promo-chess', CHESS_FROM, T_FLY - T_CHESS);
 assertClipCovers('promo-flappy', FLY_FROM, END - T_FLY);
 const P = perch(0.3);
 const R = windowRect();
+// Where the Flappy bird sits when the game starts: the drawer is the right 600 px
+// of the 1440 px clip, the bird a third of the way in and mid-height. The host
+// dives to exactly there and bursts, so "it became the bird" is the reading.
+const BIRD = { x: R.x + R.w * (0.62), y: R.y + R.h * 0.5 };
 const Beat4: React.FC = () => (
   <AbsoluteFill>
     <Sequence durationInFrames={T_C4}><Footage file="promo-games-lobby" from={LOBBY_FROM} /></Sequence>
@@ -44,5 +48,6 @@ export const beat4: BeatModule = { id: 'b4', slug: 'halftone-dimension', home: P
   cues: [
     { at: T_C4, pose: 'cheer' },                                                  // the challenge is on
     { at: T_C4 + 30, pose: 'curious' },
-    { at: T_FLY - HOP, x: R.x + R.w / 2 - 60, y: R.y + R.h / 2 - 60, size: 0, hop: true, hidden: true },   // dives into the window
+    { at: T_FLY - HOP, x: BIRD.x - 60, y: BIRD.y - 60, size: 0, hop: true, hidden: true },   // dives into the game, onto the bird
+    { at: T_FLY + 2, x: P.x, y: -260, size: 120, hidden: true },                             // (unseen) parks above the frame so the next beat's arrival drops in from the top
   ] };

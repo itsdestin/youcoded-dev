@@ -1,12 +1,12 @@
 import React from 'react';
-import { AbsoluteFill, Audio, staticFile } from 'remotion';
+import { AbsoluteFill, Audio, staticFile, useCurrentFrame, interpolate } from 'remotion';
 import { TransitionSeries, linearTiming } from '@remotion/transitions';
 import { barFrame, TOTAL_FRAMES } from './grid';
 import { BEATS, CUT, TAIL_FRAMES, startFrames, sequenceFrames } from './timeline';
 import { MODULES } from './beats';
 import { Backdrop } from './Backdrop';
 import { Mascot, HOP } from './Mascot';
-import { accentWipe } from './transitions';
+import { accentWipe, hardCut } from './transitions';
 import { THEMES } from './themes';
 import { MASCOT } from './layout';
 import { shift, type Cue, type ThemeCue } from './tracks';
@@ -23,6 +23,10 @@ const FILM = TOTAL_FRAMES + TAIL_FRAMES;
  * generated here — it takes off 2 frames before the wipe starts and lands 2
  * frames after the downbeat, changing costume at the apex.
  */
+const FadeOut: React.FC = () => {
+  const f = useCurrentFrame();
+  return <AbsoluteFill style={{ background: '#000', opacity: interpolate(f, [FILM - 30, FILM - 1], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }) }} />;
+};
 export const Promo: React.FC = () => {
   const nodes: React.ReactNode[] = [];
   const themes: ThemeCue[] = [];
@@ -46,8 +50,8 @@ export const Promo: React.FC = () => {
       const next = MODULES[i + 1];
       nodes.push(
         <TransitionSeries.Transition key={`${b.id}-t`} timing={linearTiming({ durationInFrames: CUT })}
-          presentation={accentWipe({ accent: THEMES[next.slug].accent, from: i % 2 === 0 ? 'left' : 'right' })} />);
-      sounds.push(<Sfx key={`whoosh-${b.id}`} at={STARTS[i + 1]} name="whoosh" volume={0.35} />);
+          presentation={(b.after === 'cut' ? hardCut : accentWipe)({ accent: THEMES[next.slug].accent, from: i % 2 === 0 ? 'left' : 'right' })} />);
+      if (b.after === 'wipe') sounds.push(<Sfx key={`whoosh-${b.id}`} at={STARTS[i + 1]} name="whoosh" volume={0.35} />);
     }
   });
   return (
@@ -57,6 +61,8 @@ export const Promo: React.FC = () => {
       <TransitionSeries>{nodes}</TransitionSeries>
       <Mascot cues={cues} />
       {sounds}
+      {/* the last second fades to black under the music's tail, so the film ends rather than stops */}
+      <FadeOut />
     </AbsoluteFill>
   );
 };

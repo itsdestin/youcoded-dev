@@ -13,13 +13,15 @@ export type Theme = {
   slug: Slug; name: string; dark: boolean;
   canvas: string; accent: string; onAccent: string; fg: string;
   wallpaper?: string;                 // staticFile path under public/
+  gradient?: string;                  // a CSS gradient for themes with no wallpaper (Halftone)
   font: 'Inter' | 'Comfortaa' | 'Nunito' | 'Space Grotesk';
 };
 const T = (t: Theme) => t;
 export const THEMES: Record<Slug, Theme> = {
   midnight:             T({ slug: 'midnight', name: 'Midnight', dark: true, canvas: '#0D1117', accent: '#B1BAC4', onAccent: '#0D1117', fg: '#C9D1D9', font: 'Inter' }),
   'meadow-mist':        T({ slug: 'meadow-mist', name: 'Meadow Mist', dark: false, canvas: '#F6FAF5', accent: '#2F7D55', onAccent: '#FFFFFF', fg: '#041008', wallpaper: 'themes/meadow-mist/wallpaper.jpg', font: 'Nunito' }),
-  'halftone-dimension': T({ slug: 'halftone-dimension', name: 'Halftone Dimension', dark: true, canvas: '#08060e', accent: '#E51F48', onAccent: '#ffffff', fg: '#F0E8F8', font: 'Inter' }),
+  'halftone-dimension': T({ slug: 'halftone-dimension', name: 'Halftone Dimension', dark: true, canvas: '#08060e', accent: '#E51F48', onAccent: '#ffffff', fg: '#F0E8F8', font: 'Inter',
+    gradient: 'linear-gradient(135deg, #18102e 0%, #2a1650 30%, #341454 55%, rgba(232,35,74,0.35) 75%, rgba(0,184,255,0.25) 90%, #18102e 100%)' }),
   'kuromi-dreamer':     T({ slug: 'kuromi-dreamer', name: 'Kuromi Dreamer', dark: false, canvas: '#C9B8E0', accent: '#8158ad', onAccent: '#FFFFFF', fg: '#190E27', wallpaper: 'themes/kuromi-dreamer/wallpaper.webp', font: 'Comfortaa' }),
   'devils-garden':      T({ slug: 'devils-garden', name: "Devil's Garden", dark: true, canvas: '#140810', accent: '#FFC627', onAccent: '#140810', fg: '#FBE9C9', wallpaper: 'themes/devils-garden/wallpaper.jpg', font: 'Space Grotesk' }),
   'golden-sunbreak':    T({ slug: 'golden-sunbreak', name: 'Golden Sunbreak', dark: true, canvas: '#08080e', accent: '#ffc030', onAccent: '#000000', fg: '#F8E8C8', wallpaper: 'themes/golden-sunbreak/wallpaper.jpg', font: 'Inter' }),

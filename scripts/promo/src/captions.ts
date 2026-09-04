@@ -3,7 +3,7 @@
 // Each beat has a headline and a quieter sub-line (Caption.tsx).
 export const CAPTIONS = {
   b1: { head: 'YouCoded', sub: 'Useful. Fun. Yours.' },
-  b2: { head: 'One tap to start.', sub: 'Briefing, inbox, journal. Quick actions you set up once.' },
+  b2: { head: 'Just ask.', sub: 'Type what you need. It pulls your notes and gets to work.' },
   b3: { head: 'Your files, beside the chat.', sub: 'Attach a spreadsheet. Ask. Watch it change.' },
   b4: { head: 'Play while it works.', sub: 'Chess and Connect 4 with friends. Flappy on your own.' },
   b5: { head: 'Every conversation, findable.', sub: 'Search, tag, note, drag into order.' },

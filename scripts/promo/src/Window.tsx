@@ -22,7 +22,7 @@ export const Window: React.FC<{ scale?: number; pushIn?: number; dy?: number; op
   const top = windowRect(scale).y + dy;
   const shadow = light
     ? '0 24px 60px rgba(30,10,40,.30), 0 4px 14px rgba(30,10,40,.18), 0 0 0 1px rgba(0,0,0,.14)'
-    : '0 24px 64px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.12)';
+    : '0 24px 64px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.2)';
   return (
     <div style={{ position: 'absolute', left: WINDOW.cx, top, width: CLIP.w, height: CLIP.h, opacity,
       transform: `translateX(-50%) scale(${s})`, transformOrigin: 'center top',

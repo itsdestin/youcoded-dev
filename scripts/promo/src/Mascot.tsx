@@ -107,7 +107,9 @@ export const Mascot: React.FC<{ cues: Cue[] }> = ({ cues }) => {
   // Blink for 3 frames roughly every 3.2 s (the app's chill blink cadence), never mid-hop.
   const blink = f % 97 < 3 && h.pose !== 'tuck';
   const t = THEMES[h.costume];
-  const comps = companionsFor(h.costume);
+  // Halftone's 'ghost' (a chromatic after-image of the body) read as a SECOND mascot
+  // tumbling behind the host — companions that are silhouettes are not drawn.
+  const comps = companionsFor(h.costume).filter((c) => !c.ghost);
   const lag = hostAt(cues, f - 4, fps);      // companions follow four frames behind
   const compIn = spring({ frame: f - (h.burstAt ?? -100), fps, config: { damping: 12, stiffness: 120 } });
   const burst = h.burstAt != null ? interpolate(f - h.burstAt, [0, 12], [0, 1], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }) : 1;

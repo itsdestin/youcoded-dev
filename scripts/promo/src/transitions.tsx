@@ -44,3 +44,6 @@ const Wipe: React.FC<TransitionPresentationComponentProps<Props>> = ({ children,
   );
 };
 export const accentWipe = (props: Props): TransitionPresentation<Props> => ({ component: Wipe, props });
+/** A hard cut inside the same overlap maths: the entering shot is simply on top. */
+const Cut: React.FC<TransitionPresentationComponentProps<Props>> = ({ children }) => <AbsoluteFill>{children}</AbsoluteFill>;
+export const hardCut = (props: Props): TransitionPresentation<Props> => ({ component: Cut, props });

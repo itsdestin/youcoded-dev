@@ -26,7 +26,7 @@ const Rise: React.FC = () => {
 const Wordmark: React.FC = () => {
   const f = useCurrentFrame();
   if (f >= RISE + 6) return null;
-  return <Caption head={CAPTIONS.b1.head} at={4} theme="midnight" top={FRAME.h / 2 - 70} size={96} headColor="#fff" />;
+  return <Caption head={CAPTIONS.b1.head} at={0} theme="midnight" top={FRAME.h / 2 - 70} size={96} headColor="#fff" />;
 };
 const Beat1: React.FC = () => (
   <AbsoluteFill>
@@ -43,7 +43,7 @@ export const beat1: BeatModule = {
      edge of an empty frame — it comes up at 200 px and shrinks on the hop. */
   cues: [
     { at: 0, x: 850, y: FRAME.h + 40, size: 200, pose: 'peek', costume: 'midnight' },   // below the frame
-    { at: 10, y: FRAME.h - 140 },                                                       // peeks up over the bottom edge
+    { at: 4, y: FRAME.h - 140 },                                                       // peeks up over the bottom edge
     { at: 34, pose: 'curious' },                                                        // looks around
     { at: RISE, x: P.x, y: P.y, size: MASCOT.size, pose: 'idle', hop: true },          // hops onto the title bar
   ],
