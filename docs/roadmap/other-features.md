@@ -32,10 +32,12 @@ has passed ~8 items — graduate it to its own file.
 
 ## buddy
 
-- [ ] Buddy floater does not appear on Linux Wayland — the XWayland route worked but was shelved
-      (2026-07-23); the native-Wayland overlay ships switched off by default. Next attempt: native
-      Wayland.
-      `buddy-window` `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1`
+- [ ] The buddy appears on Linux Wayland but is stuck where it lands — it cannot be dragged, and
+      the edge snap, dock and peek behaviours never fire. Confirmed by Destin 2026-09-04; the
+      earlier "does not appear" wording was wrong and had never been verified. Route found and
+      probed 2026-09-04: a KWin helper script positions the window (the app already ships
+      `kwin-keep-above.ts`, which only raises it). Design in flight.
+      `buddy-window` `desktop` `confirmed` `checked 2026-09-04` `v1.3.1` → docs/active/prototypes/2026-09-04-buddy-kwin-helper-probe/FINDINGS.md
 
 - [ ] With a buddy window open, a streaming reply makes the whole window re-lay-out on every
       token (2026-08-27) — the twin of the main-chat stutter fixed in perf cycle 1.

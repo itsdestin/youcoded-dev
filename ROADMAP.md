@@ -59,7 +59,7 @@ Target: `v1.3`
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 16 | 4 | 0 | 6 |
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 15 | 9 | 1 | 1 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 0 | 5 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 13 | 4 | 1 | 6 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 13 | 3 | 1 | 6 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 12 | 7 | 1 | 1 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 11 | 4 | 0 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 6 | 3 | 0 | 2 |
