@@ -63,7 +63,7 @@ is the illustrated version of this table and the record of Destin's sign-off.
 | 7 | 24–28 | Midnight | All Sessions → Resume; "econ" narrows the list; a note in the Organize sheet; "plan my week" dragged into place. | **Every conversation, findable.** / Search, tag, note, drag into order. | Follows the pill along the strip |
 | 8 | 28–33 | Devil's Garden | The chat on the laptop; the phone slides in with its session list, taps the session, the PHONE asks "active on Desktop — take over here?", Take over, the chat loads; on 32 the phone's project files show the same spreadsheet. | **Pick up on any device.** / Chats and project files sync across all your devices. | Hops onto the phone; cheers the files |
 | 9 | 33–38 | Light | The marketplace opens on drop 2; the Remember card and its detail page; Install; back in the chat with the new Remember chip. | **Add what you need.** / Plugins from the WeCoded marketplace. One click to install. | Wow at the marketplace; cheers the install |
-| 10 | 38–43 + tail | Golden Sunbreak | The window settles smaller; the wordmark, the platforms line, the link; a fade to black under the tail. | **YouCoded** · **Free. Open source.** / Windows · Mac · Linux · Android · github.com/itsdestin/youcoded | Waves, cheers on the final hit, stays to the fade |
+| 10 | 38–43 + tail | Golden Sunbreak | The window settles smaller; the wordmark, the platforms line, the link; a fade to black under the tail. | **YouCoded** · **Free. Open source.** / Windows · Mac · Linux · Android · www.youcoded.ai | Waves, cheers on the final hit, stays to the fade |
 
 Transitions: the host hops across every beat boundary, landing on the downbeat in the
 new costume, while the window swaps under it with a slanted wipe in the incoming theme's

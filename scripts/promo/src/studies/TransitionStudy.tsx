@@ -25,14 +25,16 @@ import { CAPTIONS } from '../captions';
 const SEG = 84;
 const P = perch(0.3);
 const HOST_CX = P.x + 60, HOST_CY = P.y + 60;
-type Seg = { slug: Slug; file: string; from: number; label: string; say: string; from_: WipeFrom };
+// `rate` 0.25 on the theme-recording segments: they are STATIC screens, and at 1× the 84-frame segment
+// runs into the recording's NEXT repaint (the window went Strawberry half a second before the wipe)
+type Seg = { slug: Slug; file: string; from: number; rate: number; label: string; say: string; from_: WipeFrom };
 const SEGS: Seg[] = [
-  { slug: 'golden-sunbreak', file: 'promo-theme', from: markFrame('promo-theme', 'paint1', 'end', 20), label: CAPTIONS.b3.head, say: CAPTIONS.b3.yours, from_: 'left' },
-  { slug: 'strawberry-kitty', file: 'promo-theme', from: markFrame('promo-theme', 'paint2', 'end', 20), label: CAPTIONS.b3.head, say: CAPTIONS.b3.sub, from_: 'left' },
-  { slug: 'kuromi-dreamer', file: 'promo-theme', from: markFrame('promo-theme', 'paint3', 'end', 20), label: CAPTIONS.b4.head, say: CAPTIONS.b4.sub, from_: 'right' },
-  { slug: 'cotton-candy-sky', file: 'promo-idle-cotton', from: 30, label: CAPTIONS.b5.head, say: CAPTIONS.b5.sub, from_: 'left' },
+  { slug: 'golden-sunbreak', file: 'promo-theme', from: markFrame('promo-theme', 'paint1', 'end', 20), rate: 0.25, label: CAPTIONS.b3.head, say: CAPTIONS.b3.yours, from_: 'left' },
+  { slug: 'strawberry-kitty', file: 'promo-theme', from: markFrame('promo-theme', 'paint2', 'end', 20), rate: 0.25, label: CAPTIONS.b3.head, say: CAPTIONS.b3.sub, from_: 'left' },
+  { slug: 'kuromi-dreamer', file: 'promo-theme', from: markFrame('promo-theme', 'paint3', 'end', 20), rate: 0.25, label: CAPTIONS.b4.head, say: CAPTIONS.b4.sub, from_: 'right' },
+  { slug: 'cotton-candy-sky', file: 'promo-idle-cotton', from: 30, rate: 1, label: CAPTIONS.b5.head, say: CAPTIONS.b5.sub, from_: 'left' },
 ];
-SEGS.forEach((s) => assertClipCovers(s.file, s.from, SEG));
+SEGS.forEach((s) => assertClipCovers(s.file, s.from, SEG + 30, s.rate));
 const START = SEGS.map((_, k) => k * (SEG - CUT));
 const DOWN = START.map((s, k) => (k === 0 ? 0 : s + PRE));
 export const TRANSITION_STUDY_FRAMES = START[3] + SEG + 30;
@@ -47,7 +49,7 @@ const actions: Action[] = [
   A.look(hit1 + 30, 8, 0.4, 0.3), A.look(hit1 + 56, 8, 0, 0),
   ...A.vanish(DOWN[2] - 8), ...A.appear(DOWN[2], P.x, P.y, SEGS[2].slug),
   A.look(DOWN[2] + 34, 8, 0.4, 0.3), A.look(DOWN[2] + 58, 8, 0, 0),
-  ...A.twirl(DOWN[3] - 12, 20, P.x, P.y, SEGS[3].slug),
+  ...A.twirl(DOWN[3] - 14, 24, P.x, P.y, SEGS[3].slug),
   A.look(DOWN[3] + 40, 8, 0.4, 0.3), A.blink(DOWN[3] + 70),
 ];
 const cues: BubbleCue[] = SEGS.map((s, k) => ({ at: (k === 0 ? 26 : DOWN[k] + 24), until: k < 3 ? DOWN[k + 1] - 16 : undefined, text: s.say, slug: s.slug }));
@@ -67,7 +69,7 @@ export const TransitionStudy: React.FC = () => (
         <React.Fragment key={s.slug}>
           <TransitionSeries.Sequence durationInFrames={k === 3 ? SEG + 30 : SEG}>
             <AbsoluteFill>
-              <Footage file={s.file} from={s.from} light={!THEMES[s.slug].dark} />
+              <Footage file={s.file} from={s.from} rate={s.rate} light={!THEMES[s.slug].dark} />
               <Label text={s.label} at={k === 0 ? 8 : PRE + 2} slug={s.slug} />
             </AbsoluteFill>
           </TransitionSeries.Sequence>

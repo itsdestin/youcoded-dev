@@ -23,9 +23,10 @@ export type HostState = {
   costume: Slug; hidden: boolean; alpha: number;
   poof: number | null;            // frame a costume poof started, or null
   spin: number;                   // turn about the VERTICAL axis, degrees (the twirl); 0 = facing us
+  poofScale: number;              // how big the next poof draws (1 = the host's size; the teleport uses 1.8)
 };
 export const REST: HostState = { x: 0, y: 0, size: 120, rot: 0, sx: 1, sy: 1, armL: 0, armR: 0, legL: 0, legR: 0, face: 'welcome', blink: 0,
-  lookX: 0, lookY: 0, shadow: 1, air: 0, costume: 'midnight', hidden: false, alpha: 1, poof: null, spin: 0 };
+  lookX: 0, lookY: 0, shadow: 1, air: 0, costume: 'midnight', hidden: false, alpha: 1, poof: null, spin: 0, poofScale: 1 };
 
 export type Action = { at: number; dur: number; run: (t: number, s: HostState, start: HostState, f: number) => void; name?: string };
 /** Progress 0..1 of an action at frame f, clamped. */
@@ -219,7 +220,11 @@ export const A = {
       s.legL = 0; s.legR = 0; s.rot = L(start.rot, 0, k); s.air = 0; s.shadow = 1;
     } },
     { at: hit - 4, dur: 4, name: 'eyes-shut', run: (t, s) => { s.blink = t < 1 ? 1 : 0; } },
-    { at: hit, dur: 0, name: 'swap', run: (_t, s) => { s.costume = slug; s.poof = hit; s.face = 'shocked'; } },
+    // the band is 96 px wide and moves ~300 px a frame, so it covers the host for barely a frame; for the
+    // two frames it is passing, the host is simply not drawn (the first review saw the old costume's
+    // edges poking out beside the band)
+    { at: hit - 1, dur: 2, name: 'under-the-band', run: (t, s) => { s.alpha = t < 1 ? 0 : 1; } },
+    { at: hit, dur: 0, name: 'swap', run: (_t, s) => { s.costume = slug; s.poof = hit; s.face = 'shocked'; s.poofScale = 1.3; } },
     { at: hit, dur: 16, name: 'spring-up', run: (t, s) => {
       const b = E.settle(t);                                         // 0.70 → overshoot → 1
       s.sy = L(0.70, 1, b) + 0.22 * E.hump(Math.min(1, t * 2.2)) * (1 - t);   // a stretch on the way up
@@ -242,21 +247,24 @@ export const A = {
     { at: at - 8, dur: 8, name: 'wind', run: (t, s, start) => {
       const k = E.inOutQuad(t); s.sy = L(start.sy, 0.82, k); s.sx = L(start.sx, 1.14, k); s.armL = L(start.armL, 30, k); s.armR = L(start.armR, -30, k); s.rot = L(start.rot, 0, k);
     } },
-    { at, dur: 5, name: 'puff-out', run: (t, s, start) => {
-      const k = E.inCubic(t);
-      s.sy = L(0.82, 1.6, E.outQuad(t)) * (1 - k); s.sx = L(1.14, 0.5, E.outQuad(t)) * (1 - k);   // whips up into a wisp, then gone
-      s.alpha = 1 - k; s.shadow = 1 - t; s.poof = t === 0 ? at : s.poof; s.armL = start.armL; s.armR = start.armR;
+    { at, dur: 4, name: 'puff-out', run: (t, s, start) => {
+      // a quick stretch UP then gone — whole, not squeezed to a line (the first review read a thin
+      // sliver as "sucked into a line"); the big puff is what the eye keeps
+      const k = E.inQuad(t);
+      s.sy = L(0.82, 1.25, t) * (1 - k); s.sx = L(1.14, 0.9, t) * (1 - k);
+      s.alpha = 1 - k; s.shadow = 1 - t; s.armL = start.armL; s.armR = start.armR;
       if (t >= 1) { s.hidden = true; s.sy = 1; s.sx = 1; s.alpha = 1; }
     } },
-    { at, dur: 0, name: 'poof', run: (_t, s) => { s.poof = at; } },
+    { at, dur: 0, name: 'poof', run: (_t, s) => { s.poof = at; s.poofScale = 1.8; } },
   ],
   appear: (back: number, x: number, y: number, slug: Slug): Action[] => [
-    { at: back, dur: 0, name: 'materialise', run: (_t, s) => { s.hidden = false; s.x = x; s.y = y; s.costume = slug; s.poof = back; s.face = 'shocked'; s.rot = 0; s.legL = 0; s.legR = 0; s.air = 0; s.alpha = 1; } },
-    { at: back, dur: 10, name: 'grow', run: (t, s) => {
-      const k = E.outBack(t); s.sx = k; s.sy = k * L(1.18, 1, t);      // grows from the feet, a little tall at first
+    { at: back, dur: 0, name: 'materialise', run: (_t, s) => { s.hidden = false; s.x = x; s.y = y; s.costume = slug; s.poof = back; s.poofScale = 1.8; s.face = 'shocked'; s.rot = 0; s.legL = 0; s.legR = 0; s.air = 0; s.alpha = 1; } },
+    { at: back, dur: 8, name: 'grow', run: (t, s) => {
+      const k = E.outBack(t); s.sx = k; s.sy = k * L(1.22, 1.08, t);   // grows from the feet, tall — it drops into the squash next
       s.armL = L(120, 0, k); s.armR = L(-120, 0, k); s.shadow = t;
     } },
-    { at: back + 10, dur: 14, name: 'land', run: (t, s) => { const b = E.settle(t); s.sy = L(0.86, 1, b); s.sx = 2 - s.sy; } },
+    // the landing: from tall to a deep squash that rings down in two bounces (the weight the first review missed)
+    { at: back + 8, dur: 16, name: 'land', run: (t, s) => { const b = E.settle(t); s.sy = L(0.74, 1, b); s.sx = 2 - s.sy; s.armL = L(0, 0, b) + 30 * E.hump(Math.min(1, t * 2)); s.armR = -s.armL; } },
     { at: back + 14, dur: 0, name: 'face', run: (_t, s) => { s.face = 'welcome'; } },
     { at: back + 22, dur: 3, name: 'blink', run: (t, s) => { s.blink = t < 1 ? 1 : 0; } },
   ],
@@ -269,9 +277,10 @@ export const A = {
    * wobble that rings down, then the welcome face.
    */
   twirl: (at: number, dur: number, x: number, y: number, slug: Slug): Action[] => [
+    { at, dur: 0, name: 'poof-size', run: (_t, s) => { s.poofScale = 1.2; } },
     { at, dur, name: 'twirl', run: (t, s, start) => {
       const e = E.inOutQuad(t);
-      s.spin = 1080 * e;                                              // three turns; edge-on at 90, 270, 450, 540±…
+      s.spin = 720 * e;                                               // two turns (three strobed at 30 fps); the blur in Host.tsx fills the gaps
       s.x = L(start.x, x, e); s.y = L(start.y, y, e);
       const mid = E.hump(t);
       s.sy = 1 + 0.16 * mid; s.sx = 1 - 0.10 * mid;
@@ -282,7 +291,7 @@ export const A = {
       if (t >= 1) s.spin = 0;
     } },
     { at: at + dur, dur: 16, name: 'wobble', run: (t, s) => {
-      s.rot = 9 * Math.exp(-4 * t) * Math.sin(t * Math.PI * 3);       // the dizzy sway, ringing down
+      s.rot = 16 * Math.exp(-3.5 * t) * Math.sin(t * Math.PI * 3);    // the dizzy sway, ringing down
       const b = E.settle(t); s.sy = L(0.90, 1, b); s.sx = 2 - s.sy; s.spin = 0;
       s.face = t < 0.6 ? 'dizzy' : 'welcome';
     } },

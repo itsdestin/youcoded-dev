@@ -12,6 +12,6 @@ export const CAPTIONS = {
   b8: { head: 'Pick up on any device.', sub: 'Chats and project files sync across all your devices.' },
   b9: { head: 'Add what you need.', sub: 'Plugins from the WeCoded marketplace. One click to install.' },
   b10: { head: 'Free. Open source.', sub: 'Windows · Mac · Linux · Android' },
-  link: 'github.com/itsdestin/youcoded',
+  link: 'www.youcoded.ai',   // Destin, 2026-09-04: the site, not the repo
 } as const;
 export const BANNED = ['real app', 'real files', 'actually', 'does real work', 'self-improving'];

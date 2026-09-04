@@ -70,12 +70,15 @@ export const Host: React.FC<{ actions: Action[]; base: HostState; faceStyle?: Fa
   const lag = evaluate(actions, base, f - 4);
   // The twirl: a turn about the vertical axis is drawn as a horizontal squeeze
   // (cos of the angle; negative = we see its back, which for this rig is its
-  // mirror image). When it turns faster than ~60° a frame, two fainter copies
-  // at earlier angles trail it — a poor man's motion blur, so the fast middle
-  // of the spin reads as a blur and not a flicker.
+  // mirror image). Once it turns faster than ~25° a frame, five fainter copies
+  // spread evenly over the angle it turned since the last frame are drawn
+  // under it — a motion blur, so the fast middle of the spin reads as a
+  // translucent spinning column and not a 15 Hz strobe (the first review saw
+  // full-sprite / sliver alternating frames).
   const prev = evaluate(actions, base, f - 1);
   const dSpin = s.spin - prev.spin;
-  const ghosts = Math.abs(dSpin) > 60 ? [1 / 3, 2 / 3] : [];
+  const ghosts = Math.abs(dSpin) > 25 ? [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6] : [];
+  const blur = ghosts.length > 0;
   const turn = (deg: number) => Math.cos((deg * Math.PI) / 180);
   const comps = companionsFor(s.costume).filter((c) => !c.ghost);
   const shadowW = s.size * 0.62 * (1 - 0.45 * s.air), shadowA = 0.35 * s.shadow * (1 - 0.6 * s.air);
@@ -96,15 +99,16 @@ export const Host: React.FC<{ actions: Action[]; base: HostState; faceStyle?: Fa
         return <div key={i} style={{ position: 'absolute', left: lx, top: ly, width: w, height: hh, transform: `scale(${born})`, opacity: born }}
           dangerouslySetInnerHTML={{ __html: c.svg.replace('<svg', '<svg style="width:100%;height:100%;display:block;overflow:visible"') }} />;
       })}
-      {s.poof != null && <Poof at={s.poof} cx={s.x + s.size / 2} cy={s.y + s.size / 2} color={t.accent} size={s.size} />}
+      {s.poof != null && <Poof at={s.poof} cx={s.x + s.size / 2} cy={s.y + s.size / 2} color={t.accent} size={s.size * s.poofScale} />}
       {ghosts.map((g) => (
-        <div key={g} style={{ position: 'absolute', left: s.x, top: s.y, width: s.size, height: s.size, opacity: 0.22,
+        <div key={g} style={{ position: 'absolute', left: s.x, top: s.y, width: s.size, height: s.size, opacity: 0.3,
           transform: `rotate(${s.rot.toFixed(2)}deg) scale(${(s.sx * turn(s.spin - dSpin * g)).toFixed(3)}, ${(s.sy * breathe).toFixed(3)})`, transformOrigin: '50% 86%' }}>
-          <Rig s={s} style={faceStyle} scope={`host-${s.costume}-g${Math.round(g * 3)}`} />
+          <Rig s={s} style={faceStyle} scope={`host-${s.costume}-g${Math.round(g * 6)}`} />
         </div>
       ))}
       <div style={{ position: 'absolute', left: s.x, top: s.y, width: s.size, height: s.size,
         transform: `rotate(${s.rot.toFixed(2)}deg) scale(${(s.sx * turn(s.spin)).toFixed(3)}, ${(s.sy * breathe).toFixed(3)})`, transformOrigin: '50% 86%',
+        opacity: blur ? 0.75 : 1,
         filter: t.dark ? `drop-shadow(0 6px 14px rgba(0,0,0,.5)) drop-shadow(0 0 22px ${t.accent}66)` : 'drop-shadow(0 6px 14px rgba(40,10,40,.35))' }}>
         <Rig s={s} style={faceStyle} scope={`host-${s.costume}`} />
       </div>

@@ -15,24 +15,31 @@ Destin chose: fixed check-ins, nothing rendered past one until he says go — (1
 deck (answered, `docs/active/prototypes/promo-2026-09/deck/promo-v3.answers.json`), (2) the
 storyboard page (`storyboard-v3.html`, approved with notes, all applied), (3) the mascot /
 captions check-in (`checkin-3.html`, his notes below), (4) one half-size draft of the whole
-film, (5) the final. **We are between 3 and 4.**
+film, (5) the final. **We are at check-in 3b** (`checkin-3b.html`: the label + bubble captions, the
+three theme-change moves A/B/C on real cuts, the intro with the knock-back and centred title) — his
+answers decide which move goes into every beat and whether the captions are approved.
 
 ## Destin's notes on check-in 3, still to build (in this order)
 
-1. **Captions = one top-line section label, and the sub-text as a SPEECH BUBBLE from the
-   mascot** that follows it as it moves. The three A/B/C designs on the page are superseded by
-   this; keep the payoff-word accent and the theme font. Build it as a still or a 5-second
-   clip first (a bubble that pops in beside the host, tail toward it, moves with it), then
-   the film.
-2. **The hop between beats feels odd — find a better theme transition.** Candidates to show
-   him as a short study clip, one after another on the same cut: (a) the host rides the
-   accent wipe band across the screen and slides into its perch; (b) a poof-teleport — it
-   vanishes in a puff at the old perch and reappears in a puff at the new one, already in the
-   new costume; (c) a spin in place — a fast twirl with a squash, the costume changing
-   mid-spin, no travel. Keep the landing/settle feel from the study; drop the arc.
+1. **Captions = one section label + a SPEECH BUBBLE from the host** — built (`Label.tsx`,
+   `Bubble.tsx`; shown on `checkin-3b.html`). NOT yet in the beats: every `Beat*.tsx` still
+   renders the old `Caption`. Once approved: replace each beat's `<Caption>` with a `<Label>`
+   for the headline and a `bubbles: BubbleCue[]` export the way `TransitionStudy.tsx` does it
+   (Promo.tsx must collect the cues and render `<Bubbles>` above the host); the intro's
+   wordmark hand-off should land on the label's position, not the old centred band.
+2. **Theme change instead of the hop** — built as three moves in `host/engine.ts`
+   (`A.quickChange`, `A.vanish`+`A.appear`, `A.twirl`) and shown on real wipes in
+   `studies/TransitionStudy.tsx`. Once he picks: replace the arrival hop in `Promo.tsx`
+   (`A.hop(at, HOP, …)` + costume at +14) with the chosen move — for A the hit frame comes from
+   `bandHitFrame()` and the `BandOverlay` must be rendered above the host for each wipe —
+   and replace Beat3's three "jump for joy" hops with the same move (or C for those, if he
+   picks A: there is no band on an in-place flip).
 3. **Eyes a smidge less dark** — done: `inkFor()` keeps 32 % of the body colour (was 22 %).
-4. Then the draft (check-in 4): `npm run render:draft` → `out/draft.mp4`, plus a context-free
-   review agent before he sees it (see "Show him early").
+4. **The intro** — knock-back + centred group built (`RECOIL_X`, `WORD_LEFT_CENTRED`); the
+   intro's sounds now live in `IntroVisuals`, so the film has them too.
+5. Then the draft (check-in 4): `npm run render:draft` → `out/draft.mp4`, plus a context-free
+   review agent before he sees it (see "Show him early"). **Render one clip at a time**: two
+   parallel `remotion render`s hung one of them at 0 % CPU for 12 minutes on 2026-09-04.
 
 Everything else he asked for in round three is built and committed: the punch intro (black,
 silent, peek from the left edge, walk, punch, burst into Cotton Candy, "Assistant" rolling
