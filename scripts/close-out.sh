@@ -88,9 +88,22 @@ else
   # cleaned up looks IDENTICAL to one that was never pushed, or whose name you
   # mistyped. Assuming the good one printed an all-green report for a branch that
   # never existed. There is a real answer available instead of a guess — a merge
-  # commit on $BASE names the branch it merged ("Merge pull request #N from
-  # owner/<branch>"), so look for one before concluding anything.
-  MERGE_COMMIT=$(git -C "$REPO_DIR" log "$BASE" --merges --grep="/$BRANCH\$" \
+  # commit on $BASE names the branch it merged, so look for one before
+  # concluding anything.
+  #
+  # TWO subject shapes, and the pattern must match BOTH. GitHub's is
+  # "Merge pull request #N from owner/<branch>", which ends at the branch name;
+  # a local `git merge --no-ff <branch>` writes "Merge branch '<branch>'", where
+  # the name is QUOTED and may be followed by " into <x>". The old pattern was
+  # "/<branch>$" — GitHub-only — so a branch merged locally and pushed (the
+  # workflow CLAUDE.md actually prescribes: "merge means merge AND push", no PR
+  # required) reported as "never pushed — nobody else can review this branch
+  # yet". That is the same misleading-message failure the 2026-09-03 fix below
+  # was for, on the other axis; hit again 2026-09-04.
+  #
+  # The trailing ('|$) is also what keeps a branch from matching a LONGER one
+  # that starts with its name (fix/resume vs fix/resume-cc-brand-icon).
+  MERGE_COMMIT=$(git -C "$REPO_DIR" log "$BASE" --merges --grep="(/|')$BRANCH('|\$)" \
                  --extended-regexp --format=%h -1 2>/dev/null || true)
   if [[ -n "$MERGE_COMMIT" ]]; then
     pass "no ref left, and $BASE carries the merge commit $MERGE_COMMIT for it — the work landed"
@@ -111,7 +124,7 @@ else
       _base=$(git -C "$_dir" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
       if git -C "$_dir" rev-parse --verify -q "origin/$BRANCH" >/dev/null 2>&1 \
          || git -C "$_dir" rev-parse --verify -q "$BRANCH" >/dev/null 2>&1 \
-         || [[ -n $(git -C "$_dir" log "$_base" --merges --grep="/$BRANCH\$" --extended-regexp --format=%h -1 2>/dev/null) ]]; then
+         || [[ -n $(git -C "$_dir" log "$_base" --merges --grep="(/|')$BRANCH('|\$)" --extended-regexp --format=%h -1 2>/dev/null) ]]; then
         ELSEWHERE="$_cand"; break
       fi
     done
