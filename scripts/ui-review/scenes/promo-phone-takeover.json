@@ -1,0 +1,82 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&student=1&latency=150&platform=android&lease=held%3ADesktop&seed=none&title=new+session",
+ "theme": "devils-garden",
+ "width": 390,
+ "height": 844,
+ "fps": 30,
+ "boot": 3000,
+ "why": "Beat 8's phone half. The phone has no session-list home: it boots into a (deliberately empty, seed=none) session, and the Resume browser — a full-screen sheet at 390 px — is two taps away (All Sessions, Resume); nothing before `list` is in the edit. A row tap expands the row; its Resume Session button is what runs the lease gate, so `tap` is the row and the dialog follows the button. Take over creates the session, the workbench names it after the row, lifts Initializing and answers its first page with the briefing (all dev-only fakes); `chat` waits for the first bubble. Session Files lives in the phone's overflow menu (|||), found by prefix because its label carries a count. `list` is marked once the rows themselves are on screen (the browser opens on \"Loading sessions…\" for a moment).",
+ "actions": [
+  {
+   "hold": 600
+  },
+  {
+   "click": "[title='All Sessions']",
+   "settle": 600
+  },
+  {
+   "click": "js:[...document.querySelectorAll('button')].find(b=>b.offsetParent!==null&&b.textContent.trim()==='Resume'&&!b.title)",
+   "settle": 0
+  },
+  {
+   "waitFor": "[placeholder='Search sessions...']",
+   "settle": 0
+  },
+  {
+   "waitForText": "econ midterm brief",
+   "settle": 1000,
+   "mark": "list"
+  },
+  {
+   "hold": 800
+  },
+  {
+   "clickText": "econ midterm brief",
+   "settle": 800,
+   "mark": "tap"
+  },
+  {
+   "clickText": "Resume Session",
+   "tag": "button",
+   "settle": 0
+  },
+  {
+   "waitForText": "take over here",
+   "timeout": 8000,
+   "settle": 1000,
+   "mark": "dialog"
+  },
+  {
+   "clickText": "Take over",
+   "tag": "button",
+   "settle": 0,
+   "mark": "takeover"
+  },
+  {
+   "waitForText": "Pulling your notes and the syllabus",
+   "timeout": 10000,
+   "settle": 500,
+   "mark": "chat"
+  },
+  {
+   "hold": 1500
+  },
+  {
+   "click": "[title='Menu']",
+   "settle": 600
+  },
+  {
+   "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].find(e=>e.offsetParent!==null&&e.textContent.trim().startsWith('Session Files'))",
+   "settle": 0
+  },
+  {
+   "waitForText": "Q3-sales.xlsx",
+   "timeout": 8000,
+   "settle": 500,
+   "mark": "files"
+  },
+  {
+   "hold": 2500
+  }
+ ]
+}

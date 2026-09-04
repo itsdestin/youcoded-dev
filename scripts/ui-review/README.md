@@ -120,6 +120,12 @@ scripts/ui-review/scenes/row2-does-things.json
 | `key` (+`modifiers`) | one key — `Enter`, `Escape`, … |
 | `waitFor` / `waitForText` (+`tag`, `timeout`) | poll until the element is on screen (contains-match for text; default 20 s). **Use this before clicking anything a scripted reply produces** — a fixed `settle` is a race |
 | `hold` | keep recording for N ms; `settle` on any action is the pause after it |
+| `autopilot` (`ms`, `when`, `key`, `every`, `minGap`) | poll `when` (a JS expression evaluated in the page) every `every` ms for `ms` ms and press `key` when it is true — the recorder "plays" a game by reading the DOM. (Not `autoplay`: that is the workbench's own `?autoplay=<ms>` URL switch, which auto-sends the first message.) |
+| `mark` (on any action) | a label for this action in `<out>.marks.json`, which lists every action's start/end in video seconds — a timeline trims to a label, never to a hand-measured frame |
+| `evalFile` | like `eval`, but the JavaScript is read from a file next to the scene — for a page-side script too long to live in one JSON string (the Flappy pilot, `scenes/flappy-pilot.js`) |
+
+Scene-level `fps` (default 24) sets the encode frame rate — the promo films at 30 so no
+frame is doubled in a 30 fps edit.
 
 ```
 WB_PORT=5473 CDP_PORT=10330 node scripts/ui-review/record.mjs scripts/ui-review/scenes/<scene>.json <out-base>
@@ -222,6 +228,13 @@ Spec: `docs/archive/specs/2026-08-31-live-review-panes-design.md`.
 Rebuild every landing-page asset at once (loops, gallery stills, live embed):
 `bash scripts/ui-review/site-assets.sh <worktree>` — refuses a workbench serving a
 different tree, and refuses to overwrite a gallery when any shot failed verification.
+
+**`"zoom": 1.25`** (scene field, default 1) films the page zoomed in the way Ctrl+= does in the
+app: the layout runs at width/zoom × height/zoom CSS px and Chrome paints it at `zoom` device
+pixels per CSS px, so the clip keeps its size and everything in it is `zoom` times bigger, in
+real pixels. Actions address elements by selector, so nothing else in the scene changes. The
+fourteen desktop `promo-*` scenes carry 1.25 (Destin, 2026-09-04: "hit the + a bit so it's easier
+for viewers to track what's happening"); the phone scenes stay at 1.
 
 ## Hero mascots, the tab icon, and the share image (2026-09-04)
 

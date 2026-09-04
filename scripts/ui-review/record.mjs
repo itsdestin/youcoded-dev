@@ -13,6 +13,7 @@ import { mkdtempSync, rmSync, writeFileSync, readFileSync, mkdirSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { CHROME_FLAGS, waitForCdp, selExpr, textExpr, rectOfExpr } from './cdp-helpers.mjs';
+import { runAutopilot, marksFile } from './autopilot.mjs';
 
 const [scenePath, outBase] = process.argv.slice(2);
 if (!scenePath || !outBase) { console.error('usage: node record.mjs <scene.json> <outBase>'); process.exit(2); }
@@ -20,6 +21,15 @@ const scene = JSON.parse(readFileSync(scenePath, 'utf8'));
 const WB_PORT = process.env.WB_PORT ?? '5473';
 const CDP_PORT = Number(process.env.CDP_PORT ?? 10320);
 const W = scene.width ?? 1440, H = scene.height ?? 900;
+// `zoom` (default 1): film the page ZOOMED IN, the way Ctrl+= does in the app —
+// the layout runs at W/zoom × H/zoom CSS px and Chrome paints it at `zoom`
+// device pixels per CSS px, so the clip is still W×H but everything in it is
+// `zoom` times bigger. Destin, 2026-09-04: "hit the + a bit so it's easier for
+// viewers to track what's happening and what the messages say." Scene actions
+// address elements by selector, so nothing else changes; mouse coordinates
+// are CSS px and use the CSS size below.
+const ZOOM = scene.zoom ?? 1;
+const CW = Math.round(W / ZOOM), CH = Math.round(H / ZOOM);
 // Scenes hardcode the workbench default (127.0.0.1:5473); swap it for whatever
 // port this worktree's workbench actually started on, same trick as shot.mjs's `wb()`.
 let url = scene.base.replace(/127\.0\.0\.1:\d+/, `127.0.0.1:${WB_PORT}`);
@@ -48,6 +58,10 @@ const target = targets.find((t) => t.type === 'page') ?? targets[0];
 const ws = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise((r) => ws.addEventListener('open', r));
 let id = 0; const pending = new Map(); const frames = [];
+// Fix: wall-clock of the FIRST screencast frame is the clip's time zero — every
+// action's start/end (stamped in Date.now()) is converted to video seconds by
+// subtracting this, in marksFile below.
+let firstFrameAt = 0;
 const framesDir = mkdtempSync(join(tmpdir(), 'ui-frames-'));
 // Fix: this used to only get cleaned up on the success path at the bottom of
 // the file — any early exit (a MISSING selector, a failed click) left hundreds
@@ -59,6 +73,7 @@ ws.addEventListener('message', (m) => {
   const d = JSON.parse(m.data);
   if (d.id && pending.has(d.id)) { pending.get(d.id)(d); pending.delete(d.id); }
   if (d.method === 'Page.screencastFrame') {
+    if (frames.length === 0) firstFrameAt = Date.now();
     const n = frames.length;
     writeFileSync(join(framesDir, `f${String(n).padStart(5, '0')}.png`), Buffer.from(d.params.data, 'base64'));
     frames.push({ n, t: d.params.metadata.timestamp });
@@ -72,7 +87,7 @@ const evaluate = async (expression) => (await send('Runtime.evaluate', { express
 const rectOf = async (expr) => evaluate(rectOfExpr(expr));
 
 // ---- humanised input ----
-let cur = { x: W / 2, y: H / 2 };
+let cur = { x: CW / 2, y: CH / 2 };
 async function moveTo(p, ms = 400) {
   const steps = Math.max(6, Math.round(ms / 16));
   for (let i = 1; i <= steps; i++) {
@@ -128,7 +143,14 @@ async function typeSlow(text, cps = 18) {
     await sleep(1000 / cps * (0.7 + Math.random() * 0.6));
   }
 }
-const KEYS = { Enter: { key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r' }, Escape: { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 } };
+// Space is the Flappy flap key. It needs `code: 'Space'` and a literal ' ' as
+// both key and text — the app's handler checks e.key === ' ', and the generic
+// fallback below would have sent key 'Space', which it ignores.
+const KEYS = {
+  Enter: { key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r' },
+  Escape: { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 },
+  Space: { key: ' ', code: 'Space', windowsVirtualKeyCode: 32, text: ' ' },
+};
 async function key(name, modifiers = 0) {
   const k = KEYS[name] ?? { key: name, code: `Key${name.toUpperCase()}`, windowsVirtualKeyCode: name.toUpperCase().charCodeAt(0) };
   await send('Input.dispatchKeyEvent', { type: 'keyDown', modifiers, ...k });
@@ -137,7 +159,7 @@ async function key(name, modifiers = 0) {
 
 // ---- boot ----
 await send('Page.enable'); await send('Runtime.enable');
-await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
+await send('Emulation.setDeviceMetricsOverride', { width: CW, height: CH, deviceScaleFactor: ZOOM, mobile: false });
 // `storage`: extra localStorage keys seeded BEFORE the first paint. Some panel
 // geometry (the artifact drawer's width) is a stored preference, and a scene
 // that clicks it wider mid-take gets a stale tile instead: the artifact preview
@@ -150,15 +172,23 @@ await send('Page.navigate', { url });
 const READY = scene.ready ?? "document.readyState === 'complete' && document.body.innerText.trim().length > 20";
 for (let i = 0; i < 120; i++) { if (await evaluate(READY)) break; await sleep(250); }
 await sleep(scene.boot ?? 3500);
-await moveTo({ x: W * 0.6, y: H * 0.55 }, 1);
+await moveTo({ x: CW * 0.6, y: CH * 0.55 }, 1);
 
 // ---- record ----
 await send('Page.startScreencast', { format: 'png', everyNthFrame: 1, maxWidth: W, maxHeight: H });
 const t0 = Date.now();
-for (const a of scene.actions) {
-  if (a.hold != null) { await sleep(a.hold); continue; }
-  if (a.wait != null) { await sleep(a.wait); continue; }
-  if (a.moveTo) { const p = await rectOf(selExpr(a.moveTo)); if (!p) throw new Error(`MISSING ${a.moveTo}`); await moveTo(p, a.ms ?? 400); }
+// Fix: every action is stamped (wall-clock start/end) for the marks file, so a
+// later editing pass can trim footage by label instead of a hand-measured frame.
+// hold/wait still `continue` past `settle` (unchanged semantics, so existing
+// landing-page scenes film identically) but now go through the stamp too — they
+// are the marks a beat trims to most often.
+const stamps = [];   // one per action: wall-clock start/end, for the marks file
+for (const [i, a] of scene.actions.entries()) {
+  const kind = Object.keys(a).find((k) => !['settle', 'mark', 'tag', 'ms', 'cps', 'to', 'timeout', 'modifiers'].includes(k)) ?? 'noop';
+  const start = Date.now();
+  if (a.hold != null) await sleep(a.hold);
+  else if (a.wait != null) await sleep(a.wait);
+  else if (a.moveTo) { const p = await rectOf(selExpr(a.moveTo)); if (!p) throw new Error(`MISSING ${a.moveTo}`); await moveTo(p, a.ms ?? 400); }
   else if (a.click) await click(selExpr(a.click));
   else if (a.drag) await drag(selExpr(a.drag), selExpr(a.to), a.ms);
   else if (a.clickText) await click(textExpr(a.clickText, a.tag));
@@ -177,8 +207,24 @@ for (const a of scene.actions) {
     const deadline = Date.now() + (a.timeout ?? 20000);
     while (!(await rectOf(expr))) { if (Date.now() > deadline) throw new Error(`TIMEOUT waiting for ${expr}`); await sleep(150); }
   }
+  // autopilot: poll a JS predicate in the page and press a key when it says so —
+  // the recorder "plays" a game (Flappy) by reading its DOM instead of a fixed rhythm.
+  else if (a.autopilot) {
+    const r = await runAutopilot({
+      evaluate, press: (k) => key(k), sleep, now: () => Date.now(),
+      ms: a.autopilot.ms, every: a.autopilot.every, when: a.autopilot.when, key: a.autopilot.key, minGap: a.autopilot.minGap,
+    });
+    console.error(`autopilot: ${r.presses} presses over ${r.polls} polls`);
+  }
   else if (a.eval) await evaluate(a.eval);
-  await sleep(a.settle ?? 400);
+  // evalFile: the same as eval, but the JS comes from a file beside the scene.
+  // A page-side autopilot is 2 KB of commented code; inlined in JSON it would
+  // be one unreadable line with every comment stripped (the promo's Flappy
+  // pilot, scenes/flappy-pilot.js, is the first). The file's own trailing
+  // `;` is dropped so the source can be an expression as well as a statement.
+  else if (a.evalFile) await evaluate(readFileSync(join(dirname(scenePath), a.evalFile), 'utf8').replace(/;\s*$/, ''));
+  stamps.push({ i, kind, mark: a.mark ?? null, start, end: Date.now() });
+  if (a.hold == null && a.wait == null) await sleep(a.settle ?? 400);
 }
 await send('Page.stopScreencast');
 await sleep(300);
@@ -193,7 +239,9 @@ const list = frames.map((f, i) => {
 writeFileSync(join(framesDir, 'list.txt'), list);
 mkdirSync(dirname(outBase), { recursive: true });
 const enc = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', join(framesDir, 'list.txt'),
-  '-vf', `scale=${W}:-2,fps=24,format=yuv420p`, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '33', '-row-mt', '1', '-an', `${outBase}.webm`]);
+  // Fix: scene-level `fps` (default 24) sets the encode frame rate — the promo
+  // films at 30 so no frame is doubled in a 30 fps edit.
+  '-vf', `scale=${W}:-2,fps=${scene.fps ?? 24},format=yuv420p`, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '33', '-row-mt', '1', '-an', `${outBase}.webm`]);
 if (enc.status !== 0) { console.error(enc.stderr.toString()); process.exit(1); }
 // Poster = the LAST frame, not the first: a loop that starts in an empty chat
 // (rows 1/2/6/7 since 2026-08-28) would otherwise show a blank window wherever
@@ -201,5 +249,11 @@ if (enc.status !== 0) { console.error(enc.stderr.toString()); process.exit(1); }
 spawnSync('magick', [join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0')}.png`), '-quality', '82', `${outBase}.webp`]);
 // framesDir cleanup now happens in the exit handler registered above (covers
 // error exits too, not just this success path).
-console.log(`frames=${frames.length} duration=${duration.toFixed(1)}s out=${outBase}.webm`);
+// Marks file: where every scene action landed in the finished clip, in video
+// seconds, so a later edit pass trims by label instead of a hand-measured frame.
+// 60 ms of screencast transport lag (see marksFile) — so a mark lands on the frame that shows it.
+const CAPTURE_LAG_MS = 100;
+const marks = marksFile({ fps: scene.fps ?? 24, width: W, height: H, duration, firstFrameAt, stamps, captureLagMs: CAPTURE_LAG_MS });
+writeFileSync(`${outBase}.marks.json`, JSON.stringify(marks, null, 1));
+console.log(`frames=${frames.length} duration=${duration.toFixed(1)}s out=${outBase}.webm marks=${outBase}.marks.json`);
 process.exit(0);

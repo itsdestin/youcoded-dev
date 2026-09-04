@@ -184,6 +184,15 @@ def hat(open_=False):
     return onepole_hp(noise(n), 7000) * exp_decay(n, 0.09 if open_ else 0.014) * 0.5
 
 
+def crash(length=1.0):
+    """A crash-like noise burst for the promo's opening impact: bright filtered noise that rings
+    for ~a second. Not a real cymbal — the same white-noise-through-a-highpass recipe as hat(),
+    just longer, with a slower decay and a touch of lowpass so it does not fizz."""
+    n = secs(length)
+    x = onepole_hp(noise(n), 4500) * exp_decay(n, 0.28)
+    return onepole_lp(x, 12000, 1) * 0.6
+
+
 def rim():
     n = secs(0.05)
     return (sine(900, n) * 0.5 + onepole_hp(noise(n), 2500) * 0.5) * exp_decay(n, 0.008)
@@ -248,6 +257,82 @@ def vinyl(n: int, level=0.05):
     for i in rng.integers(0, n, size=max(1, n // secs(0.09))):
         crackle[i:i + 30] += rng.uniform(0.2, 1.0) * exp_decay(30, 0.0003)[:min(30, n - i)]
     return (hiss + crackle) * level
+
+
+# ---------- UI-style sound effects (for the video's cuts and the mascot) ----------
+def sfx_pop():
+    """A soft 'boop' for the mascot landing: a short downward sine blip with a tiny click."""
+    n = secs(0.16)
+    f = 300 + 400 * np.exp(-np.arange(n) / (0.03 * SR))
+    body = sine(f, n) * exp_decay(n, 0.05)
+    body[:secs(0.002)] += noise(secs(0.002)) * 0.3
+    return soft_clip(body, 1.2) * 0.8
+
+
+def sfx_whoosh():
+    """A cut whoosh: noise through a rising then falling one-pole, 260 ms."""
+    n = secs(0.26)
+    t = np.linspace(0, 1, n)
+    cutoff = 400 + 5000 * np.sin(np.pi * t) ** 2
+    e = np.sin(np.pi * t) ** 1.5
+    return onepole_hp(onepole_lp(noise(n), cutoff, 2), 300) * e * 0.9
+
+
+def sfx_chime():
+    """The theme-applied chime: a bright major-ish triad, 1.3 s, with reverb."""
+    n = secs(1.3)
+    out = np.zeros(n, dtype=np.float32)
+    for i, m in enumerate((81, 88, 93)):        # A5 E6 A6
+        out += sine(midi(m), n) * exp_decay(n, 0.35 - 0.05 * i) * (0.6 - 0.12 * i)
+        out += sine(midi(m) * 2, n) * exp_decay(n, 0.12) * 0.12
+    return reverb(soft_clip(out, 1.1), 0.9, 0.3, 0.35) * 0.8
+
+
+def sfx_sparkle(notes):
+    """A theme-flip sparkle IN KEY: the bar's own chord tones, two octaves up, as a fast upward
+    arpeggio (three 40 ms-spaced plucks with a short decay), 300 ms, dry. Replaces sfx_chime
+    (an A-major bell with a 1.3 s reverb tail) which rang over the C and G bars and clashed with
+    the track — Destin, 2026-09-04: "a bit offputting and clashes with the music"."""
+    n = secs(0.3)
+    out = np.zeros(n, dtype=np.float32)
+    for i, m in enumerate(notes):
+        at = secs(0.04 * i)
+        k = n - at
+        pluck = sine(midi(m + 24), k) * exp_decay(k, 0.09) * (0.55 - 0.1 * i)
+        pluck += sine(midi(m + 36), k) * exp_decay(k, 0.04) * 0.15
+        out[at:] += pluck
+    return soft_clip(out, 1.1) * 0.8
+
+
+def sfx_punch():
+    """The mascot's punch on the wordmark, 250 ms: a low thud (a fast 140 → 45 Hz sine drop, like a
+    kick with more body) plus a bright click on the first 6 ms so it reads on a laptop speaker
+    that cannot reproduce the thud."""
+    n = secs(0.25)
+    f = 45 + 95 * np.exp(-np.arange(n) / (0.03 * SR))
+    thud = sine(f, n) * exp_decay(n, 0.07)
+    click = onepole_hp(noise(secs(0.006)), 2500) * exp_decay(secs(0.006), 0.002) * 0.9
+    thud[:len(click)] += click
+    return soft_clip(thud, 1.5) * 0.85
+
+
+def sfx_poof():
+    """A costume-change puff, 350 ms: noise through a lowpass that opens fast and closes slowly
+    (bright at the front, dull at the tail), soft attack so it feels airy rather than hit."""
+    n = secs(0.35)
+    t = np.linspace(0, 1, n)
+    cutoff = 300 + 2600 * np.exp(-t * 4)                 # bright on the burst, dull by the tail
+    e = np.minimum(t / 0.06, 1.0) * np.exp(-t * 5)       # 20 ms fade-in, then a long-ish decay
+    return onepole_hp(onepole_lp(noise(n), cutoff, 2), 250) * e * 0.9
+
+
+def sfx_step():
+    """A footstep, 80 ms: a tiny dull noise tap (lowpassed, gone in ~15 ms) over a faint 150 Hz
+    thump. Quiet by design — the video plays several in a row."""
+    n = secs(0.08)
+    tap = onepole_lp(noise(n), 900, 2) * exp_decay(n, 0.012)
+    thump = sine(150, n) * exp_decay(n, 0.02) * 0.5
+    return soft_clip(tap * 1.5 + thump, 1.2) * 0.7
 
 
 # ---------- mixing ----------

@@ -1,0 +1,77 @@
+{
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=theme-builder&seed=none&title=new+theme",
+  "theme": "cotton-candy-sky",
+  "width": 1440,
+  "height": 900,
+  "zoom": 1.25,
+  "fps": 30,
+  "boot": 3000,
+  "actions": [
+    {
+      "eval": "(()=>{Object.defineProperty(document,'visibilityState',{get:()=>'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));delete document.visibilityState;document.documentElement.setAttribute('data-doc-hidden','0');return document.visibilityState})()",
+      "settle": 0
+    },
+    {
+      "hold": 900
+    },
+    {
+      "click": "[placeholder^='Message']",
+      "settle": 200
+    },
+    {
+      "typeSlow": "build me a theme with the vibe of outdoor anime art",
+      "cps": 24,
+      "mark": "typed"
+    },
+    {
+      "key": "Enter",
+      "settle": 400,
+      "mark": "sent"
+    },
+    {
+      "waitForText": "all complete",
+      "timeout": 25000,
+      "settle": 700
+    },
+    {
+      "eval": "window.__workbenchAppearanceSync({theme:'golden-sunbreak'})",
+      "settle": 0,
+      "mark": "flip1"
+    },
+    {
+      "eval": "new Promise(r=>{const h=document.documentElement;const done=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(1)));if(h.dataset.theme==='golden-sunbreak')return done();new MutationObserver((m,o)=>{if(h.dataset.theme==='golden-sunbreak'){o.disconnect();done()}}).observe(h,{attributes:true,attributeFilter:['data-theme']})})",
+      "settle": 0,
+      "mark": "paint1"
+    },
+    {
+      "hold": 2600
+    },
+    {
+      "eval": "window.__workbenchAppearanceSync({theme:'strawberry-kitty'})",
+      "settle": 0,
+      "mark": "flip2"
+    },
+    {
+      "eval": "new Promise(r=>{const h=document.documentElement;const done=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(1)));if(h.dataset.theme==='strawberry-kitty')return done();new MutationObserver((m,o)=>{if(h.dataset.theme==='strawberry-kitty'){o.disconnect();done()}}).observe(h,{attributes:true,attributeFilter:['data-theme']})})",
+      "settle": 0,
+      "mark": "paint2"
+    },
+    {
+      "hold": 2600
+    },
+    {
+      "eval": "window.__workbenchAppearanceSync({theme:'kuromi-dreamer'})",
+      "settle": 0,
+      "mark": "flip3"
+    },
+    {
+      "eval": "new Promise(r=>{const h=document.documentElement;const done=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(1)));if(h.dataset.theme==='kuromi-dreamer')return done();new MutationObserver((m,o)=>{if(h.dataset.theme==='kuromi-dreamer'){o.disconnect();done()}}).observe(h,{attributes:true,attributeFilter:['data-theme']})})",
+      "settle": 0,
+      "mark": "paint3"
+    },
+    {
+      "hold": 4000
+    }
+  ],
+  "why": "Starts in Cotton Candy Sky (the look of beats 1-2) and flips to three community looks after the reply. The holds between flips are 2600 ms — one bar of the track is 2.03 s and the wipe straddles the downbeat — and 4000 ms after the last so the sub-line has a still look to land on. Each flip is followed by a paint observer that resolves two frames after data-theme changes, so `paintN` marks the frame the new look is actually on screen. The opening dust freeze is the promo-conversations trick (see its `why`); with Cotton Candy Sky's particles live, typing the request took 7.6 s instead of ~2."
+}

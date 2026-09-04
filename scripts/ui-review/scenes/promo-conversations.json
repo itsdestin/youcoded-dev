@@ -1,0 +1,102 @@
+{
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&student=1&latency=150",
+  "theme": "midnight",
+  "width": 1440,
+  "height": 900,
+  "zoom": 1.25,
+  "fps": 30,
+  "boot": 3000,
+  "why": "The first action freezes the theme's dust particles through the app's own window-hidden pause (ThemeEffects.tsx onVisibility), then puts visibilityState back so nothing else in the app thinks the window is hidden. Measured 2026-09-03: with the particle canvas repainting every 33 ms, every pointer step of the recorder waits ~90 ms for a frame (15 ms with the canvas still), so a click took 1.2-1.8 s and the drag's 19-step approach alone ate 2 s -- the pill never moved inside the 2 s shot. The dust stays on screen for the whole clip, it just does not drift. The pointer is parked on the All Sessions button before the opening hold: the screencast never draws a cursor, and a 19-step approach across the chat costs ~2 s of hover re-renders on this page, which pushed the menu past the bar the edit gives it. The opening hold is 2.6 s, not 0.9: for the first ~2.5 s after the screencast starts every pointer step costs ~90 ms whatever the page is doing, then ~1 ms (measured on this page, dust frozen); the menu click used to land inside that window and take 1.7 s. Nothing before the `menu` mark is in the edit.",
+  "actions": [
+    {
+      "eval": "(()=>{Object.defineProperty(document,'visibilityState',{get:()=>'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));delete document.visibilityState;document.documentElement.setAttribute('data-doc-hidden','0');return document.visibilityState})()",
+      "settle": 0
+    },
+    {
+      "moveTo": "[title='All Sessions']",
+      "ms": 16,
+      "settle": 0
+    },
+    {
+      "hold": 2600
+    },
+    {
+      "click": "[title='All Sessions']",
+      "settle": 500,
+      "mark": "menu"
+    },
+    {
+      "settle": 400,
+      "mark": "resume",
+      "click": "js:[...document.querySelectorAll('button')].find(b=>b.offsetParent!==null&&b.textContent.trim()==='Resume'&&!b.title)"
+    },
+    {
+      "waitFor": "[placeholder='Search sessions...']",
+      "settle": 1200
+    },
+    {
+      "click": "[placeholder='Search sessions...']",
+      "settle": 200
+    },
+    {
+      "typeSlow": "econ",
+      "cps": 12,
+      "settle": 0,
+      "mark": "search"
+    },
+    {
+      "hold": 1200
+    },
+    {
+      "click": "[aria-label^='Organize ']",
+      "settle": 600,
+      "mark": "organize"
+    },
+    {
+      "click": "js:[...document.querySelectorAll('button[aria-pressed=\"false\"]')].find(b=>b.offsetParent!==null&&b.textContent.trim()==='urgent')",
+      "settle": 500,
+      "mark": "tag"
+    },
+    {
+      "click": "textarea[aria-label='Add a note…']",
+      "settle": 200
+    },
+    {
+      "typeSlow": "ask about the demand curve",
+      "cps": 24,
+      "settle": 0,
+      "mark": "note"
+    },
+    {
+      "hold": 900
+    },
+    {
+      "key": "Escape",
+      "settle": 500
+    },
+    {
+      "click": "[placeholder^='Message']",
+      "settle": 0
+    },
+    {
+      "eval": "new Promise(r=>{setTimeout(()=>r(0),8000);const gone=()=>!document.querySelector(\"[placeholder='Search sessions...']\");const done=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(1)));if(gone())return done();const o=new MutationObserver(()=>{if(gone()){o.disconnect();done()}});o.observe(document.body,{childList:true,subtree:true})})",
+      "settle": 700,
+      "mark": "close"
+    },
+    {
+      "moveTo": "[data-session-idx='0']",
+      "ms": 500,
+      "settle": 300
+    },
+    {
+      "drag": "[data-session-idx='0']",
+      "to": "[data-session-idx='2']",
+      "ms": 400,
+      "settle": 200,
+      "mark": "drag"
+    },
+    {
+      "hold": 1600
+    }
+  ]
+}

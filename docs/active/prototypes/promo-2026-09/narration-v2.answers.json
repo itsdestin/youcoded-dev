@@ -1,0 +1,126 @@
+{
+ "lines": {
+  "l01": {
+   "text": "Welcome to YouCoded! I'm your assistant. -> YouCoded is a free, open-source, and fully personalizable AI assistant.",
+   "changed": true
+  },
+  "l02": {
+   "text": "Save repeatable prompts.",
+   "changed": true
+  },
+  "l03": {
+   "text": "Or entire workflows. No explaining needed.",
+   "changed": true
+  },
+  "l04": {
+   "text": "Tired of grey chatbots? Build something better.",
+   "changed": true
+  },
+  "l05": {
+   "text": "Golden hour.",
+   "changed": false
+  },
+  "l06": {
+   "text": "Kitty cat!",
+   "changed": true
+  },
+  "l07": {
+   "text": "Another kitty cat!",
+   "changed": true
+  },
+  "l08": {
+   "text": "Use any AI, cloud or local.",
+   "changed": true
+  },
+  "l09": {
+   "text": "Behave, Grok, or I'm switching to Claude.",
+   "changed": true
+  },
+  "l10": {
+   "text": "Drop in a spreadsheet, ask the assistant for a sort.",
+   "changed": true,
+   "note": "rename this section to \"Collaborate with your assitant.\""
+  },
+  "l11": {
+   "text": "View and edit the result together.",
+   "changed": true,
+   "note": "rename this section to \"Collaborate with your assitant.\""
+  },
+  "l12": {
+   "text": "Manage classes, coding projects, and more with Project View.",
+   "changed": true,
+   "note": "change to Everything is a project."
+  },
+  "l13": {
+   "text": "You can play games alone or against friends while your assistant works.",
+   "changed": true
+  },
+  "l14": {
+   "text": "Try Connect 4. I'd win.",
+   "changed": true
+  },
+  "l15": {
+   "text": "Or perhaps chess?",
+   "changed": true
+  },
+  "l16": {
+   "text": "Easily see the status of working assistants.",
+   "changed": true
+  },
+  "l17": {
+   "text": "Search and filter old conversations.",
+   "changed": true
+  },
+  "l18": {
+   "text": "Or add tags and notes to help you find conversations later.",
+   "changed": true
+  },
+  "l19": {
+   "text": "",
+   "changed": true,
+   "note": "drop this"
+  },
+  "l20": {
+   "text": "Start a conversation on your computer, and resume on your phone.",
+   "changed": true
+  },
+  "l21": {
+   "text": "",
+   "changed": true,
+   "note": "delete this frame. looks like unnecessary friction"
+  },
+  "l22": {
+   "text": "Same conversation, same files, synced automatically.",
+   "changed": true
+  },
+  "l23": {
+   "text": "There's a marketplace.",
+   "changed": true
+  },
+  "l24": {
+   "text": "Made by people like you.",
+   "changed": false
+  },
+  "l25": {
+   "text": "In your chat.",
+   "changed": false
+  },
+  "l26": {
+   "text": "That's me. See you in there!",
+   "changed": false
+  }
+ },
+ "order": [
+  "1",
+  "3",
+  "4",
+  "5",
+  "9",
+  "2",
+  "6",
+  "8",
+  "7",
+  "10"
+ ],
+ "submitted": "2026-09-04T03:42:11"
+}

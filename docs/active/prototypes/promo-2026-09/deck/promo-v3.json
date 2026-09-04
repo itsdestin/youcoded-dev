@@ -1,0 +1,275 @@
+{
+ "title": "Promo video, round three: what to add, how the mascot should move, where you check in",
+ "intro": "The re-cut you saw is at scripts/promo/out/youcoded-promo.mp4. Before anything else is built or rendered, these are the decisions. Every question stands on its own; pick and add a note where you want.",
+ "sections": [
+  {
+   "title": "Length and what goes in",
+   "intro": "Three things are missing: the WeCoded marketplace, picking your own model, and a glimpse of project view. They need room.",
+   "questions": [
+    {
+     "id": "length",
+     "area": "video",
+     "today": "The video is 72 seconds: an opening, 'just ask', files, games, conversations, phone, three theme looks, and an end card. The music is composed to exactly that length, 34 bars, so every cut lands on a beat.",
+     "problem": "Adding three more things at the same length means every feature gets about four seconds, which reads as a blur. Making it longer means a longer Reddit post; the viewer has to stay for the extra time.",
+     "proposal": "Grow the video and re-arrange the music to match, or cut existing material to make room. The music is code, so a new length is a re-render, not a problem.",
+     "options": [
+      {
+       "label": "About 90 seconds: keep everything, add the three new beats",
+       "pros": [
+        "Nothing already there gets shallower",
+        "Each new feature gets a proper 5 to 6 second beat"
+       ],
+       "cons": [
+        "Longest option; Reddit viewers drop off past a minute",
+        "The end card and the music tail need re-timing"
+       ]
+      },
+      {
+       "label": "About 80 seconds: add the three beats, trim the phone and theme beats",
+       "pros": [
+        "Everything is still in",
+        "Only two beats lose a couple of seconds each"
+       ],
+       "cons": [
+        "The phone beat loses the take-over dialog; the theme beat drops to two looks"
+       ]
+      },
+      {
+       "label": "Stay at 72 seconds: drop the Flappy flight and one theme look to make room",
+       "pros": [
+        "Tightest; nothing feels slow"
+       ],
+       "cons": [
+        "The games beat loses its most charming moment",
+        "Each of the three new beats is about four seconds"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The three missing features",
+   "intro": "What the app can show for each, what the workbench (the fake-backend copy the video is filmed in) already has, and the choices. Proposed order for the new cut: open, just ask, PICK YOUR MODEL, files, PROJECT VIEW, games, conversations, phone, MARKETPLACE, describe a look, end card.",
+   "questions": [
+    {
+     "id": "marketplace",
+     "area": "marketplace",
+     "today": "The WeCoded marketplace inside the app has a hero, rails of featured plugins (Encyclopedia, Inbox, Messaging, Theme Builder and about thirty more), a detail page with an Install button, likes and comments, and a Themes tab with community themes. The workbench copy has all of that populated. Two things do not work there yet: pressing Install does nothing lasting, and star ratings show as zero. Both are a small dev-only fake to fix.",
+     "problem": "The current video never shows the marketplace at all, and the theme beat cycles three looks with no hint of where they come from.",
+     "proposal": "A marketplace beat of its own, and let the theme beat's community looks come from the marketplace's Themes tab instead of appearing from nowhere.",
+     "options": [
+      {
+       "label": "Both: a plugins beat, and the theme picks come from the marketplace",
+       "pros": [
+        "The marketplace is seen twice, once for plugins and once for themes",
+        "The 'pick one from the community' line finally has a picture behind it"
+       ],
+       "cons": [
+        "Two dev-only fakes to build (install for plugins, install-and-apply for themes)",
+        "Uses the most time"
+       ]
+      },
+      {
+       "label": "A plugins beat only: browse, open Encyclopedia (or Journal), Install, it shows up back in the chat",
+       "pros": [
+        "One clear story: find a plugin, install it, use it"
+       ],
+       "cons": [
+        "The theme looks still appear from nowhere"
+       ]
+      },
+      {
+       "label": "Themes only: the marketplace's Themes tab supplies the looks in the theme beat",
+       "pros": [
+        "Cheapest; one fake",
+        "Fixes the 'where did Hello Kitty come from' problem"
+       ],
+       "cons": [
+        "Plugins, the bigger half of the marketplace, are never shown"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "model",
+     "area": "models",
+     "today": "The status bar shows the current model; clicking it opens a picker listing your Claude subscription, OpenRouter cloud models (Claude Sonnet, GPT, Grok, Qwen, Llama) and Local Models, with a search box and favourite stars. Settings has a Model Providers page with a Local Models section whose downloads show a live progress bar. The workbench has the picker populated but with no prices or 'free' tags, and the downloadable-model list is empty; both are small fakes.",
+     "problem": "The video never shows that you choose the model, which is one of the app's main differences from a single-vendor chat app.",
+     "proposal": "A short beat, right after 'Just ask': open the picker, scroll the list, pick a different model, the chip changes, the next reply comes from it.",
+     "options": [
+      {
+       "label": "The picker: Claude, cloud models, local, pick one and go (with prices and free tags faked in)",
+       "pros": [
+        "Shows the whole choice in one screen",
+        "Four seconds is enough"
+       ],
+       "cons": [
+        "The local-model download is not seen"
+       ]
+      },
+      {
+       "label": "Settings, Model Providers, and a local model downloading with its progress bar",
+       "pros": [
+        "The 'runs on your machine' story is visible"
+       ],
+       "cons": [
+        "Settings pages read as chores; the cloud choice is not seen"
+       ]
+      },
+      {
+       "label": "Both, quickly: the picker, then a flash of a download in progress",
+       "pros": [
+        "Cloud and local both seen"
+       ],
+       "cons": [
+        "Needs about six seconds; two shots in one beat"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "project-view",
+     "area": "projects",
+     "today": "Project view opens from the folder button in the header: a project hero with its name and description and a sync badge, then tabs for Files (a file tree), Conversations (the chats in that project) and Context (the instructions and rules the assistant follows, with 'always' and 'conditional' chips). The workbench seeds one populated project, but it is the YouCoded code project itself: its files and rules are developer material, not a student's.",
+     "problem": "The video never shows that documents, context and conversations live together in a project.",
+     "proposal": "A four-second glimpse: open Projects, the hero and the Files tree, one click to Context. To keep the student persona it needs a student project faked in (for example 'Econ 201' with notes, a syllabus, and a context note like 'I am a second-year, keep explanations short').",
+     "options": [
+      {
+       "label": "A four-second glimpse of its own, with a student project faked in",
+       "pros": [
+        "Consistent persona",
+        "Shows files, conversations and context in one place"
+       ],
+       "cons": [
+        "A fixture to write; a short beat can only hint"
+       ]
+      },
+      {
+       "label": "Fold it into the files beat: after the sheet changes, open Projects to show where it lives",
+       "pros": [
+        "No extra beat; a natural follow-on from files"
+       ],
+       "cons": [
+        "The files beat gets busier; less time on each"
+       ]
+      },
+      {
+       "label": "Use the workbench's existing developer project as is",
+       "pros": [
+        "No fixture work"
+       ],
+       "cons": [
+        "A code project with CLAUDE.md and rules in a student's video"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The mascot",
+   "intro": "You said the mascot should feel like premium animation, not a cheap phone game. This is what that means in practice and how you get to judge it before it goes into the film.",
+   "questions": [
+    {
+     "id": "mascot-direction",
+     "area": "mascot",
+     "today": "The host is the app's own rigged mascot in each theme's costume. It is moved by simple springs: it hops on a straight arc, its arms swing to fixed poses, it bobs up and down, and a ring flashes when it changes costume.",
+     "problem": "That is exactly the recipe of cheap game animation: no build-up before a move, no weight on landing, the body never leans or stretches, the face never looks anywhere, and effects are stock rings. It moves, but nothing about it feels alive or considered.",
+     "proposal": "A proper motion pass using the classic animation principles: a crouch before every hop and a stretch on the way up; the body leans into the direction it travels and tucks at the top; a squash on landing that settles in two small bounces; arms and companions that trail and settle after the body (follow-through); a soft contact shadow on the title bar that shrinks when it jumps and returns when it lands, so it has weight; breathing instead of bobbing; eyes that look toward what is about to happen and a blink before an action; a proper 'poof' on costume changes with a burst of small particles instead of a ring; every hop takes off early and lands exactly on the beat. The art itself (the rigs) stays the app's, since that is the brand.",
+     "options": [
+      {
+       "label": "Do the motion pass on the app's rigs",
+       "pros": [
+        "The mascot in the video is the mascot in the app",
+        "All of the above is achievable in the video tool without new art"
+       ],
+       "cons": [
+        "The rigs have fixed faces and no separate eyebrows or mouth shapes, so expression comes from body and timing, not the face"
+       ]
+      },
+      {
+       "label": "Motion pass plus richer promo-only art for the default and golden rigs",
+       "pros": [
+        "More expressive faces (eyebrows, mouth shapes, a pupil that really looks)"
+       ],
+       "cons": [
+        "New art to draw and approve; the promo mascot then differs slightly from the app's",
+        "Adds a day"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "mascot-checkpoint",
+     "area": "mascot",
+     "today": "Until now the mascot's motion was only ever seen inside a full draft render, which is three and a half minutes a go and buries the mascot under everything else.",
+     "problem": "You could not judge the mascot on its own, and I could not iterate on it quickly.",
+     "proposal": "Before the film is touched, a short mascot-only study clip (about ten seconds: idle on a title bar, a hop to a new perch with a costume change, the dive, a wave) rendered in under a minute. You approve or redirect the motion there, as many rounds as it takes; only then does it go into the film.",
+     "options": [
+      {
+       "label": "Yes, a mascot study clip first",
+       "pros": [
+        "Fast rounds, one thing to judge"
+       ],
+       "cons": [
+        "One extra step before you see the film again"
+       ]
+      },
+      {
+       "label": "No, put it straight into the film",
+       "pros": [
+        "Fewer steps"
+       ],
+       "cons": [
+        "Each round of mascot notes costs a full draft render"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Where you check in",
+   "intro": "You asked for more review and approval points instead of repeated renders.",
+   "questions": [
+    {
+     "id": "checkpoints",
+     "area": "process",
+     "today": "The last round went from your notes straight to five draft renders and a final, with only agent reviews in between.",
+     "problem": "You had no chance to redirect until the end.",
+     "proposal": "A fixed sequence of check-ins, each one a file you open and answer, nothing rendered past it until you say go: (1) this deck; (2) a storyboard page for the new cut, beat by beat, with a real screenshot of every new surface from the app and the caption copy; (3) the mascot study clip; (4) the posters of the newly filmed scenes; (5) one half-size draft of the film; (6) the final.",
+     "options": [
+      {
+       "label": "All six check-ins",
+       "pros": [
+        "You can redirect at every stage"
+       ],
+       "cons": [
+        "More back-and-forth; each waits on you"
+       ]
+      },
+      {
+       "label": "Deck, storyboard, mascot clip, draft, final (skip the posters)",
+       "pros": [
+        "One fewer wait; footage problems still show in the draft"
+       ],
+       "cons": [
+        "A bad scene is only caught at the draft"
+       ]
+      },
+      {
+       "label": "Deck, mascot clip, draft, final (skip the storyboard page)",
+       "pros": [
+        "Fastest"
+       ],
+       "cons": [
+        "Beat order and captions are only judged on the draft"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
