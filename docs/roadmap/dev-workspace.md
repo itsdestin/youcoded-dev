@@ -309,6 +309,22 @@ seen-on is always n/a here.
       landing page — uniqueness is not the argument
       `n/a` `parked` `checked 2026-08-31`
 
+- [ ] The demo videos on the landing page are recordings of the desktop app shrunk to phone
+      width, so on a phone the app's own writing inside them is a few pixels tall — you can see
+      there is an app, not what it is doing. Re-filming them framed for a phone is the fix
+      `n/a` `confirmed` `checked 2026-09-03`
+
+- [ ] On a phone the landing page's "More than a chatbot" and "How we got here" run about three
+      and two full screens of unbroken text each; a first-time reader also flagged the third
+      About paragraph ("outpace development of competing closed agents") as strategy talk with
+      no reason to be on the page
+      `n/a` `confirmed` `checked 2026-09-03`
+
+- [ ] The asterisk on the landing page's iOS download button has no footnote anywhere near it —
+      the explanation sits about ten screens further down, so someone taps it expecting an App
+      Store link
+      `n/a` `confirmed` `checked 2026-09-03`
+
 - [ ] Ship v1.3 — the release mechanics: an `/audit` run, version bumps on both platforms (still
       1.2.4), a CHANGELOG 1.3.0 entry, the tag. The one product gate left is the Connected-accounts
       question filed under sync
