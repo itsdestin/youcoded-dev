@@ -3,6 +3,7 @@ import { useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion';
 import { family } from './Caption';
 import { THEMES, type Slug } from './themes';
 import { evaluate, type Action, type HostState } from './host/engine';
+import { measureText } from '@remotion/layout-utils';
 
 // The speech bubble: the caption's second line, said by the host. Destin,
 // 2026-09-04: "one top-line caption/section label, then have the sub-label or
@@ -18,6 +19,33 @@ type Props = { cues: BubbleCue[]; actions: Action[]; base: HostState };
 const FONT = 26, PAD_X = 22, PAD_Y = 11, GAP = 18, OUT = 6;
 const MAX_W = 560;   // a longer line WRAPS (Destin's twelve-word games line ran off the frame on one line, 2026-09-04)
 export const bubbleWidth = (text: string) => Math.min(text.length * FONT * 0.56 + PAD_X * 2, MAX_W + PAD_X * 2);
+/**
+ * The TIGHT width of a bubble's text: measured word by word (Destin, 2026-09-04: "some of the
+ * bubbles have extra empty space on the left/right side"). A box set to `max-content` capped at
+ * maxW is maxW wide whenever the text wraps, even when its lines are shorter — so this wraps the
+ * words greedily at maxW to learn the line count, then finds the narrowest width that still fits
+ * in that many lines. Measured with the real font, so the box hugs the longest line.
+ */
+const fitCache = new Map<string, number>();
+export function fitWidth(text: string, fontFamily: string, maxW: number): number {
+  const key = `${fontFamily}|${maxW}|${text}`;
+  const hit = fitCache.get(key); if (hit != null) return hit;
+  const opts = { fontFamily, fontSize: FONT, fontWeight: 600 } as const;
+  const words = text.split(' ').map((w) => ({ w, width: measureText({ text: w, ...opts }).width }));
+  const space = measureText({ text: 'a a', ...opts }).width - measureText({ text: 'aa', ...opts }).width;
+  const lines = (W: number) => { let n = 1, cur = 0; for (const { width } of words) { const add = cur ? space + width : width; if (cur && cur + add > W) { n++; cur = width; } else cur += add; } return n; };
+  const total = words.reduce((t, x) => t + x.width, 0) + space * (words.length - 1);
+  let out: number;
+  if (total <= maxW) out = total;
+  else {
+    const n = lines(maxW);
+    let lo = Math.max(...words.map((x) => x.width)), hi = maxW;   // the narrowest width that still wraps into n lines
+    for (let i = 0; i < 24; i++) { const mid = (lo + hi) / 2; if (lines(mid) <= n) hi = mid; else lo = mid; }
+    out = hi;
+  }
+  out = Math.ceil(out) + 2;   // a hair of slack so the browser's own rounding never adds a line
+  fitCache.set(key, out); return out;
+}
 
 export const Bubbles: React.FC<Props> = ({ cues, actions, base }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
@@ -42,6 +70,7 @@ export const Bubbles: React.FC<Props> = ({ cues, actions, base }) => {
   // Resume browser went to the left and covered the search field it was pointing at, 2026-09-04)
   const right = cue.side ? cue.side === 'R' : (s0.x + s0.size / 2 < 1280 && fitsRight) || roomRight >= roomLeft;
   const maxW = Math.max(260, Math.min(MAX_W, (right ? roomRight : roomLeft) - PAD_X * 2));
+  const tight = fitWidth(cue.text, family(t), maxW);
   const inS = spring({ frame: f - cue.at, fps, config: { damping: 12, stiffness: 190 } });
   const outS = f >= until ? interpolate(f - until, [0, OUT], [1, 0], { extrapolateRight: 'clamp' }) : 1;
   const scale = inS * outS;
@@ -54,7 +83,7 @@ export const Bubbles: React.FC<Props> = ({ cues, actions, base }) => {
   return (
     <div style={{ position: 'absolute', left: anchorX, top: headY, transform: `translate(${right ? GAP : -GAP}px, -50%) ${right ? '' : 'translateX(-100%)'}`, pointerEvents: 'none' }}>
       <div style={{ position: 'relative', transform: `scale(${scale.toFixed(3)})`, transformOrigin: right ? '0% 50%' : '100% 50%', opacity: Math.min(1, scale * 1.4) }}>
-        <div style={{ padding: `${PAD_Y}px ${PAD_X}px`, borderRadius: 20, background: bg, color: ink, fontFamily: family(t), fontSize: FONT, fontWeight: 600, lineHeight: 1.2, whiteSpace: 'normal', maxWidth: maxW, width: 'max-content', textAlign: right ? 'left' : 'right',
+        <div style={{ padding: `${PAD_Y}px ${PAD_X}px`, borderRadius: 20, background: bg, color: ink, fontFamily: family(t), fontSize: FONT, fontWeight: 600, lineHeight: 1.2, whiteSpace: 'normal', width: tight, boxSizing: 'content-box', textAlign: right ? 'left' : 'right',
           boxShadow: `0 8px 24px rgba(0,0,0,${t.dark ? 0.45 : 0.18}), 0 0 0 2px ${t.accent}55` }}>{cue.text}</div>
         {/* the tail: a rounded wedge pointing at the head */}
         <svg width={tail + 4} height={tail * 1.6} viewBox={`0 0 ${tail + 4} ${tail * 1.6}`}

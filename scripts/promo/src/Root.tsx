@@ -7,6 +7,7 @@ import { CaptionStudy } from './CaptionStudy';
 import { LabelStudy, LabelReel, REEL_FRAMES, DESIGNS } from './LabelStudy';
 import { HostStudy, STUDY_FRAMES } from './intro/HostStudy';
 import { TransitionStudy, TRANSITION_STUDY_FRAMES } from './studies/TransitionStudy';
+import { EndPoseStudy } from './studies/EndPoseStudy';
 // The film runs the bar grid (TOTAL_FRAMES) plus TAIL_FRAMES, the frames the
 // last beat holds so the music's final chord plays out under a live picture.
 // `Intro` is the cold-open study clip (round three's mascot check-in) and the
@@ -21,6 +22,10 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="PresentStudy" component={Film} durationInFrames={studyFrames(['b4', 'b8'])} fps={FPS} width={1920} height={1080} defaultProps={{ ids: ['b4', 'b8'] as const as any, music: false }} />
     {/* check-in 5: the close on its own — the window filling the frame, the modal, the host beside the Y (Destin, 2026-09-04) */}
     <Composition id="CloseStudy" component={Film} durationInFrames={studyFrames(['b10'])} fps={FPS} width={1920} height={1080} defaultProps={{ ids: ['b10'] as const as any, music: false }} />
+    {/* end-pose candidates for the close (Destin, 2026-09-04) */}
+    {(['A', 'B', 'C', 'D', 'E', 'F'] as const).map((p) => (
+      <Still key={`End${p}`} id={`End${p}`} component={EndPoseStudy} width={1920} height={1080} defaultProps={{ pose: p }} />
+    ))}
     {/* check-in 3b: the label + bubble captions and the three theme-transition candidates */}
     <Composition id="TransitionStudy" component={TransitionStudy} durationInFrames={TRANSITION_STUDY_FRAMES} fps={FPS} width={1920} height={1080} />
     {/* caption STYLE variants for Destin, 2026-09-04, round two: nine animated designs (G X P O K S W B R —

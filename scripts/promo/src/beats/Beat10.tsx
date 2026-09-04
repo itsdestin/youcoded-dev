@@ -28,7 +28,7 @@ const WORD_TOP = MODAL.y + 96;                         // the wordmark's top ins
 assertClipCovers('promo-idle-golden', 0, LEN('b10'));
 // Standing just left of the Y of the big "YouCoded" (Inter 800 at 84 px: the word is ~394 px wide,
 // centred at 960, so the Y's left edge is ~763); the feet sit on the word's baseline.
-const Y_SPOT = { x: 763 - 24 - 120 + 22, y: WORD_TOP + 84 * 0.92 - 120 * 0.86 };
+export const Y_SPOT = { x: 763 - 24 - 120 + 22, y: WORD_TOP + 84 * 0.92 - 120 * 0.86 };
 const HOME = perch(0.3);
 const GROW_AT = PRE + 4, MODAL_AT = PRE + 22;
 /** The window grows from its film size to SCALE over ~0.8 s, then holds. */
@@ -54,7 +54,7 @@ const Modal: React.FC = () => {
     </>
   );
 };
-const Beat10: React.FC = () => (
+export const Beat10: React.FC = () => (
   <AbsoluteFill>
     <Grow />
     <Modal />

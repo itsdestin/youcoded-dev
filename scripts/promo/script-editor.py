@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """The script editor — a page where Destin rewrites the host's lines with a screenshot of each moment.
 
-  python3 scripts/promo/script-editor.py [--port N] [--no-open] [--build]
+  python3 scripts/promo/script-editor.py [--port N] [--no-open] [--build] [--fresh]
+  --fresh: start from the film's lines, ignoring a previous round's saved edits
 
 One card per line, in film order: the frame from the current draft at the moment the bubble is
 up (so he sees what is on screen and where the host stands), the headline under the window,
@@ -21,7 +22,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 HERE = os.path.dirname(os.path.abspath(__file__))
 DOCS = os.path.abspath(os.path.join(HERE, '..', '..', 'docs', 'active', 'prototypes', 'promo-2026-09'))
 STILLS = os.path.join(DOCS, 'script')
-OUT = os.path.join(DOCS, 'narration-v2.answers.json')
+OUT = os.path.join(DOCS, 'script-edits.answers.json')   # this round's edits; each submit is copied to a dated file by the session that applies it
 
 # What is on screen at each line, in film order (matches narration-v2.md). Keyed by the line's
 # text so a reordered cue list still finds its description; a line with no entry shows nothing.
@@ -177,8 +178,9 @@ def summary(ls, state):
     return '\n'.join(rows) if rows else '  (no changes)'
 
 def main(argv):
-    ap = argparse.ArgumentParser(); ap.add_argument('--port', type=int, default=8791); ap.add_argument('--no-open', action='store_true'); ap.add_argument('--build', action='store_true')
+    ap = argparse.ArgumentParser(); ap.add_argument('--port', type=int, default=8791); ap.add_argument('--no-open', action='store_true'); ap.add_argument('--build', action='store_true'); ap.add_argument('--fresh', action='store_true')
     a = ap.parse_args(argv)
+    if a.fresh and os.path.exists(OUT): os.remove(OUT)
     cs = cues(); names = stills(cs); ls = lines(cs, names); page = render(ls).encode()
     if a.build:
         p = os.path.join(DOCS, 'script-editor.html'); open(p, 'w').write(page.decode().replace("'stills/'", "'script/'")); print('wrote', p); return 0
