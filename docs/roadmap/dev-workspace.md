@@ -248,6 +248,12 @@ seen-on is always n/a here.
 
 ## release
 
+- [ ] Android beta builds all claim to be version 1.2.4. The desktop test build stamps its own
+      version number into every beta; the Android one never got that, so its About screen shows
+      the last released number no matter how new the code is — a tester reporting a bug names a
+      version that says nothing about what they were running
+      `n/a` `confirmed` `checked 2026-09-03`
+
 - [ ] REVERT WHEN 1.3.0 SHIPS: youcoded.ai's download buttons now hand out the newest release
       INCLUDING pre-releases, so visitors get the 1.3.0-beta build instead of v1.2.4 from May.
       Deliberate and temporary (Destin, 2026-09-03). On 1.3.0: put the buttons back on
