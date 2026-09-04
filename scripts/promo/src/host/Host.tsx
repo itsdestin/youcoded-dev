@@ -110,7 +110,9 @@ export const Host: React.FC<{ actions: Action[]; base: HostState; faceStyle?: Fa
       <div style={{ position: 'absolute', left: s.x, top: s.y, width: s.size, height: s.size,
         transform: `rotate(${s.rot.toFixed(2)}deg) scale(${(s.sx * turn(s.spin)).toFixed(3)}, ${(s.sy * breathe).toFixed(3)})`, transformOrigin: '50% 86%',
         opacity: blur ? 0.75 : 1,
-        filter: t.dark ? `drop-shadow(0 6px 14px rgba(0,0,0,.5)) drop-shadow(0 0 22px ${t.accent}66)` : 'drop-shadow(0 6px 14px rgba(40,10,40,.35))' }}>
+        // dark themes: a thin light rim plus the accent glow — the Halftone hood on the plum backdrop was
+        // invisible for the whole games beat in the draft review
+        filter: t.dark ? `drop-shadow(0 0 3px ${t.fg}cc) drop-shadow(0 6px 14px rgba(0,0,0,.5)) drop-shadow(0 0 26px ${t.accent}99)` : 'drop-shadow(0 6px 14px rgba(40,10,40,.35))' }}>
         <Rig s={s} style={faceStyle} scope={`host-${s.costume}`} />
       </div>
     </div>

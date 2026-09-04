@@ -15,7 +15,10 @@ Destin chose: fixed check-ins, nothing rendered past one until he says go — (1
 deck (answered, `docs/active/prototypes/promo-2026-09/deck/promo-v3.answers.json`), (2) the
 storyboard page (`storyboard-v3.html`, approved with notes, all applied), (3) the mascot /
 captions check-in (`checkin-3.html`, his notes below), (4) one half-size draft of the whole
-film, (5) the final. **We are at check-in 3c** (`checkin-3c.html`: beats 4 and 8 choreographed so
+film, (5) the final. **We are at check-in 4** (`checkin-4.html`, `study/draft.mp4`: the whole film at
+half size, every beat presenting, the warm faces, the zoomed footage; one fresh-eyes pass applied).
+His notes on the draft → fixes → the final render (`bash scripts/promo/render.sh`, full size + loudness)
+→ wrap-up. History: check-in 3c (`checkin-3c.html`: beats 4 and 8 choreographed so
 the host PRESENTS the app, the three moves rotating across the cuts, captions centred + bubbles,
 the app filmed 25 % zoomed in, the peek fixed). His 3b answers, all applied: all three moves
 together, rotating (A quick-change → B poof → C twirl; B where there is no band); the headline

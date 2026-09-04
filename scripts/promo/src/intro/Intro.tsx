@@ -21,7 +21,7 @@ const { fontFamily } = loadInter();
 // window rises under it while the wordmark hands off to the caption band.
 //
 // Every number here is a frame at 30 fps. IMPACT is the music's bar 0.
-export const IMPACT = 236;                       // must equal timeline.ts PRELUDE
+export const IMPACT = 196;                       // must equal timeline.ts PRELUDE
 export const SIZE = 140;                        // the host is bigger here than on a title bar
 const WORD = { size: 112, cx: 960, baseline: 578 };
 // Inter 800 at 112 px: "YouCoded" measures ~525 px, so its left edge (the Y) is at ~697.
@@ -41,16 +41,17 @@ export const WORD_LEFT_CENTRED = RECOIL_X + SIZE + 44;              // the Y's l
 const P = perch(0.3);
 
 export const introActions = (): Action[] => [
-  // pacing (review of 3b: it waited 3.5 s at the edge): peek at 30, look, step in at 96, walk 108–196, size up the Y, punch at 236
-  A.peekIn(30, 28, GROUND_Y, SIZE, 0.82),         // peeks in over the left edge (the body is the middle half of the box, so most of the box must show)
-  A.face(30, 'curious'),
-  A.look(60, 8, 0.55, 0.1), A.look(74, 8, -0.4, -0.15), A.blink(86), A.look(90, 8, 0.2, 0),
-  A.stepIn(96, 14, -18, GROUND_Y),                // steps fully into frame
-  A.face(108, 'welcome'),
-  A.walk(108, 88, STAND_X, 7),                    // a cautious walk across
-  A.look(124, 20, 0.5, 0),
-  A.face(198, 'curious'), A.look(198, 10, 0.6, -0.25), A.tilt(202, 10, 7), A.blink(212),   // looks the Y up and down
-  A.face(220, 'welcome'), A.look(220, 6, 0.5, -0.1), A.tilt(220, 6, 0),   // fixes on the Y (never the chevron 'idle' face — it read as empty eyes)
+  // pacing (the draft review: 8 s of black before anything happens): peek at 8, a quick look round, step in at 60,
+  // walk 70–148, size up the Y, punch at 196 — 6.5 s of silence, and the host is moving for most of it
+  A.peekIn(8, 24, GROUND_Y, SIZE, 0.82),          // peeks in over the left edge (the body is the middle half of the box, so most of the box must show)
+  A.face(8, 'curious'),
+  A.look(34, 8, 0.55, 0.1), A.look(46, 8, -0.4, -0.15), A.blink(54), A.look(56, 6, 0.2, 0),
+  A.stepIn(60, 12, -18, GROUND_Y),                // steps fully into frame
+  A.face(70, 'welcome'),
+  A.walk(70, 78, STAND_X, 6),                     // a cautious walk across
+  A.look(84, 20, 0.5, 0),
+  A.face(152, 'curious'), A.look(152, 10, 0.6, -0.25), A.tilt(156, 10, 7), A.blink(168),   // looks the Y up and down
+  A.face(180, 'welcome'), A.look(180, 6, 0.5, -0.1), A.tilt(180, 6, 0),   // fixes on the Y (never the chevron 'idle' face — it read as empty eyes)
   A.punch(IMPACT, 1),                             // wind-up from 224, the hit at 236
   A.face(IMPACT, 'shocked'), A.costume(IMPACT, 'cotton-candy-sky'), A.look(IMPACT, 4, 0, 0),
   // the recoil: knocked STRAIGHT back off the Y in a fast low arc (lands by IMPACT+10), BEFORE the title
@@ -59,8 +60,8 @@ export const introActions = (): Action[] => [
   A.face(IMPACT + 22, 'welcome'), A.look(IMPACT + 22, 8, 0.5, -0.1), A.blink(IMPACT + 30),   // …and admires the full title
   // onto the title bar: takes off BEFORE the window arrives and hangs long enough to land as it settles
   // (review: the window rose through it and it looked drawn inside the wallpaper)
-  A.hop(IMPACT + barFrame(1) - 8, 34, P.x, P.y, 150),
-  A.to(IMPACT + barFrame(1) - 8, 34, 'size', 120),
+  A.hop(IMPACT + barFrame(1) + 2, 28, P.x, P.y, 150),
+  A.to(IMPACT + barFrame(1) + 2, 28, 'size', 120),
   A.face(IMPACT + barFrame(1) + 40, 'welcome'),
 ];
 
@@ -76,12 +77,13 @@ const Wordmark: React.FC = () => {
   // so host + wordmark end up centred as a group
   const centre = f >= IMPACT + 10 ? spring({ frame: f - IMPACT - 10, fps, config: { damping: 16, stiffness: 110 } }) : 0;
   const left = interpolate(centre, [0, 1], [WORD_LEFT, WORD_LEFT_CENTRED]) + jolt;
-  // The mark hands off to the caption band BEFORE bar 1 (14 frames early), so
-  // the window rising on the downbeat never passes through it.
-  const HAND = IMPACT + barFrame(1) - 14;
-  const hand = f >= HAND ? spring({ frame: f - HAND, fps, config: { damping: 20, stiffness: 160 } }) : 0;
-  const scale = interpolate(hand, [0, 1], [1, 0.38]);
-  const y = interpolate(hand, [0, 1], [WORD.baseline - WORD.size * 0.82, 990]);
+  // The mark FADES as the window rises on bar 1 (the draft review caught it painted over the
+  // input box while the window slid up through it); the label under the window takes over
+  // (Beat1 draws "YouCoded Assistant" there once the window has settled).
+  const RISE = IMPACT + barFrame(1);
+  const gone = interpolate(f, [RISE, RISE + 8], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const scale = 1;
+  const y = WORD.baseline - WORD.size * 0.82;
   const flash = f === IMPACT ? 1 : f === IMPACT + 1 ? 0.45 : 0;   // one hard white frame and a half, not a grey fade (review: "a grey strobe")
   // WHY the mark is anchored by its LEFT edge and not centred: a centred flex
   // row re-centres itself when "Assistant" rolls out, which slid "You" under the
@@ -90,11 +92,14 @@ const Wordmark: React.FC = () => {
   // while the host bounces back to RECOIL_X, so the GROUP is what ends centred.
   return (
     <>
-      <div style={{ position: 'absolute', left: interpolate(hand, [0, 1], [left, 960 - (525 + 28 + 300) * 0.38 / 2]), top: y, display: 'flex', justifyContent: 'flex-start', transform: `scale(${scale})`, transformOrigin: '0% 50%',
-        fontFamily: `${fontFamily}, system-ui, sans-serif`, fontWeight: 800, fontSize: WORD.size, letterSpacing: '-0.03em', color: '#fff', opacity: fadeIn, lineHeight: 1 }}>
+      <div style={{ position: 'absolute', left, top: y, display: 'flex', justifyContent: 'flex-start', transform: `scale(${scale})`, transformOrigin: '0% 50%',
+        fontFamily: `${fontFamily}, system-ui, sans-serif`, fontWeight: 800, fontSize: WORD.size, letterSpacing: '-0.03em', color: '#fff', opacity: fadeIn * gone, lineHeight: 1 }}>
         <span style={{ display: 'inline-block', textShadow: f >= IMPACT ? '0 6px 30px rgba(0,0,0,.35)' : 'none' }}>YouCoded</span>
+        {/* WHY a wipe over a (nearly) stationary word: any version that SLID the word out from behind
+            "YouCoded" led with its last letters ("YouCodedt", "istant" — two draft reviews). A clip that
+            grows left-to-right over a word that barely moves reveals "A", "As", "Ass"… */}
         <span style={{ display: 'inline-block', overflow: 'hidden', width: interpolate(roll, [0, 1], [0, 470]), marginLeft: interpolate(roll, [0, 1], [0, 28]), whiteSpace: 'nowrap', verticalAlign: 'top' }}>
-          <span style={{ display: 'inline-block', transform: `translateX(${interpolate(roll, [0, 1], [-470, 0])}px)`, fontWeight: 500, color: f >= IMPACT ? THEMES['cotton-candy-sky'].accent : '#fff' }}>Assistant</span>
+          <span style={{ display: 'inline-block', transform: `translateX(${interpolate(roll, [0, 1], [-24, 0])}px)`, fontWeight: 500, color: f >= IMPACT ? THEMES['cotton-candy-sky'].accent : '#fff' }}>Assistant</span>
         </span>
       </div>
       {flash > 0 && <AbsoluteFill style={{ background: '#fff', opacity: flash }} />}
@@ -151,7 +156,7 @@ export const IntroVisuals: React.FC<{ windowFile?: string }> = ({ windowFile = '
     <Wordmark />
     {/* footsteps, the punch, the poof and the landing pop live HERE so the film (Beat1 renders
         IntroVisuals) gets them too — they were only in the study before */}
-    {[116, 128, 140, 152, 164, 176, 188].map((at) => <Sfx key={at} at={at} name="step" volume={0.35} />)}
+    {[78, 90, 102, 114, 126, 138].map((at) => <Sfx key={at} at={at} name="step" volume={0.35} />)}
     <Sfx at={IMPACT} name="punch" volume={0.8} />
     <Sfx at={IMPACT} name="poof" volume={0.5} />
     <Sfx at={IMPACT + barFrame(1) + 18} name="pop" volume={0.4} />

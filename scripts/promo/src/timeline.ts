@@ -14,7 +14,7 @@
 // host walking in — and the music starts on the frame the host punches the
 // wordmark. That frame is bar 0. PRELUDE is how many frames come before it;
 // the first beat carries them, and every absolute bar sits PRELUDE later.
-export const PRELUDE = 236;                             // the punch; see intro/Intro.tsx IMPACT
+export const PRELUDE = 196;                             // the punch; see intro/Intro.tsx IMPACT (236 → 196 on 2026-09-04: the silent open ran 8 s)
 export const PRE = 6;                                   // frames of the wipe before the downbeat (200 ms)
 export const POST = 4;                                  // …and after it (133 ms); a 333 ms wipe in all
 export const CUT = PRE + POST;

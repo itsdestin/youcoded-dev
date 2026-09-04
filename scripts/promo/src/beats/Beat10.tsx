@@ -28,7 +28,7 @@ const Settle: React.FC = () => {
 const Beat10: React.FC = () => (
   <AbsoluteFill>
     <Settle />
-    <Caption head="YouCoded" at={L('b10', 38) + 4} theme="golden-sunbreak" top={CAP_TOP} size={84} headColor="#fff" />
+    <Caption head="YouCoded" at={L('b10', 38) + 16} theme="golden-sunbreak" top={CAP_TOP} size={84} headColor="#fff" />
     <Caption head={CAPTIONS.b10.head} sub={CAPTIONS.b10.sub} at={L('b10', 39)} subAt={L('b10', 39) + 6} theme="golden-sunbreak" top={CAP_TOP + 104} size={36} />
     <Caption head={CAPTIONS.link} at={L('b10', 40)} theme="golden-sunbreak" top={CAP_TOP + 104 + CAPTION.h - 14} size={36} headColor="#ffc030" />
   </AbsoluteFill>

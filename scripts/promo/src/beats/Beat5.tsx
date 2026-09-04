@@ -18,7 +18,9 @@ const A_FROM = markFrame('promo-sheet', 'attach', 'start', -6);
 const A_RATE = Math.min(1.6, Math.max(1, (markSec('promo-sheet', 'reply', 'end') - markSec('promo-sheet', 'attach', 'start')) / (2 * BAR_S)));
 const B_FROM = markFrame('promo-sheet', 'after', 'end', 20);
 const P_RATE = 1.2;
-const P_FROM = markFrame('promo-project', 'projects', 'start', -10);
+// +34, not −10: the Projects page shows empty, then "Loading files…", for a second after the click
+// (the draft review also caught six frames of the old chat before it)
+const P_FROM = markFrame('promo-project', 'projects', 'start', 34);
 const P = perch(0.25), LEAN = perch(0.62);
 assertClipCovers('promo-sheet', A_FROM, T_AFTER, A_RATE);
 assertClipCovers('promo-sheet', B_FROM, T_PROJ - T_AFTER);
@@ -28,7 +30,8 @@ const Beat5: React.FC = () => (
     <Sequence durationInFrames={T_AFTER}><Footage file="promo-sheet" from={A_FROM} rate={A_RATE} light /></Sequence>
     <Sequence from={T_AFTER} durationInFrames={T_PROJ - T_AFTER}><Footage file="promo-sheet" from={B_FROM} pushIn={0.02} light /></Sequence>
     <Sequence from={T_PROJ}><Footage file="promo-project" from={P_FROM} rate={P_RATE} light /></Sequence>
-    <Label text={CAPTIONS.b5.head} at={L('b5', 13) + 4} slug="meadow-mist" />
+    <Sequence durationInFrames={T_PROJ}><Label text={CAPTIONS.b5.head} at={L('b5', 13) + 4} slug="meadow-mist" /></Sequence>
+    <Sequence from={T_PROJ}><Label text={CAPTIONS.b5.head2} at={4} slug="meadow-mist" /></Sequence>
   </AbsoluteFill>
 );
 /** Local frame of a mark in the first shot (the sheet clip from A_FROM at A_RATE). */

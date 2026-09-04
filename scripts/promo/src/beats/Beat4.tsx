@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
+import { AbsoluteFill, Sequence } from 'remotion';
 import { Footage } from '../Footage';
 import { Label } from '../Label';
 import { CAPTIONS } from '../captions';
@@ -14,13 +14,22 @@ import { L, LEN, type BeatModule } from './beat';
 // the click to the reply and the beat is 6.4 s, so it runs at 1.35×.
 const RATE = 1.35;
 const FROM = markFrame('promo-model', 'chip', 'start', -15);
-/** Local frame of a mark in this beat (the clip plays from frame 0 at RATE). */
-const M = (mark: string, edge: 'start' | 'end' = 'start') => Math.round((markFrame('promo-model', mark, edge) - FROM) / RATE);
+// Two shots: A runs from before the click to just after it; B opens with the list already
+// there. WHY: between them the picker says "Loading models…" for 1.6 s of footage (the draft review).
+const A_LEN = Math.round((markFrame('promo-model', 'chip', 'end', 6) - FROM) / RATE);
+const B_FROM = markFrame('promo-model', 'list', 'start', -4);
+/** Local frame of a mark in this beat (shot A from frame 0, shot B from A_LEN, both at RATE). */
+const M = (mark: string, edge: 'start' | 'end' = 'start') => {
+  const fr = markFrame('promo-model', mark, edge);
+  return fr < B_FROM ? Math.round((fr - FROM) / RATE) : A_LEN + Math.round((fr - B_FROM) / RATE);
+};
 const P = perch(0.3), ABOVE = perch(0.4);                     // the model popup opens in the window's centre; 0.4 keeps its feet off the tab
-assertClipCovers('promo-model', FROM, LEN('b4'), RATE);
+assertClipCovers('promo-model', FROM, A_LEN, RATE);
+assertClipCovers('promo-model', B_FROM, LEN('b4') - A_LEN, RATE);
 const Beat4: React.FC = () => (
   <AbsoluteFill>
-    <Footage file="promo-model" from={FROM} rate={RATE} light />
+    <Sequence durationInFrames={A_LEN}><Footage file="promo-model" from={FROM} rate={RATE} light /></Sequence>
+    <Sequence from={A_LEN}><Footage file="promo-model" from={B_FROM} rate={RATE} light /></Sequence>
     <Label text={CAPTIONS.b4.head} at={L('b4', 10) + 4} slug="creme" />
   </AbsoluteFill>
 );

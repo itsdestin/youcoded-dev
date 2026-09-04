@@ -20,20 +20,24 @@ const FLIP1 = L('b3', 6), FLIP2 = L('b3', 7), FLIP3 = L('b3', 8), END = LEN('b3'
 const A_LEN = FLIP1 - 21;
 const A_FROM = markFrame('promo-theme', 'sent', 'end', 8) - A_LEN;
 const B_FROM = markFrame('promo-theme', 'paint1', 'end', 2) - 21;
-const C_FROM = markFrame('promo-theme', 'paint2', 'end', 2);
-const D_FROM = markFrame('promo-theme', 'paint3', 'end', 2);
+// +14, not +2: the wallpaper image lands ~10 frames after the paint mark, and +2 showed a blank
+// pink window for a third of a second on the Kuromi flip (the draft review)
+const C_FROM = markFrame('promo-theme', 'paint2', 'end', 14);
+const D_FROM = markFrame('promo-theme', 'paint3', 'end', 14);
 if (A_FROM < 0 || B_FROM < 0) throw new Error('the theme recording is too short before the request/reply; re-film with a longer lead');
 assertClipCovers('promo-theme', A_FROM, A_LEN);
 assertClipCovers('promo-theme', B_FROM, FLIP2 - A_LEN);
 assertClipCovers('promo-theme', C_FROM, FLIP3 - FLIP2);
-assertClipCovers('promo-theme', D_FROM, END - FLIP3);
+// the D shot is a static screen; at 0.8× the clip (which ends 10 frames short at 1×) covers it
+const D_RATE = 0.8;
+assertClipCovers('promo-theme', D_FROM, END - FLIP3, D_RATE);
 const P = perch(0.3);
 const Beat3: React.FC = () => (
   <AbsoluteFill>
     <Sequence durationInFrames={A_LEN}><Footage file="promo-theme" from={A_FROM} light /></Sequence>
     <Sequence from={A_LEN} durationInFrames={FLIP2 - A_LEN}><Footage file="promo-theme" from={B_FROM} /></Sequence>
     <Sequence from={FLIP2} durationInFrames={FLIP3 - FLIP2}><Footage file="promo-theme" from={C_FROM} light /></Sequence>
-    <Sequence from={FLIP3}><Footage file="promo-theme" from={D_FROM} light /></Sequence>
+    <Sequence from={FLIP3}><Footage file="promo-theme" from={D_FROM} rate={D_RATE} light /></Sequence>
     <Sequence durationInFrames={FLIP1 + WASH}><Label text={CAPTIONS.b3.head} at={L('b3', 5) + 4} slug="cotton-candy-sky" /></Sequence>
     <Sequence from={FLIP1 + WASH} durationInFrames={FLIP2 - FLIP1}><Label text={CAPTIONS.b3.head} at={0} slug="golden-sunbreak" still /></Sequence>
     <Sequence from={FLIP2 + WASH} durationInFrames={FLIP3 - FLIP2}><Label text={CAPTIONS.b3.head} at={0} slug="strawberry-kitty" still /></Sequence>
