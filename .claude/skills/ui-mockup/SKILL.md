@@ -20,6 +20,12 @@ the code already answers; do not ask what has an obvious answer (state it, the r
 will show it). Draw only after it is submitted: its answers are the first source of the
 contract.
 
+**Hand Destin the `[deck] http://127.0.0.1:…` line from `serve`, never the `.html` path**, while
+the server runs. The app opens a pasted path as a plain file, where Submit has no server and the
+page falls back to a copy box; on 2026-09-04 that paste came back as one flattened line and the
+deck read as "not submitted". If it happens anyway: `review-cards.py record <spec> '<paste>'`
+writes the submitted answers file from the paste (both line-per-step and flattened forms).
+
 ## The mechanism: edit the real components
 
 `bash scripts/run-workbench.sh` boots the **real renderer** in a browser tab at
