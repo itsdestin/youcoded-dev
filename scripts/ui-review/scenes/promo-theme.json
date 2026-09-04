@@ -1,11 +1,15 @@
 {
  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=theme-builder&seed=none&title=new+theme",
- "theme": "midnight",
+ "theme": "cotton-candy-sky",
  "width": 1440,
  "height": 900,
  "fps": 30,
  "boot": 3000,
  "actions": [
+  {
+   "eval": "(()=>{Object.defineProperty(document,'visibilityState',{get:()=>'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));delete document.visibilityState;document.documentElement.setAttribute('data-doc-hidden','0');return document.visibilityState})()",
+   "settle": 0
+  },
   {
    "hold": 900
   },
@@ -39,7 +43,7 @@
    "mark": "paint1"
   },
   {
-   "hold": 4500
+   "hold": 2600
   },
   {
    "eval": "window.__workbenchAppearanceSync({theme:'strawberry-kitty'})",
@@ -52,7 +56,7 @@
    "mark": "paint2"
   },
   {
-   "hold": 4500
+   "hold": 2600
   },
   {
    "eval": "window.__workbenchAppearanceSync({theme:'kuromi-dreamer'})",
@@ -65,7 +69,8 @@
    "mark": "paint3"
   },
   {
-   "hold": 6000
+   "hold": 4000
   }
- ]
+ ],
+ "why": "Starts in Cotton Candy Sky (the look of beats 1-2) and flips to three community looks after the reply. The holds between flips are 2600 ms — one bar of the track is 2.03 s and the wipe straddles the downbeat — and 4000 ms after the last so the sub-line has a still look to land on. Each flip is followed by a paint observer that resolves two frames after data-theme changes, so `paintN` marks the frame the new look is actually on screen. The opening dust freeze is the promo-conversations trick (see its `why`); with Cotton Candy Sky's particles live, typing the request took 7.6 s instead of ~2."
 }

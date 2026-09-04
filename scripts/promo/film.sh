@@ -28,7 +28,10 @@ VITE_CWD="$(readlink "/proc/${VITE_PID:-0}/cwd" 2>/dev/null || true)"
 [[ "$VITE_CWD" == "$TDIR/desktop" ]] || { echo "[film] REFUSING: :$WB_PORT serves '${VITE_CWD:-nothing}', not '$TDIR/desktop'" >&2; exit 1; }
 node "$WS/scripts/workbench-boot-check.mjs" "$WB_PORT"
 
-ALL=(promo-idle-midnight promo-quick-chip promo-sheet promo-flappy promo-games-lobby promo-connect4 promo-chess promo-conversations promo-remote promo-phone promo-takeover promo-theme promo-idle-golden)
+# Round three (storyboard-v3): promo-remote, promo-phone, promo-takeover and
+# promo-idle-midnight are retired — the phone beat is one phone clip now, and
+# the cold open sits in Cotton Candy Sky.
+ALL=(promo-idle-cotton promo-quick-chip promo-theme promo-model promo-sheet promo-project promo-games-lobby promo-connect4 promo-chess promo-flappy promo-conversations promo-anydevice promo-phone-takeover promo-market promo-idle-golden)
 # A partial re-film ([scene ...]) still rewrites the review page for EVERY scene,
 # so re-filming one never turns the page into a one-entry page.
 SCENES=("$@"); [[ ${#SCENES[@]} -gt 0 ]] || SCENES=("${ALL[@]}")
@@ -37,6 +40,16 @@ for s in "${SCENES[@]}"; do
   echo "[film] $s"
   if CDP_PORT=$((10360 + i)) node "$WS/scripts/ui-review/record.mjs" "$WS/scripts/ui-review/scenes/$s.json" "$OUT/$s"; then
     cp "$OUT/$s.webp" "$REVIEW/footage/$s.webp"
+    # One still per MARK, at the mark's end: the frame the edit will cut on.
+    # Verifying a take means looking at these, not scrubbing the clip — a mark
+    # that lands on a stale theme or a half-open menu is invisible in a poster.
+    mkdir -p "$REVIEW/marks"; rm -f "$REVIEW/marks/$s-"*.png
+    node -e '
+      const m = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+      for (const a of m.actions) if (a.mark) console.log(`${a.mark}\t${a.end}`);
+    ' "$OUT/$s.marks.json" | while IFS=$'\t' read -r mark at; do
+      ffmpeg -y -loglevel error -ss "$at" -i "$OUT/$s.webm" -frames:v 1 "$REVIEW/marks/$s-$mark.png"
+    done
   else FAILED+=("$s"); fi
   i=$((i+1))
 done

@@ -1,6 +1,6 @@
 {
  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&student=1&latency=150",
- "theme": "cotton-candy-sky",
+ "theme": "midnight",
  "width": 1440,
  "height": 900,
  "fps": 30,
@@ -57,7 +57,7 @@
    "mark": "tag"
   },
   {
-   "click": "textarea[aria-label='Add a note\u2026']",
+   "click": "textarea[aria-label='Add a note…']",
    "settle": 200
   },
   {
