@@ -49,6 +49,14 @@ seen-on is always n/a here.
       line in `desktop/tsconfig.tests.json`; verify.sh prints the remaining count every run
       `n/a` `confirmed` `checked 2026-09-02`
 
+- [ ] The desktop CI job fails while every test passes — 7,971 passed, 0 failed, job exits 1 on
+      "EnvironmentTeardownError: Closing rpc while onUserConsoleLog was pending". Console output
+      still in flight when a worker shuts down, so the red names no test and points at whichever
+      file happened to be running. Seen on the Windows leg on master (#405 and #407 merges) and on
+      a PR branch the same day. Different from the flake items above: nothing fails, the job just
+      exits 1 — so "re-run it" is the only response anyone can give today
+      `n/a` `confirmed` `checked 2026-09-03` `regression`
+
 - [ ] subagent-view, mcp-startup-wiring and project-watcher were filed as the suites that flake
       under parallel load, but 27 full local runs on 2026-09-02 (1 alone, 6 concurrent, 4 pinned to
       4 cores, 2 x 8 concurrent) never failed any of the three — the four that DID fail at 8-way
