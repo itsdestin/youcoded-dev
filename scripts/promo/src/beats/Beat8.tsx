@@ -61,10 +61,11 @@ export const beat8: BeatModule = { id: 'b8', slug: 'devils-garden', home: P, Com
     A.look(T1 - 10, 8, 0.6, 0.2), A.face(T1 - 10, 'curious'),                      // sees the phone coming
     A.walk(T1 + 2, 30, BESIDE.x, 5),
     A.point(PM('list') + 4, 'R', 0.6), A.look(PM('list') + 4, 6, 0.6, 0.4),        // "here's your chat, on the phone"
-    A.point(PM('dialog') + 2, 'R', 0.55), A.face(PM('dialog') + 2, 'shocked'), A.look(PM('dialog') + 2, 4, 0.6, 0.5),   // the take-over question
-    A.nod(PM('takeover', 'end')), A.face(PM('takeover', 'end'), 'welcome'),
+    A.startle(PM('dialog') + 2), A.look(PM('dialog') + 2, 4, 0.6, 0.5),                  // "whoa — it's asking to take over"
+    A.point(PM('dialog') + 20, 'R', 0.7), A.face(PM('dialog') + 20, 'curious'),
+    A.nod(PM('takeover', 'end')), A.face(PM('takeover', 'end'), 'welcome'),               // "yes, take over"
     A.tada(PM('chat', 'end') + 4, 'R'), A.rest(PM('chat', 'end') + 40),
     A.look(T_FILES - 24, 8, 0.5, 0.5), A.hop(T_FILES - 16, 26, ON_PHONE.x, ON_PHONE.y, 90), A.to(T_FILES - 16, 26, 'size', 96),   // onto the phone for the files
     A.cheer(T_FILES + 12, 30), A.face(T_FILES + 12, 'welcome'), A.blink(T_FILES + 50),
   ],
-  bubbles: [{ at: PM('list') + 12, until: PM('dialog') - 6, text: CAPTIONS.b8.sub, slug: 'devils-garden' }] };
+  bubbles: [{ at: T1 + 36, until: PM('dialog') - 6, text: CAPTIONS.b8.sub, slug: 'devils-garden', side: 'L' }] };   // once it has reached the phone

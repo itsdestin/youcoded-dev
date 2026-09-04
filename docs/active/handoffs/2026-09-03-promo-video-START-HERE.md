@@ -15,9 +15,16 @@ Destin chose: fixed check-ins, nothing rendered past one until he says go — (1
 deck (answered, `docs/active/prototypes/promo-2026-09/deck/promo-v3.answers.json`), (2) the
 storyboard page (`storyboard-v3.html`, approved with notes, all applied), (3) the mascot /
 captions check-in (`checkin-3.html`, his notes below), (4) one half-size draft of the whole
-film, (5) the final. **We are at check-in 3b** (`checkin-3b.html`: the label + bubble captions, the
-three theme-change moves A/B/C on real cuts, the intro with the knock-back and centred title) — his
-answers decide which move goes into every beat and whether the captions are approved.
+film, (5) the final. **We are at check-in 3c** (`checkin-3c.html`: beats 4 and 8 choreographed so
+the host PRESENTS the app, the three moves rotating across the cuts, captions centred + bubbles,
+the app filmed 25 % zoomed in, the peek fixed). His 3b answers, all applied: all three moves
+together, rotating (A quick-change → B poof → C twirl; B where there is no band); the headline
+stays centred under the window; the mascot must present, not wander, with more arm/leg work
+(`A.point/tada/cheer/clap/tapFoot/nod/think/shrug/startle` in `host/engine.ts`); the peek leans
+toward the centre; the closing link is www.youcoded.ai; every desktop scene has `zoom: 1.25`
+(record.mjs). **Next, after his 3c answers:** choreograph beats 2, 3, 5, 6, 7, 9, 10 the way
+Beat4/Beat8 do it (walk to the action, point, react, cheer — every move tied to a footage mark),
+then the half-size draft (check-in 4) with a context-free review first.
 
 ## Destin's notes on check-in 3, still to build (in this order)
 

@@ -13,7 +13,7 @@ import { evaluate, type Action, type HostState } from './host/engine';
 // `until` (or when the next cue starts), and is not drawn while the host is
 // hidden or shrunk (the dive into the game) — a bubble with nobody under it
 // is the one thing this must never show.
-export type BubbleCue = { at: number; until?: number; text: string; slug: Slug };
+export type BubbleCue = { at: number; until?: number; text: string; slug: Slug; side?: 'L' | 'R' };
 type Props = { cues: BubbleCue[]; actions: Action[]; base: HostState };
 const FONT = 26, PAD_X = 22, PAD_Y = 11, GAP = 18, OUT = 6;
 
@@ -25,15 +25,22 @@ export const Bubbles: React.FC<Props> = ({ cues, actions, base }) => {
   const cue = sorted[i];
   const until = Math.min(cue.until ?? Infinity, sorted[i + 1]?.at ?? Infinity);
   if (f >= until + OUT) return null;
-  const s = evaluate(actions, base, f - 2);
+  const s = evaluate(actions, base, f - 1);
   if (s.hidden || s.size < 60 || s.alpha < 0.5) return null;
   const t = THEMES[cue.slug];
+  // Which side the bubble sits on is decided ONCE per cue, from where the host is on
+  // the cue's first frame and whether the text fits between it and the frame edge —
+  // never per frame (a host walking across x = 1280 made the bubble flip sides
+  // mid-word and run off the edge for five frames in the 3c review).
+  const s0 = evaluate(actions, base, cue.at);
+  const estWidth = cue.text.length * FONT * 0.56 + PAD_X * 2 + GAP + 40;
+  const fitsRight = s0.x + s0.size * 0.82 + estWidth < 1900;
+  const right = cue.side ? cue.side === 'R' : (s0.x + s0.size / 2 < 1280 && fitsRight) || s0.x + s0.size * 0.18 - estWidth < 20;
   const inS = spring({ frame: f - cue.at, fps, config: { damping: 12, stiffness: 190 } });
   const outS = f >= until ? interpolate(f - until, [0, OUT], [1, 0], { extrapolateRight: 'clamp' }) : 1;
   const scale = inS * outS;
   // anchor: the side of the head, at eye height; flips to the left when the host is in the right third
   const headY = s.y + s.size * 0.42;
-  const right = s.x + s.size / 2 < 1280;
   const anchorX = right ? s.x + s.size * 0.82 : s.x + s.size * 0.18;
   const bg = t.dark ? t.fg : '#ffffff';
   const ink = t.dark ? t.canvas : t.fg;

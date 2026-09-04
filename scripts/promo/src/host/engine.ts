@@ -202,11 +202,26 @@ export const A = {
   // to the footage marks so every move has a reason the viewer can see.
 
   /** Point with one arm: 'R' toward the right, 'L' toward the left; `dip` 0 = straight out, 1 = straight down. Holds until the next arm action. */
-  point: (at: number, arm: 'L' | 'R', dip = 0.5, dur = 8): Action => ({ at, dur, name: 'point', run: (t, s, start) => {
-    const k = E.outBack(t);
-    const deg = 90 * (1 - dip) + 0;                           // 90 = horizontal, 0 = hanging
-    if (arm === 'R') s.armR = L(start.armR, -deg, k); else s.armL = L(start.armL, deg, k);
-    s.rot = L(start.rot, arm === 'R' ? 4 : -4, k);          // a small lean the same way
+  point: (at: number, arm: 'L' | 'R', dip = 0.5, dur = 10): Action => ({ at, dur: dur + 14, name: 'point', run: (t, s, start) => {
+    // the arm is short, so a point has to be BIG to read: the arm swings well up (150 = high,
+    // 55 = down-and-out at dip 1), the whole body leans that way, and the arm jabs once more
+    // after it lands (the 3c review read a 36° arm as "standing")
+    const k = E.outBack(Math.min(1, t * (dur + 14) / dur));
+    const deg = 150 - 95 * dip;
+    const jab = 12 * E.hump(Math.max(0, Math.min(1, (t * (dur + 14) - dur) / 14)));
+    if (arm === 'R') { s.armR = L(start.armR, -deg, k) - jab; s.armL = L(start.armL, 20, k); }
+    else { s.armL = L(start.armL, deg, k) + jab; s.armR = L(start.armR, -20, k); }
+    s.rot = L(start.rot, arm === 'R' ? 10 : -10, k);        // leans toward what it points at
+    s.sx = 1 + 0.04 * k; s.sy = 1 - 0.03 * k;
+  } }),
+  /** A startle: a quick jump up with the arms thrown high and a stretch, landing in a squash; the shocked face. */
+  startle: (at: number, dur = 16): Action => ({ at, dur, name: 'startle', run: (t, s, start) => {
+    const up = E.hump(Math.min(1, t * 1.4));
+    s.y = start.y - 34 * up; s.air = up; s.shadow = 1 - 0.4 * up;
+    s.sy = 1 + 0.16 * up; s.sx = 1 - 0.1 * up;
+    s.armL = L(start.armL, 160, E.outBack(Math.min(1, t * 3))); s.armR = -s.armL; s.legL = -18 * up; s.legR = 18 * up;
+    s.face = 'shocked';
+    if (t > 0.72) { const b = E.settle((t - 0.72) / 0.28); s.y = start.y; s.air = 0; s.shadow = 1; s.sy = L(0.82, 1, b); s.sx = 2 - s.sy; s.legL = 0; s.legR = 0; }
   } }),
   /** Arms back down, lean gone. */
   rest: (at: number, dur = 10): Action => ({ at, dur, name: 'rest', run: (t, s, start) => {
@@ -223,11 +238,15 @@ export const A = {
   } }),
   /** Both arms up, alternating little pumps — a cheer — for dur frames, then down. */
   cheer: (at: number, dur = 30): Action => ({ at, dur, name: 'cheer', run: (t, s, start) => {
+    // arms high and pumping, and the body actually JUMPS (26 px, stretched on the way up,
+    // squashed on the way down) — a 7 px bob did not register in the 3c review
     const up = Math.min(1, t * 5), down = Math.min(1, (1 - t) * 5), io = Math.min(up, down);
-    const pump = Math.sin(t * dur / 30 * Math.PI * 2 * 2) * 14;
+    const pump = Math.sin(t * dur / 30 * Math.PI * 2 * 2) * 18;
     s.armL = L(start.armL, 150, E.outBack(up)) * (t < 1 ? 1 : 0) + pump * io; s.armR = -s.armL;
-    const bob = Math.abs(Math.sin(t * dur / 30 * Math.PI * 2 * 2)) * 10 * io; s.y = start.y - bob; s.sy = 1 - 0.03 * (bob / 10); s.sx = 2 - s.sy;
-    if (t >= 1) { s.armL = start.armL; s.armR = start.armR; s.y = start.y; s.sy = 1; s.sx = 1; }
+    const ph = t * dur / 30 * Math.PI * 2 * 2;
+    const jump = Math.max(0, Math.sin(ph)) * 26 * io; s.y = start.y - jump; s.air = Math.min(1, jump / 30); s.shadow = 1 - 0.4 * s.air;
+    s.sy = 1 + 0.1 * Math.sin(ph) * io; s.sx = 2 - s.sy; s.legL = -14 * Math.max(0, Math.sin(ph)) * io; s.legR = -s.legL;
+    if (t >= 1) { s.armL = start.armL; s.armR = start.armR; s.y = start.y; s.sy = 1; s.sx = 1; s.air = 0; s.shadow = 1; s.legL = 0; s.legR = 0; }
   } }),
   /** A clap: arms up in front, beating together, for dur frames. */
   clap: (at: number, dur = 24): Action => ({ at, dur, name: 'clap', run: (t, s, start) => {
@@ -246,9 +265,9 @@ export const A = {
     if (t >= 1) { s.legR = 0; s.rot = start.rot; s.armL = start.armL; s.armR = start.armR; }
   } }),
   /** A nod: two quick dips with a small squash, eyes down. */
-  nod: (at: number, dur = 14): Action => ({ at, dur, name: 'nod', run: (t, s) => {
-    const d = Math.abs(Math.sin(t * Math.PI * 2)) * (1 - t * 0.5);
-    s.sy = 1 - 0.08 * d; s.sx = 1 + 0.05 * d; s.lookY = 0.4 * d;
+  nod: (at: number, dur = 16): Action => ({ at, dur, name: 'nod', run: (t, s, start) => {
+    const d = Math.abs(Math.sin(t * Math.PI * 2)) * (1 - t * 0.4);
+    s.sy = 1 - 0.16 * d; s.sx = 1 + 0.1 * d; s.lookY = 0.5 * d; s.rot = start.rot + 5 * d;   // two deep dips
   } }),
   /** Thinking: a hand to the chin (right arm up and in), a tilt, eyes up and away; holds until `rest`. */
   think: (at: number, dur = 10): Action => ({ at, dur, name: 'think', run: (t, s, start) => {
