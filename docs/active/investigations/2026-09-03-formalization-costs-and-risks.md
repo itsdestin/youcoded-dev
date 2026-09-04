@@ -12,21 +12,54 @@ the outside world came from a September 2026 web search (sources at the end).
 Nothing here is legal advice — it is the map to bring to a one-hour lawyer
 conversation, so that hour is spent on decisions instead of discovery.
 
+## Status as of 2026-09-03, evening (read this first)
+
+**Done, all on 2026-09-03.** The company exists: **Destin's Adventures, LLC**, Arizona Business
+ID 25117372, member-managed, Destin sole member and statutory agent, Active / In Good Standing.
+EIN issued (number in the private worksheet). DMCA designated agent registered (DMCA-1079861).
+Terms, Privacy and Security name the company, list the agent and use support@youcoded.ai
+(youcoded#416, live). `youcoded.ai` bought; email routing, site and `api.youcoded.ai` live with
+HTTPS. Whole repo MIT (Android relicensed, youcoded#400). The Anthropic-terms violation (usage
+meter reading the sign-in token) is fixed and shipped in the 1.3 betas the site hands out.
+**Nothing legal blocks a public beta post.** The remaining items are stores, signing, money.
+
+**In the mail.** Arizona trade name "YouCoded" (applied 2026-09-03; 3–4 week review; $10 on
+approval; needed only for Apple's developer-name field, set once at first App Store Connect
+upload). D-U-N-S number (applied 2026-09-03 at dnb.com; days to weeks).
+
+**Destin next, in order:** sign the operating agreement → bank account (Mercury/Relay; no cash
+contribution at formation, so avoid Capital One's $2,000 fee waiver) → switch the Stripe behind
+Buy Me a Coffee to the company → sign the asset assignment → roll the Cloudflare token → Azure
+Artifact Signing identity validation (can start now) → trademark search → when D-U-N-S arrives:
+Apple Developer Program + Google Play Console as the organisation.
+
+**Claude next, gated on the above:** certificate profile + signing/notarization in CI (Azure
+"Completed"; Apple account); Play listing (Play account); badge / first-run / Donate-in-Play /
+Android CC-pin wording once Destin decides (open questions below, items 2–6).
+
+**Where things live.** Screen-by-screen filing guide, taxes, city rules, liability dos/don'ts:
+`2026-09-03-arizona-llc-formation-guide.md` (this folder). Destin's exact values, EIN, the
+signed-document drafts and per-service answers (Azure, D-U-N-S, DMCA): private brain,
+`~/system/me/youcoded-llc/README.md`. Company PDFs (Articles, CP 575, ACC record):
+`~/Documents/destins-adventures-llc/`. Every remaining launch item: roadmap `v1.3` flag.
+
+---
+
 ## The short version
 
-1. **One thing in the app breaks Anthropic's rules today.** The usage meter reads the
+1. ✅ *Fixed 2026-09-03 (youcoded#403).* **One thing in the app broke Anthropic's rules.** The usage meter reads the
    Claude Code sign-in token off disk and calls Anthropic's server with it. Anthropic
    forbids exactly that for third-party apps and has been cutting apps off since
    April 2026. Everything else about the Claude integration is the allowed shape.
    Fix this before any publicity.
-2. **The Android app is labelled GPLv3 by mistake.** The reason given (the Termux
+2. ✅ *Relicensed 2026-09-03 (youcoded#400).* **The Android app was labelled GPLv3 by mistake.** The reason given (the Termux
    terminal component) is wrong: that component is Apache 2.0, and the vendored copy's
    own LICENSE, NOTICE and VENDORED.md say so. Destin is the sole author, so the
    Android app can be relicensed to MIT like the desktop app. That re-opens every
    monetization door on Android.
 3. **Removing the download warnings costs about $220 a year plus $25 once**, and needs
    an identity (yours or an LLC's) attached to each store/signing account.
-4. **An LLC is worth forming first**, in Arizona, for **$50** with no annual report if the
+4. ✅ *Formed 2026-09-03: Destin's Adventures, LLC.* **An LLC is worth forming first**, in Arizona, for **$50** with no annual report if the
    statutory agent sits in Maricopa or Pima County. Then every account (Apple, Google,
    Microsoft, trademark) is in the company's name from day one and never needs transferring.
 5. **File a trademark for "YouCoded". Skip patents entirely.** Copyright you already
@@ -589,8 +622,8 @@ The Settings → Donate button opens `buymeacoffee.com/itsdestin` in the browser
 
 ## Open questions for Destin
 
-1. Should Apple/Google/Azure accounts wait for the LLC (recommended; the LLC takes days in
-   Arizona, the D-U-N-S number 1–2 weeks) or open in your name now and convert later?
+1. ~~Should Apple/Google/Azure accounts wait for the LLC?~~ Answered 2026-09-03: the LLC exists;
+   every account opens in its name.
 2. Is "WeCoded" a brand you want to keep long-term? It decides whether to file one mark or two.
 3. Badge wording: "No leaked secrets found" is the accurate candidate; your call.
 4. First-run sentence wording (the assistant can change and delete files; backups are yours).

@@ -368,8 +368,9 @@ seen-on is always n/a here.
 
 - [ ] Public-launch formalization is the 1.3 gate: signed macOS/Windows installers, a Play listing,
       the LLC behind every account, a trademark filing. Done 2026-09-03: youcoded.ai (site, API,
-      email), the Anthropic-token fix, Android → MIT, policies linked everywhere. Destin's own
-      paperwork, the order to do it in, every open question and the year-one costs are the report
+      email), the Anthropic-token fix, Android → MIT, the LLC itself (Destin's Adventures, LLC),
+      EIN, DMCA agent, legal pages naming the company (youcoded#416). In the mail: trade name,
+      D-U-N-S. The report's "Status" block is the current state; Destin's values are in the brain
       `n/a` `in-flight` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
