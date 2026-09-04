@@ -1,13 +1,36 @@
 ---
 title: "YouCoded's native tools vs. the other harnesses — Read, Edit, Write, Bash, and the niche tools"
-status: active
+status: shipped
 date: 2026-08-26
 supersedes-partially: 2026-08-10-harness-mutation-safety-prior-art.md (its §1 hash recommendation is re-affirmed here, not superseded)
 ---
 
 # YouCoded's native tools vs. the other harnesses
 
-> **Status 2026-08-28.** Destin picked batches A, B and C plus PDF reading; all shipped the same day — youcoded PRs **#352** (D-2, G-7), **#353** (D-1, D-3, D-4, D-5, D-6, G-4, G-5, G-10, G-11, G-12, G-13, T-3) and **#354** (G-6). **G-2** (Other + note on question cards) shipped as PR **#355** after a 3/3 deck approval. **G-3** waits on an evaluator measurement now that the G-4 wording is live. **G-8** shipped as PR **#357** (bare patterns recurse; hidden entries skipped unless named). **G-1** is designed and approved (2026-08-28) — spec `docs/archive/specs/2026-08-28-bash-background-execution-design.md`, card deck 5/5 yes. Still open, each with a ROADMAP entry: **G-3**, **G-9**, **T-1/T-2**; **G-14** stays documented-and-accepted; **D-7** was fixed 2026-08-26, **D-8** is ROADMAP #133.
+> **Archived 2026-09-04 — the ledger is closed.** Every item in §8 is now shipped or filed on
+> the roadmap; nothing here is waiting on a decision, and §9's ranking is spent.
+> Read §2–§7 for the field comparison, which is still the reference; read §8 as history.
+>
+> **Shipped 2026-08-28** — youcoded PRs **#352** (D-2, G-7), **#353** (D-1, D-3, D-4, D-5, D-6,
+> G-4, G-5, G-10, G-11, G-12, G-13, T-3), **#354** (G-6), **#355** (G-2, after a 3/3 deck
+> approval), **#357** (G-8: bare patterns recurse; hidden entries skipped unless named).
+> **G-1** (background Bash) was designed, approved 5/5 on a card deck, and **shipped the same
+> day** — spec `docs/archive/specs/2026-08-28-bash-background-execution-design.md`, plan
+> `docs/archive/plans/2026-08-28-bash-background-execution.md`, depth
+> `youcoded/docs/native-runtime.md` → "Background Bash". **D-7** was fixed 2026-08-26
+> (youcoded PR #329).
+>
+> **Still open, each carried by a roadmap entry that links back here** — this doc is no longer
+> their home:
+>
+> | Ledger item | Roadmap entry |
+> |---|---|
+> | **G-3** — Edit's exact matcher loops small local models on `old_string not found` | `docs/roadmap/native-harness.md` → tools (`needs-verify`; gate is an evaluator measurement now that the G-4 wording is live) |
+> | **G-9** — no diagnostics appended after Edit/Write | `docs/roadmap/native-harness.md` → tools (`parked`) |
+> | **T-1 / T-2** — the 4,000-char Bash window, and flipping the "prefer Read/Grep over cat" wording off in full-auto | `docs/roadmap/native-harness.md` → tools, one entry (`parked`; decide with the harness evaluator, not by argument) |
+> | **G-1 follow-ups** — typing into a running command, a "Running commands" list, "tell me when the log says ready" | `docs/roadmap/native-harness.md` → tools (`parked`; deferred on purpose at the 2026-08-28 sizing) |
+> | **D-8** — WebFetch/WebSearch subjects run through the file-path guard | `docs/roadmap/native-harness.md` → permissions (`blocked` on approval-card copy) → `docs/active/investigations/2026-09-01-full-auto-external-read-ask.md` |
+> | **G-14** — Bash's secret-file guard is bypassable by `cat` | `docs/roadmap/native-harness.md` → permissions (`confirmed`, `security`) → `docs/active/investigations/2026-09-01-bash-skips-secret-path-deny.md`. No longer "documented and accepted": the 2026-09-01 sweep re-filed it as a confirmed security item |
 
 
 **Question asked:** how do YouCoded's native tools (the descriptions the model reads, what they can do, what they refuse) compare with the same tools in Claude Code, Codex CLI, Gemini CLI, OpenCode, Cline, Roo/Kilo, OpenClaw, Hermes, Pi, and Cursor? And what do those harnesses have that YouCoded doesn't?
@@ -276,7 +299,7 @@ Numbered so decisions can reference them. **D** = measured defect (code or descr
 | **D-5** | D | Write does not preserve CRLF/BOM; Edit does. A Write over a CRLF file converts it to LF. | `write.ts:64` vs `edit.ts:20-33` | reuse Edit's `preserveFormat` |
 | **D-6** | D | WebFetch's `prompt` parameter ("What you want to learn from this page") is only echoed as a header — it invites the model to expect an answer that never comes. | `web-fetch.ts:823-826` | rename the description ("Optional note, echoed back; the full page is returned regardless") or drop the param |
 | **D-7** | D | Documentation drift: `youcoded/docs/native-runtime.md` claimed Bash retains 22,000/6,000 chars (code: 4,000/4,000) and that null totals render "at least S" (code: "more may exist"). | — | **Fixed this session** — youcoded PR #329, merged `c04739df` |
-| **D-8** | D (known) | WebFetch/WebSearch subjects run through the file-path guard (`NON_PATH_SUBJECT_TOOLS` = Bash/Skill/Task only). A normal URL resolves *inside* the workspace so it doesn't prompt every call, but a query starting with `/` or containing `.env` trips a file-permission card or a "credential file" hard deny. | `harness-session.ts:48,2531-2555` **[verified]** | Already ROADMAP #133 with a plan (`2026-08-21-full-auto-external-read-bypass.md`, unbuilt, blocked on a copy-approval gate) |
+| **D-8** | D (known) | WebFetch/WebSearch subjects run through the file-path guard (`NON_PATH_SUBJECT_TOOLS` = Bash/Skill/Task only). A normal URL resolves *inside* the workspace so it doesn't prompt every call, but a query starting with `/` or containing `.env` trips a file-permission card or a "credential file" hard deny. | `harness-session.ts:48,2531-2555` **[verified]** | Roadmap `native-harness.md` → permissions, `blocked` on the approval-card copy (report `2026-09-01-full-auto-external-read-ask.md`) |
 
 ### Design gaps
 
@@ -295,7 +318,7 @@ Numbered so decisions can reference them. **D** = measured defect (code or descr
 | **G-11** | G | **No re-read dedupe on Read.** | Claude Code, Hermes return a "unchanged since last read" notice | small — `readRegistry` already has the mtime |
 | **G-12** | G | **Skill tool has no `args`** and is absent on small models; a 30 K+ SKILL.md is head/tail cut mid-instructions. | Claude Code `args`; OpenCode returns a sampled file list so the model can Read more | small (`args`) |
 | **G-13** | G | **No "prefer the dedicated tools over cat/grep/sed" guidance in Bash's description.** The Edit read-gate makes `cat` useless indirectly, but the model isn't told up front. | Claude Code, OpenCode, Hermes, Cursor 2026, Kilo all say it | text only — but see T-2 |
-| **G-14** | G | **Bash's secret-file guard is bypassed** (documented, accepted). | Claude Code applies `Read(.env)` deny to recognised Bash file commands; Gemini blocks `$()` | medium; recorded, not re-argued |
+| **G-14** | G | **Bash's secret-file guard is bypassed** — `cat ~/.ssh/id_rsa` reads what Read refuses. | Claude Code applies `Read(.env)` deny to recognised Bash file commands; Gemini blocks `$()` | medium; **re-filed 2026-09-01 as a `confirmed` `security` roadmap item** (report `2026-09-01-bash-skips-secret-path-deny.md`), not the accepted-and-closed it was here |
 
 ### Taste
 
@@ -322,7 +345,7 @@ Ordered by (what the user experiences) ÷ (effort). Each is independent.
 8. **G-10, G-9, G-12, G-8** — as they come up.
 9. **T-1 — re-evaluate the Bash window** with the harness evaluator, not by argument.
 
-Nothing here is captured in `ROADMAP.md` yet — that's the next step once Destin picks which items he wants; D-7 is done, D-8 is already there.
+**Closed 2026-09-04.** Items 1–8 shipped on 2026-08-28 (see the header). What survives of items 4, 5, 6, 8 and 9 — G-3, the G-1 follow-ups, G-9, and T-1/T-2 — is on `docs/roadmap/native-harness.md`; D-8 and G-14 are on the same file under `## permissions`. This ranking is spent; the roadmap is the live list.
 
 ---
 

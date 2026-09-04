@@ -127,12 +127,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] Background Bash follow-ups, deferred on purpose at the 2026-08-28 sizing: typing into a running
       command, a "Running commands" list outside the chat, and "tell me when the log says ready"
-      `desktop` `parked` `checked 2026-09-01`
+      `desktop` `parked` `checked 2026-09-04` → docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md
 
 - [ ] Bash shows the model only ~4,000 chars / ~100 lines of output (7–12× less than peer harnesses,
       so every long result costs a second call); and the "prefer Read/Grep over cat/grep" wording
       should switch off in full-auto — decide both with the harness evaluator, not by argument
-      `desktop` `parked` `checked 2026-09-01`
+      `desktop` `parked` `checked 2026-09-04` → docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md
 
 - [ ] WebFetch's "page was too thin to extract" thresholds were reasoned defaults, never measured
       against real pages the way the JS-render floor next to them was
@@ -145,11 +145,11 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Small local models loop on Edit "old_string not found" over smart quotes, trailing spaces and
       Unicode dashes — wanted: one normalisation pass before matching. Gate: measure the not-found
       rate with the harness evaluator first, now that the 2026-08-28 wording change shipped
-      `desktop` `needs-verify` `checked 2026-09-01`
+      `desktop` `needs-verify` `checked 2026-09-04` → docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md
 
 - [ ] Idea: after Edit/Write in the Coder preset, append the file's syntax/type errors to the tool
       result (JSON/YAML check, tsc for TypeScript) the way OpenCode and Hermes do
-      `desktop` `parked` `checked 2026-08-28`
+      `desktop` `parked` `checked 2026-09-04` → docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md
 
 - [ ] Nobody has read a PDF with the native agent in an installed build — the PDF reader's extra
       files are unpacked from the app archive on paper only, unverified outside a dev instance
