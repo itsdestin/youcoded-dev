@@ -58,7 +58,7 @@ Target: `v1.3`
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 28 | 17 | 1 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 22 | 5 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 19 | 10 | 1 | 4 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 17 | 6 | 0 | 5 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 16 | 6 | 0 | 5 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 16 | 4 | 0 | 6 |
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 15 | 9 | 1 | 1 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 13 | 4 | 1 | 6 |

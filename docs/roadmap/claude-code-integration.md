@@ -9,11 +9,6 @@ chat-data).
       during the permission-timeout review; not yet tried in a dev instance)
       `tool-cards` `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-plan-approval-single-write.md
 
-- [ ] The status bar's In: and Out: numbers describe only the last thing sent, not the whole
-      session — a 42-hour session reports 713 output tokens. Claude Code sessions only; the
-      app's own agent counts these properly (found 2026-09-03 while fixing the Reuse chip)
-      `status-bar` `all` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-statusline-context-window-is-not-session-totals.md
-
 - [ ] On Android the permission-mode chip never shows "auto", and shows "normal" for any screen it
       cannot read — where desktop shows "unknown" (found 2026-07-17)
       `status-bar` `android` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-android-permission-mode-auto-unknown.md
