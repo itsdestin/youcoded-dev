@@ -6,6 +6,10 @@
 // `look` can move them. Coordinates are the rig's viewBox (-3 -5 30 30): eyes
 // around (9.3, 9.5) and (14.7, 9.3), the mouth near (12, 13.3).
 export type FaceStyle = 'classic' | 'soft' | 'dot';
+// Destin, 2026-09-04, on seeing soft/dot in the study: "holy shit those eyes are
+// significantly worse" — the Golden Sunbreak and Strawberry Kitty eyes (the
+// rigs' own big dark eyes with sparkle highlights) are the model. 'classic' is
+// the style the film uses; soft/dot stay only as the record of what was tried.
 type Set = Record<'idle' | 'welcome' | 'curious' | 'shocked' | 'blink', string>;
 // The new styles draw their ink in a FIXED dark, not the theme's on-accent:
 // on a light theme the on-accent is white, and a white iris in a white eye is
@@ -49,9 +53,22 @@ const DOT: Set = {
 };
 
 const SETS: Record<Exclude<FaceStyle, 'classic'>, Set> = { soft: SOFT, dot: DOT };
+/**
+ * The classic welcome and shocked faces paint their sparkle highlights as bare
+ * circles; wrapping each eye's highlights in a `.pupil` group lets the host's
+ * `look` slide them, so the eyes glance around without changing expression
+ * (only the curious face has pupil groups in the rig itself).
+ */
+function withTrackingHighlights(rigSvg: string): string {
+  return rigSvg.replace(/(<g id="rig-face-(?:welcome|shocked)"[^>]*>)([\s\S]*?)(\n\s*<(?:g transform|ellipse cx="12")[^>]*>[\s\S]*?<\/g>|\n\s*<ellipse cx="12"[^>]*\/>)/, (_m, open, eyes, mouth) => {
+    // group the highlight circles that follow each eye ellipse
+    const grouped = eyes.replace(/((?:\s*<circle[^>]*\/>){2,3})/g, '<g class="pupil">$1</g>');
+    return `${open}${grouped}${mouth}`;
+  });
+}
 /** Replace the rig's five face groups with a style's; 'classic' returns the rig untouched. */
 export function withFaces(rigSvg: string, style: FaceStyle): string {
-  if (style === 'classic') return rigSvg;
+  if (style === 'classic') return withTrackingHighlights(rigSvg);
   const set = SETS[style];
   let out = rigSvg;
   for (const face of Object.keys(set) as (keyof Set)[]) {

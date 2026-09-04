@@ -31,7 +31,7 @@ export const studyActions = (): Action[] => [
 ];
 const THEME_TRACK: { at: number; slug: Slug }[] = [{ at: 0, slug: 'golden-sunbreak' }, { at: T.hop1 + 15, slug: 'strawberry-kitty' }, { at: T.out, slug: 'kuromi-dreamer' }];
 export const STUDY_FRAMES = T.end;
-export const HostStudy: React.FC<{ faceStyle?: FaceStyle }> = ({ faceStyle = 'soft' }) => {
+export const HostStudy: React.FC<{ faceStyle?: FaceStyle }> = ({ faceStyle = 'classic' }) => {
   const f = useCurrentFrame();
   const slug = [...THEME_TRACK].reverse().find((c) => f >= c.at)!.slug;
   const file = slug === 'golden-sunbreak' ? 'promo-idle-golden' : slug === 'strawberry-kitty' ? 'promo-idle-golden' : 'promo-idle-golden';

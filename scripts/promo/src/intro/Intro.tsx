@@ -38,7 +38,7 @@ export const introActions = (): Action[] => [
   A.walk(104, 88, STAND_X, 7),                    // a cautious walk across
   A.look(120, 20, 0.5, 0),
   A.face(192, 'curious'), A.look(192, 10, 0.6, -0.25), A.tilt(196, 10, 7), A.blink(208),   // looks the Y up and down
-  A.face(220, 'idle'), A.tilt(220, 6, 0),
+  A.face(220, 'welcome'), A.look(220, 6, 0.5, -0.1), A.tilt(220, 6, 0),   // fixes on the Y (never the chevron 'idle' face — it read as empty eyes)
   A.punch(IMPACT, 1),                             // wind-up from 224, the hit at 236
   A.face(IMPACT, 'shocked'), A.costume(IMPACT, 'cotton-candy-sky'), A.look(IMPACT, 4, 0, 0),
   A.face(IMPACT + 20, 'welcome'), A.blink(IMPACT + 26),
@@ -119,7 +119,7 @@ const Rise: React.FC<{ file: string }> = ({ file }) => {
 };
 
 export const INTRO_FRAMES = IMPACT + barFrame(2) + 40;
-export const Intro: React.FC<{ faceStyle?: FaceStyle; windowFile?: string }> = ({ faceStyle = 'soft', windowFile = 'promo-idle-cotton' }) => (
+export const Intro: React.FC<{ faceStyle?: FaceStyle; windowFile?: string }> = ({ faceStyle = 'classic', windowFile = 'promo-idle-cotton' }) => (
   <AbsoluteFill style={{ background: '#000' }}>
     <Sequence from={IMPACT}><Audio src={staticFile('promo.wav')} /></Sequence>
     <Burst />

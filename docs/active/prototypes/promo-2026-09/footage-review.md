@@ -2,21 +2,29 @@
 
 Filmed 2026-09-03 from `/home/destin/youcoded-dev/worktrees/promo-fakes`. One poster (the last frame) per scene; the clips and marks are in `scripts/promo/public/footage/`.
 
-## promo-idle-midnight
+## promo-idle-cotton
 
-![promo-idle-midnight](footage/promo-idle-midnight.webp)
+![promo-idle-cotton](footage/promo-idle-cotton.webp)
 
 ## promo-quick-chip
 
 ![promo-quick-chip](footage/promo-quick-chip.webp)
 
+## promo-theme
+
+![promo-theme](footage/promo-theme.webp)
+
+## promo-model
+
+![promo-model](footage/promo-model.webp)
+
 ## promo-sheet
 
 ![promo-sheet](footage/promo-sheet.webp)
 
-## promo-flappy
+## promo-project
 
-![promo-flappy](footage/promo-flappy.webp)
+![promo-project](footage/promo-project.webp)
 
 ## promo-games-lobby
 
@@ -30,25 +38,25 @@ Filmed 2026-09-03 from `/home/destin/youcoded-dev/worktrees/promo-fakes`. One po
 
 ![promo-chess](footage/promo-chess.webp)
 
+## promo-flappy
+
+![promo-flappy](footage/promo-flappy.webp)
+
 ## promo-conversations
 
 ![promo-conversations](footage/promo-conversations.webp)
 
-## promo-remote
+## promo-anydevice
 
-![promo-remote](footage/promo-remote.webp)
+![promo-anydevice](footage/promo-anydevice.webp)
 
-## promo-phone
+## promo-phone-takeover
 
-![promo-phone](footage/promo-phone.webp)
+![promo-phone-takeover](footage/promo-phone-takeover.webp)
 
-## promo-takeover
+## promo-market
 
-![promo-takeover](footage/promo-takeover.webp)
-
-## promo-theme
-
-![promo-theme](footage/promo-theme.webp)
+![promo-market](footage/promo-market.webp)
 
 ## promo-idle-golden
 

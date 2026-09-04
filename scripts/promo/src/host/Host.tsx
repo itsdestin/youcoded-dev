@@ -1,12 +1,12 @@
 import React from 'react';
 import { useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
 import { PIVOT, type Face } from '../poses';
-import { THEMES, rigFor, companionsFor, type Slug } from '../themes';
+import { THEMES, rigFor, companionsFor, inkFor, type Slug } from '../themes';
 import { evaluate, type Action, type HostState } from './engine';
 import { withFaces, type FaceStyle } from './faces';
 
 const FACES: Face[] = ['idle', 'welcome', 'curious', 'shocked', 'dizzy'];
-const DEFAULT_RIG_SLUGS: Slug[] = ['midnight', 'meadow-mist', 'devils-garden', 'cotton-candy-sky', 'golden-sunbreak'];
+const DEFAULT_RIG_SLUGS: Slug[] = ['midnight', 'creme', 'light', 'meadow-mist', 'devils-garden', 'cotton-candy-sky', 'golden-sunbreak'];
 
 /** One rig, posed from a HostState. `scope` keeps its style rules from leaking into another rig on screen. */
 const Rig: React.FC<{ s: HostState; style: FaceStyle; scope: string }> = ({ s, style, scope }) => {
@@ -16,7 +16,7 @@ const Rig: React.FC<{ s: HostState; style: FaceStyle; scope: string }> = ({ s, s
   const blink = s.blink > 0.5;
   return (
     <div className={scope} style={{ width: '100%', height: '100%',
-      ['--rig-accent' as string]: t.accent, ['--rig-on-accent' as string]: t.onAccent, ['--rig-line' as string]: t.fg }}>
+      ['--rig-accent' as string]: t.accent, ['--rig-on-accent' as string]: inkFor(s.costume), ['--rig-line' as string]: t.fg }}>
       <style>{`
 .${scope} svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .${scope} #rig-arm-left { transform-box: view-box; transform-origin: ${PIVOT['rig-arm-left']}; transform: rotate(${s.armL.toFixed(2)}deg); }
@@ -58,7 +58,7 @@ const Poof: React.FC<{ at: number; cx: number; cy: number; color: string; size: 
  * shadow that shrinks when it is in the air, the theme's companions trailing
  * it, and a poof on costume changes. `base` sets where it starts.
  */
-export const Host: React.FC<{ actions: Action[]; base: HostState; faceStyle?: FaceStyle }> = ({ actions, base, faceStyle = 'soft' }) => {
+export const Host: React.FC<{ actions: Action[]; base: HostState; faceStyle?: FaceStyle }> = ({ actions, base, faceStyle = 'classic' }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = evaluate(actions, base, f);

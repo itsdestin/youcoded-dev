@@ -8,7 +8,7 @@
 import { RIGS, COMPANIONS, type Companion } from './theme-art.generated';
 import { DEFAULT_BUDDY_RIG } from './rig';
 
-export type Slug = 'midnight' | 'meadow-mist' | 'halftone-dimension' | 'kuromi-dreamer' | 'devils-garden' | 'golden-sunbreak' | 'strawberry-kitty' | 'cotton-candy-sky';
+export type Slug = 'midnight' | 'creme' | 'light' | 'meadow-mist' | 'halftone-dimension' | 'kuromi-dreamer' | 'devils-garden' | 'golden-sunbreak' | 'strawberry-kitty' | 'cotton-candy-sky';
 export type Theme = {
   slug: Slug; name: string; dark: boolean;
   canvas: string; accent: string; onAccent: string; fg: string;
@@ -19,6 +19,9 @@ export type Theme = {
 const T = (t: Theme) => t;
 export const THEMES: Record<Slug, Theme> = {
   midnight:             T({ slug: 'midnight', name: 'Midnight', dark: true, canvas: '#0D1117', accent: '#B1BAC4', onAccent: '#0D1117', fg: '#C9D1D9', font: 'Inter' }),
+  // Two more built-ins for round three (the model beat and the marketplace beat). Token-only, no wallpaper.
+  creme:                T({ slug: 'creme', name: 'Crème', dark: false, canvas: '#F6EEE1', accent: '#3D3229', onAccent: '#F6EEE1', fg: '#2C2418', font: 'Inter' }),
+  light:                T({ slug: 'light', name: 'Light', dark: false, canvas: '#F2F2F2', accent: '#1A1A1A', onAccent: '#F2F2F2', fg: '#1A1A1A', font: 'Inter' }),
   'meadow-mist':        T({ slug: 'meadow-mist', name: 'Meadow Mist', dark: false, canvas: '#F6FAF5', accent: '#2F7D55', onAccent: '#FFFFFF', fg: '#041008', wallpaper: 'themes/meadow-mist/wallpaper.jpg', font: 'Nunito' }),
   'halftone-dimension': T({ slug: 'halftone-dimension', name: 'Halftone Dimension', dark: true, canvas: '#08060e', accent: '#E51F48', onAccent: '#ffffff', fg: '#F0E8F8', font: 'Inter',
     gradient: 'linear-gradient(135deg, #18102e 0%, #2a1650 30%, #341454 55%, rgba(232,35,74,0.35) 75%, rgba(0,184,255,0.25) 90%, #18102e 100%)' }),
@@ -27,6 +30,19 @@ export const THEMES: Record<Slug, Theme> = {
   'golden-sunbreak':    T({ slug: 'golden-sunbreak', name: 'Golden Sunbreak', dark: true, canvas: '#08080e', accent: '#ffc030', onAccent: '#000000', fg: '#F8E8C8', wallpaper: 'themes/golden-sunbreak/wallpaper.jpg', font: 'Inter' }),
   'strawberry-kitty':   T({ slug: 'strawberry-kitty', name: 'Strawberry Kitty', dark: false, canvas: '#F8D7DE', accent: '#CC4060', onAccent: '#FFFFFF', fg: '#3A1420', wallpaper: 'themes/strawberry-kitty/wallpaper.png', font: 'Comfortaa' }),
   'cotton-candy-sky':   T({ slug: 'cotton-candy-sky', name: 'Cotton Candy Sky', dark: false, canvas: '#FBF5FC', accent: '#8B47B8', onAccent: '#FFFFFF', fg: '#21152C', wallpaper: 'themes/cotton-candy-sky/wallpaper.jpg', font: 'Comfortaa' }),
+};
+/**
+ * The ink the default rig draws its eyes and mouth in: a DEEP SHADE OF THE BODY
+ * COLOUR, never the theme's on-accent. WHY: on Cotton Candy, Meadow Mist and
+ * Halftone the on-accent is white, and white eyes on a coloured body read as
+ * glowing and soulless (Destin, 2026-09-04). Golden Sunbreak's own rig uses a
+ * very dark brown on gold — the same idea, done by hand.
+ */
+export const inkFor = (slug: Slug): string => {
+  const hex = THEMES[slug].accent.replace('#', '');
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  const k = 0.22;                                   // keep 22 % of the body colour, the rest black
+  return '#' + [r, g, b].map((v) => Math.round(v * k).toString(16).padStart(2, '0')).join('');
 };
 /** The rig a theme dresses the host in: its own if it ships one, else the app's default rig tinted with the theme accent. */
 export const rigFor = (slug: Slug): string => RIGS[slug] ?? DEFAULT_BUDDY_RIG;

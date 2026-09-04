@@ -10,9 +10,14 @@ const { withFaces } = await import('./src/host/faces.ts');
 const out = process.argv[2];
 const dir = mkdtempSync(join(tmpdir(), 'faces-'));
 const faces = ['idle', 'welcome', 'curious', 'shocked', 'blink'];
-const tints = { midnight: ['#B1BAC4', '#0D1117'], 'cotton-candy-sky': ['#8B47B8', '#FFFFFF'], 'golden-sunbreak': ['#ffc030', '#000000'] };
+// every tint the film's default rig wears, with the ink the host really uses
+// (the same 22 %-of-the-body shade as themes.ts inkFor; inlined because themes.ts
+// imports the generated module without an extension, which Node's loader rejects)
+const ACCENT = { midnight: '#B1BAC4', creme: '#3D3229', 'cotton-candy-sky': '#8B47B8', 'meadow-mist': '#2F7D55', 'devils-garden': '#FFC627', 'golden-sunbreak': '#ffc030' };
+const ink = (hex) => '#' + [0, 2, 4].map((i) => Math.round(parseInt(hex.slice(1 + i, 3 + i), 16) * 0.22).toString(16).padStart(2, '0')).join('');
+const tints = Object.fromEntries(Object.entries(ACCENT).map(([s, a]) => [s, [a, ink(a)]]));
 const rows = [];
-for (const style of ['classic', 'soft', 'dot']) {
+for (const style of ['classic']) {
   for (const [slug, [accent, on]] of Object.entries(tints)) {
     const cells = [];
     for (const face of faces) {

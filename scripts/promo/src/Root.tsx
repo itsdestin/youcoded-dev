@@ -13,8 +13,8 @@ import { HostStudy, STUDY_FRAMES } from './intro/HostStudy';
 export const RemotionRoot: React.FC = () => (
   <>
     <Composition id="Promo" component={Promo} durationInFrames={TOTAL_FRAMES + TAIL_FRAMES} fps={FPS} width={1920} height={1080} />
-    <Composition id="Intro" component={Intro} durationInFrames={INTRO_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'soft' as const }} />
-    <Composition id="HostStudy" component={HostStudy} durationInFrames={STUDY_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'soft' as const }} />
+    <Composition id="Intro" component={Intro} durationInFrames={INTRO_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'classic' as const }} />
+    <Composition id="HostStudy" component={HostStudy} durationInFrames={STUDY_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'classic' as const }} />
     {(['A', 'B', 'C'] as const).map((d) => (
       <Still key={d} id={`Caption${d}`} component={CaptionStudy} width={1920} height={1080}
         defaultProps={{ design: d, slug: 'halftone-dimension' as const, still: 'connect4', head: 'Play while it works.', sub: 'Chess and Connect 4 with friends. Flappy on your own.' }} />
