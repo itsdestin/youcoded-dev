@@ -203,6 +203,17 @@ seen-on is always n/a here.
       rule separates from this noise. Remaining work is the gate itself, which still scores it
       `n/a` `confirmed` `checked 2026-09-03` `performance` → docs/active/investigations/2026-09-01-perf-rig-native-chat-nondeterministic.md
 
+- [ ] Android cannot be built or tested on this machine at all — there is no Android SDK
+      installed, only Android Studio, and CLAUDE.md asserted the opposite (it named
+      `/home/destin/.android-sdk` and a `java-21-openjdk` that also does not exist). Gradle
+      stops at `SDK location not found` before compiling, so every past "checked both
+      platforms" claim made by running that documented command was a configuration failure
+      read as a pass. CLAUDE.md corrected 2026-09-04 with the verification pasted in; the
+      remaining work is installing the SDK so the Android half of a cross-platform change
+      can actually be run. Until then Kotlin can only be compiled file-by-file with the
+      kotlinc inside `/opt/android-studio`
+      `n/a` `confirmed` `checked 2026-09-04`
+
 - [ ] Perf rig: the artifacts phase's session-files drawer lists nothing about 1 run in 9 —
       once for 30 s aborting a 26-minute run, once returning undefined numbers that the median
       silently swallowed; cause unknown
