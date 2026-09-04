@@ -6,7 +6,7 @@ here: installing or browsing themes (marketplace).
       used the registry's 1.2.0 rig and companions (the sun that floats beside the mascot) because
       the vendored copy has neither; a user who installs Golden Sunbreak today does not get the
       character the film shows. Open question from the promo: update the vendored theme to 1.2.0?
-      `all` `decision`
+      `all` `decision` `checked 2026-09-04`
 
 - [ ] Rebase every theme's mascot faces on the promo's "warm" face set (2026-09-04): the
       welcome eyes on every expression, expression carried by brows, lids and mouth; surprised
