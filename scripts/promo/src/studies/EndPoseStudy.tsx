@@ -9,7 +9,7 @@ import { A, REST, type Action } from '../host/engine';
 // End-pose candidates for the close (Destin, 2026-09-04: "we need to work on the final
 // idle/ending pose"). Each is a still of the film's last second — the grown window, the
 // modal, the wordmark — with the host beside the Y in one candidate pose, settled.
-export type EndPose = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | 'P6';
+export type EndPose = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | 'P6' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5' | 'Q6';
 export const END_POSES: Record<EndPose, { name: string; blurb: string; actions: Action[] }> = {
   A: { name: 'Powered down', blurb: 'Today: eyes closed, limbs tucked under.', actions: [A.shutdown(0)] },
   B: { name: 'At ease', blurb: 'Standing, arms down, looking at you with the warm face.', actions: [A.face(0, 'welcome'), A.look(0, 4, 0, 0.05)] },
@@ -24,6 +24,16 @@ export const END_POSES: Record<EndPose, { name: string; blurb: string; actions: 
   P3: { name: 'Nodding off', blurb: 'Tipped over sideways, eyes closed, arms loose, one leg cocked.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { rot: 13, armL: 12, armR: 4, legR: -10 })] },
   P4: { name: 'Curled up', blurb: 'Squashed into a ball, arms hugging in, legs tucked, eyes closed.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { armL: 62, armR: -62, legL: 90, legR: -90 }), A.set(0, { sy: 0.86, sx: 1.12 })] },
   P5: { name: 'Sat down asleep', blurb: 'Sitting on the baseline, legs out, arms in its lap, eyes closed.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { legL: -85, legR: 85, armL: 40, armR: -40, rot: 3 }), A.set(0, { sy: 0.95, sx: 1.03 })] },
+  // Destin, 2026-09-04: "some between p1/p5 ish. he should crouch/sit into his legs, then tuck his arms in under
+  // the left/right corners of his body" — four takes on that: the body squats down onto legs folded out in front,
+  // and the arms swing inward and down so the hands sit under the body's lower corners (arms are painted BEHIND
+  // the body, so only what pokes past its edge shows).
+  Q1: { name: 'Sit and tuck', blurb: 'A deep squat onto the legs, hands tucked under the lower corners.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { legL: -85, legR: 85, armL: -28, armR: 28 }), A.set(0, { sy: 0.8, sx: 1.12 })] },
+  Q2: { name: 'Sit and tuck, deeper', blurb: 'Same, the arms further under.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { legL: -80, legR: 80, armL: -50, armR: 50 }), A.set(0, { sy: 0.84, sx: 1.1 })] },
+  Q3: { name: 'Sit and tuck, flat eyes', blurb: 'Q1 with today\'s flat-line eyes.', actions: [A.face(0, 'shutdown'), A.pose(0, 8, { legL: -85, legR: 85, armL: -28, armR: 28 }), A.set(0, { sy: 0.8, sx: 1.12 })] },
+  Q4: { name: 'Sit and tuck, legs under', blurb: 'The legs fold under the body instead of out in front.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { legL: 95, legR: -95, armL: -28, armR: 28 }), A.set(0, { sy: 0.82, sx: 1.12 })] },
+  Q5: { name: 'Sit and tuck (arms slide down)', blurb: 'The squat, and the arms slid down the sides to the lower corners, turned in under.', actions: [A.sitTuck(0, 30)] },
+  Q6: { name: 'Sit and tuck, hands showing', blurb: 'As Q5, the hands turned less far under so a little of each shows at the corner.', actions: [A.sitTuck(0, 30), A.pose(30, 1, { armL: -30, armR: 30 })] },
   P6: { name: 'Standby', blurb: 'Lids most of the way down, arms down, still upright — dimming with the picture.', actions: [A.face(0, 'dozy'), A.pose(0, 8, { armL: 0, armR: 0, rot: 0 }), A.set(0, { sy: 0.97, sx: 1.02 })] },
 };
 const AT = LEN('b10') - 40;   // the close's last second

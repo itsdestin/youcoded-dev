@@ -27,9 +27,10 @@ export type HostState = {
   peekHand: 'L' | 'R' | null;     // the edge peek is on (which edge); Host draws the app's mittens on that edge
   peek: number;                   // 0..1 blend into the app's side-peek pose: the body sunk past the edge, leaning 75°, own arms hidden
   mittens: number;                // 0..1 how far the two grip mittens are on the edge (they slide on first, off last)
+  tuck: number;                   // 0..1 the arms slid down the body's sides to its lower corners (the sit-and-tuck power-down)
 };
 export const REST: HostState = { x: 0, y: 0, size: 120, rot: 0, sx: 1, sy: 1, armL: 0, armR: 0, legL: 0, legR: 0, face: 'welcome', blink: 0,
-  lookX: 0, lookY: 0, shadow: 1, air: 0, costume: 'midnight', hidden: false, alpha: 1, poof: null, spin: 0, poofScale: 1, peekHand: null, peek: 0, mittens: 0 };
+  lookX: 0, lookY: 0, shadow: 1, air: 0, costume: 'midnight', hidden: false, alpha: 1, poof: null, spin: 0, poofScale: 1, peekHand: null, peek: 0, mittens: 0, tuck: 0 };
 
 export type Action = { at: number; dur: number; run: (t: number, s: HostState, start: HostState, f: number) => void; name?: string };
 /** Progress 0..1 of an action at frame f, clamped. */
@@ -342,10 +343,25 @@ export const A = {
     s.sy = L(start.sy, 0.94, k); s.sx = L(start.sx, 1.04, k); s.rot = L(start.rot, 0, k);
     if (t > 0.3) s.face = 'shutdown';
   } }),
+  /**
+   * The sit-and-tuck power-down (Destin, 2026-09-04: "he should crouch/sit into his legs, then tuck his
+   * arms in under the left/right corners of his body"): over the first half the body squats down onto
+   * its legs (they fold in underneath); over the second the arms slide down the body's sides to its
+   * lower corners (`tuck`, drawn by Host as a translate before the arm's rotation) and turn in under
+   * it, the eyes close in soft arcs. `wake` undoes it.
+   */
+  sitTuck: (at: number, dur = 30): Action => ({ at, dur, name: 'sitTuck', run: (t, s, start) => {
+    const a = E.inOutQuad(Math.min(1, t / 0.55));                          // the squat
+    const b = E.inOutQuad(Math.max(0, (t - 0.4) / 0.6));                   // the tuck, overlapping the squat's end
+    s.sy = L(start.sy, 0.8, a); s.sx = L(start.sx, 1.12, a); s.rot = L(start.rot, 0, a);
+    s.legL = L(start.legL, 95, a); s.legR = L(start.legR, -95, a);
+    s.tuck = b; s.armL = L(start.armL, -55, b); s.armR = L(start.armR, 55, b);
+    if (t > 0.45) s.face = 'asleep';
+  } }),
   wake: (at: number, dur = 14): Action => ({ at, dur, name: 'wake', run: (t, s, start) => {
     const k = E.outBack(t);
     s.armL = L(start.armL, 0, k); s.armR = L(start.armR, 0, k); s.legL = L(start.legL, 0, k); s.legR = L(start.legR, 0, k);
-    s.sy = L(start.sy, 1, k); s.sx = L(start.sx, 1, k);
+    s.sy = L(start.sy, 1, k); s.sx = L(start.sx, 1, k); s.tuck = L(start.tuck, 0, k);
     if (t > 0.5) s.face = 'welcome';
   } }),
   hide: (at: number): Action => ({ at, dur: 0, name: 'hide', run: (_t, s) => { s.hidden = true; } }),

@@ -50,7 +50,7 @@ size, loudness pass) and the wrap-up.
   between beats (the three theme-change moves instead).
 - **Copy:** short, concrete, no AI-isms, no invented numbers ("There are hundreds." was a lie —
   the theme registry is small). Bubbles must be readable: ≥ 1.2 s + a quarter second a word.
-- The close ends with the host standing left of the Y in "YouCoded", like the start — inside a big modal in the middle of the window, which has grown to fill the frame (2026-09-04).
+- The close ends with the host standing left of the Y in "YouCoded", like the start — inside a big modal in the middle of the window, which has grown to fill the frame; after the cheer it settles into a ta-da (E of `storyboard-v3/end-poses.png`) and then SITS AND TUCKS (engine `sitTuck`: squats onto folded legs, the arms slide down to its lower corners and turn under, the `asleep` face) before the fade (2026-09-04).
 
 ## What is approved
 

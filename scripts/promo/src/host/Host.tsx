@@ -24,8 +24,8 @@ const Rig: React.FC<{ s: HostState; style: FaceStyle; scope: string }> = ({ s, s
       ['--rig-accent' as string]: t.accent, ['--rig-on-accent' as string]: inkFor(s.costume), ['--rig-line' as string]: t.fg }}>
       <style>{`
 .${scope} svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.${scope} #rig-arm-left { transform-box: view-box; transform-origin: ${PIVOT['rig-arm-left']}; transform: rotate(${s.armL.toFixed(2)}deg); }
-.${scope} #rig-arm-right { transform-box: view-box; transform-origin: ${PIVOT['rig-arm-right']}; transform: rotate(${s.armR.toFixed(2)}deg); }
+.${scope} #rig-arm-left { transform-box: view-box; transform-origin: ${PIVOT['rig-arm-left']}; transform: translate(${(1.6 * s.tuck).toFixed(2)}px, ${(5.4 * s.tuck).toFixed(2)}px) rotate(${s.armL.toFixed(2)}deg); }
+.${scope} #rig-arm-right { transform-box: view-box; transform-origin: ${PIVOT['rig-arm-right']}; transform: translate(${(-1.6 * s.tuck).toFixed(2)}px, ${(5.4 * s.tuck).toFixed(2)}px) rotate(${s.armR.toFixed(2)}deg); }
 .${scope} #rig-leg-left { transform-box: view-box; transform-origin: ${PIVOT['rig-leg-left']}; transform: rotate(${s.legL.toFixed(2)}deg); }
 .${scope} #rig-leg-right { transform-box: view-box; transform-origin: ${PIVOT['rig-leg-right']}; transform: rotate(${s.legR.toFixed(2)}deg); }
 .${scope} #rig-hand-peek-left, .${scope} #rig-hand-peek-right { display: none !important; }

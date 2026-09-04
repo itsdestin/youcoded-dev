@@ -23,7 +23,7 @@ export const RemotionRoot: React.FC = () => (
     {/* check-in 5: the close on its own — the window filling the frame, the modal, the host beside the Y (Destin, 2026-09-04) */}
     <Composition id="CloseStudy" component={Film} durationInFrames={studyFrames(['b10'])} fps={FPS} width={1920} height={1080} defaultProps={{ ids: ['b10'] as const as any, music: false }} />
     {/* end-pose candidates for the close (Destin, 2026-09-04) */}
-    {(['A', 'B', 'C', 'D', 'E', 'F', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6'] as const).map((p) => (
+    {(['A', 'B', 'C', 'D', 'E', 'F', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6'] as const).map((p) => (
       <Still key={`End${p}`} id={`End${p}`} component={EndPoseStudy} width={1920} height={1080} defaultProps={{ pose: p }} />
     ))}
     {/* check-in 3b: the label + bubble captions and the three theme-transition candidates */}
