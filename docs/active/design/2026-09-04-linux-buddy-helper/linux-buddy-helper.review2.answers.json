@@ -1,0 +1,27 @@
+{
+ "deck": "linux-buddy-helper-review2",
+ "started": "2026-09-04T20:55:15.067Z",
+ "submitted": "2026-09-04T20:56:39Z",
+ "cur": 2,
+ "answers": {
+  "B-1": {
+   "v": "yes",
+   "note": "",
+   "seconds": 70,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-3": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
