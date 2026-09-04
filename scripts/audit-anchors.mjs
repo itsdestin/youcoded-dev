@@ -34,6 +34,26 @@ export const REPOS = ['youcoded', 'youcoded-core', 'youcoded-admin', 'wecoded-th
 // how a symlink got committed and clobbered the real clone on 2026-08-28
 // (docs/PITFALLS.md). Resolve sub-repos from the main checkout instead:
 // `git rev-parse --git-common-dir` names the main checkout's .git from any worktree.
+
+// WHY (2026-09-03): this script is normally run in the SHARED youcoded-dev checkout,
+// where concurrent sessions leave in-flight work uncommitted. Their half-written rule
+// or MAP row points at code that only exists on their branch, so it fails HERE while
+// CI — which only ever sees committed files — stays green. Without this note the
+// closing line reads "confirmed drift; fix now", and the obvious "fix" is deleting a
+// colleague session's uncommitted file. That has already happened once in this
+// workspace (2026-08-27, a teammate's rule-file edit was wiped).
+export function uncommittedPaths(root, runner = execFileSync) {
+  try {
+    return runner('git', ['-C', root, 'status', '--porcelain'],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })
+      .split('\n')
+      .map(l => l.slice(3).trim())
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
 const subRepoRootCache = new Map();
 export function subRepoRoot(root) {
   if (subRepoRootCache.has(root)) return subRepoRootCache.get(root);
@@ -708,19 +728,24 @@ function main() {
   if (asJson) {
     console.log(JSON.stringify(result, null, 2));
   } else {
-    printHuman(result);
+    printHuman(result, root);
   }
   process.exit(result.ok ? 0 : 1);
 }
 
-function printHuman(r) {
+function printHuman(r, root = process.cwd()) {
   console.log(`anchors: ${r.anchors.total - r.anchors.failed.length}/${r.anchors.total} ok · `
     + `MAP paths: ${r.mapPaths.total - r.mapPaths.missing.length}/${r.mapPaths.total} ok · `
     + `eager ≈${r.budgets.eagerTokens} tokens (limit ${r.budgets.eagerLimit})`);
+  const printed = [];
   const dump = (label, arr) => {
     if (!arr.length) return;
     console.log(`FAIL ${label}:`);
-    for (const x of arr) console.log('  ' + (typeof x === 'string' ? x : JSON.stringify(x)));
+    for (const x of arr) {
+      const line = typeof x === 'string' ? x : JSON.stringify(x);
+      printed.push(line);
+      console.log('  ' + line);
+    }
   };
   const warn = (label, arr) => {
     if (!arr.length) return;
@@ -758,9 +783,19 @@ function printHuman(r) {
       for (const f of r.diffScope.uncoveredCode.slice(0, 20)) console.log('    ' + f);
     }
   }
+  if (!r.ok) {
+    const blamed = uncommittedPaths(root).filter(f => printed.some(line => line.includes(f)));
+    if (blamed.length) {
+      console.log('NOTE: these failures name files with UNCOMMITTED local changes — most likely');
+      console.log('      another session\'s in-flight work, NOT drift for you to "fix":');
+      for (const f of blamed) console.log('        ' + f);
+      console.log('      CI only ever sees committed files. Run `git status` and leave them alone.');
+    }
+  }
   console.log(r.ok
     ? 'MECHANICAL PASS: OK'
-    : 'MECHANICAL PASS: FAILURES — every failure above is confirmed drift; fix now.');
+    : 'MECHANICAL PASS: FAILURES — every failure above is confirmed drift; fix now'
+      + ' (except any flagged UNCOMMITTED above).');
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

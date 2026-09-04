@@ -14,9 +14,22 @@ written down, never closed, and independently rediscovered twice.
 failure mode, not the output. Every recommendation ends this session as one of three
 things: **applied**, **a dated roadmap entry** (`docs/roadmap/<area>.md` — `ROADMAP.md` → "Filing an item"), or **dropped with a reason.**
 
-## Step 0 — "wrap up" DOES NOT MEAN "merge"
+## Step 0 — ASK about pushing, first thing
 
-**Default: do not merge, do not push, do not open a PR.** Destin routinely says *wrap
+**Open the wrap-up by asking Destin "Ready to push?"** — before the retrospective, not
+buried at the end of it. Give him three things in one or two lines each:
+
+1. **A yes/no recommendation**, and why.
+2. **Whether each branch is actually ready** — does it build, did `scripts/verify.sh`
+   pass, has anything about it been proved on a real run, and what is still unverified.
+3. **What pushing does and does not do** — pushing is not a PR and not a merge.
+
+He asked for this on 2026-09-03, after a session ended with two finished, verified,
+committed branches sitting unpushed on one machine because the skill said "do not push"
+and nobody asked. Deciding is his; surfacing the decision is yours. A branch that exists
+in exactly one place is the thing wrap-up is supposed to prevent, not produce.
+
+**Then default to: do not merge, do not push, do not open a PR** unless he answers yes. Destin routinely says *wrap
 up* or *close out* meaning "do the docs and workspace hygiene" while the branch stays
 open — he often has a FRESH session review the PR before he merges, precisely because
 the session that wrote the code is the worst reviewer of it. Merge only when he says so

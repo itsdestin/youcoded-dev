@@ -200,13 +200,24 @@ VM with `Could not find @vscode/ripgrep-darwin-x64` (youcoded#189); `@napi-rs/ca
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-release.yml", "contains": "darwin-x64 binaries"} -->
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "darwin-x64 binaries"} -->
 
-To check a dmg before handing it to a tester, extract it and confirm the arch actually present:
+To check a dmg before handing it to a tester, extract it and confirm the arch **and the
+signature**:
 
 ```bash
 7z x -y YouCoded-<version>.dmg -o/tmp/dmgcheck >/dev/null
 find /tmp/dmgcheck -type d -name '*-darwin-*'        # expect darwin-x64 in the unsuffixed dmg
 file "$(find /tmp/dmgcheck -path '*MacOS/YouCoded')" # expect Mach-O 64-bit x86_64
+ls -d /tmp/dmgcheck/*/YouCoded.app/Contents/_CodeSignature   # MUST exist — see below
 ```
+
+**A missing `_CodeSignature` means the dmg cannot be opened by anyone.** macOS then rejects
+the app as *broken* rather than *unverified*, which removes the "Open Anyway" button from
+System Settings and leaves a user no way in at all. This is not hypothetical: electron-builder
+≤ 26.8.1 ad-hoc signed automatically when it found no certificate, 26.15.3 silently dropped
+that fallback, and the 2026-07-23 Dependabot bump shipped six weeks of unopenable macOS
+builds with every check green. Both mac workflows now carry a `Verify the macOS bundle is
+signed` step, so CI catches it first — this recipe is the manual counterpart.
+Full postmortem: `docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md`.
 
 ## Local verification (typecheck + CI-style build)
 

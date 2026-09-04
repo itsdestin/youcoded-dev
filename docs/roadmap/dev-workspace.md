@@ -99,6 +99,22 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
+      nothing anywhere saying the app had stopped responding, so a tester's force-quit on
+      2026-09-03 could not be explained at all. FIXED on a branch 2026-09-03
+      (`youcoded feat/crash-diagnostics`): crashes, dead helper processes and freezes now all write
+      a line into the log the Report-a-bug flow already sends, and crash files stay on the user's
+      machine. Open until that branch merges
+      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
+
+- [ ] The app's log is in a folder nobody would guess — Claude Code's, not the app's — so anyone
+      poking around for it concludes there is no log at all, as a tester with full access to the
+      machine did on 2026-09-03. Less bad than it first looked: Report a bug already attaches the
+      log for the user, so nothing is lost when they use that path. What is left is that the log
+      keeps only its last 500 lines, which can be shorter than one session, and that there is no
+      way to just go and look at it
+      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
+
 - [ ] The feature flow — a questions deck before anything is drawn, review rounds, a signed
       contract, then a graded acceptance deck — is built but has never been run end to end on a
       real feature; the first small UI feature Destin asks for is the trial, and its handoff
@@ -255,6 +271,26 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## release
+
+- [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
+      a button that no longer appears — a routine dependency update quietly stopped the Mac build
+      from being stamped at all, so macOS now rejects it as a broken app rather than an unverified
+      one, and the approval step our site walks users through vanished with it. Only a terminal
+      command gets past it. v1.2.4 was stamped correctly and 1.3.0-beta.72 is not; both dmgs read
+      off directly. Affects releases, not just betas. It is not a one-time install hurdle either —
+      the in-app update button downloads the same kind of build, so a Mac user who is happily
+      using the app is walked back into the same dead end on every update. FIXED on a branch
+      2026-09-03 (`youcoded fix/mac-adhoc-signing`) — restores the old behaviour and adds a build
+      check that fails if it ever stops happening again; open until that branch merges and a Mac
+      confirms the approval button is back. ON MERGE: re-add the verify anchor under the dmg
+      recipe in docs/build-and-release.md — it was dropped because it pointed at branch-only code
+      `n/a` `confirmed` `checked 2026-09-03` `urgent` `regression` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
+
+- [ ] No download we publish can be checked for corruption or tampering — the release carries the
+      installers and nothing else, no checksum file of any kind, so neither a user nor the app's
+      own updater can tell a good download from a bad one. Verified against the 1.3.0-beta.72
+      release listing
+      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
 
 - [ ] Android beta builds all claim to be version 1.2.4. The desktop test build stamps its own
       version number into every beta; the Android one never got that, so its About screen shows
