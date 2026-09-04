@@ -53,7 +53,7 @@ When you need to verify runtime behavior (GPU usage, DOM state, IPC responses, t
 cd <repo> && git fetch origin && git pull origin master
 ```
 
-**Expect the main checkout to be dirty and behind, and branch off `origin/master` anyway.** Concurrent sessions leave uncommitted work in `youcoded/`, which makes both `setup.sh` and `git pull` skip that repo *without failing* — on 2026-08-27 the main checkout sat 146 commits behind for two days. Two consequences: `git worktree add <path> -b <branch> origin/master` (never bare `master`), and **Serena is pinned to the main checkout, so its answers are that stale copy**. The session-start hook prints the behind-count when it is non-zero.
+**Expect the main checkout to be dirty and behind, and branch off `origin/master` anyway.** Concurrent sessions leave uncommitted work in `youcoded/`, which makes both `setup.sh` and `git pull` skip that repo *without failing* — on 2026-08-27 the main checkout sat 146 commits behind for two days. Three consequences: `git worktree add <path> -b <branch> origin/master` (never bare `master`); **Serena is pinned to the main checkout, so its answers are that stale copy**; and **`.claude/rules/` and `docs/MAP.md` are read from the shared checkout, so a stale checkout GOVERNS the session with stale rules** — you cannot read your way out of it. On 2026-09-03 `landing-page.md` still carried a "never edit `index.html`, edit `build.py`" invariant that master had already deleted when the redesign shipped; obeying it would have meant editing a file that writes only to `mockups/` and whose download resolver is a dead `url:'#'` stub. Before acting on a rule or MAP row, diff it: `git -C /home/destin/youcoded-dev diff origin/master -- .claude/rules/<name>.md docs/MAP.md`. The session-start hook prints the behind-count when it is non-zero.
 
 **Use worktrees for non-trivial work.** Any work beyond a handful of lines or narrowly-scoped bug fixes must be done in a separate git worktree (or use the Agent tool with `isolation: "worktree"`). This prevents multiple concurrent Claude sessions from overwriting each other's changes.
 
@@ -69,6 +69,11 @@ git worktree remove <path>
 git push origin --delete <branch>   # skip if GitHub's PR auto-delete already removed it
 git branch -D <branch>              # -D (not -d) because --no-ff merges leave the tip non-ancestral
 ```
+**`gh pr merge --delete-branch` ends in `fatal: '<default>' is already used by worktree` in every
+repo here, and THE MERGE STILL SUCCEEDED** — gh merges server-side, then tries to check the default
+branch out locally, which fails because the main checkout already holds it (3/3 merges, 2026-09-03).
+Confirm with `git log --oneline origin/master -1`, then do the cleanup above by hand; do not re-run
+the merge.
 Verify the commit landed on master first: `git branch --contains <sha>` should list `master`. Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
 
 **Run `bash scripts/close-out.sh <branch> [<repo>]` yourself** — it reports all of the above plus the docs half (live docs still naming the branch, shipped docs still under `docs/active/`, the ROADMAP and MAP items). Read-only, always exits 0: it says what is left, it does not do it, so finish every line it reports. The `wrap-up` skill runs it as its first step.

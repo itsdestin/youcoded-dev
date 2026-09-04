@@ -93,6 +93,51 @@ gh run watch --repo itsdestin/youcoded $(gh run list --repo itsdestin/youcoded \
 gh run download --repo itsdestin/youcoded <run-id> -n youcoded-desktop-windows -D ./beta
 ```
 
+### Publishing a beta as a PUBLIC pre-release (what youcoded.ai serves)
+
+Actions artifacts cannot be linked from the website: they need a GitHub login, they arrive
+as a `.zip` rather than an installer, and they self-delete after 7 days. To make a beta
+publicly downloadable, attach the same files to a **GitHub pre-release**. Done for
+`1.3.0-beta.72` on 2026-09-03 (youcoded#413).
+
+```bash
+# Tag WITHOUT a leading `v`. desktop-release.yml and android-release.yml both trigger on
+# `tags: ['v*']`, so a `v`-prefixed tag would fire a real release build off this tag.
+# --target needs the FULL 40-char sha; a short sha is rejected with
+#   HTTP 422: Release.target_commitish is invalid
+gh release create 1.3.0-beta.72 --repo itsdestin/youcoded \
+  --draft --prerelease --target <full-40-char-sha> \
+  --title "1.3.0-beta.72 (pre-release)" --notes-file notes.md <files…>
+gh release edit 1.3.0-beta.72 --repo itsdestin/youcoded --draft=false
+```
+
+Build first, upload second: `--draft` keeps it invisible while ~1 GB uploads, and a draft
+creates no tag at all, so nothing can fire early.
+
+**A pre-release does not touch anyone's installed app.** The in-app update checker reads
+`/releases/latest`, which by definition returns the newest *stable* release and skips
+pre-releases — verified still returning `v1.2.4` after publishing. The same fact is why the
+website had to move OFF `/releases/latest` to see betas at all (`docs/index.html` now reads
+the `/releases` list; revert when 1.3.0 ships — `docs/roadmap/dev-workspace.md`).
+<!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts", "contains": "releases/latest"} -->
+
+**Wait on the artifact, not on the run's status.** `gh run view --json status` was observed
+returning `completed/success` for a run still `in_progress` (2026-09-03), and acting on it
+produced `no valid artifacts found to download`. Poll for the thing you actually need:
+
+```bash
+until [ "$(gh api repos/itsdestin/youcoded/actions/runs/<id>/artifacts \
+  --jq '.artifacts|length')" = 3 ]; do sleep 45; done
+```
+
+**Android needs its own dispatch.** `android-test-build.yml` produces debug-signed APKs with a
+`.releasetest` package suffix — wrong for a public download. Dispatch `android-release.yml`
+instead: it builds a properly signed release APK, and its "Create GitHub Release" step is
+guarded by `if: startsWith(github.ref, 'refs/tags/')`, so a manual dispatch publishes nothing.
+Its APK still reports `versionName` 1.2.4 — nothing stamps a version on the Android side the
+way `desktop-test-build.yml` does (filed: `docs/roadmap/dev-workspace.md`).
+<!-- verify: {"path": "youcoded/.github/workflows/android-release.yml", "contains": "refs/tags/"} -->
+
 **It replaces the installed app in place.** `electron-builder.yml` pins `appId: com.youcoded.desktop`
 and `productName: YouCoded`, so NSIS upgrades over the existing install rather than sitting beside
 it. `AppData/Roaming/youcoded` (window bounds, localStorage) carries over, and `~/.claude/` +
