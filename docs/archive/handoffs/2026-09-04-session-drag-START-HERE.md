@@ -1,7 +1,7 @@
 ---
 title: Session drag between windows — built, verified live, one branch to merge
 date: 2026-09-04
-status: active
+status: shipped
 supersedes: docs/archive/handoffs/2026-09-03-session-drag-START-HERE.md
 ---
 
@@ -20,7 +20,7 @@ a decision any more. What is left is merging, and two small follow-ups.
 | History wrong after a tear-off | **FIXED.** PR [#409](https://github.com/itsdestin/youcoded/pull/409), `fix/tearoff-history`. CI green, `MERGEABLE`. Not merged — Destin's call |
 | Drag between windows on Wayland | **FIXED, verified live, pushed.** Branch `feat/session-drag-handoff` (head in `git log`; desktop-drop and desktop-only menu landed after Destin's live review). `verify.sh` green. **No PR yet** |
 | The drag picture | **No longer a decision.** The compositor carries nothing; the strip draws the pill itself (below) |
-| Workspace docs | This handoff, the `multi-window-detach` rule and `scripts/platform-probe.mjs` are on `youcoded-dev` branch `docs/session-drag-html-drag` (supersedes `docs/tearoff-followups`, which can be deleted) |
+| Workspace docs | This handoff, the `multi-window-detach` rule, the MAP row and `scripts/platform-probe.mjs` landed with `docs/session-drag-html-drag` on `youcoded-dev` |
 
 **Worktrees:** `worktrees/feat-session-drag`, `worktrees/fix-tearoff-history`. A dev
 instance was left running for Destin's review: `bash scripts/run-dev.sh
@@ -104,19 +104,14 @@ resolved from the `WindowRegistry`. `SESSION_DRAG_HANDOFF`, the temp file,
 
 ---
 
-## Still open
+## Still open (filed)
 
-- **Open a PR for `feat/session-drag-handoff`** and merge after #409. Then close the two
-  `docs/roadmap/user-interface.md` items this branch resolves (drop on another window's
-  chat; no menu command) and archive this handoff.
 - **A pill dragged into ANOTHER window shows nothing under the cursor there** until it is
   dropped — that window cannot read the payload mid-drag. Fix: main relays
   `{sessionId, name, color}` to peer windows on drag start so the target can draw the
-  carried ghost too. Small; filed in `docs/roadmap/user-interface.md`.
+  carried ghost too. `docs/roadmap/user-interface.md`.
 - **Long-press → menu on the touchscreen** is wired through Chromium's `contextmenu` on
-  long-press but was not exercised live yet.
-- **Merge `docs/session-drag-html-drag`** on `youcoded-dev` after the code lands (its rule
-  anchors name files that exist only on the branch); delete `docs/tearoff-followups`.
+  long-press but was not exercised live.
 
 ## Reproducing the probes
 

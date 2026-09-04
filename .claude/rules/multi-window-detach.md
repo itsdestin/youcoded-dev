@@ -99,4 +99,4 @@ Guard: `tearoff-handoff.test.ts`.
 
 Depth, including the full measurements:
 `docs/archive/investigations/2026-09-03-session-tearoff-history-and-wayland.md`
-and `docs/active/handoffs/2026-09-04-session-drag-START-HERE.md`.
+and `docs/archive/handoffs/2026-09-04-session-drag-START-HERE.md`.
