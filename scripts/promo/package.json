@@ -4,11 +4,11 @@
   "type": "module",
   "scripts": {
     "studio": "remotion studio src/index.ts",
-    
-    "render:draft": "remotion render src/index.ts Promo out/draft.mp4 --scale 0.5 --browser-executable /usr/bin/google-chrome-stable",
-    "render": "remotion render src/index.ts Promo out/promo-video.mp4 --codec h264 --crf 18 --browser-executable /usr/bin/google-chrome-stable",
+    "render:draft": "flock /tmp/promo-render.lock remotion render src/index.ts Promo out/draft.mp4 --scale 0.5 --browser-executable /usr/bin/google-chrome-stable",
+    "render": "flock /tmp/promo-render.lock remotion render src/index.ts Promo out/promo-video.mp4 --codec h264 --crf 18 --browser-executable /usr/bin/google-chrome-stable",
     "test": "node --test src/timeline.test.ts src/captions.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "study": "flock /tmp/promo-render.lock remotion render src/index.ts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.520",

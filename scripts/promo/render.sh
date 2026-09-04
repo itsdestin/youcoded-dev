@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Final render + loudness normalisation. Usage: bash scripts/promo/render.sh [draft]
+# Every render goes through `flock /tmp/promo-render.lock` (package.json): two renders at once
+# hung one of them at 0 % CPU for twelve minutes on 2026-09-04. A study clip: `npm run study --
+# <CompositionId> out/<name>.mp4` takes the same lock. Never render while film.sh is recording.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"; cd "$HERE"
 # jq parses the loudnorm measurement below. Fail here with a name rather than

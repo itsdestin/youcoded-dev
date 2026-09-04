@@ -218,6 +218,13 @@ Rebuild every landing-page asset at once (loops, gallery stills, live embed):
 `bash scripts/ui-review/site-assets.sh <worktree>` — refuses a workbench serving a
 different tree, and refuses to overwrite a gallery when any shot failed verification.
 
+**`"zoom": 1.25`** (scene field, default 1) films the page zoomed in the way Ctrl+= does in the
+app: the layout runs at width/zoom × height/zoom CSS px and Chrome paints it at `zoom` device
+pixels per CSS px, so the clip keeps its size and everything in it is `zoom` times bigger, in
+real pixels. Actions address elements by selector, so nothing else in the scene changes. The
+fourteen desktop `promo-*` scenes carry 1.25 (Destin, 2026-09-04: "hit the + a bit so it's easier
+for viewers to track what's happening"); the phone scenes stay at 1.
+
 ## Workbench switches the plans rely on
 
 `?scenario=default|empty|no-providers|refused|stress` (resume list / permissions /
