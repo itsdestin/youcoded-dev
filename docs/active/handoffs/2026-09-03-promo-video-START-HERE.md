@@ -10,17 +10,40 @@ plan: docs/active/plans/2026-09-03-promo-video-plan.md
 
 # Promo video — START HERE
 
-Destin saw the first full cut on 2026-09-03 and asked for a re-cut: more themes, the
-backdrop and the mascot changing colour with them, a "manage your conversations" beat
-instead of the drag beat, games "with friends" with a bounce to chess or Connect 4,
-better-styled and more informative captions, better transitions, and the rigged golden
-mascot instead of the old flat one. The re-cut is built and was reviewed by an agent with
-no context (its findings are folded in). **The next session's job is Destin's notes on
-the re-cut** — iterate, show him drafts early, do not open PRs until he is happy.
+**Round three is in progress (2026-09-04) and the next session continues it.** The process
+Destin chose: fixed check-ins, nothing rendered past one until he says go — (1) the question
+deck (answered, `docs/active/prototypes/promo-2026-09/deck/promo-v3.answers.json`), (2) the
+storyboard page (`storyboard-v3.html`, approved with notes, all applied), (3) the mascot /
+captions check-in (`checkin-3.html`, his notes below), (4) one half-size draft of the whole
+film, (5) the final. **We are between 3 and 4.**
+
+## Destin's notes on check-in 3, still to build (in this order)
+
+1. **Captions = one top-line section label, and the sub-text as a SPEECH BUBBLE from the
+   mascot** that follows it as it moves. The three A/B/C designs on the page are superseded by
+   this; keep the payoff-word accent and the theme font. Build it as a still or a 5-second
+   clip first (a bubble that pops in beside the host, tail toward it, moves with it), then
+   the film.
+2. **The hop between beats feels odd — find a better theme transition.** Candidates to show
+   him as a short study clip, one after another on the same cut: (a) the host rides the
+   accent wipe band across the screen and slides into its perch; (b) a poof-teleport — it
+   vanishes in a puff at the old perch and reappears in a puff at the new one, already in the
+   new costume; (c) a spin in place — a fast twirl with a squash, the costume changing
+   mid-spin, no travel. Keep the landing/settle feel from the study; drop the arc.
+3. **Eyes a smidge less dark** — done: `inkFor()` keeps 32 % of the body colour (was 22 %).
+4. Then the draft (check-in 4): `npm run render:draft` → `out/draft.mp4`, plus a context-free
+   review agent before he sees it (see "Show him early").
+
+Everything else he asked for in round three is built and committed: the punch intro (black,
+silent, peek from the left edge, walk, punch, burst into Cotton Candy, "Assistant" rolling
+out, music from the hit), the model beat on four favourites (Claude, DeepSeek, Grok, GPT, no
+prices), project view folded into the files beat (Econ 201), the phone asking to take over
+from Desktop, the marketplace beat on drop 2, the 44-bar track, the classic eyes with a dark
+ink on every theme. The full film assembles and renders (self-checked, ~100 s).
 
 ## The one-paragraph version
 
-A ~72 s 1920×1080 video of the app, hosted by the mascot, cut to a synthwave track
+A ~100 s 1920×1080 video of the app (a 7.9 s silent prelude + 44 bars), hosted by the mascot, cut to a synthwave track
 composed in code. Three layers: (1) `scripts/promo/music/song.py promo` renders the track
 and exports its beat grid as JSON; (2) `scripts/promo/film.sh` films the scenes of the real
 renderer in the UI Workbench through headless Chrome, one theme per beat, writing a
@@ -36,14 +59,14 @@ changes costume with the theme.
 | What | Where |
 |---|---|
 | Workspace branch | `feat/promo-video`, worktree `/home/destin/youcoded-dev/worktrees/promo` — **never pushed** |
-| App branch (dev-only workbench fakes + fixtures) | `feat/promo-workbench-fakes`, worktree `/home/destin/youcoded-dev/worktrees/promo-fakes`, rebased on master 2026-09-03 — **PR itsdestin/youcoded#402 open**, the rebase + three later commits not yet pushed. Nothing in it ships to users |
+| App branch (dev-only workbench fakes + fixtures) | `feat/promo-workbench-fakes`, worktree `/home/destin/youcoded-dev/worktrees/promo-fakes` — **PR itsdestin/youcoded#402 open**; the round-three fakes (favourites, install, Econ 201, phone take-over, student mode) are committed but **not yet pushed**. Nothing in it ships to users |
 | The latest draft | `scripts/promo/out/draft.mp4` (half size, with music); final renders land in `out/youcoded-promo.mp4` + `-silent.mp4` (all under `out/`, gitignored) |
 | The music | `scripts/promo/public/promo.wav` + `.mp3` + `promo.grid.json` + `sfx-{pop,whoosh,chime}.wav` (gitignored; regenerate with `cd scripts/promo/music && python3 song.py promo ../public/promo.wav`, then `ffmpeg -i ../public/promo.wav -codec:a libmp3lame -q:a 2 ../public/promo.mp3`) |
 | The footage | `scripts/promo/public/footage/<scene>.webm` + `.webp` poster + `.marks.json` (gitignored; regenerate with `film.sh`) |
 | The theme art the overlays use | `scripts/promo/public/themes/<slug>/` (rig, companions, wallpaper, pre-blurred backdrop) + `src/theme-art.generated.ts`, both gitignored — `bash scripts/promo/theme-assets.sh` copies them from the `wecoded-themes` checkout beside the workspace |
-| Scenes | `scripts/ui-review/scenes/promo-*.json` (thirteen) + `scenes/flappy-pilot.js` |
-| Timeline | `scripts/promo/src/` — `timeline.ts` (bars, PRE/POST), `themes.ts`, `tracks.ts`, `Backdrop.tsx`, `Mascot.tsx`, `transitions.tsx`, `Caption.tsx`, `captions.ts`, `marks.ts`, `layout.ts`, `beats/beat.ts` (the beat contract) + `beats/Beat1…8.tsx`, `Promo.tsx` |
-| Review evidence | `docs/active/prototypes/promo-2026-09/` — `footage-review.md` + `footage/*.webp` posters, `marks/<scene>-<mark>.png` (the frame at every mark) |
+| Scenes | `scripts/ui-review/scenes/promo-*.json` (fifteen) + `scenes/flappy-pilot.js`, `scenes/market-chip-sync.js` |
+| Timeline | `scripts/promo/src/` — `timeline.ts` (PRELUDE, bars, PRE/POST), `themes.ts` (+ `inkFor`), `host/engine.ts` (the motion engine: actions evaluated per frame), `host/Host.tsx` (the renderer), `host/faces.ts`, `intro/Intro.tsx` (the punch intro, also the study clip), `intro/HostStudy.tsx`, `Backdrop.tsx`, `transitions.tsx`, `Caption.tsx` + `CaptionStudy.tsx`, `captions.ts`, `marks.ts`, `layout.ts`, `beats/beat.ts` (the contract: host actions in local frames) + `beats/Beat1…10.tsx`, `Promo.tsx` |
+| Review evidence | `docs/active/prototypes/promo-2026-09/` — the deck + answers, `storyboard-v3.html`, `checkin-3.html` (+ `study/*.mp4`, `storyboard-v3/*.png`), `footage-review.md`, `footage/*.webp`, `marks/<scene>-<mark>.png` |
 | Spec / plan | the spec is the storyboard, captions, themes and music table; the plan is the original nine tasks |
 
 ## After a fresh clone (or a new machine)
@@ -61,7 +84,9 @@ npm run typecheck && npm test && npm run render:draft
 | Destin says… | Change | Then |
 |---|---|---|
 | a caption / wording | `src/captions.ts` — the test pins every string to the spec's storyboard table, so change the spec row too | `npm test`, draft render |
-| a beat is too long / short / wrong order | `src/timeline.ts` `BEATS` (bars must tile 0–34) and the music sections in `song.py`'s `promo_track()` — the music and the storyboard are one grid | re-render music, `npm test`, draft render |
+| the mascot's motion | the beat's `host` actions (`beats/BeatN.tsx`, local frames via `L(id, bar)`), the action library in `host/engine.ts` (hop, walk, punch, look, blink, pose, wave, costume); the arrival hop between beats is generated in `Promo.tsx` | `npx remotion render src/index.ts HostStudy out/host-study.mp4` (~1 min) to judge it alone |
+| the intro | `src/intro/Intro.tsx` (`introActions`, IMPACT = timeline PRELUDE) | `npx remotion render src/index.ts Intro out/intro-study.mp4` |
+| a beat is too long / short / wrong order | `src/timeline.ts` `BEATS` (bars must tile 0–44) and the music sections in `song.py`'s `promo_track()` — the music and the storyboard are one grid | re-render music, `npm test`, draft render |
 | a different theme on a beat | the beat's `slug` (and its `Caption theme=`), the scene's `"theme"`, the spec | re-film that scene, draft render |
 | the host does something wrong | the beat's `cues` (LOCAL frames — `L('bN', bar)` for anything on the grid), poses in `src/poses.ts`; the hop/costume/burst mechanics in `Mascot.tsx` | draft render |
 | where the window / caption / phone sits | `src/layout.ts` only | draft render |
@@ -74,7 +99,7 @@ npm run typecheck && npm test && npm run render:draft
 (half size, ~3.5 min) → look at `out/draft.mp4` (frames via `ffmpeg -i out/draft.mp4 -vf "select='eq(n,N)'" -vsync 0 -frames:v 1 f.png`; a contact sheet: `-vf "select='not(mod(n,30))',scale=320:-1,tile=6x12" -frames:v 1`).
 Final: `bash scripts/promo/render.sh` (~10 min). Hand files over as plain paths in chat.
 
-**Show him early.** A draft render is three and a half minutes. Show it before polishing.
+**Show him early — at the check-ins he chose, and not otherwise.** A draft render is four minutes. Destin, 2026-09-04: "i don't want you to keep wasting time rendering and re-rendering without giving me any opportunities to redirect you." Study clips (Intro, HostStudy: one minute each) are how motion is judged; stills are how designs are judged.
 **Then have an agent with no context review it** (a general-purpose agent, the draft path,
 "watch it as a first-time muted viewer, list findings with frame numbers") — it found nineteen
 things on 2026-09-03 that the session that built the cut had stopped seeing.

@@ -41,7 +41,7 @@ export const THEMES: Record<Slug, Theme> = {
 export const inkFor = (slug: Slug): string => {
   const hex = THEMES[slug].accent.replace('#', '');
   const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
-  const k = 0.22;                                   // keep 22 % of the body colour, the rest black
+  const k = 0.32;                                   // keep 32 % of the body colour, the rest black (0.22 read a smidge too dark — Destin, 2026-09-04)
   return '#' + [r, g, b].map((v) => Math.round(v * k).toString(16).padStart(2, '0')).join('');
 };
 /** The rig a theme dresses the host in: its own if it ships one, else the app's default rig tinted with the theme accent. */
