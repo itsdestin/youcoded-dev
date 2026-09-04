@@ -1,6 +1,6 @@
 ---
 date: 2026-09-03
-status: active
+status: shipped
 type: investigation
 topic: The In:/Out: status-bar chips present one request's numbers as session totals on Claude Code sessions
 ---
@@ -49,9 +49,14 @@ the Reuse chip under 50% on every Claude Code session. Fixed in youcoded PR #405
 (`renderer/state/cache-reuse.ts`); both copies of `statusline.sh` now carry a comment
 recording what each field is, so this does not have to be re-derived.
 
-**What is not decided.** Whether `In:`/`Out:` should (a) be relabelled to say they
-describe the current request, (b) be sourced from the transcript watcher, which sees
-every turn's usage and could sum a real session total, or (c) be hidden on Claude Code
-sessions. Claude Code's status line offers no session-total token counts at all, so
-option (a) is the only one that costs nothing. This is a design call for Destin, not a
-mechanical fix — which is why PR #405 deliberately left the two chips alone.
+**Outcome — shipped 2026-09-03, youcoded#411.** Option (b): the numbers now come from
+real session totals. Two changes were needed, because there was a second defect
+underneath this one. The transcript watcher only ever recorded the LAST request of a
+turn — Claude Code writes one assistant line per API request and only the final one
+carries a `stop_reason` other than `tool_use`, so turn-complete events saw 4-17% of the
+assistant lines that carry usage. It now keeps a per-turn tally and reports the sum,
+the same thing `native-session-host.ts` already did for the app's own agent. The chips
+then read those totals instead of the statusline. `Speed:` turned out to be the same
+defect in a third form (one request's output over the whole session's API time, which
+rounded to 0 every time) and is fixed too. Verified against the transcripts above: the
+session reporting `Out: 3` sums to 119,894; the one reporting 713 sums to 455,396.
