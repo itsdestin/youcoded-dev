@@ -131,6 +131,18 @@ def row(t):
 # comparison rather than a different design.
 CAPS_BASE = ('s-all', 'n-fixed', 'c-all')
 GROUPS = [
+    # Round 7. The shipped header at six letter-spacings and NOTHING else
+    # different, because "a bit less" is a number and the only way to pick it is
+    # to see the same words at each one.
+    ('Spacing', [
+        ('Shipped +0.22',  's-all', 'n-fixed', 'c-all', 'k-you', 'w-even', 'g-same', 'p-left', 38, 32, 0.94, 64, 22, 60, 'x-same', 'i-glass'),
+        ('+0.19',          's-all', 'n-fixed', 'c-all', 'k-you', 'w-even', 'g-same', 'p-left', 38, 32, 0.94, 64, 19, 60, 'x-same', 'i-glass'),
+        ('+0.16',          's-all', 'n-fixed', 'c-all', 'k-you', 'w-even', 'g-same', 'p-left', 38, 32, 0.94, 64, 16, 60, 'x-same', 'i-glass'),
+        ('+0.13',          's-all', 'n-fixed', 'c-all', 'k-you', 'w-even', 'g-same', 'p-left', 38, 32, 0.94, 64, 13, 60, 'x-same', 'i-glass'),
+        ('+0.10',          's-all', 'n-fixed', 'c-all', 'k-you', 'w-even', 'g-same', 'p-left', 38, 32, 0.94, 64, 10, 60, 'x-same', 'i-glass'),
+        ('+0.07',          's-all', 'n-fixed', 'c-all', 'k-you', 'w-even', 'g-same', 'p-left', 38, 32, 0.94, 64,  7, 60, 'x-same', 'i-glass'),
+        ('+0.04',          's-all', 'n-fixed', 'c-all', 'k-you', 'w-even', 'g-same', 'p-left', 38, 32, 0.94, 64,  4, 60, 'x-same', 'i-glass'),
+    ]),
     # Round 5. Everything here is the combination Destin asked for -- glass mark,
     # "YOU" in the theme colour, wide caps -- with one thing moved per row. The
     # last three swap the MARK back so the icon can be judged against the same
@@ -482,7 +494,7 @@ body.mode-stack .sliders{{opacity:.3;pointer-events:none}}
 
 <div class="panelbar">
   <div class="ptop">
-    <div class="ptitle">youcoded.ai header bar &middot; round 6</div>
+    <div class="ptitle">youcoded.ai header bar &middot; round 7</div>
     <div class="seg">
       <button id="m-single" class="on">Try one</button>
       <button id="m-stack">See all at once</button>
@@ -582,7 +594,7 @@ var LIVE = {{ s:'s-all', n:'n-theme', c:'c-as', k:'k-none', w:'w-even', g:'g-mon
 // First load lands on the combination asked for, not on the live baseline --
 // "Back to what's live" is one click away and is what LIVE is for.
 var START = {{ s:'s-all', n:'n-fixed', c:'c-all', k:'k-you', w:'w-even', g:'g-same', p:'p-left',
-               x:'x-same', i:'i-glass', tile:38, corner:32, wm:94, bar:64, track:22, tag:60, dot:false }};
+               x:'x-same', i:'i-glass', tile:38, corner:32, wm:94, bar:64, track:16, tag:60, dot:false }};
 var sel = Object.assign({{}}, START);
 
 var els = {{}};
@@ -642,7 +654,7 @@ function paint(){{
     : ('tile ' + sel.tile + 'px · name ' + (sel.wm/100).toFixed(2) + 'rem · '
        + (sel.track >= 0 ? '+' : '') + (sel.track/100).toFixed(2) + 'em');
   summary();
-  try {{ localStorage.setItem('yc-navpreview-sel6', JSON.stringify(sel)); }} catch(e){{}}
+  try {{ localStorage.setItem('yc-navpreview-sel7', JSON.stringify(sel)); }} catch(e){{}}
 }}
 
 var whyEl = document.getElementById('why');
@@ -679,7 +691,7 @@ document.getElementById('m-single').onclick = function(){{ setMode(false); }};
 document.getElementById('m-stack').onclick = function(){{ setMode(true); }};
 
 var savedSel = null;
-try {{ savedSel = JSON.parse(localStorage.getItem('yc-navpreview-sel6')); }} catch(e){{}}
+try {{ savedSel = JSON.parse(localStorage.getItem('yc-navpreview-sel7')); }} catch(e){{}}
 if (savedSel && savedSel.s && savedSel.k) sel = Object.assign({{}}, LIVE, savedSel);
 var savedTheme = null;
 try {{ savedTheme = localStorage.getItem('yc-navpreview-theme'); }} catch(e){{}}

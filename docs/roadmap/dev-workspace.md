@@ -340,6 +340,25 @@ seen-on is always n/a here.
       coupled chain, so re-run them together now that the Kotlin half is in
       `n/a` `needs-verify` `checked 2026-09-01`
 
+- [ ] `roadmap-check.mjs --fix` edits the SHARED checkout no matter where you run it, because
+      its root defaults to the script's own location rather than the current directory. Run from
+      a worktree on 2026-09-04 it silently rewrote ROADMAP.md in `/home/destin/youcoded-dev`,
+      where other sessions keep uncommitted work, and left the worktree it was invoked in
+      untouched — the caller cannot tell, because it prints a success line either way. `--root`
+      exists and is the workaround, but nothing makes you pass it. Wanted: default the root to
+      the git toplevel of the working directory, or refuse `--fix` when the resolved root is a
+      different checkout from the one you are standing in
+      `n/a` `confirmed` `checked 2026-09-04`
+
+- [ ] The new site header does not match the two logos nearest it, and both were consciously
+      deferred on 2026-09-04 rather than decided. The header is now a glass tile with the robot
+      in the theme colour and a wide-caps wordmark; the FOOTER logo a few screens down still
+      wears the old solid tile and mixed-case name, and the four theme mascots directly beneath
+      the header are master's newer full-bodied art while the header's robot is still the app's
+      flat icon. Destin saw both and said leave them for now, so this is a decision waiting to
+      be made, not a defect
+      `n/a` `decision` `checked 2026-09-04`
+
 - [ ] Landing copy note, recorded so it is not re-derived: conversation tags, private notes and
       one-tap prompt chips are unique (0 of 8 competitors on 2026-08-31) but must not lead the
       landing page — uniqueness is not the argument
