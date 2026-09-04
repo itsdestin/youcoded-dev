@@ -1,6 +1,6 @@
 {
   "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&seed=none&reply=flappy-task&title=study+guide&signedIn=1",
-  "theme": "halftone-dimension",
+  "theme": "golden-sunbreak",
   "width": 1440,
   "height": 900,
   "zoom": 1.25,

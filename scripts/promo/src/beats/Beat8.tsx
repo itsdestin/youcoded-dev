@@ -7,7 +7,7 @@ import { CAPTIONS } from '../captions';
 import { PHONE, perch } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
 import { A } from '../host/engine';
-import { L, LEN, type BeatModule } from './beat';
+import { L, LEN, present, inWindow, type BeatModule } from './beat';
 import { Sfx } from './sfx';
 
 // Beat 8 (bars 28–33): pick up on any device, in Devil's Garden. The chat on
@@ -52,20 +52,12 @@ const Beat8: React.FC = () => (
     <Sfx at={T1 + 6} name="whoosh" volume={0.3} />
   </AbsoluteFill>
 );
+const P8 = present([
+  { at: T1 + 30, say: 'Oh hey, your phone.', spot: BESIDE, point: 'R', face: 'happy', side: 'L' },              // walks to the bar's end to meet it
+  { at: PM('dialog') + 4, say: 'It asks first. Polite.', spot: ON_PHONE, point: 'down', face: 'shocked', side: 'L' },   // on the phone, pointing at the question
+  { at: PM('chat', 'end') + 6, say: 'Same chat. Same files.', point: 'down', face: 'happy', side: 'L' },
+  { at: T_FILES + 34, say: 'All synced.', point: 'down', face: 'happy', side: 'L', until: END - 12 },
+], 'devils-garden', P);
 export const beat8: BeatModule = { id: 'b8', slug: 'devils-garden', home: P, Component: Beat8,
-  // The host PRESENTS the phone: sees it coming, walks to the right end of the
-  // bar to meet it, points at the session list and at the take-over question,
-  // nods at Take over, ta-das at the loaded chat, then hops onto the phone to
-  // cheer the files.
-  host: [
-    A.look(T1 - 10, 8, 0.6, 0.2), A.face(T1 - 10, 'curious'),                      // sees the phone coming
-    A.walk(T1 + 2, 30, BESIDE.x, 5),
-    A.point(PM('list') + 4, 'R', 0.6), A.look(PM('list') + 4, 6, 0.6, 0.4),        // "here's your chat, on the phone"
-    A.startle(PM('dialog') + 2), A.look(PM('dialog') + 2, 4, 0.6, 0.5),                  // "whoa — it's asking to take over"
-    A.point(PM('dialog') + 20, 'R', 0.7), A.face(PM('dialog') + 20, 'curious'),
-    A.nod(PM('takeover', 'end')), A.face(PM('takeover', 'end'), 'welcome'),               // "yes, take over"
-    A.tada(PM('chat', 'end') + 4, 'R'), A.face(PM('chat', 'end') + 4, 'happy'), A.face(PM('chat', 'end') + 30, 'welcome'), A.rest(PM('chat', 'end') + 40),
-    A.look(T_FILES - 24, 8, 0.5, 0.5), A.hop(T_FILES - 16, 26, ON_PHONE.x, ON_PHONE.y, 90), A.to(T_FILES - 16, 26, 'size', 96),   // onto the phone for the files
-    A.cheer(T_FILES + 12, 30), A.face(T_FILES + 12, 'happy'), A.face(T_FILES + 44, 'welcome'), A.blink(T_FILES + 50),
-  ],
-  bubbles: [{ at: T1 + 36, until: PM('dialog') - 6, text: CAPTIONS.b8.sub, slug: 'devils-garden', side: 'L' }] };   // once it has reached the phone
+  host: [A.look(T1 - 10, 8, 0.6, 0.2), ...P8.host, A.to(PM('dialog') - 20, 16, 'size', 96), A.nod(PM('takeover', 'end'))],   // sees it coming; smaller on the phone; nods at Take over
+  bubbles: P8.bubbles };

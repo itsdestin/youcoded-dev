@@ -7,7 +7,7 @@ import { perch } from '../layout';
 import { markFrame, markSec, assertClipCovers } from '../marks';
 import { A } from '../host/engine';
 import { PRE } from '../timeline';
-import { L, LEN, type BeatModule } from './beat';
+import { L, LEN, present, inWindow, type BeatModule } from './beat';
 
 // Beat 9 (bars 33–38): the WeCoded marketplace, in Light, on drop 2. The
 // marketplace OPENS on bar 33's downbeat (the drawer shows during the wipe's
@@ -31,16 +31,12 @@ const Beat9: React.FC = () => (
 );
 const INSTALL = T_DETAIL + Math.round((markSec('promo-market', 'install') - markSec('promo-market', 'detail')) * 30) + 6;
 const CHIP = T_BACK + 18;
-// The host is startled by the marketplace ("wow"), walks to the middle of the bar above
-// the Remember card and points at it, claps as Install lands, walks back for the chat
-// and points at the new Remember chip.
+const P9 = present([
+  { at: L('b9', 33) + 10, say: "Need more? There's a marketplace.", point: 'down', face: 'happy' },                   // on the bar, over the grid
+  { at: T_DETAIL + 8, say: 'Plugins, made by people like you.', spot: inWindow(0.8, 0.4), point: 'L', face: 'welcome' },   // beside the plugin page
+  { at: INSTALL, say: 'One click.', face: 'happy' },
+  { at: CHIP, say: "And it's in your chat.", spot: inWindow(0.5, 0.86), point: 'down', face: 'happy', until: END - 12 },   // above the chip in the chat
+], 'light', P);
 export const beat9: BeatModule = { id: 'b9', slug: 'light', home: P, Component: Beat9,
-  host: [
-    A.startle(L('b9', 33) + 6), A.look(L('b9', 33) + 6, 6, 0.2, 0.5), A.face(L('b9', 33) + 24, 'happy'), A.face(L('b9', 34), 'welcome'),   // wow, a marketplace
-    A.walk(T_DETAIL - 10, 26, perch(0.5).x, 5), A.look(T_DETAIL - 10, 10, 0.1, 0.5),
-    A.point(T_DETAIL + 20, 'R', 0.9), A.face(T_DETAIL + 20, 'curious'),                                          // the card
-    A.rest(INSTALL - 6), A.clap(INSTALL, 26), A.face(INSTALL, 'happy'), A.face(INSTALL + 30, 'welcome'),         // installed!
-    A.walk(T_BACK - 8, 26, P.x, 5), A.look(T_BACK - 8, 10, 0, 0.3),
-    A.point(CHIP, 'R', 0.9), A.face(CHIP, 'happy'), A.look(CHIP, 6, 0.2, 0.6), A.face(CHIP + 30, 'welcome'), A.rest(CHIP + 34), A.blink(CHIP + 44),   // the chip in the chat
-  ],
-  bubbles: [{ at: L('b9', 33) + 30, until: T_DETAIL - 14, text: CAPTIONS.b9.sub, slug: 'light' }] };
+  host: [...P9.host, A.clap(INSTALL + 2, 24)],                     // claps as Install lands
+  bubbles: P9.bubbles };

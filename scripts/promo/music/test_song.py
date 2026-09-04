@@ -29,9 +29,9 @@ class PromoTrack(unittest.TestCase):
 
     def test_grid_shape(self):
         g = self.grid
-        self.assertEqual(g["bpm"], 118)
+        self.assertEqual(g["bpm"], 112)
         self.assertEqual(g["bars"], BARS)
-        self.assertAlmostEqual(g["bar_seconds"], 240 / 118, places=4)
+        self.assertAlmostEqual(g["bar_seconds"], 240 / 112, places=4)
         self.assertEqual(len(g["beats"]), BARS * 4)
         # The 44-bar storyboard (re-planned 2026-09-03), pinned as (name, start bar): the video
         # timeline reads its cuts off this grid, so a moved boundary here is a moved cut in the video.
@@ -45,7 +45,7 @@ class PromoTrack(unittest.TestCase):
         with wave.open(self.wav) as w:
             n, sr = w.getnframes(), w.getframerate()
         self.assertEqual(sr, 44100)
-        self.assertAlmostEqual(n / sr, BARS * 240 / 118 + 2.5, delta=0.05)
+        self.assertAlmostEqual(n / sr, BARS * 240 / 112 + 2.5, delta=0.05)
         self.assertFalse(np.isnan(self.pcm).any())
         self.assertLessEqual(np.abs(self.pcm).max(), 10 ** (-1 / 20) + 1e-3)   # peak ≤ -1 dBFS
         self.assertGreater(np.abs(self.pcm).max(), 0.5)                            # not silent

@@ -193,7 +193,7 @@ def promo_track() -> Song:
     on 23) · break 24-25 (drums out) · build 26-27 (riser, snare roll) · groove2 28-32 (half-time
     snare; riser 31-32, fill on 32) · drop2 33-37 (hook, brightest) · outro 38-42 (thins out, drums
     out from 41) · end 43 (final hit, 2.5 s tail)."""
-    s = Song(118, 44, tail=2.5)
+    s = Song(112, 44, tail=2.5)      # 118 → 112 on 2026-09-04: Destin wanted a tad more time on every shot
     chords = [[57, 60, 64], [57, 60, 65], [55, 60, 64], [55, 59, 62]]     # Am F/A C/G G
     roots = [45, 41, 48, 43]
     KICK, SNR, HAT = "x...x...x...x...", "....x.......x...", "x.x.x.x.x.x.x.xo"

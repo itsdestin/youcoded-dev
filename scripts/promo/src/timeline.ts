@@ -29,7 +29,7 @@ export const BEATS: Beat[] = [
   { id: 'b3', bars: [5, 10], after: 'wipe' },           // describe a look: golden on 6, strawberry on 7, kuromi on 8
   { id: 'b4', bars: [10, 13], after: 'wipe' },          // pick your model (crème)
   { id: 'b5', bars: [13, 18], after: 'wipe' },          // files, then project view on 16 (meadow mist)
-  { id: 'b6', bars: [18, 24], after: 'wipe' },          // games with friends (halftone)
+  { id: 'b6', bars: [18, 24], after: 'wipe' },          // games with friends (golden sunbreak)
   { id: 'b7', bars: [24, 28], after: 'wipe' },          // manage your conversations (midnight)
   { id: 'b8', bars: [28, 33], after: 'wipe' },          // pick up on any device (devil's garden)
   { id: 'b9', bars: [33, 38], after: 'wipe' },          // the marketplace, on drop 2 (light)

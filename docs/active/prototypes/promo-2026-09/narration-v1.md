@@ -16,7 +16,7 @@ Edit anything here in your own words; I'll wire whatever this file says.
 | 0:18 | The theme request goes out | Describe a look. | "Want a new look? Just describe it." |
 | 0:20 | Golden Sunbreak lands, the host twirls into gold | | "Ooh. Golden hour." |
 | 0:22 | Strawberry Kitty, the host poofs into the cat | | "Or borrow one from the community." |
-| 0:24 | Kuromi Dreamer | | "There are hundreds." |
+| 0:24 | Kuromi Dreamer | | "Or make and share your own." |
 | 0:28 | The model list opens | Your model, your call. | "Pick whichever brain you like." |
 | 0:30 | Grok is picked | | "Grok today. Why not." |
 | 0:33 | The answer arrives | | "See? Any of them." |

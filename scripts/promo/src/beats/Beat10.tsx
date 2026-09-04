@@ -7,7 +7,7 @@ import { perch, windowRect, CAPTION, WINDOW } from '../layout';
 import { assertClipCovers } from '../marks';
 import { A } from '../host/engine';
 import { PRE } from '../timeline';
-import { L, LEN, type BeatModule } from './beat';
+import { L, LEN, present, inWindow, type BeatModule } from './beat';
 
 // Beat 10 (bars 38–43 + the audio tail), the close, in Golden Sunbreak: the
 // window arrives full size under the wipe and settles smaller; the wordmark,
@@ -19,6 +19,10 @@ const R = windowRect(SCALE);
 const CAP_TOP = R.y + DY + R.h + 30;
 assertClipCovers('promo-idle-golden', 0, LEN('b10'));
 const P = { x: perch(0.3, SCALE).x, y: perch(0.3, SCALE).y + DY };
+// Where it ends: standing just left of the Y of the big "YouCoded" under the window, the way
+// the film began (Destin, 2026-09-04). Inter 800 at 84 px: the word is ~394 px wide, centred
+// at 960, so the Y's left edge is ~763; the feet sit on the word's baseline.
+const Y_SPOT = { x: 763 - 24 - 120 + 22, y: CAP_TOP + 84 * 0.92 - 120 * 0.86 };
 const HOME = perch(0.3);
 const Settle: React.FC = () => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
@@ -33,13 +37,17 @@ const Beat10: React.FC = () => (
     <Caption head={CAPTIONS.link} at={L('b10', 40)} theme="golden-sunbreak" top={CAP_TOP + 104 + CAPTION.h - 14} size={36} headColor="#ffc030" />
   </AbsoluteFill>
 );
-// The host hops down with the window as it settles (the perch moves), waves, cheers
-// the final hit, and SHUTS DOWN — eyes closed, limbs tucked under — as the picture fades.
+const P10 = present([
+  { at: L('b10', 39) + 4, say: "That's me. See you in there!", face: 'happy', until: L('b10', 42) },
+], 'golden-sunbreak', P);
+// The host hops down with the window as it settles (the perch moves), waves with its
+// line, cheers the final hit, and SHUTS DOWN — eyes closed, limbs tucked under — as the picture fades.
 export const beat10: BeatModule = { id: 'b10', slug: 'golden-sunbreak', home: HOME, Component: Beat10,
   host: [
-    A.hop(PRE + 6, 26, P.x, P.y, 60),                                  // follows the window down as it settles
-    A.wave(L('b10', 39), 50), A.face(L('b10', 39), 'happy'), A.face(L('b10', 39) + 50, 'welcome'),
-    A.blink(L('b10', 41)), A.look(L('b10', 41) + 10, 10, 0.3, 0.2),
-    A.cheer(L('b10', 43), 30), A.face(L('b10', 43), 'happy'), A.face(L('b10', 43) + 34, 'welcome'),   // the final hit
-    A.shutdown(L('b10', 44) + 8),                                         // signs off under the fade
-  ] };
+    A.hop(PRE + 6, 26, P.x, P.y, 60),
+    A.wave(L('b10', 39), 50), ...P10.host,
+    A.cheer(L('b10', 43), 30), A.face(L('b10', 43), 'happy'), A.face(L('b10', 43) + 34, 'welcome'),
+    A.hop(L('b10', 43) + 40, 28, Y_SPOT.x, Y_SPOT.y, 70), A.look(L('b10', 44) + 4, 8, 0.5, 0),   // down beside the Y, a glance at it
+    A.shutdown(L('b10', 44) + 20),
+  ],
+  bubbles: P10.bubbles };

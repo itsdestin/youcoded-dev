@@ -7,7 +7,7 @@ import { perch } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
 import { A } from '../host/engine';
 import { WASH } from '../Backdrop';
-import { L, LEN, type BeatModule } from './beat';
+import { L, LEN, present, inWindow, type BeatModule } from './beat';
 import { Sfx } from './sfx';
 
 // Beat 3 (bars 5–10): describe a look. The request is sent under bar 5, the
@@ -49,22 +49,21 @@ const Beat3: React.FC = () => (
     <Sfx at={FLIP3} name="sparkle3" volume={0.35} />
   </AbsoluteFill>
 );
-// The three in-place flips take the moves that need no wipe band: twirl, poof, twirl
-// (the "jump for joy" hops are gone — Destin, 2026-09-04). Between them the host
-// REACTS to each new look: a ta-da at golden, a look around at strawberry, delight at kuromi.
+const P3 = present([
+  { at: L('b3', 5) + 8, say: 'Want a new look? Just describe it.', spot: inWindow(0.56, 0.16), point: 'R', face: 'welcome', until: FLIP1 - 30 },   // beside the request
+  { at: FLIP1 - 26, spot: P },                                                                              // back to the bar for the change
+  { at: FLIP1 + 26, say: 'Ooh. Golden hour.', face: 'happy', until: FLIP2 - 20 },
+  { at: FLIP2 + 26, say: 'Or borrow one from the community.', face: 'welcome', until: FLIP3 - 20 },
+  { at: FLIP3 + 30, say: 'Or make and share your own.', face: 'happy', until: LEN('b3') - 12 },
+], 'kuromi-dreamer', P);
+// The three in-place flips take the moves that need no wipe band: twirl, poof, twirl.
 export const beat3: BeatModule = { id: 'b3', slug: 'cotton-candy-sky', home: P, Component: Beat3,
   themes: [{ at: FLIP1, slug: 'golden-sunbreak' }, { at: FLIP2, slug: 'strawberry-kitty' }, { at: FLIP3, slug: 'kuromi-dreamer' }],
   host: [
-    A.point(L('b3', 5) + 8, 'R', 0.9), A.look(L('b3', 5) + 10, 8, 0.4, 0.4), A.face(L('b3', 5) + 8, 'curious'),   // points at the request going out
-    A.rest(FLIP1 - 22),
+    ...P3.host,
     ...A.twirl(FLIP1 - 10, 22, P.x, P.y, 'golden-sunbreak'),
-    A.tada(FLIP1 + 30, 'C'), A.face(FLIP1 + 30, 'happy'), A.face(FLIP1 + 56, 'welcome'), A.rest(FLIP1 + 60),
     ...A.vanish(FLIP2 - 8), ...A.appear(FLIP2, P.x, P.y, 'strawberry-kitty'),
-    A.look(FLIP2 + 28, 8, -0.5, 0.3), A.look(FLIP2 + 44, 8, 0.5, 0.3), A.face(FLIP2 + 28, 'curious'), A.look(FLIP2 + 58, 8, 0, 0),   // looks the new look over
     ...A.twirl(FLIP3 - 10, 22, P.x, P.y, 'kuromi-dreamer'),
-    A.face(FLIP3 + 30, 'happy'), A.cheer(FLIP3 + 30, 24), A.face(FLIP3 + 56, 'welcome'), A.blink(FLIP3 + 64),
   ],
-  bubbles: [
-    { at: FLIP1 + 26, until: FLIP2 - 16, text: CAPTIONS.b3.yours, slug: 'golden-sunbreak' },
-    { at: FLIP2 + 28, until: LEN('b3') - 20, text: CAPTIONS.b3.sub, slug: 'kuromi-dreamer' },
-  ] };
+  // the bubbles wear the costume of their moment (the twirl/poof set the costume; the cue's slug only colours the bubble)
+  bubbles: P3.bubbles.map((b) => ({ ...b, slug: b.at < FLIP1 ? 'cotton-candy-sky' : b.at < FLIP2 ? 'golden-sunbreak' : b.at < FLIP3 ? 'strawberry-kitty' : 'kuromi-dreamer' })) };

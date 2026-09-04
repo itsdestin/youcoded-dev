@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { BEATS, PRE, POST, CUT, PRELUDE, TAIL_FRAMES, sequenceFrames, transitionFrames, preFrames, startFrames, localFrame, absBar } from './timeline.ts';
-const barFrame = (b: number) => Math.round(b * (240 / 118) * 30);
+const barFrame = (b: number) => Math.round(b * (240 / 112) * 30);   // 112 BPM since 2026-09-04
 test('beats tile bars 0–44 with no gap or overlap', () => {
   assert.equal(BEATS[0].bars[0], 0); assert.equal(BEATS.at(-1)!.bars[1], 44);
   for (let i = 1; i < BEATS.length; i++) assert.equal(BEATS[i].bars[0], BEATS[i - 1].bars[1]);

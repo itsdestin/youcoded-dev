@@ -12,25 +12,25 @@ import { THEMES, type Slug } from './themes';
 // line of copy is no longer here; the host says it (Bubble.tsx).
 type Props = { text: string; at: number; slug: Slug; still?: boolean; top?: number; size?: number; accentLast?: boolean; align?: 'center' | 'left' };
 const R = windowRect();
-export const Label: React.FC<Props> = ({ text, at, slug, still = false, top = CAPTION.top + 2, size = 40, accentLast = true, align = 'center' }) => {
+export const Label: React.FC<Props> = ({ text, at, slug, still = false, top = CAPTION.top - 2, size = 46, accentLast = true, align = 'center' }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
   if (f < at) return null;
   const t = THEMES[slug];
   const bar = still ? 1 : spring({ frame: f - at, fps, config: { damping: 16, stiffness: 200 } });
   const slide = still ? 1 : spring({ frame: f - at - 4, fps, config: { damping: 18, stiffness: 120 } });
   const words = text.split(' ');
-  const shadow = t.dark ? '0 3px 18px rgba(0,0,0,.55)' : `0 2px 12px ${t.canvas}`;
+  // 2026-09-04: no accent bar ("fingernail"); the words carry a soft glow in the accent and an
+  // underline in the accent draws in under them on the beat
+  const glow = t.dark ? `0 0 18px ${t.accent}99, 0 3px 18px rgba(0,0,0,.6)` : `0 0 16px ${t.accent}55, 0 2px 10px ${t.canvas}`;
   return (
-    <div style={{ position: 'absolute', left: align === 'left' ? R.x : 0, right: align === 'left' ? undefined : 0, top, display: 'flex', alignItems: 'center', justifyContent: align === 'left' ? 'flex-start' : 'center', gap: 18, height: size * 1.15 }}>
-      <div style={{ width: 8, height: size * 1.05 * bar, borderRadius: 4, background: t.accent, boxShadow: t.dark ? `0 0 16px ${t.accent}88` : 'none' }} />
-      <div>
-        <div style={{ fontFamily: family(t), fontSize: size, fontWeight: 800, letterSpacing: '-0.02em', color: t.fg, textShadow: shadow, lineHeight: 1.15, whiteSpace: 'nowrap',
-          transform: `translateX(${interpolate(slide, [0, 1], [-24, 0])}px)`, opacity: slide }}>
-          {words.map((w, i) => (
-            <span key={i} style={{ marginRight: i < words.length - 1 ? '0.26em' : 0, color: accentLast && i === words.length - 1 && words.length > 1 ? t.accent : undefined }}>{w}</span>
-          ))}
-        </div>
+    <div style={{ position: 'absolute', left: align === 'left' ? R.x : 0, right: align === 'left' ? undefined : 0, top, display: 'flex', flexDirection: 'column', alignItems: align === 'left' ? 'flex-start' : 'center' }}>
+      <div style={{ fontFamily: family(t), fontSize: size, fontWeight: 800, letterSpacing: '-0.02em', color: t.fg, textShadow: glow, lineHeight: 1.15, whiteSpace: 'nowrap',
+        transform: `translateY(${interpolate(slide, [0, 1], [10, 0])}px)`, opacity: slide }}>
+        {words.map((w, i) => (
+          <span key={i} style={{ marginRight: i < words.length - 1 ? '0.26em' : 0, color: accentLast && i === words.length - 1 && words.length > 1 ? t.accent : undefined }}>{w}</span>
+        ))}
       </div>
+      <div style={{ height: 4, borderRadius: 2, marginTop: 4, background: t.accent, width: `${Math.round(bar * 100)}%`, alignSelf: align === 'left' ? 'flex-start' : 'center', maxWidth: text.length * size * 0.5, boxShadow: t.dark ? `0 0 12px ${t.accent}aa` : 'none' }} />
     </div>
   );
 };

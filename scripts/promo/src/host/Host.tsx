@@ -14,6 +14,11 @@ const Rig: React.FC<{ s: HostState; style: FaceStyle; scope: string }> = ({ s, s
   // Golden Sunbreak's rig shares the default face geometry, so the new faces fit it too.
   const svg = DEFAULT_RIG_SLUGS.includes(s.costume) ? withFaces(rigFor(s.costume), style) : rigFor(s.costume);
   const blink = s.blink > 0.5;
+  // A theme's own rig has only the contract's five faces; the warm set's happy/smug/shutdown (and
+  // a rig may skip dizzy) do not exist there, and a face the rig lacks drew NOTHING — Kuromi went
+  // blank for a few frames in the draft (Destin, 2026-09-04). Fall back to a face the rig has.
+  const has = (f: Face) => svg.includes(`id="rig-face-${f}"`);
+  const face: Face = has(s.face) ? s.face : s.face === 'dizzy' ? (has('shocked') ? 'shocked' : 'welcome') : s.face === 'shutdown' ? (has('idle') ? 'idle' : 'welcome') : 'welcome';
   return (
     <div className={scope} style={{ width: '100%', height: '100%',
       ['--rig-accent' as string]: t.accent, ['--rig-on-accent' as string]: inkFor(s.costume), ['--rig-line' as string]: t.fg }}>
@@ -23,10 +28,13 @@ const Rig: React.FC<{ s: HostState; style: FaceStyle; scope: string }> = ({ s, s
 .${scope} #rig-arm-right { transform-box: view-box; transform-origin: ${PIVOT['rig-arm-right']}; transform: rotate(${s.armR.toFixed(2)}deg); }
 .${scope} #rig-leg-left { transform-box: view-box; transform-origin: ${PIVOT['rig-leg-left']}; transform: rotate(${s.legL.toFixed(2)}deg); }
 .${scope} #rig-leg-right { transform-box: view-box; transform-origin: ${PIVOT['rig-leg-right']}; transform: rotate(${s.legR.toFixed(2)}deg); }
-.${scope} #rig-hand-peek-left, .${scope} #rig-hand-peek-right { display: none !important; }
+.${scope} #rig-hand-peek-left { display: ${s.peekHand === 'L' ? 'inline' : 'none'} !important; }
+.${scope} #rig-hand-peek-right { display: ${s.peekHand === 'R' ? 'inline' : 'none'} !important; }
+.${scope} #rig-arm-left { ${s.peekHand === 'L' ? 'display: none !important;' : ''} }
+.${scope} #rig-arm-right { ${s.peekHand === 'R' ? 'display: none !important;' : ''} }
 .${scope} .pupil { transform: translate(${s.lookX.toFixed(2)}px, ${s.lookY.toFixed(2)}px); }
 .${scope} #rig-face-blink { display: ${blink ? 'inline' : 'none'} !important; }
-${FACES.map((n) => `.${scope} #rig-face-${n} { display: ${n === s.face && !blink ? 'inline' : 'none'} !important; }`).join('\n')}
+${FACES.map((n) => `.${scope} #rig-face-${n} { display: ${n === face && !blink ? 'inline' : 'none'} !important; }`).join('\n')}
 `}</style>
       <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: svg }} />
     </div>

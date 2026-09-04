@@ -2,7 +2,7 @@ import React from 'react';
 import { IntroVisuals, introActions, IMPACT } from '../intro/Intro';
 import { perch } from '../layout';
 import { assertClipCovers } from '../marks';
-import { L, LEN, type BeatModule } from './beat';
+import { L, LEN, present, inWindow, type BeatModule } from './beat';
 import { barFrame } from '../grid';
 import { PRELUDE } from '../timeline';
 import { CAPTIONS } from '../captions';
@@ -17,6 +17,10 @@ import { Label } from '../Label';
 if (IMPACT !== PRELUDE) throw new Error(`Intro IMPACT ${IMPACT} ≠ timeline PRELUDE ${PRELUDE}`);
 assertClipCovers('promo-idle-cotton', 0, LEN('b1') - L('b1', 1));
 // Once the window has settled, the label takes over from the faded wordmark.
+const P1 = present([
+  { at: IMPACT + barFrame(1) + 32, say: "Hi! I'm your assistant.", face: 'happy' },
+  { at: IMPACT + barFrame(1) + 70, say: 'Let me show you around.', point: 'down', face: 'welcome', until: LEN('b1') - 6 },
+], 'cotton-candy-sky', perch(0.3));
 const Beat1: React.FC = () => (
   <AbsoluteFill>
     <IntroVisuals />
@@ -24,7 +28,7 @@ const Beat1: React.FC = () => (
   </AbsoluteFill>
 );
 export const beat1: BeatModule = { id: 'b1', slug: 'cotton-candy-sky', home: perch(0.3), Component: Beat1, arrival: 'none',
-  // after the hop onto the title bar (lands ~IMPACT + bar 1 + 18): a ta-da at the window, then the tagline
-  host: [...introActions(), A.tada(IMPACT + barFrame(1) + 26, 'C'), A.face(IMPACT + barFrame(1) + 26, 'happy'), A.face(IMPACT + barFrame(1) + 52, 'welcome'), A.rest(IMPACT + barFrame(1) + 60)],
+  // on the title bar (lands ~IMPACT + bar 1 + 24): "Hi!" with a wave, then "Let me show you around" pointing at the window
+  host: [...introActions(), A.wave(IMPACT + barFrame(1) + 30, 36), ...P1.host],
   themes: [{ at: IMPACT, slug: 'cotton-candy-sky' }],
-  bubbles: [{ at: IMPACT + barFrame(1) + 30, until: LEN('b1') - 12, text: CAPTIONS.b1.sub, slug: 'cotton-candy-sky' }] };
+  bubbles: P1.bubbles };

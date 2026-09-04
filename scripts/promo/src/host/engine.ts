@@ -24,9 +24,10 @@ export type HostState = {
   poof: number | null;            // frame a costume poof started, or null
   spin: number;                   // turn about the VERTICAL axis, degrees (the twirl); 0 = facing us
   poofScale: number;              // how big the next poof draws (1 = the host's size; the teleport uses 1.8)
+  peekHand: 'L' | 'R' | null;     // the rig's edge-gripping hand shown instead of that arm (the corner peek)
 };
 export const REST: HostState = { x: 0, y: 0, size: 120, rot: 0, sx: 1, sy: 1, armL: 0, armR: 0, legL: 0, legR: 0, face: 'welcome', blink: 0,
-  lookX: 0, lookY: 0, shadow: 1, air: 0, costume: 'midnight', hidden: false, alpha: 1, poof: null, spin: 0, poofScale: 1 };
+  lookX: 0, lookY: 0, shadow: 1, air: 0, costume: 'midnight', hidden: false, alpha: 1, poof: null, spin: 0, poofScale: 1, peekHand: null };
 
 export type Action = { at: number; dur: number; run: (t: number, s: HostState, start: HostState, f: number) => void; name?: string };
 /** Progress 0..1 of an action at frame f, clamped. */
@@ -183,18 +184,27 @@ export const A = {
     s.armR = L(start.armR, -150, E.outBack(Math.min(1, t * 4))) + Math.sin(t * dur / 30 * Math.PI * 2 * 2.2) * 16 * inOut;
     if (t >= 1) s.armR = start.armR;
   } }),
-  /** Peek in from the LEFT edge of the frame: the body slides from fully off to `reveal` of its width showing. */
-  peekIn: (at: number, dur: number, y: number, size: number, reveal = 0.55): Action => ({ at, dur, name: 'peekIn', run: (t, s) => {
+  /**
+   * Peek in from the LEFT edge of the frame, from wherever it is to `reveal` of its
+   * width showing, leaning `lean` degrees toward the centre. The rig's edge-gripping
+   * hand shows in place of the left arm, the right arm hangs behind the edge, and the
+   * legs are tucked back out of sight. Call it twice for a two-step peek (a first
+   * glance, then leaning fully in — Destin, 2026-09-04).
+   */
+  peekIn: (at: number, dur: number, y: number, size: number, reveal = 0.55, lean = 12): Action => ({ at, dur, name: 'peekIn', run: (t, s, start) => {
+    const fromX = start.hidden ? -size : start.x;
     s.size = size; s.y = y; s.hidden = false;
-    s.x = L(-size, -size * (1 - reveal), E.outCubic(t));
-    s.rot = L(0, 12, E.outCubic(t));                   // leans IN toward the centre, like looking round a corner (−14 leaned back toward the edge — Destin, 2026-09-04)
-    s.armL = -150; s.armR = 0; s.legL = 0; s.legR = 0;
+    s.x = L(fromX, -size * (1 - reveal), E.outCubic(t));
+    s.rot = L(start.hidden ? 0 : start.rot, lean, E.outCubic(t));
+    s.peekHand = 'L'; s.armR = 30; s.legL = -55; s.legR = -55;   // hand on the edge; the far arm and the legs behind it
     s.shadow = 0;
   } }),
   /** Step fully into frame from a peek, onto the ground at y. */
   stepIn: (at: number, dur: number, x: number, y: number): Action => ({ at, dur, name: 'stepIn', run: (t, s, start) => {
     const e = E.inOutQuad(t);
-    s.x = L(start.x, x, e); s.y = L(start.y, y, e); s.rot = L(start.rot, 0, e); s.armL = L(start.armL, 0, e); s.shadow = e;
+    s.x = L(start.x, x, e); s.y = L(start.y, y, e); s.rot = L(start.rot, 0, e); s.shadow = e;
+    s.peekHand = t > 0.15 ? null : 'L';                 // lets go of the edge as it steps
+    s.armL = L(-40, 0, e); s.armR = L(start.armR, 0, e); s.legL = L(start.legL, 0, e); s.legR = L(start.legR, 0, e);
   } }),
   // ---- presenting gestures (Destin, 2026-09-04: "the mascot kinda just moves around for no reason
   // … I really want it to feel like the mascot is presenting the app … more movement in the

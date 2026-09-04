@@ -1,6 +1,6 @@
 # Promo footage — review
 
-Filmed 2026-09-03 from `/home/destin/youcoded-dev/worktrees/promo-fakes`. One poster (the last frame) per scene; the clips and marks are in `scripts/promo/public/footage/`.
+Filmed 2026-09-04 from `/home/destin/youcoded-dev/worktrees/promo-fakes`. One poster (the last frame) per scene; the clips and marks are in `scripts/promo/public/footage/`.
 
 ## promo-idle-cotton
 
