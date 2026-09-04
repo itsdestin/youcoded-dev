@@ -1,67 +1,45 @@
 import React from 'react';
-import { AbsoluteFill, Sequence, OffthreadVideo, staticFile, useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion';
+import { AbsoluteFill, Sequence } from 'remotion';
 import { Footage } from '../Footage';
-import { Phone } from '../Phone';
 import { Caption } from '../Caption';
 import { CAPTIONS } from '../captions';
-import { PHONE, MASCOT, perch } from '../layout';
-import { markFrame, clipFrames, assertClipCovers } from '../marks';
+import { perch, windowRect } from '../layout';
+import { markFrame, assertClipCovers } from '../marks';
+import { A } from '../host/engine';
 import { L, LEN, type BeatModule } from './beat';
 import { Sfx } from './sfx';
 
-// Beat 6 (bars 18–22): Remote Access on the laptop, the phone slides in on bar
-// 19 and carries the same conversation, then on bar 21 the laptop asks to take
-// over. Devil's Garden.
-const T1 = L('b6', 19);                          // the phone slides in
-const T2 = L('b6', 21);                          // cut to the takeover recording
-const END = LEN('b6');
-// 'resumed' is an in-page observer that resolves when the "take over here"
-// dialog has left the DOM — the frame the click has visibly landed. The shot
-// holds AFTER_RESUME frames of the app's answer after it.
-const AFTER_RESUME = 2;                          // end on the click landing — the Resume list that follows is an unrelated dialog
-const END_AT = markFrame('promo-takeover', 'resumed', 'end') + AFTER_RESUME;
-const LEAD = 30;                                 // the takeover shot opens 1 s before its action
-// Shot A opens on the clip's first frame: the CHAT, then Settings — the review
-// of draft 7 could not tell the phone carried the same conversation when the
-// laptop only ever showed Settings. Shot A2 jumps to the Remote Access popup
-// opening as the phone slides in (the eye is on the phone), skipping most of
-// the Settings list, which read as setup chores.
-const A_FROM = 0;
-const A2_FROM = markFrame('promo-remote', 'popup', 'start', -4);
-const B_FROM = END_AT - (END - T2);
-// The phone runs to the end of the beat: it opens LEAD frames before the reply,
-// or as late as the clip can still cover, whichever is earlier.
-const PHONE_FROM = Math.min(markFrame('promo-phone', 'reply', 'start', -LEAD), clipFrames('promo-phone') - (END - T1));
+// Beat 6 (bars 18–24): games with friends, in Halftone Dimension. The friends
+// lobby and a Challenge (bar 18), Connect 4 against Jake with moves both ways
+// (19–20), one chess move (21), then the Flappy flight on the hook's last two
+// bars (22–23), where the host dives INTO the game and becomes the bird.
+const T_C4 = L('b6', 19), T_CHESS = L('b6', 21), T_FLY = L('b6', 22), END = LEN('b6');
+const LOBBY_FROM = markFrame('promo-games-lobby', 'challenge', 'end', 8) - T_C4;
+const C4_FROM = markFrame('promo-connect4', 'drop1', 'start', -12);
+const CHESS_FROM = markFrame('promo-chess', 'move', 'start', -24);
+const FLY_FROM = markFrame('promo-flappy', 'fly', 'start', -8);
+assertClipCovers('promo-games-lobby', LOBBY_FROM, T_C4);
+assertClipCovers('promo-connect4', C4_FROM, T_CHESS - T_C4);
+assertClipCovers('promo-chess', CHESS_FROM, T_FLY - T_CHESS);
+assertClipCovers('promo-flappy', FLY_FROM, END - T_FLY);
 const P = perch(0.3);
-const ON_PHONE = { x: PHONE.x + 40, y: PHONE.y - 60, size: 96 };
-assertClipCovers('promo-remote', A_FROM, T1);
-assertClipCovers('promo-remote', A2_FROM, T2 - T1);
-assertClipCovers('promo-takeover', B_FROM, END - T2);
-assertClipCovers('promo-phone', PHONE_FROM, END - T1);
-
-const PhoneIn: React.FC = () => {
-  const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const s = spring({ frame: f, fps, config: { damping: 17, stiffness: 110, mass: 1 } });
-  return (
-    <Phone x={interpolate(s, [0, 1], [1980, PHONE.x])}>
-      <OffthreadVideo src={staticFile('footage/promo-phone.webm')} trimBefore={PHONE_FROM} muted style={{ width: PHONE.w, height: PHONE.h }} />
-    </Phone>
-  );
-};
+const R = windowRect();
+const BIRD = { x: R.x + R.w * 0.62 - 60, y: R.y + R.h * 0.5 - 60 };
 const Beat6: React.FC = () => (
   <AbsoluteFill>
-    <Sequence durationInFrames={T1}><Footage file="promo-remote" from={A_FROM} /></Sequence>
-    <Sequence from={T1} durationInFrames={T2 - T1}><Footage file="promo-remote" from={A2_FROM} /></Sequence>
-    <Sequence from={T2}><Footage file="promo-takeover" from={B_FROM} /></Sequence>
-    <Sequence from={T1}><PhoneIn /></Sequence>
-    <Caption head={CAPTIONS.b6.head} sub={CAPTIONS.b6.sub} at={L('b6', 18) + 4} subAt={T1 + 8} theme="devils-garden" />
-    <Sfx at={T1 + 8} name="pop" volume={0.4} />
-    <Sfx at={T2 + 10} name="pop" volume={0.4} />
+    <Sequence durationInFrames={T_C4}><Footage file="promo-games-lobby" from={LOBBY_FROM} /></Sequence>
+    <Sequence from={T_C4} durationInFrames={T_CHESS - T_C4}><Footage file="promo-connect4" from={C4_FROM} /></Sequence>
+    <Sequence from={T_CHESS} durationInFrames={T_FLY - T_CHESS}><Footage file="promo-chess" from={CHESS_FROM} /></Sequence>
+    <Sequence from={T_FLY}><Footage file="promo-flappy" from={FLY_FROM} pushIn={0.03} /></Sequence>
+    <Caption head={CAPTIONS.b6.head} sub={CAPTIONS.b6.sub} at={L('b6', 18) + 4} theme="halftone-dimension" />
+    <Sfx at={T_FLY + 10} name="poof" volume={0.5} />
   </AbsoluteFill>
 );
-export const beat6: BeatModule = { id: 'b6', slug: 'devils-garden', home: P, Component: Beat6,
-  cues: [
-    { at: T1 + 8, ...ON_PHONE, pose: 'curious', hop: true },                              // hops onto the phone
-    { at: T2 + 10, x: P.x, y: P.y, size: MASCOT.size, pose: 'idle', hop: true },          // back to the laptop
+export const beat6: BeatModule = { id: 'b6', slug: 'halftone-dimension', home: P, Component: Beat6,
+  host: [
+    A.pose(T_C4, 12, { armL: 150, armR: -150 }), A.face(T_C4, 'welcome'),                     // cheers the challenge
+    A.pose(T_C4 + 30, 14, { armL: 0, armR: 0 }), A.look(T_C4 + 30, 10, 0.5, 0.4), A.face(T_C4 + 40, 'curious'),
+    A.look(T_FLY - 30, 8, 0.5, 0.6), A.face(T_FLY - 30, 'shocked'),                              // eyes the game
+    A.hop(T_FLY - 14, 26, BIRD.x, BIRD.y, 120), A.to(T_FLY, 10, 'size', 0), A.set(T_FLY + 10, { poof: T_FLY + 10 }), A.hide(T_FLY + 12),
+    A.set(T_FLY + 14, { x: P.x, y: -260, size: 120 }),                                         // (unseen) parks above the frame for the next arrival
   ] };

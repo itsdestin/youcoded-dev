@@ -20,7 +20,7 @@ const { fontFamily } = loadInter();
 // window rises under it while the wordmark hands off to the caption band.
 //
 // Every number here is a frame at 30 fps. IMPACT is the music's bar 0.
-export const IMPACT = 236;
+export const IMPACT = 236;                       // must equal timeline.ts PRELUDE
 export const SIZE = 140;                        // the host is bigger here than on a title bar
 const WORD = { size: 112, cx: 960, baseline: 578 };
 // Inter 800 at 112 px: "YouCoded" measures ~525 px, so its left edge (the Y) is at ~697.
@@ -85,6 +85,7 @@ const Burst: React.FC = () => {
   const t = THEMES['cotton-candy-sky'];
   const p = interpolate(f - IMPACT, [0, 16], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   if (f < IMPACT) return <AbsoluteFill style={{ background: '#000' }} />;
+  if (p >= 1) return null;                          // the film's own backdrop takes over once the burst has covered the frame
   const r = 60 + p * 2300;
   const cx = STAND_X + SIZE + 24, cy = WORD.baseline - 60;
   const mask = `radial-gradient(circle at ${cx}px ${cy}px, #000 ${Math.max(0, r - 220)}px, transparent ${r}px)`;
@@ -119,12 +120,18 @@ const Rise: React.FC<{ file: string }> = ({ file }) => {
 };
 
 export const INTRO_FRAMES = IMPACT + barFrame(2) + 40;
-export const Intro: React.FC<{ faceStyle?: FaceStyle; windowFile?: string }> = ({ faceStyle = 'classic', windowFile = 'promo-idle-cotton' }) => (
-  <AbsoluteFill style={{ background: '#000' }}>
-    <Sequence from={IMPACT}><Audio src={staticFile('promo.wav')} /></Sequence>
+/** Everything the intro draws except the host and the music: black, the burst, the window rising, the wordmark, the sounds. */
+export const IntroVisuals: React.FC<{ windowFile?: string }> = ({ windowFile = 'promo-idle-cotton' }) => (
+  <AbsoluteFill>
     <Burst />
     <Sequence from={IMPACT + barFrame(1)}><Rise file={windowFile} /></Sequence>
     <Wordmark />
+  </AbsoluteFill>
+);
+export const Intro: React.FC<{ faceStyle?: FaceStyle; windowFile?: string }> = ({ faceStyle = 'classic', windowFile = 'promo-idle-cotton' }) => (
+  <AbsoluteFill style={{ background: '#000' }}>
+    <Sequence from={IMPACT}><Audio src={staticFile('promo.wav')} /></Sequence>
+    <IntroVisuals windowFile={windowFile} />
     <Host actions={introActions()} base={{ ...REST, hidden: true, costume: 'midnight' }} faceStyle={faceStyle} />
     {/* footsteps and the punch */}
     {[112, 124, 136, 148, 160, 172, 184].map((at) => <Sfx key={at} at={at} name="step" volume={0.35} />)}

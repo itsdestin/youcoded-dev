@@ -30,8 +30,10 @@ export const WASH = 8;   // frames a theme change takes to sweep the backdrop
  * circle over WASH frames — the same moment the window's wipe or the app's
  * own theme paint happens, so the change reads as one event.
  */
-export const Backdrop: React.FC<{ themes: ThemeCue[]; total: number }> = ({ themes: raw, total }) => {
+export const Backdrop: React.FC<{ themes: ThemeCue[]; total: number; from?: number }> = ({ themes: raw, total, from = 0 }) => {
   const f = useCurrentFrame();
+  // black until `from` (the film's silent prelude; the intro's own burst paints the first colour)
+  if (f < from) return <AbsoluteFill style={{ background: '#000' }} />;
   // Only CHANGES of theme count: two Midnight beats in a row must not wash
   // (draft 6 drew a hard-edged circle between beats 1 and 2 for exactly that).
   const themes = [...raw].sort((a, b) => a.at - b.at).filter((c, k, all) => k === 0 || c.slug !== all[k - 1].slug);

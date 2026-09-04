@@ -2,57 +2,57 @@
 //
 // A TransitionSeries transition OVERLAPS its neighbours by its length, so each
 // sequence is padded by exactly the transition around it — pad by anything
-// else and every later beat drifts (the first draft padded a 2-frame fade by
-// 6 and landed the theme drop 4 frames late).
+// else and every later beat drifts.
 //
-// Round 6 (the re-cut): a transition that STARTS on the downbeat reads late,
-// because the eye registers the new shot only once the wipe is mostly across.
-// So the wipe now straddles the beat: it starts PRE frames BEFORE the downbeat
-// and ends POST frames after, and the incoming shot has the majority of the
-// frame exactly on the beat. The price is that every beat except the first
-// begins PRE frames before its own downbeat — beat components must place
-// in-beat anchors at `local(bar)` (below), never at barFrame(bar) - barFrame(start).
+// The wipe straddles the beat: it starts PRE frames BEFORE the downbeat and
+// ends POST frames after, so the incoming shot owns most of the frame exactly
+// on the beat. Every beat except the first therefore begins PRE frames before
+// its own downbeat; in-beat anchors go through localFrame(), never
+// barFrame(bar) - barFrame(start).
+//
+// Round three: the film opens with a SILENT PRELUDE — black, the wordmark, the
+// host walking in — and the music starts on the frame the host punches the
+// wordmark. That frame is bar 0. PRELUDE is how many frames come before it;
+// the first beat carries them, and every absolute bar sits PRELUDE later.
+export const PRELUDE = 236;                             // the punch; see intro/Intro.tsx IMPACT
 export const PRE = 6;                                   // frames of the wipe before the downbeat (200 ms)
 export const POST = 4;                                  // …and after it (133 ms); a 333 ms wipe in all
 export const CUT = PRE + POST;
-// The music is 71.65 s but the bar grid only runs to bar 34 = frame 2075
-// (69.17 s). TAIL_FRAMES holds the LAST beat open for the rest of the audio;
-// no transition follows it, so nothing else on the timeline moves.
+// The music runs 2.5 s past bar 44; TAIL_FRAMES holds the LAST beat open for it.
 export const TAIL_FRAMES = 74;
-export type Transition = 'wipe' | 'cut' | 'none';   // 'cut': same overlap maths, no visible wipe (beat 1 → 2 is the same window)
-export type BeatId = 'b1' | 'b2' | 'b3' | 'b4' | 'b5' | 'b6' | 'b7' | 'b8';
+export type Transition = 'wipe' | 'cut' | 'none';
+export type BeatId = 'b1' | 'b2' | 'b3' | 'b4' | 'b5' | 'b6' | 'b7' | 'b8' | 'b9' | 'b10';
 export type Beat = { id: BeatId; bars: [number, number]; after: Transition };
 export const BEATS: Beat[] = [
-  { id: 'b1', bars: [0, 2], after: 'cut' },             // cold open (midnight) → the same window: a hard cut, the host bounces on the beat
-  { id: 'b2', bars: [2, 5], after: 'wipe' },            // one tap (midnight)
-  { id: 'b3', bars: [5, 8], after: 'wipe' },            // the spreadsheet (meadow mist)
-  { id: 'b4', bars: [8, 14], after: 'wipe' },           // games with friends (halftone dimension)
-  { id: 'b5', bars: [14, 18], after: 'wipe' },          // manage your conversations (kuromi dreamer)
-  { id: 'b6', bars: [18, 22], after: 'wipe' },          // laptop → phone → take over (devil's garden)
-  { id: 'b7', bars: [22, 29], after: 'wipe' },          // the theme request under bar 22, flips on 23 / 25 / 27
-  { id: 'b8', bars: [29, 34], after: 'none' },          // close (golden sunbreak)
+  { id: 'b1', bars: [0, 2], after: 'cut' },             // the punch intro (prelude + bars 0–1); cotton candy from the hit
+  { id: 'b2', bars: [2, 5], after: 'wipe' },            // just ask (cotton candy)
+  { id: 'b3', bars: [5, 10], after: 'wipe' },           // describe a look: golden on 6, strawberry on 7, kuromi on 8
+  { id: 'b4', bars: [10, 13], after: 'wipe' },          // pick your model (crème)
+  { id: 'b5', bars: [13, 18], after: 'wipe' },          // files, then project view on 16 (meadow mist)
+  { id: 'b6', bars: [18, 24], after: 'wipe' },          // games with friends (halftone)
+  { id: 'b7', bars: [24, 28], after: 'wipe' },          // manage your conversations (midnight)
+  { id: 'b8', bars: [28, 33], after: 'wipe' },          // pick up on any device (devil's garden)
+  { id: 'b9', bars: [33, 38], after: 'wipe' },          // the marketplace, on drop 2 (light)
+  { id: 'b10', bars: [38, 44], after: 'none' },         // close (golden sunbreak)
 ];
 export const isFirst = (b: Beat) => b === BEATS[0];
 export const isLast = (b: Beat) => b === BEATS.at(-1);
-/** Frames a beat's sequence starts before its own downbeat. */
-export const preFrames = (b: Beat) => (isFirst(b) ? 0 : PRE);
+/** Frames a beat's sequence runs before its own first downbeat (the prelude for the first beat, the wipe's lead for the rest). */
+export const preFrames = (b: Beat) => (isFirst(b) ? PRELUDE : PRE);
 export const postFrames = (b: Beat) => (b.after === 'none' ? 0 : POST);
 export const transitionFrames = (b: Beat) => (b.after === 'none' ? 0 : CUT);
 export const tailFrames = (b: Beat) => (isLast(b) ? TAIL_FRAMES : 0);
 export const sequenceFrames = (b: Beat, barFrame: (bar: number) => number) =>
   barFrame(b.bars[1]) - barFrame(b.bars[0]) + preFrames(b) + postFrames(b) + tailFrames(b);
-/** First frame of each beat's SEQUENCE in the finished composition (its downbeat is preFrames later). */
+/** First frame of each beat's SEQUENCE in the finished composition. */
 export function startFrames(barFrame: (bar: number) => number): number[] {
   let t = 0;
   return BEATS.map((b) => { const s = t; t += sequenceFrames(b, barFrame) - transitionFrames(b); return s; });
 }
-/**
- * The LOCAL frame (inside the beat's own sequence) of an absolute bar. This is
- * the only correct way to anchor anything inside a beat: it is the difference
- * of two ABSOLUTE bar frames (barFrame rounds, so a relative bar can land a
- * frame off) plus the frames the sequence runs before its downbeat.
- */
+/** The LOCAL frame (inside the beat's own sequence) of an absolute bar. */
 export const localFrame = (b: Beat, bar: number, barFrame: (bar: number) => number) =>
   barFrame(bar) - barFrame(b.bars[0]) + preFrames(b);
-/** The beat's own length in frames — what its shots must cover. */
+/** The beat's full length in frames — what its shots must cover. */
 export const beatFrames = (b: Beat, barFrame: (bar: number) => number) => sequenceFrames(b, barFrame);
+/** Absolute frame of a bar's downbeat in the finished film. */
+export const absBar = (bar: number, barFrame: (bar: number) => number) => PRELUDE + barFrame(bar);

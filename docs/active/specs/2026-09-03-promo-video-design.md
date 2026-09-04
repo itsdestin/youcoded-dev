@@ -45,49 +45,52 @@ the same rig and the same fixtures.
 
 ## Storyboard
 
-Times are bar boundaries of the music (118 BPM, one bar = 2.03 s) — see "Music" below.
-Every beat is one or more recorded shots plus Remotion overlays. "Caption" is the
-headline and the sub-line; the mascot column says what the host does.
+Round three (2026-09-04). The film opens with a silent prelude — black, a white
+"YouCoded", the host walking in from the left edge and punching the wordmark — and the
+music starts on the hit, which is bar 0. Times are bar boundaries of the music (118 BPM,
+one bar = 2.03 s), 44 bars. "Caption" is the headline and the sub-line; the mascot column
+says what the host does. The page `docs/active/prototypes/promo-2026-09/storyboard-v3.html`
+is the illustrated version of this table and the record of Destin's sign-off.
 
 | # | Bars | Theme | On screen | Caption | Mascot |
 |---|---|---|---|---|---|
-| 1 | 0–2 | Midnight | Dark backdrop. Wordmark. The app window rises into frame on bar 1. | **YouCoded** / Useful. Fun. Yours. | Peeks up over the bottom edge, looks around, hops onto the window's title bar |
-| 2 | 2–5 | Midnight | Empty new session. Cursor taps the **Briefing** quick chip on the downbeat, the prompt fills, Enter, tool cards tick past, the brief lands (the clip runs at 1.6×). | **Just ask.** / Type what you need. It pulls your notes and gets to work. | Sits on the title bar, watching |
-| 3 | 5–8 | Meadow Mist | Attach `Q3-sales.xlsx`, type "sort by amount and add a totals row", then on bar 7 the Session Files panel shows the changed sheet. | **Your files, beside the chat.** / Attach a spreadsheet. Ask. Watch it change. | Hops over to peer at the sheet (curious) |
-| 4 | 8–14 | Halftone Dimension | Bar 8: the Games friends lobby, a friend online, **Challenge**. Bars 9–10: Connect 4, pieces dropped both ways. Bar 11: a chess move. Bars 12–13: the Flappy bird flies through pipes while the chat keeps working behind it. | **Play while it works.** / Chess and Connect 4 with friends. Flappy on your own. | Cheers at the challenge; on bar 12 dives INTO the window and becomes the bird (no host on screen during the flight) |
-| 5 | 14–18 | Cotton Candy Sky | Bars 14–15: All Sessions → Resume; the Resume browser with dates, tags and notes; a search narrows it. Bar 16: the Organize sheet — a tag and a note go on a conversation. Bar 17: a pill on the session strip is dragged into order. | **Every conversation, findable.** / Search, tag, note, drag into order. | Pops back out of the window onto the title bar; follows the pill along the strip |
-| 6 | 18–22 | Devil's Garden | Settings → Remote Access popup (QR + link). Bar 19: a phone frame slides in, the same conversation continues there. Bar 21: the laptop shows "This session is active on Pixel 9 — take over here?", cursor hits **Take over**. | **Start on your laptop. Finish on your phone.** / Same conversation, picked up where you left it. | Hops from the laptop onto the phone and back |
-| 7 | 22–29 | Midnight → Golden Sunbreak → Strawberry Kitty → Kuromi Dreamer | Bar 22: "build me a theme with the vibe of outdoor anime art" is sent, the reply lands. Bar 23 (the drop): the whole app becomes Golden Sunbreak. Bar 25: Strawberry Kitty. Bar 27: Kuromi Dreamer. The backdrop washes with each. | **Describe a look. It's yours.** / Or pick one from the community. (the sub-line arrives with the second look) | Shocked, then a new costume with each flip (welcome, cheer, welcome) |
-| 8 | 29–33 + tail | Golden Sunbreak | The window settles smaller. Wordmark line, platforms, link. | **Free. Open source.** / Windows · Mac · Linux · Android · github.com/itsdestin/youcoded | Waves, then hops out of the top of frame on bar 32 |
+| 1 | prelude + 0–2 | black → Cotton Candy Sky | Black, silent, "YouCoded" in white. The host peeks in over the left edge, looks around, walks across to stand left of the Y, looks at it, punches. The screen bursts into colour from the fist, "Assistant" rolls out of the wordmark, the window rises on bar 1. | **YouCoded Assistant** / Useful. Fun. Yours. | Peek, walk, punch, costume change in the burst, hops onto the title bar |
+| 2 | 2–5 | Cotton Candy Sky | A request is typed and sent, the assistant pulls the notes, the brief lands (1.6×). | **Just ask.** / Type what you need. It pulls your notes and gets to work. | Watches the reply |
+| 3 | 5–10 | Cotton Candy → Golden Sunbreak (6), Strawberry Kitty (7), Kuromi Dreamer (8) | "build me a theme with the vibe of outdoor anime art" is sent under bar 5; the app turns golden on the drop, two community looks follow one bar apart. | **Describe a look.** / It's yours. · then: Or pick one from the community. | Shocked and a jump for joy with each look, a new costume each time |
+| 4 | 10–13 | Crème | The status-bar model chip, the popup's favourites (Claude, DeepSeek, Grok, GPT), Grok picked, the chip changes, a question, Grok answers (1.35×). | **Your model, your call.** / Claude, a cloud model, or one running on your machine. | Peers at the popup |
+| 5 | 13–18 | Meadow Mist | Attach the spreadsheet, ask for the sort and the totals row; the sorted sheet on bar 15; on 16 project view: Econ 201's hero and files, one click to Context. | **Your files, beside the chat.** / Attach a spreadsheet. Ask. Watch it change. · then: Every file, chat and note lives in its project. | Hops over to peer at the sheet, back for the project |
+| 6 | 18–24 | Halftone Dimension | Friends lobby and a Challenge; Connect 4 with moves both ways; a chess move; the Flappy flight on 22–23. | **Play while it works.** / Chess and Connect 4 with friends. Flappy on your own. | Cheers the challenge; dives into the game and becomes the bird |
+| 7 | 24–28 | Midnight | All Sessions → Resume; "econ" narrows the list; a note in the Organize sheet; "plan my week" dragged into place. | **Every conversation, findable.** / Search, tag, note, drag into order. | Follows the pill along the strip |
+| 8 | 28–33 | Devil's Garden | The chat on the laptop; the phone slides in with its session list, taps the session, the PHONE asks "active on Desktop — take over here?", Take over, the chat loads; on 32 the phone's project files show the same spreadsheet. | **Pick up on any device.** / Chats and project files sync across all your devices. | Hops onto the phone; cheers the files |
+| 9 | 33–38 | Light | The marketplace opens on drop 2; the Remember card and its detail page; Install; back in the chat with the new Remember chip. | **Add what you need.** / Plugins from the WeCoded marketplace. One click to install. | Wow at the marketplace; cheers the install |
+| 10 | 38–43 + tail | Golden Sunbreak | The window settles smaller; the wordmark, the platforms line, the link; a fade to black under the tail. | **YouCoded** · **Free. Open source.** / Windows · Mac · Linux · Android · github.com/itsdestin/youcoded | Waves, cheers on the final hit, stays to the fade |
 
-Transitions: the hop-and-wipe above, on every beat boundary. Cuts inside a beat are
-straight cuts on a downbeat. Each beat may hold a gentle push-in (2–3 %) on the region
-that changed.
+Transitions: the host hops across every beat boundary, landing on the downbeat in the
+new costume, while the window swaps under it with a slanted wipe in the incoming theme's
+accent. Cuts inside a beat are straight cuts on a downbeat.
 
 ## Music
 
-**Arcade synthwave** — Destin's pick from two sketches, 2026-09-03 ("a BANGER"). 118 BPM,
-A minor, chiptune pulse arps and a lead hook on top of a four-on-the-floor kick, a saw
-bass and a supersaw pad that pump with every kick. Rendered by `scripts/promo/music/song.py`;
-`promo_track()` is the approved material arranged to the storyboard:
+**Arcade synthwave** — Destin's pick from two sketches, 2026-09-03. 118 BPM, A minor;
+`scripts/promo/music/song.py` `promo_track()`, 44 bars, starting from silence on the punch:
 
-| Bars | Time | Section | What the video does there |
-|---|---|---|---|
-| 0–1 | 0.0–4.1 | Intro: arp + pad, hats, riser | Beat 1, the mascot peeks in; the window rises on the riser |
-| 2–4 | 4.1–10.2 | **Drop 1**: full groove | Beat 2; the quick chip is tapped on the downbeat of bar 2 |
-| 5–7 | 10.2–16.3 | Groove | Beat 3, spreadsheet |
-| 8–13 | 16.3–28.5 | Groove + lead hook | Beat 4, games; the hook is the bird's theme on 12–13 |
-| 14–15 | 28.5–32.5 | Break: drums out, arp + pad | Beat 5 opens on the Resume browser; quiet so the UI reads |
-| 16–17 | 32.5–36.6 | Build: riser, snare roll | The tag, the note, the drag |
-| 18–21 | 36.6–44.7 | Groove (half-time snare) | Beat 6: Remote Access, phone, takeover |
-| 22 | 44.7–46.8 | Groove, riser, fill + silence gap | The theme request is sent; the reply lands |
-| 23–28 | 46.8–59.0 | **Drop 2**: full groove + hook, brighter filter; an accent on 25 and 27 | Beat 7; the flips land on the downbeats of 23, 25 and 27 |
-| 29–32 | 59.0–67.1 | Outro: pad and arp thin out | Beat 8, wave-out |
-| 33 | 67.1 | Final hit, tail to ~71.6 | Wordmark holds |
+| Bars | Section | On screen |
+|---|---|---|
+| 0–1 | An impact hit on 0, then arp + pad, riser | The burst, the window |
+| 2–4 | Groove | Just ask |
+| 5 | Riser, fill, silence gap | The theme request is sent |
+| 6–9 | **Drop 1**: hook, accents on 7 and 8 | The three looks |
+| 10–12 | Groove | Pick your model |
+| 13–17 | Groove, lead on 16 | Files, then project view |
+| 18–23 | Hook | Games |
+| 24–25 / 26–27 | Break / build | Conversations |
+| 28–32 | Half-time groove, riser on 31–32 | Any device |
+| 33–37 | **Drop 2** | Marketplace |
+| 38–42 | Outro | Close |
+| 43 | Final hit, tail ~2.5 s | Wordmark, fade |
 
-The sequencer writes `promo.grid.json` (every bar and beat time, section marks) and the
-Remotion timeline reads it, so every cut, caption and hop is placed on the grid.
-Delivered at −14 LUFS integrated (loudness-normalised by ffmpeg at the final mux).
+UI sounds from the same synth: pop (landings), whoosh (wipes), chime (theme flips),
+punch, poof (costume changes), step (the walk). Delivered at −14 LUFS.
 
 ## Footage: one scene file per shot
 

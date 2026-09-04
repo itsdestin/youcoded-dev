@@ -1,8 +1,7 @@
 import React from 'react';
 import { Composition, Still } from 'remotion';
-import { FPS, TOTAL_FRAMES } from './grid';
-import { TAIL_FRAMES } from './timeline';
-import { Promo } from './Promo';
+import { FPS } from './grid';
+import { Promo, FILM } from './Promo';
 import { Intro, INTRO_FRAMES } from './intro/Intro';
 import { CaptionStudy } from './CaptionStudy';
 import { HostStudy, STUDY_FRAMES } from './intro/HostStudy';
@@ -12,7 +11,7 @@ import { HostStudy, STUDY_FRAMES } from './intro/HostStudy';
 // three `Caption*` stills are the caption designs Destin picks from.
 export const RemotionRoot: React.FC = () => (
   <>
-    <Composition id="Promo" component={Promo} durationInFrames={TOTAL_FRAMES + TAIL_FRAMES} fps={FPS} width={1920} height={1080} />
+    <Composition id="Promo" component={Promo} durationInFrames={FILM} fps={FPS} width={1920} height={1080} />
     <Composition id="Intro" component={Intro} durationInFrames={INTRO_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'classic' as const }} />
     <Composition id="HostStudy" component={HostStudy} durationInFrames={STUDY_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'classic' as const }} />
     {(['A', 'B', 'C'] as const).map((d) => (

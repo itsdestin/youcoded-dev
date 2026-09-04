@@ -1,47 +1,58 @@
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion';
+import { AbsoluteFill, Sequence, OffthreadVideo, staticFile, useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion';
 import { Footage } from '../Footage';
+import { Phone } from '../Phone';
 import { Caption } from '../Caption';
 import { CAPTIONS } from '../captions';
-import { perch, windowRect, CAPTION, WINDOW } from '../layout';
-import { PRE } from '../timeline';
-import { assertClipCovers } from '../marks';
+import { PHONE, perch } from '../layout';
+import { markFrame, assertClipCovers } from '../marks';
+import { A } from '../host/engine';
 import { L, LEN, type BeatModule } from './beat';
 import { Sfx } from './sfx';
 
-// Beat 8 (bars 29–33 + the audio tail), the close, back in Golden Sunbreak: the
-// window settles smaller, the WORDMARK sits under it with the platforms line and
-// the link, the host waves and cheers through the outro and hops out on the
-// final hit (bar 33). The review of draft 7: 12 s with nothing changing, the
-// app's name only in the URL, the host gone after five seconds.
-const SCALE = 0.7;
-const DY = -96;
-const R = windowRect(SCALE);
-// The window arrives at full size under the wipe and settles to SCALE over the
-// first 20 frames — cut in already small it sat as a picture-in-picture over
-// the previous beat's window for the length of the wipe.
-const Settle: React.FC = () => {
+// Beat 8 (bars 28–33): pick up on any device, in Devil's Garden. The chat on
+// the laptop (bar 28); the phone slides in on 29 with only its session list,
+// taps the session, and the PHONE asks "This session is active on Desktop —
+// take over here?"; Take over, and the conversation loads (30–31); on 32 the
+// phone opens its project files: the same spreadsheet, already there.
+const T1 = L('b8', 29), T_FILES = L('b8', 32), END = LEN('b8');
+// The laptop's clip (7.3 s) is shorter than the beat (10.4 s) and static, so it
+// plays twice — the second shot starts on bar 31, where nothing on it moves.
+const T_LAP2 = L('b8', 31);
+assertClipCovers('promo-anydevice', 0, T_LAP2);
+assertClipCovers('promo-anydevice', 0, END - T_LAP2);
+// The phone: the list and the tap run at 1.2× so the take-over prompt and the
+// loaded chat both land inside bars 29–31; a jump to the files panel on 32.
+const P_RATE = 1.2;
+const P1_FROM = markFrame('promo-phone-takeover', 'list', 'start', -8);
+const P2_FROM = markFrame('promo-phone-takeover', 'files', 'start', -15);
+assertClipCovers('promo-phone-takeover', P1_FROM, T_FILES - T1, P_RATE);
+assertClipCovers('promo-phone-takeover', P2_FROM, END - T_FILES);
+const P = perch(0.3);
+const ON_PHONE = { x: PHONE.x + 40, y: PHONE.y - 62 };
+const PhoneIn: React.FC = () => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
-  const s = spring({ frame: f - PRE, fps, config: { damping: 18, stiffness: 90 } });
-  return <Footage file="promo-idle-golden" from={0} scale={interpolate(s, [0, 1], [WINDOW.scale, SCALE])} dy={interpolate(s, [0, 1], [0, DY])} />;
+  const s = spring({ frame: f, fps, config: { damping: 17, stiffness: 110, mass: 1 } });
+  const x = interpolate(s, [0, 1], [1980, PHONE.x]);
+  return (
+    <Phone x={x}>
+      <Sequence durationInFrames={T_FILES - T1}><OffthreadVideo src={staticFile('footage/promo-phone-takeover.webm')} trimBefore={P1_FROM} playbackRate={P_RATE} muted style={{ width: PHONE.w, height: PHONE.h }} /></Sequence>
+      <Sequence from={T_FILES - T1}><OffthreadVideo src={staticFile('footage/promo-phone-takeover.webm')} trimBefore={P2_FROM} muted style={{ width: PHONE.w, height: PHONE.h }} /></Sequence>
+    </Phone>
+  );
 };
-const CAP_TOP = R.y + DY + R.h + 30;            // the wordmark follows the smaller window down
-const OUT = L('b8', 33);
-assertClipCovers('promo-idle-golden', 0, LEN('b8'));
-const P = { x: perch(0.3, SCALE).x, y: perch(0.3, SCALE).y + DY };
 const Beat8: React.FC = () => (
   <AbsoluteFill>
-    <Settle />
-    <Caption head={CAPTIONS.b1.head} at={L('b8', 29) + 4} theme="golden-sunbreak" top={CAP_TOP} size={84} headColor="#fff" />
-    <Caption head={CAPTIONS.b8.head} sub={CAPTIONS.b8.sub} at={L('b8', 30)} subAt={L('b8', 30) + 6} theme="golden-sunbreak" top={CAP_TOP + 104} size={36} />
-    <Caption head={CAPTIONS.link} at={L('b8', 31)} theme="golden-sunbreak" top={CAP_TOP + 104 + CAPTION.h - 14} size={36} headColor="#ffc030" />
-    <Sfx at={OUT} name="pop" volume={0.45} />
+    <Sequence durationInFrames={T_LAP2}><Footage file="promo-anydevice" from={0} /></Sequence>
+    <Sequence from={T_LAP2}><Footage file="promo-anydevice" from={0} /></Sequence>
+    <Sequence from={T1}><PhoneIn /></Sequence>
+    <Caption head={CAPTIONS.b8.head} sub={CAPTIONS.b8.sub} at={L('b8', 28) + 4} subAt={T1 + 8} theme="devils-garden" />
+    <Sfx at={T1 + 6} name="whoosh" volume={0.3} />
   </AbsoluteFill>
 );
-export const beat8: BeatModule = { id: 'b8', slug: 'golden-sunbreak', home: P, Component: Beat8,
-  cues: [
-    { at: L('b8', 29) + 6, pose: 'welcome' },
-    { at: L('b8', 31), pose: 'cheer' },
-    { at: L('b8', 31) + 20, pose: 'welcome' },
-    { at: OUT, pose: 'cheer' },                                // the final hit: both arms up, and it stays to the fade
+export const beat8: BeatModule = { id: 'b8', slug: 'devils-garden', home: P, Component: Beat8,
+  host: [
+    A.look(T1 - 10, 8, 0.6, 0.2),                                                  // sees the phone coming
+    A.hop(T1 + 6, 28, ON_PHONE.x, ON_PHONE.y, 90), A.to(T1 + 6, 28, 'size', 96), A.face(T1 + 20, 'curious'), A.look(T1 + 30, 8, 0, 0.5),   // hops onto the phone
+    A.blink(T_FILES - 20), A.face(T_FILES, 'welcome'), A.pose(T_FILES + 4, 12, { armL: 150, armR: -150 }), A.pose(T_FILES + 40, 12, { armL: 0, armR: 0 }),   // the files are there
   ] };
