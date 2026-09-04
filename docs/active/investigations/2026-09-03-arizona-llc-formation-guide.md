@@ -8,7 +8,7 @@ created: 2026-09-03
 
 Written for Destin, 2026-09-03, from the state's own instructions and 2026 walkthroughs. Sources
 are at the end. Personal details (addresses, the choices from the decision deck) live in the
-private brain, not here: `~/system/me/youcoded-llc-filing.md`.
+private brain, not here: `~/system/legal/filing-worksheet.md`.
 
 The state site changed in January 2026. The old eCorp portal is gone; everything now happens at
 the **Arizona Business Center**, https://arizonabusinesscenter.azcc.gov. Older guides still say

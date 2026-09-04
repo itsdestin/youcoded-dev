@@ -40,7 +40,7 @@ Android CC-pin wording once Destin decides (open questions below, items 2–6).
 **Where things live.** Screen-by-screen filing guide, taxes, city rules, liability dos/don'ts:
 `2026-09-03-arizona-llc-formation-guide.md` (this folder). Destin's exact values, EIN, the
 signed-document drafts and per-service answers (Azure, D-U-N-S, DMCA): private brain,
-`~/system/me/youcoded-llc/README.md`. Company PDFs (Articles, CP 575, ACC record):
+`~/system/legal/` (`README.md` = situation, done, remaining, calendar; `filing-worksheet.md` = values). Company PDFs (Articles, CP 575, ACC record):
 `~/Documents/destins-adventures-llc/`. Every remaining launch item: roadmap `v1.3` flag.
 
 ---
