@@ -9,7 +9,7 @@ up (so he sees what is on screen and where the host stands), the headline under 
 the line as it is, and a text box to rewrite it. Each box shows the most words that slot can
 hold (the film's timing rule, 1.2 s + a quarter second a word, against the frames the line
 actually has) and the counter turns red when a rewrite would not fit. Submit writes
-docs/active/prototypes/promo-2026-09/narration-v2.answers.json and prints every changed line;
+out/script-editor/script-edits.answers.json and prints every changed line;
 the next session copies the changes into the beats (the beats are the truth).
 
 The cue list comes from cues.sh (every bubble's frame and length), the stills from
@@ -20,9 +20,11 @@ import argparse, html, json, os, subprocess, sys, webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DOCS = os.path.abspath(os.path.join(HERE, '..', '..', 'docs', 'active', 'prototypes', 'promo-2026-09'))
-STILLS = os.path.join(DOCS, 'script')
-OUT = os.path.join(DOCS, 'script-edits.answers.json')   # this round's edits; each submit is copied to a dated file by the session that applies it
+# Everything the editor writes lives under out/ (gitignored): the stills it cuts from the draft, the static page,
+# and the answers. The session that applies a submit copies the answers file into the film's docs folder as the record.
+DOCS = os.path.join(HERE, 'out', 'script-editor')
+STILLS = os.path.join(DOCS, 'stills')
+OUT = os.path.join(DOCS, 'script-edits.answers.json')
 
 # What is on screen at each line, in film order (matches narration-v2.md). Keyed by the line's
 # text so a reordered cue list still finds its description; a line with no entry shows nothing.
@@ -183,7 +185,7 @@ def main(argv):
     if a.fresh and os.path.exists(OUT): os.remove(OUT)
     cs = cues(); names = stills(cs); ls = lines(cs, names); page = render(ls).encode()
     if a.build:
-        p = os.path.join(DOCS, 'script-editor.html'); open(p, 'w').write(page.decode().replace("'stills/'", "'script/'")); print('wrote', p); return 0
+        os.makedirs(DOCS, exist_ok=True); p = os.path.join(DOCS, 'script-editor.html'); open(p, 'w').write(page.decode()); print('wrote', p); return 0
     class H(BaseHTTPRequestHandler):
         def log_message(self, *x): pass
         def _j(self, code, obj):

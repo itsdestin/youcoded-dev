@@ -11,7 +11,9 @@ else TDIR="$WS/youcoded"; fi
 export YOUCODED_PORT_OFFSET="${YOUCODED_PORT_OFFSET:-300}" VITE_NO_WATCH=1
 export WB_PORT=$((5173 + YOUCODED_PORT_OFFSET))
 OUT="$HERE/public/footage"; mkdir -p "$OUT"   # Remotion serves public/ — the clips and marks live there directly
-REVIEW="$WS/docs/active/prototypes/promo-2026-09"; mkdir -p "$REVIEW/footage"
+# Posters and one still per mark go to out/review/ (gitignored) — copy the ones a check-in needs into that
+# film's docs folder. (They went straight into docs/active/prototypes/promo-2026-09 for the first film.)
+REVIEW="$HERE/out/review"; mkdir -p "$REVIEW/footage"
 
 # The workbench we start is killed by process GROUP on exit (setsid gives it
 # its own), never by a pkill pattern — a pattern can match the shell running it.
