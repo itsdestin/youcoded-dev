@@ -17,12 +17,14 @@ yet.**
 ## Do this first
 
 1. Read `docs/active/design/2026-09-04-linux-buddy-helper/technical-design.md`
-   (revision 5). It is the build spec.
+   (revision 6). It is the build spec.
 2. Read the contract — `linux-buddy-helper.contract.json` in the same folder.
    13 rows, signed. It is the definition of done.
-3. Skim the three review files in `docs/active/reviews/2026-09-04-linux-buddy-helper-design-review-{1,2,3}.md`.
-   36 findings, all accepted. **Most of them are things a fresh session would
-   otherwise redo.**
+3. Skim the four review files in `docs/active/reviews/2026-09-04-linux-buddy-helper-design-review-{1,2,3,4}.md`.
+   48 findings, all accepted. **Most of them are things a fresh session would
+   otherwise redo.** Round 4 is narrow and the most load-bearing per word — it
+   is the only review of §0's work-area resolver, and two of its findings would
+   have shipped the bug §0 exists to remove, silently, on one screen.
 
 ## Where it stands
 
@@ -32,7 +34,7 @@ yet.**
 | Questions decks | answered, committed |
 | UI, built in the workbench | **merged on the branch, approved** (review round 2, B-1/B-2/B-3 all yes) |
 | Contract | signed 2026-09-04 21:10; R2/R6/R10 amended by the decide deck |
-| Technical design | revision 5 — three review rounds, cap reached; probe rounds 3/4/6 folded in |
+| Technical design | revision 6 — rounds 1-3 (36 findings) + a narrow round 4 on the work-area material (12 findings); probe rounds 3-6 folded in |
 | **Build** | **not started** |
 | Acceptance | not started |
 
@@ -114,6 +116,15 @@ re-shot (one row for a new user, two once the helper is installed).
   **no** readback of any kind: `getBounds()` stays at `0,0` forever.
 - **Electron's `workArea` is a lie on Wayland** — equal to `bounds`, panel
   included. Never clamp to it; use §0's resolver.
+- **Plain `qdbus6` cannot read the work-area struct** — it prints
+  "I don't know how to display an argument of type '(iiii)'" **to stdout** and
+  **exits 0**, so the repo's existing wrapper reports success with garbage. Use
+  `--literal` or `dbus-send`, and treat unparseable stdout as failure (§0.1).
+- **`show()` is synchronous** and places the window in its constructor. The
+  work-area resolve is async and must be awaited **before the first buddy window
+  exists** (§0.6) — there is no readback to correct it afterwards.
+- **`StrutManager` has no signals.** Verified by introspection. A panel change
+  fires no event anywhere; do not go looking (§0.7).
 - Dev instances share a `resourceClass` with production. Assume collision.
 
 ## Open, needs Destin

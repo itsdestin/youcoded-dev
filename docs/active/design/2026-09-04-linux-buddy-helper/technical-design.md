@@ -1,15 +1,15 @@
 ---
 status: draft
 date: 2026-09-04
-revision: 5
+revision: 6
 feature: linux-buddy-helper
 contract: linux-buddy-helper.contract.json (13 rows, signed 2026-09-04; R2/R10 amended by decide-uninstall#D-1)
 branch: feat/linux-buddy-kwin-helper
-review: round 1 (13 findings, 13 accepted), round 2 (13 findings, 13 accepted), round 3 (10 findings, 10 accepted) — docs/active/reviews/
+review: rounds 1-3 (36 findings, 36 accepted) + round 4 narrow, scoped to the new work-area material (12 findings, 12 accepted) — docs/active/reviews/
 measurements: probe rounds 3-6 (2026-09-04) closed §3, §2's caption leak and R11, and REVERSED R3-F7's work-area decision
 ---
 
-# Linux buddy helper — technical design (revision 5)
+# Linux buddy helper — technical design (revision 6)
 
 Revision 1 was reviewed adversarially and every one of its thirteen findings was
 accepted, three of them severe: a security hole, a dev-instance/production
@@ -90,20 +90,152 @@ invisible: the app's position would keep travelling past the panel while the
 window stopped, and dragging back would feel stuck until the app's number caught
 up.
 
-**So `workArea` becomes a resolved value, not a raw Electron read:**
+**So `workArea` becomes a resolved value, not a raw Electron read.** Revision 5
+named the DBus call and left everything around it to the build. Round 4's review
+found two ways that silently produces the exact bug this section exists to
+remove, on the developer's own machine, with no error anywhere — so the
+invocation, the parse, the await point and the failure semantics are all
+specified here.
 
-1. `org.kde.plasmashell /StrutManager availableScreenRect <screenName>` returns
-   the true rect — measured `(0, 0, 1707, 1015)`, exactly KWin's own.
-2. The screen *name* is not something Electron exposes (`display.label` is
-   `"Built-in Screen"`, not `"eDP-1"`). It comes free from
-   `supportInformation()` — the call §4 already makes for the version and
-   Wayland gates — whose `Screens` block carries `Name:`, `Geometry:` and
-   `Scale:` per screen. Electron displays match KDE screens **by bounds**.
-3. **Both failure paths degrade to the full screen rect, which is the correct
-   fail-safe:** an unknown screen name returns it (measured), and a KWin-only
-   session has no `org.kde.plasmashell` at all.
-4. Re-resolved on `display-metrics-changed` and on buddy-show, not cached for
-   the session — a panel can be moved, resized or set to auto-hide at any time.
+**1 · The call, the exact invocation, and the exact parse (R4-F2).** The repo's
+only qdbus wrapper (`kwin-keep-above.ts`) runs `execFile` with no flags and
+treats exit 0 as success. That is unsafe here: `qdbus6` cannot render a D-Bus
+struct without `--literal`, and it writes its complaint **to stdout** and
+**exits 0**. Measured 2026-09-04:
+
+```
+$ out=$(qdbus6 … availableScreenRect eDP-1 2>/dev/null); echo "exit=$? stdout=[$out]"
+exit=0 stdout=[qdbus: I don't know how to display an argument of type '(iiii)', run with --literal.]
+```
+
+So the resolver would parse `NaN`, fall through, and hand every user the 52 px
+bug. Use one of these two, and treat **any** unparseable stdout as failure —
+never as an empty or zero rect:
+
+```
+qdbus6 --literal … availableScreenRect <name>   →  [Argument: (iiii) 0, 0, 1707, 1015]
+                                                   /^\[Argument: \(iiii\) (-?\d+), (-?\d+), (\d+), (\d+)\]/
+dbus-send --session --print-reply --dest=org.kde.plasmashell /StrutManager \
+  org.kde.PlasmaShell.StrutManager.availableScreenRect string:<name>
+                                                →  struct { int32 0 / int32 0 / int32 1707 / int32 1015 }
+```
+
+Both formats verified 2026-09-04.
+
+**2 · Matching Electron displays to KDE screens.** The screen *name* is not
+something Electron exposes (`display.label` is `"Built-in Screen"`, not
+`"eDP-1"`). It comes free from `supportInformation()` — the call §4 already
+makes for the version and Wayland gates — whose `Screens` block carries `Name:`,
+`Enabled:`, `Geometry:`, `Physical size:` and `Scale:` per screen. Match **by
+bounds**, with three rules Round 4 added:
+
+- **Skip any screen whose `Enabled:` is not `1` (R4-F11).** The field exists
+  because KWin expects to print screens where it is `0`; a disabled output with
+  a stale or zeroed `Geometry` can otherwise shadow the real primary.
+- **Match within ±2 px, not exactly (R4-F8).** Electron reports scale
+  `1.4997071027755737` where KWin reports `1.5`. Both round *this* screen to
+  `1707x1067`, which is why the origin screen agrees; whether both round a
+  second screen's **origin** identically is untested and untestable without the
+  hardware. An exact match would fail every non-primary display on a one-pixel
+  disagreement.
+- **Duplicate `Geometry` means ambiguous (R4-F11).** Plasma mirrors by placing
+  two outputs at the same position and size — a projector in presentation mode
+  is exactly this. Use the **intersection** of the candidates'
+  `availableScreenRect`s: never larger than any candidate, so the mascot cannot
+  land on a panel either one reserves.
+
+**3 · The containment check — the single most important line in this section
+(R4-F1).** `availableScreenRect` returns a rect in the **global** coordinate
+space, and on a one-screen desktop at the origin that is indistinguishable from
+screen-local, so the probe could not have caught a mistake here. If the match
+resolves Electron display A to KDE screen B, the app hands **another monitor's**
+x-range to `clampToWorkArea` — which runs inside `place()` on every drag frame,
+against an owned position that is already clamped, with no readback to notice
+(§3). The mascot is yanked to the other screen and pinned there, and the user
+cannot drag it back: **the exact "appears but is stuck" symptom this feature was
+commissioned to remove.**
+
+So: **a resolved rect that is not contained within that Electron display's own
+`bounds` is discarded.** One check, pure logic, unit-testable without hardware,
+and it converts every class of mis-match — wrong screen, wrong coordinate space,
+stale answer — from "buddy pinned to the wrong monitor" into "buddy sits 52 px
+low on the right monitor".
+
+**4 · Failure is the pre-fix behaviour, not a fix (R4-F3).** Revision 5 called
+the fallback "the correct fail-safe". It is only the *safe direction*: falling
+back to the display's own `bounds` is precisely the value Round 6 measured
+Electron already giving, whose consequence is the 52 px bug. It is also
+numerically **indistinguishable** from a legitimate answer (a screen with no
+panel, or an auto-hidden one), so the resolver carries **`resolved: boolean`**
+alongside the rect — otherwise nothing downstream, and no test, can tell
+"resolved" from "gave up". Note also that revision 5's "an unknown name returns
+the full rect (measured)" repeats R3-F7's own error: with one screen at the
+origin, every plausible fallback collapses onto the same four numbers. What an
+unknown name returns on a **multi-screen** system is unmeasured, and goes on
+§9's list.
+
+**5 · plasmashell can be absent permanently or momentarily (R4-F12).**
+`org.kde.plasmashell` has **no** DBus service-activation file — it is a systemd
+user unit (`plasma-plasmashell.service`), verified 2026-09-04 — so a crash, a
+systemd restart or `plasmashell --replace` leaves the name unclaimed for
+seconds. And at login, plasmashell may hold the bus name before it has created
+its panels, so the full rect is a *legitimate* answer at that instant. Two
+different states, two different responses:
+
+- **No such service on this session** (KWin-only): fall back once, permanently.
+- **The call failed right now**: retry with backoff, and **keep the last
+  successfully resolved rect rather than overwriting it with a fallback.** The
+  first successful resolve wins over an earlier failure, and re-places the buddy.
+
+**6 · When it is resolved — and it must be awaited before the first window
+(R4-F5).** `show()` is `show(): void` and places the mascot in the
+`BrowserWindow` constructor synchronously (`buddy-window-manager.ts:296-320`),
+while resolving is two async subprocess calls. Left unstated, the build would
+place the very first buddy a user ever sees against an unresolved rect — 52 px
+low, `keepAbove` over the clock — and §3's measured "no readback, no `move`
+event" guarantees nothing ever corrects it. If the user never drags, it is wrong
+for the whole session, and the persisted-dock branch at `:318` restores a
+bottom-docked buddy flush to the panel.
+
+**The resolve is awaited once, during the same startup step that already runs
+`supportInformation()` for §4's version and Wayland gates** — one call, 2-4 ms,
+whose answer is needed before `BUDDY_SHOW` can be granted anyway. No buddy window
+is constructed before it settles.
+
+**7 · Re-resolving, and the signal that does not exist (R4-F4).** Revision 5
+justified its trigger with "a panel can be moved, resized or set to auto-hide at
+any time" — a case that trigger is definitionally blind to, because Round 6
+established Electron cannot see struts at all, so a panel change fires no display
+event. **And there is nothing to subscribe to instead:**
+`org.kde.PlasmaShell.StrutManager` introspects to three methods, **zero signals
+and zero properties** (verified 2026-09-04). Stated plainly here so a later
+session does not go looking. So:
+
+- Wire **all three** Electron display events — `display-metrics-changed`,
+  `display-added`, `display-removed` — debounced. `buddy-overlay-manager.ts:157-168`
+  already carries the WHY for exactly this trio (hotplug is the case that
+  invalidates a screen-name map), and `:110` records that on KWin Wayland
+  `display-metrics-changed` fires three times within 200 ms of `showInactive()`
+  with `changedMetrics=[]`, so debouncing is mandatory rather than tidy.
+- Panel changes have **no** event. They are picked up on buddy-show plus a cheap
+  re-resolve at the **start of each drag and dock** — 2 ms, once per gesture,
+  never per frame. **A drag runs on the rect cached at its start**, stated so it
+  is not discovered later.
+
+**8 · The call sites (R4-F10).** §3 lists its nine writes by line; this change is
+the same shape and gets the same treatment. Twelve live `.workArea` reads in
+`buddy-window-manager.ts` — **129, 162, 171, 302, 308, 318, 435, 440, 504, 578,
+624, 631** — of which **302, 435 and 624** are `screen.getPrimaryDisplay().workArea`
+and bypass `getDisplayMatching` entirely, so the resolver must serve both shapes.
+The pure helpers all take `workArea` as a parameter (`buddy-geometry.ts:9`,
+`buddy-dock.ts:56/70`), so nothing below the call sites changes signature.
+
+**The source scan is scoped to `buddy-window-manager.ts`.** It must **exempt**
+5 reads in `buddy-overlay-manager.ts` and 14 in
+`renderer/components/buddy/overlay-state.ts`: those are the dormant overlay
+strategy, which `chooseBuddyStrategy` never selects (`buddy-manager.ts:38-46`
+returns `'windows'` on every path but an explicit env override). Counts verified
+2026-09-04. Without the exemption the guard fails the moment it is written.
 
 On KDE **X11** this whole path is skipped with everything else (§4's Wayland
 gate), where Electron's `workArea` is correct and already in use.
@@ -124,10 +256,21 @@ against a built artifact**, not against the `files:` rule.
 said where it comes from, so nothing derived it, stored it, or cleaned it up. It
 is derived from the userData profile path and stored in the app's own settings,
 **and orphans are actively removed**: on install *and* on every launch, scan
-`~/.local/share/kwin/scripts/` for `youcodedbuddyhelper-*`, delete every package
-that is not this install's, and `kwriteconfig6 --delete` its key (removal must
-delete the key, not merely set it false, or `[Plugins]` accrues one dead entry
-per token forever).
+`~/.local/share/kwin/scripts/` for `youcodedbuddyhelper-*` and, for each package
+that is not this install's, run §6's ordering — **`unloadScript <id>` →
+`kwriteconfig6 --delete` its key → delete the directory**, with a single
+`reconfigure` at the end of the batch. (Removal must delete the key, not merely
+set it false, or `[Plugins]` accrues one dead entry per token forever.)
+
+**The `unloadScript` is not optional, and revision 5 omitted it (R4-F7).**
+Revision 5 deleted an orphan's files and stopped, which contradicts §6's own
+stated reason for ordering removal the way it does. Round 4's U1 measured that
+deleting or overwriting a script's files does **not** stop KWin executing the
+copy it already parsed — so every orphan the cleanup "removed" kept running
+inside the compositor until logout, which is precisely the hazard the next
+paragraph describes. U3 measured `unloadScript` on a not-loaded id as harmless
+(returns `false`, exit 0), so the extra call is free when the orphan was never
+loaded.
 
 This matters because **an orphan is not inert**: it still matches our
 `resourceClass` and a `YC:` caption, so N orphans mean N compositor handlers
@@ -327,7 +470,7 @@ non-Linux path.
 | R9 | Buddy off leaves the helper | nothing on toggle-off |
 | R10 | *(amended)* the user can remove the helper | **Remove helper** action in the buddy popup, shown only when installed (decide-uninstall#D-1) |
 | R2 | *(amended)* consent copy | must no longer promise removal on uninstall |
-| R11 | Updates replace the helper quietly | at launch, bundled `Version` > installed → copy files, `unloadScript`, `reconfigure` |
+| R11 | Updates replace the helper quietly | at launch, bundled `Version` ≠ `helperLoadedVersion` → copy files, `unloadScript`, `reconfigure`, *then* record the version |
 | R12 | Existing users get the buddy hidden once | one-shot migration |
 
 **R10 was re-opened with Destin** because the approved consent card promised
@@ -378,6 +521,36 @@ app keeps running the previous helper, including one built against an older
 caption grammar. `unloadScript` on an id that is not loaded returns `false`
 harmlessly, so the install and update paths can share one sequence.
 
+**The version marker must not be the file the update overwrites (R4-F6).**
+Revision 5 compared the bundled `Version` against the installed package's
+`metadata.json` — which step 1 has already replaced by the time steps 2 and 3
+run. Two crash windows follow, and neither self-heals:
+
+- **`unloadScript` fails, or the app dies after step 1.** New files on disk, old
+  script still parsed and running (U1). Next launch sees equal versions and skips
+  the update, `isScriptLoaded` says `true`, the status card says "installed" — so
+  the user runs the previous helper **forever**, possibly against an older caption
+  grammar. That is the exact failure Round 4 was run to prevent, re-entered
+  through the back door.
+- **`reconfigure` fails, or the app dies between steps 2 and 3.** The script is
+  unloaded, so §4's `installed` (which *is* `isScriptLoaded`) flips to false and
+  §5's gate kills the buddy. Next launch: versions equal, so no update; files and
+  config key both present, so no install either. Nothing calls `reconfigure`. The
+  buddy stays dead until logout or a manual Remove-then-Add.
+
+So the app persists **`helperLoadedVersion` in its own settings, written only
+after `reconfigure` resolves successfully**, and the launch check is
+`bundled !== helperLoadedVersion`. The full sequence then re-runs unconditionally
+whenever they differ, which repairs both windows on the very next launch at no
+cost (U3). §1's half-install rollback does not cover this: it is written for
+install, and on update there is nothing to roll back *to* — the previous
+package's files are already gone.
+
+**Nothing can verify the reload happened**, and the design must not pretend
+otherwise: `isScriptLoaded` is `true` for the old and new script alike, and no
+loaded script reports its version over DBus (§4 — `run()` is void). The version
+marker records *what we did*, not what KWin is running.
+
 ## 7 · Keep-above (R1-6)
 
 The helper sets `keepAbove = true` on attach and **re-asserts on restore** —
@@ -404,7 +577,10 @@ The contract has zero mechanical rows. Minimum to fix that:
   gating (a foreign `resourceClass` and a wrong token are both refused)**,
   version comparison, install plan, rollback, **and that install/update emits
   `unloadScript` before `reconfigure`** (Round 4: `reconfigure` alone does not
-  reload an overwritten script).
+  reload an overwritten script). Plus R4-F6's two crash windows: `unloadScript`
+  rejects → `helperLoadedVersion` is **not** written and the next launch re-runs
+  the sequence; `reconfigure` rejects → same. And R4-F7: orphan cleanup emits
+  `unloadScript` for each orphan id **before** deleting its directory.
 - `buddy-caption-channel.test.ts` — `place()` picks caption vs `setPosition` per
   platform × helper state; all nine write sites and three constructor sites route
   through it.
@@ -417,15 +593,25 @@ The contract has zero mechanical rows. Minimum to fix that:
   helper, including when status is unknown.
 - `buddy-remove-helper.test.ts` — the removal order above, and that removal
   targets only this install's plugin id.
-- `buddy-work-area.test.ts` — the resolved work area: a matched screen uses
-  `availableScreenRect`, an unmatched one and a missing `org.kde.plasmashell`
-  both fall back to full screen bounds, and nothing on the buddy path reads
-  `display.workArea` raw on Wayland (source scan). **Plus the multi-screen match
-  itself, against synthetic inventories** (§9): two and three screens, a
-  negative-offset screen left of the primary, differing per-screen scales, the
-  two systems listing screens in different orders, and a KDE screen whose bounds
-  match nothing Electron reports. This is the substitute for the hardware run
-  Destin deferred, and it covers the half that is logic rather than hardware.
+- `buddy-work-area.test.ts` — the resolved work area. **The parse** (R4-F2): the
+  `--literal` success line; the "I don't know how to display" line that arrives
+  on *stdout* with exit 0; empty stdout; non-zero exit — each must be a failure,
+  never a zero rect. **The match**: a matched screen uses `availableScreenRect`;
+  `Enabled: 0` screens are skipped; bounds within ±2 px still match; two screens
+  sharing a `Geometry` intersect; an Electron display matching nothing KDE
+  reports, *and* the reverse. **The containment check** (R4-F1): a rect outside
+  the display's own bounds is discarded and `resolved` is false. **The
+  lifecycle**: `org.kde.plasmashell` absent → fall back and mark unresolved; a
+  later successful resolve replaces the fallback and re-places the buddy; with
+  the resolve unsettled, `show()` must not construct a buddy window (R4-F5).
+  **The scan**: nothing in `buddy-window-manager.ts` reads `display.workArea`
+  raw, with `buddy-overlay-manager.ts` and `renderer/.../overlay-state.ts`
+  exempt (§0.8).
+
+  Run against **synthetic** multi-screen inventories (§9): two and three screens,
+  a negative-offset screen left of the primary, differing per-screen scales, the
+  two systems listing screens in different orders. **What this does and does not
+  prove is stated in §9** — it is not a substitute for the hardware run.
 - Source scan: the pin switch stays gone (R6).
 - `ipc-channels.test.ts` — a hand-written `buddy:*` parity block.
 
@@ -437,24 +623,42 @@ The contract has zero mechanical rows. Minimum to fix that:
   probe round. KWin exposes every screen in one coordinate space with per-screen
   scale, so a second screen is reachable by construction — but that is reasoning.
 
-  **What is actually at risk is narrow, and none of it strands the buddy.** The
-  hardware-dependent part is whether KWin's second-screen offsets behave; the
-  part that would really break is the **Electron-display → KDE-screen-name match
-  by bounds** in §0, and that is pure logic with no hardware in it. So it is
-  **unit-tested against synthetic two- and three-screen inventories** (offsets,
-  mismatched scales, a name that matches nothing, screens listed in a different
-  order by the two systems) — see §8. That shrinks the genuinely untested surface
-  to "does KDE report a real second monitor the way it reports this one".
+  **Revision 5 undersold this risk and Round 4 corrected it (R4-F8, R4-F1,
+  R4-F9).** Revision 5 said the untested half was "pure logic with no hardware in
+  it". It is not: the match is an assertion that **two independent number sources
+  agree**, and a unit test that authors *both* inventories has made them agree by
+  construction. It proves the mapping is correct *given* agreement, which was
+  never the doubt. What it cannot catch, and each of these breaks the feature
+  rather than degrading it:
 
-  Worst cases if it is wrong, all recoverable by dragging: the buddy opens on the
-  wrong screen, or the name match fails and `availableScreenRect` returns the
-  full rect for that screen so the buddy docks onto that screen's panel. **It
-  cannot be lost off-screen**: `show()` already runs a saved position through
-  `getDisplayMatching` + `clampToWorkArea`, which pulls an unreachable position
-  back onto the nearest live display, and that path is unchanged by this feature.
+  1. A ±1 px disagreement in a non-primary screen's logical **origin**. Electron
+     reports scale `1.4997071027755737` where KWin reports `1.5`; both round
+     *this* screen identically, which is why the origin screen agrees.
+  2. The coordinate space and the multi-screen fallback of `availableScreenRect`.
+  3. Whether `supportInformation()` lists mirrored or disabled outputs, and how.
+  4. Whether `frameGeometry` assignment lands exactly at a **non-zero screen
+     offset** — every "landed on the exact pixel" result so far was on the origin
+     screen.
+  5. Whether Chromium/Ozone reports a second display's bounds at all under
+     fractional scaling, versus collapsing or duplicating it.
+
+  **What makes the deferral acceptable is §0.3's containment check, not the unit
+  test.** Without it, a mis-match hands `clampToWorkArea` another monitor's global
+  rect, which re-clamps every drag frame against an already-clamped owned
+  position, with no readback to notice — a buddy **pinned to the wrong screen and
+  undraggable**, which is the very symptom this feature exists to remove. With
+  it, every mis-match degrades to "52 px low on the right screen". The containment
+  check *is* pure logic and *is* synthetically testable.
+
+  Revision 5's off-screen reassurance was also circular (R4-F9): it rested on the
+  clamp at `:308` "unchanged by this feature", when §8's source scan requires
+  changing exactly that line. Restated correctly: the clamp moves to the resolved
+  rect, which the containment check guarantees is inside the display's bounds, so
+  it still pulls an unreachable position back on-screen.
 
   **Do the real two-screen run before release**, not before build — roadmap item
-  filed.
+  filed. Add to it: what an **unknown screen name** returns on a multi-screen
+  system (§0.4).
 - Surviving a KWin restart is untested.
 - The deb/rpm/pacman uninstall hook, deliberately (§6).
 
