@@ -9,7 +9,7 @@ import { A, REST, type Action } from '../host/engine';
 // End-pose candidates for the close (Destin, 2026-09-04: "we need to work on the final
 // idle/ending pose"). Each is a still of the film's last second — the grown window, the
 // modal, the wordmark — with the host beside the Y in one candidate pose, settled.
-export type EndPose = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | 'P6' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5' | 'Q6';
+export type EndPose = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | 'P6' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5' | 'Q6' | 'R1' | 'R2' | 'R3' | 'R4' | 'R5' | 'R6' | 'R7' | 'R8' | 'R9' | 'R10';
 export const END_POSES: Record<EndPose, { name: string; blurb: string; actions: Action[] }> = {
   A: { name: 'Powered down', blurb: 'Today: eyes closed, limbs tucked under.', actions: [A.shutdown(0)] },
   B: { name: 'At ease', blurb: 'Standing, arms down, looking at you with the warm face.', actions: [A.face(0, 'welcome'), A.look(0, 4, 0, 0.05)] },
@@ -34,6 +34,17 @@ export const END_POSES: Record<EndPose, { name: string; blurb: string; actions: 
   Q4: { name: 'Sit and tuck, legs under', blurb: 'The legs fold under the body instead of out in front.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { legL: 95, legR: -95, armL: -28, armR: 28 }), A.set(0, { sy: 0.82, sx: 1.12 })] },
   Q5: { name: 'Sit and tuck (arms slide down)', blurb: 'The squat, and the arms slid down the sides to the lower corners, turned in under.', actions: [A.sitTuck(0, 30)] },
   Q6: { name: 'Sit and tuck, hands showing', blurb: 'As Q5, the hands turned less far under so a little of each shows at the corner.', actions: [A.sitTuck(0, 30), A.pose(30, 1, { armL: -30, armR: 30 })] },
+  // Round three (Destin, 2026-09-04: "that sit and tuck still looks really odd. give me like 10 more alternatives")
+  R1: { name: 'Lying on its side', blurb: 'Tipped over onto its side on the baseline, eyes closed.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { rot: -90, armL: 10, armR: -10, legL: 10, legR: -10 })] },
+  R2: { name: 'Relaxed sit', blurb: 'Sat down, legs out in front, arms resting by its sides.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { legL: -60, legR: 60, armL: -8, armR: 8 }), A.set(0, { sy: 0.9, sx: 1.06 })] },
+  R3: { name: 'Knees up', blurb: 'Sat with the legs drawn up, arms round them.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { legL: -35, legR: 35, armL: -30, armR: 30 }), A.set(0, { sy: 0.9, sx: 1.06, tuck: 0.5 })] },
+  R4: { name: 'Slouch', blurb: 'Standing but sagging: a lean, sunk a little, arms hanging loose.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { rot: 11, armL: 10, armR: 2 }), A.set(0, { sy: 0.92, sx: 1.05 })] },
+  R5: { name: 'Deflate', blurb: 'Shrinks a size smaller and settles, limbs neutral.', actions: [A.face(0, 'asleep'), A.set(0, { size: 102, sy: 0.92, sx: 1.05, x: Y_SPOT.x + 9, y: Y_SPOT.y + 15 })] },
+  R6: { name: 'Leaning on the Y', blurb: 'Leans over onto the wordmark and dozes against it.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { rot: 13, armL: 0, armR: -20 })] },
+  R7: { name: 'Switched off', blurb: 'Stands exactly as it is, flat-line eyes, and dims a step darker than the picture.', actions: [A.face(0, 'shutdown'), A.pose(0, 8, { armL: 0, armR: 0, legL: 0, legR: 0, rot: 0 }), A.set(0, { alpha: 0.72 })] },
+  R8: { name: 'Bean', blurb: 'Squashed down wide, limbs left where they are, eyes closed.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { armL: 0, armR: 0, legL: 0, legR: 0 }), A.set(0, { sy: 0.78, sx: 1.16 })] },
+  R9: { name: 'Asleep standing, zzz', blurb: 'P2 with little z\'s drifting up from its head.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { armL: 6, armR: -6 }), A.set(0, { sy: 0.95, sx: 1.04 })] },
+  R10: { name: 'Sat on the edge', blurb: 'Sat on the baseline as if on a ledge, legs dangling over it.', actions: [A.face(0, 'asleep'), A.pose(0, 8, { armL: 4, armR: -4, legL: -12, legR: 12 }), A.set(0, { y: Y_SPOT.y + 16, sy: 0.96, sx: 1.03 })] },
   P6: { name: 'Standby', blurb: 'Lids most of the way down, arms down, still upright — dimming with the picture.', actions: [A.face(0, 'dozy'), A.pose(0, 8, { armL: 0, armR: 0, rot: 0 }), A.set(0, { sy: 0.97, sx: 1.02 })] },
 };
 const AT = LEN('b10') - 40;   // the close's last second
@@ -42,6 +53,9 @@ export const EndPoseStudy: React.FC<{ pose: EndPose }> = ({ pose }) => (
     <Backdrop themes={[{ at: 0, slug: 'golden-sunbreak' }]} total={1} />
     <Sequence from={-AT}><Beat10 /></Sequence>
     <Sequence from={-30}><Host actions={END_POSES[pose].actions} base={{ ...REST, x: Y_SPOT.x, y: Y_SPOT.y, size: 120, costume: 'golden-sunbreak', face: 'welcome' }} /></Sequence>
+    {pose === 'R9' && ['z', 'z', 'z'].map((z, i) => (
+      <div key={i} style={{ position: 'absolute', left: Y_SPOT.x + 96 + i * 16, top: Y_SPOT.y - 6 - i * 22, fontFamily: 'Inter, system-ui', fontWeight: 800, fontSize: 18 + i * 6, color: '#ffc030', opacity: 0.9 - i * 0.2 }}>{z}</div>
+    ))}
     <div style={{ position: 'absolute', right: 28, bottom: 14, fontFamily: 'system-ui', fontSize: 24, color: '#fff', opacity: 0.7 }}>{pose} · {END_POSES[pose].name}</div>
   </AbsoluteFill>
 );
