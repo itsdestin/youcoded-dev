@@ -115,8 +115,7 @@ resolved from the `WindowRegistry`. `SESSION_DRAG_HANDOFF`, the temp file,
 
 ## Reproducing the probes
 
-`scratchpad/html5probe/` in session `2647deca` (`main.js`, `page.html`, `preload.js`):
-two windows, a draggable pill with a 330px ruler picture, every event to `probe3.log`.
-Run with `youcoded/desktop/node_modules/.bin/electron --ozone-platform=wayland main.js`.
-`scratchpad/cdp.mjs` there is a dependency-free CDP eval (`node cdp.mjs <ws-url> '<js>'`)
-— `scripts/cdp-eval.mjs` needs the `ws` package and cannot run from the workspace root.
+`docs/archive/prototypes/2026-09-04-html5-drag-probe/` (README inside): two windows, a
+draggable pill with a 330px ruler picture, every event to `probe3.log`. The live
+event recorder used to diagnose the dev window ran through `scripts/cdp-eval.mjs`
+against `run-dev.sh`'s debugger port (9272).

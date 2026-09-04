@@ -99,6 +99,14 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] The docs audit cannot run from a workspace worktree — `node scripts/audit-anchors.mjs`
+      resolves every `youcoded/...` anchor from the worktree's own folder, where the sub-repos do
+      not exist, so a docs-only branch shows hundreds of missing files until it is merged. The
+      2026-09-04 session worked around it by symlinking the five sub-repos into the worktree for
+      one run and deleting them after. Fix: when the root has no `youcoded/`, fall back to the
+      sub-repos of the checkout the script lives in, or take a `--repos <dir>` flag
+      `n/a` `confirmed` `checked 2026-09-04`
+
 - [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
       nothing anywhere saying the app had stopped responding, so a tester's force-quit on
       2026-09-03 could not be explained at all. FIXED on a branch 2026-09-03

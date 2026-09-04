@@ -30,14 +30,19 @@
 //   - The target page's globals (`window.claude`, React/xterm internals
 //     reachable via fiber walk, etc.) are evaluable directly — useful for
 //     dumping `__terminalRegistry`, monkey-patching `terminal.write`, etc.
-//   - `ws` package is the only dependency. Run from a directory whose
-//     `node_modules` resolves it (the workspace root has none, so either
-//     symlink or run from inside `youcoded/desktop` where it's installed).
+//   - No dependency: Node's built-in WebSocket (22+) is used. Runs from any
+//     directory — it used to import the `ws` package, which the workspace
+//     root does not have, so it failed with "Cannot find package 'ws'" the
+//     one time a session reached for it (2026-09-04) and got rewritten from
+//     scratch in a scratchpad instead.
 //
 // History: written during the Tier 2 android-xterm-webview dogfood pass to
 // inspect xterm scrollback live and capture the byte stream into xterm. See
 // the Tier 2 spec/plan under `docs/archive/`.
-import WebSocket from 'ws';
+if (typeof globalThis.WebSocket !== 'function') {
+  console.error('cdp-eval needs Node 22+ (built-in WebSocket); this is ' + process.version);
+  process.exit(1);
+}
 
 const wsUrl = process.argv[2];
 const expr = process.argv[3];
@@ -48,15 +53,15 @@ if (!wsUrl || !expr) {
 
 const ws = new WebSocket(wsUrl);
 let id = 1;
-ws.on('open', () => {
+ws.onopen = () => {
   ws.send(JSON.stringify({
     id: id++,
     method: 'Runtime.evaluate',
     params: { expression: expr, returnByValue: true, awaitPromise: true },
   }));
-});
-ws.on('message', (raw) => {
-  const msg = JSON.parse(raw.toString());
+};
+ws.onmessage = (ev) => {
+  const msg = JSON.parse(typeof ev.data === 'string' ? ev.data : ev.data.toString());
   if (msg.id) {
     if (msg.result?.exceptionDetails) {
       console.log(JSON.stringify(msg.result.exceptionDetails, null, 2));
@@ -65,5 +70,5 @@ ws.on('message', (raw) => {
     }
     ws.close();
   }
-});
-ws.on('error', (e) => { console.error('ws error:', e.message); process.exit(2); });
+};
+ws.onerror = (e) => { console.error('ws error:', e.message ?? String(e)); process.exit(2); };

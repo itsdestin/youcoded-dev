@@ -1,0 +1,73 @@
+<meta charset="utf-8"><title>html5 drag probe</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; font:13px system-ui,sans-serif; background:#16181d; color:#e6e8ee; height:100vh; display:flex; flex-direction:column; }
+  header { padding:10px 14px; border-bottom:1px solid #2a2e37; display:flex; align-items:center; gap:10px; }
+  .who { font-weight:700; font-size:15px; }
+  .bar { display:flex; gap:6px; padding:5px 8px; background:#20232b; border-radius:999px; min-height:30px; min-width:300px; align-items:center; }
+  .pill { display:flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px; background:#2e333f; cursor:grab; user-select:none; white-space:nowrap; }
+  .pill.ghost { opacity:.3; }
+  .dot { width:8px;height:8px;border-radius:50%;background:#5ac47d; }
+  main { flex:1; padding:14px; overflow:auto; }
+  .hint { color:#8b93a5; line-height:1.8; }
+  #log { font:11px ui-monospace,monospace; white-space:pre-wrap; color:#c8cddb; margin-top:12px; }
+  body.hot { outline:4px solid #5b9dff; outline-offset:-4px; }
+</style>
+<header><span class="who" id="who">?</span><div class="bar" id="bar"></div></header>
+<main>
+  <div class="hint">
+    1. Drag the pill <b>sideways inside the bar</b> for a second (measures dragover rate).<br>
+    2. Drag it <b>out over the desktop</b> and <b>take a screenshot</b> — the ruler is the result:
+    a 330-wide picture means the ceiling is gone; gridlines 60 screen px apart means 1.5× (crisp), 40 apart means 1×.<br>
+    ROUND 2:<br>
+    a. Drag the pill out, then press <b>Escape</b> while still holding.<br>
+    b. Drag the pill out and <b>release over the empty desktop</b>.<br>
+    c. On the <b>touchscreen</b>: press and hold the pill, then drag it into the other window.<br>
+    d. Drag it back and forth <b>inside the bar</b> and release there.
+  </div>
+  <div id="log">waiting…</div>
+</main>
+<script>
+const q=(s)=>document.querySelector(s);
+const who=new URLSearchParams(location.search).get('who')||'?';
+q('#who').textContent='Window '+who; document.title='Window '+who;
+const log=(m)=>{const e=q('#log');e.textContent=(m+'\n'+e.textContent).slice(0,2000);window.probe.report(who+' | '+m);};
+// Same ruler as probe 2: gridlines every 40 CSS px, painted at DPR, 330x160 CSS px
+// — the approved card's width.
+function ruler() {
+  const W=330, H=160, dpr=window.devicePixelRatio||1;
+  const c=document.createElement('canvas');
+  c.width=Math.round(W*dpr); c.height=Math.round(H*dpr);
+  c.style.width=W+'px'; c.style.height=H+'px';
+  const x=c.getContext('2d'); x.scale(dpr,dpr);
+  for(let i=0;i*40<W;i++){ x.fillStyle=i%2?'#1b2430':'#243044'; x.fillRect(i*40,0,40,H); }
+  x.strokeStyle='#5b9dff'; x.lineWidth=1; x.font='bold 15px ui-monospace,monospace'; x.textBaseline='top';
+  for(let cx=0;cx<W;cx+=40){ x.beginPath(); x.moveTo(cx+0.5,0); x.lineTo(cx+0.5,H); x.stroke(); x.fillStyle='#ffd479'; x.fillText(String(cx),cx+3,40); }
+  x.fillStyle='#5ac47d'; x.fillRect(0,0,9,H); x.fillStyle='#ff6b6b'; x.fillRect(W-9,0,9,H);
+  x.fillStyle='#fff'; x.font='bold 14px ui-monospace,monospace'; x.fillText('L',0,H-24); x.fillText('R',W-11,H-24);
+  return c;
+}
+const bar=q('#bar');
+const p=document.createElement('div'); p.className='pill'; p.draggable=true;
+p.innerHTML='<span class="dot"></span>drag me';
+let overCount=0, overStart=0;
+p.addEventListener('dragstart',(e)=>{
+  const img=ruler(); document.body.appendChild(img); img.style.position='fixed'; img.style.left='-9999px';
+  e.dataTransfer.setData('application/x-youcoded-session', 'session-from-'+who);
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setDragImage(img, 20, 20);
+  p.classList.add('ghost'); overCount=0; overStart=performance.now();
+  window.__dsT=performance.now(); log('dragstart: pointerType-of-press above; image 330x160 CSS px painted at dpr '+window.devicePixelRatio+', effectAllowed=move');
+});
+p.addEventListener('dragend',(e)=>{ p.classList.remove('ghost'); log('dragend dropEffect='+e.dataTransfer.dropEffect+' client='+e.clientX+','+e.clientY+' screen='+e.screenX+','+e.screenY+' inWin='+(e.clientX>=0&&e.clientY>=0&&e.clientX<=innerWidth&&e.clientY<=innerHeight)); });
+p.addEventListener('pointerdown',(e)=>log('pointerdown type='+e.pointerType));
+p.addEventListener('pointermove',(e)=>{ if(!p.classList.contains('ghost')) return; log('pointermove DURING drag?! type='+e.pointerType); });
+window.addEventListener('keydown',(e)=>log('keydown '+e.key+(p.classList.contains('ghost')?' (during drag)':'')));
+document.addEventListener('dragleave',(e)=>{ if(e.target===document.documentElement||!e.relatedTarget) log('dragleave window'); });
+bar.addEventListener('dragover',(e)=>{ e.preventDefault(); overCount++; const t=performance.now()-overStart; if(overCount%50===0) log('bar dragover #'+overCount+' clientX='+e.clientX+' ('+Math.round(overCount/(t/1000))+'/s)'); });
+document.addEventListener('dragover',(e)=>{ e.preventDefault(); e.dataTransfer.dropEffect='move'; document.body.classList.add('hot'); });
+document.addEventListener('dragleave',()=>document.body.classList.remove('hot'));
+document.addEventListener('drop',(e)=>{ e.preventDefault(); document.body.classList.remove('hot');
+  log('DROP here: payload='+JSON.stringify(e.dataTransfer.getData('application/x-youcoded-session'))+' files='+e.dataTransfer.files.length); });
+bar.appendChild(p);
+</script>
