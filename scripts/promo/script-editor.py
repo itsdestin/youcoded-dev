@@ -72,6 +72,12 @@ input.line{width:100%;border:1px solid var(--line);border-radius:8px;padding:10p
 .count{font-size:13px;margin-top:6px;color:var(--muted)}.count.bad{color:var(--bad);font-weight:600}.count.ok{color:var(--ok)}
 textarea{width:100%;margin-top:8px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:14px;background:var(--bg);color:var(--fg);resize:vertical;min-height:34px}
 .thanks{display:none;text-align:center;padding:60px 20px;font-size:20px}
+.sec{border:1px solid var(--line);border-radius:16px;margin:18px 0;background:var(--bg)}.sec.drag{opacity:.55;border-color:var(--acc)}.sec.over{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.sechead{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card);border-radius:16px 16px 0 0;position:sticky;top:58px;z-index:1}
+.sechead .handle{font-size:22px;cursor:grab;user-select:none;touch-action:none;padding:0 6px;color:var(--muted)}.sechead .handle:active{cursor:grabbing}
+.sechead .num{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.sechead .title{font-weight:700;flex:1}
+.sechead button{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:8px;padding:4px 10px;cursor:pointer;font:inherit}.sechead button[disabled]{opacity:.35;cursor:default}
+.sec.locked .handle{visibility:hidden}.sec .card{margin:12px}
 @media(max-width:760px){.card{grid-template-columns:1fr}}
 """
 JS = r"""
@@ -79,6 +85,31 @@ const L=__L__;let state={lines:{}};
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;};
 const words=(s)=>s.trim()?s.trim().split(/\s+/).length:0;
 const main=document.getElementById('main');
+// Sections (the film's ten beats) are drag-reorderable — Destin, 2026-09-04: "i want to be able to
+// drag-reorder sections." The open (1) and the close (10) stay where they are. The order is saved
+// with the lines and printed on Submit; the film is re-cut to it afterwards. Reordering uses
+// pointer events (touch and mouse both work — HTML drag-and-drop does not on a touchscreen) plus
+// up/down buttons.
+const BEATS=[...new Set(L.map(l=>l.beat))]; const LOCKED=new Set([BEATS[0],BEATS[BEATS.length-1]]);
+const secOf={}; BEATS.forEach(b=>{ const sec=el('section','sec'+(LOCKED.has(b)?' locked':'')); sec.dataset.beat=b;
+  const first=L.find(l=>l.beat===b); const h=el('div','sechead');
+  const handle=el('span','handle','≡'); handle.title='Drag to reorder';
+  h.append(handle, el('span','num'), el('span','title',first.headline.split(' · ')[0]));
+  const up=el('button',null,'▲'), down=el('button',null,'▼'); up.onclick=()=>move(sec,-1); down.onclick=()=>move(sec,1); h.append(up,down);
+  if(LOCKED.has(b)){ up.disabled=down.disabled=true; h.append(el('span','num', b===BEATS[0]?'stays first':'stays last')); }
+  sec.append(h); main.append(sec); secOf[b]=sec;
+  // drag with the pointer: the section follows the finger/cursor's midpoint through its neighbours
+  handle.onpointerdown=(e)=>{ if(LOCKED.has(b)) return; e.preventDefault(); handle.setPointerCapture(e.pointerId); sec.classList.add('drag');
+    const mv=(ev)=>{ const under=document.elementFromPoint(ev.clientX,ev.clientY)?.closest('.sec'); if(!under||under===sec||under.classList.contains('locked')) return;
+      const r=under.getBoundingClientRect(); if(ev.clientY<r.top+r.height/2) under.before(sec); else under.after(sec); renumber(); };
+    const upH=()=>{ sec.classList.remove('drag'); handle.removeEventListener('pointermove',mv); handle.removeEventListener('pointerup',upH); handle.removeEventListener('pointercancel',upH); saveOrder(); };
+    handle.addEventListener('pointermove',mv); handle.addEventListener('pointerup',upH); handle.addEventListener('pointercancel',upH); };
+});
+function secs(){ return [...main.querySelectorAll('.sec')]; }
+function move(sec,d){ const all=secs(); const i=all.indexOf(sec), j=i+d; if(j<1||j>all.length-2) return; if(d<0) all[j].before(sec); else all[j].after(sec); renumber(); saveOrder(); }
+function renumber(){ secs().forEach((sec,i)=>{ sec.querySelector('.num').textContent='Section '+(i+1); const all=secs(); sec.querySelectorAll('.sechead button')[0].disabled=sec.classList.contains('locked')||i<=1; sec.querySelectorAll('.sechead button')[1].disabled=sec.classList.contains('locked')||i>=all.length-2; }); }
+function saveOrder(){ state.order=secs().map(s=>s.dataset.beat); save(); }
+function applyOrder(order){ if(!order) return; const all=Object.fromEntries(secs().map(s=>[s.dataset.beat,s])); order.forEach(b=>{ if(all[b]) main.append(all[b]); }); renumber(); }
 L.forEach((l,i)=>{
   const c=el('div','card'); c.dataset.id=l.id;
   const left=el('div'); const img=el('img'); img.src='stills/'+l.still; img.alt=''; left.append(img);
@@ -93,13 +124,14 @@ L.forEach((l,i)=>{
     const changed=inp.value.trim()!==l.text; c.classList.toggle('changed',changed); state.lines[l.id]={...(state.lines[l.id]||{}),text:inp.value,changed}; save();};
   inp.oninput=upd; right.append(inp,count);
   const ta=el('textarea'); ta.placeholder='A note for me (optional): what you want the moment to feel like, or what to change on screen'; ta.oninput=()=>{state.lines[l.id]={...(state.lines[l.id]||{}),note:ta.value}; save();}; right.append(ta);
-  c.append(left,right); main.append(c); inp._upd=upd;
+  c.append(left,right); secOf[l.beat].append(c); inp._upd=upd;
 });
+renumber();
 const READ_BASE=__RB__, READ_WORD=__RW__;
 let t=null; function save(){ progress(); clearTimeout(t); t=setTimeout(()=>fetch('/answers',{method:'POST',body:JSON.stringify(state)}),300); }
-function progress(){ const n=Object.values(state.lines).filter(a=>a.changed||a.note).length; document.getElementById('prog').textContent=n+' of '+L.length+' changed'; }
+function progress(){ const n=Object.values(state.lines).filter(a=>a.changed||a.note).length; const re=state.order&&state.order.join()!==BEATS.join(); document.getElementById('prog').textContent=n+' of '+L.length+' changed'+(re?' · sections reordered':''); }
 document.getElementById('submit').onclick=async()=>{ await fetch('/submit',{method:'POST',body:JSON.stringify(state)}); document.getElementById('main').style.display='none'; document.querySelector('header').style.display='none'; document.getElementById('thanks').style.display='block'; };
-fetch('/answers').then(r=>r.json()).then(s=>{ if(s&&s.lines){ state=s; for(const [id,a] of Object.entries(s.lines)){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(!c) continue; const inp=c.querySelector('input.line'); if(a.text!=null){ inp.value=a.text; } if(a.note) c.querySelector('textarea').value=a.note; inp._upd(); } } document.querySelectorAll('input.line').forEach(i=>i._upd()); }).catch(()=>document.querySelectorAll('input.line').forEach(i=>i._upd()));
+fetch('/answers').then(r=>r.json()).then(s=>{ if(s&&(s.lines||s.order)){ state=s; if(!state.lines) state.lines={}; applyOrder(s.order); for(const [id,a] of Object.entries(s.lines)){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(!c) continue; const inp=c.querySelector('input.line'); if(a.text!=null){ inp.value=a.text; } if(a.note) c.querySelector('textarea').value=a.note; inp._upd(); } } document.querySelectorAll('input.line').forEach(i=>i._upd()); }).catch(()=>document.querySelectorAll('input.line').forEach(i=>i._upd()));
 """
 
 def cues():
@@ -130,7 +162,7 @@ def lines(cs, names):
 def render(ls):
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The host's lines</title><style>{CSS}</style></head>
 <body><header><h1>The host's lines — edit any of them</h1><span class="prog" id="prog"></span><button class="submit" id="submit">Submit</button></header>
-<main id="main"><p class="intro">One card per line, in film order. The picture is the exact moment from the draft. Rewrite the line in the box; the counter tells you how many words that moment can hold (the music cuts every 2.1 s and a line needs 1.2 s plus a quarter second a word to be read). A red counter means the line will not fit unless the shot gets more time — you can still submit it and say so in the note. Leave a line alone to keep it. Submit when you are done; I copy the changes into the film.</p></main>
+<main id="main"><p class="intro">One card per line, in film order. The picture is the exact moment from the draft. Rewrite the line in the box; the counter tells you how many words that moment can hold (the music cuts every 2.1 s and a line needs 1.2 s plus a quarter second a word to be read). A red counter means the line will not fit unless the shot gets more time — you can still submit it and say so in the note. Leave a line alone to keep it. <b>Sections can be reordered</b>: drag a section by its ≡ handle (or use ▲ ▼); the open stays first and the close stays last. Two things to know before you reorder: the music has two big hits, on the current 3rd section (the theme changes) and the 9th (the marketplace) — whatever you put there gets the hit — and the theme colours change on every cut, so any order works there. Submit when you are done; I copy the changes into the film.</p></main>
 <div class="thanks" id="thanks">Got it. Your lines are saved — I'll put them in the film.</div>
 <script>{JS.replace('__L__', json.dumps(ls)).replace('__RB__', str(READ_BASE)).replace('__RW__', str(READ_WORD))}</script></body></html>"""
 
@@ -140,6 +172,9 @@ def summary(ls, state):
         a = (state.get('lines') or {}).get(l['id']) or {}
         if a.get('changed') or a.get('note'):
             rows.append(f"  {l['time']} {l['beat']:>3}  \"{l['text']}\" → \"{a.get('text', l['text']).strip()}\"" + (f"   note: {a['note']}" if a.get('note') else ''))
+    order = state.get('order')
+    beats = [l['beat'] for l in ls]; seen = []; [seen.append(b) for b in beats if b not in seen]
+    if order and order != seen: rows.append('  section order: ' + ' → '.join(order) + f'   (was {" → ".join(seen)})')
     return '\n'.join(rows) if rows else '  (no changes)'
 
 def main(argv):
