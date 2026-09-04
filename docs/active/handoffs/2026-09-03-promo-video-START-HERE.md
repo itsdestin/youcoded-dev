@@ -47,7 +47,7 @@ the final render (full size, loudness pass) and the wrap-up.
   between beats (the three theme-change moves instead).
 - **Copy:** short, concrete, no AI-isms, no invented numbers ("There are hundreds." was a lie —
   the theme registry is small). Bubbles must be readable: ≥ 1.2 s + a quarter second a word.
-- The close ends with the host standing left of the Y in "YouCoded", like the start.
+- The close ends with the host standing left of the Y in "YouCoded", like the start — inside a big modal in the middle of the window, which has grown to fill the frame (2026-09-04).
 
 ## What is approved
 
@@ -91,7 +91,7 @@ backdrop one theme track, the bubbles one cue list. `npm run render:draft` → `
 | a shot shows loading / the wrong moment | the beat's `*_FROM` (`markFrame(scene, mark, edge, offset)`) and `rate` (a static screen can run at 0.6–0.8× to fit; `assertClipCovers` throws at bundle time if a shot outruns its clip) | draft |
 | the theme-change move on a cut | `CYCLE` / `arrival()` in `src/Promo.tsx`; Beat3's in-place flips in `Beat3.tsx` | draft |
 | the sound on a moment | `<Sfx at name volume>` in the beat; new sounds in `music/synth.py` + `SFX` in `song.py` + `SECONDS` in `src/beats/sfx.tsx` | re-render the track |
-| the close | `src/beats/Beat10.tsx` (`Y_SPOT` beside the Y, the wave/cheer/shutdown), `TAIL_FRAMES` in `timeline.ts` | draft |
+| the close | `src/beats/Beat10.tsx`: the window grows to `SCALE` 1.15 (fills the frame), a scrim, the `MODAL` box in the middle holding the wordmark, the platforms and the site (Destin, 2026-09-04: "a nice big popup modal in the middle of that youcoded window"), `Y_SPOT` beside the Y inside it, the wave/cheer/shutdown; `TAIL_FRAMES` in `timeline.ts` | `npm run study -- CloseStudy out/close-study.mp4 --scale 0.5` (1 min), then the draft |
 
 **Commands** (from `scripts/promo/`): `npm run typecheck && npm test && npm run render:draft`.
 Frames: `ffmpeg -i out/draft.mp4 -vf "select='eq(n\,N)'" -frames:v 1 f.png`; contact sheet:
