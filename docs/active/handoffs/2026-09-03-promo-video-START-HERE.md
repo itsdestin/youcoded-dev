@@ -24,10 +24,16 @@ size, loudness pass) and the wrap-up.
   (and `scripts/promo/out/draft.mp4`, the same file). The page around it:
   `docs/active/prototypes/promo-2026-09/checkin-6.html`. The record of his edit and how each
   section was sized to it: `narration-v3.md`. His raw submit: `narration-v2.answers.json`.
-- **Open choices:** the caption style — nine animated variants in `study/label-reel.mp4` and the
-  settled looks in `storyboard-v3/caption-variants-2.png` (G X P O K S W B R; the film uses G, no
-  underline, while he picks; port his pick from `src/LabelStudy.tsx` into `src/Label.tsx` and delete
-  the study) — and the peek's exact pose (it is the app's docked side-peek now).
+- **Decided 2026-09-04 (late):** the caption style is G (the study is deleted; `Label.tsx` is G);
+  the close settles into a ta-da held through the fade — the powered-down pose is SKIPPED (sixteen
+  candidates are on file: `storyboard-v3/end-poses.png`, `power-down-poses.png`,
+  `power-down-poses-2.png`; `POWER_DOWN` in `Beat10.tsx` and `studies/EndPoseStudy.tsx` stay for
+  when he wants one). He then said "lets prep this final render. i think this should be ready!" —
+  `bash scripts/promo/render.sh` ran: `scripts/promo/out/youcoded-promo.mp4` (−14 LUFS) and
+  `youcoded-promo-silent.mp4`, full size. **He renders NOTHING further without his say-so** ("stop
+  rendering without my confirmation that we're ready").
+- Still his to call: whether the final is the one (then merge youcoded#402 and this branch, and the
+  wrap-up), the peek's exact pose if he ever wants it shallower.
 - The branch: `feat/promo-video` in worktree `/home/destin/youcoded-dev/worktrees/promo`
   (pushed). The app's fixture branch `feat/promo-workbench-fakes`
   (`/home/destin/youcoded-dev/worktrees/promo-fakes`, PR itsdestin/youcoded#402, pushed) holds
