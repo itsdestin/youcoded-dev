@@ -546,8 +546,10 @@ switch SSL mode to Full (strict) and re-proxy, or simply stay as is.
 
 Tick these off here; each unblocks a Claude session listed in the roadmap (`v1.3` flag).
 
-- [ ] **Form the LLC** at azcc.gov — Articles of Organization ($50), statutory agent at a Maricopa
-      or Pima County address. Same day: free EIN at irs.gov, then a business bank account.
+- [ ] **Form the LLC** at arizonabusinesscenter.azcc.gov (the portal that replaced eCorp in January 2026)
+      — Articles of Organization ($85 expedited), statutory agent at a Maricopa or Pima County address.
+      Same day: free EIN at irs.gov, then a business bank account. Screen-by-screen walkthrough, taxes,
+      city licences and the liability dos/don'ts: `2026-09-03-arizona-llc-formation-guide.md` (this folder).
 - [ ] **D-U-N-S number** at dnb.com (free, 1–2 weeks; the slowest step — start it with the LLC).
 - [ ] **Register a DMCA agent** at copyright.gov/dmca-directory ($6) in the LLC's name.
 - [ ] **Trademark**: search tmsearch.uspto.gov for "YouCoded", then file class 9 ($350) in the LLC's
