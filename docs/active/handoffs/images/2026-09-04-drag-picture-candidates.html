@@ -1,0 +1,87 @@
+<meta charset="utf-8"><title>drag picture candidates</title>
+<style>
+  body { margin:0; background:#2b2f36; color:#e6e8ee; font:13px system-ui,sans-serif; padding:28px; }
+  h1 { font-size:15px; font-weight:600; margin:0 0 4px; }
+  .sub { color:#9aa3b2; margin:0 0 26px; font-size:12px; }
+  .row { display:flex; gap:44px; align-items:flex-start; }
+  .cand { text-align:left; }
+  .name { font-weight:700; font-size:13px; margin-bottom:2px; }
+  .desc { color:#9aa3b2; font-size:11px; margin-bottom:10px; max-width:190px; line-height:1.5; }
+  canvas { display:block; }
+  .rule { color:#6f7889; font-size:10px; margin-top:8px; }
+</style>
+<h1>What follows the cursor when you drag a session to another window</h1>
+<p class="sub">Shown at true size — this is exactly how big each one appears on your screen. The width can never exceed 138 pixels; the height is unlimited.</p>
+<div class="row" id="row"></div>
+<script>
+const W = 138;
+const T = { canvas:'#12151c', panel:'#1b2029', inset:'#262c38', accent:'#7aa2f7', fg:'#e8eaf0', fg2:'#a9b1c1', dot:'#4ade80' };
+const FAM = 'ui-sans-serif, system-ui, sans-serif';
+function rr(x,a,b,w,h,r){const q=Math.min(r,w/2,h/2);x.beginPath();x.moveTo(a+q,b);x.arcTo(a+w,b,a+w,b+h,q);x.arcTo(a+w,b+h,a,b+h,q);x.arcTo(a,b+h,a,b,q);x.arcTo(a,b,a+w,b,q);x.closePath();}
+function ell(x,t,m){if(x.measureText(t).width<=m)return t;let c=t;while(c&&x.measureText(c+'…').width>m)c=c.slice(0,-1);return c+'…';}
+function make(H, draw){
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d');
+  rr(x,0,0,W,H,10); x.save(); x.clip();
+  x.fillStyle=T.canvas; x.fillRect(0,0,W,H);
+  draw(x,H); x.restore(); return c;
+}
+const NAME='refactor the parser';
+const MSGS=[['user','why does the parser drop the last line'],['assistant','The reader stops at the final newline.'],['user','fix it please']];
+
+// A — compact chip: the dot and the name, nothing else.
+const A = make(40,(x)=>{
+  x.fillStyle=T.panel; x.fillRect(0,0,W,40);
+  x.fillStyle=T.dot; x.beginPath(); x.arc(14,20,4.5,0,7); x.fill();
+  x.fillStyle=T.fg; x.font='600 13px '+FAM; x.textBaseline='middle';
+  x.fillText(ell(x,NAME,W-32), 25, 20.5);
+});
+
+// B — mini window: title bar plus the last few messages, the approved card squeezed to fit.
+const B = make(150,(x,H)=>{
+  x.fillStyle=T.panel; x.fillRect(0,0,W,26);
+  x.fillStyle=T.dot; x.beginPath(); x.arc(13,13,4,0,7); x.fill();
+  x.fillStyle=T.fg; x.font='600 11px '+FAM; x.textBaseline='middle';
+  x.fillText(ell(x,NAME,W-28), 22, 13.5);
+  x.font='10px '+FAM; let y=34;
+  for(const [role,text] of MSGS){
+    const mine=role==='user';
+    const words=text.split(' '); const lines=[]; let ln='';
+    for(const w of words){const t=ln?ln+' '+w:w; if(x.measureText(t).width<=W-32||!ln)ln=t; else {lines.push(ln); ln=w;} if(lines.length===2)break;}
+    if(lines.length<2&&ln)lines.push(ln);
+    const tw=Math.max(...lines.map(l=>x.measureText(l).width));
+    const bw=tw+12, bh=lines.length*13+8;
+    if(y+bh>H-6)break;
+    const bx=mine?W-8-bw:8;
+    x.save(); x.globalAlpha=mine?0.28:1; x.fillStyle=mine?T.accent:T.inset;
+    rr(x,bx,y,bw,bh,7); x.fill(); x.restore();
+    x.fillStyle=mine?T.fg:T.fg2;
+    lines.forEach((l,i)=>x.fillText(l,bx+6,y+4+i*13+6.5));
+    y+=bh+6;
+  }
+});
+
+// C — mini window, name only: the same window shape, no message text to squint at.
+const C = make(84,(x)=>{
+  x.fillStyle=T.panel; x.fillRect(0,0,W,30);
+  x.fillStyle=T.dot; x.beginPath(); x.arc(15,15,4.5,0,7); x.fill();
+  x.fillStyle=T.fg; x.font='600 12px '+FAM; x.textBaseline='middle';
+  x.fillText(ell(x,NAME,W-30), 25, 15.5);
+  x.fillStyle=T.inset;
+  [[0.78,42],[0.55,54],[0.68,66]].forEach(([f,yy])=>{rr(x,10,yy,(W-20)*f,6,3);x.fill();});
+});
+
+const defs=[
+  ['A','Compact chip','Just the name and its status light. Nothing is small enough to squint at.'],
+  ['B','Mini window with messages','The card you picked, narrowed to the only width that fits. The message text is genuinely this small.'],
+  ['C','Mini window, name only','Window-shaped like B, but the conversation is suggested rather than spelled out.'],
+];
+const row=document.getElementById('row');
+[A,B,C].forEach((c,i)=>{
+  const d=document.createElement('div'); d.className='cand';
+  d.innerHTML='<div class="name">'+defs[i][0]+' — '+defs[i][1]+'</div><div class="desc">'+defs[i][2]+'</div>';
+  d.appendChild(c);
+  const r=document.createElement('div'); r.className='rule'; r.textContent=c.width+' x '+c.height+' pixels';
+  d.appendChild(r); row.appendChild(d);
+});
+</script>

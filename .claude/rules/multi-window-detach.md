@@ -13,19 +13,19 @@ paths:
   - "**/desktop/src/main/window-registry.ts"
   - "**/desktop/src/main/pending-acquire.ts"
   - "**/desktop/src/renderer/session-drag-model.ts"
+  - "**/desktop/src/renderer/session-drag-image.ts"
   - "**/desktop/src/renderer/components/SessionStrip.tsx"
-  - "**/desktop/src/renderer/components/SessionDragPreview.tsx"
-last_verified: 2026-09-03
+last_verified: 2026-09-04
 verify:
   - path: youcoded/desktop/src/renderer/session-drag-model.ts
-    contains: "chooseSessionDragModel"
+    contains: "chooseTearOffModel"
   - path: youcoded/desktop/src/main/pending-acquire.ts
     contains: "PendingAcquireQueue"
   - path: youcoded/desktop/src/main/window-registry.ts
     contains: "markInheritedByTransfer"
   - test: youcoded/desktop/tests/tearoff-handoff.test.ts
   - test: youcoded/desktop/tests/session-drag-model.test.ts
-  - test: youcoded/desktop/tests/session-strip-dnd.test.tsx
+  - test: youcoded/desktop/tests/session-strip-osdrag.test.tsx
 ---
 
 # Multi-window session detach
@@ -40,23 +40,41 @@ app's own focused window) · `win.getPosition()` → `[0,0]` for every window ·
 learning or setting where its windows are; it is not configurable, and XWayland
 (`--n=x11`) is rejected — it blurs the whole app at fractional scaling.
 
-**So: never make a cross-window decision from a screen coordinate.** Anything
-that hit-tests the cursor against another window, or positions a window, works
-on Windows/macOS/Linux-X11 and silently does nothing here — the worst shape,
-because `setPosition` reports success. Re-measure with
-`node scripts/platform-probe.mjs` before trusting any of them.
+**So: never make a cross-window decision from a screen coordinate.** Re-measure
+with `node scripts/platform-probe.mjs` before trusting any of them.
 Guard: `session-drag-model.test.ts`.
 
-## The drag model is chosen per platform, and both paths must stay live
+## Only the CROSS-WINDOW half forks. The pointer path runs everywhere
 
-`chooseSessionDragModel()` returns `'dnd'` on Linux+Wayland (the compositor runs
-the drag; the destination window is TOLD it was dropped on, via `session:adopt`)
-and `'pointer'` everywhere else (today's live tear-off). Destin's call,
-2026-09-03: keep the tear-off animation where it works rather than trade it away
-everywhere. **Do not "simplify" the fork away** — a test pins that Windows pills
-stay non-draggable. The two cannot coexist within one drag: while the compositor
-owns the pointer, the app gets no `pointermove`, so no window can chase the
-cursor. Guard: `session-strip-dnd.test.tsx`.
+`clientX` works perfectly on Wayland, and the strip's reorder motion uses it 16
+times. `chooseTearOffModel()` picks only what carries a pill OUT of its window:
+`'os-drag'` on Linux+Wayland (the compositor runs it from the moment the pill is
+60px clear of the strip) and `'live-window'` elsewhere (spawn a peer window
+mid-drag and move it under the cursor). An earlier draft disabled the whole
+pointer path on Wayland and would have flattened the motion to fix a
+cross-window problem. **Do not widen the fork.** Guard:
+`session-strip-osdrag.test.tsx` pins that pills are never HTML5-draggable — a
+draggable pill gets a browser-run drag at mouse-down and stops sending
+`pointermove`, so nothing could animate.
+
+## A drop is REJECTED SILENTLY if it asks for the wrong effect
+
+`startDrag` drags a file, so the source offers `copy`. A target setting
+`dropEffect = 'move'` gets no drop event at all — `dragover` fires forever and
+nothing else happens, with no error anywhere. Three drags, zero drops, measured
+2026-09-04; it read exactly like "the compositor won't deliver drops". Do not
+"correct" this to `move` because a session is being moved. Guard:
+`session-strip-osdrag.test.tsx`.
+
+## The drag picture can never exceed 138 physical pixels wide
+
+Measured four ways on KDE/Wayland (2026-09-04). The compositor draws the image at
+the size it REPORTS, one screen pixel per image pixel — ignoring the display's
+scale factor — and crops anything wider than 138px to 138, centred. Height is
+unbounded (355 came through whole). `nativeImage` honours `scaleFactor`, but that
+only shrinks the reported size, so it cannot buy width. Not the pill's width, and
+not proportional. A full-size card is only possible if a YouCoded window paints it
+itself on `dragover`, where window-local coordinates work.
 
 ## `webContents.send` into a window that has not mounted is DROPPED
 
@@ -85,4 +103,5 @@ compared against a live drag. KWin draws the real border and shadow on drop, so
 nothing is lost. Do not add them back.
 
 Depth, including the full measurements:
-`docs/archive/investigations/2026-09-03-session-tearoff-history-and-wayland.md`.
+`docs/archive/investigations/2026-09-03-session-tearoff-history-and-wayland.md`
+and `docs/active/handoffs/2026-09-04-session-drag-START-HERE.md`.

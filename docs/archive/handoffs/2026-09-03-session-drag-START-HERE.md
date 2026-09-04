@@ -1,7 +1,8 @@
 ---
 title: Session drag + tear-off — where this stands, and what to do next
 date: 2026-09-03
-status: active
+status: superseded
+superseded_by: docs/active/handoffs/2026-09-04-session-drag-START-HERE.md
 ---
 
 # Read this first
