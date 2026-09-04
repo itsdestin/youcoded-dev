@@ -6,6 +6,7 @@ import { A, REST, type Action } from '../host/engine';
 import type { FaceStyle } from '../host/faces';
 import { THEMES } from '../themes';
 import { Window } from '../Window';
+import { Backdrop } from '../Backdrop';
 import { CLIP, perch } from '../layout';
 import { barFrame } from '../grid';
 import { Sfx } from '../beats/sfx';
@@ -27,6 +28,16 @@ const WORD = { size: 112, cx: 960, baseline: 578 };
 const WORD_LEFT = WORD.cx - 262;
 const GROUND_Y = WORD.baseline - SIZE * 0.86;    // the host's feet on the wordmark's baseline
 const STAND_X = WORD_LEFT - 44 - SIZE;           // its box just left of the Y
+// After the punch the whole title — host, gap, "YouCoded Assistant" — sits
+// CENTRED for a beat (Destin, 2026-09-04: "bound the mascot back a bit and
+// center the full title page thing for a second"). "Assistant" adds 28 + 470
+// px on the right, so the group is 140 + 44 + 525 + 28 + 470 = 1207 px wide;
+// the host bounces back to its left edge and the wordmark slides left to meet it.
+const ASSIST_W = 28 + 470;
+const GROUP_W = SIZE + 44 + 525 + ASSIST_W;
+// −20: the body fills only the middle of its 140 px box, so the group's VISIBLE left edge is ~20 px in
+export const RECOIL_X = Math.round(960 - GROUP_W / 2) - 20;       // the host's box after the recoil (336)
+export const WORD_LEFT_CENTRED = RECOIL_X + SIZE + 44;              // the Y's left edge once centred (520)
 const P = perch(0.3);
 
 export const introActions = (): Action[] => [
@@ -41,7 +52,8 @@ export const introActions = (): Action[] => [
   A.face(220, 'welcome'), A.look(220, 6, 0.5, -0.1), A.tilt(220, 6, 0),   // fixes on the Y (never the chevron 'idle' face — it read as empty eyes)
   A.punch(IMPACT, 1),                             // wind-up from 224, the hit at 236
   A.face(IMPACT, 'shocked'), A.costume(IMPACT, 'cotton-candy-sky'), A.look(IMPACT, 4, 0, 0),
-  A.face(IMPACT + 20, 'welcome'), A.blink(IMPACT + 26),
+  A.hop(IMPACT + 3, 16, RECOIL_X, GROUND_Y, 44),  // the recoil: bounced back off the Y, lands on the group's left edge
+  A.face(IMPACT + 22, 'welcome'), A.look(IMPACT + 22, 8, 0.5, -0.1), A.blink(IMPACT + 30),   // …and admires the full title
   A.hop(IMPACT + barFrame(1) + 6, 30, P.x, P.y, 140),   // onto the title bar as the window settles
   A.to(IMPACT + barFrame(1) + 6, 30, 'size', 120),
   A.face(IMPACT + barFrame(1) + 40, 'welcome'),
@@ -54,6 +66,8 @@ const Wordmark: React.FC = () => {
   const jolt = f >= IMPACT ? interpolate(spring({ frame: f - IMPACT, fps, config: { damping: 9, stiffness: 260 } }), [0, 1], [26, 0]) : 0;
   // "Assistant" rolls out from behind the wordmark's right edge over 14 frames
   const roll = f >= IMPACT + 2 ? spring({ frame: f - IMPACT - 2, fps, config: { damping: 14, stiffness: 140 } }) : 0;
+  // …and the whole mark slides left by the same spring, so host + wordmark end up centred as a group
+  const left = interpolate(roll, [0, 1], [WORD_LEFT, WORD_LEFT_CENTRED]);
   // The mark hands off to the caption band BEFORE bar 1 (14 frames early), so
   // the window rising on the downbeat never passes through it.
   const HAND = IMPACT + barFrame(1) - 14;
@@ -63,11 +77,12 @@ const Wordmark: React.FC = () => {
   const flash = f >= IMPACT && f < IMPACT + 3 ? 1 - (f - IMPACT) / 3 : 0;
   // WHY the mark is anchored by its LEFT edge and not centred: a centred flex
   // row re-centres itself when "Assistant" rolls out, which slid "You" under the
-  // host's feet in the first study. The Y stays where the fist hit it; the whole
-  // line re-centres only as it hands off to the band.
+  // host's feet in the first study. Instead the left edge is driven on purpose:
+  // it slides from the punch point to WORD_LEFT_CENTRED in step with the roll,
+  // while the host bounces back to RECOIL_X, so the GROUP is what ends centred.
   return (
     <>
-      <div style={{ position: 'absolute', left: interpolate(hand, [0, 1], [WORD_LEFT, 960 - (525 + 28 + 300) * 0.38 / 2]), top: y, display: 'flex', justifyContent: 'flex-start', transform: `scale(${scale})`, transformOrigin: '0% 50%',
+      <div style={{ position: 'absolute', left: interpolate(hand, [0, 1], [left, 960 - (525 + 28 + 300) * 0.38 / 2]), top: y, display: 'flex', justifyContent: 'flex-start', transform: `scale(${scale})`, transformOrigin: '0% 50%',
         fontFamily: `${fontFamily}, system-ui, sans-serif`, fontWeight: 800, fontSize: WORD.size, letterSpacing: '-0.03em', color: '#fff', opacity: fadeIn, lineHeight: 1 }}>
         <span style={{ display: 'inline-block', transform: `translateX(${jolt}px)`, textShadow: f >= IMPACT ? '0 6px 30px rgba(0,0,0,.35)' : 'none' }}>YouCoded</span>
         <span style={{ display: 'inline-block', overflow: 'hidden', width: interpolate(roll, [0, 1], [0, 470]), marginLeft: interpolate(roll, [0, 1], [0, 28]), whiteSpace: 'nowrap', verticalAlign: 'top' }}>
@@ -131,6 +146,9 @@ export const IntroVisuals: React.FC<{ windowFile?: string }> = ({ windowFile = '
 export const Intro: React.FC<{ faceStyle?: FaceStyle; windowFile?: string }> = ({ faceStyle = 'classic', windowFile = 'promo-idle-cotton' }) => (
   <AbsoluteFill style={{ background: '#000' }}>
     <Sequence from={IMPACT}><Audio src={staticFile('promo.wav')} /></Sequence>
+    {/* the film's backdrop, as Promo.tsx draws it: black through the prelude, Cotton Candy under the burst and after it
+        (without it the study went black again once the burst had covered the frame — Burst hands off to the backdrop) */}
+    <Backdrop themes={[{ at: IMPACT, slug: 'cotton-candy-sky' }]} total={INTRO_FRAMES} from={IMPACT} />
     <IntroVisuals windowFile={windowFile} />
     <Host actions={introActions()} base={{ ...REST, hidden: true, costume: 'midnight' }} faceStyle={faceStyle} />
     {/* footsteps and the punch */}

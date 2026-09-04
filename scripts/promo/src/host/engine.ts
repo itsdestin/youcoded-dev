@@ -22,9 +22,10 @@ export type HostState = {
   air: number;                    // 0..1 how far off the ground (shrinks the shadow)
   costume: Slug; hidden: boolean; alpha: number;
   poof: number | null;            // frame a costume poof started, or null
+  spin: number;                   // turn about the VERTICAL axis, degrees (the twirl); 0 = facing us
 };
 export const REST: HostState = { x: 0, y: 0, size: 120, rot: 0, sx: 1, sy: 1, armL: 0, armR: 0, legL: 0, legR: 0, face: 'welcome', blink: 0,
-  lookX: 0, lookY: 0, shadow: 1, air: 0, costume: 'midnight', hidden: false, alpha: 1, poof: null };
+  lookX: 0, lookY: 0, shadow: 1, air: 0, costume: 'midnight', hidden: false, alpha: 1, poof: null, spin: 0 };
 
 export type Action = { at: number; dur: number; run: (t: number, s: HostState, start: HostState, f: number) => void; name?: string };
 /** Progress 0..1 of an action at frame f, clamped. */
@@ -196,4 +197,95 @@ export const A = {
   } }),
   hide: (at: number): Action => ({ at, dur: 0, name: 'hide', run: (_t, s) => { s.hidden = true; } }),
   show: (at: number): Action => ({ at, dur: 0, name: 'show', run: (_t, s) => { s.hidden = false; } }),
+
+  // ---- the theme-change moves (round three, check-in 3b). Destin, 2026-09-04:
+  // "the jump animation just feels odd" — these replace the arrival hop. Each
+  // ends standing at x,y in `slug`, with the landing/settle feel of the hop
+  // (a squash that rings down in two bounces) but no arc across the screen.
+
+  /**
+   * A · the quick-change behind the wipe. `hit` is the frame the accent band
+   * crosses the host (transitions.ts bandHitFrame). It sees the band coming
+   * and ducks — crouches, throws its arms over its eyes — the band passes over
+   * it and it springs up in the new costume, arms flung wide, a small pop off
+   * the ground, and settles. A magician's cloth: the wipe is the cloth.
+   */
+  quickChange: (hit: number, slug: Slug, x: number, y: number): Action[] => [
+    { at: hit - 10, dur: 10, name: 'duck', run: (t, s, start) => {
+      const k = E.inOutQuad(t);
+      s.x = L(start.x, x, k); s.y = L(start.y, y, k);
+      s.sy = L(start.sy, 0.70, k); s.sx = L(start.sx, 1.22, k);
+      s.armL = L(start.armL, -150, k); s.armR = L(start.armR, 150, k);   // arms up over the eyes
+      s.legL = 0; s.legR = 0; s.rot = L(start.rot, 0, k); s.air = 0; s.shadow = 1;
+    } },
+    { at: hit - 4, dur: 4, name: 'eyes-shut', run: (t, s) => { s.blink = t < 1 ? 1 : 0; } },
+    { at: hit, dur: 0, name: 'swap', run: (_t, s) => { s.costume = slug; s.poof = hit; s.face = 'shocked'; } },
+    { at: hit, dur: 16, name: 'spring-up', run: (t, s) => {
+      const b = E.settle(t);                                         // 0.70 → overshoot → 1
+      s.sy = L(0.70, 1, b) + 0.22 * E.hump(Math.min(1, t * 2.2)) * (1 - t);   // a stretch on the way up
+      s.sx = 2 - s.sy;
+      const pop = 26 * E.hump(Math.min(1, t * 1.6));                  // a small pop off the ground
+      s.y = y - pop; s.air = Math.min(1, pop / 40); s.shadow = 1 - 0.4 * s.air; s.x = x;
+      s.armL = L(-150, 0, E.outBack(t)) - 40 * E.hump(t); s.armR = L(150, 0, E.outBack(t)) + 40 * E.hump(t);   // flung wide, then down
+      s.rot = 0; s.legL = 0; s.legR = 0;
+    } },
+    { at: hit + 16, dur: 0, name: 'face', run: (_t, s) => { s.face = 'welcome'; } },
+    { at: hit + 24, dur: 3, name: 'blink', run: (t, s) => { s.blink = t < 1 ? 1 : 0; } },
+  ],
+
+  /**
+   * B · the poof-teleport. Vanishes at `at`: a quick crouch, a stretch upward,
+   * and it shrinks to nothing in a puff. Reappears at `back`, at x,y in `slug`:
+   * a puff, grows from its feet with an overshoot, then the landing squash.
+   */
+  vanish: (at: number): Action[] => [
+    { at: at - 8, dur: 8, name: 'wind', run: (t, s, start) => {
+      const k = E.inOutQuad(t); s.sy = L(start.sy, 0.82, k); s.sx = L(start.sx, 1.14, k); s.armL = L(start.armL, 30, k); s.armR = L(start.armR, -30, k); s.rot = L(start.rot, 0, k);
+    } },
+    { at, dur: 5, name: 'puff-out', run: (t, s, start) => {
+      const k = E.inCubic(t);
+      s.sy = L(0.82, 1.6, E.outQuad(t)) * (1 - k); s.sx = L(1.14, 0.5, E.outQuad(t)) * (1 - k);   // whips up into a wisp, then gone
+      s.alpha = 1 - k; s.shadow = 1 - t; s.poof = t === 0 ? at : s.poof; s.armL = start.armL; s.armR = start.armR;
+      if (t >= 1) { s.hidden = true; s.sy = 1; s.sx = 1; s.alpha = 1; }
+    } },
+    { at, dur: 0, name: 'poof', run: (_t, s) => { s.poof = at; } },
+  ],
+  appear: (back: number, x: number, y: number, slug: Slug): Action[] => [
+    { at: back, dur: 0, name: 'materialise', run: (_t, s) => { s.hidden = false; s.x = x; s.y = y; s.costume = slug; s.poof = back; s.face = 'shocked'; s.rot = 0; s.legL = 0; s.legR = 0; s.air = 0; s.alpha = 1; } },
+    { at: back, dur: 10, name: 'grow', run: (t, s) => {
+      const k = E.outBack(t); s.sx = k; s.sy = k * L(1.18, 1, t);      // grows from the feet, a little tall at first
+      s.armL = L(120, 0, k); s.armR = L(-120, 0, k); s.shadow = t;
+    } },
+    { at: back + 10, dur: 14, name: 'land', run: (t, s) => { const b = E.settle(t); s.sy = L(0.86, 1, b); s.sx = 2 - s.sy; } },
+    { at: back + 14, dur: 0, name: 'face', run: (_t, s) => { s.face = 'welcome'; } },
+    { at: back + 22, dur: 3, name: 'blink', run: (t, s) => { s.blink = t < 1 ? 1 : 0; } },
+  ],
+
+  /**
+   * C · the twirl. Spins about its own axis, accelerating then slowing — three
+   * full turns over `dur` frames — stretched tall and thin in the middle, the
+   * costume switching the instant it is edge-on at the halfway point (a puff
+   * there), gliding to x,y if that differs. Comes out of the spin with a dizzy
+   * wobble that rings down, then the welcome face.
+   */
+  twirl: (at: number, dur: number, x: number, y: number, slug: Slug): Action[] => [
+    { at, dur, name: 'twirl', run: (t, s, start) => {
+      const e = E.inOutQuad(t);
+      s.spin = 1080 * e;                                              // three turns; edge-on at 90, 270, 450, 540±…
+      s.x = L(start.x, x, e); s.y = L(start.y, y, e);
+      const mid = E.hump(t);
+      s.sy = 1 + 0.16 * mid; s.sx = 1 - 0.10 * mid;
+      s.armL = -70 * mid; s.armR = 70 * mid; s.legL = -12 * mid; s.legR = 12 * mid;   // arms out, centrifugal
+      s.rot = 0; s.air = 0; s.shadow = 1 - 0.25 * mid;
+      if (t >= 0.5) { s.costume = slug; s.poof = at + Math.round(dur / 2); }
+      s.face = t >= 0.5 && t < 1 ? 'dizzy' : s.face;
+      if (t >= 1) s.spin = 0;
+    } },
+    { at: at + dur, dur: 16, name: 'wobble', run: (t, s) => {
+      s.rot = 9 * Math.exp(-4 * t) * Math.sin(t * Math.PI * 3);       // the dizzy sway, ringing down
+      const b = E.settle(t); s.sy = L(0.90, 1, b); s.sx = 2 - s.sy; s.spin = 0;
+      s.face = t < 0.6 ? 'dizzy' : 'welcome';
+    } },
+    { at: at + dur + 20, dur: 3, name: 'blink', run: (t, s) => { s.blink = t < 1 ? 1 : 0; } },
+  ],
 };

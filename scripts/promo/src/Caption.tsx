@@ -16,7 +16,7 @@ const FONTS: Record<Theme['font'], string> = {
   Nunito: loadNunito().fontFamily,
   'Space Grotesk': loadSpaceGrotesk().fontFamily,
 };
-const family = (t: Theme) => `${FONTS[t.font]}, ${FONTS.Inter}, system-ui, sans-serif`;
+export const family = (t: Theme) => `${FONTS[t.font]}, ${FONTS.Inter}, system-ui, sans-serif`;
 
 type Props = { head: string; sub?: string; at: number; subAt?: number; theme: Slug; top?: number; size?: number; headColor?: string; still?: boolean };
 /**

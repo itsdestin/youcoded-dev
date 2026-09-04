@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import type { TransitionPresentation, TransitionPresentationComponentProps } from '@remotion/transitions';
 // The cut between beats: a slanted wipe whose leading edge is a band of the
 // INCOMING theme's accent colour. The wipe runs PRE frames before the downbeat
@@ -47,3 +47,33 @@ export const accentWipe = (props: Props): TransitionPresentation<Props> => ({ co
 /** A hard cut inside the same overlap maths: the entering shot is simply on top. */
 const Cut: React.FC<TransitionPresentationComponentProps<Props>> = ({ children }) => <AbsoluteFill>{children}</AbsoluteFill>;
 export const hardCut = (props: Props): TransitionPresentation<Props> => ({ component: Cut, props });
+
+/**
+ * The frame, counting from the wipe's first frame, on which the band's leading
+ * edge crosses x at height y (both px in the 1920×1080 frame). The host's
+ * quick-change is timed from it so the costume swaps exactly as the band
+ * passes over it. Returns `cut` if the edge never gets there.
+ */
+export function bandHitFrame(cut: number, from: WipeFrom, x: number, y: number): number {
+  for (let k = 0; k <= cut; k++) {
+    const { top, bot } = wipeEdge(k / cut, from);
+    const edgeX = (top + (bot - top) * (y / 1080)) / 100 * 1920;
+    if (from === 'left' ? edgeX >= x : edgeX <= x) return k;
+  }
+  return cut;
+}
+/**
+ * The band alone, drawn ABOVE the host for the frames of a wipe (the
+ * presentation's band sits under the host, which is drawn on top of the
+ * series). With this copy on top, the band passes in FRONT of the host — the
+ * cloth of the quick-change — and lands on the same pixels as the one below.
+ */
+export const BandOverlay: React.FC<{ at: number; cut: number; accent: string; from: WipeFrom }> = ({ at, cut, accent, from }) => {
+  const f = useCurrentFrame();
+  if (f < at || f > at + cut) return null;
+  const p = (f - at) / cut;
+  const { top: edgeTop, bot: edgeBot } = wipeEdge(p, from);
+  const bandTop = from === 'left' ? edgeTop + BAND : edgeTop - BAND;
+  const bandBot = from === 'left' ? edgeBot + BAND : edgeBot - BAND;
+  return <AbsoluteFill style={{ clipPath: `polygon(${edgeTop}% 0%, ${bandTop}% 0%, ${bandBot}% 100%, ${edgeBot}% 100%)`, background: accent, opacity: 0.95, pointerEvents: 'none' }} />;
+};
