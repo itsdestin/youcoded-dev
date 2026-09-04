@@ -10,7 +10,7 @@ const { withFaces } = await import('./src/host/faces.ts');
 const out = process.argv[2];
 const styles = process.argv.length > 3 ? process.argv.slice(3) : ['classic', 'warm'];
 const dir = mkdtempSync(join(tmpdir(), 'faces-'));
-const faces = ['welcome', 'shocked', 'curious', 'happy', 'idle', 'dizzy', 'blink'];
+const faces = ['welcome', 'shocked', 'curious', 'happy', 'smug', 'blink', 'dizzy', 'shutdown'];
 // every tint the film's default rig wears, with the ink the host really uses
 // (the same 22 %-of-the-body shade as themes.ts inkFor; inlined because themes.ts
 // imports the generated module without an extension, which Node's loader rejects)
@@ -24,7 +24,8 @@ for (const style of styles) {
     for (const face of faces) {
       let svg = withFaces(DEFAULT_BUDDY_RIG, style).replaceAll('var(--rig-accent, #f0a828)', accent).replaceAll('var(--rig-accent, #ffc030)', accent)
         .replaceAll('var(--rig-accent, #ffe090)', accent).replaceAll('var(--rig-accent, #ffd060)', accent).replaceAll('var(--rig-on-accent, #2a1004)', on);
-      const css = '<style>' + ['idle', 'welcome', 'curious', 'shocked', 'dizzy', 'blink', 'happy'].map((g) => `#rig-face-${g}{display:${g === face ? 'inline' : 'none'} !important}`).join('') + '#rig-hand-peek-left,#rig-hand-peek-right{display:none !important}</style>';
+      const tuck = face === 'shutdown' ? '#rig-arm-left{transform-box:view-box;transform-origin:2.5px 9px;transform:rotate(70deg)}#rig-arm-right{transform-box:view-box;transform-origin:21.5px 9px;transform:rotate(-70deg)}#rig-leg-left{transform-box:view-box;transform-origin:8.95px 17px;transform:rotate(95deg)}#rig-leg-right{transform-box:view-box;transform-origin:15.05px 17px;transform:rotate(-95deg)}' : '';
+      const css = '<style>' + ['idle', 'welcome', 'curious', 'shocked', 'dizzy', 'blink', 'happy', 'smug', 'shutdown'].map((g) => `#rig-face-${g}{display:${g === face ? 'inline' : 'none'} !important}`).join('') + '#rig-hand-peek-left,#rig-hand-peek-right{display:none !important}' + tuck + '</style>';
       svg = svg.replace(/(<svg[^>]*>)/, `$1${css}`);
       const p = join(dir, `${style}-${slug}-${face}.png`);
       writeFileSync(join(dir, 't.svg'), svg);

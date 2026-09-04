@@ -10,7 +10,8 @@ export type FaceStyle = 'classic' | 'soft' | 'dot' | 'warm';
 // significantly worse" — the Golden Sunbreak and Strawberry Kitty eyes (the
 // rigs' own big dark eyes with sparkle highlights) are the model. 'classic' is
 // the style the film uses; soft/dot stay only as the record of what was tried.
-type Set = Record<'idle' | 'welcome' | 'curious' | 'shocked' | 'blink', string> & { happy?: string; dizzy?: string };
+type Set = Record<'idle' | 'welcome' | 'curious' | 'shocked' | 'blink', string> & { happy?: string; dizzy?: string; smug?: string; shutdown?: string };
+const EXTRA_FACES = ['happy', 'smug', 'shutdown'] as const;   // faces a set may add beyond the rig's own five
 // The new styles draw their ink in a FIXED dark, not the theme's on-accent:
 // on a light theme the on-accent is white, and a white iris in a white eye is
 // no eye at all (the first sheet, Cotton Candy row).
@@ -70,23 +71,30 @@ const warmEye = (cx: number, cy: number, sx = 1, lid = 0) => {
   <g class="pupil"><circle cx="${cx + 0.7 * sx}" cy="${cy + 0.7 * sx}" r="${0.3 * sx}" fill="${HI}"/><circle cx="${cx + 0.05 * sx}" cy="${cy + 1.3 * sx}" r="${0.2 * sx}" fill="${HI2}" fill-opacity="0.8"/><circle cx="${cx + 1.0 * sx}" cy="${cy + 1.3 * sx}" r="${0.14 * sx}" fill="${HI3}" fill-opacity="0.65"/></g></g>`;
 };
 const warmBrow = (cx: number, y: number, tilt = 0) => `<path d="M${cx - 1.35} ${y + tilt} Q${cx} ${y - 0.6} ${cx + 1.35} ${y - tilt}" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`;
+/** A swirl eye: arcs chained outward from the centre, two turns. */
+const swirl = (cx: number, cy: number) => `<path d="M${cx} ${cy} a0.35 0.35 0 0 1 0.35 0.35 a0.7 0.7 0 0 1 -0.7 0.7 a1.05 1.05 0 0 1 -1.05 -1.05 a1.4 1.4 0 0 1 1.4 -1.4 a1.75 1.75 0 0 1 1.75 1.75 a2 2 0 0 1 -1.2 1.9" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`;
+/** A four-point star. */
+const star = (cx: number, cy: number, r: number) => `<path d="M${cx} ${cy - r} Q${cx} ${cy} ${cx + r} ${cy} Q${cx} ${cy} ${cx} ${cy + r} Q${cx} ${cy} ${cx - r} ${cy} Q${cx} ${cy} ${cx} ${cy - r} Z" fill="${HI}"/>`;
 const SMILE = `<g transform="rotate(-2 12 13.3)"><path d="M10.8 13.3 Q10.8 13 12 13 Q13.2 13 13.2 13.3 A1.1 1 0 0 1 10.8 13.3 Z" fill="${INK}"/></g>`;
 const WARM: Set = {
-  // calm: the welcome eyes with the lids a third down, a small closed smile
-  idle: `${warmEye(9.3, 9.55, 1, 0.2)}${warmEye(14.7, 9.25, 1, 0.2)}<path d="M11 13.3 Q12 13.9 13 13.3" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`,
+  // smug: the welcome eyes with the lids a fifth down, a small closed smile (Destin, 2026-09-04: the first 'idle' draft)
+  smug: `${warmEye(9.3, 9.55, 1, 0.2)}${warmEye(14.7, 9.25, 1, 0.2)}<path d="M11 13.3 Q12 13.9 13 13.3" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`,
+  // idle = shutdown: eyes closed as two flat lines, a small neutral mouth; the host's `shutdown` action tucks the limbs under it
+  idle: `<path d="M8 10 L10.6 10" fill="none" stroke="${INK}" stroke-width="0.8" stroke-linecap="round"/><path d="M13.4 9.8 L16 9.8" fill="none" stroke="${INK}" stroke-width="0.8" stroke-linecap="round"/><path d="M11.3 13.3 L12.7 13.3" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`,
+  shutdown: `<path d="M8 10 L10.6 10" fill="none" stroke="${INK}" stroke-width="0.8" stroke-linecap="round"/><path d="M13.4 9.8 L16 9.8" fill="none" stroke="${INK}" stroke-width="0.8" stroke-linecap="round"/><path d="M11.3 13.3 L12.7 13.3" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`,
   welcome: `${warmEye(9.3, 9.55)}${warmEye(14.7, 9.25)}${SMILE}`,
   // curious: the SAME two eyes, one brow up, a small off-centre mouth
-  curious: `${warmEye(9.3, 9.55)}${warmEye(14.7, 9.25)}${warmBrow(14.7, 6.5, 0.25)}<path d="M11.4 13.3 Q12.2 13.9 13 13.2" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`,
+  curious: `${warmEye(9.3, 9.55)}${warmEye(14.7, 9.25)}<path d="M8 7.1 L10.6 6.9" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>${warmBrow(14.7, 6.3, 0.3)}<path d="M11.4 13.3 Q12.2 13.9 13 13.2" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`,
   // surprised: the same eyes a touch bigger with their sparkles, both brows up, a small round mouth
   shocked: `${warmEye(9.3, 9.7, 1.12)}${warmEye(14.7, 9.4, 1.12)}${warmBrow(9.3, 6.5)}${warmBrow(14.7, 6.2)}<ellipse cx="12" cy="13.6" rx="0.7" ry="0.85" fill="${INK}"/>`,
-  blink: `<path d="M8 10 Q9.3 11 10.6 10" fill="none" stroke="${INK}" stroke-width="0.9" stroke-linecap="round"/><path d="M13.4 10 Q14.7 11 16 10" fill="none" stroke="${INK}" stroke-width="0.9" stroke-linecap="round"/>${SMILE}`,
+  blink: `<path d="M8 10 Q9.3 10.5 10.6 10" fill="none" stroke="${INK}" stroke-width="0.85" stroke-linecap="round"/><path d="M13.4 9.8 Q14.7 10.3 16 9.8" fill="none" stroke="${INK}" stroke-width="0.85" stroke-linecap="round"/>${SMILE}`,
   // happy (new): eyes closed in two upward arcs, the smile wide open
   happy: `<path d="M8 10.4 Q9.3 8.6 10.6 10.4" fill="none" stroke="${INK}" stroke-width="0.9" stroke-linecap="round"/><path d="M13.4 10.1 Q14.7 8.3 16 10.1" fill="none" stroke="${INK}" stroke-width="0.9" stroke-linecap="round"/>
     <path d="M10.3 13 Q10.3 12.7 12 12.7 Q13.7 12.7 13.7 13 A1.7 1.5 0 0 1 10.3 13 Z" fill="${INK}"/>`,
   // dizzy: the X eyes a little lighter, the same wavy mouth, the stars kept
-  dizzy: `<g stroke="${INK}" stroke-width="0.85" stroke-linecap="round"><line x1="8.1" y1="8.7" x2="10.5" y2="11.3"/><line x1="10.5" y1="8.7" x2="8.1" y2="11.3"/><line x1="13.5" y1="8.7" x2="15.9" y2="11.3"/><line x1="15.9" y1="8.7" x2="13.5" y2="11.3"/></g>
+  dizzy: `${swirl(9.3, 9.8)}${swirl(14.7, 9.6)}
     <path d="M10.4 13.6 L11.2 13 L12 13.6 L12.8 13 L13.6 13.6" fill="none" stroke="${INK}" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M5.4 3.6 Q6.4 2.6 7.4 3.6 Q6.4 4.6 5.4 3.6" fill="none" stroke="${HI}" stroke-width="0.5" stroke-linecap="round"/><path d="M16.6 3.6 Q17.6 2.6 18.6 3.6 Q17.6 4.6 16.6 3.6" fill="none" stroke="${HI}" stroke-width="0.5" stroke-linecap="round"/>`,
+    ${star(8.6, 3.4, 0.7)}${star(12.2, 2.3, 0.85)}${star(15.8, 3.4, 0.7)}<path d="M7.6 4.4 Q12 0.9 16.4 4.4" fill="none" stroke="${HI}" stroke-width="0.3" stroke-dasharray="0.6 0.5" stroke-linecap="round"/>`,
 };
 
 const SETS: Record<Exclude<FaceStyle, 'classic'>, Set> = { soft: SOFT, dot: DOT, warm: WARM };
@@ -123,8 +131,11 @@ export function withFaces(rigSvg: string, style: FaceStyle): string {
     }
     out = out.slice(0, from) + set[face] + out.slice(i);
   }
-  // a set may add a 'happy' group the rig does not have: it goes in after the blink group
-  // (placed BEFORE the blink group's open tag — after its first </g> landed inside it, since the smile is a nested <g>)
-  if (set.happy && !out.includes('id="rig-face-happy"')) out = out.replace(/(<g id="rig-face-blink")/, `<g id="rig-face-happy" style="display:none">${set.happy}</g>\n      $1`);
+  // a set may add face groups the rig does not have (happy, smug, shutdown): each goes in
+  // BEFORE the blink group's open tag (after its first </g> landed inside it — the smile is a nested <g>)
+  for (const extra of EXTRA_FACES) {
+    const body = set[extra];
+    if (body && !out.includes(`id="rig-face-${extra}"`)) out = out.replace(/(<g id="rig-face-blink")/, `<g id="rig-face-${extra}" style="display:none">${body}</g>\n      $1`);
+  }
   return out;
 }

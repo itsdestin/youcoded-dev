@@ -53,7 +53,7 @@ Target: `v1.3`
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 8 | 1 | 1 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 12 | 4 | 0 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 11 | 4 | 0 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 6 | 3 | 0 | 2 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 3 | 1 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 1 | 0 | 1 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 3 | 0 | 0 | 2 |
 

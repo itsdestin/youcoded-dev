@@ -5,7 +5,7 @@ import { THEMES, rigFor, companionsFor, inkFor, type Slug } from '../themes';
 import { evaluate, type Action, type HostState } from './engine';
 import { withFaces, type FaceStyle } from './faces';
 
-const FACES: Face[] = ['idle', 'welcome', 'curious', 'shocked', 'dizzy', 'happy'];
+const FACES: Face[] = ['idle', 'welcome', 'curious', 'shocked', 'dizzy', 'happy', 'smug', 'shutdown'];
 const DEFAULT_RIG_SLUGS: Slug[] = ['midnight', 'creme', 'light', 'meadow-mist', 'devils-garden', 'cotton-candy-sky', 'golden-sunbreak'];
 
 /** One rig, posed from a HostState. `scope` keeps its style rules from leaking into another rig on screen. */

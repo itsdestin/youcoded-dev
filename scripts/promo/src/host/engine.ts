@@ -279,6 +279,20 @@ export const A = {
     s.armL = L(start.armL, 75, k); s.armR = L(start.armR, -75, k); s.rot = L(start.rot, 6, k); s.sy = 1 - 0.04 * k; s.sx = 1 + 0.03 * k;
     if (t >= 1) { s.armL = start.armL; s.armR = start.armR; s.rot = start.rot; s.sy = 1; s.sx = 1; }
   } }),
+  /** Shutdown: eyes close, the arms fold in under the body and the legs tuck up beneath it, the body settles a touch lower. `wake` undoes it. */
+  shutdown: (at: number, dur = 16): Action => ({ at, dur, name: 'shutdown', run: (t, s, start) => {
+    const k = E.inOutQuad(t);
+    s.armL = L(start.armL, 70, k); s.armR = L(start.armR, -70, k);      // arms swing in under the belly
+    s.legL = L(start.legL, 95, k); s.legR = L(start.legR, -95, k);      // legs fold up underneath
+    s.sy = L(start.sy, 0.94, k); s.sx = L(start.sx, 1.04, k); s.rot = L(start.rot, 0, k);
+    if (t > 0.3) s.face = 'shutdown';
+  } }),
+  wake: (at: number, dur = 14): Action => ({ at, dur, name: 'wake', run: (t, s, start) => {
+    const k = E.outBack(t);
+    s.armL = L(start.armL, 0, k); s.armR = L(start.armR, 0, k); s.legL = L(start.legL, 0, k); s.legR = L(start.legR, 0, k);
+    s.sy = L(start.sy, 1, k); s.sx = L(start.sx, 1, k);
+    if (t > 0.5) s.face = 'welcome';
+  } }),
   hide: (at: number): Action => ({ at, dur: 0, name: 'hide', run: (_t, s) => { s.hidden = true; } }),
   show: (at: number): Action => ({ at, dur: 0, name: 'show', run: (_t, s) => { s.hidden = false; } }),
 
