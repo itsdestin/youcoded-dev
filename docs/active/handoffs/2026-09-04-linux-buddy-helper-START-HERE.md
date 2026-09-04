@@ -40,10 +40,11 @@ yet.**
 
 ## Next steps, in order
 
-### 0 · Measurements before writing code — **two done, two need Destin**
+### 0 · Measurements before writing code — **done**
 
-Done 2026-09-04, headless, machine left byte-identical (`kwinrc` diffed against a
-pre-probe backup). Probe FINDINGS rounds 3, 4 and 6.
+All four resolved on 2026-09-04 — three measured, one deferred by Destin. Every
+headless round left the machine byte-identical (`kwinrc` diffed against a
+pre-probe backup) and nothing is installed. Probe FINDINGS rounds 3-6.
 
 - ✅ **Three windows at 60 fps** (§3) — holds. 363/363 renames applied, all exact,
   188/sec. The per-role grammar stands; no group format to write.
@@ -54,17 +55,18 @@ pre-probe backup). Probe FINDINGS rounds 3, 4 and 6.
   was wrong and the buddy would have docked 52 px onto the taskbar. §0 is
   rewritten around plasmashell's `StrutManager`. **Read §0 before building.**
 
-Still open, both needing Destin — one launch covers both:
-`bash docs/active/prototypes/2026-09-04-buddy-kwin-helper-probe/round5-live.sh`
+- ✅ **Caption leak** (§2) — Destin, live, dragging the real grammar with the
+  three skip flags set: *"the buddy is not listed."* Overview and the
+  screen-share picker show nothing. KRunner's window search and panel title
+  widgets stay unchecked and are accepted as a known gap.
+- ⏸️ **Multi-monitor** (§9) — **deferred by Destin** ("we will skip tv for now",
+  2026-09-04). The half that is logic — matching Electron displays to KDE screen
+  names by bounds — moves into unit tests against synthetic inventories (§8).
+  Roadmap item filed for the real two-screen run before release. Do **not**
+  re-open this as a blocker.
 
-- **Multi-monitor** (§9). Needs the TV plugged in *before* launching. The rig has
-  one button per screen; the question is whether the window lands on the right
-  physical screen and whether the two scales survive. Round 6 raised the stakes:
-  Electron displays are matched to KDE screen names **by bounds**, and that match
-  has only ever been exercised against one screen.
-- **Eyeball Overview (Meta+W) and a screen-share picker mid-drag** (§2). The rig
-  uses the real `YC:mascot@x,y` caption and sets the three skip flags, so what he
-  sees is what a user would see.
+Rig for both, if it is ever needed again:
+`bash docs/active/prototypes/2026-09-04-buddy-kwin-helper-probe/round5-live.sh`
 
 ### 1 · Task breakdown
 Descriptions, not pre-written code (feature-flow default; pre-written code only

@@ -6,7 +6,7 @@ feature: linux-buddy-helper
 contract: linux-buddy-helper.contract.json (13 rows, signed 2026-09-04; R2/R10 amended by decide-uninstall#D-1)
 branch: feat/linux-buddy-kwin-helper
 review: round 1 (13 findings, 13 accepted), round 2 (13 findings, 13 accepted), round 3 (10 findings, 10 accepted) — docs/active/reviews/
-measurements: probe rounds 3, 4 and 6 (2026-09-04) closed §3 and R11 and REVERSED R3-F7's work-area decision
+measurements: probe rounds 3-6 (2026-09-04) closed §3, §2's caption leak and R11, and REVERSED R3-F7's work-area decision
 ---
 
 # Linux buddy helper — technical design (revision 5)
@@ -182,11 +182,17 @@ accept the write and read back `true`**, where the app's own `skipTaskbar` is a
 no-op on Wayland. (Revision 4 cited `window.h:364/369/374` for this; it is now a
 result, not a reading of the API.)
 
-**It does not remove the consequence entirely (R2-F5).** Those three flags do not
-cover KWin's Overview, KRunner's window search, the screen-share window picker,
-or panel title widgets. The caption is therefore kept short and tokenless, and
-**Overview and a screen-share picker must be eyeballed mid-drag** before this is
-called done.
+**Those three flags do not cover KWin's Overview, KRunner's window search, the
+screen-share window picker, or panel title widgets (R2-F5) — so the two that a
+user actually passes through were checked, and the caption does not leak.**
+Destin, live 2026-09-04, dragging the real `YC:mascot@<x>,<y>` grammar with the
+three flags set: *"the buddy is not listed."* The grammar stands as written and
+§2's open eyeball item is closed.
+
+Two surfaces on R2-F5's list were **not** checked — KRunner's window search and
+panel title widgets. Both are opt-in searches rather than something a user walks
+into, so they are accepted as a known gap rather than a blocker. The caption
+stays short and tokenless regardless: that is what keeps the gap cheap.
 
 ## 3 · Position becomes app-owned (R1-1, R1-5)
 
@@ -477,9 +483,11 @@ headless, machine left byte-identical (`kwinrc` diffed against a pre-probe backu
 | The app gets no readback of a compositor-side move (§3) | **Confirmed.** `getBounds()` frozen at `0,0`; one `move` event, at creation |
 | The helper can set `skipTaskbar`/`skipSwitcher`/`skipPager` (§2) | **Yes** — all three read back `true`; previously cited from a header file, now measured |
 
-Still unmeasured, and named as such: multi-monitor (§9), KWin-restart survival
-(§9), and whether Overview and the screen-share picker show the caption mid-drag
-(§2). The last two need Destin — a second screen and his eyes respectively.
+**Overview and the screen-share picker were then checked by Destin (Round 5) and
+show nothing** — §2. Still unmeasured, and named as such: multi-monitor (§9,
+**deferred by Destin**, with a unit-test substitute for the half that is logic),
+KWin-restart survival (§9), and KRunner's window search and panel title widgets
+(§2, accepted as a known gap).
 
 ## 11 · Pre-existing defects to fix in passing
 

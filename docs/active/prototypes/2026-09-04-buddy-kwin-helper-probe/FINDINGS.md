@@ -209,6 +209,38 @@ than an implementation detail.
 script unloaded; `diff` of `~/.config/kwinrc` against the pre-probe backup is
 identical.
 
+## Round 5 — does the caption leak? (2026-09-04, Destin's eyes) — PASS
+
+```bash
+bash round5-live.sh
+```
+
+§2 could not settle this by argument. The helper sets `skipTaskbar`,
+`skipSwitcher` and `skipPager` — measured writable, all three read back `true` —
+but those three flags **do not** cover KWin's Overview, KRunner's window search,
+the screen-share window picker, or panel title widgets. Since the caption carries
+live coordinates and changes ~60×/second during a drag, a leak anywhere visible
+would have been an obvious defect in a shipping product, and the fix (a shorter
+or coordinate-free grammar) is much cheaper before the build than after.
+
+The rig used the **real shipping grammar** `YC:mascot@<x>,<y>` and set the same
+three flags the helper will, so what was on screen is what a user would see.
+
+**Verdict (Destin, live): "the buddy is not listed."** Reported as one answer
+covering the rig's two instructions — drag, then Overview (Meta+W), then a
+screen-share window picker. So the three flags are sufficient in practice on
+KWin 6.7.3, the caption grammar stands as written, and §2's open eyeball item is
+closed.
+
+**Not claimed:** KRunner's window search and panel title widgets were on §2's
+list of surfaces the flags do not cover and were not part of the two things
+Destin was asked to look at. They remain unchecked — a lower-stakes miss, since
+both are opt-in searches rather than something a user passes through.
+
+**Left exactly as found.** The helper was loaded over DBus, never installed, and
+unloaded on exit; `isScriptLoaded` is false and `~/.local/share/kwin/scripts/`
+contains only Destin's own `tp-edges`.
+
 ## Round 6 — where does the app get the work area? (2026-09-04, headless)
 
 Fell out of Round 5's smoke test. §0 of the technical design names **Electron's
@@ -257,6 +289,8 @@ such service and falls back to the same full rect.
   (Round 3). The per-role grammar stands.
 - Updating the helper in place needs `unloadScript` before `reconfigure`;
   `reconfigure` alone silently keeps the old copy (Round 4).
+- The caption does **not** leak into Overview or the screen-share picker —
+  Destin, live (Round 5). The grammar stands.
 - The app gets **no** readback of a compositor-side move — `getBounds()` never
   updates and `move` never fires (Round 6, W3).
 - Electron's `workArea` is the full screen on Wayland; the real one comes from
