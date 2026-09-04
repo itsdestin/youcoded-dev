@@ -321,8 +321,11 @@ def _lift_envelope(s: Song, lift_db: dict[int, float], ramp: float = 0.04) -> np
 
 # The UI sounds written next to the track: name -> generator. Every file is peak-normalised to
 # -3 dBFS by the same master() call, so the video mixes them at one volume convention.
+# sparkle1/2/3: the flips land on bars 6, 7, 8 of promo_track's Am F C G cycle — C/G, G, Am —
+# so each sparkle arpeggiates the chord that is playing under it (in key by construction).
 SFX = {"pop": S.sfx_pop, "whoosh": S.sfx_whoosh, "chime": S.sfx_chime,
-       "punch": S.sfx_punch, "poof": S.sfx_poof, "step": S.sfx_step}
+       "punch": S.sfx_punch, "poof": S.sfx_poof, "step": S.sfx_step,
+       "sparkle1": lambda: S.sfx_sparkle([55, 60, 64]), "sparkle2": lambda: S.sfx_sparkle([55, 59, 62]), "sparkle3": lambda: S.sfx_sparkle([57, 60, 64])}
 
 
 def render_promo(out: str):

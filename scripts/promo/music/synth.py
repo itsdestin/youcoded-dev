@@ -288,6 +288,22 @@ def sfx_chime():
     return reverb(soft_clip(out, 1.1), 0.9, 0.3, 0.35) * 0.8
 
 
+def sfx_sparkle(notes):
+    """A theme-flip sparkle IN KEY: the bar's own chord tones, two octaves up, as a fast upward
+    arpeggio (three 40 ms-spaced plucks with a short decay), 300 ms, dry. Replaces sfx_chime
+    (an A-major bell with a 1.3 s reverb tail) which rang over the C and G bars and clashed with
+    the track — Destin, 2026-09-04: "a bit offputting and clashes with the music"."""
+    n = secs(0.3)
+    out = np.zeros(n, dtype=np.float32)
+    for i, m in enumerate(notes):
+        at = secs(0.04 * i)
+        k = n - at
+        pluck = sine(midi(m + 24), k) * exp_decay(k, 0.09) * (0.55 - 0.1 * i)
+        pluck += sine(midi(m + 36), k) * exp_decay(k, 0.04) * 0.15
+        out[at:] += pluck
+    return soft_clip(out, 1.1) * 0.8
+
+
 def sfx_punch():
     """The mascot's punch on the wordmark, 250 ms: a low thud (a fast 140 → 45 Hz sine drop, like a
     kick with more body) plus a bright click on the first 6 ms so it reads on a laptop speaker

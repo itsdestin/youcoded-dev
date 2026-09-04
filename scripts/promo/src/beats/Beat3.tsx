@@ -42,9 +42,11 @@ const Beat3: React.FC = () => (
     <Sequence from={FLIP1 + WASH} durationInFrames={FLIP2 - FLIP1}><Label text={CAPTIONS.b3.head} at={0} slug="golden-sunbreak" still /></Sequence>
     <Sequence from={FLIP2 + WASH} durationInFrames={FLIP3 - FLIP2}><Label text={CAPTIONS.b3.head} at={0} slug="strawberry-kitty" still /></Sequence>
     <Sequence from={FLIP3 + WASH}><Label text={CAPTIONS.b3.head} at={0} slug="kuromi-dreamer" still /></Sequence>
-    <Sfx at={FLIP1} name="chime" volume={0.55} />
-    <Sfx at={FLIP2} name="chime" volume={0.45} />
-    <Sfx at={FLIP3} name="chime" volume={0.45} />
+    {/* an in-key sparkle per flip (each arpeggiates the chord under its bar), not the bell chime
+        that rang over the music — Destin, 2026-09-04 */}
+    <Sfx at={FLIP1} name="sparkle1" volume={0.4} />
+    <Sfx at={FLIP2} name="sparkle2" volume={0.35} />
+    <Sfx at={FLIP3} name="sparkle3" volume={0.35} />
   </AbsoluteFill>
 );
 // The three in-place flips take the moves that need no wipe band: twirl, poof, twirl

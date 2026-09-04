@@ -9,7 +9,7 @@ import { FPS } from '../grid';
 // old code wrapped all three in a flat 12 frames and the chime (1.30 s = 39
 // frames) stopped dead after 0.4 s, in the middle of the theme flip. Never
 // give an effect fewer frames than its file: re-measure if a file is replaced.
-const SECONDS = { pop: 0.16, whoosh: 0.26, chime: 1.3, punch: 0.25, poof: 0.35, step: 0.08 } as const;   // punch/poof/step added 2026-09-04 with the 44-bar track
+const SECONDS = { pop: 0.16, whoosh: 0.26, chime: 1.3, punch: 0.25, poof: 0.35, step: 0.08, sparkle1: 0.3, sparkle2: 0.3, sparkle3: 0.3 } as const;   // punch/poof/step added 2026-09-04 with the 44-bar track; sparkle1-3 (in-key theme flips) the same day
 export type SfxName = keyof typeof SECONDS;
 
 /** One-shot UI sound starting at frame `at`, played to the end of its file. */
