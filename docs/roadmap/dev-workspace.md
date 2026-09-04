@@ -382,11 +382,6 @@ seen-on is always n/a here.
       upload, data-safety form, content rating and account-deletion link
       `android` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
-- [ ] The privacy policy, terms and contributing guide still say "not a company" and name "its
-      maintainer" as the responsible party; the company now exists (Destin's Adventures, LLC,
-      Arizona, formed 2026-09-03) and they must name it
-      `n/a` `confirmed` `checked 2026-09-03` `v1.3`
-
 - [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
       turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
       pinned on "Initializing session..." behind CC's trust-folder prompt while terminal view

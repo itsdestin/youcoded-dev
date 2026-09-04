@@ -220,7 +220,7 @@ LLC franchise tax.
 
 ### Things in the repo that assume there is no company
 
-- `youcoded/PRIVACY.md` line 5: "It is not a company." Rewrite to name the LLC.
+- ~~`youcoded/PRIVACY.md` line 5: "It is not a company."~~ Done 2026-09-03 (youcoded#416).
 - `youcoded/TERMS.md` names "YouCoded, its maintainer, and its contributors" as the
   indemnified party. Name the LLC.
 - The OpenRouter attribution header says `https://youcoded.app`
@@ -518,11 +518,11 @@ Updated 2026-09-03 after the free items above were opened as PRs. Arizona, Maric
 | 1 | ✅ done 2026-09-03 | `youcoded.ai` bought (Cloudflare Registrar). Email Routing: `destin@youcoded.ai` and `support@youcoded.ai` → destinmoss.work@gmail.com (support@ to be re-pointed later) | $160 / 2 yrs | — |
 | 2 | ✅ done 2026-09-03 | Site live at https://youcoded.ai (GitHub Pages custom domain, old URL redirects; youcoded#407). Worker at https://api.youcoded.ai (wecoded-marketplace#84/#85; app switched in youcoded#406). OpenRouter header → youcoded.ai (youcoded#408) | $0 | 1 |
 | 3 | Destin | **LLC formed 2026-09-03: Destin's Adventures, LLC, Arizona Business ID 25117372, approved the same evening.** Trade name "YouCoded" applied for the same night (state review 3–4 weeks, $10 paid on approval). EIN obtained the same night. Still to do: business bank account | $85 paid | — |
-| 4 | Claude | Update PRIVACY/TERMS/SECURITY to name the LLC and use support@youcoded.ai — **written 2026-09-03 on youcoded branch `chore/name-the-llc`, awaiting Destin's go to open the PR** | $0 | 3 |
+| 4 | ✅ done 2026-09-03 | PRIVACY/TERMS/SECURITY name the LLC, contact support@youcoded.ai, DMCA agent in Terms §6 (youcoded#416) | $0 | 3 |
 | 5 | Destin | D-U-N-S number (free, 1–2 weeks); then Apple Developer Program (organization), Google Play Console (organization), Azure Artifact Signing | $99/yr + $25 + $10/mo | 3 |
 | 6 | Claude | Wire signing + notarization into the desktop CI; Play `.aab` upload; data-safety form draft | $0 | 5 |
 | 7 | Destin | USPTO clearance search (tmsearch.uspto.gov), then file "YouCoded" in class 9; optionally class 42 | $350 (+$350) | 3 |
-| 8 | ✅ done 2026-09-03 | DMCA agent registered (DMCA-1079861); Terms §6 updated on the `chore/name-the-llc` branch | $6 | 3 |
+| 8 | ✅ done 2026-09-03 | DMCA agent registered (DMCA-1079861); Terms §6 names the agent (youcoded#416) | $6 | 3 |
 | 9 | Claude, after Destin's wording call | Rename the "Likely safe" badge to what was checked; fix the scan-follows-wrong-ref bug; Gemma license notice on download; first-run "the assistant can change and delete files" line | $0 | Destin picks wording |
 | 10 | Destin, optional | One hour with a lawyer: read the Terms once, confirm the Android relicense reasoning | $300–600 | 3 |
 | | | **Year-one total, doing it yourself** | **~$700 to $1,050** | |

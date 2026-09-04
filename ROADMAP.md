@@ -42,7 +42,6 @@ Target: `v1.3`
 - dev-workspace: Public-launch formalization is the 1.3 gate: signed macOS/Windows installers, a Play listing,
 - dev-workspace: Windows and macOS installers still hit the security wall — nothing is signed or notarized.
 - dev-workspace: No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
-- dev-workspace: The privacy policy, terms and contributing guide still say "not a company" and name "its
 - local-models: Gemma models download with no licence notice, and Google's Gemma terms require passing their
 - marketplace: A plugin that ships from a non-default branch gets scanned against the wrong code. Four live
 - marketplace: The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets
@@ -52,7 +51,7 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 64 | 25 | 0 | 8 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 63 | 25 | 0 | 8 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 48 | 8 | 0 | 16 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 28 | 17 | 1 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 6 | 0 | 9 |
