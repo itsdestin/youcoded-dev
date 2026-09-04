@@ -8,19 +8,22 @@
 const { app, BrowserWindow, ipcMain, screen } = require('electron');
 
 const START = { x: 640, y: 380, w: 300, h: 300 };
+// Caption prefix is the contract with the KWin helper. The installed package
+// uses YOUCODED-BUDDY; the standalone probe script uses YOUCODED-KWIN-PROBE.
+const PREFIX = process.env.PROBE_PREFIX || 'YOUCODED-KWIN-PROBE';
 let win;
 let pos = { x: START.x, y: START.y };
 
 function publish() {
   // The move channel. One string write; no IPC to the compositor, no script reload.
-  win.setTitle(`YOUCODED-KWIN-PROBE@${Math.round(pos.x)},${Math.round(pos.y)}`);
+  win.setTitle(`${PREFIX}@${Math.round(pos.x)},${Math.round(pos.y)}`);
 }
 
 app.whenReady().then(() => {
   win = new BrowserWindow({
     width: START.w, height: START.h,
     frame: false, transparent: true, resizable: false, skipTaskbar: true,
-    title: `YOUCODED-KWIN-PROBE@${START.x},${START.y}`,
+    title: `${PREFIX}@${START.x},${START.y}`,
     webPreferences: { preload: `${__dirname}/preload.js`, contextIsolation: true },
   });
   // The page must never clobber the caption — it IS the control channel now.

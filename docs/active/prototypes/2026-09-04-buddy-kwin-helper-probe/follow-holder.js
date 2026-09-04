@@ -1,11 +1,12 @@
 // Drives the caption channel: sweeps the window along a path by renaming itself,
 // and logs the wall time so we can compare against the DBus path.
 const { app, BrowserWindow } = require('electron');
+const PREFIX = process.env.PROBE_PREFIX || 'YOUCODED-KWIN-PROBE';
 let win;
 app.whenReady().then(() => {
   win = new BrowserWindow({
     width: 420, height: 300, frame: false, transparent: true, resizable: false,
-    title: 'YOUCODED-KWIN-PROBE@700,400',
+    title: `${PREFIX}@700,400`,
     webPreferences: { contextIsolation: true },
   });
   win.loadFile('holder.html');
@@ -18,7 +19,7 @@ app.whenReady().then(() => {
     const step = () => {
       const x = Math.round(700 + 380 * Math.cos(i * 0.105));
       const y = Math.round(430 + 260 * Math.sin(i * 0.105));
-      win.setTitle(`YOUCODED-KWIN-PROBE@${x},${y}`);
+      win.setTitle(`${PREFIX}@${x},${y}`);
       if (++i < N) setTimeout(step, 16);        // 60fps cadence
       else {
         console.log(`SWEEP_DONE|${N} title writes in ${Date.now() - t0}ms`);

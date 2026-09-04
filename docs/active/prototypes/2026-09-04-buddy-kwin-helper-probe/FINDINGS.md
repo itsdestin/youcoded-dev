@@ -121,3 +121,55 @@ bash round0.sh        # K1-K4, headless, ~35s, opens a small window
 bash round0b.sh       # K5-K6, headless, ~40s
 bash interactive.sh   # Round 1, needs a human
 ```
+
+## Round 2 — installation, startup order, screens (2026-09-04, headless)
+
+Built the helper as a real KDE script package (`package/`, same layout as the
+user's own `tp-edges`), installed it to `~/.local/share/kwin/scripts/`, enabled
+it the way KDE itself does (`kwriteconfig6 … PluginsEnabled` + `reconfigure`),
+and drove it end to end with no manual script loading anywhere.
+
+| ID | Question | Verdict | Evidence |
+|----|----------|---------|----------|
+| P1 | Does KWin load the helper from config, like any other script? | **YES** | `isScriptLoaded youcodedbuddyhelper` → `true` after `reconfigure` alone |
+| P2 | Does it attach to a floater created LONG after KWin loaded it? | **YES** | `ATTACHED\|YOUCODED-BUDDY@700,400` — the app started ~18 s after the script; `workspace.windowAdded` covers it |
+| P3 | Does the installed copy actually move the window? | **YES, exactly** | 120-move sweep, then KWin queried live: caption `@1079,411`, `frameGeometry` **1079,411**, `keepAbove=true` |
+| P4 | What does the helper know about screens? | Full inventory | `SCREEN\|0\|name=eDP-1\|x=0,y=0,w=1707,h=1067\|scale=1.5` + `WORKSPACE\|w=1707,h=1067\|screens=1` |
+
+**Multi-monitor: mechanism looks right, NOT tested.** Only `eDP-1` was connected.
+What P4 establishes is the shape of the answer: KWin exposes every screen with an
+`x,y` offset in ONE unified coordinate space plus its own `devicePixelRatio`, and
+`frameGeometry` addresses that space — so a second screen is reachable by
+construction, and per-screen scale is visible (unlike XWayland's single global
+scale, which is what would have regressed the laptop+TV setup). **Still needs a
+real two-screen run before anyone claims it works.**
+
+**Detecting absence is a design problem, not a probe problem.** With no helper
+(GNOME, wlroots, or a user who disabled it) the app renames its window and
+nothing happens — no crash, no error, verified. But the app *cannot* notice by
+reading its position, because that is exactly the thing Wayland denies it. It has
+to ask KWin directly (`isScriptLoaded` over DBus) or have the helper announce
+itself. Whichever, the floater needs an honest disabled state rather than a
+mascot that silently refuses to move.
+
+**Left exactly as found.** The package was uninstalled, `kwinrc` restored (diff
+against the pre-probe backup: identical), and the script unloaded from KWin's
+memory. Nothing from this probe is installed on the machine.
+
+## What is now settled, and what is not
+
+**Settled — all measured, none inferred:**
+- Position, keep-above, and true-position readback all work through KWin.
+- The caption channel carries 60 fps drag with zero drops.
+- Dragging is computable without a global cursor.
+- The helper installs, auto-loads from config, and picks up windows created later.
+- Destin, live: drag felt right, and **it stayed on top of a focused window** —
+  the primitive that had never once been confirmed on Wayland.
+
+**Not settled:**
+- Two screens (needs the TV).
+- Surviving a KWin restart in a real session — not tested, because restarting
+  KWin on a live Wayland session risks the user's session. It should follow from
+  P1 (config-loaded scripts start with KWin) but that is reasoning, not a result.
+- How the app ships and enables the helper, and what it does when it is missing.
+- Everything about GNOME and wlroots, where this lever does not exist.
