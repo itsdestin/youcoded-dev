@@ -21,13 +21,12 @@ Edit anything here in your own words; I'll wire whatever this file says.
 | 0:30 | Grok is picked | | "Grok today. Why not." |
 | 0:33 | The answer arrives | | "See? Any of them." |
 | 0:34 | The spreadsheet is attached | Your files, beside the chat. | "Drop a file in." |
-| 0:36 | The assistant works on it | | "Sorting it, adding totals…" |
+| 0:36 | The ask goes out | | "Ask it to sort and total." |
 | 0:38 | The sorted sheet re-opens | | "Done. Right next to the chat." |
 | 0:40 | Project view: Econ 201 | Everything in its project. | "And it all lives in its project." |
 | 0:45 | The challenge goes out to Jake | Play while it works. | "Waiting on me? Challenge a friend." |
 | 0:47 | Connect 4, our drop | | "Jake's going down." |
 | 0:51 | The chess move | | "Or chess, if you're fancy." |
-| 0:53 | The host eyes Flappy, then dives in | | "One sec." |
 | 0:57 | The sessions menu, Resume | Every conversation, findable. | "Every chat you've ever had…" |
 | 0:59 | The resume browser narrows on "econ" | | "…searchable." |
 | 1:01 | The note is typed | | "Tag it. Note it." |

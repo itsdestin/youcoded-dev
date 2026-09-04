@@ -2,7 +2,7 @@ import json, os, shutil, subprocess, sys, tempfile, unittest, wave
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-BARS = 44
+BARS = 42
 
 class PromoTrack(unittest.TestCase):
     @classmethod
@@ -37,7 +37,7 @@ class PromoTrack(unittest.TestCase):
         # timeline reads its cuts off this grid, so a moved boundary here is a moved cut in the video.
         # Bar 6 (drop 1, the theme flips) and bar 33 (drop 2, the marketplace) must never move.
         STORYBOARD = [("intro", 0), ("groove", 2), ("drop1", 6), ("groove-b", 10), ("hook", 18), ("break", 24),
-                      ("build", 26), ("groove2", 28), ("drop2", 33), ("outro", 38), ("end", 43)]
+                      ("build", 26), ("groove2", 28), ("drop2", 33), ("outro", 38), ("end", 41)]
         self.assertEqual([(s["name"], s["bar"]) for s in g["sections"]], STORYBOARD)
         self.assertEqual([s["t"] for s in g["sections"]], [b * g["bar_seconds"] for _, b in STORYBOARD])
 

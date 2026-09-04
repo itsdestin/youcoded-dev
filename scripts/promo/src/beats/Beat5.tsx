@@ -38,9 +38,10 @@ const PM = (mark: string) => T_PROJ + Math.round((markFrame('promo-project', mar
 /** Local frame of a mark in the first shot (the sheet clip from A_FROM at A_RATE). */
 const M = (mark: string, edge: 'start' | 'end' = 'start') => Math.round((markFrame('promo-sheet', mark, edge) - A_FROM) / A_RATE);
 const P5 = present([
+  // the first shot (1.6×) shows the drop and the ask; the sorted sheet is the second shot at T_AFTER
   { at: M('attach') + 4, say: 'Drop a file in.', spot: inWindow(0.3, 0.935), point: 'L', face: 'welcome' },          // beside the attach, on the input row
-  { at: M('reply') + 4, say: 'Sorting it, adding totals…', spot: inWindow(0.74, 0.12), point: 'down', face: 'curious' },   // top of the file panel
+  { at: T_AFTER - 56, say: 'Ask it to sort and total.', spot: inWindow(0.74, 0.12), point: 'down', face: 'curious' },   // top of the file panel, as the ask goes out
   { at: T_AFTER + 6, say: 'Done. Right next to the chat.', point: 'down', face: 'happy' },
   { at: T_PROJ + 10, say: 'And it all lives in its project.', spot: inWindow(0.5, 0.6), point: 'down', face: 'welcome', until: END - 12 },   // above the file grid
-], 'meadow-mist', P);
+], 'meadow-mist', P, END - 12);
 export const beat5: BeatModule = { id: 'b5', slug: 'meadow-mist', home: P, Component: Beat5, host: P5.host, bubbles: P5.bubbles };

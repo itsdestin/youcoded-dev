@@ -18,7 +18,7 @@ export const PRELUDE = 196;                             // the punch; see intro/
 export const PRE = 6;                                   // frames of the wipe before the downbeat (200 ms)
 export const POST = 4;                                  // …and after it (133 ms); a 333 ms wipe in all
 export const CUT = PRE + POST;
-// The music runs 2.5 s past bar 44; TAIL_FRAMES holds the LAST beat open for it.
+// The music runs 2.5 s past bar 42; TAIL_FRAMES holds the LAST beat open for it.
 export const TAIL_FRAMES = 74;
 export type Transition = 'wipe' | 'cut' | 'none';
 export type BeatId = 'b1' | 'b2' | 'b3' | 'b4' | 'b5' | 'b6' | 'b7' | 'b8' | 'b9' | 'b10';
@@ -33,7 +33,7 @@ export const BEATS: Beat[] = [
   { id: 'b7', bars: [24, 28], after: 'wipe' },          // manage your conversations (midnight)
   { id: 'b8', bars: [28, 33], after: 'wipe' },          // pick up on any device (devil's garden)
   { id: 'b9', bars: [33, 38], after: 'wipe' },          // the marketplace, on drop 2 (light)
-  { id: 'b10', bars: [38, 44], after: 'none' },         // close (golden sunbreak)
+  { id: 'b10', bars: [38, 42], after: 'none' },         // close (golden sunbreak); 44 → 42 on 2026-09-04: the close ran 15 s
 ];
 export const isFirst = (b: Beat) => b === BEATS[0];
 export const isLast = (b: Beat) => b === BEATS.at(-1);

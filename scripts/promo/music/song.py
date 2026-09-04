@@ -191,9 +191,9 @@ def promo_track() -> Song:
     riser + fill + the gap) · drop1 6-9 (hook, brighter; accents on 7 and 8 for the theme flips) ·
     groove-b 10-17 (hook out; the lead re-enters on 16 under project view) · hook 18-23 (games; fill
     on 23) · break 24-25 (drums out) · build 26-27 (riser, snare roll) · groove2 28-32 (half-time
-    snare; riser 31-32, fill on 32) · drop2 33-37 (hook, brightest) · outro 38-42 (thins out, drums
-    out from 41) · end 43 (final hit, 2.5 s tail)."""
-    s = Song(112, 44, tail=2.5)      # 118 → 112 on 2026-09-04: Destin wanted a tad more time on every shot
+    snare; riser 31-32, fill on 32) · drop2 33-37 (hook, brightest) · outro 38-40 (thins out, drums
+    out from 40) · end 41 (final hit, 2.5 s tail)."""
+    s = Song(112, 42, tail=2.5)      # 118 → 112 on 2026-09-04: Destin wanted a tad more time on every shot; 44 → 42 bars the same day: the close ran 15 s
     chords = [[57, 60, 64], [57, 60, 65], [55, 60, 64], [55, 59, 62]]     # Am F/A C/G G
     roots = [45, 41, 48, 43]
     KICK, SNR, HAT = "x...x...x...x...", "....x.......x...", "x.x.x.x.x.x.x.xo"
@@ -204,7 +204,7 @@ def promo_track() -> Song:
     # must not move — the theme flips and the marketplace cut land on them. Bar 5 is still "groove"
     # by name: it carries the riser, the fill and the gap below, exactly as bar 22 did in the 34-bar cut.
     for name, bar in (("intro", 0), ("groove", 2), ("drop1", 6), ("groove-b", 10), ("hook", 18), ("break", 24),
-                      ("build", 26), ("groove2", 28), ("drop2", 33), ("outro", 38), ("end", 43)):
+                      ("build", 26), ("groove2", 28), ("drop2", 33), ("outro", 38), ("end", 41)):
         s.section(name, bar)
 
     def section_of(bar):
@@ -216,10 +216,10 @@ def promo_track() -> Song:
     # would pull every other bar down by that much. Trimmed, it lands at exactly drop level.
     impact_trim = 10 ** (-LIFT_DB.get(0, 0) / 20)
 
-    for bar in range(44):
+    for bar in range(42):
         sec = section_of(bar)
         ch, root = chords[bar % 4], roots[bar % 4]
-        drums = sec in ("groove", "drop1", "groove-b", "hook", "groove2", "drop2") or (sec == "outro" and bar < 41)
+        drums = sec in ("groove", "drop1", "groove-b", "hook", "groove2", "drop2") or (sec == "outro" and bar < 40)
         # The lead hook: both drops, the games section, and a two-bar early entry on 16-17 (project
         # view lands on 16). Phrases alternate A/B from the bar the hook ENTERS, not from bar parity —
         # drop 2 starts on an odd bar and must still open with phrase A.
@@ -273,7 +273,7 @@ def promo_track() -> Song:
                 if thin and i % 2 == 1: continue
                 s.note("arp", bar, i, S.chip_pulse(seq[i % len(seq)] + 12, s.beat / 4 * 0.85, duty=0.5 if thin else 0.25), 0.4 if thin else 0.5)
         # --- pad (an octave up in the quiet sections; the outro climbs up once the drums leave on 41)
-        pad_notes = [m + (12 if sec in ("intro", "break") or (sec == "outro" and bar >= 41) else 0) for m in ch]
+        pad_notes = [m + (12 if sec in ("intro", "break") or (sec == "outro" and bar >= 40) else 0) for m in ch]
         s.note("pad", bar, 0, S.pad_supersaw(pad_notes, s.bar * (2.4 if sec == "end" else 1.02), cutoff=(2200, 2400, 2600)[bright] if bright or sec not in ("intro", "break", "outro") else 1200), 0.8)
         # --- lead hook (two-bar phrase, repeats)
         if hook:

@@ -30,8 +30,7 @@ const Rig: React.FC<{ s: HostState; style: FaceStyle; scope: string }> = ({ s, s
 .${scope} #rig-leg-right { transform-box: view-box; transform-origin: ${PIVOT['rig-leg-right']}; transform: rotate(${s.legR.toFixed(2)}deg); }
 .${scope} #rig-hand-peek-left { display: ${s.peekHand === 'L' ? 'inline' : 'none'} !important; }
 .${scope} #rig-hand-peek-right { display: ${s.peekHand === 'R' ? 'inline' : 'none'} !important; }
-.${scope} #rig-arm-left { ${s.peekHand === 'L' ? 'display: none !important;' : ''} }
-.${scope} #rig-arm-right { ${s.peekHand === 'R' ? 'display: none !important;' : ''} }
+${s.peekHand ? `.${scope} #rig-arm-left, .${scope} #rig-arm-right, .${scope} #rig-leg-left, .${scope} #rig-leg-right { display: none !important; }` : ''}
 .${scope} .pupil { transform: translate(${s.lookX.toFixed(2)}px, ${s.lookY.toFixed(2)}px); }
 .${scope} #rig-face-blink { display: ${blink ? 'inline' : 'none'} !important; }
 ${FACES.map((n) => `.${scope} #rig-face-${n} { display: ${n === face && !blink ? 'inline' : 'none'} !important; }`).join('\n')}
@@ -108,6 +107,12 @@ export const Host: React.FC<{ actions: Action[]; base: HostState; faceStyle?: Fa
         return <div key={i} style={{ position: 'absolute', left: lx, top: ly, width: w, height: hh, transform: `scale(${born})`, opacity: born }}
           dangerouslySetInnerHTML={{ __html: c.svg.replace('<svg', '<svg style="width:100%;height:100%;display:block;overflow:visible"') }} />;
       })}
+      {/* the corner peek: the limbs are behind the frame edge, and the hand that grips the edge is drawn
+          ON the edge, in front of it (the rig's own peek hand sits at the body's side, which is off screen) */}
+      {s.peekHand === 'L' && !s.hidden && (
+        <div style={{ position: 'absolute', left: 0, top: s.y + s.size * 0.6, width: s.size * 0.11, height: s.size * 0.15, borderRadius: s.size * 0.05, background: t.accent,
+          boxShadow: 'inset -2px 0 3px rgba(0,0,0,.25), 0 2px 6px rgba(0,0,0,.35)', opacity: s.alpha }} />
+      )}
       {s.poof != null && <Poof at={s.poof} cx={s.x + s.size / 2} cy={s.y + s.size / 2} color={t.accent} size={s.size * s.poofScale} />}
       {ghosts.map((g) => (
         <div key={g} style={{ position: 'absolute', left: s.x, top: s.y, width: s.size, height: s.size, opacity: 0.3,

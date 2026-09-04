@@ -33,8 +33,8 @@ const Beat4: React.FC = () => (
   </AbsoluteFill>
 );
 const P4 = present([
-  { at: M('list') + 2, say: 'Pick whichever brain you like.', spot: inWindow(0.66, 0.74), point: 'L', face: 'welcome' },   // right of the list, pointing at it
+  { at: M('list') + 2, say: 'Pick whichever brain you like.', spot: inWindow(0.74, 0.74), point: 'L', face: 'welcome' },   // right of the list (clear of its stars), pointing at it
   { at: M('pick', 'end') + 2, say: 'Grok today. Why not.', point: 'L', face: 'happy' },
   { at: M('reply') + 6, say: 'See? Any of them.', spot: inWindow(0.8, 0.72), point: 'L', face: 'happy', until: LEN('b4') - 12 },   // beside the answer
-], 'creme', P);
+], 'creme', P, LEN('b4') - 12);
 export const beat4: BeatModule = { id: 'b4', slug: 'creme', home: P, Component: Beat4, host: P4.host, bubbles: P4.bubbles };

@@ -55,7 +55,7 @@ const P3 = present([
   { at: FLIP1 + 26, say: 'Ooh. Golden hour.', face: 'happy', until: FLIP2 - 20 },
   { at: FLIP2 + 26, say: 'Or borrow one from the community.', face: 'welcome', until: FLIP3 - 20 },
   { at: FLIP3 + 30, say: 'Or make and share your own.', face: 'happy', until: LEN('b3') - 12 },
-], 'kuromi-dreamer', P);
+], 'kuromi-dreamer', P, LEN('b3') - 12);
 // The three in-place flips take the moves that need no wipe band: twirl, poof, twirl.
 export const beat3: BeatModule = { id: 'b3', slug: 'cotton-candy-sky', home: P, Component: Beat3,
   themes: [{ at: FLIP1, slug: 'golden-sunbreak' }, { at: FLIP2, slug: 'strawberry-kitty' }, { at: FLIP3, slug: 'kuromi-dreamer' }],

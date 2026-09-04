@@ -45,9 +45,9 @@ export const introActions = (): Action[] => [
   // walk 70–148, size up the Y, punch at 196 — 6.5 s of silence, and the host is moving for most of it
   // the two-step peek: a first glance (half the body, a small lean, a hand on the edge), a look
   // across, then leaning fully in — and only then the step out (Destin, 2026-09-04)
-  A.peekIn(8, 14, GROUND_Y, SIZE, 0.5, 6), A.face(8, 'curious'),
+  A.peekIn(8, 14, GROUND_Y, SIZE, 0.64, 8), A.face(8, 'curious'),
   A.look(24, 8, 0.55, 0.1), A.look(34, 8, -0.4, -0.15),
-  A.peekIn(40, 14, GROUND_Y, SIZE, 0.88, 16), A.look(44, 8, 0.3, 0), A.blink(56),
+  A.peekIn(40, 14, GROUND_Y, SIZE, 0.96, 18), A.look(44, 8, 0.3, 0), A.blink(56),
   A.stepIn(62, 12, -18, GROUND_Y),                // steps fully into frame
   A.face(70, 'welcome'),
   A.walk(70, 78, STAND_X, 6),                     // a cautious walk across

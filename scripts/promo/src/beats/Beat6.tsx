@@ -17,7 +17,7 @@ const T_C4 = L('b6', 19), T_CHESS = L('b6', 21), T_FLY = L('b6', 22), END = LEN(
 const LOBBY_FROM = markFrame('promo-games-lobby', 'challenge', 'end', 8) - T_C4;
 const C4_FROM = markFrame('promo-connect4', 'drop1', 'start', -12);
 const CHESS_FROM = markFrame('promo-chess', 'move', 'start', -24);
-const FLY_FROM = markFrame('promo-flappy', 'fly', 'start', -8);
+const FLY_FROM = markFrame('promo-flappy', 'fly', 'start', -2);   // −2, not −8: the "Press Space to fly" prompt read as an idle screen
 assertClipCovers('promo-games-lobby', LOBBY_FROM, T_C4);
 assertClipCovers('promo-connect4', C4_FROM, T_CHESS - T_C4);
 assertClipCovers('promo-chess', CHESS_FROM, T_FLY - T_CHESS);
@@ -41,9 +41,9 @@ const SIDE = inWindow(0.54, 0.62);                                  // left of t
 const P6 = present([
   { at: L('b6', 18) + 10, say: 'Waiting on me? Challenge a friend.', spot: SIDE, point: 'R', face: 'welcome' },
   { at: DROP1 + 2, say: "Jake's going down.", point: 'R', face: 'happy' },
-  { at: MOVE - 6, say: 'Or chess, if you\'re fancy.', point: 'R', face: 'welcome' },
-  { at: T_FLY - 34, say: 'One sec.', spot: P, face: 'happy', until: T_FLY - 6 },   // back on the bar, eyeing Flappy
-], 'golden-sunbreak', P);
+  { at: T_CHESS + 4, say: 'Or chess, if you\'re fancy.', point: 'R', face: 'welcome', until: T_FLY - 30 },
+  { at: T_FLY - 30, spot: P, face: 'happy' },                       // back on the bar, eyeing Flappy — then the dive
+], 'golden-sunbreak', P, END - 12);
 // …then dives INTO the game (the bird is the host)
 export const beat6: BeatModule = { id: 'b6', slug: 'golden-sunbreak', home: P, Component: Beat6,
   host: [

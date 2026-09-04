@@ -16,12 +16,13 @@ export const Label: React.FC<Props> = ({ text, at, slug, still = false, top = CA
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
   if (f < at) return null;
   const t = THEMES[slug];
-  const bar = still ? 1 : spring({ frame: f - at, fps, config: { damping: 16, stiffness: 200 } });
-  const slide = still ? 1 : spring({ frame: f - at - 4, fps, config: { damping: 18, stiffness: 120 } });
+  // the words come first, the underline draws in under them (the other way round left an underline alone for half a second)
+  const slide = still ? 1 : spring({ frame: f - at, fps, config: { damping: 18, stiffness: 120 } });
+  const bar = still ? 1 : spring({ frame: f - at - 6, fps, config: { damping: 16, stiffness: 200 } });
   const words = text.split(' ');
   // 2026-09-04: no accent bar ("fingernail"); the words carry a soft glow in the accent and an
   // underline in the accent draws in under them on the beat
-  const glow = t.dark ? `0 0 18px ${t.accent}99, 0 3px 18px rgba(0,0,0,.6)` : `0 0 16px ${t.accent}55, 0 2px 10px ${t.canvas}`;
+  const glow = t.dark ? `0 0 18px ${t.accent}99, 0 3px 18px rgba(0,0,0,.6)` : `0 0 16px ${t.accent}55, 0 2px 10px ${t.canvas}, 0 1px 3px rgba(0,0,0,.25)`;   // the last shadow: pink-on-pink (Strawberry, Kuromi) needs an edge
   return (
     <div style={{ position: 'absolute', left: align === 'left' ? R.x : 0, right: align === 'left' ? undefined : 0, top, display: 'flex', flexDirection: 'column', alignItems: align === 'left' ? 'flex-start' : 'center' }}>
       <div style={{ fontFamily: family(t), fontSize: size, fontWeight: 800, letterSpacing: '-0.02em', color: t.fg, textShadow: glow, lineHeight: 1.15, whiteSpace: 'nowrap',

@@ -4,6 +4,7 @@ import { FPS } from './grid';
 import { Promo, FILM, Film, studyFrames } from './Promo';
 import { Intro, INTRO_FRAMES } from './intro/Intro';
 import { CaptionStudy } from './CaptionStudy';
+import { LabelStudy } from './LabelStudy';
 import { HostStudy, STUDY_FRAMES } from './intro/HostStudy';
 import { TransitionStudy, TRANSITION_STUDY_FRAMES } from './studies/TransitionStudy';
 // The film runs the bar grid (TOTAL_FRAMES) plus TAIL_FRAMES, the frames the
@@ -20,6 +21,15 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="PresentStudy" component={Film} durationInFrames={studyFrames(['b4', 'b8'])} fps={FPS} width={1920} height={1080} defaultProps={{ ids: ['b4', 'b8'] as const as any, music: false }} />
     {/* check-in 3b: the label + bubble captions and the three theme-transition candidates */}
     <Composition id="TransitionStudy" component={TransitionStudy} durationInFrames={TRANSITION_STUDY_FRAMES} fps={FPS} width={1920} height={1080} />
+    {/* caption variants for Destin, 2026-09-04 (G glow · P plate · O outline · K kicker · S stacked accent) */}
+    {(['G', 'P', 'O', 'K', 'S'] as const).map((d) => (
+      <Still key={`L${d}`} id={`Label${d}`} component={LabelStudy} width={1920} height={1080}
+        defaultProps={{ design: d, slug: 'cotton-candy-sky' as const, still: 'cotton', head: 'Just ask.' }} />
+    ))}
+    {(['G', 'P', 'O', 'K', 'S'] as const).map((d) => (
+      <Still key={`LD${d}`} id={`LabelDark${d}`} component={LabelStudy} width={1920} height={1080}
+        defaultProps={{ design: d, slug: 'devils-garden' as const, still: 'anydevice', head: 'Pick up on any device.', kicker: 'Any device' }} />
+    ))}
     {(['A', 'B', 'C'] as const).map((d) => (
       <Still key={d} id={`Caption${d}`} component={CaptionStudy} width={1920} height={1080}
         defaultProps={{ design: d, slug: 'halftone-dimension' as const, still: 'connect4', head: 'Play while it works.', sub: 'Chess and Connect 4 with friends. Flappy on your own.' }} />

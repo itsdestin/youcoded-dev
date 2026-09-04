@@ -26,8 +26,8 @@ const Beat2: React.FC = () => (
 // happy at the finished brief.
 const C = L('b2', 2) + 3;                                           // the chip's click release
 const P2 = present([
-  { at: C - 2, say: 'Just tap what you need.', spot: inWindow(0.56, 0.905), point: 'L', face: 'welcome' },   // beside the chip strip, pointing at the chips
-  { at: C + 62, say: "I'm grabbing your notes…", spot: inWindow(0.74, 0.36), point: 'L', face: 'curious' },   // beside the reply as it streams
+  { at: C - 2, say: 'Just tap what you need.', spot: inWindow(0.72, 0.9), point: 'L', face: 'welcome' },   // right of the chip strip (clear of the chips), pointing at them
+  { at: C + 62, say: "I'm grabbing your notes…", spot: inWindow(0.62, 0.3), point: 'L', face: 'curious' },   // right beside the reply as it streams
   { at: L('b2', 4) + 6, say: "There's your brief.", point: 'L', face: 'happy', until: LEN('b2') - 12 },
-], 'cotton-candy-sky', P);
+], 'cotton-candy-sky', P, LEN('b2') - 12);
 export const beat2: BeatModule = { id: 'b2', slug: 'cotton-candy-sky', home: P, Component: Beat2, arrival: 'none', host: P2.host, bubbles: P2.bubbles };

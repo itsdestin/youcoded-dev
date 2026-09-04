@@ -36,9 +36,9 @@ const DROP = T_DRAG + Math.round((markSec('promo-conversations', 'drag', 'end') 
 const P7 = present([
   { at: MENU + 6, say: "Every chat you've ever had…", point: 'down', face: 'welcome' },                              // on the bar, pointing at the menu
   { at: T_SEARCH + 8, say: '…searchable.', spot: inWindow(0.8, 0.58), point: 'L', face: 'welcome' },                  // beside the resume browser
-  { at: T_NOTE + 26, say: 'Tag it. Note it.', point: 'L', face: 'happy' },
-  { at: T_DRAG - 4, say: 'Drag it into order.', spot: perch(0.5), point: 'down', face: 'welcome', until: END - 12 },   // back on the bar over the strip
-], 'midnight', P);
+  { at: T_NOTE + 8, say: 'Tag it. Note it.', spot: perch(0.72), point: 'down', face: 'happy' },                     // back on the bar (clear of the tab) as the note is typed
+  { at: T_DRAG - 4, say: 'Drag it into order.', point: 'down', face: 'welcome', until: END - 12 },
+], 'midnight', P, END - 12);
 export const beat7: BeatModule = { id: 'b7', slug: 'midnight', home: P, Component: Beat7,
   host: [...P7.host, A.look(T_DRAG + 4, 10, -0.5, 0.3), A.look(T_DRAG + 22, 14, 0.5, 0.3), A.face(DROP + 2, 'happy')],   // follows the pill with its eyes
   bubbles: P7.bubbles };

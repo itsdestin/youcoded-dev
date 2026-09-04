@@ -103,8 +103,8 @@ export const A = {
     const ph = t * steps * Math.PI * 2;               // one full cycle per step
     const gait = Math.sin(ph) * E.hump(t);            // fades in and out at the ends
     const dir = Math.sign(x - start.x) || 1;
-    s.legL = 28 * gait; s.legR = -28 * gait;
-    s.armL = -18 * gait; s.armR = 18 * gait;
+    s.legL = 38 * gait; s.legR = -38 * gait;              // (28/18 read as a glide at half size — draft review)
+    s.armL = -30 * gait; s.armR = 30 * gait;
     s.y = start.y - Math.abs(Math.sin(ph)) * 4 * E.hump(t);   // a small bob on each step
     s.rot = dir * 5 * E.hump(t);                       // leans into the walk
     s.sy = 1 - Math.abs(Math.sin(ph)) * 0.02; s.sx = 1 + Math.abs(Math.sin(ph)) * 0.02;
@@ -196,7 +196,7 @@ export const A = {
     s.size = size; s.y = y; s.hidden = false;
     s.x = L(fromX, -size * (1 - reveal), E.outCubic(t));
     s.rot = L(start.hidden ? 0 : start.rot, lean, E.outCubic(t));
-    s.peekHand = 'L'; s.armR = 30; s.legL = -55; s.legR = -55;   // hand on the edge; the far arm and the legs behind it
+    s.peekHand = 'L'; s.armL = 0; s.armR = 0; s.legL = 0; s.legR = 0;   // the limbs stay behind the edge (Host hides them and draws the hand on the edge)
     s.shadow = 0;
   } }),
   /** Step fully into frame from a peek, onto the ground at y. */
@@ -204,7 +204,7 @@ export const A = {
     const e = E.inOutQuad(t);
     s.x = L(start.x, x, e); s.y = L(start.y, y, e); s.rot = L(start.rot, 0, e); s.shadow = e;
     s.peekHand = t > 0.15 ? null : 'L';                 // lets go of the edge as it steps
-    s.armL = L(-40, 0, e); s.armR = L(start.armR, 0, e); s.legL = L(start.legL, 0, e); s.legR = L(start.legR, 0, e);
+    s.armL = 0; s.armR = 0; s.legL = 0; s.legR = 0;
   } }),
   // ---- presenting gestures (Destin, 2026-09-04: "the mascot kinda just moves around for no reason
   // … I really want it to feel like the mascot is presenting the app … more movement in the

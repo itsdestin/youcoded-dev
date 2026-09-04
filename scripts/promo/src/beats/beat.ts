@@ -51,12 +51,21 @@ export const inWindow = (fx: number, fy: number): Spot => {
   return { x: r.x + r.w * fx - MASCOT.size / 2, y: r.y + r.h * fy - MASCOT.size * 0.86 };
 };
 const HOP = 22;                                       // frames a presenter hop takes; lands at 78 %
-export function present(lines: Line[], slug: import('../themes').Slug, home: Spot): { host: Action[]; bubbles: BubbleCue[] } {
+/** `cap`: the last frame any bubble may stay (the beat's LEN − 12: the wipe takes the last 10). */
+export function present(lines: Line[], slug: import('../themes').Slug, home: Spot, cap = Infinity): { host: Action[]; bubbles: BubbleCue[] } {
   const host: Action[] = [];
   const bubbles: BubbleCue[] = [];
   let here = home;
-  lines.forEach((l, i) => {
-    const next = lines[i + 1];
+  let earliest = 0;                                   // the next line may not start before this (the previous line's reading time)
+  const readOf = (t: string) => 36 + 8 * t.split(' ').length;   // 1.2 s plus ~0.27 s a word
+  lines.forEach((raw, i) => {
+    // a first line with a spot cannot hop before the arrival move has landed (~frame 24): a hop
+    // scheduled before frame 0 was simply lost and the host stayed on the bar (draft review)
+    const l0 = i === 0 && raw.spot ? { ...raw, at: Math.max(raw.at, 24 + HOP) } : raw;
+    // a line that would cut the previous one short waits for it (reading beats sync — Destin, 2026-09-04)
+    const l = l0.say || l0.spot ? { ...l0, at: Math.max(l0.at, earliest) } : l0;
+    const next0 = lines[i + 1];
+    const next = next0 && l.say ? { ...next0, at: Math.max(next0.at, l.at + readOf(l.say) + 4) } : next0;
     if (l.spot && (l.spot.x !== here.x || l.spot.y !== here.y)) {
       const dist = Math.hypot(l.spot.x - here.x, l.spot.y - here.y);
       host.push(A.rest(l.at - HOP - 4, 4), A.hop(l.at - HOP + 5, HOP, l.spot.x, l.spot.y, Math.min(70, 30 + dist * 0.12)));
@@ -69,8 +78,9 @@ export function present(lines: Line[], slug: import('../themes').Slug, home: Spo
     if (l.say) {
       // never shorter than its reading time: 0.8 s plus a quarter second a word (bubbles went
       // by too fast to read in the draft — Destin, 2026-09-04); the next line simply takes over
-      const read = 24 + 7 * l.say.split(' ').length;
-      const until = Math.max(l.at + read, l.until ?? (next ? next.at - 8 : l.at + 90));
+      const read = readOf(l.say);
+      const until = Math.min(cap, Math.max(l.at + read, l.until ?? (next ? next.at - 8 : l.at + 90)));
+      earliest = l.at + read + 4;
       bubbles.push({ at: l.at + 2, until, text: l.say, slug, side: l.side });
       if (l.point && l.point !== 'none') host.push(A.rest(until + 2));
     } else if (l.point && l.point !== 'none' && next) host.push(A.rest(next.at - 10));

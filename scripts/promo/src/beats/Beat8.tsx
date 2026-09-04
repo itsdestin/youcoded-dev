@@ -57,7 +57,7 @@ const P8 = present([
   { at: PM('dialog') + 4, say: 'It asks first. Polite.', spot: ON_PHONE, point: 'down', face: 'shocked', side: 'L' },   // on the phone, pointing at the question
   { at: PM('chat', 'end') + 6, say: 'Same chat. Same files.', point: 'down', face: 'happy', side: 'L' },
   { at: T_FILES + 34, say: 'All synced.', point: 'down', face: 'happy', side: 'L', until: END - 12 },
-], 'devils-garden', P);
+], 'devils-garden', P, END - 12);
 export const beat8: BeatModule = { id: 'b8', slug: 'devils-garden', home: P, Component: Beat8,
   host: [A.look(T1 - 10, 8, 0.6, 0.2), ...P8.host, A.to(PM('dialog') - 20, 16, 'size', 96), A.nod(PM('takeover', 'end'))],   // sees it coming; smaller on the phone; nods at Take over
   bubbles: P8.bubbles };

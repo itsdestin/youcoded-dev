@@ -18,7 +18,6 @@ const DY = -96;
 const R = windowRect(SCALE);
 const CAP_TOP = R.y + DY + R.h + 30;
 assertClipCovers('promo-idle-golden', 0, LEN('b10'));
-const P = { x: perch(0.3, SCALE).x, y: perch(0.3, SCALE).y + DY };
 // Where it ends: standing just left of the Y of the big "YouCoded" under the window, the way
 // the film began (Destin, 2026-09-04). Inter 800 at 84 px: the word is ~394 px wide, centred
 // at 960, so the Y's left edge is ~763; the feet sit on the word's baseline.
@@ -33,21 +32,21 @@ const Beat10: React.FC = () => (
   <AbsoluteFill>
     <Settle />
     <Caption head="YouCoded" at={L('b10', 38) + 16} theme="golden-sunbreak" top={CAP_TOP} size={84} headColor="#fff" />
-    <Caption head={CAPTIONS.b10.head} sub={CAPTIONS.b10.sub} at={L('b10', 39)} subAt={L('b10', 39) + 6} theme="golden-sunbreak" top={CAP_TOP + 104} size={36} />
-    <Caption head={CAPTIONS.link} at={L('b10', 40)} theme="golden-sunbreak" top={CAP_TOP + 104 + CAPTION.h - 14} size={36} headColor="#ffc030" />
+    <Caption head={CAPTIONS.b10.head} sub={CAPTIONS.b10.sub} at={L('b10', 38) + 34} subAt={L('b10', 38) + 40} theme="golden-sunbreak" top={CAP_TOP + 104} size={36} />
+    <Caption head={CAPTIONS.link} at={L('b10', 39)} theme="golden-sunbreak" top={CAP_TOP + 104 + CAPTION.h - 14} size={36} headColor="#ffc030" />
   </AbsoluteFill>
 );
 const P10 = present([
-  { at: L('b10', 39) + 4, say: "That's me. See you in there!", face: 'happy', until: L('b10', 42) },
-], 'golden-sunbreak', P);
-// The host hops down with the window as it settles (the perch moves), waves with its
-// line, cheers the final hit, and SHUTS DOWN — eyes closed, limbs tucked under — as the picture fades.
+  { at: L('b10', 38) + 44, say: "That's me. See you in there!", face: 'happy', side: 'L', until: L('b10', 41) - 4 },
+], 'golden-sunbreak', Y_SPOT);
+// The close: as the window settles smaller the host hops straight down to stand beside the Y of
+// the big "YouCoded" (where the film began), waves with its line, cheers the final hit on bar 41,
+// and SHUTS DOWN — eyes closed, limbs tucked under — a couple of seconds before the picture fades.
 export const beat10: BeatModule = { id: 'b10', slug: 'golden-sunbreak', home: HOME, Component: Beat10,
   host: [
-    A.hop(PRE + 6, 26, P.x, P.y, 60),
-    A.wave(L('b10', 39), 50), ...P10.host,
-    A.cheer(L('b10', 43), 30), A.face(L('b10', 43), 'happy'), A.face(L('b10', 43) + 34, 'welcome'),
-    A.hop(L('b10', 43) + 40, 28, Y_SPOT.x, Y_SPOT.y, 70), A.look(L('b10', 44) + 4, 8, 0.5, 0),   // down beside the Y, a glance at it
-    A.shutdown(L('b10', 44) + 20),
+    A.hop(PRE + 8, 30, Y_SPOT.x, Y_SPOT.y, 90),
+    A.wave(L('b10', 38) + 44, 44), ...P10.host,
+    A.cheer(L('b10', 41), 30), A.face(L('b10', 41), 'happy'), A.face(L('b10', 41) + 34, 'welcome'),
+    A.look(L('b10', 41) + 40, 8, 0.5, 0), A.shutdown(L('b10', 41) + 52),
   ],
   bubbles: P10.bubbles };
