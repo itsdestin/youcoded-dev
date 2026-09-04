@@ -1,7 +1,7 @@
 import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import { Footage } from '../Footage';
-import { Caption } from '../Caption';
+import { Label } from '../Label';
 import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
@@ -18,8 +18,9 @@ assertClipCovers('promo-quick-chip', FROM, LEN('b2'), RATE);
 const Beat2: React.FC = () => (
   <AbsoluteFill>
     <Footage file="promo-quick-chip" from={FROM} rate={RATE} pushIn={0.02} light />
-    <Caption head={CAPTIONS.b2.head} sub={CAPTIONS.b2.sub} at={L('b2', 2) + 4} theme="cotton-candy-sky" />
+    <Label text={CAPTIONS.b2.head} at={L('b2', 2) + 4} slug="cotton-candy-sky" />
   </AbsoluteFill>
 );
 export const beat2: BeatModule = { id: 'b2', slug: 'cotton-candy-sky', home: P, Component: Beat2,
-  host: [A.look(L('b2', 3), 10, 0.3, 0.45), A.blink(L('b2', 4)), A.look(L('b2', 4) + 10, 10, 0, 0)] };   // watches the reply come in
+  host: [A.look(L('b2', 3), 10, 0.3, 0.45), A.blink(L('b2', 4)), A.look(L('b2', 4) + 10, 10, 0, 0)],   // watches the reply come in
+  bubbles: [{ at: L('b2', 2) + 18, until: LEN('b2') - 20, text: CAPTIONS.b2.sub, slug: 'cotton-candy-sky' }] };

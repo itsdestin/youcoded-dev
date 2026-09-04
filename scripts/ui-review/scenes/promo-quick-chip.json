@@ -1,41 +1,42 @@
 {
- "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&seed=none&reply=briefing&title=new+session",
- "theme": "cotton-candy-sky",
- "width": 1440,
- "height": 900,
- "fps": 30,
- "boot": 3000,
- "actions": [
-  {
-   "eval": "(()=>{Object.defineProperty(document,'visibilityState',{get:()=>'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));delete document.visibilityState;document.documentElement.setAttribute('data-doc-hidden','0');return document.visibilityState})()",
-   "settle": 0
-  },
-  {
-   "hold": 900
-  },
-  {
-   "clickText": "Briefing",
-   "tag": "button",
-   "settle": 500,
-   "mark": "chip"
-  },
-  {
-   "typeSlow": "tomorrow's econ midterm",
-   "cps": 26
-  },
-  {
-   "key": "Enter",
-   "settle": 400
-  },
-  {
-   "waitForText": "that's where the hour goes",
-   "tag": "p",
-   "timeout": 25000,
-   "settle": 1200
-  },
-  {
-   "hold": 1200
-  }
- ],
- "why": "Cotton Candy Sky's dust is frozen first (the same window-hidden trick as promo-conversations, see its `why`): with the particle canvas repainting, the chip click alone took 2.2 s on the first take."
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&seed=none&reply=briefing&title=new+session",
+  "theme": "cotton-candy-sky",
+  "width": 1440,
+  "height": 900,
+  "zoom": 1.25,
+  "fps": 30,
+  "boot": 3000,
+  "actions": [
+    {
+      "eval": "(()=>{Object.defineProperty(document,'visibilityState',{get:()=>'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));delete document.visibilityState;document.documentElement.setAttribute('data-doc-hidden','0');return document.visibilityState})()",
+      "settle": 0
+    },
+    {
+      "hold": 900
+    },
+    {
+      "clickText": "Briefing",
+      "tag": "button",
+      "settle": 500,
+      "mark": "chip"
+    },
+    {
+      "typeSlow": "tomorrow's econ midterm",
+      "cps": 26
+    },
+    {
+      "key": "Enter",
+      "settle": 400
+    },
+    {
+      "waitForText": "that's where the hour goes",
+      "tag": "p",
+      "timeout": 25000,
+      "settle": 1200
+    },
+    {
+      "hold": 1200
+    }
+  ],
+  "why": "Cotton Candy Sky's dust is frozen first (the same window-hidden trick as promo-conversations, see its `why`): with the particle canvas repainting, the chip click alone took 2.2 s on the first take."
 }

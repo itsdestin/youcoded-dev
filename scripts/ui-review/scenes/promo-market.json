@@ -1,75 +1,76 @@
 {
- "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&student=1&latency=150",
- "theme": "light",
- "width": 1440,
- "height": 900,
- "fps": 30,
- "boot": 3000,
- "why": "Beat 9. The card is opened by its title (an h3). After Install the app's button reads Uninstall — there is no \"Installed\" label in the detail overlay — so `installed` waits for that. The marketplace is a Settings screen behind the detail overlay: three Escapes walk back to the chat (detail, marketplace, settings; a spare Escape in the chat is harmless) and `back` is marked on an observer that resolves when the composer's skills button is visible again. The chip row only reads its list at mount, so market-chip-sync.js hands the mock's list (which skills.install extended) to the app's own setChips before `chip` waits for the Remember chip.",
- "actions": [
-  {
-   "hold": 900
-  },
-  {
-   "click": "[title='Browse skills']",
-   "settle": 900,
-   "mark": "drawer"
-  },
-  {
-   "click": "[title='Open marketplace']",
-   "settle": 1800,
-   "mark": "market"
-  },
-  {
-   "hold": 1200
-  },
-  {
-   "clickText": "Remember",
-   "tag": "h3",
-   "settle": 1500,
-   "mark": "detail"
-  },
-  {
-   "clickText": "Install",
-   "tag": "button",
-   "settle": 0,
-   "mark": "install"
-  },
-  {
-   "waitForText": "Uninstall",
-   "tag": "button",
-   "timeout": 10000,
-   "settle": 900,
-   "mark": "installed"
-  },
-  {
-   "key": "Escape",
-   "settle": 500
-  },
-  {
-   "key": "Escape",
-   "settle": 500
-  },
-  {
-   "key": "Escape",
-   "settle": 300
-  },
-  {
-   "eval": "new Promise(r=>{setTimeout(()=>r(0),8000);const vis=(el)=>!!el&&el.offsetParent!==null;const ok=()=>vis(document.querySelector(\"[title='Browse skills']\"))&&![...document.querySelectorAll('button,a,span')].some(e=>vis(e)&&e.textContent.includes('Back to chat'));const done=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(1)));if(ok())return done();const o=new MutationObserver(()=>{if(ok()){o.disconnect();done()}});o.observe(document.body,{childList:true,subtree:true,attributes:true})})",
-   "settle": 400,
-   "mark": "back"
-  },
-  {
-   "evalFile": "market-chip-sync.js",
-   "settle": 300
-  },
-  {
-   "waitFor": "js:[...document.querySelectorAll('button')].find(b=>b.offsetParent!==null&&b.textContent.trim()==='Remember')",
-   "settle": 300,
-   "mark": "chip"
-  },
-  {
-   "hold": 2000
-  }
- ]
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&student=1&latency=150",
+  "theme": "light",
+  "width": 1440,
+  "height": 900,
+  "zoom": 1.25,
+  "fps": 30,
+  "boot": 3000,
+  "why": "Beat 9. The card is opened by its title (an h3). After Install the app's button reads Uninstall — there is no \"Installed\" label in the detail overlay — so `installed` waits for that. The marketplace is a Settings screen behind the detail overlay: three Escapes walk back to the chat (detail, marketplace, settings; a spare Escape in the chat is harmless) and `back` is marked on an observer that resolves when the composer's skills button is visible again. The chip row only reads its list at mount, so market-chip-sync.js hands the mock's list (which skills.install extended) to the app's own setChips before `chip` waits for the Remember chip.",
+  "actions": [
+    {
+      "hold": 900
+    },
+    {
+      "click": "[title='Browse skills']",
+      "settle": 900,
+      "mark": "drawer"
+    },
+    {
+      "click": "[title='Open marketplace']",
+      "settle": 1800,
+      "mark": "market"
+    },
+    {
+      "hold": 1200
+    },
+    {
+      "clickText": "Remember",
+      "tag": "h3",
+      "settle": 1500,
+      "mark": "detail"
+    },
+    {
+      "clickText": "Install",
+      "tag": "button",
+      "settle": 0,
+      "mark": "install"
+    },
+    {
+      "waitForText": "Uninstall",
+      "tag": "button",
+      "timeout": 10000,
+      "settle": 900,
+      "mark": "installed"
+    },
+    {
+      "key": "Escape",
+      "settle": 500
+    },
+    {
+      "key": "Escape",
+      "settle": 500
+    },
+    {
+      "key": "Escape",
+      "settle": 300
+    },
+    {
+      "eval": "new Promise(r=>{setTimeout(()=>r(0),8000);const vis=(el)=>!!el&&el.offsetParent!==null;const ok=()=>vis(document.querySelector(\"[title='Browse skills']\"))&&![...document.querySelectorAll('button,a,span')].some(e=>vis(e)&&e.textContent.includes('Back to chat'));const done=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(1)));if(ok())return done();const o=new MutationObserver(()=>{if(ok()){o.disconnect();done()}});o.observe(document.body,{childList:true,subtree:true,attributes:true})})",
+      "settle": 400,
+      "mark": "back"
+    },
+    {
+      "evalFile": "market-chip-sync.js",
+      "settle": 300
+    },
+    {
+      "waitFor": "js:[...document.querySelectorAll('button')].find(b=>b.offsetParent!==null&&b.textContent.trim()==='Remember')",
+      "settle": 300,
+      "mark": "chip"
+    },
+    {
+      "hold": 2000
+    }
+  ]
 }

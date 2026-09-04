@@ -21,6 +21,15 @@ const scene = JSON.parse(readFileSync(scenePath, 'utf8'));
 const WB_PORT = process.env.WB_PORT ?? '5473';
 const CDP_PORT = Number(process.env.CDP_PORT ?? 10320);
 const W = scene.width ?? 1440, H = scene.height ?? 900;
+// `zoom` (default 1): film the page ZOOMED IN, the way Ctrl+= does in the app —
+// the layout runs at W/zoom × H/zoom CSS px and Chrome paints it at `zoom`
+// device pixels per CSS px, so the clip is still W×H but everything in it is
+// `zoom` times bigger. Destin, 2026-09-04: "hit the + a bit so it's easier for
+// viewers to track what's happening and what the messages say." Scene actions
+// address elements by selector, so nothing else changes; mouse coordinates
+// are CSS px and use the CSS size below.
+const ZOOM = scene.zoom ?? 1;
+const CW = Math.round(W / ZOOM), CH = Math.round(H / ZOOM);
 // Scenes hardcode the workbench default (127.0.0.1:5473); swap it for whatever
 // port this worktree's workbench actually started on, same trick as shot.mjs's `wb()`.
 let url = scene.base.replace(/127\.0\.0\.1:\d+/, `127.0.0.1:${WB_PORT}`);
@@ -78,7 +87,7 @@ const evaluate = async (expression) => (await send('Runtime.evaluate', { express
 const rectOf = async (expr) => evaluate(rectOfExpr(expr));
 
 // ---- humanised input ----
-let cur = { x: W / 2, y: H / 2 };
+let cur = { x: CW / 2, y: CH / 2 };
 async function moveTo(p, ms = 400) {
   const steps = Math.max(6, Math.round(ms / 16));
   for (let i = 1; i <= steps; i++) {
@@ -150,7 +159,7 @@ async function key(name, modifiers = 0) {
 
 // ---- boot ----
 await send('Page.enable'); await send('Runtime.enable');
-await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
+await send('Emulation.setDeviceMetricsOverride', { width: CW, height: CH, deviceScaleFactor: ZOOM, mobile: false });
 // `storage`: extra localStorage keys seeded BEFORE the first paint. Some panel
 // geometry (the artifact drawer's width) is a stored preference, and a scene
 // that clicks it wider mid-take gets a stale tile instead: the artifact preview
@@ -163,7 +172,7 @@ await send('Page.navigate', { url });
 const READY = scene.ready ?? "document.readyState === 'complete' && document.body.innerText.trim().length > 20";
 for (let i = 0; i < 120; i++) { if (await evaluate(READY)) break; await sleep(250); }
 await sleep(scene.boot ?? 3500);
-await moveTo({ x: W * 0.6, y: H * 0.55 }, 1);
+await moveTo({ x: CW * 0.6, y: CH * 0.55 }, 1);
 
 // ---- record ----
 await send('Page.startScreencast', { format: 'png', everyNthFrame: 1, maxWidth: W, maxHeight: H });

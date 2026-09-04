@@ -1,70 +1,71 @@
 {
- "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&student=1&latency=150&reply=elasticity",
- "theme": "creme",
- "width": 1440,
- "height": 900,
- "fps": 30,
- "boot": 3000,
- "why": "Beat 4. The status-bar chip opens the Model popup, whose field is a second click away from the list: the popup shows the current model as a field, and the favourites list drops down from that field (ModelPicker shows favourites until you type — no search needed; the four favourites are seeded by the workbench). `list` waits for the Claude row so the frame it marks has the list painted. The Grok row is hovered 400 ms before the pick; `chip2` waits for the status-bar chip's title to start with the Grok id, which is the chip re-rendered on the new binding. The reply fixture is attributed to x-ai/grok-4. `chip` is marked once the popup's model field is up (it opens on \"Loading models…\" for a few frames).",
- "actions": [
-  {
-   "hold": 900
-  },
-  {
-   "click": "[title$='click to change model']",
-   "settle": 0
-  },
-  {
-   "waitFor": "button[aria-haspopup='listbox'][aria-label='Model']",
-   "settle": 700,
-   "mark": "chip"
-  },
-  {
-   "click": "button[aria-haspopup='listbox'][aria-label='Model']",
-   "settle": 300
-  },
-  {
-   "waitFor": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Claude Sonnet 4.6'))",
-   "settle": 300,
-   "mark": "list"
-  },
-  {
-   "moveTo": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Grok 4'))",
-   "ms": 400,
-   "settle": 400
-  },
-  {
-   "click": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Grok 4'))",
-   "settle": 300,
-   "mark": "pick"
-  },
-  {
-   "waitFor": "[title^='x-ai/grok-4']",
-   "settle": 700,
-   "mark": "chip2"
-  },
-  {
-   "click": "[placeholder^='Message']",
-   "settle": 200
-  },
-  {
-   "typeSlow": "explain elasticity in two lines",
-   "cps": 30
-  },
-  {
-   "key": "Enter",
-   "settle": 400,
-   "mark": "sent"
-  },
-  {
-   "waitForText": "sales barely move",
-   "tag": "p",
-   "timeout": 25000,
-   "settle": 300,
-   "mark": "reply"
-  },
-  {
-   "hold": 2500
-  }
- ]
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&student=1&latency=150&reply=elasticity",
+  "theme": "creme",
+  "width": 1440,
+  "height": 900,
+  "zoom": 1.25,
+  "fps": 30,
+  "boot": 3000,
+  "why": "Beat 4. The status-bar chip opens the Model popup, whose field is a second click away from the list: the popup shows the current model as a field, and the favourites list drops down from that field (ModelPicker shows favourites until you type — no search needed; the four favourites are seeded by the workbench). `list` waits for the Claude row so the frame it marks has the list painted. The Grok row is hovered 400 ms before the pick; `chip2` waits for the status-bar chip's title to start with the Grok id, which is the chip re-rendered on the new binding. The reply fixture is attributed to x-ai/grok-4. `chip` is marked once the popup's model field is up (it opens on \"Loading models…\" for a few frames).",
+  "actions": [
+    {
+      "hold": 900
+    },
+    {
+      "click": "[title$='click to change model']",
+      "settle": 0
+    },
+    {
+      "waitFor": "button[aria-haspopup='listbox'][aria-label='Model']",
+      "settle": 700,
+      "mark": "chip"
+    },
+    {
+      "click": "button[aria-haspopup='listbox'][aria-label='Model']",
+      "settle": 300
+    },
+    {
+      "waitFor": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Claude Sonnet 4.6'))",
+      "settle": 300,
+      "mark": "list"
+    },
+    {
+      "moveTo": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Grok 4'))",
+      "ms": 400,
+      "settle": 400
+    },
+    {
+      "click": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Grok 4'))",
+      "settle": 300,
+      "mark": "pick"
+    },
+    {
+      "waitFor": "[title^='x-ai/grok-4']",
+      "settle": 700,
+      "mark": "chip2"
+    },
+    {
+      "click": "[placeholder^='Message']",
+      "settle": 200
+    },
+    {
+      "typeSlow": "explain elasticity in two lines",
+      "cps": 30
+    },
+    {
+      "key": "Enter",
+      "settle": 400,
+      "mark": "sent"
+    },
+    {
+      "waitForText": "sales barely move",
+      "tag": "p",
+      "timeout": 25000,
+      "settle": 300,
+      "mark": "reply"
+    },
+    {
+      "hold": 2500
+    }
+  ]
 }

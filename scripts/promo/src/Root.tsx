@@ -1,7 +1,7 @@
 import React from 'react';
 import { Composition, Still } from 'remotion';
 import { FPS } from './grid';
-import { Promo, FILM } from './Promo';
+import { Promo, FILM, Film, studyFrames } from './Promo';
 import { Intro, INTRO_FRAMES } from './intro/Intro';
 import { CaptionStudy } from './CaptionStudy';
 import { HostStudy, STUDY_FRAMES } from './intro/HostStudy';
@@ -15,6 +15,9 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Promo" component={Promo} durationInFrames={FILM} fps={FPS} width={1920} height={1080} />
     <Composition id="Intro" component={Intro} durationInFrames={INTRO_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'classic' as const }} />
     <Composition id="HostStudy" component={HostStudy} durationInFrames={STUDY_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'classic' as const }} />
+    {/* check-in 3c: two beats choreographed so the host PRESENTS the app (model picker, the phone), with the
+        rotating theme-change moves, the centred label and the bubbles — the pattern for every other beat */}
+    <Composition id="PresentStudy" component={Film} durationInFrames={studyFrames(['b4', 'b8'])} fps={FPS} width={1920} height={1080} defaultProps={{ ids: ['b4', 'b8'] as const as any, music: false }} />
     {/* check-in 3b: the label + bubble captions and the three theme-transition candidates */}
     <Composition id="TransitionStudy" component={TransitionStudy} durationInFrames={TRANSITION_STUDY_FRAMES} fps={FPS} width={1920} height={1080} />
     {(['A', 'B', 'C'] as const).map((d) => (

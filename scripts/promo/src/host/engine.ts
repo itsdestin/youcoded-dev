@@ -187,7 +187,7 @@ export const A = {
   peekIn: (at: number, dur: number, y: number, size: number, reveal = 0.55): Action => ({ at, dur, name: 'peekIn', run: (t, s) => {
     s.size = size; s.y = y; s.hidden = false;
     s.x = L(-size, -size * (1 - reveal), E.outCubic(t));
-    s.rot = L(0, -14, E.outCubic(t));                  // leans in around the edge, like looking round a corner
+    s.rot = L(0, 12, E.outCubic(t));                   // leans IN toward the centre, like looking round a corner (−14 leaned back toward the edge — Destin, 2026-09-04)
     s.armL = -150; s.armR = 0; s.legL = 0; s.legR = 0;
     s.shadow = 0;
   } }),
@@ -195,6 +195,70 @@ export const A = {
   stepIn: (at: number, dur: number, x: number, y: number): Action => ({ at, dur, name: 'stepIn', run: (t, s, start) => {
     const e = E.inOutQuad(t);
     s.x = L(start.x, x, e); s.y = L(start.y, y, e); s.rot = L(start.rot, 0, e); s.armL = L(start.armL, 0, e); s.shadow = e;
+  } }),
+  // ---- presenting gestures (Destin, 2026-09-04: "the mascot kinda just moves around for no reason
+  // … I really want it to feel like the mascot is presenting the app … more movement in the
+  // hands/legs"). Each is a short, readable gesture AT something on screen; the beats chain them
+  // to the footage marks so every move has a reason the viewer can see.
+
+  /** Point with one arm: 'R' toward the right, 'L' toward the left; `dip` 0 = straight out, 1 = straight down. Holds until the next arm action. */
+  point: (at: number, arm: 'L' | 'R', dip = 0.5, dur = 8): Action => ({ at, dur, name: 'point', run: (t, s, start) => {
+    const k = E.outBack(t);
+    const deg = 90 * (1 - dip) + 0;                           // 90 = horizontal, 0 = hanging
+    if (arm === 'R') s.armR = L(start.armR, -deg, k); else s.armL = L(start.armL, deg, k);
+    s.rot = L(start.rot, arm === 'R' ? 4 : -4, k);          // a small lean the same way
+  } }),
+  /** Arms back down, lean gone. */
+  rest: (at: number, dur = 10): Action => ({ at, dur, name: 'rest', run: (t, s, start) => {
+    const k = E.inOutQuad(t); s.armL = L(start.armL, 0, k); s.armR = L(start.armR, 0, k); s.rot = L(start.rot, 0, k); s.legL = L(start.legL, 0, k); s.legR = L(start.legR, 0, k);
+  } }),
+  /** "Ta-da": both arms sweep up and out with a little hop, then hold wide; `side` leans it toward what is presented. */
+  tada: (at: number, side: 'L' | 'R' | 'C' = 'C', dur = 14): Action => ({ at, dur, name: 'tada', run: (t, s, start) => {
+    const k = E.outBack(t);
+    s.armL = L(start.armL, 115, k); s.armR = L(start.armR, -115, k);
+    const hop = 18 * E.hump(Math.min(1, t * 1.5)); s.y = start.y - hop; s.air = Math.min(1, hop / 30); s.shadow = 1 - 0.3 * s.air;
+    s.sy = 1 + 0.08 * E.hump(t); s.sx = 2 - s.sy;
+    s.rot = L(start.rot, side === 'R' ? 6 : side === 'L' ? -6 : 0, k);
+    if (t >= 1) { s.y = start.y; s.air = 0; s.shadow = 1; }
+  } }),
+  /** Both arms up, alternating little pumps — a cheer — for dur frames, then down. */
+  cheer: (at: number, dur = 30): Action => ({ at, dur, name: 'cheer', run: (t, s, start) => {
+    const up = Math.min(1, t * 5), down = Math.min(1, (1 - t) * 5), io = Math.min(up, down);
+    const pump = Math.sin(t * dur / 30 * Math.PI * 2 * 2) * 14;
+    s.armL = L(start.armL, 150, E.outBack(up)) * (t < 1 ? 1 : 0) + pump * io; s.armR = -s.armL;
+    const bob = Math.abs(Math.sin(t * dur / 30 * Math.PI * 2 * 2)) * 10 * io; s.y = start.y - bob; s.sy = 1 - 0.03 * (bob / 10); s.sx = 2 - s.sy;
+    if (t >= 1) { s.armL = start.armL; s.armR = start.armR; s.y = start.y; s.sy = 1; s.sx = 1; }
+  } }),
+  /** A clap: arms up in front, beating together, for dur frames. */
+  clap: (at: number, dur = 24): Action => ({ at, dur, name: 'clap', run: (t, s, start) => {
+    const io = Math.min(1, t * 4, (1 - t) * 4);
+    const beat = (Math.sin(t * dur / 30 * Math.PI * 2 * 3) + 1) / 2;           // 3 claps a second
+    s.armL = L(start.armL, 125 + 25 * beat, io); s.armR = L(start.armR, -125 - 25 * beat, io);
+    s.sy = 1 - 0.02 * beat * io; s.sx = 2 - s.sy;
+    if (t >= 1) { s.armL = start.armL; s.armR = start.armR; s.sy = 1; s.sx = 1; }
+  } }),
+  /** Waiting: one foot taps and the body rocks, arms loosely swinging, for dur frames. */
+  tapFoot: (at: number, dur = 40): Action => ({ at, dur, name: 'tapFoot', run: (t, s, start) => {
+    const io = Math.min(1, t * 4, (1 - t) * 4);
+    const ph = t * dur / 30 * Math.PI * 2 * 2.5;                             // 2.5 taps a second
+    s.legR = -22 * Math.max(0, Math.sin(ph)) * io; s.rot = L(start.rot, 3, io) + Math.sin(ph) * 1.5 * io;
+    s.armL = start.armL + 8 * Math.sin(ph) * io; s.armR = start.armR - 8 * Math.sin(ph) * io;
+    if (t >= 1) { s.legR = 0; s.rot = start.rot; s.armL = start.armL; s.armR = start.armR; }
+  } }),
+  /** A nod: two quick dips with a small squash, eyes down. */
+  nod: (at: number, dur = 14): Action => ({ at, dur, name: 'nod', run: (t, s) => {
+    const d = Math.abs(Math.sin(t * Math.PI * 2)) * (1 - t * 0.5);
+    s.sy = 1 - 0.08 * d; s.sx = 1 + 0.05 * d; s.lookY = 0.4 * d;
+  } }),
+  /** Thinking: a hand to the chin (right arm up and in), a tilt, eyes up and away; holds until `rest`. */
+  think: (at: number, dur = 10): Action => ({ at, dur, name: 'think', run: (t, s, start) => {
+    const k = E.outBack(t); s.armR = L(start.armR, -165, k); s.rot = L(start.rot, -7, k); s.lookX = L(start.lookX, 0.45, k); s.lookY = L(start.lookY, -0.35, k);
+  } }),
+  /** A shrug: both arms out sideways, a tilt, held briefly. */
+  shrug: (at: number, dur = 16): Action => ({ at, dur, name: 'shrug', run: (t, s, start) => {
+    const io = Math.min(1, t * 3, (1 - t) * 3), k = E.outBack(io);
+    s.armL = L(start.armL, 75, k); s.armR = L(start.armR, -75, k); s.rot = L(start.rot, 6, k); s.sy = 1 - 0.04 * k; s.sx = 1 + 0.03 * k;
+    if (t >= 1) { s.armL = start.armL; s.armR = start.armR; s.rot = start.rot; s.sy = 1; s.sx = 1; }
   } }),
   hide: (at: number): Action => ({ at, dur: 0, name: 'hide', run: (_t, s) => { s.hidden = true; } }),
   show: (at: number): Action => ({ at, dur: 0, name: 'show', run: (_t, s) => { s.hidden = false; } }),

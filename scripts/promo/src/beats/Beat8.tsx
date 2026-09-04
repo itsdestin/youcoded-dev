@@ -2,7 +2,7 @@ import React from 'react';
 import { AbsoluteFill, Sequence, OffthreadVideo, staticFile, useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion';
 import { Footage } from '../Footage';
 import { Phone } from '../Phone';
-import { Caption } from '../Caption';
+import { Label } from '../Label';
 import { CAPTIONS } from '../captions';
 import { PHONE, perch } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
@@ -28,8 +28,10 @@ const P1_FROM = markFrame('promo-phone-takeover', 'list', 'start', -8);
 const P2_FROM = markFrame('promo-phone-takeover', 'files', 'start', -15);
 assertClipCovers('promo-phone-takeover', P1_FROM, T_FILES - T1, P_RATE);
 assertClipCovers('promo-phone-takeover', P2_FROM, END - T_FILES);
-const P = perch(0.3);
+const P = perch(0.3), BESIDE = perch(0.78);                       // the right end of the title bar, next to the phone
 const ON_PHONE = { x: PHONE.x + 40, y: PHONE.y - 62 };
+/** Local frame of a phone mark (the phone clip starts at T1 and runs at P_RATE until T_FILES). */
+const PM = (mark: string, edge: 'start' | 'end' = 'start') => T1 + Math.round((markFrame('promo-phone-takeover', mark, edge) - P1_FROM) / P_RATE);
 const PhoneIn: React.FC = () => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
   const s = spring({ frame: f, fps, config: { damping: 17, stiffness: 110, mass: 1 } });
@@ -46,13 +48,23 @@ const Beat8: React.FC = () => (
     <Sequence durationInFrames={T_LAP2}><Footage file="promo-anydevice" from={0} /></Sequence>
     <Sequence from={T_LAP2}><Footage file="promo-anydevice" from={0} /></Sequence>
     <Sequence from={T1}><PhoneIn /></Sequence>
-    <Caption head={CAPTIONS.b8.head} sub={CAPTIONS.b8.sub} at={L('b8', 28) + 4} subAt={T1 + 8} theme="devils-garden" />
+    <Label text={CAPTIONS.b8.head} at={L('b8', 28) + 4} slug="devils-garden" />
     <Sfx at={T1 + 6} name="whoosh" volume={0.3} />
   </AbsoluteFill>
 );
 export const beat8: BeatModule = { id: 'b8', slug: 'devils-garden', home: P, Component: Beat8,
+  // The host PRESENTS the phone: sees it coming, walks to the right end of the
+  // bar to meet it, points at the session list and at the take-over question,
+  // nods at Take over, ta-das at the loaded chat, then hops onto the phone to
+  // cheer the files.
   host: [
-    A.look(T1 - 10, 8, 0.6, 0.2),                                                  // sees the phone coming
-    A.hop(T1 + 6, 28, ON_PHONE.x, ON_PHONE.y, 90), A.to(T1 + 6, 28, 'size', 96), A.face(T1 + 20, 'curious'), A.look(T1 + 30, 8, 0, 0.5),   // hops onto the phone
-    A.blink(T_FILES - 20), A.face(T_FILES, 'welcome'), A.pose(T_FILES + 4, 12, { armL: 150, armR: -150 }), A.pose(T_FILES + 40, 12, { armL: 0, armR: 0 }),   // the files are there
-  ] };
+    A.look(T1 - 10, 8, 0.6, 0.2), A.face(T1 - 10, 'curious'),                      // sees the phone coming
+    A.walk(T1 + 2, 30, BESIDE.x, 5),
+    A.point(PM('list') + 4, 'R', 0.6), A.look(PM('list') + 4, 6, 0.6, 0.4),        // "here's your chat, on the phone"
+    A.point(PM('dialog') + 2, 'R', 0.55), A.face(PM('dialog') + 2, 'shocked'), A.look(PM('dialog') + 2, 4, 0.6, 0.5),   // the take-over question
+    A.nod(PM('takeover', 'end')), A.face(PM('takeover', 'end'), 'welcome'),
+    A.tada(PM('chat', 'end') + 4, 'R'), A.rest(PM('chat', 'end') + 40),
+    A.look(T_FILES - 24, 8, 0.5, 0.5), A.hop(T_FILES - 16, 26, ON_PHONE.x, ON_PHONE.y, 90), A.to(T_FILES - 16, 26, 'size', 96),   // onto the phone for the files
+    A.cheer(T_FILES + 12, 30), A.face(T_FILES + 12, 'welcome'), A.blink(T_FILES + 50),
+  ],
+  bubbles: [{ at: PM('list') + 12, until: PM('dialog') - 6, text: CAPTIONS.b8.sub, slug: 'devils-garden' }] };

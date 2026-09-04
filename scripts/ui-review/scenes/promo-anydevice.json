@@ -1,14 +1,15 @@
 {
- "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&student=1&latency=150",
- "theme": "devils-garden",
- "width": 1440,
- "height": 900,
- "fps": 30,
- "boot": 3000,
- "why": "Beat 8's laptop half: the site conversation on the laptop in Devil's Garden, held 7 s with no clicks. The phone clip (promo-phone-takeover) carries the same conversation; nothing here is marked because the edit anchors on the phone's marks.",
- "actions": [
-  {
-   "hold": 7000
-  }
- ]
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&student=1&latency=150",
+  "theme": "devils-garden",
+  "width": 1440,
+  "height": 900,
+  "zoom": 1.25,
+  "fps": 30,
+  "boot": 3000,
+  "why": "Beat 8's laptop half: the site conversation on the laptop in Devil's Garden, held 7 s with no clicks. The phone clip (promo-phone-takeover) carries the same conversation; nothing here is marked because the edit anchors on the phone's marks.",
+  "actions": [
+    {
+      "hold": 7000
+    }
+  ]
 }

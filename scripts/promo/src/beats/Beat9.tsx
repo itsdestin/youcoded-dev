@@ -1,7 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Sequence } from 'remotion';
 import { Footage } from '../Footage';
-import { Caption } from '../Caption';
+import { Label } from '../Label';
 import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
@@ -26,7 +26,7 @@ const Beat9: React.FC = () => (
     <Sequence durationInFrames={T_DETAIL}><Footage file="promo-market" from={S1_FROM} light /></Sequence>
     <Sequence from={T_DETAIL} durationInFrames={T_BACK - T_DETAIL}><Footage file="promo-market" from={S2_FROM} light /></Sequence>
     <Sequence from={T_BACK}><Footage file="promo-market" from={S3_FROM} pushIn={0.02} light /></Sequence>
-    <Caption head={CAPTIONS.b9.head} sub={CAPTIONS.b9.sub} at={L('b9', 33) + 4} theme="light" />
+    <Label text={CAPTIONS.b9.head} at={L('b9', 33) + 4} slug="light" />
   </AbsoluteFill>
 );
 export const beat9: BeatModule = { id: 'b9', slug: 'light', home: P, Component: Beat9,
@@ -35,4 +35,5 @@ export const beat9: BeatModule = { id: 'b9', slug: 'light', home: P, Component: 
     A.hop(T_DETAIL - 8, 24, perch(0.5).x, perch(0.5).y, 50), A.face(T_DETAIL + 10, 'curious'),
     A.face(L('b9', 36) + 10, 'welcome'), A.pose(L('b9', 36) + 10, 12, { armL: 150, armR: -150 }), A.pose(L('b9', 36) + 40, 12, { armL: 0, armR: 0 }),   // installed!
     A.hop(T_BACK - 8, 24, P.x, P.y, 50), A.blink(T_BACK + 20),
-  ] };
+  ],
+  bubbles: [{ at: L('b9', 33) + 18, until: L('b9', 36), text: CAPTIONS.b9.sub, slug: 'light' }] };

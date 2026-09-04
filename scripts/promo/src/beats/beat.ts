@@ -7,13 +7,15 @@
 import type React from 'react';
 import type { Action } from '../host/engine';
 import type { ThemeCue } from '../tracks';
+import type { BubbleCue } from '../Bubble';
 import type { Slug } from '../themes';
 import { BEATS, localFrame, beatFrames, type BeatId } from '../timeline';
 import { barFrame } from '../grid';
 export type BeatModule = {
   id: BeatId; slug: Slug; home: { x: number; y: number };
   Component: React.FC; host: Action[]; themes?: ThemeCue[];
-  arrival?: 'hop' | 'none';       // 'none' when the beat stages its own entrance (beat 1)
+  bubbles?: BubbleCue[];          // what the host SAYS (the caption's second line), local frames
+  arrival?: 'move' | 'none';      // 'none' when the beat stages its own entrance (beat 1)
 };
 export const beatOf = (id: BeatId) => BEATS.find((b) => b.id === id)!;
 /** Local frame of an absolute bar inside beat `id`. */

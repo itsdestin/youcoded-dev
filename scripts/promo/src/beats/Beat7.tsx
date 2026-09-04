@@ -1,7 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Sequence } from 'remotion';
 import { Footage } from '../Footage';
-import { Caption } from '../Caption';
+import { Label } from '../Label';
 import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
@@ -28,11 +28,12 @@ const Beat7: React.FC = () => (
     <Sequence from={T_SEARCH} durationInFrames={T_NOTE - T_SEARCH}><Footage file="promo-conversations" from={S2_FROM} /></Sequence>
     <Sequence from={T_NOTE} durationInFrames={T_DRAG - T_NOTE}><Footage file="promo-conversations" from={S3_FROM} /></Sequence>
     <Sequence from={T_DRAG}><Footage file="promo-conversations" from={S4_FROM} /></Sequence>
-    <Caption head={CAPTIONS.b7.head} sub={CAPTIONS.b7.sub} at={L('b7', 24) + 4} theme="midnight" />
+    <Label text={CAPTIONS.b7.head} at={L('b7', 24) + 4} slug="midnight" />
   </AbsoluteFill>
 );
 export const beat7: BeatModule = { id: 'b7', slug: 'midnight', home: P, Component: Beat7,
   host: [
     A.look(T_SEARCH, 10, 0.1, 0.5), A.face(T_NOTE, 'curious'), A.blink(T_NOTE + 20),
     A.hop(T_DRAG + 12, 26, perch(0.45).x, perch(0.45).y, 50), A.look(T_DRAG + 20, 10, 0.5, 0.3), A.face(T_DRAG + 40, 'welcome'),   // follows the pill along the strip
-  ] };
+  ],
+  bubbles: [{ at: L('b7', 24) + 18, until: T_DRAG - 10, text: CAPTIONS.b7.sub, slug: 'midnight' }] };
