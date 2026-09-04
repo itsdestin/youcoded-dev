@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Promo check-in 5: the presenter rebuilt</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--fg:#1b1d22;--muted:#6b7280;--line:#e3e6ea;--acc:#2f6fed}
+@media(prefers-color-scheme:dark){:root{--bg:#121417;--card:#1b1e23;--fg:#e8eaee;--muted:#9aa2ad;--line:#2b3037;--acc:#5b8dff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:26px;margin:0 0 6px}h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:40px 0 12px}
+p.lead{color:var(--muted);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+video,img.wide{width:100%;border-radius:10px;border:1px solid var(--line);display:block;background:#000}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pair figcaption{font-size:13px;color:var(--muted);margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-weight:600}
+ul,ol{margin:6px 0 0 18px;padding:0}li{margin:6px 0}
+.ask{border:2px solid var(--acc);border-radius:12px;padding:16px 18px;margin:20px 0}
+code{font-size:13px;background:rgba(127,127,127,.12);padding:1px 5px;border-radius:4px}
+</style></head><body><main>
+<h1>Check-in 5: the presenter rebuilt</h1>
+<p class="lead">Your five notes on the fourth draft, applied. The whole film at half size with the music is below; under it, what changed for each note and the two things you need to pick.</p>
+
+<div class="card">
+<video controls src="study/draft.mp4"></video>
+</div>
+
+<h2>1 · The peek-in</h2>
+<div class="card">
+<p>It is now the app's own docked side-peek, copied number for number from the buddy: two mittens (the rig's own peek-hand art) pinned on the screen edge, one above and one below the face, and the body sunk past the edge leaning 75° between them with its own arms hidden. First the hands come over the edge with the top of the head and a bit of the eyes (0.3 s), a look across, then the full pose; then it steps out with its normal arms (the mittens slide back off the edge as its own arms fade in — nothing pops), takes a quick look around, and walks over. The long reaching arm and the floating hand are gone.</p>
+<div class="pair">
+<figure><img class="wide" src="storyboard-v3/peek-before.png" alt="before"><figcaption>Before (the fourth draft): a floating dot for a hand, a tilted blob, limbs popping in.</figcaption></figure>
+<figure><img class="wide" src="storyboard-v3/peek-app.png" alt="after"><figcaption>Now: frames 6–110 of the open, every fourth frame — mittens, the lean, the step out, the look around, the walk.</figcaption></figure>
+</div>
+<p class="lead" style="margin-top:10px">One full frame of the peek: <code>storyboard-v3/peek-frame-52.png</code>. The open on its own, full size: <code>study/intro-study.mp4</code>.</p>
+</div>
+
+<h2>2 · Caption styles — pick one</h2>
+<div class="card">
+<p>The underline is gone from the film (the draft above uses the plain glow while you pick). Nine styles, each 2 seconds on a light theme then 2 on a dark one, animating in: <code>study/label-reel.mp4</code>. The settled looks side by side:</p>
+<img class="wide" src="storyboard-v3/caption-variants-2.png" alt="caption variants">
+<table style="margin-top:12px">
+<tr><th>Letter</th><th>Size</th><th>How it comes in</th></tr>
+<tr><td><b>G</b> Glow</td><td>48 px</td><td>Rises 10 px and fades in (today's look, minus the underline)</td></tr>
+<tr><td><b>X</b> Big glow</td><td>62 px</td><td>Pops in with a little overshoot on the beat</td></tr>
+<tr><td><b>P</b> Plate</td><td>46 px</td><td>A frosted pill rises, the words fade onto it</td></tr>
+<tr><td><b>O</b> Outline</td><td>50 px</td><td>Hollow letters revealed left to right</td></tr>
+<tr><td><b>K</b> Kicker</td><td>15 + 46 px</td><td>A tiny topic line in the accent, then the headline slides up under it</td></tr>
+<tr><td><b>S</b> Stacked accent</td><td>40 + 60 px</td><td>The set-up words fade in, the payoff word pops bigger</td></tr>
+<tr><td><b>W</b> Word by word</td><td>52 px</td><td>Each word springs up in turn</td></tr>
+<tr><td><b>B</b> Blur in</td><td>56 px</td><td>From a soft blur to sharp, a faint glow stays</td></tr>
+<tr><td><b>R</b> Ribbon</td><td>40 px on a bar</td><td>A solid accent bar slides in from the left, the text follows</td></tr>
+</table>
+<div class="ask"><b>Pick a letter</b> (or a mix — e.g. X's size with W's motion). It goes into the film's label and the study is deleted.</div>
+</div>
+
+<h2>3 · The script, and 4 · Golden hour</h2>
+<div class="card">
+<p>The script is rewritten as <code>narration-v2.md</code>: every line next to what is on screen at that moment, the old line, the new line, and the most words its slot can hold. Edit the lines there in your own words.</p>
+<p><b>Why Golden hour was on the wrong theme, and why three lines never showed at all.</b> The rule that every bubble stays long enough to be read (1.2 s plus a quarter second a word — yours) was met by quietly pushing each line later. Beat 3's first line was seven words, so everything after it slid a whole bar: "Golden hour" landed on Strawberry Kitty, and "There's your brief", "See? Any of them" and "All synced" were pushed clean out of their sections. Now a line that does not fit its slot stops the build and says which line, which slot, and by how much — so every line in the film is written to its footage. The cost: the music cuts every 2.1 s, and a 2.1-second slot fits <b>two words</b>. The theme flips and the take-over prompt are two-word lines now.</p>
+<p>Dropped: "Let me show you around" (there is 2.3 s after the hello before the next section, and it collided with the chip line), "One click" (the clap says it), "It asks first. Polite." → "Asks first." (1.4-second slot).</p>
+</div>
+
+<h2>5 · Where he stands and what he points at</h2>
+<div class="card">
+<p>Every line now names the <b>thing</b> it is about (a point in the window). From that, the film works out where to stand — beside it, a hand's reach away, on the side you choose (left, right, above, or on the title bar) — and the arm is turned to the <b>true angle</b> from the shoulder to that point, the body leans that way, the eyes follow, and the speech bubble goes on the far side so it never covers what he is pointing at. He moves only when the next thing needs a different spot; lines about things nearby are said from where he is. Each section's arrival move now lands him directly at his first spot instead of on the title bar and then hopping again.</p>
+<p>Hops per section now: hello 0 · chip 2 · themes 0 (he stays by the input row and the three costume changes happen in place) · model 1 · files 2 · games 0 (then the dive) · conversations 2 · phone 2 · marketplace 1 · close 1.</p>
+<p>One still per line, so you can check each spot: <code>study/lines-01.png</code> … <code>study/lines-07.png</code> (four per sheet, in film order).</p>
+</div>
+
+<h2>Open for you</h2>
+<div class="card">
+<ol>
+<li>The caption style (letter or mix).</li>
+<li>The script — edit <code>narration-v2.md</code>; note the word budget per line. "Watch this." is the line I like least (see the notes at the bottom of that file).</li>
+<li>The peek: the app's pose or something between it and the earlier shallow lean?</li>
+<li>Still open from before: the Golden Sunbreak sun companion; the Flappy bird's size; the phone's "Sync failing" row; merging youcoded#402 and this branch after the final.</li>
+</ol>
+</div>
+</main></body></html>

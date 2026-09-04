@@ -28,9 +28,14 @@ const Rig: React.FC<{ s: HostState; style: FaceStyle; scope: string }> = ({ s, s
 .${scope} #rig-arm-right { transform-box: view-box; transform-origin: ${PIVOT['rig-arm-right']}; transform: rotate(${s.armR.toFixed(2)}deg); }
 .${scope} #rig-leg-left { transform-box: view-box; transform-origin: ${PIVOT['rig-leg-left']}; transform: rotate(${s.legL.toFixed(2)}deg); }
 .${scope} #rig-leg-right { transform-box: view-box; transform-origin: ${PIVOT['rig-leg-right']}; transform: rotate(${s.legR.toFixed(2)}deg); }
-.${scope} #rig-hand-peek-left { display: ${s.peekHand === 'L' ? 'inline' : 'none'} !important; }
-.${scope} #rig-hand-peek-right { display: ${s.peekHand === 'R' ? 'inline' : 'none'} !important; }
-${s.peekHand ? `.${scope} #rig-arm-left, .${scope} #rig-arm-right, .${scope} #rig-leg-left, .${scope} #rig-leg-right { display: none !important; }` : ''}
+.${scope} #rig-hand-peek-left, .${scope} #rig-hand-peek-right { display: none !important; }
+${s.peek > 0
+    // The app's side peek hides the rig's OWN arms (the edge mittens are the hands; a 75°-leaning body would show a
+    // stray third arm — mascot-poses.ts 'peek-left') — crossfaded by `peek`, so the arms fade in as it steps out and
+    // are never switched on in one frame. The rig's own peek-hand stubs (at the body's side) stay off: Host draws the
+    // mittens on the frame edge instead, the way BuddyMascot's PeekHands does.
+    ? `.${scope} #rig-arm-left, .${scope} #rig-arm-right { opacity: ${Math.min(1, (1 - s.peek) * 2).toFixed(3)}; }`
+    : ''}
 .${scope} .pupil { transform: translate(${s.lookX.toFixed(2)}px, ${s.lookY.toFixed(2)}px); }
 .${scope} #rig-face-blink { display: ${blink ? 'inline' : 'none'} !important; }
 ${FACES.map((n) => `.${scope} #rig-face-${n} { display: ${n === face && !blink ? 'inline' : 'none'} !important; }`).join('\n')}
@@ -107,12 +112,17 @@ export const Host: React.FC<{ actions: Action[]; base: HostState; faceStyle?: Fa
         return <div key={i} style={{ position: 'absolute', left: lx, top: ly, width: w, height: hh, transform: `scale(${born})`, opacity: born }}
           dangerouslySetInnerHTML={{ __html: c.svg.replace('<svg', '<svg style="width:100%;height:100%;display:block;overflow:visible"') }} />;
       })}
-      {/* the corner peek: the limbs are behind the frame edge, and the hand that grips the edge is drawn
-          ON the edge, in front of it (the rig's own peek hand sits at the body's side, which is off screen) */}
-      {s.peekHand === 'L' && !s.hidden && (
-        <div style={{ position: 'absolute', left: 0, top: s.y + s.size * 0.6, width: s.size * 0.11, height: s.size * 0.15, borderRadius: s.size * 0.05, background: t.accent,
-          boxShadow: 'inset -2px 0 3px rgba(0,0,0,.25), 0 2px 6px rgba(0,0,0,.35)', opacity: s.alpha }} />
-      )}
+      {/* The edge peek's MITTENS (Destin, 2026-09-04: "like the existing rig for hanging off the edge when the buddy
+          is docked"): the rig's own peek-hand art (rig-hand-peek-left, a 2.6×3.4 rounded rect), pinned ON the frame
+          edge exactly as the app's PeekHands pins them — 15 % wide, 17 % tall, centred at 0.46 ± 0.34 of the box,
+          tilted ∓4° — OUTSIDE the body's transforms, so the hands stay planted on the edge while the body leans
+          between them. They slide on from behind the edge by `mittens` (and back off as it steps out). */}
+      {s.peekHand === 'L' && s.mittens > 0 && [0.46 - 0.34, 0.46 + 0.34].map((c, i) => (
+        <div key={i} style={{ position: 'absolute', left: 0, top: s.y + (c - 0.085) * s.size, width: s.size * 0.15, height: s.size * 0.17,
+          transform: `translateX(${(-100 * (1 - s.mittens)).toFixed(1)}%) rotate(${i === 0 ? 4 : -4}deg)`,
+          filter: t.dark ? `drop-shadow(0 0 3px ${t.fg}cc) drop-shadow(0 4px 10px rgba(0,0,0,.5))` : 'drop-shadow(0 4px 10px rgba(40,10,40,.35))' }}
+          dangerouslySetInnerHTML={{ __html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.3 7.9 3.4 4.2" width="100%" height="100%" style="display:block"><rect x="0.7" y="8.3" width="2.6" height="3.4" rx="1.17" fill="${t.accent}" stroke="#000000" stroke-opacity="0.4" stroke-width="0.34"/></svg>` }} />
+      ))}
       {s.poof != null && <Poof at={s.poof} cx={s.x + s.size / 2} cy={s.y + s.size / 2} color={t.accent} size={s.size * s.poofScale} />}
       {ghosts.map((g) => (
         <div key={g} style={{ position: 'absolute', left: s.x, top: s.y, width: s.size, height: s.size, opacity: 0.3,
@@ -122,6 +132,8 @@ export const Host: React.FC<{ actions: Action[]; base: HostState; faceStyle?: Fa
       ))}
       <div style={{ position: 'absolute', left: s.x, top: s.y, width: s.size, height: s.size,
         transform: `rotate(${s.rot.toFixed(2)}deg) scale(${(s.sx * turn(s.spin)).toFixed(3)}, ${(s.sy * breathe).toFixed(3)})`, transformOrigin: '50% 86%',
+        // the app's side-peek lean: 75° about the box's CENTRE (buddy.css `rotate: 75deg` on .mascot-lean), blended by `peek`
+        ...(s.peek > 0 ? { transform: `rotate(${(75 * s.peek).toFixed(2)}deg)`, transformOrigin: '50% 50%' } : {}),
         opacity: blur ? 0.75 : 1,
         // dark themes: a thin light rim plus the accent glow — the Halftone hood on the plum backdrop was
         // invisible for the whole games beat in the draft review

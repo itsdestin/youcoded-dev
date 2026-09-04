@@ -4,7 +4,7 @@ import { FPS } from './grid';
 import { Promo, FILM, Film, studyFrames } from './Promo';
 import { Intro, INTRO_FRAMES } from './intro/Intro';
 import { CaptionStudy } from './CaptionStudy';
-import { LabelStudy } from './LabelStudy';
+import { LabelStudy, LabelReel, REEL_FRAMES, DESIGNS } from './LabelStudy';
 import { HostStudy, STUDY_FRAMES } from './intro/HostStudy';
 import { TransitionStudy, TRANSITION_STUDY_FRAMES } from './studies/TransitionStudy';
 // The film runs the bar grid (TOTAL_FRAMES) plus TAIL_FRAMES, the frames the
@@ -21,14 +21,17 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="PresentStudy" component={Film} durationInFrames={studyFrames(['b4', 'b8'])} fps={FPS} width={1920} height={1080} defaultProps={{ ids: ['b4', 'b8'] as const as any, music: false }} />
     {/* check-in 3b: the label + bubble captions and the three theme-transition candidates */}
     <Composition id="TransitionStudy" component={TransitionStudy} durationInFrames={TRANSITION_STUDY_FRAMES} fps={FPS} width={1920} height={1080} />
-    {/* caption variants for Destin, 2026-09-04 (G glow · P plate · O outline · K kicker · S stacked accent) */}
-    {(['G', 'P', 'O', 'K', 'S'] as const).map((d) => (
+    {/* caption STYLE variants for Destin, 2026-09-04, round two: nine animated designs (G X P O K S W B R —
+        see LabelStudy.tsx). `LabelReel` is the video (each design 2 s light, 2 s dark); the `Label<D>` /
+        `LabelDark<D>` stills draw each one settled (`at: -40`) for the sheet. */}
+    <Composition id="LabelReel" component={LabelReel} durationInFrames={REEL_FRAMES} fps={FPS} width={1920} height={1080} />
+    {DESIGNS.map((d) => (
       <Still key={`L${d}`} id={`Label${d}`} component={LabelStudy} width={1920} height={1080}
-        defaultProps={{ design: d, slug: 'cotton-candy-sky' as const, still: 'cotton', head: 'Just ask.' }} />
+        defaultProps={{ design: d, slug: 'cotton-candy-sky' as const, still: 'cotton', head: 'Just ask.', kicker: 'Any model', at: -40, showTag: true }} />
     ))}
-    {(['G', 'P', 'O', 'K', 'S'] as const).map((d) => (
+    {DESIGNS.map((d) => (
       <Still key={`LD${d}`} id={`LabelDark${d}`} component={LabelStudy} width={1920} height={1080}
-        defaultProps={{ design: d, slug: 'devils-garden' as const, still: 'anydevice', head: 'Pick up on any device.', kicker: 'Any device' }} />
+        defaultProps={{ design: d, slug: 'devils-garden' as const, still: 'anydevice', head: 'Pick up on any device.', kicker: 'Any device', at: -40, showTag: true }} />
     ))}
     {(['A', 'B', 'C'] as const).map((d) => (
       <Still key={d} id={`Caption${d}`} component={CaptionStudy} width={1920} height={1080}

@@ -21,13 +21,13 @@ const Beat2: React.FC = () => (
   </AbsoluteFill>
 );
 // The host is already on this perch in this costume (the intro put it there), so no
-// arrival move. It PRESENTS the chip: points down at the strip as the chip is clicked,
-// taps its foot while the assistant works, reads the reply as it streams, nods, and is
-// happy at the finished brief.
-const C = L('b2', 2) + 3;                                           // the chip's click release
-const P2 = present([
-  { at: C - 2, say: 'Just tap what you need.', spot: inWindow(0.72, 0.9), point: 'L', face: 'welcome' },   // right of the chip strip (clear of the chips), pointing at them
-  { at: C + 62, say: "I'm grabbing your notes…", spot: inWindow(0.62, 0.3), point: 'L', face: 'curious' },   // right beside the reply as it streams
-  { at: L('b2', 4) + 6, say: "There's your brief.", point: 'L', face: 'happy', until: LEN('b2') - 12 },
-], 'cotton-candy-sky', P, LEN('b2') - 12);
+// arrival move. Its hello from beat 1 is still up until local 37, so the first line
+// waits for it. Two lines, not three: the beat is 6.7 s and each line needs ~2 s to read.
+//   the Briefing chip (measured on the draft: 35 % across, 87 % down the window)
+//   the reply, top-left; its right edge is ~40 % across so the host stands beyond it
+const END = LEN('b2');
+const P2 = present('b2', [
+  { at: 48, say: 'Tap a chip.', target: inWindow(0.355, 0.867), stand: 'above', face: 'welcome' },
+  { at: 116, say: 'Notes in, brief out.', target: inWindow(0.40, 0.16), stand: 'R', face: 'happy', until: END - 8 },
+], 'cotton-candy-sky', P, END - 8);
 export const beat2: BeatModule = { id: 'b2', slug: 'cotton-candy-sky', home: P, Component: Beat2, arrival: 'none', host: P2.host, bubbles: P2.bubbles };

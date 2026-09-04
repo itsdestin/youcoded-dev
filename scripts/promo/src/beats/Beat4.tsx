@@ -23,8 +23,9 @@ const M = (mark: string, edge: 'start' | 'end' = 'start') => {
   return fr < B_FROM ? Math.round((fr - FROM) / RATE) : A_LEN + Math.round((fr - B_FROM) / RATE);
 };
 const P = perch(0.3);
+const END = LEN('b4');
 assertClipCovers('promo-model', FROM, A_LEN, RATE);
-assertClipCovers('promo-model', B_FROM, LEN('b4') - A_LEN, RATE);
+assertClipCovers('promo-model', B_FROM, END - A_LEN, RATE);
 const Beat4: React.FC = () => (
   <AbsoluteFill>
     <Sequence durationInFrames={A_LEN}><Footage file="promo-model" from={FROM} rate={RATE} light /></Sequence>
@@ -32,9 +33,13 @@ const Beat4: React.FC = () => (
     <Label text={CAPTIONS.b4.head} at={L('b4', 10) + 4} slug="creme" />
   </AbsoluteFill>
 );
-const P4 = present([
-  { at: M('list') + 2, say: 'Pick whichever brain you like.', spot: inWindow(0.74, 0.74), point: 'L', face: 'welcome' },   // right of the list (clear of its stars), pointing at it
-  { at: M('pick', 'end') + 2, say: 'Grok today. Why not.', point: 'L', face: 'happy' },
-  { at: M('reply') + 6, say: 'See? Any of them.', spot: inWindow(0.8, 0.72), point: 'L', face: 'happy', until: LEN('b4') - 12 },   // beside the answer
-], 'creme', P, LEN('b4') - 12);
-export const beat4: BeatModule = { id: 'b4', slug: 'creme', home: P, Component: Beat4, host: P4.host, bubbles: P4.bubbles };
+// The list opens 0.7 s in and Grok is picked 1.2 s after that — too close for two lines, so
+// one line covers the list and the pick, and the second lands with the reply.
+//   the model list: the Model dialog sits 32–68 % across, 40–84 % down (measured on the draft); the host stands
+//   just RIGHT of its edge, pointing in (a first pass measured it a whole tile off and stood him on the dialog)
+//   the reply grows in at the bottom-left; the host stands right of it
+const P4 = present('b4', [
+  { at: M('list') + 4, say: 'Claude, cloud, or local.', target: inWindow(0.68, 0.6), stand: 'R', face: 'welcome', until: M('sent') + 4 },
+  { at: M('reply') - 2, say: 'Grok it is.', target: inWindow(0.2, 0.6), stand: 'R', face: 'happy', until: END - 8 },
+], 'creme', P, END - 8);
+export const beat4: BeatModule = { id: 'b4', slug: 'creme', home: P4.home, Component: Beat4, host: P4.host, bubbles: P4.bubbles };

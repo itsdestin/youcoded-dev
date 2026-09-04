@@ -6,7 +6,7 @@ import { CAPTIONS } from '../captions';
 import { perch, windowRect } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
 import { A } from '../host/engine';
-import { L, LEN, present, inWindow, type BeatModule } from './beat';
+import { L, LEN, present, inWindow, feetAt, type BeatModule } from './beat';
 import { Sfx } from './sfx';
 
 // Beat 6 (bars 18–24): games with friends, in Golden Sunbreak (was Halftone: its hooded rig made a tiny dark bird — Destin, 2026-09-04). The friends
@@ -36,19 +36,21 @@ const Beat6: React.FC = () => (
   </AbsoluteFill>
 );
 const DROP1 = T_C4 + 12;
-const MOVE = T_CHESS + 24;
-const SIDE = inWindow(0.54, 0.62);                                  // left of the games panel, pointing into it
-const P6 = present([
-  { at: L('b6', 18) + 10, say: 'Waiting on me? Challenge a friend.', spot: SIDE, point: 'R', face: 'welcome' },
-  { at: DROP1 + 2, say: "Jake's going down.", point: 'R', face: 'happy' },
-  { at: T_CHESS + 4, say: 'Or chess, if you\'re fancy.', point: 'R', face: 'welcome', until: T_FLY - 30 },
-  { at: T_FLY - 30, spot: P, face: 'happy' },                       // back on the bar, eyeing Flappy — then the dive
-], 'golden-sunbreak', P, END - 12);
+// The games panel fills the right third of the window (its left edge is ~63 % across) and is
+// dense, so the host stands just LEFT of the panel, over the wallpaper, for the whole beat, and
+// aims into it: the Challenge button (93 % across, 36 % down), then the board. No hops until the
+// dive, which leaves from here.
+const SIDE = feetAt(0.55, 0.62);
+const P6 = present('b6', [
+  { at: 14, say: 'Challenge a friend.', spot: SIDE, target: inWindow(0.93, 0.36), face: 'welcome' },
+  { at: DROP1 + 2, say: "Connect 4. Jake's going down.", target: inWindow(0.82, 0.5), stay: true, face: 'happy' },
+  { at: T_CHESS + 6, say: 'Or chess.', target: inWindow(0.82, 0.5), stay: true, face: 'welcome', until: T_FLY - 2 },
+], 'golden-sunbreak', P, END - 8);
 // …then dives INTO the game (the bird is the host)
-export const beat6: BeatModule = { id: 'b6', slug: 'golden-sunbreak', home: P, Component: Beat6,
+export const beat6: BeatModule = { id: 'b6', slug: 'golden-sunbreak', home: P6.home, Component: Beat6,
   host: [
     ...P6.host,
-    A.look(T_FLY - 24, 8, 0.5, 0.6),
+    A.face(T_FLY - 26, 'happy'), A.look(T_FLY - 24, 8, 0.5, 0.6),
     A.hop(T_FLY - 14, 26, BIRD.x, BIRD.y, 120), A.to(T_FLY, 10, 'size', 0), A.set(T_FLY + 10, { poof: T_FLY + 10 }), A.hide(T_FLY + 12),
     A.set(T_FLY + 14, { x: P.x, y: -260, size: 120 }),                                         // (unseen) parks above the frame for the next arrival
   ],

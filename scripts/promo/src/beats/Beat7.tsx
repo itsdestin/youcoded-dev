@@ -33,12 +33,17 @@ const Beat7: React.FC = () => (
 );
 const MENU = 10;
 const DROP = T_DRAG + Math.round((markSec('promo-conversations', 'drag', 'end') - markSec('promo-conversations', 'drag')) * 30);
-const P7 = present([
-  { at: MENU + 6, say: "Every chat you've ever had…", point: 'down', face: 'welcome' },                              // on the bar, pointing at the menu
-  { at: T_SEARCH + 8, say: '…searchable.', spot: inWindow(0.8, 0.58), point: 'L', face: 'welcome' },                  // beside the resume browser
-  { at: T_NOTE + 8, say: 'Tag it. Note it.', spot: perch(0.72), point: 'down', face: 'happy' },                     // back on the bar (clear of the tab) as the note is typed
-  { at: T_DRAG - 4, say: 'Drag it into order.', point: 'down', face: 'welcome', until: END - 12 },
-], 'midnight', P, END - 12);
-export const beat7: BeatModule = { id: 'b7', slug: 'midnight', home: P, Component: Beat7,
+// Four shots of ~2 s each: a line per shot, two words where the shot is short.
+//   the sessions menu drops from the title bar's centre — said from the bar, pointing down at it
+//   the Resume browser (30–69 % across); the host stands right of it, pointing at the search field
+//   the Organize sheet is the same panel; the note box is low in it — no move, just a new aim
+//   the strip is in the title bar, so the host hops back onto the bar's right end and points at the pill
+const P7 = present('b7', [
+  { at: MENU + 4, say: 'Every chat, ever.', target: inWindow(0.62, 0.15), stand: 'bar', face: 'welcome' },
+  { at: T_SEARCH + 14, say: 'Searchable.', target: inWindow(0.68, 0.27), stand: 'R', face: 'welcome' },
+  { at: T_NOTE + 4, say: 'Tags, notes.', target: inWindow(0.52, 0.7), stay: true, face: 'happy' },
+  { at: T_DRAG, say: 'Drag to reorder.', spot: perch(0.78), target: inWindow(0.55, 0.01), face: 'welcome', until: END - 8 },
+], 'midnight', P, END - 8);
+export const beat7: BeatModule = { id: 'b7', slug: 'midnight', home: P7.home, Component: Beat7,
   host: [...P7.host, A.look(T_DRAG + 4, 10, -0.5, 0.3), A.look(T_DRAG + 22, 14, 0.5, 0.3), A.face(DROP + 2, 'happy')],   // follows the pill with its eyes
   bubbles: P7.bubbles };

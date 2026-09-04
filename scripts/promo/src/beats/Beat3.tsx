@@ -49,21 +49,27 @@ const Beat3: React.FC = () => (
     <Sfx at={FLIP3} name="sparkle3" volume={0.35} />
   </AbsoluteFill>
 );
-const P3 = present([
-  { at: L('b3', 5) + 8, say: 'Want a new look? Just describe it.', spot: inWindow(0.56, 0.16), point: 'R', face: 'welcome', until: FLIP1 - 30 },   // beside the request
-  { at: FLIP1 - 26, spot: P },                                                                              // back to the bar for the change
-  { at: FLIP1 + 26, say: 'Ooh. Golden hour.', face: 'happy', until: FLIP2 - 20 },
-  { at: FLIP2 + 26, say: 'Or borrow one from the community.', face: 'welcome', until: FLIP3 - 20 },
-  { at: FLIP3 + 30, say: 'Or make and share your own.', face: 'happy', until: LEN('b3') - 12 },
-], 'kuromi-dreamer', P, LEN('b3') - 12);
+// The host arrives beside the typed request (the input row, bottom of the window) and STAYS
+// there for the whole beat: the three costume changes happen in place, in the picture. The
+// two one-bar themes (Golden, Strawberry) hold 2.1 s each, which fits a two-word line and no
+// more — the draft's "Ooh. Golden hour." was pushed a whole bar late and landed over
+// Strawberry Kitty. Each flip's line starts after its move has landed and ends before the
+// next move winds up.
+const P3 = present('b3', [
+  { at: 8, say: 'Watch this.', target: inWindow(0.5, 0.945), stand: 'R', face: 'welcome', until: FLIP1 - 10 },
+  { at: FLIP1 + 8, say: 'Golden hour.', face: 'happy', until: FLIP2 - 4 },
+  { at: FLIP2 + 8, say: 'Borrow one.', face: 'welcome', until: FLIP3 - 4 },
+  { at: FLIP3 + 10, say: 'Or make your own, and share it.', face: 'happy', until: END - 8 },
+], 'kuromi-dreamer', P, END - 8);
+const HERE = P3.where(FLIP1);
 // The three in-place flips take the moves that need no wipe band: twirl, poof, twirl.
-export const beat3: BeatModule = { id: 'b3', slug: 'cotton-candy-sky', home: P, Component: Beat3,
+export const beat3: BeatModule = { id: 'b3', slug: 'cotton-candy-sky', home: P3.home, Component: Beat3,
   themes: [{ at: FLIP1, slug: 'golden-sunbreak' }, { at: FLIP2, slug: 'strawberry-kitty' }, { at: FLIP3, slug: 'kuromi-dreamer' }],
   host: [
     ...P3.host,
-    ...A.twirl(FLIP1 - 10, 22, P.x, P.y, 'golden-sunbreak'),
-    ...A.vanish(FLIP2 - 8), ...A.appear(FLIP2, P.x, P.y, 'strawberry-kitty'),
-    ...A.twirl(FLIP3 - 10, 22, P.x, P.y, 'kuromi-dreamer'),
+    ...A.twirl(FLIP1 - 10, 22, HERE.x, HERE.y, 'golden-sunbreak'),
+    ...A.vanish(FLIP2 - 8), ...A.appear(FLIP2, HERE.x, HERE.y, 'strawberry-kitty'),
+    ...A.twirl(FLIP3 - 10, 22, HERE.x, HERE.y, 'kuromi-dreamer'),
   ],
   // the bubbles wear the costume of their moment (the twirl/poof set the costume; the cue's slug only colours the bubble)
   bubbles: P3.bubbles.map((b) => ({ ...b, slug: b.at < FLIP1 ? 'cotton-candy-sky' : b.at < FLIP2 ? 'golden-sunbreak' : b.at < FLIP3 ? 'strawberry-kitty' : 'kuromi-dreamer' })) };

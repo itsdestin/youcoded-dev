@@ -24,10 +24,12 @@ export type HostState = {
   poof: number | null;            // frame a costume poof started, or null
   spin: number;                   // turn about the VERTICAL axis, degrees (the twirl); 0 = facing us
   poofScale: number;              // how big the next poof draws (1 = the host's size; the teleport uses 1.8)
-  peekHand: 'L' | 'R' | null;     // the rig's edge-gripping hand shown instead of that arm (the corner peek)
+  peekHand: 'L' | 'R' | null;     // the edge peek is on (which edge); Host draws the app's mittens on that edge
+  peek: number;                   // 0..1 blend into the app's side-peek pose: the body sunk past the edge, leaning 75°, own arms hidden
+  mittens: number;                // 0..1 how far the two grip mittens are on the edge (they slide on first, off last)
 };
 export const REST: HostState = { x: 0, y: 0, size: 120, rot: 0, sx: 1, sy: 1, armL: 0, armR: 0, legL: 0, legR: 0, face: 'welcome', blink: 0,
-  lookX: 0, lookY: 0, shadow: 1, air: 0, costume: 'midnight', hidden: false, alpha: 1, poof: null, spin: 0, poofScale: 1, peekHand: null };
+  lookX: 0, lookY: 0, shadow: 1, air: 0, costume: 'midnight', hidden: false, alpha: 1, poof: null, spin: 0, poofScale: 1, peekHand: null, peek: 0, mittens: 0 };
 
 export type Action = { at: number; dur: number; run: (t: number, s: HostState, start: HostState, f: number) => void; name?: string };
 /** Progress 0..1 of an action at frame f, clamped. */
@@ -185,26 +187,42 @@ export const A = {
     if (t >= 1) s.armR = start.armR;
   } }),
   /**
-   * Peek in from the LEFT edge of the frame, from wherever it is to `reveal` of its
-   * width showing, leaning `lean` degrees toward the centre. The rig's edge-gripping
-   * hand shows in place of the left arm, the right arm hangs behind the edge, and the
-   * legs are tucked back out of sight. Call it twice for a two-step peek (a first
-   * glance, then leaning fully in — Destin, 2026-09-04).
+   * The LEFT-edge peek, exactly the app's own docked side-peek (BuddyMascot + buddy.css,
+   * "75° wider" staging): two grip mittens pinned ON the screen edge, one above and one
+   * below the face, and the body sunk past the edge leaning 75° into the frame with its
+   * own arms hidden — Destin, 2026-09-04: "his hands should peek over the edge with a bit
+   * of his eyes, like the existing rig for hanging off the edge when the buddy is docked".
+   * `reveal` is how much of the box is in frame: 0.36 shows the top of the head and a bit
+   * of the eyes, 0.55 is the app's pose. The mittens slide onto the edge FIRST (the body
+   * arrives hand-first, like a real peek), then the body rises into the lean. Call it
+   * twice for the two-step peek. (Two earlier versions — a lone hand-rectangle, then a
+   * long reaching arm — both "looked cooked"; the app's pose is the one he knows.)
    */
-  peekIn: (at: number, dur: number, y: number, size: number, reveal = 0.55, lean = 12): Action => ({ at, dur, name: 'peekIn', run: (t, s, start) => {
-    const fromX = start.hidden ? -size : start.x;
-    s.size = size; s.y = y; s.hidden = false;
-    s.x = L(fromX, -size * (1 - reveal), E.outCubic(t));
-    s.rot = L(start.hidden ? 0 : start.rot, lean, E.outCubic(t));
-    s.peekHand = 'L'; s.armL = 0; s.armR = 0; s.legL = 0; s.legR = 0;   // the limbs stay behind the edge (Host hides them and draws the hand on the edge)
+  peekIn: (at: number, dur: number, y: number, size: number, reveal = 0.55): Action => ({ at, dur, name: 'peekIn', run: (t, s, start) => {
+    const first = start.hidden;
+    s.size = size; s.hidden = false; s.peekHand = 'L';
+    const m = first ? Math.min(1, (t * dur) / 6) : 1;                           // mittens on over the first 6 frames
+    s.mittens = E.outCubic(m);
+    const k = first ? E.outBack(Math.max(0, (t * dur - 4) / (dur - 4))) : E.outCubic(t);   // the body follows the hands, with a little overshoot
+    s.x = L(first ? -size : start.x, -size * (1 - reveal), k);
+    s.peek = first ? Math.min(1, k) : 1;
+    s.y = y - 0.11 * size * s.peek;                                             // the app's −11 % up-shift
+    s.rot = 0; s.armL = 0; s.armR = 0; s.legL = 0; s.legR = 10 * s.peek;       // the app's peek-left: one leg cocked out
     s.shadow = 0;
   } }),
-  /** Step fully into frame from a peek, onto the ground at y. */
+  /**
+   * Step out of the peek onto the ground at (x, y): the lean unwinds, the body slides
+   * into frame, the mittens slide back off the edge while the rig's own arms fade in
+   * (Host crossfades them by `peek`), and the cocked leg comes down. Normal arms from
+   * here on — nothing appears or vanishes in a single frame.
+   */
   stepIn: (at: number, dur: number, x: number, y: number): Action => ({ at, dur, name: 'stepIn', run: (t, s, start) => {
     const e = E.inOutQuad(t);
-    s.x = L(start.x, x, e); s.y = L(start.y, y, e); s.rot = L(start.rot, 0, e); s.shadow = e;
-    s.peekHand = t > 0.15 ? null : 'L';                 // lets go of the edge as it steps
-    s.armL = 0; s.armR = 0; s.legL = 0; s.legR = 0;
+    s.peek = 1 - e;
+    s.x = L(start.x, x, e); s.y = L(start.y, y, e); s.shadow = e;
+    s.mittens = 1 - Math.min(1, t / 0.55);                                      // hands let go over the first half
+    s.peekHand = t < 1 ? 'L' : null;
+    s.rot = 0; s.armL = 0; s.armR = 0; s.legL = 0; s.legR = L(start.legR, 0, E.outBack(t));
   } }),
   // ---- presenting gestures (Destin, 2026-09-04: "the mascot kinda just moves around for no reason
   // … I really want it to feel like the mascot is presenting the app … more movement in the
@@ -223,6 +241,33 @@ export const A = {
     else { s.armL = L(start.armL, deg, k) + jab; s.armR = L(start.armR, -20, k); }
     s.rot = L(start.rot, arm === 'R' ? 10 : -10, k);        // leans toward what it points at
     s.sx = 1 + 0.04 * k; s.sy = 1 - 0.03 * k;
+  } }),
+  /**
+   * AIM one arm at a point on screen (Destin, 2026-09-04: "he should be better positioned so he
+   * actually gestures at the elements he should be gesturing at"). Unlike `point`, which swings an
+   * arm to one of three fixed angles, this rotates the arm to the TRUE angle from its shoulder to
+   * (tx, ty), picks the arm on the target's side, leans the body that way and turns the eyes to
+   * it — so wherever the host stands, the gesture lands on the thing it is talking about. Holds
+   * until the next arm action (`rest`).
+   */
+  aim: (at: number, tx: number, ty: number, dur = 10): Action => ({ at, dur: dur + 14, name: 'aim', run: (t, s, start) => {
+    const k = E.outBack(Math.min(1, t * (dur + 14) / dur));
+    const jab = 10 * E.hump(Math.max(0, Math.min(1, (t * (dur + 14) - dur) / 14)));   // one extra jab after it lands, like `point`
+    // shoulder pivots in box fractions (rig viewBox −3 −5 30 30: left arm at (2.5, 9), right arm at (21.5, 9))
+    const useR = tx >= s.x + s.size / 2;
+    const px = s.x + s.size * (useR ? 0.817 : 0.183), py = s.y + s.size * 0.467;
+    const vx = tx - px, vy = ty - py;
+    // limbs hang at 0° and turn clockwise for positive degrees, so the arm's direction is (−sin θ, cos θ);
+    // solving for θ gives atan2(−vx, vy). The body's own lean (rot) turns the arm too, so it is subtracted.
+    const lean = useR ? 8 : -8;
+    const deg = (Math.atan2(-vx, vy) * 180) / Math.PI - lean;
+    const sign = deg < 0 ? -1 : 1;
+    if (useR) { s.armR = L(start.armR, deg, k) + sign * jab; s.armL = L(start.armL, 20, k); }
+    else { s.armL = L(start.armL, deg, k) + sign * jab; s.armR = L(start.armR, -20, k); }
+    s.rot = L(start.rot, lean, k);
+    s.sx = 1 + 0.04 * k; s.sy = 1 - 0.03 * k;
+    const d = Math.hypot(vx, vy) || 1;
+    s.lookX = L(start.lookX, (0.55 * vx) / d, k); s.lookY = L(start.lookY, (0.45 * vy) / d, k);
   } }),
   /** A startle: a quick jump up with the arms thrown high and a stretch, landing in a squash; the shocked face. */
   startle: (at: number, dur = 16): Action => ({ at, dur, name: 'startle', run: (t, s, start) => {

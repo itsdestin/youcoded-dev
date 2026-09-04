@@ -7,7 +7,7 @@ import { perch, windowRect, CAPTION, WINDOW } from '../layout';
 import { assertClipCovers } from '../marks';
 import { A } from '../host/engine';
 import { PRE } from '../timeline';
-import { L, LEN, present, inWindow, type BeatModule } from './beat';
+import { L, LEN, present, type BeatModule } from './beat';
 
 // Beat 10 (bars 38–43 + the audio tail), the close, in Golden Sunbreak: the
 // window arrives full size under the wipe and settles smaller; the wordmark,
@@ -36,7 +36,7 @@ const Beat10: React.FC = () => (
     <Caption head={CAPTIONS.link} at={L('b10', 39)} theme="golden-sunbreak" top={CAP_TOP + 104 + CAPTION.h - 14} size={36} headColor="#ffc030" />
   </AbsoluteFill>
 );
-const P10 = present([
+const P10 = present('b10', [
   { at: L('b10', 38) + 44, say: "That's me. See you in there!", face: 'happy', side: 'L', until: L('b10', 41) - 4 },
 ], 'golden-sunbreak', Y_SPOT);
 // The close: as the window settles smaller the host hops straight down to stand beside the Y of

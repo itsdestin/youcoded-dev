@@ -16,12 +16,11 @@ export const Label: React.FC<Props> = ({ text, at, slug, still = false, top = CA
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
   if (f < at) return null;
   const t = THEMES[slug];
-  // the words come first, the underline draws in under them (the other way round left an underline alone for half a second)
   const slide = still ? 1 : spring({ frame: f - at, fps, config: { damping: 18, stiffness: 120 } });
-  const bar = still ? 1 : spring({ frame: f - at - 6, fps, config: { damping: 16, stiffness: 200 } });
   const words = text.split(' ');
-  // 2026-09-04: no accent bar ("fingernail"); the words carry a soft glow in the accent and an
-  // underline in the accent draws in under them on the beat
+  // 2026-09-04: no accent bar ("fingernail") and, since the fourth draft, no underline either ("i don't
+  // like the underline"); the words carry a soft glow in the accent. This is variant G of LabelStudy; the
+  // one Destin picks replaces it.
   const glow = t.dark ? `0 0 18px ${t.accent}99, 0 3px 18px rgba(0,0,0,.6)` : `0 0 16px ${t.accent}55, 0 2px 10px ${t.canvas}, 0 1px 3px rgba(0,0,0,.25)`;   // the last shadow: pink-on-pink (Strawberry, Kuromi) needs an edge
   return (
     <div style={{ position: 'absolute', left: align === 'left' ? R.x : 0, right: align === 'left' ? undefined : 0, top, display: 'flex', flexDirection: 'column', alignItems: align === 'left' ? 'flex-start' : 'center' }}>
@@ -31,7 +30,6 @@ export const Label: React.FC<Props> = ({ text, at, slug, still = false, top = CA
           <span key={i} style={{ marginRight: i < words.length - 1 ? '0.26em' : 0, color: accentLast && i === words.length - 1 && words.length > 1 ? t.accent : undefined }}>{w}</span>
         ))}
       </div>
-      <div style={{ height: 4, borderRadius: 2, marginTop: 4, background: t.accent, width: `${Math.round(bar * 100)}%`, alignSelf: align === 'left' ? 'flex-start' : 'center', maxWidth: text.length * size * 0.5, boxShadow: t.dark ? `0 0 12px ${t.accent}aa` : 'none' }} />
     </div>
   );
 };

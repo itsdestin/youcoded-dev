@@ -10,7 +10,7 @@ plan: docs/active/plans/2026-09-03-promo-video-plan.md
 
 # Promo video — START HERE
 
-## Where we are (2026-09-04, end of the third session)
+## Where we are (2026-09-04, end of the fourth session)
 
 The whole film exists as a **half-size draft with music**: 99 s, ten beats, the mascot narrating.
 Destin reviews it **live** — he watches the draft and gives notes with timestamps in chat. The next
@@ -18,12 +18,13 @@ session takes his notes, applies them, re-renders the draft, and repeats until h
 the final render (full size, loudness pass) and the wrap-up.
 
 - The draft he is looking at: `docs/active/prototypes/promo-2026-09/study/draft.mp4`
-  (and `scripts/promo/out/draft.mp4`, the same file). The page around it, with a section table
-  and the change log of every round: `docs/active/prototypes/promo-2026-09/checkin-4.html`.
-- **One choice is open:** the caption style. Five variants are on that page
-  (`storyboard-v3/caption-variants.png`): G glow · P plate · O outline · K kicker · S stacked
-  accent. The draft currently uses G. When he picks, port that design from
-  `src/LabelStudy.tsx` into `src/Label.tsx` (the film's label) and delete the study.
+  (and `scripts/promo/out/draft.mp4`, the same file). The page around it, with his five notes on
+  the fourth draft and what changed for each: `docs/active/prototypes/promo-2026-09/checkin-5.html`.
+- **Open choices:** the caption style — nine animated variants in `study/label-reel.mp4` and the
+  settled looks in `storyboard-v3/caption-variants-2.png` (G X P O K S W B R; the film uses G, no
+  underline, while he picks; port his pick from `src/LabelStudy.tsx` into `src/Label.tsx` and delete
+  the study) — and the script: `narration-v2.md` is written to the footage with a word budget per
+  line; he edits the lines there and the beats are updated to match (the beats are the truth).
 - The branch: `feat/promo-video` in worktree `/home/destin/youcoded-dev/worktrees/promo`
   (pushed). The app's fixture branch `feat/promo-workbench-fakes`
   (`/home/destin/youcoded-dev/worktrees/promo-fakes`, PR itsdestin/youcoded#402, pushed) holds
@@ -50,7 +51,7 @@ the final render (full size, loudness pass) and the wrap-up.
 
 ## What is approved
 
-The punch intro (black, silent 6.5 s, the two-step peek, the walk, the punch on bar 0, the burst
+The punch intro (black, silent 6.5 s, the peek — the APP's docked side-peek, mittens on the edge and the body leaning 75° between them, then a step out with its own arms, a look around, the walk — the punch on bar 0, the burst
 into Cotton Candy Sky, "Assistant" wiping on, the group centred, the window rising) · the warm
 face set (`faces-warm.png`; also the guideline for the app's own rigs, filed under
 `docs/roadmap/themes.md`) · the three theme-change moves rotating across the cuts (quick-change,
@@ -77,12 +78,12 @@ backdrop one theme track, the bubbles one cue list. `npm run render:draft` → `
 
 | He says… | Change | Then |
 |---|---|---|
-| a line the host says, or when | the beat's `present([...])` lines in `src/beats/BeatN.tsx` (`say`, `at` in local frames, `spot`, `point`, `face`, `until`, `side`); keep `narration-v1.md` in step | draft render |
-| the host should stand somewhere else / point at something | the line's `spot`: `perch(x)` on the title bar (0–1 along it), `inWindow(fx, fy)` for feet at a fraction of the window, `ON_PHONE` etc. Keep it off buttons and text | draft render |
+| a line the host says, or when | the beat's `present('bN', [...])` lines in `src/beats/BeatN.tsx` (`say`, `at` in local frames, `until`, `face`, `side`); keep `narration-v2.md` in step. **A line that cannot be read in its slot fails the build** (`present()` throws with the line, the slot and the shortfall — Destin's rule, 1.2 s + ¼ s a word; the old presenter pushed lines later silently, which put "Golden hour" on the wrong theme). A one-bar shot fits two words | `bash scripts/promo/cues.sh` (2 s, no browser: every bubble with its frame, theme, costume and stand — or the first timing error), then the draft |
+| the host should stand somewhere else / point at something | the line's `target: inWindow(fx, fy)` — the THING the line is about — plus `stand: 'L' \| 'R' \| 'above' \| 'bar'` (which side of it to stand on); `present()` computes the spot, aims the arm at the true angle (engine `aim`), turns the eyes, and puts the bubble on the far side. `stay: true` = aim from where he is (no hop); `spot` = an explicit box position. **Measure targets on a FULL frame or the top-left tile of a 2×2 sheet** — the model-list target was measured a whole tile off once and stood him on the dialog | draft render, then `bash scripts/promo/line-sheets.sh <dir>` — one still per line, four per sheet — and LOOK at them |
 | a move looks wrong / add a gesture | `src/host/engine.ts` — `A.point/tada/cheer/clap/nod/startle/wave/walk/hop/twirl/vanish+appear/quickChange/shutdown/wake`; the presenter rule itself is `present()` in `src/beats/beat.ts` | `npx remotion render src/index.ts HostStudy out/x.mp4` or the draft |
-| the intro | `src/intro/Intro.tsx` (`introActions`; `IMPACT` must equal `PRELUDE` in `timeline.ts`) | `npx remotion render src/index.ts Intro out/intro-study.mp4` (1 min) |
+| the intro | `src/intro/Intro.tsx` (`introActions`; `IMPACT` must equal `PRELUDE` in `timeline.ts`). The peek is `A.peekIn(at, dur, y, size, reveal)` + `A.stepIn` in `engine.ts`, drawn by `Host.tsx` as the app's docked side-peek (mittens pinned on the edge, the body's own arms hidden, a 75° lean about the box centre — the numbers are BuddyMascot's PeekHands + buddy.css). Two earlier peeks (a lone hand rectangle; a long reaching arm) were both rejected as "cooked" — do not reinvent it, match the app | `npm run study -- Intro out/intro-study.mp4` (1 min) |
 | a face | `src/host/faces.ts` `WARM` (SVG in the rig's viewBox; `warmEye`, `warmBrow`); the sheet: `node faces-sheet.mjs <out.png> warm` | the sheet |
-| the headline | `src/Label.tsx`; the strings in `src/captions.ts` (the test pins them to the spec's storyboard table — change the spec row too) | `npm test`, draft |
+| the headline | `src/Label.tsx` (glow only, no underline); the strings in `src/captions.ts` (the test pins them to the spec's storyboard table — change the spec row too); the nine animated variants are `src/LabelStudy.tsx` (`LabelReel`, `Label<D>` stills in `Root.tsx`) | `npm test`, draft; `npm run study -- LabelReel out/label-reel.mp4` |
 | a bubble's look | `src/Bubble.tsx` (pinned to the host's head; side locked per cue) | draft |
 | the music (tempo, bars, levels) | `music/song.py` `promo_track()`; bars and sections must match `src/timeline.ts` `BEATS` and both tests (`music/test_song.py`, `src/timeline.test.ts`) | `python3 song.py promo ../public/promo.wav && python3 test_song.py`, `npm test`, draft |
 | a beat longer/shorter/reordered | `BEATS` in `timeline.ts` (bars must tile 0–42) + the song's sections | as above |
@@ -145,8 +146,13 @@ npm run typecheck && npm test && npm run render:draft
   reading time can push the NEXT line later — that is deliberate.
 - **The word "Assistant" must be revealed by a wipe over a stationary word.** Sliding it out
   from behind "YouCoded" always led with its last letters.
-- **A first line with a spot cannot hop before the arrival move has landed** (~frame 24);
-  `present()` clamps it. Extras a beat adds (twirls, the dive) are timed to marks.
+- **A first line with a stand cannot hop before the arrival move has landed** (frame 46): if it
+  starts earlier, `present()` makes that stand the beat's `home`, so the arrival lands there
+  directly (one move, not two). Extras a beat adds (twirls, the dive) are timed to marks and use
+  `P.where(frame)` for the spot the host is on at that frame.
+- **Never `str.replace(a, b)` with an `a` that might be empty.** A slice whose end marker sat
+  before its start came back `''`, and Python's replace then inserted the new block between every
+  character of `Host.tsx` (85,000 lines). Assert the slice is non-empty, or use the Edit tool.
 - **`zoom` in a scene** lays the page out at W/zoom × H/zoom CSS px at `zoom` device pixels per
   CSS px — real pixels, selectors unchanged; the phone scenes stay at 1.
 - The older lessons still hold: marks, never measured frames; the wipe straddles the downbeat
@@ -157,7 +163,8 @@ npm run typecheck && npm test && npm run render:draft
 
 ## Open decisions for Destin
 
-- The caption style (G / P / O / K / S), then port it into `Label.tsx`.
+- The caption style (G X P O K S W B R — `label-reel.mp4`), then port it into `Label.tsx`.
+- The script: his edits to `narration-v2.md` (word budget per line), mirrored into the beats.
 - The Golden Sunbreak sun companion floats above-left of the golden host; a first-time viewer
   read it as a stray particle. Keep (theme identity) or drop it from the film's companions.
 - The Flappy bird is the game's own size (~20 px at full frame); nothing in the film can

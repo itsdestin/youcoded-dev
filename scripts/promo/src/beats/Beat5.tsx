@@ -33,15 +33,15 @@ const Beat5: React.FC = () => (
     <Sequence from={T_PROJ}><Label text={CAPTIONS.b5.head2} at={4} slug="meadow-mist" /></Sequence>
   </AbsoluteFill>
 );
-/** Local frame of a project-view mark (that clip starts at T_PROJ, at P_RATE). */
-const PM = (mark: string) => T_PROJ + Math.round((markFrame('promo-project', mark) - P_FROM) / P_RATE);
 /** Local frame of a mark in the first shot (the sheet clip from A_FROM at A_RATE). */
 const M = (mark: string, edge: 'start' | 'end' = 'start') => Math.round((markFrame('promo-sheet', mark, edge) - A_FROM) / A_RATE);
-const P5 = present([
-  // the first shot (1.6×) shows the drop and the ask; the sorted sheet is the second shot at T_AFTER
-  { at: M('attach') + 4, say: 'Drop a file in.', spot: inWindow(0.3, 0.935), point: 'L', face: 'welcome' },          // beside the attach, on the input row
-  { at: T_AFTER - 56, say: 'Ask it to sort and total.', spot: inWindow(0.74, 0.12), point: 'down', face: 'curious' },   // top of the file panel, as the ask goes out
-  { at: T_AFTER + 6, say: 'Done. Right next to the chat.', point: 'down', face: 'happy' },
-  { at: T_PROJ + 10, say: 'And it all lives in its project.', spot: inWindow(0.5, 0.6), point: 'down', face: 'welcome', until: END - 12 },   // above the file grid
-], 'meadow-mist', P, END - 12);
-export const beat5: BeatModule = { id: 'b5', slug: 'meadow-mist', home: P, Component: Beat5, host: P5.host, bubbles: P5.bubbles };
+// Three moments, three lines, each said beside the thing it is about:
+//   the file chip (bottom-left of the chat; its right edge is ~13 % across, 85 % down) — the drop and the ask are one line, the ask is typed under it
+//   the re-opened sheet (the viewer fills the right half; the host stands in the empty file-list column left of it)
+//   the project's file grid (the Projects page; the host stands in the gap between the tab row and the search box, pointing down at the cards)
+const P5 = present('b5', [
+  { at: M('attach') + 4, say: 'Drop in a spreadsheet, ask for a sort.', target: inWindow(0.13, 0.85), stand: 'R', face: 'welcome', until: T_AFTER - 8 },
+  { at: T_AFTER + 4, say: 'Sorted, totalled.', target: inWindow(0.58, 0.45), stand: 'L', face: 'happy', until: T_PROJ - 8 },
+  { at: T_PROJ + 10, say: 'Files, chats and notes, one project.', target: inWindow(0.5, 0.56), stand: 'above', face: 'welcome', until: END - 8 },
+], 'meadow-mist', P, END - 8);
+export const beat5: BeatModule = { id: 'b5', slug: 'meadow-mist', home: P5.home, Component: Beat5, host: P5.host, bubbles: P5.bubbles };

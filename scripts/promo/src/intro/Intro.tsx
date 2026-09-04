@@ -41,17 +41,17 @@ export const WORD_LEFT_CENTRED = RECOIL_X + SIZE + 44;              // the Y's l
 const P = perch(0.3);
 
 export const introActions = (): Action[] => [
-  // pacing (the draft review: 8 s of black before anything happens): peek at 8, a quick look round, step in at 60,
-  // walk 70–148, size up the Y, punch at 196 — 6.5 s of silence, and the host is moving for most of it
-  // the two-step peek: a first glance (half the body, a small lean, a hand on the edge), a look
-  // across, then leaning fully in — and only then the step out (Destin, 2026-09-04)
-  A.peekIn(8, 14, GROUND_Y, SIZE, 0.64, 8), A.face(8, 'curious'),
-  A.look(24, 8, 0.55, 0.1), A.look(34, 8, -0.4, -0.15),
-  A.peekIn(40, 14, GROUND_Y, SIZE, 0.96, 18), A.look(44, 8, 0.3, 0), A.blink(56),
-  A.stepIn(62, 12, -18, GROUND_Y),                // steps fully into frame
-  A.face(70, 'welcome'),
-  A.walk(70, 78, STAND_X, 6),                     // a cautious walk across
-  A.look(84, 20, 0.5, 0),
+  // The open (Destin, 2026-09-04): the hands peek over the edge with a bit of the eyes — the app's own docked
+  // side-peek — a look across, then fully into the app's pose; a cautious step out with normal hands; a quick
+  // look around; then the walk over to the wordmark. Punch at 196 — 6.5 s of silence, and it moves for most of it.
+  A.peekIn(8, 18, GROUND_Y, SIZE, 0.36), A.face(8, 'curious'),               // mittens on the edge, then the top of the head and the eyes
+  A.look(28, 8, 0.55, 0.1), A.look(38, 8, -0.4, -0.15),
+  A.peekIn(44, 12, GROUND_Y, SIZE, 0.55), A.look(48, 8, 0.3, 0), A.blink(58), // the app's full peek pose
+  A.stepIn(64, 14, -18, GROUND_Y),                                            // steps out, hands let go, arms are its own again
+  A.face(78, 'welcome'),
+  A.look(78, 5, 0.6, 0), A.tilt(78, 5, 4), A.look(86, 5, -0.5, -0.2), A.tilt(86, 5, -4), A.look(94, 5, 0.5, 0), A.tilt(94, 6, 0),   // a quick look around
+  A.walk(100, 52, STAND_X, 5),                                                // a cautious walk across
+  A.look(104, 20, 0.5, 0),
   A.face(152, 'curious'), A.look(152, 10, 0.6, -0.25), A.tilt(156, 10, 7), A.blink(168),   // looks the Y up and down
   A.face(180, 'welcome'), A.look(180, 6, 0.5, -0.1), A.tilt(180, 6, 0),   // fixes on the Y (never the chevron 'idle' face — it read as empty eyes)
   A.punch(IMPACT, 1),                             // wind-up from 224, the hit at 236
@@ -158,7 +158,7 @@ export const IntroVisuals: React.FC<{ windowFile?: string }> = ({ windowFile = '
     <Wordmark />
     {/* footsteps, the punch, the poof and the landing pop live HERE so the film (Beat1 renders
         IntroVisuals) gets them too — they were only in the study before */}
-    {[78, 90, 102, 114, 126, 138].map((at) => <Sfx key={at} at={at} name="step" volume={0.35} />)}
+    {[104, 114, 124, 134, 144].map((at) => <Sfx key={at} at={at} name="step" volume={0.35} />)}
     <Sfx at={IMPACT} name="punch" volume={0.8} />
     <Sfx at={IMPACT} name="poof" volume={0.5} />
     <Sfx at={IMPACT + barFrame(1) + 18} name="pop" volume={0.4} />

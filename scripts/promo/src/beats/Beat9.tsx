@@ -32,13 +32,16 @@ const Beat9: React.FC = () => (
   </AbsoluteFill>
 );
 const INSTALL = T_DETAIL + Math.round((markSec('promo-market', 'install') - markSec('promo-market', 'detail')) * 30) + 6;
-const CHIP = T_BACK + 18;
-const P9 = present([
-  { at: L('b9', 33) + 10, say: "Need more? There's a marketplace.", point: 'down', face: 'happy' },                   // on the bar, over the grid
-  { at: T_DETAIL + 8, say: 'Plugins, made by people like you.', spot: inWindow(0.86, 0.62), point: 'L', face: 'welcome' },   // beside the plugin page, clear of the filter row
-  { at: INSTALL, say: 'One click.', face: 'happy' },
-  { at: CHIP, say: "And it's in your chat.", spot: inWindow(0.5, 0.86), point: 'down', face: 'happy', until: END - 12 },   // above the chip in the chat
-], 'light', P, END - 12);
-export const beat9: BeatModule = { id: 'b9', slug: 'light', home: P, Component: Beat9,
+// Three lines for three screens. The Details page opens ~0.5 s into its shot and fills the
+// window (its right edge is ~88 % across), so the host stays on the title bar and points down into
+// the page — never ON a card, which the draft did (standing at the window's right edge pushed the
+// bubble off the frame). Install is
+// answered with a clap under the line, not a line of its own: the shot is too short for both.
+const P9 = present('b9', [
+  { at: L('b9', 33) + 8, say: "Need more? There's a marketplace.", target: inWindow(0.5, 0.78), stand: 'bar', face: 'happy' },
+  { at: T_DETAIL + 16, say: 'Made by people like you.', target: inWindow(0.5, 0.4), stand: 'bar', face: 'welcome', until: T_BACK - 8 },
+  { at: T_BACK, say: 'In your chat.', target: inWindow(0.34, 0.87), stand: 'R', face: 'happy', until: END - 8 },
+], 'light', P, END - 8);
+export const beat9: BeatModule = { id: 'b9', slug: 'light', home: P9.home, Component: Beat9,
   host: [...P9.host, A.clap(INSTALL + 2, 24)],                     // claps as Install lands
   bubbles: P9.bubbles };

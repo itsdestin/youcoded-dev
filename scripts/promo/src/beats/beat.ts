@@ -26,64 +26,124 @@ export const isLight = (slug: Slug) => !['midnight', 'halftone-dimension', 'devi
 
 // ---- the presenter (Destin, 2026-09-04: "each animation should be obviously tied to
 // something in the demo or in his speech. he shouldn't be a distraction"; "move the
-// mascot over the window to point out different features"). A beat is a list of LINES:
-// each has a frame, a spot to stand (on the title bar or anywhere over the window),
-// a gesture, and what the host says. `present()` turns that into the host's actions
-// and its bubbles with ONE rule: hop to the spot just before the line, point while
-// the bubble is up, hold still otherwise. Nothing else moves unless a beat adds a
+// mascot over the window to point out different features"; and, on the draft: "he should
+// be better positioned so he actually gestures at the elements he should be gesturing at").
+//
+// A beat is a list of LINES. Each names the THING it is about — a TARGET, a point inside
+// the window — and `present()` works out the rest: where to stand (beside the target, a
+// hand's reach away, on the side the author picks), which arm to raise and at what angle
+// (engine `aim`: the true angle from the shoulder to the target), where the eyes look, and
+// which side the speech bubble goes (away from the target, so it never covers what is being
+// pointed at). The host moves ONLY when the next target needs a different stand — a line
+// about something nearby is said from where it is. Nothing else moves unless a beat adds a
 // reaction with a visible cause (a twirl on a theme flip, the dive into Flappy).
+//
+// TIMING IS ENFORCED, NOT NUDGED. Every bubble must be readable — Destin's rule: at least
+// 1.2 s plus a quarter second a word — and the old presenter met it by silently pushing
+// the line later, which is how "Ooh. Golden hour." ended up over Strawberry Kitty and three
+// lines were pushed clean out of their beats and never shown. Now a line that does not fit
+// its slot THROWS at bundle time and names the line, the slot and the shortfall, so the
+// script is written to the footage and not the other way round.
 import { A } from '../host/engine';
 import type { Face } from '../poses';
-import { windowRect, MASCOT } from '../layout';
-export type Spot = { x: number; y: number };
+import { windowRect, MASCOT, FRAME } from '../layout';
+export type Spot = { x: number; y: number };                    // the host's box: top-left
+export type Target = { x: number; y: number };                  // a point on screen
+export type Stand = 'L' | 'R' | 'above' | 'bar';                // where the host stands relative to its target
 export type Line = {
   at: number;                       // local frame the line starts (the gesture lands here)
   say?: string;                     // the bubble; none = a silent move/gesture
-  spot?: Spot;                      // where to stand; omitted = stay
-  point?: 'L' | 'R' | 'down' | 'none';   // the gesture while the line is up
+  target?: Target;                  // what the line is about — the host stands beside it and points at it
+  stand?: Stand;                    // which side of the target to stand on (default: the side with more room)
+  stay?: boolean;                   // aim at the target from where it already stands (no new stand, no hop)
+  spot?: Spot;                      // an explicit place to stand (overrides target-derived stands)
   face?: Face;
   until?: number;                   // bubble end; default: 8 frames before the next line
-  side?: 'L' | 'R';                 // force the bubble's side
+  side?: 'L' | 'R';                 // force the bubble's side (default: away from the target)
 };
-/** A spot INSIDE the window: feet at (fx, fy) of the window's width/height. */
-export const inWindow = (fx: number, fy: number): Spot => {
+/** A point INSIDE the window at (fx, fy) of its width/height. */
+export const inWindow = (fx: number, fy: number): Target => {
+  const r = windowRect();
+  return { x: r.x + r.w * fx, y: r.y + r.h * fy };
+};
+/** The old spot helper: a box whose FEET are at (fx, fy) of the window. Kept for the beats' extras (the dive). */
+export const feetAt = (fx: number, fy: number): Spot => {
   const r = windowRect();
   return { x: r.x + r.w * fx - MASCOT.size / 2, y: r.y + r.h * fy - MASCOT.size * 0.86 };
 };
+const SIZE = MASCOT.size;
+const ARM = { L: { x: 0.183, y: 0.467 }, R: { x: 0.817, y: 0.467 } };   // shoulder pivots, box fractions
+const REACH = 58;                                                     // px from the shoulder to the target: the arm (16 px) plus a visible gap
+/**
+ * Where to stand for a target. 'L' = left of it, pointing right with the right arm; 'R' = right of it,
+ * pointing left; 'above' = over it, pointing down (offset left so the body does not sit on it);
+ * 'bar' = on the title bar at the target's x. The box is kept inside the frame and off the caption band.
+ */
+export function standFor(target: Target, stand: Stand): Spot {
+  const r = windowRect();
+  let x: number, y: number;
+  if (stand === 'bar') { x = target.x - SIZE * 0.62; y = r.y - SIZE + MASCOT.feetIn; }
+  else if (stand === 'L') { x = target.x - REACH - ARM.R.x * SIZE; y = target.y - ARM.R.y * SIZE; }
+  else if (stand === 'R') { x = target.x + REACH - ARM.L.x * SIZE; y = target.y - ARM.L.y * SIZE; }
+  else { x = target.x - REACH * 0.6 - ARM.R.x * SIZE; y = target.y - REACH - ARM.R.y * SIZE; }
+  x = Math.max(8, Math.min(FRAME.w - SIZE - 8, x));
+  const feetMax = r.y + r.h - 10;                                     // never below the window's bottom edge (the caption band is under it)
+  y = Math.max(0, Math.min(feetMax - SIZE * 0.86, y));
+  return { x: Math.round(x), y: Math.round(y) };
+}
 const HOP = 22;                                       // frames a presenter hop takes; lands at 78 %
-/** `cap`: the last frame any bubble may stay (the beat's LEN − 12: the wipe takes the last 10). */
-export function present(lines: Line[], slug: import('../themes').Slug, home: Spot, cap = Infinity): { host: Action[]; bubbles: BubbleCue[] } {
+const ARRIVED = 24 + HOP;                             // the first frame a hop may land after the arrival move
+/** Destin's rule: 1.2 s plus a quarter second a word. */
+export const readOf = (t: string) => 36 + 8 * t.split(' ').length;
+export type Presented = { host: Action[]; bubbles: BubbleCue[]; home: Spot; where: (f: number) => Spot };
+/**
+ * `home` is where the arrival move lands. If the first line starts before a hop could land
+ * (frame 46), the host simply arrives at that line's stand instead — one move, not two.
+ * `cap`: the last frame any bubble may stay (the beat's LEN − 8: the wipe takes the last 10).
+ */
+export function present(id: BeatId, lines: Line[], slug: Slug, home: Spot, cap = Infinity): Presented {
   const host: Action[] = [];
   const bubbles: BubbleCue[] = [];
+  const stands: { at: number; spot: Spot }[] = [];
+  const standOf = (l: Line): Spot | undefined => {
+    if (l.spot) return l.spot;
+    if (!l.target || l.stay) return undefined;
+    return standFor(l.target, l.stand ?? (l.target.x < FRAME.w / 2 ? 'R' : 'L'));
+  };
+  const first = lines[0];
+  const firstStand = first ? standOf(first) : undefined;
+  if (first && firstStand && first.at < ARRIVED) home = firstStand;   // arrive straight at the first line's stand
   let here = home;
-  let earliest = 0;                                   // the next line may not start before this (the previous line's reading time)
-  const readOf = (t: string) => 36 + 8 * t.split(' ').length;   // 1.2 s plus ~0.27 s a word
-  lines.forEach((raw, i) => {
-    // a first line with a spot cannot hop before the arrival move has landed (~frame 24): a hop
-    // scheduled before frame 0 was simply lost and the host stayed on the bar (draft review)
-    const l0 = i === 0 && raw.spot ? { ...raw, at: Math.max(raw.at, 24 + HOP) } : raw;
-    // a line that would cut the previous one short waits for it (reading beats sync — Destin, 2026-09-04)
-    const l = l0.say || l0.spot ? { ...l0, at: Math.max(l0.at, earliest) } : l0;
-    const next0 = lines[i + 1];
-    const next = next0 && l.say ? { ...next0, at: Math.max(next0.at, l.at + readOf(l.say) + 4) } : next0;
-    if (l.spot && (l.spot.x !== here.x || l.spot.y !== here.y)) {
-      const dist = Math.hypot(l.spot.x - here.x, l.spot.y - here.y);
-      host.push(A.rest(l.at - HOP - 4, 4), A.hop(l.at - HOP + 5, HOP, l.spot.x, l.spot.y, Math.min(70, 30 + dist * 0.12)));
-      here = l.spot;
+  stands.push({ at: -Infinity, spot: home });
+  lines.forEach((l, i) => {
+    const next = lines[i + 1];
+    const label = `${id} line ${i + 1}${l.say ? ` "${l.say}"` : ''}`;
+    const stand = standOf(l);
+    if (stand && Math.hypot(stand.x - here.x, stand.y - here.y) > 40) {
+      if (l.at < ARRIVED) throw new Error(`${label} starts at frame ${l.at}, before a hop could land (${ARRIVED}); start it later or let it be the beat's first line`);
+      const dist = Math.hypot(stand.x - here.x, stand.y - here.y);
+      // a low quick arc inside the window; higher only for a long crossing (the tall arcs read as "jumping around" in the draft)
+      host.push(A.rest(l.at - HOP - 4, 4), A.hop(l.at - HOP + 5, HOP, stand.x, stand.y, Math.min(60, 24 + dist * 0.08)));
+      here = stand; stands.push({ at: l.at - HOP + 5, spot: stand });
     }
     if (l.face) host.push(A.face(l.at, l.face));
-    if (l.point === 'L') host.push(A.point(l.at, 'L', 0.55));
-    else if (l.point === 'R') host.push(A.point(l.at, 'R', 0.55));
-    else if (l.point === 'down') host.push(A.point(l.at, 'R', 1));
+    if (l.target) host.push(A.aim(l.at, l.target.x, l.target.y));
+    else if (l.spot) host.push(A.rest(l.at));
     if (l.say) {
-      // never shorter than its reading time: 0.8 s plus a quarter second a word (bubbles went
-      // by too fast to read in the draft — Destin, 2026-09-04); the next line simply takes over
       const read = readOf(l.say);
-      const until = Math.min(cap, Math.max(l.at + read, l.until ?? (next ? next.at - 8 : l.at + 90)));
-      earliest = l.at + read + 4;
-      bubbles.push({ at: l.at + 2, until, text: l.say, slug, side: l.side });
-      if (l.point && l.point !== 'none') host.push(A.rest(until + 2));
-    } else if (l.point && l.point !== 'none' && next) host.push(A.rest(next.at - 10));
+      const until = Math.min(cap, l.until ?? (next ? next.at - 8 : l.at + 90));
+      if (until - l.at < read) throw new Error(`${label} has ${until - l.at} frames (${l.at}→${until}) but needs ${read} to be read: shorten it, start it earlier, or move the next line`);
+      if (next && next.at < until) throw new Error(`${label} runs to ${until} but the next line starts at ${next.at}`);
+      // the bubble's side: away from the target, so it never covers what is being pointed at
+      // …unless it would not fit on that side (Bubble.tsx's own estimate) — then Bubble picks the side
+      const est = l.say.length * 26 * 0.56 + 44 + 18 + 40;
+      const away = l.target ? (l.target.x >= here.x + SIZE / 2 ? 'L' : 'R') : undefined;
+      const fits = away === 'R' ? here.x + SIZE * 0.82 + est < 1900 : away === 'L' ? here.x + SIZE * 0.18 - est > 20 : true;
+      const side = l.side ?? (fits ? away : undefined);
+      bubbles.push({ at: l.at + 2, until, text: l.say, slug, side });
+      if (l.target) host.push(A.rest(until + 2));
+    } else if (l.target && next) host.push(A.rest(next.at - 10));
   });
-  return { host, bubbles };
+  const where = (f: number) => [...stands].reverse().find((s) => s.at <= f)!.spot;
+  return { host, bubbles, home, where };
 }
