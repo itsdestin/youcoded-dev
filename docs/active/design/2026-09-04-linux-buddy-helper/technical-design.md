@@ -1,15 +1,15 @@
 ---
 status: draft
 date: 2026-09-04
-revision: 6
+revision: 7
 feature: linux-buddy-helper
 contract: linux-buddy-helper.contract.json (13 rows, signed 2026-09-04; R2/R10 amended by decide-uninstall#D-1)
 branch: feat/linux-buddy-kwin-helper
 review: rounds 1-3 (36 findings, 36 accepted) + round 4 narrow, scoped to the new work-area material (12 findings, 12 accepted) — docs/active/reviews/
-measurements: probe rounds 3-6 (2026-09-04) closed §3, §2's caption leak and R11, and REVERSED R3-F7's work-area decision
+measurements: probe rounds 3-7 (2026-09-04) closed §3, §2's caption leak and R11, and REVERSED R3-F7's work-area decision
 ---
 
-# Linux buddy helper — technical design (revision 6)
+# Linux buddy helper — technical design (revision 7)
 
 Revision 1 was reviewed adversarially and every one of its thirteen findings was
 accepted, three of them severe: a security hole, a dev-instance/production
@@ -392,9 +392,54 @@ to write.
 
 | Channel | Meaning |
 |---|---|
-| `buddy:helper-status` | `{ supported, installed }` |
+| `buddy:helper-status` | `{ needed, supported, installed, reason? }` |
 | `buddy:install-helper` | `{ ok }` |
 | `buddy:remove-helper` | `{ ok }` — new, per decide-uninstall#D-1. Add to `MOCK_ONLY` with the other two, and remove all three when the real backend lands. |
+
+**`needed` — added in revision 7, and without it this feature takes a working
+buddy away from real users.** Revisions 1-6 carried a single gate, and R5 then
+turns the whole control read-only whenever that gate says no. On **KDE X11 the
+buddy works today**, so those users would have been shown "Not yet supported on
+this desktop" and lost it. §4 already said X11 must be a no-op; the payload could
+not express it.
+
+**And the Wayland gate was wrong on Wayland too (probe Round 7).** KWin reports
+`Operation Mode: Wayland` whether or not *our* windows are native Wayland
+surfaces. Same binary, same session, forced to XWayland with
+`--ozone-platform=x11`: `XDG_SESSION_TYPE`, `WAYLAND_DISPLAY`, `DISPLAY` and
+`XDG_CURRENT_DESKTOP` are **byte-identical** to the native run, KWin still says
+Wayland — but `getCursorScreenPoint()` returns real coordinates, the native
+handle is an XID, and `setPosition` genuinely moves the window. **`setPosition`
+works; no helper is needed; the design as written would have installed one and
+blocked the buddy behind a consent card.** This repo has already been burned by
+exactly this ambiguity — `main.ts:1310-1320`, 2026-07-23: *"the probe was
+silently running XWayland."*
+
+So the two facts are separate and both are required:
+
+- **`needed`** — *the app cannot position its own windows here*:
+  `process.platform === 'linux' && app.commandLine.getSwitchValue('ozone-platform') === 'wayland'`.
+  Electron resolves that switch itself; we never pass it (measured: `wayland` on
+  the native run, `x11` on the forced one). **No environment variable can
+  substitute** — all four are identical across the two runs.
+- **`supported`** — *a helper exists for this desktop*: the version + session
+  gate below.
+
+The three states the renderer must render, and nothing else:
+
+| `needed` | `supported` | What the user sees |
+|---|---|---|
+| false | — | **No helper UI at all.** Windows, macOS, Linux X11, and Linux Wayland running XWayland. The toggle behaves exactly as it does today. |
+| true | false | R5's row: "Not yet supported on this desktop", disabled. GNOME, wlroots, Plasma 5. |
+| true | true | The consent flow (R1-R3), then R8-R10. |
+
+`needed` also gates §5's `BUDDY_SHOW` refusal and §6's R12 migration — a user who
+never needed a helper must never be refused a buddy or have one hidden.
+
+**Failing safe.** If the two facts disagree or either is unknown, prefer
+`needed: false`: the cost is the status quo (a buddy that cannot be dragged,
+which is today's behaviour), where the opposite error takes away a buddy that
+works.
 
 - **`installed`** is `isScriptLoaded youcodedbuddyhelper` over DBus — what the
   probe recommended. Files-plus-config-key is a proxy that reports true when KWin
@@ -415,14 +460,15 @@ to write.
   probe's own success channel was `print()` scraped out of journald — not a
   shippable API.
 
-  **And a Wayland gate (R3-F4).** There is no Wayland/X11 detection anywhere in
-  the desktop source today, and `chooseBuddyStrategy` treats all of Linux alike.
-  Without this, a KDE Plasma 6 user on an **X11** session — where `setPosition`
-  works and the buddy is not broken — would get a consent card for a change to
-  their desktop settings they do not need, and lose a working buddy if they
-  declined. On KDE X11 this feature is a **no-op**: no consent, no gate, `place()`
-  keeps using `setPosition`. The same response already carries
-  `Operation Mode: Wayland`, so it costs nothing.
+  **And a Wayland gate (R3-F4, corrected by Round 7).** There is no Wayland/X11
+  detection anywhere in the desktop source today, and `chooseBuddyStrategy`
+  treats all of Linux alike. R3-F4 identified the regression — a KDE user whose
+  buddy works would get a consent card they do not need — and proposed KWin's
+  `Operation Mode: Wayland` as the gate. **Measured Round 7: that gate does not
+  detect the case it was written for.** It is retained here as half of
+  `supported` (a helper needs a Wayland compositor to be worth installing), but
+  the X11 no-op is delivered by **`needed`** above, which is the only signal that
+  actually flips.
 
   So `supported` is a **version + session gate**, measured 2026-09-04:
   `org.kde.KWin.supportInformation()` returns a block whose first fields include
@@ -458,8 +504,9 @@ a failed status call leaves it `null` forever, so an early click enables the
 buddy with no ask; `App.tsx`'s boot path calls `buddy.show()` straight from
 `localStorage` with no helper check; and the main handler is unconditional.
 
-**`BUDDY_SHOW` refuses on Linux when the helper is not live, and returns the
-reason.** The renderer disables the toggle while status is unknown and renders a
+**`BUDDY_SHOW` refuses when `needed` and the helper is not live, and returns the
+reason** — `needed`, not "on Linux": an X11 or XWayland user never needed a
+helper and must never be refused a buddy (§4). The renderer disables the toggle while status is unknown and renders a
 distinct state when the status call *failed*, rather than falling through to the
 non-Linux path.
 
@@ -471,7 +518,7 @@ non-Linux path.
 | R10 | *(amended)* the user can remove the helper | **Remove helper** action in the buddy popup, shown only when installed (decide-uninstall#D-1) |
 | R2 | *(amended)* consent copy | must no longer promise removal on uninstall |
 | R11 | Updates replace the helper quietly | at launch, bundled `Version` ≠ `helperLoadedVersion` → copy files, `unloadScript`, `reconfigure`, *then* record the version |
-| R12 | Existing users get the buddy hidden once | one-shot migration |
+| R12 | Existing users get the buddy hidden once | one-shot migration, **gated on `needed` and not-installed** — an X11 user's working buddy is never hidden (§4) |
 
 **R10 was re-opened with Destin** because the approved consent card promised
 "removed when you uninstall YouCoded", which is false: AppImage — the first

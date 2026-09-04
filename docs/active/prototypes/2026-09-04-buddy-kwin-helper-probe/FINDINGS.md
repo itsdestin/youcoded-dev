@@ -276,6 +276,47 @@ name returns the full screen rect**, which is the correct fail-safe; and
 `org.kde.plasmashell` is plasmashell, not KWin, so a KWin-only session has no
 such service and falls back to the same full rect.
 
+## Round 7 — is the helper even NEEDED here? (2026-09-04, headless)
+
+Raised by the B5 builder: §4 gates the feature on KWin's `Operation Mode:
+Wayland`, and R5 then turns the whole control read-only whenever the gate says
+no. On **KDE X11 the buddy works today** — so as specified, those users would be
+shown "Not yet supported on this desktop" and lose a working buddy. §4's own
+text says X11 must be a no-op; the payload the renderer receives cannot express
+that.
+
+Worse, the gate is wrong even on Wayland. KWin reports `Operation Mode: Wayland`
+whether or not **our** windows are native Wayland surfaces — and this repo has
+already been burned by that exact ambiguity (`main.ts:1310-1320`, 2026-07-23:
+*"the probe was silently running XWayland"*).
+
+Same binary, same session, two runs:
+
+| | native Wayland | forced `--ozone-platform=x11` |
+|---|---|---|
+| `XDG_SESSION_TYPE` | `wayland` | `wayland` |
+| `WAYLAND_DISPLAY` | `wayland-0` | `wayland-0` |
+| `DISPLAY` | `:0` | `:0` |
+| `XDG_CURRENT_DESKTOP` | `KDE` | `KDE` |
+| **`app.commandLine.getSwitchValue('ozone-platform')`** | **`wayland`** | **`x11`** |
+| `screen.getCursorScreenPoint()` | `0,0` | `352,1014` — real |
+| `getNativeWindowHandle()` | `01000000` | `04002003` — an XID |
+| `setPosition(456,321)` → `getPosition()` | `456,321` — the silent lie | `456,320` — a real WM adjustment |
+
+| ID | Question | Verdict |
+|----|----------|---------|
+| N1 | Do environment variables distinguish native Wayland from XWayland? | **NO** — all four are byte-identical |
+| N2 | Does KWin's `Operation Mode` distinguish them? | **NO** — it describes the compositor, not our surfaces |
+| N3 | Is there an in-process signal that does? | **YES** — Electron resolves `ozone-platform` itself and exposes it on `app.commandLine`; we never passed it |
+| N4 | Do the behavioural tells agree with it? | **YES** — cursor, handle and the `setPosition` lie all flip together |
+
+**So "does the buddy need a helper here?" is `ozone-platform === 'wayland'`, and
+it is a different question from "can a helper work here?"** (KWin ≥ 6 on a
+Wayland session). The design conflated them. Getting it wrong in the unsafe
+direction costs a working buddy; getting it wrong the other way leaves the
+status quo. §4 now carries both facts and R5's row fires only on the
+needed-but-unavailable combination.
+
 ## What is now settled, and what is not
 
 **Settled — all measured, none inferred:**
@@ -291,6 +332,9 @@ such service and falls back to the same full rect.
   `reconfigure` alone silently keeps the old copy (Round 4).
 - The caption does **not** leak into Overview or the screen-share picker —
   Destin, live (Round 5). The grammar stands.
+- "Needs a helper" is `app.commandLine.getSwitchValue('ozone-platform')`, not any
+  environment variable and not KWin's Operation Mode — both of which are
+  identical under XWayland (Round 7).
 - The app gets **no** readback of a compositor-side move — `getBounds()` never
   updates and `move` never fires (Round 6, W3).
 - Electron's `workArea` is the full screen on Wayland; the real one comes from
