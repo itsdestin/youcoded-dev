@@ -3,6 +3,8 @@ import { AbsoluteFill, Img, staticFile, useCurrentFrame, interpolate } from 'rem
 import { THEMES, type Slug } from './themes';
 import type { ThemeCue } from './tracks';
 import { WINDOW } from './layout';
+import { revealedPolygon } from './transitions';
+import { CUT } from './timeline';
 
 // One theme's field: the canvas colour, its wallpaper pre-blurred behind it
 // (theme-assets.sh writes backdrop.jpg), a veil of the canvas colour so the
@@ -37,21 +39,21 @@ export const Backdrop: React.FC<{ themes: ThemeCue[]; total: number }> = ({ them
   const cur = themes[i];
   const prev = themes[i - 1];
   const drift = interpolate(f, [0, total], [30, 70], { extrapolateRight: 'clamp' });
-  const p = interpolate(f - cur.at, [0, WASH], [0, 1], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' });
+  // A beat cut rides the same slanted wipe as the window (same edge maths, same
+  // CUT frames) so backdrop and window sweep as ONE motion; an in-beat flip
+  // (beat 7) spreads from the window's centre as a soft circle instead — a
+  // dark theme closing in as a circle over a light one read as a lens fault.
+  const wipe = cur.wash === 'wipe-left' || cur.wash === 'wipe-right';
+  const p = interpolate(f - cur.at, [0, wipe ? CUT : WASH], [0, 1], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' });
   const r = interpolate(p, [0, 1], [0, 1500]);
-  // A soft-edged circle (a radial mask, not a clip-path) so the sweep reads as
-  // light spreading rather than a disc being stamped on.
-  const mask = `radial-gradient(circle at ${WINDOW.cx}px ${WINDOW.cy}px, #000 ${Math.max(0, r - 160)}px, transparent ${r}px)`;
+  const circle = `radial-gradient(circle at ${WINDOW.cx}px ${WINDOW.cy}px, #000 ${Math.max(0, r - 160)}px, transparent ${r}px)`;
+  const style: React.CSSProperties | undefined = !prev || p >= 1 ? undefined
+    : wipe ? { clipPath: revealedPolygon(p, cur.wash === 'wipe-left' ? 'left' : 'right') }
+    : { maskImage: circle, WebkitMaskImage: circle };
   return (
     <AbsoluteFill>
       {prev && p < 1 && <Field slug={prev.slug} drift={drift} />}
-      <AbsoluteFill style={prev && p < 1 ? { maskImage: mask, WebkitMaskImage: mask } : undefined}>
-        <Field slug={cur.slug} drift={drift} />
-      </AbsoluteFill>
-      {/* the wash's leading edge: a faint accent glow so the sweep is visible even between two dark themes */}
-      {prev && p < 1 && <AbsoluteFill style={{ maskImage: `radial-gradient(circle at ${WINDOW.cx}px ${WINDOW.cy}px, transparent ${Math.max(0, r - 200)}px, #000 ${r - 40}px, transparent ${r + 60}px)`,
-        WebkitMaskImage: `radial-gradient(circle at ${WINDOW.cx}px ${WINDOW.cy}px, transparent ${Math.max(0, r - 200)}px, #000 ${r - 40}px, transparent ${r + 60}px)`,
-        background: THEMES[cur.slug].accent, opacity: 0.28 * (1 - p), mixBlendMode: 'screen' }} />}
+      <AbsoluteFill style={style}><Field slug={cur.slug} drift={drift} /></AbsoluteFill>
     </AbsoluteFill>
   );
 };

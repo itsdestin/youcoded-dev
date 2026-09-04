@@ -20,8 +20,11 @@ const END = LEN('b6');
 // holds AFTER_RESUME frames of the app's answer after it.
 const AFTER_RESUME = 12;
 const END_AT = markFrame('promo-takeover', 'resumed', 'end') + AFTER_RESUME;
-const LEAD = 30;                                 // each shot opens 1 s before its action
-const A_FROM = markFrame('promo-remote', 'popup', 'start', -LEAD);
+const LEAD = 30;                                 // the takeover shot opens 1 s before its action
+// Shot A opens on the clip's first frame: the CHAT, then Settings, then the
+// Remote Access popup — the review of draft 7 could not tell the phone carried
+// the same conversation when the laptop only ever showed Settings.
+const A_FROM = 0;
 const B_FROM = END_AT - (END - T2);
 // The phone runs to the end of the beat: it opens LEAD frames before the reply,
 // or as late as the clip can still cover, whichever is earlier.
@@ -47,7 +50,7 @@ const Beat6: React.FC = () => (
     <Sequence durationInFrames={T2}><Footage file="promo-remote" from={A_FROM} /></Sequence>
     <Sequence from={T2}><Footage file="promo-takeover" from={B_FROM} /></Sequence>
     <Sequence from={T1}><PhoneIn /></Sequence>
-    <Caption head={CAPTIONS.b6.head} sub={CAPTIONS.b6.sub} at={T1 + 6} theme="devils-garden" />
+    <Caption head={CAPTIONS.b6.head} sub={CAPTIONS.b6.sub} at={L('b6', 18) + 4} subAt={T1 + 8} theme="devils-garden" />
     <Sfx at={T1 + 8} name="pop" volume={0.4} />
     <Sfx at={T2 + 10} name="pop" volume={0.4} />
   </AbsoluteFill>

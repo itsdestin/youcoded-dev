@@ -13,6 +13,18 @@
    "hold": 500
   },
   {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "turn my lecture notes into a study guide with practice questions",
+   "cps": 30
+  },
+  {
+   "key": "Enter",
+   "settle": 700
+  },
+  {
    "click": "button[title='Games']",
    "settle": 900,
    "mark": "games"

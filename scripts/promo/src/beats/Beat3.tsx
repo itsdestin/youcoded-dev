@@ -17,7 +17,9 @@ const A_FROM = markFrame('promo-sheet', 'attach', 'start', -6);
 // two bars is 4 s, so the shot runs fast. Capped at 1.6: past that the typing
 // reads as a glitch rather than as someone typing.
 const A_RATE = Math.min(1.6, Math.max(1, (markSec('promo-sheet', 'reply', 'end') - markSec('promo-sheet', 'attach', 'start')) / (2 * BAR_S)));
-const B_FROM = markFrame('promo-sheet', 'after', 'end', -6);
+// +20 (0.67 s) after the click's end: the panel shows "Loading spreadsheet…" for
+// a moment when it re-opens, and a shot that opens on that reads as a reload.
+const B_FROM = markFrame('promo-sheet', 'after', 'end', 20);
 const P = perch(0.25);
 const LEAN = perch(0.62);                      // leans toward the files panel on the right
 assertClipCovers('promo-sheet', A_FROM, CUT_AT, A_RATE);

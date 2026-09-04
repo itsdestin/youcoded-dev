@@ -8,7 +8,7 @@
 // wash from one theme to the next while the wipe is still running.
 import type { Slug } from './themes';
 import type { Pose } from './poses';
-export type ThemeCue = { at: number; slug: Slug };
+export type ThemeCue = { at: number; slug: Slug; wash?: 'circle' | 'wipe-left' | 'wipe-right' };   // default: circle (an in-beat flip); a beat cut passes the wipe it rides
 export type Cue = {
   at: number;
   x?: number; y?: number; size?: number;

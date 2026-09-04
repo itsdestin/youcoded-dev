@@ -1,6 +1,6 @@
 {
  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=150",
- "theme": "kuromi-dreamer",
+ "theme": "cotton-candy-sky",
  "width": 1440,
  "height": 900,
  "fps": 30,

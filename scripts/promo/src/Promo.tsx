@@ -32,7 +32,7 @@ export const Promo: React.FC = () => {
     const b = BEATS[i];
     if (m.id !== b.id) throw new Error(`beat module order ${m.id} ≠ timeline ${b.id}`);
     const start = STARTS[i];
-    themes.push({ at: start, slug: m.slug }, ...shift(m.themes ?? [], start));
+    themes.push({ at: start, slug: m.slug, wash: i === 0 ? 'circle' : i % 2 === 1 ? 'wipe-left' : 'wipe-right' }, ...shift(m.themes ?? [], start));
     if (m.arrival !== 'none') {
       const at = start - 2;
       cues.push({ at, x: m.home.x, y: m.home.y, size: MASCOT.size, pose: 'idle', costume: m.slug, hop: true, hidden: false });

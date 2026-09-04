@@ -8,7 +8,7 @@ export const CAPTIONS = {
   b4: { head: 'Play while it works.', sub: 'Chess and Connect 4 with friends. Flappy on your own.' },
   b5: { head: 'Every conversation, findable.', sub: 'Search, tag, note, drag into order.' },
   b6: { head: 'Start on your laptop. Finish on your phone.', sub: 'Same conversation, picked up where you left it.' },
-  b7: { head: "Describe a look. It's yours.", sub: 'Or pick one from the community.' },
+  b7: { head: 'Describe a look.', yours: "It's yours.", sub: 'Or pick one from the community.' },
   b8: { head: 'Free. Open source.', sub: 'Windows · Mac · Linux · Android' },
   link: 'github.com/itsdestin/youcoded',
 } as const;

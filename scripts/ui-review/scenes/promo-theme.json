@@ -55,12 +55,12 @@
    "hold": 4500
   },
   {
-   "eval": "window.__workbenchAppearanceSync({theme:'cotton-candy-sky'})",
+   "eval": "window.__workbenchAppearanceSync({theme:'kuromi-dreamer'})",
    "settle": 0,
    "mark": "flip3"
   },
   {
-   "eval": "new Promise(r=>{const h=document.documentElement;const done=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(1)));if(h.dataset.theme==='cotton-candy-sky')return done();new MutationObserver((m,o)=>{if(h.dataset.theme==='cotton-candy-sky'){o.disconnect();done()}}).observe(h,{attributes:true,attributeFilter:['data-theme']})})",
+   "eval": "new Promise(r=>{const h=document.documentElement;const done=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(1)));if(h.dataset.theme==='kuromi-dreamer')return done();new MutationObserver((m,o)=>{if(h.dataset.theme==='kuromi-dreamer'){o.disconnect();done()}}).observe(h,{attributes:true,attributeFilter:['data-theme']})})",
    "settle": 0,
    "mark": "paint3"
   },

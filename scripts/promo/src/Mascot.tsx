@@ -37,16 +37,26 @@ export function hostAt(cues: Cue[], f: number, fps: number) {
   const hopP = cur.hop ? Math.min(1, Math.max(0, dt / HOP)) : 1;
   const t = cur.hop ? hopP : spring({ frame: dt, fps, config: SPRING });
   const x = interpolate(t, [0, 1], [prev.x, cur.x]);
-  const arc = cur.hop ? -4 * HOP_HEIGHT * hopP * (1 - hopP) : 0;
+  // The arc is capped so a hop from the title bar (y ≈ 10) does not leave the
+  // top of the frame — the first draft's host vanished for four frames on every
+  // cut. A hop that starts or ends low (the dive into the window, the pop back
+  // out) keeps the full height.
+  const height = Math.min(HOP_HEIGHT, Math.max(24, Math.min(prev.y, cur.y) + 14));
+  const arc = cur.hop ? -4 * height * hopP * (1 - hopP) : 0;
   const y = interpolate(t, [0, 1], [prev.y, cur.y]) + arc;
-  const size = interpolate(t, [0, 1], [prev.size, cur.size]);
+  // A hop that shrinks (the dive into the window) keeps its size until the
+  // last third, or the host fades to nothing before it reaches the window.
+  const sizeT = cur.hop && cur.size < prev.size ? Math.pow(t, 3) : t;
+  const size = interpolate(sizeT, [0, 1], [prev.size, cur.size]);
   // Landing: a squash that springs back (scaleY dips, scaleX widens).
   const land = cur.hop ? spring({ frame: dt - HOP, fps, config: { damping: 9, stiffness: 220 } }) : 1;
   const squash = cur.hop && dt >= HOP ? interpolate(land, [0, 1], [0.78, 1]) : 1;
   // In the air the limbs tuck; the costume switches at the apex, under the burst.
   const pose = cur.hop && hopP < 1 ? 'tuck' : cur.pose;
-  const costume = cur.hop && hopP < 0.5 ? prev.costume : cur.costume;
-  const burstAt = cur.burst ? cur.at : cur.hop && prev.costume !== cur.costume ? cur.at + HOP / 2 : null;
+  // Emerging from nothing (the pop back out of the window) wears the new costume from the first frame.
+  const costume = cur.hop && hopP < 0.5 && prev.size > 0 ? prev.costume : cur.costume;
+  // The burst: on an explicit cue, at the apex of a costume-changing hop, or where a dive lands.
+  const burstAt = cur.burst ? cur.at : cur.hop && cur.size === 0 ? cur.at + HOP : cur.hop && prev.costume !== cur.costume ? cur.at + HOP / 2 : null;
   const def = POSES[pose];
   const prevDef = POSES[cur.hop ? cur.pose : prev.pose];
   const lt = cur.hop ? 1 : t;
@@ -105,24 +115,28 @@ export const Mascot: React.FC<{ cues: Cue[] }> = ({ cues }) => {
   return (
     <>
       {comps.map((c, i) => {
-        const size = c.size * h.size;
+        const w = c.size * h.size, hh = w / c.aspect;
         const period = (c.floatMs / 1000) * fps;
         const fl = Math.sin(((f + i * 17) / period) * Math.PI * 2) * c.float * h.size;
-        const lx = lag.x + lag.size / 2 + c.dx * lag.size - size / 2;
-        const ly = lag.y + bob + lag.size / 2 + c.dy * lag.size - size / 2 + fl;
-        const s = h.burstAt != null && f >= h.burstAt ? compIn : 1;
-        return <div key={i} style={{ position: 'absolute', left: lx, top: ly, width: size, height: size, transform: `scale(${s})`, opacity: s }}
+        const lx = lag.x + lag.size / 2 + c.dx * lag.size - w / 2;
+        const ly = lag.y + bob + lag.size / 2 + c.dy * lag.size - hh / 2 + fl;
+        let s = h.burstAt != null && f >= h.burstAt ? compIn : 1;
+        // a ghost shows only while the host is moving (speed in px/frame → 0..1)
+        if (c.ghost) s *= Math.min(1, Math.hypot(h.x - lag.x, h.y - lag.y) / 40);
+        return <div key={i} style={{ position: 'absolute', left: lx, top: ly, width: w, height: hh, transform: `scale(${s})`, opacity: s }}
           dangerouslySetInnerHTML={{ __html: c.svg.replace('<svg', '<svg style="width:100%;height:100%;display:block;overflow:visible"') }} />;
       })}
       {burst < 1 && (
         <div style={{ position: 'absolute', left: cx, top: cy, width: 0, height: 0 }}>
-          <div style={{ position: 'absolute', left: -180 * burst, top: -180 * burst, width: 360 * burst, height: 360 * burst, borderRadius: '50%',
-            border: `${6 * (1 - burst) + 2}px solid ${t.accent}`, opacity: 1 - burst, boxShadow: `0 0 40px ${t.accent}` }} />
+          <div style={{ position: 'absolute', left: -150 * burst, top: -150 * burst, width: 300 * burst, height: 300 * burst, borderRadius: '50%',
+            border: `${4 * (1 - burst) + 1.5}px solid ${t.accent}`, opacity: (1 - burst) * 0.9 }} />
         </div>
       )}
       <div style={{ position: 'absolute', left: h.x, top: h.y + bob, width: h.size, height: h.size,
         transform: `scaleY(${h.squash}) scaleX(${1 + (1 - h.squash) * 0.6})`, transformOrigin: 'center bottom',
-        filter: t.dark ? 'drop-shadow(0 6px 14px rgba(0,0,0,.5))' : 'drop-shadow(0 6px 14px rgba(40,10,40,.35))' }}>
+        // On a dark theme the host also gets a faint accent glow: Halftone's rig is a
+        // near-black body with neon edges and vanished into its own backdrop.
+        filter: t.dark ? `drop-shadow(0 6px 14px rgba(0,0,0,.5)) drop-shadow(0 0 22px ${t.accent}66)` : 'drop-shadow(0 6px 14px rgba(40,10,40,.35))' }}>
         <Rig costume={h.costume} arms={h.arms} legs={h.legs} face={h.face} blink={blink} scope={`host-${h.costume}`} />
       </div>
     </>

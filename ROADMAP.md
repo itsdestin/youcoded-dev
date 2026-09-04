@@ -50,7 +50,7 @@ Target: `v1.3`
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 16 | 6 | 0 | 5 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 16 | 4 | 0 | 6 |
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 14 | 9 | 0 | 1 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 12 | 7 | 1 | 1 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 8 | 1 | 1 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 12 | 4 | 0 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 11 | 4 | 0 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 6 | 3 | 0 | 2 |

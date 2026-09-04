@@ -28,7 +28,7 @@ assertClipCovers('promo-games-lobby', LOBBY_FROM, T_C4);
 assertClipCovers('promo-connect4', C4_FROM, T_CHESS - T_C4);
 assertClipCovers('promo-chess', CHESS_FROM, T_FLY - T_CHESS);
 assertClipCovers('promo-flappy', FLY_FROM, END - T_FLY);
-const P = perch(0.72);
+const P = perch(0.3);
 const R = windowRect();
 const Beat4: React.FC = () => (
   <AbsoluteFill>
