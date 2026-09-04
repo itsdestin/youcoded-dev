@@ -24,23 +24,31 @@ user approving it as a card carrying an enforced worst-case token/dollar
 ceiling, and an executor that journals each step so the plan resumes across a
 restart. It was approved in the 2026-08-11 spec (§4, §7, §8) and never started.
 
-## The next action is measurement, not code
+## The probes are done; the next action is Destin's decisions, then design
 
-The spec requires three live probes **before the stage-two design is final**.
-None has been run. Do these first; two of the three can change the design.
+The spec required three live probes **before the stage-two design is final**.
+All three were run on 2026-09-04 against the pinned engine build; results and
+their design consequences are in `youcoded/docs/engine-dependencies.md` →
+"Stage-two probes". In one line each:
 
-1. **How many helpers the local engine really runs at once** — the configured
-   parallel slots versus what `llama-server` actually serves concurrently.
-2. **Whether KV prefix reuse survives fan-out.** If it does not, a plan costs
-   far more than its card would promise, and the ceiling shown to the user is
-   the feature's core promise.
-3. **Whether the `--jinja` tool grammar holds on the nested plan schema.** If
-   small local models cannot emit a valid plan, stage two is cloud-only — which
-   cuts against the run-it-on-your-own-machine positioning. Know this before
-   building, not after.
+1. **Four helpers at once** is the ceiling; an eight-wide fan-out runs as two
+   waves. With the app's real launch shape all four share ONE context pool the
+   size of the configured window, so budgets are summed against the pool.
+2. **Prefix reuse only partly survives** the first simultaneous fan-out (one to
+   two of four children reuse; the rest pay the full prompt again); every later
+   wave reuses fully. The card's worst case charges a full prefill per child.
+3. **Plan authoring is a model-class gate, not cloud-only:** every local model
+   from the 9B class up produced a valid, sensible plan every time; the 2B
+   class is unreliable and gemma-4-E2B ignores the schema entirely. Validate
+   app-side with one retry, and expect 40 s to 4 min of "writing the plan".
 
-Nothing else in stage two is blocked on Destin. (The *naming* is — see
-"Blocked on a decision" below — but the probes are not.)
+The probes also found a shipped bug: the app cannot read the engine's slot
+count on this build, so every local model is capped at one helper
+(`fix/engine-slot-count-field`, unmerged).
+
+What blocks stage two now is Destin's decisions — the prompt at
+`docs/active/handoffs/2026-09-04-stage-two-decisions-prompt.md` puts them on a
+question deck and then starts the design.
 
 ## Read in this order
 
