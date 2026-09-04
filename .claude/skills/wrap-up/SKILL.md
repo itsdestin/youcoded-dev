@@ -14,13 +14,37 @@ written down, never closed, and independently rediscovered twice.
 failure mode, not the output. Every recommendation ends this session as one of three
 things: **applied**, **a dated roadmap entry** (`docs/roadmap/<area>.md` — `ROADMAP.md` → "Filing an item"), or **dropped with a reason.**
 
-## Step 0 — "wrap up" DOES NOT MEAN "merge"
+## Step 0 — PUSH first, then ask about merging
 
-**Default: do not merge, do not push, do not open a PR.** Destin routinely says *wrap
-up* or *close out* meaning "do the docs and workspace hygiene" while the branch stays
-open — he often has a FRESH session review the PR before he merges, precisely because
-the session that wrote the code is the worst reviewer of it. Merge only when he says so
-in words, this turn. Never end a turn suggesting it either (`CLAUDE.md` → iteration mode).
+**Push every branch this session touched, before anything else. Do not ask.** A push is a
+backup, not a release: it ships nothing, merges nothing, and `git push -d` undoes it. An
+unpushed branch is the only state where work can actually be lost, and a session that ends
+holding one has failed at the cheapest thing it had to do. Secrets-scan the diff of a
+branch going to a PUBLIC repo before its first push (`youcoded` and `youcoded-dev` are
+public; `youcoded-admin` is not).
+
+Then **sweep for anything else local-only and push that too** — other sessions leave
+branches behind, and they are just as losable:
+
+```bash
+for r in . youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace; do
+  git -C "$r" fetch -q origin
+  git -C "$r" for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads
+done          # anything with no upstream, or [ahead N], needs pushing
+```
+
+**Then ask Destin one question: "Ready to merge?"** With a recommendation and, per branch,
+whether it is actually ready — did `scripts/verify.sh` pass, has any of it been proved on a
+real run, what is still unverified. **Default to NOT merging** unless he answers yes; he
+often has a fresh session review the PR first, precisely because the session that wrote the
+code is the worst reviewer of it. Never end a turn suggesting a merge (`CLAUDE.md` →
+iteration mode).
+
+Destin asked for this on 2026-09-03, twice. First because a session ended with two
+finished, verified branches sitting unpushed on one machine — the skill said "do not push"
+and nobody raised it. Then again, to correct the fix: the question was never whether to
+push, it was whether to merge. A sweep that day found seven more unpushed branches across
+four repos. The rule now also lives in `~/system/global.md` → Git, everywhere.
 
 **You run the commands, not Destin.** He does not run commands; that is the whole point
 of this workspace. Never hand him something to type — run it and act on the output.

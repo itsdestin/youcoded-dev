@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Shared settings still register the deleted youcoded-core SessionStart hook
 ---

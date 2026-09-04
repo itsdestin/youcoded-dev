@@ -1,0 +1,19 @@
+{
+  "title": "Session strip and switching — round 11",
+  "key": "session-motion-live-11",
+  "out": "deck-live-11.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "release-holds",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "Let go any way you like: the pill goes only where it is — done?",
+      "changed": "You said to evaluate more thoroughly, so I stopped probing one drag at a time and built a sweep: dozens of drags in a row on one page, mouse and touch, at your screen's scale and refresh rate, with hand-like paths, grabs anywhere on the pill, wobble, releases mid-motion, drags started before the press animation finished, and hands that keep moving after letting go. Every release was scored on five checks. It found the thing every earlier probe had missed. The floating pill and the dots' step-aside were tied to a flag that switches off the instant your finger or button lifts, while the drop itself lands a moment later. If the last movement's frame arrived in that gap, which it does whenever a hand lifts while still moving, the pill snapped back to where it started, and then everything jumped to the new order. A hand that holds perfectly still before letting go never triggers it, which is why the probes were blind. The drag now holds exactly as drawn until the drop lands. Five smaller faults came out behind it and are fixed too: a dot under the pill popping to full size at the drop, dots giving way early while the name was still opening after a fresh press, a preview opening half a second after a drop if the hand rested on a dot, the old name's ghost appearing during a fast drag after a press, and on touch a tap leaving a sticky preview open under the finger.",
+      "notice": "Release however you naturally do: mid-motion, on the touchpad, with a finger on the screen. The pill settles from where it is, at most half a dot away. Nothing snaps home, nothing jumps a second time.",
+      "risk": "On a touchscreen, resting a finger on a dot no longer previews its name; tap it instead. The pane now runs without the workbench's fake delay on the drop, as the app does.",
+      "live": { "surface": "session-strip-motion", "round": 11, "candidate": "name-flow-7" }
+    }
+  ]
+}

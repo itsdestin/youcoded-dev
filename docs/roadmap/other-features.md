@@ -66,6 +66,11 @@ has passed ~8 items — graduate it to its own file.
       have a skip button
       `onboarding` `all` `parked` `checked 2026-09-01`
 
+- [ ] Nothing on first run tells a new user the assistant can change and delete files and that
+      backups are theirs; the Terms disclaim it, but the first thing a court asks is what the user
+      was told. One sentence; wording is Destin's call
+      `onboarding` `all` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+
 ## misc
 
 - [ ] Idea: automation results delivered to Telegram, Discord or email, each channel a plugin. Only

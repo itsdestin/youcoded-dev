@@ -18,11 +18,6 @@ chat-data).
       "paste the code" (2026-07-16 sweep)
       `tool-cards` `android` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-android-bare-phrase-prompt-cards.md
 
-- [ ] Every new Claude Code session opens with a "No such file or directory" hook error — the old
-      youcoded-core start-up hook is still registered after the app deleted the folder it lived in
-      (UI-review dev instance 2026-08-25; still in Destin's settings 2026-09-01)
-      `terminal` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-stale-session-start-hook.md
-
 - [ ] Android still submits long messages (over ~56 bytes) with a fixed 600 ms pause before Enter,
       where desktop waits for the terminal's own echo — mirror the desktop approach (PITFALLS
       sweep, 2026-07-15)

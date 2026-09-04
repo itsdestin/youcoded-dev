@@ -1,0 +1,15 @@
+{
+ "deck": "session-motion-live-5",
+ "started": "2026-09-03T20:00:32.883Z",
+ "submitted": "2026-09-03T20:01:52Z",
+ "cur": 0,
+ "answers": {
+  "flow": {
+   "v": "other",
+   "note": "this is MUCH better. you're doing a good job. however, it still bugs out a bit when the chip is released, and i cant seem to drag it to be the leftmost or rightmost session. it should also stop moving at the left/right boundaries of the outer container rather than sliding past.",
+   "seconds": 78,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

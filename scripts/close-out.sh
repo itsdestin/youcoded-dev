@@ -88,15 +88,51 @@ else
   # cleaned up looks IDENTICAL to one that was never pushed, or whose name you
   # mistyped. Assuming the good one printed an all-green report for a branch that
   # never existed. There is a real answer available instead of a guess — a merge
-  # commit on $BASE names the branch it merged ("Merge pull request #N from
-  # owner/<branch>"), so look for one before concluding anything.
-  MERGE_COMMIT=$(git -C "$REPO_DIR" log "$BASE" --merges --grep="/$BRANCH\$" \
+  # commit on $BASE names the branch it merged, so look for one before
+  # concluding anything.
+  #
+  # TWO subject shapes, and the pattern must match BOTH. GitHub's is
+  # "Merge pull request #N from owner/<branch>", which ends at the branch name;
+  # a local `git merge --no-ff <branch>` writes "Merge branch '<branch>'", where
+  # the name is QUOTED and may be followed by " into <x>". The old pattern was
+  # "/<branch>$" — GitHub-only — so a branch merged locally and pushed (the
+  # workflow CLAUDE.md actually prescribes: "merge means merge AND push", no PR
+  # required) reported as "never pushed — nobody else can review this branch
+  # yet". That is the same misleading-message failure the 2026-09-03 fix below
+  # was for, on the other axis; hit again 2026-09-04.
+  #
+  # The trailing ('|$) is also what keeps a branch from matching a LONGER one
+  # that starts with its name (fix/resume vs fix/resume-cc-brand-icon).
+  MERGE_COMMIT=$(git -C "$REPO_DIR" log "$BASE" --merges --grep="(/|')$BRANCH('|\$)" \
                  --extended-regexp --format=%h -1 2>/dev/null || true)
   if [[ -n "$MERGE_COMMIT" ]]; then
     pass "no ref left, and $BASE carries the merge commit $MERGE_COMMIT for it — the work landed"
     MERGED=yes
   else
-    fail "no ref for $BRANCH anywhere, and no merge commit for it on $BASE — never pushed, or the name is wrong"
+    # Before crying "never pushed", check whether the branch simply lives in a
+    # DIFFERENT repo. `$REPO` defaults to youcoded, and the wrap-up skill runs this
+    # on every branch a session touched — including the workspace's own docs
+    # branches, which are the common case for wrap-up. Without this the script
+    # reported a merged branch as "never pushed — nobody else can review this
+    # branch yet", which reads as lost work and invites a session to redo it
+    # (observed 2026-09-03).
+    ELSEWHERE=""
+    for _cand in workspace youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace; do
+      [[ "$_cand" == "$REPO" ]] && continue
+      if [[ "$_cand" == workspace ]]; then _dir="$WORKSPACE"; else _dir="$WORKSPACE/$_cand"; fi
+      [[ -e "$_dir/.git" ]] || continue
+      _base=$(git -C "$_dir" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
+      if git -C "$_dir" rev-parse --verify -q "origin/$BRANCH" >/dev/null 2>&1 \
+         || git -C "$_dir" rev-parse --verify -q "$BRANCH" >/dev/null 2>&1 \
+         || [[ -n $(git -C "$_dir" log "$_base" --merges --grep="(/|')$BRANCH('|\$)" --extended-regexp --format=%h -1 2>/dev/null) ]]; then
+        ELSEWHERE="$_cand"; break
+      fi
+    done
+    if [[ -n "$ELSEWHERE" ]]; then
+      fail "$BRANCH is not in $REPO — it is in $ELSEWHERE. Re-run: bash scripts/close-out.sh $BRANCH $ELSEWHERE"
+    else
+      fail "no ref for $BRANCH anywhere, and no merge commit for it on $BASE — never pushed, or the name is wrong"
+    fi
     MERGED=unknown
   fi
 fi
@@ -132,6 +168,11 @@ if [[ "$MERGED" == yes ]]; then
 else
   if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
     pass "pushed to origin — a reviewer can see it"
+  elif [[ -n "${ELSEWHERE:-}" ]]; then
+    # The line above already said which repo it is in. Repeating "never pushed"
+    # here would contradict it, and that contradiction is what made the wrong
+    # answer convincing in the first place.
+    note "not asking whether it was pushed — it is not this repo's branch"
   else
     fail "never pushed — nobody else can review this branch yet"
   fi

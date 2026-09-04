@@ -1,0 +1,19 @@
+{
+  "title": "Session strip and switching — round 6",
+  "key": "session-motion-live-6",
+  "out": "deck-live-6.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "release-and-ends",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "Clean release, and the pill reaches and stops at both ends — done?",
+      "changed": "Your three notes from round 5. The pill now stops at the first and last pill of the row instead of sliding past; the clamp existed but had stopped reaching the screen. A session can now be dropped as the very first or very last: a dot at either end counts as passed a pixel before its far edge, which the stopped pill can reach. And the release no longer disturbs the row. Three things were happening at the drop: the dot the pill was over popped back to full size under it, the row re-laid itself out and opened a different name, and the dropped pill slid out from under your cursor onto the next dot, which opened its hover preview. Now the squeeze keeps running while the pill glides home, the row keeps its layout until your cursor leaves the strip, and no preview opens until you have actually moved.",
+      "notice": "Drag a name all the way left or right and let go: it lands first or last. Drop mid-row: the pill glides a few pixels into its slot and the dot it was over swells back; nothing else moves. Hover previews wake up again once you move.",
+      "risk": "After a drop, moving along the strip without leaving it keeps the current layout until you exit or press again; a dot's preview still opens when you enter it fresh.",
+      "live": { "surface": "session-strip-motion", "round": 6, "candidate": "name-flow-2" }
+    }
+  ]
+}

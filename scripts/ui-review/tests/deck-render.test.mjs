@@ -156,6 +156,11 @@ test('live step: panes, label theme row that does not reload them, no picking by
     // edge with nothing to say so, which is exactly what happened on 2026-08-31.
     assert.equal(await c.evaluate("document.querySelector('#inner iframe').style.width"), '420px', 'width the pane measured for itself');
     assert.equal(await c.evaluate("document.querySelector('#inner iframe').style.height"), '220px', 'height the pane measured for itself');
+    // The fit rule: a row of panes wraps rather than scrolling sideways, and the stage takes
+    // only the height the panes need so the question sits directly beneath them.
+    assert.equal(await c.evaluate("getComputedStyle(document.querySelector('.stage .inner')).flexWrap"), 'wrap', 'panes wrap');
+    assert.equal(await c.evaluate("document.querySelector('.stage').scrollWidth <= document.querySelector('.stage').clientWidth"), true, 'no sideways scroll');
+    assert.equal(await c.evaluate("document.querySelector('#content').classList.contains('live-fit') || document.querySelector('#content').classList.contains('col-right')"), true, 'live fit layout');
     // The lettered chip must not weld itself to the label ("aCard and row"). Measured as
     // actual space, whichever way it is produced — the first fix used a margin, the caption
     // is now a flex row with a gap, and the test should not care which.

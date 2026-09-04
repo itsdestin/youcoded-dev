@@ -166,6 +166,17 @@ The candidates are the ones `youcoded`'s comparison view already uses
 compare candidate. **Pick-one is the default** for open-ended animation work; a try-this
 yes/no is for verifying something built to an agreed spec.
 
+**Fitting panes to the page — two rules, enforced by `page.js` (`fitPanes`):**
+
+1. **A pane is never wider than the stage, and the row never scrolls sideways.** The deck
+   tries every count of panes per row and keeps the one that gives the widest panes; fixed
+   panes (a dialog, a popover) sit as many abreast as fit at their real size, then wrap.
+2. **A wide, short surface declares a width RANGE and stacks.** `paneWidth: { min, max }` in
+   the registry makes a pane fluid: the deck hands it the widest width its row allows (told
+   by message, never by reloading) — the session strip is judged full-width, three strips one
+   above the other, not three abreast at a third of their size with both ends cut off
+   (Destin, 2026-09-01). The workbench's compare tab shows fluid panes at `min`.
+
 ```json
 { "live": { "worktree": "session-motion" },            // deck level: one build per review
   "steps": [
@@ -224,6 +235,66 @@ pixels per CSS px, so the clip keeps its size and everything in it is `zoom` tim
 real pixels. Actions address elements by selector, so nothing else in the scene changes. The
 fourteen desktop `promo-*` scenes carry 1.25 (Destin, 2026-09-04: "hit the + a bit so it's easier
 for viewers to track what's happening"); the phone scenes stay at 1.
+
+## Hero mascots, the tab icon, and the share image (2026-09-04)
+
+The last three hand-made assets on `youcoded/docs/index.html` are generated now. All three
+tools live in `youcoded/docs/tools/` and are run by hand — `index.html` is the live page and
+is hand-edited, so these are not a build step.
+
+| Tool | What it makes |
+|---|---|
+| `gen-hero-mascots.py` | the picker's four `<button class="mascot">` blocks — paste over the two `.mrow` divs |
+| `gen-og-image.mjs` | `og-image.png`, photographed from the live page (needs a static server on `docs/`) |
+| — | `docs/favicon.svg` is the nav mark; `applyTheme()` re-tints it per theme as a data URL |
+
+**Bump `?v=` on `og:image` and `twitter:image` whenever the image is regenerated.** Slack,
+iMessage, Discord, Facebook and X all cache a preview image BY URL for days; replacing the
+file alone leaves an already-shared link showing the old picture.
+
+### The art is each theme's own rig
+Vendored to `youcoded/docs/mascots/<slug>.rig.svg` from
+`wecoded-themes/themes/<slug>/assets/mascot-rig.svg`. Only four themes ship one
+(golden-sunbreak, halftone-dimension, kuromi-dreamer, strawberry-kitty); anything else falls
+back to the app's `DEFAULT_BUDDY_RIG` and is tinted.
+
+**Do not strip `slot-hat` / `slot-eyewear` as empty scaffolding.** Each theme's SIGNATURE
+lives there — Halftone's visor is eyewear, Kuromi's horns and Strawberry Kitty's ears-and-bow
+are hats. Stripping them turned Halftone into a featureless blob and left both cats bald.
+
+### Faces and ink come from the promo film
+`worktrees/promo` (branch `feat/promo-video`), `scripts/promo/src/`:
+
+- **`themes.ts → inkFor`** — the tinted rig's eyes and mouth are a deep shade of the BODY
+  colour, `accent × 0.32`. NEVER the theme's on-accent: that is white on three of the
+  picker's four themes, and white eyes on a coloured body are "terrifying" (Destin).
+- **`host/faces.ts → WARM`** — every expression keeps the welcome face's big sparkled eyes;
+  brows, lids and the mouth carry the expression. Nothing is ever a hollow black disc, which
+  is what made the old surprised face scary.
+- **`host/Host.tsx → DEFAULT_RIG_SLUGS`** — which rigs take the warm set. Halftone keeps its
+  visor faces and the two cats keep their cat faces; those ARE those characters.
+- **`host/engine.ts`** — the pose library and its angles: wave −150 with a waggle, cheer
+  ±150 with a jump, shrug ±75, tada ±115, think −165, startle ±160.
+
+`happy` is deliberately unused on the site: its eyes are two thin closed arcs and at 45px
+they read as "the eyes have gone missing". And never ask a rig for a face it lacks — an
+unmatched `data-face` shows no face group at all, i.e. a blank head.
+
+### An arm only reads if it grows
+Measured 2026-09-04: at the picker's 45px a raised arm is a ~5px shape floating off a 25px
+body, and it reads as a stray dot at **every** hold angle from −60 to −170. Angle was never
+the problem. Scale the arm ~1.7–2× while it is up (from the shoulder — `transform-box:
+fill-box; transform-origin: 50% 0%`, which IS the rig contract's pivot). Hold arms near
+vertical or near horizontal; a rounded rect stopped at 45° is a diamond, not an arm.
+
+Two layers of motion, because one element can run one animation per property: the long idle
+rides on a wrapping `.rig-idle` group and never stops, the poses ride on `.rig-root`. A pose
+ends when EVERY animation it started has finished — not the first `animationend`, which cuts
+off any pose that staggers its limbs.
+
+**`transform-box: view-box` with the rig's `data-pivot` values in px does NOT work** — Chrome
+reads those lengths as rendered CSS pixels, so the shoulder lands in the middle of the head
+and the waving arm detaches and flies off the body.
 
 ## Workbench switches the plans rely on
 
@@ -305,3 +376,19 @@ decides whether it runs on every push or only when someone remembers.
 New surface → add a shot with an `expect` → run the one plan → check `coverage.md` shows
 it `covered` in every theme → only then write about it. New workbench switch → also add a
 route to `scripts/workbench-boot-check.mjs`.
+
+## Drag probe and drag sweep (session-pill motion)
+
+`node scripts/ui-review/drag-probe.mjs <url> <fromIdx> <toIdx> [dragMs]` drives ONE
+session-pill drag over CDP and prints every pill's left edge per frame around the drop —
+the microscope. Envs make it move like a hand: `PRESS_FIRST=<idx>`, `GRAB=0..1`,
+`PROBE_W=460` (the deck pane's width), `WOBBLE=<px>`, `AFTER=hand`, `OVERSHOOT_PX`.
+
+`node scripts/ui-review/drag-fuzz.mjs <url> [count] [seed]` is the sweep: many drags in
+a row on one page, mouse AND touch (`POINTER=mouse|touch|mix`), `DPR=1.5`, `UNLIMITED=1`
+(frame-rate cap lifted), randomised grab/path/wobble/release/after, five checks per
+release (contact, continuity, reversal, others, blink). **A release is not "clean" until
+three seeds × mouse and touch come back all-zero** — on 2026-09-03 ten rounds of single
+drags each fixed a real fault and each left the next one standing; the sweep found the
+one that mattered (the drag visuals hung on a ref pointerup flips before the drop lands)
+in its first 60 drags. Frames of any scenario are in `drag-fuzz.json`.

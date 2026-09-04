@@ -71,3 +71,9 @@ that in the shared area with android as seen-on.
       is not synced, Android's missing-file check is a stub that reports nothing missing, so a damaged
       record there looks normal forever
       `files-panel` `android` `needs-verify` `checked 2026-09-01`
+
+- [ ] Android is pinned to Claude Code 2.1.112 because later releases ship as a native binary the
+      Android runtime cannot run; a Play listing whose core feature is frozen on an old version is a
+      support problem waiting to happen. Decide before the listing: unblock newer versions, or scope
+      what the listing promises
+      `android` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md

@@ -6,7 +6,7 @@ paths:
   - "**/docs/gallery/**"
   - "scripts/ui-review/**"
   - "**/desktop/src/renderer/dev/workbench/**"
-last_verified: 2026-09-01
+last_verified: 2026-09-04
 verify:
   - path: scripts/ui-review/site-assets.sh
     contains: "docs/media"
@@ -17,6 +17,12 @@ verify:
   - path: scripts/ui-review/copy-preview.py
   - path: youcoded/docs/index.html
     contains: "Appearance"
+  - path: youcoded/docs/tools/gen-hero-mascots.py
+    contains: "WARM_FACES"
+  - path: youcoded/docs/tools/gen-og-image.mjs
+    contains: "1600x840"
+  - path: youcoded/docs/mascots/golden-sunbreak.rig.svg
+  - path: youcoded/docs/favicon.svg
   - path: youcoded/desktop/src/renderer/dev/workbench/reply-script.ts
     contains: "splitTurns"
   - path: youcoded/desktop/src/renderer/dev/workbench/fixture-loader.ts
@@ -36,8 +42,13 @@ Rebuilt 2026-08-28 for 1.3.0 (youcoded #360): `docs/archive/specs/2026-08-27-lan
 (loops + posters), `docs/gallery/` (48 stills) and `docs/site/` (embed). It refuses a
 workbench serving another tree and refuses to overwrite the gallery if any shot failed
 verification. It is a step in the desktop release checklist (`docs/build-and-release.md`).
-**Why:** the previous site drifted for four months because its mockups were hand-drawn.
+The last three followed on 2026-09-04: `youcoded/docs/tools/gen-hero-mascots.py` (picker
+mascots — theme rigs, ink `accent x 0.32` never on-accent, WARM faces, a lifted arm scaled
+~1.7-2x) and `gen-og-image.mjs` (bump `?v=` on `og:image` or a shared link keeps the old one).
+**Why:** the previous site drifted for four months on hand-drawn mockups; the share image
+stayed a screenshot of the pre-redesign app.
 **Guard:** the script's own checks; `scripts/workbench-boot-check.mjs`.
+Depth for the mascots: `scripts/ui-review/README.md` -> "Hero mascots".
 
 ## Loops live in `docs/media/`, not `docs/site/media/`
 **Invariant:** never write recordings under `docs/site/` — `npm run build:site` runs with

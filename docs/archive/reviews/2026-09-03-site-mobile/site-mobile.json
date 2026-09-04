@@ -1,0 +1,212 @@
+{
+  "title": "youcoded.ai on a phone",
+  "key": "site-mobile",
+  "out": "site-mobile.html",
+  "images": "images/site-mobile",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/docs/active/reviews/2026-09-03-site-mobile/runs/before",
+    "after": "/home/destin/youcoded-dev/docs/active/reviews/2026-09-03-site-mobile/runs/after"
+  },
+  "themes": [
+    "cotton-candy-sky"
+  ],
+  "crops": {
+    "feature-1": [
+      "phone",
+      "feature-1",
+      "780x700+0+300"
+    ],
+    "feature-2": [
+      "phone",
+      "feature-2",
+      "780x700+0+960"
+    ],
+    "roadmap": [
+      "phone",
+      "roadmap",
+      "780x700+0+150"
+    ],
+    "download": [
+      "phone",
+      "download",
+      "780x560+0+230"
+    ],
+    "demo": [
+      "phone",
+      "hero",
+      "780x640+0+700"
+    ],
+    "nav": [
+      "phone",
+      "about",
+      "780x330+0+0"
+    ],
+    "footer": [
+      "phone",
+      "footer",
+      "780x700+0+900"
+    ],
+    "floating": [
+      "phone",
+      "faq",
+      "780x740+0+930"
+    ],
+    "integrations": [
+      "phone",
+      "integrations",
+      "780x760+0+380"
+    ]
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Feature cards",
+      "path": "youcoded.ai on a phone → \"Everything the app gives you\"",
+      "crop": "feature-1",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "The ten feature cards stop being a squeezed desktop layout and become one thing per screen: the clip on top, the words underneath.",
+      "changed": "On a wide screen the ten cards sit in a pile that slides as you scroll, words on one side and clip on the other. On a phone that shape gave the words a 250px column — the headline broke one word per line — and shrank the clip to a thumbnail. Below 1000px the pile is gone: each card is a plain block, full-width clip on top, headline and paragraph under it. The clip starts when you reach it and stops when you leave.",
+      "measured": "Whole page at 390px: 15,683px tall before, 11,596px after — and several of the screens it lost were bare wallpaper between cards",
+      "notice": "A headline reads in two lines instead of nine, the clip is big enough to see, and scrolling no longer passes through empty screens.",
+      "risk": "Cards no longer slide over each other on a phone — that motion is replaced by ordinary scrolling, and nothing above 1000px wide changes."
+    },
+    {
+      "id": "M-2",
+      "surface": "Download buttons",
+      "path": "youcoded.ai on a phone → top of the page",
+      "crop": "download",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "The five download buttons become a card with your own platform across the top, instead of a stretched pill with the buttons loose inside it.",
+      "changed": "The download control is one long rounded pill built for a single row of five buttons. At 390px the five wrap onto three lines and the pill becomes a blob with the buttons floating loose inside it. On a phone it is now a card: a two-across grid, with whichever platform you are on filling the full top row. Same five buttons, same order, same accent colour.",
+      "measured": "Every button is at least 48px tall — the size a thumb needs; the old wrapped chips were 44px and unevenly spaced",
+      "notice": "The button for your own device is the biggest thing on the screen; the other four are one tap away underneath it.",
+      "risk": "It reads as a card rather than as the same pill you see on a laptop."
+    },
+    {
+      "id": "M-3",
+      "surface": "The bar at the top",
+      "path": "youcoded.ai on a phone → any section",
+      "crop": "nav",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "The bar at the top stops being see-through, so paragraphs no longer scroll visibly through the YouCoded name.",
+      "changed": "The bar uses the theme's glass — 70% opaque for Cotton Candy Sky. On a wide screen text passes beside it; on a phone there is only one column, so every paragraph slides underneath and shows through. It is solid on phones now, still in the theme's own colour, so it still re-skins when you tap a mascot.",
+      "measured": "At 94% opaque the sentence underneath was still readable in a screenshot — a ghost line straight across the wordmark. Only fully opaque cleared it",
+      "notice": "The YouCoded name at the top is always legible, and the page stops looking like two pages printed on top of each other.",
+      "risk": "That one bar loses its glass look on phones; everything else on the page keeps it."
+    },
+    {
+      "id": "M-4",
+      "surface": "The live demo",
+      "path": "youcoded.ai on a phone → top of the page",
+      "crop": "demo",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "On a phone the live demo waits for you to tap it instead of starting on its own.",
+      "changed": "That window in the hero is not a picture — it is the actual app running in a frame, which means downloading the app's code and its wallpapers. It used to start by itself as soon as it scrolled into view. On a phone it now shows the still with a Start the demo button and downloads nothing until you press it. On a laptop it still starts by itself, exactly as before. It also waits if Data Saver is on.",
+      "measured": "About 3MB of the 13MB a phone used to download was the demo booting unasked",
+      "notice": "The page settles far quicker on a phone signal and spends no data on a demo you did not ask for; tapping still gives you the real thing.",
+      "risk": "Someone who would have watched the demo now has to notice the button first."
+    },
+    {
+      "id": "M-5",
+      "surface": "The Roadmap card",
+      "path": "youcoded.ai on a phone → last feature card",
+      "crop": "roadmap",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "The roadmap diagram stops printing its two halves on top of each other.",
+      "changed": "That card's picture is a drawn diagram, not a video clip, and it was pinned into a wide 16:10 box. On a phone its content is much taller than the box, so the second column printed on top of the first and neither could be read. It now sits in the flow as one column and the box grows to fit it.",
+      "measured": "9 lines of the diagram are on their own line now; before, 4 of them printed on top of each other",
+      "notice": "You can actually read what the roadmap card describes.",
+      "risk": "The card is taller than the others, because the diagram is taller than a clip."
+    },
+    {
+      "id": "M-6",
+      "surface": "Footer",
+      "path": "youcoded.ai on a phone → bottom of the page",
+      "crop": "footer",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "The footer links stack instead of breaking \"Built by Destin\" across three lines.",
+      "changed": "The footer is one row with the links pushed to the right. At 390px there is no room, so they squeezed into columns: \"Built by Destin\" broke over three lines with the Open Source badge wedged among them. It is now stacked — logo, links wrapping normally, badge, licence line.",
+      "notice": "The links read as a normal row and are much easier to hit.",
+      "risk": "The footer is a little taller than it was."
+    },
+    {
+      "id": "M-7",
+      "surface": "Floating Download button",
+      "path": "youcoded.ai on a phone → the FAQ, most of the way down",
+      "crop": "floating",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "A small Download button now follows you down the page on a phone, and disappears when you reach the footer.",
+      "changed": "On a laptop the download pill is pinned to the bottom of the window all the way down. On a phone it sits in the hero and scrolls away, so from there to the footer — about 11,000px — the page had nothing to press. This turns on the page's existing floating button (switched off on laptops for the opposite reason) in the bottom-right corner: it appears after the first screen and hides once the footer's own links are visible.",
+      "notice": "There is always a way back to the download buttons without scrolling up by hand.",
+      "risk": "Being pinned to the screen it covers the tail of a line or two while you read — say no and I will take it out."
+    },
+    {
+      "id": "M-8",
+      "surface": "Service list",
+      "path": "youcoded.ai on a phone → \"Connect your services\"",
+      "crop": "integrations",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "The twenty service buttons fit two and three to a row instead of one and two.",
+      "changed": "These are set at the desktop size, and the theme fonts are wide, so at 390px most of them took a whole row to themselves and the list ran fourteen rows down the page. They are slightly smaller and closer together now — still at least 44px tall, which is the size a thumb needs.",
+      "measured": "20 services in 9 rows instead of 14",
+      "notice": "You can see most of the list at once instead of scrolling through it one name at a time.",
+      "risk": "The names are set a little smaller than the rest of the page's text."
+    }
+  ]
+}

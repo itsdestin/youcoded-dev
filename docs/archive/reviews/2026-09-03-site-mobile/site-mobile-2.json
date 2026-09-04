@@ -1,0 +1,159 @@
+{
+  "title": "youcoded.ai on a phone — round 2",
+  "key": "site-mobile-2",
+  "out": "site-mobile-2.html",
+  "images": "images/site-mobile-2",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/docs/active/reviews/2026-09-03-site-mobile/runs2/before",
+    "after": "/home/destin/youcoded-dev/docs/active/reviews/2026-09-03-site-mobile/runs2/after"
+  },
+  "themes": [
+    "cotton-candy-sky"
+  ],
+  "crops": {
+    "download": [
+      "phone",
+      "download",
+      "780x620+0+280"
+    ],
+    "demo": [
+      "phone",
+      "demo",
+      "780x740+0+140"
+    ],
+    "footer": [
+      "phone",
+      "footer",
+      "780x640+0+740"
+    ],
+    "landscape": [
+      "phone",
+      "landscape",
+      "1688x780+0+0"
+    ],
+    "faq": [
+      "phone",
+      "faq",
+      "780x700+0+920"
+    ],
+    "roadmap": [
+      "phone",
+      "roadmap",
+      "780x760+0+120"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Download buttons",
+      "path": "Top of the page",
+      "crop": "download",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "Your own platform is now the first button as well as the widest one.",
+      "changed": "You asked for the picked one to be at the top. It was already the full-width purple button, but it stayed wherever its device sits in the list — so on this Linux machine it was on the second row, under Windows and macOS. It is now lifted to the top row. Everything else keeps its order. You will also see the \"Try Demo\" button vanish from under the card — that is the next step.",
+      "notice": "The first thing under DOWNLOAD is the button for the device you are holding.",
+      "risk": "The order of the other four now reads Windows, macOS, Android, iOS with your own one missing from it."
+    },
+    {
+      "id": "R-2",
+      "surface": "The live demo",
+      "path": "Top of the page",
+      "crop": "demo",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "The still shows the app in the look you have picked, and the window is phone-shaped so the demo is usable.",
+      "changed": "Two things you asked for. The still is now taken from this very demo, once per look, so tapping a mascot changes the picture too — before it was one fixed image that stayed the same whatever colour the page went. And the window is shaped like a phone instead of like a letterbox, so the app inside gets a real phone screen to draw on rather than a 195px strip. The old shape also cropped the still, which is why the chat bubbles used to be sliced through the middle of words. The separate \"Try Demo\" button under the download card is gone: it did exactly what \"Start the demo\" on the picture does, and the two sat a thumb's width apart.",
+      "measured": "The demo went from 195 to 531 pixels tall; the app's own writing is now the size it would be on your phone",
+      "notice": "You can read the conversation in the picture before you tap it, and once you tap it the demo is something you can actually use rather than squint at.",
+      "risk": "The window is taller, so it pushes the rest of the page down a little."
+    },
+    {
+      "id": "R-3",
+      "surface": "Footer",
+      "path": "Bottom of the page",
+      "crop": "footer",
+      "highlight": {
+        "box": [
+          3,
+          20,
+          94,
+          76
+        ]
+      },
+      "headline": "Open Source sits beside the YouCoded name, and the licence line now names OpenAI and OpenRouter too.",
+      "changed": "Both things you asked for. The Open Source badge used to trail the four links; it now sits on the same line as the name. The last line reads \"Not affiliated with, endorsed by, or officially supported by Anthropic, OpenAI, or OpenRouter.\" The links are also given room to be tapped — they were the smallest targets on the page.",
+      "measured": "Each footer link went from 23 to 44 pixels tall, which is about the width of a fingertip",
+      "notice": "The badge reads as part of the name rather than as a fifth link, and you stop missing Privacy and hitting Terms.",
+      "risk": "On a wide screen the badge stays where it always was, at the end of the links — say the word and it moves up there too. The longer licence line does wrap onto a second row on a mid-sized window."
+    },
+    {
+      "id": "R-4",
+      "surface": "A phone held sideways",
+      "path": "Anywhere on the page, turned landscape",
+      "crop": "landscape",
+      "highlight": {
+        "box": [
+          2,
+          3,
+          96,
+          94
+        ]
+      },
+      "headline": "Turned sideways, the page stops pinning two see-through bars over the words.",
+      "changed": "Held sideways a phone is wider than it is tall, and the page was reading only the width — so it decided it was on a laptop and pinned the download row to the bottom of the screen, see-through, with paragraphs scrolling visibly through it. The bar at the top was doing the same thing. The page now looks at the height too: on any short screen the download row goes back into the page where it belongs and the top bar goes solid.",
+      "measured": "The two bars were covering about 2 of every 5 rows of a sideways screen",
+      "notice": "Turning the phone sideways gives you a readable page instead of a page with two strips of furniture stuck on it.",
+      "risk": "Sideways, the download buttons are up at the top of the page rather than always on screen."
+    },
+    {
+      "id": "R-5",
+      "surface": "The floating Download button",
+      "path": "The FAQ, most of the way down",
+      "crop": "faq",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "The floating Download button now gets out of the way while you are reading, and comes back the moment you scroll up.",
+      "changed": "You said yes to this button, and it works — but pinned to the screen it was sitting on the words at 10 of 17 places down the page, once on top of the \"Create a GitHub account\" link and once over a whole FAQ row. It now hides while you are scrolling down and reappears as soon as you scroll back up, which is also the moment someone is looking for a way back. Reaching the footer still hides it for good, since the footer has the real links.",
+      "measured": "It covered body text at 10 of 17 places on the way down; now none",
+      "notice": "Nothing is covered while you read. Flick up half a centimetre and the button is there.",
+      "risk": "If you only ever scroll downwards you will not see it until you flick back up — the alternative is that it covers a line of whatever you are reading, which is what it was doing."
+    },
+    {
+      "id": "R-6",
+      "surface": "The Roadmap card",
+      "path": "Last feature card",
+      "crop": "roadmap",
+      "highlight": {
+        "box": [
+          3,
+          4,
+          94,
+          92
+        ]
+      },
+      "headline": "On the Roadmap card the words come before the drawing, so you are told it is a plan before you see it.",
+      "changed": "Every other card puts its demo on top and its words underneath. On this one that meant you met a detailed, real-looking Agents screen most of a screenful before reaching the \"Coming after 1.3\" label that says it does not exist yet. This one card is turned around: label, headline and explanation first, drawing last.",
+      "notice": "You read \"Roadmap · Coming after 1.3\" before you see the screen it is describing, so nothing looks like a feature you could go and use today.",
+      "risk": "It is now the only card on the page in that order."
+    }
+  ]
+}

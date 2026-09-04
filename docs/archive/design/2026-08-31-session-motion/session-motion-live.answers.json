@@ -1,0 +1,31 @@
+{
+ "deck": "session-motion-live",
+ "started": "2026-09-02T08:18:56.314Z",
+ "submitted": "2026-09-02T08:24:08Z",
+ "cur": 2,
+ "answers": {
+  "feel": {
+   "v": "pick",
+   "pick": "soft",
+   "note": "i like soft, but it will need to be tuned/repaired a bit. it's jank.",
+   "seconds": 101,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "switch-when": {
+   "v": "pick",
+   "pick": "press",
+   "note": "again i like press, but we will need to do further refinement/tuning on the merge soft/press variant to make it less janky.",
+   "seconds": 166,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "arrival": {
+   "v": "other",
+   "note": "i want to try a few slighly more interesting/bounct options. ",
+   "seconds": 43,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -124,3 +124,6 @@ __pycache__/
 scripts/promo/out/
 scripts/promo/public/
 scripts/promo/src/theme-art.generated.ts
+
+# Written beside a deck spec by review-cards.py serve (the workbench it boots for live panes)
+*.workbench.log

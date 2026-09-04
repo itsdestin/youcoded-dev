@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 import {
   parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths,
   globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor,
+  uncommittedPaths,
 } from './audit-anchors.mjs';
 
 test('parseRuleFrontmatter: block paths, last_verified, verify with contains', () => {
@@ -548,4 +549,30 @@ test('subRepoRoot: a worktree resolves sub-repos from the main checkout; a check
   assert.equal(baseFor(wt, 'docs/MAP.md'), wt, 'workspace paths stay on the worktree — that is the branch under audit');
   const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-bare-'));
   assert.equal(subRepoRoot(bare), bare, 'not a git checkout: keep root, never throw');
+});
+
+// --- uncommittedPaths -------------------------------------------------------
+// WHY these exist: run in the SHARED checkout, the auditor reports another
+// session's in-flight rule as "confirmed drift; fix now", and the obvious fix is
+// deleting their file. That already happened once here (2026-08-27).
+
+test('uncommittedPaths: parses porcelain, both modified and untracked', () => {
+  const fake = () => ' M docs/MAP.md\n?? .claude/rules/new-thing.md\n M docs/roadmap/files.md\n';
+  assert.deepEqual(uncommittedPaths('/anywhere', fake), [
+    'docs/MAP.md', '.claude/rules/new-thing.md', 'docs/roadmap/files.md',
+  ]);
+});
+
+test('uncommittedPaths: a clean tree yields nothing', () => {
+  assert.deepEqual(uncommittedPaths('/anywhere', () => ''), []);
+});
+
+test('uncommittedPaths: a git failure is not fatal — the auditor still runs', () => {
+  assert.deepEqual(uncommittedPaths('/anywhere', () => { throw new Error('not a repo'); }), []);
+});
+
+test('uncommittedPaths: runs git against the given root, not the cwd', () => {
+  let seen = null;
+  uncommittedPaths('/some/root', (_cmd, args) => { seen = args; return ''; });
+  assert.deepEqual(seen, ['-C', '/some/root', 'status', '--porcelain']);
 });

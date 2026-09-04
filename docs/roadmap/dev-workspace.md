@@ -4,6 +4,25 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] `native-session-host` can fail its own CLEANUP on the macOS CI leg — `ENOTEMPTY` from
+      `rmHostRoot()` while deleting the temp dir, thrown out of afterEach into a test that had
+      already passed, so the red names the wrong thing. Seen 2026-09-03 on youcoded#399, passed
+      on a plain re-run of the same commit. The retrying remove the test-suite-hygiene rule
+      prescribes IS in place; its budget (10 x 25ms = 250ms) is just too small for a loaded
+      3-core runner while fire-and-forget ledger writes are still landing. Not a product bug —
+      but it fails whole runs, which is how a real failure next to it gets ignored
+      `n/a` `confirmed` `checked 2026-09-03`
+
+- [ ] On a Mac, three things can miss a change made in the split second after they start
+      watching: a new file may not appear in the Files panel, an edited theme may not
+      hot-reload, and a session title may not update. Same cause as the watcher bug fixed in
+      youcoded#399 (macOS reports the watch as live before it actually is) — those two got the
+      fix and a measured proof; these three were audited but not reproduced, so they were left
+      out of that PR rather than shipped unproven. Sites: artifacts/project-watcher.ts,
+      theme-watcher.ts, the topic watch in ipc-handlers.ts. The other four watcher sites are
+      already safe (they re-check on a timer)
+      `n/a` `confirmed` `checked 2026-09-03` → docs/archive/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
+
 - [ ] `native-session-host` "a finished run is injected ONCE as a user turn with injected:
       shell-complete" fails on the macOS CI leg only: the finished-notice text arrives without the
       command's own output ("done"), so the exact-match regex misses. Passed on a plain re-run of
@@ -30,16 +49,13 @@ seen-on is always n/a here.
       line in `desktop/tsconfig.tests.json`; verify.sh prints the remaining count every run
       `n/a` `confirmed` `checked 2026-09-02`
 
-- [ ] File-watching tests go red on the macOS CI leg every week or two — on branches that touch
-      nothing in sync, and on untouched master — with zero watcher events delivered; Ubuntu and
-      Windows pass the same commit, and every fire also skips macOS packaging. 2026-09-02: it is
-      NOT only the sync-spaces engine — git-watcher failed the same way in the same run, so the
-      production risk is wider than sync. 2026-09-03: "every week or two" is now understating it —
-      master went red at 4224fb85 (sync-spaces-engine) and PR #397, based on that same commit, went
-      red at git-watcher, and it repeated on an explicit re-run of the failed job. Two runs of one
-      commit failing the same test is not a race losing a coin flip; the same suite passed 5/5
-      locally. Whatever changed is macOS-side and current, and it blocks merges on a red board
-      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
+- [ ] The desktop CI job fails while every test passes — 7,971 passed, 0 failed, job exits 1 on
+      "EnvironmentTeardownError: Closing rpc while onUserConsoleLog was pending". Console output
+      still in flight when a worker shuts down, so the red names no test and points at whichever
+      file happened to be running. Seen on the Windows leg on master (#405 and #407 merges) and on
+      a PR branch the same day. Different from the flake items above: nothing fails, the job just
+      exits 1 — so "re-run it" is the only response anyone can give today
+      `n/a` `confirmed` `checked 2026-09-03` `regression`
 
 - [ ] subagent-view, mcp-startup-wiring and project-watcher were filed as the suites that flake
       under parallel load, but 27 full local runs on 2026-09-02 (1 alone, 6 concurrent, 4 pinned to
@@ -82,6 +98,22 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+
+- [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
+      nothing anywhere saying the app had stopped responding, so a tester's force-quit on
+      2026-09-03 could not be explained at all. FIXED on a branch 2026-09-03
+      (`youcoded feat/crash-diagnostics`): crashes, dead helper processes and freezes now all write
+      a line into the log the Report-a-bug flow already sends, and crash files stay on the user's
+      machine. Open until that branch merges
+      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
+
+- [ ] The app's log is in a folder nobody would guess — Claude Code's, not the app's — so anyone
+      poking around for it concludes there is no log at all, as a tester with full access to the
+      machine did on 2026-09-03. Less bad than it first looked: Report a bug already attaches the
+      log for the user, so nothing is lost when they use that path. What is left is that the log
+      keeps only its last 500 lines, which can be shorter than one session, and that there is no
+      way to just go and look at it
+      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
 
 - [ ] The feature flow — a questions deck before anything is drawn, review rounds, a signed
       contract, then a graded acceptance deck — is built but has never been run end to end on a
@@ -161,6 +193,14 @@ seen-on is always n/a here.
       has not seen it in his own app — check whether a maximized-at-launch window avoids it)
       `terminal` `n/a` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-terminal-pty-column-count.md
 
+- [ ] The landing redesign's five clips exist only in the mockup folder; the site-assets script that
+      regenerates every loop does not know their names, so the next regeneration drops them
+      `n/a` `confirmed` `checked 2026-09-03`
+
+- [ ] The landing mockup's generator still carries the two phrases removed from the live page on
+      2026-09-03 ("self-improving", "does real work"); the next rebuild-and-port reintroduces them
+      `n/a` `confirmed` `checked 2026-09-03`
+
 ## knowledge
 
 - [ ] Path-scoped rules never reach a session that edits through the Bash tool, which is what
@@ -226,7 +266,43 @@ seen-on is always n/a here.
       decompositions). Catalog: `docs/active/handoffs/2026-07-10-review-followups.md`
       `n/a` `parked` `checked 2026-08-12`
 
+- [ ] youcoded-core's status line and write-guard still reference the deleted usage-fetch script (the
+      file itself is gone there, so nothing runs) — clean up, or let the scheduled archive take it
+      `n/a` `confirmed` `checked 2026-09-03`
+
 ## release
+
+- [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
+      a button that no longer appears — a routine dependency update quietly stopped the Mac build
+      from being stamped at all, so macOS now rejects it as a broken app rather than an unverified
+      one, and the approval step our site walks users through vanished with it. Only a terminal
+      command gets past it. v1.2.4 was stamped correctly and 1.3.0-beta.72 is not; both dmgs read
+      off directly. Affects releases, not just betas. It is not a one-time install hurdle either —
+      the in-app update button downloads the same kind of build, so a Mac user who is happily
+      using the app is walked back into the same dead end on every update. FIXED on a branch
+      2026-09-03 (`youcoded fix/mac-adhoc-signing`) — restores the old behaviour and adds a build
+      check that fails if it ever stops happening again; open until that branch merges and a Mac
+      confirms the approval button is back. ON MERGE: re-add the verify anchor under the dmg
+      recipe in docs/build-and-release.md — it was dropped because it pointed at branch-only code
+      `n/a` `confirmed` `checked 2026-09-03` `urgent` `regression` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
+
+- [ ] No download we publish can be checked for corruption or tampering — the release carries the
+      installers and nothing else, no checksum file of any kind, so neither a user nor the app's
+      own updater can tell a good download from a bad one. Verified against the 1.3.0-beta.72
+      release listing
+      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
+
+- [ ] Android beta builds all claim to be version 1.2.4. The desktop test build stamps its own
+      version number into every beta; the Android one never got that, so its About screen shows
+      the last released number no matter how new the code is — a tester reporting a bug names a
+      version that says nothing about what they were running
+      `n/a` `confirmed` `checked 2026-09-03`
+
+- [ ] REVERT WHEN 1.3.0 SHIPS: youcoded.ai's download buttons now hand out the newest release
+      INCLUDING pre-releases, so visitors get the 1.3.0-beta build instead of v1.2.4 from May.
+      Deliberate and temporary (Destin, 2026-09-03). On 1.3.0: put the buttons back on
+      stable-only, and delete the 1.3.0-beta pre-release so it stops being what the site serves
+      `n/a` `confirmed` `checked 2026-09-03` `v1.3.0`
 
 - [ ] Re-work the release method: releases tag master directly, so every release ships the
       undifferentiated 2,370 commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
@@ -235,8 +311,9 @@ seen-on is always n/a here.
       fixes onto them — so a minor can go out while the next major is still blocked. Caveats to
       fold in when building: every fix needs a "goes in the minor?" cherry-pick decision, and the
       one-tag-both-platforms rule (ADR 005) means even a fix-only minor must coordinate an Android
-      versionCode bump and ships a paired Android build (no bare desktop-only hotfixes)
-      `n/a` `parked` `checked 2026-09-03` `v1.3.1`
+      versionCode bump and ships a paired Android build (no bare desktop-only hotfixes). Promoted to a
+      1.3 blocker 2026-09-03: store listings make bug-fix releases routine, so this must exist first
+      `n/a` `confirmed` `checked 2026-09-03` `v1.3`
 
 - [ ] Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
       from the embed's theme button and the whole app window becomes one blur; the redesign makes
@@ -263,24 +340,67 @@ seen-on is always n/a here.
       coupled chain, so re-run them together now that the Kotlin half is in
       `n/a` `needs-verify` `checked 2026-09-01`
 
+- [ ] `roadmap-check.mjs --fix` edits the SHARED checkout no matter where you run it, because
+      its root defaults to the script's own location rather than the current directory. Run from
+      a worktree on 2026-09-04 it silently rewrote ROADMAP.md in `/home/destin/youcoded-dev`,
+      where other sessions keep uncommitted work, and left the worktree it was invoked in
+      untouched — the caller cannot tell, because it prints a success line either way. `--root`
+      exists and is the workaround, but nothing makes you pass it. Wanted: default the root to
+      the git toplevel of the working directory, or refuse `--fix` when the resolved root is a
+      different checkout from the one you are standing in
+      `n/a` `confirmed` `checked 2026-09-04`
+
+- [ ] The new site header does not match the two logos nearest it, and both were consciously
+      deferred on 2026-09-04 rather than decided. The header is now a glass tile with the robot
+      in the theme colour and a wide-caps wordmark; the FOOTER logo a few screens down still
+      wears the old solid tile and mixed-case name, and the four theme mascots directly beneath
+      the header are master's newer full-bodied art while the header's robot is still the app's
+      flat icon. Destin saw both and said leave them for now, so this is a decision waiting to
+      be made, not a defect
+      `n/a` `decision` `checked 2026-09-04`
+
 - [ ] Landing copy note, recorded so it is not re-derived: conversation tags, private notes and
       one-tap prompt chips are unique (0 of 8 competitors on 2026-08-31) but must not lead the
       landing page — uniqueness is not the argument
       `n/a` `parked` `checked 2026-08-31`
+
+- [ ] The demo videos on the landing page are recordings of the desktop app shrunk to phone
+      width, so on a phone the app's own writing inside them is a few pixels tall — you can see
+      there is an app, not what it is doing. Re-filming them framed for a phone is the fix
+      `n/a` `confirmed` `checked 2026-09-03`
+
+- [ ] On a phone the landing page's "More than a chatbot" and "How we got here" run about three
+      and two full screens of unbroken text each; a first-time reader also flagged the third
+      About paragraph ("outpace development of competing closed agents") as strategy talk with
+      no reason to be on the page
+      `n/a` `confirmed` `checked 2026-09-03`
+
+- [ ] The asterisk on the landing page's iOS download button has no footnote anywhere near it —
+      the explanation sits about ten screens further down, so someone taps it expecting an App
+      Store link
+      `n/a` `confirmed` `checked 2026-09-03`
 
 - [ ] Ship v1.3 — the release mechanics: an `/audit` run, version bumps on both platforms (still
       1.2.4), a CHANGELOG 1.3.0 entry, the tag. The one product gate left is the Connected-accounts
       question filed under sync
       `n/a` `blocked` `checked 2026-09-01` `v1.3`
 
-- [ ] The Android build labels the vendored terminal emulator GPLv3 while its own VENDORED.md says
-      Apache 2.0 — one of the two is wrong, and it is the licence notice users see
-      `n/a` `needs-verify` `checked 2026-09-01`
+- [ ] Public-launch formalization is the 1.3 gate: signed macOS/Windows installers, a Play listing,
+      the LLC behind every account, a trademark filing. Done 2026-09-03: youcoded.ai (site, API,
+      email), the Anthropic-token fix, Android → MIT, the LLC itself (Destin's Adventures, LLC),
+      EIN, DMCA agent, legal pages naming the company (youcoded#416). In the mail: trade name,
+      D-U-N-S. The report's "Status" block is the current state; Destin's values are in the brain
+      `n/a` `in-flight` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
-- [ ] The "formalization" push after 1.3: the youcoded.ai domain, app store and Play Store
-      listings, the macOS/Windows security-warning signing, an LLC — Destin, 2026-09-02, "soon-ish,
-      probably right after the 1.3 release"
-      `n/a` `parked` `checked 2026-09-02`
+- [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
+      The LLC exists (2026-09-03); blocked until the Apple / Azure signing accounts are opened in its name;
+      after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads
+      `n/a` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+
+- [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
+      a verified developer even for sideloads. Blocked on the LLC's D-U-N-S number; then the bundle
+      upload, data-safety form, content rating and account-deletion link
+      `android` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
       turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view

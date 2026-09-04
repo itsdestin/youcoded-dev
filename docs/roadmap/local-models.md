@@ -19,3 +19,7 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       upstream engine support is an unmerged pull request needing a separate runner. Revisit
       only when mainline llama.cpp and llama-server can serve it, then add a catalog entry.
       `desktop` `parked` `checked 2026-07-13`
+
+- [ ] Gemma models download with no licence notice, and Google's Gemma terms require passing their
+      use restrictions on to the user; Qwen and GPT-OSS are Apache-licensed and need nothing
+      `local-models-screen` `all` `confirmed` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md

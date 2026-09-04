@@ -8,13 +8,13 @@ Recent restructure (unified-marketplace merge) split the registry into `/skills/
 
 - **The apps read the Worker's `/catalog` FIRST; `index.json` is the fallback.** Since the
   catalog service (2026-08-31) both `skill-provider.ts` and `MarketplaceFetcher.kt` try
-  `https://wecoded-marketplace-api.destinj101.workers.dev/catalog` on a **1-hour** TTL, then
+  `https://api.youcoded.ai/catalog` (the old `wecoded-marketplace-api.destinj101.workers.dev` still answers for pre-1.3 installs) on a **1-hour** TTL, then
   raw `index.json` on the old 24-hour TTL, then any stale cache. The catalog carries the block
   the store renders (kind, origin, scan verdict, capabilities, licence, pinned commit) which
   `index.json` does not; it is rebuilt hourly by `catalog-ingest.yml` in `wecoded-marketplace`.
   Requests are conditional (`If-None-Match` → `304` → keep the cached body), which is
   load-bearing rather than an optimisation: the response is several MB, both platforms refresh
-  hourly, Android over mobile data, and `*.workers.dev` gets no Cloudflare edge cache.
+  hourly, Android over mobile data, and until 2026-09-03 the Worker lived only on `*.workers.dev`, which gets no Cloudflare edge cache.
 - **Kill switch: `CATALOG_ENABLED`.** A `[vars]` value in `worker/wrangler.toml`. Set it to
   `"0"`, commit, merge → `GET /catalog` answers **503**, and both clients treat that exactly
   like any other failure and fall back to `index.json`. No user sees an error. This is the way

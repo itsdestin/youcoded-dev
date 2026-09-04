@@ -1,11 +1,15 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: on a *.workers.dev address the Cache API is inert, so checkRateLimit is a no-op in production
 ---
 
 # `checkRateLimit` is a no-op in production — the Worker needs a custom domain
+
+**Closed 2026-09-03.** `api.youcoded.ai` attached to the Worker; measured on the new host: 70
+sequential `GET /ratings/:id` → 23×200 then 47×429. Same probe on workers.dev: 70×200.
+wecoded-marketplace#84, #85; app host swap youcoded#406.
 
 `wecoded-marketplace/worker/src/lib/rate-limit.ts` keeps its fixed-window counters only in
 the Cloudflare Cache API.

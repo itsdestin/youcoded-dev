@@ -1,0 +1,33 @@
+{
+  "title": "Session strip and switching — round 2",
+  "key": "session-motion-live-2",
+  "out": "deck-live-2.html",
+  "live": { "worktree": "session-motion", "paneWidth": 460 },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "strip-tuned",
+      "surface": "Session strip",
+      "path": "Header",
+      "headline": "Soft and press, tuned — does it feel right now?",
+      "changed": "Your two picks are now the only behaviour: the switch happens on press, names open over 260ms on a plain ease, the badge opens after the name. Two things were making it feel rough: the badge was being cut off mid-opening because the timing window was tuned to the old speed, and the dots stepping aside were starting slowly, leaving the dragged pill over a dot. The dots now lead on the fast curve while everything that opens uses the gentle one.",
+      "notice": "Names open a touch slower than before. The badge finishes opening every time. Dragging feels the same as it did at the faster speed.",
+      "risk": "If something still feels off, say what gesture — click, hover, drag or drop — in the note.",
+      "live": { "surface": "session-strip-motion", "round": 3, "candidate": "soft-press" }
+    },
+    {
+      "id": "arrival",
+      "surface": "Chat",
+      "path": "Main view",
+      "headline": "How should the conversation arrive?",
+      "risk": "The conversation you are leaving is never animated. One element moves, so a very long conversation costs no more than a short one. The bounce here is on movement only; nothing in the strip bounces.",
+      "live": { "surface": "session-switch-arrival", "round": 2 },
+      "variants": [
+        { "id": "lift", "label": "Fade and lift", "candidate": "lift", "summary": "The baseline: fades in while rising 6px on the plain ease, 300ms." },
+        { "id": "spring", "label": "Spring up", "candidate": "spring", "summary": "Rises 14px and overshoots a touch before settling, while fading in. 380ms." },
+        { "id": "grow", "label": "Grow in", "candidate": "grow", "summary": "Starts a hair smaller and springs to size while fading in. No lift. 360ms." },
+        { "id": "slide", "label": "Slide in", "candidate": "slide", "summary": "Comes in from the right by 32px with a soft overshoot, like the next page of something. 360ms." }
+      ]
+    }
+  ]
+}
