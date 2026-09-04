@@ -1,0 +1,75 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&seed=none&reply=flappy-task&title=study+guide&signedIn=1&bot=passive",
+ "theme": "halftone-dimension",
+ "width": 1440,
+ "height": 900,
+ "fps": 30,
+ "boot": 3000,
+ "storage": {
+  "youcoded-drawer-width": 600
+ },
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "turn my lecture notes into a study guide with practice questions",
+   "cps": 30
+  },
+  {
+   "key": "Enter",
+   "settle": 700
+  },
+  {
+   "click": "button[title='Games']",
+   "settle": 900,
+   "mark": "games"
+  },
+  {
+   "clickText": "Connect 4",
+   "tag": "span",
+   "settle": 400
+  },
+  {
+   "waitFor": "[data-col='3']",
+   "settle": 600,
+   "mark": "board"
+  },
+  {
+   "click": "[data-col='3']",
+   "settle": 0,
+   "mark": "drop1"
+  },
+  {
+   "hold": 1600
+  },
+  {
+   "click": "[data-col='2']",
+   "settle": 0,
+   "mark": "drop2"
+  },
+  {
+   "hold": 1600
+  },
+  {
+   "click": "[data-col='4']",
+   "settle": 0,
+   "mark": "drop3"
+  },
+  {
+   "hold": 1600
+  },
+  {
+   "click": "[data-col='3']",
+   "settle": 0,
+   "mark": "drop4"
+  },
+  {
+   "hold": 2500
+  }
+ ]
+}

@@ -18,9 +18,21 @@ Filmed 2026-09-03 from `/home/destin/youcoded-dev/worktrees/promo-fakes`. One po
 
 ![promo-flappy](footage/promo-flappy.webp)
 
-## promo-strip
+## promo-games-lobby
 
-![promo-strip](footage/promo-strip.webp)
+![promo-games-lobby](footage/promo-games-lobby.webp)
+
+## promo-connect4
+
+![promo-connect4](footage/promo-connect4.webp)
+
+## promo-chess
+
+![promo-chess](footage/promo-chess.webp)
+
+## promo-conversations
+
+![promo-conversations](footage/promo-conversations.webp)
 
 ## promo-remote
 

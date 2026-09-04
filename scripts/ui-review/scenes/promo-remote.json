@@ -1,10 +1,36 @@
-{ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&remote=setup",
-  "theme": "midnight", "width": 1440, "height": 900, "fps": 30, "boot": 3000,
-  "actions": [
-    {"hold": 500},
-    {"click": "[title=Settings]", "settle": 800},
-    {"click": "[title='Remote Access']", "settle": 1200, "mark": "popup"},
-    {"waitForText": "Set Up Remote Access", "tag": "button", "timeout": 8000},
-    {"clickText": "Set Up Remote Access", "tag": "button", "settle": 1200, "mark": "setup"},
-    {"hold": 2600}
-  ] }
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&remote=setup",
+ "theme": "devils-garden",
+ "width": 1440,
+ "height": 900,
+ "fps": 30,
+ "boot": 3000,
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "click": "[title=Settings]",
+   "settle": 800
+  },
+  {
+   "click": "[title='Remote Access']",
+   "settle": 1200,
+   "mark": "popup"
+  },
+  {
+   "waitForText": "Set Up Remote Access",
+   "tag": "button",
+   "timeout": 8000
+  },
+  {
+   "clickText": "Set Up Remote Access",
+   "tag": "button",
+   "settle": 1200,
+   "mark": "setup"
+  },
+  {
+   "hold": 2600
+  }
+ ]
+}

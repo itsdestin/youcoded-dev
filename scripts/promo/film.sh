@@ -28,7 +28,7 @@ VITE_CWD="$(readlink "/proc/${VITE_PID:-0}/cwd" 2>/dev/null || true)"
 [[ "$VITE_CWD" == "$TDIR/desktop" ]] || { echo "[film] REFUSING: :$WB_PORT serves '${VITE_CWD:-nothing}', not '$TDIR/desktop'" >&2; exit 1; }
 node "$WS/scripts/workbench-boot-check.mjs" "$WB_PORT"
 
-ALL=(promo-idle-midnight promo-quick-chip promo-sheet promo-flappy promo-strip promo-remote promo-phone promo-takeover promo-theme promo-idle-golden)
+ALL=(promo-idle-midnight promo-quick-chip promo-sheet promo-flappy promo-games-lobby promo-connect4 promo-chess promo-conversations promo-remote promo-phone promo-takeover promo-theme promo-idle-golden)
 # A partial re-film ([scene ...]) still rewrites the review page for EVERY scene,
 # so re-filming one never turns the page into a one-entry page.
 SCENES=("$@"); [[ ${#SCENES[@]} -gt 0 ]] || SCENES=("${ALL[@]}")

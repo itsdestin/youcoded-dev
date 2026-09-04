@@ -1,0 +1,44 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&seed=none&reply=flappy-task&title=study+guide&signedIn=1",
+ "theme": "halftone-dimension",
+ "width": 1440,
+ "height": 900,
+ "fps": 30,
+ "boot": 3000,
+ "storage": {
+  "youcoded-drawer-width": 600
+ },
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "click": "button[title='Games']",
+   "settle": 900,
+   "mark": "games"
+  },
+  {
+   "clickText": "Chess",
+   "tag": "span",
+   "settle": 400
+  },
+  {
+   "waitFor": "[aria-label^='e2,']",
+   "settle": 800,
+   "mark": "board"
+  },
+  {
+   "click": "[aria-label^='e2,']",
+   "settle": 450,
+   "mark": "pick"
+  },
+  {
+   "click": "[aria-label^='e4,']",
+   "settle": 0,
+   "mark": "move"
+  },
+  {
+   "hold": 2500
+  }
+ ]
+}

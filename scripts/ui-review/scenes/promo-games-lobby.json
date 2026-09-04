@@ -1,0 +1,63 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&seed=none&reply=flappy-task&title=study+guide&signedIn=1&autoplay=0",
+ "theme": "halftone-dimension",
+ "width": 1440,
+ "height": 900,
+ "fps": 30,
+ "boot": 3000,
+ "storage": {
+  "youcoded-drawer-width": 600
+ },
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "turn my lecture notes into a study guide with practice questions",
+   "cps": 30
+  },
+  {
+   "key": "Enter",
+   "settle": 700
+  },
+  {
+   "click": "button[title='Games']",
+   "settle": 900,
+   "mark": "games"
+  },
+  {
+   "clickText": "Connect 4",
+   "tag": "span",
+   "settle": 400,
+   "mark": "connect4"
+  },
+  {
+   "waitForText": "Challenge",
+   "tag": "button",
+   "timeout": 10000,
+   "settle": 0
+  },
+  {
+   "hold": 1200
+  },
+  {
+   "moveTo": "js:[...document.querySelectorAll('button')].find(b=>b.offsetParent!==null&&b.textContent.trim()==='Challenge')",
+   "ms": 500,
+   "settle": 0,
+   "mark": "hover"
+  },
+  {
+   "clickText": "Challenge",
+   "tag": "button",
+   "settle": 300,
+   "mark": "challenge"
+  },
+  {
+   "hold": 2000
+  }
+ ]
+}
