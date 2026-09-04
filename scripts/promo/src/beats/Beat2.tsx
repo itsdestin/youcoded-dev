@@ -21,6 +21,16 @@ const Beat2: React.FC = () => (
     <Label text={CAPTIONS.b2.head} at={L('b2', 2) + 4} slug="cotton-candy-sky" />
   </AbsoluteFill>
 );
-export const beat2: BeatModule = { id: 'b2', slug: 'cotton-candy-sky', home: P, Component: Beat2,
-  host: [A.look(L('b2', 3), 10, 0.3, 0.45), A.blink(L('b2', 4)), A.look(L('b2', 4) + 10, 10, 0, 0)],   // watches the reply come in
-  bubbles: [{ at: L('b2', 2) + 18, until: LEN('b2') - 20, text: CAPTIONS.b2.sub, slug: 'cotton-candy-sky' }] };
+// The host is already on this perch in this costume (the intro put it there), so no
+// arrival move. It PRESENTS the chip: points down at the strip as the chip is clicked,
+// taps its foot while the assistant works, reads the reply as it streams, nods, and is
+// happy at the finished brief.
+const C = L('b2', 2) + 3;                                           // the chip's click release
+export const beat2: BeatModule = { id: 'b2', slug: 'cotton-candy-sky', home: P, Component: Beat2, arrival: 'none',
+  host: [
+    A.point(C - 4, 'R', 0.9), A.look(C - 4, 6, 0.2, 0.6), A.face(C, 'curious'),   // "that chip, there"
+    A.rest(C + 36), A.tapFoot(C + 40, 36), A.look(C + 40, 8, 0.1, 0.5),           // waits on the assistant
+    A.nod(L('b2', 4) - 10), A.face(L('b2', 4) - 10, 'welcome'),                    // reads the reply
+    A.face(L('b2', 4) + 24, 'happy'), A.tada(L('b2', 4) + 24, 'C'), A.face(L('b2', 4) + 52, 'welcome'), A.rest(L('b2', 4) + 58),
+  ],
+  bubbles: [{ at: C + 16, until: LEN('b2') - 20, text: CAPTIONS.b2.sub, slug: 'cotton-candy-sky' }] };

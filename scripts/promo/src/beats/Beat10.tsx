@@ -33,10 +33,13 @@ const Beat10: React.FC = () => (
     <Caption head={CAPTIONS.link} at={L('b10', 40)} theme="golden-sunbreak" top={CAP_TOP + 104 + CAPTION.h - 14} size={36} headColor="#ffc030" />
   </AbsoluteFill>
 );
+// The host hops down with the window as it settles (the perch moves), waves, cheers
+// the final hit, and SHUTS DOWN — eyes closed, limbs tucked under — as the picture fades.
 export const beat10: BeatModule = { id: 'b10', slug: 'golden-sunbreak', home: HOME, Component: Beat10,
   host: [
     A.hop(PRE + 6, 26, P.x, P.y, 60),                                  // follows the window down as it settles
-    A.wave(L('b10', 39), 50), A.face(L('b10', 39), 'welcome'),
+    A.wave(L('b10', 39), 50), A.face(L('b10', 39), 'happy'), A.face(L('b10', 39) + 50, 'welcome'),
     A.blink(L('b10', 41)), A.look(L('b10', 41) + 10, 10, 0.3, 0.2),
-    A.pose(L('b10', 43), 12, { armL: 150, armR: -150 }), A.face(L('b10', 43), 'shocked'), A.face(L('b10', 43) + 20, 'welcome'),   // the final hit
+    A.cheer(L('b10', 43), 30), A.face(L('b10', 43), 'happy'), A.face(L('b10', 43) + 34, 'welcome'),   // the final hit
+    A.shutdown(L('b10', 44) + 8),                                         // signs off under the fade
   ] };

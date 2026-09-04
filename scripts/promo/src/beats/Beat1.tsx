@@ -6,6 +6,7 @@ import { L, LEN, type BeatModule } from './beat';
 import { barFrame } from '../grid';
 import { PRELUDE } from '../timeline';
 import { CAPTIONS } from '../captions';
+import { A } from '../host/engine';
 
 // Beat 1: the punch intro. The prelude (black, silent, the walk) then bars 0–1:
 // the burst into Cotton Candy Sky on the hit and the window rising on bar 1.
@@ -15,5 +16,7 @@ if (IMPACT !== PRELUDE) throw new Error(`Intro IMPACT ${IMPACT} ≠ timeline PRE
 assertClipCovers('promo-idle-cotton', 0, LEN('b1') - L('b1', 1));
 const Beat1: React.FC = () => <IntroVisuals />;
 export const beat1: BeatModule = { id: 'b1', slug: 'cotton-candy-sky', home: perch(0.3), Component: Beat1, arrival: 'none',
-  host: introActions(), themes: [{ at: IMPACT, slug: 'cotton-candy-sky' }],
+  // after the hop onto the title bar (lands ~IMPACT + bar 1 + 18): a ta-da at the window, then the tagline
+  host: [...introActions(), A.tada(IMPACT + barFrame(1) + 26, 'C'), A.face(IMPACT + barFrame(1) + 26, 'happy'), A.face(IMPACT + barFrame(1) + 52, 'welcome'), A.rest(IMPACT + barFrame(1) + 60)],
+  themes: [{ at: IMPACT, slug: 'cotton-candy-sky' }],
   bubbles: [{ at: IMPACT + barFrame(1) + 30, until: LEN('b1') - 12, text: CAPTIONS.b1.sub, slug: 'cotton-candy-sky' }] };

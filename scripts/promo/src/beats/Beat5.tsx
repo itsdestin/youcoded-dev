@@ -31,12 +31,25 @@ const Beat5: React.FC = () => (
     <Label text={CAPTIONS.b5.head} at={L('b5', 13) + 4} slug="meadow-mist" />
   </AbsoluteFill>
 );
+/** Local frame of a mark in the first shot (the sheet clip from A_FROM at A_RATE). */
+const M = (mark: string, edge: 'start' | 'end' = 'start') => Math.round((markFrame('promo-sheet', mark, edge) - A_FROM) / A_RATE);
+/** Local frame of a project-view mark (that clip starts at T_PROJ, at P_RATE). */
+const PM = (mark: string) => T_PROJ + Math.round((markFrame('promo-project', mark) - P_FROM) / P_RATE);
+// The host PRESENTS the files: points at the attach, walks over above the file panel
+// while the assistant works and points down at the sheet, is startled-then-happy when
+// the sorted sheet re-opens, walks back for project view and points at the tree, nods
+// at Context.
 export const beat5: BeatModule = { id: 'b5', slug: 'meadow-mist', home: P, Component: Beat5,
   host: [
-    A.hop(T_AFTER - 10, 26, LEAN.x, LEAN.y, 60), A.face(T_AFTER, 'curious'), A.look(T_AFTER + 10, 8, 0.3, 0.5),   // hops over to peer at the sheet
-    A.hop(T_PROJ - 10, 26, P.x, P.y, 60), A.face(T_PROJ + 10, 'welcome'), A.look(T_PROJ + 12, 8, 0, 0.3), A.blink(T_PROJ + 40),
+    A.point(M('attach') + 2, 'R', 0.9), A.face(M('attach') + 2, 'curious'), A.look(M('attach') + 2, 6, 0.1, 0.6),   // the attach
+    A.rest(M('reply') - 4), A.walk(M('reply'), 30, LEAN.x, 5), A.look(M('reply'), 10, 0.3, 0.5),                      // over to the panel
+    A.point(M('reply') + 36, 'R', 0.85), A.face(M('reply') + 36, 'curious'),                                          // "watch the sheet"
+    A.rest(T_AFTER - 14), A.startle(T_AFTER + 2), A.face(T_AFTER + 20, 'happy'), A.tada(T_AFTER + 22, 'R'), A.face(T_AFTER + 50, 'welcome'), A.rest(T_AFTER + 56),
+    A.walk(T_PROJ - 6, 30, P.x, 5), A.look(T_PROJ - 6, 10, 0, 0.3), A.face(T_PROJ, 'welcome'),                          // back for project view
+    A.point(PM('files') - 2, 'L', 0.85), A.face(PM('files'), 'curious'), A.look(PM('files'), 6, -0.4, 0.6),           // the file tree
+    A.nod(PM('context')), A.face(PM('context'), 'happy'), A.face(PM('context') + 24, 'welcome'), A.rest(PM('context') + 26), A.blink(PM('context') + 40),
   ],
   bubbles: [
-    { at: L('b5', 13) + 18, until: T_AFTER - 16, text: CAPTIONS.b5.sub, slug: 'meadow-mist' },
-    { at: T_PROJ + 22, until: END - 20, text: CAPTIONS.b5.project, slug: 'meadow-mist' },
+    { at: L('b5', 13) + 18, until: M('reply') - 4, text: CAPTIONS.b5.sub, slug: 'meadow-mist' },
+    { at: T_PROJ + 34, until: END - 20, text: CAPTIONS.b5.project, slug: 'meadow-mist' },
   ] };

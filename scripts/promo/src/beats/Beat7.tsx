@@ -4,7 +4,7 @@ import { Footage } from '../Footage';
 import { Label } from '../Label';
 import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
-import { markFrame, assertClipCovers } from '../marks';
+import { markFrame, markSec, assertClipCovers } from '../marks';
 import { A } from '../host/engine';
 import { L, LEN, type BeatModule } from './beat';
 
@@ -31,9 +31,21 @@ const Beat7: React.FC = () => (
     <Label text={CAPTIONS.b7.head} at={L('b7', 24) + 4} slug="midnight" />
   </AbsoluteFill>
 );
+const MENU = 10, RESUME = MENU + Math.round((markSec('promo-conversations', 'resume') - markSec('promo-conversations', 'menu')) * 30);
+const NOTE_TYPED = T_NOTE + 22, DROP = T_DRAG + Math.round((markSec('promo-conversations', 'drag', 'end') - markSec('promo-conversations', 'drag')) * 30);
+// The host points at the sessions menu and at Resume, walks to the middle of the bar
+// above the resume browser and points into it as "econ" narrows the list, thinks over
+// the note being typed and nods at it, then follows the pill along the strip with its
+// eyes and points at where it lands.
 export const beat7: BeatModule = { id: 'b7', slug: 'midnight', home: P, Component: Beat7,
   host: [
-    A.look(T_SEARCH, 10, 0.1, 0.5), A.face(T_NOTE, 'curious'), A.blink(T_NOTE + 20),
-    A.hop(T_DRAG + 12, 26, perch(0.45).x, perch(0.45).y, 50), A.look(T_DRAG + 20, 10, 0.5, 0.3), A.face(T_DRAG + 40, 'welcome'),   // follows the pill along the strip
+    A.point(MENU + 4, 'R', 0.7), A.face(MENU + 4, 'curious'), A.look(MENU + 4, 6, 0.4, 0.4),                    // the menu
+    A.nod(RESUME + 6), A.rest(RESUME + 24),                                                                    // Resume
+    A.walk(T_SEARCH + 2, 26, perch(0.5).x, 5), A.look(T_SEARCH + 2, 10, 0.1, 0.5),                            // over the browser
+    A.point(T_SEARCH + 34, 'R', 0.9), A.face(T_SEARCH + 34, 'curious'),                                       // "type a word, it narrows"
+    A.rest(T_NOTE - 6), A.think(NOTE_TYPED), A.look(NOTE_TYPED, 8, 0.2, 0.5),                                  // the note
+    A.rest(T_DRAG - 24), A.nod(T_DRAG - 22), A.face(T_DRAG - 22, 'welcome'),
+    A.look(T_DRAG + 4, 10, -0.5, 0.3), A.look(T_DRAG + 22, 14, 0.5, 0.3),                                     // follows the pill
+    A.point(DROP + 2, 'R', 0.8), A.face(DROP + 2, 'happy'), A.face(DROP + 30, 'welcome'), A.rest(DROP + 34), A.blink(DROP + 44),
   ],
-  bubbles: [{ at: L('b7', 24) + 18, until: T_DRAG - 10, text: CAPTIONS.b7.sub, slug: 'midnight' }] };
+  bubbles: [{ at: L('b7', 24) + 18, until: T_NOTE - 10, text: CAPTIONS.b7.sub, slug: 'midnight' }] };
