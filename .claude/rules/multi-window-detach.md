@@ -13,8 +13,8 @@ paths:
   - "**/desktop/src/main/window-registry.ts"
   - "**/desktop/src/main/pending-acquire.ts"
   - "**/desktop/src/renderer/session-drag-model.ts"
-  - "**/desktop/src/renderer/session-drag-image.ts"
   - "**/desktop/src/renderer/components/SessionStrip.tsx"
+  - "**/desktop/src/renderer/components/SessionDropZone.tsx"
 last_verified: 2026-09-04
 verify:
   - path: youcoded/desktop/src/renderer/session-drag-model.ts
@@ -25,65 +25,66 @@ verify:
     contains: "markInheritedByTransfer"
   - test: youcoded/desktop/tests/tearoff-handoff.test.ts
   - test: youcoded/desktop/tests/session-drag-model.test.ts
-  - test: youcoded/desktop/tests/session-strip-osdrag.test.tsx
+  - test: youcoded/desktop/tests/session-strip-htmldrag.test.tsx
 ---
 
 # Multi-window session detach
 
 ## Three window APIs return ZERO on Linux/Wayland
 
-`screen.getCursorScreenPoint()` → `{0,0}` forever (even with the pointer over the
-app's own focused window) · `win.getPosition()` → `[0,0]` for every window ·
-`win.setPosition()` → **a no-op that still reports success** · `window.screenX/Y`
-→ `0`. Measured on Electron 41.10.7 / KDE Plasma / Wayland, twice: July 2026
-(buddy floater) and 2026-09-03 (this subsystem). Wayland forbids a client from
-learning or setting where its windows are; it is not configurable, and XWayland
-(`--n=x11`) is rejected — it blurs the whole app at fractional scaling.
+`screen.getCursorScreenPoint()` → `{0,0}` forever · `win.getPosition()` → `[0,0]` ·
+`win.setPosition()` → **a no-op that still reports success** · `window.screenX/Y` →
+`0`. Measured on Electron 41.10.7 / KDE Plasma / Wayland, July 2026 and 2026-09-03.
+Wayland forbids it; XWayland is rejected (blurs the app at fractional scaling).
+**Never make a cross-window decision from a screen coordinate.** Re-measure with
+`node scripts/platform-probe.mjs`. Guard: `session-drag-model.test.ts`.
 
-**So: never make a cross-window decision from a screen coordinate.** Re-measure
-with `node scripts/platform-probe.mjs` before trusting any of them.
-Guard: `session-drag-model.test.ts`.
+## On Wayland the WHOLE gesture is a browser drag; everywhere else the pointer path
 
-## Only the CROSS-WINDOW half forks. The pointer path runs everywhere
+`chooseTearOffModel()` picks `'html-drag'` on Linux+Wayland, `'live-window'`
+elsewhere. On `'html-drag'` the pill is `draggable`: the browser starts a native
+drag from the press, the compositor carries it, and the drop arrives in the
+target window's own window-local coordinates. In-strip reorder is fed from the
+`dragover` stream (~190/s, working `clientX`) into the SAME slot logic as the
+pointer path, so #404's motion is intact. A finger never becomes a browser drag
+on Linux (measured, with and without `--touch-drag-drop`): touch reorders on the
+pointer path and moves sessions between windows through the pill's right-click /
+long-press menu. **Do not add a mid-gesture handoff back** — the only API for it
+is the wrong tool (next section). Guard: `session-strip-htmldrag.test.tsx`.
 
-`clientX` works perfectly on Wayland, and the strip's reorder motion uses it 16
-times. `chooseTearOffModel()` picks only what carries a pill OUT of its window:
-`'os-drag'` on Linux+Wayland (the compositor runs it from the moment the pill is
-60px clear of the strip) and `'live-window'` elsewhere (spawn a peer window
-mid-drag and move it under the cursor). An earlier draft disabled the whole
-pointer path on Wayland and would have flattened the motion to fix a
-cross-window problem. **Do not widen the fork.** Guard:
-`session-strip-osdrag.test.tsx` pins that pills are never HTML5-draggable — a
-draggable pill gets a browser-run drag at mouse-down and stops sending
-`pointermove`, so nothing could animate.
+## `webContents.startDrag` on Linux crops the picture to ~138px and carries only a file
 
-## A drop is REJECTED SILENTLY if it asks for the wrong effect
+Electron's limit, not the compositor's: `drag_util_views.cc` hands the icon to
+Chromium's LINK-drag helper (`button_drag_utils::SetDragImage`, max width 150),
+which crops to ~138px, rasterises at 1x, offers only copy/link (a target asking
+`'move'` gets no drop, silently) and paints the file's NAME beside a narrow icon.
+Read from v41.10.7 source on 2026-09-04, after a day measuring it as a Wayland
+limit. A page-started drag touches none of it. Guard: `session-drag-model.test.ts`
+pins that preload never exposes `startDrag`.
 
-`startDrag` drags a file, so the source offers `copy`. A target setting
-`dropEffect = 'move'` gets no drop event at all — `dragover` fires forever and
-nothing else happens, with no error anywhere. Three drags, zero drops, measured
-2026-09-04; it read exactly like "the compositor won't deliver drops". Do not
-"correct" this to `move` because a session is being moved. Guard:
-`session-strip-osdrag.test.tsx`.
+## The compositor carries an INVISIBLE picture; the strip draws the pill itself
 
-## The drag picture can never exceed 138 physical pixels wide
+1x1 transparent canvas as the drag image; the twin in the row, a carried ghost
+below it (document-level `dragover`). A pill snapshot with the twin off flattened
+the in-row animation — the dot-flow loop keys off the twin. Also: **hiding the
+source synchronously inside `dragstart` aborts the drag** (deferred a tick), and
+`dragleave` has no usable `relatedTarget` — "over the row" is a per-`dragover`
+hit-test. Depth: the handoff below.
 
-Measured four ways on KDE/Wayland (2026-09-04). The compositor draws the image at
-the size it REPORTS, one screen pixel per image pixel — ignoring the display's
-scale factor — and crops anything wider than 138px to 138, centred. Height is
-unbounded (355 came through whole). `nativeImage` honours `scaleFactor`, but that
-only shrinks the reported size, so it cannot buy width. Not the pill's width, and
-not proportional. A full-size card is only possible if a YouCoded window paints it
-itself on `dragover`, where window-local coordinates work.
+## Escape and "released over the desktop" are indistinguishable
+
+Both end with `dropEffect 'none'` and unusable coordinates (measured), so a
+release over nothing puts the pill BACK. A new window is made by dropping on the
+source window's own chat area (`SessionDropZone`: "Open in a new window"); in
+another window that surface says "Move here". Guard: `session-strip-htmldrag.test.tsx`.
 
 ## `webContents.send` into a window that has not mounted is DROPPED
 
 Not queued — measured. A tear-off hands the session to a `BrowserWindow` created
-one statement earlier, so the push landed before React could subscribe and the
-entire handoff silently did nothing. The renderer **pulls** on mount
-(`detach:claim-pending`); `PendingAcquireQueue.isReady` keeps push and pull
-exclusive so a payload is delivered exactly once. Same shape as
-`BUDDY_OVERLAY_READY`. Guard: `tearoff-handoff.test.ts`.
+one statement earlier, so the whole handoff silently did nothing. The renderer
+**pulls** on mount (`detach:claim-pending`); `PendingAcquireQueue.isReady` keeps
+push and pull exclusive so a payload arrives exactly once. Guard:
+`tearoff-handoff.test.ts`.
 
 ## A window that INHERITED a session reads its first page to EOF
 
@@ -93,14 +94,6 @@ window that was listening, false of one that just inherited the session.
 `WindowRegistry.markInheritedByTransfer` is the one-shot exemption. Without it a
 torn-off window showed history frozen at the moment the session was resumed.
 Guard: `tearoff-handoff.test.ts`.
-
-## The drag image carries no border and no shadow
-
-The compositor composites the drag surface's partly-transparent edge pixels
-differently than a page would: rounded corners survive, a 1px border on the curve
-and a soft outer shadow both fringe. Destin picked the clean treatment from five
-compared against a live drag. KWin draws the real border and shadow on drop, so
-nothing is lost. Do not add them back.
 
 Depth, including the full measurements:
 `docs/archive/investigations/2026-09-03-session-tearoff-history-and-wayland.md`

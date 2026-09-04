@@ -1,16 +1,15 @@
 ---
-title: Session drag between windows — everything measured, one decision left
+title: Session drag between windows — built, verified live, one branch to merge
 date: 2026-09-04
 status: active
-supersedes: docs/active/handoffs/2026-09-03-session-drag-START-HERE.md
+supersedes: docs/archive/handoffs/2026-09-03-session-drag-START-HERE.md
 ---
 
 # Read this first
 
-Three bugs in dragging a session pill between windows. **Two are fixed, tested and
-pushed. The third — what the drag LOOKS like on Wayland — is blocked on one decision
-from Destin, described at the bottom.** Everything below was measured on the real
-desktop, not assumed. Nothing here needs re-deriving.
+Dragging a session pill between windows on Linux/Wayland **works and Destin has
+verified it live** ("okay this looks good!!", 2026-09-04). Nothing is blocked on
+a decision any more. What is left is merging, and two small follow-ups.
 
 ---
 
@@ -18,197 +17,108 @@ desktop, not assumed. Nothing here needs re-deriving.
 
 | Thing | Where it stands |
 |---|---|
-| **History was wrong after a tear-off** | **FIXED.** PR [#409](https://github.com/itsdestin/youcoded/pull/409), branch `fix/tearoff-history`, head `b1d78c2d`. Rebuilt on today's master, CI green on Linux/macOS/Windows + Android, `MERGEABLE`. Not merged — Destin's call |
-| **Could not drag a pill back into a window on Wayland** | **FIXED and pushed**, branch `feat/session-drag-handoff`, head `39ee01e6`. `verify.sh` green. **No PR opened yet** (so no CI run yet) — opening one is Destin's call |
-| **What the drag looks like** | **BLOCKED on a decision.** The picture the compositor drags cannot exceed 138px wide. Three options at the bottom |
-| Workspace docs | The Wayland rule + `scripts/platform-probe.mjs` are on `youcoded-dev` branch `docs/tearoff-followups`. Investigation + 3 roadmap items already on `youcoded-dev` master |
+| History wrong after a tear-off | **FIXED.** PR [#409](https://github.com/itsdestin/youcoded/pull/409), `fix/tearoff-history`. CI green, `MERGEABLE`. Not merged — Destin's call |
+| Drag between windows on Wayland | **FIXED, verified live, pushed.** Branch `feat/session-drag-handoff`, head `8d88bd0d`. `verify.sh` green. **No PR yet** |
+| The drag picture | **No longer a decision.** The compositor carries nothing; the strip draws the pill itself (below) |
+| Workspace docs | This handoff, the `multi-window-detach` rule and `scripts/platform-probe.mjs` are on `youcoded-dev` branch `docs/session-drag-html-drag` (supersedes `docs/tearoff-followups`, which can be deleted) |
 
-**Worktrees in use:** `worktrees/fix-tearoff-history`, `worktrees/feat-session-drag`.
-A dev instance may still be running — `bash scripts/run-dev.sh feat/session-drag-handoff
---label "Wayland Drag"` started it; kill the Vite on port 5223 and its Electron when done.
-
----
-
-## 1. The history fix (done)
-
-Two independent causes, both found by probing, both now guarded by
-`desktop/tests/tearoff-handoff.test.ts`.
-
-**a. The handoff landed before anyone could hear it.** A tear-off hands the session to a
-`BrowserWindow` created one statement earlier, and `webContents.send` into a renderer
-whose React tree does not exist yet is **dropped, not queued** (measured on Electron
-41.10.7). So the whole handoff silently did nothing: no history, no "open on the session
-you dragged", no re-sent permission prompt. The new window now **pulls** on mount
-(`detach:claim-pending`); `PendingAcquireQueue.isReady` keeps push and pull exclusive so a
-payload arrives exactly once. Same shape as `BUDDY_OVERLAY_READY`.
-
-**b. The first page of history stopped in the wrong place.** `TRANSCRIPT_PAGE` normally
-stops at the transcript watcher's `startOffset`, because everything past that byte already
-reached the requester over the live stream — true of a window that was listening, false of
-one that just inherited the session. `WindowRegistry.markInheritedByTransfer` is a one-shot
-exemption: the inheriting window's first page reads to end of file.
+**Worktrees:** `worktrees/feat-session-drag`, `worktrees/fix-tearoff-history`. A dev
+instance was left running for Destin's review: `bash scripts/run-dev.sh
+feat/session-drag-handoff --label "Wayland Drag"` — kill the Vite on port 5223 and its
+Electron once the branch merges.
 
 ---
 
-## 2. Why the drag was broken (measured, do not re-litigate)
+## What was wrong with the previous design, and how it was found
 
-On this machine — Electron 41.10.7, KDE Plasma, Wayland — with the pointer actively moving
-over the app's own focused window. Re-runnable: `node scripts/platform-probe.mjs`.
+The 2026-09-03 handoff was blocked on "the compositor crops the drag picture to 138px".
+That was a misattribution. Electron's Linux `webContents.startDrag`
+(`shell/browser/ui/drag_util_views.cc`) hands the icon to Chromium's **link-drag**
+helper, `button_drag_utils::SetDragImage`, whose `kLinkDragImageMaxWidth = 150` is the
+cap (138 after the button's insets). The same helper rasterises at 1x, offers only
+`copy|link` (which is why a `'move'` drop was refused silently), and paints the file
+name beside any icon narrower than the cap. Read from the v41.10.7 source; every
+oddity measured the day before lines up with it.
 
-```
-screen.getCursorScreenPoint()  ->  {x:0, y:0}   every sample
-win.getPosition()              ->  [0, 0]       every window, whatever was requested
-win.setPosition(1200, 300)     ->  a no-op that STILL REPORTS SUCCESS
-window.screenX / screenY       ->  0            every window
-```
+A drag the **page** starts (`draggable` + `dragstart` + `setDragImage`) never touches
+that helper. Probed the same day with a two-window Electron app on this machine:
 
-Every cross-window step of the old drag resolves from one of those, so peer windows never
-highlighted, the torn-off window never followed the cursor, and the drop always resolved to
-"you dropped it on nothing" — which, with the correct Chrome-matching rule that a window's
-only session cannot be torn off, left the pill nowhere to go.
+| Question | Answer |
+|---|---|
+| Picture size | A 330 CSS px ruler came through whole, gridlines 60 screen px apart — **crisp at 1.5x** |
+| Payload | Arrived through `dataTransfer` under a private MIME type; no temp file |
+| `move` | Accepted (`dropEffect=move` on drop) |
+| Drops | Landed in both directions between the two windows |
+| In-strip reorder | The bar saw `dragover` at ~190/s with working `clientX` |
+| Escape vs release over desktop | **Indistinguishable**: both `dropEffect 'none'`, coordinates meaningless |
+| Touch | **Never starts a browser drag** on Linux, with or without `--touch-drag-drop` |
 
-**The distinction that matters:** window-local coordinates (`clientX`) work perfectly on
-Wayland. Only SCREEN coordinates are dead. So only the cross-window half needed replacing.
+The previous handoff's reason for rejecting a page-started drag — "it stops
+`pointermove`, so the in-strip motion dies" — was true but not decisive: the
+`dragover` stream carries the same window-local X, so the reorder can be fed from it.
 
-**A wrong turn worth not repeating:** the first draft disabled the whole pointer path on
-Wayland, which would have flattened #404's in-strip motion to fix a cross-window problem.
-Destin caught it ("pretty sure it was fine during testing" — he was right).
+## The design that shipped (`'html-drag'`, Linux/Wayland only)
 
----
+- The pill is `draggable`. `dragstart` writes the session id under
+  `application/x-youcoded-session`, sets `effectAllowed = 'move'`, and hands the
+  compositor a **1x1 transparent canvas** as the picture.
+- **The strip draws the pill in hand itself.** Inside the row: the twin, exactly as on
+  the pointer path — #404's motion untouched. Below the row: a *carried ghost* that
+  follows the cursor, placed from a document-level `dragover` listener with one style
+  write per event. The one place nothing is drawn is the bare desktop between two
+  windows, where a release does nothing anyway.
+- **Drop targets:** the strip (reorder for our own pill, adopt for another window's) and
+  the chat area (`SessionDropZone`): "Open in a new window" for our own pill, "Move
+  here" for another window's. Releasing over nothing, or pressing Escape, puts the pill
+  back. A window's only session cannot be torn off (Chrome's rule) — its zone is inert
+  and the menu item is disabled.
+- **Right-click / long-press a pill** → "Move to new window" and "Move to window N —
+  names". Works everywhere, by keyboard, and is the only cross-window route for touch.
+- Windows/macOS/X11 keep the live tear-off; pills are not draggable there.
 
-## 3. The drag that now works: "promote on exit"
+Main's only job is ownership: `SESSION_DRAG_ADOPT` from the receiving window, source
+resolved from the `WindowRegistry`. `SESSION_DRAG_HANDOFF`, the temp file,
+`session-drag-image.ts` and the card plumbing are gone.
 
-The pointer path still runs inside the strip, untouched, so the motion from #404 is intact.
-When the pill is pulled 60px clear of the strip, the gesture is handed to the **compositor**.
+### Three things that each cost a round, so nobody repeats them
 
-- `SessionStrip` → `detach.dragHandoff({sessionId, icon})` at the existing tear-off
-  threshold (`session-drag-model.ts` picks `os-drag` only on Linux+Wayland).
-- Main calls `webContents.startDrag({file, icon})`. **That call returns when the whole drag
-  ends**, which is the completion signal.
-- The destination window gets `dragover`/`drop` in its own window-local coordinates and
-  sends `detach.dragAdopt({sessionId})`. Main resolves the SOURCE from the
-  `WindowRegistry`, never from the payload, so a forged drop cannot move someone else's
-  session.
-- Released over nothing → main tears off into a new window, unless the source owns only
-  that one session (Chrome's rule; the guard lives in main, not the strip, so a lone
-  session can still be dropped INTO another window — that was the original complaint).
-
-### Three things measured before writing any of it
-
-1. **A gesture cannot be promoted from inside the page.** Setting `draggable=true`
-   mid-drag never fires `dragstart`; the browser decides at mouse-down. `startDrag` is the
-   only API that can begin a drag mid-gesture.
-2. **`startDrag` drags FILES**, with no way to attach a payload, so the session id rides on
-   a temp file's NAME and is read back from `dataTransfer.files[0].name`. Dropping the pill
-   on a file manager therefore leaves a small empty `.ycsession` file — accepted cost.
-3. **The receiving window must accept the drop as a `copy`.** A file drag offers `copy`;
-   asking for `move` makes Chromium reject the drop **silently** — `dragover` fires forever
-   and `drop` never arrives. Three drags, zero drops, no error anywhere. It read exactly
-   like "the compositor won't deliver drops" and nearly sank the design. **Do not "correct"
-   this to `move` because a session is being moved.**
-
-Also: the source window gets `lostpointercapture` the instant the OS takes over and
-`pointerup` only when the drag ends, so the strip tears its drag state down explicitly at
-handoff (`handoffCleanup`). Without that a ghost pill is left stranded on screen.
+1. **Hiding the source synchronously inside `dragstart` aborts the drag.** Recorded in
+   the dev window: `dragend` 12ms after `dragstart`, pointer still, every time. The
+   in-slot hide (`dragActive`) is deferred by a tick.
+2. **A snapshot of the pill as the compositor's picture, with the twin off, flattens the
+   in-row animation** — the loop that flows the dots around the pill keys off the twin.
+   Hence the invisible picture and the strip drawing the pill itself.
+3. **`dragenter`/`dragleave` carry no usable `relatedTarget`** in Chromium, so "over the
+   row" is a hit-test per `dragover`, never an enter/leave count.
 
 ### Guards
 
-- `desktop/tests/session-drag-model.test.ts` — platform matrix, the file-name payload round
-  trip, and that preload reports facts rather than deciding.
-- `desktop/tests/session-strip-osdrag.test.tsx` — adopt vs ignore a real file drop, the
-  copy-vs-move drop effect, that pills are never HTML5-draggable (which is what keeps the
-  motion's `pointermove`), and that Windows is untouched.
-
-What jsdom cannot prove — that the compositor delivers a drag between two real windows —
-was measured directly instead: drops in both directions, session id intact.
+- `desktop/tests/session-drag-model.test.ts` — platform fork, MIME payload round trip,
+  preload reports facts and never exposes `startDrag`.
+- `desktop/tests/session-strip-htmldrag.test.tsx` — pills draggable on Wayland and not on
+  Windows; dragstart payload + `move`; adopt vs reorder vs foreign file; `dragend` never
+  opens a window; the pill menu's entries and its lone-session refusal.
 
 ---
 
-## 4. The drag PICTURE: a hard 138px ceiling
+## Still open
 
-Destin's report: "the dragged session window is rendering weird in a tall narrow truncated
-box thing." It was the approved 330px card, cropped.
+- **Open a PR for `feat/session-drag-handoff`** and merge after #409. Then close the two
+  `docs/roadmap/user-interface.md` items this branch resolves (drop on another window's
+  chat; no menu command) and archive this handoff.
+- **A pill dragged into ANOTHER window shows nothing under the cursor there** until it is
+  dropped — that window cannot read the payload mid-drag. Fix: main relays
+  `{sessionId, name, color}` to peer windows on drag start so the target can draw the
+  carried ghost too. Small; filed in `docs/roadmap/user-interface.md`.
+- **Long-press → menu on the touchscreen** is wired through Chromium's `contextmenu` on
+  long-press but was not exercised live yet.
+- **Merge `docs/session-drag-html-drag`** on `youcoded-dev` after the code lands (its rule
+  anchors name files that exist only on the branch); delete `docs/tearoff-followups`.
 
-Measured three ways, all on the real desktop:
+## Reproducing the probes
 
-| Round | Picture handed over | What appeared on screen |
-|---|---|---|
-| The app's card | 651 × 355 px | 138 × 354 — centre slice, full height |
-| Ruler, wide | 600 × 300 px | 138 wide — centre slice |
-| Ruler, narrow | 150 × 300 px | 150 → cut to 138; both edge stripes still visible |
-| Ruler, wide, tagged `scaleFactor: 5` | 600 × 300 px, **reports 120 × 60** | **120 × 60, complete** |
-
-**Conclusions, all three consistent:**
-
-- The drag picture is drawn at the size the image **reports**, one screen pixel per image
-  pixel — the Wayland drag path ignores the 1.5× display scale entirely, which is also why
-  it looks small next to everything else.
-- Report more than **138px wide** and it is cropped to 138, centred. Height is unbounded
-  (355 came through whole).
-- `nativeImage` honours `scaleFactor` (600px tagged 5 reports 120), but that only SHRINKS
-  the reported size, so it cannot buy width. **There is no workaround at this layer.**
-
-Not the cause, ruled out: it is not the pill's width (131 CSS px, a different number in
-different units), and it is not proportional (the 150px picture kept 92% of itself).
-
-### The workaround that does exist
-
-The system only draws that one picture — it does not stop the app drawing. Once the cursor
-is inside a YouCoded window, that window receives `dragover` with working window-local
-coordinates (hundreds per second, measured), so **it can paint the full-size card itself,
-with no size limit.**
-
-Plumbing it needs: the receiving window does not know WHICH session is in flight — the
-desktop withholds the payload until drop — so main must broadcast `{sessionId, name,
-color, messages}` to every window when the handoff starts. `SESSION_DRAG_STARTED` already
-exists to extend.
-
----
-
-## 5. THE DECISION (this is what a new session should start with)
-
-Candidates rendered at true size:
-`docs/active/handoffs/images/2026-09-04-drag-picture-candidates.png`
-(regenerate from the `.html` beside it: `node scripts/ui-probe.mjs "file://<path>.html" --size 780x360 --shot <out>.png`).
-
-1. **Hybrid** — the app paints the full 330px card whenever the drag is over one of its
-   windows; a small 138px chip elsewhere. Best result where it matters. Cost: the picture
-   changes size as you cross a window edge, because two different things draw it.
-2. **Hybrid, nothing outside** — full card inside the app, bare cursor over the desktop.
-   No size-change seam, but dragging to empty desktop to make a new window gives no
-   feedback at all.
-3. **Small chip only** — one of A (name + dot, 138×40), B (mini window with messages,
-   138×150) or C (mini window, name only, 138×84). Least work, consistent everywhere,
-   permanently small. B is the closest to what Destin approved on 2026-09-03.
-
-Whatever is chosen, `SessionDragPreview.tsx` (the React component from commit `5307b3cd`)
-is dead — `startDrag` takes a bitmap and there is no `dragstart` to snapshot a DOM node
-from. The current painter is `desktop/src/renderer/session-drag-image.ts` (canvas, theme
-tokens, no border and no shadow — both fringe against the compositor's compositing of
-partly-transparent edges; Destin picked that treatment from five).
-
----
-
-## 6. Still open, beyond the decision
-
-- **Open a PR for `feat/session-drag-handoff`** — nothing has run CI on it yet.
-- **Right-click a pill → "Move to new window" / "Move to → window N".** Roughly half an
-  hour, cannot fail on any platform, works by keyboard, and it is the only escape when a
-  drag breaks. Filed in `docs/roadmap/user-interface.md`.
-- **The drop target is the session bar only**, so releasing over another window's chat area
-  makes a THIRD window instead of moving it there. Also filed.
-- **Merge `docs/tearoff-followups`** (the Wayland rule + probe script) after #409 lands —
-  its anchors name files that only exist on that branch, so it is red until then.
-- **Do not copy this work's `docs/MAP.md` rows over.** Master gained a pills hot-path row
-  and one for #404's `header/drag-order.ts`; re-derive against today's MAP.
-
-## 7. Reproducing the probes
-
-`scratchpad/handoff/` in session `a3186e5c` holds the two-window drag probe (`main.js`,
-`page.html`, `preload.js`, `package.json`) — run with
-`youcoded/desktop/node_modules/.bin/electron main.js`. It logs every event to `probe2.log`
-so nobody has to read results off the screen. `scratchpad/sfprobe/` is the windowless
-`nativeImage` scale-factor test. Both are trivially rebuilt from the descriptions above.
-
-**A trap that cost a round:** an inline `<script>` with no closing `</script>` does not
-execute at all in Chrome. The probe page looked fine and did nothing.
+`scratchpad/html5probe/` in session `2647deca` (`main.js`, `page.html`, `preload.js`):
+two windows, a draggable pill with a 330px ruler picture, every event to `probe3.log`.
+Run with `youcoded/desktop/node_modules/.bin/electron --ozone-platform=wayland main.js`.
+`scratchpad/cdp.mjs` there is a dependency-free CDP eval (`node cdp.mjs <ws-url> '<js>'`)
+— `scripts/cdp-eval.mjs` needs the `ws` package and cannot run from the workspace root.

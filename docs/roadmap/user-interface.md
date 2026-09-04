@@ -13,6 +13,13 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       a session that is already open in the wrong window can only be rescued with the mouse
       `window-chrome` `desktop` `confirmed` `checked 2026-09-03`
 
+- [ ] While a session pill is being dragged from one window into another, nothing follows the cursor
+      inside the SECOND window until it is dropped — the bar and chat area light up, but the pill
+      itself is only drawn by the window it came from. The receiving window cannot read what is
+      being dragged until the drop. Fix: main tells every other window the name and colour when
+      the drag starts, so it can draw the carried pill too
+      `window-chrome` `desktop` `confirmed` `checked 2026-09-04`
+
 - [ ] Dictation is not built into the message box — speaking a message means OS-level dictation
       glued on top, which does not punctuate. Wanted: a mic in the input bar that produces properly
       punctuated, readable text the way a phone keyboard's voice input does, with live partial
