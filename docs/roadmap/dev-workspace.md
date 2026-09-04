@@ -179,6 +179,14 @@ seen-on is always n/a here.
 
 ## knowledge
 
+- [ ] The "About This Project" and git-habits paragraphs in this repo's CLAUDE.md now say the same
+      thing as Destin's global rules file, which every session on his machines loads on its own
+      since 2026-09-03. Replace them with the short "About the owner" block from the brain plan
+      (additive, so cloud sessions and public clones without the brain still get the two lines
+      that matter), and swap the memory notes the brain now carries (laptop hardware, Destin's
+      preferences) for one pointer line each. Waits for the desktop to pull the brain first
+      `n/a` `blocked` `checked 2026-09-03`
+
 - [ ] Path-scoped rules never reach a session that edits through the Bash tool, which is what
       bypass-permissions mode tells sessions to do. Measured on 2026-09-03 (session
       43f47281): ~200 lines were changed under `desktop/src/renderer/components/project-view/`,
