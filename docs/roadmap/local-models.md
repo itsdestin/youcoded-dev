@@ -27,12 +27,15 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
 - [ ] Local models rewrite files at a crawl — an edit-style reply that the engine can produce at
       ~100 tokens a second comes out at ~16, because the engine's built-in draft-free speculative
       decoding is switched off. Measured 6× on a rewrite, no change on prose (2026-09-04).
-      `desktop` `confirmed` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+      Flag added on branch `feat/engine-speed-flags` (youcoded), probes green, awaiting merge.
+      `desktop` `in-flight` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
 
 - [ ] Long conversations slow down more than they need to and eat memory — the context cache is
       stored at full size; compressing it (q8) measured +40% generation speed at 16k of context
       and halves the memory the context needs. Same fix feeds the memory-crash item above.
-      `desktop` `confirmed` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+      Key-cache half added on branch `feat/engine-speed-flags` (youcoded); the value-cache half
+      is a fatal load error without flash attention, so it stays a decision for Destin.
+      `desktop` `in-flight` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
 
 - [ ] The memory warning charges a flat 2 GB of "working memory" for every model at every context
       length, but a 128k context on a 27B model needs up to ~32 GB of it — so the warning is wrong
