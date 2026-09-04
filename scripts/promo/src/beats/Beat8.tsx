@@ -64,8 +64,8 @@ export const beat8: BeatModule = { id: 'b8', slug: 'devils-garden', home: P, Com
     A.startle(PM('dialog') + 2), A.look(PM('dialog') + 2, 4, 0.6, 0.5),                  // "whoa — it's asking to take over"
     A.point(PM('dialog') + 20, 'R', 0.7), A.face(PM('dialog') + 20, 'curious'),
     A.nod(PM('takeover', 'end')), A.face(PM('takeover', 'end'), 'welcome'),               // "yes, take over"
-    A.tada(PM('chat', 'end') + 4, 'R'), A.rest(PM('chat', 'end') + 40),
+    A.tada(PM('chat', 'end') + 4, 'R'), A.face(PM('chat', 'end') + 4, 'happy'), A.face(PM('chat', 'end') + 30, 'welcome'), A.rest(PM('chat', 'end') + 40),
     A.look(T_FILES - 24, 8, 0.5, 0.5), A.hop(T_FILES - 16, 26, ON_PHONE.x, ON_PHONE.y, 90), A.to(T_FILES - 16, 26, 'size', 96),   // onto the phone for the files
-    A.cheer(T_FILES + 12, 30), A.face(T_FILES + 12, 'welcome'), A.blink(T_FILES + 50),
+    A.cheer(T_FILES + 12, 30), A.face(T_FILES + 12, 'happy'), A.face(T_FILES + 44, 'welcome'), A.blink(T_FILES + 50),
   ],
   bubbles: [{ at: T1 + 36, until: PM('dialog') - 6, text: CAPTIONS.b8.sub, slug: 'devils-garden', side: 'L' }] };   // once it has reached the phone

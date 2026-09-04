@@ -5,7 +5,7 @@ import { THEMES, rigFor, companionsFor, inkFor, type Slug } from '../themes';
 import { evaluate, type Action, type HostState } from './engine';
 import { withFaces, type FaceStyle } from './faces';
 
-const FACES: Face[] = ['idle', 'welcome', 'curious', 'shocked', 'dizzy'];
+const FACES: Face[] = ['idle', 'welcome', 'curious', 'shocked', 'dizzy', 'happy'];
 const DEFAULT_RIG_SLUGS: Slug[] = ['midnight', 'creme', 'light', 'meadow-mist', 'devils-garden', 'cotton-candy-sky', 'golden-sunbreak'];
 
 /** One rig, posed from a HostState. `scope` keeps its style rules from leaking into another rig on screen. */
@@ -58,7 +58,8 @@ const Poof: React.FC<{ at: number; cx: number; cy: number; color: string; size: 
  * shadow that shrinks when it is in the air, the theme's companions trailing
  * it, and a poof on costume changes. `base` sets where it starts.
  */
-export const Host: React.FC<{ actions: Action[]; base: HostState; faceStyle?: FaceStyle }> = ({ actions, base, faceStyle = 'classic' }) => {
+// 'warm' is the film's face set since 2026-09-04 (faces.ts): the welcome eyes on every expression.
+export const Host: React.FC<{ actions: Action[]; base: HostState; faceStyle?: FaceStyle }> = ({ actions, base, faceStyle = 'warm' }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = evaluate(actions, base, f);

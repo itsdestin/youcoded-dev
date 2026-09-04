@@ -34,6 +34,6 @@ export const beat4: BeatModule = { id: 'b4', slug: 'creme', home: P, Component: 
     A.nod(M('pick', 'end')), A.face(M('pick', 'end'), 'welcome'), A.rest(M('pick', 'end') + 16),
     A.walk(M('chip2') + 8, 26, P.x, 4), A.look(M('chip2') + 8, 10, 0, 0.3),
     A.tapFoot(M('sent') - 30, 34), A.look(M('sent') - 30, 8, 0.2, 0.5),                            // waits on the answer
-    A.cheer(M('reply') - 8, 24), A.face(M('reply') - 8, 'welcome'), A.blink(M('reply') + 30),   // early enough to finish before the cut
+    A.cheer(M('reply') - 8, 24), A.face(M('reply') - 8, 'happy'), A.face(M('reply') + 18, 'welcome'), A.blink(M('reply') + 30),   // early enough to finish before the cut
   ],
   bubbles: [{ at: M('list') + 10, until: M('chip2') + 4, text: CAPTIONS.b4.sub, slug: 'creme' }] };   // gone before it walks back

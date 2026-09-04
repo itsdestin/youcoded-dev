@@ -4,7 +4,7 @@
 // outward is negative. PIVOT values are the rigs' own data-pivot attributes, in
 // viewBox units — the same numbers MascotRig reads at runtime, and identical
 // across the default rig and every theme rig (checked 2026-09-03).
-export type Face = 'idle' | 'welcome' | 'curious' | 'shocked' | 'dizzy';
+export type Face = 'idle' | 'welcome' | 'curious' | 'shocked' | 'dizzy' | 'happy';   // happy: the warm set only (closed happy eyes, big smile)
 export type Pose = 'idle' | 'welcome' | 'curious' | 'shocked' | 'peek' | 'tuck' | 'cheer';
 export const PIVOT = { 'rig-arm-left': '2.5px 9px', 'rig-arm-right': '21.5px 9px', 'rig-leg-left': '8.95px 17px', 'rig-leg-right': '15.05px 17px' } as const;
 export const POSES: Record<Pose, { arms: [number, number]; legs: [number, number]; face: Face; wave?: boolean }> = {

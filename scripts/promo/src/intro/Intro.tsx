@@ -157,7 +157,7 @@ export const IntroVisuals: React.FC<{ windowFile?: string }> = ({ windowFile = '
     <Sfx at={IMPACT + barFrame(1) + 18} name="pop" volume={0.4} />
   </AbsoluteFill>
 );
-export const Intro: React.FC<{ faceStyle?: FaceStyle; windowFile?: string }> = ({ faceStyle = 'classic', windowFile = 'promo-idle-cotton' }) => (
+export const Intro: React.FC<{ faceStyle?: FaceStyle; windowFile?: string }> = ({ faceStyle = 'warm', windowFile = 'promo-idle-cotton' }) => (
   <AbsoluteFill style={{ background: '#000' }}>
     <Sequence from={IMPACT}><Audio src={staticFile('promo.wav')} /></Sequence>
     {/* the film's backdrop, as Promo.tsx draws it: black through the prelude, Cotton Candy under the burst and after it
