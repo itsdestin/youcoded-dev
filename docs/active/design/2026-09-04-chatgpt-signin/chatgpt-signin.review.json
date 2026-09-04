@@ -1,0 +1,185 @@
+{
+  "title": "Sign in with ChatGPT — the screens",
+  "key": "chatgpt-signin-review",
+  "out": "chatgpt-signin.review.html",
+  "images": "images/chatgpt-signin-review",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/b92ad69f-fec4-4d93-8bac-d36fee6847a0/scratchpad/review/before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/b92ad69f-fec4-4d93-8bac-d36fee6847a0/scratchpad/review/after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "providers-out": [
+      "chatgpt-signin",
+      "providers-chatgpt-signed-out",
+      "440x600+500+150"
+    ],
+    "providers-in": [
+      "chatgpt-signin",
+      "providers-chatgpt-signed-in",
+      "440x600+500+150"
+    ],
+    "providers-waiting": [
+      "chatgpt-signin",
+      "providers-chatgpt-waiting",
+      "440x600+500+150"
+    ],
+    "providers-blocked": [
+      "chatgpt-signin",
+      "providers-chatgpt-blocked",
+      "440x600+500+150"
+    ],
+    "first-run": [
+      "chatgpt-signin",
+      "first-run-sign-in",
+      "560x500+440+180"
+    ],
+    "first-run-waiting": [
+      "chatgpt-signin",
+      "first-run-chatgpt-waiting",
+      "700x320+370+280"
+    ],
+    "status-bar": [
+      "chatgpt-signin",
+      "chatgpt-session",
+      "760x48+0+852"
+    ],
+    "usage-card": [
+      "chatgpt-signin",
+      "chatgpt-usage-card",
+      "520x260+10+540"
+    ],
+    "plan-limit": [
+      "chatgpt-signin",
+      "chatgpt-plan-limit",
+      "760x140+10+660"
+    ],
+    "picker": [
+      "chatgpt-signin",
+      "chatgpt-model-picker",
+      "440x400+500+370"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers → ChatGPT",
+      "crop": "providers-out",
+      "headline": "A ChatGPT section sits between Claude Code and OpenRouter, with a Sign in button instead of a key box.",
+      "changed": "New section. The row says Not signed in, one line under it says what you get (your plan's models, in YouCoded's assistant) and that the button opens chatgpt.com. The (i) beside the heading explains it, including the honest sentence you chose on the questions deck: OpenAI welcomes this publicly but has not put it in writing.",
+      "notice": "The window's opening sentence now names a ChatGPT plan among the alternatives, and the Settings row under Model Providers reads Claude Code, ChatGPT, OpenRouter, local models.",
+      "risk": "The section pushes OpenRouter and Local Models further down; anyone used to their old positions scrolls once more.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-2",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers → ChatGPT, after signing in",
+      "crop": "providers-in",
+      "headline": "Signed in, the row shows who and which plan, a Sign out button, and how much of the plan's windows are used.",
+      "changed": "The status line turns green: Signed in as your email · ChatGPT Plus. The button becomes an outlined Sign out. One small line under it: Plan usage: 34% of the 5-hour window (with the time it resets) · 12% of the week.",
+      "notice": "The plan name comes from OpenAI at sign-in and is shown as they name it, so Pro or Team users see their own plan, not a guess.",
+      "risk": "The email is shown in full in a window that can be on screen when someone else is looking; the same is true of the account row today.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-3",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers → ChatGPT, mid sign-in",
+      "crop": "providers-waiting",
+      "headline": "While the browser tab is open, the row waits with a spinner and a Cancel, and tells you to come back.",
+      "changed": "Pressing Sign in opens chatgpt.com in your browser. Until OpenAI sends you back, the row reads Waiting for you to finish in the browser… with a Cancel beside it and one line saying to sign in in the tab that opened.",
+      "notice": "Nothing in the window is blocked while it waits. Cancel puts the row back to Not signed in.",
+      "risk": "If the browser tab is closed without finishing, the row waits until you press Cancel; there is no timeout in this design.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-4",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers → ChatGPT, when OpenAI refuses",
+      "crop": "providers-blocked",
+      "headline": "If sign-in works but OpenAI refuses to serve the account, the row says so in OpenAI's own words.",
+      "changed": "A red status line: Signed in as your email — then the reason OpenAI gave, for example a workspace admin turning it off. Sign out is the only button; there is nothing to retry from here.",
+      "notice": "This is the state the honesty note promises: if OpenAI ever turns this off for apps like ours, this row says so instead of every conversation failing with a puzzle.",
+      "risk": "The reason text is OpenAI's, so its length and wording are not ours to tidy; a long one wraps to three lines.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-5",
+      "surface": "First-run screen",
+      "path": "First run → sign in",
+      "crop": "first-run",
+      "headline": "The sign-in card offers Log in with ChatGPT beside Log in with Claude, and its sentence names both plans.",
+      "changed": "The sentence reads Sign in with your Claude or ChatGPT plan — no API key or credit card needed. Two buttons side by side: the Claude one filled, the ChatGPT one outlined. The line above the progress bar now says Claude or ChatGPT account.",
+      "notice": "A new user with only a ChatGPT plan finishes setup here instead of pressing Skip setup and hunting through Settings. Their conversations then run on YouCoded's own assistant with ChatGPT's models, not on Claude Code.",
+      "risk": "Claude stays the filled button because Claude Code is the default engine; a ChatGPT user may read the outlined one as second-class.",
+      "highlight": {
+        "selector": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Log in with Claude')?.parentElement"
+      }
+    },
+    {
+      "id": "P-6",
+      "surface": "First-run screen",
+      "path": "First run → sign in → ChatGPT",
+      "crop": "first-run-waiting",
+      "headline": "After pressing Log in with ChatGPT, the card is replaced by a waiting line that names ChatGPT.",
+      "changed": "A browser window should have opened. Finish signing in to ChatGPT there… — the same shape the Claude sign-in uses today, with ChatGPT named so the two round-trips are not confused.",
+      "notice": "Same spinner, same place, same Skip link underneath.",
+      "risk": "Like the Claude sign-in today there is no Cancel on this screen; closing the tab leaves it waiting until the main process times out.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-7",
+      "surface": "Status bar",
+      "path": "Any conversation on a ChatGPT model → status bar",
+      "crop": "status-bar",
+      "headline": "In a conversation on a ChatGPT model, the 5-hour and 7-day chips come back, showing the ChatGPT plan's windows.",
+      "changed": "Two chips: 5h: 34% and 7d: 12%, each with its reset time — the same two the bar shows for a Claude plan in a Claude Code conversation. Clicking one opens Model Providers, where the plan row is.",
+      "notice": "Before, a conversation on YouCoded's own assistant showed no plan chips at all, because only Claude Code had a plan to show. On OpenRouter or a local model they stay hidden, as today.",
+      "risk": "The bar is one chip wider on these conversations; at phone width the reset times drop first, as they already do.",
+      "highlight": {
+        "selector": "js:document.querySelector(\"[title*='click to change model']\")?.parentElement"
+      }
+    },
+    {
+      "id": "P-8",
+      "surface": "Chat view",
+      "path": "Any conversation on a ChatGPT model → type /usage",
+      "crop": "usage-card",
+      "headline": "The /usage card shows the ChatGPT plan's two windows and says it measures the whole plan.",
+      "changed": "The two bars, 5-hour limit and 7-day limit, with their reset times, then the line Measured across your whole ChatGPT plan, not just this conversation. On a Claude plan the same card still says Claude account.",
+      "notice": "Same card, same bars, one word changed in the note — so there is nothing new to learn.",
+      "risk": "The card's heading still says Session usage while the bars are plan-wide; that is true today for Claude as well.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-9",
+      "surface": "Chat view",
+      "path": "A ChatGPT conversation when the plan's window is used up",
+      "crop": "plan-limit",
+      "headline": "When the plan runs out, the turn stops with the reset time and one button to carry on with another provider.",
+      "changed": "A red bubble: Your ChatGPT plan's 5-hour limit is used up. It resets at 6:43 PM. Under it, one button — Continue with Claude Sonnet 4.6 on OpenRouter — with the words That provider bills per use beside it, before you tap. A local model would say Runs on this computer, nothing to pay.",
+      "notice": "Tapping the button switches this conversation to that model; the chip in the status bar changes so you can see it. Your messages and the reply so far stay. If nothing else is connected, only the reset time shows.",
+      "risk": "The button picks the first other connected provider's first model, not your favourite; you can still open the model picker and choose differently.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-10",
+      "surface": "Model picker",
+      "path": "Status bar → model chip → search gpt",
+      "crop": "picker",
+      "headline": "The plan's models appear in the picker under ChatGPT, labelled the way OpenAI names them.",
+      "changed": "Four rows — GPT-5.6 Sol, GPT-5.6 Terra, GPT-5.6 Luna, GPT-5.5 — each marked · ChatGPT, beside the GPT-5 that OpenRouter already offered. The list is whatever the signed-in plan allows, so a new model appears the day OpenAI ships it.",
+      "notice": "The green OpenAI mark on each row is the same one those models already wear elsewhere. The current one is highlighted, as always.",
+      "risk": "Two providers can offer the same model (GPT-5 on OpenRouter, GPT-5.5 on ChatGPT); the provider name after the dot is the only thing telling them apart.",
+      "highlight": {
+        "selector": "[role=dialog]"
+      }
+    }
+  ]
+}
