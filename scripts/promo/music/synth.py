@@ -184,6 +184,15 @@ def hat(open_=False):
     return onepole_hp(noise(n), 7000) * exp_decay(n, 0.09 if open_ else 0.014) * 0.5
 
 
+def crash(length=1.0):
+    """A crash-like noise burst for the promo's opening impact: bright filtered noise that rings
+    for ~a second. Not a real cymbal — the same white-noise-through-a-highpass recipe as hat(),
+    just longer, with a slower decay and a touch of lowpass so it does not fizz."""
+    n = secs(length)
+    x = onepole_hp(noise(n), 4500) * exp_decay(n, 0.28)
+    return onepole_lp(x, 12000, 1) * 0.6
+
+
 def rim():
     n = secs(0.05)
     return (sine(900, n) * 0.5 + onepole_hp(noise(n), 2500) * 0.5) * exp_decay(n, 0.008)
@@ -277,6 +286,37 @@ def sfx_chime():
         out += sine(midi(m), n) * exp_decay(n, 0.35 - 0.05 * i) * (0.6 - 0.12 * i)
         out += sine(midi(m) * 2, n) * exp_decay(n, 0.12) * 0.12
     return reverb(soft_clip(out, 1.1), 0.9, 0.3, 0.35) * 0.8
+
+
+def sfx_punch():
+    """The mascot's punch on the wordmark, 250 ms: a low thud (a fast 140 → 45 Hz sine drop, like a
+    kick with more body) plus a bright click on the first 6 ms so it reads on a laptop speaker
+    that cannot reproduce the thud."""
+    n = secs(0.25)
+    f = 45 + 95 * np.exp(-np.arange(n) / (0.03 * SR))
+    thud = sine(f, n) * exp_decay(n, 0.07)
+    click = onepole_hp(noise(secs(0.006)), 2500) * exp_decay(secs(0.006), 0.002) * 0.9
+    thud[:len(click)] += click
+    return soft_clip(thud, 1.5) * 0.85
+
+
+def sfx_poof():
+    """A costume-change puff, 350 ms: noise through a lowpass that opens fast and closes slowly
+    (bright at the front, dull at the tail), soft attack so it feels airy rather than hit."""
+    n = secs(0.35)
+    t = np.linspace(0, 1, n)
+    cutoff = 300 + 2600 * np.exp(-t * 4)                 # bright on the burst, dull by the tail
+    e = np.minimum(t / 0.06, 1.0) * np.exp(-t * 5)       # 20 ms fade-in, then a long-ish decay
+    return onepole_hp(onepole_lp(noise(n), cutoff, 2), 250) * e * 0.9
+
+
+def sfx_step():
+    """A footstep, 80 ms: a tiny dull noise tap (lowpassed, gone in ~15 ms) over a faint 150 Hz
+    thump. Quiet by design — the video plays several in a row."""
+    n = secs(0.08)
+    tap = onepole_lp(noise(n), 900, 2) * exp_decay(n, 0.012)
+    thump = sine(150, n) * exp_decay(n, 0.02) * 0.5
+    return soft_clip(tap * 1.5 + thump, 1.2) * 0.7
 
 
 # ---------- mixing ----------
