@@ -2,6 +2,9 @@
 # Final render + loudness normalisation. Usage: bash scripts/promo/render.sh [draft]
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"; cd "$HERE"
+# jq parses the loudnorm measurement below. Fail here with a name rather than
+# 40 lines later with "jq: command not found" in the middle of a render.
+command -v jq >/dev/null || { echo "render.sh needs jq" >&2; exit 1; }
 if [[ "${1:-}" == "draft" ]]; then npm run render:draft; exit; fi
 npm run render
 # Fix: npm run render can exit 0 while still failing to produce the output (e.g. Remotion
@@ -20,5 +23,8 @@ I=$(jq -r .input_i <<<"$M"); TP=$(jq -r .input_tp <<<"$M"); LRA=$(jq -r .input_l
 echo "render.sh: measured input loudness I=$I LUFS (target -14)"
 ffmpeg -y -hide_banner -loglevel error -i out/promo-video.mp4 -c:v copy -af "loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=$I:measured_TP=$TP:measured_LRA=$LRA:measured_thresh=$TH:linear=true" -c:a aac -b:a 192k out/youcoded-promo.mp4
 ffmpeg -y -hide_banner -loglevel error -i out/youcoded-promo.mp4 -an -c:v copy out/youcoded-promo-silent.mp4
-ffmpeg -hide_banner -i out/youcoded-promo.mp4 -af ebur128 -f null - 2>&1 | grep -E "I:|LRA:" | tail -2
+# `|| true`: this line only PRINTS the finished loudness. Under `set -o pipefail`
+# a pipeline whose grep matches nothing (or whose head/tail closes the pipe early)
+# exits non-zero and would fail the script AFTER both outputs already exist.
+ffmpeg -hide_banner -i out/youcoded-promo.mp4 -af ebur128 -f null - 2>&1 | grep -E "I:|LRA:" | tail -2 || true
 ls -la out/youcoded-promo.mp4 out/youcoded-promo-silent.mp4

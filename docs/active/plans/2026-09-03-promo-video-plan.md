@@ -81,7 +81,7 @@ Task order: 1 → 2 (workspace, independent of each other) · 3 → 4 → 5 (you
 - Create: `scripts/promo/music/test_song.py`
 
 **Interfaces:**
-- Produces: `python3 song.py promo <out.wav>` → writes `<out>.wav`, `<out>.grid.json` (shape `{bpm, bars, bar_seconds, beat_seconds, beats:[{bar,beat,t}], sections:[{name,bar,t}]}`), and `<dir>/sfx-pop.wav`, `<dir>/sfx-whoosh.wav`, `<dir>/sfx-chime.wav` beside it. Section names, in order: `intro, drop1, groove, hook, break, build, groove2, drop2, outro, end` at bars `0, 2, 6, 10, 14, 16, 18, 23, 29, 33`.
+- Produces: `python3 song.py promo <out.wav>` → writes `<out>.wav`, `<out>.grid.json` (shape `{bpm, bars, bar_seconds, beat_seconds, beats:[{bar,beat,t}], sections:[{name,bar,t}]}`), and `<dir>/sfx-pop.wav`, `<dir>/sfx-whoosh.wav`, `<dir>/sfx-chime.wav` beside it. Section names, in order: `intro, drop1, groove, hook, break, build, groove2, drop2, outro, end` at bars `0, 2, 5, 8, 14, 16, 18, 23, 29, 33` (re-planned 2026-09-03 for the games and conversations beats; the spec's Music table is the authority).
 
 - [ ] **Step 1: Write the failing test**
 

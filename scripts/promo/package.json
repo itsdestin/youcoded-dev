@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "studio": "remotion studio src/index.ts",
-    "still:layout": "remotion still src/index.ts Layout out/layout.png --browser-executable /usr/bin/google-chrome-stable",
+    
     "render:draft": "remotion render src/index.ts Promo out/draft.mp4 --scale 0.5 --browser-executable /usr/bin/google-chrome-stable",
     "render": "remotion render src/index.ts Promo out/promo-video.mp4 --codec h264 --crf 18 --browser-executable /usr/bin/google-chrome-stable",
     "test": "node --test src/timeline.test.ts src/captions.test.ts",

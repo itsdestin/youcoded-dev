@@ -1,28 +1,21 @@
 import React from 'react';
 import { AbsoluteFill } from 'remotion';
-import { Backdrop } from '../Backdrop';
 import { Footage } from '../Footage';
 import { Caption } from '../Caption';
-import { Mascot } from '../Mascot';
 import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
-import { barFrame } from '../grid';
-import { CUT } from '../timeline';
 import { markFrame, assertClipCovers } from '../marks';
+import { L, LEN, type BeatModule } from './beat';
 
 // Beat 2 (bars 2–5): the Briefing quick chip. The trim puts the chip's click
-// release on frame 3 of the beat, i.e. three frames after bar 2's downbeat, so
-// the click and the bar land together.
-const BEAT = barFrame(6) - barFrame(2) + CUT;
-const FROM = markFrame('promo-quick-chip', 'chip', 'end', -3);
-const P = perch();
-assertClipCovers('promo-quick-chip', FROM, BEAT);
-
-export const Beat2: React.FC = () => (
+// release three frames after bar 2's downbeat, so the click and the bar land together.
+const FROM = markFrame('promo-quick-chip', 'chip', 'end', -3) - L('b2', 2);
+const P = perch(0.3);
+assertClipCovers('promo-quick-chip', FROM, LEN('b2'));
+const Beat2: React.FC = () => (
   <AbsoluteFill>
-    <Backdrop theme="midnight" />
     <Footage file="promo-quick-chip" from={FROM} pushIn={0.02} />
-    <Caption text={CAPTIONS.b2} at={10} />
-    <Mascot cues={[{ at: 0, x: P.x, y: P.y, pose: 'idle' }]} />
+    <Caption head={CAPTIONS.b2.head} sub={CAPTIONS.b2.sub} at={L('b2', 2) + 4} theme="midnight" />
   </AbsoluteFill>
 );
+export const beat2: BeatModule = { id: 'b2', slug: 'midnight', home: P, Component: Beat2, cues: [{ at: L('b2', 3), pose: 'curious' }] };

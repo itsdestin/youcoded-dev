@@ -1,54 +1,58 @@
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
-import { Backdrop } from '../Backdrop';
+import { AbsoluteFill, Sequence } from 'remotion';
 import { Footage } from '../Footage';
 import { Caption } from '../Caption';
-import { Mascot } from '../Mascot';
 import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
-import { barFrame } from '../grid';
-import { CUT } from '../timeline';
 import { markFrame, assertClipCovers } from '../marks';
+import { L, LEN, type BeatModule } from './beat';
 import { Sfx } from './sfx';
 
-// Beat 7 (bars 21–28): one continuous shot. The theme request is typed under
-// the build, the reply lands, and the whole app turns gold on bar 23's downbeat.
-const BEAT = barFrame(29) - barFrame(21) + CUT;
-const FLIP = barFrame(2);                       // 122 — bar 23's downbeat
-// The trim is chosen BACKWARDS from the flip: whatever the recording did before
-// it, the flip has to land on this frame.
+// Beat 7 (bars 22–29): describe a look. The request is sent under bar 22, the
+// reply lands, and on bar 23's downbeat the whole app turns Golden Sunbreak;
+// on 25 it becomes Strawberry Kitty and on 27 Cotton Candy Sky. The backdrop
+// washes and the host changes costume on every flip.
 //
-// WHY the trim comes from the 'gold' mark and not the 'flip' one: 'flip' is
-// when the scene FIRES the theme change; 'gold' is an in-page observer that
-// resolves the moment the app's own `data-theme` attribute becomes
-// 'golden-sunbreak'. The recorder already subtracts its own 100 ms capture lag
-// from every mark, so all that is left is the browser's paint: measured on two
-// takes, the first gold frame lands +1.4 and +1.5 frames after
-// markSec('promo-theme','gold','end').
-// The offset here is 2, not 1, because markFrame ROUNDS the mark down: this
-// take's gold mark ends at 11.481 s = clip frame 344.43, which rounds to 344,
-// and 344 + 1.5 is clip frame 346. Verified on the round-4 render with the
-// nudge at 1 — the app was still dark on bar 23 (composition frame 1403, window
-// mean RGB 16.98/22.24/29.52) and turned gold one frame late at 1404
-// (90.64/99.21/107.35), while the backdrop and the host turned on 1403.
-// Re-measure whenever promo-theme is re-filmed.
-const FROM = markFrame('promo-theme', 'gold', 'end', 2) - FLIP;
-if (FROM < 0) throw new Error('the theme recording has less than two bars before the flip; re-film with a longer hold');
-assertClipCovers('promo-theme', FROM, BEAT);
-const P = perch();
-
-export const Beat7: React.FC = () => (
+// Four shots of ONE recording, cut where the app is static so the cuts are
+// invisible: A ends 8 frames after Enter; B opens 27 frames before the first
+// paint (the reply already landed) and runs through it; C and D open on their
+// paints. WHY the paint marks and not the flip marks: 'flipN' is when the scene
+// FIRES the theme change; 'paintN' is an in-page observer resolving when the
+// app's data-theme attribute has changed. The recorder subtracts its capture
+// lag; the browser's paint still lands ~1.5 frames after the mark, hence +2.
+const FLIP1 = L('b7', 23), FLIP2 = L('b7', 25), FLIP3 = L('b7', 27), END = LEN('b7');
+const A_LEN = 40;
+const A_FROM = markFrame('promo-theme', 'sent', 'end', 8) - A_LEN;
+const B_FROM = markFrame('promo-theme', 'paint1', 'end', 2) - (FLIP1 - A_LEN);
+const C_FROM = markFrame('promo-theme', 'paint2', 'end', 2);
+const D_FROM = markFrame('promo-theme', 'paint3', 'end', 2);
+if (A_FROM < 0 || B_FROM < 0) throw new Error('the theme recording is too short before the request/reply; re-film with a longer lead');
+assertClipCovers('promo-theme', A_FROM, A_LEN);
+assertClipCovers('promo-theme', B_FROM, FLIP2 - A_LEN);
+assertClipCovers('promo-theme', C_FROM, FLIP3 - FLIP2);
+assertClipCovers('promo-theme', D_FROM, END - FLIP3);
+const P = perch(0.3);
+const Beat7: React.FC = () => (
   <AbsoluteFill>
-    <Backdrop theme="midnight" switchAt={FLIP} />
-    {/* The take holds 14 s after the flip, so this is real footage end to end —
-        the still-tail loop the old short take needed is gone. */}
-    <Footage file="promo-theme" from={FROM} />
-    <Caption text={CAPTIONS.b7} at={FLIP + 14} />
-    <Mascot cues={[
-      { at: 0, x: P.x, y: P.y, pose: 'idle' },
-      { at: FLIP, pose: 'shocked', costume: 'golden' },     // changes costume on the flip
-      { at: FLIP + 18, pose: 'welcome' },
-    ]} />
-    <Sfx at={FLIP} name="chime" volume={0.55} />
+    <Sequence durationInFrames={A_LEN}><Footage file="promo-theme" from={A_FROM} /></Sequence>
+    <Sequence from={A_LEN} durationInFrames={FLIP2 - A_LEN}><Footage file="promo-theme" from={B_FROM} /></Sequence>
+    <Sequence from={FLIP2} durationInFrames={FLIP3 - FLIP2}><Footage file="promo-theme" from={C_FROM} light /></Sequence>
+    <Sequence from={FLIP3}><Footage file="promo-theme" from={D_FROM} light /></Sequence>
+    <Caption head={CAPTIONS.b7.head} at={FLIP1 + 12} theme="golden-sunbreak" />
+    <Sequence from={FLIP2}><Caption head={CAPTIONS.b7.head} sub={CAPTIONS.b7.sub} at={0} theme="strawberry-kitty" /></Sequence>
+    <Sequence from={FLIP3}><Caption head={CAPTIONS.b7.head} sub={CAPTIONS.b7.sub} at={0} theme="cotton-candy-sky" /></Sequence>
+    <Sfx at={FLIP1} name="chime" volume={0.55} />
+    <Sfx at={FLIP2} name="chime" volume={0.45} />
+    <Sfx at={FLIP3} name="chime" volume={0.45} />
   </AbsoluteFill>
 );
+export const beat7: BeatModule = { id: 'b7', slug: 'midnight', home: P, Component: Beat7,
+  themes: [{ at: FLIP1, slug: 'golden-sunbreak' }, { at: FLIP2, slug: 'strawberry-kitty' }, { at: FLIP3, slug: 'cotton-candy-sky' }],
+  cues: [
+    { at: FLIP1, pose: 'shocked', costume: 'golden-sunbreak', burst: true },
+    { at: FLIP1 + 18, pose: 'welcome' },
+    { at: FLIP2, pose: 'shocked', costume: 'strawberry-kitty', burst: true },
+    { at: FLIP2 + 18, pose: 'cheer' },
+    { at: FLIP3, pose: 'shocked', costume: 'cotton-candy-sky', burst: true },
+    { at: FLIP3 + 18, pose: 'welcome' },
+  ] };

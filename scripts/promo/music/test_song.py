@@ -22,9 +22,13 @@ class PromoTrack(unittest.TestCase):
         self.assertEqual(g["bars"], 34)
         self.assertAlmostEqual(g["bar_seconds"], 240 / 118, places=4)
         self.assertEqual(len(g["beats"]), 34 * 4)
-        self.assertEqual([s["name"] for s in g["sections"]],
-                         ["intro", "drop1", "groove", "hook", "break", "build", "groove2", "drop2", "outro", "end"])
-        self.assertEqual([s["bar"] for s in g["sections"]], [0, 2, 6, 10, 14, 16, 18, 23, 29, 33])
+        # The 2026-09-03 re-planned storyboard, pinned as (name, start bar): the video timeline reads
+        # these from the grid JSON, so a moved boundary here is a moved cut in the video. Bar 23
+        # (drop 2) must never move — the theme flip lands on it.
+        STORYBOARD = [("intro", 0), ("drop1", 2), ("groove", 5), ("hook", 8), ("break", 14), ("build", 16),
+                      ("groove2", 18), ("drop2", 23), ("outro", 29), ("end", 33)]
+        self.assertEqual([(s["name"], s["bar"]) for s in g["sections"]], STORYBOARD)
+        self.assertEqual([s["t"] for s in g["sections"]], [b * g["bar_seconds"] for _, b in STORYBOARD])
 
     def test_audio_is_sane(self):
         with wave.open(self.wav) as w:

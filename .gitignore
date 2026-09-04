@@ -123,3 +123,4 @@ __pycache__/
 # scene JSON that produced them stay tracked; nothing under public/ or out/ does.
 scripts/promo/out/
 scripts/promo/public/
+scripts/promo/src/theme-art.generated.ts

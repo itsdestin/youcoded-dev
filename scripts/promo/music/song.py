@@ -175,15 +175,19 @@ def render_b(out: str):
 # ---------------------------------------------------------------- the promo track
 def promo_track() -> Song:
     """The approved arcade-synthwave material arranged to the storyboard (spec → Music table).
-    34 bars: intro 0-1 · drop1 2-5 · groove 6-9 · hook 10-13 · break 14-15 · build 16-17 ·
-    groove2 18-22 (half-time snare, fill on 22) · drop2 23-28 (hook, brighter) · outro 29-32 · end 33."""
+    34 bars: intro 0-1 · drop1 2-4 (fill on 4) · groove 5-7 · hook 8-13 (fill on 13) · break 14-15 ·
+    build 16-17 · groove2 18-21 (half-time snare) · 22 (fill + gap) · drop2 23-28 (hook, brighter;
+    accents on 25 and 27 for the theme flips; fill on 28) · outro 29-32 · end 33."""
     s = Song(118, 34, tail=2.5)
     chords = [[57, 60, 64], [57, 60, 65], [55, 60, 64], [55, 59, 62]]     # Am F/A C/G G
     roots = [45, 41, 48, 43]
     KICK, SNR, HAT = "x...x...x...x...", "....x.......x...", "x.x.x.x.x.x.x.xo"
     HOOK_A = [(0, 76, 2), (2, 79, 2), (4, 81, 3), (8, 79, 2), (10, 76, 2), (12, 72, 4)]
     HOOK_B = [(0, 74, 3), (4, 76, 3), (8, 79, 6)]
-    for name, bar in (("intro", 0), ("drop1", 2), ("groove", 6), ("hook", 10), ("break", 14), ("build", 16),
+    # Re-planned 2026-09-03 storyboard: the games hook is six bars (8-13, the Flappy flight is 12-13),
+    # groove2 (phone) is four bars, drop1/groove are 3+3. Bar 23 (drop 2) does not move — the theme
+    # flip lands on it. Bar 22 is still groove2 by name: it carries the fill and the gap below.
+    for name, bar in (("intro", 0), ("drop1", 2), ("groove", 5), ("hook", 8), ("break", 14), ("build", 16),
                       ("groove2", 18), ("drop2", 23), ("outro", 29), ("end", 33)):
         s.section(name, bar)
 
@@ -203,9 +207,16 @@ def promo_track() -> Song:
             if sec == "groove2": snare_pat = "........x......."            # half-time
             if bar == 22: snare_pat = "....x.......xx.."                   # fill trails off into the pre-drop-2 gap (see below)
             elif bar in (13, 28): snare_pat = "....x.......xxxX"           # fills before a section change
+            elif bar == 4: snare_pat = "....x.......x.xX"                   # a short push into the groove (drop1 -> spreadsheet cut on 5)
             s.hits("snare", snare_pat, bar, S.snare, gain=0.8)
             s.hits("clap", SNR if sec != "groove2" else "........x.......", bar, S.clap, gain=0.5)
             s.hits("hat", HAT, bar, S.hat, gain=0.55 if not bright else 0.65)
+            if bar in (25, 27):
+                # Theme flips 2 and 3 land on these downbeats (flip 1 is bar 23, which the gap already
+                # sets up). An open hat + clap on beat 1 gives each flip a hit under it; the pad already
+                # re-triggers on every bar's downbeat, so the bass/arp/pad material is untouched.
+                s.hits("hat", "o...............", bar, S.hat, gain=0.6)
+                s.hits("clap", "x...............", bar, S.clap, gain=0.7)
         elif sec == "build":
             s.hits("hat", "x.x.x.x.x.x.x.x." if bar == 16 else "xxxxxxxxxxxxxxxx", bar, S.hat, gain=0.45)
             s.hits("snare", "x...x...x...x..." if bar == 16 else "x.x.x.x.xxxxxxxx", bar, S.snare, gain=0.55)
