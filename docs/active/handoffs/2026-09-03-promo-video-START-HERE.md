@@ -3,143 +3,165 @@ status: active
 created: 2026-09-03
 updated: 2026-09-04
 type: handoff
-topic: The Reddit promo video — how it is built, where everything lives, what state it is in, and how to iterate on Destin's feedback.
+topic: The Reddit promo video — where it stands, how it is built, how to iterate on Destin's notes, and what he has already decided.
 spec: docs/active/specs/2026-09-03-promo-video-design.md
 plan: docs/active/plans/2026-09-03-promo-video-plan.md
 ---
 
 # Promo video — START HERE
 
-**Round three is in progress (2026-09-04) and the next session continues it.** The process
-Destin chose: fixed check-ins, nothing rendered past one until he says go — (1) the question
-deck (answered, `docs/active/prototypes/promo-2026-09/deck/promo-v3.answers.json`), (2) the
-storyboard page (`storyboard-v3.html`, approved with notes, all applied), (3) the mascot /
-captions check-in (`checkin-3.html`, his notes below), (4) one half-size draft of the whole
-film, (5) the final. **We are at check-in 4** (`checkin-4.html`, `study/draft.mp4`: the whole film at
-half size, every beat presenting, the warm faces, the zoomed footage; one fresh-eyes pass applied).
-His notes on the draft → fixes → the final render (`bash scripts/promo/render.sh`, full size + loudness)
-→ wrap-up. History: check-in 3c (`checkin-3c.html`: beats 4 and 8 choreographed so
-the host PRESENTS the app, the three moves rotating across the cuts, captions centred + bubbles,
-the app filmed 25 % zoomed in, the peek fixed). His 3b answers, all applied: all three moves
-together, rotating (A quick-change → B poof → C twirl; B where there is no band); the headline
-stays centred under the window; the mascot must present, not wander, with more arm/leg work
-(`A.point/tada/cheer/clap/tapFoot/nod/think/shrug/startle` in `host/engine.ts`); the peek leans
-toward the centre; the closing link is www.youcoded.ai; every desktop scene has `zoom: 1.25`
-(record.mjs). **Next, after his 3c answers:** choreograph beats 2, 3, 5, 6, 7, 9, 10 the way
-Beat4/Beat8 do it (walk to the action, point, react, cheer — every move tied to a footage mark),
-then the half-size draft (check-in 4) with a context-free review first.
+## Where we are (2026-09-04, end of the third session)
 
-## Destin's notes on check-in 3, still to build (in this order)
+The whole film exists as a **half-size draft with music**: 99 s, ten beats, the mascot narrating.
+Destin reviews it **live** — he watches the draft and gives notes with timestamps in chat. The next
+session takes his notes, applies them, re-renders the draft, and repeats until he says go; then
+the final render (full size, loudness pass) and the wrap-up.
 
-1. **Captions = one section label + a SPEECH BUBBLE from the host** — built (`Label.tsx`,
-   `Bubble.tsx`; shown on `checkin-3b.html`). NOT yet in the beats: every `Beat*.tsx` still
-   renders the old `Caption`. Once approved: replace each beat's `<Caption>` with a `<Label>`
-   for the headline and a `bubbles: BubbleCue[]` export the way `TransitionStudy.tsx` does it
-   (Promo.tsx must collect the cues and render `<Bubbles>` above the host); the intro's
-   wordmark hand-off should land on the label's position, not the old centred band.
-2. **Theme change instead of the hop** — built as three moves in `host/engine.ts`
-   (`A.quickChange`, `A.vanish`+`A.appear`, `A.twirl`) and shown on real wipes in
-   `studies/TransitionStudy.tsx`. Once he picks: replace the arrival hop in `Promo.tsx`
-   (`A.hop(at, HOP, …)` + costume at +14) with the chosen move — for A the hit frame comes from
-   `bandHitFrame()` and the `BandOverlay` must be rendered above the host for each wipe —
-   and replace Beat3's three "jump for joy" hops with the same move (or C for those, if he
-   picks A: there is no band on an in-place flip).
-3. **Eyes a smidge less dark** — done: `inkFor()` keeps 32 % of the body colour (was 22 %).
-4. **The intro** — knock-back + centred group built (`RECOIL_X`, `WORD_LEFT_CENTRED`); the
-   intro's sounds now live in `IntroVisuals`, so the film has them too.
-5. Then the draft (check-in 4): `npm run render:draft` → `out/draft.mp4`, plus a context-free
-   review agent before he sees it (see "Show him early"). **Render one clip at a time**: two
-   parallel `remotion render`s hung one of them at 0 % CPU for 12 minutes on 2026-09-04.
+- The draft he is looking at: `docs/active/prototypes/promo-2026-09/study/draft.mp4`
+  (and `scripts/promo/out/draft.mp4`, the same file). The page around it, with a section table
+  and the change log of every round: `docs/active/prototypes/promo-2026-09/checkin-4.html`.
+- **One choice is open:** the caption style. Five variants are on that page
+  (`storyboard-v3/caption-variants.png`): G glow · P plate · O outline · K kicker · S stacked
+  accent. The draft currently uses G. When he picks, port that design from
+  `src/LabelStudy.tsx` into `src/Label.tsx` (the film's label) and delete the study.
+- The branch: `feat/promo-video` in worktree `/home/destin/youcoded-dev/worktrees/promo`
+  (pushed). The app's fixture branch `feat/promo-workbench-fakes`
+  (`/home/destin/youcoded-dev/worktrees/promo-fakes`, PR itsdestin/youcoded#402, pushed) holds
+  the dev-only workbench fakes the scenes need; nothing in it ships to users. Merge both only
+  on his say-so, after the final.
 
-Everything else he asked for in round three is built and committed: the punch intro (black,
-silent, peek from the left edge, walk, punch, burst into Cotton Candy, "Assistant" rolling
-out, music from the hit), the model beat on four favourites (Claude, DeepSeek, Grok, GPT, no
-prices), project view folded into the files beat (Econ 201), the phone asking to take over
-from Desktop, the marketplace beat on drop 2, the 44-bar track, the classic eyes with a dark
-ink on every theme. The full film assembles and renders (self-checked, ~100 s).
+## How Destin wants this to go (his words, this project)
 
-## The one-paragraph version
+- **Check-ins, not renders.** "i don't want you to keep wasting time rendering and re-rendering
+  without giving me any opportunities to redirect you." Nothing goes into the film before he has
+  seen it as a still or a short study; the draft is the check-in for the whole.
+- **No context-free reviewers any more.** "you can stop using no-context reviewers. i'm
+  literally here reviewing it live." Do your own frame check (contact sheet + the frames you
+  changed), then hand him the path.
+- **Files as plain paths in chat**, never artifacts or file cards.
+- **The mascot is a presenter, not a distraction.** "each animation should be obviously tied to
+  something in the demo or in his speech." It hops to the feature it talks about (inside the
+  window when that is where the feature is), points while its bubble is up, holds still otherwise.
+- **Premium, not "cheap phone game".** Anticipation, weight, settle; the warm faces; no jump
+  between beats (the three theme-change moves instead).
+- **Copy:** short, concrete, no AI-isms, no invented numbers ("There are hundreds." was a lie —
+  the theme registry is small). Bubbles must be readable: ≥ 1.2 s + a quarter second a word.
+- The close ends with the host standing left of the Y in "YouCoded", like the start.
 
-A ~100 s 1920×1080 video of the app (a 7.9 s silent prelude + 44 bars), hosted by the mascot, cut to a synthwave track
-composed in code. Three layers: (1) `scripts/promo/music/song.py promo` renders the track
-and exports its beat grid as JSON; (2) `scripts/promo/film.sh` films the scenes of the real
-renderer in the UI Workbench through headless Chrome, one theme per beat, writing a
-**marks file** beside each clip; (3) a Remotion project in `scripts/promo/src/` lays the
-clips, captions, the host and its companions, and the sounds on the grid, trimming every
-shot by a mark label, and `scripts/promo/render.sh` produces the MP4 at −14 LUFS. Every
-cut lands on a downbeat by construction and a test pins it. The backdrop and the host are
-one continuous track each across the whole film: the host hops across every cut and
-changes costume with the theme.
+## What is approved
 
-## Where things are
+The punch intro (black, silent 6.5 s, the two-step peek, the walk, the punch on bar 0, the burst
+into Cotton Candy Sky, "Assistant" wiping on, the group centred, the window rising) · the warm
+face set (`faces-warm.png`; also the guideline for the app's own rigs, filed under
+`docs/roadmap/themes.md`) · the three theme-change moves rotating across the cuts (quick-change,
+poof, twirl) · the presenter model with speech bubbles · the app filmed 25 % zoomed in · the
+games beat in Golden Sunbreak (the golden Flappy bird) · the in-key sparkle on theme flips ·
+112 BPM, 42 bars · the narrator script `docs/active/prototypes/promo-2026-09/narration-v1.md`
+(edit it and mirror the lines into the beats — the beats are the truth).
+
+## The pipeline in one paragraph
+
+Three layers. (1) **Music**: `scripts/promo/music/song.py promo` renders the track from code
+(112 BPM, 42 bars: punch on bar 0, drop 1 on 6, drop 2 on 33, outro 38–40, final hit 41, 2.5 s
+tail) and writes `public/promo.grid.json` + every `sfx-*.wav`. (2) **Footage**:
+`bash scripts/promo/film.sh <app-worktree> [scene…]` films the real renderer in the UI Workbench
+through headless Chrome, one JSON scene per clip (`scripts/ui-review/scenes/promo-*.json`,
+`zoom: 1.25` on the desktop ones), writing a **marks file** beside each clip; every trim in the
+timeline is a mark, never a measured frame. (3) **Remotion** (`scripts/promo/src/`): the beats
+lay the clips on the bar grid, the host is one continuous action list across the film, the
+backdrop one theme track, the bubbles one cue list. `npm run render:draft` → `out/draft.mp4`
+(half size, ~4 min). `bash scripts/promo/render.sh` → `out/youcoded-promo.mp4` at −14 LUFS
+(+ a silent copy).
+
+## How to iterate on his notes
+
+| He says… | Change | Then |
+|---|---|---|
+| a line the host says, or when | the beat's `present([...])` lines in `src/beats/BeatN.tsx` (`say`, `at` in local frames, `spot`, `point`, `face`, `until`, `side`); keep `narration-v1.md` in step | draft render |
+| the host should stand somewhere else / point at something | the line's `spot`: `perch(x)` on the title bar (0–1 along it), `inWindow(fx, fy)` for feet at a fraction of the window, `ON_PHONE` etc. Keep it off buttons and text | draft render |
+| a move looks wrong / add a gesture | `src/host/engine.ts` — `A.point/tada/cheer/clap/nod/startle/wave/walk/hop/twirl/vanish+appear/quickChange/shutdown/wake`; the presenter rule itself is `present()` in `src/beats/beat.ts` | `npx remotion render src/index.ts HostStudy out/x.mp4` or the draft |
+| the intro | `src/intro/Intro.tsx` (`introActions`; `IMPACT` must equal `PRELUDE` in `timeline.ts`) | `npx remotion render src/index.ts Intro out/intro-study.mp4` (1 min) |
+| a face | `src/host/faces.ts` `WARM` (SVG in the rig's viewBox; `warmEye`, `warmBrow`); the sheet: `node faces-sheet.mjs <out.png> warm` | the sheet |
+| the headline | `src/Label.tsx`; the strings in `src/captions.ts` (the test pins them to the spec's storyboard table — change the spec row too) | `npm test`, draft |
+| a bubble's look | `src/Bubble.tsx` (pinned to the host's head; side locked per cue) | draft |
+| the music (tempo, bars, levels) | `music/song.py` `promo_track()`; bars and sections must match `src/timeline.ts` `BEATS` and both tests (`music/test_song.py`, `src/timeline.test.ts`) | `python3 song.py promo ../public/promo.wav && python3 test_song.py`, `npm test`, draft |
+| a beat longer/shorter/reordered | `BEATS` in `timeline.ts` (bars must tile 0–42) + the song's sections | as above |
+| what the app does on screen | the scene JSON (actions by selector, `mark`s, reply fixtures in `youcoded/desktop/src/renderer/dev/workbench/fixtures/replies/`); a different theme = the scene's `theme` + the beat's `slug` | `bash scripts/promo/film.sh /home/destin/youcoded-dev/worktrees/promo-fakes promo-<x>` (one scene ~1 min; the marks flow through with no edit), draft |
+| a shot shows loading / the wrong moment | the beat's `*_FROM` (`markFrame(scene, mark, edge, offset)`) and `rate` (a static screen can run at 0.6–0.8× to fit; `assertClipCovers` throws at bundle time if a shot outruns its clip) | draft |
+| the theme-change move on a cut | `CYCLE` / `arrival()` in `src/Promo.tsx`; Beat3's in-place flips in `Beat3.tsx` | draft |
+| the sound on a moment | `<Sfx at name volume>` in the beat; new sounds in `music/synth.py` + `SFX` in `song.py` + `SECONDS` in `src/beats/sfx.tsx` | re-render the track |
+| the close | `src/beats/Beat10.tsx` (`Y_SPOT` beside the Y, the wave/cheer/shutdown), `TAIL_FRAMES` in `timeline.ts` | draft |
+
+**Commands** (from `scripts/promo/`): `npm run typecheck && npm test && npm run render:draft`.
+Frames: `ffmpeg -i out/draft.mp4 -vf "select='eq(n\,N)'" -frames:v 1 f.png`; contact sheet:
+`-vf "select='not(mod(n\,24))',scale=320:-1,tile=8x16" -frames:v 1 sheet.jpg`. Hand him paths.
+
+## File map
 
 | What | Where |
 |---|---|
-| Workspace branch | `feat/promo-video`, worktree `/home/destin/youcoded-dev/worktrees/promo` — **never pushed** |
-| App branch (dev-only workbench fakes + fixtures) | `feat/promo-workbench-fakes`, worktree `/home/destin/youcoded-dev/worktrees/promo-fakes` — **PR itsdestin/youcoded#402 open**; the round-three fakes (favourites, install, Econ 201, phone take-over, student mode) are committed but **not yet pushed**. Nothing in it ships to users |
-| The latest draft | `scripts/promo/out/draft.mp4` (half size, with music); final renders land in `out/youcoded-promo.mp4` + `-silent.mp4` (all under `out/`, gitignored) |
-| The music | `scripts/promo/public/promo.wav` + `.mp3` + `promo.grid.json` + `sfx-{pop,whoosh,chime}.wav` (gitignored; regenerate with `cd scripts/promo/music && python3 song.py promo ../public/promo.wav`, then `ffmpeg -i ../public/promo.wav -codec:a libmp3lame -q:a 2 ../public/promo.mp3`) |
-| The footage | `scripts/promo/public/footage/<scene>.webm` + `.webp` poster + `.marks.json` (gitignored; regenerate with `film.sh`) |
-| The theme art the overlays use | `scripts/promo/public/themes/<slug>/` (rig, companions, wallpaper, pre-blurred backdrop) + `src/theme-art.generated.ts`, both gitignored — `bash scripts/promo/theme-assets.sh` copies them from the `wecoded-themes` checkout beside the workspace |
-| Scenes | `scripts/ui-review/scenes/promo-*.json` (fifteen) + `scenes/flappy-pilot.js`, `scenes/market-chip-sync.js` |
-| Timeline | `scripts/promo/src/` — `timeline.ts` (PRELUDE, bars, PRE/POST), `themes.ts` (+ `inkFor`), `host/engine.ts` (the motion engine: actions evaluated per frame), `host/Host.tsx` (the renderer), `host/faces.ts`, `intro/Intro.tsx` (the punch intro, also the study clip), `intro/HostStudy.tsx`, `Backdrop.tsx`, `transitions.tsx`, `Caption.tsx` + `CaptionStudy.tsx`, `captions.ts`, `marks.ts`, `layout.ts`, `beats/beat.ts` (the contract: host actions in local frames) + `beats/Beat1…10.tsx`, `Promo.tsx` |
-| Review evidence | `docs/active/prototypes/promo-2026-09/` — the deck + answers, `storyboard-v3.html`, `checkin-3.html` (+ `study/*.mp4`, `storyboard-v3/*.png`), `footage-review.md`, `footage/*.webp`, `marks/<scene>-<mark>.png` |
-| Spec / plan | the spec is the storyboard, captions, themes and music table; the plan is the original nine tasks |
+| Timeline & grid | `src/timeline.ts` (PRELUDE 196, PRE 6 / POST 4, BEATS, TAIL_FRAMES 74), `src/grid.ts` (reads the grid JSON) |
+| Assembly | `src/Promo.tsx` — `assemble(ids)` builds any subset of beats (the film, or a study), the arrival moves, the band overlay, the bubbles; `Film`, `Promo` |
+| A beat | `src/beats/BeatN.tsx` — shots (`Footage` from marks), the `Label`, `present([...])` lines, extras with a cause; the contract and the presenter rule in `src/beats/beat.ts` |
+| The host | `src/host/engine.ts` (state + actions, evaluated per frame), `src/host/Host.tsx` (draws the rig, the blur on a twirl, the peek hand, the rim on dark themes; falls back to a face the rig has), `src/host/faces.ts` (the warm set), `src/poses.ts` (Face type, pivots) |
+| The intro | `src/intro/Intro.tsx` (+ `HostStudy.tsx`, `studies/TransitionStudy.tsx` — older studies) |
+| Captions | `src/Label.tsx` (the headline), `src/Bubble.tsx` (the host's lines), `src/captions.ts` (headline strings), `src/LabelStudy.tsx` (the five variants), `src/Caption.tsx` (the close's wordmark lines + the fonts) |
+| Look | `src/themes.ts` (colours, fonts, `inkFor`), `src/Backdrop.tsx`, `src/transitions.tsx` (the wipe, `bandHitFrame`, `BandOverlay`), `src/layout.ts` (the window rect, `perch`, the phone), `src/Window.tsx`, `src/Phone.tsx`, `src/Footage.tsx`, `src/marks.ts` |
+| Music | `music/song.py`, `music/synth.py`, `music/test_song.py`; outputs in `public/` (gitignored) |
+| Footage | `public/footage/<scene>.webm` + `.marks.json` (gitignored; `film.sh` regenerates); posters and one still per mark under `docs/active/prototypes/promo-2026-09/footage/`, `…/marks/` |
+| Theme art | `public/themes/<slug>/` + `src/theme-art.generated.ts` (gitignored; `bash theme-assets.sh`) |
+| Review evidence | `docs/active/prototypes/promo-2026-09/` — `checkin-3*.html`, `checkin-4.html`, `study/*.mp4`, `storyboard-v3/*.png` (faces, captions), `narration-v1.md`, the deck + answers |
 
-## After a fresh clone (or a new machine)
+## After a fresh clone
 
 ```
 cd scripts/promo && npm ci
-bash theme-assets.sh                       # rigs, companions, wallpapers → public/themes + the generated module
+bash theme-assets.sh
 cd music && python3 song.py promo ../public/promo.wav && cd ..
-bash film.sh /path/to/app-worktree         # ~10 min, all scenes
+bash film.sh /home/destin/youcoded-dev/worktrees/promo-fakes      # ~10 min, all scenes
 npm run typecheck && npm test && npm run render:draft
 ```
 
-## How to iterate on feedback
-
-| Destin says… | Change | Then |
-|---|---|---|
-| a caption / wording | `src/captions.ts` — the test pins every string to the spec's storyboard table, so change the spec row too | `npm test`, draft render |
-| the mascot's motion | the beat's `host` actions (`beats/BeatN.tsx`, local frames via `L(id, bar)`), the action library in `host/engine.ts` (hop, walk, punch, look, blink, pose, wave, costume); the arrival hop between beats is generated in `Promo.tsx` | `npx remotion render src/index.ts HostStudy out/host-study.mp4` (~1 min) to judge it alone |
-| the intro | `src/intro/Intro.tsx` (`introActions`, IMPACT = timeline PRELUDE) | `npx remotion render src/index.ts Intro out/intro-study.mp4` |
-| a beat is too long / short / wrong order | `src/timeline.ts` `BEATS` (bars must tile 0–44) and the music sections in `song.py`'s `promo_track()` — the music and the storyboard are one grid | re-render music, `npm test`, draft render |
-| a different theme on a beat | the beat's `slug` (and its `Caption theme=`), the scene's `"theme"`, the spec | re-film that scene, draft render |
-| the host does something wrong | the beat's `cues` (LOCAL frames — `L('bN', bar)` for anything on the grid), poses in `src/poses.ts`; the hop/costume/burst mechanics in `Mascot.tsx` | draft render |
-| where the window / caption / phone sits | `src/layout.ts` only | draft render |
-| what the app is doing on screen | the scene JSON — actions, marks, reply fixtures (`youcoded/desktop/src/renderer/dev/workbench/fixtures/replies/`) | re-film that scene: `bash scripts/promo/film.sh <app-worktree> promo-<x>`; the timeline picks up the new marks with no edit |
-| the music (levels, section feel, tempo) | `song.py` `promo_track()` / `render_promo()`; per-bar lift in `LIFT_DB` | `python3 -m unittest test_song`, re-render to `public/`, draft render |
-| a transition or the backdrop wash | `src/transitions.tsx` (the slanted accent wipe; `wipeEdge` is shared with the backdrop so both sweep as one), `src/Backdrop.tsx` (circle wash for in-beat flips) | draft render |
-| the trim inside a beat | the beat file — only ever `markFrame(scene, label, edge, offset)`; if the frame you want has no mark, add a `"mark"` to the scene action and re-film | draft render |
-
-**Commands** (from `scripts/promo/`): `npm run typecheck && npm test && npm run render:draft`
-(half size, ~3.5 min) → look at `out/draft.mp4` (frames via `ffmpeg -i out/draft.mp4 -vf "select='eq(n,N)'" -vsync 0 -frames:v 1 f.png`; a contact sheet: `-vf "select='not(mod(n,30))',scale=320:-1,tile=6x12" -frames:v 1`).
-Final: `bash scripts/promo/render.sh` (~10 min). Hand files over as plain paths in chat.
-
-**Show him early — at the check-ins he chose, and not otherwise.** A draft render is four minutes. Destin, 2026-09-04: "i don't want you to keep wasting time rendering and re-rendering without giving me any opportunities to redirect you." Study clips (Intro, HostStudy: one minute each) are how motion is judged; stills are how designs are judged.
-**Then have an agent with no context review it** (a general-purpose agent, the draft path,
-"watch it as a first-time muted viewer, list findings with frame numbers") — it found nineteen
-things on 2026-09-03 that the session that built the cut had stopped seeing.
-
 ## Things learned the hard way (do not re-learn)
 
-- **The vendored Golden Sunbreak in the app is stale.** The registry (`wecoded-themes/themes/golden-sunbreak`, 1.2.0) has a rig and four companions; `youcoded/desktop/src/renderer/themes/community/golden-sunbreak` is the 1.0 stills. The workbench fixture was updated on the fakes branch; the app's own vendored copy was not (it may ship to users — a separate decision).
-- **A theme's companions keep their own aspect ratio** (`size` is width relative to the mascot; height follows the SVG viewBox). Halftone's bars are 100×6 — drawn square they were a solid box on the mascot's head. A companion named "ghost" is invisible at rest and fades in with motion, like the app.
-- **A transition's entering presentation stays mounted at progress 1** for the rest of its sequence. Anything still inside the frame at p = 1 is parked there for the whole beat.
-- **The wipe straddles the downbeat** (`PRE` 6 frames before, `POST` 4 after). Every beat but the first therefore starts before its own downbeat; in-beat anchors go through `L(id, bar)`, never `barFrame(bar) - barFrame(start)`.
-- **The Flappy autopilot cannot run from the recorder.** `scenes/flappy-pilot.js` runs inside the page (rAF loop, flap rule from the engine's constants), injected by the recorder's `evalFile` action.
-- **Marks, never measured frames.** Every trim is `markFrame(...)`. When a beat needs a frame nobody marked, add an in-page observer action to the scene that resolves on the DOM change (`promo-theme.json` `paintN`, `promo-takeover.json` `resumed`). `record.mjs` corrects for the screencast's ~100 ms capture lag; a theme paint still lands ~1.5 frames after its mark, hence `+2` in `Beat7.tsx`.
-- **A `drag` mark spans the recorder's whole gesture**, and on a wallpaper-heavy page the ~70 pointer steps run slow (6 s for an 1100 ms drag): anchor the shot on the mark's START.
-- **Multiplayer in the workbench** needs `&signedIn=1` (fake opponent "Jake" answers Connect 4 drops; `&bot=passive` keeps him in column 7 so a scripted game cannot end early); `&autoplay=0` keeps the friends lobby. Chess accepts one human move and no reply.
-- **`assertClipCovers`** throws at bundle time if a shot would outrun its clip — a frozen last frame is otherwise invisible.
-- **`VITE_NO_WATCH=1` serves stale modules**: restart the workbench after any change in the app worktree before filming. `film.sh <path>` refuses a port serving a different tree and only kills a workbench it started.
-- **`theme-assets.sh` runs under `set -euo pipefail`**: a `$(ls … | head -1)` for a file that does not exist aborts the script silently — it now has `|| true`.
-- Remotion 4.0.520 + Node 26: `node --test` runs the `.ts` tests directly, so `timeline.ts` and `captions.ts` import nothing. The fonts (`@remotion/google-fonts`) fetch at render.
+- **One render at a time.** Two parallel `remotion render`s hung one of them at 0 % CPU for
+  twelve minutes. Do not render while `film.sh` is recording either (the screencast drops frames).
+- **The Bash tool's `cd` persists.** A `cd out` or `cd music` in one command leaves the next
+  command there; a whole batch of edits once silently "applied" to files that were not there.
+  Use absolute paths or lead with `cd /home/destin/youcoded-dev/worktrees/promo/scripts/promo`.
+- **`ffprobe -count_frames … -of csv=p=0` prints a trailing comma**; `| tr -d ','` before arithmetic.
+- **Loading screens are on camera unless you cut them.** The model picker shows "Loading models…"
+  for 1.6 s; the Projects page shows empty then "Loading files…"; a theme's wallpaper lands ~10
+  frames after its paint mark. Open a shot after the load (`markFrame(..., +N)`) or split it.
+- **A static shot can run slower than 1×** to fit its bars (Beat3's last theme, Beat9's grid);
+  at 1× it runs into the next click (the marketplace dialog opened, shut and reopened).
+- **A shot's first frame at rate 1.6× reaches the clip's next event sooner than you think** —
+  the sort in Beat5 was never on camera in the first shot; the lines had to follow the footage.
+- **A theme's own rig has only the contract's five faces.** `happy`, `smug`, `shutdown` (and
+  sometimes `dizzy`) exist only in the warm set on the default rig; Host falls back, but a
+  custom-rig costume will never show them.
+- **The bubble's side is decided once per cue** from the host's position on the cue's first
+  frame and whether the text fits; a per-frame choice flipped it mid-word. A line's minimum
+  reading time can push the NEXT line later — that is deliberate.
+- **The word "Assistant" must be revealed by a wipe over a stationary word.** Sliding it out
+  from behind "YouCoded" always led with its last letters.
+- **A first line with a spot cannot hop before the arrival move has landed** (~frame 24);
+  `present()` clamps it. Extras a beat adds (twirls, the dive) are timed to marks.
+- **`zoom` in a scene** lays the page out at W/zoom × H/zoom CSS px at `zoom` device pixels per
+  CSS px — real pixels, selectors unchanged; the phone scenes stay at 1.
+- The older lessons still hold: marks, never measured frames; the wipe straddles the downbeat
+  (`L(id, bar)` for anything on the grid); `assertClipCovers` at bundle time; a transition's
+  entering presentation stays mounted at progress 1; companions keep their own aspect; the
+  Flappy autopilot runs inside the page; `VITE_NO_WATCH=1` serves stale modules — restart the
+  workbench after any app change; `theme-assets.sh` runs under `pipefail`.
 
 ## Open decisions for Destin
 
-- Merge of youcoded#402 (needs a push of the rebased branch first) and of `feat/promo-video` — both after his notes are in.
-- The Settings list in the phone beat shows "Backup & Sync — Sync failing" with a red dot for ~1.4 s (a workbench fixture state). Left as is; a fixture flag or a trim would remove it.
-- Beat 7 keeps the chat visible through all three looks, so "build me a theme with the vibe of outdoor anime art" sits above Strawberry Kitty and Kuromi; the sub-line "Or pick one from the community." is what explains them.
-- The opening: bars 0–1 are the wordmark, the peek and the window rising; a Reddit autoplay preview shows exactly that. A faster open would mean moving drop 1.
+- The caption style (G / P / O / K / S), then port it into `Label.tsx`.
+- The Golden Sunbreak sun companion floats above-left of the golden host; a first-time viewer
+  read it as a stray particle. Keep (theme identity) or drop it from the film's companions.
+- The Flappy bird is the game's own size (~20 px at full frame); nothing in the film can
+  enlarge it without changing the app's game.
+- The phone beat's Settings list shows "Backup & Sync — Sync failing" for ~1.4 s (a fixture state).
+- Merge of youcoded#402 and of `feat/promo-video`, after the final.
 - Should the app's vendored Golden Sunbreak be updated to the registry's 1.2.0 (rig + companions)?
