@@ -128,6 +128,56 @@ PKILL_MESSAGE = (
     "process NAMES rather than command lines, drop the -f (`pkill node`)."
 )
 
+# ---------------------------------------------------------------------------
+# Guard 3: `rg` with r CLUSTERED into a short-option group — `rg -rn`, `rg -nr`.
+#
+# `-r` is ripgrep's --replace and it TAKES A VALUE, so a clustered group hands it
+# the rest of the group (or the next argument) as replacement text. Both failure
+# modes are SILENT, which is what makes this worth blocking rather than warning:
+#
+#     rg -rn alpha file    ->  prints "n beta" / "gamma n", EXIT 0
+#                              (matches replaced by the literal "n", no line
+#                               numbers — output that reads like real output)
+#     rg -nr alpha file    ->  prints NOTHING, EXIT 1
+#                              (r swallowed "alpha" as the replacement, leaving
+#                               no pattern — indistinguishable from "no matches")
+#
+# The second one is the dangerous half: CLAUDE.md requires a programmatic search
+# behind any claimed negative, and this shape manufactures a clean-looking
+# negative for a string that is present. Measured 2026-09-03, ripgrep 14.x.
+#
+# This is muscle memory that THIS WORKSPACE INDUCES: CLAUDE.md says "Search with
+# rg. Never type grep", and the habit it displaces is `grep -rn`. Cost one
+# session a re-run and a nearly-believed wrong result.
+#
+# A bare `-r` is left alone — `rg -r X pat` is a legitimate replace. Only a
+# cluster of two or more letters containing `r` is blocked, which no real
+# replace invocation ever is.
+RG_CLUSTERED_R = re.compile(
+    r"(?:^|[|&;(]\s*|\s)rg\s+(?:[^|&;\n]*\s)?-(?=[a-zA-Z]*r)[a-zA-Z]{2,}(?=\s|$)"
+)
+
+
+def rg_replace_offender(command: str):
+    """True for `rg -rn` / `rg -nr` style clusters, which silently misbehave."""
+    if "<<" in command:
+        return False   # heredoc body is data, same reasoning as the glob guard
+    return bool(RG_CLUSTERED_R.search(command))
+
+
+RG_REPLACE_MESSAGE = (
+    "Blocked before it ran: in ripgrep `-r` is --replace and it TAKES A VALUE, so a "
+    "clustered group like -rn or -nr does not mean what it means in grep. Both ways "
+    "of getting it wrong are SILENT:\n"
+    "  rg -rn PAT f   prints every match with PAT replaced by the literal \"n\", exit 0\n"
+    "  rg -nr PAT f   prints NOTHING and exits 1 — r ate PAT as the replacement, so it "
+    "looks exactly like \"no matches\" for a string that is there\n"
+    "You almost certainly meant `rg -n PAT` (line numbers) or `rg -l PAT` (names only); "
+    "ripgrep recurses by default, so there is no -r to carry over from grep. If you "
+    "really do want a replacement, pass it unclustered: rg -r REPLACEMENT PAT."
+)
+
+
 MESSAGE = (
     "Blocked before it ran: this shell is zsh, not bash. zsh expands `{tok}` itself "
     "before {cmd} sees it — so the tool searches for whatever filenames matched, and "
@@ -155,6 +205,13 @@ def main() -> int:
     try:
         if pkill_offender(command):
             print(PKILL_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open, same contract as everything else in this hook
+
+    try:
+        if rg_replace_offender(command):
+            print(RG_REPLACE_MESSAGE, file=sys.stderr)
             return 2
     except Exception:
         pass   # fail open, same contract as everything else in this hook
