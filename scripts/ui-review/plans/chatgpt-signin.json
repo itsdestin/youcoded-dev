@@ -17,11 +17,12 @@
    "measure": [
     "[role=dialog][aria-label='Model Providers']"
    ],
-   "expect": "[role=dialog][aria-label='Model Providers']"
+   "expect": "[role=dialog][aria-label='Model Providers']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1"
   },
   {
    "name": "providers-chatgpt-signed-out",
-   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=signed-out",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=signed-out&planUsage=1",
    "actions": [
     {
      "click": "[title=Settings]",
@@ -39,7 +40,7 @@
   },
   {
    "name": "providers-chatgpt-waiting",
-   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=waiting",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=waiting&planUsage=1",
    "actions": [
     {
      "click": "[title=Settings]",
@@ -57,7 +58,7 @@
   },
   {
    "name": "providers-chatgpt-blocked",
-   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=blocked",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=blocked&planUsage=1",
    "actions": [
     {
      "click": "[title=Settings]",
@@ -161,7 +162,7 @@
      "settle": 600
     },
     {
-     "click": "[placeholder='Search all models\u2026']",
+     "click": "[placeholder='Search all models…']",
      "settle": 200
     },
     {
@@ -174,7 +175,7 @@
    "measure": [
     "[role=dialog]"
    ],
-   "expect": "[placeholder='Search all models\u2026']"
+   "expect": "[placeholder='Search all models…']"
   }
  ]
 }
