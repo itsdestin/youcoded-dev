@@ -41,7 +41,7 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
    basis is so small too that it read as the surface name itself truncating to "H…", which is a
    worse loss than the path (the thing that was actually long) giving up more of the row it was
    already ellipsizing. */
-.top .where{flex:0 1 auto;max-width:40%;min-width:0;overflow:hidden} .top .where .id{flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .where{flex:0 1 auto;max-width:40%;min-width:0;overflow:hidden} .top .where .id{flex:0 1 auto;min-width:min(100%,14ch);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}   /* keeps at least 14 characters of the surface name, then ellipsizes — never "H…", never a hard clip of a long name */
 .top .where .eyebrow{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (max-width:1400px){.top .where .eyebrow,.top .where .sep{display:none}} @media (max-width:950px){.top .count{display:none}} @media (max-width:760px){.top .long{display:none} .top .nav .btn{padding:0 6px}}
 .where{display:flex;align-items:center;gap:10px} .where .id{font-weight:500;font-size:14px} .where .sep{color:var(--fg-faint)}
