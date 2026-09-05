@@ -40,24 +40,61 @@ yet.**
 
 `bash scripts/verify.sh worktrees/linux-buddy-helper` passes all six checks.
 
-## STATE AS OF 2026-09-04 21:00 — a dev instance is RUNNING
+## STATE AS OF 2026-09-04 21:40 — live-tested, two defects found and fixed
 
 | | |
 |---|---|
-| Branch | `feat/linux-buddy-kwin-helper` @ `0b2eb16a`, pushed, verify.sh green |
-| Workspace branch | `probe/buddy-kwin-helper` @ `7a3b418`, pushed (docs, probe, wrap-up) |
-| Build | **complete** — 5 tasks, 5 independent reviews, ~20 findings all fixed |
-| Dev instance | `run-dev.sh linux-buddy-helper --label "Linux Buddy Helper" --offset 40 --profile buddytest` — Vite 5213, remote 9940, debugger 9262, userData `~/.config/youcoded-buddytest` |
-| Acceptance deck | served at `http://127.0.0.1:40439/linux-buddy-helper.contract.acceptance.html` |
-| KDE baseline | `kwinrc` backed up to the session scratchpad **before** launch; only `tp-edges` installed, no helper loaded. **Diff it after testing and confirm byte-identical.** |
+| Branch | `feat/linux-buddy-kwin-helper` @ `417ea394`, pushed, full suite green |
+| Workspace branch | `probe/buddy-kwin-helper` @ `879f2ad`, pushed |
+| Build | complete — 5 tasks, 5 independent reviews, ~20 findings all fixed |
+| **Live test** | **run on a real KDE Wayland desktop. Both defects it found are fixed and re-tested: Destin, 2026-09-04 — "this works!"** |
+| Dev instance | relaunched after the fixes: `--label "Linux Buddy Helper" --offset 40 --profile buddytest`, Vite 5213 |
+| KDE baseline | `kwinrc` backed up to the session scratchpad **before** the first launch. **Still to do: diff it and confirm byte-identical.** The helper IS currently installed under the `buddytest` profile — expect that one `[Plugins]` line, and nothing else. |
 
-**Destin is mid-test.** He was given a six-step script: read the row before
-touching it → flip on → decline once (R4: no buddy at all) → flip on and Add
-helper → drag/keep-above/chat-position/edge-dock → off-and-on (R9: no second
-question) → Remove helper (R10: buddy switches off, KDE settings clean). His
-answers are the nine `live-app` rows of the acceptance deck.
+### The two defects the live run found — both measured, both fixed
 
-**Kill the dev instance when done** (`--profile buddytest`), and diff `kwinrc`.
+Neither was reachable from a unit test as the suites then stood, and neither is
+a Linux quirk you would guess. Probe FINDINGS rounds 8 and 9 carry the numbers.
+
+- **The drag flickered across the whole screen.** The renderer drove the drag
+  from `e.screenX`, which is the window's origin plus the cursor inside it — and
+  on Wayland that origin is frozen at `0,0` forever (Round 8: three real moves to
+  500,300 / 900,600 / 200,150, `window.screenX` read 0 every time). So each frame
+  moved the window and the next frame reported the cursor as having moved back by
+  exactly that much: `P(n+1) = F - g - P(n)`, a two-cycle. **The renderer now
+  sends window-local coordinates and main converts using the position it owns.**
+  Identical arithmetic on Windows/macOS/X11, so it is one path, not a branch.
+- **"Add helper" turned the buddy on and straight back off.** `reconfigure`
+  returns void the instant KWin accepts it, ~200 ms before the script is running
+  (Round 9: false at 3 ms; first true at 205/199/199 ms). Install checked
+  immediately, got false, and `buddyShowRefusal` refused. **Install now waits for
+  KWin to report the script loaded, on a WALL-CLOCK budget** — each poll is a
+  DBus call with its own 4 s timeout, so a poll count would have let a slow
+  compositor hold the launch path for ~400 s.
+
+Guards, each watched go red with its fix removed:
+`tests/buddy-drag-coordinates.test.ts` (a model of the compositor, driven through
+both the Wayland and the ordinary path), `tests/buddy-drag-payload.test.tsx` (the
+renderer boundary — screen coordinates can be nonsense and the drag is
+unaffected), and three new cases in `tests/kwin-helper.test.ts`.
+
+### Still open
+
+- The nine `live-app` contract rows are **not** all individually recorded. Destin
+  confirmed the drag, Remove helper, and the consent-then-Add-helper flow. R7,
+  R8, R11, R13 have not been separately signed off — ask, do not assume.
+- **The packaged-build check.** `assets/kwin-helper/**` is in `asarUnpack`, but
+  nothing proves it unpacks in a real build. If it does not, "Add helper" does
+  nothing at all in the shipped app only — dev looks perfect.
+- The real two-screen run (roadmap item filed).
+- Two copy questions: whether "Not yet supported on this desktop" should become a
+  real GNOME roadmap item or be reworded; and the string "Couldn't remove the
+  helper from your KDE settings.", which Destin has never seen.
+- **At merge:** add the four deferred globs to `.claude/rules/buddy-floater.md`
+  (they match nothing until the branch lands, and the auditor fails on that),
+  rewrite its dormant-overlay paragraph, close the buddy roadmap item, archive
+  the design/review/prototype docs.
+- **Merge is not approved.** A fresh session should review the PR first.
 
 ## Next steps, in order
 
