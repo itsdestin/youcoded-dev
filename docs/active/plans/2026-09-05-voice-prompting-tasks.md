@@ -265,16 +265,36 @@ it, focus leaving **before** 250 ms leaves it closed. Plus **`VoiceButton.test.t
 the card copy for all five states, including the two new sentences and the Retry branch; no
 test renders this component today.
 
-### T10 · Leave the workspace findable (depends: T5, T9)
-**Files:** `docs/MAP.md` (workspace)
-**Design:** the whole of it.
-Add the `<userData>/voice/` row to the on-disk state table, **and a subsystem row for
-`main/voice/`** with its entry points, its guard tests and this design as its depth doc (B22) —
-otherwise the next session finds a whole subsystem only by grep. Judge whether a
-`.claude/rules/voice.md` earns its place or whether the MAP row plus the tests carry it; the
-workspace's own ladder prefers a pinning test to a rule, and this feature now has eight test
-files, so state the decision either way.
-**Rows:** none. **Check:** `node scripts/audit-anchors.mjs`.
+### T10 · Leave the workspace findable — **DEFERRED TO THE MERGE SESSION** (2026-09-05)
+
+**Not done, deliberately.** `scripts/audit-anchors.mjs` resolves every `docs/MAP.md` path from
+the workspace root, where `youcoded/` is the SHARED checkout — so a MAP row naming this
+feature's files fails the nightly audit for the whole window between the workspace branch
+merging and the app branch merging. Tried it: 18 paths missing, mechanical pass red. (T7 hit
+the same wall and left the rule's `verify:` frontmatter alone for the same reason, naming the
+new test in prose instead.)
+
+**So the merge session adds all of this, in the commit that lands `feat/voice-prompting`:**
+
+1. A **subsystem row** in `docs/MAP.md`, after "Local engine & models":
+   entry points `desktop/src/main/voice/{voice-service,voice-worker,voice-assets,voice-pin}.ts`,
+   `desktop/src/renderer/voice-capture.ts`, `desktop/src/shared/voice-types.ts` (which owns
+   `splitAtLastSentenceEnd`, the one grey/solid rule), and
+   `app/src/main/kotlin/com/youcoded/app/runtime/VoiceRecognizer.kt`; depth doc
+   `docs/active/specs/2026-09-05-voice-prompting-technical-design.md`; guards
+   `voice-rehear`, `voice-service`, `voice-silence`, `voice-assets`, `voice-addon-load`,
+   `voice-split`, `useVoiceInput`, `VoiceButton`, `remote-shim-voice-gate`.
+2. An **on-disk state row**: the voice folder under Electron's userData holds the speech
+   engine and its model, fetched once on the first tap (~500 MB), per machine, never synced;
+   owner `desktop/src/main/voice/voice-assets.ts`. **Write the folder names without backticks**
+   — the auditor reads a backticked fragment as a path and will fail on it.
+3. A **hot-path row**: "the mic, and its download / no-microphone cards" →
+   `desktop/src/renderer/components/VoiceButton.tsx`.
+4. **Decide on a rule.** The workspace ladder prefers a pinning test to a rule, and this
+   feature now has nine test files including source-scanning guards for the two invariants that
+   no runtime test can see (the production workbench gate; the split's single owner). The
+   recommendation is **no `.claude/rules/voice.md`** — the MAP row plus those guards carry it —
+   but say so explicitly in the merge commit rather than leaving it unanswered.
 
 ## After the build
 
