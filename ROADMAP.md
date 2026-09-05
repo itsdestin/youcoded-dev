@@ -51,7 +51,7 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 68 | 26 | 2 | 9 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 70 | 26 | 2 | 9 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 48 | 8 | 1 | 16 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 28 | 16 | 0 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 6 | 0 | 9 |
@@ -73,7 +73,9 @@ report under `docs/active/investigations/` with a `<!-- claim: … -->` anchor a
 `→ <path>`. New items start `needs-verify` unless you reproduced it or your report anchors
 the cause. To close an item: delete it from the area file, append one line to
 `docs/roadmap/shipped.md`, archive its report. Run `node scripts/roadmap-check.mjs --fix`
-before committing.
+before committing. **The area table at the top of this file is generated** by that
+command: two branches that both file items will conflict on it every time. On a merge
+conflict there, take either side and run `--fix`; never hand-edit the counts.
 
 The last line of an entry is its tokens, in this order. **Every one is a closed list — a
 word that is not below is an error, not a new category. Do not invent one.**

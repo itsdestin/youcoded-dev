@@ -340,6 +340,12 @@ refuses to nest.
 
 ## Tests
 
+**From a worktree outside the workspace folder** (a scratchpad checkout of `youcoded-dev`),
+set `YOUCODED_WORKSPACE=/home/destin/youcoded-dev` first: the deck code finds the theme
+registry by walking up to a folder that holds `wecoded-themes/themes`, and a temp worktree has
+no sub-repos beside it. Without it 16 tests error with "no workspace root above …" and the
+contract close-out test fails the same way (measured 2026-09-04).
+
 They are `unittest` and `node --test`, not pytest, and they live outside a package — so the
 start directory has to be the top level too. `-t .` fails with *"Start directory is not
 importable"*, which is why nothing ran them for months:

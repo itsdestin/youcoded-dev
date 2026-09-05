@@ -220,6 +220,19 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+- [ ] roadmap-check verifies a report's claim against whatever copy of the sub-repo happens to
+      be on disk beside it, so a stale main checkout can keep a fixed bug "confirmed" for days
+      (two specialist bugs fixed 2026-09-02 were re-listed as open on 2026-09-04), and from a
+      scratchpad worktree every claim is skipped as "repo not on disk". Read claims from
+      origin/<default> with git show, and fall back to $YOUCODED_WORKSPACE for the sub-repos
+      `n/a` `confirmed` `checked 2026-09-05`
+
+- [ ] Every branch that files a roadmap item conflicts on the generated area table in ROADMAP.md
+      at merge time (three times on 2026-09-04/05). `roadmap-check --fix` could resolve a conflict
+      it recognises as only the table (strip the markers inside the table block and regenerate),
+      leaving any other conflict alone
+      `n/a` `confirmed` `checked 2026-09-05`
+
 
 - [ ] Path-scoped rules never reach a session that edits through the Bash tool, which is what
       bypass-permissions mode tells sessions to do. Measured on 2026-09-03 (session
