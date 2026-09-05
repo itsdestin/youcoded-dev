@@ -294,7 +294,7 @@ def build():
     body = f"""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Instruction Layer Comparison</title><style>{CSS}</style></head><body>
 <h1>YouCoded's agent instructions vs. Claude Code, Codex, Pi and Hermes</h1>
-<p class="lead">Seventeen kinds of instruction a harness gives its model. For each: what the four other agents actually send (verbatim, trimmed with “…”), what YouCoded sends today, and what to do about it. Read 2026-09-04 from each project's public source; Claude Code from its live prompt. Companion report: <code>docs/active/investigations/2026-09-04-native-prompt-vs-competitors.md</code>.</p>
+<p class="lead">Seventeen kinds of instruction a harness gives its model. For each: what the four other agents actually send (verbatim, trimmed with “…”), what YouCoded sends today, and what to do about it. Read 2026-09-04 from each project's public source; Claude Code from its live prompt. Companion report: <code>docs/archive/investigations/2026-09-04-native-prompt-vs-competitors.md</code>.</p>
 <div class="toolbar">
 <button data-filter="all">All {len(AREAS)} areas</button>
 <button data-filter="gaps">Where YouCoded has a gap</button>

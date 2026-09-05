@@ -1,12 +1,36 @@
 ---
 title: "YouCoded's native system prompt and agent instructions vs. Codex, Claude Code, Pi, Hermes, OpenClaw, Gemini CLI, Cline, Goose, Amp, Cursor"
-status: active
+status: shipped
 date: 2026-09-04
+shipped: 2026-09-05 (youcoded PR #423)
 type: investigation
 companion: 2026-08-26-native-tools-vs-other-harnesses.md (the TOOL layer — Read/Edit/Write/Bash limits and descriptions — is compared there and not repeated here)
 ---
 
 # YouCoded's native prompt vs. the other harnesses
+
+> **Status 2026-09-05 — most of §7 SHIPPED as youcoded PR #423** (`085ef667`), from Destin's own
+> draft on the workbench page beside this doc, then a nine-item approve/deny diff deck.
+> Landed: the persistence rule (§5.1), mode-honest permission text (§5.2 — as "approval is the app's
+> job", the version that does not double-ask), the writing block (§5.3 — **Destin's own wording**, not
+> the version proposed here), the dirty-worktree rule (§5.4), the untrusted-content wrapper and its
+> prompt half (§5.5), the question-vs-action rule (§5.6 — Destin's phrasing, narrowed to *changing*
+> things so Bash can still read), the envelope definitions (§5.7), and the planning threshold (§5.9).
+> New beyond this doc: a visual-review rule (look at visual output the way the user will see it),
+> "never answer from memory what a tool can tell you", the non-interactive-flags note in Bash, and a
+> vendor-neutral identity line. All of it lives in one composed module,
+> `prompts/shared-doctrine.ts`, keyed by capability — so §5.8's empty per-model slots are answered by
+> a better mechanism than filling them.
+>
+> **Still open:** §5.9's memory item (roadmap, sequenced behind the evaluator gate), and the one thing
+> this doc said to do first and nobody did — **measure the new prompt with the harness evaluator**,
+> especially on a small local model, since the prompt grew from ~200 to ~990 words (cloud Coder) and
+> ~630 (small local). Filed in `docs/roadmap/native-harness.md`.
+>
+> The three HTML pages beside this doc are the review surfaces it was read through. Only the last one,
+> `2026-09-04-prompt-workbench.html`, was accepted — it is the tool to reach for the next time the
+> prompt changes. The other two (a card matrix, a long-form reading page) were rejected as review
+> formats and are kept only because the workbench's generator imports one of them for its source text.
 
 **Question asked (Destin, 2026-09-04):** how do the system prompt and agent instructions that YouCoded's
 own agent runs on compare with what Codex, Claude Code, Pi, Hermes and the rest send their models? Where

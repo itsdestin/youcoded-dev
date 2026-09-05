@@ -373,7 +373,7 @@ def build():
         f'<h3 id="d{i}">{esc(t)}</h3><div class="diff">{b}</div>' for i, (t, b) in enumerate(DIFFS)) + '</section>'
     head = """<h1 id="top">Reading the prompts: YouCoded, Claude Code, Codex, Pi, Hermes</h1>
 <p class="lead">A system prompt is the standing orders an app gives its model before you type anything. Each of these five apps wrote different orders, for different reasons. This page walks through each prompt in the order the model reads it, with the real text on the right and a plain explanation on the left, then draws out the differences that change what you experience.</p>
-<p>Start with YouCoded, since that is the baseline, then read the other four. Every quoted block is verbatim from the source named under it; "[…]" marks a trim. Read 2026-09-04. The ranked recommendations and the full method are in the companion report, <code>docs/active/investigations/2026-09-04-native-prompt-vs-competitors.md</code>.</p>"""
+<p>Start with YouCoded, since that is the baseline, then read the other four. Every quoted block is verbatim from the source named under it; "[…]" marks a trim. Read 2026-09-04. The ranked recommendations and the full method are in the companion report, <code>docs/archive/investigations/2026-09-04-native-prompt-vs-competitors.md</code>.</p>"""
     body = f'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reading the Prompts</title><style>{CSS}</style></head><body><div class="wrap">{toc}<main>{head}{"".join(chapter(c) for c in CHAPTERS)}{diffs}</main></div></body></html>'
     return body
 
