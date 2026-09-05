@@ -132,10 +132,10 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
    shares are set per header count via the two :has() rules. */
 .card.contract table{table-layout:fixed}
 .card.contract th:nth-child(1){width:2.6em} .card.contract th:nth-child(3){width:7.5em}
-.card.contract th:nth-child(4){width:18%} .card.contract th:nth-child(5){width:13em}
+.card.contract th:nth-child(4){width:18%} .card.contract th:nth-child(5){width:14%}   /* From is an id that breaks anywhere; a fixed em width starved Verdict at 1024px */
 .card.contract td:nth-child(5),.card.contract .src{overflow-wrap:anywhere}
 /* ungraded: five columns — Statement takes the rest; graded: Statement and Verdict split it */
-.card.contract table:has(th:nth-child(6)) th:nth-child(2){width:32%}
+.card.contract table:has(th:nth-child(6)) th:nth-child(2){width:32%} .card.contract table:has(th:nth-child(6)) th:nth-child(6){width:26%}
 .words .cards:has(.contract){grid-template-columns:1fr}
 .compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
 /* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the

@@ -579,7 +579,7 @@
     renderResponses(); $('#step').hidden = true; $('#finished').hidden = false; document.body.dataset.screen = 'finished';
     // The header describes what is ON SCREEN. Left saying "Home · chat — step 3 of 3" it would
     // be labelling a step nobody is looking at. The progress strip stays: it is the summary at
-    // a glance, and clicking a segment is still the way back into that step.
+    // a glance, and clicking a segment is still the way back into that step (a one-page deck hides the strip; `‹ Back to the deck` is its way back).
     $('#wtitle').textContent = DECK.title; $('#wsub').textContent = 'review complete';
     $('#count').textContent = 'all ' + N + ' steps · read-only';
     $('#prev').disabled = false; $('#next').disabled = true;   // Prev goes back into the deck; nothing follows the end

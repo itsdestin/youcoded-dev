@@ -62,7 +62,8 @@ A words-only deck (every step picture-free) renders as pages, not one step per s
 - With no page markers, all question steps share **one** scrolling page.
 - A **page marker** in `steps` — `{"id": "P-scope", "page": "What gets redrawn", "intro":
   "one line"}` — starts a new page. Every question step after it, until the next marker,
-  sits on that page. A marker before a picture step is a spec error.
+  sits on that page. A marker before a picture step is a spec error, as is a marker with
+  no title or with fields beyond `page` and `intro`, or a marker with no steps after it.
 - The header's progress bar counts pages. Prev / Next move between pages. `step n of m`
   reads `page n of m · k of q answered`.
 - Each question keeps its own answer row (buttons + note) and its own `id`; the answers
