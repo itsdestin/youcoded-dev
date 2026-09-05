@@ -47,7 +47,12 @@ def summary(spec, state):
         counts[v] = counts.get(v, 0) + 1
         note = (a.get('note') or '').strip()
         # A choice step answers with the variant it picked ("P-19 pick B"); "no" there means none of them.
-        what = f'pick {a.get("pick", "?")}' if v == 'pick' else ('none' if v == 'no' and st.get('variants') else v)
+        # "Don't know" is Other with a flag on it, so the file keeps three answers rather than
+        # four — but the summary must say which of the two it was, or a session reads a shrug
+        # as "he wants something else".
+        what = (f'pick {a.get("pick", "?")}' if v == 'pick'
+                else 'none' if v == 'no' and st.get('variants')
+                else "don't know" if v == 'other' and a.get('dk') else v)
         # Fix: a note is a note (Destin, 2026-09-04) — no tag to print. An older answers
         # file may still carry a leftover per-note category alongside it; it is simply
         # never read here, so it has no effect on the summary.

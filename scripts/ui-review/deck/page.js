@@ -157,15 +157,21 @@
     // options." The cards are the better of the two (they carry the summary, the measurement
     // and the risk), so they are now the only place you pick. What stays here is only what a
     // card CANNOT say: none of them, or something else entirely.
-    $('#answers').innerHTML = picks || st.kind === 'decide'
+    // A QUESTION with no options is answered Yes / No / Don't know: a shrug is a real answer
+    // and must not have to be typed into Other. It rides as Other with `dk` so the answers
+    // file keeps three values, and both summaries print "don't know" for it.
+    $('#answers').innerHTML = st.kind === 'question'
+      ? `<button class="btn ans" data-v="yes">${esc(st.yes || 'Yes')}</button><button class="btn ans" data-v="no">${esc(st.no || 'No')}</button><button class="btn ans" data-v="other" data-dk="1">Don't know</button>`
+      : picks || st.kind === 'decide'
       ? (picks ? `<button class="btn ans" data-v="no">None of these</button>` : '')
         + `<button class="btn ans" data-v="other">Other</button>`
       : `<button class="btn ans" data-v="yes">${yesLabel(st)}</button><button class="btn ans" data-v="no">${noLabel(st)}</button><button class="btn ans" data-v="other">Other</button>`;
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
-  function answer(v, pick) {
+  function answer(v, pick, dk) {
     if (state.submitted) return;
     const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), v }; if (v === 'pick') a.pick = pick; else delete a.pick;
+    if (dk) a.dk = true; else delete a.dk;   // "Don't know" is Other with a flag; anything else clears it
     state.answers[id] = a; paintState(); save(); $('#note').focus();
   }
   $('#deck-title').textContent = DECK.title; document.title = DECK.title;
@@ -225,12 +231,25 @@
     if (st.kind === 'clip') $$('#inner video').forEach(v => v.addEventListener('loadedmetadata', layout));
     $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
     $('#headline').textContent = st.headline;
-    const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><span class="key">${esc(o.id)}</span><div class="vbody"><h3>${esc(o.label)}</h3><p>${esc(o.summary)}</p>${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+    // An option carries its own pros and cons now, and the preferred one wears a badge beside
+    // its letter — Destin (2026-09-04): one grey paragraph per option was unreadable, and
+    // "(recommended)" written into the label read as part of the option's name.
+    const bullets = (o, k) => (o[k] || []).length ? `<ul class="${k}">${o[k].map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
+    const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><span class="key">${esc(o.id)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}<div class="vbody"><h3>${esc(o.label)}</h3>${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+    // The three parts of a question, one card each. Kept as its own helper because the
+    // scrolling question page draws the same card per article.
+    const partCard = (title, text) => `<section class="card part"><h3>${esc(title)}</h3><p>${esc(text)}</p></section>`;
+    const partCards = s2 => [['Today', s2.today], ['The problem', s2.problem], ['Proposal', s2.proposal]]
+      .filter(([, t]) => t).map(([h, t]) => partCard(h, t)).join('');
     // CONTRACT: the rows as one table, not a card per row — grading (a `verdict` on any row)
     // adds a Verdict column instead of always reserving one nobody has filled in yet.
     const graded = st.kind === 'contract' && st.rows.some(r => r.verdict);
     const rowsTable = () => `<section class="card contract"><table><thead><tr><th>#</th><th>Statement</th><th>Checked by</th><th>Threshold</th><th>From</th>${graded ? '<th>Verdict</th>' : ''}</tr></thead><tbody>${st.rows.map(r => `<tr class="${esc(r.verdict)}"><td>${esc(r.id)}</td><td>${esc(r.statement)}${r.note ? `<p class="src">“${esc(r.note)}”</p>` : ''}</td><td>${esc(r.checkedBy)}${r.guard ? `<p class="src">${esc(r.guard)}</p>` : ''}</td><td>${esc(r.threshold || 'pass / fail')}</td><td class="src">${esc(r.source)}</td>${graded ? `<td>${esc(r.verdict || '—')}${r.evidence ? `<p class="src">${esc(r.evidence)}</p>` : ''}</td>` : ''}</tr>`).join('')}</tbody></table></section>`;
-    $('#cards').innerHTML = st.kind === 'contract'
+    $('#cards').innerHTML = st.kind === 'question'
+      ? partCards(st)
+        + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
+      : st.kind === 'contract'
       ? rowsTable()
         + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
         + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
@@ -239,7 +258,8 @@
         + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
         + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
       : st.kind === 'decide'
-      ? (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+      ? partCards(st)
+        + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
         + st.options.map(o => optionCard(o, ' option')).join('')
         + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
       : `<section class="card"><h3>${ICON.change}What changed</h3><p>${esc(st.changed)}</p>${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`
@@ -340,7 +360,7 @@
   // answered step used to lose that answer entirely. The note debounces so a sentence typed
   // at speed is one POST, not one per keystroke.
   let noteTimer = null;
-  $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick); });
+  $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick, b.dataset.dk === '1'); });
   $('#note').addEventListener('input', e => {
     const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), note: e.target.value };
     state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
@@ -356,7 +376,7 @@
   function summary() {
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
     // Mirrors serve.py's summary(): a note prints plainly, right after the answer, same words.
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : (v === 'other' && a.dk ? "don't know" : v)); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
     return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
   }
   function openDialog() {
@@ -408,7 +428,7 @@
     const v = a.v || 'skip';
     if (v === 'skip') return 'No answer';
     if (v === 'pick') { const o = (pickList(st) || []).find(x => x.id === a.pick); return a.pick + (o ? ' — ' + o.label : ''); }
-    if (v === 'other') return 'Something else';
+    if (v === 'other') return a.dk ? "Don't know" : 'Something else';
     if (v === 'no') return pickList(st) ? 'None of these' : noLabel(st);
     return yesLabel(st);
   };

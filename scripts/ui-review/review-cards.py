@@ -22,9 +22,13 @@ and LIVE (`live` — panes of the RUNNING app he can hover, click and drag, one 
 candidate each out of youcoded's compare/registry.tsx; `variants` makes it a pick-one, their
 absence a yes/no, and `serve` boots the worktree's workbench for it).
 
-A step may instead be WORDS-ONLY ("words": true — a question with 1–3 written options, or a
-statement to approve; no picture, no images folder needed): that is the questions deck asked
-before anything is drawn.
+A step may instead be WORDS-ONLY ("words": true — no picture, no images folder needed): that
+is the questions deck asked before anything is drawn. A QUESTION says what exists, what goes
+wrong and what would change in three fields of its own (`today`, `problem`, `proposal`), and
+offers 1–3 written options carrying their own `pros`/`cons` (one may be `"recommended": true`)
+— or none, and is answered Yes / No / Don't know. Writing any of that as "Today: … Pro: …"
+inside a summary is refused, by field name. A STATEMENT to approve (`changed` + `notice`,
+`yes`/`no` relabels, no `today`) is the other words step, and is exempt from all of it.
 
 A CONTRACT step ("rows") is the definition of done signed off as one step; see
 docs/active/specs/2026-09-01-feature-flow-design.md.

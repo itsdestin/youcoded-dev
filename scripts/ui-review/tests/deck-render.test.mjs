@@ -278,6 +278,16 @@ test('a words-only deck renders with no stage and records a pick', async () => {
       assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#stage')).display"), 'none');
       assert.equal(await c.evaluate("document.querySelectorAll('.card.option').length"), 1);          // Q-1: one option
       assert.equal(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.dataset.v).join(',')"), 'other');
+      // A question says what exists, what goes wrong and what would change, one card each —
+      // never crammed into the option's summary (design §3.2).
+      assert.equal(await c.evaluate("document.querySelectorAll('.card.part').length"), 3, 'today / the problem / the proposal');
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('.card.part h3')].map(h=>h.textContent)"),
+        ['Today', 'The problem', 'Proposal']);
+      // The preferred option wears a badge; "(recommended)" written into a label is refused by the builder.
+      assert.equal(await c.evaluate("document.querySelectorAll('.card.option[data-pick=a] .badge').length"), 1, 'the recommended option is badged');
+      assert.equal(await c.evaluate("document.querySelector('.card.option .badge').textContent"), 'Recommended');
+      assert.equal(await c.evaluate("document.querySelectorAll('.card.option ul.pros li').length"), 2, 'both pros listed');
+      assert.equal(await c.evaluate("document.querySelectorAll('.card.option ul.cons li').length"), 1, 'the con listed');
       await c.evaluate("document.querySelector('.card.option').click()");
       await c.evaluate("document.querySelector('#save').click()");   // → Q-2
       // Back up to Q-1 and add its note — proves the note field and the pick land together
@@ -289,10 +299,18 @@ test('a words-only deck renders with no stage and records a pick', async () => {
       await c.evaluate("document.querySelector('#next').click()");   // → Q-3
       await sleep(200);
       assert.equal(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.textContent).join(',')"), 'Holds,Fails,Other');
+      // Q-4 asks something with nothing to pick between: a shrug is a real answer, so it is a
+      // button, not something to type into Other. It rides as Other with a flag.
+      await c.evaluate("document.querySelector('#next').click()"); await sleep(200);
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.textContent)"), ['Yes', 'No', "Don't know"]);
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.dataset.v)"), ['yes', 'no', 'other']);
+      assert.equal(await c.evaluate("document.querySelector('.ans[data-v=other]').dataset.dk"), '1');
+      await c.evaluate("document.querySelector('.ans[data-v=other]').click()"); await sleep(400);
       await sleep(400);
       const answers = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
       assert.deepEqual([answers.answers['Q-1'].v, answers.answers['Q-1'].pick], ['pick', 'a']);
       assert.equal(answers.answers['Q-1'].note, 'smaller');
+      assert.deepEqual([answers.answers['Q-4'].v, answers.answers['Q-4'].dk], ['other', true], "don't know is Other with a flag");
       // Clearing the note removes it from the saved answer.
       await c.evaluate("document.querySelectorAll('#steps span')[0].click()");   // back to Q-1
       await c.evaluate("const n2 = document.querySelector('#note'); n2.value = ''; n2.dispatchEvent(new Event('input'))");

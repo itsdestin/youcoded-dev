@@ -101,6 +101,67 @@ class WordsTests(unittest.TestCase):
         self.assertEqual(lines[1], 'Q-1 pick a — "but smaller"')
         self.assertEqual(lines[3], 'Q-3 yes — "fine"')
 
+    # ── the question step: today / the problem / the proposal, and options that carry
+    # their own pros and cons (design §3.2). The refusals exist because sessions kept
+    # cramming all of that into one summary paragraph, which Destin then had to unpick.
+    def test_question_needs_today_problem_proposal(self):
+        s = spec_with(self.tmp, lambda r: r['steps'][0].pop('today'))
+        self.assertIn('Q-1: missing today (a question says what exists, what goes wrong, '
+                      'and what would change — today / problem / proposal)', errs(s))
+
+    def test_recommended_in_a_label_is_refused(self):
+        s = spec_with(self.tmp, lambda r: r['steps'][0]['options'][0].update(
+            {'label': 'In the friends list (recommended)'}))
+        self.assertIn('Q-1/a: "(recommended)" in a label — set "recommended": true on the option instead', errs(s))
+
+    def test_inline_labels_are_refused(self):
+        s = spec_with(self.tmp, lambda r: r['steps'][0]['options'][0].update(
+            {'summary': 'Today: nothing. Pro: fast.'}))
+        e = errs(s)
+        self.assertIn('Q-1/a: summary contains "Today:" — put it in the step\'s today field', e)
+        self.assertIn('Q-1/a: summary contains "Pro:" — put it in pros', e)
+
+    def test_one_recommended_at_most(self):
+        def two(r):
+            r['steps'][1]['options'][0]['recommended'] = True
+            r['steps'][1]['options'][1]['recommended'] = True
+        s = spec_with(self.tmp, two)
+        self.assertIn('Q-2: two options are recommended — at most one', errs(s))
+
+    def test_option_needs_pros_cons_or_summary(self):
+        s = spec_with(self.tmp, lambda r: r['steps'][1]['options'].__setitem__(1, {'id': 'b', 'label': 'Two'}))
+        self.assertIn('Q-2/b: an option needs pros, cons or a summary', errs(s))
+
+    def test_statement_is_exempt(self):
+        # Q-3 is a statement to approve, not a question: no today, and no complaint about it.
+        s = load_spec(words_spec(self.tmp))
+        self.assertNotIn('today', s['steps'][2])
+        self.assertEqual([e for e in errs(s) if e.startswith('Q-3')], [])
+
+    def test_deck_data_carries_the_parts(self):
+        s = load_spec(words_spec(self.tmp))
+        d = deck_data(s, {})
+        q1, q4 = d['steps'][0], d['steps'][3]
+        self.assertEqual(q1['today'], 'Your friends are a list you open from the games screen.')
+        self.assertTrue(q1['problem'] and q1['proposal'])
+        self.assertEqual(q1['options'][0]['pros'], ['One place for everything about a friend.',
+                                                    'Nothing new to find — the list is already open.'])
+        self.assertEqual(q1['options'][0]['cons'], ['The row gets a little busier.'])
+        self.assertIs(q1['options'][0]['recommended'], True)
+        # A question with no options is answered Yes / No / Don't know, so it gets its own kind.
+        self.assertEqual(q4['kind'], 'question')
+        self.assertTrue(q4['today'] and q4['problem'] and q4['proposal'])
+
+    def test_summary_prints_dont_know(self):
+        # "Don't know" rides as Other with a flag, so the file keeps three answers, not four —
+        # but both summaries must SAY don't know, or the session reads it as "something else".
+        from deck.serve import summary
+        s = load_spec(words_spec(self.tmp))
+        state = {'submitted': '2026-09-04T10:00:00Z',
+                 'answers': {'Q-4': {'v': 'other', 'dk': True, 'note': 'ask me later'}}}
+        lines = summary(s, state).split('\n')
+        self.assertEqual(lines[4], 'Q-4 don\'t know — "ask me later"')
+
     def test_is_words_is_the_flag_not_a_guess(self):
         # A step that merely FORGOT its crop is still an error, not a silent words step.
         self.assertFalse(is_words({'id': 'x', 'headline': 'h'}))

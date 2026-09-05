@@ -42,9 +42,19 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .answers{display:contents}
 /* a choice step: one button per variant, lettered like its picture's caption */
 .ans .key{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:5px;background:var(--inset);border:1px solid var(--edge);font-size:11px;font-weight:700;letter-spacing:.04em} .ans.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
-.card.variant{display:flex;gap:10px;align-items:flex-start;cursor:pointer} .card.variant .key{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:5px;background:var(--panel);border:1px solid var(--edge);font-size:11px;font-weight:700}
-.card.variant .vbody{min-width:0;display:flex;flex-direction:column;gap:4px} .card.variant h3{margin:0} .card.variant p{margin:0} .card.variant .r{font-size:11px;color:var(--mark)} .card.variant .cost{font-size:11px;color:var(--fg-muted)} .card.variant.on{border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)} .card.variant.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
+.card.variant{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;cursor:pointer} .card.variant .key{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:5px;background:var(--panel);border:1px solid var(--edge);font-size:11px;font-weight:700}
+.card.variant .vbody{flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:4px}  /* Fix: the letter and the Recommended badge now hold their own row when the card is narrow — before this the badge squeezed the option's words into a ~130px gutter. */ .card.variant h3{margin:0} .card.variant p{margin:0} .card.variant .r{font-size:11px;color:var(--mark)} .card.variant .cost{font-size:11px;color:var(--fg-muted)} .card.variant.on{border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)} .card.variant.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
 @media (hover:hover){.card.variant:hover{border-color:var(--fg-muted)}}
+/* An option's pros and cons. The COLOUR is on the marker only — a whole sentence in green or
+   red reads as a warning rather than as a plus or a minus, and Destin reads these as prose. */
+.card.variant ul{margin:2px 0 0;padding-left:16px;display:flex;flex-direction:column;gap:3px}
+.card.variant li{font-size:12px;color:var(--fg);line-height:1.4}
+.card.variant ul.pros li::marker{color:var(--yes)} .card.variant ul.cons li::marker{color:var(--no)}
+/* The recommended option, beside its letter — the flag the "(recommended)" label used to fake. */
+.card.variant .badge{flex:none;align-self:flex-start;padding:3px 7px;border-radius:var(--radius-full);background:color-mix(in srgb,var(--yes) 18%,var(--panel));border:1px solid color-mix(in srgb,var(--yes) 45%,var(--edge));color:color-mix(in srgb,var(--yes) 78%,var(--fg));font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+/* A question's three parts: Today / The problem / Proposal, one card each, the eyebrow the
+   plain cards already use. No icon — these are the question's own words, not a verdict. */
+.card.part h3{color:var(--fg-dim)}
 .frame.pickable{cursor:pointer;border-radius:var(--radius-md);padding:4px;margin:-4px} .frame.pickable.on{outline:2px solid var(--mark);outline-offset:2px} .frame.pickable figcaption .key{margin-right:6px}
 .ans{border-color:var(--edge)}
 /* Yes and No carry their meaning in the RESTING state — a tinted border and a tinted label,

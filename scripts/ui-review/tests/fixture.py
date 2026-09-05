@@ -149,9 +149,11 @@ def live_spec(tmp, base=None, **over):
 
 # ── words-only decks ────────────────────────────────────────────────────────────────────
 def words_spec(tmp, **over):
-    """A QUESTIONS deck: no pictures anywhere. One question with a single option (plus the
-    page's own Other), one with three, and one statement to approve with relabelled buttons.
-    Picture-free on purpose, like live_spec — this is CI coverage."""
+    """A QUESTIONS deck: no pictures anywhere. Two questions written the way a question is
+    written now — today / the problem / the proposal as their own fields, options carrying
+    their own pros and cons, the preferred one flagged rather than labelled "(recommended)"
+    — one statement to approve with relabelled buttons, and one yes/no/don't-know question
+    with no options at all. Picture-free on purpose, like live_spec — this is CI coverage."""
     deck = os.path.join(tmp, 'deck')
     os.makedirs(deck, exist_ok=True)
     spec = {
@@ -160,17 +162,38 @@ def words_spec(tmp, **over):
         'steps': [
             {'id': 'Q-1', 'words': True, 'surface': 'Games', 'path': 'Questions',
              'headline': 'Where does the invite live?',
-             'options': [{'id': 'a', 'label': 'In the friends list (recommended)', 'summary': 'One place for everything about a friend.'}]},
+             'today': 'Your friends are a list you open from the games screen.',
+             'problem': 'There is nowhere on that list to start a game, so you go looking for the friend twice.',
+             'proposal': 'Put the invite next to the friend it is for.',
+             'options': [{'id': 'a', 'label': 'In the friends list', 'recommended': True,
+                          'summary': 'The invite sits on the friend it is for.',
+                          'pros': ['One place for everything about a friend.',
+                                   'Nothing new to find — the list is already open.'],
+                          'cons': ['The row gets a little busier.']}]},
             {'id': 'Q-2', 'words': True, 'surface': 'Games', 'path': 'Questions',
              'headline': 'How many boards on screen at once?',
-             'options': [{'id': 'a', 'label': 'One', 'summary': 'Simplest.'},
-                         {'id': 'b', 'label': 'Two', 'summary': 'Mine and theirs.'},
-                         {'id': 'c', 'label': 'As many as fit', 'summary': 'Costs a layout rule.'}]},
+             'today': 'One game fills the window, and a second game replaces it.',
+             'problem': 'You lose sight of the first game the moment you open another.',
+             'proposal': 'Show more than one board at a time.',
+             'options': [{'id': 'a', 'label': 'One', 'summary': 'Simplest.',
+                          'pros': ['Nothing to take in but the game you are playing.'],
+                          'cons': ['You cannot watch two games at once.']},
+                         {'id': 'b', 'label': 'Two', 'summary': 'Mine and theirs.',
+                          'pros': ['You can see both games without switching.'],
+                          'cons': ['Each board is half the size.']},
+                         {'id': 'c', 'label': 'As many as fit', 'summary': 'Costs a layout rule.',
+                          'pros': ['Nothing is ever hidden from you.'],
+                          'cons': ['Boards get small fast.']}]},
             {'id': 'Q-3', 'words': True, 'surface': 'Games', 'path': 'Questions',
              'headline': 'A game you leave keeps running for the other player.',
              'changed': 'Stated, not asked: the alternative would surprise the friend who stayed.',
              'notice': 'Nothing yet — this becomes a row of the contract.',
              'yes': 'Holds', 'no': 'Fails'},
+            {'id': 'Q-4', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'Should a game keep its sound when you switch away from it?',
+             'today': 'A game goes quiet the moment you look at something else.',
+             'problem': 'You miss your turn, because nothing tells you the other player moved.',
+             'proposal': 'Yes keeps the game audible while you are elsewhere; No leaves it silent.'},
         ],
     }
     spec.update(over)

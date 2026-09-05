@@ -16,10 +16,26 @@ DEFAULT_THEMES = ['midnight', 'light', 'creme', 'dark', 'halftone-dimension', 'm
 # Whole-word, case-insensitive. "px" and numbers are fine — measurements are wanted.
 BANNED = ['token', 'primitive', 'selector', 'ipc', 'prop', 'props', 'reducer', 'handler',
           'component', 'tailwind', 'css class', 'react', 'dom', 'z-index']
-TEXT_FIELDS = ['headline', 'changed', 'measured', 'notice', 'risk', 'surface', 'path']
+TEXT_FIELDS = ['headline', 'changed', 'measured', 'notice', 'risk', 'surface', 'path',
+               # The three parts of a question (below) are copy Destin reads, so the
+               # banned-word rule reaches them exactly as it reaches every other field.
+               'today', 'problem', 'proposal']
 VARIANT_TEXT_FIELDS = ['label', 'summary', 'measured', 'risk']
 # A decide OPTION is words only — no picture — so `cost` carries what it would cost to take it.
 OPTION_TEXT_FIELDS = ['label', 'summary', 'measured', 'cost']
+# The three parts of a question: what exists, what goes wrong, what would change (design §3.2).
+QUESTION_FIELDS = ('today', 'problem', 'proposal')
+# WHY refused: every one of these labels is a FIELD now, and a session that types them into a
+# sentence instead ("Today: … Pro: fast") hands Destin one grey paragraph to unpick — which is
+# exactly what the questions decks of 2026-09-01..04 did. Refuse the sentence, name the field.
+INLINE_LABELS = ('today:', 'proposal:', 'problem:', 'pro:', 'pros:', 'con:', 'cons:', 'downside:', 'upside:')
+INLINE_TARGET = {'today:': "the step's today field", 'problem:': "the step's problem field",
+                 'proposal:': "the step's proposal field", 'pro:': 'pros', 'pros:': 'pros',
+                 'upside:': 'pros', 'con:': 'cons', 'cons:': 'cons', 'downside:': 'cons'}
+# "(recommended)" typed into a label instead of the flag — the page cannot badge it, and the
+# letter reads as part of the option's name.
+RECOMMENDED_RE = re.compile(r'\(?recommended\)?', re.I)
+COUNT_WORD = {2: 'two', 3: 'three', 4: 'four'}
 HEADLINE_MAX = 25
 RISK_WARN = 40
 # A contract row's `checkedBy` — who resolves it: a guard script, this deck's own answers,
@@ -140,6 +156,24 @@ def is_words(step):
     are its body). Users: the QUESTIONS deck answered before anything is drawn, the contract,
     and the acceptance deck's human rows (feature-flow design §3, §5, §7)."""
     return step.get('words') is True or is_contract(step)
+
+
+def is_question(step):
+    """A QUESTION step: a words step that asks something, keyed on `today` — the first of the
+    three parts every question carries (what exists / what goes wrong / what would change).
+    A contract is never one, and a STATEMENT to approve (yes/no relabels, `changed` +
+    `notice`, no `today`) is deliberately exempt, so acceptance rows are unaffected."""
+    return is_words(step) and not is_contract(step) and 'today' in step
+
+
+def inline_label_errors(text, where, field, errors):
+    """Refuse an inline "Today: …" / "Pro: …" label inside a field that has its own home for
+    it. Matched case-insensitively at a word boundary, colon and all, so "professional" and
+    "pro rata" are untouched."""
+    low = (text or '').lower()
+    for lab in INLINE_LABELS:
+        if re.search(r'(?<![\w-])' + re.escape(lab), low):
+            errors.append(f'{where}: {field} contains "{lab.capitalize()}" — put it in {INLINE_TARGET[lab]}')
 
 
 def no_pictures(spec):
@@ -292,12 +326,20 @@ def _validate_options(st, sid, errors, warnings, minimum):
         elif o['id'] in seen:
             errors.append(f'{sid}: duplicate option id "{o["id"]}"')
         seen.add(o.get('id'))
-        for k in ('label', 'summary'):
-            if not o.get(k):
-                errors.append(f'{sid}/{oid}: missing {k}')
+        if not o.get('label'):
+            errors.append(f'{sid}/{oid}: missing label')
+        # An option's body is now pros and cons (design §3.2); `summary` alone is still fine —
+        # every deck written before this change has only that, and they must keep building.
+        if not (o.get('pros') or o.get('cons') or o.get('summary')):
+            errors.append(f'{sid}/{oid}: an option needs pros, cons or a summary')
         for k in OPTION_TEXT_FIELDS:
             for w in banned_in(o.get(k)):
                 errors.append(f'{sid}/{oid}: {k} uses banned word "{w}"')
+        # A pro or a con is a sentence Destin reads, so it obeys the same vocabulary as the rest.
+        for k in ('pros', 'cons'):
+            for line in (o.get(k) or []):
+                for w in banned_in(line):
+                    errors.append(f'{sid}/{oid}: {k} uses banned word "{w}"')
         if o.get('measured') and not re.search(r'\d', o['measured']):
             warnings.append(f'{sid}/{oid}: measured has no number in it')
 
@@ -315,8 +357,10 @@ def _validate_words(spec, st, sid, errors, warnings):
     _headline_and_words(st, sid, errors)
     if is_contract(st):
         _validate_rows(spec, st, sid, errors)
-    elif st.get('options'):
-        _validate_options(st, sid, errors, warnings, minimum=1)
+    # A words step with options is ALWAYS a question — there is no other reason to offer a
+    # choice — so it owes the three parts even when its author forgot `today` entirely.
+    elif is_question(st) or st.get('options'):
+        _validate_question(st, sid, errors, warnings)
     else:
         for k in ('changed', 'notice'):
             if not st.get(k):
@@ -333,6 +377,33 @@ def _validate_words(spec, st, sid, errors, warnings):
         errors.append(f'{sid}: themes must be a non-empty list of theme names')
     if word_count(st.get('risk')) > RISK_WARN:
         warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
+
+
+def _validate_question(st, sid, errors, warnings):
+    """A words step that asks something (design §3.2). It says what exists, what goes wrong and
+    what would change, each in its own field; its options carry their own pros and cons, and at
+    most one of them is the recommended one — flagged, never written into the label."""
+    for k in QUESTION_FIELDS:
+        if not st.get(k):
+            errors.append(f'{sid}: missing {k} (a question says what exists, what goes wrong, '
+                          f'and what would change — today / problem / proposal)')
+        else:
+            inline_label_errors(st[k], sid, k, errors)
+    if not st.get('options'):
+        return
+    _validate_options(st, sid, errors, warnings, minimum=1)
+    opts = st['options'] if isinstance(st['options'], list) else []
+    recommended = 0
+    for i, o in enumerate(opts):
+        if not isinstance(o, dict):
+            continue
+        oid = o.get('id') or f'option {i + 1}'
+        inline_label_errors(o.get('summary'), f'{sid}/{oid}', 'summary', errors)
+        if RECOMMENDED_RE.search(o.get('label') or ''):
+            errors.append(f'{sid}/{oid}: "(recommended)" in a label — set "recommended": true on the option instead')
+        recommended += 1 if o.get('recommended') else 0
+    if recommended > 1:
+        errors.append(f'{sid}: {COUNT_WORD.get(recommended, recommended)} options are recommended — at most one')
 
 
 def _validate_rows(spec, st, sid, errors):

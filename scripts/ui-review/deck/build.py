@@ -8,7 +8,8 @@ import os
 
 from .crops import image_name
 from .live import has_live, is_live, live_base, live_offset, pane_url, pane_width
-from .spec import SpecError, all_themes, is_choice, is_contract, is_decide, is_words, run_names, step_themes, validate, workspace_root, is_clip, clip_files
+from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
+                    is_decide, is_question, is_words, run_names, step_themes, validate, workspace_root)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -69,7 +70,11 @@ def _choice_step(spec, st, boxes, run):
 
 
 def _option(o):
-    return {'id': o['id'], 'label': o['label'], 'summary': o['summary'],
+    # `pros`/`cons` are the option's body now and `summary` is optional beside them (design
+    # §3.2); both lists are always present so page.js never has to test for the key.
+    return {'id': o['id'], 'label': o['label'], 'summary': o.get('summary', ''),
+            'pros': list(o.get('pros') or []), 'cons': list(o.get('cons') or []),
+            'recommended': bool(o.get('recommended')),
             'measured': o.get('measured', ''), 'cost': o.get('cost', '')}
 
 
@@ -108,6 +113,14 @@ def _words_step(spec, st):
     elif st.get('options'):
         d['kind'] = 'decide'
         d['options'] = [_option(o) for o in st['options']]
+    elif is_question(st):
+        # A question with nothing to pick between is answered Yes / No / Don't know, which is a
+        # different answer row from both the decide and the statement — so it gets its own kind.
+        d['kind'] = 'question'
+    # The three parts of a question ride as their own keys; page.js draws one card each.
+    for k in QUESTION_FIELDS:
+        if st.get(k):
+            d[k] = st[k]
     return d
 
 
