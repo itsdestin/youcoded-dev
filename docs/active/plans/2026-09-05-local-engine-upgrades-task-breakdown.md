@@ -383,9 +383,17 @@ Renames: `engine.setSpeed` → `engine.setConfig({speed})` and `models.dismissMe
 **Then `node scripts/workbench-boot-check.mjs`** — the unit suite has passed while the app
 crashed at boot three times running.
 
-### T23 — The three fields nothing draws (§H, R3-24) — plus one stale default
-`EngineCard.tsx` still carries `status.speed ?? { speculative: true, compressCache: true }`, a
-third copy of a default that is now unreachable because main and the mock both always send
+### T23 — The three fields nothing draws (§H, R3-24) — plus two orphans
+**`presetInForce()` has no consumer** (found reviewing T7). T7 builds the fallback that lets
+the engine start when its settings file is unusable, and exposes `presetInForce()` so the card
+can say per-model settings are not in force for that run — but nothing renders it, so a user in
+that state sees their per-model settings silently ignored with no explanation. The card must
+say so. Same for the `preset-model-rejected` event, whose `lastLoadError` half T9 owns: the
+model that got dropped needs to say why in its own settings dialog.
+
+
+Also: `EngineCard.tsx` still carries `status.speed ?? { speculative: true, compressCache: true }`,
+a third copy of a default that is now unreachable because main and the mock both always send
 `speed` (found building T8). Delete it rather than leave a copy that can drift.
 
 
