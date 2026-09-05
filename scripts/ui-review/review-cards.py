@@ -6,6 +6,9 @@
         build it, serve it, print the address for the session to put in chat, save answers to <spec>.answers.json, exit when Destin submits
   python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
         block until the answers file says submitted (for a session that no longer holds the `serve` process)
+  python3 scripts/ui-review/review-cards.py record <spec.json> ['<pasted summary>' | < file]
+        the page's copy box, pasted back, becomes the submitted answers file — for a deck he answered as a
+        plain file (no server to submit to); newlines optional, a chat paste flattens them
   python3 scripts/ui-review/review-cards.py contract-check <feature>.contract.json
         every row's source resolves to an answered step in a submitted deck and every mechanical guard exists on disk or on
         the contract's branch (exit 1 lists what doesn't); then reports, as ok:/todo: lines, whether the contract was signed
@@ -52,7 +55,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from deck.build import build_page                       # noqa: E402
 from deck.contract import AcceptanceError, acceptance_spec, acceptance_status, check_contract, contract_steps, signoff   # noqa: E402
 from deck.crops import crop_images                      # noqa: E402
-from deck.serve import already_served, serve, wait_for_submit   # noqa: E402
+from deck.serve import already_served, record, serve, wait_for_submit   # noqa: E402
 from deck.spec import SpecError, apply_live_theme, load_spec, validate    # noqa: E402
 
 
@@ -85,8 +88,11 @@ def main(argv):
         sys.stdout.reconfigure(line_buffering=True)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest='cmd', required=True)
-    for c in ('build', 'serve', 'wait', 'contract-check', 'acceptance'):
+    for c in ('build', 'serve', 'wait', 'contract-check', 'acceptance', 'record'):
         sub.add_parser(c).add_argument('spec')
+    # `record`: the copy box's text, pasted back, when the page had no server to submit to.
+    # One argument or stdin; newlines optional (a chat paste flattens them — see parse_pasted).
+    sub.choices['record'].add_argument('text', nargs='?', help='the pasted summary; omit to read stdin')
     for c in ('serve', 'wait'):
         sub.choices[c].add_argument('--timeout', type=float, default=240, help='minutes to wait for a submit (exit 2 after)')
     sv = sub.choices['serve']
@@ -108,6 +114,8 @@ def main(argv):
             return build(spec)
         if a.cmd == 'wait':
             return wait_for_submit(spec, timeout_min=a.timeout)
+        if a.cmd == 'record':
+            return record(spec, a.text if a.text is not None else sys.stdin.read())
         if a.cmd == 'contract-check':
             # Fix: check_contract() assumes a well-formed spec (a row with no `id` raised
             # KeyError, which close-out.sh then printed under "contract does not hold" — a

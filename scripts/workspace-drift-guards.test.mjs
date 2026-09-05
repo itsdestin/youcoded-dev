@@ -169,7 +169,9 @@ test('guard: a commit in the main checkout is refused, with the worktree recipe'
   const r = tryCommit(p.local);
   assert.notEqual(r.code, 0, 'commit must fail');
   assert.match(r.out, /Refusing to commit in the shared/);
-  assert.match(r.out, /git worktree add/);
+  assert.match(r.out, /workspace-start\.mjs --session/);
+  assert.match(r.out, /Do not copy whole shared files/);
+  assert.doesNotMatch(r.out, /push origin HEAD:master/);
   assert.match(git(p.local, 'status', '--porcelain'), /a\.txt/, 'the edit must still be there');
   rmSync(p.root, { recursive: true, force: true });
 });

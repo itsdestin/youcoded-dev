@@ -263,7 +263,7 @@ def contract_spec(tmp, **over):
                    'answers': {'Q-1': {'v': 'pick', 'pick': 'a', 'seconds': 12}}}, f)
     with open(os.path.join(deck, 'r1.answers.json'), 'w') as f:
         json.dump({'deck': 'arcade-r1', 'submitted': '2026-09-01T09:30:00Z',
-                   'answers': {'S-1': {'v': 'yes', 'note': 'band could be thinner', 'note_kind': 'later', 'seconds': 20},
+                   'answers': {'S-1': {'v': 'yes', 'note': 'band could be thinner', 'seconds': 20},
                                'S-2': {'v': 'skip', 'seconds': 1}}}, f)
     spec = {
         # Fix: `out` must share the contract's stem (arcade.contract.html, not contract.html) —

@@ -289,5 +289,65 @@ class AcceptanceTests(unittest.TestCase):
         self.assertEqual(validate(load_spec(ap))[0], [])
 
 
+class ReviewSourcedRowTests(unittest.TestCase):
+    """Rows whose source is an ACCEPTED finding in a review file (feature-flow design §8e): the
+    code reviewer's and UX tester's accepted findings become contract rows so the acceptance
+    deck shows them, marked as found in review rather than approved on a deck Destin saw."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.review = os.path.join(self.tmp, 'deck', '2026-09-10-arcade-code-review.md')
+
+    def write_review(self, body):
+        os.makedirs(os.path.dirname(self.review), exist_ok=True)
+        with open(self.review, 'w') as f:
+            f.write(body)
+
+    def with_review_row(self, source='review:2026-09-10-arcade-code-review.md#F2', checked_by='human', **extra):
+        def mutate(raw):
+            raw['steps'][0]['rows'].append({'id': 'R9', 'statement': 'Closing the board never leaves a stale invite.',
+                                            'checkedBy': checked_by, 'threshold': 'pass/fail', 'source': source, **extra})
+        return spec_with(self.tmp, mutate)
+
+    def test_review_source_validates_without_a_sources_entry(self):
+        self.write_review('# Code review\n- F1 rejected — taste\n- F2 accepted — a stale invite survives closing the board\n')
+        s = self.with_review_row()
+        self.assertEqual([e for e in errs(s) if 'R9' in e], [])
+        from deck.contract import check_contract
+        self.assertEqual([p for p in check_contract(s) if 'R9' in p], [])
+
+    def test_missing_review_file_and_unknown_or_rejected_finding_are_reported(self):
+        from deck.contract import check_contract
+        s = self.with_review_row()
+        self.assertTrue(any('R9' in p and 'cannot read' in p for p in check_contract(s)))
+        self.write_review('- F1 rejected — taste\n- F2 rejected — not a bug\n')
+        self.assertTrue(any('R9' in p and 'F2' in p and 'not accepted' in p for p in check_contract(s)))
+        s = self.with_review_row(source='review:2026-09-10-arcade-code-review.md#F7')
+        self.assertTrue(any('R9' in p and 'no finding "F7"' in p for p in check_contract(s)))
+        # Review F4: an id that is on a line but unmarked is "not marked", never "no finding";
+        # bold ids, a trailing colon and a capitalised verdict all still resolve.
+        self.write_review('- F2 — deck/contract.py:40 — raw finding, not triaged yet\n')
+        s = self.with_review_row()
+        self.assertTrue(any('R9' in p and 'F2' in p and 'not marked' in p for p in check_contract(s)))
+        self.write_review('- **F2**: Accepted — bold id, colon, capital verdict\n')
+        self.assertEqual([p for p in check_contract(s) if 'R9' in p], [])
+
+    def test_acceptance_deck_marks_review_rows(self):
+        from deck.contract import acceptance_spec
+        self.write_review('- F2 accepted — a stale invite survives closing the board\n')
+        s = self.with_review_row()
+        acc = acceptance_spec(s, {'R1': {'verdict': 'pass', 'evidence': 'shot'}, 'R3': {'verdict': 'pass', 'evidence': 'ran'}})
+        table = acc['steps'][0]
+        found = {r['id']: r.get('found') for r in table['rows']}
+        self.assertEqual(found['R9'], 'review')
+        self.assertIsNone(found['R1'])
+        human = [st for st in acc['steps'][1:] if st['id'] == 'R9'][0]
+        self.assertIn('review', human['changed'].lower())
+        # The tag must survive into the page data (ROW_KEYS), or page.js can never show it.
+        ap = os.path.join(self.tmp, 'deck', 'arcade.contract.acceptance.json')
+        write_json(ap, acc)
+        self.assertEqual(deck_data(load_spec(ap), {})['steps'][0]['rows'][-1]['found'], 'review')
+
+
 if __name__ == '__main__':
     unittest.main()

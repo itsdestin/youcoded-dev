@@ -1,0 +1,180 @@
+{
+ "title": "Sign in with ChatGPT — contract",
+ "key": "chatgpt-signin-contract",
+ "out": "chatgpt-signin.contract.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "feat/chatgpt-signin",
+ "sources": {
+  "chatgpt-signin-questions": "chatgpt-signin.questions.json",
+  "chatgpt-signin-review": "chatgpt-signin.review.json",
+  "chatgpt-signin-review-2": "chatgpt-signin.review-2.json",
+  "chatgpt-signin-review-3": "chatgpt-signin.review-3.json",
+  "chatgpt-signin-review-4": "chatgpt-signin.review-4.json",
+  "chatgpt-signin-review-5": "chatgpt-signin.review-5.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Settings → Model Providers · First-run screen · Chat view · Status bar · Model picker",
+   "path": "Settings → Model Providers → ChatGPT; First run → sign in; conversation on a ChatGPT model",
+   "headline": "This is what done means.",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "The ChatGPT sign-in lives in two places: a ChatGPT card in Settings → Model Providers and a second button on the first-run screen.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-questions#Q-1"
+    },
+    {
+     "id": "R2",
+     "statement": "The provider is called ChatGPT on its Settings card, and its models are listed by their own names, such as GPT-5.6.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-questions#Q-2"
+    },
+    {
+     "id": "R3",
+     "statement": "Every model the signed-in plan allows appears in the model picker, grouped together, and a new model appears when OpenAI ships it.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-questions#Q-3"
+    },
+    {
+     "id": "R4",
+     "statement": "The /usage card and the status-bar chips show both the 5-hour and 7-day windows of the ChatGPT plan, with reset times.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-questions#Q-4"
+    },
+    {
+     "id": "R5",
+     "statement": "When the plan runs out mid-conversation, the turn stops with a card naming the reset time and a way to switch provider.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-questions#Q-5"
+    },
+    {
+     "id": "R6",
+     "statement": "The ChatGPT card's (i) note says the plan is used through OpenAI's own sign-in, allowed today but not promised in writing.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-questions#Q-6"
+    },
+    {
+     "id": "R7",
+     "statement": "A ChatGPT card sits between Claude Code and OpenRouter in Model Providers, with a Sign in button instead of a key box.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review#P-1",
+     "note": "fine but we should no longer show \"Default engine\" on the claude code tab. al providers should be formatted similarly with neutral treatment"
+    },
+    {
+     "id": "R8",
+     "statement": "The signed-in line matches the app's other status text, and the Claude Code card shows plan usage whenever the ChatGPT card does.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review#P-2",
+     "note": "i don't like the signed in text. it doesn't really match any styling use'd elsewhere in the app. figure out how to make this more consistent with other surfaces. and add usage to the cc card if doing that for gpt."
+    },
+    {
+     "id": "R9",
+     "statement": "In a conversation on a ChatGPT model the status bar shows the plan's 5h and 7d chips, each with its reset time.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review#P-7"
+    },
+    {
+     "id": "R10",
+     "statement": "Typing /usage in a ChatGPT conversation shows the plan's two windows and says they are measured across the whole ChatGPT plan.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review#P-8"
+    },
+    {
+     "id": "R11",
+     "statement": "The plan's models appear in the model picker labelled the way OpenAI names them, each marked with its provider.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review#P-10",
+     "note": "call it \"ChatGPT Plan\""
+    },
+    {
+     "id": "R12",
+     "statement": "While the browser tab is open, the ChatGPT card shows one short waiting line with a spinner and a Cancel, nothing else.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review-2#P-3"
+    },
+    {
+     "id": "R13",
+     "statement": "When OpenAI refuses the account, the status stays grey and OpenAI's own reason sits on a red line beneath it, with Sign out.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review-2#P-4"
+    },
+    {
+     "id": "R14",
+     "statement": "The first-run card stacks three full-width sign-ins, Claude filled, ChatGPT and OpenRouter outlined, and its link reads Use an API key or local model.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review-2#P-5"
+    },
+    {
+     "id": "R15",
+     "statement": "While the browser is open the first-run card stays, holding the waiting line, and the Skip setup link is gone from every step.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review-2#P-6"
+    },
+    {
+     "id": "R16",
+     "statement": "In the model picker and the status-bar chip the plan's models are grouped under ChatGPT Plan; the Settings card stays ChatGPT.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review-2#P-10"
+    },
+    {
+     "id": "R17",
+     "statement": "The Claude Code and ChatGPT headings above the cards are gone; each card carries its (i) beside its name.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review-3#P-1",
+     "note": "still need to remove the duplicative openrouter/api header, as we did for claude code/chatgpt. we will add two new topline headers (Cloud Models, Local Models) and remove the others. reduce the spacing a tad between the claude code/chatgpt cards"
+    },
+    {
+     "id": "R18",
+     "statement": "Every provider card's button is pinned to the top right on the name's line, however many lines the status takes.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review-3#P-2"
+    },
+    {
+     "id": "R19",
+     "statement": "The used-up card reads You have reached ChatGPT's 5-hour session limit (Resets @ 6:43pm), and Switch Providers opens the model picker.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review-3#P-9"
+    },
+    {
+     "id": "R20",
+     "statement": "Model Providers has two group headings, Cloud Models and Local Models; the OpenRouter/API heading is gone and the cloud cards sit closer.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "chatgpt-signin-review-4#P-1",
+     "note": "looks good aside from the stray ollama row. wouldnt that be local?"
+    },
+    {
+     "id": "R21",
+     "statement": "A custom endpoint pointing at this computer, like Ollama, lists under Local Models instead of under the OpenRouter card.",
+     "checkedBy": "mechanical",
+     "threshold": "the named test passes",
+     "source": "chatgpt-signin-review-5#P-1",
+     "guard": "youcoded/desktop/tests/local-endpoint.test.ts"
+    }
+   ]
+  }
+ ]
+}

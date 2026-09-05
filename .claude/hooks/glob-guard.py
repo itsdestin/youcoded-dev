@@ -37,6 +37,7 @@ Tests: node --test .claude/hooks/glob-guard.test.mjs
 """
 
 import json
+import os
 import re
 import shlex
 import sys
@@ -221,6 +222,48 @@ MESSAGE = (
 )
 
 
+# ── guard 5: `kill <pid>` aimed at Destin's LIVE app ─────────────────────────────────────
+# The live-app-safety rule forbids signalling the built YouCoded app or anything it runs.
+# On 2026-09-04 a session typed `kill 208941` from memory — a pid it had seen in an earlier
+# diagnostic listing — and stopped the live app's local-model engine. A rule read is not a
+# guard; this is. Before any `kill`/`kill -SIG` with numeric pids runs, read each pid's
+# command line from /proc and refuse when it belongs to the live app: the built binary
+# (`/opt/YouCoded/`) or the live profile directory (`/.config/youcoded/` — the trailing slash
+# keeps every dev profile, `youcoded-dev/`, `youcoded-m2a/`…, out of it). `kill -0` is a
+# liveness probe and is allowed. Fails open when /proc is unreadable.
+LIVE_APP_SIGNATURES = ("/opt/YouCoded/", "/.config/youcoded/")
+KILL_CMD = re.compile(r"(?:^|[|&;(]\s*)kill\s+([^|&;\n]*)")
+PROC_ROOT = os.environ.get("GLOB_GUARD_PROC", "/proc")
+
+
+def live_app_pids(command: str):
+    """The numeric pids in every `kill …` clause whose /proc cmdline is the live app's."""
+    hits = []
+    for m in KILL_CMD.finditer(strip_heredocs(command)):
+        args = m.group(1).split()
+        if any(a in ("-0", "-s0", "-n0") for a in args):
+            continue
+        for a in args:
+            if not a.isdigit():
+                continue
+            try:
+                with open(os.path.join(PROC_ROOT, a, "cmdline"), "rb") as f:
+                    cmdline = f.read().replace(b"\0", b" ").decode("utf-8", "replace")
+            except OSError:
+                continue
+            if any(sig in cmdline for sig in LIVE_APP_SIGNATURES):
+                hits.append((a, cmdline.strip()[:120]))
+    return hits
+
+
+KILL_LIVE_MESSAGE = (
+    "Blocked before it ran: pid {pid} is Destin's LIVE YouCoded app ({cmd}). The live-app-safety "
+    "rule forbids signalling it. If you meant your own dev process, look its pid up from its "
+    "port or unique command line IN THE SAME COMMAND (e.g. ss -ltnp | rg ':8199') — never "
+    "from a number remembered from an earlier listing."
+)
+
+
 def main() -> int:
     try:
         payload = json.load(sys.stdin)
@@ -242,6 +285,14 @@ def main() -> int:
             return 2
     except Exception:
         pass   # fail open, same contract as everything else in this hook
+
+    try:
+        hits = live_app_pids(command)
+        if hits:
+            print(KILL_LIVE_MESSAGE.format(pid=hits[0][0], cmd=hits[0][1]), file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open
 
     try:
         if pgrep_loop_offender(command):

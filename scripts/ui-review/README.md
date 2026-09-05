@@ -64,6 +64,11 @@ the reason. **A review must quote `coverage.md` and call unverified surfaces "un
 
 ## Writing a shot
 
+A context-free tester (the UX tester of the feature flow) learns this tool from
+`tester-kit.md` alone — keep that file, not this section, as the beginner's copy, and keep the
+two in agreement. The reviewer briefs beside it: `ux-tester.md`, `code-reviewer.md`,
+`grader.md`, `contract-agent.md`.
+
 `"measure": ["#send", {"text": "Send"}]` on a shot records those elements' window rectangles in
 the manifest (`measures`), which is how a review deck gets an exact highlight box. A missing
 element fails the shot. **Plan the `measure` lines before the Before run** — a measurement can
@@ -345,6 +350,12 @@ closes it at the end. Unset the `CLAUDE*` env vars first (see run-dev.sh) or Cla
 refuses to nest.
 
 ## Tests
+
+**From a worktree outside the workspace folder** (a scratchpad checkout of `youcoded-dev`),
+set `YOUCODED_WORKSPACE=/home/destin/youcoded-dev` first: the deck code finds the theme
+registry by walking up to a folder that holds `wecoded-themes/themes`, and a temp worktree has
+no sub-repos beside it. Without it 16 tests error with "no workspace root above …" and the
+contract close-out test fails the same way (measured 2026-09-04).
 
 They are `unittest` and `node --test`, not pytest, and they live outside a package — so the
 start directory has to be the top level too. `-t .` fails with *"Start directory is not

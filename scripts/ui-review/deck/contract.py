@@ -1,9 +1,10 @@
 """The gate's three facts, and the acceptance deck built from the contract.
 
 contract-check reads what the design calls the gate (feature-flow design §4): (1) the contract
-holds — every row's `source` names a step that exists in a deck the spec's `sources` map points
-at, that deck's answers were SUBMITTED, that step was answered (not skipped), and every
-`mechanical` guard exists on disk or on the contract's branch; (2) the contract was SIGNED —
+holds — every row's `source` either names a step that exists in a deck the spec's `sources` map
+points at, that deck's answers were SUBMITTED and that step was answered (not skipped), or is
+`review:<file>#<id>` naming a finding line marked accepted (§8e); and every `mechanical` guard
+exists on disk or on the contract's branch; (2) the contract was SIGNED —
 its own answers file is submitted and the contract step answered yes; (3) the acceptance deck
 was submitted. Only (1) is an exit code: the contract agent runs this before Destin has seen
 the deck, so (2) and (3) are reported as `ok:` / `todo:` lines that close-out.sh relays.
@@ -13,9 +14,45 @@ beside every graded row, then one words step per human / live-app row for Destin
 import glob
 import json
 import os
+import re
 import subprocess
 
-from .spec import is_contract, is_page, workspace_root
+from .spec import REVIEW_SOURCE_RE, is_contract, is_page, workspace_root
+
+
+def is_review_source(src):
+    return bool(REVIEW_SOURCE_RE.match(src or ''))
+
+
+def review_finding(base, src):
+    """Resolve a `review:<file>#<id>` source: '' if the finding line exists and says accepted,
+    else one problem. The review file's findings are one per line, `- <id> <verdict> — <text>`
+    with verdict accepted / rejected / already handled (feature-flow design §8b, §8e).
+    WHY the check reads the verdict: a reviewer's raw finding is an opinion; only one the
+    implementing session ACCEPTED is a promise the acceptance deck may hold the build to."""
+    rel, _, fid = src[len('review:'):].partition('#')
+    path = os.path.join(base, rel)
+    try:
+        with open(path) as f:
+            lines = f.read().splitlines()
+    except OSError as e:
+        return f'cannot read review file {rel}: {e.strerror or e}'
+    # Review F4 (2026-09-04): an id that IS on a line but is not marked must not be reported as
+    # "no finding" — that names a false cause. Match the id loosely (bold, trailing colon, any
+    # case on the verdict word) and say exactly which of the three states the line is in.
+    present = False
+    for line in lines:
+        m = re.match(r'^\s*[-*]\s+\**([\w.-]+)\**:?\s*(.*)$', line)
+        if not m or m.group(1) != fid:
+            continue
+        present = True
+        v = re.match(r'(accepted|rejected|already handled)\b', m.group(2), re.I)
+        if v:
+            verdict = v.group(1).lower()
+            return '' if verdict == 'accepted' else f'finding {fid} in {rel} is {verdict}, not accepted — only accepted findings become rows'
+    if present:
+        return f'finding {fid} in {rel} is not marked — write "- {fid} accepted — …" (or rejected / already handled) after triage'
+    return f'no finding "{fid}" in {rel} (findings are lines like "- {fid} accepted — …")'
 
 
 class AcceptanceError(Exception):
@@ -93,6 +130,14 @@ def check_contract(spec):
     for st in contract_steps(spec):
         for r in st['rows']:
             tag = f'{st["id"]}/{r["id"]}'
+            # Review F5: the mechanical-guard check is shared by both source shapes — one copy.
+            if r.get('checkedBy') == 'mechanical' and not guard_exists(root, spec.get('branch'), r.get('guard', '')):
+                problems.append(f'{tag}: guard {r.get("guard")} is neither on disk under {root} nor committed on branch "{spec.get("branch") or "(no branch in the spec)"}"')
+            if is_review_source(r.get('source')):
+                why = review_finding(spec['_base'], r['source'])
+                if why:
+                    problems.append(f'{tag}: {why}')
+                continue
             key, _, sid = (r.get('source') or '').partition('#')
             rel = sources.get(key)
             if not rel:
@@ -115,8 +160,6 @@ def check_contract(spec):
             a = (ans.get('answers') or {}).get(sid) or {}
             if not a.get('v') or a['v'] == 'skip':
                 problems.append(f'{tag}: step {sid} of {key} was not answered')
-            if r.get('checkedBy') == 'mechanical' and not guard_exists(root, spec.get('branch'), r.get('guard', '')):
-                problems.append(f'{tag}: guard {r.get("guard")} is neither on disk under {root} nor committed on branch "{spec.get("branch") or "(no branch in the spec)"}"')
     return problems
 
 
@@ -167,12 +210,16 @@ def acceptance_spec(spec, verdicts):
     rows = []
     for r in st['rows']:
         v = verdicts.get(r['id']) or {}
-        rows.append({**r, **({'verdict': v['verdict'], 'evidence': v.get('evidence', '')} if v.get('verdict') else {})})
+        # `found: review` marks a row that came from a reviewer's accepted finding, not from a
+        # deck Destin answered — the acceptance deck shows the tag so he can veto it (design §8e).
+        found = {'found': 'review'} if is_review_source(r.get('source')) else {}
+        rows.append({**r, **found, **({'verdict': v['verdict'], 'evidence': v.get('evidence', '')} if v.get('verdict') else {})})
     table = {**st, 'id': st['id'], 'rows': rows, 'headline': 'The contract, graded — accept these verdicts?',
              'yes': 'Yes, accept', 'no': 'No, something is wrong'}
     human = [{'id': r['id'], 'words': True, 'surface': st['surface'], 'path': 'Acceptance',
               'headline': r['statement'],
-              'changed': 'Checked by you.' + (f' Your note at review: “{r["note"]}”' if r.get('note') else ''),
+              'changed': ('Found in review after the build, not on a deck you saw — veto it here if you disagree. ' if is_review_source(r.get('source')) else 'Checked by you.')
+                         + (f' Your note at review: “{r["note"]}”' if r.get('note') else ''),
               'notice': r.get('threshold') or 'pass / fail',
               'yes': 'Holds', 'no': 'Fails'}
              for r in st['rows'] if r.get('checkedBy') in ('human', 'live-app')]

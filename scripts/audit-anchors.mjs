@@ -55,6 +55,17 @@ export function uncommittedPaths(root, runner = execFileSync) {
 }
 
 const subRepoRootCache = new Map();
+/** Commits this checkout is behind its remote default branch, or 0 when that cannot be
+ *  told (no git, no remote, a detached build). Never throws: the auditor's job is the
+ *  audit, and a missing git is not an audit failure. */
+function behindCount(root) {
+  try {
+    const out = execFileSync('git', ['-C', root, 'rev-list', '--count', 'HEAD..origin/master'],
+      { timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+    return /^\d+$/.test(out) ? Number(out) : 0;
+  } catch { return 0; }
+}
+
 export function subRepoRoot(root) {
   if (subRepoRootCache.has(root)) return subRepoRootCache.get(root);
   let resolved = root;
@@ -582,6 +593,28 @@ function main() {
   // THIS branch's docs against code that may be older than the branch expects.
   if (subRepoRoot(root) !== root && !asJson) {
     console.log(`note: sub-repos resolved from the main checkout ${subRepoRoot(root)} (this is a worktree)`);
+    // …and a behind SUB-REPO invents MAP-path failures the same way a behind
+    // workspace invents doc failures: on 2026-09-05 a test merged to youcoded
+    // master was reported missing for an hour because the shared checkout was 8
+    // commits back. The workspace warning below could not see it — the two are
+    // different repos and go stale independently.
+    for (const repo of REPOS) {
+      const behind = behindCount(path.join(subRepoRoot(root), repo));
+      if (behind > 0) {
+        console.log(`note: ${repo}/ in that checkout is ${behind} commit(s) behind origin/master — a MAP path reported missing may simply not be pulled yet.`);
+      }
+    }
+  }
+  // A behind checkout invents failures. On 2026-09-05 a session running this in the
+  // shared checkout got two: a doc reported as living in BOTH docs/active and
+  // docs/archive (it had been archived upstream) and a word-budget violation (fixed
+  // upstream) — and spent calls on each before noticing. CLAUDE.md warns that a stale
+  // checkout governs the session; this says it at the moment it would mislead.
+  if (!asJson) {
+    const behind = behindCount(root);
+    if (behind > 0) {
+      console.log(`note: this checkout is ${behind} commit(s) behind origin/master — failures below may already be FIXED upstream. Re-check from a worktree at origin/master before acting on one.`);
+    }
   }
   const result = {
     ok: true,

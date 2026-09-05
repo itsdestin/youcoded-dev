@@ -34,42 +34,10 @@
      "settle": 900
     },
     {
-     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Switch to ROCm'))?.click()"
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Set up')?.click()"
     },
     {
      "wait": 900
-    },
-    {
-     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').scrollIntoView({block:'start'})"
-    },
-    {
-     "wait": 400
-    }
-   ],
-   "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.startsWith('Local engine'))"
-  },
-  {
-   "name": "local-engine-rocm-refused",
-   "actions": [
-    {
-     "click": "[title=Settings]",
-     "settle": 700
-    },
-    {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
-     "settle": 900
-    },
-    {
-     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Switch to ROCm'))?.click()"
-    },
-    {
-     "wait": 900
-    },
-    {
-     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Check again')?.click()"
-    },
-    {
-     "wait": 1200
     },
     {
      "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').scrollIntoView({block:'start'})"
@@ -92,7 +60,7 @@
      "settle": 900
     },
     {
-     "eval": "document.querySelector('[data-testid=engine-advanced-toggle]')?.click()"
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Advanced') && b.closest('.rounded-lg')?.textContent.includes('Local engine'))?.click()"
     },
     {
      "wait": 700
@@ -144,22 +112,22 @@
      "wait": 600
     },
     {
-     "eval": "document.querySelector(\"[aria-label^='Settings for gemma-4-E2B']\")?.click()"
-    },
-    {
-     "wait": 800
-    },
-    {
-     "eval": "[...document.querySelectorAll('[data-testid=model-settings] button')].find(b=>b.textContent.trim()==='Advanced')?.click()"
-    },
-    {
-     "wait": 600
-    },
-    {
      "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Installed').scrollIntoView({block:'start'})"
     },
     {
-     "wait": 400
+     "wait": 300
+    },
+    {
+     "eval": "document.querySelector(\"[aria-label^='Settings for gemma-4-E2B']\")?.click()"
+    },
+    {
+     "wait": 900
+    },
+    {
+     "eval": "[...document.querySelectorAll('[data-testid=model-settings] button')].find(b=>b.textContent.trim().startsWith('Advanced'))?.click()"
+    },
+    {
+     "wait": 600
     }
    ],
    "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.trim()==='Installed')"
@@ -180,6 +148,12 @@
     },
     {
      "eval": "([...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Recommended') || [...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Installed')).scrollIntoView({block:'start'})"
+    },
+    {
+     "eval": "document.querySelector('[data-testid=repo-size-line] button')?.focus()"
+    },
+    {
+     "wait": 400
     },
     {
      "wait": 400
@@ -215,9 +189,15 @@
     {
      "click": "js:[...document.querySelectorAll('[data-model-picker-portal] [aria-pressed], [data-model-picker-portal] button, [data-model-picker-portal] [role=option]')].find(b=>/14b/i.test(b.textContent))",
      "settle": 1400
+    },
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('may not fit in available memory'))?.click()"
+    },
+    {
+     "wait": 500
     }
    ],
-   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Show more')"
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>/Show more|may not fit/i.test(b.textContent))"
   }
  ]
 }

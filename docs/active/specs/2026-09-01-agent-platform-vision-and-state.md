@@ -195,19 +195,22 @@ cross-project bucket for specialist charters. Open:
 
 ### 5.3 Specialists — stage one done, stage two not started
 
-Shipped (§4). Open, in the roadmap: child-transcript GC (blocked on a general
-delete-conversation feature), a stale `SPECIALIST_RUN_CHANGED` resend flipping a finished
-card back to running, `missedSteers` storing unclamped text, Activity notes appending rather
-than interleaving, and six named follow-on ideas (promote a foreground hire to background
+Shipped (§4). Open, in the roadmap (re-verified 2026-09-04): child-transcript GC (blocked
+on a general delete-conversation feature) and six named follow-on ideas — the stale-resend and
+unclamped-missed-steers bugs were fixed on 2026-09-02, the note-order bug on 2026-09-05 (promote a foreground hire to background
 mid-run, open a helper's own transcript, …).
 
 **Stage two — plans** (`docs/active/specs/2026-08-11-native-specialists-design.md` §4): the
 `propose_plan` tool, schema + validator + executor + journal, plan cards with worst-case
 token/dollar ceilings that are enforced caps, hard-stop budgets, re-planning instead of
-clever plans, resume across restarts. Not started. Three **live probes the spec requires
-before design is final have never been run**: the local engine's real parallel slots; whether
-KV prefix reuse survives fan-out; whether the `--jinja` tool grammar holds on the nested plan
-schema. The Claude Code bridge (`youcoded agent run` CLI + bundled skill) is also unbuilt and
+clever plans, resume across restarts. Not started. The three **live probes the spec requires
+before design is final were run 2026-09-04** on the pinned engine build
+(`youcoded/docs/engine-dependencies.md` → "Stage-two probes"): four helpers at once is the
+ceiling and the shipped launch shape shares one context pool across them; prefix reuse only
+partly survives the first simultaneous fan-out, so the card must charge a full prefill per
+child; plan authoring through the tool grammar is reliable from the 9B model class up and
+absent below it, so `propose_plan` is a model-class gate, not cloud-only. Design can proceed
+once §9 items 1–3 are ruled (`docs/active/handoffs/2026-09-04-stage-two-decisions-prompt.md`). The Claude Code bridge (`youcoded agent run` CLI + bundled skill) is also unbuilt and
 needs a `bin` entry the app has never shipped.
 
 **Verification debt:** the 1c hands-on checklist
@@ -351,8 +354,8 @@ MCP phase 2 → Android M8 → onboarding M9. Small permissions items slot anywh
 **Capability track** (§5.4): taxonomy → eval CI gate → cache breakpoints → event log →
 memory → containment → goals → remote protocol.
 
-**Specialists stage two** waits for the three live probes and for model metadata (plan-card
-dollar figures). **Agents & Automations** waits for the §6.1 ruling, cost accounting, and
+**Specialists stage two** has its three live probes (2026-09-04) and waits on §9 items 1–3 and
+on model metadata (plan-card dollar figures — token ceilings can ship first). **Agents & Automations** waits for the §6.1 ruling, cost accounting, and
 stage two's journal. The custom harness builder has no dependency and no owner.
 
 ---
@@ -414,7 +417,7 @@ stage two's journal. The custom harness builder has no dependency and no owner.
 - `docs/active/plans/2026-07-18-multi-model-cwd-contract.md` — awaiting §9 item 6.
 - `docs/active/specs/2026-07-30-permission-ask-timeout-design.md` + plan — PR #278.
 - `docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md` + plan `2026-08-21-full-auto-external-read-bypass.md` — 0/37.
-- `docs/active/specs/2026-08-05-project-scoped-skills-design.md` + plan.
+- Superseded: `docs/archive/specs/2026-08-05-project-scoped-skills-design.md` + plan — narrow Claude Code compatibility shipped in YouCoded PR #424; the v1.3 native-first replacement is tracked in `docs/roadmap/native-harness.md`.
 - `docs/active/specs/2026-08-17-search-scope-and-timeout-design.md`.
 - `docs/active/handoffs/2026-08-17-session-context-panel-handoff.md`.
 - `docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md`.

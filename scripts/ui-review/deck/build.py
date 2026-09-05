@@ -80,7 +80,7 @@ def _option(o):
 
 
 # The rows keys, verbatim into deck data — page.js draws them as a table (feature-flow design §3).
-ROW_KEYS = ('id', 'statement', 'checkedBy', 'guard', 'threshold', 'source', 'note', 'verdict', 'evidence')
+ROW_KEYS = ('id', 'statement', 'checkedBy', 'guard', 'threshold', 'source', 'note', 'verdict', 'evidence', 'found')
 
 
 def _decide_step(spec, st, boxes, runs):

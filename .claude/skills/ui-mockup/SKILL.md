@@ -21,6 +21,12 @@ the code already answers; do not ask what has an obvious answer (state it, the r
 will show it). Draw only after it is submitted: its answers are the first source of the
 contract.
 
+**Hand Destin the `[deck] http://127.0.0.1:…` line from `serve`, never the `.html` path**, while
+the server runs. The app opens a pasted path as a plain file, where Submit has no server and the
+page falls back to a copy box; on 2026-09-04 that paste came back as one flattened line and the
+deck read as "not submitted". If it happens anyway: `review-cards.py record <spec> '<paste>'`
+writes the submitted answers file from the paste (both line-per-step and flattened forms).
+
 ## The mechanism: edit the real components
 
 `bash scripts/run-workbench.sh` boots the **real renderer** in a browser tab at
@@ -86,6 +92,17 @@ approved.
 - When he picks among options (A/B/C), keep the rejected ones described in the ledger marked
   "decision: X" so the reasoning survives.
 
+## Before the first review deck: the UX tester's first run
+
+Once the mockups hold together, and **before Destin sees any deck**, dispatch the UX tester
+(`scripts/ui-review/ux-tester.md` — a fresh subagent with only the briefing and
+`scripts/ui-review/tester-kit.md`, nothing from the workspace) against the workbench with
+the feature's task. Triage its findings (`accepted` / `rejected` / `already handled` on each
+line of `docs/active/reviews/<date>-<feature>-ux-review-1.md`), apply the accepted ones and the
+shorter wording it proposes (checked against the design guide's banned words; a proposal
+that changes meaning goes on the deck for Destin instead), then build the review deck. The
+deck he sees should already be free of the confusion an outsider catches in ten minutes.
+
 ## Verification is Destin's
 
 Per the workspace rule, do **not** script interactive verification. One-shot screenshots for
@@ -109,8 +126,18 @@ Decisions must not live only in chat — and the deck answers ARE the record (th
    pre-written code only for cross-repo / stored-data / strict-order work → subagent-driven
    build with a reviewer per task. Destin is not in this stage; a contradiction with the
    approved UI is a reopen deck, never a silent change.
-4. At the end: write `<feature>.contract.verdicts.json` beside the contract, run
-   `review-cards.py acceptance`, serve the acceptance deck; `bash scripts/close-out.sh <branch>`
-   reports whether the contract holds, was signed, and was accepted.
+4. **Two reviews, then triage** (design §8e): dispatch the code reviewer
+   (`scripts/ui-review/code-reviewer.md`) and the UX tester's second run (`ux-tester.md`,
+   against the built branch) in parallel, each with a budget; mark every finding line in
+   their review files; fix the accepted ones; hand the review files to the contract agent so
+   accepted findings become `review:` rows.
+5. File a roadmap entry for anything the contract agent listed under `## Not covered` that is
+   real work rather than a question for the next round (`docs/roadmap/<area>.md`
+   — `ROADMAP.md` → "Filing an item"), and follow the workspace knowledge rules (pinning test >
+   ast-grep rule > WHY comment > path-scoped rule) for anything durable.
+6. At the end: dispatch the grader (`scripts/ui-review/grader.md`, a fresh agent) to write
+   `<feature>.contract.verdicts.json`, run `review-cards.py acceptance`, serve the acceptance
+   deck; `bash scripts/close-out.sh <branch>` reports whether the contract holds, was signed,
+   and was accepted. Merge only on Destin's word.
 
 Merging cannot shift appearance, because nothing was ever copied.

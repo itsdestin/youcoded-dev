@@ -1,0 +1,28 @@
+{
+ "deck": "local-engine-upgrades-review-3",
+ "started": "2026-09-05T08:02:22.641Z",
+ "submitted": "2026-09-05T08:06:24Z",
+ "cur": 2,
+ "answers": {
+  "P-16": {
+   "v": "yes",
+   "seconds": 161,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-17": {
+   "v": "yes",
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-18": {
+   "note": "still kinda ugly with FAR more text than the average user would want/need. and that bare checkbox is NOT youcoded's style. ",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 54,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

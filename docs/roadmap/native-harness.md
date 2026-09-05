@@ -4,6 +4,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+- [ ] On a ChatGPT-plan model, YouCoded does not hand OpenAI's private reasoning back on the
+      next step of a tool turn, so a long tool-using turn may re-think work it already did —
+      slower and more expensive than it needs to be. Phase 0 measured no reasoning item at all
+      on the free plan, so nothing is broken today; a paid plan is the case to check
+      `desktop` `needs-verify` `checked 2026-09-05` → docs/archive/specs/2026-09-05-chatgpt-signin-backend-design.md
+
 - [ ] Memory the desktop app holds for each session is never let go when the session ends —
       six small per-session bookkeeping structures survive session exit (found 2026-08-27 while
       chasing the sidecar crash; not the crash cause, a few hundred bytes each)
@@ -68,8 +74,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Third-party agent CLIs as session providers (Codex first, then OpenCode / Cursor) — cuts
       against the standing "one first-party harness, every model" direction, kept as a deliberate
       what-if. Codex was scoped for real 2026-08-31 via its official app-server interface (draft
-      spec; nothing committed to build)
-      `desktop` `parked` `checked 2026-08-31` → docs/active/specs/2026-08-31-codex-session-provider-design.md
+      spec; nothing committed to build). Superseded for the ChatGPT-plan goal on 2026-09-04:
+      OpenAI publicly welcomes the plan inside third-party apps, so the plan's models are
+      reached directly (shipped 2026-09-05); this stays for Codex-the-agent only
+      `desktop` `parked` `checked 2026-09-04` → docs/archive/investigations/2026-09-04-chatgpt-subscription-paths.md
 
 - [ ] Native Runtime Parity Program — everything that still separates a native session from a Claude
       Code one (context truncation notice, M6 onward, cwd contract, MCP phase 2, M7–M9). The single
@@ -108,6 +116,22 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-09-01`
 
 ## tools
+- [ ] The assistant cannot search the WeCoded marketplace, so when it needs a capability it does
+      not have it reaches straight for a script or an outside service instead of the plugin that
+      already does the job. Wanted: a tool it can call to search plugins and integrations, so
+      "check what we already have" comes before "build something new". Destin, 2026-09-05: a 1.3
+      blocker, and the partner to the new "assume you can do it, find a way" rule in the prompt
+      `marketplace-screen` `desktop` `needs-verify` `checked 2026-09-05` `v1.3`
+
+- [ ] The assistant's standing instructions grew about five times on 2026-09-05 (youcoded #423) and
+      what that did to a small model is still unknown. Measured twice on 2026-09-05 at one run per
+      arm and both runs were inconclusive — the same build scored 2-3 points apart on the judged
+      items across runs, which is the size of the effect. Needs `--repeats` (the evaluator now warns
+      when a comparison plan lacks them). Still unmeasured either way: the COMPACT prompt a small
+      LOCAL model gets, which no OpenRouter arm exercises, and whether "keep going until it's done"
+      makes a small model loop more
+      `desktop` `needs-verify` `checked 2026-09-05` → docs/archive/investigations/2026-09-04-native-prompt-vs-competitors.md
+
 - [ ] One Grep from a conversation whose folder is your home directory can hang the turn for
       hours — on 2026-08-26 a background Explorer's search sat 4 h in Google Drive before Stop killed it
       `desktop` `confirmed` `checked 2026-09-01` `urgent` → docs/active/investigations/2026-09-01-grep-glob-no-deadline.md
@@ -203,30 +227,34 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       reading on DeepSeek is NOT a bug — measurement artifact, documented)
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-08-17-cache-efficiency.md
 
+- [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
+      OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account
+      balance on every message) should become a user-facing setting instead of a hardcoded
+      number — some users may want shorter replies to stretch a small credit balance further,
+      others may want a higher ceiling for very long single replies
+      `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
+
 ## specialists
 - [ ] Helper (specialist) transcripts pile up in the sessions folder forever — there is no way
       to delete one, and closing the parent conversation leaves its helpers' files behind.
       Blocked on a general delete-conversation feature existing at all (none does today)
       `desktop` `blocked` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
 
-- [ ] A note sent to a background helper mid-run shows at the bottom of its Activity trail,
-      after tool calls that actually happened later
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md
-
-- [ ] A finished helper's card can flip back to "running" — a late-arriving run update
-      overwrites the finished one, because a run record carries nothing saying which is newer
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-run-stale-resend.md
-
-- [ ] A note you send a helper that misses its window is stored in full in the parent's ledger,
-      past the 2,000-character cap notes are supposed to obey, and nothing limits how many pile up
-      `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-missed-steers-unclamped.md
+- [ ] After a reload, a helper's card can come back with no notes on it: the reload sends the
+      conversation's history and the helper records separately, and if the helper record arrives
+      before the card exists on screen it is dropped rather than parked, so the next live update
+      is the first thing the card shows. Found by the 2026-09-04 code review of the note-order fix
+      `tool-cards` `desktop` `needs-verify` `checked 2026-09-04`
 
 - [ ] Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user
       approves a card, the executor journals and resumes it. Approved in the 2026-08-11
-      specialists spec (§4, §7, §8); three live probes the spec requires (local engine's real
-      parallel slots, prefix reuse across fan-out, tool grammar on the nested plan schema) have
-      never been run; the Claude Code bridge (`youcoded agent run`) is unbuilt from the same spec
-      `desktop` `needs-verify` `checked 2026-09-01`
+      specialists spec (§4, §7, §8). The three live probes the spec requires were run on
+      2026-09-04 on the pinned engine build (four helpers at once is the ceiling; the first
+      fan-out pays most of its prompt cost again; plan authoring works from the 9B model class
+      up and not below) — results in youcoded `docs/engine-dependencies.md` → "Stage-two probes".
+      Still gated on Destin's decisions (the stage-two decisions prompt handoff). The Claude Code
+      bridge (`youcoded agent run`) is unbuilt from the same spec
+      `desktop` `decision` `checked 2026-09-04`
 
 - [ ] "Assistants" made of "Duties" — Destin's unit of organisation for the future Agents &
       Automations view: an assistant groups duties, may be a coordinator, a sole agent, or no
@@ -247,10 +275,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       unbuilt 2026-09-01)
       `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-native-mcp-phase-2.md
 
-- [ ] Open a native session on a repo and the repo's own `.claude/skills/` folder is never picked up —
-      Claude Code in the same folder would see them. Plan written 2026-08-06
-      (`docs/active/plans/2026-08-06-project-scoped-skills.md`), build work only
-      `desktop` `needs-verify` `checked 2026-08-26` `v1.3.1`
+- [ ] **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
+      only project-skill convention is Claude Code's `.claude/skills/`, so a person using only
+      YouCoded has no obvious place to put a personal or project workflow. Make `~/.youcoded/`
+      and a project-owned `.youcoded/` location the native source of truth; treat `.claude/skills/`
+      as optional import/export compatibility, never a prerequisite. The existing 2026-08-06 plan
+      is Claude Code parity only and must be superseded or expanded before implementation.
+      `all` `blocked` `checked 2026-09-05` `v1.3`
 
 - [ ] Pasting a path like `/README.md` or `/My Files/notes.md` into the chat still gets eaten as a
       slash command and the text vanishes; the common `/home/…` shape was fixed 2026-08-10. Destin

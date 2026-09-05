@@ -1,0 +1,84 @@
+{
+ "deck": "chatgpt-signin-review",
+ "started": "2026-09-05T00:40:47.696Z",
+ "submitted": "2026-09-05T01:55:44Z",
+ "cur": 9,
+ "answers": {
+  "P-1": {
+   "note": "fine but we should no longer show \"Default engine\" on the claude code tab. al providers should be formatted similarly with neutral treatment",
+   "note_kind": "noting",
+   "v": "yes",
+   "seconds": 285,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "other",
+   "note": "i don't like the signed in text. it doesn't really match any styling use'd elsewhere in the app. figure out how to make this more consistent with other surfaces. and add usage to the cc card if doing that for gpt.",
+   "note_kind": "noting",
+   "seconds": 52,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-3": {
+   "v": "yes",
+   "note": "think we can visually clean this up/simplify a bit.",
+   "note_kind": "noting",
+   "seconds": 100,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-4": {
+   "v": "yes",
+   "note": "improve visually tho",
+   "note_kind": "noting",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-5": {
+   "v": "other",
+   "note": "i think we also recently worked on openrouter oauth, which we should add here. idk if we finished/merged this but we should at the very least note that openrouter oauth should also go on this screen. \"i have an api key instead\" should change to \"Use an API key or local model\"",
+   "note_kind": "noting",
+   "seconds": 265,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-6": {
+   "note": "keep the card/container around this loading section. also remove the \"skip setup installed via terminal\" button",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 43,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-7": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-8": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-9": {
+   "v": "other",
+   "note": "this looks janky. i think we can improve this card/message.",
+   "note_kind": "noting",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-10": {
+   "v": "yes",
+   "seconds": 40,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "call it \"ChatGPT Plan\"",
+   "note_kind": "noting"
+  }
+ }
+}

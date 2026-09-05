@@ -47,7 +47,7 @@ ROWS = [
      'LOOP · Light — Project View: Files tab opens a PDF and a spreadsheet in-app; the editor pane; one project-wide search.', '', '', ''),
     ('row4', 'Stay organized', 'Tags, notes, and shortcuts.',
      'Tag and annotate conversations, pin the ones that matter, and hide the ones you\'ll never go back to. Quick chips run the prompts you use every day in one tap.',
-     'LOOP · Dark — a quick chip clicked; a session tagged + noted; the resume list filtered by tag; the Context tab showing the project\'s instructions.', '', '', ''),
+     'LOOP · Dark — a quick chip clicked; a session tagged + noted; the resume list filtered by tag; the Instructions & Memories tab showing the project\'s instructions.', '', '', ''),
     ('row5', 'Works everywhere', 'Start on your laptop. Finish on your phone.',
      'Windows, macOS, Linux, Android, and any browser. Your conversations and files stay in sync through your own private GitHub, so what you started here is waiting there.',
      'LOOP · Meadow Mist — the same conversation on desktop, then in a phone frame beside it; sync "up to date".',

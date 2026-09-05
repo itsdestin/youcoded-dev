@@ -10,6 +10,13 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       Destin 2026-09-02: warn and let me choose. The same fix must count memory for several sessions sharing one model, and must NOT warn on machines whose memory is deliberately full of cache that the model load can reclaim
       `desktop` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-08-16-dual-model-oom-desktop-crash.md
 
+- [ ] A local model's helper limit is decided when the conversation opens, before the model has
+      loaded — and asking the engine about an unloaded model would load it — so most local
+      conversations still get the one-helper cap until they are resumed after a first message.
+      The number should be re-read once the model is actually loaded (after the first turn), or
+      taken from any model the engine already has loaded. Follow-on to the slot-count fix
+      `desktop` `confirmed` `checked 2026-09-04`
+
 - [ ] "Run in background" option — keep the downloaded models serving other AI tools on this
       machine after the YouCoded window closes; today the engine is deliberately stopped on
       quit. Destin's note during the 2026-07-20 engine-lifecycle fix; only if real demand shows.
@@ -66,3 +73,14 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       model), a hardware/what's-loaded page with prompt speed and time-to-first-token, manual
       load/unload, embeddings for local search. Inventory and order in the report.
       `desktop` `decision` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+
+- [ ] Whole publishers' models are invisible in search because of how they punctuate filenames.
+      Measured over 10 real repos on 2026-09-05: `mradermacher/gemma-3-12b-it-GGUF` (13 files,
+      0 offered) and **`TheBloke/Llama-2-7B-Chat-GGUF` (12 files, 0 offered)** both write
+      `<name>.Q4_K_M.gguf` with a dot, and TheBloke is one of the largest GGUF publishers on
+      Hugging Face. A THIRD, separate cause: `Mungert/gemma-3-4b-it-gguf` (24 files, 0 offered)
+      is rejected on case, not punctuation — lowercase double-quant names like
+      `gemma-3-4b-it-f16-q8_0.gguf`. Worth splitting into the two causes when picked up, and
+      worth surveying how many of search's results are affected before widening the pattern:
+      loosening it wrongly makes unrelated files look like downloadable models.
+      `desktop` `confirmed` `checked 2026-09-05`

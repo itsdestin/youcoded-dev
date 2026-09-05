@@ -43,6 +43,11 @@ RISK_WARN = 40
 CHECKED_BY = ('mechanical', 'deck', 'live-app', 'human')
 # <deck key>#<step id> — the answered step a row's verdict comes from.
 SOURCE_RE = re.compile(r'^[\w.-]+#[\w.-]+$')
+# review:<path relative to the contract>#<finding id> — an ACCEPTED finding from the code
+# reviewer's or UX tester's review file (feature-flow design §8e). WHY a second shape: those
+# rows were never on a deck Destin answered, so they cannot point at a deck step; they point
+# at the finding line instead, and contract.py checks that line says "accepted".
+REVIEW_SOURCE_RE = re.compile(r'^review:[\w./-]+#[\w.-]+$')
 # Each live pane boots its own copy of the app; four is the cap (spec: Non-goals).
 MAX_LIVE_PANES = 4
 # Wider than this and the row scrolls sideways, which defeats comparing the panes at all.
@@ -628,8 +633,10 @@ def _validate_rows(spec, st, sid, errors):
         if r.get('checkedBy') == 'mechanical' and not r.get('guard'):
             errors.append(f'{sid}/{rid}: a mechanical row needs a guard (a workspace-relative test or script path)')
         src = r.get('source') or ''
-        if not SOURCE_RE.match(src):
-            errors.append(f'{sid}/{rid}: source must look like <deck key>#<step id>')
+        if REVIEW_SOURCE_RE.match(src):
+            pass  # a review file, not a deck — resolved by contract.py, never by `sources`
+        elif not SOURCE_RE.match(src):
+            errors.append(f'{sid}/{rid}: source must look like <deck key>#<step id> or review:<file>#<finding id>')
         elif src.split('#')[0] not in sources:
             errors.append(f'{sid}/{rid}: source deck "{src.split("#")[0]}" is not in the spec\'s "sources"')
         if 'verdict' in r:

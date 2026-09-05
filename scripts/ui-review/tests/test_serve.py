@@ -156,3 +156,37 @@ class ServeTests(unittest.TestCase):
         self.assertEqual(result['code'], 0)
 
 if __name__ == '__main__': unittest.main()
+
+
+class RecordTests(unittest.TestCase):
+    """`record`: the copy box's summary, pasted back, becomes the submitted answers file."""
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(); self.spec = load_spec(make_fixture(self.tmp))
+        from deck.serve import parse_pasted, record
+        self.parse, self.record = parse_pasted, record
+    def test_one_line_paste_reads_the_same_as_one_per_line(self):
+        ids = [st['id'] for st in self.spec['steps']]
+        lines = f'fixture · not submitted · 1 yes · 0 no · 1 other · 0 skipped\n{ids[0]} yes\n{ids[1]} other — "make it bigger" [fix later]'
+        flat = lines.replace('\n', ' ')                       # what a chat paste did on 2026-09-04
+        a, pa = self.parse(self.spec, lines); b, pb = self.parse(self.spec, flat)
+        self.assertEqual(pa, []); self.assertEqual(pb, []); self.assertEqual(a, b)
+        self.assertEqual(a['answers'][ids[0]], {'v': 'yes'})
+        # A leftover [fix later] from a deck written before 2026-09-05 parses and is dropped —
+        # the tags are gone (Destin), and an old paste must still record rather than refuse.
+        self.assertEqual(a['answers'][ids[1]], {'v': 'other', 'note': 'make it bigger'})
+    def test_pick_must_name_a_real_option_and_unknown_words_refuse(self):
+        ids = [st['id'] for st in self.spec['steps']]
+        _, problems = self.parse(self.spec, f'{ids[0]} maybe')
+        self.assertTrue(problems and ids[0] in problems[0])
+        _, problems = self.parse(self.spec, 'nothing here at all')
+        self.assertTrue(problems and 'no step answers' in problems[0])
+    def test_record_writes_a_submitted_file_and_keeps_an_earlier_one(self):
+        ids = [st['id'] for st in self.spec['steps']]
+        write_atomic(answers_path(self.spec), {'answers': {ids[0]: {'v': 'no'}}, 'submitted': '2026-09-01T10:00:00Z'})
+        logs = []
+        self.assertEqual(self.record(self.spec, f'{ids[0]} yes {ids[1]} skip', log=logs.append), 0)
+        got = json.load(open(answers_path(self.spec)))
+        self.assertTrue(got['submitted']); self.assertEqual(got['answers'], {ids[0]: {'v': 'yes'}})   # skip is absent, as the page leaves it
+        self.assertTrue(any(f.startswith(self.spec['_stem'] + '.answers.2026') for f in os.listdir(self.spec['_base'])))   # the old submit is history, not overwritten
+        self.assertEqual(self.record(self.spec, f'{ids[0]} pick zz', log=logs.append), 1)                  # a refused paste writes nothing new
+        self.assertIn('refused', ''.join(logs))
