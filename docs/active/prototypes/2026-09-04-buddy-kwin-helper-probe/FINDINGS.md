@@ -317,6 +317,66 @@ direction costs a working buddy; getting it wrong the other way leaves the
 status quo. §4 now carries both facts and R5's row fires only on the
 needed-but-unavailable combination.
 
+## Round 8 — what does the RENDERER think its window position is? (2026-09-04, headless)
+
+Run: `bash round8.sh` (`round8.js` + `kwin/round8-follow.js`).
+
+Asked because Destin's first live drag produced **"the buddy flickers all over
+the screen"**. One window, moved three times by caption, with the renderer asked
+after each move where it believes it is.
+
+| after                          | KWin actually put it at | `window.screenX/Y` | `getBounds()` |
+|--------------------------------|-------------------------|--------------------|---------------|
+| creation (`YC:mascot@100,100`)  | 100,100                | **0,0**            | 0,0           |
+| `YC:mascot@500,300`             | 500,300                | **0,0**            | 0,0           |
+| `YC:mascot@900,600`             | 900,600                | **0,0**            | 0,0           |
+| `YC:mascot@200,150`             | 200,150                | **0,0**            | 0,0           |
+
+**R8-F1 — a renderer's screen coordinates are unusable on Wayland, and this is
+what made the buddy flicker.** `e.screenX` on a pointer event is the window's
+origin plus the cursor's position inside it. The origin is frozen at 0,0 (above,
+and it matches Round 6's W3 — there is no readback of a compositor-side move at
+all), so `e.screenX` is really just `e.clientX` wearing a screen coordinate's
+name. The drag was anchor-based on that number: each frame the window moved to
+`screenX − grab`, which changed `clientX` by minus the same amount, so the next
+frame asked for the position before last. The window position satisfies
+`P(n+1) = F − g − P(n)` — a two-cycle that alternates between two points for as
+long as the finger is down, and jumps somewhere new every time the finger moves.
+
+The fix is to send the cursor's position **inside the window** and convert in
+main, where the app's own idea of where the window sits is authoritative:
+`target = where he is now + how far the finger has strayed from the grab point`.
+That formula is exact when the window follows the finger AND when it is pinned
+at an edge and cannot, and on Windows/macOS/X11 it is arithmetically the same
+expression the screen-based one evaluated to — so it is one path, not a branch.
+Pinned by `tests/buddy-drag-coordinates.test.ts` (a model of the compositor) and
+`tests/buddy-drag-payload.test.tsx` (the renderer boundary).
+
+## Round 9 — how long after `reconfigure` is the script running? (2026-09-04, headless)
+
+Run: `bash reload-latency.sh` — three unload/reconfigure cycles, polling
+`isScriptLoaded` every few ms until it flips.
+
+| cycle | isScriptLoaded at 3ms | first `true` |
+|-------|-----------------------|--------------|
+| 1     | false                 | **205 ms**   |
+| 2     | false                 | **199 ms**   |
+| 3     | false                 | **199 ms**   |
+
+**R9-F1 — `reconfigure` returns void long before KWin has started the script.**
+It reports only that the compositor accepted the request. Install checked
+`isScriptLoaded` immediately after and got `false`, so it reported success while
+nothing was running: the settings screen turned the buddy on and the app refused
+him in the same breath ("the helper isn't active"), and only a second attempt
+worked. Install now polls until KWin says it is loaded, on a **wall-clock**
+budget — each poll is a DBus call carrying its own 4s timeout, so a poll count
+would have let a slow compositor hold the launch path for 400 seconds.
+
+Bonus: because step 3 of the update sequence unloads the script first,
+`false → true` is unambiguous proof that KWin re-read the package and started
+*this* copy. Round 4's "nothing can verify the reload actually happened" no
+longer holds for the install path.
+
 ## What is now settled, and what is not
 
 **Settled — all measured, none inferred:**
@@ -339,6 +399,11 @@ needed-but-unavailable combination.
   updates and `move` never fires (Round 6, W3).
 - Electron's `workArea` is the full screen on Wayland; the real one comes from
   plasmashell's `StrutManager` (Round 6).
+- A renderer's `e.screenX/screenY` are `clientX/clientY` in disguise — the
+  window origin behind them never updates (Round 8). Drag in window-local
+  coordinates and convert in main.
+- `reconfigure` is accepted ~200 ms before the script is running, so anything
+  that asks "is it loaded?" straight afterwards gets `false` (Round 9).
 
 **Not settled:**
 - Two screens (needs the TV) — and Round 6 raises the stakes: the
