@@ -1,0 +1,203 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
+ "_why": "Local-engine upgrades (docs/active/design/2026-09-04-local-engine-upgrades). The new controls do not exist on master, so every After-only click is an `eval` that finds nothing on the Before run and simply does not fire \u2014 both runs then capture the SAME shot name at the SAME scroll position (scrollIntoView on an element both runs have), which is what a Before | After deck needs. `expect` names an element both runs have.",
+ "shots": [
+  {
+   "name": "local-engine-card",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').scrollIntoView({block:'start'})"
+    },
+    {
+     "wait": 500
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.startsWith('Local engine'))"
+  },
+  {
+   "name": "local-engine-rocm-guide",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Set up')?.click()"
+    },
+    {
+     "wait": 900
+    },
+    {
+     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').scrollIntoView({block:'start'})"
+    },
+    {
+     "wait": 400
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.startsWith('Local engine'))"
+  },
+  {
+   "name": "local-engine-advanced",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Advanced') && b.closest('.rounded-lg')?.textContent.includes('Local engine'))?.click()"
+    },
+    {
+     "wait": 700
+    },
+    {
+     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').scrollIntoView({block:'start'})"
+    },
+    {
+     "wait": 400
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.startsWith('Local engine'))"
+  },
+  {
+   "name": "local-models-installed",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "wait": 600
+    },
+    {
+     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Installed').scrollIntoView({block:'start'})"
+    },
+    {
+     "wait": 400
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.trim()==='Installed')"
+  },
+  {
+   "name": "local-model-settings",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "wait": 600
+    },
+    {
+     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Installed').scrollIntoView({block:'start'})"
+    },
+    {
+     "wait": 300
+    },
+    {
+     "eval": "document.querySelector(\"[aria-label^='Settings for gemma-4-E2B']\")?.click()"
+    },
+    {
+     "wait": 900
+    },
+    {
+     "eval": "[...document.querySelectorAll('[data-testid=model-settings] button')].find(b=>b.textContent.trim().startsWith('Advanced'))?.click()"
+    },
+    {
+     "wait": 600
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.trim()==='Installed')"
+  },
+  {
+   "name": "local-models-recommended",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "settle": 900
+    },
+    {
+     "wait": 900
+    },
+    {
+     "eval": "([...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Recommended') || [...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Installed')).scrollIntoView({block:'start'})"
+    },
+    {
+     "eval": "document.querySelector('[data-testid=repo-size-line] button')?.focus()"
+    },
+    {
+     "wait": 400
+    },
+    {
+     "wait": 400
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.trim()==='Models')"
+  },
+  {
+   "name": "local-model-memory-warning",
+   "actions": [
+    {
+     "click": "[title='All Sessions']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='+New Session'||b.textContent.includes('New Session'))",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label='Model'][aria-haspopup='listbox']",
+     "settle": 700
+    },
+    {
+     "click": "[aria-label='Search all models']",
+     "settle": 200
+    },
+    {
+     "type": "14b"
+    },
+    {
+     "wait": 600
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-model-picker-portal] [aria-pressed], [data-model-picker-portal] button, [data-model-picker-portal] [role=option]')].find(b=>/14b/i.test(b.textContent))",
+     "settle": 1400
+    },
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('may not fit in available memory'))?.click()"
+    },
+    {
+     "wait": 500
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>/Show more|may not fit/i.test(b.textContent))"
+  }
+ ]
+}

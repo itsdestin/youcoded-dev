@@ -1,0 +1,78 @@
+{
+  "title": "The hint that points back to chat",
+  "key": "back-to-chat-hint",
+  "out": "back-to-chat-hint.html",
+  "images": "images/back-to-chat-hint",
+  "runs": { "today": "/home/destin/youcoded-dev/scratch/hint-candidates" },
+  "themes": ["midnight", "light"],
+  "crops": {
+    "hint-a": ["hint", "a", "560x120+0+0"],
+    "hint-b": ["hint", "b", "560x120+0+0"],
+    "hint-c": ["hint", "c", "560x120+0+0"]
+  },
+  "steps": [
+    {
+      "id": "H-1",
+      "surface": "Top-left of the terminal",
+      "path": "After the initializing screen's button sends you to the terminal",
+      "headline": "Three shapes for the little hint that points you back to the chat button. Which one looks least out of place?",
+      "variants": [
+        {
+          "id": "a",
+          "label": "A — Quiet bubble",
+          "crop": "hint-a",
+          "summary": "Built out of the same panel the app's other pop-ups use, with a small arrow aimed at the chat button. Draws the least attention of the three.",
+          "measured": "300 px wide, 30 px tall — the same height as the toggle it points at",
+          "risk": "On the Light theme it is a near-white box sitting on a near-white terminal, and the thin outline is nearly all that separates them."
+        },
+        {
+          "id": "b",
+          "label": "B — Filled bubble",
+          "crop": "hint-b",
+          "summary": "Same shape and arrow, filled with the theme's highlight colour so it stays readable no matter what the terminal is printing behind it.",
+          "measured": "Same 300 px box; the fill is the only difference from A",
+          "risk": "That colour is what the app uses to mark the control you are currently on, so a filled bubble reads a bit like a stray second copy of the Terminal button."
+        },
+        {
+          "id": "c",
+          "label": "C — Shelf under the toolbar",
+          "crop": "hint-c",
+          "summary": "Squared off at the top and hung directly off the toolbar's bottom edge, so it reads as part of the window frame rather than a box floating over your terminal. No arrow.",
+          "measured": "Same width; sits 8 px higher, flush against the toolbar",
+          "risk": "Nothing points at the chat button any more — the shelf only starts underneath it, which is a weaker hint if your eye is elsewhere."
+        }
+      ],
+      "risk": "All three cover the first line or two of terminal output while they are up. The ✕ and switching back to chat both clear them."
+    },
+    {
+      "id": "H-2",
+      "words": true,
+      "surface": "The wording inside the hint",
+      "path": "Same bubble as above",
+      "headline": "The wording is what makes the bubble as wide as it is. How much of it do you want to keep?",
+      "options": [
+        {
+          "id": "keep",
+          "label": "Keep \"Click here to switch back to chat view\"",
+          "summary": "Your exact words. Nothing to re-decide, and it is the most explicit for someone who has never noticed the toggle.",
+          "measured": "300 px — about a quarter of the window on a laptop, and it reaches the ✕ on a phone",
+          "cost": "On a phone and on your own touchscreen, \"Click\" is the wrong verb for what you actually do."
+        },
+        {
+          "id": "short",
+          "label": "\"Back to chat view\"",
+          "summary": "The arrow already does the pointing, so the words only have to name where the button goes.",
+          "measured": "About 150 px — half the width, and it clears the terminal's first line on a phone",
+          "cost": "Says less. Someone who did not follow the arrow has less to go on."
+        },
+        {
+          "id": "neutral",
+          "label": "\"Switch back to chat view here\"",
+          "summary": "As explicit as your version, minus the verb that only makes sense with a mouse.",
+          "measured": "About 250 px",
+          "cost": "Still a wide bubble, so it still covers a line of terminal output."
+        }
+      ]
+    }
+  ]
+}

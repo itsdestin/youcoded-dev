@@ -12,7 +12,7 @@ supersedes_cost_shape: ROADMAP.md:1280 (the terminal-wrap cost estimate, for Cod
 > **Parked 2026-09-04.** The ChatGPT-plan goal this spec was written for is now met the
 > direct way — OpenAI publicly welcomed plans inside third-party apps in July 2026, which
 > removes §1's "must not be re-proposed" ban on that path. See
-> `docs/active/investigations/2026-09-04-chatgpt-subscription-paths.md`. This spec stays
+> `docs/archive/investigations/2026-09-04-chatgpt-subscription-paths.md`. This spec stays
 > for the separate feature "Codex-the-agent inside YouCoded"; §1's table, Phase 0 Q4/Q5 and
 > the sign-in screens are partly stale (the app-server now has `account/login/start` and
 > `account/rateLimits/read`).

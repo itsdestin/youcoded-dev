@@ -114,7 +114,7 @@ all pass on the worktree; the workbench mounts clean on all routes.
 ## Related design — "Manage Assistant Settings" destination
 
 The stub button's destination is the **Assistant-settings consolidated panel**:
-`docs/active/design/2026-08-17-assistant-settings-panel-design.md` (concurrent
+`docs/archive/design/2026-08-17-assistant-settings-panel-design.md` (concurrent
 design, same day — Defaults + Permissions + Model Providers collapse into one
 searchable tabbed panel; prototype `docs/active/prototypes/
 2026-08-17-assistant-settings-panel.html`). The session-context panel and the

@@ -103,8 +103,26 @@ seen-on is always n/a here.
       separate it and two apps can write it at once. Found 2026-09-05 while handing over the
       ChatGPT sign-in build, right after the setup-wizard state was given the same treatment
       (YOUCODED_TOOLKIT_STATE_DIR); the sync path needs its own override or the same one
-      `desktop` `unconfirmed` `checked 2026-09-05`
+      `desktop` `needs-verify` `checked 2026-09-05`
 
+- [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
+      1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
+      context-free tester cannot claim to have covered either. Add pointer and scale switches to
+      shot.mjs and ui-probe.mjs (drag-fuzz already has both) and default the tester kit to them
+      `n/a` `confirmed` `checked 2026-09-04`
+
+- [ ] Measure the feature flow's two reviewers: after three features have run through the
+      2026-09-04 flow, count findings, accepted, rejected and rows failed at acceptance per
+      reviewer, and whether the UX tester's first run cut Destin's review-deck rounds; decide
+      from those numbers whether each reviewer earns its cost
+      `n/a` `parked` `checked 2026-09-04`
+
+
+- [ ] A 526-line conversation-triage script for the test engine exists only on branch
+      `chore/conversation-triage-script` (rescued 2026-09-04 from the deleted assistant-settings
+      mockup branch, where it had hitched a ride). Nobody has said whether it is wanted: merge it
+      with a README line, or delete the branch
+      `n/a` `decision` `checked 2026-09-04`
 
 - [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
       nothing anywhere saying the app had stopped responding, so a tester's force-quit on
@@ -209,6 +227,19 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+- [ ] roadmap-check verifies a report's claim against whatever copy of the sub-repo happens to
+      be on disk beside it, so a stale main checkout can keep a fixed bug "confirmed" for days
+      (two specialist bugs fixed 2026-09-02 were re-listed as open on 2026-09-04), and from a
+      scratchpad worktree every claim is skipped as "repo not on disk". Read claims from
+      origin/<default> with git show, and fall back to $YOUCODED_WORKSPACE for the sub-repos
+      `n/a` `confirmed` `checked 2026-09-05`
+
+- [ ] Every branch that files a roadmap item conflicts on the generated area table in ROADMAP.md
+      at merge time (three times on 2026-09-04/05). `roadmap-check --fix` could resolve a conflict
+      it recognises as only the table (strip the markers inside the table block and regenerate),
+      leaving any other conflict alone
+      `n/a` `confirmed` `checked 2026-09-05`
+
 
 - [ ] Path-scoped rules never reach a session that edits through the Bash tool, which is what
       bypass-permissions mode tells sessions to do. Measured on 2026-09-03 (session
