@@ -451,7 +451,22 @@ spawns `$SHELL` (Windows: `powershell.exe`) with no args, no hook pipe, no trans
 terminal view only, **not offered in the new-session form** (the picker entry is the roadmap
 idea, which becomes in-flight: its floor ships here). `engine:run-in-terminal(command)` creates
 one in the current project folder and returns its id; the command is written **after the
-PTY's first output**, never on spawn, without `\r`. **The stated reason did not reproduce**
+PTY's first output**, never on spawn, without `\r` — **and with every control character
+refused before the session is created** (found reviewing T5). "We do not APPEND a carriage
+return" is not the same promise as "there is no carriage return in the string", and the
+difference is a shell-execution path: measured on real PTYs, one `\r` anywhere inside the
+command runs it on bash, zsh and fish with no keypress (`\n` and `;` are safe — line editors
+accept on CR, not LF). The command is not always ours: `remote-server.ts` reads it off a
+WebSocket, so an authenticated remote client could otherwise run anything on the host with no
+prompt, no permission gate and no transcript; and a prereq command that ever came from a file
+or a CRLF-shaped Windows string would silently run `sudo` for the user. One validator,
+`prepareRunInTerminal()`, stands in front of BOTH entry points and refuses
+`[\r\n\t\x00-\x08\x0b-\x1f\x7f]` naming the character and its index (TAB included: at a prompt
+it triggers completion, which rewrites the line the user is about to run). A structural test
+pins that `provider: 'shell'` appears on exactly two lines in `src/main/`, so a third way to
+open a shell fails the suite rather than quietly skipping the validator. The remote
+`session:create` refuses `provider === 'shell'` outright — the button is the only sanctioned
+way to make one. **The stated reason did not reproduce**
 (measured building T5): writing on spawn survived on fish 4, zsh and bash here, because the
 kernel's tty buffer holds the bytes until the shell starts reading. That survival is luck, not
 a guarantee, so the rule ships as specified and the probe records all three timings — the
