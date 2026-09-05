@@ -85,3 +85,10 @@ chat-data).
       concluding. An unclearable overlay was already noted as a UX bug in the 2026-08-07
       shipped entry and never tracked
       `desktop` `needs-verify` `checked 2026-09-03` `needs-repro`
+- [ ] When Claude goes quiet mid-answer the chat says "Still waiting on Claude — check Terminal
+      view if this persists", and that is all it says: no way to get there from the message, so
+      you have to know where the chat/terminal switch is and find it yourself. The initializing
+      screen had the identical dead end and got a button on 2026-09-04 (youcoded `2cdf468f`);
+      this is the same sentence on the other surface. The switch and the coach mark that points
+      back both exist now, so it is wiring, not new design
+      `chat` `desktop` `confirmed` `checked 2026-09-04`

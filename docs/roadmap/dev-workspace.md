@@ -438,3 +438,13 @@ seen-on is always n/a here.
       inside the viewport but still rendering as a spacer — that number must always be zero.
       Generalises past folding to any lazy render: is anything late to the screen?
       `n/a` `needs-verify` `checked 2026-09-03` `performance`
+- [ ] `ui-probe.mjs` cannot run anything BEFORE a page loads, so screenshotting a surface in a
+      chosen theme needs a hack: the theme is read from browser storage at boot, and the only way
+      to seed it is to pass two viewport sizes so the second pass reloads with it set. Burned four
+      probe runs on 2026-09-04 capturing one hint in four themes. A `--pre <js>` flag is the whole
+      fix (`Page.addScriptToEvaluateOnNewDocument` before navigate); the screenshot rig already
+      does exactly this. Same run: a probe that tried to READ Tailwind's rules out of
+      `document.styleSheets` returned a confident false negative twice under Vite — worth a line
+      in the script's header, since the working check was to paint the style unconditionally for
+      one run and photograph it
+      `n/a` `confirmed` `checked 2026-09-04`

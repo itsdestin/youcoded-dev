@@ -57,12 +57,9 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 
 ## Overlays (`components/overlays/Overlay.tsx`)
 - **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode scrim/blur/shadow/radius/z-index; pick a LAYER (L1–L4). `SessionStrip` `z-[9000]` is load-bearing; glassmorphism is var-driven.
+- **A utility class CANNOT override `.layer-surface`'s background, border or radius** — that CSS is unlayered, Tailwind's utilities are in `@layer utilities`, and unlayered always wins: `rounded-t-none` there is a silent no-op, not an error. Inline `style` is the only thing that beats it, and it beats the wallpaper-opacity rule too · `ViewToggleHint.tsx`.
 - **`.layer-surface` on a REPEATED element (grid tile, list row) is a paint bug** — N tiles = N backdrop-filters, and Windows Electron drops their paint per card (shipped twice: `516411a5`, `1f68a7f0`) · guard: `drawer-card-glass.test.ts`.
 
 ## Remote access state sync (`main/remote-server.ts`, `RemoteSnapshotExporter.tsx`)
 - **Remote clients hydrate via `chat:hydrate` on connect** — no parallel replay buffer; extend `serializeChatState`/`deserializeChatState` instead. `chat:export-snapshot` has a 2s timeout.
 - **`attentionState` is authoritative on DESKTOP only** — remote browsers get `attentionMap` via `status:data` and MUST NOT run their own classifier. App's `statusData` handler's `attentionMap` diff is load-bearing.
-
-## UI iteration tooling
-- **Building or redesigning UI? `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`); `run-dev.sh` only for PTY/main-process behaviour. Unbacked channels → `MOCK_ONLY`; review under `stress`/`empty`. **After ANY shim change: `node scripts/workbench-boot-check.mjs`.** Spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
-- **UI review sweep: `bash scripts/ui-review/run-review.sh <worktree>`** — self-verified, 6 themes; read `coverage.md`; `/ui-review`.

@@ -131,7 +131,14 @@ else
     if [[ -n "$ELSEWHERE" ]]; then
       fail "$BRANCH is not in $REPO — it is in $ELSEWHERE. Re-run: bash scripts/close-out.sh $BRANCH $ELSEWHERE"
     else
-      fail "no ref for $BRANCH anywhere, and no merge commit for it on $BASE — never pushed, or the name is wrong"
+      # Three causes, and this script cannot tell them apart: never pushed, wrong
+      # name, or merged under a merge message that does not NAME the branch --
+      # which is what a descriptive merge subject produces, and what this
+      # workspace's commit style encourages. Hit 2026-09-04 by a branch that was
+      # merged and pushed an hour earlier. Asserting "never pushed" for that is
+      # the misleading-error shape the workspace forbids, so state the
+      # observation and hand over the one command that settles it.
+      fail "no ref for $BRANCH anywhere, and no merge commit on $BASE NAMES it. Either it was never pushed, the name is wrong, or it was merged under a subject that does not mention the branch (a descriptive merge message). Check with: git -C $REPO_DIR log $BASE --oneline -20"
     fi
     MERGED=unknown
   fi
@@ -174,7 +181,7 @@ else
     # answer convincing in the first place.
     note "not asking whether it was pushed — it is not this repo's branch"
   else
-    fail "never pushed — nobody else can review this branch yet"
+    fail "no remote ref — nobody else can review this branch yet, unless it already merged (see above)"
   fi
 fi
 
