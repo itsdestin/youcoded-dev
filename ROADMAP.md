@@ -60,9 +60,9 @@ Target: `v1.3`
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 15 | 9 | 1 | 1 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 0 | 5 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 14 | 4 | 2 | 6 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 14 | 4 | 0 | 2 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 8 | 1 | 1 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 13 | 1 | 2 | 2 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 12 | 4 | 0 | 2 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 2 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
 
