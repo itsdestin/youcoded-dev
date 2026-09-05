@@ -202,3 +202,50 @@ generation first and awaits the exchange), F3 (`lastModelsAttemptAt` reset in `c
 and before the post-callback kick) and N1 (a fresh secret ref on re-sign-in, old ref deleted
 only after the file has switched). N2–N7 remain open as nits; N4 and N7 are carried into the
 final sweep below.
+
+## T5 — first run
+
+Reviewed `desktop/src/main/first-run.ts`, `desktop/src/renderer/components/FirstRunView.tsx`
+and `desktop/tests/first-run-chatgpt.test.ts` (commit `25f6b334`) against §5, §6 and the
+lock-out property. `tsc --noEmit` clean; 15/15 tests pass. The review's question was the one
+that matters on this branch: **the Skip-setup link is gone, so can any user reach a state with
+no way forward?** Two answers were yes.
+
+1. **must-fix — the provider-aware launch check has no test, and the test file says it does.**
+   `first-run-chatgpt.test.ts:20` claims the check is "pinned elsewhere"; `rg -n 'hasUsableProvider'
+   desktop/tests` returns nothing, and no test imports `main.ts`. Reverting `main.ts:974-976`
+   to the Claude-only check keeps all 15 green while throwing a ChatGPT-only install at a
+   Skip-less sign-in screen on every launch.
+2. **must-fix — `forceStep('AUTHENTICATE')` demotes an established install to first-run for good.**
+   `setup_completed` is written only by the FIRST_RUN_SKIP handler, which no UI reaches on this
+   branch (`rg -n 'skip\(\)' desktop/src/renderer` → nothing), so `isFirstRun()` rests on the
+   state file alone. Close the window without signing in and the NEXT launch takes the early
+   branch, never consults the provider-aware check, and re-runs the Node/Git/Claude installers
+   against a working install — with only "Try Again" on screen if one fails.
+3. **should-fix — a ChatGPT-only user is told in Settings they are signed in to Claude.**
+   `authComplete: true` on the ChatGPT path + `ModelProvidersPopup.tsx:243` → the Claude Code
+   row reads "Signed in with your Claude account" and draws Claude plan bars for no account.
+4. **should-fix — every first-run error still offers a Skip that no longer exists**
+   (`describe-step.ts:22`, reachable in one click via the OpenRouter button).
+5. **should-fix — that same OpenRouter line arms a Try Again that re-runs the whole prerequisite
+   installer** (`lastError` is the renderer's only retry gate).
+6. **should-fix — LIVE-APP HAZARD.** `STATE_DIR` is `~/.claude/toolkit-state`, module-level and
+   unaffected by the dev profile; `run-dev.sh` shifts Electron's userData but not HOME. Running
+   the first-run flow in a dev instance overwrites the setup state Destin's INSTALLED app reads,
+   and leaving it at `AUTHENTICATE` shows him the setup wizard on his real app's next launch.
+7. **nit** — the ChatGPT success path never clears a prior `lastError`.
+8. **nit (declined)** — the seeding effect also fires on the late path, replacing an established
+   user's remembered model. Deliberate; left as is.
+9. **nit** — no test renders `authMode: 'chatgpt'` at `AUTHENTICATE`, so deleting the `done`
+   guard in `FirstRunView.tsx:308` would default a user to the native runtime the moment a
+   sign-in *starts* — including one who then finishes with Claude instead.
+
+Checked and correct: quit / closed tab / timeout mid-wait cannot dead-end (`run()` resets
+`authMode`, `forceStep` rebuilds from `defaultState()`); `YOUCODED_CHATGPT=0` after a ChatGPT
+completion degrades to the first ready provider rather than locking out; `hasUsableProvider` is
+a real signal, not a rubber stamp (local-engine ready means a user-triggered install exists).
+
+verdict: changes requested — the branch's highest-stakes property has zero coverage while the
+suite claims otherwise; `forceStep('AUTHENTICATE')` strands an established install on a screen
+whose only control re-runs a failing installer; Settings claims a Claude sign-in that never
+happened; and a dev run of the wizard writes over the installed app's setup state.
