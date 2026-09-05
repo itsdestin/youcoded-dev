@@ -23,7 +23,7 @@
    "rows": [
     {
      "id": "R1",
-     "statement": "When AMD's ROCm software is missing on Linux, the app shows the exact install command and runs it in its own terminal.",
+     "statement": "When AMD's ROCm software is missing on Linux, the app shows the install command and types it into its own terminal for you to run.",
      "checkedBy": "human",
      "threshold": "pass/fail",
      "source": "local-engine-upgrades-questions#Q-1",
