@@ -124,10 +124,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `marketplace-screen` `desktop` `needs-verify` `checked 2026-09-05` `v1.3`
 
 - [ ] The assistant's standing instructions grew about five times on 2026-09-05 (youcoded #423) and
-      nobody has measured what that did to a small local model, which has the least room for them —
-      the harness evaluator is the tool for it, one local and one OpenRouter model, roughly a quarter
-      per run. Also unmeasured: whether the new "keep going until it's done" rule makes a small model
-      loop more
+      what that did to a small model is still unknown. Measured twice on 2026-09-05 at one run per
+      arm and both runs were inconclusive — the same build scored 2-3 points apart on the judged
+      items across runs, which is the size of the effect. Needs `--repeats` (the evaluator now warns
+      when a comparison plan lacks them). Still unmeasured either way: the COMPACT prompt a small
+      LOCAL model gets, which no OpenRouter arm exercises, and whether "keep going until it's done"
+      makes a small model loop more
       `desktop` `needs-verify` `checked 2026-09-05` → docs/archive/investigations/2026-09-04-native-prompt-vs-competitors.md
 
 - [ ] One Grep from a conversation whose folder is your home directory can hang the turn for
