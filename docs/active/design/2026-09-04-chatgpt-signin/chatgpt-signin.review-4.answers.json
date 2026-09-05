@@ -1,12 +1,11 @@
 {
  "deck": "chatgpt-signin-review-4",
- "started": "2026-09-05T05:26:52.160Z",
- "submitted": null,
- "cur": 0,
  "answers": {
   "P-1": {
    "v": "yes",
-   "note": ""
+   "note": "looks good aside from the stray ollama row. wouldnt that be local?",
+   "note_kind": "noting"
   }
- }
+ },
+ "submitted": "2026-09-05T05:43:31Z"
 }
