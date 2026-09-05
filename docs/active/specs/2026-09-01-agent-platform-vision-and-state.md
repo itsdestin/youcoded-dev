@@ -196,9 +196,8 @@ cross-project bucket for specialist charters. Open:
 ### 5.3 Specialists — stage one done, stage two not started
 
 Shipped (§4). Open, in the roadmap (re-verified 2026-09-04): child-transcript GC (blocked
-on a general delete-conversation feature), Activity notes appending rather than interleaving
-(fix on an unmerged branch), and six named follow-on ideas — the stale-resend and
-unclamped-missed-steers bugs were fixed on 2026-09-02 (promote a foreground hire to background
+on a general delete-conversation feature) and six named follow-on ideas — the stale-resend and
+unclamped-missed-steers bugs were fixed on 2026-09-02, the note-order bug on 2026-09-05 (promote a foreground hire to background
 mid-run, open a helper's own transcript, …).
 
 **Stage two — plans** (`docs/active/specs/2026-08-11-native-specialists-design.md` §4): the

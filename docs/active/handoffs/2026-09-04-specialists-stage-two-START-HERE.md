@@ -42,9 +42,10 @@ their design consequences are in `youcoded/docs/engine-dependencies.md` →
    class is unreliable and gemma-4-E2B ignores the schema entirely. Validate
    app-side with one retry, and expect 40 s to 4 min of "writing the plan".
 
-The probes also found a shipped bug: the app cannot read the engine's slot
-count on this build, so every local model is capped at one helper
-(`fix/engine-slot-count-field`, unmerged).
+The probes also found a shipped bug: the app could not read the engine's slot
+count on this build, so every local model was capped at one helper. Fixed and
+merged 2026-09-05; a follow-on (the count is read before the model loads) is
+on the local-models roadmap.
 
 What blocks stage two now is Destin's decisions — the prompt at
 `docs/active/handoffs/2026-09-04-stage-two-decisions-prompt.md` puts them on a
@@ -72,9 +73,6 @@ re-derive from these:
 
 ## Open bugs, with reports
 
-- `docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md` —
-  a note sent mid-run lands at the bottom of the Activity trail, below tool
-  calls that happened later.
 - `docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md` —
   helper transcripts accumulate forever. **Blocked**: the app has no
   delete-a-conversation feature at all, so this waits on that existing.
@@ -82,8 +80,8 @@ re-derive from these:
 Two more (a stale run update rewinding a finished card; missed steers stored
 unclamped) were fixed on master on 2026-09-02 (`96d82393`, `5f759d8a`) without
 closing their roadmap items — closed and archived 2026-09-04. The note-order bug
-has a fix on `fix/specialists-ledger-bugs` (youcoded, unmerged as of
-2026-09-04), which also pins checklist 9b's security half as a unit test.
+was fixed and merged 2026-09-05 (`f0ac766d`, `7d3cc64d`); the same branch pinned
+checklist 9b's security half as a unit test.
 
 ## Code map
 

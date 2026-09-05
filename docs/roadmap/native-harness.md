@@ -215,11 +215,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       is the first thing the card shows. Found by the 2026-09-04 code review of the note-order fix
       `tool-cards` `desktop` `needs-verify` `checked 2026-09-04`
 
-- [ ] A note sent to a background helper mid-run shows at the bottom of its Activity trail,
-      after tool calls that actually happened later. Fix on youcoded `fix/specialists-ledger-bugs`
-      (`f0ac766d`, unmerged; the same branch pins checklist 9b as a test, `e8ce8001`)
-      `tool-cards` `desktop` `in-flight` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md
-
 - [ ] Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user
       approves a card, the executor journals and resumes it. Approved in the 2026-08-11
       specialists spec (§4, §7, §8). The three live probes the spec requires were run on

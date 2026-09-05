@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: helper Activity-trail notes are appended to the tail of the segment list instead of placed by timestamp among tool calls
 ---
@@ -30,3 +30,4 @@ sort by timestamp when building groups. The first keeps the reducer the single s
 ## History
 - 2026-08-16 — plan 1c Task 11 review; a deliberate trade-off, not an oversight.
 - 2026-09-01 — re-verified: still tail-appended, timeline still unsorted.
+- 2026-09-04 — fixed on youcoded `fix/specialists-ledger-bugs` (`f0ac766d`, then `7d3cc64d` after review: two-sided ordering, third dispatch site). Merged 2026-09-05; roadmap item closed.
