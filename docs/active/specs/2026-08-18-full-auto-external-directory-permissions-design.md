@@ -1,8 +1,18 @@
 ---
-status: active
+status: shipped
 ---
 
 # Full-Auto Interrupted by External-Directory Asks on Read Tools — Design
+
+> **AMENDED AND BUILT 2026-09-05 (branch `session/reads-always-allowed`).** Destin widened the
+> decision from "lift the forced ask in Full Auto" to **"lift it in every mode, Ask First
+> included"** — *"permissions boundaries should only really be for actions that change things
+> (write, edit, bash, etc)."* That is strictly broader AND strictly simpler: with no mode to
+> consult, the `isWalkAwayRead` probe this spec designed (and its plumbing through
+> `HarnessSessionOpts`, `NativeSessionHost` root wiring and specialist-child wiring) is not
+> needed at all. Shipped as a `READ_ONLY_PATH_TOOLS` set in `harness-session.ts`.
+> The **UI checkpoint this spec required is moot**: no read card survives to approve copy for.
+> The web-subject fix (§ WebSearch/WebFetch) shipped unchanged, in the same commit.
 
 > **STATUS (verified 2026-08-26): ratified, unbuilt.** Destin ratified the direction 2026-08-21 and
 > the implementation plan (`docs/active/plans/2026-08-21-full-auto-external-read-bypass.md`) was

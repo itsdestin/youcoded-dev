@@ -1,11 +1,21 @@
 ---
-status: draft
+status: superseded
 date: 2026-08-21
 spec: docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md
 ---
 
 # Full-Auto External Read Bypass + Web-Subject Guard Fix — Implementation Plan
 
+> **SUPERSEDED 2026-09-05 — DO NOT EXECUTE.** The behaviour shipped on branch
+> `session/reads-always-allowed`, under a broader decision than this plan was written for:
+> reads outside the workspace no longer ask in ANY mode, not just Full Auto (Destin,
+> 2026-09-05). That deletes most of this plan rather than completing it — Task 2 (the human
+> gate on card copy) is moot because no read card survives, and Task 3's `isWalkAwayRead`
+> probe and its host/specialist wiring are unnecessary because there is no mode to consult.
+> Task 4 (the WebSearch/WebFetch subject fix) shipped as specified. Kept only as the record of
+> how the decision was reached; the amended spec is the live document.
+>
+> Original state, for the record:
 > **EXECUTION STATE (verified 2026-08-26): NOT STARTED. 0 of 37 steps done; no code exists.**
 > - `git grep -n isWalkAwayRead origin/master -- desktop/src` → no hits. Same on the feature branch:
 >   `git grep -n isWalkAwayRead feat/full-auto-read-bypass -- desktop/src` → no hits.
