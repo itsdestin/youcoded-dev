@@ -15,8 +15,11 @@ answers do not support a row, the row does not exist; write what was missed into
 `## Not covered` list at the end of your reply so the next round can ask.
 
 ## How an answer becomes a row
-- `yes` with a note → one row; the note is quoted in `note`. A note that asks for a change is
-  not part of the row — list it under `## Not covered` for the next round to ask.
+- `yes`, with or without a note → one row. Statement = the step's headline rewritten as what
+  the user experiences (present tense, no code words — the deck's banned list applies).
+  `source` = `<deck key>#<step id>`; `note` = the note text verbatim. A note is never tagged
+  (Destin, 2026-09-04): read it — a note that asks for a change is not part of the row, list
+  it under `## Not covered` for the next round to ask.
 - `pick X` → a row stating the picked option's label as a fact ("The invite lives in the
   friends list"). Other options are not rows.
 - `other` → a row from the note ONLY if it states a requirement; a wish or a question is
