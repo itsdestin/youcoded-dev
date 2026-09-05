@@ -65,11 +65,22 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       shareable knowledge packs via the marketplace; provenance + revocation as the gate on sharing
       `desktop` `parked` `checked 2026-07-28` → docs/archive/specs/2026-07-28-context-knowledge-app-features-outline.md
 
+- [ ] Sign in with ChatGPT — a ChatGPT plan's models inside YouCoded's own assistant: a
+      ChatGPT card in Model Providers (sign in, plan bars, sign out), a Log in with ChatGPT
+      button on first run, the plan's models grouped under ChatGPT Plan in the picker, the
+      5h/7d chips and the usage card describing that plan, and a used-up-plan card with
+      Switch Providers. Screens approved over five decks 2026-09-04/05; every channel is
+      still mock-only — the sign-in round-trip, the model list, the usage read and the
+      request path are the build
+      `desktop` `in-flight` `checked 2026-09-05` → docs/active/handoffs/2026-09-05-chatgpt-signin-START-HERE.md
+
 - [ ] Third-party agent CLIs as session providers (Codex first, then OpenCode / Cursor) — cuts
       against the standing "one first-party harness, every model" direction, kept as a deliberate
       what-if. Codex was scoped for real 2026-08-31 via its official app-server interface (draft
-      spec; nothing committed to build)
-      `desktop` `parked` `checked 2026-08-31` → docs/active/specs/2026-08-31-codex-session-provider-design.md
+      spec; nothing committed to build). Superseded for the ChatGPT-plan goal on 2026-09-04:
+      OpenAI publicly welcomes the plan inside third-party apps, so the plan's models are
+      reached directly (the item above); this stays for Codex-the-agent only
+      `desktop` `parked` `checked 2026-09-04` → docs/active/investigations/2026-09-04-chatgpt-subscription-paths.md
 
 - [ ] Native Runtime Parity Program — everything that still separates a native session from a Claude
       Code one (context truncation notice, M6 onward, cwd contract, MCP phase 2, M7–M9). The single
