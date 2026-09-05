@@ -60,6 +60,22 @@ Recorded here as they are settled, so a later task cannot re-decide them (T1 bui
   in front of Destin, and a `NotFoundError` in the headless review rig. Gate capture on not being
   the workbench, or have the compare panes supply a bridge without `sendAudio`.
 
+## Carry to the acceptance deck, honestly
+
+**The grey rule does not fully deliver the reason it was chosen for.** V-9 was put to Destin as
+"everything since your last full stop stays grey, **so black text never changes**". Measured on
+real recorded engine output while building T4 (the ladder is committed at
+`desktop/tests/fixtures/parakeet-rehear-ladder.json`), the second half is still not quite true
+inside one open stretch: at 3 s the engine writes "And so, my fellow Americans." and the text
+goes solid; at 4 s it **takes the full stop back** and the text returns to grey. Twice in eleven
+passes on a clean studio recording.
+
+The mechanic he chose is what was built, and it is much better than the two-word tail it
+replaced — a test pins that the old rule leaks a rewrite into black text on this same recording,
+and `voice-types.ts` already refuses to promise stability. But **the acceptance deck must not
+repeat the sentence "solid text never changes"**, and R2's row should be read to him as what it
+is: grey follows sentence endings, and a sentence ending can be withdrawn.
+
 ## Wave 1 — no dependencies, run in parallel
 
 ### T1 · The shared shape, the split helper, and the fake
