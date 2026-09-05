@@ -280,11 +280,38 @@ curated repos). Keys: `<arch>.block_count`, `.attention.head_count_kv`, `.attent
 / `.value_length` (fallback `embedding_length / head_count`), `.context_length`,
 `.attention.sliding_window`, `.attention.sliding_window_pattern`, `.full_attention_interval`,
 `.attention.key_length_swa` / `.value_length_swa`, `.attention.shared_kv_layers`.
+**`head_count_kv` and `head_count` can be PER-LAYER ARRAYS, not scalars** (found building T10;
+llama.cpp reads them with `get_key_or_arr`, `llama-model.cpp:1115`). `gemma-4-12b-it` writes 48
+entries (8 KV heads on sliding layers, 1 on full-attention layers) and `gemma-4-26B-A4B-it`
+writes 30 (8 / 2); two of the eleven curated repos parsed to no head count at all before this
+was handled. **§D2 must consume the per-layer array** — a flat 8 over-sizes the full-attention
+layers eightfold. The reader returns `headCountKvLayers` (exact, per layer) alongside
+`headCountKv` (the array's **maximum**, so a consumer reading only the scalar over-counts
+rather than under-counts). An absent `head_count_kv` inherits `head_count`, as llama.cpp does.
+
 **`sliding_window_pattern` has two shapes (R3-6 — read out of Destin's own Gemma 4 file):**
 a scalar (Gemma 3, "every Nth layer is full") and a **35-element bool ARRAY** (GGUF type 9) in
 `gemma4`, where 28 layers slide and 7 are full. A reader expecting a `u32` either throws or
 reads the array header as a number. The reader handles both, and treats an **unhandled key
-type** — not only an unknown architecture — as `contextBytesIsUpperBound: true`.
+type** — not only an unknown architecture — as `contextBytesIsUpperBound: true`, and likewise
+a known-sliding architecture with no known period, a pattern array that does not cover every
+layer, and a parse that ran out of bytes (all found building T10; all err in the honest
+direction).
+
+**The scalar pattern needs a per-architecture DEFAULT PERIOD, not just `dense_first`** (found
+building T10). llama.cpp's `set_swa_pattern` is called with a period that differs by family —
+gemma3 = 6, gemma2 = 2, gpt-oss = 2, plamo3 = 8, most others 4 — so a file carrying a sliding
+window but no pattern key is silently mis-mapped without that table. Both tables live in
+`gguf-header.ts` and are pinned: `SWA_PATTERN_DEFAULTS`, and `DENSE_FIRST_ARCHITECTURES`, which
+is only three architectures (`rg -n "set_swa_pattern" src/models/` → 17 call sites, exactly
+three pass `true`: cohere2moe, smallthinker, modern-bert). **`phi3` is a fixed-period
+exception** — llama.cpp calls `set_swa_pattern(1)` there unconditionally and ignores the file's
+own key; believing the file would under-count KV, the one direction that turns a `tight` verdict
+into a wrong `fits`.
+
+**The resolved sliding mask lives in `gguf-header.ts`, not the estimator**: the design put the
+layer map under §D2 while requiring the `dense_first` pinning in `gguf-header.test.ts`, which
+would duplicate the rule. §D2 consumes `header.slidingLayers` directly.
 **One header per repo** (default quant's first file), persisted beside
 `curated-models-cache.json` in userData as `gguf-headers-cache.json`, keyed by repo +
 default-quant sha (HF) or path + mtime (local).
@@ -297,7 +324,11 @@ default-quant sha (HF) or path + mtime (local).
   `gguf-header.test.ts`) or straight off the per-layer bool array (Gemma 4); no key → every
   layer full. **Sliding layers use `key_length_swa` / `value_length_swa` when present** — in
   Gemma 4 those are 256 against a full-attention 512, i.e. half — and **`shared_kv_layers = n`
-  means n layers store no KV of their own** and are subtracted (R3-6). Getting these wrong is
+  means n layers store no KV of their own** and are subtracted (R3-6) — specifically the
+  **trailing** n: llama.cpp's Gemma 4 loader computes `n_layer_kv_from_start = n_layer_all −
+  shared_kv_layers` (`src/models/gemma4.cpp`), so on E2B only the FIRST 15 of 35 layers store
+  their own KV (found building T10). Head counts come from `header.headCountKvLayers` per
+  layer, never from the scalar. Getting these wrong is
   not harmless: Gemma 4 IS a recognised family, so `contextBytesIsUpperBound` never fires and
   an over-estimate would be stated as a precise number — the fake precision R1-25 forbids.
   A family or key type the reader does not handle counts every layer full and sets

@@ -166,10 +166,17 @@ be saved.
 
 ### T11 — Estimator (§D2, §D3) — after T10
 File: `desktop/src/main/model-manager/fit-estimator.ts`.
-- Layer map from T10's header: `full_attention_interval = n` → non-full layers contribute 0 KV;
-  `sliding_window_pattern` scalar or array → sliding layers keep `min(context, slidingWindow)`
-  tokens **at `key_length_swa` / `value_length_swa` when present** (half-width in Gemma 4); and
-  `shared_kv_layers = n` subtracts n layers (R3-6).
+- Layer map: **consume `header.slidingLayers` from T10** — the resolved per-layer mask lives in
+  `gguf-header.ts`, not here, so its rule and its test stay together. Sliding layers keep
+  `min(context, slidingWindow)` tokens **at `key_length_swa` / `value_length_swa` when present**
+  (half-width in Gemma 4); `full_attention_interval` layers that are recurrent contribute 0 KV;
+  `shared_kv_layers = n` subtracts the **trailing** n layers (on Gemma 4 E2B only the first 15
+  of 35 store their own KV).
+- **Head counts come from `header.headCountKvLayers`, per layer — NEVER the scalar** (found
+  building T10). Gemma 4's larger models write `head_count_kv` as a per-layer array (12B: 48
+  entries, 8 on sliding layers and 1 on full-attention ones), and a flat 8 over-sizes the
+  full-attention layers eightfold. The scalar `headCountKv` is the array's maximum, so reading
+  it over-counts rather than under-counts — but it is still wrong.
 - `kvBytes` per kept token = `kvHeads × (dK×bytes(kType) + dV×bytes(vType))`, `f16 = 2`,
   `q8_0 = 1`, + 6 % block overhead.
 - **The verdict tiers (R2-10, corrected by R3-3):** `need = model + vision + kv + 512 MB`.
