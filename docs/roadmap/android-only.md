@@ -77,3 +77,9 @@ that in the shared area with android as seen-on.
       support problem waiting to happen. Decide before the listing: unblock newer versions, or scope
       what the listing promises
       `android` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+
+- [ ] Tapping a file the app can't display dead-ends on the phone: the panel says so honestly but the
+      "Open externally" button is desktop-only, so there is no way to hear an .mp3 or watch an .mp4
+      you were just handed. Desktop opens it in whatever app the OS uses; Android needs the same via
+      a share/view intent
+      `files-panel` `android` `confirmed` `checked 2026-09-05`
