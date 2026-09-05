@@ -441,10 +441,22 @@ spawns `$SHELL` (Windows: `powershell.exe`) with no args, no hook pipe, no trans
 terminal view only, **not offered in the new-session form** (the picker entry is the roadmap
 idea, which becomes in-flight: its floor ships here). `engine:run-in-terminal(command)` creates
 one in the current project folder and returns its id; the command is written **after the
-PTY's first output**, never on spawn (fish and zsh discard startup input), without `\r`.
+PTY's first output**, never on spawn, without `\r`. **The stated reason did not reproduce**
+(measured building T5): writing on spawn survived on fish 4, zsh and bash here, because the
+kernel's tty buffer holds the bytes until the shell starts reading. That survival is luck, not
+a guarantee, so the rule ships as specified and the probe records all three timings — the
+evidence is in the repo rather than in a claim. A second measured fact matters more for anyone
+touching this: **the PTY's "first output" is usually the shell's terminal-capability query, not
+its prompt** — fish blocks ten seconds waiting for a Primary Device Attribute reply a bare
+node-pty never sends, so the probe answers those queries the way xterm.js does in the real app.
 Probe on fish, zsh, bash and PowerShell before the task closes. Sizing: 54 `provider ===
 'claude' | 'native'` comparisons across 24 non-test files (46 of them in the renderer) — the
-task carries the list.
+task carries the list. **Measured on the branch, that count is wrong: 58 across 28 non-test
+files, 47 of them in the renderer** (T5 worked from the measured list). A separate family that
+looks identical is NOT `SessionProvider` and must be left alone — `artifact-tracker.ts`,
+`SessionRefActions.tsx`, `ResumeOptionsPopover.tsx`, `SessionDrawer.tsx`, `ResumeBrowser.tsx`
+and `chatsearch-index/*` read a *chatsearch conversation* provider. A shell session writes no
+transcript and no conversation record, so none of those can ever see `'shell'`.
 
 **Hiding the provider from the new-session form does NOT make those sites unreachable
 (R3-25).** The earlier draft claimed it did; §A5 contradicts it two sections earlier — "Run in
