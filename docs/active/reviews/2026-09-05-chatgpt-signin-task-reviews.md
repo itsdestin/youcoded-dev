@@ -249,3 +249,104 @@ verdict: changes requested — the branch's highest-stakes property has zero cov
 suite claims otherwise; `forceStep('AUTHENTICATE')` strands an established install on a screen
 whose only control re-runs a failing installer; Settings claims a Claude sign-in that never
 happened; and a dev run of the wizard writes over the installed app's setup state.
+
+## T3 — the model path
+
+Reviewed `chatgpt-model.ts`, the registry's `'chatgpt'` case, the catalog rows and the harness
+edits (commit `2eb0c004`) against §4.1–§4.6 and §8. 65 tests pass; `tsc --noEmit` clean.
+
+**No must-fix.** Token hygiene traced clean: the two new files contain zero log calls
+(`rg -n "console\.|log\(" src/main/providers/chatgpt-model.ts src/main/providers/provider-registry.ts`
+→ no output); the only credential-shaped value handed to the SDK is the literal placeholder
+`apiKey: 'chatgpt'`, which `withUserAgentSuffix` normalises to a lower-cased `authorization`
+key — exactly the key `ChatGptAuth.fetch()` overwrites, so the doubled-bearer hazard is
+genuinely avoided; `foldStream` rethrows the stream's own error unchanged and builds no message
+of its own; and the wrapped model does not expose `config`, so nothing can surface the request.
+Both mechanisms the design leans on were verified in the SDK's own source: `transformParams`
+runs on `doGenerate` AND `doStream` and `wrapGenerate` sees the transformed params, so
+store / instructions / include / cache-key are forced on titles, retries and tool follow-ups
+alike; and a plain Error with no `statusCode` survives `handleFetchError` intact, so §4.5's
+reason for the bare error still holds.
+
+1. **should-fix — a fresh sign-in can leave the user unable to start a session at all.** The
+   virtual row sorts FIRST while `models()` is cache-first and returns `[]` until the manifest
+   lands. The new-session form takes `readyProviders[0]`, finds no models, is not a freeform
+   type — Create is blocked with no explanation, with the user's OpenRouter row one dropdown
+   away. Persists indefinitely while the fetch keeps failing (offline, or a 401, retried only
+   every 5 minutes).
+2. **should-fix — a blocked account's models stay in the shared catalog.** `model-catalog.ts:259`
+   gates on `enabled`, never `ready`. The two shipping pickers filter on `ready`, but
+   `ipc-handlers.ts:2477` feeds the unfiltered catalog to the **ModelSearch** tool, so the app's
+   own agent is offered ids it cannot use and delegates a task that fails.
+3. **should-fix (test) — the session cache key is unpinned.** Deleting both `harness-session.ts`
+   lines leaves the suite green; every step of every ChatGPT session would then lose
+   `prompt_cache_key` and re-bill the shared prefix against the plan window. Silent.
+4. **should-fix (test) — the `include` assertion is vacuous for the id it uses.** The SDK adds
+   `reasoning.encrypted_content` itself for reasoning models, and `gpt-5.5` is one — so deleting
+   the middleware's own line stays green, while that line is load-bearing exactly for the ids
+   the SDK does not recognise (which is what the manifest names first).
+5. **nit** — a mid-stream error releases the reader but never cancels the body: one leaked
+   socket per failed fold.
+6. **nit** — `foldStream`'s error and no-finish paths are unpinned.
+7. **nit** — `2eb0c004`'s message claims a fixed fallback model list that does not exist;
+   §4.3 specifies the opposite. Correct the record.
+8. **nit** — with the kill switch on, `testConnection` says "not configured" while
+   `languageModel` says "turned off in this build"; the vaguer one is the reachable one.
+
+verdict: changes requested — a signed-in row that sorts first with an empty model cache blocks
+native session creation; the catalog branch ignores `ready`, so a blocked account's models stay
+in the shared catalog; and three behaviours the design calls load-bearing are not pinned.
+
+## T4 — the surfaces
+
+Reviewed the four channels across main, preload, remote-server, remote-shim and
+`SessionService.kt` (commit `96edd6a2`) against §3, §5 and §6. `verify.sh` green;
+`ipc-channels.test.ts` + `workbench-mock-contract.test.ts` = 259 passed.
+
+**Token leakage: clean.** `ChatGptAccountStatus` carries only `state`, `email`, `plan`, `usage`,
+`reason`; `status()` reads the in-memory account, which holds a `secretRef` pointer and never
+decrypts; the three verbs return booleans; the only strings that can cross are the fixed
+sentences and `error_description`. The one unbounded field is finding 4, and it is body text.
+
+**Live-app hazard: clean, verified by execution order rather than by the comment.**
+`app.setPath('userData', …)` is module-level at `main.ts:297`; `createWindow()` has exactly one
+call site inside `app.whenReady()`, and `rg -n "new ChatGptAuth" src` returns one hit at
+`main.ts:926` — unambiguously after the override. `chatgpt-auth.ts` has no module-level
+`app.getPath` and no import-time I/O. `providers.json` is untouched (the row is virtual).
+Port 1455 is claimed only inside a user-initiated `signIn()`; it is necessarily shared with the
+installed app, so a dev sign-in during a live sign-in makes one of them show the port sentence —
+unavoidable, not introduced here.
+
+1. **must-fix — the kill switch does not make the feature inert, and can silently sign the user
+   out.** `ChatGptAuth`'s constructor starts the usage poll whenever an account exists, and
+   nothing in the wiring reaches that: with `YOUCODED_CHATGPT=0` a signed-in user's app still
+   calls OpenAI at launch and every 5 minutes forever. Worse, that poll refreshes the token, and
+   a 400/401 there runs `clearAccount()` — **deleting the stored secret and the account file**.
+   §6 promises "a fast revert, not a sign-out"; as built the switch can perform a sign-out, and
+   it does not stop the traffic you flipped it to stop.
+2. **should-fix — the preload leg of the parity test is vacuous.** This namespace invokes
+   through `IPC.*` constants, so the four literals appear in `preload.ts` only in the constants
+   table. Mutation run: deleting all four methods from the exposed object passes. Every desktop
+   user would then get "window.claude.chatgpt.status is not a function" on the Settings card.
+   The usual second net is gone too — `chatgpt.*` is not in `HAND_WRITTEN`, so the workbench
+   fake and the real namespace can now drift with nothing complaining.
+3. **should-fix — the first-run ChatGPT arm bypasses the kill switch** (`main.ts:429`, `:1000`
+   pass the raw handle), so an invoke with mode `'chatgpt'` still opens the browser and binds
+   1455. Only the renderer gate keeps the button off screen.
+4. **should-fix — `blocked.reason` can be an entire HTML error page**, persisted to the account
+   file and returned in every status payload. A 403 from a proxy in front of chatgpt.com is not
+   JSON.
+5. **nit** — `dispose()` is fire-and-forget at quit, contradicting its own contract.
+6. **nit** — `ModelProvidersPopup.tsx:303` still calls the namespace MOCK_ONLY.
+
+Also confirmed: parity has no exemption list and three of the four legs bite on deletion;
+Android's four ids sit in the not-implemented fall-through and reply with a fast honest refusal
+rather than hanging; two windows both pressing Sign in get two browser tabs and a card that lags
+up to a second, and an authenticated remote browser can sign the desktop out (§5, deliberate).
+Nothing anywhere tests the kill switch: `rg -n "YOUCODED_CHATGPT" tests` finds only a source
+regex, so dropping the env check from `chatgptForUi` passes the whole suite.
+
+verdict: changes requested — the kill switch leaves the usage poll running, so a disabled
+feature still calls OpenAI every five minutes and can delete the user's stored tokens; the
+preload parity assertion is satisfied by the constants table alone; the first-run arm ignores
+the switch; and a blocked reason can carry an untruncated HTML body to the card.
