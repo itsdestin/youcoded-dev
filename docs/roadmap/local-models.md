@@ -73,3 +73,10 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       model), a hardware/what's-loaded page with prompt speed and time-to-first-token, manual
       load/unload, embeddings for local search. Inventory and order in the report.
       `desktop` `decision` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+
+- [ ] Some publishers name a model's quantisation after a dot instead of a dash, and the app
+      drops every one of their files — `mradermacher/gemma-3-12b-it-GGUF` offers no real
+      download option at all, only (until T14's fix) a mislabelled vision file. Whoever picks
+      this up should survey how many of the repos search returns are affected before widening
+      the name pattern, because loosening it wrongly makes unrelated files look like quants.
+      `local-models` `desktop` `confirmed` `checked 2026-09-05`

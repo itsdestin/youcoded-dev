@@ -274,6 +274,12 @@ and `loadedModelsBytes` over loaded-not-sleeping rows.
      850 MB for gemma-3-12b. The summing belongs in the download job, not the quant option, so
      T15 is where it is fixed. Left unfixed, a user with just enough free space passes the check
      and then runs out mid-download.
+  3. **The size the user READS and the fit label beside it now disagree** (found reviewing T14).
+     `LocalModelsSection.tsx:51-53` already computes `download = totalSizeBytes + visionBytes`,
+     but `fitFor` is still called with `totalSizeBytes` alone (`model-manager.ts:72`). So the
+     moment T14 lands, gemma-3-12b's row grows ~0.85 GB and Qwen2.5-Omni's ~2.6 GB with no
+     visible explanation, and the fit label can read "fits" on a machine where the real download
+     is tight. T15 passes `totalSizeBytes + (visionBytes ?? 0)` to `fitFor`.
 - **The projector must NOT go into any quant's `files` list.** T14 kept it a separate field on
   purpose: `files` being a complete `1..N` split of one quant is what makes "the files on disk
   are complete" safe to judge from filenames alone, and a projector in there would let a
