@@ -112,6 +112,85 @@ test('deck renders at three sizes and records an answer', async () => {
   } finally { if (srv.exitCode === null) srv.kill(); }
 });
 
+// Two defects seen in real decks at 1440x900 on 2026-09-04 (Task 4): (1) a long step `path`
+// (the uppercase eyebrow beside the surface title) ran under the progress bar and the Next
+// button — reproduced below, and confirmed RED against the pre-fix CSS (`.nav`'s own
+// `min-width:0` let it collapse to a literal 0px box once `.where` had nothing capping how
+// much of the row it could claim; `.nav`'s children then overflowed it, centered on the
+// collapsed point, sliding backward under the path text). (2) a picture DECIDE step's side
+// column sliced its third option and the Risk card off below the fold, with the answer
+// buttons scrolling away too. The column assertions below did NOT reproduce against any
+// fixture built for this task, including far more option/risk text than a real deck would
+// carry — `.info`'s pre-existing `overflow:auto` already lets it shrink and scroll on its own
+// (see the CSS comment on `.col-right .decide`). They stay as a pinning test for the stated
+// invariant (info scrolls, controls never leaves the viewport, the third card is reachable)
+// rather than as a demonstrated regression.
+test('header never runs under the nav, and the side column scrolls instead of slicing', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-longpath-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}, long_path=True))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const url = `http://127.0.0.1:${port}/fixture.html`;
+    // The header measurement: at both sizes, #wsub (the eyebrow) must never run past .nav's
+    // left edge — checked on step 1, which carries the 90-character path. At 1280 the existing
+    // <1400px media query hides #wsub entirely, so the check there is trivially true; it stays
+    // in the loop because the fix must hold at both sizes it is asked for.
+    //
+    // Fix (2026-09-05): `.nav`'s OWN bounding box is not enough on its own — `.nav` has
+    // `min-width:0`, so when the row runs out of room .nav can be shrunk to a LITERAL 0px box
+    // (confirmed by measurement: navL === navR pre-fix at this path length) while its children
+    // (`.steps`, `#prev`, `#next`) keep their real widths and, centered on that now-degenerate
+    // point, spill out past it in both directions — sitting UNDER #wsub on the left and under
+    // #count on the right. `.nav.left` is always `#wsub`'s own right edge plus one gap by
+    // construction of a flex row, so comparing against it alone is trivially true whether or
+    // not the row actually collapsed — it never catches this. `#prev` (the first real content
+    // inside `.nav`) is what actually slides under #wsub, so it is the one that must clear it.
+    for (const [w, h] of [[1440, 900], [1280, 800]]) {
+      const c = await cdp(await freePort(), w, h);
+      try {
+        await c.send('Page.navigate', { url: url + '?step=1' });
+        for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+        await sleep(300);
+        assert.deepEqual(c.errors, [], `${w}x${h} step 1`);
+        const clear = await c.evaluate("document.querySelector('#wsub').getBoundingClientRect().right <= document.querySelector('.nav').getBoundingClientRect().left");
+        assert.equal(clear, true, `${w}x${h}: the header (#wsub) never runs under the nav`);
+        const prevClear = await c.evaluate("document.querySelector('#wsub').getBoundingClientRect().right <= document.querySelector('#prev').getBoundingClientRect().left");
+        assert.equal(prevClear, true, `${w}x${h}: the Prev button (the nav's real leftmost content) never sits under #wsub`);
+        if (w === 1440) {
+          assert.notEqual(await c.evaluate("getComputedStyle(document.querySelector('#wsub')).display"), 'none', '#wsub is still visible at 1440');
+        }
+      } finally { c.close(); }
+    }
+    // The column measurement: S-5 is the fixture's decide step (three long options + a Risk
+    // card) — open it at 1440x900 and check the side column scrolls instead of slicing.
+    const c = await cdp(await freePort(), 1440, 900);
+    try {
+      await c.send('Page.navigate', { url: url + '?step=5' });
+      for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+      await sleep(300);
+      assert.deepEqual(c.errors, [], 'S-5 console');
+      const layout = await c.evaluate('document.body.dataset.layout');
+      assert.ok(layout === 'B' || layout === 'C', `S-5 should keep the side column (B or C), got ${layout}`);
+      assert.equal(await c.evaluate("document.querySelector('.controls').getBoundingClientRect().bottom <= innerHeight"), true, 'the answer row stays inside the viewport');
+      assert.equal(await c.evaluate("document.querySelector('.info').scrollHeight > document.querySelector('.info').clientHeight"), true, '.info has more content than it can show — it scrolls');
+      // Scroll .info to the bottom and confirm the third option card is fully inside it —
+      // "reachable", not sliced off past the column's own bottom edge.
+      const reachable = await c.evaluate(`(() => {
+        const info = document.querySelector('.info');
+        info.scrollTop = info.scrollHeight;
+        const cards = document.querySelectorAll('.card.option');
+        const third = cards[cards.length - 1];
+        return third.getBoundingClientRect().bottom <= info.getBoundingClientRect().bottom + 1;
+      })()`);
+      assert.equal(reachable, true, 'the third option card is reachable by scrolling .info');
+    } finally { c.close(); }
+  } finally { if (srv.exitCode === null) srv.kill(); }
+});
+
 // ── LIVE panes ────────────────────────────────────────────────────────────────────────────
 // A stub pane server stands in for the workbench: same two messages the real route sends
 // (a height on load, a theme swap in place), no Vite, no app, no ImageMagick. `--no-live`

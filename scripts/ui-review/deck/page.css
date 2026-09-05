@@ -22,8 +22,21 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .top{height:clamp(56px,6vh,64px);flex:none;display:flex;padding:8px 20px 0;background:var(--panel);border-bottom:1px solid var(--edge);border-radius:12px 12px 0 0}
 /* Fix (2026-08-27): a long surface + path ran straight under the Prev/Next block and the step
    counter — the header had no shrink and no truncation, so any wordy step corrupted the top bar. */
-.top .where{flex:0 1 auto;min-width:0;overflow:hidden} .top .where .id{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.top .where .eyebrow{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Fix (2026-09-05): the 2026-08-27 fix above still let a long `path` run the Prev button and
+   the progress bar under the eyebrow text at 1440px. `.where` already had `min-width:0` and
+   `overflow:hidden` was already granting the eyebrow itself a shrinkable min-width (a flex
+   item with non-visible overflow gets an automatic 0 content-based minimum, no explicit
+   `min-width:0` required) — so `.where` was NEVER the one that overflowed. The actual failure
+   was in `.nav`: it also opts into `min-width:0`, with nothing to stop `.where`'s uncapped
+   demand from squeezing `.nav`'s OWN box to a literal 0px (measured: `.nav`'s left === right)
+   while its children — `.steps`, `#prev`, `#next`, none of which have their own zero-min —
+   kept their real widths and, centered on that collapsed point, spilled backward under the
+   path text. `max-width:40%` is what actually stops this: it caps how much of the row `.where`
+   may claim, so the shrink math never needs to touch `.nav` at all. Giving the eyebrow its own
+   `flex:1 1 auto;min-width:0` is a defensive second line, not the load-bearing fix — confirmed
+   by removing it alone and re-running the render test, which still passed. */
+.top .where{flex:0 1 auto;max-width:40%;min-width:0;overflow:hidden} .top .where .id{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .where .eyebrow{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (max-width:1400px){.top .where .eyebrow,.top .where .sep{display:none}} @media (max-width:950px){.top .count{display:none}} @media (max-width:760px){.top .long{display:none} .top .nav .btn{padding:0 6px}}
 .where{display:flex;align-items:center;gap:10px} .where .id{font-weight:500;font-size:14px} .where .sep{color:var(--fg-faint)}
 .nav{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;min-width:0}
@@ -159,6 +172,28 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 
 .info{padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto}
 .controls{padding:clamp(10px,1.2vh,14px) 16px;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(8px,0.8vw,14px)}
+/* Fix (2026-09-05): in the SIDE COLUMN (a picture DECIDE step keeps `col-right` even at choice
+   widths — see layout()'s comment on that), a long third option plus the Risk card can grow
+   `.info` well past the column's own height. `.info`'s pre-existing `overflow:auto` already
+   grants it a shrinkable min-height the same way `.nav`'s `min-width:0` does above — measured:
+   `.info` already scrolls its own overflow and `.controls` already stayed on screen for every
+   content size tried here, including far more than a real deck would ever carry, so this is
+   NOT known to fix an actively-reproducing slice — it did not go red against any fixture built
+   for it. What it buys instead is an EXPLICIT structural guarantee in place of an implicit
+   one: right now `.info` only shrinks because `overflow:auto` happens to carry that side
+   effect, which is easy for a future edit to remove without knowing why (removing `overflow:
+   auto` here for some unrelated reason would silently bring the slice back). Splitting
+   `.decide` into a two-row grid (info's content row, controls' own auto row) makes "the
+   answer row always gets its own height and info takes whatever's left" a rule you can read
+   off the CSS, not an emergent property of one property's side effect. `min-height:0` on both
+   rows is what lets a grid item actually shrink to that (grid items default to content-sized,
+   same trap as the flex min-width one above). `position:sticky` on `.controls` is redundant
+   once the row split holds, but costs nothing and matches the `.compact .controls` sticky rule
+   below it — if the row split assumption ever breaks, sticky is the fallback that still keeps
+   the buttons on screen. */
+.col-right .decide{display:grid;grid-template-rows:1fr auto;min-height:0}
+.col-right .info{overflow:auto;min-height:0}
+.col-right .controls{position:sticky;bottom:0;background:var(--panel)}
 .compact .controls{display:grid;grid-template-columns:1fr 1fr 1fr;position:sticky;bottom:0;z-index:3;box-shadow:0 -8px 20px rgba(0,0,0,.35)} .compact .controls .ans{max-width:none} .compact .controls .note{grid-column:1/3} .compact .controls #save{grid-column:3}
 .stage{position:relative;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);overflow:auto;min-height:0;line-height:0;font-size:0}
 .stage .inner{display:flex;justify-content:center;align-items:center;gap:18px;padding:12px 14px;min-width:100%;min-height:100%}

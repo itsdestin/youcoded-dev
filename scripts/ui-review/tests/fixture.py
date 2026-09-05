@@ -4,8 +4,17 @@ without Chrome or the workbench."""
 import json, os, subprocess
 
 GEO = '400x200+500+250'
+# A 90-character `path` for the header-overflow test (Task 4) — measured at 1440x900 to be
+# exactly long enough that .top's flex row runs out of room and #prev/.steps (the progress
+# bar) get squeezed toward zero width, sliding backward to sit under the path text, unless the
+# CSS fix holds. Padded with '.', not spaces, to stay exactly 90 chars if this phrase is ever
+# shortened — a trailing run of SPACES collapses under CSS whitespace rules even with
+# `white-space:nowrap`, which silently shortened an earlier version of this string to 82
+# rendered characters and made the test pass even against the un-fixed CSS (2026-09-05).
+LONG_PATH_BASE = 'Settings > Appearance > Advanced options > Debug tools > Diagnostics > Experimental flags.'
+LONG_PATH = (LONG_PATH_BASE + '.' * 90)[:90]
 
-def make_fixture(tmp, themes=('midnight', 'light'), clip=False):
+def make_fixture(tmp, themes=('midnight', 'light'), clip=False, long_path=False):
     for run in ('before', 'after'):
         for theme in themes:
             d = os.path.join(tmp, 'runs', run, 'shots-main', theme); os.makedirs(d, exist_ok=True)
@@ -41,6 +50,29 @@ def make_fixture(tmp, themes=('midnight', 'light'), clip=False):
                               'headline': 'The block now blinks.', 'changed': 'It animates.', 'notice': 'Motion.', 'risk': 'None.'})
     except (FileNotFoundError, subprocess.CalledProcessError):
         pass
+    if long_path:
+        # Fix (2026-09-05): stresses both Task 4 fixes in one deck — a long `path` on every
+        # step (so #wsub can genuinely overflow the top bar at 1440px if the eyebrow's flex-
+        # shrink regresses) and a picture DECIDE step whose three option summaries plus a Risk
+        # card outgrow the side column (so the third card and Risk card would slice off, and
+        # the answer row would scroll away with them, without the col-right CSS fix). Kept
+        # behind this flag so the default fixture — every other test in this suite — never
+        # moves a byte.
+        for st in spec['steps']:
+            st['path'] = LONG_PATH
+        spec['steps'].append({
+            'id': 'S-5', 'surface': 'Home', 'path': LONG_PATH, 'crop': 'c',
+            'highlight': {'selector': '#send'}, 'headline': 'Which layout should the button use?',
+            'risk': 'A longer risk sentence, so the Risk card itself adds real height to the column, the way a genuine review often does.',
+            'options': [
+                {'id': 'a', 'label': 'Keep it on one row', 'summary':
+                 'This keeps the button exactly where it sits today, in the same row as everything else on the screen, so nothing about the surrounding layout changes and nobody has to relearn where to look. It costs nothing to build and matches every screenshot already in the help pages. The row does get busier every time a new action joins it, and on a narrow window two labels already start to touch, leaving no room to add anything else here without shrinking what is already crowded.'},
+                {'id': 'b', 'label': 'Move it to its own row', 'summary':
+                 'This drops the button onto a row of its own, underneath everything else, so it always has plenty of open space around it no matter how many other actions get added later. Nothing above it ever gets more crowded, and a narrow window never forces two labels to touch. The page grows a little taller because of the extra row, which pushes everything below it down slightly, and on a very short window that extra row can push the next section further out of view.'},
+                {'id': 'c', 'label': 'Let it wrap on its own', 'summary':
+                 'This lets the button move to a second row on its own whenever the window gets narrow, without anyone deciding the exact width in advance. At a wide window it behaves like keeping it on one row, and at a narrow window it behaves like giving it a row of its own, so both benefits arrive without a separate setting. The tradeoff is that the exact moment it wraps depends on how long the neighboring labels happen to be that day.'},
+            ],
+        })
     p = os.path.join(deck, 'deck.json'); json.dump(spec, open(p, 'w'), indent=1); return p
 
 
