@@ -141,7 +141,10 @@ def _live_step(spec, st):
     `url` is both the pane's address and its pop-out link: "open on its own" is this same
     candidate in a new tab, which is room and quiet, not a different rendering."""
     live = st['live']
-    theme = spec['themes'][0]   # first paint; every later theme change goes by message, not by reload
+    # First paint; every later theme change goes by message, not by reload. spec['themes'][0] is
+    # the theme the app itself is on by the time build runs (spec.apply_live_theme reorders the
+    # list before this), so a live pane boots the app in Destin's own theme too.
+    theme = spec['themes'][0]
     if st.get('variants'):
         panes = [{'id': v['id'], 'label': v['label'], 'summary': v['summary'],
                   'measured': v.get('measured', ''), 'risk': v.get('risk', ''),

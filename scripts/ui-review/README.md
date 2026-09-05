@@ -140,6 +140,17 @@ a signed-in account with a scripted friend for the games. The workbench serves w
 `VITE_NO_WATCH=1`, so **restart it after editing a fixture or the mock shim** — the
 recorder otherwise films the previous code and every frame still "verifies".
 
+### The theme a deck opens on
+
+`build` and `serve` open the deck on the theme **Destin's app is on right now** — the app
+writes its slug to `~/.claude/youcoded-appearance.json` on every theme change, and the deck
+moves that theme to the front of the spec's `themes` (adding it when the deck has no pictures,
+or when its crops already exist for that theme). Every theme pill still works; only the first
+paint changes. A picture deck with nothing shot in that theme keeps its own order and says so:
+`live theme golden-sunbreak is not captured in these runs — opening on midnight`. Override with
+`--theme <slug>`; pin a deck to its own order — a deck whose point IS a theme — with
+`"theme": "fixed"` at the top of the spec.
+
 ### Clips in a review deck (motion, hover, transitions, visual bugs)
 
 A deck step can show a recording per run instead of a still — the reviewer sees Before and

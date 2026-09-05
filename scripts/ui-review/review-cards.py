@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Review deck v2 — the page Destin approves UI changes on, one point per step.
 
-  python3 scripts/ui-review/review-cards.py build <spec.json>     cut the crops, resolve every highlight box, write the HTML next to the spec
-  python3 scripts/ui-review/review-cards.py serve <spec.json> [--no-build] [--port N] [--timeout MIN]
+  python3 scripts/ui-review/review-cards.py build <spec.json> [--theme SLUG]     cut the crops, resolve every highlight box, write the HTML next to the spec
+  python3 scripts/ui-review/review-cards.py serve <spec.json> [--no-build] [--port N] [--timeout MIN] [--theme SLUG]
         build it, serve it, print the address for the session to put in chat, save answers to <spec>.answers.json, exit when Destin submits
   python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
         block until the answers file says submitted (for a session that no longer holds the `serve` process)
@@ -30,6 +30,11 @@ offers 1–3 written options carrying their own `pros`/`cons` (one may be `"reco
 inside a summary is refused, by field name. A STATEMENT to approve (`changed` + `notice`,
 `yes`/`no` relabels, no `today`) is the other words step, and is exempt from all of it.
 
+The deck opens on whatever theme the app is on (read from ~/.claude/youcoded-appearance.json,
+which the app rewrites on every theme change) — moved to the front of the spec's `themes`, or
+added to it when the deck's pictures already exist in that theme. `--theme <slug>` overrides it;
+`"theme": "fixed"` in the spec keeps the spec's own order, for a deck about one theme.
+
 A CONTRACT step ("rows") is the definition of done signed off as one step; see
 docs/active/specs/2026-09-01-feature-flow-design.md.
 
@@ -48,7 +53,7 @@ from deck.build import build_page                       # noqa: E402
 from deck.contract import AcceptanceError, acceptance_spec, acceptance_status, check_contract, contract_steps, signoff   # noqa: E402
 from deck.crops import crop_images                      # noqa: E402
 from deck.serve import already_served, serve, wait_for_submit   # noqa: E402
-from deck.spec import SpecError, load_spec, validate    # noqa: E402
+from deck.spec import SpecError, apply_live_theme, load_spec, validate    # noqa: E402
 
 
 def build(spec):
@@ -89,9 +94,16 @@ def main(argv):
                     help="don't start or stop the app server for live panes (it's already running)")
     sv.add_argument('--no-build', action='store_true', help='serve the page as it is on disk')
     sv.add_argument('--port', type=int, default=0)
+    for c in ('build', 'serve'):
+        sub.choices[c].add_argument('--theme', help="open the deck on this theme instead of the one the app is on")
     a = ap.parse_args(argv)
     try:
         spec = load_spec(a.spec)
+        # WHY here and not in load_spec(): only the two commands that PAINT a page follow the
+        # app's theme. contract-check and acceptance read the same spec and must see the order
+        # its author wrote, or a row's meaning would depend on which theme Destin is using.
+        if a.cmd in ('build', 'serve'):
+            apply_live_theme(spec, a.theme, log=lambda m: print(m, file=sys.stderr))
         if a.cmd == 'build':
             return build(spec)
         if a.cmd == 'wait':

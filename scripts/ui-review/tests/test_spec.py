@@ -122,3 +122,116 @@ class ClipStepTests(unittest.TestCase):
         errors, _ = validate(s)
         self.assertTrue(any('has no crop' in e for e in errors), errors)
         self.assertTrue(any('banned word "reducer"' in e for e in errors), errors)
+
+
+class LiveThemeTests(unittest.TestCase):
+    """The deck opens on the theme Destin's live app is on (design §5). The app writes the
+    slug to ~/.claude/youcoded-appearance.json on every theme change; these tests point
+    live_theme() at a temp file instead via YOUCODED_APPEARANCE_FILE."""
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+        self.appearance = os.path.join(self.d, 'appearance.json')
+        os.environ['YOUCODED_APPEARANCE_FILE'] = self.appearance
+        self.addCleanup(os.environ.pop, 'YOUCODED_APPEARANCE_FILE', None)
+        self.log = []
+
+    def set_live(self, theme):
+        with open(self.appearance, 'w') as f:
+            json.dump({'theme': theme, 'reducedEffects': False}, f)
+
+    def words(self, **over):
+        """A picture-free deck (a questions deck): no images folder, no runs."""
+        over.setdefault('steps', [{"id": "Q-1", "words": True, "surface": "Games", "path": "Questions",
+                                   "headline": "A short statement.", "changed": "Stated, not asked.",
+                                   "notice": "Nothing yet."}])
+        over.setdefault('themes', ['midnight', 'light'])
+        p = write_spec(self.d, **over)
+        s = json.load(open(p))
+        for k in ('images', 'runs'):
+            s.pop(k, None)
+        json.dump(s, open(p, 'w'))
+        return load_spec(p)
+
+    def pictures(self, **over):
+        over.setdefault('themes', ['midnight', 'light'])
+        return load_spec(write_spec(self.d, **over))
+
+    def capture(self, theme, runs=('before', 'after')):
+        """The crops `crop` would have cut for that theme — empty files are enough, since the
+        captured check is existence only."""
+        d = os.path.join(self.d, 'images', 'deck')
+        os.makedirs(d, exist_ok=True)
+        for r in runs:
+            open(os.path.join(d, f'c--{theme}--{r}.png'), 'w').close()
+
+    def apply(self, spec, **kw):
+        from deck.spec import apply_live_theme
+        return apply_live_theme(spec, log=self.log.append, **kw)
+
+    def test_no_appearance_file_leaves_the_order_alone(self):
+        s = self.words()
+        self.assertEqual(self.apply(s), 'midnight')
+        self.assertEqual(s['themes'], ['midnight', 'light'])
+
+    def test_live_theme_already_in_the_list_moves_to_the_front(self):
+        self.set_live('light')
+        s = self.words()
+        self.assertEqual(self.apply(s), 'light')
+        self.assertEqual(s['themes'], ['light', 'midnight'])
+
+    def test_live_theme_not_listed_is_added_to_a_picture_free_deck(self):
+        self.set_live('creme')
+        s = self.words()
+        self.assertEqual(self.apply(s), 'creme')
+        self.assertEqual(s['themes'], ['creme', 'midnight', 'light'])
+
+    def test_picture_deck_keeps_its_order_when_the_live_theme_is_not_captured(self):
+        self.set_live('creme')
+        s = self.pictures()
+        self.assertEqual(self.apply(s), 'midnight')
+        self.assertEqual(s['themes'], ['midnight', 'light'])
+        self.assertTrue(any('not captured' in m for m in self.log), self.log)
+
+    def test_picture_deck_opens_on_a_captured_live_theme(self):
+        self.set_live('creme')
+        self.capture('creme')
+        s = self.pictures()
+        self.assertEqual(self.apply(s), 'creme')
+        self.assertEqual(s['themes'], ['creme', 'midnight', 'light'])
+        self.assertEqual(self.log, [])
+
+    def test_a_live_theme_with_no_colours_anywhere_is_refused(self):
+        self.set_live('no-such-theme')
+        s = self.words()
+        self.assertEqual(self.apply(s), 'midnight')
+        self.assertEqual(s['themes'], ['midnight', 'light'])
+        self.assertTrue(any('no colours here' in m for m in self.log), self.log)
+
+    def test_override_wins_over_the_file(self):
+        self.set_live('light')
+        s = self.words()
+        self.assertEqual(self.apply(s, override='midnight'), 'midnight')
+        self.assertEqual(s['themes'], ['midnight', 'light'])
+
+    def test_fixed_pins_the_specs_own_order(self):
+        self.set_live('light')
+        s = self.words(theme='fixed')
+        self.assertEqual(self.apply(s), 'midnight')
+        self.assertEqual(s['themes'], ['midnight', 'light'])
+
+    def test_the_opened_theme_is_recorded_on_the_spec(self):
+        self.set_live('light')
+        s = self.words()
+        self.apply(s)
+        self.assertEqual(s['_open_theme'], 'light')
+
+    def test_any_other_top_level_theme_value_is_refused(self):
+        with self.assertRaises(SpecError) as e:
+            self.words(theme='midnight')
+        self.assertIn('fixed', str(e.exception))
+
+    def test_an_unreadable_appearance_file_is_silently_ignored(self):
+        with open(self.appearance, 'w') as f:
+            f.write('{not json')
+        from deck.spec import live_theme
+        self.assertIsNone(live_theme())

@@ -48,6 +48,11 @@ MAX_LIVE_PANES = 4
 # Wider than this and the row scrolls sideways, which defeats comparing the panes at all.
 LIVE_FIT_WIDTH = 1600
 AUTO_WARN_FRACTION = 0.6   # an auto-highlight covering more than this much of the crop is "whole surface"
+# The live app writes the theme it is on to this file on every appearance change
+# (desktop `appearance:set`). It is a plain file, never held open, so reading it is inside the
+# live-app safety rule — and it is the only way a deck can know which palette Destin is looking
+# at today. Overridable for tests; live_theme() re-reads the variable on every call.
+APPEARANCE_FILE = os.environ.get('YOUCODED_APPEARANCE_FILE') or os.path.expanduser('~/.claude/youcoded-appearance.json')
 
 
 class SpecError(Exception):
@@ -72,6 +77,12 @@ def workspace_root():
 
 
 def load_spec(path):
+    """Read a deck spec and fill in everything downstream assumes.
+
+    `"theme": "fixed"` at the top level pins the deck to its OWN theme order — for a deck whose
+    point is one specific theme. Without it the deck opens on whatever theme the live app is on
+    (apply_live_theme, called by the CLI, not here: contract-check and the tests want the
+    spec's own order)."""
     with open(path) as f:
         spec = json.load(f)
     for k in ('title', 'key', 'out', 'steps'):
@@ -95,7 +106,91 @@ def load_spec(path):
     shared.pop('_comment', None)
     spec['_crops'] = {**shared, **spec.get('crops', {})}
     spec.setdefault('themes', list(DEFAULT_THEMES))
+    # "fixed" is the only value this key takes; anything else is a typo that would otherwise be
+    # ignored in silence, and the deck would open on a theme the author thought they had pinned.
+    if 'theme' in spec and spec['theme'] != 'fixed':
+        raise SpecError(f'spec has "theme": {json.dumps(spec["theme"])} — the only accepted value is "fixed", '
+                        'which keeps the deck on its own theme order')
     return spec
+
+
+def live_theme():
+    """The theme Destin's app is on right now, or None when we cannot tell.
+
+    WHY silent: a deck must still build on a machine with no YouCoded install, a first run
+    before the app has ever saved its appearance, or a half-written file — the theme is a
+    nicety, and a missing one just leaves the deck on the spec's own first theme."""
+    path = os.environ.get('YOUCODED_APPEARANCE_FILE') or APPEARANCE_FILE
+    try:
+        with open(path) as f:
+            t = json.load(f).get('theme')
+    except (OSError, ValueError, AttributeError):
+        return None
+    return t if isinstance(t, str) and t else None
+
+
+def captured(spec, theme):
+    """True when every picture step in the deck already has its crop cut for `theme`, in every
+    run. A deck with no picture steps is trivially captured. Mirrors build_page's existence
+    check exactly (a choice step's variants come from the LAST run only), because that is the
+    check that would fail the build if we opened on a theme nothing was shot in."""
+    from .crops import image_name   # imported here: crops.py imports this module at load time
+    runs = run_names(spec)
+    base = os.path.join(spec['_base'], spec.get('images') or '')
+    for st in spec['steps']:
+        if is_page(st) or is_live(st) or is_words(st) or is_clip(st):
+            continue   # no picture of its own — a marker, a running app, written words, a recording
+        if is_choice(st):
+            if not all(os.path.exists(os.path.join(base, image_name(v['crop'], theme, runs[-1]))) for v in st['variants']):
+                return False
+            continue
+        if not all(os.path.exists(os.path.join(base, image_name(st['crop'], theme, r))) for r in runs):
+            return False
+    return True
+
+
+def apply_live_theme(spec, override=None, log=lambda m: None):
+    """Open the deck on the theme Destin is actually using, and say so when we cannot.
+
+    Destin (2026-09-04): every deck opened on Midnight because specs list it first, while his
+    app was on Golden Sunbreak — the deck showed him a palette he does not use. Returns the
+    theme the deck opens on and moves it to the front of `spec['themes']`, which is what the
+    page's first paint, its theme pills AND every live pane's address are built from
+    (build.py `_live_step`).
+
+    Order: `--theme` wins; `"theme": "fixed"` in the spec pins its own order; else the live
+    app's theme, moved to the front when the deck lists it, added at the front when the deck
+    has no pictures (nothing to shoot) or the crops for it already exist. A theme with no
+    colours anywhere, or one nothing was shot in, is refused with a printed line rather than a
+    silently wrong-looking deck."""
+    first = spec['themes'][0]
+
+    def settle(t):
+        spec['_open_theme'] = t
+        return t
+
+    want = override
+    if want is None:
+        if spec.get('theme') == 'fixed':
+            return settle(first)
+        want = live_theme()
+    if not want or want == first:
+        return settle(first)
+    # "live theme X" reads wrong when Destin typed --theme X himself, so name what we followed.
+    what = 'theme' if override else 'live theme'
+    from .build import theme_tokens   # imported here: build.py imports this module at load time
+    try:
+        theme_tokens([want])
+    except SpecError:
+        log(f'{what} {want} has no colours here — opening on {first}')
+        return settle(first)
+    if want in spec['themes']:
+        spec['themes'].remove(want)
+    elif not captured(spec, want):
+        log(f'{what} {want} is not captured in these runs — opening on {first}')
+        return settle(first)
+    spec['themes'].insert(0, want)
+    return settle(want)
 
 
 def step_themes(spec, step):

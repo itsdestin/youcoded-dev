@@ -12,6 +12,11 @@ import { fileURLToPath } from 'node:url';
 import net from 'node:net';
 
 const HERE = dirname(fileURLToPath(import.meta.url)), RC = join(HERE, '..', 'review-cards.py');
+// WHY: review-cards.py opens a deck on the theme the live app is on, read from
+// ~/.claude/youcoded-appearance.json. Point every python3 child (they inherit this env) at a
+// file that does not exist, so these renders assert the fixture's own first theme instead of
+// whichever theme this machine happens to be using today.
+process.env.YOUCODED_APPEARANCE_FILE = join(tmpdir(), 'deck-render-no-appearance.json');
 const freePort = () => new Promise(r => { const s = net.createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => r(p)); }); });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
