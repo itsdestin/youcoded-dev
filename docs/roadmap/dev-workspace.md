@@ -149,7 +149,7 @@ seen-on is always n/a here.
 - [ ] Opening Settings → Backup & Sync in the workbench takes the whole thing down to "YouCoded
       failed to start"; the boot check cannot see it and the review sweep counts the error state
       as covered
-      `n/a` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-sync-panel-crash.md
+      `n/a` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-sync-panel-crash.md
 
 - [ ] The old review-harness script still lets the model it runs read the OpenRouter key (its
       env scrub does not work); the native evaluator fixed this properly — retire the old script,

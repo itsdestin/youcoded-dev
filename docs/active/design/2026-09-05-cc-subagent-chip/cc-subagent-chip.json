@@ -5,7 +5,7 @@
  "images": "images-cc-subagent-chip",
  "runs": {
   "before": "/tmp/claude-1000/-home-destin-youcoded-dev/6cc079bd-fa23-4d95-8f75-1aa9bd41283e/scratchpad/run-before",
-  "after": "/tmp/claude-1000/-home-destin-youcoded-dev/6cc079bd-fa23-4d95-8f75-1aa9bd41283e/scratchpad/run-after"
+  "after": "/tmp/claude-1000/-home-destin-youcoded-dev/6cc079bd-fa23-4d95-8f75-1aa9bd41283e/scratchpad/run-green3"
  },
  "labels": {
   "before": "Today",

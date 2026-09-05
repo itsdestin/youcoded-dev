@@ -260,6 +260,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       decision 1 in the agent-platform vision doc §9; Phase 4's agent model and inbox wait on it
       `all` `parked` `checked 2026-09-01`
 
+- [ ] In the helpers popup, the amber "Needs you" label on a helper waiting for permission is
+      close to unreadable on the three pale themes — measured 1.52:1 on light, 1.41:1 on creme
+      and 1.19:1 on meadow-mist, against a 4.5:1 floor. The fix is the one the working pill took
+      on 2026-09-05: colour the ring and tint, leave the word on the theme's own text colour.
+      Left alone there because it is the consent affordance and the branch that measured it was
+      about a different chip
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-05`
+
 - [ ] Specialists — six follow-on ideas from plan 1c, named but not designed: promote a
       foreground helper to background mid-run; open a helper's own transcript in a viewer; a
       project-level native specialists folder; per-helper token/cost on its own card; a strict
