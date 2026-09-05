@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: missedSteers stores a steer's full unclamped text in the ledger the 2,000-char note cap protects — and nothing bounds the array's length
 ---
@@ -36,3 +36,5 @@ commutative-append guarantee survives.
 - 2026-08-16 — plan 1c Task 5 review; a deliberate scope cut.
 - 2026-08-26 — 1c merged (`62c1f182`); actionable.
 - 2026-09-01 — re-verified: original `text` still reaches `appendMissedSteers`; no length cap.
+- 2026-09-02 — fixed on youcoded master, `5f759d8a`: `boundMissedSteers()` clamps every entry to the note cap inside all three mutate callbacks and keeps the last 50.
+- 2026-09-04 — roadmap item closed and report archived (the fix had landed without closing either).

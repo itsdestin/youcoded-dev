@@ -210,23 +210,19 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `blocked` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
 
 - [ ] A note sent to a background helper mid-run shows at the bottom of its Activity trail,
-      after tool calls that actually happened later
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md
-
-- [ ] A finished helper's card can flip back to "running" — a late-arriving run update
-      overwrites the finished one, because a run record carries nothing saying which is newer
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-run-stale-resend.md
-
-- [ ] A note you send a helper that misses its window is stored in full in the parent's ledger,
-      past the 2,000-character cap notes are supposed to obey, and nothing limits how many pile up
-      `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-missed-steers-unclamped.md
+      after tool calls that actually happened later. Fix on youcoded `fix/specialists-ledger-bugs`
+      (`f0ac766d`, unmerged; the same branch pins checklist 9b as a test, `e8ce8001`)
+      `tool-cards` `desktop` `in-flight` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md
 
 - [ ] Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user
       approves a card, the executor journals and resumes it. Approved in the 2026-08-11
-      specialists spec (§4, §7, §8); three live probes the spec requires (local engine's real
-      parallel slots, prefix reuse across fan-out, tool grammar on the nested plan schema) have
-      never been run; the Claude Code bridge (`youcoded agent run`) is unbuilt from the same spec
-      `desktop` `needs-verify` `checked 2026-09-01`
+      specialists spec (§4, §7, §8). The three live probes the spec requires were run on
+      2026-09-04 on the pinned engine build (four helpers at once is the ceiling; the first
+      fan-out pays most of its prompt cost again; plan authoring works from the 9B model class
+      up and not below) — results in youcoded `docs/engine-dependencies.md` → "Stage-two probes".
+      Still gated on Destin's decisions (the stage-two decisions prompt handoff). The Claude Code
+      bridge (`youcoded agent run`) is unbuilt from the same spec
+      `desktop` `decision` `checked 2026-09-04`
 
 - [ ] "Assistants" made of "Duties" — Destin's unit of organisation for the future Agents &
       Automations view: an assistant groups duties, may be a coordinator, a sole agent, or no

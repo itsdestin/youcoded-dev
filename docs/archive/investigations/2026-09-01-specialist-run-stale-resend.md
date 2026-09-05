@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: a stale specialists:event can flip a finished helper card back to "running" — the run record carries no sequence or version field
 ---
@@ -38,3 +38,5 @@ the card's. The remote replay buffer must carry the same stamp.
 - 2026-08-16 — found in plan 1c Task 11's review; not actionable until 1c merged.
 - 2026-08-26 — 1c merged (`62c1f182`); actionable.
 - 2026-09-01 — re-verified: reducer still whole-overwrite, view still has no ordering field.
+- 2026-09-02 — fixed on youcoded master, `96d82393`: `SpecialistRunView.seq` stamped in `toRunView`; the reducer drops an incoming view whose seq is not newer.
+- 2026-09-04 — roadmap item closed and report archived (the fix had landed without closing either).

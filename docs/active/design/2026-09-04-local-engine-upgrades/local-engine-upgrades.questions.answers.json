@@ -1,0 +1,69 @@
+{
+ "deck": "local-engine-upgrades-questions",
+ "started": "2026-09-05T05:30:12.382Z",
+ "submitted": "2026-09-05T05:38:45Z",
+ "cur": 7,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "a",
+   "note": "only half-related, but this makes me think we should add a simple \"Terminal\" entry to the provider list when creating a new session, and allow users to have just a bare terminal window as a \"youcoded\" session. this would ingratiate us with devs and we could have this change paste the command into a new terminal session.",
+   "note_kind": "noting",
+   "seconds": 121,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "a",
+   "note": "but, to be clear, the ui should still prioritize non-developers. things that would confuse people should be hidden by and \"advanced settings\" menu or something of the like, with (i) explainers for concepts",
+   "note_kind": "noting",
+   "seconds": 50,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "c",
+   "note": "how do others like unsloth studio handle this? i lean towards always download, but am open to providing an option if we REALLY feel like this may bother users",
+   "note_kind": "noting",
+   "seconds": 70,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "a",
+   "note": "fine with this being in advanced, along with some earlier settings. we should set the best defaults (like speculative decoding should probably default to \"on\").",
+   "note_kind": "noting",
+   "seconds": 93,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 36,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 57,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 62,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": ""
+  },
+  "S-4": {
+   "v": "yes",
+   "seconds": 22,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
