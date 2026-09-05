@@ -1,0 +1,38 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "width": 390,
+ "height": 800,
+ "pre": [
+  { "click": "[title=Settings]", "settle": 700 }
+ ],
+ "shots": [
+  {
+   "name": "narrow-drawer",
+   "actions": [],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Assistant settings'))"
+  },
+  {
+   "name": "narrow-list",
+   "actions": [
+    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] button')].some(b=>b.textContent.includes('Local models'))"
+  },
+  {
+   "name": "narrow-claude",
+   "actions": [
+    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
+    { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Claude Code'))", "settle": 900 }
+   ],
+   "expect": "[role=dialog] [aria-label=Back]"
+  },
+  {
+   "name": "narrow-general",
+   "actions": [
+    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
+    { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('General'))", "settle": 900 }
+   ],
+   "expect": "[role=dialog] [aria-label=Back]"
+  }
+ ]
+}
