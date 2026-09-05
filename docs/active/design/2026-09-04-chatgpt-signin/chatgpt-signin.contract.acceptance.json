@@ -88,7 +88,7 @@
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review#P-7",
      "verdict": "pass",
-     "evidence": "In a live conversation on a ChatGPT model the status bar showed exactly two chips, \"5h: 34% Resets @ 8:45am\" and \"7d: 12% Resets Thursday @ 6:35am\", both pointing at the ChatGPT plan rather than claude.ai. Amended per W-2, which you approved: a Plus/Pro plan still shows exactly 5h and 7d, but your own free account reports one 30-day window, so it shows a single \"30d\" chip \u2014 a test pins that output too. One thing to flag: the 7-day chip spells the day out in full (\"Resets Thursday\"), while the limit card uses the three-letter form (\"Tue\") \u2014 the W-1 deck said the chip already said \"Tue\", and it never did; that gap is unresolved."
+     "evidence": "In a live conversation on a ChatGPT model the status bar showed exactly two chips, \"5h: 34% Resets @ 8:45am\" and \"7d: 12% Resets Thursday @ 6:35am\", both pointing at the ChatGPT plan rather than claude.ai. Amended per W-2, which you approved: a Plus or Pro plan still shows exactly 5h and 7d, but your own free account reports one 30-day window, so it shows a single \"30d\" chip \u2014 a test pins that output too. The chip and the limit card now spell the day the same way (you chose the full \"Tuesday\" on 2026-09-05), and a test holds them together."
     },
     {
      "id": "R10",
@@ -180,7 +180,7 @@
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review-3#P-9",
      "verdict": "pass",
-     "evidence": "I made the running app hit the plan limit and read the card back: it says exactly \"You have reached ChatGPT's 5-hour session limit (Resets @ 6:43pm).\" with a single Switch Providers button and no Try again, and clicking that button opened the model picker. The weekly version of the same card now names the day too (\"Resets Tue @ 6:43pm\"), which you approved on W-1 \u2014 but the 7-day chip beside it spells the day out in full (\"Thursday\"), which the W-1 deck said already matched and does not; that is unresolved and is being put to you separately."
+     "evidence": "I made the running app hit the plan limit and read the card back: it says exactly \"You have reached ChatGPT's 5-hour session limit (Resets @ 6:43pm).\" with a single Switch Providers button and no Try again, and clicking that button opened the model picker. The weekly version of the same card now names the day too, which you approved on W-1 \u2014 and since 2026-09-05 it spells it out in full (\"Resets Tuesday @ 6:43pm\") so it reads the same as the 7-day chip beside it, which is unchanged."
     },
     {
      "id": "R20",
