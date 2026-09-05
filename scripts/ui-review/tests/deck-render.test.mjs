@@ -1,5 +1,5 @@
 // scripts/ui-review/tests/deck-render.test.mjs
-// Builds the fixture deck, serves it with review-cards.py serve --no-open, and drives headless
+// Builds the fixture deck, serves it with review-cards.py serve, and drives headless
 // Chrome over raw CDP: no console errors, the layout the page chose at three sizes, the answer
 // container on screen, and a Yes + Save & Next that lands in the answers file.
 import { test } from 'node:test';
@@ -34,7 +34,7 @@ test('deck renders at three sizes and records an answer', async () => {
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
   { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
   const port = await freePort();
-  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   let srvOut = ''; srv.stdout.on('data', d => srvOut += d);
   try {
     await sleep(800);
@@ -134,7 +134,7 @@ test('live step: panes, label theme row that does not reload them, no picking by
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('live.json'), fx.stderr);
   { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
   const port = await freePort();
-  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--no-live', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--no-live', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   const url = `http://127.0.0.1:${port}/live.html`;
   const c = await cdp(await freePort(), 1600, 1000);
   try {
@@ -244,7 +244,7 @@ test('live step: a stopped app server says so, with the command that starts it',
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('live.json'), fx.stderr);
   { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
   const port = await freePort();
-  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--no-live', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--no-live', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   const c = await cdp(await freePort(), 1400, 900);
   try {
     await sleep(800);
@@ -285,7 +285,7 @@ print(p)`;
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
   { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
   const port = await freePort();
-  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   try {
     await sleep(800);
     const c = await cdp(await freePort(), 1440, 900);
@@ -382,7 +382,7 @@ test('a page holding a contract step is wide', async () => {
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('arcade.contract.json'), fx.stderr);
   { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
   const port = await freePort();
-  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   const c = await cdp(await freePort(), 1440, 900);
   try {
     await sleep(800);
@@ -410,7 +410,7 @@ print(p)`;
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
   { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
   const port = await freePort();
-  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   const c = await cdp(await freePort(), 1440, 900);
   try {
     await sleep(800);
@@ -439,7 +439,7 @@ test('submit lands on a finish screen that reads the answers back, and the deck 
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
   { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
   const port = await freePort();
-  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   const c = await cdp(await freePort(), 1440, 900);
   try {
     await sleep(800);

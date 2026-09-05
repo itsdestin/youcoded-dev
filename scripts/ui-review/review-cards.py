@@ -2,8 +2,8 @@
 """Review deck v2 — the page Destin approves UI changes on, one point per step.
 
   python3 scripts/ui-review/review-cards.py build <spec.json>     cut the crops, resolve every highlight box, write the HTML next to the spec
-  python3 scripts/ui-review/review-cards.py serve <spec.json> [--no-open] [--no-build] [--port N] [--timeout MIN]
-        build it, serve it, open the browser, save answers to <spec>.answers.json, exit when Destin submits
+  python3 scripts/ui-review/review-cards.py serve <spec.json> [--no-build] [--port N] [--timeout MIN]
+        build it, serve it, print the address for the session to put in chat, save answers to <spec>.answers.json, exit when Destin submits
   python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
         block until the answers file says submitted (for a session that no longer holds the `serve` process)
   python3 scripts/ui-review/review-cards.py contract-check <feature>.contract.json
@@ -85,7 +85,6 @@ def main(argv):
     for c in ('serve', 'wait'):
         sub.choices[c].add_argument('--timeout', type=float, default=240, help='minutes to wait for a submit (exit 2 after)')
     sv = sub.choices['serve']
-    sv.add_argument('--no-open', action='store_true')
     sv.add_argument('--no-live', action='store_true',
                     help="don't start or stop the app server for live panes (it's already running)")
     sv.add_argument('--no-build', action='store_true', help='serve the page as it is on disk')
@@ -154,7 +153,7 @@ def main(argv):
             return 3
         if not a.no_build and build(spec) != 0:
             return 1
-        return serve(spec, port=a.port, open_browser=not a.no_open, timeout_min=a.timeout, live=not a.no_live)
+        return serve(spec, port=a.port, timeout_min=a.timeout, live=not a.no_live)
     except SpecError as e:
         print(str(e), file=sys.stderr)
         return 1

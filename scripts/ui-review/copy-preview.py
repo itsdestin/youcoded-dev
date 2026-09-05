@@ -6,7 +6,7 @@ text under each block. Served like the review deck: edits save as they happen to
 <out>.answers.json; Submit ends the server and writes <out>.answers.md.
 
   python3 scripts/ui-review/copy-preview.py build <site index.html> <out-dir>
-  python3 scripts/ui-review/copy-preview.py serve <site index.html> <out-dir> [--no-open] [--port N] [--timeout MIN]
+  python3 scripts/ui-review/copy-preview.py serve <site index.html> <out-dir> [--port N] [--timeout MIN]
 
 WHY a page and not a table: Destin reviewed the old→new table (copy-review.py) and
 could not tell how any of it would land on the page — "chunked up and displayed
@@ -336,7 +336,7 @@ def main():
         s.add_argument('--media', help='dir of <scene>.webm/.webp loops to drop into the rows (copied to <out-dir>/media)')
         s.add_argument('--gap', action='append', default=[], help='rowN=known gap text, shown on that row')
         if name == 'serve':
-            s.add_argument('--no-open', action='store_true'); s.add_argument('--port', type=int, default=0); s.add_argument('--timeout', type=int, default=240)
+            s.add_argument('--port', type=int, default=0); s.add_argument('--timeout', type=int, default=240)
     a = ap.parse_args()
     if a.media:
         import shutil
@@ -355,7 +355,7 @@ def main():
     other = already_served(spec)
     if other:
         print(f'REFUSING: already served by pid {other["pid"]} at {other["url"]}'); return 3
-    rc = serve(spec, port=a.port, open_browser=not a.no_open, timeout_min=a.timeout, log=lambda m: print(m) if m.startswith('[') or m.startswith('copy-preview') else None)
+    rc = serve(spec, port=a.port, timeout_min=a.timeout, log=lambda m: print(m) if m.startswith('[') or m.startswith('copy-preview') else None)
     if rc == 0:
         print(f'[copy-preview] edits written to {write_edits(a.out_dir, out)}')
     return rc

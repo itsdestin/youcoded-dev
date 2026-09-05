@@ -1,5 +1,10 @@
-"""Serve a built deck on 127.0.0.1, open it in the browser, save every answer to
+"""Serve a built deck on 127.0.0.1, print its address, save every answer to
 <spec-stem>.answers.json as it arrives, and exit when Destin submits.
+
+WHY it never opens a browser (Destin, 2026-09-05): a session runs inside the YouCoded app,
+which opens any link pasted into chat — a model launching its own browser window on his
+desktop is a surprise, not a convenience. `serve` prints the address; the session's job is
+to put it in chat as the last line of its turn.
 
 WHY exit-on-submit: Claude runs `serve` as a background command and is re-invoked when it
 exits — that exit IS the notification that the review is done, with the summary on stdout.
@@ -16,7 +21,6 @@ import threading
 import time
 import urllib.error
 import urllib.request
-import webbrowser
 
 from .live import VITE_BASE_PORT, has_live, live_offset
 from .spec import SpecError, is_page, workspace_root
@@ -147,16 +151,6 @@ def make_server(spec, port, on_submit):
 
     srv = _Server(('127.0.0.1', port), Handler)
     return srv, f'http://127.0.0.1:{srv.server_address[1]}/{spec["out"]}'
-
-
-def open_url(url):
-    for cmd in (['xdg-open', url], ['open', url]):
-        try:
-            subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            return True
-        except FileNotFoundError:
-            continue
-    return webbrowser.open(url)
 
 
 def already_served(spec):
@@ -302,7 +296,7 @@ def stop_workbench(proc):
             proc.kill()
 
 
-def serve(spec, port=0, open_browser=True, timeout_min=240, log=print, live=True):
+def serve(spec, port=0, timeout_min=240, log=print, live=True):
     """Blocks. Returns 0 after a submit (summary logged), 2 on timeout, 3 if this spec is already served.
 
     `live=False` (--no-live) leaves the app server alone, for when Destin already has the
@@ -332,8 +326,9 @@ def serve(spec, port=0, open_browser=True, timeout_min=240, log=print, live=True
     with open(lock, 'w') as f:
         json.dump({'pid': os.getpid(), 'url': url}, f)
     log(f'[deck] {url}')
-    if open_browser:
-        open_url(url)
+    # Fix (Destin, 2026-09-05): never launch a browser ourselves — print the link and let
+    # the session paste it into chat, where the YouCoded app opens it for him.
+    log('[deck] not opened — put this link in chat as the last line of your turn')
     # WHY: shutdown() blocks until serve_forever() returns, so calling it on the thread
     # that runs serve_forever (the handler thread is one of its children in
     # ThreadingMixIn) would deadlock — it must run on a throwaway thread.

@@ -1,4 +1,5 @@
 import json, os, sys, tempfile, threading, time, unittest, urllib.error, urllib.request
+from unittest import mock
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 from fixture import make_fixture
@@ -52,7 +53,7 @@ class ServeTests(unittest.TestCase):
         self.assertEqual(s[1:], ['S-1 yes', 'S-2 other — "bigger"', 'S-3 skip'])
     def test_serve_returns_0_on_submit_and_prints_summary(self):
         out = []; result = {}
-        def run(): result['code'] = serve(self.spec, port=0, open_browser=False, timeout_min=1, log=out.append)
+        def run(): result['code'] = serve(self.spec, port=0, timeout_min=1, log=out.append)
         t = threading.Thread(target=run, daemon=True); t.start()
         for _ in range(50):
             if any(l.startswith('[deck] http') for l in out): break
@@ -63,13 +64,13 @@ class ServeTests(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(self.spec['_base'], 'deck.serve.json')))
     def test_second_serve_of_same_spec_refuses(self):
         json.dump({'pid': os.getpid(), 'url': 'http://127.0.0.1:1/x'}, open(os.path.join(self.spec['_base'], 'deck.serve.json'), 'w'))
-        out = []; self.assertEqual(serve(self.spec, port=0, open_browser=False, timeout_min=1, log=out.append), 3); self.assertTrue(any('REFUSING' in l for l in out))
+        out = []; self.assertEqual(serve(self.spec, port=0, timeout_min=1, log=out.append), 3); self.assertTrue(any('REFUSING' in l for l in out))
     def test_live_lock_owned_by_someone_else_still_refuses(self):
         # pid 1 is init — alive, not ours, so os.kill(1, 0) raises PermissionError for a
         # normal user (or succeeds for root, in which case the lock is just "alive" too).
         json.dump({'pid': 1, 'url': 'http://127.0.0.1:1/x'}, open(os.path.join(self.spec['_base'], 'deck.serve.json'), 'w'))
         out = []
-        self.assertEqual(serve(self.spec, port=0, open_browser=False, timeout_min=1, log=out.append), 3)
+        self.assertEqual(serve(self.spec, port=0, timeout_min=1, log=out.append), 3)
         self.assertTrue(any('REFUSING' in l for l in out))
     def test_bad_json_post_gets_a_400(self):
         srv, url = make_server(self.spec, 0, lambda state: None)
@@ -118,7 +119,7 @@ class ServeTests(unittest.TestCase):
         # and serve() does it before it starts (the lock check in test_second_serve_of_same_spec_refuses runs first)
         write_atomic(answers_path(self.spec), {'submitted': '2026-08-27T11:00:00Z', 'answers': {}})
         result = {}
-        def run(): result['code'] = serve(self.spec, port=0, open_browser=False, timeout_min=1, log=out.append)
+        def run(): result['code'] = serve(self.spec, port=0, timeout_min=1, log=out.append)
         t = threading.Thread(target=run, daemon=True); t.start()
         for _ in range(50):
             if any(l.startswith('[deck] http') for l in out): break
@@ -134,5 +135,24 @@ class ServeTests(unittest.TestCase):
         write_atomic(answers_path(self.spec), {'submitted': '2026-08-27T18:40:00Z', 'answers': {'S-1': {'v': 'yes'}}})
         out.clear(); self.assertEqual(wait_for_submit(self.spec, timeout_min=1, poll_s=0.05, log=out.append), 0)
         self.assertTrue(any('1 yes' in l and '2 skipped' in l for l in out))
+    def test_serve_never_opens_a_browser(self):
+        # WHY: Destin's instruction (2026-09-05) is that a session puts the printed link in
+        # chat instead of a model auto-launching a browser window on his desktop. Patching
+        # both the process-spawn route (xdg-open/open) and the stdlib fallback (webbrowser)
+        # to explode proves neither is reachable from serve() any more — a regression here
+        # would raise inside the thread below instead of quietly reopening a window.
+        def boom(*a, **k):
+            raise AssertionError('a deck must not open a browser')
+        out = []; result = {}
+        def run(): result['code'] = serve(self.spec, port=0, timeout_min=1, log=out.append)
+        with mock.patch('subprocess.Popen', side_effect=boom), mock.patch('webbrowser.open', side_effect=boom):
+            t = threading.Thread(target=run, daemon=True); t.start()
+            for _ in range(50):
+                if any(l.startswith('[deck] http') for l in out): break
+                time.sleep(0.1)
+            url = next(l for l in out if l.startswith('[deck] http')).split(' ', 1)[1]
+            post(url.rsplit('/', 1)[0] + '/submit', {'deck': 'fixture', 'answers': {}})
+            t.join(5)
+        self.assertEqual(result['code'], 0)
 
 if __name__ == '__main__': unittest.main()
