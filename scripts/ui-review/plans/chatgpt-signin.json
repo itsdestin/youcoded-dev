@@ -75,6 +75,28 @@
    "expect": "[role=dialog][aria-label='Model Providers']"
   },
   {
+   "name": "providers-local-models",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "settle": 1200
+    },
+    {
+     "scrollDialog": "bottom",
+     "settle": 600
+    }
+   ],
+   "measure": [
+    "[role=dialog][aria-label='Model Providers']"
+   ],
+   "expect": "[role=dialog][aria-label='Model Providers']"
+  },
+  {
    "name": "first-run-sign-in",
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&firstRun=AUTHENTICATE",
    "boot": 4500,
