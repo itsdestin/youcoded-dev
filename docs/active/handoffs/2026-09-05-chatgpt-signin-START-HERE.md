@@ -95,6 +95,26 @@ the **usage read**, and the **limit error** (the `usage_limit_reached` 429 → a
   (`YOUCODED_CHATGPT=0`, mirroring `YOUCODED_NATIVE`), and the blocked state carries OpenAI's
   own words.
 
+## The contract
+
+`chatgpt-signin.contract.json`, 21 rows, written by a fresh agent from the deck answers
+only. `review-cards.py contract-check` on 2026-09-05:
+
+```
+ok: contract holds: 21 rows, every source answered and submitted, every guard found
+todo: not signed — chatgpt-signin.contract.json has no answers file; serve chatgpt-signin.contract.json and answer it
+todo: acceptance deck not built — write chatgpt-signin.contract.verdicts.json, then review-cards.py acceptance chatgpt-signin.contract.json
+```
+
+One row is mechanical (`tests/local-endpoint.test.ts`); the rest are deck or human rows.
+The agent's "not covered" list — things approved in passing but never a deck step of their
+own: one card shape for every provider and the 5h/7d bars on both plan cards (carried by
+notes on rows 7 and 8); the pay-per-use warning from the questions deck, dropped by the
+approved round-3 wording; the local-model route on first run; whether Web Search keeps its
+heading; the two waiting states' lack of a timeout; and the first-run progress line "Sign in
+with your Claude, ChatGPT or OpenRouter account to finish setup.", which is tested but was
+never on a deck.
+
 ## Decisions Destin made that a builder must not undo
 
 - Name: **ChatGPT** (card), **ChatGPT Plan** (picker/chip). Not "OpenAI".
