@@ -102,7 +102,7 @@ only. `review-cards.py contract-check` on 2026-09-05:
 
 ```
 ok: contract holds: 21 rows, every source answered and submitted, every guard found
-todo: not signed — chatgpt-signin.contract.json has no answers file; serve chatgpt-signin.contract.json and answer it
+ok: signed 2026-09-05 05:49 — C yes
 todo: acceptance deck not built — write chatgpt-signin.contract.verdicts.json, then review-cards.py acceptance chatgpt-signin.contract.json
 ```
 
