@@ -53,7 +53,9 @@ emitted locally as a `level` event, so the meter never waits on a round trip.
 **Main** — `src/main/voice/`:
 - `voice-model.ts` — acquisition of the model folder, the same shape as
   `engine/engine-acquisition.ts`: pinned URL (sherpa-onnx's `asr-models` release,
-  `sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8.tar.bz2`, 464 MB), pinned SHA-256, download with
+  `sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8.tar.bz2`, 487,170,055 bytes), pinned SHA-256
+  (`5793d0fd397c5778d2cf2126994d58e9d56b1be7c04d13c7a15bb1b4eafb16bf`, from the release's
+  `checksum.txt`, read 2026-09-05), download with
   throttled progress, verify, unpack with the system `tar` into a `.unpacking` sibling, write
   the `.complete` marker last, rename into `<userData>/voice/parakeet-tdt-0.6b-v3-int8/`
   (641 MB unpacked). Per-machine, never synced; a new row in `docs/MAP.md`'s on-disk table.
