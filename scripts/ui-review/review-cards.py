@@ -15,6 +15,7 @@
         (its own answers file) and whether the acceptance deck was submitted
   python3 scripts/ui-review/review-cards.py acceptance <feature>.contract.json
         merge <feature>.contract.verdicts.json into <feature>.contract.acceptance.json — the contract graded, plus a yes/no per human row
+        verdicts.json is {rowId: {verdict, evidence}}; verdict is literally "pass" or "fail"
 
 Five step kinds, each named by its own fields: APPROVE (`changed`+`notice`, yes/no),
 CHOICE (`variants` — a picture per option, pick one), DECIDE (`options` — one picture of

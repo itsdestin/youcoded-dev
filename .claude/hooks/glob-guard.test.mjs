@@ -321,3 +321,32 @@ test('ALLOWS kill with a shell variable or job spec — nothing numeric to look 
   assert.equal(runProc('P=$(ss -ltnp | rg ":8199" | rg -o "pid=[0-9]+" | cut -d= -f2); kill "$P"').blocked, false);
   assert.equal(runProc('kill %1').blocked, false);
 });
+
+// ── guard 6: a `pgrep -f` match list handed to `kill` in the same command ───────────────
+// `pkill -f` in two steps. Both blocked cases below are the exact commands that killed
+// this session's own shell on 2026-09-05 (exit 144, output truncated mid-run) while
+// shutting a dev instance down — and the second one is the shape CLAUDE.md recommended
+// at the time ("use `pgrep -af` then `kill <pid>`"), which is only safe across TWO calls.
+test('blocks: a for-loop killing every pid pgrep -f returned', () => {
+  const { blocked, message } = run(
+    `for pid in $(pgrep -f 'user-data-dir=/home/destin/.config/youcoded-chatgpt'); do kill "$pid"; done`);
+  assert.ok(blocked);
+  assert.match(message, /YOUR OWN SHELL/);
+});
+
+test('blocks: kill $(pgrep -f …), with and without a signal', () => {
+  assert.ok(run('kill $(pgrep -f vite)').blocked);
+  assert.ok(run('kill -9 $(pgrep -af my-server)').blocked);
+  assert.ok(run(`for pid in $(pgrep -f 'x'); do echo "killing $pid"; kill -9 "$pid" 2>/dev/null; done`).blocked);
+});
+
+test('ALLOWS: a pid derived from a listening port — the shape that actually works', () => {
+  assert.ok(!run(`kill $(ss -ltnp 2>/dev/null | grep ':5433' | grep -o 'pid=[0-9]*' | cut -d= -f2)`).blocked);
+});
+
+test('ALLOWS: pgrep -f with no kill, kill -0 as a probe, and a literal pid', () => {
+  assert.ok(!run(`pgrep -af 'youcoded-chatgpt' | head -3`).blocked);
+  assert.ok(!run('pgrep -f vite; echo done').blocked);
+  assert.ok(!run('kill -0 $(pgrep -f vite)').blocked);
+  assert.ok(!run('kill 12345678').blocked);
+});

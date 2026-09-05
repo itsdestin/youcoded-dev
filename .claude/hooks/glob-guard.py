@@ -263,6 +263,46 @@ KILL_LIVE_MESSAGE = (
     "from a number remembered from an earlier listing."
 )
 
+# ── guard 6: `kill` fed by `pgrep -f` in the SAME command ────────────────────────────────
+# Guard 2 blocks `pkill -f`. This is the same bug wearing the two-step disguise CLAUDE.md
+# itself used to recommend: `for pid in $(pgrep -f X); do kill $pid; done`, or
+# `kill $(pgrep -f X)`. `pgrep -f` is safe to RUN — it signals nothing — but its match list
+# ALWAYS contains the `zsh -c '<your whole command>'` wrapper, because the pattern is right
+# there in the command line. Feed that list to `kill` in the same breath and you signal your
+# own shell, exactly as `pkill -f` would.
+#
+# Measured 2026-09-05 while shutting a dev instance down: two such commands each killed
+# their own shell (exit 144, output truncated mid-run) and cost two follow-up turns to
+# untangle. Memory already recorded the shell being killed this way twice before the guard
+# existed — the two-step form is why guard 2 did not catch it.
+#
+# The safe shapes, all used successfully in that same session: derive the pid from a handle
+# that CANNOT appear in your own command line — a listening port
+# (`kill $(ss -ltnp | rg ':5433' | rg -o 'pid=[0-9]+' | cut -d= -f2)`) or a pid file — or
+# split it across two calls: run `pgrep -af X` alone, read the pid, then `kill <pid>`.
+PGREP_KILL = re.compile(
+    r"\bkill\b(?![^|&;\n]*\s-0\b)[^|&;\n]*\$\(\s*pgrep\s+(?:[^)\n]*\s)?-[a-zA-Z]*f"
+    r"|\bfor\b[^\n;]*\$\(\s*pgrep\s+(?:[^)\n]*\s)?-[a-zA-Z]*f[^\n]*?\bkill\b"
+)
+
+
+def pgrep_kill_offender(command: str):
+    """True when a `pgrep -f` match list reaches `kill` inside one command line."""
+    return bool(PGREP_KILL.search(strip_heredocs(command)))
+
+
+PGREP_KILL_MESSAGE = (
+    "Blocked before it ran: a `pgrep -f` match list is being handed to `kill` in the same "
+    "command. Claude Code wraps every Bash call as `zsh -c '<your whole command>'`, so the "
+    "pattern always matches that wrapper too — the list contains YOUR OWN SHELL, and killing "
+    "it truncates the command mid-run (measured twice on 2026-09-05, exit 144). This is "
+    "`pkill -f` in two steps; guard 2 blocks only the one-step form.\n"
+    "Instead use a handle that cannot appear in your own command line: a listening port "
+    "(`kill $(ss -ltnp | rg ':5433' | rg -o 'pid=[0-9]+' | cut -d= -f2)`) or a pid file. If "
+    "you must match on the command line, split it across two Bash calls: `pgrep -af X` on "
+    "its own, read the pid, then `kill <pid>` in the next call."
+)
+
 
 def main() -> int:
     try:
@@ -290,6 +330,13 @@ def main() -> int:
         hits = live_app_pids(command)
         if hits:
             print(KILL_LIVE_MESSAGE.format(pid=hits[0][0], cmd=hits[0][1]), file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open
+
+    try:
+        if pgrep_kill_offender(command):
+            print(PGREP_KILL_MESSAGE, file=sys.stderr)
             return 2
     except Exception:
         pass   # fail open

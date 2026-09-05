@@ -24,6 +24,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import { checkAnchor, currentShas, harvestDocAnchors, REPOS } from './audit-anchors.mjs';
 
 export const ROADMAP_DIR = 'docs/roadmap';
@@ -534,12 +535,30 @@ function main() {
     return args[i + 1];
   };
   const rootArg = value('--root');
-  const root = rootArg ? path.resolve(rootArg) : path.resolve(fileURLToPath(new URL('..', import.meta.url)));
+  // WHY the default is the CALLER's worktree, not this script's own location:
+  // `scripts/` is run from the shared youcoded-dev checkout, but the roadmap files being
+  // edited live in a worktree. With the old default a session in a worktree silently
+  // checked the SHARED tree — reporting errors in files it had not touched and passing
+  // over its own (measured 2026-09-05: four runs before the mismatch was noticed).
+  // Every workspace worktree has docs/roadmap/, so this is strictly more correct; the
+  // script's own location remains the fallback for a caller outside one.
+  const root = rootArg ? path.resolve(rootArg) : defaultRoot();
+  if (!rootArg) console.log(`roadmap-check: ${root}`);   // say which tree, always
   const today = value('--today') ?? new Date().toISOString().slice(0, 10);
   if (!isRealDate(today)) { console.error(`roadmap-check: --today must be YYYY-MM-DD, got "${today}"`); process.exit(1); }
   const r = run({ root, fix: flag('--fix'), quiet: flag('--quiet'), structureOnly: flag('--structure'), today });
   process.stdout.write(r.text);
   process.exit(r.exitCode);
+}
+
+/** The worktree the caller is standing in when it carries roadmap files, else this
+ *  script's own checkout. See the WHY at the `root` assignment above. */
+function defaultRoot() {
+  try {
+    const top = execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
+    if (top && fs.existsSync(path.join(top, 'docs', 'roadmap'))) return top;
+  } catch { /* not a git dir, or no git — fall through */ }
+  return path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

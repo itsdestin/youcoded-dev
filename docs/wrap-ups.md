@@ -32,3 +32,12 @@ recurred — the repetition is the data.
 - Goals were implicit; the two that matter (fewer tokens next session, more automation + preferences captured once) were never stated → applied: "What better means here" section
 - Roadmap entries filed by wrap-up are not tagged, so the next wrap-up cannot check whether they moved → dropped: Destin deferred; revisit once the ledger has run a few sessions
 - deleted/merged: `SKILL.md` narrative trimmed hard enough to absorb a new section, a new step and a fifth question and still come out smaller — 1504 → 1492 words
+
+## 2026-09-05 — built and shipped Sign in with ChatGPT (feat/chatgpt-signin-backend + build/chatgpt-signin, both merged)
+- RECURRED (3rd time, first two in memory `feedback-pkill-by-pid.md`): killed my own shell with `for pid in $(pgrep -f X); do kill $pid; done`. Guard 2 blocks `pkill -f`; this is the same bug in two steps, and CLAUDE.md RECOMMENDED it ("use `pgrep -af` then `kill <pid>`") → applied: guard 6 in `.claude/hooks/glob-guard.py` + 4 tests, and the CLAUDE.md advice corrected  [2 self-kills in one command, exit 144, 2 follow-up turns]
+- `roadmap-check.mjs` silently checked the SHARED checkout from a worktree — reported errors in files I had not touched, passed over mine → applied: defaults to the caller's worktree when it has `docs/roadmap/`, and prints the root it used  [4 wasted runs before the mismatch was visible]
+- `audit-anchors.mjs --root <worktree>` reports every `youcoded/...` anchor as missing, because a worktree has no sub-repo clones → applied: usage header now says DO NOT pass a worktree, and why  [12 false failures, all files that existed]
+- A verdicts file's `verdict` must literally be `pass`/`fail`; only `spec.py`'s validator knew, and it fails at serve time, after the deck is built and committed → applied: stated in `acceptance_spec`'s docstring and `review-cards.py`'s usage  [1 rebuild + a correcting commit; the grading subagent made the same guess I did]
+- Contract row R16 was satisfied by what a chip OPENS, not by the chip's own text; the grader said so instead of silently passing it → dropped: the honesty worked, nothing to change
+- `cdp-eval.mjs` needs `ws`, absent where I ran it → dropped: its own header already says to run it from a directory whose node_modules has ws; I did not read the header  [2 calls]
+- deleted/merged: `formatDayShort` + `DAY_NAMES_SHORT` in `shared/time-format.ts` — Destin chose the long day name, leaving one day formatter where there were two

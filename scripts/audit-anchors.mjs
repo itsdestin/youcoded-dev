@@ -16,8 +16,14 @@
 //   node scripts/audit-anchors.mjs --json          machine-readable (for the /audit agent)
 //   node scripts/audit-anchors.mjs --no-diff       skip the git diff-scope computation
 //   node scripts/audit-anchors.mjs --root <dir>    workspace root (default: this script's parent
-//                                                  dir — pass explicitly when running from a
-//                                                  worktree, which has no sub-repo clones)
+//                                                  dir — the SHARED checkout, the only tree that
+//                                                  has the sub-repo clones)
+//
+// DO NOT pass --root <a worktree>. Anchors and MAP rows keep their `youcoded/...` prefix and
+// are resolved from the workspace root, so a worktree (which has no sub-repo clones) reports
+// every one of them as missing — 12 false failures on 2026-09-05, all for files that existed.
+// To check a MAP row you just added on a branch, verify its paths against the sub-repo
+// worktree directly; the anchor pass is a whole-workspace check, run from the shared checkout.
 //
 // Tests: node --test scripts/audit-anchors.test.mjs
 

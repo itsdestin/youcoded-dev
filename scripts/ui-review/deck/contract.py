@@ -198,7 +198,11 @@ GRADED = ('mechanical', 'deck')
 
 def acceptance_spec(spec, verdicts):
     """The acceptance deck as a spec dict. `verdicts` is {row id: {verdict, evidence}} from
-    <stem>.verdicts.json. Refuses when a graded row has none: an ungraded row is not a pass."""
+    <stem>.verdicts.json, where `verdict` must be the literal "pass" or "fail" (spec.py
+    validates it at serve time, so a grader that writes "holds" builds a deck that will not
+    serve — measured 2026-09-05, one rebuild and a correcting commit). Anything the verdict
+    cannot carry, an amendment included, belongs in `evidence`.
+    Refuses when a graded row has none: an ungraded row is not a pass."""
     steps = contract_steps(spec)
     if len(steps) != 1:
         raise AcceptanceError(f'expected exactly one contract step, found {len(steps)}')
