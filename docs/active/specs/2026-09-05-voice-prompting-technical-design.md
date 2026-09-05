@@ -23,6 +23,8 @@ Android half. Every decision below is downstream of a deck answer; the answer is
 | The mic is always visible; the first tap offers a one-time download (464 MB) on a card above the mic | Q-5, review V-2 |
 | No microphone: the card says the real reason, with Check again | review V-3 |
 | While listening: the "Listening" strip above the box (dot · Listening · meter · clock · Stop); the mic's ring follows loudness, 2–9 px | review2 V-4, V-5 |
+| Hold Space in an empty box for a quarter second to listen, release to stop; a tap does nothing; no other shortcut | review3 V-7 |
+| Refused by the operating system: the card says "Microphone access was refused by your computer. Allow it for YouCoded in your system's privacy settings, then check again." with Check again | review3 V-8 |
 | Android uses the phone's own recogniser, wired to the same mic button | Q-6 |
 | No mic on the remote browser client until remote access is encrypted | Q-7 (roadmap remote-access.md) |
 
@@ -76,7 +78,11 @@ emitted locally as a `level` event, so the meter never waits on a round trip.
   `voice:stop`, `voice:cancel`; `ipcMain.on` for `voice:audio` (fire-and-forget, an
   ArrayBuffer); `voice:event` push to the requesting window. macOS: `voice:start` first calls
   `systemPreferences.askForMediaAccess('microphone')` and reports a refusal as
-  `unavailable` with the exact reason.
+  `unavailable` with the V-8 sentence verbatim ("Microphone access was refused by your
+  computer. Allow it for YouCoded in your system's privacy settings, then check again.").
+  A renderer `getUserMedia` `NotAllowedError` maps to the same sentence; `NotFoundError`
+  maps to V-3's "No microphone was found on this computer."; anything else surfaces the
+  browser's own message, never a guess.
 
 **Packaging** — `sherpa-onnx-node` plus its per-platform optional package (linux-x64 31 MB,
 win-x64 21 MB, darwin-arm64 32 MB; electron-builder ships only the current platform's). The
