@@ -4,6 +4,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+- [ ] On a ChatGPT-plan model, YouCoded does not hand OpenAI's private reasoning back on the
+      next step of a tool turn, so a long tool-using turn may re-think work it already did —
+      slower and more expensive than it needs to be. Phase 0 measured no reasoning item at all
+      on the free plan, so nothing is broken today; a paid plan is the case to check
+      `desktop` `chatgpt` `unconfirmed` `checked 2026-09-05` → docs/active/specs/2026-09-05-chatgpt-signin-backend-design.md
+
 - [ ] Memory the desktop app holds for each session is never let go when the session ends —
       six small per-session bookkeeping structures survive session exit (found 2026-08-27 while
       chasing the sidecar crash; not the crash cause, a few hundred bytes each)
