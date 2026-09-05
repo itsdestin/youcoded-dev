@@ -109,6 +109,9 @@ is_residue() {
     local f="$1" h c b
     [ -f "$f" ] || return 1
     h=$(git hash-object "$f") || return 1
+    # The cheap case first: identical to what the remote has right now.
+    b=$(git rev-parse "$REMOTE:$f" 2>/dev/null) || b=""
+    if [ "$b" = "$h" ]; then return 0; fi
     for c in $(git rev-list --max-count=300 "$REMOTE" -- "$f"); do
         b=$(git rev-parse "$c:$f" 2>/dev/null) || continue
         if [ "$b" = "$h" ]; then return 0; fi
@@ -152,13 +155,15 @@ while IFS= read -r f; do
     if printf '%s\n' "$incoming" | grep -qxF "$f"; then classify "$f" no; fi
 done <<< "$locally_edited"
 
-# An untracked file the incoming commits also add blocks the merge too -- but
-# only when its content actually differs, which is the case git refuses.
+# An untracked file the incoming commits also add blocks the merge too -- and
+# it blocks REGARDLESS of content. Git compares paths, not bytes: it refuses to
+# overwrite an untracked file it has to create even when the bytes are already
+# identical. Skipping the identical ones as "not a blocker" is what made the
+# first run of this healer die on git's own "would be overwritten by merge"
+# after it had already healed 16 files (real checkout, 2026-09-04).
 while IFS= read -r f; do
     [ -z "$f" ] && continue
-    if git cat-file -e "$REMOTE:$f" 2>/dev/null; then
-        if ! git show "$REMOTE:$f" | diff -q - "$f" >/dev/null 2>&1; then classify "$f" yes; fi
-    fi
+    if git cat-file -e "$REMOTE:$f" 2>/dev/null; then classify "$f" yes; fi
 done < <(git ls-files --others --exclude-standard)
 
 if [ -n "$conflicts" ]; then

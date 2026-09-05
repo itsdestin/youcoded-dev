@@ -283,3 +283,21 @@ test('a genuine conflict still refuses, and names only the conflicting file', ()
     'the unsaved edit must still be there');
   rmSync(p.root, { recursive: true, force: true });
 });
+
+/** Git refuses to overwrite an untracked file it needs to create EVEN WHEN the
+ *  content is byte-identical -- it compares paths, not bytes. The first version
+ *  of the residue classifier skipped identical untracked files as "not a
+ *  blocker" and the fast-forward then died on git's own error, which is how
+ *  this was found: two files, on the real checkout, after the healing had
+ *  already run. */
+test('an untracked file identical to the one upstream adds is residue, not a blocker', () => {
+  const p = makePair();
+  remoteCommit(p, 'newdoc.md', 'the doc\n', 'upstream adds a file');
+  writeFileSync(join(p.local, 'newdoc.md'), 'the doc\n');   // same bytes, untracked here
+
+  const r = runSync(p.local);
+  assert.equal(r.code, 0, r.out);
+  assert.equal(git(p.local, 'rev-parse', 'HEAD'), git(p.local, 'rev-parse', 'origin/master'));
+  assert.equal(git(p.local, 'status', '--porcelain').trim(), '');
+  rmSync(p.root, { recursive: true, force: true });
+});
