@@ -1,0 +1,21 @@
+{
+ "answers": {
+  "scope": {
+   "pick": "All five, plus brand-new characters for the three themes that have none"
+  },
+  "new-expressions": {
+   "pick": "Add only 'happy'"
+  },
+  "resting-face": {
+   "pick": "Open, awake eyes at rest"
+  },
+  "aliveness": {
+   "pick": "Reactions, plus spontaneous moments of his own",
+   "note": "i want a much richer idle/spontaneity, but the non-notifying movements should be subtle enough to be distinguished from a single clear \"needs attention\" animation when a session has a blue/red/yellow status light"
+  },
+  "sleeping": {
+   "pick": "Sleeps after a few quiet minutes, wakes on any activity"
+  }
+ },
+ "submitted": "2026-09-05T04:58:11Z"
+}
