@@ -321,6 +321,11 @@ stream, reads it and calls `engineManager.recordReply(...)`, which emits `status
 ## Wave 4
 
 ### T9 — Pending apply, keep-loaded, delete, load errors (§C2) — after T6, T7, T8
+- **Use a MERGING writer, which T8 deliberately did not add** (found building T8):
+  `updateEngineConfig(home, { models })` replaces the whole section, so `models:set-settings`
+  needs an `updateModelSettings(home, id, patch)` that merges inside `mutateJson`, the way
+  `updateEngineSpeed` already does. Writing the section wholesale would drop every other
+  model's settings on each save.
 - A settings save writes `engine.models[id]` with `pendingApply: true` and does NOT touch
   `models.ini` — every `?reload=1` diffs presets and would unload a changed model mid-reply.
 - Apply runs when that model has no in-flight request: write `models.ini` → `?reload=1` →
@@ -378,7 +383,12 @@ Renames: `engine.setSpeed` → `engine.setConfig({speed})` and `models.dismissMe
 **Then `node scripts/workbench-boot-check.mjs`** — the unit suite has passed while the app
 crashed at boot three times running.
 
-### T23 — The three fields nothing draws (§H, R3-24)
+### T23 — The three fields nothing draws (§H, R3-24) — plus one stale default
+`EngineCard.tsx` still carries `status.speed ?? { speculative: true, compressCache: true }`, a
+third copy of a default that is now unreachable because main and the mock both always send
+`speed` (found building T8). Delete it rather than leave a copy that can drift.
+
+
 Three signed rows describe text a user reads, and the mockup renders none of them:
 - `breakdown.advice` (R8) — the size bubble in `LocalModelsSection.tsx` ends today in a
   hardcoded "includes X for an Nk context"; it gains the advice line when the estimator sets one.
@@ -399,7 +409,10 @@ code to point at.
   the alias table.
 - `.claude/rules/engine-local-models.md`: rewrite the five bullets §I names (flat-basename
   "never rename downloads", the mmproj denylist, "integrated GPUs fall back to RAM-only",
-  "CUDA opt-in is Windows-x64-only", the `set-context` null trick).
+  "CUDA opt-in is Windows-x64-only", the `set-context` null trick). **Two of these already
+  contradict the shipped code** (confirmed building T8): `set-context` no longer restarts or
+  nulls `supervisorBinary`, and `config.json` is described as syncable when its `engine`
+  section is per-machine.
 - `native-runtime.md` rule and depth doc plus the `shared/types.ts` comment: `SessionProvider`
   has three members.
 - `desktop/src/shared/engine-types.ts`: the `loadedModelsBytes` comment says "loaded **or
