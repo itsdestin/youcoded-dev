@@ -122,6 +122,24 @@ File: `desktop/src/main/engine/engine-acquisition.ts`.
 - `installed()` backfills a marker lacking `devices` once, lazily, the first time `status()`
   reads it, so existing installs get a pool too.
 - `llvmpipe` and `SwiftShader` are classified CPU, not GPU.
+**Handoffs from T2, measured while building it:**
+- **`probeDownloadSize(asset)` answers the size question BEFORE any bytes move** (HEAD per
+  archive), so the switch confirmation can say "Switching to CUDA downloads 611 MB (238 MB
+  engine + 373 MB CUDA runtime)" against the 32 MB Vulkan default, and the progress bar's
+  denominator never changes mid-download. `totalBytes` is `null` when ANY part is unreadable —
+  a half-sum shown as a whole would understate what the user agreed to.
+- **`totalMiB`/`freeMiB` are `number | null`, never `0` for an unparsed line** — T11 must treat
+  a null pool as "no pool" and fall back to RAM. A null silently read as 0 makes every model
+  `too-large`, which is the hard block.
+- **`isGpu` is recorded per device**; do not re-derive it. `device.backend` is the printed id
+  (`Vulkan0`, `CUDA0`), so §A4's check is `startsWith('CUDA')`.
+- **A new `devicesError` field on the marker.** Without it, "the binary failed to start" and
+  "no matching device" look identical to T4. **T4 reads `devicesError` first and quotes it**,
+  and says "found no graphics chip" only when `devices` is empty AND there is no error.
+- **`onMarkerUpdated` is an optional constructor arg nothing passes yet.** T4's `EngineManager`
+  wires it to `emit('status-changed')`, or a lazily backfilled device list sits unseen until
+  the next unrelated engine event.
+
 **Accepted when:** `engine-acquisition.test.ts` pins the runtime archive landing in the same
 directory, the devices in the marker, the lazy backfill, and the llvmpipe classification.
 
