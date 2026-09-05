@@ -60,6 +60,7 @@ session-start hook prints this table into every session, so a lookup costs zero 
 | You'd call it | File |
 |---|---|
 | the chat transcript / message list | `youcoded/desktop/src/renderer/components/ChatView.tsx` |
+| what a message's TEXT does — which words are links or clickable files, code blocks, tables | `youcoded/desktop/src/renderer/components/MarkdownContent.tsx`; what counts as a file path: `youcoded/desktop/src/renderer/hooks/useInlineFilepathDetector.ts` |
 | the session switcher / session tabs / the pills in the header | `youcoded/desktop/src/renderer/components/SessionStrip.tsx` (press, hover peek, drag, drop, the All Sessions menu) |
 | where a dragged session pill lands, and when a dot steps aside | `youcoded/desktop/src/renderer/components/header/drag-order.ts` (`DRAG_TUNE`); how it is drawn: `SessionStrip.tsx` → `flow` |
 | the session pills / dragging a session to another window, and the pill's right-click menu | `youcoded/desktop/src/renderer/components/SessionStrip.tsx`; on Linux/Wayland the chat-area drop target is `SessionDropZone.tsx` |
