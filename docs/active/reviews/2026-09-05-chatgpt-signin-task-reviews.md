@@ -350,3 +350,62 @@ verdict: changes requested — the kill switch leaves the usage poll running, so
 feature still calls OpenAI every five minutes and can delete the user's stored tokens; the
 preload parity assertion is satisfied by the constants table alone; the first-run arm ignores
 the switch; and a blocked reason can carry an untruncated HTML body to the card.
+
+## T6 — the renderer
+
+Reviewed the card, the chips, `/usage`, the provider-type cache and the snapshot builder
+(commit `c6bd6776`) against §4.4, §4.5, §4.9 and the two words-deck answers.
+
+**Regression risk for everyone else: checked, not assumed.** `other` is written only on the
+ChatGPT path (`rg -n '\.other\b|other ??=' src --glob '!*.test.*'` → two files, both
+ChatGPT's), so every new render branch is inert for a Claude user; the chip refactor preserves
+element order, nesting and attribute order, pinned byte-for-byte; `buildUsageSnapshot` adds its
+new key by conditional spread, so a Claude snapshot is key-for-key identical; no new timer and
+no new network read; the popup's kill-switch gate renders `false` inside an existing stack, so
+no spacer and no layout shift.
+
+**W-2 arithmetic** — 300 → "5h", 10080 → "7d", 43200 → "30d", 1440 → "1d", all pinned. **Dates** —
+nothing in T6 touches epoch seconds; the ×1000 happens once in main and the renderer only ever
+sees ISO strings.
+
+1. **must-fix — §4.9's `SessionInfo.providerType` was never added, and its stand-in shows the
+   wrong plan's numbers.** A user with both an OpenAI API key and the ChatGPT plan has `gpt-5.5`
+   twice; a session bound to the API key resolved to `'chatgpt'`, so the status bar showed the
+   plan's chips and `/usage` said "measured across your whole ChatGPT plan" for a session
+   spending API credit. The test pinned that wrong answer as correct.
+2. **must-fix — `load()` had no generation guard.** One sign-in fires three invalidations in
+   about a second and each clears `inflight`, so three catalog reads run concurrently; the
+   catalog does a real fetch when its 24 h memo has lapsed. If the first resolved last, the
+   cache was left holding the pre-sign-in lists with nothing to re-notify — no chips and no plan
+   until a reload, which is exactly the state §4.9 exists to eliminate.
+3. **should-fix — the only watcher for a completed sign-in unmounts when Settings closes.**
+   `rg -n 'invalidateProviderTypeCache' src` → three call sites, two inside the popup. The
+   sign-in finishes in a browser tab the app does not own, so pressing Escape on the way back
+   loses the transition entirely.
+4. **should-fix — the shape W-2 created had no fixture anywhere.** The workbench, the review rig
+   and the acceptance deck all still showed the Plus screens, so the first sight of a 30-day bar
+   would have been the live walk on Destin's own account — for the one decision he approved from
+   words with no picture.
+5. **should-fix — W-1's stated purpose is not met** (below).
+6. **should-fix — on a free plan the only chip rides a toggle that does not name it**, and no
+   test covered hiding, so deleting the visibility check passed.
+7–11, plus an unmount leak. **nits** — no clamp below one hour ("0h" beside a card saying
+   "1-hour"); `typeof w.minutes === 'number'` admits `NaN`; odd-length chips had no stable order
+   and would swap between polls; a stale comment; the miss refetch blanked the cache globally,
+   so a `/usage` card opened in that round trip showed Claude's numbers for a ChatGPT session;
+   and removing `listeners.delete` leaked a listener per destroyed session with the suite green.
+
+**Applied 2026-09-05:** all of the above except 5. Fix 1's renderer half refuses to guess when
+two provider TYPES share a model id, and the main half now stamps the session's real provider
+type at create and in the session listing (`stampProviderTypes`, `ipc-handlers.ts`) — a
+mid-session model swap still falls back to the catalog, which now answers "unknown" rather than
+wrongly. Fix 3 watches the app-wide status push. A real-clock poll test was also given an
+8-second budget after it flaked under the parallel suite.
+
+**5 is Destin's call, not the build's.** The W-1 deck's premise was wrong: it said the 7-day
+chip beside the card "already says Resets Tue @ 6:43pm", but the chip has always said
+"Tuesday". As built the card says "Tue" next to a chip saying "Tuesday". Making the chip short
+changes a string every existing Claude subscriber sees for a reason unrelated to this feature;
+making the card long departs from the option he clicked. Left as built, put to him in chat.
+
+verdict: changes requested — all applied except the W-1 wording, which is a product decision.
