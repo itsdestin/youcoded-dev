@@ -65,10 +65,41 @@ compare rounds stay and render what shipped, as the record of how it was decided
   nothing — no import, nothing in the build or packager config. Users get the
   registry's current version, which is the one the film used. That item can close.
 
-## Still open
+## Built so far (branch `feat/buddy-sleep-poses` on youcoded)
 
-- The faces themselves — nothing drawn yet. The default character first: it is
-  what seven of the eleven themes use, and every other character is judged
-  against it.
-- The two-tier motion system, and the sleep state that the z's hang off.
-- Three brand-new characters for Cotton Candy Sky, Meadow Mist and Devil's Garden.
+1. **A pose can move the body.** `rig-body` was allowed by the type and then
+   silently dropped. Every sleep pose needs it.
+2. **Pose changes animate at all.** React rebuilds the mascot's host element on
+   a pose change; the re-index threw the springs away and rebuilt them already
+   at their target, so NOTHING has ever animated between poses. Also: limb
+   tx/ty was never sprung, and the re-index wrote the final pose for one frame
+   first. All three fixed, all three measured.
+3. **The `sleep` pose** — loaf body, docked arms, eyes shut.
+4. **The default rig's eight warm faces** — the film's set, plus `happy` and
+   `shutdown`, plus `idle` redrawn as squeezed-shut (it is the HELD face, and
+   the film's version was identical to `shutdown`).
+5. **`FACE_FALLBACK`** — asking a rig for a face it lacks used to hide EVERY
+   face. Load-bearing until all four community rigs are redrawn.
+
+## Still open, in the order it should probably happen
+
+1. **Golden Sunbreak's faces.** Shares the default's face geometry, so this is
+   nearly a copy. `wecoded-themes/themes/golden-sunbreak/assets/mascot-rig.svg`.
+2. **Halftone Dimension, Kuromi Dreamer, Strawberry Kitty.** Hand-drawn, in
+   character — Halftone keeps its visor, the cats keep their cat faces. The
+   warm set is the STYLE GUIDE here, not the artwork: expression from brows,
+   lids and mouth; no big black discs; highlights in the eyes.
+3. **The theme builder** (`wecoded-marketplace/wecoded-themes-plugin/skills/theme-builder/`).
+   Destin, 2026-09-05: "we will also need to improve theme builder to create
+   better mascots given the new template." Concretely, and verified on disk:
+   `reference/mascots.md:92` still says **"Six faces, not four: idle · welcome ·
+   curious · shocked · dizzy · blink"** — it is eight now; the four starter SVGs
+   in `scripts/base-mascot-{idle,welcome,shocked,dizzy}.svg` are the OLD style
+   (black-disc eyes) and are what every new community theme is currently built
+   from; and none of the warm style rules exist in the skill at all. Until this
+   is done, every theme made in the app ships the faces we just replaced.
+4. **The two-tier motion system**, and the sleep state the z's hang off.
+   Governed by Destin's rule: ambient motion only while every session is green
+   or gray; red/amber/blue stops it and plays the one clear signal.
+5. **Three brand-new characters** for Cotton Candy Sky, Meadow Mist and
+   Devil's Garden.
