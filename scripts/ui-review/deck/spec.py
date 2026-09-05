@@ -132,14 +132,21 @@ def live_theme():
 def captured(spec, theme):
     """True when every picture step in the deck already has its crop cut for `theme`, in every
     run. A deck with no picture steps is trivially captured. Mirrors build_page's existence
-    check exactly (a choice step's variants come from the LAST run only), because that is the
-    check that would fail the build if we opened on a theme nothing was shot in."""
+    check (a choice step's variants come from the LAST run only; a step with its own `themes`
+    list is only checked in those), because that is the check that would fail the build if we
+    opened on a theme nothing was shot in."""
     from .crops import image_name   # imported here: crops.py imports this module at load time
     runs = run_names(spec)
     base = os.path.join(spec['_base'], spec.get('images') or '')
     for st in spec['steps']:
         if is_page(st) or is_live(st) or is_words(st) or is_clip(st):
             continue   # no picture of its own — a marker, a running app, written words, a recording
+        # Fix (review, 2026-09-05): a step with its OWN themes list (a real-app capture that
+        # exists in one theme) is never rendered in any other theme — build_page only checks the
+        # themes in step_themes(). Demanding its crop here refused the live theme on every deck
+        # that mixes a broad theme list with one narrowly-themed step (chatsearch-gate has one).
+        if st.get('themes') and theme not in st['themes']:
+            continue
         if is_choice(st):
             if not all(os.path.exists(os.path.join(base, image_name(v['crop'], theme, runs[-1]))) for v in st['variants']):
                 return False

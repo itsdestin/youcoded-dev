@@ -200,6 +200,20 @@ class LiveThemeTests(unittest.TestCase):
         self.assertEqual(s['themes'], ['creme', 'midnight', 'light'])
         self.assertEqual(self.log, [])
 
+    def test_a_step_with_its_own_themes_does_not_need_the_live_theme(self):
+        # A real-app capture exists in ONE theme and lists it; the live theme must not be refused
+        # because that step has no crop for it — build_page never asks for one (review, 2026-09-05).
+        self.set_live('creme')
+        self.capture('creme')
+        s = self.pictures(steps=[
+            {"id": "S-1", "surface": "Home", "path": "Chat", "crop": "c",
+             "headline": "Short headline.", "changed": "What changed.", "notice": "You will notice."},
+            {"id": "S-2", "surface": "Terminal", "path": "Live", "crop": "c", "themes": ["midnight"],
+             "headline": "One theme only.", "changed": "Captured in the app.", "notice": "Midnight only."}])
+        self.assertEqual(self.apply(s), 'creme')
+        self.assertEqual(s['themes'][0], 'creme')
+        self.assertEqual(self.log, [])
+
     def test_a_live_theme_with_no_colours_anywhere_is_refused(self):
         self.set_live('no-such-theme')
         s = self.words()
