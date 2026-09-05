@@ -70,7 +70,7 @@
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review#P-1",
      "note": "fine but we should no longer show \"Default engine\" on the claude code tab. al providers should be formatted similarly with neutral treatment",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "I opened Settings \u2192 Model Providers in the running workbench and read the whole panel back: the three cloud cards come out in the order Claude Code, ChatGPT, OpenRouter, and the ChatGPT card carries a \"Sign in with ChatGPT\" button with no key box anywhere on it. Your note is done too \u2014 there is no \"Default engine\" badge or green connected text left, and all three cards use the one neutral card shape (name, one grey status line, one button on the right)."
     },
     {
@@ -87,7 +87,7 @@
      "checkedBy": "deck",
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review#P-7",
-     "verdict": "holds, amended",
+     "verdict": "pass",
      "evidence": "In a live conversation on a ChatGPT model the status bar showed exactly two chips, \"5h: 34% Resets @ 8:45am\" and \"7d: 12% Resets Thursday @ 6:35am\", both pointing at the ChatGPT plan rather than claude.ai. Amended per W-2, which you approved: a Plus/Pro plan still shows exactly 5h and 7d, but your own free account reports one 30-day window, so it shows a single \"30d\" chip \u2014 a test pins that output too. One thing to flag: the 7-day chip spells the day out in full (\"Resets Thursday\"), while the limit card uses the three-letter form (\"Tue\") \u2014 the W-1 deck said the chip already said \"Tue\", and it never did; that gap is unresolved."
     },
     {
@@ -96,7 +96,7 @@
      "checkedBy": "deck",
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review#P-8",
-     "verdict": "holds, amended",
+     "verdict": "pass",
      "evidence": "The test that pins the /usage card's exact markup for a ChatGPT session passes: it draws the 5-hour and 7-day bars with their reset times and ends with the line \"Measured across your whole ChatGPT plan, not just this conversation.\" Amended per W-2, which you approved: on a plan whose windows are a different length \u2014 your free account's single 30-day one \u2014 the card draws one \"30-day limit\" row instead, with the same ChatGPT-plan sentence under it."
     },
     {
@@ -106,7 +106,7 @@
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review#P-10",
      "note": "call it \"ChatGPT Plan\"",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "I opened the model picker in the running workbench and searched \"gpt\": the plan's models list as \"GPT-5.6 Sol \u00b7 ChatGPT Plan\", \"GPT-5.6 Terra \u00b7 ChatGPT Plan\", \"GPT-5.6 Luna \u00b7 ChatGPT Plan\" and \"GPT-5.5 \u00b7 ChatGPT Plan\", each with the green OpenAI mark. The names are not written into the app \u2014 the code takes OpenAI's own display name off the account's model list and drops the rows OpenAI marks hidden, which the recorded real-account list confirms."
     },
     {
@@ -115,7 +115,7 @@
      "checkedBy": "deck",
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review-2#P-3",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "I put the running card into its waiting state and read it back: the whole card is \"ChatGPT\", a spinner, \"Waiting for the browser\u2026\", and a Cancel button \u2014 nothing else, no extra sentence and no usage bars."
     },
     {
@@ -124,7 +124,7 @@
      "checkedBy": "deck",
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review-2#P-4",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "I put the running card into its refused state and read it back: the status line stays the ordinary grey \"Signed in as destin@example.com\", OpenAI's own reason (\"Your workspace admin has turned off Codex for this account.\") sits on its own line in the red warning colour beneath it, and the button is Sign out. The code takes that sentence verbatim from OpenAI's reply rather than composing a guess."
     },
     {
@@ -133,7 +133,7 @@
      "checkedBy": "deck",
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review-2#P-5",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "I loaded the first-run sign-in screen in the running workbench: it shows three stacked full-width buttons \u2014 Log in with Claude, Log in with ChatGPT, Log in with OpenRouter \u2014 with a link underneath reading \"Use an API key or local model\". In the code the Claude button is the filled one and the other two are the outlined variant, as approved."
     },
     {
@@ -142,7 +142,7 @@
      "checkedBy": "deck",
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review-2#P-6",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "I loaded the first-run screen mid-sign-in: the same bordered card stays in place and holds one line \u2014 a spinner plus \"A browser window should have opened. Finish signing in to ChatGPT there\u2026\" \u2014 with no buttons and no link under it. Searching the whole app for the old \"Skip setup\" link returns only a comment saying it was removed, so it is gone from every step."
     },
     {
@@ -151,7 +151,7 @@
      "checkedBy": "deck",
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review-2#P-10",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "In the running app the picker rows read \"\u00b7 ChatGPT Plan\", the picker's provider filter chip says \"ChatGPT Plan\", and the popup the status-bar model chip opens reads \"GPT-5.6 Sol \u00b7 ChatGPT Plan\", while the Settings card title is still the plain word \"ChatGPT\" \u2014 all four checked by reading the live screens. Worth knowing: the status-bar chip itself shows only the model name and the OpenAI mark (\"GPT 5.6 Sol\"), never a provider name \u2014 that is how it has always behaved for every provider, and the \"ChatGPT Plan\" label appears the moment you click it."
     },
     {
@@ -161,7 +161,7 @@
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review-3#P-1",
      "note": "still need to remove the duplicative openrouter/api header, as we did for claude code/chatgpt. we will add two new topline headers (Cloud Models, Local Models) and remove the others. reduce the spacing a tad between the claude code/chatgpt cards",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "Reading the live Model Providers panel back, the only headings left are the two group ones, Cloud Models and Local Models \u2014 the old \"Claude Code\" and \"ChatGPT\" labels above the cards are gone. Each of the three cards carries its own (i) beside its name: About Claude Code, About ChatGPT sign-in, About OpenRouter."
     },
     {
@@ -170,7 +170,7 @@
      "checkedBy": "deck",
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review-3#P-2",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "I measured the three live cards on screen: on all of them the button's top edge is within five pixels of the card name's, and each sits the same twelve pixels from the card's right edge \u2014 including the tallest card, whose status runs to several lines plus two usage bars, and the shortest one-line card."
     },
     {
@@ -179,7 +179,7 @@
      "checkedBy": "deck",
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review-3#P-9",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "I made the running app hit the plan limit and read the card back: it says exactly \"You have reached ChatGPT's 5-hour session limit (Resets @ 6:43pm).\" with a single Switch Providers button and no Try again, and clicking that button opened the model picker. The weekly version of the same card now names the day too (\"Resets Tue @ 6:43pm\"), which you approved on W-1 \u2014 but the 7-day chip beside it spells the day out in full (\"Thursday\"), which the W-1 deck said already matched and does not; that is unresolved and is being put to you separately."
     },
     {
@@ -189,7 +189,7 @@
      "threshold": "pass/fail",
      "source": "chatgpt-signin-review-4#P-1",
      "note": "looks good aside from the stray ollama row. wouldnt that be local?",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "Reading the live panel back, it has exactly two group headings \u2014 CLOUD MODELS and LOCAL MODELS \u2014 the old OpenRouter/API heading is gone, and the three cloud cards sit in one tight stack with the app's smallest gap between them."
     },
     {
@@ -199,7 +199,7 @@
      "threshold": "the named test passes",
      "source": "chatgpt-signin-review-5#P-1",
      "guard": "youcoded/desktop/tests/local-endpoint.test.ts",
-     "verdict": "holds",
+     "verdict": "pass",
      "evidence": "The named guard test passes (both of its cases). It checks that every way of writing \"this computer\" \u2014 localhost, 127.0.0.1, ::1, 0.0.0.0 \u2014 counts as local, and that a server elsewhere (a company API, a machine on your home network) does not, so a broadening later cannot quietly drag a remote server under Local Models. In the running app the Ollama endpoint now appears under Local Models, not under the OpenRouter card."
     }
    ],
