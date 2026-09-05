@@ -28,7 +28,9 @@
       "changed": "Your question in chat: wouldn't Ollama be local? The app sorts each custom endpoint by its address. One on this computer (localhost) lists under Local Models, after Other local apps; one on a server elsewhere stays under Cloud Models. In round 4 the list under Other local apps was empty and Ollama sat under the OpenRouter card.",
       "notice": "Add provider stays under Cloud Models. A local endpoint added there moves to Local Models the moment it is saved.",
       "risk": "A local server reached by a name other than localhost (a Tailscale name, your machine's own name) would still be filed under Cloud; the address is the only signal.",
-      "highlight": "auto"
+      "highlight": {
+        "selector": "[role=dialog][aria-label='Model Providers']"
+      }
     }
   ]
 }
