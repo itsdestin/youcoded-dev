@@ -20,6 +20,13 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       (`984b3410`, unmerged)
       `desktop` `in-flight` `checked 2026-09-04`
 
+- [ ] A local model's helper limit is decided when the conversation opens, before the model has
+      loaded — and asking the engine about an unloaded model would load it — so most local
+      conversations still get the one-helper cap until they are resumed after a first message.
+      The number should be re-read once the model is actually loaded (after the first turn), or
+      taken from any model the engine already has loaded. Follow-on to the slot-count fix
+      `desktop` `confirmed` `checked 2026-09-04`
+
 - [ ] "Run in background" option — keep the downloaded models serving other AI tools on this
       machine after the YouCoded window closes; today the engine is deliberately stopped on
       quit. Destin's note during the 2026-07-20 engine-lifecycle fix; only if real demand shows.
