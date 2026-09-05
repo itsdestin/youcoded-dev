@@ -191,13 +191,13 @@
      "settle": 1400
     },
     {
-     "eval": "[...document.querySelectorAll('button')].find(b=>/^Why\\?$/i.test(b.textContent.trim()))?.click()"
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('may not fit in available memory'))?.click()"
     },
     {
      "wait": 500
     }
    ],
-   "expect": "js:[...document.querySelectorAll('button')].some(b=>/Show more|why\\?|^less$/i.test(b.textContent.trim()))"
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>/Show more|may not fit/i.test(b.textContent))"
   }
  ]
 }
