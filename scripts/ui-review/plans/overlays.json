@@ -229,7 +229,7 @@
      "settle": 900
     },
     {
-     "click": "[aria-label=Context]",
+     "click": "[aria-label='Instructions & Memories']",
      "settle": 900
     },
     {
@@ -247,7 +247,7 @@
      "settle": 900
     },
     {
-     "click": "[aria-label=Context]",
+     "click": "[aria-label='Instructions & Memories']",
      "settle": 900
     },
     {
