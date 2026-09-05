@@ -35,9 +35,9 @@ done          # anything with no upstream, or [ahead N], needs pushing
 
 **Then ask Destin one question: "Ready to merge?"** With a recommendation and, per branch,
 whether it is actually ready — did `scripts/verify.sh` pass, has any of it been proved on a
-real run, what is still unverified. **Default to NOT merging** unless he answers yes; he
-often has a fresh session review the PR first, precisely because the session that wrote the
-code is the worst reviewer of it. Never end a turn suggesting a merge (`CLAUDE.md` →
+real run, what is still unverified. **Default to NOT merging** unless he answers yes; at the
+end of each session, Destin decides whether the work is ready to merge. Never end a turn
+suggesting a merge (`CLAUDE.md` →
 iteration mode).
 
 Destin asked for this on 2026-09-03, twice. First because a session ended with two

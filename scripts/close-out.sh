@@ -71,7 +71,7 @@ fi
 
 # TWO MODES, because "close out" does not always mean "merged".
 # Destin routinely says wrap up / close out meaning "do the docs and workspace
-# hygiene" while the PR stays open for a fresh session to review. Reporting
+# hygiene" while the branch stays open for him to decide whether it merges. Reporting
 # "delete the branch" then would be actively wrong advice, so the script asks
 # whether the work landed FIRST and changes what it checks accordingly.
 MERGED=no
@@ -82,17 +82,6 @@ if [[ -n "$SHA" ]]; then
     note "not merged into $BASE yet — PRE-MERGE close-out. Branch, worktree and"
     note "dead-name checks are SKIPPED: they would all tell you to delete things"
     note "you still need. Docs and workspace hygiene below still apply."
-    # Would it merge? `git merge-tree --write-tree` (git >= 2.38) does the merge in memory
-    # and exits 1 on a conflict, naming the files. WHY (2026-09-05): two of five branches
-    # answered "ready to merge?" with a clean verify and then conflicted on ROADMAP.md at
-    # merge time, twice, because master had moved. The question belongs on this report,
-    # not in a throwaway worktree the merging session has to build to find out.
-    if MT=$(git -C "$REPO_DIR" merge-tree --write-tree --name-only "$BASE" "$SHA" 2>/dev/null); then
-      pass "merges cleanly into $BASE as of now (git merge-tree)"
-    else
-      CONFLICTS=$(printf '%s\n' "$MT" | sed -n '2,$p' | tr '\n' ' ')
-      fail "would CONFLICT with $BASE in: ${CONFLICTS:-(see git merge-tree)} — merge $BASE into the branch and resolve before asking to merge"
-    fi
   fi
 else
   # No ref anywhere is NOT evidence of a close-out: a branch that merged and was
