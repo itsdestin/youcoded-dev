@@ -45,10 +45,19 @@ Files: `desktop/src/main/engine/engine-pin.ts`, `scripts/generate-engine-pin.mjs
 - ROCm asset rows: `linux/x64` (tar.gz, nests under `llama-<tag>/`) and `win32/x64` (flat zip,
   contains `llama-server.exe` + `amdhip64_7.dll`).
 - `EngineAsset.runtime?: { assetName; sha256 }`; the CUDA rows point at the cudart zip.
-- `EngineAsset.gfxTargets?: string[]` on ROCm rows, emitted by the generator from the release.
+- `EngineAsset.gfxTargets?: string[]` on ROCm rows, read by the generator from upstream's
+  release workflow at the pinned tag. **The two ROCm rows carry DIFFERENT lists** (found
+  building T1, verified at b10665): Windows adds gfx1103 and gfx1153 and drops the four CDNA
+  parts Linux has. One shared list would either refuse ROCm to a Windows user whose chip is
+  supported, or offer it to a Linux user whose chip has no kernels in the archive — so **T3's
+  gating must read the row for the running platform**, not "the pin's gfx list".
 - `EnginePin.argAliases` — the binary's CLI alias table, generated from `--help` at bump time.
   It must cover short (`c`), long (`ctx-size`) and env (`LLAMA_ARG_CTX_SIZE`) spellings, all of
   which the preset accepts and resolves to the same option (probed).
+  **A `--no-…` flag keeps its own canonical name and does NOT fold into the positive one**
+  (found building T1): folding `--no-mmap` → `mmap` would silently invert what the user asked
+  for, and llama-server's OFF short forms do not look negative (`-nkvo`, `-nocb`, `-ndio`,
+  `-nr`), so the inversion would pass review. `nkvo` → `no-kv-offload`, `kvo` → `kv-offload`.
 - `BACKENDS` gains `'rocm'`. The bump procedure gains "re-check the ROCm target list".
 **Accepted when:** the generator test asserts the runtime row, the gfx list and the alias
 table; `engine-config`'s allowlist test round-trips a saved `rocm`.
@@ -127,7 +136,8 @@ Files: `desktop/src/main/gpu-detector.ts`, new `desktop/src/main/engine/rocm-pre
   from `/etc/os-release` maps to an install command or, where AMD's repository is needed first,
   to `docsUrl`. Windows always satisfied.
 - `backendOptions(...)` exactly as §A3: never the installed backend, never Apple or Intel, and
-  Linux ROCm only when `gfxTarget` is in the pin's `gfxTargets`.
+  Linux ROCm only when `gfxTarget` is in **that platform's own** `gfxTargets` row — Linux and
+  Windows ROCm are compiled for different chip sets (T1).
 **Accepted when:** `gpu-detector.test.ts` and `rocm-prereqs.test.ts` cover the vendor ids, the
 kfd → gfx mapping, each distro family, and every `backendOptions` gate.
 
@@ -137,7 +147,9 @@ New `desktop/src/main/engine/model-presets.ts`.
   the cache scan** — a stale section resurrects a deleted model as a ghost row (probed).
 - Per-model keys; long forms only; the extra-flag tokeniser (`--key value` → `key = value`,
   bare `--key` → `key = 1`); alias normalisation through the pin's table before the
-  reserved-key denylist.
+  reserved-key denylist — **and the denylist must strip a leading `no-` after normalising**,
+  because a negative spelling normalises to its own canonical key and would otherwise walk
+  straight past it (T1).
 - **Written temp-file + rename, the way `download-manifest.ts` writes (R3-2)** — `~/.youcoded/`
   is shared between the dev instance and the built app, so two supervisors can rewrite this
   file at once, and a half-written one is fatal to engine startup.

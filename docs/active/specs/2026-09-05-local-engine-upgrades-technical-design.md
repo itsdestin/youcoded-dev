@@ -72,12 +72,22 @@ Rows: R1, R5, R6, R13, R14, R15, R16.
 - `EngineAsset.runtime?: { assetName; sha256 }` — the CUDA rows point at
   `cudart-llama-bin-win-cuda-12.4-x64.zip`. The generator emits it from the release's assets.
 - `EngineAsset.gfxTargets?: string[]` on ROCm rows — the build's compiled AMD targets from
-  upstream's release workflow, pasted by the generator (b10665 Linux: gfx908, 90a, 942, 950,
-  1010–1036, 1100–1102, 1150–1152, 1200, 1201). The bump procedure gains "re-check the ROCm
-  target list". (R1-2)
+  upstream's release workflow, read by the generator from `.github/workflows/release.yml` at
+  the pinned tag. **The two ROCm rows carry DIFFERENT lists** (found building T1, verified at
+  tag b10665): Windows adds gfx1103 and gfx1153 and drops all four CDNA parts (gfx908, 90a,
+  942, 950) that Linux has. One shared list would either refuse ROCm to a Windows user whose
+  chip is supported, or offer it to a Linux user whose chip has no kernels in the archive.
+  The bump procedure gains "re-check the ROCm target list". (R1-2)
 - `EnginePin.argAliases: Record<string, string>` — the binary's CLI alias table (`c` →
   `ctx-size`, `ngl`/`gpu-layers` → `n-gpu-layers`, `LLAMA_ARG_N_GPU_LAYERS` → …), generated
   from `--help` at bump time; §C2 normalises preset keys through it. (R2-8)
+  **A `--no-…` flag keeps its own canonical name — it does NOT fold into the positive one**
+  (found building T1). Folding would map `--no-mmap` → `mmap`, so a caller that normalises
+  before writing the preset (§C2 does) would silently turn "don't memory-map this model" into
+  "do". It hides well, because llama-server's OFF short forms do not start with `no-` at all:
+  `-nkvo`, `-nocb`, `-ndio`, `-nr`. So `nkvo` → `no-kv-offload` and `kvo` → `kv-offload` are
+  two different canonical keys, and **§C2's reserved-key denylist must strip a leading `no-`
+  itself after normalising**, or the negative spelling walks straight past it.
 - `engine-config.ts`: `BACKENDS` gains `'rocm'` with a pinning test. (R1-29)
 
 ### A2. Acquisition (`engine-acquisition.ts`) (R2-5)
