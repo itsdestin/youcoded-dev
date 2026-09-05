@@ -46,14 +46,14 @@ Target: `v1.3`
 - marketplace: A plugin that ships from a non-default branch gets scanned against the wrong code. Four live
 - marketplace: The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets
 - other-features: Nothing on first run tells a new user the assistant can change and delete files and that
-- user-interface: Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel —
+- user-interface: Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel.
 
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 67 | 26 | 1 | 9 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 68 | 26 | 2 | 9 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 49 | 8 | 1 | 16 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 27 | 17 | 0 | 6 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 28 | 16 | 0 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 6 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 10 | 1 | 4 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 16 | 4 | 0 | 6 |

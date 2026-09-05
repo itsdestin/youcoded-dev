@@ -111,6 +111,12 @@ seen-on is always n/a here.
       `n/a` `parked` `checked 2026-09-04`
 
 
+- [ ] A 526-line conversation-triage script for the test engine exists only on branch
+      `chore/conversation-triage-script` (rescued 2026-09-04 from the deleted assistant-settings
+      mockup branch, where it had hitched a ride). Nobody has said whether it is wanted: merge it
+      with a README line, or delete the branch
+      `n/a` `decision` `checked 2026-09-04`
+
 - [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
       nothing anywhere saying the app had stopped responding, so a tester's force-quit on
       2026-09-03 could not be explained at all. FIXED on a branch 2026-09-03

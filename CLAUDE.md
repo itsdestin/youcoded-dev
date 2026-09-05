@@ -224,6 +224,12 @@ while the branch stays open — Destin often has a fresh session review the PR f
 because the session that wrote the code is the worst reviewer of it. Merge only on an
 explicit instruction, and never end a turn suggesting it.
 
+**A handoff prompt for a new session goes in plain chat, never a file.** When Destin asks
+for a prompt to start a fresh session with, write it as one chat message he can copy —
+not a handoff document, not a path (Destin, 2026-09-04). A written handoff doc is still
+right when the material is the *record* of a piece of work (`docs/active/handoffs/`); the
+prompt that points a new session at that record is chat.
+
 **Destin does not run commands.** If the wrap-up needs `scripts/close-out.sh`,
 `scripts/audit-anchors.mjs` or a test run, YOU run it and act on the output. Never end a
 turn by handing him something to type.

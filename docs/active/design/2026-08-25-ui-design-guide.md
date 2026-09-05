@@ -158,7 +158,7 @@ rule — the validator does not check it (P-16, decided 2026-08-25: no new pack 
 | `SegmentedTabs` | 2–5 exclusive *short* options or view switches (Haiku/Sonnet/Opus; Chat/Terminal; Plugins/Themes) | for filter categories (those are pills); for anything that wraps |
 | `TextInput`/`Textarea`/`Select`/`InputGroup` | every field; `InputGroup` when a button lives *inside* the field (search + clear, key + save) | icon buttons floating over a bare input (Skills drawer today) |
 | `SearchFilterPill` | every search-with-filter control (Projects, Session Files, Marketplace, Skills drawer, Resume) | four bespoke search boxes |
-| `SettingRow` | any row that navigates or holds one control | hand-rolled `flex` rows with a chevron |
+| `SettingRow` | any row that navigates or holds one control; **also every expand-in-place section** (`expanded` turns its right-hand chevron down) | hand-rolled `flex` rows with a chevron; **a bare leading “›” text toggle** (Destin, 2026-09-05: “I HATE the bare dropdowns with a chevron”) |
 | `Dialog` (`prompt` 340 / `panel` 420 / `document` 600) | all modals. `prompt` = one question + buttons; `panel` = a settings screen; `document` = long prose | choosing `prompt` for a list (Keyboard Shortcuts); headerless dialogs (Donate/Development) |
 | `Callout` | inline explainer or warning inside a panel | coloured borders on ad-hoc divs |
 | `LoadingState` / `EmptyState` / `ErrorState` | *every* async surface's three states; `EmptyState` always names what's missing **and** offers the way out | a lone sentence ("Nothing matches those filters."); two empty states on one screen; blank headings |
@@ -306,6 +306,11 @@ then a card grid; empty → `EmptyState` centred in the sheet.
   P-9 2026-08-27; the 12 px drawer pills were rejected as the smallest text in the app). *Action chip* = `md` radius `secondary sm` (quick
   chips). *Tag/badge* = `sm` radius, dot + neutral text (session tags, counts). Tabs are
   never chips — they are `SegmentedTabs`.
+- **G-22 Expandable rows** (2026-09-05): a section that opens below its row is a `SettingRow`
+  with `onClick` + `expanded` — the same right-hand chevron every navigating row has, turned to
+  point down while open. Never a leading “›” glyph beside a word, never a bare text toggle.
+  Filed in `docs/roadmap/user-interface.md` for the three places that still do it (Sync log,
+  the recommended-model card, the system marker).
 - **G-19 Counts**: a count next to a label is always `label` + space + muted numeral
   ("Files 9", "Session Files 4", "Results 0"); never parentheses, never "9 files" in a
   tab, never "+9" without a tooltip naming what.
