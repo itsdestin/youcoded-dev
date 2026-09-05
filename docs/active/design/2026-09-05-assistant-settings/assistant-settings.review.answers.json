@@ -1,0 +1,106 @@
+{
+ "deck": "assistant-settings-review",
+ "started": "2026-09-05T08:47:33.664Z",
+ "submitted": "2026-09-05T09:00:56Z",
+ "cur": 13,
+ "answers": {
+  "P-1": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "yes",
+   "seconds": 38,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-3": {
+   "v": "yes",
+   "note": "just call this Default Model. line below should say \"This model will be pre-filled in the model picker, but you may still switch models at any time",
+   "note_kind": "noting",
+   "seconds": 95,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-4": {
+   "note": "hate the weird fingernail styling of the \"advanced\" card. i honestly think we should probably completely drop the \"approve protected requests\" idea, as it may get us in trouble with anthropic.",
+   "note_kind": "noting",
+   "v": "yes",
+   "seconds": 78,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-5": {
+   "note": "i'm kinda realizing i think the sign-in/usage cardsopenrouter, chatgpt, and claude code should all be grouped into a single \"Cloud Providers\" top-level tab. the permissions stuff from claude can move to permissions. we will keep the chatgpt usage card, claude code usage card, and openrouter sign-in card stacked together, similar to the current page. we can get rid of the separate \"Providers\" and \"Assistant\" labels in the left-side menu",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 228,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-6": {
+   "v": "other",
+   "note": "see previous slide",
+   "note_kind": "noting",
+   "seconds": 11,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-7": {
+   "v": "yes",
+   "seconds": 74,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-8": {
+   "v": "yes",
+   "seconds": 124,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-9": {
+   "v": "yes",
+   "seconds": 21,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-10": {
+   "note": "i think web search can actually just go in general. too empty to be its own thing",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 24,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-11": {
+   "v": "pick",
+   "pick": "dot",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-12": {
+   "v": "yes",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-13": {
+   "v": "pick",
+   "pick": "b",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-14": {
+   "v": "other",
+   "note": "see previous slide. i think we should drop this altogether",
+   "note_kind": "noting",
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
