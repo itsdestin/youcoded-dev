@@ -51,7 +51,11 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .card.variant li{font-size:12px;color:var(--fg);line-height:1.4}
 .card.variant ul.pros li::marker{color:var(--yes)} .card.variant ul.cons li::marker{color:var(--no)}
 /* The recommended option, beside its letter — the flag the "(recommended)" label used to fake. */
-.card.variant .badge{flex:none;align-self:flex-start;padding:3px 7px;border-radius:var(--radius-full);background:color-mix(in srgb,var(--yes) 18%,var(--panel));border:1px solid color-mix(in srgb,var(--yes) 45%,var(--edge));color:color-mix(in srgb,var(--yes) 78%,var(--fg));font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+/* Fix (2026-09-05): green already means "answered yes" and amber (--mark) already means "the
+   one I picked" elsewhere on this card — painting the badge from --yes made it read as one of
+   those instead of what it actually says ("this is the one I'd recommend"). A quiet chip that
+   matches the other small metadata on the card (same radius as .key) carries no colour role. */
+.card.variant .badge{flex:none;align-self:flex-start;padding:3px 7px;border-radius:5px;background:var(--panel);border:1px solid var(--edge);color:var(--fg-dim);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
 /* A question's three parts: Today / The problem / Proposal, one card each, the eyebrow the
    plain cards already use. No icon — these are the question's own words, not a verdict. */
 .card.part h3{color:var(--fg-dim)}

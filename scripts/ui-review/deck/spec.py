@@ -311,7 +311,13 @@ def _validate_decide(spec, st, sid, errors, warnings):
 def _validate_options(st, sid, errors, warnings, minimum):
     """The written options of a decide step. `minimum` is 2 for a picture decide (one option
     plus Other is a yes/no step in disguise) and 1 for a words-only question, where the
-    recommended answer alone plus Other is exactly the shape Destin asked for (2026-09-01)."""
+    recommended answer alone plus Other is exactly the shape Destin asked for (2026-09-01).
+    Shared by both callers (a picture decide via _validate_decide, and a words question via
+    _validate_question) — so every option-level rule below (the label refusals, the pros/cons
+    shape, the recommended flag) holds for either kind. The `(recommended)`-in-a-label check
+    and the inline-label scan of `summary` used to live only in _validate_question, which a
+    picture decide step never reached — moved here 2026-09-05 because the design says "any
+    option label", not "any words-question option label"."""
     opts = st['options']
     if not isinstance(opts, list) or len(opts) < minimum:
         errors.append(f'{sid}: a decide step needs at least {minimum} option{"s" if minimum > 1 else ""}')
@@ -328,18 +334,38 @@ def _validate_options(st, sid, errors, warnings, minimum):
         seen.add(o.get('id'))
         if not o.get('label'):
             errors.append(f'{sid}/{oid}: missing label')
+        elif RECOMMENDED_RE.search(o['label']):
+            errors.append(f'{sid}/{oid}: "(recommended)" in a label — set "recommended": true on the option instead')
         # An option's body is now pros and cons (design §3.2); `summary` alone is still fine —
         # every deck written before this change has only that, and they must keep building.
-        if not (o.get('pros') or o.get('cons') or o.get('summary')):
+        # Fix: a whitespace-only summary ("   ") must count as absent, or a blank-looking
+        # option silently passes with nothing Destin can actually read (2026-09-05).
+        summary = (o.get('summary') or '').strip()
+        if not (o.get('pros') or o.get('cons') or summary):
             errors.append(f'{sid}/{oid}: an option needs pros, cons or a summary')
+        inline_label_errors(o.get('summary'), f'{sid}/{oid}', 'summary', errors)
         for k in OPTION_TEXT_FIELDS:
             for w in banned_in(o.get(k)):
                 errors.append(f'{sid}/{oid}: {k} uses banned word "{w}"')
-        # A pro or a con is a sentence Destin reads, so it obeys the same vocabulary as the rest.
+        # Fix: pros/cons must be an actual list of short lines. A bare string used to slip
+        # through here and iterate by CHARACTER in the loop below (banned_in on each letter),
+        # and a blank line ("") in the list would render as a bullet with nothing on it.
         for k in ('pros', 'cons'):
-            for line in (o.get(k) or []):
+            val = o.get(k)
+            if val is None:
+                continue
+            if not (isinstance(val, list) and all(isinstance(line, str) and line.strip() for line in val)):
+                errors.append(f'{sid}/{oid}: {k} must be a list of short lines')
+                continue
+            # A pro or a con is a sentence Destin reads, so it obeys the same vocabulary as the rest.
+            for line in val:
                 for w in banned_in(line):
                     errors.append(f'{sid}/{oid}: {k} uses banned word "{w}"')
+        # Fix: `recommended` is read as a plain boolean everywhere it is used (page.js's
+        # badge, the "at most one" count in _validate_question) — a truthy non-bool ("yes")
+        # would badge silently, and a falsy non-bool ("no") would silently not.
+        if o.get('recommended') is not None and not isinstance(o['recommended'], bool):
+            errors.append(f'{sid}/{oid}: recommended must be true or false')
         if o.get('measured') and not re.search(r'\d', o['measured']):
             warnings.append(f'{sid}/{oid}: measured has no number in it')
 
@@ -392,16 +418,11 @@ def _validate_question(st, sid, errors, warnings):
     if not st.get('options'):
         return
     _validate_options(st, sid, errors, warnings, minimum=1)
+    # Fix: the label refusal and the summary inline-label scan moved into _validate_options
+    # (2026-09-05), which a picture decide step now shares — so only the "at most one
+    # recommended" count stays a words-question-only rule here.
     opts = st['options'] if isinstance(st['options'], list) else []
-    recommended = 0
-    for i, o in enumerate(opts):
-        if not isinstance(o, dict):
-            continue
-        oid = o.get('id') or f'option {i + 1}'
-        inline_label_errors(o.get('summary'), f'{sid}/{oid}', 'summary', errors)
-        if RECOMMENDED_RE.search(o.get('label') or ''):
-            errors.append(f'{sid}/{oid}: "(recommended)" in a label — set "recommended": true on the option instead')
-        recommended += 1 if o.get('recommended') else 0
+    recommended = sum(1 for o in opts if isinstance(o, dict) and o.get('recommended'))
     if recommended > 1:
         errors.append(f'{sid}: {COUNT_WORD.get(recommended, recommended)} options are recommended — at most one')
 

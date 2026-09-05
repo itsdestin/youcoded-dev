@@ -318,6 +318,18 @@ test('a words-only deck renders with no stage and records a pick', async () => {
       await sleep(400);
       const answers2 = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
       assert.equal((answers2.answers['Q-1'].note || ''), '');
+      // Fix (2026-09-05): the finish screen used to read a question's Yes back as "Yes, keep
+      // it" — the picture-deck fallback — because it fell through the same yesLabel() that a
+      // question's OWN buttons never use. Answer Q-4 Yes, submit, and the responses table cell
+      // must read the same plain word the button showed.
+      await c.evaluate("document.querySelectorAll('#steps span')[3].click()");   // → Q-4
+      await c.evaluate("document.querySelector('.ans[data-v=yes]').click()"); await sleep(300);
+      await c.evaluate("document.querySelector('#done').click()"); await sleep(300);
+      await c.evaluate("document.querySelector('#submit').click()"); await sleep(1200);
+      assert.equal(await c.evaluate('document.body.dataset.screen'), 'finished');
+      const rows = JSON.parse(await c.evaluate(
+        "JSON.stringify([...document.querySelectorAll('#responses tbody tr')].map(r=>[...r.cells].map(c=>c.textContent.trim())))"));
+      assert.equal(rows[3][2], 'Yes', 'a question answered yes reads back as "Yes", not the picture deck\'s "Yes, keep it"');
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
   } finally { srv.kill(); }

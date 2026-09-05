@@ -132,6 +132,36 @@ class WordsTests(unittest.TestCase):
         s = spec_with(self.tmp, lambda r: r['steps'][1]['options'].__setitem__(1, {'id': 'b', 'label': 'Two'}))
         self.assertIn('Q-2/b: an option needs pros, cons or a summary', errs(s))
 
+    def test_whitespace_only_summary_counts_as_missing(self):
+        # A summary of only spaces reads as blank on the page — it must not satisfy the
+        # "needs pros, cons or a summary" rule any more than an actually-empty one does.
+        s = spec_with(self.tmp, lambda r: r['steps'][1]['options'].__setitem__(
+            1, {'id': 'b', 'label': 'Two', 'summary': '   '}))
+        self.assertIn('Q-2/b: an option needs pros, cons or a summary', errs(s))
+
+    def test_pros_must_be_a_list_not_a_string(self):
+        # A bare string used to iterate by CHARACTER in the banned-word scan below it.
+        s = spec_with(self.tmp, lambda r: r['steps'][0]['options'][0].update({'pros': 'fast and simple'}))
+        self.assertIn('Q-1/a: pros must be a list of short lines', errs(s))
+
+    def test_cons_rejects_a_blank_line(self):
+        s = spec_with(self.tmp, lambda r: r['steps'][0]['options'][0].update({'cons': ['a real line', '']}))
+        self.assertIn('Q-1/a: cons must be a list of short lines', errs(s))
+
+    def test_recommended_must_be_a_boolean(self):
+        s = spec_with(self.tmp, lambda r: r['steps'][0]['options'][0].update({'recommended': 'no'}))
+        self.assertIn('Q-1/a: recommended must be true or false', errs(s))
+
+    def test_recommended_label_refused_on_a_picture_decide_too(self):
+        # This refusal used to live only inside _validate_question, which a picture decide
+        # step's _validate_decide never calls into — moved into the shared _validate_options
+        # (2026-09-05) so a picture decide is held to the same "any option label" rule.
+        from deck.spec import _validate_options
+        st = {'options': [{'id': 'a', 'label': 'Denser layout (recommended)', 'summary': 'x'}]}
+        errors, warnings = [], []
+        _validate_options(st, 'D-1', errors, warnings, minimum=1)
+        self.assertIn('D-1/a: "(recommended)" in a label — set "recommended": true on the option instead', errors)
+
     def test_statement_is_exempt(self):
         # Q-3 is a statement to approve, not a question: no today, and no complaint about it.
         s = load_spec(words_spec(self.tmp))

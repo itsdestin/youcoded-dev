@@ -140,7 +140,12 @@
   const YES = runs.length === 1 ? 'Yes, build it' : 'Yes, keep it', NO = runs.length === 1 ? 'No, leave it' : 'No, revert it';
   // A words step may relabel the buttons ("Holds / Fails" on an acceptance row): the deck's
   // build/keep wording is about a picture, and a statement has none.
-  const yesLabel = st => st.yes || YES, noLabel = st => st.no || NO;
+  // Fix: a question (`kind === 'question'`) has no picture to keep or revert either, so its
+  // fallback is the plain "Yes" / "No" the buttons already show — not "Yes, keep it". This is
+  // now the ONLY place that decides the default; renderAnswers calls it instead of repeating
+  // its own `st.yes || 'Yes'`, so the finish-screen read-back can never disagree with the button.
+  const yesLabel = st => st.yes || (st.kind === 'question' ? 'Yes' : YES),
+    noLabel = st => st.no || (st.kind === 'question' ? 'No' : NO);
   // The things a step offers to pick between, or null if it is a yes/no. A LIVE step's
   // question shape rides in `shape`, because `kind` already says where its picture comes
   // from — so a live pick-one answers exactly like a picture pick-one.
@@ -161,7 +166,7 @@
     // and must not have to be typed into Other. It rides as Other with `dk` so the answers
     // file keeps three values, and both summaries print "don't know" for it.
     $('#answers').innerHTML = st.kind === 'question'
-      ? `<button class="btn ans" data-v="yes">${esc(st.yes || 'Yes')}</button><button class="btn ans" data-v="no">${esc(st.no || 'No')}</button><button class="btn ans" data-v="other" data-dk="1">Don't know</button>`
+      ? `<button class="btn ans" data-v="yes">${esc(yesLabel(st))}</button><button class="btn ans" data-v="no">${esc(noLabel(st))}</button><button class="btn ans" data-v="other" data-dk="1">Don't know</button>`
       : picks || st.kind === 'decide'
       ? (picks ? `<button class="btn ans" data-v="no">None of these</button>` : '')
         + `<button class="btn ans" data-v="other">Other</button>`
