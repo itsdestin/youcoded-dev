@@ -3,7 +3,14 @@
  "width": 390,
  "height": 800,
  "pre": [
-  { "click": "[title=Settings]", "settle": 700 }
+  {
+   "click": "[aria-label='Open menu']",
+   "settle": 500
+  },
+  {
+   "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>/^Settings/.test(b.textContent.trim()))",
+   "settle": 700
+  }
  ],
  "shots": [
   {
@@ -14,23 +21,38 @@
   {
    "name": "narrow-list",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    }
    ],
    "expect": "js:[...document.querySelectorAll('[role=dialog] button')].some(b=>b.textContent.includes('Local models'))"
   },
   {
    "name": "narrow-claude",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Claude Code'))", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Claude Code'))",
+     "settle": 900
+    }
    ],
    "expect": "[role=dialog] [aria-label=Back]"
   },
   {
    "name": "narrow-general",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('General'))", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('General'))",
+     "settle": 900
+    }
    ],
    "expect": "[role=dialog] [aria-label=Back]"
   }

@@ -1,0 +1,279 @@
+{
+  "title": "Assistant settings — the panel, page by page",
+  "key": "assistant-settings-review",
+  "out": "assistant-settings.review.html",
+  "images": "images/assistant-settings.review",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review/before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review/after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "drawer": [
+      "assistant-settings",
+      "settings-drawer",
+      "320x840+0+56"
+    ],
+    "row": [
+      "assistant-settings",
+      "settings-drawer",
+      "320x70+0+360"
+    ],
+    "row-attention": [
+      "assistant-settings",
+      "drawer-attention",
+      "320x70+0+360"
+    ],
+    "general": [
+      "assistant-settings",
+      "assistant-general",
+      "840x720+300+90"
+    ],
+    "claude-skip": [
+      "assistant-settings",
+      "assistant-claude-skip-on",
+      "840x720+300+90"
+    ],
+    "chatgpt": [
+      "assistant-settings",
+      "assistant-chatgpt",
+      "840x720+300+90"
+    ],
+    "chatgpt-blocked": [
+      "assistant-settings",
+      "assistant-chatgpt-blocked",
+      "840x720+300+90"
+    ],
+    "openrouter": [
+      "assistant-settings",
+      "assistant-openrouter",
+      "840x720+300+90"
+    ],
+    "local": [
+      "assistant-settings",
+      "assistant-local",
+      "840x720+300+90"
+    ],
+    "permissions": [
+      "assistant-settings",
+      "assistant-permissions",
+      "840x720+300+90"
+    ],
+    "specialists": [
+      "assistant-settings",
+      "assistant-specialists",
+      "840x720+300+90"
+    ],
+    "search": [
+      "assistant-settings",
+      "assistant-search",
+      "840x720+300+90"
+    ],
+    "phone-list": [
+      "assistant-settings-narrow",
+      "narrow-list",
+      "390x800+0+0"
+    ],
+    "phone-page": [
+      "assistant-settings-narrow",
+      "narrow-claude",
+      "390x800+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Settings drawer",
+      "path": "Settings",
+      "crop": "drawer",
+      "headline": "One row, Assistant settings, replaces Model Providers, Defaults, Permissions and Specialists.",
+      "changed": "The four rows are gone. One row sits where Model Providers was, under Backup & Sync, with the same stacked-layers icon. Its second line is the model a new conversation starts on — Claude Code · Sonnet here — so the drawer answers the most common question without opening anything.",
+      "notice": "The drawer is four rows shorter. Remote Access, Development and everything below move up.",
+      "risk": "Anyone who reaches for Permissions or Specialists by name in the drawer has to learn they are inside this row now.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-2",
+      "surface": "Settings → Assistant settings",
+      "path": "Settings → Assistant settings → General",
+      "crop": "general",
+      "headline": "The row opens one wide window: a list of pages on the left, the chosen page on the right.",
+      "changed": "This is your Q-1 answer drawn. Eight pages in three groups — General on its own, then Providers (Claude Code, ChatGPT, OpenRouter, Local models), then Assistant (Permissions, Specialists, Web search). The window is 820 wide, twice today's popups, so a page has the same room it had in its popup. It opens on General: what a new conversation starts on, the project folder, and the close-session prompt — the old Defaults popup minus the permissions switch, which moved to Claude Code.",
+      "notice": "The dialog no longer hugs its content; every page opens at the same size, so switching pages never makes the window jump.",
+      "risk": "On a window narrower than about 900 the panel shrinks to fit and the page column gets tight before the phone layout takes over at 640.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-3",
+      "surface": "Settings → Assistant settings → General",
+      "path": "Settings → Assistant settings → General → Start on",
+      "crop": "general",
+      "headline": "Start on: one default for every provider, chosen with the same picker the chat uses.",
+      "changed": "Your Q-3 answer. The four Claude tabs (Haiku, Sonnet, Opus, Fable) are gone. In their place a Start on row with the chat's own model picker, so a ChatGPT plan model, an OpenRouter model or a downloaded local model can be the default. The line under it says what it does: the model a new conversation uses until you pick another.",
+      "notice": "Nothing else on the page changed. The picker is the same control you use at the bottom of a chat.",
+      "risk": "Until the backend lands a non-Claude pick shows in the row but a new conversation still starts on Claude, and the picker opens on starred models only, so the current pick is hidden until you type.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-4",
+      "surface": "Settings → Assistant settings → Claude Code",
+      "path": "Settings → Assistant settings → Claude Code",
+      "crop": "claude-skip",
+      "headline": "The Claude Code page: its card, then Skip Permissions and the advanced list, exactly as they were.",
+      "changed": "Your Q-2 note said if Claude Code's permissions are just Skip Permissions they belong on the Claude Code page. They are: one switch, its red warning, and behind Advanced the five protection switches. All of it moved here from the Defaults popup, unchanged in words or behaviour. The one edit: Advanced is now a proper row with a chevron that turns down when open, instead of a bare text link — the shape the design guide asks for. The page starts with the same Claude Code card the Model Providers popup showed, with its Preferences button.",
+      "notice": "The Skip Permissions line now says New Claude Code conversations will skip tool approval — one word added, because on this page the scope matters.",
+      "risk": "Three overlapping controls exist for one idea (this switch, Bypass in Claude Code's own Preferences, the mode chip under the chat) and nothing says which wins; older than this panel, filed.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-5",
+      "surface": "Settings → Assistant settings → ChatGPT",
+      "path": "Settings → Assistant settings → ChatGPT",
+      "crop": "chatgpt",
+      "headline": "The ChatGPT page is the card you approved on the sign-in deck, on a page of its own.",
+      "changed": "Nothing new is drawn here: the card, its Sign in / Sign out button, the plan bars and the (i) are the ones the Sign in with ChatGPT contract signed off. What is new is the frame — it is a page in the list rather than a card between two others. The Before picture shows today's app, which has no ChatGPT card yet because that work has not merged.",
+      "notice": "It is the thinnest page in the panel: one card. When you are signed in, the plan's usage bars fill the space under it.",
+      "risk": "This panel can only land after the ChatGPT sign-in does, because it is built on top of those cards.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-6",
+      "surface": "Settings → Assistant settings → OpenRouter",
+      "path": "Settings → Assistant settings → OpenRouter",
+      "crop": "openrouter",
+      "headline": "OpenRouter: its card, then Your own API keys — the direct keys and custom endpoints list.",
+      "changed": "The OpenRouter card with Connect to OpenRouter, and under it the list of your own provider keys (Anthropic, OpenAI, Google) and custom endpoints with Add provider — the same list the popup kept under OpenRouter. It gains a heading, Your own API keys, because on a page of its own an empty list was one lonely Add provider button.",
+      "notice": "Endpoints on this computer, like Ollama, are not here — they list under Local models, as the ChatGPT deck decided.",
+      "risk": "None beyond the heading; the controls are the popup's.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-7",
+      "surface": "Settings → Assistant settings → Local models",
+      "path": "Settings → Assistant settings → Local models",
+      "crop": "local",
+      "headline": "Local models: the engine card, the model browser and other local apps, with room to breathe.",
+      "changed": "The longest section of the old popup gets the whole page: the engine card, the models search and list with downloads, and the Other local apps detector. The page title carries the (i) the section heading used to carry. It scrolls inside the page with a fade, never clipping.",
+      "notice": "At 600 wide the model rows show their size and fit description on one line where the 420 popup wrapped them.",
+      "risk": "It is still the page most likely to overflow; a long download list scrolls inside the page while the list on the left stays put.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-8",
+      "surface": "Settings → Assistant settings → Permissions",
+      "path": "Settings → Assistant settings → Permissions",
+      "crop": "permissions",
+      "headline": "Permissions: the three modes and the Always-allowed list, with one sentence saying who it covers.",
+      "changed": "The Permissions popup as it was — Permission modes, Always allowed by folder with Revoke — with one new first line: Applies to ChatGPT, OpenRouter and local models. Claude Code asks in its own way, and its switch is on the Claude Code page — where Claude Code page is a link that switches pages. That line is the whole cost of your Q-2 note. The (i) explainer sits beside the page title, where every page's (i) now lives.",
+      "notice": "Nothing else on the page changed.",
+      "risk": "The beta tester went to Permissions first looking for the Claude Code switch and was bounced; the link is the fix, and the deck step after this one asks whether to rename the switch as well.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-9",
+      "surface": "Settings → Assistant settings → Specialists",
+      "path": "Settings → Assistant settings → Specialists",
+      "crop": "specialists",
+      "headline": "Specialists: the tier pickers and the roster, unchanged, on their own page.",
+      "changed": "Your Q-7 answer: one page, both parts, as today. The intro, the Budget and Frontier pickers, the Available specialists roster and its Refresh and Open folder buttons are the popup's. Its (i) sits beside the page title. One fix the beta tester found: an empty band sat above the first group of the roster and read as a missing row; it is gone.",
+      "notice": "The intro's Click the (i) above now points at the (i) beside the title, two lines up.",
+      "risk": "None; this page is a move, not a redesign.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-10",
+      "surface": "Settings → Assistant settings → Web search",
+      "path": "Settings → Assistant settings → Web search",
+      "crop": "search",
+      "headline": "Web search: the Tavily and Exa key rows on their own page, last in the list.",
+      "changed": "Your Q-5 answer. The sentence that search works free with no setup, then the two key rows, as they were at the bottom of the popup. The (i) sits beside the page title.",
+      "notice": "It is a short page — two rows. Its place last in the list is deliberate: it is a service the assistant uses, not a model that answers you.",
+      "risk": "None beyond the move.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-11",
+      "surface": "Settings drawer",
+      "path": "Settings → the Assistant settings row",
+      "headline": "You asked to see this one (Q-4): should the row carry a warning dot when a provider is broken?",
+      "variants": [
+        {
+          "id": "dot",
+          "label": "Live line, plus a red dot when a provider is broken (recommended)",
+          "crop": "row-attention",
+          "summary": "The second line always shows the default (Claude Code · Sonnet). When a provider is actually broken — here a ChatGPT plan its owner switched off — a small red dot appears at the row's right, and the same dot marks ChatGPT in the page list and on its page. It never appears for anything less than broken: not for a provider you have not set up, not for an empty key."
+        },
+        {
+          "id": "plain",
+          "label": "Live line only, never a dot",
+          "crop": "row",
+          "summary": "The same second line, no dot. A broken provider is visible only once you open the panel and its page, or when a chat fails and its error bubble offers Open Settings."
+        }
+      ],
+      "risk": "A dot on a settings row is new here; Backup & Sync uses a red count badge for the same idea, so the two should read as one family."
+    },
+    {
+      "id": "P-12",
+      "surface": "Settings → Assistant settings, phone width",
+      "path": "Settings → Assistant settings on a phone or a narrow window",
+      "crop": "phone-page",
+      "headline": "On a phone the page list is the first screen; a page opens with a back arrow in the title.",
+      "changed": "Below 640 wide the window becomes the list of pages, each a row with a chevron, and tapping one shows that page with its name as the title and a back arrow to the list — the shape of phone settings everywhere. Before, the phone drawer had the four separate rows and each opened its popup.",
+      "notice": "The Before picture is today's Defaults popup at phone width; the After is the Claude Code page reached through the list.",
+      "risk": "On Android this is also the panel you get, with only General in the list until the phone can serve the other pages (your Q-6 answer).",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-13",
+      "words": true,
+      "surface": "Settings → Assistant settings → Claude Code",
+      "path": "Settings → Assistant settings → Claude Code → Skip Permissions",
+      "headline": "The beta tester could not tell what Skip Permissions does. Rename it in plain words?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Rename: Work without asking (recommended)",
+          "summary": "The row becomes Work without asking, its hint New Claude Code conversations won't ask before changing files or running commands, and the red banner Claude will change files and run commands without asking you. Same switch, same danger zone, same behaviour. Pro: says what happens instead of naming a mechanism; no student knows what a tool approval is. Con: anyone who learned Skip Permissions from the old Defaults popup or from Claude Code itself has to re-find it under a new name, and the drawer's old summary said Skip Perms.",
+          "cost": "Three strings."
+        },
+        {
+          "id": "b",
+          "label": "Keep Skip Permissions, but rewrite the hint and banner",
+          "summary": "The name stays, since Claude Code calls it that too; the hint and banner take the plain wording above. Pro: the name matches Claude Code's own vocabulary. Con: the name is still the part you read first.",
+          "cost": "Two strings."
+        },
+        {
+          "id": "c",
+          "label": "Keep everything as it is",
+          "summary": "The shipped wording, moved unchanged. Pro: nothing to re-learn. Con: the tester turned it on and still could not say what Claude would do.",
+          "cost": "Nothing."
+        }
+      ]
+    },
+    {
+      "id": "P-14",
+      "words": true,
+      "surface": "Settings → Assistant settings → Claude Code",
+      "path": "Settings → Assistant settings → Claude Code → Skip Permissions → Advanced",
+      "headline": "The Advanced list under the switch is written for developers. Rewrite it in plain words?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Plain names plus a one-line intro (recommended)",
+          "summary": "Today the list reads Auto-approve all — Silently approve all protected requests; Config files — .bashrc, .gitconfig, .mcp.json; Protected directories — .git/, .claude/ paths; cd + redirect commands — Compound cd with output redirection; cd + git commands — Compound cd with git operations. Proposal: an intro line, Even with asking off, Claude still checks before these. Turn one on to stop that check. Then the rows: Everything — stop every remaining check; Settings files — .bashrc, .gitconfig, .mcp.json; Hidden system folders — .git and .claude; Commands that write files from another folder; Commands that change version history from another folder. The file names stay as the hint because they are the truth; the titles say what they protect. Pro: a student can tell what each switch lets Claude do. Con: the words are new, so a bug report from a power user names a switch by a name Claude Code's own docs do not use.",
+          "cost": "Six strings; the scary confirmation window is untouched."
+        },
+        {
+          "id": "b",
+          "label": "Keep the developer names",
+          "summary": "The list moves as it is. Pro: matches the file and command names a developer expects. Con: the tester looked at every switch and could not tell what any of them would let Claude do.",
+          "cost": "Nothing."
+        }
+      ]
+    }
+  ]
+}

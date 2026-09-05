@@ -3,7 +3,10 @@
  "width": 1440,
  "height": 900,
  "pre": [
-  { "click": "[title=Settings]", "settle": 700 }
+  {
+   "click": "[title=Settings]",
+   "settle": 700
+  }
  ],
  "shots": [
   {
@@ -14,33 +17,60 @@
   {
    "name": "assistant-general",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    }
    ],
    "expect": "[role=dialog] nav[aria-label='Assistant settings pages']"
   },
   {
    "name": "assistant-claude",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Claude Code')", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Claude Code')",
+     "settle": 900
+    }
    ],
    "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Claude Code'"
   },
   {
    "name": "assistant-claude-skip-on",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Claude Code')", "settle": 900 },
-    { "click": "[role=dialog] [aria-label='Skip Permissions']", "settle": 500 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Advanced'))", "settle": 500 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Claude Code')",
+     "settle": 900
+    },
+    {
+     "click": "[role=dialog] [aria-label='Skip Permissions']",
+     "settle": 500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Advanced'))",
+     "settle": 500
+    }
    ],
    "expect": "[role=dialog] [aria-label='Auto-approve all']"
   },
   {
    "name": "assistant-chatgpt",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='ChatGPT')", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='ChatGPT')",
+     "settle": 900
+    }
    ],
    "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='ChatGPT'"
   },
@@ -48,8 +78,14 @@
    "name": "assistant-chatgpt-blocked",
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=blocked",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='ChatGPT')", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='ChatGPT')",
+     "settle": 900
+    }
    ],
    "expect": "[role=dialog] [role=img][aria-label='ChatGPT needs attention']"
   },
@@ -62,59 +98,176 @@
   {
    "name": "assistant-openrouter",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='OpenRouter')", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='OpenRouter')",
+     "settle": 900
+    }
    ],
    "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='OpenRouter'"
   },
   {
    "name": "assistant-local",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Local models')", "settle": 1200 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Local models')",
+     "settle": 1200
+    }
    ],
    "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Local models'"
   },
   {
    "name": "assistant-permissions",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Permissions')", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Permissions')",
+     "settle": 900
+    }
    ],
    "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Permissions'"
   },
   {
    "name": "assistant-permissions-explainer",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Permissions')", "settle": 900 },
-    { "click": "[role=dialog] [aria-label='What is this?']", "settle": 700 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Permissions')",
+     "settle": 900
+    },
+    {
+     "click": "[role=dialog] [aria-label='What is this?']",
+     "settle": 700
+    }
    ],
    "expect": "[role=dialog] [aria-label=Back]"
   },
   {
    "name": "assistant-specialists",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Specialists')", "settle": 1200 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Specialists')",
+     "settle": 1200
+    }
    ],
    "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Specialists'"
   },
   {
    "name": "assistant-search",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Web search')", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Web search')",
+     "settle": 900
+    }
    ],
    "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Web search'"
   },
   {
    "name": "assistant-general-picker",
    "actions": [
-    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Sonnet'))", "settle": 900 }
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Sonnet'))",
+     "settle": 900
+    }
    ],
    "expect": "js:!!document.querySelector('input[placeholder*=\"earch\"]')"
+  },
+  {
+   "name": "assistant-claude-info",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Claude Code')",
+     "settle": 900
+    },
+    {
+     "click": "[role=dialog] [aria-label='About Claude Code']",
+     "settle": 700
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Anthropic')"
+  },
+  {
+   "name": "assistant-prefs",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Claude Code')",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Preferences')",
+     "settle": 900
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Claude Code Preferences')"
+  },
+  {
+   "name": "assistant-search-addkey",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Web search')",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Add key')",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=dialog] [aria-label='Tavily API key']"
+  },
+  {
+   "name": "assistant-permissions-link",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Permissions')",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Claude Code page')",
+     "settle": 700
+    }
+   ],
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Claude Code'"
   }
  ]
 }

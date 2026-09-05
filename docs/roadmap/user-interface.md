@@ -159,3 +159,20 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       design-guide G-22; the Local Models engine card and model rows switched to it on
       `feat/local-engine-upgrades`, these three have not.
       `all` `confirmed` `checked 2026-09-05` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
+
+- [ ] On a phone-width window the quick-chip row under the typing box ("Fix Tests",
+      "Briefing", "Draft Text" and the edit button) runs off the right edge and is clipped,
+      with no way to scroll to the rest — seen by the context-free tester on every phone-width
+      screenshot during the Assistant settings mockup review (2026-09-05)
+      `quick-chips` `desktop` `needs-verify` `checked 2026-09-05`
+
+- [ ] Three controls decide whether Claude Code asks before acting — Skip Permissions in
+      Assistant settings, "Bypass" inside Claude Code's own Preferences window, and the mode
+      chip in the bar under the chat — and nothing says how they relate or which one wins
+      (the single most confusing moment in the 2026-09-05 Assistant settings tester run)
+      `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
+
+- [ ] The model picker opens on your starred models only, so the model you already chose is
+      not in the list and nothing is ticked until you type — on the "Start on" row of
+      Assistant settings the current default looks unset (tester, 2026-09-05)
+      `model-picker` `desktop` `confirmed` `checked 2026-09-05`
