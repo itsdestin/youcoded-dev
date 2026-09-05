@@ -152,3 +152,10 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       Replace or Append — and skip the menu when the box is empty (Destin, 2026-09-02; same rule
       as editing a queued message, native-harness → sessions)
       `quick-chips` `all` `needs-verify` `checked 2026-09-02`
+
+- [ ] Three places still open a section with a bare "›" beside a word — the Backup & Sync log
+      ("Show log"), the recommended-model card in Local Models, and the system marker in chat.
+      Destin (2026-09-05 review deck): "I HATE the bare dropdowns with a chevron." The rule is now
+      design-guide G-22; the Local Models engine card and model rows switched to it on
+      `feat/local-engine-upgrades`, these three have not.
+      `all` `confirmed` `checked 2026-09-05` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
