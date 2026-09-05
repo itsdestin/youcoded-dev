@@ -2,18 +2,21 @@
  "title": "Voice prompting — contract",
  "key": "voice-prompting-contract",
  "out": "voice-prompting.contract.html",
- "themes": ["midnight"],
+ "themes": [
+  "midnight"
+ ],
  "branch": "feat/voice-prompting",
  "sources": {
   "voice-prompting-questions": "voice-prompting.questions.json",
   "voice-prompting-review": "voice-prompting.review.json",
-  "voice-prompting-review2": "voice-prompting.review2.json"
+  "voice-prompting-review2": "voice-prompting.review2.json",
+  "voice-prompting-review3": "voice-prompting.review3.json"
  },
  "steps": [
   {
    "id": "C",
    "surface": "Message box → the mic button (desktop and Android)",
-   "path": "Any chat session → the mic beside Send; the first tap before the speech model is downloaded; a computer with no microphone; the Android message box; a remote browser tab",
+   "path": "Any chat session → the mic beside Send; the first tap before the speech model is downloaded; a computer with no microphone; the Android message box; a remote browser tab; the card when the computer refuses microphone access; holding the space bar in an empty box",
    "headline": "This is what done means.",
    "rows": [
     {
@@ -33,11 +36,10 @@
     },
     {
      "id": "R3",
-     "statement": "One tap starts the mic; a second tap, Enter, a keyboard shortcut, or about two quiet seconds stops it.",
+     "statement": "One tap starts the mic; a second tap, Enter, the strip's Stop, or about two quiet seconds stops it.",
      "checkedBy": "live-app",
-     "threshold": "pass/fail",
-     "source": "voice-prompting-questions#Q-3",
-     "note": "i would also like to be able to press and hold the spacebard in a bare input box for walkue-talkie mode though."
+     "threshold": "Silence stop after 2 s (measured on the deck)",
+     "source": "voice-prompting-review3#V-6"
     },
     {
      "id": "R4",
@@ -114,9 +116,57 @@
      "id": "R14",
      "statement": "While listening, the ring around the mic grows with your loudness and sits still when you pause.",
      "checkedBy": "deck",
-     "threshold": "Ring from 2 px up to less than the deck's 12 px maximum; it moves only when the level changes",
-     "source": "voice-prompting-review2#V-5",
-     "note": "make the max size a tad smaller tho"
+     "threshold": "Ring 2 to 9 px (measured on the deck); it moves only when the level changes",
+     "source": "voice-prompting-review3#V-6"
+    },
+    {
+     "id": "R15",
+     "statement": "The mic sits between the message and Send, drawn like the paperclip; while it listens the placeholder reads 'Listening…'.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-6"
+    },
+    {
+     "id": "R16",
+     "statement": "Typing while the mic is open ends dictation and keeps what you typed.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-6"
+    },
+    {
+     "id": "R17",
+     "statement": "On Midnight and Dark the filled mic and its ring are the theme's light grey, not a colour.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-6"
+    },
+    {
+     "id": "R18",
+     "statement": "In an empty box, holding the space bar a quarter second starts listening; letting go stops it; a quick tap does nothing.",
+     "checkedBy": "human",
+     "threshold": "Listening starts after a 0.25 s hold (from the deck)",
+     "source": "voice-prompting-review3#V-7"
+    },
+    {
+     "id": "R19",
+     "statement": "With any text in the box the space bar types a space as always; there is no other keyboard shortcut for the mic.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-7"
+    },
+    {
+     "id": "R20",
+     "statement": "If refused, the card reads 'Microphone access was refused by your computer. Allow it for YouCoded in your system's privacy settings, then check again.'",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-8"
+    },
+    {
+     "id": "R21",
+     "statement": "That card has one Check again button; on a Mac the system's own permission prompt comes first, and the card appears only if declined.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-8"
     }
    ]
   }

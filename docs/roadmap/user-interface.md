@@ -22,7 +22,9 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
 
 - [ ] After voice ships: a fallback to the speech service built into Windows and macOS for
       people who do not want the 464 MB download. Destin on the review deck 2026-09-05: "we may
-      want to roadmap a fallback to built-in windows or mac speech services, but not rn"
+      want to roadmap a fallback to built-in windows or mac speech services, but not rn".
+      Same shelf: Moonshine v2 (106 MB, English only, 8 s at a time) as a smaller download if
+      the 464 MB first download draws complaints (accepted on review V-0's risk card)
       `input-bar` `desktop` `parked` `checked 2026-09-05`
 
 - [ ] On a phone the app is a shrunk desktop — status-bar chips, panels and desktop session
