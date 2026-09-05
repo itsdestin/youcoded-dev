@@ -1,21 +1,23 @@
 {
- "answers": {
-  "scope": {
-   "pick": "All five, plus brand-new characters for the three themes that have none"
+  "answers": {
+    "scope": {
+      "pick": "All five, plus brand-new characters for the three themes that have none"
+    },
+    "new-expressions": {
+      "pick": "Other \u2014 happy and shut-down, not smug",
+      "note": "AMENDED IN CHAT immediately after submitting, 2026-09-04: \"actually lets just keep shut-down.\" The deck answer was 'Add only happy'. Read as happy + shutdown; smug was never asked for on its own and stays OUT unless he asks. SECOND HALF OF THE SAME MESSAGE, and it is a hold, not a decision: \"i may want to workshop it a bit further though before we implement, i didn't entirely love the shut down pose as written.\" The shutdown FACE is settled; the shutdown POSE is not, and must not be built until he has picked one. See sleeping's note."
+    },
+    "resting-face": {
+      "pick": "Open, awake eyes at rest"
+    },
+    "aliveness": {
+      "pick": "Reactions, plus spontaneous moments of his own",
+      "note": "i want a much richer idle/spontaneity, but the non-notifying movements should be subtle enough to be distinguished from a single clear \"needs attention\" animation when a session has a blue/red/yellow status light"
+    },
+    "sleeping": {
+      "pick": "Sleeps after a few quiet minutes, wakes on any activity",
+      "note": "BLOCKED ON THE POSE WORKSHOP (2026-09-04). Sleeping is what shows the shutdown pose, and the pose is unsettled \u2014 so the sleep behaviour is designed but not built until he picks one. The film's pose (engine `sitTuck`, storyboard-v3/sit-and-tuck.png) was authored for the END OF A VIDEO at large size beside the wordmark; the desktop case is 112px in a corner, persistent, must wake convincingly, and may be docked at a screen edge. Ten earlier candidates are on file in storyboard-v3/power-down-poses{,-2}.png."
+    }
   },
-  "new-expressions": {
-   "pick": "Add only 'happy'"
-  },
-  "resting-face": {
-   "pick": "Open, awake eyes at rest"
-  },
-  "aliveness": {
-   "pick": "Reactions, plus spontaneous moments of his own",
-   "note": "i want a much richer idle/spontaneity, but the non-notifying movements should be subtle enough to be distinguished from a single clear \"needs attention\" animation when a session has a blue/red/yellow status light"
-  },
-  "sleeping": {
-   "pick": "Sleeps after a few quiet minutes, wakes on any activity"
-  }
- },
- "submitted": "2026-09-05T04:58:11Z"
+  "submitted": "2026-09-05T04:58:11Z"
 }
