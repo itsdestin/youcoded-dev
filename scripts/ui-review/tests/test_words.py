@@ -219,6 +219,14 @@ class WordsTests(unittest.TestCase):
         s = spec_with(self.tmp, lambda r: r['steps'][2].update({'headline': 'Not here'}))
         self.assertIn('P-2: a page marker carries only page and intro', errs(s))
 
+    def test_marker_needs_a_title(self):
+        # is_page() is keyed on the KEY's presence, not its value — an empty "page" is still a
+        # marker, so it must be refused here rather than rendering a page with no name.
+        s = spec_with(self.tmp, lambda r: r['steps'][2].update({'page': ''}))
+        self.assertIn('P-2: a page marker needs a title in "page"', errs(s))
+        s2 = spec_with(self.tmp, lambda r: r['steps'][2].update({'page': '   '}))
+        self.assertIn('P-2: a page marker needs a title in "page"', errs(s2))
+
     def test_marker_refused_in_a_deck_with_pictures(self):
         s = spec_with(self.tmp, lambda r: r['steps'].append(
             {'id': 'S-9', 'surface': 'Games', 'path': 'Board', 'crop': 'bubble',
@@ -240,6 +248,20 @@ class WordsTests(unittest.TestCase):
         self.assertEqual([st['id'] for st in d['steps']], ['Q-1', 'Q-2', 'Q-3', 'Q-4'])
         self.assertEqual([p['steps'] for p in d['pages']], [['Q-1', 'Q-2'], ['Q-3', 'Q-4']])
         self.assertEqual([p['title'] for p in d['pages']], ['Questions fixture', 'What we promise'])
+
+    def test_deck_opening_with_a_marker_has_no_implicit_page(self):
+        # A marker as the very FIRST step means there is never an unlabelled stretch before it —
+        # pages() must not invent a "P-1" nobody wrote; the marker's own id and title lead, and
+        # (with no other marker in the deck) it is the deck's only page.
+        def marker_first(r):
+            r['steps'].insert(0, r['steps'].pop(2))   # move P-2 to the front
+        s = spec_with(self.tmp, marker_first)
+        p = pages(s)
+        self.assertEqual(len(p), 1)
+        self.assertEqual(p[0]['id'], 'P-2')
+        self.assertNotEqual(p[0]['id'], 'P-1')
+        self.assertEqual(p[0]['title'], 'What we promise')
+        self.assertEqual([st['id'] for st in p[0]['steps']], ['Q-1', 'Q-2', 'Q-3', 'Q-4'])
 
     def test_a_picture_deck_has_no_pages(self):
         # Pages are for question decks: a deck with any picture keeps one step per screen.

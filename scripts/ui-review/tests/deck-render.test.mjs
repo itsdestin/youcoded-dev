@@ -263,7 +263,25 @@ test('live step: a stopped app server says so, with the command that starts it',
 
 test('a question deck opens as pages and answers every question on one', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'deck-words-'));
-  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import words_spec; print(words_spec(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  // Fix (2026-09-05): the pages rewrite (task 3) dropped the finish-screen "Yes" pin — Q-4 is
+  // the fixture's only `question`-kind step (Yes/No/Don't know), and it already answers Don't
+  // know here, so a SECOND question-kind step (Q-5) is added just for this test so the finish
+  // screen has to show one cell reading "Yes" and a different cell reading "Don't know" at the
+  // same time, instead of one step's answer overwritten by the other's (which is all a single
+  // step could ever prove). Kept local to this test — the shared words_spec fixture (and every
+  // other test's step counts) is untouched.
+  const py = `import sys, json; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+raw['steps'].append({'id': 'Q-5', 'words': True, 'surface': 'Games', 'path': 'Questions',
+    'headline': 'Should an unanswered invite expire on its own?',
+    'today': 'An invite waits forever until it is accepted or declined.',
+    'problem': 'A stale invite from weeks ago still shows up as new.',
+    'proposal': 'Invites disappear on their own after a day.'})
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
   { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
   const port = await freePort();
@@ -293,26 +311,32 @@ test('a question deck opens as pages and answers every question on one', async (
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-1\"] .card.option').click()"); await sleep(200);
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-2\"] .card.option[data-pick=b]').click()"); await sleep(200);
       assert.equal(await c.evaluate("document.querySelectorAll('article.q.done').length"), 2, 'both answered questions take the done edge');
-      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^page 1 of 2 · 2 of 4 answered/);
+      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^page 1 of 2 · 2 of 5 answered/);
       await c.evaluate("const n=document.querySelector('article.q[data-id=\"Q-1\"] .note'); n.value='smaller'; n.dispatchEvent(new Event('input', {bubbles:true}))");
       await sleep(500);
 
-      // Next page: the statement and the yes/no/don't-know question, both on one page.
+      // Next page: the statement and TWO yes/no/don't-know questions (Q-4, and Q-5 added above
+      // just for this test), all on one page.
       await c.evaluate("document.querySelector('#save').click()"); await sleep(300);
       assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^page 2 of 2 /);
       assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'What we promise');
       assert.equal(await c.evaluate("document.querySelector('#wsub').textContent"), 'Statements, not questions.');
-      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q')].map(a=>a.dataset.id)"), ['Q-3', 'Q-4']);
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q')].map(a=>a.dataset.id)"), ['Q-3', 'Q-4', 'Q-5']);
       assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-3\"] .ans')].map(b=>b.textContent).join(',')"), 'Holds,Fails,Other');
       assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-4\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', "Don't know"]);
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-5\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', "Don't know"]);
       assert.equal(await c.evaluate("document.querySelector('#save').textContent"), 'Done', 'the last page finishes the deck');
-      await c.evaluate("document.querySelector('article.q[data-id=\"Q-4\"] .ans[data-v=other]').click()"); await sleep(500);
+      // Q-4 answers Don't know; Q-5 answers Yes — two DIFFERENT question-kind steps in two
+      // different states, so the finish screen has to tell them apart, not just echo one value.
+      await c.evaluate("document.querySelector('article.q[data-id=\"Q-4\"] .ans[data-v=other]').click()"); await sleep(300);
+      await c.evaluate("document.querySelector('article.q[data-id=\"Q-5\"] .ans[data-v=yes]').click()"); await sleep(500);
 
       const answers = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
       assert.deepEqual([answers.answers['Q-1'].v, answers.answers['Q-1'].pick], ['pick', 'a']);
       assert.equal(answers.answers['Q-1'].note, 'smaller');
       assert.deepEqual([answers.answers['Q-2'].v, answers.answers['Q-2'].pick], ['pick', 'b']);
       assert.deepEqual([answers.answers['Q-4'].v, answers.answers['Q-4'].dk], ['other', true], "don't know is Other with a flag");
+      assert.equal(answers.answers['Q-5'].v, 'yes', 'the second question-kind step answers yes');
       // A page marker is not a step: it is never in the deck's steps and never gets an answer.
       assert.equal(await c.evaluate('DECK.steps.some(s => s.id === "P-2")'), false);
       assert.equal(answers.answers['P-2'], undefined);
@@ -321,17 +345,55 @@ test('a question deck opens as pages and answers every question on one', async (
       await c.evaluate("document.querySelector('#prev').click()"); await sleep(300);
       assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q')].map(a=>a.classList.contains('done'))"), [true, true]);
       assert.equal(await c.evaluate("document.querySelectorAll('article.q .card.variant.on').length"), 2, 'both picks still lit');
+
+      // Fix (2026-09-05): restore the note-clearing pin the pages rewrite dropped — page.js's
+      // #cards input handler writes `note: n.value` verbatim, so clearing the box must clear
+      // (or blank) the saved field too, not leave the earlier text sitting in the answers file.
+      // Blocks, not bare `const n = …` again: Runtime.evaluate shares ONE top-level scope
+      // across calls, and line 297's `const n` above is still declared in it — a second bare
+      // `const n` throws "Identifier 'n' has already been declared" instead of clearing anything.
+      await c.evaluate("{ const n=document.querySelector('article.q[data-id=\"Q-1\"] .note'); n.value=''; n.dispatchEvent(new Event('input', {bubbles:true})); }");
+      await sleep(500);
+      const cleared = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
+      assert.equal((cleared.answers['Q-1'].note || ''), '', 'clearing the note clears (or blanks) the saved field');
+      // Put the note back so the rest of this test (and the finish screen) still reads it.
+      await c.evaluate("{ const n=document.querySelector('article.q[data-id=\"Q-1\"] .note'); n.value='smaller'; n.dispatchEvent(new Event('input', {bubbles:true})); }");
+      await sleep(500);
+
       // The finish screen still names STEPS, not pages.
       await c.evaluate("document.querySelector('#done').click()"); await sleep(300);
       await c.evaluate("document.querySelector('#submit').click()"); await sleep(1200);
       assert.equal(await c.evaluate('document.body.dataset.screen'), 'finished');
       const rows = JSON.parse(await c.evaluate(
         "JSON.stringify([...document.querySelectorAll('#responses tbody tr')].map(r=>[...r.cells].map(c=>c.textContent.trim())))"));
-      assert.equal(rows.length, 4, 'four steps, not two pages');
+      assert.equal(rows.length, 5, 'five steps, not two pages');
       assert.equal(rows[3][2], "Don't know");
+      assert.equal(rows[4][2], 'Yes', 'a question answered yes reads back as "Yes", not the picture deck\'s "Yes, keep it"');
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
   } finally { srv.kill(); }
+});
+
+// CONTRACT page: the table (# / Statement / Checked by / Threshold / From / Verdict) needs
+// real width, not the ~760px column every prose question shares — Task 2 review finding.
+test('a page holding a contract step is wide', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-contract-wide-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import contract_spec; print(contract_spec(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('arcade.contract.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1440, 900);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/arcade.contract.html` });
+    for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true')); i++) await sleep(100);
+    assert.equal(await c.evaluate('document.body.dataset.layout'), 'pages');
+    assert.equal(await c.evaluate("document.querySelector('#content').classList.contains('wide')"), true, 'a contract page widens the column');
+    const cardsW = await c.evaluate("document.querySelector('#cards').getBoundingClientRect().width");
+    assert.ok(cardsW > 800, `cards should be wider than 800px at 1440x900, got ${cardsW}`);
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); }
 });
 
 // A deck with ONE page and no markers: the whole question set on one screen, and the forward
@@ -358,6 +420,11 @@ print(p)`;
     assert.equal(await c.evaluate("document.querySelectorAll('article.q').length"), 4, 'every question on it');
     assert.equal(await c.evaluate("document.querySelector('#save').textContent"), 'Done');
     assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'Questions fixture', 'the implicit page wears the deck title');
+    // Fix (2026-09-05): a one-page deck has nothing to move BETWEEN — Prev/Next and the single
+    // (always-full) progress segment used to sit there as dead controls.
+    assert.equal(await c.evaluate("document.querySelector('#prev').hidden"), true, 'nothing to move between on a one-page deck');
+    assert.equal(await c.evaluate("document.querySelector('#next').hidden"), true);
+    assert.equal(await c.evaluate("document.querySelector('#steps').hidden"), true);
     assert.deepEqual(c.errors, []);
   } finally { c.close(); srv.kill(); }
 });

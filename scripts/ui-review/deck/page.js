@@ -232,6 +232,10 @@
   document.body.dataset.screen = 'deck';   // 'finished' once submitted — read by deck-render.test.mjs
   // One segment per page when the deck is pages, one per step otherwise.
   $('#steps').innerHTML = (PAGES || DECK.steps).map(() => '<span></span>').join('');
+  // Fix: a ONE-page deck (no marker ever split it) has nothing to move BETWEEN — a Prev/Next
+  // pair and a single, always-full progress segment would just be dead controls sitting in
+  // the header. PAGES is fixed for the life of the page, so this is decided once, not per-paint.
+  if (PAGES && PAGES.length === 1) { $('#steps').hidden = true; $('#prev').hidden = true; $('#next').hidden = true; }
   const stage = $('#stage'), inner = $('#inner'), loupe = $('#loupe');
 
   // ── persistence ──
@@ -398,7 +402,13 @@
   const PAD = 28, CAP = 24, GAP = 18;
   function layout() {
     if (PAGES) {   // the reading column: a block that scrolls, nothing to size against a picture
-      $('#content').className = 'content pages'; $('#step').classList.remove('compact-step');
+      // Fix: a CONTRACT step's table (# / Statement / Checked by / Threshold / From / Verdict)
+      // squeezed into the 760px reading column same as a question card — the acceptance deck's
+      // screenshot showed two narrow columns stretching across the whole 1440px viewport
+      // instead. A page that HOLDS a contract step gets a wider column; the CSS keeps any
+      // prose question sharing that page at the normal reading width (`.pages.wide article.q`).
+      const wide = pageSteps(cur).some(st => st.kind === 'contract');
+      $('#content').className = 'content pages' + (wide ? ' wide' : ''); $('#step').classList.remove('compact-step');
       document.body.classList.remove('thumbs-inline');
       document.body.dataset.layout = 'pages'; document.body.dataset.scores = '{}';
       window.__deckReady = true; return;

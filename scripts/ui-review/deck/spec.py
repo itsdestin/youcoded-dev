@@ -330,6 +330,11 @@ def _validate_page(spec, st, sid, i, errors):
     it belongs only in a deck with no pictures, and it must actually have questions under it."""
     if [k for k in st if k not in PAGE_FIELDS]:
         errors.append(f'{sid}: a page marker carries only page and intro')
+    # Fix (2026-09-05): `is_page` is keyed on the KEY's presence, not its value, so
+    # `{"id": "P-2", "page": ""}` was still a marker — and rendered a page with no eyebrow,
+    # no header title, nothing to tell it apart from the page before it.
+    if not (st.get('page') or '').strip():
+        errors.append(f'{sid}: a page marker needs a title in "page"')
     if not words_only(spec):
         errors.append(f'{sid}: pages are for question decks — this deck has pictures')
     # Its page runs to the NEXT marker, so a marker followed straight by another one is empty

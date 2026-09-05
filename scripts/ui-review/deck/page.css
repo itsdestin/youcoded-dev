@@ -96,7 +96,16 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 /* the framed decision card is the QUESTION here, not the column, so the wrapper stops being one */
 .content.pages .decide{display:block;background:none;border:0;border-radius:0;overflow:visible;min-height:0}
 .content.pages .info{padding:0;display:block;overflow:visible}
-.pages .cards{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+/* padding-bottom clears the sticky #controls bar below: its button's own clamp() plus the
+   bar's 10px top+bottom padding, so the last card can scroll clear of it instead of the bar
+   landing on top of a card's own text (Destin, 2026-09-05). */
+.pages .cards{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-bottom:clamp(54px,calc(4.4vh + 20px),72px)}
+/* WIDE: a page that holds a CONTRACT step (design 3.1 + Task 3 review) — the table needs real
+   width, not the 760px reading column every question shares. Only #controls widens alongside
+   it; a prose question sharing the page (below) stays at the reading width and centres itself
+   in the wider column instead of stretching across it. */
+.content.pages.wide .cards,.content.pages.wide #controls{max-width:min(1200px,100% - 32px)}
+.pages.wide article.q:not(:has(.card.contract)){max-width:760px;align-self:center;width:100%}
 .pages .page-head .intro{margin:4px 0 0;font-size:13px;color:var(--fg-2);line-height:1.5}
 /* One question = one card, the same panel/edge/radius idiom the single-step decision card uses. */
 .pages article.q{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
@@ -114,6 +123,10 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 /* CONTRACT: the rows as a table; a graded row is tinted by its verdict */
 .card.contract{overflow:auto} .card.contract table{border-collapse:collapse;width:100%;font-size:12px} .card.contract th{text-align:left;font-weight:600;color:var(--fg-dim);padding:6px 8px;border-bottom:1px solid var(--edge)} .card.contract td{padding:6px 8px;border-bottom:1px solid var(--edge);vertical-align:top}
 .card.contract .src{margin:2px 0 0;font-size:11px;color:var(--fg-muted)} .card.contract tr.pass td:last-child{color:var(--yes)} .card.contract tr.fail td:last-child{color:var(--no)}
+/* The narrow columns (#, Checked by, Threshold, From) never need to WRAP — stopping them
+   means the extra width Task 2 gives a contract page lands on the two columns that actually
+   read as prose: Statement (2nd) and Verdict (last, when the deck is graded). */
+.card.contract th,.card.contract td:not(:nth-child(2)):not(:last-child){white-space:nowrap}
 .words .cards:has(.contract){grid-template-columns:1fr}
 .compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
 /* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the
