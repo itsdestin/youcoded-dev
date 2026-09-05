@@ -96,6 +96,7 @@ session-start hook prints this table into every session, so a lookup costs zero 
 | buddy mode (the floating window) | `youcoded/desktop/src/renderer/components/buddy/` |
 | the Permissions settings screen | `youcoded/desktop/src/renderer/components/PermissionsSection.tsx` |
 | the specialists chip + popup | `youcoded/desktop/src/renderer/components/SpecialistsChip.tsx` |
+| why a Bash command was refused before it ran | `.claude/hooks/glob-guard.py` (six guards: unquoted globs, `pkill -f`, `rg -r` clustered, `pgrep -f` as a loop condition, `kill` aimed at the live app, `pgrep -f` feeding `kill`) — each carries the measurement that earned it |
 | the fake backend the Workbench runs against | `youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts` |
 | every main-process IPC channel (the switchboard) | `youcoded/desktop/src/main/ipc-handlers.ts` |
 | what the renderer is allowed to call | `youcoded/desktop/src/main/preload.ts` |
