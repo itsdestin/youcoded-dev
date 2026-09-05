@@ -98,6 +98,12 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+- [ ] The dev dashboard exists only as a page served in the browser — it has no way in from the
+      app itself. Wanted: a button on Settings → Development that opens it as a full page, shown
+      only when a youcoded-dev folder is actually on this device; when it is not, the same button
+      offers to add one as a YouCoded-managed synced project instead of opening a dead screen
+      `settings/development` `desktop` `confirmed` `checked 2026-09-05` → docs/active/design/2026-09-05-dev-dashboard/2026-09-05-dev-dashboard-design.md
+
 - [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
       1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
       context-free tester cannot claim to have covered either. Add pointer and scale switches to
