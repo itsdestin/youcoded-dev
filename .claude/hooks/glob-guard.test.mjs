@@ -226,6 +226,42 @@ for (const cmd of [
   });
 }
 
+// A heredoc BODY is data, but the shell after the heredoc is still shell: this exact shape
+// slipped through the blanket `<<` exemption on 2026-09-04 and killed the shell.
+test('blocks: pkill -f after a heredoc', () => {
+  const { blocked } = run("cat > /tmp/x <<'EOF'\nhello\nEOF\npkill -f script-editor; echo survived");
+  assert.equal(blocked, true);
+});
+test('allows: pkill -f inside a heredoc body', () => {
+  const { blocked } = run("cat <<'EOF'\npkill -f node is the trap\nEOF");
+  assert.equal(blocked, false);
+});
+
+// ---------------------------------------------------------------------------
+// Guard 4 — `pgrep -f` as a loop/if condition: it always matches the wrapper, so it never ends
+// ---------------------------------------------------------------------------
+for (const cmd of [
+  'until ! pgrep -f "remotion render" >/dev/null; do sleep 3; done; echo done',
+  'while pgrep -f vite; do sleep 1; done',
+  'if pgrep -af "python3 serve.py" >/dev/null; then echo running; fi',
+]) {
+  test(`blocks: ${cmd}`, () => {
+    const { blocked, message } = run(cmd);
+    assert.equal(blocked, true, `should have blocked: ${cmd}`);
+    assert.match(message, /never turns false|never ends/);
+    assert.match(message, /run_in_background|flock/, 'must name the way to wait');
+  });
+}
+for (const cmd of [
+  'until [ -f out/done ]; do sleep 2; done',
+  'pgrep -af node | rg -v pgrep',
+  'while read -r l; do echo "$l"; done < list',
+]) {
+  test(`allows: ${cmd}`, () => {
+    assert.equal(run(cmd).blocked, false, `should have allowed: ${cmd}`);
+  });
+}
+
 for (const cmd of [
   'pgrep -af node',            // read-only: signals nothing
   'pgrep -f node | head',
@@ -240,3 +276,48 @@ for (const cmd of [
     assert.equal(blocked, false, `false positive on: ${cmd}\nhook said: ${message}`);
   });
 }
+
+// Guard 5: `kill <pid>` aimed at the live app. Observed 2026-09-04 — a session killed the
+// live app's llama-server with a pid remembered from an earlier listing. The tests point the
+// hook at a fake /proc so they never depend on what is running on this machine.
+const PROC = mkdtempSync(path.join(tmpdir(), 'glob-guard-proc-'));
+process.on('exit', () => rmSync(PROC, { recursive: true, force: true }));
+function fakeProc(pid, argv) {
+  mkdirSync(path.join(PROC, String(pid)), { recursive: true });
+  writeFileSync(path.join(PROC, String(pid), 'cmdline'), argv.join('\0') + '\0');
+}
+fakeProc(4101, ['/home/destin/.config/youcoded/engine/b10665-vulkan/llama-b10665/llama-server', '--port', '9920']);
+fakeProc(4102, ['/opt/YouCoded/youcoded', '--type=zygote']);
+fakeProc(4103, ['/home/destin/.config/youcoded-dev/engine/b10665-vulkan/llama-b10665/llama-server', '--port', '8199']);
+fakeProc(4104, ['node', 'scripts/ui-review/shot.mjs']);
+function runProc(command) {
+  const r = spawnSync('python3', [HOOK], {
+    input: JSON.stringify({ tool_name: 'Bash', tool_input: { command }, cwd: CWD }),
+    encoding: 'utf8', env: { ...process.env, GLOB_GUARD_PROC: PROC },
+  });
+  return { blocked: r.status === 2, message: (r.stderr || '').trim() };
+}
+test('blocks kill of the live app engine (its cmdline is under /.config/youcoded/)', () => {
+  const { blocked, message } = runProc('kill 4101');
+  assert.ok(blocked);
+  assert.match(message, /LIVE YouCoded app/);
+  assert.match(message, /4101/);
+});
+test('blocks kill of the built app binary, with a signal, and after a semicolon', () => {
+  assert.ok(runProc('kill -9 4102').blocked);
+  assert.ok(runProc('echo x; kill -TERM 4102').blocked);
+  assert.ok(runProc('kill 4104 4102').blocked);
+});
+test('ALLOWS kill of a dev-profile engine (youcoded-dev/ is not youcoded/) and of unrelated processes', () => {
+  assert.equal(runProc('kill 4103').blocked, false);
+  assert.equal(runProc('kill 4104').blocked, false);
+  assert.equal(runProc('kill 4103 4104').blocked, false);
+});
+test('ALLOWS kill -0 (a liveness probe) even on the live app, and pids /proc does not know', () => {
+  assert.equal(runProc('kill -0 4101').blocked, false);
+  assert.equal(runProc('kill 999999').blocked, false);
+});
+test('ALLOWS kill with a shell variable or job spec — nothing numeric to look up', () => {
+  assert.equal(runProc('P=$(ss -ltnp | rg ":8199" | rg -o "pid=[0-9]+" | cut -d= -f2); kill "$P"').blocked, false);
+  assert.equal(runProc('kill %1').blocked, false);
+});

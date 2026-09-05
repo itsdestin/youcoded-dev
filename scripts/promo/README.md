@@ -41,7 +41,7 @@ one cue list. `npm run render:draft` → `out/draft.mp4` (half size, ~6 min). `b
 | Tool | What it does |
 |---|---|
 | `bash film.sh <app-worktree> [scene…]` | films the scenes (~1 min each, ~10 min all) into `public/footage/` with a marks file each; posters + one still per mark under `out/review/` |
-| `npm run render:draft` · `bash render.sh` | the half-size draft · the final with the loudness pass. One render at a time (`flock`): two at once hung one for 12 min |
+| `npm run render:draft` · `bash render.sh` | the half-size draft · the final with the loudness pass. One render at a time (`flock /tmp/promo-render.lock`): two at once hung one for 12 min. Run a render with `run_in_background` and act on its completion notice; to wait for one from another command, `flock /tmp/promo-render.lock true` — never an `until ! pgrep -f …` loop, which matches its own shell and never ends |
 | `npm run study -- <Composition> out/x.mp4 [--scale 0.5]` | any single composition: `Intro`, `CloseStudy`, `PresentStudy`, `HostStudy`, `LabelReel`, the `End*` stills |
 | `bash cues.sh [out.json]` | every speech bubble with its frame, theme, costume, stand and visibility — or the first timing error — in 2 s, no browser |
 | `bash line-sheets.sh <dir>` | one still per line from `out/draft.mp4`, four per sheet, in film order — the check that every line stands beside its thing on its own theme |

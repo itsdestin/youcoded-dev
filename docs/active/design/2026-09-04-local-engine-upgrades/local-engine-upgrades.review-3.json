@@ -1,0 +1,67 @@
+{
+  "title": "Local engine upgrades — review, round 3",
+  "key": "local-engine-upgrades-review-3",
+  "out": "local-engine-upgrades.review-3.html",
+  "images": "images/local-engine-upgrades-review-3",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-local-engine-before",
+    "after": "/home/destin/youcoded-dev/scratch/ui-local-engine-after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "creme",
+    "dark",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "crops": {
+    "models-recommended": [
+      "local-engine",
+      "local-models-recommended",
+      "420x590+510+156"
+    ],
+    "model-settings": [
+      "local-engine",
+      "local-model-settings",
+      "420x400+510+256"
+    ],
+    "memory-warning": [
+      "local-engine",
+      "local-model-memory-warning",
+      "460x330+490+560"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-16",
+      "surface": "Settings → Model Providers → Models → Recommended",
+      "path": "Round 3 of P-12: the breakdown bubble, placed",
+      "crop": "models-recommended",
+      "headline": "The size breakdown bubble now opens from the number's left edge and stays inside the dialog.",
+      "changed": "Round 2 centred the bubble on the number, so it hung out of the dialog to the left. It now lines up with the number's left edge and opens below it. Same contents: Model file · Download · Memory while running, with the context share on the last line.",
+      "notice": "Hover the dotted number and the bubble sits under it, over the next card, inside the dialog.",
+      "risk": "A hover bubble always covers whatever is below it; it closes when the pointer leaves."
+    },
+    {
+      "id": "P-17",
+      "surface": "Settings → Model Providers → Models → a model's Settings",
+      "path": "Round 3 of P-14: settings in their own small dialog",
+      "crop": "model-settings",
+      "headline": "A model's Settings button opens a small dialog of its own — 'Model settings · gemma-4-E2B-it' — instead of unfolding under the row.",
+      "changed": "The same rows as round 2 (Context length, Keep loaded, Advanced with GPU layers and Extra engine flags) now live in a dialog one layer above Model Providers, with the model's name as its subtitle and the usual close button. Nothing changes on the Installed list itself.",
+      "notice": "The Installed list stays short; settings open in a focused window and close with ✕ or Esc.",
+      "risk": "Two stacked dialogs on a phone-width screen: the inner one uses the same 88% width as every dialog."
+    },
+    {
+      "id": "P-18",
+      "surface": "New session form → model picked → memory warning",
+      "path": "Round 3 of P-15: the reason unfolds inside the strip",
+      "crop": "memory-warning",
+      "headline": "Why? unfolds the numbers and the don't-warn-again box inside the same warning strip, which grows to hold them.",
+      "changed": "Round 2 put the details under the strip as loose text. They are now the strip's own second block: the two numbers, the explanation, and the checkbox, all inside the one container; Less folds it back. The picture shows it unfolded.",
+      "notice": "One container that grows and shrinks; nothing floats loose beneath it.",
+      "risk": "Unfolded, the strip pushes the Create Session button down; it starts folded."
+    }
+  ]
+}

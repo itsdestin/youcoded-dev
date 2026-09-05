@@ -10,6 +10,13 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       Destin 2026-09-02: warn and let me choose. The same fix must count memory for several sessions sharing one model, and must NOT warn on machines whose memory is deliberately full of cache that the model load can reclaim
       `desktop` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-08-16-dual-model-oom-desktop-crash.md
 
+- [ ] A local model's helper limit is decided when the conversation opens, before the model has
+      loaded — and asking the engine about an unloaded model would load it — so most local
+      conversations still get the one-helper cap until they are resumed after a first message.
+      The number should be re-read once the model is actually loaded (after the first turn), or
+      taken from any model the engine already has loaded. Follow-on to the slot-count fix
+      `desktop` `confirmed` `checked 2026-09-04`
+
 - [ ] "Run in background" option — keep the downloaded models serving other AI tools on this
       machine after the YouCoded window closes; today the engine is deliberately stopped on
       quit. Destin's note during the 2026-07-20 engine-lifecycle fix; only if real demand shows.
@@ -27,12 +34,15 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
 - [ ] Local models rewrite files at a crawl — an edit-style reply that the engine can produce at
       ~100 tokens a second comes out at ~16, because the engine's built-in draft-free speculative
       decoding is switched off. Measured 6× on a rewrite, no change on prose (2026-09-04).
-      `desktop` `confirmed` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+      Flag added on branch `feat/engine-speed-flags` (youcoded), probes green, awaiting merge.
+      `desktop` `in-flight` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
 
 - [ ] Long conversations slow down more than they need to and eat memory — the context cache is
       stored at full size; compressing it (q8) measured +40% generation speed at 16k of context
       and halves the memory the context needs. Same fix feeds the memory-crash item above.
-      `desktop` `confirmed` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+      Key-cache half added on branch `feat/engine-speed-flags` (youcoded); the value-cache half
+      is a fatal load error without flash attention, so it stays a decision for Destin.
+      `desktop` `in-flight` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
 
 - [ ] The memory warning charges a flat 2 GB of "working memory" for every model at every context
       length, but a 128k context on a 27B model needs up to ~32 GB of it — so the warning is wrong

@@ -37,6 +37,7 @@ Tests: node --test .claude/hooks/glob-guard.test.mjs
 """
 
 import json
+import os
 import re
 import shlex
 import sys
@@ -106,16 +107,25 @@ def find_offender(command: str, cwd: str = ""):
 #
 # It has cost three sessions their shell. There is no "careful" pattern: the argument is
 # always in the caller's cmdline, so this is unconditional, which is what makes blocking
-# it free of false positives. `pgrep -f` is fine (it signals nothing) and so is a bare
-# `pkill name` (matches process NAMES, not command lines).
+# it free of false positives. `pgrep -f` is fine to RUN (it signals nothing — but see guard 4:
+# as a loop condition it never turns false) and so is a bare `pkill name` (process NAMES).
 PKILL_F = re.compile(r"(?:^|[|&;(]\s*|\s)pkill\s+(?:[^|&;\n]*\s)?-[a-zA-Z]*f")
+
+
+HEREDOC = re.compile(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n(?:.*?\n)*?\2[ \t]*(?:\n|$)", re.S)
+
+
+def strip_heredocs(command: str) -> str:
+    """The command with every heredoc BODY removed (its `<<TAG` line stays). A heredoc body is
+    data, not shell — but the shell AFTER it is still shell. Skipping the whole command whenever
+    `<<` appeared let `python3 - <<'EOF' … EOF; pkill -f script-editor` through on 2026-09-04,
+    and it killed the shell (and the editor Destin was typing on) exactly as guard 2 warns."""
+    return HEREDOC.sub("", command)
 
 
 def pkill_offender(command: str):
     """True when the command contains a `pkill -f`, which cannot succeed in this harness."""
-    if "<<" in command:
-        return False   # heredoc body is data, same reasoning as the glob guard
-    return bool(PKILL_F.search(command))
+    return bool(PKILL_F.search(strip_heredocs(command)))
 
 
 PKILL_MESSAGE = (
@@ -126,6 +136,31 @@ PKILL_MESSAGE = (
     "Instead: find the pids first (`pgrep -af <pattern>` is safe — it signals nothing), "
     "then `kill <pid> <pid>` in a command that does not repeat the pattern. To match "
     "process NAMES rather than command lines, drop the -f (`pkill node`)."
+)
+
+# ── guard 4: `pgrep -f` as a loop or if condition ─────────────────────────────────────
+# `pgrep -f` signals nothing, so it is safe to RUN — but for the same reason as pkill it
+# always MATCHES: the wrapper's command line contains the pattern. So `until ! pgrep -f X`
+# never ends and `while pgrep -f X` never stops. On 2026-09-04 six render-wait loops of that
+# shape each sat for their full 600 s timeout and reported nothing. To wait for something,
+# wait on IT: run the command itself with run_in_background (its exit is the notification),
+# or `flock <its lock file> true`, or filter the wrapper out: `pgrep -af X | rg -v pgrep`.
+PGREP_LOOP = re.compile(r"\b(?:until|while|if)\b[^\n;]*?\bpgrep\s+(?:[^|&;\n]*\s)?-[a-zA-Z]*f")
+
+
+def pgrep_loop_offender(command: str):
+    """True when a `pgrep -f` is the condition of an until/while/if — it can never turn false."""
+    return bool(PGREP_LOOP.search(strip_heredocs(command)))
+
+
+PGREP_LOOP_MESSAGE = (
+    "Blocked before it ran: `pgrep -f` as a loop or if condition never turns false here. Claude "
+    "Code wraps every Bash call as `zsh -c '<your whole command>'`, so the pattern always matches "
+    "that wrapper — `until ! pgrep -f X` never ends (six render waits each burned their whole "
+    "600 s timeout on 2026-09-04).\n"
+    "Instead: wait on the thing itself — run it with run_in_background and act on its completion "
+    "notification, or `flock <its lock file> true` when it holds one, or filter the wrapper out: "
+    "`pgrep -af X | rg -v pgrep`."
 )
 
 # ---------------------------------------------------------------------------
@@ -187,6 +222,48 @@ MESSAGE = (
 )
 
 
+# ── guard 5: `kill <pid>` aimed at Destin's LIVE app ─────────────────────────────────────
+# The live-app-safety rule forbids signalling the built YouCoded app or anything it runs.
+# On 2026-09-04 a session typed `kill 208941` from memory — a pid it had seen in an earlier
+# diagnostic listing — and stopped the live app's local-model engine. A rule read is not a
+# guard; this is. Before any `kill`/`kill -SIG` with numeric pids runs, read each pid's
+# command line from /proc and refuse when it belongs to the live app: the built binary
+# (`/opt/YouCoded/`) or the live profile directory (`/.config/youcoded/` — the trailing slash
+# keeps every dev profile, `youcoded-dev/`, `youcoded-m2a/`…, out of it). `kill -0` is a
+# liveness probe and is allowed. Fails open when /proc is unreadable.
+LIVE_APP_SIGNATURES = ("/opt/YouCoded/", "/.config/youcoded/")
+KILL_CMD = re.compile(r"(?:^|[|&;(]\s*)kill\s+([^|&;\n]*)")
+PROC_ROOT = os.environ.get("GLOB_GUARD_PROC", "/proc")
+
+
+def live_app_pids(command: str):
+    """The numeric pids in every `kill …` clause whose /proc cmdline is the live app's."""
+    hits = []
+    for m in KILL_CMD.finditer(strip_heredocs(command)):
+        args = m.group(1).split()
+        if any(a in ("-0", "-s0", "-n0") for a in args):
+            continue
+        for a in args:
+            if not a.isdigit():
+                continue
+            try:
+                with open(os.path.join(PROC_ROOT, a, "cmdline"), "rb") as f:
+                    cmdline = f.read().replace(b"\0", b" ").decode("utf-8", "replace")
+            except OSError:
+                continue
+            if any(sig in cmdline for sig in LIVE_APP_SIGNATURES):
+                hits.append((a, cmdline.strip()[:120]))
+    return hits
+
+
+KILL_LIVE_MESSAGE = (
+    "Blocked before it ran: pid {pid} is Destin's LIVE YouCoded app ({cmd}). The live-app-safety "
+    "rule forbids signalling it. If you meant your own dev process, look its pid up from its "
+    "port or unique command line IN THE SAME COMMAND (e.g. ss -ltnp | rg ':8199') — never "
+    "from a number remembered from an earlier listing."
+)
+
+
 def main() -> int:
     try:
         payload = json.load(sys.stdin)
@@ -208,6 +285,21 @@ def main() -> int:
             return 2
     except Exception:
         pass   # fail open, same contract as everything else in this hook
+
+    try:
+        hits = live_app_pids(command)
+        if hits:
+            print(KILL_LIVE_MESSAGE.format(pid=hits[0][0], cmd=hits[0][1]), file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open
+
+    try:
+        if pgrep_loop_offender(command):
+            print(PGREP_LOOP_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open
 
     try:
         if rg_replace_offender(command):

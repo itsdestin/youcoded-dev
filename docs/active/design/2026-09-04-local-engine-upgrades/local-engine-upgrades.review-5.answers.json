@@ -1,0 +1,16 @@
+{
+ "deck": "local-engine-upgrades-review-5",
+ "started": "2026-09-05T08:55:33.312Z",
+ "submitted": "2026-09-05T08:56:12Z",
+ "cur": 0,
+ "answers": {
+  "P-20": {
+   "v": "yes",
+   "note": "put the \"warn me about this\" as a sub-card inside the expanded \"model may not fit card\". then this is good.",
+   "note_kind": "noting",
+   "seconds": 36,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

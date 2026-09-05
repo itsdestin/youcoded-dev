@@ -203,30 +203,34 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       reading on DeepSeek is NOT a bug — measurement artifact, documented)
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-08-17-cache-efficiency.md
 
+- [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
+      OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account
+      balance on every message) should become a user-facing setting instead of a hardcoded
+      number — some users may want shorter replies to stretch a small credit balance further,
+      others may want a higher ceiling for very long single replies
+      `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
+
 ## specialists
 - [ ] Helper (specialist) transcripts pile up in the sessions folder forever — there is no way
       to delete one, and closing the parent conversation leaves its helpers' files behind.
       Blocked on a general delete-conversation feature existing at all (none does today)
       `desktop` `blocked` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
 
-- [ ] A note sent to a background helper mid-run shows at the bottom of its Activity trail,
-      after tool calls that actually happened later
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-specialist-notes-not-interleaved.md
-
-- [ ] A finished helper's card can flip back to "running" — a late-arriving run update
-      overwrites the finished one, because a run record carries nothing saying which is newer
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-run-stale-resend.md
-
-- [ ] A note you send a helper that misses its window is stored in full in the parent's ledger,
-      past the 2,000-character cap notes are supposed to obey, and nothing limits how many pile up
-      `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-01-specialist-missed-steers-unclamped.md
+- [ ] After a reload, a helper's card can come back with no notes on it: the reload sends the
+      conversation's history and the helper records separately, and if the helper record arrives
+      before the card exists on screen it is dropped rather than parked, so the next live update
+      is the first thing the card shows. Found by the 2026-09-04 code review of the note-order fix
+      `tool-cards` `desktop` `needs-verify` `checked 2026-09-04`
 
 - [ ] Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user
       approves a card, the executor journals and resumes it. Approved in the 2026-08-11
-      specialists spec (§4, §7, §8); three live probes the spec requires (local engine's real
-      parallel slots, prefix reuse across fan-out, tool grammar on the nested plan schema) have
-      never been run; the Claude Code bridge (`youcoded agent run`) is unbuilt from the same spec
-      `desktop` `needs-verify` `checked 2026-09-01`
+      specialists spec (§4, §7, §8). The three live probes the spec requires were run on
+      2026-09-04 on the pinned engine build (four helpers at once is the ceiling; the first
+      fan-out pays most of its prompt cost again; plan authoring works from the 9B model class
+      up and not below) — results in youcoded `docs/engine-dependencies.md` → "Stage-two probes".
+      Still gated on Destin's decisions (the stage-two decisions prompt handoff). The Claude Code
+      bridge (`youcoded agent run`) is unbuilt from the same spec
+      `desktop` `decision` `checked 2026-09-04`
 
 - [ ] "Assistants" made of "Duties" — Destin's unit of organisation for the future Agents &
       Automations view: an assistant groups duties, may be a coordinator, a sole agent, or no

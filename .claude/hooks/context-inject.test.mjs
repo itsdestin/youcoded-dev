@@ -240,3 +240,40 @@ test('a fresh real report with residue: 0 stays silent', () => {
   assert.doesNotMatch(out, /Audit staleness|Unapplied audit findings/);
   fs.rmSync(ws, { recursive: true, force: true });
 });
+
+// 2026-09-05: `youcoded` still had a worktree registered at a session scratchpad
+// under /tmp that a reboot had cleared. Every git call against that path exits
+// 128, and under `set -euo pipefail` the `status --porcelain | wc -l` PIPELINE
+// took the WHOLE hook down — after the worktree list, before "Where things are".
+// So every session started blind to the orientation block while CLAUDE.md and
+// MAP.md both stated it had been injected. Silent, again: a hook that stops
+// early is indistinguishable from a hook with nothing more to say.
+test('a worktree whose directory is gone does not kill the rest of the hook', () => {
+  const { ws, repo } = makeWorkspace();
+  // The orientation block is generated from docs/MAP.md — it is the part that
+  // vanished, so the fixture needs one for the assertion to mean anything.
+  fs.mkdirSync(path.join(ws, 'docs'), { recursive: true });
+  fs.writeFileSync(
+    path.join(ws, 'docs', 'MAP.md'),
+    ['| Subsystem | Entry points | Rule | Depth | Guards |',
+     '|---|---|---|---|---|',
+     '| Chat | `a/b.ts` | chat-reducer | — | — |',
+     '',
+     '## Hot paths',
+     '',
+     "| You'd call it | File |",
+     '|---|---|',
+     '| the thing | `a/b.ts` |',
+     ''].join('\n'),
+  );
+  const gone = path.join(ws, 'worktrees', 'vanished');
+  git(repo, 'worktree', 'add', '-q', '-b', 'feat/gone', gone);
+  fs.rmSync(gone, { recursive: true, force: true });
+
+  // execFileSync throws on a non-zero exit, so the old hook fails here outright.
+  const out = runHook(ws);
+  assert.match(out, /vanished.*directory is gone/, 'must name the stale registration, so it gets pruned');
+  assert.match(out, /Where things are/, 'the orientation block must still print');
+  assert.doesNotMatch(out, /stopped early/, 'the hook must reach its own end');
+  fs.rmSync(ws, { recursive: true, force: true });
+});

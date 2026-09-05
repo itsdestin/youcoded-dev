@@ -2,16 +2,12 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
-- [ ] Dropping a session onto another window's chat area makes a THIRD window instead of moving it
-      there — only the thin session bar at the top accepts a drop, and that is a small target to
-      hit while dragging. Open question: make the whole window accept it, which costs the ability
-      to tear a session off by flicking it into space that happens to sit over another window
-      `window-chrome` `desktop` `decision` `checked 2026-09-03`
-
-- [ ] A session can only be moved between windows by dragging it — there is no menu command and no
-      keyboard path. The "Launch in New Window" toggle only decides where a NEW session starts, so
-      a session that is already open in the wrong window can only be rescued with the mouse
-      `window-chrome` `desktop` `confirmed` `checked 2026-09-03`
+- [ ] While a session pill is being dragged from one window into another, nothing follows the cursor
+      inside the SECOND window until it is dropped — the bar and chat area light up, but the pill
+      itself is only drawn by the window it came from. The receiving window cannot read what is
+      being dragged until the drop. Fix: main tells every other window the name and colour when
+      the drag starts, so it can draw the carried pill too
+      `window-chrome` `desktop` `confirmed` `checked 2026-09-04`
 
 - [ ] Dictation is not built into the message box — speaking a message means OS-level dictation
       glued on top, which does not punctuate. Wanted: a mic in the input bar that produces properly
@@ -69,11 +65,13 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       (attention toast, permission gates, loading spinners, sync status) were never audited
       `chat` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-chat-float-stacking.md
 
-- [ ] Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel —
-      mockup built 2026-08-18 (four provider-first pages) and never reviewed by Destin; it now
-      lives on branch feat/assistant-settings-mockup (worktree worktrees/assistant-settings)
-      Destin 2026-09-02: not a review next session, but finishing it is a pre-1.3 priority
-      `settings` `desktop` `needs-verify` `checked 2026-09-02` `v1.3`
+- [ ] Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel.
+      Destin reviewed the 2026-08-18 mockup on 2026-09-04: concept yes, implementation
+      rejected and DELETED (branch and worktree gone). Restart from scratch through the feature
+      flow — questions deck, then draw in the workbench on today's master. The concept and the
+      one hard constraint (Claude Code and native sessions have different permission modes) are
+      at the top of the archived design doc. Pre-1.3 priority (Destin, 2026-09-02)
+      `settings` `desktop` `confirmed` `checked 2026-09-04` `v1.3` → docs/archive/design/2026-08-17-assistant-settings-panel-design.md
 
 - [ ] Pressing a session whose name is shorter than the current one lets one or two more
       dots into the row, and they appear at once while the bar re-centres ~6px in a single
@@ -154,3 +152,10 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       Replace or Append — and skip the menu when the box is empty (Destin, 2026-09-02; same rule
       as editing a queued message, native-harness → sessions)
       `quick-chips` `all` `needs-verify` `checked 2026-09-02`
+
+- [ ] Three places still open a section with a bare "›" beside a word — the Backup & Sync log
+      ("Show log"), the recommended-model card in Local Models, and the system marker in chat.
+      Destin (2026-09-05 review deck): "I HATE the bare dropdowns with a chevron." The rule is now
+      design-guide G-22; the Local Models engine card and model rows switched to it on
+      `feat/local-engine-upgrades`, these three have not.
+      `all` `confirmed` `checked 2026-09-05` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
