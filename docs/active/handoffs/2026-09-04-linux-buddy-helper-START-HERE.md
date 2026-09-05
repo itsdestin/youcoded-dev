@@ -40,6 +40,25 @@ yet.**
 
 `bash scripts/verify.sh worktrees/linux-buddy-helper` passes all six checks.
 
+## STATE AS OF 2026-09-04 21:00 — a dev instance is RUNNING
+
+| | |
+|---|---|
+| Branch | `feat/linux-buddy-kwin-helper` @ `0b2eb16a`, pushed, verify.sh green |
+| Workspace branch | `probe/buddy-kwin-helper` @ `7a3b418`, pushed (docs, probe, wrap-up) |
+| Build | **complete** — 5 tasks, 5 independent reviews, ~20 findings all fixed |
+| Dev instance | `run-dev.sh linux-buddy-helper --label "Linux Buddy Helper" --offset 40 --profile buddytest` — Vite 5213, remote 9940, debugger 9262, userData `~/.config/youcoded-buddytest` |
+| Acceptance deck | served at `http://127.0.0.1:40439/linux-buddy-helper.contract.acceptance.html` |
+| KDE baseline | `kwinrc` backed up to the session scratchpad **before** launch; only `tp-edges` installed, no helper loaded. **Diff it after testing and confirm byte-identical.** |
+
+**Destin is mid-test.** He was given a six-step script: read the row before
+touching it → flip on → decline once (R4: no buddy at all) → flip on and Add
+helper → drag/keep-above/chat-position/edge-dock → off-and-on (R9: no second
+question) → Remove helper (R10: buddy switches off, KDE settings clean). His
+answers are the nine `live-app` rows of the acceptance deck.
+
+**Kill the dev instance when done** (`--profile buddytest`), and diff `kwinrc`.
+
 ## Next steps, in order
 
 ### 0 · Measurements before writing code — **done**
