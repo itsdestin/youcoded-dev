@@ -1,0 +1,62 @@
+{
+ "title": "Helpers you can see in a Claude Code session",
+ "key": "cc-subagent-chip",
+ "out": "cc-subagent-chip.html",
+ "images": "images-cc-subagent-chip",
+ "runs": {
+  "before": "/tmp/claude-1000/-home-destin-youcoded-dev/6cc079bd-fa23-4d95-8f75-1aa9bd41283e/scratchpad/run-before",
+  "after": "/tmp/claude-1000/-home-destin-youcoded-dev/6cc079bd-fa23-4d95-8f75-1aa9bd41283e/scratchpad/run-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Proposed"
+ },
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "lead": "When the assistant sends helpers off to work in parallel, the app has always shown a chip at the bottom of the window counting them — but only in sessions running on the app's own engine. In a Claude Code session the same chip never appeared, even though the app was already following every helper's work. Both steps use the same conversation: three helpers, two still working, one finished. Two Yes/No steps.",
+ "crops": {
+  "bar": [
+   "cc-subagents",
+   "bar",
+   "1280x120+0+780"
+  ],
+  "helpers": [
+   "cc-subagents",
+   "helpers",
+   "660x660+310+120"
+  ]
+ },
+ "steps": [
+  {
+   "id": "CC.1",
+   "surface": "Bottom bar",
+   "path": "Any Claude Code conversation where the assistant sends helpers out",
+   "crop": "bar",
+   "highlight": "auto",
+   "headline": "The bar now counts helpers in a Claude Code session too, in the words Claude Code uses for them.",
+   "changed": "A chip appears at the bottom saying how many helpers are working — \"2 subagents\" — and switches to \"3 finished\" once they all come back. It sits in the same spot, and looks the same, as the chip a session on the app's own engine already gets. The only difference is the word: the app's own helpers are called specialists, Claude Code's are called subagents, because that is what Claude Code calls them everywhere else.",
+   "notice": "A conversation with no helpers still shows nothing at all — the chip only appears once there is something to count. Clicking it opens the list in the next step.",
+   "risk": "One more chip on an already busy bar. It is not something you can switch off from the Customize menu, the same as the specialists chip today."
+  },
+  {
+   "id": "CC.2",
+   "surface": "Bottom bar → helpers list",
+   "path": "Click the chip",
+   "crop": "helpers",
+   "highlight": {
+    "box": [
+     7,
+     19,
+     86,
+     21
+    ]
+   },
+   "headline": "Clicking the chip lists every helper, grouped by whether it is still working.",
+   "changed": "Today the only place these three helpers exist is one collapsed row in the conversation, which scrolls away as you keep talking. The list gives each one a card: what it was asked to do, which kind of helper it is, how long it has been going, and — folded shut — its briefing, everything it has done so far, and its answer when it lands.",
+   "notice": "The cards are the same ones the conversation shows, so nothing here can disagree with what you already see in chat. Clicking a helper's name jumps to it in the conversation.",
+   "risk": "Two things the app's own helpers get are missing here: no Stop button, and no way to tell which helper a permission question came from — Claude Code reports neither."
+  }
+ ]
+}
