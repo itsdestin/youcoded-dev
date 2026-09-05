@@ -81,15 +81,62 @@ compare rounds stay and render what shipped, as the record of how it was decided
 5. **`FACE_FALLBACK`** — asking a rig for a face it lacks used to hide EVERY
    face. Load-bearing until all four community rigs are redrawn.
 
+## The four community characters (decks, 2026-09-05)
+
+Three rounds. Round one on `theme-faces.review.json`, round two answered partly
+in chat, the colour rounds on `halftone-eyes*.review.json`.
+
+- **Golden Sunbreak: yes**, with one correction — see dizzy below.
+- **Both cats keep their own eye highlights.** Destin: *"for welcome/curious, i
+  kinda like the old eyes better"* and *"we should also use the old
+  welcome/curious eyes for shocked on both."* So the three-dot sparkle cluster is
+  a per-character choice, not the house style: Sunbreak and Halftone use the
+  cluster, Kuromi and Strawberry Kitty use their original pair (one large shine
+  high on the inner edge, one small low and outside). `shocked` uses that same
+  eye opened wider, never a solid disc.
+- **Spirals are not an option for `dizzy`.** Destin: *"we got rid of those
+  intentionally."* The promo film's face set reintroduced them; crossed lines are
+  restored everywhere, including the six starter skins and the BUILT-IN buddy,
+  which had also picked them up and would have shipped with them.
+- **Halftone loses its visor.** The pre-filled visor painted a 45%-opaque slab
+  across the eyes, so no expression on this character had ever been readable. It
+  ships as an opt-in component instead of built in.
+- **Halftone's face is a cyan outline on a violet eye** (`#00b8ff` on `#33265c`),
+  after a first attempt in paper white was rejected: *"i don't like when the
+  eyes/mouth appear soulless and glowing like that."* A large light shape on a
+  dark body reads as a glowing hole. The outline colour also carries the eyelids,
+  brows and mouth, so the whole face is drawn in cyan.
+
+## What the drawing taught the theme builder
+
+Doing the art before the guidance was Destin's call and it paid: every item here
+was invisible until something was actually drawn.
+
+1. **`rig-face-idle` is not the face you see at rest** — the resting pose asks for
+   `welcome`. The docs never said so, so an author draws their best work into a
+   group that only shows when the buddy is pressed.
+2. **Nothing checked that a face is visible against its own body.** Halftone
+   shipped `#1e2636` on `#191327` and was expressionless for months.
+3. **A pre-filled accessory can erase the face.** The visor was a signature
+   component and it cost the character every expression underneath it.
+4. **Cursor tracking was documented as a `curious` convention**, so it worked on
+   exactly one face per rig. It belongs on all three open-eyed faces.
+5. **The six starter skins were outside the auditor's scope**, so they still
+   shipped the old six-face set — the fastest route for a retired style to get
+   back into circulation.
+6. **Four static starter drawings are the wrong shape.** One parameterised
+   template that takes a palette and emits all eight faces is what actually got
+   used, and it is what the builder should hand people.
+
+Four of these are now mechanical rather than written, in
+`wecoded-themes/scripts/audit-rigs.mjs`: eight faces required, pupil groups on the
+three open-eyed faces, `skins/` in scope, and byte-equality between
+`mascots/examples/` and the theme's shipped rig. Each was shown failing before it
+passed, and the copy check caught real drift the moment it was added.
+
 ## Still open, in the order it should probably happen
 
-1. **Golden Sunbreak's faces.** Shares the default's face geometry, so this is
-   nearly a copy. `wecoded-themes/themes/golden-sunbreak/assets/mascot-rig.svg`.
-2. **Halftone Dimension, Kuromi Dreamer, Strawberry Kitty.** Hand-drawn, in
-   character — Halftone keeps its visor, the cats keep their cat faces. The
-   warm set is the STYLE GUIDE here, not the artwork: expression from brows,
-   lids and mouth; no big black discs; highlights in the eyes.
-3. **The theme builder** (`wecoded-marketplace/wecoded-themes-plugin/skills/theme-builder/`).
+1. **The theme builder** (`wecoded-marketplace/wecoded-themes-plugin/skills/theme-builder/`).
    Destin, 2026-09-05: "we will also need to improve theme builder to create
    better mascots given the new template." Concretely, and verified on disk:
    `reference/mascots.md:92` still says **"Six faces, not four: idle · welcome ·
@@ -98,8 +145,8 @@ compare rounds stay and render what shipped, as the record of how it was decided
    (black-disc eyes) and are what every new community theme is currently built
    from; and none of the warm style rules exist in the skill at all. Until this
    is done, every theme made in the app ships the faces we just replaced.
-4. **The two-tier motion system**, and the sleep state the z's hang off.
+2. **The two-tier motion system**, and the sleep state the z's hang off.
    Governed by Destin's rule: ambient motion only while every session is green
    or gray; red/amber/blue stops it and plays the one clear signal.
-5. **Three brand-new characters** for Cotton Candy Sky, Meadow Mist and
+3. **Three brand-new characters** for Cotton Candy Sky, Meadow Mist and
    Devil's Garden.
