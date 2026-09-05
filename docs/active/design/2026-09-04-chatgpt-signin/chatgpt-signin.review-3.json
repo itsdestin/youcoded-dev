@@ -1,0 +1,52 @@
+{
+  "title": "Sign in with ChatGPT — round 3",
+  "key": "chatgpt-signin-review-3",
+  "out": "chatgpt-signin.review-3.html",
+  "images": "images/chatgpt-signin-review-3",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/b92ad69f-fec4-4d93-8bac-d36fee6847a0/scratchpad/review/after-2",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/b92ad69f-fec4-4d93-8bac-d36fee6847a0/scratchpad/review/after-3"
+  },
+  "labels": {"before": "Round 2", "after": "Round 3"},
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {
+    "providers-in": ["chatgpt-signin", "providers-chatgpt-signed-in", "440x600+500+150"],
+    "providers-blocked": ["chatgpt-signin", "providers-chatgpt-blocked", "440x600+500+150"],
+    "plan-limit": ["chatgpt-signin", "chatgpt-plan-limit", "1240x120+10+670"]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers",
+      "crop": "providers-in",
+      "headline": "The Claude Code and ChatGPT headings above the cards are gone; the (i) sits beside the name inside each card.",
+      "changed": "Your note on P-1 (round 2). The small capital headings CLAUDE CODE and CHATGPT no longer repeat the card's name. Each card's name carries the (i) beside it. The OPENROUTER/API heading stays, because it covers the OpenRouter row and the API-key providers under it together.",
+      "notice": "The window is two lines shorter; the three cards sit closer together.",
+      "risk": "The (i) is smaller inside the card than it was in the heading; it is still the same target size to tap.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-2",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers, any card",
+      "crop": "providers-blocked",
+      "headline": "Every card's button is pinned to the top right, on the name's line, however many lines the status takes.",
+      "changed": "Your note on P-1 and P-2 (round 2). Preferences, Sign out, Sign in with ChatGPT and Connect to OpenRouter all sit on the first line of their card. Shown here on the refused-account card, where the status runs to three lines and the button used to float in the middle of them.",
+      "notice": "On the one-line cards nothing visibly moves; the change shows on the taller ones.",
+      "risk": "A long status line now wraps under the button's left edge rather than beside it.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-9",
+      "surface": "Chat view",
+      "path": "A ChatGPT conversation when the plan's window is used up",
+      "crop": "plan-limit",
+      "headline": "The card reads You have reached ChatGPT's 5-hour session limit (Resets @ 6:43pm), with one Switch Providers button.",
+      "changed": "Your wording from round 2, exactly. Switch Providers opens the model picker for this conversation, where every connected provider and its models already are, so the choice is yours rather than a guess at the first other provider. The sentence about what the other provider costs is gone with that guess.",
+      "notice": "The reset time is written the way the status-bar chip writes it, so the two agree.",
+      "risk": "Nothing on the card says whether the provider you pick next bills per use; the picker's rows carry the provider name, not its billing.",
+      "highlight": "auto"
+    }
+  ]
+}
