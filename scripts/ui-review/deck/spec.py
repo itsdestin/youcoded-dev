@@ -166,6 +166,41 @@ def is_question(step):
     return is_words(step) and not is_contract(step) and 'today' in step
 
 
+PAGE_FIELDS = ('id', 'page', 'intro')
+
+
+def is_page(step):
+    """A PAGE MARKER, not a step: `{"id": "P-2", "page": "What we promise", "intro": "..."}`
+    starts a new page of a question deck. It asks nothing, so it gets no answer row, no line in
+    the summary and no contract source — every reader of `steps` skips it (design 3.1)."""
+    return 'page' in step
+
+
+def words_only(spec):
+    """Every step is a question, a statement or a contract: no picture, no live pane. This is
+    the deck that renders as PAGES; anything else keeps one step per screen."""
+    return bool(spec['steps']) and all(is_page(st) or is_words(st) for st in spec['steps'])
+
+
+def pages(spec):
+    """The pages of a question deck — [{id, title, intro, steps: [step...]}] — or None when the
+    deck has pictures. Destin (2026-09-04): "my mindset should stay in the same place for each
+    set of questions, and only shift when moving to a new set", so with NO marker every question
+    shares one page, titled with the deck's own title."""
+    if not words_only(spec):
+        return None
+    out = []
+    for st in spec['steps']:
+        if is_page(st):
+            out.append({'id': st['id'], 'title': st.get('page') or '', 'intro': st.get('intro') or '', 'steps': []})
+            continue
+        if not out:
+            # No marker before the first question: the implicit first page, the deck's own title.
+            out.append({'id': 'P-1', 'title': spec.get('title') or '', 'intro': '', 'steps': []})
+        out[-1]['steps'].append(st)
+    return out
+
+
 def inline_label_errors(text, where, field, errors):
     """Refuse an inline "Today: …" / "Pro: …" label inside a field that has its own home for
     it. Matched case-insensitively at a word boundary, colon and all, so "professional" and
@@ -181,7 +216,8 @@ def no_pictures(spec):
     words-only). It names no `images` folder and no `runs`; every code path that reaches for
     either bails out first (load_spec, crops.py, build.py, review-cards.py). Widens
     live.all_live."""
-    return bool(spec['steps']) and all(is_live(st) or is_words(st) for st in spec['steps'])
+    # A page marker is not a step and has no picture of its own, so it never decides this.
+    return bool(spec['steps']) and all(is_page(st) or is_live(st) or is_words(st) for st in spec['steps'])
 
 
 def clip_files(spec, step):
@@ -237,6 +273,10 @@ def validate(spec):
         elif st['id'] in ids:
             errors.append(f'{sid}: duplicate id')
         ids.add(st.get('id'))
+        # A PAGE MARKER first of all: it is not a step, so none of the step rules apply to it.
+        if is_page(st):
+            _validate_page(spec, st, sid, i, errors)
+            continue
         # Live FIRST: both the choice path and the default path *require* a crop, and a live
         # step turns that requirement off rather than inheriting it.
         if is_live(st):
@@ -282,6 +322,25 @@ def validate(spec):
             warnings.append(f'{sid}: measured has no number in it')
     _images_folder_warning(spec, warnings)
     return errors, warnings
+
+
+def _validate_page(spec, st, sid, i, errors):
+    """A page marker starts a new page of a QUESTION deck (design 3.1). It carries nothing but
+    its title and one line of intro — anything else means its author meant to write a step —
+    it belongs only in a deck with no pictures, and it must actually have questions under it."""
+    if [k for k in st if k not in PAGE_FIELDS]:
+        errors.append(f'{sid}: a page marker carries only page and intro')
+    if not words_only(spec):
+        errors.append(f'{sid}: pages are for question decks — this deck has pictures')
+    # Its page runs to the NEXT marker, so a marker followed straight by another one is empty
+    # even though there are questions further down the deck.
+    mine = 0
+    for nxt in spec['steps'][i + 1:]:
+        if is_page(nxt):
+            break
+        mine += 1
+    if not mine:
+        errors.append(f'{sid}: an empty page')
 
 
 def _validate_decide(spec, st, sid, errors, warnings):

@@ -261,7 +261,7 @@ test('live step: a stopped app server says so, with the command that starts it',
   } finally { c.close(); if (srv.exitCode === null) srv.kill(); }
 });
 
-test('a words-only deck renders with no stage and records a pick', async () => {
+test('a question deck opens as pages and answers every question on one', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'deck-words-'));
   const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import words_spec; print(words_spec(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
@@ -270,69 +270,96 @@ test('a words-only deck renders with no stage and records a pick', async () => {
   const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   try {
     await sleep(800);
-    const c = await cdp(await freePort(), 1400, 900);
+    const c = await cdp(await freePort(), 1440, 900);
     try {
       await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
       for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true')); i++) await sleep(100);
-      assert.equal(await c.evaluate('document.body.dataset.layout'), 'words');
+      // A words-only deck is PAGES now: the fixture's marker splits Q-1/Q-2 from Q-3/Q-4.
+      assert.equal(await c.evaluate('document.body.dataset.layout'), 'pages');
       assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#stage')).display"), 'none');
-      assert.equal(await c.evaluate("document.querySelectorAll('.card.option').length"), 1);          // Q-1: one option
-      assert.equal(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.dataset.v).join(',')"), 'other');
-      // A question says what exists, what goes wrong and what would change, one card each —
-      // never crammed into the option's summary (design §3.2).
-      assert.equal(await c.evaluate("document.querySelectorAll('.card.part').length"), 3, 'today / the problem / the proposal');
-      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('.card.part h3')].map(h=>h.textContent)"),
-        ['Today', 'The problem', 'Proposal']);
-      // The preferred option wears a badge; "(recommended)" written into a label is refused by the builder.
-      assert.equal(await c.evaluate("document.querySelectorAll('.card.option[data-pick=a] .badge').length"), 1, 'the recommended option is badged');
-      assert.equal(await c.evaluate("document.querySelector('.card.option .badge').textContent"), 'Recommended');
-      assert.equal(await c.evaluate("document.querySelectorAll('.card.option ul.pros li').length"), 2, 'both pros listed');
-      assert.equal(await c.evaluate("document.querySelectorAll('.card.option ul.cons li').length"), 1, 'the con listed');
-      await c.evaluate("document.querySelector('.card.option').click()");
-      await c.evaluate("document.querySelector('#save').click()");   // → Q-2
-      // Back up to Q-1 and add its note — proves the note field and the pick land together
-      // in the saved file (feature-flow design §5). No tag row: a note is a note (Destin, 2026-09-04).
-      await c.evaluate("document.querySelector('#prev').click()");   // back to Q-1
-      await c.evaluate("const n = document.querySelector('#note'); n.value = 'smaller'; n.dispatchEvent(new Event('input'))");
-      assert.equal(await c.evaluate("document.querySelector('#tags')"), null);
-      await c.evaluate("document.querySelector('#save').click()");   // → Q-2 again
-      await c.evaluate("document.querySelector('#next').click()");   // → Q-3
-      await sleep(200);
-      assert.equal(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.textContent).join(',')"), 'Holds,Fails,Other');
-      // Q-4 asks something with nothing to pick between: a shrug is a real answer, so it is a
-      // button, not something to type into Other. It rides as Other with a flag.
-      await c.evaluate("document.querySelector('#next').click()"); await sleep(200);
-      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.textContent)"), ['Yes', 'No', "Don't know"]);
-      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.dataset.v)"), ['yes', 'no', 'other']);
-      assert.equal(await c.evaluate("document.querySelector('.ans[data-v=other]').dataset.dk"), '1');
-      await c.evaluate("document.querySelector('.ans[data-v=other]').click()"); await sleep(400);
-      await sleep(400);
+      assert.equal(await c.evaluate("document.querySelectorAll('#steps span').length"), 2, 'one segment per page');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q').length"), 2, 'both questions of page 1');
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q')].map(a=>a.dataset.id)"), ['Q-1', 'Q-2']);
+      // The reading column stays a column: one option per row, nothing wider than ~760px.
+      assert.ok(await c.evaluate("document.querySelector('#cards').getBoundingClientRect().width <= 761"), 'the column is capped');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"Q-1\"] .card.part').length"), 3, 'today / the problem / the proposal');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"Q-1\"] .card.option .badge').length"), 1, 'the recommended option is badged');
+      // Every question carries its own answer row and its own note; the shared one is put away.
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q .qrow .note[data-id]').length"), 2);
+      assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#answers')).display"), 'none', 'the shared answer row is hidden');
+      assert.equal(await c.evaluate("document.querySelector('#save').textContent"), 'Next page ›');
+
+      // Pick on Q-1 and on Q-2 without the screen changing under him.
+      await c.evaluate("document.querySelector('article.q[data-id=\"Q-1\"] .card.option').click()"); await sleep(200);
+      await c.evaluate("document.querySelector('article.q[data-id=\"Q-2\"] .card.option[data-pick=b]').click()"); await sleep(200);
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q.done').length"), 2, 'both answered questions take the done edge');
+      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^page 1 of 2 · 2 of 4 answered/);
+      await c.evaluate("const n=document.querySelector('article.q[data-id=\"Q-1\"] .note'); n.value='smaller'; n.dispatchEvent(new Event('input', {bubbles:true}))");
+      await sleep(500);
+
+      // Next page: the statement and the yes/no/don't-know question, both on one page.
+      await c.evaluate("document.querySelector('#save').click()"); await sleep(300);
+      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^page 2 of 2 /);
+      assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'What we promise');
+      assert.equal(await c.evaluate("document.querySelector('#wsub').textContent"), 'Statements, not questions.');
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q')].map(a=>a.dataset.id)"), ['Q-3', 'Q-4']);
+      assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-3\"] .ans')].map(b=>b.textContent).join(',')"), 'Holds,Fails,Other');
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-4\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', "Don't know"]);
+      assert.equal(await c.evaluate("document.querySelector('#save').textContent"), 'Done', 'the last page finishes the deck');
+      await c.evaluate("document.querySelector('article.q[data-id=\"Q-4\"] .ans[data-v=other]').click()"); await sleep(500);
+
       const answers = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
       assert.deepEqual([answers.answers['Q-1'].v, answers.answers['Q-1'].pick], ['pick', 'a']);
       assert.equal(answers.answers['Q-1'].note, 'smaller');
+      assert.deepEqual([answers.answers['Q-2'].v, answers.answers['Q-2'].pick], ['pick', 'b']);
       assert.deepEqual([answers.answers['Q-4'].v, answers.answers['Q-4'].dk], ['other', true], "don't know is Other with a flag");
-      // Clearing the note removes it from the saved answer.
-      await c.evaluate("document.querySelectorAll('#steps span')[0].click()");   // back to Q-1
-      await c.evaluate("const n2 = document.querySelector('#note'); n2.value = ''; n2.dispatchEvent(new Event('input'))");
-      await c.evaluate("document.querySelector('#save').click()");   // → Q-2, saves the cleared note
-      await sleep(400);
-      const answers2 = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
-      assert.equal((answers2.answers['Q-1'].note || ''), '');
-      // Fix (2026-09-05): the finish screen used to read a question's Yes back as "Yes, keep
-      // it" — the picture-deck fallback — because it fell through the same yesLabel() that a
-      // question's OWN buttons never use. Answer Q-4 Yes, submit, and the responses table cell
-      // must read the same plain word the button showed.
-      await c.evaluate("document.querySelectorAll('#steps span')[3].click()");   // → Q-4
-      await c.evaluate("document.querySelector('.ans[data-v=yes]').click()"); await sleep(300);
+      // A page marker is not a step: it is never in the deck's steps and never gets an answer.
+      assert.equal(await c.evaluate('DECK.steps.some(s => s.id === "P-2")'), false);
+      assert.equal(answers.answers['P-2'], undefined);
+
+      // Prev returns to page 1 with both picks still painted on.
+      await c.evaluate("document.querySelector('#prev').click()"); await sleep(300);
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q')].map(a=>a.classList.contains('done'))"), [true, true]);
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q .card.variant.on').length"), 2, 'both picks still lit');
+      // The finish screen still names STEPS, not pages.
       await c.evaluate("document.querySelector('#done').click()"); await sleep(300);
       await c.evaluate("document.querySelector('#submit').click()"); await sleep(1200);
       assert.equal(await c.evaluate('document.body.dataset.screen'), 'finished');
       const rows = JSON.parse(await c.evaluate(
         "JSON.stringify([...document.querySelectorAll('#responses tbody tr')].map(r=>[...r.cells].map(c=>c.textContent.trim())))"));
-      assert.equal(rows[3][2], 'Yes', 'a question answered yes reads back as "Yes", not the picture deck\'s "Yes, keep it"');
+      assert.equal(rows.length, 4, 'four steps, not two pages');
+      assert.equal(rows[3][2], "Don't know");
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
   } finally { srv.kill(); }
+});
+
+// A deck with ONE page and no markers: the whole question set on one screen, and the forward
+// button is the end of the deck rather than a page turn.
+test('a question deck with no markers is one page whose button reads Done', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-onepage-'));
+  const py = `import sys, json; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); raw['steps'].pop(2)
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-open', '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1440, 900);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+    for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true')); i++) await sleep(100);
+    assert.equal(await c.evaluate("document.querySelectorAll('#steps span').length"), 1, 'one page, one segment');
+    assert.equal(await c.evaluate("document.querySelectorAll('article.q').length"), 4, 'every question on it');
+    assert.equal(await c.evaluate("document.querySelector('#save').textContent"), 'Done');
+    assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'Questions fixture', 'the implicit page wears the deck title');
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); }
 });
 
 // ── the finish screen ──────────────────────────────────────────────────────────────────────

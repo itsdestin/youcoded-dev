@@ -9,7 +9,8 @@ import os
 from .crops import image_name
 from .live import has_live, is_live, live_base, live_offset, pane_url, pane_width
 from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
-                    is_decide, is_question, is_words, run_names, step_themes, validate, workspace_root)
+                    is_decide, is_page, is_question, is_words, pages, run_names, step_themes, validate,
+                    workspace_root)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -178,7 +179,7 @@ def deck_data(spec, boxes):
         'boxes': boxes.get(st['id'], {}),
         # Only when the step narrows the deck's list — page.js falls back to DECK.themes otherwise.
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
-    } for st in spec['steps']]
+    } for st in spec['steps'] if not is_page(st)]
     every = all_themes(spec)
     # `command` is spelled HERE, where the offset and the worktree are both known, so the
     # "server isn't running" card can name the exact thing to run instead of guessing.
@@ -188,7 +189,13 @@ def deck_data(spec, boxes):
         'worktree': tree,
         'command': f'YOUCODED_PORT_OFFSET={live_offset(spec)} bash scripts/run-workbench.sh {tree}',
     }} if has_live(spec) else {}
-    return {**live, 'title': spec['title'], 'key': spec['key'], 'runs': runs,
+    # A question deck is PAGES (design 3.1): `pages` lists the step ids on each, and page.js
+    # switches to the scrolling reading column when it is there. Absent for any deck with a
+    # picture, which keeps one step per screen — `steps` itself never carries the markers.
+    pg = pages(spec)
+    paged = {'pages': [{'id': p['id'], 'title': p['title'], 'intro': p['intro'],
+                        'steps': [st['id'] for st in p['steps']]} for p in pg]} if pg else {}
+    return {**live, **paged, 'title': spec['title'], 'key': spec['key'], 'runs': runs,
             'runLabels': {'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
             'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},
             'steps': steps}
@@ -198,6 +205,8 @@ def build_page(spec, boxes):
     errors, warnings = validate(spec)
     runs = run_names(spec)
     for st in spec['steps']:
+        if is_page(st):
+            continue   # a page marker names a page — it has no picture and no answer
         if is_live(st):
             continue   # nothing on disk to check — the pane is a running app; page.js probes the server
         if is_words(st):

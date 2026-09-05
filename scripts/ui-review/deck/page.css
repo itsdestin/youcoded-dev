@@ -87,6 +87,30 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 /* WORDS: no stage at all — the question and its option cards take the row (feature-flow §5) */
 .content.words{grid-template-columns:1fr;grid-template-rows:1fr;grid-template-areas:"decide"} .content.words .stage{display:none}
 .words .cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))} .words .card.option{min-height:96px}
+/* ── PAGES: a question deck is a scrolling reading column per SET of questions (design §3.1).
+   Destin (2026-09-04): "my mindset should stay in the same place for each set of questions, and
+   only shift when moving to a new set" — so Prev/Next move PAGES, and every question on one is
+   answered without the screen changing under him. Picture decks never take this class. */
+.content.pages{display:block;overflow:auto}
+.content.pages .stage{display:none}
+/* the framed decision card is the QUESTION here, not the column, so the wrapper stops being one */
+.content.pages .decide{display:block;background:none;border:0;border-radius:0;overflow:visible;min-height:0}
+.content.pages .info{padding:0;display:block;overflow:visible}
+.pages .cards{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.pages .page-head .intro{margin:4px 0 0;font-size:13px;color:var(--fg-2);line-height:1.5}
+/* One question = one card, the same panel/edge/radius idiom the single-step decision card uses. */
+.pages article.q{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.pages article.q.done{border-color:color-mix(in srgb,var(--yes) 45%,var(--edge))}
+.pages article.q .qh{margin:0;font-size:15px;font-weight:500;line-height:1.35}
+.pages .qbody{display:flex;flex-direction:column;gap:10px}
+.pages .qrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+/* Reading text, not chrome: 14px in the column. The pros and cons follow it up a step so a list
+   does not read as a footnote to the paragraph above it. */
+.pages .card p{font-size:14px} .pages .card li{font-size:13px}
+/* The shared answer row belongs to ONE step; on a page each question carries its own, so all
+   that is left of it is the way forward — pinned to the bottom of the column as it scrolls. */
+.content.pages #controls{position:sticky;bottom:0;z-index:3;max-width:760px;margin:0 auto;padding:10px 0;justify-content:flex-end;background:var(--canvas)}
+.content.pages #controls>#answers,.content.pages #controls>#note{display:none}
 /* CONTRACT: the rows as a table; a graded row is tinted by its verdict */
 .card.contract{overflow:auto} .card.contract table{border-collapse:collapse;width:100%;font-size:12px} .card.contract th{text-align:left;font-weight:600;color:var(--fg-dim);padding:6px 8px;border-bottom:1px solid var(--edge)} .card.contract td{padding:6px 8px;border-bottom:1px solid var(--edge);vertical-align:top}
 .card.contract .src{margin:2px 0 0;font-size:11px;color:var(--fg-muted)} .card.contract tr.pass td:last-child{color:var(--yes)} .card.contract tr.fail td:last-child{color:var(--no)}

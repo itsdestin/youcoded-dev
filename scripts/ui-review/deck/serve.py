@@ -19,7 +19,7 @@ import urllib.request
 import webbrowser
 
 from .live import VITE_BASE_PORT, has_live, live_offset
-from .spec import SpecError, workspace_root
+from .spec import SpecError, is_page, workspace_root
 
 
 def answers_path(spec):
@@ -42,6 +42,8 @@ def summary(spec, state):
     counts = {'yes': 0, 'no': 0, 'other': 0, 'pick': 0, 'skip': 0}
     lines = []
     for st in spec['steps']:
+        if is_page(st):
+            continue   # a page marker asks nothing — no answer, so no line
         a = (state.get('answers') or {}).get(st['id']) or {}
         v = a.get('v') or 'skip'
         counts[v] = counts.get(v, 0) + 1

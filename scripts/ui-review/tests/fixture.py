@@ -184,6 +184,10 @@ def words_spec(tmp, **over):
                          {'id': 'c', 'label': 'As many as fit', 'summary': 'Costs a layout rule.',
                           'pros': ['Nothing is ever hidden from you.'],
                           'cons': ['Boards get small fast.']}]},
+            # A PAGE MARKER, not a step: it answers nothing and gets no line in the summary.
+            # Everything after it sits on its own page, because the thinking shifts here from
+            # "which design do we pick" to "is this statement true" (design §3.1).
+            {'id': 'P-2', 'page': 'What we promise', 'intro': 'Statements, not questions.'},
             {'id': 'Q-3', 'words': True, 'surface': 'Games', 'path': 'Questions',
              'headline': 'A game you leave keeps running for the other player.',
              'changed': 'Stated, not asked: the alternative would surprise the friend who stayed.',

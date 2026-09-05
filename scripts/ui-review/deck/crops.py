@@ -8,7 +8,7 @@ import subprocess
 
 from .boxes import diff_bbox, image_size, px_to_pct, rect_to_pct
 from .live import is_live
-from .spec import AUTO_WARN_FRACTION, is_choice, is_words, no_pictures, run_names, step_themes, is_clip
+from .spec import AUTO_WARN_FRACTION, is_choice, is_page, is_words, no_pictures, run_names, step_themes, is_clip
 
 
 def image_name(crop, theme, run):
@@ -49,6 +49,8 @@ def crop_images(spec, log=print):
         # LIVE FIRST, before is_choice: a live pick-one has `variants` too, so is_choice()
         # claims it and _crop_choice then dies on the crop those variants deliberately lack.
         # (Same reason validate() dispatches live first.)
+        if is_page(st):
+            continue   # a page marker, not a step — no crop to look up
         if is_live(st):
             continue   # a running app, not a still — nothing to cut, and no `crop` to look up
         if is_words(st):
