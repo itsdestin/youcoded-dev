@@ -309,6 +309,16 @@ exception** — llama.cpp calls `set_swa_pattern(1)` there unconditionally and i
 own key; believing the file would under-count KV, the one direction that turns a `tight` verdict
 into a wrong `fits`.
 
+**`attention.recurrent_layers` is read too, and it outranks `full_attention_interval`**
+(`qwen35.cpp:21`) — a file using the array form would otherwise be counted as ~4x more
+attention layers than it has. Reading it correctly needs a SECOND key the design never named:
+the interval applies over `n_layer() = block_count - nextn_predict_layers`
+(`llama-hparams.cpp:272`), so `nextnPredictLayers` is read as well. On the Qwen3.6-35B-A3B file
+on this machine — 41 blocks, `nextn_predict_layers = 1` — deriving from `block_count` alone
+marks index 40, a dense attention layer that DOES hold a cache, as recurrent: 31 of 41 instead
+of the correct 30, a ~10% under-count of that model's KV, which is the direction that turns
+`tight` into a wrong `fits`.
+
 **The resolved sliding mask lives in `gguf-header.ts`, not the estimator**: the design put the
 layer map under §D2 while requiring the `dense_first` pinning in `gguf-header.test.ts`, which
 would duplicate the rule. §D2 consumes `header.slidingLayers` directly.
