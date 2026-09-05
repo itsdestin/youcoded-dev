@@ -248,3 +248,24 @@ Task order: 1, 2, 4, 5, 8 are independent of each other; 3 needs 2; 6 needs noth
 - [ ] **Step 1:** `cd scripts/ui-review/tests && python3 -m unittest test_spec test_tokens test_live test_words test_contract`; `python3 -m unittest discover -s scripts/ui-review/tests -t scripts/ui-review/tests -p 'test_*.py'`; `node --test scripts/ui-review/tests/deck-render.test.mjs`; `bash scripts/ui-review/tests/close-out-contract.test.sh`; `node scripts/check-doc-commands.mjs --local`. All green, outputs pasted into the handoff.
 - [ ] **Step 2:** `python3 scripts/ui-review/review-cards.py selfie --before origin/master` in the background — this is the review Destin answers. Also `preview` the converted mascot deck and the linux-buddy questions deck and read both contact sheets yourself first.
 - [ ] **Step 3:** Announce the deck URL in chat with the paths of the contact sheets. Do not merge; wait for his answers.
+
+---
+
+### Task 11: `serve` never opens the browser (Destin, 2026-09-05)
+
+Runs after Task 3's fix round and before Task 5. Spec §2 decision 8 and §6.4b.
+
+**Files:**
+- Modify: `scripts/ui-review/deck/serve.py` (`open_url` deleted, `import webbrowser` deleted, the `open_browser` parameter of `serve()` deleted, the `[deck] http://…` log line kept)
+- Modify: `scripts/ui-review/review-cards.py` (`--no-open` deleted from the parser and the docstring; the docstring's `serve` line says "prints the address for the session to put in chat")
+- Modify: `scripts/ui-review/tests/test_serve.py` (drop `open_browser=False` from every `serve(...)` call), `scripts/ui-review/tests/deck-render.test.mjs` (drop `'--no-open'` from every spawn)
+- Modify: `scripts/ui-review/README.md` (the sentence "opens the browser" in the review-cards cell → "prints the address; the session puts the link in chat at the end of its turn"), `CLAUDE.md` (the two paragraphs that say `serve … in the background does it all` / `run it in the background`: add "it never opens a browser — put the printed link in chat as the last line of your turn"), `.claude/skills/ui-mockup/SKILL.md` (same sentence where `serve` is mentioned)
+- Test: `scripts/ui-review/tests/test_serve.py` (`test_serve_never_opens_a_browser`: patch `subprocess.Popen` and `webbrowser.open` to raise if called; `serve()` on the fixture with a submit from a thread returns 0)
+
+**Interfaces:** `serve(spec, port=0, timeout_min=240, log=print, live=True)`. Task 6's `preview` and Task 7's `selfie` must not add any opening either.
+
+- [ ] Step 1: write the failing test (the patched `Popen` raises `AssertionError('a deck must not open a browser')` — with the current code `open_url` calls it).
+- [ ] Step 2: run `python3 -m unittest test_serve` — FAIL.
+- [ ] Step 3: delete the machinery; edit the docs.
+- [ ] Step 4: `rg -n "no-open|open_browser|open_url|webbrowser" scripts/ui-review .claude CLAUDE.md` → no hits. Run `test_serve`, the CI five, the render suite — PASS.
+- [ ] Step 5: commit `feat(deck): serve prints the address and opens nothing — the link goes in chat at the end of the turn (Destin, 2026-09-05)`.

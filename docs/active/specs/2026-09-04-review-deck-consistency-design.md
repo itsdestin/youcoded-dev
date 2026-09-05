@@ -48,6 +48,10 @@ A sweep of every deck served since 2026-08-25 (61 specs, 15 screenshotted) found
 5. A session must be able to pick the right step kind from one table.
 6. The deck opens on the live app's theme.
 7. Deck changes are reviewed on a deck of the deck.
+8. (2026-09-05) **A deck never opens the browser itself.** `serve` prints the address; the
+   session puts that link in chat at the end of its turn, and Destin opens it when he is
+   ready. Sessions run inside the app, which opens a pasted link; an unasked-for browser
+   window on his desktop is the wrong surface.
 
 ## 3. The page
 
@@ -204,6 +208,13 @@ montage`). Exit 1 on a console error. A session reads the sheet before `serve`.
 
 Any change to `page.css`, `page.js`, the template or the fixture is shown to Destin this
 way. The rule (§7) says so.
+
+### 6.4b `serve` does not open a browser
+
+`serve` no longer opens anything: the `--no-open` flag goes, `open_url` goes, and the
+address is printed as `[deck] http://…` for the session to relay. `selfie` follows the same
+rule. The rule file (§7) says: the link goes in chat, at the end of the turn, as the last
+line — never mid-turn, never auto-launched.
 
 ### 6.5 Templates
 
