@@ -1,7 +1,7 @@
 ---
 status: active
 created: 2026-09-05
-revised: 2026-09-05 after design reviews 1 and 2 (docs/active/reviews/2026-09-05-voice-prompting-design-review-{1,2}.md — 30 accepted, 1 already handled)
+revised: 2026-09-05 after design reviews 1–3 (docs/active/reviews/2026-09-05-voice-prompting-design-review-{1,2,3}.md — 41 accepted, 1 already handled) and the reopen deck
 feature: voice prompting
 design: docs/active/design/2026-09-05-voice-prompting/ (questions deck, review rounds 1–3, signed contract)
 ui-branch: youcoded feat/voice-prompting (the composer's mic, built and reviewed against a workbench fake)
@@ -19,11 +19,12 @@ Findings marked `R1-n` / `R2-n` are the two design reviews.
 | Decision | Source |
 |---|---|
 | Engine: NVIDIA Parakeet TDT 0.6B v3 (int8), run through sherpa-onnx, on the user's computer | review V-0 |
-| Words appear while talking; settled words solid, the newest two grey until they settle | Q-2, review3 V-6 |
+| Words appear while talking; **everything since your last full stop stays grey and turns solid when you finish a sentence** | Q-2, review3 V-6, **reopen V-9** |
 | Tap to start; stops on a second tap, Enter, the strip's Stop, or two quiet seconds; the text then waits | Q-3, review3 V-6 |
 | The text waits in the box; nothing sends by itself | Q-4 |
-| The mic is always visible; the first tap offers a one-time download on a card above the mic | Q-5, review V-2 |
+| The mic is always visible; the first tap offers a one-time download on a card above the mic, promising **about 500 MB** and naming the language limit | Q-5, review V-2, **reopen V-10, V-11** |
 | No microphone: the card says the real reason, with Check again | review V-3 |
+| While the download expands the card reads **"Almost ready…"** with a moving bar | **reopen V-12** |
 | While listening: the "Listening" strip above the box (dot · Listening · meter · clock · Stop); the mic's ring follows loudness, 2–9 px | review2 V-4, V-5; review3 V-6 |
 | Hold Space in an empty box for a quarter second to listen, release to stop; a tap does nothing; no other shortcut | review3 V-7 |
 | Refused by the operating system: "Microphone access was refused by your computer. Allow it for YouCoded in your system's privacy settings, then check again." with Check again | review3 V-8 |
@@ -33,15 +34,24 @@ Findings marked `R1-n` / `R2-n` are the two design reviews.
 Not in this build: Moonshine as a small-download option, a cloud engine, Whisper, the
 built-in Windows/macOS speech services (roadmap, user-interface.md), hotwords.
 
-**Two card sentences are open and go to Destin on one decide deck** (R1-12, R2-4), served
-with the acceptance deck, because both change R8's approved copy and copy is his:
-1. the download's size — R8 was approved reading "464 MB", the model archive alone is
-   487,170,055 bytes, and with the runtime the true first-run total is ~498 MB; the design
-   asserts no number until that deck answers, and whatever it answers is what the card prints
-   and what the design's prose then says (R2-12: there is no shared renderer size helper —
-   `formatBytes` is a private function in `main/project-context.ts` — so the unit is written
-   literally, once, wherever the number appears);
-2. whether the card also names the language limit ("English and 24 European languages").
+**All four open questions were answered on the reopen deck** (2026-09-05, forced by R3-3 —
+the engine provably breaks a promise Destin had approved):
+
+- **V-9 — the grey window.** Measured against the real pinned model, a re-hear rewrites text it
+  has already settled: commas appear and move three words back, inside solid black. The
+  approved "newest two grey until they settle" was therefore not true of the engine we chose.
+  **Decision: everything since the user's last full stop stays grey and turns solid when a
+  sentence ends**, so black text never changes. This replaces the two-word tail everywhere —
+  in `voice-worker.ts`'s split, in `voice-types.ts`'s wording, and in the mirror layer.
+- **V-10 — the size.** The card promises **about 500 MB**, the true combined first-run total
+  (model plus runtime), not the 464 MB the model archive alone rounds to.
+- **V-11 — the languages.** The card gains one line: **"Understands English and 24 other
+  European languages."**
+- **V-12 — the unpack label.** While the archive expands the card reads **"Almost ready…"**
+  with a moving, unmeasured bar.
+
+There is no shared renderer size helper (R2-12 — `formatBytes` is private to
+`main/project-context.ts`), so "about 500 MB" is written literally, once, in the card.
 
 ## Architecture
 
@@ -99,9 +109,19 @@ Already built: `VoiceButton.tsx`, `useVoiceInput.ts`, the voice parts of `InputB
   `window` `blur` / `visibilitychange` while `spaceHeld` is set also stop the mic, or an
   alt-tab mid-hold leaves it open until the silence stop inserts text nobody asked for.
 - **`unpacking` is a real card state, not just a type member** (R2-8): `VoiceButton` gains a
-  fifth branch — indeterminate bar plus "Unpacking…" — because the R1-15 fix that added the
-  phase would otherwise make the progress card *vanish* for the minute it exists to explain.
-  The workbench fake emits it, since that is the surface Destin reviews.
+  fifth branch — a moving, unmeasured bar plus **"Almost ready…"** (reopen V-12) — because the
+  R1-15 fix that added the phase would otherwise make the progress card *vanish* for the minute
+  it exists to explain. The workbench fake emits it, since that is the surface Destin reviews.
+- **The capture is gated exactly like the composition** (R3-4): `voice-capture.open()` runs
+  only where the bridge offers `sendAudio`. On Android `start()` is the bridge call alone and
+  the phase flips when it resolves — otherwise the WebView, whose `WebChromeClient` overrides
+  only `onConsoleMessage`, auto-denies `getUserMedia` and the phone shows V-8's sentence about
+  "your computer" and "system privacy settings". The `NotFoundError`/`NotAllowedError` mapping
+  is desktop-only for the same reason.
+- **Space-hold's guard is "a hold is in flight", not "`spaceHeld` is set"** (R3-7): on `blur`
+  and `visibilitychange`, clear `spaceHoldTimer` **and** stop if `spaceHeld` — the 250 ms
+  before the hold arms is exactly where the leak lives, and a guard on `spaceHeld` alone is
+  false for all of it.
 
 ### Main — `src/main/voice/`
 
@@ -109,13 +129,26 @@ Already built: `VoiceButton.tsx`, `useVoiceInput.ts`, the voice parts of `InputB
   synced; a new row in `docs/MAP.md`'s on-disk table), in `engine/engine-acquisition.ts`'s
   shape: download → verify → unpack into a `.unpacking` sibling → `.complete` marker last →
   rename into place. Two changes to that shape, both stated rather than inherited:
-  - **`net.fetch`, not global `fetch`** (R2-10), so system proxies are honoured, and
-    `err.cause` is unwrapped into the message — Node's `fetch` reports a corporate proxy and an
-    offline machine identically as "fetch failed", which is neither allowed error shape.
-    Where no cause survives, the card is `<ErrorState mode="general">`.
+  - **`net.fetch`, not global `fetch`** (R2-10), so system proxies are honoured — Node's
+    `fetch` reports a corporate proxy and an offline machine identically as "fetch failed",
+    which is neither allowed error shape. **`net.fetch` rejects with the reason in
+    `err.message` and sets no `cause`** (R3-5), so the card shows `err.message` verbatim;
+    `err.cause` stays only as a fallback for any path still on Node's `fetch`. `net.fetch` is
+    not assignable to `typeof fetch`, so `voice-assets.ts` declares its own fetch field rather
+    than reusing `engine-acquisition`'s slot. A download failure is **recoverable and has a real
+    reason**, so it stays the existing card plus that reason plus Retry (R3-6) — the
+    two-action `<ErrorState mode="general">` is not imported into a 288 px popover it cannot
+    host.
   - **The verifier takes `{algo, encoding, digest}`** (R2-13): npm publishes sha512/base64
     (`dist.integrity`) and the model release publishes sha256/hex. Each pin records the
     command that produced it; a pin nobody can reproduce is worse than the format mismatch.
+  - **The unpack is the third change, not an inheritance** (R3-11): this is the app's first
+    `.tar.bz2`, and `engine-acquisition`'s `systemTar()` is documented and was verified for
+    `.zip` and `.tar.gz` only — GNU tar shells out to a `bzip2` binary that a slim Linux
+    container may not have. Before the build starts, `tar -xf` a small `.tar.bz2` is checked on
+    Windows' System32 tar and on a bzip2-less Linux image; the decompressor is then named
+    explicitly with a checked failure message, or bzip2 is decompressed in-process. (The
+    "single-threaded" note describes `bzip2(1)`, not the format.)
   1. **The runtime** (R1-15, R2-3): the `sherpa-onnx-<platform>-<arch>@1.13.7` tarball from the
      npm registry (21–38 MB) **plus `sherpa-onnx-node@1.13.7`'s JS wrappers, unpacked beside
      the addon** (R2-2). npm tarballs are rooted at `package/` and the addon needs its three
@@ -138,10 +171,16 @@ Already built: `VoiceButton.tsx`, `useVoiceInput.ts`, the voice parts of `InputB
   `voice:audio`, relays `partial` / `final` / `error`, and **guarantees exactly one terminal
   event per `start`** (R1-9): a worker `exit` or `error`, a load failure, or a pass that throws
   becomes `error` with the real message (exit code and the last stderr line, verbatim).
-  - **Heartbeat instead of a blind timer** (R2-7): while a pass is running the service pushes a
-    heartbeat, so the renderer's watchdog starts only once the worker has gone quiet — a fixed
-    5 s renderer timer would race a variable-length final pass, kill a good utterance, and
-    blame the engine for it.
+  - **A deadline the service can defend** (R2-7, corrected by R3-2). A heartbeat alone
+    reinstates the very bug R1-9 fixed: it is pushed from the service's own belief that a pass
+    is running, so a worker that wedges or swaps — 1.14 GB resident — never exits, never
+    throws, never stops heartbeating, and the mic sits disabled in `finishing` forever. So the
+    worker **acknowledges each pass with its segment length**, the service derives the expected
+    cost from the measured curve below, and a pass that overruns it by a multiple kills the
+    worker and emits the one terminal `error` R1-9 promises, saying what actually happened
+    ("Voice stopped: the speech engine did not answer for 30 seconds and was closed") — specific
+    and true, never an invented cause. The renderer's watchdog is the second line, armed only
+    once the heartbeat stops.
   - **Lifecycle** (R2-14): `start` records the requesting `webContents.id`; a destroyed or
     closed window cancels that session and unloads; `app.on('before-quit')` kills the worker;
     a second window's `start` while another is listening is refused with a real reason.
@@ -170,12 +209,17 @@ Already built: `VoiceButton.tsx`, `useVoiceInput.ts`, the voice parts of `InputB
     (2 threads: 55 · 193 · 363 · 733 ms). So the next pass is scheduled when the previous one
     completes plus a 200 ms gap, never on a fixed timer, and `decodeAsync` keeps the worker
     draining audio while a pass runs.
-  - **the segment→text contract, stated** (R2-9): `committed` is **cumulative across
-    segments** and the tail is **promoted into it on commit**, so the grey never disappears or
-    repeats. A segment commits at any ≥ 0.8 s pause once past 5 s. The hard cut is taken at
-    the **quietest 100 ms frame in the last second** rather than exactly at 15 s — the same RMS
-    the silence stop already computes, so it is nearly free, and it lands the split between
-    words in almost every real case instead of mangling one mid-dictation.
+  - **the segment→text contract, stated** (R2-9, rewritten for reopen V-9). `committed` is
+    **cumulative across segments** and is promoted on commit, so the grey never disappears or
+    repeats. **The grey/solid boundary is the user's last sentence-ending punctuation, not a
+    word count**: everything after the final `.`, `?` or `!` in the current pass is grey; the
+    prefix up to and including it is solid. This is the only split that survives R3-3's
+    measurement — the engine revises punctuation several words back while re-hearing, so any
+    fixed tail (two words, or six) leaves revisions landing in black text. A segment commits at
+    any ≥ 0.8 s pause once past 5 s. The hard cut is taken at the **quietest 100 ms frame in
+    the last second** rather than exactly at 15 s — the same RMS the silence stop already
+    computes, so it is nearly free, and it lands the split between words in almost every real
+    case instead of mangling one mid-dictation.
   - `stop`: one last pass on the open segment, then exactly one `final` with every committed
     segment joined. `cancel`: drop everything, emit nothing.
   - Memory: one loaded recogniser measured **1.14 GB RSS** at 2 threads (R1-13), so the
@@ -225,10 +269,19 @@ Node's `fs` carries no quarantine attribute, so Gatekeeper's notarisation gate i
 the Android half dead). The gate is the shim's **own Android predicate**,
 `location.protocol === 'file:' && !targetUrl` (R2-1): `!targetUrl` alone means "not paired to a
 remote desktop", which is also true in a plain remote browser tab, so that gate would have put
-the mic exactly where Q-7 says it must not be. The namespace is decided at `installShim()`, so a
-runtime switch to a remote desktop hides the mic through `setConnectionMode`, which already
-broadcasts. `ipc-channels.test.ts` asserts **the predicate**, not the presence of a string, and
-records remote-desktop as the named exception with its Q-7 reason.
+the mic exactly where Q-7 says it must not be.
+
+**And the namespace decision alone is not enough** (R3-2's sibling, R3-1): `setConnectionMode`
+is four lines that flip a module variable — it does **not** rebuild `window.claude`, so a phone
+that pairs to a desktop mid-session would keep a live mic talking to a host with no `voice:*`
+handlers. So every `voice.*` method **also refuses at call time** when `targetUrl` is set — the
+per-call shape `android.*` already uses — and `status()` answers `unavailable` carrying the Q-7
+reason, so the card explains itself instead of the button going quietly dead.
+
+`ipc-channels.test.ts` keeps doing what it does — the six type strings across the surfaces. The
+**predicate** is asserted in a runtime test built on `remote-shim-unsupported.test.ts`'s harness
+(install the shim at `file://` with no target, and at `http://` with none; assert
+`window.claude.voice` is present in the first and absent in the second) (R3-10).
 
 ## The shared contract
 
@@ -239,11 +292,16 @@ Android's shim omits both, and the renderer calls only what is present); the fif
 state `{state: 'unpacking'; engine: string}`, which Android never produces; and the event
 contract in two sentences: `cancel` emits nothing, `stop` emits exactly one `final`.
 
-**`ipc-bridge.md`'s exception list is amended in the same change** (R2-16) — it is a closed
-list, and two desktop-only bridge methods appear here — one clause each: `sendAudio` because
-the phone's recogniser owns the microphone, `micAccess` because the Activity's launcher owns
-that question. The parity test asserts the exceptions **by name**, so the rule and the test
-cannot drift apart.
+**`committed`'s doc comment loses "will not change again"** (R3-3): it is false of this engine
+inside an open segment. It says what is true instead — `committed` is everything up to and
+including the last sentence-ending mark, and only a *completed sentence* is final.
+
+**`ipc-bridge.md`'s exception list is amended in the same change** (R2-16, R3-10) — it is a
+closed list, and this build adds **three** asymmetries, not two: `sendAudio` (the phone's
+recogniser owns the microphone), `micAccess` (the Activity's launcher owns that question), and
+**the `voice` namespace itself, absent from `remote-shim.ts` outside `android-local`** with the
+Q-7 reason. The parity test asserts the two method exceptions **by name**; the namespace's
+predicate is the runtime test above.
 
 `MOCK_ONLY` loses its `voice.*` rows when the real handlers land; the workbench fake stays for
 the compare panes, gains `micAccess` and `sendAudio`, emits `unpacking`, and is corrected so
@@ -252,31 +310,39 @@ the compare panes, gains `micAccess` and `sendAudio`, emits `unpacking`, and is 
 ## Tests
 
 - `voice-rehear.test.ts` — segment/commit/tail as pure functions over Float32 buffers with a
-  scripted fake recogniser whose cost follows the measured curve: the tail is the last two
-  words; `committed` is cumulative and the tail is promoted on commit; commit only past 5 s and
-  on a ≥ 0.8 s pause; **a hard cut never splits a word when any sub-threshold frame exists in
-  the last second**; passes never overlap and never run on a timer.
-- `voice-addon-load.test.ts` — the worker loads the addon from a temp directory with **no
-  `node_modules` on the path** (R2-2), and a missing sibling library surfaces the loader's real
-  message.
+  scripted fake recogniser whose cost follows the measured curve: the grey/solid split is the
+  last sentence-ending mark; `committed` is cumulative and promoted on commit; commit only past
+  5 s and on a ≥ 0.8 s pause; **a hard cut never splits a word when any sub-threshold frame
+  exists in the last second**; passes never overlap and never run on a timer.
+  **One case is driven by recorded real output** (R3-3) — the eleven-line ladder of real
+  Parakeet passes in review 3, committed as a fixture — because a scripted fake is
+  prefix-stable by construction and can never catch the rewrite this rule exists to contain.
+- `voice-addon-load.test.ts` — the worker's loader is exercised against a **fake addon** built
+  by the test (a plain file plus a sibling it fails to find) from a temp directory with **no
+  `node_modules` on the path** (R2-2, R3-9): what is being pinned is the absolute-path resolution
+  and the verbatim error forwarding, not sherpa itself, which is no longer a dependency and is
+  never downloaded for tests.
 - `voice-silence.test.ts` — no stop before speech; stop two seconds after speech ends; a loud
   burst resets the clock.
 - `voice-assets.test.ts` — a half-unpacked folder is never reported ready; a bad digest deletes
   the archive and reports the exact mismatch (both digest shapes); a stale pinned layout is
   caught by the existence check; progress reaches `unpacking` before `ready`.
 - `voice-service.test.ts` — exactly one terminal event per start for: normal stop, cancel
-  (none), worker exit mid-pass, load failure, a pass that throws, **and the requesting window
-  being destroyed**; a second window's start is refused.
+  (none), worker exit mid-pass, load failure, a pass that throws, the requesting window being
+  destroyed, **and a worker that neither exits nor answers** (R3-2 — the only path the earlier
+  list omitted, and the one that restored the forever-`finishing` mic); a second window's start
+  is refused.
 - `useVoiceInput.test.ts` — readiness composition on desktop (probe wins) and its absence on
-  Android; NotAllowed → unavailable with V-8's sentence; the heartbeat-gated watchdog; a late
+  Android; **the Android start path opens no microphone** (R3-4); NotAllowed → unavailable with V-8's sentence; the heartbeat-gated watchdog; a late
   `final` after a watchdog error still delivers; events dropped while idle.
 - `InputBar.test.tsx` — partial/final merge into an existing draft; typing while listening
   cancels and keeps the typed text; **Enter while listening stops and does not send, while the
   Send button and the Send-anyway retry still send**; Space held 250 ms in an empty box starts,
   release stops, a tap does nothing, Space with text types a space, **focus leaving mid-hold
-  stops the mic**.
-- `ipc-channels.test.ts` — the six request types and the push across the surfaces, asserting
-  the Android predicate and the two named bridge exceptions.
+  stops the mic, and focus leaving *before* the 250 ms elapses leaves it closed** (R3-7).
+- `ipc-channels.test.ts` — the six request types and the push across the surfaces, and the two
+  named bridge exceptions. The Android **predicate** is a separate runtime test on
+  `remote-shim-unsupported.test.ts`'s harness (R3-10).
 - `workbench-mock-contract.test.ts` — the fake's `cancel` emits no `final`.
 - Android: `VoiceRecognizerTest` with a fake `SpeechRecognizer` for the partial/final/error
   mapping, and a manifest guard for the two strings (`./gradlew test -x bundleWebUi`).
@@ -285,10 +351,14 @@ the compare panes, gains `micAccess` and `sendAudio`, emits `unpacking`, and is 
 
 - Talking 12–15 s without a pause costs 2–4 cores at roughly two thirds while it lasts; the
   hard cut bounds it. The "weak laptop" of the findings will hear its fan.
-- The first-run download is around half a gigabyte; its exact printed number is on the decide
-  deck. Moonshine (106 MB) is the roadmap fallback if it draws complaints.
+- The first-run download is about 500 MB and the card says so (reopen V-10). Moonshine
+  (106 MB) is the roadmap fallback if it draws complaints.
 - Linux: Chromium's audio capture goes through PulseAudio or PipeWire's Pulse shim (not the
   desktop portal); a machine without that daemon looks like "no microphone" and gets the
   general sentence with the real error beneath.
-- Parakeet is 25 European languages; the language sentence on the card awaits its deck.
+- Parakeet is 25 European languages and the card now says so (reopen V-11).
+- The grey region is a whole unfinished sentence, so a user dictating a long sentence without
+  a full stop sees most of the box grey. That is the honest reading of an engine that revises
+  punctuation behind itself (R3-3), and it is what Destin chose over a calmer box whose black
+  text quietly changes.
 - Android punctuation depends on the phone maker (Q-6 accepted this).
