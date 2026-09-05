@@ -100,7 +100,7 @@ Rows: R1, R5, R6, R13, R14, R15, R16.
   reads it (spawning `--list-devices` on that binary), so existing installs get a pool too.
 - `llvmpipe` / `SwiftShader` device names are classified CPU (R2-12).
 
-### A3. Chip, target and prerequisite detection — in `gpu-detector.ts` (R1-22)
+### A3. Chip, target and prerequisite detection — in `models/gpu-detector.ts` (R1-22)
 `detectGpu()` grows `vendor: 'nvidia'|'amd'|'apple'|'intel'|null` and `gfxTarget: string|null`.
 - Linux: vendor from `/sys/class/drm/card*/device/vendor`; `gfxTarget` from
   `/sys/class/kfd/kfd/topology/nodes/*/properties` `gfx_target_version` (110501 → `gfx1151`,
@@ -364,7 +364,7 @@ default-quant sha (HF) or path + mtime (local).
 - **The pool is what the engine reports** (R1-7, R1-6, R1-30, R2-5): the first GPU device's
   `totalMiB` from the `.complete` marker (86016 MiB on the Z13's Vulkan build — Vulkan's view
   of the unified pool; the Metal device total on a Mac; the card's VRAM on a discrete GPU).
-  CPU-only installs use total RAM. `gpu-detector.ts`'s VRAM probe stays only for the label
+  CPU-only installs use total RAM. `models/gpu-detector.ts`'s VRAM probe stays only for the label
   wording ("fits on your GPU").
 - Headline is the one numbers line (R28): `"<model> GB model + <kv> GB for <ctx>k context,
   with <loaded> GB already loaded."`; `detail` one sentence; `breakdown.advice` = "Lower this
