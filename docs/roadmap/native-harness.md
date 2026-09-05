@@ -203,6 +203,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       reading on DeepSeek is NOT a bug — measurement artifact, documented)
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-08-17-cache-efficiency.md
 
+- [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
+      OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account
+      balance on every message) should become a user-facing setting instead of a hardcoded
+      number — some users may want shorter replies to stretch a small credit balance further,
+      others may want a higher ceiling for very long single replies
+      `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
+
 ## specialists
 - [ ] Helper (specialist) transcripts pile up in the sessions folder forever — there is no way
       to delete one, and closing the parent conversation leaves its helpers' files behind.
