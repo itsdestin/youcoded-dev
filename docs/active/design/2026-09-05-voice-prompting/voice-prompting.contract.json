@@ -10,7 +10,8 @@
   "voice-prompting-questions": "voice-prompting.questions.json",
   "voice-prompting-review": "voice-prompting.review.json",
   "voice-prompting-review2": "voice-prompting.review2.json",
-  "voice-prompting-review3": "voice-prompting.review3.json"
+  "voice-prompting-review3": "voice-prompting.review3.json",
+  "voice-prompting-reopen": "voice-prompting.reopen.json"
  },
  "steps": [
   {
@@ -29,10 +30,10 @@
     },
     {
      "id": "R2",
-     "statement": "Words appear in the box while you are still talking; the newest few show grey until they settle, then turn solid.",
-     "checkedBy": "deck",
+     "statement": "While you talk, everything since your last full stop stays grey; it turns solid when you finish a sentence.",
+     "checkedBy": "human",
      "threshold": "pass/fail",
-     "source": "voice-prompting-questions#Q-2"
+     "source": "voice-prompting-reopen#V-9"
     },
     {
      "id": "R3",
@@ -72,10 +73,10 @@
     },
     {
      "id": "R8",
-     "statement": "Before the model exists, the tap opens a card above the mic: 'Speak your messages', two sentences, 464 MB, Not now and Download.",
-     "checkedBy": "deck",
+     "statement": "The first tap opens a card above the mic: 'Speak your messages', with a one-time download of about 500 MB.",
+     "checkedBy": "human",
      "threshold": "pass/fail",
-     "source": "voice-prompting-review#V-2"
+     "source": "voice-prompting-reopen#V-10"
     },
     {
      "id": "R9",
@@ -167,6 +168,20 @@
      "checkedBy": "live-app",
      "threshold": "pass/fail",
      "source": "voice-prompting-review3#V-8"
+    },
+    {
+     "id": "R22",
+     "statement": "The card names the language limit: it understands English and 24 other European languages.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-reopen#V-11"
+    },
+    {
+     "id": "R23",
+     "statement": "While the download is being unpacked the card reads 'Almost ready…' with a bar that keeps moving.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-reopen#V-12"
     }
    ]
   }
