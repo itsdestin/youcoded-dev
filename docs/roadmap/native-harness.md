@@ -116,6 +116,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-09-01`
 
 ## tools
+- [ ] The assistant cannot search the WeCoded marketplace, so when it needs a capability it does
+      not have it reaches straight for a script or an outside service instead of the plugin that
+      already does the job. Wanted: a tool it can call to search plugins and integrations, so
+      "check what we already have" comes before "build something new". Destin, 2026-09-05: a 1.3
+      blocker, and the partner to the new "assume you can do it, find a way" rule in the prompt
+      `marketplace-screen` `desktop` `needs-verify` `checked 2026-09-05` `v1.3`
+
 - [ ] The assistant's standing instructions grew about five times on 2026-09-05 (youcoded #423) and
       nobody has measured what that did to a small local model, which has the least room for them —
       the harness evaluator is the tool for it, one local and one OpenRouter model, roughly a quarter
