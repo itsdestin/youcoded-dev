@@ -98,6 +98,13 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+- [ ] A dev instance still shares one file with Destin's live app: the cross-device sync state
+      at ~/.claude/toolkit-state/sync-spaces.json is a hardcoded path, so --profile does not
+      separate it and two apps can write it at once. Found 2026-09-05 while handing over the
+      ChatGPT sign-in build, right after the setup-wizard state was given the same treatment
+      (YOUCODED_TOOLKIT_STATE_DIR); the sync path needs its own override or the same one
+      `desktop` `unconfirmed` `checked 2026-09-05`
+
 
 - [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
       nothing anywhere saying the app had stopped responding, so a tester's force-quit on
