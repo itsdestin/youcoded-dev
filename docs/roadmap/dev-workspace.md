@@ -188,11 +188,6 @@ seen-on is always n/a here.
       In progress in another session on branch feat/session-strip-motion (Destin, 2026-09-02)
       `n/a` `in-flight` `checked 2026-09-02`
 
-- [ ] Review-deck "decide" steps cut off their last option in the side-column layout — the third
-      option is sliced and you scroll to reach it (46 px cut on chatsearch-gate step 1 at
-      1574x820 after the 2026-09-01 styling pass; pre-existing, not caused by live panes)
-      `n/a` `needs-verify` `checked 2026-09-01`
-
 - [ ] Terminal text wraps about two-thirds (only ever seen in the UI-review rig, never the live app —
       Destin 2026-09-02; still a rig bug to fix if it persists) of the way across the pane — Claude Code's screen and
       input line stop near 950 px in a 1440-wide window (dev instance under xvfb, 2026-08-27; Destin
