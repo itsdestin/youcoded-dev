@@ -34,8 +34,8 @@ export const CONCEPTS = {
              sparkOpacity: [1, 0.85], accent: '#8B47B8' },
       art: { eyewear: '<g fill="none" stroke="#8B47B8" stroke-width="0.4">'
                     + '<circle cx="9.3" cy="9.6" r="2.5"/><circle cx="14.7" cy="9.3" r="2.5"/><path d="M11.8 9.5 L12.2 9.4"/></g>',
-             item: '<path d="M23.2 8.4 L23.9 9.8 L25.4 10 L24.3 11.1 L24.6 12.6 L23.2 11.9 L21.8 12.6 L22.1 11.1 L21 10 L22.5 9.8 Z" fill="#8B47B8"/>'
-                 + '<path d="M23.2 12.4 L23.2 15.5" stroke="#B597C6" stroke-width="0.35" stroke-linecap="round"/>' } },
+             item: '<path d="M23.2 7.1 L23.9 8.5 L25.4 8.7 L24.3 9.8 L24.6 11.3 L23.2 10.6 L21.8 11.3 L22.1 9.8 L21 8.7 L22.5 8.5 Z" fill="#8B47B8"/>'
+                 + '<path d="M23.2 11.1 L23.2 13.6" stroke="#B597C6" stroke-width="0.35" stroke-linecap="round"/>' } },
   ],
   'meadow-mist': [
     { id: 'sprout', label: 'A — Sprout',
@@ -70,10 +70,22 @@ export const CONCEPTS = {
                  + '<path d="M6.2 7 L6.2 13.4"/><path d="M17.8 7 L17.8 13.4"/></g>',
              hat: '<g><path d="M12 4 L12 2.4" stroke="#3F7F76" stroke-width="0.4"/>'
                 + '<circle cx="12" cy="1.7" r="1.25" fill="#FF8FA8"/><circle cx="12" cy="1.7" r="0.45" fill="#FFC627"/></g>' } },
-    { id: 'gold', label: 'B — Sunstone',
-      cfg: { id: 'dgB', skin: 'solid', body: '#FFC627', highlight: '#FFE9A8', shade: '#A8701A',
-             face: { ink: '#140810' }, catchlight: 'cluster',
-             spark: ['#FFF4D0', '#FFD968', '#FFB020'], accent: '#8C3050' },
+    { id: 'bone', label: 'A — Bone',
+      cfg: { id: 'dgBone', skin: 'solid', body: '#EAD7B4', highlight: '#FBEFD6', shade: '#9A7C52',
+             face: { ink: '#241018' }, catchlight: 'cluster',
+             spark: ['#FFF4D0', '#FFC627', '#E0BE86'], accent: '#8C3050' },
+      art: { hat: '<path d="M4.6 3.9 Q12 5.4 19.4 3.9 Q19.4 3.2 16.8 2.9 L16.4 0.6 Q12 -0.5 7.6 0.6 L7.2 2.9 Q4.6 3.2 4.6 3.9 Z" fill="#7A3048" stroke="#4A1A2A" stroke-width="0.3" stroke-linejoin="round"/>'
+                + '<path d="M7.4 2.4 Q12 3.3 16.6 2.4" fill="none" stroke="#FFC627" stroke-width="0.45"/>' } },
+    { id: 'sandstone', label: 'B — Sandstone',
+      cfg: { id: 'dgSand', skin: 'solid', body: '#C4703F', highlight: '#E8A472', shade: '#7A3C1E',
+             face: { ink: '#2A1008' }, catchlight: 'cluster',
+             spark: ['#FFE9C0', '#FFC627', '#FF9E6B'], accent: '#FFC627' },
+      art: { hat: '<path d="M4.6 3.9 Q12 5.4 19.4 3.9 Q19.4 3.2 16.8 2.9 L16.4 0.6 Q12 -0.5 7.6 0.6 L7.2 2.9 Q4.6 3.2 4.6 3.9 Z" fill="#7A3048" stroke="#4A1A2A" stroke-width="0.3" stroke-linejoin="round"/>'
+                + '<path d="M7.4 2.4 Q12 3.3 16.6 2.4" fill="none" stroke="#FFC627" stroke-width="0.45"/>' } },
+    { id: 'plum', label: 'C — Plum',
+      cfg: { id: 'dgPlum', skin: 'solid', body: '#3A1C33', highlight: '#5A3050', shade: '#160A14',
+             face: { ink: '#FFC627', fill: '#1E0E1A', rim: '#FFC627', rimW: 0.3 },
+             catchlight: 'cluster', spark: ['#FFF4D0', '#FF8FA8', '#FFC627'], accent: '#FFC627' },
       art: { hat: '<path d="M4.6 3.9 Q12 5.4 19.4 3.9 Q19.4 3.2 16.8 2.9 L16.4 0.6 Q12 -0.5 7.6 0.6 L7.2 2.9 Q4.6 3.2 4.6 3.9 Z" fill="#7A3048" stroke="#4A1A2A" stroke-width="0.3" stroke-linejoin="round"/>'
                 + '<path d="M7.4 2.4 Q12 3.3 16.6 2.4" fill="none" stroke="#FFC627" stroke-width="0.45"/>' } },
     { id: 'ember', label: 'C — Ember',
