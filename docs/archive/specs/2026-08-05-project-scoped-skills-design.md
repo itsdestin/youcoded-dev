@@ -1,9 +1,18 @@
 ---
-status: draft
+status: superseded
 ---
 
 # Project-scoped skills for native sessions — design
 
+> ## Superseded 2026-09-05
+>
+> YouCoded PR #424 implemented this document's narrow Claude Code compatibility
+> goal: a native session can load `<project>/.claude/skills/`. That does not give
+> a native-only user a YouCoded-owned place for personal or project workflows.
+> The v1.3 blocker in `docs/roadmap/native-harness.md` requires a replacement
+> design where `.claude/skills/` is optional compatibility, not the product's
+> source of truth. This design must not guide further work.
+>
 > ## Status 2026-08-26 — NOT BUILT; the ROADMAP's "never discovered" claim re-verified TRUE
 >
 > Verified against `youcoded` `origin/master` (`dbbb9139`) on 2026-08-26:

@@ -1,9 +1,18 @@
 ---
-status: draft
+status: superseded
 ---
 
 # Project-Scoped Skills Implementation Plan
 
+> ## Superseded 2026-09-05
+>
+> YouCoded PR #424 shipped the narrow Claude Code compatibility part: native
+> sessions can load a project's `.claude/skills/` entries. The v1.3 blocker is
+> broader: native-only users need YouCoded-owned personal and project skill
+> locations, with `.claude/skills/` only an optional import/export layer. See
+> `docs/roadmap/native-harness.md` → `skills-mcp`. Do not implement the remaining
+> steps in this plan; a native-first replacement design is required.
+>
 > ## Status 2026-08-26 — NOT BUILT; the ROADMAP's "never discovered" claim re-verified TRUE
 >
 > Verified against `youcoded` `origin/master` (`dbbb9139`) on 2026-08-26:
