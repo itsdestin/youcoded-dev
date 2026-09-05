@@ -1,5 +1,5 @@
 ---
-status: draft
+status: closed
 date: 2026-09-05
 feature: docs/active/design/2026-09-04-chatgpt-signin/
 round: 2
@@ -46,7 +46,7 @@ h.set('authorization', \`Bearer ${await accessToken()}\`); fetch(url, { ...init,
 request has exactly one `authorization` value and it equals the token (assert on `new Headers(captured.headers).get('authorization')`,
 and that the placeholder string appears nowhere in the request).
 
-verdict: (pending)
+verdict: accepted — the wrapper replaces the header through Headers.set; pinned as exactly one authorization value with the placeholder absent (§4.1, §8)
 
 ## R2-2 — One production call on the ChatGPT model does not stream; the design's own `stream: true` invariant is violated and native sessions never get titles
 
@@ -75,7 +75,7 @@ model produces a captured body with `stream: true`. Cheap P0 addition: one non-s
 record the exact refusal (if it turns out to be accepted, the middleware half is dropped and only the title path is
 pinned).
 
-verdict: (pending)
+verdict: accepted — P0-5 added; wrapGenerate folds doStream if the endpoint refuses a non-streaming call; the title path is pinned to stream:true either way (§0, §4.2)
 
 ## R2-3 — The ChatGPT-only default lasts exactly one session: both forms reset the runtime to Claude Code after every create
 
@@ -100,7 +100,7 @@ Code session with no Claude login. The user hits the exact failure R1-1 describe
 used by both `useState` initialisers **and** both post-create resets. `runtime-default.test.tsx` asserts the
 post-create reset lands on the default, not `'claude'`.
 
-verdict: (pending)
+verdict: accepted — one defaultRuntime() for both initialisers and both post-create resets (§5, §8)
 
 ## R2-4 — Seeding the row into the shared `~/.youcoded/providers.json` puts a stray "ChatGPT Plan" key card into Destin's live app (and any older build)
 
@@ -131,7 +131,7 @@ about not touching that app; this touches it through a shared file.
 migration either way, and `remove()`/`upsert()` already refuse built-ins. If persisting is kept for a reason, say
 the reason and accept the stray card in the design.
 
-verdict: (pending)
+verdict: accepted — the row is virtual, appended by the registry and never written to providers.json (§2, §6, §8, §9.7)
 
 ## R2-5 — Phase 0's "our version" manifest leg sends Electron's version, not the app's
 
@@ -157,7 +157,7 @@ will never send — the exact failure R1-14 was accepted to prevent.
 **Proposed fix** Read the version from `desktop/package.json` in the probe (`JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url))).version`),
 print which string each leg used, and have the design quote both strings in the P0-3 record.
 
-verdict: (pending)
+verdict: accepted — the probe reads desktop/package.json and prints the string each leg sent (§0)
 
 ## R2-6 — `signIn()` while `waiting` contradicts the generation counter, and `waiting` has no defined end
 
@@ -185,7 +185,7 @@ same verifier, same timer); pin "second signIn while waiting: timer count stays 
 success, callback error, cancel, timeout) — `status()` checks it before the file; the listener may close whenever.
 Pin: `status()` returns `waiting` with the exchange promise pending.
 
-verdict: (pending)
+verdict: accepted — re-entry while waiting bumps nothing; waiting is an explicit phase flag checked before the file (§3)
 
 ## R2-7 — Three plumbing statements in §1/§5 do not match main.ts; one of them is a live-app safety hazard
 
@@ -216,7 +216,7 @@ of its own. For the OpenRouter clause either return `{ cleanup, hasUsableProvide
 the clause and file the pre-existing gap (Claude logged out + OpenRouter key → wizard every launch) on the roadmap.
 Pin the late check with whichever shape is chosen.
 
-verdict: (pending)
+verdict: accepted — ChatGptAuth is built inside createWindow() after the userData override with its own SecretsStore; the OpenRouter clause is dropped and filed (§1, §5, §9)
 
 ## R2-8 — The weekly limit card names a clock time for a reset days away, while the chip beside it names the day
 
@@ -235,7 +235,7 @@ formats the same instant as `Resets ${DAYS[d.getDay()]} @ …` (`StatusBar.tsx:2
 5-hour string is untouched. It is Destin's wording, so show him the one changed line rather than deciding it in
 the build.
 
-verdict: (pending)
+verdict: accepted — the weekly reset format goes to Destin on a one-step words deck before the build touches the sentence (§4.5, §9.8)
 
 ## R2-9 — The 5-minute poll and the account-file writer have no stated lifecycle
 
@@ -260,7 +260,7 @@ success, stopped by `signOut()` and by the `blocked` transition, `unref()`'d; th
 response headers; `mutate(fn)` retries like `SecretsStore.mutate` and throws the same shape. Pin start/stop in
 `chatgpt-auth.test.ts` with an injected `setInterval`.
 
-verdict: (pending)
+verdict: accepted — poll lifecycle named (start on construction/callback, stop on sign-out/blocked, unref); refresh at response headers; mutate retries then throws (§3, §4.4)
 
 ## R2-10 — Classifying a 429 consumes the body the SDK still needs
 
@@ -279,7 +279,7 @@ response (provider error 429)" — a misleading error by the house standard.
 **Proposed fix** Classify on `response.clone()` (or re-wrap: `new Response(text, { status, statusText, headers })`)
 and say so in §4.5; pin that a non-limit 429 reaches `describeProviderError` with OpenAI's message.
 
-verdict: (pending)
+verdict: accepted — classify on response.clone(); a burst 429 keeps OpenAI's message, pinned (§4.5, §8)
 
 ## R2-11 — The wizard's 2-minute window ends in a browser error page for a slow first sign-in
 
@@ -299,7 +299,7 @@ connection-refused page while the wizard already says "Sign-in timed out. Try ag
 up for one extra minute answering a fixed "This sign-in timed out — go back to YouCoded and try again." page instead
 of closing the port, so the tab never shows a connection error.
 
-verdict: (pending)
+verdict: accepted — the wizard gets 5 minutes; a timed-out listener answers a fixed page for one more minute (§3, §5, §9.1)
 
 ## R2-12 — Small undecided points a builder would otherwise guess
 
@@ -320,7 +320,7 @@ verdict: (pending)
 
 **Proposed fix** One line each in the design.
 
-verdict: (pending)
+verdict: accepted — binding seeded only when a row is back, runtime key unconditional; isSignedIn before the spawn; startAuth signatures widened (§5)
 
 ---
 
