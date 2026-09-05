@@ -38,6 +38,28 @@ The breakdown review's headline risk was four tasks specifying the same rule (B5
   recomputes frame energy itself** for the hard cut, because it needs per-frame values the
   transport does not carry. T1 writes that down in the type's comment.
 
+## Decided during the build, binding on later tasks
+
+Recorded here as they are settled, so a later task cannot re-decide them (T1 built, 2026-09-05):
+
+- **`sendAudio?(chunk: ArrayBuffer, rms: number)` takes two arguments.** The design wrote one,
+  but the worklet's RMS has to reach main for the silence stop and a single number cannot ride
+  inside the audio buffer. **T6** passes the worklet's RMS as the second argument; **T5** reads
+  it for the two-second stop; **T4** still recomputes per-frame energy itself for the hard cut,
+  which needs values the transport does not carry.
+- **`micAccess?()` and `sendAudio?` are both optional**, so `typeof bridge.micAccess === 'function'`
+  is the desktop gate.
+- **`unpacking` carries no percentage** — there is no believable one — so T9's card branch is an
+  indeterminate bar.
+- **`sizeMb` stays on the readiness states that have a number, and the card does not print it**;
+  T9's copy is the literal sentence from the reopen deck.
+- **The fake emits a `heartbeat` alongside each partial**, so T6's heartbeat-gated watchdog does
+  not fire in the workbench.
+- **T6 must not let capture run in the workbench.** The fake now offers `sendAudio`/`micAccess`,
+  so a naive desktop gate would call `getUserMedia` in a review tab — a Chrome permission prompt
+  in front of Destin, and a `NotFoundError` in the headless review rig. Gate capture on not being
+  the workbench, or have the compare panes supply a bridge without `sendAudio`.
+
 ## Wave 1 — no dependencies, run in parallel
 
 ### T1 · The shared shape, the split helper, and the fake
