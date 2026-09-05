@@ -1,6 +1,19 @@
 ---
-status: draft
+status: superseded
 ---
+
+> **SUPERSEDED 2026-09-04.** Destin reviewed the React mockup (branch
+> `feat/assistant-settings-mockup`) in the workbench and rejected the implementation: "decent
+> in concept, but I hate this implementation" — built by another model on outdated workspace
+> tooling. Branch, worktree and mockup files are DELETED; the stowaway
+> `test-engine/conversation-triage.mjs` was rescued to `origin/chore/conversation-triage-script`.
+> The panel restarts from a fresh session through the feature flow (questions deck first).
+> Two things from this round survive and the restart should read them:
+> the **concept** — one "Assistant settings" row replacing Defaults + Permissions + Model
+> Providers, organised provider-first (Claude Code · OpenRouter · Local · Global), no search
+> box, no invented settings; and the **fact-check** — Claude Code sessions and native
+> (OpenRouter/Local) sessions use different permission-mode sets that share no strings, so a
+> single shared permissions page is not free. Everything below is history.
 
 # Assistant Settings — Consolidated Panel Design
 
