@@ -1,0 +1,54 @@
+{
+  "title": "How the buddy falls asleep",
+  "key": "sleep-pose",
+  "out": "sleep-pose.review.html",
+  "intro": "You said you didn't love the shut-down pose as written. A is that pose, as close as the app can get to it, so the other two are judged against the thing you're reacting to. Every pane runs the whole thing on a loop \u2014 he settles, breathes while he's under, and wakes \u2014 because two thirds of a sleep pose is motion and a picture can only show the middle of it. \"Wake him\" triggers the wake on demand. They're at his real size: 112 pixels, the same as the window he actually lives in. The theme buttons at the top right re-run all three in another theme.",
+  "live": {
+    "worktree": "mascot-sleep",
+    "paneWidth": 174
+  },
+  "steps": [
+    {
+      "id": "sleep-pose",
+      "surface": "Buddy floater",
+      "path": "Desktop corner",
+      "headline": "Which way of falling asleep reads best?",
+      "live": {
+        "surface": "buddy-sleep",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "loaf",
+          "label": "Loaf",
+          "candidate": "loaf",
+          "summary": "The film's own pose. He squats down and his arms swing under to the bottom corners. Watch whether you read those as tucked arms or as short legs \u2014 that ambiguity is my main worry with it."
+        },
+        {
+          "id": "slump",
+          "label": "Slump",
+          "candidate": "slump",
+          "summary": "Dozed off where he stood: he leans, sinks a little, his arms go slack. His outline barely changes, so nothing has to be worked out \u2014 but it's also the closest to how he already looks when idle."
+        },
+        {
+          "id": "deflate",
+          "label": "Dim",
+          "candidate": "deflate",
+          "summary": "Shrinks a touch, settles, and fades to about half brightness. The only one that says 'powered down' through brightness rather than posture \u2014 so it's the one that still works when he's small, or docked half-off a screen edge."
+        }
+      ]
+    },
+    {
+      "id": "sleep-zzz",
+      "words": true,
+      "surface": "Buddy floater",
+      "path": "Desktop corner",
+      "headline": "Should little z's drift up off him while he sleeps?",
+      "changed": "Whichever posture you picked above, small z's can rise and fade above his head while he's under.",
+      "notice": "It removes all doubt about what he's doing \u2014 nobody has to work out his posture to know he's asleep. It is also the one part of this that isn't him: it's a bit of cartoon furniture floating in the corner of your screen.",
+      "risk": "Motion. A sleeping buddy is supposed to be the quiet state, and z's keep something moving forever \u2014 which is exactly what you asked the ambient tier NOT to do when there's a status light that needs to stand out.",
+      "yes": "Yes, add z's",
+      "no": "No, keep him still"
+    }
+  ]
+}
