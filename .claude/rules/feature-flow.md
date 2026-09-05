@@ -7,9 +7,13 @@ paths:
   - "scripts/ui-review/deck/**"
   - "scripts/ui-review/review-cards.py"
   - "scripts/ui-review/contract-agent.md"
+  - "scripts/ui-review/code-reviewer.md"
+  - "scripts/ui-review/ux-tester.md"
+  - "scripts/ui-review/grader.md"
+  - "scripts/ui-review/tester-kit.md"
   - "docs/active/design/**"
   - "scripts/close-out.sh"
-last_verified: 2026-09-01
+last_verified: 2026-09-04
 verify:
   - path: scripts/ui-review/deck/contract.py
     contains: "def check_contract"
@@ -72,18 +76,18 @@ was signed (`.contract.answers.json`, step `yes`); the acceptance deck was submi
 `docs/active/reviews/<date>-<feature>-design-review-<n>.md` (findings `R<n>-<k>` marked
 accepted / rejected / already handled, reversals `reverses:`; stop on a round accepting nothing,
 cap three) → task breakdown → subagent build, a reviewer per task.
-**Why:** whether rounds improve or churn a design is unmeasured; the files are the data.
+**Why:** whether rounds improve or churn a design is unmeasured.
 **Guard:** none — candidate.
 
 ## Two reviewers, a stranger grades, then the deck
 **Invariant:** after the build, a code reviewer (`scripts/ui-review/code-reviewer.md`: branch,
 contract rows, file rules — nothing else) and the UX tester's second run report in parallel to
-`docs/active/reviews/<date>-<feature>-{code,ux}-review.md`, each under a budget. The implementing
+`docs/active/reviews/<date>-<feature>-code-review.md` / `-ux-review-<run>.md`, each under a budget. The implementing
 session triages; accepted findings become `review:` rows. A fresh grader
 (`scripts/ui-review/grader.md`) writes `<feature>.contract.verdicts.json`, failing a `mechanical`
 row whose test exists but tests something else. The acceptance deck shows every verdict, tags
 `review:` rows **found in review**, and asks one yes/no per `human` row. Destin opens no review
 session; nothing merges without his word.
 **Why:** the builder is the worst reviewer of its branch; an existing guard is not a checked
-criterion; an ungraded row is not a pass.
+criterion.
 **Guard:** `review-cards.py acceptance` refuses ungraded rows; `test_contract.py` (AcceptanceTests).

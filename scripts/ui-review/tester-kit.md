@@ -46,18 +46,23 @@ node scripts/ui-review/shot.mjs my-plan.json out-dir
   `{"key": "Escape"}`, `{"wait": 500}`, `{"eval": "<javascript>"}`. Every action accepts
   `"settle": <ms>` to pause after it.
 - `{"dump": true}` **lists every clickable control on the current screen** into the
-  manifest file in `out-dir`. Start every new screen with a dump: it is how you learn what
-  the selectors are called. Prefer `aria-label`, `title`, role or `data-testid` selectors over
-  visible text; text changes.
+  manifest file in `out-dir` — for each one its tag, `aria-label`, `title`, visible text and
+  position. Start every new screen with a dump: it is how you learn what to click. Prefer an
+  `aria-label` or `title` selector (`[aria-label='Send']`, `[title='Settings']`) over visible
+  text; text changes.
 - `expect` is required: a selector or `js:` expression that must be true after the actions.
   If it is not, the shot is filed under `out-dir/<theme>/_unverified/` and the run's summary
   says so. **A shot that failed to open is not evidence** — say "could not open X" rather
   than describing what you did not see. If you meant to screenshot the unchanged page, say
   `"sameAsBaseline": true`.
-- Screenshots land in `out-dir/<theme>/<name>.png`. Look at them; the reviewer reading your
-  report will too.
-- To test at a phone-like width, add `"width": 390`. To test a theme other than the default,
-  pass a comma list as the third argument, for example `midnight` or `halftone-dimension`.
+- Screenshots land in `out-dir/<theme>/<name>.png` — the default theme is `midnight`, so
+  `out-dir/midnight/open-settings.png`. Look at them; the reviewer reading your report will too.
+- To test at a phone-like width, add `"width": 390`. To test other themes, pass a comma list
+  as the third argument, for example `light,halftone-dimension`.
+- **If your briefing says you are testing the real development copy**, it also gives you a
+  port number. Run the tool as `ATTACH_PORT=<that port> node scripts/ui-review/shot.mjs …`
+  so it drives the running app instead of opening its own browser tab. Without that
+  variable you would be looking at a bare page with no app behind it.
 
 Two things this tool cannot yet do, so do not claim to have tested them: touch input, and
 a high-density screen (the app's owner runs at 1.5× scale with a touchscreen). Say so in

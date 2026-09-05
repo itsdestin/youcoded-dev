@@ -7,15 +7,19 @@ design doc is not one any more. Feature-flow design §8e.
 
 **Before dispatching:** boot the surface yourself and confirm the address answers —
 `bash scripts/run-workbench.sh <worktree>` for mockups (address
-`http://localhost:5233/?mode=workbench`), or `run-dev.sh` plus the CDP recipe in
-`docs/local-dev.md` for the built copy — then put the address in the briefing. Give the
+`http://localhost:5233/?mode=workbench`), or, for the built copy, `run-dev.sh` plus the
+CDP recipe in `docs/local-dev.md` (Electron launched with `--remote-debugging-port=<port>`) —
+then put the address in the briefing, and for the built copy ALSO the debugging port: the
+kit's tool only drives a running app through `ATTACH_PORT=<port>`. Give the
 tester a token/time budget (a review is not a second build; 45 minutes of wall time is
 plenty for one feature) and the path of the review file it writes.
 
 **It runs twice per feature:** on the mockups **before Destin sees the first review deck**
 (so the deck he gets has already had the confusion and wordiness taken out), and once on the
-built branch, after the code reviewer, **before the grader**. Only the second run's accepted
-findings become contract rows.
+built branch, after the code reviewer, **before the grader**. The review files are numbered by
+run — `docs/active/reviews/<date>-<feature>-ux-review-1.md` and `…-ux-review-2.md` — so the
+two never overwrite each other and the first run's triage counts survive. Only the second
+run's accepted findings become contract rows.
 
 **After it reports:** mark every finding `accepted`, `rejected` or `already handled` on its
 line in the review file (`- U3 accepted — …`); a wording proposal is applied only after
@@ -38,7 +42,8 @@ and read their combined report">.
 **Where:** the app is running at `<address>`. It is running against a
 <**simulated backend** — the assistant, files and other people are fakes that answer
 instantly and the same way every time; that is by design and is not a finding | **real
-development copy**>. Do not start, stop or restart anything.
+development copy** — drive it with `ATTACH_PORT=<port>` as the kit explains>. Do not start,
+stop or restart anything.
 
 **How to drive it:** read `scripts/ui-review/tester-kit.md` first — it tells you how to click
 through the app, take screenshots, and what shape to write findings in. Start every new

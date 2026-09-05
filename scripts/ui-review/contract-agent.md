@@ -30,7 +30,7 @@ answers do not support a row, the row does not exist; write what was missed into
 
 ## Rows from the reviewers (the second pass only)
 After the build, the implementing session hands you the code reviewer's and UX tester's
-review files (`docs/active/reviews/<date>-<feature>-code-review.md`, `…-ux-review.md`) with
+review files (`docs/active/reviews/<date>-<feature>-code-review.md`, `…-ux-review-2.md`) with
 every finding marked. **Only a line marked `accepted` becomes a row.** Its `source` is
 `review:<path relative to the contract>#<finding id>` (e.g.
 `review:../../reviews/2026-09-10-arcade-code-review.md#F2`); no `sources` entry is needed.

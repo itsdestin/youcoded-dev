@@ -34,5 +34,6 @@ Write `<feature>.contract.verdicts.json` beside the contract (same stem):
 ```
 
 Then run `python3 scripts/ui-review/review-cards.py acceptance <feature>.contract.json` and
-paste its output. Finish with `bash scripts/verify.sh <worktree>`'s summary. Your reply is
+paste its output. Finish with `bash scripts/verify.sh <worktree>`'s summary (desktop only —
+on a workspace-only branch run the tests the touched files' rules name and say so). Your reply is
 the verdicts file's path, the verify summary, and one line per `fail`. Do not fix anything.

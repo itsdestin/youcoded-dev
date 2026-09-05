@@ -1,9 +1,10 @@
 """The gate's three facts, and the acceptance deck built from the contract.
 
 contract-check reads what the design calls the gate (feature-flow design §4): (1) the contract
-holds — every row's `source` names a step that exists in a deck the spec's `sources` map points
-at, that deck's answers were SUBMITTED, that step was answered (not skipped), and every
-`mechanical` guard exists on disk or on the contract's branch; (2) the contract was SIGNED —
+holds — every row's `source` either names a step that exists in a deck the spec's `sources` map
+points at, that deck's answers were SUBMITTED and that step was answered (not skipped), or is
+`review:<file>#<id>` naming a finding line marked accepted (§8e); and every `mechanical` guard
+exists on disk or on the contract's branch; (2) the contract was SIGNED —
 its own answers file is submitted and the contract step answered yes; (3) the acceptance deck
 was submitted. Only (1) is an exit code: the contract agent runs this before Destin has seen
 the deck, so (2) and (3) are reported as `ok:` / `todo:` lines that close-out.sh relays.
@@ -36,10 +37,21 @@ def review_finding(base, src):
             lines = f.read().splitlines()
     except OSError as e:
         return f'cannot read review file {rel}: {e.strerror or e}'
+    # Review F4 (2026-09-04): an id that IS on a line but is not marked must not be reported as
+    # "no finding" — that names a false cause. Match the id loosely (bold, trailing colon, any
+    # case on the verdict word) and say exactly which of the three states the line is in.
+    present = False
     for line in lines:
-        m = re.match(r'^\s*[-*]\s+(\S+)\s+(accepted|rejected|already handled)\b', line)
-        if m and m.group(1) == fid:
-            return '' if m.group(2) == 'accepted' else f'finding {fid} in {rel} is {m.group(2)}, not accepted — only accepted findings become rows'
+        m = re.match(r'^\s*[-*]\s+\**([\w.-]+)\**:?\s*(.*)$', line)
+        if not m or m.group(1) != fid:
+            continue
+        present = True
+        v = re.match(r'(accepted|rejected|already handled)\b', m.group(2), re.I)
+        if v:
+            verdict = v.group(1).lower()
+            return '' if verdict == 'accepted' else f'finding {fid} in {rel} is {verdict}, not accepted — only accepted findings become rows'
+    if present:
+        return f'finding {fid} in {rel} is not marked — write "- {fid} accepted — …" (or rejected / already handled) after triage'
     return f'no finding "{fid}" in {rel} (findings are lines like "- {fid} accepted — …")'
 
 
@@ -118,12 +130,13 @@ def check_contract(spec):
     for st in contract_steps(spec):
         for r in st['rows']:
             tag = f'{st["id"]}/{r["id"]}'
+            # Review F5: the mechanical-guard check is shared by both source shapes — one copy.
+            if r.get('checkedBy') == 'mechanical' and not guard_exists(root, spec.get('branch'), r.get('guard', '')):
+                problems.append(f'{tag}: guard {r.get("guard")} is neither on disk under {root} nor committed on branch "{spec.get("branch") or "(no branch in the spec)"}"')
             if is_review_source(r.get('source')):
                 why = review_finding(spec['_base'], r['source'])
                 if why:
                     problems.append(f'{tag}: {why}')
-                if r.get('checkedBy') == 'mechanical' and not guard_exists(root, spec.get('branch'), r.get('guard', '')):
-                    problems.append(f'{tag}: guard {r.get("guard")} is neither on disk under {root} nor committed on branch "{spec.get("branch") or "(no branch in the spec)"}"')
                 continue
             key, _, sid = (r.get('source') or '').partition('#')
             rel = sources.get(key)
@@ -146,8 +159,6 @@ def check_contract(spec):
             a = (ans.get('answers') or {}).get(sid) or {}
             if not a.get('v') or a['v'] == 'skip':
                 problems.append(f'{tag}: step {sid} of {key} was not answered')
-            if r.get('checkedBy') == 'mechanical' and not guard_exists(root, spec.get('branch'), r.get('guard', '')):
-                problems.append(f'{tag}: guard {r.get("guard")} is neither on disk under {root} nor committed on branch "{spec.get("branch") or "(no branch in the spec)"}"')
     return problems
 
 

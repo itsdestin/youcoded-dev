@@ -209,6 +209,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       Blocked on a general delete-conversation feature existing at all (none does today)
       `desktop` `blocked` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
 
+- [ ] After a reload, a helper's card can come back with no notes on it: the reload sends the
+      conversation's history and the helper records separately, and if the helper record arrives
+      before the card exists on screen it is dropped rather than parked, so the next live update
+      is the first thing the card shows. Found by the 2026-09-04 code review of the note-order fix
+      `tool-cards` `desktop` `needs-verify` `checked 2026-09-04`
+
 - [ ] A note sent to a background helper mid-run shows at the bottom of its Activity trail,
       after tool calls that actually happened later. Fix on youcoded `fix/specialists-ledger-bugs`
       (`f0ac766d`, unmerged; the same branch pins checklist 9b as a test, `e8ce8001`)

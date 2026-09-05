@@ -163,7 +163,8 @@ opens nothing.
   as a beta tester with a task. Reports errors and dead ends, expected-one-thing-got-another,
   **every piece of copy that uses more words than it needs** (with the shorter wording), and
   visual inconsistencies. Runs twice: on the mockups before the first review deck (step 4),
-  and on the built branch here. Told when the backend is simulated, so fixtures are not bugs.
+  and on the built branch here; the files are `…-ux-review-1.md` and `…-ux-review-2.md`. Told
+  when the backend is simulated, so fixtures are not bugs.
 - **Triage** is the implementing session's: every finding line is marked `accepted`,
   `rejected` or `already handled` in the review file (same convention as §8b). Accepted
   findings from this pass become contract rows with `source: review:<file>#<id>`;

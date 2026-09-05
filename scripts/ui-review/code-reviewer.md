@@ -34,6 +34,8 @@ feature. If you disagree with the approved design, say so in one line at the end
   produces the wrong result, and how you confirmed it (a test you ran, a call chain you read).
   A finding you could not confirm is marked `PLAUSIBLE`, not omitted and not asserted.
 - Run `bash scripts/verify.sh <worktree>` once and paste its summary at the top of your file.
+  It covers `youcoded/desktop` only: if the branch touches no desktop code, run the tests the
+  rules for the touched files name (or the repo's own test command) and say which you ran.
 - Budget: <the implementing session sets one>. A review is not a second build. When the
   budget is gone, write where you stopped.
 

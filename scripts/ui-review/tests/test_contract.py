@@ -289,10 +289,6 @@ class AcceptanceTests(unittest.TestCase):
         self.assertEqual(validate(load_spec(ap))[0], [])
 
 
-if __name__ == '__main__':
-    unittest.main()
-
-
 class ReviewSourcedRowTests(unittest.TestCase):
     """Rows whose source is an ACCEPTED finding in a review file (feature-flow design §8e): the
     code reviewer's and UX tester's accepted findings become contract rows so the acceptance
@@ -328,6 +324,13 @@ class ReviewSourcedRowTests(unittest.TestCase):
         self.assertTrue(any('R9' in p and 'F2' in p and 'not accepted' in p for p in check_contract(s)))
         s = self.with_review_row(source='review:2026-09-10-arcade-code-review.md#F7')
         self.assertTrue(any('R9' in p and 'no finding "F7"' in p for p in check_contract(s)))
+        # Review F4: an id that is on a line but unmarked is "not marked", never "no finding";
+        # bold ids, a trailing colon and a capitalised verdict all still resolve.
+        self.write_review('- F2 — deck/contract.py:40 — raw finding, not triaged yet\n')
+        s = self.with_review_row()
+        self.assertTrue(any('R9' in p and 'F2' in p and 'not marked' in p for p in check_contract(s)))
+        self.write_review('- **F2**: Accepted — bold id, colon, capital verdict\n')
+        self.assertEqual([p for p in check_contract(s) if 'R9' in p], [])
 
     def test_acceptance_deck_marks_review_rows(self):
         from deck.contract import acceptance_spec
@@ -344,3 +347,7 @@ class ReviewSourcedRowTests(unittest.TestCase):
         ap = os.path.join(self.tmp, 'deck', 'arcade.contract.acceptance.json')
         write_json(ap, acc)
         self.assertEqual(deck_data(load_spec(ap), {})['steps'][0]['rows'][-1]['found'], 'review')
+
+
+if __name__ == '__main__':
+    unittest.main()
