@@ -32,3 +32,4 @@ recurred — the repetition is the data.
 - Goals were implicit; the two that matter (fewer tokens next session, more automation + preferences captured once) were never stated → applied: "What better means here" section
 - Roadmap entries filed by wrap-up are not tagged, so the next wrap-up cannot check whether they moved → dropped: Destin deferred; revisit once the ledger has run a few sessions
 - deleted/merged: `SKILL.md` narrative trimmed hard enough to absorb a new section, a new step and a fifth question and still come out smaller — 1504 → 1492 words
+- `close-out.sh` reported the just-merged branch as "never pushed" — it cannot see a fast-forward merge → roadmap: `dev-workspace.md` (tests-adjacent, filed under rigs' neighbour section)  [3rd instance of this misleading-message class in the same script, 2026-09-03/04/05]

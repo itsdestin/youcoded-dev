@@ -469,3 +469,14 @@ seen-on is always n/a here.
       inside the viewport but still rendering as a spacer — that number must always be zero.
       Generalises past folding to any lazy render: is anything late to the screen?
       `n/a` `needs-verify` `checked 2026-09-03` `performance`
+
+- [ ] `close-out.sh` calls a branch "never pushed — nobody else can review this" when it was
+      actually merged by fast-forward. It looks for the branch ref, or a merge commit naming
+      the branch ("Merge pull request #N from owner/x" or "Merge branch 'x'"). A branch rebased
+      to one commit and pushed straight to master leaves neither, so a clean close-out reads as
+      the worst possible outcome. Hit 2026-09-05 on `chore/wrap-up-retrospective-first`
+      immediately after the merge succeeded; it is the SAME misleading-message class the script
+      was already fixed for twice (2026-09-03, 2026-09-04), on a third axis. A fast-forward IS
+      distinguishable: the branch's commits are ancestors of master and the reflog/upstream said
+      so before deletion — or ask for the sha instead of guessing from the name
+      `n/a` `confirmed` `checked 2026-09-05`
