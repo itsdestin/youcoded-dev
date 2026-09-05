@@ -99,6 +99,18 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] Committing a workspace doc takes six manual steps every time, and the leftovers are what
+      the sync healer exists to clean up. The pre-commit hook refuses commits in the shared
+      `youcoded-dev` checkout (correctly), so every edit becomes: copy each changed path into a
+      linked worktree, stage by explicit path, commit, push — done seven times in the
+      2026-09-04 buddy session alone. Nothing removes the original in the shared checkout, and
+      that residue is exactly what `workspace-sync.sh`'s classifier had to be built to
+      untangle. Copying whole files across also sweeps other sessions' work: doing it during
+      this very wrap-up pulled six unrelated index rows into the staging area. Wanted: one
+      command that takes the paths, does the copy/stage/commit/push in a worktree, and cleans
+      the shared copy — so the drift is never created rather than healed afterwards.
+      `n/a` `confirmed` `checked 2026-09-04`
+
 - [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
       nothing anywhere saying the app had stopped responding, so a tester's force-quit on
       2026-09-03 could not be explained at all. FIXED on a branch 2026-09-03

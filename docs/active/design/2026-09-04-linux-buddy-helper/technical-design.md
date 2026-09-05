@@ -1,7 +1,7 @@
 ---
 status: draft
 date: 2026-09-04
-revision: 7
+revision: 9
 feature: linux-buddy-helper
 contract: linux-buddy-helper.contract.json (13 rows, signed 2026-09-04; R2/R10 amended by decide-uninstall#D-1)
 branch: feat/linux-buddy-kwin-helper
@@ -9,7 +9,7 @@ review: rounds 1-3 (36 findings, 36 accepted) + round 4 narrow, scoped to the ne
 measurements: probe rounds 3-7 (2026-09-04) closed §3, §2's caption leak and R11, and REVERSED R3-F7's work-area decision
 ---
 
-# Linux buddy helper — technical design (revision 7)
+# Linux buddy helper — technical design (revision 9)
 
 Revision 1 was reviewed adversarially and every one of its thirteen findings was
 accepted, three of them severe: a security hole, a dev-instance/production
@@ -129,9 +129,14 @@ makes for the version and Wayland gates — whose `Screens` block carries `Name:
 `Enabled:`, `Geometry:`, `Physical size:` and `Scale:` per screen. Match **by
 bounds**, with three rules Round 4 added:
 
-- **Skip any screen whose `Enabled:` is not `1` (R4-F11).** The field exists
-  because KWin expects to print screens where it is `0`; a disabled output with
-  a stale or zeroed `Geometry` can otherwise shadow the real primary.
+- **Skip any screen whose `Enabled:` is `0` (R4-F11).** The field exists because
+  KWin expects to print screens where it is `0`; a disabled output with a stale
+  or zeroed `Geometry` can otherwise shadow the real primary. **A screen with no
+  `Enabled:` field at all counts as enabled** — revision 6 said "not `1`", which
+  would have turned the whole feature off on any KWin that formats the block
+  differently, and silently. The residual exposure is R4-F11's own case, which
+  the ±2 px bounds match and the containment check both still have to pass.
+  KWin 6.7.3 always emits the field (measured).
 - **Match within ±2 px, not exactly (R4-F8).** Electron reports scale
   `1.4997071027755737` where KWin reports `1.5`. Both round *this* screen to
   `1707x1067`, which is why the origin screen agrees; whether both round a
@@ -222,6 +227,14 @@ session does not go looking. So:
   never per frame. **A drag runs on the rect cached at its start**, stated so it
   is not discovered later.
 
+**Two deviations from this section are deliberate and were reviewed.** The
+work-area *fallback* is the display's `workArea`, not its `bounds`: on KDE
+Wayland they are byte-identical (Round 6 W1), and on every other platform
+`workArea` is the value that is already correct there, so the fallback is never
+worse and sometimes right. **Containment is still tested against `bounds`** —
+that basis is not negotiable, and a review confirmed the deviation did not leak
+into it. The second is the `Enabled:` reading above.
+
 **8 · The call sites (R4-F10).** §3 lists its nine writes by line; this change is
 the same shape and gets the same treatment. Twelve live `.workArea` reads in
 `buddy-window-manager.ts` — **129, 162, 171, 302, 308, 318, 435, 440, 504, 578,
@@ -277,6 +290,26 @@ This matters because **an orphan is not inert**: it still matches our
 writing geometry on every drag frame, and an orphan built against an older
 caption grammar mis-parses the new one. A fresh or reset profile mints a new
 token, which is exactly how orphans appear.
+
+**But "not this install's" is not the same as "dead", and revision 7 got that
+wrong — badly (B2 review, F1).** A dev instance gets its own userData directory
+(`main.ts:286`, from `YOUCODED_PROFILE`, which `scripts/run-dev.sh` always
+exports), so its plugin id differs from production's. With the sweep as
+specified, **production and every dev instance are permanently each other's
+orphan**: launching a dev instance — the workspace's mandated way to test
+anything — would unload the real app's helper from KWin and delete its files
+mid-session. Destin's buddy would stop moving with no message anywhere, and it
+would never repair itself, because `syncOnLaunch` returns early when its own
+package directory is gone. That is `live-app-safety.md` violated by **shipped
+product code**, not by a session.
+
+So ownership must be recoverable, not merely derivable. `copyPackage` already
+rewrites `metadata.json` to stamp the per-install plugin id; it also stamps
+**`X-YouCoded-Profile: <userDataDir>`**, and the sweep **skips any package whose
+recorded profile directory still exists on disk**. A package with no such field
+— a pre-fix install, or the probe's old un-suffixed package — stays sweepable,
+because nothing is running it. Unreadable metadata is left alone: a stale
+package is inert once unloaded, a deleted live one is not.
 
 **Half-install rollback (R1-13.6):** if files copy but `kwriteconfig6` or
 `reconfigure` fails, remove what was written and report failure. Never leave
@@ -427,11 +460,29 @@ So the two facts are separate and both are required:
 
 The three states the renderer must render, and nothing else:
 
-| `needed` | `supported` | What the user sees |
-|---|---|---|
-| false | — | **No helper UI at all.** Windows, macOS, Linux X11, and Linux Wayland running XWayland. The toggle behaves exactly as it does today. |
-| true | false | R5's row: "Not yet supported on this desktop", disabled. GNOME, wlroots, Plasma 5. |
-| true | true | The consent flow (R1-R3), then R8-R10. |
+| `needed` | `supported` | `installed` | What the user sees |
+|---|---|---|---|
+| false | — | false | **No helper UI at all.** Windows, macOS, Linux X11, and Linux Wayland running XWayland. The toggle behaves exactly as it does today. |
+| false | — | **true** | **The Remove helper action, and nothing else** — see below. |
+| true | false | — | R5's row: "Not yet supported on this desktop", disabled. GNOME, wlroots, Plasma 5. |
+| true | true | — | The consent flow (R1-R3), then R8-R10. |
+
+**Why the second row exists (raised by the B2 builder, and it is an R10
+violation).** A user can install the helper on Wayland and then log into X11 —
+or get an XWayland-backed build after an update. `needed` is now false, so a
+plain reading hides the whole helper UI **including Remove helper**, while the
+script is still installed and still loaded inside KWin. R10 promises *"you can
+remove it again any time, from the buddy's own settings"*, and in that state the
+settings are gone.
+
+It is not harmful — the helper only ever touches windows carrying our caption
+grammar, and on X11 the app positions its own windows so no such caption is ever
+written — but a promise the product made is unkeepable, which is enough.
+
+So **`installed` is reported truthfully whatever `needed` says**, and the Remove
+helper action is rendered whenever `installed` is true. It needs no new copy: the
+button already says what it does, and R6's one-row state for a *new* user is
+untouched, because a new user has nothing installed.
 
 `needed` also gates §5's `BUDDY_SHOW` refusal and §6's R12 migration — a user who
 never needed a helper must never be refused a buddy or have one hidden.
@@ -446,7 +497,15 @@ works.
   has not reconfigured, when the script threw on load, or when a restart is
   pending. Files+config remain the input to the *install* decision only.
   **Re-checked on window-show**, not once at panel mount, so disabling the script
-  in System Settings mid-session is noticed.
+  in System Settings mid-session is noticed — **and reacted to.** Noticing alone
+  was a bug (B4 review, F1): §3's owned-position model requires that the caption
+  channel never flip live→dead while buddy windows exist, because after the flip
+  moves take the `setPosition` branch (a silent no-op on Wayland) and `rectOf`
+  returns a frozen `getBounds()`, so the chat and bar re-anchor to the screen
+  corner while the mascot sits still and undraggable. Revision 7 named removal as
+  the guarantee, but removal is not the only writer — this re-check and a
+  momentary DBus failure flip it too. **A live→dead transition forces the buddy
+  off**, the same response R4 already gives to a declined helper.
 - **`supported`** is not "`org.kde.KWin` is reachable" — that is also true on
   Plasma **5**, whose scripting API is `clientList`/`clientAdded`, which this
   helper does not use. Install would succeed and the buddy would never move,
@@ -506,7 +565,27 @@ buddy with no ask; `App.tsx`'s boot path calls `buddy.show()` straight from
 
 **`BUDDY_SHOW` refuses when `needed` and the helper is not live, and returns the
 reason** — `needed`, not "on Linux": an X11 or XWayland user never needed a
-helper and must never be refused a buddy (§4). The renderer disables the toggle while status is unknown and renders a
+helper and must never be refused a buddy (§4).
+
+**Two sentences of revision 6 are withdrawn here, both superseded by §4's
+`needed` gate (B5b build):**
+
+- *"The renderer disables the toggle while status is unknown."* **No.** That
+  predates `needed`, and it would give Windows, macOS and Linux-X11 users a
+  momentarily dead switch during a lookup whose answer cannot affect them —
+  a change to the row-one promise that nothing changes for them. Enforcement
+  belongs in main, which is where §5 puts it, and main refuses on its own if a
+  helper does turn out to be needed.
+- *"…and renders a distinct state when the status call failed."* Deliberately
+  unbuilt: it needs words that do not exist, and a failed call already
+  fail-safes to `needed: false`, which is row one. **If it should say something,
+  that is a copy question for Destin, not a build task.**
+
+**Removal forcing the buddy off is scoped to `needed` too.** §6's sequence ends
+"force the buddy off (R4: no helper, no buddy)" — but in §4's second row the
+buddy moves perfectly well without a helper, so switching it off when a user
+removes one they were not using would take away something that was working. That
+is the same regression `needed` exists to prevent. The renderer disables the toggle while status is unknown and renders a
 distinct state when the status call *failed*, rather than falling through to the
 non-Linux path.
 
@@ -541,8 +620,17 @@ acceptance card is re-shot from both states.
 
 **The removal sequence, in order** — anything else looks like a silent failure:
 `unloadScript` → `kwriteconfig6 … Enabled false` → `reconfigure` → delete the
-package directory → force the buddy off (R4: no helper, no buddy) → status reads
-"not installed". Without the `unloadScript` first, KWin keeps running the deleted
+package directory → **`kwriteconfig6 --delete` the key** → force the buddy off
+(R4: no helper, no buddy) → status reads "not installed".
+
+The final `--delete` reconciles this list with §1, which requires removal to
+delete the key rather than leave it false — otherwise `[Plugins]` accrues one
+dead entry per token forever. It comes last and is best-effort: KWin has already
+re-read the config as disabled, so it needs no second `reconfigure`, and its
+failure must not fail the removal. **`unloadScript` failing, however, aborts the
+whole sequence** — Round 4 measured that deleting the files does not stop KWin
+running the parsed copy, so "removed" plus a buddy that still moves is the exact
+outcome this ordering exists to prevent. Without the `unloadScript` first, KWin keeps running the deleted
 script until logout and the buddy keeps moving, so the user believes removal
 failed.
 
