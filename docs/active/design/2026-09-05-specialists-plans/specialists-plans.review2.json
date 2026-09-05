@@ -1,0 +1,94 @@
+{
+  "title": "Plans — round 2: your four notes",
+  "key": "specialists-plans-review2",
+  "out": "specialists-plans.review2.html",
+  "images": "images/specialists-plans.review2",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/plans-card-review/round1",
+    "after": "/home/destin/youcoded-dev/scratch/plans-card-review/after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "writing": [
+      "plans-card",
+      "writing",
+      "1210x220+16+90"
+    ],
+    "running": [
+      "plans-card",
+      "running",
+      "1210x600+16+90"
+    ],
+    "paused": [
+      "plans-card",
+      "paused",
+      "1210x470+16+90"
+    ],
+    "add-budget": [
+      "plans-card",
+      "add-budget",
+      "1210x470+16+90"
+    ],
+    "interrupted": [
+      "plans-card",
+      "interrupted",
+      "1210x390+16+90"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat · plan card",
+      "path": "While the assistant is writing the plan",
+      "crop": "writing",
+      "headline": "The card is one line while the plan is being written, like every other collapsed card in the chat.",
+      "changed": "The clock and the wait note moved up into the card's own line: 'Plan: … writing the plan · 1m 12s · can take a few minutes on your computer'. The second line under it is gone. The note about waiting only appears on a model running on your computer.",
+      "notice": "A plan being written takes exactly as much room as any other card until it has something to show.",
+      "risk": "On a very narrow window the line is cut with an ellipsis rather than wrapping."
+    },
+    {
+      "id": "R-2",
+      "surface": "Chat · plan card",
+      "path": "A plan that is running, with one specialist opened",
+      "crop": "running",
+      "headline": "Each specialist is your existing specialist card again: open it for its brief, its thinking and tool calls, and its report.",
+      "changed": "The plain name-and-status lines are gone. Every specialist inside a step is now the same card you already get when your assistant hires one: a collapsed row that opens onto Briefing, Activity and Report, with Send-a-note and Stop while it works. The nesting reads plan, then step, then specialist. Stop the plan is red-outlined at the bottom right.",
+      "notice": "You can watch any one specialist in the plan as closely as you watch a specialist hired on its own, without leaving the plan card.",
+      "risk": "With several specialists open at once the plan card gets tall; each one starts closed, and a finished step folds."
+    },
+    {
+      "id": "R-3",
+      "surface": "Chat · plan card",
+      "path": "A plan paused at its limit",
+      "crop": "paused",
+      "headline": "The paused card drops the reassurance sentence, and Stop sits red on the left of Add budget at the bottom right.",
+      "changed": "The line now reads only 'Paused — step 1 hit its 27,000-token limit with 2 of 3 reviewers done.' The buttons moved from the bottom left to the bottom right, Stop in the app's red outline, to the left of Add budget.",
+      "notice": "Less to read, and the safe button is never the one your thumb lands on by habit.",
+      "risk": "The limit line above still says what was spent against what, so the promise is not lost, just shorter."
+    },
+    {
+      "id": "R-4",
+      "surface": "Chat · plan card",
+      "path": "After pressing Add budget",
+      "crop": "add-budget",
+      "headline": "The amount stays on the left and the two buttons sit together at the bottom right, Cancel before Continue.",
+      "changed": "Same row as before, re-ordered: the field and its dollar figure hold the left, Cancel then Continue sit at the right edge.",
+      "notice": "The button that spends money is the furthest right, where the plan's other forward buttons are.",
+      "risk": "None visible; the suggested amount is still the paused step's own limit."
+    },
+    {
+      "id": "R-5",
+      "surface": "Chat · plan card",
+      "path": "After the app restarted mid-plan",
+      "crop": "interrupted",
+      "headline": "Stop, in red, sits to the left of Continue at the bottom right.",
+      "changed": "The two buttons moved from the bottom left to the bottom right and swapped order, so Continue is the rightmost on this card and on the paused one.",
+      "notice": "Both cards that can restart work now put their buttons in the same place, in the same order.",
+      "risk": "None visible."
+    }
+  ]
+}

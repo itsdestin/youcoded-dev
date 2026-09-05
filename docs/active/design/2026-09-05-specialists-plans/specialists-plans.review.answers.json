@@ -1,0 +1,91 @@
+{
+ "deck": "specialists-plans-review",
+ "started": "2026-09-05T20:43:33.028Z",
+ "submitted": "2026-09-05T20:51:46Z",
+ "cur": 11,
+ "answers": {
+  "P-1": {
+   "v": "yes",
+   "seconds": 45,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-3": {
+   "v": "yes",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-4": {
+   "note": "i don't lke that it's two lines, the collapsed tool card should be 1 line like other tool cards",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 45,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-5": {
+   "note": "i want to keep our current agent/specialist cards that show thinking, output, and tool calls  for agents within the plan. this should have a clear visual heirarchy of collapsed cards (Plan->Step->Specialist). stop the plan should also have the red theming used for other stop buttons in the ui and sit at the bottom right, not the left",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 115,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-6": {
+   "v": "yes",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-7": {
+   "note": "drop \"nothing is spent past limit you approved. move the add budget/stop buttons to bottom right. make stop red-tint like earlier suggestions",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 43,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-8": {
+   "v": "yes",
+   "note": "out of curiosity, does pausing/resuming after credit limit is reached itself consume tokens? or is it no-cost pause/resume?",
+   "note_kind": "noting",
+   "seconds": 67,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-9": {
+   "v": "yes",
+   "note": "move buttons to right side. also, stop should be to the left of the whie button on this and the previous card.",
+   "note_kind": "noting",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-10": {
+   "v": "yes",
+   "seconds": 24,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-11": {
+   "note": "",
+   "v": "yes",
+   "seconds": 33,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-12": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
