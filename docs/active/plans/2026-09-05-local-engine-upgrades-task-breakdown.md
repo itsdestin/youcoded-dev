@@ -409,10 +409,14 @@ code to point at.
   the alias table.
 - `.claude/rules/engine-local-models.md`: rewrite the five bullets §I names (flat-basename
   "never rename downloads", the mmproj denylist, "integrated GPUs fall back to RAM-only",
-  "CUDA opt-in is Windows-x64-only", the `set-context` null trick). **Two of these already
-  contradict the shipped code** (confirmed building T8): `set-context` no longer restarts or
+  "CUDA opt-in is Windows-x64-only", the `set-context` null trick). **Four of these already
+  contradict the shipped code.** Confirmed building T8: `set-context` no longer restarts or
   nulls `supervisorBinary`, and `config.json` is described as syncable when its `engine`
-  section is per-machine.
+  section is per-machine. Confirmed building T15: line 28's "Router id = filename minus
+  `.gguf`" and line 36's "flat-basename cache naming is a probe-pinned contract" are both
+  false for a vision model, which lives in a folder and is **named by the folder** — probed.
+  Each needs "…except a model with a vision projector". The rule's `verify:` block and
+  `docs/MAP.md`'s guard list both gain `youcoded/desktop/test-engine/probe-vision.mjs`.
 - `native-runtime.md` rule and depth doc plus the `shared/types.ts` comment: `SessionProvider`
   has three members.
 - `desktop/src/shared/engine-types.ts`: the `loadedModelsBytes` comment says "loaded **or
