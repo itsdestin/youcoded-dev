@@ -58,6 +58,16 @@ refused → the carry in §4.7 is built in this feature and the task breakdown g
 task. P0-5: refused → `wrapGenerate` in §4.2 is built; accepted → dropped, the title path
 is still pinned to a body with `stream: true` either way.
 
+**Phase 0 answers (2026-09-05, Destin's account — free plan):** all five in
+`docs/active/investigations/2026-09-05-chatgpt-phase0-findings.md`. P0-1 passed end to end
+(10-day access tokens); P0-2 both legs are real (`/wham/usage` body and the `x-codex-*`
+headers, `reset_at` in epoch seconds); P0-3 the app's own version lists more rows than the
+Codex string, so the app sends its own; P0-4 accepted, so §4.7 is not built; P0-5 refused
+(400 "Stream must be set to true"), so `wrapGenerate` is built. One thing the screens had
+assumed is false on this account: a free plan has **one 30-day window**, no 5h/7d — put to
+Destin on words deck W-2; the parser reports windows by length and maps 300 min → `five_hour`,
+10080 → `seven_day`, anything else → `other` (drawn or dropped per W-2).
+
 ---
 
 ## 1. Shape of the whole thing
