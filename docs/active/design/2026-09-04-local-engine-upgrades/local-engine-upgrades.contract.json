@@ -1,0 +1,261 @@
+{
+ "title": "Local engine upgrades — contract",
+ "key": "local-engine-upgrades-contract",
+ "out": "local-engine-upgrades.contract.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "feat/local-engine-upgrades",
+ "sources": {
+  "local-engine-upgrades-questions": "local-engine-upgrades.questions.json",
+  "local-engine-upgrades-review": "local-engine-upgrades.review.json",
+  "local-engine-upgrades-review-2": "local-engine-upgrades.review-2.json",
+  "local-engine-upgrades-review-3": "local-engine-upgrades.review-3.json",
+  "local-engine-upgrades-review-5": "local-engine-upgrades.review-5.json",
+  "local-engine-upgrades-review-6": "local-engine-upgrades.review-6.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Settings → Model Providers → Local models, and the new-session form",
+   "path": "The engine card, the Recommended and Installed model lists, a model's Settings dialog, and the memory warning before a model loads",
+   "headline": "This is what done means.",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "When AMD's ROCm software is missing on Linux, the app shows the exact install command and runs it in its own terminal.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#Q-1",
+     "note": "only half-related, but this makes me think we should add a simple \"Terminal\" entry to the provider list when creating a new session, and allow users to have just a bare terminal window as a \"youcoded\" session. this would ingratiate us with devs and we could have this change paste the command into a new terminal session."
+    },
+    {
+     "id": "R2",
+     "statement": "Each downloaded model can set its own context length, Keep loaded, GPU layers, and a free-text box of extra engine flags.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#Q-2",
+     "note": "but, to be clear, the ui should still prioritize non-developers. things that would confuse people should be hidden by and \"advanced settings\" menu or something of the like, with (i) explainers for concepts"
+    },
+    {
+     "id": "R3",
+     "statement": "A model that can see images always downloads its vision file; there is no switch to skip it.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#Q-3",
+     "note": "how do others like unsloth studio handle this? i lean towards always download, but am open to providing an option if we REALLY feel like this may bother users"
+    },
+    {
+     "id": "R4",
+     "statement": "Speculative decoding and Compress context memory are visible switches under Advanced on the engine card, both on by default.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#Q-4",
+     "note": "fine with this being in advanced, along with some earlier settings. we should set the best defaults (like speculative decoding should probably default to \"on\")."
+    },
+    {
+     "id": "R5",
+     "statement": "A faster-engine button appears only for the matching graphics chip; you never land on a processor-only engine labelled CUDA or ROCm.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-1"
+    },
+    {
+     "id": "R6",
+     "statement": "Choosing the CUDA engine always brings its runtime files along; there is no separate second download to remember.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-1"
+    },
+    {
+     "id": "R7",
+     "statement": "On a shared-memory machine, the fit verdict counts the graphics pool limit and the memory available right now.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-2"
+    },
+    {
+     "id": "R8",
+     "statement": "On a 'tight' or 'too large' verdict, the size bubble ends with 'Lower this model's context length in its Settings to shrink this.'",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-6#S-6"
+    },
+    {
+     "id": "R9",
+     "statement": "The before-load warning is asked once per model at a given context length and remembers your answer on this computer.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-2"
+    },
+    {
+     "id": "R10",
+     "statement": "Adding vision downloads the file and moves the model into its own folder in one step; nothing on disk is rearranged otherwise.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-3"
+    },
+    {
+     "id": "R11",
+     "statement": "Models whose family has no vision file show nothing new on their row.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-3"
+    },
+    {
+     "id": "R12",
+     "statement": "While the engine runs, the card shows the chip in use, GB of models loaded, and the last reply's read and write speed, live.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-4"
+    },
+    {
+     "id": "R13",
+     "statement": "The engine card is a title with its state, one fact line, a faster-engine row when your chip has one, and an Advanced row.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-9",
+     "note": "goood boy"
+    },
+    {
+     "id": "R14",
+     "statement": "Set up shows one sentence, the command with Copy beside it, then Run in terminal and Check again — nothing else.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-10",
+     "note": "goooood boyyyyyyy"
+    },
+    {
+     "id": "R15",
+     "statement": "The switch is offered only once the app finds both the chip and its software; a failure after install shows the engine's own message.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-10"
+    },
+    {
+     "id": "R16",
+     "statement": "On a Linux flavour the app cannot recognise, the box offers AMD's guide and Check again instead of a command.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-10"
+    },
+    {
+     "id": "R17",
+     "statement": "Advanced opens in place: two speed switches with one-line hints, the context length, and one read-only row for version, backend and models folder.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-11"
+    },
+    {
+     "id": "R18",
+     "statement": "Every on/off setting on these screens is the app's standard toggle row, never a hand-drawn one.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/setting-row-authority.test.tsx",
+     "threshold": "the named test passes — no toggle anywhere in the desktop renderer sits outside a standard settings row",
+     "source": "local-engine-upgrades-review-2#P-11"
+    },
+    {
+     "id": "R19",
+     "statement": "Changing a speed switch restarts the engine; a model in use reloads on its next message.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-11"
+    },
+    {
+     "id": "R20",
+     "statement": "A model's size is one dotted number; hover or tap opens a small table of model file, download total and memory while running.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-12",
+     "note": "can't tell if its a deck bug but this is not really visible or positioned properly. bad boy :("
+    },
+    {
+     "id": "R21",
+     "statement": "The size breakdown bubble opens below the number, lined up with its left edge, and stays inside the dialog.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-3#P-16"
+    },
+    {
+     "id": "R22",
+     "statement": "An eye marks a downloaded model that sees images and a page marks text-only; hovering either names it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-13"
+    },
+    {
+     "id": "R23",
+     "statement": "Under a model that could see, 'Add vision (0.9 GB)' is a short link and its hover points to it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-13"
+    },
+    {
+     "id": "R24",
+     "statement": "A model's Settings button opens a small dialog of its own, 'Model settings' with the model's name; the Installed list is unchanged.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-3#P-17"
+    },
+    {
+     "id": "R25",
+     "statement": "Context length and Keep loaded are plain rows; Advanced unfolds Layers on graphics chip and Extra engine flags, each with an (i).",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-3#P-17"
+    },
+    {
+     "id": "R26",
+     "statement": "A mistyped extra flag stops only that model from loading and shows the engine's own message in its settings.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-3#P-17"
+    },
+    {
+     "id": "R27",
+     "statement": "The memory warning is an expandable row: one amber sentence with a chevron that opens to the numbers line and the toggle row.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-5#P-20",
+     "note": "put the \"warn me about this\" as a sub-card inside the expanded \"model may not fit card\". then this is good."
+    },
+    {
+     "id": "R28",
+     "statement": "Open, the row's second line is the model size plus its context memory and what is already loaded — one line, no paragraph.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-5#P-20"
+    },
+    {
+     "id": "R29",
+     "statement": "Open, the 'Warn me about this model' toggle is nested inside the warning card as its own small card, indented and tinted.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-6#P-21",
+     "note": "put the \"warn me about this\" as a sub-card inside the expanded \"model may not fit card\". then this is good."
+    },
+    {
+     "id": "R30",
+     "statement": "Closed, the warning is one amber line, and on Halftone and Meadow it still reads as a warning against the theme.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-5#P-20"
+    },
+    {
+     "id": "R31",
+     "statement": "A too-large model shows the same row in the danger colour and opens to the numbers line only — no 'Warn me' toggle.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-6#S-5"
+    },
+    {
+     "id": "R32",
+     "statement": "The size bubble lists 'Vision file (sees images)' as its own line, between Model file and Download, only for models that have one.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-6#S-7"
+    }
+   ]
+  }
+ ]
+}
