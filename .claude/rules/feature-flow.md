@@ -20,59 +20,70 @@ verify:
 
 # Feature flow — the deck is the one surface
 
-Design: `docs/active/specs/2026-09-01-feature-flow-design.md`.
+Design: `docs/active/specs/2026-09-01-feature-flow-design.md`. Order: questions → mockups →
+UX tester 1 → review deck(s) → contract → design + capped review → build → code reviewer +
+UX tester 2 → triage → grader → acceptance deck → Destin's merge call.
 
 ## Questions before drawing
-**Invariant:** a new feature's step-2 questions are a words-only deck (`<feature>.questions.json`,
-`"words": true` decide steps, 1–3 options), served and submitted before any UI is drawn. A note
-with no tag (answers files from before 2026-09-01) counts as **just noting**, same as a tagged one.
-(untagged-note rule: `scripts/ui-review/contract-agent.md` prose — none — candidate)
-**Why:** answers in chat are not a source; a contract row must resolve to an answered step.
-**Guard:** `test_words.py` covers the words-deck invariant only; the `ui-mockup` skill's
-"Before drawing anything" section (prose — not enforced).
+**Invariant:** step-2 questions are a words-only deck (`<feature>.questions.json`, `"words": true`
+decide steps, 1–3 options), submitted before any UI is drawn. An untagged note is **just noting**.
+**Why:** a chat answer is not a source; a row must resolve to an answered step.
+**Guard:** `test_words.py`.
 
-## The contract is a deck, and its sources are answered steps
-**Invariant:** `<feature>.contract.json` is a one-step `rows` deck; every row's `source` is
-`<deck key>#<step id>` of a submitted, non-skipped answer. Not the design spec, not the plan,
-not the transcript. Written by a FRESH agent from `scripts/ui-review/contract-agent.md`.
-**Why:** provenance — the rows are Destin's decisions, and a generator grading itself is generous.
-**Guard:** `review-cards.py contract-check`; `test_contract.py`.
+## The UX tester runs before Destin sees a deck, and once more at the end
+**Invariant:** a fresh subagent given ONLY `scripts/ui-review/ux-tester.md`'s briefing and
+`scripts/ui-review/tester-kit.md` — no CLAUDE.md, rules, spec or plan — drives the mockups before
+the first review deck, and the built branch after the code review. It reports errors,
+expected-vs-actual, over-long copy (with shorter wording) and visual inconsistencies; each
+finding line is triaged `accepted` / `rejected` / `already handled`.
+**Why:** a tester who read the design doc is not a beta tester (decided 2026-09-04).
+**Guard:** none — candidate (design §8e: measure after three features).
+
+## Sources are answered steps or accepted findings
+**Invariant:** `<feature>.contract.json` is a one-step `rows` deck. A row's `source` is
+`<deck key>#<step id>` of a submitted, non-skipped answer, or `review:<file>#<id>` naming a line
+marked `accepted` in a review file. A FRESH agent writes it from
+`scripts/ui-review/contract-agent.md`, never from the spec, plan or transcript.
+**Why:** provenance — rows are Destin's decisions, or promises he can veto.
+**Guard:** `review-cards.py contract-check`; `test_contract.py` (`ReviewSourcedRowTests`).
 
 ## Answers files are committed
-**Invariant:** `docs/**/*.answers.json` (and the stamped rotations) are tracked; only `scratch/`
-is ignored. Never add them back to `.gitignore`.
-**Why:** they are the only record of decisions; ignored for three months, they lived on one disk.
-**Guard:** none — candidate (an anchor test on `.gitignore`).
-
-## Reopen only through a deck
-**Invariant:** when implementation contradicts approved UI, the implementing session serves a
-one-step words-only `decide` deck and waits; a chat question is not a route back. The answer
-amends the contract row's `source`.
-**Why:** a chat answer is not a source (see above).
+**Invariant:** `docs/**/*.answers.json` (and stamped rotations) are tracked; only `scratch/` is
+ignored.
+**Why:** the only record of decisions; ignored, they lived on one disk.
 **Guard:** none — candidate.
 
-## The gate is three facts, and one command reports them
-**Invariant:** `review-cards.py contract-check <feature>.contract.json` is the only reader of
-the gate: (1) every row's source resolves and every `mechanical` guard exists on disk or on
-the contract's `branch` (exit 1 otherwise); (2) the contract was signed — `<feature>.contract.answers.json`
-submitted with the contract step `yes`; (3) `<feature>.contract.acceptance.answers.json` is
-submitted. `close-out.sh` relays its `ok:` / `todo:` lines and reads no answers file itself.
-**Why:** a guard the branch adds is not in the main checkout until merge; a contract nobody
-signed is not a definition of done; two readers of one file drift.
+## Reopen only through a deck
+**Invariant:** when implementation contradicts approved UI, serve a one-step words-only `decide`
+deck and wait; the answer amends the row's `source`.
+**Why:** a chat answer is not a source.
+**Guard:** none — candidate.
+
+## The gate is three facts, one command reports them
+**Invariant:** `review-cards.py contract-check` is the only reader: every source resolves and every
+`mechanical` guard exists on disk or on the contract's `branch` (exit 1 otherwise); the contract
+was signed (`.contract.answers.json`, step `yes`); the acceptance deck was submitted.
+`close-out.sh` relays its lines.
+**Why:** a branch's guard is absent from the main checkout until merge; unsigned is not done.
 **Guard:** `test_contract.py` (ContractCheckTests); `close-out-contract.test.sh`.
 
-## The build stage is reviewed, capped, and recorded
-**Invariant:** between the signed contract and the branch: a technical design → reviewer rounds
-that each write `docs/active/reviews/<date>-<feature>-design-review-<n>.md` (findings `R<n>-<k>`
-marked accepted / rejected / already handled, reversals tagged `reverses:`), stopping on a round
-with nothing accepted, cap three → task breakdown (descriptions by default; pre-written code
-only for cross-repo / stored-data / strict-order work) → subagent build with a reviewer per task.
-**Why:** nothing yet shows whether review rounds improve a design or churn it; the files are the data.
-**Guard:** none — candidate (design §8b: tooling after three features).
+## The build stage is reviewed, capped, recorded
+**Invariant:** technical design → reviewer rounds writing
+`docs/active/reviews/<date>-<feature>-design-review-<n>.md` (findings `R<n>-<k>` marked
+accepted / rejected / already handled, reversals `reverses:`; stop on a round accepting nothing,
+cap three) → task breakdown → subagent build, a reviewer per task.
+**Why:** whether rounds improve or churn a design is unmeasured; the files are the data.
+**Guard:** none — candidate.
 
-## Acceptance is graded rows plus human rows
-**Invariant:** the grader writes `<feature>.contract.verdicts.json` (beside the contract, same
-stem — the CLI reads exactly that name); `review-cards.py acceptance` refuses when a
-`mechanical` or `deck` row has no verdict.
-**Why:** an ungraded row is not a pass.
-**Guard:** `test_contract.py` (AcceptanceTests).
+## Two reviewers, a stranger grades, then the deck
+**Invariant:** after the build, a code reviewer (`scripts/ui-review/code-reviewer.md`: branch,
+contract rows, file rules — nothing else) and the UX tester's second run report in parallel to
+`docs/active/reviews/<date>-<feature>-{code,ux}-review.md`, each under a budget. The implementing
+session triages; accepted findings become `review:` rows. A fresh grader
+(`scripts/ui-review/grader.md`) writes `<feature>.contract.verdicts.json`, failing a `mechanical`
+row whose test exists but tests something else. The acceptance deck shows every verdict, tags
+`review:` rows **found in review**, and asks one yes/no per `human` row. Destin opens no review
+session; nothing merges without his word.
+**Why:** the builder is the worst reviewer of its branch; an existing guard is not a checked
+criterion; an ungraded row is not a pass.
+**Guard:** `review-cards.py acceptance` refuses ungraded rows; `test_contract.py` (AcceptanceTests).

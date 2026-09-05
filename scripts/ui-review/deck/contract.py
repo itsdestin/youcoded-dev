@@ -13,9 +13,34 @@ beside every graded row, then one words step per human / live-app row for Destin
 import glob
 import json
 import os
+import re
 import subprocess
 
-from .spec import is_contract, workspace_root
+from .spec import REVIEW_SOURCE_RE, is_contract, workspace_root
+
+
+def is_review_source(src):
+    return bool(REVIEW_SOURCE_RE.match(src or ''))
+
+
+def review_finding(base, src):
+    """Resolve a `review:<file>#<id>` source: '' if the finding line exists and says accepted,
+    else one problem. The review file's findings are one per line, `- <id> <verdict> — <text>`
+    with verdict accepted / rejected / already handled (feature-flow design §8b, §8e).
+    WHY the check reads the verdict: a reviewer's raw finding is an opinion; only one the
+    implementing session ACCEPTED is a promise the acceptance deck may hold the build to."""
+    rel, _, fid = src[len('review:'):].partition('#')
+    path = os.path.join(base, rel)
+    try:
+        with open(path) as f:
+            lines = f.read().splitlines()
+    except OSError as e:
+        return f'cannot read review file {rel}: {e.strerror or e}'
+    for line in lines:
+        m = re.match(r'^\s*[-*]\s+(\S+)\s+(accepted|rejected|already handled)\b', line)
+        if m and m.group(1) == fid:
+            return '' if m.group(2) == 'accepted' else f'finding {fid} in {rel} is {m.group(2)}, not accepted — only accepted findings become rows'
+    return f'no finding "{fid}" in {rel} (findings are lines like "- {fid} accepted — …")'
 
 
 class AcceptanceError(Exception):
@@ -93,6 +118,13 @@ def check_contract(spec):
     for st in contract_steps(spec):
         for r in st['rows']:
             tag = f'{st["id"]}/{r["id"]}'
+            if is_review_source(r.get('source')):
+                why = review_finding(spec['_base'], r['source'])
+                if why:
+                    problems.append(f'{tag}: {why}')
+                if r.get('checkedBy') == 'mechanical' and not guard_exists(root, spec.get('branch'), r.get('guard', '')):
+                    problems.append(f'{tag}: guard {r.get("guard")} is neither on disk under {root} nor committed on branch "{spec.get("branch") or "(no branch in the spec)"}"')
+                continue
             key, _, sid = (r.get('source') or '').partition('#')
             rel = sources.get(key)
             if not rel:
@@ -166,12 +198,16 @@ def acceptance_spec(spec, verdicts):
     rows = []
     for r in st['rows']:
         v = verdicts.get(r['id']) or {}
-        rows.append({**r, **({'verdict': v['verdict'], 'evidence': v.get('evidence', '')} if v.get('verdict') else {})})
+        # `found: review` marks a row that came from a reviewer's accepted finding, not from a
+        # deck Destin answered — the acceptance deck shows the tag so he can veto it (design §8e).
+        found = {'found': 'review'} if is_review_source(r.get('source')) else {}
+        rows.append({**r, **found, **({'verdict': v['verdict'], 'evidence': v.get('evidence', '')} if v.get('verdict') else {})})
     table = {**st, 'id': st['id'], 'rows': rows, 'headline': 'The contract, graded — accept these verdicts?',
              'yes': 'Yes, accept', 'no': 'No, something is wrong'}
     human = [{'id': r['id'], 'words': True, 'surface': st['surface'], 'path': 'Acceptance',
               'headline': r['statement'],
-              'changed': 'Checked by you.' + (f' Your note at review: “{r["note"]}”' if r.get('note') else ''),
+              'changed': ('Found in review after the build, not on a deck you saw — veto it here if you disagree. ' if is_review_source(r.get('source')) else 'Checked by you.')
+                         + (f' Your note at review: “{r["note"]}”' if r.get('note') else ''),
               'notice': r.get('threshold') or 'pass / fail',
               'yes': 'Holds', 'no': 'Fails'}
              for r in st['rows'] if r.get('checkedBy') in ('human', 'live-app')]

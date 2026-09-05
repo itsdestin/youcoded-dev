@@ -98,6 +98,18 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+- [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
+      1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
+      context-free tester cannot claim to have covered either. Add pointer and scale switches to
+      shot.mjs and ui-probe.mjs (drag-fuzz already has both) and default the tester kit to them
+      `n/a` `confirmed` `checked 2026-09-04`
+
+- [ ] Measure the feature flow's two reviewers: after three features have run through the
+      2026-09-04 flow, count findings, accepted, rejected and rows failed at acceptance per
+      reviewer, and whether the UX tester's first run cut Destin's review-deck rounds; decide
+      from those numbers whether each reviewer earns its cost
+      `n/a` `parked` `checked 2026-09-04`
+
 
 - [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
       nothing anywhere saying the app had stopped responding, so a tester's force-quit on

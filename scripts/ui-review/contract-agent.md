@@ -28,6 +28,17 @@ answers do not support a row, the row does not exist; write what was missed into
   reply with the source, for the session to file.
 - `no` / `skip` → no row. A skipped step is unanswered, never "fine".
 
+## Rows from the reviewers (the second pass only)
+After the build, the implementing session hands you the code reviewer's and UX tester's
+review files (`docs/active/reviews/<date>-<feature>-code-review.md`, `…-ux-review.md`) with
+every finding marked. **Only a line marked `accepted` becomes a row.** Its `source` is
+`review:<path relative to the contract>#<finding id>` (e.g.
+`review:../../reviews/2026-09-10-arcade-code-review.md#F2`); no `sources` entry is needed.
+Statement = the finding rewritten as what the user experiences. `contract-check` reads the
+line and refuses a finding that is not `accepted`; the acceptance deck tags these rows
+**found in review** so Destin can veto what he never approved on a deck. `rejected` and
+`already handled` lines are not rows and not `## Not covered`.
+
 ## `checkedBy`
 - `mechanical` only when you can name a test or guard path (workspace-relative) that checks
   the statement and EXISTS — on disk, or committed on the feature branch you were told

@@ -64,6 +64,11 @@ the reason. **A review must quote `coverage.md` and call unverified surfaces "un
 
 ## Writing a shot
 
+A context-free tester (the UX tester of the feature flow) learns this tool from
+`tester-kit.md` alone — keep that file, not this section, as the beginner's copy, and keep the
+two in agreement. The reviewer briefs beside it: `ux-tester.md`, `code-reviewer.md`,
+`grader.md`, `contract-agent.md`.
+
 `"measure": ["#send", {"text": "Send"}]` on a shot records those elements' window rectangles in
 the manifest (`measures`), which is how a review deck gets an exact highlight box. A missing
 element fails the shot. **Plan the `measure` lines before the Before run** — a measurement can
