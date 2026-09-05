@@ -8,6 +8,7 @@ handoff: docs/active/handoffs/2026-09-05-chatgpt-signin-START-HERE.md
 reviews:
   - docs/active/reviews/2026-09-05-chatgpt-signin-design-review-1.md
   - docs/active/reviews/2026-09-05-chatgpt-signin-design-review-2.md
+  - docs/active/reviews/2026-09-05-chatgpt-signin-design-review-3.md
 branches:
   youcoded: feat/chatgpt-signin
   youcoded-dev: design/chatgpt-subscription
@@ -19,8 +20,8 @@ tags: [chatgpt, openai, providers, native-runtime, oauth, technical-design]
 **What this is.** The build-stage design for the backend behind the approved screens. The
 screens, their copy and the contract are settled (21 rows); this document says what main
 does when each of them is used, what it stores, what it reuses, and what it must never do.
-It is written to be handed to a builder who has not read the decks. Revised after review
-rounds 1 and 2 (every accepted finding is folded in; the review files record which).
+It is written to be handed to a builder who has not read the decks. Revised after three
+review rounds — the cap (every accepted finding is folded in; the review files record which).
 
 **What is fixed by the contract and not reopened here:** the names (ChatGPT / ChatGPT
 Plan), the four card states, the plan's models grouped under the provider with no curated
@@ -135,9 +136,16 @@ dev launch. Instead `ProviderRegistry` appends
 ```
 
 to what `readAll()` returns whenever it was constructed with a `ChatGptAuth` (`list()`,
-`languageModel()` and `testConnection()` all go through it), and `upsert`/`remove` refuse the
-id like the other built-ins. Nothing on disk, so nothing for an older build to misread and
-nothing for the kill switch to migrate.
+`languageModel()` and `testConnection()` all go through it). **The id is never in `BUILT_INS`**
+— `init()` seeds every `BUILT_INS` entry to disk, which is the stray-card bug again — but in a
+separate `VIRTUAL_IDS` set with a WHY naming `init()`. `list()` reports `builtIn: true` for it;
+`upsert`, `remove` and `setKey` refuse it with one sentence ("ChatGPT is signed in through
+OpenAI, not with a key — use Sign out on its card."); `testConnection('chatgpt')` answers
+`{ ok: isSignedIn(), message }` with no network call. The §8 pin calls `init()` after
+constructing with a `ChatGptAuth` and asserts the file holds no `chatgpt` row. The row is
+appended **first**, so when a model id exists on both the plan and an OpenAI-key provider the
+plan's row is the one an id-only lookup finds. Nothing on disk, so nothing for an older build
+to misread and nothing for the kill switch to migrate.
 
 `label` is what the model picker and the status chip show (contract R11/R16). The Settings
 card's title is the literal "ChatGPT" in `ModelProvidersPopup.tsx`, already built.
@@ -190,8 +198,9 @@ completed sign-in.
   listener, leaves the timer and the generation alone, and returns true. Otherwise, in order: (1) pre-flight
   `safeStorage.isEncryptionAvailable()`; if false, **throw** the SecretsStore's own sentence
   ("Secure key storage is not available on this system…") before any browser opens.
-  (2) generate the PKCE verifier + S256 challenge and a 16-byte `state`; bind
-  `127.0.0.1:1455`; on `EADDRINUSE` **throw** "Port 1455 is already in use on this computer,
+  (2) generate the PKCE verifier + S256 challenge and a 16-byte `state`; **if the lingering
+  post-timeout listener (below) is still up, close it first** (`closeAllConnections()` +
+  `close()`), then bind `127.0.0.1:1455`; on `EADDRINUSE` **throw** "Port 1455 is already in use on this computer,
   so YouCoded cannot receive the sign-in. Close the other program using it (often the Codex
   CLI) and try again." (3) build the authorize URL, `shell.openExternal`, state → `waiting`,
   arm the timeout (default 10 minutes; the wizard passes 5). Returns true as soon as the
@@ -200,8 +209,11 @@ completed sign-in.
   resolved by the callback, `cancelSignIn()` or the timer; the wizard awaits it. The card
   never calls it (it polls `status()`).
 - `cancelSignIn()` — bump generation, close the listener, clear the timer, `signed-out`. True.
-- `signOut()` — bump generation, close any listener, stop the usage poll, delete the secret,
-  delete the account file, drop caches, `signed-out`. True. Never contacts OpenAI (no revoke endpoint is
+- `signOut()` — bump generation, close any listener, clear the `waiting` flag (resolving
+  `waitForSignIn` as `'cancelled'`), stop the usage poll, delete the secret, delete the account
+  file, drop caches, `signed-out`. True. From `blocked` it is the same. `signIn()` from
+  `blocked` (reachable by IPC, not from the card) starts a normal round; the callback's fresh
+  account write replaces the file, so no `blocked` survives it. Never contacts OpenAI (no revoke endpoint is
   documented; the refresh token simply stops being used).
 - `accessToken()` (main-internal) — returns a live access token, refreshing through
   `grant_type=refresh_token` when fewer than 5 minutes remain, under a single in-flight
@@ -236,6 +248,9 @@ sign-in. **On timeout the listener stays up for one more minute** answering ever
 with a fixed "This sign-in timed out — go back to YouCoded and try again." page, so a user who
 finishes in the browser just after the deadline sees that sentence instead of a
 connection-refused error; the state is already `signed-out` and the late callback is ignored.
+A new `signIn()` inside that minute closes it and binds fresh (step 2 above), so the
+`EADDRINUSE` sentence is only ever true of another process. Pinned: "signIn 5 s after a
+timeout succeeds and the lingering server is closed".
 
 Constants (verified against pi's source on 2026-09-04, re-read 2026-09-05):
 
@@ -315,8 +330,12 @@ hidden, and caches them in the account file. A 401/403 on this call is **silent*
 rows stand, and the account transitions (§4.6) happen only on a turn. `ModelCatalog.get`
 gains an `else if (p.type === 'chatgpt' && this.chatgptModels)` branch mirroring the
 `local-engine` one: rows come from an injected `() => Promise<CatalogModel[]>`, failure
-degrades to the cached rows, then to none. Refreshed at sign-in and at most hourly on
-`providers.catalog`. **Zero visible rows and no cache** → the picker lists nothing for the
+degrades to the cached rows, then to none. **The injected function is cache-first and never
+awaits the network**: `modelCatalog.get()` runs at six call sites, including the per-session
+context and price resolvers for sessions on *any* provider, so an expired hourly stamp must
+kick a background `refreshModels()` and return the cached rows now — never put an OpenAI
+round-trip in front of an OpenRouter session's first turn. Refreshed at sign-in and at most
+hourly, the stamp living inside `refreshModels()`. **Zero visible rows and no cache** → the picker lists nothing for the
 plan and the card stays signed-in; nothing is probed request-by-request (that would spend the
 user's plan). No pricing rows — the plan is not per-token, and pricing.ts is emphatic that
 absent means absent, never `$0`.
@@ -398,6 +417,33 @@ burst rate limit) stays an `APICallError` and keeps the SDK's own backoff.
 - A blocked account **stays listed** in `providers.list` with `ready: false`, so the plan's
   models leave the picker but the card keeps its Sign out.
 
+### 4.8 Capability profile — the harness must know the type
+
+`capability-profile.ts` has its own `ProfileProviderType` union, and the host passes the
+registry row's type through it unchanged (`?? 'openrouter'` catches only null). Without a
+`'chatgpt'` member the plan's models are sized like an unmeasured local model (no skill
+catalog, a 2k injection budget where OpenRouter's GPT-5.6 gets 20k), get the `'default'` prompt
+variant instead of `'gpt'`, and lose vision. So: add `'chatgpt'` to `ProfileProviderType`,
+`FRONTIER_PROVIDERS` and `VISION_PROVIDERS`; `cloudVariant('chatgpt')` → `'gpt'`; and a type-level
+guard so the two unions cannot drift again. Pinned: `resolveProfile({ providerType: 'chatgpt',
+contextLength: null, modelId: 'gpt-5.6' })` yields `exposeSkillCatalog: true`,
+`injectionBudgetTokens: 20_000`, `promptVariant: 'gpt'`, `supportsVision: true`.
+
+### 4.9 The renderer's provider-type lookup — two fixes the routing depends on
+
+§4.4's routing ("App routes `chatgptUsage` to a session bound to a ChatGPT model") runs
+through `hooks/use-provider-type.ts`, which caches the catalog **once per page and never
+invalidates**, and resolves by model id alone. Two consequences the design owns even though
+the renderer otherwise ships as approved: (a) a session started after signing in shows no
+chips and no plan on `/usage` until the app reloads — the acceptance walk for R4/R9 is exactly
+that path; (b) models.dev's `openai` list carries the same ids the plan uses (`gpt-5.5`,
+`gpt-5.6-sol`), so with both an OpenAI-key provider and the plan configured an id-only lookup
+can pick the wrong provider. Fixes: export `invalidateProviderTypeCache()` and call it from the
+card on every `chatgpt.status` transition it observes and from `ProvidersSection` after any
+upsert/remove, plus one refetch on a miss; and expose the native session's `providerType`
+(main already computes it in `bindingToPortableModel`) on `SessionInfo`, which the hook
+prefers over the catalog lookup. Pinned in `use-provider-type.test.tsx`.
+
 ### 4.7 Encrypted reasoning across steps (built only if P0-4 says it must be)
 
 The SDK re-sends a reasoning item only when the prompt holds an assistant `reasoning` part
@@ -448,18 +494,27 @@ machine is an email code or 2FA away, so it gets 5 minutes, not Claude's 2 and n
 card's 10), then `await waitForSignIn()`: `signed-in` → auth installed,
 `LAUNCH_WIZARD` → `COMPLETE` exactly like `handleOAuthLogin`; `timed-out` → `authMode:
 'none'`, `lastError: 'Sign-in timed out. Try again?'`; `cancelled` → "Sign-in was cancelled.";
-`{ error }` → that text. `'openrouter'` → `lastError: 'OpenRouter sign-in is coming in a later
+`{ error }` → that text. **A throw from `signIn()` itself** (port held by another process, no
+keychain) is caught by `handleChatGptLogin` and written as `authMode: 'none', lastError: <the
+thrown message>` — both `FIRST_RUN_START_AUTH` handlers in main.ts swallow throws, so without
+this the wizard's button would silently do nothing (mirror of `handleOAuthLogin`'s "Could not
+get login URL" line). `'openrouter'` → `lastError: 'OpenRouter sign-in is coming in a later
 update.'` — the button on the approved card must not be silent.
 
 **The launch-time auth check is made provider-aware.** Today every launch after first run
 asks `claude auth status` and forces the wizard back to AUTHENTICATE when Claude is not
 logged in (`main.ts` 915–925) — a ChatGPT-only install would be asked to sign in on every
-launch. The check becomes `chatgptAuth.isSignedIn() || (await detectAuth()).installed` — the sync
-file read first, the `claude auth status` spawn only when it is false; pinned with a test that
-stubs `detectAuth` to not-installed, seeds a signed-in account, and asserts `COMPLETE`. The
-same gap exists today for an install with only an OpenRouter key and no Claude login; main.ts
-has no reader for that, so it is **filed on the roadmap** (native-harness) rather than fixed
-here.
+launch. **This branch also removes the Skip-setup link from every step (contract R15)** — on master a
+forced re-run could be skipped; here it cannot. So the check is no longer only about ChatGPT:
+an install running on an OpenRouter key, an install whose `claude` CLI broke or vanished
+(`detectAuth` reports not-installed on any throw), or a ChatGPT-only install under the kill
+switch would otherwise be locked at a sign-in screen with no exit on the first launch after
+upgrading. The check becomes, in this order, `chatgptAuth.isSignedIn() || (await
+hasUsableProvider()) || (await detectAuth()).installed` — the two local reads before the
+spawn. `registerIpcHandlers` returns `{ cleanup, hasUsableProvider }` (any `ready` row from
+`providerRegistry.list()`) instead of the bare cleanup. Pinned in `first-run-chatgpt.test.ts`:
+`detectAuth` stubbed to not-installed + a signed-in account → `COMPLETE`; + one ready
+OpenRouter row → `COMPLETE`; the kill-switch variant → `COMPLETE`.
 
 **A ChatGPT-only install's first session.** The two new-session forms default their Runtime
 toggle to Claude Code and seed the native picker from `localStorage['youcoded-last-binding']`.
@@ -470,8 +525,9 @@ sees `authMode: 'chatgpt'` and `currentStep: 'COMPLETE'`) writes a new
 is already back** (the models refresh was kicked by the callback a second earlier and may
 still be in flight; `useNativeBinding` already falls back to the first ready provider's first
 model, so a missing seed degrades to the right thing). Both forms read the key through one
-`defaultRuntime()` in `RuntimeBinding.tsx` for their `useState` initialiser **and** for the
-reset they do after every create (today both reset to the literal `'claude'` — SessionStrip
+`defaultRuntime()` in `RuntimeBinding.tsx` — which returns `'claude'` unless `isNativeSupported()`,
+so a stored `'native'` cannot open the forms with a disabled Create under `YOUCODED_NATIVE=0` —
+for their `useState` initialiser **and** for the reset they do after every create (today both reset to the literal `'claude'` — SessionStrip
 742, App 3361 — which would make the default last exactly one session). Nobody else writes
 the key, so users who never did a ChatGPT first run see no change.
 
@@ -483,9 +539,11 @@ Mirrors `YOUCODED_NATIVE`. When set:
 
 - preload's `chatgpt.supported` is false → the renderer hides the ChatGPT card and the
   first-run button (two one-line gates on the approved screens; nothing else changes).
-- `ProviderRegistry` is constructed with `chatgpt: null`: the virtual row is not appended, so
-  `list()` omits it, `languageModel` refuses it with "ChatGPT sign-in is turned off in this
-  build.", and the catalog contributes nothing. A session already bound to a ChatGPT model shows whatever the chip shows today for
+- `ChatGptAuth` is **still constructed** (it is the file reader the launch-time check needs, so
+  a ChatGPT-only install is not locked out by the switch); `ProviderRegistry`, the catalog and
+  preload get `chatgpt: null`: the virtual row is not appended, so `list()` omits it,
+  `languageModel` refuses it with "ChatGPT sign-in is turned off in this build.", and the
+  catalog contributes nothing. A session already bound to a ChatGPT model shows whatever the chip shows today for
   a provider that is not listed (the bare model id); its next turn fails with that sentence.
 - The four handlers still exist (parity) and answer `signed-out` / `false`.
 
@@ -512,12 +570,14 @@ Tokens already stored are left alone; the flag is a fast revert, not a sign-out.
 | Test | Pins |
 |---|---|
 | `tests/chatgpt-oauth.test.ts` | PKCE challenge is S256 of the verifier; authorize URL carries client id, scope, redirect, state, challenge; JWT claim decoding; usage and manifest parsers against the Phase 0 fixtures (recorded JSON, secrets stripped); the 429 → limit-sentence mapping (window choice, reset normalisation); **the thrown limit / expired / blocked errors have no own `statusCode`, `status` or `code`, and `describeProviderError` returns each message byte for byte** |
-| `tests/chatgpt-auth.test.ts` | every arrow in §3 with injected I/O: state mismatch never exchanges **and leaves the state `waiting`**; `error` never reaches the HTML; cancel closes the listener; timeout at the passed duration; sign-out deletes the secret before the file; refresh under one in-flight promise; a 401 refresh failure signs out; a 403 blocks with the verbatim reason; a copied userData reads signed-out; `EADDRINUSE` and an unavailable keychain **throw** their sentences; **timer-after-success is a no-op; refresh-after-signOut leaves no secret; cancel-during-exchange leaves no account file**; `usageForStatus()` prunes; `plan` follows the poll; **a second `signIn()` while waiting adds no timer and bumps nothing; `status()` is `waiting` while the exchange is pending; the poll starts on construction when signed in and on callback, stops on sign-out and on blocked, and is unref'd; `mutate` retries then throws; the timed-out listener answers the fixed page for one minute** |
-| `tests/provider-registry.test.ts` (extended) | the virtual row appears in `list()` only when a `ChatGptAuth` is given and never lands in providers.json; `upsert`/`remove` refuse it; `ready` follows `isSignedIn`; the chatgpt case sends `store:false`, `include`, non-empty `instructions`, `prompt_cache_key`, the three headers and `originator: youcoded`; no `system` input item; **exactly one `authorization` value per request, equal to the token, placeholder absent** (second call, second token); the 401 → refresh → re-send; `generateText` on the model sends `stream: true`; a burst 429 keeps OpenAI's message; the kill-switch refusal |
+| `tests/chatgpt-auth.test.ts` | every arrow in §3 with injected I/O: state mismatch never exchanges **and leaves the state `waiting`**; `error` never reaches the HTML; cancel closes the listener; timeout at the passed duration; sign-out deletes the secret before the file; refresh under one in-flight promise; a 401 refresh failure signs out; a 403 blocks with the verbatim reason; a copied userData reads signed-out; `EADDRINUSE` and an unavailable keychain **throw** their sentences; **timer-after-success is a no-op; refresh-after-signOut leaves no secret; cancel-during-exchange leaves no account file**; `usageForStatus()` prunes; `plan` follows the poll; **a second `signIn()` while waiting adds no timer and bumps nothing; `status()` is `waiting` while the exchange is pending; the poll starts on construction when signed in and on callback, stops on sign-out and on blocked, and is unref'd; `mutate` retries then throws; the timed-out listener answers the fixed page for one minute and a `signIn()` inside it succeeds; `signOut()` during waiting resolves `waitForSignIn` cancelled** |
+| `tests/provider-registry.test.ts` (extended) | the virtual row appears in `list()` only when a `ChatGptAuth` is given, first, with `builtIn: true`, and `init()` afterwards leaves no `chatgpt` row in providers.json; `upsert`/`remove`/`setKey` refuse it with the one sentence; `testConnection` answers from `isSignedIn()`; `ready` follows `isSignedIn`; the chatgpt case sends `store:false`, `include`, non-empty `instructions`, `prompt_cache_key`, the three headers and `originator: youcoded`; no `system` input item; **exactly one `authorization` value per request, equal to the token, placeholder absent** (second call, second token); the 401 → refresh → re-send; `generateText` on the model sends `stream: true`; a burst 429 keeps OpenAI's message; the kill-switch refusal |
 | `tests/model-catalog.test.ts` (extended) | chatgpt rows come from the injected source, degrade to the cache, then to none; hidden rows dropped; no pricing |
 | `tests/ipc-channels.test.ts` | the five-surface parity block |
 | `tests/workbench-mock-contract.test.ts` | forces the four rows off `MOCK_ONLY` |
-| `tests/first-run-chatgpt.test.ts` | `handleChatGptLogin` transitions: waiting line, success → COMPLETE, timeout/cancel/error → `authMode: 'none'` with the right line; `'openrouter'` → its line; **the late auth check passes on a signed-in ChatGPT account with Claude not logged in** |
+| `tests/first-run-chatgpt.test.ts` | `handleChatGptLogin` transitions: waiting line, success → COMPLETE, timeout/cancel/error → `authMode: 'none'` with the right line; a throw from `signIn()` → `lastError` is the thrown text; `'openrouter'` → its line; **the late auth check passes with Claude not logged in for a signed-in ChatGPT account, for one ready OpenRouter row, and under the kill switch** |
+| `tests/capability-profile*.test.ts` (extended) | §4.8's four values for `providerType: 'chatgpt'`; the union guard |
+| `tests/use-provider-type.test.tsx` (small) | the cache invalidates on a status transition and refetches on a miss; a session's own `providerType` wins over the id lookup |
 | `tests/runtime-default.test.tsx` (small) | `defaultRuntime()` reads `youcoded-runtime-default`; both forms use it for the initial runtime **and** the post-create reset; nothing writes the key outside the first-run completion path |
 
 `bash scripts/verify.sh` green before any claim of done.
@@ -543,6 +603,8 @@ Made here, as technical defaults — each is visible to the user, so each is nam
    on the plan's first model (§5), through one new localStorage key that nothing else writes.
 7. **The provider row is virtual** (§2) — never persisted — so no other build on the machine
    can misread it.
+9. **The launch-time check accepts any ready provider** (§5), because the Skip link is gone;
+   this is what keeps an OpenRouter-only or a broken-CLI install out of a locked wizard.
 8. **The weekly limit sentence's reset format** goes to Destin on a one-step words deck
    before the build touches `chatGptLimitMessage`: keep the clock time only, or add the day
    the way the 7-day chip already does ("Resets Mon @ 6:43pm"). The 5-hour sentence is
@@ -551,8 +613,8 @@ Made here, as technical defaults — each is visible to the user, so each is nam
 Open, not blocking, unchanged from the handoff: the pay-per-use warning (dropped by the
 approved round-3 wording — nothing here reintroduces it), the first-run "or local model"
 route, the OpenRouter sign-in backend, Android's native runtime (M8). Added by this design as
-roadmap items, not built here: carrying encrypted reasoning across steps (§4.7) if P0-4 shows
-it is optional; the launch-time auth check for an OpenRouter-only install (§5).
+a roadmap item, not built here: carrying encrypted reasoning across steps (§4.7) if P0-4 shows
+it is optional.
 
 ---
 
@@ -574,7 +636,10 @@ it is optional; the launch-time auth check for an OpenRouter-only install (§5).
   260/286 (`remoteServer` before the dev-profile userData override), 895–925 (the late auth
   check); `@ai-sdk/provider-utils/dist/index.js` 1372–1380 (headers lower-cased before `fetch`),
   3305–3318 (how `fetch` is called); `src/renderer/components/SessionStrip.tsx` 742 and
-  `App.tsx` 3361 (the post-create runtime reset); `src/main/harness/harness-session.ts` 428 (`describeProviderError`),
+  `App.tsx` 3361 (the post-create runtime reset); `src/main/harness/capability-profile.ts` 87–89,
+  157–170, 350 (the union, `cloudVariant`, the provider sets); `src/renderer/hooks/use-provider-type.ts`
+  17–43 (the page-lifetime cache and the id-only lookup); `origin/master` `FirstRunView.tsx` 362–367
+  (the Skip link this branch removes); `src/main/harness/harness-session.ts` 428 (`describeProviderError`),
   1146 (`assistantMessage`), 2965 (`withRetry`); `src/main/ipc-handlers.ts` `buildStatusData`;
   `src/renderer/components/RuntimeBinding.tsx` (`youcoded-last-binding`);
   `tests/ipc-channels.test.ts` (`arcade:*`).
