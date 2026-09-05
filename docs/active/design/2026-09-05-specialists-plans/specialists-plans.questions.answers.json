@@ -1,0 +1,58 @@
+{
+ "deck": "specialists-plans-questions",
+ "started": "2026-09-05T08:37:29.786Z",
+ "submitted": "2026-09-05T08:40:46Z",
+ "cur": 6,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 49,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "a",
+   "note": "",
+   "seconds": 41,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

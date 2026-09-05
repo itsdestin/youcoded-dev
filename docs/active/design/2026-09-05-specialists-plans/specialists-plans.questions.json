@@ -1,0 +1,166 @@
+{
+  "title": "Plans — seven questions before anything is drawn",
+  "key": "specialists-plans-questions",
+  "out": "specialists-plans.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "Local models",
+      "headline": "How a plan runs on a local model, and whether plans are offered to small ones",
+      "options": [
+        {
+          "id": "a",
+          "label": "Offer plans from the 9B local class up and on every cloud model; smaller models keep today's behaviour (recommended)",
+          "summary": "How it works on a local model: your one loaded model does everything. It writes the plan (40 seconds on a 9B, two to four minutes on a 27B), then each specialist in the plan is a separate conversation on that same model, running in parallel inside the engine's four lanes. All four share one memory pool the size of your context setting and one graphics chip, so four at once each run about half speed and the first wave pays the full instruction-loading cost again. A second local model is only involved if you pointed the budget or frontier tier at one in Settings, and that loads a second model into memory. With this option a 2B model never sees a plan card; the assistant answers on its own, as today. Cost: nothing new, the gate that already decides who may hire specialists decides this too."
+        },
+        {
+          "id": "b",
+          "label": "Wait for a small local model that can write a valid plan",
+          "summary": "Plans ship to nobody until a 2B-class model passes the test, which no date promises. Cloud users and 9B-or-larger local users get nothing in the meantime, and the gate is still needed for whichever models remain below the bar."
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "Before approval",
+      "headline": "What the plan card shows before you approve it",
+      "options": [
+        {
+          "id": "a",
+          "label": "A short step list, the specialist count, one ceiling line, then Approve and Comment (recommended)",
+          "summary": "The card reads like a receipt: 'Review 6 files (3 specialists) → Check each result → Combine', then 'Up to 40,000 tokens · about $0.12 on Claude Sonnet' (tokens only when the model has no published price), then the two buttons. Each step opens to show its instructions and its own cap, but that detail is folded by default. Fits the tool-card header every other card uses."
+        },
+        {
+          "id": "b",
+          "label": "The full tree open, every step's cap editable on the card",
+          "summary": "Power users can trim a step's budget before approving. Downside: a plan with eight steps becomes a screen-tall form in the middle of a chat, and most people will approve without reading it, which defeats the point of a ceiling."
+        },
+        {
+          "id": "c",
+          "label": "One sentence and a ceiling; details behind a 'Show plan' link",
+          "summary": "Smallest card, least reading. Downside: you approve something you have not seen; the spec's reason for a card is that you see the fan-out before it costs anything."
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "Comment",
+      "headline": "What pressing Comment does",
+      "options": [
+        {
+          "id": "a",
+          "label": "A note box opens under the card; the assistant rewrites the plan and posts a new card (recommended)",
+          "summary": "You type 'skip the tests folder, use the budget model for reviewing' and a revised card appears below the old one, which greys out. Same shape as sending a note to a running specialist today. Cheapest to build and works on a phone."
+        },
+        {
+          "id": "b",
+          "label": "Comment on individual steps inside the card",
+          "summary": "Each step gets its own note field, so 'drop step 2' is a click on step 2. Downside: a plan usually needs a sentence, not per-step edits, and the card becomes a small editor that needs its own keyboard and phone handling."
+        },
+        {
+          "id": "c",
+          "label": "Comment just puts the plan into the typing box as a quote",
+          "summary": "Nothing new on the card; you reply in chat as you would to any message. Downside: the link between your reply and the card is lost, so the revised plan cannot show what changed."
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Settings · Specialists",
+      "path": "Auto-approve",
+      "headline": "Should small plans run without asking, and where is that set",
+      "options": [
+        {
+          "id": "a",
+          "label": "Off until you turn it on: a Settings row 'Run plans without asking when under …' with an amount you set (recommended)",
+          "summary": "Every plan asks until you decide you trust the card. When on, a plan under the amount shows as already running, with the ceiling still printed. Downside: one more Settings row to discover."
+        },
+        {
+          "id": "b",
+          "label": "On by default at a small amount",
+          "summary": "Fewer interruptions from day one. Downside: money can be spent on a plan you never saw, which is the exact thing the ceiling exists to prevent; a first-time user learns about plans from a bill line."
+        },
+        {
+          "id": "c",
+          "label": "No auto-approve in the first version",
+          "summary": "Simplest: every plan asks. Downside: a session that plans five times an hour becomes a click-through."
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "While running",
+      "headline": "Where progress shows while a plan runs",
+      "options": [
+        {
+          "id": "a",
+          "label": "The plan card is the progress surface: each step ticks off, each specialist is a line inside it (recommended)",
+          "summary": "One card in chat tells the whole story: 'Review 6 files — 2 of 3 done', a line per specialist with Stop and Send a note, then the check and combine steps. The separate one-card-per-specialist you get today stays for specialists hired outside a plan. Downside: a big plan makes a tall card, which is why steps fold once done."
+        },
+        {
+          "id": "b",
+          "label": "Keep one card per specialist as today; the plan card only shows the step list",
+          "summary": "Nothing about today's cards changes. Downside: a three-specialist step puts four cards in a row in chat, and the plan's own card cannot show which step you are on without scrolling."
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "Paused for budget",
+      "headline": "What you see when a plan hits its ceiling",
+      "options": [
+        {
+          "id": "a",
+          "label": "The card pauses in place: what finished stays, the stuck step says why, buttons offer Add budget or Stop (recommended)",
+          "summary": "'Paused — Review step reached its 15,000-token cap with 2 of 3 files done.' Add budget asks for an amount and continues from where it stopped; Stop keeps the finished results and hands control back to the assistant. Nothing is lost and nothing is spent past the number you approved."
+        },
+        {
+          "id": "b",
+          "label": "The assistant asks you in chat, as a question card, and the plan card just says Paused",
+          "summary": "Reuses the question card every other ask uses. Downside: two cards for one event, and the question scrolls away from the plan it is about."
+        },
+        {
+          "id": "c",
+          "label": "Stop the plan and report what finished; the assistant proposes a new plan for the rest",
+          "summary": "Matches 're-plan instead of clever plans'. Downside: a cap that was set slightly low costs a whole new plan-writing wait (up to minutes on a local model) instead of one click."
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "After a restart",
+      "headline": "What happens to a running plan when the app restarts",
+      "options": [
+        {
+          "id": "a",
+          "label": "The card comes back as 'Interrupted — 3 of 5 steps done' with a Continue button; nothing runs until you press it (recommended)",
+          "summary": "Finished steps are kept and reused for free; pressing Continue runs only the unfinished work. Downside: a plan you meant to leave running overnight waits for your click after a crash or an update."
+        },
+        {
+          "id": "b",
+          "label": "Continue automatically the moment the conversation is opened",
+          "summary": "Feels like it never stopped. Downside: model time and money start again without you seeing it, possibly on a different model if your default changed, and a crash loop would re-run the same step repeatedly."
+        },
+        {
+          "id": "c",
+          "label": "Continue automatically only when a local model is running it (free); otherwise ask",
+          "summary": "Free work resumes on its own, paid work waits for you. Downside: two behaviours to explain, and 'local' is not always free of consequence (it occupies the engine)."
+        }
+      ]
+    }
+  ]
+}
