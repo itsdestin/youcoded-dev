@@ -134,19 +134,44 @@ three open-eyed faces, `skins/` in scope, and byte-equality between
 `mascots/examples/` and the theme's shipped rig. Each was shown failing before it
 passed, and the copy check caught real drift the moment it was added.
 
+## The theme builder (2026-09-05)
+
+Rebuilt after the art, on Destin's call that drawing first would teach us what the
+guidance needed. It did — and it also turned up that the four starter drawings every
+new theme was copied from had never worked. They were lifted out of the app's React
+code and kept React's attribute spelling (`fillRule`, `stopColor`), which real SVG
+ignores, so the eye cutouts never cut, the gradients never painted, and the body fell
+back to `currentColor` — which renders BLACK through the app's `<img>` path (measured
+on a page with `color: #ff0000`, output pure `#000000`). Rendered as the app renders
+them, all four were black silhouettes; `idle` had one eye, `welcome` none.
+
+- **Starters deleted, replaced by `build-mascot.mjs`** — takes a palette, emits a
+  conforming rig plus the four flat variants. The generated rig passes the
+  wecoded-themes registry auditor (the same one gating PRs there) with zero warnings,
+  so a new mascot conforms by construction rather than by recall.
+- **`--from-rig` re-derives flat art from a decorated rig**, because flat art built
+  from a palette knows nothing about a hat added later.
+- **The flat set is `idle · welcome · inquisitive · shocked`** — the app's
+  `MascotVariant` union. The manifest template named `dizzy` (not in the union) and
+  omitted `inquisitive` (in it). Both themes this skill generated carried the dead
+  asset; both hand-made themes were correct, which is what pinned the cause.
+- **Flat art is now DERIVED from the rig** (`wecoded-themes/scripts/flatten-rig.mjs`),
+  not maintained beside it — rebuilding the rigs had left every phone user on the old
+  faces.
+
+Now mechanical rather than prose, each shown failing before it passed: eight faces
+required; pupil groups on the three open-eyed faces; `skins/` in the auditor's scope;
+`mascots/examples/` byte-equal to the shipped rig; manifest mascot keys inside the
+app's union; flat art matching its rig. Plus 11 generator tests in marketplace CI.
+
+**Known and accepted:** none of this reaches Android or a remote browser, which render
+four stills. Destin, 2026-09-05: *"okay this is fine for now."* Filed in
+`docs/roadmap/themes.md`.
+
 ## Still open, in the order it should probably happen
 
-1. **The theme builder** (`wecoded-marketplace/wecoded-themes-plugin/skills/theme-builder/`).
-   Destin, 2026-09-05: "we will also need to improve theme builder to create
-   better mascots given the new template." Concretely, and verified on disk:
-   `reference/mascots.md:92` still says **"Six faces, not four: idle · welcome ·
-   curious · shocked · dizzy · blink"** — it is eight now; the four starter SVGs
-   in `scripts/base-mascot-{idle,welcome,shocked,dizzy}.svg` are the OLD style
-   (black-disc eyes) and are what every new community theme is currently built
-   from; and none of the warm style rules exist in the skill at all. Until this
-   is done, every theme made in the app ships the faces we just replaced.
-2. **The two-tier motion system**, and the sleep state the z's hang off.
+1. **The two-tier motion system**, and the sleep state the z's hang off.
    Governed by Destin's rule: ambient motion only while every session is green
    or gray; red/amber/blue stops it and plays the one clear signal.
-3. **Three brand-new characters** for Cotton Candy Sky, Meadow Mist and
+2. **Three brand-new characters** for Cotton Candy Sky, Meadow Mist and
    Devil's Garden.
