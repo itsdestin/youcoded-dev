@@ -258,10 +258,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       unbuilt 2026-09-01)
       `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-native-mcp-phase-2.md
 
-- [ ] Open a native session on a repo and the repo's own `.claude/skills/` folder is never picked up —
-      Claude Code in the same folder would see them. Plan written 2026-08-06
-      (`docs/active/plans/2026-08-06-project-scoped-skills.md`), build work only
-      `desktop` `needs-verify` `checked 2026-08-26` `v1.3.1`
+- [ ] **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
+      only project-skill convention is Claude Code's `.claude/skills/`, so a person using only
+      YouCoded has no obvious place to put a personal or project workflow. Make `~/.youcoded/`
+      and a project-owned `.youcoded/` location the native source of truth; treat `.claude/skills/`
+      as optional import/export compatibility, never a prerequisite. The existing 2026-08-06 plan
+      is Claude Code parity only and must be superseded or expanded before implementation.
+      `all` `blocked` `checked 2026-09-05` `v1.3`
 
 - [ ] Pasting a path like `/README.md` or `/My Files/notes.md` into the chat still gets eaten as a
       slash command and the text vanishes; the common `/home/…` shape was fixed 2026-08-10. Destin

@@ -45,6 +45,7 @@ Target: `v1.3`
 - local-models: Gemma models download with no licence notice, and Google's Gemma terms require passing their
 - marketplace: A plugin that ships from a non-default branch gets scanned against the wrong code. Four live
 - marketplace: The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets
+- native-harness: **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
 - other-features: Nothing on first run tells a new user the assistant can change and delete files and that
 - user-interface: Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel.
 
@@ -52,7 +53,7 @@ Target: `v1.3`
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 70 | 26 | 2 | 9 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 50 | 9 | 1 | 16 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 50 | 8 | 1 | 16 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 28 | 16 | 0 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 6 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 10 | 1 | 4 |
