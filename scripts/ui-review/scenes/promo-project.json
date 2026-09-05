@@ -6,7 +6,7 @@
   "zoom": 1.25,
   "fps": 30,
   "boot": 3000,
-  "why": "Beat 5's second half. Project View opens on the focused conversation's project or, when none matches, the first in the list — the student fixture puts Econ 201 first and lists no Documents project on purpose. `files` waits for Q3-sales.xlsx in the Files tree rather than trusting a settle. The Context tab button carries a count badge (\"Context 2\"), so it is found by prefix, not exact text; `context` is marked on the wait for the note so its frame shows the tab populated. On the first take the Files grid sat in the DOM for two seconds before Chrome painted it (the screencast only emits a frame on a paint, and nothing else on the page changed), so `files` is marked on a double-rAF eval after a small pointer nudge over the tab bar, which forces the paint; `projects` likewise waits for the Econ 201 hero (the view's header paints a beat before the project is selected). The opening dust freeze is promo-conversations' trick — Meadow Mist's pointer steps ran slow enough that the Projects click alone took 1.5 s.",
+  "why": "Beat 5's second half. Project View opens on the focused conversation's project or, when none matches, the first in the list — the student fixture puts Econ 201 first and lists no Documents project on purpose. `files` waits for Q3-sales.xlsx in the Files tree rather than trusting a settle. The Instructions & Memories tab button carries a count badge (\"Instructions & Memories 2\"), so it is found by prefix, not exact text; `context` is marked on the wait for the note so its frame shows the tab populated. On the first take the Files grid sat in the DOM for two seconds before Chrome painted it (the screencast only emits a frame on a paint, and nothing else on the page changed), so `files` is marked on a double-rAF eval after a small pointer nudge over the tab bar, which forces the paint; `projects` likewise waits for the Econ 201 hero (the view's header paints a beat before the project is selected). The opening dust freeze is promo-conversations' trick — Meadow Mist's pointer steps ran slow enough that the Projects click alone took 1.5 s.",
   "actions": [
     {
       "eval": "(()=>{Object.defineProperty(document,'visibilityState',{get:()=>'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));delete document.visibilityState;document.documentElement.setAttribute('data-doc-hidden','0');return document.visibilityState})()",
@@ -46,7 +46,7 @@
       "hold": 1500
     },
     {
-      "click": "js:[...document.querySelectorAll('button')].find(b=>b.offsetParent!==null&&/^Context\\d*$/.test(b.textContent.trim()))",
+      "click": "js:[...document.querySelectorAll('button')].find(b=>b.offsetParent!==null&&/^Instructions & Memories\\d*$/.test(b.textContent.trim()))",
       "settle": 0
     },
     {
