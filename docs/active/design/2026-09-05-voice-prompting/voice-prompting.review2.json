@@ -1,0 +1,83 @@
+{
+  "title": "Voice prompting — round 2: the listening feedback, and the mic's motion",
+  "key": "voice-prompting-review2",
+  "out": "voice-prompting.review2.html",
+  "live": {
+    "worktree": "voice-prompting",
+    "paneWidth": 560
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "V-4",
+      "surface": "Message box → while the mic listens",
+      "path": "Round 1, V-1: 'i want to see a few alternatives for the counter/feedback location and styling'. Each pane below keeps the mic listening on a loop (the stand-in engine restarts itself) so the feedback is always on screen; the mic's motion is the same in all three",
+      "headline": "Where should the loudness meter and the clock live while you talk?",
+      "risk": "The loop clears the box each time it restarts; in the app the words stay.",
+      "live": {
+        "surface": "voice-listening-feedback",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "beside",
+          "label": "A — Beside the mic",
+          "candidate": "beside",
+          "summary": "Round 1's design: four small bars and a m:ss clock tucked left of the glowing mic, inside the box. Nothing moves elsewhere; the box keeps its height.",
+          "measured": "About 50 px of the box's right end"
+        },
+        {
+          "id": "strip",
+          "label": "B — A strip above the box",
+          "candidate": "strip",
+          "summary": "The thin band the app already uses for 'model loading' appears above the box: a green dot, 'Listening', the bars and the clock, and a Stop button at its right end. The mic itself only glows. Biggest and clearest, with a second way to stop; it pushes the chat up by one row while you talk.",
+          "measured": "One 36 px band above the box"
+        },
+        {
+          "id": "placeholder",
+          "label": "C — In the empty line",
+          "candidate": "placeholder",
+          "summary": "Bars and clock sit where the placeholder text was, at the left of the empty box, and step aside as the first words arrive. Nothing added to the layout at all; once you are talking, only the glowing mic tells you it still listens.",
+          "measured": "0 px added; hidden after the first word"
+        }
+      ]
+    },
+    {
+      "id": "V-5",
+      "surface": "Message box → the mic button itself",
+      "path": "Round 1, V-1: '…and the animation on the mic icon'. Same loop; the feedback beside the mic is the same in all three, only the button's motion differs",
+      "headline": "How should the mic move while it listens?",
+      "risk": "All three are kept cheap on a 180 Hz screen (stepped or event-driven), so none will run the fan.",
+      "live": {
+        "surface": "voice-mic-motion",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "breathe",
+          "label": "A — Breathing ring",
+          "candidate": "breathe",
+          "summary": "Round 1's design: a soft ring grows out of the filled mic once every 1.4 s, in ten steps, regardless of how loud you are. Calm and constant.",
+          "measured": "1 ring every 1.4 s"
+        },
+        {
+          "id": "level",
+          "label": "B — Ring follows your voice",
+          "candidate": "level",
+          "summary": "No timer: the ring's size is your loudness. Quiet, it hugs the button; a loud word pushes it out. The button becomes the meter, so it reacts the instant you speak and sits still when you pause.",
+          "measured": "Ring 2 to 12 px, moves only when the level changes"
+        },
+        {
+          "id": "dot",
+          "label": "C — Recording dot",
+          "candidate": "dot",
+          "summary": "The filled mic sits still, and a small red dot on its corner blinks slowly, the way a recorder does. The most familiar 'this is recording' sign, and the least motion.",
+          "measured": "8 px dot, on and off every 1.2 s"
+        }
+      ]
+    }
+  ]
+}
