@@ -34,8 +34,14 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
    path text. `max-width:40%` is what actually stops this: it caps how much of the row `.where`
    may claim, so the shrink math never needs to touch `.nav` at all. Giving the eyebrow its own
    `flex:1 1 auto;min-width:0` is a defensive second line, not the load-bearing fix — confirmed
-   by removing it alone and re-running the render test, which still passed. */
-.top .where{flex:0 1 auto;max-width:40%;min-width:0;overflow:hidden} .top .where .id{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+   by removing it alone and re-running the render test, which still passed. `.id` gets
+   `flex:none` for the opposite reason: once `.where`'s 40% box is itself under-width for a
+   90-char path, `.id` (a tiny "Home"-sized item) and the eyebrow were BOTH still flex-shrink:1
+   and so both gave up space proportional to their own size — small as `.id`'s share was, its
+   basis is so small too that it read as the surface name itself truncating to "H…", which is a
+   worse loss than the path (the thing that was actually long) giving up more of the row it was
+   already ellipsizing. */
+.top .where{flex:0 1 auto;max-width:40%;min-width:0;overflow:hidden} .top .where .id{flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .top .where .eyebrow{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (max-width:1400px){.top .where .eyebrow,.top .where .sep{display:none}} @media (max-width:950px){.top .count{display:none}} @media (max-width:760px){.top .long{display:none} .top .nav .btn{padding:0 6px}}
 .where{display:flex;align-items:center;gap:10px} .where .id{font-weight:500;font-size:14px} .where .sep{color:var(--fg-faint)}
