@@ -42,7 +42,7 @@ Grep flags) touched matching semantics only; neither added a deadline or changed
   bound their own Grep/Glob** — timeout value, what happens on timeout (partial results + "narrow your
   search" vs. error), hidden folders by default or not, network/FUSE mounts avoided or not — and fold
   the answers into the spec. Starting points:
-  `docs/active/investigations/2026-08-26-native-tools-vs-other-harnesses.md` §6 (records Gemini at
+  `docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md` §6 (records Gemini at
   30 s; its `—` for Claude Code, OpenCode, Pi and Hermes means *not measured*, not *none* — verify
   against source) and `docs/archive/investigations/2026-08-10-harness-search-tools-prior-art.md`.
   Codex is in neither doc.

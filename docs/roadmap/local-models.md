@@ -33,3 +33,46 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
 - [ ] Gemma models download with no licence notice, and Google's Gemma terms require passing their
       use restrictions on to the user; Qwen and GPT-OSS are Apache-licensed and need nothing
       `local-models-screen` `all` `confirmed` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+
+- [ ] Local models rewrite files at a crawl — an edit-style reply that the engine can produce at
+      ~100 tokens a second comes out at ~16, because the engine's built-in draft-free speculative
+      decoding is switched off. Measured 6× on a rewrite, no change on prose (2026-09-04).
+      Flag added on branch `feat/engine-speed-flags` (youcoded), probes green, awaiting merge.
+      `desktop` `in-flight` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+
+- [ ] Long conversations slow down more than they need to and eat memory — the context cache is
+      stored at full size; compressing it (q8) measured +40% generation speed at 16k of context
+      and halves the memory the context needs. Same fix feeds the memory-crash item above.
+      Key-cache half added on branch `feat/engine-speed-flags` (youcoded); the value-cache half
+      is a fatal load error without flash attention, so it stays a decision for Destin.
+      `desktop` `in-flight` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+
+- [ ] The memory warning charges a flat 2 GB of "working memory" for every model at every context
+      length, but a 128k context on a 27B model needs up to ~32 GB of it — so the warning is wrong
+      exactly when it matters. Computable from the model file's own header.
+      `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+
+- [ ] Context length is one number for every local model — right for the big one, wasteful for a
+      2B utility model and dangerous for a dense 27B. The engine already supports a per-model
+      settings file; nothing writes it.
+      `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+
+- [ ] Windows "Switch to CUDA (faster on NVIDIA)" very likely fails on a PC without NVIDIA's
+      toolkit installed: upstream ships the CUDA runtime files as a separate download and the app
+      never fetches them. Needs a Windows repro.
+      `desktop` `needs-verify` `checked 2026-09-04` `needs-repro` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+
+- [ ] "Gemma 4 12B — with vision" cannot see: the vision projector file is never downloaded, and
+      the engine only pairs one when model and projector sit in their own folder, which our flat
+      download layout never creates. Local vision needs both changes.
+      `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+
+- [ ] Backends upstream now ships that we do not offer — AMD ROCm on Linux and Windows, Intel
+      SYCL, newer CUDA, Android. ROCm on AMD machines like Destin's is widely reported faster than
+      what we use; one measured trial decides whether it becomes an opt-in.
+      `desktop` `decision` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+
+- [ ] Parity with LM Studio / Ollama / Jan — per-model settings (context, keep loaded, draft
+      model), a hardware/what's-loaded page with prompt speed and time-to-first-token, manual
+      load/unload, embeddings for local search. Inventory and order in the report.
+      `desktop` `decision` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md

@@ -106,16 +106,25 @@ def find_offender(command: str, cwd: str = ""):
 #
 # It has cost three sessions their shell. There is no "careful" pattern: the argument is
 # always in the caller's cmdline, so this is unconditional, which is what makes blocking
-# it free of false positives. `pgrep -f` is fine (it signals nothing) and so is a bare
-# `pkill name` (matches process NAMES, not command lines).
+# it free of false positives. `pgrep -f` is fine to RUN (it signals nothing — but see guard 4:
+# as a loop condition it never turns false) and so is a bare `pkill name` (process NAMES).
 PKILL_F = re.compile(r"(?:^|[|&;(]\s*|\s)pkill\s+(?:[^|&;\n]*\s)?-[a-zA-Z]*f")
+
+
+HEREDOC = re.compile(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n(?:.*?\n)*?\2[ \t]*(?:\n|$)", re.S)
+
+
+def strip_heredocs(command: str) -> str:
+    """The command with every heredoc BODY removed (its `<<TAG` line stays). A heredoc body is
+    data, not shell — but the shell AFTER it is still shell. Skipping the whole command whenever
+    `<<` appeared let `python3 - <<'EOF' … EOF; pkill -f script-editor` through on 2026-09-04,
+    and it killed the shell (and the editor Destin was typing on) exactly as guard 2 warns."""
+    return HEREDOC.sub("", command)
 
 
 def pkill_offender(command: str):
     """True when the command contains a `pkill -f`, which cannot succeed in this harness."""
-    if "<<" in command:
-        return False   # heredoc body is data, same reasoning as the glob guard
-    return bool(PKILL_F.search(command))
+    return bool(PKILL_F.search(strip_heredocs(command)))
 
 
 PKILL_MESSAGE = (
@@ -126,6 +135,31 @@ PKILL_MESSAGE = (
     "Instead: find the pids first (`pgrep -af <pattern>` is safe — it signals nothing), "
     "then `kill <pid> <pid>` in a command that does not repeat the pattern. To match "
     "process NAMES rather than command lines, drop the -f (`pkill node`)."
+)
+
+# ── guard 4: `pgrep -f` as a loop or if condition ─────────────────────────────────────
+# `pgrep -f` signals nothing, so it is safe to RUN — but for the same reason as pkill it
+# always MATCHES: the wrapper's command line contains the pattern. So `until ! pgrep -f X`
+# never ends and `while pgrep -f X` never stops. On 2026-09-04 six render-wait loops of that
+# shape each sat for their full 600 s timeout and reported nothing. To wait for something,
+# wait on IT: run the command itself with run_in_background (its exit is the notification),
+# or `flock <its lock file> true`, or filter the wrapper out: `pgrep -af X | rg -v pgrep`.
+PGREP_LOOP = re.compile(r"\b(?:until|while|if)\b[^\n;]*?\bpgrep\s+(?:[^|&;\n]*\s)?-[a-zA-Z]*f")
+
+
+def pgrep_loop_offender(command: str):
+    """True when a `pgrep -f` is the condition of an until/while/if — it can never turn false."""
+    return bool(PGREP_LOOP.search(strip_heredocs(command)))
+
+
+PGREP_LOOP_MESSAGE = (
+    "Blocked before it ran: `pgrep -f` as a loop or if condition never turns false here. Claude "
+    "Code wraps every Bash call as `zsh -c '<your whole command>'`, so the pattern always matches "
+    "that wrapper — `until ! pgrep -f X` never ends (six render waits each burned their whole "
+    "600 s timeout on 2026-09-04).\n"
+    "Instead: wait on the thing itself — run it with run_in_background and act on its completion "
+    "notification, or `flock <its lock file> true` when it holds one, or filter the wrapper out: "
+    "`pgrep -af X | rg -v pgrep`."
 )
 
 # ---------------------------------------------------------------------------
@@ -208,6 +242,13 @@ def main() -> int:
             return 2
     except Exception:
         pass   # fail open, same contract as everything else in this hook
+
+    try:
+        if pgrep_loop_offender(command):
+            print(PGREP_LOOP_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open
 
     try:
         if rg_replace_offender(command):

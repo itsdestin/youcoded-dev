@@ -1,0 +1,25 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=week-sync&autoplay=2500&platform=android",
+ "theme": "devils-garden",
+ "width": 390,
+ "height": 844,
+ "fps": 30,
+ "boot": 3000,
+ "actions": [
+  {
+   "hold": 2600
+  },
+  {
+   "waitForText": "synced to your other devices",
+   "tag": "p",
+   "settle": 800,
+   "mark": "reply"
+  },
+  {
+   "eval": "(document.querySelector('[data-testid=chat-scroll],main')||document.scrollingElement).scrollBy({top:800,behavior:'smooth'})"
+  },
+  {
+   "hold": 2500
+  }
+ ]
+}

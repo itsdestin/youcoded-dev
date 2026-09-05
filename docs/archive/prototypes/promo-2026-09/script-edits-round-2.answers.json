@@ -1,0 +1,105 @@
+{
+ "lines": {
+  "l01": {
+   "text": "Welcome to YouCoded! I'm your assistant.",
+   "changed": false
+  },
+  "l02": {
+   "text": "YouCoded is a free, open-source, and fully personalizable AI agent.",
+   "changed": true
+  },
+  "l03": {
+   "text": "Tired of grey chatbots? Build something better.",
+   "changed": false
+  },
+  "l04": {
+   "text": "Golden hour.",
+   "changed": false
+  },
+  "l05": {
+   "text": "Kitty cat!",
+   "changed": false
+  },
+  "l06": {
+   "text": "Another kitty cat!",
+   "changed": false
+  },
+  "l07": {
+   "text": "Use any AI, cloud or local.",
+   "changed": false
+  },
+  "l08": {
+   "text": "Behave, Grok, or I'm switching to Claude.",
+   "changed": false
+  },
+  "l09": {
+   "text": "Drop in a spreadsheet, ask the assistant for a sort.",
+   "changed": false
+  },
+  "l10": {
+   "text": "View and edit the result together.",
+   "changed": false
+  },
+  "l11": {
+   "text": "Manage classes, coding projects, and more with Project View.",
+   "changed": false
+  },
+  "l12": {
+   "text": "There's even a marketplace for skills, themes, integrations, and more!",
+   "changed": true
+  },
+  "l13": {
+   "text": "Download things built by your coworkers or classmates..",
+   "changed": true
+  },
+  "l14": {
+   "text": "Just like that!",
+   "changed": true
+  },
+  "l15": {
+   "text": "Save repeatable prompts.",
+   "changed": false
+  },
+  "l16": {
+   "text": "Or entire workflows. No annoying re-explaination needed.",
+   "changed": true
+  },
+  "l17": {
+   "text": "You can play games alone or against friends while your assistant works.",
+   "changed": false
+  },
+  "l18": {
+   "text": "Try Connect 4. I'd win.",
+   "changed": false
+  },
+  "l19": {
+   "text": "Or perhaps chess?",
+   "changed": false
+  },
+  "l20": {
+   "text": "Start a conversation on your computer, and resume on your phone.",
+   "changed": false
+  },
+  "l21": {
+   "text": "Same conversation, same files, synced automatically.",
+   "changed": false
+  },
+  "l22": {
+   "text": "Easily see the status of working assistants.",
+   "changed": false
+  },
+  "l23": {
+   "text": "Search and filter old conversations.",
+   "changed": false
+  },
+  "l24": {
+   "text": "Or add tags and notes to help you find conversations later.",
+   "changed": false
+  },
+  "l25": {
+   "text": "See you in there!",
+   "changed": true
+  }
+ },
+ "submitted": "2026-09-04T13:43:45"
+}

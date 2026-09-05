@@ -2,6 +2,20 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
+- [ ] The Golden Sunbreak the app ships is older than the registry's (2026-09-04): the promo film
+      used the registry's 1.2.0 rig and companions (the sun that floats beside the mascot) because
+      the vendored copy has neither; a user who installs Golden Sunbreak today does not get the
+      character the film shows. Open question from the promo: update the vendored theme to 1.2.0?
+      `all` `decision` `checked 2026-09-04`
+
+- [ ] Rebase every theme's mascot faces on the promo's "warm" face set (2026-09-04): the
+      welcome eyes on every expression, expression carried by brows, lids and mouth; surprised
+      is not two black discs, curious has two brows of different shapes, blink is nearly flat
+      with the welcome mouth, dizzy is swirl eyes with stars circling above the head, plus new
+      happy, smug and shutdown (eyes closed, limbs tucked under) faces. Destin: "these will
+      also be the new guidelines to rebase all other themes on in the live app", 2026-09-04
+      `all` `decision` `checked 2026-09-04`
+
 - [ ] On the four light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
       Strawberry Kitty) the provider brand colours — the Claude orange on the model chip and
       friends — are still hard to read; 25 of 70 colour/theme pairs fail contrast, seen 2026-08-31

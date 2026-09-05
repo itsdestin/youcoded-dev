@@ -226,6 +226,42 @@ for (const cmd of [
   });
 }
 
+// A heredoc BODY is data, but the shell after the heredoc is still shell: this exact shape
+// slipped through the blanket `<<` exemption on 2026-09-04 and killed the shell.
+test('blocks: pkill -f after a heredoc', () => {
+  const { blocked } = run("cat > /tmp/x <<'EOF'\nhello\nEOF\npkill -f script-editor; echo survived");
+  assert.equal(blocked, true);
+});
+test('allows: pkill -f inside a heredoc body', () => {
+  const { blocked } = run("cat <<'EOF'\npkill -f node is the trap\nEOF");
+  assert.equal(blocked, false);
+});
+
+// ---------------------------------------------------------------------------
+// Guard 4 — `pgrep -f` as a loop/if condition: it always matches the wrapper, so it never ends
+// ---------------------------------------------------------------------------
+for (const cmd of [
+  'until ! pgrep -f "remotion render" >/dev/null; do sleep 3; done; echo done',
+  'while pgrep -f vite; do sleep 1; done',
+  'if pgrep -af "python3 serve.py" >/dev/null; then echo running; fi',
+]) {
+  test(`blocks: ${cmd}`, () => {
+    const { blocked, message } = run(cmd);
+    assert.equal(blocked, true, `should have blocked: ${cmd}`);
+    assert.match(message, /never turns false|never ends/);
+    assert.match(message, /run_in_background|flock/, 'must name the way to wait');
+  });
+}
+for (const cmd of [
+  'until [ -f out/done ]; do sleep 2; done',
+  'pgrep -af node | rg -v pgrep',
+  'while read -r l; do echo "$l"; done < list',
+]) {
+  test(`allows: ${cmd}`, () => {
+    assert.equal(run(cmd).blocked, false, `should have allowed: ${cmd}`);
+  });
+}
+
 for (const cmd of [
   'pgrep -af node',            // read-only: signals nothing
   'pgrep -f node | head',

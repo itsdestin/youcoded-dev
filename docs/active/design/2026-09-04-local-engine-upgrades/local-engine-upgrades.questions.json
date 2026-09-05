@@ -1,0 +1,154 @@
+{
+  "title": "Local engine upgrades — four questions, four criteria",
+  "key": "local-engine-upgrades-questions",
+  "out": "local-engine-upgrades.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Settings → Providers → Local models → Engine card",
+      "path": "AMD graphics on Linux: the faster ROCm engine needs AMD's ROCm software installed first",
+      "headline": "On Linux, how should the app get AMD's ROCm software installed when it is missing?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Show the exact command and run it in the app's own terminal (recommended)",
+          "summary": "Today: the Engine card has no ROCm option at all. Proposal: when an AMD graphics chip is found but ROCm is not, the card offers 'Switch to ROCm', explains what is missing, shows the one install command for your Linux flavour (Arch, Ubuntu, Fedora detected automatically), and a 'Run in terminal' button pastes it into YouCoded's terminal. You press Enter and type your password there, so nothing happens without you seeing it. 'Check again' then completes the switch. Pro: transparent, works on every distro we can name, and a power user can edit the command first. Con: two clicks and a password instead of one click.",
+          "cost": "A distro detector, a command table, a terminal hand-off, and a re-check."
+        },
+        {
+          "id": "b",
+          "label": "One-click install: the app runs the package manager itself",
+          "summary": "Same detection, but the button runs the install directly and the system's own admin-password window pops up. Pro: smoothest possible. Con: the app is now changing system software; a half-finished install (network drop, unsupported distro) is much harder to explain and undo, and some desktops have no admin-password window at all, so it silently fails.",
+          "cost": "Everything in (a) plus a privilege-escalation path per desktop environment and its failure handling."
+        },
+        {
+          "id": "c",
+          "label": "Guide only: show the command with a Copy button",
+          "summary": "The card explains what is missing and offers the command to copy into any terminal, then 'Check again'. Pro: simplest to build and impossible to break anything. Con: the user must leave the app to finish.",
+          "cost": "The detector and the command table only."
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Settings → Providers → Local models → each downloaded model",
+      "path": "Per-model settings: today one context length applies to every local model",
+      "headline": "How much should a power user be able to set per model?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Context length, keep loaded, GPU layers, plus a free-text 'extra engine flags' box (recommended)",
+          "summary": "Today: one context length for all models, nothing else. Proposal: each downloaded model gets a small 'Settings' disclosure with context length (blank = the global one), 'Keep loaded' (never auto-sleep this model), GPU layers (Auto or a number, for machines where the model must partly run on the processor), and an 'Extra engine flags' text box for anything the engine supports that we have no control for. Pro: this is the LM Studio / Ollama parity list, and the flags box means no power user is ever blocked by our UI. Con: the flags box can break a model's load if mistyped, so the load error must show the engine's real message.",
+          "cost": "A per-model settings file the engine already understands, four controls, and an error path."
+        },
+        {
+          "id": "b",
+          "label": "Context length only for now",
+          "summary": "Only the one setting the memory work needs. Pro: smallest surface. Con: power users still cannot pin a model in memory or pass a flag, and we come back to this screen again later.",
+          "cost": "One control."
+        },
+        {
+          "id": "c",
+          "label": "Everything in (a) plus a global 'extra engine flags' box on the Engine card",
+          "summary": "Same as (a) with one more box for flags that should apply to every model (for example turning speculative decoding off machine-wide). Pro: complete. Con: two places to look for flags; a global flag that breaks the engine breaks every model at once.",
+          "cost": "(a) plus one control and an engine-restart path."
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Settings → Providers → Local models → download a model",
+      "path": "Vision: a model that can see images needs a second file (about 1 GB) downloaded beside it",
+      "headline": "When a model can see images, should its vision file download automatically?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Yes, on by default, shown as its own line in the size with a switch to skip (recommended)",
+          "summary": "Today: the vision file is never downloaded, so 'Gemma 4 — with vision' cannot see. Proposal: the download card lists 'Model 4.8 GB + images 0.9 GB', with the images part switched on; turn it off to save the space. Pro: vision just works for the people the catalog promised it to. Con: about 1 GB more per vision model unless you notice the switch.",
+          "cost": "A folder-per-model download layout, a size line, one switch."
+        },
+        {
+          "id": "b",
+          "label": "Off by default, opt in per download",
+          "summary": "Same card, switch off. Pro: no surprise disk use. Con: most people will not know to turn it on and the model stays blind, which is today's complaint.",
+          "cost": "Same as (a)."
+        },
+        {
+          "id": "c",
+          "label": "Always download it, no switch",
+          "summary": "Pro: nothing to decide. Con: no way to save the space on a small drive.",
+          "cost": "Slightly less than (a)."
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Settings → Providers → Local models → Engine card",
+      "path": "Speed settings: speculative decoding and context-cache compression, both now on by default",
+      "headline": "Should the two new speed settings be visible switches, or stay hidden and always on?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Visible under an 'Advanced' disclosure on the Engine card, on by default (recommended)",
+          "summary": "Two switches with a one-line plain explanation each: 'Speculative decoding — guesses ahead from text already in the conversation; large speedup when the reply repeats earlier text' and 'Compress context memory — halves what long conversations use'. Pro: a power user can turn one off when comparing models or chasing a quality doubt, and can see what the engine is doing. Con: two more controls most people never touch.",
+          "cost": "Two switches, a restart on change, and their plain-words copy."
+        },
+        {
+          "id": "b",
+          "label": "Hidden, always on",
+          "summary": "Pro: nothing to explain. Con: no way to rule the speed features out when a model misbehaves, short of the extra-flags box.",
+          "cost": "Nothing beyond what is already built."
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Settings → Providers → Local models → Engine card",
+      "path": "Switching the engine to CUDA or ROCm",
+      "headline": "A faster-engine button appears only for the matching graphics chip, and the switch is refused unless that chip is really in use.",
+      "changed": "Today 'Switch to CUDA' shows on every Windows PC, NVIDIA or not, and a click can end on a slower processor-only engine labelled CUDA. Stated, not asked: the button shows only when the matching chip is detected; the CUDA runtime files (a second download) always come with the CUDA engine; after install the app asks the engine which device it will use and refuses the switch, with the engine's real message, if no graphics chip answers.",
+      "notice": "Nothing yet — this becomes rows of the contract.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Settings → Providers → Local models → model cards and the load warning",
+      "path": "Memory: the fit label and the warning before loading a model",
+      "headline": "Fit labels show the model and its context memory as two numbers, and the warning is remembered once you answer it.",
+      "changed": "Today: 'Runs well' assumes 2 GB of working memory for every model at every context length. Stated, not asked: the label reads like '9 GB model + 16 GB for 128k context'; a 'tight' verdict offers 'lower context for this model'; on shared-memory machines the graphics pool limit and currently available memory are what count; the before-load warning is shown once per model at a given context length and remembers your choice.",
+      "notice": "Nothing yet — this becomes rows of the contract.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Settings → Providers → Local models → a downloaded model",
+      "path": "Vision for models already on disk",
+      "headline": "A model already downloaded gets an 'Add vision' action; nothing on disk is rearranged behind your back.",
+      "changed": "Stated, not asked: for a downloaded model whose family has a vision file, the card offers 'Add vision (0.9 GB)'; it downloads the file and moves the model into its own folder in one step. Models without a vision file show nothing new.",
+      "notice": "Nothing yet — this becomes a row of the contract.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-4",
+      "words": true,
+      "surface": "Settings → Providers → Local models → Engine card",
+      "path": "What the engine is doing right now",
+      "headline": "The Engine card shows the device in use, memory held by loaded models, and last-reply speed for prompt reading and generation.",
+      "changed": "Today it shows the version and backend name only. Stated, not asked: one compact line per fact, updated live while the engine runs, in plain words (for example 'Radeon 8060S · 12.4 GB of models loaded · last reply 383 read / 16 write per second').",
+      "notice": "Nothing yet — this becomes a row of the contract.",
+      "yes": "Holds",
+      "no": "Fails"
+    }
+  ]
+}

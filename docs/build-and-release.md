@@ -215,9 +215,19 @@ the app as *broken* rather than *unverified*, which removes the "Open Anyway" bu
 System Settings and leaves a user no way in at all. This is not hypothetical: electron-builder
 ≤ 26.8.1 ad-hoc signed automatically when it found no certificate, 26.15.3 silently dropped
 that fallback, and the 2026-07-23 Dependabot bump shipped six weeks of unopenable macOS
-builds with every check green. Both mac workflows now carry a `Verify the macOS bundle is
-signed` step, so CI catches it first — this recipe is the manual counterpart.
+builds with every check green. Both mac workflows now run
+`desktop/scripts/verify-mac-signature.sh`, which asks `codesign --verify --deep --strict` for
+a verdict and compares the signing identifier to the bundle's own `CFBundleIdentifier`, and
+`mac.forceCodeSigning` makes electron-builder itself fail when it cannot sign — so CI
+catches it first; this recipe is the manual counterpart for a dmg already in hand (on a Mac,
+run the same `codesign --verify --deep --strict` on the extracted `.app`).
 Full postmortem: `docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md`.
+<!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "identity: '-'"} -->
+<!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "forceCodeSigning: true"} -->
+<!-- verify: {"path": "youcoded/desktop/scripts/verify-mac-signature.sh", "contains": "--verify --deep --strict --verbose=2"} -->
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-release.yml", "contains": "verify-mac-signature.sh"} -->
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "verify-mac-signature.sh"} -->
+<!-- verify: {"test": "youcoded/desktop/tests/verify-mac-signature.test.ts"} -->
 
 ## Local verification (typecheck + CI-style build)
 

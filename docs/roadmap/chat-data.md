@@ -3,6 +3,11 @@ Filing test: everything kept about a chat — transcript, title, tags, notes, se
 resume state. Not here: the model is running right now (native-harness); the files a chat
 produced and the panel that shows them (files).
 
+- [ ] Once the Organize (tags and note) sheet has been opened and closed on a row, the Resume
+      browser no longer closes on Escape — three presses and it stays open; clicking the backdrop
+      still closes it (seen in the workbench while filming the promo, 2026-09-03)
+      `resume-browser` `desktop` `needs-verify` `checked 2026-09-03`
+
 - [ ] Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
       off-by-default preference and a model picker, so the open marker and the "open" state filter in
       search results stop answering "cannot be determined yet"; phases 1 and 2 shipped, phase 3 is

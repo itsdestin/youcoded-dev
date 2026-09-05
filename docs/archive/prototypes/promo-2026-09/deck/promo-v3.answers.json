@@ -1,0 +1,29 @@
+{
+ "answers": {
+  "length": {
+   "pick": "About 90 seconds: keep everything, add the three new beats",
+   "note": ""
+  },
+  "marketplace": {
+   "pick": "A plugins beat only: browse, open Encyclopedia (or Journal), Install, it shows up back in the chat"
+  },
+  "model": {
+   "pick": "The picker: Claude, cloud models, local, pick one and go (with prices and free tags faked in)",
+   "note": "dont fake prices or anything."
+  },
+  "project-view": {
+   "pick": "Fold it into the files beat: after the sheet changes, open Projects to show where it lives"
+  },
+  "mascot-direction": {
+   "pick": "Other",
+   "note": "i think i dislike some of the current unthemed mascots anyway (mostly the weird empty eyes some have), so we can reqork some of the official mascot designs. we can add new rigs/eyes/mouths and keep them as real alternate styles even if they don't have a use in the live app yet."
+  },
+  "mascot-checkpoint": {
+   "pick": "Yes, a mascot study clip first"
+  },
+  "checkpoints": {
+   "pick": "Deck, storyboard, mascot clip, draft, final (skip the posters)"
+  }
+ },
+ "submitted": "2026-09-04T02:38:16Z"
+}

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Promo check-in 3: the mascot, the faces, the captions</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--fg:#1b1d22;--muted:#6b7280;--line:#e3e6ea;--acc:#2f6fed}
+@media(prefers-color-scheme:dark){:root{--bg:#121417;--card:#1b1e23;--fg:#e8eaee;--muted:#9aa2ad;--line:#2b3037;--acc:#5b8dff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:26px;margin:0 0 6px}h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:40px 0 12px}
+p.lead{color:var(--muted);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+video,img.wide{width:100%;border-radius:10px;border:1px solid var(--line);display:block;background:#000}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.grid figure{margin:0}.grid img{width:100%;border-radius:8px;border:1px solid var(--line)}
+figcaption{font-size:14px;color:var(--muted);margin-top:6px}figcaption b{color:var(--fg)}
+ul{margin:6px 0 0 18px;padding:0}li{margin:4px 0}
+.ask{border:2px solid var(--acc);border-radius:12px;padding:16px 18px;margin:20px 0}
+code{font-size:13px;background:var(--bg);padding:1px 6px;border-radius:4px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+</style></head><body><main>
+<h1>Check-in 3: the mascot, the faces, the captions</h1>
+<p class="lead">Two short clips built on the new motion engine, the three face styles, and the three caption designs. Nothing goes into the film until you've answered the four questions at the bottom. Every round of your notes on these is a one-minute render.</p>
+
+<h2>1 · The intro (your storyboard, as a clip)</h2>
+<div class="card">
+<video controls src="study/intro-study.mp4"></video>
+<p class="lead" style="margin-top:10px">13 seconds. Black, silent, the white wordmark. The host peeks in around the left edge, looks left and right, steps in, walks across with a small careful gait and swinging arms, stops just left of the Y, looks it up and down, winds up and punches. The music starts on the hit; the screen bursts into Cotton Candy Sky from the fist with sparks; "Assistant" rolls out of the wordmark's right side; the host changes costume in the burst with a poof and a shocked face; the wordmark hands off to the caption band and the app window rises on bar 1; the host hops onto its title bar. Sound is in the clip.</p>
+<img class="wide" src="study/intro-sheet.jpg" alt="intro frames">
+<p class="lead" style="margin-top:10px">What to look for: the crouch before the punch and the lunge through it; the lean into the walk; the eyes actually looking (left, right, then at the Y); the blink before the strike; the squash on landing when it hops onto the window.</p>
+</div>
+
+<h2>2 · Everything else the host does in the film</h2>
+<div class="card">
+<video controls src="study/host-study.mp4"></video>
+<p class="lead" style="margin-top:10px">10 seconds, on a stand-in window. Idle on the title bar (breathing, a blink, a glance down); a hop to a new perch that crouches first, stretches on the way up, leans into the travel, tucks at the top, changes costume with a poof at the apex, and lands with a squash that settles in two small bounces; the contact shadow under its feet shrinks in the air; the dive into the window with a poof where it lands; the pop back out in a third costume; the wave. This hop is what happens on every cut of the film.</p>
+<img class="wide" src="study/host-sheet.jpg" alt="host study frames">
+</div>
+
+<h2>3 · The faces (settled)</h2>
+<div class="card">
+<p class="lead">Your call, 2026-09-04: the Golden Sunbreak and Strawberry Kitty eyes are the model, and eyes must never be lighter than the body. The two new styles are gone. What was wrong on the light themes: the rig paints its eyes in the theme's ink colour, which is white on Cotton Candy, Meadow Mist and Halftone, so the eyes glowed. The host now draws its eyes and mouth in a deep shade of its own body colour on every theme, exactly the way the golden rig's dark-brown-on-gold works. Below: the rig's own faces on every tint the film uses, with that ink. Both clips above use these.</p>
+<img class="wide" src="storyboard-v3/faces-styles.png" alt="faces on every tint">
+<p class="lead" style="margin-top:8px">The same white-eyes problem exists in the app itself on those themes; that is a one-line theme-engine fix for a separate PR, your call.</p>
+</div>
+
+<h2>4 · The captions</h2>
+<div class="card">
+<p class="lead">Same frame, three treatments. The payoff word is in the theme accent in all three; the font follows the theme as before.</p>
+<div class="grid">
+<figure><img src="storyboard-v3/caption-A.png" alt="A"><figcaption><b>A · Lower-third card.</b> A panel in the theme's ink at the window's bottom-left corner with a thick accent bar; headline and sub-line inside. Reads as titling. Slides in from the left on the beat.</figcaption></figure>
+<figure><img src="storyboard-v3/caption-B.png" alt="B"><figcaption><b>B · Big type.</b> An oversized headline on a blurred pill overlapping the window's bottom edge; the sub-line in spaced small caps under it. Poster energy; words slam in.</figcaption></figure>
+<figure><img src="storyboard-v3/caption-C.png" alt="C"><figcaption><b>C · Editorial.</b> A numbered accent tag, a hairline the width of the window, the headline left-aligned to the window and the sub-line on the right. The quietest and the most designed.</figcaption></figure>
+</div>
+</div>
+
+<div class="ask"><b>Three answers still open, in chat:</b>
+<ol>
+<li><b>The intro</b> — notes on the motion, or "go".</li>
+<li><b>Hops, dive, wave</b> — notes, or "go".</li>
+<li><b>Caption design</b> — A, B or C.</li>
+</ol>
+After that the check-ins left are one half-size draft of the full film and the final.</div>
+</main></body></html>

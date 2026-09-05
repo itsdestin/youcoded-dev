@@ -5,7 +5,7 @@ status: shipped
 review: Reviewed 2026-08-28 — docs/archive/investigations/2026-08-28-bash-background-spec-review.md (16 findings, all applied or decided here; the two open judgment calls decided by Claude, approved by Destin "update as you see fit"). UI approved 5/5 on deck docs/active/design/2026-08-28-bash-background/. Plan: docs/archive/plans/2026-08-28-bash-background-execution.md (10 tasks, 47 steps; its five deviations folded back here 2026-08-28).
 tags: [native-runtime, harness, harness-tools, renderer, ipc-bridge]
 related:
-  - docs/active/investigations/2026-08-26-native-tools-vs-other-harnesses.md (§5 Bash, ledger G-1)
+  - docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md (§5 Bash, ledger G-1)
   - youcoded branch feat/bash-background-ui (worktree worktrees/bash-bg — the approved card, workbench-only, MOCK_ONLY 'native.killShell')
   - youcoded/docs/native-runtime.md → "Specialists (plan 1b — background, durability, steering)" (the delivery path this reuses)
 ---

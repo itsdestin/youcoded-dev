@@ -1,0 +1,26 @@
+{
+  "name": "youcoded-promo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render:draft": "flock /tmp/promo-render.lock remotion render src/index.ts Promo out/draft.mp4 --scale 0.5 --browser-executable /usr/bin/google-chrome-stable",
+    "render": "flock /tmp/promo-render.lock remotion render src/index.ts Promo out/promo-video.mp4 --codec h264 --crf 18 --browser-executable /usr/bin/google-chrome-stable",
+    "test": "node --test src/timeline.test.ts src/captions.test.ts",
+    "typecheck": "tsc --noEmit",
+    "study": "flock /tmp/promo-render.lock remotion render src/index.ts"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.520",
+    "@remotion/google-fonts": "4.0.520",
+    "@remotion/layout-utils": "^4.0.520",
+    "@remotion/transitions": "4.0.520",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "remotion": "4.0.520"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.0",
+    "typescript": "5.8.3"
+  }
+}
