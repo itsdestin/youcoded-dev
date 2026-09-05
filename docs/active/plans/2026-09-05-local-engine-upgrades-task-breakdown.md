@@ -263,6 +263,21 @@ and `loadedModelsBytes` over loaded-not-sleeping rows.
   `totalBytes` summed so the percentage covers both. This, not Add vision, is what contract R3
   ("always downloads its vision file; there is no switch to skip it") asks for. A failed
   projector leg leaves the model **complete**, in `'available'`, with its Add-vision link.
+- **Two handoffs from T14, both required or vision stays invisible:**
+  1. **Nothing yet WRITES `quant.visionFile` into the manifest.** T13's `writeManifest` only
+     carries a projector forward from a prior manifest of the same publisher, so a first-ever
+     download of a vision repo still produces a manifest with no `visionFile` — and §E2's
+     `vision: 'available'` state can never be reached. T15 adds
+     `...(quant.visionFile ? { visionFile: quant.visionFile } : {})` to `writeManifest`.
+  2. **`QuantOption.totalSizeBytes` deliberately excludes the projector**, so `model-manager`'s
+     free-disk guard currently under-reserves a vision download by the projector's size — about
+     850 MB for gemma-3-12b. The summing belongs in the download job, not the quant option, so
+     T15 is where it is fixed. Left unfixed, a user with just enough free space passes the check
+     and then runs out mid-download.
+- **The projector must NOT go into any quant's `files` list.** T14 kept it a separate field on
+  purpose: `files` being a complete `1..N` split of one quant is what makes "the files on disk
+  are complete" safe to judge from filenames alone, and a projector in there would let a
+  concurrent render stamp `completedAt` while the projector is still downloading.
 - `cache-scan.ts` scans one level of folders: `vision: 'ready'` when an `mmproj*` is present,
   `'available'` when the manifest carries `visionFile` but no `mmproj` is (also the
   crash-recovery state), else `'none'`.
