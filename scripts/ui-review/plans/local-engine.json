@@ -112,22 +112,22 @@
      "wait": 600
     },
     {
+     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Installed').scrollIntoView({block:'start'})"
+    },
+    {
+     "wait": 300
+    },
+    {
      "eval": "document.querySelector(\"[aria-label^='Settings for gemma-4-E2B']\")?.click()"
     },
     {
-     "wait": 800
+     "wait": 900
     },
     {
      "eval": "[...document.querySelectorAll('[data-testid=model-settings] button')].find(b=>b.textContent.trim().startsWith('Advanced'))?.click()"
     },
     {
      "wait": 600
-    },
-    {
-     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Installed').scrollIntoView({block:'start'})"
-    },
-    {
-     "wait": 400
     }
    ],
    "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.trim()==='Installed')"
