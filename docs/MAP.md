@@ -84,6 +84,9 @@ session-start hook prints this table into every session, so a lookup costs zero 
 | the projects page and its context editor | `youcoded/desktop/src/renderer/components/project-view/` |
 | the marketplace screen and its cards | `youcoded/desktop/src/renderer/components/marketplace/` |
 | the terminal pane | `youcoded/desktop/src/renderer/components/TerminalView.tsx` |
+| the "Initializing session…" screen and its stalled warning | `youcoded/desktop/src/renderer/App.tsx` (search `initSlowWarning`) |
+| the chat/terminal toggle | `youcoded/desktop/src/renderer/components/WideViewToggle.tsx`, `NarrowViewToggle.tsx` (both carry `data-view-toggle`) |
+| the hint pointing back to the chat button | `youcoded/desktop/src/renderer/components/ViewToggleHint.tsx` |
 | buddy mode (the floating window) | `youcoded/desktop/src/renderer/components/buddy/` |
 | the Permissions settings screen | `youcoded/desktop/src/renderer/components/PermissionsSection.tsx` |
 | the specialists chip + popup | `youcoded/desktop/src/renderer/components/SpecialistsChip.tsx` |
