@@ -47,9 +47,12 @@ count on this build, so every local model was capped at one helper. Fixed and
 merged 2026-09-05; a follow-on (the count is read before the model loads) is
 on the local-models roadmap.
 
-What blocks stage two now is Destin's decisions — the prompt at
-`docs/active/handoffs/2026-09-04-stage-two-decisions-prompt.md` puts them on a
-question deck and then starts the design.
+Destin ruled on the gating decisions on 2026-09-05 (vision doc §8, that date's row;
+the deck and his answers are in `docs/active/design/2026-09-05-specialists-plans/`).
+The stage-two design started the same day in that folder under the feature flow.
+Model information (pricing, context, capability class) is built **concurrently** in
+a separate session from `docs/active/handoffs/2026-09-05-model-information-prompt.md`;
+the plans work consumes two functions from it and touches none of its files.
 
 ## Read in this order
 
@@ -121,13 +124,16 @@ Tests — 18 files, `youcoded/desktop/tests/specialist*.test.*` plus
 `chat-reducer-specialists.test.ts`. `bash scripts/verify.sh <worktree>` runs the
 affected ones.
 
-## Blocked on a decision
+## Decisions that were blocking, now ruled (2026-09-05)
 
-Stage two's *shape* is not blocked, but its *vocabulary* is. Destin's 2026-09-01
-"assistants made of duties" proposal makes a duty implemented as a specialist,
-which turns the specialists spec's headline noun into an implementation detail.
-That is decision 1 in the vision doc §9, and Agents & Automations waits on the
-same ruling. Do not rename anything before it lands.
+Vocabulary: the user-facing word for a child session is **specialist** on every
+surface (remaining "helper" copy is a roadmap sweep); **plan** and **duty** stay
+separate words. The future third view is **Autonomous Assistants**, built around an
+assistant made of duties with the coordinator shape first — a coordinator is a plan
+runner on a schedule, so stage two is designed so a plan can later be a duty's
+structure. Still owed: the duty design itself, and Destin's ruling on gating plan
+authoring to the model classes that can write one (asked on the stage-two questions
+deck after he asked how plans run on local models).
 
 Also unbuilt from the same spec: the Claude Code bridge (`youcoded agent run`
 CLI plus a bundled skill), which needs a `bin` entry the app has never shipped.

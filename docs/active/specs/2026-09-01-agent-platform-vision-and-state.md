@@ -77,13 +77,15 @@ The family has accumulated five overlapping nouns. This table is the current mea
 | **Tool** | One of the sixteen native tools (Read, Write, Edit, Bash, BashOutput, KillShell, Glob, Grep, WebFetch, WebSearch, TodoWrite, AskUserQuestion, SendUserFile, Skill, Task, ModelSearch). Named exactly as Claude Code names them so every tool card renders unchanged. | ADR 009 |
 | **Specialist** | A native session with a parent. The model-facing tool is `Task`; the user-facing word is *specialist* (or *helper*); UI copy never says subagent, orchestrator, spawn or Task. Four built-ins (explorer, researcher, reviewer, worker) plus user files in `~/.youcoded/specialists/` and Claude Code's `.claude/agents` format. | specialists spec, shipped 1a/1b/1c |
 | **Plan** | Stage two of specialists: a schema-validated document (map / verify / combine / repeat) the model proposes as a tool call and the user approves as a card. Data, never code. | specialists spec §4, unbuilt |
-| **Agent** (2026-07-09 sense) | "A named automation": harness + model + instructions + workspace + trigger. The single object the Agents & Automations view was designed around. | vision §3.5, unbuilt |
-| **Assistant / Duty** (2026-09-01 sense) | Destin's proposed replacement for the object above: an **assistant** is the named container ("my Office assistant"); a **duty** is one recurring job it is responsible for, implemented as a specialist or a skill. See §6.1. | captured, not designed |
+| **Agent** (2026-07-09 sense) | "A named automation": harness + model + instructions + workspace + trigger. The single object the 2026-07-09 view was designed around. **Superseded 2026-09-05** by assistant/duty below; the view itself is named **Autonomous Assistants** on screen, not "Agents & Automations". | vision §3.5, superseded |
+| **Assistant / Duty** (2026-09-01 sense) | **Ruled 2026-09-05:** the unit of organization. An **assistant** is the named container ("my Office assistant"); a **duty** is one recurring job it is responsible for. v1 ships the **coordinator** shape (the assistant is an agent that dispatches its duties). Duties are broader than plans and not yet fully conceptualized; a plan may later be the structure a duty uses. See §6.1. | ruled, not designed |
 | **Inbox** | Where runs that need a human (a permission ask *or* a content question) wait, and where finished runs report. | unbuilt |
 
-Two collisions to keep in view: **"Assistant" already names a shipped preset and an unmerged
-Settings panel mockup**, and the specialists spec's headline noun becomes "an implementation
-detail" under the assistant/duty framing. Neither is resolved here (§9, items 1–2).
+Two collisions were on the table and both were ruled 2026-09-05 (§8): **"assistant" stays
+everywhere it is today** (the preset, the Settings panel mockup, and the new container) — Destin
+does not see the overlap as a problem — and **the user-facing word for a child session is
+"specialist"**, unified: copy that still says "helper" is swept to "specialist" (roadmap item).
+"Plan" and "duty" stay separate words for separate things.
 
 ---
 
@@ -160,7 +162,7 @@ Recorded order from the 2026-08-11 program, re-verified 2026-08-26 and unchanged
 | # | Step | State |
 |---|---|---|
 | 3 | **Session context transparency panel** (broadened from "tell the user what was truncated") | Design approved 2026-08-17, tabbed mockup on `feat/context-truncation-notice`; **backend unbuilt** (`native.onSessionContext` does not exist). Handoff: `docs/active/handoffs/2026-08-17-session-context-panel-handoff.md` |
-| 4 | **Ground-truth model metadata** — pricing incl. `input_cache_read`, context, tool support, discovered not curated | Unbuilt. Blocks 5 and the cost chip's correctness |
+| 4 | **Ground-truth model metadata** — pricing incl. `input_cache_read`, context, tool support, discovered not curated | Unbuilt. Blocks 5 and the cost chip's correctness. **Runs concurrently with stage two from 2026-09-05** in its own session: `docs/active/handoffs/2026-09-05-model-information-prompt.md` |
 | 5 | **Capability tiering rework** (four tiers: small/big local, small/frontier cloud) + fold `model-step-budget.ts` into the profile | Unbuilt. The specialists `Task` gate (`canDelegate`) already needs this model-class axis |
 | 6 | **M4 leftovers** — folderless sessions | Unbuilt, low priority. (Image-by-path shipped; cost chip shipped but see §5.5) |
 | 7 | **Multi-model cwd contract** — Bash `workdir`, file-tool relative-path policy, one canonical cwd-rules block | Items 1 and 4 unbuilt; item 2 shipped differently (miss hints). **Blocked on a decision, not code** (§9 item 6) |
@@ -209,8 +211,9 @@ before design is final were run 2026-09-04** on the pinned engine build
 ceiling and the shipped launch shape shares one context pool across them; prefix reuse only
 partly survives the first simultaneous fan-out, so the card must charge a full prefill per
 child; plan authoring through the tool grammar is reliable from the 9B model class up and
-absent below it, so `propose_plan` is a model-class gate, not cloud-only. Design can proceed
-once §9 items 1–3 are ruled (`docs/active/handoffs/2026-09-04-stage-two-decisions-prompt.md`). The Claude Code bridge (`youcoded agent run` CLI + bundled skill) is also unbuilt and
+absent below it, so `propose_plan` is a model-class gate, not cloud-only. The gating decisions
+were ruled 2026-09-05 (§8; deck and answers in `docs/active/design/2026-09-05-specialists-plans/`)
+and the stage-two design started the same day under the feature flow, in that folder. The Claude Code bridge (`youcoded agent run` CLI + bundled skill) is also unbuilt and
 needs a `bin` entry the app has never shipped.
 
 **Verification debt:** the 1c hands-on checklist
@@ -265,9 +268,10 @@ the environment; the perf rig cannot see native per-token streaming.
 
 ## 6. The long-term shape
 
-### 6.1 Agents & Automations (Phase 4) — the headline surface
+### 6.1 Autonomous Assistants (Phase 4, formerly "Agents & Automations") — the headline surface
 
-A third top-level view alongside Chat and Projects. What was designed 2026-07-09:
+A third top-level view alongside Chat and Projects, named **Autonomous Assistants** on screen
+(ruled 2026-09-05). What was designed 2026-07-09:
 
 - **Triggers:** v1 = manual "Run now" and cron/one-time schedules; v2 = file-watch, webhook
   (explicit opt-in), app events, agent-to-agent chaining.
@@ -285,8 +289,9 @@ A third top-level view alongside Chat and Projects. What was designed 2026-07-09
 - **Sharing:** agent manifests are JSON → share to friends, publish to WeCoded with security
   scanning from day one.
 
-**The unit of organization is under live question.** The 2026-07-09 design has one object:
-*an agent is one automation*. On 2026-09-01 Destin proposed two nested ones:
+**The unit of organization was ruled 2026-09-05: assistant made of duties, coordinator shape
+first.** The 2026-07-09 one-object design (*an agent is one automation*) is superseded. Destin's
+2026-09-01 proposal, now the design basis:
 
 > An **assistant** is the thing the user names and thinks in — "my Office assistant". It
 > groups the **duties** it is responsible for. An assistant may be (a) a **coordinator** agent
@@ -311,12 +316,15 @@ any device, so they probably share one mechanism, but the UI must keep them dist
 Specialists' 5-minute ask hold and delegation ledger are the shipped half of that mechanism
 and nothing yet connects them to this.
 
-Phase 4 items 1 (agent model + store) and 4 (inbox) explicitly wait on this being settled.
-Open questions, none answered: does a trigger belong to the assistant or to each duty (the
-example implies per-duty)? Do budgets sit on the assistant or the duty? Does a coordinator get
-its own conversation the user can talk to, or is it only ever scheduled? How do duties share
-context, if at all? Which shape is the v1 default — the agentless grouping is cheapest and is
-probably where this starts.
+**What the ruling means for the build order:** a coordinator is a plan runner on a schedule plus
+a conversation plus the durable "ping the user and wait" — so it cannot exist before
+specialists stage two (plans) and it is the reason stage two is designed so a plan can later
+serve as the structure of a duty. Destin has said duties are broader than plans and that he has
+not fully conceptualized what an autonomous assistant's duties look like; that design is still
+owed and is not part of stage two. Open questions, none answered: does a trigger belong to the
+assistant or to each duty (the example implies per-duty)? Do budgets sit on the assistant or
+the duty? Does the coordinator's conversation live in Chat or only inside the Autonomous
+Assistants view? How do duties share context, if at all?
 
 **Exit criterion (unchanged):** "Every morning at 8, summarize my project's new GitHub issues
 into a note and ping me if any look urgent" is creatable in-app by a non-developer, runs on a
@@ -354,9 +362,12 @@ MCP phase 2 → Android M8 → onboarding M9. Small permissions items slot anywh
 **Capability track** (§5.4): taxonomy → eval CI gate → cache breakpoints → event log →
 memory → containment → goals → remote protocol.
 
-**Specialists stage two** has its three live probes (2026-09-04) and waits on §9 items 1–3 and
-on model metadata (plan-card dollar figures — token ceilings can ship first). **Agents & Automations** waits for the §6.1 ruling, cost accounting, and
-stage two's journal. The custom harness builder has no dependency and no owner.
+**Specialists stage two** has its three live probes (2026-09-04) and its gating decisions
+(2026-09-05); its design is in progress. **Model metadata (parity step 4) runs concurrently in a
+separate session** so plan cards carry dollar ceilings from day one where a price is known
+(`docs/active/handoffs/2026-09-05-model-information-prompt.md`). **Autonomous Assistants**
+waits for cost accounting, stage two's journal, and the duty design. The custom harness builder
+has no dependency and no owner.
 
 ---
 
@@ -374,18 +385,19 @@ stage two's journal. The custom harness builder has no dependency and no owner.
 | 2026-08-13 | Bash grants are exact by default; widening is named, never inferred; a moving target (`git push` with no branch) gets no Always-allow button. |
 | 2026-08-16 | Cost = `(input − cacheRead) × prompt + cacheRead × input_cache_read + output × completion`; the naive formula is ~10× high. |
 | 2026-08-26 | Third-party CLIs, `/goal`, CC-style agent view, sandboxing-vs-scratch: filed as ideas with no design; the skip-permissions investigation's argument *against* OS sandboxing is not to be re-derived. |
+| 2026-09-05 | **Unit of organization:** assistant made of duties, **coordinator shape first** (deck `docs/active/design/2026-09-05-specialists-plans/specialists-plans.decisions.json`). **Words:** "assistant" stays for the preset, the Settings panel and the container — not a problem worth a rename; the third view is named **Autonomous Assistants**; the user-facing word for a child session is **specialist** everywhere (sweep remaining "helper" copy). **Plans and duties stay separate**; a plan may later be the structure a duty uses; duties are not yet conceptualized. **Order:** model information (metadata + tiering) is built **concurrently** in its own session while plans are designed and built, so plan cards show dollars from day one where a price exists. **Local plan authoring:** not ruled — Destin asked how plans run on local models first; answered in the stage-two questions deck. |
 
 ---
 
 ## 9. Decisions owed by Destin
 
-1. **The unit of organization for Agents & Automations** — the 2026-07-09 "agent = one
-   automation" or the 2026-09-01 assistant/duty split, and which of the three assistant
-   shapes is v1. Everything in §6.1 waits on this.
-2. **The word "assistant"** — it now means a preset, a settings panel, and the proposed
-   container. Pick which survives; rename the others.
-3. **Interleaving the two tracks** — parity (§5.1) versus capability (§5.4). Both are ordered
-   internally; nobody has said which goes first or how they alternate.
+1. ~~**The unit of organization for Agents & Automations**~~ — ruled 2026-09-05 (§8): assistant
+   made of duties, coordinator first. Still owed: the duty design itself (§6.1 open questions).
+2. ~~**The word "assistant"**~~ — ruled 2026-09-05 (§8): it stays everywhere; the view is
+   "Autonomous Assistants"; child sessions are "specialists".
+3. **Interleaving the two tracks** — parity (§5.1) versus capability (§5.4). Partly ruled
+   2026-09-05: parity step 4 (model information) runs concurrently with specialists stage two.
+   The rest of the interleave, and the session context panel's slot, are still open.
 4. **Assistant settings panel mockup** — sign-off pending since 2026-08-26.
 5. **Session context panel** — approved by eye; green-light the backend.
 6. **cwd contract item 2** — reject relative paths outright (loud) or keep the miss hints

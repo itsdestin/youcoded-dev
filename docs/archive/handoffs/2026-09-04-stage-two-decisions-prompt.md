@@ -1,6 +1,6 @@
 ---
 date: 2026-09-04
-status: active
+status: superseded
 type: handoff
 topic: the prompt Destin pastes into a fresh session to settle what gates specialists stage two (plans), then start the stage-two design
 ---

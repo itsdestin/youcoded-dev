@@ -1,0 +1,25 @@
+{
+ "answers": {
+  "unit-of-organization": {
+   "pick": "Assistant made of duties, coordinator first",
+   "note": ""
+  },
+  "word-assistant": {
+   "pick": "Other",
+   "note": "ehh i'm not sure this is as much of a problem as you make it out to be. fine with most surfaces rn. the only thing i'd change is \"agents view\" will become \"Autonomous Assistants\" "
+  },
+  "plan-words": {
+   "note": "pretty sure we call them \"Specialists\" in most places now, but if not we should unify around Specialists naming. we will keep plans/duties separate. a plan may eventually be used as the structure for a duty, but duties are a bit more broad i think? i haven;t fully conceptualized what the autonomous agents' duties will look like yet.",
+   "pick": "Other"
+  },
+  "order-of-work": {
+   "pick": "Model information first, then plans with dollars from day one",
+   "note": "i think model information can largely get built concurrently, you will give me a prompt for a fresh session to work on that issue while we build out plans."
+  },
+  "local-plan-authoring": {
+   "pick": "Other",
+   "note": "still a bit confused about how, exactly, plans would work with local models. do they send out other local models? how would that work with context and generation speeds and such across multiple parallel local specialist instances? we may need to think this through a bit more carefully\n"
+  }
+ },
+ "submitted": "2026-09-05T08:21:02Z"
+}

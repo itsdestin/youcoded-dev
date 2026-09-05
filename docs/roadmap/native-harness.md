@@ -47,11 +47,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       quick chips, user-interface)
       `input-bar` `desktop` `needs-verify` `checked 2026-09-02`
 
-- [ ] Agents & Automations — a third top-level view beside Chat and Projects where work runs on a
-      schedule or trigger without the user (cron / "run now", budgets as hard stops, an inbox of
-      runs). Verified 2026-09-01: zero scheduling code exists in either app. Blocked on Destin's
-      "Assistants made of Duties" ruling, plus cost accounting and the specialists durable journal
-      `all` `blocked` `checked 2026-09-01` → docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
+- [ ] Autonomous Assistants (formerly "Agents & Automations") — a third top-level view beside Chat
+      and Projects where work runs on a schedule or trigger without the user (cron / "run now",
+      budgets as hard stops, an inbox of runs). Verified 2026-09-01: zero scheduling code exists in
+      either app. Named and its unit of organisation ruled 2026-09-05; still blocked on the duty
+      design, cost accounting and the specialists durable journal
+      `all` `blocked` `checked 2026-09-05` → docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
 
 - [ ] Goal layer — checkable goals and a goal queue on top of the existing step-budget and
       doom-loop machinery (super-agent roadmap step 8). Deliberately last in that program:
@@ -221,15 +222,23 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       2026-09-04 on the pinned engine build (four helpers at once is the ceiling; the first
       fan-out pays most of its prompt cost again; plan authoring works from the 9B model class
       up and not below) — results in youcoded `docs/engine-dependencies.md` → "Stage-two probes".
-      Still gated on Destin's decisions (the stage-two decisions prompt handoff). The Claude Code
-      bridge (`youcoded agent run`) is unbuilt from the same spec
-      `desktop` `decision` `checked 2026-09-04`
+      Gating decisions ruled 2026-09-05 (plans and duties stay separate words; model information is
+      built concurrently in another session so cards can show dollars); design started the same
+      day under the feature flow. The Claude Code bridge (`youcoded agent run`) is unbuilt from the
+      same spec
+      `desktop` `in-flight` `checked 2026-09-05` → docs/active/design/2026-09-05-specialists-plans/specialists-plans.decisions.json
 
-- [ ] "Assistants" made of "Duties" — Destin's unit of organisation for the future Agents &
-      Automations view: an assistant groups duties, may be a coordinator, a sole agent, or no
-      agent at all; "ping the user and wait" is a core competency. Captured, not designed —
-      decision 1 in the agent-platform vision doc §9; Phase 4's agent model and inbox wait on it
-      `all` `parked` `checked 2026-09-01`
+- [ ] "Assistants" made of "Duties" — the unit of organisation for the future Autonomous Assistants
+      view. Ruled 2026-09-05: an assistant groups duties and the first version is the coordinator
+      shape (the assistant decides which duties to run); "ping the user and wait" is a core
+      competency. Duties themselves are broader than plans and still not conceptualised — that
+      design is the next thing owed; the view's agent model and inbox wait on it
+      `all` `parked` `checked 2026-09-05` → docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
+
+- [ ] The app calls a hired child session a "specialist" in some places and a "helper" in others
+      (Settings explainer, report cards). Decided 2026-09-05: one word, "specialist", on every
+      surface; sweep the remaining "helper" copy
+      `desktop` `decision` `checked 2026-09-05`
 
 - [ ] Specialists — six follow-on ideas from plan 1c, named but not designed: promote a
       foreground helper to background mid-run; open a helper's own transcript in a viewer; a
