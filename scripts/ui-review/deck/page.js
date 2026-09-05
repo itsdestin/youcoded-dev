@@ -10,9 +10,6 @@
     change: '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m12.5 7.5 4 4"/></svg>',
     eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
     warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>' };
-  // Mirrors serve.py's NOTE_KIND: an unknown/absent note_kind (an old answers file predating
-  // tags) prints nothing in the summary rather than "[undefined]".
-  const NOTE_KIND = { now: 'fix now', later: 'fix later', noting: 'just noting' };
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   if (window.top !== window) document.body.classList.add('embedded');
   // What the stage shows for a step: one frame per run (before/after, or today), or — for a CHOICE
@@ -276,13 +273,6 @@
     $$('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
     $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', a.v === 'pick' && f.dataset.run === a.pick));
     const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
-    // The tag row is shown only once a note has text — nothing about an empty note is tagged.
-    // A visible default, never an inference: an old answer's note (written before tags existed)
-    // has no note_kind, so it shows none selected — the default is written only when a note
-    // gains text under the #note input handler below, never painted on here.
-    const hasNote = !!(a.note && a.note.trim());
-    $('#tags').hidden = !hasNote;
-    $$('#tags .tag').forEach(b => b.classList.toggle('on', hasNote && b.dataset.kind === a.note_kind));
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
     const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
     $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
@@ -353,15 +343,7 @@
   $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick); });
   $('#note').addEventListener('input', e => {
     const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), note: e.target.value };
-    // A note that just gained text is "just noting" until he says otherwise — a visible default,
-    // not an inference: it is on screen, selected, and one click away from the other two.
-    if (a.note.trim() && !a.note_kind) a.note_kind = 'noting';
-    if (!a.note.trim()) delete a.note_kind;
     state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
-  });
-  $('#tags').addEventListener('click', e => {
-    const b = e.target.closest('.tag'); if (!b || state.submitted) return;
-    const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note_kind: b.dataset.kind }; paintState(); save();
   });
   $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
   // From the finish screen, Prev means "back into the deck" — the step he left, not the one
@@ -373,8 +355,8 @@
   // ── submit ──
   function summary() {
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
-    // Mirrors serve.py's summary(): the note's tag prints right after its quoted text, same words.
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); const tag = NOTE_KIND[a.note_kind]; lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' + (tag ? ' [' + tag + ']' : '') : '')); }
+    // Mirrors serve.py's summary(): a note prints plainly, right after the answer, same words.
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
     return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
   }
   function openDialog() {
@@ -415,7 +397,7 @@
   function lockSubmitted() {
     $('#done').innerHTML = 'Submitted ✓<span class="long"> — view responses</span>';
     $('#done').onclick = showFinished; $('#done').disabled = false;
-    $$('.ans,#save,#note,.tag').forEach(e => e.disabled = true); paintState();
+    $$('.ans,#save,#note').forEach(e => e.disabled = true); paintState();
   }
 
   // ── the finish screen ──
@@ -434,11 +416,11 @@
     const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
     const rows = DECK.steps.map((st, i) => {
       const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
-      const note = (a.note || '').trim(); const tag = NOTE_KIND[a.note_kind];
+      const note = (a.note || '').trim();
       return `<tr><td class="n">${i + 1}</td>`
         + `<td class="step-cell">${esc(st.surface)}<p class="src">${esc(st.headline)}</p></td>`
         + `<td class="v" data-v="${esc(v)}">${esc(ANS_LABEL(st, a))}</td>`
-        + `<td>${note ? esc(note) + (tag ? `<span class="kind">${esc(tag)}</span>` : '') : '<span class="src">—</span>'}</td></tr>`;
+        + `<td>${note ? esc(note) : '<span class="src">—</span>'}</td></tr>`;
     }).join('');
     $('#responses').querySelector('tbody').innerHTML = rows;
     const when = (state.submitted || '').slice(0, 16).replace('T', ' ');

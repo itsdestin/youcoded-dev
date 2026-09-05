@@ -21,10 +21,6 @@ import webbrowser
 from .live import VITE_BASE_PORT, has_live, live_offset
 from .spec import SpecError, workspace_root
 
-# The tag says what a note IS — next-round work, a roadmap line, or a remark — so the
-# contract agent (Task 6) can route it instead of guessing (feature-flow design §5).
-NOTE_KIND = {'now': 'fix now', 'later': 'fix later', 'noting': 'just noting'}
-
 
 def answers_path(spec):
     return os.path.join(spec['_base'], spec['_stem'] + '.answers.json')
@@ -52,10 +48,10 @@ def summary(spec, state):
         note = (a.get('note') or '').strip()
         # A choice step answers with the variant it picked ("P-19 pick B"); "no" there means none of them.
         what = f'pick {a.get("pick", "?")}' if v == 'pick' else ('none' if v == 'no' and st.get('variants') else v)
-        # The tag says what the note IS — next-round work, a roadmap line, or a remark — so the
-        # contract agent routes it instead of guessing (feature-flow design §5).
-        tag = NOTE_KIND.get(a.get('note_kind'), '')
-        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' + (f' [{tag}]' if tag else '') if note else ''))
+        # Fix: a note is a note (Destin, 2026-09-04) — no tag to print. An older answers
+        # file may still carry a leftover per-note category alongside it; it is simply
+        # never read here, so it has no effect on the summary.
+        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else ''))
     when = (state.get('submitted') or '')[:16].replace('T', ' ')
     head = (f'{spec["key"]} · {"submitted " + when if when else "not submitted"} · '
             f'{counts["yes"]} yes · {counts["no"]} no · {counts["other"]} other · '

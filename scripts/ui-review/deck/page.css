@@ -175,9 +175,6 @@ figcaption .key{color:var(--mark);font-weight:700}
 .ans .key{flex:none} .ans .dot{width:clamp(8px,0.7vw,11px);height:clamp(8px,0.7vw,11px)}
 #save{height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);padding:0 clamp(14px,1.4vw,26px)}
 .note{flex:3 1 220px;font:inherit;font-size:clamp(12px,0.85vw,14px);height:clamp(34px,4.4vh,52px);padding:0 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)} .note::placeholder{color:var(--fg-muted)}
-/* Note tags: what the note IS. Shown only once a note has text; "Just noting" is preselected so nothing is inferred. */
-.tags{display:inline-flex;gap:6px} .tag{font:inherit;font-size:11px;padding:4px 9px;border:1px solid var(--edge);border-radius:999px;background:var(--well);color:var(--fg-dim);cursor:pointer} .tag.on{border-color:var(--mark);color:var(--fg);box-shadow:inset 0 0 0 1px var(--mark)}
-.compact .controls .tags{grid-column:1/4}
 .veil{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:30} .veil.on{display:flex}
 .dlg{width:min(520px,92vw);background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5)} .dlg h2{margin:0 0 10px;font-size:16px;font-weight:500} .dlg p{margin:0 0 10px;color:var(--fg-2);font-size:13px;line-height:1.5}
 .dlg .warn{display:flex;gap:8px;align-items:flex-start;background:var(--inset);border:1px solid color-mix(in srgb, var(--mark) 45%, var(--edge));border-radius:var(--radius-md);padding:10px 12px;color:var(--fg);margin:12px 0}
@@ -213,7 +210,6 @@ figcaption .key{color:var(--mark);font-weight:700}
 .responses td.v[data-v="no"]{color:color-mix(in srgb,var(--no) 78%,var(--fg))}
 .responses td.v[data-v="other"]{color:color-mix(in srgb,var(--other) 82%,var(--fg))}
 .responses td.v[data-v="skip"]{color:var(--fg-muted);font-weight:400}
-.responses .kind{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:var(--radius-full);border:1px solid var(--edge);background:var(--inset);font-size:10px;color:var(--fg-muted);white-space:nowrap}
 @media (max-width:700px){.fin-actions{flex-wrap:wrap} .responses{font-size:11px} .responses th,.responses td{padding:6px 7px}}
 /* A frame whose picture could not be fetched — see the onerror in page.js for which of the
    two reasons it prints. Bordered so it reads as a message, not as a design with no content. */

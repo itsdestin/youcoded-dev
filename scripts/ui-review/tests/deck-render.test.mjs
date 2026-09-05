@@ -280,12 +280,11 @@ test('a words-only deck renders with no stage and records a pick', async () => {
       assert.equal(await c.evaluate("[...document.querySelectorAll('.ans')].map(b => b.dataset.v).join(',')"), 'other');
       await c.evaluate("document.querySelector('.card.option').click()");
       await c.evaluate("document.querySelector('#save').click()");   // → Q-2
-      // Back up to Q-1 and tag its note — proves the tag row appears once the note has text
-      // and the pick lands next to it in the saved file (feature-flow design §5).
+      // Back up to Q-1 and add its note — proves the note field and the pick land together
+      // in the saved file (feature-flow design §5). No tag row: a note is a note (Destin, 2026-09-04).
       await c.evaluate("document.querySelector('#prev').click()");   // back to Q-1
       await c.evaluate("const n = document.querySelector('#note'); n.value = 'smaller'; n.dispatchEvent(new Event('input'))");
-      assert.equal(await c.evaluate("document.querySelector('#tags').hidden"), false);
-      await c.evaluate("document.querySelector('.tag[data-kind=later]').click()");
+      assert.equal(await c.evaluate("document.querySelector('#tags')"), null);
       await c.evaluate("document.querySelector('#save').click()");   // → Q-2 again
       await c.evaluate("document.querySelector('#next').click()");   // → Q-3
       await sleep(200);
@@ -293,16 +292,14 @@ test('a words-only deck renders with no stage and records a pick', async () => {
       await sleep(400);
       const answers = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
       assert.deepEqual([answers.answers['Q-1'].v, answers.answers['Q-1'].pick], ['pick', 'a']);
-      assert.equal(answers.answers['Q-1'].note_kind, 'later');
-      // Clearing the note must remove its tag — paintState()'s highlight is display-only and
-      // must not repaint a tag that isn't stored (the fix this test pins).
+      assert.equal(answers.answers['Q-1'].note, 'smaller');
+      // Clearing the note removes it from the saved answer.
       await c.evaluate("document.querySelectorAll('#steps span')[0].click()");   // back to Q-1
       await c.evaluate("const n2 = document.querySelector('#note'); n2.value = ''; n2.dispatchEvent(new Event('input'))");
-      assert.equal(await c.evaluate("document.querySelector('#tags').hidden"), true);
       await c.evaluate("document.querySelector('#save').click()");   // → Q-2, saves the cleared note
       await sleep(400);
       const answers2 = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
-      assert.equal('note_kind' in answers2.answers['Q-1'], false);
+      assert.equal((answers2.answers['Q-1'].note || ''), '');
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
   } finally { srv.kill(); }
@@ -326,7 +323,7 @@ test('submit lands on a finish screen that reads the answers back, and the deck 
     for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
     assert.equal(await c.evaluate('document.body.dataset.screen'), 'deck');
 
-    // step 1: yes + a tagged note. step 3: "other". step 2 is left with no answer on purpose.
+    // step 1: yes + a note. step 3: "other". step 2 is left with no answer on purpose.
     await c.evaluate("document.querySelector('.ans[data-v=yes]').click(); const n=document.querySelector('#note'); n.value='amber is strong'; n.dispatchEvent(new Event('input'));");
     await sleep(400);
     await c.evaluate("document.querySelector('#steps span:nth-child(3)').click()"); await sleep(600);
@@ -342,9 +339,10 @@ test('submit lands on a finish screen that reads the answers back, and the deck 
     // Every step is read back, including the one with no answer.
     const rows = JSON.parse(await c.evaluate("JSON.stringify([...document.querySelectorAll('#responses tbody tr')].map(r=>[...r.cells].map(c=>c.textContent.trim())))"));
     assert.equal(rows.length, 3);
-    assert.equal(rows[0][2], 'Yes, keep it'); assert.match(rows[0][3], /amber is strong.*just noting/);
+    assert.equal(rows[0][2], 'Yes, keep it'); assert.match(rows[0][3], /amber is strong/);
     assert.equal(rows[1][2], 'No answer');
     assert.equal(rows[2][2], 'Something else');
+    assert.equal(await c.evaluate("document.querySelectorAll('#responses .kind').length"), 0);   // no tag pill left to render
     assert.match(await c.evaluate("document.querySelector('#fin-meta').textContent"), /3 steps · 1 yes · 0 no · 1 other · 1 with no answer · submitted /);
     assert.deepEqual(c.errors, []);
 

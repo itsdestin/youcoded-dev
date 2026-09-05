@@ -108,10 +108,7 @@ Decisions must not live only in chat — and the deck answers ARE the record (th
    pre-written code only for cross-repo / stored-data / strict-order work → subagent-driven
    build with a reviewer per task. Destin is not in this stage; a contradiction with the
    approved UI is a reopen deck, never a silent change.
-4. File a roadmap entry for every *fix later* note the contract agent listed (`docs/roadmap/<area>.md`
-   — `ROADMAP.md` → "Filing an item"), and follow the workspace knowledge rules (pinning test >
-   ast-grep rule > WHY comment > path-scoped rule) for anything durable.
-5. At the end: write `<feature>.contract.verdicts.json` beside the contract, run
+4. At the end: write `<feature>.contract.verdicts.json` beside the contract, run
    `review-cards.py acceptance`, serve the acceptance deck; `bash scripts/close-out.sh <branch>`
    reports whether the contract holds, was signed, and was accepted.
 

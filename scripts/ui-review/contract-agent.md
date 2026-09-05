@@ -15,17 +15,12 @@ answers do not support a row, the row does not exist; write what was missed into
 `## Not covered` list at the end of your reply so the next round can ask.
 
 ## How an answer becomes a row
-- `yes` with no note, or a note tagged **just noting** → one row. Statement = the step's
-  headline rewritten as what the user experiences (present tense, no code words — the deck's
-  banned list applies). `source` = `<deck key>#<step id>`; `note` = the note text verbatim.
-- A note with NO tag (answers files older than the tags, 2026-09-01) counts as **just noting**.
+- `yes` with a note → one row; the note is quoted in `note`. A note that asks for a change is
+  not part of the row — list it under `## Not covered` for the next round to ask.
 - `pick X` → a row stating the picked option's label as a fact ("The invite lives in the
   friends list"). Other options are not rows.
 - `other` → a row from the note ONLY if it states a requirement; a wish or a question is
   `## Not covered`.
-- A note tagged **fix now** → NOT a row (it was the next round's work; the next round's
-  answer is the source). Tagged **fix later** → not a row; list it under `## Roadmap` in your
-  reply with the source, for the session to file.
 - `no` / `skip` → no row. A skipped step is unanswered, never "fine".
 
 ## `checkedBy`
