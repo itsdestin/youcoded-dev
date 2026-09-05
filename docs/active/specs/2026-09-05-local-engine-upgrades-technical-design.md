@@ -8,15 +8,20 @@ branch: feat/local-engine-upgrades (youcoded)
 reviews:
   - docs/active/reviews/2026-09-05-local-engine-upgrades-design-review-1.md
   - docs/active/reviews/2026-09-05-local-engine-upgrades-design-review-2.md
+  - docs/active/reviews/2026-09-05-local-engine-upgrades-design-review-3.md
 ---
 
-# Local engine upgrades — technical design (build stage 8a, after review round 2)
+# Local engine upgrades — technical design (build stage 8a, after review round 3 — final)
 
 The UI is decided: 32 contract rows, signed 2026-09-05, mocked on `feat/local-engine-upgrades`
 against the fakes in `mock-shim.ts` / `mock-only.ts`. This document says what main must do so
-those screens stop being fakes. It re-litigates nothing about the *what*. Two review rounds
-(50 findings accepted, 1 reversal) reshaped it; each change cites its finding. Everything
-marked **probed** was checked against the installed b10665 on 2026-09-05.
+those screens stop being fakes. It re-litigates nothing about the *what*. Three review rounds
+— the cap — reshaped it: 63 findings accepted, 2 rejected, 1 reversal. Each change cites its
+finding. Everything marked **probed** was checked against the installed b10665 on 2026-09-05.
+Round 3 changed two decisions rather than only sharpening wording: a model too big for the GPU
+is no longer blocked when it would run split across GPU and RAM (R3-3), and an extra engine
+flag is now validated by running the binary, because one typo would otherwise stop the whole
+engine from starting (R3-1).
 
 Investigation with the measurements behind every number:
 `docs/active/investigations/2026-09-04-local-model-runner-audit.md`.
@@ -37,11 +42,15 @@ merged into `feat/local-engine-upgrades` on 2026-09-05.
     speed: { speculative: true, compressCache: true },
     models: { [modelId]: { contextLength: number|null, keepLoaded: boolean,
                           gpuLayers: number|'auto', extraFlags: string,
-                          memoryWarningDismissedAt: number|null,
+                          memoryWarningDismissed: {at, contextLength}|null,
                           pendingApply?: true } } }
   ```
   Missing keys = the defaults above = today's behaviour. Written through the existing locked
-  `mutateJson`.
+  `mutateJson`. `memoryWarningDismissed` stores the **resolved effective** context length at
+  dismissal time, not a bare timestamp (R3-4/R3-23): a bare timestamp cannot answer §D4's
+  "same length?" question, and `contextLength` alone is `null` for a model on the engine-wide
+  default — so raising the engine-wide context from 32k to 128k would keep a stale dismissal
+  alive for exactly the model that now needs 4× the memory.
 - **The download manifest stays after completion**, gaining `completedAt` and
   `visionFile?: { path, size, sha256 }`. Three code paths that read presence as "unfinished"
   or delete it are changed to read `completedAt` (R2-4): `installedModels()`'s cleanup,
@@ -145,8 +154,13 @@ Rows: R4, R17, R18, R19.
   `engine-supervisor.test.ts` pins both branches, and pins that `-c` and
   `--sleep-idle-seconds` are NO LONGER on the command line (they moved into the preset, §C2).
 - **One channel `engine:set-config(patch)`** with `{ contextSize?, speed? }`. `speed` →
-  write + restart (stop, `supervisorBinary = null`, respawn). `contextSize` → write + rewrite
-  `[*]` + `?reload=1` under the idle rule of §C2 — no process restart (R2-24).
+  write + restart (stop, `supervisorBinary = null`, respawn) **behind the same bounded idle
+  wait as §C2's pending apply** (R3-5): `stop()` has no in-flight guard of its own — the only
+  `inFlight > 0` check is in the idle timer — so an immediate restart SIGTERMs llama-server
+  mid-answer and the streaming reply dies. Contract R19 promises the opposite ("a model in use
+  reloads on its next message"); the panel shows the same "Applies after the current reply"
+  footer. `contextSize` → write + rewrite `[*]` + `?reload=1` under that same idle rule — no
+  process restart (R2-24).
   `engine:set-context` stays as a thin alias for existing callers (Android stub included).
 
 ## C. Per-model settings via the router's preset file
@@ -187,6 +201,23 @@ ctx-size n-gpu-layers sleep-idle-seconds` (R1-13). Sections are emitted **only f
 in the cache scan** (a stale section would resurrect a deleted model as a ghost row — probed,
 `source: preset`), and `deleteModel` prunes `engine.models[id]` (R2-6).
 
+**A saved flag is validated against the binary, not against a shape (R3-1 — probed).** Shape
+plus a denylist accepts any plausible typo, and **the router refuses to initialise on an
+unrecognised key in ANY section**, not just `[*]`: with `not-a-real-flag = 7` inside a
+per-model section, b10665 exits 1 at startup with `failed to initialize router models: option
+'not-a-real-flag' not recognized in preset '<id>'`. A running engine survives (the `?reload=1`
+merely returns 500 and the old presets are retained, `/health` still 200), so nothing looks
+broken until the next spawn — a speed restart, an engine restart, or the next app launch — at
+which point **every** local model is gone with no in-app way back. Contract R26 ("stops only
+that model from loading") cannot be met by a single shared file unless two things happen:
+1. **At save time**, the flag is written into a throwaway preset holding only that section and
+   the binary is run against it with an empty `--models-dir`; a non-zero exit rejects the save
+   and shows the binary's own stderr line (never a guessed cause).
+2. **At spawn time**, a preset that fails to initialise is retried once with the offending
+   model's section omitted — that model gets `lastLoadError` and every other model still runs.
+`lastLoadError` therefore has two sources: the router row's failure text when a load fails, and
+the startup rejection above when the model has no router row to fail on.
+
 **Writing and applying (R1-8, R2-2, R2-3):** a settings save writes `engine.models[id]` with
 `pendingApply: true` and does NOT touch `models.ini` yet — every `?reload=1` (downloads,
 deletes, `refreshModels()`) diffs presets and unloads a changed model mid-reply. The apply
@@ -196,7 +227,15 @@ ref-count are NOT the signal — a model with an open chat never releases its re
 write `models.ini` from config (pending included, flag cleared) → `GET /models?reload=1` →
 `POST /models/unload` for the changed model(s). Bounded: at the next idle moment, or after
 10 minutes regardless; the dialog's footer says "Applies after the current reply" while
-pending. The supervisor also writes `models.ini` before every spawn.
+pending. The supervisor also writes `models.ini` before every spawn — **through the same
+temp-file + rename path as `download-manifest.ts`** (R3-2): `~/.youcoded/` is explicitly shared
+between the dev instance and the built app (`native-home.ts`), so two supervisors can rewrite
+this file at once, and a reader that catches a half-written one is fatal. **The spawn must be
+able to boot without it:** a missing preset is a startup error too (probed — `preset file does
+not exist` → exit 1), so when the file cannot be written or read back, `--models-preset` is
+omitted and the engine falls back to today's `-c` / `--sleep-idle-seconds` command line (the
+one case where they return; `engine-supervisor.test.ts` pins both branches). Per-model settings
+are lost for that run and the card says so; a dead engine is not an option.
 `ModelSettings.lastLoadError: string|null` = the router row's failure text when the model's
 last load failed (R26).
 
@@ -229,24 +268,44 @@ Range in **1 MB steps, stopping as soon as the keys below are parsed** (the arch
 precede the tokenizer arrays in convert-emitted files; `probe-headers.mjs` pins that on the
 curated repos). Keys: `<arch>.block_count`, `.attention.head_count_kv`, `.attention.key_length`
 / `.value_length` (fallback `embedding_length / head_count`), `.context_length`,
-`.attention.sliding_window`, `.attention.sliding_window_pattern`, `.full_attention_interval`.
+`.attention.sliding_window`, `.attention.sliding_window_pattern`, `.full_attention_interval`,
+`.attention.key_length_swa` / `.value_length_swa`, `.attention.shared_kv_layers`.
+**`sliding_window_pattern` has two shapes (R3-6 — read out of Destin's own Gemma 4 file):**
+a scalar (Gemma 3, "every Nth layer is full") and a **35-element bool ARRAY** (GGUF type 9) in
+`gemma4`, where 28 layers slide and 7 are full. A reader expecting a `u32` either throws or
+reads the array header as a number. The reader handles both, and treats an **unhandled key
+type** — not only an unknown architecture — as `contextBytesIsUpperBound: true`.
 **One header per repo** (default quant's first file), persisted beside
 `curated-models-cache.json` in userData as `gguf-headers-cache.json`, keyed by repo +
 default-quant sha (HF) or path + mtime (local).
 
 ### D2. Estimator (`fit-estimator.ts`) (R1-6, R1-7, R1-10, R1-25, R2-9, R2-10)
 - Layer map: `full_attention_interval = n` → layers with `il % n != n-1` are recurrent/linear
-  and contribute **0 KV** (Qwen3.5 family); `sliding_window_pattern` → sliding layers keep
-  `min(context, slidingWindow)` tokens, with the `dense_first` rule pinned per arch against
-  llama.cpp's `llama-hparams.cpp` in `gguf-header.test.ts` (Gemma 3/4); no key → every layer
-  full. A family the reader does not recognise counts every layer full and sets
+  and contribute **0 KV** (Qwen3.5 family, a genuine scalar — probed); `sliding_window_pattern`
+  → sliding layers keep `min(context, slidingWindow)` tokens, from the scalar's `dense_first`
+  rule (Gemma 3, pinned per arch against llama.cpp's `llama-hparams.cpp` in
+  `gguf-header.test.ts`) or straight off the per-layer bool array (Gemma 4); no key → every
+  layer full. **Sliding layers use `key_length_swa` / `value_length_swa` when present** — in
+  Gemma 4 those are 256 against a full-attention 512, i.e. half — and **`shared_kv_layers = n`
+  means n layers store no KV of their own** and are subtracted (R3-6). Getting these wrong is
+  not harmless: Gemma 4 IS a recognised family, so `contextBytesIsUpperBound` never fires and
+  an over-estimate would be stated as a precise number — the fake precision R1-25 forbids.
+  A family or key type the reader does not handle counts every layer full and sets
   `contextBytesIsUpperBound: true`; the bubble then says "up to" (R1-25).
 - `kvBytes` per kept token = `kvHeads × (dK×bytes(kType) + dV×bytes(vType))`, `f16 = 2`,
   `q8_0 = 1`, +6 % block overhead.
-- **The verdict formula (R2-10):** `need = model + vision + kv + 512 MB`. Pool side: `need ≤
-  (pool − loadedBytes) × 0.9` fits, `≤ pool − loadedBytes` tight, else too large **for the
-  model + vision part only** — the KV term may raise a verdict to `tight`, never to `too-large`
-  (R1-10). Available side (`checkMemoryForLoad`): `need ≤ MemAvailable` (Linux
+- **The verdict formula (R2-10, corrected by R3-3):** `need = model + vision + kv + 512 MB`.
+  `need ≤ (pool − loadedBytes) × 0.9` → **fits** (entirely on the GPU); `≤ pool − loadedBytes`
+  → **tight**; above the pool but `≤ pool − loadedBytes + MemAvailable` → **tight**, because
+  that is a model that *splits across GPU and system RAM and runs* — b10665's `-ngl` default is
+  `auto`, which offloads only the layers that fit and runs the rest on the CPU, and today's
+  estimator already models this tier ("Splits across GPU + system RAM → runs at decent speed").
+  Only above **that** is it `too-large`. **This matters because `too-large` is a hard block:**
+  `RuntimeBinding.tsx` refuses to create the session at all, and §D4 makes `too-large`
+  non-dismissible — so scoring against VRAM alone would stop a discrete-GPU user from using a
+  12 GB model on an 8 GB card with 32 GB of RAM, a model that loads and answers fine. Contract
+  R7 asks for the pool limit **and** the memory available right now, not the pool alone. As
+  before, the KV term may raise a verdict to `tight`, never to `too-large` (R1-10). Available side (`checkMemoryForLoad`): `need ≤ MemAvailable` (Linux
   `/proc/meminfo`; macOS `vm_stat` free + inactive + purgeable; Windows `os.freemem()`,
   documented as "free only") — `loadedBytes` is NOT added here because resident models are
   already excluded from available memory. `loadedBytes` = Σ over `loaded` rows (not
@@ -263,10 +322,19 @@ default-quant sha (HF) or path + mtime (local).
 ### D3. `contextLengthFor(modelId)` = per-model setting ?? engine `contextSize`. `quants()`
 uses the engine's; `memoryCheck` and `installedModels` use the model's own.
 
-### D4. The remembered warning (R9, R29, R31) — `ModelSettings.memoryWarningDismissedAt`
-Written through `models:set-settings`; `memoryCheck` returns `ok` for a `tight` verdict when
-the stored length equals the current one; a changed context asks again; `too-large` never
-dismissible.
+Guards (R3-26 — both files already exist): `fit-estimator.test.ts` pins `need = model + vision
++ kv + 512 MB`, all four verdict tiers including the split-offload one, "KV may reach `tight`,
+never `too-large`", `loadedBytes` over `loaded` and NOT `sleeping` rows (R1-14), the three
+per-platform available-memory readers, and §D4's dismissal rule; `gguf-header.test.ts` pins the
+scalar and array pattern shapes, the `_swa` lengths, `shared_kv_layers`, and that an unhandled
+key type sets `contextBytesIsUpperBound`.
+
+### D4. The remembered warning (R9, R29, R31) — `ModelSettings.memoryWarningDismissed`
+Written through `models:set-settings` as `{ at, contextLength }`, where `contextLength` is the
+**resolved effective** length (`contextLengthFor(id)` = per-model ?? engine-wide) at the moment
+of dismissal (R3-4/R3-23). `memoryCheck` returns `ok` for a `tight` verdict when the stored
+`contextLength` equals `contextLengthFor(id)` now; any change on either side — the model's own
+setting or the engine-wide default — asks again. `too-large` is never dismissible.
 
 ## E. Vision: the projector downloads with the model, into a folder
 
@@ -288,7 +356,17 @@ repo carries `visionBytes` and `visionFile: { path, size, sha256 }`.
 - `cache-scan.ts` scans one level of folders; `vision: 'ready'` when `mmproj*` is present;
   `'available'` when the folder's or flat manifest carries `visionFile` but no `mmproj` is
   present (also the crash-recovery state, R1-11); else `'none'`.
+- **A fresh download of a repo with a projector fetches BOTH files in one job** (R3-22) —
+  this, not `add-vision`, is what contract R3 ("always downloads its vision file; there is no
+  switch to skip it") asks for, and §E1/§E2/§E4 as written only made the projector *visible*,
+  *placed*, and *addable-later*. One `downloadId`, both files into `<cacheDir>/<id>/`,
+  `totalBytes` summed over the pair so the percentage covers both (the same shape §A2 uses for
+  the runtime archive). A failed projector leg leaves the model **complete** in the
+  `'available'` state with its Add-vision link — no new error text needed.
 - `deleteModel` removes the folder and prunes `engine.models[id]`.
+
+Guards (R3-26 — the file already exists): `cache-scan.test.ts` pins the one-level folder scan
+and all three `vision` states, R1-11's crash-recovery `'available'` included.
 
 ### E3. Backfill for pre-feature downloads (R2-20)
 A complete set with no manifest (every download made before this feature) resolves its repo
@@ -324,10 +402,20 @@ idea, which becomes in-flight: its floor ships here). `engine:run-in-terminal(co
 one in the current project folder and returns its id; the command is written **after the
 PTY's first output**, never on spawn (fish and zsh discard startup input), without `\r`.
 Probe on fish, zsh, bash and PowerShell before the task closes. Sizing: 54 `provider ===
-'claude' | 'native'` comparisons across 24 non-test files — the task carries the list; hiding
-the provider from the form means a missed site cannot be reached by a user. Docs asserting
-the two-member union (`native-runtime.md` rule and depth doc, `shared/types.ts` comment) are
-in the docs task.
+'claude' | 'native'` comparisons across 24 non-test files (46 of them in the renderer) — the
+task carries the list.
+
+**Hiding the provider from the new-session form does NOT make those sites unreachable
+(R3-25).** The earlier draft claimed it did; §A5 contradicts it two sections earlier — "Run in
+terminal" creates the session **and the renderer selects it**, so the user is sitting inside a
+shell session with every renderer branch deciding what to draw for a provider it has never
+seen (`App.tsx` alone has 16). What a selected shell session must show, and what the task
+builds: the terminal view forced (no chat/terminal toggle), no composer, no model picker, no
+stop button, and the session strip and header labelling it by the shell's name. Guard: a
+renderer test over the branches `App.tsx` takes for `provider === 'shell'`.
+
+Docs asserting the two-member union (`native-runtime.md` rule and depth doc,
+`shared/types.ts` comment) are in the docs task.
 
 ## G. The live hardware line (R12; R1-14, R1-31)
 
@@ -336,6 +424,10 @@ streaming completion's final frame carries `timings.prompt_per_second` / `predic
 (verified by `probe-chat.mjs` on b10665); `provider-registry.ts`'s local fetch wrapper (where
 `withPrefillProgress` taps the stream) reads it and calls `engineManager.recordReply(...)`,
 which emits `status-changed`.
+The comment already on the branch — `engine-types.ts` "Σ bytes of models currently resident
+(loaded **or sleeping**)" — says the opposite of R1-14 and is corrected in the docs task
+(R3-27). Guard: `engine-supervisor.test.ts` pins `loadedModelsBytes` over `loaded` rows only,
+and that a `sleeping` row contributes nothing (R3-26).
 
 ## H. Surfaces, parity, and the fakes (R2-29)
 
@@ -344,10 +436,22 @@ New channels — `engine:prereqs`, `engine:run-in-terminal`, `engine:set-config`
 `ipc-handlers.ts`, `preload.ts`, `remote-shim.ts`, `remote-server.ts`, `SessionService.kt`
 (desktop-only stubs like `engine:set-backend`), with `ipc-channels.test.ts` extended; then
 each comes OFF `mock-only.ts`. The mockup's `engine.setSpeed` → `engine.setConfig({speed})`
-and `models.dismissMemoryWarning` → `models.setSettings({memoryWarningDismissedAt})` are
+and `models.dismissMemoryWarning` → `models.setSettings({memoryWarningDismissed})` are
 renamed in `useIpc.ts`, `EngineCard.tsx`, `RuntimeBinding.tsx` (drop the `as any` gate) and
 `mock-shim.ts`; `mock-only.ts` loses the two dropped channels. The fakes stay for the
 workbench; `node scripts/workbench-boot-check.mjs` runs after the shim change (R2-28).
+
+**Three signed rows need renderer work the mockup never built (R3-24).** The renames above
+were the only renderer change in the plan, but three fields describe *text a user reads* and
+nothing draws them today (`rg -n "Lower this model|advice|contextBytesIsUpperBound|
+lastLoadError" desktop/src` → no hits). Without this task they ship invisible and the
+acceptance grader fails three rows with no code to point at:
+- `breakdown.advice` (R8) — the size bubble in `LocalModelsSection.tsx` currently ends in a
+  hardcoded "includes X for an Nk context"; it gains the advice line when the estimator sets one.
+- `breakdown.contextBytesIsUpperBound` (R1-25) — the same bubble says "up to" for the context
+  share when the flag is set.
+- `ModelSettings.lastLoadError` (R26) — the settings dialog's only error line today is its own
+  save failure; it gains a line for the model's last load error.
 
 ## I. Docs, probes, roadmap (R1-27, R2-25, R2-30, R2-31)
 
@@ -363,8 +467,17 @@ workbench; `node scripts/workbench-boot-check.mjs` runs after the shim change (R
   the `set-context` null trick (gone — context is a preset reload). `native-runtime.md` (rule
   and `youcoded/docs/native-runtime.md`): `SessionProvider` has three members.
 - `docs/MAP.md`: engine row gains `gguf-header.ts`, `rocm-prereqs.ts`, `model-presets.ts`
-  (writer), the new tests and probes; the sessions/native-runtime row gains the shell
-  provider; "On-disk state" gains the rows listed under Storage.
+  (writer), the new tests and probes, **and the two renderer files this feature rewrites
+  hardest — `EngineCard.tsx` and `LocalModelsSection.tsx` — neither of which is in any MAP or
+  rule row today** (R3-28, verified: `rg -n "EngineCard|RuntimeBinding" docs/MAP.md
+  .claude/rules/*.md` → no output). The sessions/native-runtime row gains the shell provider.
+  "On-disk state" gains the rows listed under Storage, **and its existing
+  `~/.youcoded/config.json` row — still described as "native-runtime settings (engine cache
+  dir, pins)" — is amended to say the per-machine `engine` section now also holds the speed
+  switches, the per-model settings and the dismissed warnings.**
+- `youcoded/desktop/src/shared/engine-types.ts`: the `loadedModelsBytes` comment says
+  "resident (loaded **or sleeping**)", which is the opposite of what §G computes — corrected
+  to "loaded rows only; a sleeping model's memory is freed (R1-14)" (R3-27).
 - Probes on every bump: the existing five + `probe-speed` + `probe-presets` + `probe-vision`
   + `probe-headers`.
 - Roadmap, `docs/roadmap/local-models.md` unless noted — **closed:** spec decoding and KV
@@ -385,10 +498,29 @@ task is reported done; every new user-facing failure through `<ErrorState>` / `F
 with the REAL cause, never a guess. The three new failure texts:
 - Add vision could not move the model: "Could not move <id> into its own folder: <OS error>.
   Nothing was changed."
-- Preset file could not be written: "Could not save this model's settings: <OS error>." (the
-  engine keeps running with the previous file).
+- Preset file could not be written **while the engine is running**: "Could not save this
+  model's settings: <OS error>." (the engine does keep running, on the previous file).
+- Preset file could not be written **or read back at spawn** (R3-2) — a different situation
+  and a different sentence, because the engine would otherwise not start at all: "Started
+  without your per-model settings: <OS error>. Every model is using the shared context
+  length." Shown on the engine card, not as a failure dialog.
+- An extra engine flag the binary rejects (R3-1): the save is refused with the binary's own
+  stderr line, verbatim, never a guessed cause.
 - Runtime archive failed its check: reuse the existing sentence — "The <BACKEND> runtime
   files failed their integrity check — please try installing again."
+**Closing an item means three mechanical steps, not a ticked box (R3-21).** `ROADMAP.md`
+defines closing as: delete the item from its area file, append one line to
+`docs/roadmap/shipped.md`, archive its report — then `node scripts/roadmap-check.mjs --fix`
+before committing. §I closes seven items and rewrites two to residue; all seven get their
+`shipped.md` line. And CLAUDE.md extends "merge" to "…AND archive the docs AND close the
+roadmap item", so at merge the five lifecycle documents this feature produced move to
+`docs/archive/`: this design, the contract folder
+`docs/active/design/2026-09-04-local-engine-upgrades/`, and the three review records.
+**The one document that stays live** is
+`docs/active/investigations/2026-09-04-local-model-runner-audit.md` — the two rewritten
+residue items (dual-model OOM, LM-Studio parity) still link it, and archiving it would leave
+two dangling links for the nightly anchor CI to flag.
+
 Closing tasks: `node scripts/workbench-boot-check.mjs` after the shim rename; the acceptance
 stage — a fresh grader writes `local-engine-upgrades.contract.verdicts.json` for all 32 rows,
 re-shooting the `deck` rows from the built branch against the real backend, then
@@ -403,3 +535,8 @@ re-shooting the `deck` rows from the built branch against the real backend, then
 - One `engine:set-config` for every engine-wide knob; one `models:set-settings` for every
   per-model one, the warning's memory included; one storage file.
 - The shell session is the only genuinely new subsystem.
+- **The one place this design is deliberately not simplest (R3-1, R3-2):** `models.ini` is a
+  single all-or-nothing input that llama.cpp treats as a fatal startup error, and user-typed
+  text goes into it. The two guards that cost the most here — validating a flag by running the
+  binary, and being able to spawn without the preset at all — are what keep one typo in a text
+  box from bricking the local engine. Neither is optional.
