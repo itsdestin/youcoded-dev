@@ -153,3 +153,19 @@ never on a deck.
   first deck's browser-open failed silently and the file path was pasted instead of the URL.
 - The `ui-mockup` skill now says: hand Destin the `[deck] http://…` line, never the `.html` path.
 - `scripts/ui-review/plans/chatgpt-signin.json` — eleven shots covering every approved surface.
+
+## Build stage log (2026-09-05)
+
+- **Technical design:** `docs/active/specs/2026-09-05-chatgpt-signin-backend-design.md` — three
+  adversarial review rounds (the cap), 34 findings, all accepted and folded in:
+  `docs/active/reviews/2026-09-05-chatgpt-signin-design-review-{1,2,3}.md`.
+- **Task breakdown:** `docs/active/plans/2026-09-05-chatgpt-signin-build.md` (T0–T7).
+- **Phase 0 probe:** `youcoded/desktop/test-engine/chatgpt-phase0.mjs` on
+  `feat/chatgpt-signin-backend`. The listener leg already passed under Electron; the rest needs
+  Destin to sign in once in the browser it opens. **No production code before its findings file
+  exists** (`docs/active/investigations/2026-09-05-chatgpt-phase0-findings.md`).
+- **One wording decision** on a words deck: `chatgpt-signin.words-1.json` (the weekly limit
+  card's reset format). Answered → `.answers.json` beside it.
+- Build branches: youcoded `feat/chatgpt-signin-backend` (off `feat/chatgpt-signin`),
+  youcoded-dev `build/chatgpt-signin` (off `design/chatgpt-subscription`); both fast-forward into
+  their parents when the build lands. Neither parent is merged.
