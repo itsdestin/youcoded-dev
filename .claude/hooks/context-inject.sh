@@ -21,11 +21,16 @@ WORKSPACE="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
 [[ ! -d "$WORKSPACE" ]] && exit 0
 
+# Startup only reports; it must not mutate or retarget a running session.
+if [[ -f "$WORKSPACE/scripts/workspace-start.mjs" ]]; then
+    echo 'Development edits: start/resume with node scripts/workspace-start.mjs --session <stable-key> [repo…]. Use returned absolute paths and read instructions there; do not pull shared checkouts.'
+fi
+
 collect_repo_state() {
     local repo_dir="$1"
     local repo_name="$2"
 
-    [[ ! -d "$repo_dir/.git" ]] && return
+    [[ ! -e "$repo_dir/.git" ]] && return
 
     local branch recent dirty dirty_count behind
     branch=$(git -C "$repo_dir" branch --show-current 2>/dev/null || echo "detached")
@@ -39,7 +44,7 @@ collect_repo_state() {
 
     echo "### $repo_name (on \`$branch\`)"
     if [[ "$behind" =~ ^[0-9]+$ && "$behind" -gt 0 ]]; then
-        echo "⚠ ${behind} commits behind its upstream as of the last fetch — run \`git -C $repo_name pull --ff-only\` before trusting Serena or this summary"
+        echo "⚠ ${behind} commits behind its upstream as of the last fetch — use workspace-start for new work; updating an existing branch is a separate decision, not an automatic pull"
     fi
     echo "Recent commits:"
     echo '```'
@@ -59,7 +64,7 @@ collect_repo_state() {
 # Detect multi-repo workspace by checking for known sub-repos
 SUB_REPOS=()
 for candidate in youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace; do
-    if [[ -d "$WORKSPACE/$candidate/.git" ]]; then
+    if [[ -e "$WORKSPACE/$candidate/.git" ]]; then
         SUB_REPOS+=("$candidate")
     fi
 done
