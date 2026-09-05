@@ -1,0 +1,199 @@
+{
+  "title": "Plans — the plan card and its states",
+  "key": "specialists-plans-review",
+  "out": "specialists-plans.review.html",
+  "images": "images/specialists-plans.review",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/plans-card-review/before",
+    "after": "/home/destin/youcoded-dev/scratch/plans-card-review/after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "proposed": [
+      "plans-card",
+      "proposed",
+      "1060x700+16+90"
+    ],
+    "proposed-local": [
+      "plans-card",
+      "proposed-local",
+      "1060x400+16+90"
+    ],
+    "comment": [
+      "plans-card",
+      "comment",
+      "1060x440+16+90"
+    ],
+    "writing": [
+      "plans-card",
+      "writing",
+      "1060x300+16+90"
+    ],
+    "running": [
+      "plans-card",
+      "running",
+      "1060x520+16+90"
+    ],
+    "auto-approved": [
+      "plans-card",
+      "auto-approved",
+      "1060x540+16+90"
+    ],
+    "paused": [
+      "plans-card",
+      "paused",
+      "1060x500+16+90"
+    ],
+    "add-budget": [
+      "plans-card",
+      "add-budget",
+      "1060x500+16+90"
+    ],
+    "interrupted": [
+      "plans-card",
+      "interrupted",
+      "1060x420+16+90"
+    ],
+    "completed": [
+      "plans-card",
+      "completed",
+      "1060x360+16+90"
+    ],
+    "revised": [
+      "plans-card",
+      "revised",
+      "1060x400+16+90"
+    ],
+    "settings": [
+      "plans-card",
+      "settings",
+      "440x600+500+150"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Chat · plan card",
+      "path": "A conversation, after the assistant proposes a plan",
+      "crop": "proposed",
+      "headline": "One card shows the whole fan-out before it costs anything: the steps, who does them, the ceiling, Approve and Comment.",
+      "changed": "Today (left) the assistant hires specialists one at a time, each with its own consent card, and you never see the total. Now (right) a multi-step job arrives as one plan card: a numbered step list with the specialist count and what each step does, one line with the total specialist count, the most it can ever cost (dollars first, the amount of work after), and which model the specialists run on, then Approve and Comment. Each step opens to show its own limit.",
+      "notice": "You read three lines and approve once instead of answering a card per specialist. Nothing runs until you press Approve.",
+      "risk": "The step wording comes from the assistant, so a vague plan reads vaguely; the example here is a hand-written one."
+    },
+    {
+      "id": "P-2",
+      "surface": "Chat · plan card",
+      "path": "The same plan on a model running on your computer",
+      "crop": "proposed-local",
+      "headline": "On a model with no published price the ceiling is shown as an amount of work only, never a made-up dollar figure.",
+      "changed": "The ceiling line gives the amount and says the model 'has no published price' instead of a dollar figure.",
+      "notice": "Local models never show $0.00. Cloud models with a known price show dollars from day one.",
+      "risk": "Until model information ships, some cloud models also lack a price and will read like this."
+    },
+    {
+      "id": "P-3",
+      "surface": "Chat · plan card",
+      "path": "After pressing Comment",
+      "crop": "comment",
+      "headline": "Comment opens a note box under the plan; the assistant rewrites the plan and posts a new card.",
+      "changed": "Approve and Comment are replaced by a note box ('What should change?') with Send and Cancel. Enter sends; Shift+Enter makes a new line.",
+      "notice": "Same feel as sending a running specialist a note. After you send, this card greys out and a revised plan appears below it.",
+      "risk": "The revised plan is written by the assistant, so in this mockup pressing Send only greys the card; nothing new appears."
+    },
+    {
+      "id": "P-4",
+      "surface": "Chat · plan card",
+      "path": "While the assistant is still writing the plan",
+      "crop": "writing",
+      "headline": "While the plan is being written the card says so and counts the time, instead of a spinner that looks stuck.",
+      "changed": "A card appears the moment the assistant starts composing: 'Writing the plan · 1m 12s — a model on your computer can take a few minutes.' On a cloud model the clause about waiting is dropped.",
+      "notice": "On a 9B local model this is about 40 seconds; on a 27B it can be two to four minutes. You can see it is alive.",
+      "risk": "The wait sentence is keyed on whether the model has a price, so a cloud model with no price gets it too."
+    },
+    {
+      "id": "P-5",
+      "surface": "Chat · plan card",
+      "path": "A plan that is running",
+      "crop": "running",
+      "headline": "The plan card is the progress surface: steps tick off and each specialist is a line inside its step with Note and Stop.",
+      "changed": "The running step opens on its own and lists its specialists by name with the same status line and 'Send Wren a note / Stop' buttons a specialist card has today. Finished steps show what they used; waiting steps show their limit. The bottom line becomes 'Spent … of the … limit' and a Stop the plan button appears.",
+      "notice": "One card tells the whole story. Specialists hired outside a plan keep their own cards as today.",
+      "risk": "A plan with many steps makes a tall card; done steps fold to one line to keep it short."
+    },
+    {
+      "id": "P-6",
+      "surface": "Chat · plan card",
+      "path": "A small plan that ran without asking",
+      "crop": "auto-approved",
+      "headline": "A plan under your limit starts on its own and says so on the card, with the ceiling still printed.",
+      "changed": "One muted line under the ceiling: 'Ran without asking — under the limit you set in Settings.' Everything else is the running card.",
+      "notice": "You always know why a plan did not ask. The limit is off until you turn it on in Settings.",
+      "risk": "None shown here beyond the line itself."
+    },
+    {
+      "id": "P-7",
+      "surface": "Chat · plan card",
+      "path": "A plan that reached its ceiling",
+      "crop": "paused",
+      "headline": "When a plan hits its ceiling it pauses in place: finished work stays, the stuck step says why, and you choose Add budget or Stop.",
+      "changed": "The header reads 'paused — reached its limit'. The paused step shows which reviewers finished and which one stopped. An amber line says 'Paused — step 1 hit its 27,000-token limit with 2 of 3 reviewers done. Nothing is spent past the limit you approved.' Buttons: Add budget, Stop.",
+      "notice": "Money stops exactly at the number you approved. Stop keeps the finished results and hands control back to the assistant.",
+      "risk": "The amber line is the same colour a stuck specialist uses; here it means 'waiting for you', not 'broken'."
+    },
+    {
+      "id": "P-8",
+      "surface": "Chat · plan card",
+      "path": "After pressing Add budget",
+      "crop": "add-budget",
+      "headline": "Add budget asks for one number, shows what it is worth in dollars, and continues from where the plan stopped.",
+      "changed": "The two buttons become 'Allow [9,000] more … (about $0.03) Continue Cancel'. The suggested amount is the paused step's own per-specialist limit; the dollar figure uses the plan's own rate.",
+      "notice": "One click and one number; the plan resumes the paused step, it does not start over.",
+      "risk": "Continue puts the stopped reviewer back to work; in this mockup its clock restarts from zero."
+    },
+    {
+      "id": "P-9",
+      "surface": "Chat · plan card",
+      "path": "After the app restarted mid-plan",
+      "crop": "interrupted",
+      "headline": "After a restart the card comes back as 'interrupted — 2 of 3 steps done' with Continue; nothing runs until you press it.",
+      "changed": "Finished steps keep their tick and what they used. One line: 'The app closed mid-plan. Steps 1–2 are saved; Continue runs the rest.' Buttons: Continue, Stop.",
+      "notice": "A plan never silently restarts after a crash or an update, and finished work is never paid for twice.",
+      "risk": "A plan you meant to leave running overnight waits for your click, which is what you chose on the questions deck."
+    },
+    {
+      "id": "P-10",
+      "surface": "Chat · plan card",
+      "path": "A finished plan",
+      "crop": "completed",
+      "headline": "A finished plan folds to its step list and one line: how long it took and what it used against the ceiling.",
+      "changed": "Header reads 'finished in 6m 52s'; every step shows a tick and what it used; the bottom line reads 'Spent $0.10 (33,600 tokens) of the $0.12 limit'. No buttons. The assistant's own message with the ranked list follows the card.",
+      "notice": "You can see at a glance that the plan came in under its ceiling.",
+      "risk": "The result lives in the assistant's message, not on the card, so a long list scrolls the card away."
+    },
+    {
+      "id": "P-11",
+      "surface": "Chat · plan card",
+      "path": "The old plan after a Comment",
+      "crop": "revised",
+      "headline": "After a Comment the old plan greys out and points to the new one below it.",
+      "changed": "The card dims, its header reads 'revised — see the new plan below', every step shows as not started, and a muted line says it was revised after your comment.",
+      "notice": "The history of what you asked for stays in the chat; only the newest plan has buttons.",
+      "risk": "The new card is not in this picture, so the pointer points at nothing here."
+    },
+    {
+      "id": "P-12",
+      "surface": "Settings · Specialists",
+      "path": "Settings → Specialists",
+      "crop": "settings",
+      "headline": "A new Plans section in Settings: 'Run small plans without asking', off by default, with the limit shown once it is on.",
+      "changed": "Below the intelligence tiers a Plans block adds one switch with a two-line explanation, and under it 'when the plan's limit is under [20000] tokens' — greyed out until the switch is on.",
+      "notice": "Every plan asks until you flip this. Big plans always ask no matter what.",
+      "risk": "None beyond the switch being off in this picture."
+    }
+  ]
+}
