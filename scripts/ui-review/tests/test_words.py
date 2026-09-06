@@ -182,6 +182,21 @@ class WordsTests(unittest.TestCase):
         self.assertEqual(q4['kind'], 'question')
         self.assertTrue(q4['today'] and q4['problem'] and q4['proposal'])
 
+    def test_legacy_answer_without_v_is_unanswered(self):
+        # An answers file written by the RETIRED plain questions page stored the option's
+        # label prose under "pick" and carried no "v" at all. The deck's contract is
+        # {"v": "pick", "pick": "<option id>"}, so such an entry has no answer — and the
+        # summary must SAY so rather than coerce it, because a session converting a deck to
+        # the new spec has to convert its answers file too (the mascot deck, 2026-09-05).
+        from deck.serve import summary
+        s = load_spec(words_spec(self.tmp))
+        state = {'submitted': '2026-09-04T10:00:00Z', 'answers': {
+            'Q-1': {'pick': 'In the friends list'},          # legacy: label prose, no "v"
+            'Q-2': {'v': 'pick', 'pick': 'b'}, 'Q-3': {'v': 'yes'}, 'Q-4': {'v': 'other'}}}
+        out = summary(s, state).split('\n')
+        self.assertIn('1 skipped', out[0])
+        self.assertEqual(out[1], 'Q-1 skip')
+
     def test_summary_prints_dont_know(self):
         # "Don't know" rides as Other with a flag, so the file keeps three answers, not four —
         # but both summaries must SAY don't know, or the session reads it as "something else".
@@ -233,6 +248,22 @@ class WordsTests(unittest.TestCase):
              'headline': 'Bigger?', 'changed': 'x', 'notice': 'y', 'highlight': {'text': 'Send'}}),
             images='images/questions', runs={'today': '/nowhere'})
         self.assertIn('P-2: pages are for question decks — this deck has pictures', errs(s))
+
+    def test_contract_deck_is_not_a_pages_deck(self):
+        # A contract is picture-free, so words_only() was true for it and pages() claimed it —
+        # turning the acceptance deck into ONE 5,884px scroll whose first question started at
+        # y=3739, under the contract table, while the header read "page 1 of 1 · 0 of 8
+        # answered" (measured 2026-09-05). Pages are a QUESTION-deck behaviour (design §3.1).
+        s = spec_with(self.tmp, lambda r: r['steps'].append(
+            {'id': 'C-1', 'words': True, 'surface': 'Games', 'path': 'Contract',
+             'headline': 'This is what done means.',
+             'rows': [{'id': 'R-1', 'statement': 'A game you leave keeps running.',
+                       'checkedBy': 'a person', 'source': 'Q-3'}]}))
+        self.assertIsNone(pages(s))
+
+    def test_question_deck_still_has_pages(self):
+        s = load_spec(words_spec(self.tmp))
+        self.assertIsNotNone(pages(s))
 
     def test_a_marker_with_nothing_after_it_is_refused(self):
         def to_the_end(r):
