@@ -159,8 +159,12 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       `feat/local-engine-upgrades`, these two have not.
       `all` `confirmed` `checked 2026-09-06` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
 
-- [ ] The browser reports invalid page structure on the Local Models list: a card's whole
-      row is one big button, and the size figure inside it opens its own hover bubble from a
-      second button nested inside the first. Browsers silently rearrange that, and the two
-      sentences Destin signed off about a model's size and memory live in exactly that bubble
-      `settings/local-models` `all` `confirmed` `checked 2026-09-06`
+- [ ] Warning text elsewhere in the app is still one fixed amber, so it can vanish on a pale
+      theme the same way the local-model memory warning did. Measured on 2026-09-06: that amber
+      scores 1.05:1 on Creme's card and 1.16:1 on Light's — both BUILT-IN themes — against a
+      4.5:1 floor. The memory warning was moved to the new per-theme `--warning-fg` on
+      `feat/local-engine-upgrades`; 27 other `text-amber-*` sites were left alone deliberately,
+      because switching them changes their colour on the dark themes they were signed off in.
+      Includes this feature's own "Will be tight — close other apps first" label. Same fix, one
+      class at a time, each with a look at the surface it sits on.
+      `all` `confirmed` `checked 2026-09-06`

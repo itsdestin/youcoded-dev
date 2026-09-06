@@ -91,3 +91,21 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       properly. Nobody can observe it today either, because the whole section is hidden off the
       desktop — it is a trap sprung by opening that gate, so it cannot be reproduced until then.
       `settings/local-models` `android` `needs-verify` `checked 2026-09-06`
+
+- [ ] Open Model Providers on a computer whose models were downloaded before this feature and
+      there are no "Add vision" links at all — they appear only if you close the screen and
+      open it again. The lookup that decides which models could see images is deliberately
+      fired and forgotten so the list is never held up by Hugging Face, and nothing tells the
+      screen when the answers arrive ("The answers appear the next time the screen opens",
+      engine-manager.ts). A user who opens that screen once may never be offered vision at all.
+      Fix is a push from main when a backfill pass writes something, which is a new IPC channel
+      and therefore desktop + Android + remote parity work — too wide to bolt onto the
+      acceptance fixes. NOT the same as the vision item closed above, which was about the
+      projector file never being downloaded, and NOT the same route as the model-picker refresh
+      fixed on `feat/leu-t24-accept-fixes`: that one rides the download-progress push, and no
+      download is running when a backfill lookup answers. Worth knowing while you are here:
+      `engine:models-changed` LOOKS like the channel for all of this and is not — it is declared
+      in `preload.ts` and `shared/types.ts` and nothing in the main process ever sends it
+      (`rg -n "ENGINE_MODELS_CHANGED" desktop/src/` → a declaration and a listener, no sender),
+      and it would only fire while the engine process is running anyway.
+      `desktop` `confirmed` `checked 2026-09-06`
