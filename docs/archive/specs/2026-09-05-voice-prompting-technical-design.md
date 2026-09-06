@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 created: 2026-09-05
 revised: 2026-09-05 after design reviews 1–3 (docs/active/reviews/2026-09-05-voice-prompting-design-review-{1,2,3}.md — 41 accepted, 1 already handled) and the reopen deck
 feature: voice prompting

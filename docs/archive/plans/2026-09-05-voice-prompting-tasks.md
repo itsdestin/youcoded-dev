@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 created: 2026-09-05
 revised: 2026-09-05 after the breakdown review (docs/active/reviews/2026-09-05-voice-prompting-breakdown-review.md — 22 findings, all accepted)
 feature: voice prompting

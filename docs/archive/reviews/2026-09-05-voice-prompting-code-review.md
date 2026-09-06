@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 feature: voice-prompting
 branch: feat/voice-prompting
 reviewer: code-reviewer (fresh agent, brief scripts/ui-review/code-reviewer.md)

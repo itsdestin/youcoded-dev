@@ -62,7 +62,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
       voice-prompting mic (2026-09-05 deck, Q-7: Destin picked "desktop and Android first") stays
       off the remote client until the channel is encrypted. When it is: record in the browser, send
       the audio to the desktop's speech engine, so it sounds the same everywhere
-      `input-bar` `remote` `parked` `checked 2026-09-05` → docs/active/design/2026-09-05-voice-prompting/voice-prompting.questions.json
+      `input-bar` `remote` `parked` `checked 2026-09-05` → docs/archive/design/2026-09-05-voice-prompting/voice-prompting.questions.json
 
 - [ ] A phone that pairs to a desktop mid-dictation cannot stop its own microphone. The mic
       belongs to the phone's own speech service, and the only way to close it is a message the

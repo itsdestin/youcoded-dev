@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 created: 2026-09-05
 reviews: docs/active/plans/2026-09-05-voice-prompting-tasks.md
 gate: feature-flow §8c — the one breakdown review before ten subagents are dispatched

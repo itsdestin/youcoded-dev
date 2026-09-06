@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 created: 2026-09-05
 feature: voice prompting — docs/active/design/2026-09-05-voice-prompting/
 answers: Q-1 of voice-prompting.questions.json ("how good are these local speech models actually tho?")

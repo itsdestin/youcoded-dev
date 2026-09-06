@@ -9,17 +9,6 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       the drag starts, so it can draw the carried pill too
       `window-chrome` `desktop` `confirmed` `checked 2026-09-04`
 
-- [ ] Dictation is not built into the message box — speaking a message means OS-level dictation
-      glued on top, which does not punctuate. Wanted: a mic in the input bar that produces properly
-      punctuated, readable text the way a phone keyboard's voice input does, with live partial
-      transcript while speaking. Destin asked for this to rank higher than a normal idea. Undesigned:
-      which speech engine (local matters for the run-everything-local audience), and Android parity,
-      where dictation matters most
-      In design 2026-09-05 (docs/active/design/2026-09-05-voice-prompting/): engine is Parakeet
-      through sherpa-onnx on desktop, the phone's own recogniser on Android; live words, tap
-      to talk with a silence stop, text waits in the box, first tap offers the download
-      `input-bar` `all` `in-flight` `checked 2026-09-05`
-
 - [ ] After voice ships: a fallback to the speech service built into Windows and macOS for
       people who do not want the 464 MB download. Destin on the review deck 2026-09-05: "we may
       want to roadmap a fallback to built-in windows or mac speech services, but not rn".
