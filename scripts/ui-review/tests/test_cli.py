@@ -42,6 +42,19 @@ class CliTests(unittest.TestCase):
         code, _, err = self.run_cli('build', self.p); self.assertEqual(code, 0, err)
         page = open(os.path.join(self.d, 'fixture.html')).read()
         self.assertIn('<html lang="en" data-theme="light">', page)
+    def test_preview_without_chrome_refuses(self):
+        # WHY this case lives in test_cli and not the render suite: CI must be able to run it
+        # on a machine with no browser at all. PATH is emptied for the call, so `preview` sees
+        # exactly what such a machine sees.
+        old = os.environ['PATH']
+        os.environ['PATH'] = tempfile.mkdtemp()
+        try:
+            code, out, err = self.run_cli('preview', self.p)
+        finally:
+            os.environ['PATH'] = old
+        self.assertEqual(code, 2, out + err)
+        self.assertIn('preview needs google-chrome-stable on PATH', out + err)
+
     def test_wait_reads_the_answers_file(self):
         json.dump({'submitted': '2026-08-27T18:40:00Z', 'answers': {}}, open(os.path.join(self.d, 'deck.answers.json'), 'w'))
         code, out, _ = self.run_cli('wait', self.p, '--timeout', '1'); self.assertEqual(code, 0); self.assertIn('3 skipped', out)

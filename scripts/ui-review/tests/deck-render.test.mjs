@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
+import { mkdtempSync, readFileSync, existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -566,4 +566,31 @@ test('submit lands on a finish screen that reads the answers back, and the deck 
     assert.equal(srv.exitCode, 0, 'the server exits on submit');
     assert.deepEqual(c.errors, []);
   } finally { c.close(); if (srv.exitCode === null) srv.kill(); }
+});
+
+// `preview` is the whole point of render.mjs: a session looks at the deck as pictures before
+// it hands Destin the link. Four sessions in one day served a deck with a visible header
+// defect because nobody had looked. The words fixture is two pages; two sizes and two themes
+// make eight shots plus the contact sheet that a session actually reads.
+test('preview writes one png per page × size × theme and a contact sheet', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-preview-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import words_spec; print(words_spec(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('.json'), fx.stderr);
+  const out = join(tmp, 'shots');
+  const r = spawnSync('python3', [RC, 'preview', spec, '--sizes', '1440x900,1024x768', '--themes', 'midnight,light', '--out', out], { encoding: 'utf8' });
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  for (const size of ['1440x900', '1024x768'])
+    for (const n of [1, 2])
+      for (const theme of ['midnight', 'light']) {
+        const f = join(out, `p${n}-${theme}-${size}.png`);
+        assert.ok(existsSync(f), `missing ${f}\n${r.stdout}${r.stderr}`);
+        assert.ok(statSync(f).size > 1000, `empty ${f}`);
+        assert.match(r.stdout, new RegExp(`p${n}-${theme}-${size}\\.png`), 'every file is named on stdout');
+      }
+  assert.ok(existsSync(join(out, 'contact.png')), 'contact sheet');
+  assert.ok(statSync(join(out, 'contact.png')).size > 1000, 'contact sheet is not blank');
+  assert.match(r.stdout, /contact: /);
+  // The server preview starts must not outlive it, and must never take the serve lock —
+  // a session that previews a deck then serves it would otherwise be refused as "already served".
+  assert.equal(existsSync(join(dirname(spec), 'questions.serve.json')), false, 'preview takes no serve lock');
 });

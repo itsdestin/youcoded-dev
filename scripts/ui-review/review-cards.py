@@ -4,6 +4,10 @@
   python3 scripts/ui-review/review-cards.py build <spec.json> [--theme SLUG]     cut the crops, resolve every highlight box, write the HTML next to the spec
   python3 scripts/ui-review/review-cards.py serve <spec.json> [--no-build] [--port N] [--timeout MIN] [--theme SLUG]
         build it, serve it, print the address for the session to put in chat, save answers to <spec>.answers.json, exit when Destin submits
+  python3 scripts/ui-review/review-cards.py preview <spec.json> [--sizes 1440x900,1024x768] [--themes midnight,light] [--out DIR] [--theme SLUG]
+        build it, then look at it: one picture per page x window size x theme, plus contact.png laid out beside each other.
+        READ THE CONTACT SHEET BEFORE `serve` — four sessions in one day handed Destin a deck whose header was
+        visibly broken. The pictures land in <spec dir>/preview/ by default; that folder is scratch and is not committed.
   python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
         block until the answers file says submitted (for a session that no longer holds the `serve` process)
   python3 scripts/ui-review/review-cards.py record <spec.json> ['<pasted summary>' | < file]
@@ -55,6 +59,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from deck.build import build_page                       # noqa: E402
 from deck.contract import AcceptanceError, acceptance_spec, acceptance_status, check_contract, contract_steps, signoff   # noqa: E402
 from deck.crops import crop_images                      # noqa: E402
+from deck.preview import can_render, preview as render_preview   # noqa: E402
 from deck.serve import already_served, record, serve, wait_for_submit   # noqa: E402
 from deck.spec import SpecError, apply_live_theme, load_spec, validate    # noqa: E402
 
@@ -88,7 +93,7 @@ def main(argv):
         sys.stdout.reconfigure(line_buffering=True)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest='cmd', required=True)
-    for c in ('build', 'serve', 'wait', 'contract-check', 'acceptance', 'record'):
+    for c in ('build', 'preview', 'serve', 'wait', 'contract-check', 'acceptance', 'record'):
         sub.add_parser(c).add_argument('spec')
     # `record`: the copy box's text, pasted back, when the page had no server to submit to.
     # One argument or stdin; newlines optional (a chat paste flattens them — see parse_pasted).
@@ -100,18 +105,36 @@ def main(argv):
                     help="don't start or stop the app server for live panes (it's already running)")
     sv.add_argument('--no-build', action='store_true', help='serve the page as it is on disk')
     sv.add_argument('--port', type=int, default=0)
-    for c in ('build', 'serve'):
+    for c in ('build', 'preview', 'serve'):
         sub.choices[c].add_argument('--theme', help="open the deck on this theme instead of the one the app is on")
+    pv = sub.choices['preview']
+    pv.add_argument('--sizes', help='window sizes to shoot, comma separated (default 1440x900,1280x800,1024x768)')
+    pv.add_argument('--themes', help="themes to shoot, comma separated (default: the deck's first two)")
+    pv.add_argument('--out', help='where the pictures go (default <spec dir>/preview/)')
     a = ap.parse_args(argv)
     try:
         spec = load_spec(a.spec)
         # WHY here and not in load_spec(): only the two commands that PAINT a page follow the
         # app's theme. contract-check and acceptance read the same spec and must see the order
         # its author wrote, or a row's meaning would depend on which theme Destin is using.
-        if a.cmd in ('build', 'serve'):
+        if a.cmd in ('build', 'preview', 'serve'):
             apply_live_theme(spec, a.theme, log=lambda m: print(m, file=sys.stderr))
         if a.cmd == 'build':
             return build(spec)
+        if a.cmd == 'preview':
+            # Asked before the build, so a machine with no browser is told immediately instead
+            # of after minutes of cropping.
+            if not can_render(lambda m: print(m, file=sys.stderr)):
+                return 2
+            # WHY build() here and not inside preview(): deck/preview.py importing this module
+            # back would be a circular import. Pictures of a stale page are worse than none, so
+            # a failed build stops the command.
+            if build(spec) != 0:
+                return 1
+            return render_preview(spec,
+                                  sizes=a.sizes.split(',') if a.sizes else None,
+                                  themes=a.themes.split(',') if a.themes else None,
+                                  out=a.out)
         if a.cmd == 'wait':
             return wait_for_submit(spec, timeout_min=a.timeout)
         if a.cmd == 'record':
