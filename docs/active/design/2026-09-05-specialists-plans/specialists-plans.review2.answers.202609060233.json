@@ -1,0 +1,48 @@
+{
+ "deck": "specialists-plans-review2",
+ "started": "2026-09-06T02:30:00.854Z",
+ "submitted": "2026-09-06T02:33:12Z",
+ "cur": 4,
+ "answers": {
+  "R-1": {
+   "note": "this still looks thicker than any other tool/specialist card.",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-2": {
+   "note": "i think the steps need their own container styling like the specialist/plan cards. and the margin to the left of the specialist card is a bit too wide",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 83,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-3": {
+   "note": "make this in-line with the warning. not below it",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-4": {
+   "note": "again, in-line with warning instead of below. reduce to \"allow # tokens ($##)\", drop more/about.",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 58,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-5": {
+   "note": "put in-line with \"app closed mid plan\"",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

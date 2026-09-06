@@ -1,0 +1,52 @@
+{
+  "title": "Plans — round 3: your five notes",
+  "key": "specialists-plans-review3",
+  "out": "specialists-plans.review3.html",
+  "images": "images/specialists-plans.review3",
+  "runs": { "before": "/home/destin/youcoded-dev/scratch/plans-card-review/round2", "after": "/home/destin/youcoded-dev/scratch/plans-card-review/after" },
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {
+    "writing": ["plans-card", "writing", "1210x200+16+90"],
+    "running": ["plans-card", "running", "1210x600+16+90"],
+    "paused": ["plans-card", "paused", "1210x430+16+90"],
+    "add-budget": ["plans-card", "add-budget", "1210x430+16+90"],
+    "interrupted": ["plans-card", "interrupted", "1210x360+16+90"]
+  },
+  "steps": [
+    {
+      "id": "S-1", "surface": "Chat · plan card", "path": "While the assistant is writing the plan", "crop": "writing",
+      "headline": "The writing card is now exactly one row tall, the same as any other collapsed card.",
+      "changed": "The card was still reserving an empty padded strip under its header, which is what made it look thicker. That strip is gone: while a plan is being written the card is its header row and nothing else.",
+      "notice": "In a chat full of cards, a plan being written no longer stands out as the fat one.",
+      "risk": "Nothing to open while it writes; the card grows into the step list the moment the plan lands."
+    },
+    {
+      "id": "S-2", "surface": "Chat · plan card", "path": "A plan that is running, with one specialist opened", "crop": "running",
+      "headline": "Each step is now its own bordered container, and its specialists sit inside it instead of far to the right.",
+      "changed": "A step used to be a bare row with its specialists pushed 28 pixels to the right. It is now a container with the same border and inset fill the plan and specialist cards use, and the specialists sit on the container's own padding. Stop the plan also moved up onto the spending line rather than taking a row of its own.",
+      "notice": "The nesting reads by shape now, plan then step then specialist, and each level costs less width than the indent did.",
+      "risk": "Three container edges inside one another can look busy on a theme with heavy borders, which is why the step's edge is the faintest of the three."
+    },
+    {
+      "id": "S-3", "surface": "Chat · plan card", "path": "A plan paused at its limit", "crop": "paused",
+      "headline": "The paused sentence and its two buttons share one row.",
+      "changed": "Stop and Add budget moved up beside the amber sentence instead of sitting on a line below it. On a narrow window they drop under the sentence rather than being cut off.",
+      "notice": "The card is a row shorter, and the buttons are next to the words that explain why they are there.",
+      "risk": "A longer pause reason will push the buttons onto their own line again at narrow widths."
+    },
+    {
+      "id": "S-4", "surface": "Chat · plan card", "path": "After pressing Add budget", "crop": "add-budget",
+      "headline": "Add budget opens in place on the same row, and reads 'Allow 9,000 tokens ($0.03)'.",
+      "changed": "The amount field and its buttons replace Stop and Add budget on the sentence's row. The wording lost 'more' and 'about': it is now Allow, the number, tokens, and the dollar figure in brackets.",
+      "notice": "Raising a limit happens on the line you were already reading, with no new row appearing under it.",
+      "risk": "The field, its dollar figure and two buttons are a lot for one row on a narrow window; they wrap as a group."
+    },
+    {
+      "id": "S-5", "surface": "Chat · plan card", "path": "After the app restarted mid-plan", "crop": "interrupted",
+      "headline": "Stop and Continue sit beside the sentence about the app closing.",
+      "changed": "Same change as the paused card: the buttons moved up onto the explanation's row, Stop still red and to the left of Continue.",
+      "notice": "Every card that asks you for a decision now puts the question and the answer on one line.",
+      "risk": "None visible."
+    }
+  ]
+}
