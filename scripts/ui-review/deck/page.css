@@ -246,6 +246,11 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
    below it — if the row split assumption ever breaks, sticky is the fallback that still keeps
    the buttons on screen. */
 .col-right .decide{display:grid;grid-template-rows:1fr auto;min-height:0}
+/* Fix (Destin, 2026-09-06): "other, save/next … have weird margins". In the side column the
+   answer row wraps, and each control kept its own flex basis — so Other, the note and Save
+   landed on three lines at three different widths. In a column they are one stack, one edge. */
+.col-right .controls{align-items:stretch}
+.col-right .controls .ans,.col-right .controls .note,.col-right .controls #save{flex:1 1 100%;max-width:none;margin:0}
 .col-right .info{overflow:auto;min-height:0}
 .col-right .controls{position:sticky;bottom:0;background:var(--panel)}
 .compact .controls{display:grid;grid-template-columns:1fr 1fr 1fr;position:sticky;bottom:0;z-index:3;box-shadow:0 -8px 20px rgba(0,0,0,.35)} .compact .controls .ans{max-width:none} .compact .controls .note{grid-column:1/3} .compact .controls #save{grid-column:3}
