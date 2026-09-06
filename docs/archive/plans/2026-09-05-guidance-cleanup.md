@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 # Workspace guidance cleanup implementation plan
 
@@ -27,3 +27,7 @@ status: active
 ## Verification and handoff
 
 Use `node scripts/roadmap-check.mjs --fix`, `node --test scripts/roadmap-check.test.mjs .claude/hooks/context-inject.test.mjs`, `node scripts/audit-anchors.mjs`, and `git diff --check` from the isolated workspace. Search tracked active operational guidance for remaining retired-tool references. Inspect both repo diffs. Do not claim a global uninstall: live/shared registration remains untouched until an authorized safe rollout.
+
+## Landed
+
+Repository cleanup merged in youcoded#431 and youcoded-dev#46. Runtime follow-ups remain open in the roadmap. Shared/live configuration and caches were not modified.
