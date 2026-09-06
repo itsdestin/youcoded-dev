@@ -160,8 +160,18 @@ test('LIVE: a forced layout per delta is detected, and a coalesced stream is not
     assert.ok(dirty.layoutsPerCommit >= PER_DELTA_LAYOUT_RATIO, `expected ~1 layout per commit, got ${dirty.layoutsPerCommit}`);
   } finally {
     try { cdp?.close(); } catch { /* already closed */ }
-    chrome.kill();
-    rmSync(profile, { recursive: true, force: true });
+    // WHY THE WAIT AND THE try/catch: `kill()` only SIGNALS. Chrome keeps writing its
+    // profile for a moment after, so removing the directory immediately raced it and
+    // threw `ENOTEMPTY: ... /Default` — which failed this test in CI on 2026-09-06
+    // AFTER every assertion above had passed. A leftover directory in the OS temp dir
+    // is not a test failure; reporting one as though the instrument were broken is.
+    await new Promise((done) => {
+      if (chrome.exitCode !== null || chrome.signalCode !== null) return done();
+      const t = setTimeout(done, 5000);
+      chrome.once('exit', () => { clearTimeout(t); done(); });
+      chrome.kill();
+    });
+    try { rmSync(profile, { recursive: true, force: true }); } catch { /* the OS will reap it */ }
   }
 });
 
