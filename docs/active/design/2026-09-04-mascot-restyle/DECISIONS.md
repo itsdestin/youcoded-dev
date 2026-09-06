@@ -168,10 +168,46 @@ app's union; flat art matching its rig. Plus 11 generator tests in marketplace C
 four stills. Destin, 2026-09-05: *"okay this is fine for now."* Filed in
 `docs/roadmap/themes.md`.
 
+## The three new characters (decks, 2026-09-05/06)
+
+- **Cotton Candy Sky — Stargazer.** Pale lavender body outlined in deep purple, round
+  purple spectacles, a small star held up beside his head. Destin's note: the star was
+  down by his fist and now sits at head height.
+- **Meadow Mist — Sprout.** Near-white body outlined in forest green, two leaves growing
+  out of his head. *"AHH its so cute."*
+- **Devil's Garden — Bone.** Sun-bleached cream body under a wine cowboy hat with a gold
+  band. Destin liked the cowboy read but rejected a gold body: *"don't like gold as the
+  body color on this one."* Bone won over sandstone and plum.
+
+Rejected, with the reason kept so it is not re-argued: Cloudpuff and Moonlet (Cotton
+Candy), Toadstool and Fernkin (Meadow Mist), Saguaro and Ember (Devil's Garden — Ember
+also repeated the horns-and-tail idea Kuromi already owns).
+
+All three came out of the theme-builder generator on its first real job, so the body,
+limbs and eight faces are identical to every other character. **Every theme in the
+registry now ships a mascot.**
+
+## The dizzy correction I got backwards (2026-09-05)
+
+Destin's round-one note — *"need to fix the weird loops on dizzy, we got rid of those
+intentionally"* — I read as the spiral eyes and reverted them to crossed lines. He meant
+the two closed loops floating either side of the head. He caught it on the next deck:
+*"we redesigned dizzy to use the new sqirly eyes and drop the weird loops on the
+left/right side of the head. why did we reintroduce the old version?"*
+
+Settled against the code, not memory: the loop path `M5.4 3.6 Q6.4 2.6 7.4 3.6 …` is on
+`origin/master`, so it predates the film; the spiral arrived with the warm set. **dizzy is
+two spirals plus the zigzag mouth, and nothing floats beside the head** — the loops read
+as debris and collide with hats and ears, which would have bitten the new characters
+immediately. Corrected in the built-in buddy, all four community rigs, all six starter
+skins, the generator, both reference docs, and the test that was pinning the wrong answer.
+
+Also folded in: the theme scripts now generate from the skill's `mascot-faces.mjs` rather
+than a second copy of the same geometry, so there is one face source.
+
 ## Still open, in the order it should probably happen
 
-1. **The two-tier motion system**, and the sleep state the z's hang off.
-   Governed by Destin's rule: ambient motion only while every session is green
-   or gray; red/amber/blue stops it and plays the one clear signal.
-2. **Three brand-new characters** for Cotton Candy Sky, Meadow Mist and
-   Devil's Garden.
+1. **The two-tier motion system**, and the sleep state the z's hang off — filed in
+   `docs/roadmap/other-features.md` at Destin's call, 2026-09-05, rather than built here.
+2. **Nothing else.** Every character is drawn and signed off; four branches are pushed
+   and green, none merged.
