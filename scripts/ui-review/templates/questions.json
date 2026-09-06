@@ -1,0 +1,115 @@
+{
+  "_comment": [
+    "QUESTION — words only, no pictures, read as PAGES: the questions of one page sit in a column he scrolls, and he answers each in place.",
+    "Use it before anything is drawn, and for any point that is decided in words. Four or more questions belong here rather than in a chat message: a wall of one-liners assumes he remembers every one of them.",
+    "Every question is written for someone with NO context, in three parts: what exists today, what goes wrong, and what would change. Err on more questions per page — a page is a set he can hold in his head at once."
+  ],
+  "title": "Saved searches — the questions before anything is drawn",
+  "_comment_title": "title: what this deck is about, in his words. It also titles the first page when no page marker comes before the first question.",
+  "key": "saved-searches-questions",
+  "_comment_key": "key: a short name for this deck. His answers are saved under it.",
+  "out": "saved-searches.questions.html",
+  "_comment_out": "out: the page build writes, beside this spec.",
+  "themes": ["midnight", "light"],
+  "_comment_themes": "themes: a words deck opens in whichever palette his app is on; this list is what the palette buttons offer.",
+  "_comment_no_pictures": "No \"images\" and no \"runs\": nothing here is photographed, so a deck of questions names neither.",
+  "steps": [
+    {
+      "_comment": "A YES / NO / DON'T KNOW question: no options, so the page offers those three answers. 'Don't know' is a real answer — it says the question is not ready.",
+      "id": "Q-1",
+      "_comment_id": "id: your name for this question. It labels his answer, so keep it short and never reuse it.",
+      "words": true,
+      "_comment_words": "words: true — this step has no picture at all. Without it a step that merely forgot its picture would render silently blank.",
+      "surface": "Chat search",
+      "_comment_surface": "surface: the part of the app the question is about, named the way he would name it.",
+      "path": "The search box at the top of the session list",
+      "_comment_path": "path: where in the app that is.",
+      "headline": "Should a search you run often be saveable?",
+      "_comment_headline": "headline: the question itself, in one sentence. 25 words at most, no code words.",
+      "today": "Searching your past sessions means typing the words again every time, and the box forgets them as soon as you close it.",
+      "_comment_today": "today: what exists right now — which part of the app, and what it does for him. Write it as though he has never seen it.",
+      "problem": "A search you run every Monday costs the same typing every Monday, and a long one is easy to mistype.",
+      "_comment_problem": "problem: what goes wrong, as HE experiences it. Not the code's problem.",
+      "proposal": "A search could be kept by name and re-run in one press. Yes starts the design; No drops it and nothing changes.",
+      "_comment_proposal": "proposal: what would change, as he would notice it. On a Yes/No question, say here what each answer leads to."
+    },
+    {
+      "_comment": "A PAGE MARKER, not a question: it starts a new page. Everything after it, up to the next marker, is read together. There is no marker before Q-1 above, so the first page is titled with the deck's own title.",
+      "id": "P-2",
+      "page": "Where saved searches live",
+      "_comment_page": "page: the page's title. It must say something — a blank one is a page he cannot tell from the one before it.",
+      "intro": "The first page decided that searches can be saved. These three decide where you would find them again.",
+      "_comment_intro": "intro (optional): one line under the title, saying what this set of questions is for."
+    },
+    {
+      "_comment": "A PICK-ONE question: the options ARE the answers, so the page offers them plus Other. One option is allowed when it is the answer you propose; three is usually the most he can hold at once.",
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat search",
+      "path": "The search box at the top of the session list",
+      "headline": "Where should a saved search appear once you have saved it?",
+      "today": "The search box is empty every time you open it, and there is nowhere in the app that lists searches.",
+      "problem": "A saved search nobody can find is a saved search nobody uses, so where it lives decides whether the feature is worth building.",
+      "proposal": "Three places it could live. Pick the one you would actually look in.",
+      "options": [
+        {
+          "_comment": "One answer. Its pros and cons are about HIS experience, never about the code.",
+          "id": "under-box",
+          "_comment_id": "id: your name for this answer. It is what gets recorded.",
+          "label": "Under the search box",
+          "_comment_label": "label: the answer's name, two or three words. Never write '(recommended)' into it — set the flag below instead, so the page can badge it.",
+          "pros": [
+            "It is in front of you at the moment you would want it.",
+            "Nothing new to learn and nowhere new to go."
+          ],
+          "_comment_pros": "pros: short lines about what he gains. One point per line.",
+          "cons": [
+            "Pushes the results down by a row.",
+            "Room for about three before the list gets long."
+          ],
+          "_comment_cons": "cons: the same, for what it costs him.",
+          "measured": "3 saved searches before it needs scrolling",
+          "_comment_measured": "measured (optional): a number. Needs a digit in it.",
+          "recommended": true,
+          "_comment_recommended": "recommended: true on AT MOST ONE answer. The page badges it; say WHY in that answer's pros."
+        },
+        {
+          "id": "sidebar",
+          "label": "In the session list",
+          "pros": [
+            "Sits beside your sessions, where you already look for old work.",
+            "Room for as many as you like."
+          ],
+          "cons": [
+            "Mixes searches in with sessions, which are different things.",
+            "One more thing making the list longer."
+          ]
+        },
+        {
+          "id": "settings",
+          "label": "In settings",
+          "summary": "A list you manage in one place and rarely visit.",
+          "_comment_summary": "summary (optional): a sentence instead of, or beside, the lists — for an answer that does not need both.",
+          "pros": ["Out of the way; nothing else on screen gets busier."],
+          "cons": ["Two clicks and a screen change away from where you would use it."]
+        }
+      ]
+    },
+    {
+      "_comment": "A STATEMENT, not a question: something you are asserting, that he confirms or rejects. No 'today' field, so the page treats it as a thing to approve — and 'yes'/'no' rename the buttons.",
+      "id": "S-1",
+      "words": true,
+      "surface": "Chat search",
+      "path": "The search box at the top of the session list",
+      "headline": "A saved search re-runs against everything, including sessions made since you saved it.",
+      "changed": "Stated, not asked: a saved search keeps the words, not the results, so it always answers with today's sessions.",
+      "_comment_changed": "changed: the What changed card. On a statement, what you are asserting.",
+      "notice": "The same saved search finds more as you work, and never shows a result you have deleted.",
+      "_comment_notice": "notice: the You'll notice card — what this means for him in practice.",
+      "yes": "Holds",
+      "_comment_yes": "yes (optional): renames the Yes button. Under five words. Use it when 'Yes, build it' is the wrong thing to say.",
+      "no": "Fails",
+      "_comment_no": "no (optional): renames the No button. Under five words."
+    }
+  ]
+}

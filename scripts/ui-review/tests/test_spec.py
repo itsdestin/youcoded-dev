@@ -249,3 +249,68 @@ class LiveThemeTests(unittest.TestCase):
             f.write('{not json')
         from deck.spec import live_theme
         self.assertIsNone(live_theme())
+
+
+class CommentStrippingTests(unittest.TestCase):
+    """`_comment` is how a TEMPLATE explains a field in place (design §6.5). It is documentation
+    for the session writing the deck, never deck content, so load_spec removes it everywhere —
+    at every depth, before a single rule is checked."""
+
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+
+    def _load(self, **over):
+        return load_spec(write_spec(self.d, **over))
+
+    def test_comment_on_the_deck_and_on_a_step_is_gone(self):
+        s = self._load(_comment='what this deck is for',
+                       steps=[{'_comment': 'one point per step', 'id': 'S-1', 'surface': 'Home',
+                               'path': 'Chat', 'crop': 'c', 'headline': 'Short headline.',
+                               'changed': 'What changed.', 'notice': 'You will notice.'}])
+        self.assertNotIn('_comment', s)
+        self.assertNotIn('_comment', s['steps'][0])
+        self.assertEqual(validate(s), ([], []))
+
+    def test_comment_inside_options_variants_and_rows_is_gone(self):
+        s = self._load(steps=[
+            {'id': 'S-1', 'words': True, 'surface': 'Home', 'path': 'Chat', 'headline': 'Which one?',
+             'today': 'It is one row.', 'problem': 'It gets crowded.', 'proposal': 'Give it a row.',
+             'options': [{'_comment': 'each option is a real answer', 'id': 'a', 'label': 'Leave it',
+                          'pros': ['Nothing moves.'], 'cons': ['Stays crowded.']}]},
+            {'id': 'S-2', 'surface': 'Home', 'path': 'Chat', 'headline': 'Which picture?',
+             'variants': [{'_comment': 'one picture each', 'id': 'A', 'label': 'A', 'crop': 'c', 'summary': 'One.'},
+                          {'id': 'B', 'label': 'B', 'crop': 'c', 'summary': 'Two.'}]}])
+        self.assertNotIn('_comment', s['steps'][0]['options'][0])
+        self.assertNotIn('_comment', s['steps'][1]['variants'][0])
+        self.assertEqual(validate(s)[0], [])
+
+    def test_comment_is_stripped_before_the_page_marker_rule_runs(self):
+        # A page marker refuses any key but page/intro — so an un-stripped `_comment` on one
+        # would turn the template that explains a page into an error.
+        s = self._load(steps=[
+            {'_comment': 'a page marker starts a new page', 'id': 'P-1', 'page': 'First page',
+             'intro': 'One line under the title.'},
+            {'id': 'S-1', 'words': True, 'surface': 'Home', 'path': 'Chat', 'headline': 'Which one?',
+             'today': 'It is one row.', 'problem': 'It gets crowded.', 'proposal': 'Give it a row.'}])
+        self.assertNotIn('_comment', s['steps'][0])
+        self.assertEqual(validate(s)[0], [])
+
+    def test_a_comment_named_after_its_field_is_stripped_too(self):
+        # A template explains each field beside the field itself, which needs one comment key
+        # per field — `_comment_headline` next to `headline`. Any key starting `_comment` goes.
+        s = self._load(_comment_title='what this deck is about',
+                       steps=[{'id': 'S-1', '_comment_id': 'your name for this point', 'surface': 'Home',
+                               'path': 'Chat', 'crop': 'c', 'headline': 'Short headline.',
+                               'changed': 'What changed.', 'notice': 'You will notice.'}])
+        self.assertNotIn('_comment_title', s)
+        self.assertNotIn('_comment_id', s['steps'][0])
+        self.assertEqual(validate(s), ([], []))
+
+    def test_a_comment_may_be_a_list_of_lines_and_may_sit_at_any_depth(self):
+        s = self._load(live={'_comment': ['line one', 'line two'], 'worktree': 'demo'},
+                       steps=[{'id': 'S-1', 'surface': 'Home', 'path': 'Chat', 'crop': 'c',
+                               'headline': 'Short headline.', 'changed': 'What changed.',
+                               'notice': 'You will notice.',
+                               'highlight': {'_comment': 'what the box goes around', 'text': 'Send'}}])
+        self.assertNotIn('_comment', s['live'])
+        self.assertNotIn('_comment', s['steps'][0]['highlight'])

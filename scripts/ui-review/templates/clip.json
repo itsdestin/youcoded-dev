@@ -1,0 +1,61 @@
+{
+  "_comment": [
+    "CLIP — a short RECORDING per run instead of a still, answered Yes / No / Other.",
+    "Use it for something that only exists while it moves: an animation, a transition, a bug you cannot photograph. For anything he should DRIVE — drag, hover, resize — use live.json instead; four clip steps were rejected in 2026-08-31 as 'just rough to compare'.",
+    "Make the recordings first: scripts/ui-review/record-pair.sh <scene> <before run> <after run> <images folder>/clips. build refuses a step whose files are not on disk."
+  ],
+  "title": "The session strip — how it moves, before and after",
+  "_comment_title": "title: what this deck is about, in his words.",
+  "key": "session-strip-motion",
+  "_comment_key": "key: a short name for this deck. His answers are saved under it.",
+  "out": "session-strip.clip.html",
+  "_comment_out": "out: the page build writes, beside this spec.",
+  "images": "images/clip",
+  "_comment_images": "images: the folder holding the pictures AND the clips/ folder under it. It must contain this file's own name.",
+  "runs": {
+    "_comment": "runs: two recordings of the same scene — one off master, one off your branch. One run named \"today\" is fine when there is nothing to compare against.",
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": ["midnight"],
+  "_comment_themes": "themes: a recording is filmed in ONE palette, so list the one it was filmed in.",
+  "steps": [
+    {
+      "_comment": "One step is one motion. Say in words what to watch for — a recording plays once and he may miss it.",
+      "id": "M-1",
+      "_comment_id": "id: your name for this point. It labels his answer.",
+      "surface": "Chat",
+      "_comment_surface": "surface: the part of the app this lives in, named the way he would name it.",
+      "path": "The row of sessions along the top",
+      "_comment_path": "path: how he would get there.",
+      "clip": "session-switch",
+      "_comment_clip": "clip: the scene NAME, when record-pair.sh made the files — it looks for <images>/clips/<name>--before.webm and <name>--after.webm, plus a .webp poster beside each.",
+      "headline": "Switching sessions now slides the conversation in instead of blinking it in.",
+      "_comment_headline": "headline: the one sentence he reads first. What he SEES. 25 words at most, no code words.",
+      "changed": "The conversation moves in from the right while it fades, over about a third of a second.",
+      "_comment_changed": "changed: the What changed card. One or two sentences on the real difference.",
+      "measured": "320 ms, 32 px of travel",
+      "_comment_measured": "measured: the timing. On a motion step this is the most useful number you have.",
+      "notice": "Switching feels like moving between two things rather than the screen being replaced.",
+      "_comment_notice": "notice: the You'll notice card. What is different for him while using it.",
+      "risk": "A long conversation costs no more than a short one, because only the whole view moves.",
+      "_comment_risk": "risk: the Risk card."
+    },
+    {
+      "_comment": "The same step with the files named by hand — for clips you did not make with record-pair.sh.",
+      "id": "M-2",
+      "surface": "Chat",
+      "path": "The row of sessions along the top",
+      "clip": {
+        "_comment": "clip as an object: one file per run, relative to this spec. Every run in \"runs\" needs an entry.",
+        "before": "images/clip/clips/drag-pill--before.webm",
+        "after": "images/clip/clips/drag-pill--after.webm"
+      },
+      "headline": "Dragging a session sideways now pushes its neighbours out of the way as you go.",
+      "changed": "The other sessions step aside while you drag, instead of jumping into place when you let go.",
+      "measured": "180 ms per neighbour",
+      "notice": "You can see where the session will land before you drop it.",
+      "risk": "Dragging fast over several neighbours puts a lot of motion on screen at once."
+    }
+  ]
+}

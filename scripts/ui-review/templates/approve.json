@@ -1,0 +1,62 @@
+{
+  "_comment": [
+    "APPROVE — Destin looks at a change that is ALREADY BUILT and answers Yes, keep it / No, revert it / Other.",
+    "Two screenshot sweeps: 'before' is master, 'after' is your branch. The rig boxes the pixels that differ.",
+    "Copy this file beside your design notes, rename it, replace every value. Every _comment is stripped when the deck is built, so leave or delete them as you like."
+  ],
+  "title": "Send button — two changes to keep or revert",
+  "_comment_title": "title: what this deck is about, in his words. It heads every page.",
+  "key": "send-button-review",
+  "_comment_key": "key: a short name for this deck. His answers are saved under it, so keep it stable across rounds.",
+  "out": "send-button.review.html",
+  "_comment_out": "out: the page build writes, beside this spec.",
+  "images": "images/approve",
+  "_comment_images": "images: where the cropped pictures land. It must contain this file's own name, or two decks overwrite each other's pictures.",
+  "runs": {
+    "_comment": "runs: the two screenshot sweeps to compare, as folders relative to this file. Make them with run-review.sh, once per branch.",
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": ["midnight", "light"],
+  "_comment_themes": "themes: which palettes every picture is shown in. Two is plenty unless colour is the point; six is the full set.",
+  "steps": [
+    {
+      "_comment": "One step is one point. Keep a deck under about eight, or he stops reading.",
+      "id": "S-1",
+      "_comment_id": "id: your name for this point. It labels his answer, so keep it short and never reuse it.",
+      "surface": "Chat",
+      "_comment_surface": "surface: the part of the app this lives in, named the way he would name it.",
+      "path": "The row under the message box",
+      "_comment_path": "path: how he would get there — the screen, the menu route, the row.",
+      "crop": "send",
+      "_comment_crop": "crop: which region of the screenshot to show. Names come from crops.json; add your own under a top-level \"crops\" block.",
+      "headline": "The send button now sits on its own line, clear of the model name.",
+      "_comment_headline": "headline: the one sentence he reads first. What he SEES, not what you edited. 25 words at most, no code words.",
+      "changed": "The button moved down into a row of its own instead of sharing the row with the model name.",
+      "_comment_changed": "changed: the What changed card. One or two sentences on the real difference.",
+      "measured": "24 px lower, 8 px clear of the model name",
+      "_comment_measured": "measured: a number that proves it — sizes, counts, milliseconds. Leave it out when you have none; a number with no digit is refused.",
+      "notice": "Nothing overlaps when the model name is long, and the button no longer jumps as you type.",
+      "_comment_notice": "notice: the You'll notice card. What is different for him while he is using it.",
+      "risk": "The message box is 24 px shorter, so a long message scrolls a line sooner.",
+      "_comment_risk": "risk: the Risk card. What could go wrong or annoy him. Leave it empty when there is genuinely nothing."
+    },
+    {
+      "_comment": "A second point, showing the two optional fields a step may carry.",
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "The strip along the bottom of the window",
+      "crop": "statusbar",
+      "headline": "The bottom strip keeps one line of text instead of wrapping to two.",
+      "changed": "Long branch names are shortened in the middle now, so the strip never grows a second line.",
+      "notice": "The window stops shifting up and down while a session runs.",
+      "risk": "A very long branch name reads as its start and its end with a gap in the middle.",
+      "highlight": {
+        "_comment": "highlight: what the box goes around. Omit it on a two-run deck and the rig boxes whatever pixels changed. Use \"text\" for words on screen, or a hand-placed \"box\": [x, y, w, h] as a last resort.",
+        "text": "master"
+      },
+      "themes": ["midnight"],
+      "_comment_themes": "themes on a STEP: show this one point in fewer palettes than the deck — for a surface captured in only one."
+    }
+  ]
+}

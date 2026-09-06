@@ -105,4 +105,74 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(sorted(d['images']['light']), ['after', 'before'])   # a picture per run, like a normal step
         self.assertEqual(d['boxes']['light']['after'], [25.0, 25.0, 20.0, 15.0])
 
+
+class TemplateTests(unittest.TestCase):
+    """`templates/` is the answer to "what does a spec of this kind look like?" — one worked
+    example per step kind in the design's chooser (§4, §6.5). A template that does not validate
+    teaches a session a spec that will be refused, so every one of them is checked here.
+
+    They are validated, never BUILT: a template names crops and run folders but ships no
+    screenshots, and pictures are build's business, not the spec's."""
+
+    DIR = os.path.join(os.path.dirname(HERE), 'templates')
+    NAMES = ['approve.json', 'brief.json', 'choice.json', 'clip.json', 'contract.json',
+             'decide.json', 'live.json', 'questions.json']
+
+    def _files(self):
+        return sorted(f for f in os.listdir(self.DIR) if f.endswith('.json'))
+
+    def test_there_is_a_template_for_every_kind(self):
+        self.assertEqual(self._files(), self.NAMES)
+
+    def test_every_template_loads_and_validates_with_no_errors(self):
+        from deck.spec import validate
+        for name in self._files():
+            with self.subTest(template=name):
+                spec = load_spec(os.path.join(self.DIR, name))
+                errors, _ = validate(spec)
+                self.assertEqual(errors, [], f'{name}: ' + '; '.join(errors))
+
+    def test_no_comment_survives_the_load(self):
+        # The whole point of `_comment` is that it explains the field to the session writing the
+        # deck and then disappears — it must never reach validation, the page or the answers file.
+        def walk(node, where):
+            if isinstance(node, dict):
+                self.assertEqual([k for k in node if k.startswith('_comment')], [], where)
+                for k, v in node.items():
+                    walk(v, f'{where}.{k}')
+            elif isinstance(node, list):
+                for i, v in enumerate(node):
+                    walk(v, f'{where}[{i}]')
+        for name in self._files():
+            with self.subTest(template=name):
+                walk(load_spec(os.path.join(self.DIR, name)), name)
+
+    def test_every_template_is_actually_commented(self):
+        # A template with no comments is just another deck: the explanation IS the deliverable.
+        for name in self._files():
+            with self.subTest(template=name):
+                with open(os.path.join(self.DIR, name)) as f:
+                    raw = f.read()
+                self.assertGreaterEqual(raw.count('"_comment'), 6, name)
+
+    def test_each_kind_is_covered_by_the_template_named_after_it(self):
+        from deck.spec import is_choice, is_clip, is_contract, is_decide, is_page, is_question, is_words
+        from deck.live import is_live
+        def steps(name):
+            return load_spec(os.path.join(self.DIR, name))['steps']
+        self.assertTrue(any(is_choice(s) for s in steps('choice.json')))
+        self.assertTrue(any(is_decide(s) for s in steps('decide.json')))
+        self.assertTrue(any(is_clip(s) for s in steps('clip.json')))
+        self.assertTrue(any(is_live(s) for s in steps('live.json')))
+        self.assertTrue(any(is_contract(s) for s in steps('contract.json')))
+        self.assertTrue(any(is_question(s) for s in steps('questions.json')))
+        self.assertTrue(any(is_page(s) for s in steps('questions.json')))
+        # Approve and brief are the same shape; the run count is what tells them apart.
+        approve, brief = load_spec(os.path.join(self.DIR, 'approve.json')), load_spec(os.path.join(self.DIR, 'brief.json'))
+        self.assertEqual(len(approve['runs']), 2)
+        self.assertEqual(list(brief['runs']), ['today'])
+        for spec in (approve, brief):
+            self.assertTrue(all(not is_words(s) and not is_live(s) for s in spec['steps']))
+
+
 if __name__ == '__main__': unittest.main()

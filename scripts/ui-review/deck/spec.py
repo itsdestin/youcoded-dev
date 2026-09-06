@@ -81,6 +81,26 @@ def workspace_root():
         d = parent
 
 
+def strip_comments(node):
+    """Drop every `_comment` key, at every depth, from a spec just read off disk.
+
+    WHY: a template (`scripts/ui-review/templates/`) explains each field in place, next to the
+    field, because a session writing its first deck of that kind has nothing else to copy from —
+    and JSON has no comment syntax. The explanation is for the AUTHOR, never deck content, so it
+    is removed before anything reads the spec: a page marker refuses any key it does not know,
+    and an un-stripped comment would otherwise reach the page and the answers file. A value may
+    be one line or a list of lines; either way the key goes.
+
+    Any key STARTING `_comment` goes, not just the bare one, so a template can explain a field
+    right beside it (`"_comment_headline"` next to `"headline"`) instead of describing eight
+    fields in one blob at the top of the object. Templates: design §6.5."""
+    if isinstance(node, dict):
+        return {k: strip_comments(v) for k, v in node.items() if not k.startswith('_comment')}
+    if isinstance(node, list):
+        return [strip_comments(v) for v in node]
+    return node
+
+
 def load_spec(path):
     """Read a deck spec and fill in everything downstream assumes.
 
@@ -90,6 +110,8 @@ def load_spec(path):
     spec's own order)."""
     with open(path) as f:
         spec = json.load(f)
+    # Before every rule below: a `_comment` is documentation for the author, not spec content.
+    spec = strip_comments(spec)
     for k in ('title', 'key', 'out', 'steps'):
         if k not in spec or spec[k] is None:
             raise SpecError(f'spec is missing "{k}"')

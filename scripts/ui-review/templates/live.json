@@ -1,0 +1,88 @@
+{
+  "_comment": [
+    "LIVE — panes of the RUNNING app he can hover, click and drag, answered Yes / No or pick one.",
+    "This is the right shape for motion, drag, hover and resize: a 200 ms animation cannot be judged from a recording. Each pane boots its own copy of the app from one authored candidate in youcoded's compare/registry.tsx, so build that first.",
+    "No pictures at all, so this deck names no images folder and no runs. serve boots the workbench of the worktree below; four panes is the cap, because each one is a whole app."
+  ],
+  "title": "Switching sessions — try it",
+  "_comment_title": "title: what this deck is about, in his words.",
+  "key": "session-switch-live",
+  "_comment_key": "key: a short name for this deck. His answers are saved under it.",
+  "out": "session-switch.live.html",
+  "_comment_out": "out: the page build writes, beside this spec.",
+  "themes": ["midnight"],
+  "_comment_themes": "themes: the palette the panes boot in. He can switch it on the page.",
+  "live": {
+    "_comment": "live (deck level): which build the panes come from. Required — every candidate in one review has to come from one build, or he is comparing two different apps.",
+    "worktree": "session-motion",
+    "_comment_worktree": "worktree: the name of the worktree whose workbench serve boots. It must hold the candidates named below.",
+    "paneWidth": 460,
+    "_comment_paneWidth": "paneWidth (optional): how wide the registry says this surface is. Only for laying the row out; over 1600 the page warns, because one pane wider than a screen scrolls sideways."
+  },
+  "steps": [
+    {
+      "_comment": "A TRY-THIS step: one pane, answered Yes / No. Same words as an approve step — the pane is just a live picture.",
+      "id": "L-1",
+      "_comment_id": "id: your name for this point. It labels his answer.",
+      "surface": "Chat",
+      "_comment_surface": "surface: the part of the app this lives in, named the way he would name it.",
+      "path": "The row of sessions along the top",
+      "_comment_path": "path: how he would get there.",
+      "headline": "Drag a session sideways — do the others get out of the way soon enough?",
+      "_comment_headline": "headline: the one sentence he reads first, and the thing to DO. 25 words at most, no code words.",
+      "changed": "The sessions beside the one you drag step aside while you move, instead of jumping when you let go.",
+      "_comment_changed": "changed: the What changed card. One or two sentences.",
+      "measured": "180 ms per neighbour",
+      "_comment_measured": "measured: the timing you are asking about.",
+      "notice": "You can see where the session will land before you drop it.",
+      "_comment_notice": "notice: the You'll notice card. What to watch for while he plays with it.",
+      "risk": "Dragging fast over several neighbours puts a lot of motion on screen at once.",
+      "_comment_risk": "risk: the Risk card.",
+      "live": {
+        "_comment": "live (step level): the address of the design this pane shows.",
+        "surface": "session-strip-motion",
+        "_comment_surface": "surface: the surface's name in the compare registry.",
+        "round": 3,
+        "_comment_round": "round: which round of that surface. REQUIRED — candidate names repeat across rounds, so an address without one silently shows an older design.",
+        "candidate": "soft-press",
+        "_comment_candidate": "candidate: which authored design, for a one-pane step. On a pick-one step this moves onto each variant instead."
+      }
+    },
+    {
+      "_comment": "A PICK-ONE step: two to four panes side by side, and he picks one. Same shape as a choice step, with running panes instead of pictures.",
+      "id": "L-2",
+      "surface": "Chat",
+      "path": "The main conversation view",
+      "headline": "How should the conversation arrive when you switch to it?",
+      "risk": "Only the whole view moves, so a long conversation costs no more than a short one.",
+      "live": {
+        "surface": "session-switch-arrival",
+        "round": 2
+      },
+      "variants": [
+        {
+          "_comment": "One pane. It boots the app on this candidate; he drives it himself.",
+          "id": "lift",
+          "_comment_id": "id: your name for this design. It is what his answer records.",
+          "label": "Fade and lift",
+          "_comment_label": "label: the design's name, two or three words.",
+          "candidate": "lift",
+          "_comment_candidate": "candidate: this design's name in the registry, under the surface and round above.",
+          "summary": "Fades in while rising a little. The quietest of the two.",
+          "_comment_summary": "summary: one or two sentences on what this design is.",
+          "measured": "300 ms, 6 px of rise",
+          "_comment_measured": "measured (optional): the timing. Needs a digit in it.",
+          "risk": "On a slow machine the fade can look like a delay.",
+          "_comment_risk": "risk (optional): what is wrong with THIS design in particular."
+        },
+        {
+          "id": "spring",
+          "label": "Spring up",
+          "candidate": "spring",
+          "summary": "Rises further and overshoots a touch before settling.",
+          "measured": "380 ms, 14 px of rise"
+        }
+      ]
+    }
+  ]
+}
