@@ -1,8 +1,9 @@
 # Workspace Map
 
 One row per subsystem: where to start, what loads when you touch it, what pins it.
-Touching a subsystem? Start at its **Entry points**. The matching **Rule** injects
-automatically the moment you edit a file under its `paths:` glob — you don't invoke it.
+Touching a subsystem? Start at its **Entry points** and read the matching **Rule**
+before editing. Native path rules inject after a tool step; automatic discovery is
+not a guarantee that instructions governed the first write. Command hooks are separate.
 Read the **Depth doc** on demand when you need the full architecture. The **Guard tests**
 are the invariants; run them (or read them as the contract) before shipping a change there.
 

@@ -4,6 +4,18 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+- [ ] Project startup reminders and before/after-action checks should work in native chats too,
+      with approval before scripts run and clear reports when a check fails or times out
+      `desktop` `parked` `checked 2026-09-05` `security` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
+- [ ] The assistant can receive a file's instructions only after its first edit has already
+      happened; it should see them and reconsider before changing the file
+      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
+- [ ] The assistant should know which tools, instructions and automatic checks are actually
+      active in this chat, rather than guessing from setup instructions
+      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
 - [ ] On a ChatGPT-plan model, YouCoded does not hand OpenAI's private reasoning back on the
       next step of a tool turn, so a long tool-using turn may re-think work it already did —
       slower and more expensive than it needs to be. Phase 0 measured no reasoning item at all
@@ -68,8 +80,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Context & knowledge as product surfaces — five-idea outline, no design done: grow the
       context popup into a real surface (per-item token cost, "this rule loaded because…", session
       mutes); one-tap "remember this?" correction capture; work state as a first-class object;
-      shareable knowledge packs via the marketplace; provenance + revocation as the gate on sharing
-      `desktop` `parked` `checked 2026-07-28` → docs/archive/specs/2026-07-28-context-knowledge-app-features-outline.md
+      shareable knowledge packs via the marketplace; provenance + revocation as the gate on sharing.
+      Destin, 2026-09-05: also explain which instructions loaded, why, and what was skipped or
+      shortened, including after reopening a chat or changing its working folder
+      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
 
 - [ ] Third-party agent CLIs as session providers (Codex first, then OpenCode / Cursor) — cuts
       against the standing "one first-party harness, every model" direction, kept as a deliberate

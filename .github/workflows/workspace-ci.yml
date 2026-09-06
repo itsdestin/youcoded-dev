@@ -94,7 +94,7 @@ jobs:
       # guard and workspace-sync.sh. Both are only ever exercised on Destin's
       # machine, so CI is the only thing that would notice them rotting.
       - name: Test the workspace drift guards
-        run: node --test scripts/workspace-drift-guards.test.mjs
+        run: node --test scripts/workspace-drift-guards.test.mjs scripts/workspace-mcp.test.mjs
 
       - name: Test the workbench boot check
         if: ${{ !cancelled() }}
