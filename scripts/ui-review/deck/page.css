@@ -143,8 +143,12 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
    card from the available/selectable options". They were the SAME card — same fill, same
    border, same radius — so nothing said which ones he could click. An explanation is now flat
    text behind a quiet rule; only a thing he can pick keeps the raised, bordered card. */
-.pages .card.part{background:none;border:0;border-left:2px solid var(--edge);border-radius:0;padding:0 0 0 12px}
-.pages .card.part h3{color:var(--fg-faint)}
+/* Fix (Destin, 2026-09-06): "the top options should be contained card things, not bare text on
+   the panel". They were flattened to tell them apart from the choices; the Option A/B/C headings
+   and the raised, hovering card now do that job, so an explanation is a contained card again —
+   quieter than a choice: the well fill instead of the raised one, and no hover. */
+.pages .card.part{background:var(--well);border:1px solid var(--edge);border-radius:var(--radius-md);padding:10px 12px}
+.pages .card.part h3{color:var(--fg-muted)}
 .pages .card.part p{color:var(--fg-2)}
 /* …and the pickable ones look pickable: they sit on the raised fill, and the whole card
    answers to the pointer rather than only its border changing colour. */
@@ -159,7 +163,7 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 /* Fix (Destin, 2026-09-06): "3 cards side-by-side horizontally" — the three explanations were
    three screens of scrolling before the first thing he can answer. The column widens to hold
    them; below 900px of room they stack again rather than becoming three unreadable strips. */
-.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start}
+.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:stretch}
 @media (max-width:1000px){.parts{grid-template-columns:1fr}}
 /* Fix (Destin, 2026-09-06): "big ass clear Option A / Option B headers". The heading is the
    thing he picks; the option's own name is the line under it and the id is a quiet trailing
@@ -253,6 +257,11 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 .col-right .controls .ans,.col-right .controls .note,.col-right .controls #save{flex:1 1 100%;max-width:none;margin:0}
 .col-right .info{overflow:auto;min-height:0}
 .col-right .controls{position:sticky;bottom:0;background:var(--panel)}
+/* Fix (Destin, 2026-09-06): "option B seems to get cut off by other visually?" — it was: the
+   column scrolls, and the last card ended exactly where the answer row begins with nothing to
+   say more was below. A fade sits on top of the answer row while there is more to scroll. */
+.col-right .decide.more .controls::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:26px;background:linear-gradient(to bottom,transparent,var(--panel));pointer-events:none}
+.col-right .info{padding-bottom:6px}
 .compact .controls{display:grid;grid-template-columns:1fr 1fr 1fr;position:sticky;bottom:0;z-index:3;box-shadow:0 -8px 20px rgba(0,0,0,.35)} .compact .controls .ans{max-width:none} .compact .controls .note{grid-column:1/3} .compact .controls #save{grid-column:3}
 .stage{position:relative;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);overflow:auto;min-height:0;line-height:0;font-size:0}
 .stage .inner{display:flex;justify-content:center;align-items:center;gap:18px;padding:12px 14px;min-width:100%;min-height:100%}

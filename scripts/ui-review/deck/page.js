@@ -466,12 +466,23 @@
     $$('#inner img, #inner video').forEach(i => i.style.width = ((i.naturalWidth || i.videoWidth) * s * zoom) + 'px');
     $('#lvl').textContent = Math.round(zoom * 100) + '%';
     // Read by the render test: the choice, and the scores it was made from (so the test checks the RULE, not a table).
+    // Fix (Destin, 2026-09-06): "option B seems to get cut off by other visually?" — the side
+    // column scrolls, and its last card ended exactly at the answer row with no sign of more.
+    // The class drives a fade over that row; re-checked whenever the column is laid out.
+    markMore();
     document.body.dataset.layout = score[best] < floor ? 'compact' : best;
     document.body.dataset.scores = JSON.stringify(score);
     const b = $('#inner .frame .box'); if (b && zoom > 1) b.scrollIntoView({ block: 'center', inline: 'center' });
     window.__deckReady = true;   // the render test waits for this — set only once a real layout has been chosen
   }
 
+  function markMore() {
+    const info = $('#content .info'), dec = $('#content .decide');
+    if (!info || !dec) return;
+    const more = info.scrollHeight > info.clientHeight + 2 && info.scrollTop + info.clientHeight < info.scrollHeight - 2;
+    dec.classList.toggle('more', more);
+    if (!info.dataset.moreBound) { info.dataset.moreBound = '1'; info.addEventListener('scroll', markMore, { passive: true }); }
+  }
   // ── navigation & answers ──
   function record() {
     const secs = Math.round((Date.now() - stepStart) / 1000);
