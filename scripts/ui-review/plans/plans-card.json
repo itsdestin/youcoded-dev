@@ -1,0 +1,156 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "proposed",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'proposed'"
+  },
+  {
+   "name": "proposed-local",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed-local",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'proposed'"
+  },
+  {
+   "name": "comment",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-testid=plan-block] button')].find(b=>b.textContent.trim()==='Comment')",
+     "settle": 600
+    }
+   ],
+   "expect": "[data-testid=plan-comment]"
+  },
+  {
+   "name": "writing",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-writing",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "[data-testid=plan-writing]"
+  },
+  {
+   "name": "running",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-running",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "js:document.querySelector('[data-testid=plan-child] button')",
+     "settle": 500
+    }
+   ],
+   "expect": "js:!!document.querySelector('[data-testid=plan-child] [aria-expanded=\"true\"]')"
+  },
+  {
+   "name": "auto-approved",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-auto-approved",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'running'"
+  },
+  {
+   "name": "paused",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-paused",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused'"
+  },
+  {
+   "name": "add-budget",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-paused",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-testid=plan-block] button')].find(b=>b.textContent.trim()==='Add budget')",
+     "settle": 600
+    }
+   ],
+   "expect": "[data-testid=plan-add-budget]"
+  },
+  {
+   "name": "interrupted",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-interrupted",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'interrupted'"
+  },
+  {
+   "name": "completed",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-completed",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'completed'"
+  },
+  {
+   "name": "revised",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-revised",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'stopped'"
+  },
+  {
+   "name": "settings",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+   "actions": [
+    {
+     "click": "[title='Settings']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=button]')].find(e=>e.textContent.trim().startsWith('Specialists')&&e.textContent.length<80)",
+     "settle": 1000
+    }
+   ],
+   "expect": "[data-testid=tier-row-budget]"
+  }
+ ]
+}
