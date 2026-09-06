@@ -5,14 +5,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, existsSync, statSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import net from 'node:net';
 // WHY the driver is not in this file any more: `review-cards.py preview` needs the same
 // headless-Chrome driver, and two copies would drift. deck/render.mjs owns it now.
-import { cdp } from '../deck/render.mjs';
+import { cdp, renderDeck } from '../deck/render.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url)), RC = join(HERE, '..', 'review-cards.py');
 // WHY: review-cards.py opens a deck on the theme the live app is on, read from
@@ -593,4 +593,23 @@ test('preview writes one png per page × size × theme and a contact sheet', asy
   // The server preview starts must not outlive it, and must never take the serve lock —
   // a session that previews a deck then serves it would otherwise be refused as "already served".
   assert.equal(existsSync(join(dirname(spec), 'questions.serve.json')), false, 'preview takes no serve lock');
+});
+
+// A page that never sets window.__deckReady used to be screenshotted silently: the bounded
+// poll (40 × 250ms) would just time out and renderDeck would shoot whatever was on screen with
+// no sign anything was wrong. A plain, no-JS HTML file served over file:// is the simplest
+// fixture that never sets the flag — no deck, no server, nothing else that could go wrong.
+test('a page that never becomes ready is reported, not screenshotted silently', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-neverready-'));
+  const html = join(tmp, 'never-ready.html');
+  writeFileSync(html, '<!doctype html><html><body>this page never sets __deckReady</body></html>');
+  const out = join(tmp, 'shots');
+  const { files, errors } = await renderDeck({ url: `file://${html}`, out, sizes: ['640x480'], themes: ['x'], pages: 1 });
+  // The function returns (rather than hanging forever on a page that will never be ready) and
+  // still writes the shot — a session should be able to see what WAS on screen — but the run
+  // now says, in the errors list, that this exact page never finished.
+  assert.equal(files.length, 1, 'still writes the shot');
+  assert.ok(existsSync(files[0]));
+  assert.equal(errors.length, 1, 'exactly one error, naming this page');
+  assert.equal(errors[0], 'p1 x 640x480: the page never finished laying out (window.__deckReady was never set)');
 });
