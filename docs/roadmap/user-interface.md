@@ -158,3 +158,9 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       design-guide G-22; the Local Models engine card and model rows switched to it on
       `feat/local-engine-upgrades`, these three have not.
       `all` `confirmed` `checked 2026-09-05` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
+
+- [ ] The browser reports invalid page structure on the Local Models list: a card's whole
+      row is one big button, and the size figure inside it opens its own hover bubble from a
+      second button nested inside the first. Browsers silently rearrange that, and the two
+      sentences Destin signed off about a model's size and memory live in exactly that bubble
+      `settings/local-models` `all` `confirmed` `checked 2026-09-06`
