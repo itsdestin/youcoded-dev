@@ -1,0 +1,52 @@
+{
+  "title": "Assistant settings — round 5: narrower list, shorter words",
+  "key": "assistant-settings-review-5",
+  "out": "assistant-settings.review-5.html",
+  "images": "images/assistant-settings.review-5",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review-r5/before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review-r5/after"
+  },
+  "labels": { "before": "Round 4", "after": "Round 5" },
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {
+    "folder": ["assistant-settings-r5", "assistant-general-folder", "840x720+300+90"],
+    "confirm": ["assistant-settings-r5", "assistant-permissions-skip-on", "840x720+300+90"],
+    "signout": ["assistant-settings-r5", "assistant-cloud-signout", "840x720+300+90"]
+  },
+  "steps": [
+    {
+      "id": "R5-1",
+      "surface": "Settings → Assistant settings → General",
+      "path": "Settings → Assistant settings → General → the folder picker, open",
+      "crop": "folder",
+      "headline": "The open list is exactly as wide as the control, and each folder is one line.",
+      "changed": "It no longer hangs off both sides — it starts and ends where the closed control does. The name and the path sit side by side on one line instead of stacked, so the list is half the height it was.",
+      "notice": "This shape is only here. Opening the same picker on the new conversation form still gives the wider, centred list with two lines per folder, exactly as before.",
+      "risk": "A long path on a narrow window gets cut short with the name winning the space. Hovering a row still shows the whole path.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R5-2",
+      "surface": "Settings → Assistant settings → Permissions",
+      "path": "Settings → Assistant settings → Permissions → turning the switch on",
+      "crop": "confirm",
+      "headline": "Your words, one paragraph, in normal text instead of grey.",
+      "changed": "The three paragraphs are gone. What is left is your line: when you begin a session in skip permissions mode, Claude Code will not ask before taking actions or running commands, and be cautious using it with Haiku- or Sonnet-class models. Then the tick box and the two buttons.",
+      "notice": "Roughly a third of the height it was, and the text is the ordinary reading colour rather than the faint one.",
+      "risk": "What it no longer tells anyone is what we actually measured — that with this on, Claude read private files and changed files outside the project. That warning now lives only in the (i) beside the switch elsewhere in the app.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R5-3",
+      "surface": "Settings → Assistant settings → Cloud providers",
+      "path": "Settings → Assistant settings → Cloud providers → Sign out",
+      "crop": "signout",
+      "headline": "The sign-out popup is down to the one sentence that tells you what to do.",
+      "changed": "The opening line about YouCoded not being able to clear it is gone, as you asked. What remains is where to go and what to type.",
+      "notice": "The popup is about half the height, and the first thing you read is the instruction.",
+      "risk": "Without that opening line, someone may press Got it expecting the app to have signed them out. Nothing in the popup now says it did not.",
+      "highlight": "auto"
+    }
+  ]
+}

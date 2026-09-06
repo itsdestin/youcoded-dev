@@ -1,0 +1,38 @@
+{
+ "deck": "assistant-settings-review-4",
+ "started": "2026-09-06T11:13:05.290Z",
+ "submitted": "2026-09-06T11:20:44Z",
+ "cur": 3,
+ "answers": {
+  "R4-1": {
+   "v": "yes",
+   "seconds": 45,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R4-2": {
+   "note": "i think on this surface (not in new session menu or elsewhere) the width of the selection menu should match the dropdown card, and the project name/filepath/etc should be in-line together.",
+   "note_kind": "noting",
+   "v": "yes",
+   "seconds": 91,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R4-3": {
+   "note": "this copy is weird. way too much gray text. cahng to something like \"When you begin a session in skip permissions mode,Claude Code will not ask before taking actions or running commands. You should be cautious when attempting to use this mode with Haiku- or Sonnnet- class models.",
+   "note_kind": "noting",
+   "v": "yes",
+   "seconds": 291,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R4-4": {
+   "v": "yes",
+   "note": "skip the first section of text \"youcoded cannot clear it for you\"",
+   "note_kind": "noting",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
