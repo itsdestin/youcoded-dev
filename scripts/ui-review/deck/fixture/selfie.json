@@ -8,13 +8,24 @@
     "before": "runs/before",
     "after": "runs/after"
   },
-  "themes": ["midnight", "light"],
+  "themes": [
+    "midnight",
+    "light"
+  ],
   "sources": {
     "deck-selfie-questions": "selfie-questions.json"
   },
   "crops": {
-    "c": ["main", "home", "400x200+500+250"],
-    "d": ["main", "home", "300x160+100+100"]
+    "c": [
+      "main",
+      "home",
+      "400x200+500+250"
+    ],
+    "d": [
+      "main",
+      "home",
+      "300x160+100+100"
+    ]
   },
   "steps": [
     {
@@ -42,7 +53,9 @@
           "crop": "c",
           "summary": "Shows the block where it sits, with room around it on both sides.",
           "measured": "400 px wide",
-          "highlight": {"text": "Send"}
+          "highlight": {
+            "text": "Send"
+          }
         },
         {
           "id": "corner",
@@ -61,14 +74,20 @@
       "headline": "Which side of the strip should the block sit on?",
       "notice": "Whichever you pick is where it sits on every screen.",
       "risk": "Nothing else in the strip moves whichever you pick.",
-      "highlight": {"selector": "#send"},
+      "highlight": {
+        "selector": "#send"
+      },
       "options": [
         {
           "id": "left",
           "label": "The left end",
           "summary": "The block stays at the end of the strip it is at today.",
-          "pros": ["It is where your eye already is when you finish typing."],
-          "cons": ["It crowds the words that sit next to it."],
+          "pros": [
+            "It is where your eye already is when you finish typing."
+          ],
+          "cons": [
+            "It crowds the words that sit next to it."
+          ],
           "cost": "Nothing to build — it is where it is today.",
           "measured": "0 extra taps"
         },
@@ -76,8 +95,12 @@
           "id": "right",
           "label": "The right end",
           "summary": "The block moves to the far end, on its own.",
-          "pros": ["Plenty of empty room around it, so it never crowds anything."],
-          "cons": ["It is further from where you were just looking."],
+          "pros": [
+            "Plenty of empty room around it, so it never crowds anything."
+          ],
+          "cons": [
+            "It is further from where you were just looking."
+          ],
           "cost": "One line of layout work.",
           "recommended": true
         }
@@ -124,6 +147,31 @@
       "changed": "The recording on the right is the block after the change: red, not grey.",
       "notice": "The colour is the only difference between the two recordings.",
       "risk": "Colour on its own is hard to tell apart on the pale palette."
+    },
+    {
+      "id": "S-6",
+      "surface": "Home",
+      "path": "The strip under the message box",
+      "crop": "d",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Today"
+      },
+      "highlight": {
+        "box": [
+          10,
+          10,
+          60,
+          40
+        ]
+      },
+      "headline": "Paint a second block in the corner of the strip.",
+      "changed": "A second block would be painted in the corner, where the strip is empty today.",
+      "measured": "1 block, 10 px square",
+      "notice": "The corner stops being blank, and the strip carries two things instead of one.",
+      "risk": "The corner is where the strip is narrowest, so a second block crowds it."
     }
   ]
 }

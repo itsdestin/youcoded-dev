@@ -3,7 +3,10 @@
   "key": "deck-selfie-questions",
   "out": "selfie-questions.html",
   "theme": "fixed",
-  "themes": ["midnight", "light"],
+  "themes": [
+    "midnight",
+    "light"
+  ],
   "steps": [
     {
       "id": "Q-1",
@@ -29,23 +32,35 @@
           "id": "one",
           "label": "One",
           "summary": "The strip stays as it is today.",
-          "pros": ["Nothing to take in but the one thing in front of you."],
-          "cons": ["The one you were reading vanishes when the next arrives."]
+          "pros": [
+            "Nothing to take in but the one thing in front of you."
+          ],
+          "cons": [
+            "The one you were reading vanishes when the next arrives."
+          ]
         },
         {
           "id": "two",
           "label": "Two",
           "summary": "The newest and the one before it.",
           "recommended": true,
-          "pros": ["You keep the one you were reading while the next arrives."],
-          "cons": ["Each of the two is half as wide."]
+          "pros": [
+            "You keep the one you were reading while the next arrives."
+          ],
+          "cons": [
+            "Each of the two is half as wide."
+          ]
         },
         {
           "id": "many",
           "label": "As many as fit",
           "summary": "The strip fills up and then starts dropping the oldest.",
-          "pros": ["Nothing is ever taken off the screen before you have read it."],
-          "cons": ["They get narrow fast, and the strip is busy."]
+          "pros": [
+            "Nothing is ever taken off the screen before you have read it."
+          ],
+          "cons": [
+            "They get narrow fast, and the strip is busy."
+          ]
         }
       ]
     },
@@ -64,6 +79,61 @@
       "notice": "Nothing yet — this becomes a row of the contract.",
       "yes": "Holds",
       "no": "Fails"
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Home",
+      "path": "Questions",
+      "pick": "several",
+      "headline": "Which of these should the strip be allowed to hold?",
+      "today": "The strip holds one thing, and the newest one replaces it.",
+      "problem": "Two of the things it could hold are useful at the same time.",
+      "proposal": "Tick every one worth letting in; ticking two means the strip holds both.",
+      "options": [
+        {
+          "id": "text",
+          "label": "A line of text",
+          "pros": [
+            "The cheapest of the three, and it never moves."
+          ],
+          "cons": [
+            "Says the least."
+          ]
+        },
+        {
+          "id": "count",
+          "label": "A count",
+          "pros": [
+            "One number you can read without stopping."
+          ],
+          "cons": [
+            "Means nothing on its own."
+          ]
+        },
+        {
+          "id": "dot",
+          "label": "A coloured dot",
+          "pros": [
+            "Readable from across the room."
+          ],
+          "cons": [
+            "Two dots side by side are hard to tell apart."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Home",
+      "path": "Questions",
+      "answer": "words",
+      "prompt": "What should the strip be called?",
+      "headline": "What should the strip under the message box be called?",
+      "today": "It has no name, so it gets described differently every time it comes up.",
+      "problem": "Nobody can ask for it by name, and two people describing it do not sound alike.",
+      "proposal": "Give it one name and use it in the app, the help pages and here."
     }
   ]
 }
