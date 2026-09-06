@@ -59,8 +59,8 @@ ignored.
 **Guard:** none — candidate.
 
 ## Reopen only through a deck
-**Invariant:** when implementation contradicts approved UI, serve a one-step words-only `decide`
-deck and wait; the answer amends the row's `source`.
+**Invariant:** when implementation contradicts approved UI, serve a one-step QUESTION deck (see
+`review-deck.md`) and wait; the answer amends the row's `source`.
 **Why:** a chat answer is not a source.
 **Guard:** none — candidate.
 

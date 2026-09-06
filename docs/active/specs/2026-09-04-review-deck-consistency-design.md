@@ -233,7 +233,9 @@ records and are not converted.
 ## 7. Instructions
 
 - **`.claude/rules/review-deck.md`** (new; paths `docs/active/design/**/*.json`,
-  `docs/active/reviews/**/*.json`, `scripts/ui-review/deck/**`, `scripts/ui-review/templates/**`):
+  `scripts/ui-review/deck/**`, `scripts/ui-review/templates/**` — `docs/active/reviews/**/*.json`
+  was dropped when written: that folder holds only review files, and `audit-anchors.mjs` fails a
+  glob matching nothing tracked):
   the chooser table (§4), the question-page rule, "preview before serve", "selfie before
   merging a deck change", the theme default, ≤600 words, `verify:` anchors on the templates
   and the tests.

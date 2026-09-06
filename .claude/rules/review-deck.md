@@ -51,7 +51,8 @@ options drifted in two days. **Guard:** `test_words.py`.
 
 ## Look at it before he does
 **Invariant:** `preview <spec>`, then READ `preview/contact.png`, before `serve`. **Why:** four decks went
-out in a day with a visible defect. **Guard:** `test_cli.py`.
+out in a day with a visible defect. **Guard:** none — candidate (`test_cli.py` covers `preview`
+itself, not the habit).
 
 ## A change under `deck/` is reviewed on a deck
 **Invariant:** an edit to `page.css`, `page.js`, `page.html.tmpl` or `deck/fixture/` ships only

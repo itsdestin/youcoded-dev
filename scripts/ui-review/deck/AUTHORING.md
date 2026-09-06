@@ -163,8 +163,8 @@ screen. Every question shares one page until a marker starts the next:
 `build` writes no page at all when any of these hold; it names the step and the field to use.
 
 Every step: a missing `id`, `surface`, `path` or `headline`; a duplicate `id`; a headline over
-25 words; a code word (`token`, `selector`, `component`, `reducer`, `handler`, `prop`, `ipc`,
-`react`, `dom`, `css class`, `tailwind`, `primitive`, `z-index`) in any text he reads; `themes`
+25 words; a code word (`token`, `selector`, `component`, `reducer`, `handler`, `prop`, `props`,
+`ipc`, `react`, `dom`, `css class`, `tailwind`, `primitive`, `z-index`) in any text he reads; `themes`
 that is not a non-empty list.
 
 Questions:
@@ -202,6 +202,19 @@ contain the spec's name.
 A note carries no tag: a note is a note (Destin, 2026-09-04). Old files carrying `note_kind`
 still load; the field is ignored. Serving a deck whose answers were already submitted moves the
 old file aside as `<stem>.answers.<stamp>.json` and starts a fresh review.
+
+## What he sees when he submits
+
+The step is replaced by a **finish screen**: a tick, "Feedback submitted", and every answer read
+back in a table. It exists because the server exits on submit — after that there is nowhere else
+to read the answers, and the old behaviour (a greyed-out button on the last step) was
+indistinguishable from a click that did nothing. `‹ Back to the deck` and the header's
+`Submitted ✓` toggle between the two; the deck itself is read-only from then on. Re-opening a
+submitted deck lands on the finish screen, not on a step full of dead buttons.
+
+While a deck is being served, `<spec stem>.serve.json` beside it holds the pid and the URL — a
+second `serve` of the same spec refuses rather than rebuilding the page under the running one.
+The server's root redirects to the deck and folders never list.
 
 ## The printed summary
 
