@@ -57,7 +57,10 @@ A sweep of every deck served since 2026-08-25 (61 specs, 15 screenshotted) found
 
 ### 3.1 Question pages
 
-A words-only deck (every step picture-free) renders as pages, not one step per screen.
+A QUESTION deck — every step picture-free, and none of them a contract — renders as pages, not
+one step per screen. A contract or acceptance deck is picture-free too but keeps one step per
+screen: paging it put the first question Destin must answer 3,739 px down a single 5,884 px
+scroll, under the contract table, headed "page 1 of 1 · 0 of 8 answered" (measured 2026-09-05).
 
 - With no page markers, all question steps share **one** scrolling page.
 - A **page marker** in `steps` — `{"id": "P-scope", "page": "What gets redrawn", "intro":
@@ -205,7 +208,19 @@ montage`). Exit 1 on a console error. A session reads the sheet before `serve`.
    and with the working tree, at 1440×900 and 1024×768, in `midnight` and `light`.
 3. Writes a review-deck spec whose steps are one **Approve** step per fixture page, with
    `runs: {before, after}` pointing at the two render folders and `highlight: "auto"`, so
-   the changed region is boxed by pixel diff; then `serve`s it.
+   the changed region is boxed by pixel diff. It does NOT serve.
+
+**The descriptions are the session's job.** `selfie` writes each step's `headline` and `changed`
+as a `TODO:` placeholder that `validate()` refuses, so the deck cannot be built or served until
+the session that made the change has said, per step, what moved and what Destin will notice —
+held to the same standard as every other deck's steps. The commit subjects since `--before` that
+touched `deck/` are seeded into each step's `_comment` as a starting point, and the run ends by
+listing the steps still to write plus the one `serve` command that follows.
+
+Why: the generated wording described the picture, not the change ("The review deck, page 3, in a
+1440 by 900 window, in both palettes"), and `changed`/`notice` were the same two sentences on
+every step. Destin answered five steps Other — "i have literally no idea what i'm supposed to be
+looking at ... make this review deck more useful" (2026-09-05).
 
 Any change to `page.css`, `page.js`, the template or the fixture is shown to Destin this
 way. The rule (§7) says so.

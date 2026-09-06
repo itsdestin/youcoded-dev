@@ -81,7 +81,7 @@ Load only the procedure needed. Existing approval gates still apply; moving thei
 
 ### New Features & UI/UX Changes
 
-UI design precedes backend implementation. Read `.claude/rules/feature-flow.md` and `docs/active/design/2026-08-25-ui-design-guide.md` before proposing a new interface. Opening questions use a questions deck; approved decisions become a contract. Show Before/After review decks—not galleries or prose substitutes. Motion/drag/hover use operable live steps. Approved UI is the backend's contract; reopening it requires the prescribed deck.
+UI design precedes backend implementation. Read `.claude/rules/feature-flow.md` and `docs/active/design/2026-08-25-ui-design-guide.md` before proposing a new interface. Opening questions use a questions deck; approved decisions become a contract. Show Before/After review decks—not galleries or prose substitutes: `preview` the built deck and read the contact sheet before he sees it, then `serve` it in the background and put the printed link in chat as the last line of your turn (it opens nothing itself); re-serve an already-answered deck with `serve --no-build`. Kinds, fields and refusals: `.claude/rules/review-deck.md`, depth in `scripts/ui-review/deck/AUTHORING.md`, starting points in `scripts/ui-review/templates/`. Motion/drag/hover use operable live steps. Approved UI is the backend's contract; reopening it requires the prescribed deck.
 
 Use the context-free UX tester before Destin's first deck and after implementation, a fresh code reviewer, and a fresh grader before acceptance. Briefs and execution: `scripts/ui-review/{ux-tester,code-reviewer,grader,contract-agent}.md`; full route: `.claude/rules/feature-flow.md`. This overrides generic brainstorming chat-question habits for YouCoded features.
 

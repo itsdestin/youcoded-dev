@@ -143,8 +143,11 @@ Not hand-written: `review-cards.py acceptance <contract>` merges
 
 ## Page markers — how a question deck is split
 
-A deck whose every step is words-only renders as scrolling PAGES rather than one step per
-screen. Every question shares one page until a marker starts the next:
+A QUESTION deck — every step words-only, and no contract step — renders as scrolling PAGES
+rather than one step per screen. Every question shares one page until a marker starts the next.
+A deck that defines or grades done (a `rows` step) is picture-free too but is NOT paged: it
+keeps one step per screen, so its table gets the full width and its first question is on the
+first screen rather than under a 3,600px table.
 
     {"id": "P-2", "page": "Where saved searches live", "intro": "one line"}
 
@@ -153,7 +156,7 @@ screen. Every question shares one page until a marker starts the next:
 - With no marker before the first question, the first page is titled with the deck's `title`.
 - A marker's page runs to the next marker, so two markers in a row is an empty page and is
   refused.
-- Markers belong only in a deck with no pictures.
+- Markers belong only in a question deck — not in one with pictures, not in one with a contract.
 - The progress bar counts pages; Prev / Next move between pages. A marker gets no answer row,
   no summary line and cannot be a contract `source`.
 - Err on MORE questions per page: a page is one set he can hold in his head at once.
@@ -179,7 +182,12 @@ Questions:
 - `… a words step has no crop — there is no picture` (also `clip`, `highlight`, `variants`, `live`)
 
 Page markers: `a page marker carries only page and intro`; `a page marker needs a title in
-"page"`; `pages are for question decks — this deck has pictures`; `an empty page`.
+"page"`; `pages are for question decks — this deck has pictures`; `pages are for question decks
+— this deck defines done (it has a contract step)`; `an empty page`.
+
+Placeholders: `… headline is still a placeholder — replace the "TODO: …" line with what actually
+changed on this page and what Destin will notice`. Any field of any step whose text starts
+`TODO:` blocks the build. `selfie` writes them on purpose — see below.
 
 Pictures: a missing crop file, an unknown crop name, an unresolved highlight box, `a one-run
 deck needs a highlight`, `"auto" highlight needs a before and an after run`.
@@ -241,7 +249,7 @@ on a yes/no question.
 | `serve <spec> [--port N] [--timeout MIN] [--no-build] [--no-live]` | build, serve on 127.0.0.1, save answers as they arrive, exit when he submits. Prints `[deck] http://…` and **opens nothing** — put that line in chat as the last line of your turn. Run it in the background |
 | `wait <spec> [--timeout MIN]` | block on the answers file alone, for a session that no longer holds the `serve` process |
 | `record <spec> '<pasted summary>'` | write the submitted answers file from the page's copy box, for a deck he answered as a plain file |
-| `selfie [--before <ref>] [--out DIR] [--dry-run]` | the deck reviewed on a deck: renders a fixture carrying every kind with the deck code at `--before` (default `origin/master`) and with this worktree's, then serves an approve deck of the two, boxed by pixel difference. Run it for any change to `page.css`, `page.js`, `page.html.tmpl` or `deck/fixture/` |
+| `selfie [--before <ref>] [--out DIR] [--dry-run]` | the deck reviewed on a deck: renders a fixture carrying every kind with the deck code at `--before` (default `origin/master`) and with this worktree's, then writes an approve deck of the two, boxed by pixel difference. Run it for any change to `page.css`, `page.js`, `page.html.tmpl` or `deck/fixture/`. **It does not serve.** Every step's `headline` and `changed` come out as `TODO:` placeholders the build refuses: you write, per step, what moved and what he will notice — the commit subjects since `--before` are seeded in each step's `_comment` to start from, and the run ends by listing the steps still to write plus the `serve` command that follows |
 | `contract-check <feature>.contract.json` | every row's source resolves to an answered step and every mechanical guard exists (exit 1 lists what does not); then `ok:` / `todo:` lines for the sign-off and the acceptance deck |
 | `acceptance <feature>.contract.json` | merge the grader's verdicts into `<feature>.contract.acceptance.json`, ready to serve |
 
@@ -263,6 +271,11 @@ deck whose point IS one theme.
 4. `serve` in the background; put the printed `[deck] http://…` line in chat as the last line
    of your turn, and stop.
 5. Its exit is the notification; read the summary it prints.
+
+A deck he has ALREADY answered is re-served with `serve --no-build` — never rebuilt. Rebuilding
+a historical deck means "fixing" the record of a past decision, and ten committed specs
+(seven archived, three still under `docs/active/`) no longer build against today's field names.
+That they fail loudly is correct; leave them as the record they are.
 
 ## Tests
 
