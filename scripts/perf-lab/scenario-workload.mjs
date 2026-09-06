@@ -14,9 +14,19 @@
 import { appendFileSync, statSync, truncateSync } from 'node:fs';
 import { waitFor } from './cdp.mjs';
 import { cpuSnapshot, cpuPercent, pssMb } from './procs.mjs';
+import {
+  enablePerformanceDomain, formatLayoutCostLine, installCommitProbe,
+  readCommitProbe, readCounters, stopCommitProbe, summariseLayoutCost,
+} from './layout-cost.mjs';
 import { transcriptLines } from './fixture.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// How long to watch the native stream for the layout-cost reading. Long enough that
+// a slow local model still emits a few hundred deltas, short enough to be noise next
+// to an hour-long run. It measures a RATIO, so the exact length does not change the
+// verdict — only how many samples back it.
+const NATIVE_LAYOUT_WINDOW_MS = 3000;
 
 /** Upper-middle element of the sorted samples; null for an empty set (never NaN). */
 export function median(a) {
@@ -670,8 +680,8 @@ export const MEASURES = {
   blindTo: [
     'conversation sizes beyond the fixture huge transcript',
     'switching under memory pressure from many MORE than 6 sessions',
-    'anything requiring a real GPU — the rig runs headless under Xvfb',
-    'per-TOKEN streaming cost: the streamer appends WHOLE turns (a user line + an assistant line per 150 ms tick) through the Claude Code transcript path, so the renderer sees ~7 renders/s per target, each appending timeline entries — never the native harness\'s hundreds of same-turn deltas per second, none of which append an entry. A fix that only helps the per-delta path (cycle-1 N2/N3) is under-represented here; measuring it needs a native-provider streaming variant',
+    'anything requiring a real GPU. MEASURED, not assumed, since 2026-09-03: report.machine.renderer records what Chromium actually used, and under Xvfb it is llvmpipe with gpu_compositing disabled. Check that field before comparing two reports — if it ever says otherwise, this line is wrong',
+    'per-TOKEN streaming TIME. The Claude Code streamer appends WHOLE turns (~7 renders/s per target), never the native harness\'s hundreds of same-turn deltas per second, so a per-delta fix is under-represented in every DURATION here. Since 2026-09-03 the per-delta WORK is measured instead — nativeLayoutCost counts layouts per commit over a native-streaming window (see layout-cost.mjs) — which is what re-gates cycle 1. What is still blind: the buddy window (no scenario opens one) and layout ATTRIBUTION (the counter is renderer-wide and cannot name the effect that forced it)',
     'whether a switch into a STREAMING session feels slow because of the stream or because of the size — medium and small carry both; only huge and empty are clean',
     'ENTRIES_PER_TURN is a measured constant, not read from the app — if the app changes what a timeline entry is, every resumed switch stops settling and the report says so, but the rig cannot fix itself',
   ],
@@ -873,6 +883,36 @@ export async function runWorkloadScenario(app, fixture, {
     }
     if (nativeFailure) console.error(`[perf-lab] workload: native leg failed, continuing — ${nativeFailure}`);
 
+    // ── Per-token layout COST, over the native stream ─────────────────────
+    // WHY HERE AND NOWHERE ELSE: this is the only point in the whole rig where a
+    // real per-delta stream is running. The Claude Code streamer started below
+    // appends whole TURNS, so measuring there would report a clean ratio no matter
+    // what the renderer does — and a clean number from a window where the defect
+    // cannot appear is how five wrong conclusions were reached in this project.
+    // The window is taken BEFORE the workload starts so the two streams never mix.
+    //
+    // It measures WORK, not time, so a slow local model makes the window quieter
+    // but does not move the ratio. A model that never answered is reported as
+    // 'no-stream' rather than as a pass — see summariseLayoutCost.
+    let nativeLayoutCost = null;
+    if (!nativeFailure) {
+      await enablePerformanceDomain(cdp, warnings, 'workload');
+      const attach = await installCommitProbe(cdp, { selector: '.chat-scroll' });
+      if (!attach?.attached) {
+        warnings.push('workload: no visible .chat-scroll to observe, so nativeLayoutCost is UNMEASURED — the per-token layout count says nothing this run');
+      }
+      const layoutBefore = await readCounters(cdp);
+      await sleep(NATIVE_LAYOUT_WINDOW_MS);
+      const layoutProbe = await readCommitProbe(cdp);
+      const layoutAfter = await readCounters(cdp);
+      await stopCommitProbe(cdp);
+      nativeLayoutCost = summariseLayoutCost(layoutBefore, layoutAfter, layoutProbe);
+      console.error(`[perf-lab] workload: ${formatLayoutCostLine(nativeLayoutCost)}`);
+      if (nativeLayoutCost.verdict === 'no-stream') {
+        warnings.push(`workload: the native session produced no DOM commits in the ${NATIVE_LAYOUT_WINDOW_MS}ms layout window, so nativeLayoutCost measured nothing — do not read it as a pass`);
+      }
+    }
+
     // ── Workload window: stream + switch + sample CPU, all over ONE clock ──
     // Stream into the resumed medium and small sessions BY NAME — never huge (so
     // the switch into the biggest conversation is measured clean) and never the
@@ -1054,6 +1094,10 @@ export async function runWorkloadScenario(app, fixture, {
       nativeFirstTokenMs,
       // null when the native leg failed; the string says why, in the app's words.
       nativeFailure,
+      // Layouts per render commit over a native-streaming window — the re-gate for
+      // perf cycle 1's forced-layout-per-token defect. `verdict` is the reading;
+      // 'no-stream' and 'unmeasured' are NOT passes. See layout-cost.mjs.
+      nativeLayoutCost,
       // Only pill clicks feed the PRIMARY switch metrics. An overflow-menu switch
       // also pays for opening a menu, so mixing the two would poison the
       // distribution; it is reported separately instead.
