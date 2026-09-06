@@ -32,19 +32,20 @@ has passed ~8 items — graduate it to its own file.
 
 ## buddy
 
-- [ ] The buddy appears on Linux Wayland but is stuck where it lands — it cannot be dragged, and
-      the edge snap, dock and peek behaviours never fire. Confirmed by Destin 2026-09-04; the
-      earlier "does not appear" wording was wrong and had never been verified. Route found and
-      probed 2026-09-04: a KWin helper script positions the window (the app already ships
-      `kwin-keep-above.ts`, which only raises it). Design in flight.
-      `buddy-window` `desktop` `confirmed` `checked 2026-09-04` `v1.3.1` → docs/active/prototypes/2026-09-04-buddy-kwin-helper-probe/FINDINGS.md
+- [ ] Nobody has checked the Linux buddy's helper survives being packaged (2026-09-06): it
+      works in a development build, but the helper's files are handled specially when the app
+      is built into an installer, and nothing proves that handling is right. If it is wrong,
+      "Add helper" would appear to work and silently do nothing — in the shipped app only,
+      where no test looks. Build an installer, install it on a KDE Wayland desktop, add the
+      helper, drag the buddy
+      `buddy-window` `desktop` `needs-verify` `checked 2026-09-06` `v1.3.1`
 
 - [ ] The Linux buddy has never been tried on two screens — every probe ran on the laptop panel
       alone, and Destin deferred the TV test on 2026-09-04. On a second monitor the buddy may open
       on the wrong screen, or sit on that screen's taskbar if the app fails to match KDE's name for
       it. Not a stranding risk: an unreachable position is already pulled back to the nearest
       screen. Do the real two-screen run before this ships.
-      `buddy-window` `desktop` `needs-verify` `checked 2026-09-04` `v1.3.1` → docs/active/design/2026-09-04-linux-buddy-helper/technical-design.md
+      `buddy-window` `desktop` `needs-verify` `checked 2026-09-04` `v1.3.1` → docs/archive/design/2026-09-04-linux-buddy-helper/technical-design.md
 
 - [ ] With a buddy window open, a streaming reply makes the whole window re-lay-out on every
       token (2026-08-27) — the twin of the main-chat stutter fixed in perf cycle 1.

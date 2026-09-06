@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-04
 feature: linux-buddy-helper
 branch: feat/linux-buddy-kwin-helper (youcoded)

@@ -8,12 +8,12 @@
 # Globs are "**/"-prefixed on purpose: rule paths resolve from the PROJECT ROOT,
 # so a "youcoded/..." glob never fires on the same file inside worktrees/<name>/,
 # which is where CLAUDE.md sends all non-trivial work.
-# AT MERGE of feat/linux-buddy-kwin-helper, add these four globs — they match nothing
-# until that branch lands, and audit-anchors.mjs fails a glob that matches nothing:
-#   **/desktop/src/main/kwin-helper.ts   **/desktop/src/main/kde-dbus.ts
-#   **/desktop/src/shared/buddy-caption.ts   **/desktop/assets/kwin-helper/**
 paths:
   - "**/desktop/src/main/buddy-*.ts"
+  - "**/desktop/src/main/kwin-helper.ts"
+  - "**/desktop/src/main/kde-dbus.ts"
+  - "**/desktop/src/shared/buddy-caption.ts"
+  - "**/desktop/assets/kwin-helper/**"
   - "**/desktop/src/shared/buddy-geometry.ts"
   - "**/desktop/src/renderer/components/buddy/**"
   - "**/desktop/src/renderer/components/mascot/**"
@@ -63,12 +63,20 @@ Geometry is pure (`shared/buddy-geometry.ts`); windows belong to `BuddyWindowMan
 - **Theme `companions` is a TOP-LEVEL manifest key, NOT inside `mascot`** — older versions crash in `resolveAllAssetPaths`.
 
 ## The dormant overlay
-**`BuddyOverlayManager` is DORMANT — `chooseBuddyStrategy` returns `windows` everywhere**, including Linux Wayland, where `setIgnoreMouseEvents` is a probe-verified TOTAL no-op that makes a screen-sized overlay an invisible click-eater. Reachable only via `YOUCODED_BUDDY_STRATEGY=overlay` (`docs/active/investigations/2026-07-23-buddy-overlay-wayland-presentation.md`). Binding on anyone editing it:
-- **Never read `getPosition()`/`getBounds()`** (Wayland returns stale values) and **never persist before the init pull resolves** (it writes `{0,0}` and poisons `buddy-positions.json`). Overlay math is window-local; the renderer PULLS the work area via `overlayReady()`.
-- Interactive elements need a hover-counted wrapper (`overlaySetInteractive`); recreation on display change re-applies keep-above, input region, title.
+**`BuddyOverlayManager` is DORMANT** — `chooseBuddyStrategy` returns `windows` everywhere,
+and on Wayland `setIgnoreMouseEvents` is a no-op that would make a screen-sized overlay an
+invisible click-eater. Reachable only via `YOUCODED_BUDDY_STRATEGY=overlay`. Read its rules
+first: `docs/active/investigations/2026-07-23-buddy-overlay-wayland-presentation.md`.
 
 ## Linux Wayland
-**Measured, and counter-intuitive throughout — never re-derive one of these; read
-`docs/active/prototypes/2026-09-04-buddy-kwin-helper-probe/FINDINGS.md`** (no env var
-tells Wayland from XWayland; `--class` cannot set WM_CLASS; `workArea` equals `bounds`).
-`feat/linux-buddy-kwin-helper` is in review and rewrites the overlay claim above.
+**Counter-intuitive throughout, all measured — never re-derive one; read
+`docs/archive/prototypes/2026-09-04-buddy-kwin-helper-probe/FINDINGS.md`** (nothing tells
+Wayland from XWayland; `--class` cannot set WM_CLASS; `workArea` is the WHOLE screen, so the
+panel strut comes from plasmashell).
+
+**The buddy moves through its own window title here** (youcoded#438): the app renames the
+window `YC:<role>@<x>,<y>` and an opt-in KWin script sets the geometry. So **only `place()`
+may write a buddy title**, and **the window never knows where it is** — `getBounds()` returns
+its birth position forever; `rectOf()` remembers. Both are guarded by source-scanning tests
+(`buddy-title-guard`, `buddy-position-source`). X11 gates out entirely. Depth:
+`docs/archive/design/2026-09-04-linux-buddy-helper/technical-design.md`.
