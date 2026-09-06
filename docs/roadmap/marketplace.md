@@ -75,6 +75,15 @@ them. Not here: the theme renders wrong (themes).
       Destin's call — candidate "No leaked secrets found"
       `marketplace-screen` `all` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
+- [ ] Retire the old `wecoded-marketplace-api.destinj101.workers.dev` API address. It is kept alive
+      by `workers_dev = true` in worker/wrangler.toml only because shipped builds hardcode it —
+      stable v1.2.4 and every beta up to 1.3.0-beta.71 do. Attaching the api.youcoded.ai custom
+      domain on 2026-09-03 silently switched it off and took the games lobby, Backup & Sync and the
+      whole account API down for those users until 2026-09-06. Retire only once no supported build
+      names it: that needs a released build everyone is on, and ideally the address read from config
+      rather than compiled in, so the next move cannot repeat this
+      `all` `confirmed` `checked 2026-09-06`
+
 ## install
 
 - [ ] 314 Docker-packaged MCP listings can be browsed but not installed — the detail page shows
