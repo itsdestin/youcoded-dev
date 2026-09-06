@@ -32,13 +32,15 @@ has passed ~8 items — graduate it to its own file.
 
 ## buddy
 
-- [ ] Nobody has checked the Linux buddy's helper survives being packaged (2026-09-06): it
-      works in a development build, but the helper's files are handled specially when the app
-      is built into an installer, and nothing proves that handling is right. If it is wrong,
-      "Add helper" would appear to work and silently do nothing — in the shipped app only,
-      where no test looks. Build an installer, install it on a KDE Wayland desktop, add the
-      helper, drag the buddy
-      `buddy-window` `desktop` `needs-verify` `checked 2026-09-06` `v1.3.1`
+- [ ] **BLOCKS 1.3** — the buddy has only ever been used in a development build (2026-09-06):
+      every test of it, including the live Wayland run Destin signed off, ran against the dev
+      instance. Nobody has opened a real beta build and used the buddy. The specific worry is
+      the Linux helper — its files are handled specially when the app is packaged, and if that
+      handling is wrong, "Add helper" looks like it works and silently does nothing, in the
+      shipped app only, where no test looks. Destin, 2026-09-06: test the buddy in a beta
+      build before 1.3. Cut a beta, install it, and on KDE Wayland add the helper and drag the
+      buddy; elsewhere just check the buddy still opens, drags, docks and remembers where it was
+      `buddy-window` `all` `needs-verify` `checked 2026-09-06` `urgent` `v1.3`
 
 - [ ] The Linux buddy has never been tried on two screens — every probe ran on the laptop panel
       alone, and Destin deferred the TV test on 2026-09-04. On a second monitor the buddy may open
