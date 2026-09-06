@@ -1,0 +1,31 @@
+{
+  "title": "One picture of today, and one thing to build",
+  "key": "deck-selfie-brief",
+  "out": "selfie-brief.html",
+  "images": "images/selfie-brief",
+  "theme": "fixed",
+  "runs": {
+    "today": "runs/after"
+  },
+  "labels": {
+    "today": "Today"
+  },
+  "themes": ["midnight", "light"],
+  "crops": {
+    "c": ["main", "home", "400x200+500+250"]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Home",
+      "path": "The strip under the message box",
+      "crop": "c",
+      "headline": "Put a count of unread messages in the strip, where nothing is today.",
+      "changed": "The empty half of the strip would carry a number instead of nothing.",
+      "measured": "about 40 px of the strip's free space",
+      "notice": "You would see how many are waiting without opening anything.",
+      "risk": "On a narrow window the branch name gets shorter to make room.",
+      "highlight": {"text": "Send"}
+    }
+  ]
+}

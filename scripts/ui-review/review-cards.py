@@ -8,6 +8,11 @@
         build it, then look at it: one picture per page x window size x theme, plus contact.png laid out beside each other.
         READ THE CONTACT SHEET BEFORE `serve` — four sessions in one day handed Destin a deck whose header was
         visibly broken. The pictures land in <spec dir>/preview/ by default; that folder is scratch and is not committed.
+  python3 scripts/ui-review/review-cards.py selfie [--before origin/master] [--out DIR] [--dry-run]
+        the DECK reviewed on a deck: renders a fixture carrying every kind of step with the deck code at
+        <--before> and with this worktree's, then serves a review of the two, boxed by pixel difference.
+        Run it for any change to page.css, page.js, the page template or the fixture. --dry-run lays the
+        fixture out and writes the review spec without checking anything out, rendering or serving.
   python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
         block until the answers file says submitted (for a session that no longer holds the `serve` process)
   python3 scripts/ui-review/review-cards.py record <spec.json> ['<pasted summary>' | < file]
@@ -54,12 +59,14 @@ import argparse
 import json
 import os
 import sys
+import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from deck.build import build_page                       # noqa: E402
 from deck.contract import AcceptanceError, acceptance_spec, acceptance_status, check_contract, contract_steps, signoff   # noqa: E402
 from deck.crops import crop_images                      # noqa: E402
 from deck.preview import can_render, preview as render_preview   # noqa: E402
+from deck.selfie import selfie as run_selfie              # noqa: E402
 from deck.serve import already_served, record, serve, wait_for_submit   # noqa: E402
 from deck.spec import SpecError, apply_live_theme, load_spec, validate    # noqa: E402
 
@@ -107,11 +114,24 @@ def main(argv):
     sv.add_argument('--port', type=int, default=0)
     for c in ('build', 'preview', 'serve'):
         sub.choices[c].add_argument('--theme', help="open the deck on this theme instead of the one the app is on")
+    # `selfie` is the one command with no spec of its own: it WRITES one.
+    sf = sub.add_parser('selfie')
+    sf.add_argument('--before', default='origin/master', help='the git ref to compare this worktree against')
+    sf.add_argument('--out', help='where the fixture, the pictures and the review land (default: a fresh temp folder, printed)')
+    sf.add_argument('--dry-run', action='store_true', help='lay the fixture out and write the review spec; check nothing out, render nothing, serve nothing')
     pv = sub.choices['preview']
     pv.add_argument('--sizes', help='window sizes to shoot, comma separated (default 1440x900,1280x800,1024x768)')
     pv.add_argument('--themes', help="themes to shoot, comma separated (default: the deck's first two)")
     pv.add_argument('--out', help='where the pictures go (default <spec dir>/preview/)')
     a = ap.parse_args(argv)
+    if a.cmd == 'selfie':
+        # WHY before the try below: selfie has no `spec` argument to load — the review deck is
+        # its OUTPUT. `finish` is main() again, so the deck it writes is built and served by
+        # exactly the code path a session would type next, with no second copy of either.
+        out = a.out or tempfile.mkdtemp(prefix='deck-selfie-')
+        print('[selfie] working folder: ' + out)
+        return run_selfie(a.before, out, log=lambda m: print('[selfie] ' + m),
+                          dry_run=a.dry_run, finish=lambda p: main(['serve', p]))
     try:
         spec = load_spec(a.spec)
         # WHY here and not in load_spec(): only the two commands that PAINT a page follow the

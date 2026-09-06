@@ -1,0 +1,69 @@
+{
+  "title": "Two questions and one promise",
+  "key": "deck-selfie-questions",
+  "out": "selfie-questions.html",
+  "theme": "fixed",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Home",
+      "path": "Questions",
+      "headline": "Should the block change colour with the palette you are using?",
+      "today": "The block is painted the one colour, whichever palette you are on.",
+      "problem": "On the pale palette it almost disappears into the background behind it.",
+      "proposal": "Yes repaints it per palette; No leaves it the one colour it is today."
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Home",
+      "path": "Questions",
+      "headline": "How many blocks should the strip hold at once?",
+      "today": "One block fills the strip, and a second one takes its place.",
+      "problem": "You lose sight of the first the moment a second one arrives.",
+      "proposal": "Let the strip hold more than one at a time.",
+      "options": [
+        {
+          "id": "one",
+          "label": "One",
+          "summary": "The strip stays as it is today.",
+          "pros": ["Nothing to take in but the one thing in front of you."],
+          "cons": ["The one you were reading vanishes when the next arrives."]
+        },
+        {
+          "id": "two",
+          "label": "Two",
+          "summary": "The newest and the one before it.",
+          "recommended": true,
+          "pros": ["You keep the one you were reading while the next arrives."],
+          "cons": ["Each of the two is half as wide."]
+        },
+        {
+          "id": "many",
+          "label": "As many as fit",
+          "summary": "The strip fills up and then starts dropping the oldest.",
+          "pros": ["Nothing is ever taken off the screen before you have read it."],
+          "cons": ["They get narrow fast, and the strip is busy."]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "What we promise",
+      "intro": "Statements, not questions."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Home",
+      "path": "Promises",
+      "headline": "A block you dismiss stays gone until you ask for it back.",
+      "changed": "Stated, not asked: the alternative is something that comes back uninvited.",
+      "notice": "Nothing yet — this becomes a row of the contract.",
+      "yes": "Holds",
+      "no": "Fails"
+    }
+  ]
+}

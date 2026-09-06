@@ -55,6 +55,33 @@ class CliTests(unittest.TestCase):
         self.assertEqual(code, 2, out + err)
         self.assertIn('preview needs google-chrome-stable on PATH', out + err)
 
+    # `selfie` renders the deck fixture with the deck code at two git refs and boxes what
+    # moved. The DRY RUN is the half that needs neither Chrome nor a checkout: it lays out the
+    # synthetic run, copies the three fixture decks beside it, and writes the review spec that
+    # a real run would then fill with pictures. That is what CI can check.
+    def test_selfie_dry_run_writes_the_review_spec_and_checks_nothing_out(self):
+        out = tempfile.mkdtemp()
+        code, so, se = self.run_cli('selfie', '--dry-run', '--out', out)
+        self.assertEqual(code, 0, so + se)
+        p = os.path.join(out, 'selfie-review.json')
+        self.assertTrue(os.path.exists(p), so + se)
+        s = json.load(open(p))
+        # One step per fixture page x window size: three decks, eight pages, two sizes.
+        self.assertGreaterEqual(len(s['steps']), 8, json.dumps(s['steps'], indent=1))
+        for st in s['steps']:
+            self.assertEqual(st['highlight'], 'auto')
+            self.assertIn(st['crop'], s['crops'])
+        # The two run folders the pictures will land in exist, so a session can see the shape
+        # of the run before anything is rendered.
+        for run in s['runs'].values():
+            self.assertTrue(os.path.isdir(run), run)
+        # The three fixture decks are beside the synthetic run, pointed at it.
+        for stem in ('selfie', 'selfie-brief', 'selfie-questions'):
+            self.assertTrue(os.path.exists(os.path.join(out, 'deck', stem + '.json')), stem)
+        self.assertTrue(os.path.exists(os.path.join(out, 'runs', 'after', 'shots-main', 'midnight', 'home.png')))
+        # A dry run never checks a second copy of the workspace out.
+        self.assertFalse(os.path.exists(os.path.join(out, 'before')), 'a dry run makes no worktree')
+
     def test_wait_reads_the_answers_file(self):
         json.dump({'submitted': '2026-08-27T18:40:00Z', 'answers': {}}, open(os.path.join(self.d, 'deck.answers.json'), 'w'))
         code, out, _ = self.run_cli('wait', self.p, '--timeout', '1'); self.assertEqual(code, 0); self.assertIn('3 skipped', out)

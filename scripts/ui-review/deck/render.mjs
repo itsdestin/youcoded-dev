@@ -65,7 +65,7 @@ export async function cdp(port, w, h) {
 // the PAGE number on a words-only deck and the step number otherwise).
 // Returns { files, errors } — one `errors` line per shot that logged one, naming the shot, so
 // a session reading the JSON knows WHICH picture is untrustworthy rather than just that one is.
-export async function renderDeck({ url, out, sizes, themes, pages }) {
+export async function renderDeck({ url, out, sizes, themes, pages, settle = 400 }) {
   mkdirSync(out, { recursive: true });
   const files = [], errors = [];
   for (const size of sizes) {
@@ -96,7 +96,11 @@ export async function renderDeck({ url, out, sizes, themes, pages }) {
           // The page sets __deckReady once it has CHOSEN a layout; images, fonts and the
           // transition into it still need a beat, and a shot taken mid-transition is a
           // picture of a defect that isn't there.
-          await sleep(400);
+          // `settle` is a knob because a page holding a RECORDING needs longer: Chrome paints
+          // its own spinning loading ring over a video it has not finished fetching, and that
+          // ring is at a different angle in every shot — which `selfie` then boxes as a change
+          // (measured 2026-09-05). Longer here costs seconds; a false box costs trust.
+          await sleep(settle);
           const shot = await c.send('Page.captureScreenshot', { format: 'png' });
           const file = join(out, `p${n}-${theme}-${w}x${h}.png`);
           writeFileSync(file, Buffer.from(shot.data, 'base64'));
@@ -110,7 +114,7 @@ export async function renderDeck({ url, out, sizes, themes, pages }) {
 }
 
 // CLI form, so preview.py can call this as a plain subprocess:
-//   node deck/render.mjs --url U --out DIR --sizes 1440x900,1280x800 --themes midnight,light --pages 3
+//   node deck/render.mjs --url U --out DIR --sizes 1440x900,1280x800 --themes midnight,light --pages 3 [--settle 400]
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const args = {};
   for (let i = 2; i < process.argv.length; i += 2) args[process.argv[i].replace(/^--/, '')] = process.argv[i + 1];
@@ -120,6 +124,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     sizes: (args.sizes || '1440x900').split(','),
     themes: (args.themes || 'midnight').split(','),
     pages: Number(args.pages || 1),
+    settle: Number(args.settle || 400),
   });
   console.log(JSON.stringify(result));
   process.exit(result.errors.length ? 1 : 0);

@@ -613,3 +613,51 @@ test('a page that never becomes ready is reported, not screenshotted silently', 
   assert.equal(errors.length, 1, 'exactly one error, naming this page');
   assert.equal(errors[0], 'p1 x 640x480: the page never finished laying out (window.__deckReady was never set)');
 });
+
+// The FIXTURE DECK behind `review-cards.py selfie`: one deck carrying every kind of step, a
+// one-run brief, and a two-page question deck. It is the thing the deck's own changes are
+// reviewed against, so if a kind stops building — or a page throws while it draws — the
+// selfie is measuring the wrong thing and says nothing about the change. `--dry-run` lays the
+// fixture out without checking anything out or rendering; this test then builds and opens it.
+test('the selfie fixture holds every kind of step and every page opens clean', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-selfie-'));
+  const lay = spawnSync('python3', [RC, 'selfie', '--dry-run', '--out', tmp], { encoding: 'utf8' });
+  assert.equal(lay.status, 0, lay.stdout + lay.stderr);
+  const deck = join(tmp, 'deck');
+  // Every kind at once: approve, choice, decide, contract and (when ffmpeg made the
+  // recordings) clip in one spec; a one-run brief; a question deck with a page marker.
+  const kinds = JSON.parse(readFileSync(join(deck, 'selfie.json'), 'utf8')).steps;
+  assert.ok(kinds.some(s => s.changed && s.crop), 'an approve step');
+  assert.ok(kinds.some(s => s.variants), 'a choice step');
+  assert.ok(kinds.some(s => s.options), 'a decide step');
+  assert.ok(kinds.some(s => s.rows), 'a contract step');
+  const pageCounts = {};
+  for (const stem of ['selfie', 'selfie-brief', 'selfie-questions']) {
+    const spec = join(deck, `${stem}.json`);
+    const b = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' });
+    assert.equal(b.status, 0, `${stem} does not build:\n${b.stdout}${b.stderr}`);
+    const n = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(join(HERE, '..'))});
+from deck.preview import page_count
+from deck.spec import load_spec
+print(page_count(load_spec(${JSON.stringify(spec)})))`], { encoding: 'utf8' });
+    pageCounts[stem] = Number(n.stdout.trim());
+    assert.ok(pageCounts[stem] >= 1, `${stem} page count: ${n.stdout}${n.stderr}`);
+  }
+  // The three built pages share one folder, so one server reaches all of them.
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', join(deck, 'selfie.json'), '--no-build', '--port', String(port), '--timeout', '3'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  let srvOut = ''; srv.stdout.on('data', d => srvOut += d);
+  try {
+    await sleep(800);
+    for (const stem of ['selfie', 'selfie-brief', 'selfie-questions']) {
+      const out = join(tmp, 'shots', stem);
+      const { files, errors } = await renderDeck({
+        url: `http://127.0.0.1:${port}/${stem}.html`, out,
+        sizes: ['1440x900'], themes: ['midnight'], pages: pageCounts[stem],
+      });
+      assert.deepEqual(errors, [], `${stem} logged an error while being shot\n${srvOut}`);
+      assert.equal(files.length, pageCounts[stem], `${stem}: one picture per page`);
+      for (const f of files) assert.ok(statSync(f).size > 1000, `blank ${f}`);
+    }
+  } finally { if (srv.exitCode === null) srv.kill(); }
+});

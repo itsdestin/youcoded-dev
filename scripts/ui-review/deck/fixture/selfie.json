@@ -1,0 +1,129 @@
+{
+  "title": "Every kind of step, on one deck",
+  "key": "deck-selfie",
+  "out": "selfie.html",
+  "images": "images/selfie",
+  "theme": "fixed",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": ["midnight", "light"],
+  "sources": {
+    "deck-selfie-questions": "selfie-questions.json"
+  },
+  "crops": {
+    "c": ["main", "home", "400x200+500+250"],
+    "d": ["main", "home", "300x160+100+100"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Home",
+      "path": "The strip under the message box",
+      "crop": "c",
+      "headline": "A red block appeared under the message box.",
+      "changed": "A red block was painted where the strip was empty before.",
+      "measured": "120 px wide, 40 px tall",
+      "notice": "There is something in the strip now instead of blank space.",
+      "risk": "The strip has room for one block and no more."
+    },
+    {
+      "id": "S-2",
+      "surface": "Home",
+      "path": "The strip under the message box",
+      "headline": "Which of these two views should the strip show?",
+      "notice": "Whichever you pick is the view every screen uses.",
+      "risk": "Both keep the strip exactly where it is today.",
+      "variants": [
+        {
+          "id": "middle",
+          "label": "The middle of the screen",
+          "crop": "c",
+          "summary": "Shows the block where it sits, with room around it on both sides.",
+          "measured": "400 px wide",
+          "highlight": {"text": "Send"}
+        },
+        {
+          "id": "corner",
+          "label": "The top corner",
+          "crop": "d",
+          "summary": "Shows the corner of the screen instead, which is empty today.",
+          "measured": "300 px wide"
+        }
+      ]
+    },
+    {
+      "id": "S-3",
+      "surface": "Home",
+      "path": "The strip under the message box",
+      "crop": "c",
+      "headline": "Which side of the strip should the block sit on?",
+      "notice": "Whichever you pick is where it sits on every screen.",
+      "risk": "Nothing else in the strip moves whichever you pick.",
+      "highlight": {"selector": "#send"},
+      "options": [
+        {
+          "id": "left",
+          "label": "The left end",
+          "summary": "The block stays at the end of the strip it is at today.",
+          "pros": ["It is where your eye already is when you finish typing."],
+          "cons": ["It crowds the words that sit next to it."],
+          "cost": "Nothing to build — it is where it is today.",
+          "measured": "0 extra taps"
+        },
+        {
+          "id": "right",
+          "label": "The right end",
+          "summary": "The block moves to the far end, on its own.",
+          "pros": ["Plenty of empty room around it, so it never crowds anything."],
+          "cons": ["It is further from where you were just looking."],
+          "cost": "One line of layout work.",
+          "recommended": true
+        }
+      ]
+    },
+    {
+      "id": "S-4",
+      "surface": "Home",
+      "path": "The strip under the message box",
+      "words": true,
+      "headline": "This is what done means for the block.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "The block is painted in the place the picture shows.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "deck-selfie-questions#Q-1"
+        },
+        {
+          "id": "R2",
+          "statement": "The block can be told apart from the background at a glance.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "deck-selfie-questions#Q-2",
+          "note": "It could be a shade darker."
+        },
+        {
+          "id": "R3",
+          "statement": "The block keeps its size at every window width.",
+          "checkedBy": "mechanical",
+          "guard": "scripts/ui-review/tests/test_spec.py",
+          "threshold": "the named test passes",
+          "source": "deck-selfie-questions#Q-2"
+        }
+      ]
+    },
+    {
+      "id": "S-5",
+      "surface": "Home",
+      "path": "The strip under the message box",
+      "clip": "blink",
+      "headline": "The block is red while it plays, where it used to be grey.",
+      "changed": "The recording on the right is the block after the change: red, not grey.",
+      "notice": "The colour is the only difference between the two recordings.",
+      "risk": "Colour on its own is hard to tell apart on the pale palette."
+    }
+  ]
+}
