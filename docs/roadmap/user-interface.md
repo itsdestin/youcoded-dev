@@ -12,10 +12,11 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
 - [ ] Dictation is not built into the message box — speaking a message means OS-level dictation
       glued on top, which does not punctuate. Wanted: a mic in the input bar that produces properly
       punctuated, readable text the way a phone keyboard's voice input does, with live partial
-      transcript while speaking. Destin asked for this to rank higher than a normal idea. Undesigned:
-      which speech engine (local matters for the run-everything-local audience), and Android parity,
-      where dictation matters most
-      `input-bar` `all` `parked` `checked 2026-09-02`
+      transcript while speaking. Destin asked for this to rank higher than a normal idea. Both
+      questions that were open are answered: the engine is Parakeet, chosen by measuring six of them
+      on this machine, and the phone uses its own recogniser. Built, tested by Destin, and waiting on
+      his merge decision
+      `input-bar` `all` `in-flight` `checked 2026-09-05` → docs/active/investigations/2026-09-05-local-speech-engines.md
 
 - [ ] On a phone the app is a shrunk desktop — status-bar chips, panels and desktop session
       switching — where Gemini, Siri and Claude mobile are built around quick dispatch and search.
