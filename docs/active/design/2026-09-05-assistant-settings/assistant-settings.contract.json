@@ -1,0 +1,205 @@
+{
+ "title": "Assistant settings — contract",
+ "key": "assistant-settings-contract",
+ "out": "assistant-settings.contract.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "feat/assistant-settings",
+ "sources": {
+  "assistant-settings-questions": "assistant-settings.questions.json",
+  "assistant-settings-review": "assistant-settings.review.json",
+  "assistant-settings-review-2": "assistant-settings.review-2.json",
+  "assistant-settings-review-3": "assistant-settings.review-3.json",
+  "assistant-settings-review-4": "assistant-settings.review-4.json",
+  "assistant-settings-review-5": "assistant-settings.review-5.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Settings → Assistant settings",
+   "path": "Settings → Assistant settings",
+   "headline": "This is what done means for Assistant settings.",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "One Assistant settings row in the Settings drawer replaces Model Providers, Defaults, Permissions and Specialists.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review#P-1"
+    },
+    {
+     "id": "R2",
+     "statement": "The Assistant settings row shows the current default, plus a red dot when a provider is broken.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review#P-11"
+    },
+    {
+     "id": "R3",
+     "statement": "The row opens one wide window: a list of pages on the left, the chosen page on the right.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review#P-2"
+    },
+    {
+     "id": "R4",
+     "statement": "The list is five flat pages: General, Cloud providers, Local models, Permissions, Specialists.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-2#R2-1",
+     "note": "i think defaul model and default project folder should both have correctly styled dropdowns. the title of project folder should be \"Show Project Folder\". websearch should not be a bare header, but a card that contains the tavily/exa cards. tight spacing on it."
+    },
+    {
+     "id": "R5",
+     "statement": "Any connected model, Claude, ChatGPT, OpenRouter or a downloaded local one, can be set as the default.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review#P-3",
+     "note": "just call this Default Model. line below should say \"This model will be pre-filled in the model picker, but you may still switch models at any time"
+    },
+    {
+     "id": "R6",
+     "statement": "General's first row is Default model, saying the pick is pre-filled but switchable; web search keys sit at the bottom.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-2#R2-2",
+     "note": "add mirror line in project folder when we add dropdown."
+    },
+    {
+     "id": "R7",
+     "statement": "The folder row is called Default project folder.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-3#R3-4"
+    },
+    {
+     "id": "R8",
+     "statement": "The default folder control is the same folder picker the new conversation form uses, folder icon and all.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-4#R4-1"
+    },
+    {
+     "id": "R9",
+     "statement": "Open, it lists your saved folders with a tick on the one in use, and Browse for folder at the bottom.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-4#R4-2",
+     "note": "i think on this surface (not in new session menu or elsewhere) the width of the selection menu should match the dropdown card, and the project name/filepath/etc should be in-line together."
+    },
+    {
+     "id": "R10",
+     "statement": "In this panel the open folder list is as wide as the control, one line per folder.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-5#R5-1"
+    },
+    {
+     "id": "R11",
+     "statement": "Cloud providers stacks the Claude Code, ChatGPT and OpenRouter cards on one page, with your own API keys below.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-2#R2-3",
+     "note": "we should also have a white \"My Account\" page button that outlinks to the relevant provider's webpage. should be at the top right when signed in. also i thought we were supposed to make the claude code card mirror the gpt card with usage limits and such and a sign out button."
+    },
+    {
+     "id": "R12",
+     "statement": "Claude Code's card matches ChatGPT's with limit bars and Sign out, and every signed-in card has My Account.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-3#R3-2"
+    },
+    {
+     "id": "R13",
+     "statement": "Sign out on the Claude Code card explains where to sign out, and signs nothing out.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-4#R4-4",
+     "note": "skip the first section of text \"youcoded cannot clear it for you\""
+    },
+    {
+     "id": "R14",
+     "statement": "That sign-out popup is one sentence saying where to go and what to type.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-5#R5-3"
+    },
+    {
+     "id": "R15",
+     "statement": "Permissions holds Claude Code's Skip Permissions switch first, then the three modes and Always-allowed list for other providers.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-2#R2-4",
+     "note": "change copy. that should be \"Enable Skip Permissions Mode?\" with copy that says\" Allows you to toggle claude code's --dangerously-skip-permissions flag when creating a session. Claude won't ask before taking action"
+    },
+    {
+     "id": "R16",
+     "statement": "The Advanced list of protection overrides is gone from the app.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review#P-14",
+     "note": "see previous slide. i think we should drop this altogether"
+    },
+    {
+     "id": "R17",
+     "statement": "Any protection override someone had switched on is turned off when this ships.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-2#R2-5"
+    },
+    {
+     "id": "R18",
+     "statement": "The switch is titled Enable Skip Permissions Mode? with a hint about Claude Code's skip-permissions flag when starting a session.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-3#R3-3",
+     "note": "remove the current red banner. replace it with a blocking popup that requires to acknowledge whatever working claude code itself uses for the skip permissions confirmation screen. tick a box saying they ackowleding they use it at their own risk."
+    },
+    {
+     "id": "R19",
+     "statement": "Turning Skip Permissions on stops you with a popup you must tick to confirm; turning it off is instant.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-4#R4-3",
+     "note": "this copy is weird. way too much gray text. cahng to something like \"When you begin a session in skip permissions mode,Claude Code will not ask before taking actions or running commands. You should be cautious when attempting to use this mode with Haiku- or Sonnnet- class models."
+    },
+    {
+     "id": "R20",
+     "statement": "That popup is one short paragraph in ordinary text, cautioning about Haiku- and Sonnet-class models.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-5#R5-2"
+    },
+    {
+     "id": "R21",
+     "statement": "Local models has a whole page: the engine card, the model browser and other local apps.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review#P-7"
+    },
+    {
+     "id": "R22",
+     "statement": "Specialists is one page: the tier pickers above, the roster below, unchanged.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review#P-9"
+    },
+    {
+     "id": "R23",
+     "statement": "On a phone the five pages are the first screen, and a page opens with a back arrow.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-review-2#R2-6"
+    },
+    {
+     "id": "R24",
+     "statement": "Android gets the same Assistant settings row and panel now, showing only the pages it can serve.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "assistant-settings-questions#Q-6"
+    }
+   ]
+  }
+ ]
+}
