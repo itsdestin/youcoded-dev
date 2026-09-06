@@ -15,7 +15,7 @@ status: shipped
 > The web-subject fix (§ WebSearch/WebFetch) shipped unchanged, in the same commit.
 
 > **STATUS (verified 2026-08-26): ratified, unbuilt.** Destin ratified the direction 2026-08-21 and
-> the implementation plan (`docs/active/plans/2026-08-21-full-auto-external-read-bypass.md`) was
+> the implementation plan (`docs/archive/plans/2026-08-21-full-auto-external-read-bypass.md`) was
 > finalized 2026-08-23, but **zero code exists**: `git grep -n isWalkAwayRead origin/master --
 > desktop/src` → no hits, and `NON_PATH_SUBJECT_TOOLS` on master is still
 > `new Set(['Bash', 'Skill', 'Task'])` (`harness-session.ts:48`) — WebSearch/WebFetch were never

@@ -18,8 +18,8 @@ only, so `WebSearch`/`WebFetch` (whose subject is a query/URL) are path-guarded,
 `Read`/`Glob`/`Grep` outside the cwd raise the external ask regardless of mode.
 <!-- claim: {"path": "youcoded/desktop/src/main/harness/harness-session.ts", "contains": "const NON_PATH_SUBJECT_TOOLS = new Set\\(\\['Bash', 'Skill', 'Task'\\]\\)"} -->
 
-The ratified design (spec `docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md`,
-plan `docs/active/plans/2026-08-21-full-auto-external-read-bypass.md`, final review
+The ratified design (spec `docs/archive/specs/2026-08-18-full-auto-external-directory-permissions-design.md`,
+plan `docs/archive/plans/2026-08-21-full-auto-external-read-bypass.md`, final review
 2026-08-23) lifts the external ask for the three read-only tools inside `full-auto` only
 (`isWalkAwayRead`), and takes the web tools out of the path-subject set. Writes and Bash
 outside the project still ask. Distinct from the native bypass-mode feature
