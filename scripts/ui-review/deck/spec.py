@@ -14,6 +14,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 UI_REVIEW = os.path.dirname(HERE)
 DEFAULT_THEMES = ['midnight', 'light', 'creme', 'dark', 'halftone-dimension', 'meadow-mist']
 # Whole-word, case-insensitive. "px" and numbers are fine — measurements are wanted.
+# The marker a GENERATOR leaves where a session has to write the copy. Any field still
+# carrying it blocks the build (validate) — `selfie` writes the pictures, but only the session
+# that made the change can say what moved and what Destin will notice (design §6.4).
+TODO = 'TODO:'
 BANNED = ['token', 'primitive', 'selector', 'ipc', 'prop', 'props', 'reducer', 'handler',
           'component', 'tailwind', 'css class', 'react', 'dom', 'z-index']
 TEXT_FIELDS = ['headline', 'changed', 'measured', 'notice', 'risk', 'surface', 'path',
@@ -311,12 +315,26 @@ def words_only(spec):
     return bool(spec['steps']) and all(is_page(st) or is_words(st) for st in spec['steps'])
 
 
+def has_contract(spec):
+    """This deck defines or grades done — a contract or acceptance deck (feature-flow design §3,
+    §7). Picture-free like a question deck, but NOT a pages deck: see pages()."""
+    return any(is_contract(st) for st in spec['steps'])
+
+
 def pages(spec):
     """The pages of a question deck — [{id, title, intro, steps: [step...]}] — or None when the
-    deck has pictures. Destin (2026-09-04): "my mindset should stay in the same place for each
-    set of questions, and only shift when moving to a new set", so with NO marker every question
-    shares one page, titled with the deck's own title."""
+    deck has pictures or defines done. Destin (2026-09-04): "my mindset should stay in the same
+    place for each set of questions, and only shift when moving to a new set", so with NO marker
+    every question shares one page, titled with the deck's own title."""
     if not words_only(spec):
+        return None
+    # Fix (2026-09-05): a CONTRACT deck is picture-free too, so words_only() was true for it and
+    # pages() silently claimed it — the chatgpt-signin acceptance deck became ONE 5,884px scroll
+    # at 1440x900 whose first question to answer started at y=3739, below a 3,611px contract
+    # table, under a header reading "page 1 of 1 · 0 of 8 answered" — which invites a Done press
+    # before he has scrolled. Pages are a QUESTION-deck behaviour (design §3.1); a deck that
+    # defines or grades done keeps one step per screen.
+    if has_contract(spec):
         return None
     out = []
     for st in spec['steps']:
@@ -402,6 +420,14 @@ def validate(spec):
         elif st['id'] in ids:
             errors.append(f'{sid}: duplicate id')
         ids.add(st.get('id'))
+        # A PLACEHOLDER, before any kind-specific rule: a generated deck must not be servable
+        # until its descriptions are written. WHY (2026-09-05): `selfie` shipped every step with
+        # the same two generic sentences, and Destin answered five of them "i have literally no
+        # idea what i'm supposed to be looking at ... make this review deck more useful".
+        for k, v in st.items():
+            if isinstance(v, str) and v.strip().startswith(TODO):
+                errors.append(f'{sid}: {k} is still a placeholder — replace the "{TODO} …" line '
+                              'with what actually changed on this page and what Destin will notice')
         # A PAGE MARKER first of all: it is not a step, so none of the step rules apply to it.
         if is_page(st):
             _validate_page(spec, st, sid, i, errors)
@@ -466,6 +492,10 @@ def _validate_page(spec, st, sid, i, errors):
         errors.append(f'{sid}: a page marker needs a title in "page"')
     if not words_only(spec):
         errors.append(f'{sid}: pages are for question decks — this deck has pictures')
+    elif has_contract(spec):
+        # Same rule from the other side: pages() refuses a contract deck, so a marker left in one
+        # would be silently dropped rather than drawn. Say so at build time instead.
+        errors.append(f'{sid}: pages are for question decks — this deck defines done (it has a contract step)')
     # Its page runs to the NEXT marker, so a marker followed straight by another one is empty
     # even though there are questions further down the deck.
     mine = 0

@@ -154,7 +154,15 @@
   // letter — Destin (2026-09-04): one grey paragraph per option was unreadable, and
   // "(recommended)" written into the label read as part of the option's name.
   const bullets = (o, k) => (o[k] || []).length ? `<ul class="${k}">${o[k].map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
-  const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><span class="key">${esc(o.id)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}<div class="vbody"><h3>${esc(o.label)}</h3>${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+  // Fix (2026-09-05): the chip printed the WHOLE option id, so `default-and-sunbreak` ate about
+  // 150px of the card's own gutter and squeezed the option's words. The chip is a handle, not
+  // the id: show at most KEY_MAX characters and keep the full id in its tooltip. Nothing else
+  // changes — the answers file, the printed summary and the finish screen all still carry it in
+  // full. (Chosen over a length LIMIT on ids: five committed specs already use long, readable
+  // ids, and those ids are what a session reads back out of the answers file.)
+  const KEY_MAX = 10;
+  const chip = id => `<span class="key" title="${esc(id)}">${esc(id.length > KEY_MAX ? id.slice(0, KEY_MAX - 1) + '…' : id)}</span>`;
+  const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}">${chip(o.id)}${o.recommended ? '<span class="badge">Recommended</span>' : ''}<div class="vbody"><h3>${esc(o.label)}</h3>${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
   // The three parts of a question, one card each.
   const partCard = (title, text) => `<section class="card part"><h3>${esc(title)}</h3><p>${esc(text)}</p></section>`;
   const partCards = st => [['Today', st.today], ['The problem', st.problem], ['Proposal', st.proposal]]
@@ -402,13 +410,11 @@
   const PAD = 28, CAP = 24, GAP = 18;
   function layout() {
     if (PAGES) {   // the reading column: a block that scrolls, nothing to size against a picture
-      // Fix: a CONTRACT step's table (# / Statement / Checked by / Threshold / From / Verdict)
-      // squeezed into the 760px reading column same as a question card — the acceptance deck's
-      // screenshot showed two narrow columns stretching across the whole 1440px viewport
-      // instead. A page that HOLDS a contract step gets a wider column; the CSS keeps any
-      // prose question sharing that page at the normal reading width (`.pages.wide article.q`).
-      const wide = pageSteps(cur).some(st => st.kind === 'contract');
-      $('#content').className = 'content pages' + (wide ? ' wide' : ''); $('#step').classList.remove('compact-step');
+      // A contract step never reaches this branch: spec.pages() refuses a deck that defines or
+      // grades done, so a contract is always drawn one step per screen (`.content.words`, whose
+      // own `:has(.contract)` rule gives its table the full width). The `.pages.wide` column
+      // this used to switch on was removed with it, 2026-09-05.
+      $('#content').className = 'content pages'; $('#step').classList.remove('compact-step');
       document.body.classList.remove('thumbs-inline');
       document.body.dataset.layout = 'pages'; document.body.dataset.scores = '{}';
       window.__deckReady = true; return;
@@ -553,7 +559,9 @@
   const ANS_LABEL = (st, a) => {
     const v = a.v || 'skip';
     if (v === 'skip') return 'No answer';
-    if (v === 'pick') { const o = (pickList(st) || []).find(x => x.id === a.pick); return a.pick + (o ? ' — ' + o.label : ''); }
+    // Fix: a words QUESTION offers `options`, not the `variants`/`panes` pickList knows about, so
+    // its answers read back on the finish screen as a bare id ("all-five-plus-new"). Look in both.
+    if (v === 'pick') { const o = (pickList(st) || st.options || []).find(x => x.id === a.pick); return a.pick + (o ? ' — ' + o.label : ''); }
     if (v === 'other') return a.dk ? "Don't know" : 'Something else';
     if (v === 'no') return pickList(st) ? 'None of these' : noLabel(st);
     return yesLabel(st);

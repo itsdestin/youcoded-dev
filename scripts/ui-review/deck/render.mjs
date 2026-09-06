@@ -67,7 +67,9 @@ export async function cdp(port, w, h) {
 // a session reading the JSON knows WHICH picture is untrustworthy rather than just that one is.
 export async function renderDeck({ url, out, sizes, themes, pages, settle = 400 }) {
   mkdirSync(out, { recursive: true });
-  const files = [], errors = [];
+  // `themeSwaps` is NOT an error: a step with its own `themes` list is a legitimate spec shape.
+  // It is reported so the caller can say which pages exist in only one palette.
+  const files = [], errors = [], themeSwaps = [];
   for (const size of sizes) {
     const [w, h] = String(size).split('x').map(Number);
     // One Chrome per size (the window size is fixed at launch), reused across pages and themes.
@@ -128,16 +130,25 @@ export async function renderDeck({ url, out, sizes, themes, pages, settle = 400 
           // its first frame by now, so this is back to being the ordinary post-layout beat —
           // not a stand-in for waiting on the video.
           await sleep(settle);
+          // Fix (2026-09-05): the shot is named for the theme the page SETTLED on, not the one
+          // asked for. `page.js` overrides `?theme=` for a step carrying its own `themes` list
+          // (`if (st.themes && st !== lastStep) theme = st.themes[0]`), so a narrowly-themed step
+          // requested as `light` was shot in its own theme and saved as `p3-light-….png` — a
+          // filename that lies about its own picture. Five committed specs have such a step.
+          const actual = (await c.evaluate('document.documentElement.dataset.theme').catch(() => null)) || theme;
           const shot = await c.send('Page.captureScreenshot', { format: 'png' });
-          const file = join(out, `p${n}-${theme}-${w}x${h}.png`);
+          const file = join(out, `p${n}-${actual}-${w}x${h}.png`);
           writeFileSync(file, Buffer.from(shot.data, 'base64'));
           files.push(file);
+          // Say it, so `preview`'s caller can print it: a session comparing two palettes has to
+          // know that this page only exists in one.
+          if (actual !== theme) themeSwaps.push(`${label}: this page carries its own palette — shot in ${actual}, not ${theme} (${file})`);
           for (const e of c.errors) if (e.startsWith(label + ': ')) errors.push(e);
         }
       }
     } finally { c.close(); }
   }
-  return { files, errors };
+  return { files, errors, themeSwaps };
 }
 
 // CLI form, so preview.py can call this as a plain subprocess:

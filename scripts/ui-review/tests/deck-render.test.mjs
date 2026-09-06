@@ -186,6 +186,41 @@ test('header never runs under the nav, and the side column scrolls instead of sl
   } finally { if (srv.exitCode === null) srv.kill(); }
 });
 
+// The SHORT case of the same header. A 14ch min-width floor on `.id` reserved 91.3px for the
+// word "Home" (33.6px of text) and, because `.where` clips its overflow, left the subtitle
+// "Chat" rendered at 0px wide — Destin: "a bunch of unnecessary empty blank space in the
+// header?" (2026-09-05). Both halves are pinned: no dead space, and no truncation of a
+// subtitle that fits.
+test('a short surface name takes only its own width, and the subtitle beside it is not clipped', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-shorthead-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1440, 900);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/fixture.html?step=1` });
+    for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+    await sleep(300);
+    // The name's box must be its own text, not a reserved minimum: measure the text itself.
+    const m = JSON.parse(await c.evaluate(`(() => {
+      const t = document.querySelector('#wtitle'), s = document.querySelector('#wsub');
+      const p = document.createElement('span');
+      p.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:' + getComputedStyle(t).font;
+      p.textContent = t.textContent; document.body.appendChild(p);
+      const natTitle = p.getBoundingClientRect().width; p.remove();
+      return JSON.stringify({ titleW: t.getBoundingClientRect().width, natTitle,
+        subW: s.getBoundingClientRect().width, subClipped: s.scrollWidth > s.clientWidth + 1 });
+    })()`));
+    assert.ok(m.titleW < m.natTitle + 4, `the surface name reserves no dead space: box ${m.titleW}px for ${m.natTitle}px of text`);
+    assert.equal(m.subClipped, false, 'a subtitle that fits is not ellipsized');
+    assert.ok(m.subW > 0, `the subtitle is actually drawn (got ${m.subW}px wide)`);
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); }
+});
+
 // ── LIVE panes ────────────────────────────────────────────────────────────────────────────
 // A stub pane server stands in for the workbench: same two messages the real route sends
 // (a height on load, a theme swap in place), no Vite, no app, no ImageMagick. `--no-live`
@@ -448,9 +483,11 @@ print(p)`;
   } finally { srv.kill(); }
 });
 
-// CONTRACT page: the table (# / Statement / Checked by / Threshold / From / Verdict) needs
-// real width, not the ~760px column every prose question shares — Task 2 review finding.
-test('a page holding a contract step is wide', async () => {
+// A CONTRACT deck is picture-free, but it is NOT a pages deck: it stays one step per screen.
+// It became one long scroll when words_only() alone decided pages — the acceptance deck was
+// 5,884px tall with its first question at y=3739 (measured 2026-09-05). The table still needs
+// real width, which the words layout's own `:has(.contract)` rule gives it.
+test('a contract deck is step-per-screen, and its table still gets real width', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'deck-contract-wide-'));
   const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import contract_spec; print(contract_spec(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
   const spec = fx.stdout.trim(); assert.ok(spec.endsWith('arcade.contract.json'), fx.stderr);
@@ -462,12 +499,45 @@ test('a page holding a contract step is wide', async () => {
     await sleep(800);
     await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/arcade.contract.html` });
     for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true')); i++) await sleep(100);
-    assert.equal(await c.evaluate('document.body.dataset.layout'), 'pages');
-    assert.equal(await c.evaluate("document.querySelector('#content').classList.contains('wide')"), true, 'a contract page widens the column');
+    assert.equal(await c.evaluate('document.body.dataset.layout'), 'words', 'a contract deck keeps one step per screen');
+    assert.equal(await c.evaluate("document.querySelector('#content').classList.contains('pages')"), false, 'a contract deck is never paged');
     const cardsW = await c.evaluate("document.querySelector('#cards').getBoundingClientRect().width");
     assert.ok(cardsW > 800, `cards should be wider than 800px at 1440x900, got ${cardsW}`);
     assert.deepEqual(c.errors, []);
   } finally { c.close(); srv.kill(); }
+});
+
+// A shot's FILENAME must name the palette the picture is actually in. `page.js` overrides
+// `?theme=` for a step carrying its own `themes` list, so a narrowly-themed step requested as
+// midnight was shot in its own palette and saved as `p2-midnight-….png` — a filename that lies.
+test('a step with its own themes is named for the palette it was actually shot in', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-themename-'));
+  const py = `import sys, json; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import make_fixture
+p = make_fixture(${JSON.stringify(tmp)})
+raw = json.load(open(p)); raw['steps'][1]['themes'] = ['light']
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const out = mkdtempSync(join(tmpdir(), 'deck-themeshots-'));
+    const r = await renderDeck({ url: `http://127.0.0.1:${port}/fixture.html`, out, sizes: ['1440x900'], themes: ['midnight'], pages: 3 });
+    // Step 1 and 3 carry no themes of their own and are shot in the requested midnight.
+    assert.ok(r.files.some(f => f.endsWith('p1-midnight-1440x900.png')), r.files.join('\n'));
+    assert.ok(r.files.some(f => f.endsWith('p3-midnight-1440x900.png')), r.files.join('\n'));
+    // Step 2 lists only `light`, so the page opens in light — and the file says light.
+    assert.ok(r.files.some(f => f.endsWith('p2-light-1440x900.png')), r.files.join('\n'));
+    assert.ok(!r.files.some(f => f.endsWith('p2-midnight-1440x900.png')), 'no file claims a palette the page was not in');
+    // And the caller is told, so `preview` can print it.
+    assert.equal(r.themeSwaps.length, 1, JSON.stringify(r.themeSwaps));
+    assert.match(r.themeSwaps[0], /shot in light, not midnight/);
+    assert.deepEqual(r.errors, []);
+  } finally { srv.kill(); }
 });
 
 // A deck with ONE page and no markers: the whole question set on one screen, and the forward

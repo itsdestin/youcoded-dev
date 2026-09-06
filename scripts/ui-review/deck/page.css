@@ -41,7 +41,13 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
    basis is so small too that it read as the surface name itself truncating to "H…", which is a
    worse loss than the path (the thing that was actually long) giving up more of the row it was
    already ellipsizing. */
-.top .where{flex:0 1 auto;max-width:40%;min-width:0;overflow:hidden} .top .where .id{flex:0 1 auto;min-width:min(100%,14ch);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}   /* keeps at least 14 characters of the surface name, then ellipsizes — never "H…", never a hard clip of a long name */
+.top .where{flex:0 1 auto;max-width:40%;min-width:0;overflow:hidden} /* Fix (2026-09-05): the 14ch min-width FLOOR reserved 91px for a surface named "Home" (33.6px of
+   text) and, because `.where` is `overflow:hidden`, pushed the separator and the whole subtitle
+   out of the box — "Chat" rendered at 0px wide. Destin: "looks like you just added a bunch of
+   unnecessary empty blank space in the header?". The name now takes exactly the room it needs
+   (`flex:none`, so it is never squeezed to "H…" either) with a CAP instead of a floor, so a
+   genuinely long surface name still ellipsizes rather than eating the subtitle's room. */
+.top .where .id{flex:none;max-width:22ch;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .top .where .eyebrow{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (max-width:1400px){.top .where .eyebrow,.top .where .sep{display:none}} @media (max-width:950px){.top .count{display:none}} @media (max-width:760px){.top .long{display:none} .top .nav .btn{padding:0 6px}}
 .where{display:flex;align-items:center;gap:10px} .where .id{font-weight:500;font-size:14px} .where .sep{color:var(--fg-faint)}
@@ -119,12 +125,6 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
    bar's 10px top+bottom padding, so the last card can scroll clear of it instead of the bar
    landing on top of a card's own text (Destin, 2026-09-05). */
 .pages .cards{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-bottom:clamp(54px,calc(4.4vh + 20px),72px)}
-/* WIDE: a page that holds a CONTRACT step (design 3.1 + Task 3 review) — the table needs real
-   width, not the 760px reading column every question shares. Only #controls widens alongside
-   it; a prose question sharing the page (below) stays at the reading width and centres itself
-   in the wider column instead of stretching across it. */
-.content.pages.wide .cards,.content.pages.wide #controls{max-width:min(1200px,100% - 32px)}
-.pages.wide article.q:not(:has(.card.contract)){max-width:760px;align-self:center;width:100%}
 .pages .page-head .intro{margin:4px 0 0;font-size:13px;color:var(--fg-2);line-height:1.5}
 /* One question = one card, the same panel/edge/radius idiom the single-step decision card uses. */
 .pages article.q{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px}

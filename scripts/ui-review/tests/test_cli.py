@@ -71,6 +71,15 @@ class CliTests(unittest.TestCase):
         for st in s['steps']:
             self.assertEqual(st['highlight'], 'auto')
             self.assertIn(st['crop'], s['crops'])
+            # The descriptions are the SESSION's job (design §6.4): selfie shoots the pictures
+            # and boxes what moved, but a generated sentence about a 1440 by 900 window told
+            # Destin nothing — "i have literally no idea what i'm supposed to be looking at".
+            self.assertTrue(st['headline'].startswith('TODO:'), st['headline'])
+            self.assertTrue(st['changed'].startswith('TODO:'), st['changed'])
+            self.assertIn('Commits since', st['_comment'])
+        # And it says which steps still need one, plus the command that follows.
+        self.assertIn('still need a description', so)
+        self.assertIn('review-cards.py serve', so)
         # The two run folders the pictures will land in exist, so a session can see the shape
         # of the run before anything is rendered.
         for run in s['runs'].values():
@@ -81,6 +90,17 @@ class CliTests(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(out, 'runs', 'after', 'shots-main', 'midnight', 'home.png')))
         # A dry run never checks a second copy of the workspace out.
         self.assertFalse(os.path.exists(os.path.join(out, 'before')), 'a dry run makes no worktree')
+
+    def test_selfie_spec_with_placeholders_refuses_to_build(self):
+        # The point of the placeholder: a selfie deck CANNOT be served until a session has said
+        # what changed. Build the spec the dry run just wrote and check it is refused by name.
+        out = tempfile.mkdtemp()
+        code, so, se = self.run_cli('selfie', '--dry-run', '--out', out)
+        self.assertEqual(code, 0, so + se)
+        code, so, se = self.run_cli('build', os.path.join(out, 'selfie-review.json'))
+        self.assertNotEqual(code, 0, so + se)
+        self.assertIn('headline is still a placeholder', so + se)
+        self.assertIn('changed is still a placeholder', so + se)
 
     def test_selfie_bad_before_ref_refuses_plainly_instead_of_a_traceback(self):
         # `_add_worktree` raises RuntimeError on a ref git cannot check out; that used to

@@ -73,7 +73,9 @@ def _choice_step(spec, st, boxes, run):
 def _option(o):
     # `pros`/`cons` are the option's body now and `summary` is optional beside them (design
     # §3.2); both lists are always present so page.js never has to test for the key.
-    return {'id': o['id'], 'label': o['label'], 'summary': o.get('summary', ''),
+    # Fix: `.strip()` — a summary of only spaces used to render an EMPTY paragraph under the
+    # option's title, a blank gap with nothing in it. Blank now means no paragraph at all.
+    return {'id': o['id'], 'label': o['label'], 'summary': (o.get('summary') or '').strip(),
             'pros': list(o.get('pros') or []), 'cons': list(o.get('cons') or []),
             'recommended': bool(o.get('recommended')),
             'measured': o.get('measured', ''), 'cost': o.get('cost', '')}

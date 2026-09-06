@@ -92,6 +92,11 @@ def preview(spec, sizes=None, themes=None, out=None, log=print):
         return 1
     for f in result['files']:
         log(f)
+    # A step carrying its own `themes` opens in ITS palette whatever `?theme=` asked for, so the
+    # shot is named for the palette it is actually in — say which ones those were, or a session
+    # reads a one-palette page as a missing shot.
+    for line in result.get('themeSwaps') or []:
+        log('  ' + line)
 
     sheet = os.path.join(out, 'contact.png')
     if shutil.which('magick') is None:

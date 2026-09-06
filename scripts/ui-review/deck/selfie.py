@@ -29,7 +29,7 @@ from .boxes import diff_bbox
 from .fixture.make_runs import make_clips, make_runs
 from .preview import CHROME, page_count
 from .serve import make_server
-from .spec import load_spec, workspace_root
+from .spec import TODO, load_spec, workspace_root
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIXTURE = os.path.join(HERE, 'fixture')
@@ -203,15 +203,42 @@ def _moved(out, stem, page, size, theme):
     return diff_bbox(paths[0], paths[1]) is not None
 
 
-def _steps(out, plan, before_ref, dry_run, log, nothing_built=False):
+def deck_commit_subjects(before_ref, log=print):
+    """The subjects of the commits since `before_ref` that touched the deck's own code.
+
+    They are the raw material for the per-step descriptions a session has to write: what a step
+    is FOR is in the commit that caused it, not in anything this script can measure."""
+    # THIS checkout, not workspace_root(): the shared checkout is where `git worktree add` has
+    # to run, but its HEAD is master — asking it for `origin/master..HEAD` returns nothing while
+    # the branch under review sits here (measured 2026-09-05).
+    root = os.path.dirname(os.path.dirname(UI_REVIEW))
+    r = subprocess.run(['git', '-C', root, 'log', '--no-merges', '--format=%s',
+                        f'{before_ref}..HEAD', '--', 'scripts/ui-review/deck'],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        log(f'could not list the commits since {before_ref}: {r.stderr.strip() or r.stdout.strip()}')
+        return []
+    return [line.strip() for line in r.stdout.splitlines() if line.strip()]
+
+
+def _steps(out, plan, before_ref, dry_run, log, nothing_built=False, subjects=()):
     """One approve step per page that moved — or, on a dry run, per page that WOULD be shot.
 
     WHY only the pages that moved: `highlight: "auto"` boxes the pixels that differ, and a page
     where nothing differs has no box, which fails the build. Most pages do not move on most
-    changes, so emitting them all would mean the selfie almost never builds."""
-    # Fix: "this branch" and a bare git ref are developer words on a page Destin reads — say
-    # what he is actually comparing (the deck's look now, versus before this work) instead.
-    changed = "The deck's own appearance, as it is now against how it was before this work."
+    changes, so emitting them all would mean the selfie almost never builds.
+
+    WHY the descriptions are placeholders (2026-09-05): every step used to carry the same two
+    generic sentences — "The review deck, page 3, in a 1440 by 900 window, in both palettes" —
+    which describes the PICTURE, not the change. Destin answered five steps "i have literally no
+    idea what i'm supposed to be looking at ... make this review deck more useful". `selfie` can
+    shoot the pages and box what moved; only the session that made the change can say what moved
+    and why, so it now writes a placeholder that validate() REFUSES rather than a sentence that
+    says nothing. The commit subjects since `--before` ride along in `_comment` as the starting
+    point, so writing them is a minute's work rather than an archaeology dig."""
+    hint = ('Write headline (what changed here, in his words) and changed (why), then delete '
+            'this line. Commits since ' + before_ref + ' touching the deck: '
+            + ('; '.join(subjects[:8]) if subjects else '(none found)'))
     steps = []
     for stem, label, page in plan:
         for size in SIZES:
@@ -219,7 +246,6 @@ def _steps(out, plan, before_ref, dry_run, log, nothing_built=False):
             themes = list(THEMES) if dry_run else [t for t in THEMES if _moved(out, stem, page, size, t)]
             if not themes:
                 continue
-            palette = f'the {themes[0]} palette' if len(themes) == 1 else 'both palettes'
             steps.append({
                 'id': shot_name(stem, page, size),
                 'surface': label,
@@ -227,8 +253,9 @@ def _steps(out, plan, before_ref, dry_run, log, nothing_built=False):
                 'crop': shot_name(stem, page, size),
                 'themes': themes,
                 'highlight': 'auto',
-                'headline': f'The {label.lower()}, page {page}, in a {w} by {h} window, in {palette}.',
-                'changed': changed,
+                '_comment': hint,
+                'headline': f'{TODO} what changed on this page?',
+                'changed': f'{TODO} why it changed, in one sentence.',
                 'notice': 'Anything boxed is what moved.',
             })
     if steps or dry_run:
@@ -363,10 +390,25 @@ def selfie(before_ref, out, log=print, dry_run=False, finish=None):
         missing = [label for (stem, label) in DECKS if stem not in built]
         plan = [p for p in plan if p[0] in built]
 
-    steps = _steps(out, plan, before_ref, dry_run, log, nothing_built=not dry_run and not plan)
+    steps = _steps(out, plan, before_ref, dry_run, log,
+                   nothing_built=not dry_run and not plan,
+                   subjects=deck_commit_subjects(before_ref, log))
     path = _write_review(out, plan, steps, missing, before_ref)
     log(f'wrote {path} — {len(steps)} step(s)')
+    # The steps whose copy is still the placeholder. validate() refuses them, so the deck cannot
+    # be built or served until they are written — say WHICH, and the one command that follows.
+    todo = [st['id'] for st in steps if str(st.get('headline', '')).startswith(TODO)]
+    if todo:
+        log('')
+        log(f'{len(todo)} step(s) still need a description — say, per step, what moved and what '
+            'he will notice (the commit subjects are in each step\'s "_comment"):')
+        for sid in todo:
+            log('  ' + sid)
+        log(f'then: python3 scripts/ui-review/review-cards.py serve {path}')
     if dry_run:
         log('dry run: nothing was checked out, rendered or served')
+        return 0
+    if todo:
+        # Nothing to serve yet: building this deck would fail on the placeholders by design.
         return 0
     return finish(path) if finish else 0
