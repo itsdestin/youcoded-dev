@@ -1,0 +1,53 @@
+{
+ "title": "The review deck \u2014 the layout you asked me to fix",
+ "key": "deck-rebuild-review-2",
+ "out": "deck-review2.html",
+ "images": "images/deck-review2",
+ "themes": [
+  "midnight"
+ ],
+ "theme": "fixed",
+ "runs": {
+  "before": "/tmp/claude-1000/-home-destin-youcoded-dev/d3be01a5-97db-4ff2-8e07-3ad6b0b27099/scratchpad/qcmp/runs/before",
+  "after": "/tmp/claude-1000/-home-destin-youcoded-dev/d3be01a5-97db-4ff2-8e07-3ad6b0b27099/scratchpad/qcmp/runs/after2"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "After"
+ },
+ "crops": {
+  "qpage": [
+   "q",
+   "questions",
+   "1180x600+150+230"
+  ],
+  "qopts": [
+   "q",
+   "options",
+   "1180x600+150+250"
+  ]
+ },
+ "steps": [
+  {
+   "id": "D-1",
+   "surface": "A page of questions",
+   "path": "Two of your mascot questions, before and after this round",
+   "crop": "qpage",
+   "headline": "An explanation no longer looks like something you can pick, and every question says which one it is.",
+   "changed": "Before, the Today / The problem / Proposal blocks and the options you choose between were the same card \u2014 same fill, same border, same corners \u2014 so nothing said which ones you could click. Now an explanation is plain text behind a thin rule, and only a thing you can pick keeps a raised bordered card that lights up under the pointer. Each question also carries a QUESTION 1 OF 2 line, the gap between two questions is twice the gap inside one, and an answered question shows a green tick on that line.",
+   "notice": "You can tell at a glance what is a choice and what is background. Scrolling a long page, the numbered line tells you where you are without counting. Everything you read now starts on one left edge \u2014 the option letters used to push their words about 110 pixels further right than the paragraph above them.",
+   "risk": "The letter chip now sits on the same line as the option's title rather than in its own column. On a very narrow window the title wraps around it."
+  },
+  {
+   "id": "D-2",
+   "surface": "A question with written options",
+   "path": "The option cards, on a test deck",
+   "crop": "qopts",
+   "headline": "The same alignment and card treatment, on a question that sits beside a picture.",
+   "changed": "The option cards keep the raised fill and hover that mark them as choices, and their text lines up with the explanation above rather than indenting behind the letter.",
+   "notice": "Options read as a list you compare down a single edge instead of a row of boxes at different indents.",
+   "risk": "This is a test deck, so the words are placeholders. Judge the layout, not the content."
+  }
+ ],
+ "_comment": "A RECORD, not a deck to rebuild. Its pictures came from scratch folders under /tmp that are gone; the answers beside it are what it decided. Re-serve with `serve --no-build` only if the run folders still exist."
+}
