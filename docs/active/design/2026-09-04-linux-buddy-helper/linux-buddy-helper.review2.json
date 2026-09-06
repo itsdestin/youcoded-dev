@@ -1,0 +1,62 @@
+{
+  "title": "The buddy on Linux \u2014 round 2",
+  "key": "linux-buddy-helper-review2",
+  "out": "linux-buddy-helper.review2.html",
+  "images": "images/linux-buddy-helper.review2",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/buddy-helper-review/before",
+    "after": "/home/destin/youcoded-dev/scratch/buddy-helper-review/after"
+  },
+  "themes": [
+    "midnight"
+  ],
+  "crops": {
+    "pin-row": [
+      "buddy",
+      "pin-row",
+      "360x360+375+230"
+    ],
+    "consent": [
+      "buddy",
+      "consent",
+      "360x360+375+230"
+    ],
+    "unavailable": [
+      "buddy",
+      "unavailable",
+      "360x360+375+230"
+    ]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Buddy Floater popup",
+      "path": "Settings \u2192 Buddy Floater",
+      "crop": "consent",
+      "headline": "Your copy edits, in place \u2014 and the switch still asks before it turns the buddy on.",
+      "changed": "\"that is why the buddy sits wherever it lands\" is gone. \"Without this helper, the buddy floater cannot be enabled.\" now closes the first paragraph.",
+      "notice": "The popup states plainly that there is no buddy without the helper, so Not now reads as a real choice rather than a mystery.",
+      "risk": "None known. This is the wording you dictated; check it reads the way you meant."
+    },
+    {
+      "id": "B-2",
+      "surface": "Buddy Floater popup",
+      "path": "Settings \u2192 Buddy Floater",
+      "crop": "pin-row",
+      "headline": "The \"Pin buddy above other windows\" switch is gone completely, as you asked \u2014 not just once the helper is installed.",
+      "changed": "The row, its saved preference in this panel, and its error hint are all removed. The popup is now a single row in every state.",
+      "notice": "One switch where there were two. The buddy is always pinned above other windows when it is on.",
+      "risk": "The main-process preference and the KWin code behind it still exist and still work \u2014 only this control is gone. If you ever want an unpinned buddy again it is a new control, not a revert."
+    },
+    {
+      "id": "B-3",
+      "surface": "Buddy Floater popup",
+      "path": "Settings \u2192 Buddy Floater",
+      "crop": "unavailable",
+      "headline": "\"Not yet supported\" rather than a flat no \u2014 and the explanation now gets the full width.",
+      "changed": "Wording is \"Not yet supported on this desktop\", leading the description instead of sitting in a narrow right-hand column, which had squeezed the text into six cramped lines.",
+      "notice": "Three tidy lines instead of a ribbon, and the wording implies this may change rather than closing the door.",
+      "risk": "\"Not yet\" is a soft promise. Nobody is working on GNOME support today, and nothing here creates a plan for it \u2014 if that matters, the roadmap is where it should be written down, not implied by a settings row."
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "title": "The buddy on Linux \u2014 three changes",
+  "key": "linux-buddy-helper-review",
+  "out": "linux-buddy-helper.review.html",
+  "images": "images/linux-buddy-helper.review",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/buddy-helper-review/before",
+    "after": "/home/destin/youcoded-dev/scratch/buddy-helper-review/after"
+  },
+  "themes": [
+    "midnight"
+  ],
+  "crops": {
+    "pin-row": [
+      "buddy",
+      "pin-row",
+      "360x360+375+230"
+    ],
+    "consent": [
+      "buddy",
+      "consent",
+      "360x360+375+230"
+    ],
+    "unavailable": [
+      "buddy",
+      "unavailable",
+      "360x360+375+230"
+    ]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Buddy Floater popup",
+      "path": "Settings \u2192 Buddy Floater",
+      "crop": "consent",
+      "headline": "Switching the buddy on now asks first, because saying yes writes a file into your KDE settings.",
+      "changed": "Flipping the switch no longer turns the buddy on straight away. The popup explains, in two short paragraphs, why the buddy cannot be dragged on Linux and what the helper does, then offers Add helper or Not now.",
+      "notice": "One extra step the first time only. After you accept, the switch behaves exactly as it always has, and the buddy can be dragged.",
+      "risk": "If you press Not now, the buddy stays off \u2014 you do not get a stuck buddy as a consolation prize. That follows your Q-2R answer, and it is a change from today, where a Linux buddy always appears."
+    },
+    {
+      "id": "B-2",
+      "surface": "Buddy Floater popup",
+      "path": "Settings \u2192 Buddy Floater",
+      "crop": "pin-row",
+      "headline": "Once the helper is in place, the separate \"Pin buddy above other windows\" switch disappears.",
+      "changed": "The popup drops to a single row. The helper pins the buddy itself, so a second switch for the same job could only ever disagree with it.",
+      "notice": "One less switch to think about, and the buddy stays on top without you asking. Nothing you can currently do is lost.",
+      "risk": "You lose the ability to have the buddy on but NOT pinned above other windows. Nobody has asked for that, but it is a real capability going away \u2014 say so if you want it kept."
+    },
+    {
+      "id": "B-3",
+      "surface": "Buddy Floater popup",
+      "path": "Settings \u2192 Buddy Floater",
+      "crop": "unavailable",
+      "headline": "On a Linux desktop this cannot work on, the row says Unavailable instead of offering a switch that does nothing.",
+      "changed": "The switch is replaced by the word Unavailable and one line saying the buddy needs KDE Plasma. The pin switch, whose own description admitted it had no effect off KDE, is gone too.",
+      "notice": "Nobody is invited to turn on something that cannot work, and the reason is stated rather than left to be guessed at.",
+      "risk": "This does not affect you \u2014 you are on KDE. It affects other people on GNOME and similar, who today get a buddy that appears and sits still, and who after this get no buddy at all."
+    }
+  ]
+}
