@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Voice bench</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--fg:#1b1d22;--muted:#6b7280;--line:#e3e6ea;--acc:#2f6fed;--acc2:#e9f0ff;--rec:#d93025;--ok:#148a4b;--warn:#b7791f}
+@media(prefers-color-scheme:dark){:root{--bg:#121417;--card:#1b1e23;--fg:#e8eaee;--muted:#9aa2ad;--line:#2b3037;--acc:#5b8dff;--acc2:#1f2a44;--rec:#ff6b5e;--ok:#3fbf7f;--warn:#e2b04a}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:2;background:var(--card);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+header h1{font-size:17px;margin:0;flex:1}
+main{max-width:1100px;margin:0 auto;padding:18px 20px 80px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
+.tabs{display:flex;gap:6px}.tab{padding:8px 16px;border-radius:8px;border:1px solid var(--line);cursor:pointer;background:var(--bg)}.tab.on{background:var(--acc2);border-color:var(--acc);font-weight:600}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label.chk{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);cursor:pointer;flex:1 1 300px}
+label.chk.off{opacity:.45}label.chk small{display:block;color:var(--muted);font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.seg span{padding:8px 14px;cursor:pointer}.seg span.on{background:var(--acc2);font-weight:600}
+.mic{width:96px;height:96px;border-radius:50%;border:0;background:var(--acc);color:#fff;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(47,111,237,.35);transition:transform .1s}
+.mic.on{background:var(--rec);animation:pulse 1.2s infinite}.mic:active{transform:scale(.96)}.mic:disabled{opacity:.5;animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,48,37,.45)}100%{box-shadow:0 0 0 22px rgba(217,48,37,0)}}
+.meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden;flex:1;min-width:160px}.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .08s}
+.status{color:var(--muted);font-size:14px;min-height:22px}
+table{width:100%;border-collapse:collapse;font-size:15px}th,td{text-align:left;padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em;border-top:0}
+td.num{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.good{color:var(--ok);font-weight:600}.meh{color:var(--warn);font-weight:600}.bad{color:var(--rec);font-weight:600}
+.sample{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:12px 14px;font-size:17px;line-height:1.6}
+.live{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:760px){.live{grid-template-columns:1fr}}
+.pane{min-height:160px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:18px;line-height:1.6}
+.pane .tail{color:var(--muted)}
+select{font:inherit;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.hint{color:var(--muted);font-size:14px}
+button.small{font:inherit;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+</style></head><body>
+<header><h1>Voice bench — your voice, every candidate engine, this machine</h1>
+ <div class="tabs"><div class="tab on" data-tab="batch">Batch: say it, then compare</div><div class="tab" data-tab="live">Live: words while you talk</div></div>
+</header>
+<main>
+<div class="card">
+ <h2>Computer to imitate</h2>
+ <div class="row">
+  <div class="seg" id="threads"></div>
+  <span class="hint">Fewer threads ≈ a slower, cheaper laptop. Your machine is far faster than a typical student's; 4 threads is the honest default.</span>
+ </div>
+</div>
+
+<section id="tab-batch">
+<div class="card">
+ <h2>Engines to run (each loads once, on first use — the first run of each is slow)</h2>
+ <div class="row" id="engines"></div>
+</div>
+<div class="card">
+ <h2>Read this aloud, or say anything</h2>
+ <div class="sample" id="sample">Hey, can you look at the budget spreadsheet I sent yesterday? Row 14 is wrong: it says $2,300, but Sarah's invoice was $2,030. Fix it, then draft a short reply to her asking whether the March numbers are final. Also, remind me at 4:15 to call the landlord.</div>
+ <div class="row" style="margin-top:8px"><label><input type="checkbox" id="useref" checked> I read the sample (scores each engine's word errors against it)</label>
+ <label><input type="checkbox" id="autostop" checked> Stop by itself after 2 s of quiet</label></div>
+</div>
+<div class="card">
+ <div class="row"><button class="mic" id="mic">Tap to talk</button><div class="meter"><i id="lvl"></i></div><span id="timer" class="status">0.0 s</span></div>
+ <div class="status" id="bstatus">Tap the mic, speak, tap again (or go quiet). Every ticked engine then hears the same recording.</div>
+</div>
+<div class="card" id="results" hidden>
+ <h2>What each engine heard</h2>
+ <table><thead><tr><th>Engine</th><th>Text</th><th>Took</th><th>× realtime</th><th>Word errors</th></tr></thead><tbody id="rows"></tbody></table>
+ <p class="hint">Took = time after you stopped, for the whole recording. × realtime = took ÷ recording length (0.10 means a 10 s message takes 1 s). Word errors = % of the sample's words missed, wrong or extra; under 5 % reads clean, 5–10 % needs a fix or two, over 15 % is unusable.</p>
+</div>
+</section>
+
+<section id="tab-live" hidden>
+<div class="card">
+ <h2>Two ways to show words while you talk</h2>
+ <div class="row">
+  <label>True streaming engine <select id="streamsel"></select></label>
+  <label>Re-hear-chunks engine <select id="chunksel"></select></label>
+ </div>
+ <p class="hint">Left: an engine built to hear audio as it arrives — words land almost instantly, never rewrite, but it has no punctuation of its own, so a small punctuation model adds it. Right: a whole-message engine re-hears everything since the last pause about once a second; the last words (grey) may shuffle until the next pass. This is what Whisper-style engines must do to look live.</p>
+</div>
+<div class="card">
+ <div class="row"><button class="mic" id="lmic">Tap to talk</button><div class="meter"><i id="llvl"></i></div><span id="ltimer" class="status">0.0 s</span></div>
+ <div class="status" id="lstatus"></div>
+</div>
+<div class="live">
+ <div class="card"><h2>True streaming</h2><div class="pane" id="pstream"></div></div>
+ <div class="card"><h2>Re-hear chunks <span id="chunkms" class="hint"></span></h2><div class="pane" id="pchunk"></div></div>
+</div>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s);const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
+let ENG={},CPU=8,threads=4;
+const THREAD_CHOICES=()=>[[CPU,`This machine (${CPU} threads)`],[4,'Typical laptop (4)'],[2,'Weak laptop (2)']];
+fetch('/engines').then(r=>r.json()).then(d=>{ENG=d.engines;CPU=d.cpu;buildSetup();});
+function buildSetup(){
+  const t=$('#threads');t.innerHTML='';THREAD_CHOICES().forEach(([n,l])=>{const s=el('span','',l);s.dataset.n=n;if(n===threads)s.classList.add('on');s.onclick=()=>{threads=n;[...t.children].forEach(c=>c.classList.toggle('on',c===s));};t.append(s);});
+  const e=$('#engines');e.innerHTML='';
+  for(const [k,s] of Object.entries(ENG)){ if(s.stream) continue;
+    const l=el('label','chk'+(s.present?'':' off'));const c=el('input');c.type='checkbox';c.value=k;c.disabled=!s.present;c.checked=s.present&&['whisper-base','parakeet-v3','moonshine-v2'].includes(k);
+    l.append(c,el('div','',`<b>${s.label}</b> <span class="hint">${s.size} · ${s.runtime}</span><small>${s.langs} languages${s.note?' · '+s.note:''}${s.present?'':' · <b>not downloaded</b>'}</small>`));e.append(l);}
+  const ss=$('#streamsel'),cs=$('#chunksel');ss.innerHTML='<option value="">— none —</option>';cs.innerHTML='<option value="">— none —</option>';
+  for(const [k,s] of Object.entries(ENG)){ if(!s.present) continue; const o=new Option(s.label,k); (s.stream?ss:cs).append(o);}
+  ss.value=ENG['stream-conformer']?.present?'stream-conformer':ss.options[1]?.value||'';
+  cs.value=ENG['parakeet-v3']?.present?'parakeet-v3':(cs.options[1]?.value||'');
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));$('#tab-batch').hidden=t.dataset.tab!=='batch';$('#tab-live').hidden=t.dataset.tab!=='live';});
+
+// ---- shared mic capture: level meter, timer, silence auto-stop -------------------------
+async function openMic(){ return navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true,noiseSuppression:true,autoGainControl:true}}); }
+function meterLoop(analyser,lvlEl,timerEl,t0,onSilence){
+  const buf=new Float32Array(analyser.fftSize);let spoke=false,quietSince=null;
+  function tick(){ if(!analyser._on) return; analyser.getFloatTimeDomainData(buf); let s=0;for(const v of buf)s+=v*v; const rms=Math.sqrt(s/buf.length);
+    lvlEl.style.width=Math.min(100,rms*600)+'%'; timerEl.textContent=((performance.now()-t0)/1000).toFixed(1)+' s';
+    if(rms>0.02){spoke=true;quietSince=null;} else if(spoke){ quietSince??=performance.now(); if(performance.now()-quietSince>2000){onSilence();return;} }
+    requestAnimationFrame(tick);} tick();
+}
+
+// ---- batch --------------------------------------------------------------------------
+let rec=null,bctx=null,bana=null;
+$('#mic').onclick=async()=>{ if(rec){stopBatch();return;}
+  const keys=[...document.querySelectorAll('#engines input:checked')].map(i=>i.value); if(!keys.length){$('#bstatus').textContent='Tick at least one engine.';return;}
+  const stream=await openMic(); bctx=new AudioContext(); bana=bctx.createAnalyser(); bana.fftSize=2048; bctx.createMediaStreamSource(stream).connect(bana); bana._on=true;
+  const chunks=[]; rec=new MediaRecorder(stream,{mimeType:'audio/webm;codecs=opus'}); rec.ondataavailable=e=>chunks.push(e.data);
+  rec.onstop=async()=>{ stream.getTracks().forEach(t=>t.stop()); bana._on=false; bctx.close(); const blob=new Blob(chunks,{type:'audio/webm'}); rec=null; $('#mic').classList.remove('on'); $('#mic').textContent='Tap to talk'; $('#lvl').style.width='0';
+    $('#bstatus').textContent='Thinking… (engines load on first use; a big one can take 10–30 s to load, then it is cached)'; $('#mic').disabled=true;
+    try{ const r=await fetch('/batch',{method:'POST',headers:{'X-Bench':JSON.stringify({engines:keys,threads,reference:$('#useref').checked?$('#sample').textContent:''})},body:blob}); const d=await r.json(); if(d.error) throw new Error(d.error); showRows(d);} catch(e){$('#bstatus').textContent='Failed: '+e.message;} finally{$('#mic').disabled=false;}
+  };
+  rec.start(); $('#mic').classList.add('on'); $('#mic').textContent='Stop'; $('#bstatus').textContent='Listening…'; $('#results').hidden=true;
+  meterLoop(bana,$('#lvl'),$('#timer'),performance.now(),()=>{ if($('#autostop').checked) stopBatch(); });
+};
+function stopBatch(){ if(rec&&rec.state==='recording') rec.stop(); }
+function showRows(d){ $('#results').hidden=false; const tb=$('#rows'); tb.innerHTML=''; $('#bstatus').textContent=`Recording was ${d.audio_seconds} s at ${threads} threads.`;
+  d.rows.forEach(r=>{ const tr=el('tr'); const s=ENG[r.key]||{label:r.key};
+    if(r.error){ tr.append(el('td','',`<b>${s.label}</b>`),el('td','bad',r.error),el('td'),el('td'),el('td')); tb.append(tr); return; }
+    const w=r.wer; const cls=w==null?'':w<5?'good':w<10?'meh':'bad';
+    tr.append(el('td','',`<b>${s.label}</b><br><span class="hint">${s.size}${r.load>1?` · loaded in ${r.load} s`:''}</span>`), el('td','',r.text||'<i class="hint">(nothing)</i>'), el('td','num',r.seconds+' s'), el('td','num',r.rtf), el('td','num '+cls,w==null?'—':w+' %'));
+    tb.append(tr); });
+}
+
+// ---- live ---------------------------------------------------------------------------
+let live=null;
+$('#lmic').onclick=async()=>{ if(live){await stopLive();return;}
+  const sk=$('#streamsel').value,ck=$('#chunksel').value; if(!sk&&!ck){$('#lstatus').textContent='Pick at least one engine.';return;}
+  $('#lstatus').textContent='Loading engines…'; $('#lmic').disabled=true;
+  let sid; try{ const r=await fetch('/live/start',{method:'POST',body:JSON.stringify({stream:sk,chunk:ck,threads})}); const d=await r.json(); if(d.error) throw new Error(d.error); sid=d.sid; } catch(e){$('#lstatus').textContent='Failed: '+e.message;$('#lmic').disabled=false;return;}
+  const stream=await openMic(); const ctx=new AudioContext({sampleRate:16000}); const src=ctx.createMediaStreamSource(stream); const ana=ctx.createAnalyser(); ana.fftSize=2048; src.connect(ana); ana._on=true;
+  const proc=ctx.createScriptProcessor(4096,1,1); src.connect(proc); proc.connect(ctx.destination);
+  let pending=[],pendLen=0,sending=Promise.resolve();
+  proc.onaudioprocess=e=>{ const f=e.inputBuffer.getChannelData(0); const i16=new Int16Array(f.length); for(let i=0;i<f.length;i++) i16[i]=Math.max(-1,Math.min(1,f[i]))*32767; pending.push(i16); pendLen+=f.length;
+    if(pendLen>=4800){ const all=new Int16Array(pendLen); let o=0; for(const p of pending){all.set(p,o);o+=p.length;} pending=[];pendLen=0;
+      sending=sending.then(()=>fetch('/live/feed/'+sid,{method:'POST',body:all}).then(r=>r.json()).then(paint).catch(()=>{})); } };
+  live={sid,stream,ctx,proc,ana,drain:()=>sending}; $('#pstream').textContent=''; $('#pchunk').textContent=''; $('#chunkms').textContent='';
+  $('#lmic').classList.add('on'); $('#lmic').textContent='Stop'; $('#lmic').disabled=false; $('#lstatus').textContent='Listening…';
+  meterLoop(ana,$('#llvl'),$('#ltimer'),performance.now(),()=>{});
+};
+function paint(d){ if(d.error){$('#lstatus').textContent=d.error;return;} if('stream' in d) $('#pstream').textContent=d.stream;
+  if('chunk' in d){ const w=(d.chunk||'').split(' '); const n=Math.min(3,w.length); const head=w.slice(0,w.length-n).join(' '), tail=w.slice(w.length-n).join(' '); $('#pchunk').innerHTML=(head?head+' ':'')+'<span class="tail">'+tail+'</span>'; if(d.chunk_ms) $('#chunkms').textContent=`(each pass ${d.chunk_ms} ms)`; } }
+async function stopLive(){ const l=live; live=null; l.ana._on=false; l.proc.disconnect(); l.stream.getTracks().forEach(t=>t.stop()); l.ctx.close(); $('#lmic').classList.remove('on'); $('#lmic').textContent='Tap to talk'; $('#llvl').style.width='0'; $('#lstatus').textContent='Finishing…';
+  await l.drain(); const d=await fetch('/live/stop/'+l.sid,{method:'POST'}).then(r=>r.json()); if('stream' in d) $('#pstream').textContent=d.stream; if('chunk' in d) $('#pchunk').textContent=d.chunk; $('#lstatus').textContent=`Done — ${d.audio_seconds||0} s of audio. Final text above (nothing grey left).`; }
+</script>
+</body></html>

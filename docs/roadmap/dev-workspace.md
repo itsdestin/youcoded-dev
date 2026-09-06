@@ -3,6 +3,16 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
+      `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
+      an Android manifest or a workspace file yields "tests: none", and the guard that
+      exists to catch exactly that edit stays silent. Found 2026-09-05 reviewing the voice
+      prompting manifest guard, which reads `app/src/main/AndroidManifest.xml` from a test in
+      `desktop/tests/`. CI's full `npm test` does catch it, so this is about the local loop
+      lying, not about shipping broken. Fix: let a test declare the paths it watches, or
+      widen the source-scanning-guard fallback to spot cross-repo reads
+      `n/a` `confirmed` `checked 2026-09-05`
+
 
 - [ ] `native-session-host` can fail its own CLEANUP on the macOS CI leg — `ENOTEMPTY` from
       `rmHostRoot()` while deleting the temp dir, thrown out of afterEach into a test that had
