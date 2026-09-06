@@ -57,7 +57,7 @@ first, and only then read your diff.
 
 ## Documentation Drift
 
-- **Fix on sight.** A doc/rule/CLAUDE.md claim that contradicts current code gets fixed in the session you notice it — verify against code, cite the verification in the commit. There is no drift ledger to defer into. *Guard:* the fix + its commit message.
+- **Fix verified drift within authorized editing scope.** Verify a contradictory doc/rule claim against code and cite the verification in the commit. In a read-only review, report it and ask before editing; this rule is not permission to expand the task. *Guard:* the fix + its commit message.
 - **Unfixable this session → an entry in `docs/roadmap/dev-workspace.md` under `## knowledge`** (`ROADMAP.md` → "Filing an item"), captured the same session. Not a scratch note, not memory.
 - **`/audit` is the periodic backstop** (run before releases / after major refactors). It is fix-executing and diff-scoped: it verifies claim anchors against code, applies corrections inline, and writes a dated report to `docs/audits/YYYY-MM-DD.md`. The report is an audit trail of applied fixes plus a **residue** of items needing a human decision (product-behavior questions, deletions of user content, privacy-copy wording). *Guard:* the report's `residue:` frontmatter count — the session-start hook warns when it's non-zero or the latest report is >60 days old. (`docs/knowledge-debt.md` is retired — the residue in the newest audit report is the only surviving drift ledger.)
 
