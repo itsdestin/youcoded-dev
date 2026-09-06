@@ -4,11 +4,14 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
 
 - [ ] Loading a second large local model took the whole machine down — Qwen3.5-122B and
       Qwen3.6-35B resident together on the Strix Halo desktop (2026-08-16) lost the desktop
-      shell, YouCoded, Chrome and Steam. The app's memory warning never appeared. Waits on
-      Destin: auto-unload the first model silently, with a toast, or hard-block — and whether
-      one model alone should be blocked when it will not fit the GPU pool.
-      Destin 2026-09-02: warn and let me choose. The same fix must count memory for several sessions sharing one model, and must NOT warn on machines whose memory is deliberately full of cache that the model load can reclaim
-      `desktop` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-08-16-dual-model-oom-desktop-crash.md
+      shell, YouCoded, Chrome and Steam. **The warning half is fixed**: the numbers behind it are
+      now real (the model's own file, the graphics chip's own pool, only models actually holding
+      memory), and it warns before a download and before a session. What is still open is what the
+      app should DO when two models cannot fit even with honest numbers — quietly unload the
+      first, unload it with a toast, or refuse outright. Destin 2026-09-02: warn and let me
+      choose. Still true of any fix: count memory once for several sessions sharing one model, and
+      do not warn on a machine whose memory is deliberately full of cache the load can reclaim.
+      `settings/local-models` `desktop` `decision` `checked 2026-09-06` → docs/active/investigations/2026-08-16-dual-model-oom-desktop-crash.md
 
 - [ ] A local model's helper limit is decided when the conversation opens, before the model has
       loaded — and asking the engine about an unloaded model would load it — so most local
@@ -31,48 +34,19 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       use restrictions on to the user; Qwen and GPT-OSS are Apache-licensed and need nothing
       `local-models-screen` `all` `confirmed` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
-- [ ] Local models rewrite files at a crawl — an edit-style reply that the engine can produce at
-      ~100 tokens a second comes out at ~16, because the engine's built-in draft-free speculative
-      decoding is switched off. Measured 6× on a rewrite, no change on prose (2026-09-04).
-      Flag added on branch `feat/engine-speed-flags` (youcoded), probes green, awaiting merge.
-      `desktop` `in-flight` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+- [ ] Three faster engine builds upstream ships that we still do not offer: Intel SYCL, a newer
+      CUDA than the one we pin, and Android. ROCm is done — AMD machines on Linux and Windows are
+      offered it now, so this is what is left. Each needs the same measured trial ROCm got before
+      it becomes an option, and the Android one has no local engine to attach to yet.
+      `settings/local-models` `desktop` `decision` `checked 2026-09-06` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
 
-- [ ] Long conversations slow down more than they need to and eat memory — the context cache is
-      stored at full size; compressing it (q8) measured +40% generation speed at 16k of context
-      and halves the memory the context needs. Same fix feeds the memory-crash item above.
-      Key-cache half added on branch `feat/engine-speed-flags` (youcoded); the value-cache half
-      is a fatal load error without flash attention, so it stays a decision for Destin.
-      `desktop` `in-flight` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
-
-- [ ] The memory warning charges a flat 2 GB of "working memory" for every model at every context
-      length, but a 128k context on a 27B model needs up to ~32 GB of it — so the warning is wrong
-      exactly when it matters. Computable from the model file's own header.
-      `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
-
-- [ ] Context length is one number for every local model — right for the big one, wasteful for a
-      2B utility model and dangerous for a dense 27B. The engine already supports a per-model
-      settings file; nothing writes it.
-      `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
-
-- [ ] Windows "Switch to CUDA (faster on NVIDIA)" very likely fails on a PC without NVIDIA's
-      toolkit installed: upstream ships the CUDA runtime files as a separate download and the app
-      never fetches them. Needs a Windows repro.
-      `desktop` `needs-verify` `checked 2026-09-04` `needs-repro` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
-
-- [ ] "Gemma 4 12B — with vision" cannot see: the vision projector file is never downloaded, and
-      the engine only pairs one when model and projector sit in their own folder, which our flat
-      download layout never creates. Local vision needs both changes.
-      `desktop` `confirmed` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
-
-- [ ] Backends upstream now ships that we do not offer — AMD ROCm on Linux and Windows, Intel
-      SYCL, newer CUDA, Android. ROCm on AMD machines like Destin's is widely reported faster than
-      what we use; one measured trial decides whether it becomes an opt-in.
-      `desktop` `decision` `checked 2026-09-04` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
-
-- [ ] Parity with LM Studio / Ollama / Jan — per-model settings (context, keep loaded, draft
-      model), a hardware/what's-loaded page with prompt speed and time-to-first-token, manual
-      load/unload, embeddings for local search. Inventory and order in the report.
-      `desktop` `decision` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+- [ ] Parity with LM Studio / Ollama / Jan — what is LEFT after the 2026-09-05 upgrades. Shipped:
+      per-model context length, keep-loaded, GPU layers and extra engine options, and a live line
+      on the engine card saying what hardware is in use, how much is loaded and how fast the last
+      reply ran. Still missing: loading and unloading a model by hand, embeddings for local
+      search, a draft-model picker, and a real hardware page rather than that one line. Inventory
+      and order in the report.
+      `settings/local-models` `desktop` `decision` `checked 2026-09-06` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
 
 - [ ] Whole publishers' models are invisible in search because of how they punctuate filenames.
       Measured over 10 real repos on 2026-09-05: `mradermacher/gemma-3-12b-it-GGUF` (13 files,
@@ -107,3 +81,12 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       on any of the three platforms — but it is the same dependency, and voice now unpacks its own
       downloads with nothing outside the app. Worth sharing that
       `settings/local-models` `all` `needs-verify` `checked 2026-09-05`
+
+- [ ] The Local Models list would crash a phone or a browser the day either one gets a local
+      engine. Asking "what have I downloaded?" is the one engine question whose failure is still
+      handed back as a success: a phone answers "not supported on mobile" as an object, the screen
+      is written to expect a list, and the first thing it does is filter it — which throws and
+      takes the whole screen down. Six sibling questions were fixed for exactly this on
+      2026-09-05 and this one was knowingly left out. Nobody can see it today because the whole
+      section is hidden off the desktop; it is a trap sprung by opening that gate.
+      `settings/local-models` `android` `confirmed` `checked 2026-09-06`

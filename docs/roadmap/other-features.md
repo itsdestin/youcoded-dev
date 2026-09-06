@@ -98,7 +98,9 @@ has passed ~8 items — graduate it to its own file.
       `all` `parked` `checked 2026-09-01`
 
 - [ ] A plain "Terminal" choice when starting a new session — a bare terminal window as a
-      YouCoded session, no assistant attached. Destin's note on the 2026-09-05 local-engine
-      questions deck: it would win over developers, and the engine's "install ROCm prerequisites"
-      step could paste its command into one.
-      `all` `decision` `checked 2026-09-05` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.questions.answers.json
+      YouCoded session, no assistant attached. Half of it is built: the local engine's "Run in
+      terminal" button already opens exactly that session, and it is a real session in the strip.
+      What is missing is the choice itself — the new-session form still never offers it, so the
+      only way to get one is that one button. Destin's note on the 2026-09-05 local-engine
+      questions deck: it would win over developers.
+      `all` `in-flight` `checked 2026-09-06` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.questions.answers.json

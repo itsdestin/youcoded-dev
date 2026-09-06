@@ -152,12 +152,12 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       as editing a queued message, native-harness → sessions)
       `quick-chips` `all` `needs-verify` `checked 2026-09-02`
 
-- [ ] Three places still open a section with a bare "›" beside a word — the Backup & Sync log
-      ("Show log"), the recommended-model card in Local Models, and the system marker in chat.
-      Destin (2026-09-05 review deck): "I HATE the bare dropdowns with a chevron." The rule is now
-      design-guide G-22; the Local Models engine card and model rows switched to it on
-      `feat/local-engine-upgrades`, these three have not.
-      `all` `confirmed` `checked 2026-09-05` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
+- [ ] Two places still open a section with a bare "›" beside a word — the Backup & Sync log
+      ("Show log") and the system marker in chat. Destin (2026-09-05 review deck): "I HATE the
+      bare dropdowns with a chevron." The rule is now design-guide G-22; the Local Models engine
+      card, its model rows and its recommended-model card all switched to it on
+      `feat/local-engine-upgrades`, these two have not.
+      `all` `confirmed` `checked 2026-09-06` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
 
 - [ ] The browser reports invalid page structure on the Local Models list: a card's whole
       row is one big button, and the size figure inside it opens its own hover bubble from a

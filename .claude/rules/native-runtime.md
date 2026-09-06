@@ -54,38 +54,37 @@ verify:
 ---
 # Multi-model native runtime (provider seam + sessions + local reliability)
 
-`SessionProvider` is `'claude' | 'native'`. **Depth for every bullet: `youcoded/docs/native-runtime.md` + `provider-dependencies.md`. Siblings: `harness-tools.md` (tools/skills/MCP), `native-permissions.md` (Always-allow rules); primer: `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md`.**
+`SessionProvider` has THREE members — `'claude' | 'native' | 'shell'`; 'shell' is a plain terminal (no AI), made only by `engine:run-in-terminal`, so every provider branch must handle it. **Depth: `youcoded/docs/native-runtime.md`, `provider-dependencies.md`. Siblings: `harness-tools.md`, `native-permissions.md`; primer: `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md`.**
 
 ## Provider seam (Phase 0) — guard: `ipc-channels.test.ts`
-- **`'gemini'` is GONE** — never reintroduce it.
-- **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`.
-- **`createSession` throws only for a fresh native session without a binding**; the native branch builds NO PTY worker (guard every `session.worker.X`); needs a `binding` unless resuming.
+- **`'gemini'` is GONE** — never reintroduce it. **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`, which hides every desktop-only section off Electron.
+- **`createSession` throws only for a fresh native session without a binding**; the native branch builds NO PTY worker — guard every `session.worker.X`.
 
-## Native sessions (Plan A) — guards: `harness-session`/`native-session-host`/`native-send`/`native-home` tests
-- **API keys: `safeStorage`-encrypted in `userData/native-secrets.json`, NEVER `~/.youcoded/`** (only a `secretRef`; no plaintext fallback); `~/.youcoded/` writes ride `NativeHome.mutateJson` (→ `mutateFileUnderLock`, THROWS on lock exhaustion).
+## Native sessions (Plan A) — guards: `harness-session`/`native-session-host`/`native-send`/`native-home`
+- **API keys: `safeStorage`-encrypted in `userData/native-secrets.json`, NEVER `~/.youcoded/`** (a `secretRef` only, no plaintext fallback); `~/.youcoded/` writes ride `NativeHome.mutateJson` (→ `mutateFileUnderLock`, THROWS on lock exhaustion).
 - **`SessionStore` coalesces same-`partId` deltas; display-only (`session-error`, payload-less `assistant-thinking`) is NEVER persisted.** Callers serialize per session; re-entrant `send()` throws.
-- **`send()` never throws — synchronous `NativeSendResult`** (`'sent'|'queued'` FIFO-10 `|'failed'`, real reason); the queue drains ONLY on `send()` settle; **interrupt aborts the current turn only — the queue still drains**; `destroy()` order is load-bearing (destroy → append-chain → dispose → delete).
-- **Queued messages are renderer list state, NEVER timeline**; `native:*` calls have ONE shape on ALL transports (invokes; interrupt/retry are fire-and-forget).
-- **The renderer native send path skips ALL PTY machinery** (`native-send.ts`); the send string MUST equal `buildOutgoingMessage(...).content`; ESC → `native.interrupt`.
+- **`send()` never throws — synchronous `NativeSendResult`** (`'sent'|'queued'` FIFO-10 `|'failed'`, real reason); the queue drains ONLY on settle; **interrupt aborts the current turn only — the queue still drains**; `destroy()` order is load-bearing (destroy → append-chain → dispose → delete).
+- **Queued messages are renderer list state, NEVER timeline**; `native:*` calls have ONE shape on ALL transports (interrupt/retry fire-and-forget).
+- **The renderer native send path skips ALL PTY machinery** (`native-send.ts`); the send string MUST equal `buildOutgoingMessage(...).content`.
 
-## Tool loop (`harness-session.ts`) — guards: `harness-session-loop`/`harness-history-rebuild`/`harness-sdk-toolcall-contract`/`permission-engine` tests
-- **The emit surface is FROZEN** — new loop states map onto existing `TranscriptEventType`s only.
+## Tool loop (`harness-session.ts`) — guards: `harness-session-loop`/`harness-history-rebuild`/`harness-sdk-toolcall-contract`/`permission-engine`
+- **The emit surface is FROZEN** — new loop states map onto existing `TranscriptEventType`s.
 - **Tool-call/result pairing holds EVERYWHERE** (driver, `rebuildHistory`, `fitToContext`) — a dangling tool_call bricks sessions.
 - **An ask PAUSES the turn, not ends it** — no re-`send()` while open. **Carve-out: a HUMAN dismissal (broker `dismissed`) ENDS it.**
 - **Permission precedence is two-tier:** tool-layer guards never yield; the destructive deny-list is CONFIG — a remembered Always-allow beats it.
 
-## M2 conversations/sync — guards: `session-meta-parity`/`holder-takeover` tests
-- **Native sessions are real Conversation Store rows** — invariants: rule `conversations.md`.
-- **`quiesce(id)` is a SEPARATE, STRONGER teardown than `interrupt()`** — cross-device takeover only, never the Stop button.
+## M2 conversations/sync — guards: `session-meta-parity`/`holder-takeover`
+- **Native sessions are real Conversation Store rows** — see rule `conversations.md`.
+- **`quiesce(id)` is STRONGER teardown than `interrupt()`** — cross-device takeover only, never Stop.
 
-## Local reliability (Plan C) — guards: `capability-profile`/`known-models`/`compaction`/`harness-compaction` tests
+## Local reliability (Plan C) — guards: `capability-profile`/`known-models`/`compaction` tests
 - **CapabilityProfile NEVER branches on a model name** (`known-models.ts` is the ONLY modelId inspection); `supportsTools:false` → plain chat.
-- **A local model's REAL context window is read (`/props`) + clamped, never guessed** — ONE number feeds tiering, compaction trigger, StatusBar chip.
+- **A local model's REAL context window is read (`/props`) + clamped, never guessed** — ONE number feeds tiering, compaction, StatusBar.
 - **Two-stage compaction FAILS SAFE** — never drops a message, cuts on a USER boundary.
 
 ## Stall watchdog & the park — guard: `harness-stall-watchdog.test.ts`
 - **The park is a `return` that does NOT resolve the stall race** — stage 2 emits `{stalled:true}` and returns; nothing is torn down; a late chunk still continues the turn. That `return` IS the feature.
-- **Check the park guard against the EXPRESSION, never prose — it has been mis-stated five times.** `!isSpecialistChild && (sawFirstChunk || turnEverParked) && !willRetry`, `willRetry = !emittedAny && isFirstAttempt`. `willRetry` tests `emittedAny`, NOT `sawFirstChunk` — tool-argument fragments set only the latter, so a first-attempt tool-args stall still auto-retries silently.
-- **Clock 1 stays OUT OF SCOPE** — nothing streamed this attempt and the turn never parked → still ends in the prefill `StreamStallError`. `turnEverParked` is per-TURN (cleared only at `send()` entry), so a post-park retry can never die on Clock 1.
+- **Check the park guard against the EXPRESSION, never prose — it has been mis-stated five times.** `!isSpecialistChild && (sawFirstChunk || turnEverParked) && !willRetry`, `willRetry = !emittedAny && isFirstAttempt`. `willRetry` tests `emittedAny`, NOT `sawFirstChunk` — tool-argument fragments set only the latter, so a first-attempt tool-args stall auto-retries silently.
+- **Clock 1 stays OUT OF SCOPE** — nothing streamed this attempt and the turn never parked → still ends in the prefill `StreamStallError`. `turnEverParked` is per-TURN (cleared at `send()` entry), so a post-park retry never dies on Clock 1.
 - **A specialist child must NEVER park** — `SUBAGENT_DISPLAY_TYPES` excludes `assistant-thinking`, so a parked child shows no card, its `send()` never settles, and the parent's `Task` waits forever.
 - **Retry erases in THREE places** — screen (`NATIVE_PARTS_DROPPED`, rule `chat-reducer.md`), disk (`SessionStore` discards the open part — the one path that doesn't flush it), model memory (`reportPartial('')`).
