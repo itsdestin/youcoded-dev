@@ -157,7 +157,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       bare dropdowns with a chevron." The rule is now design-guide G-22; the Local Models engine
       card, its model rows and its recommended-model card all switched to it on
       `feat/local-engine-upgrades`, these two have not.
-      `all` `confirmed` `checked 2026-09-06` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
+      `all` `confirmed` `checked 2026-09-06` → docs/archive/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
 
 - [ ] Warning text elsewhere in the app is still one fixed amber, so it can vanish on a pale
       theme the same way the local-model memory warning did. Measured on 2026-09-06: that amber
@@ -168,3 +168,14 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       Includes this feature's own "Will be tight — close other apps first" label. Same fix, one
       class at a time, each with a look at the surface it sits on.
       `all` `confirmed` `checked 2026-09-06`
+
+- [ ] Model rows in the picker carry no tags, so choosing means knowing the names. Destin wants
+      **cost and intelligence tags** on each row, and the tokens-per-second tag filed alongside
+      them in local-models is meant to sit in the same strip — three coloured tags answering
+      "what will this cost me, how clever is it, how fast is it" at a glance. His words,
+      2026-09-06: "the cost/intelligence tags i want to eventually build in the model selector".
+      Undesigned: where the numbers come from (OpenRouter publishes per-model pricing; nothing
+      publishes "intelligence", so it is either a curated band or a benchmark we choose and
+      defend), what a local model shows for cost (nothing? "free"?), and whether three tags fit
+      a row that already carries a name, a source and a favourite star.
+      `model-picker` `all` `confirmed` `checked 2026-09-06`

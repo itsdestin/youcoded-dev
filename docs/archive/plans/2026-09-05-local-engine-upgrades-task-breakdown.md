@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-05
 type: plan
 topic: the build order for the local-engine upgrades — 23 tasks in 6 waves, each with its files, its guard test and its acceptance condition

@@ -194,6 +194,56 @@ RG_CLUSTERED_R = re.compile(
 )
 
 
+# ---------------------------------------------------------------------------
+# Guard 6: `curl -s <url>/health && <go>` — succeeds on HTTP 503.
+#
+# curl's EXIT CODE says whether the REQUEST completed, not whether the server
+# said yes. llama-server answers /health with 503 the whole time it is loading a
+# model, so `curl -s .../health >/dev/null && break` breaks out immediately
+# against a server with nothing loaded, and every measurement taken afterwards
+# is against a server that was never ready. Cost on 2026-09-06: four benchmark
+# runs discarded, and the shape is the one this workspace keeps producing — a
+# check whose passing condition is also produced by the thing it rules out.
+# `-f/--fail` makes curl exit non-zero on 4xx/5xx; `-w '%{http_code}'` lets you
+# compare the status yourself. The repo's own probes already do this correctly
+# (`(await fetch(url)).ok` is 2xx-only) — this catches the shell spelling.
+CURL_READY_RE = re.compile(r"curl\b[^\n;|&]*?/(health|ready|healthz)\b[^\n;|&]*")
+
+
+def curl_readiness_offender(command: str):
+    """True for a curl readiness poll whose success is exit code, not HTTP status."""
+    if "<<" in command:
+        return False   # heredoc body is data, same reasoning as the glob guard
+    for m in CURL_READY_RE.finditer(command):
+        frag = m.group(0)
+        # `-f` may be clustered (`-sf`, `-fsS`), so look inside every short-flag
+        # group rather than for the literal "-f" — otherwise the guard fires on
+        # the very spelling it is telling you to use.
+        short = [t for t in frag.split() if t.startswith("-") and not t.startswith("--")]
+        if any("f" in t[1:] for t in short) or "--fail" in frag or "http_code" in frag:
+            continue
+        after = command[m.end():m.end() + 40]
+        # Only a poll: the exit code has to be feeding a decision for this to bite.
+        if "&&" in frag or "&&" in after or "||" in after or "then" in after:
+            return True
+    return False
+
+
+CURL_READY_MESSAGE = (
+    "Blocked before it ran: curl's EXIT CODE says the request completed, not that the "
+    "server said yes. A readiness endpoint answers 503 while it is still starting — "
+    "llama-server does exactly this for the whole time it is loading a model — and "
+    "`curl -s .../health && <go>` treats that 503 as ready. Everything measured after "
+    "it is measured against a server with nothing loaded, and it looks like a real "
+    "result.\n"
+    "Use one of:\n"
+    "  curl -sf <url>/health && <go>                              # -f exits non-zero on 4xx/5xx\n"
+    "  [ \"$(curl -s -o /dev/null -w '%{http_code}' <url>/health)\" = 200 ] && <go>\n"
+    "On 2026-09-06 this cost four benchmark runs, all reported as empty rather than wrong "
+    "— which was luck, not design."
+)
+
+
 def rg_replace_offender(command: str):
     """True for `rg -rn` / `rg -nr` style clusters, which silently misbehave."""
     if "<<" in command:
@@ -380,6 +430,13 @@ def main() -> int:
     try:
         if rg_replace_offender(command):
             print(RG_REPLACE_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open, same contract as everything else in this hook
+
+    try:
+        if curl_readiness_offender(command):
+            print(CURL_READY_MESSAGE, file=sys.stderr)
             return 2
     except Exception:
         pass   # fail open, same contract as everything else in this hook

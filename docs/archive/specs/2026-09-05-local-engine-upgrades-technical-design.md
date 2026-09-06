@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-09-05
 type: spec
 topic: how the backend serves the approved local-engine screens — chip-gated faster engines with a ROCm set-up path, per-model settings via the router's preset file, a real memory model from GGUF headers, vision downloads in a folder per model, a live hardware line, and the two speed switches

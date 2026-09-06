@@ -1,6 +1,6 @@
 {
  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
- "_why": "Local-engine upgrades (docs/active/design/2026-09-04-local-engine-upgrades). The new controls do not exist on master, so every After-only click is an `eval` that finds nothing on the Before run and simply does not fire \u2014 both runs then capture the SAME shot name at the SAME scroll position (scrollIntoView on an element both runs have), which is what a Before | After deck needs. `expect` names an element both runs have.",
+ "_why": "Local-engine upgrades (docs/archive/design/2026-09-04-local-engine-upgrades). The new controls do not exist on master, so every After-only click is an `eval` that finds nothing on the Before run and simply does not fire \u2014 both runs then capture the SAME shot name at the SAME scroll position (scrollIntoView on an element both runs have), which is what a Before | After deck needs. `expect` names an element both runs have.",
  "shots": [
   {
    "name": "local-engine-card",

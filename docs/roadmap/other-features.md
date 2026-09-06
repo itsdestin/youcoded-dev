@@ -103,4 +103,4 @@ has passed ~8 items — graduate it to its own file.
       What is missing is the choice itself — the new-session form still never offers it, so the
       only way to get one is that one button. Destin's note on the 2026-09-05 local-engine
       questions deck: it would win over developers.
-      `all` `in-flight` `checked 2026-09-06` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.questions.answers.json
+      `all` `in-flight` `checked 2026-09-06` → docs/archive/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.questions.answers.json

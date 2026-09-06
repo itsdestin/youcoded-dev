@@ -367,3 +367,36 @@ test('ALLOWS restoring a file git does not track', () => {
 test('ALLOWS an ordinary copy that has nothing to do with backups', () => {
   assert.equal(runInRepo('cp /tmp/built.png tracked.ts').blocked, false);
 });
+
+// ---------------------------------------------------------------------------
+// Guard 6 — a curl readiness poll that reads the exit code, not the HTTP status.
+// Observed 2026-09-06: `curl -s .../health >/dev/null && break` broke out of the
+// wait loop against a llama-server that answers 503 for the whole time it is
+// loading a model, so four benchmark runs measured a server with nothing in it.
+// ---------------------------------------------------------------------------
+
+test('blocks a health poll whose success is curl exit code', () => {
+  const { blocked, message } = run('curl -s --max-time 2 http://127.0.0.1:5000/health >/dev/null && break');
+  assert.ok(blocked);
+  assert.match(message, /exit code/i);
+});
+
+test('blocks it inside the wait loop shape that caused the incident', () => {
+  assert.ok(run('for i in $(seq 1 90); do curl -s http://127.0.0.1:5000/health >/dev/null 2>&1 && break; sleep 2; done').blocked);
+});
+
+test('ALLOWS the two spellings the message recommends', () => {
+  // -f may be clustered; if this regressed, the guard would fire on its own advice.
+  assert.equal(run('curl -sf http://127.0.0.1:5000/health && break').blocked, false);
+  assert.equal(run('curl --fail -s http://127.0.0.1:5000/healthz && go').blocked, false);
+  assert.equal(run(`[ "$(curl -s -o /dev/null -w '%{http_code}' http://x/health)" = 200 ] && break`).blocked, false);
+});
+
+test('ALLOWS a health request whose result is not feeding a decision', () => {
+  assert.equal(run('curl -s https://example.com/health').blocked, false);
+  assert.equal(run('curl -s https://example.com/health | jq .').blocked, false);
+});
+
+test('ALLOWS a chained curl to an endpoint that is not a readiness check', () => {
+  assert.equal(run('curl -s http://127.0.0.1:5000/models && echo listed').blocked, false);
+});
