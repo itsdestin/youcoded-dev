@@ -48,6 +48,22 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       hardware page rather than that one line. Inventory and order in the report.
       `settings/local-models` `desktop` `decision` `checked 2026-09-06` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
 
+- [ ] The model list says whether a model FITS and nothing about whether it will be fast, and
+      the two are unrelated. Destin picked a 27B on size and got 3 tokens a second. Measured on
+      the Strix Halo the same day: Qwen3.8-27B (29.3 GB) reads 216 and writes 5.3 tokens a
+      second, while Qwen3.6-35B-A3B (30.4 GB — the SAME size on disk) reads 707 and writes 31.
+      Six times faster for the same memory, because only about 3B of it is used per token.
+      Anyone choosing on size alone reliably picks the slower one. Wanted: an estimated
+      tokens-per-second **tag with a red / yellow / green colour**, sitting alongside the cost
+      and intelligence tags Destin wants in the model selector — not a number buried in the size
+      breakdown. The inputs are already there: the file's own header carries the active
+      parameter count (the reader landed with the 2026-09-05 upgrades) and the engine reports
+      the real rate of the last reply, so the estimate can be corrected against measurement
+      rather than staying a guess. Undesigned: what the three colours mean (bands are hardware-
+      relative — 5/s is poor on this machine and good on a laptop), how a model nobody has run
+      yet is estimated, and whether hosted models get the same tag.
+      `model-picker` `all` `confirmed` `checked 2026-09-06` `performance`
+
 - [ ] Whole publishers' models are invisible in search because of how they punctuate filenames.
       Measured over 10 real repos on 2026-09-05: `mradermacher/gemma-3-12b-it-GGUF` (13 files,
       0 offered) and **`TheBloke/Llama-2-7B-Chat-GGUF` (12 files, 0 offered)** both write
