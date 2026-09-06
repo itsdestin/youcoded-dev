@@ -1,0 +1,44 @@
+{
+ "deck": "specialists-plans-review3",
+ "started": "2026-09-06T06:37:35.525Z",
+ "submitted": "2026-09-06T06:39:12Z",
+ "cur": 4,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-3": {
+   "note": "maybe we should put this whole warning in an outer container of the same color. i think that's a style used elsewhere in the app maybe?",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 35,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "yes",
+   "note": "same as before, maybe put warning+buttons in container together?",
+   "note_kind": "noting",
+   "seconds": 31,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-5": {
+   "note": "same as before",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,36 @@
+{
+  "title": "Plans — round 4: the warning in its own container",
+  "key": "specialists-plans-review4",
+  "out": "specialists-plans.review4.html",
+  "images": "images/specialists-plans.review4",
+  "runs": { "before": "/home/destin/youcoded-dev/scratch/plans-card-review/round3", "after": "/home/destin/youcoded-dev/scratch/plans-card-review/after" },
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {
+    "paused": ["plans-card", "paused", "1210x420+16+90"],
+    "add-budget": ["plans-card", "add-budget", "1210x420+16+90"],
+    "interrupted": ["plans-card", "interrupted", "1210x340+16+90"]
+  },
+  "steps": [
+    {
+      "id": "T-1", "surface": "Chat · plan card", "path": "A plan paused at its limit", "crop": "paused",
+      "headline": "The pause and its buttons now sit in the app's own status container: a tinted panel, a coloured dot, the words, the buttons.",
+      "changed": "You were right that the app already has this shape. It is the strip Remote Access and the sync screens use for 'here is the state, here is the button that fixes it'. The amber wording became an amber dot with ordinary text, which is how the app colours every other status.",
+      "notice": "The pause reads as one object you can act on rather than a coloured sentence with buttons floating beside it.",
+      "risk": "The words lost their amber colour. The dot carries it instead, which matches the session pills and keeps the text readable in every theme."
+    },
+    {
+      "id": "T-2", "surface": "Chat · plan card", "path": "After pressing Add budget", "crop": "add-budget",
+      "headline": "Raising the limit happens inside the same container, with the sentence still visible beside it.",
+      "changed": "The amount field and its buttons replace Stop and Add budget inside the strip. Nothing moves, nothing is added below.",
+      "notice": "You can still read why the plan paused while you decide how much to allow.",
+      "risk": "On a narrow window the field and both buttons wrap under the sentence, inside the same container."
+    },
+    {
+      "id": "T-3", "surface": "Chat · plan card", "path": "After the app restarted mid-plan", "crop": "interrupted",
+      "headline": "The interrupted plan uses the same container, with a grey dot instead of amber.",
+      "changed": "Same strip as the paused card. Its dot is grey because an interrupted plan is waiting, not warning: nothing went wrong and nothing is at risk.",
+      "notice": "Both cards that ask you for a decision now look like one another, and like the rest of the app.",
+      "risk": "None visible."
+    }
+  ]
+}
