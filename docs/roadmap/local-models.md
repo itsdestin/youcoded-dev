@@ -84,3 +84,10 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       worth surveying how many of search's results are affected before widening the pattern:
       loosening it wrongly makes unrelated files look like downloadable models.
       `desktop` `confirmed` `checked 2026-09-05`
+
+- [ ] Installing the local-model engine still asks the computer to unpack the download with a
+      program the app does not ship, so a machine without it fails at a step the user did not know
+      existed. Lower risk than the speech model was — the shapes it downloads need no extra helper
+      on any of the three platforms — but it is the same dependency, and voice now unpacks its own
+      downloads with nothing outside the app. Worth sharing that
+      `settings/local-models` `all` `needs-verify` `checked 2026-09-05`
