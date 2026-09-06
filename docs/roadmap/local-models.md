@@ -73,3 +73,14 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       model), a hardware/what's-loaded page with prompt speed and time-to-first-token, manual
       load/unload, embeddings for local search. Inventory and order in the report.
       `desktop` `decision` `checked 2026-09-04` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
+
+- [ ] Whole publishers' models are invisible in search because of how they punctuate filenames.
+      Measured over 10 real repos on 2026-09-05: `mradermacher/gemma-3-12b-it-GGUF` (13 files,
+      0 offered) and **`TheBloke/Llama-2-7B-Chat-GGUF` (12 files, 0 offered)** both write
+      `<name>.Q4_K_M.gguf` with a dot, and TheBloke is one of the largest GGUF publishers on
+      Hugging Face. A THIRD, separate cause: `Mungert/gemma-3-4b-it-gguf` (24 files, 0 offered)
+      is rejected on case, not punctuation — lowercase double-quant names like
+      `gemma-3-4b-it-f16-q8_0.gguf`. Worth splitting into the two causes when picked up, and
+      worth surveying how many of search's results are affected before widening the pattern:
+      loosening it wrongly makes unrelated files look like downloadable models.
+      `desktop` `confirmed` `checked 2026-09-05`

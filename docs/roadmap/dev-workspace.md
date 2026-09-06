@@ -108,6 +108,20 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+- [ ] The question deck (`scripts/questions/serve.py`) can only ask multiple-choice questions,
+      so a session needing Destin to approve a set of concrete text changes rebuilds its own
+      loopback answer page instead of using it — happened 2026-09-05 for a nine-item prompt
+      diff review. Wanted: a card type that renders a before/after diff, so one surface
+      answers every "approve these specific edits" question
+      `desktop` `needs-verify` `checked 2026-09-05`
+
+- [ ] A dev instance still shares one file with Destin's live app: the cross-device sync state
+      at ~/.claude/toolkit-state/sync-spaces.json is a hardcoded path, so --profile does not
+      separate it and two apps can write it at once. Found 2026-09-05 while handing over the
+      ChatGPT sign-in build, right after the setup-wizard state was given the same treatment
+      (YOUCODED_TOOLKIT_STATE_DIR); the sync path needs its own override or the same one
+      `desktop` `needs-verify` `checked 2026-09-05`
+
 - [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
       1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
       context-free tester cannot claim to have covered either. Add pointer and scale switches to
@@ -152,7 +166,13 @@ seen-on is always n/a here.
 - [ ] Opening Settings → Backup & Sync in the workbench takes the whole thing down to "YouCoded
       failed to start"; the boot check cannot see it and the review sweep counts the error state
       as covered
-      `n/a` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-sync-panel-crash.md
+      `n/a` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-sync-panel-crash.md
+
+- [ ] `chatgpt-auth.test.ts` ("after the callback the poll starts…") fails on the Windows CI
+      runner and passes on a re-run of the same commit, with no code change — seen 2026-09-05 on
+      youcoded PR #430. A suite that fails for reasons that are not yours trains sessions to wave
+      real failures away, which is the exact thing the 2026-08-28 flake sweep set out to end
+      `n/a` `confirmed` `checked 2026-09-05` `regression`
 
 - [ ] The old review-harness script still lets the model it runs read the OpenRouter key (its
       env scrub does not work); the native evaluator fixed this properly — retire the old script,
@@ -230,6 +250,19 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+- [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
+      then recommend deleting its worktree; it should notice unfinished edits before declaring success
+      `n/a` `needs-verify` `checked 2026-09-05`
+
+- [ ] Recheck the old cleanup handoff's remaining unused-code and bug-hunt ideas before
+      treating them as completed; its retired tooling instructions are no longer a safe starting point
+      `n/a` `needs-verify` `checked 2026-09-05` → docs/archive/handoffs/2026-08-05-code-cleanup-with-serena.md
+
+- [ ] Planning, design, review and wrap-up instructions can send an assistant down conflicting
+      routes or to a skill it cannot invoke; consolidate the routes and check availability
+      without turning a read-only review into permission to edit or ship
+      `n/a` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
 - [ ] roadmap-check verifies a report's claim against whatever copy of the sub-repo happens to
       be on disk beside it, so a stale main checkout can keep a fixed bug "confirmed" for days
       (two specialist bugs fixed 2026-09-02 were re-listed as open on 2026-09-04), and from a

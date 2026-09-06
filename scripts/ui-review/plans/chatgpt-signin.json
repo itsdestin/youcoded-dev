@@ -1,0 +1,203 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 3500,
+ "shots": [
+  {
+   "name": "providers-chatgpt-signed-in",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "settle": 1200
+    }
+   ],
+   "measure": [
+    "[role=dialog][aria-label='Model Providers']"
+   ],
+   "expect": "[role=dialog][aria-label='Model Providers']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1"
+  },
+  {
+   "name": "providers-chatgpt-signed-out",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=signed-out&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "settle": 1200
+    }
+   ],
+   "measure": [
+    "[role=dialog][aria-label='Model Providers']"
+   ],
+   "expect": "[role=dialog][aria-label='Model Providers']"
+  },
+  {
+   "name": "providers-chatgpt-waiting",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=waiting&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "settle": 1200
+    }
+   ],
+   "measure": [
+    "[role=dialog][aria-label='Model Providers']"
+   ],
+   "expect": "[role=dialog][aria-label='Model Providers']"
+  },
+  {
+   "name": "providers-chatgpt-blocked",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=blocked&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "settle": 1200
+    }
+   ],
+   "measure": [
+    "[role=dialog][aria-label='Model Providers']"
+   ],
+   "expect": "[role=dialog][aria-label='Model Providers']"
+  },
+  {
+   "name": "providers-local-models",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "settle": 1200
+    },
+    {
+     "scrollDialog": "bottom",
+     "settle": 600
+    }
+   ],
+   "measure": [
+    "[role=dialog][aria-label='Model Providers']"
+   ],
+   "expect": "[role=dialog][aria-label='Model Providers']"
+  },
+  {
+   "name": "first-run-sign-in",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&firstRun=AUTHENTICATE",
+   "boot": 4500,
+   "actions": [
+    {
+     "wait": 400
+    }
+   ],
+   "measure": [
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Log in with Claude')?.parentElement"
+   ],
+   "sameAsBaseline": true,
+   "expect": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Log in with Claude')"
+  },
+  {
+   "name": "first-run-chatgpt-waiting",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&firstRun=AUTHENTICATE&authMode=chatgpt",
+   "boot": 4500,
+   "actions": [
+    {
+     "wait": 400
+    }
+   ],
+   "sameAsBaseline": true,
+   "expect": "js:[...document.querySelectorAll('h1')].find(h=>h.textContent.trim()==='YouCoded')"
+  },
+  {
+   "name": "chatgpt-session",
+   "actions": [
+    {
+     "click": "[title='gpt-5.6 debug session']",
+     "settle": 1200
+    }
+   ],
+   "measure": [
+    "js:document.querySelector(\"[title*='click to change model']\")?.parentElement"
+   ],
+   "expect": "[title*='click to change model']"
+  },
+  {
+   "name": "chatgpt-usage-card",
+   "actions": [
+    {
+     "click": "[title='gpt-5.6 debug session']",
+     "settle": 1000
+    },
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/usage"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    }
+   ],
+   "expect": "[placeholder^='Message']"
+  },
+  {
+   "name": "chatgpt-plan-limit",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planLimit=1",
+   "actions": [
+    {
+     "click": "[title='gpt-5.6 debug session']",
+     "settle": 1500
+    }
+   ],
+   "expect": "[title*='click to change model']"
+  },
+  {
+   "name": "chatgpt-model-picker",
+   "actions": [
+    {
+     "click": "[title='gpt-5.6 debug session']",
+     "settle": 1000
+    },
+    {
+     "click": "[title*='click to change model']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>/gpt/i.test(b.textContent))",
+     "settle": 600
+    },
+    {
+     "click": "[placeholder='Search all models…']",
+     "settle": 200
+    },
+    {
+     "type": "gpt"
+    },
+    {
+     "wait": 800
+    }
+   ],
+   "measure": [
+    "[role=dialog]"
+   ],
+   "expect": "[placeholder='Search all models…']"
+  }
+ ]
+}

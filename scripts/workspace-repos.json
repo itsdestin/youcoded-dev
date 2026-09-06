@@ -1,0 +1,8 @@
+{
+  "workspace": { "repository": "itsdestin/youcoded-dev", "branch": "master" },
+  "youcoded": { "repository": "itsdestin/youcoded", "branch": "master" },
+  "youcoded-core": { "repository": "itsdestin/youcoded-core", "branch": "master" },
+  "youcoded-admin": { "repository": "itsdestin/youcoded-admin", "branch": "master" },
+  "wecoded-themes": { "repository": "itsdestin/wecoded-themes", "branch": "main" },
+  "wecoded-marketplace": { "repository": "itsdestin/wecoded-marketplace", "branch": "master" }
+}

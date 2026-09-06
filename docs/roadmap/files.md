@@ -16,7 +16,7 @@ searched or resumed (chat-data).
 - [ ] Chat file chips: paste `/tmp/x.log` and `/tmp/x.txt` — only the second becomes a chip;
       `.log` `.sh` `.env` `.sql` `.toml` `Dockerfile` etc. render as dead grey text although the
       files pane opens them fine (Destin saw 3 of 8 test files miss, 2026-08-25)
-      `chat` `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-chat-file-chip-allowlist.md
+      `chat` `all` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-chat-file-chip-allowlist.md
 
 - [ ] A file chip in chat for a file that exists but lives outside the project folder (Claude
       named a document in Destin's notes repo) fails with "Couldn't open README.md — the file

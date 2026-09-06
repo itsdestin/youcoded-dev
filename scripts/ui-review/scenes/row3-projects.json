@@ -6,5 +6,5 @@
     {"click": "[title='README.md']", "settle": 1500},
     {"hold": 1200},
     {"key": "Escape", "settle": 600},
-    {"click": "[aria-label=Context]", "settle": 1200}, {"hold": 1500}
+    {"click": "[aria-label='Instructions & Memories']", "settle": 1200}, {"hold": 1500}
   ] }

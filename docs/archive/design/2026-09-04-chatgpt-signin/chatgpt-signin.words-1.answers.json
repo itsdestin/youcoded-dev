@@ -1,0 +1,15 @@
+{
+ "deck": "chatgpt-signin-words-1",
+ "started": "2026-09-05T08:30:34.990Z",
+ "submitted": "2026-09-05T08:31:12Z",
+ "cur": 0,
+ "answers": {
+  "W-1": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

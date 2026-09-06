@@ -39,7 +39,7 @@ SCREEN = {
     "Behave, Grok, or I'm switching to Claude.": ("Your model, your call.", "The question goes out and Grok's answer grows in at the bottom-left."),
     "Drop in a spreadsheet, ask the assistant for a sort.": ("Collaborate with your assistant.", "The spreadsheet chip appears; \"sort it by amount and add a totals row\" is typed under it."),
     "View and edit the result together.": ("Collaborate with your assistant.", "The sorted sheet re-opens in the panel beside the chat (two bars)."),
-    "Manage classes, coding projects, and more with Project View.": ("Everything is a project.", "Project view: Econ 201, its file grid, then the Context tab."),
+    "Manage classes, coding projects, and more with Project View.": ("Everything is a project.", "Project view: Econ 201, its file grid, then the Instructions & Memories tab."),
     "There's even a marketplace for skills, themes, integrations, and more!": ("Add what you need.", "The marketplace grid, on the music's second drop."),
     "Download things built by your coworkers or classmates.": ("Add what you need.", "The Remember plugin's page; Install (the host claps); \"Installed\"."),
     "Just like that!": ("Add what you need.", "Back in the chat; the Remember chip on the strip."),

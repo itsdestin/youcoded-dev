@@ -416,8 +416,8 @@ stage two's journal. The custom harness builder has no dependency and no owner.
 - `docs/active/specs/2026-08-11-native-specialists-design.md` — specialists, both stages.
 - `docs/active/plans/2026-07-18-multi-model-cwd-contract.md` — awaiting §9 item 6.
 - `docs/active/specs/2026-07-30-permission-ask-timeout-design.md` + plan — PR #278.
-- `docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md` + plan `2026-08-21-full-auto-external-read-bypass.md` — 0/37.
-- `docs/active/specs/2026-08-05-project-scoped-skills-design.md` + plan.
+- `docs/archive/specs/2026-08-18-full-auto-external-directory-permissions-design.md` + plan `2026-08-21-full-auto-external-read-bypass.md` — 0/37.
+- Superseded: `docs/archive/specs/2026-08-05-project-scoped-skills-design.md` + plan — narrow Claude Code compatibility shipped in YouCoded PR #424; the v1.3 native-first replacement is tracked in `docs/roadmap/native-harness.md`.
 - `docs/active/specs/2026-08-17-search-scope-and-timeout-design.md`.
 - `docs/active/handoffs/2026-08-17-session-context-panel-handoff.md`.
 - `docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md`.

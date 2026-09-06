@@ -39,13 +39,13 @@ cat >&2 <<'MSG'
   behind. Committing here is what put it 110 commits behind on 2026-09-03 and
   nearly lost five of Destin's product ideas.
 
-  Commit from a throwaway worktree instead, and push from there:
+  Start an isolated workspace BEFORE editing, then commit from its returned path:
 
-      git worktree add /tmp/wsfix -b <branch> origin/master
-      cd /tmp/wsfix
-      # redo the edit here, stage BY EXPLICIT PATH (never `git add -A`)
-      git commit && git push origin HEAD:master
-      cd - && git worktree remove /tmp/wsfix && git branch -D <branch>
+      node scripts/workspace-start.mjs --session <stable-key>
+
+  If you already edited here, reapply only your intended changes in that workspace.
+  Do not copy whole shared files over newer versions. Stage explicit paths.
+  Publishing a branch is separate from merging; merge only when Destin approves.
 
   Your edits in this folder are untouched -- nothing was lost by this refusal.
 

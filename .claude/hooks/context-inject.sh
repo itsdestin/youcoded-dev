@@ -9,16 +9,28 @@
 
 set -euo pipefail
 
+# WHY: everything below is injected into a session's context, and a hook that
+# dies part-way looks EXACTLY like a hook that had nothing more to say — which
+# is how the orientation block stayed missing without anyone noticing (see the
+# stale-worktree guard below). Say it out loud instead.
+HOOK_FINISHED=0
+trap 'rc=$?; [[ $HOOK_FINISHED == 1 ]] || echo "(context-inject stopped early, exit $rc — the orientation block below is MISSING, not empty. Fix the hook before trusting this summary.)"' EXIT
+
 # Claude Code sets CLAUDE_PROJECT_DIR when running in a project; fallback to cwd
 WORKSPACE="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
 [[ ! -d "$WORKSPACE" ]] && exit 0
 
+# Startup only reports; it must not mutate or retarget a running session.
+if [[ -f "$WORKSPACE/scripts/workspace-start.mjs" ]]; then
+    echo 'Development edits: start/resume with node scripts/workspace-start.mjs --session <stable-key> [repo…]. Use returned absolute paths and read instructions there; do not pull shared checkouts.'
+fi
+
 collect_repo_state() {
     local repo_dir="$1"
     local repo_name="$2"
 
-    [[ ! -d "$repo_dir/.git" ]] && return
+    [[ ! -e "$repo_dir/.git" ]] && return
 
     local branch recent dirty dirty_count behind
     branch=$(git -C "$repo_dir" branch --show-current 2>/dev/null || echo "detached")
@@ -26,13 +38,13 @@ collect_repo_state() {
     dirty=$(git -C "$repo_dir" status --porcelain 2>/dev/null | head -5)
     # How far this checkout trails its upstream, as of the LAST fetch (no network
     # here — a hook must not block on it). WHY: the main youcoded checkout sat 146
-    # commits behind for two days on 2026-08-27 and nothing said so; Serena is
-    # pinned to it, so every symbol lookup was answering from stale code.
+    # commits behind for two days on 2026-08-27 and nothing said so; a checkout
+    # can look current while its source and guidance are stale.
     behind=$(git -C "$repo_dir" rev-list --count 'HEAD..@{u}' 2>/dev/null || echo "0")
 
     echo "### $repo_name (on \`$branch\`)"
     if [[ "$behind" =~ ^[0-9]+$ && "$behind" -gt 0 ]]; then
-        echo "⚠ ${behind} commits behind its upstream as of the last fetch — run \`git -C $repo_name pull --ff-only\` before trusting Serena or this summary"
+        echo "⚠ ${behind} commits behind its upstream as of the last fetch — use workspace-start for new work; updating an existing branch is a separate decision, not an automatic pull"
     fi
     echo "Recent commits:"
     echo '```'
@@ -52,7 +64,7 @@ collect_repo_state() {
 # Detect multi-repo workspace by checking for known sub-repos
 SUB_REPOS=()
 for candidate in youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace; do
-    if [[ -d "$WORKSPACE/$candidate/.git" ]]; then
+    if [[ -e "$WORKSPACE/$candidate/.git" ]]; then
         SUB_REPOS+=("$candidate")
     fi
 done
@@ -93,13 +105,29 @@ if [[ ${#SUB_REPOS[@]} -gt 0 ]]; then
         repo_base=$(git -C "$WORKSPACE/$repo" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo "origin/master")
         while IFS= read -r wt_path; do
             [[ "$wt_path" == "$WORKSPACE/$repo" ]] && continue   # skip the main checkout
+            # A worktree still REGISTERED against a directory that no longer
+            # exists — a session scratchpad under /tmp, cleared on reboot — is
+            # not a worktree, and every git command below exits 128 against it.
+            # Under `set -euo pipefail` the `status | wc -l` PIPELINE then killed
+            # the whole hook, silently, before it printed the orientation block:
+            # on 2026-09-05 one stale /tmp entry in `youcoded` meant no session
+            # got "Where things are", Hot paths, On-disk state or the audit
+            # staleness warning, while CLAUDE.md and MAP.md both promised they
+            # were injected. Skip it here and say so, so the next session prunes it.
+            if [[ ! -d "$wt_path" ]]; then
+                echo "  ⚠ $(basename "$wt_path") [$repo] — registered but its directory is gone; run \`git -C $repo worktree prune\`"
+                WT_ANY=1
+                continue
+            fi
             wt_branch=$(git -C "$wt_path" branch --show-current 2>/dev/null || echo "detached")
             # Branch name alone was not what sessions came looking for: the
             # 2026-08-28 transcript audit found 22 of 55 sessions re-deriving
             # dirty/ahead per worktree with their own git calls, because the
             # question is always "is there work in here, and has it landed yet".
             # Both counts together cost ~0.14s for 14 worktrees — measured.
-            wt_dirty=$(git -C "$wt_path" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+            # `|| echo 0`: with pipefail a failing git kills the PIPELINE, and the
+            # guard above is not a promise that no other git call can ever fail.
+            wt_dirty=$(git -C "$wt_path" status --porcelain 2>/dev/null | wc -l | tr -d ' ' || echo 0)
             wt_ahead=$(git -C "$wt_path" rev-list --count "$repo_base..HEAD" 2>/dev/null || echo "?")
             if [[ "$wt_ahead" == "?" ]]; then
                 wt_note="no upstream to compare against"
@@ -229,4 +257,5 @@ if [[ -d "$AUDITS_DIR" ]]; then
     fi
 fi
 
+HOOK_FINISHED=1
 exit 0

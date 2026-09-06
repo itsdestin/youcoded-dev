@@ -112,22 +112,22 @@
      "wait": 600
     },
     {
+     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Installed').scrollIntoView({block:'start'})"
+    },
+    {
+     "wait": 300
+    },
+    {
      "eval": "document.querySelector(\"[aria-label^='Settings for gemma-4-E2B']\")?.click()"
     },
     {
-     "wait": 800
+     "wait": 900
     },
     {
      "eval": "[...document.querySelectorAll('[data-testid=model-settings] button')].find(b=>b.textContent.trim().startsWith('Advanced'))?.click()"
     },
     {
      "wait": 600
-    },
-    {
-     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Installed').scrollIntoView({block:'start'})"
-    },
-    {
-     "wait": 400
     }
    ],
    "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.trim()==='Installed')"
@@ -191,13 +191,13 @@
      "settle": 1400
     },
     {
-     "eval": "[...document.querySelectorAll('button')].find(b=>/^Why\\?$/i.test(b.textContent.trim()))?.click()"
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('may not fit in available memory'))?.click()"
     },
     {
      "wait": 500
     }
    ],
-   "expect": "js:[...document.querySelectorAll('button')].some(b=>/Show more|why\\?|^less$/i.test(b.textContent.trim()))"
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>/Show more|may not fit/i.test(b.textContent))"
   }
  ]
 }
