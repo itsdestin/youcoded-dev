@@ -2,7 +2,9 @@
   "_comment": [
     "QUESTION — words only, no pictures, read as PAGES: the questions of one page sit in a column he scrolls, and he answers each in place.",
     "Use it before anything is drawn, and for any point that is decided in words. Four or more questions belong here rather than in a chat message: a wall of one-liners assumes he remembers every one of them.",
-    "Every question is written for someone with NO context, in three parts: what exists today, what goes wrong, and what would change. Err on more questions per page — a page is a set he can hold in his head at once."
+    "Every question is written for someone with NO context, in three parts: what exists today, what goes wrong, and what would change. Err on more questions per page — a page is a set he can hold in his head at once.",
+    "Two fields change HOW he answers, on this or any other slide. \"pick\": \"several\" lets him choose more than one of the options (clicking a chosen one again unpicks it). \"answer\": \"words\" makes the answer a line he types, with \"prompt\" as its placeholder — for a name or a piece of copy, where a list of options invented in advance would never hear the answer he actually wants.",
+    "\"stage\" (ask / design / contract / review / accept) at the top of the deck makes the build check this deck carries the slide that stage exists for. It never says which OTHER slides are allowed: one deck can ask a question, show a picture and define done."
   ],
   "title": "Saved searches — the questions before anything is drawn",
   "_comment_title": "title: what this deck is about, in his words. It also titles the first page when no page marker comes before the first question.",
@@ -10,7 +12,10 @@
   "_comment_key": "key: a short name for this deck. His answers are saved under it.",
   "out": "saved-searches.questions.html",
   "_comment_out": "out: the page build writes, beside this spec.",
-  "themes": ["midnight", "light"],
+  "themes": [
+    "midnight",
+    "light"
+  ],
   "_comment_themes": "themes: a words deck opens in whichever palette his app is on; this list is what the palette buttons offer.",
   "_comment_no_pictures": "No \"images\" and no \"runs\": nothing here is photographed, so a deck of questions names neither.",
   "steps": [
@@ -90,8 +95,12 @@
           "label": "In settings",
           "summary": "A list you manage in one place and rarely visit.",
           "_comment_summary": "summary (optional): a sentence instead of, or beside, the lists — for an answer that does not need both.",
-          "pros": ["Out of the way; nothing else on screen gets busier."],
-          "cons": ["Two clicks and a screen change away from where you would use it."]
+          "pros": [
+            "Out of the way; nothing else on screen gets busier."
+          ],
+          "cons": [
+            "Two clicks and a screen change away from where you would use it."
+          ]
         }
       ]
     },

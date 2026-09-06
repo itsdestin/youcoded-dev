@@ -800,3 +800,53 @@ test('one deck holds a single-picture slide, a before/after slide and a written 
     assert.deepEqual(c.errors, []);
   } finally { c.close(); srv.kill(); }
 });
+// The two answer shapes that are about HOW he answers, not what he is looking at. Destin,
+// 2026-09-06: "A and C, drop B" and "call it this" both had nowhere to go but the note box.
+test('a slide can take several picks, and a slide can take an answer he types', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-shapes-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import shapes_spec; print(shapes_spec(${JSON.stringify(tmp)}, paged=False))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('shapes.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1440, 900);
+  const open = async step => {
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/shapes.html?step=${step}` });
+    for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true').catch(() => false)); i++) await sleep(150);
+    await sleep(300);
+  };
+  try {
+    await sleep(800);
+    await open(1);
+    assert.match(await c.evaluate("document.querySelector('.pickhint').textContent"), /as many as you like/);
+    // Two clicks, two chosen — a pick-one would have replaced the first with the second.
+    await c.evaluate("document.querySelector('.card.variant[data-pick=\"a\"]').click()");
+    await c.evaluate("document.querySelector('.card.variant[data-pick=\"c\"]').click()");
+    await sleep(200);
+    assert.equal(await c.evaluate("document.querySelectorAll('.card.variant.on').length"), 2, 'two options chosen at once');
+    // Clicking a chosen one again unpicks it, and unpicking the last one unanswers the slide.
+    await c.evaluate("document.querySelector('.card.variant[data-pick=\"c\"]').click()");
+    await sleep(200);
+    assert.equal(await c.evaluate("document.querySelectorAll('.card.variant.on').length"), 1, 'clicking again unpicks');
+    // Unpicking the LAST one leaves the slide unanswered, rather than answered with nothing.
+    await c.evaluate("document.querySelector('.card.variant[data-pick=\"a\"]').click()");
+    await sleep(200);
+    assert.equal(await c.evaluate("document.querySelectorAll('.card.variant.on').length"), 0);
+    assert.match(await c.evaluate("document.querySelector('#count').textContent"), /0 answered/);
+    await c.evaluate("document.querySelector('.card.variant[data-pick=\"a\"]').click()");
+    await sleep(200);
+    await open(2);
+    const box = "document.querySelector('#answers .ans-write')";
+    assert.ok(await c.evaluate(`!!${box}`), 'a write slide answers with a box, not buttons');
+    assert.equal(await c.evaluate(`${box}.placeholder`), 'What should it be called?');
+    await c.evaluate(`(()=>{const t=${box};t.value='The shelf';t.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+    await sleep(500);
+    assert.deepEqual(c.errors, []);
+    // What he chose and what he wrote both survive the round trip to the answers file.
+    const ans = JSON.parse(await c.evaluate("fetch('/answers').then(r=>r.text())"));
+    assert.equal(ans.answers['Q-1'].v, 'picks');
+    assert.deepEqual(ans.answers['Q-1'].picks, ['a']);
+    assert.equal(ans.answers['Q-2'].v, 'wrote');
+    assert.equal(ans.answers['Q-2'].text, 'The shelf');
+  } finally { c.close(); srv.kill(); }
+});

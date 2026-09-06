@@ -10,7 +10,7 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 sys.path.insert(0, HERE)
-from fixture import words_spec                                   # noqa: E402
+from fixture import shapes_spec, words_spec                      # noqa: E402
 from deck.build import build_page, deck_data                     # noqa: E402
 from deck.crops import crop_images                               # noqa: E402
 from deck.spec import SpecError, is_page, is_words, load_spec, no_pictures, pages, validate   # noqa: E402
@@ -310,6 +310,115 @@ class WordsTests(unittest.TestCase):
         # A contract step (rows) is a words step too — even with no rows yet, so the empty
         # contract gets the contract error in Task 3, not "missing crop".
         self.assertTrue(is_words({'id': 'x', 'rows': []}))
+
+
+class AnswerShapeTests(unittest.TestCase):
+    """How he answers, rather than what he is looking at: several at once, and words he types.
+    Both asked for by Destin on 2026-09-06 — "A and C, drop B" and "call it this" had nowhere
+    to go but the note box, which nothing reads as a decision."""
+    def setUp(self): self.d = tempfile.mkdtemp()
+
+    def _q(self, **over):
+        st = {'id': 'Q-1', 'words': True, 'surface': 'Home', 'path': 'Chat', 'headline': 'A question?',
+              'today': 'Now.', 'problem': 'Bad.', 'proposal': 'Better.'}
+        st.update(over)
+        spec = {'title': 'T', 'key': 't', 'out': 't.html', 'themes': ['midnight'], 'steps': [st]}
+        p = os.path.join(self.d, 't.json')
+        with open(p, 'w') as f:
+            json.dump(spec, f)
+        return load_spec(p)
+
+    OPTS = [{'id': 'a', 'label': 'One', 'pros': ['Good.']}, {'id': 'b', 'label': 'Two', 'cons': ['Bad.']}]
+
+    def test_several_reaches_the_page(self):
+        s = self._q(pick='several', options=self.OPTS)
+        self.assertEqual(validate(s), ([], []))
+        self.assertEqual(deck_data(s, {})['steps'][0]['pick'], 'several')
+
+    def test_one_is_the_default_and_says_nothing_to_the_page(self):
+        s = self._q(options=self.OPTS)
+        self.assertNotIn('pick', deck_data(s, {})['steps'][0])
+
+    def test_several_needs_something_to_pick_between(self):
+        errors, _ = validate(self._q(pick='several'))
+        self.assertTrue(any('needs options or variants' in e for e in errors), errors)
+
+    def test_an_unknown_pick_shape_is_refused(self):
+        errors, _ = validate(self._q(pick='two', options=self.OPTS))
+        self.assertTrue(any('pick must be' in e for e in errors), errors)
+
+    def test_a_written_answer_reaches_the_page_with_its_prompt(self):
+        s = self._q(answer='words', prompt='What should it be called?')
+        self.assertEqual(validate(s), ([], []))
+        step = deck_data(s, {})['steps'][0]
+        self.assertEqual(step['answer'], 'words')
+        self.assertEqual(step['prompt'], 'What should it be called?')
+
+    def test_a_written_answer_and_a_list_to_pick_from_are_two_questions(self):
+        errors, _ = validate(self._q(answer='words', options=self.OPTS))
+        self.assertTrue(any('two different' in e for e in errors), errors)
+
+    def test_a_prompt_without_a_written_answer_is_refused(self):
+        errors, _ = validate(self._q(prompt='Name it'))
+        self.assertTrue(any('prompt is the placeholder' in e for e in errors), errors)
+
+    def test_the_fixture_builds_on_both_layouts(self):
+        for paged in (True, False):
+            s = load_spec(shapes_spec(tempfile.mkdtemp(), paged=paged))
+            self.assertEqual(validate(s)[0], [], f'paged={paged}')
+            self.assertEqual(bool(pages(s)), paged)
+
+
+class StageChecklistTests(unittest.TestCase):
+    """A deck says WHICH STAGE it is at, and the tool checks the slide that stage needs is
+    there. A stage never says which other slides are allowed — that is what forced one ask
+    into several decks (Destin, 2026-09-06)."""
+    def setUp(self): self.d = tempfile.mkdtemp()
+
+    def _deck(self, stage, steps):
+        spec = {'title': 'T', 'key': 't', 'out': 't.html', 'themes': ['midnight'], 'stage': stage, 'steps': steps}
+        p = os.path.join(self.d, 't.json')
+        with open(p, 'w') as f:
+            json.dump(spec, f)
+        return load_spec(p)
+
+    QUESTION = {'id': 'Q-1', 'words': True, 'surface': 'Home', 'path': 'Chat', 'headline': 'A question?',
+                'today': 'Now.', 'problem': 'Bad.', 'proposal': 'Better.'}
+    CONTRACT = {'id': 'C', 'words': True, 'surface': 'Home', 'path': 'Chat', 'headline': 'What done means.',
+                'rows': [{'id': 'R1', 'statement': 'It works.', 'checkedBy': 'human',
+                          'threshold': 'pass/fail', 'source': 't#Q-1'}]}
+
+    def test_an_ask_deck_with_a_question_passes(self):
+        self.assertEqual(validate(self._deck('ask', [self.QUESTION]))[0], [])
+
+    def test_an_ask_deck_with_no_question_is_refused(self):
+        spec = {'title': 'T', 'key': 't', 'out': 't.html', 'themes': ['midnight'], 'stage': 'ask',
+                'sources': {'t': 't.json'}, 'branch': 'b', 'steps': [self.CONTRACT]}
+        p = os.path.join(self.d, 'c.json')
+        with open(p, 'w') as f:
+            json.dump(spec, f)
+        errors, _ = validate(load_spec(p))
+        self.assertTrue(any('needs a question' in e for e in errors), errors)
+
+    def test_a_deck_naming_no_stage_is_checked_against_nothing(self):
+        spec = {'title': 'T', 'key': 't', 'out': 't.html', 'themes': ['midnight'], 'steps': [self.QUESTION]}
+        p = os.path.join(self.d, 'n.json')
+        with open(p, 'w') as f:
+            json.dump(spec, f)
+        self.assertEqual(validate(load_spec(p))[0], [])
+
+    def test_an_unknown_stage_is_refused(self):
+        errors, _ = validate(self._deck('shipping', [self.QUESTION]))
+        self.assertTrue(any('is not one of' in e for e in errors), errors)
+
+    def test_a_stage_never_forbids_a_slide_it_did_not_ask_for(self):
+        # The whole point: an "ask" deck may also carry the contract it leads to.
+        spec = {'title': 'T', 'key': 't', 'out': 't.html', 'themes': ['midnight'], 'stage': 'ask',
+                'sources': {'t': 't.json'}, 'branch': 'b', 'steps': [self.QUESTION, self.CONTRACT]}
+        p = os.path.join(self.d, 'both.json')
+        with open(p, 'w') as f:
+            json.dump(spec, f)
+        self.assertEqual(validate(load_spec(p))[0], [])
 
 
 if __name__ == '__main__':

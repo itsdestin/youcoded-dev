@@ -311,3 +311,38 @@ def mixed_spec(tmp, **over):
     with open(p, 'w') as f:
         json.dump(spec, f)
     return p
+
+
+def shapes_spec(tmp, paged=True):
+    """The two answer shapes that are about HOW he answers: several at once, and words he types.
+
+    `paged=False` adds a contract slide, which is what turns a words-only deck into one slide per
+    screen — so the same two shapes are exercised on both layouts."""
+    deck = os.path.join(tmp, 'shapes'); os.makedirs(deck, exist_ok=True)
+    steps = [
+        {'id': 'Q-1', 'words': True, 'surface': 'Home', 'path': 'Chat', 'pick': 'several',
+         'headline': 'Which of these should ship?',
+         'today': 'One goes in at a time.', 'problem': 'Two of them belong together.',
+         'proposal': 'Tick every one worth building.',
+         'options': [
+             {'id': 'a', 'label': 'The first one', 'pros': ['Quick.'], 'cons': ['Small.']},
+             {'id': 'b', 'label': 'The second one', 'pros': ['Useful.'], 'cons': ['Slow.']},
+             {'id': 'c', 'label': 'The third one', 'pros': ['Cheap.'], 'cons': ['Odd.']}]},
+        {'id': 'Q-2', 'words': True, 'surface': 'Home', 'path': 'Chat', 'answer': 'words',
+         'prompt': 'What should it be called?',
+         'headline': 'What should the strip be called?',
+         'today': 'It has no name in the app.', 'problem': 'Nobody can ask for it by name.',
+         'proposal': 'Give it one name and use it everywhere.'},
+    ]
+    if not paged:
+        steps.append({'id': 'C', 'words': True, 'surface': 'Home', 'path': 'Chat',
+                      'headline': 'This is what done means.',
+                      'rows': [{'id': 'R1', 'statement': 'The strip has one name everywhere.',
+                                'checkedBy': 'human', 'threshold': 'pass/fail', 'source': 'shapes#Q-2'}]})
+    spec = {'title': 'Shapes fixture', 'key': 'shapes', 'out': 'shapes.html',
+            'themes': ['midnight'], 'theme': 'fixed', 'steps': steps,
+            **({} if paged else {'sources': {'shapes': 'shapes.json'}, 'branch': 'feat/shapes'})}
+    p = os.path.join(deck, 'shapes.json')
+    with open(p, 'w') as f:
+        json.dump(spec, f)
+    return p

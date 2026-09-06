@@ -450,6 +450,19 @@ def validate(spec):
             if isinstance(v, str) and v.strip().startswith(TODO):
                 errors.append(f'{sid}: {k} is still a placeholder — replace the "{TODO} …" line '
                               'with what actually changed on this page and what Destin will notice')
+        # HOW he answers, checked once for every kind: `pick: "several"` needs something to
+        # pick between, and a written answer cannot also be a pick-one.
+        if 'pick' in st and st['pick'] not in ('one', 'several'):
+            errors.append(f'{sid}: pick must be "one" or "several"')
+        elif st.get('pick') == 'several' and not (st.get('options') or st.get('variants')):
+            errors.append(f'{sid}: pick "several" needs options or variants to pick between')
+        if 'answer' in st and st['answer'] != 'words':
+            errors.append(f'{sid}: answer must be "words" — the only shape whose answer is typed')
+        if st.get('answer') == 'words' and (st.get('options') or st.get('variants')):
+            errors.append(f'{sid}: a written answer and a list to pick from are two different '
+                          f'questions — drop one')
+        if st.get('prompt') and st.get('answer') != 'words':
+            errors.append(f'{sid}: prompt is the placeholder in a written answer — add "answer": "words"')
         # A slide's own `runs` must be captures the deck actually holds, or its pictures would
         # be looked for in a folder nobody named.
         if 'runs' in st:
@@ -508,6 +521,7 @@ def validate(spec):
         if st.get('measured') and not re.search(r'\d', st['measured']):
             warnings.append(f'{sid}: measured has no number in it')
     _images_folder_warning(spec, warnings)
+    _stage_checklist(spec, errors)
     return errors, warnings
 
 
@@ -840,6 +854,40 @@ def _validate_live(spec, st, sid, errors, warnings):
     if width > LIVE_FIT_WIDTH:
         warnings.append(f'{sid}: a {width}px pane is wider than any screen the deck is read on '
                         f'and will scroll sideways — narrow the surface or make it fluid')
+
+
+# What each stage of a feature MUST put in front of Destin, by the slide that does it.
+# WHY a checklist rather than a deck TYPE (Destin, 2026-09-06): "each kind of way I'd want to
+# present information should be an independent slide the model can add to any deck ... should
+# still have a must-have X slide in Y deck." A type says which slides are ALLOWED, which is what
+# forced one ask into several decks. A stage says which slides are REQUIRED, and leaves the rest
+# of the deck to whatever actually explains the thing.
+STAGES = {
+    'ask': ('a question', lambda spec, st: is_question(st) or (is_words(st) and st.get('today'))),
+    'design': ('something to look at and choose between',
+               lambda spec, st: is_choice(st) or is_decide(st) or is_live(st) or (
+                   not is_words(st) and not is_page(st) and len(step_runs(spec, st)) == 1)),
+    'contract': ('the definition of done', lambda spec, st: is_contract(st)),
+    'review': ('a change he can see',
+               lambda spec, st: is_clip(st) or is_live(st) or (
+                   not is_words(st) and not is_page(st) and len(step_runs(spec, st)) == 2)),
+    'accept': ('a statement to accept or reject',
+               lambda spec, st: is_words(st) and not is_contract(st) and not st.get('today') and st.get('changed')),
+}
+
+
+def _stage_checklist(spec, errors):
+    """A deck that names its stage must carry that stage's slide. Nothing is forbidden."""
+    stage = spec.get('stage')
+    if stage is None:
+        return
+    if stage not in STAGES:
+        errors.append(f'stage "{stage}" is not one of ' + ', '.join(STAGES))
+        return
+    what, holds = STAGES[stage]
+    if not any(holds(spec, st) for st in spec['steps'] if not is_page(st)):
+        errors.append(f'a "{stage}" deck needs {what} — add the slide that asks it, '
+                      f'or drop "stage" if this deck is something else')
 
 
 def _images_folder_warning(spec, warnings):

@@ -43,7 +43,7 @@ def write_atomic(path, obj):
 
 def summary(spec, state):
     """One line per step, ledger id first, in spec order (spec §4.5)."""
-    counts = {'yes': 0, 'no': 0, 'other': 0, 'pick': 0, 'skip': 0}
+    counts = {'yes': 0, 'no': 0, 'other': 0, 'pick': 0, 'picks': 0, 'wrote': 0, 'skip': 0}
     lines = []
     for st in spec['steps']:
         if is_page(st):
@@ -56,7 +56,11 @@ def summary(spec, state):
         # "Don't know" is Other with a flag on it, so the file keeps three answers rather than
         # four — but the summary must say which of the two it was, or a session reads a shrug
         # as "he wants something else".
+        # `picks` is several chosen at once and `wrote` is an answer he typed — both are
+        # answers in their own right, so they print as themselves rather than as a bare verb.
         what = (f'pick {a.get("pick", "?")}' if v == 'pick'
+                else 'picks ' + ', '.join(a.get('picks') or []) if v == 'picks'
+                else 'wrote "' + (a.get('text') or '').strip() + '"' if v == 'wrote'
                 else 'none' if v == 'no' and st.get('variants')
                 else "don't know" if v == 'other' and a.get('dk') else v)
         # Fix: a note is a note (Destin, 2026-09-04) — no tag to print. An older answers
@@ -66,7 +70,9 @@ def summary(spec, state):
     when = (state.get('submitted') or '')[:16].replace('T', ' ')
     head = (f'{spec["key"]} · {"submitted " + when if when else "not submitted"} · '
             f'{counts["yes"]} yes · {counts["no"]} no · {counts["other"]} other · '
-            + (f'{counts["pick"]} picked · ' if counts['pick'] else '') + f'{counts["skip"]} skipped')
+            + (f'{counts["pick"]} picked · ' if counts['pick'] else '')
+            + (f'{counts["picks"]} multi-picked · ' if counts['picks'] else '')
+            + (f'{counts["wrote"]} written · ' if counts['wrote'] else '') + f'{counts["skip"]} skipped')
     return head + '\n' + '\n'.join(lines)
 
 

@@ -35,6 +35,7 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 | `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json` |
 | `live` | live only | `{"worktree": "<name>", "paneWidth": 460}` — the build every pane comes from |
 | `branch` | contract | the branch the contract will be built on |
+| `stage` | no | `ask`, `design`, `contract`, `review` or `accept` — the tool then checks this deck carries that stage's slide. It never says which OTHER slides are allowed |
 | `sources` | contract | `{deck key: spec file}` for every deck a row may point back at |
 
 Fields on every step: `id` (unique, never reused), `surface` (the part of the app, in his
@@ -159,6 +160,31 @@ accepted review finding), `guard` (required on a mechanical row), optional `note
 Not hand-written: `review-cards.py acceptance <contract>` merges
 `<feature>.contract.verdicts.json` into a deck of statement steps, one per row.
 
+## How he answers: several at once, or words he types
+
+Two fields that are about the ANSWER rather than the picture, so they sit on any slide that
+can carry them.
+
+| Field | On | What it does |
+|---|---|---|
+| `"pick": "several"` | any slide with `options` or `variants` | he may choose more than one; clicking a chosen one again unpicks it. One line above the cards says so. Unpicking the last leaves the slide unanswered |
+| `"answer": "words"` | a words slide with nothing to pick | the answer is a line he types. `prompt` is the placeholder. *Don't know* stays |
+
+They land in the answers file as `{"v": "picks", "picks": ["a", "c"]}` and
+`{"v": "wrote", "text": "…"}`, and print in the summary as `picks a, c` and `wrote "…"`.
+
+WHY (Destin, 2026-09-06): every slide ended in pick-exactly-one or yes/no, so "A and C, drop B"
+and "call it *this*" had nowhere to go but the free note — a paragraph a session has to
+interpret, not an answer the tool records as a decision.
+
+## What stage the deck is at
+
+`"stage"` names where in a feature this deck sits, and the build refuses one that is missing
+the slide its stage exists for: **ask** needs a question, **design** something to look at and
+choose between, **contract** the definition-of-done table, **review** a before/after or a
+recording or live panes, **accept** a statement to accept or reject. Nothing else is forbidden —
+an ask deck may carry the contract it leads to. Leave `stage` out and nothing is checked.
+
 ## Page markers — how a question deck is split
 
 A QUESTION deck — every step words-only, and no contract step — renders as scrolling PAGES
@@ -197,11 +223,17 @@ Questions:
 - `… "(recommended)" in a label — set "recommended": true on the option instead`
 - `… two options are recommended — at most one`
 - `… an option needs pros, cons or a summary`
+- `… pick must be "one" or "several"`, `… pick "several" needs options or variants to pick between`
+- `… a written answer and a list to pick from are two different questions — drop one`
+- `… prompt is the placeholder in a written answer — add "answer": "words"`
 - `… a words step has no crop — there is no picture` (also `clip`, `highlight`, `variants`, `live`)
 
 Page markers: `a page marker carries only page and intro`; `a page marker needs a title in
 "page"`; `pages are for question decks — this deck has pictures`; `pages are for question decks
 — this deck defines done (it has a contract step)`; `an empty page`.
+
+Stages: `stage "<x>" is not one of ask, design, contract, review, accept`, `a "<stage>" deck
+needs <the slide it exists for>`.
 
 Placeholders: `… headline is still a placeholder — replace the "TODO: …" line with what actually
 changed on this page and what Destin will notice`. Any field of any step whose text starts

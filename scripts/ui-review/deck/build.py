@@ -191,6 +191,24 @@ def _still_step(spec, st, boxes):
     }
 
 
+def _answer_shape(st):
+    """The two shapes that are about HOW he answers rather than what he is looking at, so they
+    ride on every kind of slide instead of being folded into one of them.
+
+    `pick: "several"` lets him choose more than one — "A and C, drop B" used to have nowhere to
+    go but the note box. `answer: "words"` makes the answer a line he types, so a name or a piece
+    of copy is a real answer instead of a pick from options invented in advance. Both asked for
+    by Destin, 2026-09-06."""
+    d = {}
+    if st.get('pick') == 'several':
+        d['pick'] = 'several'
+    if st.get('answer') == 'words':
+        d['answer'] = 'words'
+        if st.get('prompt'):
+            d['prompt'] = st['prompt']
+    return d
+
+
 def deck_data(spec, boxes):
     runs = run_names(spec)
     steps = [_live_step(spec, st) if is_live(st)
@@ -200,6 +218,8 @@ def deck_data(spec, boxes):
              else _clip_step(spec, st, step_runs(spec, st)) if is_clip(st)
              else _still_step(spec, st, boxes)
              for st in spec['steps'] if not is_page(st)]
+    for st, out in zip([x for x in spec['steps'] if not is_page(x)], steps):
+        out.update(_answer_shape(st))
     every = all_themes(spec)
     # `command` is spelled HERE, where the offset and the worktree are both known, so the
     # "server isn't running" card can name the exact thing to run instead of guessing.

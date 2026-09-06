@@ -191,11 +191,15 @@
     const graded = st.rows.some(r => r.verdict);
     return `<section class="card contract"><table><thead><tr><th>#</th><th>Statement</th><th>Checked by</th><th>Threshold</th><th>From</th>${graded ? '<th>Verdict</th>' : ''}</tr></thead><tbody>${st.rows.map(r => `<tr class="${esc(r.verdict)}"><td>${esc(r.id)}</td><td>${esc(r.statement)}${r.note ? `<p class="src">“${esc(r.note)}”</p>` : ''}</td><td>${esc(r.checkedBy)}${r.guard ? `<p class="src">${esc(r.guard)}</p>` : ''}</td><td>${esc(r.threshold || 'pass / fail')}</td><td class="src">${esc(r.source)}${r.found === 'review' ? '<p class="src"><strong>found in review</strong> — not on a deck you answered</p>' : ''}</td>${graded ? `<td>${esc(r.verdict || '—')}${r.evidence ? `<p class="src">${esc(r.evidence)}</p>` : ''}</td>` : ''}</tr>`).join('')}</tbody></table></section>`;
   };
+  // SEVERAL looks exactly like pick-one until it says so — the cards, the borders and the
+  // lettering are the same. One line above them is what tells him he may tick more than one.
+  const pickHint = st => st.pick === 'several'
+    ? '<p class="pickhint">Pick as many as you like — click one again to unpick it.</p>' : '';
   // The body of one step, in the order the cards are read.
   const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + riskCard(st)
     : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + riskCard(st)
-    : pickList(st) ? pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + riskCard(st)
-    : st.kind === 'decide' ? partCards(st) + noticeCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
+    : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + riskCard(st)
+    : st.kind === 'decide' ? partCards(st) + pickHint(st) + noticeCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
     : changedCard(st) + noticeCard(st) + riskCard(st);
 
   // A one-picture slide is a BRIEF (nothing built yet): "keep / revert" would ask about work that
@@ -217,8 +221,14 @@
     : (st.kind === 'live' && st.shape === 'choice') ? st.panes : null;
   // The answer row for one step, as markup. Hoisted so a question on a scrolling page gets
   // exactly the buttons it would get on a screen of its own.
+  // WRITE: the answer IS words he types, not one of a list. Destin (2026-09-06): naming and
+  // wording decisions had to be faked as a pick-one from options invented in advance, so an
+  // answer that was not on the list was never heard. `Don't know` stays — a shrug is an answer.
+  const writeBox = st => `<textarea class="write ans-write" data-id="${esc(st.id)}" rows="2" placeholder="${esc(st.prompt || 'Type your answer…')}"></textarea>`
+    + `<button class="btn ans" data-v="other" data-dk="1">Don't know</button>`;
   const answerButtons = st => {
     const picks = pickList(st);
+    if (st.answer === 'words') return writeBox(st);
     return st.kind === 'question'
       ? `<button class="btn ans" data-v="yes">${esc(yesLabel(st))}</button><button class="btn ans" data-v="no">${esc(noLabel(st))}</button><button class="btn ans" data-v="other" data-dk="1">Don't know</button>`
       : picks || st.kind === 'decide'
@@ -248,7 +258,19 @@
   function answer(v, pick, dk, id) {
     if (state.submitted) return;
     id = id || (PAGES ? '' : DECK.steps[cur].id); if (!id) return;
+    const st = stepById(id) || {};
+    // SEVERAL: the same click toggles membership instead of replacing the answer, so "A and C,
+    // not B" is a real answer rather than a sentence in the note box (Destin, 2026-09-06).
+    if (v === 'pick' && st.pick === 'several') {
+      const had = (state.answers[id] || {}).picks || [];
+      const picks = had.includes(pick) ? had.filter(x => x !== pick) : had.concat([pick]);
+      const b = { ...(state.answers[id] || {}), v: picks.length ? 'picks' : 'skip', picks };
+      delete b.pick; delete b.dk;
+      if (!picks.length) { delete b.picks; delete b.v; }
+      state.answers[id] = b; paintState(); save(); return;
+    }
     const a = { ...(state.answers[id] || {}), v }; if (v === 'pick') a.pick = pick; else delete a.pick;
+    if (v !== 'picks') delete a.picks;
     if (dk) a.dk = true; else delete a.dk;   // "Don't know" is Other with a flag; anything else clears it
     state.answers[id] = a; paintState(); save();
     const n = PAGES ? $(`#cards article.q[data-id="${CSS.escape(id)}"] .note`) : $('#note'); if (n) n.focus();
@@ -383,19 +405,33 @@
     if (art && !state.submitted) answer('pick', c.dataset.pick, false, art.dataset.id);
   });
   $('#cards').addEventListener('input', e => {
+    const w = e.target.closest('.ans-write[data-id]');
+    if (w) { writeAnswer(w.dataset.id, w.value); return; }
     const n = e.target.closest('.note[data-id]'); if (!n || !PAGES) return;
     state.answers[n.dataset.id] = { ...(state.answers[n.dataset.id] || {}), note: n.value };
     paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
   });
+  // Typing IS the answer on a write slide. Emptying the box unanswers it, the way clicking a
+  // chosen option off does — otherwise a cleared box would still count as answered.
+  function writeAnswer(id, text) {
+    if (state.submitted) return;
+    const a = { ...(state.answers[id] || {}) };
+    if (text.trim()) { a.v = 'wrote'; a.text = text; delete a.dk; } else { delete a.v; delete a.text; }
+    state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+  }
+  // Chosen, whichever shape the answer has: one pick, or one of several.
+  const chosen = (a, id) => a.v === 'picks' ? (a.picks || []).includes(id) : (a.v === 'pick' && a.pick === id);
   function paintPage() {
     $$('#cards article.q').forEach(art => {
       const a = state.answers[art.dataset.id] || {};
       art.querySelectorAll('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick)));
-      art.querySelectorAll('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
+      art.querySelectorAll('.card.variant').forEach(c => c.classList.toggle('on', chosen(a, c.dataset.pick)));
       const n = art.querySelector('.note');
       // Never while he is typing in it: assigning `value` puts the caret back at the end.
       if (n && document.activeElement !== n) n.value = a.note || '';
       if (n) n.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
+      const w = art.querySelector('.ans-write');
+      if (w && document.activeElement !== w) w.value = a.text || '';
       // An answered question takes the same green edge the mock-up used for `done`.
       art.classList.toggle('done', !!(a.v && a.v !== 'skip'));
     });
@@ -416,9 +452,11 @@
     if (PAGES) { paintPage(); return; }
     const a = state.answers[DECK.steps[cur].id] || {};
     $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick)));
-    $$('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
-    $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', a.v === 'pick' && f.dataset.run === a.pick));
+    $$('.card.variant').forEach(c => c.classList.toggle('on', chosen(a, c.dataset.pick)));
+    $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', chosen(a, f.dataset.run)));
     const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
+    // Never while he is typing in it: assigning `value` would put the caret back at the end.
+    const w = $('#answers .ans-write'); if (w && document.activeElement !== w) w.value = a.text || '';
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
     const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
     $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
@@ -521,6 +559,7 @@
   // at speed is one POST, not one per keystroke.
   let noteTimer = null;
   $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick, b.dataset.dk === '1'); });
+  $('#answers').addEventListener('input', e => { const w = e.target.closest('.ans-write[data-id]'); if (w) writeAnswer(w.dataset.id, w.value); });
   $('#note').addEventListener('input', e => {
     if (PAGES) return;   // on a page the note lives on the question, not in the shared row
     const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), note: e.target.value };
@@ -537,7 +576,7 @@
   function summary() {
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
     // Mirrors serve.py's summary(): a note prints plainly, right after the answer, same words.
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : (v === 'other' && a.dk ? "don't know" : v)); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && pickList(st) ? 'none' : (v === 'other' && a.dk ? "don't know" : v)); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
     return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
   }
   function openDialog() {
@@ -593,7 +632,10 @@
     if (v === 'skip') return 'No answer';
     // Fix: a words QUESTION offers `options`, not the `variants`/`panes` pickList knows about, so
     // its answers read back on the finish screen as a bare id ("all-five-plus-new"). Look in both.
-    if (v === 'pick') { const o = (pickList(st) || st.options || []).find(x => x.id === a.pick); return a.pick + (o ? ' — ' + o.label : ''); }
+    const label = id => { const o = (pickList(st) || st.options || []).find(x => x.id === id); return id + (o ? ' — ' + o.label : ''); };
+    if (v === 'pick') return label(a.pick);
+    if (v === 'picks') return (a.picks || []).map(label).join('; ');
+    if (v === 'wrote') return '“' + String(a.text || '').trim() + '”';
     if (v === 'other') return a.dk ? "Don't know" : 'Something else';
     if (v === 'no') return pickList(st) ? 'None of these' : noLabel(st);
     return yesLabel(st);
