@@ -62,10 +62,10 @@ Target: `v1.3`
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 17 | 2 | 2 | 2 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 16 | 4 | 0 | 6 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 0 | 5 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 14 | 4 | 2 | 6 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 15 | 4 | 2 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 14 | 4 | 0 | 2 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 8 | 1 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 2 | 2 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 9 | 3 | 1 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
 
 ## Filing an item

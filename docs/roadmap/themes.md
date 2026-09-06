@@ -11,10 +11,19 @@ here: installing or browsing themes (marketplace).
 - [ ] Rebase every theme's mascot faces on the promo's "warm" face set (2026-09-04): the
       welcome eyes on every expression, expression carried by brows, lids and mouth; surprised
       is not two black discs, curious has two brows of different shapes, blink is nearly flat
-      with the welcome mouth, dizzy is swirl eyes with stars circling above the head, plus new
-      happy, smug and shutdown (eyes closed, limbs tucked under) faces. Destin: "these will
-      also be the new guidelines to rebase all other themes on in the live app", 2026-09-04
-      `all` `decision` `checked 2026-09-04`
+      with the welcome mouth, plus new happy and shut-down faces. Destin: "these will
+      also be the new guidelines to rebase all other themes on in the live app", 2026-09-04.
+      Two details settled on the decks 2026-09-05 and NOT as written above: smug is dropped,
+      and knocked-out stays crossed eyes — the swirls were removed on purpose once already.
+      Built for all four community characters and the built-in buddy; branches open, not merged
+      `all` `in-flight` `checked 2026-09-05`
+
+- [ ] Everything the mascot learned this year is desktop-only (2026-09-05): on a phone or in
+      a browser the buddy is four still pictures — no blinking, no reacting, no eyes following
+      the cursor, and none of the new happy or asleep faces. Desktop gets all eight expressions
+      and the motion; the other two surfaces fall back to flat drawings because they cannot
+      load the animated format. Destin, told this: "okay this is fine for now"
+      `android` `confirmed` `checked 2026-09-05`
 
 - [ ] On the four light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
       Strawberry Kitty) the provider brand colours — the Claude orange on the model chip and

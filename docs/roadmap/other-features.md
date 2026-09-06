@@ -46,6 +46,16 @@ has passed ~8 items — graduate it to its own file.
       The main chat refuses and offers "Send anyway"; the buddy window doesn't.
       `buddy-window` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-buddy-chat-input-bar-pty-gate.md
 
+- [ ] The buddy reacts to the app but never does anything of his own (2026-09-05): between
+      reactions he only breathes. Wanted: small spontaneous moments — a glance around, a
+      stretch, dozing off after a few quiet minutes and waking the moment anything happens.
+      Destin's rule for it: the small movements must stay clearly quieter than the one
+      animation that means "a session needs you", so they only run while every session is
+      calm and stop the instant one turns red, amber or blue. Those status colours already
+      reach the buddy window and go unused. The asleep pose and its z's are built and signed
+      off; nothing drives them yet
+      `buddy-window` `desktop` `confirmed` `checked 2026-09-05`
+
 - [ ] Buddy companions (sun, motes, ghost, sleepy Zzz) only show on the welcome screen; the floater
       renders the mascot alone because its window has no room for them (2026-07-16). Needs a
       padded-window design that keeps drag, docking and click-through working.
