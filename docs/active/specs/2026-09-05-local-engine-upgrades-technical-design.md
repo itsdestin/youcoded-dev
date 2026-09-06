@@ -130,7 +130,21 @@ the marker, parenthetical stripped; null → "Processor only").
 list a device with the matching prefix (`CUDA0:` / `ROCm0:`), or the install is discarded —
 **only if this call created it** (the `preexisting` guard `installAndVerify` already has) —
 with `Kept the current engine: the <BACKEND> build found no graphics chip it can use —
-"<the engine's last stderr line>". Nothing was changed.` A binary that fails to START
+"<the engine's last stderr line>". Nothing was changed.` **There is no stderr line to quote in
+this case** (found building T4): T2's `listDevices()` keeps no output whenever the
+`Available devices:` block parses, so a build that starts fine and simply lists nothing usable
+leaves nothing on the marker. The sentence skeleton is unchanged and the slot is filled with
+what the engine really reported — its own device names, or "no devices at all" — rather than a
+fabricated line. The quoted form survives where the engine genuinely produced a sentence: a
+`devicesError`, and a device-class load failure.
+**The "binary failed to start" sentence reads "could not be asked which graphics chip it would
+use", not "would not run"** — `devicesError` also covers a probe timeout, where "would not run"
+would be a guess.
+**"Checked when your first model loads" cannot be a post-switch state**: `backendOptions()`
+never offers the installed backend, so the row is gone the instant the switch succeeds. It is a
+live PRE-switch note on `BackendOption.note`, shown whenever the model cache holds nothing
+complete, which sets the expectation before the user commits and disappears on its own when a
+download lands. A binary that fails to START
 (missing `libamdhip64.so.7`, a linker error) gets its own sentence quoting the real stderr,
 not the "no graphics chip" one. Then `verifyBoot`. **Then a real load** of the smallest
 complete model in the cache (`max_tokens: 1`): a failure whose text names a device or kernel

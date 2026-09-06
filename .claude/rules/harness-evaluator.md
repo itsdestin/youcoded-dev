@@ -49,23 +49,14 @@ version × instruction file × model**, each cell in its own disposable fixture,
 every run twice: free checks read off the event stream, and an LLM judge. `--dry-run` is
 free and needs no key; a real run needs `--key-file`.
 
-- **The credential arrives by file or not at all.** `harness-eval.mjs` **refuses to start**
-  if `OPENROUTER_API_KEY` is in its environment, and passes worker config over **stdin** —
-  never argv, never env. `delete process.env.X` is `unsetenv`: in-heap only, it never
-  rewrites `/proc/<pid>/environ`, which every same-uid descendant — including a Bash call
-  the model makes — can read. **`review-harness.mjs` still has the bug** (a `decision` in `docs/roadmap/dev-workspace.md`). Guard:
-  `harness-eval-key-leak.test.ts`, whose negative control must report LEAKED.
-
-- **The grader always loads from the orchestrator's own build; only the worker loads the
-  cell's `dist`** — else a branch-vs-master run silently compares two *graders* too.
-  `paths.ts`: `graderRoot()` (ignores its argument on purpose) vs `harnessRoot(cell)`.
-  Guard: `harness-eval-orchestrator.test.ts`.
-
-- **A check has three states, and `never-ran` is not `passed`** — nothing was measured, and
-  the report must render it visibly differently. The first version keyed it on an empty
-  event list, unreachable in production, so a provider billing failure scored as a model
-  failure. Guards: `harness-eval-assertions.test.ts` (discrimination-tested),
-  `harness-eval-report.test.ts`.
+- **The credential arrives by file or not at all, and lives nowhere between runs.**
+  `harness-eval.mjs` **refuses to start** if `OPENROUTER_API_KEY` is in its environment, and
+  passes worker config over **stdin** — never argv, never env, because `delete process.env.X`
+  never rewrites `/proc/<pid>/environ`, which every same-uid descendant can read. No key file
+  exists on the machine and the app's copy is `safeStorage`-encrypted: ask Destin to write one
+  (`umask 077`), pass `--key-file`, delete it after. **`review-harness.mjs` still has the bug**
+  (a `decision` in `docs/roadmap/dev-workspace.md`). Guard: `harness-eval-key-leak.test.ts`,
+  whose negative control must report LEAKED.
 
 - **Every judge grade must quote the answer verbatim or be discarded**, and contradiction
   warnings only warn — never adjust a score. They match tool ids, not prose; keying them on
@@ -84,12 +75,6 @@ free and needs no key; a real run needs `--key-file`.
   after truncating 13 paid runs, because cwd-persistence and read-before-edit REQUIRE
   repeats.
 
-- **Every run ends in an answer or a labelled failure** — three FACT triggers each send a
-  second `WRAP_UP_PROMPT` turn with every tool denied. Scope per-turn scans to the
-  *testing* turn; an unscoped scan sees the wrap-up and mislabels a run that recovered.
-  `runCase` never throws for a run that produced events — round 5 lost four transcripts to
-  a rejected promise.
-
 - **The fixture is byte-identical across runs, so results stay comparable** — including a
   seeded `port` disagreement between `config/settings.toml` and `config/app.toml`; don't
   "fix" it, four cases depend on it. **`notes/pristine.md` is reserved for the read-gate
@@ -97,14 +82,23 @@ free and needs no key; a real run needs `--key-file`.
   Edit. Guard: `harness-review-fixture.test.ts`.
 
 - **There is no resume, and the estimate is deliberately high.** A stopped run re-pays for
-  every finished cell. `estimate.ts` prices from the MAX of a case's samples, never the
-  mean — under-predicting spends money nobody agreed to — so it reads **~2.2×** the real
-  bill (~$0.25 a cell, 2026-08-13). **A case with no measured row is priced as a 40–63-call
-  battery run**; the CLI names those rows as battery-priced. Treat them as HIGH.
+  every finished cell. `estimate.ts` prices from the MAX of a case's samples, never the mean,
+  so it reads ~2.2× the real bill (~$0.25 a cell); an unmeasured case is priced as a battery
+  run. Under-predicting would spend money nobody agreed to.
 
 - **Offer a run after changing a harness tool; never run the paid path unasked.**
   `--dry-run` is free; `--max-spend <usd>` is a hard cap re-checked against OpenRouter's
   own billing between cells.
 
-Changing the evaluator itself: `youcoded/docs/harness-evaluator-internals.md`. History:
+- **One run per arm measures noise, not effect.** 2026-09-05: an identical build/case/model/
+  judge swung 2-3 points on judged items between two runs — the size of most effects — and a
+  session reported that swing as a finding, then retracted it. Use `--repeats`; a ≥2-arm plan
+  at `repeats: 1` now warns at the estimate. Guard: `harness-eval-comparison-noise.test.ts`.
+
+- **`builds` is the code-version axis** — `{id, dist}`, `dist` an ABSOLUTE built `dist/` (no
+  default, on purpose), one detached worktree per arm built with `npm run build:main`.
+  Worked example: `test-engine/eval-plans/prompt-doctrine.json`.
+
+Changing the evaluator itself — grader loading, the three check states, the wrap-up turn:
+`youcoded/docs/harness-evaluator-internals.md`. History:
 `docs/archive/specs/2026-08-12-harness-evaluator-design.md`.

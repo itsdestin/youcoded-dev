@@ -321,6 +321,11 @@ stream, reads it and calls `engineManager.recordReply(...)`, which emits `status
 ## Wave 4
 
 ### T9 — Pending apply, keep-loaded, delete, load errors (§C2) — after T6, T7, T8
+- **Use a MERGING writer, which T8 deliberately did not add** (found building T8):
+  `updateEngineConfig(home, { models })` replaces the whole section, so `models:set-settings`
+  needs an `updateModelSettings(home, id, patch)` that merges inside `mutateJson`, the way
+  `updateEngineSpeed` already does. Writing the section wholesale would drop every other
+  model's settings on each save.
 - A settings save writes `engine.models[id]` with `pendingApply: true` and does NOT touch
   `models.ini` — every `?reload=1` diffs presets and would unload a changed model mid-reply.
 - Apply runs when that model has no in-flight request: write `models.ini` → `?reload=1` →
@@ -378,7 +383,20 @@ Renames: `engine.setSpeed` → `engine.setConfig({speed})` and `models.dismissMe
 **Then `node scripts/workbench-boot-check.mjs`** — the unit suite has passed while the app
 crashed at boot three times running.
 
-### T23 — The three fields nothing draws (§H, R3-24)
+### T23 — The three fields nothing draws (§H, R3-24) — plus two orphans
+**`presetInForce()` has no consumer** (found reviewing T7). T7 builds the fallback that lets
+the engine start when its settings file is unusable, and exposes `presetInForce()` so the card
+can say per-model settings are not in force for that run — but nothing renders it, so a user in
+that state sees their per-model settings silently ignored with no explanation. The card must
+say so. Same for the `preset-model-rejected` event, whose `lastLoadError` half T9 owns: the
+model that got dropped needs to say why in its own settings dialog.
+
+
+Also: `EngineCard.tsx` still carries `status.speed ?? { speculative: true, compressCache: true }`,
+a third copy of a default that is now unreachable because main and the mock both always send
+`speed` (found building T8). Delete it rather than leave a copy that can drift.
+
+
 Three signed rows describe text a user reads, and the mockup renders none of them:
 - `breakdown.advice` (R8) — the size bubble in `LocalModelsSection.tsx` ends today in a
   hardcoded "includes X for an Nk context"; it gains the advice line when the estimator sets one.
@@ -399,7 +417,14 @@ code to point at.
   the alias table.
 - `.claude/rules/engine-local-models.md`: rewrite the five bullets §I names (flat-basename
   "never rename downloads", the mmproj denylist, "integrated GPUs fall back to RAM-only",
-  "CUDA opt-in is Windows-x64-only", the `set-context` null trick).
+  "CUDA opt-in is Windows-x64-only", the `set-context` null trick). **Four of these already
+  contradict the shipped code.** Confirmed building T8: `set-context` no longer restarts or
+  nulls `supervisorBinary`, and `config.json` is described as syncable when its `engine`
+  section is per-machine. Confirmed building T15: line 28's "Router id = filename minus
+  `.gguf`" and line 36's "flat-basename cache naming is a probe-pinned contract" are both
+  false for a vision model, which lives in a folder and is **named by the folder** — probed.
+  Each needs "…except a model with a vision projector". The rule's `verify:` block and
+  `docs/MAP.md`'s guard list both gain `youcoded/desktop/test-engine/probe-vision.mjs`.
 - `native-runtime.md` rule and depth doc plus the `shared/types.ts` comment: `SessionProvider`
   has three members.
 - `desktop/src/shared/engine-types.ts`: the `loadedModelsBytes` comment says "loaded **or
