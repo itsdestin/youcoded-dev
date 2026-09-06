@@ -1,0 +1,22 @@
+{
+ "deck": "cc-subagent-chip",
+ "started": "2026-09-05T23:02:53.124Z",
+ "submitted": "2026-09-05T23:03:15Z",
+ "cur": 1,
+ "answers": {
+  "CC.1": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "CC.2": {
+   "v": "yes",
+   "note": "why is working blue? should be green.",
+   "note_kind": "noting",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
