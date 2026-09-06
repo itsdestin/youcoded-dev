@@ -1,0 +1,189 @@
+{
+ "title": "Voice prompting — contract",
+ "key": "voice-prompting-contract",
+ "out": "voice-prompting.contract.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "feat/voice-prompting",
+ "sources": {
+  "voice-prompting-questions": "voice-prompting.questions.json",
+  "voice-prompting-review": "voice-prompting.review.json",
+  "voice-prompting-review2": "voice-prompting.review2.json",
+  "voice-prompting-review3": "voice-prompting.review3.json",
+  "voice-prompting-reopen": "voice-prompting.reopen.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Message box → the mic button (desktop and Android)",
+   "path": "Any chat session → the mic beside Send; the first tap before the speech model is downloaded; a computer with no microphone; the Android message box; a remote browser tab; the card when the computer refuses microphone access; holding the space bar in an empty box",
+   "headline": "This is what done means.",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "Speech becomes text through Parakeet, downloaded once (464 MB) and running on your computer; your voice never leaves it.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review#V-0",
+     "note": "we may want to roadmap a fallback to built-in windows or mac speech services, but not rn"
+    },
+    {
+     "id": "R2",
+     "statement": "While you talk, everything since your last full stop stays grey; it turns solid when you finish a sentence.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-reopen#V-9"
+    },
+    {
+     "id": "R3",
+     "statement": "One tap starts the mic; a second tap, Enter, the strip's Stop, or about two quiet seconds stops it.",
+     "checkedBy": "live-app",
+     "threshold": "Silence stop after 2 s (measured on the deck)",
+     "source": "voice-prompting-review3#V-6"
+    },
+    {
+     "id": "R4",
+     "statement": "After you stop, the text waits in the message box with the cursor at the end; nothing sends until you press Send.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-questions#Q-4"
+    },
+    {
+     "id": "R5",
+     "statement": "The mic is in the message box from day one; before the model is downloaded, the first tap explains and offers the download.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-questions#Q-5"
+    },
+    {
+     "id": "R6",
+     "statement": "On Android the mic uses the phone's own recognizer; words appear live in the app's box, ready to fix or send.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-questions#Q-6"
+    },
+    {
+     "id": "R7",
+     "statement": "In a remote browser tab there is no mic button; voice ships on desktop and Android only.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-questions#Q-7",
+     "note": "will need to note on roadmap though so we dont forget"
+    },
+    {
+     "id": "R8",
+     "statement": "The first tap opens a card above the mic: 'Speak your messages', with a one-time download of about 500 MB.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-reopen#V-10"
+    },
+    {
+     "id": "R9",
+     "statement": "Download turns the card into a progress bar; when it finishes, a note says 'Voice is ready — tap the mic to talk.'",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review#V-2"
+    },
+    {
+     "id": "R10",
+     "statement": "Not now closes the card and leaves the mic in place; nothing downloads without the Download tap.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review#V-2"
+    },
+    {
+     "id": "R11",
+     "statement": "With no microphone, the tap opens the card saying 'No microphone was found on this computer.' with one Check again button.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review#V-3"
+    },
+    {
+     "id": "R12",
+     "statement": "The reason on that card is always the one the computer reported, never a guess.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review#V-3"
+    },
+    {
+     "id": "R13",
+     "statement": "While you talk, a band above the box shows a green dot, 'Listening', the loudness bars, the clock and a Stop button.",
+     "checkedBy": "deck",
+     "threshold": "One 36 px band above the box (measured on the deck); the mic itself only glows",
+     "source": "voice-prompting-review2#V-4"
+    },
+    {
+     "id": "R14",
+     "statement": "While listening, the ring around the mic grows with your loudness and sits still when you pause.",
+     "checkedBy": "deck",
+     "threshold": "Ring 2 to 9 px (measured on the deck); it moves only when the level changes",
+     "source": "voice-prompting-review3#V-6"
+    },
+    {
+     "id": "R15",
+     "statement": "The mic sits between the message and Send, drawn like the paperclip; while it listens the placeholder reads 'Listening…'.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-6"
+    },
+    {
+     "id": "R16",
+     "statement": "Typing while the mic is open ends dictation and keeps what you typed.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-6"
+    },
+    {
+     "id": "R17",
+     "statement": "On Midnight and Dark the filled mic and its ring are the theme's light grey, not a colour.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-6"
+    },
+    {
+     "id": "R18",
+     "statement": "In an empty box, holding the space bar a quarter second starts listening; letting go stops it; a quick tap does nothing.",
+     "checkedBy": "human",
+     "threshold": "Listening starts after a 0.25 s hold (from the deck)",
+     "source": "voice-prompting-review3#V-7"
+    },
+    {
+     "id": "R19",
+     "statement": "With any text in the box the space bar types a space as always; there is no other keyboard shortcut for the mic.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-7"
+    },
+    {
+     "id": "R20",
+     "statement": "If refused, the card reads 'Microphone access was refused by your computer. Allow it for YouCoded in your system's privacy settings, then check again.'",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-8"
+    },
+    {
+     "id": "R21",
+     "statement": "That card has one Check again button; on a Mac the system's own permission prompt comes first, and the card appears only if declined.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-review3#V-8"
+    },
+    {
+     "id": "R22",
+     "statement": "The card names the language limit: it understands English and 24 other European languages.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-reopen#V-11"
+    },
+    {
+     "id": "R23",
+     "statement": "While the download is being unpacked the card reads 'Almost ready…' with a bar that keeps moving.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "voice-prompting-reopen#V-12"
+    }
+   ]
+  }
+ ]
+}

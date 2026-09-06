@@ -77,3 +77,16 @@ that in the shared area with android as seen-on.
       support problem waiting to happen. Decide before the listing: unblock newer versions, or scope
       what the listing promises
       `android` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+
+- [ ] Tapping a file the app can't display dead-ends on the phone: the panel says so honestly but the
+      "Open externally" button is desktop-only, so there is no way to hear an .mp3 or watch an .mp4
+      you were just handed. Desktop opens it in whatever app the OS uses; Android needs the same via
+      a share/view intent
+      `files-panel` `android` `confirmed` `checked 2026-09-05`
+
+- [ ] On the phone, the permission question the app asks Android is wired to a screen that may
+      already be gone: nothing unhooks it when the window closes, so a request arriving afterwards
+      throws where nothing catches it and the caller waits forever instead of being told no. Same
+      shape for the file picker, the folder picker and the QR scanner, so worth fixing once for all
+      four rather than per feature
+      `android` `needs-verify` `checked 2026-09-05` `needs-repro`

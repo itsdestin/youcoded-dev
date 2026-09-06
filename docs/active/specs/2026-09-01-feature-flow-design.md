@@ -20,12 +20,20 @@ Four assumptions are made here so the plan can be written; each is a one-line ve
 1. "I want feature X"
 2. Model churns, then asks questions to establish what we're building and how the user should experience it — **this stays at the front; you cannot draw UI without it**
 3. Short loop: draft UI → visual review → update → until consistent with intent and existing theming
-4. UI deck to approve or give feedback
-5. Iterate, re-review
+4. **UX tester, first run** (§8e): a context-free beta-tester agent drives the mockups, reports
+   confusion and over-long copy; fixes applied — so the first deck Destin sees is already clean
+5. UI deck to approve or give feedback; iterate, re-review
 6. Build the verification contract — what "successful/complete" means
 7. Technical design (backend, data shape, reuse) → adversarial reviewers, instrumented and capped → work breakdown → §8
-8. Build: one implementer subagent per task, one reviewer per task, whole-branch review — §8
-9. Close out
+8. Build: one implementer subagent per task, one reviewer per task — §8d
+9. **Two reviews in parallel** (§8e): a code reviewer on the whole branch, the UX tester's
+   second run on the built branch; the implementing session triages and fixes; accepted
+   findings become contract rows tagged *found in review*
+10. **Grader** (§7): a fresh agent writes the verdicts; acceptance deck
+11. Destin's merge call; close out
+
+(Decided with Destin 2026-09-04. Before that, step 4 did not exist, the whole-branch review was
+one agent with no UX pass, and the grader was the implementing session.)
 
 **Where Destin sits.** Four appearances, all on the review deck, none in a terminal:
 
@@ -34,9 +42,10 @@ Four assumptions are made here so the plan can be written; each is a one-line ve
 | Questions (step 2) | `<feature>.questions.json` — words-only `decide` steps | picks one of 1–3 written options, or Other with a note |
 | Review rounds (steps 4–5) | `<feature>-r<N>.json` — the existing deck, as many rounds as it takes | yes / no / pick / other, notes tagged *fix now / fix later / just noting* |
 | Contract (step 6) | `<feature>.contract.json` — one step, the rows | yes ("that is done") / no / other |
-| Acceptance (step 9) | `<feature>.contract.acceptance.json` — the rows graded, plus one yes/no per `human` row | ticks the human rows, sees every machine verdict |
+| Acceptance (step 10) | `<feature>.contract.acceptance.json` — the rows graded, plus one yes/no per `human` row; rows *found in review* are tagged so he can veto them | ticks the human rows, sees every machine verdict |
+| Merge (step 11) | — | says "merge"; nothing merges without it |
 
-A fifth, rare one is the reopen deck (§6). Steps 7–8 run without him — the whole build stage (§8) is agents reviewing agents. "One human review point" means one surface, not one moment.
+A rare extra one is the reopen deck (§6). Steps 7–10 run without him — the whole build stage (§8) is agents reviewing agents, and he never opens a review session himself. "One human review point" means one surface, not one moment.
 
 ## 2. State of the pipeline
 
@@ -81,7 +90,7 @@ The spec's top level carries `sources` (`{deck key: spec path}`) and `branch` (t
 
 **What the `checkedBy` column exposes.** The evaluator shape is planner → generator → evaluator. Here: planner = questions deck + brainstorm; generator = implementing session; evaluator = the column. `mechanical` has `verify.sh`. `deck` has the answers file. **`live-app` has nothing.** Live panes embed the *workbench* — the real renderer over a fake backend — so they make `deck` rows interactive; they do not produce a `live-app` row. A workbench fake can stand in for an *answer* rather than a *source* (the arcade's "Jake is online" came from a fixture, so the workbench showed the healthy state forever while the shipped app could only say "No friends online"). `shot.mjs` and `ui-probe.mjs` can drive a page, but nothing wires either into a deck. Until a real-app rig exists, `live-app` rows are `human` rows on the acceptance deck. This design does not block on it. `MOCK_ONLY` is empty and lists only channels with *no backend*; nothing marks which fakes are answers versus sources, and that marking is what a real-app rig would need first.
 
-**A named guard is not a checked criterion.** `contract-check` verifies a `mechanical` guard *exists*. A test that exists but tests something else passes. Closing that gap is the grader's job (§7), and today the grader is the implementing session; §10 P3 makes it a stranger.
+**A named guard is not a checked criterion.** `contract-check` verifies a `mechanical` guard *exists*. A test that exists but tests something else passes. Closing that gap is the grader's job (§7) — a fresh agent since 2026-09-04, told to read the guard and fail the row when the test covers something else.
 
 ## 4. The gate
 
@@ -112,6 +121,13 @@ When implementation disproves approved UI (arcade contrast, marketplace's dead U
 
 ## 7. Acceptance
 
+**The grader is a fresh agent, not the implementing session** (`scripts/ui-review/grader.md`;
+was §10 P3, adopted 2026-09-04). It runs after the §8e reviews are triaged and fixed, because
+grading code that is about to change is wasted. It does one narrow job — a verdict with
+evidence per graded row — and is told to read each `mechanical` guard and fail a row whose
+test exists but tests something else, which closes §3's "a named guard is not a checked
+criterion" gap. It hunts for nothing; hunting is §8e.
+
 The grader writes `<feature>.contract.verdicts.json` beside the contract (every file of the flow shares the contract's stem) — `{rowId: {verdict: pass|fail, evidence}}` for every `mechanical` and `deck` row (for `deck` rows: the step re-shot from the built branch, or the live pane). `review-cards.py acceptance <contract>` merges the two into `<feature>.contract.acceptance.json`: step 1 is the contract table with verdicts beside every graded row (yes / no / other — "do you accept these verdicts"), then one words-only yes/no step per `human` and `live-app` row, buttons *Holds / Fails*. It refuses to build if any `mechanical` or `deck` row has no verdict: an ungraded row is not a pass.
 
 ## 8. Build stage — from signed contract to branch
@@ -131,7 +147,39 @@ This is prose and a file convention, not tooling; tooling waits for the data.
 
 **8c. Work breakdown.** The design becomes tasks. Each task is small enough for one subagent, names the contract rows it satisfies, names its own check, and states what it depends on. One review pass. **Plan tier (§9 Q3) lives here and only here:** by default a task carries a description the subagent codes from; a task carries pre-written code only when the work crosses repos, changes data already saved on users' machines, or has steps that must land in strict order. The evidence for the default: this feature's plan was 1,770 lines with pre-written code, half corrected after review and its line numbers stale the day it was written; the marketplace wrote ~3,300 plan lines that were rewritten; the arcade shipped four games, two services and Android parity from a contract-shaped ledger. The cost of the default: a vague task lets two subagents build the same thing two ways, so the breakdown review checks for vagueness, not only mistakes.
 
-**8d. Build.** `superpowers:subagent-driven-development`, unchanged: one implementer subagent per task, parallel where tasks are independent, each given only its task, the contract rows it satisfies, and the rules for the files it touches; a reviewer subagent per task checking the diff against the task and the workspace rules; the coordinating session fixes; `verify.sh` after each task; a ledger (`.superpowers/sdd/progress.md`); a fresh agent reviews the whole branch against the contract at the end. Then the grader (§7), the acceptance deck, and close-out (§4).
+**8d. Build.** `superpowers:subagent-driven-development`, unchanged: one implementer subagent per task, parallel where tasks are independent, each given only its task, the contract rows it satisfies, and the rules for the files it touches; a reviewer subagent per task checking the diff against the task and the workspace rules; the coordinating session fixes; `verify.sh` after each task; a ledger (`.superpowers/sdd/progress.md`). Then §8e, the grader (§7), the acceptance deck, and close-out (§4).
+
+**8e. Two reviewers, then triage.** Decided with Destin 2026-09-04, replacing the single
+whole-branch review. Both are fresh subagents the implementing session dispatches; Destin
+opens nothing.
+
+- **Code reviewer** (`scripts/ui-review/code-reviewer.md`): the branch, the contract's rows, and
+  the rules for the files touched — not the spec, plan, decks or transcript. Hunts bugs,
+  broken promises (a `mechanical` row whose guard does not test it), dead or duplicated code,
+  and things that work but should have been built differently. Every finding names file and
+  line and how it was confirmed; unconfirmed ones are marked `PLAUSIBLE`.
+- **UX tester** (`scripts/ui-review/ux-tester.md`, kit `scripts/ui-review/tester-kit.md`): gets
+  ONLY a short briefing and the kit — no CLAUDE.md, rules, spec or plan — and drives the app
+  as a beta tester with a task. Reports errors and dead ends, expected-one-thing-got-another,
+  **every piece of copy that uses more words than it needs** (with the shorter wording), and
+  visual inconsistencies. Runs twice: on the mockups before the first review deck (step 4),
+  and on the built branch here; the files are `…-ux-review-1.md` and `…-ux-review-2.md`. Told
+  when the backend is simulated, so fixtures are not bugs.
+- **Triage** is the implementing session's: every finding line is marked `accepted`,
+  `rejected` or `already handled` in the review file (same convention as §8b). Accepted
+  findings from this pass become contract rows with `source: review:<file>#<id>`;
+  `contract-check` reads the line and refuses a non-accepted source; the acceptance deck tags
+  the row *found in review*. A copy proposal that changes meaning rather than length is not
+  applied — it goes to Destin on the review deck.
+- **Caps:** each reviewer gets a budget and stops when it is spent, writing where it stopped.
+  A review is not a second build.
+- **Measured like §8b:** findings, accepted, rejected, and rows failed at acceptance are all
+  on disk. After three features, decide from those numbers whether each reviewer earns its
+  cost and whether the first UX run cut Destin's review-deck rounds. Nothing is tooled until
+  then.
+- **Known gap:** the drivers (`shot.mjs`, `ui-probe.mjs`) emulate neither touch nor a 1.5×
+  screen, which is how Destin actually uses the app; the kit says so and the tester must not
+  claim to have tested either. Roadmap: dev-workspace.
 
 **"Pick 10 roadmap things"** is its own plan, after this one. The shape exists and was run three times (`docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md` Tasks 13/16: an approved list, a deterministic verdict, named stop conditions, a spend budget, a ledger). Applied to the roadmap: list = one area file from the restructure design; verdict = `verify.sh` + `close-out.sh`; ledger = the entry. It depends on the restructure landing and on this contract (each fix needs a done-condition). The restructure's per-area files also make "every open item in the feature's area was folded in or excluded with a reason" a mechanical check, which is where §10 P6 goes.
 
@@ -148,7 +196,6 @@ These four are asked on the first questions deck (`docs/active/design/2026-09-01
 
 ## 10. Deferred — not built by this plan
 
-- **P3 — Grade with a stranger.** The verdicts file is written by a fresh evaluator agent, not the implementer; it runs `verify.sh`, re-shoots the `deck` rows from the built branch, and writes evidence per row. A prompt-level change once §7 exists.
 - **P5 — Show the interpretation before the work.** Round N+1's first step quotes each round-N note beside the one line of what will change because of it, as a yes/no.
 - **P6 — Roadmap fold-in as a check.** Waits for the restructure's area files (§8).
 - **"You pick" option** on a question, recording a delegated decision the contract marks AI-decided and vetoable at acceptance.

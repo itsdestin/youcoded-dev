@@ -17,13 +17,10 @@
   ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   cd "$ROOT"
 
-  REPOS=(
-    "itsdestin/youcoded:master"
-    "itsdestin/youcoded-core:master"
-    "itsdestin/youcoded-admin:master"
-    "itsdestin/wecoded-themes:main"
-    "itsdestin/wecoded-marketplace:master"
-  )
+  # One inventory for initial installation and isolated session startup.
+  repo_list=$(node -e 'const r=require(process.argv[1]); for (const [name,v] of Object.entries(r)) if(name!=="workspace") console.log(`${v.repository}:${v.branch}`)' "$ROOT/scripts/workspace-repos.json")
+  REPOS=()
+  while IFS= read -r entry; do REPOS+=("$entry"); done <<< "$repo_list"
 
   for entry in "${REPOS[@]}"; do
     repo="${entry%%:*}"

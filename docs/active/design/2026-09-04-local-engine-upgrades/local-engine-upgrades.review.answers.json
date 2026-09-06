@@ -1,0 +1,72 @@
+{
+ "deck": "local-engine-upgrades-review",
+ "started": "2026-09-05T06:19:19.130Z",
+ "submitted": "2026-09-05T07:01:01Z",
+ "cur": 7,
+ "answers": {
+  "P-1": {
+   "v": "other",
+   "note": "i HATE the bare dropdowns with a chevron. \"> Advanced\" is just ugly as hell to me. we should not this in our ui design guide wherever it exists and fix here. i also think this whole card is just a bit visually cluttered with poor hierarchy and can be improved.",
+   "note_kind": "noting",
+   "seconds": 2011,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-2": {
+   "note": "looks a bit cluttered with poor hierarchty",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-3": {
+   "v": "other",
+   "note": "this just reads as broken. we should just check this before offering the switch to rocm button?",
+   "note_kind": "noting",
+   "seconds": 47,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-4": {
+   "v": "yes",
+   "note": "too much text and would likely confuse some of our regular student users. simplify a bit",
+   "note_kind": "noting",
+   "seconds": 67,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-5": {
+   "note": "i think this can just be a single topline number with dotted underline that breaks down the components on hover?",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 67,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-6": {
+   "note": "i think we should just have icons like an eye and paper next to the model name. on hover they can have a sees images/text-only tooltip",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 103,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-7": {
+   "note": "what? this is mega ugly and will confuse the shit out of normal users in its current layout. visual heirarchy sucks donkey balls.",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 67,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-8": {
+   "v": "other",
+   "note": "crowded, bad visually heirarchy. i think we can make this a single line \"This model may not fit within available system memory\" and make it an expandable pill with detail hidden below.",
+   "note_kind": "noting",
+   "seconds": 97,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

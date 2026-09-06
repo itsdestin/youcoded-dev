@@ -1,0 +1,103 @@
+{
+  "title": "Local engine upgrades — review",
+  "key": "local-engine-upgrades-review",
+  "out": "local-engine-upgrades.review.html",
+  "images": "images/local-engine-upgrades-review",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-local-engine-before",
+    "after": "/home/destin/youcoded-dev/scratch/ui-local-engine-after"
+  },
+  "themes": ["midnight", "light", "creme", "dark", "halftone-dimension", "meadow-mist"],
+  "crops": {
+    "engine-card": ["local-engine", "local-engine-card", "420x420+510+156"],
+    "engine-rocm-guide": ["local-engine", "local-engine-rocm-guide", "420x590+510+156"],
+    "engine-rocm-refused": ["local-engine", "local-engine-rocm-refused", "420x590+510+156"],
+    "engine-advanced": ["local-engine", "local-engine-advanced", "420x590+510+156"],
+    "models-recommended": ["local-engine", "local-models-recommended", "420x590+510+156"],
+    "models-installed": ["local-engine", "local-models-installed", "420x590+510+156"],
+    "model-settings": ["local-engine", "local-model-settings", "420x590+510+156"],
+    "memory-warning": ["local-engine", "local-model-memory-warning", "460x330+490+560"]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Settings → Model Providers → Local engine card",
+      "path": "What the engine is doing right now (deck S-4)",
+      "crop": "engine-card",
+      "headline": "The engine card says which chip it runs on, how much model memory is loaded, and how fast the last reply was.",
+      "changed": "One new line under the state line, only while the engine runs: chip name · GB of models loaded · last reply read / write speed per second. The backend line now reads in words ('Vulkan (any graphics chip)') and the faster-engine button appears ONLY when a matching chip was found — on this AMD laptop, 'Switch to ROCm (faster on AMD)'; on a plain machine, no button.",
+      "notice": "You can tell at a glance whether a model is on the graphics chip or the processor, and how a slow reply compares to the last one. The old 'Switch to CUDA' that showed on every Windows PC is gone.",
+      "risk": "The speed figures come from the engine's own timing of the last reply, so the first one appears only after you have sent a message."
+    },
+    {
+      "id": "P-2",
+      "surface": "Settings → Model Providers → Local engine card",
+      "path": "Switch to ROCm when AMD's software is missing (deck Q-1 pick a)",
+      "crop": "engine-rocm-guide",
+      "headline": "Pressing 'Switch to ROCm' without AMD's software installed opens a guide with the one install command for your Linux flavour.",
+      "changed": "An info box under the button: what is missing (with an (i) explaining ROCm), 'Install command for Arch Linux:' and the command, then Run in terminal · Copy · Check again · Not now, and one line saying the terminal will ask for your password.",
+      "notice": "Nothing installs behind your back. 'Run in terminal' pastes the command into YouCoded's terminal where you press Enter yourself; 'Check again' finishes the switch once it is done. Ubuntu and Fedora get their own command; an unknown distro gets AMD's guide instead.",
+      "risk": "The command names the packages for a supported distro. On a distro we cannot recognise the box offers AMD's guide and Check again only."
+    },
+    {
+      "id": "P-3",
+      "surface": "Settings → Model Providers → Local engine card",
+      "path": "A faster engine that finds no chip is refused (deck S-1)",
+      "crop": "engine-rocm-refused",
+      "headline": "If the faster engine cannot find a graphics chip it can use, the switch is refused and the engine's own message is shown; nothing changes.",
+      "changed": "After 'Check again' (or a direct switch on a machine that has the software), the app installs the build and asks it which device it will use. No device: the error line reads 'Kept the current engine: … no ROCm-capable device is detected. Nothing was changed.'",
+      "notice": "You never end up on a slower processor-only engine that is labelled ROCm or CUDA — today that is exactly what a wrong click could do.",
+      "risk": "The message quotes the engine, so its wording is the engine's, not ours."
+    },
+    {
+      "id": "P-4",
+      "surface": "Settings → Model Providers → Local engine card → Advanced",
+      "path": "Speed switches and the settings that moved under Advanced (deck Q-4 pick a)",
+      "crop": "engine-advanced",
+      "headline": "An Advanced disclosure holds two speed switches, both on, plus the context length and the models folder that used to sit in the open.",
+      "changed": "'Speculative decoding' and 'Compress context memory' as switch rows with a one-line hint and an (i) each. Context length (with an (i)) and 'Models are stored in' moved down here from the main card.",
+      "notice": "The card is shorter and calmer by default; someone comparing models or chasing a quality doubt can turn a speed feature off and see it is off.",
+      "risk": "Changing a switch restarts the engine, so a model in use reloads on the next message."
+    },
+    {
+      "id": "P-5",
+      "surface": "Settings → Model Providers → Models → Recommended",
+      "path": "The size line under a downloadable model (deck S-2, Q-3 pick c)",
+      "crop": "models-recommended",
+      "headline": "A model's size line now shows the model, the memory its context needs, and its vision file as separate numbers before the verdict.",
+      "changed": "'2.4 GB model + 1.6 GB for 32k context + 0.9 GB for images · UD-Q4_K_XL · Runs fast — fits on your GPU'. The context figure comes from the model file's own header at the context length this model will run with. Vision-capable models always download their vision file (Destin's pick) and say so in the size.",
+      "notice": "'Tight' and 'too large' stop being a mystery — you can see which number is the problem and that lowering the context fixes it. Models that can see images cost about 1 GB more, and the line tells you before you download.",
+      "risk": "The picture's Before side has no recommended cards because master's workbench fixture had none; the real app shows the same cards with only '2.4 GB · UD-Q4_K_XL' on that line."
+    },
+    {
+      "id": "P-6",
+      "surface": "Settings → Model Providers → Models → Installed",
+      "path": "A downloaded model's row (deck S-3, Q-2)",
+      "crop": "models-installed",
+      "headline": "Installed rows gain a Settings button; a model that can see images says so, and one that could gets an 'Add vision' line.",
+      "changed": "'Settings' (quiet, beside Delete) on every complete model. A 'Sees images' tag after the name when the vision file is in place. Under a model whose family has a vision file it never fetched: 'Can see images once its vision file is added · Add vision (0.9 GB)'.",
+      "notice": "One click adds vision to a model you already have: it downloads the file and moves the model into its own folder so the engine pairs the two. Nothing on disk is rearranged unless you ask.",
+      "risk": "Delete on a model with vision removes the vision file too."
+    },
+    {
+      "id": "P-7",
+      "surface": "Settings → Model Providers → Models → a model's Settings",
+      "path": "Per-model settings (deck Q-2 pick a)",
+      "crop": "model-settings",
+      "headline": "Each model gets its own context length and a Keep loaded switch, with GPU layers and extra engine flags behind a second Advanced.",
+      "changed": "Context length (blank = 'Same as engine'), Keep loaded (never auto-sleep this model), then Advanced: 'Layers on graphics chip' (Auto or a number) and 'Extra engine flags' (a text box passed straight to the engine). Every control has an (i) in plain words. Saves on blur or toggle; the model reloads with the new values on its next message.",
+      "notice": "A 2B helper can run at 16k while the big model runs at 128k. A power user can pin a model in memory or pass any flag the engine accepts; a mistyped flag shows the engine's own error here instead of a silent failure.",
+      "risk": "Extra flags are unchecked by design: a wrong one stops that model from loading until it is fixed."
+    },
+    {
+      "id": "P-8",
+      "surface": "New session form → model picked → memory warning",
+      "path": "The warning before loading a model (deck S-2)",
+      "crop": "memory-warning",
+      "headline": "The memory warning names the two numbers behind it and can be silenced for this model at this context length.",
+      "changed": "The app's standard warning box replaces a hand-drawn one with an emoji. It reads '9.5 GB model + 15.6 GB for 128k context may not fit beside what is loaded', keeps Show more, and adds a checkbox: 'Don't warn me again for this model at this context length'. A 'too large' block has no checkbox — it is not a choice.",
+      "notice": "You answer the same warning once, not every time you pick the model; change the context length and it asks again because the numbers changed.",
+      "risk": "The remembered answer lives on this computer only; another device asks once too."
+    }
+  ]
+}

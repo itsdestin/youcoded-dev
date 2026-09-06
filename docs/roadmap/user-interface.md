@@ -9,13 +9,12 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       the drag starts, so it can draw the carried pill too
       `window-chrome` `desktop` `confirmed` `checked 2026-09-04`
 
-- [ ] Dictation is not built into the message box — speaking a message means OS-level dictation
-      glued on top, which does not punctuate. Wanted: a mic in the input bar that produces properly
-      punctuated, readable text the way a phone keyboard's voice input does, with live partial
-      transcript while speaking. Destin asked for this to rank higher than a normal idea. Undesigned:
-      which speech engine (local matters for the run-everything-local audience), and Android parity,
-      where dictation matters most
-      `input-bar` `all` `parked` `checked 2026-09-02`
+- [ ] After voice ships: a fallback to the speech service built into Windows and macOS for
+      people who do not want the 464 MB download. Destin on the review deck 2026-09-05: "we may
+      want to roadmap a fallback to built-in windows or mac speech services, but not rn".
+      Same shelf: Moonshine v2 (106 MB, English only, 8 s at a time) as a smaller download if
+      the 464 MB first download draws complaints (accepted on review V-0's risk card)
+      `input-bar` `desktop` `parked` `checked 2026-09-05`
 
 - [ ] On a phone the app is a shrunk desktop — status-bar chips, panels and desktop session
       switching — where Gemini, Siri and Claude mobile are built around quick dispatch and search.
@@ -65,11 +64,13 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       (attention toast, permission gates, loading spinners, sync status) were never audited
       `chat` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-chat-float-stacking.md
 
-- [ ] Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel —
-      mockup built 2026-08-18 (four provider-first pages) and never reviewed by Destin; it now
-      lives on branch feat/assistant-settings-mockup (worktree worktrees/assistant-settings)
-      Destin 2026-09-02: not a review next session, but finishing it is a pre-1.3 priority
-      `settings` `desktop` `needs-verify` `checked 2026-09-02` `v1.3`
+- [ ] Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel.
+      Destin reviewed the 2026-08-18 mockup on 2026-09-04: concept yes, implementation
+      rejected and DELETED (branch and worktree gone). Restart from scratch through the feature
+      flow — questions deck, then draw in the workbench on today's master. The concept and the
+      one hard constraint (Claude Code and native sessions have different permission modes) are
+      at the top of the archived design doc. Pre-1.3 priority (Destin, 2026-09-02)
+      `settings` `desktop` `confirmed` `checked 2026-09-04` `v1.3` → docs/archive/design/2026-08-17-assistant-settings-panel-design.md
 
 - [ ] Pressing a session whose name is shorter than the current one lets one or two more
       dots into the row, and they appear at once while the bar re-centres ~6px in a single
@@ -150,3 +151,10 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       Replace or Append — and skip the menu when the box is empty (Destin, 2026-09-02; same rule
       as editing a queued message, native-harness → sessions)
       `quick-chips` `all` `needs-verify` `checked 2026-09-02`
+
+- [ ] Three places still open a section with a bare "›" beside a word — the Backup & Sync log
+      ("Show log"), the recommended-model card in Local Models, and the system marker in chat.
+      Destin (2026-09-05 review deck): "I HATE the bare dropdowns with a chevron." The rule is now
+      design-guide G-22; the Local Models engine card and model rows switched to it on
+      `feat/local-engine-upgrades`, these three have not.
+      `all` `confirmed` `checked 2026-09-05` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json

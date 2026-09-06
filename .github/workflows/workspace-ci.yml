@@ -94,7 +94,7 @@ jobs:
       # guard and workspace-sync.sh. Both are only ever exercised on Destin's
       # machine, so CI is the only thing that would notice them rotting.
       - name: Test the workspace drift guards
-        run: node --test scripts/workspace-drift-guards.test.mjs
+        run: node --test scripts/workspace-drift-guards.test.mjs scripts/workspace-mcp.test.mjs
 
       - name: Test the workbench boot check
         if: ${{ !cancelled() }}
@@ -138,6 +138,12 @@ jobs:
       - name: close-out.sh names the right repo instead of crying "never pushed"
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-wrong-repo.test.sh
+
+      # The pre-merge report must say whether the branch still merges cleanly — two branches
+      # passed every check on 2026-09-04 and conflicted on the generated roadmap table at merge.
+      - name: close-out.sh reports a merge conflict before anyone asks "ready to merge?"
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-conflict.test.sh
 
       # A command printed in a doc is a promise nobody checks. The deck's test command sat
       # WRONG in two docs for months — `-t .` cannot start at all — which is why that suite

@@ -1,0 +1,33 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=statusbar-cc",
+ "width": 1280,
+ "height": 900,
+ "shots": [
+  {
+   "name": "bar",
+   "boot": 4500,
+   "actions": [
+    {
+     "eval": "(()=>{const s=[...document.querySelectorAll('*')].find(e=>e.scrollHeight>e.clientHeight+200&&e.clientHeight>300); if(s) s.scrollTop=s.scrollHeight;})()",
+     "settle": 900
+    }
+   ],
+   "sameAsBaseline": true
+  },
+  {
+   "name": "helpers",
+   "boot": 4500,
+   "sameAsBaseline": true,
+   "actions": [
+    {
+     "eval": "(()=>{const s=[...document.querySelectorAll('*')].find(e=>e.scrollHeight>e.clientHeight+200&&e.clientHeight>300); if(s) s.scrollTop=s.scrollHeight;})()",
+     "settle": 600
+    },
+    {
+     "eval": "(()=>{const c=document.querySelector('[data-testid=specialists-chip]'); if(c) c.click();})()",
+     "settle": 1000
+    }
+   ]
+  }
+ ]
+}

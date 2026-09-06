@@ -11,7 +11,7 @@ import { B, LEN, present, inWindow, type BeatModule } from './beat';
 // Beat 5 (6 bars): collaborate with your assistant — and where it all lives.
 // Its first two bars: the request goes out (fast); bars 2–4: the re-opened, sorted
 // sheet (slowed to fill them); bars 4–6: project view — Econ 201's hero and file
-// tree, one click to Context (the clip runs at 1.2× so the Context tab lands inside).
+// tree, one click to Instructions & Memories (the clip runs at 1.2× so the tab lands inside).
 const T_AFTER = B('b5', 2), T_PROJ = B('b5', 4), END = LEN('b5');
 const A_FROM = markFrame('promo-sheet', 'attach', 'start', -6);
 const A_RATE = Math.min(1.6, Math.max(1, (markSec('promo-sheet', 'reply', 'end') - markSec('promo-sheet', 'attach', 'start')) / (2 * BAR_S)));

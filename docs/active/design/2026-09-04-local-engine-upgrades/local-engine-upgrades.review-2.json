@@ -1,0 +1,127 @@
+{
+  "title": "Local engine upgrades — review, round 2",
+  "key": "local-engine-upgrades-review-2",
+  "out": "local-engine-upgrades.review-2.html",
+  "images": "images/local-engine-upgrades-review-2",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-local-engine-before",
+    "after": "/home/destin/youcoded-dev/scratch/ui-local-engine-after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "creme",
+    "dark",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "crops": {
+    "engine-card": [
+      "local-engine",
+      "local-engine-card",
+      "420x400+510+156"
+    ],
+    "engine-rocm-guide": [
+      "local-engine",
+      "local-engine-rocm-guide",
+      "420x590+510+156"
+    ],
+    "engine-advanced": [
+      "local-engine",
+      "local-engine-advanced",
+      "420x590+510+156"
+    ],
+    "models-recommended": [
+      "local-engine",
+      "local-models-recommended",
+      "420x590+510+156"
+    ],
+    "models-installed": [
+      "local-engine",
+      "local-models-installed",
+      "420x590+510+156"
+    ],
+    "model-settings": [
+      "local-engine",
+      "local-model-settings",
+      "420x590+510+156"
+    ],
+    "memory-warning": [
+      "local-engine",
+      "local-model-memory-warning",
+      "460x330+490+560"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-9",
+      "surface": "Settings → Model Providers → Local engine card",
+      "path": "Round 2 of P-1: the card, re-laid",
+      "crop": "engine-card",
+      "headline": "The engine card is a title with its state, one fact line, and two rows: a faster engine when your chip has one, and Advanced.",
+      "changed": "Round 1 had a state line, a hardware line, a 'Using:' line with a button, and a bare '› Advanced'. Now: 'Local engine · Running', then one line — chip · GB loaded · last reply read/write speed — then a 'Faster engine for your AMD chip' row with a Set up / Switch button, then an 'Advanced' row with the same right-hand chevron every settings row has. Version and backend moved into Advanced.",
+      "notice": "Less to read, and the two things you might act on are rows you already know how to use. The button for a faster engine only appears when the app has found the matching chip.",
+      "risk": "Nothing on this card tells you the engine version any more until you open Advanced."
+    },
+    {
+      "id": "P-10",
+      "surface": "Settings → Model Providers → Local engine card",
+      "path": "Round 2 of P-2 and P-3: setting up ROCm, and no more 'refused' state",
+      "crop": "engine-rocm-guide",
+      "headline": "Set up shows one sentence, the command with Copy inside it, and two buttons; the switch is only offered when it will work.",
+      "changed": "The box under the faster-engine row: 'Install AMD's ROCm software first' (with an (i)), 'Run this in a terminal (Arch Linux). It will ask for your password.', the command with Copy beside it, then Run in terminal and Check again. The four-button row and the extra paragraph are gone. The app now checks for the chip AND its software before offering the button at all, so the round-1 'refused' screen is no longer a normal state — a failure after install still shows the engine's own message as an ordinary error line.",
+      "notice": "Two clicks and a password in your own terminal, nothing installed behind your back, and no button that leads to a refusal.",
+      "risk": "On a Linux flavour we cannot recognise, the box offers AMD's guide and Check again instead of a command."
+    },
+    {
+      "id": "P-11",
+      "surface": "Settings → Model Providers → Local engine card → Advanced",
+      "path": "Round 2 of P-4: shorter words, proper rows",
+      "crop": "engine-advanced",
+      "headline": "Advanced opens in place: two speed switches with one-line hints, the context length, and the engine build and folder, all as rows.",
+      "changed": "'Speculative decoding — Faster replies when text repeats.' and 'Compress context memory — Halves the memory long chats use.' Each keeps its (i) for the full story. Context length is a row with the number field on the right; the version, backend and models folder are one read-only row.",
+      "notice": "A student sees four short rows, not paragraphs; a power user still gets every fact and switch.",
+      "risk": "Changing either switch restarts the engine; a model in use reloads on the next message."
+    },
+    {
+      "id": "P-12",
+      "surface": "Settings → Model Providers → Models → Recommended",
+      "path": "Round 2 of P-5: one number, breakdown on hover",
+      "crop": "models-recommended",
+      "headline": "A model's size is one dotted number; hovering it breaks down model, vision file, download total and memory while running.",
+      "changed": "'3.3 GB · UD-Q4_K_XL · Runs fast — fits on your GPU'. The 3.3 GB carries a dotted underline; hover or tap opens a small table: Model file 2.4 GB · Vision file 0.9 GB · Download 3.3 GB · Memory while running 4.9 GB (includes 1.6 GB for a 32k context). The picture shows the bubble open on the first card.",
+      "notice": "The row is a single line again. The context-memory number is one hover away when 'tight' needs explaining.",
+      "risk": "The Before side has no recommended cards because master's workbench fixture had none; the real app shows the same cards with '2.4 GB · UD-Q4_K_XL'."
+    },
+    {
+      "id": "P-13",
+      "surface": "Settings → Model Providers → Models → Installed",
+      "path": "Round 2 of P-6: icons, not a tag",
+      "crop": "models-installed",
+      "headline": "An eye marks a model that sees images, a page marks text-only; hover names it. 'Add vision' is a short link.",
+      "changed": "The 'Sees images' tag is replaced by a small eye icon; text-only models get a page icon. Hovering either says 'Sees images' or 'Text only' (and, for a model that could see, points to the Add vision link). The Add vision line is just 'Add vision (0.9 GB)'.",
+      "notice": "You can tell at a glance which downloaded models take pictures, without an extra word on every row.",
+      "risk": "Icons need the hover bubble for their meaning; on a phone the bubble opens on tap."
+    },
+    {
+      "id": "P-14",
+      "surface": "Settings → Model Providers → Models → a model's Settings",
+      "path": "Round 2 of P-7: the settings panel as rows",
+      "crop": "model-settings",
+      "headline": "A model's settings are ordinary Settings rows: Context length, Keep loaded, and an Advanced row for GPU layers and flags.",
+      "changed": "Every setting is a row with a title, a one-line hint and its control on the right. 'Context length — Blank uses the engine's setting.' 'Keep loaded — Never put this model to sleep.' 'Advanced' expands in place with the right-hand chevron turned down: 'Layers on graphics chip' (Auto or a number) and 'Extra engine flags' (a text box), both with an (i).",
+      "notice": "It reads like the rest of Settings. A first-time user sees two plain rows; a power user opens Advanced.",
+      "risk": "Extra flags are unchecked by design: a wrong one stops that model from loading until it is fixed, with the engine's message shown here."
+    },
+    {
+      "id": "P-15",
+      "surface": "New session form → model picked → memory warning",
+      "path": "Round 2 of P-8: one line, details on request",
+      "crop": "memory-warning",
+      "headline": "The memory warning is one line with a Why? that unfolds the numbers and the don't-warn-again box.",
+      "changed": "The app's thin status strip (amber dot, one sentence, one action) replaces the boxed warning. Why? unfolds '9.5 GB model + 15.6 GB for 128k context…', the explanation, and 'Don't warn me again for this model at this context length'. 'Too large' uses the same strip with no checkbox: it is not a choice. The picture shows it unfolded.",
+      "notice": "The form stays short; the warning reads in a glance and explains itself only when asked.",
+      "risk": "The remembered answer lives on this computer only."
+    }
+  ]
+}

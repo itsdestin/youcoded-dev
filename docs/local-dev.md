@@ -147,6 +147,9 @@ git -C youcoded branch -D dev-profile
 
 ## Driving the desktop dev app via CDP (headless verification)
 
+(A tester with no workspace context gets `scripts/ui-review/tester-kit.md` instead of this
+section; the implementing session does steps 1–2 below and hands over the address.)
+
 For programmatic UI verification of the DESKTOP dev instance (the Android recipe in
 CLAUDE.md uses adb; this is the desktop equivalent, first used for the Phase 2 Plan A
 live-acceptance run):

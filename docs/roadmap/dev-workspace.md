@@ -3,6 +3,16 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
+      `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
+      an Android manifest or a workspace file yields "tests: none", and the guard that
+      exists to catch exactly that edit stays silent. Found 2026-09-05 reviewing the voice
+      prompting manifest guard, which reads `app/src/main/AndroidManifest.xml` from a test in
+      `desktop/tests/`. CI's full `npm test` does catch it, so this is about the local loop
+      lying, not about shipping broken. Fix: let a test declare the paths it watches, or
+      widen the source-scanning-guard fallback to spot cross-repo reads
+      `n/a` `confirmed` `checked 2026-09-05`
+
 
 - [ ] `native-session-host` can fail its own CLEANUP on the macOS CI leg — `ENOTEMPTY` from
       `rmHostRoot()` while deleting the temp dir, thrown out of afterEach into a test that had
@@ -98,6 +108,38 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+- [ ] The question deck (`scripts/questions/serve.py`) can only ask multiple-choice questions,
+      so a session needing Destin to approve a set of concrete text changes rebuilds its own
+      loopback answer page instead of using it — happened 2026-09-05 for a nine-item prompt
+      diff review. Wanted: a card type that renders a before/after diff, so one surface
+      answers every "approve these specific edits" question
+      `desktop` `needs-verify` `checked 2026-09-05`
+
+- [ ] A dev instance still shares one file with Destin's live app: the cross-device sync state
+      at ~/.claude/toolkit-state/sync-spaces.json is a hardcoded path, so --profile does not
+      separate it and two apps can write it at once. Found 2026-09-05 while handing over the
+      ChatGPT sign-in build, right after the setup-wizard state was given the same treatment
+      (YOUCODED_TOOLKIT_STATE_DIR); the sync path needs its own override or the same one
+      `desktop` `needs-verify` `checked 2026-09-05`
+
+- [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
+      1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
+      context-free tester cannot claim to have covered either. Add pointer and scale switches to
+      shot.mjs and ui-probe.mjs (drag-fuzz already has both) and default the tester kit to them
+      `n/a` `confirmed` `checked 2026-09-04`
+
+- [ ] Measure the feature flow's two reviewers: after three features have run through the
+      2026-09-04 flow, count findings, accepted, rejected and rows failed at acceptance per
+      reviewer, and whether the UX tester's first run cut Destin's review-deck rounds; decide
+      from those numbers whether each reviewer earns its cost
+      `n/a` `parked` `checked 2026-09-04`
+
+
+- [ ] A 526-line conversation-triage script for the test engine exists only on branch
+      `chore/conversation-triage-script` (rescued 2026-09-04 from the deleted assistant-settings
+      mockup branch, where it had hitched a ride). Nobody has said whether it is wanted: merge it
+      with a README line, or delete the branch
+      `n/a` `decision` `checked 2026-09-04`
 
 - [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
       nothing anywhere saying the app had stopped responding, so a tester's force-quit on
@@ -124,7 +166,21 @@ seen-on is always n/a here.
 - [ ] Opening Settings → Backup & Sync in the workbench takes the whole thing down to "YouCoded
       failed to start"; the boot check cannot see it and the review sweep counts the error state
       as covered
-      `n/a` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-sync-panel-crash.md
+      `n/a` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-sync-panel-crash.md
+
+- [ ] `chatgpt-auth.test.ts` ("after the callback the poll starts…") fails on the Windows CI
+      runner and passes on a re-run of the same commit, with no code change — seen 2026-09-05 on
+      youcoded PR #430. A suite that fails for reasons that are not yours trains sessions to wave
+      real failures away, which is the exact thing the 2026-08-28 flake sweep set out to end
+      `n/a` `confirmed` `checked 2026-09-05` `regression`
+
+- [ ] Reading and editing files through shell `cat`/`sed`/heredocs loads NO path-scoped rule —
+      rules fire on the file tools only — so a session told to prefer Bash silently works with
+      none of them. Measured 2026-09-05: a session that shipped a renderer feature, a new test
+      and a review deck got 0 of the 6 rules its own edits matched (`~/.claude/instructions-loaded.log`
+      records the misses). A PostToolUse hook on edit-shaped Bash could name the rule that did
+      not load; the observation instrument for it already exists
+      `n/a` `confirmed` `checked 2026-09-05`
 
 - [ ] The old review-harness script still lets the model it runs read the OpenRouter key (its
       env scrub does not work); the native evaluator fixed this properly — retire the old script,
@@ -202,6 +258,32 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+- [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
+      then recommend deleting its worktree; it should notice unfinished edits before declaring success
+      `n/a` `needs-verify` `checked 2026-09-05`
+
+- [ ] Recheck the old cleanup handoff's remaining unused-code and bug-hunt ideas before
+      treating them as completed; its retired tooling instructions are no longer a safe starting point
+      `n/a` `needs-verify` `checked 2026-09-05` → docs/archive/handoffs/2026-08-05-code-cleanup-with-serena.md
+
+- [ ] Planning, design, review and wrap-up instructions can send an assistant down conflicting
+      routes or to a skill it cannot invoke; consolidate the routes and check availability
+      without turning a read-only review into permission to edit or ship
+      `n/a` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
+- [ ] roadmap-check verifies a report's claim against whatever copy of the sub-repo happens to
+      be on disk beside it, so a stale main checkout can keep a fixed bug "confirmed" for days
+      (two specialist bugs fixed 2026-09-02 were re-listed as open on 2026-09-04), and from a
+      scratchpad worktree every claim is skipped as "repo not on disk". Read claims from
+      origin/<default> with git show, and fall back to $YOUCODED_WORKSPACE for the sub-repos
+      `n/a` `confirmed` `checked 2026-09-05`
+
+- [ ] Every branch that files a roadmap item conflicts on the generated area table in ROADMAP.md
+      at merge time (three times on 2026-09-04/05). `roadmap-check --fix` could resolve a conflict
+      it recognises as only the table (strip the markers inside the table block and regenerate),
+      leaving any other conflict alone
+      `n/a` `confirmed` `checked 2026-09-05`
+
 
 - [ ] Path-scoped rules never reach a session that edits through the Bash tool, which is what
       bypass-permissions mode tells sessions to do. Measured on 2026-09-03 (session
@@ -438,3 +520,10 @@ seen-on is always n/a here.
       inside the viewport but still rendering as a spacer — that number must always be zero.
       Generalises past folding to any lazy render: is anything late to the screen?
       `n/a` `needs-verify` `checked 2026-09-03` `performance`
+
+- [ ] The close-out check reports a fully merged, fully pushed branch as "never pushed" when the
+      merge commit's message was written by hand instead of left as git's default, because it looks
+      for the branch's name in that message. Happened on the voice merge 2026-09-05, where the
+      message was rewritten to describe the feature for Destin. Matching the commit rather than the
+      words would fix it; so would always keeping the branch name in the message
+      `n/a` `confirmed` `checked 2026-09-05`

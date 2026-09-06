@@ -138,6 +138,13 @@ export YOUCODED_PORT_OFFSET="$OFFSET"
 # localStorage, window bounds, and cache don't clobber the built app's.
 export YOUCODED_PROFILE="$PROFILE"
 
+# The first-run wizard's setup state lives under HOME, NOT under Electron's
+# userData, so --profile alone does not isolate it: a dev instance that runs the
+# wizard writes over the state file Destin's INSTALLED app reads, and leaving it
+# mid-flow makes his real app open on the setup wizard at its next launch.
+# (Found by the T5 review of the ChatGPT sign-in build, 2026-09-05.)
+export YOUCODED_TOOLKIT_STATE_DIR="$HOME/.claude/toolkit-state-$PROFILE"
+
 # Chromium's remote-debugging port, ON BY DEFAULT for dev instances (2026-08-28).
 #
 # WHY default-on: without it, inspecting a live renderer means killing the app,
