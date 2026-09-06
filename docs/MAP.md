@@ -99,6 +99,7 @@ session-start hook prints this table into every session, so a lookup costs zero 
 | the buddy's face / its expressions | `youcoded/desktop/src/renderer/components/mascot/mascot-poses.ts` (which face each pose shows) plus the active theme's own rig SVG in the wecoded-themes registry |
 | drawing a mascot for a theme | `wecoded-marketplace/wecoded-themes-plugin/skills/theme-builder/scripts/build-mascot.mjs` — generate from a palette, then decorate the slots |
 | buddy mode (the floating window) | `youcoded/desktop/src/renderer/components/buddy/` |
+| where the buddy is positioned, docked and dragged | `youcoded/desktop/src/main/buddy-window-manager.ts` |
 | the Permissions settings screen | `youcoded/desktop/src/renderer/components/PermissionsSection.tsx` |
 | the specialists chip + popup | `youcoded/desktop/src/renderer/components/SpecialistsChip.tsx` |
 | the fake backend the Workbench runs against | `youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts` |

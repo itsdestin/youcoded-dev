@@ -1,0 +1,120 @@
+{
+  "title": "The buddy on Linux \u2014 contract",
+  "key": "linux-buddy-helper-contract",
+  "out": "linux-buddy-helper.contract.html",
+  "themes": [
+    "midnight"
+  ],
+  "branch": "feat/linux-buddy-kwin-helper",
+  "sources": {
+    "linux-buddy-helper-questions": "linux-buddy-helper.questions.json",
+    "linux-buddy-helper-questions2": "linux-buddy-helper.questions2.json",
+    "linux-buddy-helper-review2": "linux-buddy-helper.review2.json",
+    "linux-buddy-helper-decide-uninstall": "linux-buddy-helper.decide-uninstall.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Buddy Floater popup",
+      "path": "Settings \u2192 Buddy Floater, on Linux",
+      "headline": "This is what done means for the buddy on Linux.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Switching the buddy on for the first time asks you before anything is added to your desktop.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail \u2014 the ask happens once, at the switch, not during first-run setup",
+          "source": "linux-buddy-helper-questions#Q-1"
+        },
+        {
+          "id": "R2",
+          "statement": "The popup explains what the helper does, says the buddy cannot be turned on without it, and does not promise removal on uninstall.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail \u2014 the approved card, re-shot from the built branch",
+          "source": "linux-buddy-helper-decide-uninstall#D-1",
+          "note": "AMENDED 2026-09-04. The approved card said 'it is removed when you uninstall YouCoded', which is false for most Linux users. Replacement wording carried in the design."
+        },
+        {
+          "id": "R3",
+          "statement": "The choice you are given is Add helper or Not now.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail \u2014 the approved card, re-shot from the built branch",
+          "source": "linux-buddy-helper-review2#B-1"
+        },
+        {
+          "id": "R4",
+          "statement": "If you decline the helper, no buddy appears at all \u2014 nothing stuck in one spot.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "linux-buddy-helper-questions2#Q-2R"
+        },
+        {
+          "id": "R5",
+          "statement": "On a Linux desktop the helper cannot work on, the row reads Not yet supported on this desktop.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail \u2014 the approved row, re-shot from the built branch",
+          "source": "linux-buddy-helper-review2#B-3"
+        },
+        {
+          "id": "R6",
+          "statement": "The separate switch for pinning the buddy above other windows is gone; the popup is one row.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail \u2014 the approved row, re-shot from the built branch",
+          "source": "linux-buddy-helper-review2#B-2",
+          "note": "AMENDED 2026-09-04 by decide-uninstall#D-1: a Remove helper action is a second control. It appears ONLY when the helper is installed, so the one-row state this row was signed against is still what a new user sees. Acceptance re-shoots both states."
+        },
+        {
+          "id": "R7",
+          "statement": "Whenever the buddy is on, it stays above other windows without you asking for it.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "linux-buddy-helper-review2#B-2"
+        },
+        {
+          "id": "R8",
+          "statement": "Once the helper is added, you can drag the buddy anywhere on screen and it stays there.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "linux-buddy-helper-questions2#Q-5"
+        },
+        {
+          "id": "R9",
+          "statement": "Turning the buddy off leaves the helper in place, so turning it back on is instant.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail \u2014 no second question on the way back on",
+          "source": "linux-buddy-helper-questions#Q-3"
+        },
+        {
+          "id": "R10",
+          "statement": "You can remove the helper again yourself, any time, from the buddy's own settings.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail \u2014 Remove helper takes it out of KDE's settings and the buddy switches off",
+          "source": "linux-buddy-helper-decide-uninstall#D-1",
+          "note": "AMENDED 2026-09-04. Was: 'Uninstalling the app takes the helper back out of your desktop settings' (source questions#Q-3). Design review found that unbuildable \u2014 AppImage, the first format shipped, has no uninstall step at all, and on deb/rpm/pacman the hook runs as root against a per-user kwinrc. Re-opened via the decide deck; Destin chose a user-owned Remove helper control plus honest wording."
+        },
+        {
+          "id": "R11",
+          "statement": "An app update puts an improved helper in place quietly, without asking you again.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "linux-buddy-helper-questions#Q-4"
+        },
+        {
+          "id": "R12",
+          "statement": "If your buddy is already on, it is hidden after the update until you turn it back on.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "linux-buddy-helper-questions2#Q-5",
+          "note": "hide the buddy at the start of next update/ then prompt only if user goes in to re enable/"
+        },
+        {
+          "id": "R13",
+          "statement": "The offer to add the helper waits in the buddy's settings; no dialog interrupts you after an update.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "linux-buddy-helper-questions2#Q-5"
+        }
+      ]
+    }
+  ]
+}

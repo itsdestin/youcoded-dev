@@ -32,10 +32,22 @@ has passed ~8 items — graduate it to its own file.
 
 ## buddy
 
-- [ ] Buddy floater does not appear on Linux Wayland — the XWayland route worked but was shelved
-      (2026-07-23); the native-Wayland overlay ships switched off by default. Next attempt: native
-      Wayland.
-      `buddy-window` `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1`
+- [ ] **BLOCKS 1.3** — the buddy has only ever been used in a development build (2026-09-06):
+      every test of it, including the live Wayland run Destin signed off, ran against the dev
+      instance. Nobody has opened a real beta build and used the buddy. The specific worry is
+      the Linux helper — its files are handled specially when the app is packaged, and if that
+      handling is wrong, "Add helper" looks like it works and silently does nothing, in the
+      shipped app only, where no test looks. Destin, 2026-09-06: test the buddy in a beta
+      build before 1.3. Cut a beta, install it, and on KDE Wayland add the helper and drag the
+      buddy; elsewhere just check the buddy still opens, drags, docks and remembers where it was
+      `buddy-window` `all` `needs-verify` `checked 2026-09-06` `urgent` `v1.3`
+
+- [ ] The Linux buddy has never been tried on two screens — every probe ran on the laptop panel
+      alone, and Destin deferred the TV test on 2026-09-04. On a second monitor the buddy may open
+      on the wrong screen, or sit on that screen's taskbar if the app fails to match KDE's name for
+      it. Not a stranding risk: an unreachable position is already pulled back to the nearest
+      screen. Do the real two-screen run before this ships.
+      `buddy-window` `desktop` `needs-verify` `checked 2026-09-04` `v1.3.1` → docs/archive/design/2026-09-04-linux-buddy-helper/technical-design.md
 
 - [ ] With a buddy window open, a streaming reply makes the whole window re-lay-out on every
       token (2026-08-27) — the twin of the main-chat stutter fixed in perf cycle 1.

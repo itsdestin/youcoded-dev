@@ -1,0 +1,32 @@
+{
+ "deck": "linux-buddy-helper-review",
+ "started": "2026-09-04T20:50:05.224Z",
+ "submitted": "2026-09-04T20:52:52Z",
+ "cur": 2,
+ "answers": {
+  "B-1": {
+   "note": "remove \"that is why the buddy sits wherever it lands.\" affter \"buddy's behalf\" put \"Without this helper, the buddy floater cannot be enabled.\"",
+   "note_kind": "now",
+   "v": "yes",
+   "seconds": 88,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-2": {
+   "note": "i think we can just completely get rid of the \"pin buddy above other windows\" biit.",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 29,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-3": {
+   "v": "other",
+   "note": "This should be more of a \"Not yet supported, in-progress\"",
+   "note_kind": "noting",
+   "seconds": 50,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
