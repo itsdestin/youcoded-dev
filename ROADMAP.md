@@ -47,6 +47,7 @@ Target: `v1.3`
 - marketplace: The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets
 - native-harness: The assistant cannot search the WeCoded marketplace, so when it needs a capability it does
 - native-harness: **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
+- other-features: **BLOCKS 1.3** — the buddy has only ever been used in a development build (2026-09-06):
 - other-features: Nothing on first run tells a new user the assistant can change and delete files and that
 - user-interface: Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel.
 
