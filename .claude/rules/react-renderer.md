@@ -44,10 +44,9 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 - **The right slot holds EITHER the artifact drawer OR the games panel** — both read `var(--right-pane-width)`; `chrome-glass--drawer-open` gates on `activeDrawerOpen || gameState.panelOpen`. Don't hardcode the width.
 
 ## Theme color contrast (`desktop/scripts/audit-theme-contrast.mjs`; CI `wecoded-themes/scripts/audit-contrast.mjs`)
-- **`panel` vs `canvas` ≥ 1.07:1**; `fg` ≥8, `fg-2` ≥5.5, `fg-dim` ≥4, `fg-muted` ≥3, `fg-faint` ≥2 on five surfaces (`contrast-rules.js`); `on-accent` vs `accent` ≥4.5.
-- **chat-pane bg == drawer-pane bg (both `--canvas`)** — change them in the SAME edit; the audit doesn't catch a mismatch.
-- **A status colour means what `StatusDot.tsx` STATUS_LABEL says**: green *Working*, blue *Response Ready*, amber *Needs a Look*, red *Needs Input*. A pill choosing its own tells the user the opposite of the session pills (specialists said "Working" in blue until Destin caught it, 2026-09-05).
-- **Status colours are FIXED across themes, so never put one in the word** — `#4CAF50` as text measures 1.97/1.81/1.50:1 on light/creme/meadow-mist (floor 4.5). Ring + tint, word on `text-fg`; `SessionStrip` STATUS_PILL is the pattern. The sweep catches this — never `probe: false` in a plan.
+- **Surface/text/accent thresholds are BLOCKING CI** (`audit-contrast.mjs`) — the numbers live in the depth doc; you cannot violate them silently.
+- **chat-pane bg == drawer-pane bg (both `--canvas`)** — change them in the SAME edit; the audit does NOT catch this one.
+- **Status colour == `StatusDot.tsx` STATUS_LABEL** (green *Working*, blue *Response Ready*), and it goes in the ring/tint, NEVER the word — fixed across themes, so as text it fails the pale ones · depth doc → "Status colours".
 
 ## Header bar (`HeaderBar.tsx`)
 - **No `min-w-0` on the left cluster** (collapses below the gear's `shrink-0`); put it on an individual child. Layout is SPACE-aware (`packSessions()` + ResizeObserver) — no `@media`/`window.innerWidth`; viewport branches only via `useNarrowViewport()`.
@@ -64,7 +63,3 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 ## Remote access state sync (`main/remote-server.ts`, `RemoteSnapshotExporter.tsx`)
 - **Remote clients hydrate via `chat:hydrate` on connect** — no parallel replay buffer; extend `serializeChatState`/`deserializeChatState` instead. `chat:export-snapshot` has a 2s timeout.
 - **`attentionState` is authoritative on DESKTOP only** — remote browsers get `attentionMap` via `status:data` and MUST NOT run their own classifier. App's `statusData` handler's `attentionMap` diff is load-bearing.
-
-## UI iteration tooling
-- **Building or redesigning UI? `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`); `run-dev.sh` only for PTY/main-process behaviour. Unbacked channels → `MOCK_ONLY`; review under `stress`/`empty`. **After ANY shim change: `node scripts/workbench-boot-check.mjs`.** Spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
-- **UI review sweep: `/ui-review`** (`run-review.sh`) — self-verified, 6 themes; read `coverage.md` before writing any finding.

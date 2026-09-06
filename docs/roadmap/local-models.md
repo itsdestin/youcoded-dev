@@ -91,7 +91,7 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       the binding's own provider, and a total network failure is never remembered, so the cost
       repeats on every create, resume and model swap. The local half is fixed and pinned; this
       is the same one-line narrowing in `ipc-handlers.ts`'s pricing closure.
-      `local-models` `desktop` `confirmed` `checked 2026-09-05`
+      `desktop` `confirmed` `checked 2026-09-05`
 
 - [ ] A vision model downloaded while the app is already running can be told to the assistant as
       text-only. The engine does re-read the file pairing on request, and a download completing
@@ -100,4 +100,4 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       while the assistant is told the model cannot see, so the user attaches a picture and it
       silently vanishes. Found reviewing the vision work 2026-09-05; deriving the answer from the
       files on disk as well as from the engine would close it for good.
-      `local-models` `desktop` `confirmed` `checked 2026-09-05`
+      `local-models-screen` `desktop` `confirmed` `checked 2026-09-05`

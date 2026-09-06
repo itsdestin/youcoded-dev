@@ -59,9 +59,9 @@ Target: `v1.3`
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 7 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 10 | 1 | 4 |
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 16 | 9 | 1 | 1 |
+| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 16 | 1 | 2 | 2 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 16 | 4 | 0 | 6 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 0 | 5 |
-| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 14 | 1 | 2 | 2 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 14 | 4 | 2 | 6 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 8 | 1 | 1 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 11 | 4 | 0 | 1 |
