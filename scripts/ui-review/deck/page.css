@@ -124,13 +124,43 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 /* padding-bottom clears the sticky #controls bar below: its button's own clamp() plus the
    bar's 10px top+bottom padding, so the last card can scroll clear of it instead of the bar
    landing on top of a card's own text (Destin, 2026-09-05). */
-.pages .cards{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-bottom:clamp(54px,calc(4.4vh + 20px),72px)}
+.pages .cards{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:28px;padding-bottom:clamp(54px,calc(4.4vh + 20px),72px)}
 .pages .page-head .intro{margin:4px 0 0;font-size:13px;color:var(--fg-2);line-height:1.5}
 /* One question = one card, the same panel/edge/radius idiom the single-step decision card uses. */
 .pages article.q{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
 .pages article.q.done{border-color:color-mix(in srgb,var(--yes) 45%,var(--edge))}
 .pages article.q .qh{margin:0;font-size:15px;font-weight:500;line-height:1.35}
+/* Fix (Destin, 2026-09-06): "too hard to quickly navigate between questions and tell them
+   apart". Three things do that job now — each question says which one it is, the gap between
+   two of them is bigger than any gap inside one, and an answered question says so where the
+   number is rather than only by a border tint you have to hunt for. */
+.pages article.q .qnum{margin:0 0 -4px;display:flex;align-items:center;gap:8px;font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-faint)}
+.pages article.q .qnum .tick{display:none;color:var(--yes);letter-spacing:.06em}
+.pages article.q .qnum .tick::before{content:"✓ ";font-weight:700}
+.pages article.q.done .qnum .tick{display:inline}
+.pages article.q.done .qnum .n{color:var(--fg-muted)}
 .pages .qbody{display:flex;flex-direction:column;gap:10px}
+/* Fix (Destin, 2026-09-06): "difficult to differentiate the different explanations section
+   card from the available/selectable options". They were the SAME card — same fill, same
+   border, same radius — so nothing said which ones he could click. An explanation is now flat
+   text behind a quiet rule; only a thing he can pick keeps the raised, bordered card. */
+.pages .card.part{background:none;border:0;border-left:2px solid var(--edge);border-radius:0;padding:0 0 0 12px}
+.pages .card.part h3{color:var(--fg-faint)}
+.pages .card.part p{color:var(--fg-2)}
+/* …and the pickable ones look pickable: they sit on the raised fill, and the whole card
+   answers to the pointer rather than only its border changing colour. */
+.pages .card.variant{background:var(--inset);border-color:var(--edge)}
+@media (hover:hover){.pages .card.variant:hover{background:color-mix(in srgb,var(--inset) 82%,var(--fg));border-color:var(--fg-muted)}}
+.pages .card.variant.on{background:color-mix(in srgb,var(--mark) 10%,var(--inset))}
+/* One left edge for everything he reads. The letter chip used to sit in its own gutter, so an
+   option's words started ~110px right of the paragraph above it — the "strange left/right
+   margins" (Destin). The chip now rides on the label's own line instead of indenting the card. */
+.pages .card.variant{display:block;padding:10px 12px}
+.pages .card.variant .vbody{display:block}
+.pages .card.variant .key,.pages .card.variant .badge{float:left;margin:0 8px 4px 0}
+.pages .card.variant h3{display:inline}
+.pages .card.variant ul,.pages .card.variant p{clear:both}
+.pages .card.variant ul{margin-top:8px}
 .pages .qrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 /* Reading text, not chrome: 14px in the column. The pros and cons follow it up a step so a list
    does not read as a footnote to the paragraph above it. */

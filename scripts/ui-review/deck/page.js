@@ -341,7 +341,11 @@
     // after the deck, which the chip and the header already say twice — so it gets no third.
     const named = pg.intro || pg.title !== DECK.title;
     $('#cards').innerHTML = (named ? `<div class="page-head"><p class="eyebrow">${esc(pg.title)}</p>${pg.intro ? `<p class="intro">${esc(pg.intro)}</p>` : ''}</div>` : '')
-      + steps.map(st => `<article class="q" data-id="${esc(st.id)}">`
+      + steps.map((st, i) => `<article class="q" data-id="${esc(st.id)}">`
+        // Fix (Destin, 2026-09-06): "too hard to quickly navigate between questions and tell
+        // them apart". A page of questions had nothing between one and the next but a 14px gap,
+        // so on a tall question you cannot see where you are. Each one now names itself.
+        + `<p class="qnum"><span class="n">Question ${i + 1} of ${steps.length}</span><span class="tick" aria-hidden="true">answered</span></p>`
         + `<h2 class="qh">${esc(st.headline)}</h2>`
         + `<div class="qbody">${cardsFor(st)}</div>`
         + `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
