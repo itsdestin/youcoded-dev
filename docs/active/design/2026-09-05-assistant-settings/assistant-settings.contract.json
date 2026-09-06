@@ -12,7 +12,8 @@
   "assistant-settings-review-2": "assistant-settings.review-2.json",
   "assistant-settings-review-3": "assistant-settings.review-3.json",
   "assistant-settings-review-4": "assistant-settings.review-4.json",
-  "assistant-settings-review-5": "assistant-settings.review-5.json"
+  "assistant-settings-review-5": "assistant-settings.review-5.json",
+  "assistant-settings-review-6": "assistant-settings.review-6.json"
  },
  "steps": [
   {
@@ -173,17 +174,17 @@
     },
     {
      "id": "R21",
-     "statement": "Local models has a whole page: the engine card, the model browser and other local apps.",
+     "statement": "Local models is a whole page in the five-page panel: the engine card, the model browser and other local apps.",
      "checkedBy": "deck",
      "threshold": "pass/fail",
-     "source": "assistant-settings-review#P-7"
+     "source": "assistant-settings-review-6#R6-1"
     },
     {
      "id": "R22",
-     "statement": "Specialists is one page: the tier pickers above, the roster below, unchanged.",
+     "statement": "Specialists is one page in the five-page panel: the tier pickers above, the roster below, unchanged.",
      "checkedBy": "deck",
      "threshold": "pass/fail",
-     "source": "assistant-settings-review#P-9"
+     "source": "assistant-settings-review-6#R6-2"
     },
     {
      "id": "R23",
