@@ -101,3 +101,9 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       silently vanishes. Found reviewing the vision work 2026-09-05; deriving the answer from the
       files on disk as well as from the engine would close it for good.
       `local-models-screen` `desktop` `confirmed` `checked 2026-09-05`
+- [ ] Installing the local-model engine still asks the computer to unpack the download with a
+      program the app does not ship, so a machine without it fails at a step the user did not know
+      existed. Lower risk than the speech model was — the shapes it downloads need no extra helper
+      on any of the three platforms — but it is the same dependency, and voice now unpacks its own
+      downloads with nothing outside the app. Worth sharing that
+      `settings/local-models` `all` `needs-verify` `checked 2026-09-05`

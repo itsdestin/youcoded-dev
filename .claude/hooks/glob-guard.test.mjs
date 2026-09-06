@@ -321,3 +321,49 @@ test('ALLOWS kill with a shell variable or job spec — nothing numeric to look 
   assert.equal(runProc('P=$(ss -ltnp | rg ":8199" | rg -o "pid=[0-9]+" | cut -d= -f2); kill "$P"').blocked, false);
   assert.equal(runProc('kill %1').blocked, false);
 });
+
+// ── guard 6: restoring a tracked file from a hand-made backup ──────────────────
+// The command shape below is the one that silently reverted a finished fix on
+// 2026-09-05: the save half never ran (wrong cwd), the restore half ran anyway
+// against a stale .bak, and it printed nothing and exited 0.
+function runInRepo(command) {
+  const repo = mkdtempSync(path.join(tmpdir(), 'globguard-repo-'));
+  spawnSync('git', ['init', '-q'], { cwd: repo });
+  writeFileSync(path.join(repo, 'tracked.ts'), 'export const a = 1;\n');
+  writeFileSync(path.join(repo, 'untracked.ts'), 'export const b = 2;\n');
+  spawnSync('git', ['add', 'tracked.ts'], { cwd: repo });
+  spawnSync('git', ['-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-qm', 'x'], { cwd: repo });
+  const r = spawnSync('python3', [HOOK], {
+    input: JSON.stringify({ tool_name: 'Bash', tool_input: { command }, cwd: repo }),
+    encoding: 'utf8',
+  });
+  rmSync(repo, { recursive: true, force: true });
+  return { blocked: r.status === 2, message: (r.stderr || '').trim() };
+}
+
+test('blocks restoring a TRACKED file from a .bak, and says to use git instead', () => {
+  const { blocked, message } = runInRepo('cp /tmp/x/ib.bak tracked.ts');
+  assert.ok(blocked);
+  assert.match(message, /git checkout -- tracked\.ts/);
+});
+
+test('blocks it inside the chained shape that caused the incident', () => {
+  assert.ok(runInRepo(
+    'cp tracked.ts /tmp/x/ib.bak && python3 -c "mutate()"; cd .. && cp /tmp/x/ib.bak tracked.ts',
+  ).blocked);
+  // mv is the same hazard.
+  assert.ok(runInRepo('mv /tmp/x/ib.orig tracked.ts').blocked);
+});
+
+test('ALLOWS making a backup — only restoring over version control is refused', () => {
+  assert.equal(runInRepo('cp tracked.ts /tmp/x/ib.bak').blocked, false);
+});
+
+test('ALLOWS restoring a file git does not track', () => {
+  assert.equal(runInRepo('cp /tmp/x/ib.bak untracked.ts').blocked, false);
+  assert.equal(runInRepo('cp /tmp/x/ib.bak /tmp/somewhere/else.ts').blocked, false);
+});
+
+test('ALLOWS an ordinary copy that has nothing to do with backups', () => {
+  assert.equal(runInRepo('cp /tmp/built.png tracked.ts').blocked, false);
+});

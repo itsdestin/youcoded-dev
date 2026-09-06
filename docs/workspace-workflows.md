@@ -123,6 +123,30 @@ cd <worktree> && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=/home/desti
   ./gradlew test -x bundleWebUi
 ```
 
+**`./gradlew test` can report BUILD SUCCESSFUL without running a single test.** Gradle skips
+tasks whose inputs have not changed, and prints `N actionable tasks: N up-to-date` — a green
+you did not earn. Two agents were caught by it on the same day (2026-09-05): one reported a
+cached green as a pass, the other trusted it after editing Kotlin. Force execution, and
+confirm from the XML rather than the summary:
+
+```bash
+# Really run them. `test` is an umbrella task and does NOT accept --tests;
+# name the variant task if you want to filter.
+./gradlew testDebugUnitTest -x bundleWebUi --rerun-tasks
+
+# What actually ran — the summary will not tell you.
+grep -o 'tests="[0-9]*"' app/build/test-results/testDebugUnitTest/TEST-<Class>.xml
+```
+
+Same trap on the desktop side, different shape: **`npx vitest` is not this repo's vitest.**
+npx resolves a cached global copy with no jsdom, which dies at `Cannot find package 'jsdom'`
+and looks like a broken test rather than a wrong binary. Run one suite with the local
+binary, from `desktop/`:
+
+```bash
+cd youcoded/desktop && ./node_modules/.bin/vitest run tests/<file>.test.ts
+```
+
 See `docs/build-and-release.md` for full build order, release flows, and version bumping rules.
 
 ### Harness evals (native agent tools)

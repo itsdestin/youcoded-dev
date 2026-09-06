@@ -38,6 +38,7 @@ Tests: node --test .claude/hooks/glob-guard.test.mjs
 
 import json
 import os
+import subprocess
 import re
 import shlex
 import sys
@@ -264,6 +265,73 @@ KILL_LIVE_MESSAGE = (
 )
 
 
+# ── guard 6: restoring a TRACKED file from a hand-made backup ────────────────────────────
+# Mutation testing is standard practice here — `.claude/rules/test-suite-hygiene.md` says
+# to break what a guard guards, watch it go red, and put it back. The obvious way to put it
+# back is `cp file /tmp/x.bak` … `cp /tmp/x.bak file`, and that is a trap with no warning
+# on it: the two halves are separate commands, so a backup that never got written (a cwd
+# the session did not expect, an `&&` chain that stopped early) leaves the RESTORE to
+# succeed anyway from whatever stale `.bak` happens to be sitting there. On 2026-09-05 that
+# silently reverted a finished fix and its comments; only a later grep for a comment that
+# should have been present caught it, about six calls after the fact. The failure is
+# invisible by construction — the restore prints nothing and exits 0.
+#
+# git already does this correctly and cannot go stale: `git stash push -- <file>` parks it,
+# `git checkout -- <file>` puts it back exactly as committed. So a `.bak`-shaped restore
+# ONTO A TRACKED FILE is refused. Making a backup is fine, and an untracked destination is
+# none of this hook's business — only overwriting version-controlled work.
+BACKUP_SUFFIXES = (".bak", ".orig", ".save", ".backup")
+RESTORE_CMD = re.compile(
+    r"(?:^|[|&;(]\s*)(?:cp|mv)\s+(?:-[a-zA-Z]+\s+)*(\S+)\s+(\S+)(?=\s|;|&|\||$)"
+)
+
+
+def _is_tracked(path: str, cwd: str) -> bool:
+    """Does git know this path? Fails open (False) on any doubt."""
+    try:
+        r = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", "--", path],
+            cwd=cwd or None, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5,
+        )
+        return r.returncode == 0
+    except Exception:
+        return False
+
+
+def backup_restore_offender(command: str, cwd: str = ""):
+    """(source, destination) of a `.bak`-style restore over a tracked file, else None."""
+    if "<<" in command:
+        return None   # heredoc body is data, same reasoning as the glob guard
+    for src, dst in RESTORE_CMD.findall(command):
+        src_clean = src.strip("'\"")
+        dst_clean = dst.strip("'\"")
+        if not src_clean.endswith(BACKUP_SUFFIXES):
+            continue
+        if dst_clean.endswith(BACKUP_SUFFIXES):
+            continue   # making the backup, not restoring from one
+        if _is_tracked(dst_clean, cwd):
+            return (src_clean, dst_clean)
+    return None
+
+
+BACKUP_RESTORE_MESSAGE = (
+    "Blocked before it ran: restoring `{dst}` from `{src}` overwrites a file git is "
+    "tracking, from a copy nothing verified. The two halves of a hand-made backup are "
+    "separate commands, so when the SAVE half does not run — a cwd you did not expect, an "
+    "`&&` chain that stopped early — this RESTORE still succeeds, silently, from whatever "
+    "stale backup is lying around. On 2026-09-05 that reverted a finished fix and nobody "
+    "noticed for six calls.\n"
+    "Use git, which cannot go stale:\n"
+    "  git stash push -- {dst}    # park your version, then mutate\n"
+    "  git checkout -- {dst}      # put back exactly what is committed\n"
+    "  git stash pop              # and take your version back\n"
+    "COMMIT FIRST if the edit you are testing is not committed — `git checkout` throws away "
+    "uncommitted work, which is the same accident wearing a different hat. If the "
+    "destination is genuinely not source under version control, copy it to a path git does "
+    "not track."
+)
+
+
 def main() -> int:
     try:
         payload = json.load(sys.stdin)
@@ -297,6 +365,14 @@ def main() -> int:
     try:
         if pgrep_loop_offender(command):
             print(PGREP_LOOP_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open
+
+    try:
+        hit = backup_restore_offender(command, payload.get("cwd") or "")
+        if hit:
+            print(BACKUP_RESTORE_MESSAGE.format(src=hit[0], dst=hit[1]), file=sys.stderr)
             return 2
     except Exception:
         pass   # fail open
