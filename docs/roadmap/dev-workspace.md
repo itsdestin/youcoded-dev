@@ -520,3 +520,10 @@ seen-on is always n/a here.
       inside the viewport but still rendering as a spacer — that number must always be zero.
       Generalises past folding to any lazy render: is anything late to the screen?
       `n/a` `needs-verify` `checked 2026-09-03` `performance`
+
+- [ ] The close-out check reports a fully merged, fully pushed branch as "never pushed" when the
+      merge commit's message was written by hand instead of left as git's default, because it looks
+      for the branch's name in that message. Happened on the voice merge 2026-09-05, where the
+      message was rewritten to describe the feature for Destin. Matching the commit rather than the
+      words would fix it; so would always keeping the branch name in the message
+      `n/a` `confirmed` `checked 2026-09-05`
