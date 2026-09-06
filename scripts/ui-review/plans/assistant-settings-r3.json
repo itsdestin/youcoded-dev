@@ -1,0 +1,55 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1",
+ "width": 1440,
+ "height": 900,
+ "pre": [
+  {
+   "click": "[title=Settings]",
+   "settle": 700
+  }
+ ],
+ "shots": [
+  {
+   "name": "assistant-general",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Default model') && document.body.textContent.includes('Tavily')"
+  },
+  {
+   "name": "assistant-cloud",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Cloud providers')",
+     "settle": 900
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('My Account') && document.body.textContent.includes('5-hour limit')"
+  },
+  {
+   "name": "assistant-permissions-skip-on",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Permissions')",
+     "settle": 900
+    },
+    {
+     "click": "js:document.querySelector('[role=dialog] [aria-label=\"Enable Skip Permissions Mode?\"]')",
+     "settle": 600
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('without asking you')"
+  }
+ ]
+}
