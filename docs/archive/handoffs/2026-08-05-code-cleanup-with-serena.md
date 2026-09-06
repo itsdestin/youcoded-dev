@@ -1,5 +1,5 @@
 ---
-status: active
+status: superseded
 created: 2026-08-05
 ---
 
@@ -7,8 +7,11 @@ created: 2026-08-05
 
 > **Progress note 2026-08-12 — done so far:** the Serena setup below landed (`08067924`); the ESLint gate landed (`3bff0cf6`/`51d859e4`, merged via `48202704`); the 89 unused-`React`-imports sweep landed (`9961df9e`). The remaining backlog items below stay live.
 
-Paste the prompt below to start a cleanup session. Everything above the prompt is
-context for whoever is reading this file directly.
+**Superseded 2026-09-05:** this is a historical record, not current instructions.
+The setup and prompt below were retired with the workspace search-tool cleanup.
+Use `CLAUDE.md` and `docs/code-intelligence.md` for current worktree-local procedures.
+Unverified residual cleanup ideas remain filed in the development-workspace roadmap;
+archiving this handoff does not claim they shipped.
 
 ## What was set up on 2026-08-05
 

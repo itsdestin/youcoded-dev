@@ -38,8 +38,8 @@ collect_repo_state() {
     dirty=$(git -C "$repo_dir" status --porcelain 2>/dev/null | head -5)
     # How far this checkout trails its upstream, as of the LAST fetch (no network
     # here — a hook must not block on it). WHY: the main youcoded checkout sat 146
-    # commits behind for two days on 2026-08-27 and nothing said so; Serena is
-    # pinned to it, so every symbol lookup was answering from stale code.
+    # commits behind for two days on 2026-08-27 and nothing said so; a checkout
+    # can look current while its source and guidance are stale.
     behind=$(git -C "$repo_dir" rev-list --count 'HEAD..@{u}' 2>/dev/null || echo "0")
 
     echo "### $repo_name (on \`$branch\`)"

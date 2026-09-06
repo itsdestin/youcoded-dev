@@ -4,6 +4,18 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+- [ ] Project startup reminders and before/after-action checks should work in native chats too,
+      with approval before scripts run and clear reports when a check fails or times out
+      `desktop` `parked` `checked 2026-09-05` `security` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
+- [ ] The assistant can receive a file's instructions only after its first edit has already
+      happened; it should see them and reconsider before changing the file
+      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
+- [ ] The assistant should know which tools, instructions and automatic checks are actually
+      active in this chat, rather than guessing from setup instructions
+      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
 - [ ] On a ChatGPT-plan model, YouCoded does not hand OpenAI's private reasoning back on the
       next step of a tool turn, so a long tool-using turn may re-think work it already did —
       slower and more expensive than it needs to be. Phase 0 measured no reasoning item at all
@@ -68,8 +80,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Context & knowledge as product surfaces — five-idea outline, no design done: grow the
       context popup into a real surface (per-item token cost, "this rule loaded because…", session
       mutes); one-tap "remember this?" correction capture; work state as a first-class object;
-      shareable knowledge packs via the marketplace; provenance + revocation as the gate on sharing
-      `desktop` `parked` `checked 2026-07-28` → docs/archive/specs/2026-07-28-context-knowledge-app-features-outline.md
+      shareable knowledge packs via the marketplace; provenance + revocation as the gate on sharing.
+      Destin, 2026-09-05: also explain which instructions loaded, why, and what was skipped or
+      shortened, including after reopening a chat or changing its working folder
+      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
 
 - [ ] Third-party agent CLIs as session providers (Codex first, then OpenCode / Cursor) — cuts
       against the standing "one first-party harness, every model" direction, kept as a deliberate
@@ -137,8 +151,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `confirmed` `checked 2026-09-01` `urgent` → docs/active/investigations/2026-09-01-grep-glob-no-deadline.md
 
 - [ ] On a small local vision model the assistant is told an image is "already visible earlier in
-      this conversation" and gets no picture, even though it can no longer see it, until the file changes
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-trimmed-image-dedupe-cache.md
+      this conversation" and gets no picture, even though it can no longer see it, until the file changes.
+      **Now genuinely reachable** — measured 2026-09-05 while building the local-engine upgrades: no
+      `KNOWN_MODELS` entry has ever declared `supportsVision`, and local bindings always resolved to
+      "don't know", so no local model could reach the buggy path at all. Once the engine reports a
+      paired vision file, any downloaded local vision model resolves true, and the only remaining
+      precondition is a context under ~8,500 tokens — which is exactly the small vision models this
+      feature makes easy to install.
+      `desktop` `confirmed` `checked 2026-09-05` → docs/active/investigations/2026-09-01-trimmed-image-dedupe-cache.md
 
 - [ ] Write and Edit refuse a file "modified since you read it" after a plain touch or git checkout
       that changed nothing, and can miss a real outside edit made in the same second
@@ -184,11 +204,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       command that looks covered still raises the permission card with no reason — it reads
       as the app forgetting the approval
       `tool-cards` `desktop` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
-
-- [ ] Full Auto still stops to ask before merely reading a file outside the project, and a web
-      search or fetch can raise the same file-permission card. Blocked on Destin approving the
-      approval-card copy in the workbench (plan Task 2); code tasks 3–4 can start in parallel
-      `tool-cards` `desktop` `blocked` `checked 2026-09-01` → docs/active/investigations/2026-09-01-full-auto-external-read-ask.md
 
 - [ ] Sessions on local/OpenRouter models have no "Skip Permissions" — the toggle is hidden on
       create and resume, and the permission chip stops at Full Auto
@@ -261,6 +276,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       agent at all; "ping the user and wait" is a core competency. Captured, not designed —
       decision 1 in the agent-platform vision doc §9; Phase 4's agent model and inbox wait on it
       `all` `parked` `checked 2026-09-01`
+
+- [ ] In the helpers popup, the amber "Needs you" label on a helper waiting for permission is
+      close to unreadable on the three pale themes — measured 1.52:1 on light, 1.41:1 on creme
+      and 1.19:1 on meadow-mist, against a 4.5:1 floor. The fix is the one the working pill took
+      on 2026-09-05: colour the ring and tint, leave the word on the theme's own text colour.
+      Left alone there because it is the consent affordance and the branch that measured it was
+      about a different chip
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-05`
 
 - [ ] Specialists — six follow-on ideas from plan 1c, named but not designed: promote a
       foreground helper to background mid-run; open a helper's own transcript in a viewer; a

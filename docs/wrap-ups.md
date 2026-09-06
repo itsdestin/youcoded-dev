@@ -33,6 +33,16 @@ recurred — the repetition is the data.
 - Roadmap entries filed by wrap-up are not tagged, so the next wrap-up cannot check whether they moved → dropped: Destin deferred; revisit once the ledger has run a few sessions
 - deleted/merged: `SKILL.md` narrative trimmed hard enough to absorb a new section, a new step and a fifth question and still come out smaller — 1504 → 1492 words
 
+## 2026-09-05 — guidance cleanup (session/guidance-serena-cleanup)
+- Native path-rule support was initially uncertain from static guidance; source inspection confirmed it, but delivery follows the tool step → applied: accurate wording in CLAUDE/MAP; roadmap: first-write timing, hook compatibility and runtime capability facts in native-harness.
+- Retired checkout-pinned search setup competed with the isolated-worktree rule → applied on branch: empty workspace MCP registry, removed app index config, branch-local search guidance and CI regression test; live/shared registration deliberately untouched.
+- Always-loaded recipes and incident narratives crowded out core guidance → applied: CLAUDE.md 6,186 → 1,985 whitespace-delimited words; detailed recipes moved to docs/workspace-workflows.md. Existing approval/verification gates retained.
+- Instruction provenance overlaps an existing context-and-knowledge idea → roadmap: expanded that item rather than creating a second project. Full workflow/skill routing consolidation deferred in dev-workspace.
+- A helper stopped on provider credit limits; work continued directly. Runtime also refused simultaneous write-capable helpers → applied: qualify parallelism by available runtime support rather than assuming it.
+- Roadmap validator downgraded stale workbench-sync and file-chip claims to needs-verify; no product fix claimed. Full anchor audit is blocked by absent sibling component repos; desktop verify and focused workspace tests passed.
+- Close-out mistook the untouched branch tip's ancestry for completed work despite uncommitted edits → roadmap: dev-workspace. Its deletion suggestions were not followed; these worktrees hold the actual changes.
+- deleted/merged: retired setup instructions and active handoff removed from current guidance; historical handoff archived with its unresolved ideas preserved in the roadmap. No global cache deletion, live-app changes or runtime implementation.
+
 ## 2026-09-05 — competitive review of the native prompt, then shipped it (feat/prompt-doctrine, feat/prompt-capability, feat/prompt-plain-language)
 - Paid for an 8-cell before/after eval at one run per arm, reported the gap as a finding, retracted it when a re-run of the SAME builds swung 2-3 points on the same judged items → applied: `harness-eval.mjs` warns at the estimate when a ≥2-arm plan has `repeats: 1`, guard `harness-eval-comparison-noise.test.ts`  [$1.90 spent, one wrong conclusion Destin acted on]
 - `builds` (the code-version axis) had no worked example and no key-file guidance; learned it from `matrix.ts` source and searched five places for a key that does not exist → applied: `prompt-doctrine.json` committed as the example, three bullets in `.claude/rules/harness-evaluator.md`  [~10 tool calls + one blocked turn]
