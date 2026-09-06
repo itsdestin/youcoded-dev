@@ -29,10 +29,11 @@ UX tester 1 → review deck(s) → contract → design + capped review → build
 UX tester 2 → triage → grader → acceptance deck → Destin's merge call.
 
 ## Questions before drawing
-**Invariant:** step-2 questions are a words-only deck (`<feature>.questions.json`, `"words": true`
-question steps, 1–3 options), submitted before any UI is drawn. A note carries no tag.
-**Why:** a chat answer is not a source; a row must resolve to an answered step.
-**Guard:** `test_words.py`.
+**Invariant:** step-2 questions are a words-only deck (`<feature>.questions.json`), submitted
+before any UI is drawn: each question carries `today`, `problem`, `proposal` and 1–3 `options`
+with `pros`, `cons`, at most one `recommended`. **Why:** a chat answer is not a source; a row
+must resolve to an answered step. **Guard:** `test_words.py`; how to write one:
+`.claude/rules/review-deck.md`.
 
 ## The UX tester runs before Destin sees a deck, and once more at the end
 **Invariant:** a fresh subagent given ONLY `scripts/ui-review/ux-tester.md`'s briefing and

@@ -98,7 +98,7 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
-- [ ] The question deck (`scripts/questions/serve.py`) can only ask multiple-choice questions,
+- [ ] The question deck can only ask multiple-choice questions,
       so a session needing Destin to approve a set of concrete text changes rebuilds its own
       loopback answer page instead of using it — happened 2026-09-05 for a nine-item prompt
       diff review. Wanted: a card type that renders a before/after diff, so one surface
