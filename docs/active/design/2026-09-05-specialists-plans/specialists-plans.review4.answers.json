@@ -1,0 +1,32 @@
+{
+ "deck": "specialists-plans-review4",
+ "started": "2026-09-06T06:46:55.658Z",
+ "submitted": "2026-09-06T06:47:56Z",
+ "cur": 2,
+ "answers": {
+  "T-1": {
+   "note": "? this isn't what i asked for in the las round. you just added a status dot for some reason? i said i want a container/visible pill that goes around both the warning and the buttons on the righthand side?",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 51,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "T-2": {
+   "v": "other",
+   "note": "see prior",
+   "note_kind": "noting",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "T-3": {
+   "note": "see prior",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

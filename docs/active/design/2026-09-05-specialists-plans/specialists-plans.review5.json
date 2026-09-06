@@ -1,0 +1,64 @@
+{
+  "title": "Plans — round 5: the pill, actually visible",
+  "key": "specialists-plans-review5",
+  "out": "specialists-plans.review5.html",
+  "images": "images/specialists-plans.review5",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/plans-card-review/round4",
+    "after": "/home/destin/youcoded-dev/scratch/plans-card-review/after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "paused": [
+      "plans-card",
+      "paused",
+      "1210x420+16+90"
+    ],
+    "add-budget": [
+      "plans-card",
+      "add-budget",
+      "1210x420+16+90"
+    ],
+    "interrupted": [
+      "plans-card",
+      "interrupted",
+      "1210x340+16+90"
+    ]
+  },
+  "steps": [
+    {
+      "id": "T-1",
+      "surface": "Chat · plan card",
+      "path": "A plan paused at its limit",
+      "crop": "paused",
+      "headline": "The paused row is now a filled, outlined pill holding the sentence and both buttons.",
+      "changed": "Last round I reached for the app's status strip, but its fill is the same inset grey as the card it sits in, so you saw a dot and no container. The strip can now be tinted: this one is filled and outlined in the warning's own amber, and the pill wraps the words and the buttons together.",
+      "notice": "The pause reads as one object that belongs to itself, not a sentence with buttons drifting beside it.",
+      "risk": "The tint is an option on the shared strip, so the settings screens that use the flat version are untouched."
+    },
+    {
+      "id": "T-2",
+      "surface": "Chat · plan card",
+      "path": "After pressing Add budget",
+      "crop": "add-budget",
+      "headline": "Raising the limit happens inside the same amber pill.",
+      "changed": "The amount field, Cancel and Continue replace Stop and Add budget inside the pill. The sentence stays where it is.",
+      "notice": "You can read why the plan paused while you type the number.",
+      "risk": "On a narrow window the field and buttons wrap onto a second line inside the pill."
+    },
+    {
+      "id": "T-3",
+      "surface": "Chat · plan card",
+      "path": "After the app restarted mid-plan",
+      "crop": "interrupted",
+      "headline": "The interrupted plan gets the same pill, filled and outlined in neutral grey.",
+      "changed": "Same container, different colour: an interrupted plan is waiting, not warning, so its pill is the app's plain inset with a visible edge.",
+      "notice": "Both cards that ask you a question now show it as a pill, and the colour tells you whether anything is wrong.",
+      "risk": "None visible."
+    }
+  ]
+}
