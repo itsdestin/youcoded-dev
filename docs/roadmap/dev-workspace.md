@@ -164,6 +164,14 @@ seen-on is always n/a here.
       real failures away, which is the exact thing the 2026-08-28 flake sweep set out to end
       `n/a` `confirmed` `checked 2026-09-05` `regression`
 
+- [ ] Reading and editing files through shell `cat`/`sed`/heredocs loads NO path-scoped rule —
+      rules fire on the file tools only — so a session told to prefer Bash silently works with
+      none of them. Measured 2026-09-05: a session that shipped a renderer feature, a new test
+      and a review deck got 0 of the 6 rules its own edits matched (`~/.claude/instructions-loaded.log`
+      records the misses). A PostToolUse hook on edit-shaped Bash could name the rule that did
+      not load; the observation instrument for it already exists
+      `n/a` `confirmed` `checked 2026-09-05`
+
 - [ ] The old review-harness script still lets the model it runs read the OpenRouter key (its
       env scrub does not work); the native evaluator fixed this properly — retire the old script,
       or port the three fixes to it?
