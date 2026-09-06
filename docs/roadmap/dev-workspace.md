@@ -98,6 +98,13 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+- [ ] The question deck (`scripts/questions/serve.py`) can only ask multiple-choice questions,
+      so a session needing Destin to approve a set of concrete text changes rebuilds its own
+      loopback answer page instead of using it — happened 2026-09-05 for a nine-item prompt
+      diff review. Wanted: a card type that renders a before/after diff, so one surface
+      answers every "approve these specific edits" question
+      `desktop` `needs-verify` `checked 2026-09-05`
+
 - [ ] A dev instance still shares one file with Destin's live app: the cross-device sync state
       at ~/.claude/toolkit-state/sync-spaces.json is a hardcoded path, so --profile does not
       separate it and two apps can write it at once. Found 2026-09-05 while handing over the
