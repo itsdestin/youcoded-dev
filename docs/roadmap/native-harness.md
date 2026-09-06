@@ -185,13 +185,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       as the app forgetting the approval
       `tool-cards` `desktop` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
 
-- [ ] Full Auto still stops to ask before merely reading a file outside the project, and a web
-      search or fetch can raise the same file-permission card. BUILT 2026-09-05 on branch
-      `session/reads-always-allowed`, unmerged — and widened past the original fix: reads never
-      ask in any mode now, Ask First included. No longer blocked; the card copy Destin was
-      going to approve no longer exists
-      `tool-cards` `desktop` `in-flight` `checked 2026-09-05` → docs/active/investigations/2026-09-01-full-auto-external-read-ask.md
-
 - [ ] Sessions on local/OpenRouter models have no "Skip Permissions" — the toggle is hidden on
       create and resume, and the permission chip stops at Full Auto
       `status-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-native-no-bypass-mode.md

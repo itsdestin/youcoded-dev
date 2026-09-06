@@ -1,7 +1,7 @@
 ---
 status: superseded
 date: 2026-08-21
-spec: docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md
+spec: docs/archive/specs/2026-08-18-full-auto-external-directory-permissions-design.md
 ---
 
 # Full-Auto External Read Bypass + Web-Subject Guard Fix — Implementation Plan
@@ -34,7 +34,7 @@ spec: docs/active/specs/2026-08-18-full-auto-external-directory-permissions-desi
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** In Full Auto, stop forcing approval asks when Read/Grep/Glob touch paths outside the session jail; stop WebSearch/WebFetch queries/URLs from ever tripping the path guard. Spec: `docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md` (ratified by Destin 2026-08-21).
+**Goal:** In Full Auto, stop forcing approval asks when Read/Grep/Glob touch paths outside the session jail; stop WebSearch/WebFetch queries/URLs from ever tripping the path guard. Spec: `docs/archive/specs/2026-08-18-full-auto-external-directory-permissions-design.md` (ratified by Destin 2026-08-21).
 
 **Architecture:** One new optional `HarnessSessionOpts` callback (`isWalkAwayRead`) lets `runOneTool`'s external-directory branch fall through to the normal configured decision for three read-only tools when the session's *live* mode is full-auto. Everything else about the guard (secret hard-denies, spill exemptions, invented-path interception, write asks) is untouched and repinned by tests. The web fix **adds** WebSearch/WebFetch to `NON_PATH_SUBJECT_TOOLS` — the "subject is not a filesystem path" set — which removes them from the path-*guarded* population.
 
@@ -590,6 +590,6 @@ Blocked until Task 2's **Destin approved** box is ticked.
 - [ ] **Step 1:** Final `bash scripts/verify.sh <worktree>` → exit 0.
 - [ ] **Step 2:** Merge the branch to `master` in `youcoded/` AND PUSH ("merge means merge AND push"). CI builds/releases handle the rest.
 - [ ] **Step 3:** Shut down the dev instance (orphaned Vite servers hold port 5223).
-- [ ] **Step 4:** Workspace bookkeeping, same session, in `youcoded-dev`: `git mv docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md docs/archive/specs/` AND `git mv docs/active/plans/2026-08-21-full-auto-external-read-bypass.md docs/archive/plans/` (this plan archives with its spec); add/update the ROADMAP entry as `[x]` (dated one-liner, dedupe first); commit + push `youcoded-dev` (includes Task 6's spec-amendment commit).
+- [ ] **Step 4:** Workspace bookkeeping, same session, in `youcoded-dev`: `git mv docs/archive/specs/2026-08-18-full-auto-external-directory-permissions-design.md docs/archive/specs/` AND `git mv docs/archive/plans/2026-08-21-full-auto-external-read-bypass.md docs/archive/plans/` (this plan archives with its spec); add/update the ROADMAP entry as `[x]` (dated one-liner, dedupe first); commit + push `youcoded-dev` (includes Task 6's spec-amendment commit).
 - [ ] **Step 5:** Worktree cleanup (only after `git branch --contains <sha>` lists master): `git worktree remove <path>`; delete the branch remotely and locally.
 - [ ] **Step 6: Post-ship verification (spec requirement).** Permission asks are NEVER persisted to the native session transcripts (`~/.youcoded/sessions/<slug>/<sessionId>.jsonl`) — verified 2026-08-23: `TranscriptEventType` (`src/shared/types.ts:98`) has no permission member; asks ride the live broker channel only. So the check is observational: after Destin has used a real Full-Auto session across external paths, he confirms (a) zero approval cards appeared for Read/Grep/Glob, and (b) any card that DID appear was a write or safety-stop card. Record his confirmation in the archived spec's tail — converts "we think it's fixed" into an observed claim. Any resurgence of read asks feeds the parked Option B decision.

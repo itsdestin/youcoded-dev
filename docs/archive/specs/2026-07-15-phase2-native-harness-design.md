@@ -26,8 +26,8 @@ status: shipped
 > written.
 >
 > **Keep, don't delete:** two live docs still cite this spec by path —
-> `docs/active/plans/2026-08-21-full-auto-external-read-bypass.md` and
-> `docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md` — because
+> `docs/archive/plans/2026-08-21-full-auto-external-read-bypass.md` and
+> `docs/archive/specs/2026-08-18-full-auto-external-directory-permissions-design.md` — because
 > §0's settled decisions (we own the loop; the transcript-event emit surface is frozen) are
 > still binding on new work. **Recommended: move to `docs/archive/specs/`** and update those
 > two references. (Not moved here; Destin's call.)
