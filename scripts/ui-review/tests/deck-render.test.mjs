@@ -407,8 +407,16 @@ print(p)`;
       assert.equal(await c.evaluate("document.querySelectorAll('#steps span').length"), 2, 'one segment per page');
       assert.equal(await c.evaluate("document.querySelectorAll('article.q').length"), 2, 'both questions of page 1');
       assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q')].map(a=>a.dataset.id)"), ['Q-1', 'Q-2']);
-      // The reading column stays a column: one option per row, nothing wider than ~760px.
-      assert.ok(await c.evaluate("document.querySelector('#cards').getBoundingClientRect().width <= 761"), 'the column is capped');
+      // The column is capped, and wide enough for the three explanations to sit side by side —
+      // Destin, 2026-09-06: "do 3 cards side-by-side horizontally". At 760px they were three
+      // screens of scrolling before the first thing he can answer.
+      assert.ok(await c.evaluate("document.querySelector('#cards').getBoundingClientRect().width <= 1121"), 'the column is capped');
+      const partTops = await c.evaluate("JSON.stringify([...document.querySelectorAll('article.q[data-id=\"Q-1\"] .card.part')].map(e=>Math.round(e.getBoundingClientRect().top)))");
+      assert.equal(new Set(JSON.parse(partTops)).size, 1, 'the three explanations share one row');
+      // Everything he reads starts on one left edge: the option name, its bullets, and the
+      // explanation text above them ("strange left/right margins", same review).
+      const edges = JSON.parse(await c.evaluate("JSON.stringify(['.card.part p','.card.variant .oname','.card.variant li'].map(s=>Math.round(document.querySelector(s).getBoundingClientRect().left)))"));
+      assert.ok(Math.max(...edges) - Math.min(...edges) <= 2, 'one left edge, got ' + edges.join(','));
       assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"Q-1\"] .card.part').length"), 3, 'today / the problem / the proposal');
       assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"Q-1\"] .card.option .badge').length"), 1, 'the recommended option is badged');
       // Every question carries its own answer row and its own note; the shared one is put away.

@@ -74,7 +74,6 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
    red reads as a warning rather than as a plus or a minus, and Destin reads these as prose. */
 .card.variant ul{margin:2px 0 0;padding-left:16px;display:flex;flex-direction:column;gap:3px}
 .card.variant li{font-size:12px;color:var(--fg);line-height:1.4}
-.card.variant ul.pros li::marker{color:var(--yes)} .card.variant ul.cons li::marker{color:var(--no)}
 /* The recommended option, beside its letter — the flag the "(recommended)" label used to fake. */
 /* Fix (2026-09-05): green already means "answered yes" and amber (--mark) already means "the
    one I picked" elsewhere on this card — painting the badge from --yes made it read as one of
@@ -124,7 +123,7 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 /* padding-bottom clears the sticky #controls bar below: its button's own clamp() plus the
    bar's 10px top+bottom padding, so the last card can scroll clear of it instead of the bar
    landing on top of a card's own text (Destin, 2026-09-05). */
-.pages .cards{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:28px;padding-bottom:clamp(54px,calc(4.4vh + 20px),72px)}
+.pages .cards{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:28px;padding-bottom:clamp(54px,calc(4.4vh + 20px),72px)}
 .pages .page-head .intro{margin:4px 0 0;font-size:13px;color:var(--fg-2);line-height:1.5}
 /* One question = one card, the same panel/edge/radius idiom the single-step decision card uses. */
 .pages article.q{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
@@ -157,17 +156,40 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
    margins" (Destin). The chip now rides on the label's own line instead of indenting the card. */
 .pages .card.variant{display:block;padding:10px 12px}
 .pages .card.variant .vbody{display:block}
-.pages .card.variant .key,.pages .card.variant .badge{float:left;margin:0 8px 4px 0}
-.pages .card.variant h3{display:inline}
-.pages .card.variant ul,.pages .card.variant p{clear:both}
+/* Fix (Destin, 2026-09-06): "3 cards side-by-side horizontally" — the three explanations were
+   three screens of scrolling before the first thing he can answer. The column widens to hold
+   them; below 900px of room they stack again rather than becoming three unreadable strips. */
+.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start}
+@media (max-width:1000px){.parts{grid-template-columns:1fr}}
+/* Fix (Destin, 2026-09-06): "big ass clear Option A / Option B headers". The heading is the
+   thing he picks; the option's own name is the line under it and the id is a quiet trailing
+   mark, because ids are what the answers file and any contract row speak in. */
+.card.variant .ohead{display:flex;align-items:center;gap:8px;margin:0 0 6px;font:600 15px/1.2 var(--font);text-transform:none;letter-spacing:0;color:var(--fg)}
+.card.variant .ohead .oletter{flex:none}
+.card.variant .ohead .key{margin-left:auto;font-weight:500}
+.card.variant .oname{margin:0;font:500 12px/1.3 var(--font);text-transform:uppercase;letter-spacing:.07em;color:var(--fg-muted)}
+/* The pros and cons hang their markers in the card's own padding rather than a second indent:
+   the bullet text then starts on the same left edge as everything above it (Destin: "the
+   pros/cons lists all still have weird margins"). */
+.card.variant ul{margin:8px 0 0;padding:0;list-style:none}
+.card.variant li{position:relative;padding-left:14px}
+.card.variant li::before{content:"";position:absolute;left:2px;top:.55em;width:5px;height:5px;border-radius:50%}
+.card.variant ul.pros li::before{background:var(--yes)} .card.variant ul.cons li::before{background:var(--no)}
+.pages .card.variant{display:block;padding:12px 14px}
+.pages .card.variant .vbody{display:block}
 .pages .card.variant ul{margin-top:8px}
-.pages .qrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+/* Fix (Destin, 2026-09-06): "other, save/next … still have weird margins". The row now runs
+   edge to edge of the question card — the buttons size to their words, the note takes the rest,
+   and nothing carries a margin of its own. */
+.pages .qrow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:2px 0 0}
+.pages .qrow .ans{flex:0 0 auto;max-width:none;margin:0}
+.pages .qrow .note{flex:1 1 220px;margin:0}
 /* Reading text, not chrome: 14px in the column. The pros and cons follow it up a step so a list
    does not read as a footnote to the paragraph above it. */
 .pages .card p{font-size:14px} .pages .card li{font-size:13px}
 /* The shared answer row belongs to ONE step; on a page each question carries its own, so all
    that is left of it is the way forward — pinned to the bottom of the column as it scrolls. */
-.content.pages #controls{position:sticky;bottom:0;z-index:3;max-width:760px;margin:0 auto;padding:10px 0;justify-content:flex-end;background:var(--canvas)}
+.content.pages #controls{position:sticky;bottom:0;z-index:3;max-width:1120px;margin:0 auto;padding:10px 0;justify-content:flex-end;background:var(--canvas)}
 .content.pages #controls>#answers,.content.pages #controls>#note{display:none}
 /* CONTRACT: the rows as a table; a graded row is tinted by its verdict */
 .card.contract{overflow:auto} .card.contract table{border-collapse:collapse;width:100%;font-size:12px} .card.contract th{text-align:left;font-weight:600;color:var(--fg-dim);padding:6px 8px;border-bottom:1px solid var(--edge)} .card.contract td{padding:6px 8px;border-bottom:1px solid var(--edge);vertical-align:top}

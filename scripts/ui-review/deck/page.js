@@ -162,11 +162,22 @@
   // ids, and those ids are what a session reads back out of the answers file.)
   const KEY_MAX = 10;
   const chip = id => `<span class="key" title="${esc(id)}">${esc(id.length > KEY_MAX ? id.slice(0, KEY_MAX - 1) + '…' : id)}</span>`;
-  const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}">${chip(o.id)}${o.recommended ? '<span class="badge">Recommended</span>' : ''}<div class="vbody"><h3>${esc(o.label)}</h3>${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+  // Fix (Destin, 2026-09-06): "add big ass clear 'Option A. Option B.' headers on the
+  // selectable options". The option's own id (`all-three`) was doing that job in a small chip,
+  // which named the thing without announcing that it is the thing you pick. The heading is now
+  // the position — Option A, Option B — and the id follows it quietly, because the answers file,
+  // the summary and any contract row still speak in ids.
+  const LETTERS = 'ABCDEFGH';
+  const optionCard = (o, cls, i) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><h3 class="ohead"><span class="oletter">Option ${LETTERS[i] || String(i + 1)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}${chip(o.id)}</h3><div class="vbody"><h4 class="oname">${esc(o.label)}</h4>${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
   // The three parts of a question, one card each.
   const partCard = (title, text) => `<section class="card part"><h3>${esc(title)}</h3><p>${esc(text)}</p></section>`;
-  const partCards = st => [['Today', st.today], ['The problem', st.problem], ['Proposal', st.proposal]]
-    .filter(([, t]) => t).map(([h, t]) => partCard(h, t)).join('');
+  // Fix (Destin, 2026-09-06): "do 3 cards side-by-side horizontally". Stacked, the three
+  // explanations were three screens of scrolling before the first thing he can answer.
+  const partCards = st => {
+    const cards = [['Today', st.today], ['The problem', st.problem], ['Proposal', st.proposal]]
+      .filter(([, t]) => t).map(([h, t]) => partCard(h, t)).join('');
+    return cards ? `<div class="parts">${cards}</div>` : '';
+  };
   const changedCard = st => `<section class="card"><h3>${ICON.change}What changed</h3><p>${esc(st.changed)}</p>${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`;
   const noticeCard = st => st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '';
   const riskCard = st => st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '';
@@ -179,8 +190,8 @@
   // The body of one step, in the order the cards are read.
   const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + riskCard(st)
     : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + riskCard(st)
-    : pickList(st) ? pickList(st).map(v => optionCard(v, '')).join('') + noticeCard(st) + riskCard(st)
-    : st.kind === 'decide' ? partCards(st) + noticeCard(st) + st.options.map(o => optionCard(o, ' option')).join('') + riskCard(st)
+    : pickList(st) ? pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + riskCard(st)
+    : st.kind === 'decide' ? partCards(st) + noticeCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
     : changedCard(st) + noticeCard(st) + riskCard(st);
 
   // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
